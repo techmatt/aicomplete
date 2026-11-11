@@ -11,6 +11,7 @@ import argparse
 import collections
 import json
 import os
+import re
 import sys
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
@@ -30,12 +31,15 @@ def main():
     # 118: only the runs' decks.
     in_runs = dealt(a.dirs)
     deck = {k: v for k, v in deck.items() if k in in_runs}
-    want = set(x for x in a.agents.split(',') if x)
+    # 184: a resolved label holds commas before its weights ("engine:strategy=1,w.built=4,..."): split between agents only.
+    want = set(x for x in re.split(r',(?![a-z_]+\.[a-z_]+=)', a.agents) if x)
     games = collections.Counter()
     idle = collections.defaultdict(collections.Counter)
     kept = collections.defaultdict(collections.Counter)
+    seen = set()
     for d in a.dirs:
         cells = cells_for(d)
+        seen.update(c['agent'] for c in cells.values())
         with open(os.path.join(d, 'games.jsonl'), encoding='utf-8') as f:
             f.readline()
             for line in f:
@@ -50,6 +54,10 @@ def main():
                     if c.get('kept', 0) > 0:
                         kept[agent][cid] += 1
                     idle[agent][cid] += c.get('played', 0)
+    missing = want - set(games)
+    if missing:
+        # 184: an alias (strategist) matched nothing and its read was silently empty; results.json names the full label.
+        sys.exit(f"--agents matched no game for {', '.join(sorted(missing))}; the agents here: {' | '.join(sorted(seen))}")
     for agent in sorted(games):
         n = games[agent]
         print(f'## {agent} ({n} games)\n')

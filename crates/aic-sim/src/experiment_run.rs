@@ -133,7 +133,8 @@ pub fn run_experiment(path: &str, o: &Options) -> i32 {
         records
     );
     print_cells(&sums);
-    if let Some(line) = crate::agents::moves::report(games.len()) {
+    // 184: the heuristics count this process's games only (a resumed game replays with no agent).
+    if let Some(line) = crate::agents::moves::report(games.len().saturating_sub(resumed)) {
         println!("{line}");
     }
     let bad = games.iter().filter(|g| !g.replay_ok).count();

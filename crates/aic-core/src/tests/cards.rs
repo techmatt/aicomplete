@@ -1,5 +1,5 @@
 use super::*;
-use crate::content::{CardDef, Op, Tag, TAGS};
+use crate::content::{CardDef, Op, Side, Tag, TAGS};
 use crate::modules::{adversary, cards, effects, threats};
 
 #[test]
@@ -559,6 +559,20 @@ fn a_part_with_nothing_to_act_on_never_blocks_the_rest() {
     let have = cards::tag_counts(&w, &g, 0)[crate::content::Tag::Diplomacy as usize];
     let offered = rules.legal_actions(&g).iter().any(|a| matches!(a, Action::Play { card, .. } if card == "consular_pouch"));
     assert_eq!(offered, have >= 1, "its own Diplomacy tag doesn't count ({have} in play)");
+}
+
+/// 184 (r78): a Discord sway is a card's price, never a part that acts. The Nuclear Option (liberate, then sway
+/// Discord) was offered with no corrupted city in reach: 19 credits for a Discord sway. A Unity sway still acts.
+#[test]
+fn a_discord_sway_is_a_price_not_a_part_that_acts() {
+    let (rules, g) = lab_actions();
+    let w = rules.world();
+    let liberate = Op::Liberate { ambassadors: 0, troops: 0, botnet: false };
+    assert!(!effects::feasible(&w, &g, 0, std::slice::from_ref(&liberate)), "the lab has no corrupted city in reach");
+    let nuclear = [liberate.clone(), Op::Sway { side: Side::Discord, amount: 1 }];
+    assert!(!effects::feasible(&w, &g, 0, &nuclear), "the Discord sway alone doesn't make it playable");
+    let unity = [liberate, Op::Sway { side: Side::Unity, amount: 1 }];
+    assert!(effects::feasible(&w, &g, 0, &unity), "a Unity sway acts");
 }
 
 /// 169: Honeypot Relay's own strike fires its "when you remove agents" (it paid only when another fight trigger was

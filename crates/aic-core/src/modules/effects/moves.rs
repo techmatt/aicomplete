@@ -158,7 +158,7 @@ pub(super) fn gather(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, piec
         }
         moved += n;
     }
-    cx.note(Some(to), || format!("Seat {seat} gathers {moved} pieces into {}", hex_name(&w, to)));
+    cx.note(Some(to), || format!("Seat {seat} gathers {} into {}", batch(moved, "piece"), hex_name(&w, to)));
     Ok(())
 }
 
@@ -197,7 +197,7 @@ fn strike(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, pieces: &[Piece
         }
         removed += n;
     }
-    cx.note(Some(at), || format!("Seat {seat} removes {removed} pieces on or next to {}", hex_name(&w, at)));
+    cx.note(Some(at), || format!("Seat {seat} removes {} on or next to {}", batch(removed, "piece"), hex_name(&w, at)));
     Ok(())
 }
 
@@ -242,6 +242,6 @@ pub(super) fn push(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, pieces
         }
         moved += n;
     }
-    cx.note(Some(from), || format!("Seat {seat} pushes {moved} pieces from {}", hex_name(&w, from)));
+    cx.note(Some(from), || format!("Seat {seat} pushes {} from {}", batch(moved, "piece"), hex_name(&w, from)));
     Ok(())
 }

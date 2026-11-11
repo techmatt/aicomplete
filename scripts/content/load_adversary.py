@@ -77,7 +77,9 @@ def counter_words(option):
     parts = []
     for it in option:
         if "resource" in it:
-            parts.append(f"{it['amount']} {it['resource'].replace('_', ' ')}")
+            # 184: a piece is capitalized on cards (r77, amendment 8044): Ambassadors, as the threat's own text.
+            word = it['resource'].replace('_', ' ')
+            parts.append(f"{it['amount']} {'Ambassadors' if word == 'ambassadors' else word}")
         elif "sacrifice" in it:
             parts.append(f"{it['amount']} {SACRIFICE[it['sacrifice']]} tags")
         else:
@@ -112,12 +114,12 @@ def cards_page(threats, projects, adversary):
             locs = ", ".join(x.replace("_", " ") for x in t["locations"])
             menu = "; ".join(counter_words(o) for o in t["counters"])
             out.append(f"| {cell(t['name'])} | {tags} | {locs} | {cell(t['text'])} | {cell(menu)} |")
-    # 175: a project prints its cost for each player count (the per-player cost times 2, 3, 4).
-    out += ["", "## Projects", "", "| Project | Tags | Compute (2 / 3 / 4 players) | Resolves | Text |",
+    # 175: a project prints its cost for each player count (the per-player cost times 1, 2, 3, 4; 184 added solo).
+    out += ["", "## Projects", "", "| Project | Tags | Compute (1 / 2 / 3 / 4 players) | Resolves | Text |",
             "|---|---|---|---|---|"]
     for p in projects:
         tags = " + ".join(x.capitalize() for x in p["tags"])
-        costs = " / ".join(str(p["cost"] * n) for n in (2, 3, 4))
+        costs = " / ".join(str(p["cost"] * n) for n in (1, 2, 3, 4))
         out.append(f"| {cell(p['name'])} | {tags} | {costs} | {'ongoing' if p['ongoing'] else 'once'} | "
                    f"{cell(p['text'])} |")
     return "\n".join(out) + "\n"

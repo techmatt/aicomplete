@@ -168,7 +168,7 @@ fn placing_node_takes_the_next_track_token_and_uncovers_its_income() {
     assert!(hexes
         .iter()
         .all(|&h| rules.map.adjacent(h, start) && g.tokens(h, node(0)) == 0));
-    // Deploy, which refreshes here: a test of the track, not of its limit.
+    // Expand, which refreshes here: a test of the track, not of its limit.
     let place = |rules: &Rules, g: &mut GameState| {
         g.vars.insert(ai::power_used(0, power_index(rules, 0, "Expand")).into(), 0);
         act(rules, g, power(rules, 0, "Expand"));

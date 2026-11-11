@@ -1,5 +1,5 @@
 // `npm run e2e:researcher` (075): the Researcher's board in a real browser. Plays the baseline at
-// 3 countries with `station_cubes` and `owned_station_cubes` (142: a claimed station's) 3, so a card fills in round 2: seat 2, the Researcher, claims
+// 3 countries with `station_cubes` and `owned_station_cubes` (142: a claimed station's) 4, so Onyx's 8-cube card fills in round 2 (184: at 3 it filled in round 3 and round 4 held no cubes): seat 2, the Researcher, claims
 // Onyx's neutral station and passes its turns. Checks its tracks and powers on the page, Patience's
 // carried insight and the stored research cubes, and spends 3 cubes on its second node power.
 // Needs the viewer running.
@@ -18,7 +18,7 @@ mkdirSync(out, { recursive: true });
 const SEAT = 2;
 const config = JSON.parse(readFileSync(join(web, '..', 'configs', 'baseline.json'), 'utf8'));
 config.countries = 3;
-Object.assign(config.modules.find((m) => m.module === 'board').params, { station_cubes: 3, owned_station_cubes: 3, troop_steps: 0, claim_station: 1 });
+Object.assign(config.modules.find((m) => m.module === 'board').params, { station_cubes: 4, owned_station_cubes: 4, troop_steps: 0, claim_station: 1 });
 // Nothing diverts a cube or takes the bound city while the script passes its turns.
 // No agents: a creation line would land one on the claimed station, blocking its cubes.
 Object.assign(config.modules.find((m) => m.module === 'adversary').params, { corrupt_at: 20, corrupt_station_at: 20, corrupt_factory_at: 20, corrupt_land_at: 20, supply_per_country: 0 });
@@ -72,7 +72,10 @@ try {
   // Keeps in round 2's draft may have spent some before the action phase, all of the carried at r59 (145: this
   // failed on main since 142), so the carried amount above is Patience's check; here, no more than income plus it.
   check(insight >= income && insight <= carried + income, `insight ${insight}: at least its income ${income}, at most that plus the carried ${carried}`);
-  check(await js(`${panel}.querySelector('.res.r-insight .inc')?.textContent ?? ''`) === `+${income}`, 'its insight reads as an addition, not a reset');
+  // 184: the badge shows what next round adds: the income, plus any gift, less any insight lost next round.
+  const next = income + await value('economy.insight_gift') - await value('economy.insight_debt');
+  const badge = await js(`${panel}.querySelector('.res.r-insight .inc')?.textContent ?? ''`);
+  check(badge === `${next >= 0 ? '+' : ''}${next}`, `its insight reads as an addition, not a reset: ${badge} (income ${income})`);
 
   // Round 3 stores cubes once the card has completed in round 2.
   check(await toRound(page, 4), 'reached round 4');

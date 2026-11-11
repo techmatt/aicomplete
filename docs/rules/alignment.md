@@ -89,7 +89,8 @@ A threat countered by a card is discarded and its partial payments are refunded.
 - **Unity pulled back:** "Remove N Unity from the Unity track" removes up to N.
 - Extra threats come from the deck of the tier of this round's adversary card's first pull (an empty deck reshuffles), one per country in turn from country 0,
   and are countered or execute like any other. One dealt after the round's counter
-  phase (a tip in production or upkeep, False Flag) takes a waits token and executes next round, after a counter phase.
+  phase (a tip after the action phase) takes a waits token and executes next round. False Flag's come before the
+  counter phase: countered or executed that round.
 - Blight and Firestorm create on the lowest-numbered city holding agents (138: a creation line); a
   country with none gains nothing. Blight also opens a neutral factory in each country.
 - **Discord cards destroy no nodes (139, Matt) and change no rule for the whole map (156):** their higher strengths add

@@ -3,7 +3,7 @@ use aic_core::{Config, Rules};
 
 use super::blocks::*;
 use super::run::{
-    block, budget_warnings, card_note_failures, card_quote_failures, op_docs, revision_line_failures, rules_file_failures, unknown_params, BLOCKS,
+    block, budget_warnings, card_note_failures, card_quote_failures, op_docs, revision_line_failures, rulebook_revision_failure, rules_file_failures, unknown_params, BLOCKS,
     DOC_BUDGET, DOC_WARN,
 };
 
@@ -209,6 +209,15 @@ fn the_rules_readme_names_the_rules_revision() {
     assert_eq!(revision_line_failures(&stale, 45).len(), 1);
     let none = vec![("docs/rules/README.md".to_string(), "no line".to_string())];
     assert_eq!(revision_line_failures(&none, 45).len(), 1);
+}
+
+/// 184: the rulebook names the revision too (it said 77 at 78).
+#[test]
+fn the_rulebook_names_the_rules_revision() {
+    let book = include_str!("../../../../docs/rulebook.md");
+    assert_eq!(rulebook_revision_failure(book, aic_core::RULES_REVISION), None);
+    assert!(rulebook_revision_failure("*Rules revision 43. x", 45).is_some());
+    assert!(rulebook_revision_failure("no line", 45).is_some());
 }
 
 /// 106: every card `tools/card-art/samples.json` names is in content (one named a card cut

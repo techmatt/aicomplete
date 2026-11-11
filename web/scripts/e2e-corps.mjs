@@ -71,8 +71,8 @@ try {
   check(stored === 5, `seat 0 stores ${stored} research cubes`);
   const shown = await js(`document.querySelector('.seat .res.r-research_cubes')?.textContent ?? ''`);
   check(/research cubes\s*5/.test(shown), `its board shows them: "${shown.trim()}"`);
-  // 099: since r37 a converter needs a node in a city of its country: seat 0 places
-  // one on a Horizon city with a node power (answering each prompt toward it).
+  // 099: a converter needs a city of its country in reach (r75; r37 asked a node on one): seat 0 places a node
+  // on a Horizon city with a node power (answering each prompt toward it), which puts the city in reach.
   const horizonCities = await js(`window.aic.view.hexes.filter((h) => h.country === 0 && h.kind === 'city').map((h) => 'Horizon #' + h.number)`);
   // The board's powers that place a node (their index is the id's last part).
   const placing = await js(`(window.aic.view.seats[0].board?.cards ?? []).filter((c) => c.id.includes('.power.') && /place/.test(c.text ?? '')).map((c) => Number(c.id.split('.').pop()))`);
@@ -90,16 +90,16 @@ try {
   }
   const conv = await js(`[...document.querySelectorAll('.seat')][0].querySelectorAll('.converter').length ? [...[...document.querySelectorAll('.seat')][0].querySelectorAll('.converter')].map((e) => [e.className, e.textContent]) : []`);
   check(conv.some(([c]) => c.includes(' usable')), `a usable converter: ${JSON.stringify(conv.find(([c]) => c.includes(' usable')))}`);
-  check(conv.some(([c, t]) => c.includes('unusable') && /no node/.test(t)), `beside an unusable one: ${JSON.stringify(conv.find(([c]) => c.includes('unusable')))}`);
+  // 184: r75 asks for any city of the country in reach (r37 asked for a node on one).
+  check(conv.some(([c, t]) => c.includes('unusable') && /no city of this country in reach/.test(t)), `beside an unusable one: ${JSON.stringify(conv.find(([c]) => c.includes('unusable')))}`);
   writeFileSync(join(out, 'corps.png'), await page.shot());
 
   const anti = await resource('antimatter');
   check(await js(`window.aic.legal.some((a) => a.type === 'convert' && a.seat === 0 && a.country === 0)`), 'the converter is on the menu');
   await js(`window.aic.act({ type: 'convert', seat: 0, country: 0 })`);
   check(await resource('research_cubes') === stored - 1 && await resource('antimatter') === anti + 1, 'using it turns a cube and 2 energy into 1 antimatter');
-  // 105: as often as you can pay (only Onyx's is once a round).
-  const payable = await resource('research_cubes') >= 1 && await resource('energy') >= 2;
-  check(await js(`window.aic.legal.some((a) => a.type === 'convert' && a.seat === 0 && a.country === 0)`) === payable, `offered again while it can be paid (${payable})`);
+  // 184: r75 prints every converter once a round per player (105 had them as often as you can pay).
+  check(!(await js(`window.aic.legal.some((a) => a.type === 'convert' && a.seat === 0 && a.country === 0)`)), 'not offered again this round (once a round, r75)');
   check(consoleErrors.length === 0, `no page errors${consoleErrors.length ? `: ${consoleErrors.join(' | ')}` : ''}`);
 } catch (e) {
   console.error(e);

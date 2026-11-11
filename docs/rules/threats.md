@@ -39,7 +39,8 @@ never share a hex), one condition for every type: a site of the type that is **n
 city, research station or factory; a military base never is). Among those sites, the one with the most adversary pieces on or next to it (agents, troops, botnets); ties, the lower hex number. Tokens go in printed order, but if that leaves one off the
 board (a city token on the only such coastal city), the type with fewer sites goes first. A printed game does this by eye. A location type with no
 such site in the country gets no token; the pull never deals a threat with none there (so a threat whose only type has
-no such site skips that country, and a base-only threat never lands at 1 country).
+no such site skips that country, and a base-only threat never lands at 1 country). A line for "the base here" or "the
+factory here" with no such token does nothing (184: Garrison State and Manhunt landed their troops on the city).
 
 **Near.** Every threat card prints, above its text, "Payers: any player with a Node or Ambassador on or next to a
 token. Target: the player with a Node nearest a token." A player is **near** a threat with one of their nodes or ambassadors on or next to any of its tokens. Only a

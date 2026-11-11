@@ -151,7 +151,9 @@ fn removes_botnet(o: &Op) -> bool {
 
 /// An op that removes adversary ambassadors (agents).
 fn removes_ambassadors(o: &Op) -> bool {
+    // 184: Convert (r77: where it stood) and Amnesty Decree's ClearCity take agents off too.
     matches!(o, Op::RemoveAmbassadorsCountry { .. } | Op::Pushback { .. } | Op::RemoveWhere { pieces: Removable::Agents, .. })
+        || matches!(o, Op::Convert { .. } | Op::ClearCity { .. })
         || matches!(o, Op::Gather { strike: true, pieces, .. } if pieces.contains(&Piece::Agents))
 }
 
@@ -181,7 +183,8 @@ fn team(rules: &Rules, g: &GameState) -> Team {
             let ops = w.content.card(&id).all_ops();
             let has = |f: fn(&Op) -> bool| ops.iter().any(|o| f(o)) as i64;
             t.botnet_cards += has(removes_botnet);
-            t.liberate_cards += has(|o| matches!(o, Op::Liberate { .. } | Op::ClearCity { .. } | Op::Cleanse { .. }));
+            // 184: only a city liberation (a station or factory cleanse frees no city; ClearCity removes agents).
+            t.liberate_cards += has(|o| matches!(o, Op::Liberate { .. } | Op::Cleanse { cities: true, .. }));
             t.troop_cards += has(removes_troops);
             t.ambassador_cards += has(removes_ambassadors);
         }

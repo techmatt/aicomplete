@@ -324,7 +324,7 @@
    ],
    "cost": 9,
    "ongoing": false,
-   "text": "Rally 2, each country: research stations. Each country: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 Agents are on it).",
+   "text": "Rally 2, each country: research stations. Each country: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 Agents and no player Ambassador are on it; one that holds takes 1 Agent).",
    "effects": [
     {
      "op": "rally",

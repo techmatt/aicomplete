@@ -592,7 +592,8 @@ impl Module for Threats {
             "threat tier",
             // 145: as `deal_extra` picks it (it said the card's stage).
             first_pull(w, g).map_or_else(|| adversary::threat_tier(w, g), |(t, _)| t) as i64,
-            Some(3),
+            // 184: two tiers since 146 ("threat tier 2/3" pointed at a third).
+            Some(2),
             "the tier a Discord card's extra threat comes from: this round's adversary card's first pull",
         );
     }

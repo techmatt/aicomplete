@@ -166,7 +166,8 @@ pub enum RoundFlag {
     Shelter,
     /// Sites in the country can't be claimed (027).
     Embargo,
-    /// Arrivals don't land in the country in the next build (068).
+    /// No Rally or creation line places agents in the country until the end of the next adversary turn (068, 178);
+    /// troops still land.
     Cordon,
 }
 
@@ -661,9 +662,9 @@ pub enum Op {
     },
     /// In one country, facilities and nodes can't be destroyed this round.
     Shelter,
-    /// In one country, no arrivals land until the end of the next adversary turn, its build and any
-    /// build a project brings (118; 068: a Security card does an ambassador's job); its agent pool waits
-    /// for the next Rally (178, Matt's ruling #30).
+    /// In one country, no Rally or creation line places agents until the end of the next adversary turn (118; 068:
+    /// a Security card does an ambassador's job); its agent pool waits for the next Rally (178, Matt's ruling #30);
+    /// troops still land.
     Cordon,
     /// Play a building from your hand paying no credits; its other costs and
     /// its requirements stand (068: the Builder's expensive power).
@@ -726,7 +727,7 @@ pub enum Op {
     },
     /// A hack (021): a botnet within your reach makes no compute in the next build.
     CutBotnet,
-    /// Movement add-on (021): move one of your ambassadors on the board up to
+    /// A card's move (021): move one of your ambassadors on the board up to
     /// `range` hexes onto a piece (or not at all).
     MoveOne {
         range: i64,
@@ -834,7 +835,7 @@ pub enum Op {
 
     // ---------- instant: threats and the team ----------
     /// `count` adversary troops onto factories in scope (players choose; 151: an event's, a project's or the
-    /// board's on the lowest-numbered), else cities; `each_country`: on each board;
+    /// board's on the lowest-numbered), else cities; `each_country`: in each country;
     /// `destroy`: each takes the node there; `at`, `location`: elsewhere; `stand`: they never march.
     Troops {
         count: i64,
@@ -976,7 +977,7 @@ pub enum Op {
         resource: Resource,
         amount: i64,
     },
-    /// Bases make `count` extra Drones (corp troops), `now` or each production (`rounds`, `permanent`), `past_cap`
+    /// Bases make `count` extra Drones, `now` or each production (`rounds`, `permanent`), `past_cap`
     /// (`fill`: to the cap; `near`: by a troop).
     CorpTroops {
         #[serde(default, skip_serializing_if = "is_zero")]
@@ -1113,17 +1114,17 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "is_zero")]
         cut: i64,
     },
-    /// 151, Rally X: each board's agent pool lands on every `site` site, whoever owns it (175: no tiers),
+    /// 151, Rally X: each country's agent pool lands on every `site` site, whoever owns it (175: no tiers),
     /// spread evenly, the remainder on the lowest-numbered not the adversary's; a blocked site's share stays in
-    /// the supply. `count`: that many a board instead of the pool (a project's rally). A cordoned board's pool
-    /// lands nowhere.
+    /// the supply. `count`: that many a country instead of the pool (a project's rally). A cordoned country's
+    /// pool waits for its next Rally (178).
     Rally {
         site: RallyAt,
         #[serde(default, skip_serializing_if = "is_zero")]
         count: i64,
     },
     /// 151: the adversary's income rises for the rest of the game: `compute` more a round, `ambassadors` more
-    /// a board a round (into each board's pool).
+    /// a country a round (into each country's pool).
     IncreaseIncome {
         #[serde(default, skip_serializing_if = "is_zero")]
         compute: i64,
@@ -1159,7 +1160,7 @@ pub enum Op {
     },
     /// 167, a prohibition (158's firewall generalized): in the next adversary turn, `step` doesn't act on a
     /// hex where `where` holds when the step runs. A blocked Rally share or Muster troop stays in the supply;
-    /// a blocked site doesn't corrupt (Corrupt lines and natural corruption), nothing is pulled into it.
+    /// a blocked site doesn't corrupt (Corrupt lines and natural corruption), no agent moves onto it.
     Prohibit {
         step: Step,
         #[serde(rename = "where")]

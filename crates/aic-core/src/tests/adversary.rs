@@ -562,7 +562,7 @@ fn every_event_card_rallies_and_corrupts() {
 fn the_load_check_refuses_an_event_or_a_project_off_the_standard() {
     use crate::content::{event_rule_break, project_rule_break};
     let c = content();
-    // War Drums: Rally, Deploy | Sway, Corrupt.
+    // War Drums: Rally, Muster | Sway, Corrupt.
     let base = c.adversary.iter().find(|a| a.id == "mil_s1_war_drums").unwrap();
     assert_eq!(event_rule_break(base), None);
     let rally = base.standing[0].clone();

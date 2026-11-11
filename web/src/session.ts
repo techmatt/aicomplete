@@ -187,6 +187,9 @@ export class Timeline {
       storageSet(KEPT_KEY, raw);
       throw e;
     }
+    // 184: one that stops replaying (a rules change rejected an action) is kept too: the next New game's save
+    // overwrote its unreplayed actions.
+    if (t.replayError) storageSet(KEPT_KEY, raw);
     t.seek(saved.cursor ?? t.last);
     t.savedRules = saved.rules;
     t.warning = saved.warning ?? null;

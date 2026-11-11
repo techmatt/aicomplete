@@ -171,7 +171,7 @@ line alone reads near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used. Any item that spends seeds updates the ledger, after its last read, not before it. Used: every
-seed below 42997 (each item's range is in its write-up). Next free: 42997. **The dev seeds for screens are
+seed below 43039 (each item's range is in its write-up). Next free: 43039. **The dev seeds for screens are
 36800-36831**: screen at 32 seeds a cell.
 
 ## Reading prices

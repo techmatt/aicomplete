@@ -84,7 +84,9 @@ def rows(games):
         ('Popular Uprising played / Action uses (either half)', m(lambda g: cnt(g, 'cards.played.popular_uprising')),
          m(lambda g: cnt(g, 'cards.used.popular_uprising'))),
         ('cities liberated by a card / the Liberate action', m(lambda g: cnt(g, 'board.liberated_card')),
-         m(lambda g: cnt(g, 'board.liberated.city'))),
+         # 184: since 178 (r77) a card liberates through the action's own path, which tallies liberated.city too
+         # (on an older run liberated.city alone is the action).
+         m(lambda g: cnt(g, 'board.liberated.city') - cnt(g, 'board.liberated_card'))),
     ]
     for name, key in powers.items():
         out.append((f'{name} used', m(lambda g, key=key: cnt(g, key))))

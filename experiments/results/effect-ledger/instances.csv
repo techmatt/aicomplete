@@ -187,7 +187,7 @@ gigafactory_charter,tags [card],card,industry,1.0,1.0,1.0,0.87,0.87
 grad_student_pool,draw [play],play,count=2,2.0,8.0,4.0,6.0,3.0
 grad_student_pool,card_discount credits [passive],passive,"tag=science, resource=credits, amount=5",5.0,9.0,1.8,6.75,1.35
 grad_student_pool,tags [card],card,science,1.0,1.0,1.0,0.75,0.75
-great_liberation,cleanse cities [play],play,"amount=3, one_country=True, cities=True",3.0,108.0,36.0,44.0,14.67
+great_liberation,cleanse cities [play],play,"amount=3, one_country=True, cities=True",3.0,120.0,40.0,44.0,14.67
 grid_census,gain_per_node energy [play],play,resource=energy,1.0,22.5,22.5,15.8,15.8
 grid_census,tags [card],card,power,1.0,1.0,1.0,0.7,0.7
 hardened_bunker_complex,production energy [play],play,"resource=energy, amount=1",1.0,14.4,14.4,13.73,13.73

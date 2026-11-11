@@ -42,7 +42,7 @@ The cards config lists which cards are in the game (baseline: all of them).
 - **The end-game cards (drafts; Matt, 2026-11-09).** Ten tier-2 cards for the last 3-4 rounds act where the
   agents stand, in reach: **convert** them into your ambassadors where they stand (Mass Defection, Double
   Agents, Open Source Uprising, Embassy of Exiles), **strike** them (Kettle Operation: and troops) on or next to a hex in
-  reach (Kettle Operation, Lure Network), **firewall** a hex for a round (Firewall Array, Air Gap), mass your own
+  reach (Kettle Operation, Lure Network), **firewall** a hex until the end of the next adversary turn (Firewall Array, Air Gap), mass your own
   (Rally the Allies), or remove them, or troops, on one hex (Surgical Strike). The six events and Open Source Uprising also sway 1-2 Unity; three print a tag threshold ("with 3 Diplomacy tags,
   also …"). None frees a city, none is
   global, none makes a liberation cheaper the next time ([ambassadors.md](ambassadors.md)).
@@ -103,7 +103,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   and go to your played pile (their tags don't count). **Nothing to act on never blocks a card** (Matt): a part
   of a card with nothing to act on (a removal with no target in reach, a move, a gain per tag with too few tags, a draw
   with no card left) does nothing, and the rest resolves. A program, event or ability is offered when at least one of
-  its parts acts; one that would do nothing at all is not. A removal's target is a hex with a piece the card names:
+  its parts acts; one that would do nothing at all is not. A Discord sway is a price, never a part that acts (184). A removal's target is a hex with a piece the card names:
   "remove 1 agent" can't name a hex holding only a troop. A building's when-built effect is not checked.
 - **Own tags:** a card's own tags never count toward its own `needs` (Matt, as in Terraforming Mars): it is still
   in your hand. Once played, a program's or building's tags count for its own gains per tag, which print "(including

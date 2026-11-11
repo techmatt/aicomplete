@@ -63,6 +63,24 @@ function playPrice(credits: number | undefined, extra: string[]): string {
   return parts.length ? ` (${parts.join(' + ')})` : '';
 }
 
+/** Each standard action's printed name, by its key (crates/aic-core/src/modules/board/standard.rs). */
+const STANDARD_NAMES: Record<string, string> = {
+  station: 'Build a research station',
+  remove: 'Remove agents',
+  clear: 'Clear a corruption marker or land corruption',
+  move: 'Dispatch a player ambassador',
+  ambassador: 'Gain a player ambassador',
+  claim: 'Claim a site',
+  liberate: 'Liberate a site',
+  harden_chips: 'Harden a facility',
+  harden_buy: 'Project: harden',
+  drain: 'Project: drain',
+  insight: 'Turn a cube into insight',
+  envoy: 'Envoy',
+  botnet: 'Take down a botnet',
+  buy_energy: "Buy a city's energy",
+};
+
 /** The action's own words, without seat; null for a type with no special label. */
 function known(a: Action, withTarget: boolean, cx: LabelContext): string | null {
   const card = typeof a.card === 'string' ? cardName(a.card) : '';
@@ -77,7 +95,16 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       const o = String(a.option ?? 'choose');
       // Two humps at least, so a one-word name (Horizon, a country) keeps its capital.
       const opName = /^[A-Z][a-z]+(?:[A-Z][a-z]+)+$/.test(o) ? o.replace(/(?!^)([A-Z])/g, ' $1').toLowerCase() : o;
-      return `${contentIds(contentName(opName)).replace('T2 keep -1', 'T2 keep')}${t}`;
+      // 184: a seat answer named the bare seat ("seat 0: seat 0"): the panel's name, with its board.
+      const seat = /^seat (\d+)$/.exec(o);
+      if (seat) {
+        const ai = cx.view?.seats[Number(seat[1])]?.board?.name;
+        return `choose Seat ${seat[1]}${ai ? ` (${ai})` : ''}${t}`;
+      }
+      // 184: a card answer (a discard, say) read as if the card were played: "seat 0: Liberation Accords".
+      const named = contentName(opName);
+      if (named !== opName) return `choose ${named}${t}`;
+      return `${contentIds(named).replace('T2 keep -1', 'T2 keep')}${t}`;
     }
     case 'tier':
       return `draft from tier ${a.tier}`;
@@ -123,7 +150,8 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
     case 'standard': {
       // The rules publish each standard action's words and cost in the view.
       const s = cx.view?.standard.find((x) => x.act === String(a.act));
-      if (!s) return `standard: ${words(String(a.act))}`;
+      // 184: with no view (the step line, the log) the key printed: "standard: move" for Dispatch (r77).
+      if (!s) return STANDARD_NAMES[String(a.act)] ?? `standard: ${words(String(a.act))}`;
       // 099: a card-set price (the Harden action a card grants) is the seat's own.
       const chips = s.seat_chips?.[Number(a.seat)] ?? s.chips;
       const costs = ([[s.energy, 'energy'], [s.credits, 'credits'], [chips, 'chips'], [s.ambassadors, 'ambassadors']] as const)
@@ -280,11 +308,11 @@ const TOKEN_NAMES: Record<string, string> = {
   node: 'node',
   botnet: 'botnet',
   corruption: 'corruption marker',
-  land_corruption: 'land corruption (no node may be placed here)',
+  land_corruption: 'land corruption (nothing may be built here: no node, factory or station)',
   ambassador: 'ambassador',
   station: 'research station',
   troop: 'adversary troop',
-  unit: 'Drone (corp troop)',
+  unit: 'Drone',
   harden: 'hardening token',
   firewall: 'firewall (no agent may arrive here)',
 };

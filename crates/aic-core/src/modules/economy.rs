@@ -312,7 +312,7 @@ impl Module for Economy {
                     "insight lost next round",
                     debt,
                     None,
-                    "this much less insight next round: from agents on your nodes, or a threat",
+                    "this much less insight next round: what a threat or card took",
                 );
             }
         }

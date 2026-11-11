@@ -719,7 +719,7 @@ fn strategy_health(md: &Md, w: &mut String) {
     let spec = md.run.spec;
     let sums = md.run.sums;
     let _ = writeln!(w, "\n## Strategy health\n");
-    let _ = writeln!(w, "Per game, over the whole team: buildings played (any tier), tier-2 cards played (buildings and programs), all cards played, economy buildings (printing standing income) standing at the end; then the share of wins with 2 or more buildings played, and in brackets with 2 or more buildings standing at the end.\n");
+    let _ = writeln!(w, "Per game, over the whole team: buildings played (any tier), tier-2 cards played (any kind), all cards played, economy buildings (printing standing income) standing at the end; then the share of wins with 2 or more buildings played, and in brackets with 2 or more buildings standing at the end.\n");
     let order = agent_order(run.cells);
     let mut gkeys: Vec<(String, String)> = Vec::new();
     for c in run.cells {

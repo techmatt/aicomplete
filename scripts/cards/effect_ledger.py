@@ -223,7 +223,8 @@ def op_worth(t, o):
     if op == 'cleanse':
         share = 0.8 if o.get('one_country') else 1.0
         if o.get('cities'):
-            return Worth(city=row('liberate') * share * n('amount'))
+            # 184: a freed city is liberated through the action's path (178), the seat's cube on too.
+            return Worth(city=(row('liberate') + row('liberate_align')) * share * n('amount'))
         each = row('cleanse') if o.get('only') == 'factory' else row('cleanse_station')
         return Worth(now=each * share * n('amount'))
     if op == 'liberate':

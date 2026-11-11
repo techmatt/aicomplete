@@ -38,7 +38,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("antimatter_discord", 0, 5, "the antimatter action: Sway toward Discord to produce 1 antimatter (0: no such action)"),
     ParamSpec::int("antimatter_uses", 0, 5, "times each player may take the antimatter action per round"),
     ParamSpec::list("purge_at", 1, 50, "Unity tips at which the purge asks less: agents, then troops, then botnets stop counting (136; 156: tips, not cards drawn, since the Unity deck reshuffles)"),
-    ParamSpec::list("tier_at", 1, 50, "157: the tip (its side's count, this tip included) from which its cards resolve tier II, then tier III"),
+    ParamSpec::list("tier_at", 1, 50, "157: the tip (its side's count, this tip included) from which its cards resolve strength II, then strength III"),
     ParamSpec::int("node_loss", 0, 1, "1: a player with no nodes on the board loses the game for everyone"),
     ParamSpec::int("clear_win_stage", 1, 3, "the bar-0 win counts only once this round's adversary card is of this stage (1: any time)"),
 ];
@@ -88,7 +88,7 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
     }
     let t = b.list("tier_at")?;
     if t.len() != 2 || t.iter().any(|&x| x < 1) || t[0] > t[1] {
-        return Err("alignment.tier_at: give two tip counts of 1 or more, in order (tier II, tier III)".into());
+        return Err("alignment.tier_at: give two tip counts of 1 or more, in order (strength II, strength III)".into());
     }
     Ok(Box::new(Alignment))
 }
@@ -629,7 +629,7 @@ impl Module for Alignment {
             "Unity tips",
             ut,
             next(w.list("alignment.purge_at"), ut),
-            "Unity tips so far; the purge asks less at each step, and the next Unity card resolves at the tier they reach",
+            "Unity tips so far; the purge asks less at each step, and the next Unity card resolves at the strength they reach",
         );
         out.global(
             "discord_tips",

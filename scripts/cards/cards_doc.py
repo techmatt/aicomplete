@@ -151,13 +151,13 @@ def alignment_section():
     with open(os.path.join(ROOT, 'content', 'alignment.json'), encoding='utf-8') as f:
         cards = json.load(f)
     out = ['## Unity and Discord cards', '',
-           'From `content/alignment.json`. Its side\'s tip count, this tip included, picks the tier that resolves '
+           'From `content/alignment.json`. Its side\'s tip count, this tip included, picks the strength that resolves '
            '(`alignment.tier_at`; [rules/alignment.md](rules/alignment.md)). *(draft)*: drafted by 156, for Matt to keep or prune.',
            '']
     for side in ('unity', 'discord'):
         cs = [c for c in cards if c['side'] == side]
         out += [f'### {side.capitalize()} ({len(cs)})', '',
-                '| card | tier I | tier II | tier III |', '|---|---|---|---|']
+                '| card | strength I | strength II | strength III |', '|---|---|---|---|']
         for c in cs:
             name = c['name'] + (' *(draft)*' if c.get('draft') else '')
             t = [x['text'].replace('|', '/') for x in c['tiers']]

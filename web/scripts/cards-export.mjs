@@ -199,6 +199,10 @@ function buildStats(root, rules) {
   if (best) {
     const dir = dirname(best.file);
     const { wins, games } = winDeltas(join(dir, 'games.csv'));
+    // 184: a screen kept without games.csv still counts its games per agent in its cells (Kept % read blank).
+    if (!Object.keys(games).length) {
+      for (const c of best.d.cells ?? []) if (c.agent) games[c.agent] = (games[c.agent] ?? 0) + (c.games ?? 0);
+    }
     for (const [agent, cards] of Object.entries(best.d.cards)) {
       byAgent[agent] = {};
       for (const [id, c] of Object.entries(cards)) {
@@ -228,7 +232,8 @@ function buildStats(root, rules) {
       // undrafted, so that ratio reads 1000% on a card offered four times.
       { key: 'kept_pct', label: `Kept %${r}`, title: `keeps per 100 games of this agent: each card is one copy, so about the share of games it was kept in; ${source.path}`, unit: '%' },
       { key: 'played_pct', label: `Played %${r}`, title: `played ÷ (kept + drawn), as the screen report has it; ${source.path}`, unit: '%' },
-      { key: 'win_delta', label: `Win Δ${r}`, title: 'win % with this building standing at game end minus without, by variant and difficulty: a correlation, and buildings only (games.jsonl has other per-card outcomes, but committed results dirs do not keep it)', unit: ' pts' },
+      // 184: no games.csv, no win deltas: an always-blank column read as a measurement.
+      ...(Object.keys(wins).length ? [{ key: 'win_delta', label: `Win Δ${r}`, title: 'win % with this building standing at game end minus without, by variant and difficulty: a correlation, and buildings only (games.jsonl has other per-card outcomes, but committed results dirs do not keep it)', unit: ' pts' }] : []),
     );
   }
   const at = reasoned.revision ? ` (r${reasoned.revision})` : '';
@@ -314,7 +319,8 @@ function frameless(kind, row, fields) {
 // `counter` list and a source (139: this read the old fields and threw).
 function counterWords(option) {
   return option
-    .map((i) => (i.resource ? `${i.amount} ${i.resource}` : i.sacrifice ? `${i.amount} ${i.sacrifice} tags` : `${i.nodes_near} nodes near`))
+    // 184: words, not keys ('research_cubes'), as load_adversary.py prints them.
+    .map((i) => (i.resource ? `${i.amount} ${i.resource === 'ambassadors' ? 'Ambassadors' : i.resource.replaceAll('_', ' ')}` : i.sacrifice ? `${i.amount} ${i.sacrifice[0].toUpperCase()}${i.sacrifice.slice(1)} tags` : `${i.nodes_near} nodes near it`))
     .join(' + ');
 }
 
@@ -330,7 +336,8 @@ function threat(t) {
     keywords: (t.tags ?? []).map((g) => `tag: ${g}`),
     cost: credits || first.reduce((n, i) => n + (i.amount ?? i.nodes_near ?? 0), 0),
     costLabel: `counter: ${menu}`,
-    price: [['Counter', menu], ['Tags', tags]],
+    // 184: where its token goes, which its text calls 'here'.
+    price: [['Counter', menu], ['Tags', tags], ['Locations', (t.locations ?? []).map((l) => l.replaceAll('_', ' ')).join(', ')]],
     ops: { effects: t.effects },
   });
 }
@@ -344,17 +351,17 @@ function adversary(a) {
   });
 }
 
-// 156: every Alignment card prints tiers I, II and III (its side's tips pick one); `draft` marks a
-// drafted card Matt has not picked yet.
+// 156: every Alignment card prints strengths I, II and III (its side's tips pick one; r77 calls them
+// strengths, not tiers); `draft` marks a drafted card Matt has not picked yet.
 function alignment(a) {
   const numerals = ['I', 'II', 'III'];
   const tiers = a.tiers ?? [];
   return frameless(a.side, a, {
     tier: 0,
-    tierLabel: a.draft ? 'Three tiers (draft)' : 'Three tiers',
+    tierLabel: a.draft ? 'Three strengths (draft)' : 'Three strengths',
     text: tiers.map((t, i) => `${numerals[i]}: ${t.text}`).join(' '),
     draft: !!a.draft,
-    ops: Object.fromEntries(tiers.map((t, i) => [`tier ${numerals[i]}`, t.effects])),
+    ops: Object.fromEntries(tiers.map((t, i) => [`strength ${numerals[i]}`, t.effects])),
   });
 }
 
@@ -363,10 +370,10 @@ function project(p) {
     tier: p.stage,
     tierLabel: `Stage ${p.stage}`,
     cost: p.cost,
-    // 175: printed per player count.
-    costLabel: `${2 * p.cost} / ${3 * p.cost} / ${4 * p.cost} compute (2 / 3 / 4 players)`,
+    // 175: printed per player count (184: the solo game's too).
+    costLabel: `${p.cost} / ${2 * p.cost} / ${3 * p.cost} / ${4 * p.cost} compute (1 / 2 / 3 / 4 players)`,
     keywords: p.ongoing ? ['ongoing'] : [],
-    price: [['2 players', 2 * p.cost], ['3 players', 3 * p.cost], ['4 players', 4 * p.cost]],
+    price: [['1 player', p.cost], ['2 players', 2 * p.cost], ['3 players', 3 * p.cost], ['4 players', 4 * p.cost]],
     ops: { effects: p.effects },
   });
 }
@@ -387,7 +394,8 @@ function aiBoard(b, cardName) {
   // 118: a step's effects were dropped, so the Researcher's free-station space read '—'.
   const effect = (e) => (e.op === 'build_station' ? 'builds a free research station in reach' : e.op.replaceAll('_', ' '));
   // 118: a space's income reads +N, apart from the energy that places it.
-  const step = (u) => [(u.income ?? []).map((x) => `+${costs([x])}`).join(", "), ...(u.effects ?? []).map(effect), u.cost && `${u.cost} energy to place`, u.keep2 && 'tier-2 keep upgrade', ...(u.tags ?? []).map((t) => `${t} tag`), u.capstone && `capstone: ${u.capstone.name}`];
+  // 184: a Dispatch +N space (r77's name for the Movement add-on) printed nothing.
+  const step = (u) => [(u.income ?? []).map((x) => `+${costs([x])}`).join(", "), ...(u.effects ?? []).map(effect), u.moves && `Dispatch +${u.moves}`, u.cost && `${u.cost} energy to place`, u.keep2 && 'tier-2 keep upgrade', ...(u.tags ?? []).map((t) => `${t} tag`), u.capstone && `capstone: ${u.capstone.name}`];
   const track = (l) => l.map((u) => step(u).filter(Boolean).join('; ') || '—').join(' · ');
   const capstones = [...b.economy_track, ...(b.play_track ?? [])].flatMap((u) => u.capstone ?? []);
   return frameless('ai', b, {
@@ -396,6 +404,7 @@ function aiBoard(b, cardName) {
     tags: b.tags ?? [],
     price: [
       ['Credits a round', b.credits],
+      ...(b.moves ? [['Dispatches a round', b.moves]] : []),
       ...(b.income?.length ? [['Income', costs(b.income)]] : []),
       // 118: a power with no cost and no tags (Synthesis) priced as an empty string.
       ...(b.powers ?? []).map((p) => [`Power: ${p.name}`, [(p.tags ?? []).map(([t, n]) => `sacrifice ${n} ${t}`).join(', '), costs(p.cost)].filter(Boolean).join('; ') || 'free']),

@@ -49,7 +49,7 @@ pub const HOUSE_TERMS: [(&str, &str); 23] = [
     ("Convert", "an agent on or next to the city leaves its stack and becomes your ambassador where it stood"),
     ("Gather up to N", "pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece (a strike, \"remove up to N on or next to a hex\", moves nothing)"),
     ("Push up to N", "pieces from a hex in your reach, each to a hex next to it that you choose; you may stop at any piece"),
-    ("Firewall", "a token on a hex: no agent lands or moves there (a Rally share for it stays in the supply) and its site doesn't corrupt; it comes off at the end of the next adversary turn"),
+    ("Firewall", "a token on a hex: no agent lands or moves there (a Rally share for it stays in the supply) and no Corrupt line or natural corruption takes its site; it comes off at the end of the next adversary turn"),
     ("In the next adversary turn, no X", "a Unity card's prohibition: that step skips each site where the condition holds when the step runs; what it would have placed stays in the supply"),
 ];
 
@@ -160,10 +160,12 @@ pub(super) fn projects_block() -> String {
         .iter()
         .map(|p| {
             let tags: Vec<&str> = p.tags.iter().map(|t| t.name()).collect();
-            // 175: printed per player count (the cost is per player: 2, 3 and 4 players read off the card).
+            // 175: printed per player count (the cost is per player: 2, 3 and 4 players read off the card;
+            // 184: and the solo game's, 1 player).
             vec![
                 p.name.clone(),
                 tags.join(" + "),
+                p.cost.to_string(),
                 (2 * p.cost).to_string(),
                 (3 * p.cost).to_string(),
                 (4 * p.cost).to_string(),
@@ -171,7 +173,7 @@ pub(super) fn projects_block() -> String {
             ]
         })
         .collect();
-    table(&["Project", "Tags", "2 players", "3 players", "4 players", "Resolves"], rows)
+    table(&["Project", "Tags", "1 player", "2 players", "3 players", "4 players", "Resolves"], rows)
 }
 
 fn value(v: &ParamValue) -> String {
@@ -753,13 +755,13 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          and you can sacrifice cards with the right tags to use your AI board's powers. There is no \
          limit on what you hold or on how far cards raise your income; energy you don't spend stays \
          energy, so drafting cards that spend it is up to you.\n\n\
-         **Nodes, for new players.** There is no growth step. In the action phase you place \
+         **Nodes, for new players.** Nodes don't grow on their own. In the action phase you place \
          nodes with your board's two node powers, each once a round, so 0, 1 or 2 tokens a \
          round from them, and cards can add more. Every board has 1 energy for 1 node; the second costs more, in the board's own \
          currency. Either way you also pay the energy printed on the track space you uncover. You \
          start with {} energy and one city bound to you, which makes energy every round.\n\n\
          **Dispatches, tags and sales, for new players.** A Dispatch puts one of your ambassadors, \
-         from your supply or anywhere on the map, onto a piece in your reach and costs nothing, but you \
+         from your supply or anywhere on the map, onto a piece or botnet in your reach and costs nothing, but you \
          have only your board's Dispatches each round ({} printed, more as Dispatch spaces are \
          uncovered), and what you don't use is lost, like insight. **One tag rule:** \
          the tag printed on your AI board, and any a late, costly track space reveals, count like the \

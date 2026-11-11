@@ -317,7 +317,9 @@ fn at_risk(w: &World, g: &GameState) -> Vec<(usize, i64, i64, bool)> {
     for h in 0..g.hexes.len() {
         // 175: a player's node hex corrupts at its own number (2), whatever site it holds.
         if common::node_owner(g, h).is_some() && !common::firewalled(g, h) {
-            let count = agents(g, h) + if node_gathers { agents_next_to(w, g, h) } else { 0 };
+            // 184: an agent on a neighboring node hex stays on its own target (plan::converge), as tips_last_node reads.
+            let near: i64 = w.map.hexes[h].neighbors.iter().filter(|&&x| common::node_owner(g, x).is_none()).map(|&x| agents(g, x)).sum();
+            let count = agents(g, h) + if node_gathers { near } else { 0 };
             if count > 0 && count + 1 >= node_n {
                 out.push((h, count, node_n, node_gathers));
             }

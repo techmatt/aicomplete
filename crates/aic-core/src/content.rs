@@ -1106,6 +1106,21 @@ fn check_threat(t: &ThreatDef) -> Result<(), String> {
     if t.tags.is_empty() || !(1..=2).contains(&t.locations.len()) {
         return Err(format!("threat {:?}: a tag and 1 or 2 locations", t.id));
     }
+    // 184: a troop line "on the X here" names a type the threat prints, and with two tokens it names which (Iron
+    // Curtain's took whichever token came first, a city when no factory had one).
+    for e in &t.effects {
+        if let Op::Troops { at: Some(crate::op::TroopAt::Location), location, .. } = e {
+            match location {
+                Some(l) if !t.locations.contains(l) => {
+                    return Err(format!("threat {:?}: a troop line on a {l:?} token it doesn't print", t.id));
+                }
+                None if t.locations.len() > 1 => {
+                    return Err(format!("threat {:?}: a troop line on a two-token threat names which token", t.id));
+                }
+                _ => {}
+            }
+        }
+    }
     let what = format!("threat {:?}", t.id);
     for item in t.counters.iter().flatten() {
         match item {
@@ -1241,7 +1256,7 @@ pub fn event_rule_break(a: &AdversaryCard) -> Option<String> {
         return Some("one Rally X line".into());
     }
     if steps.windows(2).any(|p| p[0] > p[1]) || a.twists.iter().any(|e| event_step(e) < 2) {
-        return Some("a step out of the fixed order (threat, rally, deploy, other lines, corrupt)".into());
+        return Some("a step out of the fixed order (threat, rally, muster, other lines, corrupt)".into());
     }
     if steps.iter().filter(|&&s| s == 2).count() > 2 {
         return Some("more than two other lines (consequences)".into());

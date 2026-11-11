@@ -143,7 +143,7 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
       );
       break;
     case 'land_corruption':
-      // 145: land corruption (138): a scorched square of land with the marker's cross; no node may be placed.
+      // 145: land corruption (138): a scorched square of land with the marker's cross; nothing may be built (node, factory or station: r77).
       g.append(
         el('rect', { x: f(-0.85 * s), y: f(-0.85 * s), width: f(1.7 * s), height: f(1.7 * s), rx: f(0.2 * s), fill: '#bcaaa4', stroke: ADVERSARY_COLOR, 'stroke-width': f(0.22 * s), class: 'glyph' }),
         el('path', { d: `M${f(-0.45 * s)},${f(-0.45 * s)} L${f(0.45 * s)},${f(0.45 * s)} M${f(0.45 * s)},${f(-0.45 * s)} L${f(-0.45 * s)},${f(0.45 * s)}`, fill: 'none', stroke: ADVERSARY_COLOR, 'stroke-width': f(0.24 * s), 'stroke-linecap': 'round' }),

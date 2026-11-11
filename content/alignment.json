@@ -290,11 +290,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "In the next adversary turn, no site on or next to an Ambassador corrupts, and nothing is pulled into it.",
+   {"text": "In the next adversary turn, no Corrupt line or natural corruption takes a site on or next to an Ambassador, and no Agent moves onto it.",
     "effects": [{"op": "prohibit", "step": "corrupt", "where": "by_ambassador"}]},
-   {"text": "In the next adversary turn, no site on or next to an Ambassador or a Node corrupts, and nothing is pulled into it.",
+   {"text": "In the next adversary turn, no Corrupt line or natural corruption takes a site on or next to an Ambassador or a Node, and no Agent moves onto it.",
     "effects": [{"op": "prohibit", "step": "corrupt", "where": "by_player"}]},
-   {"text": "In the next adversary turn, no site within 2 of an Ambassador or a Node corrupts, and nothing is pulled into it.",
+   {"text": "In the next adversary turn, no Corrupt line or natural corruption takes a site within 2 of an Ambassador or a Node, and no Agent moves onto it.",
     "effects": [{"op": "prohibit", "step": "corrupt", "where": "near_player"}]}
   ]
  },

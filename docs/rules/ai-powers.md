@@ -69,7 +69,7 @@ own currency:
 are short, turn a research cube into 1 insight at any time (Cintamani's converter gives 2), and use your board's own
 way: the Builder pays 5 credits for 1 (Focus), the Protector gains 1 each time a troop ends its march next to its node (Vigil), the
 Researcher discards a card for 2 (Synthesis). Insight you don't spend still goes at the round's end (the Researcher
-keeps it), but many threat counters offer insight (8 / 10 / 12 by tier, by tag: [threats.md](threats.md) *Counters*),
+keeps it), but a few threat counters offer insight (6 at tier 1, 7 at tier 2: [threats.md](threats.md) *Counters*),
 so spare insight can stop one.
 
 **Insight loops (r41).** Nothing turns insight back into what makes it: insight buys cards, and a card that pays insight

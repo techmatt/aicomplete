@@ -56,14 +56,11 @@ wait at its bases.
   intended loss route, which players stop by standing ambassadors on bases and neutral factories, claiming
   neutral factories and keeping the Discord track below its tip.
 
-**Adversary troops (candidate): the march.** Adversary troops come from adversary-owned factories (each round),
-from the Muster's
-`wall_troops` landing where the Protector stands, and from projects and threats (Armored Columns, Orbital Strike,
-Total War). They are the adversary's
-mobile threat to player infrastructure. **Targets:** player-owned research stations and
-factories, **not nodes** (`troop_node`; a troop on or next to a node only stands there).
-Cities are never targets (corruption is the adversary's way into cities), nor are neutral or
-adversary-owned facilities.
+**Adversary troops (candidate): the march.** Troops come from adversary-owned factories (each round), most event
+cards' Muster (each country's lowest-numbered factory, else city), the Muster's `wall_troops` landing where the
+Protector stands, and projects and threats (Armored Columns, Orbital Strike, Total War). **Targets:** player-owned
+research stations and factories, **not nodes** (`troop_node`; a troop on or next to a node only stands there), never
+cities (corruption is the adversary's way in) or neutral or adversary-owned facilities.
 
 In the adversary phase (`board.march`, after the corruption step) **every adversary troop
 takes `troop_steps` steps** (Forced March's twist: more), one troop at a time, country by country and by hex number within each, in an order

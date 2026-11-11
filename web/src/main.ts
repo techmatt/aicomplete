@@ -209,6 +209,13 @@ function render() {
   else ui.tip.hidden = true;
 }
 
+/** What a phase asks of the seats, where its key alone doesn't say (the buttons are at a panel's foot). */
+const PHASE_HINTS: Record<string, string> = {
+  tier: 'pick the tier deck to draft from, at the foot of the panel',
+  draft: 'draft a card, at the foot of the panel',
+  keep: 'choose which drafted cards to keep, each at its keep price, at the foot of the panel',
+};
+
 /** Who the game waits for, and the open choice's question, above the board. */
 function renderPrompt(targets: number) {
   const v = shown;
@@ -228,8 +235,11 @@ function renderPrompt(targets: number) {
     return;
   }
   const acting = [...new Set(legal.map((a) => a.seat))];
+  // 184: a draft phase named only its key ("tier: Seat 0 to act"); say what the panel's buttons are for.
+  const short = v.phase ? shortPhase(v.phase.name) : '';
+  const what = PHASE_HINTS[short];
   ui.prompt.innerHTML = v.phase && acting.length
-    ? `<b>${escapeHtml(shortPhase(v.phase.name))}:</b> ${acting.map(seatName).join(', ')} to act`
+    ? `<b>${escapeHtml(short)}:</b> ${acting.map(seatName).join(', ')} to act${what ? ` <span class="how">— ${what}</span>` : ''}`
     : '';
 }
 
@@ -478,9 +488,13 @@ document.addEventListener('mousemove', (e) => {
   mouse = { x: e.clientX, y: e.clientY };
   hover(e.target as Element, e.clientX, e.clientY);
 });
-// 118: off the page there is nothing to redo.
+// 118: off the page there is nothing to redo (184: and the tip and outlines go, or they stayed while paused).
 document.addEventListener('mouseout', (e) => {
-  if (!e.relatedTarget) mouse = null;
+  if (!e.relatedTarget) {
+    mouse = null;
+    ui.tip.hidden = true;
+    highlight([]);
+  }
 });
 
 // ---------- input ----------
@@ -686,9 +700,11 @@ $('record').onclick = () => {
   ui.recordNote.value = tl.source.kind === 'record' ? tl.source.note : '';
   ui.recordText.value = currentRecord(false);
   // 099: a game that stopped replaying copies only the actions that replayed.
-  ui.recordMsg.textContent = tl.replayError
-    ? `This game stopped replaying (the error bar names the action): the copy holds only the ${tl.last} actions that replayed.`
-    : restamped();
+  // 184: and still says it is stamped as this engine's revision.
+  ui.recordMsg.textContent = [
+    tl.replayError ? `This game stopped replaying (the error bar names the action): the copy holds only the ${tl.last} actions that replayed.` : '',
+    restamped(),
+  ].filter(Boolean).join(' ');
   ui.recordDialog.showModal();
 };
 
@@ -780,9 +796,10 @@ async function main() {
     const other = restored.savedRules !== undefined && restored.savedRules !== rulesRevision
       ? `saved session from rules revision ${restored.savedRules}, this engine plays ${rulesRevision}: `
       : '';
-    if (restored.replayError) showError(`saved session: ${other}${restored.replayError}`);
-    // 118: a watched record's warnings (they name its revision too) come back on a reload.
-    else if (restored.warning) showError(`saved session: ${restored.warning}`);
+    // 184: a session that stopped replaying is kept whole (`Timeline.restore`): say how to get it.
+    if (restored.replayError) showError(`saved session: ${other}${restored.replayError}. Its full actions are kept in this browser: run copy(aic.keptSession()) in the console`);
+    // 118: a watched record's warnings come back on a reload (184: with the revision note, as they were written then).
+    else if (restored.warning) showError(`saved session: ${other}${restored.warning}`);
     else if (other) showError(`${other}it replayed, but may not be the game it was`);
     // The session keeps the config it started with: say so when the file has changed
     // since (a retuned baseline), or the game shown is not what the file now plays.

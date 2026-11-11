@@ -251,7 +251,7 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
             return format!("spend {who} from your supply: remove up to {} agents in reach", w.int("board.remove_count"));
         }
         // 178 (Matt's ruling #22): Dispatch, not Move (it plays the same: the ambassador comes from anywhere).
-        StandardAction::Move => "use 1 Dispatch: put a player ambassador, from your supply or the board, onto a piece in reach",
+        StandardAction::Move => "use 1 Dispatch: put a player ambassador, from your supply or the board, onto a piece or botnet in reach",
         StandardAction::Ambassador => "gain a player ambassador",
         StandardAction::Claim => {
             return format!(
@@ -312,7 +312,7 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
         StandardAction::Move => (
             "Dispatch a player ambassador",
             "1 of your Dispatches this round (your board's, unused ones lost)".into(),
-            "from your supply or the board onto a piece in reach (not the hex it comes from)".into(),
+            "from your supply or the board onto a piece or botnet in reach (not the hex it comes from)".into(),
         ),
         StandardAction::Ambassador => (
             "Gain a player ambassador",
@@ -486,8 +486,15 @@ pub(super) fn std_resolve(
     let w = cx.world;
     let on_hex = |cx: &mut Cx| -> Res<Option<usize>> {
         let opts = targets.iter().map(|&h| hex_opt(&w, h)).collect();
-        let verb = act.name().split('_').next().unwrap_or_default();
-        let prompt = || format!("Seat {s}: {verb} on which hex?");
+        // 184: the printed action's words, not its key (Dispatch's key is still "move", 178).
+        let prompt = || match act {
+            StandardAction::Move => format!("Seat {s}: dispatch an ambassador to which hex?"),
+            StandardAction::Botnet => format!("Seat {s}: take down a botnet on which hex?"),
+            StandardAction::BuyEnergy => format!("Seat {s}: buy energy from which city?"),
+            StandardAction::Station => format!("Seat {s}: build a research station on which hex?"),
+            StandardAction::Remove => format!("Seat {s}: remove an agent, from which hex?"),
+            _ => format!("Seat {s}: {} on which hex?", act.name().split('_').next().unwrap_or_default()),
+        };
         Ok(cx.choose(s, prompt, opts)?.map(|i| targets[i]))
     };
     match act {

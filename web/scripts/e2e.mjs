@@ -197,7 +197,7 @@ try {
       if (!bs.length) return '';
       // Favor plays over passes so games reach the cards.
       const plays = bs.filter((b) => !b.classList.contains('pass') && !b.classList.contains('pass-all'));
-      // 068: take every eviction on offer, checked after the game.
+      // 068, 184: take every Remove agents on offer, checked after the game.
       const evict = plays.find((b) => b.dataset.action?.includes('"remove"'));
       if (evict) { evict.click(); return 'button'; }
       const pool = plays.length && Math.random() < 0.7 ? plays : bs;
@@ -212,22 +212,29 @@ try {
   check(!!end.outcome && end.legal === 0, `played to the end in ${clicks} clicks, ${end.n} actions: ${end.text}`);
   const played = await js(`window.aic.timeline.actions.filter((a) => a.type !== 'pass').length`);
   check(played > 0, `${played} non-pass actions taken through the UI`);
-  // 068: an evicting ambassador stays on the hex: step to just after each eviction.
+  // 068, 184 (r75: Remove agents spends an ambassador and places nothing): the picked hex loses an agent and gains no
+  // ambassador. Step to just before and after each first pick.
   const evictions = await js(`(() => {
     const t = window.aic.timeline;
     const out = [];
+    const count = (target, kind) => {
+      const h = window.aic.view.hexes.find((x) => JSON.stringify(x.hex) === JSON.stringify(target));
+      return (h?.tokens ?? []).filter((k) => k.kind === kind).reduce((n, k) => n + (k.count ?? 1), 0);
+    };
     t.actions.forEach((a, i) => {
       if (a.type !== 'choose' || !a.target) return;
       const before = t.actions[i - 1];
       if (before?.type !== 'standard' || before.act !== 'remove') return;
+      window.aic.seek(i);
+      const amb0 = count(a.target, 'ambassador:' + a.seat), adv0 = count(a.target, 'ambassador:adversary');
       window.aic.seek(i + 1);
-      const h = window.aic.view.hexes.find((x) => JSON.stringify(x.hex) === JSON.stringify(a.target));
-      out.push(h.tokens.some((k) => k.kind === 'ambassador:' + a.seat) || JSON.stringify([a, h.tokens]));
+      const amb1 = count(a.target, 'ambassador:' + a.seat), adv1 = count(a.target, 'ambassador:adversary');
+      out.push((amb1 === amb0 && adv1 === adv0 - 1) || JSON.stringify([a, amb0, amb1, adv0, adv1]));
     });
     window.aic.seek(t.last);
     return out;
   })()`);
-  check(evictions.every((x) => x === true), `evicting leaves the ambassador on the piece (${evictions.filter((x) => x === true).length}/${evictions.length}) ${evictions.find((x) => x !== true) ?? ''}`);
+  check(evictions.every((x) => x === true), `Remove agents takes an agent and places no ambassador (${evictions.filter((x) => x === true).length}/${evictions.length}) ${evictions.find((x) => x !== true) ?? ''}`);
   check(armedAtOnce === hexChoices, `hex choices highlight their hexes at once (${armedAtOnce}/${hexChoices})`);
   check(seen.standard.size > 0 && seen.sell > 0, `standard actions offered as buttons (${[...seen.standard].join(', ')}) and selling a card`);
   // 139: no clock, war every round: the fronts are always drawn at war.

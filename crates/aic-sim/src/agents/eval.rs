@@ -1510,7 +1510,9 @@ impl Eval {
                     stations[s] += 1;
                     v += if stations[s] <= STATIONS_USEFUL { w.station } else { w.station_spare };
                     // 138: a player's station filling toward its Corrupt number.
-                    let p = (Self::toward(rules, &tokens, &arriving, h, station_gather) / station_at.max(1) as f64).min(1.0);
+                    // 184: a firewalled or prohibited station doesn't corrupt in the turn ahead (r77 #30), as a city.
+                    let toward = if banned(h) { 0.0 } else { Self::toward(rules, &tokens, &arriving, h, station_gather) };
+                    let p = (toward / station_at.max(1) as f64).min(1.0);
                     v -= w.site_pressure * (w.station + w.station_flip) * w.pressure * p * p;
                 }
             }
@@ -1525,7 +1527,9 @@ impl Eval {
                 } else if owned {
                     v += w.owned_factory;
                     // 138: a player's factory filling toward its Corrupt number.
-                    let p = (Self::toward(rules, &tokens, &arriving, h, factory_gather) / factory_at.max(1) as f64).min(1.0);
+                    // 184: as a station, a firewalled or prohibited factory doesn't corrupt in the turn ahead.
+                    let toward = if banned(h) { 0.0 } else { Self::toward(rules, &tokens, &arriving, h, factory_gather) };
+                    let p = (toward / factory_at.max(1) as f64).min(1.0);
                     v -= w.site_pressure * 2.0 * w.owned_factory * w.pressure * p * p;
                 }
             }

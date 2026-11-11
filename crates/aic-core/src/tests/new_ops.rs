@@ -22,6 +22,23 @@ fn token_on(g: &mut GameState, t: &str, h: usize) {
     setv(g, &format!("threats.loc.{t}.0"), h as i64 + 1);
 }
 
+/// 184 (r78): "2 adversary Troops land on the base here" with no base token (one country has no base) lands
+/// nothing; it fell back to the threat's other token and put the troops on the city.
+#[test]
+fn a_troop_line_for_a_missing_token_type_lands_nothing() {
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let def = w.content.threats.iter().find(|t| t.id == "garrison_state").expect("Garrison State");
+    assert_eq!(def.locations, [content::Location::City, content::Location::Base], "its printed types, city first");
+    let troops: Vec<content::Op> = def.effects.iter().filter(|o| matches!(o, content::Op::Troops { .. })).cloned().collect();
+    assert!(!troops.is_empty());
+    let city = (0..g.hexes.len()).find(|&h| is_city(&w, h) && w.map.hexes[h].country == 0).expect("a city");
+    token_on(&mut g, "garrison_state", city);
+    let before = g.tokens(city, TROOP);
+    run_threat(&rules, &mut g, "garrison_state", 0, &troops);
+    assert_eq!(g.tokens(city, TROOP), before, "no troop on the city token");
+}
+
 #[test]
 fn extra_corp_troops_go_past_the_cap_but_one_a_base_a_production_step() {
     let (rules, mut g) = lab(&["board.bases"]);

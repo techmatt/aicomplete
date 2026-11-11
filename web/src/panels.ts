@@ -84,10 +84,10 @@ function bucketBar(b: Value | undefined, side: 'unity' | 'discord', name: string
     <span class="btext">${name} ${b.value}/${b.max ?? '?'}</span></span>`;
 }
 
-/** "Unity tips 1 (next at 2)". */
+/** "Unity tips 1 (next step at 2 tips)". */
 function tipsChip(t: Value | undefined, side: 'unity' | 'discord', name: string): string {
   if (!t) return '';
-  return `<span class="tips ${side}" data-value="${esc(t.key)}" data-scope="global">${name} tips <b>${t.value}</b>${t.max !== undefined ? `<small> (next at ${t.max})</small>` : ''}</span>`;
+  return `<span class="tips ${side}" data-value="${esc(t.key)}" data-scope="global">${name} tips <b>${t.value}</b>${t.max !== undefined ? `<small> (next step at ${t.max} tips)</small>` : ''}</span>`;
 }
 
 /** The Alignment line, and its resolved cards and decks for the line under it; nothing without the module. */
@@ -118,21 +118,23 @@ function alignmentHtml(v: View): { track: string; cards: string[] } {
 function lossesHtml(v: View, config: Config): string[] {
   const g = v.globals;
   const loss: string[] = [];
+  // 184: a game that is over stays red under its WON banner: no danger once there is an outcome.
+  const live = !v.outcome;
   const dd = pile(v, 'alignment.deck.discord');
   if (dd) {
-    const danger = dd.count <= 1 ? ' danger' : '';
+    const danger = live && dd.count <= 1 ? ' danger' : '';
     loss.push(`<span class="value${danger}" data-pile="${esc(dd.key)}" title="a Discord tip that finds no card loses the game"><span class="label">Discord deck runs out</span> <b>${dd.count}</b></span>`);
   }
   const deck = findValue(g, 'adversary.deck');
   if (deck) {
-    const danger = deck.value <= 1 ? ' danger' : '';
+    const danger = live && deck.value <= 1 ? ' danger' : '';
     loss.push(`<span class="value${danger}" data-value="${deck.key}" data-scope="global"><span class="label">adversary cards run out</span> <b>${deck.value}</b><small> left</small></span>`);
   }
   // 044: the third locked loss: a seat's last node, if this config has it.
   const counts = v.seats.map((s) => s.values.find((x) => x.key === 'board.node')?.value);
   if (param(config, 'alignment', 'node_loss') && counts.every((n) => n !== undefined) && counts.length) {
     const least = Math.min(...(counts as number[]));
-    loss.push(`<span class="value${least <= 1 ? ' danger' : ''}" title="a seat with no nodes on the board loses the game (early on, nothing destroys a last node)"><span class="label">a seat's last node gone</span> <b>${least}</b><small> fewest held</small></span>`);
+    loss.push(`<span class="value${live && least <= 1 ? ' danger' : ''}" title="a seat with no nodes on the board loses the game (no stage protects a last node: 175)"><span class="label">a seat's last node gone</span> <b>${least}</b><small> fewest held</small></span>`);
   }
   // Unlabeled `vars` (source "engine") are folded under the piles: see `varsHtml`.
   const other = g.filter((x) => !DRAWN_GLOBALS.has(x.key) && x.source !== 'engine').map((x) => valueChip(x, 'global'));
@@ -186,7 +188,7 @@ export function pipelineHtml(v: View): string {
     ? `<div class="sline peek" title="${esc(`top of the deck: ${deck.visible.map((c) => c.name).join(', ')}`)}">top: ${deck.visible.map((c) => `<span data-card="${esc(c.id)}" data-where="pile:adversary.deck">${esc(c.name)}</span>`).join(', ')}</div>`
     : '';
   const deckBox = deck
-    ? `<div class="slot-box deck" data-pile="adversary.deck"><div class="sline"><span class="stitle">Deck</span><span class="big">${deck.count}</span><small>left</small></div>${peek}<div class="hint">the clock: lose when no card is left for the next round</div></div>`
+    ? `<div class="slot-box deck" data-pile="adversary.deck"><div class="sline"${next?.visible.length ? ` title="${deck.count} in the deck and ${next.visible.length} face up for next round: the lose-if count counts both"` : ''}><span class="stitle">Deck</span><span class="big">${deck.count}</span><small>left${next?.visible.length ? ` (+${next.visible.length})` : ''}</small></div>${peek}<div class="hint">the clock: lose when no card is left for the next round</div></div>`
     : '';
   const last = di?.visible[0];
   const discBox = di
@@ -195,7 +197,8 @@ export function pipelineHtml(v: View): string {
   const arrow = '<span class="parrow">→</span>';
   const boxes = [
     deckBox,
-    cardBox(next, 'Next round (face up)', 'not revealed yet', 'next'),
+    // 184: "(face up)" headed an empty slot reading "not revealed yet".
+    cardBox(next, next?.visible.length ? 'Next round (face up)' : 'Next round', 'not revealed yet', 'next'),
     cardBox(cur, 'This round', 'no card this round', 'current'),
     discBox,
   ].filter(Boolean);
@@ -247,9 +250,11 @@ function sourceBadge(v: View, id: string): { badge: string; hexes: string } {
 }
 
 function threatCard(c: CardView, where: string, v: View): string {
-  const effect = (c.text ?? '').replace(/\s*Counter:.*$/, '');
-  // 044: a waiting or jammed threat must look it, not only in the hover.
-  const waits = /Waits: /.test(c.text ?? '') ? '<span class="waits">waits</span>' : '';
+  // 184: the frame every threat prints since r77 (payers, target) filled the 3-line clamp before the effect showed;
+  // the hover keeps it.
+  const effect = (c.text ?? '').replace(/\s*Counter:.*$/, '').replace(/^Payers:.*?Target:[^.]*\.\s*/, '');
+  // 044: a waiting or jammed threat must look it, not only in the hover (184: r77 prints "Waits token:").
+  const waits = /Waits( token)?: /.test(c.text ?? '') ? '<span class="waits">waits</span>' : '';
   const jam = (c.text ?? '').match(/Jammed: needs (\d+) less/);
   const jammed = jam ? `<span class="jam">-${esc(jam[1])}</span>` : '';
   const src = sourceBadge(v, c.id);
@@ -299,10 +304,15 @@ export function countriesHtml(v: View): string {
       `cities ${cities.length - corrupted - aligned} clean`, ...some(aligned, 'aligned'), ...some(corrupted, 'corrupted', 'adv'),
       ...some(tok('ambassador:adversary'), `agent${tok('ambassador:adversary') === 1 ? '' : 's'}`, 'adv'), ...some(tok('botnet'), `botnet${tok('botnet') === 1 ? '' : 's'}`, 'adv'),
       ...some(tok('troop'), `troop${tok('troop') === 1 ? '' : 's'}`, 'adv'),
-      ...some(tok('unit'), `unit${tok('unit') === 1 ? '' : 's'}`),
+      ...some(tok('unit'), `drone${tok('unit') === 1 ? '' : 's'}`),
     ];
-    const counts = `<span class="counts" title="cities: clean, aligned, corrupted; agents, botnets and troops; corp units at bases">${parts.join(' · ')}</span>`;
-    const flags = c.values.filter((x) => !x.key.startsWith('tokens.') && !x.key.startsWith('board.project')).map((x) => valueChip(x, `country:${c.index}`)).join('');
+    const counts = `<span class="counts" title="cities: clean, aligned, corrupted; agents, botnets and troops; drones at bases">${parts.join(' · ')}</span>`;
+    // 184: an on/off round flag (board.view's FLAGS) printed a constant "1" ("Sheltered 1"): its label alone.
+    const onOff = /^board\.(blackout|sabotage|shelter|embargo|cordon)$/;
+    const flags = c.values.filter((x) => !x.key.startsWith('tokens.') && !x.key.startsWith('board.project'))
+      .map((x) => (onOff.test(x.key)
+        ? `<span class="value" data-value="${esc(x.key)}" data-scope="country:${c.index}"><span class="label">${esc(x.label)}</span></span>`
+        : valueChip(x, `country:${c.index}`))).join('');
     const groups = c.cards.map((g) => g.key === 'threats.on'
       ? g.cards.map((x) => threatCard(x, `country:${c.index}:${g.key}`, v)).join('')
       : `<div class="row"><span class="what">${esc(g.label)}</span>${g.cards.map((x) => cardChip(x, `country:${c.index}:${g.key}`)).join('')}</div>`).join('');
@@ -352,8 +362,14 @@ export function seatValuesHtml(v: View, seatIndex: number): string {
     // Insight is set to its income each round, not added to (020: "+4" read as more).
     // 075: under Patience it adds, unspent insight carrying over.
     const patient = !!findValue(s.values, 'economy.insight_carried');
-    const sign = r === 'insight' && !patient ? '→' : inc && inc.value >= 0 ? '+' : '';
-    const incHtml = inc ? `<span class="inc" data-value="${inc.key}" data-scope="${scope}" title="${r === 'insight' ? (patient ? 'next round: this is added to what you hold (Patience), plus any insight-next-round bonus' : 'next round: insight is set to this, plus any insight-next-round bonus') : 'income in upkeep'}">${sign}${inc.value}</span>` : '';
+    // 184: the badge promised its income beside "insight lost next round 3": what next round brings is the income
+    // plus the gift less the debt (economy.rs's round start; under Patience only the total with what is carried is
+    // floored, so the change itself may be negative).
+    const debt = r === 'insight' ? findValue(s.values, 'economy.insight_debt')?.value ?? 0 : 0;
+    const gift = r === 'insight' ? findValue(s.values, 'economy.insight_gift')?.value ?? 0 : 0;
+    const next = inc ? (r === 'insight' ? (patient ? inc.value + gift - debt : Math.max(0, inc.value + gift - debt)) : inc.value) : 0;
+    const sign = r === 'insight' && !patient ? '→' : next >= 0 ? '+' : '';
+    const incHtml = inc ? `<span class="inc" data-value="${inc.key}" data-scope="${scope}" title="${r === 'insight' ? (patient ? 'next round: this is added to what you hold (Patience): the income, plus any insight next round, less any insight lost next round' : 'next round: insight is set to this: the income, plus any insight next round, less any insight lost next round') : 'income in upkeep'}">${sign}${next}</span>` : '';
     return `<span class="res r-${esc(r)}" data-value="resource.${esc(r)}" data-scope="${scope}"><span class="label">${esc(have?.label ?? r.replace(/_/g, ' '))}</span> <b>${have?.value ?? 0}</b>${incHtml}</span>`;
   }).join('');
 

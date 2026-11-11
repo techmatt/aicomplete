@@ -12,6 +12,7 @@ import argparse
 import collections
 import json
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -29,7 +30,8 @@ def main():
     ap.add_argument('--min', type=float, default=1.0)
     ap.add_argument('--agents', default='')
     a = ap.parse_args()
-    want = set(x for x in a.agents.split(',') if x)
+    # 184: a resolved label holds commas before its weights ("engine:strategy=1,w.built=4,..."): split between agents only.
+    want = set(x for x in re.split(r',(?![a-z_]+\.[a-z_]+=)', a.agents) if x)
     cards = content('cards')
     boards = content('ais')
     draft = {c['id']: c for c in cards if c.get('tier') in (1, 2)}
@@ -57,6 +59,11 @@ def main():
                 continue
             by[(c['agent'], c.get('variant', ''))].extend(games[cid])
             by_agent[c['agent']].extend(games[cid])
+    missing = want - set(by_agent)
+    if missing:
+        # 184: an alias (strategist) matched nothing and its rows were silently absent; results.json names the full label.
+        sys.exit(f"--agents matched no cell for {', '.join(sorted(missing))}; the agents here: "
+                 f"{' | '.join(sorted({c['agent'] for d in a.dirs for c in load(d)[0].values()}))}")
     head = ['agent', 'pair', 'games', 'win %', *dear.values(), 'Grant', 'Actions used', 'tokens gained / spent',
             *(names[x] for x in LIBERATE)]
     print('| ' + ' | '.join(head) + ' |')

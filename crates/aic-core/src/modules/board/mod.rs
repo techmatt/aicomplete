@@ -60,7 +60,7 @@ pub static DEF: ModuleDef = ModuleDef {
         params: &[
             ParamSpec::int("start_corrupted", 0, 3, "cities per country that start corrupted"),
             ParamSpec::int("start_ambassadors", 0, 10, "player ambassadors each player starts with"),
-            ParamSpec::int("unit_cap", 0, 20, "corp units a base holds at most"),
+            ParamSpec::int("unit_cap", 0, 20, "Drones a base holds at most"),
             ParamSpec::list("corp_energy", 0, 10, "energy cubes each city of country i makes a round (a megacorp parameter; the list repeats)"),
             ParamSpec::int("city_energy_credits", 0, 20, "standard action Buy energy: credits for a neutral city's energy, once per city a round, the city in reach and producing"),
             ParamSpec::int("aligned_bonus", 0, 10, "extra energy an aligned city gives its owner"),
@@ -98,7 +98,7 @@ pub static DEF: ModuleDef = ModuleDef {
         ],
         phases: &[
             PhaseSpec::decision("act", "standard actions and projects: station, remove, clear, dispatch (from the round's Dispatches), ambassador, claim, liberate, harden, sell, drain, take down a botnet, buy a neutral city's energy; completed megaprojects' converters"),
-            PhaseSpec::auto("bases", "growth, after the income step: extra Drones (corp troops), then each city grows a factory on a free zone next to it"),
+            PhaseSpec::auto("bases", "growth, after the income step: extra Drones, then each city grows a factory on a free zone next to it"),
             PhaseSpec::auto("war", "at the end of the round, the Drones on either side of each front fight"),
             PhaseSpec::auto("march", "each adversary troop takes its steps: remove an ambassador on its hex, else destroy a target next to it, else move toward the nearest"),
             PhaseSpec::auto("produce", "the income step (economy's upkeep follows at once): factories make chips or adversary troops, aligned cities energy (an agent on one stays and darkens it), research stations cubes (an opposing piece blocks one; an adversary station's compute waits for the compute step); full megaprojects complete"),

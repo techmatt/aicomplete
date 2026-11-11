@@ -51,7 +51,7 @@ def main():
     a = ap.parse_args()
     ais = json.load(open(os.path.join(ROOT, 'content', 'ais.json'), encoding='utf-8'))
     cells = load(a.dirs)
-    print('| cell | games | win % | purge / deck | rounds | insight carried | cubes bought | free stations | 2nd node | wall strikes | troop hits | lost nodes | left: credits / energy (last round) |')
+    print('| cell | games | win % | purge wins | rounds | insight carried | cubes bought | free stations | 2nd node | wall strikes | troop hits | lost nodes | left: credits / energy (last round) |')
     print('|---|' + '---|' * 12)
     for (variant, agent), gs in sorted(cells.items()):
         n = len(gs)
@@ -60,7 +60,7 @@ def main():
         purge = sum(1 for g in gs if g.get('won') and g.get('reason') == 'purge')
         p = wins / n if n else 0
         second = per('ai.power.researcher.2')
-        print(f"| {variant} {agent[:40]} | {n} | {100 * p:.1f} ±{se(p, n):.1f} | {purge} / {wins - purge} "
+        print(f"| {variant} {agent[:40]} | {n} | {100 * p:.1f} ±{se(p, n):.1f} | {purge} "
               f"| {sum(g.get('rounds', 0) for g in gs) / n:.1f} | {per('economy.insight_carried'):.1f} "
               f"| {per('board.cubes_bought'):.2f} | {per('board.stations_built_free'):.2f} | {second:.2f} "
               f"| {per('board.wall_strikes'):.2f} | {per('board.troop_destroyed'):.2f} | {per('board.node_lost'):.1f} "

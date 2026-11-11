@@ -41,7 +41,7 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
 - `content/load_adversary.py [--check]`: `drafts/adversary/` (the source) into `content/` and `docs/adversary-cards.md`.
 - `cards/play_read.py DIR... [--min PCT] [--agents A,B]`: per agent, pooled over its cells and DIRs: the draft cards kept in more than `--min` percent of games (default 1) and played
   in none, and every draft card no game kept. Seconds. A farmed read (no `results.json`) reads from its header
-  spec, as do `screens.load` and `dealt` (182): agents by the spec's names, not resolved.
+  spec, as do `screens.load` and `dealt` (182): agents by the spec's names, not resolved; an unknown one stops it.
 - `cards/runaway_read.py DIR... [--times 5] [--floor 20] [--held 150] [--peak-times 3] [--peak-floor 10] [--top 15]`: loops:
   each trigger, threshold, reuse, discount or converter counter whose per-game maximum is over `--times` its mean
   where used; games whose insight grew three rounds running past `--held`; per cell, seat and resource the mean
@@ -52,7 +52,7 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   keep) split by runaway_read's insight flag. Seconds.
 - `cards/slots_read.py DIR... [--rounds N]`: per cell, each seat's build-overs a game and its buildings standing as
   each round starts, from the `slots.*` counters.
-- `cards/board_read.py DIR... [--powers] [--cards]`: per cell, pooled across DIRs: wins ± SE, the win mix, Patience's
+- `cards/board_read.py DIR... [--powers] [--cards]`: per cell, pooled across DIRs: wins ± SE, purge wins, Patience's
   carried insight, cubes bought, free stations, the Researcher's second node, strikes a Wall stopped, troop hits, nodes
   lost and what seats leave unspent; `--powers` every board power a game, `--cards` the deck's research-cube cards
   (read from content) kept, played and used.
@@ -60,7 +60,7 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   power's uses a game (`ai::power_is_dear`), Grant, Action buildings' uses, tokens gained / spent, each liberate card
   kept / played (Popular Uprising's Action uses); then per agent `play_read.py`'s two lists. Seconds.
 - `cards/liberation_read.py DIR... [--cards]`: per cell (config, pair, agent): wins ± SE, rounds, cities corrupted a
-  game, cities liberated a game (by a card / by the fallback), the share of games with a liberation, Grant uses,
+  game, cities liberated a game (card / action), the share of games with a liberation, Grant uses,
   strikes a Wall stopped and troops landed by the Wall pressure; `--cards` each liberate card's kept / played a game.
   Seconds.
 - `cards/effect_stats.py READ [--screen DIR] [--flag 5] [--out MD]`: each Unity and Discord card's resolutions a game
@@ -73,7 +73,7 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   insight left unspent a round; each board's first dear power used a game; each seat's most-held tag by round
   (`ai.tag_top.<seat>`). Seconds.
 - `cards/energy_read.py DIR...`: per cell: win %, the energy a seat holds as the action phase ends at rounds 3 and 6
-  and its last round (`unspent.<seat>.energy.rNN`), then each energy mechanic's use a game. Seconds.
+  and its last round (`unspent.<seat>.energy.rNN`), then each energy mechanic's use a game.
 - `cards/corp_read.py DIR...`: per cell, pooled across DIRs: wins, completions and their mean round, cubes paid by
   color, cubes stored and converted, uses per converter, stations claimed and built, adversary compute by source.
 - `cards/price_read.py`: per-card rates and stratified win deltas from games.jsonl

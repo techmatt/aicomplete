@@ -365,7 +365,7 @@ def worst_case(t, mil):
 
 
 def event_step(e):
-    """151: where an event line sits in the fixed step order: rally 0, deploy 1, other lines 2, corrupt 3."""
+    """151: where an event line sits in the fixed step order: rally 0, muster 1, other lines 2, corrupt 3."""
     if e.get("op") == "rally" and not e.get("count"):
         return 0
     if e.get("op") == "troops" and e.get("each_country") and not any(e.get(k) for k in ("at", "stand", "location", "if")):
@@ -375,7 +375,7 @@ def event_step(e):
 
 def event_breaks(ev):
     """151, the event standard (the Rust twin is `content::event_rule_break`): one Rally X, the fixed order (threat,
-    rally, deploy, other lines, corrupt), at most two other lines, no per-event compute or creation line, "each
+    rally, muster, other lines, corrupt), at most two other lines, no per-event compute or creation line, "each
     country", never "each board" (178, Matt's ruling #17; 151 had it the other way)."""
     out = []
     if "each board" in ev.get("text", "").lower():
@@ -384,7 +384,7 @@ def event_breaks(ev):
     if steps.count(0) != 1:
         out.append("one Rally X line")
     if any(a > b for a, b in zip(steps, steps[1:])) or any(event_step(e) < 2 for e in ev.get("twists", [])):
-        out.append("a step out of the fixed order (threat, rally, deploy, other lines, corrupt)")
+        out.append("a step out of the fixed order (threat, rally, muster, other lines, corrupt)")
     if steps.count(2) > 2:
         out.append("more than two other lines (consequences)")
     if any(e.get("op") == "corrupt" for e in ev.get("standing", [])):

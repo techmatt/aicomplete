@@ -93,28 +93,28 @@ Costs are printed per player count (the table below).
   ([economy.md](economy.md)), off a project, not the waiting compute.
 
 <!-- generated: projects -->
-| Project | Tags | 2 players | 3 players | 4 players | Resolves |
-|---|---|---|---|---|---|
-| Raiding Parties | military | 8 | 12 | 16 | once |
-| War Footing | military | 14 | 21 | 28 | once |
-| Purge the Unaligned | military | 14 | 21 | 28 | once |
-| Armored Columns | military | 20 | 30 | 40 | once |
-| Arms Race | military | 22 | 33 | 44 | ongoing |
-| Declaration of War | military | 36 | 54 | 72 | ongoing |
-| Disinformation | influence | 10 | 15 | 20 | once |
-| Recruitment Drive | influence | 22 | 33 | 44 | once |
-| Infiltration Drive | influence | 36 | 54 | 72 | once |
-| Data Heist | cyber | 12 | 18 | 24 | once |
-| Botnet Swarm | cyber | 12 | 18 | 24 | once |
-| Station Coup | cyber | 18 | 27 | 36 | once |
-| Market Crash | economic | 10 | 15 | 20 | once |
-| Shadow Factories | economic | 14 | 21 | 28 | once |
-| Capital Flight | economic | 16 | 24 | 32 | once |
-| Rolling Blackouts | grid | 12 | 18 | 24 | once |
-| Grid Capture | grid | 18 | 27 | 36 | ongoing |
-| False Flag | universal | 12 | 18 | 24 | once |
-| Grand Offensive | universal | 20 | 30 | 40 | once |
-| Propaganda Network | universal | 28 | 42 | 56 | ongoing |
+| Project | Tags | 1 player | 2 players | 3 players | 4 players | Resolves |
+|---|---|---|---|---|---|---|
+| Raiding Parties | military | 4 | 8 | 12 | 16 | once |
+| War Footing | military | 7 | 14 | 21 | 28 | once |
+| Purge the Unaligned | military | 7 | 14 | 21 | 28 | once |
+| Armored Columns | military | 10 | 20 | 30 | 40 | once |
+| Arms Race | military | 11 | 22 | 33 | 44 | ongoing |
+| Declaration of War | military | 18 | 36 | 54 | 72 | ongoing |
+| Disinformation | influence | 5 | 10 | 15 | 20 | once |
+| Recruitment Drive | influence | 11 | 22 | 33 | 44 | once |
+| Infiltration Drive | influence | 18 | 36 | 54 | 72 | once |
+| Data Heist | cyber | 6 | 12 | 18 | 24 | once |
+| Botnet Swarm | cyber | 6 | 12 | 18 | 24 | once |
+| Station Coup | cyber | 9 | 18 | 27 | 36 | once |
+| Market Crash | economic | 5 | 10 | 15 | 20 | once |
+| Shadow Factories | economic | 7 | 14 | 21 | 28 | once |
+| Capital Flight | economic | 8 | 16 | 24 | 32 | once |
+| Rolling Blackouts | grid | 6 | 12 | 18 | 24 | once |
+| Grid Capture | grid | 9 | 18 | 27 | 36 | ongoing |
+| False Flag | universal | 6 | 12 | 18 | 24 | once |
+| Grand Offensive | universal | 10 | 20 | 30 | 40 | once |
+| Propaganda Network | universal | 14 | 28 | 42 | 56 | ongoing |
 <!-- /generated -->
 
 No project destroys a node directly; a Corrupt line or flip a project prints is

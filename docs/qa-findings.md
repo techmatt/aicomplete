@@ -3,8 +3,8 @@
 What a bug hunt reads first: the findings still open, the reports ruled won't-fix (never re-report one), and the
 faults past hunts kept finding. Fixed findings, never to re-report: F1–F100 (020, 044) in `git show
 1617d75:docs/qa-findings.md`; then each hunt's `fixed.md` and `deferred.md` under `experiments/results/`: 099 (r38,
-F101 on), 118 (r46, F132, D43, W19 on), 145 (r59, F165, D57 on), 169 (r72 → 73, F205, D72 on). A new finding takes
-the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
+F101 on), 118 (r46, F132, D43, W19 on), 145 (r59, F165, D57 on), 169 (r72 → 73, F205, D72 on), 184 (r77 → 78, F225,
+D77, W28 on). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
 
 ## Checkers
 
@@ -23,12 +23,9 @@ rules revision, step time). What they already catch, so a hunt needn't hand-chec
 - The adversary's twist loop names where each twist op is read; an unread one panics (a catch-all arm once hid a
   twist that never ran).
 - The sweep's `no-control` (099) flags a legal action with no button or hex pick on screen.
-- 118: `scripts/cards/runaway_read.py` (loops in a run's counters), `aic-sim docs --check` on a rules quote a card no
-  longer prints, wasm-parity's engine games (r41+ engines), the sweep's r41+ moments and strategist and 1-player cases.
-- 145: `scripts/cards/counter_names.py` (counter keys a read script quotes that no game writes), the sweep's r55-r59
-  moments (claims, liberations, Envoy, hold-offs, node loss by cause, Corrupt X by site) and d3 cases.
-- 169: the sweep's r70-r72 moments (gather, push, strike, cancel, standing liberation, prohibitions) and d1 strategist
-  cases; `stale-word` on screen and `docs --check` on a stale house word (agents, Operatives) in what players read.
+- `runaway_read.py` (loops in counters, 118), `counter_names.py` (keys no game writes, 145); `docs --check` on a rules
+  quote a card no longer prints (118) and on a stale house word in what players read, the rulebook too (169, 184).
+- The sweep's moments by revision (`COUNTER_EVENTS_*`: r35, r41, r55, r70, r74) and `stale-word` on screen (169, 184).
 
 ## Where hunts found faults
 
@@ -61,18 +58,20 @@ Each hunt found most of its faults in the same places. Look there first:
 - **A new verb against old guards** (169): Push skipped Wall, `per_site` restarted "one per country in turn" each
   site, a card's own play missed its own trigger. Check each new op against every rule about arrivals and order.
 - **A rename by one phrase** (169): replacing "adversary ambassador" left the bare word in labels, faces and prose.
+- **A rules item's other surfaces** (184): r74-r77 changed the code and the rules, and left icons, viewer labels,
+  prompts, pricing notes, the card viewer's export, e2e lanes and read scripts on the old rule. List every surface.
 
 ## Open, deferred to Matt
 
-Closed by 121 and 124 (git has them): D16, D43, D44, D47, D48, D51, D53, D54; by 152 (both scenes): D69.
+Closed by 121 and 124 (git has them): D16, D43, D44, D47, D48, D51, D53, D54; by 152 (both scenes): D69; by 178 (r77 #27): D76.
 
 | # | Area | Finding | Options, and the pick |
 |---|---|---|---|
-| D2 | variants | The off-variants don't measure what a module adds (the rules say so): alignment off, botnets always count; cards off, only Decommission removes one; threats off reads low. | (a) Leave, documented; (b) a stand-in; (c) retire. **Open:** (b) for alignment if Matt still measures with it. |
+| D2 | variants | The off-variants don't measure what a module adds (the rules say so). | Leave; a stand-in; retire. **Open:** a stand-in for alignment if Matt measures with it. |
 | D6 | agents | After a mid-step reshuffle of a drawn-out deck, the pending-choice guess keeps the true RNG for every stream, not just the reshuffled one (`determinize.rs`, `drawn_out`). Rare. | (a) Map pile to RNG purpose; (b) leave it. **Pick (b)** until a verdict hinges on late Alignment draws. |
-| D32 | rules | Any lost Follower (Sabotage, Purge Protocols) leaves Popular Uprising short of 4 for good unless Manifesto Leak refills it; Hostile Buyout's cube lands on a city the liberation's own adversary ambassador darkens. Both follow the rules as written. | Design notes. **Matt's call**. |
-| D41 | rules | Aligning a dark city cancels one adversary ambassador (r40, D38), but Remove costs the same ambassador, clears up to 3 and stays: no agent took the cancel in 1,200 r40 games (102). | (a) Leave it: the rule reads as a site claim does; (b) let Align on a dark city both cancel and align; (c) price Remove up. **Matt's call**; (a) until a player asks for it. |
-| D42 | cards | Data Licensing Deal (10 a Dataset at r40) is still unplayed: it needs a Dataset on a card, and the agents spend Grad Student Pool's and Telemetry Archive's at once, so the 4-Dataset pile it pays back from never stands; cost 1 or 12 a Dataset played it 0.01 a game (102). | (a) A Dataset building that holds its pile (a cap, no spend branch); (b) cash from every pile at once; (c) leave it. **Matt's call**. |
+| D32 | rules | Any lost Follower (Sabotage, Purge Protocols) leaves Popular Uprising short of 4 for good unless Manifesto Leak refills it, as the rules say (the Hostile Buyout half went with `free_leaves`, 178). | A design note. **Matt's call**. |
+| D41 | rules | Aligning a dark city cancels one agent (r40), but Remove costs the same ambassador and clears up to 3: no agent took the cancel (102). | Leave; cancel and align; price Remove up. **Matt's call**; leave. |
+| D42 | cards | Data Licensing Deal is unplayed: the agents spend every Dataset pile at once, so its 4-Dataset pile never stands (102). | A pile that holds; cash every pile; leave. **Matt's call**. |
 | D21 | picks | `picks/card_frames_r2.json` and `scene_style_r1.json` point at images that are gone: opening those pickers shows broken tiles. Superseded rounds. | (a) Delete the two manifests; (b) leave them as a record. **Pick (b)** unless they confuse: their rulings are in the frames and the preamble. |
 | D45 | engine | Fight triggers read the board's net count: a removal plus a placement in one action fires nothing. | Count at the removal ops. **Pick** when common. |
 | D46 | loops | Drain with Security Ops Floor and Intrusion Lab: ~12 for 10 credits, while projects hold compute. | Leave it: compute caps it. **Pick**. |
@@ -81,31 +80,40 @@ Closed by 121 and 124 (git has them): D16, D43, D44, D47, D48, D51, D53, D54; by
 | D55 | rules | At 1 country no military base: base arrivals, Escalation, Total War's base ambassadors place nothing. | **Matt's call**. |
 | D56 | content | `Content::check` lets through ops that never run: a threshold or `here` op on an AI board, the Science niche or `gain_per_tokens` in a trigger's ops. | Widen the checks (F196 did two). **Pick**. |
 | D50 | viewer | A new player's notes from two real-speed sessions: [viewer-notes.md](../experiments/results/118_bug_hunt_r46/viewer-notes.md). | Picks there. |
-| D57 | cards | Exascale Training Cluster kept in 59-72% of games, played in 1-3% (r62: 5 energy, override cut; 10% even at 3 energy): the keep plan wants it, the play eval doesn't. | 150 tried three keep-plan levers (kept `plan_spare`); one pricing for keep and play is an agents item of its own, then more power **Matt's call** (148, 150). |
-| D58 | speed | Greedy 1.63× a decision r58 → r59, 3.0× r60 → r61: settling the loss prompts that threat execution asks (pay or discard, nearest ties) in `search::settled` (147's profile); at r68 86-91% of greedy's time is `score_choose`, the prompt answers (157). | A cheaper settle of an uncountered threat's loss prompts (moves greedy's play). **Pick**. |
+| D57 | cards | Exascale Training Cluster kept in 59-72% of games, played in 1-3% (r62): the keep plan wants it, the play eval doesn't. | One pricing for keep and play (an agents item), then more power **Matt's call** (148, 150). |
+| D58 | speed | Greedy grew 1.63× a decision at r59, 3.0× at r61: at r68 86-91% of its time answers threats' loss prompts (`score_choose`, 157). | A cheaper settle (moves greedy's play). **Pick**. |
 | D66 | docs | principles.md's credits a game and card-pricing's cost range unmeasured at r60. | Re-read, restate. **Pick**. |
 | D72 | agents | Push heuristics count agents across a border and drop firewalled sites; the liberate gather takes an ambassador off a neighbor's own bill. | The fix is in 169's `agent_moves_fix.diff`; its smoke moved greedy d2 -3.1 (amendment 7657's bar ±2). **Pick:** the sim players item. |
 | D73 | cards | Network Cleanup III (2 markers a hex) is II: a hex never holds 2. | III widens where (`near_player`). **Matt's call**. |
-| D74 | agents | The strategist keeps 38 cards it never plays (Microgrid Lab Compact 81%, Open-Weights Release 73%; r72, 16 seeds). | With D57: one pricing for keep and play. **Pick**. |
+| D74 | agents | The strategist keeps 43 cards it never plays (Open-Weights Release 71%, Microgrid Lab Compact 69%; r77, 16 seeds); the engine agent 18. | With D57: one pricing for keep and play. **Pick**. |
 | D75 | viewer | Agents' d3 games stack 18-29 troops; a two-digit count sits on the next hex's number at 1366×768 (W26's premise gone). | Draw 10+ smaller or on a pill. **Pick**. |
-| D76 | rules | A strike (Kettle Operation, Lure Network) takes troops first in hex order, no stop; a Gather asks. Now printed. | Keep. **Matt's call**. |
+| D77 | rules | A project flip (Station Coup, Lab Takeover, Station Seizure) or Overrun corrupts a firewalled or prohibited site; the words now say so. | Guard all three, a bump. **Matt's call** (question 1). |
+| D78 | rules | War Economy's troop lands on the factory under its token, not the one it builds. | `at: new_factory`, a bump. **Matt's call**. |
+| D79 | rules | The adversary-factory fallback lets players send agents to a firewalled factory: nothing lands. | Skip firewalled factories. **Matt's call** (the printed rule allows it). |
+| D80 | words | Great Liberation "frees" cities it liberates; the rulebook never defines "free". | "Liberate or free", or a rulebook line. **Matt's call**. |
+| D87 | viewer | Five small faults from sweep 2's sheets (184's deferred.md). | One viewer item. **Pick**. |
+| D86 | rules | A forced threat pull (0.1 a game) has no end in the rulebook's draw (§18): it reshuffles forever. | One rulebook sentence: take the next card. **Matt's call**. |
+| D82 | cards | Five cards print under 7.5 pt with no recorded exception (Rally the Allies 5.4 pt). | Cut words or record. **Matt's call**. |
+| D83 | art | Ten tier-2 cards (158) have no drawn scene: `cards:check` fails on main. | An art batch. **Pick**. |
+| D84 | boards | Focus (Builder) and Recovery (Protector) are never used (r77, 96 games). | With the board redesign. **Matt's call**. |
+| D85 | viewer | Prompts: "which other player?" names no card; "Corrupt factories (at 2): ... onto which?" (agents parse it); "1 seat 1's ambassador" (a record key). | Prompts and the agents' parser together. **Pick**. |
 
 ## Won't fix
 
 | # | Area | Report | Why not |
 |---|---|---|---|
-| W2 | alignment | "The last-drawn Alignment card is shuffled back before it resolves." | Not a bug: a drawn card goes face up on its resolved pile first; Discord never reshuffles, Unity only its resolved pile. |
+| W2 | alignment | "The last-drawn Alignment card is shuffled back before it resolves." | Not a bug: a drawn card goes on its resolved pile first. |
 | W3 | view | "`PhaseView.waiting` is stale during a choice in an automatic phase." | Not reached in 62 seeds; the viewer reads who decides from the choice. |
-| W5 | viewer | The event log shows engine events raw (`var changed · key adversary.supply · delta +1`). | The viewer is debug-first (web/README.md); the board, panels and prompts carry the readable story. |
-| W6 | viewer | With the *View* tab open a 4-country step costs up to ~140 ms (it re-renders ~85 KB of view JSON); *Raw state* ~75 ms. | Debug tabs, closed by default; the default log tab steps in ~25–45 ms. |
-| W7 | sim | In counter rows "-" means both "never tallied" and "no game reached this round"; a "mean where reached" carries no count of the games that reached it. | Reading aids, not wrong numbers; `games.jsonl` has the detail. |
+| W5 | viewer | The event log shows engine events raw (`var changed · key adversary.supply · delta +1`). | The viewer is debug-first (web/README.md). |
+| W6 | viewer | With the *View* tab open a 4-country step costs up to ~140 ms. | A debug tab, closed by default. |
+| W7 | sim | In counter rows "-" means "never tallied" and "no game reached this round". | Reading aids; `games.jsonl` has the detail. |
 | W9 | viewer | A grouped hex-pick button's hover shows the raw JSON of its first action only. | A developer aid. |
-| W10 | viewer | Below the supported 1366×768 (a 1366 laptop at 150% zoom, 1024×768) the board pane has no scroll fallback: the strips take the board's height. | The stated floor is 1366×768 (style.css, web/README.md); a real 1366×768 window measured board 248 px, no page scroll. |
+| W10 | viewer | Below 1366×768 (1024×768, 150% zoom) the board pane has no scroll fallback. | 1366×768 is the stated floor (web/README.md). |
 | W11 | view | The shared discard piles print insight prices discounted by seat 0's Science tags. | Hover text on a discard pile; the price at play time is right. |
 | W12 | adversary | A station that flips keeps a marker, where a corrupted city's marker goes. | No rule says otherwise; war.md's sentence is about placing a marker. A rule to write if it ever matters. |
 | W13 | viewer | A record overlaying adversary cards or AI boards shows the printed text. | Documented in experiments.md, *Content levers*; the game plays the overlay. |
 | W15 | scripts | `scripts/cards/screen.py`'s "cap" column counts deck-out losses. | That is the round cap: adversary.md's word. |
-| W16 | viewer | The sweep's `truncated` issues (thousands): threat and project text and adversary lines cut to fit, with a hover. | The no-scroll budget at 1366×768 (W10); every one has a hover or an ellipsis. |
+| W16 | viewer | The sweep's `truncated` issues (thousands): threat and project text and adversary lines cut to fit, with a hover. | The no-scroll budget (W10); each has a hover or an ellipsis. |
 | W17 | cards | "Liquidity Event is dominated by Bonded Warehouse's cash-out." | It cashes a pile without spending the Action, which can then add. |
 | W18 | report | A one-agent run's findings say "skill gap +0 pts; the ladder is ordered". | True of a one-rung ladder. |
 | W19 | ops | `copy_income` has no card; the agents' copy check is off. | Fix with its card. |

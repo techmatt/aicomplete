@@ -129,9 +129,13 @@ const PAGE_LIB = String.raw`(() => {
   // gather-then-strike, a claim or liberation spending your standing ambassadors (r75), a prohibition made or fired,
   // a remove_where sweep and a cleanse.
   const COUNTER_EVENTS_R70 = /^(effects\.(gathered|pushed|moved_canceled|struck|cleansed|firewalls|remove_where\..+)|board\.(site_standing_spent|std\.(botnet|buy_energy)|aegis_used|protection_declined)|prohibit\.[a-z]+\.[a-z_]+\.(made|fired))$/;
+  // 184: r74-r77's contact and corruption: a meeting that cancels an agent and an ambassador, agents
+  // converging on a site, a node corrupted at 2, natural corruption, Remove agents, Dispatch, troops
+  // taking an ambassador, the last node lost.
+  const COUNTER_EVENTS_R74 = /^(adversary\.(canceled|converged|ambassadors_removed|troops_removed|corruptions\.node|corruptions_natural)|board\.(std\.(remove|move|clear|claim|liberate)|troop_removed_ambassador|last_node_lost))$/;
   const counters = () => { const c = aic.timeline.frame.snap.state.stats?.counters ?? {}; return Array.isArray(c) ? Object.fromEntries(c) : c; };
   function counterEvents(c0, c1) {
-    return Object.keys(c1).filter((k) => (COUNTER_EVENTS.test(k) || COUNTER_EVENTS_R41.test(k) || COUNTER_EVENTS_R55.test(k) || COUNTER_EVENTS_R70.test(k)) && (c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);
+    return Object.keys(c1).filter((k) => (COUNTER_EVENTS.test(k) || COUNTER_EVENTS_R41.test(k) || COUNTER_EVENTS_R55.test(k) || COUNTER_EVENTS_R70.test(k) || COUNTER_EVENTS_R74.test(k)) && (c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);
   }
   /** Why the step from a to b is worth a capture, or null. */
   function moment(a, b, events, extra = []) {
@@ -202,7 +206,7 @@ const PAGE_LIB = String.raw`(() => {
   const PLACEHOLDER = /\b(undefined|NaN|null|\[object Object\]|TODO|FIXME)\b|\?\?/;
   const RAW_ID = /\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b/;
   // The words docs/spelling.rs refuses in source (STALE there), plus the engine's labels it can't read.
-  const STALE = /adversary(?:'s)? ambassadors?|enemy ambassadors?|adv\. ambassadors?|agents token|Matt to confirm|Security agents?\b|on board: \d+ ambassadors?/i;
+  const STALE = /adversary(?:'s)? ambassadors?|enemy ambassadors?|adv\. ambassadors?|agents token|Matt to confirm|Security agents?\b|on board: \d+ ambassadors?|corp troops?|\bDeploy(s|ed)?\b|each board|\btier (I|II|III)\b|Movement \+\d/i;
   const TOKENS = new Set(['cube', 'station', 'factory', 'node', 'harden', 'unit', 'ambassador', 'corruption', 'land_corruption', 'botnet', 'troop', 'firewall']);
 
   function checks() {

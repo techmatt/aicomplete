@@ -264,7 +264,12 @@ fn troops(
     let mut spots: Vec<usize> = match at {
         // No new landing place: today's (a factory near it, else a city).
         None => return team::troops(g, cx, ctx, land.count, land.each_country, land.destroy),
-        Some(TroopAt::Location) => token(&w, g, ctx, location).into_iter().collect(),
+        // 184 (r78): "the base here" with no base token (one country) lands nothing; it fell back to the
+        // threat's first token (Garrison State and Manhunt put their troops on a city).
+        Some(TroopAt::Location) => match (location, ctx.threat.as_ref()) {
+            (Some(l), Some(t)) => threats::token_of(&w, g, t, l).into_iter().collect(),
+            _ => token(&w, g, ctx, location).into_iter().collect(),
+        },
         Some(TroopAt::NewFactory) => ctx
             .threat
             .as_ref()
@@ -440,7 +445,9 @@ fn requisition(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, r: Resource, amount: i
         if g.pile(&cards::hand(s)).len() as i64 >= n {
             opts.push(opt(format!("discard {n} cards")));
         }
-        let prompt = || format!("{}: lose {} or discard {n} cards?", head(ctx, s), r.amount(amount));
+        // 184: Data Heist's "pays 3 insight next round" asked "lose 3 insight" (as if from what the seat holds).
+        let when = if next_round { " next round" } else { "" };
+        let prompt = || format!("{}: lose {}{when} or discard {n} cards?", head(ctx, s), r.amount(amount));
         match cx.choose_loss(s, prompt, opts)? {
             Some(0) if can_pay => {
                 if !next_round {

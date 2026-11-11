@@ -54,7 +54,7 @@ npm run e2e:sources            # the same way, as are e2e:corps and e2e:research
   fold by phase; hovering a heading outlines that phase's hexes.
 - **The header** shows the engine version and rules revision. A saved session
   (`localStorage`, replayed on load) whose config changed or no longer loads, or a record
-  from another revision, says so in the error bar; one that no longer loads is kept
+  from another revision, says so in the error bar; one that no longer loads or replays is kept
   (`copy(aic.keptSession())`). Tabs: event log, raw state, generic view, resolved config.
 
 ## Game records
@@ -86,8 +86,8 @@ change can move it, so remeasure before reading a layout change into a failure: 
 prints that game's pane heights at the three sizes; diff two revisions' output.
 
 `e2e:corps` and `e2e:researcher` play the baseline
-at `station_cubes` and `owned_station_cubes` 5 (corps) or 3 (researcher) on a quiet board (no troop steps or adversary supply, no corruption before round 20)
-for cubes, converters (a node on a city) and the Researcher's board; `e2e:sources`
+at `station_cubes` and `owned_station_cubes` 5 (corps) or 4 (researcher) on a quiet board (no troop steps or adversary supply, no corruption before round 20)
+for cubes, converters (a city of the country in reach, once a round) and the Researcher's board; `e2e:sources`
 checks a face-up threat's sources and a forged payment refused.
 
 **Against a built site:** a dev-server rebuild breaks a run mid-way (`reading 'view'`), so

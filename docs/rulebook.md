@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 77. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 78. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -315,7 +315,7 @@ The adversary in this book is **the Militarist**. Its board has three project sl
 4. **Muster N.** N adversary troops land in each country, one at a time, on its lowest-numbered factory (any owner's);
    with none, on its lowest-numbered city; with none, they don't land.
 5. **Other lines**, at most two, in printed order: an income raise, a new neutral factory in each country, Discord,
-   Unity taken back, a blackout (cities make no energy this round), and so on. Each card says what it does.
+   Unity taken back, a blackout (cities make no energy until the end of next round), and so on. Each card says what it does.
 6. **Troops where the Protector stands** (the Militarist's board, above): Muster 1 in each country with the
    Protector's node.
 7. **Projects.** Ongoing projects act (§17).
@@ -463,7 +463,8 @@ except on an event.
 - some cards make all your cards of one tag cheaper.
 
 **Play a card if any part of it can act.** Parts with nothing to act on (no target in reach, say) are skipped. A
-program or event with nothing at all to do can't be played; a building always can.
+program or event with nothing at all to do can't be played; a building always can. A sway toward Discord is a price,
+not a part that acts.
 
 ### Tags
 
@@ -568,7 +569,7 @@ and an ambassador never share a hex.
 > on it), your standing ambassador pays 1 and your supply pays 4. The adversary's cube comes off, yours goes on, and
 > you add 5 Unity. The city is yours: from this round's production it makes you 1 energy a round.
 
-**Liberate cards** (some tier-2 cards) liberate a corrupted city in reach as Liberate does, for the card's own price
+**Liberate cards** (Popular Uprising and some tier-2 cards) liberate a corrupted city in reach as Liberate does, for the card's own price
 instead of ambassadors.
 
 A card that lets you **claim** a neutral research station pays its extra (one ambassador per agent on it) as Claim
@@ -670,7 +671,8 @@ round), or pay it off outright. A few buildings pay off part of every threat of 
 discarded with its tokens. Pieces it places go on its token. A resource harm reads "pay N or discard M cards": the
 player chooses; with neither possible, they pay what they have and discard their hand.
 
-A threat dealt after the action phase began (by a Discord card or another threat) gets a **waits** token: it takes
+A threat dealt after the action phase ended (by a Discord card tipped later in the round, or by another threat taking
+effect) gets a **waits** token: it takes
 effect next round.
 
 > **Example.** A Military threat's token sits on a research station. The Protector's ambassador stands next to it, so
@@ -909,8 +911,8 @@ each become your ambassador where it stood. The converted agents come off first,
 converted on one hex both stay; an agent the card left on that hex meets one of them, one for one (§8).
 
 **Firewall.** Some cards put a firewall on a land hex in your reach. While it stands, no agent lands, is placed or
-moves in there: its Rally share stays in the supply, like any blocked landing. Nothing on it corrupts (agents already
-there stay). Troops pass. It lasts until the end of the next adversary turn (step 12).
+moves in there: its Rally share stays in the supply, like any blocked landing. No Corrupt line or natural corruption
+takes it (agents already there stay); a project or threat that flips or corrupts a named site still can. Troops pass. It lasts until the end of the next adversary turn (step 12).
 
 **Cordon.** Hardpoint Lockdown cordons a country until the end of the next adversary turn (step 12): no agents land
 there from a Rally or a card line (troops still land, and Gather and Push still move agents in). That country's pool
@@ -1142,7 +1144,7 @@ crates/aic-core/src/face.rs, modules/cards/triggers.rs.*
 - **Corrupted:** owned by the adversary. **Neutral:** owned by nobody.
 - **A country you're in:** a country where you have a node. **Your home country:** the one you start in.
 - **Discord:** the adversary's track; 6 Discord cards, and a 7th tip loses, §12. **Unity:** your track, §12.
-- **Dispatch:** the standard action that puts one of your ambassadors onto a piece in reach; **Dispatches:** how many
+- **Dispatch:** the standard action that puts one of your ambassadors onto a piece or botnet in reach; **Dispatches:** how many
   you have each round, §5 and §8.
 - **Draw:** take the top tier-1 card, free.
 - **Drone:** a megacorp's piece, waiting at a base and fighting in war, §11.

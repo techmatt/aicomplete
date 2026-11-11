@@ -529,7 +529,8 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::Cleanse { amount, one_country, cities, only } => {
             let share = if *one_country { 0.8 } else { 1.0 };
             if *cities {
-                Worth { city: row("liberate") * share * *amount as f64, ..Worth::default() }
+                // 184: a freed city is liberated through the action's path (178), the seat's cube on too.
+                Worth { city: (row("liberate") + row("liberate_align")) * share * *amount as f64, ..Worth::default() }
             } else {
                 // r35: a station is a flip, a factory stays cheap; either kind
                 // reads the station's row, the dearer one it may take.

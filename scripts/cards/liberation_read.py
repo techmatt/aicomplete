@@ -1,5 +1,6 @@
 """080: the liberation read. Per cell (config x variant x agent): win rate, cities corrupted and liberated
-per game (by a card or the fallback), each liberate card's kept and played rate per game, Grant uses and
+per game (by a card or by the Liberate action: liberated.city less liberated_card from r77; before 178 liberated.city
+alone was the action), each liberate card's kept and played rate per game, Grant uses and
 Wall stops per game.
 
     python scripts/cards/liberation_read.py DIR [DIR...] [--cards]
@@ -44,7 +45,7 @@ def main():
     a = ap.parse_args()
     cells = load(a.dirs)
     print('| config | pair | agent | games | win % | ±SE | rounds | corrupted / game (games with one) | '
-          'liberated: all (card / Liberate action, r55 the fallback) | per won game | games with a liberation | Grant / game | '
+          'liberated: all (card / Liberate action) | per won game | games with a liberation | Grant / game | '
           'Wall strikes stopped / game | troops landed by Wall pressure |')
     print('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|')
     for (cfg, var, agent), gs in sorted(cells.items()):
@@ -57,7 +58,7 @@ def main():
         corrupting = sum(1 for g in gs if g['counters'].get('adversary.corruptions.city', 0)) / n * 100
         print(f"| {cfg} | {var} | {agent} | {n} | {100 * p:.1f} | {se:.1f} | {sum(g['rounds'] for g in gs) / n:.2f} | "
               f"{per(gs, 'adversary.corruptions.city'):.2f} ({corrupting:.0f}%) | {per(gs, 'board.cities_freed'):.2f} ({per(gs, 'board.liberated_card'):.2f} / "
-              f"{per(gs, 'board.liberated.city'):.2f}) | {per(won, 'board.cities_freed') if won else 0:.2f} | "
+              f"{per(gs, 'board.liberated.city') - per(gs, 'board.liberated_card'):.2f}) | {per(won, 'board.cities_freed') if won else 0:.2f} | "
               f"{sum(1 for x in freed if x) / n * 100:.0f}% | "
               f"{per(gs, 'ai.power.researcher.3'):.2f} | {per(gs, 'board.wall_strikes'):.2f} | "
               f"{per(gs, 'adversary.wall_troops'):.2f} |")

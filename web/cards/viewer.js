@@ -418,10 +418,15 @@ function wire() {
     controls();
     render();
   };
+  // 184: a failed write (a broken ledger, a held file) did nothing and said nothing.
   $('seen-all').onclick = async () => {
-    const { seen } = await call('/api/seen', { all: true });
-    data.seen = seen;
-    render();
+    try {
+      const { seen } = await call('/api/seen', { all: true });
+      data.seen = seen;
+      render();
+    } catch (e) {
+      status(`Not marked seen: ${e.message}`, true);
+    }
   };
   $('rebuild').onclick = async () => {
     $('rebuild').disabled = true;

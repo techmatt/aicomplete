@@ -72,7 +72,8 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
             // The threshold is a rider: it acts only with the tags, and then as its own ops do.
             Op::IfTags { tag, count, then } => cards::tags(w, g, seat, *tag) >= *count && feasible(w, g, seat, then),
             Op::DelayThreat { .. } => !undelayed_threats(w, g, seat).is_empty(),
-            Op::Sway { .. } => w.variant("alignment") != Some("off"),
+            // 184: a Discord sway is the card's price (The Nuclear Option), never a part that acts.
+            Op::Sway { side, .. } => *side == Side::Unity && w.variant("alignment") != Some("off"),
             Op::Damage { ambassadors, troops } => !damage_hexes(w, g, seat, *ambassadors, *troops).is_empty(),
             Op::DamageCountry { ambassadors, troops } => any_hex(g, |h| adversary::can_damage(g, h, *ambassadors, *troops)),
             Op::DestroyAll => any_hex(g, |h| adversary::can_destroy_all(g, h)),

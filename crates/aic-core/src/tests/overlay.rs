@@ -148,6 +148,17 @@ fn a_threat_off_the_card_standard_is_refused_by_name() {
             "a troop that stands",
         ),
         (r#"threats.dark_cities.effects=[{"op":"each_destroy_node","count":1}]"#, "dark_cities", "each player destroys"),
+        // 184: a troop line names a type the threat prints, and which of two.
+        (
+            r#"threats.iron_curtain.effects=[{"op":"troops","count":2,"at":"location"},{"op":"pull_unity","amount":2}]"#,
+            "iron_curtain",
+            "names which token",
+        ),
+        (
+            r#"threats.supply_raid.effects=[{"op":"troops","count":1,"at":"location","location":"base"}]"#,
+            "supply_raid",
+            "doesn't print",
+        ),
     ] {
         let e = match Rules::new(&baseline_with(&[entry])) {
             Err(e) => e,

@@ -10,7 +10,7 @@ Every parameter of the baseline config, with its value and range, generated from
 |---|---|---|---|
 | `board.start_corrupted` | 1 | 0..3 | cities per country that start corrupted |
 | `board.start_ambassadors` | 1 | 0..10 | player ambassadors each player starts with |
-| `board.unit_cap` | 2 | 0..20 | corp units a base holds at most |
+| `board.unit_cap` | 2 | 0..20 | Drones a base holds at most |
 | `board.corp_energy` | 1 | 0..10 | energy cubes each city of country i makes a round (a megacorp parameter; the list repeats) |
 | `board.city_energy_credits` | 4 | 0..20 | standard action Buy energy: credits for a neutral city's energy, once per city a round, the city in reach and producing |
 | `board.aligned_bonus` | 0 | 0..10 | extra energy an aligned city gives its owner |
@@ -93,7 +93,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `alignment.antimatter_discord` | 1 | 0..5 | the antimatter action: Sway toward Discord to produce 1 antimatter (0: no such action) |
 | `alignment.antimatter_uses` | 1 | 0..5 | times each player may take the antimatter action per round |
 | `alignment.purge_at` | 3, 6, 6 | 1..50 | Unity tips at which the purge asks less: agents, then troops, then botnets stop counting (136; 156: tips, not cards drawn, since the Unity deck reshuffles) |
-| `alignment.tier_at` | 3, 6 | 1..50 | 157: the tip (its side's count, this tip included) from which its cards resolve tier II, then tier III |
+| `alignment.tier_at` | 3, 6 | 1..50 | 157: the tip (its side's count, this tip included) from which its cards resolve strength II, then strength III |
 | `alignment.node_loss` | 1 | 0..1 | 1: a player with no nodes on the board loses the game for everyone |
 | `alignment.clear_win_stage` | 1 | 1..3 | the bar-0 win counts only once this round's adversary card is of this stage (1: any time) |
 | `ai.boards` | 0, 1, 2 | 0..99 | AI board (index into content/ais.json) of each seat; the list repeats for more seats |

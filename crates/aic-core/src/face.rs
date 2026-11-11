@@ -554,8 +554,8 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
                 p.push(w("city"));
                 p
             });
+            // 184: each becomes your ambassador where it stood (r77, 178 #32): no node.
             icons.extend(counted(*max, "ambassador"));
-            icons.push(w("node"));
             let what = if *max == 1 { "1 agent".to_string() } else { format!("{max} agents") };
             one(clause(icons, format!("convert {what} around a city in reach")))
         }
@@ -769,7 +769,8 @@ fn event_face(on: &Event) -> (Vec<Part>, String) {
             vec![w("play"), Part::Word(format!("\u{2265}{at}")), w("credits")],
             format!("when you play a card printed at {at} credits or more"),
         ),
-        Event::RemoveTroop => (adversary(minus(1, "troop")), "when you remove a troop".to_string()),
+        // 184: once an action (r77), however many come off: no count, as the agent trigger.
+        Event::RemoveTroop => (adversary(vec![w("troop")]), "when you remove a troop".to_string()),
         Event::RemoveCompute => (
             adversary(vec![w("compute"), w("project")]),
             // 106: compute is only ever on adversary projects; the long form didn't fit 7.5 pt.

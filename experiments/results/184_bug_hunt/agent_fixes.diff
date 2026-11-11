@@ -1,0 +1,69 @@
+diff --git a/crates/aic-sim/src/agents/eval.rs b/crates/aic-sim/src/agents/eval.rs
+index e30b309..986313e 100644
+--- a/crates/aic-sim/src/agents/eval.rs
++++ b/crates/aic-sim/src/agents/eval.rs
+@@ -1510,7 +1510,9 @@ impl Eval {
+                     stations[s] += 1;
+                     v += if stations[s] <= STATIONS_USEFUL { w.station } else { w.station_spare };
+                     // 138: a player's station filling toward its Corrupt number.
+-                    let p = (Self::toward(rules, &tokens, &arriving, h, station_gather) / station_at.max(1) as f64).min(1.0);
++                    // 184: a firewalled or prohibited station doesn't corrupt in the turn ahead (r77 #30), as a city.
++                    let toward = if banned(h) { 0.0 } else { Self::toward(rules, &tokens, &arriving, h, station_gather) };
++                    let p = (toward / station_at.max(1) as f64).min(1.0);
+                     v -= w.site_pressure * (w.station + w.station_flip) * w.pressure * p * p;
+                 }
+             }
+@@ -1525,7 +1527,9 @@ impl Eval {
+                 } else if owned {
+                     v += w.owned_factory;
+                     // 138: a player's factory filling toward its Corrupt number.
+-                    let p = (Self::toward(rules, &tokens, &arriving, h, factory_gather) / factory_at.max(1) as f64).min(1.0);
++                    // 184: as a station, a firewalled or prohibited factory doesn't corrupt in the turn ahead.
++                    let toward = if banned(h) { 0.0 } else { Self::toward(rules, &tokens, &arriving, h, factory_gather) };
++                    let p = (toward / factory_at.max(1) as f64).min(1.0);
+                     v -= w.site_pressure * 2.0 * w.owned_factory * w.pressure * p * p;
+                 }
+             }
+diff --git a/crates/aic-sim/src/agents/moves.rs b/crates/aic-sim/src/agents/moves.rs
+index c4dac09..325e81d 100644
+--- a/crates/aic-sim/src/agents/moves.rs
++++ b/crates/aic-sim/src/agents/moves.rs
+@@ -317,7 +317,9 @@ fn at_risk(w: &World, g: &GameState) -> Vec<(usize, i64, i64, bool)> {
+     for h in 0..g.hexes.len() {
+         // 175: a player's node hex corrupts at its own number (2), whatever site it holds.
+         if common::node_owner(g, h).is_some() && !common::firewalled(g, h) {
+-            let count = agents(g, h) + if node_gathers { agents_next_to(w, g, h) } else { 0 };
++            // 184: an agent on a neighboring node hex stays on its own target (plan::converge), as tips_last_node reads.
++            let near: i64 = w.map.hexes[h].neighbors.iter().filter(|&&x| common::node_owner(g, x).is_none()).map(|&x| agents(g, x)).sum();
++            let count = agents(g, h) + if node_gathers { near } else { 0 };
+             if count > 0 && count + 1 >= node_n {
+                 out.push((h, count, node_n, node_gathers));
+             }
+diff --git a/crates/aic-sim/src/agents/value.rs b/crates/aic-sim/src/agents/value.rs
+index 0a4e069..c402fed 100644
+--- a/crates/aic-sim/src/agents/value.rs
++++ b/crates/aic-sim/src/agents/value.rs
+@@ -529,7 +529,8 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
+         Op::Cleanse { amount, one_country, cities, only } => {
+             let share = if *one_country { 0.8 } else { 1.0 };
+             if *cities {
+-                Worth { city: row("liberate") * share * *amount as f64, ..Worth::default() }
++                // 184: a freed city is liberated through the action's path (178), the seat's cube on too.
++                Worth { city: (row("liberate") + row("liberate_align")) * share * *amount as f64, ..Worth::default() }
+             } else {
+                 // r35: a station is a flip, a factory stays cheap; either kind
+                 // reads the station's row, the dearer one it may take.
+diff --git a/scripts/cards/effect_ledger.py b/scripts/cards/effect_ledger.py
+index 9b9bf12..4d617fd 100644
+--- a/scripts/cards/effect_ledger.py
++++ b/scripts/cards/effect_ledger.py
+@@ -223,7 +223,8 @@ def op_worth(t, o):
+     if op == 'cleanse':
+         share = 0.8 if o.get('one_country') else 1.0
+         if o.get('cities'):
+-            return Worth(city=row('liberate') * share * n('amount'))
++            # 184: a freed city is liberated through the action's path (178), the seat's cube on too.
++            return Worth(city=(row('liberate') + row('liberate_align')) * share * n('amount'))
+         each = row('cleanse') if o.get('only') == 'factory' else row('cleanse_station')
+         return Worth(now=each * share * n('amount'))
+     if op == 'liberate':

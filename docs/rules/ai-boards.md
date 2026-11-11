@@ -83,7 +83,7 @@ deck cards that place a node). Only tracks whose next step you can pay are offer
 **Hard to explain to a new player:** a placement's price is two numbers, the power's and the space's; Harden has two
 prices, Bulwark's energy and the standard project's credits (`harden_credits`), and Faraday Yard hardens when played; "bound" is a new word for a city that is otherwise only aligned.
 
-**Node powers (candidate).** There is no growth phase. Nodes come from the board's two **node powers**, used in the
+**Node powers (candidate).** Nodes don't grow on their own. Nodes come from the board's two **node powers**, used in the
 action phase, each once a round, so the powers place 0-2 nodes a round (cards that place nodes add to that: cards
 aren't capped). Every board has the same first one, Expand: 1 energy for 1 node; the second costs a steep price in the board's
 own currency ([ai-powers.md](ai-powers.md)). Three things keep the loops short: 2 placements a round by power and rising step costs cap energy → node →

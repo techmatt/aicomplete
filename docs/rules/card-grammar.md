@@ -64,7 +64,7 @@ raises are on programs, the engines' triggers, Actions and Effects on buildings;
   city counts too (its cube carries the city glyph), and it is liberated ([ambassadors.md](ambassadors.md)).
 - **Liberate:** liberate one corrupted city in your reach as the Liberate action does, unpaid
   ([ambassadors.md](ambassadors.md)): its agents and the adversary's cube come off, Unity sways, your cube goes on
-  (its icon line always ends → cube). Each
+  (the word Liberate carries your cube). Each
   engine's twist: `ambassadors` (gain that many), `troops` (up to that many adversary troops in the city's country come
   off), `botnet` (a botnet on or next to the city comes off; its icon carries the city glyph). Only the liberate capstones print it ([player-cards.md](player-cards.md)).
 - **Clear a city (`clear_city`):** remove up to N agents (Amnesty Decree: 4) around one corrupted

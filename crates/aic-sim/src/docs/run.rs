@@ -286,6 +286,15 @@ pub(super) fn rules_file_failures(files: &[(String, String)]) -> Vec<String> {
     out
 }
 
+/// 184: the rulebook's opening "Rules revision N." names `rev` too (it said 77 at 78).
+pub(super) fn rulebook_revision_failure(text: &str, rev: u32) -> Option<String> {
+    const LEAD: &str = "Rules revision ";
+    let Some(i) = text.find(LEAD) else { return Some(format!("docs/rulebook.md: no \"{LEAD}N\" line")) };
+    let rest = &text[i + LEAD.len()..];
+    let n = &rest[..rest.find(|c: char| !c.is_ascii_digit()).unwrap_or(rest.len())];
+    (n != rev.to_string()).then(|| format!("docs/rulebook.md: says \"{LEAD}{n}\", but RULES_REVISION is {rev}"))
+}
+
 /// 117: the rules README's "at rules revision N" line, hand-kept, must name `rev`
 /// (`RULES_REVISION`): it once said 43 at 45. A missing line is a failure too.
 pub(super) fn revision_line_failures(files: &[(String, String)], rev: u32) -> Vec<String> {
@@ -501,6 +510,9 @@ pub fn run(o: &Options) {
     let mut failures: Vec<String> = harm_failures().into_iter().map(|f| format!("{HARMS_MD}: {f}")).collect();
     failures.extend(rules_file_failures(&rules_new));
     failures.extend(revision_line_failures(&rules_new, aic_core::RULES_REVISION));
+    if let Ok(book) = fs::read_to_string("docs/rulebook.md") {
+        failures.extend(rulebook_revision_failure(&book, aic_core::RULES_REVISION));
+    }
     let faces: Vec<(String, String)> = content().cards.iter().map(|c| (c.name.clone(), card_face(c).full_text())).collect();
     failures.extend(card_quote_failures(&rules_new, &faces));
     let mut sizes = budget_pages();

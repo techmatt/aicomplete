@@ -861,7 +861,7 @@
    "locations": [
     "factory"
    ],
-   "text": "An adversary factory is built here. The adversary gains 5 compute.",
+   "text": "An adversary factory is built on the free industrial zone nearest here. The adversary gains 5 compute.",
    "counters": [
     [
      {
@@ -1404,7 +1404,8 @@
     {
      "op": "troops",
      "count": 2,
-     "at": "location"
+     "at": "location",
+     "location": "factory"
     },
     {
      "op": "pull_unity",
@@ -1434,7 +1435,7 @@
     "factory",
     "base"
    ],
-   "text": "An adversary factory is built here. 1 adversary Troop lands on the factory here.",
+   "text": "An adversary factory is built on the free industrial zone nearest here. 1 adversary Troop lands on the factory here.",
    "counters": [
     [
      {

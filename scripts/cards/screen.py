@@ -95,8 +95,8 @@ def split(key):
 
 
 def wins_mix(c, gs):
-    e = ends(gs)
-    return f"{e['purge']} / {e['unity_deck']}"
+    # 184: the purge is the only win since r67 (the Unity-deck half read 0 as a measurement).
+    return f"{ends(gs)['purge']}"
 
 
 def loss_mix(c, gs):
@@ -171,7 +171,7 @@ COLUMNS = {
     'win_rounds': ('win rounds', lambda c, gs: hist(g['rounds'] for g in wins(gs))),
     'loss_rounds': ('loss rounds', lambda c, gs: hist(g['rounds'] for g in losses(gs))),
     'ends': ('ends', ends_text),
-    'wins_mix': ('wins: purge / Unity', wins_mix),
+    'wins_mix': ('wins (purge)', wins_mix),
     'loss_mix': ('losses: Discord / node / cap (% of losses)', loss_mix),
     'loss_ends': ('losses: Discord / node / deck-out', loss_ends),
     'node_rounds': ('node-loss rounds', lambda c, gs: hist(g['rounds'] for g in gs if g['reason'] == 'node')),

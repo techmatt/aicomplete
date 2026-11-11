@@ -93,7 +93,12 @@ pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause
             .collect();
         opts.push(opt(LET_IT_GO));
         let who = owner.unwrap_or(0);
-        let prompt = || format!("Seat {who}: the {} at {} would be destroyed: spend which protection?", piece_name(kind), hex_name(&w, h));
+        // 184: a node is "seat N's node" ("the seat 3's node" read wrong): "the" only before a plain piece name.
+        let prompt = || {
+            let piece = piece_name(kind);
+            let the = if piece.starts_with("seat ") { "" } else { "the " };
+            format!("Seat {who}: {the}{piece} at {} would be destroyed: spend which protection?", hex_name(&w, h))
+        };
         let pick = cx.choose_loss(who, prompt, opts)?.and_then(|i| options.get(i).copied());
         match pick {
             Some(Guard::Base(b)) => {
