@@ -30,7 +30,6 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.troop_node` | 4 | 0..4 | adversary troops strike nodes from this stage of adversary card on (0: always, 4: never) |
 | `board.vigil_cap` | 1 | 1..10 | 185: troops a round whose march ending next to a seat's node pays its Vigil (later ones that round pay nothing) |
 | `board.node_marker` | 1 | 0..1 | 1: a destroyed node leaves a corruption marker on its hex |
-| `board.war_reach` | 0 | 0..1 | war that destroys a factory destroys nodes within this many hexes of it |
 | `board.station_chips` | 2 | 0..20 | standard action: chips to build a research station |
 | `board.factory_chips` | 2 | 0..5 | chips a player-owned factory makes its owner each round |
 | `board.remove_ambassadors` | 1 | 1..5 | standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing) |

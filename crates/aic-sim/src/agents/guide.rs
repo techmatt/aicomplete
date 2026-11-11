@@ -326,13 +326,6 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
                 if common::cube_owner(g, h).is_some() {
                     out.factories += WAR_SHARE;
                 }
-                for x in common::within(w, h, w.int("board.war_reach")) {
-                    if let Some(s) = common::node_owner(g, x) {
-                        if s < seats {
-                            out.nodes[s] += WAR_SHARE;
-                        }
-                    }
-                }
             }
         }
     }

@@ -23,7 +23,7 @@ drones fights twice.
   changes hands later.
 - **Output** (each round; the site table in [ambassadors.md](ambassadors.md)): a player's factory makes
   `factory_chips` (2) chips for its owner; an adversary factory makes 1 adversary troop on its hex (**locked**); a neutral
-  factory makes nothing, except that **on each Discord tip it makes 1 drone**. One opposing ambassador or agent blocks a
+  factory makes nothing, except that **at a Discord tip it arms its country's bases** (below). One opposing ambassador or agent blocks a
   factory's output while it stands. Threats build adversary factories (Mass Production, War Economy), seize them
   (Factory Occupation: corruption, with its cleanup) and destroy them (Siege); a project builds them (Shadow Factories).
 - **Growth** (each round, after the income step and the extra drones): every city builds one factory **on a
@@ -38,12 +38,11 @@ active; a 1-country game has none), with no owner and no ambassador rules beyond
 player troops: a corp's pieces are **drones**, their own piece, which belong to the megacorp of their territory and
 wait at its bases.
 
-- **Whenever a corp makes drones, it puts 1 on each of its bases** (so a neutral factory's tip drone is 2 at 3 and 4
-  countries). Bases make no drone of their own. **The drone rule** (r75, Matt's ruling 8): one player ambassador
-  always stops 1 drone and is used up. On a base it stops a drone made there; on a neutral factory at a Discord
-  tip it stops 1 of that factory's drones (the players choose which base's, when it can't stop all), so each
-  ambassador there stops one. A full base takes no drone and spends no ambassador; among several players' ambassadors
-  the lowest seat's goes first. An agent on a neutral factory blocks its tip drones outright.
+- **Whenever a corp makes drones, it puts 1 on each of its bases.** Bases make no drone of their own. **At a Discord
+  tip** (r80, Matt's ruling #50) each country with at least one **unblocked neutral factory** (no agent and no player
+  ambassador on it) makes drones: 1 on each of its bases, once per country however many such factories it has.
+  **The drone rule** (r75, Matt's ruling 8): a player ambassador on a base always stops 1 drone made there and is used
+  up; a full base takes no drone and spends no ambassador; among several players' ambassadors the lowest seat's goes first.
 - **Peacetime:** at most `unit_cap` drones wait at each base. A drone at a base **absorbs
   an adversary-troop strike** on a facility on or next to the base: 1 drone per hit.
 - **Extra drones** (135, candidate) go past the cap: Warmongering (the Militarist's board: a base with an
@@ -52,7 +51,7 @@ wait at its bases.
   (146: no special pieces).
 - **War, at the end of every round:** on each front the piles at the two bases cancel 1 for 1. Each surplus drone
   crosses, acts at once and is used up: it destroys the rival corp's factory nearest its base (not an
-  adversary-owned one; ties: lower hex number), **and any node on its hex**, guarded like any node (r75). **Each factory destroyed in war sways `destruction_discord` (1) Discord:** runaway Discord is an
+  adversary-owned one; ties: lower hex number), **never the node on its hex** (r80, Matt's ruling #52). **Each factory destroyed in war sways `destruction_discord` (1) Discord:** runaway Discord is an
   intended loss route, which players stop by standing ambassadors on bases and neutral factories, claiming
   neutral factories and keeping the Discord track below its tip.
 
@@ -96,7 +95,7 @@ Removing a troop sways `alignment.troop` (0 since r38: stopping its harm already
 
 **For new players.** Adversary troops are the adversary's raiders. They appear on adversary
 factories every round, from most event cards (Muster: on each country's lowest-numbered factory, else city), some threats and
-projects, and every round 1 lands on an adversary or neutral factory in each country where the Protector has a node.
+projects, and every round a Muster 1 in each country where the Protector has a node.
 Every round, in the adversary's turn,
 each troop takes two steps. If a research station or factory you own is on or next to the
 troop's hex, it destroys that piece and leaves the board; otherwise it walks one hex toward
@@ -112,8 +111,8 @@ node on it or in its way. Troops don't hit nodes.
 its output (energy, research cubes, chips), and the adversary's make Discord, compute or raiders. Claim a neutral site,
 or take one back from the adversary, with your ambassadors (5 for a city, 3 for a station or factory). One of your ambassadors standing on an adversary site shuts it off, and one of
 its agents shuts off yours; your own ambassador on your piece takes a hit for it. Each border between countries has a
-military base on each side, a pile of drones: every Discord tip, each neutral factory adds a drone to each of its
-corp's bases (each of your ambassadors standing there stops one), and at the end of every round the two piles cancel and
+military base on each side, a pile of drones: every Discord tip, a country with a neutral factory free of agents and
+ambassadors adds a drone to each of its bases (your ambassador on a base stops it), and at the end of every round the two piles cancel and
 each drone left over destroys a factory across the border, swaying 1 Discord. So Discord feeds war and war feeds
 Discord: keep neutral factories quiet and the Discord track low. **What resisted this summary:** the extra
 drones (Warmongering, Arms Race) ignore the pile's cap, and the agent count you pay for
@@ -127,9 +126,8 @@ grows by one for each agent already on the site.
 **It is a slide, not a cliff, and it is local (139, Matt):** a seat loses tokens a few at a time from the middle of
 the game on, only where the board is overrun: an uncountered threat that prints it (146: the nearest player destroys
 their node closest to it; Siege takes the node on its factory's hex), a site that corrupts (138: only a node on its
-own hex), a node hex holding `corrupt_node_at` (2) agents (175, [adversary.md](adversary.md)), war that destroys a
-factory (nodes on its hex and, by `war_reach` 0, none next to it) and Border War (each player with a node on or next
-to a front's base destroys 1 of those). **Nothing else destroys a node:** Discord cards, projects and the other event
+own hex), a node hex holding `corrupt_node_at` (2) agents (175, [adversary.md](adversary.md)) and Border War (each
+player with a node on or next to a front's base destroys 1 of those). War takes factories, never nodes (r80). **Nothing else destroys a node:** Discord cards, projects and the other event
 cards print board pressure instead ([alignment.md](alignment.md)); Offensive deals a threat onto the node hex with the
 most agents and troops. A hit is each player's own pick of which token, absorbed as any destruction is (below).
 **No last-node safety (175, Matt's ruling).** Every source above takes a last node, at any stage; a player with no
@@ -141,11 +139,11 @@ lowest-numbered free land hexes next to the start, off no track; 177 calibrates 
 uncovered. Each lost token is a board location you can no longer act from, so getting all
 your nodes out is always a tradeoff.
 
-**Corruption markers (candidate; `node_marker`).** A lost node leaves a corruption marker on
-its hex, unless the hex is a corrupted site, holds a botnet or already holds a marker (the
-cap on the loop: a marker adds no corruption where there is some). A marked hex can't take a
-node. On a city that is not corrupted it counts 1 toward its Corrupt number (not when gathered from next door); since no node stands
-there, a marker never destroys nodes itself. It doesn't count against the purge. **Clearing
+**Corruption markers (candidate; `node_marker`).** A node lost to anything but corruption (a threat, Border War)
+leaves a corruption marker on its hex, unless the hex is a corrupted site, holds a botnet or a marker
+already. Corruption leaves its own mark instead (r80, Matt's ruling #42: a site's cube, a node hex's land
+corruption; [adversary.md](adversary.md)). A marked hex can't take a node. **A marker only blocks** (r80): it never
+counts toward corruption and never destroys nodes. It doesn't count against the purge. **Clearing
 one is worth an action (candidate):** the Clear standard action (`clear_cost` credits) takes
 a marker off in reach and pays `clear_unity` Sway toward Unity and `clear_credits` credits;
 Science cards clear them too, for the same reward. Clear takes a land corruption token off too (in reach,
@@ -158,6 +156,6 @@ nothing (Matt). A shelter on the country stops a destruction, spending nothing. 
 chooses which protection to spend, or none** (r75, Matt's ruling 5; seat 0 for a neutral piece): a drone at a
 base next to it (adversary strikes only), a hardening token on the hex, **the owner's own ambassador on the hex**
 (armor, 137; another player's never guards it, and a neutral site has none), or the Aegis Doctrine capstone (once a
-round, the Protector's own nodes and facilities, when the Protector chooses). War's node on a destroyed factory's
-hex, and Scorched Earth's, go through the same choice. A destroyed node leaves the game (above). A destroyed station
+round, the Protector's own nodes and facilities, when the Protector chooses). Scorched Earth's node loss goes
+through the same choice. A destroyed node leaves the game (above). A destroyed station
 or factory takes its cube with it.

@@ -38,8 +38,10 @@ fn setup_deals_one_project_into_each_board_slot() {
     }
 }
 
+/// r80 (ruling #49): compute fills the leftmost project, whatever it costs; when it resolves the rest slide one
+/// slot left (keeping their compute) and the right slot refills.
 #[test]
-fn compute_fills_the_cheapest_project_which_resolves_when_full() {
+fn compute_fills_the_leftmost_project_and_the_rest_slide_left() {
     // Costs and Disinformation's sway pinned as printed at r65.
     let (rules, mut g) = lab_with(
         &[],
@@ -50,36 +52,22 @@ fn compute_fills_the_cheapest_project_which_resolves_when_full() {
             r#"projects.disinformation.effects=[{"op":"sway","side":"discord","amount":5}]"#,
         ],
     );
-    // At 2 players: Botnet Swarm 12, Disinformation 10, Market Crash 10.
-    row(&mut g, &["botnet_swarm", "disinformation", "market_crash"]);
-    with_cx(&rules, |cx| gain_and_pour(&mut g, cx,11)).unwrap();
-    // Disinformation (the first of the cheapest) filled at 10 and resolved:
-    // 5 (142; 4 before) toward Discord. The 11th point went onto the cheapest of the row, its slot refilled
-    // at once (175).
-    assert_eq!(g.pile(PROJECTS_DONE), ["disinformation"]);
-    assert_eq!(g.var("alignment.discord"), 5);
-    let on: i64 = adversary::projects(&g).iter().map(|p| g.var(&adversary::project_key(p))).sum();
-    assert_eq!(on, 1);
-    assert_eq!(g.var(&adversary::project_key("botnet_swarm")), 0);
-    assert_eq!(g.var(adversary::COMPUTE), 11);
-    assert_eq!(g.stats.counters["adversary.project.disinformation"], 1);
-    assert_eq!(g.stats.per_round["adversary.compute"][1], 11);
-}
-
-/// 175: each slot refills as it empties; the others keep their projects and compute.
-#[test]
-fn a_slot_refills_as_its_project_resolves() {
-    let (rules, mut g) = lab_with(&[], &["projects.disinformation.cost=5", "projects.armored_columns.cost=10"]);
-    row(&mut g, &["armored_columns", "disinformation"]);
-    g.vars.insert(adversary::project_key("armored_columns").into(), 3);
+    // At 2 players: Disinformation 10, Botnet Swarm 12, Market Crash 10.
+    row(&mut g, &["disinformation", "botnet_swarm", "market_crash"]);
+    g.vars.insert(adversary::project_key("market_crash").into(), 2);
     g.piles.insert(PROJECT_DECK.into(), ["station_coup", "war_footing"].map(Key::new).to_vec().into());
     set_pile(&mut g, adversary::PROJECT_DISCARD, &[]);
-    with_cx(&rules, |cx| gain_and_pour(&mut g, cx, 10)).unwrap();
+    with_cx(&rules, |cx| gain_and_pour(&mut g, cx, 9)).unwrap();
+    assert_eq!(g.var(&adversary::project_key("disinformation")), 9, "all on the leftmost");
+    assert_eq!(g.var(&adversary::project_key("botnet_swarm")), 0);
+    with_cx(&rules, |cx| gain_and_pour(&mut g, cx, 2)).unwrap();
     assert_eq!(g.pile(PROJECTS_DONE), ["disinformation"]);
-    // The Military slot keeps Armored Columns and its 3; an open slot takes Station Coup.
-    assert_eq!(g.pile(PROJECTS)[0], "armored_columns");
-    assert!(g.pile(PROJECTS).iter().any(|p| p == "station_coup"));
-    assert_eq!(g.var(&adversary::project_key("armored_columns")), 3);
+    assert_eq!(g.var("alignment.discord"), 5);
+    assert_eq!(g.pile(PROJECTS), ["botnet_swarm", "market_crash", "station_coup"], "slid left, refilled at the right");
+    assert_eq!(g.var(&adversary::project_key("botnet_swarm")), 1, "the 11th point onto the new leftmost");
+    assert_eq!(g.var(&adversary::project_key("market_crash")), 2, "a slid project keeps its compute");
+    assert_eq!(g.var(adversary::COMPUTE), 11);
+    assert_eq!(g.stats.counters["adversary.project.disinformation"], 1);
 }
 
 #[test]
@@ -121,8 +109,8 @@ fn a_new_row_is_dealt_into_the_slots_when_all_have_resolved() {
         ["armored_columns", "station_coup", "recruitment_drive"]
     );
     assert_eq!(g.pile(PROJECT_DECK), ["war_footing"]);
-    // The 11th point went onto the cheapest of the new row (Station Coup, 18).
-    assert_eq!(g.var(&adversary::project_key("station_coup")), 1);
+    // The 11th point went onto the leftmost of the new row (r80).
+    assert_eq!(g.var(&adversary::project_key("armored_columns")), 1);
     // An ongoing project (Grid Capture, 18) goes into play and acts every round's build.
     row(&mut g, &["grid_capture"]);
     g.vars.insert(adversary::project_key("grid_capture").into(), 17);
@@ -132,20 +120,46 @@ fn a_new_row_is_dealt_into_the_slots_when_all_have_resolved() {
     assert_eq!(g.pile(PROJECTS), ["war_footing"]);
 }
 
+/// r80 (ruling #41): an ongoing project acts in the Income beat, after compute (it acted in the build).
 #[test]
-fn an_ongoing_project_acts_in_the_build() {
+fn an_ongoing_project_acts_in_the_income_beat() {
     // Propaganda Network's ongoing line pinned as printed at r65: Sway 2 toward Discord.
-    let (rules, mut g) = lab_with(
-        &["adversary.build"],
-        &[r#"projects.propaganda_network.effects=[{"op":"sway","side":"discord","amount":2}]"#],
-    );
+    let set = [r#"projects.propaganda_network.effects=[{"op":"sway","side":"discord","amount":2}]"#];
+    let (rules, mut g) = lab_with(&["adversary.build"], &set);
     set_pile(&mut g, PROJECTS_ONGOING, &["propaganda_network"]);
     set_pile(&mut g, NEXT, &["mil_s1_probing_strikes"]);
     let before = g.var("alignment.discord");
     run(&rules, &mut g);
     // 151: the card's troops land on the lowest-numbered factory (else city), asking nothing.
     assert!(g.pending.is_none());
+    assert_eq!(g.var("alignment.discord"), before, "not in the Card beat");
+    let (rules, mut g) = lab_with(&["adversary.compute"], &set);
+    set_pile(&mut g, PROJECTS_ONGOING, &["propaganda_network"]);
+    let before = g.var("alignment.discord");
+    run(&rules, &mut g);
     assert_eq!(g.var("alignment.discord"), before + 2);
+}
+
+/// r80 (ruling #41): the four beats name every adversary phase of the baseline round, in round order, in one
+/// constant (a rename is one edit).
+#[test]
+fn the_four_beats_cover_the_adversary_turn_in_order() {
+    let cfg = baseline();
+    let mut seen: Vec<&str> = Vec::new();
+    for p in &cfg.round {
+        if let Some(b) = adversary::beat_of(p) {
+            if seen.last() != Some(&b) {
+                seen.push(b);
+            }
+        }
+    }
+    let names: Vec<&str> = adversary::BEATS.iter().map(|(b, _)| *b).collect();
+    assert_eq!(seen, names);
+    for (_, phases) in adversary::BEATS {
+        for p in phases {
+            assert!(cfg.round.iter().any(|r| r == p), "{p} is a baseline phase");
+        }
+    }
 }
 
 /// 145: an ongoing project filled this round (here by the build's botnet

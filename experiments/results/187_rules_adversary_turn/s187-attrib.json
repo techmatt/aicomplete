@@ -1,0 +1,74 @@
+{
+  "name": "s187-attrib",
+  "note": "187: what carries r80's d0 and d2 drop? Land corruption's Discord drip off (#42 puts it on node hexes) and the Protector's Muster off (#48), on the dev seeds.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "bp_noblight",
+      "set": [
+        "adversary.blight_discord=0"
+      ]
+    },
+    {
+      "name": "bp_nowall",
+      "set": [
+        "adversary.wall_troops=0"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "br_noblight",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.blight_discord=0"
+      ]
+    },
+    {
+      "name": "br_nowall",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.wall_troops=0"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "pr_noblight",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.blight_discord=0"
+      ]
+    },
+    {
+      "name": "pr_nowall",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.wall_troops=0"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

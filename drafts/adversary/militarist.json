@@ -26,7 +26,7 @@
    },
    {
     "name": "Troops where the Protector stands",
-    "text": "Each round: in each country where the Protector has a Node, Muster 1 on its lowest-numbered adversary or neutral factory (none: none lands).",
+    "text": "Each round: Muster 1 in each country where the Protector has a Node.",
     "effects": [
      {
       "rule": "adversary.build",

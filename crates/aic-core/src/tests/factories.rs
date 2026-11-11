@@ -237,10 +237,10 @@ fn a_discord_tip_makes_a_troop_at_each_of_a_factorys_corp_bases() {
     assert!(other.iter().all(|&b| g.tokens(b, UNIT) == 0));
 }
 
-/// 137: at a tip, one opposing ambassador blocks a neutral factory's troop
-/// and stays; a player ambassador on it is used up instead; an occupied,
-/// player or adversary factory makes none; a player ambassador on a base is
-/// used up instead of the troop there.
+/// r80 (ruling #50): at a Discord tip each base of a country with an unblocked neutral factory gains 1 drone, once
+/// a country however many such factories it has. An agent or a player ambassador on the factory blocks it and
+/// stays; an occupied, player or adversary factory isn't neutral; a player ambassador on a base stops its drone and
+/// is used up; a full base takes none and keeps its ambassador.
 #[test]
 fn what_stops_a_tip_troop() {
     let (rules, mut g0) = lab(&[]);
@@ -257,6 +257,15 @@ fn what_stops_a_tip_troop() {
     tip(&mut g);
     assert_eq!(units(&g), n);
 
+    // A second neutral factory in the country adds nothing: one drone a base.
+    let mut g = g0.clone();
+    let f2 = piece(0).industry.iter().map(|&z| rules.map.numbered(0, z)).find(|&h| h != f && g.tokens(h, FACTORY) == 0);
+    if let Some(f2) = f2 {
+        put(&mut g, f2, FACTORY, 1);
+        tip(&mut g);
+        assert_eq!(units(&g), n, "once a country");
+    }
+
     let mut g = g0.clone();
     put(&mut g, f, ADV_AMBASSADOR, 1);
     tip(&mut g);
@@ -265,8 +274,7 @@ fn what_stops_a_tip_troop() {
     let mut g = g0.clone();
     put(&mut g, f, ambassador(0), 1);
     tip(&mut g);
-    assert_eq!((units(&g), g.tokens(f, ambassador(0))), (0, 0));
-    assert_eq!(g.stats.counters["board.factory_ambassador_used"], 1);
+    assert_eq!((units(&g), g.tokens(f, ambassador(0))), (0, 1), "a player ambassador blocks it and stays");
 
     for (tok, label) in [(TROOP, "occupied"), (cube(0), "a player's"), (ADV_CUBE, "the adversary's")] {
         let mut g = g0.clone();
@@ -292,63 +300,6 @@ fn what_stops_a_tip_troop() {
     put(&mut g, bases[0], ambassador(1), 1);
     tip(&mut g);
     assert_eq!((g.tokens(bases[0], UNIT), g.tokens(bases[0], ambassador(1))), (cap, 1));
-    // ... and with every base of its corp full, the factory's ambassador stays.
-    let mut g = g0.clone();
-    for &b in &bases {
-        put(&mut g, b, UNIT, cap);
-    }
-    put(&mut g, f, ambassador(0), 1);
-    tip(&mut g);
-    assert_eq!((units(&g), g.tokens(f, ambassador(0))), (cap * n, 1));
-}
-
-/// r75: the adversary factory's troop comes in the income step (`board.produce`);
-/// growth (`board.bases`) after it makes no corp troop either.
-/// r75 (Matt's ruling 8): at a Discord tip each player ambassador on a neutral
-/// factory stops 1 of its troops (one for each of its corp's bases with room)
-/// and is used up; seat 0 chooses which base's troop when they can't stop all.
-/// A full base takes none and spends no ambassador.
-#[test]
-fn each_ambassador_on_a_factory_stops_one_tip_troop() {
-    let (rules, mut g0) = lab_with(&[], &["countries=3"]);
-    let w = rules.world();
-    let f = rules.map.numbered(0, piece(0).factories[0]);
-    put(&mut g0, f, FACTORY, 1);
-    let bases = board::corp_bases(&w, 0);
-    assert_eq!(bases.len(), 2);
-    let units = |g: &GameState| bases.iter().map(|&b| g.tokens(b, UNIT)).collect::<Vec<_>>();
-    let tip = |g: &mut GameState, take: usize| {
-        let asked = std::cell::RefCell::new(Vec::new());
-        with_answers(&rules, g, |a| {
-            asked.borrow_mut().push((a.seat, a.options.len()));
-            let at = rules.map.hexes[bases[take]].hex;
-            a.options.iter().position(|o| o.target == Some(at)).expect("a base option")
-        }, board::tip_corp_troops);
-        asked.into_inner()
-    };
-
-    // One ambassador: it stops the troop of the base seat 0 picks.
-    let mut g = g0.clone();
-    put(&mut g, f, ambassador(0), 1);
-    assert_eq!(tip(&mut g, 1), [(0, 2)]);
-    assert_eq!((units(&g), g.tokens(f, ambassador(0))), (vec![1, 0], 0));
-
-    // Two (any seats'): both troops stopped, both used up. (The rule asks only when they can't stop all; the
-    // engine still asks for the first, a choice with one outcome, so the asks aren't checked here.)
-    let mut g = g0.clone();
-    put(&mut g, f, ambassador(0), 1);
-    put(&mut g, f, ambassador(1), 1);
-    tip(&mut g, 0);
-    assert_eq!((units(&g), g.tokens(f, ambassador(0)), g.tokens(f, ambassador(1))), (vec![0, 0], 0, 0));
-
-    // A full base takes none: one ambassador stops the other base's troop, a
-    // second stays.
-    let cap = w.int("board.unit_cap");
-    let mut g = g0.clone();
-    put(&mut g, bases[0], UNIT, cap);
-    put(&mut g, f, ambassador(0), 2);
-    assert_eq!(tip(&mut g, 1), []);
-    assert_eq!((units(&g), g.tokens(f, ambassador(0))), (vec![cap, 0], 1));
 }
 
 #[test]

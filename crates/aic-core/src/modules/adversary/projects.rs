@@ -124,10 +124,25 @@ fn slot_key(id: &str) -> KeyBuf {
     KeyBuf::new("adversary.slot.").text(id)
 }
 
-/// A project leaves its slot (resolved or discarded): the slot refills at once (175).
+/// A project leaves its slot (resolved or discarded): r80 (ruling #49) the projects to its right slide one slot
+/// left and the empty slot at the right refills at once (175: the slot refilled in place).
 fn leave_slot(g: &mut GameState, cx: &mut Cx, id: &str) {
+    let k = g.var(&slot_key(id));
     cx.set_key(g, &slot_key(id), 0);
+    if k > 0 {
+        for other in g.pile(PROJECTS).to_vec() {
+            let j = g.var(&slot_key(&other));
+            if j > k {
+                cx.set_key(g, &slot_key(&other), j - 1);
+            }
+        }
+    }
     deal_projects(g, cx);
+}
+
+/// r80 (ruling #49): the project compute goes onto: the leftmost visible one.
+pub fn compute_target(g: &GameState) -> Option<Key> {
+    g.pile(PROJECTS).iter().min_by_key(|id| g.var(&slot_key(id.as_str()))).copied()
 }
 
 /// 175: compute waiting for the adversary's turn: every source banks here, and the compute step adds it to
@@ -152,8 +167,8 @@ pub fn gain_compute(g: &mut GameState, cx: &mut Cx, n: i64) -> Res {
 /// 175, the compute step (the end of the adversary's turn): all compute is added once: the printed income,
 /// each botnet without a player ambassador on it (and not hacked this round), each corrupted research station
 /// without one, and everything banked since the last step (threats, cards, projects). `compute_every` goes
-/// on every visible project first; then each point onto the cheapest visible project, a full one resolving
-/// at once and its slot refilling.
+/// on every visible project first; then each point onto the leftmost visible project (r80), a full one
+/// resolving at once, the rest sliding left and the right slot refilling.
 pub fn compute_step(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     let income = g.var(INCOME_COMPUTE).max(0);
@@ -208,8 +223,8 @@ pub fn compute_step(g: &mut GameState, cx: &mut Cx) -> Res {
 }
 
 /// 175: the waiting compute goes onto the projects (the compute step's second half): `compute_every` on every
-/// visible project first, then each point onto the cheapest one (ties: the first slot), a full one resolving at
-/// once and its slot refilling. With no project left, compute is lost.
+/// visible project first, then each point onto the leftmost one (r80, ruling #49; it was the cheapest), a full
+/// one resolving at once, the rest sliding left and the right slot refilling. With no project left, compute is lost.
 pub fn pour_waiting(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     let every = g.var(WAITING_EVERY);
@@ -223,12 +238,7 @@ pub fn pour_waiting(g: &mut GameState, cx: &mut Cx) -> Res {
     let n = g.var(WAITING);
     cx.set_key(g, WAITING, 0);
     for _ in 0..n {
-        let Some(id) = g
-            .pile(PROJECTS)
-            .iter()
-            .min_by_key(|id| project_cost(&w, g, id))
-            .cloned()
-        else {
+        let Some(id) = compute_target(g) else {
             cx.tally(g, "adversary.compute_lost", 1);
             continue;
         };

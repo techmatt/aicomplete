@@ -65,10 +65,12 @@ fn only_seats_near_a_threat_may_pay_and_pooled_credits_counter_it() {
     assert_eq!(counted(&g, "threats.countered.t1"), 1);
 }
 
-/// 145: a [city, coastal city] threat whose city token would take the only
-/// clean coastal city places its coastal token there and the city token inland.
+/// r80 (ruling #46): each token, in printed order, goes on the site of its type (not the adversary's) with the
+/// most agents on its own hex, ties the lowest number; agents next door don't count, and two tokens never share a
+/// hex: a [city, coastal city] threat whose city token takes the only clean coastal city leaves its coastal token
+/// off (145's reorder is gone).
 #[test]
-fn a_city_token_leaves_the_only_coastal_city_to_the_coastal_token() {
+fn a_location_token_goes_where_most_agents_stand_on_the_hex() {
     let (rules, mut g) = threat_lab();
     let m = &rules.map;
     let c = (0..m.countries.len())
@@ -80,20 +82,22 @@ fn a_city_token_leaves_the_only_coastal_city_to_the_coastal_token() {
     let here: Vec<usize> = cities(m).into_iter().filter(|&h| m.hexes[h].country as usize == c).collect();
     let coastal = *here.iter().find(|&&h| m.hexes[h].coastal).unwrap();
     let inland = *here.iter().find(|&&h| !m.hexes[h].coastal).unwrap();
-    // Every other city corrupted; the coastal one under more pressure.
     for &h in &here {
         if h != coastal && h != inland {
             put(&mut g, h, ADV_CUBE, 1);
         }
+        put(&mut g, h, ADV_AMBASSADOR, 0);
     }
-    put(&mut g, coastal, ADV_AMBASSADOR, 2);
+    put(&mut g, coastal, ADV_AMBASSADOR, 1);
+    // Three agents beside the inland city, none on it: they don't count.
+    let beside = m.hexes[inland].neighbors.iter().copied().find(|&x| kind(m, x) != HexKind::Ocean && kind(m, x) != HexKind::City);
+    if let Some(x) = beside {
+        put(&mut g, x, ADV_AMBASSADOR, 3);
+    }
     set_pile(&mut g, "threats.deck.2", &["propaganda_ministry"]);
     with_cx(&rules, |cx| threats::deal_tier(&mut g, cx, 2, &[crate::content::PullTag::Any], c)).unwrap();
-    let mut got = threats::tokens(&g, &Key::new("propaganda_ministry"));
-    got.sort();
-    let mut want = vec![coastal, inland];
-    want.sort();
-    assert_eq!(got, want, "both tokens on the board");
+    let got = threats::tokens(&g, &Key::new("propaganda_ministry"));
+    assert_eq!(got, vec![coastal], "the city token takes the coastal city; the coastal token has no site left");
 }
 
 /// 145: the share paid reads each option in its own currencies: 1 credit
@@ -387,4 +391,17 @@ fn near_mask_matches_the_reach() {
         }
         assert!(checked > 0, "{n} countries: no threat was ever active");
     }
+}
+
+/// 184's D86 (a), stated in r80's rulebook and threats.md: if a reshuffled deck has no card that fits, the pull
+/// takes the next card anyway.
+#[test]
+fn a_reshuffled_deck_with_no_fitting_card_deals_the_next_anyway() {
+    let (rules, mut g) = threat_lab();
+    set_pile(&mut g, "threats.deck.2", &["propaganda_ministry"]);
+    set_pile(&mut g, "threats.discard.2", &[]);
+    let military = [crate::content::PullTag::Is(crate::vocab::ThreatTag::Military)];
+    with_cx(&rules, |cx| threats::deal_tier(&mut g, cx, 2, &military, 0)).unwrap();
+    assert!(threats::active(&g).iter().any(|(t, _)| t.as_str() == "propaganda_ministry"), "an Influence threat, dealt anyway");
+    assert_eq!(g.stats.counters.get("threats.pull_forced").copied(), Some(1));
 }

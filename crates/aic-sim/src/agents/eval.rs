@@ -358,7 +358,7 @@ pub struct Weights {
     /// `shelter_node`, and the seat's `node_danger` reads its nodes less the exposed ones.
     pub corrupt_exposure: f64,
     /// 151, above 0: the coming Rally (`plan::next_rally`: the card ahead's site type and each board's pool,
-    /// spread evenly) counts this share of its expected ambassadors on each site toward corrupting, a round
+    /// dealt round-robin) counts this share of its expected ambassadors on each site toward corrupting, a round
     /// ahead: the pressure, at-risk and exposure terms read them as if landed.
     pub rally_read: f64,
     /// 147 (D67), above 0: each land-corruption token, and open land filling
@@ -1678,17 +1678,15 @@ impl Eval {
         v += w.level * level.steps() as f64;
         // A resolved (or ongoing) project counts in full, so letting one
         // fill never scores better than holding it back.
-        let mut cheapest = f64::MAX;
         for id in adversary::projects(g) {
             let cost = adversary::project_cost(&world, g, &id).max(1) as f64;
-            cheapest = cheapest.min(cost);
             v -= w.project * g.var(&adversary::project_key(&id)) as f64 / cost;
         }
         // 175: compute made since the adversary's last turn waits beside the projects until its compute step,
-        // then goes onto the cheapest: read as already there.
+        // then goes onto the leftmost (r80, ruling #49; it was the cheapest): read as already there.
         let waiting = g.var(adversary::WAITING) as f64;
-        if waiting > 0.0 && cheapest < f64::MAX {
-            v -= w.project * waiting / cheapest;
+        if let (true, Some(id)) = (waiting > 0.0, adversary::compute_target(g)) {
+            v -= w.project * waiting / adversary::project_cost(&world, g, &id).max(1) as f64;
         }
         let resolved = g.stats.counters.get("adversary.projects_resolved");
         v -= w.project * resolved.copied().unwrap_or(0) as f64;

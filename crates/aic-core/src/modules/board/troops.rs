@@ -62,15 +62,9 @@ pub(super) fn battle(g: &mut GameState, cx: &mut Cx) -> Res {
             let Some(h) = target else {
                 break;
             };
+            // r80 (ruling #52): a drone's strike destroys only the factory, never the node on its hex (027-r79 took it).
             if destroy_piece(g, cx, h, FACTORY, Cause::War)? {
                 destroyed += 1;
-                // War that destroys a facility takes the node on its hex
-                // (027) and, by `war_reach`, around it (034). r75 (Matt's ruling 5): guarded like any node.
-                for x in within(&w, h, w.int("board.war_reach")) {
-                    if let Some(s) = node_owner(g, x) {
-                        destroy_piece(g, cx, x, node(s), Cause::Effect("war"))?;
-                    }
-                }
             }
         }
     }

@@ -40,6 +40,16 @@ pub const LAND_CORRUPTION: &str = "land_corruption";
 /// the end of the next adversary turn.
 pub const FIREWALL: &str = "firewall";
 
+/// r80 (ruling #53): a prohibition's token, one per step, on each hex its condition held on when the card
+/// resolved; it lasts like a firewall (off at the end of the next adversary turn).
+pub fn prohibit_token(step: crate::op::Step) -> &'static str {
+    match step {
+        crate::op::Step::Rally => "no_rally",
+        crate::op::Step::Muster => "no_muster",
+        crate::op::Step::Corrupt => "no_corrupt",
+    }
+}
+
 /// Whether hex `h` holds a firewall (158).
 pub fn firewalled(g: &GameState, h: usize) -> bool {
     g.tokens(h, FIREWALL) > 0

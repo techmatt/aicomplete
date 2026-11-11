@@ -49,8 +49,8 @@ pub const HOUSE_TERMS: [(&str, &str); 23] = [
     ("Convert", "an agent on or next to the city leaves its stack and becomes your ambassador where it stood"),
     ("Gather up to N", "pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece (a strike, \"remove up to N on or next to a hex\", moves nothing)"),
     ("Push up to N", "pieces from a hex in your reach, each to a hex next to it that you choose; you may stop at any piece"),
-    ("Firewall", "a token on a hex: no agent lands or moves there (a Rally share for it stays in the supply) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn"),
-    ("In the next adversary turn, no X", "a Unity card's prohibition: that step skips each site where the condition holds when the step runs; what it would have placed stays in the supply"),
+    ("Firewall", "a token on a hex: no agent lands or moves there (a Rally skips it) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn"),
+    ("In the next adversary turn, no X", "a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (a Rally deals past it), and the tokens come off with the firewalls"),
 ];
 
 /// `3 credits, 1 energy`.
@@ -806,7 +806,7 @@ pub(super) fn game_end_block(r: &Rules) -> String {
     format!(
         "**How the game ends, for new players.** The only way to win is the purge, and Unity eases it, \
          step by step, like terror levels. {easing} Pressure comes every round: the face-up adversary event card deals threats \
-         by your sites and says where its new agents land (spread evenly over every site of a kind), \
+         by your sites and says where its new agents land (dealt one at a time onto every site of a kind), \
          so you always know where the next wave lands. Agents pile up, a card's Corrupt line \
          moves every agent next to a city onto it, a city holding {} corrupts, a hex with your node and {} \
          loses the node, and corrupted \
@@ -829,7 +829,7 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          ambassadors for the same, so you choose between racing toward Unity and holding off the next \
          Discord card. You also lose if any player has no nodes left on the board. \
          Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of \
-         their own hex (or agents on it), war across a front (it takes the factory's hex) and Border War (nodes by a front's \
+         their own hex (or agents on it), and Border War (nodes by a front's \
          base). A lost token leaves the game and marks its hex, so you can't act from there any more; its \
          income stays. {safe}The adversary deck is a round cap too, {} rounds at \
          most (fewer at the harder levels), and reaching it loses. So there are three different \

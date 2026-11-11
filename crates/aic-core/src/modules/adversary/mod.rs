@@ -67,15 +67,29 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("board_difficulty_at", 0, 5, "the difficulty level from which the adversary board's own difficulty line applies (135)"),
 ];
 
+/// r80 (ruling #41): the adversary turn's four beats, printed as a strip on the adversary board, with the round
+/// phases each runs (working names: a rename is this one edit). Threat resolution stays its own round step.
+pub const BEATS: [(&str, &[&str]); 4] = [
+    ("Card", &["adversary.event", "threats.deal", "adversary.build"]),
+    ("Corrupt", &["adversary.corrupt", "adversary.natural"]),
+    ("March", &["board.march"]),
+    ("Income", &["adversary.reveal", "adversary.compute"]),
+];
+
+/// The beat a round phase belongs to (none: not part of the adversary turn).
+pub fn beat_of(phase: &str) -> Option<&'static str> {
+    BEATS.iter().find(|(_, ps)| ps.contains(&phase)).map(|(b, _)| *b)
+}
+
 const PHASES: &[PhaseSpec] = &[
-    PhaseSpec::auto("build", "the event card after its threats: Rally X (each country's pool lands), Muster (its troops), its other lines; the board's rules; ongoing projects act"),
+    PhaseSpec::auto("build", "the Card beat after the threats: Rally X (each country's pool lands), Muster (its troops), the card's other lines, the Protector's Muster"),
     PhaseSpec::auto("corrupt", "the event card's Corrupt X lines: every agent next to an X moves onto it, then every X holding its number corrupts"),
     PhaseSpec::auto("natural", "natural corruption: every city, research station or factory holding its number corrupts, then every node hex holding a node's"),
     PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead; then agent income into each country's pool"),
     PhaseSpec::auto("event", "the face-up event card becomes this round's (none left: the adversary wins)"),
     // 178 (amendment 8112): its own phase, so a project's prompt doesn't follow the reveal's hidden draw in one
     // phase (a determinized replay of it could resolve another project first). No play change.
-    PhaseSpec::auto("compute", "the compute step (income, botnets, corrupted stations and the compute banked since the last turn onto the projects, which resolve as they fill); then every firewall, cordon and prohibition of this turn comes off: the adversary turn ends"),
+    PhaseSpec::auto("compute", "the Income beat's compute (income, botnets, corrupted stations and the compute banked since the last turn onto the leftmost project, which resolves as it fills); ongoing projects act; then every firewall, cordon and prohibition token comes off: the adversary turn ends"),
 ];
 
 // `run`'s phase indices: each is its phase's position in `PHASES`.
@@ -394,15 +408,6 @@ impl Module for Adversary {
                     }
                 }
                 wall_pressure(g, cx)?;
-                // Ongoing projects act, in the order they came into play.
-                for id in ongoing_acting(g) {
-                    let p = project(&w, &id);
-                    let acts: Vec<Op> = p.effects.iter().filter(|e| !standing_project_op(e)).cloned().collect();
-                    effects::run(g, cx, &acts, &mut effects::Ctx::team().named("project").why(&p.name))?;
-                    if g.is_over() {
-                        return Ok(());
-                    }
-                }
             }
             CORRUPT => {
                 // 138: the card's Corrupt X lines, in card order (they replace the spread).
@@ -441,11 +446,19 @@ impl Module for Adversary {
                 if !g.is_over() {
                     compute_step(g, cx)?;
                 }
-                // 158: firewalls come off at the end of the adversary turn after they went on.
+                // r80 (ruling #41): ongoing projects act in the Income beat, after compute, in the order they came
+                // into play (they acted in the build, between Muster and Corrupt).
+                if !g.is_over() {
+                    ongoing_projects_act(g, cx)?;
+                }
+                // 158: firewalls come off at the end of the adversary turn after they went on; r80 (#53) so do
+                // prohibition tokens.
                 for h in 0..g.hexes.len() {
-                    let n = g.tokens(h, FIREWALL);
-                    if n > 0 {
-                        cx.add_tokens(g, h, FIREWALL, -n);
+                    for kind in [FIREWALL, prohibit_token(Step::Rally), prohibit_token(Step::Muster), prohibit_token(Step::Corrupt)] {
+                        let n = g.tokens(h, kind);
+                        if n > 0 {
+                            cx.add_tokens(g, h, kind, -n);
+                        }
                     }
                 }
                 // 178 (Matt's ruling #30): so does a cordon (it lasted to the end of the next round).
@@ -530,7 +543,7 @@ impl Module for Adversary {
             g.var(COMPUTE),
             None,
             &format!(
-                "adversary compute made so far: each botnet makes {} a round (none under a player ambassador); it fills the cheapest visible project",
+                "adversary compute made so far: each botnet makes {} a round (none under a player ambassador); it fills the leftmost visible project",
                 w.int("adversary.botnet_compute")
             ),
         );
@@ -589,7 +602,7 @@ impl Module for Adversary {
         let row = g.pile(PROJECTS);
         out.pile(
             "projects",
-            "Adversary projects (compute fills the cheapest)",
+            "Adversary projects (compute fills the leftmost)",
             None,
             row.len(),
             row.iter().map(|id| pshow(id, &fill(id))).collect(),
@@ -671,6 +684,20 @@ impl Module for Adversary {
     }
 }
 
+/// Ongoing projects act, in the order they came into play (r80: in the Income beat).
+fn ongoing_projects_act(g: &mut GameState, cx: &mut Cx) -> Res {
+    let w = cx.world;
+    for id in ongoing_acting(g) {
+        let p = project(&w, &id);
+        let acts: Vec<Op> = p.effects.iter().filter(|e| !standing_project_op(e)).cloned().collect();
+        effects::run(g, cx, &acts, &mut effects::Ctx::team().named("project").why(&p.name))?;
+        if g.is_over() {
+            break;
+        }
+    }
+    Ok(())
+}
+
 /// Shows the next `n` deck cards beyond the face-up one (Recon Sweep); a
 /// longer peek already running is kept.
 pub fn peek(g: &mut GameState, cx: &mut Cx, n: i64) {
@@ -700,6 +727,14 @@ pub fn prohibit(g: &mut GameState, cx: &mut Cx, step: Step, wh: Where) {
     let mask = if g.var(rk) == round { g.var(wk) | bit } else { bit };
     cx.set_key(g, rk, round);
     cx.set_key(g, wk, mask);
+    // r80 (ruling #53): a token on each hex the condition holds on now; the step reads the tokens, not the
+    // condition, and they come off with the firewalls.
+    let w = cx.world;
+    for h in super::plan::sites_where(&w, g, wh) {
+        if g.tokens(h, prohibit_token(step)) == 0 {
+            cx.add_tokens(g, h, prohibit_token(step), 1);
+        }
+    }
     cx.tally(g, &format!("prohibit.{}.{}.made", step.name(), wh.name()), 1);
 }
 

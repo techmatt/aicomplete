@@ -1,0 +1,10 @@
+new d0 (432): purge 386, deck_empty 46 | corruptions.node 0.79, tip_factory_troops 2.59, units_built 2.54, war_destroyed 1.81, wall_troops 4.60, rally.ambassador.made 0.08, tips_discord 1.30
+new d1 (432): purge 314, deck_empty 62, discord_deck 55, node 1 | corruptions.node 1.62, tip_factory_troops 6.44, units_built 5.80, war_destroyed 0.98, wall_troops 4.95, rally.ambassador.made 0.08, tips_discord 3.69
+new d2 (432): purge 213, discord_deck 208, deck_empty 11 | corruptions.node 1.87, tip_factory_troops 8.40, units_built 6.84, war_destroyed 0.61, wall_troops 9.60, rally.ambassador.made 0.08, tips_discord 5.32
+new d3 (432): discord_deck 202, purge 179, deck_empty 49, node 2 | corruptions.node 1.83, tip_factory_troops 8.63, units_built 6.78, war_destroyed 0.68, wall_troops 9.11, rally.ambassador.made 0.08, tips_discord 5.38
+new d4 (432): discord_deck 208, purge 162, deck_empty 58, node 4 | corruptions.node 2.08, tip_factory_troops 8.28, units_built 6.67, war_destroyed 0.69, wall_troops 9.37, rally.ambassador.made 0.08, tips_discord 5.38
+old d0 (432): purge 403, deck_empty 29 | corruptions.node 0.64, tip_factory_troops 4.77, units_built 4.77, war_destroyed 1.79, wall_troops 4.52, rally.ambassador.made 0.08, tips_discord 1.45
+old d1 (432): purge 320, deck_empty 70, discord_deck 41, node 1 | corruptions.node 1.49, tip_factory_troops 7.97, units_built 7.97, war_destroyed 1.11, wall_troops 5.13, rally.ambassador.made 0.08, tips_discord 3.61
+old d2 (432): purge 239, discord_deck 186, deck_empty 7 | corruptions.node 1.67, tip_factory_troops 8.50, units_built 8.50, war_destroyed 0.88, wall_troops 9.93, rally.ambassador.made 0.08, tips_discord 5.11
+old d3 (432): discord_deck 190, purge 187, deck_empty 52, node 3 | corruptions.node 1.67, tip_factory_troops 9.17, units_built 9.16, war_destroyed 0.92, wall_troops 9.33, rally.ambassador.made 0.08, tips_discord 5.33
+old d4 (432): purge 189, discord_deck 182, deck_empty 57, node 4 | corruptions.node 1.86, tip_factory_troops 8.48, units_built 8.48, war_destroyed 0.95, wall_troops 9.62, rally.ambassador.made 0.08, tips_discord 5.37

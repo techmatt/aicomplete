@@ -1114,9 +1114,9 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "is_zero")]
         cut: i64,
     },
-    /// 151, Rally X: each country's agent pool lands on every `site` site, whoever owns it (175: no tiers),
-    /// spread evenly, the remainder on the lowest-numbered not the adversary's; a blocked site's share stays in
-    /// the supply. `count`: that many a country instead of the pool (a project's rally). A cordoned country's
+    /// 151, Rally X: each country's agent pool lands on the `site` sites, whoever owns it (175: no tiers), r80
+    /// dealt one at a time in hex order, skipping a firewalled or no-Rally site (none left: back to the
+    /// supply). `count`: that many a country instead of the pool (a project's rally). A cordoned country's
     /// pool waits for its next Rally (178).
     Rally {
         site: RallyAt,

@@ -4,6 +4,7 @@ use crate::content::Op;
 use crate::modules::common::{FIREWALL, LAND_CORRUPTION, MARKER};
 use crate::modules::{adversary, alignment, board, effects, plan};
 use crate::op::{CorruptSite, CreateAt, CreateIf, Facility, RallyAt};
+use crate::modules::common::STATION;
 
 /// Country `c`'s hexes passing `f`, lowest-numbered first.
 fn numbered_where(m: &Map, c: u8, f: impl Fn(usize) -> bool) -> Vec<usize> {
@@ -12,8 +13,8 @@ fn numbered_where(m: &Map, c: u8, f: impl Fn(usize) -> bool) -> Vec<usize> {
     v
 }
 
-/// 175: the build's Rally lands each board's pool on every site of the card's type, evenly, the remainder on
-/// the lowest-numbered not the adversary's; the agents' forecast reads the same plan, and the pool empties.
+/// 175: the build's Rally lands each board's pool on the sites of the card's type (r80: round-robin, so each
+/// gets the even share or one more); the agents' forecast reads the same plan, and the pool empties.
 #[test]
 fn rally_lands_each_boards_pool_evenly_on_its_eligible_sites() {
     let (rules, mut g) = lab(&["adversary.build"]);
@@ -51,10 +52,11 @@ fn rally_lands_each_boards_pool_evenly_on_its_eligible_sites() {
     assert_eq!(g.var(SUPPLY), 35);
 }
 
-/// 175: no tiers: the remainder goes one each to the lowest-numbered sites that aren't the adversary's, and a
-/// firewalled site's share stays in the supply.
+/// r80 (ruling #43): Rally deals the pool round-robin, one agent onto each site of the type in hex order (the
+/// adversary's included, no remainder rule), skipping firewalled ones, until the pool is empty; with every site
+/// firewalled the pool goes back to the supply.
 #[test]
-fn rally_remainder_skips_the_adversarys_sites_and_a_firewall_keeps_its_share() {
+fn rally_deals_round_robin_in_hex_order_skipping_firewalls() {
     let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let w = rules.world();
@@ -66,16 +68,22 @@ fn rally_remainder_skips_the_adversarys_sites_and_a_firewall_keeps_its_share() {
     put(&mut g, cities0[0], ADV_CUBE, 1);
     let k = cities0.len() as i64;
     let p = plan::rally_plan(&w, &g, RallyAt::City, 0, k + 1).unwrap();
-    assert_eq!(p.shares[0], (cities0[0], 1), "the adversary's city: the even share only");
-    assert_eq!(p.shares[1], (cities0[1], 2), "the lowest-numbered other city takes the remainder");
+    let want: Vec<(usize, i64)> = cities0.iter().enumerate().map(|(i, &h)| (h, if i == 0 { 2 } else { 1 })).collect();
+    assert_eq!(p.shares, want, "the adversary's city first in hex order takes the extra agent");
     put(&mut g, cities0[1], FIREWALL, 1);
     let p = plan::rally_plan(&w, &g, RallyAt::City, 0, k + 1).unwrap();
-    assert_eq!(p.shares[1], (cities0[1], 1), "a firewalled site keeps only its even share");
-    assert_eq!(p.shares[2], (cities0[2], 2), "the remainder goes to the next open site");
+    assert!(p.shares.iter().all(|&(h, _)| h != cities0[1]), "a firewalled site is skipped");
+    assert_eq!(p.shares.iter().map(|&(_, n)| n).sum::<i64>(), k + 1, "its agents go round to the others");
+    assert_eq!(p.shares[0], (cities0[0], 2));
+    assert_eq!(p.shares[1], (cities0[2], 2));
     g.vars.insert(SUPPLY.into(), 40);
     with_cx(&rules, |cx| adversary::rally(&mut g, cx, RallyAt::City, k + 1, Some(0), "test")).unwrap();
-    assert_eq!(g.tokens(cities0[1], ADV_AMBASSADOR), 0, "a firewall keeps its share off");
-    assert_eq!(g.var(SUPPLY), 40 - k);
+    assert_eq!(g.tokens(cities0[1], ADV_AMBASSADOR), 0);
+    assert_eq!(g.var(SUPPLY), 40 - (k + 1));
+    for &h in &cities0 {
+        put(&mut g, h, FIREWALL, 1);
+    }
+    assert_eq!(plan::rally_plan(&w, &g, RallyAt::City, 0, 3).unwrap().shares, Vec::new(), "every site firewalled");
 }
 
 /// 138: a creation line's condition picks among the sites, and `sites` how
@@ -600,4 +608,83 @@ fn the_load_check_refuses_an_event_or_a_project_off_the_standard() {
     let mut country = p.clone();
     country.text = "Each board: a threat.".into();
     assert!(project_rule_break(&country).is_some_and(|r| r.contains("each board")));
+}
+
+/// r80 (ruling #42, one aftermath for all corruption): a node hex that corrupts takes a land-corruption token, its
+/// one adversary mark, and no marker (the node loss left a marker before).
+#[test]
+fn a_corrupted_node_hex_takes_land_corruption_not_a_marker() {
+    let (rules, mut g) = lab(&["adversary.natural"]);
+    let m = &rules.map;
+    let h = numbered_where(m, 0, |h| kind(m, h) == HexKind::Open)[0];
+    put(&mut g, h, node(0), 1);
+    put(&mut g, h, ADV_AMBASSADOR, 2);
+    run_answered(&rules, &mut g);
+    assert_eq!(g.tokens(h, node(0)), 0);
+    assert_eq!((g.tokens(h, LAND_CORRUPTION), g.tokens(h, MARKER)), (1, 0));
+}
+
+/// r80 (ruling #48): the Protector's landing is a normal Muster 1 in each country where the Protector has a node:
+/// the lowest-numbered factory, a player's included (178-r79 skipped players' factories), else a city.
+#[test]
+fn the_protectors_landing_is_a_normal_muster() {
+    let (rules, mut g) = lab_with(&[], &["adversary.wall_troops=1"]);
+    let m = &rules.map;
+    let w = rules.world();
+    let s = (0..g.seats.len()).find(|&s| board::has_wall(&w, s)).expect("a seat with Wall");
+    let c = 0u8;
+    let open = numbered_where(m, c, |h| kind(m, h) == HexKind::Open);
+    put(&mut g, open[0], node(s), 1);
+    let zones = numbered_where(m, c, |h| m.hexes[h].industrial && !m.hexes[open[0]].neighbors.contains(&h) && h != open[0]);
+    assert!(zones.len() >= 2);
+    put(&mut g, zones[0], FACTORY, 1);
+    put(&mut g, zones[0], cube(0), 1);
+    put(&mut g, zones[1], FACTORY, 1);
+    with_cx(&rules, |cx| adversary::wall_pressure(&mut g, cx)).unwrap();
+    assert_eq!(g.tokens(zones[0], TROOP), 1, "the lowest-numbered factory, a player's");
+    assert_eq!(total(&g, TROOP), 1, "Muster 1, one country");
+    // No factory in the country: the lowest-numbered city.
+    let (_, mut g) = lab_with(&[], &["adversary.wall_troops=1"]);
+    put(&mut g, open[0], node(s), 1);
+    with_cx(&rules, |cx| adversary::wall_pressure(&mut g, cx)).unwrap();
+    let city = numbered_where(m, c, |h| kind(m, h) == HexKind::City)[0];
+    assert_eq!(g.tokens(city, TROOP), 1);
+}
+
+/// r80 (184's D79 a): an adversary-factory line with no free zone lands its fallback agents on a factory, never a
+/// firewalled one (as a creation line skips it).
+#[test]
+fn the_adversary_factory_fallback_skips_a_firewalled_factory() {
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    let zones = hexes_where(m, |h| m.hexes[h].industrial);
+    for &z in &zones {
+        put(&mut g, z, STATION, 1);
+    }
+    let (a, b) = (zones[0], zones[1]);
+    for z in [a, b] {
+        put(&mut g, z, STATION, 0);
+        put(&mut g, z, FACTORY, 1);
+    }
+    put(&mut g, a, FIREWALL, 1);
+    g.vars.insert(SUPPLY.into(), 40);
+    let op = Op::AdversaryFactory { count: 1, where_: None, fallback_ambassadors: 2 };
+    with_cx(&rules, |cx| effects::run(&mut g, cx, &[op], &mut effects::Ctx::team().named("test"))).unwrap();
+    assert_eq!((g.tokens(a, ADV_AMBASSADOR), g.tokens(b, ADV_AMBASSADOR)), (0, 2));
+}
+
+/// r80 (ruling #31): every event card's lines come from the fixed list of line kinds, each with an icon; a line
+/// of another kind is off the event standard.
+#[test]
+fn event_lines_come_from_the_fixed_list() {
+    use crate::content::{event_line_kind, event_rule_break, EVENT_LINE_KINDS};
+    for a in &crate::content().adversary {
+        for e in a.standing.iter().chain(&a.twists) {
+            let k = event_line_kind(e).unwrap_or_else(|| panic!("{}: {e:?}", a.id));
+            assert!(EVENT_LINE_KINDS.iter().any(|(n, icon)| *n == k && !icon.is_empty()));
+        }
+    }
+    let mut a = crate::content().adversary[0].clone();
+    a.standing.push(Op::Gain { resource: crate::content::Resource::Credits, amount: 1 });
+    assert!(event_rule_break(&a).is_some_and(|why| why.contains("fixed list")));
 }

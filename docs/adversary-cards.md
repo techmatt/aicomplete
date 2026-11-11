@@ -7,7 +7,7 @@
 Project slots: Military, Open, Open.
 
 - **Garrisons.** Income: +1 Agent a country a round.
-- **Troops where the Protector stands.** Each round: in each country where the Protector has a Node, Muster 1 on its lowest-numbered adversary or neutral factory (none: none lands).
+- **Troops where the Protector stands.** Each round: Muster 1 in each country where the Protector has a Node.
 - **Warmongering.** Each round, a military base with an adversary Troop on or next to it makes 1 extra Drone, even past its cap; at most 1 extra a base in each production, whatever makes it.
 - **Difficulty.** Militarist, harder: every Muster lands 1 more Troop a country, and the adversary gains 4 compute for each threat that executes uncountered.
 

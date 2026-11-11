@@ -131,7 +131,7 @@ the judge off the value table.
 - **Order:** the engine smoke read (`use.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read. After a
   change to how the game is won, greedy first ([agents.md](agents.md), *The tiers*): a greedy lead stops calibration
   for a question.
-- **Current recipe (162-185):** the new side farmed from a committed spec in `experiments/farm/` (commit the spec
+- **Current recipe (162-187):** the new side farmed from a committed spec in `experiments/farm/` (commit the spec
   and the code first: `farm-seeds` builds from HEAD; d0-d4 since 168;
   *Farming a read* below), the old side natively; read by `scripts/bench/ladder.py NEW OLD --measures` (pooled,
   paired, by set). `scripts/bench/read_specs.py read` (d0-d3, into `out/`) and `run_read.sh` are the native route.
@@ -172,7 +172,7 @@ line alone reads near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used. Any item that spends seeds updates the ledger, after its last read, not before it. Used: every
-seed below 43183 (each item's range is in its write-up). Next free: 43183. **The dev seeds for screens are
+seed below 43327 (each item's range is in its write-up). Next free: 43327. **The dev seeds for screens are
 36800-36831**: screen at 32 seeds a cell.
 
 ## Reading prices

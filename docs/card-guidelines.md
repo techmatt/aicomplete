@@ -33,9 +33,8 @@ card that breaks one is a bug, or a design call for Matt, never a quiet exceptio
    about 80 characters on two lines; the box below the art about the same; a program or event about
    110 (guides nothing checks). Cut words, split ideas or simplify the op rather than shrink the type. A card that
    still can't fit is a recorded exception, its reason in the item's write-up. Measure with `npm run cards:fit` in
-   `web/`. A box's capacity is its height in `art/frames/r3/fit.json` (over `layout.json`), less `CLEARANCE_MM`
-   (`web/card/card.js`) and its icon rows, at about 3.2 mm a line (`web/card/card.css`). A kind with no frame (threats, Alignment, adversary and project cards) has no
-   budget until it gets one.
+   `web/` (box sizes: `art/frames/r3/fit.json`, `web/card/card.js`). A kind with no frame (threats, Alignment,
+   adversary and project cards) has no budget until it gets one.
 10. **The name says what it does,** and the art matches the name.
 11. **No near-duplicates without a reason.** Same effect at another price or kind is fine only
     when the kind matters (an event leaves no tag; a program stays). A card that repeats an AI board's
@@ -125,9 +124,6 @@ Use these, and let the rulebook carry the rest. The house terms are defined once
 `crates/aic-sim/src/docs/blocks.rs`, which prints them in [rules/README.md](rules/README.md)'s *Terms* and in
 [player-aid.md](player-aid.md) (*Facility*: "building" is always a card, Harden goes on a facility).
 
-The Harden token on a node is a "shield". "You gain the Harden action" is a standard action a card grants, paid in
-chips (the card prints the price); the Protector's Bulwark is a power, paid in energy. It is not a keyword.
-
 **American English** everywhere (Mobilization, Armored, Modeling): `aic-sim docs --check` refuses a British spelling
 (`spelling.rs`).
 
@@ -169,6 +165,12 @@ The sheet is `icons.png` from `node tools/card-art/render.mjs`.
 | Clock | delay only: a threat waits a round |
 | Wall (bricks) | no agent may arrive: with an agent and a hex, a firewall; with a country, a cordon |
 | Requirement plates | yellow: at least (no card requires at most); stacked cards: built over |
+
+## Event lines
+
+An event card prints only the line kinds in `content::EVENT_LINE_KINDS` (r80, ruling #31; `Content::check` holds
+to it), each with its icon there: Rally, Muster, Income, New factory, Discord, Unity back, Blackout, Node loss, Forced
+March, Corrupt. Event faces have no icon row yet. A new kind is Matt's call.
 
 A price rise on paper needs a screen: small raises add up. Reason every price in
 [card-pricing.md](card-pricing.md), and record the change in [rules-history.md](rules-history.md). Center a rate sheet

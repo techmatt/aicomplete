@@ -17,7 +17,7 @@ use crate::state::GameState;
 use super::{adversary, board};
 use super::common::{
     corrupted, cube_owner, firewalled, has_building, is_city, is_ocean, next_to, node_owner, player_ambassador, ADV_AMBASSADOR,
-    LAND_CORRUPTION, BOTNET, FACTORY, MARKER, STATION,
+    LAND_CORRUPTION, BOTNET, FACTORY, STATION, prohibit_token,
 };
 use crate::content::HexKind;
 
@@ -112,9 +112,10 @@ pub fn corrupt_target(w: &World, g: &GameState, h: usize, site: CorruptSite) -> 
     }
 }
 
-/// What a `site`'s corruption counts on its own hex (034: a city's marker counts; 175: a node's, agents only).
-pub fn held(w: &World, g: &GameState, h: usize, counts: &[i64], site: CorruptSite) -> i64 {
-    counts[h] + if site != CorruptSite::Node && is_city(w, h) { g.tokens(h, MARKER) } else { 0 }
+/// What a `site`'s corruption counts on its own hex: its agents (r80, ruling #42: a marker no longer counts as an
+/// agent on a city, 034-r79).
+pub fn held(_w: &World, _g: &GameState, h: usize, counts: &[i64], _site: CorruptSite) -> i64 {
+    counts[h]
 }
 
 /// 175, a Corrupt X line's convergence: the targets in scope (hex order, country by country), the ones a
@@ -272,28 +273,26 @@ pub fn rally_sites(w: &World, g: &GameState, at: RallyAt, c: usize) -> Vec<usize
     all
 }
 
-/// 175: `n` agents rallying to `at` in board `c`: an even share on every site, the remainder one each on the
-/// lowest-numbered sites that aren't the adversary's (then the adversary's, if too few). None: no site.
+/// r80 (ruling #43), `n` agents rallying to `at` in board `c`: dealt round-robin, one agent onto each site of
+/// the type in hex order, skipping firewalled ones (and, since #53, those under a Rally prohibition's token),
+/// until the pool is empty. None: no site of the type; every site skipped: no shares (the pool goes back to
+/// the supply).
 pub fn rally_plan(w: &World, g: &GameState, at: RallyAt, c: usize, n: i64) -> Option<RallyPlan> {
     let sites = rally_sites(w, g, at, c);
     if sites.is_empty() || n <= 0 {
         return None;
     }
-    let k = sites.len() as i64;
-    let mut shares: Vec<(usize, i64)> = sites.iter().map(|&h| (h, n / k)).collect();
-    let mut order: Vec<usize> = (0..sites.len()).collect();
-    // Stable: open sites before firewalled ones (a firewalled site takes the remainder only when every site is,
-    // and its share stays in the supply), then the players' and neutral sites before the adversary's, each group
-    // in hex order.
-    order.sort_by_key(|&i| (firewalled(g, sites[i]), corrupted(g, sites[i])));
-    for &i in order.iter().take((n % k) as usize) {
-        shares[i].1 += 1;
+    let open: Vec<usize> = sites.into_iter().filter(|&h| !firewalled(g, h) && !prohibited_now(g, Step::Rally, h)).collect();
+    if open.is_empty() {
+        return Some(RallyPlan { shares: Vec::new() });
     }
+    let k = open.len() as i64;
+    let shares = open.iter().enumerate().map(|(i, &h)| (h, n / k + i64::from((i as i64) < n % k))).collect();
     Some(RallyPlan { shares })
 }
 
 /// 151, the agents' forecast of the coming Rally (public: the card ahead and the pools): the expected
-/// ambassadors landing on each hex, the remainder spread as a share. Before this round's build the card is
+/// ambassadors landing on each hex (r80: the round-robin deal, exact). Before this round's build the card is
 /// this round's; after it, the face-up one with the pools income has filled. Empty when nothing is coming
 /// (no card, empty pools, between this round's rally and the income).
 pub fn next_rally(w: &World, g: &GameState) -> Vec<(usize, f64)> {
@@ -364,14 +363,21 @@ pub fn prohibit_keys(step: Step) -> (&'static str, &'static str) {
     }
 }
 
-/// 167: the condition of a `step` prohibition acting in the adversary turn of `round` that holds on `h`.
-pub fn prohibition_on(w: &World, g: &GameState, step: Step, h: usize, round: i64) -> Option<Where> {
-    let (rk, wk) = prohibit_keys(step);
-    if g.var(rk) != round {
+/// r80 (ruling #53): whether hex `h` holds a `step` prohibition's token (placed when the card resolved, off at
+/// the end of the next adversary turn).
+pub fn prohibited_now(g: &GameState, step: Step, h: usize) -> bool {
+    g.tokens(h, prohibit_token(step)) > 0
+}
+
+/// The condition of the `step` prohibition whose token stands on `h` (r80, ruling #53: the token decides, placed
+/// where the condition held when the card resolved; the condition is only its label). `round` is kept for the
+/// forecasts' call shape: a token standing now acts in the next adversary turn, whichever round that is.
+pub fn prohibition_on(_w: &World, g: &GameState, step: Step, h: usize, _round: i64) -> Option<Where> {
+    if !prohibited_now(g, step, h) {
         return None;
     }
-    let mask = g.var(wk);
-    Where::ALL.iter().enumerate().find(|(i, wh)| mask & (1 << i) != 0 && holds(w, g, h, **wh)).map(|(_, wh)| *wh)
+    let mask = g.var(prohibit_keys(step).1);
+    Some(Where::ALL.iter().enumerate().find(|(i, _)| mask & (1 << i) != 0).map_or(Where::ALL[0], |(_, wh)| *wh))
 }
 
 /// 167: whether a `step` prohibition stops that step on hex `h` in the adversary turn of `round`.

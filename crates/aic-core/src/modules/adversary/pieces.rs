@@ -2,11 +2,11 @@
 
 use super::*;
 
-/// Troop pressure where the Protector stands (080, candidate): in the round's
-/// build, `wall_troops` adversary troops land in each country where a seat with
-/// Wall has a node, on the lowest-numbered adversary or neutral factory (178;
-/// a Wall there keeps it in the supply), so Wall has strikes to stop.
-pub(super) fn wall_pressure(g: &mut GameState, cx: &mut Cx) -> Res {
+/// Troop pressure where the Protector stands (080, candidate): in the round's Card beat, r80 (ruling #48) a normal
+/// Muster `wall_troops` in each country where a seat with Wall has a node: the lowest-numbered factory, anyone's,
+/// else city (178-r79 took only an adversary or neutral factory, none landing without one), so Wall has strikes
+/// to stop.
+pub fn wall_pressure(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     let n = w.int("adversary.wall_troops");
     if n == 0 {
@@ -17,19 +17,9 @@ pub(super) fn wall_pressure(g: &mut GameState, cx: &mut Cx) -> Res {
         if !walls.iter().any(|&s| has_node_in(&w, g, s, c)) {
             continue;
         }
-        // 178 (Matt's ruling #18, printed on the Protector's board): only on an adversary or neutral factory,
-        // never a player's; with none in the country, nothing lands (it took a city, or a player's factory).
-        let hexes: Vec<usize> = w.map.countries[c]
-            .hexes
-            .iter()
-            .copied()
-            .filter(|&h| g.tokens(h, FACTORY) > 0 && crate::modules::common::cube_owner(g, h).is_none())
-            .collect();
-        if hexes.is_empty() {
-            continue;
-        }
         // 175: a Muster like any other: the level surcharge, a Muster prohibition, Wall keeping it in the supply.
         let n = n + muster_bonus(&w);
+        let hexes = w.map.countries[c].hexes.clone();
         land_troops(g, cx, &hexes, n, "Troops land where the Protector stands: on which hex?", "adversary.wall_troops", None, true)?;
     }
     Ok(())

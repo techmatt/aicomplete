@@ -86,12 +86,13 @@ There is no "build a factory" standard action: cities build factories.
 |---|---|---|
 | | *(round start)* | Insight is set; abilities and powers refresh |
 | 1 | `alignment.sway` | Discord: the adversary board's printed drip (the Militarist's is 0), and `blight_discord` 1 per land corruption token |
-| 2 | `adversary.event` | The face-up event card becomes this round's ([adversary.md](adversary.md)) |
+| 2 | `adversary.event` | The adversary's Card beat ([adversary.md](adversary.md)): the face-up event card becomes this round's |
 | 3 | `threats.deal` | Its pulls: a threat a pull in each country, its tokens on the board ([threats.md](threats.md)) |
-| 4–6 | `adversary.build`, `.corrupt`, `.natural` | The card's Rally X (each country's pool lands), Muster and other lines, the board's Muster where the Protector stands, ongoing projects; the card's Corrupt lines; natural corruption (sites, then node hexes) |
-| 7 | `board.march` | The adversary troops march ([war.md](war.md)): `troop_steps` steps each, remove an ambassador, move or destroy |
-| 8 | `adversary.reveal` | Next round's card face up; the adversary's income (agents into each country's pool) |
-| 9 | `adversary.compute` | The compute step: income, botnets, corrupted stations and the round's banked compute onto the projects, which resolve as they fill (175); then every firewall, cordon and prohibition ends with the adversary turn |
+| 4 | `adversary.build` | The card's Rally X (each country's pool dealt round-robin), Muster and other lines; the Protector's Muster |
+| 5–6 | `adversary.corrupt`, `.natural` | The Corrupt beat: the card's Corrupt lines; natural corruption (sites, then node hexes) |
+| 7 | `board.march` | The March beat ([war.md](war.md)): `troop_steps` steps each, remove an ambassador, move or destroy |
+| 8 | `adversary.reveal` | The Income beat: next round's card face up; agents into each country's pool |
+| 9 | `adversary.compute` | The compute step: income, botnets, corrupted stations and the round's banked compute onto the leftmost project, which resolves as it fills (175); ongoing projects act; then every firewall, cordon and prohibition token comes off, ending the adversary turn |
 | 10–13 | `cards.tier`, `.deal`, `.draft`, `.keep` | Round 1: the opening deal and keep. Later: build the draft hand card by card (tier each), draft (always passing to the next seat), keep ([player-cards.md](player-cards.md)) |
 | 14 | `cards.play+threats.counter+alignment.act+board.act+ai.power` | Actions, simultaneous: cards, abilities, AI-board powers (nodes come from them), standard actions, countering threats, antimatter |
 | 15 | `board.produce` | The income step (r75, Matt's ruling 6: one step in this printed order, with 16): factories make chips (a player's) or a troop (the adversary's); aligned cities' energy to their owners, corrupted cities' Discord; stations' cubes (an adversary station's compute waits for the compute step); full megaprojects complete. One opposing ambassador or agent blocks a site |

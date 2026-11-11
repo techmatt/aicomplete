@@ -41,44 +41,36 @@ pub fn corp_bases(w: &World, c: u8) -> Vec<usize> {
     (0..w.map.hexes.len()).filter(|&b| is_base(w, b) && w.map.hexes[b].country == c).collect()
 }
 
-/// 137: a Discord tip. Each neutral factory makes 1 corp troop for each of its
-/// corp's bases; an agent on the factory blocks it (one opposing ambassador
-/// blocks a site's output), and an occupied factory makes nothing. r75 (Matt's
-/// ruling 8): a player ambassador on it always stops 1 troop, used up (it
-/// stopped them all); the players choose which base's troop when it can't stop
-/// every one. A full base takes none (145), so it uses no ambassador.
+/// A neutral factory that isn't blocked: no cube, not corrupted or occupied, and no agent or player ambassador
+/// on it (one opposing piece blocks a site's output).
+fn open_neutral_factory(g: &GameState, h: usize) -> bool {
+    g.tokens(h, FACTORY) > 0
+        && !corrupted(g, h)
+        && cube_owner(g, h).is_none()
+        && !occupied(g, h)
+        && g.tokens(h, ADV_AMBASSADOR) == 0
+        && player_ambassador(g, h).is_none()
+}
+
+/// A Discord tip, r80 (ruling #50): each base of a country with an unblocked neutral factory gains 1 drone; a
+/// player ambassador on the base stops it (used up, the base rule of [`corp_troops_at`]), and a full base takes
+/// none. (137-r79: 1 drone per neutral factory per base, an ambassador on the factory stopping one, players
+/// choosing which base.)
 pub fn tip_corp_troops(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
-    let cap = w.int("board.unit_cap");
-    for h in 0..g.hexes.len() {
-        if g.tokens(h, FACTORY) == 0 || corrupted(g, h) || cube_owner(g, h).is_some() || occupied(g, h) {
-            continue;
-        }
-        if g.tokens(h, ADV_AMBASSADOR) > 0 {
-            cx.tally(g, "board.blocked.factory_neutral", 1);
-            continue;
-        }
-        let mut open: Vec<usize> =
-            corp_bases(&w, w.map.hexes[h].country).into_iter().filter(|&b| g.tokens(b, UNIT) < cap).collect();
-        while !open.is_empty() {
-            let Some(s) = player_ambassador(g, h) else { break };
-            let standing: i64 = (0..g.seats.len()).map(|x| g.tokens(h, ambassador(x))).sum();
-            let i = if open.len() as i64 > standing {
-                let opts = open.iter().map(|&b| hex_opt(&w, b)).collect();
-                let prompt = || format!("The ambassador on the factory at {} stops the troop for which base?", hex_name(&w, h));
-                cx.choose(0, prompt, opts)?.unwrap_or(0)
-            } else {
-                0
-            };
-            open.remove(i);
-            cx.add_tokens(g, h, ambassador(s), -1);
-            cx.tally(g, "board.factory_ambassador_used", 1);
-        }
-        if open.is_empty() {
+    for c in 0..w.map.countries.len() {
+        let hexes = &w.map.countries[c].hexes;
+        let blocked = hexes
+            .iter()
+            .filter(|&&h| g.tokens(h, FACTORY) > 0 && !corrupted(g, h) && cube_owner(g, h).is_none() && !occupied(g, h))
+            .filter(|&&h| !open_neutral_factory(g, h))
+            .count() as i64;
+        cx.tally(g, "board.blocked.factory_neutral", blocked);
+        if !hexes.iter().any(|&h| open_neutral_factory(g, h)) {
             continue;
         }
         cx.tally(g, "board.tip_factory_troops", 1);
-        for b in open {
+        for b in corp_bases(&w, c as u8) {
             add_unit(g, cx, b);
         }
     }

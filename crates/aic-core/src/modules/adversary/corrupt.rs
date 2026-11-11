@@ -85,7 +85,8 @@ pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) 
 }
 
 /// 175, a node hex corrupts: its agents go to the supply and the node is destroyed (the protections apply;
-/// the Sanctuary capstone keeps it). Nothing else on the hex changes.
+/// the Sanctuary capstone keeps it). r80 (ruling #42, one aftermath for all corruption): a node it destroys
+/// leaves land corruption, the one adversary mark, in place of the node loss's marker.
 fn corrupt_node(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
     let w = cx.world;
     let n = g.tokens(h, ADV_AMBASSADOR);
@@ -93,6 +94,12 @@ fn corrupt_node(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
     if let Some(s) = node_owner(g, h) {
         if !cards::has_passive(&w, g, s, |p| matches!(p, Op::CorruptionShield)) {
             board::destroy_piece(g, cx, h, node(s), board::Cause::Effect("corruption"))?;
+            if node_owner(g, h).is_none() {
+                clear_markers_on(g, cx, h);
+                if g.tokens(h, LAND_CORRUPTION) == 0 {
+                    cx.add_tokens(g, h, LAND_CORRUPTION, 1);
+                }
+            }
         }
     }
     cx.tally(g, "adversary.corruptions", 1);
@@ -152,17 +159,13 @@ pub fn corrupt_sites(g: &mut GameState, cx: &mut Cx, site: CorruptSite, cut: i64
         }
     }
     for t in cv.targets {
-        let held = g.tokens(t, ADV_AMBASSADOR) + if site != CorruptSite::Node && is_city(&w, t) { g.tokens(t, MARKER) } else { 0 };
+        // r80 (ruling #42): agents only; a marker no longer counts.
+        let held = g.tokens(t, ADV_AMBASSADOR);
         if held < n {
             continue;
         }
-        if let Some(&(_, wh)) = cv.blocked.iter().find(|(b, _)| *b == t) {
-            prohibit_tally(g, cx, Step::Corrupt, wh, held);
-            continue;
-        }
-        // 178 (Matt's ruling #30): a firewalled site doesn't corrupt.
-        if firewalled(g, t) {
-            cx.tally(g, "adversary.firewall_held", 1);
+        // A Corrupt prohibition's token or (178, Matt's ruling #30) a firewall holds it (185's audit: one guard).
+        if guard_holds(g, cx, t, "line") {
             continue;
         }
         // An earlier corruption may have taken this target's node (a node line) or flipped it already.
@@ -192,22 +195,15 @@ fn converge_one(g: &mut GameState, cx: &mut Cx, from: usize, to: usize) -> Res {
 }
 
 /// 138, natural corruption at the end of the event card: every city,
-/// research station or factory already holding its corrupt number (a city's
-/// markers count, 034) corrupts, with no move, in hex order; 175: then every
+/// research station or factory already holding its corrupt number (r80: agents only, no markers) corrupts, with no move, in hex order; 175: then every
 /// hex with a player's node holding a node's number loses the node.
 pub(super) fn natural_corruption(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     for site in [CorruptSite::City, CorruptSite::Station, CorruptSite::Factory, CorruptSite::Node] {
         let n = corrupt_n(&w, site, 0);
         for h in super::plan::natural_targets(&w, g, site, n) {
-            // 167: a Corrupt prohibition covers natural corruption too.
-            if let Some(wh) = super::plan::prohibition_on(&w, g, Step::Corrupt, h, g.round as i64) {
-                prohibit_tally(g, cx, Step::Corrupt, wh, g.tokens(h, ADV_AMBASSADOR));
-                continue;
-            }
-            // 178 (Matt's ruling #30): a firewalled site doesn't corrupt, naturally either.
-            if firewalled(g, h) {
-                cx.tally(g, "adversary.firewall_held", 1);
+            // 167: a Corrupt prohibition covers natural corruption too; 178 (Matt's ruling #30): so does a firewall.
+            if guard_holds(g, cx, h, "natural") {
                 continue;
             }
             corrupt_hex(g, cx, h, site)?;

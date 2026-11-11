@@ -629,7 +629,8 @@ fn adversary_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Option<Facto
         cx.set_key(g, &board::new_factory_key(t), 0);
     }
     if fallback > 0 {
-        let factories: Vec<usize> = (0..g.hexes.len()).filter(|&h| g.tokens(h, FACTORY) > 0).collect();
+        // r80 (184's D79 a): a firewalled factory isn't offered, as a creation line skips it.
+        let factories: Vec<usize> = (0..g.hexes.len()).filter(|&h| g.tokens(h, FACTORY) > 0 && !firewalled(g, h)).collect();
         let opts = factories.iter().map(|&h| hex_opt(&w, h)).collect();
         let prompt = || format!("{}: agents land on which factory?", ctx.why.as_deref().unwrap_or("The adversary"));
         if let Some(i) = cx.choose_loss(0, prompt, opts)? {

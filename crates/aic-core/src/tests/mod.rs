@@ -461,6 +461,10 @@ fn deal_at(g: &mut GameState, threat: &str, c: usize, hexes: &[usize]) {
 
 fn row(g: &mut GameState, ids: &[&str]) {
     set_pile(g, PROJECTS, ids);
+    // Each in its slot, left to right (r80: compute fills the leftmost, the rest slide left).
+    for (i, id) in ids.iter().enumerate() {
+        g.vars.insert(crate::key::KeyBuf::new("adversary.slot.").text(id).as_str().into(), i as i64 + 1);
+    }
 }
 
 /// Seat `seat` with the means to play any card.
@@ -634,9 +638,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 79;
-const GOLDEN_FINGERPRINT: &str = "ccb3b728ff069ef7";
-const GOLDEN_CONTENT_HASH: &str = "dacd38c885972a12";
+const GOLDEN_REVISION: u32 = 80;
+const GOLDEN_FINGERPRINT: &str = "79975f016c57f437";
+const GOLDEN_CONTENT_HASH: &str = "312c0c6f259414fd";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

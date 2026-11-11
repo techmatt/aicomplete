@@ -31,29 +31,16 @@ fn at_war_units_cancel_and_the_surplus_destroys_rival_buildings() {
     assert_eq!(discord(&g), 2);
     assert_eq!(g.stats.counters["alignment.discord_from.war"], 2);
 
-    // A destroyed factory takes the node on its hex (027); a node
-    // elsewhere stays, and a surplus with nothing to hit is spent.
+    // r80 (ruling #52): a drone's strike destroys only the factory, never the node on its hex (027-r79 took it);
+    // a surplus with nothing to hit is spent.
     let mut g = g0.clone();
     put(&mut g, f1, FACTORY, 1);
     put(&mut g, f1, node(1), 1);
     put(&mut g, b0, UNIT, 3);
     run(&rules, &mut g);
-    assert_eq!((g.tokens(f1, FACTORY), g.tokens(f1, node(1)), g.tokens(d1, node(1))), (0, 0, 1));
+    assert!(g.pending.is_none(), "nothing asks to guard the node");
+    assert_eq!((g.tokens(f1, FACTORY), g.tokens(f1, node(1)), g.tokens(d1, node(1))), (0, 1, 1));
     assert_eq!((units(&g), discord(&g)), ((0, 0), 1));
-
-    // r75 (Matt's ruling 5): the node on the destroyed factory's hex is guarded
-    // like any node: its owner may spend its ambassador there to keep it.
-    let mut g = g0.clone();
-    put(&mut g, f1, FACTORY, 1);
-    put(&mut g, f1, node(1), 1);
-    put(&mut g, f1, ambassador(1), 1);
-    put(&mut g, b0, UNIT, 3);
-    run(&rules, &mut g);
-    let p = g.pending.as_ref().expect("the node's owner is asked");
-    assert_eq!(p.ask.seat, 1);
-    answer_with(&rules, &mut g, "spend your ambassador there");
-    answer_all(&rules, &mut g);
-    assert_eq!((g.tokens(f1, FACTORY), g.tokens(f1, node(1)), g.tokens(f1, ambassador(1))), (0, 1, 0));
 
     // Hardening absorbs one when spent (r75: the owner, seat 0 for a neutral
     // factory, chooses); let go, the factory falls.
@@ -106,7 +93,7 @@ fn war_comes_after_the_threats_execute() {
     assert!(threats < war, "{:?}", rules.config.round);
 }
 
-/// 137: a Discord tip's corp troops are held to `unit_cap` a base.
+/// 137: a Discord tip's corp troops are held to `unit_cap` a base (r80: 1 a tip, however many factories).
 #[test]
 fn bases_hold_at_most_three_units() {
     let (rules, mut g) = lab(&[]);
@@ -115,7 +102,7 @@ fn bases_hold_at_most_three_units() {
     for &f in &piece(0).factories {
         put(&mut g, m.numbered(0, f), FACTORY, 1);
     }
-    let made = piece(0).factories.len() as i64;
+    let made = 1;
     let [b0, b1] = m.fronts[0].bases;
     let cap = w.int("board.unit_cap");
     assert_eq!(cap, 3);

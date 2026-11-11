@@ -602,7 +602,7 @@ impl AlignmentCard {
 }
 
 /// An adversary project (017): one shared deck, staged (stage 1 cheap,
-/// stage 2 big). Adversary compute fills the cheapest visible project; a
+/// stage 2 big). Adversary compute fills the leftmost visible project; a
 /// full one resolves its effects once, or, `ongoing`, every round from then
 /// on. Team choices are asked of seat 0.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1244,12 +1244,47 @@ fn event_step(e: &Op) -> u8 {
     }
 }
 
+/// r80 (ruling #31): the fixed list of an event card's line kinds, each printed with one icon
+/// (docs/card-guidelines.md, *Event lines*): `(kind, icon)`. An event line outside it is off the standard.
+pub const EVENT_LINE_KINDS: [(&str, &str); 10] = [
+    ("Rally", "agent, then the site glyph"),
+    ("Muster", "troop, then the factory glyph"),
+    ("Income", "brown box: agent or compute"),
+    ("New factory", "factory glyph with a plus"),
+    ("Discord", "Discord track, arrow up"),
+    ("Unity back", "Unity track, arrow down"),
+    ("Blackout", "city glyph with energy struck through"),
+    ("Node loss", "minus node, by a base"),
+    ("Forced March", "troop with a plus step"),
+    ("Corrupt", "dark-framed site glyph"),
+];
+
+/// r80 (ruling #31): the kind (an [`EVENT_LINE_KINDS`] name) of event line `e`, none if it is no kind on the list.
+pub fn event_line_kind(e: &Op) -> Option<&'static str> {
+    Some(match e {
+        Op::Rally { count: 0, .. } => "Rally",
+        Op::Troops { each_country: true, at: None, stand: false, location: None, if_: None, .. } => "Muster",
+        Op::IncreaseIncome { .. } => "Income",
+        Op::CreateSite { .. } => "New factory",
+        Op::Sway { side: crate::vocab::Side::Discord, .. } => "Discord",
+        Op::PullUnity { .. } => "Unity back",
+        Op::Flag { .. } => "Blackout",
+        Op::EachDestroyNode { .. } => "Node loss",
+        Op::TroopSteps { .. } => "Forced March",
+        Op::Corrupt { .. } => "Corrupt",
+        _ => return None,
+    })
+}
+
 /// 151, the event standard (the threat card standard's, for events): one Rally X, its lines in the fixed order
 /// (rally, muster, other lines, corrupt), at most two other lines (consequences), no per-event compute or
 /// creation line, and "each country", never "each board". The reason it breaks, if it does.
 pub fn event_rule_break(a: &AdversaryCard) -> Option<String> {
     if says_each_board(&a.text) {
         return Some("it says \"each board\" (each country)".into());
+    }
+    if let Some(e) = a.standing.iter().chain(&a.twists).find(|e| event_line_kind(e).is_none()) {
+        return Some(format!("a line of no kind on the fixed list (r80, ruling #31): {e:?}"));
     }
     let steps: Vec<u8> = a.standing.iter().chain(&a.twists).map(event_step).collect();
     if steps.iter().filter(|&&s| s == 0).count() != 1 {

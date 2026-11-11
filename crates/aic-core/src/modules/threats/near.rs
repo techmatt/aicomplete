@@ -52,52 +52,28 @@ fn sites(w: &World, g: &GameState, c: usize, loc: Location) -> Vec<usize> {
     w.map.countries[c].hexes.iter().copied().filter(|&h| of_type(h) && !corrupted(g, h)).collect()
 }
 
-/// Adversary pieces (ambassadors, troops, botnets) on or next to hex `h`.
-fn pressure(w: &World, g: &GameState, h: usize) -> i64 {
-    within(w, h, 1)
-        .into_iter()
-        .map(|x| g.tokens(x, ADV_AMBASSADOR) + g.tokens(x, TROOP) + g.tokens(x, BOTNET))
-        .sum()
-}
-
 /// Whether country `c` has a site for at least one of `t`'s location types.
 pub(super) fn lands_in(w: &World, g: &GameState, t: &ThreatDef, c: usize) -> bool {
     t.locations.iter().any(|&l| !sites(w, g, c, l).is_empty())
 }
 
-/// Puts `threat`'s tokens in country `c`: each on the site of its type with
-/// the most adversary pieces on or next to it, ties the lower hex; two tokens
-/// never share a hex.
+/// Puts `threat`'s tokens in country `c`, in printed order: r80 (ruling #46) each on the site of its type (not the
+/// adversary's) with the most agents on its own hex, ties the lowest number; two tokens never share a hex (a token
+/// with no site left stays off). It counted adversary pieces on and next to each site, with a reorder for a token
+/// left off (145).
 pub(super) fn place_tokens(g: &mut GameState, cx: &mut Cx, threat: &Key, c: usize) {
     let w = cx.world;
     let locs: Vec<(usize, _)> = def(&w, threat).locations.iter().copied().enumerate().take(MAX_TOKENS).collect();
-    let assign = |order: &[(usize, _)]| {
-        let mut used: Vec<(usize, usize)> = Vec::new();
-        for &(i, loc) in order {
-            let best = sites(&w, g, c, loc)
-                .into_iter()
-                .filter(|h| !used.iter().any(|&(_, u)| u == *h))
-                .max_by_key(|&h| (pressure(&w, g, h), std::cmp::Reverse(h)));
-            if let Some(h) = best {
-                used.push((i, h));
-            }
+    let mut used: Vec<usize> = Vec::new();
+    for (i, loc) in locs {
+        let best = sites(&w, g, c, loc)
+            .into_iter()
+            .filter(|h| !used.contains(h))
+            .max_by_key(|&h| (g.tokens(h, ADV_AMBASSADOR), std::cmp::Reverse(w.map.hexes[h].number)));
+        if let Some(h) = best {
+            used.push(h);
+            cx.set_key(g, &loc_key(threat, i), h as i64 + 1);
         }
-        used
-    };
-    let mut placed = assign(&locs);
-    // 145: in printed order a city token could take the only clean coastal
-    // city and leave a coastal-city token off the board: when that leaves a
-    // token unplaced, the type with fewer sites places first.
-    if placed.len() < locs.len() {
-        let mut narrow = locs.clone();
-        narrow.sort_by_key(|&(_, loc)| sites(&w, g, c, loc).len());
-        let other = assign(&narrow);
-        if other.len() > placed.len() {
-            placed = other;
-        }
-    }
-    for (i, h) in placed {
-        cx.set_key(g, &loc_key(threat, i), h as i64 + 1);
     }
 }
 

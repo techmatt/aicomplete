@@ -26,8 +26,8 @@ stage I pulls one tier-1 threat a country, stage II one tier-2 (or a tier 1 and 
 two tier-2s (`check.py` refuses another shape). In `threats.deal`, for each pull and each country in order, **the draw rule**: turn up the top card of
 that tier's deck; it stays if it carries a listed tag (Universal fits any; "any" takes every card) and the country has
 a site of one of its location types not the adversary's (*Location tokens*); otherwise it goes to that tier's discard and the next is turned up. An empty deck
-reshuffles its discard. A pull still unfilled after one reshuffle takes the next card anyway and is counted
-(`threats.pull_forced`: a content bug; `drafts/adversary/check.py`'s simulated pulls never need one, but threats a
+reshuffles its discard; **if a reshuffled deck has no card that fits, take the next card anyway** (counted as
+`threats.pull_forced`, a content bug: `drafts/adversary/check.py`'s simulated pulls never need one, but threats a
 threat deals and the ones waiting a round are out of the deck there too). From
 difficulty `extra_threats_at` (5, past the top level 4, so never) the card adds `extra_threats` more pulls of its first
 pull, countries in turn: the ladder raises intensity, never the count (142, Matt). A threat that deals a threat
@@ -36,8 +36,9 @@ pull, countries in turn: the ladder raises intensity, never the count (142, Matt
 
 **Location tokens.** A dealt threat puts a token on a site of each of its location types in its country (two tokens
 never share a hex), one condition for every type: a site of the type that is **not the adversary's** (a city, coastal
-city, research station or factory; a military base never is). Among those sites, the one with the most adversary pieces on or next to it (agents, troops, botnets); ties, the lower hex number. Tokens go in printed order, but if that leaves one off the
-board (a city token on the only such coastal city), the type with fewer sites goes first. A printed game does this by eye. A location type with no
+city, research station or factory; a military base never is). Tokens go in printed order (r80, Matt's ruling #46),
+each onto the site of its type with **the most agents on its own hex** (troops, botnets and neighbors don't count);
+ties, the lowest hex number. A token with no such site left stays off the board. A location type with no
 such site in the country gets no token; the pull never deals a threat with none there (so a threat whose only type has
 no such site skips that country, and a base-only threat never lands at 1 country). A line for "the base here" or "the
 factory here" with no such token does nothing (184: Garrison State and Manhunt landed their troops on the city).
@@ -101,26 +102,26 @@ Its compute waits for the adversary's compute step ([adversary.md](adversary.md)
 
 **For new players (the adversary model).** Each round the adversary's event card comes first. Its top line deals
 threats: in each country, turn up cards from the named tier's threat deck until one has a listed tag (a Universal card
-has every tag) and the country has a site of one of its location types not the adversary's, discard the misses, and put its location tokens on the board. If you have a node or an ambassador on
+has every tag) and the country has a site of one of its location types not the adversary's, discard the misses, and put each location token on the site of its type holding the most agents. If you have a node or an ambassador on
 or next to a token, you are *near* that threat and may help pay it off. Each threat prints one way to pay, or two: a
 scarce thing (energy, ambassadors, insight, research cubes, chips, or cards given up for their tags) or credits;
 resources can be pooled between players, giving up cards is done by one player alone. What a threat takes if unpaid is
-never what it asks for. Next the card rallies (each country's pool of agents lands on the sites of the type
-it names, spread evenly) and musters its troops, then its other lines, its Corrupt lines (every agent next to a site of
+never what it asks for. Next the card rallies (each country's pool of agents is dealt one at a time onto the sites of
+the type it names, in hex order) and musters its troops, then its other lines, its Corrupt lines (every agent next to a site of
 the type moves onto it, and each site holding its number corrupts) and the march. You draft and act; production then runs from one
 snapshot of the board. At the end of the round each threat nobody paid does what it prints, and nothing else: one
 consequence, sometimes two, from a short list (troops or agents on its spot, compute, Sway toward
 Discord, Unity pulled back, a site corrupted or seized, a botnet, or the nearest player paying energy, chips, cubes or
 ambassadors or discarding cards, losing insight, a building, or a node). A player harm always hits the one player whose
 node is nearest the threat. Tier 1 is small; tier 2 is about two tier-1s. Compute waits for the adversary's compute
-step, then fills the cheapest project on its board; a full project fires there, and its slot refills at once. **Harder levels** make threats
+step, then fills the leftmost project on its board; a full project fires there, the rest slide left and the right
+slot refills. **Harder levels** make threats
 harsher, not more: difficulty 1 lets cities, stations and factories corrupt with one fewer agent and makes every counter cost 1 more of
 each thing (4 more credits), 2 adds 1 more again (credits unchanged) and the Militarist's line (4 compute for each
 unpaid threat, 1 more troop on every Muster), 3 gives a shorter, busier game, and 4 deals tier-2 threats sooner; no
 level deals an extra threat. Levels 1 to 3 also raise the adversary's compute income (most at 2), and level 1 starts
 its agent income ([adversary.md](adversary.md)).
-**What resisted a summary:** where a token goes (the most-threatened site of its type not the adversary's, by count of
-adversary pieces), and that only resource options pool.
+**What resisted a summary:** that only resource options pool.
 
 **Compute.** Many threats also give the adversary compute, onto its projects ([adversary.md](adversary.md)), when they
 execute uncountered: printed on the threat. Not every threat gives it.

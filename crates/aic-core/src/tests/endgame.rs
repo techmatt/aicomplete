@@ -307,12 +307,19 @@ fn a_marker_adds_nothing_where_there_is_corruption_and_blocks_the_hex() {
     assert_eq!(g.tokens(a, MARKER), 1);
 }
 
+/// r80 (ruling #42): a marker no longer counts as an agent toward a city's corruption (034-r79 counted it); a
+/// city that does corrupt takes the cube, its one mark, and the marker comes off.
 #[test]
-fn a_marker_counts_toward_corrupting_a_city() {
-    let (rules, mut g) = lab_with(&["adversary.natural"], &["adversary.corrupt_at=2"]);
+fn a_marker_no_longer_counts_toward_corrupting_a_city() {
+    let (rules, mut g0) = lab_with(&["adversary.natural"], &["adversary.corrupt_at=2"]);
     let h = rules.map.numbered(0, piece(0).cities[1]);
-    put(&mut g, h, MARKER, 1);
-    put(&mut g, h, ADV_AMBASSADOR, 1);
+    put(&mut g0, h, MARKER, 1);
+    put(&mut g0, h, ADV_AMBASSADOR, 1);
+    let mut g = g0.clone();
+    run(&rules, &mut g);
+    assert_eq!((g.tokens(h, ADV_CUBE), g.tokens(h, MARKER)), (0, 1), "one agent and a marker: short of 2");
+    let mut g = g0.clone();
+    put(&mut g, h, ADV_AMBASSADOR, 2);
     run(&rules, &mut g);
     assert_eq!(g.tokens(h, ADV_CUBE), 1);
     assert_eq!(g.tokens(h, MARKER), 0, "the city's corruption replaces it");

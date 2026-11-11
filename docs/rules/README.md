@@ -22,7 +22,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 79 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 80 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -75,8 +75,8 @@ The house words, as the player aid prints them ([player-aid.md](../player-aid.md
 - **Convert**: an agent on or next to the city leaves its stack and becomes your ambassador where it stood.
 - **Gather up to N**: pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece (a strike, "remove up to N on or next to a hex", moves nothing).
 - **Push up to N**: pieces from a hex in your reach, each to a hex next to it that you choose; you may stop at any piece.
-- **Firewall**: a token on a hex: no agent lands or moves there (a Rally share for it stays in the supply) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn.
-- **In the next adversary turn, no X**: a Unity card's prohibition: that step skips each site where the condition holds when the step runs; what it would have placed stays in the supply.
+- **Firewall**: a token on a hex: no agent lands or moves there (a Rally skips it) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn.
+- **In the next adversary turn, no X**: a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (a Rally deals past it), and the tokens come off with the firewalls.
 <!-- /generated -->
 
 The rest:
@@ -91,8 +91,8 @@ The rest:
   are most of a card's. The exceptions are Spread (Exodus Corridors, measured from
   the ambassador), Take down a botnet (where your ambassador stands on one), and country effects such as a tier-2 sweep or Shelter (any country;
   [card-grammar.md](card-grammar.md)). Reach is 1 for every player rule: no deck card's
-  move goes further. Reach bounds where a piece goes, not where it comes from: a Dispatch, or a card's "move up to N ambassadors", takes one from anywhere. The adversary's distances (a Corrupt line moving agents from next door, `war_reach`) are its dials, not
-  a player's reach ([adversary.md](adversary.md), [war.md](war.md)). A converter needs a city of its country in your
+  move goes further. Reach bounds where a piece goes, not where it comes from: a Dispatch, or a card's "move up to N ambassadors", takes one from anywhere. The adversary's distances (a Corrupt line moving agents from next door, a troop's
+  strike) are its own, not a player's reach ([adversary.md](adversary.md), [war.md](war.md)). A converter needs a city of its country in your
   reach ([board.md](board.md)).
 - **Site**: a city, research station or factory (137: one site model, [ambassadors.md](ambassadors.md)). A military
   base is no site: it is a front's troop pile ([war.md](war.md)).

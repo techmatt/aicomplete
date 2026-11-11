@@ -38,8 +38,8 @@ pub fn rally_site(c: &AdversaryCard) -> Option<crate::op::RallyAt> {
 }
 
 /// 151, Rally X in board `scope` or every board: each board places its pool (or `count`, a project's rally)
-/// by [`super::plan::rally_plan`]: every site of the type gets the even share, the remainder one each on the
-/// lowest-numbered not the adversary's (175). The supply is a cap. Tallied as `adversary.rallied` and by source.
+/// by [`super::plan::rally_plan`]: r80 (ruling #43) dealt round-robin onto the sites of the type in hex order,
+/// skipping firewalled and prohibited ones. The supply is a cap. Tallied as `adversary.rallied` and by source.
 pub fn rally(g: &mut GameState, cx: &mut Cx, site: crate::op::RallyAt, count: i64, scope: Option<usize>, source: &str) -> Res {
     let w = cx.world;
     let boards: Vec<usize> = match scope {
@@ -66,7 +66,7 @@ pub fn rally(g: &mut GameState, cx: &mut Cx, site: crate::op::RallyAt, count: i6
             continue;
         };
         let before = g.var(SUPPLY);
-        // 175: one rule for a blocked landing: a prohibited or firewalled site's share stays in the supply.
+        // r80: the plan already skips firewalled and prohibited sites; the check stays as a guard.
         for &(h, k) in &plan.shares {
             if k <= 0 {
                 continue;

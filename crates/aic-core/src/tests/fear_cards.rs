@@ -4,20 +4,15 @@
 use super::*;
 use crate::content::Op;
 use crate::modules::{adversary, plan};
+use crate::modules::common::prohibit_token;
 use crate::op::{CorruptSite, Per, RallyAt, Removable, Step, Where};
 
-/// The prohibition's round, as `prohibit` set it, made the current round (the step running now).
-fn into_its_turn(g: &mut GameState, step: Step) {
-    let r = g.var(plan::prohibit_keys(step).0);
-    assert!(r > 0, "the prohibition is pending");
-    g.round = r as u32;
-}
-
-/// A Corrupt prohibition keeps a covered city from corrupting and pulls nothing into it; an uncovered one still
-/// corrupts.
+/// r80 (ruling #53): a Corrupt prohibition puts its token on each hex its condition holds on when the card
+/// resolves; the token, not the condition, keeps a covered city from corrupting (an ambassador arriving later
+/// covers nothing, one leaving uncovers nothing), and the tokens come off at the end of the next adversary turn.
 #[test]
 fn a_corrupt_prohibition_stops_a_covered_city() {
-    let (rules, mut g) = lab(&[]);
+    let (rules, mut g) = lab(&["adversary.compute"]);
     let w = rules.world();
     let m = &rules.map;
     let (c, lonely) = city_with_lonely_neighbors(m);
@@ -26,18 +21,23 @@ fn a_corrupt_prohibition_stops_a_covered_city() {
     let n = adversary::corrupt_n(&w, CorruptSite::City, 0);
     assert!(plan::corrupt_plan(&w, &g, CorruptSite::City, n, None).iter().any(|(t, _)| *t == c));
     run_ops(&rules, &mut g, &[Op::Prohibit { step: Step::Corrupt, where_: Where::ByAmbassador }]);
-    into_its_turn(&mut g, Step::Corrupt);
-    assert!(plan::corrupt_plan(&w, &g, CorruptSite::City, n, None).iter().any(|(t, _)| *t == c), "no ambassador yet");
+    assert_eq!(g.tokens(c, prohibit_token(Step::Corrupt)), 0, "no ambassador when it resolved");
     put(&mut g, lonely[1], ambassador(0), 1);
-    assert!(!plan::corrupt_plan(&w, &g, CorruptSite::City, n, None).iter().any(|(t, _)| *t == c));
+    assert!(plan::corrupt_plan(&w, &g, CorruptSite::City, n, None).iter().any(|(t, _)| *t == c), "a later ambassador covers nothing");
+    run_ops(&rules, &mut g, &[Op::Prohibit { step: Step::Corrupt, where_: Where::ByAmbassador }]);
+    assert_eq!(g.tokens(c, prohibit_token(Step::Corrupt)), 1);
+    put(&mut g, lonely[1], ambassador(0), 0);
+    assert!(!plan::corrupt_plan(&w, &g, CorruptSite::City, n, None).iter().any(|(t, _)| *t == c), "the token holds");
     let cv = plan::converge(&w, &g, CorruptSite::City, None);
     assert!(cv.blocked.iter().any(|(t, wh)| *t == c && *wh == Where::ByAmbassador));
-    // Another round: the prohibition has lapsed.
-    g.round += 1;
+    // The end of the adversary turn (the Income beat) takes the tokens off, with the firewalls.
+    run(&rules, &mut g);
+    assert_eq!(total(&g, prohibit_token(Step::Corrupt)), 0);
     assert!(plan::corrupt_plan(&w, &g, CorruptSite::City, n, None).iter().any(|(t, _)| *t == c));
 }
 
-/// A Rally prohibition: a covered site's share stays in the supply (it does not go to the other sites).
+/// r80 (rulings #43, #53): a Rally prohibition's token is skipped like a firewall: nothing lands on the covered
+/// site and the round-robin deals its agents to the others.
 #[test]
 fn a_rally_prohibition_keeps_the_share_in_the_supply() {
     let (rules, mut g) = lab(&[]);
@@ -46,19 +46,18 @@ fn a_rally_prohibition_keeps_the_share_in_the_supply() {
     let sites = plan::rally_sites(&w, &g, RallyAt::City, country);
     assert!(sites.len() >= 2);
     let k = sites.len() as i64;
-    run_ops(&rules, &mut g, &[Op::Prohibit { step: Step::Rally, where_: Where::Ambassador }]);
-    into_its_turn(&mut g, Step::Rally);
     put(&mut g, sites[0], ambassador(0), 1);
+    run_ops(&rules, &mut g, &[Op::Prohibit { step: Step::Rally, where_: Where::Ambassador }]);
+    assert_eq!(g.tokens(sites[0], prohibit_token(Step::Rally)), 1);
     let before: Vec<i64> = sites.iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).collect();
     let supply = g.var(SUPPLY);
-    with_cx(&rules, |cx| adversary::rally(&mut g, cx, RallyAt::City, 2 * k, Some(country), "test")).unwrap();
+    with_cx(&rules, |cx| adversary::rally(&mut g, cx, RallyAt::City, 2 * (k - 1), Some(country), "test")).unwrap();
     assert_eq!(g.tokens(sites[0], ADV_AMBASSADOR), before[0], "nothing lands on the covered site");
     assert_eq!(g.tokens(sites[0], ambassador(0)), 1, "and its ambassador stands");
     for (i, &h) in sites.iter().enumerate().skip(1) {
-        assert_eq!(g.tokens(h, ADV_AMBASSADOR), before[i] + 2, "the others take their share only");
+        assert_eq!(g.tokens(h, ADV_AMBASSADOR), before[i] + 2, "the others take the pool round-robin");
     }
     assert_eq!(g.var(SUPPLY), supply - 2 * (k - 1));
-    assert_eq!(g.stats.counters.get("prohibit.rally.ambassador.blocked").copied(), Some(2));
 }
 
 /// "Remove 1 agent from each hex on or next to an ambassador": every such hex, no other.
