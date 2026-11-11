@@ -502,7 +502,7 @@ pub enum Event {
     /// You place tokens of `kind` on your cards: once a placement (178; once a token before r77).
     PlaceTokens { kind: TokenKind },
     /// An adversary troop ends its march next to your node (an AI board's innate: Vigil; 178, Matt's ruling #18,
-    /// was "your Wall stops a troop"): once a troop a march, any march.
+    /// was "your Wall stops a troop"): any march; 185: at most `board.vigil_cap` (1) troops a round.
     MarchEndsNear,
 }
 
@@ -1135,6 +1135,17 @@ pub enum Op {
     RemoveBotnets {
         count: i64,
     },
+    /// 185 (Matt's ruling #3): `count` adversary research cubes onto each open megaproject. They fill it like
+    /// any cube and each pays the card's adversary payout at completion. Printed on no card yet.
+    AdversaryCubes {
+        count: i64,
+    },
+    /// 185 (Matt's ruling #3): up to `count` botnets, one at a time (players choose which), each come off and
+    /// become an adversary research cube on its country's open megaproject; a botnet in a country whose
+    /// megaproject is complete can't. Printed on no card yet.
+    BotnetCubes {
+        count: i64,
+    },
     /// 156: one player (the team chooses, among those with something it acts
     /// on) resolves `then` as their own card would, in their reach: a Unity
     /// card's way to act where pieces are.
@@ -1362,6 +1373,7 @@ impl Op {
             | Op::ThreatCompute { .. }
             | Op::Rally { .. }
             | Op::IncreaseIncome { .. } => &[Team],
+            Op::AdversaryCubes { .. } | Op::BotnetCubes { .. } => &[Threat, Team],
             Op::ComputeEvery { .. } => &[Threat, Team],
             Op::Create { .. } => &[Threat, Team],
             Op::Corrupt { .. } => &[Threat, Team, Twist],

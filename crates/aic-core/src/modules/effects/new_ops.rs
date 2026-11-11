@@ -323,6 +323,8 @@ fn force_flip(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, each_country: bool) -> 
             let here = threats::token_of(&w, g, t, Location::Station);
             spots.retain(|h| Some(*h) == here);
         }
+        // 185 (D77): a firewalled or prohibited station is skipped, even by a forced flip.
+        spots.retain(|&h| !adversary::guard_holds(g, cx, h, "force_flip"));
         let opts = spots.iter().map(|&h| hex_opt(&w, h)).collect();
         let prompt = || format!("{}: which research station flips to the adversary?", ctx.why.as_deref().unwrap_or("Threat"));
         if let Some(i) = cx.choose(0, prompt, opts)? {
@@ -340,7 +342,8 @@ fn force_flip(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, each_country: bool) -> 
 fn corrupt_city(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Option<Spot>) -> Res {
     let w = cx.world;
     let Some(h) = city_token(&w, g, ctx) else { return Ok(()) };
-    if !corrupted(g, h) {
+    // 185 (D77): a firewalled or prohibited city doesn't corrupt (nor does Regime Change take the nodes by it).
+    if !corrupted(g, h) && !adversary::guard_holds(g, cx, h, "corrupt_city") {
         adversary::corrupt_city(g, cx, h)?;
         if at == Some(Spot::Location) {
             for x in within(&w, h, 1) {

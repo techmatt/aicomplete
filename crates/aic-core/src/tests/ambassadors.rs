@@ -221,7 +221,7 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
     );
 
     // 137: an agent on an owned station blocks its cube and
-    // stays; a corrupted station makes adversary compute, no megaproject cube;
+    // stays; a corrupted station puts an adversary cube on its open megaproject (185);
     // a neutral one makes a neutral cube.
     let mut g = g0.clone();
     let [s0, s1] = [0, 1].map(|c| m.numbered(c, piece(c).stations[0]));
@@ -243,9 +243,11 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
         let k = board::project_neutral(0);
         g.var(&k) - g0.var(&k)
     };
+    // 185: the corrupted station puts an adversary cube on its open megaproject.
+    let cubes = rules.world().int("board.station_cubes");
     assert_eq!(
         (key(&g, 0, None), key(&g, 0, Some(0)), key(&g, 1, None), neutral_key(&g)),
-        (0, 0, 0, 1)
+        (0, 0, cubes, 1)
     );
     // 175: the corrupted station's compute comes in the adversary's compute step, not in production.
     assert_eq!(g.var(adversary::COMPUTE) - compute, 0);

@@ -75,9 +75,10 @@ megaproject is the corp's defining card.
 <!-- /generated -->
 
 - **Stations** follow the one site model ([ambassadors.md](ambassadors.md)). In production a **neutral** one makes
-  `station_cubes` (1) research cube a round, a player's `owned_station_cubes` (2) in its owner's color; an adversary station (corrupted) makes
-  no cube but adds `station_cubes` compute in the adversary's compute step, so no adversary cube reaches a
-  megaproject. No player starts with a
+  `station_cubes` (1) research cube a round, a player's `owned_station_cubes` (2) in its owner's color; an adversary
+  station (corrupted) makes `station_cubes` **adversary** cubes (r79, Matt's ruling: the payout stays; the count a
+  candidate) onto its country's megaproject until it completes, and after that adds `station_cubes` compute in the
+  adversary's compute step instead. No player starts with a
   station: building one (`station_chips`) or claiming the neutral one (`claim_station` ambassadors) is an investment.
   One opposing ambassador or agent on a station blocks its output while it stands; the Liberate action takes an
   adversary station for the liberator.
@@ -95,8 +96,9 @@ megaproject is the corp's defining card.
   before upkeep and threats, so a whole round's cubes land first. A card holding its size
   or more completes, and **every cube on it pays, overflow included** (9 cubes on an 8-cube
   card pay 9 times); the payout spends them: a player cube pays its owner the card's player
-  payout, a neutral cube nothing. Nothing puts an adversary cube on a megaproject at present, so the printed
-  adversary payout never pays. Countries complete in piece order.
+  payout, an adversary cube the card's adversary payout (1 Sway to Discord; Polar Compute Array: 1 adversary
+  compute), a neutral cube nothing. Adversary cubes come from adversary stations (above) and the `adversary_cubes`
+  and `botnet_cubes` ops (r79; printed on no card yet, [ops.md](../ops.md)). Countries complete in piece order.
 - **After completion** that country's stations put their cubes on their owners' boards: a
   player stores **research cubes**, kept between rounds. A neutral station's cube is lost; adversary stations
   make compute (137).

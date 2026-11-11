@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 78. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 79. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -226,9 +226,10 @@ rule**, your **income**, one **tag** (§7), your **building slots**, your **Disp
   (Production isn't a landing: an adversary factory on that hex still makes its troop there, which marches off.)
   The Militarist answers it: each turn, in each country where you have a node, a troop lands on its lowest-numbered
   adversary or neutral factory, if it has one (§6, its board).
-- **Vigil** (Protector): when an adversary troop ends its march next to one of your nodes, gain 1 insight. It pays once
-  per troop per march; a troop that strikes doesn't count. It pays in any march: the adversary's turn's (spend it
-  this round) or the one a threat starts at once (that comes after the action phase, so its insight is lost).
+- **Vigil** (Protector): the first time each round an adversary troop ends its march next to one of your nodes, gain
+  1 insight; later troops that round pay nothing. A troop that strikes doesn't count. It pays in any march: the
+  adversary's turn's (spend it this round) or the one a threat starts at once (that comes after the action phase, so
+  its insight is lost).
 
 ### Resources
 
@@ -608,9 +609,12 @@ map before the next.
    A neutral city's energy is bought in the action phase (Buy energy, §8), not here.
 3. **Stations.** A player's station makes 2 cubes in its owner's color; a neutral one makes 1 neutral cube. They go
    onto their country's megaproject. Once it is complete, a player's cubes go onto their board as **research cubes**,
-   and a neutral station's are lost. (A corrupted station's compute comes in the adversary's compute step, §6.)
+   and a neutral station's are lost. A corrupted station makes 1 **adversary cube** onto its country's megaproject
+   until it is complete; after that it makes compute instead, in the adversary's compute step (§6). A player's
+   ambassador on a corrupted station blocks either.
 4. **Megaprojects.** A megaproject holding 8 cubes or more **completes**, once: every cube on it pays, overflow
-   included (§8), then its cubes come off. Neutral cubes pay nothing. From then on its stations' cubes go to their
+   included (§8), then its cubes come off. An adversary cube pays the card's adversary payout (1 Sway to Discord;
+   Polar Compute Array, 1 adversary compute). Neutral cubes pay nothing. From then on its stations' cubes go to their
    owners' boards (step 3).
 5. **Income.** Each player collects their income (insight aside, §5): board, track spaces, programs and buildings.
 
@@ -911,8 +915,8 @@ each become your ambassador where it stood. The converted agents come off first,
 converted on one hex both stay; an agent the card left on that hex meets one of them, one for one (§8).
 
 **Firewall.** Some cards put a firewall on a land hex in your reach. While it stands, no agent lands, is placed or
-moves in there: its Rally share stays in the supply, like any blocked landing. No Corrupt line or natural corruption
-takes it (agents already there stay); a project or threat that flips or corrupts a named site still can. Troops pass. It lasts until the end of the next adversary turn (step 12).
+moves in there: its Rally share stays in the supply, like any blocked landing. Nothing on it corrupts: no Corrupt
+line, natural corruption, station flip or threat that corrupts its site takes it (agents already there stay). Troops pass. It lasts until the end of the next adversary turn (step 12).
 
 **Cordon.** Hardpoint Lockdown cordons a country until the end of the next adversary turn (step 12): no agents land
 there from a Rally or a card line (troops still land, and Gather and Push still move agents in). That country's pool

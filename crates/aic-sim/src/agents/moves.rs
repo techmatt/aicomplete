@@ -10,7 +10,8 @@
 //!   then of agents, never a stop.
 //!
 //! Each answers only its own prompts; anything else (a strike's hex, a Gather that strikes) is left to the
-//! agent's search. The `move_rules` dial turns them off (`Forced`), for the on/off read.
+//! agent's search. Two agent behaviors (`policy::Behaviors`) switch them, for the on/off reads: `move_rules`
+//! the first three ([`pick`]), `strike_rule` the strike ([`strike`], 185: its own lever).
 
 use aic_core::content::{Op, Piece};
 use aic_core::op::CorruptSite;
@@ -43,7 +44,18 @@ pub fn report(games: usize) -> Option<String> {
     })
 }
 
-/// The option a move heuristic picks for the open prompt, and which heuristic (an index into [`NAMES`]).
+/// The strike rule's option for the open prompt when it is a strike batch prompt ([`strike_piece`]), and its
+/// index into [`NAMES`].
+pub fn strike(g: &GameState, legal: &[Action]) -> Option<(usize, usize)> {
+    let p = g.pending.as_ref()?;
+    if !p.ask.prompt.contains(effects::STRIKE_PIECE) {
+        return None;
+    }
+    strike_piece(legal)
+}
+
+/// The option a push, cancel or liberate heuristic picks for the open prompt, and which heuristic (an index into
+/// [`NAMES`]).
 /// `last_node` (177, the eval's `w.last_node` on): the push never lands agents where a last node can tip.
 pub fn pick(w: &World, g: &GameState, legal: &[Action], last_node: bool) -> Option<(usize, usize)> {
     let p = g.pending.as_ref()?;
@@ -62,9 +74,6 @@ pub fn pick(w: &World, g: &GameState, legal: &[Action], last_node: bool) -> Opti
         }
         let to = named_hex(w, prompt, " (into ")?;
         return gather_piece(w, g, legal, to);
-    }
-    if prompt.contains(effects::STRIKE_PIECE) {
-        return strike_piece(legal);
     }
     if prompt.contains(effects::PUSH_FROM) {
         return push_from(w, g, legal);

@@ -27,7 +27,7 @@ use rand_chacha::ChaCha8Rng;
 
 use super::eval::Eval;
 use super::planner::{idea, rollout_policy, searched_phase};
-use super::policy::Forced;
+use super::policy::{Behaviors, Forced};
 use super::search::{draw_guesses, pick, score_guesses, PhaseHistory, Scoring};
 use crate::prof::{self, Part};
 
@@ -78,6 +78,7 @@ impl Line {
 
 pub struct Oracle {
     forced: Forced,
+    behaviors: Behaviors,
     ev: Eval,
     rng: ChaCha8Rng,
     cfg: OracleCfg,
@@ -90,13 +91,13 @@ pub struct Oracle {
 }
 
 impl Oracle {
-    pub fn new(ev: Eval, forced: Forced, rng: ChaCha8Rng, cfg: OracleCfg) -> Self {
-        Oracle { ev, forced, rng, cfg, line: None, spent: (0, 0, false), history: PhaseHistory::default(), lines: 0 }
+    pub fn new(ev: Eval, forced: Forced, behaviors: Behaviors, rng: ChaCha8Rng, cfg: OracleCfg) -> Self {
+        Oracle { ev, forced, behaviors, rng, cfg, line: None, spent: (0, 0, false), history: PhaseHistory::default(), lines: 0 }
     }
 
     fn line_from(&mut self, rules: &Rules, state: &GameState, first: Option<&Action>, salt: u64) -> Option<Line> {
         self.lines += 1;
-        Kit { ev: &self.ev, forced: &self.forced, cfg: &self.cfg }.line(rules, state, first, salt)
+        Kit { ev: &self.ev, forced: &self.forced, behaviors: &self.behaviors, cfg: &self.cfg }.line(rules, state, first, salt)
     }
 
     /// Plays the lines of `tasks` (an opening move or the policy's, a policy
@@ -109,7 +110,7 @@ impl Oracle {
         tasks: &[(Option<Action>, u64)],
         mut take: impl FnMut(Option<Line>) -> bool,
     ) {
-        let kit = Kit { ev: &self.ev, forced: &self.forced, cfg: &self.cfg };
+        let kit = Kit { ev: &self.ev, forced: &self.forced, behaviors: &self.behaviors, cfg: &self.cfg };
         let t = self.cfg.threads.max(1);
         for batch in tasks.chunks(t) {
             self.lines += batch.len();
@@ -138,6 +139,7 @@ impl Oracle {
 struct Kit<'a> {
     ev: &'a Eval,
     forced: &'a Forced,
+    behaviors: &'a Behaviors,
     cfg: &'a OracleCfg,
 }
 
@@ -147,7 +149,7 @@ impl Kit<'_> {
     fn policy(&self, g: &GameState, salt: u64) -> Box<dyn Agent + Send> {
         let c = self.cfg;
         let seed = (g.seed ^ g.stats.actions as u64).wrapping_add(salt.wrapping_mul(0x9E37_79B9_7F4A_7C15));
-        rollout_policy(self.ev, self.forced, seed, c.samples, c.choices, c.prune, c.powers, c.answers, c.discards)
+        rollout_policy(self.ev, self.forced, self.behaviors, seed, c.samples, c.choices, c.prune, c.powers, c.answers, c.discards)
     }
 
     /// The line from `state` opening with `first` (or the policy's own move),

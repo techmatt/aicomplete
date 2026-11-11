@@ -27,8 +27,13 @@ sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 
 
 def sim(root):
-    """The binary a ROOT names, and the directory to run it in."""
-    return (root, '.') if root.endswith('.exe') else (os.path.join(root, 'aic-sim.exe'), root)
+    """The binary a ROOT names, and the directory to run it in: ROOT/aic-sim.exe, else ROOT/target/release's (185:
+    an exported old tree built in place)."""
+    if root.endswith('.exe'):
+        return (root, '.')
+    top = os.path.join(root, 'aic-sim.exe')
+    built = os.path.join(root, 'target', 'release', 'aic-sim.exe')
+    return (top if os.path.exists(top) or not os.path.exists(built) else built, root)
 
 
 def one(root, agent, games, first, countries, sets=()):
@@ -73,7 +78,7 @@ def main():
         ap.error('at most two roots')
     for root in a.roots:
         if not os.path.isfile(sim(root)[0]):
-            ap.error(f'{root} is neither a .exe nor a directory holding aic-sim.exe')
+            ap.error(f'{root} is neither a .exe nor a directory holding aic-sim.exe (or target/release/aic-sim.exe)')
     old, new = a.roots[0], a.roots[-1]
     agent, games, first, countries, pairs = a.agent, a.games, a.first, a.countries, a.pairs
     old_agent = a.old_agent or agent

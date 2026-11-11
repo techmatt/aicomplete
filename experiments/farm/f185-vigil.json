@@ -1,0 +1,61 @@
+{
+  "name": "f185-vigil",
+  "note": "185: the Vigil cap as a lever on r79, on the ladder's first 48 seeds (43039-43086): cap 2 a round, and 10 (about uncapped), the strategist, d0-d4; paired with the r79 ladder's cap-1 games.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-c2",
+      "set": [
+        "board.vigil_cap=2"
+      ]
+    },
+    {
+      "name": "br-c2",
+      "set": [
+        "ai.boards=0,2",
+        "board.vigil_cap=2"
+      ]
+    },
+    {
+      "name": "pr-c2",
+      "set": [
+        "ai.boards=1,2",
+        "board.vigil_cap=2"
+      ]
+    },
+    {
+      "name": "bp-c10",
+      "set": [
+        "board.vigil_cap=10"
+      ]
+    },
+    {
+      "name": "br-c10",
+      "set": [
+        "ai.boards=0,2",
+        "board.vigil_cap=10"
+      ]
+    },
+    {
+      "name": "pr-c10",
+      "set": [
+        "ai.boards=1,2",
+        "board.vigil_cap=10"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 48,
+  "records": 0
+}

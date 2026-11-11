@@ -127,12 +127,13 @@ fn a_full_megaproject_completes_at_the_end_of_production_and_every_cube_pays() {
 fn a_project_short_of_its_cubes_does_not_complete() {
     let (rules, mut g) = lab(&["board.produce"]);
     owned_station(&rules, &mut g, 0, 0);
-    // Round 1 already put a corrupted and a neutral station's cubes on it.
-    g.vars.insert(board::project_key(0, Some(0)).into(), 4);
+    // Round 1 already put a corrupted and a neutral station's cubes on it (185: the corrupted one's an adversary
+    // cube, so two a round besides the owned station's).
+    g.vars.insert(board::project_key(0, Some(0)).into(), 1);
     run(&rules, &mut g);
     assert_eq!(g.var(&board::project_done(0)), 0);
     let owned = rules.world().int("board.owned_station_cubes");
-    assert_eq!(g.var(&board::project_key(0, Some(0))), 4 + owned);
+    assert_eq!(g.var(&board::project_key(0, Some(0))), 1 + owned);
 }
 
 #[test]
@@ -156,11 +157,11 @@ fn a_neutral_station_makes_a_neutral_cube_unless_an_adversary_ambassador_blocks_
     assert_eq!(g.stats.counters["board.blocked.station_neutral"], 2);
 }
 
-/// 137: an adversary station makes adversary compute, before its country's
-/// megaproject completes and after (it put an adversary cube on the project).
-/// 175: in the adversary's compute step (the reveal step's income), not production.
+/// 185 (Matt's ruling #2): until its country's megaproject completes, an adversary station puts
+/// `station_cubes` adversary cubes onto it in production and makes no compute; after, it makes compute
+/// (137; 175: in the adversary's compute step). A player ambassador on it blocks both.
 #[test]
-fn an_adversary_station_makes_compute_before_and_after_completion() {
+fn an_adversary_station_puts_cubes_before_completion_and_compute_after() {
     let (rules, mut g) = lab_with(&["board.produce", "adversary.reveal", "adversary.compute"], &["adversary.compute_income=0,0,0,0,0"]);
     let cubes = rules.world().int("board.station_cubes");
     for c in 0..2 {
@@ -173,14 +174,41 @@ fn an_adversary_station_makes_compute_before_and_after_completion() {
     // (Round 1 of the new game already ran the setup's adversary stations.)
     let tallied = g.stats.counters.get("board.station_compute").copied().unwrap_or(0);
     run(&rules, &mut g);
-    assert_eq!(g.var(adversary::COMPUTE) - made, 2 * cubes);
-    assert_eq!(on_projects(&g), before);
+    assert_eq!(g.var(adversary::COMPUTE) - made, 0, "no compute before completion");
+    assert_eq!(on_projects(&g), before.iter().map(|b| b + cubes).collect::<Vec<_>>(), "an adversary cube on each");
+    // A player ambassador on country 0's station blocks its cube.
+    let h0 = rules.map.numbered(0, piece(0).stations[0]);
+    put(&mut g, h0, ambassador(0), 1);
+    let before = on_projects(&g);
+    run(&rules, &mut g);
+    assert_eq!(on_projects(&g), vec![before[0], before[1] + cubes]);
+    put(&mut g, h0, ambassador(0), 0);
     g.vars.insert(board::project_done(0).into(), 1);
     g.vars.insert(board::project_done(1).into(), 1);
-    let made = g.var(adversary::COMPUTE);
+    let (made, before) = (g.var(adversary::COMPUTE), on_projects(&g));
     run(&rules, &mut g);
-    assert_eq!(g.var(adversary::COMPUTE) - made, 2 * cubes);
-    assert_eq!(g.stats.counters["board.station_compute"] - tallied, 4 * cubes);
+    assert_eq!(g.var(adversary::COMPUTE) - made, 2 * cubes, "compute after completion");
+    assert_eq!(on_projects(&g), before);
+    assert_eq!(g.stats.counters["board.station_compute"] - tallied, 2 * cubes);
+}
+
+/// 185 (Matt's ruling #2): a completion holding adversary cubes pays each one the card's adversary payout
+/// (Tidal Grid: 1 Sway to Discord) and spends it.
+#[test]
+fn a_completion_pays_its_adversary_cubes() {
+    let (rules, mut g) = lab(&["board.produce"]);
+    let size = rules.world().content.map.countries[0].megaproject.cubes;
+    g.vars.insert(board::project_key(0, None).into(), 3);
+    g.vars.insert(board::project_neutral(0).into(), size - 3);
+    let paid = g.stats.counters.get("board.cubes_paid.adversary").copied().unwrap_or(0);
+    let discord = g.var("alignment.discord");
+    run(&rules, &mut g);
+    assert_eq!(g.var(&board::project_done(0)), 1);
+    assert_eq!(g.var(&board::project_key(0, None)), 0, "spent");
+    // The three set, and any the setup's adversary station put on it this production.
+    let n = g.stats.counters["board.cubes_paid.adversary"] - paid;
+    assert!(n >= 3);
+    assert_eq!(g.var("alignment.discord") - discord, n, "1 Sway to Discord each");
 }
 
 /// 137, kept at 139 (no dial): an agent blocking a station

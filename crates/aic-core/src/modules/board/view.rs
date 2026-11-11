@@ -18,7 +18,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         .map(|f| format!("board.{}.", f.name()))
         .collect();
     let mut keys: Vec<&str> = flags.iter().map(String::as_str).collect();
-    keys.extend(["board.project.", "board.project_done.", "board.project_paid.", "board.converter_round.", "board.track.", "board.track2."]);
+    keys.extend(["board.project.", "board.project_done.", "board.project_paid.", "board.converter_round.", "board.vigil_round.", "board.vigil_paid.","board.track.", "board.track2."]);
     // 135: hex flags, standing troops, occupations and registrations.
     keys.extend(MARKS);
     out.bookkeeping(&keys);

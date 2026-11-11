@@ -46,7 +46,7 @@ pub const SOURCES: [&str; 12] = [
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 16] = [
+pub const RULE_HARMS: [(&str, &str, &str); 18] = [
     ("income and rally", "adversary pieces placed", "agent income fills each country's pool; every event's Rally X lands it on the sites of its type (151)"),
     ("income and rally", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
     ("income and rally", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
@@ -54,10 +54,13 @@ pub const RULE_HARMS: [(&str, &str, &str); 16] = [
     ("botnets", "projects advanced (compute)", "each botnet makes compute"),
     ("corruption", "node destroyed", "a hex with a player's node and `corrupt_node_at` agents loses the node (175; protections apply)"),
     ("corruption", "node destroyed", "a node on the corrupted hex itself is destroyed (its owner may spend a protection: r75)"),
-    ("corruption", "facilities destroyed or seized", "a research station or factory that corrupts becomes the adversary's"),
+    ("corruption", "facilities destroyed or seized", "a research station or factory that corrupts becomes the adversary's; a firewall or Corrupt prohibition guards every path, flips and threats included (r79, D77)"),
     ("corruption", "ambassadors lost", "player ambassadors on it are lost"),
     ("corruption", "production blacked out", "its energy goes to the adversary"),
     ("corruption", "Discord sway", "its energy sways Discord each round"),
+    // 185 (Matt's ruling #2): the megaprojects column reads the printed payout; this is what feeds it.
+    ("corruption", "Discord sway", "an adversary station puts `station_cubes` adversary cubes a round on its country's open megaproject; each pays the card's adversary payout at completion, 1 Sway to Discord (r79)"),
+    ("corruption", "projects advanced (compute)", "an adversary station makes compute once its megaproject is complete; before, its cubes on Polar Compute Array pay 1 adversary compute each at completion (r79)"),
     // 146: no unprinted harm (the node loss near an uncountered threat and its floor sway are gone); the adversary
     // board may print compute per uncountered threat.
     ("uncountered threats", "projects advanced (compute)", "the adversary board's printed compute per threat that executes uncountered (the Militarist's difficulty line, from `board_difficulty_at`)"),
@@ -160,6 +163,8 @@ fn op_harms(op: &Op) -> Vec<usize> {
         Op::DealThreats { .. } | Op::ThreatAtNode { .. } => vec![EXTRA_THREATS],
         Op::Sway { side, .. } if side.name() == "discord" => vec![DISCORD_SWAY],
         Op::PullUnity { .. } => vec![UNITY_PULLED],
+        // 185: an adversary cube pays a megaproject's adversary payout (Discord, or compute on one card).
+        Op::AdversaryCubes { .. } | Op::BotnetCubes { .. } => vec![DISCORD_SWAY, PROJECTS_ADVANCED],
         _ => Vec::new(),
     }
 }

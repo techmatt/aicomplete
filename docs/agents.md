@@ -45,16 +45,15 @@ planned earlier, or short now by at most `plan_short` tags; a building over one 
 adds only what it beats the weakest by (`plan_cover`). Each switch's default and rule, and each
 **dominance check** (principles.md), is a row of `forced_table!`.
 
-**Move heuristics (`agents/moves.rs`, 166; `move_rules`, on).** Gather and Push prompts: push agents off the next
+**Agent behaviors** (`behavior_table!`, on for every agent; a dominance check's ban wins). **Move heuristics** (`agents/moves.rs`, 166, `move_rules`): push agents off the next
 Corrupt site onto empty land with no clean site next to it; gather (or push) agents onto a spare ambassador (no
 armor, no Claim or Liberate it pays toward) to cancel; gather a seat's own free ambassadors onto an adversary site
-when that seat can then pay its Liberate (never onto a node hex). A strike's batches (178): troops, then agents,
-largest first; its hex, and anything else, is the search's. `aic-sim experiment` prints their fires a game (all
-cells pooled). **Converge** (175, `converge_rule`, on): a Corrupt line's agent next
-to several sites goes where `plan::converge_pick` sends it. **Buy energy** (176, `energy_rule`, on): a seat with no
-card left to play buys a neutral city's energy when its credits plus this round's income, less the price, reach the
-eval's credit cap (a pass is scored before income). **Botnet reach** (176,
-`w.botnet_reach` 0.3): an ambassador on a botnet's hex is worth that share of it.
+when that seat can then pay its Liberate (never onto a node hex). **Strike** (178, `strike_rule`): a strike's
+batches, troops then agents, largest first; its hex is the search's. `aic-sim experiment` prints their fires a game
+(cells pooled). **Converge** (175, `converge_rule`): a Corrupt line's agent next to several sites goes where
+`plan::converge_pick` sends it. **Buy energy** (176, `energy_rule`): with no card left to play, buy a neutral
+city's energy when credits plus this round's income, less the price, reach the eval's credit cap. **Botnet reach**
+(176, `w.botnet_reach` 0.3): an ambassador on a botnet's hex is worth that share of it.
 
 Spec syntax: `kind[:key=value,...]`; a weight takes `w.` (`greedy:w.corrupted=40`), a table
 number `t.`, a plan or strategy switch goes bare (`strategist:plan_bury=0`). Greedy and the
@@ -128,7 +127,7 @@ Rules a player could say that a one-step search misses, each a switch (on), rule
 `forced_table!` row; the spare-insight rule is every agent's (Matt 2026-11-05).
 
 - *Shelter what a destruction showing would take, once you can't counter it* (`agents/guide.rs`,
-  `w.shelter_read`, `w.shelter_node`, `w.shelter_counter`; armor as the engine reads it, `w.shelter_armor`, D71).
+  `w.shelter_read`, `w.shelter_node`, `w.shelter_counter`; armor from `board::guards`, `w.shelter_armor`, D71).
 - *Guard your last node* (177; the strategist's 120, 0 elsewhere): `w.last_node` (eval, converge and push rules).
 - *Don't bury a building that still earns more than the new one adds* (`plan_bury`).
 - *Count your research cubes like credits* (`plan_cubes`).

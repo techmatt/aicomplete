@@ -181,11 +181,15 @@ pub fn compute_step(g: &mut GameState, cx: &mut Cx) -> Res {
         cx.per_round(g, "adversary.compute_blocked", blocked);
     }
     cx.tally(g, "adversary.compute_botnets", botnets);
-    // 137: an adversary station makes compute; one player ambassador on it blocks it.
+    // 137: an adversary station makes compute; one player ambassador on it blocks it. 185: only once its
+    // country's megaproject is complete (before that it puts adversary cubes on it, in production).
     let cubes = w.int("board.station_cubes");
     let mut stations = 0;
     for h in 0..g.hexes.len() {
         if g.tokens(h, STATION) == 0 || !corrupted(g, h) {
+            continue;
+        }
+        if g.var(&board::project_done(w.map.hexes[h].country as usize)) == 0 {
             continue;
         }
         if player_ambassador(g, h).is_some() {

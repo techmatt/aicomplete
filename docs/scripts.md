@@ -105,10 +105,10 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   SIM` is the standing check (about 2 min, quiet machine, one thread): fails at 1.3 × `speed_baseline.json`,
   `--update` moves it; across a revision it prints NO VERDICT (CLAUDE.md). `--games N` sets the many-thread column's
   games (greedy's default 200: about 3 min on one thread since 174).
-- `bench/per_decision.py OLD_ROOT NEW_ROOT`: rounds, decisions and ms per game and per decision on the same seeds,
-  for telling longer games from a slower agent. Use `--games 16` or more across rules revisions (about 8 min for the
-  default `--agent planner`; name the agents a change touched). Each root is an `.exe` or a directory holding
-  `aic-sim.exe` and the `configs/` it plays.
+- `bench/per_decision.py OLD_ROOT NEW_ROOT`: rounds, decisions and ms a game and a decision on the same seeds, to
+  tell longer games from a slower agent. Across revisions use `--games 16`+ (~8 min for the default `--agent
+  planner`; name the agents a change touched). A root is an `.exe` or a directory with `aic-sim.exe` (or
+  `target/release/`'s) and its `configs/`.
   `--set K=V` (repeatable) goes to both sides after the built-in ones: a content overlay runs the new binary on old
   content.
 - `bench/gate_stop_rate.py`: how often the gate's early stop flips a verdict (at `z` 2, about 1%).

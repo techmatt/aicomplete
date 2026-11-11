@@ -664,6 +664,9 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::Pushback { ambassadors } => Worth::now(row("pushback") * t.rate("countries") * *ambassadors as f64),
         Op::DealThreats { count, .. } => Worth::now(row("deal_threats") * *count as f64),
         Op::RemoveBotnets { count } => Worth::now(row("remove_botnets") * *count as f64),
+        // 185: a cube on each open megaproject; a botnet turned into one.
+        Op::AdversaryCubes { count } => Worth::now(row("adversary_cubes") * t.rate("countries") * *count as f64),
+        Op::BotnetCubes { count } => Worth::now(row("botnet_cubes") * *count as f64),
         // 156: one player resolves seat ops: their worth, at the row's share.
         Op::OnePlayer { then } => {
             let mut w = Worth::default();

@@ -380,8 +380,8 @@ pub struct Weights {
     /// it down from there (credits, the ambassador stays), so moving one there is a step toward it (0: off).
     pub botnet_reach: f64,
     /// 177 (0: off, as before): a seat's last node read as the game it is (`alignment.node_loss`). A raw count
-    /// of 1 with exposure `e` charges `e` (to 1) of this; a shelter keeping a last node credits its share; a
-    /// seat at 0 nodes mid-resolution scores as lost; an ambassador on a node hex cancels an arrival rather
+    /// of 1 with exposure `e` charges `e` (to 1) of this; a shelter keeping a last node credits its share; an
+    /// ambassador on a node hex cancels an arrival rather
     /// than armoring it (r75); and the converge and push rules keep agents off a last node about to tip.
     pub last_node: f64,
 }
@@ -1236,8 +1236,9 @@ impl Eval {
         }
         let world = rules.world();
         // 177: a seat with no node left on the board mid-resolution (alignment's node_loss check, run at the
-        // step's end, `alignment.rs` tips/losses) has lost the game already.
-        if w.last_node > 0.0 && world.hot(Hot::NodeLoss) > 0 && adversary::loss(g).is_some() {
+        // step's end, `alignment.rs` tips/losses) has lost the game already: an engine fact, read by every agent
+        // (185; 177 read it only with `w.last_node` on).
+        if world.hot(Hot::NodeLoss) > 0 && adversary::loss(g).is_some() {
             return -w.win;
         }
         // The next corrupt step's number for each site, read off the card ahead
@@ -2500,8 +2501,8 @@ mod tests {
         }
     }
 
-    /// 177: `last_node` is off by default (the strategist alias sets it) and set by name. On, a seat with no node
-    /// mid-resolution scores as a lost game, and an exposed last node costs more than off.
+    /// 177: `last_node` is off by default (the strategist alias sets it) and set by name. On or off (185), a seat
+    /// with no node mid-resolution scores as a lost game; on, an exposed last node costs more than off.
     #[test]
     fn last_node_reads_the_last_node() {
         let d = Weights::default();
@@ -2518,7 +2519,7 @@ mod tests {
         for h in nodes(&g, 1) {
             put(&mut g, h, common::node(1), 0);
         }
-        assert!(off.value(&r, &g) > -off.w.win);
+        assert_eq!(off.value(&r, &g), -off.w.win);
         assert_eq!(lit.value(&r, &g), -lit.w.win);
         // Seat 0 down to one node, an agent on its hex (a node hex corrupts at 2).
         let mut g = g0.clone();

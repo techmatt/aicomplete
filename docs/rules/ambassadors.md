@@ -76,8 +76,9 @@ for the last rounds, and never free a city: the players still reach it and Liber
 - **Firewall** (Firewall Array's Action, Air Gap): a token on one land hex in your reach. While it stands no
   agent arrives there: the site's Rally share stays in the supply (175: one rule for a blocked landing), a creation
   line takes the next site, a threat's or Discord card's placement there doesn't happen, and a Corrupt line moves no
-  agent onto it. Its site doesn't corrupt: neither a Corrupt line nor natural corruption takes it (agents already
-  on it stay). Troops are not stopped. It comes off at the end of the next adversary turn (its compute step), so it
+  agent onto it. Nothing on it corrupts: a Corrupt line, natural corruption, a station flip (Station Coup, Lab
+  Takeover, Station Seizure: a forced flip too) and a threat corrupting its city (Overrun, Regime Change) all skip it
+  (r79, Matt's ruling on D77, candidate; agents already on it stay). Troops are not stopped. It comes off at the end of the next adversary turn (its compute step), so it
   lasts one round; the building places a fresh one each round.
 
 A **base** is no site: it is a front's troop pile ([war.md](war.md)). A player ambassador standing on a base is used

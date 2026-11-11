@@ -1,4 +1,4 @@
-# Rulebook friction (rules revision 77)
+# Rulebook friction (rules revision 79)
 
 *What is still hard to say in [rulebook.md](rulebook.md) (third draft), ranked by how much each costs a reader, with
 the rule change that would fix it. Matt's test: a rule that can't be said well is a bad sign about the rule. Only what
@@ -52,7 +52,8 @@ history of this page. 180's rows are #41 on.
 | 50 | [Discord-tip drones](rulebook.md#19-drones-in-full) (most games) | Per neutral factory, per base, stopped by an agent on the factory, by each ambassador on the factory or the base, players choosing which base goes without, full bases spending nothing, player order among ambassadors (G, V flagged §19; V, then G2, flagged §11). | At a Discord tip, each base of a country with an unblocked neutral factory gains 1 drone; an ambassador on the base stops it. |
 | 51 | [The protection menu](rulebook.md#the-protection-order) (most games) | Shelter automatic but only for what goes through the order; then a choice of four, one (a megacorp's drone) good only against troops; one token with two names (G flagged; D rank 11). | Drones never protect; protections are Shelter, a hardening token or your own ambassador; one name for the token. |
 | 52 | [War takes the node](rulebook.md#11-war) (most games) | A drone's strike on a factory also destroys the node on its hex (D rank 13). | A drone destroys only the factory. |
-| 53 | [Prohibitions](rulebook.md#the-cards) (a few times a game) | "The next" Rally, Muster or Corrupt; the condition read as each step runs; a Corrupt prohibition stops natural corruption and moves; a Muster one stops every Muster (V, then G2, flagged; D 2/5). | A prohibition places bricks tokens on the hexes that qualify when it resolves, lasting like a firewall. |
+| 53 | [Prohibitions](rulebook.md#the-cards) (a few times a game) | "The next" Rally, Muster or Corrupt; the condition read as each step runs; a Corrupt prohibition stops natural corruption, moves, and (r79) every flip and threat corruption; a Muster one stops every Muster (V, then G2, flagged; D 2/5). | A prohibition places bricks tokens on the hexes that qualify when it resolves, lasting like a firewall. |
+| 55 | [Stations](rulebook.md#9-production) (every round with a corrupted station) | r79: a corrupted station has two outputs by its megaproject's state: an adversary cube onto the card until it completes, compute in the adversary's compute step (another phase) after; Vigil's once-a-round cap needs a marker per Protector (185, not yet read by a cold reader). | A corrupted station always makes an adversary cube: onto the megaproject while it is open, else onto the adversary's compute track as 1 compute in the same step. |
 | 54 | [Take down a botnet](rulebook.md#standard-actions) (most games) | The one standard action that ignores reach: only your ambassador on the botnet counts (the engine never checks reach), against §2's "everything you target must be in your reach". | Require reach like every other action, or print "anywhere your ambassador stands" on the action. |
 
 ## Engine against docs/rules

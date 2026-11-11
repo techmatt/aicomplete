@@ -348,8 +348,18 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
         // 137: one opposing ambassador blocks the output while it stands: an
         // agent on a neutral or player station, a player
         // ambassador on the adversary's. An adversary station makes compute.
-        // 175: an adversary station's compute is added in the adversary's compute step.
+        // 175: an adversary station's compute is added in the adversary's compute step. 185 (Matt's ruling): until
+        // its country's megaproject completes it puts `station_cubes` adversary cubes onto it instead; one player
+        // ambassador on it blocks that as it blocks the compute.
         if corrupted(g, h) {
+            if g.var(&project_done(c)) == 0 {
+                if player_ambassador(g, h).is_some() {
+                    cx.tally(g, "board.blocked.station_adversary", 1);
+                } else {
+                    cx.add_key(g, &project_key(c, None), cubes);
+                    cx.tally(g, "board.adversary_cubes", cubes);
+                }
+            }
             continue;
         }
         if g.tokens(h, ADV_AMBASSADOR) > 0 {

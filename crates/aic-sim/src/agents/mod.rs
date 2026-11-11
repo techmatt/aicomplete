@@ -49,7 +49,8 @@
 //!   stick for a skilled player, opt in.
 //!
 //! `greedy`, `engine` and `planner` keep by plan: [`policy::Policy`] wraps them, decides
-//! their keeps, and applies the dominance checks' forced behaviors.
+//! their keeps, applies the dominance checks' forced behaviors and the agent behaviors
+//! (move, strike, converge and energy rules) every agent follows.
 //!
 //! An agent is named by a spec, `kind[:key=value,...]`: `greedy`,
 //! `beam:width=4`, `rollout:rollouts=8,horizon=3`, and `w.<weight>=V` to
@@ -160,17 +161,25 @@ pub struct AgentSpec {
 pub type Param = (&'static str, f64, &'static str);
 
 /// A tier's own parameters, then the ones `greedy`, `engine` and `planner` share (022):
-/// keeping by plan, and the dominance checks' forced behaviors.
+/// keeping by plan, the dominance checks' forced behaviors, then the agent behaviors.
 macro_rules! with_policy_params {
     ($($own:expr),* $(,)?) => {
         policy::forced_table!(policy_param_rows ($($own),*))
     };
 }
 
-/// The rows of [`policy::forced_table`] as parameters, after a tier's own.
+/// The rows of [`policy::forced_table`] as parameters, after a tier's own, handed on to
+/// [`behavior_param_rows`].
 macro_rules! policy_param_rows {
     (($($own:expr),*) $($(#[$doc:meta])* ($name:ident: $ty:ty, $active:literal, $default:expr, $desc:expr))*) => {
-        &[$($own,)* $((stringify!($name), $default, $desc),)*]
+        policy::behavior_table!(behavior_param_rows ($($own,)* $((stringify!($name), $default, $desc),)*))
+    };
+}
+
+/// The rows of [`policy::behavior_table`] as parameters, after the others.
+macro_rules! behavior_param_rows {
+    (($($head:tt)*) $($(#[$doc:meta])* ($name:ident: $ty:ty, $default:expr, $desc:expr))*) => {
+        &[$($head)* $((stringify!($name), $default, $desc),)*]
     };
 }
 
@@ -502,15 +511,21 @@ impl AgentSpec {
         policy::Forced::read(|k| self.params.get(k).copied().unwrap_or(0.0))
     }
 
+    /// The agent behaviors (185): the move, strike, converge and energy rules, on unless a spec turns one off
+    /// (an agent without these parameters has none).
+    pub fn behaviors(&self) -> policy::Behaviors {
+        policy::Behaviors::read(|k| self.params.get(k).copied().unwrap_or(0.0))
+    }
+
     /// A fresh agent for one game: the search agent, wrapped in its keep
-    /// policy and forced behaviors when it has any (022).
+    /// policy, forced behaviors and agent behaviors when it has any (022, 185).
     pub fn build(&self, rules: &Rules, game_seed: u64) -> Box<dyn Agent + Send> {
         let inner = self.build_search(rules, game_seed);
-        let forced = self.forced();
-        if !forced.is_active() {
+        let (forced, behaviors) = (self.forced(), self.behaviors());
+        if !forced.is_active() && !behaviors.is_active() {
             return inner as Box<dyn Agent + Send>;
         }
-        Box::new(policy::Policy::new(inner, forced))
+        Box::new(policy::Policy::new(inner, forced, behaviors))
     }
 
     fn build_search(&self, rules: &Rules, game_seed: u64) -> Box<dyn Strategic + Send> {
@@ -566,6 +581,7 @@ impl AgentSpec {
             "planner" => Box::new(planner::Planner::new(
                 ev,
                 self.forced(),
+                self.behaviors(),
                 rng,
                 planner::PlannerCfg {
                     horizon: self.p("horizon") as u32,
@@ -585,6 +601,7 @@ impl AgentSpec {
             "oracle" => Box::new(oracle::Oracle::new(
                 ev,
                 self.forced(),
+                self.behaviors(),
                 rng,
                 oracle::OracleCfg {
                     horizon: self.p("horizon") as u32,

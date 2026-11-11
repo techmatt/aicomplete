@@ -216,8 +216,19 @@ fn march_troops(g: &mut GameState, cx: &mut Cx, troops: Vec<usize>, steps: i64, 
             marched[at] += 1;
             // Vigil: a troop that ends its march (any march, a threat's immediate one too) next to the seat's
             // node pays it once; one used up striking has no end to its march.
+            // 185 (Matt's ruling): capped, `vigil_cap` (1) troops a round per seat; later ones that round pay nothing.
             for &s in &vigil {
                 if w.map.hexes[at].neighbors.iter().any(|&x| g.tokens(x, node(s)) > 0) {
+                    let (round, paid) = (vigil_round(s), vigil_paid(s));
+                    if g.var(&round) != g.round as i64 {
+                        cx.set_key(g, &round, g.round as i64);
+                        cx.set_key(g, &paid, 0);
+                    }
+                    if g.var(&paid) >= w.int("board.vigil_cap") {
+                        cx.tally(g, "board.vigil_capped", 1);
+                        continue;
+                    }
+                    cx.add_key(g, &paid, 1);
                     cx.tally(g, "board.vigil", 1);
                     cards::on_march_end(g, cx, s)?;
                 }

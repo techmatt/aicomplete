@@ -3,6 +3,7 @@
 //! - `action_only`: the baseline after setup, playing only the action phase (`ACTIONS`, the baseline's entry).
 //! - `lab` / `lab_with` / `lab_actions`: a lab config whose round lists only the phases a test needs (list each in
 //!   baseline order; `ACTIONS` goes last), board emptied or as set up; lab params pin some numbers (`lab_config`).
+//!   Its setup places each country's corrupted station, not the neutral one (`piece(c).neutral_station`: put it).
 //! - `threat_lab`: threats with `counter_pct` pinned.
 //! - `with_cx`: one engine step on a `Cx` (it can't read an ask); `with_answers`: every ask answered by a rule;
 //!   `with_cx_picks`: asks answered by given picks; `destroy_with`: a destroy with its protection prompt answered;
@@ -633,9 +634,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 78;
-const GOLDEN_FINGERPRINT: &str = "f0ea402cf0d5fc6a";
-const GOLDEN_CONTENT_HASH: &str = "3a02bebb606033ee";
+const GOLDEN_REVISION: u32 = 79;
+const GOLDEN_FINGERPRINT: &str = "ccb3b728ff069ef7";
+const GOLDEN_CONTENT_HASH: &str = "dacd38c885972a12";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

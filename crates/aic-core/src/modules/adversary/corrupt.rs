@@ -220,6 +220,22 @@ pub(super) fn natural_corruption(g: &mut GameState, cx: &mut Cx) -> Res {
     Ok(())
 }
 
+/// 185 (Matt's ruling on 184's D77, candidate): a firewall or a Corrupt prohibition guards every flip and
+/// corruption, not only Corrupt lines and natural corruption: whether site `h` is guarded, tallied as held
+/// (`adversary.guard_held.<path>`, and the firewall's or prohibition's own counter) when it is.
+pub fn guard_holds(g: &mut GameState, cx: &mut Cx, h: usize, path: &str) -> bool {
+    let w = cx.world;
+    if let Some(wh) = super::plan::prohibition_on(&w, g, Step::Corrupt, h, g.round as i64) {
+        prohibit_tally(g, cx, Step::Corrupt, wh, g.tokens(h, ADV_AMBASSADOR));
+    } else if firewalled(g, h) {
+        cx.tally(g, "adversary.firewall_held", 1);
+    } else {
+        return false;
+    }
+    cx.tally(g, &format!("adversary.guard_held.{path}"), 1);
+    true
+}
+
 /// Research station `h`, not yet corrupted, flips to the adversary. r35: a
 /// player's station is defended: it flips only with `station_flip_at`
 /// agents on it and no player ambassador, and those are used
@@ -228,6 +244,10 @@ pub(super) fn natural_corruption(g: &mut GameState, cx: &mut Cx) -> Res {
 /// Returns whether it flipped (099: a player's station that holds is no new source).
 pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
     let w = cx.world;
+    // 185 (D77): a firewalled or prohibited station doesn't flip (the flip paths leave it out of their choice).
+    if guard_holds(g, cx, h, "flip") {
+        return Ok(false);
+    }
     if cube_owner(g, h).is_some() {
         let need = w.int("adversary.station_flip_at");
         if g.tokens(h, ADV_AMBASSADOR) < need || player_ambassador(g, h).is_some() {

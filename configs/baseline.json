@@ -24,6 +24,7 @@
         "troop_spent": 1,
         "troop_steps": 2,
         "troop_node": 4,
+        "vigil_cap": 1,
         "node_marker": 1,
         "war_reach": 0,
         "station_chips": 2,

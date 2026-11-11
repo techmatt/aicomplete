@@ -28,6 +28,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.troop_spent` | 1 | 0..1 | 1: an adversary troop that strikes a target is used up |
 | `board.troop_steps` | 2 | 0..5 | steps each adversary troop takes in the march: destroy a target on or next to it, else move 1 hex toward the nearest |
 | `board.troop_node` | 4 | 0..4 | adversary troops strike nodes from this stage of adversary card on (0: always, 4: never) |
+| `board.vigil_cap` | 1 | 1..10 | 185: troops a round whose march ending next to a seat's node pays its Vigil (later ones that round pay nothing) |
 | `board.node_marker` | 1 | 0..1 | 1: a destroyed node leaves a corruption marker on its hex |
 | `board.war_reach` | 0 | 0..1 | war that destroys a factory destroys nodes within this many hexes of it |
 | `board.station_chips` | 2 | 0..20 | standard action: chips to build a research station |

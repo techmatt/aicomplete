@@ -83,7 +83,8 @@ impl ForcedValue for Option<Tag> {
 /// The one list of keep-plan numbers and forced behaviors: a new check is a row
 /// here and its arm in [`Policy`]. A row is `(name: type, active, default, what it
 /// does)`, `active` saying whether a value on its own makes the agent a [`Policy`]
-/// (a plan's numbers do nothing alone). It makes the [`Forced`] field, the agent
+/// (a plan's numbers do nothing alone; the rules every agent follows are [`behavior_table`]'s, which
+/// always wrap it). It makes the [`Forced`] field, the agent
 /// parameter of the same name and the reading of one from the other. The order is
 /// the parameters', which [`super::AgentSpec::label`] prints in: don't reorder rows,
 /// or spec labels move. Hands the rows to `$then!`, after `$args`.
@@ -181,17 +182,6 @@ macro_rules! forced_table {
             (hoard_insight: usize, true, 0.0, "fixed policy (075): a seat with Patience plays and keeps cards only every n-th round (0: off)")
             /// Fixed policy (075): no converter, and no conversion on a power menu.
             (never_convert: bool, true, 0.0, "fixed policy (075): no converter and no power that only converts a resource")
-            /// 166: the move heuristics answer Gather and Push prompts (`agents::moves`: push agents off the
-            /// next Corrupt site, gather agents onto ambassadors, gather ambassadors toward a Liberate).
-            (move_rules: bool, false, 1.0, "166: move heuristics for Gather and Push (push agents off the next Corrupt site, gather agents onto ambassadors, gather ambassadors to a Liberate)")
-            /// 175: a Corrupt X line's agent next to several sites goes where the players lose least
-            /// (`plan::converge_pick`: onto a site corrupting anyway, else the one holding fewest).
-            (converge_rule: bool, false, 1.0, "175: a Corrupt line's converging agent goes onto a site corrupting anyway, else the one holding fewest")
-            /// 176: Buy energy (r75's action-phase purchase) when the credits it costs would sit idle: the seat's
-            /// credits and this round's credit income, less the price, still reach the eval's credit cap. A pass is
-            /// scored on the table it leaves, before income, so the search alone never saw idle credits here
-            /// (r74's production prompt looked past the income).
-            (energy_rule: bool, false, 1.0, "176: buy a neutral city's energy when its credits would sit idle (credits plus this round's income, less the price, at or over the eval's credit cap)")
             /// 082: the keep plan values cards by the value table (0: printed cost
             /// plus 1, the niche jobs and capstone jobs, as before 082).
             (plan_table: bool, false, 1.0, "keep plan values cards by the value table (0: by printed cost, as before 082)")
@@ -269,6 +259,58 @@ macro_rules! forced_table {
     };
 }
 pub(crate) use forced_table;
+
+/// The agent behaviors (185, from 182's F31): rules a player follows whatever the keep plan or a dominance check
+/// says, so any value of theirs on, at their defaults, wraps the agent in a [`Policy`] (they sat in
+/// [`forced_table`] as rows that wrapped nothing alone, so `plan_keep=0` turned them off unseen). A row is
+/// `(name: type, default, what it does)`; it makes the [`Behaviors`] field and the agent parameter of the same
+/// name, listed after [`forced_table`]'s. Hands the rows to `$then!`, after `$args`.
+macro_rules! behavior_table {
+    ($then:ident ($($args:tt)*)) => {
+        $then! {
+            ($($args)*)
+            /// 166: the move heuristics answer Gather and Push prompts (`agents::moves`: push agents off the
+            /// next Corrupt site, gather agents onto ambassadors, gather ambassadors toward a Liberate).
+            (move_rules: bool, 1.0, "166: move heuristics for Gather and Push (push agents off the next Corrupt site, gather agents onto ambassadors, gather ambassadors to a Liberate)")
+            /// 175: a Corrupt X line's agent next to several sites goes where the players lose least
+            /// (`plan::converge_pick`: onto a site corrupting anyway, else the one holding fewest).
+            (converge_rule: bool, 1.0, "175: a Corrupt line's converging agent goes onto a site corrupting anyway, else the one holding fewest")
+            /// 176: Buy energy (r75's action-phase purchase) when the credits it costs would sit idle: the seat's
+            /// credits and this round's credit income, less the price, still reach the eval's credit cap. A pass is
+            /// scored on the table it leaves, before income, so the search alone never saw idle credits here
+            /// (r74's production prompt looked past the income).
+            (energy_rule: bool, 1.0, "176: buy a neutral city's energy when its credits would sit idle (credits plus this round's income, less the price, at or over the eval's credit cap)")
+            /// 178: a strike's batches (`agents::moves::strike`): the largest of troops, then of agents, never a
+            /// stop; its hex stays the search's. Its own lever since 185 (it sat under `move_rules`).
+            (strike_rule: bool, 1.0, "178: a strike's batches go largest troops first, then agents, never a stop (its hex is the search's)")
+        }
+    };
+}
+pub(crate) use behavior_table;
+
+macro_rules! behavior_struct {
+    (() $($(#[$doc:meta])* ($name:ident: $ty:ty, $default:expr, $desc:expr))*) => {
+        /// The agent behaviors ([`behavior_table`]): on for every agent that has them unless a spec turns one off.
+        #[derive(Debug, Clone)]
+        pub struct Behaviors {
+            $($(#[$doc])* pub $name: $ty,)*
+        }
+
+        impl Behaviors {
+            /// Each field from its agent parameter.
+            pub fn read(num: impl Fn(&str) -> f64) -> Behaviors {
+                Behaviors { $($name: ForcedValue::from_param(num(stringify!($name))),)* }
+            }
+
+            /// Whether any behavior is on (the agent is then wrapped in a [`Policy`]).
+            pub fn is_active(&self) -> bool {
+                $(self.$name.is_on())||*
+            }
+        }
+    };
+}
+
+behavior_table!(behavior_struct());
 
 macro_rules! forced_struct {
     (() $($(#[$doc:meta])* ($name:ident: $ty:ty, $active:literal, $default:expr, $desc:expr))*) => {
@@ -360,6 +402,9 @@ fn counters_threats(d: &CardDef) -> bool {
 pub struct Policy {
     inner: Box<dyn Strategic + Send>,
     forced: Forced,
+    /// Whether `forced` holds anything (no: nothing is ruled out, so `choose` skips the filter).
+    forcing: bool,
+    behaviors: Behaviors,
     /// This round's keep set for a seat: (round, seat, cards).
     keeps: Vec<(u32, usize, Vec<Key>)>,
     /// 082: each seat's strategy, and whether it has been chosen.
@@ -372,10 +417,12 @@ pub struct Policy {
 }
 
 impl Policy {
-    pub fn new(inner: Box<dyn Strategic + Send>, forced: Forced) -> Policy {
+    pub fn new(inner: Box<dyn Strategic + Send>, forced: Forced, behaviors: Behaviors) -> Policy {
         Policy {
             inner,
+            forcing: forced.is_active(),
             forced,
+            behaviors,
             keeps: Vec::new(),
             strat: [None; 4],
             chosen: false,
@@ -687,22 +734,38 @@ impl Agent for Policy {
                 return i;
             }
         }
-        if self.forced.converge_rule && pending {
+        // The agent behaviors (185): each pick stands only where no forced behavior rules it out (182's F32).
+        let b = &self.behaviors;
+        if b.converge_rule && pending {
             let last_node = self.eval().is_some_and(|e| e.w.last_node > 0.0);
             if let Some(i) = super::moves::converge(&world, g, legal, last_node) {
-                return i;
+                if !self.ruled_out(&world, g, &legal[i]) {
+                    return i;
+                }
             }
         }
-        if self.forced.energy_rule && !pending {
+        if b.energy_rule && !pending {
             if let Some(i) = buy_energy(&world, g, legal, idle_credits(self.eval())) {
-                return i;
+                if !self.ruled_out(&world, g, &legal[i]) {
+                    return i;
+                }
             }
         }
-        if self.forced.move_rules && pending {
+        if b.strike_rule && pending {
+            if let Some((i, which)) = super::moves::strike(g, legal) {
+                if !self.ruled_out(&world, g, &legal[i]) {
+                    super::moves::fired(which);
+                    return i;
+                }
+            }
+        }
+        if b.move_rules && pending {
             let last_node = self.eval().is_some_and(|e| e.w.last_node > 0.0);
             if let Some((i, which)) = super::moves::pick(&world, g, legal, last_node) {
-                super::moves::fired(which);
-                return i;
+                if !self.ruled_out(&world, g, &legal[i]) {
+                    super::moves::fired(which);
+                    return i;
+                }
             }
         }
         if self.forced.wall_turtle {
@@ -759,6 +822,9 @@ impl Agent for Policy {
             }) {
                 return i;
             }
+        }
+        if !self.forcing {
+            return self.inner.choose(rules, g, legal);
         }
         let keep: Vec<usize> = (0..legal.len())
             .filter(|&i| !self.ruled_out(&world, g, &legal[i]))
@@ -883,7 +949,22 @@ mod tests {
     /// A fixed policy with one parameter on and all else 0.
     fn forced(name: &str) -> Policy {
         let f = Forced::read(|k| f64::from(k == name));
-        Policy::new(Box::new(crate::agents::tests::First), f)
+        Policy::new(Box::new(crate::agents::tests::First), f, Behaviors::read(|_| 0.0))
+    }
+
+    /// 185 (182's F31): the agent behaviors stay on when the keep plan is off, so such an agent is still
+    /// wrapped; a spec turns one off by its old name, and the label prints it as before.
+    #[test]
+    fn behaviors_outlive_the_keep_plan() {
+        let spec = crate::agents::AgentSpec::parse("greedy:plan_keep=0").unwrap();
+        assert!(!spec.forced().is_active());
+        let b = spec.behaviors();
+        assert!(b.is_active() && b.move_rules && b.converge_rule && b.energy_rule && b.strike_rule);
+        let off = crate::agents::AgentSpec::parse("greedy:move_rules=0").unwrap();
+        assert!(!off.behaviors().move_rules && off.behaviors().strike_rule);
+        assert_eq!(off.label(), "greedy:move_rules=0");
+        let strike = crate::agents::AgentSpec::parse("engine:strike_rule=0").unwrap();
+        assert!(!strike.behaviors().strike_rule && strike.behaviors().move_rules);
     }
 
     /// 082: the strategies are chosen at the round-1 keep from each seat's board's
@@ -901,7 +982,7 @@ mod tests {
         assert_eq!(g.round, 1);
         let legal = r.legal_actions(&g);
         let chosen = |name: &str, v: f64| {
-            let mut p = Policy::new(Box::new(crate::agents::tests::First), Forced::read(|k| if k == name { v } else { 0.0 }));
+            let mut p = Policy::new(Box::new(crate::agents::tests::First), Forced::read(|k| if k == name { v } else { 0.0 }), Behaviors::read(|_| 0.0));
             p.choose(&r, &g, &legal);
             p.strat
         };
@@ -911,7 +992,7 @@ mod tests {
             assert!(strategy::menu(&w, s).contains(&k.unwrap()), "seat {s}");
         }
         assert_eq!(chosen("strat0", 2.0)[0], Some(strategy::menu(&w, 0)[1]));
-        let handed = Policy::new(Box::new(crate::agents::tests::First), Forced::read(|_| 0.0)).with_strategies(a);
+        let handed = Policy::new(Box::new(crate::agents::tests::First), Forced::read(|_| 0.0), Behaviors::read(|_| 0.0)).with_strategies(a);
         assert!(handed.chosen && handed.strat == a);
     }
 

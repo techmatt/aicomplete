@@ -78,6 +78,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("troop_spent", 0, 1, "1: an adversary troop that strikes a target is used up"),
             ParamSpec::int("troop_steps", 0, 5, "steps each adversary troop takes in the march: destroy a target on or next to it, else move 1 hex toward the nearest"),
             ParamSpec::int("troop_node", 0, 4, "adversary troops strike nodes from this stage of adversary card on (0: always, 4: never)"),
+            ParamSpec::int("vigil_cap", 1, 10, "185: troops a round whose march ending next to a seat's node pays its Vigil (later ones that round pay nothing)"),
             ParamSpec::int("node_marker", 0, 1, "1: a destroyed node leaves a corruption marker on its hex"),
             ParamSpec::int("war_reach", 0, 1, "war that destroys a factory destroys nodes within this many hexes of it"),
             ParamSpec::int("station_chips", 0, 20, "standard action: chips to build a research station"),
@@ -269,6 +270,15 @@ pub fn project_done(c: usize) -> KeyBuf {
 /// `adversary`, `neutral`. Only the card shows it (074).
 pub fn project_paid(c: usize, color: &str) -> KeyBuf {
     KeyBuf::new("board.project_paid.").num(c).text(".").text(color)
+}
+
+/// 185: the last round seat `s`'s Vigil paid, and how many troops it paid for that round.
+fn vigil_round(s: usize) -> KeyBuf {
+    KeyBuf::new("board.vigil_round.").num(s)
+}
+
+fn vigil_paid(s: usize) -> KeyBuf {
+    KeyBuf::new("board.vigil_paid.").num(s)
 }
 
 /// The last round seat `s` used country `c`'s converter.

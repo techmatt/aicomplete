@@ -26,7 +26,7 @@ impl Cause {
 
 /// One protection a destruction may spend (r75, Matt's ruling 5: the owner chooses which, or none).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Guard {
+pub enum Guard {
     /// A corp troop at base `.0` next to the hex (adversary troops' strikes only).
     Base(usize),
     /// A hardening token on the hex.
@@ -44,8 +44,9 @@ fn piece_owner(g: &GameState, h: usize, kind: &str) -> Option<usize> {
         .or_else(|| if kind == STATION || kind == FACTORY { cube_owner(g, h) } else { None })
 }
 
-/// The protections a destruction of the `owner`'s piece on hex `h` could spend, in print order.
-fn guards(w: &World, g: &GameState, h: usize, owner: Option<usize>, cause: Cause) -> Vec<Guard> {
+/// The protections a destruction of the `owner`'s piece on hex `h` could spend, in print order (read-only:
+/// the agents' shelter forecast counts from it too).
+pub fn guards(w: &World, g: &GameState, h: usize, owner: Option<usize>, cause: Cause) -> Vec<Guard> {
     let mut out = Vec::new();
     if cause == Cause::Troop {
         // Each base next to it with a corp troop is an option of its own (the owner chooses which).

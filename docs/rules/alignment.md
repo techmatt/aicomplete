@@ -72,7 +72,7 @@ counted on the whole board); "remove up to N from each X / in each country piece
 next adversary turn (this round's until its build step ends; one made in that step's own check stops neither its Rally
 nor its Muster, already run), Rally, Muster or Corrupt skips a site where the condition
 holds *as the step runs*: a Rally share or Muster troop stays in the supply (every Muster: an event's, a project's,
-the Protector landing; 175), a site doesn't corrupt (naturally either) and no agent moves onto it. Choices are seat 0's (each player's own, theirs). Grassroots Funding and Think
+the Protector landing; 175), a site doesn't corrupt (naturally, or by any flip or threat either: r79, D77) and no agent moves onto it. Choices are seat 0's (each player's own, theirs). Grassroots Funding and Think
 Tank move a printed income marker "for the rest of the game". Cards marked (draft) are for Matt to keep or prune.
 
 <!-- generated: alignment -->

@@ -46,7 +46,7 @@ use rand_chacha::ChaCha8Rng;
 
 use super::determinize::hide_alignment_deal;
 use super::eval::Eval;
-use super::policy::{Forced, Policy};
+use super::policy::{Behaviors, Forced, Policy};
 use super::search::{draw_guesses, pick, score_guesses, Greedy, PhaseHistory, Scoring};
 use crate::prof::{self, Part};
 
@@ -120,6 +120,7 @@ impl Line {
 
 pub struct Planner {
     forced: Forced,
+    behaviors: Behaviors,
     ev: Eval,
     rng: ChaCha8Rng,
     cfg: PlannerCfg,
@@ -145,12 +146,13 @@ pub(super) fn idea(a: &Action) -> Option<String> {
     }
 }
 
-/// A fresh rollout policy: the engine with `forced` behaviors and `ev`'s seats'
+/// A fresh rollout policy: the engine with `forced` behaviors, the agent `behaviors` and `ev`'s seats'
 /// strategies (082), guessing from `seed`; the planner's and the oracle's.
 #[allow(clippy::too_many_arguments)]
 pub(super) fn rollout_policy(
     ev: &Eval,
     forced: &Forced,
+    behaviors: &Behaviors,
     seed: u64,
     samples: usize,
     choices: usize,
@@ -163,14 +165,15 @@ pub(super) fn rollout_policy(
     // `pruned` changes what the policy can play, not only how fast: see `Greedy::prune`.
     let greedy = Greedy::new(ev.clone(), rng, samples, 1, choices);
     let inner = Box::new(greedy.pruned(prune).powers(powers).answers(answers).discards(discards).in_rollout());
-    Box::new(Policy::new(inner, forced.clone()).with_strategies(ev.strategies()))
+    Box::new(Policy::new(inner, forced.clone(), behaviors.clone()).with_strategies(ev.strategies()))
 }
 
 impl Planner {
-    pub fn new(ev: Eval, forced: Forced, rng: ChaCha8Rng, cfg: PlannerCfg) -> Self {
+    pub fn new(ev: Eval, forced: Forced, behaviors: Behaviors, rng: ChaCha8Rng, cfg: PlannerCfg) -> Self {
         Planner {
             ev,
             forced,
+            behaviors,
             rng,
             cfg,
             line: None,
@@ -184,7 +187,7 @@ impl Planner {
     fn policy(&self, g: &GameState) -> Box<dyn Agent + Send> {
         let c = &self.cfg;
         let seed = g.seed ^ g.stats.actions as u64;
-        rollout_policy(&self.ev, &self.forced, seed, c.samples, c.choices, c.prune, c.powers, c.answers, c.discards)
+        rollout_policy(&self.ev, &self.forced, &self.behaviors, seed, c.samples, c.choices, c.prune, c.powers, c.answers, c.discards)
     }
 
     /// Plays `g` on with the rollout policy to the first decision of round

@@ -323,7 +323,7 @@
   "text": "The defender: plays on the board; Troops stop at its Nodes and can't strike there.",
   "innate": {
    "name": "Wall",
-   "text": "Adversary Troops can't enter or strike a hex with your Node. In each adversary turn's Muster, 1 Troop lands on the lowest-numbered adversary or neutral factory of each country where you have a Node (none there: none lands). Vigil: when a Troop ends its march next to your Node, gain 1 insight.",
+   "text": "Adversary Troops can't enter or strike a hex with your Node. In each adversary turn's Muster, 1 Troop lands on the lowest-numbered adversary or neutral factory of each country where you have a Node (none there: none lands). Vigil: the first time each round a Troop ends its march next to your Node, gain 1 insight.",
    "passives": [
     {
      "op": "wall"

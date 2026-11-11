@@ -81,7 +81,7 @@ landing, the players' choice, is offered only open hexes). **Nor can a troop str
 facility on a hex with the Protector's node is no target, so it stands until the node goes.
 A troop already standing on a hex when the Protector places there leaves as it likes. The
 Muster's `wall_troops` landing ([adversary.md](adversary.md)) brings troops near the Protector; Vigil pays 1 insight
-for each that ends a march next to its node ([ai-powers.md](ai-powers.md)). A landing enters a hex, so it counts; a troop made by a factory on its own hex
+for the first that ends a march next to its node each round ([ai-powers.md](ai-powers.md)). A landing enters a hex, so it counts; a troop made by a factory on its own hex
 doesn't enter. With no open way to a target a troop stays where it is.
 
 So a troop moves twice, or moves then destroys, or destroys at once. **A troop that strikes

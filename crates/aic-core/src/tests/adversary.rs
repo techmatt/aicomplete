@@ -406,7 +406,8 @@ fn botnets_start_on_the_stations_and_make_adversary_compute() {
     assert_eq!(total(&g, BOTNET), 2);
     // Round 1's compute step has run: 3 compute a botnet (lab: botnet_compute 3).
     assert_eq!(g.stats.counters["adversary.compute_botnets"], 6);
-    let stations = 2 * rules.world().int("board.station_cubes");
+    // 185: a corrupted station makes compute only once its megaproject is complete (none is here).
+    let stations = 0;
     let before = g.var(adversary::COMPUTE);
     run_answered(&rules, &mut g);
     assert_eq!(g.var(adversary::COMPUTE), before + 6 + stations);
@@ -442,7 +443,11 @@ fn the_adversary_gains_its_income_at_the_end_of_its_turn() {
         let before = g.var(adversary::COMPUTE);
         // 175: the compute step adds the botnets' and corrupted stations' compute with the income.
         let botnets = total(&g, BOTNET) * rules.world().int("adversary.botnet_compute");
-        let stations = (0..g.hexes.len()).filter(|&h| g.tokens(h, STATION) > 0 && g.tokens(h, ADV_CUBE) > 0).count()
+        // 185: only those whose megaproject is complete.
+        let done = |h: usize| g.var(&crate::modules::board::project_done(rules.map.hexes[h].country as usize)) > 0;
+        let stations = (0..g.hexes.len())
+            .filter(|&h| g.tokens(h, STATION) > 0 && g.tokens(h, ADV_CUBE) > 0 && done(h))
+            .count()
             as i64
             * rules.world().int("board.station_cubes");
         run_answered(&rules, &mut g);

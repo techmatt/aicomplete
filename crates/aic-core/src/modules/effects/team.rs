@@ -54,6 +54,8 @@ pub(super) fn flip_station(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, each_count
             let here = threats::token_of(&w, g, t, Location::Station);
             spots.retain(|h| Some(*h) == here);
         }
+        // 185 (D77): a firewalled or prohibited station is skipped.
+        spots.retain(|&h| !adversary::guard_holds(g, cx, h, "flip"));
         // 151: a project's or an event's flip takes the lowest-numbered station.
         if ctx.threat.is_none() && matches!(ctx.label, "standing" | "project") {
             if let Some(&h) = spots.iter().min_by_key(|&&h| w.map.hexes[h].number) {
@@ -131,6 +133,37 @@ pub(super) fn remove_botnets(g: &mut GameState, cx: &mut Cx, count: i64) -> Res 
             break;
         };
         adversary::remove_botnet(g, cx, botnets[i]);
+    }
+    Ok(())
+}
+
+/// 185 (Matt's ruling #3): `count` adversary research cubes onto each open megaproject.
+pub(super) fn adversary_cubes(g: &mut GameState, cx: &mut Cx, count: i64) {
+    let w = cx.world;
+    for c in 0..w.map.countries.len() {
+        if g.var(&board::project_done(c)) == 0 {
+            cx.add_key(g, &board::project_key(c, None), count);
+            cx.tally(g, "board.adversary_cubes_op", count);
+        }
+    }
+}
+
+/// 185 (Matt's ruling #3): up to `count` botnets in countries with an open megaproject (players choose which) each
+/// come off and become an adversary cube on that megaproject. Not a removal by the players: no Unity for it.
+pub(super) fn botnet_cubes(g: &mut GameState, cx: &mut Cx, count: i64) -> Res {
+    let w = cx.world;
+    for _ in 0..count {
+        let open = |h: usize| g.var(&board::project_done(w.map.hexes[h].country as usize)) == 0;
+        let botnets: Vec<usize> = (0..g.hexes.len()).filter(|&h| g.tokens(h, BOTNET) > 0 && open(h)).collect();
+        let opts = botnets.iter().map(|&h| hex_opt(&w, h)).collect();
+        let Some(i) = cx.choose(0, "Which botnet becomes an adversary research cube?", opts)? else {
+            break;
+        };
+        let h = botnets[i];
+        cx.add_tokens(g, h, BOTNET, -1);
+        cx.set_key(g, &adversary::cut_key(h), 0);
+        cx.add_key(g, &board::project_key(w.map.hexes[h].country as usize, None), 1);
+        cx.tally(g, "board.botnet_cubes", 1);
     }
     Ok(())
 }

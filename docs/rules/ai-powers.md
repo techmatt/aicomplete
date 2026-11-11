@@ -55,11 +55,12 @@ own currency:
 
 - **Builder, Focus** (a power, once a round): 5 credits → 1 insight, the keep's credit rate opened to plays. At the
   agents' values (a credit 1, an insight 2.5) it reads as a loss: it pays when one insight short stops a play or a keep.
-- **Protector, Vigil** (an Effect of Wall, not a power): when a troop ends its march next to your node, gain 1
-  insight: once per troop per march, in any march (a threat's immediate march too); a troop used up striking has no
-  end to its march. An Effect because it happens in a march, outside the action phase where powers are used: the
-  march's (phase 7) pays this round's keeps and plays, an immediate march's (phase 18) comes after them. The
-  adversary's troops cap it.
+- **Protector, Vigil** (an Effect of Wall, not a power; capped, r79, Matt's ruling: some cap is locked, its size a
+  candidate): the first troop each round that ends its march next to your node pays 1 insight (`board.vigil_cap`
+  troops a round, 1); later ones that round pay nothing, so a troop parked by your node no longer pays every march.
+  Any march counts (a threat's immediate march too); a troop used up striking has no end to its march. An Effect
+  because it happens in a march, outside the action phase where powers are used: the march's (phase 7) pays this
+  round's keeps and plays, an immediate march's (phase 18) comes after them. (r77-r78 paid every troop every march.)
 - **Researcher, Synthesis** (a power, once a round, no price but the card): discard a card from your hand, gain 2
   insight; Patience banks it. With Fieldwork (1 energy → 3 cards) it turns 1 energy into 2 cards and 2 insight: about 4.5
   credits into 13 at the agents' values. Each is once a round, which caps the loop. A tier-1 card kept for 1 insight and never
@@ -67,7 +68,7 @@ own currency:
 
 **For new players.** Insight is what you spend to keep and play cards, and every board gets 6 a round (5 printed, 1 from the economy track's first space). When you
 are short, turn a research cube into 1 insight at any time (Cintamani's converter gives 2), and use your board's own
-way: the Builder pays 5 credits for 1 (Focus), the Protector gains 1 each time a troop ends its march next to its node (Vigil), the
+way: the Builder pays 5 credits for 1 (Focus), the Protector gains 1 the first time each round a troop ends its march next to its node (Vigil), the
 Researcher discards a card for 2 (Synthesis). Insight you don't spend still goes at the round's end (the Researcher
 keeps it), but a few threat counters offer insight (6 at tier 1, 7 at tier 2: [threats.md](threats.md) *Counters*),
 so spare insight can stop one.
