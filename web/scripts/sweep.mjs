@@ -126,9 +126,9 @@ const PAGE_LIB = String.raw`(() => {
   // top-tier counter by currency (tier 3 until 146, tier 2 since). (144's blackout and sabotage flags and the "is freed" note are gone.)
   const COUNTER_EVENTS_R55 = /^(board\.(claimed|liberated)\.(city|station|factory)|board\.(std\.envoy|cities_freed|war_destroyed)|board\.node_lost\.[a-z0-9]+|adversary\.(corruptions\.(city|station|factory|land)|sites_created\.(station|factory)|factories_seized|stations_flipped)|alignment\.(unity|discord)_held_off|alignment\.unity_pulled|threats\.(countered_by\.t2\.[a-z_]+|dealt_at_node))$/;
   // 169: r70-r71's moving pieces and fear cards: a gather, a push, an arrival that cancels, a
-  // gather-then-strike, a liberation spending standing ambassadors, a prohibition made or fired,
+  // gather-then-strike, a claim or liberation spending your standing ambassadors (r75), a prohibition made or fired,
   // a remove_where sweep and a cleanse.
-  const COUNTER_EVENTS_R70 = /^(effects\.(gathered|pushed|moved_canceled|struck|cleansed|firewalls|remove_where\..+)|board\.liberate_standing|prohibit\.[a-z]+\.[a-z_]+\.(made|fired))$/;
+  const COUNTER_EVENTS_R70 = /^(effects\.(gathered|pushed|moved_canceled|struck|cleansed|firewalls|remove_where\..+)|board\.(site_standing_spent|std\.(botnet|buy_energy)|aegis_used|protection_declined)|prohibit\.[a-z]+\.[a-z_]+\.(made|fired))$/;
   const counters = () => { const c = aic.timeline.frame.snap.state.stats?.counters ?? {}; return Array.isArray(c) ? Object.fromEntries(c) : c; };
   function counterEvents(c0, c1) {
     return Object.keys(c1).filter((k) => (COUNTER_EVENTS.test(k) || COUNTER_EVENTS_R41.test(k) || COUNTER_EVENTS_R55.test(k) || COUNTER_EVENTS_R70.test(k)) && (c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);

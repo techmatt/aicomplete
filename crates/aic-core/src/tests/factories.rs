@@ -70,57 +70,61 @@ fn cube_on(g: &GameState, h: usize) -> Option<String> {
         .map(|k| k.to_string())
 }
 
+/// r75 (Matt's ruling 4): a corrupted city builds only on a free zone next to it
+/// (it searched its whole country): the one next to an agent if any, else the
+/// lowest-numbered; with none free it builds nowhere.
 #[test]
-fn a_corrupted_city_builds_next_to_an_adversary_ambassador_else_at_its_lowest_free_zone() {
+fn a_corrupted_city_builds_next_to_itself_by_an_agent_else_at_its_lowest_free_zone() {
     let (rules, mut g0) = lab(&["board.bases"]);
     let m = &rules.map;
     let at = |n: u8| m.numbered(0, n);
-    // Country 0 (see above): city 6 builds first; zone 2 is taken, so its
-    // own neighborhood has no free zone.
+    // Country 0 (see above): zone 2 is taken, so city 6 (first to build) has no
+    // free zone next to it; 8 and 11 are 7's, 11 and 13 are 14's.
     put(&mut g0, at(2), STATION, 1);
-    put(&mut g0, at(6), ADV_CUBE, 1);
     let adv = Some("cube:adversary".to_string());
     let zone = |g: &GameState, n: u8| (g.tokens(at(n), FACTORY), cube_on(g, at(n)));
+    let adversary_zones = |g: &GameState| [8, 11, 13].into_iter().filter(|&n| zone(g, n).1 == adv).count();
 
-    // No agent: the lowest-numbered free zone, 8, even though
-    // it is not next to the city; then 7 builds at 11 and 14 at 13, neutral.
+    // Corrupted 6 builds nowhere, though 8 is free in its country.
     let mut g = g0.clone();
-    run(&rules, &mut g);
-    answer_all(&rules, &mut g);
+    put(&mut g, at(6), ADV_CUBE, 1);
     assert!(!m.adjacent(at(6), at(8)));
-    assert_eq!(zone(&g, 8), (1, adv.clone()));
-    assert_eq!((zone(&g, 11), zone(&g, 13)), ((1, None), (1, None)));
-
-    // An agent next to 13 (on 9) draws it there, past 8 and 11.
-    let mut g = g0.clone();
-    put(&mut g, at(9), ADV_AMBASSADOR, 1);
-    assert!(m.adjacent(at(9), at(13)) && !m.adjacent(at(9), at(8)) && !m.adjacent(at(9), at(11)));
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
-    assert_eq!(zone(&g, 13), (1, adv.clone()));
-    assert_ne!(zone(&g, 8).1, adv);
-    assert_ne!(zone(&g, 11).1, adv);
+    assert_eq!(adversary_zones(&g), 0);
 
-    // An ambassador on a zone counts too; among two drawn zones (13 on one,
-    // 11 next to the one on 14; 8 next to neither), the lower.
+    // Corrupted 7 with no agent: its lowest-numbered free zone, 8.
     let mut g = g0.clone();
-    put(&mut g, at(13), ADV_AMBASSADOR, 1);
+    put(&mut g, at(7), ADV_CUBE, 1);
+    assert!(m.adjacent(at(7), at(8)) && m.adjacent(at(7), at(11)));
+    run(&rules, &mut g);
+    answer_all(&rules, &mut g);
+    assert_eq!(zone(&g, 8), (1, adv.clone()));
+    assert_eq!(adversary_zones(&g), 1);
+
+    // An agent next to 11 (on 14), not 8, draws it to 11.
+    let mut g = g0.clone();
+    put(&mut g, at(7), ADV_CUBE, 1);
     put(&mut g, at(14), ADV_AMBASSADOR, 1);
-    assert!(!m.adjacent(at(8), at(14)) && !m.adjacent(at(8), at(13)));
+    assert!(m.adjacent(at(14), at(11)) && !m.adjacent(at(14), at(8)));
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
     assert_eq!(zone(&g, 11), (1, adv.clone()));
-    assert_ne!(zone(&g, 13).1, adv);
-    // A player ambassador no longer repels it.
+    assert_ne!(zone(&g, 8).1, adv);
+
+    // A player ambassador doesn't repel it.
     let mut g = g0.clone();
+    put(&mut g, at(7), ADV_CUBE, 1);
     put(&mut g, at(8), ambassador(0), 1);
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
     assert_eq!(zone(&g, 8), (1, adv));
 }
 
+/// r75 (Matt's ruling 4): a neutral city's factory is neutral (claimable),
+/// whatever nodes are near (the player with the most nodes by its zone took it).
 #[test]
-fn a_clean_citys_factory_goes_to_the_most_node_by_its_zone() {
+fn a_neutral_citys_factory_is_neutral_whatever_nodes_are_near() {
     let (rules, mut g0) = lab(&["board.bases"]);
     let m = &rules.map;
     let at = |n: u8| m.numbered(0, n);
@@ -139,34 +143,27 @@ fn a_clean_citys_factory_goes_to_the_most_node_by_its_zone() {
     answer_all(&rules, &mut g);
     assert_eq!(owners(&g), [None, None, None]);
 
-    // Seat 1 next to 2; seat 1 on 11 against seat 0 on 10 (next to it), a
-    // tie the players settle; seat 0 on 9 and 10, both next to 13.
+    // Seat 1 next to 2 and on 11; seat 0 on 9 and 10, both next to 13: still
+    // neutral, and nobody is asked who takes it: the only ask is 14's zone
+    // (13, or a zone of the next country beside it), seat 0's.
     let mut g = g0.clone();
     put(&mut g, at(1), node(1), 1);
     put(&mut g, at(11), node(1), 1);
     put(&mut g, at(9), node(0), 1);
     put(&mut g, at(10), node(0), 1);
     run(&rules, &mut g);
-    let p = g.pending.as_ref().expect("a tie to settle");
-    assert!(
-        p.ask
-            .prompt
-            .starts_with(&format!("The factory at {} #11 goes to which player?", piece(0).name)),
-        "{}",
-        p.ask.prompt
-    );
-    assert_eq!(p.ask.options.len(), 2);
-    answer_with(&rules, &mut g, "seat 1");
-    answer_all(&rules, &mut g);
+    let p = g.pending.as_ref().expect("14's zone");
+    assert!(p.ask.seat == 0 && p.ask.prompt.starts_with(&format!("{} #14 builds a factory", piece(0).name)), "{:?}", p.ask);
+    answer_hex(&rules, &mut g, at(13));
+    // The other country's cities ask only for zones too.
+    while let Some(p) = g.pending.as_ref() {
+        assert!(p.ask.seat == 0 && p.ask.prompt.contains("builds a factory on which zone?"), "{:?}", p.ask);
+        answer(&rules, &mut g, 0);
+    }
+    assert_eq!(owners(&g), [None, None, None]);
+    let built = |g: &GameState| g.stats.counters.get("board.factories_built.player").copied().unwrap_or(0);
+    assert_eq!(built(&g) - built(&g0), 0);
     let c = |s: usize| Some(cube(s).to_string());
-    assert_eq!(owners(&g), [c(1), c(1), c(0)]);
-    let built = |g: &GameState| {
-        g.stats
-            .counters
-            .get("board.factories_built.player")
-            .copied()
-    };
-    assert_eq!(built(&g).unwrap_or(0) - built(&g0).unwrap_or(0), 3);
 
     // An aligned city's factory stays its owner's, whatever node is near.
     let mut g = g0.clone();
@@ -179,8 +176,9 @@ fn a_clean_citys_factory_goes_to_the_most_node_by_its_zone() {
 
 #[test]
 fn player_factories_make_chips_every_round() {
-    // 139: production runs every round (no clock).
-    let (rules, mut g0) = lab(&["board.bases"]);
+    // 139: production runs every round (no clock). r75: a factory's output is in
+    // the income step, `board.produce`.
+    let (rules, mut g0) = lab(&["board.produce"]);
     let m = &rules.map;
     let f = m.numbered(0, piece(0).factories[0]);
     put(&mut g0, f, FACTORY, 1);
@@ -251,7 +249,7 @@ fn what_stops_a_tip_troop() {
     put(&mut g0, f, FACTORY, 1);
     let bases = board::corp_bases(&w, 0);
     assert!(!bases.is_empty());
-    let tip = |g: &mut GameState| with_cx(&rules, |cx| board::tip_corp_troops(g, cx));
+    let tip = |g: &mut GameState| with_cx(&rules, |cx| board::tip_corp_troops(g, cx)).unwrap();
     let units = |g: &GameState| bases.iter().map(|&b| g.tokens(b, UNIT)).sum::<i64>();
     let n = bases.len() as i64;
 
@@ -304,9 +302,58 @@ fn what_stops_a_tip_troop() {
     assert_eq!((units(&g), g.tokens(f, ambassador(0))), (cap * n, 1));
 }
 
+/// r75: the adversary factory's troop comes in the income step (`board.produce`);
+/// growth (`board.bases`) after it makes no corp troop either.
+/// r75 (Matt's ruling 8): at a Discord tip each player ambassador on a neutral
+/// factory stops 1 of its troops (one for each of its corp's bases with room)
+/// and is used up; seat 0 chooses which base's troop when they can't stop all.
+/// A full base takes none and spends no ambassador.
+#[test]
+fn each_ambassador_on_a_factory_stops_one_tip_troop() {
+    let (rules, mut g0) = lab_with(&[], &["countries=3"]);
+    let w = rules.world();
+    let f = rules.map.numbered(0, piece(0).factories[0]);
+    put(&mut g0, f, FACTORY, 1);
+    let bases = board::corp_bases(&w, 0);
+    assert_eq!(bases.len(), 2);
+    let units = |g: &GameState| bases.iter().map(|&b| g.tokens(b, UNIT)).collect::<Vec<_>>();
+    let tip = |g: &mut GameState, take: usize| {
+        let asked = std::cell::RefCell::new(Vec::new());
+        with_answers(&rules, g, |a| {
+            asked.borrow_mut().push((a.seat, a.options.len()));
+            let at = rules.map.hexes[bases[take]].hex;
+            a.options.iter().position(|o| o.target == Some(at)).expect("a base option")
+        }, board::tip_corp_troops);
+        asked.into_inner()
+    };
+
+    // One ambassador: it stops the troop of the base seat 0 picks.
+    let mut g = g0.clone();
+    put(&mut g, f, ambassador(0), 1);
+    assert_eq!(tip(&mut g, 1), [(0, 2)]);
+    assert_eq!((units(&g), g.tokens(f, ambassador(0))), (vec![1, 0], 0));
+
+    // Two (any seats'): both troops stopped, both used up. (The rule asks only when they can't stop all; the
+    // engine still asks for the first, a choice with one outcome, so the asks aren't checked here.)
+    let mut g = g0.clone();
+    put(&mut g, f, ambassador(0), 1);
+    put(&mut g, f, ambassador(1), 1);
+    tip(&mut g, 0);
+    assert_eq!((units(&g), g.tokens(f, ambassador(0)), g.tokens(f, ambassador(1))), (vec![0, 0], 0, 0));
+
+    // A full base takes none: one ambassador stops the other base's troop, a
+    // second stays.
+    let cap = w.int("board.unit_cap");
+    let mut g = g0.clone();
+    put(&mut g, bases[0], UNIT, cap);
+    put(&mut g, f, ambassador(0), 2);
+    assert_eq!(tip(&mut g, 1), []);
+    assert_eq!((units(&g), g.tokens(f, ambassador(0))), (vec![cap, 0], 1));
+}
+
 #[test]
 fn an_adversary_factory_makes_adversary_troops() {
-    let (rules, mut g) = lab(&["board.bases"]);
+    let (rules, mut g) = lab(&["board.produce", "board.bases"]);
     let m = &rules.map;
     for c in 0..2 {
         for &z in &piece(c).industry {
@@ -328,7 +375,8 @@ fn an_adversary_factory_makes_adversary_troops() {
 /// troop is made. 068: it stays. 136: it sways no Unity (it swayed `factory_unity`).
 #[test]
 fn a_player_ambassador_on_an_adversary_factory_stops_its_troop_and_stays() {
-    let (rules, mut g) = lab(&["board.bases"]);
+    // r75: the troop is made in the income step, `board.produce`.
+    let (rules, mut g) = lab(&["board.produce"]);
     let m = &rules.map;
     let f = m.numbered(0, piece(0).factories[0]);
     put(&mut g, f, FACTORY, 1);
@@ -341,10 +389,10 @@ fn a_player_ambassador_on_an_adversary_factory_stops_its_troop_and_stays() {
 }
 
 /// 137: an adversary factory makes its troop and its own ambassadors stay
-/// (028: one was used up making it).
+/// (028: one was used up making it). r75: in the income step, `board.produce`.
 #[test]
 fn ambassadors_on_an_adversary_factory_stay_as_it_makes_its_troop() {
-    let (rules, mut g) = lab(&["board.bases"]);
+    let (rules, mut g) = lab(&["board.produce"]);
     let f = rules.map.numbered(0, piece(0).factories[0]);
     put(&mut g, f, FACTORY, 1);
     put(&mut g, f, ADV_CUBE, 1);

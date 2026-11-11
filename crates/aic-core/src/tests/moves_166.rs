@@ -108,22 +108,27 @@ fn a_push_moves_no_troop_onto_a_protector_node() {
     assert_eq!((g.tokens(b, TROOP), g.tokens(c, TROOP)), (1, 0));
 }
 
-/// Liberate spends the ambassadors standing on the site first, any seat's; the acting seat's supply pays the rest.
+/// r75 (Matt's ruling 2): Liberate spends the acting seat's own ambassadors standing on the site first, never
+/// another player's; its supply pays the rest, and its cube goes on.
 #[test]
-fn liberate_spends_the_ambassadors_standing_on_the_site() {
+fn liberate_spends_your_own_ambassadors_on_the_site() {
     let (rules, mut g) = lab_with(&[], &["board.liberate_at=5"]);
     let w = rules.world();
     let m = &rules.map;
     let (c, _, _, _) = by_a_city(&mut g, m);
     put(&mut g, c, ADV_CUBE, 1);
-    put(&mut g, c, ambassador(1), 2);
+    put(&mut g, c, ambassador(0), 2);
+    put(&mut g, c, ambassador(1), 1);
     let n = board::liberate_cost(&w, &g, c).unwrap();
-    assert_eq!(board::liberate_supply_cost(&w, &g, c), Some(n - 2));
+    assert_eq!(board::site_supply_cost(&w, &g, 0, c, true), Some(n - 2));
+    assert_eq!(board::site_supply_cost(&w, &g, 1, c, true), Some(n - 1), "only your own pay");
     set_res(&mut g, 0, Resource::Ambassadors, n - 3);
     assert!(!board::liberable(&w, &g, 0, c));
     set_res(&mut g, 0, Resource::Ambassadors, n - 2);
     assert!(board::liberable(&w, &g, 0, c));
     act(&rules, &mut g, std_act(0, "liberate"));
     pick(&rules, &mut g, c);
-    assert_eq!((g.tokens(c, ADV_CUBE), g.tokens(c, ambassador(1)), g.resource(0, Resource::Ambassadors)), (0, 0, 0));
+    let left = (g.tokens(c, ADV_CUBE), g.tokens(c, ambassador(0)), g.tokens(c, ambassador(1)), g.resource(0, Resource::Ambassadors));
+    assert_eq!(left, (0, 0, 1, 0));
+    assert_eq!(g.tokens(c, cube(0)), 1, "liberated: yours");
 }

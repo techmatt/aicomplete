@@ -866,8 +866,8 @@ fn standing(op: &Op, kind: Option<TokenKind>) -> Standing {
         ),
         // The shield stops one destruction; the roof is a whole country for the round.
         Op::CivicShelter => effect(
-            vec![w("harden"), w("country")],
-            "each round, stop the first destruction in a country you're in".to_string(),
+            vec![w("harden"), w("node")],
+            "once a round, when one of your nodes or facilities would be destroyed, you may keep it".to_string(),
         ),
         Op::TagsFromHand { tag: t } => effect(
             vec![w("cards"), w(":"), w("ACT")],

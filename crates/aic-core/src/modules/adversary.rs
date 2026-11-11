@@ -442,7 +442,7 @@ impl Module for Adversary {
                 }
             }
             2 => {
-                natural_corruption(g, cx);
+                natural_corruption(g, cx)?;
                 // Botnets at their peak, per board (country).
                 for c in 0..w.map.countries.len() {
                     let n = botnet_count(g, Some(&w.map.countries[c].hexes));
@@ -1070,7 +1070,7 @@ pub fn rally(g: &mut GameState, cx: &mut Cx, site: crate::op::RallyAt, count: i6
             }
             match super::plan::prohibition_on(&w, g, Step::Rally, h, g.round as i64) {
                 Some(wh) => prohibit_tally(g, cx, Step::Rally, wh, k),
-                None => place(g, cx, h, k),
+                None => place(g, cx, h, k)?,
             }
         }
         let made = before - g.var(SUPPLY);
@@ -1103,16 +1103,17 @@ pub fn build_all(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
 /// source with the agents' forecast, [`super::plan::create_plan`]). A
 /// cordoned country gains none. Tallied by `source` (event, board, threat, project,
 /// discord, unity).
-pub fn create(g: &mut GameState, cx: &mut Cx, line: super::plan::CreateLine, scope: Option<usize>, near: &[usize], location: Option<usize>, source: &str) {
+pub fn create(g: &mut GameState, cx: &mut Cx, line: super::plan::CreateLine, scope: Option<usize>, near: &[usize], location: Option<usize>, source: &str) -> Res {
     let w = cx.world;
     let mut made = 0;
     for (h, n) in super::plan::create_plan(&w, g, line, scope, near, location) {
         let before = g.var(SUPPLY);
-        place(g, cx, h, n);
+        place(g, cx, h, n)?;
         made += before - g.var(SUPPLY);
     }
     cx.tally(g, "adversary.created", made);
     cx.tally(g, &format!("adversary.created.{source}"), made);
+    Ok(())
 }
 
 /// Troop pressure where the Protector stands (080, candidate): in the round's
@@ -1159,37 +1160,39 @@ fn prohibit_tally(g: &mut GameState, cx: &mut Cx, step: Step, wh: Where, n: i64)
 
 /// Places `n` agents from the supply on hex `h`. The supply
 /// is a cap (027): a placement it can't make doesn't happen.
-pub fn place(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) {
+pub fn place(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) -> Res {
     // 158: a firewall stops every arrival on its hex; they stay in the supply.
     if firewalled(g, h) {
         cx.tally(g, "adversary.firewalled", n.max(0));
-        return;
+        return Ok(());
     }
     for k in 0..n {
         if g.var(SUPPLY) <= 0 {
             cx.tally(g, "adversary.supply_short", n - k);
-            return;
+            return Ok(());
         }
         cx.add_key(g, SUPPLY, -1);
         cx.per_round(g, OPS, 1);
-        arrive(g, cx, h);
+        arrive(g, cx, h)?;
     }
+    Ok(())
 }
 
 /// One agent arrives on hex `h` from the supply: it cancels a
-/// player ambassador there (both are removed, no Unity). 138: with the spread
-/// gone, no botnet forms by arriving (botnets come only from printed lines).
-fn arrive(g: &mut GameState, cx: &mut Cx, h: usize) {
-    if let Some(s) = player_ambassador(g, h) {
-        cx.add_tokens(g, h, ambassador(s), -1);
+/// player ambassador there (both are removed, no Unity; r75: the players choose
+/// whose, [`board::agent_cancels`]). 138: with the spread gone, no botnet forms
+/// by arriving (botnets come only from printed lines).
+fn arrive(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
+    if board::agent_cancels(g, cx, h)?.is_some() {
         cx.add_key(g, SUPPLY, 1);
         cx.tally(g, "adversary.canceled", 1);
-        return;
+        return Ok(());
     }
     cx.add_tokens(g, h, ADV_AMBASSADOR, 1);
+    Ok(())
 }
 
-/// Removes the botnet on hex `h` (a card's effect; no standard action does, 019).
+/// Removes the botnet on hex `h` (a card's effect, or r75's Take down a botnet standard action).
 pub fn remove_botnet(g: &mut GameState, cx: &mut Cx, h: usize) {
     if g.tokens(h, BOTNET) > 0 {
         cx.add_tokens(g, h, BOTNET, -1);
@@ -1252,10 +1255,10 @@ pub fn clear_markers_on(g: &mut GameState, cx: &mut Cx, h: usize) {
 
 /// City `h` is corrupted: the adversary's cube goes on (a player cube
 /// comes off), its agents return to the supply, and a node on
-/// it is destroyed (138: only on the hex itself; an allied ambassador there is
-/// armor).
-pub fn corrupt_city(g: &mut GameState, cx: &mut Cx, h: usize) {
-    corrupt_hex(g, cx, h, CorruptSite::City);
+/// it is destroyed (138: only on the hex itself; r75: its owner may spend a
+/// protection, such as their own ambassador there).
+pub fn corrupt_city(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
+    corrupt_hex(g, cx, h, CorruptSite::City)
 }
 
 /// 138: hex `h` corrupts as a `site`: a city, research station or factory
@@ -1264,11 +1267,10 @@ pub fn corrupt_city(g: &mut GameState, cx: &mut Cx, h: usize) {
 /// the hex is destroyed (its owner's ambassador there is armor, used up
 /// instead; the Sanctuary capstone keeps it); player ambassadors still there
 /// are lost (024: they would free it in the same step); a marker comes off.
-pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) {
+pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) -> Res {
     let w = cx.world;
     if site == CorruptSite::Node {
-        corrupt_node(g, cx, h);
-        return;
+        return corrupt_node(g, cx, h);
     }
     if site == CorruptSite::Land {
         cx.add_tokens(g, h, LAND_CORRUPTION, 1);
@@ -1279,7 +1281,7 @@ pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) 
     remove(g, cx, h, n);
     if let Some(s) = node_owner(g, h) {
         if !cards::has_passive(&w, g, s, |p| matches!(p, Op::CorruptionShield)) {
-            board::destroy_piece(g, cx, h, node(s), board::Cause::Effect("corruption"));
+            board::destroy_piece(g, cx, h, node(s), board::Cause::Effect("corruption"))?;
         }
     }
     for s in 0..g.seats.len() {
@@ -1298,22 +1300,24 @@ pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) 
         CorruptSite::Land => format!("{} takes land corruption", hex_name(&w, h)),
         _ => format!("{} is corrupted", hex_name(&w, h)),
     });
+    Ok(())
 }
 
 /// 175, a node hex corrupts: its agents go to the supply and the node is destroyed (the protections apply;
 /// the Sanctuary capstone keeps it). Nothing else on the hex changes.
-fn corrupt_node(g: &mut GameState, cx: &mut Cx, h: usize) {
+fn corrupt_node(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
     let w = cx.world;
     let n = g.tokens(h, ADV_AMBASSADOR);
     remove(g, cx, h, n);
     if let Some(s) = node_owner(g, h) {
         if !cards::has_passive(&w, g, s, |p| matches!(p, Op::CorruptionShield)) {
-            board::destroy_piece(g, cx, h, node(s), board::Cause::Effect("corruption"));
+            board::destroy_piece(g, cx, h, node(s), board::Cause::Effect("corruption"))?;
         }
     }
     cx.tally(g, "adversary.corruptions", 1);
     cx.tally(g, "adversary.corruptions.node", 1);
     cx.note(Some(h), || format!("The node at {} is corrupted", hex_name(&w, h)));
+    Ok(())
 }
 
 /// 138: the corrupt number of `site` this game: its config number, less the
@@ -1350,7 +1354,7 @@ pub fn corrupt_sites(g: &mut GameState, cx: &mut Cx, site: CorruptSite, cut: i64
         if to.len() == 1 {
             let k = g.tokens(*h, ADV_AMBASSADOR);
             for _ in 0..k {
-                converge_one(g, cx, *h, to[0]);
+                converge_one(g, cx, *h, to[0])?;
             }
         } else {
             flexible.push((*h, to.clone()));
@@ -1364,7 +1368,7 @@ pub fn corrupt_sites(g: &mut GameState, cx: &mut Cx, site: CorruptSite, cut: i64
             let Some(i) = cx.choose(0, prompt, opts)? else {
                 break;
             };
-            converge_one(g, cx, h, to[i]);
+            converge_one(g, cx, h, to[i])?;
         }
     }
     for t in cv.targets {
@@ -1380,7 +1384,7 @@ pub fn corrupt_sites(g: &mut GameState, cx: &mut Cx, site: CorruptSite, cut: i64
         if !super::plan::corrupt_target(&w, g, t, site) {
             continue;
         }
-        corrupt_hex(g, cx, t, site);
+        corrupt_hex(g, cx, t, site)?;
         if g.is_over() {
             return Ok(());
         }
@@ -1389,23 +1393,24 @@ pub fn corrupt_sites(g: &mut GameState, cx: &mut Cx, site: CorruptSite, cut: i64
 }
 
 /// 175: one agent moves from `from` onto `to` (Corrupt X's convergence): on a player ambassador the two cancel.
-fn converge_one(g: &mut GameState, cx: &mut Cx, from: usize, to: usize) {
+fn converge_one(g: &mut GameState, cx: &mut Cx, from: usize, to: usize) -> Res {
     cx.add_tokens(g, from, ADV_AMBASSADOR, -1);
     cx.tally(g, "adversary.converged", 1);
-    if let Some(s) = player_ambassador(g, to) {
-        cx.add_tokens(g, to, ambassador(s), -1);
+    // r75: the players choose whose ambassador it cancels.
+    if board::agent_cancels(g, cx, to)?.is_some() {
         cx.add_key(g, SUPPLY, 1);
         cx.tally(g, "adversary.canceled", 1);
     } else {
         cx.add_tokens(g, to, ADV_AMBASSADOR, 1);
     }
+    Ok(())
 }
 
 /// 138, natural corruption at the end of the event card: every city,
 /// research station or factory already holding its corrupt number (a city's
 /// markers count, 034) corrupts, with no move, in hex order; 175: then every
 /// hex with a player's node holding a node's number loses the node.
-fn natural_corruption(g: &mut GameState, cx: &mut Cx) {
+fn natural_corruption(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     for site in [CorruptSite::City, CorruptSite::Station, CorruptSite::Factory, CorruptSite::Node] {
         let n = corrupt_n(&w, site, 0);
@@ -1415,13 +1420,14 @@ fn natural_corruption(g: &mut GameState, cx: &mut Cx) {
                 prohibit_tally(g, cx, Step::Corrupt, wh, g.tokens(h, ADV_AMBASSADOR));
                 continue;
             }
-            corrupt_hex(g, cx, h, site);
+            corrupt_hex(g, cx, h, site)?;
             cx.tally(g, "adversary.corruptions_natural", 1);
             if g.is_over() {
-                return;
+                return Ok(());
             }
         }
     }
+    Ok(())
 }
 
 /// `count` adversary troops, each onto a factory among `hexes` (players
@@ -1484,7 +1490,7 @@ pub fn land_troops(
         if let Some(source) = destroy {
             for s in 0..g.seats.len() {
                 if g.tokens(spots[i], node(s)) > 0 {
-                    board::destroy_piece(g, cx, spots[i], node(s), board::Cause::Effect(source));
+                    board::destroy_piece(g, cx, spots[i], node(s), board::Cause::Effect(source))?;
                 }
             }
         }
@@ -1498,7 +1504,7 @@ pub fn land_troops(
 /// up; short of that one agent lands on it instead (a player
 /// ambassador standing there cancels it).
 /// Returns whether it flipped (099: a player's station that holds is no new source).
-pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) -> bool {
+pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
     let w = cx.world;
     if cube_owner(g, h).is_some() {
         let need = w.int("adversary.station_flip_at");
@@ -1506,7 +1512,7 @@ pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) -> bool {
             // 099: say what happened: a player's ambassador there cancels the one
             // arriving, and an empty supply sends none (both read "lands on it").
             let (adv, supply) = (g.tokens(h, ADV_AMBASSADOR), g.var(SUPPLY));
-            place(g, cx, h, 1);
+            place(g, cx, h, 1)?;
             cx.tally(g, "adversary.station_flip_held", 1);
             let what = if supply <= 0 {
                 "no agent is left to send"
@@ -1516,28 +1522,29 @@ pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) -> bool {
                 "the agent sent and a player ambassador there cancel each other"
             };
             cx.note(Some(h), || format!("The station at {} holds: {what}", hex_name(&w, h)));
-            return false;
+            return Ok(false);
         }
         remove(g, cx, h, need);
     }
     // 146 (D60): a flip is corruption: its cleanup as everywhere (the node on it or its armor, the adversary
     // ambassadors back to the supply, player ambassadors there lost, markers off).
-    corrupt_hex(g, cx, h, CorruptSite::Station);
+    corrupt_hex(g, cx, h, CorruptSite::Station)?;
     cx.tally(g, "adversary.stations_flipped", 1);
     cx.note(Some(h), || {
         format!("The station at {} flips to the adversary", hex_name(&w, h))
     });
-    true
+    Ok(true)
 }
 
 /// Factory `h` becomes the adversary's (070: a threat's target): it corrupts,
 /// with corruption's cleanup (146, D60: the node on it or its armor, the
 /// ambassadors; any player cube comes off, its cube goes on, markers off).
-pub fn corrupt_factory(g: &mut GameState, cx: &mut Cx, h: usize) {
+pub fn corrupt_factory(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
     let w = cx.world;
-    corrupt_hex(g, cx, h, CorruptSite::Factory);
+    corrupt_hex(g, cx, h, CorruptSite::Factory)?;
     cx.tally(g, "adversary.factories_seized", 1);
     cx.note(Some(h), || format!("The factory at {} goes to the adversary", hex_name(&w, h)));
+    Ok(())
 }
 
 /// Whether a removal of `ambassadors` or `troops` has a piece to take on hex

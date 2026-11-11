@@ -19,7 +19,7 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
         }
         Op::FlipStation { each_country, force: false } => team::flip_station(g, cx, ctx, *each_country)?,
         Op::FlipStation { each_country, force: true } => force_flip(g, cx, ctx, *each_country)?,
-        Op::CorruptCity { at } => corrupt_city(g, cx, ctx, *at),
+        Op::CorruptCity { at } => corrupt_city(g, cx, ctx, *at)?,
         Op::PlayersLose { resource, amount, all } => {
             for s in ctx.seats(&w, g) {
                 let held = g.resource(s, *resource);
@@ -31,7 +31,7 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
             let line = super::super::plan::CreateLine::of(e).expect("a creation line");
             let near = if line.if_ == crate::op::CreateIf::Near { ctx.hexes(&w, g) } else { Vec::new() };
             let location = token(&w, g, ctx, None);
-            adversary::create(g, cx, line, ctx.scope, &near, location, create_source(ctx));
+            adversary::create(g, cx, line, ctx.scope, &near, location, create_source(ctx))?;
         }
         Op::CreateSite { kind } => create_site(g, cx, ctx, *kind),
         Op::Corrupt { site, cut } => adversary::corrupt_sites(g, cx, *site, *cut, ctx.scope)?,
@@ -66,7 +66,7 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
             let c = Corp { count: *count, at: *at, near: *near, past_cap: *past_cap, permanent: *permanent, fill: *fill, rounds: *rounds };
             corp_troops(g, cx, ctx, c, *when)
         }
-        Op::DestroyFacility { at: DestroyAt::Factory } => destroy_factory(g, cx, ctx),
+        Op::DestroyFacility { at: DestroyAt::Factory } => destroy_factory(g, cx, ctx)?,
         Op::DisableBuilding { count, until: Until::EndOfNextRound } => {
             for s in ctx.seats(&w, g) {
                 for _ in 0..*count {
@@ -158,7 +158,7 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
             if let Some(h) = token(&w, g, ctx, Some(Location::Factory)) {
                 if g.tokens(h, FACTORY) > 0 {
                     if !corrupted(g, h) {
-                        adversary::corrupt_factory(g, cx, h);
+                        adversary::corrupt_factory(g, cx, h)?;
                     }
                 } else if w.map.hexes[h].industrial && !has_building(g, h) {
                     build_factory(g, cx, ctx, h);
@@ -296,7 +296,7 @@ fn troops(
         if land.destroy {
             for s in 0..g.seats.len() {
                 if g.tokens(h, node(s)) > 0 {
-                    board::destroy_piece(g, cx, h, node(s), board::Cause::Effect(ctx.label));
+                    board::destroy_piece(g, cx, h, node(s), board::Cause::Effect(ctx.label))?;
                 }
             }
         }
@@ -322,7 +322,7 @@ fn force_flip(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, each_country: bool) -> 
         let prompt = || format!("{}: which research station flips to the adversary?", ctx.why.as_deref().unwrap_or("Threat"));
         if let Some(i) = cx.choose(0, prompt, opts)? {
             // 146 (D60): corruption, with its cleanup, even a player's station.
-            adversary::corrupt_hex(g, cx, spots[i], crate::op::CorruptSite::Station);
+            adversary::corrupt_hex(g, cx, spots[i], crate::op::CorruptSite::Station)?;
             cx.tally(g, "adversary.stations_flipped", 1);
         }
     }
@@ -332,11 +332,11 @@ fn force_flip(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, each_country: bool) -> 
 /// CorruptCity (135): the threat's city. `at` location (Regime Change) also destroys the nodes on and next
 /// to it, never a last one. The no-location form (the most infiltrated city) is gone (142, P1): the load
 /// check refuses it.
-fn corrupt_city(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Option<Spot>) {
+fn corrupt_city(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Option<Spot>) -> Res {
     let w = cx.world;
-    let Some(h) = city_token(&w, g, ctx) else { return };
+    let Some(h) = city_token(&w, g, ctx) else { return Ok(()) };
     if !corrupted(g, h) {
-        adversary::corrupt_city(g, cx, h);
+        adversary::corrupt_city(g, cx, h)?;
         if at == Some(Spot::Location) {
             for x in within(&w, h, 1) {
                 for s in 0..g.seats.len() {
@@ -347,6 +347,7 @@ fn corrupt_city(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Option<Spot>) {
             }
         }
     }
+    Ok(())
 }
 
 /// Where a creation line comes from, for its tally (138): a threat, the
@@ -623,7 +624,7 @@ fn adversary_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Option<Facto
         let opts = factories.iter().map(|&h| hex_opt(&w, h)).collect();
         let prompt = || format!("{}: agents land on which factory?", ctx.why.as_deref().unwrap_or("The adversary"));
         if let Some(i) = cx.choose_loss(0, prompt, opts)? {
-            adversary::place(g, cx, factories[i], fallback);
+            adversary::place(g, cx, factories[i], fallback)?;
         }
     }
     Ok(())
@@ -688,16 +689,16 @@ fn corp_troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, c: Corp, when: CorpWhe
 /// Scorched Earth: the factory under the threat's token is destroyed (as any
 /// destruction, absorbed the same way), with the nodes on its hex, never a
 /// last one.
-fn destroy_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx) {
+fn destroy_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx) -> Res {
     let w = cx.world;
     let Some(h) = token(&w, g, ctx, Some(Location::Factory)) else {
-        return;
+        return Ok(());
     };
     if g.tokens(h, FACTORY) == 0 {
-        return;
+        return Ok(());
     }
-    if !board::destroy_piece(g, cx, h, FACTORY, board::Cause::Effect(ctx.label)) {
-        return;
+    if !board::destroy_piece(g, cx, h, FACTORY, board::Cause::Effect(ctx.label))? {
+        return Ok(());
     }
     if g.tokens(h, FACTORY) == 0 && g.tokens(h, STATION) == 0 && !is_city(&w, h) && corrupted(g, h) {
         cx.add_tokens(g, h, ADV_CUBE, -1);
@@ -705,11 +706,13 @@ fn destroy_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx) {
     if let Some(t) = &ctx.threat {
         cx.set_key(g, &board::destroyed_key(t), h as i64 + 1);
     }
+    // r75 (Matt's ruling 5): the node on the factory's hex is guarded like any node.
     for s in 0..g.seats.len() {
         if g.tokens(h, node(s)) > 0 {
-            board::lose_node(g, cx, h, s, ctx.label);
+            board::destroy_piece(g, cx, h, node(s), board::Cause::Effect(ctx.label))?;
         }
     }
+    Ok(())
 }
 
 /// Sleeper Cells: a botnet on the threat's station, else on the nearest piece

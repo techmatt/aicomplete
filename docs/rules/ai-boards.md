@@ -47,7 +47,7 @@ Revealed tags are rare, late and costly: two a board, on space 6 (cost 3), place
 
 **Movement (candidate; Matt, design doc rev 24).** There is no paid Move. Each round you have your board's
 **Movement**: its printed number plus 1 for each uncovered Movement space, each one a free Move (one of your
-ambassadors from your supply or the board onto a piece in reach). Movement unused this round is lost; a space
+ambassadors from your supply or the board onto a piece or a botnet's hex in reach). Movement unused this round is lost; a space
 counts from when it is uncovered. Cards that move ambassadors (Liaison Corps, Summit Caucus) add to it. Economy space 4
 is reached about round 2-3. **The Researcher is the movement-heavy board,** as its stations spread over the map: its own
 ambassador on one armors it and keeps agents off, which would block its cubes.
@@ -116,7 +116,7 @@ have tokens).
 | 4 | +2 credits (cost 2) | +2 credits (cost 2) | +1 insight (cost 2) |
 | 5 | +2 insight (cost 2) | +2 insight (cost 2) | +2 insight (cost 2) |
 | 6 | +1 insight, Cyber tag (cost 3) | +1 insight, Diplomacy tag (cost 3) | +2 credits, Industry tag (cost 3) |
-| 7 | +1 insight, **Master Plan** (capstone): Your buildings cost 2 credits less. (cost 5) | +1 insight, **Aegis Doctrine** (capstone): Each round, stop the first destruction in a country you're in. (cost 5) | +1 insight, **Open Science** (capstone): Each round, 2 insight from the supply, split among other players. (cost 5) |
+| 7 | +1 insight, **Master Plan** (capstone): Your buildings cost 2 credits less. (cost 5) | +1 insight, **Aegis Doctrine** (capstone): Once a round, when one of your nodes or facilities would be destroyed, you may keep it. (cost 5) | +1 insight, **Open Science** (capstone): Each round, 2 insight from the supply, split among other players. (cost 5) |
 <!-- /generated -->
 
 **Loops and caps.** No resource has a holding limit and no cap limits production ([economy.md](economy.md), *No
@@ -127,17 +127,18 @@ can't be sold back. Rush Build
 takes 1 Industry tag and 1 energy out and puts a building with 1-3 tags in, once a round: the Industry count can hold
 level, but each use spends an energy and a card for good, and the building still pays its insight, so energy and the
 hand cap it. **The energy gift** (Shared Grid Accord and Interconnector Treaty, programs) is one-shot. Energy bought
-from a neutral city costs `city_energy_credits` (5); credits → energy → a card's income is capped by the cards and
-the cities' energy (a city's `corp_energy` cubes a round, none while an agent stands on it). **Energy
+from a neutral city (Buy energy) costs `city_energy_credits` (4); credits → energy → a card's income is capped by the
+cards and the cities' energy (once per city a round, a city's `corp_energy` a buy, none while an agent stands on it). **Energy
 counters** spend energy for good. **The Researcher's:** Patience with the cube converters (Cintamani's, a cube for 2
-insight; everyone's standard action, a cube for 1) is the intended engine, with no limit a round: capped by how many
-stations make cubes (and Open Archive's 1 a round) and, for Cintamani's, by the city node in its country. Bought cubes
+insight, once a round since r75; everyone's standard action, a cube for 1, with no limit) is the intended engine:
+capped by how many stations make cubes (and Open Archive's 1 a round) and, for Cintamani's, by its once a round and
+a Cintamani city in reach. Bought cubes
 go only onto incomplete cards and are spent at completion, so credits never reach a converter. Patience banks only
 the Researcher's own insight, and no standard action gives insight. Open Science's insight goes only to
 other players; alone it is the Researcher's own, and Patience keeps it. Fieldwork's three
 cards are paid for again to keep in play (credits and insight); sold, they are 3 credits for 1 energy once a round.
 Followers → ambassadors → alignment → city energy → node is capped by building count and the Followers each
-ambassador costs. Evicting ambassadors stay on the map, capped by the supply, and the next arrival there cancels one.
+ambassador costs. Remove agents spends its ambassador and places nothing (r75), capped by the supply.
 **Movement** has no loop: a number a round, used up by moves, gaining nothing held. Wall has no loop, but it takes
 troops away as a harm where the Protector stands; `docs/harms.md`'s checks count sources, so they hold.
 

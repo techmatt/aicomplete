@@ -28,7 +28,7 @@ use super::{adversary, board, cards, effects};
 const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("tip_per_player", 1, 50, "the Unity track tips when it holds this many Sway per player"),
     ParamSpec::int("discord_tip_per_player", 1, 50, "the Discord track tips when it holds this many Sway per player"),
-    ParamSpec::int("carry", 0, 2, "Sway past a tip stays toward the next tip: 1 Unity's only (Matt, r48), 2 both sides (an adversary lever), 0 neither (a tip empties its track)"),
+    ParamSpec::int("carry", 0, 2, "Sway past a tip stays toward the next tip: 2 both sides (r75, Matt's ruling 7), 1 Unity's only (r48), 0 neither (a tip empties its track)"),
     ParamSpec::int("hold_off", 0, 1, "1: each Unity swayed may instead move 1 Discord off the Discord track, the players' choice (136)"),
     ParamSpec::int("momentum_every", 0, 10, "Momentum: a side's track holds 1 fewer Sway per this many of its tips, down to 1 per player (0: off)"),
     ParamSpec::int("troop", 0, 10, "Sway toward Unity for removing an adversary troop"),
@@ -249,7 +249,9 @@ pub fn hold_off(g: &mut GameState, cx: &mut Cx, n: i64) -> i64 {
 
 /// The Unity swayed this action or phase goes on the Unity track, or, as
 /// the players choose (seat 0 asks for the team), up to all of it moves
-/// Discord off the Discord track 1 for 1 (136, `hold_off`).
+/// Discord off the Discord track 1 for 1 (136, `hold_off`). r75 (Matt's ruling 7): any amount, no filter (145
+/// offered only amounts that stopped the tip). The Unity of one action is placed as it resolves: tips are
+/// checked after it, so this is the printed "at once".
 fn place_unity(g: &mut GameState, cx: &mut Cx) -> Res {
     let n = g.var(UNITY_NEW);
     if n <= 0 {
@@ -258,12 +260,7 @@ fn place_unity(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     let discord = g.var(track(Side::Discord));
     let most = if w.int("alignment.hold_off") > 0 { n.min(discord) } else { 0 };
-    // 145: a hold-off that leaves the Discord track full still tips, and the
-    // tip empties the track (unless Discord carries), so the Unity spent on it
-    // is lost: only amounts that stop the tip are offered.
-    let cap = capacity(&w, g, Side::Discord);
-    let empties = w.int("alignment.carry") < 2;
-    let ks: Vec<i64> = (0..=most).filter(|&k| k == 0 || !empties || discord - k < cap).collect();
+    let ks: Vec<i64> = (0..=most).collect();
     let k = if ks.len() > 1 {
         let opts = ks
             .iter()
@@ -406,7 +403,7 @@ fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
     cx.tally(g, &format!("alignment.tip_{}.r{round:02}", side.name()), 1);
     // 137: on a Discord tip each neutral factory makes 1 corp troop.
     if side == Side::Discord {
-        board::tip_corp_troops(g, cx);
+        board::tip_corp_troops(g, cx)?;
     }
     let Some(id) = draw(g, cx, side) else {
         // Discord tips with no card left: the players lose (locked, 027).

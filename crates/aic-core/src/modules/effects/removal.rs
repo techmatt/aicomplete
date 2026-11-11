@@ -182,7 +182,7 @@ pub(super) fn cleanse(
         cx.tally(g, "effects.cleansed", 1);
         if is_city(&w, hexes[i]) {
             cx.tally(g, "board.liberated_card", 1);
-            board::liberate(g, cx, hexes[i]);
+            board::liberate(g, cx, hexes[i])?;
         } else {
             cx.add_tokens(g, hexes[i], ADV_CUBE, -1);
         }
@@ -214,7 +214,7 @@ pub(super) fn liberate_city(
     if let Some(i) = cx.choose(seat, prompt, opts)? {
         let h = cities[i];
         cx.tally(g, "board.liberated_card", 1);
-        board::liberate(g, cx, h);
+        board::liberate(g, cx, h)?;
         if align {
             cx.add_tokens(g, h, cube(seat), 1);
             cx.tally(g, "board.liberated_aligned", 1);

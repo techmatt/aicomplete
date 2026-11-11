@@ -16,7 +16,7 @@
         "ambassador_discord": 0,
         "liberate_at": 5,
         "liberate_facility_at": 3,
-        "claim_city": 4,
+        "claim_city": 5,
         "claim_station": 3,
         "claim_factory": 3,
         "start_nodes": 1,
@@ -40,11 +40,12 @@
         "corp_energy": [
           1
         ],
-        "city_energy_credits": 5,
+        "city_energy_credits": 4,
         "harden_credits": 3,
         "drain_credits": 5,
         "drain_amount": 3,
-        "cube_insight": 1
+        "cube_insight": 1,
+        "botnet_credits": 5
       }
     },
     {
@@ -124,7 +125,7 @@
       "params": {
         "tip_per_player": 3,
         "discord_tip_per_player": 3,
-        "carry": 1,
+        "carry": 2,
         "hold_off": 1,
         "momentum_every": 0,
         "troop": 0,
@@ -369,9 +370,9 @@
     "cards.draft",
     "cards.keep",
     "cards.play+threats.counter+alignment.act+board.act+ai.power",
-    "board.bases",
     "board.produce",
     "economy.upkeep",
+    "board.bases",
     "threats.execute",
     "board.war",
     "board.cleanup"

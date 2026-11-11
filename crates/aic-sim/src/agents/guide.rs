@@ -35,8 +35,8 @@ pub enum Armor {
     /// Before 147: any player's ambassador on the hex, and each "destroy N of
     /// your nodes" line read apart (an armored node never fell).
     AnyAmbassador,
-    /// 147: as the engine does (`board::destroy_piece`): a hardening token, the
-    /// node owner's ambassador or the site owner's; each destroy spends one unit
+    /// 147: as the engine does (`board::destroy_piece`): a hardening token or the
+    /// node owner's own ambassador (r75: never the site owner's); each destroy spends one unit
     /// while any lasts, then takes a node. 148: one pool a hex across the
     /// country's threats (175: a seat's last node too, as the engine takes it).
     ByOwner,
@@ -51,8 +51,9 @@ fn absorbed(g: &GameState, h: usize, armor: Armor) -> bool {
     match armor {
         Armor::AnyAmbassador => common::player_ambassador(g, h).is_some(),
         Armor::ByOwner => {
+            // r75 (Matt's ruling 5): only the node owner's own ambassador guards it.
             let own = |s: usize| g.tokens(h, common::ambassador(s)) > 0;
-            common::node_owner(g, h).is_some_and(own) || common::cube_owner(g, h).is_some_and(own)
+            common::node_owner(g, h).is_some_and(own)
         }
     }
 }
@@ -78,13 +79,12 @@ fn fill(g: &GameState, hexes: &[usize], pool: &mut Vec<HexArmor>, taken: &mut Ve
 }
 
 /// 148: the armor on one hex, as `board::destroy_piece` spends it: hardening
-/// tokens, then the node owner's ambassadors, then the site owner's. One pool a
+/// tokens, then the node owner's own ambassadors (r75: never the site owner's). One pool a
 /// hex for a whole forecast, so a unit one threat spends is gone for the next.
 #[derive(Clone, Copy)]
 struct HexArmor {
     harden: i64,
     amb: [i64; 4],
-    site: Option<usize>,
 }
 
 impl HexArmor {
@@ -93,7 +93,7 @@ impl HexArmor {
         for (s, a) in amb.iter_mut().enumerate().take(g.seats.len()) {
             *a = g.tokens(h, common::ambassador(s));
         }
-        HexArmor { harden: g.tokens(h, HARDEN), amb, site: common::cube_owner(g, h).filter(|&o| o < 4) }
+        HexArmor { harden: g.tokens(h, HARDEN), amb }
     }
 
     /// Spends one unit against a destroy of seat `s`'s node here, if any lasts.
@@ -102,11 +102,9 @@ impl HexArmor {
             self.harden -= 1;
             return true;
         }
-        for o in [Some(s), self.site].into_iter().flatten() {
-            if self.amb[o] > 0 {
-                self.amb[o] -= 1;
-                return true;
-            }
+        if self.amb[s] > 0 {
+            self.amb[s] -= 1;
+            return true;
         }
         false
     }

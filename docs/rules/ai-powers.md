@@ -74,16 +74,18 @@ so spare insight can stop one.
 
 **Insight loops (r41).** Nothing turns insight back into what makes it: insight buys cards, and a card that pays insight
 (a trigger, an income) is capped by plays and slots. No card makes research cubes since r44 (Sample Repository
-was cut), so cubes → insight → cards → cubes has no card in it. Onyx's converter keeps its once a round: 1 cube → 2 chips → a 2-chip station → 1 cube a round
-once the station's card is complete, a loop that would double its cubes each round, capped only by open hexes in reach.
-The other three converters drop the limit (Horizon's needs 2 energy a use; Biomia's 2 cubes a Sway; Cintamani's only
-makes insight).
+was cut), so cubes → insight → cards → cubes has no card in it. Every megaproject converter is once a round (r75, Matt's
+ruling 9; only Onyx's was), which caps Onyx's loop: 1 cube → 2 chips → a 2-chip station → 1 cube a round once the
+station's card is complete, which would otherwise double its cubes each round, capped only by open hexes in reach.
 
 ## Shelters, hardening and shields
 
 A **shelter** (the Protector's Shelter, or a card's "shelter one country") lasts until cleanup (phase 19) of the round
-it is used in. Used in the actions, it covers the rest of the actions and what comes after them: troops from bases,
-production, the threats that execute and war (phases 14-18). The march (phase 7) has already happened, so a shelter never meets it.
+it is used in. Used in the actions, it covers the rest of the actions and what comes after them: the income step,
+growth, the threats that execute and war (phases 14-18). The march (phase 7) has already happened, so a shelter never
+meets it. It stops a destruction automatically, spending nothing; every other protection (a hardening token or shield
+below, your own ambassador, a base's corp troop, Aegis Doctrine) is the piece owner's choice ([war.md](war.md),
+*Destruction*).
 
 Hardening (the standard actions, cards) goes only on facilities a token can protect, player-owned stations and
 factories that are not corrupted, and "harden N" is N different facilities, fewer if fewer qualify. A Science card's

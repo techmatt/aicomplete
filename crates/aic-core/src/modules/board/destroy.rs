@@ -24,54 +24,102 @@ impl Cause {
     }
 }
 
-/// A piece of `kind` on hex `h` would be destroyed (175: a last node too). A Shelter Order in
-/// its country, a corp unit at a base next to it (adversary strikes only,
-/// [`Cause::Troop`]), a hardening token, the owner's ambassador on the hex (137:
-/// armor), or the Aegis Doctrine capstone absorbs it (in that order); otherwise it goes, and a war
-/// destruction ([`Cause::War`]) sways toward Discord. Returns whether it was
-/// destroyed.
-pub fn destroy_piece(
-    g: &mut GameState,
-    cx: &mut Cx,
-    h: usize,
-    kind: &str,
-    cause: Cause,
-) -> bool {
-    let w = cx.world;
-    let c = w.map.hexes[h].country as usize;
-    let owner = (0..g.seats.len()).find(|&s| kind == node(s));
-    let by_troop = cause == Cause::Troop;
-    if flagged(g, RoundFlag::Shelter, c) {
-        return false;
-    }
-    if by_troop {
-        let guard = within(&w, h, 1).into_iter().find(|&b| is_base(&w, b) && g.tokens(b, UNIT) > 0);
-        if let Some(b) = guard {
-            cx.add_tokens(g, b, UNIT, -1);
-            cx.tally(g, "board.base_absorbed", 1);
-            return false;
-        }
+/// One protection a destruction may spend (r75, Matt's ruling 5: the owner chooses which, or none).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Guard {
+    /// A corp troop at base `.0` next to the hex (adversary troops' strikes only).
+    Base(usize),
+    /// A hardening token on the hex.
+    Harden,
+    /// The owner's own ambassador on the hex (137: armor).
+    Ambassador(usize),
+    /// The Aegis Doctrine capstone (the Protector's own pieces, once a round).
+    Aegis(usize),
+}
+
+/// The seat whose piece of `kind` on hex `h` is: a node's owner, a station's or factory's cube owner.
+fn piece_owner(g: &GameState, h: usize, kind: &str) -> Option<usize> {
+    (0..g.seats.len())
+        .find(|&s| kind == node(s))
+        .or_else(|| if kind == STATION || kind == FACTORY { cube_owner(g, h) } else { None })
+}
+
+/// The protections a destruction of the `owner`'s piece on hex `h` could spend, in print order.
+fn guards(w: &World, g: &GameState, h: usize, owner: Option<usize>, cause: Cause) -> Vec<Guard> {
+    let mut out = Vec::new();
+    if cause == Cause::Troop {
+        // Each base next to it with a corp troop is an option of its own (the owner chooses which).
+        out.extend(within(w, h, 1).into_iter().filter(|&b| is_base(w, b) && g.tokens(b, UNIT) > 0).map(Guard::Base));
     }
     if g.tokens(h, HARDEN) > 0 {
-        cx.add_tokens(g, h, HARDEN, -1);
-        cx.tally(g, "board.hardening_used", 1);
-        return false;
+        out.push(Guard::Harden);
     }
-    // 137: your own ambassador is armor: the node's owner's, or the owner of
-    // the site on the hex (a node shares its hex's site's armor). A neutral
-    // site has none.
-    let armor = owner
-        .filter(|&s| g.tokens(h, ambassador(s)) > 0)
-        .or_else(|| cube_owner(g, h).filter(|&s| g.tokens(h, ambassador(s)) > 0));
-    if let Some(s) = armor {
-        cx.add_tokens(g, h, ambassador(s), -1);
-        cx.tally(g, "board.ambassador_shield", 1);
-        return false;
+    if let Some(s) = owner {
+        if g.tokens(h, ambassador(s)) > 0 {
+            out.push(Guard::Ambassador(s));
+        }
+        if aegis_ready(w, g, s) {
+            out.push(Guard::Aegis(s));
+        }
     }
-    if civic_shelter(g, cx, c) {
-        return false;
+    out
+}
+
+/// A piece of `kind` on hex `h` would be destroyed (175: a last node too). A Shelter Order in its country
+/// keeps it, spending nothing. Otherwise r75 (Matt's ruling 5): its owner (seat 0 for a neutral piece)
+/// chooses which protection to spend, or none: a corp troop at a base next to it (adversary strikes only,
+/// [`Cause::Troop`]), a hardening token, the owner's own ambassador on the hex (137: armor; only your own
+/// guards your piece), or the Aegis Doctrine capstone (the Protector's own pieces). Unprotected it goes, and
+/// a war destruction ([`Cause::War`]) sways toward Discord. Returns whether it was destroyed.
+pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause: Cause) -> Res<bool> {
+    let w = cx.world;
+    let c = w.map.hexes[h].country as usize;
+    if flagged(g, RoundFlag::Shelter, c) {
+        return Ok(false);
     }
-    match owner {
+    let owner = piece_owner(g, h, kind);
+    let options = guards(&w, g, h, owner, cause);
+    if !options.is_empty() {
+        let mut opts: Vec<crate::state::Opt> = options
+            .iter()
+            .map(|o| {
+                opt(match o {
+                    Guard::Base(b) => format!("spend the corp troop at {}", hex_name(&w, *b)),
+                    Guard::Harden => "spend the hardening token".to_string(),
+                    Guard::Ambassador(_) => "spend your ambassador there".to_string(),
+                    Guard::Aegis(_) => "use the Aegis Doctrine".to_string(),
+                })
+            })
+            .collect();
+        opts.push(opt(LET_IT_GO));
+        let who = owner.unwrap_or(0);
+        let prompt = || format!("Seat {who}: the {} at {} would be destroyed: spend which protection?", piece_name(kind), hex_name(&w, h));
+        let pick = cx.choose_loss(who, prompt, opts)?.and_then(|i| options.get(i).copied());
+        match pick {
+            Some(Guard::Base(b)) => {
+                cx.add_tokens(g, b, UNIT, -1);
+                cx.tally(g, "board.base_absorbed", 1);
+                return Ok(false);
+            }
+            Some(Guard::Harden) => {
+                cx.add_tokens(g, h, HARDEN, -1);
+                cx.tally(g, "board.hardening_used", 1);
+                return Ok(false);
+            }
+            Some(Guard::Ambassador(s)) => {
+                cx.add_tokens(g, h, ambassador(s), -1);
+                cx.tally(g, "board.ambassador_shield", 1);
+                return Ok(false);
+            }
+            Some(Guard::Aegis(s)) => {
+                cx.set_key(g, &cards::civic_used(s), 1);
+                cx.tally(g, "board.aegis_used", 1);
+                return Ok(false);
+            }
+            None => cx.tally(g, "board.protection_declined", 1),
+        }
+    }
+    match (0..g.seats.len()).find(|&s| kind == node(s)) {
         Some(s) => {
             lose_node(g, cx, h, s, cause.name());
         }
@@ -82,6 +130,11 @@ pub fn destroy_piece(
     if kind == STATION || kind == FACTORY {
         if let Some(s) = cube_owner(g, h) {
             cx.add_tokens(g, h, cube(s), -1);
+        }
+        // r75: a declined hardening token goes with the facility it guarded (as `lose_node` strips one).
+        if !hardenable(g, h) && node_owner(g, h).is_none() {
+            let n = g.tokens(h, HARDEN);
+            cx.add_tokens(g, h, HARDEN, -n);
         }
     }
     if kind == FACTORY {
@@ -94,8 +147,11 @@ pub fn destroy_piece(
     if cause == Cause::War {
         alignment::discord_from(g, cx, "war", w.int("board.destruction_discord"));
     }
-    true
+    Ok(true)
 }
+
+/// The option that spends no protection (r75: "or none").
+pub const LET_IT_GO: &str = "spend none: it is destroyed";
 
 /// Seat `s` destroys one of its nodes in `hexes`, its choice (028): a hit
 /// on the player, not a hex. Absorbed as any destruction is, so a player may
@@ -120,25 +176,16 @@ pub fn destroy_own_node(
         None => format!("Seat {s}: destroy which of your nodes?"),
     };
     if let Some(i) = cx.choose_loss(s, prompt, opts)? {
-        destroy_piece(g, cx, mine[i], node(s), cause);
+        destroy_piece(g, cx, mine[i], node(s), cause)?;
     }
     Ok(())
 }
 
-/// Uses a seat's `CivicShelter` passive (the Aegis Doctrine capstone) for a facility or
-/// node destruction in `country`, if one applies.
-fn civic_shelter(g: &mut GameState, cx: &mut Cx, country: usize) -> bool {
-    let w = cx.world;
-    for s in 0..g.seats.len() {
-        if g.var(&cards::civic_used(s)) == 0
-            && has_node_in(&w, g, s, country)
-            && cards::has_passive(&w, g, s, |p| matches!(p, Op::CivicShelter))
-        {
-            cx.set_key(g, &cards::civic_used(s), 1);
-            return true;
-        }
-    }
-    false
+/// Whether seat `s` holds the Aegis Doctrine capstone (`CivicShelter`) unused this round: r75 (Matt's
+/// ruling 5) it guards only `s`'s own pieces, when `s` chooses (it was spent on the first destruction of
+/// anyone's piece in a country `s` was in).
+fn aegis_ready(w: &World, g: &GameState, s: usize) -> bool {
+    g.var(&cards::civic_used(s)) == 0 && cards::has_passive(w, g, s, |p| matches!(p, Op::CivicShelter))
 }
 
 /// Whether a hardening token on hex `h` can protect something: a

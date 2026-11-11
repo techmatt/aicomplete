@@ -87,11 +87,13 @@ fn every_corrupted_city_is_no_loss() {
 }
 
 /// 137: the Liberate action frees an adversary city for `liberate_at`
-/// ambassadors from the supply plus 1 for each agent on it
-/// (those cancel); agents next to it don't count, and it drops
-/// down the ladder. It replaced the fallback.
+/// ambassadors plus 1 for each agent on it (those cancel); agents next to it
+/// don't count. r75 (Matt's ruling 2): the seat's own ambassadors on the city pay
+/// first, its supply the rest, never another seat's; the city becomes the
+/// seat's (its cube goes on) and no agent lands on it (`free_leaves` is a
+/// liberate card's).
 #[test]
-fn liberating_a_city_pays_liberate_at_plus_its_adversary_ambassadors() {
+fn liberating_a_city_pays_from_your_own_ambassadors_and_makes_it_yours() {
     let (rules, mut g) = lab_with(&[], &HOLD);
     let w = rules.world();
     let h = rules.map.numbered(0, piece(0).cities[0]);
@@ -101,14 +103,21 @@ fn liberating_a_city_pays_liberate_at_plus_its_adversary_ambassadors() {
     put(&mut g, n, ADV_AMBASSADOR, 2);
     put(&mut g, n, node(0), 1);
     assert_eq!(board::liberate_cost(&w, &g, h), Some(6));
-    set_res(&mut g, 0, Resource::Ambassadors, 5);
-    assert!(!rules.legal_actions(&g).contains(&std_act(0, "liberate")), "5 of 6");
-    set_res(&mut g, 0, Resource::Ambassadors, 6);
+    // Another seat's ambassadors on the city pay nothing of seat 0's bill.
+    put(&mut g, h, ambassador(1), 2);
+    assert_eq!(board::site_supply_cost(&w, &g, 0, h, true), Some(6));
+    set_res(&mut g, 0, Resource::Ambassadors, 3);
+    assert!(!rules.legal_actions(&g).contains(&std_act(0, "liberate")), "3 of 6");
+    // Seat 0's own 2 on it pay first: 4 from the supply.
+    put(&mut g, h, ambassador(0), 2);
+    assert_eq!(board::site_supply_cost(&w, &g, 0, h, true), Some(4));
+    set_res(&mut g, 0, Resource::Ambassadors, 4);
     let unity = g.var("alignment.unity") + alignment::unity_pending(&g);
     act(&rules, &mut g, std_act(0, "liberate"));
-    assert_eq!((g.tokens(h, ADV_CUBE), g.resource(0, Resource::Ambassadors)), (0, 0));
-    // Down the ladder, not off the board; the ones next to it stay.
-    assert_eq!((g.tokens(h, ADV_AMBASSADOR), g.tokens(n, ADV_AMBASSADOR)), (1, 2));
+    assert_eq!((g.tokens(h, ADV_CUBE), g.tokens(h, cube(0)), g.resource(0, Resource::Ambassadors)), (0, 1, 0));
+    assert_eq!((g.tokens(h, ambassador(0)), g.tokens(h, ambassador(1))), (0, 2));
+    // No agent lands on it; the ones next to it stay.
+    assert_eq!((g.tokens(h, ADV_AMBASSADOR), g.tokens(n, ADV_AMBASSADOR)), (0, 2));
     assert_eq!(g.var("alignment.unity") + alignment::unity_pending(&g) - unity, w.int("alignment.free_city"));
     assert_eq!(g.stats.counters["board.liberated.city"], 1);
 }
@@ -137,7 +146,7 @@ fn stage_one_takes_a_last_node_too() {
     let h = rules.map.numbered(0, piece(0).cities[0]);
     put(&mut g, h, node(0), 1);
     g.vars.insert(STAGE.into(), 1);
-    with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h));
+    with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h)).unwrap();
     assert_eq!(g.tokens(h, node(0)), 0, "stage I: it goes");
     assert_eq!(g.stats.counters["board.last_node_lost"], 1);
 }
@@ -262,7 +271,7 @@ fn a_city_that_corrupts_destroys_node_on_it_and_leaves_no_marker() {
     put(&mut g, h, node(0), 1);
     put(&mut g, far, node(0), 1);
     g.vars.insert(STAGE.into(), 2);
-    with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h));
+    with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h)).unwrap();
     assert_eq!((g.tokens(h, node(0)), g.tokens(h, MARKER)), (0, 0), "it has corruption already");
 }
 

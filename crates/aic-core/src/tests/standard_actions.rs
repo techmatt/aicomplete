@@ -56,7 +56,7 @@ fn standard_actions_are_offered_only_when_affordable_and_targeted() {
     let d = node_of(&g, 0)[0];
     put(&mut g, d, ADV_AMBASSADOR, 1);
     assert!(standard_offered(&rules, &g, 0).contains("remove"));
-    // Removing a botnet is no standard action (019: only tier-2 effects remove botnets).
+    // r75 (Matt's ruling 3): taking a botnet down needs the seat's ambassador on its hex.
     put(&mut g, d, BOTNET, 1);
     assert!(!standard_offered(&rules, &g, 0).contains("botnet"));
     assert!(rules
@@ -435,8 +435,10 @@ fn card_targets_on_the_map_must_be_in_reach() {
     assert_eq!(effects::damage_hexes(&w, &g, 0, 1, 0), vec![near]);
 }
 
+/// r75 (Matt's ruling 2): Claim needs the site in reach (a node on or next to it)
+/// and no embargo; a botnet on or next to it no longer blocks it.
 #[test]
-fn claiming_a_site_needs_node_and_no_botnet_on_or_next_to_it() {
+fn claiming_a_site_needs_it_in_reach_and_a_botnet_does_not_block_it() {
     let (rules, g0) = lab(&[]);
     let m = &rules.map;
     let station = m.numbered(0, piece(0).stations[0]);
@@ -480,7 +482,7 @@ fn claiming_a_site_needs_node_and_no_botnet_on_or_next_to_it() {
     put(&mut g, botnet_far, BOTNET, 1);
     assert!(claim(&g));
 
-    // A botnet next to the site blocks it, wherever the node is.
+    // r75: a botnet next to the site no longer blocks it.
     let mut g = g0.clone();
     put(&mut g, next, node(0), 1);
     let botnet_near = m.hexes[station]
@@ -490,12 +492,12 @@ fn claiming_a_site_needs_node_and_no_botnet_on_or_next_to_it() {
         .find(|&h| h != next && kind(m, h) != HexKind::Ocean)
         .unwrap();
     put(&mut g, botnet_near, BOTNET, 1);
-    assert!(!claim(&g));
-    // So does a botnet on the site itself.
+    assert!(claim(&g));
+    // Nor does a botnet on the site itself (`can_claim` reads reach and embargo only).
     let mut g = g0.clone();
     put(&mut g, next, node(0), 1);
     put(&mut g, station, BOTNET, 1);
-    assert!(!board::can_claim(&w, &g, 0, station));
+    assert!(board::can_claim(&w, &g, 0, station));
 
     // Claiming a city: likewise.
     let (city, lonely) = city_with_lonely_neighbors(m);
@@ -504,18 +506,61 @@ fn claiming_a_site_needs_node_and_no_botnet_on_or_next_to_it() {
     put(&mut g, lonely[0], node(0), 1);
     set_res(&mut g, 0, Resource::Ambassadors, w.int("board.claim_city"));
     assert!(standard_offered(&rules, &g, 0).contains("claim"));
-    // A botnet next to the node, two from the city: still offered.
-    let far = m.hexes[lonely[0]]
-        .neighbors
-        .iter()
-        .copied()
-        .find(|&h| m.distance(h, city) == 2)
-        .unwrap();
-    put(&mut g, far, BOTNET, 1);
-    assert!(standard_offered(&rules, &g, 0).contains("claim"));
-    // A botnet next to the city: not.
-    put(&mut g, far, BOTNET, 0);
+    // A botnet next to the city: still offered.
     put(&mut g, lonely[1], BOTNET, 1);
+    assert!(m.adjacent(lonely[1], city));
+    assert!(standard_offered(&rules, &g, 0).contains("claim"));
+}
+
+/// r75 (Matt's ruling 2): Claim's bill is paid by the seat's own ambassadors on the site first, then its
+/// supply; another seat's ambassadors there pay nothing and stay. `claim_city` is 5.
+#[test]
+fn claiming_pays_from_your_own_ambassadors_on_the_site_first() {
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let m = &rules.map;
+    let n = w.int("board.claim_city");
+    assert_eq!(n, 5);
+    let (city, next) = city_with_lonely_neighbors(m);
+    put(&mut g, next[0], node(0), 1);
+    put(&mut g, city, ambassador(1), 2);
+    assert_eq!(board::site_supply_cost(&w, &g, 0, city, false), Some(n));
+    put(&mut g, city, ambassador(0), 2);
+    assert_eq!(board::site_supply_cost(&w, &g, 0, city, false), Some(n - 2));
+    set_res(&mut g, 0, Resource::Ambassadors, n - 3);
     assert!(!standard_offered(&rules, &g, 0).contains("claim"));
+    set_res(&mut g, 0, Resource::Ambassadors, n - 2);
+    act(&rules, &mut g, std_act(0, "claim"));
+    assert_eq!(g.tokens(city, cube(0)), 1);
+    assert_eq!((g.resource(0, Resource::Ambassadors), g.tokens(city, ambassador(0)), g.tokens(city, ambassador(1))), (0, 0, 2));
+}
+
+/// r75 (Matt's ruling 3): the Take down a botnet action, `botnet_credits` (5): the seat's ambassador on the
+/// botnet's hex (it stays); the botnet comes off and sways Unity (`alignment.botnet`).
+#[test]
+fn taking_a_botnet_down_needs_your_ambassador_on_its_hex() {
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let m = &rules.map;
+    let price = w.int("board.botnet_credits");
+    assert_eq!(price, 5);
+    let me = m.numbered(0, piece(0).node);
+    put(&mut g, me, node(0), 1);
+    let h = m.hexes[me].neighbors.iter().copied().find(|&x| kind(m, x) != HexKind::Ocean).unwrap();
+    put(&mut g, h, BOTNET, 1);
+    set_res(&mut g, 0, Resource::Credits, price);
+    assert!(!standard_offered(&rules, &g, 0).contains("botnet"), "no ambassador on it");
+    put(&mut g, h, ambassador(1), 1);
+    assert!(!standard_offered(&rules, &g, 0).contains("botnet"), "another seat's ambassador");
+    put(&mut g, h, ambassador(0), 1);
+    assert_eq!(board::botnet_targets(&g, 0), vec![h]);
+    set_res(&mut g, 0, Resource::Credits, price - 1);
+    assert!(!standard_offered(&rules, &g, 0).contains("botnet"), "short of the price");
+    set_res(&mut g, 0, Resource::Credits, price);
+    let unity = g.var("alignment.unity") + crate::modules::alignment::unity_pending(&g);
+    act(&rules, &mut g, std_act(0, "botnet"));
+    assert_eq!((g.tokens(h, BOTNET), g.tokens(h, ambassador(0)), g.resource(0, Resource::Credits)), (0, 1, 0));
+    assert_eq!(g.var("alignment.unity") + crate::modules::alignment::unity_pending(&g) - unity, w.int("alignment.botnet"));
+    assert_eq!(g.stats.counters["board.botnets_taken_down"], 1);
 }
 

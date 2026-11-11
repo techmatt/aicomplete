@@ -67,10 +67,10 @@ megaproject is the corp's defining card.
 <!-- generated: corps -->
 | Corp | Megaproject | Cubes | At completion: player cube / adversary cube | Converter (as often as you can pay, unless marked) |
 |---|---|---|---|---|
-| Horizon (geothermal and tidal energy) | Tidal Grid | 8 | 3 energy, 3 credits / 1 Sway to Discord | 1 research cube + 2 energy → 1 antimatter |
-| Cintamani (AI and efficiency) | Polar Compute Array | 8 | 1 drawn card, 5 credits / 1 adversary compute | 1 research cube → 2 insight |
+| Horizon (geothermal and tidal energy) | Tidal Grid | 8 | 3 energy, 3 credits / 1 Sway to Discord | 1 research cube + 2 energy → 1 antimatter (once a round) |
+| Cintamani (AI and efficiency) | Polar Compute Array | 8 | 1 drawn card, 5 credits / 1 adversary compute | 1 research cube → 2 insight (once a round) |
 | Onyx (heavy industry, power plants and processors) | Mountain Fusion Works | 8 | 4 chips, 3 credits / 1 Sway to Discord | 1 research cube → 2 chips (once a round) |
-| Biomia (biopunk) | Delta Seawall | 8 | 1 Sway to Unity, 1 drawn card / 1 Sway to Discord | 2 research cubes → 1 Sway to Unity |
+| Biomia (biopunk) | Delta Seawall | 8 | 1 Sway to Unity, 1 drawn card / 1 Sway to Discord | 2 research cubes → 1 Sway to Unity (once a round) |
 <!-- /generated -->
 
 - **Stations** follow the one site model ([ambassadors.md](ambassadors.md)). Each makes `station_cubes` research cube
@@ -78,8 +78,8 @@ megaproject is the corp's defining card.
   no cube but adds that much compute in the adversary's compute step (137, 175), so no adversary cube reaches a
   megaproject. No player starts with a
   station: building one (`station_chips`) or claiming the neutral one (`claim_station` ambassadors) is an investment.
-  One opposing ambassador or agent on a station blocks its output while it stands; an adversary station is liberated to
-  neutral by the Liberate action.
+  One opposing ambassador or agent on a station blocks its output while it stands; the Liberate action takes an
+  adversary station for the liberator.
 - **A station is a defended investment (candidate, Matt).** The adversary needs weight to take
   yours: an effect that flips a player's station (Station Coup, Station Seizure) takes it
   only when `adversary.station_flip_at` (2) agents and no player ambassador
@@ -98,12 +98,10 @@ megaproject is the corp's defining card.
   player stores **research cubes**, kept between rounds. A neutral station's cube is lost; adversary stations
   make compute (137).
 - **Converters.** Each completed card prints one converter, used in the action phase by any
-  player with a **node in a city of that country** (Matt, r37: any city, owned or not; a node
-  elsewhere in the country no longer counts), as often as the player can pay (r41; the
-  printed texts say so since 118, and Cintamani's prints its 2 insight a cube); only Onyx's
-  is once a round per player, its loop ([ai-powers.md](ai-powers.md)). Every player also has the cube converter, a
-  standard action: 1 cube for `cube_insight` insight ([economy.md](economy.md)). A converter
-  is a reason to hold a city node. Cubes
+  player with **a city of that country in reach** (r75, Matt's ruling 9: any city, owned or not; r37 asked for a
+  node on the city), **once a round** per player each (r75: only Onyx's was). Every player also has the cube
+  converter, a standard action with no limit: 1 cube for `cube_insight` insight ([economy.md](economy.md)). A
+  converter is a reason to reach a city. Cubes
   reach a board from stations after completion, or 1 a round from the Researcher's Open Archive
   capstone; no converter makes cubes, so none feeds another within a round.
   Research cubes and converters are a resource every player reaches eventually, like
@@ -116,17 +114,14 @@ megaproject is the corp's defining card.
   and brings the completion a cube nearer.
 
 The neutral station stands next to the starting node, so a player's first
-ambassador can claim it, on a hex that is a base in no layout and has no botnet next to it
-in any (a test holds this). Two stations a country fill an 8-cube card in round 4; a third
+ambassadors can claim it, on a hex that is a base in no layout (a test holds this). Two stations a country fill an 8-cube card in round 4; a third
 speeds it: claimed, built and neutral stations all add cubes.
 
 **For new players.** Every research station makes a cube a round, yours or a neutral one; the adversary's make it
 compute instead. A country's cubes fill its corp's megaproject, and when the card fills, at
 the end of production, every cube on it pays, overflow included: yours pay you what the
 card says, neutral ones pay nothing. So claim the neutral station (3 ambassadors) or build one before the card
-fills. After that your stations there put cubes on your board, and if you have a node on one of that country's
-cities (any city, not only yours) you can spend them on its converter, as often as you can pay (Onyx's once a
-round), or anywhere for 1 insight each. Take back an adversary station with 3 of your ambassadors; the adversary can
-take yours only once 2 of its agents stand on it and none of yours.
-
-**What resisted this summary:** Onyx's converter alone keeps once a round, an exception a new player has to be told.
+fills. After that your stations there put cubes on your board, and if one of that country's cities (any city, not
+only yours) is in your reach you can spend them on its converter once a round, or anywhere for 1 insight each. Take
+back an adversary station with 3 of your ambassadors; it becomes yours. The adversary can take yours only once 2 of
+its agents stand on it and none of yours.

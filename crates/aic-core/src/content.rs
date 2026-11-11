@@ -251,8 +251,8 @@ pub struct CountryPiece {
 /// A megaproject card (074), the corp's defining card: research stations fill
 /// it with cubes; at the end of production, if it holds `cubes` or more, every
 /// player cube pays `player` to its owner and every adversary cube `adversary`.
-/// After that a seat with a node in a city of the country has the `converter`
-/// (r37; 075: any node there; 074: an aligned city). An adversary cube made after completion is lost, as a
+/// After that a seat with a city of the country in reach has the `converter`
+/// (r75; r37: a node in such a city; 075: any node there; 074: an aligned city). An adversary cube made after completion is lost, as a
 /// neutral one is (075).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -268,7 +268,7 @@ pub struct Megaproject {
 
 /// What a completed megaproject prints for players (074): pay `cost` for
 /// `effects`, as often as you can pay (105), or once a round with `once`
-/// (Onyx's, whose chips build the stations that make its cubes).
+/// (r75: every converter prints it; it was Onyx's alone).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Converter {

@@ -549,7 +549,7 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
     let t = |key: &str| tick(r, key);
     // The rule book's order; selling a card is no standard action, but sits by the actions
     // (149: chips can't be sold).
-    let order = [A::Station, A::Remove, A::Clear, A::Move, A::Ambassador, A::Claim, A::Liberate, A::HardenChips];
+    let order = [A::Station, A::Remove, A::Clear, A::Move, A::Ambassador, A::Claim, A::Liberate, A::Botnet, A::BuyEnergy, A::HardenChips];
     let mut rows: Vec<[String; 3]> = order.iter().map(|&a| std_rule_text(a, &t)).collect();
     rows.push(["Sell a card".to_string(), format!("gain {}", t("board.sell_credits")), "from your hand".to_string()]);
     rows.extend([A::HardenBuy, A::Drain, A::Insight, A::Envoy].iter().map(|&a| std_rule_text(a, &t)));

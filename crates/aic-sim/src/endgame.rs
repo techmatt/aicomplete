@@ -55,7 +55,7 @@ pub struct Pieces {
     pub liberate_cost: i64,
     /// Remove actions (one ambassador each) to clear the adversary
     /// ambassadors off every hex that is not a corrupted city, `remove_count`
-    /// a hex a use; and those that land back on the liberated cities
+    /// a use from any hexes (r75); and those that land back on the liberated cities
     /// (`free_leaves` each).
     pub remove_actions: i64,
     pub remove_after_liberate: i64,
@@ -117,6 +117,7 @@ pub fn pieces(rules: &Rules, g: &GameState) -> Pieces {
     let per_use = w.int("board.remove_count").max(1);
     let leaves = w.int("board.free_leaves");
     let mut p = Pieces::default();
+    let (mut loose, mut landing) = (0, 0);
     for h in 0..g.hexes.len() {
         let amb = g.tokens(h, common::ADV_AMBASSADOR);
         p.botnets += g.tokens(h, common::BOTNET);
@@ -131,14 +132,17 @@ pub fn pieces(rules: &Rules, g: &GameState) -> Pieces {
             p.cities += 1;
             p.ambassadors_on_corrupted += amb;
             p.liberate_cost += lib_at + amb;
-            p.remove_after_liberate += (leaves + per_use - 1) / per_use;
+            landing += leaves;
             if (0..g.seats.len()).any(|s| common::in_reach(&w, g, s, h)) {
                 p.cities_in_reach += 1;
             }
         } else if amb > 0 {
-            p.remove_actions += (amb + per_use - 1) / per_use;
+            loose += amb;
         }
     }
+    // r75: one Remove takes up to `remove_count` agents from any hexes in reach.
+    p.remove_actions = (loose + per_use - 1) / per_use;
+    p.remove_after_liberate = (landing + per_use - 1) / per_use;
     p.purge = adversary::purge_count(&w, g, level);
     p
 }

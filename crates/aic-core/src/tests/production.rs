@@ -1,37 +1,30 @@
 use super::*;
 use crate::modules::{adversary, board};
 
+/// The energy city `h` makes when producing: its country's `corp_energy`.
+fn city_energy(rules: &Rules, h: usize) -> i64 {
+    let w = rules.world();
+    let l = w.list("board.corp_energy");
+    l[rules.map.hexes[h].country as usize % l.len()]
+}
+
+/// r75 (Matt's ruling 6): production sells a neutral city's energy to nobody
+/// (021 sold it to a player next to it); an aligned city's goes free to its owner.
 #[test]
-fn cities_power_the_player_with_the_most_node_next_to_them() {
+fn production_sells_no_neutral_energy_and_an_aligned_city_powers_its_owner() {
     let (rules, g0) = lab(&["board.produce"]);
     let (city, n) = city_with_lonely_neighbors(&rules.map);
     let res = |g: &GameState, s: usize, r: Resource| g.resource(s, r) - g0.resource(s, r);
 
-    // 021: a neutral city's cube is lost unless a player with a node next
-    // to it buys it (`city_energy_credits`, 5 at r36; players choose who).
-    let mut g = g0.clone();
-    put(&mut g, n[0], node(0), 1);
-    put(&mut g, n[1], node(1), 1);
-    run(&rules, &mut g);
-    assert!(g.pending.is_none(), "nobody can pay");
-    assert_eq!((res(&g, 0, Resource::Energy), res(&g, 1, Resource::Energy)), (0, 0));
     let mut g = g0.clone();
     put(&mut g, n[0], node(0), 1);
     put(&mut g, n[1], node(1), 1);
     set_res(&mut g, 0, Resource::Credits, 5);
     set_res(&mut g, 1, Resource::Credits, 8);
     run(&rules, &mut g);
-    let p = g.pending.as_ref().expect("an energy choice");
-    assert!(p.ask.prompt.starts_with("The energy of"), "{}", p.ask.prompt);
-    answer_with(&rules, &mut g, "seat 1 buys");
-    assert_eq!((res(&g, 0, Resource::Energy), res(&g, 1, Resource::Energy)), (0, 1));
-    assert_eq!(g.resource(1, Resource::Credits), 3, "8 less the price, 5");
-    let mut g = g0.clone();
-    put(&mut g, n[0], node(0), 1);
-    set_res(&mut g, 0, Resource::Credits, 5);
-    run(&rules, &mut g);
-    answer_with(&rules, &mut g, "nobody");
-    assert_eq!((res(&g, 0, Resource::Energy), g.resource(0, Resource::Credits)), (0, 5));
+    assert!(g.pending.is_none(), "no sale is offered");
+    assert_eq!((res(&g, 0, Resource::Energy), res(&g, 1, Resource::Energy)), (0, 0));
+    assert_eq!((g.resource(0, Resource::Credits), g.resource(1, Resource::Credits)), (5, 8));
 
     // An aligned city's cube goes free to its owner.
     let mut g = g0.clone();
@@ -39,6 +32,49 @@ fn cities_power_the_player_with_the_most_node_next_to_them() {
     put(&mut g, n[0], node(0), 1);
     run(&rules, &mut g);
     assert_eq!((res(&g, 0, Resource::Energy), res(&g, 1, Resource::Energy)), (0, 1));
+}
+
+/// r75 (Matt's ruling 6): the Buy energy standard action, `city_energy_credits`
+/// (4) for a neutral city's energy: the city in reach and producing (no
+/// blackout, no agent on it), once per city a round.
+#[test]
+fn buy_energy_takes_a_neutral_producing_citys_energy_once_a_round() {
+    let (rules, g0) = lab(&["board.produce"]);
+    let w = rules.world();
+    let (city, n) = city_with_lonely_neighbors(&rules.map);
+    let price = w.int("board.city_energy_credits");
+    assert_eq!(price, 4);
+    let made = city_energy(&rules, city);
+    assert!(made > 0);
+    let buy = std_act(0, "buy_energy");
+    let offered = |g: &GameState| rules.legal_actions(g).contains(&buy);
+
+    let mut g = g0.clone();
+    set_res(&mut g, 0, Resource::Credits, price);
+    assert!(!offered(&g), "no city in reach");
+    put(&mut g, n[0], node(0), 1);
+    assert!(board::energy_for_sale(&w, &g, 0, city));
+    assert!(offered(&g));
+    // A dark city (an agent on it) is not for sale; nor is an aligned one.
+    let mut dark = g.clone();
+    put(&mut dark, city, ADV_AMBASSADOR, 1);
+    assert!(!offered(&dark));
+    let mut aligned = g.clone();
+    put(&mut aligned, city, cube(1), 1);
+    assert!(!board::energy_for_sale(&w, &aligned, 0, city));
+    // Short of the price: not offered.
+    let mut poor = g.clone();
+    set_res(&mut poor, 0, Resource::Credits, price - 1);
+    assert!(!offered(&poor));
+
+    let energy = g.resource(0, Resource::Energy);
+    act(&rules, &mut g, buy);
+    assert_eq!((g.resource(0, Resource::Energy) - energy, g.resource(0, Resource::Credits)), (made, 0));
+    // Not twice in a round, for anyone.
+    set_res(&mut g, 0, Resource::Credits, price);
+    put(&mut g, n[1], node(1), 1);
+    assert!(!board::energy_for_sale(&w, &g, 0, city));
+    assert!(!board::energy_for_sale(&w, &g, 1, city));
 }
 
 /// A station at country `c`'s printed site, owned by `seat`.
@@ -160,8 +196,11 @@ fn a_blocker_stands_while_it_blocks() {
     assert_eq!((g.var(&board::project_neutral(0)), g.tokens(h, ADV_AMBASSADOR)), (neutral, 1));
 }
 
+/// r75 (Matt's ruling 9): a completed megaproject's converter needs a city of its
+/// country in the seat's reach, any city (r37: a node on one); every converter is
+/// once a round.
 #[test]
-fn a_converter_needs_node_in_a_city_of_its_country() {
+fn a_converter_needs_a_city_of_its_country_in_reach() {
     let (rules, mut g) = lab(&["board.produce"]);
     let w = rules.world();
     let convert = Action::Convert { seat: 0, country: 0 };
@@ -175,15 +214,22 @@ fn a_converter_needs_node_in_a_city_of_its_country() {
     g.vars.insert(board::project_done(0).into(), 1);
     assert_eq!(board::converter_blocked(&w, &g, 0, 0), Some(board::NO_CITY_NODE));
     assert!(rules.apply_mut(&mut g, &convert, None).is_err());
-    // r37: a node off the cities, here the starting node's hex, is not enough.
-    let open = rules.map.numbered(0, piece(0).node);
-    assert!(!crate::modules::common::is_city(&w, open));
-    put(&mut g, open, node(0), 1);
+    // A node in the country with no city of it in reach is not enough.
+    let m = &rules.map;
+    let is_city = |h: usize| crate::modules::common::is_city(&w, h);
+    let city_of_0 = |h: usize| is_city(h) && m.hexes[h].country == 0;
+    let far = hexes_where(m, |h| {
+        m.hexes[h].country == 0 && kind(m, h) == HexKind::Open && !m.hexes[h].neighbors.iter().any(|&x| city_of_0(x))
+    })[0];
+    put(&mut g, far, node(0), 1);
     assert_eq!(board::converter_blocked(&w, &g, 0, 0), Some(board::NO_CITY_NODE));
-    let city = rules.map.numbered(0, piece(0).cities[0]);
+    // An aligned city out of reach is not the gate either (075).
+    let city = m.numbered(0, piece(0).cities[0]);
     put(&mut g, city, cube(0), 1);
     assert!(!offered(&g), "an aligned city is no longer the gate");
-    put(&mut g, city, node(0), 1);
+    // A node next to the city, not on it: the city is in reach.
+    let next = m.hexes[city].neighbors.iter().copied().find(|&x| kind(m, x) == HexKind::Open).unwrap();
+    put(&mut g, next, node(0), 1);
     assert!(offered(&g));
     let (e, a) = (g.resource(0, Resource::Energy), g.resource(0, Resource::Antimatter));
     rules.apply_mut(&mut g, &convert, None).unwrap();
@@ -192,8 +238,7 @@ fn a_converter_needs_node_in_a_city_of_its_country() {
         (g.resource(0, Resource::ResearchCubes), g.resource(0, Resource::Energy), g.resource(0, Resource::Antimatter)),
         (2, e - 2, a + 1)
     );
-    // 105: Horizon's converter has no limit a round (only Onyx's keeps one,
-    // tests/engine.rs): it is offered again while the seat can pay.
-    assert_eq!(board::converter_blocked(&w, &g, 0, 0), None);
-    assert!(offered(&g));
+    // r75 (content): Horizon's converter is once a round too (105 had no limit on it).
+    assert_eq!(board::converter_blocked(&w, &g, 0, 0), Some("used this round"));
+    assert!(!offered(&g));
 }

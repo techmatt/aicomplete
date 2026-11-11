@@ -1244,8 +1244,9 @@ pub enum Op {
     },
     /// 138: corruption never destroys your nodes (Sanctuary; was the spread shield).
     CorruptionShield,
-    /// Once a round, prevent the first facility or node destruction in a country
-    /// where you have a node.
+    /// Once a round, when one of your own nodes or facilities would be destroyed,
+    /// you may keep it (r75, Matt's ruling 5: it stopped the first destruction of
+    /// anyone's piece in a country where you had a node).
     CivicShelter,
     /// Adversary troops can't enter or strike a hex holding your nodes
     /// (068: Wall; 075: strikes). An AI board's innate only: `board::walled`

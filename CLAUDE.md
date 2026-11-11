@@ -132,7 +132,8 @@ experiments, speed, scripts, web, card art.
   its item's write-up under `experiments/results/`; `experiments/history.md` only indexes them.
 - **Each doc keeps to a 15 KB budget** (README, CLAUDE.md, web/ and card-art READMEs and every
   `docs/` page, each `docs/rules/` file included: `docs --check` refuses one over), except the
-  generated `docs/cards.md`, `docs/adversary-cards.md` and `docs/ops.md`, and `docs/rulebook.md` with its friction table. Leave about 1 KB free: an item that fills a page trims it first. Over budget, trim what the
+  generated `docs/cards.md`, `docs/adversary-cards.md` and `docs/ops.md`, `docs/rulebook.md` (the product, not an agent doc) and `docs/rulebook-friction.md` (a working
+  ledger; `run::BUDGET_EXEMPT`). Leave about 1 KB free: an item that fills a page trims it first. Over budget, trim what the
   code or a generated table already says; never move text to an archive file (git keeps the old text).
 - **Docs state the current game.** An item updates the current text in place, never appends an
   'NNN's changes' section. History goes in the item's write-up. `aic-sim docs --check` refuses a

@@ -208,8 +208,8 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
                 &label,
                 blocked.is_none() as i64,
                 None,
-                // 118: `words` says "(once a round)" where the converter is (Onyx's); the rest have no limit.
-                &format!("{}, with a node in a city of {}", m.converter.words(), country_name(w, c)),
+                // 118: `words` says "(once a round)" where the converter is (r75: every one).
+                &format!("{}, with a city of {} in your reach", m.converter.words(), country_name(w, c)),
             );
         }
         let b = ai::board(w, s);

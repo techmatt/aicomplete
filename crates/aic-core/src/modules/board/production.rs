@@ -41,12 +41,15 @@ pub fn corp_bases(w: &World, c: u8) -> Vec<usize> {
     (0..w.map.hexes.len()).filter(|&b| is_base(w, b) && w.map.hexes[b].country == c).collect()
 }
 
-/// 137: a Discord tip. Each neutral factory makes 1 corp troop, which its corp
-/// puts on each of its bases; an agent on the factory blocks it
-/// (one opposing ambassador blocks a site's output), a player ambassador on it
-/// is used up instead (the troop rule), and an occupied factory makes nothing.
-pub fn tip_corp_troops(g: &mut GameState, cx: &mut Cx) {
+/// 137: a Discord tip. Each neutral factory makes 1 corp troop for each of its
+/// corp's bases; an agent on the factory blocks it (one opposing ambassador
+/// blocks a site's output), and an occupied factory makes nothing. r75 (Matt's
+/// ruling 8): a player ambassador on it always stops 1 troop, used up (it
+/// stopped them all); the players choose which base's troop when it can't stop
+/// every one. A full base takes none (145), so it uses no ambassador.
+pub fn tip_corp_troops(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
+    let cap = w.int("board.unit_cap");
     for h in 0..g.hexes.len() {
         if g.tokens(h, FACTORY) == 0 || corrupted(g, h) || cube_owner(g, h).is_some() || occupied(g, h) {
             continue;
@@ -55,33 +58,38 @@ pub fn tip_corp_troops(g: &mut GameState, cx: &mut Cx) {
             cx.tally(g, "board.blocked.factory_neutral", 1);
             continue;
         }
-        // 145: with every base of its corp full (or none), the factory makes no
-        // troop, so no ambassador on it is used up in a troop's place.
-        let cap = w.int("board.unit_cap");
-        if !corp_bases(&w, w.map.hexes[h].country).iter().any(|&b| g.tokens(b, UNIT) < cap) {
-            continue;
-        }
-        if let Some(s) = player_ambassador(g, h) {
+        let mut open: Vec<usize> =
+            corp_bases(&w, w.map.hexes[h].country).into_iter().filter(|&b| g.tokens(b, UNIT) < cap).collect();
+        while !open.is_empty() {
+            let Some(s) = player_ambassador(g, h) else { break };
+            let standing: i64 = (0..g.seats.len()).map(|x| g.tokens(h, ambassador(x))).sum();
+            let i = if open.len() as i64 > standing {
+                let opts = open.iter().map(|&b| hex_opt(&w, b)).collect();
+                let prompt = || format!("The ambassador on the factory at {} stops the troop for which base?", hex_name(&w, h));
+                cx.choose(0, prompt, opts)?.unwrap_or(0)
+            } else {
+                0
+            };
+            open.remove(i);
             cx.add_tokens(g, h, ambassador(s), -1);
             cx.tally(g, "board.factory_ambassador_used", 1);
+        }
+        if open.is_empty() {
             continue;
         }
         cx.tally(g, "board.tip_factory_troops", 1);
-        for b in corp_bases(&w, w.map.hexes[h].country) {
+        for b in open {
             add_unit(g, cx, b);
         }
     }
+    Ok(())
 }
 
-/// Production (every round; 139 cut the clock): bases make nothing of
-/// their own; corp troops come from Discord tips at neutral factories
-/// ([`tip_corp_troops`]) and the extra-troop rules. Player-owned factories
-/// make chips, adversary factories an adversary troop; one opposing
-/// ambassador blocks either while it stands. Then the cities grow factories.
+/// Growth, after the income step (r75: it was production's first part): bases
+/// make their extra corp troops (corp troops otherwise come from Discord tips at
+/// neutral factories, [`tip_corp_troops`]), then the cities grow factories.
 pub(super) fn produce_units(g: &mut GameState, cx: &mut Cx) -> Res {
-    measure_round(g, cx);
     extra_units(g, cx);
-    factory_output(g, cx);
     grow_factories(g, cx)
 }
 
@@ -202,45 +210,27 @@ fn factory_output(g: &mut GameState, cx: &mut Cx) {
     }
 }
 
-/// Each city builds one factory: a corrupted city at a free zone in its
-/// country next to an agent if there is one, else the
-/// lowest-numbered free zone (lowest number among equals); any other city on
-/// a free zone next to it, where the players choose (an aligned city's
-/// owner, else seat 0). A corrupted city's factory is the adversary's, an
-/// aligned city's its owner's, and a clean city's goes to the player with
-/// the most nodes next to the zone (players choose on a tie), neutral if
-/// none.
+/// Each city builds one factory on a free zone next to it, or none (r75, Matt's
+/// ruling 4: a corrupted city searched its whole country). A corrupted city's
+/// factory is the adversary's, on the zone next to an agent if there is one,
+/// else the lowest-numbered; an aligned city's is its owner's, a neutral city's
+/// neutral (claimable), where the players choose (the owner, else seat 0).
 fn grow_factories(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     for city in 0..g.hexes.len() {
         if !is_city(&w, city) {
             continue;
         }
-        let zones = free_zones(&w, g);
-        let at = if corrupted(g, city) {
-            let c = w.map.hexes[city].country;
-            zones
-                .into_iter()
-                .filter(|&z| w.map.hexes[z].country == c)
-                .min_by_key(|&z| {
-                    (
-                        !next_to(&w, z, |x| g.tokens(x, ADV_AMBASSADOR) > 0),
-                        w.map.hexes[z].number,
-                    )
-                })
+        let near: Vec<usize> = free_zones(&w, g).into_iter().filter(|&z| w.map.adjacent(city, z)).collect();
+        let at = if near.is_empty() {
+            None
+        } else if corrupted(g, city) {
+            near.iter().copied().min_by_key(|&z| (!next_to(&w, z, |x| g.tokens(x, ADV_AMBASSADOR) > 0), w.map.hexes[z].number))
         } else {
-            let near: Vec<usize> = zones
-                .into_iter()
-                .filter(|&z| w.map.adjacent(city, z))
-                .collect();
-            if near.is_empty() {
-                None
-            } else {
-                let who = cube_owner(g, city).unwrap_or(0);
-                let opts = near.iter().map(|&z| hex_opt(&w, z)).collect();
-                let prompt = || format!("{} builds a factory on which zone?", hex_name(&w, city));
-                cx.choose(who, prompt, opts)?.map(|i| near[i])
-            }
+            let who = cube_owner(g, city).unwrap_or(0);
+            let opts = near.iter().map(|&z| hex_opt(&w, z)).collect();
+            let prompt = || format!("{} builds a factory on which zone?", hex_name(&w, city));
+            cx.choose(who, prompt, opts)?.map(|i| near[i])
         };
         let Some(z) = at else {
             continue;
@@ -251,10 +241,7 @@ fn grow_factories(g: &mut GameState, cx: &mut Cx) -> Res {
             // 059: corruption replaces any marker here, as on a city.
             adversary::clear_markers_on(g, cx, z);
             cx.tally(g, "board.factories_built.adversary", 1);
-        } else if let Some(s) = match cube_owner(g, city) {
-            Some(s) => Some(s),
-            None => zone_owner(g, cx, z)?,
-        } {
+        } else if let Some(s) = cube_owner(g, city) {
             cx.add_tokens(g, z, cube(s), 1);
             cx.tally(g, "board.factories_built.player", 1);
         } else {
@@ -271,51 +258,45 @@ fn grow_factories(g: &mut GameState, cx: &mut Cx) -> Res {
     Ok(())
 }
 
-/// Who takes a clean city's new factory on zone `z`: the player with the
-/// most nodes next to it (players choose on a tie), none if nobody has any.
-fn zone_owner(g: &mut GameState, cx: &mut Cx, z: usize) -> Res<Option<usize>> {
-    let w = cx.world;
-    let hexes = within(&w, z, 1);
-    let near: Vec<usize> = (0..g.seats.len())
-        .map(|s| hexes.iter().filter(|&&x| g.tokens(x, node(s)) > 0).count())
-        .collect();
-    let most = near.iter().copied().max().unwrap_or(0);
-    if most == 0 {
-        return Ok(None);
-    }
-    let tied: Vec<usize> = (0..g.seats.len()).filter(|&s| near[s] == most).collect();
-    if tied.len() == 1 {
-        return Ok(Some(tied[0]));
-    }
-    let opts = tied.iter().map(|&s| seat_opt(s)).collect();
-    let prompt = || format!("The factory at {} goes to which player?", hex_name(&w, z));
-    Ok(cx.choose(0, prompt, opts)?.map(|i| tied[i]))
-}
-
-/// Production step 3: cities make energy, stations research cubes; an
-/// agent on a station takes its output and is removed; on a
-/// city it stays and the city is dark (r37 neutral, r38 aligned too). Then
-/// full megaprojects complete. (175: the agent on a lone node's insight drain is gone: a node hex corrupts.)
+/// The income step, the board's part (r75, Matt's ruling 6: one step in a
+/// printed order; economy's upkeep, the board's and cards' income, follows it at
+/// once): factories make chips or an adversary troop, cities energy, stations
+/// research cubes, then full megaprojects complete. One opposing piece blocks a
+/// site; an agent on a city stays and the city is dark (r37 neutral, r38
+/// aligned too). A neutral city's energy is no longer sold here: the Buy energy
+/// standard action buys it in the action phase.
 pub(super) fn produce(g: &mut GameState, cx: &mut Cx) -> Res {
+    measure_round(g, cx);
+    factory_output(g, cx);
     city_energy(g, cx)?;
     station_cubes(g, cx)?;
     complete_projects(g, cx)
 }
 
-/// Cities make energy: diverted, free to an aligned city's owner, or for sale.
+/// The energy city `h` makes when it is producing (its country's `corp_energy`).
+pub fn city_output(w: &World, h: usize) -> i64 {
+    let c = w.map.hexes[h].country as usize;
+    let l = w.list("board.corp_energy");
+    l[c % l.len()]
+}
+
+/// Whether city `h` is blocked from producing: a blackout on it (its country, or
+/// near a threat, 135) or an agent standing on it.
+pub fn city_dark(w: &World, g: &GameState, h: usize) -> bool {
+    hex_flagged(w, g, RoundFlag::Blackout, h) || g.tokens(h, ADV_AMBASSADOR) > 0
+}
+
+/// Cities make energy: diverted by the adversary's, free to an aligned city's
+/// owner; a neutral city's makes nothing here (r75: it is bought by the Buy
+/// energy action).
 pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     let divert = w.int("board.divert_discord");
-    let price = w.int("board.city_energy_credits");
     for h in 0..g.hexes.len() {
         if !is_city(&w, h) {
             continue;
         }
-        let c = w.map.hexes[h].country as usize;
-        let energy = {
-            let l = w.list("board.corp_energy");
-            l[c % l.len()]
-        };
+        let energy = city_output(&w, h);
         // A blackout on its country or (135) near a threat.
         if hex_flagged(&w, g, RoundFlag::Blackout, h) {
             continue;
@@ -340,29 +321,6 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
             let n = energy + w.int("board.aligned_bonus");
             cx.add_resource(g, s, Resource::Energy, n);
             cx.tally(g, "board.city_energy_aligned", n);
-        } else {
-            // A neutral city's cube: a player with a node next to it may buy
-            // it (players choose who), otherwise it is lost (021).
-            let buyers: Vec<usize> = (0..g.seats.len())
-                .filter(|&s| g.resource(s, Resource::Credits) >= price && in_reach(&w, g, s, h))
-                .collect();
-            // 118: a city making no energy (`corp_energy` 0) sold nothing for its price.
-            if buyers.is_empty() || energy <= 0 {
-                continue;
-            }
-            let mut opts: Vec<_> = buyers.iter().map(|&s| opt(format!("seat {s} buys"))).collect();
-            opts.push(opt("nobody".to_string()));
-            let prompt = || format!(
-                "The energy of {} ({energy} energy) can be bought for {price} credits: by whom?",
-                hex_name(&w, h)
-            );
-            if let Some(i) = cx.choose(0, prompt, opts)? {
-                if let Some(&s) = buyers.get(i) {
-                    cx.add_resource(g, s, Resource::Credits, -price);
-                    cx.add_resource(g, s, Resource::Energy, energy);
-                    cx.tally(g, "board.city_energy_bought", energy);
-                }
-            }
         }
     }
     Ok(())

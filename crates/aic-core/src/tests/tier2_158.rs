@@ -51,7 +51,7 @@ fn a_firewall_stops_arrivals_and_pulls() {
     // 175: a firewalled site is still a Rally site; its share stays in the supply.
     assert!(plan::rally_sites(&w, &g, crate::op::RallyAt::City, country).contains(&c));
     assert!(!plan::next_rally(&w, &g).iter().any(|&(h, _)| h == c));
-    with_cx(&rules, |cx| adversary::place(&mut g, cx, c, 2));
+    with_cx(&rules, |cx| adversary::place(&mut g, cx, c, 2)).unwrap();
     assert_eq!(g.tokens(c, ADV_AMBASSADOR), 1, "no arrival on a firewalled hex");
 }
 

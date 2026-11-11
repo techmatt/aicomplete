@@ -10,8 +10,8 @@ fn a_shield_absorbs_a_destruction() {
     let a = rules.map.numbered(0, piece(0).node);
     run_ops(&rules, &mut g, &[Op::ShieldNode { count: 1 }]);
     assert_eq!(g.tokens(a, HARDEN), 1);
-    let kept = with_cx(&rules, |cx| board::destroy_piece(&mut g, cx, a, node(0), board::Cause::Troop));
-    assert!(!kept, "absorbed");
+    let destroyed = destroy_with(&rules, &mut g, a, node(0), board::Cause::Troop, true);
+    assert!(!destroyed, "absorbed");
     assert_eq!(g.tokens(a, node(0)), 1);
 }
 

@@ -6,7 +6,7 @@ The rules are split by area. Read this page, then only the files your task touch
   pieces, ownership, the ladder and who chooses) and the [off-variants](#off-variants).
 - [board.md](board.md): country pieces, fronts and bases, setup, research stations, megaprojects and converters.
 - [ambassadors.md](ambassadors.md): the one site model (cities, stations, factories), claiming, liberating, blocking,
-  armor, canceling, evicting.
+  armor, canceling, removing agents.
 - [adversary.md](adversary.md): the adversary board, its income and event deck (the round cap), Rally X, Corrupt X, botnets,
   the project slots, difficulty.
 - [war.md](war.md): production and war every round, factories, bases as troop piles, war, the adversary march, Wall,
@@ -22,7 +22,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 74 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 75 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -88,27 +88,29 @@ The rest:
 - **Botnet**: the adversary's persistent token ([adversary.md](adversary.md)), placed only by printed lines. Nodes are always the players', botnets always the adversary's.
 - **Reach**: every map target of a standard action is in the acting player's reach, and so
   are most of a card's. The exceptions are Spread (Exodus Corridors, measured from
-  the ambassador), and country effects such as a tier-2 sweep or Shelter (any country;
+  the ambassador), Take down a botnet (where your ambassador stands on one), and country effects such as a tier-2 sweep or Shelter (any country;
   [card-grammar.md](card-grammar.md)). Reach is 1 for every player rule: no deck card's
   move goes further. The adversary's distances (a Corrupt line moving agents from next door, `war_reach`) are its dials, not
-  a player's reach ([adversary.md](adversary.md), [war.md](war.md)). A converter is not a map target: it needs a node in a city of
-  its country ([board.md](board.md)).
+  a player's reach ([adversary.md](adversary.md), [war.md](war.md)). A converter needs a city of its country in your
+  reach ([board.md](board.md)).
 - **Site**: a city, research station or factory (137: one site model, [ambassadors.md](ambassadors.md)). A military
   base is no site: it is a front's troop pile ([war.md](war.md)).
-- **Site claim**: claiming a neutral site (the Claim action) needs the
-  player's node on or next to the site, and **a botnet next to the site blocks claims
-  on it** (one hop from the site). Liberating an adversary site needs reach only.
+- **Site claim**: claiming a neutral site (the Claim action) needs the site in the
+  player's reach and no embargo on it; a botnet on or next to it doesn't stop a claim (r75). Liberating an
+  adversary site needs reach only. Both pay with the player's own ambassadors on the site first, then the supply.
 - **Piece**: a site, a military base or a node. Ambassadors sit on pieces.
 - **Clean / corrupted / aligned / owned**: a city, research station or factory with no
   owner cube is clean (a station or factory: neutral); an adversary cube means corrupted
   (a factory: adversary-owned); a player cube means aligned (a city) or owned.
 - **The ladder**: the adversary's pieces, weakest first: agents (the explorers, used
   up when they act), **botnets** (the towns, persistent), troops, corrupted cities and
-  stations (the cities). Liberating a city takes it off the ladder: no agent stays ([ambassadors.md](ambassadors.md)).
+  stations (the cities). The Liberate action takes a site off the ladder: its agents cancel and it becomes the
+  liberator's ([ambassadors.md](ambassadors.md)); a liberate card leaves the city's agents on it.
 - **The supply is a cap**: a placement it can't make doesn't happen.
 - **Players choose**: an `Action::Choose` in `legal_actions`. Team choices in the
   adversary's steps, production and threats are asked of seat 0 (an aligned city's
-  factory placement, of its owner); a choice inside a player's own card, ability or
+  factory placement, of its owner; which protection a destruction spends, of the piece's
+  owner, [war.md](war.md)); a choice inside a player's own card, ability or
   standard action is asked of that player.
 - **Hex number**: each piece's hexes are printed 1–16 row by row; ties go to the lower
   number.
@@ -119,7 +121,7 @@ For measuring what a module adds, these variants remove its effect and keep the 
 threats), `alignment.variant=off` (no Sway moves, nothing tips, no antimatter action; the purge, the node loss and the
 adversary deck-out stay; with no tips the Discord-deck loss can't happen and the purge never eases), `cards.variant=off`
 (no draft or drawing, so no player cards at all). Two don't isolate their module: with
-Alignment off nothing tips, so botnets always count against the purge; with cards off only Decommission removes a
-botnet. `board`, `adversary`, `alignment` and `ai` are not removable (each is read by another); `threats=off`,
+Alignment off nothing tips, so botnets always count against the purge; with cards off only Decommission and the Take down a botnet action
+remove a botnet. `board`, `adversary`, `alignment` and `ai` are not removable (each is read by another); `threats=off`,
 `cards=off` and `economy=off` remove the module. Parts switch off by parameters (`destruction_discord` 0, `factory_chips` 0,
 `board.troop_steps` 0 (no march), `adversary.botnet_compute` 0).

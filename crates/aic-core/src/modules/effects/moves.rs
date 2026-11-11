@@ -77,20 +77,21 @@ fn adversary_piece(kind: &str) -> bool {
 
 /// A piece of token `kind` arrives on hex `to` (it has already left its hex). An agent onto a standing
 /// ambassador cancels both; an ambassador onto agents cancels one; otherwise it stands there.
-pub fn arrive(g: &mut GameState, cx: &mut Cx, kind: &'static str, to: usize) {
+pub fn arrive(g: &mut GameState, cx: &mut Cx, kind: &'static str, to: usize) -> Res {
     if kind == ADV_AMBASSADOR {
-        if let Some(s) = player_ambassador(g, to) {
-            cx.add_tokens(g, to, ambassador(s), -1);
+        // r75: the players choose whose ambassador it cancels.
+        if board::agent_cancels(g, cx, to)?.is_some() {
             cx.add_key(g, adversary::SUPPLY, 1);
             cx.tally(g, "effects.moved_canceled", 1);
-            return;
+            return Ok(());
         }
     } else if kind != TROOP && g.tokens(to, ADV_AMBASSADOR) > 0 {
         adversary::remove(g, cx, to, 1);
         cx.tally(g, "effects.moved_canceled", 1);
-        return;
+        return Ok(());
     }
     cx.add_tokens(g, to, kind, 1);
+    Ok(())
 }
 
 /// "2 agents" / "1 troop": a batch's label word.
@@ -160,7 +161,7 @@ pub(super) fn gather(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, piec
         for _ in 0..n {
             cx.add_tokens(g, x, k, -1);
             cx.tally(g, "effects.gathered", 1);
-            arrive(g, cx, k, to);
+            arrive(g, cx, k, to)?;
         }
         moved += n;
     }
@@ -205,7 +206,7 @@ pub(super) fn push(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, pieces
         for _ in 0..n {
             cx.add_tokens(g, from, k, -1);
             cx.tally(g, "effects.pushed", 1);
-            arrive(g, cx, k, x);
+            arrive(g, cx, k, x)?;
         }
         moved += n;
     }

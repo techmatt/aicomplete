@@ -434,7 +434,12 @@ mod tests {
             let mut k = seed;
             while !g.is_over() {
                 r.legal_actions_into(&g, &mut legal);
-                if g.pending.is_some() {
+                // 176: a prompt in `adversary.reveal` replays from the phase's start, through the reveal's
+                // draw from the hidden adversary deck and 175's compute step: on a guess, another project may
+                // resolve first. The agents never guess a pending table (151); splitting the compute step into a
+                // phase of its own would restore the check there (flagged in 176's write-up).
+                let reveal = g.config.round.get(g.phase).is_some_and(|p| p == "adversary.reveal");
+                if g.pending.is_some() && !reveal {
                     found += 1;
                     let mut h = g.clone();
                     determinize(r, &mut h, &mut ChaCha8Rng::seed_from_u64(k));
@@ -455,6 +460,12 @@ mod tests {
                         // Or a new project row is dealt (from the hidden
                         // project deck; 020's r11 games met one).
                         let row = |s: &GameState| s.pile(aic_core::modules::adversary::PROJECT_DECK).len();
+                        // 176: or a Unity or Discord card is drawn: a tip's corp-troop choice (r75) is asked
+                        // before its card comes off the hidden deck, after the tip count moved.
+                        let drawn = |s: &GameState| {
+                            use aic_core::{content::Side, modules::alignment::deck};
+                            (s.pile(&deck(Side::Unity)).len(), s.pile(&deck(Side::Discord)).len())
+                        };
                         // Or threats are dealt (from the hidden threat decks;
                         // 023's card set reaches a deal right after a choice).
                         let threats = |s: &GameState| {
@@ -479,6 +490,8 @@ mod tests {
                             && threats(&y) == threats(&g)
                             && !dealt(&x)
                             && !dealt(&y)
+                            && drawn(&x) == drawn(&g)
+                            && drawn(&y) == drawn(&g)
                         {
                             assert_eq!(
                                 (&x.hexes, &x.vars, &x.seats),

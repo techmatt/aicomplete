@@ -31,7 +31,7 @@ lands **evenly on every site of type X** in that board (city, coastal city, rese
 whoever owns it; the remainder goes one each to the lowest-numbered such sites that aren't the adversary's or
 firewalled (then the adversary's, if too few). A
 cordoned board's pool lands nowhere. A project may print "Rally 3: botnet hexes": 3 a board, by the same rule. An
-arrival on a player ambassador cancels it. The card ahead and the pools are public, so next round's landing is known.
+arrival on player ambassadors cancels one (the players choose whose). The card ahead and the pools are public.
 A threat still places its own agents "here".
 
 **A blocked landing stays in the supply (175, one rule).** A **firewall** ([ambassadors.md](ambassadors.md)) keeps
@@ -50,11 +50,10 @@ land** (`corrupt_land_at` 3; an empty land hex: no city, base or building) or **
 with a player's node). Only an X not yet the adversary's counts. On each board: **every agent next to an X moves
 onto it** (across borders too; the players choose for an agent next to several; agents already on an X stay); then
 **every X holding its number corrupts** (a city's markers count), and its agents go back to the supply. A line may
-print "(1 fewer)"; difficulty lowers a city's, station's and factory's number (`corrupt_cut`; not land's or a node's). The sim players send a choosing agent onto a site
-corrupting anyway, else the one holding fewest ([agents.md](../agents.md)).
+print "(1 fewer)"; difficulty lowers a city's, station's and factory's number (`corrupt_cut`; not land's or a node's).
 - **A corrupted site** takes the adversary's cube (a player cube comes off; [ambassadors.md](ambassadors.md)).
-  **Corruption destroys only a node on the corrupted hex itself**; its owner's ambassador there is armor, used up
-  instead. Player ambassadors left on the hex are lost. Sanctuary (capstone): corruption never destroys your nodes.
+  **Corruption destroys only a node on the corrupted hex itself**; its owner may spend a protection, such as their
+  own ambassador there ([war.md](war.md)). Player ambassadors left on the hex are lost. Sanctuary (capstone): corruption never destroys your nodes.
 - **A corrupted node hex** loses the node (the protections apply, [war.md](war.md)); its agents go to the supply and
   nothing else on the hex changes. A last node is no exception (175).
 - **Land corruption** is a hex token, printed on two late cards: no node may be placed
@@ -65,10 +64,10 @@ extra corp troop a round from all such rules; its difficulty line) are printed i
 [adversary-cards.md](../adversary-cards.md).
 
 **Botnets.** Each board starts with a botnet (on its research station); more come only from printed lines. A botnet stays
-until removed: it makes `botnet_compute` compute in the compute step (none with a player ambassador on it), **blocks
-site claims** on or next to it and counts against the purge until Unity eases it ([alignment.md](alignment.md)). **Hard to remove
-(candidate, Matt):** only tier-2 cards and Decommission (a Unity card), no standard action. Removing one sways
-`alignment.botnet` Unity.
+until removed: it makes `botnet_compute` compute in the compute step (none with a player ambassador on it) and counts
+against the purge until Unity eases it ([alignment.md](alignment.md)). **Hard to remove:** tier-2 cards, Decommission
+(a Unity card) and the dear Take down a botnet action (`botnet_credits` 5 credits, your ambassador on its hex, which
+stays; r75). Removing one sways `alignment.botnet` Unity.
 
 ## The project deck (candidate)
 

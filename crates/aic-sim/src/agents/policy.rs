@@ -188,6 +188,11 @@ macro_rules! forced_table {
             /// 175: a Corrupt X line's agent next to several sites goes where the players lose least
             /// (`plan::converge_pick`: onto a site corrupting anyway, else the one holding fewest).
             (converge_rule: bool, false, 1.0, "175: a Corrupt line's converging agent goes onto a site corrupting anyway, else the one holding fewest")
+            /// 176: Buy energy (r75's action-phase purchase) when the credits it costs would sit idle: the seat's
+            /// credits and this round's credit income, less the price, still reach the eval's credit cap. A pass is
+            /// scored on the table it leaves, before income, so the search alone never saw idle credits here
+            /// (r74's production prompt looked past the income).
+            (energy_rule: bool, false, 1.0, "176: buy a neutral city's energy when its credits would sit idle (credits plus this round's income, less the price, at or over the eval's credit cap)")
             /// 082: the keep plan values cards by the value table (0: printed cost
             /// plus 1, the niche jobs and capstone jobs, as before 082).
             (plan_table: bool, false, 1.0, "keep plan values cards by the value table (0: by printed cost, as before 082)")
@@ -317,6 +322,26 @@ impl Forced {
             && (!self.ignore_threats || !counters_threats(d))
             && (!self.never_clear || !d.effects.iter().any(|e| matches!(e, Op::ClearMarkers { .. })))
     }
+}
+
+/// The eval's `credit_cap` (eval.rs's default): credits held beyond it are worth `credit_idle` each.
+const IDLE_CREDITS: i64 = 12;
+
+/// 176 (`energy_rule`): a Buy energy action whose credits would sit idle: the seat has no card left it can play
+/// this phase, and its credits plus this round's credit income, less the price, still reach [`IDLE_CREDITS`].
+fn buy_energy(w: &World, g: &GameState, legal: &[Action]) -> Option<usize> {
+    legal.iter().position(|a| match a {
+        Action::Standard { seat, act } if act == board::StandardAction::BuyEnergy.name() => {
+            let s = *seat as usize;
+            if legal.iter().any(|b| matches!(b, Action::Play { seat, .. } if *seat as usize == s)) {
+                return false;
+            }
+            let price = board::seat_price(w, g, s, board::StandardAction::BuyEnergy).credits;
+            let after = g.resource(s, Resource::Credits) + economy::income(w, g, s)[Resource::Credits] - price;
+            after >= IDLE_CREDITS
+        }
+        _ => false,
+    })
 }
 
 /// Whether `d` counters a threat or makes one cheaper, in any of its lists: an
@@ -660,6 +685,11 @@ impl Agent for Policy {
         }
         if self.forced.converge_rule && pending {
             if let Some(i) = super::moves::converge(&world, g, legal) {
+                return i;
+            }
+        }
+        if self.forced.energy_rule && !pending {
+            if let Some(i) = buy_energy(&world, g, legal) {
                 return i;
             }
         }

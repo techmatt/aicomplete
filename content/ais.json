@@ -639,7 +639,7 @@
     "cost": 5,
     "capstone": {
      "name": "Aegis Doctrine",
-     "text": "Each round, stop the first destruction in a country you're in.",
+     "text": "Once a round, when one of your nodes or facilities would be destroyed, you may keep it.",
      "passives": [
       {
        "op": "civic_shelter"

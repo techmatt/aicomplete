@@ -12,7 +12,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.start_ambassadors` | 1 | 0..10 | player ambassadors each player starts with |
 | `board.unit_cap` | 2 | 0..20 | corp units a base holds at most |
 | `board.corp_energy` | 1 | 0..10 | energy cubes each city of country i makes a round (a megacorp parameter; the list repeats) |
-| `board.city_energy_credits` | 5 | 0..20 | credits for a neutral city's energy cube, bought by a player with a node next to it |
+| `board.city_energy_credits` | 4 | 0..20 | standard action Buy energy: credits for a neutral city's energy, once per city a round, the city in reach and producing |
 | `board.aligned_bonus` | 0 | 0..10 | extra energy an aligned city gives its owner |
 | `board.station_cubes` | 1 | 0..5 | research cubes a neutral station makes a round (an adversary one: compute) |
 | `board.owned_station_cubes` | 2 | 0..5 | research cubes a player-owned station makes its owner a round (142) |
@@ -20,7 +20,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy, each round, of an aligned city an agent darkens |
 | `board.liberate_at` | 5 | 1..10 | the Liberate action: ambassadors that liberate an adversary city |
 | `board.liberate_facility_at` | 3 | 1..10 | the Liberate action: ambassadors that liberate an adversary station or factory |
-| `board.claim_city` | 4 | 1..10 | the Claim action: ambassadors that claim a neutral city (the adversary's corrupt_at) |
+| `board.claim_city` | 5 | 1..10 | the Claim action: ambassadors that claim a neutral city |
 | `board.claim_station` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral research station |
 | `board.claim_factory` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral factory |
 | `board.start_nodes` | 1 | 1..3 | 175: nodes each player starts with: its start hex, then the lowest-numbered free land hexes next to it (the extras off no track) |
@@ -33,8 +33,8 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.war_reach` | 0 | 0..1 | war that destroys a factory destroys nodes within this many hexes of it |
 | `board.station_chips` | 2 | 0..20 | standard action: chips to build a research station |
 | `board.factory_chips` | 2 | 0..5 | chips a player-owned factory makes its owner each round |
-| `board.remove_ambassadors` | 1 | 1..5 | standard action: your ambassadors from the supply that go onto a hex to evict its agents, and stay there |
-| `board.remove_count` | 3 | 1..3 | standard action: agents one removal takes off its hex, at most |
+| `board.remove_ambassadors` | 1 | 1..5 | standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing) |
+| `board.remove_count` | 3 | 1..3 | standard action Remove agents: agents it removes, at most, from any hexes in reach (the player's choice) |
 | `board.clear_cost` | 2 | 0..20 | standard action: credits to clear a corruption marker within reach |
 | `board.clear_unity` | 2 | 0..5 | Sway toward Unity for clearing a corruption marker |
 | `board.clear_credits` | 0 | 0..5 | credits back for clearing a corruption marker |
@@ -45,6 +45,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.drain_credits` | 5 | 1..50 | standard project: credits to drain compute from an adversary project |
 | `board.drain_amount` | 3 | 1..20 | standard project: compute drained |
 | `board.cube_insight` | 1 | 0..5 | standard action, no limit a round: insight for 1 research cube (0: no such action) |
+| `board.botnet_credits` | 5 | 1..50 | standard action: credits to take down a botnet on a hex holding your ambassador (it stays) |
 | `adversary.difficulty` | 0 | 0..4 | difficulty level 0-4 (each level includes the ones below) |
 | `adversary.stage_cards` | 4, 4, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
 | `adversary.supply_per_country` | 24 | 0..40 | agents in the supply per country |
@@ -83,7 +84,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.board_difficulty_at` | 2 | 0..5 | the difficulty level from which the adversary board's own difficulty line applies (135) |
 | `alignment.tip_per_player` | 3 | 1..50 | the Unity track tips when it holds this many Sway per player |
 | `alignment.discord_tip_per_player` | 3 | 1..50 | the Discord track tips when it holds this many Sway per player |
-| `alignment.carry` | 1 | 0..2 | Sway past a tip stays toward the next tip: 1 Unity's only (Matt, r48), 2 both sides (an adversary lever), 0 neither (a tip empties its track) |
+| `alignment.carry` | 2 | 0..2 | Sway past a tip stays toward the next tip: 2 both sides (r75, Matt's ruling 7), 1 Unity's only (r48), 0 neither (a tip empties its track) |
 | `alignment.hold_off` | 1 | 0..1 | 1: each Unity swayed may instead move 1 Discord off the Discord track, the players' choice (136) |
 | `alignment.momentum_every` | 0 | 0..10 | Momentum: a side's track holds 1 fewer Sway per this many of its tips, down to 1 per player (0: off) |
 | `alignment.troop` | 0 | 0..10 | Sway toward Unity for removing an adversary troop |

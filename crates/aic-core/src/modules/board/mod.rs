@@ -46,7 +46,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("start_ambassadors", 0, 10, "player ambassadors each player starts with"),
             ParamSpec::int("unit_cap", 0, 20, "corp units a base holds at most"),
             ParamSpec::list("corp_energy", 0, 10, "energy cubes each city of country i makes a round (a megacorp parameter; the list repeats)"),
-            ParamSpec::int("city_energy_credits", 0, 20, "credits for a neutral city's energy cube, bought by a player with a node next to it"),
+            ParamSpec::int("city_energy_credits", 0, 20, "standard action Buy energy: credits for a neutral city's energy, once per city a round, the city in reach and producing"),
             ParamSpec::int("aligned_bonus", 0, 10, "extra energy an aligned city gives its owner"),
             ParamSpec::int("station_cubes", 0, 5, "research cubes a neutral station makes a round (an adversary one: compute)"),
             ParamSpec::int("owned_station_cubes", 0, 5, "research cubes a player-owned station makes its owner a round (142)"),
@@ -54,7 +54,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("ambassador_discord", 0, 5, "Discord per unit of energy, each round, of an aligned city an agent darkens"),
             ParamSpec::int("liberate_at", 1, 10, "the Liberate action: ambassadors that liberate an adversary city"),
             ParamSpec::int("liberate_facility_at", 1, 10,"the Liberate action: ambassadors that liberate an adversary station or factory"),
-            ParamSpec::int("claim_city", 1, 10, "the Claim action: ambassadors that claim a neutral city (the adversary's corrupt_at)"),
+            ParamSpec::int("claim_city", 1, 10, "the Claim action: ambassadors that claim a neutral city"),
             ParamSpec::int("claim_station", 1, 10, "the Claim action: ambassadors that claim a neutral research station"),
             ParamSpec::int("claim_factory", 1, 10, "the Claim action: ambassadors that claim a neutral factory"),
             ParamSpec::int("start_nodes", 1, 3, "175: nodes each player starts with: its start hex, then the lowest-numbered free land hexes next to it (the extras off no track)"),
@@ -67,8 +67,8 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("war_reach", 0, 1, "war that destroys a factory destroys nodes within this many hexes of it"),
             ParamSpec::int("station_chips", 0, 20, "standard action: chips to build a research station"),
             ParamSpec::int("factory_chips", 0, 5, "chips a player-owned factory makes its owner each round"),
-            ParamSpec::int("remove_ambassadors", 1, 5, "standard action: your ambassadors from the supply that go onto a hex to evict its agents, and stay there"),
-            ParamSpec::int("remove_count", 1, 3, "standard action: agents one removal takes off its hex, at most"),
+            ParamSpec::int("remove_ambassadors", 1, 5, "standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing)"),
+            ParamSpec::int("remove_count", 1, 3, "standard action Remove agents: agents it removes, at most, from any hexes in reach (the player's choice)"),
             ParamSpec::int("clear_cost", 0, 20, "standard action: credits to clear a corruption marker within reach"),
             ParamSpec::int("clear_unity", 0, 5, "Sway toward Unity for clearing a corruption marker"),
             ParamSpec::int("clear_credits", 0, 5, "credits back for clearing a corruption marker"),
@@ -79,13 +79,14 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("drain_credits", 1, 50, "standard project: credits to drain compute from an adversary project"),
             ParamSpec::int("drain_amount", 1, 20, "standard project: compute drained"),
             ParamSpec::int("cube_insight", 0, 5, "standard action, no limit a round: insight for 1 research cube (0: no such action)"),
+            ParamSpec::int("botnet_credits", 1, 50, "standard action: credits to take down a botnet on a hex holding your ambassador (it stays)"),
         ],
         phases: &[
-            PhaseSpec::decision("act", "standard actions and projects: station, remove, clear, move (from the round's Movement), ambassador, claim, liberate, harden, sell, drain; completed megaprojects' converters"),
-            PhaseSpec::auto("bases", "production: factories make chips or adversary troops, extra corp troops, cities grow factories"),
+            PhaseSpec::decision("act", "standard actions and projects: station, remove, clear, move (from the round's Movement), ambassador, claim, liberate, harden, sell, drain, take down a botnet, buy a neutral city's energy; completed megaprojects' converters"),
+            PhaseSpec::auto("bases", "growth, after the income step: extra corp troops, then each city grows a factory on a free zone next to it"),
             PhaseSpec::auto("war", "at the end of the round, the corp troops on either side of each front fight"),
             PhaseSpec::auto("march", "each adversary troop takes its steps: remove an ambassador on its hex, else destroy a target next to it, else move toward the nearest"),
-            PhaseSpec::auto("produce", "cities make energy (an agent on one stays and darkens it) and research stations produce (an opposing piece blocks one; an adversary station's compute waits for the compute step); full megaprojects complete"),
+            PhaseSpec::auto("produce", "the income step (economy's upkeep follows at once): factories make chips or adversary troops, aligned cities energy (an agent on one stays and darkens it), research stations cubes (an opposing piece blocks one; an adversary station's compute waits for the compute step); full megaprojects complete"),
             PhaseSpec::auto("cleanup", "count the country flags down"),
         ],
         rng: &[],
@@ -132,12 +133,12 @@ const LANDED_AT: &str = "board.landed_at.";
 const LANDED_N: &str = "board.landed_n.";
 
 /// The marks a round's end clears outright ([`expire_marks`]).
-const ROUND_MARKS: [&str; 5] = [NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED];
+const ROUND_MARKS: [&str; 6] = [NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED, BOUGHT];
 
 /// 135: every per-round mark [`expire_marks`] counts down, trues or clears
 /// (the view lists them as bookkeeping).
-pub(super) const MARKS: [&str; 10] =
-    [HEX_FLAGS, STAND, OCCUPIED, CORP_EXTRA, EXTRA_WAR, NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED];
+pub(super) const MARKS: [&str; 11] =
+    [HEX_FLAGS, STAND, OCCUPIED, CORP_EXTRA, EXTRA_WAR, NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED, BOUGHT];
 
 /// How many of hex `h`'s adversary troops stand.
 pub fn standing(g: &GameState, h: usize) -> i64 {
@@ -404,7 +405,7 @@ impl Module for Board {
     fn run(&self, phase: usize, g: &mut GameState, cx: &mut Cx) -> Res {
         match phase {
             1 => produce_units(g, cx)?,
-            2 => battle(g, cx),
+            2 => battle(g, cx)?,
             3 => march(g, cx)?,
             4 => produce(g, cx)?,
             5 => cleanup(g, cx),
@@ -418,8 +419,8 @@ impl Module for Board {
     }
 }
 
-/// The converter's block when the seat has no node in a city of the country.
-pub const NO_CITY_NODE: &str = "no node in a city here";
+/// The converter's block when no city of the country is in the seat's reach (r75).
+pub const NO_CITY_NODE: &str = "no city of this country in reach";
 /// The converter's block when the seat can't pay its cost.
 pub const CANT_PAY: &str = "can't pay it";
 
@@ -428,12 +429,12 @@ pub fn converter_blocked(w: &World, g: &GameState, s: usize, c: usize) -> Option
     if g.var(&project_done(c)) == 0 {
         return Some("the megaproject is not complete");
     }
-    // r37 (Matt): a node in a city of the country, any city; 075 took any node there.
-    if !has_city_node_in(w, g, s, c) {
+    // r75 (Matt's ruling 9): a city of the country in reach, any city (r37: a node on one).
+    if !city_in_reach_in(w, g, s, c) {
         return Some(NO_CITY_NODE);
     }
     let conv = &w.content.map.countries[c].megaproject.converter;
-    // 105: only a converter printed once a round keeps the limit.
+    // 105: a converter printed once a round keeps the limit (r75: every converter prints it).
     if conv.once && g.var(&converter_round(c, s)) == g.round as i64 {
         return Some("used this round");
     }

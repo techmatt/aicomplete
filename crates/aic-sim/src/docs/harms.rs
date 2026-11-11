@@ -43,15 +43,14 @@ pub const SOURCES: [&str; 12] = [
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 17] = [
+pub const RULE_HARMS: [(&str, &str, &str); 16] = [
     ("income and rally", "adversary pieces placed", "agent income fills each board's pool; every event's Rally X lands it on the sites of its type (151)"),
     ("income and rally", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
     ("income and rally", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
     ("income and rally", "production blacked out", "an agent on a city or station blocks its output while it stands (137)"),
     ("corruption", "node destroyed", "a hex with a player's node and `corrupt_node_at` agents loses the node (175; protections apply)"),
     ("botnets", "projects advanced (compute)", "each botnet makes compute"),
-    ("botnets", "actions or claims blocked", "a botnet blocks site claims next to it"),
-    ("corruption", "node destroyed", "a node on the corrupted hex itself is destroyed (an allied ambassador there is armor)"),
+    ("corruption", "node destroyed", "a node on the corrupted hex itself is destroyed (its owner may spend a protection: r75)"),
     ("corruption", "facilities destroyed or seized", "a research station or factory that corrupts becomes the adversary's"),
     ("corruption", "ambassadors lost", "player ambassadors on it are lost"),
     ("corruption", "production blacked out", "its energy goes to the adversary"),
@@ -59,7 +58,7 @@ pub const RULE_HARMS: [(&str, &str, &str); 17] = [
     // 146: no unprinted harm (the node loss near an uncountered threat and its floor sway are gone); the adversary
     // board may print compute per uncountered threat.
     ("uncountered threats", "projects advanced (compute)", "the adversary board's printed compute per threat that executes uncountered (the Militarist's difficulty line, from `board_difficulty_at`)"),
-    ("war", "node destroyed", "a destroyed factory takes the node on its hex"),
+    ("war", "node destroyed", "a destroyed factory takes the node on its hex (its owner may spend a protection: r75)"),
     ("war", "facilities destroyed or seized", "surplus troops destroy factories"),
     ("war", "Discord sway", "each factory destroyed in war sways `destruction_discord` toward Discord"),
     ("march", "facilities destroyed or seized", "a troop strikes player-owned facilities; it can't enter or strike a hex with the Protector's node"),

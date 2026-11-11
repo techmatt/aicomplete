@@ -375,6 +375,9 @@ pub struct Weights {
     /// 137: each hex where a seat's own ambassador stands on its node or owned
     /// facility: armor, used up instead of the piece.
     pub armor: f64,
+    /// 176: each botnet with a player's ambassador on its hex, a share of `botnet`: r75's standard action takes
+    /// it down from there (credits, the ambassador stays), so moving one there is a step toward it (0: off).
+    pub botnet_reach: f64,
 }
 
 /// Weights renamed since experiments named them: (former name, name).
@@ -625,6 +628,7 @@ impl Default for Weights {
             site_pressure: 1.0,
             block: 4.0,
             armor: 1.0,
+            botnet_reach: 0.3,
         }
     }
 }
@@ -1284,21 +1288,20 @@ impl Eval {
                     // adversary ambassadors add to the cost): gathering toward it, by
                     // the best-placed seat in reach, counts a little, so a seat saves up.
                     if let Some(need) = board::liberate_cost(&world, g, h) {
-                        // 166: the ambassadors standing on it, any seat's, pay first; the supply the rest.
-                        let standing = board::liberate_standing(g, h);
+                        // r75: the seat's own ambassadors standing on it pay first, its supply the rest
+                        // (166 spent anyone's).
                         if w.purge != 0.0 {
                             for (s, b) in bill.iter_mut().enumerate().take(seats) {
                                 if near[s] >> h & 1 != 0 {
-                                    *b += (need - standing).max(0);
+                                    *b += (need - board::site_standing(g, s, h)).max(0);
                                 }
                             }
                         }
                         let held = (0..seats)
                             .filter(|&s| near[s] >> h & 1 != 0)
-                            .map(|s| g.resource(s, Resource::Ambassadors))
+                            .map(|s| g.resource(s, Resource::Ambassadors) + board::site_standing(g, s, h))
                             .max()
-                            .unwrap_or(0) as f64
-                            + standing as f64;
+                            .unwrap_or(0) as f64;
                         v += w.corrupted * w.freeing * 0.25 * (held / need.max(1) as f64).min(1.0);
                     }
                     // 137: a player ambassador standing on it blocks its diversion.
@@ -1440,10 +1443,9 @@ impl Eval {
                     if let Some(need) = board::liberate_cost(&world, g, h) {
                         let held = (0..seats)
                             .filter(|&s| near[s] >> h & 1 != 0)
-                            .map(|s| g.resource(s, Resource::Ambassadors))
+                            .map(|s| g.resource(s, Resource::Ambassadors) + board::site_standing(g, s, h))
                             .max()
-                            .unwrap_or(0) as f64
-                            + board::liberate_standing(g, h) as f64;
+                            .unwrap_or(0) as f64;
                         let share = (held / need.max(1) as f64).min(1.0);
                         v += (w.station + flip) * w.station_freeing * share * share;
                     }
@@ -1479,6 +1481,10 @@ impl Eval {
                 v += w.armor;
             }
             v -= w.botnet * t.botnet as f64;
+            // 176: an ambassador on a botnet's hex can take it down (r75's standard action).
+            if t.botnet > 0 && t.ambassador[..seats].iter().any(|&n| n > 0) {
+                v += w.botnet_reach * w.botnet;
+            }
             v -= w.marker * t.marker as f64;
             if held && t.harden > 0 {
                 v += w.shield;
@@ -1562,11 +1568,11 @@ impl Eval {
         // Megaprojects: each player cube pays when the project completes.
         for c in 0..world.map.countries.len() {
             if g.var(&board::project_done(c)) > 0 {
-                // r37: the converter needs a node in a city of its country.
+                // r75: the converter needs a city of its country in reach (r37: a node on one).
                 if w.converter_city != 0.0 {
                     for s in 0..self.seats {
                         // 102 (D27): whatever the cubes, so the last cube is worth spending there.
-                        if common::has_city_node_in(&world, g, s, c) {
+                        if common::city_in_reach_in(&world, g, s, c) {
                             v += w.converter_city;
                         }
                     }

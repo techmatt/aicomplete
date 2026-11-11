@@ -18,11 +18,11 @@ pub(super) fn nearest(w: &World, from: usize, hexes: impl Iterator<Item = usize>
 /// 1; each surplus unit crosses and destroys the rival factory nearest its
 /// base, taking any node on its hex (027: a node was the target with
 /// no factory left). All units at the front are used up.
-pub(super) fn battle(g: &mut GameState, cx: &mut Cx) {
+pub(super) fn battle(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     let passes = war_steps(&w, g);
     if passes.iter().all(|&p| p == 0) {
-        return;
+        return Ok(());
     }
     cx.note(None, || "War: the fronts fight".into());
     let mut destroyed = 0;
@@ -62,19 +62,20 @@ pub(super) fn battle(g: &mut GameState, cx: &mut Cx) {
             let Some(h) = target else {
                 break;
             };
-            if destroy_piece(g, cx, h, FACTORY, Cause::War) {
+            if destroy_piece(g, cx, h, FACTORY, Cause::War)? {
                 destroyed += 1;
                 // War that destroys a facility takes the node on its hex
-                // (027) and, by `war_reach`, around it (034).
+                // (027) and, by `war_reach`, around it (034). r75 (Matt's ruling 5): guarded like any node.
                 for x in within(&w, h, w.int("board.war_reach")) {
                     if let Some(s) = node_owner(g, x) {
-                        lose_node(g, cx, x, s, "war");
+                        destroy_piece(g, cx, x, node(s), Cause::Effect("war"))?;
                     }
                 }
             }
         }
     }
     cx.tally(g, "board.war_destroyed", destroyed);
+    Ok(())
 }
 
 /// The war steps each front fights this round (135): 1 every round (139: no clock), 1
@@ -404,7 +405,7 @@ fn strike_from(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
     };
     let (x, k) = targets[i].clone();
     cx.tally(g, "board.troop_strikes", 1);
-    if destroy_piece(g, cx, x, &k, Cause::Troop) {
+    if destroy_piece(g, cx, x, &k, Cause::Troop)? {
         let kind = if k == FACTORY || k == STATION { k.as_str() } else { "node" };
         cx.tally(g, &format!("board.troop_destroyed.{kind}"), 1);
         cx.tally(g, "board.troop_destroyed", 1);

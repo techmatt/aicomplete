@@ -26,7 +26,7 @@ pub const TROOP: &str = "troop";
 pub const UNIT: &str = "unit";
 /// A hardening token: absorbs one destruction of a facility or node on its hex.
 pub const HARDEN: &str = "harden";
-/// A botnet: persistent, makes adversary compute, blocks claims next to it.
+/// A botnet: persistent, makes adversary compute, an ambassador on its hex may take it down (r75's standard action).
 pub const BOTNET: &str = "botnet";
 /// A corruption marker (034): what a destroyed node leaves on its hex.
 pub const MARKER: &str = "corruption";
@@ -203,14 +203,13 @@ pub fn has_node_in(w: &World, g: &GameState, seat: usize, country: usize) -> boo
         .any(|&h| g.tokens(h, k) > 0)
 }
 
-/// Whether `seat` has a node on a city hex of `country` (any city, owned or not): r37's
-/// converter gate.
-pub fn has_city_node_in(w: &World, g: &GameState, seat: usize, country: usize) -> bool {
-    let k = node(seat);
+/// Whether a city of `country` (any city, owned or not) is in `seat`'s reach: r75's converter gate (Matt's
+/// ruling 9, 2026-11-10; r37's was a node on the city).
+pub fn city_in_reach_in(w: &World, g: &GameState, seat: usize, country: usize) -> bool {
     w.map.countries[country]
         .hexes
         .iter()
-        .any(|&h| is_city(w, h) && g.tokens(h, k) > 0)
+        .any(|&h| is_city(w, h) && in_reach(w, g, seat, h))
 }
 
 /// Seats a threat in `scope` concerns: with a node in the country,

@@ -127,7 +127,8 @@ fingerprint covers the config and the final state less its measures (`stats`), s
 plays the same moves it with no bump; a new counter doesn't. (A fast-lane test.) It also pins
 `GOLDEN_CONTENT_HASH` (wasm-smoke `GOLDEN_CONTENT`), the content hash over raw bytes: a
 content-only edit moves it with no bump unless play changes; update both (the new hash is
-`content_hash` in any run's `games.jsonl` first line). A stale hash shows only once the
+`content_hash` in any run's `games.jsonl` first line, or `regen.py`'s "content hash" line; the new fingerprint is
+the failing `golden_game` assertion's left side: copy both, never type them). A stale hash shows only once the
 fingerprint matches; `cargo test` stops at the first failing binary (`--no-fail-fast` runs the rest).
 
 **This machine.**

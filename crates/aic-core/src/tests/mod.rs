@@ -486,6 +486,51 @@ fn gain_and_pour(g: &mut GameState, cx: &mut module::Cx, n: i64) -> module::Res 
     crate::modules::adversary::pour_waiting(g, cx)
 }
 
+/// r75: `board::destroy_piece` with its protection prompt answered: `spend` takes the first protection offered,
+/// else none. Returns whether the piece was destroyed.
+fn destroy_with(rules: &Rules, g: &mut GameState, h: usize, kind: &str, cause: modules::board::Cause, spend: bool) -> bool {
+    let mut choices = module::Choices::new(Vec::new());
+    let mut cx = module::Cx { world: rules.world(), module: "test", purposes: &[], events: None, choices: &mut choices, fought: [0; 3] };
+    let first = modules::board::destroy_piece(&mut g.clone(), &mut cx, h, kind, cause);
+    let picks = match (first, choices.asked) {
+        (Ok(_), _) => Vec::new(),
+        (Err(module::Halt::Ask), Some(a)) => {
+            let o = if spend { a.options[0].clone() } else { a.options.last().cloned().expect("an option") };
+            vec![crate::state::Pick { option: o.option, target: o.target }]
+        }
+        (e, _) => panic!("{e:?}"),
+    };
+    with_cx_picks(rules, picks, |cx| modules::board::destroy_piece(g, cx, h, kind, cause)).unwrap()
+}
+
+/// Runs `f` on `g` with every choice it asks answered by `choose` (the index of the option to take), found by
+/// replaying `f` on a copy until it asks nothing more.
+fn with_answers<T>(
+    rules: &Rules,
+    g: &mut GameState,
+    choose: impl Fn(&crate::state::Ask) -> usize,
+    f: impl Fn(&mut GameState, &mut module::Cx) -> module::Res<T>,
+) -> T {
+    let mut picks: Vec<crate::state::Pick> = Vec::new();
+    loop {
+        let mut choices = module::Choices::new(picks.clone());
+        let result = {
+            let mut cx = module::Cx { world: rules.world(), module: "test", purposes: &[], events: None, choices: &mut choices, fought: [0; 3] };
+            f(&mut g.clone(), &mut cx).map(|_| ())
+        };
+        match result {
+            Ok(()) => break,
+            Err(module::Halt::Ask) => {
+                let a = choices.asked.expect("an ask");
+                let o = a.options[choose(&a)].clone();
+                picks.push(crate::state::Pick { option: o.option, target: o.target });
+            }
+            Err(e) => panic!("{e:?}"),
+        }
+    }
+    with_cx_picks(rules, picks, |cx| f(g, cx)).unwrap()
+}
+
 /// `with_cx` with the choices already answered by `picks`.
 fn with_cx_picks<T>(
     rules: &Rules,
@@ -573,9 +618,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 74;
-const GOLDEN_FINGERPRINT: &str = "4f8cb8a692ca698c";
-const GOLDEN_CONTENT_HASH: &str = "9a4b84b013cf90d0";
+const GOLDEN_REVISION: u32 = 75;
+const GOLDEN_FINGERPRINT: &str = "52207ba2170bf546";
+const GOLDEN_CONTENT_HASH: &str = "01cf6a4efa776d20";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

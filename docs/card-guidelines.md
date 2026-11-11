@@ -158,7 +158,7 @@ The sheet is `icons.png` from `node tools/card-art/render.mjs`.
 | Discs left of `:` (At N) | when the tokens here reach N, they come off and the right happens |
 | `/` | per |
 | OR, ALL, ACT | written out; ACT is an Action granted |
-| Shield | stops one destruction: alone, a hardening token on a facility; with a node, a shield; with a country, the Aegis Doctrine capstone's |
+| Shield | stops one destruction: alone, a hardening token on a facility; with a node, a shield, or on a capstone the Aegis Doctrine's (your own nodes and facilities) |
 | Shelter (roof) | a whole country, this round |
 | Node | place it, paying its track step |
 | Node with a struck-through coin | place it free |

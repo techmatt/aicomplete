@@ -120,7 +120,8 @@ fn each_mark_has_one_reading() {
     // No card prints Civic Shelter since r42: a building is given it here.
     let mut shelter = content().cards.iter().find(|c| c.is_building()).expect("a building").clone();
     shelter.passives = vec![crate::content::Op::CivicShelter];
-    assert!(serde_json::to_string(&crate::face::card_face(&shelter)).unwrap().contains(r#"["harden","country"]"#));
+    // r75: Aegis guards your own pieces, not a country: shield + node.
+    assert!(serde_json::to_string(&crate::face::card_face(&shelter)).unwrap().contains(r#"["harden","node"]"#));
     for c in &content().cards {
         let all = serde_json::to_string(&crate::face::card_face(c)).unwrap();
         for token in ["datasets", "capital", "followers", "agents"] {

@@ -211,7 +211,7 @@
    "project": {
     "name": "Tidal Grid",
     "cubes": 8,
-    "text": "At completion each player cube pays 3 energy and 3 credits, each adversary cube 1 Sway to Discord. Afterward, with a node in a city here: 1 research cube and 2 energy for 1 antimatter, as often as you can pay. An adversary cube made here afterward is lost.",
+    "text": "At completion each player cube pays 3 energy and 3 credits, each adversary cube 1 Sway to Discord. Afterward, once a round, with a city here in your reach: 1 research cube and 2 energy for 1 antimatter. An adversary cube made here afterward is lost.",
     "player": [
      {
       "op": "gain",
@@ -248,7 +248,8 @@
        "resource": "antimatter",
        "amount": 1
       }
-     ]
+     ],
+     "once": true
     }
    }
   },
@@ -288,7 +289,7 @@
    "project": {
     "name": "Polar Compute Array",
     "cubes": 8,
-    "text": "At completion each player cube pays 1 drawn card and 5 credits, each adversary cube 1 adversary compute. Afterward, with a node in a city here: 1 research cube for 2 insight, as often as you can pay. An adversary cube made here afterward is lost.",
+    "text": "At completion each player cube pays 1 drawn card and 5 credits, each adversary cube 1 adversary compute. Afterward, once a round, with a city here in your reach: 1 research cube for 2 insight. An adversary cube made here afterward is lost.",
     "player": [
      {
       "op": "draw",
@@ -319,7 +320,8 @@
        "resource": "insight",
        "amount": 2
       }
-     ]
+     ],
+     "once": true
     }
    },
    "coast": [
@@ -360,7 +362,7 @@
    "project": {
     "name": "Mountain Fusion Works",
     "cubes": 8,
-    "text": "At completion each player cube pays 4 chips and 3 credits, each adversary cube 1 Sway to Discord. Afterward, with a node in a city here, once a round: 1 research cube for 2 chips. An adversary cube made here afterward is lost.",
+    "text": "At completion each player cube pays 4 chips and 3 credits, each adversary cube 1 Sway to Discord. Afterward, once a round, with a city here in your reach: 1 research cube for 2 chips. An adversary cube made here afterward is lost.",
     "player": [
      {
       "op": "gain",
@@ -438,7 +440,7 @@
    "project": {
     "name": "Delta Seawall",
     "cubes": 8,
-    "text": "At completion each player cube pays 1 Sway to Unity and 1 drawn card, each adversary cube 1 Sway to Discord. Afterward, with a node in a city here: 2 research cubes for 1 Sway to Unity, as often as you can pay. An adversary cube made here afterward is lost.",
+    "text": "At completion each player cube pays 1 Sway to Unity and 1 drawn card, each adversary cube 1 Sway to Discord. Afterward, once a round, with a city here in your reach: 2 research cubes for 1 Sway to Unity. An adversary cube made here afterward is lost.",
     "player": [
      {
       "op": "sway",
@@ -470,7 +472,8 @@
        "side": "unity",
        "amount": 1
       }
-     ]
+     ],
+     "once": true
     }
    },
    "coast": [

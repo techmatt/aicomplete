@@ -4,12 +4,11 @@ use crate::module::Hot;
 use super::*;
 
 /// Whether seat `s` can claim the site on hex `h` (align a city, take a
-/// station or factory): its node is on or next to `h`, no botnet is, and no
-/// embargo is up on it (its country's, or 135's on the hexes near a threat).
+/// station or factory): it is in reach and no embargo is up on it (its
+/// country's, or 135's on the hexes near a threat). r75 (Matt's ruling 2): a
+/// botnet next to it no longer blocks a claim.
 pub fn can_claim(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
-    in_reach(w, g, seat, h)
-        && !next_to(w, h, |x| g.tokens(x, BOTNET) > 0)
-        && !hex_flagged(w, g, RoundFlag::Embargo, h)
+    in_reach(w, g, seat, h) && !hex_flagged(w, g, RoundFlag::Embargo, h)
 }
 
 pub fn ambassadors_on_board(g: &GameState, seat: usize) -> i64 {
@@ -28,6 +27,26 @@ pub fn place_ambassador(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
         return;
     }
     cx.add_tokens(g, h, ambassador(seat), 1);
+}
+
+/// r75 (Matt's ruling 1): an agent arriving on hex `h` cancels one player ambassador standing there, 1 for 1;
+/// with several players' ambassadors there the players choose whose (seat 0 asks for the team; it was the
+/// lowest seat's). Returns the seat whose ambassador went, if one stood there; the caller handles the agent.
+pub fn agent_cancels(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<Option<usize>> {
+    let w = cx.world;
+    let seats: Vec<usize> = (0..g.seats.len()).filter(|&s| g.tokens(h, ambassador(s)) > 0).collect();
+    let i = match seats.len() {
+        0 => return Ok(None),
+        1 => 0,
+        _ => {
+            let opts = seats.iter().map(|&s| seat_opt(s)).collect();
+            let prompt = || format!("An agent arrives at {}: whose ambassador does it cancel?", hex_name(&w, h));
+            cx.choose_loss(0, prompt, opts)?.unwrap_or(0)
+        }
+    };
+    let s = seats[i];
+    cx.add_tokens(g, h, ambassador(s), -1);
+    Ok(Some(s))
 }
 
 /// A site's type (137: cities, research stations and factories follow one
@@ -96,32 +115,30 @@ pub fn liberate_cost(w: &World, g: &GameState, h: usize) -> Option<i64> {
     Some(liberate_ambassadors(w, kind) + g.tokens(h, ADV_AMBASSADOR))
 }
 
-/// 166 (Matt, 2026-11-09): the ambassadors standing on adversary site `h`, any seat's, that a Liberate there
-/// may spend before the acting seat's supply.
-pub fn liberate_standing(g: &GameState, h: usize) -> i64 {
-    (0..g.seats.len()).map(|s| g.tokens(h, ambassador(s))).sum()
+/// r75 (Matt's ruling 2, 2026-11-10): the ambassadors standing on site `h` that a Claim or Liberate of
+/// `seat` there spends before its supply: the seat's own, never another player's (166 spent anyone's).
+pub fn site_standing(g: &GameState, seat: usize, h: usize) -> i64 {
+    g.tokens(h, ambassador(seat))
 }
 
-/// 166: what seat `seat`'s supply pays to liberate adversary site `h`: the bill less the ambassadors standing
-/// on it, if it is an adversary site.
-pub fn liberate_supply_cost(w: &World, g: &GameState, h: usize) -> Option<i64> {
-    liberate_cost(w, g, h).map(|n| (n - liberate_standing(g, h)).max(0))
+/// What seat `seat`'s supply pays to claim neutral site `h` (`liberate`: false) or liberate adversary site
+/// `h` (true): the bill less its own ambassadors standing there, if there is such a site.
+pub fn site_supply_cost(w: &World, g: &GameState, seat: usize, h: usize, liberate: bool) -> Option<i64> {
+    let bill = if liberate { liberate_cost(w, g, h) } else { claim_cost(w, g, h) };
+    bill.map(|n| (n - site_standing(g, seat, h)).max(0))
 }
 
-/// 166: pays the Liberate bill of site `h` for `seat`: the ambassadors standing on it first (the acting seat's,
-/// then the others' in seat order), the supply the rest.
-pub fn pay_liberate(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
+/// r75's one payment rule for Claim and Liberate: `seat` pays the bill of site `h` with its ambassadors on
+/// it first, then its supply (each agent there cancels one of them: the bill's "1 more for each agent").
+pub fn pay_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, liberate: bool) {
     let w = cx.world;
-    let mut left = liberate_cost(&w, g, h).unwrap_or(0);
-    let order = std::iter::once(seat).chain((0..g.seats.len()).filter(|&s| s != seat)).collect::<Vec<_>>();
-    for s in order {
-        let k = ambassador(s);
-        let n = g.tokens(h, k).min(left);
-        if n > 0 {
-            cx.add_tokens(g, h, k, -n);
-            cx.tally(g, "board.liberate_standing", n);
-            left -= n;
-        }
+    let mut left = if liberate { liberate_cost(&w, g, h) } else { claim_cost(&w, g, h) }.unwrap_or(0);
+    let k = ambassador(seat);
+    let n = g.tokens(h, k).min(left);
+    if n > 0 {
+        cx.add_tokens(g, h, k, -n);
+        cx.tally(g, "board.site_standing_spent", n);
+        left -= n;
     }
     cx.add_resource(g, seat, Resource::Ambassadors, -left);
 }
@@ -163,10 +180,12 @@ pub fn claim_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, route: 
 }
 
 /// Adversary site `h` is liberated by seat `seat`'s massed ambassadors (the
-/// Liberate action, paid): the agents on it cancel, and it
-/// turns neutral. A city liberates as a card's does ([`liberate`]); a station
-/// or factory sways `alignment.free_facility` toward Unity (a botnet on it stays).
-pub fn liberate_site(g: &mut GameState, cx: &mut Cx, h: usize) {
+/// Liberate action, paid): the agents on it cancel, the adversary's cube comes
+/// off and r75 (Matt's ruling 2) puts the seat's on: it is the seat's, as a
+/// claim makes it (it turned neutral). A city sways `alignment.free_city`
+/// toward Unity, a station or factory `alignment.free_facility` (a botnet on it
+/// stays). No agents land on it (`free_leaves` is a liberate card's, [`liberate`]).
+pub fn liberate_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
     let w = cx.world;
     let Some(kind) = site_kind(&w, g, h) else { return };
     let adv = g.tokens(h, ADV_AMBASSADOR);
@@ -175,13 +194,15 @@ pub fn liberate_site(g: &mut GameState, cx: &mut Cx, h: usize) {
         cx.tally(g, "board.canceled", adv);
     }
     cx.tally(g, &format!("board.liberated.{}", kind.name()), 1);
-    if kind == SiteKind::City {
-        liberate(g, cx, h);
-        return;
-    }
     cx.add_tokens(g, h, ADV_CUBE, -1);
-    alignment::unity_from(g, cx, kind.name(), w.int("alignment.free_facility"));
-    cx.note(Some(h), || format!("The {} at {} is liberated", kind.name(), hex_name(&w, h)));
+    if kind == SiteKind::City {
+        cx.tally(g, "board.cities_freed", 1);
+        alignment::for_city_freed(g, cx);
+    } else {
+        alignment::unity_from(g, cx, kind.name(), w.int("alignment.free_facility"));
+    }
+    cx.add_tokens(g, h, cube(seat), 1);
+    cx.note(Some(h), || format!("Seat {seat} liberates the {} at {}", kind.name(), hex_name(&w, h)));
 }
 
 /// Whether an agent stands on hex `h` or an adjacent hex
@@ -201,13 +222,14 @@ pub fn liberate_at(w: &World) -> i64 {
 /// (027; none at 0). A liberate card
 /// with `align` (080) puts the seat's cube on it afterward
 /// (`effects::removal::liberate_city`).
-pub fn liberate(g: &mut GameState, cx: &mut Cx, h: usize) {
+pub fn liberate(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
     let w = cx.world;
     cx.add_tokens(g, h, ADV_CUBE, -1);
     cx.tally(g, "board.cities_freed", 1);
     alignment::for_city_freed(g, cx);
-    adversary::place(g, cx, h, w.int("board.free_leaves"));
+    adversary::place(g, cx, h, w.int("board.free_leaves"))?;
     cx.note(Some(h), || format!("{} is liberated", hex_name(&w, h)));
+    Ok(())
 }
 
 /// Moves one of `seat`'s ambassadors (from its supply or a hex, the seat

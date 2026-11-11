@@ -451,25 +451,26 @@ fn the_cube_converter_has_no_limit_a_round() {
     assert!(!rules.legal_actions(&g).contains(&std_act(0, "insight")), "no cube, no action");
 }
 
+/// r75 (content): every megaproject converter is printed once a round (105 kept
+/// the limit on Onyx's alone).
 #[test]
-fn only_onyxs_converter_keeps_once_a_round() {
+fn every_converter_is_once_a_round() {
     let (rules, mut g) = table(&[], &[]);
     let w = rules.world();
     let m = &rules.map;
     for (c, piece) in w.content.map.countries.iter().enumerate().take(w.map.countries.len()) {
         g.vars.insert(board::project_done(c).as_str().into(), 1);
-        // A node of seat 0 in a city of the country.
+        // A node of seat 0 in a city of the country: the city is in reach.
         let city = m.numbered(c, piece.cities[0]);
         put(&mut g, city, node(0), 1);
-        assert_eq!(piece.megaproject.converter.once, piece.name == "Onyx", "{}", piece.name);
+        assert!(piece.megaproject.converter.once, "{}", piece.name);
     }
     set_res(&mut g, 0, Resource::ResearchCubes, 10);
     set_res(&mut g, 0, Resource::Energy, 10);
     for (c, piece) in w.content.map.countries.iter().enumerate().take(w.map.countries.len()) {
         assert!(board::converter_blocked(&w, &g, 0, c).is_none(), "{}", piece.name);
         act(&rules, &mut g, Action::Convert { seat: 0, country: c as u8 });
-        let again = board::converter_blocked(&w, &g, 0, c).is_none();
-        assert_eq!(again, !piece.megaproject.converter.once, "{}", piece.name);
+        assert_eq!(board::converter_blocked(&w, &g, 0, c), Some("used this round"), "{}", piece.name);
     }
 }
 

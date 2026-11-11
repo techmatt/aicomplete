@@ -57,13 +57,13 @@ pub(super) fn flip_station(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, each_count
         // 151: a project's or an event's flip takes the lowest-numbered station.
         if ctx.threat.is_none() && matches!(ctx.label, "standing" | "project" | "board") {
             if let Some(&h) = spots.iter().min_by_key(|&&h| w.map.hexes[h].number) {
-                adversary::corrupt_station(g, cx, h);
+                adversary::corrupt_station(g, cx, h)?;
             }
             continue;
         }
         let opts = spots.iter().map(|&h| hex_opt(&w, h)).collect();
         if let Some(i) = cx.choose(0, prompt, opts)? {
-            adversary::corrupt_station(g, cx, spots[i]);
+            adversary::corrupt_station(g, cx, spots[i])?;
         }
     }
     Ok(())

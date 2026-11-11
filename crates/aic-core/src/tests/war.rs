@@ -41,7 +41,22 @@ fn at_war_units_cancel_and_the_surplus_destroys_rival_buildings() {
     assert_eq!((g.tokens(f1, FACTORY), g.tokens(f1, node(1)), g.tokens(d1, node(1))), (0, 0, 1));
     assert_eq!((units(&g), discord(&g)), ((0, 0), 1));
 
-    // Hardening absorbs one.
+    // r75 (Matt's ruling 5): the node on the destroyed factory's hex is guarded
+    // like any node: its owner may spend its ambassador there to keep it.
+    let mut g = g0.clone();
+    put(&mut g, f1, FACTORY, 1);
+    put(&mut g, f1, node(1), 1);
+    put(&mut g, f1, ambassador(1), 1);
+    put(&mut g, b0, UNIT, 3);
+    run(&rules, &mut g);
+    let p = g.pending.as_ref().expect("the node's owner is asked");
+    assert_eq!(p.ask.seat, 1);
+    answer_with(&rules, &mut g, "spend your ambassador there");
+    answer_all(&rules, &mut g);
+    assert_eq!((g.tokens(f1, FACTORY), g.tokens(f1, node(1)), g.tokens(f1, ambassador(1))), (0, 1, 0));
+
+    // Hardening absorbs one when spent (r75: the owner, seat 0 for a neutral
+    // factory, chooses); let go, the factory falls.
     let mut g = g0.clone();
     for f in [f1, f2] {
         put(&mut g, f, FACTORY, 1);
@@ -49,10 +64,21 @@ fn at_war_units_cancel_and_the_surplus_destroys_rival_buildings() {
     }
     put(&mut g, b0, UNIT, 2);
     put(&mut g, b1, UNIT, 1);
+    let mut declined = g.clone();
     run(&rules, &mut g);
+    answer_with(&rules, &mut g, "spend the hardening token");
+    answer_all(&rules, &mut g);
     assert_eq!(
         (total(&g, FACTORY), total(&g, HARDEN), discord(&g)),
         (2, 1, 0)
+    );
+    run(&rules, &mut declined);
+    answer_with(&rules, &mut declined, board::LET_IT_GO);
+    answer_all(&rules, &mut declined);
+    // r75: a declined hardening token goes with the factory it guarded.
+    assert_eq!(
+        (total(&declined, FACTORY), total(&declined, HARDEN), discord(&declined)),
+        (1, 1, 1)
     );
 
     // Equal forces cancel; the other way round hits the other country.
@@ -93,10 +119,10 @@ fn bases_hold_at_most_three_units() {
     let [b0, b1] = m.fronts[0].bases;
     let cap = w.int("board.unit_cap");
     assert_eq!(cap, 3);
-    with_cx(&rules, |cx| board::tip_corp_troops(&mut g, cx));
+    with_cx(&rules, |cx| board::tip_corp_troops(&mut g, cx)).unwrap();
     assert_eq!((g.tokens(b0, UNIT), g.tokens(b1, UNIT)), (made.min(cap), 0));
     for _ in 0..3 {
-        with_cx(&rules, |cx| board::tip_corp_troops(&mut g, cx));
+        with_cx(&rules, |cx| board::tip_corp_troops(&mut g, cx)).unwrap();
     }
     assert_eq!((g.tokens(b0, UNIT), g.tokens(b1, UNIT)), (cap, 0));
 }

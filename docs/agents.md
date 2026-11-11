@@ -1,7 +1,6 @@
 # Agents
 
-In prose, the simulator's players are "sim players"; the code keeps "agents" (`agents/`,
-`values.json`), and in the game "agents" are the adversary's pieces (Matt, 2026-11-09).
+In prose the simulator's players are "sim players"; the code keeps "agents" (Matt, 2026-11-09).
 
 The skill ladder (`crates/aic-sim/src/agents/`). One team agent drives every seat, hands
 and drafts open, and answers "players choose" questions too. Agents play
@@ -10,34 +9,31 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
 - **No peeking.** Before a search an agent replaces what the printed game hides with
   a guess from its own RNG (`agents/determinize.rs`); a test checks hidden information alone
   moves no decision (the planner and oracle: the table below).
-- **Own randomness.** Each agent's RNG is the game seed on its kind's stream, so games
-  replay from seed + actions whatever `--threads`.
+- **Own randomness.** Each agent's RNG is the game seed on its kind's stream.
 - **Decides at the top level:** outside the action phase the planner follows its line. A node
   power is scored deeper than `choices` (`search.rs`: `PLACING_PROMPTS`, `SACRIFICE_PROMPTS`).
 - **`choices` counts prompts** (a placement is two: track, hex). An effect resolved a prompt a piece is scored
   part of the way, so it reads as paid for little: 166's moves take a batch a prompt for this.
-- **A discard prompt resolves no further** (`discards` 0): a card to discard is valued by the table it leaves.
-  174's change of play at r73 (5.8× a decision, each tier within about 1 SE); `discards=99` plays as before.
+- **A discard prompt resolves no further** (`discards` 0): a card to discard is valued by the table it leaves
+  (`discards=99`: resolved as other prompts).
 - **Heuristic** (`agents/eval.rs`, `Weights`, a rule on each field): win/loss, cities,
   a seat's last nodes, the adversary's pieces, the Discord deck's last cards, Alignment (the next
   card's tier, `w.tier_read`; the horizon aims at the purge's last step), projects, holdings,
   unpaid threats by **the tempo trade** (`w.tempo`: one-off harm plus what it leaves times the
   rounds left, over what paying now costs the engine), corruption risk (`w.corrupt_exposure`,
-  `w.blight`; 167: none where a pending Corrupt prohibition's condition holds), the coming Rally (`w.rally_read`;
-  a Rally prohibition's covered sites take nothing), Movement (`w.movement`), botnets (−25, D9),
-  cubes, converter cities, a corrupted station, the liberation push, a darkened city, Patience
-  insight and idle credits.
+  `w.blight`), the coming Rally (`w.rally_read`), Movement, botnets (−25, D9), cubes, converter
+  cities, the liberation push, a darkened city, Patience insight and idle credits.
 
 | Spec | What it does | Budget parameters (defaults) |
 |---|---|---|
 | `random` | Uniform over legal actions. | none |
 | `greedy` | One action at a time, each scored by the heuristic after it, its choices resolved best-first; a pass scores the table as it is (else stalling beats stopping). | `samples` 1 (guesses averaged), `depth` 1 (actions looked ahead), `choices` 2, `discards` 0 |
-| `beam` | Beam search over the round's remaining action sequences, scored at the next round's start; plans once, replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 |
+| `beam` | Beam search over the round's remaining action sequences, scored at the next round's start; replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 |
 | `rollout` | Across rounds: the beam's `candidates` best end-of-round positions, each run `horizon` more rounds by `rollouts` greedy playouts on fresh guesses; best mean wins. | `width` 4, `depth` 120, `branch` 0, `choices` 2, `candidates` 3, `rollouts` 4, `horizon` 2 |
 | `engine` | The heuristic in **horizon mode** (`w.horizon`: income × the rounds left, discounted by danger); holdings by the value table (`w.table=0`: flat terms); the **deck clock** (`w.clock`) charges each round the team's Unity rate would leave it short. Searched like greedy; `width` > 0: a beam, `candidates` > 0: rollouts. | `width` 0, `samples` 1, `choices` 2, `answers` 99 (prompts an answer looks on; 1 loses wins), `discards` 0; weights: `Weights::engine` |
-| `strategist` | Greedy's flat weights with strategy and the **purge term** (`w.purge` 3.6: a seat's supply ambassadors up to the Liberate bill of the corrupted cities in its reach; a freed city keeps it), no search. **The screens' judge**. | `STRATEGIST`, `agents/mod.rs` |
+| `strategist` | Greedy's flat weights with strategy and the **purge term** (`w.purge` 3.6: supply ambassadors toward the Liberate bills in reach), no search. **The screens' judge**. | `STRATEGIST`, `agents/mod.rs` |
 | `planner` | The engine, rolling out a shortlist of action-phase alternatives `horizon` rounds with the engine as policy; the heuristic's best line is taken. A line runs on **full information** but the Alignment deal, valued over `deals` guesses of it; decisions inside it are scored on a guess (`agents/planner.rs`). | `horizon` 2, `alts` 2, `budget` 8, `margin` 40, `deals` 4, `lead` 0. `sweep[:...]` is `planner:deals=1,lead=0`. |
-| `oracle` | **A measuring stick, opt in**: the planner's search on **full information**, the deal too, each line played to the game's end; a winning line is followed, so the win rate is a floor on perfect play (`agents/oracle.rs`). | the planner's four, `reseeds` 0, `threads` 1 (lines side by side, same play); planner and oracle: `discards` 0 |
+| `oracle` | **A measuring stick, opt in**: the planner's search on **full information**, the deal too, each line played to the game's end; a winning line is followed, so the win rate is a floor on perfect play (`agents/oracle.rs`). | the planner's four, `reseeds` 0, `threads` 1; planner and oracle: `discards` 0 |
 
 **Keeping by plan (`agents/policy.rs`).** Greedy, engine and planner keep drafts by a plan
 (`plan_keep`). At its first keep of a round a seat sketches `plan_rounds` rounds from what it
@@ -51,10 +47,13 @@ adds only what it beats the weakest by (`plan_cover`). Each switch's default and
 
 **Move heuristics (`agents/moves.rs`, 166; `move_rules`, on).** Gather and Push prompts: push agents off the next
 Corrupt site onto empty land with no clean site next to it; gather (or push) agents onto a spare ambassador (no
-armor, no Liberate it pays toward) to cancel; gather free ambassadors onto an adversary site when a seat in reach can
-then pay its Liberate (never onto a node hex). Anything else, and every strike, is the search's. `aic-sim experiment`
-prints their fires a game. **Converge** (175, `converge_rule`, on): a Corrupt line's agent next to several sites
-goes where `plan::converge_pick` sends it.
+armor, no Claim or Liberate it pays toward) to cancel; gather a seat's own free ambassadors onto an adversary site
+when that seat can then pay its Liberate (never onto a node hex). Anything else, and every strike, is the search's.
+`aic-sim experiment` prints their fires a game. **Converge** (175, `converge_rule`, on): a Corrupt line's agent next
+to several sites goes where `plan::converge_pick` sends it. **Buy energy** (176, `energy_rule`, on): a seat with no
+card left to play buys a neutral city's energy when its credits plus this round's income, less the price, reach the
+eval's credit cap (a pass is scored before income). **Botnet reach** (176,
+`w.botnet_reach` 0.3): an ambassador on a botnet's hex is worth that share of it.
 
 Spec syntax: `kind[:key=value,...]`; a weight takes `w.` (`greedy:w.corrupted=40`), a table
 number `t.`, a plan or strategy switch goes bare (`strategist:plan_bury=0`). `greedy` and the

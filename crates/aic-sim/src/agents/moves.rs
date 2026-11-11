@@ -4,8 +4,8 @@
 //!   gathers from next door), onto empty land with no clean site next to it;
 //! - **cancel**: gather (or, with no empty land to push to, push) agents onto a hex where a spare ambassador
 //!   stands (no armor, no Liberate it pays toward), so they cancel, as `effects::moves::arrive` resolves it;
-//! - **liberate**: gather ambassadors that hold nothing onto an adversary site, when a seat in reach can then pay
-//!   its Liberate.
+//! - **liberate**: gather a seat's own ambassadors that hold nothing onto an adversary site, when that seat, in
+//!   reach, can then pay its Liberate (r75: only the acting seat's ambassadors on the site pay).
 //!
 //! Each answers only its own prompts; anything else (a strike's target, troops) is left to the agent's search.
 //! The `move_rules` dial turns them off (`Forced`), for the on/off read.
@@ -125,8 +125,9 @@ fn stop(legal: &[Action]) -> Option<usize> {
     legal.iter().position(|a| option_label(a) == effects::STOP)
 }
 
+/// The player ambassadors standing on `h`, any seat's (what an agent arriving there cancels).
 fn standing(g: &GameState, h: usize) -> i64 {
-    board::liberate_standing(g, h)
+    (0..g.seats.len()).map(|s| g.tokens(h, common::ambassador(s))).sum()
 }
 
 fn agents(g: &GameState, h: usize) -> i64 {
@@ -137,9 +138,14 @@ fn agents_next_to(w: &World, g: &GameState, h: usize) -> i64 {
     w.map.hexes[h].neighbors.iter().map(|&x| agents(g, x)).sum()
 }
 
-/// What a Liberate on `h` still needs beyond the ambassadors standing there (0: not an adversary site).
-fn liberate_short(w: &World, g: &GameState, h: usize) -> i64 {
-    board::liberate_cost(w, g, h).map_or(0, |n| (n - standing(g, h)).max(0))
+/// r75: what seat `s`'s Liberate on `h` still needs beyond its own ambassadors standing there and its supply
+/// (`None`: not an adversary site, or not in its reach). Only the acting seat's own ambassadors on the site pay.
+fn seat_short(w: &World, g: &GameState, h: usize, s: usize) -> Option<i64> {
+    if !common::in_reach(w, g, s, h) {
+        return None;
+    }
+    let held = g.tokens(h, common::ambassador(s)) + g.resource(s, aic_core::content::Resource::Ambassadors);
+    board::liberate_cost(w, g, h).map(|n| (n - held).max(0))
 }
 
 /// An ambassador on `x` is armor or a holding there (a node or a player's site): a gather leaves it.
@@ -147,23 +153,25 @@ fn holds(g: &GameState, x: usize) -> bool {
     (0..g.seats.len()).any(|s| g.tokens(x, common::node(s)) > 0 || g.tokens(x, common::cube(s)) > 0)
 }
 
-/// The ambassadors next to `h` a gather may take without leaving armor or a holding.
-fn free_ambassadors_next_to(w: &World, g: &GameState, h: usize) -> i64 {
-    w.map.hexes[h].neighbors.iter().filter(|&&x| !holds(g, x)).map(|&x| standing(g, x)).sum()
+/// Seat `s`'s ambassadors next to `h` a gather may take without leaving armor or a holding.
+fn free_own_next_to(w: &World, g: &GameState, h: usize, s: usize) -> i64 {
+    w.map.hexes[h].neighbors.iter().filter(|&&x| !holds(g, x)).map(|&x| g.tokens(x, common::ambassador(s))).sum()
 }
 
-/// Whether gathering `more` ambassadors onto adversary site `h` lets a seat in reach pay its Liberate now.
-fn payable(w: &World, g: &GameState, h: usize, more: i64) -> bool {
-    let best = (0..g.seats.len())
-        .filter(|&s| common::in_reach(w, g, s, h))
-        .map(|s| g.resource(s, aic_core::content::Resource::Ambassadors))
-        .max();
-    best.is_some_and(|b| b + more >= liberate_short(w, g, h))
+/// r75: the seat a gather onto adversary site `h` lets pay its Liberate now, and how many of its ambassadors it
+/// needs gathered: a seat in reach short of the bill whose free ambassadors next door cover it (the smallest
+/// shortfall first, then the lowest seat).
+fn liberator(w: &World, g: &GameState, h: usize) -> Option<(usize, i64)> {
+    (0..g.seats.len())
+        .filter_map(|s| seat_short(w, g, h, s).map(|short| (s, short)))
+        .filter(|&(s, short)| short > 0 && free_own_next_to(w, g, h, s) >= short)
+        .min_by_key(|&(s, short)| (short, s))
 }
 
-/// An ambassador stands on `h` that holds nothing: no node or player's site there, no adversary site it pays toward.
+/// An ambassador stands on `h` that holds nothing: no node or player's site there, no site whose Claim or Liberate
+/// it pays toward (r75: your ambassadors on a site pay its bill first).
 fn spare(w: &World, g: &GameState, h: usize) -> bool {
-    standing(g, h) > 0 && !holds(g, h) && board::liberate_cost(w, g, h).is_none()
+    standing(g, h) > 0 && !holds(g, h) && board::liberate_cost(w, g, h).is_none() && board::claim_cost(w, g, h).is_none()
 }
 
 /// A hex an agent may be pushed to without harm: land with no site, and no clean site next to it.
@@ -186,9 +194,10 @@ fn gather_into(w: &World, g: &GameState, legal: &[Action], pieces: &[Piece]) -> 
             score = (agents_next_to(w, g, h).min(standing(g, h)), 1);
         }
         if pieces.contains(&Piece::Ambassadors) {
-            let lib = free_ambassadors_next_to(w, g, h).min(liberate_short(w, g, h));
-            if lib > score.0 && payable(w, g, h, lib) {
-                score = (lib, 2);
+            if let Some((_, lib)) = liberator(w, g, h) {
+                if lib > score.0 {
+                    score = (lib, 2);
+                }
             }
         }
         if score.0 > 0 && best.is_none_or(|b| score.0 > b.0) {
@@ -226,10 +235,11 @@ fn gather_piece(w: &World, g: &GameState, legal: &[Action], to: usize) -> Option
             return Some((i, 1));
         }
     }
-    let short = liberate_short(w, g, to);
-    if short > 0 && payable(w, g, to, free_ambassadors_next_to(w, g, to)) {
+    if let Some((s, short)) = liberator(w, g, to) {
+        // Only the paying seat's own ambassadors count toward its bill (r75).
+        let mine = format!("seat {s}'s ambassador");
         let free = |a: &Action| {
-            batch(a).is_some_and(|_| option_label(a).contains("ambassador")) && option_hex(w, a).is_some_and(|x| !holds(g, x))
+            batch(a).is_some_and(|_| option_label(a).contains(&mine)) && option_hex(w, a).is_some_and(|x| !holds(g, x))
         };
         if let Some(i) = largest(&free, short) {
             return Some((i, 2));

@@ -25,10 +25,14 @@ pub enum StandardAction {
     Insight,
     /// 136: spend an ambassador to move 1 Discord off the Discord track.
     Envoy,
+    /// r75 (Matt's ruling 3): credits, your ambassador on a botnet's hex (it stays): the botnet comes off.
+    Botnet,
+    /// r75 (Matt's ruling 6): credits for a neutral city's energy in the action phase (it was sold in production).
+    BuyEnergy,
 }
 
 /// The standard actions, in the order they are offered and published.
-pub const STANDARD: [StandardAction; 12] = [
+pub const STANDARD: [StandardAction; 14] = [
     StandardAction::Station,
     StandardAction::Remove,
     StandardAction::Clear,
@@ -41,6 +45,8 @@ pub const STANDARD: [StandardAction; 12] = [
     StandardAction::Drain,
     StandardAction::Insight,
     StandardAction::Envoy,
+    StandardAction::Botnet,
+    StandardAction::BuyEnergy,
 ];
 
 impl StandardAction {
@@ -59,6 +65,8 @@ impl StandardAction {
             StandardAction::Drain => "drain",
             StandardAction::Insight => "insight",
             StandardAction::Envoy => "envoy",
+            StandardAction::Botnet => "botnet",
+            StandardAction::BuyEnergy => "buy_energy",
         }
     }
 
@@ -137,6 +145,8 @@ pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::Drain => credits(i("drain_credits")),
         StandardAction::Insight => Price { cubes: 1, ..Price::default() },
         StandardAction::Envoy => ambassadors(i("envoy_ambassadors")),
+        StandardAction::Botnet => credits(i("botnet_credits")),
+        StandardAction::BuyEnergy => credits(i("city_energy_credits")),
     }
 }
 
@@ -161,19 +171,45 @@ pub fn seat_price(w: &World, g: &GameState, seat: usize, act: StandardAction) ->
     }
 }
 
-/// The part of a standard action's price that depends on its target hex `h`
-/// (137; 140's hook): Claim's and Liberate's ambassadors, the site's
-/// `claim_cost` or `liberate_cost` (`None`: no such site there). The rest are
-/// priced whole by [`seat_price`] and add nothing here. The targets list only
-/// hexes the seat can pay this for, and the action pays it on the hex chosen.
-pub fn target_price(w: &World, g: &GameState, act: StandardAction, h: usize) -> Option<Price> {
+/// The part of seat `seat`'s standard action's price that depends on its target hex `h`
+/// (137; 140's hook): Claim's and Liberate's ambassadors from the supply, the site's
+/// `claim_cost` or `liberate_cost` less the seat's own ambassadors standing on it (r75's one payment rule;
+/// `None`: no such site there). The rest are priced whole by [`seat_price`] and add nothing here. The
+/// targets list only hexes the seat can pay this for, and the action pays it on the hex chosen.
+pub fn target_price(w: &World, g: &GameState, seat: usize, act: StandardAction, h: usize) -> Option<Price> {
     let ambassadors = |ambassadors| Price { ambassadors, ..Price::default() };
     match act {
-        StandardAction::Claim => claim_cost(w, g, h).map(ambassadors),
-        // 166: less the ambassadors standing on the site, any seat's (they are spent first).
-        StandardAction::Liberate => liberate_supply_cost(w, g, h).map(ambassadors),
+        StandardAction::Claim => site_supply_cost(w, g, seat, h, false).map(ambassadors),
+        StandardAction::Liberate => site_supply_cost(w, g, seat, h, true).map(ambassadors),
         _ => Some(Price::default()),
     }
+}
+
+/// Set while neutral city `h`'s energy has been bought this round (r75's Buy energy: once per city a round), a
+/// round mark cleared at the round's end.
+pub fn bought_key(h: usize) -> KeyBuf {
+    KeyBuf::new(BOUGHT).num(h)
+}
+
+/// Prefix of [`bought_key`].
+pub(super) const BOUGHT: &str = "board.energy_bought.";
+
+/// Whether seat `seat` may buy neutral city `h`'s energy now (r75, Matt's ruling 6): a neutral city in reach,
+/// producing (no blackout, no agent on it), with energy to sell, not bought this round.
+pub fn energy_for_sale(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
+    is_city(w, h)
+        && !corrupted(g, h)
+        && cube_owner(g, h).is_none()
+        && in_reach(w, g, seat, h)
+        && !city_dark(w, g, h)
+        && city_output(w, h) > 0
+        && g.var(&bought_key(h)) == 0
+}
+
+/// The hexes holding a botnet that seat `seat` may take down (r75, Matt's ruling 3): its own ambassador
+/// stands on the hex (reach is the ambassador's: it got there by a move in reach).
+pub fn botnet_targets(g: &GameState, seat: usize) -> Vec<usize> {
+    (0..g.hexes.len()).filter(|&h| g.tokens(h, BOTNET) > 0 && g.tokens(h, ambassador(seat)) > 0).collect()
 }
 
 /// The var counting seat `s`'s Movement used this round (149), cleared in cleanup.
@@ -212,13 +248,13 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         StandardAction::Remove => {
             let n = w.int("board.remove_ambassadors");
             let who = if n == 1 { "an ambassador".to_string() } else { format!("{n} ambassadors") };
-            return format!("move {who} from your supply onto a hex in reach: it removes up to {} agents there and stays", w.int("board.remove_count"));
+            return format!("spend {who} from your supply: remove up to {} agents in reach", w.int("board.remove_count"));
         }
         StandardAction::Move => "use 1 Movement: move a player ambassador onto a piece in reach",
         StandardAction::Ambassador => "gain a player ambassador",
         StandardAction::Claim => {
             return format!(
-                "claim a neutral site you can claim: {} ambassadors for a city, {} for a station, {} for a factory, plus 1 for each agent on it",
+                "claim a neutral site in reach: {} ambassadors for a city, {} for a station, {} for a factory, plus 1 for each agent on it; yours on it pay first",
                 claim_ambassadors(w, SiteKind::City),
                 claim_ambassadors(w, SiteKind::Station),
                 claim_ambassadors(w, SiteKind::Factory)
@@ -226,7 +262,7 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         }
         StandardAction::Liberate => {
             return format!(
-                "liberate an adversary site in reach: {} ambassadors for a city, {} for a station or factory, plus 1 for each agent on it; it turns neutral",
+                "liberate an adversary site in reach: {} ambassadors for a city, {} for a station or factory, plus 1 for each agent on it; yours on it pay first; it becomes yours",
                 liberate_ambassadors(w, SiteKind::City),
                 liberate_ambassadors(w, SiteKind::Station)
             );
@@ -238,6 +274,10 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
             return format!("turn 1 research cube into {}", Resource::Insight.words(w.int("board.cube_insight")));
         }
         StandardAction::Envoy => "move 1 Discord off the Discord track",
+        StandardAction::Botnet => "take down a botnet on a hex holding your ambassador (it stays): Unity",
+        StandardAction::BuyEnergy => {
+            return format!("buy a neutral city's energy (in reach, producing; once per city a round): {} credits", w.int("board.city_energy_credits"));
+        }
     };
     text.to_string()
 }
@@ -253,10 +293,11 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
             format!("{} chips", t("board.station_chips")),
             "on an open hex in reach that is not an industrial zone; it is yours (your cube)".into(),
         ),
+        // r75 (Matt's ruling 1): it places nothing (it stood on the hex and removed up to 3 there).
         StandardAction::Remove => (
             "Remove agents",
-            format!("{} of your ambassadors, from your supply", t("board.remove_ambassadors")),
-            format!("it goes onto one hex in reach, removes up to {} there and stays", t("board.remove_count")),
+            format!("{} of your ambassadors, from your supply, used up", t("board.remove_ambassadors")),
+            format!("remove up to {} agents in reach, from any hexes, your choice", t("board.remove_count")),
         ),
         StandardAction::Clear => (
             "Clear a corruption marker",
@@ -277,26 +318,26 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
         StandardAction::Claim => (
             "Claim a site",
             format!(
-                "{} ambassadors for a city, {} for a station, {} for a factory, from your supply, used up; 1 more for each agent on it",
+                "{} ambassadors for a city, {} for a station, {} for a factory, 1 more for each agent on it; used up: yours on the site first, your supply the rest",
                 t("board.claim_city"),
                 t("board.claim_station"),
                 t("board.claim_factory")
             ),
-            "a neutral city, research station or factory in reach, with a site claim: the agents on it cancel and your cube goes on".into(),
+            "a neutral city, research station or factory in reach (no embargo on it): the agents on it cancel and your cube goes on".into(),
         ),
-        // 137: it replaced Free a station and the city fallback.
+        // 137: it replaced Free a station and the city fallback. r75 (Matt's ruling 2): Claim's payment, and
+        // the site becomes yours.
         StandardAction::Liberate => (
             "Liberate a site",
             format!(
-                "{} ambassadors for a city, {} for a station or factory, 1 more for each agent on it; used up: those on the site first (yours, then others'), your supply the rest",
+                "{} ambassadors for a city, {} for a station or factory, 1 more for each agent on it; used up: yours on the site first, your supply the rest",
                 t("board.liberate_at"),
                 t("board.liberate_facility_at")
             ),
             format!(
-                "an adversary city, station or factory in reach: it turns neutral and sways Unity ({} for a city, {} for a station or factory); a city takes {} agents as it frees",
+                "an adversary city, station or factory in reach: the agents on it cancel, your cube goes on, and it sways Unity ({} for a city, {} for a station or factory)",
                 t("alignment.free_city"),
-                t("alignment.free_facility"),
-                t("board.free_leaves")
+                t("alignment.free_facility")
             ),
         ),
         StandardAction::HardenChips => (
@@ -326,6 +367,18 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
             format!("{} of your ambassadors, from your supply, used up", t("board.envoy_ambassadors")),
             "move 1 Discord off the Discord track".into(),
         ),
+        // r75 (Matt's ruling 3): the first standard way to take a botnet down.
+        StandardAction::Botnet => (
+            "Take down a botnet",
+            format!("{} credits", t("board.botnet_credits")),
+            format!("a botnet on a hex holding your ambassador (it stays) comes off: sway {} toward Unity", t("alignment.botnet")),
+        ),
+        // r75 (Matt's ruling 6): it was a sale in production.
+        StandardAction::BuyEnergy => (
+            "Buy a city's energy",
+            format!("{} credits", t("board.city_energy_credits")),
+            "a neutral city in reach that is producing (no blackout, no agent on it), once per city a round: gain its energy".into(),
+        ),
     };
     [name.to_string(), cost, what]
 }
@@ -341,14 +394,14 @@ pub fn station_sites(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
 /// Whether seat `s` can claim neutral site `h` now: a site claim on it and
 /// the ambassadors in its supply (137).
 pub fn claimable(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
-    target_price(w, g, StandardAction::Claim, h).is_some_and(|p| p.affordable(g, seat)) && can_claim(w, g, seat, h)
+    target_price(w, g, seat, StandardAction::Claim, h).is_some_and(|p| p.affordable(g, seat)) && can_claim(w, g, seat, h)
 }
 
 /// Whether seat `s` can liberate adversary site `h` now: in its reach (a
 /// botnet doesn't stop it: the setup station holds one) and the ambassadors
 /// in its supply (137).
 pub fn liberable(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
-    target_price(w, g, StandardAction::Liberate, h).is_some_and(|p| p.affordable(g, seat)) && in_reach(w, g, seat, h)
+    target_price(w, g, seat, StandardAction::Liberate, h).is_some_and(|p| p.affordable(g, seat)) && in_reach(w, g, seat, h)
 }
 
 /// The hexes a standard action of `seat` may target (empty: not offered).
@@ -367,9 +420,10 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
             let supply = g.resource(seat, Resource::Ambassadors) > 0;
             let on_board = ambassadors_on_board(g, seat);
             all.filter(|&h| {
+                // r75: a botnet's hex too, where an ambassador takes it down.
                 (supply || on_board > g.tokens(h, ambassador(seat)))
                     && reach(h)
-                    && has_piece(w, g, h)
+                    && (has_piece(w, g, h) || g.tokens(h, BOTNET) > 0)
             })
             .collect()
         }
@@ -399,7 +453,17 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
             vec![usize::MAX]
         }
         StandardAction::Envoy => Vec::new(),
+        StandardAction::Botnet => botnet_targets(g, seat),
+        StandardAction::BuyEnergy => all.filter(|&h| energy_for_sale(w, g, seat, h)).collect(),
     }
+}
+
+/// Remove agents' option to stop short of `remove_count`.
+pub const STOP_REMOVING: &str = "stop removing";
+
+/// The hexes in seat `seat`'s reach holding agents (Remove agents' picks).
+fn agent_hexes(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
+    (0..g.hexes.len()).filter(|&h| in_reach(w, g, seat, h) && g.tokens(h, ADV_AMBASSADOR) > 0).collect()
 }
 
 /// A standard action's effect, paid for and tallied; `targets` are its
@@ -435,14 +499,36 @@ pub(super) fn std_resolve(
             }
         }
         StandardAction::Remove => {
+            // r75 (Matt's ruling 1): the ambassadors paid are used up and nothing is placed; up to
+            // `remove_count` agents come off, one at a time, from any hexes in reach (the player may stop).
             if let Some(h) = on_hex(cx)? {
-                // 066: `remove_ambassadors` clear up to `remove_count` from the hex.
-                for _ in 0..w.int("board.remove_count").min(g.tokens(h, ADV_AMBASSADOR)) {
-                    adversary::remove_piece(g, cx, Some(s), h, ADV_AMBASSADOR);
+                adversary::remove_piece(g, cx, Some(s), h, ADV_AMBASSADOR);
+                for _ in 1..w.int("board.remove_count") {
+                    let hexes = agent_hexes(&w, g, s);
+                    if hexes.is_empty() {
+                        break;
+                    }
+                    let mut opts: Vec<crate::state::Opt> = hexes.iter().map(|&x| hex_opt(&w, x)).collect();
+                    opts.push(opt(STOP_REMOVING));
+                    let prompt = || format!("Seat {s}: remove another agent, from which hex?");
+                    let Some(&x) = cx.choose(s, prompt, opts)?.and_then(|i| hexes.get(i)) else { break };
+                    adversary::remove_piece(g, cx, Some(s), x, ADV_AMBASSADOR);
                 }
-                // 068: it left the supply for the hex and stays there: a
-                // position. It evicted them, so it arrives with no cancel.
-                cx.add_tokens(g, h, ambassador(s), w.int("board.remove_ambassadors"));
+            }
+        }
+        StandardAction::Botnet => {
+            if let Some(h) = on_hex(cx)? {
+                // r75 (Matt's ruling 3): the ambassador stays; the botnet's Unity is `alignment.botnet`.
+                adversary::remove_botnet(g, cx, h);
+                cx.tally(g, "board.botnets_taken_down", 1);
+            }
+        }
+        StandardAction::BuyEnergy => {
+            if let Some(h) = on_hex(cx)? {
+                let n = city_output(&w, h);
+                cx.set_key(g, &bought_key(h), 1);
+                cx.add_resource(g, s, Resource::Energy, n);
+                cx.tally(g, "board.city_energy_bought", n);
             }
         }
         StandardAction::Clear => {
@@ -458,15 +544,15 @@ pub(super) fn std_resolve(
         }
         StandardAction::Claim => {
             if let Some(h) = on_hex(cx)? {
-                target_price(&w, g, act, h).unwrap_or_default().pay(g, cx, s);
+                // r75: the seat's ambassadors on the site first, its supply the rest.
+                pay_site(g, cx, s, h, false);
                 claim_site(g, cx, s, h, "ambassadors");
             }
         }
         StandardAction::Liberate => {
             if let Some(h) = on_hex(cx)? {
-                // 166: the ambassadors standing on it first, any seat's; the supply pays the rest.
-                pay_liberate(g, cx, s, h);
-                liberate_site(g, cx, h);
+                pay_site(g, cx, s, h, true);
+                liberate_site(g, cx, s, h);
             }
         }
         StandardAction::HardenChips | StandardAction::HardenBuy => {

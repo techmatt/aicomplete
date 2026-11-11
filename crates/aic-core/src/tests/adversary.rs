@@ -278,14 +278,20 @@ fn corruption_destroys_only_the_node_on_its_hex_and_an_ambassador_is_armor() {
     put(&mut g0, m.numbered(1, piece(1).cities[0]), node(1), 1);
 
     let mut g = g0.clone();
-    with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h));
+    with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h)).unwrap();
     assert_eq!(g.tokens(h, node(0)), 0);
     assert_eq!((g.tokens(next, node(1)), g.tokens(next, MARKER)), (1, 0), "no blast next to it");
     assert_eq!(g.stats.counters["board.node_lost.corruption"], 1);
 
+    // r75 (Matt's ruling 5): the owner is asked whether to spend its ambassador there; spent, it keeps the node.
     let mut g = g0.clone();
     put(&mut g, h, ambassador(0), 1);
-    with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h));
+    let asked = std::cell::RefCell::new(Vec::new());
+    with_answers(&rules, &mut g, |a| {
+        asked.borrow_mut().push((a.seat, a.options.len()));
+        0
+    }, |g, cx| adversary::corrupt_city(g, cx, h));
+    assert_eq!(asked.into_inner(), [(0, 2)], "the owner's ambassador, or none");
     assert_eq!((g.tokens(h, node(0)), g.tokens(h, ambassador(0)), g.tokens(h, ADV_CUBE)), (1, 0, 1));
 }
 
@@ -304,7 +310,7 @@ fn the_corruption_shield_keeps_a_node_on_a_corrupted_hex() {
     let h = m.numbered(0, piece(0).cities[0]);
     put(&mut g, h, node(1), 1);
     put(&mut g, m.numbered(1, piece(1).node), node(1), 1);
-    with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h));
+    with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h)).unwrap();
     assert_eq!((g.tokens(h, ADV_CUBE), g.tokens(h, node(1))), (1, 1));
 }
 
@@ -375,11 +381,11 @@ fn an_arriving_ambassador_cancels_a_player_ambassador_and_forms_no_botnet() {
     let s = numbered_where(m, 0, |h| kind(m, h) == HexKind::Open)[0];
     put(&mut g, s, STATION, 1);
     put(&mut g, s, ADV_AMBASSADOR, 1);
-    with_cx(&rules, |cx| adversary::place(&mut g, cx, s, 2));
+    with_cx(&rules, |cx| adversary::place(&mut g, cx, s, 2)).unwrap();
     assert_eq!((g.tokens(s, ADV_AMBASSADOR), g.tokens(s, BOTNET)), (3, 0));
     let c = m.numbered(1, piece(1).cities[0]);
     put(&mut g, c, ambassador(0), 1);
-    with_cx(&rules, |cx| adversary::place(&mut g, cx, c, 1));
+    with_cx(&rules, |cx| adversary::place(&mut g, cx, c, 1)).unwrap();
     assert_eq!((g.tokens(c, ADV_AMBASSADOR), g.tokens(c, ambassador(0))), (0, 0));
     assert_eq!(total(&g, BOTNET), 0);
 }

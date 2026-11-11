@@ -11,16 +11,16 @@ Sway the **Unity track**; both start empty, there is no shared pool and nothing 
 empties the other. **Holding Discord off:** each Unity a player sways may instead move 1 Discord
 off the Discord track (`hold_off` 1), and Envoy ([economy.md](economy.md), a standard action) does
 the same for one of your ambassadors, so the team chooses between racing toward Unity and putting
-off the next Discord card. Unity on its own track never stops a Discord tip. The choice is made once
-the action or automatic phase that swayed the Unity has resolved, before any track tips, asked of
-seat 0 for the team (one decision for the whole amount); only an amount that keeps the Discord track
-from tipping is offered, since a tip empties it anyway. Variant `off` moves no Sway
+off the next Discord card. Unity on its own track never stops a Discord tip. The choice is made as
+the action or automatic phase that swayed the Unity resolves, before any track tips, asked of
+seat 0 for the team (one decision for the whole amount): **any amount, no filter** (r75, Matt's ruling 7; only
+amounts that stopped a tip were offered). Variant `off` moves no Sway
 ([README.md](README.md#off-variants)).
 
 **Tipping.** The Unity track holding `tip_per_player` × players Sway, or the Discord track
-holding `discord_tip_per_player` × players, **tips**: one tip's worth comes off and, on the Unity
-side, the rest stays toward the next tip (`carry` 1, r48: a big Sway can tip more than once); a
-Discord tip empties its track (`carry` 2 would carry Discord's too, 0 neither); that side's tip count
+holding `discord_tip_per_player` × players, **tips**: one tip's worth comes off and the rest stays toward
+the next tip, **on both tracks** (`carry` 2, r75, Matt's ruling 7: a Discord tip emptied its track; a big Sway can
+tip more than once; 1 carries Unity's only, 0 neither); that side's tip count
 goes up by one; one card of its side is drawn and resolves (at the tier picked by its side's tip
 count, this tip included, below). Unity tips and Discord tips are counted separately and only count up.
 Tracks are checked when an action or automatic phase finishes resolving (with win and loss, below),

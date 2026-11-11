@@ -193,15 +193,17 @@ fn unity_swayed_may_hold_discord_off() {
     }
 }
 
-/// 145: a hold-off that leaves the Discord track full is not offered (the
-/// track tips anyway and empties); with every amount too small, nothing is asked.
+/// r75 (Matt's ruling 7): every hold-off amount from 0 to the least of the Unity
+/// swayed and the Discord on its track is offered, even one that leaves the
+/// track full (145 offered only amounts that stopped the tip; `carry` 2 keeps the
+/// overflow now).
 #[test]
-fn only_a_hold_off_that_stops_the_tip_is_offered() {
+fn every_hold_off_amount_is_offered() {
     let (rules, g0) = action_only(&["alignment.hold_off=1"]);
     let cap = alignment::capacity(&rules.world(), &g0, crate::content::Side::Discord);
-    // (Discord over the cap, Unity swayed, options offered): 1 over takes 0, 2
-    // or 3 off; at the cap, 0 to 3; 3 over with 2 Unity, nothing.
-    for (over, n, offered) in [(1, 3, 3), (0, 3, 4), (3, 2, 0)] {
+    // (Discord over the cap, Unity swayed, options offered): 0 to 3 off with 3
+    // Unity, over the cap or at it; 0 to 2 with 2 Unity, 3 over the cap.
+    for (over, n, offered) in [(1, 3, 4), (0, 3, 4), (3, 2, 3)] {
         let mut g = g0.clone();
         g.vars.insert("alignment.discord".into(), cap + over);
         g.vars.insert("alignment.unity_new".into(), n);
