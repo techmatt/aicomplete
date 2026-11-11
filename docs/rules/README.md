@@ -15,14 +15,14 @@ The rules are split by area. Read this page, then only the files your task touch
 - [economy.md](economy.md): each resource's sources and uses, city energy, standard actions, the round's phases.
 - [ai-boards.md](ai-boards.md): the three boards, their special rules, node tracks and capstones.
 - [ai-powers.md](ai-powers.md): the boards' powers (node, sacrifice and insight), the insight conversions and loops,
-  shelters, hardening and shields.
+  shelters and hardening.
 - [threats.md](threats.md): the threat decks, dealing, location tokens, who is near, the counter menu, what threats do.
 - [player-cards.md](player-cards.md): the opening, the draft, keeps, play, slots, tags, tokens, the liberate
   capstones.
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 80 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 81 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -44,7 +44,7 @@ Design intent lives in [principles.md](../principles.md); the engine in
 <!-- generated: new_players -->
 **For new players.** In the first round you are dealt 8 tier-1 cards and keep 4 free (more at 5 credits each), and 2 tier-2 cards, each kept for 1 insight, to play once you meet its needs: something to plan toward. From then on, each round you build a hand of 4 cards one at a time, choosing for each whether it comes from the cheaper tier-1 deck or the stronger tier-2 deck; you take one card and pass the rest to the next player in seat order until the hands are gone, then pay insight to keep what you drafted (1 for tier 1, 2 for tier 2). Insight is this round's attention: what you don't spend is lost. Playing a card costs its credits and 0-2 insight, from the same insight as keeps. Buildings go into your AI board's 3-5 slots; once they are full, a new building goes on top of an old one, which stops working but keeps its tags. Programs stay in front of you and are where lasting income comes from ("raise your credit income by 1 per 2 Science tags on your cards"); buildings are your engine: Actions you use once a round and Effects that pay each time their trigger happens; events are used once and set aside, never to return. Every card in front of you shows tags (Science, Industry, Cyber, Power, Diplomacy, Security): they unlock some cards, and you can sacrifice cards with the right tags to use your AI board's powers. There is no limit on what you hold or on how far cards raise your income; energy you don't spend stays energy, so drafting cards that spend it is up to you.
 
-**Nodes, for new players.** Nodes don't grow on their own. In the action phase you place nodes with your board's two node powers, each once a round, so 0, 1 or 2 tokens a round from them, and cards can add more. Every board has 1 energy for 1 node; the second costs more, in the board's own currency. Either way you also pay the energy printed on the track space you uncover. You start with 3 energy and one city bound to you, which makes energy every round.
+**Nodes, for new players.** Nodes don't grow on their own. In the action phase you place nodes with your board's two node powers, each once a round, so 0, 1 or 2 tokens a round from them, and cards can add more. Every board's Expand costs nothing of its own; the second costs a tag or the board's own currency. Every placement, by power or card, pays the energy printed on the track space you uncover. You start with 3 energy and one city bound to you, which makes energy every round.
 
 **Dispatches, tags and sales, for new players.** A Dispatch puts one of your ambassadors, from your supply or anywhere on the map, onto a piece or botnet in your reach and costs nothing, but you have only your board's Dispatches each round (1-2 printed, more as Dispatch spaces are uncovered), and what you don't use is lost, like insight. **One tag rule:** the tag printed on your AI board, and any a late, costly track space reveals, count like the tags on your cards, for everything a tag does; the only difference is that a board tag can't be sacrificed. You may sell a card from your hand for 1 credit; chips can't be sold.
 <!-- /generated -->
@@ -55,7 +55,6 @@ The house words, as the player aid prints them ([player-aid.md](../player-aid.md
 
 <!-- generated: house_terms -->
 - **Facility**: a research station or factory on the board. A building is always a card. Harden goes on a facility and nothing else.
-- **Shield**: a hardening token on a hex with your node.
 - **Ambassador**: a player's piece, any player's: a card never says whose.
 - **Agent**: the adversary's piece on the board (the Security token is an Operative).
 - **Troop**: an adversary troop; a megacorp's is a Drone, its own piece, waiting at its military bases.
@@ -89,7 +88,7 @@ The rest:
 - **Botnet**: the adversary's persistent token ([adversary.md](adversary.md)), placed only by printed lines. Nodes are always the players', botnets always the adversary's.
 - **Reach**: every map target of a standard action is in the acting player's reach, and so
   are most of a card's. The exceptions are Spread (Exodus Corridors, measured from
-  the ambassador), Take down a botnet (where your ambassador stands on one), and country effects such as a tier-2 sweep or Shelter (any country;
+  the ambassador) and country effects such as a tier-2 sweep or Shelter (any country;
   [card-grammar.md](card-grammar.md)). Reach is 1 for every player rule: no deck card's
   move goes further. Reach bounds where a piece goes, not where it comes from: a Dispatch, or a card's "move up to N ambassadors", takes one from anywhere. The adversary's distances (a Corrupt line moving agents from next door, a troop's
   strike) are its own, not a player's reach ([adversary.md](adversary.md), [war.md](war.md)). A converter needs a city of its country in your

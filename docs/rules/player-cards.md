@@ -47,14 +47,14 @@ The cards config lists which cards are in the game (baseline: all of them).
   also …"). None frees a city, none is
   global, none makes a liberation cheaper the next time ([ambassadors.md](ambassadors.md)).
 - **Science owns a niche (candidate).** Among cards, only Science cards clear corruption markers, put a hardening
-  token on a hex with your node (a shield, [ai-powers.md](ai-powers.md)) or make a threat wait a round (a delay: it skips this round's
+  token on a hex with your node ([ai-powers.md](ai-powers.md)) or make a threat wait a round (a delay: it skips this round's
   execution, stays up, and can be countered next round). The content check refuses any of the three on a card without
   the tag or on a power, save the Protector's Recovery, which clears a marker. Four tier-1 cards and one tier-2 card do it.
   No card `needs` Science for it: a team without the tag still has the Clear standard action, its counters and the
   board.
 - **Typed counters (candidate).** Nine tier-1 cards fight one threat tag, and count for more than they cost toward
-  threats carrying it (or Universal) that the player is near: Security for military, Diplomacy for influence, Cyber for cyber, Industry
-  for economic (Science's and Power's tools stay general). Industry has two programs and an Action building;
+  threats carrying it (or Universal) that the player is near, a threat's tag being the card's own (Security,
+  Diplomacy, Cyber, Industry; Science's and Power's tools stay general). Industry has two programs and an Action building;
   Security, Diplomacy and Cyber one of each.
 - **Engines (candidate; the Terraforming Mars pattern).** Programs are the green cards: one-shot, and where
   permanent income lives, flat ("raise your credit income by 8") or per tag ("by 1 per 2 Science tags on your cards",
@@ -67,8 +67,8 @@ The cards config lists which cards are in the game (baseline: all of them).
   or a feeder's Operative. A committed seat earns an engine back within 2 rounds. Each tag has a tier-1 play
   trigger and a tier-2 one that counts every tag on the played card, and its engines' payoffs
   ([card-grammar.md](card-grammar.md), *The engine wording*). Cyber and Industry each keep a standing
-  automatic counter (Autonomous Defense Grid, Market Stabilization Board: cyber or economic threats anywhere need 6
-  less to counter); no other tag has one. No capstone prints a shield or a delay.
+  automatic counter (Autonomous Defense Grid, Market Stabilization Board: Cyber or Industry threats anywhere need 6
+  less to counter); no other tag has one. No capstone prints a hardening token or a delay.
 - **The liberate capstones (candidate; Matt).** Liberating a corrupted city is a core mechanic, and its main route is
   a family of tier-2 cards, one an engine, each paid mostly in its engine's resource and each liberating one corrupted
   city in your reach as the Liberate action does, unpaid: its agents come off and your cube goes on

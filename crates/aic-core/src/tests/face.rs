@@ -99,11 +99,15 @@ fn a_removal_says_which_pieces() {
     }
 }
 
-/// 063: a facility is a station or factory; a building is always a card.
+/// 063: a facility is a station or factory; a building is always a card. r81 (friction #51): the token has
+/// one name, so a node's is a hardening token too.
 #[test]
-fn harden_says_facility_and_a_shield_says_shield() {
+fn harden_says_facility_and_a_node_s_token_is_hardening_too() {
     assert_eq!(face_of("faraday_yard").text, "Raise your energy income by 1. Harden 3 facilities in reach.");
-    assert_eq!(face_of("benchmark_suite").text, "Shield 3 of your Nodes.");
+    assert_eq!(face_of("benchmark_suite").text, "Harden 3 of your Nodes.");
+    for c in &content().cards {
+        assert!(!c.text.to_lowercase().contains("shield"), "{}: {}", c.id, c.text);
+    }
 }
 
 /// 063: one mark, one reading.
@@ -117,7 +121,7 @@ fn each_mark_has_one_reading() {
     // 179 (friction #34, #40): a jam is the less mark, outside the dark frame; the minus is pay or lose.
     let jam = json(r#"[{"op": "jam", "amount": 6}, {"op": "draw", "count": 2}]"#);
     assert!(jam.contains(r#"["less:6","jam"]"#) && !jam.contains("adversary"), "{jam}");
-    assert!(json(r#"[{"op": "place_node", "count": 3, "free": true}, {"op": "gain_per_node", "resource": "energy"}]"#).contains(r#""3","free_node""#));
+    assert!(json(r#"[{"op": "place_node", "count": 3}, {"op": "gain_per_node", "resource": "energy"}]"#).contains(r#""3","node""#));
     // Dashed is another player; the solid box is one of your cards (076: never a count across them).
     let other = r#"[{"op": "choose_player"}, {"op": "other_gain", "resource": "chips", "amount": 2}, {"op": "production", "resource": "credits", "amount": 4}]"#;
     assert!(json(other).contains(r#"{"other":["2","chips"]}"#));

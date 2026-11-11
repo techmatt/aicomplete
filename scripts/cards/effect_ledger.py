@@ -200,7 +200,7 @@ def op_worth(t, o):
     if op == 'transfer':
         return Worth(now=row('transfer') * r(o['resource']) * n('max'))
     if op == 'place_node':
-        return Worth(node=n('count'), now=t.rate('node_free') * n('count') if o.get('free') else 0.0)
+        return Worth(node=n('count'))
     if op == 'clear_markers':
         return Worth(now=row('clear_markers') * t.rate('target_share') * n('count'))
     if op == 'shield_node':

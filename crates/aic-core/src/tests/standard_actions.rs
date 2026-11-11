@@ -553,7 +553,15 @@ fn taking_a_botnet_down_needs_your_ambassador_on_its_hex() {
     put(&mut g, h, ambassador(1), 1);
     assert!(!standard_offered(&rules, &g, 0).contains("botnet"), "another seat's ambassador");
     put(&mut g, h, ambassador(0), 1);
-    assert_eq!(board::botnet_targets(&g, 0), vec![h]);
+    assert_eq!(board::botnet_targets(&w, &g, 0), vec![h]);
+    // r81 (friction #54): reach, like every other action. An ambassador on a botnet out of reach can't take it down.
+    let far = (0..m.hexes.len())
+        .find(|&x| kind(m, x) != HexKind::Ocean && !crate::modules::common::in_reach(&w, &g, 0, x))
+        .unwrap();
+    put(&mut g, far, BOTNET, 1);
+    put(&mut g, far, ambassador(0), 1);
+    assert_eq!(board::botnet_targets(&w, &g, 0), vec![h], "a botnet out of reach");
+    put(&mut g, far, BOTNET, 0);
     set_res(&mut g, 0, Resource::Credits, price - 1);
     assert!(!standard_offered(&rules, &g, 0).contains("botnet"), "short of the price");
     set_res(&mut g, 0, Resource::Credits, price);

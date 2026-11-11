@@ -400,8 +400,8 @@ fn a_reshuffled_deck_with_no_fitting_card_deals_the_next_anyway() {
     let (rules, mut g) = threat_lab();
     set_pile(&mut g, "threats.deck.2", &["propaganda_ministry"]);
     set_pile(&mut g, "threats.discard.2", &[]);
-    let military = [crate::content::PullTag::Is(crate::vocab::ThreatTag::Military)];
-    with_cx(&rules, |cx| threats::deal_tier(&mut g, cx, 2, &military, 0)).unwrap();
-    assert!(threats::active(&g).iter().any(|(t, _)| t.as_str() == "propaganda_ministry"), "an Influence threat, dealt anyway");
+    let security = [crate::content::PullTag::Is(crate::vocab::ThreatTag::Security)];
+    with_cx(&rules, |cx| threats::deal_tier(&mut g, cx, 2, &security, 0)).unwrap();
+    assert!(threats::active(&g).iter().any(|(t, _)| t.as_str() == "propaganda_ministry"), "a Diplomacy threat, dealt anyway");
     assert_eq!(g.stats.counters.get("threats.pull_forced").copied(), Some(1));
 }

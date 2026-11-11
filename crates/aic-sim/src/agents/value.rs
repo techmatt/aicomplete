@@ -507,11 +507,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::ChoosePlayer => Worth::now(row("choose_player")),
         Op::OtherGain { resource, amount } => Worth::now(row("other_gain") * r(*resource) * *amount as f64),
         Op::Transfer { resource, max } => Worth::now(row("transfer") * r(*resource) * *max as f64),
-        Op::PlaceNode { count, free } => Worth {
-            node: *count as f64,
-            now: if *free { t.rate("node_free") * *count as f64 } else { 0.0 },
-            ..Worth::default()
-        },
+        Op::PlaceNode { count } => Worth { node: *count as f64, ..Worth::default() },
         Op::ClearMarkers { count } => Worth::now(row("clear_markers") * t.rate("target_share") * *count as f64),
         Op::ShieldNode { count } => Worth::now(row("shield_node") * t.rate("target_share") * *count as f64),
         Op::DelayThreat { count } => Worth::now(row("delay_threat") * *count as f64),

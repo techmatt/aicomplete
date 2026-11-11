@@ -249,7 +249,7 @@ fn energy_a_card_gains_first_can_pay_its_step_and_a_second_delay_is_not_offered(
     set_res(&mut g, 0, Resource::Energy, 0);
     let gains = [
         Op::Gain { resource: Resource::Energy, amount: step },
-        Op::PlaceNode { count: 1, free: false },
+        Op::PlaceNode { count: 1 },
     ];
     assert!(effects::feasible(&w, &g, 0, &gains));
     let delay = [Op::DelayThreat { count: 1 }];

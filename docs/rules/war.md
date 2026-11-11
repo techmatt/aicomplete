@@ -43,8 +43,7 @@ wait at its bases.
   ambassador on it) makes drones: 1 on each of its bases, once per country however many such factories it has.
   **The drone rule** (r75, Matt's ruling 8): a player ambassador on a base always stops 1 drone made there and is used
   up; a full base takes no drone and spends no ambassador; among several players' ambassadors the lowest seat's goes first.
-- **Peacetime:** at most `unit_cap` drones wait at each base. A drone at a base **absorbs
-  an adversary-troop strike** on a facility on or next to the base: 1 drone per hit.
+- **Peacetime:** at most `unit_cap` drones wait at each base. Drones never protect anything (r81, friction #51).
 - **Extra drones** (135, candidate) go past the cap: Warmongering (the Militarist's board: a base with an
   adversary troop on or next to it) and Arms Race (ongoing). A base gains at most 1 extra a round from the two
   together (Matt, 2026-11-06). War Footing (a project) fills every base to its cap. No threat makes drones
@@ -103,8 +102,7 @@ the nearest such piece. So a troop two hexes from your piece hits it next round,
 three or four hexes away a round later; the arrows on the board show where each troop is
 heading. Troops never attack cities. **Ambassadors don't fight** (175): a troop that starts a step on a hex with an
 ambassador (any player's) removes one, the players choosing whose, instead of moving or striking, so in two steps it
-can remove two. To stop a hit, remove the troop with a card, keep a drone at a military base next to the target,
-harden the target, stand your own ambassador on it (armor against a strike from next door), or put the Protector's
+can remove two. To stop a hit, remove the troop with a card, harden the target, stand your own ambassador on it (armor against a strike from next door), or put the Protector's
 node on it or in its way. Troops don't hit nodes.
 
 **Sites, bases and war, for new players.** Cities, research stations and factories work alike: whoever owns one gets

@@ -131,57 +131,58 @@ impl Tag {
 #[serde(rename_all = "snake_case")]
 pub enum ThreatSource {
     /// Corrupted cities.
-    Influence,
+    Diplomacy,
     /// Corrupted research stations and botnets.
     Cyber,
     /// Adversary factories.
-    Economic,
+    Industry,
     /// Troops.
-    Military,
+    Security,
 }
 
 impl ThreatSource {
     pub fn name(self) -> &'static str {
         match self {
-            ThreatSource::Influence => "influence",
+            ThreatSource::Diplomacy => "diplomacy",
             ThreatSource::Cyber => "cyber",
-            ThreatSource::Economic => "economic",
-            ThreatSource::Military => "military",
+            ThreatSource::Industry => "industry",
+            ThreatSource::Security => "security",
         }
     }
 
-    /// "a military", "an influence": the word with its article.
+    /// "a security", "an industry": the word with its article.
     pub fn a_word(self) -> &'static str {
         match self {
-            ThreatSource::Influence => "an influence",
+            ThreatSource::Diplomacy => "a diplomacy",
             ThreatSource::Cyber => "a cyber",
-            ThreatSource::Economic => "an economic",
-            ThreatSource::Military => "a military",
+            ThreatSource::Industry => "an industry",
+            ThreatSource::Security => "a security",
         }
     }
 }
 
 /// A threat's or project's tag (135): what an event card's pull and a project
-/// slot ask for. Universal counts as every tag.
+/// slot ask for. Universal counts as every tag. r81 (friction #47): the player
+/// cards' tag names (Universal aside), so one vocabulary is printed everywhere.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ThreatTag {
-    Military,
-    Influence,
+    Security,
+    Diplomacy,
     Cyber,
-    Economic,
-    Grid,
+    Industry,
+    Power,
     Universal,
 }
 
 impl ThreatTag {
     pub fn name(self) -> &'static str {
         match self {
-            ThreatTag::Military => "military",
-            ThreatTag::Influence => "influence",
+            ThreatTag::Security => "security",
+            ThreatTag::Diplomacy => "diplomacy",
             ThreatTag::Cyber => "cyber",
-            ThreatTag::Economic => "economic",
-            ThreatTag::Grid => "grid",
+            ThreatTag::Industry => "industry",
+            ThreatTag::Power => "power",
             ThreatTag::Universal => "universal",
         }
     }
@@ -189,10 +190,10 @@ impl ThreatTag {
     /// The tag a card's typed counter (`Jam`, `AutoCounter`) names.
     pub fn from_source(s: ThreatSource) -> ThreatTag {
         match s {
-            ThreatSource::Influence => ThreatTag::Influence,
+            ThreatSource::Diplomacy => ThreatTag::Diplomacy,
             ThreatSource::Cyber => ThreatTag::Cyber,
-            ThreatSource::Economic => ThreatTag::Economic,
-            ThreatSource::Military => ThreatTag::Military,
+            ThreatSource::Industry => ThreatTag::Industry,
+            ThreatSource::Security => ThreatTag::Security,
         }
     }
 

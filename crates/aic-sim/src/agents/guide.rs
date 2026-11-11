@@ -44,15 +44,12 @@ pub enum Armor {
     ByOwner,
 }
 
-/// What a threat's destruction is to `board::guards` (no base guards it: only a troop's strike).
-const THREAT: board::Cause = board::Cause::Effect("threat");
-
 /// Whether `h` would absorb a destruction anyway: by owner, any protection the
 /// engine offers the node owner there ([`board::guards`]).
 fn absorbed(w: &World, g: &GameState, h: usize, armor: Armor) -> bool {
     match armor {
         Armor::AnyAmbassador => g.tokens(h, HARDEN) > 0 || common::player_ambassador(g, h).is_some(),
-        Armor::ByOwner => !board::guards(w, g, h, common::node_owner(g, h), THREAT).is_empty(),
+        Armor::ByOwner => !board::guards(w, g, h, common::node_owner(g, h)).is_empty(),
     }
 }
 
@@ -61,7 +58,7 @@ fn absorbed(w: &World, g: &GameState, h: usize, armor: Armor) -> bool {
 fn factory_absorbed(w: &World, g: &GameState, h: usize, armor: Armor) -> bool {
     match armor {
         Armor::AnyAmbassador => absorbed(w, g, h, armor),
-        Armor::ByOwner => !board::guards(w, g, h, common::cube_owner(g, h), board::Cause::War).is_empty(),
+        Armor::ByOwner => !board::guards(w, g, h, common::cube_owner(g, h)).is_empty(),
     }
 }
 
@@ -94,32 +91,19 @@ impl HexArmor {
 
 /// 148: a country's armor for a whole forecast, so a unit one threat spends is gone
 /// for the next: each hex's ([`HexArmor`]), each seat's Aegis Doctrine (once a round)
-/// and each base's corp troops.
+/// (r81: drones never protect).
 #[derive(Default)]
 struct Armory {
     hexes: Vec<HexArmor>,
     aegis_used: [bool; 4],
-    /// (base hex, corp troops left), as first read.
-    bases: Vec<(usize, i64)>,
 }
 
 impl Armory {
     /// Spends one protection against a destroy of seat `s`'s node on `hexes[i]` = `h`, if any lasts: the
     /// first of [`board::guards`]'s options (in print order) the pool still holds.
-    fn spend(&mut self, w: &World, g: &GameState, i: usize, h: usize, s: usize, cause: board::Cause) -> bool {
-        for guard in board::guards(w, g, h, Some(s), cause) {
+    fn spend(&mut self, w: &World, g: &GameState, i: usize, h: usize, s: usize) -> bool {
+        for guard in board::guards(w, g, h, Some(s)) {
             let got = match guard {
-                board::Guard::Base(b) => {
-                    let at = match self.bases.iter().position(|&(x, _)| x == b) {
-                        Some(at) => at,
-                        None => {
-                            self.bases.push((b, g.tokens(b, UNIT)));
-                            self.bases.len() - 1
-                        }
-                    };
-                    let left = &mut self.bases[at].1;
-                    (*left > 0).then(|| *left -= 1).is_some()
-                }
                 board::Guard::Harden => {
                     let left = &mut self.hexes[i].harden;
                     (*left > 0).then(|| *left -= 1).is_some()
@@ -227,7 +211,7 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
                         if have <= 0 {
                             break;
                         }
-                        if near.iter().any(|&i| pool.spend(w, g, i, hexes[i], s, THREAT)) {
+                        if near.iter().any(|&i| pool.spend(w, g, i, hexes[i], s)) {
                             continue;
                         }
                         let Some(&i) = near.iter().find(|&&i| taken[i] < g.tokens(hexes[i], k)) else { break };
@@ -248,7 +232,7 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
                             continue;
                         }
                         let Some(s) = common::node_owner(g, h).filter(|&s| s < seats) else { continue };
-                        if pool.spend(w, g, i, h, s, THREAT) {
+                        if pool.spend(w, g, i, h, s) {
                             continue;
                         }
                         let have = *left[s].get_or_insert_with(|| common::node_count(g, s));

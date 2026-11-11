@@ -7,7 +7,7 @@
    "name": "Orbital Strike",
    "tier": 1,
    "tags": [
-    "military"
+    "security"
    ],
    "locations": [
     "base"
@@ -49,7 +49,7 @@
    "name": "Commandeer",
    "tier": 1,
    "tags": [
-    "military"
+    "security"
    ],
    "locations": [
     "base",
@@ -98,8 +98,8 @@
    "name": "Supply Raid",
    "tier": 1,
    "tags": [
-    "military",
-    "economic"
+    "security",
+    "industry"
    ],
    "locations": [
     "factory"
@@ -148,7 +148,7 @@
    "name": "Eviction",
    "tier": 1,
    "tags": [
-    "military"
+    "security"
    ],
    "locations": [
     "city"
@@ -196,7 +196,7 @@
    "name": "Call-Up",
    "tier": 1,
    "tags": [
-    "military"
+    "security"
    ],
    "locations": [
     "base"
@@ -233,7 +233,7 @@
     "Discord sway"
    ],
    "value": "counter 3 ambassadors (12) or 12 credits (12); uncountered 17 at values.json (a troop 9 with its strike), 1.42x the cheapest counter",
-   "check": "bites all game; Discord rides with Military here",
+   "check": "bites all game; Discord rides with Security here",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
@@ -244,8 +244,8 @@
    "name": "Provocation",
    "tier": 1,
    "tags": [
-    "influence",
-    "military"
+    "diplomacy",
+    "security"
    ],
    "locations": [
     "base"
@@ -294,7 +294,7 @@
    "name": "Agitators",
    "tier": 1,
    "tags": [
-    "influence"
+    "diplomacy"
    ],
    "locations": [
     "city"
@@ -342,7 +342,7 @@
    "name": "Defection",
    "tier": 1,
    "tags": [
-    "influence"
+    "diplomacy"
    ],
    "locations": [
     "city"
@@ -391,7 +391,7 @@
    "name": "Smear Campaign",
    "tier": 1,
    "tags": [
-    "influence"
+    "diplomacy"
    ],
    "locations": [
     "city",
@@ -438,7 +438,7 @@
    "name": "Propaganda Blitz",
    "tier": 1,
    "tags": [
-    "influence"
+    "diplomacy"
    ],
    "locations": [
     "coastal_city"
@@ -474,7 +474,7 @@
     "projects advanced (compute)"
    ],
    "value": "counter 3 ambassadors (12) or 12 credits (12); uncountered 15.3 at values.json (a troop 9 with its strike), 1.28x the cheapest counter",
-   "check": "bites the Discord race; Influence's home harm",
+   "check": "bites the Discord race; Diplomacy's home harm",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
@@ -532,7 +532,7 @@
    "tier": 1,
    "tags": [
     "cyber",
-    "influence"
+    "diplomacy"
    ],
    "locations": [
     "station"
@@ -712,7 +712,7 @@
    "name": "Requisition",
    "tier": 1,
    "tags": [
-    "economic"
+    "industry"
    ],
    "locations": [
     "factory",
@@ -761,8 +761,8 @@
    "name": "Shakedown",
    "tier": 1,
    "tags": [
-    "economic",
-    "influence"
+    "industry",
+    "diplomacy"
    ],
    "locations": [
     "city"
@@ -808,7 +808,7 @@
    "name": "Embargo",
    "tier": 1,
    "tags": [
-    "economic"
+    "industry"
    ],
    "locations": [
     "factory"
@@ -857,7 +857,7 @@
    "name": "Credit Crunch",
    "tier": 1,
    "tags": [
-    "economic"
+    "industry"
    ],
    "locations": [
     "coastal_city"
@@ -903,7 +903,7 @@
    "name": "Chip Shortage",
    "tier": 1,
    "tags": [
-    "economic"
+    "industry"
    ],
    "locations": [
     "factory"
@@ -946,7 +946,7 @@
    "name": "Blackout",
    "tier": 1,
    "tags": [
-    "grid",
+    "power",
     "cyber"
    ],
    "locations": [
@@ -990,7 +990,7 @@
    "name": "Load Shedding",
    "tier": 1,
    "tags": [
-    "grid"
+    "power"
    ],
    "locations": [
     "city",
@@ -1038,7 +1038,7 @@
    "name": "Power Surcharge",
    "tier": 1,
    "tags": [
-    "grid"
+    "power"
    ],
    "locations": [
     "station"
@@ -1086,7 +1086,7 @@
    "name": "Cooling Failure",
    "tier": 1,
    "tags": [
-    "grid"
+    "power"
    ],
    "locations": [
     "station"
@@ -1134,7 +1134,7 @@
    "name": "Grid Tap",
    "tier": 1,
    "tags": [
-    "grid"
+    "power"
    ],
    "locations": [
     "city"

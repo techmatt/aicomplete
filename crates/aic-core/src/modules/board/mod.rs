@@ -94,7 +94,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("drain_credits", 1, 50, "standard project: credits to drain compute from an adversary project"),
             ParamSpec::int("drain_amount", 1, 20, "standard project: compute drained"),
             ParamSpec::int("cube_insight", 0, 5, "standard action, no limit a round: insight for 1 research cube (0: no such action)"),
-            ParamSpec::int("botnet_credits", 1, 50, "standard action: credits to take down a botnet on a hex holding your ambassador (it stays)"),
+            ParamSpec::int("botnet_credits", 1, 50, "standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays)"),
         ],
         phases: &[
             PhaseSpec::decision("act", "standard actions and projects: station, remove, clear, dispatch (from the round's Dispatches), ambassador, claim, liberate, harden, sell, drain, take down a botnet, buy a neutral city's energy; completed megaprojects' converters"),

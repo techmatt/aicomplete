@@ -44,7 +44,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.drain_credits` | 5 | 1..50 | standard project: credits to drain compute from an adversary project |
 | `board.drain_amount` | 3 | 1..20 | standard project: compute drained |
 | `board.cube_insight` | 1 | 0..5 | standard action, no limit a round: insight for 1 research cube (0: no such action) |
-| `board.botnet_credits` | 5 | 1..50 | standard action: credits to take down a botnet on a hex holding your ambassador (it stays) |
+| `board.botnet_credits` | 5 | 1..50 | standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays) |
 | `adversary.difficulty` | 0 | 0..4 | difficulty level 0-4 (each level includes the ones below) |
 | `adversary.stage_cards` | 4, 4, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
 | `adversary.supply_per_country` | 24 | 0..40 | agents in the supply per country |

@@ -1,6 +1,6 @@
 # AI boards (module `ai`; [`content/ais.json`](../../content/ais.json))
 
-*The three boards, their special rules, node tracks and capstones. The powers, the boards' insight conversions, hardening and shields are in [ai-powers.md](ai-powers.md); terms and conventions in [README.md](README.md).*
+*The three boards, their special rules, node tracks and capstones. The powers, the boards' insight conversions, and hardening are in [ai-powers.md](ai-powers.md); terms and conventions in [README.md](README.md).*
 
 Each AI board has a **special rule**, a printed **income**, **printed tags**, two **node tracks** (economy and
 card-play), building slots (`ai.slots`) and starting credits (`ai.start_credits`), config lists by board, so a board
@@ -72,21 +72,22 @@ placements a round it is reachable about round 8.
 more, and the economy track is how a seat's income grows; it comes down as engines take over (3 energy to start,
 `ai.start_energy`; earlier steps are in [rules-history.md](../rules-history.md)). **The reasoning:**
 a board at 40 that keeps 2-4 extra cards in round 1 (10-20 credits) has 20-30 left for its first plays at a tier-1
-median of 10 credits: keeping more and playing less is a real choice. A credit space pays 2-3 a round for 1 energy
-plus its step (0-3): the early spaces pay back in a round or two, the cost-3 space in about three, so the last ones
+median of 10 credits: keeping more and playing less is a real choice. A credit space pays 2-3 a round for its step (0-3): the early spaces pay back in a round or two, the cost-3 space in about three, so the last ones
 are a late-game choice.
 
 **One payment path (locked).** Every space prints a **cost** in energy, the last ones more. Every placement pays it,
-on top of what a node power costs; a card pays only the step, and a card that prints "free" pays nothing (all four
-deck cards that place a node). Only tracks whose next step you can pay are offered, and a placement you can't pay doesn't happen.
+whatever places the node (r81, friction #16): a node power costs only its tag or currency (Expand nothing, Buy In 6
+credits, Accord 1 Diplomacy, Peer Review 3 research cubes) and a card only its credits, so the energy is stated once,
+on the track; no card places a node free. Only tracks whose next step you can pay are offered, and a placement you
+can't pay doesn't happen.
 
-**Hard to explain to a new player:** a placement's price is two numbers, the power's and the space's; Harden has two
+**Hard to explain to a new player:** Harden has two
 prices, Bulwark's energy and the standard project's credits (`harden_credits`), and Faraday Yard hardens when played; "bound" is a new word for a city that is otherwise only aligned.
 
 **Node powers (candidate).** Nodes don't grow on their own. Nodes come from the board's two **node powers**, used in the
 action phase, each once a round, so the powers place 0-2 nodes a round (cards that place nodes add to that: cards
-aren't capped). Every board has the same first one, Expand: 1 energy for 1 node; the second costs a steep price in the board's
-own currency ([ai-powers.md](ai-powers.md)). Three things keep the loops short: 2 placements a round by power and rising step costs cap energy → node →
+aren't capped). Every board has the same first one, Expand: nothing but the space; the second costs a steep price in the board's
+own currency or a tag ([ai-powers.md](ai-powers.md)). Three things keep the loops short: 2 placements a round by power and rising step costs cap energy → node →
 energy income; each second power is once a round; and every tag sacrifice permanently loses cards.
 
 <!-- generated: node_track -->

@@ -102,8 +102,8 @@ fn a_new_row_is_dealt_into_the_slots_when_all_have_resolved() {
     // Disinformation (10) resolved: Sway 5 toward Discord.
     assert_eq!(g.pile(PROJECTS_DONE), ["disinformation"]);
     assert_eq!(g.var("alignment.discord"), 5);
-    // 135: the slots are Military, any, any: Station Coup and Recruitment Drive
-    // take the open slots, Armored Columns the Military one; the row is slot order.
+    // 135: the slots are Security, any, any: Station Coup and Recruitment Drive
+    // take the open slots, Armored Columns the Security one; the row is slot order.
     assert_eq!(
         g.pile(PROJECTS),
         ["armored_columns", "station_coup", "recruitment_drive"]
@@ -116,7 +116,7 @@ fn a_new_row_is_dealt_into_the_slots_when_all_have_resolved() {
     g.vars.insert(adversary::project_key("grid_capture").into(), 17);
     with_cx(&rules, |cx| gain_and_pour(&mut g, cx,1)).unwrap();
     assert_eq!(g.pile(PROJECTS_ONGOING), ["grid_capture"]);
-    // The deck holds one card: it fills the Military slot, the rest stay empty.
+    // The deck holds one card: it fills the Security slot, the rest stay empty.
     assert_eq!(g.pile(PROJECTS), ["war_footing"]);
 }
 

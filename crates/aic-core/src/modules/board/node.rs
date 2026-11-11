@@ -78,28 +78,16 @@ fn cheapest_step(w: &World, g: &GameState, seat: usize) -> Option<i64> {
     first.into_iter().chain(second).min()
 }
 
-/// How a node is paid for (041, locked: every placement pays its track
-/// step through [`place_node`] unless a card says free).
-#[derive(Clone, Copy, PartialEq)]
-pub enum Placing {
-    /// A node power or a card: the step's cost in energy.
-    Step,
-    /// A card that says "free".
-    Free,
+/// What a placement pays on a step printing `step` (041, locked: every placement pays its track step
+/// through [`place_node`]; r81, friction #16: a card that said "free" pays it too).
+fn placing_price(step: i64) -> Price {
+    Price { energy: step, ..Price::default() }
 }
 
-/// What a placement pays on a step printing `step`.
-fn placing_price(how: Placing, step: i64) -> Price {
-    match how {
-        Placing::Step => Price { energy: step, ..Price::default() },
-        Placing::Free => Price::default(),
-    }
-}
-
-/// What a placement pays, for its prompt: ", costs 3 energy", or nothing if
-/// free (044: every prompt printed the bare step cost, whatever was charged).
-fn price_words(how: Placing, step: i64) -> String {
-    let parts = placing_price(how, step).words();
+/// What a placement pays, for its prompt: ", costs 3 energy", or nothing on a space that prints no
+/// cost (044: every prompt printed the bare step cost, whatever was charged).
+fn price_words(step: i64) -> String {
+    let parts = placing_price(step).words();
     if parts.is_empty() {
         String::new()
     } else {
@@ -107,19 +95,19 @@ fn price_words(how: Placing, step: i64) -> String {
     }
 }
 
-/// Whether seat `s` has a token and can pay its cheapest step `how`, with
+/// Whether seat `s` has a token and can pay its cheapest step, with
 /// `gained` more energy than it holds (less, when the power placing it pays
 /// energy first).
-pub fn can_pay_placement(w: &World, g: &GameState, seat: usize, how: Placing, gained: i64) -> bool {
+pub fn can_pay_placement(w: &World, g: &GameState, seat: usize, gained: i64) -> bool {
     cheapest_step(w, g, seat).is_some_and(|step| {
-        g.resource(seat, Resource::Energy) + gained >= placing_price(how, step).energy
+        g.resource(seat, Resource::Energy) + gained >= placing_price(step).energy
     })
 }
 
 /// Places one node for `seat`: the next token off its track (uncovering
-/// the space under it) onto a hex next to its node, paying `how`; only
+/// the space under it) onto a hex next to its node, paying its step; only
 /// tracks whose next step the seat can pay are offered. Returns whether placed.
-pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing) -> Res<bool> {
+pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res<bool> {
     let w = cx.world;
     if !ai::can_place(&w, g, seat) {
         return Ok(false);
@@ -128,7 +116,7 @@ pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing) -> 
     // 021: with two tracks the player chooses which one's next token to take.
     let b = ai::board(&w, seat);
     let (t1, t2) = (track_taken(g, seat), track2_taken(g, seat));
-    let can_pay = |u: &Uncover| placing_price(how, u.cost).affordable(g, seat);
+    let can_pay = |u: &Uncover| placing_price(u.cost).affordable(g, seat);
     let mut tracks: Vec<(bool, &Uncover)> = Vec::new();
     if let Some(u) = b.economy_track.get(t1).filter(|u| can_pay(u)) {
         tracks.push((false, u));
@@ -143,7 +131,7 @@ pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing) -> 
                 "track {}: uncovers {}{}",
                 if *two { 2 } else { 1 },
                 ai::uncover_label(u),
-                price_words(how, u.cost)
+                price_words(u.cost)
             ))
         })
         .collect();
@@ -157,13 +145,13 @@ pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing) -> 
     let uncovers = tracks[k].1.effects.as_slice();
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || {
-        let what = format!("uncovers {}{}", ai::uncover_words(tracks[k].1), price_words(how, step));
+        let what = format!("uncovers {}{}", ai::uncover_words(tracks[k].1), price_words(step));
         format!("Seat {seat}: {NODE_PROMPT} ({what}) on which hex?")
     };
     let Some(j) = cx.choose(seat, prompt, opts)? else {
         return Ok(false);
     };
-    placing_price(how, step).pay(g, cx, seat);
+    placing_price(step).pay(g, cx, seat);
     if second {
         cx.add_key(g, &track2_key(seat), 1);
     } else {

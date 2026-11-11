@@ -1,0 +1,20 @@
+{
+  "name": "s188-attrib",
+  "note": "188: attribution on dev seeds (36800-36831): r81 against r81 with the node powers' energy put back (#16's power half: Expand 1 energy, Buy In 1 energy + 6 credits, Accord 1 Diplomacy + 1 energy), by pair, d0-d4. The free cards' half can't be put back by overlay (the field is gone).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]},
+    {"name": "bp-oldpow", "set": ["ais.builder.powers.1.cost=[[\"energy\",1]]", "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]", "ais.protector.powers.1.cost=[[\"energy\",1]]", "ais.protector.powers.2.cost=[[\"energy\",1]]", "ais.researcher.powers.1.cost=[[\"energy\",1]]"]},
+    {"name": "br-oldpow", "set": ["ai.boards=0,2", "ais.builder.powers.1.cost=[[\"energy\",1]]", "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]", "ais.protector.powers.1.cost=[[\"energy\",1]]", "ais.protector.powers.2.cost=[[\"energy\",1]]", "ais.researcher.powers.1.cost=[[\"energy\",1]]"]},
+    {"name": "pr-oldpow", "set": ["ai.boards=1,2", "ais.builder.powers.1.cost=[[\"energy\",1]]", "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]", "ais.protector.powers.1.cost=[[\"energy\",1]]", "ais.protector.powers.2.cost=[[\"energy\",1]]", "ais.researcher.powers.1.cost=[[\"energy\",1]]"]}
+  ],
+  "difficulties": [0, 1, 2, 3, 4],
+  "agents": ["strategist"],
+  "first_seed": 36800,
+  "games": 32,
+  "records": 0
+}

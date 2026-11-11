@@ -2,6 +2,7 @@
 
 use super::*;
 use crate::content::{PullTag, ThreatTag};
+use crate::vocab::ThreatSource;
 use crate::modules::threats;
 
 fn pull(rules: &Rules, g: &mut GameState, tags: &[PullTag], c: usize) {
@@ -53,4 +54,30 @@ fn a_token_lands_on_the_most_threatened_uncorrupted_site() {
     put(&mut g, b, ADV_AMBASSADOR, 1);
     pull(&rules, &mut g, &[PullTag::Any], 0);
     assert_eq!(threats::tokens(&g, &Key::new("defection")), [b]);
+}
+
+/// r81 (friction #47): one tag vocabulary. Every tag a threat, a pull, a project or a project slot prints is a
+/// player card's tag (Universal aside), so a threat's tag is the tag its cards sacrifice, with no table between.
+#[test]
+fn every_threat_tag_is_a_card_tag() {
+    let content = crate::content();
+    let card_tag = |t: ThreatTag| t == ThreatTag::Universal || crate::vocab::TAGS.iter().any(|c| c.name() == t.name());
+    let mut seen = 0;
+    for t in content.threats.iter().flat_map(|t| t.tags.iter()).chain(content.projects.iter().flat_map(|p| p.tags.iter())) {
+        assert!(card_tag(*t), "{}", t.name());
+        seen += 1;
+    }
+    for p in content.adversary.iter().flat_map(|a| a.pulls.iter()).flat_map(|p| p.tags.iter()) {
+        if let PullTag::Is(t) = p {
+            assert!(card_tag(*t), "{}", t.name());
+            seen += 1;
+        }
+    }
+    for t in content.adversary_board.project_slots.iter().filter_map(|s| s.tag) {
+        assert!(card_tag(t), "{}", t.name());
+    }
+    assert!(seen > 0);
+    for s in [ThreatSource::Diplomacy, ThreatSource::Cyber, ThreatSource::Industry, ThreatSource::Security] {
+        assert!(crate::vocab::TAGS.iter().any(|c| c.name() == s.name()), "{}", s.name());
+    }
 }

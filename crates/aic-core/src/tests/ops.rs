@@ -66,7 +66,7 @@ fn resources_order_as_their_words() {
 }
 
 /// Every number in row `v`'s ops, not its name or text, nor its own tier or
-/// stage (135: a pull's tier, "a Military 2 threat", is printed and counts).
+/// stage (135: a pull's tier, "a Security 2 threat", is printed and counts).
 fn op_numbers(v: &serde_json::Value, out: &mut Vec<i64>) {
     fn nested(v: &serde_json::Value, out: &mut Vec<i64>) {
         match v {

@@ -27,9 +27,8 @@ pub fn strategies_block() -> String {
 }
 
 /// The words cards lean on, once: `docs/rules/README.md`'s *Terms* and the player aid print these.
-pub const HOUSE_TERMS: [(&str, &str); 23] = [
+pub const HOUSE_TERMS: [(&str, &str); 22] = [
     ("Facility", "a research station or factory on the board. A building is always a card. Harden goes on a facility and nothing else"),
-    ("Shield", "a hardening token on a hex with your node"),
     ("Ambassador", "a player's piece, any player's: a card never says whose"),
     ("Agent", "the adversary's piece on the board (the Security token is an Operative)"),
     ("Troop", "an adversary troop; a megacorp's is a Drone, its own piece, waiting at its military bases"),
@@ -68,11 +67,11 @@ pub(super) fn house_terms() -> String {
 pub(super) fn threats_block() -> String {
     use aic_core::content::ThreatTag;
     const TAGS: [ThreatTag; 6] = [
-        ThreatTag::Military,
-        ThreatTag::Influence,
+        ThreatTag::Security,
+        ThreatTag::Diplomacy,
         ThreatTag::Cyber,
-        ThreatTag::Economic,
-        ThreatTag::Grid,
+        ThreatTag::Industry,
+        ThreatTag::Power,
         ThreatTag::Universal,
     ];
     let c = content();
@@ -84,7 +83,7 @@ pub(super) fn threats_block() -> String {
             row
         })
         .collect();
-    table(&["Tier", "Cards", "Military", "Influence", "Cyber", "Economic", "Grid", "Universal"], rows)
+    table(&["Tier", "Cards", "Security", "Diplomacy", "Cyber", "Industry", "Power", "Universal"], rows)
 }
 
 fn pull_words(p: &aic_core::content::Pull) -> String {
@@ -757,8 +756,8 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          energy, so drafting cards that spend it is up to you.\n\n\
          **Nodes, for new players.** Nodes don't grow on their own. In the action phase you place \
          nodes with your board's two node powers, each once a round, so 0, 1 or 2 tokens a \
-         round from them, and cards can add more. Every board has 1 energy for 1 node; the second costs more, in the board's own \
-         currency. Either way you also pay the energy printed on the track space you uncover. You \
+         round from them, and cards can add more. Every board's Expand costs nothing of its own; the second costs a tag or \
+         the board's own currency. Every placement, by power or card, pays the energy printed on the track space you uncover. You \
          start with {} energy and one city bound to you, which makes energy every round.\n\n\
          **Dispatches, tags and sales, for new players.** A Dispatch puts one of your ambassadors, \
          from your supply or anywhere on the map, onto a piece or botnet in your reach and costs nothing, but you \

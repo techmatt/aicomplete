@@ -160,7 +160,7 @@ try {
   // Content moves under it: Rebuild, no restart.
   edit('threats.json', (rows) => {
     rows.find((t) => t.id === 'requisition').text = 'Each player here discards 3 cards or pays 6 credits.';
-    rows.push({ id: 'check_new_threat', name: 'Check New Threat', tier: 1, tags: ['economic'], locations: ['city'], text: 'A row the check added.', counters: [[{ resource: 'credits', amount: 6 }]], effects: rows[0].effects });
+    rows.push({ id: 'check_new_threat', name: 'Check New Threat', tier: 1, tags: ['industry'], locations: ['city'], text: 'A row the check added.', counters: [[{ resource: 'credits', amount: 6 }]], effects: rows[0].effects });
   });
   await page.js(`document.getElementById('rebuild').click()`);
   await page.until(`document.querySelector('[data-id="check_new_threat"]')`, 'the rebuild');
@@ -191,7 +191,7 @@ try {
   writeFileSync(join(ROOT, 'experiments', 'results', 'card-prices.csv'), `card,reason,reasoned_price\nfield_sensor_grid,"worth more, on\ntwo lines",${printed + 1.5}\n`);
   await page.js(`document.getElementById('rebuild').click()`);
   await page.until(`[...document.getElementById('sort').options].some((o) => o.value === 'price_gap')`, 'the reasoned column');
-  check(await page.js(`['jam', 'free_node'].every((m) => document.querySelector('.ico[aria-label="' + m + '"]'))`), 'after Rebuild the grid shows the jam and free-placement marks');
+  check(await page.js(`['jam', 'node'].every((m) => document.querySelector('.ico[aria-label="' + m + '"]'))`), 'after Rebuild the grid shows the jam and node marks');
   await page.js(`document.getElementById('view').value = 'table'`);
   await page.js(`document.getElementById('view').onchange()`);
   await shotTo(page, OUT, 'table');

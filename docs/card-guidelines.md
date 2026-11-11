@@ -100,7 +100,7 @@ price ([card-pricing.md](card-pricing.md), *The method*).
 
 Derived: the keep, 4 a tier-1 card and 8 a tier-2 one (1 and 2 insight); +1 energy income 14 (4 rounds × 4.5 × 0.8);
 +1 chip income 10. Units with no anchor take `values.json` (an ambassador gained 4, a sway 4, a node 8, antimatter 7)
-or [card-pricing.md](card-pricing.md) (a city liberated 45). From past checks: a node placed free 6, a research cube 6
+or [card-pricing.md](card-pricing.md) (a city liberated 45). From past checks: a research cube 6
 (9 when the play completes the megaproject), a botnet removed 16.
 
 **The anchor check**, one line per card in its item's write-up: pay = credits + 4 × (keep + play insight) + other
@@ -159,7 +159,6 @@ The sheet is `icons.png` from `node tools/card-art/render.mjs`.
 | Shield | one stop on one piece: alone, a hardening token on a facility; with a node, a shield |
 | Roof | cover over many pieces: with a country, Shelter (this round); with a node, all your pieces (Aegis: any one, once a round; Sanctuary: nodes, from corruption) |
 | Node | place it, paying its track step |
-| Node with a struck-through coin | place it free |
 | Threat (`!`) | a threat. Counter is the threat struck through |
 | Jam (threat with a down arrow) | after the less mark: one threat needs that much less of each resource |
 | Clock | delay only: a threat waits a round |

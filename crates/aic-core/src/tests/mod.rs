@@ -213,7 +213,7 @@ fn run_answered(rules: &Rules, g: &mut GameState) {
     answer_all(rules, g);
 }
 
-/// Deals Manhunt (military) to country 0 with a troop on a hex holding seat 0's
+/// Deals Manhunt (security) to country 0 with a troop on a hex holding seat 0's
 /// node, so seat 0 may counter it (118: a delay reaches only such threats).
 fn counterable_manhunt(rules: &Rules, g: &mut GameState) {
     let h = rules.map.numbered(0, piece(0).node);
@@ -638,9 +638,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 80;
-const GOLDEN_FINGERPRINT: &str = "79975f016c57f437";
-const GOLDEN_CONTENT_HASH: &str = "312c0c6f259414fd";
+const GOLDEN_REVISION: u32 = 81;
+const GOLDEN_FINGERPRINT: &str = "72c8fb419e78dfc2";
+const GOLDEN_CONTENT_HASH: &str = "d498aa6db784b442";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

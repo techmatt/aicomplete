@@ -114,12 +114,7 @@
    {
     "name": "Expand",
     "tags": [],
-    "cost": [
-     [
-      "energy",
-      1
-     ]
-    ],
+    "cost": [],
     "text": "place 1 Node",
     "effects": [
      {
@@ -132,10 +127,6 @@
     "name": "Buy In",
     "tags": [],
     "cost": [
-     [
-      "energy",
-      1
-     ],
      [
       "credits",
       6
@@ -449,12 +440,7 @@
    {
     "name": "Expand",
     "tags": [],
-    "cost": [
-     [
-      "energy",
-      1
-     ]
-    ],
+    "cost": [],
     "text": "place 1 Node",
     "effects": [
      {
@@ -471,12 +457,7 @@
       1
      ]
     ],
-    "cost": [
-     [
-      "energy",
-      1
-     ]
-    ],
+    "cost": [],
     "text": "place 1 Node",
     "effects": [
      {
@@ -770,12 +751,7 @@
    {
     "name": "Expand",
     "tags": [],
-    "cost": [
-     [
-      "energy",
-      1
-     ]
-    ],
+    "cost": [],
     "text": "place 1 Node",
     "effects": [
      {

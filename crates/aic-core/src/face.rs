@@ -317,9 +317,9 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             },
             format!("give another player up to {}", amount(*resource, *max)),
         )),
-        Op::PlaceNode { count, free } => one(clause(
-            counted(*count, if *free { "free_node" } else { "node" }),
-            format!("place {}{}", plural(*count, "node"), if *free { " free" } else { "" }),
+        Op::PlaceNode { count } => one(clause(
+            counted(*count, "node"),
+            format!("place {}", plural(*count, "node")),
         )),
         Op::ClearMarkers { count } => one(clause(
             adversary(minus(*count, "marker")),
@@ -327,7 +327,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         )),
         Op::ShieldNode { count } => one(clause(
             { let mut p = counted(*count, "harden"); p.push(w("node")); p },
-            format!("shield {count} of your nodes"),
+            format!("harden {count} of your nodes"),
         )),
         Op::DelayThreat { count } => one(clause(
             adversary(counted(*count, "clock")),
@@ -486,7 +486,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             format!("one threat needs {n} less of each resource"),
         )),
         Op::Jam { amount: n, source: Some(s) } => one(clause(
-            less(*n, "jam"),
+            { let mut p = less(*n, "jam"); p.push(w(&format!("#{}", s.name()))); p },
             format!("counts as {n} toward {} threat", s.a_word()),
         )),
         Op::CounterThreat => one(clause(adversary(vec![w("counter")]), "counter one threat")),
@@ -879,7 +879,7 @@ fn standing(op: &Op, kind: Option<TokenKind>) -> Standing {
             format!("each round, remove {n} compute from each adversary project"),
         ),
         Op::AutoCounter { source, amount: n } => effect(
-            less(*n, "jam"),
+            { let mut p = less(*n, "jam"); p.push(w(&format!("#{}", source.name()))); p },
             format!("{source} threats need {n} less to counter"),
         ),
         Op::UnityBonus { amount: n } => effect(

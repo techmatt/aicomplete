@@ -14,15 +14,6 @@ pub enum EffectSource {
     Team,
 }
 
-/// How an op's placement pays (041).
-pub(super) fn placing(free: bool) -> board::Placing {
-    if free {
-        board::Placing::Free
-    } else {
-        board::Placing::Step
-    }
-}
-
 /// The context an op resolves in.
 #[derive(Debug)]
 pub struct Ctx {

@@ -183,7 +183,7 @@ fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'st
     if power_places(w, seat, k) && !can_place(w, g, seat) {
         return Some("no node left");
     }
-    if power_places(w, seat, k) && !board::can_pay_placement(w, g, seat, board::Placing::Step, -spent) {
+    if power_places(w, seat, k) && !board::can_pay_placement(w, g, seat, -spent) {
         return Some("unaffordable");
     }
     if !p.tags.is_empty() && !cards::TagNeed::new(&p.tags).payable(&cards::sources(w, g, seat)) {

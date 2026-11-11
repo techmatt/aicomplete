@@ -21,7 +21,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = ROOT / "drafts" / "adversary"
-TAGS = ["military", "influence", "cyber", "economic", "grid"]
+TAGS = ["security", "diplomacy", "cyber", "industry", "power"]
 HARMS = [
     "node destroyed", "credits or income lost", "cards discarded", "insight lost", "ambassadors lost",
     "tokens stripped from cards", "facilities destroyed or seized", "production blacked out",

@@ -114,8 +114,8 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
             Op::CopyIncome => !cards::income_buildings(w, g, seat).is_empty(),
             Op::Reuse => !cards::reusable(w, g, seat, card).is_empty(),
             Op::DiscardHand { .. } => !g.pile(&cards::hand(seat)).is_empty(),
-            Op::PlaceNode { free, .. } => {
-                board::can_pay_placement(w, g, seat, placing(*free), gained)
+            Op::PlaceNode { .. } => {
+                board::can_pay_placement(w, g, seat, gained)
                     && !board::node_sites(w, g, seat).is_empty()
             }
             Op::ClearMarkers { .. } => any_hex(g, |h| marker_in_reach(w, g, seat, h)),

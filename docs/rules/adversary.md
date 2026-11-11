@@ -64,17 +64,17 @@ or a node's). **One aftermath (r80, Matt's ruling #42): whatever corrupts takes 
 **Botnets.** Each country starts with a botnet (on its research station); more come only from printed lines. A botnet stays
 until removed: it makes `botnet_compute` compute in the compute step (none with a player ambassador on it) and counts
 against the purge until Unity eases it ([alignment.md](alignment.md)). **Hard to remove:** tier-2 cards, Decommission
-and the Take down a botnet action (`botnet_credits` 5, your ambassador on its hex). Removing one sways Unity.
+and the Take down a botnet action (`botnet_credits` 5, a botnet in reach with your ambassador on its hex). Removing one sways Unity.
 
 ## The project deck (candidate)
 
 Adversary compute is spent on **projects**, one shared deck for every adversary
 ([`content/projects.json`](../../content/projects.json)), shuffled at setup and dealt into the adversary board's
-**slots** (the Militarist's: one Military slot and two open ones) by **the draw rule** every tagged deck uses: turn up
+**slots** (the Militarist's: one Security slot and two open ones) by **the draw rule** every tagged deck uses: turn up
 the top card; it goes into the first empty slot it fits (a slot's tag, or any in an open slot; Universal fits
 every slot), else to the project discard, which reshuffles when the deck runs out. **When a project leaves** (resolved
 or discarded), the projects to its right slide one slot left and the rightmost empty slot refills at once (r80, Matt's
-ruling #49): slot 1's Military tag binds only a card dealt into it (at setup, in practice), not one sliding in.
+ruling #49): slot 1's Security tag binds only a card dealt into it (at setup, in practice), not one sliding in.
 Costs are printed per player count (the table below).
 
 - **The compute step (175, Matt's ruling).** All compute is added **once a round** (the Income beat, after the agent income):
@@ -92,23 +92,23 @@ Costs are printed per player count (the table below).
 <!-- generated: projects -->
 | Project | Tags | 1 player | 2 players | 3 players | 4 players | Resolves |
 |---|---|---|---|---|---|---|
-| Raiding Parties | military | 4 | 8 | 12 | 16 | once |
-| War Footing | military | 7 | 14 | 21 | 28 | once |
-| Purge the Unaligned | military | 7 | 14 | 21 | 28 | once |
-| Armored Columns | military | 10 | 20 | 30 | 40 | once |
-| Arms Race | military | 11 | 22 | 33 | 44 | ongoing |
-| Declaration of War | military | 18 | 36 | 54 | 72 | ongoing |
-| Disinformation | influence | 5 | 10 | 15 | 20 | once |
-| Recruitment Drive | influence | 11 | 22 | 33 | 44 | once |
-| Infiltration Drive | influence | 18 | 36 | 54 | 72 | once |
+| Raiding Parties | security | 4 | 8 | 12 | 16 | once |
+| War Footing | security | 7 | 14 | 21 | 28 | once |
+| Purge the Unaligned | security | 7 | 14 | 21 | 28 | once |
+| Armored Columns | security | 10 | 20 | 30 | 40 | once |
+| Arms Race | security | 11 | 22 | 33 | 44 | ongoing |
+| Declaration of War | security | 18 | 36 | 54 | 72 | ongoing |
+| Disinformation | diplomacy | 5 | 10 | 15 | 20 | once |
+| Recruitment Drive | diplomacy | 11 | 22 | 33 | 44 | once |
+| Infiltration Drive | diplomacy | 18 | 36 | 54 | 72 | once |
 | Data Heist | cyber | 6 | 12 | 18 | 24 | once |
 | Botnet Swarm | cyber | 6 | 12 | 18 | 24 | once |
 | Station Coup | cyber | 9 | 18 | 27 | 36 | once |
-| Market Crash | economic | 5 | 10 | 15 | 20 | once |
-| Shadow Factories | economic | 7 | 14 | 21 | 28 | once |
-| Capital Flight | economic | 8 | 16 | 24 | 32 | once |
-| Rolling Blackouts | grid | 6 | 12 | 18 | 24 | once |
-| Grid Capture | grid | 9 | 18 | 27 | 36 | ongoing |
+| Market Crash | industry | 5 | 10 | 15 | 20 | once |
+| Shadow Factories | industry | 7 | 14 | 21 | 28 | once |
+| Capital Flight | industry | 8 | 16 | 24 | 32 | once |
+| Rolling Blackouts | power | 6 | 12 | 18 | 24 | once |
+| Grid Capture | power | 9 | 18 | 27 | 36 | ongoing |
 | False Flag | universal | 6 | 12 | 18 | 24 | once |
 | Grand Offensive | universal | 10 | 20 | 30 | 40 | once |
 | Propaganda Network | universal | 14 | 28 | 42 | 56 | ongoing |
@@ -136,21 +136,21 @@ prints its lines in the Card and Corrupt beats' order (`check.py` refuses anothe
 <!-- generated: adversary -->
 | Card | Stage | Threat (each country) | Rally | Muster | Corrupt |
 |---|---|---|---|---|---|
-| Probing Strikes | 1 | tier 1 (military) | coastal cities | 1 | cities |
-| Factory Drive | 1 | tier 1 (military or economic) | factories | 1 | factories |
-| Long Patrols | 1 | tier 1 (military or cyber) | research stations | 0 | research stations |
-| War Drums | 1 | tier 1 (military or influence) | cities | 1 | cities |
-| Signal Jamming | 1 | tier 1 (military or grid) | botnet hexes | 0 | cities |
-| Mobilization | 2 | tier 2 (military) | coastal cities | 1 | cities |
-| Station Raids | 2 | tier 2 (military or cyber) | research stations | 1 | research stations |
-| Fifth Column | 2 | tier 2 (influence or cyber) | cities | 0 | cities (1 fewer) |
-| Border War | 2 | tier 2 (military) | factories | 1 | factories |
-| Supply Lines | 2 | tier 1 (military or economic); tier 2 (military or economic) | factories | 1 | factories |
+| Probing Strikes | 1 | tier 1 (security) | coastal cities | 1 | cities |
+| Factory Drive | 1 | tier 1 (security or industry) | factories | 1 | factories |
+| Long Patrols | 1 | tier 1 (security or cyber) | research stations | 0 | research stations |
+| War Drums | 1 | tier 1 (security or diplomacy) | cities | 1 | cities |
+| Signal Jamming | 1 | tier 1 (security or power) | botnet hexes | 0 | cities |
+| Mobilization | 2 | tier 2 (security) | coastal cities | 1 | cities |
+| Station Raids | 2 | tier 2 (security or cyber) | research stations | 1 | research stations |
+| Fifth Column | 2 | tier 2 (diplomacy or cyber) | cities | 0 | cities (1 fewer) |
+| Border War | 2 | tier 2 (security) | factories | 1 | factories |
+| Supply Lines | 2 | tier 1 (security or industry); tier 2 (security or industry) | factories | 1 | factories |
 | Forced March | 2 | tier 2 (any) | cities | 1 | cities |
-| Total Mobilization | 3 | tier 2 (military); tier 2 (economic or grid) | factories | 2 | factories, cities |
-| Blitzkrieg | 3 | tier 2 (any); tier 2 (military or influence) | cities | 2 | cities, open land |
-| Occupation | 3 | tier 2 (military or cyber); tier 2 (influence) | research stations | 1 | research stations, cities (1 fewer) |
-| Naval Blockade | 3 | tier 2 (economic or grid); tier 2 (military or cyber) | coastal cities | 2 | cities, open land |
+| Total Mobilization | 3 | tier 2 (security); tier 2 (industry or power) | factories | 2 | factories, cities |
+| Blitzkrieg | 3 | tier 2 (any); tier 2 (security or diplomacy) | cities | 2 | cities, open land |
+| Occupation | 3 | tier 2 (security or cyber); tier 2 (diplomacy) | research stations | 1 | research stations, cities (1 fewer) |
+| Naval Blockade | 3 | tier 2 (industry or power); tier 2 (security or cyber) | coastal cities | 2 | cities, open land |
 <!-- /generated -->
 
 **For new players: the adversary's turn** is four beats. **Card:** a **threat** in each country; **rally** (each

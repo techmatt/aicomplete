@@ -24,11 +24,11 @@ impl Cause {
     }
 }
 
-/// One protection a destruction may spend (r75, Matt's ruling 5: the owner chooses which, or none).
+/// One protection a destruction may spend (r75, Matt's ruling 5: the owner chooses which, or none). r81
+/// (friction #51): drones never protect; a protection is Shelter (no choice), a hardening token or your
+/// own ambassador (and the Aegis Doctrine capstone's own exception).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Guard {
-    /// A corp troop at base `.0` next to the hex (adversary troops' strikes only).
-    Base(usize),
     /// A hardening token on the hex.
     Harden,
     /// The owner's own ambassador on the hex (137: armor).
@@ -46,12 +46,8 @@ fn piece_owner(g: &GameState, h: usize, kind: &str) -> Option<usize> {
 
 /// The protections a destruction of the `owner`'s piece on hex `h` could spend, in print order (read-only:
 /// the agents' shelter forecast counts from it too).
-pub fn guards(w: &World, g: &GameState, h: usize, owner: Option<usize>, cause: Cause) -> Vec<Guard> {
+pub fn guards(w: &World, g: &GameState, h: usize, owner: Option<usize>) -> Vec<Guard> {
     let mut out = Vec::new();
-    if cause == Cause::Troop {
-        // Each base next to it with a corp troop is an option of its own (the owner chooses which).
-        out.extend(within(w, h, 1).into_iter().filter(|&b| is_base(w, b) && g.tokens(b, UNIT) > 0).map(Guard::Base));
-    }
     if g.tokens(h, HARDEN) > 0 {
         out.push(Guard::Harden);
     }
@@ -68,8 +64,7 @@ pub fn guards(w: &World, g: &GameState, h: usize, owner: Option<usize>, cause: C
 
 /// A piece of `kind` on hex `h` would be destroyed (175: a last node too). A Shelter Order in its country
 /// keeps it, spending nothing. Otherwise r75 (Matt's ruling 5): its owner (seat 0 for a neutral piece)
-/// chooses which protection to spend, or none: a corp troop at a base next to it (adversary strikes only,
-/// [`Cause::Troop`]), a hardening token, the owner's own ambassador on the hex (137: armor; only your own
+/// chooses which protection to spend, or none: a hardening token, the owner's own ambassador on the hex (137: armor; only your own
 /// guards your piece), or the Aegis Doctrine capstone (the Protector's own pieces). Unprotected it goes, and
 /// a war destruction ([`Cause::War`]) sways toward Discord. Returns whether it was destroyed.
 pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause: Cause) -> Res<bool> {
@@ -79,13 +74,12 @@ pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause
         return Ok(false);
     }
     let owner = piece_owner(g, h, kind);
-    let options = guards(&w, g, h, owner, cause);
+    let options = guards(&w, g, h, owner);
     if !options.is_empty() {
         let mut opts: Vec<crate::state::Opt> = options
             .iter()
             .map(|o| {
                 opt(match o {
-                    Guard::Base(b) => format!("spend the {} at {}", crate::modules::common::DRONE, hex_name(&w, *b)),
                     Guard::Harden => "spend the hardening token".to_string(),
                     Guard::Ambassador(_) => "spend your ambassador there".to_string(),
                     Guard::Aegis(_) => "use the Aegis Doctrine".to_string(),
@@ -102,11 +96,6 @@ pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause
         };
         let pick = cx.choose_loss(who, prompt, opts)?.and_then(|i| options.get(i).copied());
         match pick {
-            Some(Guard::Base(b)) => {
-                cx.add_tokens(g, b, UNIT, -1);
-                cx.tally(g, "board.base_absorbed", 1);
-                return Ok(false);
-            }
             Some(Guard::Harden) => {
                 cx.add_tokens(g, h, HARDEN, -1);
                 cx.tally(g, "board.hardening_used", 1);

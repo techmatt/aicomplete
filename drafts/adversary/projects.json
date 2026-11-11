@@ -5,7 +5,7 @@
    "id": "raiding_parties",
    "name": "Raiding Parties",
    "tags": [
-    "military"
+    "security"
    ],
    "cost": 4,
    "ongoing": false,
@@ -33,7 +33,7 @@
    "id": "war_footing",
    "name": "War Footing",
    "tags": [
-    "military"
+    "security"
    ],
    "cost": 7,
    "ongoing": false,
@@ -61,7 +61,7 @@
    "id": "purge_the_unaligned",
    "name": "Purge the Unaligned",
    "tags": [
-    "military"
+    "security"
    ],
    "cost": 7,
    "ongoing": false,
@@ -89,7 +89,7 @@
    "id": "armored_columns",
    "name": "Armored Columns",
    "tags": [
-    "military"
+    "security"
    ],
    "cost": 10,
    "ongoing": false,
@@ -115,7 +115,7 @@
    "id": "arms_race",
    "name": "Arms Race",
    "tags": [
-    "military"
+    "security"
    ],
    "cost": 11,
    "ongoing": true,
@@ -143,7 +143,7 @@
    "id": "declaration_of_war",
    "name": "Declaration of War",
    "tags": [
-    "military"
+    "security"
    ],
    "cost": 18,
    "ongoing": true,
@@ -177,7 +177,7 @@
    "id": "disinformation",
    "name": "Disinformation",
    "tags": [
-    "influence"
+    "diplomacy"
    ],
    "cost": 5,
    "ongoing": false,
@@ -203,7 +203,7 @@
    "id": "recruitment_drive",
    "name": "Recruitment Drive",
    "tags": [
-    "influence"
+    "diplomacy"
    ],
    "cost": 11,
    "ongoing": false,
@@ -228,7 +228,7 @@
    "id": "infiltration_drive",
    "name": "Infiltration Drive",
    "tags": [
-    "influence"
+    "diplomacy"
    ],
    "cost": 18,
    "ongoing": false,
@@ -351,7 +351,7 @@
    "id": "market_crash",
    "name": "Market Crash",
    "tags": [
-    "economic"
+    "industry"
    ],
    "cost": 5,
    "ongoing": false,
@@ -379,7 +379,7 @@
    "id": "shadow_factories",
    "name": "Shadow Factories",
    "tags": [
-    "economic"
+    "industry"
    ],
    "cost": 7,
    "ongoing": false,
@@ -406,7 +406,7 @@
    "id": "capital_flight",
    "name": "Capital Flight",
    "tags": [
-    "economic"
+    "industry"
    ],
    "cost": 8,
    "ongoing": false,
@@ -432,7 +432,7 @@
    "id": "rolling_blackouts",
    "name": "Rolling Blackouts",
    "tags": [
-    "grid"
+    "power"
    ],
    "cost": 6,
    "ongoing": false,
@@ -458,7 +458,7 @@
    "id": "grid_capture",
    "name": "Grid Capture",
    "tags": [
-    "grid"
+    "power"
    ],
    "cost": 9,
    "ongoing": true,

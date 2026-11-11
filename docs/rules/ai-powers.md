@@ -1,6 +1,6 @@
 # AI-board powers (module `ai`; [`content/ais.json`](../../content/ais.json))
 
-*Each board's powers (node, sacrifice and insight), the boards' insight conversions, shelters, hardening and shields.
+*Each board's powers (node, sacrifice and insight), the boards' insight conversions, shelters and hardening.
 The boards, their special rules and tracks are in [ai-boards.md](ai-boards.md); terms and conventions in
 [README.md](README.md).*
 
@@ -15,23 +15,23 @@ still help.
 | Board | Power | Cost | Effect |
 |---|---|---|---|
 | Builder | Mint | 3 credits | gain 1 chip |
-| Builder | Expand | 1 energy | place 1 Node |
-| Builder | Buy In | 1 energy + 6 credits | place 1 Node |
+| Builder | Expand | nothing | place 1 Node |
+| Builder | Buy In | 6 credits | place 1 Node |
 | Builder | Scrap | 1 Industry | gain 2 chips |
 | Builder | Overcharge | 1 Power | gain 2 energy |
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
 | Builder | Focus | 5 credits | gain 1 insight |
 | Builder | Procure | 2 chips | draw 2 cards |
 | Protector | Bulwark | 1 energy | harden 1 facility in reach |
-| Protector | Expand | 1 energy | place 1 Node |
-| Protector | Accord | 1 Diplomacy + 1 energy | place 1 Node |
+| Protector | Expand | nothing | place 1 Node |
+| Protector | Accord | 1 Diplomacy | place 1 Node |
 | Protector | Stand Down | 1 Security | gain 3 credits |
 | Protector | Recovery | 1 Security | clear a corruption marker in reach |
 | Protector | Shelter | 1 Security + 1 energy | in any country (no reach needed) this round, no Node or facility can be destroyed |
 | Protector | Debrief | 1 Diplomacy | draw 2 cards |
 | Protector | Patrol | 1 energy | push up to 3 Agents or Troops from a hex in reach, each to a hex next to it |
 | Researcher | Fieldwork | 1 energy | draw 3 cards |
-| Researcher | Expand | 1 energy | place 1 Node |
+| Researcher | Expand | nothing | place 1 Node |
 | Researcher | Peer Review | 3 research cubes | place 1 Node |
 | Researcher | Grant | 3 credits | add 1 research cube in your color to an open megaproject |
 | Researcher | Field Station | 1 Industry | build a research station in reach, paying no chips |
@@ -79,17 +79,17 @@ was cut), so cubes → insight → cards → cubes has no card in it. Every mega
 ruling 9; only Onyx's was), which caps Onyx's loop: 1 cube → 2 chips → a 2-chip station → 1 cube a round once the
 station's card is complete, which would otherwise double its cubes each round, capped only by open hexes in reach.
 
-## Shelters, hardening and shields
+## Shelters and hardening
 
 A **shelter** (the Protector's Shelter, in any country with no reach needed, or a card's "shelter one country") lasts until cleanup (phase 20) of the round
 it is used in. Used in the actions, it covers the rest of the actions and what comes after them: the income step,
 growth, the threats that execute and war (phases 15-19). The march (phase 7) has already happened, but a threat's
-immediate march (Total War's, phase 18) meets it. It stops a destruction automatically, spending nothing; every other protection (a hardening token or shield
-below, your own ambassador, a base's drone, Aegis Doctrine) is the piece owner's choice ([war.md](war.md),
+immediate march (Total War's, phase 18) meets it. It stops a destruction automatically, spending nothing; every other protection (a hardening token
+below, your own ambassador, Aegis Doctrine) is the piece owner's choice; drones never protect (r81, friction #51) ([war.md](war.md),
 *Destruction*).
 
 Hardening (the standard actions, cards) goes only on facilities a token can protect, player-owned stations and
 factories that are not corrupted, and "harden N" is N different facilities, fewer if fewer qualify. A Science card's
-**shield** is the same token on a hex of your nodes: it absorbs a destruction there and goes with the token if it is
-lost another way. On your own facility a shield is the facility's hardening token: a table has one token, so it stays
+hardening token on a hex of your nodes (one name for the token, r81) absorbs a destruction there and goes with the node if it is
+lost another way. On your own facility it is the facility's hardening token: a table has one token, so it stays
 when the node goes, and protects the facility.

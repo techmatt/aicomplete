@@ -365,8 +365,9 @@ fn a_troop_that_strikes_is_used_up_and_one_with_no_target_stays() {
     assert_eq!((g.tokens(target, FACTORY), g.tokens(at, TROOP)), (0, 1));
 }
 
+/// r81 (friction #51): drones never protect. A drone at a base next to a struck factory stays, and the factory goes.
 #[test]
-fn a_troop_at_a_base_absorbs_a_strike_next_to_it() {
+fn a_drone_at_a_base_never_absorbs_a_strike_next_to_it() {
     let (rules, mut g) = lab(&["board.march"]);
     let m = &rules.map;
     let [b0, _] = m.fronts[0].bases;
@@ -389,7 +390,7 @@ fn a_troop_at_a_base_absorbs_a_strike_next_to_it() {
             g.tokens(b0, UNIT),
             g.var("alignment.discord")
         ),
-        (1, 0, discord)
+        (0, 1, discord)
     );
-    assert_eq!(g.stats.counters["board.base_absorbed"], 1);
+    assert!(!g.stats.counters.contains_key("board.base_absorbed"));
 }

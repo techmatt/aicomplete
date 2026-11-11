@@ -9,11 +9,11 @@
 **The decks (candidate; Matt's threat card standard, 2026-11-07, locked).** One threat deck per tier, each card
 printed once and shuffled at setup: tier 1 and tier 2; **there is no tier 3**. A tier-2 card is about two tier-1s
 (bigger consequences: a node, a site corrupted or seized, a botnet, troops, Unity pulled back), so no pull asks for
-two tier-1s. Each card carries 1 or 2 **tags** (Military, Influence, Cyber, Economic, Grid; **Universal** counts as every tag) and 1 or 2 **location
+two tier-1s. Each card carries 1 or 2 **tags**, the player cards' own (Security, Diplomacy, Cyber, Industry, Power, with their icons; r81, friction #47; **Universal** counts as every tag) and 1 or 2 **location
 types** (city, coastal city, research station, factory, military base).
 
 <!-- generated: threats -->
-| Tier | Cards | Military | Influence | Cyber | Economic | Grid | Universal |
+| Tier | Cards | Security | Diplomacy | Cyber | Industry | Power | Universal |
 |---|---|---|---|---|---|---|---|
 | 1 | 25 | 6 | 7 | 6 | 6 | 5 | 0 |
 | 2 | 32 | 7 | 7 | 7 | 8 | 6 | 5 |
@@ -21,7 +21,7 @@ types** (city, coastal city, research station, factory, military base).
 <!-- /generated -->
 
 **Dealing: the event card's pulls.** The adversary's event card ([adversary.md](adversary.md)) prints its pulls on
-its top line ("each country: a Military 2 threat", "Military 1 or Cyber 1", "any tier-2 threat"). **The ladder:**
+its top line ("each country: a Security 2 threat", "Security 1 or Cyber 1", "any tier-2 threat"). **The ladder:**
 stage I pulls one tier-1 threat a country, stage II one tier-2 (or a tier 1 and a tier 2: Supply Lines), stage III
 two tier-2s (`check.py` refuses another shape). In `threats.deal`, for each pull and each country in order, **the draw rule**: turn up the top card of
 that tier's deck; it stays if it carries a listed tag (Universal fits any; "any" takes every card) and the country has
@@ -61,9 +61,9 @@ it, their last too (175).
   players near it (`Pay` 1, or as much as is still useful; `Withdraw` takes back everything you put on it in one
   resource, even after you stop being near). The moment some option's resources are all covered it is countered and
   discarded; the rest goes back, later seats first.
-- **Tags**: one player sacrifices cards in play carrying that many tags of the kind (as an AI-board power's cost,
-  [ai-powers.md](ai-powers.md)): Security for Military, Diplomacy for Influence, Cyber, Industry for Economic, Power
-  for Grid. Tier 1 asks 2 tags, tier 2 asks 3 (Matt, 2026-11-06).
+- **Tags**: one player sacrifices cards in play carrying that many of the threat's own tag (as an AI-board power's
+  cost, [ai-powers.md](ai-powers.md)): a Security threat takes Security tags, with no table between. Tier 1 asks 2
+  tags, tier 2 asks 3 (Matt, 2026-11-06).
 - A tag option is paid whole by one player (`CounterWith`). (The engine can also read a nodes item, a player's own
   nodes near a token; no menu prints one.)
 

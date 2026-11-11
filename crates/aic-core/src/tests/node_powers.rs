@@ -11,17 +11,20 @@ fn program(w: &module::World, tag: Tag) -> Key {
     Key::new(&found.expect("a program").id)
 }
 
+/// r81 (friction #16): every placement pays the space; no card places a node free.
 #[test]
-fn a_card_pays_the_step_and_a_free_one_does_not() {
+fn a_card_pays_the_step() {
     let (rules, mut g) = at_step(&[], 5);
     let w = rules.world();
     let step = step_cost(&w, 5);
     assert!(step > 0);
-    let paying = [Op::PlaceNode { count: 1, free: false }];
+    let paying = [Op::PlaceNode { count: 1 }];
     set_res(&mut g, 0, Resource::Energy, step - 1);
     assert!(!effects::feasible(&w, &g, 0, &paying), "the step can't be paid");
-    let free = [Op::PlaceNode { count: 1, free: true }];
-    assert!(effects::feasible(&w, &g, 0, &free));
+    set_res(&mut g, 0, Resource::Energy, step);
+    assert!(effects::feasible(&w, &g, 0, &paying));
+    // The op has no "free" any more: content printing one is refused (`deny_unknown_fields`).
+    assert!(serde_json::from_str::<Op>(r#"{"op": "place_node", "count": 1, "free": true}"#).is_err());
 }
 
 #[test]
@@ -40,14 +43,13 @@ fn a_placements_prompt_names_what_it_charges() {
         let ask = choices.asked.take().expect("two tracks to choose from");
         ask.options.iter().map(|o| o.option.clone()).collect::<Vec<_>>().join(" | ")
     };
-    let free = prompt_for(&[Op::PlaceNode { count: 1, free: true }]);
-    assert!(!free.contains("costs"), "{free}");
-    let paid = prompt_for(&[Op::PlaceNode { count: 1, free: false }]);
+    let paid = prompt_for(&[Op::PlaceNode { count: 1 }]);
     assert!(paid.contains(&format!("costs {step} energy")), "{paid}");
 }
 
+/// r81 (friction #16): Expand costs nothing of its own; a free space costs nothing at all.
 #[test]
-fn every_board_places_for_1_energy_once_a_round() {
+fn every_board_s_expand_costs_only_the_space_once_a_round() {
     for seat in [0u8, 1] {
         let (rules, mut g) = at_step(&[], 1);
         let start = rules.map.numbered(seat as usize, piece(seat as usize).node);
@@ -58,21 +60,21 @@ fn every_board_places_for_1_energy_once_a_round() {
         rules.apply_mut(&mut g, &deploy, None).unwrap();
         answer_all(&rules, &mut g);
         assert_eq!(node_count(&g, seat as usize), before + 1);
-        assert_eq!(g.resource(seat as usize, Resource::Energy), 0);
-        set_res(&mut g, seat as usize, Resource::Energy, 1);
+        assert_eq!(g.resource(seat as usize, Resource::Energy), 1, "the space was free and Expand costs nothing");
         assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "once a round");
     }
 }
 
+/// r81 (friction #16): the price is stated once, on the track: Expand pays the step and nothing more.
 #[test]
-fn a_node_power_pays_its_energy_and_then_the_step() {
+fn a_node_power_pays_only_the_step() {
     let (rules, mut g) = at_step(&[], 5);
     let w = rules.world();
     let step = step_cost(&w, 5);
     let deploy = power(&rules, 0, "Expand");
+    set_res(&mut g, 0, Resource::Energy, step - 1);
+    assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the step can't be paid");
     set_res(&mut g, 0, Resource::Energy, step);
-    assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the step is on top");
-    set_res(&mut g, 0, Resource::Energy, step + 1);
     rules.apply_mut(&mut g, &deploy, None).unwrap();
     answer_all(&rules, &mut g);
     assert_eq!(g.resource(0, Resource::Energy), 0);
@@ -90,7 +92,7 @@ fn the_builder_s_second_node_power_takes_its_credits() {
     set_res(&mut g, 0, Resource::Credits, price);
     rules.apply_mut(&mut g, &buy, None).unwrap();
     answer_all(&rules, &mut g);
-    assert_eq!((g.resource(0, Resource::Energy), g.resource(0, Resource::Credits)), (0, 0));
+    assert_eq!((g.resource(0, Resource::Energy), g.resource(0, Resource::Credits)), (1, 0), "Buy In pays credits only");
 }
 
 #[test]
@@ -107,7 +109,7 @@ fn the_protector_s_second_node_power_sacrifices_diplomacy() {
     rules.apply_mut(&mut g, &accord, None).unwrap();
     answer_all(&rules, &mut g);
     assert!(g.pile(&cards::played(1)).is_empty(), "sacrificed");
-    assert_eq!(g.resource(1, Resource::Energy), 0);
+    assert_eq!(g.resource(1, Resource::Energy), 1, "Accord pays its tag only");
 }
 
 #[test]
@@ -207,9 +209,9 @@ fn a_track_s_last_steps_cost_more() {
     let extra = b.economy_track.last().unwrap().cost.min(b.play_track.last().unwrap().cost);
     assert!(extra > 0);
     let deploy = power(&rules, 0, "Expand");
+    set_res(&mut g, 0, Resource::Energy, extra - 1);
+    assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the step can't be paid");
     set_res(&mut g, 0, Resource::Energy, extra);
-    assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the power's 1 energy too");
-    set_res(&mut g, 0, Resource::Energy, extra + 1);
     act(&rules, &mut g, deploy);
     assert_eq!(g.resource(0, Resource::Energy), 0);
 }

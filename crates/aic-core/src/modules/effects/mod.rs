@@ -82,9 +82,9 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             }
         }
         Op::Transfer { resource, max } => resources::transfer(g, cx, ctx, seat, *resource, *max)?,
-        Op::PlaceNode { count, free } => {
+        Op::PlaceNode { count } => {
             for _ in 0..*count {
-                if !board::place_node(g, cx, seat, placing(*free))? {
+                if !board::place_node(g, cx, seat)? {
                     break;
                 }
             }

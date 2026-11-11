@@ -56,7 +56,7 @@ pub struct View {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct ThreatSourceView {
     pub threat: String,
-    /// `influence`, `cyber`, `economic` or `military`.
+    /// `diplomacy`, `cyber`, `industry` or `security` (r81: the card tags).
     pub source: String,
     /// The hexes of its sources.
     pub hexes: Vec<usize>,

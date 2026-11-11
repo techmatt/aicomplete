@@ -26,8 +26,8 @@ on the board and moving them (each piece one symbol: ambassador, agent, node, bo
 tags. A number goes before its icon, no number means 1. The less mark (a number over a double chevron) is a discount
 or, before the jam mark outside the dark frame, a jam. A ringed number before discs is At N. The clock is a delay only;
 the wall is a firewall (agent, hex) or cordon (agent, country). `≤`N is up to N, your choice: a give. A pin after a
-move is onto one piece. The shield is one stop on one piece (a hardening token; with a node, a shield); the roof
-covers many (Shelter's country; with a node, all your pieces). A node with a struck-through coin is placed free. The text says what the icons
+move is onto one piece. The shield icon is one stop on one piece (a hardening token, on a facility or with a node); the roof
+covers many (Shelter's country; with a node, all your pieces). The text says what the icons
 say, in order, opening with the box's word.
 
 Card details beyond the card text:
@@ -57,7 +57,7 @@ raises are on programs, the engines' triggers, Actions and Effects on buildings;
 - **Jam:** the chosen threat needs less of each resource (not below 0) while in play; if that leaves it fully paid, it
   is countered at once. **Counter a threat:** partial payments on it are refunded. **Delay N threats** (Predictive
   Modeling, Early Warning Drill): only threats you may counter, as countering and jamming; with none, the card still
-  plays for its draw or shields.
+  plays for its draw or hardening tokens.
 - **Cleanse:** take the adversary cube off a corrupted research station or factory in reach, one hex at a time (some
   cards: all in the first hex's country). A station becomes neutral. `only` limits it to stations (Reclamation Crew,
   priced as a station flip) or to factories (Back-Channel Talks, cheap); its cube icon then carries that facility's glyph. With `cities` (Great Liberation) a corrupted

@@ -1,4 +1,4 @@
-# Rulebook friction (rules revision 80)
+# Rulebook friction (rules revision 81)
 
 *What is still hard to say in [rulebook.md](rulebook.md) (third draft), ranked by how much each costs a reader, with
 the rule change that would fix it. Matt's test: a rule that can't be said well is a bad sign about the rule. Only what
@@ -14,8 +14,8 @@ each, checked against the engine; a critical designer (**D**) rated every paragr
 readers (**G2**, **V2**) read the third draft. "Flagged" means a reader marked the paragraph at severity 2-3 (of 3);
 "D 2/5" is the designer's rating (5 = ready to print).
 
-**Length.** At r80 Part 1 (sections 1-14, without Sources lines) runs **7,969 words**, the whole page **12,128**,
-against r79's 8,060 and 12,244 (187's `wc_part1.py` in its results folder; 172's regex had r79 at 7,992); the r77
+**Length.** At r81 Part 1 (sections 1-14, without Sources lines) runs **7,873 words**, the whole page **12,001**,
+against r80's 7,969 and 12,128 and r79's 8,060 and 12,244 (187's `wc_part1.py` in its results folder; 172's regex had r79 at 7,992); the r77
 second draft was 7,790 and 11,712. Spirit Island's base-game
 core rules are about 6,000-8,000 words (172's estimate, not a count), so Part 1 sits at the top of that range, still
 with no diagrams. Its density: r73 had 40 rows only a rule or component change would fix, 17 met every round; r74-r77
@@ -26,7 +26,8 @@ and 12, mostly in the adversary's turn: with the bigger faults gone, readers rea
 
 The rows before #41 keep their r73 numbers; what r74-r77 and 179 fixed is in their write-ups (175-179) and in git
 history of this page. 180's rows are #41 on; r80 (187, Matt's rulings, 2026-11-11) built #41-#43, #46, #48-#50,
-#52 and #53 ([rules-history.md](rules-history.md)).
+#52 and #53, and r81 (188, Matt's rulings, 2026-11-11) #16, #47, #51 and #54
+([rules-history.md](rules-history.md)).
 
 1. **Insight and keeps** (#2): one resource with a reset, a carve-out, a debt and three keep prices.
 2. **What removes an ambassador** (#44): five fates, and the troop that removes one isn't used up.
@@ -39,14 +40,10 @@ history of this page. 180's rows are #41 on; r80 (187, Matt's rulings, 2026-11-1
 | 2 | [Insight and keeps](rulebook.md#resources) (every round) | Reset each round, except Patience keeps your own but not gifted insight; the board prints 5 but you have 6 from round 1; less last round's losses, a debt across the round; credits stand in for keeps but not plays; opening tier-2 keeps 1 insight, later 2, upgraded 1; the opening's 4 free tier-1 keeps, then 5 credits (173: G, V flagged; 180: D 2/5 on the insight paragraph, ranks it first). | Print 6 on the board. Insight-loss tokens on your board, removed when insight is set. Patience keeps all unspent insight. **One keep price all game** (1 insight a card), credits never. |
 | 44 | [What removes an ambassador](rulebook.md#ambassadors-meet-agents) (every round) | An agent cancels one 1 for 1; a troop removes one and **stays** (it can remove two in a turn); corruption removes all; a drone stop and a protection each spend one (D, rank 3; G flagged the march line, "ambassadors don't fight" while troops remove them). | One contact rule for every adversary piece: a troop meeting an ambassador removes it and is removed, 1 for 1, as an agent does. |
 | 45 | [Growth](rulebook.md#9-production) (every round) | Every city builds a factory every round it has a free zone next to it, a blocked city too, though blocking stops everything else a site does; a corrupted city's goes by agents nearby (G, V flagged: "the map fills with factories", "'blocked or not' contradicts 'blocked sites make nothing'"; G2 flagged the corrupted city's zone choice). | A blocked city doesn't build (blocking means the site does nothing). Optionally, a city builds only while it has no factory next to it. |
-| 47 | [Two tag vocabularies](rulebook.md#10-threats) (every round) | Threat tags (Military, Influence, Economic, Grid) translate to card tags (Security, Diplomacy, Industry, Power) through a table; only Cyber is shared (D, rank 6). | Print threats with the player-card tag names and icons. |
-| 16 | [Node tracks](rulebook.md#node-tracks) (every round) | Two prices from two places: the power's (or card's) cost plus the space's. (179 printed each space's cost as a cost; 180's V: "the book defuses the biggest trap"; D rank 7.) | The powers cost only their tag or currency and every placement pays the space, stated once on the track. |
 | 31 | [Event lines](rulebook.md#the-turn) (every round) | r80 closed the list (seven other-line kinds, `content::EVENT_LINE_KINDS`, each with an icon named), but event faces print no icon row yet, so a reader still reads each line's words. | Draw the two missing glyphs (Blackout, Forced March) and give event faces an icon row. |
 | 56 | [Corruption](rulebook.md#corruption) (every round) | r80: one mark for all, but a node hex still needs its own clause: only the node goes (ambassadors stay), and land corruption goes on only if the node is lost (a protection or Sanctuary leaves none) (187's doc pass). | A corrupted node hex is open land that corrupts: everything on it goes, as on a site. |
-| 57 | [Projects](rulebook.md#17-projects) (every round) | r80's slide-left: slot 1's Military tag limits only a card dealt into it, never one that slides in (187's doc pass). | Drop the slot tag, or refill at the tagged slot. |
-| 51 | [The protection menu](rulebook.md#the-protection-order) (most games) | Shelter automatic but only for what goes through the order; then a choice of four, one (a megacorp's drone) good only against troops; one token with two names (G flagged; D rank 11). | Drones never protect; protections are Shelter, a hardening token or your own ambassador; one name for the token. |
+| 57 | [Projects](rulebook.md#17-projects) (every round) | r80's slide-left: slot 1's Security tag limits only a card dealt into it, never one that slides in (187's doc pass). | Drop the slot tag, or refill at the tagged slot. |
 | 55 | [Stations](rulebook.md#9-production) (every round with a corrupted station) | r79: a corrupted station has two outputs by its megaproject's state: an adversary cube onto the card until it completes, compute in the adversary's compute step (another phase) after; Vigil's once-a-round cap needs a marker per Protector (185, not yet read by a cold reader). | A corrupted station always makes an adversary cube: onto the megaproject while it is open, else onto the adversary's compute track as 1 compute in the same step. |
-| 54 | [Take down a botnet](rulebook.md#standard-actions) (most games) | The one standard action that ignores reach: only your ambassador on the botnet counts (the engine never checks reach), against §2's "everything you target must be in your reach". | Require reach like every other action, or print "anywhere your ambassador stands" on the action. |
 
 ## Engine against docs/rules
 

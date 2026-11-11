@@ -43,7 +43,6 @@ const PIECES = {
   drone: DRONE,
   node: fill('M12 2 4 8.500V22h16V8.500zM9.500 13h5v9h-5z'),
   // A placement that pays no track step: the node, a coin struck through at its shoulder.
-  free_node: `<g transform="translate(-2.500 2.500) scale(.84)">${fill('M12 2 4 8.500V22h16V8.500zM9.500 13h5v9h-5z')}</g><circle cx="17.500" cy="6.500" r="5.200" fill="#efeadc" stroke="currentColor" stroke-width="1.800"/>${line('M13.800 10.200l7.400-7.400', 1.800)}`,
   factory: fill('M3 22V10l6 4v-4l6 4V3h6v19z'),
   // Moving a piece: the silhouette with an arrow.
   move: `<g transform="translate(-3.500 2) scale(.84)">${AMBASSADOR}</g>${line('M14.500 12h8M19 8l3.500 4-3.500 4', 2.4)}`,

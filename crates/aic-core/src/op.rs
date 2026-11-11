@@ -551,11 +551,9 @@ pub enum Op {
         max: i64,
     },
     /// Place `count` nodes off your AI board's tracks, paying each step's
-    /// cost unless `free` (041).
+    /// cost (041; r81, friction #16: every placement pays it).
     PlaceNode {
         count: i64,
-        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
-        free: bool,
     },
     /// Clear up to `count` corruption markers in your reach, for each one's
     /// reward (041).

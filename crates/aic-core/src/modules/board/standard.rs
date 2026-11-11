@@ -207,9 +207,11 @@ pub fn energy_for_sale(w: &World, g: &GameState, seat: usize, h: usize) -> bool 
 }
 
 /// The hexes holding a botnet that seat `seat` may take down (r75, Matt's ruling 3): its own ambassador
-/// stands on the hex (reach is the ambassador's: it got there by a move in reach).
-pub fn botnet_targets(g: &GameState, seat: usize) -> Vec<usize> {
-    (0..g.hexes.len()).filter(|&h| g.tokens(h, BOTNET) > 0 && g.tokens(h, ambassador(seat)) > 0).collect()
+/// stands on the hex, and (r81, friction #54) the hex is in its reach, like every other action's target.
+pub fn botnet_targets(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
+    (0..g.hexes.len())
+        .filter(|&h| g.tokens(h, BOTNET) > 0 && g.tokens(h, ambassador(seat)) > 0 && in_reach(w, g, seat, h))
+        .collect()
 }
 
 /// The var counting seat `s`'s Dispatch used this round (149), cleared in cleanup.
@@ -275,7 +277,7 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
             return format!("turn 1 research cube into {}", Resource::Insight.words(w.int("board.cube_insight")));
         }
         StandardAction::Envoy => "move 1 Discord off the Discord track",
-        StandardAction::Botnet => "take down a botnet on a hex holding your ambassador (it stays): Unity",
+        StandardAction::Botnet => "take down a botnet in reach on a hex holding your ambassador (it stays): Unity",
         StandardAction::BuyEnergy => {
             return format!("buy a neutral city's energy (in reach, producing; once per city a round): {} credits", w.int("board.city_energy_credits"));
         }
@@ -461,7 +463,7 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
             vec![usize::MAX]
         }
         StandardAction::Envoy => Vec::new(),
-        StandardAction::Botnet => botnet_targets(g, seat),
+        StandardAction::Botnet => botnet_targets(w, g, seat),
         StandardAction::BuyEnergy => all.filter(|&h| energy_for_sale(w, g, seat, h)).collect(),
     }
 }

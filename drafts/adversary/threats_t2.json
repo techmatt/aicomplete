@@ -7,7 +7,7 @@
    "name": "Total War",
    "tier": 2,
    "tags": [
-    "military"
+    "security"
    ],
    "locations": [
     "base"
@@ -53,7 +53,7 @@
    "name": "Siege",
    "tier": 2,
    "tags": [
-    "military"
+    "security"
    ],
    "locations": [
     "factory"
@@ -99,7 +99,7 @@
    "name": "Manhunt",
    "tier": 2,
    "tags": [
-    "military"
+    "security"
    ],
    "locations": [
     "base",
@@ -150,8 +150,8 @@
    "name": "Conscription",
    "tier": 2,
    "tags": [
-    "military",
-    "economic"
+    "security",
+    "industry"
    ],
    "locations": [
     "base"
@@ -200,7 +200,7 @@
    "name": "Casus Belli",
    "tier": 2,
    "tags": [
-    "military"
+    "security"
    ],
    "locations": [
     "base"
@@ -235,7 +235,7 @@
     "Discord sway"
    ],
    "value": "counter 4 ambassadors (16) or 17 credits (17); uncountered 20 at values.json (a troop 9 with its strike), 1.25x the cheapest counter",
-   "check": "bites where corp troops can win a front; Discord rides with Military here",
+   "check": "bites where corp troops can win a front; Discord rides with Security here",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
@@ -246,7 +246,7 @@
    "name": "Overrun",
    "tier": 2,
    "tags": [
-    "influence"
+    "diplomacy"
    ],
    "locations": [
     "city"
@@ -287,7 +287,7 @@
    "name": "Insurrection",
    "tier": 2,
    "tags": [
-    "influence"
+    "diplomacy"
    ],
    "locations": [
     "city"
@@ -334,7 +334,7 @@
    "name": "Deepfake Wave",
    "tier": 2,
    "tags": [
-    "influence",
+    "diplomacy",
     "cyber"
    ],
    "locations": [
@@ -383,7 +383,7 @@
    "name": "Turncoats",
    "tier": 2,
    "tags": [
-    "influence"
+    "diplomacy"
    ],
    "locations": [
     "city"
@@ -431,7 +431,7 @@
    "name": "Propaganda Ministry",
    "tier": 2,
    "tags": [
-    "influence"
+    "diplomacy"
    ],
    "locations": [
     "city",
@@ -479,8 +479,8 @@
    "name": "Skimming Operation",
    "tier": 2,
    "tags": [
-    "economic",
-    "influence"
+    "industry",
+    "diplomacy"
    ],
    "locations": [
     "coastal_city"
@@ -526,8 +526,8 @@
    "name": "Dark Cities",
    "tier": 2,
    "tags": [
-    "grid",
-    "influence"
+    "power",
+    "diplomacy"
    ],
    "locations": [
     "city",
@@ -713,7 +713,7 @@
    "tier": 2,
    "tags": [
     "cyber",
-    "economic"
+    "industry"
    ],
    "locations": [
     "station",
@@ -809,7 +809,7 @@
    "name": "Asset Freeze",
    "tier": 2,
    "tags": [
-    "economic"
+    "industry"
    ],
    "locations": [
     "factory"
@@ -856,7 +856,7 @@
    "name": "Mass Production",
    "tier": 2,
    "tags": [
-    "economic"
+    "industry"
    ],
    "locations": [
     "factory"
@@ -901,8 +901,8 @@
    "name": "Factory Occupation",
    "tier": 2,
    "tags": [
-    "economic",
-    "military"
+    "industry",
+    "security"
    ],
    "locations": [
     "factory"
@@ -947,7 +947,7 @@
    "name": "Trade Blockade",
    "tier": 2,
    "tags": [
-    "economic"
+    "industry"
    ],
    "locations": [
     "coastal_city",
@@ -997,7 +997,7 @@
    "name": "Grid Collapse",
    "tier": 2,
    "tags": [
-    "grid"
+    "power"
    ],
    "locations": [
     "city",
@@ -1046,7 +1046,7 @@
    "name": "Power Rationing",
    "tier": 2,
    "tags": [
-    "grid"
+    "power"
    ],
    "locations": [
     "city"
@@ -1089,7 +1089,7 @@
    "name": "Thermal Runaway",
    "tier": 2,
    "tags": [
-    "grid"
+    "power"
    ],
    "locations": [
     "station"
@@ -1137,7 +1137,7 @@
    "name": "Overload",
    "tier": 2,
    "tags": [
-    "grid"
+    "power"
    ],
    "locations": [
     "factory",
@@ -1428,8 +1428,8 @@
    "name": "War Economy",
    "tier": 2,
    "tags": [
-    "military",
-    "economic"
+    "security",
+    "industry"
    ],
    "locations": [
     "factory",
@@ -1477,7 +1477,7 @@
    "name": "Cascade Failure",
    "tier": 2,
    "tags": [
-    "grid",
+    "power",
     "cyber"
    ],
    "locations": [
