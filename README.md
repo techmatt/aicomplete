@@ -21,7 +21,7 @@ Where to look: how to build and test is below; the rest has its own page.
   pricing method in [docs/card-pricing.md](docs/card-pricing.md), rates in `configs/agents/values.json`.
 - [docs/rules/](docs/rules/README.md): the rules as implemented, at `RULES_REVISION`, one file
   per area; its `README.md` maps them. Its tables are generated (*Generated docs* in architecture.md).
-- [docs/rulebook.md](docs/rulebook.md): the player-facing rulebook (a first draft, 172), hand-written from the
+- [docs/rulebook.md](docs/rulebook.md): the player-facing rulebook (a third draft, 180), hand-written from the
   engine; [docs/rulebook-friction.md](docs/rulebook-friction.md) ranks what was hard to say. Not generated: a rules
   change that moves it updates it.
 - [docs/rules-history.md](docs/rules-history.md): what each revision changed and whether

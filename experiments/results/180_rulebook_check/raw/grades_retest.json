@@ -1,0 +1,272 @@
+{
+ "G2": [
+  {
+   "id": "G2-1",
+   "grade": "right",
+   "engine": "Yes, 1 insight per troop that ends any march (a threat's march at once included) next to the Protector's node, unless the troop was used up striking. A threat's march comes in the threats step after the action phase, and round start resets insight, so that insight is lost (no carry for the Protector).",
+   "evidence": "crates/aic-core/src/modules/board/troops.rs:214-224 (alive troop ending next to node fires on_march_end); modules/cards/triggers.rs:240-248; configs/baseline.json round order puts threats.execute after the action phase; modules/economy.rs:189-200 round_start sets insight to income+gift(+Patience carry), dropping the rest.",
+   "book_fault": ""
+  },
+  {
+   "id": "G2-2",
+   "grade": "right",
+   "engine": "Your ambassador on the base is used up in place of the drone and no drone is added, whatever made it (Warmongering's past-the-limit drone included).",
+   "evidence": "production.rs:156-160 extra_units calls corp_troops_at(.., past_cap=true); production.rs:14-31 corp_troops_at removes a player ambassador on the base instead of each drone.",
+   "book_fault": ""
+  },
+  {
+   "id": "G2-3",
+   "grade": "right",
+   "engine": "The country's pool is emptied and nothing lands; the agents simply go back to the supply (only a cordoned country keeps its pool for its next Rally).",
+   "evidence": "modules/adversary.rs:1063-1075 (pool key set to 0, rally_plan returns None when no site, tallied rally_nowhere); modules/plan.rs:277-281.",
+   "book_fault": ""
+  },
+  {
+   "id": "G2-4",
+   "grade": "right",
+   "engine": "No. Each neutral city's energy can be bought once a round in total, by any one player; after one buys it, it is off sale for everyone that round.",
+   "evidence": "modules/board/standard.rs:188-206 bought_key(h) is per city, not per seat, and energy_for_sale requires it unset.",
+   "book_fault": ""
+  },
+  {
+   "id": "G2-5",
+   "grade": "right",
+   "engine": "Once the country's megaproject is done, a player's unblocked station makes 2 cubes that go onto its owner's board as research cubes. The megaproject completes once and never pays again.",
+   "evidence": "production.rs:346-363 station_cubes (project_done set -> add ResearchCubes, owned_station_cubes=2 in baseline); production.rs:383-403 complete_projects skips a done project and sets project_done=1, never reset.",
+   "book_fault": ""
+  },
+  {
+   "id": "G2-6",
+   "grade": "right",
+   "engine": "Each keep is optional. A tier-1 card costs 1 insight; a tier-2 card costs 2 (1 with the keep upgrade, minus Science discounts). Any insight you lack is paid at 5 credits each. Cards you don't keep are discarded.",
+   "evidence": "modules/cards/price.rs:13-32 keep_need (keep_tier1 1, keep_tier2 2, keep_tier2_upgraded 1, science_off); cards/play.rs:10-16 keep_price shortfall x insight_credits 5; cards/mod.rs:330-343 unkept drafted cards discarded. No solo-specific keep rule.",
+   "book_fault": ""
+  },
+  {
+   "id": "G2-7",
+   "grade": "right",
+   "engine": "No. The botnet only has to be on a hex where your own ambassador stands, in reach or not. It costs 5 credits, the ambassador stays, and you gain Unity.",
+   "evidence": "modules/board/standard.rs:209-212 botnet_targets checks only BOTNET and own ambassador on the hex (no in_reach); standard.rs:464 vs reach filters on other actions.",
+   "book_fault": ""
+  },
+  {
+   "id": "G2-8",
+   "grade": "right",
+   "engine": "Landing does not touch the ambassador. In the march, the troop's first step removes your ambassador (it is not spent as protection). Its second step strikes your factory, which is destroyed with its cube when nothing else protects it, and the troop is used up.",
+   "evidence": "adversary.rs:1470-1528 land_troops has no ambassador interaction; troops.rs:166-186 a step on a hex with an ambassador removes one; troops.rs:188-196 strike; destroy.rs:74-139 no guards left, factory and owner cube removed; baseline troop_steps 2, troop_spent 1.",
+   "book_fault": ""
+  },
+  {
+   "id": "G2-9",
+   "grade": "right",
+   "engine": "At level 2 the threat costs 5 energy or 10 credits: +2 on a non-credit item, +4 on credits, applied to each option. If it executes unpaid, it does its printed harm and the adversary also gains 4 compute, which arrives at its next compute step.",
+   "evidence": "threats/counter.rs:61-74,96-105 (counter_bonus_all 1 at d1 + counter_more_all 1 at d2; counter_bonus_credits 4); threats/mod.rs:444-449 threat_compute after an uncountered threat; adversary.rs:329-335 difficulty line from board_difficulty_at 2 (content/adversary.json threat_compute 4); adversary.rs:809-814 banked as WAITING.",
+   "book_fault": ""
+  },
+  {
+   "id": "G2-10",
+   "grade": "right",
+   "engine": "Shelter on the country stops the strike for free. Otherwise you may spend the hardening token, your own ambassador on the hex, or Aegis (Protector only); drones never guard against war. If the factory is saved, the node is untouched. If you spend nothing, the factory goes (+1 Discord), the hardening token stays because a node is on the hex, and the node is then protected on its own: the same token can still save it.",
+   "evidence": "troops.rs:65-73 (node within war_reach 0 hit only if factory destroyed); destroy.rs:47-63 guards (Base only for Cause::Troop); destroy.rs:133-138 a declined token stays when a node is on the hex; destroy.rs:147-149 Discord on war destruction. Reader's doubt came from rulebook section 13: 'One hardening token on a hex with both your facility and your node serves whichever is hit first', which is ambiguous but not false.",
+   "book_fault": ""
+  },
+  {
+   "id": "G2-11",
+   "grade": "right",
+   "engine": "The city corrupts anyway: the adversary's cube replaces yours and its agents go to the supply. Shelter keeps the node, spending nothing (not even your ambassador as armor). Your ambassador there is then removed. Any marker comes off and none is added.",
+   "evidence": "crates/aic-core/src/modules/effects/new_ops.rs:335-339 (threat CorruptCity calls adversary::corrupt_city); modules/adversary.rs:1292-1314 (take_for_adversary, agents removed, destroy_piece on the node, player ambassadors removed, clear_markers_on); modules/board/destroy.rs:77-79 (Shelter flag returns false before any guard is offered).",
+   "book_fault": ""
+  },
+  {
+   "id": "G2-12",
+   "grade": "right",
+   "engine": "Yes. A corrupted city is not a target of Corrupt cities, so an agent on it is a source like any other hex and moves onto the neutral city next to it (unless that city is firewalled or under a prohibition). Only agents already on a target stay put.",
+   "evidence": "crates/aic-core/src/modules/plan.rs:102-105 (a target must not be corrupted); plan.rs:135-170 (converge: only hexes that are targets keep their agents, every other hex with agents next to an open target is a source); modules/adversary.rs:1369-1395 (corrupt_sites moves them).",
+   "book_fault": ""
+  },
+  {
+   "id": "G2-13",
+   "grade": "right",
+   "engine": "At difficulty 0 a city corrupts at 4, so the city is untouched. The node hex's number is 2: its 2 agents go to the supply and the node is destroyed unless a protection is spent (Shelter, your ambassador, hardening, Aegis; Sanctuary keeps it). A lost node leaves a corruption marker unless the hex already has a marker, botnet or adversary cube.",
+   "evidence": "configs/baseline.json:61,65,72 (corrupt_at 4, corrupt_node_at 2, cut from level 1); modules/adversary.rs:138-140 (level), 1348-1364 (corrupt_n, no cut for nodes), 1440-1462 (natural_corruption: cities, then nodes), 1330-1342 (corrupt_node); modules/board/node.rs:187-201 (lose_node marker).",
+   "book_fault": ""
+  },
+  {
+   "id": "G2-14",
+   "grade": "right",
+   "engine": "No. Liberate costs 5 ambassadors for a city plus 1 for each agent on it. Markers are not counted. In practice a corrupted city rarely holds a marker anyway: corruption clears its markers and a node lost there leaves none.",
+   "evidence": "crates/aic-core/src/modules/board/ambassadors.rs:110-116 (liberate_cost = liberate_ambassadors + ADV_AMBASSADOR only); ambassadors.rs:91-95; modules/adversary.rs:1273-1276, 1312 (clear_markers_on); modules/board/node.rs:198 (no marker on a corrupted hex).",
+   "book_fault": ""
+  },
+  {
+   "id": "G2-15",
+   "grade": "right",
+   "engine": "Capacity is 3 and overflow carries on both tracks. Unity goes to 7 and tips to 4 (tip 1, a Unity card at strength I). It is still full, so it tips again to 1 (tip 2, another strength-I card). A drawn card's own sway can cause more tips. A purge needs 3 Unity tips, so 2 do not win.",
+   "evidence": "configs/baseline.json:125-145 (tip_per_player 3, carry 2, momentum 0, tier_at [3,6], purge_at [3,...]); modules/alignment.rs:197-209 (capacity), 389-425 (tip: subtract capacity, tier_of(before+1)), 553-578 (after: loop, re-tip while full).",
+   "book_fault": ""
+  },
+  {
+   "id": "G2-16",
+   "grade": "right",
+   "engine": "Sway comes first: the round order is alignment.sway (the board's drip and 1 Discord per land-corruption token), then adversary.event. Round 1 has no exception.",
+   "evidence": "configs/baseline.json:366-369 (round order: alignment.sway, adversary.event); modules/alignment.rs:520-528 (sway phase run, not gated by round).",
+   "book_fault": ""
+  },
+  {
+   "id": "G2-17",
+   "grade": "right",
+   "engine": "It costs 6 ambassadors from your supply: 5 for a city plus 1 for the agent. The agent goes back to the adversary's supply, and your cube goes on. The city must be in your reach. The action itself costs no energy.",
+   "evidence": "configs/baseline.json:19 (claim_city 5); modules/board/ambassadors.rs:100-106 (claim_cost +1 per agent), 128-148 (pay_site: own standing ambassadors first, then supply), 185-197 (claim_site removes agents, places cube); modules/board/standard.rs:141, 401-403 (no base price, reach required).",
+   "book_fault": ""
+  },
+  {
+   "id": "G2-18",
+   "grade": "right",
+   "engine": "Setup takes economy space 1, so the next economy node uncovers space 2, which is free: 1 energy in total for Expand. The next card-play node uncovers space 3, which costs 1: 2 energy in total. The setup spare node is off both tracks.",
+   "evidence": "content/ais.json:21-90, 111-125 (Builder economy costs [0,0,0,1,2,3,5], play costs [0,0,1,2,2,3,5], Expand 1 energy + place_node); modules/board/mod.rs:296-299 (setup sets track_key to 1); modules/board/node.rs:119-170 (place_node pays the step cost in energy).",
+   "book_fault": ""
+  },
+  {
+   "id": "G2-19",
+   "grade": "right",
+   "engine": "Its harm hits the player whose node is closest to any of its tokens, at any distance. If players tie, the tied players choose which of them takes it. If no one has a node, no player is hit.",
+   "evidence": "crates/aic-core/src/modules/threats/mod.rs:263-282 (hit_seat), 433-437; modules/threats/near.rs:214-220 (nearest_seats by node_distance).",
+   "book_fault": ""
+  }
+ ],
+ "V2": [
+  {
+   "id": "V2-1",
+   "grade": "right",
+   "engine": "Yes: each troop that ends any march (a threat's immediate one too) next to the Protector's node gives 1 insight; a troop used up striking doesn't count. Insight gained in the threats step has no later use that round and is reset at the next round start (Patience is the Researcher's, not the Protector's).",
+   "evidence": "crates/aic-core/src/modules/board/troops.rs:149-151 and 214-223 (Vigil pays in march_troops, which march_now also uses, only for a troop still alive); crates/aic-core/src/modules/economy.rs:189-200 (round_start sets insight, so unspent insight is lost unless Patience)",
+   "book_fault": ""
+  },
+  {
+   "id": "V2-2",
+   "grade": "right",
+   "engine": "The ambassador on the base is used up in place of the drone, so no drone is added. This applies to Warmongering's drone made past the limit too (the drone needs an adversary troop on or next to the base).",
+   "evidence": "crates/aic-core/src/modules/board/production.rs:159-171 (extra_units calls corp_troops_at with past_cap true); production.rs:14-30 (corp_troops_at: player_ambassador on the base is removed and the drone skipped, lines 22-25); production.rs:132-151 (Warmongering's near-troop check)",
+   "book_fault": ""
+  },
+  {
+   "id": "V2-3",
+   "grade": "right",
+   "engine": "The country's pool is emptied and lands nothing. With no site of type X, no agents are placed and the pool goes back to zero.",
+   "evidence": "crates/aic-core/src/modules/adversary.rs:1064-1076 (pool_key set to 0, then rally_plan returns None and it tallies rally_nowhere); crates/aic-core/src/modules/plan.rs:277-280",
+   "book_fault": ""
+  },
+  {
+   "id": "V2-4",
+   "grade": "right",
+   "engine": "No. A neutral city's energy can be bought once a round in total. The bought mark is kept per city, not per player.",
+   "evidence": "crates/aic-core/src/modules/board/standard.rs:188-207 (bought_key(h) keyed by hex only; energy_for_sale requires it to be 0)",
+   "book_fault": ""
+  },
+  {
+   "id": "V2-5",
+   "grade": "right",
+   "engine": "Once its megaproject is complete, your station's 2 cubes go onto your board as research cubes, unless an agent on the station blocks it. A completed megaproject is skipped from then on and never pays again.",
+   "evidence": "crates/aic-core/src/modules/board/production.rs:340-376 (station_cubes: project_done goes to the owner's ResearchCubes); production.rs:385-389 (complete_projects skips a done project); configs/baseline.json:14 owned_station_cubes 2",
+   "book_fault": ""
+  },
+  {
+   "id": "V2-6",
+   "grade": "right",
+   "engine": "From round 2 each keep costs 1 insight for a tier-1 card and 2 for a tier-2 card. A tier-2 keep is 1 with the keep upgrade, and Science discounts can lower it but never below 1. Any insight you are short costs 5 credits each. Keeping is optional (you may pass), and a Unity free purchase can make a keep free.",
+   "evidence": "crates/aic-core/src/modules/cards/price.rs:13-31 (keep_need) and 61-63 (science_off with floor); crates/aic-core/src/modules/cards/play.rs:10-16 (shortfall at insight_credits) and 230-243 (keep_card); crates/aic-core/src/modules/cards/mod.rs:385-395 and 418-420 (keep phase is passable); configs/baseline.json:186-189",
+   "book_fault": ""
+  },
+  {
+   "id": "V2-7",
+   "grade": "right",
+   "engine": "No. The only requirement is that your own ambassador stands on the botnet's hex; reach is not checked.",
+   "evidence": "crates/aic-core/src/modules/board/standard.rs:209-213 (botnet_targets: BOTNET and own ambassador on the hex, no in_reach)",
+   "book_fault": ""
+  },
+  {
+   "id": "V2-8",
+   "grade": "right",
+   "engine": "The troop lands without cancelling anything. In the march, step 1 removes your ambassador. In step 2 it strikes a target on or next to its hex, which is your factory if that is the only one. Unprotected, the factory and your cube go, and the troop is used up.",
+   "evidence": "crates/aic-core/src/modules/adversary.rs:1470-1520 (land_troops) and 1260-1262 (place_troop only adds the token); crates/aic-core/src/modules/board/troops.rs:162-183 (an ambassador on the hex is removed as that step) and 184-193, 372-404 (strike_from, troop spent); crates/aic-core/src/modules/board/destroy.rs:130-133 (cube goes); configs/baseline.json:24-25 (troop_spent 1, troop_steps 2)",
+   "book_fault": ""
+  },
+  {
+   "id": "V2-9",
+   "grade": "right",
+   "engine": "At level 2 the counter costs 5 energy or 10 credits (+2 on other resources, +4 on credits). If the threat goes unpaid it takes its printed effect, and the adversary also banks 4 compute, which arrives at its next compute step.",
+   "evidence": "crates/aic-core/src/modules/threats/counter.rs:62-73 and 82-107 (CounterSteps and requirement_with); configs/baseline.json counter_bonus_all 1, counter_bonus_credits 4, counter_bonus_at 1, counter_more_all 1, counter_more_at 2; crates/aic-core/src/modules/threats/mod.rs:444-450; crates/aic-core/src/modules/adversary.rs:329-335 (threat_compute from board_difficulty_at 2) and 809-817 (gain_compute goes to WAITING)",
+   "book_fault": ""
+  },
+  {
+   "id": "V2-10",
+   "grade": "right",
+   "engine": "Against war you may spend the hardening token, your own ambassador on the hex, or Aegis, but not a drone. If you save the factory, the node is never touched. If you let the factory go, it adds 1 Discord, and then the node faces its own destruction. Because the node is on the hex, the token is still there and can be spent to save the node.",
+   "evidence": "crates/aic-core/src/modules/board/troops.rs:52-72 (battle: the node is hit only if destroy_piece on the factory returns true; war_reach 0); crates/aic-core/src/modules/board/destroy.rs:48-64 (guards: Base only for Cause::Troop) and 134-138 (the token stays when a node is on the hex) and 147-149 (war Discord); configs/baseline.json:23,28",
+   "book_fault": ""
+  },
+  {
+   "id": "V2-11",
+   "grade": "right",
+   "engine": "The city corrupts: the adversary's cube replaces yours. Shelter stops the node's destruction, so the node stays on the now-corrupted city and leaves no marker. Your ambassador on the hex is removed anyway.",
+   "evidence": "crates/aic-core/src/modules/adversary.rs:1292-1316 (corrupt_hex: take_for_adversary, destroy_piece for the node, then every player ambassador removed); crates/aic-core/src/modules/board/destroy.rs:74-78 (Shelter flag in the country returns not-destroyed, spending nothing); content/threats.json:1261 (the threat's op is corrupt_city at its city token, with no neighbor-node clause); crates/aic-core/src/modules/effects/new_ops.rs:335-339.",
+   "book_fault": ""
+  },
+  {
+   "id": "V2-12",
+   "grade": "right",
+   "engine": "Yes. A corrupted city is not a Corrupt-cities target, so its agents count as sources. Each one moves onto the neighboring neutral city unless that city is firewalled or under a Corrupt prohibition.",
+   "evidence": "crates/aic-core/src/modules/plan.rs:102-105 (a city target must not be corrupted); plan.rs:135-170 (converge: every non-target hex with agents and an open target next to it moves its agents; only target hexes keep theirs); adversary.rs:1369-1394.",
+   "book_fault": ""
+  },
+  {
+   "id": "V2-13",
+   "grade": "right",
+   "engine": "At level 0 a city needs 4, so it doesn't corrupt. The node hex holds the node number, 2, so the node is destroyed (protections apply) and the 2 agents go back to the supply. The city is untouched and gets a corruption marker, which later counts as 1 agent toward the city's corruption.",
+   "evidence": "configs/baseline.json:61,65,72 (corrupt_at 4, corrupt_node_at 2, cut from level 1); adversary.rs:1348-1366 (no cut on a node at level 0); adversary.rs:1440-1460 (natural corruption checks cities first, then nodes); adversary.rs:1330-1345 (corrupt_node: agents removed, destroy_piece, nothing else changes); board/node.rs:198-201 (lost node leaves a marker unless the hex is tainted); plan.rs:116-118 (a city's marker counts).",
+   "book_fault": ""
+  },
+  {
+   "id": "V2-14",
+   "grade": "right",
+   "engine": "No. The Liberate price is the site's base (city 5) plus 1 for each agent on it. Markers never count, and corrupting a city takes its markers off anyway.",
+   "evidence": "crates/aic-core/src/modules/board/ambassadors.rs:110-116 (liberate_cost = liberate_ambassadors + agents only); adversary.rs:1273-1276 and 1311 (corruption clears markers); board/node.rs:198 (a lost node leaves no marker on a corrupted hex).",
+   "book_fault": ""
+  },
+  {
+   "id": "V2-15",
+   "grade": "right",
+   "engine": "With 1 seat the track tips at 3. At 7 Unity it tips (4 left, tip count 1, one Unity card at strength I), is still full and tips again (1 left, tip count 2, another strength-I card). It ends at 1, unless a drawn card sways more.",
+   "evidence": "crates/aic-core/src/modules/alignment.rs:198-210 (capacity = 3 x seats; momentum_every 0 in configs/baseline.json:129); alignment.rs:389-399 (carry 2: a tip takes off one capacity and the rest stays); alignment.rs:563-580 (loop re-checks and tips again while full); alignment.rs:179-181 (tier I on tips 1-2, tier_at 3,6).",
+   "book_fault": ""
+  },
+  {
+   "id": "V2-16",
+   "grade": "right",
+   "engine": "The Sway step comes first, then the adversary's event card, in every round including round 1.",
+   "evidence": "configs/baseline.json:366-368 (round order: alignment.sway, then adversary.event); no round-1 skip in the alignment module's sway phase (crates/aic-core/src/modules/alignment.rs:48-49).",
+   "book_fault": ""
+  },
+  {
+   "id": "V2-17",
+   "grade": "right",
+   "engine": "6 ambassadors (5 for a city plus 1 for the agent), all from your supply because none of yours stand there. The agent is removed. The city must be in your reach (and not under an Embargo).",
+   "evidence": "configs/baseline.json:19 (claim_city 5); crates/aic-core/src/modules/board/ambassadors.rs:100-106 (claim_cost = base + agents); ambassadors.rs:134-145 (pay_site: your own on the site pay first, then the supply); ambassadors.rs:179-185 (claim_site removes the agents); ambassadors.rs:10-11 (can_claim: in reach and not embargoed).",
+   "book_fault": ""
+  },
+  {
+   "id": "V2-18",
+   "grade": "right",
+   "engine": "Setup took economy space 1, so the next economy space is the free 2nd: Expand costs 1 energy in all. On the card-play track the next is the 3rd space, which costs 1 energy, so 2 energy in all.",
+   "evidence": "crates/aic-core/src/modules/board/mod.rs:298 (setup sets the economy track to 1 taken); content/ais.json builder economy_track[1] has no cost and play_track[2] has cost 1; board/node.rs:131-160 (placement pays the power's cost plus the step's energy); Expand costs energy 1 (content/ais.json).",
+   "book_fault": ""
+  },
+  {
+   "id": "V2-19",
+   "grade": "right",
+   "engine": "The harm hits the player whose node is closest, by hex distance, to any of the threat's tokens, at any distance. On a tie the tied players choose. From level 2 the adversary also gains 4 compute for each threat that executes uncountered.",
+   "evidence": "crates/aic-core/src/modules/threats/near.rs:200-220 (node_distance/nearest_seats: nodes only, any distance, all tied seats); threats/mod.rs:264-268 (tied seats pick); threats/mod.rs:447 and adversary.rs:329-335 (threat_compute); content/adversary.json:47-56 (difficulty line: threat_compute 4) with configs/baseline.json:113 (board_difficulty_at 2).",
+   "book_fault": ""
+  }
+ ]
+}

@@ -1,0 +1,88 @@
+{
+ "G3": [
+  {
+   "id": "G3-1",
+   "grade": "right",
+   "engine": "No. Solo the hand passes to yourself (draft_pick passes to (p+1)%n, cards/play.rs:351-372), so you draft all 4. Keep is optional: you may pass in phase 3 (cards/mod.rs:418-420, legal Keep at :385-395). Price: keep_tier1 1, keep_tier2 2 (1 upgraded), and each insight you lack costs insight_credits 5 (cards/price.rs:13-32, cards/play.rs:10-16, configs/baseline.json:180-189).",
+   "evidence": "crates/aic-core/src/modules/cards/play.rs:351; crates/aic-core/src/modules/cards/play.rs:230-262; crates/aic-core/src/modules/cards/price.rs:26-31",
+   "book_fault": ""
+  },
+  {
+   "id": "G3-2",
+   "grade": "right",
+   "engine": "Yes. If you decline the token and the factory is destroyed, the token comes off only when no node is left on the hex: `if !hardenable(g,h) && node_owner(g,h).is_none()` (board/destroy.rs:136-140). With your node there, it stays. When a threat later destroys the node, guards() offers Guard::Harden for any piece on a hex holding a token (destroy.rs:53-55), and spending it saves the node (destroy.rs:103-107).",
+   "evidence": "crates/aic-core/src/modules/board/destroy.rs:136-140; crates/aic-core/src/modules/board/destroy.rs:47-64",
+   "book_fault": "Book silent. §13 says 'One hardening token on a hex with both your facility and your node can save either, once: you may keep it for the second', but never says what happens to a declined token when its facility is destroyed. In the engine it stays only if a node is on the hex and otherwise goes with the facility. The reader flagged exactly this gap."
+  },
+  {
+   "id": "G3-3",
+   "grade": "right",
+   "engine": "Nothing happens when it lands. place_troop only adds the troop token (adversary.rs:1260-1262), and land_troops does nothing else unless the line destroys nodes (adversary.rs:1520-1528). In the march, a troop that starts a step on a hex with an ambassador removes one instead of moving or striking, and the players choose whose (board/troops.rs:166-187).",
+   "evidence": "crates/aic-core/src/modules/adversary.rs:1260; crates/aic-core/src/modules/board/troops.rs:166-187",
+   "book_fault": ""
+  },
+  {
+   "id": "G3-4",
+   "grade": "right",
+   "engine": "Shares are n/k = 7/3 = 2 each. The remainder of 1 goes to the first site in the order: not firewalled, then not corrupted (the adversary's last), then hex number (plan.rs:277-293, sites sorted by number at :269-272). So the lowest-numbered non-adversary station gets 3 and the others get 2. Each arrival cancels a player ambassador one for one (adversary.rs:1185-1215).",
+   "evidence": "crates/aic-core/src/modules/plan.rs:283-291; crates/aic-core/src/modules/adversary.rs:1207-1215",
+   "book_fault": ""
+  },
+  {
+   "id": "G3-5",
+   "grade": "right",
+   "engine": "Each point goes to min_by_key(project_cost), which is the printed cost × seats, not the amount still missing (adversary.rs:883-889, :175-177). The project costing 4 is the cheaper one, so the point goes there.",
+   "evidence": "crates/aic-core/src/modules/adversary.rs:883-898; crates/aic-core/src/modules/adversary.rs:175-177",
+   "book_fault": ""
+  },
+  {
+   "id": "G3-6",
+   "grade": "right",
+   "engine": "tip_corp_troops: an unoccupied neutral factory with no agent makes 1 drone on each base of its country's corp that has room (below unit_cap). Each player ambassador on the factory stops one and is spent (board/production.rs:50-87). At 3 countries there are three fronts, so each country has 2 bases (content/map.json layout fronts [[0,1],[0,2],[1,2]]; corp_bases at production.rs:38-42).",
+   "evidence": "crates/aic-core/src/modules/board/production.rs:50-87",
+   "book_fault": ""
+  },
+  {
+   "id": "G3-7",
+   "grade": "right",
+   "engine": "Yes. A Corrupt land target is a non-ocean Open hex with no factory or station and no land corruption. Nodes are not checked (plan.rs:108-110; has_building in common.rs:107-109 counts only factory and station). The line uses the land number corrupt_land_at 3 (adversary.rs:1354, :1371). At that number the hex takes the land-corruption token, its node is destroyed (protections apply) and its ambassadors are removed (adversary.rs:1293-1312).",
+   "evidence": "crates/aic-core/src/modules/plan.rs:108-110; crates/aic-core/src/modules/adversary.rs:1297-1312; crates/aic-core/src/modules/adversary.rs:1354",
+   "book_fault": "Ambiguous. §15 is clear ('an open hex with no base, station, factory or land corruption, a node on it or not'), but §6 says a hex with a node has corrupt number '2 (whatever else is there ...)'. That leaves it unclear whether a Corrupt open land line needs 3 or 2 on a node hex, and whether it lays a land token or only takes the node. The engine uses 3 and lays the land token. The reader flagged this."
+  },
+  {
+   "id": "G3-8",
+   "grade": "right",
+   "engine": "walled(h) means the hex holds the Protector's node (troops.rs:289-291). On that hex: there are no strike targets (troops.rs:236-238, :269-271); troops cannot step onto it (troops.rs:352, effects/moves.rs:52); landings stay in the supply (adversary.rs:1515-1518, effects/new_ops.rs:284-287). A facility next to the node, not on its hex, is not covered. Wall has no part in corruption, war or agents. An adversary factory on the hex still produces its troop (production.rs:200-206), and that troop walks off.",
+   "evidence": "crates/aic-core/src/modules/board/troops.rs:233-238; crates/aic-core/src/modules/board/troops.rs:340-353; crates/aic-core/src/modules/adversary.rs:1515",
+   "book_fault": "Minor. §5 'can't ... strike a hex with your node' is literally right, but it never says outright that a facility next to the node is not covered, and the reader was unsure. 'Threats still destroy' could also be read as threats' troops landing on the hex, which Wall does block."
+  },
+  {
+   "id": "G3-9",
+   "grade": "right",
+   "engine": "The rule is on the Militarist's board (content/adversary.json:28-29, 'Troops where the Protector stands'), run by wall_pressure. In each country with a Wall seat's node, wall_troops (1) + deploy_bonus troops land on the lowest-numbered factory without a player cube (adversary or neutral). With none, nothing lands and no city is used. A Wall on that hex keeps the troop in the supply (adversary.rs:1136-1161, 1515). deploy_bonus is +1 from board_difficulty_at 2 (adversary.rs:310-322, baseline.json:113).",
+   "evidence": "crates/aic-core/src/modules/adversary.rs:1136-1161; content/adversary.json:28-29",
+   "book_fault": ""
+  },
+  {
+   "id": "G3-10",
+   "grade": "right",
+   "engine": "The event troops op has lowest = deploy = true, and count = 2 + deploy_bonus (1 at level 2 or higher) = 3 in each country (effects/team.rs:26-35). land_troops places them one at a time on the lowest-numbered factory of any owner, else the lowest-numbered city. A walled or prohibited landing stays in the supply and does not move to the next site (adversary.rs:1482-1529). All three stack on the same factory.",
+   "evidence": "crates/aic-core/src/modules/effects/team.rs:26-35; crates/aic-core/src/modules/adversary.rs:1482-1529",
+   "book_fault": ""
+  },
+  {
+   "id": "G3-11",
+   "grade": "right",
+   "engine": "Never. An arriving agent cancels a player ambassador (adversary.rs:1207-1215, converge_one :1422-1433). An arriving ambassador cancels an agent (board/ambassadors.rs:23-30, used by move_ambassador :239-266). Convert removes the agents first and then places ambassadors through place_ambassador (effects/endgame.rs:28-55). Claim and Liberate bills add 1 per agent (ambassadors.rs:100-116), paid by your own ambassadors on the site first, then your supply (ambassadors.rs:133-145).",
+   "evidence": "crates/aic-core/src/modules/board/ambassadors.rs:19-30; crates/aic-core/src/modules/adversary.rs:1203-1215",
+   "book_fault": ""
+  },
+  {
+   "id": "G3-12",
+   "grade": "right",
+   "engine": "Shelter sets a country flag to 1 (board/mod.rs:229-231). The flag is counted down at cleanup (mod.rs:97-100). In the round order the adversary turn comes before the action phase (baseline.json:366-387), so Shelter never covers it. It works only inside destroy_piece (destroy.rs:76-78). Cube swaps (take_for_adversary) and ambassador removal in corrupt_hex (adversary.rs:1299-1312) do not go through destroy_piece, so Shelter does not stop them.",
+   "evidence": "crates/aic-core/src/modules/board/destroy.rs:74-78; crates/aic-core/src/modules/adversary.rs:1293-1312; configs/baseline.json:366-387",
+   "book_fault": ""
+  }
+ ]
+}

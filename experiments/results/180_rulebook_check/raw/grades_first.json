@@ -1,0 +1,398 @@
+{
+ "G": [
+  {
+   "id": "G1",
+   "grade": "right",
+   "engine": "No agents (or troops) start on the map. At setup each country's pool gets one round of agent income. At difficulty 2 that is 3 from the config plus 1 from the Militarist's Garrisons, so 4 a country.",
+   "evidence": "board/mod.rs:272-319 (setup places cubes, stations, botnet station, factories, nodes; no agents); adversary.rs:350-384 (income = ambassador_income[difficulty] + board IncreaseIncome, then fill_pools); adversary.rs:1027-1034 fill_pools; configs/baseline.json:101-107 ambassador_income [0,3,3,3,3]; content/adversary.json Garrisons increase_income ambassadors 1.",
+   "book_fault": ""
+  },
+  {
+   "id": "G2",
+   "grade": "right",
+   "engine": "No. Insight is reset each round and unspent insight is lost. The exception is the Researcher (Patience), who keeps their own unspent insight but not insight other players gave them.",
+   "evidence": "economy.rs:189-200 round_start: carried = patient ? (have - received) : 0; n = income insight + gift + carried - debt; economy.rs:79-83 patient() reads Op::Patience on the AI board.",
+   "book_fault": ""
+  },
+  {
+   "id": "G3",
+   "grade": "right",
+   "engine": "No. Every round, round 1 included, runs Sway, then the whole adversary turn, then Cards (in round 1 that is the opening deal). The game opens with the adversary's turn.",
+   "evidence": "configs/baseline.json:366-388 round order (alignment.sway, adversary.event ... adversary.compute, then cards.tier/deal/draft/keep); cards/mod.rs:279-297 setup only shuffles the decks and deals no hands; cards/mod.rs:316,350 round-1 opening handled inside cards.deal.",
+   "book_fault": ""
+  },
+  {
+   "id": "G4",
+   "grade": "right",
+   "engine": "In the Corrupt step, each agent next to a target city that is not itself a target moves onto it (the players choose if it is next to several), so the city holds 3. At the baseline difficulty 0 a city needs 4, so nothing else happens. From level 1 a city needs 3, so it corrupts: the adversary cube replaces any owner cube, the agents go back to the supply, any node there is destroyed (protections apply), player ambassadors there are removed and markers come off. An agent arriving on an ambassador cancels one, one for one.",
+   "evidence": "adversary.rs:1369-1420 corrupt_sites (converge, then held >= n corrupts; held adds a city's markers); plan.rs:135-170 converge (agents on a target stay; moves cross borders); adversary.rs:1348-1366 corrupt_n with corrupt_cut from level 1 (baseline.json:54 difficulty 0, :61 corrupt_at 4, :66-72 cut [1,1,1,0] at 1); adversary.rs:1292-1327 corrupt_hex; adversary.rs:1423-1435 converge_one cancels an ambassador.",
+   "book_fault": ""
+  },
+  {
+   "id": "G5",
+   "grade": "right",
+   "engine": "Nothing happens at once. In the adversary turn's natural corruption step (or earlier in a Corrupt nodes line), a hex with a player's node and 2 agents loses the node. The agents go to the supply and the protection order applies: Shelter does not cover the adversary turn, then the owner may spend a hardening token or shield, their own ambassador, or Aegis. Sanctuary keeps the node. A destroyed node leaves a corruption marker unless the hex is already tainted, and nothing else on the hex changes.",
+   "evidence": "adversary.rs:1440-1466 natural_corruption (City, Station, Factory, then Node at corrupt_n Node=2, no cut: op.rs:263-270 Node index 5 past cut list); adversary.rs:1330-1345 corrupt_node (agents removed, destroy_piece unless CorruptionShield); destroy.rs:73-120 guards; node.rs:198-202 marker; board/mod.rs:228-231 and 517+ Shelter flag lasts only this round to cleanup.",
+   "book_fault": ""
+  },
+  {
+   "id": "G6",
+   "grade": "right",
+   "engine": "The agent and one ambassador are both removed, one for one, and the agent goes back to the adversary's supply. With several players' ambassadors there, the team chooses whose (the engine asks seat 0 for the team, which matches 'if you can't agree, the first player decides').",
+   "evidence": "board/ambassadors.rs:35-50 agent_cancels (several seats: choose_loss(0, ...)); adversary.rs:1207-1215 arrive returns the agent to supply.",
+   "book_fault": ""
+  },
+  {
+   "id": "G7",
+   "grade": "right",
+   "engine": "It costs 1 ambassador from your supply, which is used up. It removes up to 3 agents one at a time from any hexes in your reach (one hex or several, and you may stop early), and places nothing. Like any standard action you can repeat it as often as you can pay.",
+   "evidence": "board/standard.rs:509-526 (first pick then up to remove_count-1 more from agent_hexes in reach, STOP_REMOVING option); standard.rs:141 printed price ambassadors(remove_ambassadors); configs/baseline.json:31-32 remove_ambassadors 1, remove_count 3; board/mod.rs:321-332 legal while affordable.",
+   "book_fault": ""
+  },
+  {
+   "id": "G8",
+   "grade": "right",
+   "engine": "Claim costs 6 ambassadors: 5 for a city plus 1 for the agent. Your own ambassadors on the city pay first (1 here), and your supply pays the other 5. The agent is removed and your cube goes on. The city must be in your reach and not under embargo. (In play an ambassador and an agent can't normally share a hex, since they cancel on contact.)",
+   "evidence": "board/ambassadors.rs:100-106 claim_cost = claim_city + agents; :126-129 site_supply_cost subtracts the seat's standing ambassadors; :133-144 pay_site; :185-197 claim_site removes agents, adds cube; :10-12 can_claim (reach, no embargo); baseline.json:19 claim_city 5.",
+   "book_fault": ""
+  },
+  {
+   "id": "G9",
+   "grade": "right",
+   "engine": "It becomes the liberating player's: the adversary cube comes off and theirs goes on. A station or factory adds 2 Unity, and a botnet on it stays.",
+   "evidence": "board/ambassadors.rs:205-223 liberate_site (ADV_CUBE -1, unity free_facility, cube(seat) +1, botnet untouched); configs/baseline.json:132 free_facility 2.",
+   "book_fault": ""
+  },
+  {
+   "id": "G10",
+   "grade": "right",
+   "engine": "No. Only your own ambassadors standing on the site count toward the price; the rest comes from your own supply.",
+   "evidence": "board/ambassadors.rs:120-122 site_standing counts ambassador(seat) only; :133-144 pay_site spends only that seat's tokens then its supply.",
+   "book_fault": ""
+  },
+  {
+   "id": "G11",
+   "grade": "right",
+   "engine": "In growth, after the income step and extra drones, every city (blocked or not) with a free industrial zone next to it (no factory, station or land corruption) builds a factory there, every round. A neutral city builds a neutral factory on a zone the players choose. A player's city builds its owner's factory on a zone the owner chooses, and a corrupted city builds the adversary's next to an agent where it can.",
+   "evidence": "board/production.rs:91-94 produce_units = extra_units then grow_factories; production.rs:218-259 grow_factories (neutral: cube_owner None -> chooser seat 0, no cube added); common.rs:158-162 free_zones; baseline.json:366-388 board.bases after economy.upkeep.",
+   "book_fault": ""
+  },
+  {
+   "id": "G12",
+   "grade": "right",
+   "engine": "The node is at risk only if the factory itself is destroyed; if the factory is saved, the node is untouched. Shelter in that country stops both automatically. Otherwise you, the node's owner, choose to spend a hardening token or shield on the hex, your own ambassador there, or Aegis Doctrine, or nothing. Drones only guard against adversary troops.",
+   "evidence": "board/troops.rs:65-73 battle: destroy_piece(FACTORY, War) then, only if destroyed, destroy_piece(node) for nodes within war_reach (baseline.json:28 war_reach 0 = the hex only); destroy.rs:48-66 guards (Base only for Cause::Troop), 73-80 Shelter check, chooser = owner; destroy.rs:136-141 a declined harden token stays while a node is on the hex.",
+   "book_fault": ""
+  },
+  {
+   "id": "G13",
+   "grade": "right",
+   "engine": "Income step first: factories, then cities, then stations, then megaprojects complete, then upkeep (board, tracks and cards income). Then growth: extra drones, then cities build factories. A new factory comes after all income and first produces next round.",
+   "evidence": "board/production.rs:268-274 produce = factory_output, city_energy, station_cubes, complete_projects; configs/baseline.json:366-388 board.produce, economy.upkeep, board.bases; production.rs:91-94 bases = extra_units then grow_factories.",
+   "book_fault": ""
+  },
+  {
+   "id": "G14",
+   "grade": "right",
+   "engine": "Buy energy is a standard action in the action phase: 4 credits buys a neutral city's energy (1). The city must be in your reach, with no blackout and no agent on it. Each city can be bought once a round in total, not once per player. Your own cities also give 1 energy each in production.",
+   "evidence": "board/standard.rs:198-207 energy_for_sale (neutral, reach, !city_dark, not bought_key); production.rs:285-287 city_dark = blackout or agent; standard.rs:534-541 sets bought_key(h) per hex, not per seat; board/mod.rs:135 BOUGHT is a round mark; baseline.json:39-42 corp_energy [1], city_energy_credits 4.",
+   "book_fault": ""
+  },
+  {
+   "id": "G15",
+   "grade": "right",
+   "engine": "A tip takes only one tip's worth of Sway off the track. With carry 2 in the baseline, the other 3 stay on the track toward the next tip. If what is left fills the track again, the tip loop checks again and the track tips again.",
+   "evidence": "crates/aic-core/src/modules/alignment.rs:394-400 (carries = carry>=2; back = capacity.min(held)); alignment.rs:563-584 (after(): `continue 'tips` re-checks full tracks); configs/baseline.json alignment carry 2.",
+   "book_fault": ""
+  },
+  {
+   "id": "G16",
+   "grade": "right",
+   "engine": "Only a player with a node or ambassador on or next to one of the threat's tokens may pay. Resources are pooled from every near player. A tag (sacrifice) option is paid whole by one seat.",
+   "evidence": "threats/near.rs:171-182 (near = node or player ambassador within the token mask); threats/mod.rs:502-504 (Pay refused if not near); mod.rs:478-484 (CounterWith only via can_pay_whole for one seat s).",
+   "book_fault": ""
+  },
+  {
+   "id": "G17",
+   "grade": "right",
+   "engine": "Any threat that is not fully paid has its partial payments refunded to their payers. It then executes, and its harm hits the seat whose node is closest to a token, at any distance. On a tie the tied players choose.",
+   "evidence": "threats/mod.rs:415-418 (refund unless try_complete), 433-436 (hit_seat); threats/near.rs:208-219 (nearest_seats by node distance, ties kept).",
+   "book_fault": ""
+  },
+  {
+   "id": "G18",
+   "grade": "right",
+   "engine": "Yes. A strike lists pieces on the chosen hex and on its neighbors, and the player picks batches from any of those hexes until N is reached or they stop.",
+   "evidence": "crates/aic-core/src/modules/effects/moves.rs:165-201 (around = neighbors plus the hex itself; batches chosen per hex; sizes() offers 1).",
+   "book_fault": ""
+  },
+  {
+   "id": "G19",
+   "grade": "right",
+   "engine": "Every firewall comes off at the end of the next adversary turn's compute step. A firewall placed in this round's action phase therefore lasts through the next round's adversary turn.",
+   "evidence": "crates/aic-core/src/modules/adversary.rs:469-479 (phase 5 compute: all FIREWALL tokens removed); baseline.json round order: the adversary phases come before the action phase.",
+   "book_fault": ""
+  },
+  {
+   "id": "G20",
+   "grade": "right",
+   "engine": "The trigger fires once per action if that action removed at least one troop, so the answer is 1 credit.",
+   "evidence": "crates/aic-core/src/modules/cards/triggers.rs:191-215 (fight_fire; Event::RemoveTroop => (removed[1] > 0) as i64).",
+   "book_fault": ""
+  },
+  {
+   "id": "G21",
+   "grade": "right",
+   "engine": "Yes. The standard action Take down a botnet costs 5 credits and needs your ambassador on the botnet's hex. Reach is not checked. The ambassador stays, the botnet comes off and you add 1 Unity. Cards can also remove botnets.",
+   "evidence": "board/standard.rs:148 (botnet_credits, 5 in baseline), 209-212 (targets: hex with BOTNET and own ambassador, no reach test), 527-531 (remove_botnet, ambassador stays); baseline alignment botnet 1.",
+   "book_fault": ""
+  },
+  {
+   "id": "G22",
+   "grade": "right",
+   "engine": "Clear costs 2 credits and can remove a land corruption token in reach, with no reward. If the hex also holds a marker, the marker comes off instead. A factory can't be built on land corruption, because free zones exclude it.",
+   "evidence": "board/standard.rs:136 (clear_cost 2), 420-421, 542-551; common.rs:156-161 (free_zones exclude LAND_CORRUPTION); effects/targets.rs:54-58 (card factory sites = free_zones).",
+   "book_fault": ""
+  },
+  {
+   "id": "G23",
+   "grade": "right",
+   "engine": "Each hand always passes to the next seat, (p+1) mod n, in every round. Round 1 has no draft. Solo, the hand passes back to yourself, so you keep all 4.",
+   "evidence": "crates/aic-core/src/modules/cards/play.rs:360-364 (step = 1, 'one fixed direction... alternated before r77'); cards/mod.rs:312-316 (no draft at round <= 1).",
+   "book_fault": ""
+  },
+  {
+   "id": "G24",
+   "grade": "right",
+   "engine": "Projects resolve only in the compute step at the end of the adversary turn. Compute comes from the printed income, 1 per botnet and 1 per corrupted station on a hex with no player ambassador (a hacked botnet also gives none), and compute banked since the last step. Points go one at a time onto the cheapest project, and a project resolves the moment it holds its cost.",
+   "evidence": "crates/aic-core/src/modules/adversary.rs:809-818 (gain_compute only banks WAITING), 825-871 (compute_step), 877-905 (pour_waiting, resolve at cost); resolve_project called only from 902/932.",
+   "book_fault": ""
+  },
+  {
+   "id": "G25",
+   "grade": "right",
+   "engine": "Difficulty 4 deals event cards 3/2/4 instead of 3's 4/2/3. With tier2_early 1, the stage-I card just before the first stage-II card deals tier-2 threats. Nothing else differs in the baseline: extra_corrupted and discord_removed are 0, and income and rounds are the same.",
+   "evidence": "adversary.rs:256-263 (stage_swap_at 4: stage1_removed 1, stage3_added 1; d3: stage2_removed 2); adversary.rs:192, 201-204 and threats/mod.rs:294, 372-374 (tier2_soon); board/mod.rs:275 and alignment.rs:498-509 (level-4 params are 0 in baseline); baseline compute_income [1,4,22,24,24].",
+   "book_fault": ""
+  },
+  {
+   "id": "G26",
+   "grade": "right",
+   "engine": "Yes. A threat's 'destroy a node' and a Corrupt line can both destroy a last node, subject only to the protection order (Shelter, shield, own ambassador, Aegis, or Sanctuary against corruption). As soon as any player has no node, everyone loses.",
+   "evidence": "board/node.rs:183-189 (lose_node: 'a last node too'); adversary.rs:1330-1338 (corrupt_node destroys via destroy_piece unless CorruptionShield); effects/team.rs:96; adversary.rs:1756-1758 (loss); alignment.rs:586-591.",
+   "book_fault": ""
+  },
+  {
+   "id": "G27",
+   "grade": "right",
+   "engine": "No. Paying threats is part of the merged action phase, and a seat that has passed gets no legal actions until the next decision phase. That means no payment and no withdrawal.",
+   "evidence": "configs/baseline.json:380 ('cards.play+threats.counter+alignment.act+board.act+ai.power'); crates/aic-core/src/rules.rs:475-476 (passed seats skipped in legal), 603-604 ('has passed this phase').",
+   "book_fault": ""
+  },
+  {
+   "id": "G28",
+   "grade": "right",
+   "engine": "You win the moment the board holds none of what the purge counts. Before 3 Unity tips that is corrupted cities, botnets, troops and agents. From 3 tips agents stop counting, and from 6 tips only corrupted cities count. Land corruption never counts, so you can win with it on the map.",
+   "evidence": "alignment.rs:219-221 (bar_level from purge_at [3,6,6]), 339-344 (purge_won; clear_win_stage 1 = any time); adversary.rs:1683-1706 (PurgeLevel), 1729-1750 (counts_against: city, botnet, agent, troop only).",
+   "book_fault": ""
+  }
+ ],
+ "V": [
+  {
+   "id": "V1",
+   "grade": "right",
+   "engine": "No agents or troops start on the map. Each country starts with its first marked city corrupted (adversary cube) and its marked research station corrupted with a botnet; the other station and the factories are neutral. Each country's pool gets one round of agent income at setup (1 a country at level 0: 0 base + 1 Garrisons), and round 1's Rally lands it.",
+   "evidence": "crates/aic-core/src/modules/board/mod.rs:272-292 (setup places ADV_CUBE on start_corrupted cities, STATION+ADV_CUBE on stations, neutral station, factories; no ADV_AMBASSADOR or TROOP); adversary.rs:350-357 (botnet on each marked station), :375-385 (income incl. Garrisons, fill_pools at setup); content/adversary.json events all have a rally line; configs/baseline.json start_corrupted 1, ambassador_income [0,3,3,3,3].",
+   "book_fault": ""
+  },
+  {
+   "id": "V2",
+   "grade": "right",
+   "engine": "6 insight: the board's printed 5 plus 1 from the first economy-track space the setup node uncovers. Round start runs at the start of round 1 too, before the adversary's turn.",
+   "evidence": "crates/aic-core/src/modules/economy.rs:189-200 (round_start sets insight to income); ai.rs:45-47 (uncovered clamps to at least 1), :66-72 (board income + uncovered spaces); content/ais.json (each board income insight 5, economy_track[0] insight 1); rules.rs:727-737 (round_start runs as round 1 begins).",
+   "book_fault": ""
+  },
+  {
+   "id": "V3",
+   "grade": "right",
+   "engine": "Before: the round runs sway, then the adversary's whole turn (event, threats dealt, Rally, Muster, corruption, march, reveal, compute), then cards, then the simultaneous action phase. There are no Fast/Slow timings. The threats it deals take effect after the action phase (step F) unless paid off.",
+   "evidence": "configs/baseline.json \"round\" (alignment.sway, adversary.event, threats.deal, adversary.build, adversary.corrupt, adversary.natural, board.march, adversary.reveal, adversary.compute, cards..., the combined action phase, board.produce, ..., threats.execute, board.war, board.cleanup); adversary.rs:58-67 (phase list).",
+   "book_fault": ""
+  },
+  {
+   "id": "V4",
+   "grade": "right",
+   "engine": "The country's whole pool divides evenly over every site of that type in the country, whoever owns it. The remainder goes one each to the lowest-numbered sites that aren't the adversary's and aren't firewalled, then the adversary's if there are too few. A firewalled or prohibited site's share stays in the supply.",
+   "evidence": "crates/aic-core/src/modules/plan.rs:269-293 (rally_sites in hex order, any owner; even share n/k; remainder ordered by (firewalled, corrupted), stable in hex order); adversary.rs:1052-1093 (pool emptied, prohibited share tallied, place() skips firewalled hex at 1185-1190).",
+   "book_fault": ""
+  },
+  {
+   "id": "V5",
+   "grade": "right",
+   "engine": "'Deploy' is the engine's word for a Muster (an event's, a project's, or the Protector landing). Each troop lands on the country's lowest-numbered factory (any owner); with no factory, its lowest-numbered city. If that hex holds the Protector's node (Wall), the troop stays in the supply and doesn't move on to another site. From level 2 the board's difficulty line adds 1 troop.",
+   "evidence": "crates/aic-core/src/modules/effects/team.rs:17-37 (event/project/board troops: lowest=true, deploy=true, + deploy_bonus); adversary.rs:1470-1519 (lowest keeps walled hexes in spots, picks min hex number, factory else city; :1515-1517 walled -> continue, troop not placed); adversary.rs:308-325 deploy_bonus.",
+   "book_fault": "The rulebook never uses the word 'Deploy' (it says Muster); the reader mapped it correctly, and §6 'A blocked landing stays in the supply' states the Wall case."
+  },
+  {
+   "id": "V6",
+   "grade": "right",
+   "engine": "No. A troop doesn't damage the hex it stands on just by being there. Each of its 2 steps: remove an ambassador on its hex, else strike a player-owned (uncorrupted) research station or factory on or next to it and be used up, else move one hex toward the nearest such target. Nodes are a target only from stage 4 (troop_node 4), which the 3-stage deck never reaches, so in practice never.",
+   "evidence": "crates/aic-core/src/modules/board/troops.rs:147-215 (step order: ambassador, has_troop_target -> strike_from + troop_spent, else step_toward); :233-251 troop_targets_on (player-owned, not corrupted factory/station; node only if STAGE >= Hot::TroopNode); configs/baseline.json troop_node 4, troop_steps 2.",
+   "book_fault": ""
+  },
+  {
+   "id": "V7",
+   "grade": "right",
+   "engine": "Its first step removes one ambassador on that hex (the players choose whose if there are several), and that uses the step. Its second step removes another if one is still there, otherwise it strikes or moves as normal.",
+   "evidence": "crates/aic-core/src/modules/board/troops.rs:166-187 (each step: if any seat's ambassador on `at`, remove one via choose_loss, `continue` to next step).",
+   "book_fault": ""
+  },
+  {
+   "id": "V8",
+   "grade": "right",
+   "engine": "No. A node hex corrupts naturally only when it holds at least 2 agents (the node's number takes no difficulty cut, and city markers don't count toward it). With 1 agent the node survives.",
+   "evidence": "crates/aic-core/src/modules/adversary.rs:1440-1467 natural_corruption (Node pass with corrupt_n); :1348-1366 corrupt_n; plan.rs:116-118 held (node counts agents only), :229-235 natural_targets (held >= n); configs/baseline.json corrupt_node_at 2, corrupt_cut [1,1,1,0] (node entry 0).",
+   "book_fault": ""
+  },
+  {
+   "id": "V9",
+   "grade": "right",
+   "engine": "Every agent on a hex next to a hex with a player's node (and not itself on one) moves onto it; the players choose when an agent is next to several. Then any node hex holding at least 2 agents loses its node: the protections apply and it leaves a marker, and those agents go back to the supply. Firewalled or prohibited node hexes take no agents and don't corrupt.",
+   "evidence": "crates/aic-core/src/modules/plan.rs:102-111 (Node target = any node), :135-170 converge (sources not targets; firewalled/prohibited targets not open); adversary.rs:1369-1420 corrupt_sites (held >= n; blocked/firewalled skip), :1330-1346 corrupt_node (agents removed, destroy_piece with protections).",
+   "book_fault": ""
+  },
+  {
+   "id": "V10",
+   "grade": "right",
+   "engine": "No. The number printed on a track space is the energy you pay to take that node. You pay the power's or card's cost plus that energy, and a card that places a node free pays neither. The space's printed reward (income, Dispatches, a tag, the keep upgrade, a capstone) is what you gain.",
+   "evidence": "crates/aic-core/src/modules/board/node.rs:80-97 (Placing::Step pays step energy, Free pays nothing), :122-185 (pays, advances track, runs uncover effects); content/ais.json track costs economy [0,0,0,1,2,3,5], play [0,0,1,2,2,3,5].",
+   "book_fault": ""
+  },
+  {
+   "id": "V11",
+   "grade": "right",
+   "engine": "Expand is a power, once a round in the action phase. It costs 1 energy plus the energy printed on the track space you uncover, and places one node on a land hex next to one of your nodes (in your home country if you have none) that has no node, no corruption marker and no land corruption.",
+   "evidence": "content/ais.json Expand {cost energy 1, effects place_node 1}; crates/aic-core/src/modules/board/node.rs:34-57 node_sites (not ocean, no node, no MARKER, no LAND_CORRUPTION, adjacent to own node), :122-185 place_node pays step energy.",
+   "book_fault": ""
+  },
+  {
+   "id": "V12",
+   "grade": "partly",
+   "engine": "Vigil is the Protector's: when an adversary troop ends its march next to one of the Protector's nodes and wasn't used up striking, the Protector gains 1 insight, once per troop per march. It also pays on a threat's immediate march (Spearhead's 'march at once'), but that happens in step F, after the action phase, and round start resets insight, so that insight is lost.",
+   "evidence": "crates/aic-core/src/modules/board/troops.rs:147-151, 214-226 (alive troop, neighbor has node(s) -> on_march_end); cards/triggers.rs:240-253; content/ais.json Wall innate (march_ends_near -> gain insight 1); effects/new_ops.rs:125-133 + content/threats.json:1035-1057 (threat march_now, resolved in threats.execute after the action phase); economy.rs:189-200 (insight reset at round start, Protector has no Patience).",
+   "book_fault": "Rulebook overstates: §5 'gain 1 insight (you can spend it this round). It pays once per troop per march, in any march' -- a threat's immediate march comes after the action phase, so that insight can't be spent. The reader followed the book."
+  },
+  {
+   "id": "V13",
+   "grade": "right",
+   "engine": "Each adversary turn, after the event card's lines and before ongoing projects act, 1 troop lands in each country where the Protector has a node, on that country's lowest-numbered adversary or neutral factory, never a player's factory and never a city. With no such factory, none lands. If the Protector's node is on that hex, the troop stays in the supply. From level 2 the difficulty surcharge adds 1.",
+   "evidence": "crates/aic-core/src/modules/adversary.rs:1135-1161 wall_pressure (factories with cube_owner none; empty -> continue; n + deploy_bonus; land_troops lowest/deploy), called at :425; :1515-1517 walled landing stays in supply; configs/baseline.json wall_troops 1.",
+   "book_fault": ""
+  },
+  {
+   "id": "V14",
+   "grade": "right",
+   "engine": "No. Shelter sets a flag on one country at 1, which cleanup counts down and removes at round end. It can be used only in the action phase, so it covers production, threats and war that round but never the adversary's turn (including the march).",
+   "evidence": "crates/aic-core/src/modules/board/mod.rs:228-231 (shelter sets flag 1), :517-528 (cleanup counts flags down); board/destroy.rs:77 (flag stops destruction); content/ais.json Shelter power (action-phase power).",
+   "book_fault": ""
+  },
+  {
+   "id": "V15",
+   "grade": "right",
+   "engine": "Up to N agents on or next to one city in your reach are removed, then each becomes your ambassador on the hex where it stood. All the agents come off before the ambassadors go on, so only an agent the card left on that hex cancels one of them, one for one.",
+   "evidence": "crates/aic-core/src/modules/effects/endgame.rs:6-10 (cities in reach with an agent on or next to them), 15-55 (agents removed first, then board::place_ambassador at each hex taken); modules/board/ambassadors.rs:23-30 (an arriving ambassador cancels one agent there)",
+   "book_fault": ""
+  },
+  {
+   "id": "V16",
+   "grade": "right",
+   "engine": "While the cordon stands, a Rally skips the country and its pool stays put, and creation lines place nothing there. Troops still land and moves still bring agents in. A cordon played in the action phase lasts through the next adversary turn and comes off in its compute step. The pool keeps getting income and lands at the first Rally after the cordon ends.",
+   "evidence": "modules/effects/mod.rs:122-130 (flag set to 2); modules/adversary.rs:1058-1062 (rally skips a cordoned country without emptying its pool); modules/plan.rs:83-85 (create_plan skips it); modules/adversary.rs:480-486 (cleared at step 12); no cordon check in land_troops or moves.rs",
+   "book_fault": ""
+  },
+  {
+   "id": "V17",
+   "grade": "right",
+   "engine": "Yes. Natural corruption checks the Corrupt prohibition for every target, the node hexes included, and skips any site where the condition holds. During a Corrupt line, no agent moves onto a prohibited target.",
+   "evidence": "modules/adversary.rs:1440-1449 (natural_corruption loops City, Station, Factory and Node, and a Step::Corrupt prohibition_on causes a continue); modules/plan.rs:121-150 (Corrupt line targets switched off by a prohibition)",
+   "book_fault": ""
+  },
+  {
+   "id": "V18",
+   "grade": "right",
+   "engine": "In each country, N troops land one at a time on the lowest-numbered factory, whoever owns it. With no factory they land on the lowest-numbered city, and with neither they don't land. From level 2 every Muster adds 1 troop per country. A Muster prohibition or a Wall on the chosen hex keeps that troop in the supply; it doesn't move on to another site.",
+   "evidence": "modules/effects/team.rs:27-34 (an event, project or board landing is a deploy, lowest-numbered, plus deploy_bonus); modules/adversary.rs:1478-1520 (land_troops: factories, else cities; a prohibition or walled hex means continue); adversary.rs:310-322 with configs/baseline.json board_difficulty_at 2 and content/adversary.json standing_troops_bonus 1",
+   "book_fault": ""
+  },
+  {
+   "id": "V19",
+   "grade": "right",
+   "engine": "The card resolves at the strength set by that side's tip count, this tip included: I on tips 1-2, II on tips 3-5, III from tip 6 (tier_at 3, 6).",
+   "evidence": "modules/alignment.rs:417-418 (tier_of(before + 1)), 181, 213-214; configs/baseline.json alignment tier_at [3,6]",
+   "book_fault": ""
+  },
+  {
+   "id": "V20",
+   "grade": "right",
+   "engine": "No. Of the n Unity swayed, the k the players put against Discord come off the Discord track, and only n - k goes onto the Unity track.",
+   "evidence": "modules/alignment.rs:255-287 (place_unity: hold_off(k), then add n - k to the Unity track)",
+   "book_fault": ""
+  },
+  {
+   "id": "V21",
+   "grade": "right",
+   "engine": "The Discord deck holds 6 cards and never reshuffles, so a 7th Discord tip finds it empty and you lose (discord_removed is 0, so this holds at every level). A tip takes off one tip's worth and the rest stays on the track (carry 2).",
+   "evidence": "modules/alignment.rs:396-401 (carry >= 2: subtract capacity only), 405-412 (empty deck means loss); configs/baseline.json carry 2, discord_removed 0; content/alignment.json (6 Discord cards)",
+   "book_fault": ""
+  },
+  {
+   "id": "V22",
+   "grade": "right",
+   "engine": "Any player with a node or ambassador on or next to one of its tokens may pay. Resources are pooled and a tag sacrifice is paid by one player. The harm hits the player whose node is closest to any of its tokens at any distance, and tied players choose among themselves.",
+   "evidence": "modules/threats/near.rs:171-187 (near: node or ambassador within 1), 199-217 (node_distance, nearest_seats with ties); modules/threats/counter.rs:114-117 (pooled paid), 396-398 (one seat sacrifices the tags)",
+   "book_fault": ""
+  },
+  {
+   "id": "V23",
+   "grade": "right",
+   "engine": "No. The level surcharges apply only to Pay (resource) items. A Sacrifice (tag) item passes through unchanged.",
+   "evidence": "modules/threats/counter.rs:95-107 (only CounterItem::Pay gets step and bonus; `other => other`)",
+   "book_fault": ""
+  },
+  {
+   "id": "V24",
+   "grade": "right",
+   "engine": "5 ambassadors: 3 for the factory plus 1 for each agent. With none of yours standing there, all 5 come from your supply. The agents are removed and your cube goes on.",
+   "evidence": "modules/board/ambassadors.rs:100-106 (claim_cost = claim_factory + agents), 118-144 (own standing ambassadors pay first, then the supply); configs/baseline.json claim_factory 3",
+   "book_fault": ""
+  },
+  {
+   "id": "V25",
+   "grade": "right",
+   "engine": "Once a round per player for each converter, after its megaproject completes, and only if any city of that country is in your reach. Corrupted cities count, because no corruption check is made. You must also be able to pay its cost.",
+   "evidence": "modules/board/mod.rs:427-449 (project_done, city_in_reach_in, once per round per seat via converter_round); modules/common.rs:212-216 (any city in reach)",
+   "book_fault": ""
+  },
+  {
+   "id": "V26",
+   "grade": "partly",
+   "engine": "An ambassador of yours on a base is spent to stop each drone that would be added there, from any source: a Discord tip, Warmongering, Arms Race or War Footing. At a Discord tip, an agent on the neutral factory (or a troop occupying it) stops all of its drones, owning the factory stops them, and each of your ambassadors on the factory stops one. A full base takes none. A drone already at a base can't be removed: it leaves only when it cancels in war or is spent as protection, so in war you protect the factory it strikes.",
+   "evidence": "modules/board/production.rs:14-31 (corp_troops_at: a player ambassador on the base is spent instead of each drone, including past_cap); 157-175 (Warmongering and extra drones go through corp_troops_at); modules/effects/new_ops.rs:670-674 (project drones too); production.rs:50-86 (tip: owned, corrupted, occupied or agent means none, and each factory ambassador stops one); destroy.rs:50-53, 98-101; troops.rs:38-44",
+   "book_fault": "Ambiguous. Section 19 says \"One ambassador always stops one drone, and is spent. A player's ambassador on a base stops the drone that base would get,\" which covers Warmongering. But section 11 puts the stopper only inside the Discord-tip bullet (\"Each of your ambassadors on that factory, or on a base, stops one drone\"), and the Warmongering bullet that follows names no stopper. That supports the reader's \"Warmongering/project drones have no stopper\". The book is also silent on removing a drone already at a base."
+  },
+  {
+   "id": "V27",
+   "grade": "right",
+   "engine": "No. Only the owner's own ambassador on the hex is offered as a protection. Any player's ambassador there still cancels an arriving agent one for one.",
+   "evidence": "modules/board/destroy.rs:48-64 (the Guard::Ambassador check is only for the owner seat); modules/board/ambassadors.rs:33-49 (agent_cancels any player's ambassador)",
+   "book_fault": ""
+  },
+  {
+   "id": "V28",
+   "grade": "right",
+   "engine": "Yes. From 6 Unity tips the purge counts only corrupted cities, so stations, factories and land corruption don't matter. The win is checked after every step, and a node loss is checked first.",
+   "evidence": "modules/adversary.rs:1683-1745 (from_steps: 3+ thresholds means CitiesOnly; against_bar counts only corrupted_city); configs/baseline.json purge_at [3,6,6]; modules/alignment.rs:589-605 (losses first, then purge_won)",
+   "book_fault": ""
+  }
+ ]
+}
