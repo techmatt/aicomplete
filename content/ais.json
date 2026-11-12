@@ -226,27 +226,6 @@
       "count": 2
      }
     ]
-   },
-   {
-    "name": "Annihilate",
-    "tags": [],
-    "cost": [
-     [
-      "antimatter",
-      2
-     ]
-    ],
-    "text": "remove every agent and troop in one hex in reach; sway 3 toward Unity",
-    "effects": [
-     {
-      "op": "destroy_all"
-     },
-     {
-      "op": "sway",
-      "side": "unity",
-      "amount": 3
-     }
-    ]
    }
   ],
   "play_track": [
@@ -312,7 +291,7 @@
   "text": "The defender: plays on the board; Troops stop at its Nodes and can't strike there.",
   "innate": {
    "name": "Wall",
-   "text": "Adversary Troops can't enter or strike a hex with your Node. Each adversary turn, the adversary Musters 1 in each country where you have a Node. Vigil: the first two times each round a Troop ends its march next to your Node, gain 1 insight.",
+   "text": "Adversary Troops can't enter or strike a hex with your Node. Vigil: the first two times each round a Troop ends its march next to your Node, gain 1 insight.",
    "passives": [
     {
      "op": "wall"
@@ -554,27 +533,6 @@
        "agents",
        "troops"
       ]
-     }
-    ]
-   },
-   {
-    "name": "Annihilate",
-    "tags": [],
-    "cost": [
-     [
-      "antimatter",
-      2
-     ]
-    ],
-    "text": "remove every agent and troop in one hex in reach; sway 3 toward Unity",
-    "effects": [
-     {
-      "op": "destroy_all"
-     },
-     {
-      "op": "sway",
-      "side": "unity",
-      "amount": 3
      }
     ]
    }
@@ -860,27 +818,6 @@
       "op": "discard_hand",
       "resource": "insight",
       "amount": 2
-     }
-    ]
-   },
-   {
-    "name": "Annihilate",
-    "tags": [],
-    "cost": [
-     [
-      "antimatter",
-      2
-     ]
-    ],
-    "text": "remove every agent and troop in one hex in reach; sway 3 toward Unity",
-    "effects": [
-     {
-      "op": "destroy_all"
-     },
-     {
-      "op": "sway",
-      "side": "unity",
-      "amount": 3
      }
     ]
    }

@@ -22,8 +22,8 @@
         "start_nodes": 1,
         "destruction_discord": 1,
         "troop_spent": 1,
-        "troop_steps": 2,
-        "troop_node": 4,
+        "troop_steps": 1,
+        "troop_node": 0,
         "vigil_cap": 2,
         "node_marker": 1,
         "station_chips": 1,
@@ -46,7 +46,7 @@
         "drain_credits": 5,
         "drain_amount": 3,
         "cube_insight": 1,
-        "botnet_credits": 5
+        "botnet_credits": 3
       }
     },
     {
@@ -95,22 +95,22 @@
         "stage1_added": 0,
         "extra_corrupted": 0,
         "compute_income": [
-          1,
+          0,
           4,
-          9,
-          28,
+          17,
+          25,
           30
         ],
         "ambassador_income": [
           0,
-          2,
-          3,
-          3,
-          3
+          0,
+          0,
+          0,
+          1
         ],
         "tier2_early": 1,
         "discord_removed": 0,
-        "wall_troops": 1,
+        "wall_troops": 0,
         "wall_landing": 0,
         "war_node": 1,
         "station_flip_at": 2,
@@ -136,7 +136,7 @@
         "free_city": 5,
         "free_facility": 2,
         "botnet": 1,
-        "antimatter_discord": 1,
+        "antimatter_discord": 0,
         "antimatter_uses": 1,
         "purge_at": [
           3,

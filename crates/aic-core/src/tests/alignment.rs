@@ -145,10 +145,11 @@ fn the_board_clear_win_and_the_bar_easing() {
 }
 
 /// The antimatter action sways toward Discord, onto its own track: the
-/// Unity track is untouched (136: no tug of war).
+/// Unity track is untouched (136: no tug of war). r89 turns the action off in the baseline (`antimatter_discord` 0);
+/// the test turns it on.
 #[test]
 fn the_antimatter_action_fills_only_the_discord_track() {
-    let (rules, mut g) = action_only(&[EASE]);
+    let (rules, mut g) = action_only(&[EASE, "alignment.antimatter_discord=1"]);
     g.vars.insert("alignment.unity".into(), 2);
     g.vars.insert("alignment.discord".into(), 0);
     let am = g.resource(0, Resource::Antimatter);

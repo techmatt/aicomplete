@@ -60,7 +60,7 @@ pub const SOURCES: [&str; 12] = [
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 21] = [
+pub const RULE_HARMS: [(&str, &str, &str); 22] = [
     ("income and rally", "adversary pieces placed", "agent income fills each country's pool; every event's Rally X deals it one at a time onto the sites of its type (151; r80)"),
     ("income and rally", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
     ("income and rally", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
@@ -86,6 +86,8 @@ pub const RULE_HARMS: [(&str, &str, &str); 21] = [
     // 195: a strike a protection absorbs spends it (the troop is used up either way, `troop_spent`).
     ("march", "protections stripped", "a strike absorbed by a hardening token or the owner's ambassador spends it (r75; the troop is used up either way)"),
     ("march", "facilities destroyed", "a troop strikes player-owned facilities, walking past ambassadors (r83, #44); it can't enter or strike a hex with the Protector's node"),
+    // 201 (r89, Matt 2026-11-12: troops are few and deadly): troops strike nodes from the start (`troop_node` 0).
+    ("march", "node destroyed", "a troop strikes a player's node on or next to its hex (r89, `troop_node` 0; protections apply), one step a march"),
 ];
 
 /// Columns of [`SOURCES`] that read content, for [`harm_marks`].
@@ -467,7 +469,7 @@ pub(super) fn harms_md(r: &Rules) -> String {
          is how many printed cards do it (a threat, Discord card, twist or project counts once); \
          `yes` is a rule of the board. Insight is no adversary harm, and costs raised has no row yet. \
          `Discord cards` covers both tiers; `march` is the adversary \
-         troops' strikes, which take facilities only at {troop_node}. The `yes` cells \
+         troops' strikes, which take nodes from adversary stage {troop_node} on (0: always; 4: never). The `yes` cells \
          are true at the baseline's numbers ({amb_discord}: an agent \
          darkening an aligned city sways only when that is above 0).\n\n{}\n\
          **Check** (`aic-sim docs --check`, and a fast test): each threat tier at least 5 kinds of harm. Measured \

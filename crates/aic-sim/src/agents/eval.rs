@@ -384,6 +384,10 @@ pub struct Weights {
     /// ambassador on a node hex cancels an arrival rather
     /// than armoring it (r75); and the converge and push rules keep agents off a last node about to tip.
     pub last_node: f64,
+    /// 201: with troops striking nodes (`board.troop_node` reached), a seat's node an adversary troop can reach in
+    /// its next march (hex distance at most `board.troop_steps`, the node's hex not walled) counts this much exposed
+    /// (half with a hardening token or the owner's ambassador on it), read like a node filling toward corruption.
+    pub troop_exposure: f64,
 }
 
 /// Weights renamed since experiments named them: (former name, name).
@@ -642,6 +646,7 @@ impl Default for Weights {
             armor: 1.0,
             botnet_reach: 0.3,
             last_node: 0.0,
+            troop_exposure: 1.0,
         }
     }
 }
@@ -1577,6 +1582,26 @@ impl Eval {
         // 082: in table mode a liberation counts as the city it frees.
         if w.table <= 0.0 {
             v += w.liberated * g.stats.counters.get("board.cities_freed").copied().unwrap_or(0) as f64;
+        }
+        // 201: troops that strike nodes: each node a troop reaches in its next march (the engine's
+        // `board::troops`: move, else strike on or next to its hex; a walled hex is never struck).
+        if w.troop_exposure > 0.0 && g.var(adversary::STAGE) >= world.hot(Hot::TroopNode) {
+            let steps = world.int("board.troop_steps").max(0) as i32;
+            let troops: Vec<usize> = (0..tokens.len()).filter(|&x| tokens[x].troop > 0).collect();
+            if steps > 0 && !troops.is_empty() {
+                for (h, t) in tokens.iter().enumerate() {
+                    for (s, e) in exposed.iter_mut().enumerate().take(self.seats) {
+                        if t.node[s] == 0 || board::walled(&world, g, h) {
+                            continue;
+                        }
+                        if !troops.iter().any(|&x| world.map.distance(h, x) <= steps) {
+                            continue;
+                        }
+                        let armored = t.harden > 0 || t.ambassador[s] > 0;
+                        *e += w.troop_exposure * if armored { 0.5 } else { 1.0 };
+                    }
+                }
+            }
         }
         let mut thin = i64::MAX;
         for (s, &e) in exposed.iter().enumerate().take(self.seats) {

@@ -1,6 +1,6 @@
 {
  "deck": "threats_t1",
- "note": "Tier-1 threat deck, 146 (Matt's threat card standard, 2026-11-07): each card has one consequence, rarely two, on the nearest player (the one whose node is closest to its token) or the board; one counter option or two, never in a currency its harm takes. Counters: 3 energy, 3 ambassadors, 6 insight, 3 research cubes, 3 chips, 2 tags or 12 credits. Value lines price at configs/agents/values.json (a troop 9: placed 5 plus its strike). Source: experiments/results/146_threat_standard/threat_cards.py.",
+ "note": "Tier-1 threat deck, 146 (Matt's threat card standard, 2026-11-07): each card has one consequence, rarely two, on the nearest player (the one whose node is closest to its token) or the board; one counter option or two, never in a currency its harm takes. Counters: 3 energy, 3 ambassadors, 3 insight (r89; 6 before), 3 research cubes, 3 chips, 2 tags or 12 credits. Value lines price at configs/agents/values.json (a troop 9: placed 5 plus its strike). Source: experiments/results/146_threat_standard/threat_cards.py.",
  "cards": [
   {
    "id": "orbital_strike",
@@ -12,7 +12,7 @@
    "locations": [
     "base"
    ],
-   "text": "2 adversary Troops land here.",
+   "text": "1 adversary Troop lands here.",
    "counters": [
     [
      {
@@ -30,7 +30,7 @@
    "effects": [
     {
      "op": "troops",
-     "count": 2,
+     "count": 1,
      "at": "location"
     }
    ],
@@ -40,7 +40,8 @@
    "value": "counter 3 energy (13.5) or 12 credits (12); uncountered 18 at values.json (a troop 9 with its strike), 1.50x the cheapest counter",
    "check": "bites from round 2 where a base touches a player's factory or station: the troops strike there next war",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "201 (r89, Matt 2026-11-12): troops 2 -> 1 (fewer troops, each deadlier: they strike nodes)"
    ],
    "reuses": "orbital_strike"
   },
@@ -683,7 +684,7 @@
     [
      {
       "resource": "insight",
-      "amount": 6
+      "amount": 3
      }
     ],
     [
@@ -702,10 +703,11 @@
    "harms": [
     "adversary pieces placed"
    ],
-   "value": "counter 6 insight (15) or 12 credits (12); uncountered 16 at values.json (a troop 9 with its strike), 1.33x the cheapest counter",
+   "value": "counter 3 insight (15) or 12 credits (12); uncountered 16 at values.json (a troop 9 with its strike), 1.33x the cheapest counter",
    "check": "a lasting piece at tier 1: the botnet makes compute each round and blocks the claim until removed",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "201 (r89, Matt 2026-11-12): insight counter 6 -> 3 (the new insight income)"
    ],
    "reuses": "backdoor"
   },

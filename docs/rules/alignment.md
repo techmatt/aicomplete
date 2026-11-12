@@ -39,11 +39,10 @@ fill a track again, which then tips too. Thresholds: *Tunables*.
 | Unity | clearing a corruption marker (the Clear action, Recovery, cards) | `clear_unity` 2 |
 | Unity | player cubes on a megaproject as it completes, as its corp's card prints (Delta Seawall) | 1 each |
 | Unity | cards (Peace Conference, Coalition Charter, Open Assembly), Unity cards | card text |
-| Unity | Annihilate (every board's power, 2 antimatter) | 3 |
 | Discord | energy diverted (a corrupted city) or darkened (an agent on an aligned city) | `divert_discord` 1 per unit of a corrupted city's, `ambassador_discord` 0 per unit, each round, of a dark aligned city's |
 | Discord | a factory destroyed in war (not by an adversary troop) | `destruction_discord` 1 |
 | Discord | adversary cubes on a megaproject as it completes, as its corp's card prints | 1 each |
-| Discord | the antimatter action, twists, threats, Discord cards, adversary projects | `antimatter_discord` 1, card text |
+| Discord | twists, threats, Discord cards, adversary projects | card text |
 | Discord | the adversary board's drip, at the start of every round | as printed (The Militarist: 0) |
 | Discord | each land-corruption token (Blitzkrieg, Naval Blockade), at the start of every round | `blight_discord` 1 |
 <!-- /generated -->
@@ -51,9 +50,9 @@ fill a track again, which then tips too. Thresholds: *Tunables*.
 The round's Sway is the phase `alignment.sway`, first in the round: the board's drip and `blight_discord` (1) for
 each face-up land-corruption token (a node hex's is face down: `blight_node_discord`, 0, r84; [adversary.md](adversary.md)), nothing else. A threat sways Discord only where it prints it.
 
-**The antimatter action.** In the action phase (`...+alignment.act`), any player may sway
-`antimatter_discord` toward Discord to gain 1 antimatter, up to `antimatter_uses` times a
-round each. `antimatter_discord` 0 removes the action, as does variant `off`.
+**The antimatter action is off (r89, Matt's message 9119: `antimatter_discord` 0).** The tunable stays: above 0,
+any player in the action phase (`...+alignment.act`) sways that much toward Discord to gain 1 antimatter, up to
+`antimatter_uses` times a round. A later item redesigns antimatter's sources and uses.
 
 **The cards (one-shot and hidden, like fear cards: locked).** Each side has one face-down
 deck, shuffled at setup ([`content/alignment.json`](../../content/alignment.json)), every printed

@@ -109,6 +109,27 @@ fn measure_round(g: &mut GameState, cx: &mut Cx) {
         }
         let t = g.tokens(h, TROOP);
         cx.per_round(g, "map.troops", t);
+        // 201: botnets, agents and player ambassadors on the map.
+        let b = g.tokens(h, BOTNET);
+        cx.per_round(g, "map.botnets", b);
+        let a = g.tokens(h, ADV_AMBASSADOR);
+        cx.per_round(g, "map.agents", a);
+        let p: i64 = (0..g.seats.len()).map(|s| g.tokens(h, ambassador(s))).sum();
+        cx.per_round(g, "map.ambassadors", p);
+    }
+    // 201: the players' ambassadors in hand and the adversary's pools (agents waiting for a Rally).
+    let held: i64 = (0..g.seats.len()).map(|s| g.resource(s, Resource::Ambassadors)).sum();
+    cx.per_round(g, "map.ambassadors_held", held);
+    let pools: i64 = (0..w.map.countries.len()).map(|c| g.var(&adversary::pool_key(c))).sum();
+    cx.per_round(g, "map.agent_pool", pools);
+    // 201: countries where agents on the map outnumber the players' ambassadors there.
+    for c in 0..w.map.countries.len() {
+        let hexes = &w.map.countries[c].hexes;
+        let a: i64 = hexes.iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).sum();
+        let p: i64 = hexes.iter().map(|&h| (0..g.seats.len()).map(|s| g.tokens(h, ambassador(s))).sum::<i64>()).sum();
+        if a > p {
+            cx.per_round(g, "map.agents_over", 1);
+        }
     }
     // 068: what each seat left unspent.
     for s in 0..g.seats.len() {
@@ -224,7 +245,7 @@ fn factory_output(g: &mut GameState, cx: &mut Cx) {
                 cx.tally(g, "board.blocked.factory_adversary", 1);
                 continue;
             }
-            adversary::place_troop(g, cx, h);
+            adversary::place_troop(g, cx, h, "factory");
             cx.tally(g, "board.troops_built", 1);
             cx.note(Some(h), || format!("The factory at {} makes an adversary troop", hex_name(&w, h)));
         }

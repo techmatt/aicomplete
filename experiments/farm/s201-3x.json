@@ -1,0 +1,155 @@
+{
+  "name": "s201-3x",
+  "note": "201 screen",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_p+tn+m011+st1+tt+sp+bc3+ai",
+      "set": [
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4",
+        "board.troop_node=0",
+        "adversary.mil_s1_probing_strikes.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"}]",
+        "adversary.mil_s1_factory_drive.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"create_site\",\"kind\":\"factory\"}]",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"}]",
+        "adversary.mil_s2_mobilization.standing.1.count=1",
+        "adversary.mil_s2_station_raids.standing.1.count=1",
+        "adversary.mil_s2_border_war.standing.1.count=1",
+        "adversary.mil_s2_supply_lines.standing.1.count=1",
+        "adversary.mil_s2_forced_march.standing.1.count=1",
+        "adversary.mil_s3_total_mobilization.standing.1.count=1",
+        "adversary.mil_s3_blitzkrieg.standing.1.count=1",
+        "adversary.mil_s3_occupation.standing.1.count=1",
+        "adversary.mil_s3_naval_blockade.standing.1.count=1",
+        "board.troop_steps=1",
+        "threats.orbital_strike.effects.0.count=1",
+        "threats.total_war.effects.0.count=2",
+        "threats.conscription.effects.0.count=1",
+        "threats.garrison_state.effects.1.count=1",
+        "threats.iron_curtain.effects.0.count=1",
+        "adversary.mil_s1_long_patrols.standing=[{\"op\":\"rally\",\"site\":\"station\"},{\"op\":\"increase_income\",\"ambassadors\":1},{\"op\":\"spread_botnets\",\"count\":1}]",
+        "adversary.mil_s1_signal_jamming.standing=[{\"op\":\"rally\",\"site\":\"botnet\"},{\"op\":\"increase_income\",\"compute\":2},{\"op\":\"spread_botnets\",\"count\":1}]",
+        "adversary.mil_s2_station_raids.standing=[{\"op\":\"rally\",\"site\":\"station\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"spread_botnets\",\"count\":1}]",
+        "adversary.mil_s2_fifth_column.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"increase_income\",\"ambassadors\":1},{\"op\":\"spread_botnets\",\"count\":1}]",
+        "board.botnet_credits=3",
+        "adversary.mil_s2_station_raids.standing=[{\"op\":\"rally\",\"site\":\"station\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_border_war.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_supply_lines.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"compute\":2},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_forced_march.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s3_blitzkrieg.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":2,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s3_naval_blockade.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"},{\"op\":\"troops\",\"count\":2,\"each_country\":true},{\"op\":\"flag\",\"name\":\"blackout\",\"everywhere\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]"
+      ]
+    },
+    {
+      "name": "br_p+tn+m011+st1+tt+sp+bc3+ai",
+      "set": [
+        "ai.boards=0,2",
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4",
+        "board.troop_node=0",
+        "adversary.mil_s1_probing_strikes.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"}]",
+        "adversary.mil_s1_factory_drive.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"create_site\",\"kind\":\"factory\"}]",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"}]",
+        "adversary.mil_s2_mobilization.standing.1.count=1",
+        "adversary.mil_s2_station_raids.standing.1.count=1",
+        "adversary.mil_s2_border_war.standing.1.count=1",
+        "adversary.mil_s2_supply_lines.standing.1.count=1",
+        "adversary.mil_s2_forced_march.standing.1.count=1",
+        "adversary.mil_s3_total_mobilization.standing.1.count=1",
+        "adversary.mil_s3_blitzkrieg.standing.1.count=1",
+        "adversary.mil_s3_occupation.standing.1.count=1",
+        "adversary.mil_s3_naval_blockade.standing.1.count=1",
+        "board.troop_steps=1",
+        "threats.orbital_strike.effects.0.count=1",
+        "threats.total_war.effects.0.count=2",
+        "threats.conscription.effects.0.count=1",
+        "threats.garrison_state.effects.1.count=1",
+        "threats.iron_curtain.effects.0.count=1",
+        "adversary.mil_s1_long_patrols.standing=[{\"op\":\"rally\",\"site\":\"station\"},{\"op\":\"increase_income\",\"ambassadors\":1},{\"op\":\"spread_botnets\",\"count\":1}]",
+        "adversary.mil_s1_signal_jamming.standing=[{\"op\":\"rally\",\"site\":\"botnet\"},{\"op\":\"increase_income\",\"compute\":2},{\"op\":\"spread_botnets\",\"count\":1}]",
+        "adversary.mil_s2_station_raids.standing=[{\"op\":\"rally\",\"site\":\"station\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"spread_botnets\",\"count\":1}]",
+        "adversary.mil_s2_fifth_column.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"increase_income\",\"ambassadors\":1},{\"op\":\"spread_botnets\",\"count\":1}]",
+        "board.botnet_credits=3",
+        "adversary.mil_s2_station_raids.standing=[{\"op\":\"rally\",\"site\":\"station\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_border_war.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_supply_lines.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"compute\":2},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_forced_march.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s3_blitzkrieg.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":2,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s3_naval_blockade.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"},{\"op\":\"troops\",\"count\":2,\"each_country\":true},{\"op\":\"flag\",\"name\":\"blackout\",\"everywhere\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]"
+      ]
+    },
+    {
+      "name": "pr_p+tn+m011+st1+tt+sp+bc3+ai",
+      "set": [
+        "ai.boards=1,2",
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4",
+        "board.troop_node=0",
+        "adversary.mil_s1_probing_strikes.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"}]",
+        "adversary.mil_s1_factory_drive.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"create_site\",\"kind\":\"factory\"}]",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"}]",
+        "adversary.mil_s2_mobilization.standing.1.count=1",
+        "adversary.mil_s2_station_raids.standing.1.count=1",
+        "adversary.mil_s2_border_war.standing.1.count=1",
+        "adversary.mil_s2_supply_lines.standing.1.count=1",
+        "adversary.mil_s2_forced_march.standing.1.count=1",
+        "adversary.mil_s3_total_mobilization.standing.1.count=1",
+        "adversary.mil_s3_blitzkrieg.standing.1.count=1",
+        "adversary.mil_s3_occupation.standing.1.count=1",
+        "adversary.mil_s3_naval_blockade.standing.1.count=1",
+        "board.troop_steps=1",
+        "threats.orbital_strike.effects.0.count=1",
+        "threats.total_war.effects.0.count=2",
+        "threats.conscription.effects.0.count=1",
+        "threats.garrison_state.effects.1.count=1",
+        "threats.iron_curtain.effects.0.count=1",
+        "adversary.mil_s1_long_patrols.standing=[{\"op\":\"rally\",\"site\":\"station\"},{\"op\":\"increase_income\",\"ambassadors\":1},{\"op\":\"spread_botnets\",\"count\":1}]",
+        "adversary.mil_s1_signal_jamming.standing=[{\"op\":\"rally\",\"site\":\"botnet\"},{\"op\":\"increase_income\",\"compute\":2},{\"op\":\"spread_botnets\",\"count\":1}]",
+        "adversary.mil_s2_station_raids.standing=[{\"op\":\"rally\",\"site\":\"station\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"spread_botnets\",\"count\":1}]",
+        "adversary.mil_s2_fifth_column.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"increase_income\",\"ambassadors\":1},{\"op\":\"spread_botnets\",\"count\":1}]",
+        "board.botnet_credits=3",
+        "adversary.mil_s2_station_raids.standing=[{\"op\":\"rally\",\"site\":\"station\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_border_war.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_supply_lines.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"compute\":2},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_forced_march.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s3_blitzkrieg.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":2,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s3_naval_blockade.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"},{\"op\":\"troops\",\"count\":2,\"each_country\":true},{\"op\":\"flag\",\"name\":\"blackout\",\"everywhere\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist:w.troop_exposure=0"
+  ],
+  "games": 32,
+  "records": 0
+}

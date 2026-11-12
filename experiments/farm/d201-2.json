@@ -1,0 +1,57 @@
+{
+  "name": "d201-2",
+  "note": "201: a dial screen on the spent fresh seeds 45055-45198",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_c22",
+      "set": [
+        "adversary.compute_income=0,4,17,22,30"
+      ]
+    },
+    {
+      "name": "br_c22",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=0,4,17,22,30"
+      ]
+    },
+    {
+      "name": "pr_c22",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=0,4,17,22,30"
+      ]
+    },
+    {
+      "name": "bp_c18",
+      "set": [
+        "adversary.compute_income=0,4,17,18,30"
+      ]
+    },
+    {
+      "name": "br_c18",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=0,4,17,18,30"
+      ]
+    },
+    {
+      "name": "pr_c18",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=0,4,17,18,30"
+      ]
+    }
+  ],
+  "difficulties": [
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 144,
+  "records": 0
+}

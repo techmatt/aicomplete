@@ -21,7 +21,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
   card's tier, `w.tier_read`; the horizon aims at the purge's last step), projects, holdings,
   unpaid threats by **the tempo trade** (`w.tempo`: one-off harm plus what it leaves times the
   rounds left, over what paying now costs the engine), corruption risk (`w.corrupt_exposure`,
-  `w.blight`), the coming Rally (`w.rally_read`), Dispatches (`w.movement`), botnets (−25, D9), cubes, converter
+  `w.blight`; r89's `w.troop_exposure` adds a node a troop reaches next march), the coming Rally (`w.rally_read`), Dispatches (`w.movement`), botnets (−25, D9), cubes, converter
   cities, the liberation push, a darkened city, Patience insight and idle credits.
 
 | Spec | What it does | Budget parameters (defaults) |
@@ -45,7 +45,8 @@ planned earlier, or short now by at most `plan_short` tags; a building over one 
 adds only what it beats the weakest by (`plan_cover`). Each switch's default and rule, and each
 **dominance check** (principles.md), is a row of `forced_table!`. **Ablation (200):** `no_spend` 1 / 2 / 3 bars
 every action that leaves the seat with fewer chips / research cubes / antimatter (each legal action applied to a copy,
-so slow); sources stay. The eval holds an antimatter at 5 points (r88; 2 before), as Annihilate spends 2 at once.
+so slow); sources stay. The eval holds an antimatter at 5 points (r88, set for Annihilate; 2 before); Annihilate is gone
+at r89, and the weight stands until the antimatter redesign.
 
 **Agent behaviors** (`behavior_table!`, on for every agent; a dominance check's ban wins). **Move heuristics** (`agents/moves.rs`, 166, `move_rules`): push agents off the next
 Corrupt site onto empty land with no clean site next to it; gather (or push) agents onto a spare ambassador (no

@@ -169,7 +169,7 @@ The sheet is `icons.png` from `node tools/card-art/render.mjs`.
 
 An event card prints only the line kinds in `content::EVENT_LINE_KINDS` (r80, ruling #31; `Content::check` holds
 to it), each with its icon there: Rally, Muster, Income, New factory, Discord, Unity back, Blackout, Node loss, Forced
-March, Corrupt. Event faces have no icon row yet. A new kind is Matt's call.
+March, Botnet spread (r89, Matt's amendment 9026), Corrupt. Event faces have no icon row yet. A new kind is Matt's call.
 
 A price rise on paper needs a screen: small raises add up. Reason every price in
 [card-pricing.md](card-pricing.md), and record the change in [rules-history.md](rules-history.md). Center a rate sheet

@@ -19,8 +19,9 @@ hand for no credits. Each round you may Dispatch 1 ambassador for free (2 from y
 Industry tag counts like one on your cards.
 
 **The Protector, for new players.** Your special rule is Wall: adversary troops can't enter a hex with your node or
-strike into it, so where you stand is a barrier and no troop strikes a facility under you (war, threats and corruption still can). But each adversary turn Musters 1 troop in every country you're in
-(a normal Muster: the lowest-numbered factory, anyone's, else city; on your node's hex it stays in the supply), and it can strike in that round's march. The first two troops each round that end their march next to your node pay you 1 insight each (Vigil; r79 once a round, r84 twice). You spend energy to harden
+strike into it, so where you stand is a barrier and no troop strikes your node or a facility under you (war, threats
+and corruption still can; r89: the adversary's Muster where you stand is gone). The first two troops each round that
+end their march next to your node pay you 1 insight each (Vigil; r79 once a round, r84 twice). You spend energy to harden
 facilities with Bulwark, and your board prints 2 energy a round. You earn fewer credits (13 a round), so you start with
 more: 46. Each credit space of your economy track adds 2 or 3 credits, the first one 1 energy too. Round 1 deals as
 for the Builder. Late in the game, sacrifice
@@ -136,8 +137,8 @@ cards and the cities' energy (once per city a round, a city's `corp_energy` a bu
 counters** spend energy for good. **The Researcher's:** Patience with the cube converters (Cintamani's, a cube for 2
 insight, once a round since r75; everyone's standard action, a cube for 1, with no limit) is the intended engine:
 capped by how many stations make cubes (and Open Archive's and Cryo Sample Vault's 1 a round) and, for Cintamani's, by its once a round and
-a Cintamani city in reach. **Antimatter (r88):** each source of 2 (a plant's Action, Horizon's converter) and
-Annihilate are once a round, so a seat clears at most one hex a round with it. Patience banks all the
+a Cintamani city in reach. **Antimatter:** each source of 2 (a plant's Action, Horizon's converter) is once a
+round, and its only use is the tier-2 ultimates, 1 a card (r89: Annihilate gone, pending a redesign). Patience banks all the
 Researcher's unspent insight (r82: a gift too); only cards that print it pass insight, at their cost, and no standard
 action gives it. Open Science's insight goes only to other players; alone it is the Researcher's own, and Patience
 keeps it.
@@ -154,6 +155,6 @@ so 4 players repeat the Builder. A board has no unique cards or starting buildin
 | Board | Special rule |
 |---|---|
 | Builder | *Breadth*: You have 5 building slots; the Protector has 4 and the Researcher 3. |
-| Protector | *Wall*: Adversary Troops can't enter or strike a hex with your Node. Each adversary turn, the adversary Musters 1 in each country where you have a Node. Vigil: the first two times each round a Troop ends its march next to your Node, gain 1 insight. |
+| Protector | *Wall*: Adversary Troops can't enter or strike a hex with your Node. Vigil: the first two times each round a Troop ends its march next to your Node, gain 1 insight. |
 | Researcher | *Patience*: All your unspent insight carries over to the next round, including insight other players gave you. |
 <!-- /generated -->

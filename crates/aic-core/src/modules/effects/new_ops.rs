@@ -287,8 +287,9 @@ fn troops(
             cx.tally(g, "effects.troops_walled", land.count);
             continue;
         }
+        let source = if tally.starts_with("threats.") { "threat" } else { "project" };
         for _ in 0..land.count {
-            adversary::place_troop(g, cx, h);
+            adversary::place_troop(g, cx, h, source);
             cx.per_round(g, adversary::OPS, 1);
         }
         cx.tally(g, tally, land.count);

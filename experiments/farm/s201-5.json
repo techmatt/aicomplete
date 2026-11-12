@@ -1,0 +1,117 @@
+{
+  "name": "s201-5",
+  "note": "201 screen",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_w1",
+      "set": [
+        "adversary.wall_troops=1"
+      ]
+    },
+    {
+      "name": "br_w1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.wall_troops=1"
+      ]
+    },
+    {
+      "name": "pr_w1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.wall_troops=1"
+      ]
+    },
+    {
+      "name": "bp_e1",
+      "set": [
+        "adversary.mil_s1_probing_strikes.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true}]",
+        "adversary.mil_s1_factory_drive.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"create_site\",\"kind\":\"factory\"}]",
+        "adversary.mil_s1_long_patrols.standing=[{\"op\":\"rally\",\"site\":\"station\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1},{\"op\":\"spread_botnets\",\"count\":1}]",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true}]",
+        "adversary.mil_s1_signal_jamming.standing=[{\"op\":\"rally\",\"site\":\"botnet\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"compute\":2},{\"op\":\"spread_botnets\",\"count\":1}]"
+      ]
+    },
+    {
+      "name": "br_e1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.mil_s1_probing_strikes.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true}]",
+        "adversary.mil_s1_factory_drive.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"create_site\",\"kind\":\"factory\"}]",
+        "adversary.mil_s1_long_patrols.standing=[{\"op\":\"rally\",\"site\":\"station\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1},{\"op\":\"spread_botnets\",\"count\":1}]",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true}]",
+        "adversary.mil_s1_signal_jamming.standing=[{\"op\":\"rally\",\"site\":\"botnet\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"compute\":2},{\"op\":\"spread_botnets\",\"count\":1}]"
+      ]
+    },
+    {
+      "name": "pr_e1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.mil_s1_probing_strikes.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true}]",
+        "adversary.mil_s1_factory_drive.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"create_site\",\"kind\":\"factory\"}]",
+        "adversary.mil_s1_long_patrols.standing=[{\"op\":\"rally\",\"site\":\"station\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1},{\"op\":\"spread_botnets\",\"count\":1}]",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true}]",
+        "adversary.mil_s1_signal_jamming.standing=[{\"op\":\"rally\",\"site\":\"botnet\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"compute\":2},{\"op\":\"spread_botnets\",\"count\":1}]"
+      ]
+    },
+    {
+      "name": "bp_l2",
+      "set": [
+        "adversary.mil_s3_total_mobilization.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"troops\",\"count\":2,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s3_blitzkrieg.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":2,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s3_occupation.standing=[{\"op\":\"rally\",\"site\":\"station\"},{\"op\":\"troops\",\"count\":2,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s3_naval_blockade.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"},{\"op\":\"troops\",\"count\":2,\"each_country\":true},{\"op\":\"flag\",\"name\":\"blackout\",\"everywhere\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]"
+      ]
+    },
+    {
+      "name": "br_l2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.mil_s3_total_mobilization.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"troops\",\"count\":2,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s3_blitzkrieg.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":2,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s3_occupation.standing=[{\"op\":\"rally\",\"site\":\"station\"},{\"op\":\"troops\",\"count\":2,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s3_naval_blockade.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"},{\"op\":\"troops\",\"count\":2,\"each_country\":true},{\"op\":\"flag\",\"name\":\"blackout\",\"everywhere\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]"
+      ]
+    },
+    {
+      "name": "pr_l2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.mil_s3_total_mobilization.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"troops\",\"count\":2,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s3_blitzkrieg.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":2,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s3_occupation.standing=[{\"op\":\"rally\",\"site\":\"station\"},{\"op\":\"troops\",\"count\":2,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s3_naval_blockade.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"},{\"op\":\"troops\",\"count\":2,\"each_country\":true},{\"op\":\"flag\",\"name\":\"blackout\",\"everywhere\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

@@ -1289,7 +1289,7 @@ fn event_step(e: &Op) -> u8 {
 
 /// r80 (ruling #31): the fixed list of an event card's line kinds, each printed with one icon
 /// (docs/card-guidelines.md, *Event lines*): `(kind, icon)`. An event line outside it is off the standard.
-pub const EVENT_LINE_KINDS: [(&str, &str); 10] = [
+pub const EVENT_LINE_KINDS: [(&str, &str); 11] = [
     ("Rally", "agent, then the site glyph"),
     ("Muster", "troop, then the factory glyph"),
     ("Income", "brown box: agent or compute"),
@@ -1299,6 +1299,7 @@ pub const EVENT_LINE_KINDS: [(&str, &str); 10] = [
     ("Blackout", "city glyph with energy struck through"),
     ("Node loss", "minus node, by a base"),
     ("Forced March", "troop with a plus step"),
+    ("Botnet spread", "botnet glyph with an arrow"),
     ("Corrupt", "dark-framed site glyph"),
 ];
 
@@ -1314,6 +1315,8 @@ pub fn event_line_kind(e: &Op) -> Option<&'static str> {
         Op::Flag { .. } => "Blackout",
         Op::EachDestroyNode { .. } => "Node loss",
         Op::TroopSteps { .. } => "Forced March",
+        // 201: botnets spread from the event deck (Matt, amendment 9026: an event line).
+        Op::SpreadBotnets { .. } => "Botnet spread",
         Op::Corrupt { .. } => "Corrupt",
         _ => return None,
     })

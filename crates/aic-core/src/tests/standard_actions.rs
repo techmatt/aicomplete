@@ -535,7 +535,7 @@ fn claiming_pays_from_your_own_ambassadors_on_the_site_first() {
     assert_eq!((g.resource(0, Resource::Ambassadors), g.tokens(city, ambassador(0)), g.tokens(city, ambassador(1))), (0, 0, 2));
 }
 
-/// r75 (Matt's ruling 3): the Take down a botnet action, `botnet_credits` (5): the seat's ambassador on the
+/// r75 (Matt's ruling 3): the Take down a botnet action, `botnet_credits` (3 since r89): the seat's ambassador on the
 /// botnet's hex (it stays); the botnet comes off and sways Unity (`alignment.botnet`).
 #[test]
 fn taking_a_botnet_down_needs_your_ambassador_on_its_hex() {
@@ -543,7 +543,7 @@ fn taking_a_botnet_down_needs_your_ambassador_on_its_hex() {
     let w = rules.world();
     let m = &rules.map;
     let price = w.int("board.botnet_credits");
-    assert_eq!(price, 5);
+    assert_eq!(price, 3);
     let me = m.numbered(0, piece(0).node);
     put(&mut g, me, node(0), 1);
     let h = m.hexes[me].neighbors.iter().copied().find(|&x| kind(m, x) != HexKind::Ocean).unwrap();

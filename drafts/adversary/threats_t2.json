@@ -1,6 +1,6 @@
 {
  "deck": "threats_t2",
- "note": "Tier-2 threat deck, 146 (Matt's threat card standard, 2026-11-07): bigger consequences, about two tier-1s; four cards re-cut from the old tier 3 (Last Ultimatum, Iron Curtain, War Economy, Cascade Failure). Counters: 4 energy, 4 ambassadors, 7 insight, 5 research cubes, 4 chips, 3 tags or 17 credits. Value lines price at configs/agents/values.json. Source: experiments/results/146_threat_standard/threat_cards.py.",
+ "note": "Tier-2 threat deck, 146 (Matt's threat card standard, 2026-11-07): bigger consequences, about two tier-1s; four cards re-cut from the old tier 3 (Last Ultimatum, Iron Curtain, War Economy, Cascade Failure). Counters: 4 energy, 4 ambassadors, 4 insight (r89; 7 before), 5 research cubes, 4 chips, 3 tags or 17 credits. Value lines price at configs/agents/values.json. Source: experiments/results/146_threat_standard/threat_cards.py.",
  "cards": [
   {
    "id": "total_war",
@@ -12,7 +12,7 @@
    "locations": [
     "base"
    ],
-   "text": "3 adversary Troops land here and march at once.",
+   "text": "2 adversary Troops land here and march at once.",
    "counters": [
     [
      {
@@ -30,7 +30,7 @@
    "effects": [
     {
      "op": "troops",
-     "count": 3,
+     "count": 2,
      "at": "location"
     },
     {
@@ -44,7 +44,8 @@
    "value": "counter 4 energy (18) or 17 credits (17); uncountered 37 at values.json (a troop 9 with its strike), 2.18x the cheapest counter",
    "check": "bites from stage II where a base touches player sites: the strike comes before the players can answer",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "201 (r89, Matt 2026-11-12): troops 3 -> 2 (fewer troops, each deadlier: they strike nodes)"
    ],
    "reuses": "total_war"
   },
@@ -156,7 +157,7 @@
    "locations": [
     "base"
    ],
-   "text": "2 adversary Troops land here. The nearest player pays 2 chips or discards 2 cards.",
+   "text": "1 adversary Troop lands here. The nearest player pays 2 chips or discards 2 cards.",
    "counters": [
     [
      {
@@ -174,7 +175,7 @@
    "effects": [
     {
      "op": "troops",
-     "count": 2,
+     "count": 1,
      "at": "location"
     },
     {
@@ -191,7 +192,8 @@
    "value": "counter 4 energy (18) or 17 credits (17); uncountered 26 at values.json (a troop 9 with its strike), 1.53x the cheapest counter",
    "check": "bites near bases; a normal troop marches and strikes as any",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "201 (r89, Matt 2026-11-12): troops 2 -> 1 (fewer troops, each deadlier: they strike nodes)"
    ],
    "reuses": "conscription"
   },
@@ -256,7 +258,7 @@
     [
      {
       "resource": "insight",
-      "amount": 7
+      "amount": 4
      }
     ],
     [
@@ -275,10 +277,11 @@
    "harms": [
     "facilities destroyed or seized"
    ],
-   "value": "counter 7 insight (17.5) or 17 credits (17); uncountered 25 at values.json (a troop 9 with its strike), 1.47x the cheapest counter",
+   "value": "counter 4 insight (17.5) or 17 credits (17); uncountered 25 at values.json (a troop 9 with its strike), 1.47x the cheapest counter",
    "check": "a lasting harm: the city corrupts as by the Corrupt line (a node on it is destroyed, an ambassador there is armor)",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "201 (r89, Matt 2026-11-12): insight counter 7 -> 4 (the new insight income)"
    ],
    "reuses": "overrun"
   },
@@ -1190,12 +1193,12 @@
     "city",
     "base"
    ],
-   "text": "3 Agents are created on the city here. 2 adversary Troops land on the base here.",
+   "text": "3 Agents are created on the city here. 1 adversary Troop lands on the base here.",
    "counters": [
     [
      {
       "resource": "insight",
-      "amount": 7
+      "amount": 4
      }
     ],
     [
@@ -1213,7 +1216,7 @@
     },
     {
      "op": "troops",
-     "count": 2,
+     "count": 1,
      "at": "location",
      "location": "base"
     }
@@ -1221,10 +1224,12 @@
    "harms": [
     "adversary pieces placed"
    ],
-   "value": "counter 7 insight (17.5) or 17 credits (17); uncountered 24 at values.json (a troop 9 with its strike), 1.41x the cheapest counter",
+   "value": "counter 4 insight (17.5) or 17 credits (17); uncountered 24 at values.json (a troop 9 with its strike), 1.41x the cheapest counter",
    "check": "bites both sites",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "201 (r89, Matt 2026-11-12): insight counter 7 -> 4 (the new insight income)",
+    "201 (r89, Matt 2026-11-12): troops 2 -> 1 (fewer troops, each deadlier: they strike nodes)"
    ],
    "reuses": "garrison_state"
   },
@@ -1385,7 +1390,7 @@
     "factory",
     "city"
    ],
-   "text": "2 adversary Troops land on the factory here. 2 Unity comes off the Unity track.",
+   "text": "1 adversary Troop lands on the factory here. 2 Unity comes off the Unity track.",
    "counters": [
     [
      {
@@ -1403,7 +1408,7 @@
    "effects": [
     {
      "op": "troops",
-     "count": 2,
+     "count": 1,
      "at": "location",
      "location": "factory"
     },
@@ -1419,7 +1424,8 @@
    "value": "counter 4 energy (18) or 17 credits (17); uncountered 26 at values.json (a troop 9 with its strike), 1.53x the cheapest counter",
    "check": "146: re-cut from tier 3; bites the factory and the Unity race",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "201 (r89, Matt 2026-11-12): troops 2 -> 1 (fewer troops, each deadlier: they strike nodes)"
    ],
    "reuses": "t3_iron_curtain"
   },
@@ -1489,7 +1495,7 @@
     [
      {
       "resource": "insight",
-      "amount": 7
+      "amount": 4
      }
     ],
     [
@@ -1515,10 +1521,11 @@
     "adversary pieces placed",
     "energy lost"
    ],
-   "value": "counter 7 insight (17.5) or 17 credits (17); uncountered 28 at values.json (a troop 9 with its strike), 1.65x the cheapest counter",
+   "value": "counter 4 insight (17.5) or 17 credits (17); uncountered 28 at values.json (a troop 9 with its strike), 1.65x the cheapest counter",
    "check": "146: re-cut from tier 3; a lasting piece and an energy hit",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "201 (r89, Matt 2026-11-12): insight counter 7 -> 4 (the new insight income)"
    ],
    "reuses": "t3_cascade_failure"
   }

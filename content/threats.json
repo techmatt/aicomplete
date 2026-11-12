@@ -9,7 +9,7 @@
   "locations": [
    "base"
   ],
-  "text": "2 adversary Troops land here.",
+  "text": "1 adversary Troop lands here.",
   "counters": [
    [
     {
@@ -27,7 +27,7 @@
   "effects": [
    {
     "op": "troops",
-    "count": 2,
+    "count": 1,
     "at": "location"
    }
   ],
@@ -596,7 +596,7 @@
    [
     {
      "resource": "insight",
-     "amount": 6
+     "amount": 3
     }
    ],
    [
@@ -1034,7 +1034,7 @@
   "locations": [
    "base"
   ],
-  "text": "3 adversary Troops land here and march at once.",
+  "text": "2 adversary Troops land here and march at once.",
   "counters": [
    [
     {
@@ -1052,7 +1052,7 @@
   "effects": [
    {
     "op": "troops",
-    "count": 3,
+    "count": 2,
     "at": "location"
    },
    {
@@ -1160,7 +1160,7 @@
   "locations": [
    "base"
   ],
-  "text": "2 adversary Troops land here. The nearest player pays 2 chips or discards 2 cards.",
+  "text": "1 adversary Troop lands here. The nearest player pays 2 chips or discards 2 cards.",
   "counters": [
    [
     {
@@ -1178,7 +1178,7 @@
   "effects": [
    {
     "op": "troops",
-    "count": 2,
+    "count": 1,
     "at": "location"
    },
    {
@@ -1248,7 +1248,7 @@
    [
     {
      "resource": "insight",
-     "amount": 7
+     "amount": 4
     }
    ],
    [
@@ -2061,12 +2061,12 @@
    "city",
    "base"
   ],
-  "text": "3 Agents are created on the city here. 2 adversary Troops land on the base here.",
+  "text": "3 Agents are created on the city here. 1 adversary Troop lands on the base here.",
   "counters": [
    [
     {
      "resource": "insight",
-     "amount": 7
+     "amount": 4
     }
    ],
    [
@@ -2084,7 +2084,7 @@
    },
    {
     "op": "troops",
-    "count": 2,
+    "count": 1,
     "at": "location",
     "location": "base"
    }
@@ -2232,7 +2232,7 @@
    "factory",
    "city"
   ],
-  "text": "2 adversary Troops land on the factory here. 2 Unity comes off the Unity track.",
+  "text": "1 adversary Troop lands on the factory here. 2 Unity comes off the Unity track.",
   "counters": [
    [
     {
@@ -2250,7 +2250,7 @@
   "effects": [
    {
     "op": "troops",
-    "count": 2,
+    "count": 1,
     "at": "location",
     "location": "factory"
    },
@@ -2324,7 +2324,7 @@
    [
     {
      "resource": "insight",
-     "amount": 7
+     "amount": 4
     }
    ],
    [

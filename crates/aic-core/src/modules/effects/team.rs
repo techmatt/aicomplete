@@ -197,7 +197,7 @@ pub(super) fn botnet_troops(g: &mut GameState, cx: &mut Cx, count: i64, troops: 
             cx.add_tokens(g, h, BOTNET, -1);
             cx.set_key(g, &adversary::cut_key(h), 0);
             for _ in 0..troops {
-                adversary::place_troop(g, cx, h);
+                adversary::place_troop(g, cx, h, "project");
             }
             cx.tally(g, "adversary.botnet_troops", troops);
             cx.tally(g, "adversary.project_troops", troops);
@@ -289,7 +289,7 @@ pub(super) fn factory_troops(g: &mut GameState, cx: &mut Cx, count: i64) {
             continue;
         }
         for _ in 0..count {
-            adversary::place_troop(g, cx, h);
+            adversary::place_troop(g, cx, h, "project");
         }
         cx.tally(g, "adversary.factory_troops", count);
         cx.tally(g, "adversary.project_troops", count);

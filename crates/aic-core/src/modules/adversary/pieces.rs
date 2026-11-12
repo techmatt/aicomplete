@@ -70,6 +70,7 @@ pub fn remove_botnet(g: &mut GameState, cx: &mut Cx, h: usize) {
         // A botnet formed here later is a new one: the hack cut this one (028).
         cx.set_key(g, &cut_key(h), 0);
         cx.tally(g, "adversary.botnets_removed", 1);
+        cx.per_round(g, "map.botnets_removed", 1);
         alignment::for_botnet_removed(g, cx);
     }
 }
@@ -105,9 +106,11 @@ pub fn remove_all_in_country(g: &mut GameState, cx: &mut Cx, c: usize) -> i64 {
     removed
 }
 
-/// An adversary troop lands on hex `h` (the caller counts it).
-pub fn place_troop(g: &mut GameState, cx: &mut Cx, h: usize) {
+/// An adversary troop lands on hex `h` (the caller counts it). `source` names what made it for 201's by-round
+/// measure (`map.troops_placed.<source>`: factory, muster, wall, threat, project), a stat only.
+pub fn place_troop(g: &mut GameState, cx: &mut Cx, h: usize, source: &str) {
     cx.add_tokens(g, h, TROOP, 1);
+    cx.per_round(g, &format!("map.troops_placed.{source}"), 1);
 }
 
 /// `count` adversary troops, each onto a factory among `hexes` (players
@@ -163,7 +166,16 @@ pub fn land_troops(
             cx.tally(g, "adversary.walled_landing", 1);
             continue;
         }
-        place_troop(g, cx, spots[i]);
+        let source = if tally == "adversary.wall_troops" {
+            "wall"
+        } else if muster {
+            "muster"
+        } else if tally.starts_with("threats.") {
+            "threat"
+        } else {
+            "project"
+        };
+        place_troop(g, cx, spots[i], source);
         cx.per_round(g, OPS, 1);
         cx.tally(g, tally, 1);
         if let Some(source) = destroy {
@@ -224,6 +236,9 @@ pub fn remove_piece(g: &mut GameState, cx: &mut Cx, seat: Option<usize>, h: usiz
     if kind == TROOP {
         cx.add_tokens(g, h, TROOP, -1);
         cx.tally(g, "adversary.troops_removed", 1);
+        if seat.is_some() {
+            cx.per_round(g, "map.troops_removed", 1);
+        }
         alignment::for_troop_removed(g, cx, seat);
     } else {
         remove(g, cx, h, 1);

@@ -25,17 +25,6 @@
     ]
    },
    {
-    "name": "Troops where the Protector stands",
-    "text": "Each round: Muster 1 in each country where the Protector has a Node.",
-    "effects": [
-     {
-      "rule": "adversary.build",
-      "reads": "wall_troops",
-      "note": "175: a Deploy like an event's: the lowest-numbered factory there (else city); on a hex Wall holds it stays in the supply; a Deploy prohibition and the level surcharge apply"
-     }
-    ]
-   },
-   {
     "name": "Warmongering",
     "text": "Each round, a military base with an adversary Troop on or next to it makes 1 extra Drone, even past its cap; at most 1 extra a base in each production, whatever makes it.",
     "effects": [
@@ -63,7 +52,7 @@
   ],
   "build": {
    "corrupt_at": 4,
-   "wall_troops": 1,
+   "wall_troops": 0,
    "war_node": 1,
    "botnet_compute": 1
   },
@@ -113,11 +102,6 @@
     {
      "op": "rally",
      "site": "coastal_city"
-    },
-    {
-     "op": "troops",
-     "count": 1,
-     "each_country": true
     }
    ],
    "twists": [
@@ -126,16 +110,16 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each country: Security 1. Rally: coastal cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Corrupt: cities.",
+   "text": "Threat, each country: Security 1. Rally: coastal cities. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
-    "troops made",
     "facilities destroyed or seized"
    ],
    "value": "harm 40 at values.json (Rally: coastal cities: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Corrupt: cities: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.00x. Pulls priced on their own threat cards.",
    "check": "Lands the pool on the neutral coastal cities and drops a troop on each board's first factory; Corrupt cities then takes a coastal city that 4 can gather around.",
    "flags": [
-    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"
+    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)",
+    "201 (r89, Matt 2026-11-12): Muster 1 removed (fewer troops, each deadlier)"
    ],
    "reuses": null
   },
@@ -159,11 +143,6 @@
      "site": "factory"
     },
     {
-     "op": "troops",
-     "count": 1,
-     "each_country": true
-    },
-    {
      "op": "create_site",
      "kind": "factory"
     }
@@ -174,16 +153,16 @@
      "site": "factory"
     }
    ],
-   "text": "Threat, each country: Security 1 or Industry 1. Rally: factories. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Each country: a neutral factory opens on its lowest-numbered free site. Corrupt: factories.",
+   "text": "Threat, each country: Security 1 or Industry 1. Rally: factories. Each country: a neutral factory opens on its lowest-numbered free site. Corrupt: factories.",
    "harms": [
     "adversary pieces placed",
-    "troops made",
     "facilities destroyed or seized"
    ],
    "value": "harm 34 at values.json (Rally: factories: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Each board: a neutral factory opens on its lowest-numbered free site: -6; Corrupt: factories: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 0.85x. Pulls priced on their own threat cards.",
    "check": "Contests the factories: the pool and a troop land on them, a new neutral factory opens (a target for both sides), and Corrupt factories takes one 3 gather on.",
    "flags": [
-    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"
+    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)",
+    "201 (r89, Matt 2026-11-12): Muster 1 removed (fewer troops, each deadlier)"
    ],
    "reuses": null
   },
@@ -209,6 +188,10 @@
     {
      "op": "increase_income",
      "ambassadors": 1
+    },
+    {
+     "op": "spread_botnets",
+     "count": 1
     }
    ],
    "twists": [
@@ -217,7 +200,7 @@
      "site": "station"
     }
    ],
-   "text": "Threat, each country: Security 1 or Cyber 1. Rally: research stations. Income: +1 Agent a country a round. Corrupt: research stations.",
+   "text": "Threat, each country: Security 1 or Cyber 1. Rally: research stations. Income: +1 Agent a country a round. Botnets spread: each country, a Botnet onto its lowest-numbered site next to a Botnet (none: its lowest-numbered research station). Corrupt: research stations.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or seized"
@@ -225,7 +208,8 @@
    "value": "harm 57 at values.json (Rally: research stations: 12; Income: +1 agent a board a round: 35; Corrupt: research stations: 10); the players' cheapest answer, a removal a piece it lands (6 at 2 boards, 5 each): 30; 1.91x. Pulls priced on their own threat cards.",
    "check": "Contests the one neutral research station a board: the whole pool lands on it, and Corrupt stations needs only 3; income +1 agent a board for the rest of the game.",
    "flags": [
-    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"
+    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)",
+    "201 (r89, Matt 2026-11-12): a Botnet spread line (botnets spread quickly)"
    ],
    "reuses": null
   },
@@ -247,11 +231,6 @@
     {
      "op": "rally",
      "site": "city"
-    },
-    {
-     "op": "troops",
-     "count": 1,
-     "each_country": true
     }
    ],
    "twists": [
@@ -265,17 +244,17 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each country: Security 1 or Diplomacy 1. Rally: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Sway 1 toward Discord. Corrupt: cities.",
+   "text": "Threat, each country: Security 1 or Diplomacy 1. Rally: cities. Sway 1 toward Discord. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
-    "troops made",
     "Discord sway",
     "facilities destroyed or seized"
    ],
    "value": "harm 44 at values.json (Rally: cities: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Sway 1 toward Discord: 4; Corrupt: cities: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.10x. Pulls priced on their own threat cards.",
    "check": "Spreads the pool over the neutral cities, a troop on each board's first factory, and Discord; Corrupt cities takes any city 4 gather around.",
    "flags": [
-    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"
+    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)",
+    "201 (r89, Matt 2026-11-12): Muster 1 removed (fewer troops, each deadlier)"
    ],
    "reuses": null
   },
@@ -301,6 +280,10 @@
     {
      "op": "increase_income",
      "compute": 2
+    },
+    {
+     "op": "spread_botnets",
+     "count": 1
     }
    ],
    "twists": [
@@ -309,7 +292,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each country: Security 1 or Power 1. Rally: Botnet hexes. Income: +2 compute a round. Corrupt: cities.",
+   "text": "Threat, each country: Security 1 or Power 1. Rally: Botnet hexes. Income: +2 compute a round. Botnets spread: each country, a Botnet onto its lowest-numbered site next to a Botnet (none: its lowest-numbered research station). Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
@@ -318,7 +301,8 @@
    "value": "harm 40 at values.json (Rally: botnet hexes: 12; Income: +2 compute a round: 18; Corrupt: cities: 10); the players' cheapest answer, a removal a piece it lands (6 at 2 boards, 5 each): 30; 1.32x. Pulls priced on their own threat cards.",
    "check": "Lands the pool on the botnet hexes (the adversary's own stations at first): it feeds the gather of the cities next to them; compute income +2 for the rest of the game.",
    "flags": [
-    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"
+    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)",
+    "201 (r89, Matt 2026-11-12): a Botnet spread line (botnets spread quickly)"
    ],
    "reuses": null
   },
@@ -341,11 +325,6 @@
      "site": "coastal_city"
     },
     {
-     "op": "troops",
-     "count": 1,
-     "each_country": true
-    },
-    {
      "op": "increase_income",
      "ambassadors": 1
     }
@@ -356,16 +335,16 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each country: Security 2. Rally: coastal cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Income: +1 Agent a country a round. Corrupt: cities.",
+   "text": "Threat, each country: Security 2. Rally: coastal cities. Income: +1 Agent a country a round. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
-    "troops made",
     "facilities destroyed or seized"
    ],
    "value": "harm 62 at values.json (Rally: coastal cities: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Income: +1 agent a board a round: 22; Corrupt: cities: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.55x. Pulls priced on their own threat cards.",
    "check": "Coastal cities again, a troop a board, and income +1 agent a board: the coast fills fastest from stage II.",
    "flags": [
-    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"
+    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)",
+    "201 (r89, Matt 2026-11-12): Muster 1 removed (fewer troops, each deadlier)"
    ],
    "reuses": null
   },
@@ -389,9 +368,12 @@
      "site": "station"
     },
     {
-     "op": "troops",
-     "count": 1,
-     "each_country": true
+     "op": "spread_botnets",
+     "count": 1
+    },
+    {
+     "op": "increase_income",
+     "ambassadors": 1
     }
    ],
    "twists": [
@@ -400,16 +382,18 @@
      "site": "station"
     }
    ],
-   "text": "Threat, each country: Security 2 or Cyber 2. Rally: research stations. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Corrupt: research stations.",
+   "text": "Threat, each country: Security 2 or Cyber 2. Rally: research stations. Botnets spread: each country, a Botnet onto its lowest-numbered site next to a Botnet (none: its lowest-numbered research station). Income: +1 Agent a country a round. Corrupt: research stations.",
    "harms": [
     "adversary pieces placed",
-    "troops made",
     "facilities destroyed or seized"
    ],
    "value": "harm 40 at values.json (Rally: research stations: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Corrupt: research stations: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.00x. Pulls priced on their own threat cards.",
    "check": "The pool on the neutral stations (else the players'), a troop a board; Corrupt stations takes a station 3 gather on, a player's included.",
    "flags": [
-    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"
+    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)",
+    "201 (r89, Matt 2026-11-12): Muster 1 removed (fewer troops, each deadlier)",
+    "201 (r89, Matt 2026-11-12): a Botnet spread line (botnets spread quickly)",
+    "201 (r89, Matt 2026-11-12): an agent income line (agents grow by stage)"
    ],
    "reuses": null
   },
@@ -435,6 +419,10 @@
     {
      "op": "increase_income",
      "ambassadors": 1
+    },
+    {
+     "op": "spread_botnets",
+     "count": 1
     }
    ],
    "twists": [
@@ -444,7 +432,7 @@
      "cut": 1
     }
    ],
-   "text": "Threat, each country: Diplomacy 2 or Cyber 2. Rally: cities. Income: +1 Agent a country a round. Corrupt: cities (1 fewer).",
+   "text": "Threat, each country: Diplomacy 2 or Cyber 2. Rally: cities. Income: +1 Agent a country a round. Botnets spread: each country, a Botnet onto its lowest-numbered site next to a Botnet (none: its lowest-numbered research station). Corrupt: cities (1 fewer).",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or seized"
@@ -452,7 +440,8 @@
    "value": "harm 44 at values.json (Rally: cities: 12; Income: +1 agent a board a round: 22; Corrupt: cities (1 fewer): 10); the players' cheapest answer, a removal a piece it lands (6 at 2 boards, 5 each): 30; 1.47x. Pulls priced on their own threat cards.",
    "check": "The pool over the neutral cities and Corrupt cities one fewer (3 at d0): the city cascade card; income +1 agent a board.",
    "flags": [
-    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"
+    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)",
+    "201 (r89, Matt 2026-11-12): a Botnet spread line (botnets spread quickly)"
    ],
    "reuses": null
   },
@@ -475,9 +464,8 @@
      "site": "factory"
     },
     {
-     "op": "troops",
-     "count": 1,
-     "each_country": true
+     "op": "increase_income",
+     "ambassadors": 1
     }
    ],
    "twists": [
@@ -491,17 +479,18 @@
      "site": "factory"
     }
    ],
-   "text": "Threat, each country: Security 2. Rally: factories. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Each player with a Node on or next to a front's base destroys 1 of those Nodes. Corrupt: factories.",
+   "text": "Threat, each country: Security 2. Rally: factories. Each player with a Node on or next to a front's base destroys 1 of those Nodes. Income: +1 Agent a country a round. Corrupt: factories.",
    "harms": [
     "adversary pieces placed",
-    "troops made",
     "node destroyed",
     "facilities destroyed or seized"
    ],
    "value": "harm 48 at values.json (Rally: factories: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Each player with a node on or next to a front's base destroys 1 of those nodes: 8; Corrupt: factories: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.20x. Pulls priced on their own threat cards.",
    "check": "Factories and the fronts: the pool and a troop on the factories, nodes at the fronts' bases lost, Corrupt factories.",
    "flags": [
-    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"
+    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)",
+    "201 (r89, Matt 2026-11-12): Muster 1 removed (fewer troops, each deadlier)",
+    "201 (r89, Matt 2026-11-12): an agent income line (agents grow by stage)"
    ],
    "reuses": null
   },
@@ -533,13 +522,12 @@
      "site": "factory"
     },
     {
-     "op": "troops",
-     "count": 1,
-     "each_country": true
+     "op": "increase_income",
+     "compute": 2
     },
     {
      "op": "increase_income",
-     "compute": 2
+     "ambassadors": 1
     }
    ],
    "twists": [
@@ -548,17 +536,18 @@
      "site": "factory"
     }
    ],
-   "text": "Threat, each country: Security 1 or Industry 1, and Security 2 or Industry 2. Rally: factories. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Income: +2 compute a round. Corrupt: factories.",
+   "text": "Threat, each country: Security 1 or Industry 1, and Security 2 or Industry 2. Rally: factories. Income: +2 compute a round. Income: +1 Agent a country a round. Corrupt: factories.",
    "harms": [
     "adversary pieces placed",
-    "troops made",
     "projects advanced (compute)",
     "facilities destroyed or seized"
    ],
    "value": "harm 51 at values.json (Rally: factories: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Income: +2 compute a round: 11; Corrupt: factories: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.27x. Pulls priced on their own threat cards.",
    "check": "Two pulls, the pool on the factories, a troop a board, compute income +2: the projects fill faster from here.",
    "flags": [
-    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"
+    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)",
+    "201 (r89, Matt 2026-11-12): Muster 1 removed (fewer troops, each deadlier)",
+    "201 (r89, Matt 2026-11-12): an agent income line (agents grow by stage)"
    ],
    "reuses": null
   },
@@ -581,9 +570,8 @@
      "site": "city"
     },
     {
-     "op": "troops",
-     "count": 1,
-     "each_country": true
+     "op": "increase_income",
+     "ambassadors": 1
     }
    ],
    "twists": [
@@ -596,17 +584,18 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each country: any tier-2 threat. Rally: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Every adversary Troop takes 1 more step this round. Corrupt: cities.",
+   "text": "Threat, each country: any tier-2 threat. Rally: cities. Every adversary Troop takes 1 more step this round. Income: +1 Agent a country a round. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
-    "troops made",
     "war brought forward",
     "facilities destroyed or seized"
    ],
    "value": "harm 45 at values.json (Rally: cities: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Every adversary troop takes 1 more step this round: 5; Corrupt: cities: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.12x. Pulls priced on their own threat cards.",
    "check": "Cities and the march: the pool over the neutral cities, a troop a board, every troop a step further this round.",
    "flags": [
-    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"
+    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)",
+    "201 (r89, Matt 2026-11-12): Muster 1 removed (fewer troops, each deadlier)",
+    "201 (r89, Matt 2026-11-12): an agent income line (agents grow by stage)"
    ],
    "reuses": null
   },
@@ -638,7 +627,7 @@
     },
     {
      "op": "troops",
-     "count": 2,
+     "count": 1,
      "each_country": true
     },
     {
@@ -660,7 +649,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each country: Security 2, and Industry 2 or Power 2. Rally: factories. Muster 2: each country, 2 Troops on its lowest-numbered factory (else city). Income: +1 Agent a country a round. Remove 2 Unity from the Unity track. Corrupt: factories. Corrupt: cities.",
+   "text": "Threat, each country: Security 2, and Industry 2 or Power 2. Rally: factories. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Income: +1 Agent a country a round. Remove 2 Unity from the Unity track. Corrupt: factories. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -670,7 +659,8 @@
    "value": "harm 85 at values.json (Rally: factories: 12; Deploy 2: each board, 2 troops on its lowest-numbered factory (else city): 36; Income: +1 agent a board a round: 9; Remove 2 Unity from the Unity track: 8; Corrupt: factories: 10; Corrupt: cities: 10); the players' cheapest answer, a removal a piece it lands (10 at 2 boards, 5 each): 50; 1.70x. Pulls priced on their own threat cards.",
    "check": "Two tier-2 pulls, the pool on the factories, 2 troops a board, Unity pulled back, then both Corrupt lines.",
    "flags": [
-    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"
+    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)",
+    "201 (r89, Matt 2026-11-12): Muster 2 -> 1"
    ],
    "reuses": null
   },
@@ -702,8 +692,12 @@
     },
     {
      "op": "troops",
-     "count": 2,
+     "count": 1,
      "each_country": true
+    },
+    {
+     "op": "increase_income",
+     "ambassadors": 1
     }
    ],
    "twists": [
@@ -721,7 +715,7 @@
      "site": "land"
     }
    ],
-   "text": "Threat, each country: any tier-2 threat, and Security 2 or Diplomacy 2. Rally: cities. Muster 2: each country, 2 Troops on its lowest-numbered factory (else city). Sway 1 toward Discord. Corrupt: cities. Corrupt: land.",
+   "text": "Threat, each country: any tier-2 threat, and Security 2 or Diplomacy 2. Rally: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Sway 1 toward Discord. Income: +1 Agent a country a round. Corrupt: cities. Corrupt: land.",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -731,7 +725,9 @@
    "value": "harm 72 at values.json (Rally: cities: 12; Deploy 2: each board, 2 troops on its lowest-numbered factory (else city): 36; Sway 1 toward Discord: 4; Corrupt: cities: 10; Corrupt: land: 10); the players' cheapest answer, a removal a piece it lands (10 at 2 boards, 5 each): 50; 1.44x. Pulls priced on their own threat cards.",
    "check": "The pool over the cities, 2 troops a board, then Corrupt cities and Corrupt land (empty land 3 gather around).",
    "flags": [
-    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"
+    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)",
+    "201 (r89, Matt 2026-11-12): Muster 2 -> 1",
+    "201 (r89, Matt 2026-11-12): an agent income line (agents grow by stage)"
    ],
    "reuses": null
   },
@@ -824,13 +820,17 @@
     },
     {
      "op": "troops",
-     "count": 2,
+     "count": 1,
      "each_country": true
     },
     {
      "op": "flag",
      "name": "blackout",
      "everywhere": true
+    },
+    {
+     "op": "increase_income",
+     "ambassadors": 1
     }
    ],
    "twists": [
@@ -843,7 +843,7 @@
      "site": "land"
     }
    ],
-   "text": "Threat, each country: Industry 2 or Power 2, and Security 2 or Cyber 2. Rally: coastal cities. Muster 2: each country, 2 Troops on its lowest-numbered factory (else city). Until the end of next round, cities make no energy. Corrupt: cities. Corrupt: land.",
+   "text": "Threat, each country: Industry 2 or Power 2, and Security 2 or Cyber 2. Rally: coastal cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Until the end of next round, cities make no energy. Income: +1 Agent a country a round. Corrupt: cities. Corrupt: land.",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -853,7 +853,9 @@
    "value": "harm 86 at values.json (Rally: coastal cities: 12; Deploy 2: each board, 2 troops on its lowest-numbered factory (else city): 36; Until the end of next round, cities make no energy: 18; Corrupt: cities: 10; Corrupt: land: 10); the players' cheapest answer, a removal a piece it lands (10 at 2 boards, 5 each): 50; 1.72x. Pulls priced on their own threat cards.",
    "check": "The coast: the pool on the coastal cities, 2 troops a board, cities dark for two rounds' production, Corrupt cities and Corrupt land.",
    "flags": [
-    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"
+    "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)",
+    "201 (r89, Matt 2026-11-12): Muster 2 -> 1",
+    "201 (r89, Matt 2026-11-12): an agent income line (agents grow by stage)"
    ],
    "reuses": null
   }

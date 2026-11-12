@@ -78,8 +78,9 @@ instead, and the first option's items `counter_bonus` (0) more still; from `coun
 
 **Counters (146; Matt's standard).** **One counter option, two at most**: a scarce currency or a tag sacrifice, or
 credits ("pay 3 energy or 12 credits"). Printed amounts are paid (`counter_pct` 100 by tier and `counter_credit_pct`
-100 are the screens' dials). Tier 1: 3 energy, 3 ambassadors, 6 insight, 3 research cubes, 3 chips, 2 tags or 12
-credits; tier 2: 4, 4, 7, 5, 4 chips, 3 tags or 17 credits (r83: chips halved with the chip's doubled worth) (146: the screens' 85% folded in). Nothing is priced as a share of income. **A counter never shares
+100 are the screens' dials). Tier 1: 3 energy, 3 ambassadors, 3 insight, 3 research cubes, 3 chips, 2 tags or 12
+credits; tier 2: 4, 4, 4 insight, 5, 4 chips, 3 tags or 17 credits (r83: chips halved with the chip's doubled worth;
+r89: insight 6 and 7 → 3 and 4, about half a round's insight at r87's income) (146: the screens' 85% folded in). Nothing is priced as a share of income. **A counter never shares
 a currency with its harm** ("pay 7 credits or lose 8" is a design error): no harm takes credits, and a harm taking
 energy, chips, cubes, insight, ambassadors or nodes drops that counter. The load check and `drafts/adversary/check.py`
 refuse a threat with more than two counter options, more than two consequences, a shared currency, a harm on each
@@ -119,8 +120,8 @@ slot refills. **Harder levels** make threats
 harsher, not more: difficulty 1 lets cities, stations and factories corrupt with one fewer agent and makes every counter cost 1 more of
 each thing (4 more credits), 2 adds 1 more again (credits unchanged) and the Militarist's line (4 compute for each
 unpaid threat, 1 more troop on every Muster), 3 gives a shorter, busier game, and 4 deals tier-2 threats sooner; no
-level deals an extra threat. Levels 1 to 4 also raise the adversary's compute income (most at 3), level 1 starts its
-agent income and level 2 raises it ([adversary.md](adversary.md)).
+level deals an extra threat. Levels 1 to 4 also raise the adversary's compute income (most at 2); its agent income
+starts at 0 below level 4 and grows as the event cards print income lines ([adversary.md](adversary.md)).
 **What resisted a summary:** that only resource options pool.
 
 **Compute.** Many threats also give the adversary compute, onto its projects ([adversary.md](adversary.md)), when they

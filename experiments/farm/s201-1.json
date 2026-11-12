@@ -1,0 +1,345 @@
+{
+  "name": "s201-1",
+  "note": "201 screen",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_p",
+      "set": [
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4"
+      ]
+    },
+    {
+      "name": "br_p",
+      "set": [
+        "ai.boards=0,2",
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4"
+      ]
+    },
+    {
+      "name": "pr_p",
+      "set": [
+        "ai.boards=1,2",
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4"
+      ]
+    },
+    {
+      "name": "bp_p+tn",
+      "set": [
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4",
+        "board.troop_node=0"
+      ]
+    },
+    {
+      "name": "br_p+tn",
+      "set": [
+        "ai.boards=0,2",
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4",
+        "board.troop_node=0"
+      ]
+    },
+    {
+      "name": "pr_p+tn",
+      "set": [
+        "ai.boards=1,2",
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4",
+        "board.troop_node=0"
+      ]
+    },
+    {
+      "name": "bp_p+tn+ts",
+      "set": [
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4",
+        "board.troop_node=0",
+        "board.troop_spent=0"
+      ]
+    },
+    {
+      "name": "br_p+tn+ts",
+      "set": [
+        "ai.boards=0,2",
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4",
+        "board.troop_node=0",
+        "board.troop_spent=0"
+      ]
+    },
+    {
+      "name": "pr_p+tn+ts",
+      "set": [
+        "ai.boards=1,2",
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4",
+        "board.troop_node=0",
+        "board.troop_spent=0"
+      ]
+    },
+    {
+      "name": "bp_p+tn+m011",
+      "set": [
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4",
+        "board.troop_node=0",
+        "adversary.mil_s1_probing_strikes.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"}]",
+        "adversary.mil_s1_factory_drive.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"create_site\",\"kind\":\"factory\"}]",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"}]",
+        "adversary.mil_s2_mobilization.standing.1.count=1",
+        "adversary.mil_s2_station_raids.standing.1.count=1",
+        "adversary.mil_s2_border_war.standing.1.count=1",
+        "adversary.mil_s2_supply_lines.standing.1.count=1",
+        "adversary.mil_s2_forced_march.standing.1.count=1",
+        "adversary.mil_s3_total_mobilization.standing.1.count=1",
+        "adversary.mil_s3_blitzkrieg.standing.1.count=1",
+        "adversary.mil_s3_occupation.standing.1.count=1",
+        "adversary.mil_s3_naval_blockade.standing.1.count=1"
+      ]
+    },
+    {
+      "name": "br_p+tn+m011",
+      "set": [
+        "ai.boards=0,2",
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4",
+        "board.troop_node=0",
+        "adversary.mil_s1_probing_strikes.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"}]",
+        "adversary.mil_s1_factory_drive.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"create_site\",\"kind\":\"factory\"}]",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"}]",
+        "adversary.mil_s2_mobilization.standing.1.count=1",
+        "adversary.mil_s2_station_raids.standing.1.count=1",
+        "adversary.mil_s2_border_war.standing.1.count=1",
+        "adversary.mil_s2_supply_lines.standing.1.count=1",
+        "adversary.mil_s2_forced_march.standing.1.count=1",
+        "adversary.mil_s3_total_mobilization.standing.1.count=1",
+        "adversary.mil_s3_blitzkrieg.standing.1.count=1",
+        "adversary.mil_s3_occupation.standing.1.count=1",
+        "adversary.mil_s3_naval_blockade.standing.1.count=1"
+      ]
+    },
+    {
+      "name": "pr_p+tn+m011",
+      "set": [
+        "ai.boards=1,2",
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4",
+        "board.troop_node=0",
+        "adversary.mil_s1_probing_strikes.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"}]",
+        "adversary.mil_s1_factory_drive.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"create_site\",\"kind\":\"factory\"}]",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"}]",
+        "adversary.mil_s2_mobilization.standing.1.count=1",
+        "adversary.mil_s2_station_raids.standing.1.count=1",
+        "adversary.mil_s2_border_war.standing.1.count=1",
+        "adversary.mil_s2_supply_lines.standing.1.count=1",
+        "adversary.mil_s2_forced_march.standing.1.count=1",
+        "adversary.mil_s3_total_mobilization.standing.1.count=1",
+        "adversary.mil_s3_blitzkrieg.standing.1.count=1",
+        "adversary.mil_s3_occupation.standing.1.count=1",
+        "adversary.mil_s3_naval_blockade.standing.1.count=1"
+      ]
+    },
+    {
+      "name": "bp_p+tn+ts+m011",
+      "set": [
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4",
+        "board.troop_node=0",
+        "board.troop_spent=0",
+        "adversary.mil_s1_probing_strikes.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"}]",
+        "adversary.mil_s1_factory_drive.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"create_site\",\"kind\":\"factory\"}]",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"}]",
+        "adversary.mil_s2_mobilization.standing.1.count=1",
+        "adversary.mil_s2_station_raids.standing.1.count=1",
+        "adversary.mil_s2_border_war.standing.1.count=1",
+        "adversary.mil_s2_supply_lines.standing.1.count=1",
+        "adversary.mil_s2_forced_march.standing.1.count=1",
+        "adversary.mil_s3_total_mobilization.standing.1.count=1",
+        "adversary.mil_s3_blitzkrieg.standing.1.count=1",
+        "adversary.mil_s3_occupation.standing.1.count=1",
+        "adversary.mil_s3_naval_blockade.standing.1.count=1"
+      ]
+    },
+    {
+      "name": "br_p+tn+ts+m011",
+      "set": [
+        "ai.boards=0,2",
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4",
+        "board.troop_node=0",
+        "board.troop_spent=0",
+        "adversary.mil_s1_probing_strikes.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"}]",
+        "adversary.mil_s1_factory_drive.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"create_site\",\"kind\":\"factory\"}]",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"}]",
+        "adversary.mil_s2_mobilization.standing.1.count=1",
+        "adversary.mil_s2_station_raids.standing.1.count=1",
+        "adversary.mil_s2_border_war.standing.1.count=1",
+        "adversary.mil_s2_supply_lines.standing.1.count=1",
+        "adversary.mil_s2_forced_march.standing.1.count=1",
+        "adversary.mil_s3_total_mobilization.standing.1.count=1",
+        "adversary.mil_s3_blitzkrieg.standing.1.count=1",
+        "adversary.mil_s3_occupation.standing.1.count=1",
+        "adversary.mil_s3_naval_blockade.standing.1.count=1"
+      ]
+    },
+    {
+      "name": "pr_p+tn+ts+m011",
+      "set": [
+        "ai.boards=1,2",
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4",
+        "board.troop_node=0",
+        "board.troop_spent=0",
+        "adversary.mil_s1_probing_strikes.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"}]",
+        "adversary.mil_s1_factory_drive.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"create_site\",\"kind\":\"factory\"}]",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"}]",
+        "adversary.mil_s2_mobilization.standing.1.count=1",
+        "adversary.mil_s2_station_raids.standing.1.count=1",
+        "adversary.mil_s2_border_war.standing.1.count=1",
+        "adversary.mil_s2_supply_lines.standing.1.count=1",
+        "adversary.mil_s2_forced_march.standing.1.count=1",
+        "adversary.mil_s3_total_mobilization.standing.1.count=1",
+        "adversary.mil_s3_blitzkrieg.standing.1.count=1",
+        "adversary.mil_s3_occupation.standing.1.count=1",
+        "adversary.mil_s3_naval_blockade.standing.1.count=1"
+      ]
+    },
+    {
+      "name": "bp_p+tn+ts+m011+st1",
+      "set": [
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4",
+        "board.troop_node=0",
+        "board.troop_spent=0",
+        "adversary.mil_s1_probing_strikes.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"}]",
+        "adversary.mil_s1_factory_drive.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"create_site\",\"kind\":\"factory\"}]",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"}]",
+        "adversary.mil_s2_mobilization.standing.1.count=1",
+        "adversary.mil_s2_station_raids.standing.1.count=1",
+        "adversary.mil_s2_border_war.standing.1.count=1",
+        "adversary.mil_s2_supply_lines.standing.1.count=1",
+        "adversary.mil_s2_forced_march.standing.1.count=1",
+        "adversary.mil_s3_total_mobilization.standing.1.count=1",
+        "adversary.mil_s3_blitzkrieg.standing.1.count=1",
+        "adversary.mil_s3_occupation.standing.1.count=1",
+        "adversary.mil_s3_naval_blockade.standing.1.count=1",
+        "board.troop_steps=1"
+      ]
+    },
+    {
+      "name": "br_p+tn+ts+m011+st1",
+      "set": [
+        "ai.boards=0,2",
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4",
+        "board.troop_node=0",
+        "board.troop_spent=0",
+        "adversary.mil_s1_probing_strikes.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"}]",
+        "adversary.mil_s1_factory_drive.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"create_site\",\"kind\":\"factory\"}]",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"}]",
+        "adversary.mil_s2_mobilization.standing.1.count=1",
+        "adversary.mil_s2_station_raids.standing.1.count=1",
+        "adversary.mil_s2_border_war.standing.1.count=1",
+        "adversary.mil_s2_supply_lines.standing.1.count=1",
+        "adversary.mil_s2_forced_march.standing.1.count=1",
+        "adversary.mil_s3_total_mobilization.standing.1.count=1",
+        "adversary.mil_s3_blitzkrieg.standing.1.count=1",
+        "adversary.mil_s3_occupation.standing.1.count=1",
+        "adversary.mil_s3_naval_blockade.standing.1.count=1",
+        "board.troop_steps=1"
+      ]
+    },
+    {
+      "name": "pr_p+tn+ts+m011+st1",
+      "set": [
+        "ai.boards=1,2",
+        "threats.backdoor.counters.0.0.amount=3",
+        "threats.overrun.counters.0.0.amount=4",
+        "threats.garrison_state.counters.0.0.amount=4",
+        "threats.cascade_failure.counters.0.0.amount=4",
+        "board.troop_node=0",
+        "board.troop_spent=0",
+        "adversary.mil_s1_probing_strikes.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"}]",
+        "adversary.mil_s1_factory_drive.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"create_site\",\"kind\":\"factory\"}]",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"}]",
+        "adversary.mil_s2_mobilization.standing.1.count=1",
+        "adversary.mil_s2_station_raids.standing.1.count=1",
+        "adversary.mil_s2_border_war.standing.1.count=1",
+        "adversary.mil_s2_supply_lines.standing.1.count=1",
+        "adversary.mil_s2_forced_march.standing.1.count=1",
+        "adversary.mil_s3_total_mobilization.standing.1.count=1",
+        "adversary.mil_s3_blitzkrieg.standing.1.count=1",
+        "adversary.mil_s3_occupation.standing.1.count=1",
+        "adversary.mil_s3_naval_blockade.standing.1.count=1",
+        "board.troop_steps=1"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

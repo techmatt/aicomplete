@@ -644,8 +644,6 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
             "cards (Peace Conference, Coalition Charter, Open Assembly), Unity cards".to_string(),
             "card text".to_string(),
         ],
-        // 200: every board's antimatter power.
-        ["Unity".to_string(), "Annihilate (every board's power, 2 antimatter)".to_string(), "3".to_string()],
         [
             "Discord".to_string(),
             "energy diverted (a corrupted city) or darkened (an agent on an aligned city)".to_string(),
@@ -667,8 +665,8 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
         ],
         [
             "Discord".to_string(),
-            "the antimatter action, twists, threats, Discord cards, adversary projects".to_string(),
-            format!("{}, card text", t("alignment.antimatter_discord")),
+            "twists, threats, Discord cards, adversary projects".to_string(),
+            "card text".to_string(),
         ],
         [
             "Discord".to_string(),

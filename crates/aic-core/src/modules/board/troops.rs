@@ -385,9 +385,11 @@ fn strike_from(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
     };
     let (x, k) = targets[i].clone();
     cx.tally(g, "board.troop_strikes", 1);
+    cx.per_round(g, "map.troop_strikes", 1);
     if destroy_piece(g, cx, x, &k, Cause::Troop)? {
         let kind = if k == FACTORY || k == STATION { k.as_str() } else { "node" };
         cx.tally(g, &format!("board.troop_destroyed.{kind}"), 1);
+        cx.per_round(g, &format!("map.troop_destroyed.{kind}"), 1);
         cx.tally(g, "board.troop_destroyed", 1);
     } else {
         cx.tally(g, "board.troop_absorbed", 1);
