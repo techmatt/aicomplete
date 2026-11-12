@@ -1,5 +1,6 @@
 """What the screen summaries share: reading an `aic-sim experiment` output directory
-(DIR/results.json for the cell labels, DIR/games.jsonl for the games), the helpers every
+(DIR/results.json for the cell labels, DIR/games.jsonl for the games; or FILE=SPEC, a bare farmed
+JSONL and its farm spec, wherever `stream` reads a DIR), the helpers every
 table uses, the node-source line and the dominance gate. `cards/screen.py` is the
 summary; a script one folder down puts scripts/ on `sys.path` to import this.
 """
@@ -57,11 +58,24 @@ def dealt(dirs):
     return out
 
 
+def source(d):
+    """(games file, spec file or None) of a read's input: DIR (DIR/games.jsonl, its header first), a games file with
+    a header, or FILE=SPEC, a bare farmed JSONL (`farm-seeds ... OUT`, no header) and its farm spec's JSON."""
+    path, _, spec = d.partition('=')
+    return (path if os.path.isfile(path) else os.path.join(path, 'games.jsonl')), spec or None
+
+
 def stream(d):
-    """DIR/games.jsonl line by line: its header first, then each game. A live run or one a
-    kill cut short can end in half a line: that line is dropped. Needs no results.json."""
-    with open(f'{d}/games.jsonl', encoding='utf-8') as f:
-        yield json.loads(f.readline())
+    """D's games line by line: its header first, then each game. D is a run dir, a games file, or FILE=SPEC (a farmed
+    JSONL with no header: the header is made, `{'spec': SPEC}` alone, so no `assemble` is needed; see `source`). A
+    live run or one a kill cut short can end in half a line: that line is dropped. Needs no results.json."""
+    path, spec = source(d)
+    with open(path, encoding='utf-8') as f:
+        if spec:
+            with open(spec, encoding='utf-8') as s:
+                yield {'spec': json.load(s)}
+        else:
+            yield json.loads(f.readline())
         for line in f:
             try:
                 yield json.loads(line)
@@ -99,6 +113,19 @@ def cells_of(spec):
     `cell_labels`' order. From the header alone, so a farmed read (no results.json) reads too."""
     return [{'config': c, 'variant': v['name'], 'difficulty': d, 'agent': a}
             for c in spec['configs'] for v in spec['variants'] for d in spec['difficulties'] for a in spec['agents']]
+
+
+def named_agents(cells, spec):
+    """CELLS (by id) with each agent as SPEC writes it (`strategist`), its resolved label kept as `label`.
+    results.json names a native run's agent by its resolved spec (`engine:strategy=1,...`), a farmed run's cells
+    (`cells_of` on the header) as written, so a read pooling the two would split one agent in two. The written
+    name is the header spec's at the same cell id. CELLS that don't line up with SPEC's cells come back as they are."""
+    written = cells_of(spec)
+    if sorted(cells) != list(range(len(written))) or any(
+            (cells[i]['variant'], cells[i]['difficulty']) != (w['variant'], w['difficulty'])
+            for i, w in enumerate(written)):
+        return cells
+    return {i: dict(c, label=c['agent'], agent=written[i]['agent']) for i, c in cells.items()}
 
 
 def engine(g):

@@ -9,8 +9,12 @@ keeps the fields the engine reads and drops the review ones: every op loses `new
 `check`, `flags` and `reuses`; pulls lose `per` (always "country"); a board rule's entries with no `op` (notes naming
 today's rules) are dropped; the board's `build` numbers are not written (configs/baseline.json `adversary.*` is their
 one home). 151: the board prints no creation line (its Garrisons rule is an income line).
+Writing first runs drafts/adversary/check.py's checks (its `run`) and refuses, writing nothing, on any ERROR.
 """
 
+import contextlib
+import importlib.util
+import io
 import json
 import sys
 from pathlib import Path
@@ -140,8 +144,24 @@ def dump(data):
     return json.dumps(data, indent=1, ensure_ascii=False) + "\n"
 
 
+def draft_errors():
+    """drafts/adversary/check.py's errors for DRAFTS (its own output is held back; the errors are returned)."""
+    spec = importlib.util.spec_from_file_location("adversary_check", ROOT / "drafts" / "adversary" / "check.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    with contextlib.redirect_stdout(io.StringIO()):
+        return list(mod.run(DRAFTS))
+
+
 def main():
     check = "--check" in sys.argv
+    if not check:  # --check only compares; regen.py runs check.py itself first
+        errors = draft_errors()
+        if errors:
+            for e in errors:
+                print("ERROR:", e)
+            print("drafts/adversary/check.py reports errors: nothing written")
+            sys.exit(1)
     stale = []
     for name, text in build().items():
         path = ROOT / name

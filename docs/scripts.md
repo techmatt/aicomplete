@@ -33,12 +33,13 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   tiers` is cards offered, kept and played per game by tier: run it on the first screen of a card rework, since agents
   draft tier 2 about three picks in four ([card-pricing.md](card-pricing.md)) and a tier-1 change may never show.
   `scripts/screens.py` holds what it shares with the other readers, and is the way to read a run from Python:
-  `load(dir)` gives the games with their cells, `cnt(game, key)` a counter (a power is `ai.power.<board>.<k>`).
+  `load(dir)` gives the games with their cells (`stream` also takes `FILE=SPEC`), `cnt(game, key)` a counter (a power is `ai.power.<board>.<name>`: `scripts/powers.py`).
   `python scripts/screens.py assemble SPEC FIRST COUNT OUT_DIR SHARD... [--exe EXE]` turns farmed shards (seed order)
   into an experiment output: the spec's header, then the shards, as `OUT_DIR/games.jsonl`.
 - `cards/threat_read.py DIR... [--cards]`: per cell, threats dealt, countered by kind of option, paid abroad, and the
   typed counters and capstones played, from `games.jsonl`.
 - `content/load_adversary.py [--check]`: `drafts/adversary/` (the source) into `content/` and `docs/adversary-cards.md`.
+  Writing runs `drafts/adversary/check.py`'s checks first and writes nothing on any ERROR; `--check` only compares.
 - `cards/play_read.py DIR... [--min PCT] [--agents A,B]`: per agent, pooled over its cells and DIRs: the draft cards kept in more than `--min` percent of games (default 1) and played
   in none, and every draft card no game kept. Seconds. A farmed read (no `results.json`) reads from its header
   spec, as do `screens.load` and `dealt` (182): agents by the spec's names, not resolved; an unknown one stops it.
@@ -104,23 +105,25 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   games differ prints NOT LIKE FOR LIKE). `table SIM --out FILE` is one binary's rates, `compare` reads two. `check
   SIM` is the standing check (about 2 min, quiet machine, one thread): fails at 1.3 × `speed_baseline.json`,
   `--update` moves it; across a revision it prints NO VERDICT (CLAUDE.md). `--games N` sets the many-thread column's
-  games (greedy's default 200: about 3 min on one thread since 174).
+  games (`table`'s greedy 200: about 3 min on one thread since 174); `pair` sizes rows from the baseline, ~10 s a pass.
 - `bench/per_decision.py OLD_ROOT NEW_ROOT`: rounds, decisions and ms a game and a decision on the same seeds, to
   tell longer games from a slower agent. Across revisions use `--games 16`+ (~8 min for the default `--agent
   planner`; name the agents a change touched). A root is an `.exe` or a directory with `aic-sim.exe` (or
   `target/release/`'s) and its `configs/`.
   `--set K=V` (repeatable) goes to both sides after the built-in ones: a content overlay runs the new binary on old
   content.
+- `bench/seeds.py next N [--take] [--doc FILE]`: the next N fresh seeds from experiments.md's ledger; `--take` moves its `Next free` past them.
 - `bench/gate_stop_rate.py`: how often the gate's early stop flips a verdict (at `z` 2, about 1%).
 - `bench/skilled_rows.py READ.json [--games 24] [--levels 3,4] [--rows ...] [--out ...]`: the oracle's companion spec to a read (experiments.md, *Skilled rows*).
-- `bench/read_specs.py {offs|screen|read} ... --tag NNN [--cards a,b,c]`: a rules item's specs into `out/`: `read TAG SEED
-  [AGENT] [--probe] [SET...]` three 48-seed sets, the three pairs, d0-d3; `screen NAME AGENTS LEVELS SEEDS [--offs]
-  [--first N] [LEVER...]` a dev screen (`tag:a=1;b=2` a lever); `offs` a config per `--cards` card switched off.
+- `bench/read_specs.py {offs|screen|read} ... --tag NNN [--cards a,b,c] [--out-dir DIR]`: a rules item's specs into `out/`
+  (or `experiments/farm`): `read TAG SEED [AGENT] [--probe] [--levels 0,1,2,3,4] [SET...]` three 48-seed sets,
+  the three pairs, d0-d3; `screen NAME AGENTS LEVELS SEEDS [--offs] [--first N] [LEVER...]` a dev screen (`tag:a=1;b=2` a lever); `offs` a config per `--cards` card switched off.
   `bench/run_read.sh NNN EXE ROOT TAG OUT THREADS` runs a read's three sets on one binary (ROOT its configs; EXE, OUT absolute or from the repo root).
 - `bench/ladder.py NEW[,...] OLD[,...] [--measures] [--bands 90-100,70-80,55-65,40-50] [--deck N]`: the paired ladder
-  read per difficulty, sides labeled by rules revision; `--screen DIR[,...]` a screen's levers against base. Reads a
-  farmed read (no `results.json`); engines and `--same-engine` as `paired.py`. Each win % is its side's whole rate. `--deck` defaults to the
-  project count in `content/projects.json`.
+  read per difficulty, sides labeled by rules revision; `--screen DIR[,...]` a screen's levers against base, paired
+  across DIRs. Reads a farmed read (no `results.json`), or a farm's bare out file as `FILE=SPEC.json` where a DIR
+  goes; an agent is named as its spec writes it, native or farmed; engines and `--same-engine` as `paired.py`. Each
+  win % is its side's whole rate.
 - `bench/gate_close.py`: `plan GATE_DIR OUT_DIR` picks the rows within 2 SE by gap against paired SE and writes specs
   that carry them on to the cap, reusing their games; `read` merges the runs (`--min-seeds N` leaves out rows short of
   N seeds, and says how many).

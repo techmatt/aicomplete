@@ -1,7 +1,6 @@
 // The plain face: a card kind with no frame yet. Name, type and text, all from the export.
 // Needs viewer.css.
-
-export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+import { esc } from '../card/card.js';
 
 /**
  * @param c         a card from the export

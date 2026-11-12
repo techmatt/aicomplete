@@ -327,6 +327,10 @@ pub struct GameResult {
     pub cell: usize,
     #[serde(with = "seed_string")]
     pub seed: u64,
+    /// 198: the cell's `adversary.difficulty` (0 in a line written before it), so a reader needn't join the
+    /// header's cells; `margin.level` is the Unity level, not this.
+    #[serde(default)]
+    pub difficulty: i64,
     pub won: bool,
     /// End reason, or `timeout`.
     pub reason: String,
@@ -674,6 +678,7 @@ pub fn play_one(spec: &Spec, cells: &[Cell], ci: usize, seed: u64) -> GameResult
     let mut r = GameResult {
         cell: ci,
         seed,
+        difficulty: cell.difficulty,
         ..Default::default()
     };
     let (mut offered_round, mut checked_round, mut real_choices) = (0u32, 0u32, 0usize);

@@ -154,7 +154,7 @@ pub fn land_troops(
         };
         // 167: a Muster prohibition keeps the troop in the supply where its condition holds.
         if muster {
-            if let Some(wh) = super::plan::prohibition_on(&w, g, Step::Muster, spots[i], g.round as i64) {
+            if let Some(wh) = super::plan::prohibition_on(g, Step::Muster, spots[i]) {
                 prohibit_tally(g, cx, Step::Muster, wh, 1);
                 continue;
             }

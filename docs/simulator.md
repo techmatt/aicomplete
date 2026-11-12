@@ -15,6 +15,7 @@ $S compare configs/baseline.json configs/baseline.json --set-b adversary.difficu
 $S run configs/baseline.json --games 1 --trace     # first game as JSON lines
 $S run configs/baseline.json --json                # machine-readable summary
 $S show configs/baseline.json                      # resolved config, hash, every tunable
+$S map configs/baseline.json                       # each country's hexes by number: kind, flags, neighbors
 $S modules                                         # registry: modules, variants, params, phases
 $S run configs/baseline.json --games 2000 --save out/games              # first 20 losses as records
 $S replay out/games/*.json                         # check records natively (also browser bug reports)
@@ -108,7 +109,8 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
   native `cargo build --release`, which fails (`Access is denied`) while another `aic-sim` runs from that exe: run a
   local oracle row from a copy (177). The shards write under conductor's job folder; the out file appears only at
   the end.
-- **Reading a farmed read:** `python scripts/screens.py assemble SPEC FIRST COUNT OUT_DIR SHARD...` writes
+- **Reading a farmed read:** `screens.py` and `ladder.py` read the farm's out file as `OUT=SPEC.json` (no header
+  needed); for shards, `python scripts/screens.py assemble SPEC FIRST COUNT OUT_DIR SHARD...` writes
   `games.jsonl` (the header, then the shards); `bench/paired.py` and `bench/ladder.py` read it with no `results.json`, and pair a seed
   across engines, counting the seeds on mixed engines (`--same-engine` leaves them out, 163). `scripts/farm/compare.py A B` counts games
   that differ between two engines' outputs.

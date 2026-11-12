@@ -19,6 +19,7 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { esc } from '../card/card.js';
 import { openPage, viewerUrl as url } from './cdp.mjs';
 
 const web = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -432,7 +433,6 @@ const byKind = {};
 for (const i of issues) (byKind[i.kind] ??= []).push(i);
 writeFileSync(join(out, 'issues.json'), JSON.stringify({ issues, spikes, heap }, null, 1));
 
-const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const cards = captures.filter((c) => c.file).map((c) => `<figure class="${c.issues.some((i) => HARD.has(i.kind)) ? 'bad' : ''}"><img src="${c.file}"><figcaption><b>${esc(c.game)}</b> #${c.step} ${esc(c.what)}${c.issues.length ? `<br><i>${esc([...new Set(c.issues.map((i) => i.kind))].join(', '))}</i>` : ''}</figcaption></figure>`);
 const css = 'body{margin:0;font:12px sans-serif;background:#fff}main{display:grid;grid-template-columns:repeat(4,400px);gap:6px;padding:6px}figure{margin:0;border:2px solid #ddd}figure.bad{border-color:#d33}img{width:100%;display:block}figcaption{padding:2px 4px;height:3.2em;overflow:hidden}';
 const PER_SHEET = 24;

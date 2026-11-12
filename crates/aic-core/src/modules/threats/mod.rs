@@ -33,6 +33,10 @@ use near::*;
 pub use near::mask_matches_reach;
 pub use ops::*;
 
+/// The auto phases by index in [`PHASES`] (198: named, `run` reads them; the counter phase, 1, is a decision).
+const DEAL: usize = 0;
+const EXECUTE: usize = 2;
+
 const PHASES: &[PhaseSpec] = &[
     PhaseSpec::auto(
         "deal",
@@ -401,11 +405,11 @@ impl Module for Threats {
 
     fn run(&self, phase: usize, g: &mut GameState, cx: &mut Cx) -> Res {
         match phase {
-            0 => {
+            DEAL => {
                 deal_round(g, cx);
                 return Ok(());
             }
-            2 => {}
+            EXECUTE => {}
             _ => unreachable!("threats: no auto phase {phase}"),
         }
         let w = cx.world;

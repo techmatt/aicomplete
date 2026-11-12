@@ -175,6 +175,21 @@ pub fn power_sacrifices_many(w: &World, seat: usize, k: usize) -> bool {
     board(w, seat).powers.get(k).is_some_and(|p| p.tags.iter().map(|(_, n)| n).sum::<i64>() > 1)
 }
 
+/// 198: a power's name as its counters key it (`ai.power.<board>.<slug>`, `ai.dear.<board>.<slug>.<why>`), so a
+/// cut power doesn't relabel the rest across revisions: lowercased, each run of other characters one `_` (Peer
+/// Review: `peer_review`). `scripts/powers.py` mirrors it.
+pub fn power_slug(name: &str) -> String {
+    let mut slug = String::new();
+    for ch in name.chars() {
+        if ch.is_ascii_alphanumeric() {
+            slug.push(ch.to_ascii_lowercase());
+        } else if !slug.is_empty() && !slug.ends_with('_') {
+            slug.push('_');
+        }
+    }
+    slug.trim_end_matches('_').to_string()
+}
+
 /// Set once seat `s` has used power `k` this round.
 pub(crate) fn power_used(seat: usize, k: usize) -> KeyBuf {
     KeyBuf::new("ai.power_used.").num(seat).text(".").num(k)
@@ -276,11 +291,12 @@ pub fn tally_dear_powers(g: &mut GameState, cx: &mut Cx, seat: usize) {
             Some("no target") | Some("no node left") => "no_target",
             Some(_) => "unpaid",
         };
-        cx.tally(g, &format!("ai.dear.{}.{k}.{key}", b.id), 1);
+        let slug = power_slug(&p.name);
+        cx.tally(g, &format!("ai.dear.{}.{slug}.{key}", b.id), 1);
         // 099: the cost is checked first, so a round short of both read "unpaid"
         // alone: the tags are counted on their own as well.
         if key == "unpaid" && !cards::TagNeed::new(&p.tags).payable(&cards::sources(&w, g, seat)) {
-            cx.tally(g, &format!("ai.dear.{}.{k}.no_tags", b.id), 1);
+            cx.tally(g, &format!("ai.dear.{}.{slug}.no_tags", b.id), 1);
         }
     }
 }
@@ -452,8 +468,9 @@ impl Module for Ai {
         } else {
             cards::sacrifice_for(g, cx, s, &p.tags)?;
         }
-        cx.count(g, &format!("power.{}.{k}", board(&w, s).id), 1);
-        cx.per_round(g, &format!("ai.power.{}.{k}", board(&w, s).id), 1);
+        let key = format!("ai.power.{}.{}", board(&w, s).id, power_slug(&p.name));
+        cx.tally(g, &key, 1);
+        cx.per_round(g, &key, 1);
         cx.tally(g, "ai.powers_used", 1);
         cx.per_round(g, "ai.powers_used", 1);
         // 105: what a power removes fires the seat's fight triggers.

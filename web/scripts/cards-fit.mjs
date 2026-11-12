@@ -4,7 +4,8 @@
 //   { goal, cards: { <id>: { name, top, effect, title, overflow, where, tight } } }
 // top and effect are pt (null: nothing in that box), title is pt, overflow says something
 // still breaks its box or plate, where says what, and tight lists boxes inside but short of
-// the clearance. Prints the cards below the goal. Exits 1 if anything overflows. No server.
+// the clearance. Prints the cards below the goal, and what overflows by how much (px, and
+// roughly in characters). Exits 1 if anything overflows. No server.
 //   AIC_BROWSER browser executable (see cdp.mjs)
 
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -32,14 +33,64 @@ mkdirSync(OUT, { recursive: true });
 const html = join(OUT, 'card-fit-page.html');
 writeFileSync(html, `<!doctype html><html><head><meta charset="utf-8"><base href="${pathToFileURL(join(REPO, 'web', 'card')).href}/"><link rel="stylesheet" href="card.css"></head><body>${players.map(face).join('')}</body></html>`);
 
+/**
+ * How far each box and title runs past its edge once fitCards has sized it, in px, measured as
+ * fitCards measures (a copy at true size, the box's icon rows and text against its height and
+ * width; a title against its plate less the margin). `chars` turns it into characters, roughly:
+ * the overflow in text lines times the box's characters per line, or the title's px times its
+ * characters per px. Null where the text gives no rate (an icon row alone). Only for the report:
+ * what overflows is fitCards' call.
+ */
+function overruns() {
+  const MM = 96 / 25.4;
+  const TITLE_MARGIN_MM = 1;
+  const host = document.createElement('div');
+  host.style.cssText = 'position:fixed;left:-300mm;top:0;visibility:hidden;contain:layout style';
+  document.body.append(host);
+  const out = [];
+  for (const card of document.querySelectorAll('.card')) {
+    const content = card.querySelector(':scope > .content');
+    if (!content) continue;
+    const copy = card.cloneNode(false);
+    copy.append(content.cloneNode(true));
+    host.replaceChildren(copy);
+    const row = {};
+    for (const box of copy.querySelectorAll('.effect')) {
+      const parts = [...box.querySelectorAll('.fx-line, .rules')].map((e) => e.getBoundingClientRect());
+      if (!parts.length) continue;
+      const b = box.getBoundingClientRect();
+      const down = Math.max(...parts.map((r) => r.bottom)) - Math.min(...parts.map((r) => r.top)) - b.height;
+      const side = Math.max(b.left - Math.min(...parts.map((r) => r.left)), Math.max(...parts.map((r) => r.right)) - b.right);
+      const rules = box.querySelector('.rules');
+      let chars = null;
+      if (rules && down > 0) {
+        const lineHeight = parseFloat(getComputedStyle(rules).lineHeight);
+        const lines = rules.getBoundingClientRect().height / lineHeight;
+        if (lineHeight > 0 && lines > 0) chars = Math.ceil((down / lineHeight) * (rules.textContent.trim().length / lines));
+      }
+      row[box.classList.contains('lasting') ? 'top' : 'effect'] = { down, side, chars };
+    }
+    const name = copy.querySelector('.name');
+    const span = name.firstElementChild;
+    const w = span.getBoundingClientRect().width;
+    const over = w - (name.getBoundingClientRect().width - 2 * TITLE_MARGIN_MM * MM);
+    row.title = { side: over, chars: w > 0 ? Math.ceil((over * span.textContent.trim().length) / w) : null };
+    out.push(row);
+  }
+  host.remove();
+  return out;
+}
+
 const page = await openPage({ width: 900, height: 900 });
 let rows;
 let fonts;
+let runs;
 try {
   await page.send('Page.navigate', { url: pathToFileURL(html).href });
   await page.until(`document.readyState === 'complete' && document.querySelectorAll('.card').length === ${players.length}`, 'the cards');
   rows = await page.js(`(${fitCards})()`);
   fonts = await page.js(`[...document.fonts].filter((f) => f.status === 'loaded').length`);
+  if (rows.some((r) => r.overflow.length)) runs = await page.js(`(${overruns})()`);
 } finally {
   await page.close();
 }
@@ -74,6 +125,13 @@ console.log(`titles under 15 pt: ${titled.length}${titled.length ? `, smallest $
 const tight = list.filter(([, c]) => c.tight.length);
 if (tight.length) console.log(`short of the clearance: ${tight.map(([id]) => id).join(', ')}`);
 const broken = list.filter(([, c]) => c.overflow);
-for (const [id, c] of broken) console.log(`OVERFLOW ${id}: ${c.where.join(', ')}`);
+/** "effect 6.2 px down, about 14 characters over": what of `where` runs past its edge. */
+const overrun = (i, where) => {
+  const r = runs?.[i]?.[where];
+  if (!r) return where;
+  const px = [r.down > 0 && `${r.down.toFixed(1)} px down`, r.side > 0 && `${r.side.toFixed(1)} px ${where === 'title' ? 'wide' : 'across'}`].filter(Boolean);
+  return `${where} ${px.join(' and ') || 'under a px'}${r.chars ? `, about ${r.chars} character${r.chars === 1 ? '' : 's'} over` : ''}`;
+};
+for (const [id, c] of broken) console.log(`OVERFLOW ${id}: ${c.where.map((w) => overrun(list.findIndex(([k]) => k === id), w)).join('; ')}`);
 console.log(`out/card-fit.json, ${((performance.now() - started) / 1000).toFixed(1)} s`);
 process.exit(broken.length ? 1 : 0);

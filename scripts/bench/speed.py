@@ -16,8 +16,10 @@
 
 `--threads N` caps `table` and `pair`'s many-thread column: the default leaves 4 hardware
 threads free. `check` always runs on one. `--games N` sets the games of the --threads column in
-`table`, `pair` and `specs`; the one-thread column keeps its games. Each row prints its games
-first, with a rough time when the baseline has the agent.
+`table`, `pair` and `specs`; the one-thread column keeps its games. `table` and `specs` take
+their games from TABLE; `pair` sizes each row from the baseline's ms/game, about PAIR_SECS a pass
+on each column (TABLE's where the baseline lacks the agent). Each row prints its games first,
+with a rough time when the baseline has the agent.
 
 `check` runs a small fixed set on one thread, best of three (the planner: four seeds, best of
 two), and fails if an agent's ms/game is more than TOLERANCE over
@@ -59,6 +61,9 @@ TABLE = [
 # length reads as slowness (042: r18 to r20 read 6.7 x on one seed and 1.75 x on 16).
 CHECK = [("random", 200, 2, 3), ("greedy", 6, 2, 3), ("engine", 2, 2, 3), ("planner", 4, 2, 2)]
 TOLERANCE = 1.3
+# `pair`'s target for one pass of a column at c2, in seconds at the baseline's ms/game: it plays
+# each column four times, so a row is about 80 s, whatever the revision has done to game length.
+PAIR_SECS = 10
 # What a `run --json` result says about the games, timing aside. The seeds and the agent are
 # fixed, so these move only if play did. Counters stay out: adding one is no change of play.
 PLAY_FIELDS = ("wins", "rounds_mean", "decisions_mean", "options_per_decision", "forced_share",
@@ -110,10 +115,23 @@ def games_for(one, many, c, threads, games=0):
     return max(1, one * 2 // c // (c - 1)), games or max(threads, many * 2 // c // (c - 1))
 
 
-def rows_to_run(only, threads, games=0):
+def scaled(agent, one, many, threads):
+    """`pair`'s games at c2 for a TABLE row: enough for about PAIR_SECS a pass on each column at the
+    baseline's ms/game (the many-thread column `threads` times the games), at least 2 on one thread.
+    TABLE's own where the baseline lacks the agent (rollout)."""
+    ms = saved(BASELINE).get(agent)
+    if not isinstance(ms, (int, float)) or ms <= 0:
+        return one, many
+    n = max(2, round(PAIR_SECS * 1000 / ms))
+    return n, n * threads
+
+
+def rows_to_run(only, threads, games=0, scale=False):
     """Each (agent, countries, games on one thread, games on `threads`) `only` lets through.
-    `games`, if set, is the games on `threads`."""
+    `games`, if set, is the games on `threads`; `scale` takes the rest from the baseline (`scaled`)."""
     for agent, one, many in TABLE:
+        if scale:
+            one, many = scaled(agent, one, many, threads)
         for c in (2, 3):
             if only and agent not in only and f"{agent} c{c}" not in only:
                 continue
@@ -166,7 +184,7 @@ def pair(old, new, out, only, threads, old_config, games=0):
         print(f"OTHER RULES OR CONFIG: r{before[0]} on {old_config} against r{after[0]} on {CONFIG}. Each row says "
               "whether its games came out the same on both: one that did is like for like (a rename), one that "
               "did not is speed times game length. per_decision.py splits them.", flush=True)
-    for agent, c, n1, nn in rows_to_run(only, threads, games):
+    for agent, c, n1, nn in rows_to_run(only, threads, games, scale=True):
         announce(f"{agent} c{c}", agent, c, n1, nn, threads, 4)
         r = {}
         same = True

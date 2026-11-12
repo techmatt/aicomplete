@@ -113,10 +113,13 @@ experiments, speed, scripts, web, card art.
   added beside the asked one is screened on and off as a factorial: two changes in one row can't
   say which did it. A change to a core rules file after a run was frozen needs that run's seeds
   replayed on the final build before the report, compared with `bench/same_results.py`: keep
-  the frozen run's output directory for this.
+  the frozen run's output directory for this. **On tuning**, settle every dial on screens first and
+  run the full test lane once, at the end, not after each dial.
 - **Background any step over ~30 seconds** (builds, tests, servers), and wait on the real
   process (the `cargo`, `node` or test binary), never on a launcher wrapper that returns before
-  the work is done.
+  the work is done. Give a compile its time: a fresh worktree's first build is minutes, and a
+  `timeout 55 cargo ...` cut mid-compile prints "could not compile", which reads as a real error.
+  `cargo check --tests` finds a missing import in about a minute, before a full test build.
 - **One cargo at a time in a target dir.** Parallel helpers need their own `CARGO_TARGET_DIR`.
 - **Write scripts with Write, not a Bash heredoc:** quoting breaks it, and a long one fails on
   size. A file a script writes passes `encoding='utf-8', newline='\n'`. This box's traps are in

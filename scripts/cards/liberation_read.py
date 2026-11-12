@@ -5,7 +5,8 @@ Wall stops per game.
 
     python scripts/cards/liberation_read.py DIR [DIR...] [--cards]
 
-DIR is an `aic-sim experiment` output directory (games.jsonl and results.json).
+DIR is an `aic-sim experiment` output directory (games.jsonl and results.json; a farmed run's cells come from its
+header, `screens.cells_for`).
 """
 import argparse
 import json
@@ -14,6 +15,9 @@ import os
 import sys
 from collections import defaultdict
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+from screens import cells_for  # noqa: E402
+
 LIBERATE = ['nuclear_option', 'power_to_the_people', 'hostile_buyout', 'forensic_audit', 'root_access',
             'peacekeeping_mission', 'popular_uprising', 'great_liberation']
 
@@ -21,9 +25,8 @@ LIBERATE = ['nuclear_option', 'power_to_the_people', 'hostile_buyout', 'forensic
 def load(dirs):
     cells = defaultdict(list)
     for d in dirs:
-        names = {}
-        for c in json.load(open(os.path.join(d, 'results.json'), encoding='utf-8'))['cells']:
-            names[c['cell']] = (os.path.basename(c['config']).replace('.json', ''), c['variant'], c['agent'])
+        names = {i: (os.path.basename(c['config']).replace('.json', ''), c['variant'], c['agent'])
+                 for i, c in cells_for(d).items()}
         with open(os.path.join(d, 'games.jsonl'), encoding='utf-8') as f:
             f.readline()
             for line in f:
@@ -60,7 +63,7 @@ def main():
               f"{per(gs, 'adversary.corruptions.city'):.2f} ({corrupting:.0f}%) | {per(gs, 'board.cities_freed'):.2f} ({per(gs, 'board.liberated_card'):.2f} / "
               f"{per(gs, 'board.liberated.city') - per(gs, 'board.liberated_card'):.2f}) | {per(won, 'board.cities_freed') if won else 0:.2f} | "
               f"{sum(1 for x in freed if x) / n * 100:.0f}% | "
-              f"{per(gs, 'ai.power.researcher.3'):.2f} | {per(gs, 'board.wall_strikes'):.2f} | "
+              f"{per(gs, 'ai.power.researcher.grant'):.2f} | {per(gs, 'board.wall_strikes'):.2f} | "
               f"{per(gs, 'adversary.wall_troops'):.2f} |")
     if a.cards:
         print()

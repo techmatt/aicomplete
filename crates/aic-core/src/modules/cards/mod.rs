@@ -72,6 +72,12 @@ pub static DEF: ModuleDef = ModuleDef {
     }],
 };
 
+/// The module's phases by index in [`PHASES`] (198: named, the `begin` / `legal` / `owns` arms read them).
+const TIER: usize = 0;
+const DRAFT: usize = 2;
+const KEEP: usize = 3;
+const PLAY: usize = 4;
+
 const PHASES: &[PhaseSpec] = &[
     PhaseSpec::decision(
         "tier",
@@ -295,7 +301,7 @@ impl Module for Cards {
 
     fn begin(&self, phase: usize, g: &mut GameState, cx: &mut Cx) {
         match phase {
-            0 => {
+            TIER => {
                 // r82: round 1 drafts as every round does (the opening hand came first).
                 // With both decks and discards empty there is nothing to deal.
                 let dry = !tier_open(g, 1) && !tier_open(g, 2);
@@ -305,19 +311,19 @@ impl Module for Cards {
                     }
                 }
             }
-            2 => {
+            DRAFT => {
                 if (0..g.seats.len()).all(|s| g.pile(&packet(s)).is_empty()) {
                     pass_all(g);
                 }
             }
-            3 => {
+            KEEP => {
                 for s in 0..g.seats.len() {
                     if g.pile(&drafted(s)).is_empty() {
                         g.seats[s].passed = true;
                     }
                 }
             }
-            4 => {
+            PLAY => {
                 for s in 0..g.seats.len() {
                     let hand_n = g.pile(&hand(s)).len() as i64;
                     cx.per_round(g, "cards.hand_size", hand_n);
@@ -364,14 +370,14 @@ impl Module for Cards {
     fn legal(&self, phase: usize, g: &GameState, w: &World, seat: u8, out: &mut Vec<Action>) {
         let s = seat as usize;
         match phase {
-            0 => {
+            TIER => {
                 for tier in [1u8, 2] {
                     if tier_open(g, tier) {
                         out.push(Action::Tier { seat, tier });
                     }
                 }
             }
-            2 => {
+            DRAFT => {
                 if g.var(&picked_key(s)) == 0 {
                     for id in g.pile(&packet(s)) {
                         out.push(Action::Draft {
@@ -381,7 +387,7 @@ impl Module for Cards {
                     }
                 }
             }
-            3 => {
+            KEEP => {
                 let free = alignment::free_purchases(g) > 0;
                 for id in g.pile(&drafted(s)) {
                     if free || g.resource(s, Resource::Insight) >= self.keep_price(w, g, s, id) {
@@ -392,7 +398,7 @@ impl Module for Cards {
                     }
                 }
             }
-            4 => {
+            PLAY => {
                 for id in g.pile(&hand(s)) {
                     if blocked(w, g, s, id).is_none() {
                         out.push(Action::Play {
@@ -415,16 +421,16 @@ impl Module for Cards {
     }
 
     fn can_pass(&self, phase: usize, _g: &GameState, _seat: u8) -> bool {
-        !matches!(phase, 0 | 2)
+        !matches!(phase, TIER | DRAFT)
     }
 
     fn owns(&self, phase: usize, a: &Action) -> bool {
         matches!(
             (phase, a),
-            (0, Action::Tier { .. })
-                | (2, Action::Draft { .. })
-                | (3, Action::Keep { .. })
-                | (4, Action::Play { .. } | Action::Use { .. })
+            (TIER, Action::Tier { .. })
+                | (DRAFT, Action::Draft { .. })
+                | (KEEP, Action::Keep { .. })
+                | (PLAY, Action::Play { .. } | Action::Use { .. })
         )
     }
 

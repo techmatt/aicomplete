@@ -34,10 +34,8 @@ pub fn clear_markers_on(g: &mut GameState, cx: &mut Cx, h: usize) {
     cx.add_tokens(g, h, MARKER, -marked);
 }
 
-/// City `h` is corrupted: the adversary's cube goes on (a player cube
-/// comes off), its agents return to the supply, and a node on
-/// it is destroyed (138: only on the hex itself; r75: its owner may spend a
-/// protection, such as their own ambassador there).
+/// City `h` is corrupted, as [`corrupt_hex`] with [`CorruptSite::City`]. It checks no guard: a caller that a
+/// firewall or Corrupt prohibition can stop asks [`guard_holds`] first (185).
 pub fn corrupt_city(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
     corrupt_hex(g, cx, h, CorruptSite::City)
 }
@@ -248,8 +246,7 @@ pub(super) fn natural_corruption(g: &mut GameState, cx: &mut Cx) -> Res {
 /// corruption, not only Corrupt lines and natural corruption: whether site `h` is guarded, tallied as held
 /// (`adversary.guard_held.<path>`, and the firewall's or prohibition's own counter) when it is.
 pub fn guard_holds(g: &mut GameState, cx: &mut Cx, h: usize, path: &str) -> bool {
-    let w = cx.world;
-    if let Some(wh) = super::plan::prohibition_on(&w, g, Step::Corrupt, h, g.round as i64) {
+    if let Some(wh) = super::plan::prohibition_on(g, Step::Corrupt, h) {
         prohibit_tally(g, cx, Step::Corrupt, wh, g.tokens(h, ADV_AMBASSADOR));
     } else if firewalled(g, h) {
         cx.tally(g, "adversary.firewall_held", 1);

@@ -6,6 +6,7 @@ of the same seeds gives:
 - `ladder.py`: both win % columns equal at every difficulty, the gap +0.0, no seed left out (across engines, the
   default), and the win % columns still equal under `--same-engine`, which leaves the mixed seeds out of the gap only.
 - `paired.py`: the gap is +0.0 on every seed by default, and on the same-engine seeds only under `--same-engine`.
+- `ladder.py --screen` over a native base and a farmed lever in another folder (FILE=SPEC): one agent, a real gap.
 
 No build and no binary: the reads are written here. Python's standard library only.
 """
@@ -23,6 +24,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, '..'))
 import ladder  # noqa: E402
 import paired  # noqa: E402
+import screens  # noqa: E402
 
 SPEC = {
     'name': 'read', 'configs': ['configs/baseline.json'],
@@ -143,6 +145,78 @@ class TwoAgentsTwoConfigs(unittest.TestCase):
         text = run(ladder.screen, [d], False)
         self.assertRegex(text, r'\| base \| strategist \| d0 \| 100\.0 ')
         self.assertRegex(text, r'\| x_off \| strategist \| d0 \| 0\.0 \| [\d.]+ \| -100\.0 ')
+
+
+def write_bare(path, spec, won, seeds=SEEDS):
+    """A farmed JSONL as `farm-seeds ... OUT` writes it: no header, one line a cell a seed."""
+    cells = len(spec['configs']) * len(spec['variants']) * len(spec['difficulties']) * len(spec['agents'])
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
+        for s in seeds:
+            for c in range(cells):
+                f.write(json.dumps({'cell': c, 'seed': s, 'won': won(c, s), 'rounds': 8, 'reason': 'end',
+                                    'counters': {}, 'engine': 'native'}) + '\n')
+
+
+def write_results(d, spec, label):
+    """DIR/results.json as a native experiment writes it: each cell's agent by its resolved spec, LABEL(written)."""
+    cells = [dict(c, cell=i, agent=label(c['agent'])) for i, c in enumerate(screens.cells_of(spec))]
+    with open(os.path.join(d, 'results.json'), 'w', encoding='utf-8', newline='\n') as f:
+        json.dump({'cells': cells}, f)
+
+
+class MixedScreens(unittest.TestCase):
+    """198: a screen half native and half farmed pools one agent (a native run's results.json names it by its
+    resolved spec), a screen over two folders pairs base and lever across them, and a bare farmed JSONL reads as
+    FILE=SPEC."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.spec = dict(SPEC, variants=[{'name': 'bp', 'set': []}], difficulties=[2])
+        self.lever = dict(self.spec, variants=[{'name': 'bp_x', 'set': []}])
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def path(self, name):
+        return os.path.join(self.tmp.name, name)
+
+    def test_named_agents(self):
+        resolved = {'strategist': 'engine:strategy=1,w.built=2'}
+        cells = {i: dict(c, agent=resolved[c['agent']]) for i, c in enumerate(screens.cells_of(self.spec))}
+        named = screens.named_agents(cells, self.spec)
+        self.assertEqual([c['agent'] for c in named.values()], ['strategist'])
+        self.assertEqual(named[0]['label'], 'engine:strategy=1,w.built=2')
+        # a spec whose cells don't line up leaves the cells as they are
+        self.assertIs(screens.named_agents(cells, SPEC), cells)
+
+    def test_file_spec_stream(self):
+        f, s = self.path('farm.jsonl'), self.path('spec.json')
+        write_bare(f, self.spec, lambda c, s: True)
+        with open(s, 'w', encoding='utf-8', newline='\n') as out:
+            json.dump(self.spec, out)
+        lines = list(screens.stream(f'{f}={s}'))
+        self.assertEqual(lines[0]['spec'], self.spec)
+        self.assertEqual(len(lines), 1 + len(SEEDS))
+
+    def test_screen_native_base_farmed_lever(self):
+        # base: a native run (results.json names its agent by the resolved spec), its games all won
+        native = self.path('native')
+        write_read(native, set(), self.spec, lambda c, s: True)
+        write_results(native, self.spec, lambda a: 'engine:strategy=1,w.built=2')
+        # lever: a bare farmed JSONL in another folder, read as FILE=SPEC, its games all lost
+        farm, spec = self.path('farm.jsonl'), self.path('spec.json')
+        write_bare(farm, self.lever, lambda c, s: False)
+        with open(spec, 'w', encoding='utf-8', newline='\n') as out:
+            json.dump(self.lever, out)
+        text = run(ladder.screen, [native, f'{farm}={spec}'], False)
+        self.assertNotIn('engine:', text)
+        self.assertRegex(text, r'\| base \| strategist \| d2 \| 100\.0 ')
+        self.assertRegex(text, rf'\| x \| strategist \| d2 \| 0\.0 \| [\d.]+ \| -100\.0 \| 0\.0 \| {len(SEEDS)} \|')
+
+    def test_across_prefers_own_folder(self):
+        base = {(0, 'bp', 1): 'a0', (1, 'bp', 1): 'a1', (0, 'bp', 2): 'b0'}
+        self.assertEqual(ladder.across({(1, 'bp', 1): 'x', (1, 'bp', 2): 'y', (1, 'bp', 3): 'z'}, base),
+                         {(1, 'bp', 1): 'a1', (1, 'bp', 2): 'b0'})
 
 
 if __name__ == '__main__':

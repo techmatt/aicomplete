@@ -12,6 +12,8 @@ pub const USAGE: &str = "\
 usage: aic-sim run <config.json> [options]
        aic-sim compare <a.json> <b.json> [options]
        aic-sim show <config.json> [--set k=v]...     resolved config + hash
+       aic-sim map <config.json> [--set k=v]...      each country's hexes by number: kind,
+                                                     flags and neighbors
        aic-sim modules                               module registry as JSON
        aic-sim replay <record.json>...               check saved game records
        aic-sim docs [--check]                        regenerate docs from content and
@@ -109,6 +111,7 @@ const COMMANDS: &[(&str, usize, usize, &str, &[&str])] = &[
     ("run", 1, 1, "run takes 1 config path(s)", RUN_FLAGS),
     ("compare", 2, 2, "compare takes 2 config path(s)", COMPARE_FLAGS),
     ("show", 1, 1, "show takes one config", &["--set"]),
+    ("map", 1, 1, "map takes one config", &["--set"]),
     ("modules", 0, 0, "modules takes no paths", &[]),
     ("cards", 0, 0, "cards takes no paths", &[]),
     ("replay", 1, usize::MAX, "replay takes one or more game records", &[]),

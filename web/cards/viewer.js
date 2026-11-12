@@ -1,8 +1,8 @@
 // The card viewer's page: browse, filter, sort and annotate what cards-server.mjs exports.
 // Player cards go through the one renderer; every other kind is a plain face drawn from the
 // same export. No card words live here: only labels of the page itself.
-import { fitCards, frameOf, inset, renderBack, renderCard } from '../card/card.js';
-import { esc, plainFace } from './plain.js';
+import { esc, fitCards, frameOf, inset, renderBack, renderCard } from '../card/card.js';
+import { plainFace } from './plain.js';
 
 const $ = (id) => document.getElementById(id);
 const KINDS = ['program', 'building', 'event', 'threat', 'unity', 'discord', 'adversary', 'project', 'megaproject', 'ai'];

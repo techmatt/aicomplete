@@ -43,6 +43,7 @@ pub fn main() {
         ),
         "cards" => print!("{}", agents::policy::cards_csv()),
         "show" => show(&o),
+        "map" => map(&o),
         "docs" => docs::run(&o),
         "run" | "compare" => play::run(&o),
         "replay" => play::replay_all(&o),
@@ -60,6 +61,39 @@ pub fn main() {
             agents::policy::print_choices(&r, &agent, o.seed, o.games);
         }
         other => unreachable!("command {other} is checked in parse_args"),
+    }
+}
+
+/// `aic-sim map` (198): every country's hexes by printed number, with kind, flags and neighbors, so a printed
+/// setup hex can be checked by number (the axes differ by layout, so "next to" can't be read off the numbers).
+fn map(o: &Options) {
+    let path = &o.paths[0];
+    let r = rules(path, &load(path, &o.set.iter().collect::<Vec<_>>()));
+    let w = r.world();
+    let name = |h: usize| {
+        let c = &w.map.hexes[h];
+        let country = w.content.map.countries.get(c.country as usize).map_or("?", |p| p.name.as_str());
+        format!("{country} #{}", c.number)
+    };
+    for (ci, geo) in w.map.countries.iter().enumerate() {
+        let country = w.content.map.countries.get(ci).map_or("?", |p| p.name.as_str());
+        println!("{country} (country {ci})");
+        let mut hexes = geo.hexes.clone();
+        hexes.sort_by_key(|&h| w.map.hexes[h].number);
+        for h in hexes {
+            let c = &w.map.hexes[h];
+            let mut flags = Vec::new();
+            for (on, f) in [(c.coastal, "coastal"), (c.industrial, "industrial"), (c.station_site, "station site")] {
+                if on {
+                    flags.push(f);
+                }
+            }
+            let mut by: Vec<usize> = c.neighbors.clone();
+            by.sort_by_key(|&x| (w.map.hexes[x].country, w.map.hexes[x].number));
+            let near: Vec<String> = by.into_iter().map(name).collect();
+            let flags = if flags.is_empty() { String::new() } else { format!(" ({})", flags.join(", ")) };
+            println!("  #{} {}{flags}: {}", c.number, c.kind.name(), near.join(", "));
+        }
     }
 }
 

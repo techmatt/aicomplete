@@ -147,7 +147,7 @@ pub fn converge(w: &World, g: &GameState, site: CorruptSite, scope: Option<usize
         ts.sort_by_key(|&h| w.map.hexes[h].number);
         for t in ts {
             is_target[t] = true;
-            match prohibition_on(w, g, Step::Corrupt, t, g.round as i64) {
+            match prohibition_on(g, Step::Corrupt, t) {
                 Some(wh) => out.blocked.push((t, wh)),
                 // 158: a firewall keeps arrivals off its hex; 178: nor does the site corrupt (`adversary::corrupt`).
                 None => open[t] = !firewalled(g, t),
@@ -313,11 +313,10 @@ pub fn next_rally(w: &World, g: &GameState) -> Vec<(usize, f64)> {
         if let Some(p) = rally_plan(w, g, site, c, n) {
             // 175: a blocked site's share stays in the supply (a prohibition ahead; a firewall standing now, which
             // comes off after the turn it was placed before).
-            let round = if build_ahead { g.round as i64 } else { g.round as i64 + 1 };
             out.extend(
                 p.shares
                     .iter()
-                    .filter(|&&(h, k)| k > 0 && !prohibited_in(w, g, Step::Rally, h, round) && !firewalled(g, h))
+                    .filter(|&&(h, k)| k > 0 && !prohibited_now(g, Step::Rally, h) && !firewalled(g, h))
                     .map(|&(h, k)| (h, k as f64)),
             );
         }
@@ -350,7 +349,7 @@ pub fn sites_where(w: &World, g: &GameState, wh: Where) -> Vec<usize> {
 }
 
 /// 167: a prohibition's state: the round of the adversary turn it acts in, and the conditions (a bit per
-/// [`Where::ALL`] index). Static keys: [`prohibited_in`] runs inside the agents' forecasts.
+/// [`Where::ALL`] index). Static keys: [`prohibition_on`] runs inside the agents' forecasts.
 pub fn prohibit_keys(step: Step) -> (&'static str, &'static str) {
     match step {
         Step::Rally => ("prohibit.rally.round", "prohibit.rally.where"),
@@ -366,24 +365,14 @@ pub fn prohibited_now(g: &GameState, step: Step, h: usize) -> bool {
 }
 
 /// The condition of the `step` prohibition whose token stands on `h` (r80, ruling #53: the token decides, placed
-/// where the condition held when the card resolved; the condition is only its label). `round` is kept for the
-/// forecasts' call shape: a token standing now acts in the next adversary turn, whichever round that is.
-pub fn prohibition_on(_w: &World, g: &GameState, step: Step, h: usize, _round: i64) -> Option<Where> {
+/// where the condition held when the card resolved; the condition is only its label). A token standing now acts
+/// in the next adversary turn, whichever round that is.
+pub fn prohibition_on(g: &GameState, step: Step, h: usize) -> Option<Where> {
     if !prohibited_now(g, step, h) {
         return None;
     }
     let mask = g.var(prohibit_keys(step).1);
     Some(Where::ALL.iter().enumerate().find(|(i, _)| mask & (1 << i) != 0).map_or(Where::ALL[0], |(_, wh)| *wh))
-}
-
-/// 167: whether a `step` prohibition stops that step on hex `h` in the adversary turn of `round`.
-pub fn prohibited_in(w: &World, g: &GameState, step: Step, h: usize, round: i64) -> bool {
-    prohibition_on(w, g, step, h, round).is_some()
-}
-
-/// 167: the same, in this round's adversary turn (the step running now).
-pub fn prohibited(w: &World, g: &GameState, step: Step, h: usize) -> bool {
-    prohibited_in(w, g, step, h, g.round as i64)
 }
 
 /// The corrupt number of the coming corrupt step's lines for `site`: the

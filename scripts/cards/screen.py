@@ -22,6 +22,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 import screens as s  # noqa: E402
 from screens import ROUND, avg, cnt, hist, mean  # noqa: E402
+from powers import power_key  # noqa: E402
 
 
 def ais():
@@ -40,13 +41,9 @@ def tokens():
     return len(ai['economy_track']) + len(ai['play_track'])
 
 
-def power_key(board, k):
-    return f'ai.power.{board}.{k}'
-
-
 def power_keys():
-    """Every board's tally per power, as (board, index, name), in content order."""
-    return [(b['id'], k, p['name']) for b in ais() for k, p in enumerate(b['powers'])]
+    """Every board's tally per power, as (board, name), in content order."""
+    return [(b['id'], p['name']) for b in ais() for p in b['powers']]
 
 
 def wins(gs):
@@ -120,10 +117,10 @@ def tokens_left(c, gs):
     return f"{avg([tokens() - 1 - cnt(g, 'board.node_placed') / s.seats(c) for g in gs]):.1f}"
 
 
-@reads(*(power_key(b, k) for b, k, _ in power_keys()))
+@reads(*(power_key(b, name) for b, name in power_keys()))
 def power_uses(c, gs):
     """Uses a game of each board's powers, in content order."""
-    return ' / '.join(f"{mean(gs, lambda g: cnt(g, power_key(b, k))):.1f}" for b, k, _ in power_keys())
+    return ' / '.join(f"{mean(gs, lambda g: cnt(g, power_key(b, name))):.1f}" for b, name in power_keys())
 
 
 def by_tier(field):

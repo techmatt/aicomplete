@@ -79,12 +79,12 @@ STAGE_DEALS = stage_deals()
 errors, warnings = [], []
 
 
-def load():
+def load(here=HERE):
     if CONTENT_MODE:
         return load_content()
-    t = {tier: json.loads((HERE / f"threats_t{tier}.json").read_text(encoding="utf-8"))["cards"] for tier in TIERS}
-    projects = json.loads((HERE / "projects.json").read_text(encoding="utf-8"))["cards"]
-    mil = json.loads((HERE / "militarist.json").read_text(encoding="utf-8"))
+    t = {tier: json.loads((here / f"threats_t{tier}.json").read_text(encoding="utf-8"))["cards"] for tier in TIERS}
+    projects = json.loads((here / "projects.json").read_text(encoding="utf-8"))["cards"]
+    mil = json.loads((here / "militarist.json").read_text(encoding="utf-8"))
     return t, projects, mil
 
 
@@ -469,8 +469,12 @@ def check_projects(projects, ops, new_ops):
     print(f"projects: {len(projects)}, tags {dict(tags)}, costs {sorted(p['cost'] for p in projects)}")
 
 
-def main():
-    t, projects, mil = load()
+def run(here=HERE):
+    """Every check and the pull simulation on the drafts in `here` (printing as it goes); returns the errors.
+    scripts/content/load_adversary.py calls it and refuses to write content/ on any."""
+    errors.clear()
+    warnings.clear()
+    t, projects, mil = load(here)
     ops = engine_ops()
     new_ops = defaultdict(list)
     ids = [c["id"] for cards in t.values() for c in cards] + [p["id"] for p in projects] + \
@@ -494,6 +498,11 @@ def main():
     for k, v in fails.items():
         errors.append(f"pull failed (needs a second reshuffle): {k} x{v}")
     print("ops the engine lacks:", {k: len(v) for k, v in new_ops.items()})
+    return errors
+
+
+def main():
+    run()
     for w in warnings:
         print("warning:", w)
     for e in errors:

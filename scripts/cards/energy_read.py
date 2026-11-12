@@ -20,6 +20,7 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from screens import cnt, content, load, seats  # noqa: E402
+from powers import power_key  # noqa: E402
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 
@@ -31,9 +32,9 @@ DEAR = {'Rush Build': 'builder', 'Shelter': 'protector', 'Particle Run': 'resear
 def power_index():
     out = {}
     for b in content('ais'):
-        for k, p in enumerate(b['powers']):
+        for p in b['powers']:
             if p['name'] in DEAR:
-                out[p['name']] = f"ai.power.{b['id']}.{k}"
+                out[p['name']] = power_key(b['id'], p['name'])
     return out
 
 

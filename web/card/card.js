@@ -5,7 +5,9 @@
 // sits is what it is: see tools/card-art/README.md.
 import { arrow, atRing, eye, icon, isIcon, isTag, less, stacked, tagMedallion } from './icons.js';
 
-const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+/** HTML-escapes text for an element or a quoted attribute (null and undefined print nothing). The one
+ * escaper of the card renderer, the viewer and the node scripts; the client's is `escapeHtml` in src/format.ts. */
+export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 /** Tier 2 and up print gilded; tier 0 (unique) and 1 share a frame. */
 export const tierOf = (tier) => (tier >= 2 ? 2 : 1);

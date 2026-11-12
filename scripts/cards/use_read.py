@@ -17,6 +17,7 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from screens import content, dealt, load, cnt  # noqa: E402
+from powers import power_key  # noqa: E402
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 
@@ -44,9 +45,9 @@ def main():
             # 2+ tags alone matched none after r35.
             places = any(e['op'] == 'place_node' for e in p['effects'])
             if need >= 2 or (need >= 1 and not places and any(r == 'energy' and n > 0 for r, n in p.get('cost') or [])):
-                dear[f"ai.power.{b['id']}.{k}"] = f"{b['name']} {p['name']}"
+                dear[power_key(b['id'], p['name'])] = f"{b['name']} {p['name']}"
             if p['name'] == 'Grant':
-                grant = f"ai.power.{b['id']}.{k}"
+                grant = power_key(b['id'], p['name'])
     by = collections.defaultdict(list)
     by_agent = collections.defaultdict(list)
     # 118: only the runs' decks.

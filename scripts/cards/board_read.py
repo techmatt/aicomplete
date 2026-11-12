@@ -15,6 +15,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from corp_read import cnt, load  # noqa: E402
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+from powers import power_key  # noqa: E402
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 
@@ -51,10 +53,8 @@ def main():
     a = ap.parse_args()
     ais = json.load(open(os.path.join(ROOT, 'content', 'ais.json'), encoding='utf-8'))
     cells = load(a.dirs)
-    # 197: the column read `ai.power.researcher.2` under "2nd node" (Peer Review since 075's
-    # board); a power's counter is keyed by its index, so look it up by name in this content.
-    peer = next(f"ai.power.{b['id']}.{k}" for b in ais if b['id'] == 'researcher'
-                for k, p in enumerate(b['powers']) if p['name'] == 'Peer Review')
+    # 198: a power's counter is keyed by its name (it was its index, which 197 found mislabeled here).
+    peer = power_key('researcher', 'Peer Review')
     print('| cell | games | win % | purge wins | rounds | insight carried | cubes bought | free stations | Peer Review | wall strikes | troop hits | lost nodes | left: credits / energy (last round) |')
     print('|---|' + '---|' * 12)
     for (variant, agent), gs in sorted(cells.items()):
@@ -76,8 +76,8 @@ def main():
             per = lambda k: sum(cnt(g, k) for g in gs) / n
             parts = []
             for b in ais:
-                for k, p in enumerate(b['powers']):
-                    v = per(f"ai.power.{b['id']}.{k}")
+                for p in b['powers']:
+                    v = per(power_key(b['id'], p['name']))
                     parts.append(f"{p['name']} {v:.2f}")
             print(f"{variant} {agent[:40]}: " + ', '.join(parts))
     if a.cards:

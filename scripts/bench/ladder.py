@@ -17,7 +17,11 @@ lost to corruption, adversary ambassadors placed (created or rallied), corruptio
 (amendment 6618): projects revealed and resolved as a share of the deck (`--deck`; default the number of projects in `content/projects.json`), distinct projects revealed,
 and reshuffles.
 
-A farmed read (160: shards assembled by `screens.assemble`, no results.json) reads its cells from the header. A
+A farmed read (160: shards assembled by `screens.assemble`, no results.json) reads its cells from the header; a
+bare farmed JSONL (`farm-seeds ... OUT`, no header) reads as FILE=SPEC wherever a DIR goes, SPEC its farm spec's JSON
+(its rules revision prints `r?`). An agent is named as the spec writes it (`strategist`), native or farmed, so a
+screen half farmed pools; `--screen` pairs a lever's game with base's on the same pair, difficulty and seed, in its
+own DIR or another. A
 farm line names its engine (`native` or `wasm`). Native and wasm play the same games, so a seed pairs across engines
 and a line under the table counts, per difficulty (or lever), the shared seeds played on mixed engines (163);
 `--same-engine` pairs a seed only within one engine and leaves those out, for a revision whose engines diverge.
@@ -33,7 +37,7 @@ import sys
 from collections import defaultdict
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-from screens import cells_of, gap, pair_seeds, stream  # noqa: E402
+from screens import cells_of, gap, named_agents, pair_seeds, stream  # noqa: E402
 
 BANDS = "90-100,70-80,55-65,40-50"  # 157's prompt
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -59,14 +63,16 @@ def parse_bands(text):
 
 
 def load(d):
-    """(cell, game) for each game of DIR, in file order. A farmed read has no results.json: its cells are the
-    header spec's. Each cell gets `rank`: its agent's place in the spec's list, which pairs agents across builds
-    whose labels for one agent differ."""
+    """(cell, game) for each game of DIR (or FILE=SPEC, a bare farmed JSONL: `screens.stream`), in file order. A
+    farmed read has no results.json: its cells are the header spec's. A native read's agents are named as the spec
+    writes them (`screens.named_agents`), as a farmed read's are, so a screen half farmed pools one agent. Each cell
+    gets `rank`: its agent's place in the spec's list, which pairs agents across builds whose names for one agent
+    differ."""
     lines = stream(d)
     head = next(lines)
     if os.path.exists(f"{d}/results.json"):
         with open(f"{d}/results.json", encoding="utf-8") as f:
-            cells = {c["cell"]: c for c in json.load(f)["cells"]}
+            cells = named_agents({c["cell"]: c for c in json.load(f)["cells"]}, head["spec"])
     else:
         cells = dict(enumerate(cells_of(head["spec"])))
     agents = list(dict.fromkeys(cells[k]["agent"] for k in sorted(cells)))
@@ -155,6 +161,21 @@ def mixed_line(mixed):
               + ", ".join(f"{k} {v}" for k, v in mixed.items()))
 
 
+def across(lever, base):
+    """BASE ({(folder, pair, seed): game}) keyed as LEVER's games are: a lever game pairs with base's game in its own
+    folder, else with base's (pair, seed) in another folder (the first given), so a screen pooled over folders that
+    split base and lever still pairs (it printed a `+nan` gap)."""
+    anywhere = {}
+    for (_, pair, seed), g in base.items():  # in folder order, as `screen` reads them
+        anywhere.setdefault((pair, seed), g)
+    out = {}
+    for k in lever:
+        g = base.get(k, anywhere.get(k[1:]))
+        if g is not None:
+            out[k] = g
+    return out
+
+
 def screen(dirs, with_measures):
     wins = defaultdict(dict)
     ms = defaultdict(lambda: defaultdict(list))
@@ -177,7 +198,7 @@ def screen(dirs, with_measures):
         n = wins[key]
         p = sum(map(won, n.values())) / len(n)
         se = math.sqrt(p * (1 - p) / len(n)) * 100
-        base = wins.get(("base", agent, diff), {})
+        base = across(n, wins.get(("base", agent, diff), {}))
         _, m, gse, mixed[f"{lever} {agent} d{diff}"] = paired(n, base) if lever != "base" else (0, float("nan"), float("nan"), 0)
         print(f"| {lever} | {agent} | d{diff} | {100 * p:.1f} | {se:.1f} | {m:+.1f} | {gse:.1f} | {len(n)} |")
     mixed_line(mixed)
@@ -238,8 +259,8 @@ def main():
     global DECK, SAME_ENGINE
     sys.stdout.reconfigure(encoding="utf-8", newline="\n")
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("dirs", nargs="*", help="NEW_DIRS OLD_DIRS, each ','-separated")
-    ap.add_argument("--screen", metavar="DIRS", help="read a screen instead: its output dirs, ','-separated")
+    ap.add_argument("dirs", nargs="*", help="NEW_DIRS OLD_DIRS, each ','-separated (a dir, or FILE=SPEC for a bare farmed JSONL)")
+    ap.add_argument("--screen", metavar="DIRS", help="read a screen instead: its output dirs (or FILE=SPEC), ','-separated")
     ap.add_argument("--measures", action="store_true", help="add the adversary's measures, per difficulty and side")
     ap.add_argument("--deck", type=int, default=DECK, help="the project deck's size (default %(default)s, from content/projects.json)")
     ap.add_argument("--bands", default=BANDS, help=f"each difficulty's band from d0, lo-hi ','-separated (default {BANDS})")

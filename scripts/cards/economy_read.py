@@ -9,17 +9,17 @@ tags by round: each seat's most-held tag on its cards in play when the action ph
 
     python scripts/cards/economy_read.py DIR [DIR ...] [--rounds 10]
 
-Each DIR holds an experiment's games.jsonl and results.json. A variant's seats follow its
+Each DIR is an experiment's folder (its games.jsonl header carries the spec) or FILE=SPEC. A variant's seats follow its
 `ai.boards=` override, else the baseline's 0, 1, 2.
 """
 import argparse
 import collections
-import json
 import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-from screens import cnt, content, load  # noqa: E402
+from screens import cnt, content, load, stream  # noqa: E402
+from powers import dear_key, power_key  # noqa: E402
 
 
 def dear(p):
@@ -49,8 +49,7 @@ def main():
     pooled = collections.defaultdict(list)
     seats_of = {}
     for d in a.dirs:
-        with open(os.path.join(d, 'results.json'), encoding='utf-8') as f:
-            spec = json.load(f)['spec']
+        spec = next(stream(d))['spec']  # 198: the games' header (results.json's spec is the same; a farmed read has none)
         cells, games = load(d)
         for cid, gs in games.items():
             c = cells[cid]
@@ -103,8 +102,9 @@ def main():
             if k is None or bi not in seats_of[key]:
                 parts.append('')
                 continue
-            used = sum(cnt(g, f"ai.power.{b['id']}.{k}") for g in gs) / len(gs)
-            no_tags = sum(cnt(g, f"ai.dear.{b['id']}.{k}.no_tags") for g in gs) / len(gs)
+            name = b['powers'][k]['name']
+            used = sum(cnt(g, power_key(b['id'], name)) for g in gs) / len(gs)
+            no_tags = sum(cnt(g, dear_key(b['id'], name, 'no_tags')) for g in gs) / len(gs)
             parts.append(f"{b['powers'][k]['name']} {used:.2f} (no tags {no_tags:.1f})")
         print(f"| {key[0]} {key[1]} | " + ' | '.join(parts) + ' |')
 

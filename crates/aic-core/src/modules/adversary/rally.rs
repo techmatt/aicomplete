@@ -76,7 +76,7 @@ pub fn rally(g: &mut GameState, cx: &mut Cx, site: crate::op::RallyAt, count: i6
                 cx.tally(g, "adversary.rally_blocked", k);
                 continue;
             }
-            match super::plan::prohibition_on(&w, g, Step::Rally, h, g.round as i64) {
+            match super::plan::prohibition_on(g, Step::Rally, h) {
                 Some(wh) => {
                     cx.tally(g, "adversary.rally_blocked", k);
                     prohibit_tally(g, cx, Step::Rally, wh, k)

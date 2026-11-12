@@ -1262,7 +1262,7 @@ impl Eval {
         let corrupt_ban = g.var(plan::prohibit_keys(Step::Corrupt).0) == corrupt_round;
         // 178 (Matt's ruling #30): a firewalled site doesn't corrupt in the turn ahead, as a prohibition holds it.
         let banned = |h: usize| {
-            common::firewalled(g, h) || (corrupt_ban && plan::prohibited_in(&world, g, Step::Corrupt, h, corrupt_round))
+            common::firewalled(g, h) || (corrupt_ban && plan::prohibited_now(g, Step::Corrupt, h))
         };
         let mut v = 0.0;
         let mut corrupted = 0i64;
