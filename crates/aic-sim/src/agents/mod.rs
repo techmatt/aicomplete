@@ -695,7 +695,9 @@ mod tests {
     }
 
     const GREEDY: &str = "greedy";
-    const BEAM: &str = "beam:width=2";
+    // 191: depth 30 (default 120). With most tier-1 cards at 0 insight a round runs longer, and a full-depth beam
+    // game took 445 s in release (110 s before), so the slow lane stalled; replay and repeat don't need the depth.
+    const BEAM: &str = "beam:width=2,depth=30";
     const ROLLOUT: &str = "rollout:width=2,candidates=2,rollouts=1,horizon=1";
     // The engine's beam is beam's code with another heuristic.
     const ENGINE: &str = "engine";

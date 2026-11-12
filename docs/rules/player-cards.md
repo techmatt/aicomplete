@@ -23,13 +23,13 @@ The cards config lists which cards are in the game (baseline: all of them).
   such as Darknet Exchange's off any card with that tag), and any
   `insight`, `energy`, `chips`, `antimatter` and research cubes it prints, and lowers any income it prints under
   `lowers` ("lower your credit income 1": your production of that resource falls for the rest of the game; it can't
-  be played if that income is lower). **Insight to play:** 0 for small programs and events, 1 by default (removal
-  events included), 2 for big effects and most tier 2 (counts below); it
+  be played if that income is lower). **Insight to play** is a price, spread over 0, 1 and 2 (counts below): most
+  tier-1 cards play for 0; a card that draws costs at least 1; 2 for the strongest of each tier; it
   comes from the same insight as keeps. Its `needs` (your tags, *Tags* below) are checked only when it is played. Each
   card's price is in [cards.md](../cards.md); the reasoning is in [card-pricing.md](../card-pricing.md).
 
 <!-- generated: draft_set -->
-**The draft set in numbers.** 168 cards (113 tier 1, 55 tier 2). Insight to play: 25 / 112 / 31 cards at 0 / 1 / 2, 31 of the 55 tier-2 cards at 2. An energy cost: 14 cards, 8 of the 63 buildings.
+**The draft set in numbers.** 168 cards (113 tier 1, 55 tier 2). Insight to play: 89 / 48 / 31 cards at 0 / 1 / 2, 21 of the 55 tier-2 cards at 2. An energy cost: 14 cards, 8 of the 63 buildings.
 <!-- /generated -->
 
 - **Energy costs (candidate; Matt).** Energy is a second cost on a card whose title reads power-hungry (most are buildings), its

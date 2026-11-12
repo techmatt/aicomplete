@@ -17,10 +17,10 @@ play; keeping a drafted card costs 1 (tier 1) or 2 (tier 2) more.
 | tier 1 / 2 | 113 / 55 | ~110 / ~40 |
 | program / building / event | 46% / 38% / 17% | 60 / 25 / 15% |
 | 1 / 2 / 3 tags | 68% / 29% / 4% | 60 / 30 / 10% |
-| insight 0 / 1 / 2 | 15% / 67% / 18% | 25 / 50 / 25% |
+| insight 0 / 1 / 2 | 53% / 29% / 18% | 25 / 50 / 25% |
 | help cards | 6% | ~10% |
 | primary (any) per tag: science, industry, cyber, power, diplomacy, security | 30 (36), 27 (33), 27 (40), 27 (43), 29 (38), 28 (38) | ~25 each |
-| credits 25+ | 19 | a handful, none over ~50 |
+| credits 25+ | 20 | a handful, none over ~50 |
 | antimatter cost | 4 | tier-2 ultimates only |
 
 ## Science (32)
@@ -31,13 +31,13 @@ play; keeping a drafted card costs 1 (tier 1) or 2 (tier 2) more.
 | Citation Engine | 1 | building | 20 cr; needs 2 science | 1 | - | Effect: when you play a Science card, gain 7 credits. Draw 2 cards. |
 | Cryo-Compute Burn | 1 | event | 2 cr; 1 en | 0 | - | Pay 1 energy. Gain 1 insight per Science tag on your cards. |
 | Dataset Scraper | 1 | program | 6 cr | 1 | cyber | Draw 2 cards. Add 1 Dataset to one of your Dataset buildings. |
-| Endowed Research Chair | 1 | program | 12 cr; needs 2 science | 1 | - | Raise your insight income by 2. |
+| Endowed Research Chair | 1 | program | 16 cr; needs 2 science | 0 | - | Raise your insight income by 2. |
 | Field Grant | 1 | program | 8 cr | 0 | - | Add 3 research cubes in your color to an open megaproject, in a country where you own a station. |
-| Field Sensor Grid | 1 | program | 10 cr | 1 | - | Clear 3 corruption markers in reach. Draw 3 cards. |
-| Frontier Lab Charter | 1 | program | 26 cr | 1 | - | Raise your insight income by 2. Raise your credit income by 2. |
+| Field Sensor Grid | 1 | program | 6 cr | 2 | - | Clear 3 corruption markers in reach. Draw 3 cards. |
+| Frontier Lab Charter | 1 | program | 28 cr | 0 | - | Raise your insight income by 2. Raise your credit income by 2. |
 | Grad Student Pool | 1 | building | 11 cr | 1 | - | Effect: your Science cards cost 5 credits less to play. Draw 2 cards. |
-| Moonshot Grant | 1 | program | 46 cr; needs 3 science | 1 | - | Add 8 research cubes in your color to an open megaproject. Draw 2 cards. |
-| Particle Accelerator | 1 | building | 16 cr | 1 | power | Action: pay 2 energy: add 3 research cubes in your color to an open megaproject, OR get them. |
+| Moonshot Grant | 1 | program | 42 cr; needs 3 science | 2 | - | Add 8 research cubes in your color to an open megaproject. Draw 2 cards. |
+| Particle Accelerator | 1 | building | 20 cr | 0 | power | Action: pay 2 energy: add 3 research cubes in your color to an open megaproject, OR get them. |
 | Patent Library | 1 | building | 9 cr | 1 | - | Action: pay 3 credits, draw 2 cards. |
 | Predictive Modeling | 1 | program | 7 cr | 1 | - | Delay 2 threats one round. Draw 3 cards. |
 | Preprint Server | 1 | building | 15 cr; needs 2 science | 1 | - | Effect: when you play a Science card, draw 1 card. Draw 2 cards. |
@@ -45,18 +45,18 @@ play; keeping a drafted card costs 1 (tier 1) or 2 (tier 2) more.
 | Research Royalties | 1 | program | 6 cr; needs 2 science | 0 | - | Raise your credit income by 1 per 2 Science tags on your cards (including this). |
 | Sample Repository *(not in deck)* | 1 | program | 8 cr; needs 2 science | 0 | - | Raise your research cube income by 1. |
 | Shared Compute Grant | 1 | program (help) | 6 cr | 1 | - | Another player gains 4 insight. Draw 1 card. |
-| Simulation Cluster | 1 | building | 11 cr | 1 | cyber | Action: use another of your buildings' Actions again this round. Draw 2 cards. |
+| Simulation Cluster | 1 | building | 7 cr | 2 | cyber | Action: use another of your buildings' Actions again this round. Draw 2 cards. |
 | Stress Test Suite | 1 | program | 7 cr | 0 | - | Harden 3 of your Nodes. |
-| Synthetic Data Forge | 1 | building | 8 cr; needs 2 science | 1 | - | Action: add 1 Dataset here, OR get 1 insight per Dataset here. Add 1 Dataset here. |
-| Telemetry Archive | 1 | building | 15 cr | 1 | - | Effect: when you play a Science card, add 2 Datasets here; at 4, gain 3 insight. Add 2 Datasets here. |
-| University Spinout | 1 | program | 24 cr; needs 2 science | 1 | industry | Raise your credit income by 6. |
+| Synthetic Data Forge | 1 | building | 10 cr; needs 2 science | 0 | - | Action: add 1 Dataset here, OR get 1 insight per Dataset here. Add 1 Dataset here. |
+| Telemetry Archive | 1 | building | 17 cr | 0 | - | Effect: when you play a Science card, add 2 Datasets here; at 4, gain 3 insight. Add 2 Datasets here. |
+| University Spinout | 1 | program | 26 cr; needs 2 science | 0 | industry | Raise your credit income by 6. |
 | Zero-Knowledge Exploit | 1 | event | 6 cr | 1 | cyber | Remove 5 compute from an adversary project. Draw 1 card. |
 | Data Licensing Deal *(not in deck)* | 2 | building | 15 cr | 1 | - | Effect: when you place a Dataset on one of your cards, gain 5 credits. Draw 3 cards. |
 | Forensic Audit | 2 | event | 27 cr; 4 rc | 1 | - | Pay 4 research cubes. Liberate a corrupted city in reach. Draw 2 cards. |
 | Foundation Model Campus | 2 | building | 13 cr; 2 en; needs 3 science | 2 | cyber | Each round, 3 credits per Science tag on your cards (including this). Pay 2 energy. Draw 4 cards. |
 | Interdisciplinary Institute | 2 | building | 12 cr; needs 2 science | 2 | cyber | Effect: when you play a card, gain 1 insight per tag on it. Draw 3 cards. |
 | Open Source Uprising | 2 | program | 9 cr | 1 | diplomacy | Convert 4 Agents around a city in reach. Draw 2 cards. Sway 1 toward Unity. |
-| Open-Weights Release | 2 | program (help) | 12 cr | 2 | cyber | Clear 4 corruption markers in reach. Another player gains 6 insight. |
+| Open-Weights Release | 2 | program (help) | 16 cr | 1 | cyber | Clear 4 corruption markers in reach. Another player gains 6 insight. |
 | Orbital Observatory Array | 2 | building | 10 cr; needs 1 cyber | 2 | cyber | Action: pay 2 credits, draw 3 cards. |
 | Recursive Self-Improvement | 2 | program | 29 cr; needs 2 science | 2 | cyber | Raise your insight income by 4. Draw 4 cards. |
 
@@ -67,30 +67,30 @@ play; keeping a drafted card costs 1 (tier 1) or 2 (tier 2) more.
 | Antitrust Action | 1 | program | 7 cr | 0 | - | Counts as 5 toward an industry threat. Gain 1 chip per 4 Industry tags on your cards (including this). |
 | Capital Injection | 1 | event | 12 cr | 1 | - | Draw 3 cards. Add 2 Capital to one of your Capital buildings. |
 | Economies of Scale | 1 | program | 6 cr; needs 2 industry | 0 | - | Raise your credit income by 1 per 2 Industry tags on your cards (including this). |
-| Fabrication Megaplex | 1 | building | 25 cr; 2 en | 1 | - | Each round, 6 credits and 1 chip. Pay 2 energy. Draw 3 cards. |
-| Gigafactory Charter | 1 | program | 31 cr; 2 en | 1 | - | Pay 2 energy. Raise your credit income by 10. Draw 2 cards. |
-| Joint Fabrication Pact | 1 | program (help) | 10 cr | 1 | power, diplomacy | Gain 3 chips. Another player gains 2 chips. |
-| Lights-Out Assembly | 1 | building | 10 cr; 1 en | 1 | power | Effect: when you play a card printed at 10 credits or more, gain 5 credits. Pay 1 energy. Draw 2 cards. |
-| Liquidity Event *(not in deck)* | 1 | event | 7 cr | 1 | - | Remove the Capital from one of your cards for 5 credits each. |
+| Fabrication Megaplex | 1 | building | 21 cr; 2 en | 2 | - | Each round, 6 credits and 1 chip. Pay 2 energy. Draw 3 cards. |
+| Gigafactory Charter | 1 | program | 27 cr; 2 en | 2 | - | Pay 2 energy. Raise your credit income by 10. Draw 2 cards. |
+| Joint Fabrication Pact | 1 | program (help) | 14 cr | 0 | power, diplomacy | Gain 3 chips. Another player gains 2 chips. |
+| Lights-Out Assembly | 1 | building | 6 cr; 1 en | 2 | power | Effect: when you play a card printed at 10 credits or more, gain 5 credits. Pay 1 energy. Draw 2 cards. |
+| Liquidity Event *(not in deck)* | 1 | event | 11 cr | 0 | - | Remove the Capital from one of your cards for 5 credits each. |
 | Market Watchdog | 1 | building | 7 cr | 0 | - | Action: counts as 6 toward an industry threat. |
 | Parts Exchange | 1 | building | 9 cr | 1 | - | Action: pay 1 chip, draw 2 cards. |
-| Payroll Automation | 1 | program | 12 cr | 1 | - | Raise your credit income by 3. Add 2 Capital to one of your Capital buildings. |
+| Payroll Automation | 1 | program | 16 cr | 0 | - | Raise your credit income by 3. Add 2 Capital to one of your Capital buildings. |
 | Plant Overdrive *(not in deck)* | 1 | event | 9 cr | 0 | - | Gain 1 energy per Industry tag on your cards. |
-| Prefab Plant Kit | 1 | program | 9 cr | 1 | power | Build a factory in reach. Gain 1 energy per Power tag on your cards (including this). |
-| Reclamation Crew | 1 | program | 8 cr | 1 | power | Free 1 corrupted station in reach. |
-| Retained Earnings | 1 | building | 14 cr | 1 | - | Effect: when you play an Industry card, add 2 Capital here; at 4, raise your credit income by 3. Add 2 Capital here. |
-| Robotic Foundry | 1 | program | 9 cr; 1 en | 1 | power | Pay 1 energy. Raise your credit income by 4. |
+| Prefab Plant Kit | 1 | program | 13 cr | 0 | power | Build a factory in reach. Gain 1 energy per Power tag on your cards (including this). |
+| Reclamation Crew | 1 | program | 12 cr | 0 | power | Free 1 corrupted station in reach. |
+| Retained Earnings | 1 | building | 16 cr | 0 | - | Effect: when you play an Industry card, add 2 Capital here; at 4, raise your credit income by 3. Add 2 Capital here. |
+| Robotic Foundry | 1 | program | 13 cr; 1 en | 0 | power | Pay 1 energy. Raise your credit income by 4. |
 | Standardized Tooling | 1 | building | 11 cr | 1 | - | Effect: your Industry cards cost 5 credits less to play. Draw 2 cards. |
 | Supplier Network | 1 | building | 12 cr | 1 | - | Effect: when you play an Industry card, draw 1 card. Draw 1 card. |
 | Supply Chain Audit | 1 | program | 7 cr | 0 | - | Counts as 6 toward an industry threat. Raise your credit income by 1. |
-| Vendor Financing | 1 | program (help) | 10 cr | 1 | - | Another player gains 1 chip. Raise your credit income by 3. |
+| Vendor Financing | 1 | program (help) | 14 cr | 0 | - | Another player gains 1 chip. Raise your credit income by 3. |
 | Wafer Fab Line | 1 | building | 12 cr | 1 | power | Action: pay 2 energy, draw 2 cards, get 1 chip. |
-| Wartime Retooling | 1 | program | 30 cr | 1 | power | Raise your energy income by 2. Draw 4 cards. |
-| Arcology Foundry | 2 | program | 7 cr; 2 en; needs 3 industry | 2 | - | Pay 2 energy. Raise your credit income by 7. Raise your chip income by 1. |
+| Wartime Retooling | 1 | program | 26 cr | 2 | power | Raise your energy income by 2. Draw 4 cards. |
+| Arcology Foundry | 2 | program | 11 cr; 2 en; needs 3 industry | 1 | - | Pay 2 energy. Raise your credit income by 7. Raise your chip income by 1. |
 | Capital Projects Office | 2 | building | 16 cr | 1 | - | Effect: when you play a card printed at 10 credits or more, gain 10 credits. Draw 4 cards. |
-| Collateralized Grid | 2 | program | 11 cr | 1 | power | Raise your energy income by 2. Remove the Capital from one of your cards for 1 energy each. |
-| Conglomerate Headquarters | 2 | building | 14 cr; needs 2 industry | 1 | - | Effect: when you play a card, add 1 Capital here per tag on it; at 3, gain 12 credits. Add 2 Capital here. |
-| Market Stabilization Board | 2 | building | 9 cr; needs 2 industry | 1 | - | Effect: industry threats need 6 less to counter. |
+| Collateralized Grid | 2 | program | 15 cr | 0 | power | Raise your energy income by 2. Remove the Capital from one of your cards for 1 energy each. |
+| Conglomerate Headquarters | 2 | building | 18 cr; needs 2 industry | 0 | - | Effect: when you play a card, add 1 Capital here per tag on it; at 3, gain 12 credits. Add 2 Capital here. |
+| Market Stabilization Board | 2 | building | 13 cr; needs 2 industry | 0 | - | Effect: industry threats need 6 less to counter. |
 | Orbital Mass Driver | 2 | building | 15 cr; 3 en; 1 ch; needs 3 industry | 2 | power | Each round, 13 credits and 2 chips. Pay 1 chip and 3 energy. Draw 3 cards. |
 | Vertical Monopoly | 2 | building | 20 cr; needs 3 industry | 2 | - | Each round, 3 credits per Industry tag on your cards (including this). Draw 4 cards. |
 
@@ -98,145 +98,145 @@ play; keeping a drafted card costs 1 (tier 1) or 2 (tier 2) more.
 
 | card | tier | kind | cost | insight | other tags | effect |
 |---|---|---|---|---|---|---|
-| Adaptive Malware *(not in deck)* | 1 | program | 6 cr; needs 3 cyber | 1 | - | Remove 8 compute from each adversary project. |
+| Adaptive Malware *(not in deck)* | 1 | program | 10 cr; needs 3 cyber | 0 | - | Remove 8 compute from each adversary project. |
 | Bug Bounty Board | 1 | building | 10 cr | 1 | - | Action: pay 4 credits, remove 3 compute from an adversary project, draw 1 card. |
 | Credential Harvest | 1 | event | 7 cr | 0 | - | Gain 1 insight per Cyber tag on your cards. |
-| Cryptojacking Campaign | 1 | program | 18 cr; 2 en | 1 | - | Pay 2 energy. Raise your credit income by 7. |
+| Cryptojacking Campaign | 1 | program | 22 cr; 2 en | 0 | - | Pay 2 energy. Raise your credit income by 7. |
 | Darknet Exchange | 1 | building | 12 cr | 1 | - | Effect: your Cyber cards cost 5 credits less to play. Draw 2 cards. |
-| Eviction Worm | 1 | program | 10 cr | 1 | - | Remove 3 Agents in reach. Remove 4 compute from an adversary project. |
+| Eviction Worm | 1 | program | 12 cr | 0 | - | Remove 3 Agents in reach. Remove 4 compute from an adversary project. |
 | Exploit Broker | 1 | building | 12 cr; needs 2 cyber | 1 | - | Effect: when you play a Cyber card, gain 4 credits. Draw 2 cards. |
 | Honeypot Relay | 1 | building | 12 cr | 1 | - | Effect: when you remove Agents, gain 3 credits. Draw 1 card. Remove up to 2 Agents on or next to a hex in reach, your choice. |
-| Intrusion Lab | 1 | building | 9 cr | 1 | security | Effect: when you remove adversary compute, add 1 Operative here; at 2, gain 1 antimatter. Add 1 Operative here. |
+| Intrusion Lab | 1 | building | 11 cr | 0 | security | Effect: when you remove adversary compute, add 1 Operative here; at 2, gain 1 antimatter. Add 1 Operative here. |
 | Logic Bomb | 1 | program | 9 cr | 1 | security | Remove 6 compute from an adversary project. Draw 1 card. |
 | Neural Mirror | 1 | program | 12 cr | 0 | science | Raise your insight income by 1 per 2 Cyber tags on your cards (including this). |
 | Ransomware Syndicate | 1 | program | 6 cr; needs 2 cyber | 0 | - | Raise your credit income by 1 per 2 Cyber tags on your cards (including this). |
 | Security Ops Floor | 1 | building | 13 cr | 1 | - | Effect: when you remove adversary compute, gain 1 insight. Draw 2 cards. |
 | Sentinel Mesh | 1 | building | 7 cr | 0 | security | Action: counts as 6 toward a cyber threat. |
-| Shadow Broker Scrub *(not in deck)* | 1 | program | 6 cr | 1 | science | Clear 2 corruption markers in reach. Draw 2 cards. |
-| Shared Exploit Kit | 1 | program (help) | 10 cr | 1 | science, security | Remove 6 compute from an adversary project. Another player gains 3 insight. |
+| Shadow Broker Scrub *(not in deck)* | 1 | program | 2 cr | 2 | science | Clear 2 corruption markers in reach. Draw 2 cards. |
+| Shared Exploit Kit | 1 | program (help) | 13 cr | 0 | science, security | Remove 6 compute from an adversary project. Another player gains 3 insight. |
 | Signal Hijack *(not in deck)* | 1 | event | 3 cr | 0 | security | Remove 2 Troops in reach. |
 | Threat Hunt | 1 | program | 8 cr | 0 | - | Counts as 6 toward a cyber threat. Remove 5 compute from an adversary project. |
-| Zero-Click Breach *(not in deck)* | 1 | program | 10 cr | 2 | - | Remove 18 compute from an adversary project. |
-| Air Gap | 2 | event | 6 cr | 1 | - | Firewall a hex in reach. Remove 3 Agents from a hex in reach. Sway 1 toward Unity. |
-| Autonomous Defense Grid | 2 | building | 9 cr; needs 2 cyber | 1 | - | Effect: cyber threats need 6 less to counter. |
-| Botnet Takedown | 2 | event | 8 cr; needs 1 cyber | 2 | security | Remove a Botnet in reach. Remove 6 compute from an adversary project. |
+| Zero-Click Breach *(not in deck)* | 1 | program | 18 cr | 0 | - | Remove 18 compute from an adversary project. |
+| Air Gap | 2 | event | 6 cr | 0 | - | Firewall a hex in reach. Remove 3 Agents from a hex in reach. |
+| Autonomous Defense Grid | 2 | building | 13 cr; needs 2 cyber | 0 | - | Effect: cyber threats need 6 less to counter. |
+| Botnet Takedown | 2 | event | 11 cr; needs 1 cyber | 1 | security | Remove a Botnet in reach. Remove 6 compute from an adversary project. |
 | Command-and-Control Grid | 2 | building | 18 cr; needs 2 cyber | 2 | - | Effect: when you play a card, gain 5 credits per tag on it. Draw 3 cards. |
 | Exascale Training Cluster | 2 | building | 15 cr; 5 en | 2 | power | Each round, 3 insight. Pay 5 energy. Gain 6 research cubes. |
 | Firewall Array | 2 | building | 15 cr; needs 2 cyber | 1 | power | Action: firewall a hex in reach. Draw 2 cards. |
 | Hyperscale Botnet | 2 | building | 18 cr; needs 2 cyber | 1 | - | Each round, 4 insight. Draw 3 cards. |
-| Killswitch Directive | 2 | event | 14 cr | 2 | - | Discard an adversary project. Remove 4 Agents in reach. |
+| Killswitch Directive | 2 | event | 16 cr | 1 | - | Discard an adversary project. Remove 4 Agents in reach. |
 | Lure Network | 2 | building | 12 cr | 1 | - | Action: remove up to 3 Agents on or next to a hex in reach, your choice. Draw 2 cards. |
-| Root Access | 2 | event | 40 cr; needs 2 cyber | 1 | - | Liberate a corrupted city in reach. Remove a Botnet on or next to it. |
-| Singularity Exploit | 2 | program | 4 cr; 1 am; needs 3 cyber | 2 | - | Pay 1 antimatter. Remove a Botnet in reach. Discard an adversary project. |
+| Root Access | 2 | event | 44 cr; needs 2 cyber | 0 | - | Liberate a corrupted city in reach. Remove a Botnet on or next to it. |
+| Singularity Exploit | 2 | program | 8 cr; 1 am; needs 3 cyber | 1 | - | Pay 1 antimatter. Remove a Botnet in reach. Discard an adversary project. |
 | Zero-Day Auction | 2 | program | 14 cr; needs 5 cyber | 2 | - | Gain 2 antimatter. Draw 6 cards. |
 
 ## Power (29)
 
 | card | tier | kind | cost | insight | other tags | effect |
 |---|---|---|---|---|---|---|
-| Aegis Grid Lockdown | 1 | event | 9 cr | 1 | diplomacy, security | Shelter any country this round. Place 3 Nodes. |
-| Baseload Contract | 1 | program | 20 cr | 1 | - | Raise your energy income by 2. |
+| Aegis Grid Lockdown | 1 | event | 4 cr | 0 | diplomacy, security | Shelter any country this round. Place 3 Nodes. |
+| Baseload Contract | 1 | program | 24 cr | 0 | - | Raise your energy income by 2. |
 | Capacitor Discharge | 1 | event | 10 cr | 0 | - | Gain 1 energy per Power tag on your cards. |
 | Capacity Market | 1 | program | 6 cr; needs 2 power | 0 | - | Raise your credit income by 1 per 2 Power tags on your cards (including this). |
-| Dispatch Control Room | 1 | building | 16 cr; needs 2 power | 1 | - | Effect: when you play a Power card, gain 1 energy. Gain 2 energy. |
-| Faraday Yard | 1 | program | 10 cr | 1 | - | Raise your energy income by 1. Harden 3 facilities in reach. |
-| Fusion Startup Stake | 1 | program | 20 cr | 1 | - | Raise your energy income by 1. Raise your credit income by 3. |
+| Dispatch Control Room | 1 | building | 18 cr; needs 2 power | 0 | - | Effect: when you play a Power card, gain 1 energy. Gain 2 energy. |
+| Faraday Yard | 1 | program | 14 cr | 0 | - | Raise your energy income by 1. Harden 3 facilities in reach. |
+| Fusion Startup Stake | 1 | program | 24 cr | 0 | - | Raise your energy income by 1. Raise your credit income by 3. |
 | Grid Analytics Desk | 1 | building | 11 cr | 1 | - | Action: pay 1 energy, draw 2 cards. |
-| Grid Census *(not in deck)* | 1 | program | 14 cr | 1 | - | Gain 1 energy per Node you have on the board. |
-| Interconnector Treaty | 1 | program (help) | 24 cr; needs 2 power | 1 | diplomacy | Another player gains 4 energy. Raise your credit income by 4. |
-| National Grid Buildout | 1 | program | 34 cr | 1 | - | Raise your energy income by 2. Place 3 Nodes. |
-| Peaker Turbines | 1 | program | 18 cr | 1 | industry | Raise your energy income by 1. Raise your chip income by 1. |
+| Grid Census *(not in deck)* | 1 | program | 18 cr | 0 | - | Gain 1 energy per Node you have on the board. |
+| Interconnector Treaty | 1 | program (help) | 28 cr; needs 2 power | 0 | diplomacy | Another player gains 4 energy. Raise your credit income by 4. |
+| National Grid Buildout | 1 | program | 22 cr | 0 | - | Raise your energy income by 2. Place 3 Nodes. |
+| Peaker Turbines | 1 | program | 22 cr | 0 | industry | Raise your energy income by 1. Raise your chip income by 1. |
 | Power Purchase Agreement | 1 | event | 2 cr; 2 en | 0 | science | Pay 2 energy. Claim a neutral research station in reach. |
-| Pumped Hydro Storage | 1 | program | 24 cr | 1 | - | Raise your energy income by 1. Gain 4 energy. |
-| Relay Mast Rollout | 1 | program | 10 cr | 1 | - | Place 2 Nodes. Draw 2 cards. |
-| Shared Grid Accord | 1 | program (help) | 3 cr | 1 | diplomacy | Another player gains 2 energy. Sway 2 toward Unity. |
-| Substation Hub | 1 | building | 12 cr | 1 | industry | Effect: when another player plays a Power card, you both gain 1 energy. Gain 2 energy. |
-| Tidal Barrage | 1 | program | 20 cr; needs 3 power | 1 | - | Raise your energy income by 1 per 2 Power tags on your cards (including this). |
-| Transmission Corridor *(not in deck)* | 1 | program | 6 cr | 1 | diplomacy | Place 2 Nodes. Move up to 2 Ambassadors onto pieces in reach. |
-| Beamed Power Constellation | 2 | program | 30 cr; needs 3 power | 2 | - | Place 3 Nodes. Gain 1 energy per Node you have on the board. |
-| Citywide Microgrid | 2 | building | 4 cr; 8 en | 2 | diplomacy | Action: sway 2 toward Unity. Pay 8 energy. Liberate a corrupted city in reach. |
+| Pumped Hydro Storage | 1 | program | 28 cr | 0 | - | Raise your energy income by 1. Gain 4 energy. |
+| Relay Mast Rollout | 1 | program | 6 cr | 1 | - | Place 2 Nodes. Draw 2 cards. |
+| Shared Grid Accord | 1 | program (help) | 7 cr | 0 | diplomacy | Another player gains 2 energy. Sway 2 toward Unity. |
+| Substation Hub | 1 | building | 16 cr | 0 | industry | Effect: when another player plays a Power card, you both gain 1 energy. Gain 2 energy. |
+| Tidal Barrage | 1 | program | 24 cr; needs 3 power | 0 | - | Raise your energy income by 1 per 2 Power tags on your cards (including this). |
+| Transmission Corridor *(not in deck)* | 1 | program | 10 cr | 0 | diplomacy | Place 2 Nodes. Move up to 2 Ambassadors onto pieces in reach. |
+| Beamed Power Constellation | 2 | program | 14 cr; needs 3 power | 1 | - | Place 3 Nodes. Gain 1 energy per Node you have on the board. |
+| Citywide Microgrid | 2 | building | 8 cr; 8 en | 1 | diplomacy | Action: sway 2 toward Unity. Pay 8 energy. Liberate a corrupted city in reach. |
 | Continental Supergrid | 2 | program | 20 cr; needs 3 power | 2 | diplomacy | Raise your energy income by 2. Raise your credit income by 1 per Power tag on your cards (including this). |
 | Dyson Swarm Tranche | 2 | program | 29 cr; needs 3 power | 2 | industry | Raise your energy income by 2. Raise your credit income by 8. |
 | Fusion Research Campus | 2 | building | 16 cr; needs 3 power | 2 | science | Effect: when you play a Power card, draw 2 cards. Draw 3 cards. |
-| Microgrid Lab Compact | 2 | building | 14 cr | 1 | science | Action: pay 2 energy, claim a neutral research station in reach. |
+| Microgrid Lab Compact | 2 | building | 18 cr | 0 | science | Action: pay 2 energy, claim a neutral research station in reach. |
 | Positron Storage Ring | 2 | building | 9 cr; 2 en; needs 2 power | 2 | - | Each round, 1 antimatter. Effect: when you play a Power card, gain 2 energy. Pay 2 energy. Draw 2 cards. |
-| Power to the People | 2 | building | 18 cr; 4 en; needs 2 power; over power | 1 | industry | Each round, 1 credit per Power tag on your cards (including this). Pay 4 energy. Liberate a corrupted city in reach. |
+| Power to the People | 2 | building | 22 cr; 4 en; needs 2 power; over power | 0 | industry | Each round, 1 credit per Power tag on your cards (including this). Pay 4 energy. Liberate a corrupted city in reach. |
 | Smart Grid Backbone | 2 | building | 25 cr; needs 3 power | 2 | - | Effect: when you play a card, gain 1 energy per tag on it. Gain 2 energy. |
-| The Nuclear Option | 2 | event | 19 cr; 1 am | 1 | - | Pay 1 antimatter. Liberate a corrupted city in reach. Sway 1 toward Discord. |
+| The Nuclear Option | 2 | event | 23 cr; 1 am | 0 | - | Pay 1 antimatter. Liberate a corrupted city in reach. Sway 1 toward Discord. |
 
 ## Diplomacy (31)
 
 | card | tier | kind | cost | insight | other tags | effect |
 |---|---|---|---|---|---|---|
-| Amnesty Decree | 1 | program | 11 cr | 1 | - | Remove 4 Agents on or next to one corrupted city in reach. Gain 2 Ambassadors. |
-| Back-Channel Talks | 1 | program | 10 cr | 1 | - | Free 2 corrupted factories in reach. Sway 2 toward Unity. |
-| Ceasefire Monitors | 1 | program | 8 cr | 1 | security, cyber | Remove 3 Agents or 1 Troop from a hex in reach. Gain 2 Ambassadors. |
+| Amnesty Decree | 1 | program | 15 cr | 0 | - | Remove 4 Agents on or next to one corrupted city in reach. Gain 2 Ambassadors. |
+| Back-Channel Talks | 1 | program | 14 cr | 0 | - | Free 2 corrupted factories in reach. Sway 2 toward Unity. |
+| Ceasefire Monitors | 1 | program | 12 cr | 0 | security, cyber | Remove 3 Agents or 1 Troop from a hex in reach. Gain 2 Ambassadors. |
 | Civic Watch | 1 | building | 7 cr | 0 | - | Action: counts as 6 toward a diplomacy threat. |
-| Consular Pouch | 1 | program | 9 cr; needs 2 diplomacy | 1 | - | Gain 1 Ambassador per Diplomacy tag on your cards (including this). |
-| Consulate Tower | 1 | building | 12 cr; needs 2 diplomacy | 1 | - | Effect: when another player plays a Diplomacy card, you both gain 6 credits. Draw 3 cards. |
+| Consular Pouch | 1 | program | 13 cr; needs 2 diplomacy | 0 | - | Gain 1 Ambassador per Diplomacy tag on your cards (including this). |
+| Consulate Tower | 1 | building | 8 cr; needs 2 diplomacy | 2 | - | Effect: when another player plays a Diplomacy card, you both gain 6 credits. Draw 3 cards. |
 | Envoy Briefings | 1 | program | 9 cr | 1 | - | Draw 3 cards. Gain 2 Ambassadors. |
 | Fact-Check Network | 1 | program | 6 cr | 0 | - | Counts as 5 toward a diplomacy threat. Gain 2 Ambassadors. |
-| Holographic Assembly Hall | 1 | building | 9 cr | 1 | power | Action: pay 2 energy, sway 2 toward Unity, get 2 Ambassadors. |
-| Liaison Corps | 1 | program | 8 cr | 1 | - | Gain 3 Ambassadors. Move up to 4 Ambassadors onto pieces in reach. |
+| Holographic Assembly Hall | 1 | building | 13 cr | 0 | power | Action: pay 2 energy, sway 2 toward Unity, get 2 Ambassadors. |
+| Liaison Corps | 1 | program | 12 cr | 0 | - | Gain 3 Ambassadors. Move up to 4 Ambassadors onto pieces in reach. |
 | Manifesto Leak | 1 | event | 8 cr | 0 | - | Sway 3 toward Unity. Add 1 Follower to one of your Follower buildings. |
 | Mutual Aid Pact | 1 | program (help) | 10 cr | 0 | - | Another player gains 3 insight. Gain 3 Ambassadors. |
-| Open Assembly | 1 | building | 15 cr | 1 | - | Effect: when you play a Diplomacy card, add 1 Follower here; at 2, sway 3 toward Unity. Add 1 Follower here. |
-| Peace Conference | 1 | program | 28 cr; needs 3 diplomacy | 1 | - | Sway 8 toward Unity. Gain 3 Ambassadors. |
+| Open Assembly | 1 | building | 17 cr | 0 | - | Effect: when you play a Diplomacy card, add 1 Follower here; at 2, sway 3 toward Unity. Add 1 Follower here. |
+| Peace Conference | 1 | program | 32 cr; needs 3 diplomacy | 0 | - | Sway 8 toward Unity. Gain 3 Ambassadors. |
 | Peace Dividend | 1 | program | 6 cr; needs 2 diplomacy | 0 | - | Raise your credit income by 1 per 2 Diplomacy tags on your cards (including this). |
-| Popular Uprising | 1 | building | 22 cr | 1 | - | Action: add 1 Follower here, OR pay 4 Followers, liberate a corrupted city in reach. |
+| Popular Uprising | 1 | building | 26 cr | 0 | - | Action: add 1 Follower here, OR pay 4 Followers, liberate a corrupted city in reach. |
 | Protocol Office | 1 | building | 11 cr | 1 | - | Effect: your Diplomacy cards cost 5 credits less to play. Draw 2 cards. |
-| Reconciliation Office | 1 | building | 17 cr | 1 | security | Effect: when you remove Agents, draw 1 card. Draw 2 cards. |
-| Summit Caucus | 1 | program | 10 cr | 1 | - | Move up to 6 Ambassadors in reach onto one piece. Gain 3 Ambassadors. |
-| Trade Delegation | 1 | program | 12 cr; needs 2 diplomacy | 1 | industry | Raise your credit income by 3. Gain 2 Ambassadors. |
+| Reconciliation Office | 1 | building | 13 cr | 2 | security | Effect: when you remove Agents, draw 1 card. Draw 2 cards. |
+| Summit Caucus | 1 | program | 14 cr | 0 | - | Move up to 6 Ambassadors in reach onto one piece. Gain 3 Ambassadors. |
+| Trade Delegation | 1 | program | 16 cr; needs 2 diplomacy | 0 | industry | Raise your credit income by 3. Gain 2 Ambassadors. |
 | Truth Commission *(not in deck)* | 1 | program | 6 cr | 0 | - | Counts as 5 toward a diplomacy threat. Sway 2 toward Unity. |
-| Coalition Charter | 2 | program (help) | 14 cr | 2 | - | Another player gains 4 insight. Sway 6 toward Unity. |
-| Embassy of Exiles | 2 | building | 10 cr | 1 | - | Action: convert 2 Agents around a city in reach. Gain 3 Ambassadors. |
-| Exodus Corridors | 2 | program | 14 cr; needs 1 diplomacy | 2 | security | Gather up to 6 Ambassadors into a hex in reach, each from a hex next to it. Gain 4 Ambassadors. |
-| Great Liberation | 2 | event | 32 cr; 1 am; needs 4 diplomacy | 2 | - | Pay 1 antimatter. Free 3 corrupted cities, stations or factories in reach, in one country. |
-| Hostile Buyout | 2 | event | 42 cr | 1 | - | Liberate a corrupted city in reach. Gain 3 Ambassadors. |
+| Coalition Charter | 2 | program (help) | 18 cr | 1 | - | Another player gains 4 insight. Sway 6 toward Unity. |
+| Embassy of Exiles | 2 | building | 14 cr | 0 | - | Action: convert 2 Agents around a city in reach. Gain 3 Ambassadors. |
+| Exodus Corridors | 2 | program | 18 cr; needs 1 diplomacy | 1 | security | Gather up to 6 Ambassadors into a hex in reach, each from a hex next to it. Gain 4 Ambassadors. |
+| Great Liberation | 2 | event | 32 cr; 1 am; needs 4 diplomacy | 2 | - | Pay 1 antimatter. Liberate or free 3 corrupted cities, stations or factories in reach, in one country. |
+| Hostile Buyout | 2 | event | 46 cr | 0 | - | Liberate a corrupted city in reach. Gain 3 Ambassadors. |
 | Liberation Accords | 2 | program | 15 cr; needs 1 diplomacy | 2 | - | Remove 6 Agents in reach. Gain 4 Ambassadors. |
-| Mass Defection | 2 | event | 11 cr | 1 | - | Convert 5 Agents around a city in reach. Sway 2 toward Unity. With 3 Diplomacy tags, also gain 3 Ambassadors. |
+| Mass Defection | 2 | event | 9 cr | 0 | - | Convert 5 Agents around a city in reach. Sway 2 toward Unity. |
 | Orbital Embassy | 2 | building | 10 cr; needs 2 diplomacy; over diplomacy | 2 | power | Effect: when you play a card, gain 1 Ambassador per Diplomacy tag on it. Draw 4 cards. |
 | Planetary Referendum *(not in deck)* | 2 | event | 14 cr | 2 | power | Sway 8 toward Unity. |
-| Rally the Allies | 2 | event | 14 cr | 1 | - | Gain 5 Ambassadors. Gather up to 3 Ambassadors into a hex in reach, each from a hex next to it. Sway 2 toward Unity. With 3 Diplomacy tags, also gain 3 Ambassadors. |
+| Rally the Allies | 2 | event | 12 cr | 0 | - | Gain 5 Ambassadors. Gather up to 3 Ambassadors into a hex in reach, each from a hex next to it. Sway 2 toward Unity. |
 
 ## Security (33)
 
 | card | tier | kind | cost | insight | other tags | effect |
 |---|---|---|---|---|---|---|
 | Agency Field Station | 1 | building | 14 cr | 1 | - | Effect: when you play a Security card, remove 1 Agent in reach. Draw 2 cards. |
-| Bounty Board *(not in deck)* | 1 | program | 10 cr | 1 | - | Remove 1 Troop in reach. Gain 1 credit per Security tag on your cards (including this). |
+| Bounty Board *(not in deck)* | 1 | program | 14 cr | 0 | - | Remove 1 Troop in reach. Gain 1 credit per Security tag on your cards (including this). |
 | Breach and Clear | 1 | event | 6 cr | 1 | - | Remove 1 Troop in reach. Draw 2 cards. |
-| Checkpoint Network | 1 | building | 7 cr | 1 | - | Action: push up to 2 Agents or Troops from a hex in reach, each to a hex next to it. Push up to 3 Agents or Troops from a hex in reach, each to a hex next to it. |
-| Counterinsurgency Campaign | 1 | program | 13 cr | 1 | - | Remove 3 Agents in reach. Raise your credit income by 2. |
+| Checkpoint Network | 1 | building | 11 cr | 0 | - | Action: push up to 2 Agents or Troops from a hex in reach, each to a hex next to it. Push up to 3 Agents or Troops from a hex in reach, each to a hex next to it. |
+| Counterinsurgency Campaign | 1 | program | 15 cr | 0 | - | Remove 3 Agents in reach. Raise your credit income by 2. |
 | Defense Appropriations | 1 | program | 6 cr; needs 2 security | 0 | - | Raise your credit income by 1 per 2 Security tags on your cards (including this). |
-| Diplomatic Expulsion | 1 | program | 10 cr | 1 | diplomacy | Remove 4 Agents in reach. Sway 1 toward Unity. |
-| Directed-Energy Array | 1 | building | 8 cr | 1 | power | Action: pay 2 energy, remove 3 Agents in reach. |
-| Early Warning Drill | 1 | program | 6 cr | 1 | cyber, science | Delay 1 threat one round. Harden 3 of your Nodes. |
+| Diplomatic Expulsion | 1 | program | 12 cr | 0 | diplomacy | Remove 4 Agents in reach. Sway 1 toward Unity. |
+| Directed-Energy Array | 1 | building | 11 cr | 0 | power | Action: pay 2 energy, remove 3 Agents in reach. |
+| Early Warning Drill | 1 | program | 10 cr | 0 | cyber, science | Delay 1 threat one round. Harden 3 of your Nodes. |
 | Force Protection Order | 1 | program | 6 cr | 1 | - | Counts as 6 toward a security threat. Draw 2 cards. |
 | Garrison Command | 1 | building | 7 cr | 0 | - | Action: counts as 6 toward a security threat. |
-| Hardened Bunker Complex *(not in deck)* | 1 | program | 16 cr | 1 | - | Raise your energy income by 1. Raise your credit income by 1. |
+| Hardened Bunker Complex *(not in deck)* | 1 | program | 18 cr | 0 | - | Raise your energy income by 1. Raise your credit income by 1. |
 | Hardpoint Lockdown | 1 | event | 5 cr | 0 | - | Shelter any country this round. Cordon a country until the end of the next adversary turn. |
 | Headquarters Raid | 1 | event | 28 cr; needs 2 security | 1 | - | Remove 5 Agents in reach. Draw 4 cards. |
 | Joint Task Force | 1 | building | 14 cr; needs 2 security | 1 | - | Effect: when another player plays a Security card, remove 2 Agents in reach. Draw 2 cards. |
-| Multiyear Defense Budget | 1 | program | 30 cr | 1 | - | Raise your credit income by 4. Raise your energy income by 2. |
-| Peacekeeper Rotation *(not in deck)* | 1 | program | 12 cr | 1 | diplomacy | Remove 2 Troops from a hex in reach. Move 1 Ambassador on the board up to 2 hexes. |
-| Quick Reaction Force *(not in deck)* | 1 | building | 11 cr; needs 2 security | 1 | - | Action: use another of your buildings' Actions again this round. Draw 2 cards. |
+| Multiyear Defense Budget | 1 | program | 34 cr | 0 | - | Raise your credit income by 4. Raise your energy income by 2. |
+| Peacekeeper Rotation *(not in deck)* | 1 | program | 16 cr | 0 | diplomacy | Remove 2 Troops from a hex in reach. Move 1 Ambassador on the board up to 2 hexes. |
+| Quick Reaction Force *(not in deck)* | 1 | building | 7 cr; needs 2 security | 2 | - | Action: use another of your buildings' Actions again this round. Draw 2 cards. |
 | Recruit Operatives | 1 | program | 9 cr | 1 | - | Draw 3 cards. Add 1 Operative to one of your Operative buildings. |
 | Safehouse Network | 1 | building | 14 cr | 1 | - | Action: add 1 Operative here, OR pay 2 Operatives, draw 3 cards. Add 2 Operatives here. |
-| Security Contractor HQ | 1 | building | 14 cr; needs 2 security | 1 | - | Effect: when you remove a Troop, gain 10 credits. Draw 3 cards. |
+| Security Contractor HQ | 1 | building | 10 cr; needs 2 security | 2 | - | Effect: when you remove a Troop, gain 10 credits. Draw 3 cards. |
 | Shared Threat Intel | 1 | program (help) | 7 cr | 0 | cyber | One threat needs 6 less of each resource. Another player gains 2 insight. |
 | Agency Directorate | 2 | building | 16 cr; needs 2 security; over security | 2 | - | Effect: when you play a card, add 1 Operative here per tag on it; at 4, draw 3 cards. Add 3 Operatives here. |
-| Decapitation Strike | 2 | event | 30 cr; needs 2 security | 1 | - | Remove a Botnet in reach. Remove 6 Agents in reach. |
+| Decapitation Strike | 2 | event | 32 cr; needs 2 security | 0 | - | Remove a Botnet in reach. Remove 6 Agents in reach. |
 | Deep State Ledger | 2 | program | 18 cr; needs 2 security | 2 | cyber | Raise your insight income by 3. Add 2 Operatives to one of your Operative buildings. |
-| Double Agents | 2 | event | 8 cr | 1 | - | Convert 3 Agents around a city in reach. Remove 2 Troops in reach. Sway 1 toward Unity. |
+| Double Agents | 2 | event | 8 cr | 0 | - | Convert 3 Agents around a city in reach. Remove 2 Troops in reach. |
 | Homeland Security Act | 2 | program | 18 cr; needs 3 security | 2 | power | Raise your energy income by 2. Raise your credit income by 1 per Security tag on your cards (including this). |
 | Kettle Operation | 2 | event | 18 cr; needs 2 security | 2 | - | Remove up to 6 Agents or Troops on or next to a hex in reach, your choice. Sway 2 toward Unity. |
-| Kinetic Interdiction | 2 | event | 6 cr; 1 am; needs 2 security | 1 | - | Pay 1 antimatter. Remove 2 Troops in one country. Remove 6 Agents in reach. |
-| Martial Cordon | 2 | program | 14 cr; needs 1 diplomacy | 2 | diplomacy | Remove 6 Agents in one country. Sway 2 toward Unity. |
-| Peacekeeping Mission | 2 | event | 41 cr; needs 2 security | 1 | - | Liberate a corrupted city in reach. Remove up to 2 Troops in its country. |
-| Surgical Strike | 2 | event | 15 cr | 1 | - | Remove 4 Agents or 3 Troops from a hex in reach. Sway 1 toward Unity. With 3 Security tags, also remove a Botnet in reach. |
-| Total Containment *(not in deck)* | 2 | program | 8 cr; needs 1 security | 2 | - | Remove 4 Troops in one country. Shelter any country this round. |
+| Kinetic Interdiction | 2 | event | 10 cr; 1 am; needs 2 security | 0 | - | Pay 1 antimatter. Remove 2 Troops in one country. Remove 6 Agents in reach. |
+| Martial Cordon | 2 | program | 18 cr; needs 1 diplomacy | 1 | diplomacy | Remove 6 Agents in one country. Sway 2 toward Unity. |
+| Peacekeeping Mission | 2 | event | 45 cr; needs 2 security | 0 | - | Liberate a corrupted city in reach. Remove up to 2 Troops in its country. |
+| Surgical Strike | 2 | event | 14 cr | 0 | - | Remove 4 Agents or 3 Troops from a hex in reach. Sway 1 toward Unity. |
+| Total Containment *(not in deck)* | 2 | program | 12 cr; needs 1 security | 1 | - | Remove 4 Troops in one country. Shelter any country this round. |
 
 ## Unity and Discord cards
 

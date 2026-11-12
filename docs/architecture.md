@@ -162,7 +162,8 @@ and team cards) wording and tally. Three kinds:
 its dispatch (`effects/mod.rs`, whose arm keeps the old behavior by matching the field's default and sends the
 rest to `effects/new_ops.rs`; or the rule that reads a standing op), and its price: `agents/value.rs`, `agents/strategy.rs`, `configs/agents/values.json` and the
 ledger's hand mirror, `scripts/cards/effect_ledger.py`. A new op touches the same, plus `effects/feasible.rs` (what
-it acts on). The compiler finds the Rust sites (`face.rs` lists every non-player op); the
+it acts on) and its harms row (`docs/harms.rs`, `op_harms`: every op has an arm, 191). The compiler finds the Rust
+sites (`face.rs` lists every non-player op); the
 mirror test finds the ledger.
 
 ### Generated docs
@@ -175,7 +176,8 @@ all of [ops.md](ops.md), [harms.md](harms.md) and [player-aid.md](player-aid.md)
 `drafts/adversary/` and [adversary-cards.md](adversary-cards.md). A block is a pure function of `Rules` or `Content` in
 `crates/aic-sim/src/docs/blocks.rs`, named in `run` (`run.rs`), tested in `tests.rs`.
 
-`aic-sim docs` (written or `--check`) fails on a broken harm distribution (`harm_failures`), a missing or doubled
+`aic-sim docs` (written or `--check`) fails on a threat tier with under 5 kinds of harm (`harm_failures`; 191: a thin harm row or a node-share
+over half is a gap the ledger lists, not a failure), a missing or doubled
 block, a doc page (CLAUDE.md's list) over 15 KB, a stale rules-revision line or card quote in `docs/rules/`, a
 British spelling or stale house word (`spelling.rs`), a heading like `## 080's changes` (`current_docs.rs`) and an
 id in `docs/card-pricing-notes.json` that is no player card. `--check`, and a fast-lane test, also refuse a stale

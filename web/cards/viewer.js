@@ -1,7 +1,7 @@
 // The card viewer's page: browse, filter, sort and annotate what cards-server.mjs exports.
 // Player cards go through the one renderer; every other kind is a plain face drawn from the
 // same export. No card words live here: only labels of the page itself.
-import { fitCards, frameOf, inset, renderCard } from '../card/card.js';
+import { fitCards, frameOf, inset, renderBack, renderCard } from '../card/card.js';
 import { esc, plainFace } from './plain.js';
 
 const $ = (id) => document.getElementById(id);
@@ -160,6 +160,12 @@ function grid(list) {
   fitCards($('cards'));
 }
 
+/** 191: the player cards' two backs, each with its tier's keep cost. */
+function backs() {
+  $('cards').className = 'grid';
+  $('cards').innerHTML = [1, 2].map((t) => `<div class="tile"><div class="scaled">${renderBack(t, layout)}</div></div>`).join('');
+}
+
 function table(list) {
   const cols = [['name', 'Name'], ['kind', 'Kind'], ['tier', 'Tier'], ['cost', 'Cost', 'num']];
   const head = [...cols, ...data.stats.columns.map((c) => [c.key, c.label, 'num', c.title])];
@@ -194,9 +200,9 @@ function render() {
   ui.shown = list.map((c) => c.id);
   $('count').textContent = `${list.length} of ${data.cards.length}`;
   $('dir').textContent = ui.desc ? '↓' : '↑';
-  $('zoom-box').hidden = $('view').value !== 'grid';
+  $('zoom-box').hidden = $('view').value === 'table';
   filterBar();
-  ($('view').value === 'grid' ? grid : table)(list);
+  ({ grid, table, backs }[$('view').value] ?? grid)(list);
   applySize();
 }
 

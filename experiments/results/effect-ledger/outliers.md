@@ -5,30 +5,39 @@ Values are credits per unit of the effect (printed cost shared out pro rata to 0
 
 ## Effects priced most unevenly across cards (max / min per unit over 2.5, 3+ cards)
 
-- **gather [play]** (4 cards, reasoned 1.47): 0.59 on `rally_the_allies` to 3.27 on `kettle_operation` (x5.57).
-- **damage troops [play]** (4 cards, reasoned 9.62): 1.83 on `ceasefire_monitors` to 7.64 on `bounty_board` (x4.17).
-- **production energy [play]** (13 cards, reasoned 14.4): 3.68 on `collateralized_grid` to 13.73 on `hardened_bunker_complex` (x3.73).
-- **draw [play]** (55 cards, reasoned 4.0): 1.45 on `shadow_broker_feed` to 5.24 on `agency_field_station` (x3.62).
+- **gather [play]** (4 cards, reasoned 1.47): 0.52 on `rally_the_allies` to 3.27 on `kettle_operation` (x6.26).
+- **shelter [play]** (3 cards, reasoned 2.8): 0.42 on `aegis_grid_lockdown` to 2.41 on `hardpoint_lockdown` (x5.78).
+- **draw [play]** (55 cards, reasoned 4.0): 1.19 on `shadow_broker_feed` to 5.24 on `agency_field_station` (x4.4).
+- **damage troops [play]** (4 cards, reasoned 9.62): 2.1 on `ceasefire_monitors` to 8.56 on `bounty_board` (x4.08).
+- **production energy [play]** (13 cards, reasoned 14.4): 4.09 on `collateralized_grid` to 13.36 on `hardened_bunker_complex` (x3.27).
+- **place_node [play]** (5 cards, reasoned 8.0): 1.19 on `aegis_grid_lockdown` to 3.72 on `transmission_corridor` (x3.12).
 - **draw [action]** (7 cards, reasoned 5.06): 2.04 on `wafer_fab_line` to 6.18 on `bug_bounty_board` (x3.03).
-- **sway unity [play]** (16 cards, reasoned 4.0): 1.35 on `shared_grid_accord` to 3.7 on `diplomatic_expulsion` (x2.74).
-- **remove_troops [play]** (5 cards, reasoned 5.18): 1.5 on `signal_hijack` to 3.97 on `breach_and_clear` (x2.64).
+- **sway unity [play]** (14 cards, reasoned 4.0): 1.41 on `mass_defection` to 3.81 on `martial_cordon` (x2.7).
 
 ## Tier-2 cards over the ceiling (reasoned / printed over 2.5; card-guidelines ruling 22)
 
+- `beamed_power_constellation` (tier 2): reasoned 47.5 / printed 16.5 = 2.86.
+- `mass_defection` (tier 2): reasoned 25.5 / printed 9.0 = 2.86.
+- `air_gap` (tier 2): reasoned 16.6 / printed 6.0 = 2.78.
 - `great_liberation` (tier 2): reasoned 120.0 / printed 44.0 = 2.70.
+- `rally_the_allies` (tier 2): reasoned 32.2 / printed 12.0 = 2.70.
+- `double_agents` (tier 2): reasoned 20.86 / printed 8.0 = 2.63.
+- `surgical_strike` (tier 2): reasoned 37.0 / printed 14.0 = 2.63.
 
 ## Effects whose fitted price is far from the reasoned one (beta outside 0.5-2.0, 4+ cards)
 
-- **add_tokens agents [play]** (5 cards): fitted 4.7 per unit vs reasoned 2.0 (beta 2.35 ± 0.94).
+- **place_node [play]** (5 cards): fitted 1.85 per unit vs reasoned 8.0 (beta 0.23 ± 0.16).
+- **add_tokens agents [play]** (5 cards): fitted 4.49 per unit vs reasoned 2.0 (beta 2.24 ± 0.94).
 
-## Cards whose printed cost is furthest from their summed reasoned value (gap over 2.0 SD from the mean gap -8.2 ± 9.1)
+## Cards whose printed cost is furthest from their summed reasoned value (gap over 2.0 SD from the mean gap -8.0 ± 9.4)
 
 - `great_liberation` (tier 2 event, needs diplomacy 4): printed 44.0 vs reasoned 120.0 (gap -76.0). cleanse cities [play] 120.0.
 - `vertical_monopoly` (tier 2 building, needs industry 3): printed 25.0 vs reasoned 62.0 (gap -37.0). draw [play] 16.0 + income_per_tag credits [passive] 45.0 + tags [card] 1.0.
 - `foundation_model_campus` (tier 2 building, needs science 3): printed 27.0 vs reasoned 62.5 (gap -35.5). draw [play] 16.0 + income_per_tag credits [passive] 45.0 + tags [card] 1.5.
+- `national_grid_buildout` (tier 1 program): printed 22.0 vs reasoned 53.8 (gap -31.8). production energy [play] 28.8 + place_node [play] 24.0 + tags [card] 1.0.
 - `kettle_operation` (tier 2 event, needs security 2): printed 23.0 vs reasoned 54.2 (gap -31.2). gather [play] 46.2 + sway unity [play] 8.0.
-- `decapitation_strike` (tier 2 event, needs security 2): printed 32.5 vs reasoned 20.0 (gap +12.5). remove_botnet [play] 8.0 + remove_ambassadors_country [play] 12.0.
+- `beamed_power_constellation` (tier 2 program, needs power 3): printed 16.5 vs reasoned 47.5 (gap -31.0). place_node [play] 24.0 + gain_per_node energy [play] 22.5 + tags [card] 1.0.
 - `orbital_mass_driver` (tier 2 building, needs industry 3): printed 37.5 vs reasoned 66.0 (gap -28.5). draw [play] 12.0 + income credits [passive] 32.5 + income chips [passive] 20.0 + tags [card] 1.5.
-- `power_to_the_people` (tier 2 building, needs power 2): printed 38.5 vs reasoned 66.5 (gap -28.0). liberate [play] 50.0 + income_per_tag credits [passive] 15.0 + tags [card] 1.5.
+- `decapitation_strike` (tier 2 event, needs security 2): printed 32.0 vs reasoned 20.0 (gap +12.0). remove_botnet [play] 8.0 + remove_ambassadors_country [play] 12.0.
 
-Fit: 33 effects fitted, 72 unidentified (on 1-2 cards, held at reasoned); tier 1 constant -5.33 ± 1.04, tier 2 -9.96 ± 1.7, -1.97 ± 0.6 cr per needed tag; residual sd 6.92 cr on 149 dof.
+Fit: 32 effects fitted, 72 unidentified (on 1-2 cards, held at reasoned); tier 1 constant -4.51 ± 1.03, tier 2 -9.04 ± 1.69, -2.02 ± 0.6 cr per needed tag; residual sd 6.91 cr on 150 dof.

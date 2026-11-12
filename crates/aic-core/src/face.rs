@@ -402,7 +402,9 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
                 (false, None, _) => "corrupted stations or factories",
             };
             let place = if *one_country { "in reach, in one country" } else { "in reach" };
-            let say = format!("free {n} {what} {place}");
+            // 191 (184's D80): a city is liberated, a station or factory freed, so the city form prints both.
+            let verb = if *cities { "liberate or free" } else { "free" };
+            let say = format!("{verb} {n} {what} {place}");
             let mut parts = minus(*n, "cube");
             // D37: a narrowed cube names its facility, so the bare cube keeps one meaning.
             match (*cities, only) {

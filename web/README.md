@@ -196,7 +196,8 @@ says so and exits.
 - **Card rules** are in [docs/card-guidelines.md](../docs/card-guidelines.md). A test refuses any face printing
   `*` or "worth".
 - **Shots of named cards** in the viewer's large view: `node scripts/card-shots.mjs ID,ID [--port N] [--out NAME]`
-  (shots in `out/NAME/`, about 1 s a card).
+  (shots in `out/NAME/`, about 1 s a card). The card backs (`renderBack`, the viewer's View: Backs, each tier's keep
+  cost): `node scripts/back-shots.mjs [--port N] [--out NAME]` (`out/NAME/backs.png`).
 - **Text sizes:** `npm run cards:fit` (about 2.5 s, no server) fits every player card
   headless with the real renderer and writes `out/card-fit.json` (the repo root's `out/`, as for every `out/` path
   in this section): per id,

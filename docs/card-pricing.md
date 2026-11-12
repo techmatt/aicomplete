@@ -50,7 +50,9 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
 - **Tier is power** (ruling 4): costs and effects go up a lot with tier, few cards cost 0, and tier is not a proxy for
   cost.
 - **The recipe:** value the effect at the rates; then credits = value − the keep (tier 1 2.5, tier 2 5 at r43's 2 insight) − 2.5 × the
-  insight to play − about 1, so the card beats the plain route it replaces (ruling 7).
+  insight to play − about 1, so the card beats the plain route it replaces (ruling 7). **Insight to play is a price**
+  (191, Matt): spread over 0, 1 and 2, most tier-1 cards at 0; moving a card 1 insight moves its credits the
+  anchor's 4, less what would leave it under a 1-credit gain at the table.
 - **A `needs` chain is the price** (ruling 10): needs 2-3 of a tag on an engine (108), needs 3-4 sits 2-4 under the
   recipe, needs 5-6 about half and much bigger (Zero-Day Auction, needs 5 Cyber: 2 antimatter and draw 6).
 - **The cost curve** (r46, Terraforming Mars scale; Matt: fewer cheap cards, more dear and high-impact ones): tier 1

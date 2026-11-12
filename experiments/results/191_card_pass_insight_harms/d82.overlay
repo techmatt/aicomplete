@@ -1,0 +1,16 @@
+# 191 (184's D82): words cut on the five tier-2 cards printing under 7.5 pt; each loses its last rider, its price follows.
+# Rally the Allies: the 3-Diplomacy rider (3 ambassadors, 12 at the table, about half the time) off, 18 -> 12.
+cards.rally_the_allies.effects=[{"op": "gain_ambassadors", "count": 5}, {"op": "gather", "max": 3, "pieces": ["ambassadors"]}, {"op": "sway", "side": "unity", "amount": 2}]
+cards.rally_the_allies.cost=12
+# Mass Defection: the same rider off, 15 -> 9.
+cards.mass_defection.effects=[{"op": "convert", "max": 5}, {"op": "sway", "side": "unity", "amount": 2}]
+cards.mass_defection.cost=9
+# Surgical Strike: the 3-Security botnet rider (16, about a third of the time) off, 19 -> 14.
+cards.surgical_strike.effects=[{"op": "damage", "ambassadors": 4, "troops": 3}, {"op": "sway", "side": "unity", "amount": 1}]
+cards.surgical_strike.cost=14
+# Double Agents: Sway 1 (4) off, 12 -> 8.
+cards.double_agents.effects=[{"op": "convert", "max": 3}, {"op": "remove_troops", "count": 2, "reach": true}]
+cards.double_agents.cost=8
+# Air Gap: Sway 1 (4) off, 10 -> 6.
+cards.air_gap.effects=[{"op": "firewall"}, {"op": "damage", "ambassadors": 3}]
+cards.air_gap.cost=6

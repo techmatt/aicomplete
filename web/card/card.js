@@ -177,6 +177,35 @@ export async function fitCards(root = document) {
   return rows;
 }
 
+/** A player card's keep cost by tier: what drafting it into your hand costs, in insight (r82). */
+export const keepCost = (tier) => (tierOf(tier) >= 2 ? 2 : 1);
+
+/**
+ * A player card's back (191, amendment 8617): the tier's frame color and its keep cost, one insight hexagon a point,
+ * centered low, so a drafted card's price reads from the deck. No art yet: a placeholder ground.
+ *
+ * @param tier   1 or 2 (0, unique, shares tier 1's back)
+ * @param layout web/card/layout.json, through inset()
+ */
+export function renderBack(tier, layout) {
+  const t = tierOf(tier);
+  const n = keepCost(tier);
+  const [W, H] = layout.bleed_mm;
+  const [x0, y0, x1, y1] = layout.common.insight;
+  const w = x1 - x0;
+  const h = y1 - y0;
+  const gap = 1.5;
+  const left = (W - (n * w + (n - 1) * gap)) / 2;
+  const top = H * 0.7;
+  const hexes = Array.from({ length: n }, (_, i) => insight({ insight: 1, tier: t }, [left + i * (w + gap), top, left + i * (w + gap) + w, top + h])).join('');
+  return `<article class="card back tier-${t}" style="--strip:${t >= 2 ? '#b08a2e' : '#5b6470'}">
+  <div class="back-title" data-safe>AI Complete</div>
+  <div class="back-tier" data-safe>Tier ${t}</div>
+  ${hexes}
+  <div class="back-keep" style="top:${(top + h + 1).toFixed(2)}mm" data-safe>Keep ${n}</div>
+</article>`;
+}
+
 /**
  * @param card     content: name, kind, cost, insight, needs, replaces, tags, and
  *                 the generated face (faces.json): top and top_text above the art
