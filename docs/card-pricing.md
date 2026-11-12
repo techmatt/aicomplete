@@ -15,7 +15,7 @@ a rate moved there moves the agents' read of every card that prints it. Change a
 Two other places hold rates, and neither is a price:
 
 - **The search's weights** (`Weights` in `crates/aic-sim/src/agents/eval.rs`) are points tuned against win rate, not
-  credits. Where one shadows a table row (held energy `energy` 0.8, `antimatter` 2, `liberated` and
+  credits. Where one shadows a table row (held energy `energy` 0.8, `antimatter` 5 (r88), `liberated` and
   `liberate_progress`, `station_flip`), the gap is deliberate until a screen moves it: held energy below the table's
   price is on purpose (100; the probes pricing them at the table are retired). A table edit does not
   move them; say in the write-up when a price and its weight part further.
@@ -128,8 +128,9 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
 
 Measured or found against play; each is still the table's number until a pass moves it.
 
-- **Antimatter 7:** the heuristic holds antimatter at 2 points, about 3 credits; what antimatter
-  buys is the ultimates' 1-a-card gate, not 7 credits of anything.
+- **Antimatter 7:** the heuristic holds antimatter at 5 points, about 8 credits (r88, 200; 2 before): since r88 it buys
+  Annihilate (2 a use, every board's power: a hex cleared and 3 Sway, 20-28 at the table), as well as the ultimates'
+  1-a-card gate.
 - **Troop removal 11** (7 each in one country):
   the heuristic counts a troop at 12 points, about 20 credits. A count prints "up to": the ledger and the agents count what one removes in play (`values.json` `troops_removed`, 102; Kinetic Interdiction's 6 about 3.6).
 - **The recipe nets every card about its keep + 1** over its costs at the table, so the table alone can't rank cards for

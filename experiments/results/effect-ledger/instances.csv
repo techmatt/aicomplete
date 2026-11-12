@@ -15,6 +15,9 @@ air_gap,damage ambassadors [play],play,ambassadors=3,3,6.6,2.2,2.39,0.8
 amnesty_decree,clear_city [play],play,max=4,4.0,8.0,2.0,7.06,1.76
 amnesty_decree,gain_ambassadors [play],play,count=2,2.0,8.0,4.0,7.06,3.53
 amnesty_decree,tags [card],card,diplomacy,1.0,1.0,1.0,0.88,0.88
+antiproton_foundry,gain antimatter [play],play,"resource=antimatter, amount=1",1.0,7.0,7.0,4.96,4.96
+antiproton_foundry,gain antimatter [action],action,"resource=antimatter, amount=2; pays 1 chips 1 energy",2.0,9.62,4.81,6.83,3.41
+antiproton_foundry,tags [card],card,industry,1.0,1.0,1.0,0.71,0.71
 antitrust_action,jam typed [play],play,"amount=5, source=industry",5.0,3.5,0.7,2.33,0.47
 antitrust_action,gain_per_tag chips [play],play,"resource=chips, tag=industry, per=4",0.25,6.0,24.0,4.0,16.0
 antitrust_action,tags [card],card,industry,1.0,1.0,1.0,0.67,0.67
@@ -86,6 +89,8 @@ counterinsurgency_campaign,remove_ambassadors_country [play],play,"max=3, reach=
 counterinsurgency_campaign,production credits [play],play,"resource=credits, amount=2",2.0,8.0,4.0,8.0,4.0
 counterinsurgency_campaign,tags [card],card,security,1.0,1.0,1.0,1.0,1.0
 cryo_compute_burn,gain_per_tag insight [play],play,"resource=insight, tag=science, per=1",1.0,12.5,12.5,6.5,6.5
+cryo_sample_vault,income research_cubes [passive],passive,"resource=research_cubes, amount=1",1.0,12.0,12.0,8.77,8.77
+cryo_sample_vault,tags [card],card,science,1.0,1.0,1.0,0.73,0.73
 cryptojacking_campaign,production credits [play],play,"resource=credits, amount=7",7.0,28.0,4.0,29.93,4.28
 cryptojacking_campaign,tags [card],card,cyber,1.0,1.0,1.0,1.07,1.07
 darknet_exchange,draw [play],play,count=2,2.0,8.0,4.0,6.44,3.22
@@ -152,6 +157,9 @@ fact_check_network,tags [card],card,diplomacy,1.0,1.0,1.0,0.48,0.48
 faraday_yard,production energy [play],play,"resource=energy, amount=1",1.0,14.4,14.4,10.13,10.13
 faraday_yard,harden [play],play,count=3,3.0,4.5,1.5,3.17,1.06
 faraday_yard,tags [card],card,power,1.0,1.0,1.0,0.7,0.7
+field_assay_team,damage ambassadors [action],action,ambassadors=2; pays 1 research_cubes,2,3.92,1.96,3.05,1.53
+field_assay_team,tags [card],card,science,1.0,1.0,1.0,0.78,0.78
+field_assay_team,override [card],card,,1.0,6,6.0,4.67,4.67
 field_grant,project_cube [play],play,"count=3, station=True",3.0,18.0,6.0,7.58,2.53
 field_grant,tags [card],card,science,1.0,1.0,1.0,0.42,0.42
 field_sensor_grid,clear_markers [play],play,count=3,3.0,21.0,7.0,6.79,2.26
@@ -323,6 +331,9 @@ peacekeeping_mission,liberate troops [play],play,troops=2,1.0,56.0,56.0,45.0,45.
 peaker_turbines,production energy [play],play,"resource=energy, amount=1",1.0,14.4,14.4,9.93,9.93
 peaker_turbines,production chips [play],play,"resource=chips, amount=1",1.0,16.0,16.0,11.03,11.03
 peaker_turbines,tags [card],card,power industry,2.0,1.5,0.75,1.03,0.52
+penning_trap_array,gain antimatter [play],play,"resource=antimatter, amount=1",1.0,7.0,7.0,4.52,4.52
+penning_trap_array,gain antimatter [action],action,"resource=antimatter, amount=2; pays 1 research_cubes 1 energy",2.0,11.38,5.69,7.34,3.67
+penning_trap_array,tags [card],card,science,1.0,1.0,1.0,0.65,0.65
 planetary_referendum,sway unity [play],play,"side=unity, amount=8",8.0,32.0,4.0,19.0,2.38
 plant_overdrive,gain_per_tag energy [play],play,"resource=energy, tag=industry, per=1",1.0,22.5,22.5,9.0,9.0
 popular_uprising,"add_tokens followers [action, unused branch]","action, unused branch","kind=followers, amount=1, here=True",1.0,0.0,0.0,0.0,0.0

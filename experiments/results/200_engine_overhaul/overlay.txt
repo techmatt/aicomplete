@@ -1,0 +1,17 @@
+# 200 (r88): the antimatter engines. Rerun: python scripts/cards/apply_overlay.py experiments/results/200_engine_overhaul/overlay.txt
+# Two tier-2 plants, each fed by its board's own component: research cubes (the Researcher's stations) or chips (the
+# Builder's Mint and factories), each with an energy, into 2 antimatter once a round (the Action); 1 antimatter when built.
+cards.penning_trap_array={"name": "Penning Trap Array", "tier": 2, "kind": "building", "cost": 10, "insight": 1, "needs": [["science", 1]], "tags": ["science"], "effects": [{"op": "gain", "resource": "antimatter", "amount": 1}], "ability": {"cost": [["research_cubes", 1], ["energy", 1]], "effects": [{"op": "gain", "resource": "antimatter", "amount": 2}]}}
+cards.antiproton_foundry={"name": "Antiproton Foundry", "tier": 2, "kind": "building", "cost": 10, "insight": 1, "needs": [["industry", 1]], "tags": ["industry"], "effects": [{"op": "gain", "resource": "antimatter", "amount": 1}], "ability": {"cost": [["chips", 1], ["energy", 1]], "effects": [{"op": "gain", "resource": "antimatter", "amount": 2}]}}
+# Two tier-1 cube engines (Science): a source, 1 research cube a round, and a sink that turns a cube into the purge
+# (remove 2 agents in one hex in reach), once a round.
+cards.cryo_sample_vault={"name": "Cryo Sample Vault", "tier": 1, "kind": "building", "cost": 7, "insight": 1, "tags": ["science"], "passives": [{"op": "income", "resource": "research_cubes", "amount": 1}]}
+cards.field_assay_team={"name": "Field Assay Team", "tier": 1, "kind": "building", "cost": 6, "insight": 1, "tags": ["science"], "ability": {"cost": [["research_cubes", 1]], "effects": [{"op": "damage", "ambassadors": 2}]}}
+# Horizon's megaproject converter (the megaproject chain): 1 research cube and 1 energy for 2 antimatter, once a round
+# (was 1 cube and 2 energy for 1, a loss at the table: give 12, get 7).
+corps.horizon.project.converter.cost=[["research_cubes", 1], ["energy", 1]]
+corps.horizon.project.converter.effects=[{"op": "gain", "resource": "antimatter", "amount": 2}]
+# Biomia's cube converter: 1 research cube for 1 Sway to Unity (was 2 for 1, a loss at the table: give 6, get 4).
+corps.biomia.project.converter.cost=[["research_cubes", 1]]
+corps.biomia.project.text=At completion each player cube pays 1 Sway to Unity and 1 drawn card, each adversary cube 1 Sway to Discord. Afterward, once a round, with a city here in your reach: 1 research cube for 1 Sway to Unity; and, once a round, 2 chips for 2 Sway to Unity and 1 drawn card. An adversary cube made here afterward is lost.
+corps.horizon.project.text=At completion each player cube pays 3 energy and 3 credits, each adversary cube 1 Sway to Discord. Afterward, once a round, with a city here in your reach: 1 research cube and 1 energy for 2 antimatter; and, once a round, 2 chips for 3 energy. An adversary cube made here afterward is lost.

@@ -1,0 +1,41 @@
+{
+  "name": "s200-10",
+  "note": "200 screen 10 (information, not adopted): the antimatter action at 2 Discord (spent fresh seeds 44767-44910)",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_amd2",
+      "set": [
+        "alignment.antimatter_discord=2"
+      ]
+    },
+    {
+      "name": "br_amd2",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.antimatter_discord=2"
+      ]
+    },
+    {
+      "name": "pr_amd2",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.antimatter_discord=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 144,
+  "records": 0
+}

@@ -388,14 +388,8 @@ fn the_round_cap_is_the_deck_and_higher_difficulty_shortens_it() {
         let (_, g) = lab_with(&[], &[&arg]);
         g.pile(DECK).len() + g.pile(NEXT).len()
     };
-    // 150: d3 removes two stage-II cards (`stage2_removed` 2). 196: d0 adds two (`stage_extra` 2 at d0), stage I
-    // first: 5 stage-I cards, then 5 stage-II.
-    assert_eq!((cap(0), cap(1), cap(2), cap(3), cap(4)), (13, 11, 11, 9, 9));
-    let (_, g) = lab_with(&[], &["adversary.difficulty=0"]);
-    let stage = |id: &str| if id.starts_with("mil_s1_") { 1 } else if id.starts_with("mil_s2_") { 2 } else { 3 };
-    let dealt: Vec<u8> = g.pile(NEXT).iter().chain(g.pile(DECK).iter()).map(|id| stage(id)).collect();
-    assert_eq!(dealt.iter().filter(|&&s| s == 1).count(), 5, "{dealt:?}");
-    assert_eq!(dealt.iter().filter(|&&s| s == 2).count(), 5, "{dealt:?}");
+    // 150: d3 removes two stage-II cards (`stage2_removed` 2). 200: d0 deals as d1 (196's `stage_extra` is gone).
+    assert_eq!((cap(0), cap(1), cap(2), cap(3), cap(4)), (11, 11, 11, 9, 9));
 }
 
 #[test]

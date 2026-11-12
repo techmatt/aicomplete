@@ -182,6 +182,10 @@ macro_rules! forced_table {
             (hoard_insight: usize, true, 0.0, "fixed policy (075): a seat with Patience plays and keeps cards only every n-th round (0: off)")
             /// Fixed policy (075): no converter, and no conversion on a power menu.
             (never_convert: bool, true, 0.0, "fixed policy (075): no converter and no power that only converts a resource")
+            /// Ablation (200): never take an action that spends this resource (1 chips, 2 research cubes,
+            /// 3 antimatter): a card whose cost or Action uses it, a converter, a power, a counter. Its sources stay.
+            /// Read by applying each action to a copy of the state, so it costs a game's speed.
+            (no_spend: usize, true, 0.0, "ablation (200): never take an action that spends this resource: 1 chips, 2 research cubes, 3 antimatter (sources stay)")
             /// 082: the keep plan values cards by the value table (0: printed cost
             /// plus 1, the niche jobs and capstone jobs, as before 082).
             (plan_table: bool, false, 1.0, "keep plan values cards by the value table (0: by printed cost, as before 082)")
@@ -542,6 +546,24 @@ impl Policy {
         set
     }
 
+    /// 200 (`no_spend`): whether `a` spends the resource the ablation bans: applied to a copy, the acting seat
+    /// holds less of it. A pass never does; an action the rules refuse is left to them.
+    fn spends_banned(&self, rules: &Rules, g: &GameState, a: &Action) -> bool {
+        let r = match self.forced.no_spend {
+            1 => Resource::Chips,
+            2 => Resource::ResearchCubes,
+            3 => Resource::Antimatter,
+            _ => return false,
+        };
+        if matches!(a, Action::Pass { .. }) {
+            return false;
+        }
+        let s = a.seat() as usize;
+        let before = g.resource(s, r);
+        let mut h = g.clone();
+        rules.apply_mut(&mut h, a, None).is_ok() && h.resource(s, r) < before
+    }
+
     /// Whether `a` is an action the forced behavior rules out.
     fn ruled_out(&self, world: &World, g: &GameState, a: &Action) -> bool {
         let f = &self.forced;
@@ -827,7 +849,7 @@ impl Agent for Policy {
             return self.inner.choose(rules, g, legal);
         }
         let keep: Vec<usize> = (0..legal.len())
-            .filter(|&i| !self.ruled_out(&world, g, &legal[i]))
+            .filter(|&i| !self.ruled_out(&world, g, &legal[i]) && !self.spends_banned(rules, g, &legal[i]))
             .collect();
         if keep.is_empty() || keep.len() == legal.len() {
             return self.inner.choose(rules, g, legal);

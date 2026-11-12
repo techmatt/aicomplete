@@ -128,7 +128,7 @@ prints its lines in the Card and Corrupt beats' order (`check.py` refuses anothe
 <!-- generated: round_cap -->
 | Difficulty | Stage I cards | Stage II | Stage III | Stage II from round | Round cap |
 |---|---|---|---|---|---|
-| 0 | 5 | 5 | 3 | 6 | 13 |
+| 0 | 4 | 4 | 3 | 5 | 11 |
 | 1 | 4 | 4 | 3 | 5 | 11 |
 | 2 | 4 | 4 | 3 | 5 | 11 |
 | 3 | 4 | 2 | 3 | 5 | 9 |
@@ -172,7 +172,7 @@ it makes ([alignment.md](alignment.md)): a plain loss (Matt, 2026-11-08).
 <!-- generated: difficulty -->
 | Level | Adds | Tunable |
 |---|---|---|
-| 0 | Base rules; the incomes and the event cards added (stage I first), an entry a level | `compute_income` 1, 4, 17, 22, 24, `ambassador_income` 0, 2, 2, 2, 3, `stage_extra` 2, 0, 0, 0, 0 |
+| 0 | Base rules; the incomes, an entry a level | `compute_income` 1, 4, 9, 28, 30, `ambassador_income` 0, 2, 3, 3, 3 |
 | 1 | City, station, factory corrupt with fewer agents (from `corrupt_cut_at`); counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`) | `corrupt_cut` 1, 1, 1, 0, `corrupt_cut_at` 1, `counter_bonus_all` 1, `counter_bonus_credits` 4, `counter_bonus` 0, `counter_bonus_at` 1 |
 | 2 | Counters cost more again (from `counter_more_at`); the adversary board's difficulty line (from `board_difficulty_at`) | `counter_more_all` 1, `counter_more_credits` 0, `counter_more_at` 2, `board_difficulty_at` 2 |
 | 3 | Stage-II cards removed, stage-I cards added back | `stage2_removed` 2, `stage1_added` 0 |

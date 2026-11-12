@@ -5200,5 +5200,134 @@
    }
   ],
   "draft": true
+ },
+ {
+  "id": "penning_trap_array",
+  "name": "Penning Trap Array",
+  "tier": 2,
+  "kind": "building",
+  "cost": 10,
+  "insight": 1,
+  "needs": [
+   [
+    "science",
+    1
+   ]
+  ],
+  "tags": [
+   "science"
+  ],
+  "effects": [
+   {
+    "op": "gain",
+    "resource": "antimatter",
+    "amount": 1
+   }
+  ],
+  "ability": {
+   "cost": [
+    [
+     "research_cubes",
+     1
+    ],
+    [
+     "energy",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "gain",
+     "resource": "antimatter",
+     "amount": 2
+    }
+   ]
+  }
+ },
+ {
+  "id": "antiproton_foundry",
+  "name": "Antiproton Foundry",
+  "tier": 2,
+  "kind": "building",
+  "cost": 10,
+  "insight": 1,
+  "needs": [
+   [
+    "industry",
+    1
+   ]
+  ],
+  "tags": [
+   "industry"
+  ],
+  "effects": [
+   {
+    "op": "gain",
+    "resource": "antimatter",
+    "amount": 1
+   }
+  ],
+  "ability": {
+   "cost": [
+    [
+     "chips",
+     1
+    ],
+    [
+     "energy",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "gain",
+     "resource": "antimatter",
+     "amount": 2
+    }
+   ]
+  }
+ },
+ {
+  "id": "cryo_sample_vault",
+  "name": "Cryo Sample Vault",
+  "tier": 1,
+  "kind": "building",
+  "cost": 7,
+  "insight": 1,
+  "tags": [
+   "science"
+  ],
+  "passives": [
+   {
+    "op": "income",
+    "resource": "research_cubes",
+    "amount": 1
+   }
+  ]
+ },
+ {
+  "id": "field_assay_team",
+  "name": "Field Assay Team",
+  "tier": 1,
+  "kind": "building",
+  "cost": 6,
+  "insight": 1,
+  "tags": [
+   "science"
+  ],
+  "ability": {
+   "cost": [
+    [
+     "research_cubes",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "damage",
+     "ambassadors": 2
+    }
+   ]
+  }
  }
 ]

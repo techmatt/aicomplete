@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 87. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 88. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -58,7 +58,7 @@ Everyone wins or loses together.
   - the Discord deck is empty when Discord needs a card. **The Discord deck is the game's clock**: 6 cards, never
     reshuffled (§12);
   - any player has no nodes left on the map;
-  - the adversary's event deck runs out: 13 rounds at most at level 0, 11 at levels 1-2, 9 at the hardest levels.
+  - the adversary's event deck runs out: 11 rounds at most at levels 0-2, 9 at the hardest levels.
 
 **You see the adversary's next move.** Next round's adversary card is face up all round, and the agents waiting to
 land are in open view. (The threat, Unity and Discord decks stay hidden.)
@@ -155,8 +155,8 @@ rules/README.md (Terms); content/map.json; crates/aic-core/src/map.rs, modules/c
    No agents or troops start on the map.
 3. **The adversary:**
    - its agent supply is 24 per country;
-   - build the **event deck**: deal the number of stage I, II and III cards your level asks for (§21; level 0:
-     5, 5 and 3), shuffle each stage on its own, and stack them with stage I on top. Turn the top card face up;
+   - build the **event deck**: deal the number of stage I, II and III cards your level asks for (§21; levels 0-2:
+     4, 4 and 3), shuffle each stage on its own, and stack them with stage I on top. Turn the top card face up;
    - put one round's **agent income** into each country's **pool** beside the map (1 a country at level 0);
    - shuffle the project deck and fill the adversary board's project slots (§17).
 4. **Shuffle** the Unity deck, the Discord deck, the two threat decks and the two player decks. The Unity and Discord
@@ -240,8 +240,8 @@ Nothing has a holding limit, and nothing caps your income.
 | **Energy** | yes | income, your cities, neutral cities (bought), cards | placing nodes, powers, cards, building Actions, threats |
 | **Insight** | **no** | set each round (below) | keeping and playing cards, threats |
 | **Chips** | yes | your factories, cards, Builder powers | buildings, research stations, Procure, chip converters, threats |
-| **Antimatter** | yes | the antimatter action, cards, Horizon's converter | tier-2 cards |
-| **Research cubes** | yes | your stations, once their megaproject is complete (§9) | 1 insight each, converters, Peer Review, threats |
+| **Antimatter** | yes | the antimatter plants (Penning Trap Array, Antiproton Foundry, Positron Storage Ring), Horizon's converter, two capstones, the antimatter action, cards | **Annihilate** (every board, §20), tier-2 ultimates |
+| **Research cubes** | yes | your stations, once their megaproject is complete (§9); Cryo Sample Vault; Open Archive | 1 insight each, converters, Penning Trap Array, Field Assay Team, Peer Review, threats |
 | **Ambassadors** | yes (your supply) | 1 at the start, cards, 20 credits | claiming, liberating, Remove agents, Envoy, threats |
 | **Dispatches** | **no** | your board and track spaces, each round | the Dispatch action, 1 each |
 
@@ -584,10 +584,10 @@ that country in reach** (any city, corrupted ones too) may use the converter, **
 
 | Megacorp (megaproject) | Payout, each of your cubes | Converter | Chip converter |
 |---|---|---|---|
-| Horizon (Tidal Grid) | 3 energy, 3 credits | 1 research cube + 2 energy → 1 antimatter | 2 chips → 3 energy |
+| Horizon (Tidal Grid) | 3 energy, 3 credits | 1 research cube + 1 energy → 2 antimatter | 2 chips → 3 energy |
 | Cintamani (Polar Compute Array) | draw 1 card, 5 credits | 1 research cube → 2 insight | 2 chips → draw 3 |
 | Onyx (Mountain Fusion Works) | 2 chips, 3 credits | 1 research cube → 1 chip | none |
-| Biomia (Delta Seawall) | 1 Unity, draw 1 card | 2 research cubes → 1 Unity | 2 chips → 2 Unity, draw 1 |
+| Biomia (Delta Seawall) | 1 Unity, draw 1 card | 1 research cube → 1 Unity | 2 chips → 2 Unity, draw 1 |
 
 *Sources: rules/economy.md (standard actions, Cities' energy), rules/ambassadors.md (Claiming, Liberating, Every
 contact, Remove agents), rules/board.md (Converters), rules/alignment.md (The antimatter action);
@@ -845,7 +845,7 @@ Everyone loses at once if:
 
 - a Discord tip finds the Discord deck empty;
 - any player has no nodes on the map;
-- the Card beat finds no card to turn up (the **round cap**: 13 rounds at level 0, 11 at levels 1-2, 9 at levels
+- the Card beat finds no card to turn up (the **round cap**: 11 rounds at levels 0-2, 9 at levels
   3-4). The round after the cap still opens with its Sway step, so a Discord tip can lose the game there first; then, with no
   card left, you lose.
 
@@ -1003,13 +1003,15 @@ Each power can be used once a round, in the action phase. A tag in a cost means 
 | Protector | **Accord** (1 Diplomacy: a node) | **Stand Down** (1 Security: 3 credits) | **Debrief** (1 Diplomacy: draw 2) | **Recovery** (1 Security: clear a marker in reach, +2 Unity), **Shelter** (1 Security, 1 energy: in any one country, no node or facility can be destroyed from now to cleanup, §13), **Bulwark** (1 energy: harden a facility in reach), **Patrol** (1 energy: push up to 3 agents or adversary troops from a hex in reach) |
 | Researcher | **Peer Review** (3 research cubes: a node) | **Grant** (3 credits: 1 cube in your color on a megaproject that isn't complete), **Synthesis** (discard a card from your hand: 2 insight) | **Fieldwork** (1 energy: draw 3) | **Field Station** (1 Industry: a research station without the chips, where Build a research station could go), **Audit** (1 Cyber: remove 3 compute from a project), **Particle Run** (1 Power, 1 energy: 1 antimatter) |
 
-Every board also has **Expand** (1 energy: a node). Every placement also pays the track space's energy (§5).
+Every board also has **Expand** (1 energy: a node) and **Annihilate** (2 antimatter: remove every agent and troop in
+one hex in reach, and sway 3 toward Unity): antimatter is what clears a big stack. Every placement also pays the track
+space's energy (§5).
 
 | Board | Economy track capstone | Card-play track capstone |
 |---|---|---|
 | Builder | **Full Capacity**: 1 chip each round per 4 Industry tags on your cards | **Master Plan**: your buildings cost 2 credits less |
-| Protector | **Sanctuary**: corruption never destroys your nodes | **Aegis Doctrine**: Shelter on your own pieces once a round: the first time each round one of your nodes or facilities would be destroyed, it isn't (automatic, spending nothing) |
-| Researcher | **Open Archive**: 1 research cube each round | **Open Science**: each round in the income step, give 2 insight from the supply in all to other players, split as you like; it arrives with their insight next round |
+| Protector | **Sanctuary**: corruption never destroys your nodes; 1 antimatter each round | **Aegis Doctrine**: Shelter on your own pieces once a round: the first time each round one of your nodes or facilities would be destroyed, it isn't (automatic, spending nothing) |
+| Researcher | **Open Archive**: 1 research cube and 1 antimatter each round | **Open Science**: each round in the income step, give 2 insight from the supply in all to other players, split as you like; it arrives with their insight next round |
 
 *Sources: rules/ai-powers.md, rules/ai-boards.md; content/ais.json; crates/aic-core/src/modules/ai.rs.*
 
@@ -1021,22 +1023,22 @@ Each row is the whole level. Your own costs (claim, liberate, cards, actions) ne
 
 | Level | Corrupt numbers (city / station / factory / land / node) | Threat items | Muster | Each unpaid threat | Event cards (I / II / III) | Rounds | Compute income | Agent income a country (with Garrisons) | Other |
 |---|---|---|---|---|---|---|---|---|---|
-| 0 | 4 / 3 / 3 / 3 / 2 | as printed | as printed | — | 5 / 5 / 3 | 13 | 1 | 1 | — |
+| 0 | 4 / 3 / 3 / 3 / 2 | as printed | as printed | — | 4 / 4 / 3 | 11 | 1 | 1 | — |
 | 1 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +1 | as printed | — | 4 / 4 / 3 | 11 | 4 | 3 | — |
-| 2 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | +1 troop | +4 compute | 4 / 4 / 3 | 11 | 17 | 3 | — |
-| 3 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 troop | +4 compute | 4 / 2 / 3 | 9 | 22 | 3 | — |
-| 4 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 troop | +4 compute | 3 / 2 / 4 | 9 | 24 | 4 | the last stage-I card deals tier-2 threats |
+| 2 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | +1 troop | +4 compute | 4 / 4 / 3 | 11 | 9 | 4 | — |
+| 3 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 troop | +4 compute | 4 / 2 / 3 | 9 | 28 | 4 | — |
+| 4 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 troop | +4 compute | 3 / 2 / 4 | 9 | 30 | 4 | the last stage-I card deals tier-2 threats |
 
 - **Threat items:** each resource item on a threat costs that much more; a tag item ("2 Security") never changes.
 - **Muster:** every Muster (an event card's, the Protector's) lands 1 more troop in each country it lands in.
 - **Each unpaid threat:** a threat that takes effect unpaid also gives the adversary 4 compute, at its next compute
   step (§17). A threat that only waits gives none.
 
-Both incomes climb with the level (never down). Level 0 deals two more event cards (a longer game to learn in).
+Both incomes climb with the level (never down). Level 0 deals the same event deck as level 1.
 Level 4 is level 3 with a stage-I card swapped for a stage-III card, tier-2 threats a card sooner, and higher incomes.
 
 *Sources: rules/adversary.md (Difficulty, The event deck), rules/threats.md (Countering); configs/baseline.json
-`adversary` (`compute_income`, `ambassador_income`, `stage_extra`, `counter_bonus_*`, `counter_more_*`); content/adversary.json
+`adversary` (`compute_income`, `ambassador_income`, `counter_bonus_*`, `counter_more_*`); content/adversary.json
 (Garrisons); crates/aic-core/src/modules/adversary/, modules/threats/counter.rs.*
 
 ---

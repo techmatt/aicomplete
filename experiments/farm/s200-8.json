@@ -1,0 +1,114 @@
+{
+  "name": "s200-8",
+  "note": "200 screen 8 (calibration): d1-d2 dials on the spent fresh seeds 44767-44910",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_d1c2",
+      "set": [
+        "adversary.compute_income=1,2,17,28,30"
+      ]
+    },
+    {
+      "name": "br_d1c2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,2,17,28,30"
+      ]
+    },
+    {
+      "name": "pr_d1c2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,2,17,28,30"
+      ]
+    },
+    {
+      "name": "bp_d1a1",
+      "set": [
+        "adversary.ambassador_income=0,1,3,3,3"
+      ]
+    },
+    {
+      "name": "br_d1a1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,1,3,3,3"
+      ]
+    },
+    {
+      "name": "pr_d1a1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,1,3,3,3"
+      ]
+    },
+    {
+      "name": "bp_d2c13",
+      "set": [
+        "adversary.compute_income=1,4,13,28,30"
+      ]
+    },
+    {
+      "name": "br_d2c13",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,13,28,30"
+      ]
+    },
+    {
+      "name": "pr_d2c13",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,13,28,30"
+      ]
+    },
+    {
+      "name": "bp_d2c9",
+      "set": [
+        "adversary.compute_income=1,4,9,28,30"
+      ]
+    },
+    {
+      "name": "br_d2c9",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,9,28,30"
+      ]
+    },
+    {
+      "name": "pr_d2c9",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,9,28,30"
+      ]
+    }
+  ],
+  "difficulties": [
+    1,
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 144,
+  "records": 0
+}

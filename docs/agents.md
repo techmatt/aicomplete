@@ -43,7 +43,9 @@ table's rates, `plan_table=0`), and keeps each drafted card, best ratio first, o
 is worth more with it. A play waiting a round is worth 15% less; `needs` may be met by cards
 planned earlier, or short now by at most `plan_short` tags; a building over one of the seat's
 adds only what it beats the weakest by (`plan_cover`). Each switch's default and rule, and each
-**dominance check** (principles.md), is a row of `forced_table!`.
+**dominance check** (principles.md), is a row of `forced_table!`. **Ablation (200):** `no_spend` 1 / 2 / 3 bars
+every action that leaves the seat with fewer chips / research cubes / antimatter (each legal action applied to a copy,
+so slow); sources stay. The eval holds an antimatter at 5 points (r88; 2 before), as Annihilate spends 2 at once.
 
 **Agent behaviors** (`behavior_table!`, on for every agent; a dominance check's ban wins). **Move heuristics** (`agents/moves.rs`, 166, `move_rules`): push agents off the next
 Corrupt site onto empty land with no clean site next to it; gather (or push) agents onto a spare ambassador (no

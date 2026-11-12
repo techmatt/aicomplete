@@ -587,7 +587,9 @@ impl Default for Weights {
             program: 1.0,
             token: 0.5,
             energy: 0.8,
-            antimatter: 2.0,
+            // 200: 2 -> 5 (about 8 credits, values.json's 7): r88's Annihilate spends 2 at once, so a seat saves it;
+            // at 2 Annihilate fired a third as often (screen 1).
+            antimatter: 5.0,
             insight: 0.5,
             patience: 1.0,
             wall: 3.0,

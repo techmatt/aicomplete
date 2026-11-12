@@ -57,7 +57,6 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("stage_swap_at", 0, 5, "the difficulty level from which stage1_removed and stage3_added apply (142; 2 before)"),
     ParamSpec::int("stage2_removed", 0, 3, "difficulty 3+: stage-II cards removed (a shorter round cap)"),
     ParamSpec::int("stage1_added", 0, 3, "151: difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step)"),
-    ParamSpec::list("stage_extra", 0, 3, "196: event cards added at difficulty 0-4, an entry a level: stage I while it has cards left, then stage II (a longer round cap where the players are slowest)"),
     ParamSpec::int("extra_corrupted", 0, 3, "difficulty 4: more cities per country start corrupted"),
     ParamSpec::list("compute_income", 0, 30, "151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board)"),
     ParamSpec::list("ambassador_income", 0, 10, "151: the agent income a country a round (into each country's pool), at difficulty 0-4"),
@@ -247,16 +246,12 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
     // `stage_swap_at` (4) beside the extra threat a round (Matt, message 5982).
     let swap = difficulty >= b.int("stage_swap_at")?;
     let have = |s: usize| b.world.content.adversary.iter().filter(|c| c.stage as usize == s + 1).count() as i64;
-    let mut dealt = [
+    // 200 (r88): 196's `stage_extra` (two more event cards at d0) is gone: d0's band comes from the players' side.
+    let dealt = [
         (stage_cards[0] + if difficulty >= 3 { b.int("stage1_added")? } else { 0 } - if swap { b.int("stage1_removed")? } else { 0 }).max(0),
         (stage_cards[1] - if difficulty >= 3 { b.int("stage2_removed")? } else { 0 }).max(0),
         stage_cards[2] + if swap { b.int("stage3_added")? } else { 0 },
     ];
-    // 196: `stage_extra` cards added at this level, stage I while it has cards left, then stage II.
-    let extra = b.list("stage_extra")?.get(difficulty.max(0) as usize).copied().unwrap_or(0);
-    let to_one = extra.min((have(0) - dealt[0]).max(0));
-    dealt[0] += to_one;
-    dealt[1] += extra - to_one;
     // An empty deck loses before round 1's first decision (020: it was accepted).
     if dealt.iter().sum::<i64>() < 1 {
         return Err("stage_cards: deal at least one card (the deck is the game's clock)".into());

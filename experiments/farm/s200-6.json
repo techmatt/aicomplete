@@ -1,0 +1,134 @@
+{
+  "name": "s200-6",
+  "note": "200 screen 6 (calibration, r88 with Annihilate Sway 3): d2-d3 dials on dev seeds 36832-36927",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_c19",
+      "set": [
+        "adversary.compute_income=1,4,19,22,24"
+      ]
+    },
+    {
+      "name": "br_c19",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,19,22,24"
+      ]
+    },
+    {
+      "name": "pr_c19",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,19,22,24"
+      ]
+    },
+    {
+      "name": "bp_c21",
+      "set": [
+        "adversary.compute_income=1,4,21,22,24"
+      ]
+    },
+    {
+      "name": "br_c21",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,21,22,24"
+      ]
+    },
+    {
+      "name": "pr_c21",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,21,22,24"
+      ]
+    },
+    {
+      "name": "bp_c26",
+      "set": [
+        "adversary.compute_income=1,4,17,26,24"
+      ]
+    },
+    {
+      "name": "br_c26",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,17,26,24"
+      ]
+    },
+    {
+      "name": "pr_c26",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,17,26,24"
+      ]
+    },
+    {
+      "name": "bp_c30",
+      "set": [
+        "adversary.compute_income=1,4,17,30,24"
+      ]
+    },
+    {
+      "name": "br_c30",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,17,30,24"
+      ]
+    },
+    {
+      "name": "pr_c30",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,17,30,24"
+      ]
+    },
+    {
+      "name": "bp_a3",
+      "set": [
+        "adversary.ambassador_income=0,2,2,3,3"
+      ]
+    },
+    {
+      "name": "br_a3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,2,2,3,3"
+      ]
+    },
+    {
+      "name": "pr_a3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,2,2,3,3"
+      ]
+    }
+  ],
+  "difficulties": [
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 96,
+  "records": 0
+}

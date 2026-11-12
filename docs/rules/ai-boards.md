@@ -98,7 +98,7 @@ energy income; each second power is once a round; and every tag sacrifice perman
 | 4 | pay 1 energy: +3 credits, **Dispatch +1** | pay 1 energy: +3 credits, **Dispatch +1** | pay 1 energy: +3 credits, **Dispatch +1** |
 | 5 | pay 2 energy: +3 credits | pay 2 energy: +3 credits | pay 2 energy: +3 credits |
 | 6 | pay 3 energy: +3 credits, Power tag | pay 3 energy: +2 credits, Cyber tag | pay 3 energy: +3 credits, Power tag |
-| 7 | pay 5 energy: **Full Capacity** (capstone): 1 chip each round per 4 Industry tags on your cards. | pay 5 energy: **Sanctuary** (capstone): Corruption never destroys your Nodes. | pay 5 energy: **Open Archive** (capstone): Each round, 1 research cube onto your board. |
+| 7 | pay 5 energy: **Full Capacity** (capstone): 1 chip each round per 4 Industry tags on your cards. | pay 5 energy: **Sanctuary** (capstone): Corruption never destroys your Nodes. Each round, 1 antimatter. | pay 5 energy: **Open Archive** (capstone): Each round, 1 research cube and 1 antimatter onto your board. |
 <!-- /generated -->
 
 The **keep upgrade**: tier-2 keeps cost `keep_tier2_upgraded` instead of `keep_tier2` ([player-cards.md](player-cards.md)).
@@ -135,13 +135,12 @@ from a neutral city (Buy energy) costs `city_energy_credits` (4); credits → en
 cards and the cities' energy (once per city a round, a city's `corp_energy` a buy, none while an agent stands on it). **Energy
 counters** spend energy for good. **The Researcher's:** Patience with the cube converters (Cintamani's, a cube for 2
 insight, once a round since r75; everyone's standard action, a cube for 1, with no limit) is the intended engine:
-capped by how many stations make cubes (and Open Archive's 1 a round) and, for Cintamani's, by its once a round and
-a Cintamani city in reach. Bought cubes
-go only onto incomplete cards and are spent at completion, so credits never reach a converter. Patience banks all the
+capped by how many stations make cubes (and Open Archive's and Cryo Sample Vault's 1 a round) and, for Cintamani's, by its once a round and
+a Cintamani city in reach. **Antimatter (r88):** each source of 2 (a plant's Action, Horizon's converter) and
+Annihilate are once a round, so a seat clears at most one hex a round with it. Patience banks all the
 Researcher's unspent insight (r82: a gift too); only cards that print it pass insight, at their cost, and no standard
 action gives it. Open Science's insight goes only to other players; alone it is the Researcher's own, and Patience
-keeps it. Fieldwork's three
-cards are paid for again to keep in play (credits and insight); sold, they are 3 credits for 1 energy once a round.
+keeps it.
 Followers → ambassadors → alignment → city energy → node is capped by building count and the Followers each
 ambassador costs. Remove agents spends its ambassador and places nothing (r75), capped by the supply.
 **Dispatches** have no loop: a number a round, used up, gaining nothing held. Wall has no loop, but it takes

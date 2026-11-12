@@ -1,0 +1,63 @@
+{
+  "name": "s200-12",
+  "note": "200 screen 12: d1 between steps, a 10-point easing with counters dearer at level 1 (spent fresh seeds 44767-44910)",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_cc2cm1",
+      "set": [
+        "adversary.corrupt_cut_at=2",
+        "adversary.counter_more_at=1"
+      ]
+    },
+    {
+      "name": "br_cc2cm1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.corrupt_cut_at=2",
+        "adversary.counter_more_at=1"
+      ]
+    },
+    {
+      "name": "pr_cc2cm1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.corrupt_cut_at=2",
+        "adversary.counter_more_at=1"
+      ]
+    },
+    {
+      "name": "bp_a1cm1",
+      "set": [
+        "adversary.ambassador_income=0,1,3,3,3",
+        "adversary.counter_more_at=1"
+      ]
+    },
+    {
+      "name": "br_a1cm1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,1,3,3,3",
+        "adversary.counter_more_at=1"
+      ]
+    },
+    {
+      "name": "pr_a1cm1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,1,3,3,3",
+        "adversary.counter_more_at=1"
+      ]
+    }
+  ],
+  "difficulties": [
+    1
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 144,
+  "records": 0
+}

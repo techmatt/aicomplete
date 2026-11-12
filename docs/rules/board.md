@@ -67,10 +67,10 @@ megaproject is the corp's defining card.
 <!-- generated: corps -->
 | Corp | Megaproject | Cubes | At completion: player cube / adversary cube | Converter (as often as you can pay, unless marked) | Chip converter |
 |---|---|---|---|---|---|
-| Horizon (geothermal and tidal energy) | Tidal Grid | 8 | 3 energy, 3 credits / 1 Sway to Discord | 1 research cube + 2 energy → 1 antimatter (once a round) | 2 chips → 3 energy (once a round) |
+| Horizon (geothermal and tidal energy) | Tidal Grid | 8 | 3 energy, 3 credits / 1 Sway to Discord | 1 research cube + 1 energy → 2 antimatter (once a round) | 2 chips → 3 energy (once a round) |
 | Cintamani (AI and efficiency) | Polar Compute Array | 8 | 1 drawn card, 5 credits / 1 adversary compute | 1 research cube → 2 insight (once a round) | 2 chips → 3 drawn cards (once a round) |
 | Onyx (heavy industry, power plants and processors) | Mountain Fusion Works | 8 | 2 chips, 3 credits / 1 Sway to Discord | 1 research cube → 1 chip (once a round) | none |
-| Biomia (biopunk) | Delta Seawall | 8 | 1 Sway to Unity, 1 drawn card / 1 Sway to Discord | 2 research cubes → 1 Sway to Unity (once a round) | 2 chips → 2 Sway to Unity, 1 drawn card (once a round) |
+| Biomia (biopunk) | Delta Seawall | 8 | 1 Sway to Unity, 1 drawn card / 1 Sway to Discord | 1 research cube → 1 Sway to Unity (once a round) | 2 chips → 2 Sway to Unity, 1 drawn card (once a round) |
 <!-- /generated -->
 
 - **Stations** follow the one site model ([ambassadors.md](ambassadors.md)). In production a **neutral** one makes
@@ -111,7 +111,7 @@ megaproject is the corp's defining card.
   converter, a standard action with no limit: 1 cube for `cube_insight` insight ([economy.md](economy.md)). A
   converter is a reason to reach a city. Cubes
   reach a board from stations after completion, or 1 a round from the Researcher's Open Archive
-  capstone; no converter makes cubes, so none feeds another within a round.
+  capstone or a Cryo Sample Vault (r88); no converter makes cubes, so none feeds another within a round.
   Research cubes and converters are a resource every player reaches eventually, like
   antimatter. The Researcher's board ([ai-boards.md](ai-boards.md)) and several Science cards (cards.md) name them too.
 - **Bought and carded cubes.** The Researcher's Grant power (3 credits), Field Grant (in

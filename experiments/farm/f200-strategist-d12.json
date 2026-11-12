@@ -1,0 +1,34 @@
+{
+  "name": "f200-strategist-d12",
+  "note": "200: the d1-d2 confirm (final dials) on the next free seeds 44911+, against r87 native",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    1,
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 144,
+  "records": 0
+}

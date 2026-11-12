@@ -62,9 +62,10 @@ Protector + Researcher), no c3, an engine smoke read first, then the judge (the 
 the target is 45-85 a pair, aiming near 60-75 without chasing it; no gate and no pooled second set
 ([experiments.md](experiments.md), *The ballpark read*).
 
-**Per-level bands (157; Matt took the pick at 159).** The judge (the strategist) reads each level against a band: d0 90-100, d1 70-80, d2 55-65, d3 40-50 (`bench/ladder.py`'s default `--bands`). Current (196, r86, fresh seeds): 90.5 / 70.8 / 63.9 / 40.7, all four in, d0, d1 and d3 at their edges (196's
-write-up). Earlier ladders are in the recalibration write-ups (168, 177, 178, 185, 192); d0 resisted every income dial
-(177, 192) and met its band only with two more event cards at d0 (196's `stage_extra`).
+**Per-level bands (157; Matt took the pick at 159).** The judge (the strategist) reads each level against a band: d0 90-100, d1 70-80, d2 55-65, d3 40-50 (`bench/ladder.py`'s default `--bands`). Current (200, r88, fresh seeds): 93.8 / 69.9 / 64.6 / 45.1, d1 under by 0.1, between two integer agent-income
+steps (200's write-up). Earlier ladders are in the recalibration write-ups (168, 177, 178, 185, 192); d0 resisted every income dial
+(177, 192); 196 met it with two more event cards at d0, which 200 removed (Matt: engines over dials), so d0's band
+comes from the players' side.
 
 **Cities corrupted and liberated (Matt, 2026-11-03; measured from r34).** Cities corrupted and liberated per game are a
 measured target per difficulty: at easy levels a win may need no liberation at all (the adversary corrupts no new city);

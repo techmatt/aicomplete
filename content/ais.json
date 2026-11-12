@@ -226,6 +226,27 @@
       "count": 2
      }
     ]
+   },
+   {
+    "name": "Annihilate",
+    "tags": [],
+    "cost": [
+     [
+      "antimatter",
+      2
+     ]
+    ],
+    "text": "remove every agent and troop in one hex in reach; sway 3 toward Unity",
+    "effects": [
+     {
+      "op": "destroy_all"
+     },
+     {
+      "op": "sway",
+      "side": "unity",
+      "amount": 3
+     }
+    ]
    }
   ],
   "play_track": [
@@ -379,10 +400,15 @@
     "cost": 5,
     "capstone": {
      "name": "Sanctuary",
-     "text": "Corruption never destroys your Nodes.",
+     "text": "Corruption never destroys your Nodes. Each round, 1 antimatter.",
      "passives": [
       {
        "op": "corruption_shield"
+      },
+      {
+       "op": "income",
+       "resource": "antimatter",
+       "amount": 1
       }
      ]
     }
@@ -530,6 +556,27 @@
       ]
      }
     ]
+   },
+   {
+    "name": "Annihilate",
+    "tags": [],
+    "cost": [
+     [
+      "antimatter",
+      2
+     ]
+    ],
+    "text": "remove every agent and troop in one hex in reach; sway 3 toward Unity",
+    "effects": [
+     {
+      "op": "destroy_all"
+     },
+     {
+      "op": "sway",
+      "side": "unity",
+      "amount": 3
+     }
+    ]
    }
   ],
   "play_track": [
@@ -665,11 +712,16 @@
     "cost": 5,
     "capstone": {
      "name": "Open Archive",
-     "text": "Each round, 1 research cube onto your board.",
+     "text": "Each round, 1 research cube and 1 antimatter onto your board.",
      "passives": [
       {
        "op": "income",
        "resource": "research_cubes",
+       "amount": 1
+      },
+      {
+       "op": "income",
+       "resource": "antimatter",
        "amount": 1
       }
      ]
@@ -808,6 +860,27 @@
       "op": "discard_hand",
       "resource": "insight",
       "amount": 2
+     }
+    ]
+   },
+   {
+    "name": "Annihilate",
+    "tags": [],
+    "cost": [
+     [
+      "antimatter",
+      2
+     ]
+    ],
+    "text": "remove every agent and troop in one hex in reach; sway 3 toward Unity",
+    "effects": [
+     {
+      "op": "destroy_all"
+     },
+     {
+      "op": "sway",
+      "side": "unity",
+      "amount": 3
      }
     ]
    }

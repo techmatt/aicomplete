@@ -75,10 +75,9 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.stage_swap_at` | 4 | 0..5 | the difficulty level from which stage1_removed and stage3_added apply (142; 2 before) |
 | `adversary.stage2_removed` | 2 | 0..3 | difficulty 3+: stage-II cards removed (a shorter round cap) |
 | `adversary.stage1_added` | 0 | 0..3 | 151: difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step) |
-| `adversary.stage_extra` | 2, 0, 0, 0, 0 | 0..3 | 196: event cards added at difficulty 0-4, an entry a level: stage I while it has cards left, then stage II (a longer round cap where the players are slowest) |
 | `adversary.extra_corrupted` | 0 | 0..3 | difficulty 4: more cities per country start corrupted |
-| `adversary.compute_income` | 1, 4, 17, 22, 24 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
-| `adversary.ambassador_income` | 0, 2, 2, 2, 3 | 0..10 | 151: the agent income a country a round (into each country's pool), at difficulty 0-4 |
+| `adversary.compute_income` | 1, 4, 9, 28, 30 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
+| `adversary.ambassador_income` | 0, 2, 3, 3, 3 | 0..10 | 151: the agent income a country a round (into each country's pool), at difficulty 0-4 |
 | `adversary.tier2_early` | 1 | 0..3 | difficulty 4+: tier-2 threats start this many rounds sooner |
 | `adversary.discord_removed` | 0 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
 | `adversary.wall_troops` | 1 | 0..5 | build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop) |

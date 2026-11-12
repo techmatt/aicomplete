@@ -1,0 +1,118 @@
+{
+  "name": "s200-5",
+  "note": "200 screen 5: Annihilate sway 3, plants at 0 play insight (dev seeds 36832-36927)",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_ann3",
+      "set": [
+        "ais.builder.powers.8.effects.1.amount=3",
+        "ais.protector.powers.8.effects.1.amount=3",
+        "ais.researcher.powers.8.effects.1.amount=3"
+      ]
+    },
+    {
+      "name": "br_ann3",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.powers.8.effects.1.amount=3",
+        "ais.protector.powers.8.effects.1.amount=3",
+        "ais.researcher.powers.8.effects.1.amount=3"
+      ]
+    },
+    {
+      "name": "pr_ann3",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.powers.8.effects.1.amount=3",
+        "ais.protector.powers.8.effects.1.amount=3",
+        "ais.researcher.powers.8.effects.1.amount=3"
+      ]
+    },
+    {
+      "name": "bp_p0",
+      "set": [
+        "cards.penning_trap_array.insight=0",
+        "cards.antiproton_foundry.insight=0"
+      ]
+    },
+    {
+      "name": "br_p0",
+      "set": [
+        "ai.boards=0,2",
+        "cards.penning_trap_array.insight=0",
+        "cards.antiproton_foundry.insight=0"
+      ]
+    },
+    {
+      "name": "pr_p0",
+      "set": [
+        "ai.boards=1,2",
+        "cards.penning_trap_array.insight=0",
+        "cards.antiproton_foundry.insight=0"
+      ]
+    },
+    {
+      "name": "bp_ann3p0",
+      "set": [
+        "ais.builder.powers.8.effects.1.amount=3",
+        "ais.protector.powers.8.effects.1.amount=3",
+        "ais.researcher.powers.8.effects.1.amount=3",
+        "cards.penning_trap_array.insight=0",
+        "cards.antiproton_foundry.insight=0"
+      ]
+    },
+    {
+      "name": "br_ann3p0",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.powers.8.effects.1.amount=3",
+        "ais.protector.powers.8.effects.1.amount=3",
+        "ais.researcher.powers.8.effects.1.amount=3",
+        "cards.penning_trap_array.insight=0",
+        "cards.antiproton_foundry.insight=0"
+      ]
+    },
+    {
+      "name": "pr_ann3p0",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.powers.8.effects.1.amount=3",
+        "ais.protector.powers.8.effects.1.amount=3",
+        "ais.researcher.powers.8.effects.1.amount=3",
+        "cards.penning_trap_array.insight=0",
+        "cards.antiproton_foundry.insight=0"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 96,
+  "records": 0
+}

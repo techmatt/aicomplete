@@ -64,12 +64,6 @@ def stage_deals():
         if d >= 3:  # adversary.rs `build`'s literal 3, not a config key (182: deferred)
             s1, s2 = s1 + a["stage1_added"], s2 - a["stage2_removed"]
         s1, s2 = max(s1, 0), max(s2, 0)
-        # 196: `stage_extra` cards at this level go to stage I while it has cards left (PRINTED, checked against
-        # the deck below), then stage II (adversary/mod.rs `build`).
-        extra = (a.get("stage_extra") or [])[d:d + 1]
-        extra = extra[0] if extra else 0
-        to_one = min(extra, max(PRINTED[1] - s1, 0))
-        s1, s2 = s1 + to_one, s2 + extra - to_one
         out.append((d, (s1, s2, s3), a["extra_threats"] if d >= a["extra_threats_at"] else 0))
     return out
 

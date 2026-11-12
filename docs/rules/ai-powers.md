@@ -22,6 +22,7 @@ still help.
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
 | Builder | Focus | 2 credits | gain 1 insight |
 | Builder | Procure | 1 chip | draw 2 cards |
+| Builder | Annihilate | 2 antimatter | remove every agent and troop in one hex in reach; sway 3 toward Unity |
 | Protector | Bulwark | 1 energy | harden 1 facility in reach |
 | Protector | Expand | 1 energy | place 1 Node |
 | Protector | Accord | 1 Diplomacy | place 1 Node |
@@ -30,6 +31,7 @@ still help.
 | Protector | Shelter | 1 Security + 1 energy | in any country (no reach needed) this round, no Node or facility can be destroyed |
 | Protector | Debrief | 1 Diplomacy | draw 2 cards |
 | Protector | Patrol | 1 energy | push up to 3 Agents or Troops from a hex in reach, each to a hex next to it |
+| Protector | Annihilate | 2 antimatter | remove every agent and troop in one hex in reach; sway 3 toward Unity |
 | Researcher | Fieldwork | 1 energy | draw 3 cards |
 | Researcher | Expand | 1 energy | place 1 Node |
 | Researcher | Peer Review | 3 research cubes | place 1 Node |
@@ -38,12 +40,21 @@ still help.
 | Researcher | Audit | 1 Cyber | remove 3 compute from one adversary project |
 | Researcher | Particle Run | 1 Power + 1 energy | gain 1 antimatter |
 | Researcher | Synthesis | nothing | discard a card from your hand: gain 2 insight |
+| Researcher | Annihilate | 2 antimatter | remove every agent and troop in one hex in reach; sway 3 toward Unity |
 <!-- /generated -->
 
 **Sacrifice is late-game liquidation.** Once the cards needing a tag are played, its tags turn into engine rewards,
 each payoff priced to be worth the card: 1 chip (r83: worth 2 before), 2 energy, 3 credits, a marker with its Sway, 2 cards (Debrief, 108); a
 tag and an energy buy a building, a sheltered country or an antimatter (r35). **Card throughput (108):** the Builder's
 Procure turns a spare chip into 2 cards, as the Researcher's Fieldwork turns an energy into 3.
+
+**Annihilate (r88, every board): antimatter clears the big stacks** (Matt, 2026-11-12: antimatter must feel epic). 2
+antimatter, once a round: every agent and troop in one hex in reach comes off, and 3 Sway go to Unity. Give / get at
+`values.json`: 14 against a hex of 2 agents and a troop (16) and 3 Sway (12), 28; at the table's flat 8 a hex, 20. It is
+worth saving for: a hex's stack grows each round the adversary rallies there. The antimatter comes from the plants
+(Penning Trap Array, Antiproton Foundry, Positron Storage Ring), Horizon's converter, two capstones (Open Archive,
+Sanctuary), Particle Run and, painfully, the antimatter action ([economy.md](economy.md)). The printed tier-2
+ultimates (Nuclear Option, Kinetic Interdiction, Great Liberation, Singularity Exploit) still cost 1 each.
 
 ## Insight conversions (candidate, r41)
 

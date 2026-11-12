@@ -1,0 +1,37 @@
+{
+  "name": "s200-3w2",
+  "note": "200 screen 3: eval held antimatter (dev seeds 36800-36831)",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist:w.antimatter=2"
+  ],
+  "games": 32,
+  "records": 0
+}

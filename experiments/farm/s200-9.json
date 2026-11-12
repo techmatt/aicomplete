@@ -1,0 +1,63 @@
+{
+  "name": "s200-9",
+  "note": "200 screen 9: d1 agents 1 with compute 8 / 12 (spent fresh seeds 44767-44910)",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_a1c8",
+      "set": [
+        "adversary.ambassador_income=0,1,3,3,3",
+        "adversary.compute_income=1,8,9,28,30"
+      ]
+    },
+    {
+      "name": "br_a1c8",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,1,3,3,3",
+        "adversary.compute_income=1,8,9,28,30"
+      ]
+    },
+    {
+      "name": "pr_a1c8",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,1,3,3,3",
+        "adversary.compute_income=1,8,9,28,30"
+      ]
+    },
+    {
+      "name": "bp_a1c12",
+      "set": [
+        "adversary.ambassador_income=0,1,3,3,3",
+        "adversary.compute_income=1,12,12,28,30"
+      ]
+    },
+    {
+      "name": "br_a1c12",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,1,3,3,3",
+        "adversary.compute_income=1,12,12,28,30"
+      ]
+    },
+    {
+      "name": "pr_a1c12",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,1,3,3,3",
+        "adversary.compute_income=1,12,12,28,30"
+      ]
+    }
+  ],
+  "difficulties": [
+    1
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 144,
+  "records": 0
+}

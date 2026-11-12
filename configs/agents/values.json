@@ -206,6 +206,7 @@
   },
   "overrides": [
     {"card": "directed_energy_array", "credits": 11, "why": "130: the table prices an ambassador removed in reach at 2 (anchor 5) and energy at its full anchor 4.5, so 3 removals for 2 energy read as a loss (get 1.5 against give 10.5); at the anchors a use nets 6. +11 puts its table get at 1.2 x its give."},
-    {"card": "wafer_fab_line", "credits": 10, "why": "130: the table prices a drawn card at 4 (anchor 5) and a chip at 1.5 (anchor 3) and energy at its full anchor 4.5, so draw 2 and 2 chips for 2 energy reads 7.1 against give 14.5; at the anchors 21.1 against 20. +10 puts its table get at 1.2 x its give (131: at chips 2, about 1.4 x)."}
+    {"card": "wafer_fab_line", "credits": 10, "why": "130: the table prices a drawn card at 4 (anchor 5) and a chip at 1.5 (anchor 3) and energy at its full anchor 4.5, so draw 2 and 2 chips for 2 energy reads 7.1 against give 14.5; at the anchors 21.1 against 20. +10 puts its table get at 1.2 x its give (131: at chips 2, about 1.4 x)."},
+    {"card": "field_assay_team", "credits": 6, "why": "200: the table prices 2 agents removed in one hex at 5 (anchor 10) and a cube at 3 (anchor 6), so a use nets 2 at the table against 4 at the anchors, and the card reads 4.9 against its printed 8.5; +6 puts its table get at about 1.3 x its give."}
   ]
 }

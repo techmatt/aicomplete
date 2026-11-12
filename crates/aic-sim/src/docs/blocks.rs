@@ -397,10 +397,9 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
     // Each of `steps`' six dials (`corrupt_cut_at` .. `stage_swap_at`) sits at whatever level its `_at` value names.
     let mut rows: Vec<(String, Vec<&str>)> = vec![
         // The incomes are a list with an entry a level, not a step: every level reads its own entry.
-        // 196: so is `stage_extra` (event cards added at a level: stage I first, then stage II).
         (
-            "Base rules; the incomes and the event cards added (stage I first), an entry a level".into(),
-            vec!["adversary.compute_income", "adversary.ambassador_income", "adversary.stage_extra"],
+            "Base rules; the incomes, an entry a level".into(),
+            vec!["adversary.compute_income", "adversary.ambassador_income"],
         ),
         (String::new(), vec![]),
         (String::new(), vec![]),
@@ -612,9 +611,12 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
 /// Where Sway comes from, with the amounts.
 pub(super) fn sway_sources_block(r: &Rules) -> String {
     let t = |key: &str| tick(r, key);
+    // 200: Biomia's converter read from content (it was a typed string, stale after a content change).
+    let biomia = r.world().content.map.countries.iter().find(|p| p.name == "Biomia")
+        .map_or_else(|| "none".to_string(), |p| p.megaproject.converter.words());
     let rows: Vec<[String; 3]> = vec![
         ["Unity".to_string(), "removing an adversary troop".to_string(), t("alignment.troop")],
-        ["Unity".to_string(), "Biomia's converter".to_string(), "1 for 2 research cubes".to_string()],
+        ["Unity".to_string(), "Biomia's converter".to_string(), biomia],
         [
             "Unity".to_string(),
             "liberating an adversary city (ambassadors.md: a liberate card or the Liberate action)".to_string(),
@@ -642,6 +644,8 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
             "cards (Peace Conference, Coalition Charter, Open Assembly), Unity cards".to_string(),
             "card text".to_string(),
         ],
+        // 200: every board's antimatter power.
+        ["Unity".to_string(), "Annihilate (every board's power, 2 antimatter)".to_string(), "3".to_string()],
         [
             "Discord".to_string(),
             "energy diverted (a corrupted city) or darkened (an agent on an aligned city)".to_string(),

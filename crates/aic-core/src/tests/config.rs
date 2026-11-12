@@ -187,7 +187,6 @@ fn off_switches_and_degenerate_values() {
     // An empty adversary deck is rejected; override errors name the key and the modules.
     let mut c = baseline();
     c.apply_override("adversary.stage_cards=0,0,0").unwrap();
-    c.apply_override("adversary.stage_extra=0,0,0,0,0").unwrap();
     assert!(Rules::new(&c).err().is_some_and(|e| e.contains("stage_cards")));
     let e = baseline().apply_override("board.unit_cap=x").unwrap_err();
     assert!(e.contains("board.unit_cap"), "{e}");

@@ -104,6 +104,7 @@
       "allies_at_the_airfield": { "for": "rally_the_allies", "subject": "Several delegations' planes parked in a row on a sunny airfield apron, envoys in differently colored coats walking from each toward one big open hangar where a long table waits under warm orange lamps; no flags, logos, emblems or text." }
     },
     "industry": {
+      "antiproton_foundry_line": { "card": "antiproton_foundry", "subject": "A heavy industrial production line feeding chip trays into a ring of shielded magnets, a single bright point held at its center." },
       "foundry_furnace_hall": { "was": "foundry_core", "subject": "The heart of a foundry, one great crucible tipping a stream of molten metal into a mold, workers small beside it." },
       "stacked_container_wing": { "card": "economies_of_scale", "was": "modular_expansion", "subject": "A crane lowering a prefabricated factory module onto the end of a row of identical modules." },
       "factory_on_a_flatbed": { "was": "turnkey_factory", "subject": "A compact new factory unfolding from a line of flatbed trucks on a cleared industrial lot, its chimney rising into place." },
@@ -184,6 +185,9 @@
       "microgrid_lab_battery_yard": { "card": "microgrid_lab_compact", "subject": "A self-powered research campus in a green valley, low white laboratories set around a central yard of battery cabinets and a small control hut, two wind turbines on the slope and a little river-turbine house on the stream feeding it, an engineer checking a panel of amber lamps while scientists wheel crates of glowing sky-blue research cubes between the labs; no solar panels, no flags, logos or emblems." }
     },
     "science": {
+      "penning_trap_racks": { "card": "penning_trap_array", "subject": "Rows of tall cylindrical magnetic traps in a clean white hall, each holding a faint violet glow, a technician logging one by hand." },
+      "cryo_sample_dewars": { "card": "cryo_sample_vault", "subject": "A cold vault of steaming liquid-nitrogen dewars on steel shelves, a researcher in thick gloves lifting out a frosted sample rack." },
+      "field_assay_tent": { "card": "field_assay_team", "subject": "A small field lab tent on a muddy street corner, two scientists running a portable analyzer while a patrol waits beside them." },
       "open_source_hackathon": { "card": "open_source_uprising", "subject": "A crowded open-air hackathon in a sunny city park, laptops on picnic tables, a big outdoor screen over the crowd showing only abstract colored blocks, people of every sort leaning in to help each other; no flags, logos, emblems or text." },
       "field_grant_survey": { "card": "field_grant", "subject": "Two researchers in field jackets planting a small instrument mast beside a domed research station on a windy plain, a crate of glowing sample cubes at their feet." },
       "sample_repository_shelves": { "was": "sample_repository", "subject": "A tall cold-store hall of glass shelves, each holding small luminous cubes in rows, a technician sliding one more into place." },

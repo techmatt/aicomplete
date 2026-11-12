@@ -1,0 +1,57 @@
+{
+  "name": "s200-11",
+  "note": "200 screen 11: d1 step dials moved to level 2 (spent fresh seeds 44767-44910)",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_cb2",
+      "set": [
+        "adversary.counter_bonus_at=2"
+      ]
+    },
+    {
+      "name": "br_cb2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_bonus_at=2"
+      ]
+    },
+    {
+      "name": "pr_cb2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_bonus_at=2"
+      ]
+    },
+    {
+      "name": "bp_cc2",
+      "set": [
+        "adversary.corrupt_cut_at=2"
+      ]
+    },
+    {
+      "name": "br_cc2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.corrupt_cut_at=2"
+      ]
+    },
+    {
+      "name": "pr_cc2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.corrupt_cut_at=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    1
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 144,
+  "records": 0
+}
