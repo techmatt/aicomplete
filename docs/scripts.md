@@ -117,9 +117,10 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   [AGENT] [--probe] [SET...]` three 48-seed sets, the three pairs, d0-d3; `screen NAME AGENTS LEVELS SEEDS [--offs]
   [--first N] [LEVER...]` a dev screen (`tag:a=1;b=2` a lever); `offs` a config per `--cards` card switched off.
   `bench/run_read.sh NNN EXE ROOT TAG OUT THREADS` runs a read's three sets on one binary (ROOT its configs; EXE, OUT absolute or from the repo root).
-- `bench/ladder.py NEW[,...] OLD[,...] [--measures] [--bands 90-100,70-80,55-65,40-50] [--deck 20]`: the paired ladder
+- `bench/ladder.py NEW[,...] OLD[,...] [--measures] [--bands 90-100,70-80,55-65,40-50] [--deck N]`: the paired ladder
   read per difficulty, sides labeled by rules revision; `--screen DIR[,...]` a screen's levers against base. Reads a
-  farmed read (no `results.json`); engines and `--same-engine` as `paired.py`. Each win % is its side's whole rate.
+  farmed read (no `results.json`); engines and `--same-engine` as `paired.py`. Each win % is its side's whole rate. `--deck` defaults to the
+  project count in `content/projects.json`.
 - `bench/gate_close.py`: `plan GATE_DIR OUT_DIR` picks the rows within 2 SE by gap against paired SE and writes specs
   that carry them on to the cap, reusing their games; `read` merges the runs (`--min-seeds N` leaves out rows short of
   N seeds, and says how many).

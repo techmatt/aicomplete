@@ -14,7 +14,7 @@ band prints `-`. A read of two or more agents prints a row per agent and difficu
 cells: a variant `PAIR_LEVER` is lever LEVER (no suffix: `base`), a config after the spec's first is a lever named by
 its file (`x_off`, `x_off LEVER`), each with its gap to base paired on the same pair and seed. `--measures` adds, per difficulty and side, a game's means: nodes
 lost to corruption, adversary ambassadors placed (created or rallied), corruptions, compute made, and the project deck
-(amendment 6618): projects revealed and resolved as a share of the deck (`--deck`, 20), distinct projects revealed,
+(amendment 6618): projects revealed and resolved as a share of the deck (`--deck`; default the number of projects in `content/projects.json`), distinct projects revealed,
 and reshuffles.
 
 A farmed read (160: shards assembled by `screens.assemble`, no results.json) reads its cells from the header. A
@@ -36,7 +36,16 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'
 from screens import cells_of, gap, pair_seeds, stream  # noqa: E402
 
 BANDS = "90-100,70-80,55-65,40-50"  # 157's prompt
-DECK = 20
+REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+def deck_size():
+    """The project deck's size: the number of projects in content/projects.json (22 since 195)."""
+    with open(os.path.join(REPO, "content", "projects.json"), encoding="utf-8") as f:
+        return len(json.load(f))
+
+
+DECK = deck_size()
 SAME_ENGINE = False  # --same-engine: pair a seed only within one engine (160's rule)
 
 
@@ -232,7 +241,7 @@ def main():
     ap.add_argument("dirs", nargs="*", help="NEW_DIRS OLD_DIRS, each ','-separated")
     ap.add_argument("--screen", metavar="DIRS", help="read a screen instead: its output dirs, ','-separated")
     ap.add_argument("--measures", action="store_true", help="add the adversary's measures, per difficulty and side")
-    ap.add_argument("--deck", type=int, default=DECK, help="the project deck's size (default 20)")
+    ap.add_argument("--deck", type=int, default=DECK, help="the project deck's size (default %(default)s, from content/projects.json)")
     ap.add_argument("--bands", default=BANDS, help=f"each difficulty's band from d0, lo-hi ','-separated (default {BANDS})")
     ap.add_argument("--same-engine", action="store_true",
                     help="pair a seed only when both sides played it on one engine (default: across engines)")

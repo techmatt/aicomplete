@@ -6,7 +6,7 @@ One row per harm an adversary source can do, one column per kind of source. A nu
 
 | Harm | tier-1 threats | tier-2 threats | Discord cards | adversary events | adversary projects | megaprojects | income and rally | botnets | corruption | uncountered threats | war | march |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| node destroyed |  | 6 |  | 1 | 3 |  |  |  | yes |  | yes |  |
+| node destroyed |  | 8 |  | 1 | 5 |  |  |  | yes |  | yes |  |
 | city lost |  | 1 | 3 | 10 | 2 |  |  |  | yes |  |  |  |
 | facilities destroyed |  | 2 |  |  |  |  |  |  |  |  | yes | yes |
 | facilities seized |  | 2 |  | 7 | 3 |  |  |  | yes |  |  |  |
@@ -16,7 +16,7 @@ One row per harm an adversary source can do, one column per kind of source. A nu
 | antimatter lost |  |  |  |  |  |  |  |  |  |  |  |  |
 | research cubes lost | 3 | 2 |  |  |  |  |  |  |  |  |  |  |
 | cards discarded | 17 | 13 |  |  | 1 |  |  |  |  |  |  |  |
-| ambassadors lost | 2 | 4 | 3 | 15 | 6 |  | yes |  | yes |  |  |  |
+| ambassadors lost | 2 | 6 | 3 | 15 | 6 |  | yes |  | yes |  |  |  |
 | tokens stripped from cards | 1 |  |  |  | 1 |  |  |  |  |  |  |  |
 | protections stripped |  |  |  |  | 1 |  |  |  |  |  |  | yes |
 | pieces pushed or reach cut |  |  |  |  |  |  |  |  |  |  |  |  |

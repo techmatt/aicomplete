@@ -293,6 +293,10 @@ const KNOWN: Record<string, string> = {
   unit: '#455a64',
   harden: '#607d8b',
   firewall: '#ff8a65',
+  city_chip: '#ffd54f',
+  no_rally: '#ffffff',
+  no_muster: '#ffe0b2',
+  no_corrupt: '#e1bee7',
 };
 
 export function tokenColor(kind: string): string {
@@ -315,6 +319,10 @@ const TOKEN_NAMES: Record<string, string> = {
   unit: 'Drone',
   harden: 'hardening token',
   firewall: 'firewall (no agent may arrive here)',
+  city_chip: "city's growth chip (the city builds once it holds enough)",
+  no_rally: 'no-Rally token (no Rally here)',
+  no_muster: 'no-Muster token (no Muster here)',
+  no_corrupt: 'no-Corrupt token (no Corrupt here)',
 };
 
 /** "node:1" → "node (seat 1)", "cube:adversary" → "owner cube (adversary)". */

@@ -156,6 +156,22 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
         el('path', { d: `M${f(-0.9 * s)},0 H${f(0.9 * s)} M0,${f(-0.7 * s)} V0 M${f(-0.45 * s)},0 V${f(0.7 * s)} M${f(0.45 * s)},0 V${f(0.7 * s)}`, fill: 'none', stroke: '#bf360c', 'stroke-width': f(0.12 * s) }),
       );
       break;
+    case 'city_chip':
+      // 197: a city's waiting chip (190, r83): a gold coin with a rim.
+      g.append(
+        el('circle', { cx: 0, cy: 0, r: f(0.8 * s), fill: c, stroke: '#8d6e00', 'stroke-width': f(0.16 * s), class: 'glyph' }),
+        el('circle', { cx: 0, cy: 0, r: f(0.4 * s), fill: 'none', stroke: '#8d6e00', 'stroke-width': f(0.1 * s) }),
+      );
+      break;
+    case 'no_rally':
+    case 'no_muster':
+    case 'no_corrupt':
+      // 197: a prohibition's token (r80): a "no" sign, its fill the step's color.
+      g.append(
+        el('circle', { cx: 0, cy: 0, r: f(0.85 * s), fill: c, stroke: '#c62828', 'stroke-width': f(0.2 * s), class: 'glyph' }),
+        el('path', { d: `M${f(-0.6 * s)},${f(-0.6 * s)} L${f(0.6 * s)},${f(0.6 * s)}`, fill: 'none', stroke: '#c62828', 'stroke-width': f(0.2 * s) }),
+      );
+      break;
     default:
       g.append(el('circle', { cx: 0, cy: 0, r: f(0.9 * s), fill: c, class: 'glyph' }));
   }
@@ -163,10 +179,10 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
 }
 
 /** Glyph scale per kind: owner cubes and facilities a little larger than pawns. */
-const SCALE: Record<string, number> = { cube: 1.05, station: 1.1, factory: 1, node: 1, ambassador: 0.9, troop: 0.95, unit: 0.95, harden: 0.85, botnet: 1, corruption: 0.95, land_corruption: 0.95, firewall: 0.9 };
+const SCALE: Record<string, number> = { cube: 1.05, station: 1.1, factory: 1, node: 1, ambassador: 0.9, troop: 0.95, unit: 0.95, harden: 0.85, botnet: 1, corruption: 0.95, land_corruption: 0.95, firewall: 0.9, city_chip: 0.7, no_rally: 0.8, no_muster: 0.8, no_corrupt: 0.8 };
 /** The adversary's tokens: its owner cube, its ambassadors, its troops, its botnets, a corruption marker, land corruption. */
 const isAdversary = (kind: string) => kind === 'troop' || kind === 'botnet' || kind === 'corruption' || kind === 'land_corruption' || kind.endsWith(':adversary');
-const ORDER = ['cube', 'station', 'factory', 'node', 'harden', 'firewall', 'unit', 'ambassador', 'corruption', 'land_corruption', 'botnet', 'troop'];
+const ORDER = ['cube', 'station', 'factory', 'node', 'harden', 'firewall', 'no_rally', 'no_muster', 'no_corrupt', 'city_chip', 'unit', 'ambassador', 'corruption', 'land_corruption', 'botnet', 'troop'];
 const rank = (k: string) => {
   const i = ORDER.indexOf(k.split(':')[0]);
   return i < 0 ? ORDER.length : i;

@@ -367,8 +367,9 @@ function alignment(a) {
 
 function project(p) {
   return frameless('project', p, {
-    tier: p.stage,
-    tierLabel: `Stage ${p.stage}`,
+    // Projects have no stage (one deck); the label says whether it stays in play.
+    tier: null,
+    tierLabel: p.ongoing ? 'Ongoing project' : 'Project',
     cost: p.cost,
     // 175: printed per player count (184: the solo game's too).
     costLabel: `${p.cost} / ${2 * p.cost} / ${3 * p.cost} / ${4 * p.cost} compute (1 / 2 / 3 / 4 players)`,

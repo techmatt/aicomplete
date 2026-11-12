@@ -70,6 +70,9 @@ const CASES = [
   // the Researcher, and d1's long games tip the most Unity cards.
   { name: 'c3-d1-strategist', config: 'baseline.json', set: ['countries=3', 'adversary.difficulty=1'], agent: 'engine:strategy=1' },
   { name: 'c2-d1-strategist', config: 'baseline.json', set: ['adversary.difficulty=1'], agent: 'engine:strategy=1' },
+  // 197: r85-r86's project ops (botnets, sites taken, factory troops, raids, stripped hardening,
+  // the clock) as the strategist meets them at d4, with the card-play track at 3.
+  { name: 'c3-d4-strategist', config: 'baseline.json', set: ['countries=3', 'adversary.difficulty=4'], agent: 'engine:strategy=1' },
 ];
 const unknown = only.filter((n) => !CASES.some((c) => c.name === n));
 if (unknown.length) throw new Error(`no case ${unknown.join(', ')}; cases: ${CASES.map((c) => c.name).join(', ')}`);
@@ -133,9 +136,12 @@ const PAGE_LIB = String.raw`(() => {
   // converging on a site, a node corrupted at 2, natural corruption, Remove agents, Dispatch, troops
   // taking an ambassador, the last node lost.
   const COUNTER_EVENTS_R74 = /^(adversary\.(canceled|converged|ambassadors_removed|troops_removed|corruptions\.node|corruptions_natural)|board\.(std\.(remove|move|clear|claim|liberate)|troop_removed_ambassador|last_node_lost))$/;
+  // r85 (195, 197): each project op acting: a project's act, botnet troops, botnets made and spread,
+  // a site taken or neutralized, factory troops (and blocked), a node raid, hardening stripped, the clock.
+  const COUNTER_EVENTS_R85 = /^adversary\.(project_acts\.[a-z_]+|botnet_troops|botnets_(made|spread)|sites_(taken|neutralized)|factory_troops(_blocked)?|node_raids|hardening_stripped|clock_cards)$/;
   const counters = () => { const c = aic.timeline.frame.snap.state.stats?.counters ?? {}; return Array.isArray(c) ? Object.fromEntries(c) : c; };
   function counterEvents(c0, c1) {
-    return Object.keys(c1).filter((k) => (COUNTER_EVENTS.test(k) || COUNTER_EVENTS_R41.test(k) || COUNTER_EVENTS_R55.test(k) || COUNTER_EVENTS_R70.test(k) || COUNTER_EVENTS_R74.test(k)) && (c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);
+    return Object.keys(c1).filter((k) => (COUNTER_EVENTS.test(k) || COUNTER_EVENTS_R41.test(k) || COUNTER_EVENTS_R55.test(k) || COUNTER_EVENTS_R70.test(k) || COUNTER_EVENTS_R74.test(k) || COUNTER_EVENTS_R85.test(k)) && (c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);
   }
   /** Why the step from a to b is worth a capture, or null. */
   function moment(a, b, events, extra = []) {
@@ -207,7 +213,7 @@ const PAGE_LIB = String.raw`(() => {
   const RAW_ID = /\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b/;
   // The words docs/spelling.rs refuses in source (STALE there), plus the engine's labels it can't read.
   const STALE = /adversary(?:'s)? ambassadors?|enemy ambassadors?|adv\. ambassadors?|agents token|Matt to confirm|Security agents?\b|on board: \d+ ambassadors?|corp troops?|\bDeploy(s|ed)?\b|each board|\btier (I|II|III)\b|Movement \+\d/i;
-  const TOKENS = new Set(['cube', 'station', 'factory', 'node', 'harden', 'unit', 'ambassador', 'corruption', 'land_corruption', 'botnet', 'troop', 'firewall']);
+  const TOKENS = new Set(['cube', 'station', 'factory', 'node', 'harden', 'unit', 'ambassador', 'corruption', 'land_corruption', 'botnet', 'troop', 'firewall', 'city_chip', 'no_rally', 'no_muster', 'no_corrupt']);
 
   function checks() {
     const issues = [];

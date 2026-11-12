@@ -238,7 +238,7 @@ pub(super) fn spread_botnets(g: &mut GameState, cx: &mut Cx, count: i64) {
 }
 
 /// 195 (`TakeSite`): in each country, the neutral `site` with the most agents on or next to it corrupts; with none
-/// neutral, the player-owned one with the most turns neutral. A guarded site (firewall, no-Corrupt token) is skipped.
+/// neutral, the player-owned one picked the same way turns neutral. A guarded site (firewall, no-Corrupt token) is skipped.
 pub(super) fn take_site(g: &mut GameState, cx: &mut Cx, site: Facility) -> Res {
     let w = cx.world;
     let kind = match site {
@@ -285,7 +285,8 @@ pub(super) fn factory_troops(g: &mut GameState, cx: &mut Cx, count: i64) {
         }
         cx.tally(g, "adversary.factory_troops", count);
         cx.tally(g, "adversary.project_troops", count);
-        cx.note(Some(h), || format!("The adversary factory at {} musters {count} troop", hex_name(&w, h)));
+        // 197: "makes", not "musters": no Muster rule (surcharge, Wall, no-Muster token) applies here.
+        cx.note(Some(h), || format!("The adversary factory at {} makes {count} troop", hex_name(&w, h)));
     }
 }
 
@@ -337,7 +338,8 @@ pub(super) fn clock(g: &mut GameState, cx: &mut Cx, count: i64) {
         let Some(id) = g.pile(adversary::DECK).first().cloned() else {
             break;
         };
-        cx.move_card(g, &id, adversary::DECK, adversary::DISCARD, false).expect("top of the event deck");
+        // 197: onto the discard's top, as every flip discards (the viewer's "last:" reads the top).
+        cx.move_card(g, &id, adversary::DECK, adversary::DISCARD, true).expect("top of the event deck");
         cx.tally(g, "adversary.clock_cards", 1);
         cx.note(None, || "The adversary's clock runs: the top event card is discarded".to_string());
     }

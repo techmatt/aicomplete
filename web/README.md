@@ -111,7 +111,7 @@ checker, checks the page at the moments that matter over many games. It needs a 
   at random (choices, hex picks, the odd undo). `AIC_SWEEP_SEEDS` games per case and mode (3; `--quick` 1), the
   simulated ones from seed `AIC_SWEEP_SEED` (100).
 - **Moments:** new rounds, prompts, the first of each key event and counter rise
-  (`COUNTER_EVENTS`, `_R41`, `_R55`, `_R70`), the end. At each, the checks at 1366×768, layout at the two
+  (`COUNTER_EVENTS`, `_R41` to `_R85`: r85's are the project ops), the end. At each, the checks at 1366×768, layout at the two
   larger sizes, and a screenshot (at most 14 a game, plus the end and any failure).
 - **Fail the run** (exit 1): console errors and blocking dialogs, `stuck` (no legal action
   without an outcome), the error bar, page scroll, placeholder text (`undefined`, `NaN`),

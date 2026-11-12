@@ -278,8 +278,8 @@ with agents or a corrupted site is allowed (a node doesn't remove agents).
 ### Powers
 
 Each power can be used once a round, in the action phase. Every board has two **node powers**: **Expand** (place a
-node for 1 energy, plus the space's) and a dearer second one (§20). So powers place up to 2 nodes a round; cards can place more. The other
-six, printed on your board, are conversions, draws and **sacrifice powers**, paid by discarding a card with a tag
+node for 1 energy, plus the space's) and a dearer second one (§20). So powers place up to 2 nodes a round; cards can place more. The others
+(five on the Builder, six on the Protector and the Researcher), printed on your board, are conversions, draws and **sacrifice powers**, paid by discarding a card with a tag
 (§7, *Tags*). §20 lists every board's.
 
 *Sources: rules/ai-boards.md, rules/ai-powers.md, rules/economy.md (resource table); content/ais.json;
@@ -326,7 +326,7 @@ The adversary's board prints its turn as a strip of four beats, played in order.
 **3. March.** Adversary troops march (below).
 
 **4. Income.** Turn the next event card face up. Put one round of agent income into each country's pool. Then all the
-adversary's compute arrives: its income, each botnet and corrupted station without a player's ambassador on it, and
+adversary's compute arrives: its income, each botnet and corrupted station (once its country's megaproject is complete, §9) without a player's ambassador on it, and
 what was made since the last turn, onto the projects (§17). Then ongoing projects act. Firewalls, cordons (§16) and
 no-Rally, no-Muster and no-Corrupt tokens (§12) come off.
 
@@ -775,10 +775,11 @@ Your **nodes** and your **facilities** (stations and factories) can be destroyed
 
 | By | What it destroys |
 |---|---|
-| **Corruption** (a Corrupt line, natural corruption, a threat that corrupts a site) | the node on the corrupted hex, then every ambassador there |
+| **Corruption** (a Corrupt line, natural corruption, a threat or project that corrupts a site) | the node on the corrupted hex, then every ambassador there |
 | **A node hex's corruption** (2 agents on a hex with your node, §6) | that node; the agents go to the supply |
 | **An adversary troop's strike** | the player-owned station or factory it strikes (never a node) |
 | **War** | the factory a drone strikes, then a node on its hex (War Takes Ground) |
+| **A project's raid** (Night Raid, Mob Rule, Sabotage Teams) | in each country, the node on the hex holding the most agents (at least 1) |
 | **Threats and event lines** | what they print ("destroy a node", Border War's node near a base) |
 
 A destroyed facility takes its owner's cube with it. A destroyed node leaves the game. Corruption leaves its own mark
@@ -929,8 +930,8 @@ projects one at a time until every slot is full: each goes into the first empty 
 discard back in.
 
 A project prints its cost **for each number of players**. All compute arrives in one step, the **compute step** of
-the Income beat: its printed compute income, 1 for each botnet and each corrupted research station without a player's
-ambassador on it, and every compute made since the last compute step (threats taking effect, cards and projects that
+the Income beat: its printed compute income, 1 for each botnet and each corrupted research station (once its country's megaproject is complete,
+§9) without a player's ambassador on it, and every compute made since the last compute step (threats taking effect, cards and projects that
 print it), which waits beside the projects until then. All of it goes onto the **leftmost** project. The moment a
 project holds its cost, it **resolves** and leaves its slot:
 
@@ -942,8 +943,8 @@ project holds its cost, it **resolves** and leaves its slot:
 and the empty rightmost slot is dealt a new project at once; the rest of the compute goes onto the new leftmost.
 Compute with no project to go on is lost. No project resolves outside the compute step.
 
-**What projects do.** A project is a small plan on the board: it builds or seizes a factory, spreads or converts a
-botnet, musters troops from the adversary's factories, raids a node, strips hardening, or runs the clock. **Its target
+**What projects do.** A project is a small plan on the board: it builds or seizes a factory, seizes a research station, spreads or converts a
+botnet, makes troops on the adversary's factories, raids a node, strips hardening, or runs the clock. **Its target
 is read off the board when it resolves**, in each country: "the factory with the most agents on or next to it" counts
 the agents on that hex and the six around it; "the node hex holding the most agents" counts only the hex itself; ties
 go to the lowest hex number. Nothing is marked in advance: look at the leftmost project and the board to see what it

@@ -73,7 +73,7 @@ leaves**, those to its right slide one slot left and the rightmost slot refills 
 printed per player count (the table below).
 
 - **The compute step (175).** All compute is added **once a round** (the Income beat, after the agent income): the
-  compute income, each botnet and corrupted station (`station_cubes`) with no player ambassador on it, and all made
+  compute income, each botnet and corrupted station (`station_cubes`, its megaproject complete) with no player ambassador on it, and all made
   since the last step (uncountered threats, cards, Cintamani), which **waits beside the projects** (public).
 - **Spending:** each point onto the **leftmost** visible project (r80; `compute_every` on every one, first). A
   project holding its cost **resolves** then and there: a one-shot effect, or an **ongoing** one acting in every

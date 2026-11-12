@@ -837,8 +837,8 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          ambassadors for the same, so you choose between racing toward Unity and holding off the next \
          Discord card. You also lose if any player has no nodes left on the board. \
          Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of \
-         their own hex (or agents on it), war taking a factory on their hex, and Border War (nodes by a front's \
-         base). A lost token leaves the game and marks its hex, so you can't act from there any more; its \
+         their own hex (or agents on it), war taking a factory on their hex, a project's raid (the node \
+         hex with the most agents), and Border War (nodes by a front's base). A lost token leaves the game and marks its hex, so you can't act from there any more; its \
          income stays. {safe}The adversary deck is a round cap too, {} rounds at \
          most (fewer at the harder levels), and reaching it loses. So there are three different \
          pressures: the Discord deck (politics), your nodes (the board) and the cap.\n",

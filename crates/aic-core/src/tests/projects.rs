@@ -370,6 +370,10 @@ fn the_board_verbs_take_the_targets_the_board_shows() {
     assert_eq!((g.tokens(pf, HARDEN), g.tokens(a, HARDEN)), (0, 1));
     // The clock discards the top event card.
     let deck = g.pile(adversary::DECK).len();
+    let next = g.pile(adversary::DECK)[..2].to_vec();
     run_ops(&rules, &mut g, &[Op::Clock { count: 1 }]);
     assert_eq!(g.pile(adversary::DECK).len(), deck.saturating_sub(1));
+    // 197: each discard goes on the discard's top, as a flip's does (the viewer's "last:" reads the top).
+    run_ops(&rules, &mut g, &[Op::Clock { count: 1 }]);
+    assert_eq!(g.pile(adversary::DISCARD).first(), next.get(1));
 }

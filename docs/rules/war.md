@@ -132,7 +132,9 @@ the game on, only where the board is overrun: an uncountered threat that prints 
 their node closest to it; Siege takes the node on its factory's hex), a site that corrupts (138: only a node on its
 own hex), a node hex holding `corrupt_node_at` (2) agents (175, [adversary.md](adversary.md)) and Border War (each
 player with a node on or next to a front's base destroys 1 of those). War takes a node on the hex of a factory it
-destroys (r83, the Militarist's War Takes Ground). **Nothing else destroys a node:** Discord cards, projects and the other event
+destroys (r83, the Militarist's War Takes Ground). A project's raid (r85: Night Raid, Mob Rule, Sabotage Teams) takes,
+in each country, the node on the hex holding the most agents (at least 1; ties lowest-numbered,
+[adversary.md](adversary.md)). **Nothing else destroys a node:** Discord cards, the other projects and the other event
 cards print board pressure instead ([alignment.md](alignment.md)); Offensive deals a threat onto the node hex with the
 most agents and troops. A hit is each player's own pick of which token, absorbed as any destruction is (below).
 **No last-node safety (175, Matt's ruling).** Every source above takes a last node, at any stage; a player with no

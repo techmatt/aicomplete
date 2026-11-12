@@ -9,7 +9,7 @@
    ],
    "cost": 12,
    "ongoing": true,
-   "text": "Ongoing: each round, every adversary factory musters 1 Troop on its hex (a player Ambassador on it stops it).",
+   "text": "Ongoing: each round, every adversary factory makes 1 Troop on its hex (a player Ambassador on it stops it).",
    "effects": [
     {
      "op": "factory_troops",
@@ -150,7 +150,7 @@
    ],
    "cost": 9,
    "ongoing": false,
-   "text": "Each country: its neutral factory with the most Agents on or next to it (ties: lowest-numbered) goes to the adversary; with none neutral, its player-owned factory with the most turns neutral.",
+   "text": "Each country: its neutral factory with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned factory picked the same way turns neutral.",
    "effects": [
     {
      "op": "take_site",
@@ -175,7 +175,7 @@
    ],
    "cost": 11,
    "ongoing": false,
-   "text": "The adversary builds a factory in the country with the most free industrial zones (none free: 2 Agents on a factory). Every adversary factory musters 1 Troop on its hex.",
+   "text": "The adversary builds a factory in the country with the most free industrial zones (none free: 2 Agents on a factory). Every adversary factory makes 1 Troop on its hex (a player Ambassador on it stops it).",
    "effects": [
     {
      "op": "adversary_factory",
@@ -233,7 +233,7 @@
    ],
    "cost": 9,
    "ongoing": false,
-   "text": "Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) goes to the adversary; with none neutral, its player-owned station with the most turns neutral.",
+   "text": "Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral.",
    "effects": [
     {
      "op": "take_site",
@@ -599,7 +599,7 @@
    ],
    "cost": 14,
    "ongoing": false,
-   "text": "Discard the top card of the adversary's event deck: the round cap comes a round sooner.",
+   "text": "Discard the top face-down card of the adversary's event deck, if any: the round cap comes a round sooner.",
    "effects": [
     {
      "op": "clock",

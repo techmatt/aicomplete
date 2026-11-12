@@ -4,7 +4,7 @@ What a bug hunt reads first: the findings still open, the reports ruled won't-fi
 faults past hunts kept finding. Fixed findings, never to re-report: F1–F100 (020, 044) in `git show
 1617d75:docs/qa-findings.md`; then each hunt's `fixed.md` and `deferred.md` under `experiments/results/`: 099 (r38,
 F101 on), 118 (r46, F132, D43, W19 on), 145 (r59, F165, D57 on), 169 (r72 → 73, F205, D72 on), 184 (r77 → 78, F225,
-D77, W28 on). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
+D77, W28 on), 197 (r86, F272, D88, W29 on). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
 
 ## Checkers
 

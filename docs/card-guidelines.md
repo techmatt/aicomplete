@@ -14,7 +14,7 @@ card that breaks one is a bug, or a design call for Matt, never a quiet exceptio
 3. **No arithmetic.** At most a simple "per X". No sums, series, formulas or running totals. **No "per hex of a
    country"** (ruling 6): every country has 16 hexes, so "1 per hex" is a hidden fixed number; print the number
    ("remove 6 troops in one country"). **Big numbers over "remove all X"** (*Martial Cordon*).
-4. **No trivial cards; every rider earns its text.** Drafting costs a keep (1 insight or 5 credits) before the play
+4. **No trivial cards; every rider earns its text.** Drafting costs a keep (1 insight at tier 1, 2 at tier 2; never credits) before the play
    cost, so a card must be worth that (ruling 1: *Surplus Auction*). A rider or conditional extra that adds
    symbols and parsing but no decision ("gain 1 credit") is noise: fold its value into the base number, or cut it. **Fold a near-constant rider into the number**
    (ruling 3: *Blackout Script*: a botnet makes 1 compute, so "no compute next build" is one more compute removed).

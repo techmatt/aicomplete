@@ -103,15 +103,15 @@ Project slots: Open, Open, Open.
 
 | Project | Tags | Compute (1 / 2 / 3 / 4 players) | Resolves | Text |
 |---|---|---|---|---|
-| Factory Garrisons | Security | 12 / 24 / 36 / 48 | ongoing | Ongoing: each round, every adversary factory musters 1 Troop on its hex (a player Ambassador on it stops it). |
+| Factory Garrisons | Security | 12 / 24 / 36 / 48 | ongoing | Ongoing: each round, every adversary factory makes 1 Troop on its hex (a player Ambassador on it stops it). |
 | Night Raid | Security | 9 / 18 / 27 / 36 | once | Corrupt: nodes. Each country: the node hex holding the most Agents (at least 1; ties: lowest-numbered) loses its node. |
 | War Footing | Security | 7 / 14 / 21 / 28 | once | Every military base fills with Drones to its cap. |
 | Shadow Factories | Industry | 7 / 14 / 21 / 28 | once | The adversary builds a factory in the country with the most free industrial zones (none free: 2 Agents on a factory). |
 | Hostile Takeover | Industry | 8 / 16 / 24 / 32 | once | Rally 2, each country: factories. Corrupt: factories. |
-| Asset Seizure | Industry | 9 / 18 / 27 / 36 | once | Each country: its neutral factory with the most Agents on or next to it (ties: lowest-numbered) goes to the adversary; with none neutral, its player-owned factory with the most turns neutral. |
-| War Plants | Industry | 11 / 22 / 33 / 44 | once | The adversary builds a factory in the country with the most free industrial zones (none free: 2 Agents on a factory). Every adversary factory musters 1 Troop on its hex. |
+| Asset Seizure | Industry | 9 / 18 / 27 / 36 | once | Each country: its neutral factory with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned factory picked the same way turns neutral. |
+| War Plants | Industry | 11 / 22 / 33 / 44 | once | The adversary builds a factory in the country with the most free industrial zones (none free: 2 Agents on a factory). Every adversary factory makes 1 Troop on its hex (a player Ambassador on it stops it). |
 | Botnet Swarm | Cyber | 9 / 18 / 27 / 36 | once | Each country: a botnet spreads to its lowest-numbered city, research station or factory next to one of its botnets (no botnet there: its lowest-numbered research station). |
-| Station Coup | Cyber | 9 / 18 / 27 / 36 | once | Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) goes to the adversary; with none neutral, its player-owned station with the most turns neutral. |
+| Station Coup | Cyber | 9 / 18 / 27 / 36 | once | Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. |
 | Backdoor Research | Cyber | 5 / 10 / 15 / 20 | once | 2 adversary research cubes onto each open megaproject. |
 | Data Heist | Cyber | 6 / 12 / 18 / 24 | once | Each player removes 3 tokens from their cards (their choice of cards). Each player pays 8 credits or discards 2 cards. |
 | Botnet Conscripts | Cyber | 7 / 14 / 21 / 28 | once | Each country: its lowest-numbered botnet becomes 2 Troops on its hex. |
@@ -124,4 +124,4 @@ Project slots: Open, Open, Open.
 | False Flag | Universal | 6 / 12 / 18 / 24 | once | Each country: an extra tier-2 threat, any tag. |
 | Grand Offensive | Universal | 10 / 20 / 30 / 40 | once | Each country rallies its Agent income now, to this round's Rally. Corrupt: cities. |
 | Propaganda Network | Universal | 14 / 28 / 42 / 56 | ongoing | Now: Income: +2 compute a round. Ongoing: Sway 2 toward Discord. |
-| Accelerated Timetable | Universal | 14 / 28 / 42 / 56 | once | Discard the top card of the adversary's event deck: the round cap comes a round sooner. |
+| Accelerated Timetable | Universal | 14 / 28 / 42 / 56 | once | Discard the top face-down card of the adversary's event deck, if any: the round cap comes a round sooner. |

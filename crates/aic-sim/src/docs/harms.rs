@@ -167,7 +167,8 @@ fn op_harms(op: &Op) -> Vec<usize> {
         Op::LoseAmbassador => vec![AMBASSADORS_LOST],
         Op::DestroyFacility { .. } => vec![FACILITIES_DESTROYED, NODE_DESTROYED],
         Op::ExtraWar { .. } => vec![FACILITIES_DESTROYED],
-        Op::SeizeFactory | Op::FlipStation { .. } => vec![FACILITIES_SEIZED],
+        // A seized factory or flipped station corrupts its hex: the node and ambassadors on it go too (197).
+        Op::SeizeFactory | Op::FlipStation { .. } => vec![FACILITIES_SEIZED, NODE_DESTROYED, AMBASSADORS_LOST],
         // A troop on the factory: it makes nothing while the troop stands.
         Op::OccupyFactory { .. } => vec![BLACKED_OUT, PIECES_PLACED],
         Op::DisableBuilding { .. } => vec![BLOCKED],
@@ -235,8 +236,9 @@ fn op_harms(op: &Op) -> Vec<usize> {
         // 195: the project deck's board verbs.
         Op::BotnetTroops { .. } | Op::FactoryTroops { .. } => vec![PIECES_PLACED],
         Op::SpreadBotnets { .. } => vec![PIECES_PLACED, PROJECTS_ADVANCED],
-        // A neutral site corrupts, else a player's turns neutral: seized either way.
-        Op::TakeSite { .. } => vec![FACILITIES_SEIZED, AMBASSADORS_LOST],
+        // A neutral site corrupts (a node on its hex goes with it, 197), else a player's turns neutral: seized
+        // either way.
+        Op::TakeSite { .. } => vec![FACILITIES_SEIZED, NODE_DESTROYED, AMBASSADORS_LOST],
         Op::RaidNode => vec![NODE_DESTROYED],
         Op::StripHarden => vec![PROTECTIONS_STRIPPED],
         Op::Clock { .. } => vec![CLOCK_SPED_UP],
