@@ -349,8 +349,10 @@ fn site_creation_opens_the_lowest_numbered_empty_site_in_each_country() {
     };
     let sites = |c: u8| numbered_where(m, c, |h| m.hexes[h].station_site);
     let zones = |c: u8| numbered_where(m, c, |h| m.hexes[h].industrial);
+    // 190: country 1's one site became a setup station (Cintamani 11): it creates no station.
+    assert!(!sites(0).is_empty() && sites(1).is_empty());
     for c in 0..2 {
-        assert!(!sites(c).is_empty() && zones(c).len() >= 2, "country {c}");
+        assert!(zones(c).len() >= 2, "country {c}");
     }
     // Country 0's station site and lowest zone are built on: its station has
     // nowhere to go, its factory goes on the next zone.
@@ -364,8 +366,8 @@ fn site_creation_opens_the_lowest_numbered_empty_site_in_each_country() {
     let mut want0 = factories0;
     want0.sort_by_key(|&h| m.hexes[h].number);
     assert_eq!(built(&g, 0, FACTORY), want0);
-    assert_eq!(built(&g, 1, STATION), vec![sites(1)[0]]);
-    let first_zone1 = zones(1).into_iter().find(|&h| h != sites(1)[0]).unwrap();
+    assert_eq!(built(&g, 1, STATION), Vec::<usize>::new());
+    let first_zone1 = zones(1)[0];
     assert_eq!(built(&g, 1, FACTORY), vec![first_zone1]);
     assert!(built(&g, 1, STATION).into_iter().chain(built(&g, 1, FACTORY)).all(|h| cube_free(&g, h)), "neutral");
 }
@@ -617,6 +619,29 @@ fn a_corrupted_node_hex_takes_land_corruption_not_a_marker() {
     run_answered(&rules, &mut g);
     assert_eq!(g.tokens(h, node(0)), 0);
     assert_eq!((g.tokens(h, LAND_CORRUPTION), g.tokens(h, MARKER)), (1, 0));
+}
+
+/// r83 (Matt, 2026-11-11, #56): a node hex corrupts like open land: it takes land corruption even when a
+/// protection saves the node (r80 marked it only when the node was lost).
+#[test]
+fn a_node_hex_takes_land_corruption_even_when_its_node_is_saved() {
+    let (rules, mut g) = lab(&["adversary.natural"]);
+    let m = &rules.map;
+    let h = numbered_where(m, 0, |h| kind(m, h) == HexKind::Open)[0];
+    put(&mut g, h, node(0), 1);
+    put(&mut g, h, HARDEN, 1);
+    put(&mut g, h, ADV_AMBASSADOR, 2);
+    run(&rules, &mut g);
+    answer_with(&rules, &mut g, "spend the hardening token");
+    answer_all(&rules, &mut g);
+    assert_eq!((g.tokens(h, node(0)), g.tokens(h, HARDEN)), (1, 0), "saved");
+    assert_eq!(g.tokens(h, LAND_CORRUPTION), 1);
+}
+
+/// r83 (Matt, 2026-11-11, #57): project slot 1's tag is gone: every slot of the Militarist's board is open.
+#[test]
+fn every_project_slot_is_open() {
+    assert!(crate::content().adversary_board.project_slots.iter().all(|s| s.tag.is_none()));
 }
 
 /// r80 (ruling #48): the Protector's landing is a normal Muster 1 in each country where the Protector has a node:

@@ -747,7 +747,7 @@
    {
     "op": "gain",
     "resource": "chips",
-    "amount": 6
+    "amount": 3
    },
    {
     "op": "choose_player"
@@ -755,7 +755,7 @@
    {
     "op": "other_gain",
     "resource": "chips",
-    "amount": 3
+    "amount": 2
    }
   ]
  },
@@ -779,7 +779,7 @@
    {
     "op": "other_gain",
     "resource": "chips",
-    "amount": 2
+    "amount": 1
    },
    {
     "op": "production",
@@ -915,7 +915,7 @@
    {
     "op": "production",
     "resource": "chips",
-    "amount": 2
+    "amount": 1
    }
   ],
   "energy": 2
@@ -926,7 +926,7 @@
   "tier": 2,
   "kind": "building",
   "cost": 15,
-  "chips": 2,
+  "chips": 1,
   "insight": 2,
   "needs": [
    [
@@ -947,7 +947,7 @@
    {
     "op": "income",
     "resource": "chips",
-    "amount": 3
+    "amount": 2
    }
   ],
   "effects": [
@@ -1532,7 +1532,7 @@
    {
     "op": "production",
     "resource": "chips",
-    "amount": 2
+    "amount": 1
    }
   ]
  },
@@ -3071,7 +3071,7 @@
     "op": "gain_per_tag",
     "resource": "chips",
     "tag": "industry",
-    "per": 2
+    "per": 4
    }
   ]
  },
@@ -4882,7 +4882,7 @@
     {
      "op": "gain",
      "resource": "chips",
-     "amount": 2
+     "amount": 1
     }
    ]
   }

@@ -16,12 +16,12 @@ a neutral station on one (none does yet). Nothing builds on ocean or on a land c
 station) until it is cleared ([war.md](war.md)).
 
 <!-- generated: countries -->
-| # | Name | Cities (corrupted first) | Ocean | Station (botnet) | Neutral station | Empty station sites | Industrial zones (setup factories) | Starting node |
+| # | Name | Cities (corrupted first) | Ocean | Station (botnet) | Neutral stations | Empty station sites | Industrial zones (setup factories) | Starting node |
 |---|---|---|---|---|---|---|---|---|
-| 0 | Horizon | 7, 6, 14 | 3, 12 | 4 | 10 | 5 | 2, 8, 11, 13 (2, 8) | 9 |
-| 1 | Cintamani | 10, 7, 15 | 4 | 12 | 2 | 11 | 3, 14, 9, 16 (3, 14) | 6 |
-| 2 | Onyx | 7, 2, 10 | — | 14 | 12 | 8 | 1, 6, 9, 15 (1, 6) | 11 |
-| 3 | Biomia | 11, 6, 14 | 1 | 12 | 9 | 10 | 7, 13, 3, 8 (7, 13) | 5 |
+| 0 | Horizon | 7, 6, 14 | 3, 12 | 4 | 10 | 5 | 2, 8, 11, 13 (2, 8, 13) | 9 |
+| 1 | Cintamani | 10, 7, 15 | 4 | 12 | 2, 11 | — | 3, 14, 9, 16 (3, 14) | 6 |
+| 2 | Onyx | 7, 2, 10 | — | 14 | 12, 3, 5 | 8 | 1, 6, 9, 15 (1, 6) | 11 |
+| 3 | Biomia | 11, 6, 14 | 1 | 12 | 9, 10 | — | 7, 13, 3, 8 (7, 13) | 5 |
 <!-- /generated -->
 
 Ocean hexes are on the board's outer edge in every layout the piece appears in; the
@@ -44,10 +44,9 @@ neighbors change with the country count).
 
 - Each country: the first `start_corrupted` cities of its printed corruption order get an adversary cube
   (`adversary.extra_corrupted` more at difficulty 4, but never past the 2 each piece prints); its research station starts corrupted,
-  with a **botnet** on it; its **neutral research station** on its printed hex; its two
-  setup factories, **neutral** ("a factory takes its city's owner" is for
-  factories cities build; a setup factory touching the corrupted city would otherwise
-  start adversary-owned).
+  with a **botnet** on it; its **neutral research stations** and its setup factories, **neutral**, on their printed
+  hexes (r83, Matt 2026-11-11: each city starts with at least one neutral factory and one neutral station next to it;
+  this map allows it everywhere, so a country has 1-3 stations and 2-3 factories, the table above).
 - Each player (seat *s* starts in country *s*): 1 node on the starting spot (the
   first token off their track), `start_ambassadors` player ambassador,
   `ai.start_credits` credits and `ai.start_energy` energy; their AI board's credit production is income, paid
@@ -70,20 +69,20 @@ megaproject is the corp's defining card.
 |---|---|---|---|---|
 | Horizon (geothermal and tidal energy) | Tidal Grid | 8 | 3 energy, 3 credits / 1 Sway to Discord | 1 research cube + 2 energy → 1 antimatter (once a round) |
 | Cintamani (AI and efficiency) | Polar Compute Array | 8 | 1 drawn card, 5 credits / 1 adversary compute | 1 research cube → 2 insight (once a round) |
-| Onyx (heavy industry, power plants and processors) | Mountain Fusion Works | 8 | 4 chips, 3 credits / 1 Sway to Discord | 1 research cube → 2 chips (once a round) |
+| Onyx (heavy industry, power plants and processors) | Mountain Fusion Works | 8 | 2 chips, 3 credits / 1 Sway to Discord | 1 research cube → 1 chip (once a round) |
 | Biomia (biopunk) | Delta Seawall | 8 | 1 Sway to Unity, 1 drawn card / 1 Sway to Discord | 2 research cubes → 1 Sway to Unity (once a round) |
 <!-- /generated -->
 
 - **Stations** follow the one site model ([ambassadors.md](ambassadors.md)). In production a **neutral** one makes
   `station_cubes` (1) research cube a round, a player's `owned_station_cubes` (2) in its owner's color; an adversary
-  station (corrupted) makes `station_cubes` **adversary** cubes (r79, Matt's ruling: the payout stays; the count a
-  candidate) onto its country's megaproject until it completes, and after that adds `station_cubes` compute in the
-  adversary's compute step instead. No player starts with a
-  station: building one (`station_chips`) or claiming the neutral one (`claim_station` ambassadors) is an investment.
+  station (corrupted) has **one output** (Matt's ruling #55, as since 185): `station_cubes` (1) **adversary** cube a
+  round onto its country's megaproject while it is open, else `station_cubes` compute in the adversary's compute step.
+  No player starts with a station: building one (`station_chips`, 1 chip since r83) or claiming a neutral one
+  (`claim_station` ambassadors) is an investment. Cities build neutral stations too ([war.md](war.md), city growth).
   One opposing ambassador or agent on a station blocks its output while it stands; the Liberate action takes an
   adversary station for the liberator.
 - **A station is a defended investment (candidate, Matt).** The adversary needs weight to take
-  yours: an effect that flips a player's station (Station Coup, Station Seizure) takes it
+  yours: an effect that flips a player's station (Station Coup; Station Seizure, r83's M1, after landing 2 agents) takes it
   only when `adversary.station_flip_at` (2) agents and no player ambassador
   stand on it, those agents used up; short of that one agent lands on it
   instead (a player ambassador there cancels it). A neutral station flips as before. Cards
@@ -118,10 +117,10 @@ megaproject is the corp's defining card.
   credits never reach a converter this way: a bought cube earns its card's player payout
   and brings the completion a cube nearer.
 
-The neutral station stands next to the starting node, so a player's first
+The first neutral station stands next to the starting node, so a player's first
 ambassadors can claim it, on a hex that is a base in no layout (a test holds this). At setup a country's
-neutral station is its only one making cubes (the other is the adversary's, making compute): alone it takes 8 rounds
-to fill an 8-cube card. Claiming it raises its 1 a round to 2; each station a player builds or liberates there adds 2.
+neutral stations make 1 cube a round each (the adversary's makes compute): one alone takes 8 rounds to fill an
+8-cube card, three about 3. Claiming one raises its 1 a round to 2; each station a player builds or liberates there adds 2.
 
 **For new players.** A neutral research station makes a cube a round, yours make 2; the adversary's make
 compute instead. A country's cubes fill its corp's megaproject, and when the card fills, at

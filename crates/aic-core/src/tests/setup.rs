@@ -40,12 +40,13 @@ fn setup_places_the_printed_pieces() {
             let stations = nums(&|h| g.tokens(h, STATION) > 0);
             let mut printed: Vec<u8> = p.stations.to_vec();
             printed.push(p.neutral_station);
+            printed.extend(&p.more_stations);
             printed.sort();
             assert_eq!(stations, printed.into_iter().collect());
-            // 074: a corrupted station and a neutral one, no player's.
+            // 074: a corrupted station and the neutral ones (190: `more_stations` too), no player's.
             assert_eq!(
                 nums(&|h| g.tokens(h, STATION) > 0 && g.tokens(h, ADV_CUBE) == 0),
-                [p.neutral_station].into_iter().collect()
+                [p.neutral_station].into_iter().chain(p.more_stations.iter().copied()).collect()
             );
             assert!(!p.industry.contains(&p.neutral_station), "not on an industrial zone");
             assert_eq!(

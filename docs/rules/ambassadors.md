@@ -29,8 +29,9 @@ Cities, research stations and factories follow one set of rules and differ only 
   `claim_city` 5, `claim_station` 3, `claim_factory` 3 (Liberate's prices). Your cube goes on.
   Difficulty lowers only the adversary's numbers. The bound city at setup is free ([board.md](board.md)).
   **A claim pays back in about 3 rounds** (142, Matt): a player's station makes `owned_station_cubes` 2 cubes and a
-  factory `factory_chips` 2 chips a round (a neutral station `station_cubes` 1). Give / get at `values.json`: 3
-  ambassadors (12) for 2 chips a round (4) or 2 cubes a round (6) pays back in 3 or 2 rounds.
+  factory `factory_chips` 1 chip a round (r83; a neutral station `station_cubes` 1). Give / get at `values.json`: 3
+  ambassadors (12) for 1 chip a round (4, a chip at 4 since r83) or 2 cubes a round (6) pays back in 3 or 2 rounds.
+  Claiming a neutral factory also stops it feeding the cities next to it ([war.md](war.md), city growth).
 - **Claiming a station with energy** (142): Power Purchase Agreement (an event: 2 credits and 2 energy) and Microgrid
   Lab Compact (a building: Action, pay 2 energy) claim a neutral research station in reach as the Claim action does
   (`claim_station`; 148, Matt): the energy replaces the `claim_station` ambassadors, each agent on it
@@ -77,7 +78,7 @@ for the last rounds, and never free a city: the players still reach it and Liber
   agent arrives there: Rally's share for its site stays in the supply (r82), a creation line takes the next site, and so does an adversary-factory
   line's fallback onto a factory (r80, 184's D79), a threat's or Discord card's placement there doesn't happen, and a
   Corrupt line moves no agent onto it. Nothing on it corrupts: a Corrupt line, natural corruption, a station flip
-  (Station Coup, Lab Takeover, Station Seizure: a forced flip too) and a threat corrupting its city (Overrun, Regime
+  (Station Coup, Station Seizure, Lab Takeover: a forced flip too) and a threat corrupting its city (Overrun, Regime
   Change) all skip it (r79, Matt's ruling on D77; agents already on it stay). Troops are not stopped. It comes off at the end of the next adversary turn (its Income beat), so it
   lasts one round; the building places a fresh one each round.
 

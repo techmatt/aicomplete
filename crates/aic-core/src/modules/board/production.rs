@@ -79,16 +79,37 @@ pub fn tip_corp_troops(g: &mut GameState, cx: &mut Cx) -> Res {
 
 /// Growth, after the income step (r75: it was production's first part): bases
 /// make their extra corp troops (corp troops otherwise come from Discord tips at
-/// neutral factories, [`tip_corp_troops`]), then the cities grow factories.
+/// neutral factories, [`tip_corp_troops`]), then the cities grow (190: [`grow_cities`]).
 pub(super) fn produce_units(g: &mut GameState, cx: &mut Cx) -> Res {
     extra_units(g, cx);
-    grow_factories(g, cx)
+    grow_cities(g, cx)
 }
 
 /// The measure's tallies taken as production starts, not a rule: what each
 /// seat left unspent, its dear powers, its top tag, its idle converters.
 fn measure_round(g: &mut GameState, cx: &mut Cx) {
     let w = cx.world;
+    // 190: facilities on the map by owner, and the chips waiting on cities.
+    for h in 0..g.hexes.len() {
+        for (token, name) in [(FACTORY, "factories"), (STATION, "stations")] {
+            if g.tokens(h, token) > 0 {
+                let owner = if corrupted(g, h) {
+                    "adversary"
+                } else if cube_owner(g, h).is_some() {
+                    "player"
+                } else {
+                    "neutral"
+                };
+                cx.per_round(g, &format!("map.{name}.{owner}"), 1);
+            }
+        }
+        if is_city(&w, h) {
+            let n = g.tokens(h, CITY_CHIP);
+            cx.per_round(g, "map.city_chips", n);
+        }
+        let t = g.tokens(h, TROOP);
+        cx.per_round(g, "map.troops", t);
+    }
     // 068: what each seat left unspent.
     for s in 0..g.seats.len() {
         for r in LEFT {
@@ -202,50 +223,95 @@ fn factory_output(g: &mut GameState, cx: &mut Cx) {
     }
 }
 
-/// Each city builds one factory on a free zone next to it, or none (r75, Matt's
-/// ruling 4: a corrupted city searched its whole country). A corrupted city's
-/// factory is the adversary's, on the zone next to an agent if there is one,
-/// else the lowest-numbered; an aligned city's is its owner's, a neutral city's
-/// neutral (claimable), where the players choose (the owner, else seat 0).
-fn grow_factories(g: &mut GameState, cx: &mut Cx) -> Res {
+/// Whether hex `h` holds an unclaimed neutral factory (no owner cube, player or adversary): what feeds the
+/// cities next to it (190).
+pub fn neutral_factory(g: &GameState, h: usize) -> bool {
+    g.tokens(h, FACTORY) > 0 && cube_owner(g, h).is_none() && !corrupted(g, h)
+}
+
+/// The chips city `city` gathers this round (190, Matt 2026-11-11, amendment 8642): 1 for each unclaimed neutral
+/// factory next to it, none of its own. An agent on the city neither blocks nor takes them.
+pub fn city_chip_gain(w: &World, g: &GameState, city: usize) -> i64 {
+    w.map.hexes[city].neighbors.iter().filter(|&&h| neutral_factory(g, h)).count() as i64
+}
+
+/// The facility city `city` builds next (190): whichever of factories and research stations it has fewer of next to
+/// it, any owner (ties: a factory). True for a factory.
+pub fn city_builds_factory(w: &World, g: &GameState, city: usize) -> bool {
+    let near = &w.map.hexes[city].neighbors;
+    let f = near.iter().filter(|&&h| g.tokens(h, FACTORY) > 0).count();
+    let s = near.iter().filter(|&&h| g.tokens(h, STATION) > 0).count();
+    f <= s
+}
+
+/// Where city `city` may build its next facility (190): free hexes of its type next to it (a factory on a free
+/// industrial zone, a station on open land that is not one, no base); with none, those within 2 in its own
+/// country; else none, and its chips wait.
+pub fn city_build_sites(w: &World, g: &GameState, city: usize, factory: bool) -> Vec<usize> {
+    let fits = |h: usize| {
+        if factory {
+            w.map.hexes[h].industrial && !has_building(g, h) && g.tokens(h, LAND_CORRUPTION) == 0
+        } else {
+            buildable(w, g, h) && !w.map.hexes[h].industrial && !is_base(w, h)
+        }
+    };
+    let near: Vec<usize> = (0..g.hexes.len()).filter(|&h| w.map.adjacent(city, h) && fits(h)).collect();
+    if !near.is_empty() {
+        return near;
+    }
+    let country = w.map.hexes[city].country;
+    (0..g.hexes.len())
+        .filter(|&h| w.map.hexes[h].country == country && w.map.distance(city, h) == 2 && fits(h))
+        .collect()
+}
+
+/// City growth (190, Matt 2026-11-11, amendment 8642; it replaces r75's factory a city a round): every city, owned,
+/// neutral or corrupted, gathers chips onto itself from the unclaimed neutral factories next to it, at most
+/// `board.city_chip_cap`. At `board.city_build_chips` it spends them on a **neutral** facility, the type it has
+/// fewer of next to it, on a site [`city_build_sites`] finds: an aligned city's owner picks it, a corrupted city's
+/// is the one next to an agent if any, else the lowest-numbered, as a neutral city's is. With no site, the chips
+/// wait. Cities gather first, then build in hex order.
+fn grow_cities(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
-    for city in 0..g.hexes.len() {
-        if !is_city(&w, city) {
+    let cap = w.int("board.city_chip_cap");
+    let at = w.int("board.city_build_chips");
+    let cities: Vec<usize> = (0..g.hexes.len()).filter(|&h| is_city(&w, h)).collect();
+    for &city in &cities {
+        let have = g.tokens(city, CITY_CHIP);
+        let add = city_chip_gain(&w, g, city).min(cap - have).max(0);
+        if add > 0 {
+            cx.add_tokens(g, city, CITY_CHIP, add);
+            cx.tally(g, "board.city_chips", add);
+            cx.per_round(g, "map.upkeep", add);
+        }
+    }
+    for &city in &cities {
+        if g.tokens(city, CITY_CHIP) < at {
             continue;
         }
-        let near: Vec<usize> = free_zones(&w, g).into_iter().filter(|&z| w.map.adjacent(city, z)).collect();
-        let at = if near.is_empty() {
+        let factory = city_builds_factory(&w, g, city);
+        let sites = city_build_sites(&w, g, city, factory);
+        let pick = if sites.is_empty() {
             None
-        } else if corrupted(g, city) {
-            near.iter().copied().min_by_key(|&z| (!next_to(&w, z, |x| g.tokens(x, ADV_AMBASSADOR) > 0), w.map.hexes[z].number))
+        } else if let (Some(s), false) = (cube_owner(g, city), corrupted(g, city)) {
+            let opts = sites.iter().map(|&z| hex_opt(&w, z)).collect();
+            let kind = if factory { "factory" } else { "research station" };
+            let prompt = || format!("{} builds a neutral {kind} on which hex?", hex_name(&w, city));
+            cx.choose(s, prompt, opts)?.map(|i| sites[i])
         } else {
-            let who = cube_owner(g, city).unwrap_or(0);
-            let opts = near.iter().map(|&z| hex_opt(&w, z)).collect();
-            let prompt = || format!("{} builds a factory on which zone?", hex_name(&w, city));
-            cx.choose(who, prompt, opts)?.map(|i| near[i])
+            sites.iter().copied().min_by_key(|&z| (!next_to(&w, z, |x| g.tokens(x, ADV_AMBASSADOR) > 0), w.map.hexes[z].number))
         };
-        let Some(z) = at else {
+        let Some(z) = pick else {
+            cx.tally(g, "board.city_waits", 1);
             continue;
         };
-        cx.add_tokens(g, z, FACTORY, 1);
-        if corrupted(g, city) {
-            cx.add_tokens(g, z, ADV_CUBE, 1);
-            // 059: corruption replaces any marker here, as on a city.
-            adversary::clear_markers_on(g, cx, z);
-            cx.tally(g, "board.factories_built.adversary", 1);
-        } else if let Some(s) = cube_owner(g, city) {
-            cx.add_tokens(g, z, cube(s), 1);
-            cx.tally(g, "board.factories_built.player", 1);
-        } else {
-            cx.tally(g, "board.factories_built.neutral", 1);
-        }
-        cx.note(Some(z), || {
-            format!(
-                "{} builds a factory at {}",
-                hex_name(&w, city),
-                hex_name(&w, z)
-            )
-        });
+        cx.add_tokens(g, city, CITY_CHIP, -at);
+        let (token, name) = if factory { (FACTORY, "factory") } else { (STATION, "station") };
+        cx.add_tokens(g, z, token, 1);
+        cx.tally(g, &format!("board.{name}_built_by_city"), 1);
+        cx.per_round(g, &format!("map.built.{name}"), 1);
+        cx.per_round(g, "map.upkeep", at + 1);
+        cx.note(Some(z), || format!("{} builds a neutral {name} at {}", hex_name(&w, city), hex_name(&w, z)));
     }
     Ok(())
 }

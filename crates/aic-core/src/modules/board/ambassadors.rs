@@ -193,6 +193,8 @@ pub fn claim_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, route: 
     cx.add_tokens(g, h, cube(seat), 1);
     cx.tally(g, &format!("board.claimed.{}", kind.name()), 1);
     cx.tally(g, &format!("board.claimed_by.{route}.{}", kind.name()), 1);
+    // 190: neutral claims by round (stats only).
+    cx.per_round(g, &format!("map.claims.{}", kind.name()), 1);
     cx.note(Some(h), || format!("Seat {seat} claims the {} at {}", kind.name(), hex_name(&w, h)));
 }
 

@@ -205,7 +205,8 @@
    ],
    "factories": [
     2,
-    8
+    8,
+    13
    ],
    "node": 9,
    "project": {
@@ -272,9 +273,10 @@
     12
    ],
    "neutral_station": 2,
-   "station_sites": [
+   "more_stations": [
     11
    ],
+   "station_sites": [],
    "industry": [
     3,
     14,
@@ -345,6 +347,10 @@
     14
    ],
    "neutral_station": 12,
+   "more_stations": [
+    3,
+    5
+   ],
    "station_sites": [
     8
    ],
@@ -362,12 +368,12 @@
    "project": {
     "name": "Mountain Fusion Works",
     "cubes": 8,
-    "text": "At completion each player cube pays 4 chips and 3 credits, each adversary cube 1 Sway to Discord. Afterward, once a round, with a city here in your reach: 1 research cube for 2 chips. An adversary cube made here afterward is lost.",
+    "text": "At completion each player cube pays 2 chips and 3 credits, each adversary cube 1 Sway to Discord. Afterward, once a round, with a city here in your reach: 1 research cube for 1 chip. An adversary cube made here afterward is lost.",
     "player": [
      {
       "op": "gain",
       "resource": "chips",
-      "amount": 4
+      "amount": 2
      },
      {
       "op": "gain",
@@ -393,7 +399,7 @@
       {
        "op": "gain",
        "resource": "chips",
-       "amount": 2
+       "amount": 1
       }
      ],
      "once": true
@@ -423,9 +429,10 @@
     12
    ],
    "neutral_station": 9,
-   "station_sites": [
+   "more_stations": [
     10
    ],
+   "station_sites": [],
    "industry": [
     7,
     13,

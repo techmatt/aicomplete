@@ -78,8 +78,8 @@ instead, and the first option's items `counter_bonus` (0) more still; from `coun
 
 **Counters (146; Matt's standard).** **One counter option, two at most**: a scarce currency or a tag sacrifice, or
 credits ("pay 3 energy or 12 credits"). Printed amounts are paid (`counter_pct` 100 by tier and `counter_credit_pct`
-100 are the screens' dials). Tier 1: 3 energy, 3 ambassadors, 6 insight, 3 research cubes, 6 chips, 2 tags or 12
-credits; tier 2: 4, 4, 7, 5, 7, 3 tags or 17 credits (146: the screens' 85% folded in). Nothing is priced as a share of income. **A counter never shares
+100 are the screens' dials). Tier 1: 3 energy, 3 ambassadors, 6 insight, 3 research cubes, 3 chips, 2 tags or 12
+credits; tier 2: 4, 4, 7, 5, 4 chips, 3 tags or 17 credits (r83: chips halved with the chip's doubled worth) (146: the screens' 85% folded in). Nothing is priced as a share of income. **A counter never shares
 a currency with its harm** ("pay 7 credits or lose 8" is a design error): no harm takes credits, and a harm taking
 energy, chips, cubes, insight, ambassadors or nodes drops that counter. The load check and `drafts/adversary/check.py`
 refuse a threat with more than two counter options, more than two consequences, a shared currency, a harm on each

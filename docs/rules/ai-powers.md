@@ -17,11 +17,11 @@ still help.
 | Builder | Mint | 3 credits | gain 1 chip |
 | Builder | Expand | 1 energy | place 1 Node |
 | Builder | Buy In | 6 credits | place 1 Node |
-| Builder | Scrap | 1 Industry | gain 2 chips |
+| Builder | Scrap | 1 Industry | gain 1 chip |
 | Builder | Overcharge | 1 Power | gain 2 energy |
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
 | Builder | Focus | 5 credits | gain 1 insight |
-| Builder | Procure | 2 chips | draw 2 cards |
+| Builder | Procure | 1 chip | draw 2 cards |
 | Protector | Bulwark | 1 energy | harden 1 facility in reach |
 | Protector | Expand | 1 energy | place 1 Node |
 | Protector | Accord | 1 Diplomacy | place 1 Node |
@@ -41,9 +41,9 @@ still help.
 <!-- /generated -->
 
 **Sacrifice is late-game liquidation.** Once the cards needing a tag are played, its tags turn into engine rewards,
-each payoff priced to be worth the card: 2 chips, 2 energy, 3 credits, a marker with its Sway, 2 cards (Debrief, 108); a
+each payoff priced to be worth the card: 1 chip (r83: worth 2 before), 2 energy, 3 credits, a marker with its Sway, 2 cards (Debrief, 108); a
 tag and an energy buy a building, a sheltered country or an antimatter (r35). **Card throughput (108):** the Builder's
-Procure turns 2 spare chips into 2 cards, as the Researcher's Fieldwork turns an energy into 3.
+Procure turns a spare chip into 2 cards, as the Researcher's Fieldwork turns an energy into 3.
 
 ## Insight conversions (candidate, r41)
 
@@ -78,7 +78,7 @@ so spare insight can stop one.
 **Insight loops (r41).** Nothing turns insight back into what makes it: insight buys cards, and a card that pays insight
 (a trigger, an income) is capped by plays and slots. No card makes research cubes since r44 (Sample Repository
 was cut), so cubes → insight → cards → cubes has no card in it. Every megaproject converter is once a round (r75, Matt's
-ruling 9; only Onyx's was), which caps Onyx's loop: 1 cube → 2 chips → a 2-chip station → 1 cube a round once the
+ruling 9; only Onyx's was), which caps Onyx's loop: 1 cube → 1 chip → a 1-chip station → 1 cube a round once the
 station's card is complete, which would otherwise double its cubes each round, capped only by open hexes in reach.
 
 ## Shelters and hardening

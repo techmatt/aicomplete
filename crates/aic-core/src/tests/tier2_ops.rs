@@ -138,3 +138,13 @@ fn a_firewall_guards_overrun() {
     overrun(&mut g);
     assert!(corrupted(&g, city));
 }
+
+/// r83 (Matt, 2026-11-11, M1): Station Seizure lands 2 agents on its station, then makes the normal flip check
+/// (`station_flip_at` agents, no player ambassador, no guard), not a forced flip.
+#[test]
+fn station_seizure_lands_two_agents_then_flips_as_a_station_flip_does() {
+    let t = crate::content().threat("station_seizure");
+    assert!(matches!(t.effects[0], Op::Create { count: 2, .. }), "{:?}", t.effects);
+    assert!(matches!(t.effects[1], Op::FlipStation { force: false, each_country: false }), "{:?}", t.effects);
+    assert_eq!(t.effects.len(), 2, "two consequences at most: the 4 compute went");
+}

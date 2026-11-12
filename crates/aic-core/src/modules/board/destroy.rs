@@ -135,7 +135,8 @@ pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause
     cx.note(Some(h), || {
         format!("{} at {} destroyed", piece_name(kind), hex_name(&w, h))
     });
-    if cause == Cause::War {
+    // r83: only the factory sways (War Takes Ground's node on its hex sways nothing more).
+    if cause == Cause::War && kind == FACTORY {
         alignment::discord_from(g, cx, "war", w.int("board.destruction_discord"));
     }
     Ok(true)

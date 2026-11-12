@@ -126,7 +126,8 @@ fn the_cheap_powers_sacrifice_one_tag_for_chips_or_credits() {
     answer_all(&rules, &mut g);
     rules.apply_mut(&mut g, &power(&rules, 1, "Stand Down"), None).unwrap();
     answer_all(&rules, &mut g);
-    assert_eq!((g.resource(0, Resource::Chips), g.resource(1, Resource::Credits)), (2, 3));
+    // 190: Scrap pays 1 chip (a chip is worth 4 since r83).
+    assert_eq!((g.resource(0, Resource::Chips), g.resource(1, Resource::Credits)), (1, 3));
     assert!(g.pile(&cards::played(0)).is_empty() && g.pile(&cards::played(1)).is_empty());
 }
 

@@ -2,65 +2,159 @@
 
 use super::*;
 use crate::modules::board;
+use crate::modules::common::CITY_CHIP;
 
+/// 190 (Matt, 2026-11-11, amendment 8642): a city gathers 1 chip a round from each unclaimed neutral factory next
+/// to it, none of its own; a claimed or corrupted factory adds nothing; an agent on the city blocks nothing; it holds
+/// at most `board.city_chip_cap`.
 #[test]
-fn cities_grow_factories_that_take_their_owner() {
+fn a_city_gathers_a_chip_from_each_unclaimed_neutral_factory_next_to_it() {
     let (rules, g0) = lab(&["board.bases"]);
     let m = &rules.map;
     let at = |n: u8| m.numbered(0, n);
     // Country 0: cities 6, 7, 14; zones 2 (by 6), 8 and 11 (by 7), 11 and 13 (by 14).
-    // Cities build in board order: 6, 7, 14.
     assert_eq!(
         (piece(0).cities.clone(), piece(0).industry.clone()),
         (vec![7, 6, 14], vec![2, 8, 11, 13])
     );
-    let (c6, c7) = (at(6), at(7));
-    let zones =
-        |g: &GameState| [2, 8, 11, 13].map(|n| (g.tokens(at(n), FACTORY), cube_on(g, at(n))));
+    let chips = |g: &GameState| [6, 7, 14].map(|n| g.tokens(at(n), CITY_CHIP));
 
-    // Clean 6 builds at 2 (its only zone), neutral (no nodes near);
-    // corrupted 7 and 14 at the lowest-numbered free zones, 8 then 11,
-    // adversary-owned.
+    // Nothing next to a city: no chip, and nothing is built (r75's factory a round is gone).
     let mut g = g0.clone();
-    put(&mut g, c7, ADV_CUBE, 1);
-    put(&mut g, at(14), ADV_CUBE, 1);
-    let mut gg = g.clone();
-    run(&rules, &mut gg);
-    answer_all(&rules, &mut gg);
-    let adv = Some("cube:adversary".to_string());
-    assert_eq!(
-        zones(&gg),
-        [(1, None), (1, adv.clone()), (1, adv.clone()), (0, None)]
-    );
+    run(&rules, &mut g);
+    answer_all(&rules, &mut g);
+    assert_eq!(chips(&g), [0, 0, 0]);
+    assert!((0..g.hexes.len()).all(|h| g.tokens(h, FACTORY) == 0 && g.tokens(h, STATION) == 0));
 
-    // An aligned city's factory is its owner's.
-    let mut gg = g0.clone();
-    put(&mut gg, c6, cube(1), 1);
-    run(&rules, &mut gg);
-    answer_all(&rules, &mut gg);
-    assert_eq!(zones(&gg)[0], (1, Some("cube:1".into())));
+    // Neutral factories on 8 and 11; 2 claimed by seat 0; an agent on 7.
+    let mut g = g0.clone();
+    put(&mut g, at(8), FACTORY, 1);
+    put(&mut g, at(11), FACTORY, 1);
+    put(&mut g, at(2), FACTORY, 1);
+    put(&mut g, at(2), cube(0), 1);
+    put(&mut g, at(7), ADV_AMBASSADOR, 1);
+    run(&rules, &mut g);
+    answer_all(&rules, &mut g);
+    assert_eq!(chips(&g), [0, 2, 1]);
 
-    // A clean city with two free zones: the players choose (seat 0).
-    let mut gg = g0.clone();
-    run(&rules, &mut gg);
-    let p = gg.pending.as_ref().expect("a factory choice");
-    assert!(
-        p.ask.prompt.starts_with(&format!("{} #7 builds a factory", piece(0).name)),
-        "{}",
-        p.ask.prompt
-    );
-    let options: BTreeSet<usize> = p
-        .ask
-        .options
-        .iter()
-        .map(|o| m.find(o.target.unwrap()).unwrap())
-        .collect();
-    assert_eq!(options, [at(8), at(11)].into());
-    answer_hex(&rules, &mut gg, at(11));
-    // 14 is then left only 13.
-    answer_all(&rules, &mut gg);
-    assert_eq!(zones(&gg).map(|z| z.0), [1, 0, 1, 1]);
+    // A corrupted factory adds nothing either.
+    let mut g = g0.clone();
+    put(&mut g, at(2), FACTORY, 1);
+    put(&mut g, at(2), ADV_CUBE, 1);
+    run(&rules, &mut g);
+    assert_eq!(chips(&g)[0], 0);
+
+    // The cap: 2 waiting and two factories next to it reach 3, not 4, and it builds.
+    let mut g = g0.clone();
+    put(&mut g, at(11), FACTORY, 1);
+    put(&mut g, at(13), FACTORY, 1);
+    put(&mut g, at(14), CITY_CHIP, 2);
+    put(&mut g, at(10), STATION, 1);
+    put(&mut g, at(15), STATION, 1);
+    let before = g.stats.counters.get("board.city_chips").copied().unwrap_or(0);
+    run(&rules, &mut g);
+    answer_all(&rules, &mut g);
+    assert_eq!(g.stats.counters.get("board.city_chips").copied().unwrap_or(0) - before, 1 + 1, "14 gets 1, 7 gets 1");
+    assert_eq!(rules.world().int("board.city_chip_cap"), 3);
 }
+
+/// 190: at 3 chips a city spends them on a neutral facility, whichever of factories and research stations it has
+/// fewer of next to it (ties: a factory), any owner's counted.
+#[test]
+fn at_three_chips_a_city_builds_a_neutral_facility_of_the_kind_it_has_fewer_of() {
+    let (rules, g0) = lab(&["board.bases"]);
+    let m = &rules.map;
+    let at = |n: u8| m.numbered(0, n);
+    assert_eq!(rules.world().int("board.city_build_chips"), 3);
+    let near = |g: &GameState, c: u8, kind: &str| m.hexes[at(c)].neighbors.iter().filter(|&&h| g.tokens(h, kind) > 0).count();
+
+    // 6 has a factory next to it (a player's: claimed, so it feeds nothing) and no station: a station, neutral.
+    let mut g = g0.clone();
+    put(&mut g, at(2), FACTORY, 1);
+    put(&mut g, at(2), cube(1), 1);
+    put(&mut g, at(6), CITY_CHIP, 3);
+    run(&rules, &mut g);
+    answer_all(&rules, &mut g);
+    assert_eq!(g.tokens(at(6), CITY_CHIP), 0);
+    assert_eq!((near(&g, 6, STATION), near(&g, 6, FACTORY)), (1, 1));
+    let s = m.hexes[at(6)].neighbors.iter().copied().find(|&h| g.tokens(h, STATION) > 0).unwrap();
+    assert_eq!(cube_on(&g, s), None, "neutral");
+
+    // 14 has nothing next to it: a tie, so a factory, neutral, on its lowest free zone (11).
+    let mut g = g0.clone();
+    put(&mut g, at(14), CITY_CHIP, 3);
+    run(&rules, &mut g);
+    answer_all(&rules, &mut g);
+    assert_eq!((g.tokens(at(11), FACTORY), cube_on(&g, at(11))), (1, None));
+    assert_eq!(near(&g, 14, STATION), 0);
+}
+
+/// 190: an aligned city's owner picks the hex; a corrupted city builds neutral too, next to an agent if it can,
+/// else on its lowest-numbered site; a neutral city on its lowest-numbered site.
+#[test]
+fn the_owner_picks_the_hex_and_a_corrupted_citys_facility_is_neutral() {
+    let (rules, g0) = lab(&["board.bases"]);
+    let m = &rules.map;
+    let at = |n: u8| m.numbered(0, n);
+
+    // Aligned 7 (seat 1), a tie: a factory, its owner choosing between 8 and 11.
+    let mut g = g0.clone();
+    put(&mut g, at(7), cube(1), 1);
+    put(&mut g, at(7), CITY_CHIP, 3);
+    run(&rules, &mut g);
+    let p = g.pending.as_ref().expect("the owner's choice");
+    assert_eq!(p.ask.seat, 1);
+    assert!(p.ask.prompt.starts_with(&format!("{} #7 builds a neutral factory", piece(0).name)), "{}", p.ask.prompt);
+    answer_hex(&rules, &mut g, at(11));
+    answer_all(&rules, &mut g);
+    assert_eq!((g.tokens(at(11), FACTORY), cube_on(&g, at(11))), (1, None));
+    assert_eq!(g.tokens(at(8), FACTORY), 0);
+
+    // Corrupted 7: nobody is asked; 8 with no agent near, 11 with an agent on 14 beside it; neutral either way.
+    for (agent, want) in [(false, 8), (true, 11)] {
+        let mut g = g0.clone();
+        put(&mut g, at(7), ADV_CUBE, 1);
+        put(&mut g, at(7), CITY_CHIP, 3);
+        if agent {
+            put(&mut g, at(14), ADV_AMBASSADOR, 1);
+        }
+        run(&rules, &mut g);
+        assert!(g.pending.is_none());
+        assert_eq!((g.tokens(at(want), FACTORY), cube_on(&g, at(want))), (1, None), "agent {agent}");
+    }
+}
+
+/// 190: with no free hex of its kind next to it, a city builds within 2 in its own country; with none there, nothing
+/// is built and its chips wait (no switch to the other kind, amendment 8642).
+#[test]
+fn with_no_site_next_to_it_a_city_builds_within_two_in_its_country_else_its_chips_wait() {
+    let (rules, g0) = lab(&["board.bases"]);
+    let m = &rules.map;
+    let at = |n: u8| m.numbered(0, n);
+    // 6: a station on 2 (its only zone), so it wants a factory and has no zone next to it.
+    let mut g1 = g0.clone();
+    put(&mut g1, at(2), STATION, 1);
+    put(&mut g1, at(6), CITY_CHIP, 3);
+    let mut g = g1.clone();
+    run(&rules, &mut g);
+    answer_all(&rules, &mut g);
+    let built: Vec<u8> = [8, 11, 13].into_iter().filter(|&n| g.tokens(at(n), FACTORY) > 0).collect();
+    assert_eq!(built, vec![8], "the lowest zone within 2");
+    assert_eq!(m.distance(at(6), at(8)), 2);
+
+    // Every zone within 2 taken: no factory, no station instead, and the chips wait.
+    let mut g = g1.clone();
+    for n in [8, 11, 13] {
+        put(&mut g, at(n), STATION, 1);
+    }
+    let stations = (0..g.hexes.len()).filter(|&h| g.tokens(h, STATION) > 0).count();
+    run(&rules, &mut g);
+    answer_all(&rules, &mut g);
+    assert_eq!(g.tokens(at(6), CITY_CHIP), 3);
+    assert_eq!((0..g.hexes.len()).filter(|&h| g.tokens(h, STATION) > 0).count(), stations);
+    assert!((0..g.hexes.len()).all(|h| g.tokens(h, FACTORY) == 0));
+}
+
 
 fn cube_on(g: &GameState, h: usize) -> Option<String> {
     g.hexes[h]
@@ -70,109 +164,6 @@ fn cube_on(g: &GameState, h: usize) -> Option<String> {
         .map(|k| k.to_string())
 }
 
-/// r75 (Matt's ruling 4): a corrupted city builds only on a free zone next to it
-/// (it searched its whole country): the one next to an agent if any, else the
-/// lowest-numbered; with none free it builds nowhere.
-#[test]
-fn a_corrupted_city_builds_next_to_itself_by_an_agent_else_at_its_lowest_free_zone() {
-    let (rules, mut g0) = lab(&["board.bases"]);
-    let m = &rules.map;
-    let at = |n: u8| m.numbered(0, n);
-    // Country 0 (see above): zone 2 is taken, so city 6 (first to build) has no
-    // free zone next to it; 8 and 11 are 7's, 11 and 13 are 14's.
-    put(&mut g0, at(2), STATION, 1);
-    let adv = Some("cube:adversary".to_string());
-    let zone = |g: &GameState, n: u8| (g.tokens(at(n), FACTORY), cube_on(g, at(n)));
-    let adversary_zones = |g: &GameState| [8, 11, 13].into_iter().filter(|&n| zone(g, n).1 == adv).count();
-
-    // Corrupted 6 builds nowhere, though 8 is free in its country.
-    let mut g = g0.clone();
-    put(&mut g, at(6), ADV_CUBE, 1);
-    assert!(!m.adjacent(at(6), at(8)));
-    run(&rules, &mut g);
-    answer_all(&rules, &mut g);
-    assert_eq!(adversary_zones(&g), 0);
-
-    // Corrupted 7 with no agent: its lowest-numbered free zone, 8.
-    let mut g = g0.clone();
-    put(&mut g, at(7), ADV_CUBE, 1);
-    assert!(m.adjacent(at(7), at(8)) && m.adjacent(at(7), at(11)));
-    run(&rules, &mut g);
-    answer_all(&rules, &mut g);
-    assert_eq!(zone(&g, 8), (1, adv.clone()));
-    assert_eq!(adversary_zones(&g), 1);
-
-    // An agent next to 11 (on 14), not 8, draws it to 11.
-    let mut g = g0.clone();
-    put(&mut g, at(7), ADV_CUBE, 1);
-    put(&mut g, at(14), ADV_AMBASSADOR, 1);
-    assert!(m.adjacent(at(14), at(11)) && !m.adjacent(at(14), at(8)));
-    run(&rules, &mut g);
-    answer_all(&rules, &mut g);
-    assert_eq!(zone(&g, 11), (1, adv.clone()));
-    assert_ne!(zone(&g, 8).1, adv);
-
-    // A player ambassador doesn't repel it.
-    let mut g = g0.clone();
-    put(&mut g, at(7), ADV_CUBE, 1);
-    put(&mut g, at(8), ambassador(0), 1);
-    run(&rules, &mut g);
-    answer_all(&rules, &mut g);
-    assert_eq!(zone(&g, 8), (1, adv));
-}
-
-/// r75 (Matt's ruling 4): a neutral city's factory is neutral (claimable),
-/// whatever nodes are near (the player with the most nodes by its zone took it).
-#[test]
-fn a_neutral_citys_factory_is_neutral_whatever_nodes_are_near() {
-    let (rules, mut g0) = lab(&["board.bases"]);
-    let m = &rules.map;
-    let at = |n: u8| m.numbered(0, n);
-    // Country 0 (see above), 8 taken: 6 builds at 2, 7 at 11, 14 at 13.
-    put(&mut g0, at(8), STATION, 1);
-    let owners = |g: &GameState| {
-        [2, 11, 13].map(|n| {
-            assert_eq!(g.tokens(at(n), FACTORY), 1, "zone {n}");
-            cube_on(g, at(n))
-        })
-    };
-
-    // Nobody's node near: neutral.
-    let mut g = g0.clone();
-    run(&rules, &mut g);
-    answer_all(&rules, &mut g);
-    assert_eq!(owners(&g), [None, None, None]);
-
-    // Seat 1 next to 2 and on 11; seat 0 on 9 and 10, both next to 13: still
-    // neutral, and nobody is asked who takes it: the only ask is 14's zone
-    // (13, or a zone of the next country beside it), seat 0's.
-    let mut g = g0.clone();
-    put(&mut g, at(1), node(1), 1);
-    put(&mut g, at(11), node(1), 1);
-    put(&mut g, at(9), node(0), 1);
-    put(&mut g, at(10), node(0), 1);
-    run(&rules, &mut g);
-    let p = g.pending.as_ref().expect("14's zone");
-    assert!(p.ask.seat == 0 && p.ask.prompt.starts_with(&format!("{} #14 builds a factory", piece(0).name)), "{:?}", p.ask);
-    answer_hex(&rules, &mut g, at(13));
-    // The other country's cities ask only for zones too.
-    while let Some(p) = g.pending.as_ref() {
-        assert!(p.ask.seat == 0 && p.ask.prompt.contains("builds a factory on which zone?"), "{:?}", p.ask);
-        answer(&rules, &mut g, 0);
-    }
-    assert_eq!(owners(&g), [None, None, None]);
-    let built = |g: &GameState| g.stats.counters.get("board.factories_built.player").copied().unwrap_or(0);
-    assert_eq!(built(&g) - built(&g0), 0);
-    let c = |s: usize| Some(cube(s).to_string());
-
-    // An aligned city's factory stays its owner's, whatever node is near.
-    let mut g = g0.clone();
-    put(&mut g, at(6), cube(0), 1);
-    put(&mut g, at(1), node(1), 1);
-    run(&rules, &mut g);
-    answer_all(&rules, &mut g);
-    assert_eq!(owners(&g)[0], c(0));
-}
 
 #[test]
 fn player_factories_make_chips_every_round() {
@@ -194,6 +185,7 @@ fn player_factories_make_chips_every_round() {
         g.round = round;
         run(&rules, &mut g);
         let chips = rules.world().int("board.factory_chips");
+        assert_eq!(chips, 1, "190: a player's factory makes 1 chip");
         assert_eq!(g.resource(0, Resource::Chips) - g0.resource(0, Resource::Chips), chips, "round {round}");
     }
 }

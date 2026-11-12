@@ -4,8 +4,9 @@
 
 ## Each round
 
-The adversary is a **board** (the Militarist's: project slots, three rules, a difficulty line, printed in
-[adversary-cards.md](../adversary-cards.md)), an **income** and an **event deck** (below). Its turn,
+The adversary is a **board** (the Militarist's: project slots, four rules, a difficulty line, printed in
+[adversary-cards.md](../adversary-cards.md); r83 adds **War Takes Ground**, node loss as this adversary's own axis:
+a drone that destroys a factory destroys a node on its hex too, [war.md](war.md)), an **income** and an **event deck** (below). Its turn,
 after the round's Sway step, is **four beats**, a strip on its board (r80, Matt's ruling #41; working names, one
 place: `adversary::BEATS`). Threats still execute in their own step after production ([threats.md](threats.md)).
 
@@ -56,8 +57,9 @@ or a node's). **One aftermath (r80, Matt's ruling #42): whatever corrupts takes 
 - **A corrupted site** takes the adversary's cube (a player cube and any marker come off; [ambassadors.md](ambassadors.md)).
   **Corruption destroys only a node on the corrupted hex itself**; its owner may spend a protection, such as their
   own ambassador there ([war.md](war.md)). Player ambassadors left on the hex are lost. Sanctuary (capstone): corruption never destroys your nodes.
-- **A corrupted node hex** loses the node (the protections apply, [war.md](war.md)); when the node goes, the
-  hex takes a land-corruption token, no marker. Its agents go to the supply. A last node is no exception (175).
+- **A corrupted node hex** loses the node (the protections apply, [war.md](war.md)) and **corrupts like open land**:
+  it takes a land-corruption token, no marker, whether or not a protection saves the node (r83, Matt's ruling #56).
+  Its agents go to the supply. A last node is no exception (175).
 - **Land corruption** is a hex token (open land that corrupts, a node hex that does): nothing is built there (no node,
   factory or research station), and each drips `blight_discord` Discord a round. The Clear action takes one in reach
   off (no reward).
@@ -70,11 +72,11 @@ and the Take down a botnet action (`botnet_credits` 5, a botnet in reach with yo
 
 Adversary compute is spent on **projects**, one shared deck for every adversary
 ([`content/projects.json`](../../content/projects.json)), shuffled at setup and dealt into the adversary board's
-**slots** (the Militarist's: one Security slot and two open ones) by **the draw rule** every tagged deck uses: turn up
-the top card; it goes into the first empty slot it fits (a slot's tag, or any in an open slot; Universal fits
-every slot), else to the project discard, which reshuffles when the deck runs out. **When a project leaves** (resolved
+**slots** (the Militarist's: three open slots, r83: slot 1's tag is gone, Matt's ruling #57) by **the draw rule**
+every tagged deck uses: turn up the top card; it goes into the first empty slot it fits (a slot's tag, or any in an
+open slot), else to the project discard, which reshuffles when the deck runs out. **When a project leaves** (resolved
 or discarded), the projects to its right slide one slot left and the rightmost empty slot refills at once (r80, Matt's
-ruling #49): slot 1's Security tag binds only a card dealt into it (at setup, in practice), not one sliding in.
+ruling #49).
 Costs are printed per player count (the table below).
 
 - **The compute step (175, Matt's ruling).** All compute is added **once a round** (the Income beat, after the agent income):

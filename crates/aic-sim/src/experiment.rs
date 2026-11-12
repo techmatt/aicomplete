@@ -1153,6 +1153,8 @@ pub const PER_ROUND_EXPORT: &[(&str, &str)] = &[
     ("unspent.", ""),
     // 135: threats countered and uncountered, round by round.
     ("threats.", ""),
+    // 190: facilities by owner, claims, city growth and its token moves, troops on the map, round by round.
+    ("map.", ""),
 ];
 
 fn ms_since(t: Instant) -> f64 {

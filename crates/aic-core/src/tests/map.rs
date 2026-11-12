@@ -36,7 +36,8 @@ fn every_layout_builds_and_every_piece_follows_the_design() {
                 "country {c}: two cities to corrupt at difficulty 4"
             );
             assert_eq!(p.stations.len(), 1, "country {c}");
-            assert_eq!(p.factories.len(), 2, "country {c}");
+            // 190: 2-3, so each city has one next to it.
+            assert!((2..=3).contains(&p.factories.len()), "country {c}");
             assert_eq!(p.industry.len(), 4, "country {c}: about 4 industrial zones");
             assert!(p.ocean.len() <= 2, "country {c}");
             let count = |k: HexKind| {
@@ -195,20 +196,40 @@ fn an_ocean_edge_is_not_a_front() {
 
 #[test]
 fn station_sites_are_open_free_land_and_never_a_base() {
-    // 137: empty station sites are printed, 1-2 a country, on open land with no
-    // setup piece or industrial zone, and no layout puts a base on one.
+    // 137: empty station sites are printed, at most 2 a country (190: two countries' went to setup stations), on
+    // open land with no setup piece or industrial zone, and no layout puts a base on one.
     let content = crate::content();
     for n in 1..=4u8 {
         let map = Map::build(content, n).unwrap();
         for c in 0..n as usize {
             let p = &content.map.countries[c];
-            assert!((1..=2).contains(&p.station_sites.len()), "country {c}");
+            assert!(p.station_sites.len() <= 2, "country {c}");
             for &s in &p.station_sites {
                 let h = map.numbered(c, s);
                 assert_eq!(map.hexes[h].kind, HexKind::Open, "{n} countries, country {c}, site {s}");
                 assert!(map.hexes[h].station_site);
                 assert!(!map.hexes[h].industrial);
                 assert!(!p.stations.contains(&s) && p.neutral_station != s && p.node != s);
+                assert!(!p.more_stations.contains(&s));
+            }
+        }
+    }
+}
+
+#[test]
+fn every_city_starts_with_a_neutral_factory_and_a_neutral_station_next_to_it() {
+    // 190 (Matt, 2026-11-11): where the map allows, in every layout; on this map it allows everywhere.
+    let content = crate::content();
+    for n in 1..=4u8 {
+        let map = Map::build(content, n).unwrap();
+        for c in 0..n as usize {
+            let p = &content.map.countries[c];
+            let stations: Vec<u8> = [&[p.neutral_station][..], &p.more_stations].concat();
+            for &city in &p.cities {
+                let h = map.numbered(c, city);
+                let near = |l: &[u8]| l.iter().any(|&x| map.adjacent(h, map.numbered(c, x)));
+                assert!(near(&p.factories), "{n} countries, country {c}, city {city}: a factory");
+                assert!(near(&stations), "{n} countries, country {c}, city {city}: a station");
             }
         }
     }

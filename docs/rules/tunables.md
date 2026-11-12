@@ -30,8 +30,10 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.troop_node` | 4 | 0..4 | adversary troops strike nodes from this stage of adversary card on (0: always, 4: never) |
 | `board.vigil_cap` | 1 | 1..10 | 185: troops a round whose march ending next to a seat's node pays its Vigil (later ones that round pay nothing) |
 | `board.node_marker` | 1 | 0..1 | 1: a destroyed node leaves a corruption marker on its hex |
-| `board.station_chips` | 2 | 0..20 | standard action: chips to build a research station |
-| `board.factory_chips` | 2 | 0..5 | chips a player-owned factory makes its owner each round |
+| `board.station_chips` | 1 | 0..20 | standard action: chips to build a research station |
+| `board.factory_chips` | 1 | 0..5 | chips a player-owned factory makes its owner each round |
+| `board.city_build_chips` | 3 | 1..10 | 190: chips a city spends to build a neutral factory or research station |
+| `board.city_chip_cap` | 3 | 1..10 | 190: chips a city holds at most while they wait (one each round from each unclaimed neutral factory next to it) |
 | `board.remove_ambassadors` | 1 | 1..5 | standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing) |
 | `board.remove_count` | 3 | 1..3 | standard action Remove agents: agents it removes, at most, from any hexes in reach (the player's choice) |
 | `board.clear_cost` | 2 | 0..20 | standard action: credits to clear a corruption marker within reach |
@@ -78,6 +80,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.tier2_early` | 1 | 0..3 | difficulty 4+: tier-2 threats start this many rounds sooner |
 | `adversary.discord_removed` | 0 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
 | `adversary.wall_troops` | 1 | 0..5 | build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop) |
+| `adversary.war_node` | 1 | 0..1 | build (r83, the Militarist's War Takes Ground): 1: a drone strike that destroys a factory destroys a node on its hex too |
 | `adversary.station_flip_at` | 2 | 0..5 | agents on a player's research station before an effect can flip it (short of that, one lands there instead) |
 | `adversary.botnet_compute` | 1 | 0..5 | adversary compute each botnet makes a round (none with a player ambassador on it) |
 | `adversary.board_difficulty_at` | 2 | 0..5 | the difficulty level from which the adversary board's own difficulty line applies (135) |

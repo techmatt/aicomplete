@@ -44,7 +44,7 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   worth, never the price cut to make it show a gain. A card the strategist leaves unplayed gets more power, not a lower
   price.** A card under 1.0 is too dear; one over its maximum is
   repriced or reported. Every removal number fits the board (3-6 ambassadors, 1-2 troops, 3-6 compute). Where the table disagrees, the
-  anchor wins for the price and the table stays the agents': `values.json` has chips 2 (anchor 3), insight 2.5 (4),
+  anchor wins for the price and the table stays the agents': `values.json` has chips 4 (anchor 6; r83 doubled both and halved every chip number), insight 2.5 (4),
   a drawn card 4 (5), an ambassador removed about 2.2 and a troop 11 (5 each), a project discard 8 (about 24 at 2 a
   compute). The recipe and fit below are the agents' view and the effect ledger's.
 - **Tier is power** (ruling 4): costs and effects go up a lot with tier, few cards cost 0, and tier is not a proxy for

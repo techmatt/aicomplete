@@ -72,13 +72,13 @@
     "cost": 5,
     "capstone": {
      "name": "Full Capacity",
-     "text": "1 chip each round per 2 Industry tags on your cards.",
+     "text": "1 chip each round per 4 Industry tags on your cards.",
      "passives": [
       {
        "op": "income_per_tag",
        "resource": "chips",
        "tag": "industry",
-       "per": 2
+       "per": 4
       }
      ]
     }
@@ -145,12 +145,12 @@
       1
      ]
     ],
-    "text": "gain 2 chips",
+    "text": "gain 1 chip",
     "effects": [
      {
       "op": "gain",
       "resource": "chips",
-      "amount": 2
+      "amount": 1
      }
     ]
    },
@@ -216,7 +216,7 @@
     "cost": [
      [
       "chips",
-      2
+      1
      ]
     ],
     "text": "draw 2 cards",

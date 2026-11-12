@@ -538,7 +538,8 @@ impl<'a> Cx<'a> {
     }
 
     /// Adds `n` to the per-round counter `key` (full key) for the current
-    /// round: entry `r` is round `r`, entry 0 setup.
+    /// round: entry `r` is round `r`, entry 0 setup. games.jsonl carries it
+    /// (as `<key>.rNN`) only if its prefix is in aic-sim's `PER_ROUND_EXPORT`.
     pub fn per_round(&mut self, g: &mut GameState, key: &str, n: i64) {
         let r = g.round as usize;
         let v = Arc::make_mut(g.stats.per_round.entry_str(key).or_default());

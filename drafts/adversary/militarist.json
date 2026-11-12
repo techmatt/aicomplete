@@ -4,7 +4,7 @@
   "name": "The Militarist",
   "project_slots": [
    {
-    "tag": "security"
+    "tag": null
    },
    {
     "tag": null
@@ -48,11 +48,23 @@
       "past_cap": true
      }
     ]
+   },
+   {
+    "name": "War Takes Ground",
+    "text": "When a Drone destroys a factory, it also destroys a Node on that hex.",
+    "effects": [
+     {
+      "rule": "board.war",
+      "reads": "war_node",
+      "note": "r83 (Matt, 2026-11-11, #52 follow-up): node loss as this adversary's own axis; a protection on the node still applies"
+     }
+    ]
    }
   ],
   "build": {
    "corrupt_at": 4,
    "wall_troops": 1,
+   "war_node": 1,
    "botnet_compute": 1
   },
   "difficulty": {

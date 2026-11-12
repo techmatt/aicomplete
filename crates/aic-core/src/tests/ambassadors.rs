@@ -292,20 +292,20 @@ fn a_player_ambassador_absorbs_a_destruction_when_its_owner_spends_it() {
     assert_eq!(g.var("alignment.discord"), discord);
 }
 
-/// 175: ambassadors are non-combatants: a troop starting a step on an ambassador's hex removes one instead
-/// of moving or striking, so with 2 steps it removes two.
+/// r83 (Matt, 2026-11-11, #44): troops ignore ambassadors: a troop on a hex with another seat's ambassadors
+/// neither stops for nor removes them, and strikes the facility (only the owner's own ambassador guards it).
 #[test]
-fn a_troop_on_an_ambassadors_hex_removes_one_a_step() {
+fn a_troop_ignores_ambassadors_and_strikes_the_facility() {
     let (rules, mut g) = lab(&["board.march"]);
     let m = &rules.map;
     let at = m.numbered(0, piece(0).factories[0]);
     put(&mut g, at, FACTORY, 1);
     put(&mut g, at, cube(0), 1);
     put(&mut g, at, TROOP, 1);
-    put(&mut g, at, ambassador(0), 2);
+    put(&mut g, at, ambassador(1), 2);
     run_answered(&rules, &mut g);
-    assert_eq!((g.tokens(at, ambassador(0)), g.tokens(at, FACTORY), g.tokens(at, TROOP)), (0, 1, 1));
-    assert_eq!(g.stats.counters["board.troop_removed_ambassador"], 2);
+    assert_eq!((g.tokens(at, ambassador(1)), g.tokens(at, FACTORY)), (2, 0));
+    assert!(!g.stats.counters.contains_key("board.troop_removed_ambassador"));
 }
 
 /// 137: only the piece owner's ambassador is armor: another seat's on an owned

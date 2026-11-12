@@ -85,8 +85,9 @@ pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) 
 }
 
 /// 175, a node hex corrupts: its agents go to the supply and the node is destroyed (the protections apply;
-/// the Sanctuary capstone keeps it). r80 (ruling #42, one aftermath for all corruption): a node it destroys
-/// leaves land corruption, the one adversary mark, in place of the node loss's marker.
+/// the Sanctuary capstone keeps it). r83 (Matt, 2026-11-11, #56): a node hex corrupts like open land: it always
+/// takes land corruption, the one adversary mark, whether or not a protection saves the node (r80 marked it only
+/// when the node was lost).
 fn corrupt_node(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
     let w = cx.world;
     let n = g.tokens(h, ADV_AMBASSADOR);
@@ -94,13 +95,11 @@ fn corrupt_node(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
     if let Some(s) = node_owner(g, h) {
         if !cards::has_passive(&w, g, s, |p| matches!(p, Op::CorruptionShield)) {
             board::destroy_piece(g, cx, h, node(s), board::Cause::Effect("corruption"))?;
-            if node_owner(g, h).is_none() {
-                clear_markers_on(g, cx, h);
-                if g.tokens(h, LAND_CORRUPTION) == 0 {
-                    cx.add_tokens(g, h, LAND_CORRUPTION, 1);
-                }
-            }
         }
+    }
+    clear_markers_on(g, cx, h);
+    if g.tokens(h, LAND_CORRUPTION) == 0 {
+        cx.add_tokens(g, h, LAND_CORRUPTION, 1);
     }
     cx.tally(g, "adversary.corruptions", 1);
     cx.tally(g, "adversary.corruptions.node", 1);

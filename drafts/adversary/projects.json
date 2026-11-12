@@ -9,12 +9,12 @@
    ],
    "cost": 4,
    "ongoing": false,
-   "text": "Each player pays 5 chips or discards 3 cards.",
+   "text": "Each player pays 3 chips or discards 3 cards.",
    "effects": [
     {
      "op": "requisition",
      "resource": "chips",
-     "amount": 5,
+     "amount": 3,
      "cards": 3
     }
    ],
@@ -22,7 +22,7 @@
     "cards discarded",
     "credits or income lost"
    ],
-   "value": "absorbs 4 compute a player (8 at 2 players, 8.8 at values.json compute 1.1); harm 20 (Each player pays 5 chips or discards 3 cards: 20); 2.50 a compute.",
+   "value": "absorbs 4 compute a player (8 at 2 players, 8.8 at values.json compute 1.1); harm 20 (Each player pays 3 chips or discards 3 cards: 20); 2.50 a compute.",
    "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
     "151: rewritten to the standard (one consequence, each board, deterministic)"

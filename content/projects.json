@@ -7,12 +7,12 @@
   ],
   "cost": 4,
   "ongoing": false,
-  "text": "Each player pays 5 chips or discards 3 cards.",
+  "text": "Each player pays 3 chips or discards 3 cards.",
   "effects": [
    {
     "op": "requisition",
     "resource": "chips",
-    "amount": 5,
+    "amount": 3,
     "cards": 3
    }
   ],

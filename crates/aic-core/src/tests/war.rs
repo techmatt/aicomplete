@@ -31,16 +31,23 @@ fn at_war_units_cancel_and_the_surplus_destroys_rival_buildings() {
     assert_eq!(discord(&g), 2);
     assert_eq!(g.stats.counters["alignment.discord_from.war"], 2);
 
-    // r80 (ruling #52): a drone's strike destroys only the factory, never the node on its hex (027-r79 took it);
-    // a surplus with nothing to hit is spent.
+    // r83 (Matt, 2026-11-11, amendment 8616): the Militarist's War Takes Ground: a drone's strike that destroys the
+    // factory destroys the node on its hex too (r80 spared it); a surplus with nothing to hit is spent.
     let mut g = g0.clone();
     put(&mut g, f1, FACTORY, 1);
     put(&mut g, f1, node(1), 1);
     put(&mut g, b0, UNIT, 3);
+    let mut spared = g.clone();
     run(&rules, &mut g);
-    assert!(g.pending.is_none(), "nothing asks to guard the node");
-    assert_eq!((g.tokens(f1, FACTORY), g.tokens(f1, node(1)), g.tokens(d1, node(1))), (0, 1, 1));
+    answer_all(&rules, &mut g);
+    assert_eq!((g.tokens(f1, FACTORY), g.tokens(f1, node(1)), g.tokens(d1, node(1))), (0, 0, 1));
     assert_eq!((units(&g), discord(&g)), ((0, 0), 1));
+    assert_eq!(g.stats.counters["board.war_nodes"], 1);
+    // Without the rule (`adversary.war_node` 0) the node stays, as at r80-r82.
+    let (off, _) = lab_with(&["board.war"], &["adversary.war_node=0"]);
+    run(&off, &mut spared);
+    answer_all(&off, &mut spared);
+    assert_eq!((spared.tokens(f1, FACTORY), spared.tokens(f1, node(1))), (0, 1));
 
     // Hardening absorbs one when spent (r75: the owner, seat 0 for a neutral
     // factory, chooses); let go, the factory falls.

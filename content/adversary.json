@@ -4,7 +4,7 @@
   "name": "The Militarist",
   "project_slots": [
    {
-    "tag": "security"
+    "tag": null
    },
    {
     "tag": null
@@ -42,6 +42,11 @@
       "past_cap": true
      }
     ]
+   },
+   {
+    "name": "War Takes Ground",
+    "text": "When a Drone destroys a factory, it also destroys a Node on that hex.",
+    "effects": []
    }
   ],
   "difficulty": {

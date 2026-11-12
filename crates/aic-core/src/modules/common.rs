@@ -16,6 +16,8 @@ pub use crate::vocab::{Resource, ThreatSource};
 
 pub const FACTORY: &str = "factory";
 pub const STATION: &str = "station";
+/// 190: a chip waiting on a city, gathered from the unclaimed neutral factories next to it until the city builds.
+pub const CITY_CHIP: &str = "city_chip";
 /// The adversary's owner cube (on a city, research station or factory): corrupted.
 pub const ADV_CUBE: &str = "cube:adversary";
 pub const ADV_AMBASSADOR: &str = "ambassador:adversary";

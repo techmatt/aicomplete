@@ -62,9 +62,18 @@ pub(super) fn battle(g: &mut GameState, cx: &mut Cx) -> Res {
             let Some(h) = target else {
                 break;
             };
-            // r80 (ruling #52): a drone's strike destroys only the factory, never the node on its hex (027-r79 took it).
+            // r80 (ruling #52) took the node off war; r83 (Matt, 2026-11-11, amendment 8616) puts it back as the
+            // Militarist's own rule (`adversary.war_node`): a strike that destroys the factory destroys a node on its
+            // hex too (its protections apply to each piece).
             if destroy_piece(g, cx, h, FACTORY, Cause::War)? {
                 destroyed += 1;
+                if w.int("adversary.war_node") > 0 {
+                    if let Some(s) = node_owner(g, h) {
+                        if destroy_piece(g, cx, h, node(s), Cause::War)? {
+                            cx.tally(g, "board.war_nodes", 1);
+                        }
+                    }
+                }
             }
         }
     }
@@ -157,28 +166,9 @@ fn march_troops(g: &mut GameState, cx: &mut Cx, troops: Vec<usize>, steps: i64, 
                 stopped = true;
                 cx.tally(g, "board.wall_strikes", 1);
             }
-            // 175: ambassadors are non-combatants: a troop starting a step on a hex with one removes one
-            // (players choose whose) instead of moving or striking.
-            let here: Vec<usize> = (0..g.seats.len()).filter(|&s| g.tokens(at, ambassador(s)) > 0).collect();
-            if !here.is_empty() {
-                let s = if here.len() == 1 {
-                    here[0]
-                } else {
-                    let opts = here.iter().map(|&s| opt(format!("seat {s}'s ambassador"))).collect();
-                    let prompt = || format!("The adversary troop at {} removes whose ambassador?", hex_name(&w, at));
-                    match cx.choose_loss(0, prompt, opts)? {
-                        Some(i) => here[i],
-                        None => here[0],
-                    }
-                };
-                cx.add_tokens(g, at, ambassador(s), -1);
-                cx.tally(g, "board.troop_removed_ambassador", 1);
-                cx.tally(g, "board.troop_steps", 1);
-                if g.is_over() {
-                    return Ok(());
-                }
-                continue;
-            }
+            // r83 (Matt, 2026-11-11, #44): troops ignore ambassadors: a march neither stops for nor removes one
+            // (175's removal is gone). Troops hit facilities; agents meet ambassadors. An owner's ambassador still
+            // guards a facility from the strike (`destroy_piece`'s protections).
             if has_troop_target(&w, g, at) {
                 cx.tally(g, "board.troop_steps", 1);
                 if !strike_from(g, cx, at)? {
@@ -443,11 +433,7 @@ pub fn troop_plan(w: &World, g: &GameState, h: usize) -> Option<(usize, i64)> {
         })
         .sum();
     let steps = (w.int("board.troop_steps") + extra).max(1);
-    // Moves until the target is on or next to the troop, then the strike; 175: first a step for each
-    // ambassador on its own hex the earlier troops there left (each removes at least one; the ones it meets on
-    // the way are not read).
-    let ambassadors: i64 = (0..g.seats.len()).map(|s| g.tokens(h, ambassador(s))).sum();
-    let ambassadors = (ambassadors - (g.tokens(h, TROOP) - 1).max(0)).max(0);
-    let moves = (reach(target).unwrap_or(0) as i64 - 1).max(0) + ambassadors;
+    // Moves until the target is on or next to the troop, then the strike (r83, #44: ambassadors cost it no step).
+    let moves = (reach(target).unwrap_or(0) as i64 - 1).max(0);
     Some((target, (moves + steps) / steps))
 }

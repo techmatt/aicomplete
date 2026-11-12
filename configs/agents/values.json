@@ -2,7 +2,7 @@
   "note": "082: the agents' value table, in credits, and the rates' one home (docs/card-pricing.md, *The rates*, describes them). First transcribed at r34, corrected against play at r35 (090: energy, antimatter, troop removal, liberation, the station flip, the income horizon); each op's row says what one unit is. Read by crates/aic-sim/src/agents/value.rs, whose match on Op is exhaustive: a new op does not compile without its arm, and a test fails until its row is here. Agent numbers, not rules: changing one changes no game's rules.",
   "resources": {
     "credits": 1,
-    "chips": 2,
+    "chips": 4,
     "energy": 4.5,
     "antimatter": 7,
     "insight": 2.5,
@@ -91,7 +91,7 @@
     "shelter": {"credits": 4, "per": "country sheltered this round (conditional on a destruction)"},
     "cordon": {"credits": 3, "per": "country cordoned: about 2 arrivals stopped; 178: its pool waits for the next Rally (was lost), so the Rally's are only delayed"},
     "free_building": {"credits": 8, "per": "building played paying no credits (a building's credits saved)"},
-    "build_station": {"credits": 8, "per": "station built free (2 chips and about 3 cubes before its card completes)"},
+    "build_station": {"credits": 8, "per": "station built free (1 chip and about 3 cubes before its card completes)"},
     "claim_station": {"credits": 20, "per": "neutral station claimed by a card (142: 2 cubes a round at 3 for about 4 rounds, less the risk; the ambassador route is 3 ambassadors, 12)"},
     "project_cube": {"credits": 6, "per": "player cube on a megaproject (about 9 at completion, x 2/3 for completing)"},
     "peek": {"credits": 1, "per": "adversary card shown"},

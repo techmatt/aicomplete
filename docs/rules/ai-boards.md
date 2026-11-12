@@ -13,7 +13,7 @@ upkeep). The board module owns nodes and counts the tokens taken (`board.track.<
 economy track adds 2 or 3 more, so placing a node is how your income grows; you're short of energy. Round 1 deals
 you 2 tier-1 and 2 tier-2 cards into your hand, free (the tier-2s point a build direction), then drafts and keeps as
 every round does (r82). Each round you may turn credits into a chip with Mint, 5 credits into an
-insight with Focus, and 2 chips into 2 cards with Procure. Late in the game, sacrifice cards you have finished with:
+insight with Focus, and 1 chip into 2 cards with Procure. Late in the game, sacrifice cards you have finished with:
 an Industry card pays out chips, a Power card energy, and an Industry card with an energy plays a building from your
 hand for no credits. Each round you may Dispatch 1 ambassador for free (2 from your fourth economy space). Your printed
 Industry tag counts like one on your cards.
@@ -99,7 +99,7 @@ energy income; each second power is once a round; and every tag sacrifice perman
 | 4 | pay 1 energy: +3 credits, **Dispatch +1** | pay 1 energy: +3 credits, **Dispatch +1** | pay 1 energy: +3 credits, **Dispatch +1** |
 | 5 | pay 2 energy: +3 credits | pay 2 energy: +3 credits | pay 2 energy: +3 credits |
 | 6 | pay 3 energy: +3 credits, Power tag | pay 3 energy: +2 credits, Cyber tag | pay 3 energy: +3 credits, Power tag |
-| 7 | pay 5 energy: **Full Capacity** (capstone): 1 chip each round per 2 Industry tags on your cards. | pay 5 energy: **Sanctuary** (capstone): Corruption never destroys your Nodes. | pay 5 energy: **Open Archive** (capstone): Each round, 1 research cube onto your board. |
+| 7 | pay 5 energy: **Full Capacity** (capstone): 1 chip each round per 4 Industry tags on your cards. | pay 5 energy: **Sanctuary** (capstone): Corruption never destroys your Nodes. | pay 5 energy: **Open Archive** (capstone): Each round, 1 research cube onto your board. |
 <!-- /generated -->
 
 The **keep upgrade**: tier-2 keeps cost `keep_tier2_upgraded` instead of `keep_tier2` ([player-cards.md](player-cards.md)).

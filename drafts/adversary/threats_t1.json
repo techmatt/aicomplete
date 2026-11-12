@@ -1,6 +1,6 @@
 {
  "deck": "threats_t1",
- "note": "Tier-1 threat deck, 146 (Matt's threat card standard, 2026-11-07): each card has one consequence, rarely two, on the nearest player (the one whose node is closest to its token) or the board; one counter option or two, never in a currency its harm takes. Counters: 3 energy, 3 ambassadors, 6 insight, 3 research cubes, 6 chips, 2 tags or 12 credits. Value lines price at configs/agents/values.json (a troop 9: placed 5 plus its strike). Source: experiments/results/146_threat_standard/threat_cards.py.",
+ "note": "Tier-1 threat deck, 146 (Matt's threat card standard, 2026-11-07): each card has one consequence, rarely two, on the nearest player (the one whose node is closest to its token) or the board; one counter option or two, never in a currency its harm takes. Counters: 3 energy, 3 ambassadors, 6 insight, 3 research cubes, 3 chips, 2 tags or 12 credits. Value lines price at configs/agents/values.json (a troop 9: placed 5 plus its strike). Source: experiments/results/146_threat_standard/threat_cards.py.",
  "cards": [
   {
    "id": "orbital_strike",
@@ -104,7 +104,7 @@
    "locations": [
     "factory"
    ],
-   "text": "1 adversary Troop lands here. The nearest player pays 3 chips or discards 1 card.",
+   "text": "1 adversary Troop lands here. The nearest player pays 2 chips or discards 1 card.",
    "counters": [
     [
      {
@@ -128,7 +128,7 @@
     {
      "op": "requisition",
      "resource": "chips",
-     "amount": 3,
+     "amount": 2,
      "cards": 1
     }
    ],
@@ -720,7 +720,7 @@
     "factory",
     "city"
    ],
-   "text": "The nearest player pays 5 chips or discards 2 cards. The adversary gains 3 compute.",
+   "text": "The nearest player pays 3 chips or discards 2 cards. The adversary gains 3 compute.",
    "counters": [
     [
      {
@@ -739,7 +739,7 @@
     {
      "op": "requisition",
      "resource": "chips",
-     "amount": 5,
+     "amount": 3,
      "cards": 2
     },
     {
@@ -769,7 +769,7 @@
    "locations": [
     "city"
    ],
-   "text": "Theft: the nearest player pays 5 chips or discards 2 cards; the adversary gains 4 compute.",
+   "text": "Theft: the nearest player pays 3 chips or discards 2 cards; the adversary gains 4 compute.",
    "counters": [
     [
      {
@@ -789,7 +789,7 @@
      "op": "theft",
      "who": "nearest",
      "resource": "chips",
-     "amount": 5,
+     "amount": 3,
      "compute": 4,
      "cards": 2
     }
@@ -820,7 +820,7 @@
     [
      {
       "resource": "chips",
-      "amount": 6
+      "amount": 3
      }
     ],
     [
@@ -847,7 +847,7 @@
     "adversary pieces placed",
     "energy lost"
    ],
-   "value": "counter 6 chips (12) or 12 credits (12); uncountered 12 at values.json (a troop 9 with its strike), 1.00x the cheapest counter",
+   "value": "counter 3 chips (12) or 12 credits (12); uncountered 12 at values.json (a troop 9 with its strike), 1.00x the cheapest counter",
    "check": "bites near factories (Corrupt factory at 3)",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
@@ -869,7 +869,7 @@
     [
      {
       "resource": "chips",
-      "amount": 6
+      "amount": 3
      }
     ],
     [
@@ -893,7 +893,7 @@
     "cards discarded",
     "projects advanced (compute)"
    ],
-   "value": "counter 6 chips (12) or 12 credits (12); uncountered 12.4 at values.json (a troop 9 with its strike), 1.03x the cheapest counter",
+   "value": "counter 3 chips (12) or 12 credits (12); uncountered 12.4 at values.json (a troop 9 with its strike), 1.03x the cheapest counter",
    "check": "bites a hand held for next round",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
@@ -915,7 +915,7 @@
     [
      {
       "resource": "chips",
-      "amount": 6
+      "amount": 3
      }
     ],
     [
@@ -936,7 +936,7 @@
    "harms": [
     "energy lost"
    ],
-   "value": "counter 6 chips (12) or 12 credits (12); uncountered 12 at values.json (a troop 9 with its strike), 1.00x the cheapest counter",
+   "value": "counter 3 chips (12) or 12 credits (12); uncountered 12 at values.json (a troop 9 with its strike), 1.00x the cheapest counter",
    "check": "bites energy holders; chips pay it",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"

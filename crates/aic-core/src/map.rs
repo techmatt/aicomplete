@@ -182,6 +182,7 @@ fn place_bases(
         let busy = |num: u8| {
             piece.stations.contains(&num)
                 || piece.neutral_station == num
+                || piece.more_stations.contains(&num)
                 || piece.industry.contains(&num)
                 || piece.station_sites.contains(&num)
                 || piece.node == num

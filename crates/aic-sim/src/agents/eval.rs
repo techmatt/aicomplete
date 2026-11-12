@@ -801,6 +801,9 @@ struct PowerFact {
 
 /// The tokens [`Eval::value`] reads on one hex, read once: asking the state
 /// for each by name was some 800 scans a position (069).
+///
+/// 190: a city's waiting chips (`common::CITY_CHIP`) are held by no seat and buy only a neutral facility, which
+/// any seat may claim once it stands: their held value is 0 to every seat, and the facility is valued when it lands.
 #[derive(Clone, Copy, Default)]
 struct HexTokens {
     adv_ambassador: i64,

@@ -1,0 +1,17 @@
+# 190 (r83): a player's factory makes 1 chip, not 2, and a chip is worth 4 credits at values.json, not 2.
+# Every chip price and chip gain halves (rounded up), so each keeps its worth in credits.
+# Rerun: python scripts/cards/apply_overlay.py experiments/results/190_rules_growth_chips/chips190.overlay
+cards.joint_fabrication_pact.effects.0.amount=3
+cards.joint_fabrication_pact.effects.2.amount=2
+cards.vendor_financing.effects.1.amount=1
+cards.arcology_foundry.effects.1.amount=1
+cards.peaker_turbines.effects.1.amount=1
+cards.orbital_mass_driver.chips=1
+cards.orbital_mass_driver.passives.1.amount=2
+cards.antitrust_action.effects.1.per=4
+cards.wafer_fab_line.ability.effects.1.amount=1
+ais.builder.economy_track.6.capstone.passives.0.per=4
+ais.builder.powers.3.effects.0.amount=1
+ais.builder.powers.7.cost.0.1=1
+corps.onyx.project.player.0.amount=2
+corps.onyx.project.converter.effects.0.amount=1

@@ -75,7 +75,7 @@ fn the_view_shows_the_board_the_fronts_the_projects_and_the_next_card() {
             value("board.project.adversary").value,
             g.var(&board::project_key(c, None))
         );
-        assert_eq!(value("tokens.factory").value, 2);
+        assert_eq!(value("tokens.factory").value, piece(c).factories.len() as i64);
     }
     for s in &v.seats {
         let value = |k: &str| {

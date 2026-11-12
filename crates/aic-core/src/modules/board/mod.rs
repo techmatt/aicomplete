@@ -82,6 +82,8 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("node_marker", 0, 1, "1: a destroyed node leaves a corruption marker on its hex"),
             ParamSpec::int("station_chips", 0, 20, "standard action: chips to build a research station"),
             ParamSpec::int("factory_chips", 0, 5, "chips a player-owned factory makes its owner each round"),
+            ParamSpec::int("city_build_chips", 1, 10, "190: chips a city spends to build a neutral factory or research station"),
+            ParamSpec::int("city_chip_cap", 1, 10, "190: chips a city holds at most while they wait (one each round from each unclaimed neutral factory next to it)"),
             ParamSpec::int("remove_ambassadors", 1, 5, "standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing)"),
             ParamSpec::int("remove_count", 1, 3, "standard action Remove agents: agents it removes, at most, from any hexes in reach (the player's choice)"),
             ParamSpec::int("clear_cost", 0, 20, "standard action: credits to clear a corruption marker within reach"),
@@ -311,6 +313,9 @@ impl Module for Board {
                 cx.add_tokens(g, at(n), ADV_CUBE, 1);
             }
             cx.add_tokens(g, at(piece.neutral_station), STATION, 1);
+            for &n in &piece.more_stations {
+                cx.add_tokens(g, at(n), STATION, 1);
+            }
             for &n in &piece.factories {
                 cx.add_tokens(g, at(n), FACTORY, 1);
             }

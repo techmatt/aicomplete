@@ -1,6 +1,6 @@
 {
  "deck": "threats_t2",
- "note": "Tier-2 threat deck, 146 (Matt's threat card standard, 2026-11-07): bigger consequences, about two tier-1s; four cards re-cut from the old tier 3 (Last Ultimatum, Iron Curtain, War Economy, Cascade Failure). Counters: 4 energy, 4 ambassadors, 7 insight, 5 research cubes, 7 chips, 3 tags or 17 credits. Value lines price at configs/agents/values.json. Source: experiments/results/146_threat_standard/threat_cards.py.",
+ "note": "Tier-2 threat deck, 146 (Matt's threat card standard, 2026-11-07): bigger consequences, about two tier-1s; four cards re-cut from the old tier 3 (Last Ultimatum, Iron Curtain, War Economy, Cascade Failure). Counters: 4 energy, 4 ambassadors, 7 insight, 5 research cubes, 4 chips, 3 tags or 17 credits. Value lines price at configs/agents/values.json. Source: experiments/results/146_threat_standard/threat_cards.py.",
  "cards": [
   {
    "id": "total_war",
@@ -156,7 +156,7 @@
    "locations": [
     "base"
    ],
-   "text": "2 adversary Troops land here. The nearest player pays 4 chips or discards 2 cards.",
+   "text": "2 adversary Troops land here. The nearest player pays 2 chips or discards 2 cards.",
    "counters": [
     [
      {
@@ -180,7 +180,7 @@
     {
      "op": "requisition",
      "resource": "chips",
-     "amount": 4,
+     "amount": 2,
      "cards": 2
     }
    ],
@@ -485,7 +485,7 @@
    "locations": [
     "coastal_city"
    ],
-   "text": "Theft: the nearest player pays 8 chips or discards 3 cards; the adversary gains 6 compute.",
+   "text": "Theft: the nearest player pays 4 chips or discards 3 cards; the adversary gains 6 compute.",
    "counters": [
     [
      {
@@ -505,7 +505,7 @@
      "op": "theft",
      "who": "nearest",
      "resource": "chips",
-     "amount": 8,
+     "amount": 4,
      "compute": 6,
      "cards": 3
     }
@@ -579,7 +579,7 @@
    "locations": [
     "station"
    ],
-   "text": "The station here is corrupted, even a player's. The adversary gains 4 compute.",
+   "text": "2 Agents are created here. Then the station here flips to the adversary (a player's holds unless 2 Agents and no player Ambassador are on it; one that holds takes another Agent).",
    "counters": [
     [
      {
@@ -596,21 +596,21 @@
    ],
    "effects": [
     {
-     "op": "flip_station",
-     "force": true
+     "op": "create",
+     "count": 2,
+     "at": "location"
     },
     {
-     "op": "compute",
-     "amount": 4
+     "op": "flip_station"
     }
    ],
    "harms": [
-    "facilities destroyed or seized",
-    "projects advanced (compute)"
+    "facilities destroyed or seized"
    ],
-   "value": "counter 3 Cyber tags (15) or 17 credits (17); uncountered 19.4 at values.json (a troop 9 with its strike), 1.29x the cheapest counter",
-   "check": "a lasting harm on the station's owner",
+   "value": "counter 3 Cyber tags (15) or 17 credits (17); uncountered about 15 at values.json (the flip, with its 2 agents; the 4 compute went, 4.4), about 1.0x the cheapest counter",
+   "check": "a lasting harm on the station's owner; r83 (M1): a player's ambassador or guard on the station now saves it",
    "flags": [
+    "r83 (Matt, 2026-11-11, M1): 2 agents land, then the normal flip check (2 agents, no player ambassador, no guard), not a forced flip; the 4 compute went, since the card standard allows two consequences and Content::check refuses a third (190's call, flagged)",
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
    "reuses": "station_seizure"
@@ -724,7 +724,7 @@
     [
      {
       "resource": "chips",
-      "amount": 7
+      "amount": 4
      }
     ],
     [
@@ -750,7 +750,7 @@
     "credits or income lost",
     "projects advanced (compute)"
    ],
-   "value": "counter 7 chips (14) or 17 credits (17); uncountered 17.5 at values.json (a troop 9 with its strike), 1.25x the cheapest counter",
+   "value": "counter 4 chips (14) or 17 credits (17); uncountered 17.5 at values.json (a troop 9 with its strike), 1.25x the cheapest counter",
    "check": "bites cube holders before a megaproject",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
@@ -866,7 +866,7 @@
     [
      {
       "resource": "chips",
-      "amount": 7
+      "amount": 4
      }
     ],
     [
@@ -889,7 +889,7 @@
     "facilities destroyed or seized",
     "projects advanced (compute)"
    ],
-   "value": "counter 7 chips (14) or 17 credits (17); uncountered 20.5 at values.json (a troop 9 with its strike), 1.46x the cheapest counter",
+   "value": "counter 4 chips (14) or 17 credits (17); uncountered 20.5 at values.json (a troop 9 with its strike), 1.46x the cheapest counter",
    "check": "a lasting site for the adversary",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
@@ -953,7 +953,7 @@
     "coastal_city",
     "factory"
    ],
-   "text": "4 Agents are created here. The nearest player pays 6 chips or discards 3 cards.",
+   "text": "4 Agents are created here. The nearest player pays 3 chips or discards 3 cards.",
    "counters": [
     [
      {
@@ -977,7 +977,7 @@
     {
      "op": "requisition",
      "resource": "chips",
-     "amount": 6,
+     "amount": 3,
      "cards": 3
     }
    ],

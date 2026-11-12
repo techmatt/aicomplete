@@ -266,7 +266,7 @@ pub(super) fn countries_block(c: &Content) -> String {
                 numbers(&p.cities),
                 numbers(&p.ocean),
                 numbers(&p.stations),
-                p.neutral_station.to_string(),
+                numbers(&[&[p.neutral_station][..], &p.more_stations].concat()),
                 numbers(&p.station_sites),
                 format!("{} ({})", numbers(&p.industry), numbers(&p.factories)),
                 p.node.to_string(),
@@ -280,7 +280,7 @@ pub(super) fn countries_block(c: &Content) -> String {
             "Cities (corrupted first)",
             "Ocean",
             "Station (botnet)",
-            "Neutral station",
+            "Neutral stations",
             "Empty station sites",
             "Industrial zones (setup factories)",
             "Starting node",
@@ -836,7 +836,7 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          ambassadors for the same, so you choose between racing toward Unity and holding off the next \
          Discord card. You also lose if any player has no nodes left on the board. \
          Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of \
-         their own hex (or agents on it), and Border War (nodes by a front's \
+         their own hex (or agents on it), war taking a factory on their hex, and Border War (nodes by a front's \
          base). A lost token leaves the game and marks its hex, so you can't act from there any more; its \
          income stays. {safe}The adversary deck is a round cap too, {} rounds at \
          most (fewer at the harder levels), and reaching it loses. So there are three different \

@@ -233,6 +233,10 @@ pub struct CountryPiece {
     /// The country's neutral research station at setup (074): open land, no
     /// industrial zone, no base.
     pub neutral_station: u8,
+    /// 190 (Matt, 2026-11-11): more neutral research stations at setup, so each city starts with one next to it
+    /// where the map allows. Same rules as `neutral_station`.
+    #[serde(default)]
+    pub more_stations: Vec<u8>,
     /// Printed industrial zones: open hexes next to a city where factories go.
     pub industry: Vec<u8>,
     /// 137: printed empty station sites, 1-2 a country (open land, no setup
@@ -1391,7 +1395,8 @@ fn check_project(p: &ProjectCard) -> Result<(), String> {
 
 fn check_country_piece(i: usize, p: &CountryPiece, n: usize) -> Result<(), String> {
     let start = vec![p.node];
-    let neutral = vec![p.neutral_station];
+    let mut neutral = vec![p.neutral_station];
+    neutral.extend(&p.more_stations);
     let lists = [
         &p.cities,
         &p.corrupted,
