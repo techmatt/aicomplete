@@ -57,8 +57,8 @@ own currency:
 - **Builder, Focus** (a power, once a round): 5 credits → 1 insight, for a keep or a play. At the
   agents' values (a credit 1, an insight 2.5) it reads as a loss: it pays when one insight short stops a play or a keep.
 - **Protector, Vigil** (an Effect of Wall, not a power; capped, r79, Matt's ruling: some cap is locked, its size a
-  candidate): the first troop each round that ends its march next to your node pays 1 insight (`board.vigil_cap`
-  troops a round, 1); later ones that round pay nothing, so a troop parked by your node no longer pays every march.
+  candidate): the first two troops each round that end their march next to your node pay 1 insight each (`board.vigil_cap`
+  troops a round, 2 since r84, 192; 1 at r79-r83); later ones that round pay nothing, so a troop parked by your node no longer pays every march.
   Any march counts (a threat's immediate march too); a troop used up striking has no end to its march. An Effect
   because it happens in a march, outside the action phase where powers are used: the march's (phase 7) pays this
   round's keeps and plays, an immediate march's (phase 18) comes after them. (r77-r78 paid every troop every march.)
@@ -70,7 +70,7 @@ own currency:
 **For new players.** Insight is what you spend to keep and play cards: each round, the number on the rightmost space you've uncovered on
 your card-play track (6 at the start). When you
 are short, turn a research cube into 1 insight at any time (Cintamani's converter gives 2), and use your board's own
-way: the Builder pays 5 credits for 1 (Focus), the Protector gains 1 the first time each round a troop ends its march next to its node (Vigil), the
+way: the Builder pays 5 credits for 1 (Focus), the Protector gains 1 each of the first two times each round a troop ends its march next to its node (Vigil), the
 Researcher discards a card for 2 (Synthesis). Insight you don't spend still goes at the round's end (the Researcher
 keeps all of it), but a few threat counters offer insight (6 at tier 1, 7 at tier 2: [threats.md](threats.md) *Counters*),
 so spare insight can stop one.

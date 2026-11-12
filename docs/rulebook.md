@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 83. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 84. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -225,8 +225,8 @@ rule**, your **income**, one **tag** (§7), your **building slots**, your **Disp
   land there stays in the supply), so a facility on that hex is safe from them; one next to it is not. Only troops are stopped: corruption, war and threats still destroy what is there.
   (Production isn't a landing: an adversary factory on that hex still makes its troop there, which marches off.)
   The Militarist answers it: each turn it Musters 1 in each country where you have a node (§6, its board).
-- **Vigil** (Protector): the first time each round an adversary troop ends its march next to one of your nodes, gain
-  1 insight; later troops that round pay nothing. A troop that strikes doesn't count. It pays in any march: the
+- **Vigil** (Protector): the first two times each round an adversary troop ends its march next to one of your nodes,
+  gain 1 insight; later troops that round pay nothing. A troop that strikes doesn't count. It pays in any march: the
   adversary's turn's (spend it this round) or the one a threat starts at once (that comes after the action phase, so
   its insight is lost).
 
@@ -367,8 +367,8 @@ corrupt the site they name. Corruption never spreads by itself.
   it is removed.
 - **Open land and a node hex** take a **land corruption** token. On open land any node is destroyed and every
   ambassador removed, as for a site; on a node hex (2 agents) only the node is lost (§13 applies), and the token goes
-  on whether or not the node is saved. Nothing can be built or placed on land corruption (no node, factory or research station), and it adds
-  1 Discord every round until a player Clears it (§8).
+  on **face down** whether or not the node is saved. Nothing can be built or placed on land corruption (no node, factory or research station). A face-up
+  token (open land's) adds 1 Discord every round until a player Clears it (§8); a face-down one adds none.
 
 §15 has every detail.
 
@@ -726,7 +726,7 @@ Effects **sway** Unity or Discord ("add 2 Unity"): put that many on that side's 
 
 - **Unity** comes from liberating sites (city 5, station or factory 2), clearing markers (2), removing botnets (1),
   Biomia, and cards.
-- **Discord** comes from corrupted cities (1 each a round), land corruption (1 each a round), factories destroyed in war
+- **Discord** comes from corrupted cities (1 each a round), face-up land corruption (1 each a round), factories destroyed in war
   (1 each), the antimatter action (1), and threats, projects and cards that print it.
 
 **Unity against Discord.** Whenever you gain Unity, you may put any of it against Discord instead: each Unity put
@@ -1009,8 +1009,8 @@ Each row is the whole level. Your own costs (claim, liberate, cards, actions) ne
 | Level | Corrupt numbers (city / station / factory / land / node) | Threat items | Muster | Each unpaid threat | Event cards (I / II / III) | Rounds | Compute income | Agent income a country (with Garrisons) | Other |
 |---|---|---|---|---|---|---|---|---|---|
 | 0 | 4 / 3 / 3 / 3 / 2 | as printed | as printed | — | 4 / 4 / 3 | 11 | 1 | 1 | — |
-| 1 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +1 | as printed | — | 4 / 4 / 3 | 11 | 4 | 4 | — |
-| 2 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | +1 troop | +4 compute | 4 / 4 / 3 | 11 | 22 | 4 | — |
+| 1 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +1 | as printed | — | 4 / 4 / 3 | 11 | 4 | 3 | — |
+| 2 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | +1 troop | +4 compute | 4 / 4 / 3 | 11 | 19 | 3 | — |
 | 3 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 troop | +4 compute | 4 / 2 / 3 | 9 | 24 | 4 | — |
 | 4 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 troop | +4 compute | 3 / 2 / 4 | 9 | 24 | 4 | the last stage-I card deals tier-2 threats |
 

@@ -1,0 +1,105 @@
+{
+  "name": "f192-screen2",
+  "note": "192: the package screen (dev seeds): Vigil 2, the drip, the dials.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_p16",
+      "set": [
+        "board.vigil_cap=2",
+        "adversary.blight_node_discord=0",
+        "adversary.ambassador_income=0,2,2,2,3",
+        "adversary.compute_income=0,4,16,24,24"
+      ]
+    },
+    {
+      "name": "br_p16",
+      "set": [
+        "ai.boards=0,2",
+        "board.vigil_cap=2",
+        "adversary.blight_node_discord=0",
+        "adversary.ambassador_income=0,2,2,2,3",
+        "adversary.compute_income=0,4,16,24,24"
+      ]
+    },
+    {
+      "name": "pr_p16",
+      "set": [
+        "ai.boards=1,2",
+        "board.vigil_cap=2",
+        "adversary.blight_node_discord=0",
+        "adversary.ambassador_income=0,2,2,2,3",
+        "adversary.compute_income=0,4,16,24,24"
+      ]
+    },
+    {
+      "name": "bp_p18",
+      "set": [
+        "board.vigil_cap=2",
+        "adversary.blight_node_discord=0",
+        "adversary.ambassador_income=0,2,2,2,3",
+        "adversary.compute_income=0,4,18,24,24"
+      ]
+    },
+    {
+      "name": "br_p18",
+      "set": [
+        "ai.boards=0,2",
+        "board.vigil_cap=2",
+        "adversary.blight_node_discord=0",
+        "adversary.ambassador_income=0,2,2,2,3",
+        "adversary.compute_income=0,4,18,24,24"
+      ]
+    },
+    {
+      "name": "pr_p18",
+      "set": [
+        "ai.boards=1,2",
+        "board.vigil_cap=2",
+        "adversary.blight_node_discord=0",
+        "adversary.ambassador_income=0,2,2,2,3",
+        "adversary.compute_income=0,4,18,24,24"
+      ]
+    },
+    {
+      "name": "bp_p16drip",
+      "set": [
+        "board.vigil_cap=2",
+        "adversary.ambassador_income=0,2,2,2,3",
+        "adversary.compute_income=0,4,16,24,24"
+      ]
+    },
+    {
+      "name": "br_p16drip",
+      "set": [
+        "ai.boards=0,2",
+        "board.vigil_cap=2",
+        "adversary.ambassador_income=0,2,2,2,3",
+        "adversary.compute_income=0,4,16,24,24"
+      ]
+    },
+    {
+      "name": "pr_p16drip",
+      "set": [
+        "ai.boards=1,2",
+        "board.vigil_cap=2",
+        "adversary.ambassador_income=0,2,2,2,3",
+        "adversary.compute_income=0,4,16,24,24"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

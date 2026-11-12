@@ -1,0 +1,34 @@
+{
+  "name": "f192-check",
+  "note": "192: r84 with r83 numbers put back, and with only the drip put back (d0 br diagnostic).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "br_r83",
+      "set": [
+        "ai.boards=0,2",
+        "board.vigil_cap=1",
+        "adversary.blight_node_discord=1",
+        "adversary.compute_income=1,4,22,24,24",
+        "adversary.ambassador_income=0,3,3,3,3"
+      ]
+    },
+    {
+      "name": "br_drip",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.blight_node_discord=1"
+      ]
+    }
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 144,
+  "records": 0
+}

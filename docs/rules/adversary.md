@@ -61,8 +61,9 @@ or a node's). **One aftermath (r80, Matt's ruling #42): whatever corrupts takes 
   it takes a land-corruption token, no marker, whether or not a protection saves the node (r83, Matt's ruling #56).
   Its agents go to the supply. A last node is no exception (175).
 - **Land corruption** is a hex token (open land that corrupts, a node hex that does): nothing is built there (no node,
-  factory or research station), and each drips `blight_discord` Discord a round. The Clear action takes one in reach
-  off (no reward).
+  factory or research station), and each open-land token drips `blight_discord` (1) Discord a round. A node hex's goes
+  on **face down** (r84, 192, candidate): it blocks building the same and drips `blight_node_discord` (0). The Clear
+  action takes one in reach off (no reward).
 **Botnets.** Each country starts with a botnet (on its research station); more come only from printed lines. A botnet stays
 until removed: it makes `botnet_compute` compute in the compute step (none with a player ambassador on it) and counts
 against the purge until Unity eases it ([alignment.md](alignment.md)). **Hard to remove:** tier-2 cards, Decommission
@@ -171,7 +172,7 @@ it makes ([alignment.md](alignment.md)): a plain loss (Matt, 2026-11-08).
 <!-- generated: difficulty -->
 | Level | Adds | Tunable |
 |---|---|---|
-| 0 | Base rules; the incomes, an entry a level | `compute_income` 1, 4, 22, 24, 24, `ambassador_income` 0, 3, 3, 3, 3 |
+| 0 | Base rules; the incomes, an entry a level | `compute_income` 1, 4, 19, 24, 24, `ambassador_income` 0, 2, 2, 3, 3 |
 | 1 | City, station, factory corrupt with fewer agents (from `corrupt_cut_at`); counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`) | `corrupt_cut` 1, 1, 1, 0, `corrupt_cut_at` 1, `counter_bonus_all` 1, `counter_bonus_credits` 4, `counter_bonus` 0, `counter_bonus_at` 1 |
 | 2 | Counters cost more again (from `counter_more_at`); the adversary board's difficulty line (from `board_difficulty_at`) | `counter_more_all` 1, `counter_more_credits` 0, `counter_more_at` 2, `board_difficulty_at` 2 |
 | 3 | Stage-II cards removed, stage-I cards added back | `stage2_removed` 2, `stage1_added` 0 |

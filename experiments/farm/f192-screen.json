@@ -1,0 +1,213 @@
+{
+  "name": "f192-screen",
+  "note": "192: the recalibration screen (dev seeds): each asked rule lever, the three together, and with the difficulty dials; strategist d0-d4.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_vigil2",
+      "set": [
+        "board.vigil_cap=2"
+      ]
+    },
+    {
+      "name": "br_vigil2",
+      "set": [
+        "ai.boards=0,2",
+        "board.vigil_cap=2"
+      ]
+    },
+    {
+      "name": "pr_vigil2",
+      "set": [
+        "ai.boards=1,2",
+        "board.vigil_cap=2"
+      ]
+    },
+    {
+      "name": "bp_nodrip",
+      "set": [
+        "adversary.blight_node_discord=0"
+      ]
+    },
+    {
+      "name": "br_nodrip",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.blight_node_discord=0"
+      ]
+    },
+    {
+      "name": "pr_nodrip",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.blight_node_discord=0"
+      ]
+    },
+    {
+      "name": "bp_landing",
+      "set": [
+        "adversary.wall_landing=1"
+      ]
+    },
+    {
+      "name": "br_landing",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.wall_landing=1"
+      ]
+    },
+    {
+      "name": "pr_landing",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.wall_landing=1"
+      ]
+    },
+    {
+      "name": "bp_all3",
+      "set": [
+        "board.vigil_cap=2",
+        "adversary.blight_node_discord=0",
+        "adversary.wall_landing=1"
+      ]
+    },
+    {
+      "name": "br_all3",
+      "set": [
+        "ai.boards=0,2",
+        "board.vigil_cap=2",
+        "adversary.blight_node_discord=0",
+        "adversary.wall_landing=1"
+      ]
+    },
+    {
+      "name": "pr_all3",
+      "set": [
+        "ai.boards=1,2",
+        "board.vigil_cap=2",
+        "adversary.blight_node_discord=0",
+        "adversary.wall_landing=1"
+      ]
+    },
+    {
+      "name": "bp_all3amb",
+      "set": [
+        "board.vigil_cap=2",
+        "adversary.blight_node_discord=0",
+        "adversary.wall_landing=1",
+        "adversary.ambassador_income=0,2,2,2,3"
+      ]
+    },
+    {
+      "name": "br_all3amb",
+      "set": [
+        "ai.boards=0,2",
+        "board.vigil_cap=2",
+        "adversary.blight_node_discord=0",
+        "adversary.wall_landing=1",
+        "adversary.ambassador_income=0,2,2,2,3"
+      ]
+    },
+    {
+      "name": "pr_all3amb",
+      "set": [
+        "ai.boards=1,2",
+        "board.vigil_cap=2",
+        "adversary.blight_node_discord=0",
+        "adversary.wall_landing=1",
+        "adversary.ambassador_income=0,2,2,2,3"
+      ]
+    },
+    {
+      "name": "bp_all3comp",
+      "set": [
+        "board.vigil_cap=2",
+        "adversary.blight_node_discord=0",
+        "adversary.wall_landing=1",
+        "adversary.compute_income=1,2,14,16,24"
+      ]
+    },
+    {
+      "name": "br_all3comp",
+      "set": [
+        "ai.boards=0,2",
+        "board.vigil_cap=2",
+        "adversary.blight_node_discord=0",
+        "adversary.wall_landing=1",
+        "adversary.compute_income=1,2,14,16,24"
+      ]
+    },
+    {
+      "name": "pr_all3comp",
+      "set": [
+        "ai.boards=1,2",
+        "board.vigil_cap=2",
+        "adversary.blight_node_discord=0",
+        "adversary.wall_landing=1",
+        "adversary.compute_income=1,2,14,16,24"
+      ]
+    },
+    {
+      "name": "bp_all3both",
+      "set": [
+        "board.vigil_cap=2",
+        "adversary.blight_node_discord=0",
+        "adversary.wall_landing=1",
+        "adversary.ambassador_income=0,2,2,2,3",
+        "adversary.compute_income=1,2,14,16,24"
+      ]
+    },
+    {
+      "name": "br_all3both",
+      "set": [
+        "ai.boards=0,2",
+        "board.vigil_cap=2",
+        "adversary.blight_node_discord=0",
+        "adversary.wall_landing=1",
+        "adversary.ambassador_income=0,2,2,2,3",
+        "adversary.compute_income=1,2,14,16,24"
+      ]
+    },
+    {
+      "name": "pr_all3both",
+      "set": [
+        "ai.boards=1,2",
+        "board.vigil_cap=2",
+        "adversary.blight_node_discord=0",
+        "adversary.wall_landing=1",
+        "adversary.ambassador_income=0,2,2,2,3",
+        "adversary.compute_income=1,2,14,16,24"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

@@ -24,7 +24,7 @@
         "troop_spent": 1,
         "troop_steps": 2,
         "troop_node": 4,
-        "vigil_cap": 1,
+        "vigil_cap": 2,
         "node_marker": 1,
         "station_chips": 1,
         "factory_chips": 1,
@@ -73,6 +73,7 @@
         ],
         "corrupt_cut_at": 1,
         "blight_discord": 1,
+        "blight_node_discord": 0,
         "counter_pct": [
           100,
           100
@@ -96,20 +97,21 @@
         "compute_income": [
           1,
           4,
-          22,
+          19,
           24,
           24
         ],
         "ambassador_income": [
           0,
-          3,
-          3,
+          2,
+          2,
           3,
           3
         ],
         "tier2_early": 1,
         "discord_removed": 0,
         "wall_troops": 1,
+        "wall_landing": 0,
         "war_node": 1,
         "station_flip_at": 2,
         "botnet_compute": 1,

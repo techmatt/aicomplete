@@ -85,7 +85,7 @@ There is no "build a factory" standard action: cities build factories.
 | # | Phase (config `round`) | What happens |
 |---|---|---|
 | | *(round start)* | Insight is set; abilities and powers refresh |
-| 1 | `alignment.sway` | Discord: the adversary board's printed drip (the Militarist's is 0), and `blight_discord` 1 per land corruption token |
+| 1 | `alignment.sway` | Discord: the adversary board's printed drip (the Militarist's is 0), and `blight_discord` 1 per face-up land corruption token (a node hex's goes face down: `blight_node_discord` 0, r84) |
 | 2 | `adversary.event` | The adversary's Card beat ([adversary.md](adversary.md)): the face-up event card becomes this round's |
 | 3 | `threats.deal` | Its pulls: a threat a pull in each country, its tokens on the board ([threats.md](threats.md)) |
 | 4 | `adversary.build` | The card's Rally X (each country's pool dealt round-robin), Muster and other lines; the Protector's Muster |

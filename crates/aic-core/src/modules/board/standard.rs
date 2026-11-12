@@ -555,7 +555,7 @@ pub(super) fn std_resolve(
                 if g.tokens(h, MARKER) > 0 {
                     clear_marker(g, cx, s, h);
                 } else {
-                    cx.add_tokens(g, h, LAND_CORRUPTION, -1);
+                    adversary::lift_land_corruption(g, cx, h);
                     cx.tally(g, "board.land_cleared", 1);
                 }
             }

@@ -20,7 +20,7 @@ Industry tag counts like one on your cards.
 
 **The Protector, for new players.** Your special rule is Wall: adversary troops can't enter a hex with your node or
 strike into it, so where you stand is a barrier and no troop strikes a facility under you (war, threats and corruption still can). But each adversary turn Musters 1 troop in every country you're in
-(a normal Muster: the lowest-numbered factory, anyone's, else city; on your node's hex it stays in the supply), and it can strike in that round's march. The first troop each round that ends its march next to your node pays you 1 insight (Vigil; r79: once a round). You spend energy to harden
+(a normal Muster: the lowest-numbered factory, anyone's, else city; on your node's hex it stays in the supply), and it can strike in that round's march. The first two troops each round that end their march next to your node pay you 1 insight each (Vigil; r79 once a round, r84 twice). You spend energy to harden
 facilities with Bulwark, and your board prints 2 energy a round. You earn fewer credits (13 a round), so you start with
 more: 46. Each credit space of your economy track adds 2 or 3 credits, the first one 1 energy too. Round 1 deals as
 for the Builder. Late in the game, sacrifice
@@ -155,6 +155,6 @@ so 4 players repeat the Builder. A board has no unique cards or starting buildin
 | Board | Special rule |
 |---|---|
 | Builder | *Breadth*: You have 5 building slots; the Protector has 4 and the Researcher 3. |
-| Protector | *Wall*: Adversary Troops can't enter or strike a hex with your Node. Each adversary turn, the adversary Musters 1 in each country where you have a Node. Vigil: the first time each round a Troop ends its march next to your Node, gain 1 insight. |
+| Protector | *Wall*: Adversary Troops can't enter or strike a hex with your Node. Each adversary turn, the adversary Musters 1 in each country where you have a Node. Vigil: the first two times each round a Troop ends its march next to your Node, gain 1 insight. |
 | Researcher | *Patience*: All your unspent insight carries over to the next round, including insight other players gave you. |
 <!-- /generated -->

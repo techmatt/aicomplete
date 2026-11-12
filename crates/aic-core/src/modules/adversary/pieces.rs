@@ -19,7 +19,11 @@ pub fn wall_pressure(g: &mut GameState, cx: &mut Cx) -> Res {
         }
         // 175: a Muster like any other: the level surcharge, a Muster prohibition, Wall keeping it in the supply.
         let n = n + muster_bonus(&w);
-        let hexes = w.map.countries[c].hexes.clone();
+        let mut hexes = w.map.countries[c].hexes.clone();
+        // 192: with `wall_landing` 1 a player's factory is not a landing site (the Muster takes the next factory).
+        if w.int("adversary.wall_landing") != 0 {
+            hexes.retain(|&h| !(g.tokens(h, FACTORY) > 0 && cube_owner(g, h).is_some()));
+        }
         land_troops(g, cx, &hexes, n, "Troops land where the Protector stands: on which hex?", "adversary.wall_troops", None, true)?;
     }
     Ok(())

@@ -48,7 +48,7 @@ fill a track again, which then tips too. Thresholds: *Tunables*.
 <!-- /generated -->
 
 The round's Sway is the phase `alignment.sway`, first in the round: the board's drip and `blight_discord` (1) for
-each land-corruption token ([adversary.md](adversary.md)), nothing else. A threat sways Discord only where it prints it.
+each face-up land-corruption token (a node hex's is face down: `blight_node_discord`, 0, r84; [adversary.md](adversary.md)), nothing else. A threat sways Discord only where it prints it.
 
 **The antimatter action.** In the action phase (`...+alignment.act`), any player may sway
 `antimatter_discord` toward Discord to gain 1 antimatter, up to `antimatter_uses` times a

@@ -1,0 +1,63 @@
+{
+  "name": "f192-screen4",
+  "note": "192: screen 4, on the spent fresh seeds 43903-43974: r84 with the drip back, and with d2 compute 19.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_drip",
+      "set": [
+        "adversary.blight_node_discord=1"
+      ]
+    },
+    {
+      "name": "br_drip",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.blight_node_discord=1"
+      ]
+    },
+    {
+      "name": "pr_drip",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.blight_node_discord=1"
+      ]
+    },
+    {
+      "name": "bp_drip19",
+      "set": [
+        "adversary.blight_node_discord=1",
+        "adversary.compute_income=1,4,19,24,24"
+      ]
+    },
+    {
+      "name": "br_drip19",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.blight_node_discord=1",
+        "adversary.compute_income=1,4,19,24,24"
+      ]
+    },
+    {
+      "name": "pr_drip19",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.blight_node_discord=1",
+        "adversary.compute_income=1,4,19,24,24"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 72,
+  "records": 0
+}

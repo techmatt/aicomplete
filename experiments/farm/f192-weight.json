@@ -1,0 +1,39 @@
+{
+  "name": "f192-weight",
+  "note": "192: the eval's adversary cube weight (w.adversary_cube 0.5 today) at 0 and 1, the engine smoke on the dev seeds; strategist d0-d4.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist",
+    "strategist:w.adversary_cube=0",
+    "strategist:w.adversary_cube=1"
+  ],
+  "games": 16,
+  "records": 0
+}

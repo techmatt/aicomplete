@@ -521,9 +521,9 @@ impl Module for Alignment {
         // 136: the board's printed drip (it was `adversary_discord`, 0).
         let drip = cx.world.content.adversary_board.discord_drip;
         discord_from(g, cx, "drip", drip);
-        // 138: each land-corruption token drips 1 Discord.
-        let blight: i64 = (0..g.hexes.len()).map(|h| g.tokens(h, LAND_CORRUPTION)).sum();
-        discord_from(g, cx, "blight", blight * cx.world.int("adversary.blight_discord"));
+        // 138: each land-corruption token drips 1 Discord; 192: a face-down one (a node hex's) its own rate.
+        let blight = adversary::blight_drip(&cx.world, g);
+        discord_from(g, cx, "blight", blight);
         Ok(())
     }
 

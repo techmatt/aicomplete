@@ -100,11 +100,40 @@ fn corrupt_node(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
     clear_markers_on(g, cx, h);
     if g.tokens(h, LAND_CORRUPTION) == 0 {
         cx.add_tokens(g, h, LAND_CORRUPTION, 1);
+        // 192: placed face down, so its drip is `blight_node_discord`'s, and counted for the agents.
+        cx.set_key(g, &node_blight_hex(h), 1);
+        let n = g.var(NODE_BLIGHT);
+        cx.set_key(g, NODE_BLIGHT, n + 1);
     }
     cx.tally(g, "adversary.corruptions", 1);
     cx.tally(g, "adversary.corruptions.node", 1);
     cx.note(Some(h), || format!("The node at {} is corrupted", hex_name(&w, h)));
     Ok(())
+}
+
+/// 192: face-down land corruption (a corrupted node hex's) on the board, and the hex flag that marks one.
+pub const NODE_BLIGHT: &str = "adversary.node_blight";
+
+pub fn node_blight_hex(h: usize) -> KeyBuf {
+    KeyBuf::new("adversary.node_blight.").num(h)
+}
+
+/// 192: a land-corruption token comes off hex `h`: a face-down one leaves the count.
+pub fn lift_land_corruption(g: &mut GameState, cx: &mut Cx, h: usize) {
+    cx.add_tokens(g, h, LAND_CORRUPTION, -1);
+    if g.var(&node_blight_hex(h)) > 0 {
+        cx.set_key(g, &node_blight_hex(h), 0);
+        let n = g.var(NODE_BLIGHT);
+        cx.set_key(g, NODE_BLIGHT, n - 1);
+    }
+}
+
+/// 192: Discord the land corruption on the board sways a round: face-up tokens at `blight_discord`, face-down
+/// (a corrupted node hex's) at `blight_node_discord`.
+pub fn blight_drip(w: &World, g: &GameState) -> i64 {
+    let all: i64 = (0..g.hexes.len()).map(|h| g.tokens(h, LAND_CORRUPTION)).sum();
+    let down = g.var(NODE_BLIGHT).min(all);
+    (all - down) * w.int("adversary.blight_discord") + down * w.int("adversary.blight_node_discord")
 }
 
 /// 138: the corrupt number of `site` this game: its config number, less the

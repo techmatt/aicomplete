@@ -138,6 +138,8 @@ pub struct Weights {
     /// Each player cube on a megaproject; an adversary cube costs half, and a
     /// neutral one nothing (074).
     pub project_cube: f64,
+    /// 192: an adversary cube on an open megaproject, as a share of `project_cube` (0.5: half a player cube).
+    pub adversary_cube: f64,
     /// Each research cube a seat holds (074): low on purpose, under what every
     /// converter nets by these weights, so a cube held never beats using one.
     pub research_cube: f64,
@@ -546,6 +548,7 @@ impl Default for Weights {
             reach: 0.5,
             station: 5.0,
             project_cube: 2.0,
+            adversary_cube: 0.5,
             research_cube: 0.3,
             // r37: about one converter use's net over holding the cubes.
             converter_city: 2.0,
@@ -1623,9 +1626,12 @@ impl Eval {
             let land = tokens_down as f64 + blight;
             if land > 0.0 {
                 let cap = alignment::capacity(&world, g, Side::Discord).max(1) as f64;
-                let drip = world.int("adversary.blight_discord") as f64;
+                // 192: a face-down token (a corrupted node hex's) drips at `blight_node_discord`.
+                let face_down = (g.var(adversary::NODE_BLIGHT).min(tokens_down)) as f64;
+                let drip = (land - face_down) * world.int("adversary.blight_discord") as f64
+                    + face_down * world.int("adversary.blight_node_discord") as f64;
                 let rounds = (Self::cards_left(g) as f64).min(BLIGHT_ROUNDS);
-                v -= w.blight * land * drip * rounds * w.discord_tip / cap;
+                v -= w.blight * drip * rounds * w.discord_tip / cap;
             }
         }
         // Megaprojects: each player cube pays when the project completes.
@@ -1646,7 +1652,7 @@ impl Eval {
                 .map(|s| g.var(&board::project_key(c, Some(s))))
                 .sum();
             let theirs = g.var(&board::project_key(c, None));
-            v += w.project_cube * (mine as f64 - 0.5 * theirs as f64);
+            v += w.project_cube * (mine as f64 - w.adversary_cube * theirs as f64);
         }
         for s in 0..self.seats {
             let held = g.resource(s, Resource::Ambassadors);

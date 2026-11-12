@@ -40,6 +40,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::list("corrupt_cut", 0, 5, "difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land)"),
     ParamSpec::int("corrupt_cut_at", 0, 5, "the difficulty level from which corrupt_cut applies"),
     ParamSpec::int("blight_discord", 0, 5, "Discord each land-corruption token sways each round"),
+    ParamSpec::int("blight_node_discord", 0, 5, "192: Discord each land-corruption token a corrupted node hex took (placed face down) sways each round, in place of blight_discord"),
     ParamSpec::list("counter_pct", 50, 300, "every resource counter item of a tier 1, 2 threat costs this percent of its printed amount (rounded up)"),
     ParamSpec::int("counter_credit_pct", 50, 300, "every credits counter item costs this percent of its amount after counter_pct (rounded up; 100 = unchanged; 142's dial)"),
     ParamSpec::int("counter_bonus", 0, 10, "difficulty counter_bonus_at+: added to every resource item of each threat's first counter option (142; its credits before)"),
@@ -62,6 +63,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("tier2_early", 0, 3, "difficulty 4+: tier-2 threats start this many rounds sooner"),
     ParamSpec::int("discord_removed", 0, 3, "difficulty 4+: Discord cards removed at setup (from tier 1)"),
     ParamSpec::int("wall_troops", 0, 5, "build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop)"),
+    ParamSpec::int("wall_landing", 0, 1, "192: 1: the Protector's Muster skips players' factories (the lowest-numbered neutral or adversary factory, else city); 0: anyone's"),
     ParamSpec::int("war_node", 0, 1, "build (r83, the Militarist's War Takes Ground): 1: a drone strike that destroys a factory destroys a node on its hex too"),
     ParamSpec::int("station_flip_at", 0, 5, "agents on a player's research station before an effect can flip it (short of that, one lands there instead)"),
     ParamSpec::int("botnet_compute", 0, 5, "adversary compute each botnet makes a round (none with a player ambassador on it)"),
@@ -673,6 +675,9 @@ impl Module for Adversary {
         }
         out.bookkeeping(&[
             "prohibit.",
+            // 192: which land corruption is face down (the view doesn't draw the face yet).
+            NODE_BLIGHT,
+            "adversary.node_blight.",
             PEEK,
             FIRST_CORRUPTION,
             FIRST_PROJECT,
