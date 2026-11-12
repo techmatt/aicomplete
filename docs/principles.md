@@ -97,6 +97,29 @@ one: what a round leaves of it is lost anyway. **A resource ends high** when a s
 credits 12, chips 4, energy 4, antimatter 2, ambassadors 3 (`UNSPENT_HIGH`, `crates/aic-sim/src/experiment.rs`). Games end at
 different rounds, so read the flag on the planner, whose games run longest toward a win, before a fixed policy's.
 
+## Design warnings (Matt, 2026-11-12)
+
+Calibration measures use, not soundness, so these rules are checked by `scripts/design_check.py` (thresholds,
+all candidates, in `scripts/design_check.json`) on every rules item's first screen and fresh read. A warning never
+stops work: an item whose own change trips one still finishes and calibrates, and reports the warning first.
+
+- **Capstone and tier-2 resources (antimatter, and any later) are scarce and earned.** No cheap standard-action
+  source; the only standard source is a desperate one (3-4 research cubes → 1 antimatter, say). *Warns:* over 20% of
+  the supply from standard actions or tier-1 cards; any one source over 40% of a resource's supply, or one spend
+  over 50% of its use.
+- **Boards differ:** no power or effect repeated on every board. *Warns:* one power name or one effect on 2+ boards.
+- **Standard actions are deliberately poorly priced against cards.** *Warns:* a standard action whose get passes its
+  give at the unit anchors ([card-guidelines.md](card-guidelines.md)).
+- **Unity and Discord follow the story:** Unity is trust and cooperation; Discord is fear, force and collateral
+  harm. *Warns:* a Sway source whose side disagrees with its story tag (an untagged one is listed, not warned).
+- **Fewer tokens, less processing and tracking**, all else equal. *Warns:* tokens placed or moved a round up 10%
+  on the previous revision's read.
+- **Engines over dials.** A skipped resource means its engines need buffing; at high difficulty victory needs chips,
+  energy, antimatter and cubes. *Warns:* a card kept but played under 0.1 a game, a power used under 0.1 a
+  seat-game, a resource spent under half of what is gained, one of the four spent in under 75% of won games at
+  d3-d4; a dial moved 40%+ in the item that changed the design.
+- **Games run 8-10 rounds.** *Warns:* any level's mean outside 8-10.
+
 ## Design lenses for every module
 
 - strategic: situational, never always right
@@ -155,23 +178,8 @@ suspended until Matt names a milestone (the ballpark ruling, 2026-11-03).
   the stated noise (`crates/aic-sim/src/gate.rs`); a check that stays close runs to the cap.
 - **The list grows:** a new mechanic adds the obvious fixed policy for it.
 
-The checks, by spec; each policy is said on its `forced_table!` row:
-
-- keep-all `keep_all=1`, keep-cheapest-k `keep_k=2`, tier-1-only `tier1_only=1`, tier-2-rush
-  `tier2_rush=1`, no-powers `no_powers=1`, no-counters `no_counters=1`, no-node `no_node=1`;
-- mono-tag and ignore-X, one per tag: `only_tag=N`, `never_tag=N` (1-6: Science, Industry, Cyber,
-  Power, Diplomacy, Security); event-hoarder `events_only=1`;
-- ignore threats `ignore_threats=1`, turtle `turtle=1`, free cities only `free_only=1` (turtle and
-  free cities only also pass Clear, which pays Unity); Science rush `science_rush=1`;
-- always-max-node `always_max_node=1`, never-second-node `never_second_node=1`, never-Remove
-  `never_clear=1`, Science board `science_board=1`, never-sacrifice `never_sacrifice=1` (Accord included);
-- abandon `abandon=1` (pressure counts countries at setup, so concentrating must not pay);
-- ambassador mass `ambassador_mass=1`, free-build rush `free_build_rush=1`, wall turtle
-  `wall_turtle=1`, home only `home_only=1`, capstone rush `capstone_rush=1`, never-convert
-  `never_convert=1`, always-buy-cubes `always_buy_cubes=1`, hoard insight `hoard_insight=N` (c3),
-  always-liberate `always_liberate=1`;
-- engine rush `engine_rush=1` / `=2`, a probe (an engine card: a trigger, threshold, per-tag income,
-  discount or copy).
+The checks, by spec (`planner:<check>=1`), are the `forced_table!` rows, each saying its policy; the gate's specs
+below name the ones read.
 
 **The gate** is `experiments/gate.json` (gate-075): planner
 only, d2 (d4 is not winnable, so a d4 half could not pass), 2 and 3 countries, 48 paired seeds a check, those within 2 SE going on to 96, `never_tag` dropped to fit,

@@ -12,6 +12,10 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   `drafts/adversary/` (`load_adversary.py --check`), writes `RULES_REVISION` into `docs/rules/README.md`, then `aic-sim docs`,
   `cards_doc.py`, `effect_ledger.py`, `shared_row.py`, `no_liberate.py`; prints the content hash and `git status`.
   `--check`: the `--check`s and the revision line only.
+- `design_check.py [DIR] [--old DIR] [--base REV] [--quiet]`: the design warnings ([principles.md](principles.md)):
+  content checks, plus the play checks on a read's `games.jsonl` (DIR; `--old` the previous revision's read on its seeds,
+  `--base` the item's start for the dials, default the merge base with main). First line: the report's `warnings:`.
+  Thresholds: `design_check.json`. Never exits 1.
 - `configs/shared_row.py`: regenerates `configs/shared_row.json` from the baseline.
 - `cards/cards_doc.py`: regenerates `docs/cards.md`. `cards/deck_text.py DECK...` prints a deck as plain text for a
   review, from the generated docs (`--list` the decks; README, *Card text for review*).
@@ -30,8 +34,7 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
 - `cards/screen.py`: the screen summary: named columns over experiment outputs (`--columns a,b,c`, `--preset
   tiers|041|034|018|016`, `--sources`, `--list`); `--gate DIR` each check against its own agent (agent minus
   check, paired SE), then the unspent-resources readout. `--preset
-  tiers` is cards offered, kept and played per game by tier: run it on the first screen of a card rework, since agents
-  draft tier 2 about three picks in four ([card-pricing.md](card-pricing.md)) and a tier-1 change may never show.
+  tiers` (offered, kept, played by tier): a card rework's first screen, as a tier-1 change may never show.
   `scripts/screens.py` holds what it shares with the other readers, and is the way to read a run from Python:
   `load(dir)` gives the games with their cells (`stream` also takes `FILE=SPEC`), `cnt(game, key)` a counter (a power is `ai.power.<board>.<name>`: `scripts/powers.py`).
   `python scripts/screens.py assemble SPEC FIRST COUNT OUT_DIR SHARD... [--exe EXE]` turns farmed shards (seed order)
@@ -82,11 +85,10 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
 - `cards/effect_ledger.py`: the effect ledger. It splits each card's printed cost over its effects pro rata to the
   reasoned values (`configs/agents/values.json`, an income valued over its tier's horizon), fits a price multiplier
   per effect, and writes CSVs, `ledger.html` and `outliers.md` to `experiments/results/effect-ledger/`; rerun at each
-  card revision. `outliers.md` lists the tier-2 cards over the 2.5 ceiling at the table (166; tier 1's 1.5 is read
-  at the anchors, by hand). `--stdout` prints each card's fit and fair price (card-pricing.md, *A fair price*), writing nothing;
+  card revision. `outliers.md` lists the tier-2 cards over the 2.5 ceiling at the table. `--stdout` prints each card's fit and fair price (card-pricing.md, *A fair price*), writing nothing;
   `--cards FILE`, `--values FILE` read proposed files; `--overlay FILE` (with `--stdout`) prices an overlay before it
   is written; `--hold-ratio OLD.csv` adds the price keeping an older `cards.csv`'s printed / reasoned ratio (repricing
-  after a value change). It mirrors `agents/value.rs` by hand (card-pricing.md). Seconds.
+  after a value change). Seconds.
 - `cards/payback.py [--cards CARDS.json] [--old CARDS.json [--old-keep-tier2 N]]`: rounds each engine building takes to pay back its
   price at a committed seat's fire rates (card-pricing.md *Engines*), at `values.json`'s rates; `--old` adds an older
   deck's column.
@@ -132,8 +134,7 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   `bench/test_read_tools.py` tests both. A `--pair` cell is its exact name
   (`bp/strategist`, or `DIR/bp/strategist`); a spec with several configs or difficulties leads it with the config's
   file stem and `dN` (`no_liberate/d2/bp/strategist`; `screens.cell_labels`). `--against-base` reads a price sweep:
-  every variant `cN-x` against `cN`, per agent, each lever pooled over its sizes (report.md pairs only against the
-  first variant, so it reads a c3 lever against c2).
+  every variant `cN-x` against `cN`, per agent, each lever pooled over its sizes.
 - Two agent specs on one binary: `bench/speed.py specs SIM A B`, `bench/per_decision.py SIM.exe --old-agent A
   --agent B`.
 - `bench/first_divergence.py OLD NEW`: where two runs of one spec first play differently, game by game; `--cells DIR
@@ -142,8 +143,7 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   run; writes `self.csv`, `total.csv`, `callers.csv`, `edges.csv`.
 - `bench/card_ranks.py DIR A B [--variant V]...`: Spearman of each card's keep and play rates, agent B against A
   (as `cards.csv` names them); an approximation's bar.
-- `bench/item_time.py ITEM...`: how a done conductor item's wall time split between sims, builds, tests and the
-  rest, from its run.json and main transcript (read only); `--top N` lists the unclassified calls.
+- `bench/item_time.py ITEM... [--top N]`: a done conductor item's wall time by sims, builds, tests and the rest.
 - `tune/`: `agent_sweep.py` (the strategist's parameter sweep), `sweep.py`, `log_table.py`, `engine_sweep.py`; see
   [scripts/tune/README.md](../scripts/tune/README.md).
 - Past items' one-off readers are in `experiments/archive/scripts/`, kept for the write-ups that cite them; 034's is

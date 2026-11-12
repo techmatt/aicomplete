@@ -1,0 +1,87 @@
+warnings: design: same-power Annihilate on 3 boards; same-power Expand on 3 boards; same-effect Accord/Buy In/Expand/Peer Review on 3 boards; same-effect Debrief/Procure on 2 boards; standard-over-anchor 7 (antimatter action 1.75, Buy a city's energy 1.12, Remove agents 3.75, ...); cheap-source antimatter 54%; one-source antimatter antimatter-action 53%; one-spend antimatter power:Annihilate 97%; one-spend ambassadors standard:liberate 77%; kept-not-played 29 (open_weights_release 0.02, antiproton_foundry 0.06, exascale_training_cluster 0.00, ...); power-unused builder Focus 0.02; power-unused protector Recovery 0.03; power-unused researcher Synthesis 0.00; victory-skips research_cubes 49%; rounds 5 (d0 6.2, d1 7.7, d2 7.1, ...)
+
+2160 games, old side 720
+## Warnings (53)
+- [same-power] power Annihilate is on 3 boards: builder, protector, researcher
+- [same-power] power Expand is on 3 boards: builder, protector, researcher
+- [same-effect] one effect ([{"count": 1, "op": "place_node"}]) on 3 boards under 4 names: builder Buy In, builder Expand, protector Accord, protector Expand, researcher Expand, researcher Peer Review
+- [same-effect] one effect ([{"count": 2, "op": "draw"}]) on 2 boards under 2 names: builder Procure, protector Debrief
+- [standard-over-anchor] antimatter action: give 1 sway = 4, get 1 antimatter = 7 at the anchors: 1.75; 5.72 uses a game (max 1.0)
+- [standard-over-anchor] Buy a city's energy: give 4 credits = 4, get 1 energy = 4.5 at the anchors: 1.12; 2.71 uses a game (max 1.0)
+- [standard-over-anchor] Remove agents: give 1 ambassadors = 4, get 3 agent = 15 at the anchors: 3.75; 2.22 uses a game (max 1.0)
+- [standard-over-anchor] Clear a corruption marker: give 2 credits = 2, get 2 sway + 0 credits = 8 at the anchors: 4.00; 1.14 uses a game (max 1.0)
+- [standard-over-anchor] Take down a botnet: give 5 credits = 5, get 1 botnet + 1 sway = 20 at the anchors: 4.00; 1.51 uses a game (max 1.0)
+- [standard-over-anchor] Project: drain: give 5 credits = 5, get 3 compute = 6 at the anchors: 1.20; 5.17 uses a game (max 1.0)
+- [standard-over-anchor] Liberate a city: give 5 ambassadors = 20, get 1 city_liberated + 5 sway = 65 at the anchors: 3.25; 6.53 uses a game (max 1.0)
+- [cheap-source] antimatter: 54% of its supply (5.37 a seat-game) from standard actions or tier-1 cards (max 20%): antimatter-action 53%
+- [one-source] antimatter: one source, antimatter-action, is 53% of its sources (2.86 of 5.37 a seat-game; max 40%)
+- [one-spend] antimatter: one spend, power:Annihilate, is 97% of its uses (4.41 of 4.53 a seat-game; max 50%)
+- [one-spend] ambassadors: one spend, standard:liberate, is 77% of its uses (12.80 of 16.54 a seat-game; max 50%)
+- [kept-not-played] open_weights_release: kept 0.46 a game, played 0.02
+- [kept-not-played] antiproton_foundry: kept 0.37 a game, played 0.06
+- [kept-not-played] exascale_training_cluster: kept 0.36 a game, played 0.00
+- [kept-not-played] penning_trap_array: kept 0.34 a game, played 0.05
+- [kept-not-played] microgrid_lab_compact: kept 0.32 a game, played 0.01
+- [kept-not-played] orbital_observatory_array: kept 0.29 a game, played 0.01
+- [kept-not-played] conglomerate_headquarters: kept 0.20 a game, played 0.02
+- [kept-not-played] collateralized_grid: kept 0.20 a game, played 0.00
+- [kept-not-played] positron_storage_ring: kept 0.19 a game, played 0.03
+- [kept-not-played] patent_library: kept 0.17 a game, played 0.00
+- [kept-not-played] autonomous_defense_grid: kept 0.16 a game, played 0.02
+- [kept-not-played] power_to_the_people: kept 0.16 a game, played 0.03
+- [kept-not-played] recursive_self_improvement: kept 0.15 a game, played 0.03
+- [kept-not-played] wafer_fab_line: kept 0.15 a game, played 0.01
+- [kept-not-played] garrison_command: kept 0.15 a game, played 0.01
+- [kept-not-played] deep_state_ledger: kept 0.14 a game, played 0.00
+- [kept-not-played] sentinel_mesh: kept 0.14 a game, played 0.03
+- [kept-not-played] payroll_automation: kept 0.13 a game, played 0.00
+- [kept-not-played] interceptor_battery: kept 0.12 a game, played 0.03
+- [kept-not-played] fusion_research_campus: kept 0.12 a game, played 0.03
+- [kept-not-played] cryo_sample_vault: kept 0.12 a game, played 0.03
+- [kept-not-played] directed_energy_array: kept 0.12 a game, played 0.02
+- [kept-not-played] arcology_foundry: kept 0.11 a game, played 0.00
+- [kept-not-played] robotic_foundry: kept 0.11 a game, played 0.00
+- [kept-not-played] beamed_power_constellation: kept 0.11 a game, played 0.01
+- [kept-not-played] parts_exchange: kept 0.11 a game, played 0.01
+- [kept-not-played] vendor_financing: kept 0.11 a game, played 0.01
+- [kept-not-played] particle_accelerator: kept 0.10 a game, played 0.01
+- [kept-not-played] neural_mirror: kept 0.10 a game, played 0.01
+- [power-unused] builder power Focus: used 0.02 a seat-game
+- [power-unused] protector power Recovery: used 0.03 a seat-game
+- [power-unused] researcher power Synthesis: used 0.00 a seat-game
+- [victory-skips] research_cubes: spent in 49% of won games at d3,4 (341 won; min 75%)
+- [rounds] d0: 6.2 rounds a game, won games 5.9 (432 games; target 8-10)
+- [rounds] d1: 7.7 rounds a game, won games 6.2 (432 games; target 8-10)
+- [rounds] d2: 7.1 rounds a game, won games 6.3 (432 games; target 8-10)
+- [rounds] d3: 6.4 rounds a game, won games 5.5 (432 games; target 8-10)
+- [rounds] d4: 6.6 rounds a game, won games 5.5 (432 games; target 8-10)
+
+## Information (28)
+- Turn a cube into insight: give 1 research_cubes = 6, get 1 insight = 4 at the anchors: 0.67; 1.27 uses a game (max 1.0)
+- Build a research station: give 1 chips = 6, get 1 station = 6 at the anchors: 1.00; 1.77 uses a game (max 1.0)
+- Gain a player ambassador: give 20 credits = 20, get 1 ambassadors = 4 at the anchors: 0.20; 2.39 uses a game (max 1.0)
+- Project: harden: give 3 credits = 3, get 1 harden = 3 at the anchors: 1.00; 1.83 uses a game (max 1.0)
+- Envoy: give 1 ambassadors = 4, get 1 sway = 4 at the anchors: 1.00; 0.27 uses a game (max 1.0)
+- Sell a card: give 1 card = 5, get 1 credits = 1 at the anchors: 0.20; 0.00 uses a game (max 1.0)
+- sway sources with no story tag (44; 204 assigns them, information only): cards:shared_grid_accord unity 2; cards:open_assembly unity 3; cards:manifesto_leak unity 3; cards:back_channel_talks unity 2; cards:coalition_charter unity 6; cards:planetary_referendum unity 8; cards:diplomatic_expulsion unity 1; cards:martial_cordon unity 2; cards:truth_commission unity 2; cards:nuclear_option discord 1; cards:peace_conference unity 8; cards:citywide_microgrid unity 2; cards:holographic_assembly_hall unity 2; cards:mass_defection unity 2; cards:kettle_operation unity 2; cards:rally_the_allies unity 2; cards:surgical_strike unity 1 (beside a removal: force?); cards:open_source_uprising unity 1; ais:builder:Annihilate unity 3 (beside a removal: force?); ais:protector:Annihilate unity 3 (beside a removal: force?); ais:researcher:Annihilate unity 3 (beside a removal: force?); alignment:volunteer_corps unity 1; alignment:citizens_assembly unity 1; adversary:mil_s1_war_drums discord 1; adversary:mil_s3_blitzkrieg discord 1; map:Horizon discord 1; map:Onyx discord 1; map:Biomia unity 1; map:Biomia discord 1; projects:disinformation discord 5; projects:propaganda_network discord 2; threats:call_up discord 2; threats:provocation discord 2; threats:agitators discord 2; threats:defection discord 1; threats:propaganda_blitz discord 3; threats:casus_belli discord 3; threats:deepfake_wave discord 3; threats:propaganda_ministry discord 4; standard:antimatter action discord 1; standard:Clear a corruption marker unity 2; standard:Take down a botnet unity 1; standard:Liberate a city unity 5; standard:Envoy unity 1
+- dials: none moved 40% or more since b99ed8f7a
+- energy sources, phases (each pools many engines): phase:board.produce 42%, phase:economy.upkeep 39%, phase:threats.execute 4%
+- energy: one source, standard:buy_energy, is 5% of its sources (1.35 of 24.90 a seat-game; max 40%)
+- chips sources, phases (each pools many engines): phase:board.produce 30%, phase:economy.upkeep 7%
+- chips: one source, play:joint_fabrication_pact, is 33% of its sources (1.47 of 4.51 a seat-game; max 40%)
+- antimatter sources, phases (each pools many engines): phase:economy.upkeep 7%
+- research_cubes sources, phases (each pools many engines): phase:board.produce 99%, phase:threats.execute 1%, phase:economy.upkeep 0%
+- research_cubes: one source, use:particle_accelerator, is 0% of its sources (0.00 of 5.30 a seat-game; max 40%)
+- ambassadors: one source, standard:liberate, is 22% of its sources (4.53 of 20.64 a seat-game; max 40%)
+- energy uses, phases (each pools many engines): phase:threats.execute 1%
+- energy: one spend, power:Expand, is 47% of its uses (10.67 of 22.66 a seat-game; max 50%)
+- chips uses, phases (each pools many engines): phase:threats.execute 0%
+- chips: one spend, power:Procure, is 41% of its uses (1.28 of 3.13 a seat-game; max 50%)
+- research_cubes uses, phases (each pools many engines): phase:threats.execute 0%
+- research_cubes: one spend, convert:0, is 31% of its uses (0.88 of 2.88 a seat-game; max 50%)
+- ambassadors uses, phases (each pools many engines): phase:threats.execute 0%
+- chips: spent in 87% of won games at d3,4 (341 won; min 75%)
+- energy: spent in 100% of won games at d3,4 (341 won; min 75%)
+- antimatter: spent in 99% of won games at d3,4 (341 won; min 75%)
+- tokens a round, adversary ops: 44.6 against 42.9 (+4%; max +10%)
+- tokens a round, player token moves: 13.9 against 16.2 (-14%; max +10%)
