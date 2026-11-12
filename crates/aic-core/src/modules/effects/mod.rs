@@ -299,6 +299,14 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::RemoveBotnets { count } => team::remove_botnets(g, cx, *count)?,
         Op::AdversaryCubes { count } => team::adversary_cubes(g, cx, *count),
         Op::BotnetCubes { count } => team::botnet_cubes(g, cx, *count)?,
+        // 195: the project deck's board verbs.
+        Op::BotnetTroops { count, troops } => team::botnet_troops(g, cx, *count, *troops),
+        Op::SpreadBotnets { count } => team::spread_botnets(g, cx, *count),
+        Op::TakeSite { site } => team::take_site(g, cx, *site)?,
+        Op::FactoryTroops { count } => team::factory_troops(g, cx, *count),
+        Op::RaidNode => team::raid_node(g, cx, ctx)?,
+        Op::StripHarden => team::strip_harden(g, cx),
+        Op::Clock { count } => team::clock(g, cx, *count),
         Op::OnePlayer { then } => {
             // 156: the team picks who acts, among the players it would act for.
             let able: Vec<usize> = (0..g.seats.len()).filter(|&s| feasible(&w, g, s, then)).collect();

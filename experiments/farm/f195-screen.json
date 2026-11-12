@@ -1,0 +1,143 @@
+{
+  "name": "f195-screen",
+  "note": "195: the driver screen: r84's cut taxes and untied troops put back onto r85 ids, by part (screen_spec.py)",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_taxes",
+      "set": [
+        "projects.backdoor_research.cost=4",
+        "projects.backdoor_research.effects=[{\"op\": \"requisition\", \"resource\": \"chips\", \"amount\": 3, \"cards\": 3}]",
+        "projects.backdoor_research.ongoing=false",
+        "projects.sabotage_teams.cost=7",
+        "projects.sabotage_teams.effects=[{\"op\": \"requisition\", \"resource\": \"ambassadors\", \"amount\": 2, \"cards\": 2}]",
+        "projects.sabotage_teams.ongoing=false",
+        "projects.mob_rule.cost=5",
+        "projects.mob_rule.effects=[{\"op\": \"requisition\", \"resource\": \"credits\", \"amount\": 10, \"cards\": 3}]",
+        "projects.mob_rule.ongoing=false",
+        "projects.accelerated_timetable.cost=8",
+        "projects.accelerated_timetable.effects=[{\"op\": \"team_income\", \"resource\": \"credits\", \"amount\": -4}]",
+        "projects.accelerated_timetable.ongoing=false",
+        "projects.botnet_conscripts.cost=9",
+        "projects.botnet_conscripts.effects=[{\"op\": \"requisition\", \"resource\": \"energy\", \"amount\": 1, \"cards\": 1}]",
+        "projects.botnet_conscripts.ongoing=true"
+      ]
+    },
+    {
+      "name": "br_taxes",
+      "set": [
+        "ai.boards=0,2",
+        "projects.backdoor_research.cost=4",
+        "projects.backdoor_research.effects=[{\"op\": \"requisition\", \"resource\": \"chips\", \"amount\": 3, \"cards\": 3}]",
+        "projects.backdoor_research.ongoing=false",
+        "projects.sabotage_teams.cost=7",
+        "projects.sabotage_teams.effects=[{\"op\": \"requisition\", \"resource\": \"ambassadors\", \"amount\": 2, \"cards\": 2}]",
+        "projects.sabotage_teams.ongoing=false",
+        "projects.mob_rule.cost=5",
+        "projects.mob_rule.effects=[{\"op\": \"requisition\", \"resource\": \"credits\", \"amount\": 10, \"cards\": 3}]",
+        "projects.mob_rule.ongoing=false",
+        "projects.accelerated_timetable.cost=8",
+        "projects.accelerated_timetable.effects=[{\"op\": \"team_income\", \"resource\": \"credits\", \"amount\": -4}]",
+        "projects.accelerated_timetable.ongoing=false",
+        "projects.botnet_conscripts.cost=9",
+        "projects.botnet_conscripts.effects=[{\"op\": \"requisition\", \"resource\": \"energy\", \"amount\": 1, \"cards\": 1}]",
+        "projects.botnet_conscripts.ongoing=true"
+      ]
+    },
+    {
+      "name": "pr_taxes",
+      "set": [
+        "ai.boards=1,2",
+        "projects.backdoor_research.cost=4",
+        "projects.backdoor_research.effects=[{\"op\": \"requisition\", \"resource\": \"chips\", \"amount\": 3, \"cards\": 3}]",
+        "projects.backdoor_research.ongoing=false",
+        "projects.sabotage_teams.cost=7",
+        "projects.sabotage_teams.effects=[{\"op\": \"requisition\", \"resource\": \"ambassadors\", \"amount\": 2, \"cards\": 2}]",
+        "projects.sabotage_teams.ongoing=false",
+        "projects.mob_rule.cost=5",
+        "projects.mob_rule.effects=[{\"op\": \"requisition\", \"resource\": \"credits\", \"amount\": 10, \"cards\": 3}]",
+        "projects.mob_rule.ongoing=false",
+        "projects.accelerated_timetable.cost=8",
+        "projects.accelerated_timetable.effects=[{\"op\": \"team_income\", \"resource\": \"credits\", \"amount\": -4}]",
+        "projects.accelerated_timetable.ongoing=false",
+        "projects.botnet_conscripts.cost=9",
+        "projects.botnet_conscripts.effects=[{\"op\": \"requisition\", \"resource\": \"energy\", \"amount\": 1, \"cards\": 1}]",
+        "projects.botnet_conscripts.ongoing=true"
+      ]
+    },
+    {
+      "name": "bp_troops",
+      "set": [
+        "projects.factory_garrisons.cost=11",
+        "projects.factory_garrisons.effects=[{\"op\": \"corp_troops\", \"count\": 1, \"at\": \"every_base\", \"when\": \"each_production\", \"past_cap\": true}]",
+        "projects.factory_garrisons.ongoing=true",
+        "projects.war_plants.cost=10",
+        "projects.war_plants.effects=[{\"op\": \"troops\", \"count\": 3, \"each_country\": true}]",
+        "projects.war_plants.ongoing=false",
+        "projects.night_raid.cost=18",
+        "projects.night_raid.effects=[{\"op\": \"extra_war\", \"front\": \"most_corp_troops\", \"ongoing_use\": true}]",
+        "projects.night_raid.ongoing=true",
+        "projects.night_raid.resolve=[{\"op\": \"troops\", \"count\": 3, \"each_country\": true}]"
+      ]
+    },
+    {
+      "name": "br_troops",
+      "set": [
+        "ai.boards=0,2",
+        "projects.factory_garrisons.cost=11",
+        "projects.factory_garrisons.effects=[{\"op\": \"corp_troops\", \"count\": 1, \"at\": \"every_base\", \"when\": \"each_production\", \"past_cap\": true}]",
+        "projects.factory_garrisons.ongoing=true",
+        "projects.war_plants.cost=10",
+        "projects.war_plants.effects=[{\"op\": \"troops\", \"count\": 3, \"each_country\": true}]",
+        "projects.war_plants.ongoing=false",
+        "projects.night_raid.cost=18",
+        "projects.night_raid.effects=[{\"op\": \"extra_war\", \"front\": \"most_corp_troops\", \"ongoing_use\": true}]",
+        "projects.night_raid.ongoing=true",
+        "projects.night_raid.resolve=[{\"op\": \"troops\", \"count\": 3, \"each_country\": true}]"
+      ]
+    },
+    {
+      "name": "pr_troops",
+      "set": [
+        "ai.boards=1,2",
+        "projects.factory_garrisons.cost=11",
+        "projects.factory_garrisons.effects=[{\"op\": \"corp_troops\", \"count\": 1, \"at\": \"every_base\", \"when\": \"each_production\", \"past_cap\": true}]",
+        "projects.factory_garrisons.ongoing=true",
+        "projects.war_plants.cost=10",
+        "projects.war_plants.effects=[{\"op\": \"troops\", \"count\": 3, \"each_country\": true}]",
+        "projects.war_plants.ongoing=false",
+        "projects.night_raid.cost=18",
+        "projects.night_raid.effects=[{\"op\": \"extra_war\", \"front\": \"most_corp_troops\", \"ongoing_use\": true}]",
+        "projects.night_raid.ongoing=true",
+        "projects.night_raid.resolve=[{\"op\": \"troops\", \"count\": 3, \"each_country\": true}]"
+      ]
+    }
+  ],
+  "difficulties": [
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

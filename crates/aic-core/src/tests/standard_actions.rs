@@ -194,12 +194,12 @@ fn standard_projects_turn_credits_into_hardening_and_drains() {
     assert_eq!(g.tokens(p, HARDEN), 1);
 
     // A drain needs compute on a project.
-    set_pile(&mut g, PROJECTS, &["market_crash"]);
+    set_pile(&mut g, PROJECTS, &["backdoor_research"]);
     assert!(rules.apply_mut(&mut g.clone(), &std_act(0, "drain"), None).is_err());
-    g.vars.insert(adversary::project_key("market_crash").into(), 5);
+    g.vars.insert(adversary::project_key("backdoor_research").into(), 5);
     rules.apply_mut(&mut g, &std_act(0, "drain"), None).unwrap();
     answer_all(&rules, &mut g);
-    assert_eq!(g.var(&adversary::project_key("market_crash")), 5 - w.int("board.drain_amount"));
+    assert_eq!(g.var(&adversary::project_key("backdoor_research")), 5 - w.int("board.drain_amount"));
 }
 
 /// 020: moving the seat's only ambassador onto the hex it already holds was

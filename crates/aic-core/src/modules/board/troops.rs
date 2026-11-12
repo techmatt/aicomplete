@@ -84,7 +84,7 @@ pub(super) fn battle(g: &mut GameState, cx: &mut Cx) -> Res {
 /// The war steps each front fights this round (135): 1 every round (139: no clock), 1
 /// more where a threat brought war forward on it for this round (Casus
 /// Belli), and 1 more for the front with the most corp troops
-/// (ties: the first) while an ongoing project says so (Declaration of War).
+/// (ties: the first) while an ongoing project says so (none since r85; Declaration of War did).
 pub fn war_steps(w: &World, g: &GameState) -> Vec<i64> {
     let mut out: Vec<i64> = (0..w.map.fronts.len())
         .map(|i| 1 + (g.var(&extra_war_key(i)) == g.round as i64) as i64)

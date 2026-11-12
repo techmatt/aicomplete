@@ -442,9 +442,9 @@ fn the_adversary_gains_its_income_at_the_end_of_its_turn() {
         }
         assert_eq!(g.stats.counters["adversary.compute_income"], compute, "d{d}");
         // A row too dear to fill: the next reveal step puts the income on it, resolving nothing.
-        row(&mut g, &["declaration_of_war"]);
+        row(&mut g, &["accelerated_timetable"]);
         set_pile(&mut g, adversary::PROJECTS_DONE, &[]);
-        g.vars.insert(adversary::project_key("declaration_of_war").into(), 0);
+        g.vars.insert(adversary::project_key("accelerated_timetable").into(), 0);
         let before = g.var(adversary::COMPUTE);
         // 175: the compute step adds the botnets' and corrupted stations' compute with the income.
         let botnets = total(&g, BOTNET) * rules.world().int("adversary.botnet_compute");
@@ -458,7 +458,7 @@ fn the_adversary_gains_its_income_at_the_end_of_its_turn() {
         run_answered(&rules, &mut g);
         let all = compute + botnets + stations;
         assert_eq!(g.var(adversary::COMPUTE), before + all, "d{d}");
-        assert_eq!(g.var(&adversary::project_key("declaration_of_war")), all, "d{d}");
+        assert_eq!(g.var(&adversary::project_key("accelerated_timetable")), all, "d{d}");
         assert!(g.pile(adversary::PROJECTS_DONE).is_empty());
         for b in 0..boards {
             assert_eq!(g.var(&adversary::pool_key(b)), 3 * (ambassadors + 1), "d{d} board {b}");
@@ -595,8 +595,8 @@ fn the_load_check_refuses_an_event_or_a_project_off_the_standard() {
         "more than two other lines",
     );
     refused(&|a| a.text = "Muster 1 on each board.".into(), "each board");
-    // Data Heist prints two consequences; a third is refused.
-    let p = c.projects.iter().find(|p| p.id == "data_heist").unwrap();
+    // Hostile Takeover prints two consequences; a third is refused.
+    let p = c.projects.iter().find(|p| p.id == "hostile_takeover").unwrap();
     assert_eq!(p.effects.len() + p.resolve.len(), 2);
     assert_eq!(project_rule_break(p), None);
     let mut three = p.clone();

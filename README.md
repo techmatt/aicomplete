@@ -120,7 +120,7 @@ the run: `cargo test --workspace --no-fail-fast [-- --include-ignored]` (a cargo
 
 **Rules changes:** the `golden_game` test pins the final state of one fixed game
 (baseline, seed `u64::MAX`, action *k* = legal action `(k × 7919) mod count`). If a rules change is
-intended, bump `RULES_REVISION` in `crates/aic-core/src/lib.rs` and update
+intended, bump `RULES_REVISION` in `crates/aic-core/src/lib.rs` (and `docs/rulebook.md`'s line 3 by hand: `aic-sim docs` refuses it stale) and update
 `GOLDEN_REVISION` and `GOLDEN_FINGERPRINT` in `crates/aic-core/src/tests/mod.rs` and `GOLDEN`
 in `scripts/wasm-smoke.mjs` (`wasm_smoke_expects_the_golden_fingerprint` fails until it and `GOLDEN_CONTENT` match). The
 fingerprint covers the config and the final state less its measures (`stats`), so a rename that

@@ -662,6 +662,16 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         // 185: a cube on each open megaproject; a botnet turned into one.
         Op::AdversaryCubes { count } => Worth::now(row("adversary_cubes") * t.rate("countries") * *count as f64),
         Op::BotnetCubes { count } => Worth::now(row("botnet_cubes") * *count as f64),
+        // 195: the project deck's board verbs, "in each country" at rates.countries.
+        Op::BotnetTroops { count, troops } => {
+            Worth::now(row("botnet_troops") * t.rate("countries") * (*count * *troops) as f64)
+        }
+        Op::SpreadBotnets { count } => Worth::now(row("spread_botnets") * t.rate("countries") * *count as f64),
+        Op::TakeSite { .. } => Worth::now(row("take_site") * t.rate("countries")),
+        Op::FactoryTroops { count } => Worth::now(row("factory_troops") * t.rate("countries") * *count as f64),
+        Op::RaidNode => Worth::now(row("raid_node") * t.rate("countries")),
+        Op::StripHarden => Worth::now(row("strip_harden") * t.rate("countries")),
+        Op::Clock { count } => Worth::now(row("clock") * *count as f64),
         // 156: one player resolves seat ops: their worth, at the row's share.
         Op::OnePlayer { then } => {
             let mut w = Worth::default();

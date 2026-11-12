@@ -137,7 +137,7 @@ fn measure_round(g: &mut GameState, cx: &mut Cx) {
 
 /// The extra corp troops a base asks for this production step (135): (past
 /// its cap, held to it), from the threats registered on it (Conscription),
-/// the ongoing projects (Arms Race) and the adversary board's rules
+/// the ongoing projects (none since r85; Arms Race was one) and the adversary board's rules
 /// (Warmongering).
 fn extra_asked(w: &World, g: &GameState, base: usize, registered: &[(usize, u32, i64)]) -> (i64, i64) {
     let (mut past, mut capped) = (0, 0);

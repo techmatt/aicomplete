@@ -27,7 +27,12 @@ HARMS = [
     "tokens stripped from cards", "facilities destroyed or seized", "production blacked out",
     "adversary pieces placed", "projects advanced (compute)", "extra threats", "Discord sway", "Unity pulled back",
     "actions or claims blocked", "energy lost", "war brought forward", "troops made",
+    # 195: the project deck's new harms (the ledger's rows).
+    "protections stripped", "the clock sped up", "adversary cubes on megaprojects",
 ]
+# 195: harms the drafts may print from one kind of source: the project deck's new rows (the engine's ledger,
+# docs/harms.md, counts the board rules beside them and lists any thin one under *Gaps*).
+ONE_SOURCE = {"protections stripped", "the clock sped up", "adversary cubes on megaprojects"}
 PERMANENT = {"node destroyed", "facilities destroyed or seized"}
 LOCATIONS = {"city", "coastal_city", "station", "factory", "base"}
 SACRIFICE = {"security", "diplomacy", "cyber", "industry", "power", "science"}
@@ -274,7 +279,7 @@ def ledger(t, projects, mil):
     for h in set(mil["board"].get("harms", [])):
         table[h]["Militarist board"] += 1
     for h in HARMS:
-        if len(table[h]) < 2:
+        if len(table[h]) < (1 if h in ONE_SOURCE else 2):
             errors.append(f"harm {h!r}: {len(table[h])} kind(s) of source {dict(table[h])}")
     return table
 

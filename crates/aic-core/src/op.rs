@@ -861,7 +861,7 @@ pub enum Op {
     ThreatAtNode { tier: u8 },
     /// Each player in scope destroys `count` of their nodes in scope (their choice), unless absorbed
     /// (175: a last node too). 139: a threat's or a twist's only (Border War); the team
-    /// slot (Discord cards, projects) destroys no nodes. `bases` (139, Border War): only nodes on or next to a
+    /// slot destroys a node only by a raid (`RaidNode`, 195: projects). `bases` (139, Border War): only nodes on or next to a
     /// front's military base, so a player with none there loses none.
     EachDestroyNode {
         count: i64,
@@ -1130,7 +1130,7 @@ pub enum Op {
         count: i64,
     },
     /// 185 (Matt's ruling #3): `count` adversary research cubes onto each open megaproject. They fill it like
-    /// any cube and each pays the card's adversary payout at completion. Printed on no card yet.
+    /// any cube and each pays the card's adversary payout at completion (195: Backdoor Research).
     AdversaryCubes {
         count: i64,
     },
@@ -1138,6 +1138,43 @@ pub enum Op {
     /// become an adversary research cube on its country's open megaproject; a botnet in a country whose
     /// megaproject is complete can't. Printed on no card yet.
     BotnetCubes {
+        count: i64,
+    },
+    /// 195 (a project's): in each country, up to `count` of its botnets, the lowest-numbered first, each come off and
+    /// become `troops` adversary troops on their hex (they march as any troop; no Unity sway: not a removal).
+    BotnetTroops {
+        #[serde(default = "one", skip_serializing_if = "is_one")]
+        count: i64,
+        troops: i64,
+    },
+    /// 195 (a project's): in each country, `count` times, a new botnet goes on the lowest-numbered site (city,
+    /// research station or factory) of that country next to one of its botnets that holds none; with no botnet in the
+    /// country, on its lowest-numbered research station without one.
+    SpreadBotnets {
+        count: i64,
+    },
+    /// 195 (a project's): in each country, its neutral `site` with the most agents on or next to it (ties: the
+    /// lowest-numbered) corrupts; with none neutral, its player-owned `site` with the most agents on or next to it
+    /// turns neutral (the owner's cube comes off). A firewall or a no-Corrupt token guards a site (skipped).
+    TakeSite {
+        site: Facility,
+    },
+    /// 195 (a project's): every adversary factory makes `count` troops on its hex, as its own output (a player
+    /// ambassador on it stops it); on an ongoing project, every Income beat.
+    FactoryTroops {
+        #[serde(default = "one", skip_serializing_if = "is_one")]
+        count: i64,
+    },
+    /// 195 (a project's): in each country, the hex with a player's node holding the most agents (at least one;
+    /// ties: the lowest-numbered) loses its node (its protections apply).
+    RaidNode,
+    /// 195 (a project's): in each country, the hardened facility with the most agents on or next to it (ties: the
+    /// lowest-numbered) loses its hardening tokens (a node shield on a hex with no facility is no target).
+    StripHarden,
+    /// 195 (a project's): the top `count` cards of the adversary's face-down event deck are discarded (into its
+    /// discard, face up): the round cap comes that many rounds sooner (none left: nothing).
+    Clock {
+        #[serde(default = "one", skip_serializing_if = "is_one")]
         count: i64,
     },
     /// 156: one player (the team chooses, among those with something it acts
@@ -1366,6 +1403,14 @@ impl Op {
             | Op::Rally { .. }
             | Op::IncreaseIncome { .. } => &[Team],
             Op::AdversaryCubes { .. } | Op::BotnetCubes { .. } => &[Threat, Team],
+            // 195: the project deck's board verbs.
+            Op::BotnetTroops { .. }
+            | Op::SpreadBotnets { .. }
+            | Op::TakeSite { .. }
+            | Op::FactoryTroops { .. }
+            | Op::RaidNode
+            | Op::StripHarden
+            | Op::Clock { .. } => &[Team],
             Op::ComputeEvery { .. } => &[Threat, Team],
             Op::Create { .. } => &[Threat, Team],
             Op::Corrupt { .. } => &[Threat, Team, Twist],

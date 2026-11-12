@@ -1,24 +1,44 @@
 [
  {
-  "id": "raiding_parties",
-  "name": "Raiding Parties",
+  "id": "factory_garrisons",
+  "name": "Factory Garrisons",
   "tags": [
    "security"
   ],
-  "cost": 4,
-  "ongoing": false,
-  "text": "Each player pays 3 chips or discards 3 cards.",
+  "cost": 12,
+  "ongoing": true,
+  "text": "Ongoing: each round, every adversary factory musters 1 Troop on its hex (a player Ambassador on it stops it).",
   "effects": [
    {
-    "op": "requisition",
-    "resource": "chips",
-    "amount": 3,
-    "cards": 3
+    "op": "factory_troops",
+    "count": 1
    }
   ],
   "harms": [
-   "cards discarded",
-   "credits or income lost"
+   "troops made"
+  ]
+ },
+ {
+  "id": "night_raid",
+  "name": "Night Raid",
+  "tags": [
+   "security"
+  ],
+  "cost": 9,
+  "ongoing": false,
+  "text": "Corrupt: nodes. Each country: the node hex holding the most Agents (at least 1; ties: lowest-numbered) loses its node.",
+  "effects": [
+   {
+    "op": "corrupt",
+    "site": "node"
+   },
+   {
+    "op": "raid_node"
+   }
+  ],
+  "harms": [
+   "node destroyed",
+   "adversary pieces placed"
   ]
  },
  {
@@ -44,160 +64,154 @@
   ]
  },
  {
-  "id": "purge_the_unaligned",
-  "name": "Purge the Unaligned",
+  "id": "shadow_factories",
+  "name": "Shadow Factories",
   "tags": [
-   "security"
+   "industry"
   ],
   "cost": 7,
   "ongoing": false,
-  "text": "Each player pays 2 Ambassadors or discards 2 cards.",
+  "text": "The adversary builds a factory in the country with the most free industrial zones (none free: 2 Agents on a factory).",
   "effects": [
    {
-    "op": "requisition",
-    "resource": "ambassadors",
-    "amount": 2,
-    "cards": 2
-   }
-  ],
-  "harms": [
-   "cards discarded",
-   "ambassadors lost"
-  ]
- },
- {
-  "id": "armored_columns",
-  "name": "Armored Columns",
-  "tags": [
-   "security"
-  ],
-  "cost": 10,
-  "ongoing": false,
-  "text": "Muster 3: each country, 3 Troops on its lowest-numbered factory (else city).",
-  "effects": [
-   {
-    "op": "troops",
-    "count": 3,
-    "each_country": true
-   }
-  ],
-  "harms": [
-   "troops made"
-  ]
- },
- {
-  "id": "arms_race",
-  "name": "Arms Race",
-  "tags": [
-   "security"
-  ],
-  "cost": 11,
-  "ongoing": true,
-  "text": "Ongoing: Each round, every military base makes 1 extra Drone, even past its cap (at most 1 extra a base each production).",
-  "effects": [
-   {
-    "op": "corp_troops",
+    "op": "adversary_factory",
     "count": 1,
-    "at": "every_base",
-    "when": "each_production",
-    "past_cap": true
+    "where": "most_free_zones",
+    "fallback_ambassadors": 2
    }
   ],
   "harms": [
+   "facilities destroyed or seized",
    "troops made"
   ]
  },
  {
-  "id": "declaration_of_war",
-  "name": "Declaration of War",
+  "id": "hostile_takeover",
+  "name": "Hostile Takeover",
   "tags": [
-   "security"
+   "industry"
   ],
-  "cost": 18,
-  "ongoing": true,
-  "text": "Now: Muster 3: each country, 3 Troops on its lowest-numbered factory (else city). Ongoing: Each round, the front with the most Drones fights twice.",
-  "effects": [
-   {
-    "op": "extra_war",
-    "front": "most_corp_troops",
-    "ongoing_use": true
-   }
-  ],
-  "resolve": [
-   {
-    "op": "troops",
-    "count": 3,
-    "each_country": true
-   }
-  ],
-  "harms": [
-   "war brought forward",
-   "troops made"
-  ]
- },
- {
-  "id": "disinformation",
-  "name": "Disinformation",
-  "tags": [
-   "diplomacy"
-  ],
-  "cost": 5,
+  "cost": 8,
   "ongoing": false,
-  "text": "Sway 5 toward Discord.",
-  "effects": [
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 5
-   }
-  ],
-  "harms": [
-   "Discord sway"
-  ]
- },
- {
-  "id": "recruitment_drive",
-  "name": "Recruitment Drive",
-  "tags": [
-   "diplomacy"
-  ],
-  "cost": 11,
-  "ongoing": false,
-  "text": "Income: +1 Agent a country a round.",
-  "effects": [
-   {
-    "op": "increase_income",
-    "ambassadors": 1
-   }
-  ],
-  "harms": [
-   "adversary pieces placed"
-  ]
- },
- {
-  "id": "infiltration_drive",
-  "name": "Infiltration Drive",
-  "tags": [
-   "diplomacy"
-  ],
-  "cost": 18,
-  "ongoing": false,
-  "text": "Rally 3, each country: cities. Corrupt: cities (1 fewer).",
+  "text": "Rally 2, each country: factories. Corrupt: factories.",
   "effects": [
    {
     "op": "rally",
-    "site": "city",
-    "count": 3
+    "site": "factory",
+    "count": 2
    },
    {
     "op": "corrupt",
-    "site": "city",
-    "cut": 1
+    "site": "factory"
    }
   ],
   "harms": [
    "adversary pieces placed",
    "facilities destroyed or seized"
+  ]
+ },
+ {
+  "id": "asset_seizure",
+  "name": "Asset Seizure",
+  "tags": [
+   "industry"
+  ],
+  "cost": 9,
+  "ongoing": false,
+  "text": "Each country: its neutral factory with the most Agents on or next to it (ties: lowest-numbered) goes to the adversary; with none neutral, its player-owned factory with the most turns neutral.",
+  "effects": [
+   {
+    "op": "take_site",
+    "site": "factory"
+   }
+  ],
+  "harms": [
+   "facilities destroyed or seized"
+  ]
+ },
+ {
+  "id": "war_plants",
+  "name": "War Plants",
+  "tags": [
+   "industry"
+  ],
+  "cost": 11,
+  "ongoing": false,
+  "text": "The adversary builds a factory in the country with the most free industrial zones (none free: 2 Agents on a factory). Every adversary factory musters 1 Troop on its hex.",
+  "effects": [
+   {
+    "op": "adversary_factory",
+    "count": 1,
+    "where": "most_free_zones",
+    "fallback_ambassadors": 2
+   },
+   {
+    "op": "factory_troops",
+    "count": 1
+   }
+  ],
+  "harms": [
+   "facilities destroyed or seized",
+   "troops made"
+  ]
+ },
+ {
+  "id": "botnet_swarm",
+  "name": "Botnet Swarm",
+  "tags": [
+   "cyber"
+  ],
+  "cost": 9,
+  "ongoing": false,
+  "text": "Each country: a botnet spreads to its lowest-numbered city, research station or factory next to one of its botnets (no botnet there: its lowest-numbered research station).",
+  "effects": [
+   {
+    "op": "spread_botnets",
+    "count": 1
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "station_coup",
+  "name": "Station Coup",
+  "tags": [
+   "cyber"
+  ],
+  "cost": 9,
+  "ongoing": false,
+  "text": "Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) goes to the adversary; with none neutral, its player-owned station with the most turns neutral.",
+  "effects": [
+   {
+    "op": "take_site",
+    "site": "station"
+   }
+  ],
+  "harms": [
+   "facilities destroyed or seized"
+  ]
+ },
+ {
+  "id": "backdoor_research",
+  "name": "Backdoor Research",
+  "tags": [
+   "cyber"
+  ],
+  "cost": 5,
+  "ongoing": false,
+  "text": "2 adversary research cubes onto each open megaproject.",
+  "effects": [
+   {
+    "op": "adversary_cubes",
+    "count": 2
+   }
+  ],
+  "harms": [
+   "adversary cubes on megaprojects",
+   "Discord sway"
   ]
  },
  {
@@ -228,19 +242,38 @@
   ]
  },
  {
-  "id": "botnet_swarm",
-  "name": "Botnet Swarm",
+  "id": "botnet_conscripts",
+  "name": "Botnet Conscripts",
   "tags": [
    "cyber"
   ],
-  "cost": 6,
+  "cost": 7,
   "ongoing": false,
-  "text": "Rally 3, each country: Botnet hexes.",
+  "text": "Each country: its lowest-numbered botnet becomes 2 Troops on its hex.",
   "effects": [
    {
-    "op": "rally",
-    "site": "botnet",
-    "count": 3
+    "op": "botnet_troops",
+    "count": 1,
+    "troops": 2
+   }
+  ],
+  "harms": [
+   "troops made"
+  ]
+ },
+ {
+  "id": "recruitment_drive",
+  "name": "Recruitment Drive",
+  "tags": [
+   "diplomacy"
+  ],
+  "cost": 11,
+  "ongoing": false,
+  "text": "Income: +1 Agent a country a round.",
+  "effects": [
+   {
+    "op": "increase_income",
+    "ambassadors": 1
    }
   ],
   "harms": [
@@ -248,23 +281,24 @@
   ]
  },
  {
-  "id": "station_coup",
-  "name": "Station Coup",
+  "id": "infiltration_drive",
+  "name": "Infiltration Drive",
   "tags": [
-   "cyber"
+   "diplomacy"
   ],
-  "cost": 9,
+  "cost": 14,
   "ongoing": false,
-  "text": "Rally 2, each country: research stations. Each country: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 Agents and no player Ambassador are on it; one that holds takes 1 Agent).",
+  "text": "Rally 3, each country: cities. Corrupt: cities (1 fewer).",
   "effects": [
    {
     "op": "rally",
-    "site": "station",
-    "count": 2
+    "site": "city",
+    "count": 3
    },
    {
-    "op": "flip_station",
-    "each_country": true
+    "op": "corrupt",
+    "site": "city",
+    "cut": 1
    }
   ],
   "harms": [
@@ -273,66 +307,47 @@
   ]
  },
  {
-  "id": "market_crash",
-  "name": "Market Crash",
+  "id": "mob_rule",
+  "name": "Mob Rule",
   "tags": [
-   "industry"
-  ],
-  "cost": 5,
-  "ongoing": false,
-  "text": "Each player pays 10 credits or discards 3 cards.",
-  "effects": [
-   {
-    "op": "requisition",
-    "resource": "credits",
-    "amount": 10,
-    "cards": 3
-   }
-  ],
-  "harms": [
-   "cards discarded",
-   "credits or income lost"
-  ]
- },
- {
-  "id": "shadow_factories",
-  "name": "Shadow Factories",
-  "tags": [
-   "industry"
-  ],
-  "cost": 7,
-  "ongoing": false,
-  "text": "The adversary builds a factory in the country with the most free industrial zones (none free: 2 Agents on a factory).",
-  "effects": [
-   {
-    "op": "adversary_factory",
-    "count": 1,
-    "where": "most_free_zones",
-    "fallback_ambassadors": 2
-   }
-  ],
-  "harms": [
-   "facilities destroyed or seized"
-  ]
- },
- {
-  "id": "capital_flight",
-  "name": "Capital Flight",
-  "tags": [
-   "industry"
+   "diplomacy"
   ],
   "cost": 8,
   "ongoing": false,
-  "text": "Each player's credit income falls by 4 for the rest of the game.",
+  "text": "Rally 2, each country: cities. Each country: the node hex holding the most Agents (at least 1; ties: lowest-numbered) loses its node.",
   "effects": [
    {
-    "op": "team_income",
-    "resource": "credits",
-    "amount": -4
+    "op": "rally",
+    "site": "city",
+    "count": 2
+   },
+   {
+    "op": "raid_node"
    }
   ],
   "harms": [
-   "credits or income lost"
+   "adversary pieces placed",
+   "node destroyed"
+  ]
+ },
+ {
+  "id": "disinformation",
+  "name": "Disinformation",
+  "tags": [
+   "diplomacy"
+  ],
+  "cost": 5,
+  "ongoing": false,
+  "text": "Sway 5 toward Discord.",
+  "effects": [
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 5
+   }
+  ],
+  "harms": [
+   "Discord sway"
   ]
  },
  {
@@ -356,25 +371,25 @@
   ]
  },
  {
-  "id": "grid_capture",
-  "name": "Grid Capture",
+  "id": "sabotage_teams",
+  "name": "Sabotage Teams",
   "tags": [
    "power"
   ],
-  "cost": 9,
-  "ongoing": true,
-  "text": "Ongoing: Each player pays 1 energy or discards 1 card.",
+  "cost": 6,
+  "ongoing": false,
+  "text": "Each country: the hardened facility with the most Agents on or next to it (ties: lowest-numbered) loses its hardening. Each country: the node hex holding the most Agents (at least 1; ties: lowest-numbered) loses its node.",
   "effects": [
    {
-    "op": "requisition",
-    "resource": "energy",
-    "amount": 1,
-    "cards": 1
+    "op": "strip_harden"
+   },
+   {
+    "op": "raid_node"
    }
   ],
   "harms": [
-   "cards discarded",
-   "energy lost"
+   "protections stripped",
+   "node destroyed"
   ]
  },
  {
@@ -446,6 +461,25 @@
   "harms": [
    "Discord sway",
    "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "accelerated_timetable",
+  "name": "Accelerated Timetable",
+  "tags": [
+   "universal"
+  ],
+  "cost": 14,
+  "ongoing": false,
+  "text": "Discard the top card of the adversary's event deck: the round cap comes a round sooner.",
+  "effects": [
+   {
+    "op": "clock",
+    "count": 1
+   }
+  ],
+  "harms": [
+   "the clock sped up"
   ]
  }
 ]

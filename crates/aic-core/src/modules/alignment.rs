@@ -662,7 +662,7 @@ impl Module for Alignment {
             Some(cities),
             "corrupted cities always count against the purge; each one builds agents",
         );
-        // 135: Capital Flight (a project) takes it below 0.
+        // 135: a negative team income (Capital Flight, a project until r85) takes it below 0.
         if g.var(INCOME_BONUS) != 0 {
             out.global(
                 "income_bonus",

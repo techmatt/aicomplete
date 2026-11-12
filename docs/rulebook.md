@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 84. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 85. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -330,7 +330,7 @@ adversary's compute arrives: its income, each botnet and corrupted station witho
 what was made since the last turn, onto the projects (§17). Then ongoing projects act. Firewalls, cordons (§16) and
 no-Rally, no-Muster and no-Corrupt tokens (§12) come off.
 
-**Every Muster** (an event card's, a project's, the Protector's) is raised by the level surcharge (§21). A troop that
+**Every Muster** (an event card's, the Protector's) is raised by the level surcharge (§21). A troop that
 would land on a hex with the Protector's node (Wall, §5) or a no-Muster token stays in the supply.
 
 Whenever an agent lands where players' ambassadors stand, it cancels one of them, one for one (§8). A troop landing
@@ -618,7 +618,7 @@ map before the next.
 
 **Growth:**
 
-6. **Extra drones.** Warmongering and some projects add drones to bases (§19).
+6. **Extra drones.** Warmongering adds drones to bases (§19).
 7. **Cities grow.** Every city, a player's, neutral or corrupted, puts **1 chip on itself for each unclaimed neutral
    factory next to it** (a city makes none of its own; a player's or the adversary's factory feeds nothing; an agent on
    the city stops nothing). A city holds at most 3. A city with no unclaimed factory beside it does nothing.
@@ -691,11 +691,11 @@ The megacorps fight each other across the fronts with **drones**. These are not 
 never march, and they never strike your stations.
 
 **Where drones come from.** Each base holds up to **2** drones; a full base takes no more, except from Warmongering
-and some projects (§19). Drones come:
+(§19). Drones come:
 
 - **each time the Discord track tips** (§12): each country with a neutral factory that has no agent and no ambassador
   on it puts 1 drone on each of its bases, however many such factories it has;
-- from Warmongering and some projects, in production's growth (§9, §19).
+- from Warmongering, in production's growth (§9, §19), and the War Footing project (to the limit).
 
 **An ambassador on a base** stops each drone that would land there, from any source, one ambassador a drone, and is
 spent. A drone already at a base stays until war uses it up.
@@ -942,6 +942,15 @@ project holds its cost, it **resolves** and leaves its slot:
 and the empty rightmost slot is dealt a new project at once; the rest of the compute goes onto the new leftmost.
 Compute with no project to go on is lost. No project resolves outside the compute step.
 
+**What projects do.** A project is a small plan on the board: it builds or seizes a factory, spreads or converts a
+botnet, musters troops from the adversary's factories, raids a node, strips hardening, or runs the clock. **Its target
+is read off the board when it resolves**, in each country: "the factory with the most agents on or next to it" counts
+the agents on that hex and the six around it; "the node hex holding the most agents" counts only the hex itself; ties
+go to the lowest hex number. Nothing is marked in advance: look at the leftmost project and the board to see what it
+will hit, and move agents off, claim the site or firewall it first. "Turns neutral" takes the owner's cube off a site;
+"discard the top card of the event deck" brings the round cap a round nearer. Only Data Heist makes you pay or
+discard. A botnet's troops are made on its own hex, as a factory's are, so Wall doesn't stop them.
+
 *Sources: rules/adversary.md (The project deck); content/projects.json; crates/aic-core/src/modules/adversary/.*
 
 ---
@@ -973,8 +982,8 @@ adversary's). A threat's two tokens never share a hex; a token with no place lef
 - **One ambassador always stops one drone**, and is spent. A player's ambassador on a base stops the drone that base
   would get, whatever makes it. A full base takes no drone and spends no ambassador. With several players'
   ambassadors on one base, the earliest in player order is spent first.
-- **Warmongering** and the Arms Race project add 1 drone to a base even past its limit (at most 1 extra a base a
-  round). The War Footing project fills every base.
+- **Warmongering** adds 1 drone to a base even past its limit (at most 1 extra a base a round). The War Footing
+  project fills every base.
 
 *Sources: rules/war.md; crates/aic-core/src/modules/board/production.rs.*
 
@@ -1015,8 +1024,7 @@ Each row is the whole level. Your own costs (claim, liberate, cards, actions) ne
 | 4 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 troop | +4 compute | 3 / 2 / 4 | 9 | 24 | 4 | the last stage-I card deals tier-2 threats |
 
 - **Threat items:** each resource item on a threat costs that much more; a tag item ("2 Security") never changes.
-- **Muster:** every Muster (an event card's, a project's, the Protector's) lands 1 more troop in each country
-  it lands in.
+- **Muster:** every Muster (an event card's, the Protector's) lands 1 more troop in each country it lands in.
 - **Each unpaid threat:** a threat that takes effect unpaid also gives the adversary 4 compute, at its next compute
   step (§17). A threat that only waits gives none.
 

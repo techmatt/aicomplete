@@ -1,0 +1,37 @@
+{
+  "name": "f195-smoke",
+  "note": "195: the engine smoke of the new project deck, d0-d3, engine and strategist, 16 dev seeds",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "engine",
+    "strategist"
+  ],
+  "games": 16,
+  "records": 0
+}

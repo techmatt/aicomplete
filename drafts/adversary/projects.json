@@ -2,30 +2,56 @@
  "deck": "projects",
  "cards": [
   {
-   "id": "raiding_parties",
-   "name": "Raiding Parties",
+   "id": "factory_garrisons",
+   "name": "Factory Garrisons",
    "tags": [
     "security"
    ],
-   "cost": 4,
-   "ongoing": false,
-   "text": "Each player pays 3 chips or discards 3 cards.",
+   "cost": 12,
+   "ongoing": true,
+   "text": "Ongoing: each round, every adversary factory musters 1 Troop on its hex (a player Ambassador on it stops it).",
    "effects": [
     {
-     "op": "requisition",
-     "resource": "chips",
-     "amount": 3,
-     "cards": 3
+     "op": "factory_troops",
+     "count": 1
     }
    ],
    "harms": [
-    "cards discarded",
-    "credits or income lost"
+    "troops made"
    ],
-   "value": "absorbs 4 compute a player (8 at 2 players, 8.8 at values.json compute 1.1); harm 20 (Each player pays 3 chips or discards 3 cards: 20); 2.50 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
+   "value": "give 12 compute a player (24 at 2 players, 26.4 at values.json compute 1.1); get 56 over about 4 rounds; 2.33 a compute.",
+   "check": "195: 1 consequence(s) (two at most), targets read off the board at completion. When it matters: late: adversary factories come from stage-II corruption and Shadow Factories / War Plants; worth little before round 5. Who plays it: automatic for the adversary (Income beat); players answer with an Ambassador on the factory, liberating it, or draining.",
    "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
+    "195: board verb (Matt, 2026-11-11)"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "night_raid",
+   "name": "Night Raid",
+   "tags": [
+    "security"
+   ],
+   "cost": 9,
+   "ongoing": false,
+   "text": "Corrupt: nodes. Each country: the node hex holding the most Agents (at least 1; ties: lowest-numbered) loses its node.",
+   "effects": [
+    {
+     "op": "corrupt",
+     "site": "node"
+    },
+    {
+     "op": "raid_node"
+    }
+   ],
+   "harms": [
+    "node destroyed",
+    "adversary pieces placed"
+   ],
+   "value": "give 9 compute a player (18 at 2 players, 19.8 at values.json compute 1.1); get 18; 1.00 a compute.",
+   "check": "195: 2 consequence(s) (two at most), targets read off the board at completion. When it matters: mid to late: needs agents beside node hexes (from round 3 on). Who plays it: automatic; players clear agents off and beside their node hexes, armor them, or drain.",
+   "flags": [
+    "195: board verb (Matt, 2026-11-11)"
    ],
    "reuses": null
   },
@@ -50,209 +76,203 @@
    "harms": [
     "troops made"
    ],
-   "value": "absorbs 7 compute a player (14 at 2 players, 15.4 at values.json compute 1.1); harm 16 (Every military base fills with corp troops to its cap: 16); 1.14 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
+   "value": "give 7 compute a player (14 at 2 players, 15.4 at values.json compute 1.1); get 16; 1.14 a compute.",
+   "check": "195: 1 consequence(s) (two at most), targets read off the board at completion. When it matters: any round with active fronts (2+ countries); kept from 151. Who plays it: automatic; players stand Ambassadors on bases.",
    "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
+    "151 card, kept by 195 (board pieces)"
    ],
    "reuses": null
   },
   {
-   "id": "purge_the_unaligned",
-   "name": "Purge the Unaligned",
+   "id": "shadow_factories",
+   "name": "Shadow Factories",
    "tags": [
-    "security"
+    "industry"
    ],
    "cost": 7,
    "ongoing": false,
-   "text": "Each player pays 2 Ambassadors or discards 2 cards.",
+   "text": "The adversary builds a factory in the country with the most free industrial zones (none free: 2 Agents on a factory).",
    "effects": [
     {
-     "op": "requisition",
-     "resource": "ambassadors",
-     "amount": 2,
-     "cards": 2
-    }
-   ],
-   "harms": [
-    "cards discarded",
-    "ambassadors lost"
-   ],
-   "value": "absorbs 7 compute a player (14 at 2 players, 15.4 at values.json compute 1.1); harm 16 (Each player pays 2 ambassadors or discards 2 cards: 16); 1.14 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
-   "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
-   ],
-   "reuses": null
-  },
-  {
-   "id": "armored_columns",
-   "name": "Armored Columns",
-   "tags": [
-    "security"
-   ],
-   "cost": 10,
-   "ongoing": false,
-   "text": "Muster 3: each country, 3 Troops on its lowest-numbered factory (else city).",
-   "effects": [
-    {
-     "op": "troops",
-     "count": 3,
-     "each_country": true
-    }
-   ],
-   "harms": [
-    "troops made"
-   ],
-   "value": "absorbs 10 compute a player (20 at 2 players, 22.0 at values.json compute 1.1); harm 54 (Deploy 3: each board, 3 troops on its lowest-numbered factory (else city): 54); 2.70 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
-   "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
-   ],
-   "reuses": null
-  },
-  {
-   "id": "arms_race",
-   "name": "Arms Race",
-   "tags": [
-    "security"
-   ],
-   "cost": 11,
-   "ongoing": true,
-   "text": "Ongoing: Each round, every military base makes 1 extra Drone, even past its cap (at most 1 extra a base each production).",
-   "effects": [
-    {
-     "op": "corp_troops",
+     "op": "adversary_factory",
      "count": 1,
-     "at": "every_base",
-     "when": "each_production",
-     "past_cap": true
+     "where": "most_free_zones",
+     "fallback_ambassadors": 2
     }
    ],
    "harms": [
+    "facilities destroyed or seized",
     "troops made"
    ],
-   "value": "absorbs 11 compute a player (22 at 2 players, 24.2 at values.json compute 1.1); harm 32 over about 4 rounds (Each round, every military base makes 1 extra corp troop, even past its cap (at most 1 extra a base each production): 32); 1.45 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
+   "value": "give 7 compute a player (14 at 2 players, 15.4 at values.json compute 1.1); get 15; 1.07 a compute.",
+   "check": "195: 1 consequence(s) (two at most), targets read off the board at completion. When it matters: any round; its troop a round makes it worth more early. Who plays it: automatic; players liberate the factory or stand an Ambassador on it.",
    "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
+    "151 card, kept by 195 (factories are the engine)"
    ],
    "reuses": null
   },
   {
-   "id": "declaration_of_war",
-   "name": "Declaration of War",
+   "id": "hostile_takeover",
+   "name": "Hostile Takeover",
    "tags": [
-    "security"
+    "industry"
    ],
-   "cost": 18,
-   "ongoing": true,
-   "text": "Now: Muster 3: each country, 3 Troops on its lowest-numbered factory (else city). Ongoing: Each round, the front with the most Drones fights twice.",
-   "effects": [
-    {
-     "op": "extra_war",
-     "front": "most_corp_troops",
-     "ongoing_use": true
-    }
-   ],
-   "resolve": [
-    {
-     "op": "troops",
-     "count": 3,
-     "each_country": true
-    }
-   ],
-   "harms": [
-    "war brought forward",
-    "troops made"
-   ],
-   "value": "absorbs 18 compute a player (36 at 2 players, 39.6 at values.json compute 1.1); harm 118 over about 4 rounds (Each round, the front with the most corp troops fights twice: 64; Deploy 3: each board, 3 troops on its lowest-numbered factory (else city): 54); 3.28 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
-   "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
-   ],
-   "reuses": null
-  },
-  {
-   "id": "disinformation",
-   "name": "Disinformation",
-   "tags": [
-    "diplomacy"
-   ],
-   "cost": 5,
+   "cost": 8,
    "ongoing": false,
-   "text": "Sway 5 toward Discord.",
-   "effects": [
-    {
-     "op": "sway",
-     "side": "discord",
-     "amount": 5
-    }
-   ],
-   "harms": [
-    "Discord sway"
-   ],
-   "value": "absorbs 5 compute a player (10 at 2 players, 11.0 at values.json compute 1.1); harm 20 (Sway 5 toward Discord: 20); 2.00 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
-   "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
-   ],
-   "reuses": null
-  },
-  {
-   "id": "recruitment_drive",
-   "name": "Recruitment Drive",
-   "tags": [
-    "diplomacy"
-   ],
-   "cost": 11,
-   "ongoing": false,
-   "text": "Income: +1 Agent a country a round.",
-   "effects": [
-    {
-     "op": "increase_income",
-     "ambassadors": 1
-    }
-   ],
-   "harms": [
-    "adversary pieces placed"
-   ],
-   "value": "absorbs 11 compute a player (22 at 2 players, 24.2 at values.json compute 1.1); harm 22 (Income: +1 agent a board a round: 22); 1.00 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
-   "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
-   ],
-   "reuses": null
-  },
-  {
-   "id": "infiltration_drive",
-   "name": "Infiltration Drive",
-   "tags": [
-    "diplomacy"
-   ],
-   "cost": 18,
-   "ongoing": false,
-   "text": "Rally 3, each country: cities. Corrupt: cities (1 fewer).",
+   "text": "Rally 2, each country: factories. Corrupt: factories.",
    "effects": [
     {
      "op": "rally",
-     "site": "city",
-     "count": 3
+     "site": "factory",
+     "count": 2
     },
     {
      "op": "corrupt",
-     "site": "city",
-     "cut": 1
+     "site": "factory"
     }
    ],
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or seized"
    ],
-   "value": "absorbs 18 compute a player (36 at 2 players, 39.6 at values.json compute 1.1); harm 22 (Rally 3, each board: cities: 12; Corrupt: cities (1 fewer): 10); 0.61 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
+   "value": "give 8 compute a player (16 at 2 players, 17.6 at values.json compute 1.1); get 18; 1.12 a compute.",
+   "check": "195: 2 consequence(s) (two at most), targets read off the board at completion. When it matters: any round: factories with agents beside them corrupt; strongest once agents gather (round 3 on). Who plays it: automatic; players remove agents near factories, firewall them, or drain.",
    "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
+    "195: board verb (Matt, 2026-11-11)"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "asset_seizure",
+   "name": "Asset Seizure",
+   "tags": [
+    "industry"
+   ],
+   "cost": 9,
+   "ongoing": false,
+   "text": "Each country: its neutral factory with the most Agents on or next to it (ties: lowest-numbered) goes to the adversary; with none neutral, its player-owned factory with the most turns neutral.",
+   "effects": [
+    {
+     "op": "take_site",
+     "site": "factory"
+    }
+   ],
+   "harms": [
+    "facilities destroyed or seized"
+   ],
+   "value": "give 9 compute a player (18 at 2 players, 19.8 at values.json compute 1.1); get 30; 1.67 a compute.",
+   "check": "195: 1 consequence(s) (two at most), targets read off the board at completion. When it matters: any round: early it takes a neutral factory (a troop a round from then on); late, a claimed one. Who plays it: automatic; players claim neutral factories first, or firewall the target.",
+   "flags": [
+    "195: board verb (Matt, 2026-11-11)"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "war_plants",
+   "name": "War Plants",
+   "tags": [
+    "industry"
+   ],
+   "cost": 11,
+   "ongoing": false,
+   "text": "The adversary builds a factory in the country with the most free industrial zones (none free: 2 Agents on a factory). Every adversary factory musters 1 Troop on its hex.",
+   "effects": [
+    {
+     "op": "adversary_factory",
+     "count": 1,
+     "where": "most_free_zones",
+     "fallback_ambassadors": 2
+    },
+    {
+     "op": "factory_troops",
+     "count": 1
+    }
+   ],
+   "harms": [
+    "facilities destroyed or seized",
+    "troops made"
+   ],
+   "value": "give 11 compute a player (22 at 2 players, 24.2 at values.json compute 1.1); get 29; 1.32 a compute.",
+   "check": "195: 2 consequence(s) (two at most), targets read off the board at completion. When it matters: mid to late: its troops scale with the adversary factories standing. Who plays it: automatic; players block or liberate adversary factories.",
+   "flags": [
+    "195: board verb (Matt, 2026-11-11)"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "botnet_swarm",
+   "name": "Botnet Swarm",
+   "tags": [
+    "cyber"
+   ],
+   "cost": 9,
+   "ongoing": false,
+   "text": "Each country: a botnet spreads to its lowest-numbered city, research station or factory next to one of its botnets (no botnet there: its lowest-numbered research station).",
+   "effects": [
+    {
+     "op": "spread_botnets",
+     "count": 1
+    }
+   ],
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)"
+   ],
+   "value": "give 9 compute a player (18 at 2 players, 19.8 at values.json compute 1.1); get 32; 1.78 a compute.",
+   "check": "195: 1 consequence(s) (two at most), targets read off the board at completion. When it matters: early to mid: a botnet makes compute every round and blocks the purge until removed. Who plays it: automatic; players take botnets down or stand on them.",
+   "flags": [
+    "195: board verb (Matt, 2026-11-11)"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "station_coup",
+   "name": "Station Coup",
+   "tags": [
+    "cyber"
+   ],
+   "cost": 9,
+   "ongoing": false,
+   "text": "Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) goes to the adversary; with none neutral, its player-owned station with the most turns neutral.",
+   "effects": [
+    {
+     "op": "take_site",
+     "site": "station"
+    }
+   ],
+   "harms": [
+    "facilities destroyed or seized"
+   ],
+   "value": "give 9 compute a player (18 at 2 players, 19.8 at values.json compute 1.1); get 30; 1.67 a compute.",
+   "check": "195: 1 consequence(s) (two at most), targets read off the board at completion. When it matters: any round; an adversary station puts cubes on its megaproject until it completes, then compute. Who plays it: automatic; players claim stations or firewall them.",
+   "flags": [
+    "195: board verb (Matt, 2026-11-11)"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "backdoor_research",
+   "name": "Backdoor Research",
+   "tags": [
+    "cyber"
+   ],
+   "cost": 5,
+   "ongoing": false,
+   "text": "2 adversary research cubes onto each open megaproject.",
+   "effects": [
+    {
+     "op": "adversary_cubes",
+     "count": 2
+    }
+   ],
+   "harms": [
+    "adversary cubes on megaprojects",
+    "Discord sway"
+   ],
+   "value": "give 5 compute a player (10 at 2 players, 11.0 at values.json compute 1.1); get 12; 1.20 a compute.",
+   "check": "195: 1 consequence(s) (two at most), targets read off the board at completion. When it matters: early to mid: before the megaprojects complete (each cube pays its adversary payout at completion). Who plays it: automatic; players finish megaprojects with their own cubes.",
+   "flags": [
+    "195: board verb (Matt, 2026-11-11)"
    ],
    "reuses": null
   },
@@ -282,148 +302,149 @@
     "cards discarded",
     "credits or income lost"
    ],
-   "value": "absorbs 6 compute a player (12 at 2 players, 13.2 at values.json compute 1.1); harm 24 (Each player removes 3 tokens from their cards (their choice of cards): 9; Each player pays 8 credits or discards 2 cards: 8 (189)); 2.00 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
+   "value": "give 6 compute a player (12 at 2 players, 13.2 at values.json compute 1.1); get 17; 1.42 a compute.",
+   "check": "195: 2 consequence(s) (two at most), targets read off the board at completion. When it matters: mid: once cards hold tokens. Who plays it: automatic; each player chooses which tokens, and pays or discards.",
    "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
+    "151 card, kept by 195 as the deck's one tax ('cut or nearly cut'): the only project source of tokens stripped and credits lost, which would otherwise open two ledger gaps"
    ],
    "reuses": null
   },
   {
-   "id": "botnet_swarm",
-   "name": "Botnet Swarm",
+   "id": "botnet_conscripts",
+   "name": "Botnet Conscripts",
    "tags": [
     "cyber"
    ],
-   "cost": 6,
+   "cost": 7,
    "ongoing": false,
-   "text": "Rally 3, each country: Botnet hexes.",
+   "text": "Each country: its lowest-numbered botnet becomes 2 Troops on its hex.",
    "effects": [
     {
-     "op": "rally",
-     "site": "botnet",
-     "count": 3
+     "op": "botnet_troops",
+     "count": 1,
+     "troops": 2
+    }
+   ],
+   "harms": [
+    "troops made"
+   ],
+   "value": "give 7 compute a player (14 at 2 players, 15.4 at values.json compute 1.1); get 20; 1.43 a compute.",
+   "check": "195: 1 consequence(s) (two at most), targets read off the board at completion. When it matters: mid to late: the troops strike a station or factory near the botnet within a round or two. Who plays it: automatic; players remove the troops, harden or armor the target.",
+   "flags": [
+    "195: board verb (Matt, 2026-11-11)"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "recruitment_drive",
+   "name": "Recruitment Drive",
+   "tags": [
+    "diplomacy"
+   ],
+   "cost": 11,
+   "ongoing": false,
+   "text": "Income: +1 Agent a country a round.",
+   "effects": [
+    {
+     "op": "increase_income",
+     "ambassadors": 1
     }
    ],
    "harms": [
     "adversary pieces placed"
    ],
-   "value": "absorbs 6 compute a player (12 at 2 players, 13.2 at values.json compute 1.1); harm 12 (Rally 3, each board: botnet hexes: 12); 1.00 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
+   "value": "give 11 compute a player (22 at 2 players, 24.2 at values.json compute 1.1); get 22; 1.00 a compute.",
+   "check": "195: 1 consequence(s) (two at most), targets read off the board at completion. When it matters: early: worth more the more rounds are left. Who plays it: automatic.",
    "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
+    "151 card, kept by 195 (creation)"
    ],
    "reuses": null
   },
   {
-   "id": "station_coup",
-   "name": "Station Coup",
+   "id": "infiltration_drive",
+   "name": "Infiltration Drive",
    "tags": [
-    "cyber"
+    "diplomacy"
    ],
-   "cost": 9,
+   "cost": 14,
    "ongoing": false,
-   "text": "Rally 2, each country: research stations. Each country: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 Agents and no player Ambassador are on it; one that holds takes 1 Agent).",
+   "text": "Rally 3, each country: cities. Corrupt: cities (1 fewer).",
    "effects": [
     {
      "op": "rally",
-     "site": "station",
-     "count": 2
+     "site": "city",
+     "count": 3
     },
     {
-     "op": "flip_station",
-     "each_country": true
+     "op": "corrupt",
+     "site": "city",
+     "cut": 1
     }
    ],
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or seized"
    ],
-   "value": "absorbs 9 compute a player (18 at 2 players, 19.8 at values.json compute 1.1); harm 32 (Rally 2, each board: research stations: 8; Each board: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 agents are on it): 24); 1.78 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
+   "value": "give 14 compute a player (28 at 2 players, 30.8 at values.json compute 1.1); get 22; 0.79 a compute.",
+   "check": "195: 2 consequence(s) (two at most), targets read off the board at completion. When it matters: mid: cities with 2 agents beside them corrupt. Who plays it: automatic.",
    "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
+    "151 card, kept by 195 (board verb); 18 to 14 a player"
    ],
    "reuses": null
   },
   {
-   "id": "market_crash",
-   "name": "Market Crash",
+   "id": "mob_rule",
+   "name": "Mob Rule",
    "tags": [
-    "industry"
-   ],
-   "cost": 5,
-   "ongoing": false,
-   "text": "Each player pays 10 credits or discards 3 cards.",
-   "effects": [
-    {
-     "op": "requisition",
-     "resource": "credits",
-     "amount": 10,
-     "cards": 3
-    }
-   ],
-   "harms": [
-    "cards discarded",
-    "credits or income lost"
-   ],
-   "value": "absorbs 5 compute a player (10 at 2 players, 11.0 at values.json compute 1.1); harm 20 (Each player pays 10 credits or discards 3 cards: 20); 2.00 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
-   "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
-   ],
-   "reuses": null
-  },
-  {
-   "id": "shadow_factories",
-   "name": "Shadow Factories",
-   "tags": [
-    "industry"
-   ],
-   "cost": 7,
-   "ongoing": false,
-   "text": "The adversary builds a factory in the country with the most free industrial zones (none free: 2 Agents on a factory).",
-   "effects": [
-    {
-     "op": "adversary_factory",
-     "count": 1,
-     "where": "most_free_zones",
-     "fallback_ambassadors": 2
-    }
-   ],
-   "harms": [
-    "facilities destroyed or seized"
-   ],
-   "value": "absorbs 7 compute a player (14 at 2 players, 15.4 at values.json compute 1.1); harm 15 (The adversary builds a factory on the board with the most free industrial zones (none free: 2 agents on a factory): 15); 1.07 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
-   "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
-   ],
-   "reuses": null
-  },
-  {
-   "id": "capital_flight",
-   "name": "Capital Flight",
-   "tags": [
-    "industry"
+    "diplomacy"
    ],
    "cost": 8,
    "ongoing": false,
-   "text": "Each player's credit income falls by 4 for the rest of the game.",
+   "text": "Rally 2, each country: cities. Each country: the node hex holding the most Agents (at least 1; ties: lowest-numbered) loses its node.",
    "effects": [
     {
-     "op": "team_income",
-     "resource": "credits",
-     "amount": -4
+     "op": "rally",
+     "site": "city",
+     "count": 2
+    },
+    {
+     "op": "raid_node"
     }
    ],
    "harms": [
-    "credits or income lost"
+    "adversary pieces placed",
+    "node destroyed"
    ],
-   "value": "absorbs 8 compute a player (16 at 2 players, 17.6 at values.json compute 1.1); harm 40 (Each player's credit income falls by 4 for the rest of the game: 40); 2.50 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
+   "value": "give 8 compute a player (16 at 2 players, 17.6 at values.json compute 1.1); get 16; 1.00 a compute.",
+   "check": "195: 2 consequence(s) (two at most), targets read off the board at completion. When it matters: mid to late: a node on a city hex takes the rally's agents and is raided. Who plays it: automatic; players keep agents off their node hexes.",
    "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
+    "195: board verb (Matt, 2026-11-11)"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "disinformation",
+   "name": "Disinformation",
+   "tags": [
+    "diplomacy"
+   ],
+   "cost": 5,
+   "ongoing": false,
+   "text": "Sway 5 toward Discord.",
+   "effects": [
+    {
+     "op": "sway",
+     "side": "discord",
+     "amount": 5
+    }
+   ],
+   "harms": [
+    "Discord sway"
+   ],
+   "value": "give 5 compute a player (10 at 2 players, 11.0 at values.json compute 1.1); get 20; 2.00 a compute.",
+   "check": "195: 1 consequence(s) (two at most), targets read off the board at completion. When it matters: any round: brings a Discord tip nearer. Who plays it: automatic.",
+   "flags": [
+    "151 card, kept by 195 (one of the few off-board cards)"
    ],
    "reuses": null
   },
@@ -446,38 +467,38 @@
    "harms": [
     "production blacked out"
    ],
-   "value": "absorbs 6 compute a player (12 at 2 players, 13.2 at values.json compute 1.1); harm 18 (Until the end of next round, cities make no energy: 18); 1.50 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
+   "value": "give 6 compute a player (12 at 2 players, 13.2 at values.json compute 1.1); get 18; 1.50 a compute.",
+   "check": "195: 1 consequence(s) (two at most), targets read off the board at completion. When it matters: early to mid, while energy is short. Who plays it: automatic.",
    "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
+    "151 card, kept by 195"
    ],
    "reuses": null
   },
   {
-   "id": "grid_capture",
-   "name": "Grid Capture",
+   "id": "sabotage_teams",
+   "name": "Sabotage Teams",
    "tags": [
     "power"
    ],
-   "cost": 9,
-   "ongoing": true,
-   "text": "Ongoing: Each player pays 1 energy or discards 1 card.",
+   "cost": 6,
+   "ongoing": false,
+   "text": "Each country: the hardened facility with the most Agents on or next to it (ties: lowest-numbered) loses its hardening. Each country: the node hex holding the most Agents (at least 1; ties: lowest-numbered) loses its node.",
    "effects": [
     {
-     "op": "requisition",
-     "resource": "energy",
-     "amount": 1,
-     "cards": 1
+     "op": "strip_harden"
+    },
+    {
+     "op": "raid_node"
     }
    ],
    "harms": [
-    "cards discarded",
-    "energy lost"
+    "protections stripped",
+    "node destroyed"
    ],
-   "value": "absorbs 9 compute a player (18 at 2 players, 19.8 at values.json compute 1.1); harm 32 over about 4 rounds (Each player pays 1 energy or discards 1 card: 32); 1.78 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
+   "value": "give 6 compute a player (12 at 2 players, 13.2 at values.json compute 1.1); get 11; 0.92 a compute.",
+   "check": "195: 2 consequence(s) (two at most), targets read off the board at completion. When it matters: mid to late: hardening comes from cards; a raid needs an agent on a node hex. Who plays it: automatic; players clear agents off node hexes.",
    "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
+    "195: board verb (Matt, 2026-11-11)"
    ],
    "reuses": null
   },
@@ -501,10 +522,10 @@
    "harms": [
     "extra threats"
    ],
-   "value": "absorbs 6 compute a player (12 at 2 players, 13.2 at values.json compute 1.1); harm 28 (Each board: an extra tier-2 threat, any tag: 28); 2.33 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
+   "value": "give 6 compute a player (12 at 2 players, 13.2 at values.json compute 1.1); get 28; 2.33 a compute.",
+   "check": "195: 1 consequence(s) (two at most), targets read off the board at completion. When it matters: any round. Who plays it: automatic; players counter.",
    "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
+    "151 card, kept by 195"
    ],
    "reuses": null
   },
@@ -530,10 +551,10 @@
     "adversary pieces placed",
     "facilities destroyed or seized"
    ],
-   "value": "absorbs 10 compute a player (20 at 2 players, 22.0 at values.json compute 1.1); harm 22 (Each board rallies its agent income now, to this round's Rally: 12; Corrupt: cities: 10); 1.10 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
+   "value": "give 10 compute a player (20 at 2 players, 22.0 at values.json compute 1.1); get 22; 1.10 a compute.",
+   "check": "195: 2 consequence(s) (two at most), targets read off the board at completion. When it matters: mid. Who plays it: automatic.",
    "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
+    "151 card, kept by 195 (board verb)"
    ],
    "reuses": null
   },
@@ -563,10 +584,35 @@
     "Discord sway",
     "projects advanced (compute)"
    ],
-   "value": "absorbs 14 compute a player (28 at 2 players, 30.8 at values.json compute 1.1); harm 43 over about 4 rounds (Sway 2 toward Discord: 32; Income: +2 compute a round: 11); 1.54 a compute.",
-   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
+   "value": "give 14 compute a player (28 at 2 players, 30.8 at values.json compute 1.1); get 54 over about 4 rounds; 1.93 a compute.",
+   "check": "195: 2 consequence(s) (two at most), targets read off the board at completion. When it matters: early: the income and the sway both run for the rest of the game. Who plays it: automatic.",
    "flags": [
-    "151: rewritten to the standard (one consequence, each board, deterministic)"
+    "151 card, kept by 195"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "accelerated_timetable",
+   "name": "Accelerated Timetable",
+   "tags": [
+    "universal"
+   ],
+   "cost": 14,
+   "ongoing": false,
+   "text": "Discard the top card of the adversary's event deck: the round cap comes a round sooner.",
+   "effects": [
+    {
+     "op": "clock",
+     "count": 1
+    }
+   ],
+   "harms": [
+    "the clock sped up"
+   ],
+   "value": "give 14 compute a player (28 at 2 players, 30.8 at values.json compute 1.1); get 20; 0.71 a compute.",
+   "check": "195: 1 consequence(s) (two at most), targets read off the board at completion. When it matters: late: a round less to finish the purge (at the cap, a loss). Who plays it: automatic; players drain it.",
+   "flags": [
+    "195: board verb (Matt, 2026-11-11)"
    ],
    "reuses": null
   }

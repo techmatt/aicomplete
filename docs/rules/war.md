@@ -10,8 +10,7 @@ cities' energy, stations' cubes, full megaprojects, then upkeep ([economy.md](ec
 drones, then city growth (below). **War is fought at the end of every round** on every front, after
 threats execute, so what war destroys is gone for next round's production. **War brought forward** (Casus Belli;
 candidate): the front the threat's base belongs to fights twice in next round's war (their drones
-cancel once, the surplus strikes twice). Declaration of War (an ongoing project): each round, the front with the most
-drones fights twice.
+cancel once, the surplus strikes twice).
 
 ## Factories
 
@@ -24,7 +23,7 @@ drones fights twice.
   neutral factory makes nothing for anyone, but **feeds the cities next to it** (growth, below) and **at a Discord tip
   it arms its country's bases** (below). One opposing ambassador or agent blocks a
   factory's output while it stands. Threats build adversary factories (Mass Production, War Economy), seize them
-  (Factory Occupation: corruption, with its cleanup) and destroy them (Siege); a project builds them (Shadow Factories).
+  (Factory Occupation: corruption, with its cleanup) and destroy them (Siege); projects build or take them (Shadow Factories, War Plants, Asset Seizure, Hostile Takeover).
 - **City growth** (r83, Matt 2026-11-11, candidate; each round, after the income step and the extra drones): every
   city, aligned, neutral or corrupted, puts **1 chip on itself for each unclaimed neutral factory next to it** (none
   of its own; a claimed or adversary factory feeds nothing; an agent on the city blocks nothing), holding at most
@@ -50,8 +49,7 @@ wait at its bases.
   up; a full base takes no drone and spends no ambassador; among several players' ambassadors the lowest seat's goes first.
 - **Peacetime:** at most `unit_cap` drones wait at each base. Drones never protect anything (r81, friction #51).
 - **Extra drones** (135, candidate) go past the cap: Warmongering (the Militarist's board: a base with an
-  adversary troop on or next to it) and Arms Race (ongoing). A base gains at most 1 extra a round from the two
-  together (Matt, 2026-11-06). War Footing (a project) fills every base to its cap. No threat makes drones
+  adversary troop on or next to it), at most 1 extra a base a round (Matt, 2026-11-06). War Footing (a project) fills every base to its cap. No threat makes drones
   (146: no special pieces).
 - **War, at the end of every round:** on each front the piles at the two bases cancel 1 for 1. Each surplus drone
   crosses, acts at once and is used up: it destroys the rival corp's factory nearest its base (not an
@@ -62,7 +60,8 @@ wait at its bases.
 
 **Adversary troops (candidate): the march.** Troops come from adversary-owned factories (each round), most event
 cards' Muster (each country's lowest-numbered factory, else city), the Muster's `wall_troops` landing where the
-Protector stands, and projects and threats (Armored Columns, Orbital Strike, Total War). **Targets:** player-owned
+Protector stands, threats (Orbital Strike, Total War) and projects, r85 only from adversary factories or botnets
+(Factory Garrisons, War Plants, Botnet Conscripts). **Targets:** player-owned
 research stations and factories, **not nodes** (`troop_node`; a troop on or next to a node only stands there), never
 cities (corruption is the adversary's way in) or neutral or adversary-owned facilities.
 
@@ -120,7 +119,7 @@ each drone left over destroys a factory across the border, and a node on it, swa
 unclaimed neutral factory puts a chip on each city next to it; at 3 the city builds a neutral factory or research
 station beside it, whichever it has fewer of. Claim the factory and that city stops growing. So Discord feeds war and war feeds
 Discord: keep neutral factories quiet and the Discord track low. **What resisted this summary:** the extra
-drones (Warmongering, Arms Race) ignore the pile's cap, and the agent count you pay for
+drones (Warmongering) ignore the pile's cap, and the agent count you pay for
 grows by one for each agent already on the site.
 
 **This is the troops' own movement rule**; Push (Interceptor Battery, the Protector's Patrol) moves troops too

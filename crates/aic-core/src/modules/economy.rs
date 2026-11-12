@@ -49,8 +49,7 @@ pub fn raise_production(g: &mut GameState, cx: &mut Cx, seat: usize, r: Resource
     }
 }
 
-/// Income of `r` seat `s` loses in its next upkeep (135: Credit Crunch,
-/// Market Crash), down to none; read once, then cleared.
+/// Income of `r` seat `s` loses in its next upkeep (135: Credit Crunch), down to none; read once, then cleared.
 pub fn income_debt(seat: usize, r: Resource) -> KeyBuf {
     KeyBuf::new("economy.income_debt.").num(seat).text(".").text(r.name())
 }

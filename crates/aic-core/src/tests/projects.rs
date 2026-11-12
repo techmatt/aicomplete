@@ -48,13 +48,13 @@ fn compute_fills_the_leftmost_project_and_the_rest_slide_left() {
         &[
             "projects.botnet_swarm.cost=6",
             "projects.disinformation.cost=5",
-            "projects.market_crash.cost=5",
+            "projects.backdoor_research.cost=5",
             r#"projects.disinformation.effects=[{"op":"sway","side":"discord","amount":5}]"#,
         ],
     );
-    // At 2 players: Disinformation 10, Botnet Swarm 12, Market Crash 10.
-    row(&mut g, &["disinformation", "botnet_swarm", "market_crash"]);
-    g.vars.insert(adversary::project_key("market_crash").into(), 2);
+    // At 2 players: Disinformation 10, Botnet Swarm 12, Backdoor Research 10.
+    row(&mut g, &["disinformation", "botnet_swarm", "backdoor_research"]);
+    g.vars.insert(adversary::project_key("backdoor_research").into(), 2);
     g.piles.insert(PROJECT_DECK.into(), ["station_coup", "war_footing"].map(Key::new).to_vec().into());
     set_pile(&mut g, adversary::PROJECT_DISCARD, &[]);
     with_cx(&rules, |cx| gain_and_pour(&mut g, cx, 9)).unwrap();
@@ -63,9 +63,9 @@ fn compute_fills_the_leftmost_project_and_the_rest_slide_left() {
     with_cx(&rules, |cx| gain_and_pour(&mut g, cx, 2)).unwrap();
     assert_eq!(g.pile(PROJECTS_DONE), ["disinformation"]);
     assert_eq!(g.var("alignment.discord"), 5);
-    assert_eq!(g.pile(PROJECTS), ["botnet_swarm", "market_crash", "station_coup"], "slid left, refilled at the right");
+    assert_eq!(g.pile(PROJECTS), ["botnet_swarm", "backdoor_research", "station_coup"], "slid left, refilled at the right");
     assert_eq!(g.var(&adversary::project_key("botnet_swarm")), 1, "the 11th point onto the new leftmost");
-    assert_eq!(g.var(&adversary::project_key("market_crash")), 2, "a slid project keeps its compute");
+    assert_eq!(g.var(&adversary::project_key("backdoor_research")), 2, "a slid project keeps its compute");
     assert_eq!(g.var(adversary::COMPUTE), 11);
     assert_eq!(g.stats.counters["adversary.project.disinformation"], 1);
 }
@@ -79,8 +79,8 @@ fn a_new_row_is_dealt_into_the_slots_when_all_have_resolved() {
             "projects.disinformation.cost=5",
             "projects.station_coup.cost=9",
             "projects.recruitment_drive.cost=11",
-            "projects.armored_columns.cost=10",
-            "projects.grid_capture.cost=9",
+            "projects.shadow_factories.cost=10",
+            "projects.factory_garrisons.cost=9",
         ],
     );
     row(&mut g, &["disinformation"]);
@@ -89,7 +89,7 @@ fn a_new_row_is_dealt_into_the_slots_when_all_have_resolved() {
         [
             "station_coup",
             "recruitment_drive",
-            "armored_columns",
+            "shadow_factories",
             "war_footing",
         ]
         .map(Key::new)
@@ -105,16 +105,16 @@ fn a_new_row_is_dealt_into_the_slots_when_all_have_resolved() {
     // r83 (#57): every slot is open: the row is the deck's order.
     assert_eq!(
         g.pile(PROJECTS),
-        ["station_coup", "recruitment_drive", "armored_columns"]
+        ["station_coup", "recruitment_drive", "shadow_factories"]
     );
     assert_eq!(g.pile(PROJECT_DECK), ["war_footing"]);
     // The 11th point went onto the leftmost of the new row (r80).
     assert_eq!(g.var(&adversary::project_key("station_coup")), 1);
-    // An ongoing project (Grid Capture, 18) goes into play and acts every round's build.
-    row(&mut g, &["grid_capture"]);
-    g.vars.insert(adversary::project_key("grid_capture").into(), 17);
+    // An ongoing project (Factory Garrisons, 18) goes into play and acts every round's build.
+    row(&mut g, &["factory_garrisons"]);
+    g.vars.insert(adversary::project_key("factory_garrisons").into(), 17);
     with_cx(&rules, |cx| gain_and_pour(&mut g, cx,1)).unwrap();
-    assert_eq!(g.pile(PROJECTS_ONGOING), ["grid_capture"]);
+    assert_eq!(g.pile(PROJECTS_ONGOING), ["factory_garrisons"]);
     // The deck holds one card: it fills the first slot, the rest stay empty.
     assert_eq!(g.pile(PROJECTS), ["war_footing"]);
 }
@@ -167,11 +167,11 @@ fn the_four_beats_cover_the_adversary_turn_in_order() {
 fn an_ongoing_project_filled_in_the_build_waits_a_round() {
     let (rules, mut g) = lab(&["adversary.build"]);
     let w = rules.world();
-    row(&mut g, &["grid_capture"]);
-    let cost = adversary::project_cost(&w, &g, "grid_capture");
-    g.vars.insert(adversary::project_key("grid_capture").into(), cost - 1);
+    row(&mut g, &["factory_garrisons"]);
+    let cost = adversary::project_cost(&w, &g, "factory_garrisons");
+    g.vars.insert(adversary::project_key("factory_garrisons").into(), cost - 1);
     with_cx(&rules, |cx| gain_and_pour(&mut g, cx,1)).unwrap();
-    assert_eq!(g.pile(PROJECTS_ONGOING), ["grid_capture"]);
+    assert_eq!(g.pile(PROJECTS_ONGOING), ["factory_garrisons"]);
     assert!(adversary::ongoing_acting(&g).is_empty(), "not this round");
     g.round += 1;
     assert_eq!(adversary::ongoing_acting(&g).len(), 1, "from the next");
@@ -239,6 +239,8 @@ fn security_cards_drain_or_discard_a_project() {
         r#"cards.killswitch_directive.effects=[{"op":"discard_project"},{"op":"remove_ambassadors_country","unity_per":0,"max":4,"reach":true}]"#,
     ]);
     row(&mut g, &["false_flag", "disinformation"]);
+    // 195: setup's deck may still hold the row's cards; the refill draws one that isn't.
+    set_pile(&mut g, PROJECT_DECK, &["war_footing"]);
     g.vars.insert(adversary::project_key("false_flag").into(), 8);
     set_pile(&mut g, "cards.hand.0", &["zero_knowledge_exploit", "killswitch_directive"]);
     fund(&mut g, 0);
@@ -310,23 +312,64 @@ fn botnet_takedown_removes_a_botnet_in_reach() {
     assert_eq!(g.stats.counters["adversary.botnets_removed"], 1);
 }
 
-/// 139: Purge the Unaligned takes an ambassador from each seat, never a node.
+/// 195: the project deck's board verbs, each read off the board when it resolves (deterministic targets).
 #[test]
-fn purge_the_unaligned_takes_an_ambassador_never_a_node() {
+fn the_board_verbs_take_the_targets_the_board_shows() {
+    use crate::content::Op;
+    use crate::modules::common::corrupted;
+    use crate::op::Facility;
     let (rules, mut g) = lab(&[]);
-    let homes = [0, 1].map(|c| rules.map.numbered(c, piece(c).node));
-    for (s, &h) in homes.iter().enumerate() {
-        put(&mut g, h, node(s), 2);
-        set_res(&mut g, s, Resource::Ambassadors, 1);
-    }
-    // One factory a country, so its troop asks nothing (024).
-    for c in 0..2 {
-        put(&mut g, rules.map.numbered(c, piece(c).factories[0]), FACTORY, 1);
-    }
-    row(&mut g, &["purge_the_unaligned"]);
-    let cost = adversary::project_cost(&rules.world(), &g, "purge_the_unaligned");
-    with_cx(&rules, |cx| gain_and_pour(&mut g, cx,cost)).unwrap();
-    assert_eq!(g.pile(PROJECTS_DONE), ["purge_the_unaligned"]);
-    assert_eq!((total(&g, node(0)), total(&g, node(1))), (2, 2));
-    assert_eq!((g.resource(0, Resource::Ambassadors), g.resource(1, Resource::Ambassadors)), (0, 0));
+    let m = &rules.map;
+    let f0 = m.numbered(0, piece(0).industry[0]);
+    // A zone not next to f0, so only f1 counts the agents on it.
+    let f1 = piece(0).industry.iter().map(|&n| m.numbered(0, n)).find(|&h| h != f0 && !m.adjacent(f0, h)).unwrap();
+    // Take a factory: country 0's neutral factory with the most agents on or beside it corrupts.
+    put(&mut g, f0, FACTORY, 1);
+    put(&mut g, f1, FACTORY, 1);
+    put(&mut g, f1, ADV_AMBASSADOR, 2);
+    run_ops(&rules, &mut g, &[Op::TakeSite { site: Facility::Factory }]);
+    assert!(corrupted(&g, f1) && !corrupted(&g, f0), "the one with agents beside it");
+    // A player's factory turns neutral once no neutral one is left.
+    put(&mut g, f0, cube(0), 1);
+    run_ops(&rules, &mut g, &[Op::TakeSite { site: Facility::Factory }]);
+    assert_eq!(g.tokens(f0, cube(0)), 0, "turned neutral");
+    assert!(!corrupted(&g, f0));
+    // Every adversary factory musters a troop; a player ambassador on one stops it.
+    put(&mut g, f0, ADV_CUBE, 1);
+    put(&mut g, f0, ambassador(0), 1);
+    let troops = total(&g, TROOP);
+    run_ops(&rules, &mut g, &[Op::FactoryTroops { count: 1 }]);
+    assert_eq!((g.tokens(f1, TROOP), total(&g, TROOP)), (1, troops + 1));
+    // A node hex holding agents is raided; one with none is not.
+    let (a, b) = (m.numbered(1, piece(1).node), m.numbered(1, piece(1).industry[0]));
+    put(&mut g, a, node(1), 1);
+    put(&mut g, b, node(1), 1);
+    put(&mut g, b, ADV_AMBASSADOR, 1);
+    run_ops(&rules, &mut g, &[Op::RaidNode]);
+    assert_eq!((g.tokens(a, node(1)), g.tokens(b, node(1))), (1, 0));
+    run_ops(&rules, &mut g, &[Op::RaidNode]);
+    assert_eq!(g.tokens(a, node(1)), 1, "no agent on it: no raid");
+    // A botnet becomes troops; a botnet spreads to a site next to one.
+    let st = m.numbered(1, piece(1).neutral_station);
+    put(&mut g, st, BOTNET, 1);
+    run_ops(&rules, &mut g, &[Op::BotnetTroops { count: 1, troops: 2 }]);
+    assert_eq!((g.tokens(st, BOTNET), g.tokens(st, TROOP)), (0, 2));
+    put(&mut g, st, STATION, 1);
+    let botnets = total(&g, BOTNET);
+    run_ops(&rules, &mut g, &[Op::SpreadBotnets { count: 1 }]);
+    // Country 1 has no botnet left: its lowest-numbered station takes one; country 0 has no station: none.
+    assert_eq!((g.tokens(st, BOTNET), total(&g, BOTNET)), (1, botnets + 1));
+    // A player's hardened facility loses its hardening; a node shield on a hex with no facility is no target.
+    let pf = m.numbered(1, piece(1).industry[1]);
+    put(&mut g, pf, FACTORY, 1);
+    put(&mut g, pf, cube(1), 1);
+    put(&mut g, pf, HARDEN, 2);
+    put(&mut g, a, HARDEN, 1);
+    put(&mut g, a, ADV_AMBASSADOR, 3);
+    run_ops(&rules, &mut g, &[Op::StripHarden]);
+    assert_eq!((g.tokens(pf, HARDEN), g.tokens(a, HARDEN)), (0, 1));
+    // The clock discards the top event card.
+    let deck = g.pile(adversary::DECK).len();
+    run_ops(&rules, &mut g, &[Op::Clock { count: 1 }]);
+    assert_eq!(g.pile(adversary::DECK).len(), deck.saturating_sub(1));
 }

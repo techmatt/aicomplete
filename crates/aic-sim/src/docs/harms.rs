@@ -60,7 +60,7 @@ pub const SOURCES: [&str; 12] = [
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 20] = [
+pub const RULE_HARMS: [(&str, &str, &str); 21] = [
     ("income and rally", "adversary pieces placed", "agent income fills each country's pool; every event's Rally X deals it one at a time onto the sites of its type (151; r80)"),
     ("income and rally", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
     ("income and rally", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
@@ -83,6 +83,8 @@ pub const RULE_HARMS: [(&str, &str, &str); 20] = [
     ("war", "facilities destroyed", "surplus troops destroy factories"),
     ("war", "node destroyed", "the Militarist's War Takes Ground: a drone that destroys a factory destroys a node on its hex too (r83; protections apply)"),
     ("war", "Discord sway", "each factory destroyed in war sways `destruction_discord` toward Discord"),
+    // 195: a strike a protection absorbs spends it (the troop is used up either way, `troop_spent`).
+    ("march", "protections stripped", "a strike absorbed by a hardening token or the owner's ambassador spends it (r75; the troop is used up either way)"),
     ("march", "facilities destroyed", "a troop strikes player-owned facilities, walking past ambassadors (r83, #44); it can't enter or strike a hex with the Protector's node"),
 ];
 
@@ -107,12 +109,14 @@ const CUBES_LOST: usize = 8;
 const CARDS_DISCARDED: usize = 9;
 const AMBASSADORS_LOST: usize = 10;
 const TOKENS_STRIPPED: usize = 11;
+const PROTECTIONS_STRIPPED: usize = 12;
 const BLACKED_OUT: usize = 14;
 const PIECES_PLACED: usize = 15;
 const ADVERSARY_CUBES: usize = 16;
 const INCOME_RAISED: usize = 17;
 const PROJECTS_ADVANCED: usize = 18;
 const EXTRA_THREATS: usize = 19;
+const CLOCK_SPED_UP: usize = 20;
 const DISCORD_SWAY: usize = 21;
 const UNITY_PULLED: usize = 22;
 const BLOCKED: usize = 25;
@@ -228,6 +232,14 @@ fn op_harms(op: &Op) -> Vec<usize> {
         Op::PullUnity { .. } => vec![UNITY_PULLED],
         // 185: an adversary cube pays a megaproject's adversary payout (Discord, or compute on one card).
         Op::AdversaryCubes { .. } | Op::BotnetCubes { .. } => vec![ADVERSARY_CUBES, DISCORD_SWAY, PROJECTS_ADVANCED],
+        // 195: the project deck's board verbs.
+        Op::BotnetTroops { .. } | Op::FactoryTroops { .. } => vec![PIECES_PLACED],
+        Op::SpreadBotnets { .. } => vec![PIECES_PLACED, PROJECTS_ADVANCED],
+        // A neutral site corrupts, else a player's turns neutral: seized either way.
+        Op::TakeSite { .. } => vec![FACILITIES_SEIZED, AMBASSADORS_LOST],
+        Op::RaidNode => vec![NODE_DESTROYED],
+        Op::StripHarden => vec![PROTECTIONS_STRIPPED],
+        Op::Clock { .. } => vec![CLOCK_SPED_UP],
         // The player's side: gains, removals, protections and passives.
         Op::Sway { .. }
         | Op::TeamIncome { .. }

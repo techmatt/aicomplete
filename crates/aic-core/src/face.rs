@@ -697,6 +697,13 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::RemoveBotnets { .. }
         | Op::AdversaryCubes { .. }
         | Op::BotnetCubes { .. }
+        | Op::BotnetTroops { .. }
+        | Op::SpreadBotnets { .. }
+        | Op::TakeSite { .. }
+        | Op::FactoryTroops { .. }
+        | Op::RaidNode
+        | Op::StripHarden
+        | Op::Clock { .. }
         | Op::OnePlayer { .. }
         | Op::PerSite { .. }
         | Op::RemoveWhere { .. }

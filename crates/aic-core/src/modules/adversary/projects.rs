@@ -320,8 +320,30 @@ fn resolve_project(g: &mut GameState, cx: &mut Cx, id: &str) -> Res {
     });
     leave_slot(g, cx, id);
     let once = if p.ongoing { &p.resolve } else { &p.effects };
+    let before = g.hexes.clone();
     effects::run(g, cx, once, &mut effects::Ctx::team().named("project").why(&p.name))?;
+    tally_moves(g, cx, id, &before);
     Ok(())
+}
+
+/// 195 (a measure, not a rule): the token moves a project's resolution, or an ongoing project's round, made on the
+/// map: each token added to or taken off a hex counts one (`adversary.project_moves.<id>`).
+pub(super) fn tally_moves(g: &mut GameState, cx: &mut Cx, id: &str, before: &[std::sync::Arc<crate::state::HexState>]) {
+    let mut n = 0;
+    for (a, b) in before.iter().zip(g.hexes.iter()) {
+        if std::sync::Arc::ptr_eq(a, b) {
+            continue;
+        }
+        for (k, v) in a.tokens.iter() {
+            n += (b.tokens.get(k.as_str()).copied().unwrap_or(0) - v).abs();
+        }
+        for (k, v) in b.tokens.iter() {
+            if a.tokens.get(k.as_str()).is_none() {
+                n += v.abs();
+            }
+        }
+    }
+    cx.tally(g, &KeyBuf::new("adversary.project_moves.").text(id), n);
 }
 
 /// Removes up to `n` compute from visible project `id` (Security cards).
@@ -330,6 +352,8 @@ pub fn drain_project(g: &mut GameState, cx: &mut Cx, id: &str, n: i64) {
     if k > 0 {
         cx.add_key(g, &project_key(id), -k);
         cx.tally(g, "adversary.compute_drained", k);
+        // 195: which project the players drained (a measure).
+        cx.tally(g, &KeyBuf::new("adversary.drained.").text(id), k);
     }
 }
 

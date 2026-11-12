@@ -696,7 +696,11 @@ fn ongoing_projects_act(g: &mut GameState, cx: &mut Cx) -> Res {
     for id in ongoing_acting(g) {
         let p = project(&w, &id);
         let acts: Vec<Op> = p.effects.iter().filter(|e| !standing_project_op(e)).cloned().collect();
+        let before = g.hexes.clone();
         effects::run(g, cx, &acts, &mut effects::Ctx::team().named("project").why(&p.name))?;
+        // 195: an ongoing project's rounds, and its moves (measures).
+        cx.tally(g, &KeyBuf::new("adversary.project_acts.").text(&id), 1);
+        projects::tally_moves(g, cx, &id, &before);
         if g.is_over() {
             break;
         }
