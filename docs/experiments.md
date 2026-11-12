@@ -83,7 +83,8 @@ run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have no such
 `adversary.first_corruption_round` (any site; cities alone are `adversary.corruptions.city`), `board.std_actions` and `board.war_destroyed`; every whole-game counter is in
 `games.jsonl`. Per-round tables (`<key>.rNN`, summed over seats) exist only for keys `PER_ROUND_EXPORT` in
 `experiment.rs` names (add one there: a rebuild); `unspent.<seat>.<resource>` is held as the action phase ends,
-before production and upkeep pay, research cubes too. A zero fills every round up to the key's last record, so an absent
+before production and upkeep pay, research cubes too, never insight (`economy.insight_unspent`, all seats);
+`cards.insight_bound|short.<seat>` (196) mark a seat-round held for want of insight. A zero fills every round up to the key's last record, so an absent
 `unspent.*.rNN` means the round's action phase never ended. The sim adds, as a seat
 passes: `actions.skipped|blocked[_energy].<seat>.<card>` (a building's Action offered and not taken, or not offered:
 used, unaffordable or no target; `_energy` sums energy held), `energy_cards.held|short.<seat>[.<card>]`, `slots.*`.
@@ -174,7 +175,7 @@ line alone reads near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used. Any item that spends seeds updates the ledger, after its last read, not before it. Used: every
-seed below 44191, and 46000-46143 (each item's range is in its write-up; 192 took 43903-44190, 195 46000-46143, clear of an item beside it). Next free: 44191 (to 45999), then 46144. **The dev seeds for screens are
+seed below 44479, and 46000-46143 (each item's range is in its write-up; 195 took 46000-46143, 196 44191-44478). Next free: 44479 (to 45999), then 46144. **The dev seeds for screens are
 36800-36831**: screen at 32 seeds a cell.
 
 ## Reading prices

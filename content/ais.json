@@ -15,7 +15,7 @@
     1
    ]
   ],
-  "insight": 6,
+  "insight": 3,
   "economy_track": [
    {
     "income": []
@@ -193,24 +193,6 @@
     ]
    },
    {
-    "name": "Focus",
-    "tags": [],
-    "cost": [
-     [
-      "credits",
-      5
-     ]
-    ],
-    "text": "gain 1 insight",
-    "effects": [
-     {
-      "op": "gain",
-      "resource": "insight",
-      "amount": 1
-     }
-    ]
-   },
-   {
     "name": "Procure",
     "tags": [],
     "cost": [
@@ -318,7 +300,7 @@
     2
    ]
   ],
-  "insight": 6,
+  "insight": 3,
   "economy_track": [
    {
     "income": []
@@ -608,7 +590,7 @@
     1
    ]
   ],
-  "insight": 6,
+  "insight": 3,
   "economy_track": [
    {
     "income": []

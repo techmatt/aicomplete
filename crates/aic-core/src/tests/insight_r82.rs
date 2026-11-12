@@ -7,18 +7,18 @@ use super::*;
 use crate::content::{Currency, Op};
 use crate::modules::{ai, board, cards, economy};
 
-/// The board prints 6 insight, as the card-play track's start; the setup node's track space adds none, so a new
-/// game's insight is the printed 6.
+/// The board prints 3 insight (196, r86; 6 before), as the card-play track's start; the setup node's track space adds
+/// none, so a new game's insight is the printed 3.
 #[test]
-fn the_board_prints_6_insight_and_the_setup_space_adds_none() {
+fn the_board_prints_3_insight_and_the_setup_space_adds_none() {
     let rules = Rules::new(&baseline()).unwrap();
     let w = rules.world();
     let g = rules.new_game(1);
     for s in 0..g.seats.len() {
         let b = ai::board(&w, s);
-        assert_eq!(b.insight, 6, "{}", b.id);
+        assert_eq!(b.insight, 3, "{}", b.id);
         assert!(b.economy_track.iter().all(|u| u.insight.is_none() && u.income.iter().all(|(r, _)| *r != Resource::Insight)));
-        assert_eq!(economy::income(&w, &g, s)[Resource::Insight], 6, "{}", b.id);
+        assert_eq!(economy::income(&w, &g, s)[Resource::Insight], 3, "{}", b.id);
     }
 }
 
@@ -62,7 +62,7 @@ fn the_opening_deals_2_and_2_free_then_round_1_drafts() {
     }
     assert!(rules.legal_actions(&g).iter().any(|a| matches!(a, Action::Tier { .. })), "round 1 builds a draft hand");
     // The opening hand cost nothing (the Protector's Vigil may have added 1 in the march).
-    assert!((0..g.seats.len()).all(|s| g.resource(s, Resource::Insight) >= 6));
+    assert!((0..g.seats.len()).all(|s| g.resource(s, Resource::Insight) >= 3));
 }
 
 /// Keeps cost 1 insight a tier-1 card and 2 a tier-2, in round 1 too, and no credits buy a shortfall.

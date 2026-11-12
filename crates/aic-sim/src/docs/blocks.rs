@@ -394,9 +394,10 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
     // Each of `steps`' six dials (`corrupt_cut_at` .. `stage_swap_at`) sits at whatever level its `_at` value names.
     let mut rows: Vec<(String, Vec<&str>)> = vec![
         // The incomes are a list with an entry a level, not a step: every level reads its own entry.
+        // 196: so is `stage_extra` (event cards added at a level: stage I first, then stage II).
         (
-            "Base rules; the incomes, an entry a level".into(),
-            vec!["adversary.compute_income", "adversary.ambassador_income"],
+            "Base rules; the incomes and the event cards added (stage I first), an entry a level".into(),
+            vec!["adversary.compute_income", "adversary.ambassador_income", "adversary.stage_extra"],
         ),
         (String::new(), vec![]),
         (String::new(), vec![]),

@@ -3,7 +3,9 @@
 # Arguments after an alias go to the test binary: `cargo test-all -j N` fails in a second
 # with "Unrecognized option: 'j'", which reads as a pass. `cargo test-all --test-threads=N`
 # works. Don't add a `--`: `cargo test-all -- --test-threads=N` makes the flag a test-name
-# filter, so nothing runs (045); crates/aic-sim/tests/args_guard.rs refuses it.
+# filter, so nothing runs (045); crates/aic-sim/tests/args_guard.rs refuses it. A cargo flag
+# such as `--no-fail-fast` fails the same way (196): spell the alias out for it,
+# `cargo test --workspace --no-fail-fast -- --include-ignored`.
 [alias]
 test-all = "test --workspace -- --include-ignored"
 test-slow = "test --workspace -- --ignored"

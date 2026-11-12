@@ -95,7 +95,7 @@ Closed by 121 and 124 (git has them): D16, D43, D44, D47, D48, D51, D53, D54; by
 | D86 | rules | A forced threat pull (0.1 a game) has no end in the rulebook's draw (§18): it reshuffles forever. | One rulebook sentence: take the next card. **Matt's call**. |
 | D82 | cards | Five cards print under 7.5 pt with no recorded exception (Rally the Allies 5.4 pt). | Cut words or record. **Matt's call**. |
 | D83 | art | Ten tier-2 cards (158) have no drawn scene: `cards:check` fails on main. | An art batch. **Pick**. |
-| D84 | boards | Focus (Builder) and Recovery (Protector) are never used (r77, 96 games). | With the board redesign. **Matt's call**. |
+| D84 | boards | Focus (Builder) and Recovery (Protector) are never used (r77, 96 games). Focus cut at r86 (196: 0.03 uses a Builder game even at 2 credits). | Recovery with the board redesign. **Matt's call**. |
 | D85 | viewer | Prompts: "which other player?" names no card; "Corrupt factories (at 2): ... onto which?" (agents parse it); "1 seat 1's ambassador" (a record key). | Prompts and the agents' parser together. **Pick**. |
 
 ## Won't fix

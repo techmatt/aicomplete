@@ -119,8 +119,8 @@ slot refills. **Harder levels** make threats
 harsher, not more: difficulty 1 lets cities, stations and factories corrupt with one fewer agent and makes every counter cost 1 more of
 each thing (4 more credits), 2 adds 1 more again (credits unchanged) and the Militarist's line (4 compute for each
 unpaid threat, 1 more troop on every Muster), 3 gives a shorter, busier game, and 4 deals tier-2 threats sooner; no
-level deals an extra threat. Levels 1 to 3 also raise the adversary's compute income (most at 2), and level 1 starts
-its agent income ([adversary.md](adversary.md)).
+level deals an extra threat. Levels 1 to 4 also raise the adversary's compute income (most at 2), level 1 starts its
+agent income and level 4 raises it, and level 0's deck is two cards longer ([adversary.md](adversary.md)).
 **What resisted a summary:** that only resource options pool.
 
 **Compute.** Many threats also give the adversary compute, onto its projects ([adversary.md](adversary.md)), when they

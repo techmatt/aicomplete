@@ -22,14 +22,30 @@ pub fn tally_short(w: &World, g: &mut GameState, cx: &mut Cx, seat: usize) {
             continue;
         }
         let mut short = false;
+        let mut other_short = false;
+        let mut insight_short = false;
         if g.resource(seat, Resource::Credits) < p.credits(d) {
             keys.push("limit.play.short.credits".into());
             short = true;
+            other_short = true;
         }
         for (r, n) in extra_costs_at(d, p.insight(d)) {
             if n > 0 && g.resource(seat, r) < n {
                 keys.push(format!("limit.play.short.{}", r.name()));
                 short = true;
+                if r == Resource::Insight {
+                    insight_short = true;
+                } else {
+                    other_short = true;
+                }
+            }
+        }
+        // 196: a seat-round a card was held for want of insight: `insight_short` for any insight shortfall,
+        // `insight_bound` short of insight alone (any count > 0 is one seat-round).
+        if insight_short {
+            keys.push(format!("@cards.insight_short.{seat}"));
+            if !other_short {
+                keys.push(format!("@cards.insight_bound.{seat}"));
             }
         }
         if !short {
@@ -37,7 +53,10 @@ pub fn tally_short(w: &World, g: &mut GameState, cx: &mut Cx, seat: usize) {
         }
     }
     for k in keys {
-        cx.tally(g, &k, 1);
+        match k.strip_prefix('@') {
+            Some(round_key) => cx.per_round(g, round_key, 1),
+            None => cx.tally(g, &k, 1),
+        }
     }
 }
 

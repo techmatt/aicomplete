@@ -477,12 +477,7 @@ fn every_converter_is_once_a_round() {
 
 #[test]
 fn the_boards_insight_powers() {
-    // Builder: Focus, credits for insight.
-    let (rules, mut g) = table(&[], &[]);
-    let before = (g.resource(0, Resource::Credits), g.resource(0, Resource::Insight));
-    act(&rules, &mut g, power(&rules, 0, "Focus"));
-    assert_eq!((g.resource(0, Resource::Credits), g.resource(0, Resource::Insight)), (before.0 - 5, before.1 + 1));
-    // Researcher: Synthesis, cards from hand for insight.
+    // Researcher: Synthesis, cards from hand for insight (196: the Builder's Focus, never used, was cut).
     let mut c = lab_config(&[ACTIONS]);
     c.apply_override("ai.boards=2,1").unwrap();
     let rules = Rules::new(&c).unwrap();

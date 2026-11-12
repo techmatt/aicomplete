@@ -138,8 +138,6 @@ pub struct Weights {
     /// Each player cube on a megaproject; an adversary cube costs half, and a
     /// neutral one nothing (074).
     pub project_cube: f64,
-    /// 192: an adversary cube on an open megaproject, as a share of `project_cube` (0.5: half a player cube).
-    pub adversary_cube: f64,
     /// Each research cube a seat holds (074): low on purpose, under what every
     /// converter nets by these weights, so a cube held never beats using one.
     pub research_cube: f64,
@@ -544,11 +542,11 @@ impl Default for Weights {
             tempo: 0.5,
             tempo_ref: 4.0,
             owned_factory: 4.0,
-            chips: 2.0,
+            // 196: 2 -> 4: chips held at 0 in 92% of seat-rounds at 2; 4 read +4.2 ± 2.3 (dev seeds, d0-d3).
+            chips: 4.0,
             reach: 0.5,
             station: 5.0,
             project_cube: 2.0,
-            adversary_cube: 0.5,
             research_cube: 0.3,
             // r37: about one converter use's net over holding the cubes.
             converter_city: 2.0,
@@ -1652,7 +1650,9 @@ impl Eval {
                 .map(|s| g.var(&board::project_key(c, Some(s))))
                 .sum();
             let theirs = g.var(&board::project_key(c, None));
-            v += w.project_cube * (mine as f64 - w.adversary_cube * theirs as f64);
+            // 196: an adversary cube costs half a player cube; 192's `w.adversary_cube` weight was deleted, inert at
+            // r84 and r85 (0, 0.5 and 1 played the same 384 games: nothing moves one inside the eval's one step).
+            v += w.project_cube * (mine as f64 - 0.5 * theirs as f64);
         }
         for s in 0..self.seats {
             let held = g.resource(s, Resource::Ambassadors);

@@ -328,6 +328,10 @@ impl Module for Cards {
                         let w = cx.world;
                         if g.resource(s, Resource::Insight) < self.keep_price(&w, g, s, &id) {
                             cx.tally(g, "limit.keep_short.insight", 1);
+                            // 196: a seat-round held for want of insight (keep or play; any count > 0 is one;
+                            // a keep costs insight alone, so it counts for both measures: cards/play.rs).
+                            cx.per_round(g, &format!("cards.insight_bound.{s}"), 1);
+                            cx.per_round(g, &format!("cards.insight_short.{s}"), 1);
                         } else {
                             cx.tally(g, "limit.keep_passed", 1);
                         }

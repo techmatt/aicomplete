@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 85. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 86. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -58,7 +58,7 @@ Everyone wins or loses together.
   - the Discord deck is empty when Discord needs a card. **The Discord deck is the game's clock**: 6 cards, never
     reshuffled (§12);
   - any player has no nodes left on the map;
-  - the adversary's event deck runs out: 11 rounds at most (9 at the hardest levels).
+  - the adversary's event deck runs out: 13 rounds at most at level 0, 11 at levels 1-2, 9 at the hardest levels.
 
 **You see the adversary's next move.** Next round's adversary card is face up all round, and the agents waiting to
 land are in open view. (The threat, Unity and Discord decks stay hidden.)
@@ -156,7 +156,7 @@ rules/README.md (Terms); content/map.json; crates/aic-core/src/map.rs, modules/c
 3. **The adversary:**
    - its agent supply is 24 per country;
    - build the **event deck**: deal the number of stage I, II and III cards your level asks for (§21; level 0:
-     4, 4 and 3), shuffle each stage on its own, and stack them with stage I on top. Turn the top card face up;
+     5, 5 and 3), shuffle each stage on its own, and stack them with stage I on top. Turn the top card face up;
    - put one round's **agent income** into each country's **pool** beside the map (1 a country at level 0);
    - shuffle the project deck and fill the adversary board's project slots (§17).
 4. **Shuffle** the Unity deck, the Discord deck, the two threat decks and the two player decks. The Unity and Discord
@@ -210,14 +210,14 @@ modules/alignment.rs.*
 ## 5. Your AI board
 
 Each player is one AI board: the **Builder**, the **Protector** or the **Researcher**. Your board shows a **special
-rule**, your **income**, one **tag** (§7), your **building slots**, your **Dispatches**, two **node tracks** and eight
-**powers**.
+rule**, your **income**, one **tag** (§7), your **building slots**, your **Dispatches**, two **node tracks** and seven or
+eight **powers**.
 
 | Board | Special rule | Income each round | Insight a round | Slots | Tag | Dispatches | Starting credits |
 |---|---|---|---|---|---|---|---|
-| Builder | *Breadth*: 5 slots | 15 credits, 1 energy | 6 | 5 | Industry | 1 | 40 |
-| Protector | *Wall* and *Vigil* | 13 credits, 2 energy | 6 | 4 | Security | 1 | 46 |
-| Researcher | *Patience* | 11 credits, 1 energy | 6 | 3 | Science | 2 | 40 |
+| Builder | *Breadth*: 5 slots | 15 credits, 1 energy | 3 | 5 | Industry | 1 | 40 |
+| Protector | *Wall* and *Vigil* | 13 credits, 2 energy | 3 | 4 | Security | 1 | 46 |
+| Researcher | *Patience* | 11 credits, 1 energy | 3 | 3 | Science | 2 | 40 |
 
 - **Patience** (Researcher): all your unspent insight carries over to the next round, including insight another
   player gave you.
@@ -245,9 +245,9 @@ Nothing has a holding limit, and nothing caps your income.
 | **Ambassadors** | yes (your supply) | 1 at the start, cards, 20 credits | claiming, liberating, Remove agents, Envoy, threats |
 | **Dispatches** | **no** | your board and track spaces, each round | the Dispatch action, 1 each |
 
-**Insight is this round's attention.** Your card-play track prints it, as in Spirit Island: 6 at its start, and on
+**Insight is this round's attention.** Your card-play track prints it, as in Spirit Island: 3 at its start, and on
 later spaces the new total (7, 9, ...). At the start of each round, set your insight to the number on the rightmost
-space you've uncovered (6 before any), plus what your cards add. Insight you don't spend is lost (except under Patience),
+space you've uncovered (3 before any), plus what your cards add. Insight you don't spend is lost (except under Patience),
 and no threat or project takes it: it is spent the turn it comes. Everything else on your
 board and cards pays at the end of production's **income step** (§9).
 
@@ -842,8 +842,8 @@ Everyone loses at once if:
 
 - a Discord tip finds the Discord deck empty;
 - any player has no nodes on the map;
-- the Card beat finds no card to turn up (the **round cap**: 11 rounds at levels 0-2, 9 at levels 3-4). Round 12
-  (10 at levels 3-4) still opens with its Sway step, so a Discord tip can lose the game there first; then, with no
+- the Card beat finds no card to turn up (the **round cap**: 13 rounds at level 0, 11 at levels 1-2, 9 at levels
+  3-4). The round after the cap still opens with its Sway step, so a Discord tip can lose the game there first; then, with no
   card left, you lose.
 
 The adversary running out of agents is not a loss: a placement it can't make doesn't happen.
@@ -995,7 +995,7 @@ Each power can be used once a round, in the action phase. A tag in a cost means 
 
 | Board | Node power | Conversions | Draw | Sacrifice and other powers |
 |---|---|---|---|---|
-| Builder | **Buy In** (6 credits: a node) | **Mint** (3 credits: 1 chip), **Focus** (5 credits: 1 insight) | **Procure** (1 chip: draw 2) | **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand) |
+| Builder | **Buy In** (6 credits: a node) | **Mint** (3 credits: 1 chip) | **Procure** (1 chip: draw 2) | **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand) |
 | Protector | **Accord** (1 Diplomacy: a node) | **Stand Down** (1 Security: 3 credits) | **Debrief** (1 Diplomacy: draw 2) | **Recovery** (1 Security: clear a marker in reach, +2 Unity), **Shelter** (1 Security, 1 energy: in any one country, no node or facility can be destroyed from now to cleanup, §13), **Bulwark** (1 energy: harden a facility in reach), **Patrol** (1 energy: push up to 3 agents or adversary troops from a hex in reach) |
 | Researcher | **Peer Review** (3 research cubes: a node) | **Grant** (3 credits: 1 cube in your color on a megaproject that isn't complete), **Synthesis** (discard a card from your hand: 2 insight) | **Fieldwork** (1 energy: draw 3) | **Field Station** (1 Industry: a research station without the chips, where Build a research station could go), **Audit** (1 Cyber: remove 3 compute from a project), **Particle Run** (1 Power, 1 energy: 1 antimatter) |
 
@@ -1017,10 +1017,10 @@ Each row is the whole level. Your own costs (claim, liberate, cards, actions) ne
 
 | Level | Corrupt numbers (city / station / factory / land / node) | Threat items | Muster | Each unpaid threat | Event cards (I / II / III) | Rounds | Compute income | Agent income a country (with Garrisons) | Other |
 |---|---|---|---|---|---|---|---|---|---|
-| 0 | 4 / 3 / 3 / 3 / 2 | as printed | as printed | — | 4 / 4 / 3 | 11 | 1 | 1 | — |
+| 0 | 4 / 3 / 3 / 3 / 2 | as printed | as printed | — | 5 / 5 / 3 | 13 | 1 | 1 | — |
 | 1 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +1 | as printed | — | 4 / 4 / 3 | 11 | 4 | 3 | — |
-| 2 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | +1 troop | +4 compute | 4 / 4 / 3 | 11 | 19 | 3 | — |
-| 3 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 troop | +4 compute | 4 / 2 / 3 | 9 | 24 | 4 | — |
+| 2 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | +1 troop | +4 compute | 4 / 4 / 3 | 11 | 17 | 3 | — |
+| 3 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 troop | +4 compute | 4 / 2 / 3 | 9 | 18 | 3 | — |
 | 4 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 troop | +4 compute | 3 / 2 / 4 | 9 | 24 | 4 | the last stage-I card deals tier-2 threats |
 
 - **Threat items:** each resource item on a threat costs that much more; a tag item ("2 Security") never changes.
@@ -1028,11 +1028,11 @@ Each row is the whole level. Your own costs (claim, liberate, cards, actions) ne
 - **Each unpaid threat:** a threat that takes effect unpaid also gives the adversary 4 compute, at its next compute
   step (§17). A threat that only waits gives none.
 
-Both incomes climb with the level (never down). Level 4 is level 3 with a stage-I card swapped for a stage-III card
-and tier-2 threats a card sooner.
+Both incomes climb with the level (never down). Level 0 deals two more event cards (a longer game to learn in).
+Level 4 is level 3 with a stage-I card swapped for a stage-III card, tier-2 threats a card sooner, and higher incomes.
 
 *Sources: rules/adversary.md (Difficulty, The event deck), rules/threats.md (Countering); configs/baseline.json
-`adversary` (`compute_income`, `ambassador_income`, `counter_bonus_*`, `counter_more_*`); content/adversary.json
+`adversary` (`compute_income`, `ambassador_income`, `stage_extra`, `counter_bonus_*`, `counter_more_*`); content/adversary.json
 (Garrisons); crates/aic-core/src/modules/adversary/, modules/threats/counter.rs.*
 
 ---

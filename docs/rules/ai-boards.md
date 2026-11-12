@@ -12,8 +12,8 @@ upkeep). The board module owns nodes and counts the tokens taken (`board.track.<
 **The Builder, for new players.** Your special rule is Breadth: five building slots, so your engine is wider. You start with 40 credits and earn 15 a round, and each credit space of your
 economy track adds 2 or 3 more, so placing a node is how your income grows; you're short of energy. Round 1 deals
 you 2 tier-1 and 2 tier-2 cards into your hand, free (the tier-2s point a build direction), then drafts and keeps as
-every round does (r82). Each round you may turn credits into a chip with Mint, 5 credits into an
-insight with Focus, and 1 chip into 2 cards with Procure. Late in the game, sacrifice cards you have finished with:
+every round does (r82). Each round you may turn credits into a chip with Mint
+and 1 chip into 2 cards with Procure. Late in the game, sacrifice cards you have finished with:
 an Industry card pays out chips, a Power card energy, and an Industry card with an energy plays a building from your
 hand for no credits. Each round you may Dispatch 1 ambassador for free (2 from your fourth economy space). Your printed
 Industry tag counts like one on your cards.
@@ -107,13 +107,13 @@ The **keep upgrade**: tier-2 keeps cost `keep_tier2_upgraded` instead of `keep_t
 **The card-play track (draft candidates, reasoning in `experiments/results/screen-068-boards/boards.md`).** None of it
 is uncovered at setup. A placement takes the next token from the track the player chooses (asked when both
 have tokens). **Insight prints here only, as totals** (r82, Matt's amendment, Spirit Island style): the printed start
-shows 6 and a space that raises it shows the new total; your insight is the number on the rightmost space you've
+shows 3 (r86; 6 before) and a space that raises it shows the new total; your insight is the number on the rightmost space you've
 uncovered that shows one.
 
 <!-- generated: node_track2 -->
 | Space | Builder | Protector | Researcher |
 |---|---|---|---|
-| printed start | insight 6 | insight 6 | insight 6 |
+| printed start | insight 3 | insight 3 | insight 3 |
 | 1 | **insight 7** | **insight 7** | **insight 7** |
 | 2 | **keep upgrade** | **keep upgrade** | **insight 9**, **Dispatch +1** |
 | 3 | pay 1 energy: **insight 9** | pay 1 energy: **insight 9** | pay 1 energy: **keep upgrade** |

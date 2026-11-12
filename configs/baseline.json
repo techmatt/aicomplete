@@ -93,19 +93,26 @@
         "stage_swap_at": 4,
         "stage2_removed": 2,
         "stage1_added": 0,
+        "stage_extra": [
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
         "extra_corrupted": 0,
         "compute_income": [
           1,
           4,
-          19,
-          24,
+          17,
+          18,
           24
         ],
         "ambassador_income": [
           0,
           2,
           2,
-          3,
+          2,
           3
         ],
         "tier2_early": 1,

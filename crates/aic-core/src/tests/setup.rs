@@ -4,7 +4,8 @@ use super::*;
 fn setup_places_the_printed_pieces() {
     // Difficulty 4's second corrupted city is a tunable, 0 in the baseline.
     let cases: [(i64, usize, usize, &str); 4] = [
-        (0, 1, 10, ""),
+        // 196: d0 adds two event cards (`stage_extra` 2 at d0).
+        (0, 1, 12, ""),
         // 150: d3 removes two stage-II cards (`stage2_removed` 2).
         (3, 1, 8, ""),
         (4, 1, 8, ""),
