@@ -54,18 +54,32 @@ fn uncovered2(w: &World, g: &GameState, seat: usize) -> usize {
 /// Income from the AI board and its nodes track: `(resource, amount)`
 /// pairs (insight sets the round's insight; the rest arrive in upkeep).
 pub fn track_income(w: &World, g: &GameState, seat: usize) -> Vec<(Resource, i64)> {
-    let b = board(w, seat);
-    let mut out: Vec<(Resource, i64)> = b.income.clone();
-    for u in uncovered_spaces(w, g, seat) {
-        out.extend(u.income.iter().cloned());
-    }
+    let mut out = Vec::new();
+    each_track_income(w, g, seat, |r, n| out.push((r, n)));
     out
+}
+
+/// r82 (amendment 8615): the insight seat `s`'s card-play track shows: the total on the rightmost uncovered
+/// space printing one, else the board's printed start.
+pub fn track_insight(w: &World, g: &GameState, seat: usize) -> i64 {
+    let b = board(w, seat);
+    b.play_track[..uncovered2(w, g, seat)].iter().rev().find_map(|u| u.insight).unwrap_or(b.insight)
+}
+
+/// What uncovering card-play track space `i` of board `b` adds to the round's insight (its total less the
+/// total shown before it): the increment the agents and the option keys read.
+pub fn insight_gain(b: &AiBoard, i: usize) -> i64 {
+    match b.play_track.get(i).and_then(|u| u.insight) {
+        Some(n) => n - b.play_track[..i].iter().rev().find_map(|u| u.insight).unwrap_or(b.insight),
+        None => 0,
+    }
 }
 
 /// [`track_income`] a pair at a time, for a caller that only adds them up.
 pub fn each_track_income(w: &World, g: &GameState, seat: usize, mut f: impl FnMut(Resource, i64)) {
     let b = board(w, seat);
     b.income.iter().for_each(|(r, n)| f(*r, *n));
+    f(Resource::Insight, track_insight(w, g, seat));
     for u in uncovered_spaces(w, g, seat) {
         u.income.iter().for_each(|(r, n)| f(*r, *n));
     }
@@ -283,9 +297,13 @@ pub fn builds_station(u: &Uncover) -> bool {
 }
 
 /// What uncovering a space gives, in the words of its option (a record key:
-/// `+1 credits, T2 keep -1`).
-pub fn uncover_label(u: &Uncover) -> String {
-    let mut parts: Vec<String> = u.income.iter().map(|(r, n)| format!("+{}", r.amount(*n))).collect();
+/// `+1 credits, T2 keep -1`); `gain`: the insight it adds ([`insight_gain`]; r82 prints the total).
+pub fn uncover_label(u: &Uncover, gain: i64) -> String {
+    let mut parts: Vec<String> = Vec::new();
+    if gain != 0 {
+        parts.push(format!("+{}", Resource::Insight.amount(gain)));
+    }
+    parts.extend(u.income.iter().map(|(r, n)| format!("+{}", r.amount(*n))));
     if u.keep2 {
         parts.push("T2 keep -1".into());
     }
@@ -302,9 +320,11 @@ pub fn uncover_label(u: &Uncover) -> String {
     parts.join(", ")
 }
 
-/// The same for people to read (`+1 credit, T2 keep`; the track step's hover has the rest).
+/// The same for people to read (`+1 credit, T2 keep`; the track step's hover has the rest). r82: a space
+/// printing insight reads as its total (`insight 7`).
 pub fn uncover_words(u: &Uncover) -> String {
-    let mut parts: Vec<String> = u.income.iter().map(|(r, n)| format!("+{}", r.words(*n))).collect();
+    let mut parts: Vec<String> = u.insight.map(|n| format!("insight {n}")).into_iter().collect();
+    parts.extend(u.income.iter().map(|(r, n)| format!("+{}", r.words(*n))));
     if u.keep2 {
         parts.push("T2 keep".into());
     }
@@ -449,15 +469,21 @@ impl Module for Ai {
                 .iter()
                 .enumerate()
                 .map(|(i, u)| {
+                    // r82 (amendment 8615): a printed insight total, Spirit Island style.
                     let mut marks: Vec<TrackMark> = u
-                        .income
-                        .iter()
-                        .map(|(r, n)| TrackMark {
-                            key: r.to_string(),
-                            label: format!("+{}", r.words(*n)),
-                            doc: format!("+{} every round once uncovered", r.words(*n)),
+                        .insight
+                        .map(|n| TrackMark {
+                            key: Resource::Insight.to_string(),
+                            label: format!("insight {n}"),
+                            doc: format!("your insight each round is {n} while this is the rightmost total uncovered"),
                         })
+                        .into_iter()
                         .collect();
+                    marks.extend(u.income.iter().map(|(r, n)| TrackMark {
+                        key: r.to_string(),
+                        label: format!("+{}", r.words(*n)),
+                        doc: format!("+{} every round once uncovered", r.words(*n)),
+                    }));
                     if u.keep2 {
                         marks.push(TrackMark {
                             key: "tier2".into(),

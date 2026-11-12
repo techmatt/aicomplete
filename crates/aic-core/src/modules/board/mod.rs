@@ -431,7 +431,14 @@ impl Module for Board {
             BASES => produce_units(g, cx)?,
             WAR => battle(g, cx)?,
             MARCH => march(g, cx)?,
-            PRODUCE => produce(g, cx)?,
+            PRODUCE => {
+                // 189: what kept each card in hand this round (stats only).
+                let w = cx.world;
+                for s in 0..g.seats.len() {
+                    cards::tally_short(&w, g, cx, s);
+                }
+                produce(g, cx)?
+            }
             CLEANUP => cleanup(g, cx),
             _ => unreachable!("board: no auto phase {phase}"),
         }

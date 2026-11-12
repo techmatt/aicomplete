@@ -123,7 +123,6 @@
     "each_destroy_node": {"credits": -8, "per": "node each player destroys (at rates.node)"},
     "destroy_node": {"credits": -8, "per": "node the nearest player destroys (146: a threat's; also a troop landing that destroys; at rates.node)"},
     "pull_unity": {"credits": -4, "per": "Sway pulled back from Unity"},
-    "lose_insight": {"credits": -2.5, "per": "insight lost next round"},
     "flip_station": {"credits": -15, "per": "station corrupted (r35: cleanse_station the other way)"},
     "corrupt_city": {"credits": -25, "per": "city corrupted (a liberation the other way)"},
     "players_lose": {"credits": -1, "per": "the resource at its rate"},

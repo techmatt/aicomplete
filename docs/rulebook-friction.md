@@ -1,4 +1,4 @@
-# Rulebook friction (rules revision 81)
+# Rulebook friction (rules revision 82)
 
 *What is still hard to say in [rulebook.md](rulebook.md) (third draft), ranked by how much each costs a reader, with
 the rule change that would fix it. Matt's test: a rule that can't be said well is a bad sign about the rule. Only what
@@ -26,18 +26,20 @@ and 12, mostly in the adversary's turn: with the bigger faults gone, readers rea
 
 The rows before #41 keep their r73 numbers; what r74-r77 and 179 fixed is in their write-ups (175-179) and in git
 history of this page. 180's rows are #41 on; r80 (187, Matt's rulings, 2026-11-11) built #41-#43, #46, #48-#50,
-#52 and #53, and r81 (188, Matt's rulings, 2026-11-11) #16, #47, #51 and #54
+#52 and #53, r81 (188, Matt's rulings, 2026-11-11) #16, #47, #51 and #54, and r82 (189, Matt's rulings,
+2026-11-11) #2: every board prints 6 insight (the setup space adds none), no adversary card takes insight, Patience
+keeps all of it, credits never buy a keep, keeps cost 1 insight a tier-1 card and 2 a tier-2 every round, and the
+opening deals 2 tier-1 and 2 tier-2 cards into each hand free before round 1's normal draft
 ([rules-history.md](rules-history.md)).
 
-1. **Insight and keeps** (#2): one resource with a reset, a carve-out, a debt and three keep prices.
-2. **What removes an ambassador** (#44): five fates, and the troop that removes one isn't used up.
-3. **Growth every round** (#45): every city builds, a blocked one too.
+1. **What removes an ambassador** (#44): five fates, and the troop that removes one isn't used up.
+2. **Growth every round** (#45): every city builds, a blocked one too.
+3. **Event lines** (#31): event faces print no icon row yet, so each line is read in words.
 
 ## The table
 
 | # | Rule | What makes it hard (evidence) | Proposed change |
 |---|---|---|---|
-| 2 | [Insight and keeps](rulebook.md#resources) (every round) | Reset each round, except Patience keeps your own but not gifted insight; the board prints 5 but you have 6 from round 1; less last round's losses, a debt across the round; credits stand in for keeps but not plays; opening tier-2 keeps 1 insight, later 2, upgraded 1; the opening's 4 free tier-1 keeps, then 5 credits (173: G, V flagged; 180: D 2/5 on the insight paragraph, ranks it first). | Print 6 on the board. Insight-loss tokens on your board, removed when insight is set. Patience keeps all unspent insight. **One keep price all game** (1 insight a card), credits never. |
 | 44 | [What removes an ambassador](rulebook.md#ambassadors-meet-agents) (every round) | An agent cancels one 1 for 1; a troop removes one and **stays** (it can remove two in a turn); corruption removes all; a drone stop and a protection each spend one (D, rank 3; G flagged the march line, "ambassadors don't fight" while troops remove them). | One contact rule for every adversary piece: a troop meeting an ambassador removes it and is removed, 1 for 1, as an agent does. |
 | 45 | [Growth](rulebook.md#9-production) (every round) | Every city builds a factory every round it has a free zone next to it, a blocked city too, though blocking stops everything else a site does; a corrupted city's goes by agents nearby (G, V flagged: "the map fills with factories", "'blocked or not' contradicts 'blocked sites make nothing'"; G2 flagged the corrupted city's zone choice). | A blocked city doesn't build (blocking means the site does nothing). Optionally, a city builds only while it has no factory next to it. |
 | 31 | [Event lines](rulebook.md#the-turn) (every round) | r80 closed the list (seven other-line kinds, `content::EVENT_LINE_KINDS`, each with an icon named), but event faces print no icon row yet, so a reader still reads each line's words. | Draw the two missing glyphs (Blackout, Forced March) and give event faces an icon row. |

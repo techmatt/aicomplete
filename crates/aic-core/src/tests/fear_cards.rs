@@ -36,8 +36,8 @@ fn a_corrupt_prohibition_stops_a_covered_city() {
     assert!(plan::corrupt_plan(&w, &g, CorruptSite::City, n, None).iter().any(|(t, _)| *t == c));
 }
 
-/// r80 (rulings #43, #53): a Rally prohibition's token is skipped like a firewall: nothing lands on the covered
-/// site and the round-robin deals its agents to the others.
+/// r82 (Matt, 2026-11-11, as at r79): a Rally prohibition's token blocks like a firewall: nothing lands on the
+/// covered site, and its turn in the round-robin deal stays in the supply (r80 dealt it to the others).
 #[test]
 fn a_rally_prohibition_keeps_the_share_in_the_supply() {
     let (rules, mut g) = lab(&[]);
@@ -51,13 +51,14 @@ fn a_rally_prohibition_keeps_the_share_in_the_supply() {
     assert_eq!(g.tokens(sites[0], prohibit_token(Step::Rally)), 1);
     let before: Vec<i64> = sites.iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).collect();
     let supply = g.var(SUPPLY);
-    with_cx(&rules, |cx| adversary::rally(&mut g, cx, RallyAt::City, 2 * (k - 1), Some(country), "test")).unwrap();
+    with_cx(&rules, |cx| adversary::rally(&mut g, cx, RallyAt::City, 2 * k, Some(country), "test")).unwrap();
     assert_eq!(g.tokens(sites[0], ADV_AMBASSADOR), before[0], "nothing lands on the covered site");
     assert_eq!(g.tokens(sites[0], ambassador(0)), 1, "and its ambassador stands");
     for (i, &h) in sites.iter().enumerate().skip(1) {
-        assert_eq!(g.tokens(h, ADV_AMBASSADOR), before[i] + 2, "the others take the pool round-robin");
+        assert_eq!(g.tokens(h, ADV_AMBASSADOR), before[i] + 2, "each other site takes its own share, no more");
     }
-    assert_eq!(g.var(SUPPLY), supply - 2 * (k - 1));
+    assert_eq!(g.var(SUPPLY), supply - 2 * (k - 1), "the covered site's share stays in the supply");
+    assert_eq!(g.stats.counters["adversary.rally_blocked"], 2);
 }
 
 /// "Remove 1 agent from each hex on or next to an ambassador": every such hex, no other.

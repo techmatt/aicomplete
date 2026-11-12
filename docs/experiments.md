@@ -67,6 +67,8 @@ run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have no such
   `margin.held_after_actions`: held after the last *completed* action phase, never mid-round. A won game ends inside
   a round holding the last upkeep's income, so `margin.unspent` tracks late income: read credits held as
   `margin.held_after_actions[seat][0]`.
+- **The limit** (189): `limit.keep_short.insight` / `limit.keep_passed` per drafted card unkept; `limit.play.short.<r>`,
+  `.needs_tags`, `.held` per card left in hand as the action phase ends. Read: 189's `resource_use.py NEW OLD`.
 - **The runaway check**: each resource's peak per seat (`peaks`, `PEAKS` order) far above a round's income
   (`gained / rounds`) is a runaway engine: `scripts/cards/runaway_read.py`. `sources` / `uses` / `keeps`:
   `source_read.py`.
@@ -172,7 +174,7 @@ line alone reads near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used. Any item that spends seeds updates the ledger, after its last read, not before it. Used: every
-seed below 43327 (each item's range is in its write-up). Next free: 43327. **The dev seeds for screens are
+seed below 43615 (each item's range is in its write-up; 188 took 43327-43470, 189 43471-43614). Next free: 43615. **The dev seeds for screens are
 36800-36831**: screen at 32 seeds a cell.
 
 ## Reading prices

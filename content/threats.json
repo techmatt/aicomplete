@@ -346,7 +346,7 @@
    "city",
    "station"
   ],
-  "text": "2 Unity comes off the Unity track. The nearest player gets 4 less insight next round.",
+  "text": "2 Unity comes off the Unity track. The nearest player pays 2 energy or discards 2 cards.",
   "counters": [
    [
     {
@@ -367,13 +367,15 @@
     "amount": 2
    },
    {
-    "op": "lose_insight",
-    "amount": 4
+    "op": "requisition",
+    "resource": "energy",
+    "amount": 2,
+    "cards": 2
    }
   ],
   "harms": [
    "Unity pulled back",
-   "insight lost"
+   "energy lost"
   ]
  },
  {

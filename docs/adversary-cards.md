@@ -43,7 +43,7 @@ Project slots: Security, Open, Open.
 | Provocation | Diplomacy + Security | base | A tier-1 threat is dealt into this country (it executes next round). Sway 2 toward Discord. | 3 Ambassadors; 12 credits |
 | Agitators | Diplomacy | city | 3 Agents are created here. Sway 2 toward Discord. | 2 Diplomacy tags; 12 credits |
 | Defection | Diplomacy | city | The nearest player pays 2 Ambassadors or discards 2 cards. Sway 1 toward Discord. | 2 Diplomacy tags; 12 credits |
-| Smear Campaign | Diplomacy | city, station | 2 Unity comes off the Unity track. The nearest player gets 4 less insight next round. | 3 Ambassadors; 12 credits |
+| Smear Campaign | Diplomacy | city, station | 2 Unity comes off the Unity track. The nearest player pays 2 energy or discards 2 cards. | 3 Ambassadors; 12 credits |
 | Propaganda Blitz | Diplomacy | coastal city | Sway 3 toward Discord. The adversary gains 3 compute. | 3 Ambassadors; 12 credits |
 | Sabotage | Cyber | station | The nearest player loses 4 tokens from their cards. The adversary gains 6 compute. | 2 Cyber tags; 12 credits |
 | Insider Access | Cyber + Diplomacy | station | 2 Agents are created here. The nearest player pays 3 research cubes or discards 2 cards. | 3 Ambassadors; 12 credits |
@@ -111,7 +111,7 @@ Project slots: Security, Open, Open.
 | Disinformation | Diplomacy | 5 / 10 / 15 / 20 | once | Sway 5 toward Discord. |
 | Recruitment Drive | Diplomacy | 11 / 22 / 33 / 44 | once | Income: +1 Agent a country a round. |
 | Infiltration Drive | Diplomacy | 18 / 36 / 54 / 72 | once | Rally 3, each country: cities. Corrupt: cities (1 fewer). |
-| Data Heist | Cyber | 6 / 12 / 18 / 24 | once | Each player removes 3 tokens from their cards (their choice of cards). Each player pays 3 insight next round or discards 2 cards. |
+| Data Heist | Cyber | 6 / 12 / 18 / 24 | once | Each player removes 3 tokens from their cards (their choice of cards). Each player pays 8 credits or discards 2 cards. |
 | Botnet Swarm | Cyber | 6 / 12 / 18 / 24 | once | Rally 3, each country: Botnet hexes. |
 | Station Coup | Cyber | 9 / 18 / 27 / 36 | once | Rally 2, each country: research stations. Each country: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 Agents and no player Ambassador are on it; one that holds takes 1 Agent). |
 | Market Crash | Industry | 5 / 10 / 15 / 20 | once | Each player pays 10 credits or discards 3 cards. |

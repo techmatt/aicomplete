@@ -878,10 +878,6 @@ pub enum Op {
     PullUnity {
         amount: i64,
     },
-    /// Each player in scope gets `amount` less insight next round (027).
-    LoseInsight {
-        amount: i64,
-    },
     /// A research station in scope is corrupted (a player's holds unless `adversary.station_flip_at` agents
     /// and no player ambassadors are on it); `each_country`: one a country; `force`: a player's too.
     FlipStation {
@@ -1255,15 +1251,14 @@ pub enum Op {
     },
     /// 138: corruption never destroys your nodes (Sanctuary; was the spread shield).
     CorruptionShield,
-    /// Once a round, when one of your own nodes or facilities would be destroyed,
-    /// you may keep it (r75, Matt's ruling 5: it stopped the first destruction of
-    /// anyone's piece in a country where you had a node).
+    /// Shelter on your own pieces once a round: the first time each round one of your nodes or facilities
+    /// would be destroyed, it is sheltered, automatically (r82, Matt; r75-r81 the owner chose to spend it).
     CivicShelter,
     /// Adversary troops can't enter or strike a hex holding your nodes
     /// (068: Wall; 075: strikes). An AI board's innate only: `board::walled`
     /// reads nothing else, and `Content::check` refuses it on a card or a capstone.
     Wall,
-    /// Your own unspent insight carries over to the next round, not insight given you this round (075: Patience). An
+    /// All your unspent insight carries over to the next round, gifts included (075: Patience; r82: no carve-out). An
     /// AI board's innate only: `economy` reads nothing else.
     Patience,
     /// Each round in upkeep, `amount` insight from the supply goes to other
@@ -1331,7 +1326,6 @@ impl Op {
             | Op::FlipStation { .. }
             | Op::CorruptCity { .. }
             | Op::PlayersLose { .. }
-            | Op::LoseInsight { .. }
             | Op::AdversaryBuild
             | Op::AdversaryFactory { .. }
             | Op::CorpTroops { .. }

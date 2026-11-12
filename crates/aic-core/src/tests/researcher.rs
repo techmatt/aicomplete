@@ -41,17 +41,6 @@ fn patience_carries_insight_with_no_cap() {
 }
 
 #[test]
-fn a_debt_comes_off_carried_insight() {
-    let (rules, mut g) = c3();
-    let w = rules.world();
-    let inc = economy::income(&w, &g, 2)[Resource::Insight];
-    set_res(&mut g, 2, Resource::Insight, 3);
-    g.vars.insert(economy::insight_debt(2).into(), 2);
-    next_round(&rules, &mut g);
-    assert_eq!(g.resource(2, Resource::Insight), inc + 1);
-}
-
-#[test]
 fn a_bought_cube_goes_on_an_incomplete_project_and_pays_at_completion_only() {
     let (rules, mut g) = c3();
     let w = rules.world();
@@ -161,10 +150,10 @@ fn the_new_cards_can_be_played() {
     }
 }
 
-/// r48 (Matt, D43): Patience banks only the Researcher's own insight. What another
-/// player's card gave it this round expires; its own unspent insight carries.
+/// r82 (Matt, 2026-11-11): Patience keeps all the Researcher's unspent insight, what another player's card
+/// gave it this round included (r48 to r81 it expired).
 #[test]
-fn patience_never_banks_insight_another_player_gave() {
+fn patience_banks_insight_another_player_gave() {
     let (rules, mut g) = c3();
     let w = rules.world();
     let inc = economy::income(&w, &g, 2)[Resource::Insight];
@@ -177,9 +166,7 @@ fn patience_never_banks_insight_another_player_gave() {
     })
     .unwrap();
     assert_eq!(g.resource(2, Resource::Insight), 7);
-    assert_eq!(g.var(&economy::insight_received(2)), 4);
     next_round(&rules, &mut g);
-    assert_eq!(g.resource(2, Resource::Insight), inc + 3, "only its own 3 carried");
-    assert_eq!(g.var(&economy::insight_carried(2)), 3);
-    assert_eq!(g.var(&economy::insight_received(2)), 0, "a new round: nothing given yet");
+    assert_eq!(g.resource(2, Resource::Insight), inc + 7, "all 7 carried, the gift too");
+    assert_eq!(g.var(&economy::insight_carried(2)), 7);
 }

@@ -49,7 +49,7 @@ pub enum Armor {
 fn absorbed(w: &World, g: &GameState, h: usize, armor: Armor) -> bool {
     match armor {
         Armor::AnyAmbassador => g.tokens(h, HARDEN) > 0 || common::player_ambassador(g, h).is_some(),
-        Armor::ByOwner => !board::guards(w, g, h, common::node_owner(g, h)).is_empty(),
+        Armor::ByOwner => board::protected(w, g, h, common::node_owner(g, h)),
     }
 }
 
@@ -58,7 +58,7 @@ fn absorbed(w: &World, g: &GameState, h: usize, armor: Armor) -> bool {
 fn factory_absorbed(w: &World, g: &GameState, h: usize, armor: Armor) -> bool {
     match armor {
         Armor::AnyAmbassador => absorbed(w, g, h, armor),
-        Armor::ByOwner => !board::guards(w, g, h, common::cube_owner(g, h)).is_empty(),
+        Armor::ByOwner => board::protected(w, g, h, common::cube_owner(g, h)),
     }
 }
 
@@ -102,7 +102,12 @@ impl Armory {
     /// Spends one protection against a destroy of seat `s`'s node on `hexes[i]` = `h`, if any lasts: the
     /// first of [`board::guards`]'s options (in print order) the pool still holds.
     fn spend(&mut self, w: &World, g: &GameState, i: usize, h: usize, s: usize) -> bool {
-        for guard in board::guards(w, g, h, Some(s)) {
+        // r82: a ready Aegis Doctrine shelters the first destruction a round, before any choice.
+        if !self.aegis_used[s.min(3)] && board::aegis_ready(w, g, s) {
+            self.aegis_used[s.min(3)] = true;
+            return true;
+        }
+        for guard in board::guards(g, h, Some(s)) {
             let got = match guard {
                 board::Guard::Harden => {
                     let left = &mut self.hexes[i].harden;
@@ -111,10 +116,6 @@ impl Armory {
                 board::Guard::Ambassador(o) => {
                     let left = &mut self.hexes[i].amb[o.min(3)];
                     (*left > 0).then(|| *left -= 1).is_some()
-                }
-                board::Guard::Aegis(o) => {
-                    let used = &mut self.aegis_used[o.min(3)];
-                    (!*used).then(|| *used = true).is_some()
                 }
             };
             if got {

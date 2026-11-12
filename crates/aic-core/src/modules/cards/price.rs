@@ -2,39 +2,20 @@
 
 use super::*;
 
-/// The rule for keeping one more card of `tier` when `seat` has already kept
-/// `kept` this round, before any conversion: (insight needed, credits). The
-/// opening (round 1): a tier-1 card free for the first `opening_free`, then
-/// credits; a tier-2 card `opening_keep_tier2` insight (108), and `kept` counts
-/// only the tier-1 ones ([`counts_as_kept`]). Later rounds: insight by tier. Paying a shortfall of insight in credits is the
-/// caller's: it depends on the insight the seat has left at that point.
+/// The insight keeping one more drafted card of `tier` costs `seat`: by tier in every round, the opening's
+/// draft included (r82: the opening hand is dealt free, and no credits buy a shortfall), less the keep upgrade
+/// and the Science discount.
 ///
 /// Variant `off` has no draft and no keep parameters: keeping is free there.
-pub fn keep_need(w: &World, g: &GameState, seat: usize, tier: u8, kept: i64) -> (i64, i64) {
+pub fn keep_need(w: &World, g: &GameState, seat: usize, tier: u8) -> i64 {
     if w.variant("cards") == Some("off") {
-        return (0, 0);
+        return 0;
     }
-    if g.round <= 1 {
-        if tier == 2 {
-            return (w.int("cards.opening_keep_tier2"), 0);
-        }
-        if kept < w.int("cards.opening_free") {
-            return (0, 0);
-        }
-        return (0, w.int("cards.opening_keep_credits"));
-    }
-    let need = match tier {
+    match tier {
         2 if ai::keep2(w, g, seat) => science_off(w, g, seat, w.int("cards.keep_tier2_upgraded")),
         2 => science_off(w, g, seat, w.int("cards.keep_tier2")),
         _ => w.int("cards.keep_tier1"),
-    };
-    (need, 0)
-}
-
-/// Whether keeping a card of `tier` now counts toward [`keep_need`]'s `kept`:
-/// every keep but an opening tier-2 one, which takes none of the free keeps (108).
-pub fn counts_as_kept(g: &GameState, tier: u8) -> bool {
-    !(g.round <= 1 && tier == 2)
+    }
 }
 
 /// A card's printed credit cost.

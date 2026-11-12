@@ -111,12 +111,10 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
             .iter()
             .map(|id| {
                 // 044: an Open Market free keep waives the price the status showed.
-                let (ins, cr) = if alignment::free_purchases(g) > 0 { (0, 0) } else { m.keep_price(w, g, s, id) };
-                let st = match (ins, cr) {
-                    (0, 0) => "keep free".to_string(),
-                    (i, 0) => format!("keep {i} insight"),
-                    (0, c) => format!("keep {c} credits"),
-                    (i, c) => format!("keep {i} insight + {c} credits"),
+                let ins = if alignment::free_purchases(g) > 0 { 0 } else { m.keep_price(w, g, s, id) };
+                let st = match ins {
+                    0 => "keep free".to_string(),
+                    i => format!("keep {i} insight"),
                 };
                 card(s, id, &st, Some(play_cost(w, g, s, def(w, id))))
             })

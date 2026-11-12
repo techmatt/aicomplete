@@ -124,13 +124,14 @@ pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res<bool> {
     if let Some(u) = b.play_track.get(t2).filter(|u| can_pay(u)) {
         tracks.push((true, u));
     }
+    let gain2 = ai::insight_gain(b, t2);
     let opts = tracks
         .iter()
         .map(|(two, u)| {
             opt(format!(
                 "track {}: uncovers {}{}",
                 if *two { 2 } else { 1 },
-                ai::uncover_label(u),
+                ai::uncover_label(u, if *two { gain2 } else { 0 }),
                 price_words(u.cost)
             ))
         })

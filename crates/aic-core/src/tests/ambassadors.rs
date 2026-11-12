@@ -190,14 +190,7 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
     put(&mut g, d, ADV_AMBASSADOR, 1);
     let made = g.var("adversary.compute");
     run(&rules, &mut g);
-    assert_eq!(
-        (
-            g.var("economy.insight_debt.0"),
-            g.var("adversary.compute") - made,
-            g.tokens(d, ADV_AMBASSADOR)
-        ),
-        (0, 0, 1)
-    );
+    assert_eq!((g.var("adversary.compute") - made, g.tokens(d, ADV_AMBASSADOR)), (0, 1));
 
     // On a corrupted city the ambassador is the city's (it stays to spread); on a station it blocks the cube
     // and stays (137: it took the cube and was used up).
@@ -210,15 +203,7 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
     put(&mut g, station, ADV_AMBASSADOR, 1);
     put(&mut g, station, node(1), 1);
     run(&rules, &mut g);
-    assert_eq!(
-        (
-            g.tokens(city, ADV_AMBASSADOR),
-            g.tokens(station, ADV_AMBASSADOR),
-            g.var("economy.insight_debt.0"),
-            g.var("economy.insight_debt.1")
-        ),
-        (1, 1, 0, 0)
-    );
+    assert_eq!((g.tokens(city, ADV_AMBASSADOR), g.tokens(station, ADV_AMBASSADOR)), (1, 1));
 
     // 137: an agent on an owned station blocks its cube and
     // stays; a corrupted station puts an adversary cube on its open megaproject (185);
@@ -416,17 +401,13 @@ fn the_aegis_doctrine_guards_only_its_holders_own_pieces() {
     with_answers(&rules, &mut g, |x| -> usize { panic!("asked {x:?}") }, |g, cx| board::destroy_piece(g, cx, a, node(0), cause));
     assert_eq!(g.tokens(a, node(0)), 0);
 
-    // Seat 1's node: seat 1 is offered the Aegis; used, it keeps the node, and a
-    // second destruction that round finds it spent.
+    // Seat 1's node: r82, the Aegis shelters it with nothing asked (Shelter on your own pieces once a
+    // round), and a second destruction that round finds it spent.
     let mut g = g0.clone();
-    let asked = std::cell::RefCell::new(Vec::new());
-    let kept = !with_answers(&rules, &mut g, |x| {
-        asked.borrow_mut().push((x.seat, x.options.iter().map(|o| o.option.clone()).collect::<Vec<_>>()));
-        0
-    }, |g, cx| board::destroy_piece(g, cx, b, node(1), cause));
+    let kept = !with_answers(&rules, &mut g, |x| -> usize { panic!("asked {x:?}") }, |g, cx| board::destroy_piece(g, cx, b, node(1), cause));
     assert!(kept);
-    assert_eq!(asked.into_inner(), [(1, vec!["use the Aegis Doctrine".to_string(), board::LET_IT_GO.to_string()])]);
     assert_eq!(g.tokens(b, node(1)), 1);
+    assert_eq!(g.stats.counters["board.aegis_used"], 1);
     with_answers(&rules, &mut g, |x| -> usize { panic!("asked {x:?}") }, |g, cx| board::destroy_piece(g, cx, c, node(1), cause));
     assert_eq!(g.tokens(c, node(1)), 0);
 }

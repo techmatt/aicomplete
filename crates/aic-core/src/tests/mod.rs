@@ -39,6 +39,7 @@ mod invariants;
 mod map;
 mod fear_cards;
 mod gather_push;
+mod insight_r82;
 mod march;
 mod new_ops;
 mod ops;
@@ -638,9 +639,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 81;
-const GOLDEN_FINGERPRINT: &str = "72c8fb419e78dfc2";
-const GOLDEN_CONTENT_HASH: &str = "d498aa6db784b442";
+const GOLDEN_REVISION: u32 = 82;
+const GOLDEN_FINGERPRINT: &str = "af0c4008f3a23125";
+const GOLDEN_CONTENT_HASH: &str = "5198074f04596f37";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

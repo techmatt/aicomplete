@@ -74,7 +74,7 @@ for the last rounds, and never free a city: the players still reach it and Liber
   does. A converted ambassador is on the board, not in your supply: it is armor or a blocker, and moves like
   any other; standing on the city, it pays toward a Liberate there.
 - **Firewall** (Firewall Array's Action, Air Gap): a token on one land hex in your reach. While it stands no
-  agent arrives there: Rally skips its site (r80), a creation line takes the next site, and so does an adversary-factory
+  agent arrives there: Rally's share for its site stays in the supply (r82), a creation line takes the next site, and so does an adversary-factory
   line's fallback onto a factory (r80, 184's D79), a threat's or Discord card's placement there doesn't happen, and a
   Corrupt line moves no agent onto it. Nothing on it corrupts: a Corrupt line, natural corruption, a station flip
   (Station Coup, Lab Takeover, Station Seizure: a forced flip too) and a threat corrupting its city (Overrun, Regime

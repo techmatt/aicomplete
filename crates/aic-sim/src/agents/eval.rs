@@ -1911,12 +1911,10 @@ impl Eval {
         }
         picks.sort_by(|a, b| b.0.total_cmp(&a.0));
         let mut left = g.resource(s, Resource::Insight);
-        let mut kept = 0;
         for (v, tier) in picks {
-            let (need, _) = cards::keep_need(world, g, s, tier, kept);
+            let need = cards::keep_need(world, g, s, tier);
             if need <= left {
                 left -= need;
-                kept += cards::counts_as_kept(g, tier) as i64;
                 cards.push(v);
             }
         }
@@ -2536,7 +2534,7 @@ mod tests {
         let w = r.world();
         let mut g = r.new_game(1);
         g.round = 3;
-        let keep = |tier| cards::keep_need(&w, &g, 0, tier, 0).0;
+        let keep = |tier| cards::keep_need(&w, &g, 0, tier);
         let (one, two) = (keep(1), keep(2));
         g.seats[0].resources.insert(Resource::Insight, two + one);
         let picks = vec![(1.0, 2), (3.0, 2), (2.0, 1)];

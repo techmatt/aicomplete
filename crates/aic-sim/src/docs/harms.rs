@@ -10,11 +10,10 @@ use super::blocks::tick;
 use super::table;
 
 /// The harms of the ledger, in its row order.
-pub const HARMS: [&str; 14] = [
+pub const HARMS: [&str; 13] = [
     "node destroyed",
     "credits or income lost",
     "cards discarded",
-    "insight lost",
     "ambassadors lost",
     "tokens stripped from cards",
     "facilities destroyed or seized",
@@ -82,17 +81,16 @@ const THREAT_TIERS: usize = 2;
 const NODE_DESTROYED: usize = 0;
 const CREDITS_LOST: usize = 1;
 const CARDS_DISCARDED: usize = 2;
-const INSIGHT_LOST: usize = 3;
-const AMBASSADORS_LOST: usize = 4;
-const TOKENS_STRIPPED: usize = 5;
-const FACILITIES_DESTROYED: usize = 6;
-const BLACKED_OUT: usize = 7;
-const PIECES_PLACED: usize = 8;
-const PROJECTS_ADVANCED: usize = 9;
-const EXTRA_THREATS: usize = 10;
-const DISCORD_SWAY: usize = 11;
-const UNITY_PULLED: usize = 12;
-const BLOCKED: usize = 13;
+const AMBASSADORS_LOST: usize = 3;
+const TOKENS_STRIPPED: usize = 4;
+const FACILITIES_DESTROYED: usize = 5;
+const BLACKED_OUT: usize = 6;
+const PIECES_PLACED: usize = 7;
+const PROJECTS_ADVANCED: usize = 8;
+const EXTRA_THREATS: usize = 9;
+const DISCORD_SWAY: usize = 10;
+const UNITY_PULLED: usize = 11;
+const BLOCKED: usize = 12;
 
 /// The harms one op does, as rows of [`HARMS`].
 fn op_harms(op: &Op) -> Vec<usize> {
@@ -105,9 +103,8 @@ fn op_harms(op: &Op) -> Vec<usize> {
         Op::Requisition { resource: Resource::Ambassadors, .. } | Op::Theft { resource: Resource::Ambassadors, .. } => {
             vec![AMBASSADORS_LOST, CARDS_DISCARDED]
         }
-        // 175: "pays N insight or discards M cards" (Data Heist) is an insight loss too (the ledger read only the
-        // discard while the node drain kept insight's second source).
-        Op::Requisition { resource: Resource::Insight, .. } => vec![INSIGHT_LOST, CARDS_DISCARDED],
+        // r82: "pays N credits or discards M cards" (Data Heist) takes either; insight is never a harm.
+        Op::Requisition { resource: Resource::Credits, .. } => vec![CREDITS_LOST, CARDS_DISCARDED],
         Op::Requisition { .. } | Op::DiscardMostExpensive | Op::Discard { .. } => vec![CARDS_DISCARDED],
         Op::Theft { resource: Resource::Credits, .. } | Op::LoseIncome { resource: Resource::Credits, .. } => {
             vec![CREDITS_LOST]
@@ -131,7 +128,6 @@ fn op_harms(op: &Op) -> Vec<usize> {
         }
         Op::ExtraWar { .. } => vec![FACILITIES_DESTROYED],
         Op::ComputePerMissing { .. } => vec![PROJECTS_ADVANCED],
-        Op::LoseInsight { .. } => vec![INSIGHT_LOST],
         Op::LoseAmbassador => vec![AMBASSADORS_LOST],
         Op::LoseTokens { .. } => vec![TOKENS_STRIPPED],
         Op::FlipStation { .. } => vec![FACILITIES_DESTROYED],

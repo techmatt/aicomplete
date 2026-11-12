@@ -9,17 +9,15 @@ The cards config lists which cards are in the game (baseline: all of them).
   hand. A played event goes to its player's **played pile**, never the discard. If you must draw and can't, reshuffle
   the discard into the deck and draw; the draft does the same. When both decks and their discards are empty (every card
   is in a hand or in play), the draft hands are what has been dealt.
-- **The opening (round 1).** Each player is dealt `opening_deal` tier-1 cards and keeps `opening_free` free; each
-  further tier-1 card kept costs `opening_keep_credits` credits. Each is also dealt `opening_deal_tier2` tier-2 cards
-  (Matt), each kept for `opening_keep_tier2` insight from round 1's insight and taking none of the free keeps:
-  a card to plan toward, played later once its `needs` and costs are met. No draft in round 1 (as Terraforming Mars'
-  first generation).
-- **The draft (rounds 2+).** `cards.tier`: each player builds a hand of `deal` cards **card by card**, choosing for
+- **The opening (round 1; r82, Matt).** Before round 1's draft, each player is dealt `opening_deal` tier-1 and
+  `opening_deal_tier2` tier-2 cards straight into their hand, kept free. The tier-2s seed a build direction, played
+  later once their `needs` and costs are met; one may go unused. Round 1 then drafts and keeps as every round does.
+- **The draft (every round).** `cards.tier`: each player builds a hand of `deal` cards **card by card**, choosing for
   each card which deck it comes from; it is dealt face up into the hand, so the next choice sees it. `cards.draft`:
   take one card, pass the rest to the next seat, until the hands are gone: always to seat *s*+1, every round;
   nobody may pass in `cards.tier` or `cards.draft`. `cards.keep`: keep any drafted cards for insight, `keep_tier1` for a tier-1 card
-  and `keep_tier2` for a tier-2 card (`keep_tier2_upgraded` with the board's keep upgrade); any insight short is paid
-  at `insight_credits` credits an insight (keeps only). An Open Market free keep is used first. The rest are
+  and `keep_tier2` for a tier-2 card (`keep_tier2_upgraded` with the board's keep upgrade), round 1
+  included; credits never buy a keep (r82), so a keep you lack the insight for isn't made. An Open Market free keep is used first. The rest are
   discarded when the action phase begins.
 - **Playing** a card costs its credits, less your discounts (Industry tags and Master Plan off a building; a tag discount
   such as Darknet Exchange's off any card with that tag), and any
@@ -27,7 +25,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   `lowers` ("lower your credit income 1": your production of that resource falls for the rest of the game; it can't
   be played if that income is lower). **Insight to play:** 0 for small programs and events, 1 by default (removal
   events included), 2 for big effects and most tier 2 (counts below); it
-  comes from the same insight as keeps, and the credit conversion is for keeps only. Its `needs` (your tags, *Tags* below) are checked only when it is played. Each
+  comes from the same insight as keeps. Its `needs` (your tags, *Tags* below) are checked only when it is played. Each
   card's price is in [cards.md](../cards.md); the reasoning is in [card-pricing.md](../card-pricing.md).
 
 <!-- generated: draft_set -->

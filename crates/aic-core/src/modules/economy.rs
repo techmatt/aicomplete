@@ -49,11 +49,6 @@ pub fn raise_production(g: &mut GameState, cx: &mut Cx, seat: usize, r: Resource
     }
 }
 
-/// Insight seat `s` loses next round (021: an agent on its nodes).
-pub fn insight_debt(seat: usize) -> String {
-    format!("economy.insight_debt.{seat}")
-}
-
 /// Income of `r` seat `s` loses in its next upkeep (135: Credit Crunch,
 /// Market Crash), down to none; read once, then cleared.
 pub fn income_debt(seat: usize, r: Resource) -> KeyBuf {
@@ -63,12 +58,6 @@ pub fn income_debt(seat: usize, r: Resource) -> KeyBuf {
 /// Insight seat `s` gains next round from another seat's capstone (075).
 pub fn insight_gift(seat: usize) -> String {
     format!("economy.insight_gift.{seat}")
-}
-
-/// Insight seat `s` got from other seats this round (r48): another seat's card
-/// or capstone. Patience never carries it over.
-pub fn insight_received(seat: usize) -> KeyBuf {
-    KeyBuf::new("economy.insight_received.").num(seat)
 }
 
 /// Insight seat `s` carried into this round by Patience (075).
@@ -189,26 +178,16 @@ impl Module for Economy {
     fn round_start(&self, g: &mut GameState, cx: &mut Cx) {
         let w = cx.world;
         for s in 0..g.seats.len() {
-            // Unspent insight is lost, but under Patience (075), which keeps
-            // only the seat's own: what others gave it this round goes (r48).
+            // Unspent insight is lost, but under Patience (075), which keeps all
+            // the seat holds (r82: insight others gave it too). No adversary harm
+            // takes insight (r82), so nothing is owed against the reset.
             let have = g.resource(s, Resource::Insight);
-            let debt = g.var(&insight_debt(s));
             let gift = g.var(&insight_gift(s));
-            let received = g.var(&insight_received(s));
-            let carried = if patient(&w, s) { (have - received).max(0) } else { 0 };
-            let n = (income(&w, g, s)[Resource::Insight] + gift + carried - debt).max(0);
+            let carried = if patient(&w, s) { have.max(0) } else { 0 };
+            let n = income(&w, g, s)[Resource::Insight] + gift + carried;
             cx.add_resource(g, s, Resource::Insight, n - have);
-            if debt > 0 {
-                cx.set_key(g, &insight_debt(s), 0);
-            }
             if gift > 0 {
                 cx.set_key(g, &insight_gift(s), 0);
-            }
-            // A capstone's gift lands now: this round's pool, but not the seat's
-            // own (alone, a gift is yours: ruling 7).
-            let landed = if g.seats.len() > 1 { gift } else { 0 };
-            if received != landed {
-                cx.set_key(g, &insight_received(s), landed);
             }
             if patient(&w, s) {
                 cx.set_key(g, &insight_carried(s), carried);
@@ -304,25 +283,12 @@ impl Module for Economy {
             if gift > 0 {
                 out.seat(s, "insight_gift", "insight next round", gift, None, "this much more insight next round, from another seat's capstone");
             }
-            let debt = g.var(&insight_debt(s));
-            if debt > 0 {
-                out.seat(
-                    s,
-                    "insight_debt",
-                    "insight lost next round",
-                    debt,
-                    None,
-                    "this much less insight next round: what a threat or card took",
-                );
-            }
         }
         out.bookkeeping(&[
             "economy.production.",
-            "economy.insight_debt.",
             "economy.income_debt.",
             "economy.insight_gift.",
             "economy.insight_carried.",
-            "economy.insight_received.",
         ]);
     }
 }

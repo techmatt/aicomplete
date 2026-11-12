@@ -362,14 +362,11 @@ export function seatValuesHtml(v: View, seatIndex: number): string {
     // Insight is set to its income each round, not added to (020: "+4" read as more).
     // 075: under Patience it adds, unspent insight carrying over.
     const patient = !!findValue(s.values, 'economy.insight_carried');
-    // 184: the badge promised its income beside "insight lost next round 3": what next round brings is the income
-    // plus the gift less the debt (economy.rs's round start; under Patience only the total with what is carried is
-    // floored, so the change itself may be negative).
-    const debt = r === 'insight' ? findValue(s.values, 'economy.insight_debt')?.value ?? 0 : 0;
+    // What next round brings is the income plus any gift (economy.rs's round start; r82: no insight is ever owed).
     const gift = r === 'insight' ? findValue(s.values, 'economy.insight_gift')?.value ?? 0 : 0;
-    const next = inc ? (r === 'insight' ? (patient ? inc.value + gift - debt : Math.max(0, inc.value + gift - debt)) : inc.value) : 0;
+    const next = inc ? (r === 'insight' ? inc.value + gift : inc.value) : 0;
     const sign = r === 'insight' && !patient ? '→' : next >= 0 ? '+' : '';
-    const incHtml = inc ? `<span class="inc" data-value="${inc.key}" data-scope="${scope}" title="${r === 'insight' ? (patient ? 'next round: this is added to what you hold (Patience): the income, plus any insight next round, less any insight lost next round' : 'next round: insight is set to this: the income, plus any insight next round, less any insight lost next round') : 'income in upkeep'}">${sign}${next}</span>` : '';
+    const incHtml = inc ? `<span class="inc" data-value="${inc.key}" data-scope="${scope}" title="${r === 'insight' ? (patient ? 'next round: this is added to what you hold (Patience): the income, plus any insight next round' : 'next round: insight is set to this: the income, plus any insight next round') : 'income in upkeep'}">${sign}${next}</span>` : '';
     return `<span class="res r-${esc(r)}" data-value="resource.${esc(r)}" data-scope="${scope}"><span class="label">${esc(have?.label ?? r.replace(/_/g, ' '))}</span> <b>${have?.value ?? 0}</b>${incHtml}</span>`;
   }).join('');
 

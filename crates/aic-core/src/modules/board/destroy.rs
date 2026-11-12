@@ -26,15 +26,13 @@ impl Cause {
 
 /// One protection a destruction may spend (r75, Matt's ruling 5: the owner chooses which, or none). r81
 /// (friction #51): drones never protect; a protection is Shelter (no choice), a hardening token or your
-/// own ambassador (and the Aegis Doctrine capstone's own exception).
+/// own ambassador. r82: the Aegis Doctrine capstone is a Shelter (automatic), not a choice here.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Guard {
     /// A hardening token on the hex.
     Harden,
     /// The owner's own ambassador on the hex (137: armor).
     Ambassador(usize),
-    /// The Aegis Doctrine capstone (the Protector's own pieces, once a round).
-    Aegis(usize),
 }
 
 /// The seat whose piece of `kind` on hex `h` is: a node's owner, a station's or factory's cube owner.
@@ -46,7 +44,7 @@ fn piece_owner(g: &GameState, h: usize, kind: &str) -> Option<usize> {
 
 /// The protections a destruction of the `owner`'s piece on hex `h` could spend, in print order (read-only:
 /// the agents' shelter forecast counts from it too).
-pub fn guards(w: &World, g: &GameState, h: usize, owner: Option<usize>) -> Vec<Guard> {
+pub fn guards(g: &GameState, h: usize, owner: Option<usize>) -> Vec<Guard> {
     let mut out = Vec::new();
     if g.tokens(h, HARDEN) > 0 {
         out.push(Guard::Harden);
@@ -54,9 +52,6 @@ pub fn guards(w: &World, g: &GameState, h: usize, owner: Option<usize>) -> Vec<G
     if let Some(s) = owner {
         if g.tokens(h, ambassador(s)) > 0 {
             out.push(Guard::Ambassador(s));
-        }
-        if aegis_ready(w, g, s) {
-            out.push(Guard::Aegis(s));
         }
     }
     out
@@ -74,7 +69,14 @@ pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause
         return Ok(false);
     }
     let owner = piece_owner(g, h, kind);
-    let options = guards(&w, g, h, owner);
+    // r82 (Matt, 2026-11-11): Aegis Doctrine is Shelter on the owner's own pieces once a round: the first
+    // destruction a round is stopped automatically, spending nothing else.
+    if let Some(s) = owner.filter(|&s| aegis_ready(&w, g, s)) {
+        cx.set_key(g, &cards::civic_used(s), 1);
+        cx.tally(g, "board.aegis_used", 1);
+        return Ok(false);
+    }
+    let options = guards(g, h, owner);
     if !options.is_empty() {
         let mut opts: Vec<crate::state::Opt> = options
             .iter()
@@ -82,7 +84,6 @@ pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause
                 opt(match o {
                     Guard::Harden => "spend the hardening token".to_string(),
                     Guard::Ambassador(_) => "spend your ambassador there".to_string(),
-                    Guard::Aegis(_) => "use the Aegis Doctrine".to_string(),
                 })
             })
             .collect();
@@ -104,11 +105,6 @@ pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause
             Some(Guard::Ambassador(s)) => {
                 cx.add_tokens(g, h, ambassador(s), -1);
                 cx.tally(g, "board.ambassador_shield", 1);
-                return Ok(false);
-            }
-            Some(Guard::Aegis(s)) => {
-                cx.set_key(g, &cards::civic_used(s), 1);
-                cx.tally(g, "board.aegis_used", 1);
                 return Ok(false);
             }
             None => cx.tally(g, "board.protection_declined", 1),
@@ -177,10 +173,15 @@ pub fn destroy_own_node(
 }
 
 /// Whether seat `s` holds the Aegis Doctrine capstone (`CivicShelter`) unused this round: r75 (Matt's
-/// ruling 5) it guards only `s`'s own pieces, when `s` chooses (it was spent on the first destruction of
-/// anyone's piece in a country `s` was in).
-fn aegis_ready(w: &World, g: &GameState, s: usize) -> bool {
+/// ruling 5) it guards only `s`'s own pieces; r82 it shelters the first of them a round, automatically.
+pub fn aegis_ready(w: &World, g: &GameState, s: usize) -> bool {
     g.var(&cards::civic_used(s)) == 0 && cards::has_passive(w, g, s, |p| matches!(p, Op::CivicShelter))
+}
+
+/// Whether a destruction of the `owner`'s piece on hex `h` would be stopped by something of the owner's: a
+/// ready Aegis Doctrine (r82: automatic) or any of [`guards`] (read-only, for the agents' forecasts).
+pub fn protected(w: &World, g: &GameState, h: usize, owner: Option<usize>) -> bool {
+    owner.is_some_and(|s| aegis_ready(w, g, s)) || !guards(g, h, owner).is_empty()
 }
 
 /// Whether a hardening token on hex `h` can protect something: a

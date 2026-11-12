@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[2]
 HERE = ROOT / "drafts" / "adversary"
 TAGS = ["security", "diplomacy", "cyber", "industry", "power"]
 HARMS = [
-    "node destroyed", "credits or income lost", "cards discarded", "insight lost", "ambassadors lost",
+    "node destroyed", "credits or income lost", "cards discarded", "ambassadors lost",
     "tokens stripped from cards", "facilities destroyed or seized", "production blacked out",
     "adversary pieces placed", "projects advanced (compute)", "extra threats", "Discord sway", "Unity pulled back",
     "actions or claims blocked", "energy lost", "war brought forward", "troops made",

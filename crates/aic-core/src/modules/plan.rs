@@ -274,20 +274,16 @@ pub fn rally_sites(w: &World, g: &GameState, at: RallyAt, c: usize) -> Vec<usize
 }
 
 /// r80 (ruling #43), `n` agents rallying to `at` in board `c`: dealt round-robin, one agent onto each site of
-/// the type in hex order, skipping firewalled ones (and, since #53, those under a Rally prohibition's token),
-/// until the pool is empty. None: no site of the type; every site skipped: no shares (the pool goes back to
-/// the supply).
+/// the type in hex order, until the pool is empty. r82 (Matt, 2026-11-11, as at r79): a firewalled or no-Rally
+/// site keeps its turn in the deal, and its share stays in the supply when the Rally runs. None: no site of
+/// the type.
 pub fn rally_plan(w: &World, g: &GameState, at: RallyAt, c: usize, n: i64) -> Option<RallyPlan> {
     let sites = rally_sites(w, g, at, c);
     if sites.is_empty() || n <= 0 {
         return None;
     }
-    let open: Vec<usize> = sites.into_iter().filter(|&h| !firewalled(g, h) && !prohibited_now(g, Step::Rally, h)).collect();
-    if open.is_empty() {
-        return Some(RallyPlan { shares: Vec::new() });
-    }
-    let k = open.len() as i64;
-    let shares = open.iter().enumerate().map(|(i, &h)| (h, n / k + i64::from((i as i64) < n % k))).collect();
+    let k = sites.len() as i64;
+    let shares = sites.iter().enumerate().map(|(i, &h)| (h, n / k + i64::from((i as i64) < n % k))).collect();
     Some(RallyPlan { shares })
 }
 

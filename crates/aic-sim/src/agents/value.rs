@@ -622,7 +622,6 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::EachDestroyNode { count, .. } => Worth::now(row("each_destroy_node") * *count as f64),
         Op::DestroyNode { count } => Worth::now(row("destroy_node") * *count as f64),
         Op::PullUnity { amount } => Worth::now(row("pull_unity") * *amount as f64),
-        Op::LoseInsight { amount } => Worth::unseen(row("lose_insight") * *amount as f64),
         Op::FlipStation { each_country, .. } => {
             Worth::now(row("flip_station") * if *each_country { t.rate("countries") } else { 1.0 })
         }

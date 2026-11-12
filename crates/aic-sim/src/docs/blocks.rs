@@ -48,8 +48,8 @@ pub const HOUSE_TERMS: [(&str, &str); 22] = [
     ("Convert", "an agent on or next to the city leaves its stack and becomes your ambassador where it stood"),
     ("Gather up to N", "pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece (a strike, \"remove up to N on or next to a hex\", moves nothing)"),
     ("Push up to N", "pieces from a hex in your reach, each to a hex next to it that you choose; you may stop at any piece"),
-    ("Firewall", "a token on a hex: no agent lands or moves there (a Rally skips it) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn"),
-    ("In the next adversary turn, no X", "a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (a Rally deals past it), and the tokens come off with the firewalls"),
+    ("Firewall", "a token on a hex: no agent lands or moves there (a Rally's share for it stays in the supply) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn"),
+    ("In the next adversary turn, no X", "a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (a Rally's share for it stays in the supply), and the tokens come off with the firewalls"),
 ];
 
 /// `3 credits, 1 energy`.
@@ -472,6 +472,7 @@ pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
         .enumerate()
         .map(|(i, b)| {
             let mut printed = vec![(Resource::Credits, b.credits)];
+            // r82 (amendment 8615): insight prints only on the card-play track (its start and totals).
             printed.extend(b.income.iter().copied());
             vec![
                 b.name.clone(),
@@ -517,7 +518,9 @@ pub(super) fn board_details_block(c: &Content) -> String {
 
 /// One space of a node track.
 pub(super) fn space(u: &Uncover) -> String {
-    let mut parts = vec![gains(&u.income)];
+    // r82 (amendment 8615): insight prints as the new total.
+    let mut parts: Vec<String> = u.insight.map(|n| format!("**insight {n}**")).into_iter().collect();
+    parts.push(gains(&u.income));
     if u.keep2 {
         parts.push("**keep upgrade**".to_string());
     }
@@ -565,7 +568,13 @@ pub(super) fn node_track_block(c: &Content) -> String {
 }
 
 pub(super) fn node_track2_block(c: &Content) -> String {
-    track_block(&c.ais, |b| &b.play_track, "1")
+    let start = c.ais.iter().map(|b| format!("insight {}", b.insight)).collect::<Vec<_>>();
+    let mut out = track_block(&c.ais, |b| &b.play_track, "1");
+    // r82 (amendment 8615): the printed start, left of space 1 and never covered.
+    let row = format!("| printed start | {} |\n", start.join(" | "));
+    let at = out.find("\n|---").and_then(|i| out[i + 1..].find('\n').map(|j| i + 1 + j + 1)).unwrap_or(out.len());
+    out.insert_str(at, &row);
+    out
 }
 
 pub(super) fn powers_block(c: &Content) -> String {
@@ -738,13 +747,14 @@ pub(super) fn new_players_block(r: &Rules) -> String {
     };
     let insight: Vec<i64> = c.cards.iter().map(|d| d.insight).collect();
     format!(
-        "**For new players.** In the first round you are dealt {} tier-1 cards and keep {} free (more \
-         at {} credits each), and {} tier-2 cards, each kept for {} insight, to play once you meet \
-         its needs: something to plan toward. From then on, each round you build a hand of {} cards one at a time, \
+        "**For new players.** You start with {} tier-1 and {} tier-2 cards in your hand, free: the \
+         tier-2 cards are something to plan toward, to play once you meet their needs. Then every round, \
+         the first included, you build a hand of {} cards one at a time, \
          choosing for each whether it comes from the cheaper tier-1 deck or the stronger tier-2 \
          deck; you take one card and pass the rest to the next player in seat order until the hands are gone, then \
-         pay insight to keep what you drafted ({} for tier 1, {} for tier 2). Insight is this round's \
-         attention: what you don't spend is lost. Playing a card costs its credits and {} insight, \
+         pay insight to keep what you drafted ({} for tier 1, {} for tier 2; nothing else buys a keep). \
+         Insight is this round's attention: your card-play track shows it, the number on the rightmost \
+         space you've uncovered ({} before any), and what you don't spend is lost. Playing a card costs its credits and {} insight, \
          from the same insight as keeps. Buildings go into your AI board's {} slots; once they are \
          full, a new building goes on top of an old one, which stops working but keeps its tags. \
          Programs stay in front of you and are where lasting income comes from (\"raise your credit \
@@ -756,7 +766,7 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          energy, so drafting cards that spend it is up to you.\n\n\
          **Nodes, for new players.** Nodes don't grow on their own. In the action phase you place \
          nodes with your board's two node powers, each once a round, so 0, 1 or 2 tokens a \
-         round from them, and cards can add more. Every board's Expand costs nothing of its own; the second costs a tag or \
+         round from them, and cards can add more. Every board's Expand costs 1 energy; the second costs a tag or \
          the board's own currency. Every placement, by power or card, pays the energy printed on the track space you uncover. You \
          start with {} energy and one city bound to you, which makes energy every round.\n\n\
          **Dispatches, tags and sales, for new players.** A Dispatch puts one of your ambassadors, \
@@ -767,13 +777,11 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          tags on your cards, for everything a tag does; the only difference is that a board tag can't \
          be sacrificed. You may sell a card from your hand for {} credit; chips can't be sold.\n",
         n("cards.opening_deal"),
-        n("cards.opening_free"),
-        n("cards.opening_keep_credits"),
         n("cards.opening_deal_tier2"),
-        n("cards.opening_keep_tier2"),
         n("cards.deal"),
         n("cards.keep_tier1"),
         n("cards.keep_tier2"),
+        c.ais.first().map_or(0, |b| b.insight),
         range(&insight),
         range(&slots),
         n("ai.start_energy"),

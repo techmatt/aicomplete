@@ -397,7 +397,7 @@
     "city",
     "station"
    ],
-   "text": "2 Unity comes off the Unity track. The nearest player gets 4 less insight next round.",
+   "text": "2 Unity comes off the Unity track. The nearest player pays 2 energy or discards 2 cards.",
    "counters": [
     [
      {
@@ -418,16 +418,18 @@
      "amount": 2
     },
     {
-     "op": "lose_insight",
-     "amount": 4
+     "op": "requisition",
+     "resource": "energy",
+     "amount": 2,
+     "cards": 2
     }
    ],
    "harms": [
     "Unity pulled back",
-    "insight lost"
+    "energy lost"
    ],
    "value": "counter 3 ambassadors (12) or 12 credits (12); uncountered 18 at values.json (a troop 9 with its strike), 1.50x the cheapest counter",
-   "check": "bites the Unity race and next round's keeps",
+   "check": "bites the Unity race and this round's energy (189: insight is no adversary harm)",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],

@@ -264,7 +264,7 @@
    ],
    "cost": 6,
    "ongoing": false,
-   "text": "Each player removes 3 tokens from their cards (their choice of cards). Each player pays 3 insight next round or discards 2 cards.",
+   "text": "Each player removes 3 tokens from their cards (their choice of cards). Each player pays 8 credits or discards 2 cards.",
    "effects": [
     {
      "op": "lose_tokens",
@@ -272,18 +272,17 @@
     },
     {
      "op": "requisition",
-     "resource": "insight",
-     "amount": 3,
-     "cards": 2,
-     "next_round": true
+     "resource": "credits",
+     "amount": 8,
+     "cards": 2
     }
    ],
    "harms": [
     "tokens stripped from cards",
     "cards discarded",
-    "insight lost"
+    "credits or income lost"
    ],
-   "value": "absorbs 6 compute a player (12 at 2 players, 13.2 at values.json compute 1.1); harm 24 (Each player removes 3 tokens from their cards (their choice of cards): 9; Each player pays 3 insight next round or discards 2 cards: 15); 2.00 a compute.",
+   "value": "absorbs 6 compute a player (12 at 2 players, 13.2 at values.json compute 1.1); harm 24 (Each player removes 3 tokens from their cards (their choice of cards): 9; Each player pays 8 credits or discards 2 cards: 8 (189)); 2.00 a compute.",
    "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
     "151: rewritten to the standard (one consequence, each board, deterministic)"

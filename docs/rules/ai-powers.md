@@ -15,7 +15,7 @@ still help.
 | Board | Power | Cost | Effect |
 |---|---|---|---|
 | Builder | Mint | 3 credits | gain 1 chip |
-| Builder | Expand | nothing | place 1 Node |
+| Builder | Expand | 1 energy | place 1 Node |
 | Builder | Buy In | 6 credits | place 1 Node |
 | Builder | Scrap | 1 Industry | gain 2 chips |
 | Builder | Overcharge | 1 Power | gain 2 energy |
@@ -23,7 +23,7 @@ still help.
 | Builder | Focus | 5 credits | gain 1 insight |
 | Builder | Procure | 2 chips | draw 2 cards |
 | Protector | Bulwark | 1 energy | harden 1 facility in reach |
-| Protector | Expand | nothing | place 1 Node |
+| Protector | Expand | 1 energy | place 1 Node |
 | Protector | Accord | 1 Diplomacy | place 1 Node |
 | Protector | Stand Down | 1 Security | gain 3 credits |
 | Protector | Recovery | 1 Security | clear a corruption marker in reach |
@@ -31,7 +31,7 @@ still help.
 | Protector | Debrief | 1 Diplomacy | draw 2 cards |
 | Protector | Patrol | 1 energy | push up to 3 Agents or Troops from a hex in reach, each to a hex next to it |
 | Researcher | Fieldwork | 1 energy | draw 3 cards |
-| Researcher | Expand | nothing | place 1 Node |
+| Researcher | Expand | 1 energy | place 1 Node |
 | Researcher | Peer Review | 3 research cubes | place 1 Node |
 | Researcher | Grant | 3 credits | add 1 research cube in your color to an open megaproject |
 | Researcher | Field Station | 1 Industry | build a research station in reach, paying no chips |
@@ -47,13 +47,14 @@ Procure turns 2 spare chips into 2 cards, as the Researcher's Fieldwork turns an
 
 ## Insight conversions (candidate, r41)
 
-Insight is the turn's attention: it pays keeps and plays ([player-cards.md](player-cards.md)), and keeps stay in insight
-(credits stand in only for keeps, at `insight_credits` an insight). Each board prints 5 a round, and the economy track's first space,
-uncovered from setup, adds 1: 6 from round 1. Every player has the
+Insight is this round's attention, readable off the board: it pays keeps and plays ([player-cards.md](player-cards.md)),
+and credits never buy a keep (r82). The card-play track prints it as totals, Spirit Island style (r82): 6 at its
+start, then the new total on each space that raises it; a seat's insight is the number on the rightmost space it has
+uncovered. The economy track prints none. Every player has the
 cube converter, a standard action with no limit a round ([economy.md](economy.md)); each board adds one conversion of its
 own currency:
 
-- **Builder, Focus** (a power, once a round): 5 credits → 1 insight, the keep's credit rate opened to plays. At the
+- **Builder, Focus** (a power, once a round): 5 credits → 1 insight, for a keep or a play. At the
   agents' values (a credit 1, an insight 2.5) it reads as a loss: it pays when one insight short stops a play or a keep.
 - **Protector, Vigil** (an Effect of Wall, not a power; capped, r79, Matt's ruling: some cap is locked, its size a
   candidate): the first troop each round that ends its march next to your node pays 1 insight (`board.vigil_cap`
@@ -66,11 +67,12 @@ own currency:
   credits into 13 at the agents' values. Each is once a round, which caps the loop. A tier-1 card kept for 1 insight and never
   played returns 2; a tier-2 keep (2, or 1 upgraded) is refunded in full, +1 when upgraded.
 
-**For new players.** Insight is what you spend to keep and play cards, and every board gets 6 a round (5 printed, 1 from the economy track's first space). When you
+**For new players.** Insight is what you spend to keep and play cards: each round, the number on the rightmost space you've uncovered on
+your card-play track (6 at the start). When you
 are short, turn a research cube into 1 insight at any time (Cintamani's converter gives 2), and use your board's own
 way: the Builder pays 5 credits for 1 (Focus), the Protector gains 1 the first time each round a troop ends its march next to its node (Vigil), the
 Researcher discards a card for 2 (Synthesis). Insight you don't spend still goes at the round's end (the Researcher
-keeps it), but a few threat counters offer insight (6 at tier 1, 7 at tier 2: [threats.md](threats.md) *Counters*),
+keeps all of it), but a few threat counters offer insight (6 at tier 1, 7 at tier 2: [threats.md](threats.md) *Counters*),
 so spare insight can stop one.
 
 **Insight loops (r41).** Nothing turns insight back into what makes it: insight buys cards, and a card that pays insight
@@ -84,9 +86,10 @@ station's card is complete, which would otherwise double its cubes each round, c
 A **shelter** (the Protector's Shelter, in any country with no reach needed, or a card's "shelter one country") lasts until cleanup (phase 20) of the round
 it is used in. Used in the actions, it covers the rest of the actions and what comes after them: the income step,
 growth, the threats that execute and war (phases 15-19). The march (phase 7) has already happened, but a threat's
-immediate march (Total War's, phase 18) meets it. It stops a destruction automatically, spending nothing; every other protection (a hardening token
-below, your own ambassador, Aegis Doctrine) is the piece owner's choice; drones never protect (r81, friction #51) ([war.md](war.md),
-*Destruction*).
+immediate march (Total War's, phase 18) meets it. It stops a destruction automatically, spending nothing, and so does the Protector's Aegis Doctrine capstone, a shelter
+on its own pieces once a round (r82: the first time each round one of its nodes or facilities would be destroyed); the
+other protections (a hardening token below, your own ambassador) are the piece owner's choice; drones never protect
+(r81, friction #51) ([war.md](war.md), *Destruction*).
 
 Hardening (the standard actions, cards) goes only on facilities a token can protect, player-owned stations and
 factories that are not corrupted, and "harden N" is N different facilities, fewer if fewer qualify. A Science card's

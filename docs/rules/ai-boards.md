@@ -10,9 +10,9 @@ is printed under it. Uncovered values add to the income every round (insight at 
 upkeep). The board module owns nodes and counts the tokens taken (`board.track.<seat>`); the AI board reads it.
 
 **The Builder, for new players.** Your special rule is Breadth: five building slots, so your engine is wider. You start with 40 credits and earn 15 a round, and each credit space of your
-economy track adds 2 or 3 more, so placing a node is how your income grows; you're short of energy. Round 1 deals you
-8 tier-1 cards (4 free, each further keep 5 credits) and 2 tier-2 cards (1 insight each), so choose between more cards
-now and more money for the first plays. Each round you may turn credits into a chip with Mint, 5 credits into an
+economy track adds 2 or 3 more, so placing a node is how your income grows; you're short of energy. Round 1 deals
+you 2 tier-1 and 2 tier-2 cards into your hand, free (the tier-2s point a build direction), then drafts and keeps as
+every round does (r82). Each round you may turn credits into a chip with Mint, 5 credits into an
 insight with Focus, and 2 chips into 2 cards with Procure. Late in the game, sacrifice cards you have finished with:
 an Industry card pays out chips, a Power card energy, and an Industry card with an energy plays a building from your
 hand for no credits. Each round you may Dispatch 1 ambassador for free (2 from your fourth economy space). Your printed
@@ -29,8 +29,8 @@ cards (Debrief), and a Security card with an energy shelters a whole country for
 ambassador for free (2 from your fourth economy space). Your printed Security tag counts like one on your
 cards.
 
-**The Researcher, for new players.** Your special rule is Patience: your own insight you don't spend stays with you
-into the next round, so you can save up for a big round (insight another player gave you this round doesn't carry). You start with 40 credits and earn 11 a round, 3 more for each credit
+**The Researcher, for new players.** Your special rule is Patience: insight you don't spend stays with you
+into the next round, so you can save up for a big round (r82: all of it, including insight another player gave you). You start with 40 credits and earn 11 a round, 3 more for each credit
 space of your economy track; round 1 deals as for the Builder. You play off
 the board, on your turn budget and on research cubes. Each round you may turn 1 energy into 3 cards, a card from your hand into 2 insight (Synthesis), and 3
 credits into a research cube on a megaproject that isn't complete yet. Your second node power costs 3 research cubes and, like any node, the uncovered space's energy,
@@ -63,20 +63,20 @@ placements a round it is reachable about round 8.
 <!-- generated: boards -->
 | Board | Printed income | Starting credits | Slots | Printed tags | Dispatches | Economy track | Card-play track | Tokens in all |
 |---|---|---|---|---|---|---|---|---|
-| Builder | 15 credits, 5 insight, 1 energy | 40 | 5 | Industry | 1 (up to 2) | 7 | 7 | 14 |
-| Protector | 13 credits, 5 insight, 2 energy | 46 | 4 | Security | 1 (up to 2) | 7 | 7 | 14 |
-| Researcher | 11 credits, 5 insight, 1 energy | 40 | 3 | Science | 2 (up to 4) | 7 | 7 | 14 |
+| Builder | 15 credits, 1 energy | 40 | 5 | Industry | 1 (up to 2) | 7 | 7 | 14 |
+| Protector | 13 credits, 2 energy | 46 | 4 | Security | 1 (up to 2) | 7 | 7 | 14 |
+| Researcher | 11 credits, 1 energy | 40 | 3 | Science | 2 (up to 4) | 7 | 7 | 14 |
 <!-- /generated -->
 
 **The starting-economy scaffold (candidate; Matt).** Until engines carry the economy, the boards start and earn much
 more, and the economy track is how a seat's income grows; it comes down as engines take over (3 energy to start,
 `ai.start_energy`; earlier steps are in [rules-history.md](../rules-history.md)). **The reasoning:**
-a board at 40 that keeps 2-4 extra cards in round 1 (10-20 credits) has 20-30 left for its first plays at a tier-1
-median of 10 credits: keeping more and playing less is a real choice. A credit space pays 2-3 a round for its step (0-3): the early spaces pay back in a round or two, the cost-3 space in about three, so the last ones
+a board at 40 with 4 cards in hand and round 1's keeps has 3-4 plays at a tier-1 median of 10 credits; credits never
+buy a keep (r82), so insight is round 1's limit on keeps and credits on plays. A credit space pays 2-3 a round for its step (0-3): the early spaces pay back in a round or two, the cost-3 space in about three, so the last ones
 are a late-game choice.
 
 **One payment path (locked).** Every space prints a **cost** in energy, the last ones more. Every placement pays it,
-whatever places the node (r81, friction #16): a node power costs only its tag or currency (Expand nothing, Buy In 6
+whatever places the node (r81, friction #16): a node power costs only its tag or currency (Expand 1 energy (r82), Buy In 6
 credits, Accord 1 Diplomacy, Peer Review 3 research cubes) and a card only its credits, so the energy is stated once,
 on the track; no card places a node free. Only tracks whose next step you can pay are offered, and a placement you
 can't pay doesn't happen.
@@ -86,14 +86,14 @@ prices, Bulwark's energy and the standard project's credits (`harden_credits`), 
 
 **Node powers (candidate).** Nodes don't grow on their own. Nodes come from the board's two **node powers**, used in the
 action phase, each once a round, so the powers place 0-2 nodes a round (cards that place nodes add to that: cards
-aren't capped). Every board has the same first one, Expand: nothing but the space; the second costs a steep price in the board's
+aren't capped). Every board has the same first one, Expand: 1 energy plus the space's (r82); the second costs a steep price in the board's
 own currency or a tag ([ai-powers.md](ai-powers.md)). Three things keep the loops short: 2 placements a round by power and rising step costs cap energy → node →
 energy income; each second power is once a round; and every tag sacrifice permanently loses cards.
 
 <!-- generated: node_track -->
 | Space | Builder | Protector | Researcher |
 |---|---|---|---|
-| 1 (on the board at setup) | +1 insight | +1 insight | +1 insight |
+| 1 (on the board at setup) | nothing | nothing | nothing |
 | 2 | +3 credits | +1 energy, +2 credits | +3 credits |
 | 3 | +2 credits | +3 credits | builds a free research station in reach |
 | 4 | pay 1 energy: +3 credits, **Dispatch +1** | pay 1 energy: +3 credits, **Dispatch +1** | pay 1 energy: +3 credits, **Dispatch +1** |
@@ -106,18 +106,21 @@ The **keep upgrade**: tier-2 keeps cost `keep_tier2_upgraded` instead of `keep_t
 
 **The card-play track (draft candidates, reasoning in `experiments/results/screen-068-boards/boards.md`).** None of it
 is uncovered at setup. A placement takes the next token from the track the player chooses (asked when both
-have tokens).
+have tokens). **Insight prints here only, as totals** (r82, Matt's amendment, Spirit Island style): the printed start
+shows 6 and a space that raises it shows the new total; your insight is the number on the rightmost space you've
+uncovered that shows one.
 
 <!-- generated: node_track2 -->
 | Space | Builder | Protector | Researcher |
 |---|---|---|---|
-| 1 | +1 insight | +1 insight | +1 insight |
-| 2 | **keep upgrade** | **keep upgrade** | +2 insight, **Dispatch +1** |
-| 3 | pay 1 energy: +2 insight | pay 1 energy: +2 insight | pay 1 energy: **keep upgrade** |
-| 4 | pay 2 energy: +2 credits | pay 2 energy: +2 credits | pay 2 energy: +1 insight |
-| 5 | pay 2 energy: +2 insight | pay 2 energy: +2 insight | pay 2 energy: +2 insight |
-| 6 | pay 3 energy: +1 insight, Cyber tag | pay 3 energy: +1 insight, Diplomacy tag | pay 3 energy: +2 credits, Industry tag |
-| 7 | pay 5 energy: +1 insight, **Master Plan** (capstone): Your buildings cost 2 credits less. | pay 5 energy: +1 insight, **Aegis Doctrine** (capstone): Once a round, when one of your Nodes or facilities would be destroyed, you may keep it. | pay 5 energy: +1 insight, **Open Science** (capstone): Each round, 2 insight from the supply, split among other players. |
+| printed start | insight 6 | insight 6 | insight 6 |
+| 1 | **insight 7** | **insight 7** | **insight 7** |
+| 2 | **keep upgrade** | **keep upgrade** | **insight 9**, **Dispatch +1** |
+| 3 | pay 1 energy: **insight 9** | pay 1 energy: **insight 9** | pay 1 energy: **keep upgrade** |
+| 4 | pay 2 energy: +2 credits | pay 2 energy: +2 credits | pay 2 energy: **insight 10** |
+| 5 | pay 2 energy: **insight 11** | pay 2 energy: **insight 11** | pay 2 energy: **insight 12** |
+| 6 | pay 3 energy: **insight 12**, Cyber tag | pay 3 energy: **insight 12**, Diplomacy tag | pay 3 energy: +2 credits, Industry tag |
+| 7 | pay 5 energy: **insight 13**, **Master Plan** (capstone): Your buildings cost 2 credits less. | pay 5 energy: **insight 13**, **Aegis Doctrine** (capstone): Once a round, the first time one of your Nodes or facilities would be destroyed, it is sheltered. | pay 5 energy: **insight 13**, **Open Science** (capstone): Each round, 2 insight from the supply, split among other players. |
 <!-- /generated -->
 
 **Loops and caps.** No resource has a holding limit and no cap limits production ([economy.md](economy.md), *No
@@ -134,9 +137,10 @@ counters** spend energy for good. **The Researcher's:** Patience with the cube c
 insight, once a round since r75; everyone's standard action, a cube for 1, with no limit) is the intended engine:
 capped by how many stations make cubes (and Open Archive's 1 a round) and, for Cintamani's, by its once a round and
 a Cintamani city in reach. Bought cubes
-go only onto incomplete cards and are spent at completion, so credits never reach a converter. Patience banks only
-the Researcher's own insight, and no standard action gives insight. Open Science's insight goes only to
-other players; alone it is the Researcher's own, and Patience keeps it. Fieldwork's three
+go only onto incomplete cards and are spent at completion, so credits never reach a converter. Patience banks all the
+Researcher's unspent insight (r82: a gift too); only cards that print it pass insight, at their cost, and no standard
+action gives it. Open Science's insight goes only to other players; alone it is the Researcher's own, and Patience
+keeps it. Fieldwork's three
 cards are paid for again to keep in play (credits and insight); sold, they are 3 credits for 1 energy once a round.
 Followers → ambassadors → alignment → city energy → node is capped by building count and the Followers each
 ambassador costs. Remove agents spends its ambassador and places nothing (r75), capped by the supply.
@@ -152,5 +156,5 @@ so 4 players repeat the Builder. A board has no unique cards or starting buildin
 |---|---|
 | Builder | *Breadth*: You have 5 building slots; the Protector has 4 and the Researcher 3. |
 | Protector | *Wall*: Adversary Troops can't enter or strike a hex with your Node. Each adversary turn, the adversary Musters 1 in each country where you have a Node. Vigil: the first time each round a Troop ends its march next to your Node, gain 1 insight. |
-| Researcher | *Patience*: Your own unspent insight carries over to the next round; insight other players gave you this round does not. |
+| Researcher | *Patience*: All your unspent insight carries over to the next round, including insight other players gave you. |
 <!-- /generated -->

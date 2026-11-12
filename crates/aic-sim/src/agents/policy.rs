@@ -934,12 +934,9 @@ fn on_given_up(w: &World, g: &GameState, threat: &str) -> bool {
     threats::active(g).iter().any(|(t, c)| t == threat && *c == last_country(w))
 }
 
-/// Whether seat `s` could pay to keep a card of `tier` now (insight, with
-/// any shortfall in credits).
+/// Whether seat `s` could pay to keep a card of `tier` now (insight; r82: no credits buy it).
 fn keep_affordable(w: &World, g: &GameState, s: usize, tier: u8) -> bool {
-    let (ins, cr) = cards::keep_need(w, g, s, tier, 0);
-    let short = (ins - g.resource(s, Resource::Insight).max(0)).max(0);
-    g.resource(s, Resource::Credits) >= cr + short * w.int("cards.insight_credits")
+    g.resource(s, Resource::Insight) >= cards::keep_need(w, g, s, tier)
 }
 
 #[cfg(test)]

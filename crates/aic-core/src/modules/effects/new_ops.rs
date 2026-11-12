@@ -104,12 +104,9 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
             }
         }
         Op::LoseIncome { resource, amount } => {
+            // r82: insight is never an adversary harm (`Content::check` refuses it here).
             for s in ctx.seats(&w, g) {
-                if *resource == Resource::Insight {
-                    cx.add_key(g, &economy::insight_debt(s), *amount);
-                } else {
-                    cx.add_key(g, &economy::income_debt(s, *resource), *amount);
-                }
+                cx.add_key(g, &economy::income_debt(s, *resource), *amount);
             }
         }
         Op::LoseOr { options } => {
@@ -455,8 +452,6 @@ fn requisition(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, r: Resource, amount: i
             Some(0) if can_pay => {
                 if !next_round {
                     cx.add_resource(g, s, r, -amount);
-                } else if r == Resource::Insight {
-                    cx.add_key(g, &economy::insight_debt(s), amount);
                 } else {
                     cx.add_key(g, &economy::income_debt(s, r), amount);
                 }
@@ -575,7 +570,6 @@ fn option_words(o: &Op) -> String {
     match o {
         Op::PlayersLose { resource, amount, all: false } => format!("lose {}", resource.amount(*amount)),
         Op::PlayersLose { resource, all: true, .. } => format!("lose all your {resource}"),
-        Op::LoseInsight { amount } => format!("{} less next round", Resource::Insight.amount(*amount)),
         Op::Discard { count } => format!("discard {count} card{}", if *count == 1 { "" } else { "s" }),
         other => format!("{other:?}"),
     }

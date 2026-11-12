@@ -53,10 +53,10 @@ fn rally_lands_each_boards_pool_evenly_on_its_eligible_sites() {
 }
 
 /// r80 (ruling #43): Rally deals the pool round-robin, one agent onto each site of the type in hex order (the
-/// adversary's included, no remainder rule), skipping firewalled ones, until the pool is empty; with every site
-/// firewalled the pool goes back to the supply.
+/// adversary's included, no remainder rule), until the pool is empty. r82 (Matt, 2026-11-11, as at r79): a
+/// firewalled site keeps its turn in the deal and its share stays in the supply.
 #[test]
-fn rally_deals_round_robin_in_hex_order_skipping_firewalls() {
+fn rally_deals_round_robin_in_hex_order_and_a_firewalled_share_stays_in_the_supply() {
     let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let w = rules.world();
@@ -72,18 +72,13 @@ fn rally_deals_round_robin_in_hex_order_skipping_firewalls() {
     assert_eq!(p.shares, want, "the adversary's city first in hex order takes the extra agent");
     put(&mut g, cities0[1], FIREWALL, 1);
     let p = plan::rally_plan(&w, &g, RallyAt::City, 0, k + 1).unwrap();
-    assert!(p.shares.iter().all(|&(h, _)| h != cities0[1]), "a firewalled site is skipped");
-    assert_eq!(p.shares.iter().map(|&(_, n)| n).sum::<i64>(), k + 1, "its agents go round to the others");
-    assert_eq!(p.shares[0], (cities0[0], 2));
-    assert_eq!(p.shares[1], (cities0[2], 2));
+    assert_eq!(p.shares, want, "a firewalled site keeps its turn in the deal");
     g.vars.insert(SUPPLY.into(), 40);
     with_cx(&rules, |cx| adversary::rally(&mut g, cx, RallyAt::City, k + 1, Some(0), "test")).unwrap();
-    assert_eq!(g.tokens(cities0[1], ADV_AMBASSADOR), 0);
-    assert_eq!(g.var(SUPPLY), 40 - (k + 1));
-    for &h in &cities0 {
-        put(&mut g, h, FIREWALL, 1);
-    }
-    assert_eq!(plan::rally_plan(&w, &g, RallyAt::City, 0, 3).unwrap().shares, Vec::new(), "every site firewalled");
+    assert_eq!(g.tokens(cities0[1], ADV_AMBASSADOR), 0, "nothing lands on it");
+    assert_eq!(g.tokens(cities0[2], ADV_AMBASSADOR), 1, "and no one else takes its share");
+    assert_eq!(g.var(SUPPLY), 40 - k, "its 1 stays in the supply");
+    assert_eq!(g.stats.counters["adversary.rally_blocked"], 1);
 }
 
 /// 138: a creation line's condition picks among the sites, and `sites` how

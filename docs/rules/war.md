@@ -150,10 +150,10 @@ so the reward can't be farmed: a token lost costs far more than a Sway.
 
 **Destruction.** Only war sways Discord: a factory destroyed by the drones crossing a
 front sways `destruction_discord` Discord. An adversary troop's strike (in the march) sways
-nothing (Matt). A shelter on the country stops a destruction, spending nothing. Otherwise **the piece's owner
-chooses which protection to spend, or none** (r75, Matt's ruling 5; seat 0 for a neutral piece): a drone at a
-base next to it (adversary strikes only), a hardening token on the hex, **the owner's own ambassador on the hex**
-(armor, 137; another player's never guards it, and a neutral site has none), or the Aegis Doctrine capstone (once a
-round, the Protector's own nodes and facilities, when the Protector chooses). Scorched Earth's node loss goes
+nothing (Matt). A shelter on the country stops a destruction, spending nothing, and so
+does the Aegis Doctrine capstone, a shelter on the Protector's own pieces once a round (r82: the first time each round
+one of its nodes or facilities would be destroyed, automatically, asking nothing). Otherwise **the piece's owner
+chooses which protection to spend, or none** (r75, Matt's ruling 5; seat 0 for a neutral piece): a hardening token on the hex, **the owner's own ambassador on the hex**
+(armor, 137; another player's never guards it, and a neutral site has none). Scorched Earth's node loss goes
 through the same choice. A destroyed node leaves the game (above). A destroyed station
 or factory takes its cube with it.

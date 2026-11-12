@@ -162,19 +162,16 @@ pub fn plan_keeps(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx) 
     // the spare insight pays its whole keep ("with insight to burn, keep every
     // card worth having").
     if pc.spare_at > 0.0 {
-        let mut count = g.var(&cards::kept_key(s));
         let mut spare = g.resource(s, Resource::Insight) as f64 - pc.spare_at;
         for id in &kept {
-            let tier = cards::def(w, id).tier;
-            spare -= cards::keep_need(w, g, s, tier, count).0 as f64;
-            count += cards::counts_as_kept(g, tier) as i64;
+            spare -= cards::keep_need(w, g, s, cards::def(w, id).tier) as f64;
         }
         let mut rest: Vec<Key> = g.pile(&cards::drafted(s)).iter().filter(|c| !kept.contains(c)).cloned().collect();
         by_ratio(w, g, s, f, pc, &pt, &tags, &mut rest);
         for c in rest {
             let d = cards::def(w, &c);
-            let (ins, cr) = cards::keep_need(w, g, s, d.tier, count);
-            if cr > 0 || ins as f64 > spare {
+            let ins = cards::keep_need(w, g, s, d.tier);
+            if ins as f64 > spare {
                 continue;
             }
             let worth = if pc.table {
@@ -187,7 +184,6 @@ pub fn plan_keeps(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx) 
                 continue;
             }
             spare -= ins as f64;
-            count += cards::counts_as_kept(g, d.tier) as i64;
             kept.push(c);
         }
     }
@@ -416,20 +412,10 @@ fn plan(
         antimatter: res(Resource::Antimatter),
         research_cubes: res(Resource::ResearchCubes),
     };
-    // Pay the keeps: insight first, the shortfall in credits.
-    let rate = w.int("cards.insight_credits");
-    let mut paid = 0;
-    let mut count = g.var(&cards::kept_key(s));
+    // Pay the keeps in insight (r82: no credits buy a shortfall).
     for id in kept {
-        let tier = cards::def(w, id).tier;
-        let (ins, cr) = cards::keep_need(w, g, s, tier, count);
-        // 108: an opening tier-2 keep takes none of the free tier-1 keeps.
-        count += cards::counts_as_kept(g, tier) as i64;
-        let from_insight = ins.min(now.insight);
-        now.insight -= from_insight;
-        paid += cr + (ins - from_insight) * rate;
-        now.credits -= cr + (ins - from_insight) * rate;
-        if now.credits < 0 {
+        now.insight -= cards::keep_need(w, g, s, cards::def(w, id).tier);
+        if now.insight < 0 {
             return None;
         }
     }
@@ -607,9 +593,7 @@ fn plan(
             }
         }
     }
-    // 024: credits paid to keep are credits not spent on the board (the
-    // opening's 5-credit keeps took all 20 starting credits).
-    Some((total - f.plan_credit * paid as f64, planned))
+    Some((total, planned))
 }
 
 /// 082: whether a card that works on a token pile of the seat's own (a feeder,

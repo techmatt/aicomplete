@@ -29,13 +29,13 @@ an income for the rest of the game (the Militarist's **Garrisons**). No troop in
 **Rally X (151, Matt, locked; r80: round-robin, Matt's ruling #43).** Every event prints one Rally X: each country's
 whole pool is **dealt one agent at a time onto each site of type X** in that country (city, coastal city, research
 station, factory or botnet hex), whoever owns it, in hex order, round and round until the pool is empty. A firewalled
-site, or one under a Rally prohibition token, is skipped and gets nothing; with every site skipped the pool goes back
-to the supply; with no site of the type, nothing lands. A cordoned country's pool waits for its next Rally. A project
+site, or one under a Rally prohibition token, keeps its turn in the deal, and the agents dealt to it stay in the
+supply (r82, as at r79; candidate, Matt: it may prove strong); with no site of the type, nothing lands. A cordoned country's pool waits for its next Rally. A project
 may print "Rally 3: botnet hexes": 3 a country, by the same rule. An arrival on player ambassadors cancels one (the
 players choose whose). A threat still places its own agents "here".
 
 **A blocked landing stays in the supply (175).** A **firewall** ([ambassadors.md](ambassadors.md)) lasts to the end
-of the next adversary turn: Rally skips its hex, a Corrupt line moves no agent onto it, and the site doesn't corrupt
+of the next adversary turn: Rally's share for its hex stays in the supply, a Corrupt line moves no agent onto it, and the site doesn't corrupt
 (agents already on it stay). A Unity **prohibition** (r80, Matt's ruling #53) puts a no-Rally, no-Muster or
 no-Corrupt token on every hex where its condition holds **when the card resolves** ([alignment.md](alignment.md));
 the step skips a hex with its token (no-Corrupt: lines, natural, flips and threats), and the tokens come off with the

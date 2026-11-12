@@ -68,7 +68,7 @@ never reach or "one player"; its strengths widen the count or the condition. Sha
 counted on the whole board); "remove up to N from each X / in each country piece from X / each player from one X"
 (`remove_where`; a cleared marker pays its reward); **prohibitions** (`prohibit`, 158's firewall generalized; r80,
 Matt's ruling #53): a no-Rally, no-Muster or no-Corrupt token goes on every hex where the condition holds **when the
-card resolves**; the step skips a hex holding its token: Rally deals it nothing, a Muster troop (any Muster) stays
+card resolves**; the step skips a hex holding its token: Rally's share for it stays in the supply (r82), a Muster troop (any Muster) stays
 in the supply, a site doesn't corrupt (by a line, naturally, or by any flip or threat) and no agent moves onto it. The tokens come off with the firewalls, at
 the end of the next adversary turn (one made during an adversary turn, at that turn's end). Choices are seat 0's (each player's own, theirs). Grassroots Funding and Think
 Tank move a printed income marker "for the rest of the game". Cards marked (draft) are for Matt to keep or prune.

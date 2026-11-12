@@ -675,7 +675,6 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::EachDestroyNode { .. }
         | Op::DestroyNode { .. }
         | Op::PullUnity { .. }
-        | Op::LoseInsight { .. }
         | Op::AdversaryBuild
         | Op::Create { .. }
         | Op::CreateSite { .. }
@@ -895,7 +894,7 @@ fn standing(op: &Op, kind: Option<TokenKind>) -> Standing {
         ),
         Op::CivicShelter => effect(
             vec![w("shelter"), w("node")],
-            "once a round, when one of your nodes or facilities would be destroyed, you may keep it".to_string(),
+            "once a round, the first time one of your nodes or facilities would be destroyed, it is sheltered".to_string(),
         ),
         Op::TagsFromHand { tag: t } => effect(
             vec![w("cards"), w(":"), w("ACT")],

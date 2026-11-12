@@ -112,7 +112,7 @@ the type moves onto it, and each site holding its number corrupts) and the march
 snapshot of the board. At the end of the round each threat nobody paid does what it prints, and nothing else: one
 consequence, sometimes two, from a short list (troops or agents on its spot, compute, Sway toward
 Discord, Unity pulled back, a site corrupted or seized, a botnet, or the nearest player paying energy, chips, cubes or
-ambassadors or discarding cards, losing insight, a building, or a node). A player harm always hits the one player whose
+ambassadors or discarding cards, losing a building, or a node; never insight, spent the turn it comes, r82). A player harm always hits the one player whose
 node is nearest the threat. Tier 1 is small; tier 2 is about two tier-1s. Compute waits for the adversary's compute
 step, then fills the leftmost project on its board; a full project fires there, the rest slide left and the right
 slot refills. **Harder levels** make threats

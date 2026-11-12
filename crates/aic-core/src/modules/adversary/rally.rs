@@ -38,8 +38,9 @@ pub fn rally_site(c: &AdversaryCard) -> Option<crate::op::RallyAt> {
 }
 
 /// 151, Rally X in board `scope` or every board: each board places its pool (or `count`, a project's rally)
-/// by [`super::plan::rally_plan`]: r80 (ruling #43) dealt round-robin onto the sites of the type in hex order,
-/// skipping firewalled and prohibited ones. The supply is a cap. Tallied as `adversary.rallied` and by source.
+/// by [`super::plan::rally_plan`]: r80 (ruling #43) dealt round-robin onto the sites of the type in hex order;
+/// r82: a firewalled or prohibited site's share stays in the supply (`adversary.rally_blocked`). The supply is a
+/// cap. Tallied as `adversary.rallied` and by source.
 pub fn rally(g: &mut GameState, cx: &mut Cx, site: crate::op::RallyAt, count: i64, scope: Option<usize>, source: &str) -> Res {
     let w = cx.world;
     let boards: Vec<usize> = match scope {
@@ -66,13 +67,20 @@ pub fn rally(g: &mut GameState, cx: &mut Cx, site: crate::op::RallyAt, count: i6
             continue;
         };
         let before = g.var(SUPPLY);
-        // r80: the plan already skips firewalled and prohibited sites; the check stays as a guard.
+        // r82: a blocked site's share stays in the supply.
         for &(h, k) in &plan.shares {
             if k <= 0 {
                 continue;
             }
+            if firewalled(g, h) {
+                cx.tally(g, "adversary.rally_blocked", k);
+                continue;
+            }
             match super::plan::prohibition_on(&w, g, Step::Rally, h, g.round as i64) {
-                Some(wh) => prohibit_tally(g, cx, Step::Rally, wh, k),
+                Some(wh) => {
+                    cx.tally(g, "adversary.rally_blocked", k);
+                    prohibit_tally(g, cx, Step::Rally, wh, k)
+                }
                 None => place(g, cx, h, k)?,
             }
         }

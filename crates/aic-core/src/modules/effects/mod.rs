@@ -76,9 +76,6 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::OtherGain { resource, amount } => {
             if let Some(o) = ctx.other {
                 cx.add_resource(g, o, *resource, *amount);
-                if *resource == Resource::Insight && o != seat {
-                    cx.add_key(g, &economy::insight_received(o), *amount);
-                }
             }
         }
         Op::Transfer { resource, max } => resources::transfer(g, cx, ctx, seat, *resource, *max)?,
@@ -257,12 +254,6 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::EachDestroyNode { count, bases } => team::each_destroy_node(g, cx, ctx, *count, *bases)?,
         Op::DestroyNode { count } => team::destroy_nearest_node(g, cx, ctx, *count)?,
         Op::PullUnity { amount } => alignment::pull_unity(g, cx, *amount),
-        Op::LoseInsight { amount } => {
-            for s in ctx.seats(&w, g) {
-                cx.add_key(g, &economy::insight_debt(s), *amount);
-                cx.tally(g, "effects.insight_lost", *amount);
-            }
-        }
 
         // Threats.
         Op::Flag { name, scope: None, rounds: 1, everywhere: false } => {

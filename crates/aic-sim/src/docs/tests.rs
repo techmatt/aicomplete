@@ -176,9 +176,10 @@ fn a_track_space_prints_income_upgrade_and_cost() {
         tags: vec![],
         moves: 0,
         capstone: None,
+        insight: Some(9),
     };
     // 179 (Matt, friction #16): the cost prints as a cost, first.
-    assert_eq!(space(&u), "pay 3 energy: +2 credits, +1 chip, **keep upgrade**");
+    assert_eq!(space(&u), "pay 3 energy: **insight 9**, +2 credits, +1 chip, **keep upgrade**");
 }
 
 #[test]

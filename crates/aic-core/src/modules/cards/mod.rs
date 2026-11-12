@@ -38,16 +38,12 @@ pub use triggers::*;
 use view::*;
 
 const DRAFT_PARAMS: &[ParamSpec] = &[
-    ParamSpec::int("deal", 0, 10, "cards each player drafts from each round after the first, choosing each one's tier"),
-    ParamSpec::int("opening_deal", 0, 20, "cards dealt to each player in round 1 (the opening)"),
-    ParamSpec::int("opening_free", 0, 20, "opening cards each player keeps free"),
-    ParamSpec::int("opening_keep_credits", 0, 20, "credits for each opening card kept beyond the free ones"),
-    ParamSpec::int("opening_deal_tier2", 0, 10, "tier-2 cards also dealt to each player in the opening (108)"),
-    ParamSpec::int("opening_keep_tier2", 0, 10, "insight to keep an opening tier-2 card; tier-2 keeps take none of the free ones (108)"),
+    ParamSpec::int("deal", 0, 10, "cards each player drafts from each round, choosing each one's tier"),
+    ParamSpec::int("opening_deal", 0, 20, "tier-1 cards dealt into each player's hand in round 1, kept free (the opening; r82)"),
+    ParamSpec::int("opening_deal_tier2", 0, 10, "tier-2 cards also dealt into each player's hand in the opening, kept free (r82)"),
     ParamSpec::int("keep_tier1", 0, 10, "insight to keep a drafted tier-1 card"),
     ParamSpec::int("keep_tier2", 0, 10, "insight to keep a drafted tier-2 card"),
     ParamSpec::int("keep_tier2_upgraded", 0, 10, "insight to keep a tier-2 card once the AI board's keep upgrade is uncovered"),
-    ParamSpec::int("insight_credits", 1, 20, "credits for 1 insight, usable only for keep costs"),
     ParamSpec::int("science_every", 0, 10, "1 insight off tier-2 keeps and card plays per this many Science tags (0: off)"),
     ParamSpec::int("industry_every", 0, 10, "1 credit off buildings per this many Industry tags (0: off)"),
     ParamSpec::int("discount_floor", 0, 5, "tag and building discounts stop at this cost; a cost printed under it stays"),
@@ -59,7 +55,7 @@ pub static DEF: ModuleDef = ModuleDef {
     requires: &["ai", "adversary", "alignment", "board"],
     variants: &[VariantDef {
         name: "draft",
-        summary: "An opening deal, some kept free; then each round a Terraforming Mars draft, the tier chosen card by card; keeps cost insight",
+        summary: "An opening hand dealt free; then each round a Terraforming Mars draft, the tier chosen card by card; keeps cost insight",
         params: DRAFT_PARAMS,
         phases: PHASES,
         rng: &["cards"],
@@ -81,14 +77,14 @@ const PHASES: &[PhaseSpec] = &[
         "tier",
         "each player builds their draft hand card by card, choosing each card's tier",
     ),
-    PhaseSpec::auto("deal", "round 1: deal the opening hand"),
+    PhaseSpec::auto("deal", "round 1: deal the opening hand, kept free"),
     PhaseSpec::decision(
         "draft",
         "take one card and pass the rest to the next seat, until the hands are gone",
     ),
     PhaseSpec::decision(
         "keep",
-        "keep any drafted cards (insight; the opening: free, then credits); the rest are discarded",
+        "keep any drafted cards (insight by tier); the rest are discarded",
     ),
     PhaseSpec::decision(
         "play",
@@ -231,11 +227,6 @@ pub fn civic_used(seat: usize) -> String {
     format!("cards.civic_used.{seat}")
 }
 
-/// Drafted cards `seat` has kept this round.
-pub fn kept_key(seat: usize) -> String {
-    format!("cards.kept_round.{seat}")
-}
-
 pub fn def<'w>(w: &World<'w>, id: &str) -> &'w CardDef {
     w.content.card(id)
 }
@@ -246,7 +237,6 @@ struct Cards {
     opening_deal: i64,
     /// 108: tier-2 cards dealt in the opening besides `opening_deal` tier-1 ones.
     opening_deal_tier2: i64,
-    insight_credits: i64,
     /// Selected cards (content indices).
     cards: Vec<usize>,
     /// Variant `off`: no draft.
@@ -258,7 +248,6 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
         deal: b.int("deal")?,
         opening_deal: b.int("opening_deal")?,
         opening_deal_tier2: b.int("opening_deal_tier2")?,
-        insight_credits: b.int("insight_credits")?,
         cards: b.cards.clone(),
         off: false,
     }))
@@ -269,7 +258,6 @@ fn build_off(b: &Build) -> Result<Box<dyn Module>, String> {
         deal: 0,
         opening_deal: 0,
         opening_deal_tier2: 0,
-        insight_credits: 1,
         cards: b.cards.clone(),
         off: true,
     }))
@@ -302,18 +290,17 @@ impl Module for Cards {
                 cx.refresh(g, s, &id);
             }
             cx.set_key(g, &civic_used(s), 0);
-            cx.set_key(g, &kept_key(s), 0);
         }
     }
 
     fn begin(&self, phase: usize, g: &mut GameState, cx: &mut Cx) {
         match phase {
             0 => {
-                // The opening has no draft (round 1 deals the opening hand).
+                // r82: round 1 drafts as every round does (the opening hand came first).
                 // With both decks and discards empty there is nothing to deal.
                 let dry = !tier_open(g, 1) && !tier_open(g, 2);
                 for s in 0..g.seats.len() {
-                    if self.off || g.round <= 1 || self.deal <= 0 || dry {
+                    if self.off || self.deal <= 0 || dry {
                         g.seats[s].passed = true;
                     }
                 }
@@ -337,6 +324,13 @@ impl Module for Cards {
                     let ins = g.resource(s, Resource::Insight);
                     cx.per_round(g, "cards.insight_after_keep", ins);
                     for id in g.pile(&drafted(s)).to_vec() {
+                        // 189: why a drafted card went unkept (stats only).
+                        let w = cx.world;
+                        if g.resource(s, Resource::Insight) < self.keep_price(&w, g, s, &id) {
+                            cx.tally(g, "limit.keep_short.insight", 1);
+                        } else {
+                            cx.tally(g, "limit.keep_passed", 1);
+                        }
                         discard(g, cx, &id, &drafted(s));
                     }
                 }
@@ -346,14 +340,15 @@ impl Module for Cards {
     }
 
     fn run(&self, _phase: usize, g: &mut GameState, cx: &mut Cx) -> Res {
-        // The opening (round 1): each seat is dealt its opening hand to keep from.
+        // The opening (round 1, r82): each seat is dealt its opening hand into its hand, kept free; the
+        // round's draft follows.
         if self.off || g.round > 1 {
             return Ok(());
         }
         for s in 0..g.seats.len() {
             for (tier, n) in [(1, self.opening_deal), (2, self.opening_deal_tier2)] {
                 for _ in 0..n {
-                    if !deal_top(g, cx, tier, &drafted(s))? {
+                    if !deal_top(g, cx, tier, &hand(s))? {
                         break;
                     }
                 }
@@ -385,8 +380,7 @@ impl Module for Cards {
             3 => {
                 let free = alignment::free_purchases(g) > 0;
                 for id in g.pile(&drafted(s)) {
-                    let (_, cr) = self.keep_price(w, g, s, id);
-                    if free || g.resource(s, Resource::Credits) >= cr {
+                    if free || g.resource(s, Resource::Insight) >= self.keep_price(w, g, s, id) {
                         out.push(Action::Keep {
                             seat,
                             card: *id,

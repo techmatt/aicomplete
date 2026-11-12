@@ -11,22 +11,14 @@
   "credits": 15,
   "income": [
    [
-    "insight",
-    5
-   ],
-   [
     "energy",
     1
    ]
   ],
+  "insight": 6,
   "economy_track": [
    {
-    "income": [
-     [
-      "insight",
-      1
-     ]
-    ]
+    "income": []
    },
    {
     "income": [
@@ -114,7 +106,12 @@
    {
     "name": "Expand",
     "tags": [],
-    "cost": [],
+    "cost": [
+     [
+      "energy",
+      1
+     ]
+    ],
     "text": "place 1 Node",
     "effects": [
      {
@@ -233,25 +230,17 @@
   ],
   "play_track": [
    {
-    "income": [
-     [
-      "insight",
-      1
-     ]
-    ]
+    "income": [],
+    "insight": 7
    },
    {
     "income": [],
     "keep2": true
    },
    {
-    "income": [
-     [
-      "insight",
-      2
-     ]
-    ],
-    "cost": 1
+    "income": [],
+    "cost": 1,
+    "insight": 9
    },
    {
     "income": [
@@ -263,33 +252,20 @@
     "cost": 2
    },
    {
-    "income": [
-     [
-      "insight",
-      2
-     ]
-    ],
-    "cost": 2
+    "income": [],
+    "cost": 2,
+    "insight": 11
    },
    {
-    "income": [
-     [
-      "insight",
-      1
-     ]
-    ],
+    "income": [],
     "cost": 3,
     "tags": [
      "cyber"
-    ]
+    ],
+    "insight": 12
    },
    {
-    "income": [
-     [
-      "insight",
-      1
-     ]
-    ],
+    "income": [],
     "cost": 5,
     "capstone": {
      "name": "Master Plan",
@@ -300,7 +276,8 @@
        "amount": 2
       }
      ]
-    }
+    },
+    "insight": 13
    }
   ],
   "tags": [
@@ -337,22 +314,14 @@
   "credits": 13,
   "income": [
    [
-    "insight",
-    5
-   ],
-   [
     "energy",
     2
    ]
   ],
+  "insight": 6,
   "economy_track": [
    {
-    "income": [
-     [
-      "insight",
-      1
-     ]
-    ]
+    "income": []
    },
    {
     "income": [
@@ -440,7 +409,12 @@
    {
     "name": "Expand",
     "tags": [],
-    "cost": [],
+    "cost": [
+     [
+      "energy",
+      1
+     ]
+    ],
     "text": "place 1 Node",
     "effects": [
      {
@@ -560,25 +534,17 @@
   ],
   "play_track": [
    {
-    "income": [
-     [
-      "insight",
-      1
-     ]
-    ]
+    "income": [],
+    "insight": 7
    },
    {
     "income": [],
     "keep2": true
    },
    {
-    "income": [
-     [
-      "insight",
-      2
-     ]
-    ],
-    "cost": 1
+    "income": [],
+    "cost": 1,
+    "insight": 9
    },
    {
     "income": [
@@ -590,43 +556,31 @@
     "cost": 2
    },
    {
-    "income": [
-     [
-      "insight",
-      2
-     ]
-    ],
-    "cost": 2
+    "income": [],
+    "cost": 2,
+    "insight": 11
    },
    {
-    "income": [
-     [
-      "insight",
-      1
-     ]
-    ],
+    "income": [],
     "cost": 3,
     "tags": [
      "diplomacy"
-    ]
+    ],
+    "insight": 12
    },
    {
-    "income": [
-     [
-      "insight",
-      1
-     ]
-    ],
+    "income": [],
     "cost": 5,
     "capstone": {
      "name": "Aegis Doctrine",
-     "text": "Once a round, when one of your Nodes or facilities would be destroyed, you may keep it.",
+     "text": "Once a round, the first time one of your Nodes or facilities would be destroyed, it is sheltered.",
      "passives": [
       {
        "op": "civic_shelter"
       }
      ]
-    }
+    },
+    "insight": 13
    }
   ],
   "tags": [
@@ -640,7 +594,7 @@
   "text": "The scientist: plays off the board, on its turn budget and on research cubes.",
   "innate": {
    "name": "Patience",
-   "text": "Your own unspent insight carries over to the next round; insight other players gave you this round does not.",
+   "text": "All your unspent insight carries over to the next round, including insight other players gave you.",
    "passives": [
     {
      "op": "patience"
@@ -650,22 +604,14 @@
   "credits": 11,
   "income": [
    [
-    "insight",
-    5
-   ],
-   [
     "energy",
     1
    ]
   ],
+  "insight": 6,
   "economy_track": [
    {
-    "income": [
-     [
-      "insight",
-      1
-     ]
-    ]
+    "income": []
    },
    {
     "income": [
@@ -751,7 +697,12 @@
    {
     "name": "Expand",
     "tags": [],
-    "cost": [],
+    "cost": [
+     [
+      "energy",
+      1
+     ]
+    ],
     "text": "place 1 Node",
     "effects": [
      {
@@ -863,21 +814,13 @@
   ],
   "play_track": [
    {
-    "income": [
-     [
-      "insight",
-      1
-     ]
-    ]
+    "income": [],
+    "insight": 7
    },
    {
-    "income": [
-     [
-      "insight",
-      2
-     ]
-    ],
-    "moves": 1
+    "income": [],
+    "moves": 1,
+    "insight": 9
    },
    {
     "income": [],
@@ -885,22 +828,14 @@
     "cost": 1
    },
    {
-    "income": [
-     [
-      "insight",
-      1
-     ]
-    ],
-    "cost": 2
+    "income": [],
+    "cost": 2,
+    "insight": 10
    },
    {
-    "income": [
-     [
-      "insight",
-      2
-     ]
-    ],
-    "cost": 2
+    "income": [],
+    "cost": 2,
+    "insight": 12
    },
    {
     "income": [
@@ -915,12 +850,7 @@
     ]
    },
    {
-    "income": [
-     [
-      "insight",
-      1
-     ]
-    ],
+    "income": [],
     "cost": 5,
     "capstone": {
      "name": "Open Science",
@@ -931,7 +861,8 @@
        "amount": 2
       }
      ]
-    }
+    },
+    "insight": 13
    }
   ],
   "tags": [

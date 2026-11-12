@@ -640,9 +640,13 @@ pub struct AiBoard {
     pub innate: Innate,
     /// Credit production every round, before cards raise it.
     pub credits: i64,
-    /// Income every round before the node track adds to it.
+    /// Income every round before the node track adds to it (never insight: r82, the card-play track prints it).
     #[serde(default)]
     pub income: Vec<Cost>,
+    /// r82 (amendment 8615): the insight the card-play track prints before its first space, the round's
+    /// insight until a space printing a higher total is uncovered.
+    #[serde(default)]
+    pub insight: i64,
     /// The node track: one space per node. The first token
     /// starts on the board, so the first space is uncovered from setup.
     pub economy_track: Vec<Uncover>,
@@ -676,9 +680,13 @@ pub struct Innate {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Uncover {
-    /// Income every round once uncovered (insight raises the round's insight).
+    /// Income every round once uncovered (never insight: `insight` prints it).
     #[serde(default)]
     pub income: Vec<Cost>,
+    /// r82 (amendment 8615): the round's insight once this is the rightmost space uncovered that prints one, an
+    /// absolute total (Spirit Island style); only the card-play track prints it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub insight: Option<i64>,
     /// A board upgrade (021): keeping a tier-2 card costs
     /// `cards.keep_tier2_upgraded` insight instead of `cards.keep_tier2`.
     #[serde(default)]
@@ -839,7 +847,7 @@ impl Content {
         Ok(())
     }
 
-    fn check_ai_board(&self, b: &AiBoard) -> Result<(), String> {
+    pub(crate) fn check_ai_board(&self, b: &AiBoard) -> Result<(), String> {
         let what = format!("AI board {:?}", b.id);
         if b.economy_track.is_empty() {
             return Err(format!("{what}: needs a node track"));
@@ -850,6 +858,22 @@ impl Content {
             .chain(b.economy_track.iter().chain(&b.play_track).flat_map(|u| u.income.iter()))
         {
             resource(r, &what)?;
+            // r82 (amendment 8615): insight is printed as totals on the card-play track, nowhere else.
+            if *r == Resource::Insight {
+                return Err(format!("{what}: insight prints only as the card-play track's totals"));
+            }
+        }
+        if b.economy_track.iter().any(|u| u.insight.is_some()) {
+            return Err(format!("{what}: the economy track prints no insight"));
+        }
+        let mut last = b.insight;
+        for u in &b.play_track {
+            if let Some(n) = u.insight {
+                if n <= last {
+                    return Err(format!("{what}: a card-play track's insight totals rise ({n} after {last})"));
+                }
+                last = n;
+            }
         }
         // 068: among cards marker clearing stays Science's, but the Protector's
         // cheap power prints it too.
@@ -1194,7 +1218,6 @@ pub fn harm_currencies(effects: &[Op]) -> Vec<Currency> {
                 out.push(Currency::Resource(Resource::Ambassadors));
                 (Some(*resource), false)
             }
-            Op::LoseInsight { .. } => (Some(Resource::Insight), false),
             Op::LoseAmbassador => (Some(Resource::Ambassadors), false),
             Op::EachDestroyNode { .. } | Op::DestroyNode { .. } | Op::DestroyFacility { .. } => (None, true),
             Op::Troops { destroy, .. } => (None, *destroy),
@@ -1489,6 +1512,16 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
             Op::ConvertUpkeep { from, to, .. } => {
                 resource(from, what)?;
                 resource(to, what)?;
+            }
+            // r82 (Matt, 2026-11-11): insight is this round's attention, spent this turn: no harm takes it,
+            // now or from the next reset.
+            Op::PlayersLose { resource: Resource::Insight, .. }
+            | Op::LoseIncome { resource: Resource::Insight, .. }
+            | Op::Requisition { resource: Resource::Insight, .. }
+            | Op::Theft { resource: Resource::Insight, .. }
+            | Op::LoseNodeOr { resource: Resource::Insight, .. }
+            | Op::LoseAmbassadorsOr { resource: Resource::Insight, .. } => {
+                return Err(format!("{what}: insight is never a harm (r82)"));
             }
             Op::Production { resource: r, .. }
             | Op::PlayersLose { resource: r, .. }

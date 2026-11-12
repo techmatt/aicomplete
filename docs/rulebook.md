@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 81. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 82. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -165,7 +165,7 @@ rules/README.md (Terms); content/map.json; crates/aic-core/src/map.rs, modules/c
    second Builder. Sit in player order: cards pass around the table by it (§7). Player 1 plays in country 1, and so
    on. With 2 players there is no Researcher; solo, only the Builder plays. Each player:
    - places the first node from their **economy track** on their country's starting hex. This uncovers the track's
-     first space (+1 insight each round, §5);
+     first space, which shows nothing (§5);
    - takes 1 ambassador, 3 energy and their board's starting credits;
    - puts their cube on their **home city**: their country's neutral city nearest that first node (tie: the lower hex
      number). It is now theirs like any other city, and can be lost the same way.
@@ -188,7 +188,7 @@ Each round runs in this order. Steps **C** and **D** are your choices; the rest 
 | | **Round start** | Set your insight (§5). Refresh your powers, Actions, antimatter action and Dispatches. |
 | **A** | **Sway** | Each land-corruption token adds 1 Discord (§12). |
 | **B** | **The adversary's turn** (§6) | Four beats: **Card** (threats, agents, troops), **Corrupt**, **March**, **Income** (the next card, agents, compute). |
-| **C** | **Cards** (§7) | Round 1: the opening deal. Later rounds: build a hand, draft, keep. |
+| **C** | **Cards** (§7) | Build a hand, draft, keep. Round 1 first deals the opening hand. |
 | **D** | **Action phase** (§8) | All players at once: play cards, use powers and Actions, place nodes, dispatch ambassadors, pay threats. |
 | **E** | **Production** (§9) | Everything pays (the income step), then growth: extra drones, and cities build factories. |
 | **F** | **Threats** (§10) | Every threat not paid off takes effect. |
@@ -215,12 +215,12 @@ rule**, your **income**, one **tag** (§7), your **building slots**, your **Disp
 
 | Board | Special rule | Income each round | Insight a round | Slots | Tag | Dispatches | Starting credits |
 |---|---|---|---|---|---|---|---|
-| Builder | *Breadth*: 5 slots | 15 credits, 1 energy | 5 (+1 from setup) | 5 | Industry | 1 | 40 |
-| Protector | *Wall* and *Vigil* | 13 credits, 2 energy | 5 (+1) | 4 | Security | 1 | 46 |
-| Researcher | *Patience* | 11 credits, 1 energy | 5 (+1) | 3 | Science | 2 | 40 |
+| Builder | *Breadth*: 5 slots | 15 credits, 1 energy | 6 | 5 | Industry | 1 | 40 |
+| Protector | *Wall* and *Vigil* | 13 credits, 2 energy | 6 | 4 | Security | 1 | 46 |
+| Researcher | *Patience* | 11 credits, 1 energy | 6 | 3 | Science | 2 | 40 |
 
-- **Patience** (Researcher): your own unspent insight carries over to the next round. Insight another player gave you
-  does not.
+- **Patience** (Researcher): all your unspent insight carries over to the next round, including insight another
+  player gave you.
 - **Wall** (Protector): adversary troops can't move onto, land on or strike a hex with your node (a troop that would
   land there stays in the supply), so a facility on that hex is safe from them; one next to it is not. Only troops are stopped: corruption, war and threats still destroy what is there.
   (Production isn't a landing: an adversary factory on that hex still makes its troop there, which marches off.)
@@ -245,20 +245,21 @@ Nothing has a holding limit, and nothing caps your income.
 | **Ambassadors** | yes (your supply) | 1 at the start, cards, 20 credits | claiming, liberating, Remove agents, Envoy, threats |
 | **Dispatches** | **no** | your board and track spaces, each round | the Dispatch action, 1 each |
 
-**Insight is this round's attention.** At the start of each round, set your insight to 5, plus what your uncovered track spaces and
-cards add (your setup node's space adds 1, so you start with 6), less any insight a threat or project made you
-lose last round (§10, §17). Insight you don't spend is lost (except under Patience). Everything else on your
+**Insight is this round's attention.** Your card-play track prints it, as in Spirit Island: 6 at its start, and on
+later spaces the new total (7, 9, ...). At the start of each round, set your insight to the number on the rightmost
+space you've uncovered (6 before any), plus what your cards add. Insight you don't spend is lost (except under Patience),
+and no threat or project takes it: it is spent the turn it comes. Everything else on your
 board and cards pays at the end of production's **income step** (§9).
 
 ### Node tracks
 
 Your nodes start on your board, on two tracks of 7 spaces: the **economy track** and the **card-play track**. To place a
 node, take the next one off either track. That uncovers the space under it, and what the space shows is yours for the
-rest of the game: income, Dispatches, a tag, a free research station, the **keep upgrade** (§7), and on the last
-space a **capstone**, a lasting rule (§20). The card-play track does not limit how many cards you play.
+rest of the game: income, a new insight total (card-play track only), Dispatches, a tag, a free research station, the
+**keep upgrade** (§7), and on the last space a **capstone**, a lasting rule (§20). The card-play track does not limit how many cards you play.
 
 **Every placement pays the energy printed on the space** you uncover, whatever places the node; a power or card
-that places one costs only its own tag or currency on top (Expand costs nothing more):
+that places one costs only its own tag or currency on top (Expand: 1 energy):
 
 | Space | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
 |---|---|---|---|---|---|---|---|
@@ -266,7 +267,8 @@ that places one costs only its own tag or currency on top (Expand costs nothing 
 | Card-play track: energy to pay | free | free | pay 1 | pay 2 | pay 2 | pay 3 | pay 5 |
 
 > **Example.** The Builder has placed 3 economy nodes (the setup node included) and none from the card-play track.
-> Expanding onto the economy track's fourth space costs its 1 energy; onto the card-play track's first space, nothing.
+> Expanding onto the economy track's fourth space costs 2 energy (Expand's 1 and the space's 1); onto the card-play
+> track's first space, just Expand's 1.
 
 **Where:** on a land hex in your reach with no node of any player, no corruption marker and no land corruption. A hex
 with agents or a corrupted site is allowed (a node doesn't remove agents).
@@ -276,7 +278,7 @@ with agents or a corrupted site is allowed (a node doesn't remove agents).
 ### Powers
 
 Each power can be used once a round, in the action phase. Every board has two **node powers**: **Expand** (place a
-node, paying only the space) and a dearer second one (§20). So powers place up to 2 nodes a round; cards can place more. The other
+node for 1 energy, plus the space's) and a dearer second one (§20). So powers place up to 2 nodes a round; cards can place more. The other
 six, printed on your board, are conversions, draws and **sacrifice powers**, paid by discarding a card with a tag
 (§7, *Tags*). §20 lists every board's.
 
@@ -309,8 +311,8 @@ The adversary's board prints its turn as a strip of four beats, played in order.
 - **Threats.** Its first line deals threats (§10).
 - **Rally X.** Every event card has one. In each country, deal the whole pool **one agent at a time onto each site of
   type X** (cities, coastal cities, research stations, factories or hexes with a botnet), whoever owns it, in
-  hex-number order, going round again until the pool is empty. Skip a firewalled site (§16) or one with a no-Rally
-  token (§12). If no site can take an agent, the pool goes back to the supply.
+  hex-number order, going round again until the pool is empty. A firewalled site (§16) or one with a no-Rally token
+  (§12) still takes its turn in the deal, but the agent dealt to it goes back to the supply instead.
 - **Muster N.** N adversary troops land in each country on its lowest-numbered factory (any owner's); with none, on
   its lowest-numbered city.
 - **Other lines**, at most two, each one of seven kinds with its own icon: an income raise, a new neutral factory in
@@ -422,18 +424,19 @@ deck. There is no hand limit.
 
 ### Round 1: the opening
 
-Each player is dealt **8 tier-1 cards** and **2 tier-2 cards**. Keep up to 4 tier-1 cards **free**; each further tier-1
-card costs **5 credits**. Each tier-2 card kept costs **1 insight**. Discard the rest. There is no draft in round 1.
+Before round 1's draft, each player is dealt **2 tier-1 cards** and **2 tier-2 cards** straight into their hand, kept
+**free**. The tier-2 cards point you toward a build to plan for; you need not play both. Then round 1 builds a hand,
+drafts and keeps like every round.
 
-### Rounds 2 on: build, draft, keep
+### Every round: build, draft, keep
 
 1. **Build a hand.** Each player takes the top card of the tier-1 or the tier-2 deck, your choice each time, one at a
    time until they have 4. Each arrives face up, so you see it before choosing the next. (This is not a draw.)
 2. **Draft.** Take one card from the hand in front of you and pass the rest on, until the hands are gone. Always
    pass to the next player in player order. Solo, you take all 4, then keep those you want, paying as below.
 3. **Keep.** Pay **1 insight** for each tier-1 card and **2 insight** for each tier-2 card you keep (1 with the keep
-   upgrade, and less with Science discounts, below). When your insight runs out, each further insight a keep needs
-   costs **5 credits**. Discard the cards you don't keep.
+   upgrade, and less with Science discounts, below). Credits can't pay for a keep: when your insight runs out, you
+   keep no more. Discard the cards you don't keep.
 
 Keeps and plays spend the same insight, so every card you keep is insight you can't spend playing one this round.
 
@@ -452,8 +455,7 @@ except on an event.
 
 **Discounts** (a discount never takes a cost below 1; a cost printed 0 stays 0):
 
-- every 2 Science tags on your cards take 1 insight off each card you play, and off each tier-2 card you keep from
-  round 2 on;
+- every 2 Science tags on your cards take 1 insight off each card you play, and off each tier-2 card you keep;
 - every 2 Industry tags take 1 credit off each building;
 - some cards make all your cards of one tag cheaper.
 
@@ -787,12 +789,13 @@ When a node or facility would be destroyed:
    nothing. It lasts from the action phase to cleanup, so it covers production, threats and war, never the
    adversary's turn. It stops only what goes through this order: cubes still change hands, ambassadors are still
    removed, and a node you give up to pay something is still lost.
-2. Otherwise **its owner chooses** one protection to spend, or none (for a neutral piece, the players choose). Each is
+2. **Aegis Doctrine** (a Protector capstone) is Shelter on the Protector's own pieces once a round: the first time
+   each round one of its nodes or facilities would be destroyed, it is saved, automatically, spending nothing.
+3. Otherwise **its owner chooses** one protection to spend, or none (for a neutral piece, the players choose). Each is
    used up:
    - a **hardening token** on the hex;
-   - **your own ambassador** on the hex (never another player's);
-   - **Aegis Doctrine** (a Protector capstone): once a round, on one of the Protector's own nodes or facilities.
-3. With nothing spent, the piece is destroyed.
+   - **your own ambassador** on the hex (never another player's).
+4. With nothing spent, the piece is destroyed.
 
 A facility's owner is the player whose cube is on it. One hardening token on a hex with both your facility and your
 node can save either, once: you may keep it for the second (it stays on the hex while your node does). Corruption never destroys
@@ -804,7 +807,7 @@ the node of a player with **Sanctuary** (a Protector capstone), and spends nothi
 
 Nothing protects a last node but the protection order above: anything that destroys a node can destroy your last
 one, at any stage. Any player with no nodes loses the game for everyone, so keep a second node on the board: the
-first spaces of both tracks cost no energy, so an early second node by Expand costs nothing. Watch the hexes next to a
+first spaces of both tracks cost no energy, so an early second node by Expand costs just its 1 energy. Watch the hexes next to a
 lone node: two agents on it take it, and a Corrupt nodes line pulls in every agent next to it.
 
 *Sources: rules/war.md (Node loss), rules/ai-powers.md (Shelters and hardening), rules/ambassadors.md
@@ -901,7 +904,7 @@ each become your ambassador where it stood. The converted agents come off first,
 converted on one hex both stay; an agent the card left on that hex meets one of them, one for one (§8).
 
 **Firewall.** Some cards put a firewall on a land hex in your reach. While it stands, no agent lands, is placed or
-moves in there: Rally skips it. Nothing on it corrupts: no Corrupt line, natural corruption, station flip or threat
+moves in there: an agent Rally deals to it goes back to the supply. Nothing on it corrupts: no Corrupt line, natural corruption, station flip or threat
 that corrupts its site takes it (agents already there stay). Troops pass. It lasts until the end of the next adversary
 turn (its Income beat).
 
@@ -984,12 +987,12 @@ Each power can be used once a round, in the action phase. A tag in a cost means 
 | Protector | **Accord** (1 Diplomacy: a node) | **Stand Down** (1 Security: 3 credits) | **Debrief** (1 Diplomacy: draw 2) | **Recovery** (1 Security: clear a marker in reach, +2 Unity), **Shelter** (1 Security, 1 energy: in any one country, no node or facility can be destroyed from now to cleanup, §13), **Bulwark** (1 energy: harden a facility in reach), **Patrol** (1 energy: push up to 3 agents or adversary troops from a hex in reach) |
 | Researcher | **Peer Review** (3 research cubes: a node) | **Grant** (3 credits: 1 cube in your color on a megaproject that isn't complete), **Synthesis** (discard a card from your hand: 2 insight) | **Fieldwork** (1 energy: draw 3) | **Field Station** (1 Industry: a research station without the chips, where Build a research station could go), **Audit** (1 Cyber: remove 3 compute from a project), **Particle Run** (1 Power, 1 energy: 1 antimatter) |
 
-Every board also has **Expand** (place a node). Every placement pays the track space's energy, and nothing more of energy (§5).
+Every board also has **Expand** (1 energy: a node). Every placement also pays the track space's energy (§5).
 
 | Board | Economy track capstone | Card-play track capstone |
 |---|---|---|
 | Builder | **Full Capacity**: 1 chip each round per 2 Industry tags on your cards | **Master Plan**: your buildings cost 2 credits less |
-| Protector | **Sanctuary**: corruption never destroys your nodes | **Aegis Doctrine**: once a round, when one of your nodes or facilities would be destroyed, you may keep it (you choose when) |
+| Protector | **Sanctuary**: corruption never destroys your nodes | **Aegis Doctrine**: Shelter on your own pieces once a round: the first time each round one of your nodes or facilities would be destroyed, it isn't (automatic, spending nothing) |
 | Researcher | **Open Archive**: 1 research cube each round | **Open Science**: each round in the income step, give 2 insight from the supply in all to other players, split as you like; it arrives with their insight next round |
 
 *Sources: rules/ai-powers.md, rules/ai-boards.md; content/ais.json; crates/aic-core/src/modules/ai.rs.*
@@ -1100,7 +1103,7 @@ The shape says the kind of thing; the picture inside says which. (The art is not
 | Node | place a node, paying its track space |
 | Move (a figure with an arrow) | move ambassadors onto pieces; with a pin after it, all onto one piece |
 | Shield | one stop on one piece: a hardening token, on a facility or with a node |
-| Roof | cover over many pieces: with a country, Shelter (the whole country, this round); with a node, all your pieces (the Aegis Doctrine keeps any one of your nodes or facilities once a round; Sanctuary, every node from corruption) |
+| Roof | cover over many pieces: with a country, Shelter (the whole country, this round); with a node, all your pieces (the Aegis Doctrine shelters the first of your nodes or facilities that would be destroyed each round; Sanctuary, every node from corruption) |
 | Sway (a marker on a track) | add that much Unity (you may put it against Discord, §12), or Discord on the one card that says so |
 | Peek (a card with an eye) | look at the next event cards under the face-up one |
 | Threat (`!`) | a threat; struck through: pay it off |
@@ -1138,7 +1141,7 @@ crates/aic-core/src/face.rs, modules/cards/triggers.rs.*
   you have each round, §5 and §8.
 - **Draw:** take the top tier-1 card, free.
 - **Drone:** a megacorp's piece, waiting at a base and fighting in war, §11.
-- **Expand:** every board's first node power, paying only the space, §5.
+- **Expand:** every board's first node power, 1 energy plus the space's, §5.
 - **Firewall, cordon:** §16. **Front:** §2.
 - **Hardening token:** one stop on one facility or node, §13.
 - **Here:** on this card.

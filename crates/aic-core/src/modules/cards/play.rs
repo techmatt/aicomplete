@@ -4,15 +4,40 @@ use crate::key::KeyBuf;
 use super::*;
 
 impl Cards {
-    /// What keeping `card` costs `seat` now: (insight, credits). [`keep_need`],
-    /// with any shortfall of insight at `insight_credits` credits an insight
-    /// (that conversion is only for keeps).
-    pub(super) fn keep_price(&self, w: &World, g: &GameState, seat: usize, card: &str) -> (i64, i64) {
-        let kept = g.var(&kept_key(seat));
-        let (need, credits) = keep_need(w, g, seat, def(w, card).tier, kept);
-        let have = g.resource(seat, Resource::Insight).max(0);
-        let ins = need.min(have);
-        (ins, credits + (need - ins) * self.insight_credits)
+    /// The insight keeping `card` costs `seat` now: [`keep_need`]. r82: no credits buy a shortfall.
+    pub(super) fn keep_price(&self, w: &World, g: &GameState, seat: usize, card: &str) -> i64 {
+        keep_need(w, g, seat, def(w, card).tier)
+    }
+}
+
+/// 189: why each card left in seat `s`'s hand when the action phase ends stayed there (stats only, for the
+/// resource-use read): `limit.play.short.<resource>` per resource it lacked, `.needs_tags`, else `.held`.
+pub fn tally_short(w: &World, g: &mut GameState, cx: &mut Cx, seat: usize) {
+    let p = prices(w, g, seat);
+    let mut keys: Vec<String> = Vec::new();
+    for id in g.pile(&hand(seat)).iter() {
+        let d = def(w, id);
+        if !requirements_met(w, g, seat, d) {
+            keys.push("limit.play.needs_tags".into());
+            continue;
+        }
+        let mut short = false;
+        if g.resource(seat, Resource::Credits) < p.credits(d) {
+            keys.push("limit.play.short.credits".into());
+            short = true;
+        }
+        for (r, n) in extra_costs_at(d, p.insight(d)) {
+            if n > 0 && g.resource(seat, r) < n {
+                keys.push(format!("limit.play.short.{}", r.name()));
+                short = true;
+            }
+        }
+        if !short {
+            keys.push("limit.play.held".into());
+        }
+    }
+    for k in keys {
+        cx.tally(g, &k, 1);
     }
 }
 
@@ -239,23 +264,14 @@ impl Cards {
             return Err(Halt::Illegal(format!("{card} was not drafted by seat {s}")));
         }
         // A Unity card's free keep first, then the price.
-        let (ins, cr) = self.keep_price(&w, g, s, card);
-        if (ins > 0 || cr > 0) && !alignment::take_free_purchase(g, cx) {
-            if g.resource(s, Resource::Credits) < cr {
+        let ins = self.keep_price(&w, g, s, card);
+        if ins > 0 && !alignment::take_free_purchase(g, cx) {
+            if g.resource(s, Resource::Insight) < ins {
                 return Err("can't afford to keep it".into());
             }
             cx.add_resource(g, s, Resource::Insight, -ins);
-            cx.add_resource(g, s, Resource::Credits, -cr);
-            if ins > 0 {
-                cx.tally(g, "cards.insight_kept", ins);
-                cx.per_round(g, "cards.insight_kept", ins);
-            }
-            if g.round > 1 && cr > 0 {
-                cx.tally(g, "cards.insight_bought", cr / self.insight_credits);
-            }
-        }
-        if counts_as_kept(g, def(&w, card).tier) {
-            cx.add_key(g, &kept_key(s), 1);
+            cx.tally(g, "cards.insight_kept", ins);
+            cx.per_round(g, "cards.insight_kept", ins);
         }
         cx.move_card(g, card, &drafted(s), &hand(s), false)?;
         cx.count(g, &format!("kept.{card}"), 1);

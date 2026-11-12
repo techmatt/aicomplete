@@ -47,34 +47,36 @@ fn a_placements_prompt_names_what_it_charges() {
     assert!(paid.contains(&format!("costs {step} energy")), "{paid}");
 }
 
-/// r81 (friction #16): Expand costs nothing of its own; a free space costs nothing at all.
+/// r82 (Matt, 2026-11-11): Expand costs its 1 energy (r81 made it free); a free space adds nothing.
 #[test]
-fn every_board_s_expand_costs_only_the_space_once_a_round() {
+fn every_board_s_expand_costs_1_energy_and_the_space_once_a_round() {
     for seat in [0u8, 1] {
         let (rules, mut g) = at_step(&[], 1);
         let start = rules.map.numbered(seat as usize, piece(seat as usize).node);
         put(&mut g, start, node(seat as usize), 1);
         let deploy = power(&rules, seat as usize, "Expand");
-        set_res(&mut g, seat as usize, Resource::Energy, 1);
+        set_res(&mut g, seat as usize, Resource::Energy, 0);
+        assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "r82: Expand's own energy");
+        set_res(&mut g, seat as usize, Resource::Energy, 2);
         let before = node_count(&g, seat as usize);
         rules.apply_mut(&mut g, &deploy, None).unwrap();
         answer_all(&rules, &mut g);
         assert_eq!(node_count(&g, seat as usize), before + 1);
-        assert_eq!(g.resource(seat as usize, Resource::Energy), 1, "the space was free and Expand costs nothing");
+        assert_eq!(g.resource(seat as usize, Resource::Energy), 1, "the space was free and Expand costs 1 energy");
         assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "once a round");
     }
 }
 
-/// r81 (friction #16): the price is stated once, on the track: Expand pays the step and nothing more.
+/// r82 (Matt, 2026-11-11, 188's question): Expand costs its 1 energy again, with the step.
 #[test]
-fn a_node_power_pays_only_the_step() {
+fn a_node_power_pays_its_energy_and_the_step() {
     let (rules, mut g) = at_step(&[], 5);
     let w = rules.world();
     let step = step_cost(&w, 5);
     let deploy = power(&rules, 0, "Expand");
-    set_res(&mut g, 0, Resource::Energy, step - 1);
-    assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the step can't be paid");
     set_res(&mut g, 0, Resource::Energy, step);
+    assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the step and Expand's 1 can't both be paid");
+    set_res(&mut g, 0, Resource::Energy, step + 1);
     rules.apply_mut(&mut g, &deploy, None).unwrap();
     answer_all(&rules, &mut g);
     assert_eq!(g.resource(0, Resource::Energy), 0);
@@ -209,9 +211,9 @@ fn a_track_s_last_steps_cost_more() {
     let extra = b.economy_track.last().unwrap().cost.min(b.play_track.last().unwrap().cost);
     assert!(extra > 0);
     let deploy = power(&rules, 0, "Expand");
-    set_res(&mut g, 0, Resource::Energy, extra - 1);
-    assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the step can't be paid");
     set_res(&mut g, 0, Resource::Energy, extra);
+    assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the step and Expand's 1 can't both be paid");
+    set_res(&mut g, 0, Resource::Energy, extra + 1);
     act(&rules, &mut g, deploy);
     assert_eq!(g.resource(0, Resource::Energy), 0);
 }

@@ -1,0 +1,37 @@
+{
+  "name": "f189-greedy",
+  "note": "189: the fresh ladder, r82 against r81 on the same seeds: greedy, d0-d4.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "greedy"
+  ],
+  "games": 48,
+  "records": 0
+}
