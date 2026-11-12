@@ -160,9 +160,11 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       return `${s.doc.split(';')[0]}${costs.length ? ` (${costs.join(', ')})` : ''}`;
     }
     case 'convert': {
-      const x = cx.view?.seats[Number(a.seat)]?.values.find((y) => y.key === `board.converter.${a.country}`);
+      // 199: `chips` names the corp's chip converter (r87), absent for the cube one.
+      const which = a.chips ? 'chip_converter' : 'converter';
+      const x = cx.view?.seats[Number(a.seat)]?.values.find((y) => y.key === `board.${which}.${a.country}`);
       // The log and the step line have no view: the country's name, handed in, names it.
-      if (!x) return `the converter of ${cx.countries?.[Number(a.country)] ?? `country ${a.country}`}`;
+      if (!x) return `the ${a.chips ? 'chip converter' : 'converter'} of ${cx.countries?.[Number(a.country)] ?? `country ${a.country}`}`;
       return `${x.label}: ${(x.doc ?? '').split(':')[0]}`;
     }
     case 'sell': {

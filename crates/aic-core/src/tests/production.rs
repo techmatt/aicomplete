@@ -231,7 +231,7 @@ fn a_blocker_stands_while_it_blocks() {
 fn a_converter_needs_a_city_of_its_country_in_reach() {
     let (rules, mut g) = lab(&["board.produce"]);
     let w = rules.world();
-    let convert = Action::Convert { seat: 0, country: 0 };
+    let convert = Action::Convert { seat: 0, country: 0, chips: false };
     let offered = |g: &GameState| rules.legal_actions(g).contains(&convert);
     with_cx(&rules, |cx| {
         cx.add_resource(&mut g, 0, Resource::ResearchCubes, 3);

@@ -1155,7 +1155,7 @@ pub enum Op {
     },
     /// 195 (a project's): in each country, its neutral `site` with the most agents on or next to it (ties: the
     /// lowest-numbered) corrupts; with none neutral, its player-owned `site` with the most agents on or next to it
-    /// turns neutral (the owner's cube comes off). A firewall or a no-Corrupt token guards a site (skipped).
+    /// turns neutral (the owner's cube comes off). A firewall or a no-Corrupt token guards a site (skipped); a guarded neutral one still counts as neutral, so nothing happens there (199, D88).
     TakeSite {
         site: Facility,
     },

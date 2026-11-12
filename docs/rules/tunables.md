@@ -22,7 +22,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.liberate_facility_at` | 3 | 1..10 | the Liberate action: ambassadors that liberate an adversary station or factory |
 | `board.claim_city` | 5 | 1..10 | the Claim action: ambassadors that claim a neutral city |
 | `board.claim_station` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral research station |
-| `board.claim_factory` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral factory |
+| `board.claim_factory` | 2 | 1..10 | the Claim action: ambassadors that claim a neutral factory |
 | `board.start_nodes` | 1 | 1..3 | 175: nodes each player starts with: its start hex, then the lowest-numbered free land hexes next to it (the extras off no track) |
 | `board.destruction_discord` | 1 | 0..5 | Discord each facility destroyed in war sways |
 | `board.troop_spent` | 1 | 0..1 | 1: an adversary troop that strikes a target is used up |
@@ -77,7 +77,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.stage1_added` | 0 | 0..3 | 151: difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step) |
 | `adversary.stage_extra` | 2, 0, 0, 0, 0 | 0..3 | 196: event cards added at difficulty 0-4, an entry a level: stage I while it has cards left, then stage II (a longer round cap where the players are slowest) |
 | `adversary.extra_corrupted` | 0 | 0..3 | difficulty 4: more cities per country start corrupted |
-| `adversary.compute_income` | 1, 4, 17, 18, 24 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
+| `adversary.compute_income` | 1, 4, 17, 22, 24 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
 | `adversary.ambassador_income` | 0, 2, 2, 2, 3 | 0..10 | 151: the agent income a country a round (into each country's pool), at difficulty 0-4 |
 | `adversary.tier2_early` | 1 | 0..3 | difficulty 4+: tier-2 threats start this many rounds sooner |
 | `adversary.discord_removed` | 0 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |

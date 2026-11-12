@@ -50,14 +50,81 @@ pub fn tally_short(w: &World, g: &mut GameState, cx: &mut Cx, seat: usize) {
         }
         if !short {
             keys.push("limit.play.held".into());
+            // 199: a kept card the seat could have played this round: a dead keep later is "held back".
+            if g.stats.counters.get(keep_at(seat, id).as_str()).is_some_and(|&r0| r0 > 0) {
+                keys.push(format!("={}", keep_ok(seat, id)));
+            }
         }
     }
     for k in keys {
+        if let Some(flag) = k.strip_prefix('=') {
+            cx.level(g, flag, 1);
+            continue;
+        }
         match k.strip_prefix('@') {
             Some(round_key) => cx.per_round(g, round_key, 1),
             None => cx.tally(g, &k, 1),
         }
     }
+}
+
+/// 199 (stats only): kept `card` left seat `s`'s hand unplayed: a dead keep, counted now
+/// (`cards.keep_plan.left_never` / `.left_held`, by whether it was ever playable), its keys cleared.
+pub(super) fn keep_left(g: &mut GameState, cx: &mut Cx, s: usize, card: &str) {
+    let ka = keep_at(s, card);
+    if !g.stats.counters.get(ka.as_str()).is_some_and(|&r0| r0 > 0) {
+        return;
+    }
+    let ok = keep_ok(s, card);
+    let held = g.stats.counters.get(ok.as_str()).is_some_and(|&v| v > 0);
+    cx.tally(g, if held { "cards.keep_plan.left_held" } else { "cards.keep_plan.left_never" }, 1);
+    cx.level(g, &ka, 0);
+    if held {
+        cx.level(g, &ok, 0);
+    }
+}
+
+/// 199 (stats only): marks each kept card in seat `seat`'s hand it could play now (its tags met, every cost in hand)
+/// as `keep_ok`: called as the play phase begins, before the round's spending, beside `tally_short`'s end-of-phase mark.
+pub fn mark_playable_keeps(w: &World, g: &mut GameState, cx: &mut Cx, seat: usize) {
+    let p = prices(w, g, seat);
+    let mut ok = Vec::new();
+    for id in g.pile(&hand(seat)).iter() {
+        if !g.stats.counters.get(keep_at(seat, id).as_str()).is_some_and(|&r0| r0 > 0) {
+            continue;
+        }
+        let d = def(w, id);
+        if requirements_met(w, g, seat, d)
+            && g.resource(seat, Resource::Credits) >= p.credits(d)
+            && extra_costs_at(d, p.insight(d)).iter().all(|&(r, n)| n <= 0 || g.resource(seat, r) >= n)
+        {
+            ok.push(keep_ok(seat, id));
+        }
+    }
+    for k in ok {
+        cx.level(g, &k, 1);
+    }
+}
+
+/// 199 (stats only): the round seat `s` kept `card`, 0 once it is played; a key left above 0 at the end is a dead keep.
+pub(super) fn keep_at(s: usize, card: &str) -> String {
+    format!("cards.keep_at.{s}.{card}")
+}
+
+/// 199 (stats only): 1 once seat `s` could have played its kept `card` at the end of an action phase.
+pub(super) fn keep_ok(s: usize, card: &str) -> String {
+    format!("cards.keep_ok.{s}.{card}")
+}
+
+/// 199 (stats only): a drafted card seat `s` could keep but couldn't play by the next round: its tags unmet, or its
+/// credits over what it holds and one round's credit income.
+pub(super) fn keep_unaffordable(w: &World, g: &GameState, seat: usize, card: &str) -> bool {
+    let d = def(w, card);
+    if !requirements_met(w, g, seat, d) {
+        return true;
+    }
+    let reach = g.resource(seat, Resource::Credits) + economy::income(w, g, seat)[Resource::Credits];
+    prices(w, g, seat).credits(d) > reach
 }
 
 /// Whether seat `s` meets what `d` requires.
@@ -291,10 +358,20 @@ impl Cards {
             cx.add_resource(g, s, Resource::Insight, -ins);
             cx.tally(g, "cards.insight_kept", ins);
             cx.per_round(g, "cards.insight_kept", ins);
+            cx.per_round(g, &format!("cards.seat_insight_kept.{s}"), ins);
         }
         cx.move_card(g, card, &drafted(s), &hand(s), false)?;
         cx.count(g, &format!("kept.{card}"), 1);
         cx.per_round(g, "cards.kept", 1);
+        // 199: the keep plan (stats only): kept by tier and round, and the round it was kept, read when it plays
+        // (`enter_play`) and, for a dead keep, at the game's end.
+        let tier = def(&w, card).tier;
+        cx.per_round(g, &format!("cards.kept_t{tier}"), 1);
+        cx.level(g, &keep_at(s, card), g.round as i64);
+        let ok = keep_ok(s, card);
+        if g.stats.counters.get(ok.as_str()).is_some_and(|&v| v > 0) {
+            cx.level(g, &ok, 0);
+        }
         if g.pile(&drafted(s)).is_empty() {
             g.seats[s].passed = true;
         }
@@ -308,6 +385,24 @@ fn enter_play(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &CardDef
     // filed its buildings under `ai.played.`, out of every read of plays.
     cx.tally(g, &KeyBuf::new("cards.played.").text(id), 1);
     cx.per_round(g, "cards.played", 1);
+    // 199: the keep plan (stats only): plays by tier and round; a kept card's wait from keep to play, 3 rounds or
+    // more a late keep (`cards.late_play.<id>`, valued by the reader). Its `keep_at` goes to 0: played.
+    cx.per_round(g, &format!("cards.played_t{}", d.tier), 1);
+    let ka = keep_at(seat, id);
+    if let Some(&r0) = g.stats.counters.get(ka.as_str()).filter(|&&r0| r0 > 0) {
+        let wait = g.round as i64 - r0;
+        cx.tally(g, "cards.keep_plan.played", 1);
+        cx.tally(g, "cards.keep_plan.wait", wait);
+        if wait >= 3 {
+            cx.tally(g, "cards.keep_plan.late", 1);
+            cx.tally(g, &KeyBuf::new("cards.late_play.").text(id), 1);
+        }
+        cx.level(g, &ka, 0);
+        let ok = keep_ok(seat, id);
+        if g.stats.counters.get(ok.as_str()).is_some() {
+            cx.level(g, &ok, 0);
+        }
+    }
     if d.is_building() {
         place_building(g, cx, seat, id, d)?;
         cx.move_card(g, id, &hand(seat), &built(seat), false)?;
@@ -348,6 +443,7 @@ fn pay_card_extras(g: &mut GameState, cx: &mut Cx, seat: usize, d: &CardDef) {
     if insight.1 > 0 {
         cx.tally(g, "cards.insight_played", insight.1);
         cx.per_round(g, "cards.insight_played", insight.1);
+        cx.per_round(g, &format!("cards.seat_insight_played.{seat}"), insight.1);
     }
     for (r, n) in &d.lowers {
         cx.add_key(g, &economy::production_key(seat, *r), -n);

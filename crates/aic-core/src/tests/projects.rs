@@ -327,6 +327,16 @@ fn the_board_verbs_take_the_targets_the_board_shows() {
     put(&mut g, f0, FACTORY, 1);
     put(&mut g, f1, FACTORY, 1);
     put(&mut g, f1, ADV_AMBASSADOR, 2);
+    // 199 (D88): a firewalled neutral factory still counts as neutral: the player's one stays theirs.
+    {
+        use crate::modules::common::FIREWALL;
+        let mut d88 = g.clone();
+        put(&mut d88, f1, FIREWALL, 1);
+        put(&mut d88, f0, cube(0), 1);
+        run_ops(&rules, &mut d88, &[Op::TakeSite { site: Facility::Factory }]);
+        assert_eq!(d88.tokens(f0, cube(0)), 1, "the guarded neutral one counts: nothing happens");
+        assert!(!corrupted(&d88, f1));
+    }
     run_ops(&rules, &mut g, &[Op::TakeSite { site: Facility::Factory }]);
     assert!(corrupted(&g, f1) && !corrupted(&g, f0), "the one with agents beside it");
     // A player's factory turns neutral once no neutral one is left.

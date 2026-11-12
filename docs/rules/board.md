@@ -65,12 +65,12 @@ neighbors change with the country count).
 megaproject is the corp's defining card.
 
 <!-- generated: corps -->
-| Corp | Megaproject | Cubes | At completion: player cube / adversary cube | Converter (as often as you can pay, unless marked) |
-|---|---|---|---|---|
-| Horizon (geothermal and tidal energy) | Tidal Grid | 8 | 3 energy, 3 credits / 1 Sway to Discord | 1 research cube + 2 energy → 1 antimatter (once a round) |
-| Cintamani (AI and efficiency) | Polar Compute Array | 8 | 1 drawn card, 5 credits / 1 adversary compute | 1 research cube → 2 insight (once a round) |
-| Onyx (heavy industry, power plants and processors) | Mountain Fusion Works | 8 | 2 chips, 3 credits / 1 Sway to Discord | 1 research cube → 1 chip (once a round) |
-| Biomia (biopunk) | Delta Seawall | 8 | 1 Sway to Unity, 1 drawn card / 1 Sway to Discord | 2 research cubes → 1 Sway to Unity (once a round) |
+| Corp | Megaproject | Cubes | At completion: player cube / adversary cube | Converter (as often as you can pay, unless marked) | Chip converter |
+|---|---|---|---|---|---|
+| Horizon (geothermal and tidal energy) | Tidal Grid | 8 | 3 energy, 3 credits / 1 Sway to Discord | 1 research cube + 2 energy → 1 antimatter (once a round) | 2 chips → 3 energy (once a round) |
+| Cintamani (AI and efficiency) | Polar Compute Array | 8 | 1 drawn card, 5 credits / 1 adversary compute | 1 research cube → 2 insight (once a round) | 2 chips → 3 drawn cards (once a round) |
+| Onyx (heavy industry, power plants and processors) | Mountain Fusion Works | 8 | 2 chips, 3 credits / 1 Sway to Discord | 1 research cube → 1 chip (once a round) | none |
+| Biomia (biopunk) | Delta Seawall | 8 | 1 Sway to Unity, 1 drawn card / 1 Sway to Discord | 2 research cubes → 1 Sway to Unity (once a round) | 2 chips → 2 Sway to Unity, 1 drawn card (once a round) |
 <!-- /generated -->
 
 - **Stations** follow the one site model ([ambassadors.md](ambassadors.md)). In production a **neutral** one makes
@@ -101,6 +101,10 @@ megaproject is the corp's defining card.
 - **After completion** that country's stations put their cubes on their owners' boards: a
   player stores **research cubes**, kept between rounds. A neutral station's cube is lost; adversary stations
   make compute (137).
+- **Chip converters** (r87, Matt: chips hoarded early pay late): three cards also print one paid in chips, used as the
+  converter is (a city of the country in reach, once a round); Onyx's, which makes chips, doesn't. Give / get at
+  `values.json` (anchors): 2 chips, 8 (12), for 3 energy 13.5 (13.5), 3 cards 12 (15), or 2 Sway and a card 12 (13).
+  Megaprojects complete by round 3 in about 97% of games (199), so they open mid-game.
 - **Converters.** Each completed card prints one converter, used in the action phase by any
   player with **a city of that country in reach** (r75, Matt's ruling 9: any city, owned or not; r37 asked for a
   node on the city), **once a round** per player each (r75: only Onyx's was). Every player also has the cube

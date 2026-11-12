@@ -541,7 +541,10 @@ impl Default for Weights {
             threat_harm_ref: 15.0,
             tempo: 0.5,
             tempo_ref: 4.0,
-            owned_factory: 4.0,
+            // 199: 4 -> 10 (r87: a claim is 2 ambassadors, 10 on the supply's 5; a factory's 1 chip a round at
+            // `chips` 4 is 10 in 2.5 rounds): claims 0.02 -> 0.46 a game, +3.9 ± 2.0 on r86's track, +3.6 on r87's
+            // (r87's track alone +4.2); 16: 2.3 claims, -8 against 10 (dev seeds, d0-d3).
+            owned_factory: 10.0,
             // 196: 2 -> 4: chips held at 0 in 92% of seat-rounds at 2; 4 read +4.2 ± 2.3 (dev seeds, d0-d3).
             chips: 4.0,
             reach: 0.5,

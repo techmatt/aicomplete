@@ -1,0 +1,36 @@
+{
+  "name": "s199-4a",
+  "note": "199 screen (dev seeds 36800-36831)",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist:plan_rounds=2"
+  ],
+  "games": 32,
+  "records": 0
+}

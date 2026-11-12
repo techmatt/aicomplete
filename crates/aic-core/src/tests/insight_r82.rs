@@ -37,7 +37,7 @@ fn the_card_play_track_prints_insight_totals_and_the_rightmost_counts() {
         assert_eq!(ai::track_insight(&w, &g, 0), shown, "space {}", i + 1);
         assert_eq!(economy::income(&w, &g, 0)[Resource::Insight], shown);
     }
-    assert_eq!(shown, 13, "the Builder's last total");
+    assert_eq!(shown, 10, "the Builder's last total (r87; 13 before)");
     let mut bad = w.content.ais[0].clone();
     bad.play_track[2].insight = Some(5);
     w.content.check_ai_board(&w.content.ais[0]).unwrap();

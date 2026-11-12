@@ -18,7 +18,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         .map(|f| format!("board.{}.", f.name()))
         .collect();
     let mut keys: Vec<&str> = flags.iter().map(String::as_str).collect();
-    keys.extend(["board.project.", "board.project_done.", "board.project_paid.", "board.converter_round.", "board.vigil_round.", "board.vigil_paid.","board.track.", "board.track2."]);
+    keys.extend(["board.project.", "board.project_done.", "board.project_paid.", "board.converter_round.", "board.chip_converter_round.", "board.vigil_round.", "board.vigil_paid.","board.track.", "board.track2."]);
     // 135: hex flags, standing troops, occupations and registrations.
     keys.extend(MARKS);
     out.bookkeeping(&keys);
@@ -192,20 +192,25 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
                 continue;
             }
             let m = &w.content.map.countries[c].megaproject;
-            let blocked = converter_blocked(w, g, s, c);
-            let label = match blocked {
-                Some(why) => format!("{} converter: {why}", country_name(w, c)),
-                None => format!("{} converter", country_name(w, c)),
-            };
-            out.seat(
-                s,
-                &format!("converter.{c}"),
-                &label,
-                blocked.is_none() as i64,
-                None,
-                // 118: `words` says "(once a round)" where the converter is (r75: every one).
-                &format!("{}, with a city of {} in your reach", m.converter.words(), country_name(w, c)),
-            );
+            // 199: the chip converter beside the cube one, where the card prints it.
+            for chips in [false, true] {
+                let Some(conv) = m.converter_of(chips) else { continue };
+                let blocked = converter_blocked_of(w, g, s, c, chips);
+                let name = if chips { "chip converter" } else { "converter" };
+                let label = match blocked {
+                    Some(why) => format!("{} {name}: {why}", country_name(w, c)),
+                    None => format!("{} {name}", country_name(w, c)),
+                };
+                out.seat(
+                    s,
+                    &format!("{}converter.{c}", if chips { "chip_" } else { "" }),
+                    &label,
+                    blocked.is_none() as i64,
+                    None,
+                    // 118: `words` says "(once a round)" where the converter is (r75: every one).
+                    &format!("{}, with a city of {} in your reach", conv.words(), country_name(w, c)),
+                );
+            }
         }
         let b = ai::board(w, s);
         let left = b.economy_track.len().saturating_sub(track_taken(g, s));

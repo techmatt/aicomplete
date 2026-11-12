@@ -341,7 +341,7 @@ export function legendHtml(): string {
 // ---------- seat panels ----------
 
 const SEAT_DRAWN = (k: string) =>
-  k.startsWith('resource.') || k.startsWith('economy.income.') || k === 'cards.slots' || k.startsWith('board.converter.');
+  k.startsWith('resource.') || k.startsWith('economy.income.') || k === 'cards.slots' || k.startsWith('board.converter.') || k.startsWith('board.chip_converter.');
 
 /** The seat's resources with income, its board's tracks, then other values. */
 export function seatValuesHtml(v: View, seatIndex: number): string {
@@ -379,7 +379,7 @@ export function seatValuesHtml(v: View, seatIndex: number): string {
   }
   const other = s.values.filter((x) => !SEAT_DRAWN(x.key)).map((x) => valueChip(x, scope)).join('');
   // 074: every completed card's converter; one this seat can't use says why.
-  const converters = s.values.filter((x) => x.key.startsWith('board.converter.')).map((x) =>
+  const converters = s.values.filter((x) => x.key.startsWith('board.converter.') || x.key.startsWith('board.chip_converter.')).map((x) =>
     `<span class="converter ${x.value ? 'usable' : 'unusable'}" data-value="${esc(x.key)}" data-scope="${scope}">${esc(x.label)}</span>`).join('');
   return `<div class="resources">${resHtml}</div>${converters ? `<div class="converters">${converters}</div>` : ''}${boardHtml(v, seatIndex)}<div class="values ai">${ai.join('')}${other}</div>`;
 }

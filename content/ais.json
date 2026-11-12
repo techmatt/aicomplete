@@ -193,6 +193,24 @@
     ]
    },
    {
+    "name": "Focus",
+    "tags": [],
+    "cost": [
+     [
+      "credits",
+      2
+     ]
+    ],
+    "text": "gain 1 insight",
+    "effects": [
+     {
+      "op": "gain",
+      "resource": "insight",
+      "amount": 1
+     }
+    ]
+   },
+   {
     "name": "Procure",
     "tags": [],
     "cost": [
@@ -213,7 +231,7 @@
   "play_track": [
    {
     "income": [],
-    "insight": 7
+    "insight": 5
    },
    {
     "income": [],
@@ -222,7 +240,7 @@
    {
     "income": [],
     "cost": 1,
-    "insight": 9
+    "insight": 7
    },
    {
     "income": [
@@ -236,7 +254,7 @@
    {
     "income": [],
     "cost": 2,
-    "insight": 11
+    "insight": 8
    },
    {
     "income": [],
@@ -244,7 +262,7 @@
     "tags": [
      "cyber"
     ],
-    "insight": 12
+    "insight": 9
    },
    {
     "income": [],
@@ -259,7 +277,7 @@
       }
      ]
     },
-    "insight": 13
+    "insight": 10
    }
   ],
   "tags": [
@@ -517,7 +535,7 @@
   "play_track": [
    {
     "income": [],
-    "insight": 7
+    "insight": 5
    },
    {
     "income": [],
@@ -526,7 +544,7 @@
    {
     "income": [],
     "cost": 1,
-    "insight": 9
+    "insight": 6
    },
    {
     "income": [
@@ -540,7 +558,7 @@
    {
     "income": [],
     "cost": 2,
-    "insight": 11
+    "insight": 7
    },
    {
     "income": [],
@@ -548,7 +566,7 @@
     "tags": [
      "diplomacy"
     ],
-    "insight": 12
+    "insight": 8
    },
    {
     "income": [],
@@ -562,7 +580,7 @@
       }
      ]
     },
-    "insight": 13
+    "insight": 9
    }
   ],
   "tags": [
@@ -797,12 +815,12 @@
   "play_track": [
    {
     "income": [],
-    "insight": 7
+    "insight": 4
    },
    {
     "income": [],
     "moves": 1,
-    "insight": 9
+    "insight": 5
    },
    {
     "income": [],
@@ -812,12 +830,12 @@
    {
     "income": [],
     "cost": 2,
-    "insight": 10
+    "insight": 6
    },
    {
     "income": [],
     "cost": 2,
-    "insight": 12
+    "insight": 7
    },
    {
     "income": [
@@ -844,7 +862,7 @@
       }
      ]
     },
-    "insight": 13
+    "insight": 8
    }
   ],
   "tags": [

@@ -18,7 +18,7 @@
         "liberate_facility_at": 3,
         "claim_city": 5,
         "claim_station": 3,
-        "claim_factory": 3,
+        "claim_factory": 2,
         "start_nodes": 1,
         "destruction_discord": 1,
         "troop_spent": 1,
@@ -105,7 +105,7 @@
           1,
           4,
           17,
-          18,
+          22,
           24
         ],
         "ambassador_income": [

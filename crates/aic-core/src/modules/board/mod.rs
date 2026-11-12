@@ -282,9 +282,10 @@ fn vigil_paid(s: usize) -> KeyBuf {
     KeyBuf::new("board.vigil_paid.").num(s)
 }
 
-/// The last round seat `s` used country `c`'s converter.
-fn converter_round(c: usize, s: usize) -> KeyBuf {
-    KeyBuf::new("board.converter_round.").num(c).text(".").num(s)
+/// The last round seat `s` used country `c`'s converter (`chips`: its chip converter, 199).
+fn converter_round(c: usize, s: usize, chips: bool) -> KeyBuf {
+    let pre = if chips { "board.chip_converter_round." } else { "board.converter_round." };
+    KeyBuf::new(pre).num(c).text(".").num(s)
 }
 
 
@@ -370,8 +371,10 @@ impl Module for Board {
             });
         }
         for c in 0..w.map.countries.len() {
-            if converter_blocked(w, g, s, c).is_none() {
-                out.push(Action::Convert { seat, country: c as u8 });
+            for chips in [false, true] {
+                if converter_blocked_of(w, g, s, c, chips).is_none() {
+                    out.push(Action::Convert { seat, country: c as u8, chips });
+                }
             }
         }
     }
@@ -414,18 +417,18 @@ impl Module for Board {
                 // 105: a removal here fires the seat's fight triggers.
                 cards::fighting(g, cx, s, |g, cx| std_resolve(g, cx, s, act, &targets))
             }
-            Action::Convert { seat, country } => {
+            Action::Convert { seat, country, chips } => {
                 let (s, c) = (*seat as usize, *country as usize);
                 // An answer replays this from a table that used it.
                 if !cx.replaying() {
                     if c >= w.map.countries.len() {
                         return Err(Halt::Illegal("no such country".into()));
                     }
-                    if let Some(why) = converter_blocked(&w, g, s, c) {
+                    if let Some(why) = converter_blocked_of(&w, g, s, c, *chips) {
                         return Err(Halt::Illegal(format!("can't use that converter: {why}")));
                     }
                 }
-                convert(g, cx, s, c)
+                convert(g, cx, s, c, *chips)
             }
             _ => Err(Halt::Illegal("not a standard action".into())),
         }
@@ -460,8 +463,16 @@ pub const NO_CITY_NODE: &str = "no city of this country in reach";
 /// The converter's block when the seat can't pay its cost.
 pub const CANT_PAY: &str = "can't pay it";
 
-/// Why seat `s` can't use country `c`'s converter now, if anything stops it.
+/// Why seat `s` can't use country `c`'s (cube) converter now, if anything stops it.
 pub fn converter_blocked(w: &World, g: &GameState, s: usize, c: usize) -> Option<&'static str> {
+    converter_blocked_of(w, g, s, c, false)
+}
+
+/// Why seat `s` can't use country `c`'s converter now (`chips`: its chip converter, 199), if anything stops it.
+pub fn converter_blocked_of(w: &World, g: &GameState, s: usize, c: usize, chips: bool) -> Option<&'static str> {
+    let Some(conv) = w.content.map.countries[c].megaproject.converter_of(chips) else {
+        return Some("none printed");
+    };
     if g.var(&project_done(c)) == 0 {
         return Some("the megaproject is not complete");
     }
@@ -469,9 +480,8 @@ pub fn converter_blocked(w: &World, g: &GameState, s: usize, c: usize) -> Option
     if !city_in_reach_in(w, g, s, c) {
         return Some(NO_CITY_NODE);
     }
-    let conv = &w.content.map.countries[c].megaproject.converter;
     // 105: a converter printed once a round keeps the limit (r75: every converter prints it).
-    if conv.once && g.var(&converter_round(c, s)) == g.round as i64 {
+    if conv.once && g.var(&converter_round(c, s, chips)) == g.round as i64 {
         return Some("used this round");
     }
     let cost = &conv.cost;
@@ -486,20 +496,26 @@ pub fn converter_blocked(w: &World, g: &GameState, s: usize, c: usize) -> Option
 }
 
 /// Seat `s` uses country `c`'s converter: pays, then its printed effects.
-fn convert(g: &mut GameState, cx: &mut Cx, s: usize, c: usize) -> Res {
+fn convert(g: &mut GameState, cx: &mut Cx, s: usize, c: usize, chips: bool) -> Res {
     let w = cx.world;
-    let m = &w.content.map.countries[c].megaproject;
-    for (r, n) in &m.converter.cost {
+    let Some(conv) = w.content.map.countries[c].megaproject.converter_of(chips) else {
+        return Err(Halt::Illegal("no such converter".into()));
+    };
+    for (r, n) in &conv.cost {
         cx.add_resource(g, s, *r, -n);
         if *r == Resource::ResearchCubes {
             cx.tally(g, "board.cubes_converted", *n);
         }
+        if *r == Resource::Chips {
+            cx.tally(g, "board.chips_converted", *n);
+        }
     }
-    if m.converter.once {
-        cx.set_key(g, &converter_round(c, s), g.round as i64);
+    if conv.once {
+        cx.set_key(g, &converter_round(c, s, chips), g.round as i64);
     }
-    cx.tally(g, &format!("board.converter.{c}"), 1);
-    cards::fighting(g, cx, s, |g, cx| effects::run(g, cx, &m.converter.effects, &mut effects::Ctx::seat(s)))
+    let key = if chips { format!("board.chip_converter.{c}") } else { format!("board.converter.{c}") };
+    cx.tally(g, &key, 1);
+    cards::fighting(g, cx, s, |g, cx| effects::run(g, cx, &conv.effects, &mut effects::Ctx::seat(s)))
 }
 
 /// 135: the hex flags count down as the country flags do; standing

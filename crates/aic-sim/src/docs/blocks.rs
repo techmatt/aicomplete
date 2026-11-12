@@ -303,6 +303,8 @@ pub(super) fn corps_block(c: &Content) -> String {
                 m.cubes.to_string(),
                 format!("{} / {}", Megaproject::words(&m.player), Megaproject::words(&m.adversary)),
                 m.converter.words(),
+                // 199: the chip converter, where the card prints one.
+                m.chip_converter.as_ref().map_or_else(|| "none".to_string(), |c| c.words()),
             ]
         })
         .collect();
@@ -313,6 +315,7 @@ pub(super) fn corps_block(c: &Content) -> String {
             "Cubes",
             "At completion: player cube / adversary cube",
             "Converter (as often as you can pay, unless marked)",
+            "Chip converter",
         ],
         rows,
     )

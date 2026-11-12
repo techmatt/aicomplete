@@ -8,6 +8,11 @@ pub fn discard(g: &mut GameState, cx: &mut Cx, card: &str, from: &str) {
     let to = discard_pile(def(&w, card).tier);
     cx.move_card(g, card, from, &to, true)
         .expect("card to discard is there");
+    // 199 (stats only): a kept card leaving the hand unplayed (sold, discarded) is a dead keep now; its keys clear,
+    // so the card coming back un-kept isn't read as a keep.
+    if let Some(s) = from.strip_prefix("cards.hand.").and_then(|n| n.parse::<usize>().ok()) {
+        play::keep_left(g, cx, s, card);
+    }
 }
 
 /// Seat `s` draws up to `n` tier-1 cards into its hand, no keep paid (023's

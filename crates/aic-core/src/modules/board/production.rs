@@ -132,6 +132,14 @@ fn measure_round(g: &mut GameState, cx: &mut Cx) {
                 }
             }
         }
+        // 199: chip converters a seat holding chips left unused (stats only).
+        if g.resource(s, Resource::Chips) > 0 {
+            for c in 0..w.map.countries.len() {
+                if converter_blocked_of(&w, g, s, c, true).is_none() {
+                    cx.tally(g, "board.chip_converter_idle", 1);
+                }
+            }
+        }
     }
 }
 

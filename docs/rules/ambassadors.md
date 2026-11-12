@@ -26,11 +26,14 @@ Cities, research stations and factories follow one set of rules and differ only 
   each agent on it (they cancel); **your own ambassadors standing on the site pay first, then your supply**, never
   another player's. Both need the site in reach; a botnet on or next to it stops neither.
 - **Claiming** (the Claim action, [economy.md](economy.md)): a neutral site in reach with no embargo on it,
-  `claim_city` 5, `claim_station` 3, `claim_factory` 3 (Liberate's prices). Your cube goes on.
+  `claim_city` 5, `claim_station` 3, `claim_factory` 2 (r87, Matt: an early factory is worth claiming; 3 before, as
+  Liberate's). Your cube goes on.
   Difficulty lowers only the adversary's numbers. The bound city at setup is free ([board.md](board.md)).
-  **A claim pays back in about 3 rounds** (142, Matt): a player's station makes `owned_station_cubes` 2 cubes and a
-  factory `factory_chips` 1 chip a round (r83; a neutral station `station_cubes` 1). Give / get at `values.json`: 3
-  ambassadors (12) for 1 chip a round (4, a chip at 4 since r83) or 2 cubes a round (6) pays back in 3 or 2 rounds.
+  **A claim pays back in a few rounds** (142, Matt): a player's station makes `owned_station_cubes` 2 cubes and a
+  factory `factory_chips` 1 chip a round (r83; a neutral station `station_cubes` 1). Give / get at `values.json`: 2
+  ambassadors (8) for 1 chip a round (4; 6 at the anchors) pays back in 2 rounds, 3 ambassadors (12) for 2 cubes a
+  round (6) in 2; a factory claimed by round 3 of an 8-10 round game makes 6-8 chips, which the corps' chip
+  converters ([board.md](board.md)) spend late. The risk is the adversary's: Asset Seizure turns it neutral.
   Claiming a neutral factory also stops it feeding the cities next to it ([war.md](war.md), city growth).
 - **Claiming a station with energy** (142): Power Purchase Agreement (an event: 2 credits and 2 energy) and Microgrid
   Lab Compact (a building: Action, pay 2 energy) claim a neutral research station in reach as the Claim action does

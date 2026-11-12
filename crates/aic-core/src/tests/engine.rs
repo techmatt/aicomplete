@@ -470,14 +470,28 @@ fn every_converter_is_once_a_round() {
     set_res(&mut g, 0, Resource::Energy, 10);
     for (c, piece) in w.content.map.countries.iter().enumerate().take(w.map.countries.len()) {
         assert!(board::converter_blocked(&w, &g, 0, c).is_none(), "{}", piece.name);
-        act(&rules, &mut g, Action::Convert { seat: 0, country: c as u8 });
+        act(&rules, &mut g, Action::Convert { seat: 0, country: c as u8, chips: false });
         assert_eq!(board::converter_blocked(&w, &g, 0, c), Some("used this round"), "{}", piece.name);
+    }
+    // 199: a chip converter (where printed) is its own once a round, paid in chips, beside the cube one.
+    set_res(&mut g, 0, Resource::Chips, 10);
+    for (c, piece) in w.content.map.countries.iter().enumerate().take(w.map.countries.len()) {
+        let Some(conv) = &piece.megaproject.chip_converter else {
+            assert_eq!(board::converter_blocked_of(&w, &g, 0, c, true), Some("none printed"));
+            continue;
+        };
+        assert!(conv.once, "{}", piece.name);
+        let chips = g.resource(0, Resource::Chips);
+        assert!(board::converter_blocked_of(&w, &g, 0, c, true).is_none(), "{}", piece.name);
+        act(&rules, &mut g, Action::Convert { seat: 0, country: c as u8, chips: true });
+        assert_eq!(g.resource(0, Resource::Chips), chips - 2, "{}", piece.name);
+        assert_eq!(board::converter_blocked_of(&w, &g, 0, c, true), Some("used this round"), "{}", piece.name);
     }
 }
 
 #[test]
 fn the_boards_insight_powers() {
-    // Researcher: Synthesis, cards from hand for insight (196: the Builder's Focus, never used, was cut).
+    // Researcher: Synthesis, cards from hand for insight.
     let mut c = lab_config(&[ACTIONS]);
     c.apply_override("ai.boards=2,1").unwrap();
     let rules = Rules::new(&c).unwrap();
@@ -491,6 +505,13 @@ fn the_boards_insight_powers() {
     answer(&rules, &mut g, 0);
     assert_eq!(g.pile("cards.hand.0").len(), 1, "one card a use");
     assert_eq!(g.resource(0, Resource::Insight), 2);
+    // Builder: Focus, 2 credits for 1 insight (199, r87: back after 196 cut it).
+    let rules = Rules::new(&lab_config(&[ACTIONS])).unwrap();
+    let mut g = rules.new_game(1);
+    set_res(&mut g, 0, Resource::Insight, 0);
+    set_res(&mut g, 0, Resource::Credits, 5);
+    rules.apply_mut(&mut g, &power(&rules, 0, "Focus"), None).unwrap();
+    assert_eq!((g.resource(0, Resource::Credits), g.resource(0, Resource::Insight)), (3, 1));
 }
 
 /// 178 (Matt's ruling #18): Vigil pays when a troop ends its march next to the Protector's node.

@@ -1,0 +1,113 @@
+{
+  "name": "s199-d3",
+  "note": "199 d3 calibration (the fresh read spent seeds 44479-44622, d3 only)",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_c20",
+      "set": [
+        "adversary.compute_income=1,4,17,20,24"
+      ]
+    },
+    {
+      "name": "br_c20",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,17,20,24"
+      ]
+    },
+    {
+      "name": "pr_c20",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,17,20,24"
+      ]
+    },
+    {
+      "name": "bp_c22",
+      "set": [
+        "adversary.compute_income=1,4,17,22,24"
+      ]
+    },
+    {
+      "name": "br_c22",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,17,22,24"
+      ]
+    },
+    {
+      "name": "pr_c22",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,17,22,24"
+      ]
+    },
+    {
+      "name": "bp_c24",
+      "set": [
+        "adversary.compute_income=1,4,17,24,24"
+      ]
+    },
+    {
+      "name": "br_c24",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,17,24,24"
+      ]
+    },
+    {
+      "name": "pr_c24",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,17,24,24"
+      ]
+    },
+    {
+      "name": "bp_a3",
+      "set": [
+        "adversary.ambassador_income=0,2,2,3,3"
+      ]
+    },
+    {
+      "name": "br_a3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,2,2,3,3"
+      ]
+    },
+    {
+      "name": "pr_a3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,2,2,3,3"
+      ]
+    }
+  ],
+  "difficulties": [
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

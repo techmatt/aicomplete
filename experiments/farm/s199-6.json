@@ -1,0 +1,121 @@
+{
+  "name": "s199-6",
+  "note": "199 screen (dev seeds 36800-36831)",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_deal5",
+      "set": [
+        "cards.deal=5"
+      ]
+    },
+    {
+      "name": "br_deal5",
+      "set": [
+        "ai.boards=0,2",
+        "cards.deal=5"
+      ]
+    },
+    {
+      "name": "pr_deal5",
+      "set": [
+        "ai.boards=1,2",
+        "cards.deal=5"
+      ]
+    },
+    {
+      "name": "bp_t4deal5",
+      "set": [
+        "ais.builder.play_track.0.insight=7",
+        "ais.builder.play_track.2.insight=8",
+        "ais.builder.play_track.4.insight=null",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=7",
+        "ais.protector.play_track.2.insight=8",
+        "ais.protector.play_track.4.insight=null",
+        "ais.protector.play_track.5.insight=null",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=6",
+        "ais.researcher.play_track.1.insight=null",
+        "ais.researcher.play_track.3.insight=7",
+        "ais.researcher.play_track.4.insight=null",
+        "ais.researcher.play_track.6.insight=8",
+        "cards.deal=5"
+      ]
+    },
+    {
+      "name": "br_t4deal5",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.play_track.0.insight=7",
+        "ais.builder.play_track.2.insight=8",
+        "ais.builder.play_track.4.insight=null",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=7",
+        "ais.protector.play_track.2.insight=8",
+        "ais.protector.play_track.4.insight=null",
+        "ais.protector.play_track.5.insight=null",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=6",
+        "ais.researcher.play_track.1.insight=null",
+        "ais.researcher.play_track.3.insight=7",
+        "ais.researcher.play_track.4.insight=null",
+        "ais.researcher.play_track.6.insight=8",
+        "cards.deal=5"
+      ]
+    },
+    {
+      "name": "pr_t4deal5",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.play_track.0.insight=7",
+        "ais.builder.play_track.2.insight=8",
+        "ais.builder.play_track.4.insight=null",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=7",
+        "ais.protector.play_track.2.insight=8",
+        "ais.protector.play_track.4.insight=null",
+        "ais.protector.play_track.5.insight=null",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=6",
+        "ais.researcher.play_track.1.insight=null",
+        "ais.researcher.play_track.3.insight=7",
+        "ais.researcher.play_track.4.insight=null",
+        "ais.researcher.play_track.6.insight=8",
+        "cards.deal=5"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

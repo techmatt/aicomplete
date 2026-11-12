@@ -1,0 +1,98 @@
+{
+  "name": "s199-3f",
+  "note": "199 screen (dev seeds 36800-36831)",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_t1",
+      "set": [
+        "ais.builder.play_track.0.insight=5",
+        "ais.builder.play_track.2.insight=7",
+        "ais.builder.play_track.4.insight=8",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=5",
+        "ais.protector.play_track.2.insight=6",
+        "ais.protector.play_track.4.insight=7",
+        "ais.protector.play_track.5.insight=8",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=4",
+        "ais.researcher.play_track.1.insight=5",
+        "ais.researcher.play_track.3.insight=6",
+        "ais.researcher.play_track.4.insight=7",
+        "ais.researcher.play_track.6.insight=8"
+      ]
+    },
+    {
+      "name": "br_t1",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.play_track.0.insight=5",
+        "ais.builder.play_track.2.insight=7",
+        "ais.builder.play_track.4.insight=8",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=5",
+        "ais.protector.play_track.2.insight=6",
+        "ais.protector.play_track.4.insight=7",
+        "ais.protector.play_track.5.insight=8",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=4",
+        "ais.researcher.play_track.1.insight=5",
+        "ais.researcher.play_track.3.insight=6",
+        "ais.researcher.play_track.4.insight=7",
+        "ais.researcher.play_track.6.insight=8"
+      ]
+    },
+    {
+      "name": "pr_t1",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.play_track.0.insight=5",
+        "ais.builder.play_track.2.insight=7",
+        "ais.builder.play_track.4.insight=8",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=5",
+        "ais.protector.play_track.2.insight=6",
+        "ais.protector.play_track.4.insight=7",
+        "ais.protector.play_track.5.insight=8",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=4",
+        "ais.researcher.play_track.1.insight=5",
+        "ais.researcher.play_track.3.insight=6",
+        "ais.researcher.play_track.4.insight=7",
+        "ais.researcher.play_track.6.insight=8"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist:w.owned_factory=10"
+  ],
+  "games": 32,
+  "records": 0
+}

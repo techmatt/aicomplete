@@ -57,8 +57,14 @@ pub enum Action {
     Standard { seat: u8, act: String },
     /// Sell a card from your hand (module `board`).
     Sell { seat: u8, card: Key },
-    /// Use a completed megaproject's converter, once a round (module `board`, 074).
-    Convert { seat: u8, country: u8 },
+    /// Use a completed megaproject's converter, once a round (module `board`, 074); `chips`: its chip
+    /// converter (199, r87), absent from older records.
+    Convert {
+        seat: u8,
+        country: u8,
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        chips: bool,
+    },
 }
 
 impl Action {

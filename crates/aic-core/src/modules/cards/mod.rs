@@ -325,6 +325,9 @@ impl Module for Cards {
             }
             PLAY => {
                 for s in 0..g.seats.len() {
+                    // 199: a kept card playable as the phase begins is no "never had" dead keep (stats only).
+                    let w = cx.world;
+                    play::mark_playable_keeps(&w, g, cx, s);
                     let hand_n = g.pile(&hand(s)).len() as i64;
                     cx.per_round(g, "cards.hand_size", hand_n);
                     let ins = g.resource(s, Resource::Insight);
@@ -340,6 +343,9 @@ impl Module for Cards {
                             cx.per_round(g, &format!("cards.insight_short.{s}"), 1);
                         } else {
                             cx.tally(g, "limit.keep_passed", 1);
+                            // 199: why a keepable card was passed: no play for it by next round, or chosen.
+                            let why = if play::keep_unaffordable(&w, g, s, &id) { "unaffordable" } else { "chosen" };
+                            cx.tally(g, &format!("limit.pass.{why}"), 1);
                         }
                         discard(g, cx, &id, &drafted(s));
                     }

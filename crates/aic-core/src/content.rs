@@ -268,6 +268,21 @@ pub struct Megaproject {
     pub player: Vec<Op>,
     pub adversary: Vec<Op>,
     pub converter: Converter,
+    /// 199 (r87, Matt 2026-11-12): a second converter paid in chips, used as the first is (a city of the
+    /// country in reach, after completion), so chips hoarded early pay late. Not every corp prints one.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub chip_converter: Option<Converter>,
+}
+
+impl Megaproject {
+    /// The converter `chips` names: the cube converter, or the chip converter if the card prints one.
+    pub fn converter_of(&self, chips: bool) -> Option<&Converter> {
+        if chips {
+            self.chip_converter.as_ref()
+        } else {
+            Some(&self.converter)
+        }
+    }
 }
 
 /// What a completed megaproject prints for players (074): pay `cost` for
@@ -297,6 +312,7 @@ impl Megaproject {
         let word = |op: &Op| match op {
             Op::Gain { resource, amount } => resource.words(*amount),
             Op::Draw { count: 1 } => "1 drawn card".to_string(),
+            Op::Draw { count } => format!("{count} drawn cards"),
             Op::Sway { side: Side::Unity, amount } => format!("{amount} Sway to Unity"),
             Op::Sway { side: Side::Discord, amount } => format!("{amount} Sway to Discord"),
             Op::Compute { amount } => format!("{amount} adversary compute"),
@@ -1445,12 +1461,19 @@ fn check_country_piece(i: usize, p: &CountryPiece, n: usize) -> Result<(), Strin
     }
     check_ops(&m.player, Slot::Player, &what)?;
     check_ops(&m.adversary, Slot::Team, &what)?;
-    check_ops(&m.converter.effects, Slot::Player, &what)?;
-    if m.converter.cost.is_empty() || m.converter.effects.is_empty() {
-        return Err(format!("{what}: a converter has a cost and an effect"));
+    for conv in std::iter::once(&m.converter).chain(m.chip_converter.as_ref()) {
+        check_ops(&conv.effects, Slot::Player, &what)?;
+        if conv.cost.is_empty() || conv.effects.is_empty() {
+            return Err(format!("{what}: a converter has a cost and an effect"));
+        }
+        for (r, _) in &conv.cost {
+            resource(r, &what)?;
+        }
     }
-    for (r, _) in &m.converter.cost {
-        resource(r, &what)?;
+    if let Some(conv) = &m.chip_converter {
+        if !conv.cost.iter().any(|(r, _)| *r == Resource::Chips) {
+            return Err(format!("{what}: a chip converter costs chips"));
+        }
     }
     Ok(())
 }

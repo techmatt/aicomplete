@@ -20,6 +20,7 @@ still help.
 | Builder | Scrap | 1 Industry | gain 1 chip |
 | Builder | Overcharge | 1 Power | gain 2 energy |
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
+| Builder | Focus | 2 credits | gain 1 insight |
 | Builder | Procure | 1 chip | draw 2 cards |
 | Protector | Bulwark | 1 energy | harden 1 facility in reach |
 | Protector | Expand | 1 energy | place 1 Node |
@@ -48,11 +49,15 @@ Procure turns a spare chip into 2 cards, as the Researcher's Fieldwork turns an 
 
 Insight is this round's attention, readable off the board: it pays keeps and plays ([player-cards.md](player-cards.md)),
 and credits never buy a keep (r82). The card-play track prints it as totals, Spirit Island style (r82): 3 at its
-start (r86; 6 before), then the new total on each space that raises it; a seat's insight is the number on the rightmost space it has
+start, then the new total on each space that raises it, each board at its own rate (r87: the Builder to 10, the
+Protector to 9, the Researcher to 8); a seat's insight is the number on the rightmost space it has
 uncovered. The economy track prints none. Every player has the
-cube converter, a standard action with no limit a round ([economy.md](economy.md)); the Protector and the Researcher
-each add one conversion of their own (the Builder's Focus, 5 credits → 1 insight, was cut at r86: 196 read it unused,
-0.03 a Builder game even at 2 credits and with the track starting at 4):
+cube converter, a standard action with no limit a round ([economy.md](economy.md)); each board adds one conversion of
+its own:
+
+- **Builder, Focus** (a power, once a round; back at r87, Matt: cut at r86 as unused): 2 credits → 1 insight. Give /
+  get 2 for 2.5 at `values.json` (4 at the anchors). 199 read it at 0.01-0.04 uses a Builder game even where insight
+  bound a seat-round in three: credits bind first.
 
 - **Protector, Vigil** (an Effect of Wall, not a power; capped, r79, Matt's ruling: some cap is locked, its size a
   candidate): the first two troops each round that end their march next to your node pay 1 insight each (`board.vigil_cap`
@@ -68,7 +73,7 @@ each add one conversion of their own (the Builder's Focus, 5 credits → 1 insig
 **For new players.** Insight is what you spend to keep and play cards: each round, the number on the rightmost space you've uncovered on
 your card-play track (3 at the start). When you
 are short, turn a research cube into 1 insight at any time (Cintamani's converter gives 2), and use your board's own
-way: the Protector gains 1 each of the first two times each round a troop ends its march next to its node (Vigil), the
+way: the Builder pays 2 credits for 1 (Focus), the Protector gains 1 each of the first two times each round a troop ends its march next to its node (Vigil), the
 Researcher discards a card for 2 (Synthesis). Insight you don't spend still goes at the round's end (the Researcher
 keeps all of it), but a few threat counters offer insight (6 at tier 1, 7 at tier 2: [threats.md](threats.md) *Counters*),
 so spare insight can stop one.

@@ -203,6 +203,8 @@ impl Module for Economy {
             let (cr, ins) = (g.resource(s, Resource::Credits), g.resource(s, Resource::Insight));
             cx.per_round(g, "economy.credits_unspent", cr);
             cx.per_round(g, "economy.insight_unspent", ins);
+            // 199: by seat, for the insight-by-board read (stats only).
+            cx.per_round(g, &format!("economy.seat_insight_unspent.{s}"), ins);
             let inc = upkeep_income(&w, g, s);
             for (r, n) in inc.iter() {
                 if r != Resource::Insight {

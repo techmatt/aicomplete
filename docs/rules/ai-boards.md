@@ -12,7 +12,7 @@ upkeep). The board module owns nodes and counts the tokens taken (`board.track.<
 **The Builder, for new players.** Your special rule is Breadth: five building slots, so your engine is wider. You start with 40 credits and earn 15 a round, and each credit space of your
 economy track adds 2 or 3 more, so placing a node is how your income grows; you're short of energy. Round 1 deals
 you 2 tier-1 and 2 tier-2 cards into your hand, free (the tier-2s point a build direction), then drafts and keeps as
-every round does (r82). Each round you may turn credits into a chip with Mint
+every round does (r82). Each round you may turn credits into a chip with Mint, 2 credits into 1 insight with Focus,
 and 1 chip into 2 cards with Procure. Late in the game, sacrifice cards you have finished with:
 an Industry card pays out chips, a Power card energy, and an Industry card with an energy plays a building from your
 hand for no credits. Each round you may Dispatch 1 ambassador for free (2 from your fourth economy space). Your printed
@@ -52,9 +52,8 @@ counts from when it is uncovered. Cards that move ambassadors (Liaison Corps, Su
 is reached about round 2-3. **The Researcher is the Dispatch-heavy board,** as its stations spread over the map: its own
 ambassador on one armors it and keeps agents off, which would block its cubes.
 
-**Give / get** (`values.json`): a Dispatch is 1.4 a round; space 6
-(cost 3, about 18) is even on the way to the capstone. A printed tag is free: the tag (1), its discount one card
-sooner, the per-tag cards' pay; the Researcher's Science discount reaches every card it plays.
+**Give / get** (`values.json`): a Dispatch is 1.4 a round; space 6 (cost 3, about 18) is even on the way to the
+capstone. A printed tag is free.
 
 **Capstones (candidate).** Each track ends in a capstone, a standing rule once its space is uncovered, as a card's
 Effect is while it is in play. A capstone is what a seat pushes on for; at 1-2
@@ -108,19 +107,20 @@ The **keep upgrade**: tier-2 keeps cost `keep_tier2_upgraded` instead of `keep_t
 is uncovered at setup. A placement takes the next token from the track the player chooses (asked when both
 have tokens). **Insight prints here only, as totals** (r82, Matt's amendment, Spirit Island style): the printed start
 shows 3 (r86; 6 before) and a space that raises it shows the new total; your insight is the number on the rightmost space you've
-uncovered that shows one.
+uncovered that shows one. **Each board grows it at its own rate** (r87, Matt: income is the lever, as Spirit Island's
+energy): the Builder to 10, the Protector 9, the Researcher, whose Patience banks it, 8 (r86: 13 on all three).
 
 <!-- generated: node_track2 -->
 | Space | Builder | Protector | Researcher |
 |---|---|---|---|
 | printed start | insight 3 | insight 3 | insight 3 |
-| 1 | **insight 7** | **insight 7** | **insight 7** |
-| 2 | **keep upgrade** | **keep upgrade** | **insight 9**, **Dispatch +1** |
-| 3 | pay 1 energy: **insight 9** | pay 1 energy: **insight 9** | pay 1 energy: **keep upgrade** |
-| 4 | pay 2 energy: +2 credits | pay 2 energy: +2 credits | pay 2 energy: **insight 10** |
-| 5 | pay 2 energy: **insight 11** | pay 2 energy: **insight 11** | pay 2 energy: **insight 12** |
-| 6 | pay 3 energy: **insight 12**, Cyber tag | pay 3 energy: **insight 12**, Diplomacy tag | pay 3 energy: +2 credits, Industry tag |
-| 7 | pay 5 energy: **insight 13**, **Master Plan** (capstone): Your buildings cost 2 credits less. | pay 5 energy: **insight 13**, **Aegis Doctrine** (capstone): Once a round, the first time one of your Nodes or facilities would be destroyed, it is sheltered. | pay 5 energy: **insight 13**, **Open Science** (capstone): Each round, 2 insight from the supply, split among other players. |
+| 1 | **insight 5** | **insight 5** | **insight 4** |
+| 2 | **keep upgrade** | **keep upgrade** | **insight 5**, **Dispatch +1** |
+| 3 | pay 1 energy: **insight 7** | pay 1 energy: **insight 6** | pay 1 energy: **keep upgrade** |
+| 4 | pay 2 energy: +2 credits | pay 2 energy: +2 credits | pay 2 energy: **insight 6** |
+| 5 | pay 2 energy: **insight 8** | pay 2 energy: **insight 7** | pay 2 energy: **insight 7** |
+| 6 | pay 3 energy: **insight 9**, Cyber tag | pay 3 energy: **insight 8**, Diplomacy tag | pay 3 energy: +2 credits, Industry tag |
+| 7 | pay 5 energy: **insight 10**, **Master Plan** (capstone): Your buildings cost 2 credits less. | pay 5 energy: **insight 9**, **Aegis Doctrine** (capstone): Once a round, the first time one of your Nodes or facilities would be destroyed, it is sheltered. | pay 5 energy: **insight 8**, **Open Science** (capstone): Each round, 2 insight from the supply, split among other players. |
 <!-- /generated -->
 
 **Loops and caps.** No resource has a holding limit and no cap limits production ([economy.md](economy.md), *No

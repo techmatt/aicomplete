@@ -1004,7 +1004,7 @@ fn source_of(rules: &Rules, g: &GameState, a: &Action) -> Source {
         Action::Antimatter { .. } => "antimatter".to_string(),
         Action::Standard { act, .. } => format!("standard:{act}"),
         Action::Sell { .. } => "sell".to_string(),
-        Action::Convert { country, .. } => format!("convert:{country}"),
+        Action::Convert { country, chips, .. } => format!("convert:{country}{}", if *chips { ":chips" } else { "" }),
     };
     (Some(a.seat()), label)
 }

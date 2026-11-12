@@ -238,7 +238,8 @@ pub(super) fn spread_botnets(g: &mut GameState, cx: &mut Cx, count: i64) {
 }
 
 /// 195 (`TakeSite`): in each country, the neutral `site` with the most agents on or next to it corrupts; with none
-/// neutral, the player-owned one picked the same way turns neutral. A guarded site (firewall, no-Corrupt token) is skipped.
+/// neutral, the player-owned one picked the same way turns neutral. A guarded site (firewall, no-Corrupt token) is skipped,
+/// and a guarded neutral one still counts as neutral (D88).
 pub(super) fn take_site(g: &mut GameState, cx: &mut Cx, site: Facility) -> Res {
     let w = cx.world;
     let kind = match site {
@@ -248,12 +249,19 @@ pub(super) fn take_site(g: &mut GameState, cx: &mut Cx, site: Facility) -> Res {
     for c in 0..w.map.countries.len() {
         let hexes: Vec<usize> = by_number(&w, c).into_iter().filter(|&h| g.tokens(h, kind) > 0 && !corrupted(g, h)).collect();
         let guarded: Vec<usize> = hexes.iter().copied().filter(|&h| adversary::guard_holds(g, cx, h, "take_site")).collect();
+        // 199 (D88, Matt 2026-11-12): a guarded neutral site still counts as neutral, so with any neutral site in
+        // the country no owned one turns neutral; with every neutral one guarded, nothing happens there.
+        let any_neutral = hexes.iter().any(|&h| cube_owner(g, h).is_none());
         let open: Vec<usize> = hexes.into_iter().filter(|h| !guarded.contains(h)).collect();
         let neutral: Vec<usize> = open.iter().copied().filter(|&h| cube_owner(g, h).is_none()).collect();
         if let Some(h) = most_agents_around(&w, g, &neutral) {
             adversary::corrupt_hex(g, cx, h, if site == Facility::Station { CorruptSite::Station } else { CorruptSite::Factory })?;
             cx.tally(g, "adversary.sites_taken", 1);
             cx.note(Some(h), || format!("The neutral {} at {} goes to the adversary", piece_name(kind), hex_name(&w, h)));
+            continue;
+        }
+        if any_neutral {
+            cx.tally(g, "adversary.sites_guarded", 1);
             continue;
         }
         let owned: Vec<usize> = open.into_iter().filter(|&h| cube_owner(g, h).is_some()).collect();
