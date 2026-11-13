@@ -94,7 +94,7 @@ generated docs, so after a content edit run `python scripts/regen.py` first. Red
 
 ```sh
 cargo build --workspace
-cargo test --workspace                             # fast lane: ~5 s once built, ~13 s after an edit in aic-sim (rebuild included)
+cargo test --workspace                             # fast lane: ~5 s once built, ~13 s after an edit in aic-sim (rebuild included); 4-6 min on a loaded box (213)
 cargo test-all                                     # full run, slow lane included: ~3.5 min on 6 test threads, rebuild included (174)
 cargo test-slow                                    # the slow lane alone: nearly all of that
 cargo build --release -p aic-sim                   # ~30 s after an aic-sim edit, ~45 s after aic-core, ~1 min cold (174)

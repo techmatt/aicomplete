@@ -36,7 +36,6 @@ fill a track again, which then tips too. Thresholds: *Tunables*.
 | Unity | liberating an adversary city (ambassadors.md: a liberate card or the Liberate action) | `alignment.free_city` 5 |
 | Unity | liberating an adversary station or factory (the Liberate action) | `free_facility` 2 |
 | Unity | removing a botnet | `alignment.botnet` 0 |
-| Unity | Breakthrough (1 antimatter, once a round) | `breakthrough_unity` 2 |
 | Unity | clearing a corruption marker (Recovery, cards) | `clear_unity` 2 |
 | Unity | player cubes on a megaproject as it completes, as its corp's card prints (Delta Seawall) | 1 each |
 | Unity | cards (Peace Conference, Coalition Charter, Open Assembly), Unity cards | card text |

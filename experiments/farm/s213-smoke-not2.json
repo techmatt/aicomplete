@@ -1,0 +1,33 @@
+{
+  "name": "s213-smoke-not2",
+  "note": "213: engine smoke, tier 2 off, dev seeds 36800",
+  "configs": [
+    "experiments/configs/no_tier2.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_not2",
+      "set": []
+    },
+    {
+      "name": "br_not2",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr_not2",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 16,
+  "records": 0
+}

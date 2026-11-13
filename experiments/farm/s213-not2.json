@@ -1,0 +1,37 @@
+{
+  "name": "s213-not2",
+  "note": "213: tier 2 off, dev seeds 36800-36831",
+  "configs": [
+    "experiments/configs/no_tier2.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_not2",
+      "set": []
+    },
+    {
+      "name": "br_not2",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr_not2",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

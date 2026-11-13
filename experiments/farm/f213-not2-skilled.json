@@ -1,0 +1,42 @@
+{
+  "name": "f213-not2-skilled",
+  "note": "Skilled rows beside f213-not2: oracle, 8 seeds a variant, d[3, 4].",
+  "configs": [
+    "experiments/configs/no_tier2.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_not2",
+      "set": []
+    },
+    {
+      "name": "br_not2",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr_not2",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    3,
+    4
+  ],
+  "agents": [
+    "strategist",
+    "oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1"
+  ],
+  "games": 8,
+  "first_seed": 0,
+  "records": 0,
+  "endgame": {
+    "back": 3,
+    "agent": "",
+    "rollouts": 1,
+    "all_losses": true
+  }
+}

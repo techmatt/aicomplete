@@ -308,6 +308,8 @@ fn cut(w: &World, act: StandardAction) -> bool {
         StandardAction::Node => "node_credits",
         StandardAction::Troop => "troop_credits",
         StandardAction::Factory => "factory_build_chips",
+        // 213 (r94): Breakthrough is gone (Matt: temporary until tier 2 carried antimatter); its Unity 0 cuts it.
+        StandardAction::Breakthrough => "breakthrough_unity",
         _ => return false,
     };
     w.int(&format!("board.{k}")) <= 0

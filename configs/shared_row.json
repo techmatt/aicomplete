@@ -50,7 +50,7 @@
         "cube_insight": 1,
         "antimatter_cubes": 4,
         "breakthrough_antimatter": 1,
-        "breakthrough_unity": 2,
+        "breakthrough_unity": 0,
         "botnet_credits": 16
       }
     },
@@ -370,7 +370,12 @@
         "air_gap",
         "rally_the_allies",
         "surgical_strike",
-        "open_source_uprising"
+        "open_source_uprising",
+        "collider_consortium",
+        "catalyzed_fab_run",
+        "antimatter_accord",
+        "cyclotron_lease",
+        "accelerator_diplomacy"
       ]
     }
   ],

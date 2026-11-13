@@ -227,6 +227,28 @@
       "count": 1
      }
     ]
+   },
+   {
+    "name": "Refine",
+    "tags": [],
+    "cost": [
+     [
+      "chips",
+      2
+     ],
+     [
+      "energy",
+      1
+     ]
+    ],
+    "text": "gain 1 antimatter",
+    "effects": [
+     {
+      "op": "gain",
+      "resource": "antimatter",
+      "amount": 1
+     }
+    ]
    }
   ],
   "play_track": [
@@ -555,6 +577,28 @@
      {
       "op": "damage",
       "troops": 2
+     }
+    ]
+   },
+   {
+    "name": "Joint Facility",
+    "tags": [],
+    "cost": [
+     [
+      "credits",
+      12
+     ],
+     [
+      "energy",
+      1
+     ]
+    ],
+    "text": "gain 1 antimatter",
+    "effects": [
+     {
+      "op": "gain",
+      "resource": "antimatter",
+      "amount": 1
      }
     ]
    }

@@ -309,6 +309,10 @@ macro_rules! behavior_table {
             /// them, the keep plan plays a card this round it can't now (the eval held the Researcher's cubes over its
             /// insight and antimatter, so it never converted, 207).
             (make_short: bool, 1.0, "211: convert cubes to insight or antimatter when, after up to three conversions, the keep plan plays a card this round it can't now")
+            /// 213 (with `make_short`): an antimatter source the seat can use this round (a board power or a built
+            /// Action that gains antimatter: Refine, Joint Facility, Particle Run, the plants) counts as a way to make
+            /// the antimatter a hand card lacks, tried before Make antimatter's cubes (r94 left the new powers unused).
+            (am_source: bool, 1.0, "213: with make_short, an antimatter power or built Action is used (before Make antimatter) when it lets the keep plan play a card this round it can't now")
         }
     };
 }
@@ -986,20 +990,28 @@ impl Policy {
         if self.forced.hoarding(&world, g, s, false) {
             return None;
         }
-        let acts: Vec<(usize, &str)> = ["insight", "antimatter"]
-            .into_iter()
-            .filter_map(|n| legal.iter().position(|a| matches!(a, Action::Standard { act, .. } if act == n)).map(|i| (i, n)))
-            .collect();
-        // A hand card not playable now, short only 1-3 insight or 1-2 antimatter the seat's cubes could make.
+        let standard = |n: &str| legal.iter().position(|a| matches!(a, Action::Standard { act, .. } if act == n));
+        // 213 (`am_source`): the seat's antimatter powers and built Actions, each once a round, before the cubes.
+        let sources: Vec<usize> = if self.behaviors.am_source {
+            legal.iter().enumerate().filter(|(_, a)| a.seat() as usize == s && makes_antimatter(&world, a)).map(|(i, _)| i).collect()
+        } else {
+            Vec::new()
+        };
+        let mut acts: Vec<(usize, &str)> = standard("insight").map(|i| (i, "insight")).into_iter().collect();
+        acts.extend(sources.iter().map(|&i| (i, "source")));
+        acts.extend(standard("antimatter").map(|i| (i, "antimatter")));
+        // A hand card not playable now, short only 1-3 insight or 1-2 antimatter the seat's cubes (or a source) could make.
         let cubes = g.resource(s, Resource::ResearchCubes);
         let am_cubes = world.int("board.antimatter_cubes").max(1);
+        let has_source = !sources.is_empty();
         let short = |c: &Key| {
             let d = cards::def(&world, c);
             let ins = cards::play_insight(&world, g, s, d) - g.resource(s, Resource::Insight);
             let am = d.antimatter - g.resource(s, Resource::Antimatter);
             !playable(legal, s, c)
                 && cards::play_cost(&world, g, s, d) <= g.resource(s, Resource::Credits)
-                && ((1..=3.min(cubes)).contains(&ins) && am <= 0 || ins <= 0 && (1..=2).contains(&am) && am * am_cubes <= cubes)
+                && ((1..=3.min(cubes)).contains(&ins) && am <= 0
+                    || ins <= 0 && (1..=2).contains(&am) && (has_source || am * am_cubes <= cubes))
         };
         if acts.is_empty() || !g.pile(&cards::hand(s)).iter().any(short) {
             return None;
@@ -1019,7 +1031,7 @@ impl Policy {
                     if plan_now(&world, &h, s, &self.forced, &pc).iter().any(|c| !playable(legal, s, c) && playable(&next, s, c)) {
                         return Some(i);
                     }
-                    if act == "antimatter" && n >= 1 {
+                    if act == "antimatter" && n >= 1 || act == "source" {
                         break;
                     }
                 }
@@ -1211,6 +1223,16 @@ pub fn print_choices(rules: &Rules, spec: &super::AgentSpec, first: u64, games: 
 /// 082's antimatter rule: whether power `k` of seat `s` sacrifices cards for
 /// antimatter while a card in the seat's hand needs antimatter it lacks and is
 /// otherwise within reach (its credits held).
+/// 213 (`am_source`): whether `a` is a board power or a built Action that gains antimatter.
+fn makes_antimatter(w: &World, a: &Action) -> bool {
+    let gains = |effects: &[Op]| effects.iter().any(|e| matches!(e, Op::Gain { resource: Resource::Antimatter, .. }));
+    match a {
+        Action::Power { seat, power } => ai::board(w, *seat as usize).powers.get(*power as usize).is_some_and(|p| gains(&p.effects)),
+        Action::Use { card, .. } => cards::def(w, card).ability.as_ref().is_some_and(|ab| gains(&ab.effects)),
+        _ => false,
+    }
+}
+
 fn antimatter_wanted(w: &World, g: &GameState, s: usize, k: usize) -> bool {
     let p = &ai::board(w, s).powers[k];
     let gains = p.effects.iter().any(|e| matches!(e, Op::Gain { resource: Resource::Antimatter, .. }));

@@ -1,0 +1,29 @@
+# 213: tier 2 as the majors (the cards). The boards' antimatter powers are in overlay-ais.txt.
+# python scripts/cards/apply_overlay.py experiments/results/213_tier2_design/overlay.txt
+#
+# Reworked majors: big payoffs paid in antimatter (anchor 18), priced at the anchors (README, give / get).
+cards.dyson_swarm_tranche.cost=12
+cards.dyson_swarm_tranche.insight=1
+cards.dyson_swarm_tranche.antimatter=1
+cards.dyson_swarm_tranche.needs=[["power", 2]]
+cards.dyson_swarm_tranche.effects=[{"op": "gain", "resource": "energy", "amount": 10}, {"op": "production", "resource": "energy", "amount": 2}]
+cards.recursive_self_improvement.cost=5
+cards.recursive_self_improvement.antimatter=1
+cards.recursive_self_improvement.effects=[{"op": "production", "resource": "insight", "amount": 3}, {"op": "draw", "count": 3}]
+cards.peacekeeping_mission.cost=20
+cards.peacekeeping_mission.antimatter=1
+cards.peacekeeping_mission.effects=[{"op": "liberate", "troops": 3}]
+cards.root_access.cost=18
+cards.root_access.antimatter=1
+cards.hostile_buyout.cost=22
+cards.hostile_buyout.antimatter=1
+cards.decapitation_strike.cost=4
+cards.decapitation_strike.antimatter=1
+cards.decapitation_strike.effects=[{"op": "remove_troops", "count": 3}, {"op": "remove_botnet"}]
+# New majors (tier 2).
+cards.collider_consortium={"id": "collider_consortium", "name": "Collider Consortium", "tier": 2, "kind": "program", "cost": 8, "antimatter": 1, "insight": 1, "tags": ["science"], "keywords": ["help"], "effects": [{"op": "gain", "resource": "research_cubes", "amount": 8}, {"op": "choose_player"}, {"op": "other_gain", "resource": "research_cubes", "amount": 3}]}
+cards.catalyzed_fab_run={"id": "catalyzed_fab_run", "name": "Catalyzed Fab Run", "tier": 2, "kind": "event", "cost": 2, "antimatter": 1, "insight": 0, "tags": ["industry", "power"], "keywords": ["help"], "effects": [{"op": "gain", "resource": "chips", "amount": 6}, {"op": "choose_player"}, {"op": "other_gain", "resource": "chips", "amount": 2}]}
+cards.antimatter_accord={"id": "antimatter_accord", "name": "Antimatter Accord", "tier": 2, "kind": "program", "cost": 8, "antimatter": 1, "insight": 1, "tags": ["diplomacy"], "effects": [{"op": "gain_ambassadors", "count": 6}, {"op": "sway", "side": "unity", "amount": 4, "narrative": "cooperation"}]}
+# New expensive tier-1 cards: an antimatter source and an antimatter spend.
+cards.cyclotron_lease={"id": "cyclotron_lease", "name": "Cyclotron Lease", "tier": 1, "kind": "building", "cost": 22, "insight": 0, "tags": ["power"], "ability": {"cost": [["energy", 2]], "effects": [{"op": "gain", "resource": "antimatter", "amount": 1}]}}
+cards.accelerator_diplomacy={"id": "accelerator_diplomacy", "name": "Accelerator Diplomacy", "tier": 1, "kind": "event", "cost": 4, "antimatter": 1, "insight": 0, "tags": ["diplomacy"], "effects": [{"op": "sway", "side": "unity", "amount": 5, "narrative": "cooperation"}, {"op": "gain_ambassadors", "count": 2}]}

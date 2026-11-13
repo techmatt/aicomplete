@@ -1,0 +1,37 @@
+{
+  "name": "s213b-ag0",
+  "note": "213 round 2: ag0, dev seeds 36800-36831",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist:am_source=0,w.am_power_earn=0"
+  ],
+  "games": 32,
+  "records": 0
+}

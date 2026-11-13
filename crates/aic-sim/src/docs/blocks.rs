@@ -636,8 +636,6 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
             t("alignment.free_facility"),
         ],
         ["Unity".to_string(), "removing a botnet".to_string(), t("alignment.botnet")],
-        // 204: the standard antimatter spend.
-        ["Unity".to_string(), "Breakthrough (1 antimatter, once a round)".to_string(), t("board.breakthrough_unity")],
         // 099: two Unity sources the table left out.
         [
             "Unity".to_string(),
@@ -690,6 +688,11 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
             t("adversary.blight_discord"),
         ],
     ];
+    // 204: the standard antimatter spend; 213 (r94): gone at `breakthrough_unity` 0, no row.
+    let mut rows = rows;
+    if r.world().int("board.breakthrough_unity") > 0 {
+        rows.push(["Unity".to_string(), "Breakthrough (1 antimatter, once a round)".to_string(), t("board.breakthrough_unity")]);
+    }
     table(&["Toward", "From", "Amount"], rows.into_iter().map(|r| r.to_vec()).collect())
 }
 

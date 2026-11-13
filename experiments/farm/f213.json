@@ -1,0 +1,57 @@
+{
+  "name": "f213",
+  "note": "213: the fresh read, r94 base and Breakthrough back on",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_bt",
+      "set": [
+        "board.breakthrough_unity=2"
+      ]
+    },
+    {
+      "name": "br_bt",
+      "set": [
+        "ai.boards=0,2",
+        "board.breakthrough_unity=2"
+      ]
+    },
+    {
+      "name": "pr_bt",
+      "set": [
+        "ai.boards=1,2",
+        "board.breakthrough_unity=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 96,
+  "records": 0
+}

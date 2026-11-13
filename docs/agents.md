@@ -53,7 +53,8 @@ the plan** (203, `kept_rule` 3): the keep plan's card this round over a pass, st
 action. **Sell a dead card** (211, `sell_rule` 1): a card the plan won't play (the deck's last round: this round;
 before: over its rounds), when up to three sales let the plan play a card it otherwise wouldn't. **Save antimatter**
 (211, `am_save`): no spend takes the seat below a reachable hand card's antimatter. **Convert for a play** (211,
-`make_short`): cubes to insight or antimatter when the plan then plays a card it can't now. **Botnet reach**
+`make_short`): cubes to insight or antimatter when the plan then plays a card it can't now; with `am_source` (213)
+an antimatter power or built Action first. **Botnet reach**
 (176, `w.botnet_reach` 0.3): an ambassador on a botnet's hex is worth that share of it.
 
 Spec syntax: `kind[:key=value,...]`; a weight takes `w.` (`greedy:w.corrupted=40`), a table

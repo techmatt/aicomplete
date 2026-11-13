@@ -1,0 +1,44 @@
+{
+  "name": "s213-tg",
+  "note": "213: Tidal Grid converter lever, dev seeds 36800-36831",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_tg",
+      "set": [
+        "corps.horizon.project.converter.cost=[[\"research_cubes\",2],[\"energy\",1]]",
+        "corps.horizon.project.converter.effects.0.amount=1"
+      ]
+    },
+    {
+      "name": "br_tg",
+      "set": [
+        "ai.boards=0,2",
+        "corps.horizon.project.converter.cost=[[\"research_cubes\",2],[\"energy\",1]]",
+        "corps.horizon.project.converter.effects.0.amount=1"
+      ]
+    },
+    {
+      "name": "pr_tg",
+      "set": [
+        "ai.boards=1,2",
+        "corps.horizon.project.converter.cost=[[\"research_cubes\",2],[\"energy\",1]]",
+        "corps.horizon.project.converter.effects.0.amount=1"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

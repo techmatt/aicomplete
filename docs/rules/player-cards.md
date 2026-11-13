@@ -29,7 +29,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   card's price is in [cards.md](../cards.md); the reasoning is in [card-pricing.md](../card-pricing.md).
 
 <!-- generated: draft_set -->
-**The draft set in numbers.** 175 cards (116 tier 1, 59 tier 2). Insight to play: 92 / 52 / 31 cards at 0 / 1 / 2, 21 of the 59 tier-2 cards at 2. An energy cost: 14 cards, 8 of the 68 buildings.
+**The draft set in numbers.** 180 cards (118 tier 1, 62 tier 2). Insight to play: 95 / 55 / 30 cards at 0 / 1 / 2, 20 of the 62 tier-2 cards at 2. An energy cost: 14 cards, 8 of the 69 buildings.
 <!-- /generated -->
 
 - **Energy costs (candidate; Matt).** Energy is a second cost on a card whose title reads power-hungry (most are buildings), its
@@ -37,6 +37,10 @@ The cards config lists which cards are in the game (baseline: all of them).
   compute. Energy costs stay uncommon (counts above), so a
   seat that makes little energy still has plenty to play. Seven late sinks (five 2-energy Actions, two tier-2
   buildings with a big energy cost; [cards.md](../cards.md)) serve a seat whose node tracks are full.
+- **Tier 2 is the majors (r94, Matt, candidate).** Spirit Island's major powers: big payoffs, most paid in antimatter
+  (15 tier-2 cards, and two dear tier-1 ones), giving lots to funnel into your own or another player's board actions:
+  liberations, troop strikes, ambassadors and Unity, energy, chips, cubes. The draft price is their only acquisition
+  cost; no tier-2 card clears many land corruption tokens (green cards do).
 - **The end-game cards (drafts; Matt, 2026-11-09).** Ten tier-2 cards for the last 3-4 rounds act where the
   agents stand, in reach: **convert** them into your ambassadors where they stand (Mass Defection, Double
   Agents, Open Source Uprising, Embassy of Exiles), **strike** them (Kettle Operation: and troops) on or next to a hex in
@@ -76,13 +80,13 @@ The cards config lists which cards are in the game (baseline: all of them).
   | The Nuclear Option | antimatter | event | sway 2 toward Discord (r90: collateral harm) |
   | Power to the People | energy | building (over Power, needs 2) | income: 1 credit per Power tag on your cards |
   | Citywide Microgrid | energy (8, a late sink) | building | Action: 2 Sway toward Unity |
-  | Hostile Buyout | Diplomacy, credits | event | gain 3 ambassadors |
+  | Hostile Buyout | antimatter (r94), Diplomacy | event | gain 3 ambassadors |
   | Forensic Audit | research cubes | event | draw 2 cards |
-  | Root Access | Cyber (needs Cyber tags) | event | remove a botnet on or next to the city |
-  | Peacekeeping Mission | Security (needs Security tags) | event | remove up to 2 adversary troops in the city's country |
+  | Root Access | antimatter (r94), Cyber (needs Cyber tags) | event | remove a botnet on or next to the city |
+  | Peacekeeping Mission | antimatter (r94), Security (needs Security tags) | event | remove up to 3 adversary troops in the city's country |
   | Popular Uprising | Followers | tier-1 building | Action: add 1 Follower here, OR pay 4 Followers to liberate, again and again |
 
-  Each is priced at its own value at the rates, 4-42 credits, well under the Liberate action's 5 ambassadors (~100
+  Each is priced at its own value at the rates, 4-42 credits (the three antimatter ones 18-22 and 1 antimatter, r94), well under the Liberate action's 5 ambassadors (~100
   credits) and out of reach before mid-game; they read 1.0-1.35 at Matt's unit anchors: the deck's late credit sinks
   ([card-pricing.md](../card-pricing.md), *The liberate capstones*). Great Liberation (Diplomacy, three cleanses in one country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the

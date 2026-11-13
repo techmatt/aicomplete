@@ -6,7 +6,7 @@ Builds `aic-sim` (release; `CARGO_BUILD_JOBS` from the environment, default 3), 
 (`drafts/adversary/check.py`, 182: 178 left it red unseen) and that `content/` matches `drafts/adversary/`
 (`load_adversary.py --check`; run the loader without it to write), sets docs/rules/README.md's "at rules revision N"
 line from `RULES_REVISION` in the source, then runs `aic-sim docs`, `scripts/cards/cards_doc.py`,
-`scripts/cards/effect_ledger.py` and `scripts/configs/shared_row.py` and `scripts/configs/no_liberate.py` (the
+`scripts/cards/effect_ledger.py` and `scripts/configs/shared_row.py` and `scripts/configs/no_liberate.py` and `no_tier2.py` (the
 derived configs: 122 left no_liberate.json stale when the baseline gained params), prints the content hash and rules
 revision from `aic-sim show configs/baseline.json` (warning if the binary's revision isn't the source's), and then
 `git status --short`. Stops at the first failing step, naming it. `--no-build` uses the binary already built.
@@ -114,7 +114,8 @@ def main():
     step('effect_ledger.py', [PY, os.path.join('scripts', 'cards', 'effect_ledger.py')])
     step('shared_row.py', [PY, os.path.join('scripts', 'configs', 'shared_row.py')])
     step('no_liberate.py', [PY, os.path.join('scripts', 'configs', 'no_liberate.py')])
-    out = step('aic-sim show', [SIM, 'show', os.path.join('configs', 'baseline.json')], capture=True)
+    step('no_tier2.py', [PY, os.path.join('scripts', 'configs', 'no_tier2.py')])
+    out =step('aic-sim show', [SIM, 'show', os.path.join('configs', 'baseline.json')], capture=True)
     first = out.splitlines()[0] if out else ''
     m = re.search(r'content hash (\S+)\s+rules revision (\S+)', first)
     if m:

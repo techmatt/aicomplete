@@ -496,7 +496,7 @@
   "name": "Recursive Self-Improvement",
   "tier": 2,
   "kind": "program",
-  "cost": 29,
+  "cost": 5,
   "insight": 2,
   "needs": [
    [
@@ -512,13 +512,14 @@
    {
     "op": "production",
     "resource": "insight",
-    "amount": 4
+    "amount": 3
    },
    {
     "op": "draw",
-    "count": 4
+    "count": 3
    }
-  ]
+  ],
+  "antimatter": 1
  },
  {
   "id": "data_licensing_deal",
@@ -1776,12 +1777,12 @@
   "name": "Dyson Swarm Tranche",
   "tier": 2,
   "kind": "program",
-  "cost": 29,
-  "insight": 2,
+  "cost": 12,
+  "insight": 1,
   "needs": [
    [
     "power",
-    3
+    2
    ]
   ],
   "tags": [
@@ -1790,16 +1791,17 @@
   ],
   "effects": [
    {
-    "op": "production",
+    "op": "gain",
     "resource": "energy",
-    "amount": 2
+    "amount": 10
    },
    {
     "op": "production",
-    "resource": "credits",
-    "amount": 8
+    "resource": "energy",
+    "amount": 2
    }
-  ]
+  ],
+  "antimatter": 1
  },
  {
   "id": "continental_supergrid",
@@ -3428,7 +3430,7 @@
   "name": "Hostile Buyout",
   "tier": 2,
   "kind": "event",
-  "cost": 46,
+  "cost": 22,
   "insight": 0,
   "tags": [
    "diplomacy"
@@ -3438,7 +3440,8 @@
     "op": "liberate",
     "ambassadors": 3
    }
-  ]
+  ],
+  "antimatter": 1
  },
  {
   "id": "forensic_audit",
@@ -3466,7 +3469,7 @@
   "name": "Root Access",
   "tier": 2,
   "kind": "event",
-  "cost": 44,
+  "cost": 18,
   "insight": 0,
   "needs": [
    [
@@ -3482,14 +3485,15 @@
     "op": "liberate",
     "botnet": true
    }
-  ]
+  ],
+  "antimatter": 1
  },
  {
   "id": "peacekeeping_mission",
   "name": "Peacekeeping Mission",
   "tier": 2,
   "kind": "event",
-  "cost": 45,
+  "cost": 20,
   "insight": 0,
   "needs": [
    [
@@ -3503,9 +3507,10 @@
   "effects": [
    {
     "op": "liberate",
-    "troops": 2
+    "troops": 3
    }
-  ]
+  ],
+  "antimatter": 1
  },
  {
   "id": "popular_uprising",
@@ -4806,7 +4811,7 @@
   "name": "Decapitation Strike",
   "tier": 2,
   "kind": "event",
-  "cost": 32,
+  "cost": 4,
   "insight": 0,
   "needs": [
    [
@@ -4819,15 +4824,14 @@
   ],
   "effects": [
    {
-    "op": "remove_botnet"
+    "op": "remove_troops",
+    "count": 3
    },
    {
-    "op": "remove_ambassadors_country",
-    "unity_per": 0,
-    "max": 6,
-    "reach": true
+    "op": "remove_botnet"
    }
-  ]
+  ],
+  "antimatter": 1
  },
  {
   "id": "citywide_microgrid",
@@ -5466,5 +5470,140 @@
     }
    ]
   }
+ },
+ {
+  "id": "collider_consortium",
+  "name": "Collider Consortium",
+  "tier": 2,
+  "kind": "program",
+  "cost": 8,
+  "antimatter": 1,
+  "insight": 1,
+  "tags": [
+   "science"
+  ],
+  "keywords": [
+   "help"
+  ],
+  "effects": [
+   {
+    "op": "gain",
+    "resource": "research_cubes",
+    "amount": 8
+   },
+   {
+    "op": "choose_player"
+   },
+   {
+    "op": "other_gain",
+    "resource": "research_cubes",
+    "amount": 3
+   }
+  ]
+ },
+ {
+  "id": "catalyzed_fab_run",
+  "name": "Catalyzed Fab Run",
+  "tier": 2,
+  "kind": "event",
+  "cost": 2,
+  "antimatter": 1,
+  "insight": 0,
+  "tags": [
+   "industry",
+   "power"
+  ],
+  "keywords": [
+   "help"
+  ],
+  "effects": [
+   {
+    "op": "gain",
+    "resource": "chips",
+    "amount": 6
+   },
+   {
+    "op": "choose_player"
+   },
+   {
+    "op": "other_gain",
+    "resource": "chips",
+    "amount": 2
+   }
+  ]
+ },
+ {
+  "id": "antimatter_accord",
+  "name": "Antimatter Accord",
+  "tier": 2,
+  "kind": "program",
+  "cost": 8,
+  "antimatter": 1,
+  "insight": 1,
+  "tags": [
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "gain_ambassadors",
+    "count": 6
+   },
+   {
+    "op": "sway",
+    "side": "unity",
+    "amount": 4,
+    "narrative": "cooperation"
+   }
+  ]
+ },
+ {
+  "id": "cyclotron_lease",
+  "name": "Cyclotron Lease",
+  "tier": 1,
+  "kind": "building",
+  "cost": 22,
+  "insight": 0,
+  "tags": [
+   "power"
+  ],
+  "ability": {
+   "cost": [
+    [
+     "energy",
+     2
+    ]
+   ],
+   "effects": [
+    {
+     "op": "gain",
+     "resource": "antimatter",
+     "amount": 1
+    }
+   ]
+  }
+ },
+ {
+  "id": "accelerator_diplomacy",
+  "name": "Accelerator Diplomacy",
+  "tier": 1,
+  "kind": "event",
+  "cost": 4,
+  "antimatter": 1,
+  "insight": 0,
+  "tags": [
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "sway",
+    "side": "unity",
+    "amount": 5,
+    "narrative": "cooperation"
+   },
+   {
+    "op": "gain_ambassadors",
+    "count": 2
+   }
+  ]
  }
 ]

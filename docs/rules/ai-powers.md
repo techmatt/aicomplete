@@ -21,6 +21,7 @@ still help.
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
 | Builder | Procure | 1 chip | draw 2 cards |
 | Builder | Fortify | 2 chips | remove 1 Troop in reach and harden 1 facility in reach |
+| Builder | Refine | 2 chips + 1 energy | gain 1 antimatter |
 | Protector | Bulwark | 1 energy | harden 1 facility in reach |
 | Protector | Accord | 1 Diplomacy | place 1 Node; if it is on or next to a city none of your other nodes is on or next to, also put a new ambassador on that city |
 | Protector | Stand Down | 1 Security | remove 1 Troop in reach |
@@ -29,6 +30,7 @@ still help.
 | Protector | Debrief | 1 Security | draw 1 card and remove 1 Agent in a hex in reach |
 | Protector | Patrol | 1 energy | push up to 3 Agents or Troops from a hex in reach, each to a hex next to it |
 | Protector | Interdict | 1 Security + 1 energy | remove up to 2 Troops in one hex in reach |
+| Protector | Joint Facility | 12 credits + 1 energy | gain 1 antimatter |
 | Researcher | Peer Review | 1 research cube | place 1 Node; if it is on or next to a research station none of your other nodes is on or next to, also gain 1 insight |
 | Researcher | Grant | 3 credits | add 1 research cube in your color to an open megaproject |
 | Researcher | Field Station | 1 Industry | build a research station in reach, paying no chips |
@@ -79,10 +81,11 @@ two alike: the Protector's **Interdict** (a Security card and 1 energy: up to 2 
 hardened); the Researcher's **Disrupt** (a Cyber card and a research cube: up to 2 troops in one country, no reach
 needed). The standard action Remove a troop (`troop_credits` 10 credits, `troop_per_round` once a round) is the hedge.
 
-**Antimatter, each board its own (r90, Matt's ruling, 2026-11-12).** No power is on every board and none spends
-antimatter: the big spends are cards (Annihilation Lance, Fusion Commons, the ultimates; [economy.md](economy.md)).
-The Researcher's Particle Run (a Power tag and 1 energy) makes it; r91 cut the Builder's Pair Forge (never used, and
-the same effect as Particle Run on a second board). The Protector makes none but Sanctuary's 1 a round.
+**Antimatter, each board its own (r90, Matt's ruling, 2026-11-12; r94).** Every board makes 1 antimatter once a round,
+each paid its own way and each costly (about 16.5 at the anchors for 18): the Builder's **Refine** (2 chips and 1
+energy), the Protector's **Joint Facility** (12 credits and 1 energy), the Researcher's **Particle Run** (a Power tag and
+1 energy). No power spends antimatter: the spends are the majors, tier-2 cards and a few dear tier-1 ones
+([economy.md](economy.md)).
 
 ## Insight conversions (candidate, r41)
 

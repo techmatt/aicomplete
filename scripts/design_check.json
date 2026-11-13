@@ -291,6 +291,8 @@
       {"key": "power:researcher:Field Station", "role": "sacrifice"},
       {"key": "power:researcher:Audit", "role": "sacrifice"},
       {"key": "power:researcher:Particle Run", "role": "sacrifice"},
+      {"key": "power:builder:Refine", "role": "hedge", "why": "213: the Builder's antimatter, costly by design (2 chips + 1 energy for 18): made when a major waits on it"},
+      {"key": "power:protector:Joint Facility", "role": "hedge", "why": "213: the Protector's antimatter, costly by design (12 credits + 1 energy for 18): made when a major waits on it"},
       {"key": "power:builder:Fortify", "role": "troop-response"},
       {"key": "power:protector:Patrol", "role": "troop-response"},
       {"key": "power:protector:Interdict", "role": "troop-response"},

@@ -62,7 +62,8 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   the starting 40-46 (Fabrication Megaplex, Frontier Lab Charter, National Grid Buildout, beside Gigafactory Charter,
   Wartime Retooling and Multiyear Defense Budget). The anchors price income at mid-game; bought in round 1-3 it runs
   about 5 rounds (about 1.25× the anchor), so a jump-start reads 1.0-1.3 at the anchors and stays under 1.5 early. Late objectives at 30-46 reach a goal in one play: Moonshot Grant's 8 cubes fill a megaproject (cubes at 9
-  when they complete it), Decapitation Strike takes a botnet and 6 ambassadors in reach, the liberate capstones.
+  when they complete it), the liberate capstones. **The majors (r94, 213):** tier-2 cards paying 1 antimatter (18) for a
+  big payoff, priced at the anchors at 1.0-1.75 (each card's line in `docs/card-pricing-notes.json`).
 - **Sway past a tip carries over** (r48): a tip returns one tip's worth and the rest waits for the next (alignment.md),
   so a big Sway can tip twice (8 at two players, where the whole pool is 8; Peace Conference). Sway is priced at the
   anchor per point, up to what the pool can hold.
@@ -129,7 +130,8 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
 Measured or found against play; each is still the table's number until a pass moves it.
 
 - **Antimatter 18** (the anchor since r90, 204): the heuristic holds antimatter at 2 points, about 3 credits (204;
-  5 at r88-r89 for Annihilate), so a seat spends it on Breakthrough unless a card it holds needs it (211's `am_save`).
+  5 at r88-r89 for Annihilate), so a seat keeps it for a card it holds that needs it (211's `am_save`) and makes it, from a power or a built Action
+  first, when that plays such a card this round (213's `am_source`).
 - **Troop removal 11** (7 each in one country):
   the heuristic counts a troop at 12 points, about 20 credits. A count prints "up to": the ledger and the agents count what one removes in play (`values.json` `troops_removed`, 102; Kinetic Interdiction's 6 about 3.6).
 - **The recipe nets every card about its keep + 1** over its costs at the table, so the table alone can't rank cards for
