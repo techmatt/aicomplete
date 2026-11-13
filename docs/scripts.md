@@ -12,10 +12,11 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   `drafts/adversary/` (`load_adversary.py --check`), writes `RULES_REVISION` into `docs/rules/README.md`, then `aic-sim docs`,
   `cards_doc.py`, `effect_ledger.py`, `shared_row.py`, `no_liberate.py`; prints the content hash and `git status`.
   `--check`: the `--check`s and the revision line only.
-- `design_check.py [DIR] [--old DIR] [--base REV] [--quiet]`: the design warnings ([principles.md](principles.md)):
-  content checks, plus the play checks on a read's `games.jsonl` (DIR; `--old` the previous revision's read on its seeds,
-  `--base` the item's start for the dials, default the merge base with main). First line: the report's `warnings:`.
-  Thresholds: `design_check.json`. Never exits 1.
+- `design_check.py [DIR] [--old DIR] [--base REV] [--quiet] [--usage]`: the design warnings ([principles.md](principles.md)):
+  content checks, plus the play checks on a read's `games.jsonl` or a farm's out file (DIR; `--old` the previous
+  revision's read on its seeds, `--base` the item's start for the dials, default the merge base with main). First line:
+  the report's `warnings:`. Thresholds and each action's expected-use band (`usage`): `design_check.json`. `--usage`
+  prints the inventory instead: each action's role, band, use pooled, by board and by level. Never exits 1.
 - `configs/shared_row.py`: regenerates `configs/shared_row.json` from the baseline.
 - `cards/cards_doc.py`: regenerates `docs/cards.md`. `cards/deck_text.py DECK...` prints a deck as plain text for a
   review, from the generated docs (`--list` the decks; README, *Card text for review*).
@@ -135,8 +136,6 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   (`bp/strategist`, or `DIR/bp/strategist`); a spec with several configs or difficulties leads it with the config's
   file stem and `dN` (`no_liberate/d2/bp/strategist`; `screens.cell_labels`). `--against-base` reads a price sweep:
   every variant `cN-x` against `cN`, per agent, each lever pooled over its sizes.
-- Two agent specs on one binary: `bench/speed.py specs SIM A B`, `bench/per_decision.py SIM.exe --old-agent A
-  --agent B`.
 - `bench/first_divergence.py OLD NEW`: where two runs of one spec first play differently, game by game; `--cells DIR
   A B` two cells of one run.
 - `bench/profile_win.py SIM OUT -- run ...`: a sampling profile, no admin (docs/speed.md, *Profiling*). `--runs K` on the next seeds each; `--attach S1,S2,...` reads 5 s windows of a long

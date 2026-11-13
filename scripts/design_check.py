@@ -1,7 +1,11 @@
 """205: design warnings that fire on their own. Reads content/ and configs/ (the tree), and a read's farmed games, and
 prints every design warning it trips, each with its number. Warnings never stop work: no exit code but 0.
 
-    python scripts/design_check.py [DIR[,DIR...]] [--old DIR[,DIR...]] [--base REV] [--config FILE] [--quiet]
+    python scripts/design_check.py [DIR[,DIR...]] [--old DIR[,DIR...]] [--base REV] [--config FILE] [--quiet] [--usage]
+
+207: `usage` warns on every player action (standard actions, board powers, converters, card plays, building Actions,
+threat counters, resource spends) whose use falls outside its expected band, both ways; `--usage` prints the inventory
+table (role, band, use pooled, by board and by level) instead of the warnings. Bands: design_check.json's `usage`.
 
 DIR is a read's folder (its games.jsonl: a farmed read assembled with its header, or an experiment's output); comma
 lists pool. With no DIR only the content checks run. `--old` is the previous revision's read on the same seeds (the
@@ -299,28 +303,171 @@ def check_dead(games, cfg, boards, o):
             dead.append((cid, k, p))
     for cid, k, p in sorted(dead, key=lambda x: -x[1]):
         o.w('kept-not-played', f'{cid} {p:.2f}', f'{cid}: kept {k:.2f} a game, played {p:.2f}')
-    # powers: uses a seat-game for each board, over the games that seated it
-    seated = defaultdict(int)
-    for g in games:
-        for part in (g.get('build') or '').split('|'):
-            if part:
-                seated[part.split(':', 1)[0]] += 1
-    for b in boards:
-        if not seated[b['id']]:
-            continue
-        for p in b['powers']:
-            key = f'ai.power.{b["id"]}.{snake(p["name"])}'
-            u = sum(g['counters'].get(key, 0) for g in games) / seated[b['id']]
-            if u < d['power_used_max_per_seat_game']:
-                o.w('power-unused', f'{b["id"]} {p["name"]} {u:.2f}', f'{b["id"]} power {p["name"]}: used {u:.2f} a seat-game')
+    # 207: powers unused (and dominant) are the usage check's; a resource gained and not spent is too, when the
+    # usage config lists it
+    listed = {r['key'] for r in cfg.get('usage', {}).get('rows', [])}
     seats = sum(len(g['spent']) for g in games) or 1
     for i, r in enumerate(PEAKS):
-        if r in ('insight', 'card_tokens'):
+        if r in ('insight', 'card_tokens') or f'spend:{r}' in listed:
             continue
         gained = sum(row[i] for g in games for row in g['gained']) / seats
         spent = sum(row[i] for g in games for row in g['spent']) / seats
         if gained >= cfg['share_min_per_seat'] and spent / gained < d['spent_per_gained_min']:
             o.w('gained-not-spent', f'{r} {spent / gained:.0%}', f'{r}: gained {gained:.2f} a seat-game, spent {spent:.2f} ({spent / gained:.0%})')
+
+
+# ---- 207: expected use ------------------------------------------------------------------------------------------
+
+USE_KINDS = {'standard', 'power', 'convert', 'sell', 'use', 'play', 'pay', 'counter_with', 'withdraw'}
+
+
+def action_key(a, seat_board, boards_by_id, countries):
+    """An action's usage key (`standard:node`, `power:builder:Mint`, `convert:Tidal Grid[:chips]`, `play`, ...), or
+    None for one that is not a player's use (pass, choose, the draft)."""
+    t = a.get('type')
+    if t not in USE_KINDS:
+        return None
+    if t == 'standard':
+        return f'standard:{a["act"]}'
+    if t == 'power':
+        b = seat_board[a['seat']]
+        ps = boards_by_id[b]['powers']
+        return f'power:{b}:{ps[a["power"]]["name"] if a["power"] < len(ps) else a["power"]}'
+    if t == 'convert':
+        c = a['country']
+        name = countries[c]['project']['name'] if c < len(countries) else str(c)
+        return f'convert:{name}' + (':chips' if a.get('chips') else '')
+    return t
+
+
+def usage_counts(games, boards, countries, listed=()):
+    """key -> tallies over the seat-games that could take it (a power: its board's seats): uses, seat-games, seat-rounds,
+    seat-games with a use, and uses and seat-games by board and by level. Resource spends (`spend:<resource>`): spent
+    and gained, by board and level, in `uses` and `seats`."""
+    boards_by_id = {b['id']: b for b in boards}
+
+    def cell():
+        return {'uses': 0, 'seats': 0, 'rounds': 0, 'with': 0}
+    T = defaultdict(lambda: dict(cell(), board=defaultdict(cell), level=defaultdict(cell)))
+
+    def add(k, b, lvl, u, seats, rounds, w):
+        row = T[k]
+        for c in (row, row['board'][b], row['level'][lvl]):
+            c['uses'] += u
+            c['seats'] += seats
+            c['rounds'] += rounds
+            c['with'] += w
+    builds = [[p.split(':', 1)[0] for p in (g.get('build') or '').split('|') if p] for g in games]
+    # every key seen anywhere, and every power of a seated board, is tallied over every seat-game that could take it
+    seated = {b for sb in builds for b in sb}
+    keys = {f'power:{b["id"]}:{p["name"]}' for b in boards if b['id'] in seated for p in b['powers']}
+    # a listed action never taken is a row of zeros (a power only when its board was seated)
+    keys |= {k for k in listed if not k.startswith('spend:') and not (k.startswith('power:') and k.split(':')[1] not in seated)}
+    per_game = []
+    for g, sb in zip(games, builds):
+        per = defaultdict(lambda: defaultdict(int))     # key -> seat -> uses
+        for a in g['actions']:
+            k = action_key(a, sb, boards_by_id, countries)
+            if k:
+                per[k][a['seat']] += 1
+                keys.add(k)
+        per_game.append(per)
+    for g, sb, per in zip(games, builds, per_game):
+        lvl = int(g['difficulty'])
+        for k in keys:
+            pb = k.split(':')[1] if k.startswith('power:') else None
+            for s, b in enumerate(sb):
+                if pb and pb != b:
+                    continue
+                u = per[k][s] if k in per else 0
+                add(k, b, lvl, u, 1, g['rounds'], int(u > 0))
+        for i, r in enumerate(PEAKS):
+            for s, b in enumerate(sb):
+                # a resource: `uses` spent, `seats` gained
+                add(f'spend:{r}', b, lvl, g['spent'][s][i], g['gained'][s][i], 0, 0)
+    return T
+
+
+def usage_value(row, measure):
+    """The row's use in its measure: `seat_game` uses a seat-game, `seat_round` uses a seat-round, `games` the share of
+    seat-games with a use, `spent` a resource's spent over gained."""
+    if measure == 'seat_round':
+        return row['uses'] / row['rounds'] if row['rounds'] else 0.0
+    if measure == 'games':
+        return row['with'] / row['seats'] if row['seats'] else 0.0
+    return row['uses'] / row['seats'] if row['seats'] else 0.0
+
+
+def usage_rows(games, cfg, boards, countries, base):
+    """Each action seen or listed, with its role, measure, band and use: (key, name, role, measure, band, value, row,
+    status) where status is `in`, `low`, `high`, `off` or `unbanded`."""
+    u = cfg.get('usage') or {}
+    roles = u.get('roles', {})
+    T = usage_counts(games, boards, countries, [r['key'] for r in u.get('rows', []) if r.get('role') != 'off'])
+    out, seen = [], set()
+    for r in u.get('rows', []):
+        k = r['key']
+        seen.add(k)
+        if 'name' not in r and k.startswith('power:'):
+            r = dict(r, name=f'{k.split(":")[1].capitalize()} {k.split(":", 2)[2]}')
+        role = roles.get(r.get('role'), {})
+        measure = r.get('measure') or role.get('measure', 'seat_game')
+        band = r.get('band') or role.get('band')
+        row = T.get(k)
+        off = r.get('off')
+        if off is True or (isinstance(off, str) and not base.get(off, 0)):
+            out.append((k, r.get('name', k), r.get('role', ''), measure, band, None, row, 'off'))
+            continue
+        if row is None or not row['seats']:
+            out.append((k, r.get('name', k), r.get('role', ''), measure, band, None, row, 'unseated'))
+            continue
+        v = usage_value(row, 'seat_game' if measure == 'spent' else measure)
+        status = 'unbanded' if not band else 'low' if v < band[0] else 'high' if v > band[1] else 'in'
+        out.append((k, r.get('name', k), r.get('role', ''), measure, band, v, row, status))
+    for k in sorted(T):
+        if k not in seen and not k.startswith('spend:'):
+            row = T[k]
+            out.append((k, k, '', 'seat_game', None, usage_value(row, 'seat_game'), row, 'unbanded'))
+    return out
+
+
+def fmt_use(v, measure):
+    return '-' if v is None else f'{v:.0%}' if measure in ('games', 'spent') else f'{v:.2f}'
+
+
+def check_usage(games, cfg, boards, countries, base, o):
+    for k, name, role, measure, band, v, row, status in usage_rows(games, cfg, boards, countries, base):
+        what = {'seat_game': 'a seat-game', 'seat_round': 'a seat-round', 'games': 'of seat-games',
+                'spent': 'of what is gained, spent'}[measure]
+        btxt = f'{fmt_use(band[0], measure)}-{fmt_use(band[1], measure)}' if band else ''
+        if status in ('low', 'high'):
+            o.w('usage', f'{name} {fmt_use(v, measure)} outside {btxt}',
+                f'{name} ({role}): {fmt_use(v, measure)} {what}, outside its band {btxt} '
+                f'({"unused" if status == "low" else "dominant"})')
+        elif status == 'unbanded' and v:
+            o.i(f'usage: {name}: {fmt_use(v, measure)} {what}, no band (add a row to `usage`)')
+        elif status == 'unseated':
+            o.i(f'usage: {name}: no seat could take it in this read (a board not seated, or a stale `usage` row)')
+
+
+def usage_table(games, cfg, boards, countries, base):
+    """The inventory as Markdown: every action's role, band, pooled use, by board and by level, and in or out."""
+    rows = usage_rows(games, cfg, boards, countries, base)
+    lv = sorted({int(g['difficulty']) for g in games})
+    bd = [b['id'] for b in boards]
+    hd = ['action', 'key', 'role', 'measure', 'band', 'use', 'in?'] + bd + [f'd{x}' for x in lv]
+    lines = ['| ' + ' | '.join(hd) + ' |', '|' + '---|' * len(hd)]
+    for k, name, role, measure, band, v, row, status in rows:
+        def part(p):
+            if not p or not p['seats']:
+                return '-'
+            return fmt_use(usage_value(p, 'seat_game' if measure == 'spent' else measure), measure)
+        btxt = f'{fmt_use(band[0], measure)}-{fmt_use(band[1], measure)}' if band else ''
+        cells = [name, f'`{k}`', role, measure, btxt, fmt_use(v, measure), status]
+        cells += [part(row['board'].get(b)) if row else '-' for b in bd]
+        cells += [part(row['level'].get(x)) if row else '-' for x in lv]
+        lines.append('| ' + ' | '.join(cells) + ' |')
+    return '\n'.join(lines)
 
 
 def check_victory_needs(games, cfg, o):
@@ -441,7 +588,8 @@ def main():
     old_dirs = opt('--old')
     base_rev = opt('--base')
     quiet = '--quiet' in argv
-    argv = [a for a in argv if a != '--quiet']
+    table = '--usage' in argv
+    argv = [a for a in argv if a not in ('--quiet', '--usage')]
     with open(cfg_path, encoding='utf-8') as f:
         cfg = json.load(f)
     cards = jload('content/cards.json')
@@ -449,6 +597,12 @@ def main():
     base = flat_baseline(jload('configs/baseline.json'))
     games = load_games(argv[0]) if argv else []
     old = load_games(old_dirs) if old_dirs else []
+    countries = jload('content/map.json')['countries']
+    if table:
+        if not games:
+            sys.exit('--usage needs a read')
+        print(usage_table(games, cfg, boards, countries, base))
+        return
     o = Out()
     check_repeats(boards, cfg, o)
     check_standard(cfg, base, o, games)
@@ -458,6 +612,7 @@ def main():
         check_scarce(games, cfg, cards, o)
         check_shares(games, cfg, o)
         check_dead(games, cfg, boards, o)
+        check_usage(games, cfg, boards, countries, base, o)
         check_victory_needs(games, cfg, o)
         check_rounds(games, cfg, o)
         check_tokens(games, old, cfg, o)

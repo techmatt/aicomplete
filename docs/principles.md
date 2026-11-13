@@ -115,9 +115,11 @@ stops work: an item whose own change trips one still finishes and calibrates, an
 - **Fewer tokens, less processing and tracking**, all else equal. *Warns:* tokens placed or moved a round up 10%
   on the previous revision's read.
 - **Engines over dials.** A skipped resource means its engines need buffing; at high difficulty victory needs chips,
-  energy, antimatter and cubes. *Warns:* a card kept but played under 0.1 a game, a power used under 0.1 a
-  seat-game, a resource spent under half of what is gained, one of the four spent in under 75% of won games at
-  d3-d4; a dial moved 40%+ in the item that changed the design.
+  energy, antimatter and cubes. *Warns:* a card kept but played under 0.1 a game, one of the four spent in under
+  75% of won games at d3-d4; a dial moved 40%+ in the item that changed the design.
+- **Every action has an expected use**, a band by its role (a hedge rare but not zero, a board's signature power
+  most rounds, a win route most games). *Warns:* `usage`, any power, standard action, converter or resource spend
+  outside its band, unused or dominant.
 - **Games run 8-10 rounds.** *Warns:* any level's mean outside 8-10.
 
 ## Design lenses for every module
