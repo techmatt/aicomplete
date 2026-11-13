@@ -163,6 +163,6 @@ Write the report to the path conductor's preamble gives, starting with the heade
 - **Design warnings** ([principles.md](docs/principles.md), *Design warnings*). A rules item runs `python
   scripts/design_check.py READ --old OLD_READ` (READ a read's folder or `games.jsonl`; OLD_READ the previous
   revision's read on its seeds) on its first screen and on its fresh read. Its first line is the report's
-  `warnings:` line, `warnings: design: <check> <number>; ...` or `warnings: none`: copy it into the report header.
+  `warnings:` line, `warnings: design: <check> <number>; design: <check> <number>; ...` or `warnings: none`: copy it into the report header.
   With no READ only the content and dials checks run. Warnings never stop work: an item whose own change trips one
   finishes, calibrates, and reports the warning first. Thresholds are candidates in `scripts/design_check.json`.

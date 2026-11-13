@@ -190,6 +190,14 @@ pub fn plan_keeps(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx) 
     kept
 }
 
+/// 203 (`kept_rule`): the hand cards the plan plays this round, from what the seat holds now, in the
+/// plan's order: the ones worth their price at the plan's rates and affordable together.
+pub fn plan_now(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx) -> Vec<Key> {
+    let pt = PlanTable::read(pc.t, w, g, s, f);
+    let one = Forced { plan_rounds: 1, plan_chain: false, ..f.clone() };
+    plan(w, g, s, &[], &one, pc, &pt).map(|(_, p)| p).unwrap_or_default()
+}
+
 /// [`plan_value`] with `kept`, or `None` if the keeps can't be paid or the
 /// new card `c` is not played in the plan.
 #[allow(clippy::too_many_arguments)]

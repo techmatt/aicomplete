@@ -43,9 +43,7 @@ table's rates, `plan_table=0`), and keeps each drafted card, best ratio first, o
 is worth more with it. A play waiting a round is worth 15% less; `needs` may be met by cards
 planned earlier, or short now by at most `plan_short` tags; a building over one of the seat's
 adds only what it beats the weakest by (`plan_cover`). Each switch's default and rule, and each
-**dominance check** (principles.md), is a row of `forced_table!`. **Ablation (200):** `no_spend` 1 / 2 / 3 bars
-every action that leaves the seat with fewer chips / research cubes / antimatter (each legal action applied to a copy,
-so slow); sources stay. The eval holds an antimatter at 5 points (r88, set for Annihilate; 2 before); Annihilate is gone
+**dominance check** (principles.md), is a row of `forced_table!`, `no_spend` (200's ablation) too. The eval holds an antimatter at 5 points (r88, set for Annihilate; 2 before); Annihilate is gone
 at r89, and the weight stands until the antimatter redesign.
 
 **Agent behaviors** (`behavior_table!`, on for every agent; a dominance check's ban wins). **Move heuristics** (`agents/moves.rs`, 166, `move_rules`): push agents off the next
@@ -55,7 +53,9 @@ when that seat can then pay its Liberate (never onto a node hex). **Strike** (17
 batches, troops then agents, largest first; its hex is the search's. `aic-sim experiment` prints their fires a game
 (cells pooled). **Converge** (175, `converge_rule`): a Corrupt line's agent next to several sites goes where
 `plan::converge_pick` sends it. **Buy energy** (176, `energy_rule`): with no card left to play, buy a neutral
-city's energy when credits plus this round's income, less the price, reach the eval's credit cap. **Botnet reach**
+city's energy when credits plus this round's income, less the price, reach the eval's credit cap. **Play the plan**
+(203, `kept_rule` 3): play the keep plan's card this round (`plan_now`) over a pass, standard action, sale or the
+antimatter action. **Botnet reach**
 (176, `w.botnet_reach` 0.3): an ambassador on a botnet's hex is worth that share of it.
 
 Spec syntax: `kind[:key=value,...]`; a weight takes `w.` (`greedy:w.corrupted=40`), a table

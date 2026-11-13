@@ -9,7 +9,7 @@ tokens-a-round check reads against it). `--base` is the revision the item starte
 main); the dials check diffs configs/baseline.json against it. Thresholds and source classes are in
 scripts/design_check.json, all candidates. The principles are docs/principles.md, *Design warnings*.
 
-The first line printed is the report header's: `warnings: design: <check> <number>; ...` or `warnings: none`.
+The first line printed is the report header's: `warnings: design: <check> <number>; design: <check> <number>; ...` or `warnings: none`.
 """
 import json
 import os
@@ -468,8 +468,9 @@ def main():
             parts.append(f'{c} {len(ns)} ({", ".join(ns[:3])}, ...)')
         else:
             parts += [f'{c} {n}' for n in ns]
-    head = '; '.join(parts)
-    print('warnings: ' + (f'design: {head}' if head else 'none'))
+    # each part led by its kind, so conductor files every one under `design`
+    head = '; '.join(f'design: {p}' for p in parts)
+    print('warnings: ' + (head or 'none'))
     print()
     if games:
         print(f'{len(games)} games' + (f', old side {len(old)}' if old else ''))

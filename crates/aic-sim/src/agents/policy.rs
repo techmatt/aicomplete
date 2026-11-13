@@ -20,7 +20,7 @@ use aic_core::state::AskKind;
 use aic_core::{fnv1a64, Action, Agent, GameState, Key, Rules};
 
 use super::credit_cost;
-use super::keep_plan::{plan_keeps, PlanCtx};
+use super::keep_plan::{plan_keeps, plan_now, PlanCtx};
 use super::strategy::{self, Choice, Mults};
 use super::value::{self, CardValue, Ctx};
 use super::Strategic;
@@ -287,6 +287,10 @@ macro_rules! behavior_table {
             /// 178: a strike's batches (`agents::moves::strike`): the largest of troops, then of agents, never a
             /// stop; its hex stays the search's. Its own lever since 185 (it sat under `move_rules`).
             (strike_rule: bool, 1.0, "178: a strike's batches go largest troops first, then agents, never a stop (its hex is the search's)")
+            /// 203: play the hand cards the keep plan plays this round (`keep_plan::plan_now`: worth their price at
+            /// its rates, affordable from what the seat holds now): 1 when the search would pass, 2 before the
+            /// search's pick (ahead of standard actions and powers that would spend the credits).
+            (kept_rule: usize, 3.0, "203: play a hand card the keep plan plays this round: 1 instead of a pass, 2 before the search's pick, 3 instead of a pass, standard action, sale or antimatter action, 4 also instead of a power")
         }
     };
 }
@@ -394,6 +398,57 @@ fn buy_energy(w: &World, g: &GameState, legal: &[Action], idle: f64) -> Option<u
     })
 }
 
+/// What seat `s`'s keep plan values cards by, at the heuristic's own rates (its multipliers and repriced table
+/// made at the first call, into `mults` and `rates`): the keep's, and 203's `kept_rule`'s.
+#[allow(clippy::too_many_arguments)]
+fn plan_ctx<'a>(
+    inner: &'a (dyn Strategic + Send),
+    forced: &Forced,
+    strat: Option<u16>,
+    mults: &'a mut Option<Arc<Mults>>,
+    rates: &'a mut Option<Arc<value::Table>>,
+    world: &World,
+    g: &GameState,
+    s: usize,
+) -> PlanCtx<'a> {
+    let ev = inner.eval();
+    if strat.is_some() && mults.is_none() {
+        // The heuristic's own multipliers (116 `strat_scale`, 124 `strat_contents`).
+        *mults = Some(ev.map_or_else(|| Arc::new(Mults::new(world, 1.0, false)), |e| e.mults()));
+    }
+    let super::eval::PlanRates { energy, antimatter, project, cap, idle, insight_cap, insight_idle, energy_cap, energy_share } =
+        ev.map_or_else(super::eval::PlanRates::table, |e| e.plan_rates());
+    // 128 (`energy_cap`): a seat whose energy piles up keeps what spends it.
+    let held = g.resource(s, Resource::Energy) as f64;
+    let energy_rate = if energy_cap > 0.0 && held > energy_cap { energy_share } else { 1.0 };
+    // 102 (D23): energy and antimatter at the heuristic's own rates, as the play check prices them.
+    let own = ev.map_or_else(value::table, |e| e.tbl);
+    if rates.is_none() {
+        *rates = Some(Arc::new(own.repriced(energy, antimatter)));
+    }
+    let t: &'a value::Table = match rates.as_deref() {
+        Some(t) => t,
+        None => own,
+    };
+    let idle = (cap, idle);
+    let spare_at = if forced.keep_spare { insight_cap } else { 0.0 };
+    // 150 (`plan_spare`): a Patience seat's insight beyond the cap is spare, so
+    // more insight income is worth the idle rate, as the play eval reads it.
+    let spare = economy::patient(world, s) && insight_cap > 0.0 && g.resource(s, Resource::Insight) as f64 > insight_cap;
+    let insight_idle = (forced.plan_spare && spare).then_some(insight_idle);
+    PlanCtx { table: forced.plan_table, strat, mults: mults.as_deref(), t, project, idle, spare_at, energy_rate, insight_idle }
+}
+
+/// 203 (`kept_rule`): a play of a hand card seat `s`'s keep plan plays this round ([`plan_now`]), the plan's first.
+fn kept_play(w: &World, g: &GameState, legal: &[Action], s: usize, f: &Forced, pc: &PlanCtx) -> Option<usize> {
+    if !legal.iter().any(|a| matches!(a, Action::Play { seat, .. } if *seat as usize == s)) {
+        return None;
+    }
+    plan_now(w, g, s, f, pc).iter().find_map(|id| {
+        legal.iter().position(|a| matches!(a, Action::Play { seat, card, .. } if *seat as usize == s && card == id))
+    })
+}
+
 /// Whether `d` counters a threat or makes one cheaper, in any of its lists: an
 /// automatic-counter capstone too (075, 073's finding 13).
 fn counters_threats(d: &CardDef) -> bool {
@@ -469,29 +524,7 @@ impl Policy {
         let drafted = g.pile(&cards::drafted(s)).to_vec();
         let full = self.forced.plan_hand > 0 && g.pile(&cards::hand(s)).len() >= self.forced.plan_hand;
         let strat = self.strat.get(s).copied().flatten();
-        let ev = self.inner.eval();
-        if strat.is_some() && self.mults.is_none() {
-            // The heuristic's own multipliers (116 `strat_scale`, 124 `strat_contents`).
-            self.mults = Some(ev.map_or_else(|| Arc::new(Mults::new(&world, 1.0, false)), |e| e.mults()));
-        }
-        let super::eval::PlanRates { energy, antimatter, project, cap, idle, insight_cap, insight_idle, energy_cap, energy_share } =
-            ev.map_or_else(super::eval::PlanRates::table, |e| e.plan_rates());
-        // 128 (`energy_cap`): a seat whose energy piles up keeps what spends it.
-        let held = g.resource(s, Resource::Energy) as f64;
-        let energy_rate = if energy_cap > 0.0 && held > energy_cap { energy_share } else { 1.0 };
-        // 102 (D23): energy and antimatter at the heuristic's own rates, as the play check prices them.
-        let own = ev.map_or_else(value::table, |e| e.tbl);
-        if self.rates.is_none() {
-            self.rates = Some(Arc::new(own.repriced(energy, antimatter)));
-        }
-        let t = self.rates.as_deref().unwrap_or(own);
-        let idle = (cap, idle);
-        let spare_at = if self.forced.keep_spare { insight_cap } else { 0.0 };
-        // 150 (`plan_spare`): a Patience seat's insight beyond the cap is spare, so
-        // more insight income is worth the idle rate, as the play eval reads it.
-        let spare = economy::patient(&world, s) && insight_cap > 0.0 && g.resource(s, Resource::Insight) as f64 > insight_cap;
-        let insight_idle = (self.forced.plan_spare && spare).then_some(insight_idle);
-        let pc = PlanCtx { table: self.forced.plan_table, strat, mults: self.mults.as_deref(), t, project, idle, spare_at, energy_rate, insight_idle };
+        let pc = plan_ctx(self.inner.as_ref(), &self.forced, strat, &mut self.mults, &mut self.rates, &world, g, s);
         let set = if self.forced.keep_none {
             Vec::new()
         } else if self.forced.keep_random {
@@ -845,6 +878,34 @@ impl Agent for Policy {
                 return i;
             }
         }
+        let kept_rule = self.behaviors.kept_rule;
+        if kept_rule == 2 && !pending {
+            if let Some(i) = self.kept_pick(rules, g, legal) {
+                return i;
+            }
+        }
+        let i = self.search_pick(rules, g, legal);
+        // 1: instead of a pass; 3: also instead of a standard action, a sale or the antimatter action (threat
+        // counters, powers, Uses and other plays stand); 4: 3 and instead of a power.
+        let yields = match &legal[i] {
+            Action::Pass { .. } => kept_rule == 1 || kept_rule >= 3,
+            Action::Standard { .. } | Action::Sell { .. } | Action::Antimatter { .. } => kept_rule >= 3,
+            Action::Power { .. } => kept_rule == 4,
+            _ => false,
+        };
+        if yields && !pending {
+            if let Some(j) = self.kept_pick(rules, g, legal) {
+                return j;
+            }
+        }
+        i
+    }
+}
+
+impl Policy {
+    /// The wrapped agent's pick among the actions nothing forced rules out.
+    fn search_pick(&mut self, rules: &Rules, g: &GameState, legal: &[Action]) -> usize {
+        let world = rules.world();
         if !self.forcing {
             return self.inner.choose(rules, g, legal);
         }
@@ -856,6 +917,22 @@ impl Agent for Policy {
         }
         let sub: Vec<Action> = keep.iter().map(|&i| legal[i].clone()).collect();
         keep[self.inner.choose(rules, g, &sub)]
+    }
+
+    /// 203 (`kept_rule`): the play of a hand card the acting seat's keep plan plays this round, if one is legal
+    /// and nothing forced rules it out.
+    fn kept_pick(&mut self, rules: &Rules, g: &GameState, legal: &[Action]) -> Option<usize> {
+        let world = rules.world();
+        let s = legal.first()?.seat() as usize;
+        if self.forced.hoarding(&world, g, s, false) {
+            return None;
+        }
+        let strat = self.strat.get(s).copied().flatten();
+        let i = {
+            let pc = plan_ctx(self.inner.as_ref(), &self.forced, strat, &mut self.mults, &mut self.rates, &world, g, s);
+            crate::prof::time(crate::prof::Part::Policy, || kept_play(&world, g, legal, s, &self.forced, &pc))?
+        };
+        (!self.ruled_out(&world, g, &legal[i]) && !self.spends_banned(rules, g, &legal[i])).then_some(i)
     }
 }
 
