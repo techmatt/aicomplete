@@ -96,10 +96,12 @@ price ([card-pricing.md](card-pricing.md), *The method*).
 | Remove 1 troop | 5 | | +1 credit income | 4 at mid-game |
 | 1 energy | 4.5 | | +1 insight income | 12 at mid-game |
 | 1 insight | 4 | | Remove 1 compute from a project | 2 (stopping projects is hard) |
-| Draw 1 card | 5 | | | |
+| Draw 1 card | 5 | | 1 antimatter | 18 (r90: a big investment that pays off) |
 
 Derived: the keep, 4 a tier-1 card and 8 a tier-2 one (1 and 2 insight); +1 energy income 14 (4 rounds × 4.5 × 0.8);
-+1 chip income about 19 (4 rounds × 6 × 0.8). Units with no anchor take `values.json` (an ambassador gained 4, a sway 4, a node 8, antimatter 7)
++1 chip income about 19 (4 rounds × 6 × 0.8). Antimatter's 18 is three research cubes (the desperate standard action,
+at par, never a gain), so every engine that makes it (a plant's Action, Pair Forge, Particle Run) shows a clear gain
+and every spend is a big one. Units with no anchor take `values.json` (an ambassador gained 4, a sway 4, a node 8)
 or [card-pricing.md](card-pricing.md) (a city liberated 45). From past checks: a research cube 6
 (9 when the play completes the megaproject), a botnet removed 16.
 

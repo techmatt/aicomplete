@@ -1,0 +1,73 @@
+{
+  "name": "d204-d1",
+  "note": "204: d1 compute income dial",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_k8",
+      "set": [
+        "adversary.compute_income=0,8,17,25,30"
+      ]
+    },
+    {
+      "name": "br_k8",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=0,8,17,25,30"
+      ]
+    },
+    {
+      "name": "pr_k8",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=0,8,17,25,30"
+      ]
+    },
+    {
+      "name": "bp_k12",
+      "set": [
+        "adversary.compute_income=0,12,17,25,30"
+      ]
+    },
+    {
+      "name": "br_k12",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=0,12,17,25,30"
+      ]
+    },
+    {
+      "name": "pr_k12",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=0,12,17,25,30"
+      ]
+    }
+  ],
+  "difficulties": [
+    1
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 96,
+  "records": 0
+}

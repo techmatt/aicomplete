@@ -29,10 +29,14 @@ pub enum StandardAction {
     Botnet,
     /// r75 (Matt's ruling 6): credits for a neutral city's energy in the action phase (it was sold in production).
     BuyEnergy,
+    /// 204 (Matt, 2026-11-12): the desperate source, research cubes for 1 antimatter.
+    Antimatter,
+    /// 204: the standard antimatter spend, a shared breakthrough: antimatter for Unity (0: off).
+    Breakthrough,
 }
 
 /// The standard actions, in the order they are offered and published.
-pub const STANDARD: [StandardAction; 14] = [
+pub const STANDARD: [StandardAction; 16] = [
     StandardAction::Station,
     StandardAction::Remove,
     StandardAction::Clear,
@@ -47,6 +51,8 @@ pub const STANDARD: [StandardAction; 14] = [
     StandardAction::Envoy,
     StandardAction::Botnet,
     StandardAction::BuyEnergy,
+    StandardAction::Antimatter,
+    StandardAction::Breakthrough,
 ];
 
 impl StandardAction {
@@ -67,6 +73,8 @@ impl StandardAction {
             StandardAction::Envoy => "envoy",
             StandardAction::Botnet => "botnet",
             StandardAction::BuyEnergy => "buy_energy",
+            StandardAction::Antimatter => "antimatter",
+            StandardAction::Breakthrough => "breakthrough",
         }
     }
 
@@ -87,17 +95,20 @@ pub struct Price {
     pub ambassadors: i64,
     /// 105: research cubes (the general converter).
     pub cubes: i64,
+    /// 204: antimatter (Breakthrough).
+    pub antimatter: i64,
 }
 
 impl Price {
     /// What it charges, in print order.
-    fn parts(self) -> [(i64, Resource); 5] {
+    fn parts(self) -> [(i64, Resource); 6] {
         [
             (self.energy, Resource::Energy),
             (self.credits, Resource::Credits),
             (self.chips, Resource::Chips),
             (self.ambassadors, Resource::Ambassadors),
             (self.cubes, Resource::ResearchCubes),
+            (self.antimatter, Resource::Antimatter),
         ]
     }
 
@@ -147,6 +158,8 @@ pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::Envoy => ambassadors(i("envoy_ambassadors")),
         StandardAction::Botnet => credits(i("botnet_credits")),
         StandardAction::BuyEnergy => credits(i("city_energy_credits")),
+        StandardAction::Antimatter => Price { cubes: i("antimatter_cubes"), ..Price::default() },
+        StandardAction::Breakthrough => Price { antimatter: i("breakthrough_antimatter"), ..Price::default() },
     }
 }
 
@@ -193,6 +206,14 @@ pub fn bought_key(h: usize) -> KeyBuf {
 
 /// Prefix of [`bought_key`].
 pub(super) const BOUGHT: &str = "board.energy_bought.";
+
+/// 204: set while seat `s` has taken Breakthrough this round (once a round), a round mark.
+pub fn broke_through_key(seat: usize) -> KeyBuf {
+    KeyBuf::new(BROKE_THROUGH).num(seat)
+}
+
+/// Prefix of [`broke_through_key`].
+pub(super) const BROKE_THROUGH: &str = "board.broke_through.";
 
 /// Whether seat `seat` may buy neutral city `h`'s energy now (r75, Matt's ruling 6): a neutral city in reach,
 /// producing (no blackout, no agent on it), with energy to sell, not bought this round.
@@ -280,6 +301,16 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         StandardAction::Botnet => "take down a botnet in reach on a hex holding your ambassador (it stays): Unity",
         StandardAction::BuyEnergy => {
             return format!("buy a neutral city's energy (in reach, producing; once per city a round): {} credits", w.int("board.city_energy_credits"));
+        }
+        StandardAction::Antimatter => {
+            return format!("turn {} into 1 antimatter", Resource::ResearchCubes.words(w.int("board.antimatter_cubes")));
+        }
+        StandardAction::Breakthrough => {
+            return format!(
+                "a shared breakthrough: {} for {} Sway toward Unity",
+                Resource::Antimatter.words(w.int("board.breakthrough_antimatter")),
+                w.int("board.breakthrough_unity")
+            );
         }
     };
     text.to_string()
@@ -386,6 +417,19 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
             format!("{} credits", t("board.city_energy_credits")),
             "a neutral city in reach that is producing (no blackout, no agent on it), once per city a round: gain its energy".into(),
         ),
+        // 204 (Matt, 2026-11-12): the one standard source, a desperate one; the engines (plants, the Builder's
+        // Forge, Particle Run, Tidal Grid) are the real supply.
+        StandardAction::Antimatter => (
+            "Make antimatter",
+            format!("{} research cubes", t("board.antimatter_cubes")),
+            "gain 1 antimatter, as often as you have cubes (a desperate trade: the engines make it cheaper)".into(),
+        ),
+        // 204: the standard antimatter spend, off unless `breakthrough_unity` is above 0.
+        StandardAction::Breakthrough => (
+            "Breakthrough",
+            format!("{} antimatter", t("board.breakthrough_antimatter")),
+            format!("sway {} toward Unity, once a round (`breakthrough_unity` 0: no such action)", t("board.breakthrough_unity")),
+        ),
     };
     [name.to_string(), cost, what]
 }
@@ -465,6 +509,16 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
         StandardAction::Envoy => Vec::new(),
         StandardAction::Botnet => botnet_targets(w, g, seat),
         StandardAction::BuyEnergy => all.filter(|&h| energy_for_sale(w, g, seat, h)).collect(),
+        StandardAction::Antimatter if w.int("board.antimatter_cubes") > 0 => vec![usize::MAX],
+        StandardAction::Antimatter => Vec::new(),
+        StandardAction::Breakthrough
+            if w.int("board.breakthrough_unity") > 0
+                && g.var(&broke_through_key(seat)) == 0
+                && w.variant("alignment") != Some("off") =>
+        {
+            vec![usize::MAX]
+        }
+        StandardAction::Breakthrough => Vec::new(),
     }
 }
 
@@ -508,6 +562,14 @@ pub(super) fn std_resolve(
         }
         StandardAction::Envoy => {
             alignment::hold_off(g, cx, 1);
+        }
+        StandardAction::Antimatter => {
+            cx.add_resource(g, s, Resource::Antimatter, 1);
+            cx.tally(g, "board.cubes_to_antimatter", 1);
+        }
+        StandardAction::Breakthrough => {
+            cx.set_key(g, &broke_through_key(s), 1);
+            alignment::unity_from(g, cx, "breakthrough", w.int("board.breakthrough_unity"));
         }
         StandardAction::Station => {
             if let Some(h) = on_hex(cx)? {

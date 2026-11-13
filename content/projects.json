@@ -343,7 +343,8 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 5
+    "amount": 5,
+    "narrative": "fear"
    }
   ],
   "harms": [
@@ -449,7 +450,8 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 2
+    "amount": 2,
+    "narrative": "fear"
    }
   ],
   "resolve": [

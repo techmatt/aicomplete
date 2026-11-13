@@ -62,7 +62,7 @@ const BASELINE: &str = include_str!("../../../../configs/baseline.json");
 const SHARED_ROW: &str = include_str!("../../../../configs/shared_row.json");
 
 /// The action phase of the baseline round.
-const ACTIONS: &str = "cards.play+threats.counter+alignment.act+board.act+ai.power";
+const ACTIONS: &str = "cards.play+threats.counter+board.act+ai.power";
 
 /// The baseline playing only the action phase, after setup.
 #[track_caller]
@@ -639,9 +639,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 89;
-const GOLDEN_FINGERPRINT: &str = "a275fd3eaf340f90";
-const GOLDEN_CONTENT_HASH: &str = "191458486cde6f4a";
+const GOLDEN_REVISION: u32 = 90;
+const GOLDEN_FINGERPRINT: &str = "d38022ef1321e4df";
+const GOLDEN_CONTENT_HASH: &str = "a0a43f5a8b20115a";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

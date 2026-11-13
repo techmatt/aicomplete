@@ -131,7 +131,7 @@ fn freeing_a_city_and_removing_a_botnet_sway_unity() {
     })
     .unwrap();
     assert_eq!(g.tokens(city, BOTNET), 0);
-    // Freeing a city sways 5 (034; 024: 4), removing a botnet 1 (136: 2); Unity
-    // swayed outside an action waits to be placed (136: it may hold Discord off).
-    assert_eq!(g.var("alignment.unity") + crate::modules::alignment::unity_pending(&g), 6);
+    // Freeing a city sways 5 (034; 024: 4), removing a botnet 0 (r90, 204: a takedown tells no story; 136: 2,
+    // r89: 1); Unity swayed outside an action waits to be placed (136: it may hold Discord off).
+    assert_eq!(g.var("alignment.unity") + crate::modules::alignment::unity_pending(&g), 5);
 }

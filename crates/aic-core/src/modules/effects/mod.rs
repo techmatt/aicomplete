@@ -191,8 +191,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             cx.add_resource(g, seat, *resource, n);
         }
         Op::RemoveTroops { count, reach } => removal::remove_troops(g, cx, seat, *count, *reach)?,
-        Op::Sway { side: Side::Discord, amount } => alignment::discord_from(g, cx, ctx.label, *amount),
-        Op::Sway { side: _, amount } => alignment::unity_from(g, cx, ctx.label, *amount),
+        Op::Sway { side: Side::Discord, amount, .. } => alignment::discord_from(g, cx, ctx.label, *amount),
+        Op::Sway { side: _, amount, .. } => alignment::unity_from(g, cx, ctx.label, *amount),
         Op::Production { resource, amount } => economy::raise_production(g, cx, seat, *resource, *amount),
         // 106: counted once, now; a program is in play when it resolves.
         Op::ProductionPerTag { resource, tag, per } => {

@@ -229,7 +229,7 @@
     {
      "op": "sway",
      "side": "discord",
-     "amount": 3
+     "amount": 3, "narrative": "fear"
     }
    ],
    "harms": [
@@ -363,7 +363,7 @@
     {
      "op": "sway",
      "side": "discord",
-     "amount": 3
+     "amount": 3, "narrative": "fear"
     },
     {
      "op": "pull_unity",
@@ -459,7 +459,7 @@
     {
      "op": "sway",
      "side": "discord",
-     "amount": 4
+     "amount": 4, "narrative": "fear"
     },
     {
      "op": "compute",

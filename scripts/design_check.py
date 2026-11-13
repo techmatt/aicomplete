@@ -66,7 +66,8 @@ def anchors():
     """Matt's unit anchors from docs/card-guidelines.md's table, then values.json for units it lacks."""
     a = dict(jload('configs/agents/values.json')['resources'])
     names = {'remove 1 agent': 'agent', 'remove 1 troop': 'troop', '1 energy': 'energy', '1 insight': 'insight',
-             'draw 1 card': 'card', '1 chip': 'chips', 'remove 1 compute from a project': 'compute'}
+             'draw 1 card': 'card', '1 chip': 'chips', 'remove 1 compute from a project': 'compute',
+             '1 antimatter': 'antimatter'}
     with open(os.path.join(ROOT, 'docs/card-guidelines.md'), encoding='utf-8') as f:
         text = f.read()
     sec = text.split('**Unit anchors**', 1)[1].split('\n\n', 2)[1]
@@ -202,11 +203,15 @@ def check_standard(cfg, base, o, games):
             parts.append(f'{qty} {unit}')
         return tot, ' + '.join(parts)
     for row in sa['rows']:
+        # 208 (P1): a row whose `off` tunable is 0 or missing is no action in this game: skip it, not "inf".
+        if row.get('off') and not base.get(row['off'], 0):
+            o.i(f'{row["name"]}: off (`{row["off"]}` 0)')
+            continue
         give, gtxt = val(row['give'])
         get, ttxt = val(row['get'])
         ratio = get / give if give else float('inf')
         c = row['src']
-        counter = 'alignment.antimatter_actions' if c == 'antimatter' else 'board.std.' + c.split(':', 1)[-1]
+        counter = 'board.std.' + c.split(':', 1)[-1]
         uses = sum(g['counters'].get(counter, 0) for g in games) / n if games else None
         used = f'; {uses:.2f} uses a game' if uses is not None else ''
         line = f'{row["name"]}: give {gtxt} = {give:g}, get {ttxt} = {get:g} at the anchors: {ratio:.2f}{used} (max {cap})'
@@ -226,7 +231,7 @@ def walk_sway(obj, where, tag, found, force_ops, ops_above=frozenset()):
         ops = {e.get('op') for e in obj if isinstance(e, dict)} | ops_above
         for e in obj:
             if isinstance(e, dict) and e.get('op') == 'sway':
-                found.append((where, e.get('side'), e.get('amount'), tag, bool(ops & force_ops)))
+                found.append((where, e.get('side'), e.get('amount'), e.get('narrative', tag), bool(ops & force_ops)))
             else:
                 walk_sway(e, where, tag, found, force_ops, frozenset(ops))
 

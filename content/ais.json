@@ -226,6 +226,28 @@
       "count": 2
      }
     ]
+   },
+   {
+    "name": "Pair Forge",
+    "tags": [],
+    "cost": [
+     [
+      "chips",
+      1
+     ],
+     [
+      "energy",
+      1
+     ]
+    ],
+    "text": "gain 1 antimatter",
+    "effects": [
+     {
+      "op": "gain",
+      "resource": "antimatter",
+      "amount": 1
+     }
+    ]
    }
   ],
   "play_track": [

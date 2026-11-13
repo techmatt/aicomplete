@@ -18,20 +18,21 @@
   },
   "standard_anchor_max": 1.0,
   "standard_actions": {
-    "note": "each standard action's give and get at the unit anchors (docs/card-guidelines.md, *Unit anchors*; values.json for units with none). A number is a count; a string is a baseline.json param (module.param). 'src' is its games.jsonl source key, for its uses a game.",
+    "note": "each standard action's give and get at the unit anchors (docs/card-guidelines.md, *Unit anchors*; values.json for units with none). A number is a count; a string is a baseline.json param (module.param). 'src' is its games.jsonl source key, for its uses a game. 'off' (208, P1): the tunable that turns the action off at 0; such a row is skipped. 'narrative' (204): the story tag of its Sway.",
     "rows": [
-      {"name": "antimatter action", "src": "antimatter", "give": {"sway": "alignment.antimatter_discord"}, "get": {"antimatter": 1}},
+      {"name": "Breakthrough", "src": "standard:breakthrough", "off": "board.breakthrough_unity", "give": {"antimatter": "board.breakthrough_antimatter"}, "get": {"sway": "board.breakthrough_unity"}, "narrative": "cooperation"},
+      {"name": "Make antimatter", "src": "standard:antimatter", "off": "board.antimatter_cubes", "give": {"research_cubes": "board.antimatter_cubes"}, "get": {"antimatter": 1}},
       {"name": "Buy a city's energy", "src": "standard:buy_energy", "give": {"credits": "board.city_energy_credits"}, "get": {"energy": 1}},
       {"name": "Turn a cube into insight", "src": "standard:insight", "give": {"research_cubes": 1}, "get": {"insight": "board.cube_insight"}},
       {"name": "Build a research station", "src": "standard:station", "give": {"chips": "board.station_chips"}, "get": {"station": 1}},
       {"name": "Remove agents", "src": "standard:remove", "give": {"ambassadors": "board.remove_ambassadors"}, "get": {"agent": "board.remove_count"}},
-      {"name": "Clear a corruption marker", "src": "standard:clear", "give": {"credits": "board.clear_cost"}, "get": {"sway": "board.clear_unity", "credits": "board.clear_credits"}},
+      {"name": "Clear a corruption marker", "src": "standard:clear", "give": {"credits": "board.clear_cost"}, "get": {"sway": "board.clear_unity", "credits": "board.clear_credits"}, "narrative": "trust"},
       {"name": "Gain a player ambassador", "src": "standard:ambassador", "give": {"credits": "board.ambassador_credits"}, "get": {"ambassadors": 1}},
-      {"name": "Take down a botnet", "src": "standard:botnet", "give": {"credits": "board.botnet_credits"}, "get": {"botnet": 1, "sway": "alignment.botnet"}},
+      {"name": "Take down a botnet", "src": "standard:botnet", "give": {"credits": "board.botnet_credits"}, "get": {"botnet": 1, "sway": "alignment.botnet"}, "narrative": "neutral"},
       {"name": "Project: harden", "src": "standard:harden_buy", "give": {"credits": "board.harden_credits"}, "get": {"harden": 1}},
       {"name": "Project: drain", "src": "standard:drain", "give": {"credits": "board.drain_credits"}, "get": {"compute": "board.drain_amount"}},
-      {"name": "Liberate a city", "src": "standard:liberate", "give": {"ambassadors": "board.liberate_at"}, "get": {"city_liberated": 1, "sway": "alignment.free_city"}},
-      {"name": "Envoy", "src": "standard:envoy", "give": {"ambassadors": "board.envoy_ambassadors"}, "get": {"sway": 1}},
+      {"name": "Liberate a city", "src": "standard:liberate", "give": {"ambassadors": "board.liberate_at"}, "get": {"city_liberated": 1, "sway": "alignment.free_city"}, "narrative": "trust"},
+      {"name": "Envoy", "src": "standard:envoy", "give": {"ambassadors": "board.envoy_ambassadors"}, "get": {"sway": 1}, "narrative": "trust"},
       {"name": "Sell a card", "src": "standard:sell", "give": {"card": 1}, "get": {"credits": "board.sell_credits"}}
     ],
     "extra_anchors": {

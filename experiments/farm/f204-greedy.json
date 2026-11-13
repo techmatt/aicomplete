@@ -1,0 +1,37 @@
+{
+  "name": "f204-greedy",
+  "note": "204: the fresh read, r90 against r89 on the same seeds",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "greedy"
+  ],
+  "games": 48,
+  "records": 0
+}

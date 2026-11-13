@@ -1,0 +1,77 @@
+{
+  "name": "s204-screen3",
+  "note": "204: screen 3 (Containment Reactor, w.antimatter 2, 4 cubes), dev seeds 36800-36831",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_c3",
+      "set": [
+        "board.antimatter_cubes=3"
+      ]
+    },
+    {
+      "name": "br_c3",
+      "set": [
+        "ai.boards=0,2",
+        "board.antimatter_cubes=3"
+      ]
+    },
+    {
+      "name": "pr_c3",
+      "set": [
+        "ai.boards=1,2",
+        "board.antimatter_cubes=3"
+      ]
+    },
+    {
+      "name": "bp_bn1",
+      "set": [
+        "alignment.botnet=1"
+      ]
+    },
+    {
+      "name": "br_bn1",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.botnet=1"
+      ]
+    },
+    {
+      "name": "pr_bn1",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.botnet=1"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

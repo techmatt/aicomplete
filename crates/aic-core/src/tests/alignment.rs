@@ -144,31 +144,25 @@ fn the_board_clear_win_and_the_bar_easing() {
     }
 }
 
-/// The antimatter action sways toward Discord, onto its own track: the
-/// Unity track is untouched (136: no tug of war). r89 turns the action off in the baseline (`antimatter_discord` 0);
-/// the test turns it on.
+/// 204: the desperate source, `board.antimatter_cubes` research cubes for 1 antimatter, sways nothing; 0 turns it
+/// off.
 #[test]
-fn the_antimatter_action_fills_only_the_discord_track() {
-    let (rules, mut g) = action_only(&[EASE, "alignment.antimatter_discord=1"]);
+fn the_antimatter_action_turns_cubes_into_antimatter_and_sways_nothing() {
+    let (rules, mut g) = action_only(&[EASE, "board.antimatter_cubes=3"]);
     g.vars.insert("alignment.unity".into(), 2);
     g.vars.insert("alignment.discord".into(), 0);
+    g.seats[0].resources.insert(Resource::ResearchCubes, 3);
     let am = g.resource(0, Resource::Antimatter);
-    let a = Action::Antimatter { seat: 0 };
+    let a = Action::Standard { seat: 0, act: "antimatter".into() };
     assert!(rules.legal_actions(&g).contains(&a));
     rules.apply_mut(&mut g, &a, None).unwrap();
     assert_eq!(g.resource(0, Resource::Antimatter), am + 1);
-    assert_eq!((g.var("alignment.unity"), g.var("alignment.discord")), (2, 1));
-    // Once a round per player.
+    assert_eq!(g.resource(0, Resource::ResearchCubes), 0);
+    assert_eq!((g.var("alignment.unity"), g.var("alignment.discord")), (2, 0));
     assert!(!rules.legal_actions(&g).contains(&a));
-    assert!(rules.apply_mut(&mut g, &a, None).is_err());
-    assert!(rules
-        .legal_actions(&g)
-        .contains(&Action::Antimatter { seat: 1 }));
-    let (rules, g) = action_only(&["alignment.antimatter_discord=0"]);
-    assert!(rules
-        .legal_actions(&g)
-        .iter()
-        .all(|a| !matches!(a, Action::Antimatter { .. })));
+    let (rules, mut g) = action_only(&["board.antimatter_cubes=0"]);
+    g.seats[0].resources.insert(Resource::ResearchCubes, 5);
+    assert!(!rules.legal_actions(&g).contains(&Action::Standard { seat: 0, act: "antimatter".into() }));
 }
 
 /// 136: Unity swayed may hold Discord off instead, 1 for 1, as the players

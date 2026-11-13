@@ -96,6 +96,9 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("drain_credits", 1, 50, "standard project: credits to drain compute from an adversary project"),
             ParamSpec::int("drain_amount", 1, 20, "standard project: compute drained"),
             ParamSpec::int("cube_insight", 0, 5, "standard action, no limit a round: insight for 1 research cube (0: no such action)"),
+            ParamSpec::int("antimatter_cubes", 0, 10, "standard action, the desperate source (204): research cubes for 1 antimatter, no limit a round (0: no such action)"),
+            ParamSpec::int("breakthrough_antimatter", 1, 10, "standard action Breakthrough (204): antimatter it spends"),
+            ParamSpec::int("breakthrough_unity", 0, 10, "standard action Breakthrough (204): Sway toward Unity, once a round (0: no such action)"),
             ParamSpec::int("botnet_credits", 1, 50, "standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays)"),
         ],
         phases: &[
@@ -150,12 +153,14 @@ const LANDED_AT: &str = "board.landed_at.";
 const LANDED_N: &str = "board.landed_n.";
 
 /// The marks a round's end clears outright ([`expire_marks`]).
-const ROUND_MARKS: [&str; 6] = [NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED, BOUGHT];
+const ROUND_MARKS: [&str; 7] = [NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED, BOUGHT, BROKE_THROUGH];
 
 /// 135: every per-round mark [`expire_marks`] counts down, trues or clears
 /// (the view lists them as bookkeeping).
-pub(super) const MARKS: [&str; 11] =
-    [HEX_FLAGS, STAND, OCCUPIED, CORP_EXTRA, EXTRA_WAR, NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED, BOUGHT];
+pub(super) const MARKS: [&str; 12] = [
+    HEX_FLAGS, STAND, OCCUPIED, CORP_EXTRA, EXTRA_WAR, NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED, BOUGHT,
+    BROKE_THROUGH,
+];
 
 /// How many of hex `h`'s adversary troops stand.
 pub fn standing(g: &GameState, h: usize) -> i64 {

@@ -51,10 +51,6 @@ fn off_variants_remove_threats_alignment_and_the_draft() {
         (g.var("alignment.unity"), g.var("alignment.discord")),
         (0, 0)
     );
-    assert!(rules
-        .legal_actions(&g)
-        .iter()
-        .all(|a| !matches!(a, Action::Antimatter { .. })));
     g.vars.insert("alignment.unity".into(), 4);
     any_action(&rules, &mut g);
     assert_eq!(g.var("alignment.unity_tips"), 0);
@@ -569,9 +565,9 @@ fn a_discord_sway_is_a_price_not_a_part_that_acts() {
     let w = rules.world();
     let liberate = Op::Liberate { ambassadors: 0, troops: 0, botnet: false };
     assert!(!effects::feasible(&w, &g, 0, std::slice::from_ref(&liberate)), "the lab has no corrupted city in reach");
-    let nuclear = [liberate.clone(), Op::Sway { side: Side::Discord, amount: 1 }];
+    let nuclear = [liberate.clone(), Op::Sway { side: Side::Discord, amount: 1, narrative: None }];
     assert!(!effects::feasible(&w, &g, 0, &nuclear), "the Discord sway alone doesn't make it playable");
-    let unity = [liberate, Op::Sway { side: Side::Unity, amount: 1 }];
+    let unity = [liberate, Op::Sway { side: Side::Unity, amount: 1, narrative: None }];
     assert!(effects::feasible(&w, &g, 0, &unity), "a Unity sway acts");
 }
 

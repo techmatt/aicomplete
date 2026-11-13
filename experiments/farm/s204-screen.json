@@ -1,0 +1,57 @@
+{
+  "name": "s204-screen",
+  "note": "204: screen on the dev seeds 36800-36831",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_c4",
+      "set": [
+        "board.antimatter_cubes=4"
+      ]
+    },
+    {
+      "name": "br_c4",
+      "set": [
+        "ai.boards=0,2",
+        "board.antimatter_cubes=4"
+      ]
+    },
+    {
+      "name": "pr_c4",
+      "set": [
+        "ai.boards=1,2",
+        "board.antimatter_cubes=4"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

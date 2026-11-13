@@ -1,0 +1,77 @@
+{
+  "name": "s204-screen4",
+  "note": "204: screen 4 (Breakthrough), dev seeds 36800-36831",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_bt2",
+      "set": [
+        "board.breakthrough_unity=2"
+      ]
+    },
+    {
+      "name": "br_bt2",
+      "set": [
+        "ai.boards=0,2",
+        "board.breakthrough_unity=2"
+      ]
+    },
+    {
+      "name": "pr_bt2",
+      "set": [
+        "ai.boards=1,2",
+        "board.breakthrough_unity=2"
+      ]
+    },
+    {
+      "name": "bp_bt3",
+      "set": [
+        "board.breakthrough_unity=3"
+      ]
+    },
+    {
+      "name": "br_bt3",
+      "set": [
+        "ai.boards=0,2",
+        "board.breakthrough_unity=3"
+      ]
+    },
+    {
+      "name": "pr_bt3",
+      "set": [
+        "ai.boards=1,2",
+        "board.breakthrough_unity=3"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

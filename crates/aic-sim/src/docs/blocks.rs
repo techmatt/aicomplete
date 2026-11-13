@@ -604,7 +604,9 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
     let order = [A::Station, A::Remove, A::Clear, A::Move, A::Ambassador, A::Claim, A::Liberate, A::Botnet, A::BuyEnergy, A::HardenChips];
     let mut rows: Vec<[String; 3]> = order.iter().map(|&a| std_rule_text(a, &t)).collect();
     rows.push(["Sell a card".to_string(), format!("gain {}", t("board.sell_credits")), "from your hand".to_string()]);
-    rows.extend([A::HardenBuy, A::Drain, A::Insight, A::Envoy].iter().map(|&a| std_rule_text(a, &t)));
+    rows.extend(
+        [A::HardenBuy, A::Drain, A::Insight, A::Envoy, A::Antimatter, A::Breakthrough].iter().map(|&a| std_rule_text(a, &t)),
+    );
     table(&["Action", "Cost", "What"], rows.into_iter().map(|r| r.to_vec()).collect())
 }
 
@@ -628,6 +630,8 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
             t("alignment.free_facility"),
         ],
         ["Unity".to_string(), "removing a botnet".to_string(), t("alignment.botnet")],
+        // 204: the standard antimatter spend.
+        ["Unity".to_string(), "Breakthrough (1 antimatter, once a round)".to_string(), t("board.breakthrough_unity")],
         // 099: two Unity sources the table left out.
         [
             "Unity".to_string(),

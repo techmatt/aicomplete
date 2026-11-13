@@ -591,9 +591,10 @@ impl Default for Weights {
             program: 1.0,
             token: 0.5,
             energy: 0.8,
-            // 200: 2 -> 5 (about 8 credits, values.json's 7): r88's Annihilate spends 2 at once, so a seat saves it;
-            // at 2 Annihilate fired a third as often (screen 1).
-            antimatter: 5.0,
+            // 200: 2 -> 5 for r88's Annihilate. 204: back to 2 with Annihilate gone: at 5 the seats turned cubes
+            // into antimatter they never spent (9 gained, 0.4 spent a seat-game at d0); at 2 the desperate action
+            // falls from 23% of supply to 10% and the spends rise (screen 2, -4.8 against 5's -5.8 vs r89).
+            antimatter: 2.0,
             insight: 0.5,
             patience: 1.0,
             wall: 3.0,

@@ -143,10 +143,6 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       const option = shown?.status.split(' or ')[Number(a.option)];
       return `counter ${threatName(t)}${option ? `: ${option}` : ''}`;
     }
-    case 'antimatter': {
-      const n = param(cx.config, 'alignment', 'antimatter_discord');
-      return `+1 antimatter${typeof n === 'number' ? ` (${n} Sway → Discord)` : ' (Sway → Discord)'}`;
-    }
     case 'standard': {
       // The rules publish each standard action's words and cost in the view.
       const s = cx.view?.standard.find((x) => x.act === String(a.act));

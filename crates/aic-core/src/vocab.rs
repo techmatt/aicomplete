@@ -322,6 +322,20 @@ impl Side {
     }
 }
 
+/// 204 (Matt, 2026-11-12): what a Sway tells in the story, which sets its side. Unity is trust and
+/// cooperation; Discord is fear, force and collateral harm; neutral tells neither (it sways 0). Read by
+/// `scripts/design_check.py`'s story check; no rule reads it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Story {
+    Trust,
+    Cooperation,
+    Fear,
+    Force,
+    Collateral,
+    Neutral,
+}
+
 macro_rules! display_by_name {
     ($($t:ty),*) => {$(
         impl fmt::Display for $t {

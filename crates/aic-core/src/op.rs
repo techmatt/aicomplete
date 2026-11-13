@@ -18,7 +18,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::vocab::{Location, Resource, Side, Tag, TagOrAny, ThreatSource, TokenKind};
+use crate::vocab::{Location, Resource, Side, Story, Tag, TagOrAny, ThreatSource, TokenKind};
 
 /// The kinds of content list an op can sit in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -825,10 +825,13 @@ pub enum Op {
     },
 
     // ---------- instant: players, threats, the team, twists ----------
-    /// Sway `amount` toward `side` (module `alignment`).
+    /// Sway `amount` toward `side` (module `alignment`). `narrative` (204): what the act tells in the story,
+    /// which sets the side; no rule reads it.
     Sway {
         side: Side,
         amount: i64,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        narrative: Option<Story>,
     },
 
     // ---------- instant: threats and the team ----------

@@ -1,0 +1,37 @@
+{
+  "name": "c204-strategist",
+  "note": "204: the confirm read (Pair Forge 1 chip, d1 compute 8) on 45535-45630, r90 against r89",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 96,
+  "records": 0
+}

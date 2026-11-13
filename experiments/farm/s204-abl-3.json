@@ -1,0 +1,34 @@
+{
+  "name": "s204-abl-3",
+  "note": "204: d3-d4 ablation on the dev seeds",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    3,
+    4
+  ],
+  "agents": [
+    "strategist:no_spend=3"
+  ],
+  "games": 32,
+  "records": 0
+}

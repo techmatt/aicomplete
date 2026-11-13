@@ -885,11 +885,11 @@ impl Agent for Policy {
             }
         }
         let i = self.search_pick(rules, g, legal);
-        // 1: instead of a pass; 3: also instead of a standard action, a sale or the antimatter action (threat
-        // counters, powers, Uses and other plays stand); 4: 3 and instead of a power.
+        // 1: instead of a pass; 3: also instead of a standard action or a sale (threat counters, powers, Uses
+        // and other plays stand); 4: 3 and instead of a power.
         let yields = match &legal[i] {
             Action::Pass { .. } => kept_rule == 1 || kept_rule >= 3,
-            Action::Standard { .. } | Action::Sell { .. } | Action::Antimatter { .. } => kept_rule >= 3,
+            Action::Standard { .. } | Action::Sell { .. } => kept_rule >= 3,
             Action::Power { .. } => kept_rule == 4,
             _ => false,
         };

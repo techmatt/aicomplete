@@ -22,7 +22,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 89 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 90 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -118,7 +118,7 @@ The rest:
 ## Off-variants
 
 For measuring what a module adds, these variants remove its effect and keep the round: `threats.variant=off` (no
-threats), `alignment.variant=off` (no Sway moves, nothing tips, no antimatter action; the purge, the node loss and the
+threats), `alignment.variant=off` (no Sway moves, nothing tips; the purge, the node loss and the
 adversary deck-out stay; with no tips the Discord-deck loss can't happen and the purge never eases), `cards.variant=off`
 (no draft or drawing, so no player cards at all). Two don't isolate their module: with
 Alignment off nothing tips, so botnets always count against the purge; with cards off only Decommission and the Take down a botnet action

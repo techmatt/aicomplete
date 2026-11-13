@@ -609,7 +609,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             w.per_tag[tag_i(*tag)] = row("gain_per_tag") * r(*resource) / (*per).max(1) as f64;
             w
         }
-        Op::Sway { side, amount } => {
+        Op::Sway { side, amount, .. } => {
             let sign = if *side == Side::Unity { 1.0 } else { -1.0 };
             Worth::now(row("sway") * sign * t.rate("sway") * *amount as f64)
         }

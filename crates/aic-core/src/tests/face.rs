@@ -92,7 +92,7 @@ fn a_removal_says_which_pieces() {
     );
     assert_eq!(
         face_of("kinetic_interdiction").text,
-        "Pay 1 antimatter. Remove 2 Troops in one country. Remove 6 Agents in reach."
+        "Pay 1 antimatter. Remove 2 Troops in one country. Remove 6 Agents in reach. Sway 1 toward Discord."
     );
     for c in &content().cards {
         assert!(!c.text.contains("per hex"), "{}: {}", c.id, c.text);

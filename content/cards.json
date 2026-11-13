@@ -1562,7 +1562,7 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 2
+    "amount": 2, "narrative": "cooperation"
    }
   ]
  },
@@ -2019,7 +2019,7 @@
      {
       "op": "sway",
       "side": "unity",
-      "amount": 3
+      "amount": 3, "narrative": "trust"
      }
     ]
    }
@@ -2050,7 +2050,7 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 3
+    "amount": 3, "narrative": "trust"
    },
    {
     "op": "add_tokens",
@@ -2220,7 +2220,7 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 2
+    "amount": 2, "narrative": "cooperation"
    }
   ]
  },
@@ -2249,7 +2249,7 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 6
+    "amount": 6, "narrative": "cooperation"
    }
   ]
  },
@@ -2329,7 +2329,7 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 8
+    "amount": 8, "narrative": "trust"
    }
   ]
  },
@@ -2520,7 +2520,7 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 1
+    "amount": 1, "narrative": "trust"
    }
   ]
  },
@@ -2797,8 +2797,8 @@
    },
    {
     "op": "sway",
-    "side": "unity",
-    "amount": 2
+    "side": "discord",
+    "amount": 1, "narrative": "force"
    }
   ]
  },
@@ -2840,7 +2840,7 @@
   "name": "Kinetic Interdiction",
   "tier": 2,
   "kind": "event",
-  "cost": 10,
+  "cost": 8,
   "antimatter": 1,
   "insight": 0,
   "needs": [
@@ -2861,8 +2861,105 @@
     "op": "remove_ambassadors_country",
     "max": 6,
     "reach": true
+   },
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 1, "narrative": "force"
    }
   ]
+ },
+ {
+  "id": "annihilation_lance",
+  "name": "Annihilation Lance",
+  "tier": 2,
+  "kind": "event",
+  "cost": 2,
+  "antimatter": 2,
+  "insight": 0,
+  "tags": [
+   "power"
+  ],
+  "effects": [
+   {
+    "op": "destroy_all"
+   },
+   {
+    "op": "remove_troops",
+    "count": 2,
+    "reach": true
+   },
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 2, "narrative": "collateral"
+   }
+  ]
+ },
+ {
+  "id": "fusion_commons",
+  "name": "Fusion Commons",
+  "tier": 2,
+  "kind": "event",
+  "cost": 4,
+  "antimatter": 2,
+  "insight": 0,
+  "needs": [
+   [
+    "science",
+    2
+   ]
+  ],
+  "tags": [
+   "science"
+  ],
+  "effects": [
+   {
+    "op": "gain",
+    "resource": "energy",
+    "amount": 6
+   },
+   {
+    "op": "draw",
+    "count": 3
+   },
+   {
+    "op": "sway",
+    "side": "unity",
+    "amount": 3, "narrative": "cooperation"
+   }
+  ]
+ },
+ {
+  "id": "containment_reactor",
+  "name": "Containment Reactor",
+  "tier": 1,
+  "kind": "building",
+  "cost": 7,
+  "insight": 0,
+  "tags": [
+   "power"
+  ],
+  "ability": {
+   "cost": [
+    [
+     "antimatter",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "gain",
+     "resource": "energy",
+     "amount": 4
+    },
+    {
+     "op": "sway",
+     "side": "unity",
+     "amount": 1, "narrative": "cooperation"
+    }
+   ]
+  }
  },
  {
   "id": "total_containment",
@@ -2973,7 +3070,7 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 2
+    "amount": 2, "narrative": "trust"
    }
   ]
  },
@@ -3264,7 +3361,7 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 1
+    "amount": 2, "narrative": "collateral"
    }
   ]
  },
@@ -4024,7 +4121,7 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 8
+    "amount": 8, "narrative": "cooperation"
    },
    {
     "op": "gain_ambassadors",
@@ -4722,7 +4819,7 @@
     {
      "op": "sway",
      "side": "unity",
-     "amount": 2
+     "amount": 2, "narrative": "cooperation"
     }
    ]
   }
@@ -4820,7 +4917,7 @@
     {
      "op": "sway",
      "side": "unity",
-     "amount": 2
+     "amount": 2, "narrative": "trust"
     },
     {
      "op": "gain_ambassadors",
@@ -4948,7 +5045,7 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 2
+    "amount": 2, "narrative": "trust"
    }
   ],
   "draft": true
@@ -5030,8 +5127,8 @@
    },
    {
     "op": "sway",
-    "side": "unity",
-    "amount": 2
+    "side": "discord",
+    "amount": 1, "narrative": "force"
    }
   ],
   "draft": true
@@ -5144,7 +5241,7 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 2
+    "amount": 2, "narrative": "cooperation"
    }
   ],
   "draft": true
@@ -5167,8 +5264,8 @@
    },
    {
     "op": "sway",
-    "side": "unity",
-    "amount": 1
+    "side": "discord",
+    "amount": 1, "narrative": "force"
    }
   ],
   "draft": true
@@ -5196,7 +5293,7 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 1
+    "amount": 1, "narrative": "cooperation"
    }
   ],
   "draft": true

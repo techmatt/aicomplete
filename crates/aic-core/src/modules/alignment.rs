@@ -1,6 +1,6 @@
 //! Alignment and the end of the game: the two Alignment tracks (Unity and
 //! Discord, each fed with its own Sway and tipping at its own threshold),
-//! the Unity and Discord decks, the antimatter action, and the win and loss
+//! the Unity and Discord decks, and the win and loss
 //! conditions, checked after every action and every automatic phase.
 //!
 //! Replaces human opposition (rules revision 5). Since 017 every card is
@@ -12,11 +12,10 @@
 //! deck reshuffles, the Discord deck never does.
 
 use crate::module::Hot;
-use crate::action::Action;
 use crate::content::{AlignmentCard, Op, Resource, Side};
 use crate::key::{Key, KeyBuf};
 use crate::module::{
-    Build, Cx, Halt, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World,
+    Build, Cx, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World,
 };
 use crate::rng::shuffle;
 use crate::state::GameState;
@@ -35,8 +34,6 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("free_city", 0, 10, "Sway toward Unity for freeing a corrupted city"),
     ParamSpec::int("free_facility", 0, 10, "Sway toward Unity for liberating an adversary station or factory (137)"),
     ParamSpec::int("botnet", 0, 10, "Sway toward Unity for removing a botnet"),
-    ParamSpec::int("antimatter_discord", 0, 5, "the antimatter action: Sway toward Discord to produce 1 antimatter (0: no such action)"),
-    ParamSpec::int("antimatter_uses", 0, 5, "times each player may take the antimatter action per round"),
     ParamSpec::list("purge_at", 1, 50, "Unity tips at which the purge asks less: agents, then troops, then botnets stop counting (136; 156: tips, not cards drawn, since the Unity deck reshuffles)"),
     ParamSpec::list("tier_at", 1, 50, "157: the tip (its side's count, this tip included) from which its cards resolve strength II, then strength III"),
     ParamSpec::int("node_loss", 0, 1, "1: a player with no nodes on the board loses the game for everyone"),
@@ -47,10 +44,6 @@ const PHASES: &[PhaseSpec] = &[
     PhaseSpec::auto(
         "sway",
         "the round's Sway: the adversary board's printed drip toward Discord (the Militarist prints none) and each land-corruption token's",
-    ),
-    PhaseSpec::decision(
-        "act",
-        "the antimatter action: sway toward Discord to produce 1 antimatter",
     ),
 ];
 
@@ -184,10 +177,6 @@ fn tier_of(w: &World, tip: i64) -> usize {
 /// Unity swayed this action or phase and still to be placed (136).
 pub fn unity_pending(g: &GameState) -> i64 {
     g.var(UNITY_NEW)
-}
-
-fn used_key(seat: usize) -> String {
-    format!("alignment.used.{seat}")
 }
 
 fn card<'w>(w: &World<'w>, id: &str) -> &'w AlignmentCard {
@@ -475,11 +464,6 @@ fn tier_words(side: &str, w: &World) -> String {
     )
 }
 
-/// Whether the antimatter action exists in this game (uses aside).
-fn antimatter_on(w: &World) -> bool {
-    w.int("alignment.antimatter_discord") > 0 && w.variant("alignment") != Some("off")
-}
-
 impl Module for Alignment {
     fn setup(&self, g: &mut GameState, cx: &mut Cx) {
         let w = cx.world;
@@ -509,14 +493,6 @@ impl Module for Alignment {
         }
     }
 
-    fn round_start(&self, g: &mut GameState, cx: &mut Cx) {
-        for s in 0..g.seats.len() {
-            if g.var(&used_key(s)) != 0 {
-                cx.set_key(g, &used_key(s), 0);
-            }
-        }
-    }
-
     fn run(&self, _phase: usize, g: &mut GameState, cx: &mut Cx) -> Res {
         // 136: the board's printed drip (it was `adversary_discord`, 0).
         let drip = cx.world.content.adversary_board.discord_drip;
@@ -524,30 +500,6 @@ impl Module for Alignment {
         // 138: each land-corruption token drips 1 Discord; 192: a face-down one (a node hex's) its own rate.
         let blight = adversary::blight_drip(&cx.world, g);
         discord_from(g, cx, "blight", blight);
-        Ok(())
-    }
-
-    fn legal(&self, _phase: usize, g: &GameState, w: &World, seat: u8, out: &mut Vec<Action>) {
-        if antimatter_on(w) && g.var(&used_key(seat as usize)) < w.int("alignment.antimatter_uses") {
-            out.push(Action::Antimatter { seat });
-        }
-    }
-
-    fn owns(&self, _phase: usize, a: &Action) -> bool {
-        matches!(a, Action::Antimatter { .. })
-    }
-
-    fn act(&self, _phase: usize, g: &mut GameState, cx: &mut Cx, a: &Action) -> Res {
-        let w = cx.world;
-        let s = a.seat() as usize;
-        let n = w.int("alignment.antimatter_discord");
-        if !antimatter_on(&w) || g.var(&used_key(s)) >= w.int("alignment.antimatter_uses") {
-            return Err(Halt::Illegal("no antimatter action left this round".into()));
-        }
-        cx.add_key(g, &used_key(s), 1);
-        cx.add_resource(g, s, Resource::Antimatter, 1);
-        discord_from(g, cx, "antimatter", n);
-        cx.count(g, "antimatter_actions", 1);
         Ok(())
     }
 
@@ -721,19 +673,6 @@ impl Module for Alignment {
             );
         }
         // 136: Unity waiting to be placed lives only within one action's check.
-        out.bookkeeping(&["alignment.used.", "alignment.unity_new"]);
-        let uses = w.int("alignment.antimatter_uses");
-        if antimatter_on(w) {
-            for s in 0..g.seats.len() {
-                out.seat(
-                    s,
-                    "antimatter_left",
-                    "antimatter actions left",
-                    (uses - g.var(&used_key(s))).max(0),
-                    Some(uses),
-                    "sway toward Discord to produce 1 antimatter",
-                );
-            }
-        }
+        out.bookkeeping(&["alignment.unity_new"]);
     }
 }

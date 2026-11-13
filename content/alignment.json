@@ -60,8 +60,8 @@
     "effects": [{"op": "remove_where", "pieces": "agents", "count": 2, "per": "country", "where": "by_corrupted_city"}]},
    {"text": "In each country piece, remove up to 3 Agents from hexes on or next to a corrupted city.",
     "effects": [{"op": "remove_where", "pieces": "agents", "count": 3, "per": "country", "where": "by_corrupted_city"}]},
-   {"text": "In each country piece, remove up to 6 Agents from hexes within 2 of an Ambassador or a Node.",
-    "effects": [{"op": "remove_where", "pieces": "agents", "count": 6, "per": "country", "where": "near_player"}]}
+   {"text": "In each country piece, remove up to 4 Agents from hexes on or next to a corrupted city.",
+    "effects": [{"op": "remove_where", "pieces": "agents", "count": 4, "per": "country", "where": "by_corrupted_city"}]}
   ]
  },
  {
@@ -70,11 +70,11 @@
   "side": "unity",
   "tiers": [
    {"text": "Sway 1 toward Unity for each city, research station or factory a player owns (at most 2).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "sway", "side": "unity", "amount": 1}]}]},
+    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "sway", "side": "unity", "amount": 1, "narrative": "cooperation"}]}]},
    {"text": "Sway 1 toward Unity for each city, research station or factory a player owns (at most 3).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "sway", "side": "unity", "amount": 1}]}]},
+    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "sway", "side": "unity", "amount": 1, "narrative": "cooperation"}]}]},
    {"text": "Sway 1 toward Unity for each city, research station or factory a player owns (at most 4).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "sway", "side": "unity", "amount": 1}]}]}
+    "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "sway", "side": "unity", "amount": 1, "narrative": "cooperation"}]}]}
   ]
  },
  {
@@ -140,8 +140,8 @@
     "effects": [{"op": "remove_where", "pieces": "agents", "count": 3, "per": "player", "where": "by_corrupted_city"}]},
    {"text": "Each player removes up to 4 Agents from one hex on or next to a corrupted city.",
     "effects": [{"op": "remove_where", "pieces": "agents", "count": 4, "per": "player", "where": "by_corrupted_city"}]},
-   {"text": "Each player removes up to 6 Agents from one hex within 2 of an Ambassador or a Node.",
-    "effects": [{"op": "remove_where", "pieces": "agents", "count": 6, "per": "player", "where": "near_player"}]}
+   {"text": "Each player removes up to 5 Agents from one hex on or next to a corrupted city.",
+    "effects": [{"op": "remove_where", "pieces": "agents", "count": 5, "per": "player", "where": "by_corrupted_city"}]}
   ]
  },
  {
@@ -221,11 +221,11 @@
   "draft": true,
   "tiers": [
    {"text": "Sway 1 toward Unity for each corrupted city, research station or factory (at most 2).",
-    "effects": [{"op": "per_site", "where": "corrupted", "max": 2, "then": [{"op": "sway", "side": "unity", "amount": 1}]}]},
+    "effects": [{"op": "per_site", "where": "corrupted", "max": 2, "then": [{"op": "sway", "side": "unity", "amount": 1, "narrative": "trust"}]}]},
    {"text": "Sway 1 toward Unity for each corrupted city, research station or factory (at most 3).",
-    "effects": [{"op": "per_site", "where": "corrupted", "max": 3, "then": [{"op": "sway", "side": "unity", "amount": 1}]}]},
+    "effects": [{"op": "per_site", "where": "corrupted", "max": 3, "then": [{"op": "sway", "side": "unity", "amount": 1, "narrative": "trust"}]}]},
    {"text": "Sway 1 toward Unity for each corrupted city, research station or factory (at most 4).",
-    "effects": [{"op": "per_site", "where": "corrupted", "max": 4, "then": [{"op": "sway", "side": "unity", "amount": 1}]}]}
+    "effects": [{"op": "per_site", "where": "corrupted", "max": 4, "then": [{"op": "sway", "side": "unity", "amount": 1, "narrative": "trust"}]}]}
   ]
  },
  {
@@ -266,8 +266,8 @@
     "effects": [{"op": "remove_where", "pieces": "agents", "count": 1, "per": "hex", "where": "by_corrupted_city"}]},
    {"text": "Remove up to 2 Agents from each hex on or next to a corrupted city.",
     "effects": [{"op": "remove_where", "pieces": "agents", "count": 2, "per": "hex", "where": "by_corrupted_city"}]},
-   {"text": "Remove up to 3 Agents from each hex within 2 of an Ambassador or a Node.",
-    "effects": [{"op": "remove_where", "pieces": "agents", "count": 3, "per": "hex", "where": "near_player"}]}
+   {"text": "Remove up to 3 Agents from each hex on or next to a corrupted city.",
+    "effects": [{"op": "remove_where", "pieces": "agents", "count": 3, "per": "hex", "where": "by_corrupted_city"}]}
   ]
  },
  {

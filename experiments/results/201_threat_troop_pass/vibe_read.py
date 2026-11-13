@@ -1,6 +1,8 @@
 """201: the vibe measures, per cell (a variant's suffix after its pair, `base` for the bare pair), from games.jsonl.
 
-    python experiments/results/201_threat_troop_pass/vibe_read.py DIR [DIR ...] [--cells a,b] [--diffs 0,1,2,3] [--md]
+    python experiments/results/201_threat_troop_pass/vibe_read.py DIR [DIR ...] [--cells a,b] [--diffs 0,1,2,3]
+
+(It prints Markdown tables always; 208: the `--md` this line once promised was never a flag, so it is dropped.)
 
 Per cell: win %, rounds; troops placed a game by source and by stage (rounds 1-4 / 5-8 / 9+ as a proxy for stage I /
 II / III: the stage-II card arrives at round 5-6 by level), troop strikes (marches that reach a player's piece) and

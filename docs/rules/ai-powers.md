@@ -22,6 +22,7 @@ still help.
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
 | Builder | Focus | 2 credits | gain 1 insight |
 | Builder | Procure | 1 chip | draw 2 cards |
+| Builder | Pair Forge | 1 chip + 1 energy | gain 1 antimatter |
 | Protector | Bulwark | 1 energy | harden 1 facility in reach |
 | Protector | Expand | 1 energy | place 1 Node |
 | Protector | Accord | 1 Diplomacy | place 1 Node |
@@ -45,9 +46,10 @@ each payoff priced to be worth the card: 1 chip (r83: worth 2 before), 2 energy,
 tag and an energy buy a building, a sheltered country or an antimatter (r35). **Card throughput (108):** the Builder's
 Procure turns a spare chip into 2 cards, as the Researcher's Fieldwork turns an energy into 3.
 
-**No board power spends antimatter (r89, Matt's message 9119):** Annihilate is off every board, and the antimatter
-action is off ([alignment.md](alignment.md)); a later item redesigns antimatter's sources and uses. The Researcher's
-Particle Run still makes it; the printed tier-2 ultimates spend it, 1 each ([economy.md](economy.md)).
+**Antimatter, each board its own (r90, Matt's ruling, 2026-11-12).** No power is on every board and none spends
+antimatter: the big spends are cards (Annihilation Lance, Fusion Commons, the ultimates; [economy.md](economy.md)).
+Two boards make it, each its own way: the Builder's Pair Forge (2 chips and 1 energy, 16.5 at the anchors, for 18)
+and the Researcher's Particle Run (a Power tag and 1 energy). The Protector makes none but Sanctuary's 1 a round.
 
 ## Insight conversions (candidate, r41)
 

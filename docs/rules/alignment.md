@@ -35,7 +35,8 @@ fill a track again, which then tips too. Thresholds: *Tunables*.
 | Unity | Biomia's converter | 1 research cube → 1 Sway to Unity (once a round) |
 | Unity | liberating an adversary city (ambassadors.md: a liberate card or the Liberate action) | `alignment.free_city` 5 |
 | Unity | liberating an adversary station or factory (the Liberate action) | `free_facility` 2 |
-| Unity | removing a botnet | `alignment.botnet` 1 |
+| Unity | removing a botnet | `alignment.botnet` 0 |
+| Unity | Breakthrough (1 antimatter, once a round) | `breakthrough_unity` 2 |
 | Unity | clearing a corruption marker (the Clear action, Recovery, cards) | `clear_unity` 2 |
 | Unity | player cubes on a megaproject as it completes, as its corp's card prints (Delta Seawall) | 1 each |
 | Unity | cards (Peace Conference, Coalition Charter, Open Assembly), Unity cards | card text |
@@ -50,9 +51,12 @@ fill a track again, which then tips too. Thresholds: *Tunables*.
 The round's Sway is the phase `alignment.sway`, first in the round: the board's drip and `blight_discord` (1) for
 each face-up land-corruption token (a node hex's is face down: `blight_node_discord`, 0, r84; [adversary.md](adversary.md)), nothing else. A threat sways Discord only where it prints it.
 
-**The antimatter action is off (r89, Matt's message 9119: `antimatter_discord` 0).** The tunable stays: above 0,
-any player in the action phase (`...+alignment.act`) sways that much toward Discord to gain 1 antimatter, up to
-`antimatter_uses` times a round. A later item redesigns antimatter's sources and uses.
+**Sway by narrative (r90, Matt's ruling, 2026-11-12).** Every source's side is what the act means in the story:
+Unity for trust and cooperation (liberating, clearing corruption, accords, shared breakthroughs), Discord for fear,
+force and collateral harm (threats, propaganda, the adversary's projects, and the players' own strikes: Surgical
+Strike, Kettle Operation, Martial Cordon and Kinetic Interdiction 1, The Nuclear Option and Annihilation Lance 2).
+Taking a botnet down tells neither (`botnet` 0). Each content sway prints its story tag (`narrative`); the table of
+every source is in 204's write-up. Nothing sways for antimatter itself: the r88 antimatter action is gone.
 
 **The cards (one-shot and hidden, like fear cards: locked).** Each side has one face-down
 deck, shuffled at setup ([`content/alignment.json`](../../content/alignment.json)), every printed

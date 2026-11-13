@@ -29,7 +29,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   card's price is in [cards.md](../cards.md); the reasoning is in [card-pricing.md](../card-pricing.md).
 
 <!-- generated: draft_set -->
-**The draft set in numbers.** 172 cards (115 tier 1, 57 tier 2). Insight to play: 89 / 52 / 31 cards at 0 / 1 / 2, 21 of the 57 tier-2 cards at 2. An energy cost: 14 cards, 8 of the 67 buildings.
+**The draft set in numbers.** 175 cards (116 tier 1, 59 tier 2). Insight to play: 92 / 52 / 31 cards at 0 / 1 / 2, 21 of the 59 tier-2 cards at 2. An energy cost: 14 cards, 8 of the 68 buildings.
 <!-- /generated -->
 
 - **Energy costs (candidate; Matt).** Energy is a second cost on a card whose title reads power-hungry (most are buildings), its
@@ -74,7 +74,7 @@ The cards config lists which cards are in the game (baseline: all of them).
 
   | Card | Engine | Kind | Extra |
   |---|---|---|---|
-  | The Nuclear Option | antimatter | event | sway 1 toward Discord |
+  | The Nuclear Option | antimatter | event | sway 2 toward Discord (r90: collateral harm) |
   | Power to the People | energy | building (over Power, needs 2) | income: 1 credit per Power tag on your cards |
   | Citywide Microgrid | energy (8, a late sink) | building | Action: 2 Sway toward Unity |
   | Hostile Buyout | Diplomacy, credits | event | gain 3 ambassadors |

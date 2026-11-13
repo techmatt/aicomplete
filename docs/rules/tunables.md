@@ -46,6 +46,9 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.drain_credits` | 5 | 1..50 | standard project: credits to drain compute from an adversary project |
 | `board.drain_amount` | 3 | 1..20 | standard project: compute drained |
 | `board.cube_insight` | 1 | 0..5 | standard action, no limit a round: insight for 1 research cube (0: no such action) |
+| `board.antimatter_cubes` | 4 | 0..10 | standard action, the desperate source (204): research cubes for 1 antimatter, no limit a round (0: no such action) |
+| `board.breakthrough_antimatter` | 1 | 1..10 | standard action Breakthrough (204): antimatter it spends |
+| `board.breakthrough_unity` | 2 | 0..10 | standard action Breakthrough (204): Sway toward Unity, once a round (0: no such action) |
 | `board.botnet_credits` | 3 | 1..50 | standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays) |
 | `adversary.difficulty` | 0 | 0..4 | difficulty level 0-4 (each level includes the ones below) |
 | `adversary.stage_cards` | 4, 4, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
@@ -76,7 +79,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.stage2_removed` | 2 | 0..3 | difficulty 3+: stage-II cards removed (a shorter round cap) |
 | `adversary.stage1_added` | 0 | 0..3 | 151: difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step) |
 | `adversary.extra_corrupted` | 0 | 0..3 | difficulty 4: more cities per country start corrupted |
-| `adversary.compute_income` | 0, 4, 17, 25, 30 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
+| `adversary.compute_income` | 0, 8, 17, 25, 30 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
 | `adversary.ambassador_income` | 0, 0, 0, 0, 1 | 0..10 | 151: the agent income a country a round (into each country's pool), at difficulty 0-4 |
 | `adversary.tier2_early` | 1 | 0..3 | difficulty 4+: tier-2 threats start this many rounds sooner |
 | `adversary.discord_removed` | 0 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
@@ -94,9 +97,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `alignment.troop` | 0 | 0..10 | Sway toward Unity for removing an adversary troop |
 | `alignment.free_city` | 5 | 0..10 | Sway toward Unity for freeing a corrupted city |
 | `alignment.free_facility` | 2 | 0..10 | Sway toward Unity for liberating an adversary station or factory (137) |
-| `alignment.botnet` | 1 | 0..10 | Sway toward Unity for removing a botnet |
-| `alignment.antimatter_discord` | 0 | 0..5 | the antimatter action: Sway toward Discord to produce 1 antimatter (0: no such action) |
-| `alignment.antimatter_uses` | 1 | 0..5 | times each player may take the antimatter action per round |
+| `alignment.botnet` | 0 | 0..10 | Sway toward Unity for removing a botnet |
 | `alignment.purge_at` | 3, 6, 6 | 1..50 | Unity tips at which the purge asks less: agents, then troops, then botnets stop counting (136; 156: tips, not cards drawn, since the Unity deck reshuffles) |
 | `alignment.tier_at` | 3, 6 | 1..50 | 157: the tip (its side's count, this tip included) from which its cards resolve strength II, then strength III |
 | `alignment.node_loss` | 1 | 0..1 | 1: a player with no nodes on the board loses the game for everyone |

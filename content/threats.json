@@ -198,7 +198,8 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 2
+    "amount": 2,
+    "narrative": "fear"
    }
   ],
   "harms": [
@@ -242,7 +243,8 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 2
+    "amount": 2,
+    "narrative": "fear"
    }
   ],
   "harms": [
@@ -284,7 +286,8 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 2
+    "amount": 2,
+    "narrative": "fear"
    }
   ],
   "harms": [
@@ -327,7 +330,8 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 1
+    "amount": 1,
+    "narrative": "fear"
    }
   ],
   "harms": [
@@ -407,7 +411,8 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 3
+    "amount": 3,
+    "narrative": "fear"
    },
    {
     "op": "compute",
@@ -1225,7 +1230,8 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 3
+    "amount": 3,
+    "narrative": "fear"
    }
   ],
   "harms": [
@@ -1340,7 +1346,8 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 3
+    "amount": 3,
+    "narrative": "fear"
    },
    {
     "op": "pull_unity",
@@ -1424,7 +1431,8 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 4
+    "amount": 4,
+    "narrative": "fear"
    },
    {
     "op": "compute",

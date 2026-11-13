@@ -46,6 +46,9 @@
         "drain_credits": 5,
         "drain_amount": 3,
         "cube_insight": 1,
+        "antimatter_cubes": 4,
+        "breakthrough_antimatter": 1,
+        "breakthrough_unity": 2,
         "botnet_credits": 3
       }
     },
@@ -96,7 +99,7 @@
         "extra_corrupted": 0,
         "compute_income": [
           0,
-          4,
+          8,
           17,
           25,
           30
@@ -135,9 +138,7 @@
         "troop": 0,
         "free_city": 5,
         "free_facility": 2,
-        "botnet": 1,
-        "antimatter_discord": 0,
-        "antimatter_uses": 1,
+        "botnet": 0,
         "purge_at": [
           3,
           6,
@@ -305,6 +306,9 @@
         "martial_cordon",
         "deep_state_ledger",
         "kinetic_interdiction",
+        "annihilation_lance",
+        "fusion_commons",
+        "containment_reactor",
         "research_royalties",
         "university_spinout",
         "interdisciplinary_institute",
@@ -382,7 +386,7 @@
     "cards.tier",
     "cards.draft",
     "cards.keep",
-    "cards.play+threats.counter+alignment.act+board.act+ai.power",
+    "cards.play+threats.counter+board.act+ai.power",
     "board.produce",
     "economy.upkeep",
     "board.bases",

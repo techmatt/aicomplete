@@ -17,7 +17,7 @@ use crate::hex::{Dir, Hex};
 use crate::key::FastMap;
 pub use crate::op::{Event, Facility, Op, Piece, RoundFlag, Slot, Spot};
 pub use crate::vocab::{
-    Location, PerResource, PullTag, Resource, Side, Tag, TagOrAny, ThreatSource, ThreatTag, TokenKind,
+    Location, PerResource, PullTag, Resource, Side, Story, Tag, TagOrAny, ThreatSource, ThreatTag, TokenKind,
     RESOURCES, TAGS,
 };
 
@@ -313,8 +313,8 @@ impl Megaproject {
             Op::Gain { resource, amount } => resource.words(*amount),
             Op::Draw { count: 1 } => "1 drawn card".to_string(),
             Op::Draw { count } => format!("{count} drawn cards"),
-            Op::Sway { side: Side::Unity, amount } => format!("{amount} Sway to Unity"),
-            Op::Sway { side: Side::Discord, amount } => format!("{amount} Sway to Discord"),
+            Op::Sway { side: Side::Unity, amount, .. } => format!("{amount} Sway to Unity"),
+            Op::Sway { side: Side::Discord, amount, .. } => format!("{amount} Sway to Discord"),
             Op::Compute { amount } => format!("{amount} adversary compute"),
             Op::ComputeEvery { amount } => format!("{amount} adversary compute on every visible project"),
             other => format!("{other:?}"),

@@ -237,7 +237,7 @@
     {
      "op": "sway",
      "side": "discord",
-     "amount": 1
+     "amount": 1, "narrative": "fear"
     },
     {
      "op": "corrupt",
@@ -704,7 +704,7 @@
     {
      "op": "sway",
      "side": "discord",
-     "amount": 1
+     "amount": 1, "narrative": "fear"
     },
     {
      "op": "corrupt",

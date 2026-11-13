@@ -626,7 +626,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             let from = if *here { "here" } else { "from one of your cards" };
             one(clause(icons, format!("remove the {} {from} for {} each", token(*kind, 2), amount(*resource, *rate))))
         }
-        Op::Sway { side, amount: n } => one(clause(
+        Op::Sway { side, amount: n, .. } => one(clause(
             counted(*n, "sway"),
             format!("sway {n} toward {}", title(side.name())),
         )),

@@ -1001,7 +1001,6 @@ fn source_of(rules: &Rules, g: &GameState, a: &Action) -> Source {
         Action::Pay { threat, .. } => format!("pay:{threat}"),
         Action::CounterWith { threat, .. } => format!("counter:{threat}"),
         Action::Withdraw { threat, .. } => format!("withdraw:{threat}"),
-        Action::Antimatter { .. } => "antimatter".to_string(),
         Action::Standard { act, .. } => format!("standard:{act}"),
         Action::Sell { .. } => "sell".to_string(),
         Action::Convert { country, chips, .. } => format!("convert:{country}{}", if *chips { ":chips" } else { "" }),
