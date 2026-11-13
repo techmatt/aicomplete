@@ -1,0 +1,149 @@
+{
+  "name": "s214-cg",
+  "note": "214 screen 3: r95 and r94 by overlay, greedy",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_r94",
+      "set": [
+        "cards.keep_tier2=2",
+        "cards.keep_tier2_upgraded=1",
+        "ais.builder.play_track.0.insight=5",
+        "ais.builder.play_track.2.insight=7",
+        "ais.builder.play_track.4.insight=8",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=5",
+        "ais.protector.play_track.2.insight=6",
+        "ais.protector.play_track.4.insight=7",
+        "ais.protector.play_track.5.insight=8",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=4",
+        "ais.researcher.play_track.1.insight=5",
+        "ais.researcher.play_track.3.insight=6",
+        "ais.researcher.play_track.4.insight=7",
+        "ais.researcher.play_track.6.insight=8",
+        "cards.mass_defection.cost=9",
+        "cards.embassy_of_exiles.cost=14",
+        "cards.penning_trap_array.cost=10",
+        "cards.antiproton_foundry.cost=10",
+        "cards.positron_storage_ring.cost=9",
+        "cards.forensic_audit.cost=27",
+        "cards.kettle_operation.cost=18",
+        "cards.surgical_strike.cost=14",
+        "cards.decapitation_strike.cost=4",
+        "cards.singularity_exploit.cost=8",
+        "cards.kinetic_interdiction.cost=8",
+        "cards.martial_cordon.cost=18",
+        "cards.nuclear_option.cost=23",
+        "cards.annihilation_lance.cost=2",
+        "cards.annihilation_lance.antimatter=2"
+      ]
+    },
+    {
+      "name": "br_r94",
+      "set": [
+        "ai.boards=0,2",
+        "cards.keep_tier2=2",
+        "cards.keep_tier2_upgraded=1",
+        "ais.builder.play_track.0.insight=5",
+        "ais.builder.play_track.2.insight=7",
+        "ais.builder.play_track.4.insight=8",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=5",
+        "ais.protector.play_track.2.insight=6",
+        "ais.protector.play_track.4.insight=7",
+        "ais.protector.play_track.5.insight=8",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=4",
+        "ais.researcher.play_track.1.insight=5",
+        "ais.researcher.play_track.3.insight=6",
+        "ais.researcher.play_track.4.insight=7",
+        "ais.researcher.play_track.6.insight=8",
+        "cards.mass_defection.cost=9",
+        "cards.embassy_of_exiles.cost=14",
+        "cards.penning_trap_array.cost=10",
+        "cards.antiproton_foundry.cost=10",
+        "cards.positron_storage_ring.cost=9",
+        "cards.forensic_audit.cost=27",
+        "cards.kettle_operation.cost=18",
+        "cards.surgical_strike.cost=14",
+        "cards.decapitation_strike.cost=4",
+        "cards.singularity_exploit.cost=8",
+        "cards.kinetic_interdiction.cost=8",
+        "cards.martial_cordon.cost=18",
+        "cards.nuclear_option.cost=23",
+        "cards.annihilation_lance.cost=2",
+        "cards.annihilation_lance.antimatter=2"
+      ]
+    },
+    {
+      "name": "pr_r94",
+      "set": [
+        "ai.boards=1,2",
+        "cards.keep_tier2=2",
+        "cards.keep_tier2_upgraded=1",
+        "ais.builder.play_track.0.insight=5",
+        "ais.builder.play_track.2.insight=7",
+        "ais.builder.play_track.4.insight=8",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=5",
+        "ais.protector.play_track.2.insight=6",
+        "ais.protector.play_track.4.insight=7",
+        "ais.protector.play_track.5.insight=8",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=4",
+        "ais.researcher.play_track.1.insight=5",
+        "ais.researcher.play_track.3.insight=6",
+        "ais.researcher.play_track.4.insight=7",
+        "ais.researcher.play_track.6.insight=8",
+        "cards.mass_defection.cost=9",
+        "cards.embassy_of_exiles.cost=14",
+        "cards.penning_trap_array.cost=10",
+        "cards.antiproton_foundry.cost=10",
+        "cards.positron_storage_ring.cost=9",
+        "cards.forensic_audit.cost=27",
+        "cards.kettle_operation.cost=18",
+        "cards.surgical_strike.cost=14",
+        "cards.decapitation_strike.cost=4",
+        "cards.singularity_exploit.cost=8",
+        "cards.kinetic_interdiction.cost=8",
+        "cards.martial_cordon.cost=18",
+        "cards.nuclear_option.cost=23",
+        "cards.annihilation_lance.cost=2",
+        "cards.annihilation_lance.antimatter=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "greedy"
+  ],
+  "games": 192,
+  "records": 0
+}

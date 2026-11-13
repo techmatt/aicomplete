@@ -1,0 +1,186 @@
+{
+  "name": "s214-smoke",
+  "note": "214: engine smoke, dev seeds 36800",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_k3",
+      "set": [
+        "cards.keep_tier2=3",
+        "cards.keep_tier2_upgraded=2"
+      ]
+    },
+    {
+      "name": "br_k3",
+      "set": [
+        "ai.boards=0,2",
+        "cards.keep_tier2=3",
+        "cards.keep_tier2_upgraded=2"
+      ]
+    },
+    {
+      "name": "pr_k3",
+      "set": [
+        "ai.boards=1,2",
+        "cards.keep_tier2=3",
+        "cards.keep_tier2_upgraded=2"
+      ]
+    },
+    {
+      "name": "bp_t4",
+      "set": [
+        "ais.builder.play_track.0.insight=7",
+        "ais.builder.play_track.2.insight=8",
+        "ais.builder.play_track.4.insight=null",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=7",
+        "ais.protector.play_track.2.insight=8",
+        "ais.protector.play_track.4.insight=null",
+        "ais.protector.play_track.5.insight=null",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=6",
+        "ais.researcher.play_track.1.insight=null",
+        "ais.researcher.play_track.3.insight=7",
+        "ais.researcher.play_track.4.insight=null",
+        "ais.researcher.play_track.6.insight=8"
+      ]
+    },
+    {
+      "name": "br_t4",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.play_track.0.insight=7",
+        "ais.builder.play_track.2.insight=8",
+        "ais.builder.play_track.4.insight=null",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=7",
+        "ais.protector.play_track.2.insight=8",
+        "ais.protector.play_track.4.insight=null",
+        "ais.protector.play_track.5.insight=null",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=6",
+        "ais.researcher.play_track.1.insight=null",
+        "ais.researcher.play_track.3.insight=7",
+        "ais.researcher.play_track.4.insight=null",
+        "ais.researcher.play_track.6.insight=8"
+      ]
+    },
+    {
+      "name": "pr_t4",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.play_track.0.insight=7",
+        "ais.builder.play_track.2.insight=8",
+        "ais.builder.play_track.4.insight=null",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=7",
+        "ais.protector.play_track.2.insight=8",
+        "ais.protector.play_track.4.insight=null",
+        "ais.protector.play_track.5.insight=null",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=6",
+        "ais.researcher.play_track.1.insight=null",
+        "ais.researcher.play_track.3.insight=7",
+        "ais.researcher.play_track.4.insight=null",
+        "ais.researcher.play_track.6.insight=8"
+      ]
+    },
+    {
+      "name": "bp_t4k3",
+      "set": [
+        "ais.builder.play_track.0.insight=7",
+        "ais.builder.play_track.2.insight=8",
+        "ais.builder.play_track.4.insight=null",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=7",
+        "ais.protector.play_track.2.insight=8",
+        "ais.protector.play_track.4.insight=null",
+        "ais.protector.play_track.5.insight=null",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=6",
+        "ais.researcher.play_track.1.insight=null",
+        "ais.researcher.play_track.3.insight=7",
+        "ais.researcher.play_track.4.insight=null",
+        "ais.researcher.play_track.6.insight=8",
+        "cards.keep_tier2=3",
+        "cards.keep_tier2_upgraded=2"
+      ]
+    },
+    {
+      "name": "br_t4k3",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.play_track.0.insight=7",
+        "ais.builder.play_track.2.insight=8",
+        "ais.builder.play_track.4.insight=null",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=7",
+        "ais.protector.play_track.2.insight=8",
+        "ais.protector.play_track.4.insight=null",
+        "ais.protector.play_track.5.insight=null",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=6",
+        "ais.researcher.play_track.1.insight=null",
+        "ais.researcher.play_track.3.insight=7",
+        "ais.researcher.play_track.4.insight=null",
+        "ais.researcher.play_track.6.insight=8",
+        "cards.keep_tier2=3",
+        "cards.keep_tier2_upgraded=2"
+      ]
+    },
+    {
+      "name": "pr_t4k3",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.play_track.0.insight=7",
+        "ais.builder.play_track.2.insight=8",
+        "ais.builder.play_track.4.insight=null",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=7",
+        "ais.protector.play_track.2.insight=8",
+        "ais.protector.play_track.4.insight=null",
+        "ais.protector.play_track.5.insight=null",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=6",
+        "ais.researcher.play_track.1.insight=null",
+        "ais.researcher.play_track.3.insight=7",
+        "ais.researcher.play_track.4.insight=null",
+        "ais.researcher.play_track.6.insight=8",
+        "cards.keep_tier2=3",
+        "cards.keep_tier2_upgraded=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 16,
+  "records": 0
+}

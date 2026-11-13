@@ -1,0 +1,21 @@
+# 214: tier-2 prices at the anchors with a tier-2 keep of 3 insight (README, *The anchor check*).
+# python scripts/cards/apply_overlay.py experiments/results/214_tier2_pricing_insight/overlay.txt
+#
+# Over the 2.5 ceiling: priced so the card stays in band under both readings of its uncertain part (a convert at
+# 10.6 or 5; an engine or income at 3.5 rounds of use or at the 2 uses a seat makes of antimatter).
+cards.mass_defection.cost=18
+cards.embassy_of_exiles.cost=30
+cards.penning_trap_array.cost=30
+cards.antiproton_foundry.cost=30
+cards.positron_storage_ring.cost=18
+# Under 1.0: cut toward the middle (about 1.2), or to just in band where the card is dear by design.
+cards.forensic_audit.cost=6
+cards.kettle_operation.cost=2
+cards.surgical_strike.cost=2
+cards.decapitation_strike.cost=0
+cards.singularity_exploit.cost=4
+cards.kinetic_interdiction.cost=2
+cards.martial_cordon.cost=8
+cards.nuclear_option.cost=6
+cards.annihilation_lance.antimatter=1
+cards.annihilation_lance.cost=10

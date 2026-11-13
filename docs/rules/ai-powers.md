@@ -92,7 +92,7 @@ energy), the Protector's **Joint Facility** (12 credits and 1 energy), the Resea
 Insight is this round's attention, readable off the board: it pays keeps and plays ([player-cards.md](player-cards.md)),
 and credits never buy a keep (r82). The card-play track prints it as totals, Spirit Island style (r82): 3 at its
 start, then the new total on each space that raises it, each board at its own rate (r87: the Builder to 10, the
-Protector to 9, the Researcher to 8); a seat's insight is the number on the rightmost space it has
+Protector to 9, the Researcher to 8; r95: 7, 7 and 6 from the first space, then a step at a time); a seat's insight is the number on the rightmost space it has
 uncovered. The economy track prints none. Every player has the
 cube converter, a standard action with no limit a round ([economy.md](economy.md)). **Insight must bind** (Matt,
 2026-11-12: about 6 a round to drafting and 2-4 to plays is the target); r91 cut the Builder's Focus (2 credits → 1

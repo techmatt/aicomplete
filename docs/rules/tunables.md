@@ -112,8 +112,8 @@ Every parameter of the baseline config, with its value and range, generated from
 | `cards.opening_deal` | 2 | 0..20 | tier-1 cards dealt into each player's hand in round 1, kept free (the opening; r82) |
 | `cards.opening_deal_tier2` | 2 | 0..10 | tier-2 cards also dealt into each player's hand in the opening, kept free (r82) |
 | `cards.keep_tier1` | 1 | 0..10 | insight to keep a drafted tier-1 card |
-| `cards.keep_tier2` | 2 | 0..10 | insight to keep a drafted tier-2 card |
-| `cards.keep_tier2_upgraded` | 1 | 0..10 | insight to keep a tier-2 card once the AI board's keep upgrade is uncovered |
+| `cards.keep_tier2` | 3 | 0..10 | insight to keep a drafted tier-2 card |
+| `cards.keep_tier2_upgraded` | 2 | 0..10 | insight to keep a tier-2 card once the AI board's keep upgrade is uncovered |
 | `cards.science_every` | 2 | 0..10 | 1 insight off tier-2 keeps and card plays per this many Science tags (0: off) |
 | `cards.industry_every` | 2 | 0..10 | 1 credit off buildings per this many Industry tags (0: off) |
 | `cards.discount_floor` | 1 | 0..5 | tag and building discounts stop at this cost; a cost printed under it stays |

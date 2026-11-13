@@ -136,7 +136,7 @@ the judge off the value table.
   change to how the game is won, greedy first ([agents.md](agents.md), *The tiers*): a greedy lead stops calibration
   for a question.
 - **Current recipe (162-187):** the new side farmed from a committed spec in `experiments/farm/` (commit the spec
-  and the code first: `farm-seeds` builds from HEAD but reads `content/` and `configs/` from the tree, so edit neither until it returns; d0-d4 since 168;
+  and the code first: `farm-seeds` builds from HEAD but reads `content/` and `configs/` from the tree, so edit neither until it returns, nor run the release binary while it builds (214: a held .exe fails it); d0-d4 since 168;
   *Farming a read* below), the old side natively; read by `scripts/bench/ladder.py NEW OLD --measures` (pooled,
   paired, by set). `scripts/bench/read_specs.py read` and `run_read.sh` are the native route.
 - **Standing measures (amendment 6618), reported old against new every read:** corruption node losses and adversary
@@ -177,7 +177,7 @@ line alone reads near the engine.
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used. Any item that spends seeds updates the ledger, after its last read, not before it:
 `python scripts/bench/seeds.py next N` prints the next N, and `--take` moves *Next free* past them. Used: every
-seed below the next free one (each item's range is in its write-up). Next free: 46432. **The dev seeds are
+seed below the next free one (each item's range is in its write-up). Next free: 46528. **The dev seeds are
 36800-36831**, for on/off checks and crash-finding (SE ~5 a cell). A per-level income step is a 2-8 point effect:
 screen it paired on this revision's spent fresh sets (~500+ games a cell, SE ~2), then confirm once on new seeds.
 

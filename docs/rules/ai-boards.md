@@ -112,17 +112,19 @@ have tokens). **Insight prints here only, as totals** (r82, Matt's amendment, Sp
 shows 3 (r86; 6 before) and a space that raises it shows the new total; your insight is the number on the rightmost space you've
 uncovered that shows one. **Each board grows it at its own rate** (r87, Matt: income is the lever, as Spirit Island's
 energy): the Builder to 10, the Protector 9, the Researcher, whose Patience banks it, 8 (r86: 13 on all three).
+**Early-heavy, late-flat** (r95, 199's `t4`): the first space jumps to 7 (Builder, Protector) or 6 (Researcher), then
+each later step adds 1, so a tier-2 keep (3 insight, r95) fits from round 2.
 
 <!-- generated: node_track2 -->
 | Space | Builder | Protector | Researcher |
 |---|---|---|---|
 | printed start | insight 3 | insight 3 | insight 3 |
-| 1 | **insight 5** | **insight 5** | **insight 4** |
-| 2 | **keep upgrade** | **keep upgrade** | **insight 5**, **Dispatch +1** |
-| 3 | pay 1 energy: **insight 7** | pay 1 energy: **insight 6** | pay 1 energy: **keep upgrade** |
-| 4 | pay 2 energy: +2 credits | pay 2 energy: +2 credits | pay 2 energy: **insight 6** |
-| 5 | pay 2 energy: **insight 8** | pay 2 energy: **insight 7** | pay 2 energy: **insight 7** |
-| 6 | pay 3 energy: **insight 9**, Cyber tag | pay 3 energy: **insight 8**, Diplomacy tag | pay 3 energy: +2 credits, Industry tag |
+| 1 | **insight 7** | **insight 7** | **insight 6** |
+| 2 | **keep upgrade** | **keep upgrade** | **Dispatch +1** |
+| 3 | pay 1 energy: **insight 8** | pay 1 energy: **insight 8** | pay 1 energy: **keep upgrade** |
+| 4 | pay 2 energy: +2 credits | pay 2 energy: +2 credits | pay 2 energy: **insight 7** |
+| 5 | pay 2 energy: nothing | pay 2 energy: nothing | pay 2 energy: nothing |
+| 6 | pay 3 energy: **insight 9**, Cyber tag | pay 3 energy: Diplomacy tag | pay 3 energy: +2 credits, Industry tag |
 | 7 | pay 5 energy: **insight 10**, **Master Plan** (capstone): Your buildings cost 2 credits less. | pay 5 energy: **insight 9**, **Aegis Doctrine** (capstone): Once a round, the first time one of your Nodes or facilities would be destroyed, it is sheltered. | pay 5 energy: **insight 8**, **Open Science** (capstone): Each round, 2 insight from the supply, split among other players. |
 <!-- /generated -->
 

@@ -11,7 +11,7 @@ is appended, an existing row replaced; this form is apply_overlay's own, the eng
 none). Nothing deletes a row: to drop a card, take it out of the deck in configs/baseline.json and
 run scripts/configs/shared_row.py, then edit content/cards.json and tools/card-art/scenes.json by
 hand. The path walks object fields and list indexes, its last step may add a
-field; the value is JSON, or a bare word taken as a string. An entry setting a value already
+field; the value is JSON (`null` drops an object's field), or a bare word taken as a string. An entry setting a value already
 there changes nothing, so a card pass keeps its edits as one overlay file and reruns it.
 
 `--check` prints each entry that would change something and writes nothing (exit 1 if any
@@ -90,6 +90,10 @@ def apply_entry(files, entry):
             i = int(last)
             changed |= at[i] != value or type(at[i]) is not type(value)
             at[i] = value
+        elif isinstance(at, dict) and value is None:
+            # 214: `null` on an object field drops the field (as the engine's overlay reads an absent field)
+            changed |= last in at
+            at.pop(last, None)
         elif isinstance(at, dict):
             changed |= last not in at or at[last] != value or type(at[last]) is not type(value)
             at[last] = value

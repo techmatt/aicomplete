@@ -65,7 +65,7 @@ fn the_opening_deals_2_and_2_free_then_round_1_drafts() {
     assert!((0..g.seats.len()).all(|s| g.resource(s, Resource::Insight) >= 3));
 }
 
-/// Keeps cost 1 insight a tier-1 card and 2 a tier-2, in round 1 too, and no credits buy a shortfall.
+/// Keeps cost 1 insight a tier-1 card and 3 a tier-2 (r95), in round 1 too, and no credits buy a shortfall.
 #[test]
 fn keeps_cost_insight_by_tier_in_round_1_and_credits_never_buy_them() {
     let rules = Rules::new(&baseline()).unwrap();
@@ -86,7 +86,7 @@ fn keeps_cost_insight_by_tier_in_round_1_and_credits_never_buy_them() {
     }
     set_pile(&mut g, &cards::drafted(0), &[one.as_str(), two.as_str()]);
     g.seats[0].passed = false;
-    assert_eq!((cards::keep_need(&w, &g, 0, 1), cards::keep_need(&w, &g, 0, 2)), (1, 2));
+    assert_eq!((cards::keep_need(&w, &g, 0, 1), cards::keep_need(&w, &g, 0, 2)), (1, 3));
     let keeps = |g: &GameState| -> Vec<String> {
         rules.legal_actions(g).iter().filter_map(|a| match a {
             Action::Keep { seat: 0, card } => Some(card.to_string()),

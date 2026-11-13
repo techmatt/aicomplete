@@ -189,8 +189,8 @@
         "opening_deal": 4,
         "opening_deal_tier2": 0,
         "keep_tier1": 1,
-        "keep_tier2": 2,
-        "keep_tier2_upgraded": 1,
+        "keep_tier2": 3,
+        "keep_tier2_upgraded": 2,
         "science_every": 2,
         "industry_every": 2,
         "discount_floor": 1

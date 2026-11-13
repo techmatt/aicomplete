@@ -716,7 +716,8 @@ mod tests {
         let (g, rec) = play(&r, seed, &mut *spec.build(&r, seed), max_actions);
         if to_the_end {
             assert!(g.is_over(), "{}", spec.label());
-        } else {
+        } else if !g.is_over() {
+            // 214: a weak fixed policy may lose before the cap (free_only's nodes are all gone in round 3 at r95).
             assert_eq!(rec.actions.len(), max_actions, "{}", spec.label());
         }
         assert_eq!(replay(&r, seed, &rec.actions).unwrap(), g);

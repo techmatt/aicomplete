@@ -1,0 +1,17 @@
+# 214: 199's t4 card-play track (early-heavy, late-flat), the boards' insight totals by space index.
+# python scripts/cards/apply_overlay.py experiments/results/214_tier2_pricing_insight/overlay-ais.txt
+ais.builder.play_track.0.insight=7
+ais.builder.play_track.2.insight=8
+ais.builder.play_track.4.insight=null
+ais.builder.play_track.5.insight=9
+ais.builder.play_track.6.insight=10
+ais.protector.play_track.0.insight=7
+ais.protector.play_track.2.insight=8
+ais.protector.play_track.4.insight=null
+ais.protector.play_track.5.insight=null
+ais.protector.play_track.6.insight=9
+ais.researcher.play_track.0.insight=6
+ais.researcher.play_track.1.insight=null
+ais.researcher.play_track.3.insight=7
+ais.researcher.play_track.4.insight=null
+ais.researcher.play_track.6.insight=8

@@ -1,0 +1,65 @@
+warnings: design: same-effect Joint Facility/Particle Run/Refine on 3 boards; design: standard-over-anchor Remove agents 1.88; design: standard-over-anchor Liberate a city 1.62; design: dials-hide-design 2 dials beside 5 design files; design: cheap-source antimatter 42%; design: one-spend ambassadors standard:liberate 60%; design: kept-not-played field_grant 0.00; design: kept-not-played deep_state_ledger 0.03; design: kept-not-played great_liberation 0.02; design: usage 8 (Builder Mint 0.30 outside 0.40-0.90, Researcher Grant 0.22 outside 0.40-0.90, Make antimatter 0.98 outside 0.05-0.50, ...); design: rounds d2 7.6; design: rounds d3 7.1; design: rounds d4 6.0
+
+1440 games, old side 1440
+## Warnings (20)
+- [same-effect] one effect ([{"amount": 1, "op": "gain", "resource": "antimatter"}]) on 3 boards under 3 names: builder Refine, protector Joint Facility, researcher Particle Run
+- [standard-over-anchor] Remove agents: give 1 ambassadors = 8, get 3 agent = 15 at the anchors: 1.88; 2.50 uses a game (max 1.0)
+- [standard-over-anchor] Liberate a city: give 5 ambassadors = 40, get 1 city_liberated + 5 sway = 65 at the anchors: 1.62; 4.56 uses a game (max 1.0)
+- [dials-hide-design] since 93548f235: 2 dial(s) moved 40%+ (cards.keep_tier2 2->3, cards.keep_tier2_upgraded 1->2) in the same change as 5 design file(s) (content/ais.json, content/cards.json, crates/aic-core/src/lib.rs, crates/aic-core/src/tests/insight_r82.rs...)
+- [cheap-source] antimatter: 42% of its supply (2.75 a seat-game) from standard actions or tier-1 cards (max 20%): standard:antimatter 36%, use:cyclotron_lease 6%
+- [one-spend] ambassadors: one spend, standard:liberate, is 60% of its uses (7.71 of 12.80 a seat-game; max 50%)
+- [kept-not-played] field_grant: kept 0.18 a game, played 0.00
+- [kept-not-played] deep_state_ledger: kept 0.14 a game, played 0.03
+- [kept-not-played] great_liberation: kept 0.12 a game, played 0.02
+- [usage] Builder Mint (board-engine): 0.30 a seat-round, outside its band 0.40-0.90 (unused)
+- [usage] Researcher Grant (board-engine): 0.22 a seat-round, outside its band 0.40-0.90 (unused)
+- [usage] Make antimatter (hedge): 0.98 a seat-game, outside its band 0.05-0.50 (dominant)
+- [usage] Remove a troop (hedge): 0.54 a seat-game, outside its band 0.05-0.50 (dominant)
+- [usage] Breakthrough (win-route): 0% of seat-games, outside its band 50%-95% (unused)
+- [usage] Claim a site (sway-tool): 0.10 a seat-game, outside its band 0.10-2.00 (unused)
+- [usage] Tidal Grid chip converter (converter): 0.00 a seat-game, outside its band 0.30-3.00 (unused)
+- [usage] Antimatter spent (resource): 43% of what is gained, spent, outside its band 50%-110% (unused)
+- [rounds] d2: 7.6 rounds a game, won games 7.0 (288 games; target 8-10)
+- [rounds] d3: 7.1 rounds a game, won games 6.6 (288 games; target 8-10)
+- [rounds] d4: 6.0 rounds a game, won games 5.8 (288 games; target 8-10)
+
+## Information (39)
+- Breakthrough: off (`board.breakthrough_unity` 0)
+- Make antimatter: give 4 research_cubes = 24, get 1 antimatter = 18 at the anchors: 0.75; 1.97 uses a game (max 1.0)
+- Buy a city's energy: give 5 credits = 5, get 1 energy = 4.5 at the anchors: 0.90; 3.11 uses a game (max 1.0)
+- Turn a cube into insight: give 1 research_cubes = 6, get 1 insight = 4 at the anchors: 0.67; 1.57 uses a game (max 1.0)
+- Build a research station: give 1 chips + 0 ambassadors = 6, get 1 station = 6 at the anchors: 1.00; 2.20 uses a game (max 1.0)
+- Lift land corruption: give 2 research_cubes = 12, get 1 land_token = 12 at the anchors: 1.00; 0.05 uses a game (max 1.0)
+- Gain a player ambassador: give 20 credits = 20, get 1 ambassadors = 8 at the anchors: 0.40; 0.67 uses a game (max 1.0)
+- Take down a botnet: give 16 credits = 16, get 1 botnet + 0 sway = 16 at the anchors: 1.00; 0.58 uses a game (max 1.0)
+- Envoy: give 1 ambassadors = 8, get 1 sway = 4 at the anchors: 0.50; 0.60 uses a game (max 1.0)
+- Sell a card: give 1 card = 5, get 1 credits = 1 at the anchors: 0.20; 0.85 uses a game (max 1.0)
+- Place a node: give 6 credits + 1 energy = 10.5, get 1 node = 8 at the anchors: 0.76; 8.08 uses a game (max 1.0)
+- Remove a troop: give 10 credits = 10, get 1 troop = 5 at the anchors: 0.50; 1.08 uses a game (max 1.0)
+- Build a factory: off (`board.factory_build_chips` 0)
+- tag-story exception ais:researcher:Disrupt: a Cyber card hacks troops (drones) anywhere in a country, no reach: the Researcher's troop answer is remote by design (206), so it is paid in Cyber, not Security
+- energy sources, phases (each pools many engines): phase:board.produce 42%, phase:economy.upkeep 38%, phase:threats.execute 3%
+- energy: one source, standard:buy_energy, is 5% of its sources (1.55 of 31.89 a seat-game; max 40%)
+- chips sources, phases (each pools many engines): phase:board.produce 26%, phase:economy.upkeep 13%
+- chips: one source, play:joint_fabrication_pact, is 14% of its sources (0.98 of 6.98 a seat-game; max 40%)
+- antimatter sources, phases (each pools many engines): phase:economy.upkeep 24%
+- antimatter: one source, standard:antimatter, is 36% of its sources (0.98 of 2.75 a seat-game; max 40%)
+- research_cubes sources, phases (each pools many engines): phase:board.produce 88%, phase:threats.execute 2%, phase:economy.upkeep 1%
+- research_cubes: one source, play:collider_consortium, is 6% of its sources (0.84 of 13.65 a seat-game; max 40%)
+- ambassadors: one source, standard:liberate, is 16% of its sources (2.60 of 15.87 a seat-game; max 40%)
+- energy uses, phases (each pools many engines): phase:threats.execute 1%
+- energy: one spend, standard:node, is 17% of its uses (4.01 of 23.32 a seat-game; max 50%)
+- chips uses, phases (each pools many engines): phase:threats.execute 0%
+- chips: one spend, power:Procure, is 35% of its uses (1.69 of 4.87 a seat-game; max 50%)
+- antimatter: one spend, play:accelerator_diplomacy, is 17% of its uses (0.20 of 1.17 a seat-game; max 50%)
+- research_cubes uses, phases (each pools many engines): phase:threats.execute 1%
+- research_cubes: one spend, standard:antimatter, is 44% of its uses (3.94 of 8.99 a seat-game; max 50%)
+- ambassadors uses, phases (each pools many engines): phase:threats.execute 0%
+- chips: spent in 96% of won games at d3,4 (128 won; min 75%)
+- energy: spent in 100% of won games at d3,4 (128 won; min 75%)
+- antimatter: spent in 86% of won games at d3,4 (128 won; min 75%)
+- research_cubes: spent in 92% of won games at d3,4 (128 won; min 75%)
+- d0: 8.8 rounds a game, won games 8.1 (288 games; target 8-10)
+- d1: 8.2 rounds a game, won games 7.5 (288 games; target 8-10)
+- tokens a round, adversary ops: 39.4 against 39.4 (-0%; max +10%)
+- tokens a round, player token moves: 11.2 against 11.0 (+2%; max +10%)

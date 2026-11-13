@@ -254,7 +254,7 @@
   "play_track": [
    {
     "income": [],
-    "insight": 5
+    "insight": 7
    },
    {
     "income": [],
@@ -263,7 +263,7 @@
    {
     "income": [],
     "cost": 1,
-    "insight": 7
+    "insight": 8
    },
    {
     "income": [
@@ -276,8 +276,7 @@
    },
    {
     "income": [],
-    "cost": 2,
-    "insight": 8
+    "cost": 2
    },
    {
     "income": [],
@@ -606,7 +605,7 @@
   "play_track": [
    {
     "income": [],
-    "insight": 5
+    "insight": 7
    },
    {
     "income": [],
@@ -615,7 +614,7 @@
    {
     "income": [],
     "cost": 1,
-    "insight": 6
+    "insight": 8
    },
    {
     "income": [
@@ -628,16 +627,14 @@
    },
    {
     "income": [],
-    "cost": 2,
-    "insight": 7
+    "cost": 2
    },
    {
     "income": [],
     "cost": 3,
     "tags": [
      "diplomacy"
-    ],
-    "insight": 8
+    ]
    },
    {
     "income": [],
@@ -898,12 +895,11 @@
   "play_track": [
    {
     "income": [],
-    "insight": 4
+    "insight": 6
    },
    {
     "income": [],
-    "moves": 1,
-    "insight": 5
+    "moves": 1
    },
    {
     "income": [],
@@ -913,12 +909,11 @@
    {
     "income": [],
     "cost": 2,
-    "insight": 6
+    "insight": 7
    },
    {
     "income": [],
-    "cost": 2,
-    "insight": 7
+    "cost": 2
    },
    {
     "income": [

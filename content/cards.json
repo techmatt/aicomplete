@@ -1379,7 +1379,7 @@
   "name": "Singularity Exploit",
   "tier": 2,
   "kind": "program",
-  "cost": 8,
+  "cost": 4,
   "antimatter": 1,
   "insight": 1,
   "needs": [
@@ -1732,7 +1732,7 @@
   "name": "Positron Storage Ring",
   "tier": 2,
   "kind": "building",
-  "cost": 9,
+  "cost": 18,
   "insight": 2,
   "needs": [
    [
@@ -2797,7 +2797,7 @@
   "name": "Martial Cordon",
   "tier": 2,
   "kind": "program",
-  "cost": 18,
+  "cost": 8,
   "insight": 1,
   "needs": [
    [
@@ -2860,7 +2860,7 @@
   "name": "Kinetic Interdiction",
   "tier": 2,
   "kind": "event",
-  "cost": 8,
+  "cost": 2,
   "antimatter": 1,
   "insight": 0,
   "needs": [
@@ -2895,8 +2895,8 @@
   "name": "Annihilation Lance",
   "tier": 2,
   "kind": "event",
-  "cost": 2,
-  "antimatter": 2,
+  "cost": 10,
+  "antimatter": 1,
   "insight": 0,
   "tags": [
    "power"
@@ -3374,7 +3374,7 @@
   "name": "The Nuclear Option",
   "tier": 2,
   "kind": "event",
-  "cost": 23,
+  "cost": 6,
   "antimatter": 1,
   "insight": 0,
   "tags": [
@@ -3448,7 +3448,7 @@
   "name": "Forensic Audit",
   "tier": 2,
   "kind": "event",
-  "cost": 27,
+  "cost": 6,
   "research_cubes": 4,
   "insight": 1,
   "tags": [
@@ -4811,7 +4811,7 @@
   "name": "Decapitation Strike",
   "tier": 2,
   "kind": "event",
-  "cost": 4,
+  "cost": 0,
   "insight": 0,
   "needs": [
    [
@@ -5070,7 +5070,7 @@
   "name": "Mass Defection",
   "tier": 2,
   "kind": "event",
-  "cost": 9,
+  "cost": 18,
   "insight": 0,
   "tags": [
    "diplomacy"
@@ -5094,7 +5094,7 @@
   "name": "Embassy of Exiles",
   "tier": 2,
   "kind": "building",
-  "cost": 14,
+  "cost": 30,
   "insight": 0,
   "tags": [
    "diplomacy"
@@ -5143,7 +5143,7 @@
   "name": "Kettle Operation",
   "tier": 2,
   "kind": "event",
-  "cost": 18,
+  "cost": 2,
   "insight": 2,
   "needs": [
    [
@@ -5292,7 +5292,7 @@
   "name": "Surgical Strike",
   "tier": 2,
   "kind": "event",
-  "cost": 14,
+  "cost": 2,
   "insight": 0,
   "tags": [
    "security"
@@ -5346,7 +5346,7 @@
   "name": "Penning Trap Array",
   "tier": 2,
   "kind": "building",
-  "cost": 10,
+  "cost": 30,
   "insight": 1,
   "needs": [
    [
@@ -5389,7 +5389,7 @@
   "name": "Antiproton Foundry",
   "tier": 2,
   "kind": "building",
-  "cost": 10,
+  "cost": 30,
   "insight": 1,
   "needs": [
    [

@@ -1,0 +1,189 @@
+{
+  "name": "s214-a",
+  "note": "214 screen 1: keep 3 x track t4, spent fresh seeds 46240-46431",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_k3",
+      "set": [
+        "cards.keep_tier2=3",
+        "cards.keep_tier2_upgraded=2"
+      ]
+    },
+    {
+      "name": "br_k3",
+      "set": [
+        "ai.boards=0,2",
+        "cards.keep_tier2=3",
+        "cards.keep_tier2_upgraded=2"
+      ]
+    },
+    {
+      "name": "pr_k3",
+      "set": [
+        "ai.boards=1,2",
+        "cards.keep_tier2=3",
+        "cards.keep_tier2_upgraded=2"
+      ]
+    },
+    {
+      "name": "bp_t4",
+      "set": [
+        "ais.builder.play_track.0.insight=7",
+        "ais.builder.play_track.2.insight=8",
+        "ais.builder.play_track.4.insight=null",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=7",
+        "ais.protector.play_track.2.insight=8",
+        "ais.protector.play_track.4.insight=null",
+        "ais.protector.play_track.5.insight=null",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=6",
+        "ais.researcher.play_track.1.insight=null",
+        "ais.researcher.play_track.3.insight=7",
+        "ais.researcher.play_track.4.insight=null",
+        "ais.researcher.play_track.6.insight=8"
+      ]
+    },
+    {
+      "name": "br_t4",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.play_track.0.insight=7",
+        "ais.builder.play_track.2.insight=8",
+        "ais.builder.play_track.4.insight=null",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=7",
+        "ais.protector.play_track.2.insight=8",
+        "ais.protector.play_track.4.insight=null",
+        "ais.protector.play_track.5.insight=null",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=6",
+        "ais.researcher.play_track.1.insight=null",
+        "ais.researcher.play_track.3.insight=7",
+        "ais.researcher.play_track.4.insight=null",
+        "ais.researcher.play_track.6.insight=8"
+      ]
+    },
+    {
+      "name": "pr_t4",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.play_track.0.insight=7",
+        "ais.builder.play_track.2.insight=8",
+        "ais.builder.play_track.4.insight=null",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=7",
+        "ais.protector.play_track.2.insight=8",
+        "ais.protector.play_track.4.insight=null",
+        "ais.protector.play_track.5.insight=null",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=6",
+        "ais.researcher.play_track.1.insight=null",
+        "ais.researcher.play_track.3.insight=7",
+        "ais.researcher.play_track.4.insight=null",
+        "ais.researcher.play_track.6.insight=8"
+      ]
+    },
+    {
+      "name": "bp_t4k3",
+      "set": [
+        "ais.builder.play_track.0.insight=7",
+        "ais.builder.play_track.2.insight=8",
+        "ais.builder.play_track.4.insight=null",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=7",
+        "ais.protector.play_track.2.insight=8",
+        "ais.protector.play_track.4.insight=null",
+        "ais.protector.play_track.5.insight=null",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=6",
+        "ais.researcher.play_track.1.insight=null",
+        "ais.researcher.play_track.3.insight=7",
+        "ais.researcher.play_track.4.insight=null",
+        "ais.researcher.play_track.6.insight=8",
+        "cards.keep_tier2=3",
+        "cards.keep_tier2_upgraded=2"
+      ]
+    },
+    {
+      "name": "br_t4k3",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.play_track.0.insight=7",
+        "ais.builder.play_track.2.insight=8",
+        "ais.builder.play_track.4.insight=null",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=7",
+        "ais.protector.play_track.2.insight=8",
+        "ais.protector.play_track.4.insight=null",
+        "ais.protector.play_track.5.insight=null",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=6",
+        "ais.researcher.play_track.1.insight=null",
+        "ais.researcher.play_track.3.insight=7",
+        "ais.researcher.play_track.4.insight=null",
+        "ais.researcher.play_track.6.insight=8",
+        "cards.keep_tier2=3",
+        "cards.keep_tier2_upgraded=2"
+      ]
+    },
+    {
+      "name": "pr_t4k3",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.play_track.0.insight=7",
+        "ais.builder.play_track.2.insight=8",
+        "ais.builder.play_track.4.insight=null",
+        "ais.builder.play_track.5.insight=9",
+        "ais.builder.play_track.6.insight=10",
+        "ais.protector.play_track.0.insight=7",
+        "ais.protector.play_track.2.insight=8",
+        "ais.protector.play_track.4.insight=null",
+        "ais.protector.play_track.5.insight=null",
+        "ais.protector.play_track.6.insight=9",
+        "ais.researcher.play_track.0.insight=6",
+        "ais.researcher.play_track.1.insight=null",
+        "ais.researcher.play_track.3.insight=7",
+        "ais.researcher.play_track.4.insight=null",
+        "ais.researcher.play_track.6.insight=8",
+        "cards.keep_tier2=3",
+        "cards.keep_tier2_upgraded=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 192,
+  "records": 0
+}

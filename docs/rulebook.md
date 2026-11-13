@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 94. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 95. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -246,8 +246,8 @@ Nothing has a holding limit, and nothing caps your income.
 | **Dispatches** | **no** | your board and track spaces, each round | the Dispatch action, 1 each |
 
 **Insight is this round's attention.** Your card-play track prints it, as in Spirit Island: 3 at its start, and on
-later spaces the new total, each board at its own rate (the Builder 5, 7, 8, 9, 10; the Protector
-5, 6, 7, 8, 9; the Researcher 4, 5, 6, 7, 8). At the start of each round, set your insight to the number on the rightmost
+later spaces the new total, each board at its own rate (the Builder 7, 8, 9, 10; the Protector
+7, 8, 9; the Researcher 6, 7, 8): a big jump on the first space, then a step at a time. At the start of each round, set your insight to the number on the rightmost
 space you've uncovered (3 before any), plus what your cards add. Insight you don't spend is lost (except under Patience),
 and no threat or project takes it: it is spent the turn it comes. Everything else on your
 board and cards pays at the end of production's **income step** (§9).
@@ -443,7 +443,7 @@ drafts and keeps like every round.
    time until they have 4. Each arrives face up, so you see it before choosing the next. (This is not a draw.)
 2. **Draft.** Take one card from the hand in front of you and pass the rest on, until the hands are gone. Always
    pass to the next player in player order. Solo, you take all 4, then keep those you want, paying as below.
-3. **Keep.** Pay **1 insight** for each tier-1 card and **2 insight** for each tier-2 card you keep (1 with the keep
+3. **Keep.** Pay **1 insight** for each tier-1 card and **3 insight** for each tier-2 card you keep (2 with the keep
    upgrade, and less with Science discounts, below). Credits can't pay for a keep: when your insight runs out, you
    keep no more. Discard the cards you don't keep.
 
