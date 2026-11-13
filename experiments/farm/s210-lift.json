@@ -1,0 +1,77 @@
+{
+  "name": "s210-lift",
+  "note": "210: Lift land corruption off / 2 / 3 (dev seeds)",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_l0",
+      "set": [
+        "board.land_cubes=0"
+      ]
+    },
+    {
+      "name": "br_l0",
+      "set": [
+        "ai.boards=0,2",
+        "board.land_cubes=0"
+      ]
+    },
+    {
+      "name": "pr_l0",
+      "set": [
+        "ai.boards=1,2",
+        "board.land_cubes=0"
+      ]
+    },
+    {
+      "name": "bp_l3",
+      "set": [
+        "board.land_cubes=3"
+      ]
+    },
+    {
+      "name": "br_l3",
+      "set": [
+        "ai.boards=0,2",
+        "board.land_cubes=3"
+      ]
+    },
+    {
+      "name": "pr_l3",
+      "set": [
+        "ai.boards=1,2",
+        "board.land_cubes=3"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

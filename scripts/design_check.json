@@ -91,17 +91,15 @@
         }
       },
       {
-        "name": "Clear a corruption marker",
-        "src": "standard:clear",
+        "name": "Lift land corruption",
+        "src": "standard:lift",
         "give": {
-          "credits": "board.clear_cost"
+          "research_cubes": "board.land_cubes"
         },
         "get": {
-          "sway": "board.clear_unity",
-          "credits": "board.clear_credits"
+          "land_token": 1
         },
-        "narrative": "trust",
-        "off": "board.clear_cost"
+        "off": "board.land_cubes"
       },
       {
         "name": "Gain a player ambassador",
@@ -124,28 +122,6 @@
           "sway": "alignment.botnet"
         },
         "narrative": "neutral"
-      },
-      {
-        "name": "Project: harden",
-        "src": "standard:harden_buy",
-        "give": {
-          "credits": "board.harden_credits"
-        },
-        "get": {
-          "harden": 1
-        },
-        "off": "board.harden_credits"
-      },
-      {
-        "name": "Project: drain",
-        "src": "standard:drain",
-        "give": {
-          "credits": "board.drain_credits"
-        },
-        "get": {
-          "compute": "board.drain_amount"
-        },
-        "off": "board.drain_credits"
       },
       {
         "name": "Liberate a city",
@@ -216,7 +192,7 @@
       }
     ],
     "extra_anchors": {
-      "note": "units the anchor table and values.json lack, from card-guidelines.md's derived lines and past checks (206: a node at values.json's 8; a factory at +1 chip income, 19)",
+      "note": "units the anchor table and values.json lack, from card-guidelines.md's derived lines and past checks (206: a node at values.json's 8; a factory at +1 chip income, 19; 210: a land token lifted at 3 rounds of a face-up token's 1 Discord, a sway 4 each, 12)",
       "station": 6,
       "harden": 3,
       "botnet": 16,
@@ -226,7 +202,8 @@
       "agent": 5,
       "sway": 4,
       "node": 8,
-      "factory": 19
+      "factory": 19,
+      "land_token": 12
     }
   },
   "sway": {
@@ -305,6 +282,7 @@
       {"key": "standard:station", "name": "Build a research station", "role": "staple"},
       {"key": "standard:antimatter", "name": "Make antimatter", "role": "hedge", "why": "the desperate antimatter source (204)"},
       {"key": "standard:troop", "name": "Remove a troop", "role": "hedge", "why": "the troop hedge (206)"},
+      {"key": "standard:lift", "name": "Lift land corruption", "role": "hedge", "why": "210 (Matt, candidate): the one standard action that removes corruption, costly but not absurd; land tokens are rare (under 1 a game at r91)"},
       {"key": "standard:ambassador", "name": "Gain a player ambassador", "role": "hedge", "why": "20 credits: the ambassador hedge"},
       {"key": "sell", "name": "Sell a card", "role": "hedge", "why": "a dead hand's 1 credit"},
       {"key": "standard:liberate", "name": "Liberate a site", "role": "win-route"},
@@ -312,9 +290,6 @@
       {"key": "standard:claim", "name": "Claim a site", "role": "sway-tool"},
       {"key": "standard:envoy", "name": "Envoy", "role": "sway-tool"},
       {"key": "standard:botnet", "name": "Take down a botnet", "role": "sway-tool"},
-      {"key": "standard:clear", "name": "Clear a corruption marker", "role": "off", "off": "board.clear_cost"},
-      {"key": "standard:harden_buy", "name": "Project: harden", "role": "off", "off": "board.harden_credits"},
-      {"key": "standard:drain", "name": "Project: drain", "role": "off", "off": "board.drain_credits"},
       {"key": "standard:factory", "name": "Build a factory", "role": "off", "off": "board.factory_build_chips"},
       {"key": "standard:harden_chips", "name": "Harden for chips", "role": "off", "off": true},
       {"key": "play", "name": "Play a card", "role": "cards"},

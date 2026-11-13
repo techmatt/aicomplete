@@ -151,7 +151,7 @@ fn tunables_list_every_module_parameter() {
     for k in [
         "board.start_corrupted",
         "board.liberate_at",
-        "board.clear_cost",
+        "board.land_cubes",
         "adversary.difficulty",
         "adversary.supply_per_country",
         "adversary.corrupt_at",

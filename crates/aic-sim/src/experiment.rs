@@ -518,6 +518,45 @@ pub struct Margin {
     /// [`UNSPENT`] order (0 if none completed). Unlike `unspent`, never "now".
     #[serde(default)]
     pub held_after_actions: Vec<Vec<i64>>,
+    /// 210: how spread each seat's nodes are at the end: [nodes on the board, countries holding them, connected
+    /// groups of them, the farthest two apart in hexes] ([`node_spread`]).
+    #[serde(default)]
+    pub node_spread: Vec<Vec<i64>>,
+}
+
+/// 210: seat `s`'s nodes at the end: their count, the countries holding them, the connected groups they form
+/// (neighbors join a group) and the largest distance between two of them.
+fn node_spread(w: &aic_core::module::World, g: &GameState, s: usize) -> Vec<i64> {
+    let mine = common::node(s);
+    let hexes: Vec<usize> = (0..g.hexes.len()).filter(|&h| g.tokens(h, mine) > 0).collect();
+    let mut countries: Vec<u8> = hexes.iter().map(|&h| w.map.hexes[h].country).collect();
+    countries.sort_unstable();
+    countries.dedup();
+    let mut group = vec![usize::MAX; hexes.len()];
+    let mut groups = 0;
+    for i in 0..hexes.len() {
+        if group[i] != usize::MAX {
+            continue;
+        }
+        group[i] = groups;
+        let mut stack = vec![i];
+        while let Some(a) = stack.pop() {
+            for b in 0..hexes.len() {
+                if group[b] == usize::MAX && w.map.hexes[hexes[a]].neighbors.contains(&hexes[b]) {
+                    group[b] = groups;
+                    stack.push(b);
+                }
+            }
+        }
+        groups += 1;
+    }
+    let far = hexes
+        .iter()
+        .flat_map(|&a| hexes.iter().map(move |&b| (a, b)))
+        .map(|(a, b)| w.map.distance(a, b) as i64)
+        .max()
+        .unwrap_or(0);
+    vec![hexes.len() as i64, countries.len() as i64, groups as i64, far]
 }
 
 /// What seat `s` held when its last completed action phase ended (121).
@@ -587,6 +626,7 @@ fn margin(rules: &Rules, g: &GameState) -> Margin {
         troops_end: (0..g.hexes.len()).map(|h| g.tokens(h, common::TROOP)).sum(),
         unspent: (0..g.seats.len()).map(|s| left_unspent(g, s)).collect(),
         held_after_actions: (0..g.seats.len()).map(|s| held_after_actions(g, s)).collect(),
+        node_spread: (0..g.seats.len()).map(|s| node_spread(&w, g, s)).collect(),
     }
 }
 
@@ -1159,6 +1199,8 @@ pub const PER_ROUND_EXPORT: &[(&str, &str)] = &[
     ("threats.", ""),
     // 190: facilities by owner, claims, city growth and its token moves, troops on the map, round by round.
     ("map.", ""),
+    // 210: land-corruption tokens on the board, round by round.
+    ("adversary.land_tokens", ""),
 ];
 
 fn ms_since(t: Instant) -> f64 {

@@ -126,7 +126,8 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   read per difficulty, sides labeled by rules revision; `--screen DIR[,...]` a screen's levers against base, paired
   across DIRs. Reads a farmed read (no `results.json`), or a farm's bare out file as `FILE=SPEC.json` where a DIR
   goes; an agent is named as its spec writes it, native or farmed; engines and `--same-engine` as `paired.py`. Each
-  win % is its side's whole rate.
+  win % is its side's whole rate. `--measures` ends with 210's table by board: slack and bound seat-rounds, land
+  tokens a round, node placement spread.
 - `bench/gate_close.py`: `plan GATE_DIR OUT_DIR` picks the rows within 2 SE by gap against paired SE and writes specs
   that carry them on to the cap, reusing their games; `read` merges the runs (`--min-seeds N` leaves out rows short of
   N seeds, and says how many).

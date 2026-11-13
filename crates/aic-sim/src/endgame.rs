@@ -58,7 +58,7 @@ pub struct Pieces {
     /// a use from any hexes (r75). It ignores reach (the Remove action takes agents in reach). (178: no agent lands on a liberated city, so `remove_after_liberate` and
     /// `free_leaves` are gone.)
     pub remove_actions: i64,
-    /// Corruption markers (Clear sways `board.clear_unity` Unity for `board.clear_cost` credits each), and of
+    /// Corruption markers (a card or Recovery clearing one sways `board.clear_unity` Unity), and of
     /// them in some seat's reach.
     pub markers: i64,
     pub markers_in_reach: i64,

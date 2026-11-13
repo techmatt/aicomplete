@@ -635,9 +635,9 @@ impl Policy {
             Action::Standard { act, .. } => {
                 // 206: the standard node placement places as a node power does.
                 (f.stays_put() && act == "node")
-                    || (f.never_clear && act == "clear")
-                    || (f.turtle && !matches!(act.as_str(), "remove" | "clear" | "ambassador" | "harden_chips" | "harden_buy"))
-                    || (f.free_only && !matches!(act.as_str(), "remove" | "clear" | "ambassador" | "move"))
+                    || (f.never_clear && act == "lift")
+                    || (f.turtle && !matches!(act.as_str(), "remove" | "lift" | "ambassador" | "harden_chips"))
+                    || (f.free_only && !matches!(act.as_str(), "remove" | "lift" | "ambassador" | "move"))
             }
             Action::Play { card, seat } => {
                 let d = cards::def(world, card);

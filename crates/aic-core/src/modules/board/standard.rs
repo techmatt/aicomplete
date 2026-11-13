@@ -7,7 +7,9 @@ use super::*;
 pub enum StandardAction {
     Station,
     Remove,
-    Clear,
+    /// 210 (Matt, candidate): research cubes lift 1 land-corruption token in reach, the one standard action that
+    /// removes corruption (r91 cut Clear, which took markers for credits).
+    Lift,
     /// 149: a free move from the seat's Dispatch (the paid Move is gone).
     Move,
     Ambassador,
@@ -18,9 +20,6 @@ pub enum StandardAction {
     Liberate,
     /// 066: the Harden action a card grants, paid in chips.
     HardenChips,
-    // 024: the credit sinks, Terraforming Mars' standard projects.
-    HardenBuy,
-    Drain,
     /// 105: the general converter, a research cube for insight, no limit a round.
     Insight,
     /// 136: spend an ambassador to move 1 Discord off the Discord track.
@@ -42,17 +41,15 @@ pub enum StandardAction {
 }
 
 /// The standard actions, in the order they are offered and published.
-pub const STANDARD: [StandardAction; 19] = [
+pub const STANDARD: [StandardAction; 17] = [
     StandardAction::Station,
     StandardAction::Remove,
-    StandardAction::Clear,
+    StandardAction::Lift,
     StandardAction::Move,
     StandardAction::Ambassador,
     StandardAction::Claim,
     StandardAction::Liberate,
     StandardAction::HardenChips,
-    StandardAction::HardenBuy,
-    StandardAction::Drain,
     StandardAction::Insight,
     StandardAction::Envoy,
     StandardAction::Botnet,
@@ -70,14 +67,12 @@ impl StandardAction {
         match self {
             StandardAction::Station => "station",
             StandardAction::Remove => "remove",
-            StandardAction::Clear => "clear",
+            StandardAction::Lift => "lift",
             StandardAction::Move => "move",
             StandardAction::Ambassador => "ambassador",
             StandardAction::Claim => "claim",
             StandardAction::Liberate => "liberate",
             StandardAction::HardenChips => "harden_chips",
-            StandardAction::HardenBuy => "harden_buy",
-            StandardAction::Drain => "drain",
             StandardAction::Insight => "insight",
             StandardAction::Envoy => "envoy",
             StandardAction::Botnet => "botnet",
@@ -156,7 +151,7 @@ pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
     match act {
         StandardAction::Station => Price { chips: i("station_chips"), ambassadors: i("station_ambassadors"), ..Price::default() },
         StandardAction::Remove => ambassadors(i("remove_ambassadors")),
-        StandardAction::Clear => credits(i("clear_cost")),
+        StandardAction::Lift => Price { cubes: i("land_cubes"), ..Price::default() },
         // 149: paid from the seat's Dispatch, not a resource (`moves_left`).
         StandardAction::Move => Price::default(),
         StandardAction::Ambassador => credits(i("ambassador_credits")),
@@ -164,8 +159,6 @@ pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::Claim | StandardAction::Liberate => Price::default(),
         // 080: the price is the card's (`seat_price`); none printed here.
         StandardAction::HardenChips => Price::default(),
-        StandardAction::HardenBuy => credits(i("harden_credits")),
-        StandardAction::Drain => credits(i("drain_credits")),
         StandardAction::Insight => Price { cubes: 1, ..Price::default() },
         StandardAction::Envoy => ambassadors(i("envoy_ambassadors")),
         StandardAction::Botnet => credits(i("botnet_credits")),
@@ -307,13 +300,11 @@ pub fn std_ops(act: StandardAction) -> &'static [Op] {
     }
 }
 
-/// 206 (amendment 9208): a standard action whose price param is 0 is cut (Clear, Drain, the Harden project), and
-/// the new ones are off at 0 (Node, Troop, Factory).
+/// 206: a standard action whose price param is 0 is off (Lift, Node, Troop, Factory). 210 (P2) deleted the cut Clear,
+/// Drain and Harden project.
 fn cut(w: &World, act: StandardAction) -> bool {
     let k = match act {
-        StandardAction::Clear => "clear_cost",
-        StandardAction::Drain => "drain_credits",
-        StandardAction::HardenBuy => "harden_credits",
+        StandardAction::Lift => "land_cubes",
         StandardAction::Node => "node_credits",
         StandardAction::Troop => "troop_credits",
         StandardAction::Factory => "factory_build_chips",
@@ -330,8 +321,7 @@ pub fn std_offered(w: &World, act: StandardAction) -> bool {
 /// What a standard action does, for the view.
 pub(super) fn std_text(w: &World, act: StandardAction) -> String {
     let text = match act {
-        // 044: Clear's words say what its reward is.
-        StandardAction::Clear => return clear_words(w),
+        StandardAction::Lift => "lift 1 land-corruption token in reach",
         StandardAction::Station => "build a research station in reach (yours)",
         StandardAction::Remove => {
             let n = w.int("board.remove_ambassadors");
@@ -357,8 +347,6 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
             );
         }
         StandardAction::HardenChips => "the Harden action a card grants: harden a facility in reach",
-        StandardAction::HardenBuy => "standard project: harden a facility in reach",
-        StandardAction::Drain => "standard project: remove compute from an adversary project",
         StandardAction::Insight => {
             return format!("turn 1 research cube into {}", Resource::Insight.words(w.int("board.cube_insight")));
         }
@@ -405,14 +393,11 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
             format!("{} of your ambassadors, from your supply, used up", t("board.remove_ambassadors")),
             format!("remove up to {} agents in reach, from any hexes, your choice", t("board.remove_count")),
         ),
-        StandardAction::Clear => (
-            "Clear a corruption marker or land corruption",
-            format!("{} credits", t("board.clear_cost")),
-            format!(
-                "in reach: a marker sways {} toward Unity and gains {} credits; land corruption just comes off",
-                t("board.clear_unity"),
-                t("board.clear_credits")
-            ),
+        // 210 (Matt, candidate: "costly but not absurd").
+        StandardAction::Lift => (
+            "Lift land corruption",
+            format!("{} research cubes", t("board.land_cubes")),
+            "a land-corruption token in reach, face up or face down, comes off: the one standard action that removes corruption".into(),
         ),
         StandardAction::Move => (
             "Dispatch a player ambassador",
@@ -455,16 +440,6 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
             "Harden a facility (a card that grants it; none does: Faraday Yard hardens when played)",
             "the chips the card prints, per token".into(),
             "a player-owned station or factory in reach that is not corrupted, one a troop can strike".into(),
-        ),
-        StandardAction::HardenBuy => (
-            "Project: harden (`harden_buy`)",
-            format!("{} credits", t("board.harden_credits")),
-            "any player: a hardening token on a player-owned station or factory in reach".into(),
-        ),
-        StandardAction::Drain => (
-            "Project: drain (`drain`)",
-            format!("{} credits", t("board.drain_credits")),
-            format!("remove up to {} compute from one visible adversary project", t("board.drain_amount")),
         ),
         // 105: the general converter every player has.
         StandardAction::Insight => (
@@ -559,10 +534,7 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
     match act {
         StandardAction::Station => station_sites(w, g, seat),
         StandardAction::Remove => all.filter(|&h| reach(h) && g.tokens(h, ADV_AMBASSADOR) > 0).collect(),
-        // 178 (Matt's ruling #28): a land corruption token too.
-        StandardAction::Clear => {
-            all.filter(|&h| reach(h) && (g.tokens(h, MARKER) > 0 || g.tokens(h, LAND_CORRUPTION) > 0)).collect()
-        }
+        StandardAction::Lift => all.filter(|&h| reach(h) && g.tokens(h, LAND_CORRUPTION) > 0).collect(),
         // Onto a piece in reach, from the supply or another hex: never onto the
         // hex the seat's only ambassador already holds (020: that charged the
         // energy and moved nothing).
@@ -583,14 +555,6 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
         StandardAction::HardenChips => {
             if harden_card_chips(w, g, seat).is_some() {
                 all.filter(|&h| reach(h) && hardenable(g, h)).collect()
-            } else {
-                Vec::new()
-            }
-        }
-        StandardAction::HardenBuy => all.filter(|&h| reach(h) && hardenable(g, h)).collect(),
-        StandardAction::Drain => {
-            if !adversary::projects_with_compute(g).is_empty() {
-                vec![usize::MAX]
             } else {
                 Vec::new()
             }
@@ -653,13 +617,13 @@ pub(super) fn std_resolve(
             StandardAction::BuyEnergy => format!("Seat {s}: buy energy from which city?"),
             StandardAction::Station => format!("Seat {s}: build a research station on which hex?"),
             StandardAction::Remove => format!("Seat {s}: remove an agent, from which hex?"),
+            StandardAction::Lift => format!("Seat {s}: lift land corruption on which hex?"),
             _ => format!("Seat {s}: {} on which hex?", act.name().split('_').next().unwrap_or_default()),
         };
         Ok(cx.choose(s, prompt, opts)?.map(|i| targets[i]))
     };
     match act {
         StandardAction::Ambassador => cx.add_resource(g, s, Resource::Ambassadors, 1),
-        StandardAction::Drain => adversary::choose_drain(g, cx, s, w.int("board.drain_amount"))?,
         StandardAction::Insight => {
             cx.add_resource(g, s, Resource::Insight, w.int("board.cube_insight"));
             cx.tally(g, "board.cubes_converted", 1);
@@ -714,16 +678,10 @@ pub(super) fn std_resolve(
                 cx.tally(g, "board.city_energy_bought", n);
             }
         }
-        StandardAction::Clear => {
+        StandardAction::Lift => {
             if let Some(h) = on_hex(cx)? {
-                // 178 (Matt's ruling #28, amendment 8118): a marker for its reward; else the land corruption
-                // token, which just comes off (no reward yet).
-                if g.tokens(h, MARKER) > 0 {
-                    clear_marker(g, cx, s, h);
-                } else {
-                    adversary::lift_land_corruption(g, cx, h);
-                    cx.tally(g, "board.land_cleared", 1);
-                }
+                adversary::lift_land_corruption(g, cx, h);
+                cx.tally(g, "board.land_lifted", 1);
             }
         }
         StandardAction::Move => {
@@ -745,7 +703,7 @@ pub(super) fn std_resolve(
                 liberate_site(g, cx, s, h);
             }
         }
-        StandardAction::HardenChips | StandardAction::HardenBuy => {
+        StandardAction::HardenChips => {
             if let Some(h) = on_hex(cx)? {
                 cx.add_tokens(g, h, HARDEN, 1);
             }
@@ -769,19 +727,3 @@ fn times(n: i64) -> String {
     }
 }
 
-/// Clear's words with its reward (the configs' `clear_unity`, `clear_credits`).
-fn clear_words(w: &World) -> String {
-    let (unity, credits) = (w.int("board.clear_unity"), w.int("board.clear_credits"));
-    let mut reward = Vec::new();
-    if unity > 0 {
-        reward.push(format!("{unity} Sway toward Unity"));
-    }
-    if credits > 0 {
-        reward.push(Resource::Credits.words(credits));
-    }
-    if reward.is_empty() {
-        "clear a corruption marker or land corruption in reach".into()
-    } else {
-        format!("clear a corruption marker in reach ({}) or land corruption", reward.join(" and "))
-    }
-}

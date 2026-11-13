@@ -145,10 +145,9 @@ leaves a corruption marker on its hex, unless the hex is a corrupted site, holds
 already. Corruption leaves its own mark instead (r80, Matt's ruling #42: a site's cube, a node hex's land
 corruption; [adversary.md](adversary.md)). A marked hex can't take a node. **A marker only blocks** (r80): it never
 counts toward corruption and never destroys nodes. It doesn't count against the purge. **Clearing
-one** (r91, Matt, 2026-11-12: no standard action removes corruption, as Spirit Island has no general "remove
-blight"): the Protector's Recovery and Science cards take a marker off in reach for `clear_unity` Sway toward Unity
-and `clear_credits` credits. A land corruption token comes off only by a card that says so (r91: the Clear action
-took it off, no reward).
+one** (r91, Matt, 2026-11-12: no standard action removes a marker; r92's Lift land corruption takes land tokens only): the Protector's Recovery and Science cards take a marker off in reach for `clear_unity` Sway toward Unity
+and `clear_credits` credits. A land corruption token comes off by a card that says so or by the standard action
+Lift land corruption (r92: `land_cubes` research cubes, no reward but the drip and the hex back; [economy.md](economy.md)).
 **Destruction.** Only war sways Discord: a factory destroyed by the drones crossing a
 front sways `destruction_discord` Discord. An adversary troop's strike (in the march) sways
 nothing (Matt). A shelter on the country stops a destruction, spending nothing, and so

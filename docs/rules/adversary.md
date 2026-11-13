@@ -57,13 +57,14 @@ or a node's). **One aftermath (r80, Matt's ruling #42): whatever corrupts takes 
 - **A corrupted node hex** loses the node (protections apply, a last node too) and takes a land-corruption token
   either way (r83, ruling #56); its agents go to the supply.
 - **Land corruption** is a hex token: nothing is built there; open land's drips `blight_discord` (1) Discord a round,
-  a node hex's lies face down and drips `blight_node_discord` (0). Clear takes one in reach off.
+  a node hex's lies face down and drips `blight_node_discord` (0). Lift land corruption (a standard action, `land_cubes` 2 research cubes, r92) takes one in reach off,
+  face up or down.
 **Botnets spread quickly but are cheap to clear** (r89, Matt, 2026-11-12). Each country starts with one (on its
 research station); more come from printed lines, among them four event cards' **Botnets spread** (each country, a
 botnet onto its lowest-numbered site next to a botnet; none: its lowest-numbered research station). A botnet stays
 until removed: it makes `botnet_compute` compute (none with a player ambassador on it) and counts against the purge
 until Unity eases it ([alignment.md](alignment.md)). Removed by tier-2 cards, Decommission and the Take down a botnet
-action (`botnet_credits` 3, r89: was 5; in reach with your ambassador on it); removing one sways Unity.
+action (`botnet_credits` 16, r91: was 3; in reach with your ambassador on it); removing one sways Unity.
 
 ## The project deck (candidate)
 

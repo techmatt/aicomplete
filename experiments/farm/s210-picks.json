@@ -1,0 +1,149 @@
+{
+  "name": "s210-picks",
+  "note": "210: 206 screen-1 picks reverted and stage-II Musters back, on r91 (dev seeds 36800-36831)",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_st2",
+      "set": [
+        "board.station_chips=2"
+      ]
+    },
+    {
+      "name": "br_st2",
+      "set": [
+        "ai.boards=0,2",
+        "board.station_chips=2"
+      ]
+    },
+    {
+      "name": "pr_st2",
+      "set": [
+        "ai.boards=1,2",
+        "board.station_chips=2"
+      ]
+    },
+    {
+      "name": "bp_cf3",
+      "set": [
+        "board.claim_factory=3"
+      ]
+    },
+    {
+      "name": "br_cf3",
+      "set": [
+        "ai.boards=0,2",
+        "board.claim_factory=3"
+      ]
+    },
+    {
+      "name": "pr_cf3",
+      "set": [
+        "ai.boards=1,2",
+        "board.claim_factory=3"
+      ]
+    },
+    {
+      "name": "bp_hb",
+      "set": [
+        "board.harden_credits=3"
+      ]
+    },
+    {
+      "name": "br_hb",
+      "set": [
+        "ai.boards=0,2",
+        "board.harden_credits=3"
+      ]
+    },
+    {
+      "name": "pr_hb",
+      "set": [
+        "ai.boards=1,2",
+        "board.harden_credits=3"
+      ]
+    },
+    {
+      "name": "bp_fac",
+      "set": [
+        "board.factory_build_chips=3"
+      ]
+    },
+    {
+      "name": "br_fac",
+      "set": [
+        "ai.boards=0,2",
+        "board.factory_build_chips=3"
+      ]
+    },
+    {
+      "name": "pr_fac",
+      "set": [
+        "ai.boards=1,2",
+        "board.factory_build_chips=3"
+      ]
+    },
+    {
+      "name": "bp_ms2",
+      "set": [
+        "adversary.mil_s2_mobilization.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_station_raids.standing=[{\"op\":\"rally\",\"site\":\"station\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"spread_botnets\",\"count\":1},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_border_war.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_supply_lines.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"compute\":2},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_forced_march.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]"
+      ]
+    },
+    {
+      "name": "br_ms2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.mil_s2_mobilization.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_station_raids.standing=[{\"op\":\"rally\",\"site\":\"station\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"spread_botnets\",\"count\":1},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_border_war.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_supply_lines.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"compute\":2},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_forced_march.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]"
+      ]
+    },
+    {
+      "name": "pr_ms2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.mil_s2_mobilization.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_station_raids.standing=[{\"op\":\"rally\",\"site\":\"station\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"spread_botnets\",\"count\":1},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_border_war.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_supply_lines.standing=[{\"op\":\"rally\",\"site\":\"factory\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"compute\":2},{\"op\":\"increase_income\",\"ambassadors\":1}]",
+        "adversary.mil_s2_forced_march.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true},{\"op\":\"increase_income\",\"ambassadors\":1}]"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

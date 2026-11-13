@@ -56,6 +56,17 @@ pub fn tally_short(w: &World, g: &mut GameState, cx: &mut Cx, seat: usize) {
             }
         }
     }
+    // 210 (stats only): a slack seat-round: the seat kept every card it drafted, holds no card it could have
+    // played, and has insight left over (`cards.slack.<seat>`, beside `cards.insight_bound.<seat>`).
+    let held = keys.iter().any(|k| k == "limit.play.held");
+    let kept_all = g
+        .stats
+        .per_round
+        .get(format!("cards.kept_all.{seat}").as_str())
+        .is_some_and(|v| v.get(g.round as usize).is_some_and(|&n| n > 0));
+    if kept_all && !held && g.resource(seat, Resource::Insight) > 0 {
+        keys.push(format!("@cards.slack.{seat}"));
+    }
     for k in keys {
         if let Some(flag) = k.strip_prefix('=') {
             cx.level(g, flag, 1);

@@ -3,7 +3,7 @@
 
 use super::*;
 use crate::content::Op;
-use crate::modules::common::{hex_opt, is_ocean, MARKER};
+use crate::modules::common::{hex_opt, is_ocean, LAND_CORRUPTION, MARKER};
 use crate::modules::{adversary, alignment, board};
 use crate::state::Pick;
 
@@ -344,19 +344,30 @@ fn up_to_two_markers_can_stop_after_one() {
     assert_eq!(n.iter().map(|&h| g.tokens(h, MARKER)).sum::<i64>(), 1, "the second pick was stop");
 }
 
-/// 206 (amendment 9208): no standard action removes corruption: Clear is cut (`clear_cost` 0).
+/// 206 (amendment 9208): no standard action removes a marker. 210: Lift land corruption takes a land-corruption
+/// token in reach for `land_cubes` research cubes, never a marker.
 #[test]
-fn no_standard_action_clears_a_marker() {
+fn lift_takes_land_corruption_never_a_marker() {
     let (rules, mut g) = at_step(&[], 1);
     let w = rules.world();
     let a = rules.map.numbered(0, piece(0).node);
     let marked = w.map.hexes[a].neighbors.iter().copied().find(|&h| !is_ocean(&w, h)).unwrap();
     put(&mut g, marked, MARKER, 1);
     assert!(!board::node_sites(&w, &g, 0).contains(&marked), "no nodes on a marker");
-    set_res(&mut g, 0, Resource::Credits, 50);
-    assert_eq!(w.int("board.clear_cost"), 0);
-    assert!(rules.apply_mut(&mut g.clone(), &std_act(0, "clear"), None).is_err());
-    assert!(!rules.legal_actions(&g).contains(&std_act(0, "clear")));
+    let cubes = w.int("board.land_cubes");
+    assert!(cubes > 0);
+    set_res(&mut g, 0, Resource::ResearchCubes, cubes);
+    assert!(rules.apply_mut(&mut g.clone(), &std_act(0, "lift"), None).is_err(), "a marker is not land corruption");
+    put(&mut g, marked, MARKER, -1);
+    put(&mut g, marked, LAND_CORRUPTION, 1);
+    assert!(!board::node_sites(&w, &g, 0).contains(&marked), "no nodes on land corruption");
+    set_res(&mut g, 0, Resource::ResearchCubes, cubes - 1);
+    assert!(!rules.legal_actions(&g).contains(&std_act(0, "lift")), "short a cube");
+    set_res(&mut g, 0, Resource::ResearchCubes, cubes);
+    rules.apply_mut(&mut g, &std_act(0, "lift"), None).unwrap();
+    pick(&rules, &mut g, marked);
+    assert_eq!((g.tokens(marked, LAND_CORRUPTION), g.resource(0, Resource::ResearchCubes)), (0, 0));
+    assert_eq!(g.stats.counters.get("board.land_lifted").copied(), Some(1));
 }
 
 /// 034's d4 fix: every printed step of the Discord deck acts before it ends,

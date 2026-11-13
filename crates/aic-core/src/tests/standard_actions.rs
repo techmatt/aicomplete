@@ -1,5 +1,4 @@
 use super::*;
-use crate::modules::adversary;
 use crate::modules::board;
 
 fn standard_offered(rules: &Rules, g: &GameState, seat: u8) -> BTreeSet<String> {
@@ -181,32 +180,6 @@ fn a_card_s_harden_action_costs_chips() {
     assert_eq!((g.resource(0, Resource::Chips), total(&g, HARDEN)), (0, 1));
 }
 
-#[test]
-fn standard_projects_turn_credits_into_hardening_and_drains() {
-    // 206 (amendment 9208): the harden and drain projects are cut at the baseline (0); this lab prices them.
-    let mut c = lab_config(&[ACTIONS]);
-    c.apply_override("board.harden_credits=3").unwrap();
-    c.apply_override("board.drain_credits=5").unwrap();
-    let rules = Rules::new(&c).unwrap();
-    let w = rules.world();
-    let mut g = rules.new_game(1);
-    set_res(&mut g, 0, Resource::Credits, 40);
-    // Any player may harden with credits (the Builder has no Harden passive).
-    let p = node_of(&g, 0)[0];
-    put(&mut g, p, STATION, 1);
-    put(&mut g, p, cube(0), 1);
-    rules.apply_mut(&mut g, &std_act(0, "harden_buy"), None).unwrap();
-    pick(&rules, &mut g, p);
-    assert_eq!(g.tokens(p, HARDEN), 1);
-
-    // A drain needs compute on a project.
-    set_pile(&mut g, PROJECTS, &["backdoor_research"]);
-    assert!(rules.apply_mut(&mut g.clone(), &std_act(0, "drain"), None).is_err());
-    g.vars.insert(adversary::project_key("backdoor_research").into(), 5);
-    rules.apply_mut(&mut g, &std_act(0, "drain"), None).unwrap();
-    answer_all(&rules, &mut g);
-    assert_eq!(g.var(&adversary::project_key("backdoor_research")), 5 - w.int("board.drain_amount"));
-}
 
 /// 020: moving the seat's only ambassador onto the hex it already holds was
 /// offered, charged for and moved nothing.

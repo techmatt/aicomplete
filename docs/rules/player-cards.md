@@ -49,7 +49,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   execution, stays up, and can be countered next round). The content check refuses any of the three on a card without
   the tag or on a power, save the Protector's Recovery, which clears a marker. Four tier-1 cards and one tier-2 card do it.
   No card `needs` Science for it: a team without the tag still has its counters, the Protector's Recovery and the
-  board (r91: the Clear standard action is cut).
+  board (r91: the Clear standard action is cut; r92's Lift land corruption takes land tokens, never a marker).
 - **Typed counters (candidate).** Nine tier-1 cards fight one threat tag, and count for more than they cost toward
   threats carrying it (or Universal) that the player is near, a threat's tag being the card's own (Security,
   Diplomacy, Cyber, Industry; Science's and Power's tools stay general). Industry has two programs and an Action building;

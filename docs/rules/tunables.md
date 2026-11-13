@@ -41,15 +41,12 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.city_chip_cap` | 3 | 1..10 | 190: chips a city holds at most while they wait (one each round from each unclaimed neutral factory next to it) |
 | `board.remove_ambassadors` | 1 | 1..5 | standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing) |
 | `board.remove_count` | 3 | 1..3 | standard action Remove agents: agents it removes, at most, from any hexes in reach (the player's choice) |
-| `board.clear_cost` | 0 | 0..20 | standard action: credits to clear a corruption marker within reach (206: 0, cut) |
+| `board.land_cubes` | 2 | 0..10 | 210: standard action Lift land corruption: research cubes to lift 1 land-corruption token in reach (0: no such action) |
 | `board.clear_unity` | 2 | 0..5 | Sway toward Unity for clearing a corruption marker |
 | `board.clear_credits` | 0 | 0..5 | credits back for clearing a corruption marker |
 | `board.envoy_ambassadors` | 1 | 0..5 | standard action Envoy: your ambassadors from the supply, used up, to move 1 Discord off the Discord track (0: no such action) |
 | `board.ambassador_credits` | 20 | 1..50 | standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit) |
 | `board.sell_credits` | 1 | 0..20 | standard action: credits for selling a card from hand |
-| `board.harden_credits` | 0 | 0..50 | standard project: credits for a hardening token (0: cut) |
-| `board.drain_credits` | 0 | 0..50 | standard project: credits to drain compute from an adversary project (206: 0, cut) |
-| `board.drain_amount` | 3 | 1..20 | standard project: compute drained |
 | `board.cube_insight` | 1 | 0..5 | standard action, no limit a round: insight for 1 research cube (0: no such action) |
 | `board.antimatter_cubes` | 4 | 0..10 | standard action, the desperate source (204): research cubes for 1 antimatter, no limit a round (0: no such action) |
 | `board.breakthrough_antimatter` | 1 | 1..10 | standard action Breakthrough (204): antimatter it spends |

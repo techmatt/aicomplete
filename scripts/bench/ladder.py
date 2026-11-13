@@ -15,7 +15,11 @@ cells: a variant `PAIR_LEVER` is lever LEVER (no suffix: `base`), a config after
 its file (`x_off`, `x_off LEVER`), each with its gap to base paired on the same pair and seed. `--measures` adds, per difficulty and side, a game's means: nodes
 lost to corruption, adversary ambassadors placed (created or rallied), corruptions, compute made, and the project deck
 (amendment 6618): projects revealed and resolved as a share of the deck (`--deck`; default the number of projects in `content/projects.json`), distinct projects revealed,
-and reshuffles.
+and reshuffles; then (210) by board, levels pooled: slack seat-rounds (the seat kept every card it drafted, held no
+card it could have played and had insight left) beside bound ones (a keep or play held for want of insight alone),
+land-corruption tokens on the board a round, where node placements land (on or next to a factory, city or station;
+`own`: one holding the seat's cube) and each seat's nodes at the end (count, countries, connected groups, farthest
+apart). A side that predates a measure prints 0 for it.
 
 A farmed read (160: shards assembled by `screens.assemble`, no results.json) reads its cells from the header; a
 bare farmed JSONL (`farm-seeds ... OUT`, no header) reads as FILE=SPEC wherever a DIR goes, SPEC its farm spec's JSON
@@ -110,6 +114,49 @@ def measures(g):
         "project reshuffles": c.get("adversary.project_reshuffles", 0),
         "rounds": g["rounds"],
     }
+
+
+def per_round(g, key):
+    """A per-round counter's values, rounds 1.. (`key.rNN` in counters)."""
+    c = g["counters"]
+    return [c.get(f"{key}.r{r:02d}", 0) for r in range(1, g["rounds"] + 1)]
+
+
+KINDS = ("factory", "city", "station", "none", "own_factory", "own_city", "own_station")
+
+
+def board_table(games_by_side):
+    """210's standing measures by board, levels pooled: slack and bound seat-rounds, land-corruption tokens a round,
+    where node placements land and how spread each seat's nodes end (docs/experiments.md, *Standing measures*)."""
+    head = ("| side | board | seat-rounds | slack | bound | land tokens a round | placements a seat-game | "
+            + " | ".join(k.replace("_", " ") for k in KINDS) + " | nodes at end | countries | groups | farthest |")
+    lines = [head, "|" + "---|" * (head.count("|") - 1)]
+    for side, games in games_by_side.items():
+        acc = defaultdict(lambda: defaultdict(float))
+        for g in games:
+            land = per_round(g, "adversary.land_tokens")
+            spread = g["margin"].get("node_spread", [])
+            for s, b in enumerate(p.split(":")[0] for p in g["build"].split("|")):
+                for a in (acc[b], acc["all"]):
+                    sl, bo = per_round(g, f"cards.slack.{s}"), per_round(g, f"cards.insight_bound.{s}")
+                    a["sr"] += len(sl)
+                    a["slack"] += sum(x > 0 for x in sl)
+                    a["bound"] += sum(x > 0 for x in bo)
+                    a["land"] += sum(land)
+                    a["lr"] += len(land)
+                    a["sg"] += 1
+                    for k in ("n",) + KINDS:
+                        a[k] += g["counters"].get(f"board.node_at.{s}.{k}", 0)
+                    for i, k in enumerate(("nodes", "countries", "groups", "far")):
+                        a[k] += spread[s][i] if s < len(spread) else 0
+        for b in sorted(acc, key=lambda x: (x == "all", x)):
+            a = acc[b]
+            sr, sg, n = a["sr"] or 1, a["sg"] or 1, a["n"] or 1
+            lines.append(f"| {side} | {b} | {int(a['sr'])} | {100 * a['slack'] / sr:.1f}% | {100 * a['bound'] / sr:.1f}% | "
+                         f"{a['land'] / (a['lr'] or 1):.3f} | {a['n'] / sg:.2f} | "
+                         + " | ".join(f"{100 * a[k] / n:.0f}%" for k in KINDS) + " | "
+                         + " | ".join(f"{a[k] / sg:.2f}" for k in ("nodes", "countries", "groups", "far")) + " |")
+    return "\n".join(lines)
 
 
 def mean_table(rows_by_side):
@@ -214,6 +261,7 @@ def ladder(new_dirs, old_dirs, bands, with_measures):
     if nl == ol:
         nl, ol = nl + " new", ol + " old"
     ms = {nl: defaultdict(list), ol: defaultdict(list)}
+    sides = {nl: [], ol: []}
     # 169: a read of two or more agents gets a row per agent and difficulty (they were pooled into one win %, its
     # band judged on the blend); rows are keyed (agent, d), the agent by its spec place.
     names = {}
@@ -228,9 +276,11 @@ def ladder(new_dirs, old_dirs, bands, with_measures):
                     new[row][key] = g
                     per_set[row][i].append(won(g))
                     ms[nl][row].append(measures(g))
+                    sides[nl].append(g)
                 else:
                     old[row][key] = g
                     ms[ol][row].append(measures(g))
+                    sides[ol].append(g)
     many = len({r for r, _ in new} | {r for r, _ in old}) > 1
     print(f"| {'agent | ' if many else ''}d | {nl} win % | ±SE | {ol} win % | gap | ±SE (paired) | sets ({nl}) | band | verdict |")
     print(f"|{'---|' if many else ''}---|---|---|---|---|---|---|---|---|")
@@ -253,6 +303,8 @@ def ladder(new_dirs, old_dirs, bands, with_measures):
         print()
         # The measures table's d column: the difficulty, with the agent when the read has two or more.
         print(mean_table({side: {(f"{names[r]} d{d}" if many else d): v for (r, d), v in by.items()} for side, by in ms.items()}))
+        print()
+        print(board_table(sides))
 
 
 def main():

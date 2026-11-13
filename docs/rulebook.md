@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 91. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 92. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -371,7 +371,7 @@ corrupt the site they name. Corruption never spreads by itself.
 - **Open land and a node hex** take a **land corruption** token. On open land any node is destroyed and every
   ambassador removed, as for a site; on a node hex (2 agents) only the node is lost (§13 applies), and the token goes
   on **face down** whether or not the node is saved. Nothing can be built or placed on land corruption (no node, factory or research station). A face-up
-  token (open land's) adds 1 Discord every round until a player Clears it (§8); a face-down one adds none.
+  token (open land's) adds 1 Discord every round until a player lifts it (Lift land corruption, §8); a face-down one adds none.
 
 §15 has every detail.
 
@@ -406,7 +406,7 @@ The adversary spends **compute** on **projects** in the Income beat, always on t
 **resolves** with its printed effect, and the rest slide left (§17). Some cards and the Researcher's Audit take compute off a project.
 
 Botnets spread quickly (four event cards print **Botnets spread**, above) but are cheap to clear. A **botnet** stays
-until a card or the **Take down a botnet** action (§8, 3 credits) removes it. It makes 1 compute a round
+until a card or the **Take down a botnet** action (§8, 16 credits) removes it. It makes 1 compute a round
 unless a player's ambassador stands on it, and counts against the purge until Unity has tipped 6 times (§14).
 Removing one adds 1 Unity.
 
@@ -542,6 +542,7 @@ Standard actions are always there, a hedge against bad luck: cards and your boar
 | **Remove a troop** | 10 credits | once a round: remove 1 adversary troop in your reach |
 | **Take down a botnet** | 16 credits | remove a botnet in your reach where your ambassador stands (the ambassador stays) |
 | **Buy energy** | 5 credits | gain the energy (1) of a neutral city in your reach that isn't blocked or blacked out; each city once a round, for all players together |
+| **Lift land corruption** | 2 research cubes | remove 1 land corruption token in your reach, face up or face down; the only standard action that removes corruption |
 | **Build a research station** | 1 chip | on an open hex in reach that isn't an industrial zone or corrupted land; it is yours |
 | **Envoy** | 1 ambassador from your supply | remove 1 Discord from the Discord track |
 | **Gain an ambassador** | 20 credits | into your supply |

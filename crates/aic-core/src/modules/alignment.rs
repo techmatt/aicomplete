@@ -500,6 +500,9 @@ impl Module for Alignment {
         // 138: each land-corruption token drips 1 Discord; 192: a face-down one (a node hex's) its own rate.
         let blight = adversary::blight_drip(&cx.world, g);
         discord_from(g, cx, "blight", blight);
+        // 210 (stats only): land-corruption tokens on the board as the round's drip reads them.
+        let land: i64 = (0..g.hexes.len()).map(|h| g.tokens(h, LAND_CORRUPTION)).sum();
+        cx.per_round(g, "adversary.land_tokens", land);
         Ok(())
     }
 

@@ -401,7 +401,7 @@ pub enum Removable {
     Agents,
     Troops,
     Botnets,
-    /// Corruption markers (each cleared for its reward, as the Clear action).
+    /// Corruption markers (each cleared for its reward, as Recovery clears one).
     Markers,
     /// The adversary's cube off a corrupted research station or factory (never a city: tier III frees none).
     Cubes,

@@ -332,6 +332,11 @@ impl Module for Cards {
                     cx.per_round(g, "cards.hand_size", hand_n);
                     let ins = g.resource(s, Resource::Insight);
                     cx.per_round(g, "cards.insight_after_keep", ins);
+                    // 210 (stats only): the seat kept every card it drafted this round (the slack measure, read
+                    // when its action phase ends: `play::tally_short`).
+                    if g.pile(&drafted(s)).is_empty() {
+                        cx.per_round(g, &format!("cards.kept_all.{s}"), 1);
+                    }
                     for id in g.pile(&drafted(s)).to_vec() {
                         // 189: why a drafted card went unkept (stats only).
                         let w = cx.world;

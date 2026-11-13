@@ -1,0 +1,57 @@
+{
+  "name": "s210-l1",
+  "note": "210: a screen on the dev seeds",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_l1",
+      "set": [
+        "board.land_cubes=1"
+      ]
+    },
+    {
+      "name": "br_l1",
+      "set": [
+        "ai.boards=0,2",
+        "board.land_cubes=1"
+      ]
+    },
+    {
+      "name": "pr_l1",
+      "set": [
+        "ai.boards=1,2",
+        "board.land_cubes=1"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

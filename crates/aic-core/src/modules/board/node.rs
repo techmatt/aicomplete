@@ -161,12 +161,41 @@ pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res<bool> {
     cx.add_tokens(g, hexes[j], node(seat), 1);
     cx.tally(g, "board.node_placed", 1);
     cx.per_round(g, "board.node_placed", 1);
+    tally_placement(&w, g, cx, seat, hexes[j]);
     if capstone {
         cx.tally(g, "board.capstones", 1);
         cx.per_round(g, "board.node_capstones", 1);
     }
     effects::run(g, cx, uncovers, &mut effects::Ctx::seat(seat))?;
     Ok(true)
+}
+
+/// 210 (stats only): where seat `seat`'s placement on hex `h` landed: `board.node_at.<seat>.<kind>` for each of a
+/// factory, a city and a research station on the hex or next to it (`own_<kind>`: one holding the seat's cube),
+/// `none` for none of the three, and `n` for every
+/// placement (the placement-spread measure; the spread at the game's end is the farm's `margin.node_spread`).
+fn tally_placement(w: &World, g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
+    let near = |f: &dyn Fn(usize) -> bool| f(h) || w.map.hexes[h].neighbors.iter().any(|&x| f(x));
+    let own = |x: usize| g.tokens(x, cube(seat)) > 0;
+    let kinds = [
+        ("factory", near(&|x| g.tokens(x, FACTORY) > 0)),
+        ("city", near(&|x| is_city(w, x))),
+        ("station", near(&|x| g.tokens(x, STATION) > 0)),
+        ("own_factory", near(&|x| g.tokens(x, FACTORY) > 0 && own(x))),
+        ("own_city", near(&|x| is_city(w, x) && own(x))),
+        ("own_station", near(&|x| g.tokens(x, STATION) > 0 && own(x))),
+    ];
+    let mut any = false;
+    for (k, hit) in kinds {
+        if hit {
+            any |= !k.starts_with("own_");
+            cx.tally(g, &format!("board.node_at.{seat}.{k}"), 1);
+        }
+    }
+    if !any {
+        cx.tally(g, &format!("board.node_at.{seat}.none"), 1);
+    }
+    cx.tally(g, &format!("board.node_at.{seat}.n"), 1);
 }
 
 /// Seat `s` loses its nodes on hex `h` (175: a last node too: no stage protects it).

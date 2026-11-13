@@ -38,6 +38,8 @@ Agent search settings go bare, heuristic weights take `w.`
 
 `--out` (default `out/experiments/<name>/`) holds `report.md`, `results.json` (`aic-experiment/2`), `games.csv` (a row
 a game), `cards.csv` (per agent, variant, config, difficulty and card), `records/` and `games.jsonl` (`aic-games/2`).
+A per-round stat (`cx.per_round`) reaches `games.jsonl` as `<key>.rNN` only if `PER_ROUND_EXPORT` (experiment.rs)
+lists its prefix.
 
 **Paired reads.** *Agents paired, per variant* (`agent_pairs`): A against B on the same seeds; `x:...` pairs with `x`
 if listed, a bare agent with the next bare agent. *Fresh-seed confirmation* (`fresh_confirmation`): each variant
@@ -45,15 +47,14 @@ against the base on the seeds outside `selection_seeds` alone, never pooled; `fi
 past the selection range for any to exist.
 
 **Results as they go.** Each finished game is appended to `games.jsonl` (actions included); the report is rewritten
-every `--report-every` seconds (60), marked **Partial: N of M games**. Games go out seed by seed across cells, so a
-stopped run has every cell's first seeds. `--resume` (same spec and `--out`) plays only the missing games and refuses
-a changed spec, config, engine, rules revision or content; without it an earlier stream moves to `games.jsonl.bak`.
+every `--report-every` seconds (60), marked **Partial: N of M games**; a stopped run has every cell's first seeds.
+`--resume` (same spec and `--out`) plays only the missing games and refuses any change; without it an earlier stream
+moves to `games.jsonl.bak`.
 
 - `report.md` and `results.json` exist from the start: wait on `^time:` in stderr or on the process, not on the file.
 
-**A game that panics** fails alone: stderr and `failed.jsonl` name its seed, config, overrides and panic, `report.md`
-lists it under *Failed games* with its replay line, `results.json` has `games_failed`, no measure counts it, and the
-run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have no such net.
+**A game that panics** fails alone (`failed.jsonl`, *Failed games* in `report.md` with its replay line; no measure
+counts it; exit 1); `--resume` plays it again. `aic-sim run` and `compare` have no such net.
 
 ## Measures
 
@@ -140,16 +141,17 @@ the judge off the value table.
   paired, by set). `scripts/bench/read_specs.py read` and `run_read.sh` are the native route.
 - **Standing measures (amendment 6618), reported old against new every read:** corruption node losses and adversary
   ambassadors placed a game, and the project deck's turnover: projects revealed (`adversary.projects_revealed`, every
-  draw) and resolved as a share of the deck, distinct projects revealed, and reshuffles, per level (`--measures`). A
-  measure the old binary never tallied goes into its tree as a patch before its first read, or the read is redone.
+  draw) and resolved as a share of the deck, distinct projects revealed, and reshuffles, per level (`--measures`);
+  since 210, by board: slack beside bound seat-rounds, land tokens a round and node placement spread (no targets yet).
+  A measure the old binary never tallied goes into its tree as a patch before its first read, or the read is redone.
 - **Costs (r73):** a 576-game strategist read set (d0-d3) about 1.5 min on 6 threads, a 720-game set with d4 about
   2 min; greedy costs about the same; double on a busy box.
 - **A before/after read is paired**: the old binary and its configs (README, *This machine*), same seeds, own folder.
   Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` (own `CARGO_TARGET_DIR`); new
   sim-only measures go in as `patch -p1` there (`git apply` in a worktree silently applies nothing).
 - **Farming a read:** `experiments/farm/read.json` is the read as one spec ([simulator.md](simulator.md), *The farm*).
-  A 720-game set farms in 75-240 s with the laptop joined; if the broker goes away, shards run one at a time (slow:
-  stop and run natively). The old side runs natively, its folder's
+  A 720-game set farms in 75-240 s with the laptop joined; if the broker goes away (its log says so only after the
+  first shard), shards run one at a time on one thread: stop it and run natively (`--threads 6`: 210's 2880 games, 4 min). The old side runs natively, its folder's
   configs (`aic-sim experiment SPEC --seed F`, or shards: `aic-sim farm read --seed S --games 8`). `ladder.py` reads
   the farm's out file as `OUT=SPEC.json`; shards, after `python scripts/screens.py assemble SPEC FIRST COUNT OUT_DIR SHARD...`.
 - **Levers:** an income or card lever is an overlay (`cards.<id>.effects.0.max=5`, *Content levers*), no build; a
@@ -162,9 +164,9 @@ the judge off the value table.
   [scripts.md](scripts.md).
 
 **Skilled rows (155).** `python scripts/bench/skilled_rows.py READ.json` writes the read's companion spec: the
-`oracle` (full information, [agents.md](agents.md)) and the strategist on the read's first 24 seeds a level (8 a
-pair), d3 and d4, the end-game probe on every loss. At r73 (174) an oracle game costs 30-160 s (a mean of 67 s),
-and the row's wall time, about 20 min on 3 threads, is its slowest game (10-18 min): launch it with the read; `threads=N` plays a decision's lines side by side. Spec and costs: `155_skilled_agents/`.
+`oracle` ([agents.md](agents.md)) and the strategist on the read's first 24 seeds a level, d3 and d4, the end-game
+probe on every loss. An oracle game costs 30-160 s (r73), the row about 20 min on 3 threads: launch it with the read.
+Spec and costs: `155_skilled_agents/`.
 
 `experiments/band.json` places a win rate (`--seed S --games 96`, the planner at 2 and 3 countries); read its win mix (the purge by
 Unity step, `ends156.py`) before a rule touching the end state. `sanity-line.json`: after a rollout policy or `prune` change, the
@@ -175,7 +177,7 @@ line alone reads near the engine.
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used. Any item that spends seeds updates the ledger, after its last read, not before it:
 `python scripts/bench/seeds.py next N` prints the next N, and `--take` moves *Next free* past them. Used: every
-seed below the next free one, and 46000-46143 (each item's range is in its write-up). Next free: 45919 (to 45999), then 46144. **The dev seeds are
+seed below the next free one (each item's range is in its write-up). Next free: 46144. **The dev seeds are
 36800-36831**, for on/off checks and crash-finding (SE ~5 a cell). A per-level income step is a 2-8 point effect:
 screen it paired on this revision's spent fresh sets (~500+ games a cell, SE ~2), then confirm once on new seeds.
 

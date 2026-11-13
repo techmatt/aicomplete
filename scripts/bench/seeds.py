@@ -48,7 +48,13 @@ def main(argv):
     first, last, m = next_range(text, int(argv[1]))
     print(f"{first}-{last}")
     if take:
-        text = text[:m.start(1)] + str(last + 1) + text[m.end(1):]
+        if m.group(2) and last == int(m.group(2)):
+            # 210: the block is used up; its "(to N)" cap would read as a negative range. Drop it: the next block
+            # (", then NNNNN") is the hand edit the docstring names.
+            text = text[:m.start(1)] + str(last + 1) + text[m.end(0):]
+            print(f"ledger: block used up to {last}: move 'Next free' to the next block by hand", file=sys.stderr)
+        else:
+            text = text[:m.start(1)] + str(last + 1) + text[m.end(1):]
         with open(doc, "w", encoding="utf-8", newline="\n") as f:
             f.write(text)
         print(f"ledger: next free {last + 1}", file=sys.stderr)
