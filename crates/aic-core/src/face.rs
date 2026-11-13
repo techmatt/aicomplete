@@ -591,6 +591,34 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             // term; Air Gap's box has no room for it twice.
             "firewall a hex in reach",
         )),
+        // 212: "if it is on or next to a factory, also gain 1 chip".
+        Op::IfNodeNext { spots, then, fresh } => {
+            let inner = clauses(then, gain);
+            let mut icons = vec![w("node"), w("onto")];
+            icons.extend(spots.iter().map(|s| w(match s {
+                crate::op::NodeSpot::City => "city",
+                crate::op::NodeSpot::Station => "station",
+                crate::op::NodeSpot::Factory => "factory",
+            })));
+            let mut says = Vec::new();
+            for c in inner {
+                icons.extend(c.icons);
+                says.push(c.say);
+            }
+            let names: Vec<String> = spots.iter().map(|s| format!("a {}", s.name())).collect();
+            // "a factory none of your other nodes is on or next to"
+            let fresh = if *fresh { " none of your other nodes is on or next to" } else { "" };
+            one(clause(icons, format!("if it is on or next to {}{fresh}, also {}", names.join(" or "), says.join(" and "))))
+        }
+        Op::AmbassadorToSpot => one(Clause {
+            icons: vec![w("ambassador"), w("city")],
+            say: "put a new ambassador on that city".to_string(),
+            share: Share::Mine,
+        }),
+        Op::LiftLand { count } => one(clause(
+            adversary(minus(*count, "hex")),
+            format!("lift {} in reach", plural(*count, "land-corruption token")),
+        )),
         Op::IfTags { tag: t, count, then } => {
             let inner = clauses(then, gain);
             let mut icons = vec![Part::Word(count.to_string()), hash(*t)];

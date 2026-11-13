@@ -206,6 +206,27 @@
       "land_token": 12
     }
   },
+  "tag_story": {
+    "note": "212: what each tag means in the story, as the ops it owns. An op key is `op`, or `op:resource` / `op:kind` / `op:side` where the op names one (opkeys.py in 212's results lists them). A card or tag-paid power whose effects hold an owned op, none of them owned by one of its tags, is a mismatch (`tag-story`). Ops in no tag's list (draws, credits, triggers, counters) are neutral: any tag may print them. `exceptions`: item -> why its story overrides the table, listed as information.",
+    "tags": {
+      "security": {"story": "force and protection: troops, agents, hardening, shelters, defending nodes",
+        "ops": ["remove_troops", "damage", "damage_country", "push", "shelter", "cordon", "harden", "shield_node", "remove_ambassadors_country", "destroy_all", "move_one", "add_tokens:agents", "remove_botnet", "gather"]},
+      "diplomacy": {"story": "cooperation: ambassadors, trust, Unity, working with humans, green energy and cleanup",
+        "ops": ["gain_ambassadors", "ambassador_to_spot", "gain_per_tag:ambassadors", "sway:unity", "move_ambassadors", "cleanse", "clear_city", "clear_markers", "consolidate", "convert", "add_tokens:followers", "other_gain:chips", "other_gain:energy", "other_gain:insight", "lift_land"]},
+      "science": {"story": "discovery: insight, research cubes, stations, megaprojects, forecasting, particle physics",
+        "ops": ["gain:insight", "gain:research_cubes", "gain:antimatter", "income:research_cubes", "income:insight", "production:insight", "production:research_cubes", "gain_per_tokens:insight:datasets", "add_tokens:datasets", "project_cube", "claim_station", "build_station", "delay_threat", "other_gain:insight"]},
+      "industry": {"story": "building: chips, factories, capital, buildings",
+        "ops": ["gain:chips", "income:chips", "production:chips", "build_factory", "add_tokens:capital", "cash_out:credits:capital", "cash_out:energy:capital", "free_building", "build_station", "other_gain:chips"]},
+      "power": {"story": "energy and antimatter: generation, grids, fusion, the weapons antimatter feeds",
+        "ops": ["gain:energy", "gain:antimatter", "income:antimatter", "production:energy", "gain_per_node:energy", "other_gain:energy", "cash_out:energy:capital", "destroy_all"]},
+      "cyber": {"story": "the network: botnets, Exploits, nodes, compute, firewalls, corruption, information",
+        "ops": ["drain_project", "drain_all", "discard_project", "remove_botnet", "firewall", "place_node", "gain:insight", "income:insight", "production:insight", "other_gain:insight", "gather"]}
+    },
+    "neutral_why": "neutral by design (any tag prints them): draws, credits, triggers and thresholds; threat counters (jam, auto_counter), since every tag answers threats its own way; liberate, the capstone every tag route reaches (player-cards.md, *The liberate capstones*); a tag's own payoffs (gain_per_tag, production_per_tag, income_per_tag, card_discount), which pay for the tag they count; reuse and choose_player, which only point another effect",
+    "exceptions": {
+      "ais:researcher:Disrupt": "a Cyber card hacks troops (drones) anywhere in a country, no reach: the Researcher's troop answer is remote by design (206), so it is paid in Cyber, not Security"
+    }
+  },
   "sway": {
     "note": "a narrative tag (204) on a sway source: its expected side. Until tags exist, sources are listed as information.",
     "tag_field": "narrative",
@@ -282,7 +303,7 @@
       {"key": "standard:station", "name": "Build a research station", "role": "staple"},
       {"key": "standard:antimatter", "name": "Make antimatter", "role": "hedge", "why": "the desperate antimatter source (204)"},
       {"key": "standard:troop", "name": "Remove a troop", "role": "hedge", "why": "the troop hedge (206)"},
-      {"key": "standard:lift", "name": "Lift land corruption", "role": "hedge", "why": "210 (Matt, candidate): the one standard action that removes corruption, costly but not absurd; land tokens are rare (under 1 a game at r91)"},
+      {"key": "standard:lift", "name": "Lift land corruption", "role": "hedge", "band": [0.005, 0.2], "why": "210 (Matt, candidate): the one standard action that removes corruption, costly but not absurd; a rare hedge (Matt, message 9540: 0.05-0.5 was out of reach by supply, land tokens under 1 a game at r91)"},
       {"key": "standard:ambassador", "name": "Gain a player ambassador", "role": "hedge", "why": "20 credits: the ambassador hedge"},
       {"key": "sell", "name": "Sell a card", "role": "hedge", "why": "a dead hand's 1 credit"},
       {"key": "standard:liberate", "name": "Liberate a site", "role": "win-route"},

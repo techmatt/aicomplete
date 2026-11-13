@@ -5,7 +5,7 @@
 //! read by the rule they change and never resolve.
 
 use crate::content::{Facility, Op, RoundFlag, Side};
-use crate::op::Spot;
+use crate::op::{NodeSpot, Spot};
 use crate::key::Key;
 use crate::module::{Cx, PromptText, Res, World};
 use crate::state::{GameState, Opt};
@@ -81,9 +81,36 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::Transfer { resource, max } => resources::transfer(g, cx, ctx, seat, *resource, *max)?,
         Op::PlaceNode { count } => {
             for _ in 0..*count {
-                if !board::place_node(g, cx, seat)? {
-                    break;
-                }
+                let Some(h) = board::place_node(g, cx, seat)? else { break };
+                ctx.node = Some(h);
+            }
+        }
+        // 212: the node power's rider: on or next to its spot, else nothing.
+        Op::IfNodeNext { spots, then, fresh } => {
+            if ctx.node.is_some_and(|h| !board::spots_near(&w, g, seat, h, spots, *fresh).is_empty()) {
+                cx.tally(g, "effects.if_node_next_met", 1);
+                ctx.fresh = *fresh;
+                run(g, cx, then, ctx)?;
+            }
+        }
+        Op::AmbassadorToSpot => {
+            let near = |h| board::spots_near(&w, g, seat, h, &[NodeSpot::City], ctx.fresh);
+            let cities = ctx.node.map(near).unwrap_or_default();
+            let opts = cities.iter().map(|&h| hex_opt(&w, h)).collect();
+            let prompt = || format!("Seat {seat}: a new ambassador onto which city?");
+            if let Some(i) = cx.choose(seat, prompt, opts)? {
+                cx.tally(g, "effects.ambassador_to_spot", 1);
+                board::place_ambassador(g, cx, seat, cities[i]);
+            }
+        }
+        Op::LiftLand { count } => {
+            for _ in 0..*count {
+                let hexes = board::land_in_reach(&w, g, seat);
+                let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
+                let prompt = || format!("Seat {seat}: lift land corruption on which hex?");
+                let Some(i) = cx.choose(seat, prompt, opts)? else { break };
+                adversary::lift_land_corruption(g, cx, hexes[i]);
+                cx.tally(g, "effects.land_lifted", 1);
             }
         }
         // 044: "up to": after the first, "stop" (as Cleanse does).

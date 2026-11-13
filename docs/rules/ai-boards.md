@@ -35,7 +35,7 @@ into the next round, so you can save up for a big round (r82: all of it, includi
 space of your economy track; round 1 deals as for the Builder. You play off
 the board, on your turn budget and on research cubes. Each round you may turn 2 insight into a card (Synthesis, your draw), a Cyber card and a research cube into up to 2
 troops removed in one country (Disrupt), and 3
-credits into a research cube on a megaproject that isn't complete yet. Your node power, Peer Review, costs 3 research cubes and, like any node, the uncovered space's energy, and gives 1 insight,
+credits into a research cube on a megaproject that isn't complete yet. Your node power, Peer Review, costs 1 research cube and, like any node, the uncovered space's energy, and gives 1 insight by a fresh station,
 so build stations early: once their country's card completes they put cubes on your board. Sacrifice an Industry card
 to build a station for free, a Cyber card to strip 3 compute off an adversary project, a Power card and an energy
 for an antimatter. Your printed Science tag counts like one on your cards (1 Science card makes 2 for the discount). Each round you may Dispatch 2
@@ -78,15 +78,15 @@ are a late-game choice.
 
 **One payment path (locked).** Every space prints a **cost** in energy, the last ones more. Every placement pays it,
 whatever places the node (r81, friction #16): a node power costs only its tag or currency (Buy In 6
-credits, Accord 1 Diplomacy, Peer Review 3 research cubes; the standard Place a node, `node_credits` credits) and a card only its credits, so the energy is stated once,
+credits, Accord 1 Diplomacy, Peer Review 1 research cube; the standard Place a node, `node_credits` credits) and a card only its credits, so the energy is stated once,
 on the track; no card places a node free. Only tracks whose next step you can pay are offered, and a placement you
 can't pay doesn't happen.
 
 **Hard to explain to a new player:** Faraday Yard hardens when played, beside Bulwark's and Fortify's hardening; "bound" is a new word for a city that is otherwise only aligned.
 
 **Node powers (candidate; r91, Matt, 2026-11-12).** Nodes don't grow on their own. Each board has one **node power**,
-once a round, in its own currency or a tag, and each does something more (Buy In a chip, Accord an ambassador, Peer
-Review an insight; [ai-powers.md](ai-powers.md)); every player also has the standard action **Place a node**
+once a round, in its own currency or a tag, and each does more by a fresh spot (r93: Buy In a chip by a factory, Accord an
+ambassador onto a city, Peer Review an insight by a station; [ai-powers.md](ai-powers.md)); every player also has the standard action **Place a node**
 (`node_credits` 6 credits, `node_per_round` twice a round, [economy.md](economy.md)), a poorer route, so 0-3 nodes a round come from
 them (cards that place nodes add to that: cards aren't capped). Expand, once on every board, is gone (r91: no power on
 every board). Three things keep the loops short: 3 placements a round and rising step costs cap energy → node →

@@ -292,6 +292,9 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::Push { .. }
         | Op::Firewall
         | Op::IfTags { .. }
+        | Op::IfNodeNext { .. }
+        | Op::AmbassadorToSpot
+        | Op::LiftLand { .. }
         | Op::Draw { .. }
         | Op::DrainAll { .. }
         | Op::GainPerTokens { .. }

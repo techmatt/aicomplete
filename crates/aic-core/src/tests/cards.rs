@@ -303,16 +303,19 @@ fn a_capstone_off_the_last_space_and_a_here_of_another_kind_are_refused() {
     assert!(e.contains("kind the card doesn't hold"), "{e}");
 }
 
+/// 212 (Matt, 2026-11-13): no tag owns an effect (the tag table is an expectation, design_check's soft
+/// `tag-story`): a marker-clearing card with any tags and needs passes the check.
 #[test]
-fn a_science_niche_card_needing_science_is_refused() {
+fn no_tag_owns_an_effect() {
     let mut c = content().clone();
     for card in &mut c.cards {
         card.text.clear();
     }
     let niche = |d: &CardDef| d.effects.iter().any(|o| matches!(o, Op::ClearMarkers { .. }));
     let card = c.cards.iter_mut().find(|d| niche(d)).unwrap();
+    card.tags = vec![Tag::Industry];
     card.needs = vec![(Tag::Science, 1)];
-    assert!(c.check().unwrap_err().contains("needs no Science"));
+    assert_eq!(c.check(), Ok(()));
 }
 
 #[test]

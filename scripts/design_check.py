@@ -288,6 +288,50 @@ def check_sway(cfg, base, o):
         o.i(f'sway sources with no story tag ({len(untagged)}; 204 assigns them, information only): ' + '; '.join(untagged))
 
 
+def op_keys(obj, acc):
+    """Every op key under obj (212): `op`, with `:resource`, `:kind` and `:side` where the op names them."""
+    if isinstance(obj, dict):
+        if 'op' in obj:
+            k = obj['op']
+            for f in ('resource', 'kind', 'side'):
+                if isinstance(obj.get(f), str):
+                    k += ':' + obj[f]
+            acc.add(k)
+        for v in obj.values():
+            op_keys(v, acc)
+    elif isinstance(obj, list):
+        for v in obj:
+            op_keys(v, acc)
+    return acc
+
+
+def check_tag_story(cfg, cards, boards, o):
+    """212: a card or tag-paid power whose owned effects are none of them its tags' (the tag table, `tag_story`)."""
+    ts = cfg.get('tag_story')
+    if not ts:
+        return
+    owner = defaultdict(set)
+    for tag, row in ts['tags'].items():
+        for k in row['ops']:
+            owner[k].add(tag)
+    items = [(f'cards:{c["id"]}', c['tags'], c) for c in cards]
+    for b in boards:
+        for p in b['powers']:
+            tags = [t for t, _ in p.get('tags', [])]
+            if tags:
+                items.append((f'ais:{b["id"]}:{p["name"]}', tags, p.get('effects', [])))
+    for where, tags, body in items:
+        owned = {k: owner[k] for k in op_keys(body, set()) if owner.get(k)}
+        if not owned or any(set(tags) & ts_ for ts_ in owned.values()):
+            continue
+        if where in ts.get('exceptions', {}):
+            o.i(f'tag-story exception {where}: {ts["exceptions"][where]}')
+            continue
+        want = sorted(set().union(*owned.values()))
+        o.w('tag-story', where, f'{where} is {"/".join(tags)} but its effects ({", ".join(sorted(owned))}) are '
+            f'{"/".join(want)}')
+
+
 def check_dead(games, cfg, boards, o):
     d = cfg['dead']
     n = len(games)
@@ -607,6 +651,7 @@ def main():
     check_repeats(boards, cfg, o)
     check_standard(cfg, base, o, games)
     check_sway(cfg, base, o)
+    check_tag_story(cfg, cards, boards, o)
     check_dials(cfg, base_rev, o)
     if games:
         check_scarce(games, cfg, cards, o)

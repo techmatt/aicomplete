@@ -895,11 +895,9 @@ impl Content {
                 last = n;
             }
         }
-        // 068: among cards marker clearing stays Science's, but the Protector's
-        // cheap power prints it too.
-        let not_clearing = |op: &&Op| !matches!(op, Op::ClearMarkers { .. });
-        if b.powers.iter().flat_map(|p| &p.effects).filter(not_clearing).any(science_niche) {
-            return Err(format!("{what}: shields and delays are Science's"));
+        // 068: shields and delays are the cards' (the Protector's Recovery clears markers).
+        if b.powers.iter().flat_map(|p| &p.effects).any(card_only) {
+            return Err(format!("{what}: shields and delays are the cards'"));
         }
         for p in &b.powers {
             check_ops(&p.effects, Slot::Player, &what)?;
@@ -1038,10 +1036,11 @@ fn innate_only(passives: &[Op], what: &str) -> Result<(), String> {
     Ok(())
 }
 
-/// Whether `op` does a job only Science cards print (046): a shield, a threat
-/// delay or marker clearing.
-fn science_niche(op: &Op) -> bool {
-    matches!(op, Op::ShieldNode { .. } | Op::DelayThreat { .. } | Op::ClearMarkers { .. })
+/// Whether `op` is a shield or a delay, which stay the cards' (046, 068): a board power never prints one.
+/// 212 (Matt, 2026-11-13): no tag owns an effect; which tag a card's effect usually carries is the tag table's
+/// expectation (`scripts/design_check.json` `tag_story`, a soft warning), not a check here.
+fn card_only(op: &Op) -> bool {
+    matches!(op, Op::ShieldNode { .. } | Op::DelayThreat { .. })
 }
 
 fn check_card(c: &CardDef) -> Result<(), String> {
@@ -1091,13 +1090,6 @@ fn check_card(c: &CardDef) -> Result<(), String> {
     }
     if c.effects.iter().chain(branches.iter().flat_map(|a| &a.effects)).any(|o| matches!(o, Op::GainPerTokens { here: false, .. })) {
         return Err(format!("{what}: gain_per_tokens counts the tokens here (076, ruling 12)"));
-    }
-    let niche = c.effects.iter().chain(branches.iter().flat_map(|a| &a.effects)).any(science_niche);
-    if niche && !c.tags.contains(&Tag::Science) {
-        return Err(format!("{what}: shields, delays and marker clearing are Science's"));
-    }
-    if niche && c.needs.iter().any(|(t, _)| *t == Tag::Science) {
-        return Err(format!("{what}: a Science niche card needs no Science tag, to stay open to a seat without them"));
     }
     if !c.is_building() && !c.passives.is_empty() {
         return Err(format!("{what}: only buildings have passives"));
@@ -1484,7 +1476,7 @@ fn check_country_piece(i: usize, p: &CountryPiece, n: usize) -> Result<(), Strin
 /// Checks every op of a content list: it may sit in `slot`, and the
 /// resources it names are ones it can use.
 pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String> {
-    for op in ops {
+    for (i, op) in ops.iter().enumerate() {
         if !op.slots().contains(&slot) {
             return Err(format!("{what}: op {op:?} can't go in a {slot:?} list"));
         }
@@ -1511,6 +1503,19 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
                 if *count < 1 || then.is_empty() || then.iter().any(|o| matches!(o, Op::IfTags { .. })) {
                     return Err(format!("{what}: if_tags counts at least 1 tag and resolves instant ops, not another if_tags"));
                 }
+            }
+            // 212: a node power's rider: one level, instant player ops, after a place_node of its list.
+            Op::IfNodeNext { spots, then, .. } => {
+                check_ops(then, Slot::Player, what)?;
+                if spots.is_empty() || then.is_empty() || then.iter().any(|o| matches!(o, Op::IfNodeNext { .. })) {
+                    return Err(format!("{what}: if_node_next names a spot and resolves instant ops, not another if_node_next"));
+                }
+                if !ops[..i].iter().any(|o| matches!(o, Op::PlaceNode { .. })) {
+                    return Err(format!("{what}: if_node_next follows a place_node in the same list"));
+                }
+            }
+            Op::LiftLand { count } if *count < 1 => {
+                return Err(format!("{what}: lift_land needs count >= 1"));
             }
             // 142 (P1): the no-location form (the most infiltrated city) is gone.
             Op::CorruptCity { at: None } => {

@@ -121,20 +121,24 @@ fn the_protector_s_second_node_power_sacrifices_diplomacy() {
     assert_eq!(g.resource(1, Resource::Energy), 1, "Accord pays its tag only");
 }
 
+/// 212: Stand Down is force (a Security card for a troop in reach), no longer 3 credits.
 #[test]
-fn the_cheap_powers_sacrifice_one_tag_for_chips_or_credits() {
+fn the_cheap_powers_sacrifice_one_tag_for_a_chip_or_a_troop() {
     let (rules, mut g) = lab(&[]);
     let w = rules.world();
     g.piles.insert(cards::played(0).into(), Arc::new(vec![program(&w, Tag::Industry)]));
     g.piles.insert(cards::played(1).into(), Arc::new(vec![program(&w, Tag::Security)]));
     set_res(&mut g, 0, Resource::Chips, 0);
-    set_res(&mut g, 1, Resource::Credits, 0);
+    assert!(!rules.legal_actions(&g).contains(&power(&rules, 1, "Stand Down")), "no troop in reach");
+    let h = rules.map.numbered(0, piece(0).node);
+    put(&mut g, h, node(1), 1);
+    put(&mut g, h, TROOP, 1);
     rules.apply_mut(&mut g, &power(&rules, 0, "Scrap"), None).unwrap();
     answer_all(&rules, &mut g);
     rules.apply_mut(&mut g, &power(&rules, 1, "Stand Down"), None).unwrap();
     answer_all(&rules, &mut g);
     // 190: Scrap pays 1 chip (a chip is worth 4 since r83).
-    assert_eq!((g.resource(0, Resource::Chips), g.resource(1, Resource::Credits)), (1, 3));
+    assert_eq!((g.resource(0, Resource::Chips), g.tokens(h, TROOP)), (1, 0));
     assert!(g.pile(&cards::played(0)).is_empty() && g.pile(&cards::played(1)).is_empty());
 }
 
@@ -206,6 +210,41 @@ fn placing_node_takes_the_next_track_token_and_uncovers_its_income() {
     g.vars
         .insert(board::track2_key(0).into(), ai::board(&w, 0).play_track.len() as i64);
     assert!(!ai::can_place(&w, &g, 0));
+}
+
+/// 212: a rider's spot is on or next to the new node; a fresh one has none of the seat's other nodes on or next to it.
+#[test]
+fn a_rider_finds_its_spot_and_a_fresh_one_no_other_node_of_yours() {
+    use crate::op::NodeSpot;
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    // The lab's board starts empty: a factory of our own on a land hex with two land neighbors.
+    let f = rules.map.numbered(0, piece(0).node);
+    put(&mut g, f, crate::modules::common::FACTORY, 1);
+    let ns = w.map.hexes[f].neighbors.clone();
+    let (h, other) = (ns[0], ns[1]);
+    // No node of seat 0 within 2 of the factory, so only the ones put here count.
+    for x in 0..g.hexes.len() {
+        if w.map.distance(x, f) <= 2 {
+            put(&mut g, x, node(0), 0);
+        }
+    }
+    put(&mut g, h, node(0), 1);
+    assert!(board::spots_near(&w, &g, 0, h, &[NodeSpot::Factory], false).contains(&f));
+    assert!(board::spots_near(&w, &g, 0, h, &[NodeSpot::Factory], true).contains(&f), "no other node of yours there");
+    put(&mut g, other, node(0), 1);
+    assert!(!board::spots_near(&w, &g, 0, h, &[NodeSpot::Factory], true).contains(&f), "another node of yours is next to it");
+    assert!(board::spots_near(&w, &g, 0, h, &[NodeSpot::Factory], false).contains(&f));
+}
+
+/// 212: a green card's side bonus lifts a land-corruption token in reach.
+#[test]
+fn lift_land_takes_a_token_in_reach() {
+    let (rules, mut g) = at_step(&[], 1);
+    let a = rules.map.numbered(0, piece(0).node);
+    put(&mut g, a, crate::modules::common::LAND_CORRUPTION, 1);
+    run_ops(&rules, &mut g, &[Op::LiftLand { count: 1 }]);
+    assert_eq!(g.tokens(a, crate::modules::common::LAND_CORRUPTION), 0);
 }
 
 #[test]

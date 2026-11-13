@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 92. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 93. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -796,7 +796,7 @@ Your **nodes** and your **facilities** (stations and factories) can be destroyed
 A destroyed facility takes its owner's cube with it. A destroyed node leaves the game. Corruption leaves its own mark
 (§6: the adversary's cube, or land corruption); a node lost any other way leaves a **corruption marker** on its hex,
 unless the hex already holds a marker, a botnet or an adversary cube. A marker only stops a node being placed there;
-it never counts as an agent. The Protector's **Recovery** and some Science cards remove one; no standard action does.
+it never counts as an agent. The Protector's **Recovery** and some cards remove one; no standard action does.
 
 ### The protection order
 
@@ -1008,9 +1008,9 @@ Each power can be used once a round, in the action phase. A tag in a cost means 
 
 | Board | Node power | Conversions | Draw | Sacrifice and other powers |
 |---|---|---|---|---|
-| Builder | **Buy In** (6 credits: a node and 1 chip) | **Mint** (3 credits: 1 chip) | **Procure** (1 chip: draw 2) | **Fortify** (2 chips: remove 1 adversary troop in reach and harden a facility in reach), **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand) |
-| Protector | **Accord** (1 Diplomacy: a node and 1 ambassador) | **Stand Down** (1 Security: 3 credits) | **Debrief** (1 Diplomacy: draw 1, and remove 1 agent in a hex in reach) | **Interdict** (1 Security, 1 energy: remove up to 2 adversary troops in one hex in reach), **Recovery** (1 Security: clear a marker in reach, +2 Unity), **Shelter** (1 Security, 1 energy: in any one country, no node or facility can be destroyed from now to cleanup, §13), **Bulwark** (1 energy: harden a facility in reach), **Patrol** (1 energy: push up to 3 agents or adversary troops from a hex in reach) |
-| Researcher | **Peer Review** (3 research cubes: a node and 1 insight) | **Grant** (3 credits: 1 cube in your color on a megaproject that isn't complete) | **Synthesis** (2 insight: draw 1) | **Disrupt** (1 Cyber, 1 research cube: remove up to 2 adversary troops in one country), **Field Station** (1 Industry: a research station without the chips, where Build a research station could go), **Audit** (1 Cyber: remove 3 compute from a project), **Particle Run** (1 Power, 1 energy: 1 antimatter) |
+| Builder | **Buy In** (6 credits: a node; 1 chip if it is on or next to a factory none of your other nodes is on or next to) | **Mint** (3 credits: 1 chip) | **Procure** (1 chip: draw 2) | **Fortify** (2 chips: remove 1 adversary troop in reach and harden a facility in reach), **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand) |
+| Protector | **Accord** (1 Diplomacy: a node; if it is on or next to a city none of your other nodes is on or next to, a new ambassador onto that city) | **Stand Down** (1 Security: remove 1 adversary troop in reach) | **Debrief** (1 Security: draw 1, and remove 1 agent in a hex in reach) | **Interdict** (1 Security, 1 energy: remove up to 2 adversary troops in one hex in reach), **Recovery** (1 Diplomacy: clear a marker in reach, +2 Unity), **Shelter** (1 Security, 1 energy: in any one country, no node or facility can be destroyed from now to cleanup, §13), **Bulwark** (1 energy: harden a facility in reach), **Patrol** (1 energy: push up to 3 agents or adversary troops from a hex in reach) |
+| Researcher | **Peer Review** (1 research cube: a node; 1 insight if it is on or next to a research station none of your other nodes is on or next to) | **Grant** (3 credits: 1 cube in your color on a megaproject that isn't complete) | **Synthesis** (2 insight: draw 1) | **Disrupt** (1 Cyber, 1 research cube: remove up to 2 adversary troops in one country), **Field Station** (1 Industry: a research station without the chips, where Build a research station could go), **Audit** (1 Cyber: remove 3 compute from a project), **Particle Run** (1 Power, 1 energy: 1 antimatter) |
 
 Every player also has the standard action **Place a node** (6 credits, twice a round). Every placement also pays the track space's energy (§5).
 

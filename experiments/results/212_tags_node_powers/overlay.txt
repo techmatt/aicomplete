@@ -1,0 +1,25 @@
+# 212: the tag pass and the green cards' land lifts (the cards; the boards' powers are in overlay-ais.txt).
+# python scripts/cards/apply_overlay.py experiments/results/212_tags_node_powers/overlay.txt experiments/results/212_tags_node_powers/overlay-ais.txt
+#
+# Cards whose effects fought their tags (design_check `tag-story`, a soft warning: no tag owns an effect, Matt,
+# message 9548). By story: shields lean Security, marker clearing Diplomacy, delays Science.
+cards.benchmark_suite.tags=["security"]
+cards.field_sensor_grid.tags=["science", "diplomacy"]
+cards.open_weights_release.tags=["science", "diplomacy"]
+cards.shadow_broker_feed.tags=["cyber", "diplomacy"]
+cards.station_prefab_order.tags=["industry", "diplomacy"]
+cards.relay_mast_rollout.tags=["cyber"]
+cards.hardened_bunker_complex.tags=["security", "power"]
+cards.multiyear_defense_budget.tags=["security", "power"]
+cards.fusion_commons.tags=["power", "diplomacy"]
+cards.zero_day_auction.tags=["cyber", "power"]
+cards.antiproton_foundry.tags=["industry", "power"]
+cards.field_assay_team.tags=["security"]
+# Green cards: a land-corruption lift as a side bonus (Fusion Commons, Citywide Microgrid and Continental Supergrid
+# carried it first, and fell under 7.5 pt in `npm run cards:fit`: 5.8, 6.9 and 5.8 pt; their effects are r92's again).
+cards.shared_grid_accord.effects=[{"op": "choose_player"}, {"op": "other_gain", "resource": "energy", "amount": 2}, {"op": "sway", "side": "unity", "amount": 2, "narrative": "cooperation"}, {"op": "lift_land", "count": 1}]
+cards.fusion_commons.effects=[{"op": "gain", "resource": "energy", "amount": 6}, {"op": "draw", "count": 3}, {"op": "sway", "side": "unity", "amount": 3, "narrative": "cooperation"}]
+cards.citywide_microgrid.effects=[{"op": "liberate"}]
+cards.continental_supergrid.effects=[{"op": "production", "resource": "energy", "amount": 2}, {"op": "production_per_tag", "resource": "credits", "tag": "power", "per": 1}]
+cards.pumped_hydro_storage.effects=[{"op": "production", "resource": "energy", "amount": 1}, {"op": "gain", "resource": "energy", "amount": 4}, {"op": "lift_land", "count": 1}]
+cards.fusion_startup_stake.effects=[{"op": "production", "resource": "energy", "amount": 1}, {"op": "production", "resource": "credits", "amount": 3}, {"op": "lift_land", "count": 1}]

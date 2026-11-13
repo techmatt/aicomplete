@@ -372,7 +372,7 @@ fn production_per_tag_counts_once_at_play_and_counts_itself() {
         r#"cards.research_royalties.effects=[{"op":"production_per_tag","resource":"credits","tag":"science","per":1}]"#,
     ];
     let (rules, mut g) = table_with(&pins, &["research_royalties", "shared_compute_grant"], &[]);
-    set_pile(&mut g, &cards::played(0), &["dataset_scraper", "red_team_audit", "shadow_broker_feed"]);
+    set_pile(&mut g, &cards::played(0), &["dataset_scraper", "red_team_audit", "open_weights_release"]);
     let w = rules.world();
     let key = economy::production_key(0, Resource::Credits);
     let science = cards::tags(&w, &g, 0, Tag::Science);

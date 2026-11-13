@@ -260,11 +260,15 @@ def op_worth(t, o):
         return Worth(now=row(op) * t.rate('target_share') * n('max'))
     if op == 'firewall':
         return Worth(now=row(op))
-    if op == 'if_tags':
+    if op == 'if_tags' or op == 'if_node_next':
         w = Worth()
         for x in o['then']:
             w.add(op_worth(t, x))
-        return w.scaled(row(op))
+        return w.scaled(row(op + ('_fresh' if o.get('fresh') else '')))
+    if op == 'ambassador_to_spot':
+        return Worth(now=row(op) * r('ambassadors'))
+    if op == 'lift_land':
+        return Worth(now=row(op) * t.rate('target_share') * n('count'))
     if op == 'project_cube':
         return Worth(now=row(op) * n('count'))
     if op == 'jam':

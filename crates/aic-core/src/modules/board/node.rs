@@ -2,6 +2,7 @@
 
 use crate::key::KeyBuf;
 use crate::content::Uncover;
+use crate::op::NodeSpot;
 
 use super::*;
 
@@ -106,11 +107,11 @@ pub fn can_pay_placement(w: &World, g: &GameState, seat: usize, gained: i64) -> 
 
 /// Places one node for `seat`: the next token off its track (uncovering
 /// the space under it) onto a hex next to its node, paying its step; only
-/// tracks whose next step the seat can pay are offered. Returns whether placed.
-pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res<bool> {
+/// tracks whose next step the seat can pay are offered. Returns the hex it went on (212: a rider's "it").
+pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res<Option<usize>> {
     let w = cx.world;
     if !ai::can_place(&w, g, seat) {
-        return Ok(false);
+        return Ok(None);
     }
     let hexes = node_sites(&w, g, seat);
     // 021: with two tracks the player chooses which one's next token to take.
@@ -138,7 +139,7 @@ pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res<bool> {
         .collect();
     let prompt = || format!("Seat {seat}: take a node off which track?");
     let Some(k) = cx.choose(seat, prompt, opts)? else {
-        return Ok(false);
+        return Ok(None);
     };
     let second = tracks[k].0;
     let step = tracks[k].1.cost;
@@ -150,7 +151,7 @@ pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res<bool> {
         format!("Seat {seat}: {NODE_PROMPT} ({what}) on which hex?")
     };
     let Some(j) = cx.choose(seat, prompt, opts)? else {
-        return Ok(false);
+        return Ok(None);
     };
     placing_price(step).pay(g, cx, seat);
     if second {
@@ -167,7 +168,27 @@ pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res<bool> {
         cx.per_round(g, "board.node_capstones", 1);
     }
     effects::run(g, cx, uncovers, &mut effects::Ctx::seat(seat))?;
-    Ok(true)
+    Ok(Some(hexes[j]))
+}
+
+/// 212: whether hex `x` holds a `spot` (a city, a research station or a factory, anyone's or none's).
+pub fn is_spot(w: &World, g: &GameState, x: usize, spot: NodeSpot) -> bool {
+    match spot {
+        NodeSpot::City => is_city(w, x),
+        NodeSpot::Station => g.tokens(x, STATION) > 0,
+        NodeSpot::Factory => g.tokens(x, FACTORY) > 0,
+    }
+}
+
+/// 212: the hexes on or next to `h` holding one of `spots` (a node power's rider: "if it is on or next to");
+/// with `fresh`, only those no other node of `seat` (on a hex but `h`) is on or next to.
+pub fn spots_near(w: &World, g: &GameState, seat: usize, h: usize, spots: &[NodeSpot], fresh: bool) -> Vec<usize> {
+    let around = |x: usize| std::iter::once(x).chain(w.map.hexes[x].neighbors.iter().copied());
+    let mine = node(seat);
+    around(h)
+        .filter(|&x| spots.iter().any(|&s| is_spot(w, g, x, s)))
+        .filter(|&x| !fresh || !around(x).any(|y| y != h && g.tokens(y, mine) > 0))
+        .collect()
 }
 
 /// 210 (stats only): where seat `seat`'s placement on hex `h` landed: `board.node_at.<seat>.<kind>` for each of a

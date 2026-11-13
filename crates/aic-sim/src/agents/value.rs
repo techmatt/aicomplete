@@ -91,7 +91,8 @@ pub struct Override {
 /// Rows of `ops` that are parts of another op's arm, not ops of their own.
 #[cfg(test)]
 pub(crate) const PART_ROWS: &[&str] =
-    &["remove_ambassador", "remove_troop", "typed_jam", "liberate_align", "liberate_troops", "liberate_botnet", "cleanse_station"];
+    &["remove_ambassador", "remove_troop", "typed_jam", "liberate_align", "liberate_troops", "liberate_botnet", "cleanse_station",
+      "if_node_next_fresh"];
 
 const SOURCE: &str = include_str!("../../../../configs/agents/values.json");
 
@@ -598,6 +599,16 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             }
             w.scaled(row("if_tags"))
         }
+        // 212: a node power's rider at the row's share (how often the node lands on or next to its spot).
+        Op::IfNodeNext { then, fresh, .. } => {
+            let mut w = Worth::default();
+            for o in then {
+                w += op_worth(t, o);
+            }
+            w.scaled(row(if *fresh { "if_node_next_fresh" } else { "if_node_next" }))
+        }
+        Op::AmbassadorToSpot => Worth::now(row("ambassador_to_spot") * r(Resource::Ambassadors)),
+        Op::LiftLand { count } => Worth::now(row("lift_land") * t.rate("target_share") * *count as f64),
         Op::Draw { count } => Worth::now(row("draw") * t.rate("drawn_card") * *count as f64),
         Op::DrainAll { amount } => Worth::now(row("drain_all") * *amount as f64),
         Op::GainPerTokens { resource, per, .. } => {

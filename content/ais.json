@@ -112,16 +112,25 @@
       6
      ]
     ],
-    "text": "place 1 Node and gain 1 chip",
+    "text": "place 1 Node; if it is on or next to a factory none of your other nodes is on or next to, also gain 1 chip",
     "effects": [
      {
       "op": "place_node",
       "count": 1
      },
      {
-      "op": "gain",
-      "resource": "chips",
-      "amount": 1
+      "op": "if_node_next",
+      "spots": [
+       "factory"
+      ],
+      "then": [
+       {
+        "op": "gain",
+        "resource": "chips",
+        "amount": 1
+       }
+      ],
+      "fresh": true
      }
     ]
    },
@@ -412,15 +421,23 @@
      ]
     ],
     "cost": [],
-    "text": "place 1 Node and gain 1 ambassador",
+    "text": "place 1 Node; if it is on or next to a city none of your other nodes is on or next to, also put a new ambassador on that city",
     "effects": [
      {
       "op": "place_node",
       "count": 1
      },
      {
-      "op": "gain_ambassadors",
-      "count": 1
+      "op": "if_node_next",
+      "spots": [
+       "city"
+      ],
+      "then": [
+       {
+        "op": "ambassador_to_spot"
+       }
+      ],
+      "fresh": true
      }
     ]
    },
@@ -432,12 +449,12 @@
       1
      ]
     ],
-    "text": "gain 3 credits",
+    "text": "remove 1 Troop in reach",
     "effects": [
      {
-      "op": "gain",
-      "resource": "credits",
-      "amount": 3
+      "op": "remove_troops",
+      "count": 1,
+      "reach": true
      }
     ]
    },
@@ -445,7 +462,7 @@
     "name": "Recovery",
     "tags": [
      [
-      "security",
+      "diplomacy",
       1
      ]
     ],
@@ -482,7 +499,7 @@
     "name": "Debrief",
     "tags": [
      [
-      "diplomacy",
+      "security",
       1
      ]
     ],
@@ -698,19 +715,28 @@
     "cost": [
      [
       "research_cubes",
-      3
+      1
      ]
     ],
-    "text": "place 1 Node and gain 1 insight",
+    "text": "place 1 Node; if it is on or next to a research station none of your other nodes is on or next to, also gain 1 insight",
     "effects": [
      {
       "op": "place_node",
       "count": 1
      },
      {
-      "op": "gain",
-      "resource": "insight",
-      "amount": 1
+      "op": "if_node_next",
+      "spots": [
+       "station"
+      ],
+      "then": [
+       {
+        "op": "gain",
+        "resource": "insight",
+        "amount": 1
+       }
+      ],
+      "fresh": true
      }
     ]
    },

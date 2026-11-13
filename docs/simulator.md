@@ -98,6 +98,10 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
   `experiments/farm/` are built into it (`crates/aic-farm/build.rs`), so a spec to farm is committed first: a spec
   missing from the workers' bundle fails there and the main box reruns its shards late, one at a time (167: a
   3,000-game screen took ~60 min). A finished item's specs move to `experiments/archive/farm/` (not built in).
+- **A farm job outlives its `farm-seeds`** (212): killing the client leaves the broker running the job's shards on
+  the main box with `target/release/aic-sim.exe`, which holds the CPU and locks that file, so `cargo build --release`
+  fails "Access is denied" until the job ends. Stop a read before you launch it, not mid-run; to build meanwhile, use
+  another `CARGO_TARGET_DIR`.
 - **The bundle's API** (`farm.mjs`): the default export `init()` (in Node it reads the wasm beside it),
   `fingerprint()`, `run(first, count, args)` returning the shard's text (`args`: one spec name), `engine()`.
 - **The fingerprint** is the rules revision, the content hash and a hash of two strategist games (baseline, d2, seeds

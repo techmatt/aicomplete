@@ -249,7 +249,7 @@
   "cost": 7,
   "insight": 0,
   "tags": [
-   "science"
+   "security"
   ],
   "effects": [
    {
@@ -361,7 +361,8 @@
   "cost": 6,
   "insight": 2,
   "tags": [
-   "science"
+   "science",
+   "diplomacy"
   ],
   "effects": [
    {
@@ -561,7 +562,7 @@
   "insight": 1,
   "tags": [
    "science",
-   "cyber"
+   "diplomacy"
   ],
   "keywords": [
    "help"
@@ -689,7 +690,7 @@
   "insight": 0,
   "tags": [
    "industry",
-   "power"
+   "diplomacy"
   ],
   "effects": [
    {
@@ -1060,7 +1061,7 @@
   "insight": 2,
   "tags": [
    "cyber",
-   "science"
+   "diplomacy"
   ],
   "effects": [
    {
@@ -1457,7 +1458,7 @@
   "cost": 6,
   "insight": 1,
   "tags": [
-   "power"
+   "cyber"
   ],
   "effects": [
    {
@@ -1562,7 +1563,12 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 2, "narrative": "cooperation"
+    "amount": 2,
+    "narrative": "cooperation"
+   },
+   {
+    "op": "lift_land",
+    "count": 1
    }
   ]
  },
@@ -1611,6 +1617,10 @@
     "op": "production",
     "resource": "credits",
     "amount": 3
+   },
+   {
+    "op": "lift_land",
+    "count": 1
    }
   ]
  },
@@ -2019,7 +2029,8 @@
      {
       "op": "sway",
       "side": "unity",
-      "amount": 3, "narrative": "trust"
+      "amount": 3,
+      "narrative": "trust"
      }
     ]
    }
@@ -2050,7 +2061,8 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 3, "narrative": "trust"
+    "amount": 3,
+    "narrative": "trust"
    },
    {
     "op": "add_tokens",
@@ -2220,7 +2232,8 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 2, "narrative": "cooperation"
+    "amount": 2,
+    "narrative": "cooperation"
    }
   ]
  },
@@ -2249,7 +2262,8 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 6, "narrative": "cooperation"
+    "amount": 6,
+    "narrative": "cooperation"
    }
   ]
  },
@@ -2329,7 +2343,8 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 8, "narrative": "trust"
+    "amount": 8,
+    "narrative": "trust"
    }
   ]
  },
@@ -2520,7 +2535,8 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 1, "narrative": "trust"
+    "amount": 1,
+    "narrative": "trust"
    }
   ]
  },
@@ -2588,7 +2604,8 @@
   "cost": 18,
   "insight": 0,
   "tags": [
-   "security"
+   "security",
+   "power"
   ],
   "effects": [
    {
@@ -2798,7 +2815,8 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 1, "narrative": "force"
+    "amount": 1,
+    "narrative": "force"
    }
   ]
  },
@@ -2865,7 +2883,8 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 1, "narrative": "force"
+    "amount": 1,
+    "narrative": "force"
    }
   ]
  },
@@ -2892,7 +2911,8 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 2, "narrative": "collateral"
+    "amount": 2,
+    "narrative": "collateral"
    }
   ]
  },
@@ -2911,7 +2931,8 @@
    ]
   ],
   "tags": [
-   "science"
+   "power",
+   "diplomacy"
   ],
   "effects": [
    {
@@ -2926,7 +2947,8 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 3, "narrative": "cooperation"
+    "amount": 3,
+    "narrative": "cooperation"
    }
   ]
  },
@@ -2956,7 +2978,8 @@
     {
      "op": "sway",
      "side": "unity",
-     "amount": 1, "narrative": "cooperation"
+     "amount": 1,
+     "narrative": "cooperation"
     }
    ]
   }
@@ -3070,7 +3093,8 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 2, "narrative": "trust"
+    "amount": 2,
+    "narrative": "trust"
    }
   ]
  },
@@ -3361,7 +3385,8 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 2, "narrative": "collateral"
+    "amount": 2,
+    "narrative": "collateral"
    }
   ]
  },
@@ -3893,7 +3918,8 @@
    ]
   ],
   "tags": [
-   "cyber"
+   "cyber",
+   "power"
   ],
   "effects": [
    {
@@ -3965,6 +3991,10 @@
     "op": "gain",
     "resource": "energy",
     "amount": 4
+   },
+   {
+    "op": "lift_land",
+    "count": 1
    }
   ]
  },
@@ -4121,7 +4151,8 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 8, "narrative": "cooperation"
+    "amount": 8,
+    "narrative": "cooperation"
    },
    {
     "op": "gain_ambassadors",
@@ -4288,7 +4319,8 @@
   "cost": 34,
   "insight": 0,
   "tags": [
-   "security"
+   "security",
+   "power"
   ],
   "effects": [
    {
@@ -4819,7 +4851,8 @@
     {
      "op": "sway",
      "side": "unity",
-     "amount": 2, "narrative": "cooperation"
+     "amount": 2,
+     "narrative": "cooperation"
     }
    ]
   }
@@ -4917,7 +4950,8 @@
     {
      "op": "sway",
      "side": "unity",
-     "amount": 2, "narrative": "trust"
+     "amount": 2,
+     "narrative": "trust"
     },
     {
      "op": "gain_ambassadors",
@@ -5045,7 +5079,8 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 2, "narrative": "trust"
+    "amount": 2,
+    "narrative": "trust"
    }
   ],
   "draft": true
@@ -5128,7 +5163,8 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 1, "narrative": "force"
+    "amount": 1,
+    "narrative": "force"
    }
   ],
   "draft": true
@@ -5241,7 +5277,8 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 2, "narrative": "cooperation"
+    "amount": 2,
+    "narrative": "cooperation"
    }
   ],
   "draft": true
@@ -5265,7 +5302,8 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 1, "narrative": "force"
+    "amount": 1,
+    "narrative": "force"
    }
   ],
   "draft": true
@@ -5293,7 +5331,8 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 1, "narrative": "cooperation"
+    "amount": 1,
+    "narrative": "cooperation"
    }
   ],
   "draft": true
@@ -5355,7 +5394,8 @@
    ]
   ],
   "tags": [
-   "industry"
+   "industry",
+   "power"
   ],
   "effects": [
    {
@@ -5410,7 +5450,7 @@
   "cost": 6,
   "insight": 1,
   "tags": [
-   "science"
+   "security"
   ],
   "ability": {
    "cost": [

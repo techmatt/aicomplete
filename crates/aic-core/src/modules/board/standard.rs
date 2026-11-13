@@ -524,6 +524,11 @@ pub fn liberable(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
     target_price(w, g, seat, StandardAction::Liberate, h).is_some_and(|p| p.affordable(g, seat)) && in_reach(w, g, seat, h)
 }
 
+/// The land-corruption tokens seat `seat` can lift: any in its reach (210's Lift, 212's card bonus).
+pub fn land_in_reach(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
+    (0..g.hexes.len()).filter(|&h| in_reach(w, g, seat, h) && g.tokens(h, LAND_CORRUPTION) > 0).collect()
+}
+
 /// The hexes a standard action of `seat` may target (empty: not offered).
 pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAction) -> Vec<usize> {
     let reach = |h: usize| in_reach(w, g, seat, h);
@@ -534,7 +539,7 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
     match act {
         StandardAction::Station => station_sites(w, g, seat),
         StandardAction::Remove => all.filter(|&h| reach(h) && g.tokens(h, ADV_AMBASSADOR) > 0).collect(),
-        StandardAction::Lift => all.filter(|&h| reach(h) && g.tokens(h, LAND_CORRUPTION) > 0).collect(),
+        StandardAction::Lift => land_in_reach(w, g, seat),
         // Onto a piece in reach, from the supply or another hex: never onto the
         // hex the seat's only ambassador already holds (020: that charged the
         // energy and moved nothing).

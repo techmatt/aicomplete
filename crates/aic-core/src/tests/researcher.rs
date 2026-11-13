@@ -59,9 +59,10 @@ fn a_bought_cube_goes_on_an_incomplete_project_and_pays_at_completion_only() {
 fn the_second_node_pays_cubes_and_no_energy_but_the_step() {
     let (rules, mut g) = c3();
     set_res(&mut g, 2, Resource::Energy, 0);
-    set_res(&mut g, 2, Resource::ResearchCubes, 2);
+    // 212: Peer Review costs 1 research cube (3 before).
+    set_res(&mut g, 2, Resource::ResearchCubes, 0);
     assert!(!rules.legal_actions(&g).contains(&researcher_power(&rules, "Peer Review")));
-    set_res(&mut g, 2, Resource::ResearchCubes, 3);
+    set_res(&mut g, 2, Resource::ResearchCubes, 1);
     assert!(rules.legal_actions(&g).contains(&researcher_power(&rules, "Peer Review")));
 }
 

@@ -1,4 +1,5 @@
-//! Science's niche: marker clearing, shields and delays ("up to N").
+//! Marker clearing, shields and delays ("up to N"): Science's niche until 212, now any tag's (usually
+//! Diplomacy, Security and Science: the tag table in docs/rules/ai-powers.md).
 
 use super::*;
 

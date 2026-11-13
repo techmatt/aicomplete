@@ -1,0 +1,66 @@
+{
+  "name": "f212",
+  "note": "212: the fresh read, r93 against r92 (seeds 46240-46335), and the prompt's numbers",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_prompt",
+      "set": [
+        "ais.builder.powers.1.effects=[{\"op\":\"place_node\",\"count\":1},{\"op\":\"if_node_next\",\"spots\":[\"factory\"],\"then\":[{\"op\":\"gain\",\"resource\":\"chips\",\"amount\":1}]}]",
+        "ais.protector.powers.1.effects=[{\"op\":\"place_node\",\"count\":1},{\"op\":\"if_node_next\",\"spots\":[\"city\"],\"then\":[{\"op\":\"ambassador_to_spot\"}]}]",
+        "ais.researcher.powers.0.effects=[{\"op\":\"place_node\",\"count\":1},{\"op\":\"if_node_next\",\"spots\":[\"station\"],\"then\":[{\"op\":\"gain\",\"resource\":\"insight\",\"amount\":1}]}]",
+        "ais.researcher.powers.0.cost=[[\"research_cubes\",3]]"
+      ]
+    },
+    {
+      "name": "br_prompt",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.powers.1.effects=[{\"op\":\"place_node\",\"count\":1},{\"op\":\"if_node_next\",\"spots\":[\"factory\"],\"then\":[{\"op\":\"gain\",\"resource\":\"chips\",\"amount\":1}]}]",
+        "ais.protector.powers.1.effects=[{\"op\":\"place_node\",\"count\":1},{\"op\":\"if_node_next\",\"spots\":[\"city\"],\"then\":[{\"op\":\"ambassador_to_spot\"}]}]",
+        "ais.researcher.powers.0.effects=[{\"op\":\"place_node\",\"count\":1},{\"op\":\"if_node_next\",\"spots\":[\"station\"],\"then\":[{\"op\":\"gain\",\"resource\":\"insight\",\"amount\":1}]}]",
+        "ais.researcher.powers.0.cost=[[\"research_cubes\",3]]"
+      ]
+    },
+    {
+      "name": "pr_prompt",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.powers.1.effects=[{\"op\":\"place_node\",\"count\":1},{\"op\":\"if_node_next\",\"spots\":[\"factory\"],\"then\":[{\"op\":\"gain\",\"resource\":\"chips\",\"amount\":1}]}]",
+        "ais.protector.powers.1.effects=[{\"op\":\"place_node\",\"count\":1},{\"op\":\"if_node_next\",\"spots\":[\"city\"],\"then\":[{\"op\":\"ambassador_to_spot\"}]}]",
+        "ais.researcher.powers.0.effects=[{\"op\":\"place_node\",\"count\":1},{\"op\":\"if_node_next\",\"spots\":[\"station\"],\"then\":[{\"op\":\"gain\",\"resource\":\"insight\",\"amount\":1}]}]",
+        "ais.researcher.powers.0.cost=[[\"research_cubes\",3]]"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 96,
+  "records": 0
+}

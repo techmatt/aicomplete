@@ -33,11 +33,15 @@ pub struct Ctx {
     /// 146: the one seat an executing threat's harm hits (the nearest by
     /// node; `None` with no node on the board).
     pub hit: Option<usize>,
+    /// 212: the hex of the node an earlier `place_node` of this list placed last (a rider's "it").
+    pub node: Option<usize>,
+    /// 212: the rider resolving asked for a fresh spot (its ambassador goes onto one).
+    pub fresh: bool,
 }
 
 impl Ctx {
     pub(super) fn new(source: EffectSource, scope: Option<usize>) -> Ctx {
-        Ctx { source, scope, other: None, label: "card", card: None, why: None, threat: None, hit: None }
+        Ctx { source, scope, other: None, label: "card", card: None, why: None, threat: None, hit: None, node: None, fresh: false }
     }
 
     /// The threat whose effects these are (135).

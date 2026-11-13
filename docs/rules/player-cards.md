@@ -44,12 +44,11 @@ The cards config lists which cards are in the game (baseline: all of them).
   (Rally the Allies), or remove them, or troops, on one hex (Surgical Strike). The six events and Open Source Uprising also sway 1-2 Unity; three print a tag threshold ("with 3 Diplomacy tags,
   also …"). None frees a city, none is
   global, none makes a liberation cheaper the next time ([ambassadors.md](ambassadors.md)).
-- **Science owns a niche (candidate).** Among cards, only Science cards clear corruption markers, put a hardening
-  token on a hex with your node ([ai-powers.md](ai-powers.md)) or make a threat wait a round (a delay: it skips this round's
-  execution, stays up, and can be countered next round). The content check refuses any of the three on a card without
-  the tag or on a power, save the Protector's Recovery, which clears a marker. Four tier-1 cards and one tier-2 card do it.
-  No card `needs` Science for it: a team without the tag still has its counters, the Protector's Recovery and the
-  board (r91: the Clear standard action is cut; r92's Lift land corruption takes land tokens, never a marker).
+- **Tags are story, not rules (r93, Matt).** No tag owns an effect, as Magic's colors don't: each tag has its usual
+  effects (the tag table in [ai-powers.md](ai-powers.md)), and a card whose effect fits none of its tags is a soft
+  design warning, never a refusal. Shields on a node hex lean Security, marker clearing Diplomacy, delays (a threat
+  skips this round's execution, stays up, and can be countered next round) Science. No board power prints a shield or
+  a delay; the Protector's Recovery clears a marker. No card `needs` a tag for any of the three.
 - **Typed counters (candidate).** Nine tier-1 cards fight one threat tag, and count for more than they cost toward
   threats carrying it (or Universal) that the player is near, a threat's tag being the card's own (Security,
   Diplomacy, Cyber, Industry; Science's and Power's tools stay general). Industry has two programs and an Action building;

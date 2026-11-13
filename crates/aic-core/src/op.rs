@@ -292,6 +292,26 @@ impl CorruptSite {
     }
 }
 
+/// 212: the spot a node power's rider looks for on or next to the node it placed.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum NodeSpot {
+    City,
+    Station,
+    Factory,
+}
+
+impl NodeSpot {
+    /// The printed name ("a factory").
+    pub fn name(self) -> &'static str {
+        match self {
+            NodeSpot::City => "city",
+            NodeSpot::Station => "research station",
+            NodeSpot::Factory => "factory",
+        }
+    }
+}
+
 /// 167: a board condition a Unity or Discord card scopes by (fear-card shape, Matt 2026-11-09: never reach).
 /// "An ambassador" is any seat's; "a player's piece" is an ambassador or a node.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -771,6 +791,24 @@ pub enum Op {
         tag: Tag,
         count: i64,
         then: Vec<Op>,
+    },
+    /// 212: a node power's rider tied to position: "if it is on or next to a `spots`, also" `then`,
+    /// resolved when the node an earlier `place_node` of the same list just placed stands on or next
+    /// to one of them; with no node placed, or none there, nothing.
+    IfNodeNext {
+        spots: Vec<NodeSpot>,
+        then: Vec<Op>,
+        /// "a <spot> none of your other nodes is on or next to": the rider pays for reaching a new one.
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        fresh: bool,
+    },
+    /// 212: one new ambassador of yours onto a city on or next to the node just placed (the player
+    /// choosing among several); it stands there as any ambassador does, toward the city's claim.
+    AmbassadorToSpot,
+    /// 212: lift up to `count` land-corruption tokens in your reach, face up or down (Lift land
+    /// corruption's effect, printed as a green card's side bonus).
+    LiftLand {
+        count: i64,
     },
     /// Draw `count` tier-1 cards into your hand, no keep paid (023: Science's
     /// card draw).
@@ -1343,6 +1381,7 @@ impl Op {
     pub fn nested(&self) -> &[Op] {
         match self {
             Op::IfTags { then, .. }
+            | Op::IfNodeNext { then, .. }
             | Op::OnePlayer { then }
             | Op::PerSite { then, .. }
             | Op::When { then, .. }
@@ -1482,6 +1521,9 @@ impl Op {
             | Op::Push { .. }
             | Op::Firewall
             | Op::IfTags { .. }
+            | Op::IfNodeNext { .. }
+            | Op::AmbassadorToSpot
+            | Op::LiftLand { .. }
             | Op::Draw { .. }
             | Op::DrainAll { .. }
             | Op::GainPerTokens { .. }

@@ -15,21 +15,21 @@ still help.
 | Board | Power | Cost | Effect |
 |---|---|---|---|
 | Builder | Mint | 3 credits | gain 1 chip |
-| Builder | Buy In | 6 credits | place 1 Node and gain 1 chip |
+| Builder | Buy In | 6 credits | place 1 Node; if it is on or next to a factory none of your other nodes is on or next to, also gain 1 chip |
 | Builder | Scrap | 1 Industry | gain 1 chip |
 | Builder | Overcharge | 1 Power | gain 2 energy |
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
 | Builder | Procure | 1 chip | draw 2 cards |
 | Builder | Fortify | 2 chips | remove 1 Troop in reach and harden 1 facility in reach |
 | Protector | Bulwark | 1 energy | harden 1 facility in reach |
-| Protector | Accord | 1 Diplomacy | place 1 Node and gain 1 ambassador |
-| Protector | Stand Down | 1 Security | gain 3 credits |
-| Protector | Recovery | 1 Security | clear a corruption marker in reach |
+| Protector | Accord | 1 Diplomacy | place 1 Node; if it is on or next to a city none of your other nodes is on or next to, also put a new ambassador on that city |
+| Protector | Stand Down | 1 Security | remove 1 Troop in reach |
+| Protector | Recovery | 1 Diplomacy | clear a corruption marker in reach |
 | Protector | Shelter | 1 Security + 1 energy | in any country (no reach needed) this round, no Node or facility can be destroyed |
-| Protector | Debrief | 1 Diplomacy | draw 1 card and remove 1 Agent in a hex in reach |
+| Protector | Debrief | 1 Security | draw 1 card and remove 1 Agent in a hex in reach |
 | Protector | Patrol | 1 energy | push up to 3 Agents or Troops from a hex in reach, each to a hex next to it |
 | Protector | Interdict | 1 Security + 1 energy | remove up to 2 Troops in one hex in reach |
-| Researcher | Peer Review | 3 research cubes | place 1 Node and gain 1 insight |
+| Researcher | Peer Review | 1 research cube | place 1 Node; if it is on or next to a research station none of your other nodes is on or next to, also gain 1 insight |
 | Researcher | Grant | 3 credits | add 1 research cube in your color to an open megaproject |
 | Researcher | Field Station | 1 Industry | build a research station in reach, paying no chips |
 | Researcher | Audit | 1 Cyber | remove 3 compute from one adversary project |
@@ -39,14 +39,43 @@ still help.
 <!-- /generated -->
 
 **Sacrifice is late-game liquidation.** Once the cards needing a tag are played, its tags turn into engine rewards,
-each payoff priced to be worth the card: 1 chip (r83: worth 2 before), 2 energy, 3 credits, a marker with its Sway, a card and
-an agent removed (Debrief, r91); a tag and an energy buy a building, a sheltered country, 2 troops removed or an antimatter (r35).
+each payoff priced to be worth the card: 1 chip (r83: worth 2 before), 2 energy, a troop removed (Stand Down, r93: 3 credits
+before), a marker with its Sway, a card and an agent removed (Debrief, r91); a tag and an energy buy a building, a sheltered
+country, 2 troops removed or an antimatter (r35).
+
+**Each power's tag is its story (r93, Matt, amendment 9513).** A tag-paid power is paid in the tag its effect fits
+(the tag table is below): the Protector's Accord and Recovery in Diplomacy (trust, cleanup), its Stand Down, Debrief,
+Shelter and Interdict in Security (force, protection). The one exception is the Researcher's Disrupt, paid in Cyber: it
+hacks troops anywhere in a country, no reach.
+
+**Node powers' riders (r93, candidate; Matt, message 9565).** A node power places next to your nodes as any placement
+does, and its bonus comes only when the new node is **on or next to a fresh spot of its board's kind**, one none of your
+other nodes is on or next to: Buy In's chip by a factory, Accord's ambassador by a city (a new ambassador onto that
+city, standing toward its claim), Peer Review's insight by a research station (Peer Review costs 1 research cube, 3
+before). With no such spot it still places, without the bonus. Why fresh: a city, a factory and a station are on or
+next to almost every hex, so "on or next to" alone was met on 99-100% of placements (212's screen); a fresh spot, about
+72%, pays for reaching a new one. Nothing places a node anywhere; "within range 2 of one of your nodes"
+is kept for a stronger version (a track upgrade or a card), never a board's own power (Matt), and no content prints it yet.
+
+| Tag | Story | Its usual effects (the tag story table of scripts/design_check.json) |
+|---|---|---|
+| Security | force and protection | troops and agents removed, pushes, shelters, cordons, hardening, shields on node hexes |
+| Diplomacy | cooperation: trust, Unity, green cleanup | ambassadors, Unity Sway, cleanses, marker clearing, land lifts, gifts |
+| Science | discovery | insight, research cubes, stations, megaproject cubes, antimatter physics, delays |
+| Industry | building | chips, factories, capital, free buildings |
+| Power | energy and antimatter | energy, antimatter, the weapons it feeds |
+| Cyber | the network | botnets, compute drains, firewalls, node placement, information (insight) |
+
+**Tags are story, not rules (Matt, message 9548):** no tag owns an effect, as in Magic's colors. The table is what a
+player expects; a card whose effects fit none of its tags is a soft design warning (`design_check.py`'s tag-story),
+never refused. Draws, credits, triggers, threat counters, liberation and a tag's own payoffs fit any tag.
+
 **Card throughput:** the Builder's Procure turns a spare chip into 2 cards; the Researcher's Synthesis turns 2 insight
 into a card (r91, Matt: the Researcher's draw outlet; Fieldwork, 1 energy for 3 cards, is cut, since it starved it).
 
 **Troop powers (r91, amendment 9247: early troops decide games).** Each board removes or stops troops its own way, no
-two alike: the Protector's **Interdict** (a Security card and 1 energy: up to 2 troops in one hex in reach) beside
-its Patrol (pushes them away) and Shelter; the Builder's **Fortify** (2 chips: 1 troop in reach and a facility
+two alike: the Protector's **Interdict** (a Security card and 1 energy: up to 2 troops in one hex in reach) and
+**Stand Down** (a Security card: 1 troop in reach, r93) beside its Patrol (pushes them away) and Shelter; the Builder's **Fortify** (2 chips: 1 troop in reach and a facility
 hardened); the Researcher's **Disrupt** (a Cyber card and a research cube: up to 2 troops in one country, no reach
 needed). The standard action Remove a troop (`troop_credits` 10 credits, `troop_per_round` once a round) is the hedge.
 
@@ -74,13 +103,13 @@ insight, used 0.01-0.04 a Builder game: an uninteresting conversion), so the boa
   round's keeps and plays, an immediate march's (phase 18) comes after them. (r77-r78 paid every troop every march.)
 - **Researcher, Synthesis reversed** (r91, Matt, 2026-11-12; a power, once a round): 2 insight → draw a card, the
   Researcher's draw outlet and a use for Patience's bank. No other insight → card action exists. Give / get 8 for 5 at
-  the anchors (a card kept at 1 insight is 4 more): a draw, not a gain. Peer Review, its node power, pays 1 insight.
+  the anchors (a card kept at 1 insight is 4 more): a draw, not a gain. Peer Review, its node power, pays 1 insight by a fresh station.
 
 **For new players.** Insight is what you spend to keep and play cards: each round, the number on the rightmost space you've uncovered on
 your card-play track (3 at the start). When you
 are short, turn a research cube into 1 insight at any time (Cintamani's converter gives 2), and use your board's own
 way: the Protector gains 1 each of the first two times each round a troop ends its march next to its node (Vigil), the
-Researcher gains 1 with each node by Peer Review and may spend 2 for a card (Synthesis). Insight you don't spend still goes at the round's end (the Researcher
+Researcher gains 1 with each node Peer Review places by a station new to its nodes and may spend 2 for a card (Synthesis). Insight you don't spend still goes at the round's end (the Researcher
 keeps all of it), but a few threat counters offer insight (6 at tier 1, 7 at tier 2: [threats.md](threats.md) *Counters*),
 so spare insight can stop one.
 
@@ -101,7 +130,7 @@ other protections (a hardening token below, your own ambassador) are the piece o
 (r81, friction #51) ([war.md](war.md), *Destruction*).
 
 Hardening (the standard actions, cards) goes only on facilities a token can protect, player-owned stations and
-factories that are not corrupted, and "harden N" is N different facilities, fewer if fewer qualify. A Science card's
+factories that are not corrupted, and "harden N" is N different facilities, fewer if fewer qualify. A card's (a shield, usually Security's)
 hardening token on a hex of your nodes (one name for the token, r81) absorbs a destruction there and goes with the node if it is
 lost another way. On your own facility it is the facility's hardening token: a table has one token, so it stays
 when the node goes, and protects the facility.

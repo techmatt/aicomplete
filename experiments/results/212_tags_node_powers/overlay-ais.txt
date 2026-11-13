@@ -1,0 +1,16 @@
+# 212: the boards' powers. Node powers: the bonus only when the new node is on or next to a fresh spot of the board's
+# kind, one none of the seat's other nodes is on or next to (Matt, message 9565: the plain rider was met on 99-100% of
+# placements). Peer Review at 1 research cube (3 before; 0.16 a seat-round at 3, 0.31 at 1 with the fresh rider).
+ais.builder.powers.1.text="place 1 Node; if it is on or next to a factory none of your other nodes is on or next to, also gain 1 chip"
+ais.builder.powers.1.effects=[{"op": "place_node", "count": 1}, {"op": "if_node_next", "spots": ["factory"], "then": [{"op": "gain", "resource": "chips", "amount": 1}], "fresh": true}]
+ais.protector.powers.1.text="place 1 Node; if it is on or next to a city none of your other nodes is on or next to, also put a new ambassador on that city"
+ais.protector.powers.1.effects=[{"op": "place_node", "count": 1}, {"op": "if_node_next", "spots": ["city"], "then": [{"op": "ambassador_to_spot"}], "fresh": true}]
+ais.researcher.powers.0.text="place 1 Node; if it is on or next to a research station none of your other nodes is on or next to, also gain 1 insight"
+ais.researcher.powers.0.effects=[{"op": "place_node", "count": 1}, {"op": "if_node_next", "spots": ["station"], "then": [{"op": "gain", "resource": "insight", "amount": 1}], "fresh": true}]
+ais.researcher.powers.0.cost=[["research_cubes", 1]]
+# The Protector's tags (Matt, amendment 9513): Accord and Recovery in Diplomacy, Debrief and Stand Down in Security,
+# Stand Down's effect force (a troop in reach) instead of 3 credits.
+ais.protector.powers.2.text="remove 1 Troop in reach"
+ais.protector.powers.2.effects=[{"op": "remove_troops", "count": 1, "reach": true}]
+ais.protector.powers.3.tags=[["diplomacy", 1]]
+ais.protector.powers.5.tags=[["security", 1]]
