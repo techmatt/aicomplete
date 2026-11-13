@@ -1,0 +1,118 @@
+{
+  "name": "s215-b",
+  "note": "215 screen 2: one change each on s55dc4, spent fresh seeds 46240-46431, d0-d3",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_s56dc4",
+      "set": [
+        "adversary.stage_cards=5,6,3",
+        "alignment.discord_tip_per_player=4"
+      ]
+    },
+    {
+      "name": "br_s56dc4",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.stage_cards=5,6,3",
+        "alignment.discord_tip_per_player=4"
+      ]
+    },
+    {
+      "name": "pr_s56dc4",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.stage_cards=5,6,3",
+        "alignment.discord_tip_per_player=4"
+      ]
+    },
+    {
+      "name": "bp_s55dc5",
+      "set": [
+        "adversary.stage_cards=5,5,3",
+        "alignment.discord_tip_per_player=5"
+      ]
+    },
+    {
+      "name": "br_s55dc5",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.stage_cards=5,5,3",
+        "alignment.discord_tip_per_player=5"
+      ]
+    },
+    {
+      "name": "pr_s55dc5",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.stage_cards=5,5,3",
+        "alignment.discord_tip_per_player=5"
+      ]
+    },
+    {
+      "name": "bp_s55dc4p7",
+      "set": [
+        "adversary.stage_cards=5,5,3",
+        "alignment.discord_tip_per_player=4",
+        "alignment.purge_at=3,7,7"
+      ]
+    },
+    {
+      "name": "br_s55dc4p7",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.stage_cards=5,5,3",
+        "alignment.discord_tip_per_player=4",
+        "alignment.purge_at=3,7,7"
+      ]
+    },
+    {
+      "name": "pr_s55dc4p7",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.stage_cards=5,5,3",
+        "alignment.discord_tip_per_player=4",
+        "alignment.purge_at=3,7,7"
+      ]
+    },
+    {
+      "name": "bp_s55dc4u4",
+      "set": [
+        "adversary.stage_cards=5,5,3",
+        "alignment.discord_tip_per_player=4",
+        "alignment.tip_per_player=4"
+      ]
+    },
+    {
+      "name": "br_s55dc4u4",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.stage_cards=5,5,3",
+        "alignment.discord_tip_per_player=4",
+        "alignment.tip_per_player=4"
+      ]
+    },
+    {
+      "name": "pr_s55dc4u4",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.stage_cards=5,5,3",
+        "alignment.discord_tip_per_player=4",
+        "alignment.tip_per_player=4"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 192,
+  "records": 0
+}

@@ -1,0 +1,55 @@
+{
+  "name": "s215-c",
+  "note": "215 screen 3: r96 and a 12-card deck, spent fresh 46240-46431",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_s552",
+      "set": [
+        "adversary.stage_cards=5,5,2"
+      ]
+    },
+    {
+      "name": "br_s552",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.stage_cards=5,5,2"
+      ]
+    },
+    {
+      "name": "pr_s552",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.stage_cards=5,5,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 192,
+  "records": 0
+}

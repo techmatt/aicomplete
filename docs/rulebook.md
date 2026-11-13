@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 95. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 96. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -58,7 +58,7 @@ Everyone wins or loses together.
   - the Discord deck is empty when Discord needs a card. **The Discord deck is the game's clock**: 6 cards, never
     reshuffled (§12);
   - any player has no nodes left on the map;
-  - the adversary's event deck runs out: 11 rounds at most at levels 0-2, 9 at the hardest levels.
+  - the adversary's event deck runs out: 13 rounds at most at levels 0-2, 11 at the hardest levels.
 
 **You see the adversary's next move.** Next round's adversary card is face up all round, and the agents waiting to
 land are in open view. (The threat, Unity and Discord decks stay hidden.)
@@ -156,7 +156,7 @@ rules/README.md (Terms); content/map.json; crates/aic-core/src/map.rs, modules/c
 3. **The adversary:**
    - its agent supply is 24 per country;
    - build the **event deck**: deal the number of stage I, II and III cards your level asks for (§21; levels 0-2:
-     4, 4 and 3), shuffle each stage on its own, and stack them with stage I on top. Turn the top card face up;
+     5, 5 and 3), shuffle each stage on its own, and stack them with stage I on top. Turn the top card face up;
    - put one round's **agent income** into each country's **pool** beside the map (1 a country at levels 0-3);
    - shuffle the project deck and fill the adversary board's project slots (§17).
 4. **Shuffle** the Unity deck, the Discord deck, the two threat decks and the two player decks. The Unity and Discord
@@ -407,8 +407,8 @@ The adversary spends **compute** on **projects** in the Income beat, always on t
 
 Botnets spread quickly (four event cards print **Botnets spread**, above) but are cheap to clear. A **botnet** stays
 until a card or the **Take down a botnet** action (§8, 16 credits) removes it. It makes 1 compute a round
-unless a player's ambassador stands on it, and counts against the purge until Unity has tipped 6 times (§14).
-Removing one adds 1 Unity.
+unless a player's ambassador stands on it, and counts against the purge until Unity has tipped 7 times (§14).
+Removing one sways neither side.
 
 *Sources: rules/adversary.md (Each round, Income, Rally X, Corrupt X, Botnets), rules/war.md (the march);
 content/adversary.json; crates/aic-core/src/modules/adversary/, modules/plan.rs, modules/board/troops.rs.*
@@ -743,13 +743,14 @@ Effects **sway** Unity or Discord ("add 2 Unity"): put that many on that side's 
 there removes 1 Discord from the Discord track. You decide as the action or step that gained it resolves, before
 any track tips. The rest goes onto the Unity track. (**Envoy** also removes 1 Discord, for 1 ambassador.)
 
-> **Example.** 3 players, so a track tips at 9. Discord is at 7. One step adds 3 Discord (10) and 2 Unity. Putting
-> both Unity against Discord leaves 8: Discord doesn't tip. Had the step added 4 Discord (11), the same 2 would leave
-> 9: Discord still tips, but to 0 instead of 2.
+> **Example.** 3 players, so the Discord track tips at 12. Discord is at 10. One step adds 3 Discord (13) and 2 Unity.
+> Putting both Unity against Discord leaves 11: Discord doesn't tip. Had the step added 4 Discord (14), the same 2
+> would leave 12: Discord still tips, but to 0 instead of 2.
 
 ### Tipping
 
-A track **tips** when it holds **3 × the number of players**. Then:
+The Unity track **tips** when it holds **3 × the number of players**, the Discord track when it holds **4 × the
+number of players**. Then:
 
 1. Take one tip's worth off. The rest stays on the track toward its next tip, on both tracks.
 2. Add 1 to that side's tip count.
@@ -772,7 +773,7 @@ and every agent moving onto it. The tokens come off at the end of the next adver
 - **The Discord deck** (6 cards) **never reshuffles.** A Discord tip with no card left loses the game: you survive 6
   Discord tips and lose on the 7th, at every level (§21).
 
-*Sources: rules/alignment.md; configs/baseline.json (`tip_per_player` 3, `carry` 2, `hold_off` 1, `tier_at` 3, 6); content/alignment.json;
+*Sources: rules/alignment.md; configs/baseline.json (`tip_per_player` 3, `discord_tip_per_player` 4, `carry` 2, `hold_off` 1, `tier_at` 3, 6); content/alignment.json;
 crates/aic-core/src/modules/alignment.rs, modules/board/production.rs (the tip's drones).*
 
 ---
@@ -841,8 +842,8 @@ You win the moment the map holds none of what the purge asks for. It asks for le
 | Unity tips | The map must hold none of these |
 |---|---|
 | 0-2 | corrupted cities, botnets, adversary troops, agents |
-| 3-5 | corrupted cities, botnets, adversary troops |
-| 6 or more | corrupted cities |
+| 3-6 | corrupted cities, botnets, adversary troops |
+| 7 or more | corrupted cities |
 
 Agents waiting in the pools are not on the map. Corrupted stations, factories and land never count, nor do
 drones.
@@ -853,7 +854,7 @@ Everyone loses at once if:
 
 - a Discord tip finds the Discord deck empty;
 - any player has no nodes on the map;
-- the Card beat finds no card to turn up (the **round cap**: 11 rounds at levels 0-2, 9 at levels
+- the Card beat finds no card to turn up (the **round cap**: 13 rounds at levels 0-2, 11 at levels
   3-4). The round after the cap still opens with its Sway step, so a Discord tip can lose the game there first; then, with no
   card left, you lose.
 
@@ -1029,11 +1030,11 @@ Each row is the whole level. Your own costs (claim, liberate, cards, actions) ne
 
 | Level | Corrupt numbers (city / station / factory / land / node) | Threat items | Muster | Each unpaid threat | Event cards (I / II / III) | Rounds | Compute income | Starting agent income a country (with Garrisons) | Other |
 |---|---|---|---|---|---|---|---|---|---|
-| 0 | 4 / 3 / 3 / 3 / 2 | as printed | as printed | — | 4 / 4 / 3 | 11 | 0 | 1 | — |
-| 1 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +1 | as printed | — | 4 / 4 / 3 | 11 | 4 | 1 | — |
-| 2 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | +1 troop | +4 compute | 4 / 4 / 3 | 11 | 17 | 1 | — |
-| 3 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 troop | +4 compute | 4 / 2 / 3 | 9 | 25 | 1 | — |
-| 4 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 troop | +4 compute | 3 / 2 / 4 | 9 | 30 | 2 | the last stage-I card deals tier-2 threats |
+| 0 | 4 / 3 / 3 / 3 / 2 | as printed | as printed | — | 5 / 5 / 3 | 13 | 0 | 1 | — |
+| 1 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +1 | as printed | — | 5 / 5 / 3 | 13 | 13 | 1 | — |
+| 2 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | +1 troop | +4 compute | 5 / 5 / 3 | 13 | 17 | 1 | — |
+| 3 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 troop | +4 compute | 5 / 3 / 3 | 11 | 21 | 1 | — |
+| 4 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 troop | +4 compute | 4 / 3 / 4 | 11 | 30 | 2 | the last stage-I card deals tier-2 threats |
 
 - **Threat items:** each resource item on a threat costs that much more; a tag item ("2 Security") never changes.
 - **Muster:** every Muster (a stage-III event card's) lands 1 more troop in each country it lands in.
@@ -1055,7 +1056,7 @@ Level 4 is level 3 with a stage-I card swapped for a stage-III card, tier-2 thre
 - **Countries:** one per player, 1-4. 2 countries share one front; 3 countries have three fronts; 4 form a ring of
   four.
 - **Boards:** Builder, Protector, Researcher, then a second Builder. 2 players: no Researcher. Solo: the Builder only.
-- **Tipping:** both tracks tip at 3 × the number of players.
+- **Tipping:** the Unity track tips at 3 × the number of players, the Discord track at 4 ×.
 - **Projects** print a cost for each number of players (§17).
 - **Drones:** at 3-4 countries every corp has two bases, so a neutral factory makes 2 drones at a Discord tip.
 - **Solo:** one country, so no fronts, no bases and no war. You take all 4 cards in the draft and keep those you want, paying as usual (§7). "Another

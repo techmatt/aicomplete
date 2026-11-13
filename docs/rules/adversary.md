@@ -128,11 +128,11 @@ prints its lines in the Card and Corrupt beats' order (`check.py` refuses anothe
 <!-- generated: round_cap -->
 | Difficulty | Stage I cards | Stage II | Stage III | Stage II from round | Round cap |
 |---|---|---|---|---|---|
-| 0 | 4 | 4 | 3 | 5 | 11 |
-| 1 | 4 | 4 | 3 | 5 | 11 |
-| 2 | 4 | 4 | 3 | 5 | 11 |
-| 3 | 4 | 2 | 3 | 5 | 9 |
-| 4 | 3 | 2 | 4 | 4 | 9 |
+| 0 | 5 | 5 | 3 | 6 | 13 |
+| 1 | 5 | 5 | 3 | 6 | 13 |
+| 2 | 5 | 5 | 3 | 6 | 13 |
+| 3 | 5 | 3 | 3 | 6 | 11 |
+| 4 | 4 | 3 | 4 | 5 | 11 |
 <!-- /generated -->
 
 <!-- generated: adversary -->

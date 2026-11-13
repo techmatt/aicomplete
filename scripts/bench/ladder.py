@@ -9,7 +9,7 @@ Each DIR is an experiment output (games.jsonl, results.json); several DIRs on a 
 order on both sides (set a, b, c of `bench/read_specs.py read`). Each side is labeled by its games' rules revision
 (`r69 new` / `r69 old` when both share one). The table, per difficulty: the new win % and its SE, the old, the paired
 gap and its SE, each set's new win %, the band and whether the new rate is in it. `--bands` gives the band of each
-difficulty from d0 up, `lo-hi` ','-separated (default `90-100,70-80,55-65,40-50`, 157's prompt); a difficulty with no
+difficulty from d0 up, `lo-hi` ','-separated (default `85-100,65-80,50-65,35-50`, Matt's soft bands of 2026-11-13); a difficulty with no
 band prints `-`. A read of two or more agents prints a row per agent and difficulty. `--screen` reads a screen's
 cells: a variant `PAIR_LEVER` is lever LEVER (no suffix: `base`), a config after the spec's first is a lever named by
 its file (`x_off`, `x_off LEVER`), each with its gap to base paired on the same pair and seed. `--measures` adds, per difficulty and side, a game's means: nodes
@@ -43,7 +43,7 @@ from collections import defaultdict
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from screens import cells_of, gap, named_agents, pair_seeds, stream  # noqa: E402
 
-BANDS = "90-100,70-80,55-65,40-50"  # 157's prompt
+BANDS = "85-100,65-80,50-65,35-50"  # Matt, 2026-11-13: loosened and soft (157's were 90-100,70-80,55-65,40-50)
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 

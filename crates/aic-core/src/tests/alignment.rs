@@ -78,11 +78,11 @@ fn bar_levels_follow_the_unity_cards_drawn() {
         unity_drawn(&mut g, tips);
         assert_eq!(alignment::bar_level(&w, &g), level, "{tips} cards");
     }
-    // 136, the baseline: 0-2 cards everything counts, 3-5 all but adversary
-    // ambassadors, 6+ only the corrupted cities.
+    // 136, the baseline: 0-2 cards everything counts, 3-6 all but adversary
+    // ambassadors, 7+ only the corrupted cities (215; 6 before).
     let rules = Rules::new(&baseline_with(&[])).unwrap();
     let w = rules.world();
-    for (n, level) in [(0, All), (2, All), (3, NoAmbassadors), (5, NoAmbassadors), (6, CitiesOnly), (8, CitiesOnly)] {
+    for (n, level) in [(0, All), (2, All), (3, NoAmbassadors), (6, NoAmbassadors), (7, CitiesOnly), (8, CitiesOnly)] {
         unity_drawn(&mut g, n);
         assert_eq!(alignment::bar_level(&w, &g), level, "{n} cards");
     }

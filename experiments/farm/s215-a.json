@@ -1,0 +1,122 @@
+{
+  "name": "s215-a",
+  "note": "215 screen 1: deck x Discord tip, spent fresh seeds 46240-46431, d0-d3",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_s5",
+      "set": [
+        "adversary.stage_cards=5,4,3"
+      ]
+    },
+    {
+      "name": "br_s5",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.stage_cards=5,4,3"
+      ]
+    },
+    {
+      "name": "pr_s5",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.stage_cards=5,4,3"
+      ]
+    },
+    {
+      "name": "bp_dc4",
+      "set": [
+        "alignment.discord_tip_per_player=4"
+      ]
+    },
+    {
+      "name": "br_dc4",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.discord_tip_per_player=4"
+      ]
+    },
+    {
+      "name": "pr_dc4",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.discord_tip_per_player=4"
+      ]
+    },
+    {
+      "name": "bp_s5dc4",
+      "set": [
+        "adversary.stage_cards=5,4,3",
+        "alignment.discord_tip_per_player=4"
+      ]
+    },
+    {
+      "name": "br_s5dc4",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.stage_cards=5,4,3",
+        "alignment.discord_tip_per_player=4"
+      ]
+    },
+    {
+      "name": "pr_s5dc4",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.stage_cards=5,4,3",
+        "alignment.discord_tip_per_player=4"
+      ]
+    },
+    {
+      "name": "bp_s55dc4",
+      "set": [
+        "adversary.stage_cards=5,5,3",
+        "alignment.discord_tip_per_player=4"
+      ]
+    },
+    {
+      "name": "br_s55dc4",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.stage_cards=5,5,3",
+        "alignment.discord_tip_per_player=4"
+      ]
+    },
+    {
+      "name": "pr_s55dc4",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.stage_cards=5,5,3",
+        "alignment.discord_tip_per_player=4"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 192,
+  "records": 0
+}

@@ -958,8 +958,9 @@ mod tests {
     #[test]
     fn deck_clock_penalizes_a_team_behind_the_deck() {
         // 080: the Wall pressure's landing may not ask where. 137: round 1's
-        // card may ask where its troops land: a seed whose opening asks nothing.
-        let r = config_rules_with("baseline", 0, &["adversary.wall_troops=0"]);
+        // card may ask where its troops land: a seed whose opening asks nothing. 215: the purge's
+        // last step pinned at 6 (the baseline's 7 since r96), as the arithmetic below reads.
+        let r = config_rules_with("baseline", 0, &["adversary.wall_troops=0", "alignment.purge_at=3,6,6"]);
         let mut g = (1..64).map(|s| r.new_game(s)).find(|g| g.pending.is_none()).unwrap();
         let value = |clock: f64, g: &aic_core::GameState| {
             let w = eval::Weights { clock, ..Default::default() };

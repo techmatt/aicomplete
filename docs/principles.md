@@ -40,7 +40,7 @@ and tier-1 cards have a median of 10 credits with tier 2 15 (r59).
 - **Adversary compute:** project costs are 5–14 *a player*, so 15–42 at 3 players and
   20–56 at 4: only the dearest at 4 go past 50. A botnet makes 1.
 - Within the principle: energy (cities make 1, a node costs 1), chips (a factory
-  makes `factory_chips` 2), insight, antimatter, Sway (tips at `tip_per_player` 3 a player), the supply (24 a country,
+  makes `factory_chips` 2), insight, antimatter, Sway (tips at `tip_per_player` 3 a player, Discord's 4), the supply (24 a country,
   pieces rather than a currency).
 
 ## Difficulty targets
@@ -62,8 +62,7 @@ Protector + Researcher), no c3, an engine smoke read first, then the judge (the 
 the target is 45-85 a pair, aiming near 60-75 without chasing it; no gate and no pooled second set
 ([experiments.md](experiments.md), *The ballpark read*).
 
-**Per-level bands (157; Matt took the pick at 159).** The judge (the strategist) reads each level against a band: d0 90-100, d1 70-80, d2 55-65, d3 40-50 (`bench/ladder.py`'s default `--bands`). Current (200, r88, fresh seeds): 93.8 / 69.9 / 64.6 / 45.1, d1 under by 0.1, between two integer agent-income
-steps (200's write-up). Earlier ladders are in the recalibration write-ups (168, 177, 178, 185, 192); d0 resisted every income dial
+**Per-level bands (157; loosened and soft, Matt, 2026-11-13).** The judge (the strategist) reads each level against a band: d0 85-100, d1 65-80, d2 50-65, d3 35-50 (`bench/ladder.py`'s default `--bands`). They are soft: a miss of a few points is reported, never chased or dialed, and where a level can't meet both, its 8-10 rounds win over its band. Current: 215's write-up (r96). Earlier ladders are in the recalibration write-ups (168, 177, 178, 185, 192); d0 resisted every income dial
 (177, 192); 196 met it with two more event cards at d0, which 200 removed (Matt: engines over dials), so d0's band
 comes from the players' side.
 

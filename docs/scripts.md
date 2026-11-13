@@ -122,7 +122,7 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   (or `experiments/farm`): `read TAG SEED [AGENT] [--probe] [--levels 0,1,2,3,4] [SET...]` three 48-seed sets,
   the three pairs, d0-d3; `screen NAME AGENTS LEVELS SEEDS [--offs] [--first N] [LEVER...]` a dev screen (`tag:a=1;b=2` a lever); `offs` a config per `--cards` card switched off.
   `bench/run_read.sh NNN EXE ROOT TAG OUT THREADS` runs a read's three sets on one binary (ROOT its configs; EXE, OUT absolute or from the repo root).
-- `bench/ladder.py NEW[,...] OLD[,...] [--measures] [--bands 90-100,70-80,55-65,40-50] [--deck N]`: the paired ladder
+- `bench/ladder.py NEW[,...] OLD[,...] [--measures] [--bands 85-100,65-80,50-65,35-50] [--deck N]`: the paired ladder
   read per difficulty, sides labeled by rules revision; `--screen DIR[,...]` a screen's levers against base, paired
   across DIRs. Reads a farmed read (no `results.json`), or a farm's bare out file as `FILE=SPEC.json` where a DIR
   goes; an agent is named as its spec writes it, native or farmed; engines and `--same-engine` as `paired.py`. Each

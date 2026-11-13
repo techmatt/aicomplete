@@ -1,0 +1,63 @@
+{
+  "name": "f215",
+  "note": "215: the fresh read (strategist), r96 and r95",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_r95",
+      "set": [
+        "adversary.stage_cards=4,4,3",
+        "alignment.discord_tip_per_player=3",
+        "alignment.purge_at=3,6,6"
+      ]
+    },
+    {
+      "name": "br_r95",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.stage_cards=4,4,3",
+        "alignment.discord_tip_per_player=3",
+        "alignment.purge_at=3,6,6"
+      ]
+    },
+    {
+      "name": "pr_r95",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.stage_cards=4,4,3",
+        "alignment.discord_tip_per_player=3",
+        "alignment.purge_at=3,6,6"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 96,
+  "records": 0
+}

@@ -53,7 +53,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.breakthrough_unity` | 0 | 0..10 | standard action Breakthrough (204): Sway toward Unity, once a round (0: no such action) |
 | `board.botnet_credits` | 16 | 1..50 | standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays) |
 | `adversary.difficulty` | 0 | 0..4 | difficulty level 0-4 (each level includes the ones below) |
-| `adversary.stage_cards` | 4, 4, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
+| `adversary.stage_cards` | 5, 5, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
 | `adversary.supply_per_country` | 24 | 0..40 | agents in the supply per country |
 | `adversary.corrupt_at` | 4 | 1..20 | a city's corrupt number: the agents on it that corrupt it (coastal cities too) |
 | `adversary.corrupt_station_at` | 3 | 1..20 | a research station's corrupt number |
@@ -92,7 +92,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.botnet_compute` | 1 | 0..5 | adversary compute each botnet makes a round (none with a player ambassador on it) |
 | `adversary.board_difficulty_at` | 2 | 0..5 | the difficulty level from which the adversary board's own difficulty line applies (135) |
 | `alignment.tip_per_player` | 3 | 1..50 | the Unity track tips when it holds this many Sway per player |
-| `alignment.discord_tip_per_player` | 3 | 1..50 | the Discord track tips when it holds this many Sway per player |
+| `alignment.discord_tip_per_player` | 4 | 1..50 | the Discord track tips when it holds this many Sway per player |
 | `alignment.carry` | 2 | 0..2 | Sway past a tip stays toward the next tip: 2 both sides (r75, Matt's ruling 7), 1 Unity's only (r48), 0 neither (a tip empties its track) |
 | `alignment.hold_off` | 1 | 0..1 | 1: each Unity swayed may instead move 1 Discord off the Discord track, the players' choice (136) |
 | `alignment.momentum_every` | 0 | 0..10 | Momentum: a side's track holds 1 fewer Sway per this many of its tips, down to 1 per player (0: off) |
@@ -100,7 +100,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `alignment.free_city` | 5 | 0..10 | Sway toward Unity for freeing a corrupted city |
 | `alignment.free_facility` | 2 | 0..10 | Sway toward Unity for liberating an adversary station or factory (137) |
 | `alignment.botnet` | 0 | 0..10 | Sway toward Unity for removing a botnet |
-| `alignment.purge_at` | 3, 6, 6 | 1..50 | Unity tips at which the purge asks less: agents, then troops, then botnets stop counting (136; 156: tips, not cards drawn, since the Unity deck reshuffles) |
+| `alignment.purge_at` | 3, 7, 7 | 1..50 | Unity tips at which the purge asks less: agents, then troops, then botnets stop counting (136; 156: tips, not cards drawn, since the Unity deck reshuffles) |
 | `alignment.tier_at` | 3, 6 | 1..50 | 157: the tip (its side's count, this tip included) from which its cards resolve strength II, then strength III |
 | `alignment.node_loss` | 1 | 0..1 | 1: a player with no nodes on the board loses the game for everyone |
 | `alignment.clear_win_stage` | 1 | 1..3 | the bar-0 win counts only once this round's adversary card is of this stage (1: any time) |

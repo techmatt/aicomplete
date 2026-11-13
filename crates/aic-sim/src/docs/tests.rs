@@ -29,19 +29,19 @@ fn row(block: &str, first: &str) -> Vec<String> {
 #[test]
 fn the_round_cap_comes_from_the_engines_deal() {
     let base = round_cap_block(&baseline(&[]));
-    // At the baseline (138): 4, 4, 3 cards; difficulty 3 removes two stage-II cards
+    // At the baseline (215: 5, 5, 3 cards; 138-214: 4, 4, 3); difficulty 3 removes two stage-II cards
     // (150: `stage2_removed` 2); difficulty 4 (142: stage_swap_at, 2 before) swaps a
     // stage-I card for a stage-III. 200: difficulty 0 deals as 1 (196's `stage_extra` is gone).
-    assert_eq!(row(&base, "0"), ["0", "4", "4", "3", "5", "11"]);
-    assert_eq!(row(&base, "1"), ["1", "4", "4", "3", "5", "11"]);
-    assert_eq!(row(&base, "2"), ["2", "4", "4", "3", "5", "11"]);
-    assert_eq!(row(&base, "3"), ["3", "4", "2", "3", "5", "9"]);
-    assert_eq!(row(&base, "4"), ["4", "3", "2", "4", "4", "9"]);
+    assert_eq!(row(&base, "0"), ["0", "5", "5", "3", "6", "13"]);
+    assert_eq!(row(&base, "1"), ["1", "5", "5", "3", "6", "13"]);
+    assert_eq!(row(&base, "2"), ["2", "5", "5", "3", "6", "13"]);
+    assert_eq!(row(&base, "3"), ["3", "5", "3", "3", "6", "11"]);
+    assert_eq!(row(&base, "4"), ["4", "4", "3", "4", "5", "11"]);
     let shorter = round_cap_block(&baseline(&["adversary.stage_cards=4,4,2"]));
     assert_eq!(row(&shorter, "1")[5], "10");
     let harsher = round_cap_block(&baseline(&["adversary.stage1_removed=2"]));
     assert_eq!(row(&base, "3")[5], row(&harsher, "3")[5], "difficulty 3 removes no stage-I card");
-    assert_eq!(row(&harsher, "4")[5], "8");
+    assert_eq!(row(&harsher, "4")[5], "10");
 }
 
 /// 099: every standard action has its row (r35's Free a station had none),

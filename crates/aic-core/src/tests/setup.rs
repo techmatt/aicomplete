@@ -4,12 +4,12 @@ use super::*;
 fn setup_places_the_printed_pieces() {
     // Difficulty 4's second corrupted city is a tunable, 0 in the baseline.
     let cases: [(i64, usize, usize, &str); 4] = [
-        // 200: d0 deals as d1 (196's two extra event cards are gone).
-        (0, 1, 10, ""),
+        // 200: d0 deals as d1 (196's two extra event cards are gone). 215: 5, 5, 3 cards.
+        (0, 1, 12, ""),
         // 150: d3 removes two stage-II cards (`stage2_removed` 2).
-        (3, 1, 8, ""),
-        (4, 1, 8, ""),
-        (4, 2, 8, "adversary.extra_corrupted=1"),
+        (3, 1, 10, ""),
+        (4, 1, 10, ""),
+        (4, 2, 10, "adversary.extra_corrupted=1"),
     ];
     for (d, corrupt, deck, set) in cases {
         let level = format!("adversary.difficulty={d}");
