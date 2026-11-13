@@ -63,7 +63,7 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   Wartime Retooling and Multiyear Defense Budget). The anchors price income at mid-game; bought in round 1-3 it runs
   about 5 rounds (about 1.25× the anchor), so a jump-start reads 1.0-1.3 at the anchors and stays under 1.5 early. Late objectives at 30-46 reach a goal in one play: Moonshot Grant's 8 cubes fill a megaproject (cubes at 9
   when they complete it), the liberate capstones. **The majors (r94, 213):** tier-2 cards paying 1 antimatter (18) for a
-  big payoff, priced at the anchors at 1.0-1.75 (each card's line in `docs/card-pricing-notes.json`).
+  big payoff, priced at the anchors at 1.0-2.5 (214; each card's line in `docs/card-pricing-notes.json`).
 - **Sway past a tip carries over** (r48): a tip returns one tip's worth and the rest waits for the next (alignment.md),
   so a big Sway can tip twice (8 at two players, where the whole pool is 8; Peace Conference). Sway is priced at the
   anchor per point, up to what the pool can hold.

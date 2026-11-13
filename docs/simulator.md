@@ -117,7 +117,12 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
   needed); for shards, `python scripts/screens.py assemble SPEC FIRST COUNT OUT_DIR SHARD...` writes
   `games.jsonl` (the header, then the shards); `bench/paired.py` and `bench/ladder.py` read it with no `results.json`, and pair a seed
   across engines, counting the seeds on mixed engines (`--same-engine` leaves them out, 163). `scripts/farm/compare.py A B` counts games
-  that differ between two engines' outputs.
+  that differ between two engines' outputs. `farm-seeds`' out file has no header line: for a reader that needs one
+  (`design_check.py`, `play_read.py`), write `aic-sim farm SPEC --header --seed F --games N` first, then the out file.
+  A farmed run writes no `results.json` or `cards.csv`: the card viewer's stats need a native `aic-sim experiment` run
+  (213 reran the dev screen's base natively, the same games).
+- **An arm with cards out of the deck** is a derived config in `experiments/configs/` (`scripts/configs/no_tier2.py`,
+  `no_liberate.py`, both run by `regen.py`): the farm bundles that folder, and no `--set` removes a card from a deck.
 - **A ladder against the old revision:** `farm-seeds` runs only the worktree's build, so the old side runs natively
   (`aic-sim experiment` on the farm spec with `first_seed`/`games` set) from a `git archive` export of the base commit
   built into its own `CARGO_TARGET_DIR`, with its own configs; 178's 144-seed strategist read took 303 s farmed, the
