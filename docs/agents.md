@@ -16,13 +16,10 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
   part of the way, so it reads as paid for little: 166's moves take a batch a prompt for this.
 - **A discard prompt resolves no further** (`discards` 0): a card to discard is valued by the table it leaves
   (`discards=99`: resolved as other prompts).
-- **Heuristic** (`agents/eval.rs`, `Weights`, a rule on each field): win/loss, cities,
-  a seat's last nodes, the adversary's pieces, the Discord deck's last cards, Alignment (the next
-  card's tier, `w.tier_read`; the horizon aims at the purge's last step), projects, holdings,
-  unpaid threats by **the tempo trade** (`w.tempo`: one-off harm plus what it leaves times the
-  rounds left, over what paying now costs the engine), corruption risk (`w.corrupt_exposure`,
-  `w.blight`; r89's `w.troop_exposure` adds a node a troop reaches next march), the coming Rally (`w.rally_read`), Dispatches (`w.movement`), botnets (−25, D9), cubes, converter
-  cities, the liberation push, a darkened city, Patience insight and idle credits.
+- **Heuristic** (`agents/eval.rs`, `Weights`, a rule on each field): win/loss, cities, last nodes, the adversary's
+  pieces, the Discord deck, Alignment (`w.tier_read`), projects, holdings, unpaid threats by **the tempo trade**
+  (`w.tempo`: harm over what paying now costs), corruption and troop risk, the Rally, Dispatches, botnets, cubes,
+  the liberation push, Patience insight and idle credits.
 
 | Spec | What it does | Budget parameters (defaults) |
 |---|---|---|
@@ -43,19 +40,20 @@ table's rates, `plan_table=0`), and keeps each drafted card, best ratio first, o
 is worth more with it. A play waiting a round is worth 15% less; `needs` may be met by cards
 planned earlier, or short now by at most `plan_short` tags; a building over one of the seat's
 adds only what it beats the weakest by (`plan_cover`). Each switch's default and rule, and each
-**dominance check** (principles.md), is a row of `forced_table!`, `no_spend` (200's ablation) too. The eval holds an antimatter at 5 points (r88, set for Annihilate; 2 before); Annihilate is gone
-at r89, and the weight stands until the antimatter redesign.
+**dominance check** (principles.md), is a row of `forced_table!`, `no_spend` (200's ablation) too. The eval holds an
+antimatter at 2 points (204). **`plan_am`** (211): the antimatter the seat's powers and built Actions make once a round
+counts from the plan's next round, and a shortfall is made from cubes at Make antimatter's price.
 
-**Agent behaviors** (`behavior_table!`, on for every agent; a dominance check's ban wins). **Move heuristics** (`agents/moves.rs`, 166, `move_rules`): push agents off the next
-Corrupt site onto empty land with no clean site next to it; gather (or push) agents onto a spare ambassador (no
-armor, no Claim or Liberate it pays toward) to cancel; gather a seat's own free ambassadors onto an adversary site
-when that seat can then pay its Liberate (never onto a node hex). **Strike** (178, `strike_rule`): a strike's
-batches, troops then agents, largest first; its hex is the search's. `aic-sim experiment` prints their fires a game
-(cells pooled). **Converge** (175, `converge_rule`): a Corrupt line's agent next to several sites goes where
-`plan::converge_pick` sends it. **Buy energy** (176, `energy_rule`): with no card left to play, buy a neutral
-city's energy when credits plus this round's income, less the price, reach the eval's credit cap. **Play the plan**
-(203, `kept_rule` 3): play the keep plan's card this round (`plan_now`) over a pass, standard action, sale or the
-antimatter action. **Botnet reach**
+**Agent behaviors** (`behavior_table!`, on for every agent; a dominance check's ban wins; each row says its rule).
+**Move heuristics** (166, `move_rules`, `agents/moves.rs`): push agents off the next Corrupt site; gather agents onto a
+spare ambassador to cancel; gather ambassadors onto a site the seat can then Liberate. **Strike** (178,
+`strike_rule`): largest batches first (`aic-sim experiment` prints their fires a game). **Converge** (175,
+`converge_rule`, `plan::converge_pick`). **Buy energy** (176, `energy_rule`): when its credits would sit idle. **Play
+the plan** (203, `kept_rule` 3): the keep plan's card this round over a pass, standard action, sale or the antimatter
+action. **Sell a dead card** (211, `sell_rule` 1): a card the plan won't play (the deck's last round: this round;
+before: over its rounds), when up to three sales let the plan play a card it otherwise wouldn't. **Save antimatter**
+(211, `am_save`): no spend takes the seat below a reachable hand card's antimatter. **Convert for a play** (211,
+`make_short`): cubes to insight or antimatter when the plan then plays a card it can't now. **Botnet reach**
 (176, `w.botnet_reach` 0.3): an ambassador on a botnet's hex is worth that share of it.
 
 Spec syntax: `kind[:key=value,...]`; a weight takes `w.` (`greedy:w.corrupted=40`), a table

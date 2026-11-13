@@ -1,0 +1,45 @@
+{
+  "name": "s211-screen",
+  "note": "211: screen on 206's spent fresh seeds 45631",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist:sell_rule=0,am_save=0,plan_am=0,make_short=0",
+    "strategist:sell_rule=1,am_save=0,plan_am=0,make_short=0",
+    "strategist:sell_rule=2,am_save=0,plan_am=0,make_short=0",
+    "strategist:sell_rule=0,am_save=0,plan_am=1,make_short=0",
+    "strategist:sell_rule=0,am_save=1,plan_am=1,make_short=0",
+    "strategist:sell_rule=0,am_save=0,plan_am=0,make_short=1",
+    "strategist:sell_rule=1,am_save=1,plan_am=1,make_short=1",
+    "strategist:sell_rule=0,am_save=0,plan_am=0,make_short=0,w.purge=0",
+    "strategist:sell_rule=0,am_save=0,plan_am=0,make_short=0,w.last_node=0",
+    "greedy:sell_rule=0,am_save=0,plan_am=0,make_short=0",
+    "greedy:sell_rule=1,am_save=1,plan_am=1,make_short=1"
+  ],
+  "games": 64,
+  "records": 0
+}

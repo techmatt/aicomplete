@@ -128,9 +128,8 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
 
 Measured or found against play; each is still the table's number until a pass moves it.
 
-- **Antimatter 7:** the heuristic holds antimatter at 5 points, about 8 credits (r88, 200; 2 before), set for Annihilate (r88).
-  r89 took Annihilate off every board, so antimatter buys only the ultimates' 1-a-card gate; both numbers stand
-  until the item that redesigns antimatter's sources and uses.
+- **Antimatter 18** (the anchor since r90, 204): the heuristic holds antimatter at 2 points, about 3 credits (204;
+  5 at r88-r89 for Annihilate), so a seat spends it on Breakthrough unless a card it holds needs it (211's `am_save`).
 - **Troop removal 11** (7 each in one country):
   the heuristic counts a troop at 12 points, about 20 credits. A count prints "up to": the ledger and the agents count what one removes in play (`values.json` `troops_removed`, 102; Kinetic Interdiction's 6 about 3.6).
 - **The recipe nets every card about its keep + 1** over its costs at the table, so the table alone can't rank cards for

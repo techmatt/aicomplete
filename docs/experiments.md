@@ -177,7 +177,7 @@ line alone reads near the engine.
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used. Any item that spends seeds updates the ledger, after its last read, not before it:
 `python scripts/bench/seeds.py next N` prints the next N, and `--take` moves *Next free* past them. Used: every
-seed below the next free one (each item's range is in its write-up). Next free: 46144. **The dev seeds are
+seed below the next free one (each item's range is in its write-up). Next free: 46240. **The dev seeds are
 36800-36831**, for on/off checks and crash-finding (SE ~5 a cell). A per-level income step is a 2-8 point effect:
 screen it paired on this revision's spent fresh sets (~500+ games a cell, SE ~2), then confirm once on new seeds.
 

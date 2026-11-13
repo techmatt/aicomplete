@@ -14,13 +14,13 @@
 use std::sync::Arc;
 
 use aic_core::content::{CardDef, Op, Resource, Tag};
-use aic_core::modules::{ai, board, cards, common, economy, threats};
+use aic_core::modules::{adversary, ai, board, cards, common, economy, threats};
 use aic_core::module::World;
 use aic_core::state::AskKind;
 use aic_core::{fnv1a64, Action, Agent, GameState, Key, Rules};
 
 use super::credit_cost;
-use super::keep_plan::{plan_keeps, plan_now, PlanCtx};
+use super::keep_plan::{plan_all, plan_keeps, plan_now, PlanCtx};
 use super::strategy::{self, Choice, Mults};
 use super::value::{self, CardValue, Ctx};
 use super::Strategic;
@@ -203,6 +203,10 @@ macro_rules! forced_table {
             /// 092 (089's call): the keep plan's budget carries research cubes, so two
             /// cube cards are not planned on the same cubes.
             (plan_cubes: bool, false, 1.0, "092: keep plan: research cubes are a budget, spent by each card planned and earned by income")
+            /// 211 (with `am_save`): the antimatter the seat's board powers and built Actions make once a round
+            /// (Particle Run, the plants) counts as income in the plan's later rounds, so a card that spends it is
+            /// kept toward it.
+            (plan_am: bool, false, 1.0, "211: keep plan: antimatter the seat's powers and built Actions make each round counts from the next round, and a shortfall is made from cubes at Make antimatter's price")
             /// 092: the opening's strategy choice reads the board's powers too.
             (strat_powers: bool, false, 1.0, "092: the strategy choice reads the board's powers as well as the opening 10")
             /// 092: the uses of each power the strategy choice counts.
@@ -291,6 +295,20 @@ macro_rules! behavior_table {
             /// its rates, affordable from what the seat holds now): 1 when the search would pass, 2 before the
             /// search's pick (ahead of standard actions and powers that would spend the credits).
             (kept_rule: usize, 3.0, "203: play a hand card the keep plan plays this round: 1 instead of a pass, 2 before the search's pick, 3 instead of a pass, standard action, sale or antimatter action, 4 also instead of a power")
+            /// 211 (Matt: "sell rarely, mostly in the last round"): sell a hand card the seat won't play when its
+            /// credits complete something this turn. Won't play: in the adversary deck's last round, a card the keep
+            /// plan doesn't play this round; before it, one the plan doesn't play over its `plan_rounds`. Complete:
+            /// with at most three such sales (cheapest first) the plan plays a card it can't now, or a costly standard
+            /// action (node, troop, botnet, claim, liberate) the search then picks becomes legal (`sell_pick`).
+            (sell_rule: usize, 1.0, "211: sell a card the seat won't play (the last round: not this round; before: not in the keep plan) when up to three sales let the plan play a card (1) or also the search take a costly standard action (2) it can't now; 3: a probe, the card opened need only be one the plan doesn't play this round")
+            /// 211: keep the antimatter a hand card needs: while the seat holds a card that spends antimatter whose
+            /// `needs` are met and whose credits it can reach in two rounds' income, nothing but such a card's play may
+            /// take the seat's antimatter below the dearest one's (Breakthrough took 87% of antimatter use, 204).
+            (am_save: bool, 1.0, "211: save antimatter for a hand card that spends it (needs met, credits within two rounds): no other spend below its antimatter")
+            /// 211: turn research cubes into insight or antimatter (the standard actions) when, after up to three of
+            /// them, the keep plan plays a card this round it can't now (the eval held the Researcher's cubes over its
+            /// insight and antimatter, so it never converted, 207).
+            (make_short: bool, 1.0, "211: convert cubes to insight or antimatter when, after up to three conversions, the keep plan plays a card this round it can't now")
         }
     };
 }
@@ -437,6 +455,28 @@ fn plan_ctx<'a>(
     let spare = economy::patient(world, s) && insight_cap > 0.0 && g.resource(s, Resource::Insight) as f64 > insight_cap;
     let insight_idle = (forced.plan_spare && spare).then_some(insight_idle);
     PlanCtx { table: forced.plan_table, strat, mults: mults.as_deref(), t, project, idle, spare_at, energy_rate, insight_idle }
+}
+
+/// 211: whether card `c` of seat `s` is playable now.
+fn playable(legal: &[Action], s: usize, c: &Key) -> bool {
+    legal.iter().any(|a| matches!(a, Action::Play { seat, card } if *seat as usize == s && card == c))
+}
+
+/// 211 (`am_save`): whether `a` takes seat `s`'s antimatter below `r`; a card's play that spends antimatter never
+/// does (it is what the antimatter is kept for), nor an action that can't spend it.
+fn below_reserve(rules: &Rules, g: &GameState, a: &Action, s: usize, r: i64) -> bool {
+    let may = match a {
+        Action::Standard { act, .. } => act == "breakthrough",
+        Action::Pay { resource, .. } => *resource == Resource::Antimatter,
+        Action::Use { .. } | Action::Power { .. } | Action::Convert { .. } | Action::CounterWith { .. } => true,
+        _ => false,
+    };
+    if !may || a.seat() as usize != s {
+        return false;
+    }
+    let before = g.resource(s, Resource::Antimatter);
+    let mut h = g.clone();
+    rules.apply_mut(&mut h, a, None).is_ok() && h.resource(s, Resource::Antimatter) < before.min(r)
 }
 
 /// 203 (`kept_rule`): a play of a hand card seat `s`'s keep plan plays this round ([`plan_now`]), the plan's first.
@@ -791,6 +831,21 @@ impl Agent for Policy {
                 return i;
             }
         }
+        // 211: cube conversions and sales that complete a play this turn.
+        if self.behaviors.make_short && !pending {
+            if let Some(i) = self.make_short_pick(rules, g, legal) {
+                if !self.ruled_out(&world, g, &legal[i]) && !self.spends_banned(rules, g, &legal[i]) {
+                    return i;
+                }
+            }
+        }
+        if self.behaviors.sell_rule > 0 && !pending {
+            if let Some(i) = self.sell_pick(rules, g, legal) {
+                if !self.ruled_out(&world, g, &legal[i]) {
+                    return i;
+                }
+            }
+        }
         // The agent behaviors (185): each pick stands only where no forced behavior rules it out (182's F32).
         let b = &self.behaviors;
         if b.converge_rule && pending {
@@ -908,17 +963,177 @@ impl Policy {
     /// The wrapped agent's pick among the actions nothing forced rules out.
     fn search_pick(&mut self, rules: &Rules, g: &GameState, legal: &[Action]) -> usize {
         let world = rules.world();
-        if !self.forcing {
+        let reserve = self.am_reserve(&world, g, legal);
+        if !self.forcing && reserve.is_none() {
             return self.inner.choose(rules, g, legal);
         }
         let keep: Vec<usize> = (0..legal.len())
             .filter(|&i| !self.ruled_out(&world, g, &legal[i]) && !self.spends_banned(rules, g, &legal[i]))
+            .filter(|&i| !reserve.is_some_and(|(s, r)| below_reserve(rules, g, &legal[i], s, r)))
             .collect();
         if keep.is_empty() || keep.len() == legal.len() {
             return self.inner.choose(rules, g, legal);
         }
         let sub: Vec<Action> = keep.iter().map(|&i| legal[i].clone()).collect();
         keep[self.inner.choose(rules, g, &sub)]
+    }
+
+    /// 211 (`make_short`): a cube conversion (insight, then antimatter) after up to three of which the keep plan
+    /// plays a card this round that it can't play now.
+    fn make_short_pick(&mut self, rules: &Rules, g: &GameState, legal: &[Action]) -> Option<usize> {
+        let world = rules.world();
+        let s = legal.first()?.seat() as usize;
+        if self.forced.hoarding(&world, g, s, false) {
+            return None;
+        }
+        let acts: Vec<(usize, &str)> = ["insight", "antimatter"]
+            .into_iter()
+            .filter_map(|n| legal.iter().position(|a| matches!(a, Action::Standard { act, .. } if act == n)).map(|i| (i, n)))
+            .collect();
+        // A hand card not playable now, short only 1-3 insight or 1-2 antimatter the seat's cubes could make.
+        let cubes = g.resource(s, Resource::ResearchCubes);
+        let am_cubes = world.int("board.antimatter_cubes").max(1);
+        let short = |c: &Key| {
+            let d = cards::def(&world, c);
+            let ins = cards::play_insight(&world, g, s, d) - g.resource(s, Resource::Insight);
+            let am = d.antimatter - g.resource(s, Resource::Antimatter);
+            !playable(legal, s, c)
+                && cards::play_cost(&world, g, s, d) <= g.resource(s, Resource::Credits)
+                && ((1..=3.min(cubes)).contains(&ins) && am <= 0 || ins <= 0 && (1..=2).contains(&am) && am * am_cubes <= cubes)
+        };
+        if acts.is_empty() || !g.pile(&cards::hand(s)).iter().any(short) {
+            return None;
+        }
+        let strat = self.strat.get(s).copied().flatten();
+        let pc = plan_ctx(self.inner.as_ref(), &self.forced, strat, &mut self.mults, &mut self.rates, &world, g, s);
+        crate::prof::time(crate::prof::Part::Policy, || {
+            let mut next = Vec::new();
+            for (i, act) in acts {
+                let mut h = g.clone();
+                for n in 0..3 {
+                    if rules.apply_mut(&mut h, &legal[i], None).is_err() {
+                        break;
+                    }
+                    next.clear();
+                    rules.legal_actions_into(&h, &mut next);
+                    if plan_now(&world, &h, s, &self.forced, &pc).iter().any(|c| !playable(legal, s, c) && playable(&next, s, c)) {
+                        return Some(i);
+                    }
+                    if act == "antimatter" && n >= 1 {
+                        break;
+                    }
+                }
+            }
+            None
+        })
+    }
+
+    /// 211 (`sell_rule`): the sale of the cheapest hand card the seat won't play, when up to three such sales let
+    /// the keep plan play a card this round it can't now, or make a costly standard action legal that the search
+    /// then picks.
+    fn sell_pick(&mut self, rules: &Rules, g: &GameState, legal: &[Action]) -> Option<usize> {
+        const MAJOR: [&str; 5] = ["node", "troop", "botnet", "claim", "liberate"];
+        let world = rules.world();
+        let s = legal.iter().find(|a| matches!(a, Action::Sell { .. }))?.seat() as usize;
+        if self.forced.hoarding(&world, g, s, false) {
+            return None;
+        }
+        let last = g.pile(adversary::DECK).is_empty() && g.pile(adversary::NEXT).is_empty();
+        let loose = self.behaviors.sell_rule == 3;
+        // A hand card not playable now whose credits three sales would reach (the costly standard actions: mode 2).
+        let credits = g.resource(s, Resource::Credits);
+        let reach = 3 * world.int("board.sell_credits");
+        let near = |c: &Key| {
+            let cost = cards::play_cost(&world, g, s, cards::def(&world, c));
+            !playable(legal, s, c) && cost > credits && cost <= credits + reach
+        };
+        if self.behaviors.sell_rule != 2 && !g.pile(&cards::hand(s)).iter().any(near) {
+            return None;
+        }
+        let strat = self.strat.get(s).copied().flatten();
+        let mut sold: Vec<GameState> = Vec::new();
+        let dead = {
+            let pc = plan_ctx(self.inner.as_ref(), &self.forced, strat, &mut self.mults, &mut self.rates, &world, g, s);
+            let forced = &self.forced;
+            let found = crate::prof::time(crate::prof::Part::Policy, || {
+                let plays = if last { plan_now(&world, g, s, forced, &pc) } else { plan_all(&world, g, s, forced, &pc) };
+                let mut dead: Vec<Key> = g
+                    .pile(&cards::hand(s))
+                    .iter()
+                    .filter(|c| !plays.contains(c))
+                    .filter(|c| legal.iter().any(|a| matches!(a, Action::Sell { seat, card } if *seat as usize == s && card == *c)))
+                    .cloned()
+                    .collect();
+                dead.sort_by(|a, b| credit_cost(cards::def(&world, a)).cmp(&credit_cost(cards::def(&world, b))).then_with(|| a.cmp(b)));
+                // 1: the card opened is one the plan wouldn't otherwise play (this round in the last, else over its
+                // rounds); 3 (loose): one it wouldn't play this round.
+                let now = if loose { plan_now(&world, g, s, forced, &pc) } else { plays.clone() };
+                let mut h = g.clone();
+                let mut next = Vec::new();
+                for (j, c) in dead.iter().take(3).enumerate() {
+                    if rules.apply_mut(&mut h, &Action::Sell { seat: s as u8, card: *c }, None).is_err() {
+                        break;
+                    }
+                    next.clear();
+                    rules.legal_actions_into(&h, &mut next);
+                    let opens = plan_now(&world, &h, s, forced, &pc).iter().any(|p| {
+                        !now.contains(p) && !playable(legal, s, p) && playable(&next, s, p) && !dead[..=j].contains(p)
+                    });
+                    if opens {
+                        return (dead, true);
+                    }
+                    sold.push(h.clone());
+                }
+                (dead, false)
+            });
+            match found {
+                (dead, true) => return legal.iter().position(|a| matches!(a, Action::Sell { card, .. } if *card == dead[0])),
+                (dead, false) => dead,
+            }
+        };
+        if dead.is_empty() || self.behaviors.sell_rule != 2 {
+            return None;
+        }
+        let std_now = |n: &str| legal.iter().any(|a| matches!(a, Action::Standard { act, .. } if act == n));
+        let new_major = |a: &Action| matches!(a, Action::Standard { act, .. } if MAJOR.contains(&act.as_str()) && !std_now(act));
+        let mut next = Vec::new();
+        for h in &sold {
+            next.clear();
+            rules.legal_actions_into(h, &mut next);
+            if next.iter().any(new_major) {
+                let pick = self.inner.choose(rules, h, &next);
+                if next.get(pick).is_some_and(new_major) {
+                    return legal.iter().position(|a| matches!(a, Action::Sell { card, .. } if *card == dead[0]));
+                }
+            }
+        }
+        None
+    }
+
+    /// 211 (`am_save`): seat and antimatter to keep, when the acting seat holds antimatter and a hand card that
+    /// spends it, its `needs` met and its credits within the seat's credits and two rounds' credit income.
+    fn am_reserve(&self, world: &World, g: &GameState, legal: &[Action]) -> Option<(usize, i64)> {
+        if !self.behaviors.am_save || legal.iter().any(|a| matches!(a, Action::Choose { .. })) {
+            return None;
+        }
+        let s = legal.first()?.seat() as usize;
+        if g.resource(s, Resource::Antimatter) <= 0 {
+            return None;
+        }
+        let hand = g.pile(&cards::hand(s));
+        if !hand.iter().any(|c| cards::def(world, c).antimatter > 0) {
+            return None;
+        }
+        let tags = cards::tag_counts(world, g, s);
+        let reach = g.resource(s, Resource::Credits) + 2 * economy::income(world, g, s)[Resource::Credits];
+        let r = hand
+            .iter()
+            .map(|c| cards::def(world, c))
+            .filter(|d| d.antimatter > 0 && d.needs.iter().all(|(t, n)| tags[*t as usize] >= *n))
+            .filter(|d| cards::play_cost(world, g, s, d) <= reach)
+            .map(|d| d.antimatter)
+            .max()?;
+        Some((s, r))
     }
 
     /// 203 (`kept_rule`): the play of a hand card the acting seat's keep plan plays this round, if one is legal

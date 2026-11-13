@@ -198,6 +198,43 @@ pub fn plan_now(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx) ->
     plan(w, g, s, &[], &one, pc, &pt).map(|(_, p)| p).unwrap_or_default()
 }
 
+/// 211 (`plan_am`): the antimatter seat `s`'s board powers and built Actions gain, one use each (a round's worth).
+fn am_makes(w: &World, g: &GameState, s: usize) -> i64 {
+    let gains = |ops: &[Op]| {
+        ops.iter()
+            .map(|o| match o {
+                Op::Gain { resource: Resource::Antimatter, amount } => *amount,
+                _ => 0,
+            })
+            .sum::<i64>()
+    };
+    // A power that sacrifices a tag counts once the seat has cards of it in play.
+    let tags = cards::tag_counts(w, g, s);
+    let has = |t: &aic_core::vocab::TagOrAny, n: i64| match t {
+        aic_core::vocab::TagOrAny::Any => tags.iter().sum::<i64>() >= n,
+        aic_core::vocab::TagOrAny::Is(t) => tags[*t as usize] >= n,
+    };
+    let powers: i64 = aic_core::modules::ai::board(w, s)
+        .powers
+        .iter()
+        .filter(|p| p.tags.iter().all(|(t, n)| has(t, *n)))
+        .map(|p| gains(&p.effects))
+        .sum();
+    let built: i64 = g
+        .pile(&cards::built(s))
+        .iter()
+        .filter_map(|id| cards::def(w, id).ability.as_ref())
+        .map(|a| a.branches().into_iter().map(|b| gains(&b.effects)).max().unwrap_or(0))
+        .sum();
+    powers + built
+}
+
+/// 211 (`sell_rule`): the hand cards the plan plays over its `plan_rounds` rounds; the rest it expects never to play.
+pub fn plan_all(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx) -> Vec<Key> {
+    let pt = PlanTable::read(pc.t, w, g, s, f);
+    plan(w, g, s, &[], f, pc, &pt).map(|(_, p)| p).unwrap_or_default()
+}
+
 /// [`plan_value`] with `kept`, or `None` if the keeps can't be paid or the
 /// new card `c` is not played in the plan.
 #[allow(clippy::too_many_arguments)]
@@ -463,6 +500,9 @@ fn plan(
         !pc.table || d.needs.iter().map(|(t, n)| (n - have(*t as usize)).max(0)).sum::<i64>() <= f.plan_short as i64
     };
     let patient = economy::patient(w, s);
+    // 211 (`plan_am`): antimatter the seat can make each round from its own powers and built Actions.
+    let am_made = if f.plan_am { am_makes(w, g, s) } else { 0 };
+    let am_cubes = if f.plan_am { w.int("board.antimatter_cubes") } else { 0 };
     let share = pc.t.rate("target_share");
     // 092 (`plan_bury`): the slots still open, and the tops a building may bury.
     let mut tops: Vec<&CardDef> = g.pile(&cards::built(s)).iter().map(|id| cards::def(w, id)).collect();
@@ -476,7 +516,7 @@ fn plan(
                 insight: inc(Resource::Insight).max(0) + if patient { b.insight } else { 0 },
                 chips: b.chips + inc(Resource::Chips),
                 energy: b.energy + inc(Resource::Energy),
-                antimatter: b.antimatter + inc(Resource::Antimatter),
+                antimatter: b.antimatter + inc(Resource::Antimatter) + am_made,
                 research_cubes: b.research_cubes + inc(Resource::ResearchCubes),
             };
         }
@@ -494,12 +534,15 @@ fn plan(
                 liberate_later(w, g, d)
             };
             let cubes = if f.plan_cubes { b.research_cubes } else { g.resource(s, Resource::ResearchCubes) };
+            // 211 (`plan_am`): antimatter short is made from cubes at Make antimatter's price.
+            let am_short = (d.antimatter - b.antimatter).max(0);
+            let am_cubes = if am_short > 0 && am_cubes > 0 { am_short * am_cubes } else { 0 };
             let fits = b.credits >= credits
                 && b.insight >= cards::play_insight(w, g, s, d)
                 && b.chips >= d.chips
                 && b.energy >= d.energy
-                && b.antimatter >= d.antimatter
-                && cubes >= d.research_cubes
+                && (b.antimatter >= d.antimatter || am_cubes > 0)
+                && cubes >= d.research_cubes + am_cubes
                 && cards::lowers_ok(w, g, s, d)
                 && (replaceable(w, g, s, d) || (f.plan_under && pc.table && under_planned(w, d, &planned)))
                 && (target || later)
@@ -533,9 +576,9 @@ fn plan(
                 b.insight -= cards::play_insight(w, g, s, d);
                 b.chips -= d.chips;
                 b.energy -= d.energy;
-                b.antimatter -= d.antimatter;
+                b.antimatter -= d.antimatter - am_short;
                 if f.plan_cubes {
-                    b.research_cubes -= d.research_cubes;
+                    b.research_cubes -= d.research_cubes + am_cubes;
                     b.research_cubes += d
                         .effects
                         .iter()
