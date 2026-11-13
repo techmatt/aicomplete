@@ -94,10 +94,11 @@ generated docs, so after a content edit run `python scripts/regen.py` first. Red
 
 ```sh
 cargo build --workspace
-cargo test --workspace                             # fast lane: ~5 s once built, ~13 s after an edit in aic-sim (rebuild included); 4-6 min on a loaded box (213)
-cargo test-all                                     # full run, slow lane included: ~3.5 min on 6 test threads, rebuild included (174)
+cargo check --tests                                # a missing import in ~1 min, before a full test build
+cargo test --workspace                             # fast lane: ~5 s once built, ~13 s after an aic-sim edit; 4-6 min on a loaded box
+cargo test-all                                     # full run, slow lane included: ~3.5 min on 6 test threads, rebuild included
 cargo test-slow                                    # the slow lane alone: nearly all of that
-cargo build --release -p aic-sim                   # ~30 s after an aic-sim edit, ~45 s after aic-core, ~1 min cold (174)
+cargo build --release -p aic-sim                   # ~30 s after an aic-sim edit, ~45 s after aic-core, ~1 min cold
 ./target/release/aic-sim docs                      # regenerate the generated docs (--check: report only)
 wasm-pack build crates/aic-wasm --target web       # ~20 s cold, ~9 s warm -> crates/aic-wasm/pkg (git-ignored)
 node scripts/farm/build.mjs out/bundle             # the farm's wasm bundle (~1 min cold)
@@ -130,7 +131,7 @@ content-only edit moves it with no bump unless play changes; update both (the ne
 `content_hash` in any run's `games.jsonl` first line, or `regen.py`'s "content hash" line; the new fingerprint is
 the failing `golden_game` assertion's left side: copy both, never type them).
 A new phase goes in `configs/baseline.json`'s `round` list and in every lab test config that lists its neighbor
-(178: `adversary.compute` beside `adversary.reveal`), or it silently never runs there.
+(`adversary.compute` beside `adversary.reveal`), or it silently never runs there.
 
 **This machine.**
 

@@ -10,7 +10,7 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   gap, ms a game. See simulator.md, *The farm*.
 - `regen.py [--no-build] [--check]`: builds release, runs `drafts/adversary/check.py`, checks `content/` against
   `drafts/adversary/` (`load_adversary.py --check`), writes `RULES_REVISION` into `docs/rules/README.md`, then `aic-sim docs`,
-  `cards_doc.py`, `effect_ledger.py`, `shared_row.py`, `no_liberate.py`; prints the content hash and `git status`.
+  `cards_doc.py`, `effect_ledger.py`, `shared_row.py`, `no_liberate.py`, `no_tier2.py`; prints the content hash and `git status`.
   `--check`: the `--check`s and the revision line only.
 - `design_check.py [DIR] [--old DIR] [--base REV] [--quiet] [--usage]`: the design warnings ([principles.md](principles.md)):
   content checks, plus the play checks on a read's `games.jsonl` or a farm's out file (DIR; `--old` the previous
