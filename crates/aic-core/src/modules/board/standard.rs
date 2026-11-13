@@ -33,10 +33,16 @@ pub enum StandardAction {
     Antimatter,
     /// 204: the standard antimatter spend, a shared breakthrough: antimatter for Unity (0: off).
     Breakthrough,
+    /// 206 (Matt, 2026-11-12): the one node placement every board has, poorly priced (Expand left every board).
+    Node,
+    /// 206 (amendment 9247): a very expensive hedge against troops: credits for 1 troop in reach.
+    Troop,
+    /// 206 (amendment 9212, candidate): a factory, yours, for chips (`factory_build_chips` 0: off).
+    Factory,
 }
 
 /// The standard actions, in the order they are offered and published.
-pub const STANDARD: [StandardAction; 16] = [
+pub const STANDARD: [StandardAction; 19] = [
     StandardAction::Station,
     StandardAction::Remove,
     StandardAction::Clear,
@@ -53,6 +59,9 @@ pub const STANDARD: [StandardAction; 16] = [
     StandardAction::BuyEnergy,
     StandardAction::Antimatter,
     StandardAction::Breakthrough,
+    StandardAction::Node,
+    StandardAction::Troop,
+    StandardAction::Factory,
 ];
 
 impl StandardAction {
@@ -75,6 +84,9 @@ impl StandardAction {
             StandardAction::BuyEnergy => "buy_energy",
             StandardAction::Antimatter => "antimatter",
             StandardAction::Breakthrough => "breakthrough",
+            StandardAction::Node => "node",
+            StandardAction::Troop => "troop",
+            StandardAction::Factory => "factory",
         }
     }
 
@@ -142,7 +154,7 @@ pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
     let chips = |chips| Price { chips, ..Price::default() };
     let ambassadors = |ambassadors| Price { ambassadors, ..Price::default() };
     match act {
-        StandardAction::Station => chips(i("station_chips")),
+        StandardAction::Station => Price { chips: i("station_chips"), ambassadors: i("station_ambassadors"), ..Price::default() },
         StandardAction::Remove => ambassadors(i("remove_ambassadors")),
         StandardAction::Clear => credits(i("clear_cost")),
         // 149: paid from the seat's Dispatch, not a resource (`moves_left`).
@@ -160,6 +172,9 @@ pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::BuyEnergy => credits(i("city_energy_credits")),
         StandardAction::Antimatter => Price { cubes: i("antimatter_cubes"), ..Price::default() },
         StandardAction::Breakthrough => Price { antimatter: i("breakthrough_antimatter"), ..Price::default() },
+        StandardAction::Node => credits(i("node_credits")),
+        StandardAction::Troop => credits(i("troop_credits")),
+        StandardAction::Factory => chips(i("factory_build_chips")),
     }
 }
 
@@ -215,6 +230,25 @@ pub fn broke_through_key(seat: usize) -> KeyBuf {
 /// Prefix of [`broke_through_key`].
 pub(super) const BROKE_THROUGH: &str = "board.broke_through.";
 
+/// 206: how often seat `s` has taken limited standard action `act` (Place a node, Remove a troop) this round, a
+/// round mark.
+pub fn std_once_key(act: StandardAction, seat: usize) -> KeyBuf {
+    KeyBuf::new(STD_ONCE).text(act.name()).text(".").num(seat)
+}
+
+/// Prefix of [`std_once_key`].
+pub(super) const STD_ONCE: &str = "board.std_once.";
+
+/// 206: how often a seat may take standard action `act` a round (`node_per_round`, `troop_per_round`), or `None`
+/// with no limit.
+fn per_round(w: &World, act: StandardAction) -> Option<i64> {
+    match act {
+        StandardAction::Node => Some(w.int("board.node_per_round")),
+        StandardAction::Troop => Some(w.int("board.troop_per_round")),
+        _ => None,
+    }
+}
+
 /// Whether seat `seat` may buy neutral city `h`'s energy now (r75, Matt's ruling 6): a neutral city in reach,
 /// producing (no blackout, no agent on it), with energy to sell, not bought this round.
 pub fn energy_for_sale(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
@@ -260,6 +294,37 @@ pub fn clear_marker(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
     }
     alignment::unity_from(g, cx, "clear", w.int("board.clear_unity"));
     cx.add_resource(g, seat, Resource::Credits, w.int("board.clear_credits"));
+}
+
+/// 206: the ops an op-backed standard action runs (node placement, troop removal, factory building), so its
+/// targets and effect are the cards' own (`effects::feasible`, `effects::run`).
+pub fn std_ops(act: StandardAction) -> &'static [Op] {
+    match act {
+        StandardAction::Node => &[Op::PlaceNode { count: 1 }],
+        StandardAction::Troop => &[Op::RemoveTroops { count: 1, reach: true }],
+        StandardAction::Factory => &[Op::BuildFactory],
+        _ => &[],
+    }
+}
+
+/// 206 (amendment 9208): a standard action whose price param is 0 is cut (Clear, Drain, the Harden project), and
+/// the new ones are off at 0 (Node, Troop, Factory).
+fn cut(w: &World, act: StandardAction) -> bool {
+    let k = match act {
+        StandardAction::Clear => "clear_cost",
+        StandardAction::Drain => "drain_credits",
+        StandardAction::HardenBuy => "harden_credits",
+        StandardAction::Node => "node_credits",
+        StandardAction::Troop => "troop_credits",
+        StandardAction::Factory => "factory_build_chips",
+        _ => return false,
+    };
+    w.int(&format!("board.{k}")) <= 0
+}
+
+/// Whether standard action `act` is in the rules (206: a cut one prints no row and is never offered).
+pub fn std_offered(w: &World, act: StandardAction) -> bool {
+    !cut(w, act)
 }
 
 /// What a standard action does, for the view.
@@ -312,6 +377,13 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
                 w.int("board.breakthrough_unity")
             );
         }
+        StandardAction::Node => {
+            return format!("place 1 node next to yours (paying its track step), {} a round", times(w.int("board.node_per_round")));
+        }
+        StandardAction::Troop => {
+            return format!("remove 1 troop in reach, {} a round", times(w.int("board.troop_per_round")));
+        }
+        StandardAction::Factory => "build a factory on a free industrial zone in reach (yours)",
     };
     text.to_string()
 }
@@ -324,7 +396,7 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
     let (name, cost, what): (&str, String, String) = match act {
         StandardAction::Station => (
             "Build a research station",
-            format!("{} chips", t("board.station_chips")),
+            format!("{} chips (and {} ambassadors, used up: a candidate, 0 none)", t("board.station_chips"), t("board.station_ambassadors")),
             "on an open hex in reach that is not an industrial zone or corrupted land; it is yours (your cube)".into(),
         ),
         // r75 (Matt's ruling 1): it places nothing (it stood on the hex and removed up to 3 there).
@@ -356,24 +428,25 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
         StandardAction::Claim => (
             "Claim a site",
             format!(
-                "{} ambassadors for a city, {} for a station, {} for a factory, 1 more for each agent on it; used up: yours on the site first, your supply the rest",
+                "{} ambassadors for a city, {} for a station, {} for a factory (Liberate's table too); used up: yours on the site first, your supply the rest",
                 t("board.claim_city"),
                 t("board.claim_station"),
                 t("board.claim_factory")
             ),
-            "a neutral city, research station or factory in reach (no embargo on it): the agents on it cancel and your cube goes on".into(),
+            "a neutral city, research station or factory in reach with no agent on it (no embargo on it): your cube goes on".into(),
         ),
         // 137: it replaced Free a station and the city fallback. r75 (Matt's ruling 2): Claim's payment, and
         // the site becomes yours.
         StandardAction::Liberate => (
             "Liberate a site",
             format!(
-                "{} ambassadors for a city, {} for a station or factory, 1 more for each agent on it; used up: yours on the site first, your supply the rest",
+                "Claim's: {} ambassadors for a city, {} for a station, {} for a factory; used up: yours on the site first, your supply the rest",
                 t("board.liberate_at"),
-                t("board.liberate_facility_at")
+                t("board.claim_station"),
+                t("board.claim_factory")
             ),
             format!(
-                "an adversary city, station or factory in reach: the agents on it cancel, your cube goes on, and it sways Unity ({} for a city, {} for a station or factory)",
+                "an adversary city, station or factory in reach with no agent on it: the adversary's cube comes off, yours goes on, and it sways Unity ({} for a city, {} for a station or factory)",
                 t("alignment.free_city"),
                 t("alignment.free_facility")
             ),
@@ -430,6 +503,27 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
             format!("{} antimatter", t("board.breakthrough_antimatter")),
             format!("sway {} toward Unity, once a round (`breakthrough_unity` 0: no such action)", t("board.breakthrough_unity")),
         ),
+        // 206 (Matt, 2026-11-12): Expand, Buy In, Accord and Peer Review were one power under four names.
+        StandardAction::Node => (
+            "Place a node",
+            format!("{} credits, and the track step's energy", t("board.node_credits")),
+            format!(
+                "place 1 node next to yours, off either track, up to {} times a round (the boards' own node powers are the better route)",
+                t("board.node_per_round")
+            ),
+        ),
+        // 206 (amendment 9247): a hedge, never the better route.
+        StandardAction::Troop => (
+            "Remove a troop",
+            format!("{} credits", t("board.troop_credits")),
+            format!("remove 1 adversary troop in reach, up to {} times a round", t("board.troop_per_round")),
+        ),
+        // 206 (amendment 9212, candidate).
+        StandardAction::Factory => (
+            "Build a factory",
+            format!("{} chips", t("board.factory_build_chips")),
+            "on a free industrial zone in reach; it is yours (your cube)".into(),
+        ),
     };
     [name.to_string(), cost, what]
 }
@@ -459,6 +553,9 @@ pub fn liberable(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
 pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAction) -> Vec<usize> {
     let reach = |h: usize| in_reach(w, g, seat, h);
     let all = 0..g.hexes.len();
+    if cut(w, act) {
+        return Vec::new();
+    }
     match act {
         StandardAction::Station => station_sites(w, g, seat),
         StandardAction::Remove => all.filter(|&h| reach(h) && g.tokens(h, ADV_AMBASSADOR) > 0).collect(),
@@ -519,6 +616,13 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
             vec![usize::MAX]
         }
         StandardAction::Breakthrough => Vec::new(),
+        StandardAction::Node | StandardAction::Troop | StandardAction::Factory => {
+            if per_round(w, act).is_none_or(|n| g.var(&std_once_key(act, seat)) < n) && effects::feasible(w, g, seat, std_ops(act)) {
+                vec![usize::MAX]
+            } else {
+                Vec::new()
+            }
+        }
     }
 }
 
@@ -646,8 +750,23 @@ pub(super) fn std_resolve(
                 cx.add_tokens(g, h, HARDEN, 1);
             }
         }
+        StandardAction::Node | StandardAction::Troop | StandardAction::Factory => {
+            if per_round(&w, act).is_some() {
+                cx.add_key(g, &std_once_key(act, s), 1);
+            }
+            effects::run(g, cx, std_ops(act), &mut effects::Ctx::seat(s))?;
+        }
     }
     Ok(())
+}
+
+/// "once", "twice", "3 times".
+fn times(n: i64) -> String {
+    match n {
+        1 => "once".into(),
+        2 => "twice".into(),
+        _ => format!("{n} times"),
+    }
 }
 
 /// Clear's words with its reward (the configs' `clear_unity`, `clear_credits`).

@@ -1,0 +1,80 @@
+{
+  "name": "s206-m1-m2",
+  "note": "206: a screen on the dev seeds",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_m1",
+      "set": [
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true}]"
+      ]
+    },
+    {
+      "name": "br_m1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true}]"
+      ]
+    },
+    {
+      "name": "pr_m1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true}]"
+      ]
+    },
+    {
+      "name": "bp_m2",
+      "set": [
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true}]",
+        "adversary.mil_s1_probing_strikes.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true}]"
+      ]
+    },
+    {
+      "name": "br_m2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true}]",
+        "adversary.mil_s1_probing_strikes.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true}]"
+      ]
+    },
+    {
+      "name": "pr_m2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.mil_s1_war_drums.standing=[{\"op\":\"rally\",\"site\":\"city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true}]",
+        "adversary.mil_s1_probing_strikes.standing=[{\"op\":\"rally\",\"site\":\"coastal_city\"},{\"op\":\"troops\",\"count\":1,\"each_country\":true}]"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

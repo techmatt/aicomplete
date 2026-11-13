@@ -1,0 +1,34 @@
+{
+  "name": "c206-strategist",
+  "note": "206: the d1 and d3 dial confirm, r91 against r90",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    1,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 96,
+  "records": 0
+}

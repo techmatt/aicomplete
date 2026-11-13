@@ -101,16 +101,19 @@ fn liberating_a_city_pays_from_your_own_ambassadors_and_makes_it_yours() {
     put(&mut g, h, ADV_AMBASSADOR, 1);
     put(&mut g, n, ADV_AMBASSADOR, 2);
     put(&mut g, n, node(0), 1);
-    assert_eq!(board::liberate_cost(&w, &g, h), Some(6));
+    // 206 (amendment 9208): an agent on it shuts it; clear it first.
+    assert_eq!(board::liberate_cost(&w, &g, h), None);
+    put(&mut g, h, ADV_AMBASSADOR, 0);
+    assert_eq!(board::liberate_cost(&w, &g, h), Some(5));
     // Another seat's ambassadors on the city pay nothing of seat 0's bill.
     put(&mut g, h, ambassador(1), 2);
-    assert_eq!(board::site_supply_cost(&w, &g, 0, h, true), Some(6));
+    assert_eq!(board::site_supply_cost(&w, &g, 0, h, true), Some(5));
     set_res(&mut g, 0, Resource::Ambassadors, 3);
-    assert!(!rules.legal_actions(&g).contains(&std_act(0, "liberate")), "3 of 6");
-    // Seat 0's own 2 on it pay first: 4 from the supply.
+    assert!(!rules.legal_actions(&g).contains(&std_act(0, "liberate")), "3 of 5");
+    // Seat 0's own 2 on it pay first: 3 from the supply.
     put(&mut g, h, ambassador(0), 2);
-    assert_eq!(board::site_supply_cost(&w, &g, 0, h, true), Some(4));
-    set_res(&mut g, 0, Resource::Ambassadors, 4);
+    assert_eq!(board::site_supply_cost(&w, &g, 0, h, true), Some(3));
+    set_res(&mut g, 0, Resource::Ambassadors, 3);
     let unity = g.var("alignment.unity") + alignment::unity_pending(&g);
     act(&rules, &mut g, std_act(0, "liberate"));
     assert_eq!((g.tokens(h, ADV_CUBE), g.tokens(h, cube(0)), g.resource(0, Resource::Ambassadors)), (0, 1, 0));
@@ -341,23 +344,19 @@ fn up_to_two_markers_can_stop_after_one() {
     assert_eq!(n.iter().map(|&h| g.tokens(h, MARKER)).sum::<i64>(), 1, "the second pick was stop");
 }
 
+/// 206 (amendment 9208): no standard action removes corruption: Clear is cut (`clear_cost` 0).
 #[test]
-fn clearing_a_marker_costs_its_credits_and_pays_its_reward() {
+fn no_standard_action_clears_a_marker() {
     let (rules, mut g) = at_step(&[], 1);
     let w = rules.world();
     let a = rules.map.numbered(0, piece(0).node);
     let marked = w.map.hexes[a].neighbors.iter().copied().find(|&h| !is_ocean(&w, h)).unwrap();
     put(&mut g, marked, MARKER, 1);
     assert!(!board::node_sites(&w, &g, 0).contains(&marked), "no nodes on a marker");
-    set_res(&mut g, 0, Resource::Energy, 0);
-    set_res(&mut g, 0, Resource::Credits, 5);
-    let credits = 5 - w.int("board.clear_cost");
-    let unity = g.var(alignment::track(Side::Unity));
-    rules.apply_mut(&mut g, &std_act(0, "clear"), None).unwrap();
-    answer_all(&rules, &mut g);
-    assert_eq!(g.tokens(marked, MARKER), 0);
-    assert_eq!(g.resource(0, Resource::Credits), credits + w.int("board.clear_credits"));
-    assert_eq!(g.var(alignment::track(Side::Unity)), unity + w.int("board.clear_unity"));
+    set_res(&mut g, 0, Resource::Credits, 50);
+    assert_eq!(w.int("board.clear_cost"), 0);
+    assert!(rules.apply_mut(&mut g.clone(), &std_act(0, "clear"), None).is_err());
+    assert!(!rules.legal_actions(&g).contains(&std_act(0, "clear")));
 }
 
 /// 034's d4 fix: every printed step of the Discord deck acts before it ends,

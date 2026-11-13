@@ -147,6 +147,10 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         }
     }
     for act in STANDARD {
+        // 206: a cut action (its price param 0) is not published.
+        if !std_offered(w, act) {
+            continue;
+        }
         let price = printed_price(w, act);
         // 105: a cube cost (the general converter) reaches the client in its words.
         let Price { energy: e, credits: cr, chips, ambassadors, cubes: _, antimatter: _ } = price;

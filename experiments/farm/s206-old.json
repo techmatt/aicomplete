@@ -1,0 +1,57 @@
+{
+  "name": "s206-old",
+  "note": "206: r90 (e188cbf) on the dev seeds, the r90 binary",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_ts2",
+      "set": [
+        "board.troop_steps=2"
+      ]
+    },
+    {
+      "name": "br_ts2",
+      "set": [
+        "ai.boards=0,2",
+        "board.troop_steps=2"
+      ]
+    },
+    {
+      "name": "pr_ts2",
+      "set": [
+        "ai.boards=1,2",
+        "board.troop_steps=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

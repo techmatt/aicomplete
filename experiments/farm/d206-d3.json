@@ -1,0 +1,57 @@
+{
+  "name": "d206-d3",
+  "note": "206: d3 compute income dial (base: f206-strategist)",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_k21",
+      "set": [
+        "adversary.compute_income=0,8,17,21,30"
+      ]
+    },
+    {
+      "name": "br_k21",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=0,8,17,21,30"
+      ]
+    },
+    {
+      "name": "pr_k21",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=0,8,17,21,30"
+      ]
+    },
+    {
+      "name": "bp_k18",
+      "set": [
+        "adversary.compute_income=0,8,17,18,30"
+      ]
+    },
+    {
+      "name": "br_k18",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=0,8,17,18,30"
+      ]
+    },
+    {
+      "name": "pr_k18",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=0,8,17,18,30"
+      ]
+    }
+  ],
+  "difficulties": [
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 96,
+  "records": 0
+}

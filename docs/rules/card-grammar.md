@@ -77,7 +77,7 @@ raises are on programs, the engines' triggers, Actions and Effects on buildings;
 - **Botnets:** removing a botnet (tier 2, in reach) is, with Decommission (a Unity card, [alignment.md](alignment.md)), the only way to remove
   one ([adversary.md](adversary.md)); cutting one off (`cut_botnet`; no content prints it) makes it produce no compute in the next compute step.
 - **Draw:** every draw takes the top cards of the tier-1 deck into your hand, no keep paid. An empty tier-1 deck
-  reshuffles its discard; with both empty it does nothing, and a card that only draws (Fieldwork) is
+  reshuffles its discard; with both empty it does nothing, and a card or power that only draws (Procure) is
   not offered. A played event goes to its played pile, never the discard, so no reshuffle brings it back.
 - **Count as power (`gain_per_tokens`; here only):** gain 1 of a resource per N tokens here, on the Action's own
   card; the tokens stay.

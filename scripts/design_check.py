@@ -67,7 +67,7 @@ def anchors():
     a = dict(jload('configs/agents/values.json')['resources'])
     names = {'remove 1 agent': 'agent', 'remove 1 troop': 'troop', '1 energy': 'energy', '1 insight': 'insight',
              'draw 1 card': 'card', '1 chip': 'chips', 'remove 1 compute from a project': 'compute',
-             '1 antimatter': 'antimatter'}
+             '1 antimatter': 'antimatter', '1 ambassador': 'ambassadors'}
     with open(os.path.join(ROOT, 'docs/card-guidelines.md'), encoding='utf-8') as f:
         text = f.read()
     sec = text.split('**Unit anchors**', 1)[1].split('\n\n', 2)[1]

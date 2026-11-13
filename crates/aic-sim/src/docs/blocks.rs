@@ -597,15 +597,21 @@ pub(super) fn powers_block(c: &Content) -> String {
 /// The standard actions and projects, with their prices: each action's words
 /// are `std_rule_text`'s, beside the view's `std_text` in standard.rs (121).
 pub(super) fn standard_actions_block(r: &Rules) -> String {
-    use aic_core::modules::board::{std_rule_text, StandardAction as A};
+    use aic_core::modules::board::{std_offered, std_rule_text, StandardAction as A};
     let t = |key: &str| tick(r, key);
+    // 206: a cut action (its price param 0) prints no row.
+    let w = r.world();
+    let on = |a: &&A| std_offered(&w, **a);
     // The rule book's order; selling a card is no standard action, but sits by the actions
     // (149: chips can't be sold).
-    let order = [A::Station, A::Remove, A::Clear, A::Move, A::Ambassador, A::Claim, A::Liberate, A::Botnet, A::BuyEnergy, A::HardenChips];
-    let mut rows: Vec<[String; 3]> = order.iter().map(|&a| std_rule_text(a, &t)).collect();
+    let order = [
+        A::Node, A::Station, A::Factory, A::Remove, A::Troop, A::Clear, A::Move, A::Ambassador, A::Claim, A::Liberate, A::Botnet,
+        A::BuyEnergy, A::HardenChips,
+    ];
+    let mut rows: Vec<[String; 3]> = order.iter().filter(on).map(|&a| std_rule_text(a, &t)).collect();
     rows.push(["Sell a card".to_string(), format!("gain {}", t("board.sell_credits")), "from your hand".to_string()]);
     rows.extend(
-        [A::HardenBuy, A::Drain, A::Insight, A::Envoy, A::Antimatter, A::Breakthrough].iter().map(|&a| std_rule_text(a, &t)),
+        [A::HardenBuy, A::Drain, A::Insight, A::Envoy, A::Antimatter, A::Breakthrough].iter().filter(on).map(|&a| std_rule_text(a, &t)),
     );
     table(&["Action", "Cost", "What"], rows.into_iter().map(|r| r.to_vec()).collect())
 }
@@ -775,9 +781,9 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          limit on what you hold or on how far cards raise your income; energy you don't spend stays \
          energy, so drafting cards that spend it is up to you.\n\n\
          **Nodes, for new players.** Nodes don't grow on their own. In the action phase you place \
-         nodes with your board's two node powers, each once a round, so 0, 1 or 2 tokens a \
-         round from them, and cards can add more. Every board's Expand costs 1 energy; the second costs a tag or \
-         the board's own currency. Every placement, by power or card, pays the energy printed on the track space you uncover. You \
+         nodes with your board's node power, once a round, which costs a tag or the board's own currency and does a \
+         little more besides, or with the standard action Place a node, which any player may take twice a round for \
+         credits; cards can add more. Every placement, by power, action or card, pays the energy printed on the track space you uncover. You \
          start with {} energy and one city bound to you, which makes energy every round.\n\n\
          **Dispatches, tags and sales, for new players.** A Dispatch puts one of your ambassadors, \
          from your supply or anywhere on the map, onto a piece or botnet in your reach and costs nothing, but you \

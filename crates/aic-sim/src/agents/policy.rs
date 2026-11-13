@@ -633,7 +633,9 @@ impl Policy {
             }
             Action::Pay { .. } => f.no_counters || f.ignore_threats || f.free_only,
             Action::Standard { act, .. } => {
-                (f.never_clear && act == "clear")
+                // 206: the standard node placement places as a node power does.
+                (f.stays_put() && act == "node")
+                    || (f.never_clear && act == "clear")
                     || (f.turtle && !matches!(act.as_str(), "remove" | "clear" | "ambassador" | "harden_chips" | "harden_buy"))
                     || (f.free_only && !matches!(act.as_str(), "remove" | "clear" | "ambassador" | "move"))
             }
@@ -1101,13 +1103,15 @@ mod tests {
             let k = ai::board(&w, 0).powers.iter().position(|p| p.name == name).unwrap();
             Action::Power { seat: 0, power: k as u8 }
         };
-        let (deploy, buy, scrap) = (by_name("Expand"), by_name("Buy In"), by_name("Scrap"));
+        // 206: Expand left every board; Buy In is the Builder's one node power, and the standard action places too.
+        let (buy, scrap) = (by_name("Buy In"), by_name("Scrap"));
+        let node = Action::Standard { seat: 0, act: "node".into() };
         let no_powers = forced("no_powers");
-        assert!(no_powers.ruled_out(&w, &g, &scrap) && !no_powers.ruled_out(&w, &g, &deploy));
+        assert!(no_powers.ruled_out(&w, &g, &scrap) && !no_powers.ruled_out(&w, &g, &buy));
         let no_node = forced("no_node");
-        assert!(no_node.ruled_out(&w, &g, &deploy) && no_node.ruled_out(&w, &g, &buy));
+        assert!(no_node.ruled_out(&w, &g, &buy) && no_node.ruled_out(&w, &g, &node));
         assert!(!no_node.ruled_out(&w, &g, &scrap));
         let never_second = forced("never_second_node");
-        assert!(never_second.ruled_out(&w, &g, &buy) && !never_second.ruled_out(&w, &g, &deploy));
+        assert!(!never_second.ruled_out(&w, &g, &buy));
     }
 }

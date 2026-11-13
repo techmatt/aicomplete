@@ -104,23 +104,6 @@
     ]
    },
    {
-    "name": "Expand",
-    "tags": [],
-    "cost": [
-     [
-      "energy",
-      1
-     ]
-    ],
-    "text": "place 1 Node",
-    "effects": [
-     {
-      "op": "place_node",
-      "count": 1
-     }
-    ]
-   },
-   {
     "name": "Buy In",
     "tags": [],
     "cost": [
@@ -129,11 +112,16 @@
       6
      ]
     ],
-    "text": "place 1 Node",
+    "text": "place 1 Node and gain 1 chip",
     "effects": [
      {
       "op": "place_node",
       "count": 1
+     },
+     {
+      "op": "gain",
+      "resource": "chips",
+      "amount": 1
      }
     ]
    },
@@ -193,24 +181,6 @@
     ]
    },
    {
-    "name": "Focus",
-    "tags": [],
-    "cost": [
-     [
-      "credits",
-      2
-     ]
-    ],
-    "text": "gain 1 insight",
-    "effects": [
-     {
-      "op": "gain",
-      "resource": "insight",
-      "amount": 1
-     }
-    ]
-   },
-   {
     "name": "Procure",
     "tags": [],
     "cost": [
@@ -228,24 +198,24 @@
     ]
    },
    {
-    "name": "Pair Forge",
+    "name": "Fortify",
     "tags": [],
     "cost": [
      [
       "chips",
-      1
-     ],
-     [
-      "energy",
-      1
+      2
      ]
     ],
-    "text": "gain 1 antimatter",
+    "text": "remove 1 Troop in reach and harden 1 facility in reach",
     "effects": [
      {
-      "op": "gain",
-      "resource": "antimatter",
-      "amount": 1
+      "op": "remove_troops",
+      "count": 1,
+      "reach": true
+     },
+     {
+      "op": "harden",
+      "count": 1
      }
     ]
    }
@@ -434,23 +404,6 @@
     ]
    },
    {
-    "name": "Expand",
-    "tags": [],
-    "cost": [
-     [
-      "energy",
-      1
-     ]
-    ],
-    "text": "place 1 Node",
-    "effects": [
-     {
-      "op": "place_node",
-      "count": 1
-     }
-    ]
-   },
-   {
     "name": "Accord",
     "tags": [
      [
@@ -459,10 +412,14 @@
      ]
     ],
     "cost": [],
-    "text": "place 1 Node",
+    "text": "place 1 Node and gain 1 ambassador",
     "effects": [
      {
       "op": "place_node",
+      "count": 1
+     },
+     {
+      "op": "gain_ambassadors",
       "count": 1
      }
     ]
@@ -529,11 +486,15 @@
       1
      ]
     ],
-    "text": "draw 2 cards",
+    "text": "draw 1 card and remove 1 Agent in a hex in reach",
     "effects": [
      {
       "op": "draw",
-      "count": 2
+      "count": 1
+     },
+     {
+      "op": "damage",
+      "ambassadors": 1
      }
     ]
    },
@@ -555,6 +516,28 @@
        "agents",
        "troops"
       ]
+     }
+    ]
+   },
+   {
+    "name": "Interdict",
+    "tags": [
+     [
+      "security",
+      1
+     ]
+    ],
+    "cost": [
+     [
+      "energy",
+      1
+     ]
+    ],
+    "text": "remove up to 2 Troops in one hex in reach",
+    "effects": [
+     {
+      "op": "damage",
+      "troops": 2
      }
     ]
    }
@@ -710,40 +693,6 @@
   ],
   "powers": [
    {
-    "name": "Fieldwork",
-    "tags": [],
-    "cost": [
-     [
-      "energy",
-      1
-     ]
-    ],
-    "text": "draw 3 cards",
-    "effects": [
-     {
-      "op": "draw",
-      "count": 3
-     }
-    ]
-   },
-   {
-    "name": "Expand",
-    "tags": [],
-    "cost": [
-     [
-      "energy",
-      1
-     ]
-    ],
-    "text": "place 1 Node",
-    "effects": [
-     {
-      "op": "place_node",
-      "count": 1
-     }
-    ]
-   },
-   {
     "name": "Peer Review",
     "tags": [],
     "cost": [
@@ -752,11 +701,16 @@
       3
      ]
     ],
-    "text": "place 1 Node",
+    "text": "place 1 Node and gain 1 insight",
     "effects": [
      {
       "op": "place_node",
       "count": 1
+     },
+     {
+      "op": "gain",
+      "resource": "insight",
+      "amount": 1
      }
     ]
    },
@@ -809,6 +763,28 @@
     ]
    },
    {
+    "name": "Disrupt",
+    "tags": [
+     [
+      "cyber",
+      1
+     ]
+    ],
+    "cost": [
+     [
+      "research_cubes",
+      1
+     ]
+    ],
+    "text": "remove up to 2 Troops in one country",
+    "effects": [
+     {
+      "op": "remove_troops",
+      "count": 2
+     }
+    ]
+   },
+   {
     "name": "Particle Run",
     "tags": [
      [
@@ -834,13 +810,18 @@
    {
     "name": "Synthesis",
     "tags": [],
-    "text": "discard a card from your hand: gain 2 insight",
+    "text": "draw 1 card",
     "effects": [
      {
-      "op": "discard_hand",
-      "resource": "insight",
-      "amount": 2
+      "op": "draw",
+      "count": 1
      }
+    ],
+    "cost": [
+     [
+      "insight",
+      2
+     ]
     ]
    }
   ],

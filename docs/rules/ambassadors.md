@@ -42,9 +42,10 @@ Cities, research stations and factories follow one set of rules and differ only 
   supply), and it needs the site in reach with no embargo. 2 energy (9)
   is cheaper than 3 ambassadors (12).
 - **Liberating an adversary site** (the Liberate action) takes massed ambassadors and **makes it yours** (r75, Matt's
-  ruling 2; it turned neutral): `liberate_at` 5 and `free_city` 5 Unity for a city, `liberate_facility_at` 3 and
-  `free_facility` 2 Unity for a station or factory, plus one for each agent on it. The agents cancel, the adversary's
-  cube comes off and yours goes on, as a claim's does. It needs the site **in reach** (your node on or next to it:
+  ruling 2; it turned neutral), at Claim's price table (r91, Matt, 2026-11-12: one table): `liberate_at` 5 and
+  `free_city` 5 Unity for a city, `claim_station` 3 or `claim_factory` 2 and `free_facility` 2 Unity for a station or
+  factory. **A site with an agent on it can't be claimed or liberated** (r91: no "+1 per agent"; clear them first,
+  with Remove agents, a card or a power). The adversary's cube comes off and yours goes on, as a claim's does. It needs the site **in reach** (your node on or next to it:
   getting close is the risk); a botnet on it stays. No agents land on it. Its factories keep their owners. A
   **liberate card** ([player-cards.md](player-cards.md), *The liberate capstones*) liberates a city exactly so, for
   its own price instead of the bill: the agents come off, Unity sways and your cube goes on. The price is the same all

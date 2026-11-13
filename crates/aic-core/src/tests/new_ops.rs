@@ -135,10 +135,11 @@ fn an_adversary_factory_liberates_as_an_adversary_station_does() {
     put(&mut g, z, FACTORY, 1);
     assert_eq!(board::liberate_cost(&w, &g, z), None);
     put(&mut g, z, ADV_CUBE, 1);
-    let at = w.int("board.liberate_facility_at");
+    // 206 (amendment 9208): Claim's table, and no agent on it.
+    let at = w.int("board.claim_factory");
     assert_eq!(board::liberate_cost(&w, &g, z), Some(at));
     put(&mut g, z, ADV_AMBASSADOR, 1);
-    assert_eq!(board::liberate_cost(&w, &g, z), Some(at + 1));
+    assert_eq!(board::liberate_cost(&w, &g, z), None);
 }
 
 #[test]
@@ -149,10 +150,9 @@ fn a_city_liberates_at_one_price_all_game() {
     let w = rules.world();
     let c = (0..g.hexes.len()).find(|&h| is_city(&w, h)).unwrap();
     put(&mut g, c, ADV_CUBE, 1);
-    put(&mut g, c, ADV_AMBASSADOR, 1);
     for stage in 1..=3 {
         setv(&mut g, crate::modules::adversary::STAGE, stage);
-        assert_eq!(board::liberate_cost(&w, &g, c), Some(w.int("board.liberate_at") + 1));
+        assert_eq!(board::liberate_cost(&w, &g, c), Some(w.int("board.liberate_at")));
     }
 }
 

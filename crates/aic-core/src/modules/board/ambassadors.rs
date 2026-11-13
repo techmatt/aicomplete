@@ -90,8 +90,9 @@ pub fn claim_ambassadors(w: &World, kind: SiteKind) -> i64 {
 /// 137: the ambassadors that liberate an adversary site of `kind`.
 pub fn liberate_ambassadors(w: &World, kind: SiteKind) -> i64 {
     match kind {
+        // 206 (amendment 9208): Claim's table (its city price is `liberate_at`, the hot knob, 5 as `claim_city`).
         SiteKind::City => liberate_at(w),
-        _ => w.int("board.liberate_facility_at").max(1),
+        _ => claim_ambassadors(w, kind),
     }
 }
 
@@ -99,20 +100,22 @@ pub fn liberate_ambassadors(w: &World, kind: SiteKind) -> i64 {
 /// agent on it, which cancel), if it is a neutral site.
 pub fn claim_cost(w: &World, g: &GameState, h: usize) -> Option<i64> {
     let kind = site_kind(w, g, h)?;
-    if corrupted(g, h) || cube_owner(g, h).is_some() {
+    // 206 (amendment 9208): no "+1 per agent": a site with an agent on it can't be claimed (clear them first).
+    if corrupted(g, h) || cube_owner(g, h).is_some() || g.tokens(h, ADV_AMBASSADOR) > 0 {
         return None;
     }
-    Some(claim_ambassadors(w, kind) + g.tokens(h, ADV_AMBASSADOR))
+    Some(claim_ambassadors(w, kind))
 }
 
 /// What liberating adversary site `h` costs in ambassadors (one more for each
 /// agent on it), if it is an adversary site.
 pub fn liberate_cost(w: &World, g: &GameState, h: usize) -> Option<i64> {
     let kind = site_kind(w, g, h)?;
-    if !corrupted(g, h) {
+    // 206 (amendment 9208): as Claim, no agent on it.
+    if !corrupted(g, h) || g.tokens(h, ADV_AMBASSADOR) > 0 {
         return None;
     }
-    Some(liberate_ambassadors(w, kind) + g.tokens(h, ADV_AMBASSADOR))
+    Some(liberate_ambassadors(w, kind))
 }
 
 /// r75 (Matt's ruling 2, 2026-11-10): the ambassadors standing on site `h` that a Claim or Liberate of

@@ -47,36 +47,43 @@ fn a_placements_prompt_names_what_it_charges() {
     assert!(paid.contains(&format!("costs {step} energy")), "{paid}");
 }
 
-/// r82 (Matt, 2026-11-11): Expand costs its 1 energy (r81 made it free); a free space adds nothing.
+/// 206 (Matt, 2026-11-12): Expand left every board; the standard Place a node costs `node_credits` and the
+/// space, `node_per_round` times a round.
 #[test]
-fn every_board_s_expand_costs_1_energy_and_the_space_once_a_round() {
+fn place_a_node_costs_its_credits_and_the_space_a_limited_number_of_times_a_round() {
     for seat in [0u8, 1] {
         let (rules, mut g) = at_step(&[], 1);
+        let w = rules.world();
+        assert!(ai::board(&w, seat as usize).powers.iter().all(|p| p.name != "Expand"));
         let start = rules.map.numbered(seat as usize, piece(seat as usize).node);
         put(&mut g, start, node(seat as usize), 1);
-        let deploy = power(&rules, seat as usize, "Expand");
-        set_res(&mut g, seat as usize, Resource::Energy, 0);
-        assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "r82: Expand's own energy");
-        set_res(&mut g, seat as usize, Resource::Energy, 2);
-        let before = node_count(&g, seat as usize);
-        rules.apply_mut(&mut g, &deploy, None).unwrap();
-        answer_all(&rules, &mut g);
-        assert_eq!(node_count(&g, seat as usize), before + 1);
-        assert_eq!(g.resource(seat as usize, Resource::Energy), 1, "the space was free and Expand costs 1 energy");
-        assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "once a round");
+        let deploy = std_act(seat, "node");
+        let price = w.int("board.node_credits");
+        set_res(&mut g, seat as usize, Resource::Credits, price - 1);
+        assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "its credits");
+        set_res(&mut g, seat as usize, Resource::Credits, 10 * price);
+        set_res(&mut g, seat as usize, Resource::Energy, 10);
+        for _ in 0..w.int("board.node_per_round") {
+            let before = node_count(&g, seat as usize);
+            rules.apply_mut(&mut g, &deploy, None).unwrap();
+            answer_all(&rules, &mut g);
+            assert_eq!(node_count(&g, seat as usize), before + 1);
+        }
+        assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "its limit a round");
     }
 }
 
-/// r82 (Matt, 2026-11-11, 188's question): Expand costs its 1 energy again, with the step.
+/// 206: a placement pays the step's energy beside Place a node's credits.
 #[test]
 fn a_node_power_pays_its_energy_and_the_step() {
     let (rules, mut g) = at_step(&[], 5);
     let w = rules.world();
     let step = step_cost(&w, 5);
-    let deploy = power(&rules, 0, "Expand");
+    let deploy = std_act(0, "node");
+    set_res(&mut g, 0, Resource::Credits, w.int("board.node_credits"));
+    set_res(&mut g, 0, Resource::Energy, step - 1);
+    assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the step's energy");
     set_res(&mut g, 0, Resource::Energy, step);
-    assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the step and Expand's 1 can't both be paid");
-    set_res(&mut g, 0, Resource::Energy, step + 1);
     rules.apply_mut(&mut g, &deploy, None).unwrap();
     answer_all(&rules, &mut g);
     assert_eq!(g.resource(0, Resource::Energy), 0);
@@ -136,8 +143,9 @@ fn tokens_of_a_placement_still_uncover() {
     let (rules, mut g) = at_step(&[], 1);
     let w = rules.world();
     set_res(&mut g, 0, Resource::Energy, 1);
+    set_res(&mut g, 0, Resource::Credits, w.int("board.node_credits"));
     let income = ai::track_income(&w, &g, 0).len();
-    rules.apply_mut(&mut g, &power(&rules, 0, "Expand"), None).unwrap();
+    rules.apply_mut(&mut g, &std_act(0, "node"), None).unwrap();
     answer_all(&rules, &mut g);
     assert_eq!(board::track_taken(&g, 0) + board::track2_taken(&g, 0), 3);
     assert_eq!(ai::track_income(&w, &g, 0).len(), income + 1);
@@ -173,10 +181,11 @@ fn placing_node_takes_the_next_track_token_and_uncovers_its_income() {
     assert!(hexes
         .iter()
         .all(|&h| rules.map.adjacent(h, start) && g.tokens(h, node(0)) == 0));
-    // Expand, which refreshes here: a test of the track, not of its limit.
+    // Place a node, which refreshes here: a test of the track, not of its limit.
     let place = |rules: &Rules, g: &mut GameState| {
-        g.vars.insert(ai::power_used(0, power_index(rules, 0, "Expand")).into(), 0);
-        act(rules, g, power(rules, 0, "Expand"));
+        g.vars.insert(board::std_once_key(board::StandardAction::Node, 0).into(), 0);
+        set_res(g, 0, Resource::Credits, 50);
+        act(rules, g, std_act(0, "node"));
     };
     place(&rules, &mut g);
     // The 2nd space (the Builder's): +3 credits a round (078).
@@ -211,10 +220,11 @@ fn a_track_s_last_steps_cost_more() {
     g.vars.insert(board::track2_key(0).into(), b.play_track.len() as i64 - 1);
     let extra = b.economy_track.last().unwrap().cost.min(b.play_track.last().unwrap().cost);
     assert!(extra > 0);
-    let deploy = power(&rules, 0, "Expand");
+    let deploy = std_act(0, "node");
+    set_res(&mut g, 0, Resource::Credits, w.int("board.node_credits"));
+    set_res(&mut g, 0, Resource::Energy, extra - 1);
+    assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the step can't be paid");
     set_res(&mut g, 0, Resource::Energy, extra);
-    assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the step and Expand's 1 can't both be paid");
-    set_res(&mut g, 0, Resource::Energy, extra + 1);
     act(&rules, &mut g, deploy);
     assert_eq!(g.resource(0, Resource::Energy), 0);
 }

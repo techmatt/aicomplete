@@ -15,41 +15,45 @@ still help.
 | Board | Power | Cost | Effect |
 |---|---|---|---|
 | Builder | Mint | 3 credits | gain 1 chip |
-| Builder | Expand | 1 energy | place 1 Node |
-| Builder | Buy In | 6 credits | place 1 Node |
+| Builder | Buy In | 6 credits | place 1 Node and gain 1 chip |
 | Builder | Scrap | 1 Industry | gain 1 chip |
 | Builder | Overcharge | 1 Power | gain 2 energy |
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
-| Builder | Focus | 2 credits | gain 1 insight |
 | Builder | Procure | 1 chip | draw 2 cards |
-| Builder | Pair Forge | 1 chip + 1 energy | gain 1 antimatter |
+| Builder | Fortify | 2 chips | remove 1 Troop in reach and harden 1 facility in reach |
 | Protector | Bulwark | 1 energy | harden 1 facility in reach |
-| Protector | Expand | 1 energy | place 1 Node |
-| Protector | Accord | 1 Diplomacy | place 1 Node |
+| Protector | Accord | 1 Diplomacy | place 1 Node and gain 1 ambassador |
 | Protector | Stand Down | 1 Security | gain 3 credits |
 | Protector | Recovery | 1 Security | clear a corruption marker in reach |
 | Protector | Shelter | 1 Security + 1 energy | in any country (no reach needed) this round, no Node or facility can be destroyed |
-| Protector | Debrief | 1 Diplomacy | draw 2 cards |
+| Protector | Debrief | 1 Diplomacy | draw 1 card and remove 1 Agent in a hex in reach |
 | Protector | Patrol | 1 energy | push up to 3 Agents or Troops from a hex in reach, each to a hex next to it |
-| Researcher | Fieldwork | 1 energy | draw 3 cards |
-| Researcher | Expand | 1 energy | place 1 Node |
-| Researcher | Peer Review | 3 research cubes | place 1 Node |
+| Protector | Interdict | 1 Security + 1 energy | remove up to 2 Troops in one hex in reach |
+| Researcher | Peer Review | 3 research cubes | place 1 Node and gain 1 insight |
 | Researcher | Grant | 3 credits | add 1 research cube in your color to an open megaproject |
 | Researcher | Field Station | 1 Industry | build a research station in reach, paying no chips |
 | Researcher | Audit | 1 Cyber | remove 3 compute from one adversary project |
+| Researcher | Disrupt | 1 Cyber + 1 research cube | remove up to 2 Troops in one country |
 | Researcher | Particle Run | 1 Power + 1 energy | gain 1 antimatter |
-| Researcher | Synthesis | nothing | discard a card from your hand: gain 2 insight |
+| Researcher | Synthesis | 2 insight | draw 1 card |
 <!-- /generated -->
 
 **Sacrifice is late-game liquidation.** Once the cards needing a tag are played, its tags turn into engine rewards,
-each payoff priced to be worth the card: 1 chip (r83: worth 2 before), 2 energy, 3 credits, a marker with its Sway, 2 cards (Debrief, 108); a
-tag and an energy buy a building, a sheltered country or an antimatter (r35). **Card throughput (108):** the Builder's
-Procure turns a spare chip into 2 cards, as the Researcher's Fieldwork turns an energy into 3.
+each payoff priced to be worth the card: 1 chip (r83: worth 2 before), 2 energy, 3 credits, a marker with its Sway, a card and
+an agent removed (Debrief, r91); a tag and an energy buy a building, a sheltered country, 2 troops removed or an antimatter (r35).
+**Card throughput:** the Builder's Procure turns a spare chip into 2 cards; the Researcher's Synthesis turns 2 insight
+into a card (r91, Matt: the Researcher's draw outlet; Fieldwork, 1 energy for 3 cards, is cut, since it starved it).
+
+**Troop powers (r91, amendment 9247: early troops decide games).** Each board removes or stops troops its own way, no
+two alike: the Protector's **Interdict** (a Security card and 1 energy: up to 2 troops in one hex in reach) beside
+its Patrol (pushes them away) and Shelter; the Builder's **Fortify** (2 chips: 1 troop in reach and a facility
+hardened); the Researcher's **Disrupt** (a Cyber card and a research cube: up to 2 troops in one country, no reach
+needed). The standard action Remove a troop (`troop_credits` 10 credits, `troop_per_round` once a round) is the hedge.
 
 **Antimatter, each board its own (r90, Matt's ruling, 2026-11-12).** No power is on every board and none spends
 antimatter: the big spends are cards (Annihilation Lance, Fusion Commons, the ultimates; [economy.md](economy.md)).
-Two boards make it, each its own way: the Builder's Pair Forge (2 chips and 1 energy, 16.5 at the anchors, for 18)
-and the Researcher's Particle Run (a Power tag and 1 energy). The Protector makes none but Sanctuary's 1 a round.
+The Researcher's Particle Run (a Power tag and 1 energy) makes it; r91 cut the Builder's Pair Forge (never used, and
+the same effect as Particle Run on a second board). The Protector makes none but Sanctuary's 1 a round.
 
 ## Insight conversions (candidate, r41)
 
@@ -58,12 +62,9 @@ and credits never buy a keep (r82). The card-play track prints it as totals, Spi
 start, then the new total on each space that raises it, each board at its own rate (r87: the Builder to 10, the
 Protector to 9, the Researcher to 8); a seat's insight is the number on the rightmost space it has
 uncovered. The economy track prints none. Every player has the
-cube converter, a standard action with no limit a round ([economy.md](economy.md)); each board adds one conversion of
-its own:
-
-- **Builder, Focus** (a power, once a round; back at r87, Matt: cut at r86 as unused): 2 credits → 1 insight. Give /
-  get 2 for 2.5 at `values.json` (4 at the anchors). 199 read it at 0.01-0.04 uses a Builder game even where insight
-  bound a seat-round in three: credits bind first.
+cube converter, a standard action with no limit a round ([economy.md](economy.md)). **Insight must bind** (Matt,
+2026-11-12: about 6 a round to drafting and 2-4 to plays is the target); r91 cut the Builder's Focus (2 credits → 1
+insight, used 0.01-0.04 a Builder game: an uninteresting conversion), so the boards' own insight ways are:
 
 - **Protector, Vigil** (an Effect of Wall, not a power; capped, r79, Matt's ruling: some cap is locked, its size a
   candidate): the first two troops each round that end their march next to your node pay 1 insight each (`board.vigil_cap`
@@ -71,16 +72,15 @@ its own:
   Any march counts (a threat's immediate march too); a troop used up striking has no end to its march. An Effect
   because it happens in a march, outside the action phase where powers are used: the march's (phase 7) pays this
   round's keeps and plays, an immediate march's (phase 18) comes after them. (r77-r78 paid every troop every march.)
-- **Researcher, Synthesis** (a power, once a round, no price but the card): discard a card from your hand, gain 2
-  insight; Patience banks it. With Fieldwork (1 energy → 3 cards) it turns 1 energy into 2 cards and 2 insight: about 4.5
-  credits into 13 at the agents' values. Each is once a round, which caps the loop. A tier-1 card kept for 1 insight and never
-  played returns 2; a tier-2 keep (2, or 1 upgraded) is refunded in full, +1 when upgraded.
+- **Researcher, Synthesis reversed** (r91, Matt, 2026-11-12; a power, once a round): 2 insight → draw a card, the
+  Researcher's draw outlet and a use for Patience's bank. No other insight → card action exists. Give / get 8 for 5 at
+  the anchors (a card kept at 1 insight is 4 more): a draw, not a gain. Peer Review, its node power, pays 1 insight.
 
 **For new players.** Insight is what you spend to keep and play cards: each round, the number on the rightmost space you've uncovered on
 your card-play track (3 at the start). When you
 are short, turn a research cube into 1 insight at any time (Cintamani's converter gives 2), and use your board's own
-way: the Builder pays 2 credits for 1 (Focus), the Protector gains 1 each of the first two times each round a troop ends its march next to its node (Vigil), the
-Researcher discards a card for 2 (Synthesis). Insight you don't spend still goes at the round's end (the Researcher
+way: the Protector gains 1 each of the first two times each round a troop ends its march next to its node (Vigil), the
+Researcher gains 1 with each node by Peer Review and may spend 2 for a card (Synthesis). Insight you don't spend still goes at the round's end (the Researcher
 keeps all of it), but a few threat counters offer insight (6 at tier 1, 7 at tier 2: [threats.md](threats.md) *Counters*),
 so spare insight can stop one.
 

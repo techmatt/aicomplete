@@ -12,15 +12,14 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.start_ambassadors` | 1 | 0..10 | player ambassadors each player starts with |
 | `board.unit_cap` | 2 | 0..20 | Drones a base holds at most |
 | `board.corp_energy` | 1 | 0..10 | energy cubes each city of country i makes a round (a megacorp parameter; the list repeats) |
-| `board.city_energy_credits` | 4 | 0..20 | standard action Buy energy: credits for a neutral city's energy, once per city a round, the city in reach and producing |
+| `board.city_energy_credits` | 5 | 0..20 | standard action Buy energy: credits for a neutral city's energy, once per city a round, the city in reach and producing |
 | `board.aligned_bonus` | 0 | 0..10 | extra energy an aligned city gives its owner |
 | `board.station_cubes` | 1 | 0..5 | research cubes a neutral station makes a round (an adversary one: compute) |
 | `board.owned_station_cubes` | 2 | 0..5 | research cubes a player-owned station makes its owner a round (142) |
 | `board.divert_discord` | 1 | 0..5 | Discord per unit of a corrupted city's energy diverted to the adversary |
 | `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy, each round, of an aligned city an agent darkens |
 | `board.liberate_at` | 5 | 1..10 | the Liberate action: ambassadors that liberate an adversary city |
-| `board.liberate_facility_at` | 3 | 1..10 | the Liberate action: ambassadors that liberate an adversary station or factory |
-| `board.claim_city` | 5 | 1..10 | the Claim action: ambassadors that claim a neutral city |
+| `board.claim_city` | 5 | 1..10 | the Claim action: ambassadors that claim a neutral city (206: Liberate's table too, its city price `liberate_at`) |
 | `board.claim_station` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral research station |
 | `board.claim_factory` | 2 | 1..10 | the Claim action: ambassadors that claim a neutral factory |
 | `board.start_nodes` | 1 | 1..3 | 175: nodes each player starts with: its start hex, then the lowest-numbered free land hexes next to it (the extras off no track) |
@@ -31,25 +30,31 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.vigil_cap` | 2 | 1..10 | 185: troops a round whose march ending next to a seat's node pays its Vigil (later ones that round pay nothing) |
 | `board.node_marker` | 1 | 0..1 | 1: a destroyed node leaves a corruption marker on its hex |
 | `board.station_chips` | 1 | 0..20 | standard action: chips to build a research station |
+| `board.station_ambassadors` | 0 | 0..5 | standard action: ambassadors a research station also uses up (206, candidate; 0: none) |
+| `board.node_credits` | 6 | 0..30 | 206: standard action Place a node: credits, beside the track step's energy (0: no such action) |
+| `board.troop_credits` | 10 | 0..50 | 206: standard action Remove a troop: credits for 1 troop in reach (0: no such action) |
+| `board.node_per_round` | 2 | 1..5 | 206: times a seat may take Place a node a round |
+| `board.troop_per_round` | 1 | 1..5 | 206: times a seat may take Remove a troop a round |
+| `board.factory_build_chips` | 0 | 0..20 | 206: standard action Build a factory: chips for a factory of yours (0: no such action) |
 | `board.factory_chips` | 1 | 0..5 | chips a player-owned factory makes its owner each round |
 | `board.city_build_chips` | 3 | 1..10 | 190: chips a city spends to build a neutral factory or research station |
 | `board.city_chip_cap` | 3 | 1..10 | 190: chips a city holds at most while they wait (one each round from each unclaimed neutral factory next to it) |
 | `board.remove_ambassadors` | 1 | 1..5 | standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing) |
 | `board.remove_count` | 3 | 1..3 | standard action Remove agents: agents it removes, at most, from any hexes in reach (the player's choice) |
-| `board.clear_cost` | 2 | 0..20 | standard action: credits to clear a corruption marker within reach |
+| `board.clear_cost` | 0 | 0..20 | standard action: credits to clear a corruption marker within reach (206: 0, cut) |
 | `board.clear_unity` | 2 | 0..5 | Sway toward Unity for clearing a corruption marker |
 | `board.clear_credits` | 0 | 0..5 | credits back for clearing a corruption marker |
 | `board.envoy_ambassadors` | 1 | 0..5 | standard action Envoy: your ambassadors from the supply, used up, to move 1 Discord off the Discord track (0: no such action) |
 | `board.ambassador_credits` | 20 | 1..50 | standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit) |
 | `board.sell_credits` | 1 | 0..20 | standard action: credits for selling a card from hand |
-| `board.harden_credits` | 3 | 1..50 | standard project: credits for a hardening token |
-| `board.drain_credits` | 5 | 1..50 | standard project: credits to drain compute from an adversary project |
+| `board.harden_credits` | 0 | 0..50 | standard project: credits for a hardening token (0: cut) |
+| `board.drain_credits` | 0 | 0..50 | standard project: credits to drain compute from an adversary project (206: 0, cut) |
 | `board.drain_amount` | 3 | 1..20 | standard project: compute drained |
 | `board.cube_insight` | 1 | 0..5 | standard action, no limit a round: insight for 1 research cube (0: no such action) |
 | `board.antimatter_cubes` | 4 | 0..10 | standard action, the desperate source (204): research cubes for 1 antimatter, no limit a round (0: no such action) |
 | `board.breakthrough_antimatter` | 1 | 1..10 | standard action Breakthrough (204): antimatter it spends |
 | `board.breakthrough_unity` | 2 | 0..10 | standard action Breakthrough (204): Sway toward Unity, once a round (0: no such action) |
-| `board.botnet_credits` | 3 | 1..50 | standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays) |
+| `board.botnet_credits` | 16 | 1..50 | standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays) |
 | `adversary.difficulty` | 0 | 0..4 | difficulty level 0-4 (each level includes the ones below) |
 | `adversary.stage_cards` | 4, 4, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
 | `adversary.supply_per_country` | 24 | 0..40 | agents in the supply per country |
@@ -79,7 +84,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.stage2_removed` | 2 | 0..3 | difficulty 3+: stage-II cards removed (a shorter round cap) |
 | `adversary.stage1_added` | 0 | 0..3 | 151: difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step) |
 | `adversary.extra_corrupted` | 0 | 0..3 | difficulty 4: more cities per country start corrupted |
-| `adversary.compute_income` | 0, 8, 17, 25, 30 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
+| `adversary.compute_income` | 0, 13, 17, 21, 30 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
 | `adversary.ambassador_income` | 0, 0, 0, 0, 1 | 0..10 | 151: the agent income a country a round (into each country's pool), at difficulty 0-4 |
 | `adversary.tier2_early` | 1 | 0..3 | difficulty 4+: tier-2 threats start this many rounds sooner |
 | `adversary.discord_removed` | 0 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |

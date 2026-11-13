@@ -272,13 +272,7 @@ fn fight_triggers_fire_once_an_action() {
     answer_all(&rules, &mut g);
     assert!(g.tokens(near, ADV_AMBASSADOR) < 3);
     assert_eq!(g.resource(0, r), before + n);
-    // Compute: the drain project.
-    let (r, n) = trigger_gain(&rules, "security_ops_floor");
-    let p = crate::modules::adversary::projects(&g)[0];
-    g.vars.insert(crate::modules::adversary::project_key(&p).as_str().into(), 4);
-    let before = g.resource(0, r);
-    act(&rules, &mut g, std_act(0, "drain"));
-    assert_eq!(g.resource(0, r), before + n);
+    // 206: the drain project is cut (compute comes off by cards and Audit).
 }
 
 #[test]
@@ -500,18 +494,18 @@ fn the_boards_insight_powers() {
         out_of_decks(&mut g, card);
     }
     set_pile(&mut g, "cards.hand.0", &["signal_hijack", "baseload_contract"]);
-    set_res(&mut g, 0, Resource::Insight, 0);
+    // 206 (Matt, 2026-11-12): Synthesis reversed, 2 insight for a card.
+    set_res(&mut g, 0, Resource::Insight, 1);
+    assert!(rules.apply_mut(&mut g.clone(), &power(&rules, 0, "Synthesis"), None).is_err(), "2 insight");
+    set_res(&mut g, 0, Resource::Insight, 3);
     rules.apply_mut(&mut g, &power(&rules, 0, "Synthesis"), None).unwrap();
-    answer(&rules, &mut g, 0);
-    assert_eq!(g.pile("cards.hand.0").len(), 1, "one card a use");
-    assert_eq!(g.resource(0, Resource::Insight), 2);
-    // Builder: Focus, 2 credits for 1 insight (199, r87: back after 196 cut it).
+    answer_all(&rules, &mut g);
+    assert_eq!(g.pile("cards.hand.0").len(), 3, "a card drawn");
+    assert_eq!(g.resource(0, Resource::Insight), 1);
+    // 206: the Builder's Focus is cut.
     let rules = Rules::new(&lab_config(&[ACTIONS])).unwrap();
-    let mut g = rules.new_game(1);
-    set_res(&mut g, 0, Resource::Insight, 0);
-    set_res(&mut g, 0, Resource::Credits, 5);
-    rules.apply_mut(&mut g, &power(&rules, 0, "Focus"), None).unwrap();
-    assert_eq!((g.resource(0, Resource::Credits), g.resource(0, Resource::Insight)), (3, 1));
+    let w = rules.world();
+    assert!(!modules::ai::board(&w, 0).powers.iter().any(|p| p.name == "Focus"));
 }
 
 /// 178 (Matt's ruling #18): Vigil pays when a troop ends its march next to the Protector's node.

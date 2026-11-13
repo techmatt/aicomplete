@@ -69,8 +69,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("divert_discord", 0, 5, "Discord per unit of a corrupted city's energy diverted to the adversary"),
             ParamSpec::int("ambassador_discord", 0, 5, "Discord per unit of energy, each round, of an aligned city an agent darkens"),
             ParamSpec::int("liberate_at", 1, 10, "the Liberate action: ambassadors that liberate an adversary city"),
-            ParamSpec::int("liberate_facility_at", 1, 10,"the Liberate action: ambassadors that liberate an adversary station or factory"),
-            ParamSpec::int("claim_city", 1, 10, "the Claim action: ambassadors that claim a neutral city"),
+            ParamSpec::int("claim_city", 1, 10, "the Claim action: ambassadors that claim a neutral city (206: Liberate's table too, its city price `liberate_at`)"),
             ParamSpec::int("claim_station", 1, 10, "the Claim action: ambassadors that claim a neutral research station"),
             ParamSpec::int("claim_factory", 1, 10, "the Claim action: ambassadors that claim a neutral factory"),
             ParamSpec::int("start_nodes", 1, 3, "175: nodes each player starts with: its start hex, then the lowest-numbered free land hexes next to it (the extras off no track)"),
@@ -81,19 +80,25 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("vigil_cap", 1, 10, "185: troops a round whose march ending next to a seat's node pays its Vigil (later ones that round pay nothing)"),
             ParamSpec::int("node_marker", 0, 1, "1: a destroyed node leaves a corruption marker on its hex"),
             ParamSpec::int("station_chips", 0, 20, "standard action: chips to build a research station"),
+            ParamSpec::int("station_ambassadors", 0, 5, "standard action: ambassadors a research station also uses up (206, candidate; 0: none)"),
+            ParamSpec::int("node_credits", 0, 30, "206: standard action Place a node: credits, beside the track step's energy (0: no such action)"),
+            ParamSpec::int("troop_credits", 0, 50, "206: standard action Remove a troop: credits for 1 troop in reach (0: no such action)"),
+            ParamSpec::int("node_per_round", 1, 5, "206: times a seat may take Place a node a round"),
+            ParamSpec::int("troop_per_round", 1, 5, "206: times a seat may take Remove a troop a round"),
+            ParamSpec::int("factory_build_chips", 0, 20, "206: standard action Build a factory: chips for a factory of yours (0: no such action)"),
             ParamSpec::int("factory_chips", 0, 5, "chips a player-owned factory makes its owner each round"),
             ParamSpec::int("city_build_chips", 1, 10, "190: chips a city spends to build a neutral factory or research station"),
             ParamSpec::int("city_chip_cap", 1, 10, "190: chips a city holds at most while they wait (one each round from each unclaimed neutral factory next to it)"),
             ParamSpec::int("remove_ambassadors", 1, 5, "standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing)"),
             ParamSpec::int("remove_count", 1, 3, "standard action Remove agents: agents it removes, at most, from any hexes in reach (the player's choice)"),
-            ParamSpec::int("clear_cost", 0, 20, "standard action: credits to clear a corruption marker within reach"),
+            ParamSpec::int("clear_cost", 0, 20, "standard action: credits to clear a corruption marker within reach (206: 0, cut)"),
             ParamSpec::int("clear_unity", 0, 5, "Sway toward Unity for clearing a corruption marker"),
             ParamSpec::int("clear_credits", 0, 5, "credits back for clearing a corruption marker"),
             ParamSpec::int("envoy_ambassadors", 0, 5, "standard action Envoy: your ambassadors from the supply, used up, to move 1 Discord off the Discord track (0: no such action)"),
             ParamSpec::int("ambassador_credits", 1, 50, "standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit)"),
             ParamSpec::int("sell_credits", 0, 20, "standard action: credits for selling a card from hand"),
-            ParamSpec::int("harden_credits", 1, 50, "standard project: credits for a hardening token"),
-            ParamSpec::int("drain_credits", 1, 50, "standard project: credits to drain compute from an adversary project"),
+            ParamSpec::int("harden_credits", 0, 50, "standard project: credits for a hardening token (0: cut)"),
+            ParamSpec::int("drain_credits", 0, 50, "standard project: credits to drain compute from an adversary project (206: 0, cut)"),
             ParamSpec::int("drain_amount", 1, 20, "standard project: compute drained"),
             ParamSpec::int("cube_insight", 0, 5, "standard action, no limit a round: insight for 1 research cube (0: no such action)"),
             ParamSpec::int("antimatter_cubes", 0, 10, "standard action, the desperate source (204): research cubes for 1 antimatter, no limit a round (0: no such action)"),
@@ -153,13 +158,13 @@ const LANDED_AT: &str = "board.landed_at.";
 const LANDED_N: &str = "board.landed_n.";
 
 /// The marks a round's end clears outright ([`expire_marks`]).
-const ROUND_MARKS: [&str; 7] = [NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED, BOUGHT, BROKE_THROUGH];
+const ROUND_MARKS: [&str; 8] = [NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED, BOUGHT, BROKE_THROUGH, STD_ONCE];
 
 /// 135: every per-round mark [`expire_marks`] counts down, trues or clears
 /// (the view lists them as bookkeeping).
-pub(super) const MARKS: [&str; 12] = [
+pub(super) const MARKS: [&str; 13] = [
     HEX_FLAGS, STAND, OCCUPIED, CORP_EXTRA, EXTRA_WAR, NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED, BOUGHT,
-    BROKE_THROUGH,
+    BROKE_THROUGH, STD_ONCE,
 ];
 
 /// How many of hex `h`'s adversary troops stand.

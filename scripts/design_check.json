@@ -2,15 +2,21 @@
   "note": "205: design_check.py's thresholds and source classes. Every number is a candidate, to be tuned from data (Matt, 2026-11-12). The principles they encode are in docs/principles.md, *Design warnings*.",
   "scarce_resources": {
     "note": "tier-2 and capstone resources: scarce and earned; no cheap standard-action source",
-    "resources": ["antimatter"],
-    "cheap_share_max": 0.20
+    "resources": [
+      "antimatter"
+    ],
+    "cheap_share_max": 0.2
   },
-  "source_share_max": 0.40,
-  "use_share_max": 0.50,
+  "source_share_max": 0.4,
+  "use_share_max": 0.5,
   "share_min_per_seat": 0.5,
   "source_classes": {
     "note": "regexes on games.jsonl's source keys (own:/other: stripped). 'standard' is a standard action or the antimatter action; tier-1 sources are found from content (own:play:/own:use: of a tier-1 card).",
-    "standard": ["^standard:", "^antimatter-action$", "^sell"]
+    "standard": [
+      "^standard:",
+      "^antimatter-action$",
+      "^sell"
+    ]
   },
   "repeat_powers": {
     "note": "a power name, or a power's effects (cost aside), on this many boards or more",
@@ -20,31 +26,228 @@
   "standard_actions": {
     "note": "each standard action's give and get at the unit anchors (docs/card-guidelines.md, *Unit anchors*; values.json for units with none). A number is a count; a string is a baseline.json param (module.param). 'src' is its games.jsonl source key, for its uses a game. 'off' (208, P1): the tunable that turns the action off at 0; such a row is skipped. 'narrative' (204): the story tag of its Sway.",
     "rows": [
-      {"name": "Breakthrough", "src": "standard:breakthrough", "off": "board.breakthrough_unity", "give": {"antimatter": "board.breakthrough_antimatter"}, "get": {"sway": "board.breakthrough_unity"}, "narrative": "cooperation"},
-      {"name": "Make antimatter", "src": "standard:antimatter", "off": "board.antimatter_cubes", "give": {"research_cubes": "board.antimatter_cubes"}, "get": {"antimatter": 1}},
-      {"name": "Buy a city's energy", "src": "standard:buy_energy", "give": {"credits": "board.city_energy_credits"}, "get": {"energy": 1}},
-      {"name": "Turn a cube into insight", "src": "standard:insight", "give": {"research_cubes": 1}, "get": {"insight": "board.cube_insight"}},
-      {"name": "Build a research station", "src": "standard:station", "give": {"chips": "board.station_chips"}, "get": {"station": 1}},
-      {"name": "Remove agents", "src": "standard:remove", "give": {"ambassadors": "board.remove_ambassadors"}, "get": {"agent": "board.remove_count"}},
-      {"name": "Clear a corruption marker", "src": "standard:clear", "give": {"credits": "board.clear_cost"}, "get": {"sway": "board.clear_unity", "credits": "board.clear_credits"}, "narrative": "trust"},
-      {"name": "Gain a player ambassador", "src": "standard:ambassador", "give": {"credits": "board.ambassador_credits"}, "get": {"ambassadors": 1}},
-      {"name": "Take down a botnet", "src": "standard:botnet", "give": {"credits": "board.botnet_credits"}, "get": {"botnet": 1, "sway": "alignment.botnet"}, "narrative": "neutral"},
-      {"name": "Project: harden", "src": "standard:harden_buy", "give": {"credits": "board.harden_credits"}, "get": {"harden": 1}},
-      {"name": "Project: drain", "src": "standard:drain", "give": {"credits": "board.drain_credits"}, "get": {"compute": "board.drain_amount"}},
-      {"name": "Liberate a city", "src": "standard:liberate", "give": {"ambassadors": "board.liberate_at"}, "get": {"city_liberated": 1, "sway": "alignment.free_city"}, "narrative": "trust"},
-      {"name": "Envoy", "src": "standard:envoy", "give": {"ambassadors": "board.envoy_ambassadors"}, "get": {"sway": 1}, "narrative": "trust"},
-      {"name": "Sell a card", "src": "standard:sell", "give": {"card": 1}, "get": {"credits": "board.sell_credits"}}
+      {
+        "name": "Breakthrough",
+        "src": "standard:breakthrough",
+        "off": "board.breakthrough_unity",
+        "give": {
+          "antimatter": "board.breakthrough_antimatter"
+        },
+        "get": {
+          "sway": "board.breakthrough_unity"
+        },
+        "narrative": "cooperation"
+      },
+      {
+        "name": "Make antimatter",
+        "src": "standard:antimatter",
+        "off": "board.antimatter_cubes",
+        "give": {
+          "research_cubes": "board.antimatter_cubes"
+        },
+        "get": {
+          "antimatter": 1
+        }
+      },
+      {
+        "name": "Buy a city's energy",
+        "src": "standard:buy_energy",
+        "give": {
+          "credits": "board.city_energy_credits"
+        },
+        "get": {
+          "energy": 1
+        }
+      },
+      {
+        "name": "Turn a cube into insight",
+        "src": "standard:insight",
+        "give": {
+          "research_cubes": 1
+        },
+        "get": {
+          "insight": "board.cube_insight"
+        }
+      },
+      {
+        "name": "Build a research station",
+        "src": "standard:station",
+        "give": {
+          "chips": "board.station_chips",
+          "ambassadors": "board.station_ambassadors"
+        },
+        "get": {
+          "station": 1
+        }
+      },
+      {
+        "name": "Remove agents",
+        "src": "standard:remove",
+        "give": {
+          "ambassadors": "board.remove_ambassadors"
+        },
+        "get": {
+          "agent": "board.remove_count"
+        }
+      },
+      {
+        "name": "Clear a corruption marker",
+        "src": "standard:clear",
+        "give": {
+          "credits": "board.clear_cost"
+        },
+        "get": {
+          "sway": "board.clear_unity",
+          "credits": "board.clear_credits"
+        },
+        "narrative": "trust",
+        "off": "board.clear_cost"
+      },
+      {
+        "name": "Gain a player ambassador",
+        "src": "standard:ambassador",
+        "give": {
+          "credits": "board.ambassador_credits"
+        },
+        "get": {
+          "ambassadors": 1
+        }
+      },
+      {
+        "name": "Take down a botnet",
+        "src": "standard:botnet",
+        "give": {
+          "credits": "board.botnet_credits"
+        },
+        "get": {
+          "botnet": 1,
+          "sway": "alignment.botnet"
+        },
+        "narrative": "neutral"
+      },
+      {
+        "name": "Project: harden",
+        "src": "standard:harden_buy",
+        "give": {
+          "credits": "board.harden_credits"
+        },
+        "get": {
+          "harden": 1
+        },
+        "off": "board.harden_credits"
+      },
+      {
+        "name": "Project: drain",
+        "src": "standard:drain",
+        "give": {
+          "credits": "board.drain_credits"
+        },
+        "get": {
+          "compute": "board.drain_amount"
+        },
+        "off": "board.drain_credits"
+      },
+      {
+        "name": "Liberate a city",
+        "src": "standard:liberate",
+        "give": {
+          "ambassadors": "board.liberate_at"
+        },
+        "get": {
+          "city_liberated": 1,
+          "sway": "alignment.free_city"
+        },
+        "narrative": "trust"
+      },
+      {
+        "name": "Envoy",
+        "src": "standard:envoy",
+        "give": {
+          "ambassadors": "board.envoy_ambassadors"
+        },
+        "get": {
+          "sway": 1
+        },
+        "narrative": "trust"
+      },
+      {
+        "name": "Sell a card",
+        "src": "standard:sell",
+        "give": {
+          "card": 1
+        },
+        "get": {
+          "credits": "board.sell_credits"
+        }
+      },
+      {
+        "name": "Place a node",
+        "src": "standard:node",
+        "off": "board.node_credits",
+        "give": {
+          "credits": "board.node_credits",
+          "energy": 1
+        },
+        "get": {
+          "node": 1
+        }
+      },
+      {
+        "name": "Remove a troop",
+        "src": "standard:troop",
+        "off": "board.troop_credits",
+        "give": {
+          "credits": "board.troop_credits"
+        },
+        "get": {
+          "troop": 1
+        }
+      },
+      {
+        "name": "Build a factory",
+        "src": "standard:factory",
+        "off": "board.factory_build_chips",
+        "give": {
+          "chips": "board.factory_build_chips"
+        },
+        "get": {
+          "factory": 1
+        }
+      }
     ],
     "extra_anchors": {
-      "note": "units the anchor table and values.json lack, from card-guidelines.md's derived lines and past checks",
-      "station": 6, "harden": 3, "botnet": 16, "city_liberated": 45, "card": 5, "compute": 2, "agent": 5, "sway": 4
+      "note": "units the anchor table and values.json lack, from card-guidelines.md's derived lines and past checks (206: a node at values.json's 8; a factory at +1 chip income, 19)",
+      "station": 6,
+      "harden": 3,
+      "botnet": 16,
+      "city_liberated": 45,
+      "card": 5,
+      "compute": 2,
+      "agent": 5,
+      "sway": 4,
+      "node": 8,
+      "factory": 19
     }
   },
   "sway": {
     "note": "a narrative tag (204) on a sway source: its expected side. Until tags exist, sources are listed as information.",
     "tag_field": "narrative",
-    "tag_side": {"trust": "unity", "cooperation": "unity", "fear": "discord", "force": "discord", "collateral": "discord"},
-    "force_ops": ["destroy_all", "remove_troops", "remove_where", "damage", "destroy_facility", "push", "cordon"]
+    "tag_side": {
+      "trust": "unity",
+      "cooperation": "unity",
+      "fear": "discord",
+      "force": "discord",
+      "collateral": "discord"
+    },
+    "force_ops": [
+      "destroy_all",
+      "remove_troops",
+      "remove_where",
+      "damage",
+      "destroy_facility",
+      "push",
+      "cordon"
+    ]
   },
   "dead": {
     "kept_min_per_game": 0.1,
@@ -55,18 +258,43 @@
   },
   "victory_needs": {
     "note": "engines over dials: at high difficulty a win needs chips, energy, antimatter and cubes; warns when one is spent in under this share of won games",
-    "levels": [3, 4], "resources": ["chips", "energy", "antimatter", "research_cubes"], "spent_share_min": 0.75
+    "levels": [
+      3,
+      4
+    ],
+    "resources": [
+      "chips",
+      "energy",
+      "antimatter",
+      "research_cubes"
+    ],
+    "spent_share_min": 0.75
   },
-  "rounds": {"min": 8, "max": 10},
+  "rounds": {
+    "min": 8,
+    "max": 10
+  },
   "tokens": {
     "note": "table work a round: the adversary's ops (games.jsonl adversary_ops) and these player-side counters, per round, against --old",
-    "player_counters": ["board.node_placed", "board.troop_moves", "board.troop_steps", "board.units_built", "board.troops_built", "board.markers"],
-    "player_prefixes": ["board.amb_moves."],
-    "rise_max": 0.10
+    "player_counters": [
+      "board.node_placed",
+      "board.troop_moves",
+      "board.troop_steps",
+      "board.units_built",
+      "board.troops_built",
+      "board.markers"
+    ],
+    "player_prefixes": [
+      "board.amb_moves."
+    ],
+    "rise_max": 0.1
   },
   "dials": {
     "note": "a baseline.json number moved by this share or more in a change that also edits content/ or a module's rules",
     "move_min": 0.4,
-    "design_paths": ["content/", "crates/aic-core/src/"]
+    "design_paths": [
+      "content/",
+      "crates/aic-core/src/"
+    ]
   }
 }

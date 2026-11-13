@@ -86,7 +86,7 @@ printed per player count (the table below).
   alone), "its lowest-numbered botnet"; ties: the lowest-numbered. "Turns neutral": the owner's cube comes off.
   **Factory troops** are an adversary factory's own output (a player ambassador on it stops them). **The clock**:
   the top event card is discarded, the round cap a round nearer.
-- **Counterplay:** an ambassador on a botnet or a corrupted station; Cyber's hacks; the drain standard project
+- **Counterplay:** an ambassador on a botnet or a corrupted station; Cyber's hacks; the Researcher's Audit
   ([economy.md](economy.md)), off a project, not the waiting compute.
 
 <!-- generated: projects -->
@@ -171,7 +171,7 @@ it makes ([alignment.md](alignment.md)): a plain loss (Matt, 2026-11-08).
 <!-- generated: difficulty -->
 | Level | Adds | Tunable |
 |---|---|---|
-| 0 | Base rules; the incomes, an entry a level | `compute_income` 0, 8, 17, 25, 30, `ambassador_income` 0, 0, 0, 0, 1 |
+| 0 | Base rules; the incomes, an entry a level | `compute_income` 0, 13, 17, 21, 30, `ambassador_income` 0, 0, 0, 0, 1 |
 | 1 | City, station, factory corrupt with fewer agents (from `corrupt_cut_at`); counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`) | `corrupt_cut` 1, 1, 1, 0, `corrupt_cut_at` 1, `counter_bonus_all` 1, `counter_bonus_credits` 4, `counter_bonus` 0, `counter_bonus_at` 1 |
 | 2 | Counters cost more again (from `counter_more_at`); the adversary board's difficulty line (from `board_difficulty_at`) | `counter_more_all` 1, `counter_more_credits` 0, `counter_more_at` 2, `board_difficulty_at` 2 |
 | 3 | Stage-II cards removed, stage-I cards added back | `stage2_removed` 2, `stage1_added` 0 |

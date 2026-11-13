@@ -1,0 +1,157 @@
+{
+  "name": "s206-screen",
+  "note": "206: screen on the dev seeds 36800-36831",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_st2",
+      "set": [
+        "board.station_chips=2"
+      ]
+    },
+    {
+      "name": "br_st2",
+      "set": [
+        "ai.boards=0,2",
+        "board.station_chips=2"
+      ]
+    },
+    {
+      "name": "pr_st2",
+      "set": [
+        "ai.boards=1,2",
+        "board.station_chips=2"
+      ]
+    },
+    {
+      "name": "bp_sta",
+      "set": [
+        "board.station_ambassadors=1"
+      ]
+    },
+    {
+      "name": "br_sta",
+      "set": [
+        "ai.boards=0,2",
+        "board.station_ambassadors=1"
+      ]
+    },
+    {
+      "name": "pr_sta",
+      "set": [
+        "ai.boards=1,2",
+        "board.station_ambassadors=1"
+      ]
+    },
+    {
+      "name": "bp_fac",
+      "set": [
+        "board.factory_build_chips=3"
+      ]
+    },
+    {
+      "name": "br_fac",
+      "set": [
+        "ai.boards=0,2",
+        "board.factory_build_chips=3"
+      ]
+    },
+    {
+      "name": "pr_fac",
+      "set": [
+        "ai.boards=1,2",
+        "board.factory_build_chips=3"
+      ]
+    },
+    {
+      "name": "bp_cf3",
+      "set": [
+        "board.claim_factory=3"
+      ]
+    },
+    {
+      "name": "br_cf3",
+      "set": [
+        "ai.boards=0,2",
+        "board.claim_factory=3"
+      ]
+    },
+    {
+      "name": "pr_cf3",
+      "set": [
+        "ai.boards=1,2",
+        "board.claim_factory=3"
+      ]
+    },
+    {
+      "name": "bp_hb",
+      "set": [
+        "board.harden_credits=3"
+      ]
+    },
+    {
+      "name": "br_hb",
+      "set": [
+        "ai.boards=0,2",
+        "board.harden_credits=3"
+      ]
+    },
+    {
+      "name": "pr_hb",
+      "set": [
+        "ai.boards=1,2",
+        "board.harden_credits=3"
+      ]
+    },
+    {
+      "name": "bp_nt",
+      "set": [
+        "board.troop_credits=0"
+      ]
+    },
+    {
+      "name": "br_nt",
+      "set": [
+        "ai.boards=0,2",
+        "board.troop_credits=0"
+      ]
+    },
+    {
+      "name": "pr_nt",
+      "set": [
+        "ai.boards=1,2",
+        "board.troop_credits=0"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

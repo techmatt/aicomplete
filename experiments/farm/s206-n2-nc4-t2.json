@@ -1,0 +1,97 @@
+{
+  "name": "s206-n2-nc4-t2",
+  "note": "206: a screen on the dev seeds",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_n2",
+      "set": [
+        "board.node_per_round=2"
+      ]
+    },
+    {
+      "name": "br_n2",
+      "set": [
+        "ai.boards=0,2",
+        "board.node_per_round=2"
+      ]
+    },
+    {
+      "name": "pr_n2",
+      "set": [
+        "ai.boards=1,2",
+        "board.node_per_round=2"
+      ]
+    },
+    {
+      "name": "bp_nc4",
+      "set": [
+        "board.node_credits=4"
+      ]
+    },
+    {
+      "name": "br_nc4",
+      "set": [
+        "ai.boards=0,2",
+        "board.node_credits=4"
+      ]
+    },
+    {
+      "name": "pr_nc4",
+      "set": [
+        "ai.boards=1,2",
+        "board.node_credits=4"
+      ]
+    },
+    {
+      "name": "bp_t2",
+      "set": [
+        "board.troop_per_round=2"
+      ]
+    },
+    {
+      "name": "br_t2",
+      "set": [
+        "ai.boards=0,2",
+        "board.troop_per_round=2"
+      ]
+    },
+    {
+      "name": "pr_t2",
+      "set": [
+        "ai.boards=1,2",
+        "board.troop_per_round=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

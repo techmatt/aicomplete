@@ -52,7 +52,7 @@ fn standard_actions_are_offered_only_when_affordable_and_targeted() {
         !o0.contains("remove") && !o0.contains("harden") && !o0.contains("chips"),
         "{o0:?}"
     );
-    assert!(!o0.contains("factory"), "cities build factories now");
+    assert!(!o0.contains("factory"), "206: Build a factory is off (`factory_build_chips` 0)");
     let d = node_of(&g, 0)[0];
     put(&mut g, d, ADV_AMBASSADOR, 1);
     assert!(standard_offered(&rules, &g, 0).contains("remove"));
@@ -68,7 +68,9 @@ fn standard_actions_are_offered_only_when_affordable_and_targeted() {
     // The view publishes every standard action with its cost.
     let v = rules.view(&g);
     let acts: Vec<&str> = v.standard.iter().map(|x| x.act.as_str()).collect();
-    assert_eq!(acts, board::STANDARD.map(board::StandardAction::name));
+    let w = rules.world();
+    let offered: Vec<&str> = board::STANDARD.iter().filter(|&&a| board::std_offered(&w, a)).map(|a| a.name()).collect();
+    assert_eq!(acts, offered, "206: a cut action is not published");
     let station = v.standard.iter().find(|x| x.act == "station").unwrap();
     assert_eq!(
         (station.energy, station.credits, station.chips),
@@ -181,10 +183,14 @@ fn a_card_s_harden_action_costs_chips() {
 
 #[test]
 fn standard_projects_turn_credits_into_hardening_and_drains() {
-    let (rules, mut g) = lab_actions();
+    // 206 (amendment 9208): the harden and drain projects are cut at the baseline (0); this lab prices them.
+    let mut c = lab_config(&[ACTIONS]);
+    c.apply_override("board.harden_credits=3").unwrap();
+    c.apply_override("board.drain_credits=5").unwrap();
+    let rules = Rules::new(&c).unwrap();
     let w = rules.world();
+    let mut g = rules.new_game(1);
     set_res(&mut g, 0, Resource::Credits, 40);
-
     // Any player may harden with credits (the Builder has no Harden passive).
     let p = node_of(&g, 0)[0];
     put(&mut g, p, STATION, 1);
@@ -251,11 +257,10 @@ fn claiming_puts_a_cube_on_a_neutral_city_in_reach() {
     assert!(!standard_offered(&rules, &g, 0).contains("claim"));
 }
 
-/// 137: claiming a dark city (agents on it) costs 1 more for
-/// each; they cancel back to the supply and the cube goes on at once (r40:
-/// Align canceled one and aligned nothing).
+/// 206 (amendment 9208): a dark city (agents on it) can't be claimed until they are gone (it cost 1 more for
+/// each, 137-r90).
 #[test]
-fn claiming_a_dark_city_pays_one_more_for_each_adversary_ambassador() {
+fn claiming_a_dark_city_waits_for_its_agents_to_go() {
     let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let w = rules.world();
@@ -263,15 +268,15 @@ fn claiming_a_dark_city_pays_one_more_for_each_adversary_ambassador() {
     let (city, next) = city_with_lonely_neighbors(m);
     put(&mut g, next[0], node(0), 1);
     put(&mut g, city, ADV_AMBASSADOR, 2);
-    assert_eq!(board::claim_cost(&w, &g, city), Some(n + 2));
+    assert_eq!(board::claim_cost(&w, &g, city), None);
     set_res(&mut g, 0, Resource::Energy, 0);
-    set_res(&mut g, 0, Resource::Ambassadors, n + 1);
-    assert!(!standard_offered(&rules, &g, 0).contains("claim"));
     set_res(&mut g, 0, Resource::Ambassadors, n + 2);
-    let supply = g.var(SUPPLY);
+    assert!(!standard_offered(&rules, &g, 0).contains("claim"));
+    put(&mut g, city, ADV_AMBASSADOR, 0);
+    assert_eq!(board::claim_cost(&w, &g, city), Some(n));
     act(&rules, &mut g, std_act(0, "claim"));
     assert_eq!((g.tokens(city, ADV_AMBASSADOR), g.tokens(city, cube(0))), (0, 1));
-    assert_eq!((g.resource(0, Resource::Ambassadors), g.var(SUPPLY)), (0, supply + 2));
+    assert_eq!(g.resource(0, Resource::Ambassadors), 2);
 }
 
 /// 137: Claim costs by site type: `claim_city`, `claim_station`,
@@ -310,8 +315,8 @@ fn claiming_costs_by_site_type() {
     assert_eq!(g.stats.counters["board.claimed.factory"], 1);
 }
 
-/// 148 (D70): a card's station claim (`claim_station`) claims as the Claim action does: a station holding
-/// agents is open to it for one of the seat's ambassadors each, which cancel.
+/// 148 (D70): a card's station claim (`claim_station`) claims as the Claim action does: 206 (amendment 9208), a
+/// station holding agents is shut to it until they are gone.
 #[test]
 fn card_claims_a_station_as_claim_does() {
     let (rules, mut g) = lab(&[]);
@@ -323,14 +328,15 @@ fn card_claims_a_station_as_claim_does() {
     put(&mut g, st, STATION, 1);
     assert_eq!(board::card_claim_stations(&w, &g, 0), vec![st]);
     put(&mut g, st, ADV_AMBASSADOR, 2);
-    assert_eq!(board::card_claim_extra(&w, &g, st), Some(2));
-    set_res(&mut g, 0, Resource::Ambassadors, 1);
-    assert!(board::card_claim_stations(&w, &g, 0).is_empty(), "short of the extra ambassadors");
+    assert_eq!(board::card_claim_extra(&w, &g, st), None);
     set_res(&mut g, 0, Resource::Ambassadors, 3);
+    assert!(board::card_claim_stations(&w, &g, 0).is_empty(), "agents on it");
+    put(&mut g, st, ADV_AMBASSADOR, 0);
+    assert_eq!(board::card_claim_extra(&w, &g, st), Some(0));
     assert_eq!(board::card_claim_stations(&w, &g, 0), vec![st]);
     run_ops(&rules, &mut g, &[crate::content::Op::ClaimStation]);
     assert_eq!((g.tokens(st, ADV_AMBASSADOR), g.tokens(st, cube(0))), (0, 1));
-    assert_eq!(g.resource(0, Resource::Ambassadors), 1);
+    assert_eq!(g.resource(0, Resource::Ambassadors), 3);
 }
 
 /// 137: Liberate turns an adversary station or factory in reach neutral for
@@ -350,7 +356,9 @@ fn liberating_a_station_or_factory_turns_it_neutral() {
         put(&mut g, h, ADV_CUBE, 1);
         put(&mut g, h, BOTNET, 1);
         put(&mut g, h, ADV_AMBASSADOR, 1);
-        let n = w.int("board.liberate_facility_at") + 1;
+        assert_eq!(board::liberate_cost(&w, &g, h), None, "{what}: 206, an agent on it");
+        put(&mut g, h, ADV_AMBASSADOR, 0);
+        let n = w.int(if tok == STATION { "board.claim_station" } else { "board.claim_factory" });
         assert_eq!(board::liberate_cost(&w, &g, h), Some(n), "{what}");
         set_res(&mut g, 0, Resource::Ambassadors, n - 1);
         assert!(!standard_offered(&rules, &g, 0).contains("liberate"), "{what}");
@@ -543,7 +551,7 @@ fn taking_a_botnet_down_needs_your_ambassador_on_its_hex() {
     let w = rules.world();
     let m = &rules.map;
     let price = w.int("board.botnet_credits");
-    assert_eq!(price, 3);
+    assert_eq!(price, 16);
     let me = m.numbered(0, piece(0).node);
     put(&mut g, me, node(0), 1);
     let h = m.hexes[me].neighbors.iter().copied().find(|&x| kind(m, x) != HexKind::Ocean).unwrap();

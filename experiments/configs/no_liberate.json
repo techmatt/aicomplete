@@ -15,7 +15,6 @@
         "divert_discord": 1,
         "ambassador_discord": 0,
         "liberate_at": 5,
-        "liberate_facility_at": 3,
         "claim_city": 5,
         "claim_station": 3,
         "claim_factory": 2,
@@ -27,12 +26,18 @@
         "vigil_cap": 2,
         "node_marker": 1,
         "station_chips": 1,
+        "station_ambassadors": 0,
+        "node_credits": 6,
+        "troop_credits": 10,
+        "node_per_round": 2,
+        "troop_per_round": 1,
+        "factory_build_chips": 0,
         "factory_chips": 1,
         "city_build_chips": 3,
         "city_chip_cap": 3,
         "remove_ambassadors": 1,
         "remove_count": 3,
-        "clear_cost": 2,
+        "clear_cost": 0,
         "clear_unity": 2,
         "clear_credits": 0,
         "envoy_ambassadors": 1,
@@ -41,15 +46,15 @@
         "corp_energy": [
           1
         ],
-        "city_energy_credits": 4,
-        "harden_credits": 3,
-        "drain_credits": 5,
+        "city_energy_credits": 5,
+        "harden_credits": 0,
+        "drain_credits": 0,
         "drain_amount": 3,
         "cube_insight": 1,
         "antimatter_cubes": 4,
         "breakthrough_antimatter": 1,
         "breakthrough_unity": 2,
-        "botnet_credits": 3
+        "botnet_credits": 16
       }
     },
     {

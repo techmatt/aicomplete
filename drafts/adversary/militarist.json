@@ -536,7 +536,7 @@
      "site": "factory"
     }
    ],
-   "text": "Threat, each country: Security 1 or Industry 1, and Security 2 or Industry 2. Rally: factories. Income: +2 compute a round. Income: +1 Agent a country a round. Corrupt: factories.",
+   "text": "Threat, each country: Security 1 or Industry 1, and Security 2 or Industry 2. Rally: factories. Income: +2 compute and +1 Agent a country a round. Corrupt: factories.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
@@ -584,7 +584,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each country: any tier-2 threat. Rally: cities. Every adversary Troop takes 1 more step this round. Income: +1 Agent a country a round. Corrupt: cities.",
+   "text": "Threat, each country: any tier-2 threat. Rally: cities. Income: +1 Agent a country a round. Every adversary Troop takes 1 more step this round. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
     "war brought forward",
@@ -715,7 +715,7 @@
      "site": "land"
     }
    ],
-   "text": "Threat, each country: any tier-2 threat, and Security 2 or Diplomacy 2. Rally: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Sway 1 toward Discord. Income: +1 Agent a country a round. Corrupt: cities. Corrupt: land.",
+   "text": "Threat, each country: any tier-2 threat, and Security 2 or Diplomacy 2. Rally: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Income: +1 Agent a country a round. Sway 1 toward Discord. Corrupt: cities. Corrupt: land.",
    "harms": [
     "adversary pieces placed",
     "troops made",
