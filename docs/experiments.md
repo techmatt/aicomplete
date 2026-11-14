@@ -70,7 +70,8 @@ counts it; exit 1); `--resume` replays it. `run` and `compare` have no such net.
 - **Variants against the base** pair on seeds; a module switched off reads as its worth.
 - **Margin**: a win's adversary cards left and ambassador supply; a loss's adversary pieces over the bar
   (`margin.level`: the Unity level, not the difficulty); every game, `margin.cities_corrupted_end`, `_aligned_end`.
-  A `deck_empty` loss (the round cap) counts `rounds` one past the cap's printed count.
+  A `deck_empty` loss (the round cap) counts `rounds` one past the cap's printed count, so a level's mean rounds run
+  over the rounds played by its round-cap share (215: d0 10.12 measured, 9.98 played, 14% at the cap).
 
 **Counters.** `games.csv` carries the margin columns, `adversary.corruptions` and
 `adversary.first_corruption_round` (any site; cities alone: `adversary.corruptions.city`), `board.std_actions` and
@@ -159,7 +160,7 @@ rollout policy or `prune` change, the line alone reads near the engine.
 
 **Fresh seeds.** Specs start at seed 0: give a confirming read a `--seed` no screen of this revision used. An item
 that spends seeds updates the ledger after its last read: `python scripts/bench/seeds.py next N` prints the next N,
-`--take` moves *Next free* (all below it used) past them. Next free: 46784. **The dev seeds are
+`--take` moves *Next free* (all below it used) past them. Next free: 46880. **The dev seeds are
 36800-36831**, for on/off checks and crash-finding (SE ~5 a cell). A 2-8 point effect (a level's income step):
 screen it paired on this revision's spent fresh sets (~500+ games a cell, SE ~2), then confirm once on new seeds.
 

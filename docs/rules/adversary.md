@@ -123,7 +123,7 @@ Night Raid, Mob Rule and Sabotage Teams raid a node (a protection saves it). Tex
 
 ## The event deck (the clock and the stager)
 
-A game deals `stage_cards` at random per stage (counts below), each stage shuffled on its own, stage I on top: as many
+A game deals `stage_cards` at random per stage (counts below; content holds 5, 6 and 4, the most a stage can deal), each stage shuffled on its own, stage I on top: as many
 rounds as cards, **the round cap** (**locked** that a cap exists and can shorten; the number a candidate). A card
 prints its lines in the Card and Corrupt beats' order (`drafts/adversary/check.py` refuses another, or more than two other lines).
 
