@@ -81,7 +81,7 @@ What the read scripts quote most (`screens.cnt(game, key)`; more in experiments.
 | `counters['ai.power.<board>.<power>']` | a board power's uses (`modules/ai.rs`; the seats on that board summed), `.rNN` a round's; names: `scripts/powers.py` |
 | `counters['board.std.<name>']` | a standard action's uses; `board.std_actions` all of them |
 | `counters['fx.<card>.tN']` / `['fx.<card>.<measure>']` | an Alignment card resolved at tier N / the change it made to a `FX_MEASURES` total (`alignment.rs`): a signed delta, not a count (`fx.network_cleanup.land` −1: one Fallout token gone) |
-| `sources[seat]` / `uses[seat]` | each resource gained / spent by where, `{label: [...]}`: `own:` or `other:` an action, `phase:` an automatic phase |
+| `sources[seat]` / `uses[seat]` | each resource gained / spent by where, `{label: [...]}`: `own:` or `other:` an action, `phase:` an automatic phase. Labels: `play:<card>`, `use:<card>` (its Action), `power:<Name>`, `standard:<act>`, `convert:<country>` (a corp converter), `phase:economy.upkeep` (income and capstones) |
 | `start`, `gained`, `spent`, `peaks` | per seat, totals (`start + gained - spent` is the end) |
 
 Each row is in `PEAKS` order (credits, insight, energy, chips, antimatter, research cubes, card tokens, ambassadors).

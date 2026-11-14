@@ -112,9 +112,9 @@ cryptojacking_campaign,production credits [play],play,"resource=credits, amount=
 cryptojacking_campaign,tags [card],card,cyber,1.0,1.0,1.0,1.07,1.07
 cyclotron_lease,gain antimatter [action],action,"resource=antimatter, amount=1; pays 2 energy",1.0,25.2,25.2,21.16,21.16
 cyclotron_lease,tags [card],card,power,1.0,1.0,1.0,0.84,0.84
-dark_fiber_collider,draw [play],play,count=2,2.0,8.0,4.0,2.14,1.07
-dark_fiber_collider,gain antimatter [action],action,"resource=antimatter, amount=1; pays 2 insight",1.0,22.75,22.75,6.09,6.09
-dark_fiber_collider,tags [card],card,cyber,1.0,1.0,1.0,0.27,0.27
+dark_fiber_collider,draw [play],play,count=2,2.0,8.0,4.0,2.11,1.05
+dark_fiber_collider,gain antimatter [action],action,"resource=antimatter, amount=1; pays 2 insight",1.0,22.75,22.75,6.0,6.0
+dark_fiber_collider,tags [card],card,cyber science,2.0,1.5,0.75,0.4,0.2
 darknet_exchange,draw [play],play,count=2,2.0,8.0,4.0,6.44,3.22
 darknet_exchange,card_discount credits [passive],passive,"tag=cyber, resource=credits, amount=5",5.0,9.0,1.8,7.25,1.45
 darknet_exchange,tags [card],card,cyber,1.0,1.0,1.0,0.81,0.81

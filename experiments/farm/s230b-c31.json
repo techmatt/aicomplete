@@ -1,0 +1,83 @@
+{
+  "name": "s230b-c31",
+  "note": "230: screen 2, w.am_make x burn_late on lever c31",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_c31",
+      "set": [
+        "cards.dark_fiber_collider.tags=[\"cyber\",\"science\"]",
+        "corps.horizon.project.converter.cost.0.1=3",
+        "corps.horizon.project.converter.cost.1.1=1"
+      ]
+    },
+    {
+      "name": "br_c31",
+      "set": [
+        "ai.boards=0,2",
+        "cards.dark_fiber_collider.tags=[\"cyber\",\"science\"]",
+        "corps.horizon.project.converter.cost.0.1=3",
+        "corps.horizon.project.converter.cost.1.1=1"
+      ]
+    },
+    {
+      "name": "pr_c31",
+      "set": [
+        "ai.boards=1,2",
+        "cards.dark_fiber_collider.tags=[\"cyber\",\"science\"]",
+        "corps.horizon.project.converter.cost.0.1=3",
+        "corps.horizon.project.converter.cost.1.1=1"
+      ]
+    },
+    {
+      "name": "bp_c31cap",
+      "set": [
+        "cards.dark_fiber_collider.tags=[\"cyber\",\"science\"]",
+        "corps.horizon.project.converter.cost.0.1=3",
+        "corps.horizon.project.converter.cost.1.1=1",
+        "ais.protector.economy_track.6.capstone.passives.1.amount=0",
+        "ais.researcher.economy_track.6.capstone.passives.1.amount=0"
+      ]
+    },
+    {
+      "name": "br_c31cap",
+      "set": [
+        "ai.boards=0,2",
+        "cards.dark_fiber_collider.tags=[\"cyber\",\"science\"]",
+        "corps.horizon.project.converter.cost.0.1=3",
+        "corps.horizon.project.converter.cost.1.1=1",
+        "ais.protector.economy_track.6.capstone.passives.1.amount=0",
+        "ais.researcher.economy_track.6.capstone.passives.1.amount=0"
+      ]
+    },
+    {
+      "name": "pr_c31cap",
+      "set": [
+        "ai.boards=1,2",
+        "cards.dark_fiber_collider.tags=[\"cyber\",\"science\"]",
+        "corps.horizon.project.converter.cost.0.1=3",
+        "corps.horizon.project.converter.cost.1.1=1",
+        "ais.protector.economy_track.6.capstone.passives.1.amount=0",
+        "ais.researcher.economy_track.6.capstone.passives.1.amount=0"
+      ]
+    }
+  ],
+  "difficulties": [
+    1,
+    2
+  ],
+  "agents": [
+    "strategist:w.am_make=0,burn_late=0",
+    "strategist:w.am_make=1,burn_late=0",
+    "strategist:w.am_make=0,burn_late=1",
+    "strategist:w.am_make=1,burn_late=1",
+    "greedy:w.am_make=0,burn_late=0",
+    "greedy:w.am_make=1,burn_late=0",
+    "greedy:w.am_make=0,burn_late=1",
+    "greedy:w.am_make=1,burn_late=1"
+  ],
+  "games": 32,
+  "records": 0
+}

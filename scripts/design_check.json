@@ -218,7 +218,8 @@
     },
     "neutral_why": "neutral by design (any tag prints them): draws, credits, triggers and thresholds; threat counters (jam, auto_counter), since every tag answers threats its own way; liberate, the capstone every tag route reaches (player-cards.md, *The liberate capstones*); a tag's own payoffs (gain_per_tag, production_per_tag, income_per_tag, card_discount), which pay for the tag they count; reuse and choose_player, which only point another effect",
     "exceptions": {
-      "ais:researcher:Disrupt": "a Cyber card hacks troops (drones) anywhere in a country, no reach: the Researcher's troop answer is remote by design (206), so it is paid in Cyber, not Security"
+      "ais:researcher:Disrupt": "a Cyber card hacks troops (drones) anywhere in a country, no reach: the Researcher's troop answer is remote by design (206), so it is paid in Cyber, not Security",
+      "ais:protector:Reclaim": "a Security card retakes a corrupted station or factory by force for an antimatter: Matt's ruling (230), Reclaim stays on Security, force is its story; the cleanse and the antimatter are what the force wins back"
     }
   },
   "sway": {

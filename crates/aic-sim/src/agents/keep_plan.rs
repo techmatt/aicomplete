@@ -199,7 +199,7 @@ pub fn plan_now(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx) ->
 }
 
 /// 211 (`plan_am`): the antimatter seat `s`'s board powers and built Actions gain, one use each (a round's worth).
-fn am_makes(w: &World, g: &GameState, s: usize) -> i64 {
+pub(crate) fn am_makes(w: &World, g: &GameState, s: usize) -> i64 {
     let gains = |ops: &[Op]| {
         ops.iter()
             .map(|o| match o {

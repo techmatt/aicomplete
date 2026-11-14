@@ -1,0 +1,172 @@
+== s230a
+base greedy:w.am_make=0,burn_late=0: 192 games, won 62.5%, rounds 8.91; antimatter a seat-game made 4.35 spent 1.62 (37%); cheap 17%
+  shares: plants 12% converter 34% upkeep 26% burns 7% make 12% other 8%
+  a seat-game: plants 0.54 converter 1.47 upkeep 1.15 burns 0.32 make 0.52 other 0.36
+  burns: all 0.630 a game, 31% in rounds 1-4; teardown 0.305 (56% r1-4, 15% last 2); meltdown 0.508 (3% r1-4, 22% last 2); reclaim 0.133 (82% r1-4, 12% last 2)
+base strategist:w.am_make=0,burn_late=0: 192 games, won 59.9%, rounds 9.06; antimatter a seat-game made 4.29 spent 1.60 (37%); cheap 17%
+  shares: plants 13% converter 31% upkeep 27% burns 8% make 13% other 8%
+  a seat-game: plants 0.57 converter 1.35 upkeep 1.15 burns 0.32 make 0.55 other 0.36
+  burns: all 0.646 a game, 35% in rounds 1-4; teardown 0.422 (52% r1-4, 19% last 2); meltdown 0.375 (0% r1-4, 10% last 2); reclaim 0.172 (73% r1-4, 14% last 2)
+c22 greedy:w.am_make=0,burn_late=0: 192 games, won 59.9%, rounds 8.97; antimatter a seat-game made 3.48 spent 1.51 (43%); cheap 34%
+  shares: plants 18% converter 0% upkeep 34% burns 11% make 26% other 12%
+  a seat-game: plants 0.61 converter 0.00 upkeep 1.17 burns 0.37 make 0.91 other 0.41
+  burns: all 0.734 a game, 27% in rounds 1-4; teardown 0.469 (37% r1-4, 30% last 2); meltdown 0.477 (3% r1-4, 26% last 2); reclaim 0.156 (70% r1-4, 15% last 2)
+c22 strategist:w.am_make=0,burn_late=0: 192 games, won 60.9%, rounds 9.03; antimatter a seat-game made 3.25 spent 1.43 (44%); cheap 30%
+  shares: plants 18% converter 0% upkeep 36% burns 11% make 24% other 11%
+  a seat-game: plants 0.58 converter 0.00 upkeep 1.18 burns 0.37 make 0.77 other 0.35
+  burns: all 0.740 a game, 32% in rounds 1-4; teardown 0.578 (39% r1-4, 26% last 2); meltdown 0.383 (0% r1-4, 18% last 2); reclaim 0.148 (84% r1-4, 11% last 2)
+c31 greedy:w.am_make=0,burn_late=0: 192 games, won 63.0%, rounds 8.77; antimatter a seat-game made 3.80 spent 1.55 (41%); cheap 27%
+  shares: plants 15% converter 19% upkeep 28% burns 9% make 19% other 11%
+  a seat-game: plants 0.56 converter 0.72 upkeep 1.06 burns 0.34 make 0.73 other 0.40
+  burns: all 0.672 a game, 29% in rounds 1-4; teardown 0.367 (47% r1-4, 21% last 2); meltdown 0.484 (3% r1-4, 27% last 2); reclaim 0.156 (70% r1-4, 20% last 2)
+c31 strategist:w.am_make=0,burn_late=0: 192 games, won 58.9%, rounds 9.00; antimatter a seat-game made 3.77 spent 1.48 (39%); cheap 23%
+  shares: plants 14% converter 18% upkeep 31% burns 9% make 18% other 9%
+  a seat-game: plants 0.53 converter 0.70 upkeep 1.17 burns 0.34 make 0.70 other 0.34
+  burns: all 0.682 a game, 34% in rounds 1-4; teardown 0.469 (47% r1-4, 20% last 2); meltdown 0.367 (0% r1-4, 17% last 2); reclaim 0.188 (67% r1-4, 17% last 2)
+dfc greedy:w.am_make=0,burn_late=0: 192 games, won 63.0%, rounds 8.90; antimatter a seat-game made 4.36 spent 1.61 (37%); cheap 17%
+  shares: plants 13% converter 33% upkeep 26% burns 7% make 12% other 8%
+  a seat-game: plants 0.55 converter 1.46 upkeep 1.15 burns 0.32 make 0.53 other 0.36
+  burns: all 0.641 a game, 31% in rounds 1-4; teardown 0.305 (56% r1-4, 15% last 2); meltdown 0.508 (3% r1-4, 23% last 2); reclaim 0.148 (74% r1-4, 11% last 2)
+dfc strategist:w.am_make=0,burn_late=0: 192 games, won 58.9%, rounds 9.11; antimatter a seat-game made 4.36 spent 1.64 (38%); cheap 18%
+  shares: plants 13% converter 31% upkeep 27% burns 8% make 13% other 8%
+  a seat-game: plants 0.57 converter 1.36 upkeep 1.18 burns 0.33 make 0.55 other 0.37
+  burns: all 0.656 a game, 35% in rounds 1-4; teardown 0.430 (51% r1-4, 18% last 2); meltdown 0.383 (0% r1-4, 12% last 2); reclaim 0.172 (73% r1-4, 14% last 2)
+== s230b
+c31 greedy:w.am_make=0,burn_late=0: 192 games, won 63.0%, rounds 8.77; antimatter a seat-game made 3.80 spent 1.55 (41%); cheap 27%
+  shares: plants 15% converter 19% upkeep 28% burns 9% make 19% other 11%
+  a seat-game: plants 0.56 converter 0.72 upkeep 1.06 burns 0.34 make 0.73 other 0.40
+  burns: all 0.672 a game, 29% in rounds 1-4; teardown 0.367 (47% r1-4, 21% last 2); meltdown 0.484 (3% r1-4, 27% last 2); reclaim 0.156 (70% r1-4, 20% last 2)
+c31 greedy:w.am_make=0,burn_late=1: 192 games, won 64.6%, rounds 8.72; antimatter a seat-game made 3.52 spent 1.38 (39%); cheap 28%
+  shares: plants 15% converter 20% upkeep 29% burns 5% make 20% other 11%
+  a seat-game: plants 0.53 converter 0.71 upkeep 1.02 burns 0.19 make 0.70 other 0.38
+  burns: all 0.375 a game, 11% in rounds 1-4; teardown 0.078 (0% r1-4, 50% last 2); meltdown 0.398 (4% r1-4, 25% last 2); reclaim 0.086 (55% r1-4, 36% last 2)
+c31 greedy:w.am_make=1,burn_late=0: 192 games, won 63.0%, rounds 8.77; antimatter a seat-game made 3.80 spent 1.55 (41%); cheap 27%
+  shares: plants 15% converter 19% upkeep 28% burns 9% make 19% other 11%
+  a seat-game: plants 0.56 converter 0.72 upkeep 1.06 burns 0.34 make 0.73 other 0.40
+  burns: all 0.672 a game, 29% in rounds 1-4; teardown 0.367 (47% r1-4, 21% last 2); meltdown 0.484 (3% r1-4, 27% last 2); reclaim 0.156 (70% r1-4, 20% last 2)
+c31 greedy:w.am_make=1,burn_late=1: 192 games, won 64.6%, rounds 8.72; antimatter a seat-game made 3.52 spent 1.38 (39%); cheap 28%
+  shares: plants 15% converter 20% upkeep 29% burns 5% make 20% other 11%
+  a seat-game: plants 0.53 converter 0.71 upkeep 1.02 burns 0.19 make 0.70 other 0.38
+  burns: all 0.375 a game, 11% in rounds 1-4; teardown 0.078 (0% r1-4, 50% last 2); meltdown 0.398 (4% r1-4, 25% last 2); reclaim 0.086 (55% r1-4, 36% last 2)
+c31 strategist:w.am_make=0,burn_late=0: 192 games, won 58.9%, rounds 9.00; antimatter a seat-game made 3.77 spent 1.48 (39%); cheap 23%
+  shares: plants 14% converter 18% upkeep 31% burns 9% make 18% other 9%
+  a seat-game: plants 0.53 converter 0.70 upkeep 1.17 burns 0.34 make 0.70 other 0.34
+  burns: all 0.682 a game, 34% in rounds 1-4; teardown 0.469 (47% r1-4, 20% last 2); meltdown 0.367 (0% r1-4, 17% last 2); reclaim 0.188 (67% r1-4, 17% last 2)
+c31 strategist:w.am_make=0,burn_late=1: 192 games, won 56.8%, rounds 9.09; antimatter a seat-game made 3.86 spent 1.50 (39%); cheap 25%
+  shares: plants 16% converter 19% upkeep 31% burns 4% make 20% other 10%
+  a seat-game: plants 0.60 converter 0.72 upkeep 1.20 burns 0.17 make 0.77 other 0.40
+  burns: all 0.344 a game, 14% in rounds 1-4; teardown 0.070 (0% r1-4, 44% last 2); meltdown 0.320 (2% r1-4, 24% last 2); reclaim 0.125 (50% r1-4, 19% last 2)
+c31 strategist:w.am_make=1,burn_late=0: 192 games, won 58.9%, rounds 9.00; antimatter a seat-game made 3.77 spent 1.48 (39%); cheap 23%
+  shares: plants 14% converter 18% upkeep 31% burns 9% make 18% other 9%
+  a seat-game: plants 0.53 converter 0.70 upkeep 1.17 burns 0.34 make 0.70 other 0.34
+  burns: all 0.682 a game, 34% in rounds 1-4; teardown 0.469 (47% r1-4, 20% last 2); meltdown 0.367 (0% r1-4, 17% last 2); reclaim 0.188 (67% r1-4, 17% last 2)
+c31 strategist:w.am_make=1,burn_late=1: 192 games, won 56.8%, rounds 9.09; antimatter a seat-game made 3.86 spent 1.50 (39%); cheap 25%
+  shares: plants 16% converter 19% upkeep 31% burns 4% make 20% other 10%
+  a seat-game: plants 0.60 converter 0.72 upkeep 1.20 burns 0.17 make 0.77 other 0.40
+  burns: all 0.344 a game, 14% in rounds 1-4; teardown 0.070 (0% r1-4, 44% last 2); meltdown 0.320 (2% r1-4, 24% last 2); reclaim 0.125 (50% r1-4, 19% last 2)
+c31cap greedy:w.am_make=0,burn_late=0: 192 games, won 62.5%, rounds 8.88; antimatter a seat-game made 2.80 spent 1.40 (50%); cheap 36%
+  shares: plants 21% converter 26% upkeep 0% burns 12% make 26% other 15%
+  a seat-game: plants 0.60 converter 0.72 upkeep 0.00 burns 0.34 make 0.73 other 0.41
+  burns: all 0.682 a game, 29% in rounds 1-4; teardown 0.352 (49% r1-4, 22% last 2); meltdown 0.500 (3% r1-4, 28% last 2); reclaim 0.172 (64% r1-4, 23% last 2)
+c31cap greedy:w.am_make=0,burn_late=1: 192 games, won 62.0%, rounds 8.87; antimatter a seat-game made 2.57 spent 1.27 (49%); cheap 39%
+  shares: plants 22% converter 28% upkeep 0% burns 7% make 28% other 15%
+  a seat-game: plants 0.56 converter 0.72 upkeep 0.00 burns 0.19 make 0.72 other 0.38
+  burns: all 0.380 a game, 11% in rounds 1-4; teardown 0.078 (0% r1-4, 50% last 2); meltdown 0.438 (4% r1-4, 27% last 2); reclaim 0.055 (86% r1-4, 14% last 2)
+c31cap greedy:w.am_make=1,burn_late=0: 192 games, won 62.5%, rounds 8.88; antimatter a seat-game made 2.80 spent 1.40 (50%); cheap 36%
+  shares: plants 21% converter 26% upkeep 0% burns 12% make 26% other 15%
+  a seat-game: plants 0.60 converter 0.72 upkeep 0.00 burns 0.34 make 0.73 other 0.41
+  burns: all 0.682 a game, 29% in rounds 1-4; teardown 0.352 (49% r1-4, 22% last 2); meltdown 0.500 (3% r1-4, 28% last 2); reclaim 0.172 (64% r1-4, 23% last 2)
+c31cap greedy:w.am_make=1,burn_late=1: 192 games, won 62.0%, rounds 8.87; antimatter a seat-game made 2.57 spent 1.27 (49%); cheap 39%
+  shares: plants 22% converter 28% upkeep 0% burns 7% make 28% other 15%
+  a seat-game: plants 0.56 converter 0.72 upkeep 0.00 burns 0.19 make 0.72 other 0.38
+  burns: all 0.380 a game, 11% in rounds 1-4; teardown 0.078 (0% r1-4, 50% last 2); meltdown 0.438 (4% r1-4, 27% last 2); reclaim 0.055 (86% r1-4, 14% last 2)
+c31cap strategist:w.am_make=0,burn_late=0: 192 games, won 57.3%, rounds 9.13; antimatter a seat-game made 2.81 spent 1.40 (50%); cheap 35%
+  shares: plants 20% converter 26% upkeep 0% burns 13% make 27% other 14%
+  a seat-game: plants 0.57 converter 0.72 upkeep 0.00 burns 0.37 make 0.77 other 0.38
+  burns: all 0.745 a game, 31% in rounds 1-4; teardown 0.500 (44% r1-4, 22% last 2); meltdown 0.430 (0% r1-4, 22% last 2); reclaim 0.188 (67% r1-4, 12% last 2)
+c31cap strategist:w.am_make=0,burn_late=1: 192 games, won 57.8%, rounds 9.20; antimatter a seat-game made 2.86 spent 1.39 (49%); cheap 38%
+  shares: plants 22% converter 27% upkeep 0% burns 7% make 30% other 15%
+  a seat-game: plants 0.62 converter 0.76 upkeep 0.00 burns 0.19 make 0.85 other 0.44
+  burns: all 0.380 a game, 12% in rounds 1-4; teardown 0.094 (0% r1-4, 42% last 2); meltdown 0.375 (2% r1-4, 25% last 2); reclaim 0.102 (62% r1-4, 8% last 2)
+c31cap strategist:w.am_make=1,burn_late=0: 192 games, won 57.3%, rounds 9.13; antimatter a seat-game made 2.81 spent 1.40 (50%); cheap 35%
+  shares: plants 20% converter 26% upkeep 0% burns 13% make 27% other 14%
+  a seat-game: plants 0.57 converter 0.72 upkeep 0.00 burns 0.37 make 0.77 other 0.38
+  burns: all 0.745 a game, 31% in rounds 1-4; teardown 0.500 (44% r1-4, 22% last 2); meltdown 0.430 (0% r1-4, 22% last 2); reclaim 0.188 (67% r1-4, 12% last 2)
+c31cap strategist:w.am_make=1,burn_late=1: 192 games, won 57.8%, rounds 9.20; antimatter a seat-game made 2.86 spent 1.39 (49%); cheap 38%
+  shares: plants 22% converter 27% upkeep 0% burns 7% make 30% other 15%
+  a seat-game: plants 0.62 converter 0.76 upkeep 0.00 burns 0.19 make 0.85 other 0.44
+  burns: all 0.380 a game, 12% in rounds 1-4; teardown 0.094 (0% r1-4, 42% last 2); meltdown 0.375 (2% r1-4, 25% last 2); reclaim 0.102 (62% r1-4, 8% last 2)
+== s230c
+c31 greedy:burn_late=1,am_last=0: 192 games, won 64.6%, rounds 8.72; antimatter a seat-game made 3.52 spent 1.38 (39%); cheap 28%
+  shares: plants 15% converter 20% upkeep 29% burns 5% make 20% other 11%
+  a seat-game: plants 0.53 converter 0.71 upkeep 1.02 burns 0.19 make 0.70 other 0.38
+  burns: all 0.375 a game, 11% in rounds 1-4; teardown 0.078 (0% r1-4, 50% last 2); meltdown 0.398 (4% r1-4, 25% last 2); reclaim 0.086 (55% r1-4, 36% last 2)
+c31 greedy:burn_late=1,am_last=1: 192 games, won 65.1%, rounds 8.62; antimatter a seat-game made 3.28 spent 1.34 (41%); cheap 14%
+  shares: plants 16% converter 31% upkeep 30% burns 6% make 5% other 11%
+  a seat-game: plants 0.54 converter 1.01 upkeep 0.99 burns 0.19 make 0.18 other 0.37
+  burns: all 0.375 a game, 11% in rounds 1-4; teardown 0.078 (0% r1-4, 60% last 2); meltdown 0.398 (4% r1-4, 25% last 2); reclaim 0.086 (55% r1-4, 36% last 2)
+c31 greedy:burn_late=2,am_last=0: 192 games, won 60.9%, rounds 8.85; antimatter a seat-game made 3.61 spent 1.40 (39%); cheap 29%
+  shares: plants 16% converter 20% upkeep 30% burns 2% make 21% other 11%
+  a seat-game: plants 0.58 converter 0.73 upkeep 1.07 burns 0.07 make 0.77 other 0.40
+  burns: all 0.141 a game, 0% in rounds 1-4; teardown 0.086 (0% r1-4, 45% last 2); meltdown 0.086 (0% r1-4, 45% last 2); reclaim 0.039 (0% r1-4, 80% last 2)
+c31 greedy:burn_late=2,am_last=1: 192 games, won 64.1%, rounds 8.68; antimatter a seat-game made 3.28 spent 1.34 (41%); cheap 15%
+  shares: plants 17% converter 32% upkeep 31% burns 2% make 6% other 12%
+  a seat-game: plants 0.56 converter 1.04 upkeep 1.00 burns 0.07 make 0.21 other 0.40
+  burns: all 0.141 a game, 0% in rounds 1-4; teardown 0.070 (0% r1-4, 78% last 2); meltdown 0.117 (0% r1-4, 67% last 2); reclaim 0.023 (0% r1-4, 100% last 2)
+c31 strategist:burn_late=1,am_last=0: 192 games, won 56.8%, rounds 9.09; antimatter a seat-game made 3.86 spent 1.50 (39%); cheap 25%
+  shares: plants 16% converter 19% upkeep 31% burns 4% make 20% other 10%
+  a seat-game: plants 0.60 converter 0.72 upkeep 1.20 burns 0.17 make 0.77 other 0.40
+  burns: all 0.344 a game, 14% in rounds 1-4; teardown 0.070 (0% r1-4, 44% last 2); meltdown 0.320 (2% r1-4, 24% last 2); reclaim 0.125 (50% r1-4, 19% last 2)
+c31 strategist:burn_late=1,am_last=1: 192 games, won 58.9%, rounds 9.03; antimatter a seat-game made 3.60 spent 1.40 (39%); cheap 10%
+  shares: plants 17% converter 30% upkeep 33% burns 5% make 4% other 10%
+  a seat-game: plants 0.63 converter 1.08 upkeep 1.18 burns 0.18 make 0.16 other 0.38
+  burns: all 0.354 a game, 13% in rounds 1-4; teardown 0.070 (0% r1-4, 56% last 2); meltdown 0.305 (3% r1-4, 26% last 2); reclaim 0.156 (40% r1-4, 45% last 2)
+c31 strategist:burn_late=2,am_last=0: 192 games, won 54.2%, rounds 9.20; antimatter a seat-game made 3.94 spent 1.49 (38%); cheap 27%
+  shares: plants 15% converter 19% upkeep 32% burns 2% make 21% other 11%
+  a seat-game: plants 0.60 converter 0.73 upkeep 1.25 burns 0.08 make 0.84 other 0.44
+  burns: all 0.151 a game, 0% in rounds 1-4; teardown 0.070 (0% r1-4, 44% last 2); meltdown 0.109 (0% r1-4, 14% last 2); reclaim 0.047 (0% r1-4, 50% last 2)
+c31 strategist:burn_late=2,am_last=1: 192 games, won 56.8%, rounds 9.18; antimatter a seat-game made 3.70 spent 1.43 (39%); cheap 11%
+  shares: plants 18% converter 30% upkeep 34% burns 2% make 5% other 11%
+  a seat-game: plants 0.65 converter 1.12 upkeep 1.26 burns 0.07 make 0.18 other 0.41
+  burns: all 0.135 a game, 0% in rounds 1-4; teardown 0.070 (0% r1-4, 56% last 2); meltdown 0.094 (0% r1-4, 17% last 2); reclaim 0.039 (0% r1-4, 60% last 2)
+== s230d
+c31 engine(am_make=1) 36 games, won 33.3%, rounds 9.81; antimatter a seat-game made 5.24 spent 1.78 (34%); cheap 18%
+  shares: plants 23% converter 29% upkeep 26% burns 3% make 10% other 9%
+  a seat-game: plants 1.21 converter 1.50 upkeep 1.35 burns 0.17 make 0.53 other 0.49
+  burns: all 0.333 a game, 0% in rounds 1-4; teardown 0.042 (0% r1-4, 0% last 2); meltdown 0.417 (0% r1-4, 20% last 2); reclaim 0.042 (0% r1-4, 100% last 2)
+c31 engine(am_make=0) 36 games, won 27.8%, rounds 9.97; antimatter a seat-game made 5.33 spent 1.79 (34%); cheap 16%
+  shares: plants 22% converter 29% upkeep 26% burns 3% make 10% other 10%
+  a seat-game: plants 1.18 converter 1.56 upkeep 1.40 burns 0.15 make 0.51 other 0.53
+  burns: all 0.306 a game, 0% in rounds 1-4; teardown 0.042 (0% r1-4, 0% last 2); meltdown 0.375 (0% r1-4, 11% last 2); reclaim 0.042 (0% r1-4, 100% last 2)
+c22 greedy: 192 games, won 64.6%, rounds 8.95; antimatter a seat-game made 2.65 spent 1.31 (49%); cheap 21%
+  shares: plants 21% converter 0% upkeep 43% burns 9% make 12% other 15%
+  a seat-game: plants 0.56 converter 0.00 upkeep 1.15 burns 0.23 make 0.31 other 0.40
+  burns: all 0.464 a game, 9% in rounds 1-4; teardown 0.141 (0% r1-4, 33% last 2); meltdown 0.445 (4% r1-4, 28% last 2); reclaim 0.109 (43% r1-4, 29% last 2)
+c22 strategist: 192 games, won 59.9%, rounds 9.08; antimatter a seat-game made 2.76 spent 1.34 (49%); cheap 21%
+  shares: plants 23% converter 0% upkeep 43% burns 7% make 12% other 15%
+  a seat-game: plants 0.64 converter 0.00 upkeep 1.18 burns 0.18 make 0.34 other 0.41
+  burns: all 0.359 a game, 13% in rounds 1-4; teardown 0.141 (0% r1-4, 72% last 2); meltdown 0.320 (2% r1-4, 27% last 2); reclaim 0.078 (80% r1-4, 0% last 2)
+c22cap greedy: 192 games, won 62.0%, rounds 9.10; antimatter a seat-game made 1.68 spent 1.16 (69%); cheap 39%
+  shares: plants 36% converter 0% upkeep 0% burns 15% make 23% other 25%
+  a seat-game: plants 0.61 converter 0.00 upkeep 0.00 burns 0.25 make 0.39 other 0.43
+  burns: all 0.505 a game, 8% in rounds 1-4; teardown 0.172 (0% r1-4, 50% last 2); meltdown 0.484 (3% r1-4, 31% last 2); reclaim 0.102 (46% r1-4, 38% last 2)
+c22cap strategist: 192 games, won 60.4%, rounds 9.14; antimatter a seat-game made 1.70 spent 1.10 (65%); cheap 42%
+  shares: plants 39% converter 0% upkeep 0% burns 12% make 26% other 23%
+  a seat-game: plants 0.66 converter 0.00 upkeep 0.00 burns 0.20 make 0.44 other 0.40
+  burns: all 0.401 a game, 12% in rounds 1-4; teardown 0.141 (0% r1-4, 72% last 2); meltdown 0.367 (2% r1-4, 30% last 2); reclaim 0.094 (67% r1-4, 0% last 2)
+c31 greedy: 192 games, won 65.1%, rounds 8.62; antimatter a seat-game made 3.28 spent 1.34 (41%); cheap 14%
+  shares: plants 16% converter 31% upkeep 30% burns 6% make 5% other 11%
+  a seat-game: plants 0.54 converter 1.01 upkeep 0.99 burns 0.19 make 0.18 other 0.37
+  burns: all 0.375 a game, 11% in rounds 1-4; teardown 0.078 (0% r1-4, 60% last 2); meltdown 0.398 (4% r1-4, 25% last 2); reclaim 0.086 (55% r1-4, 36% last 2)
+c31 strategist: 192 games, won 58.9%, rounds 9.03; antimatter a seat-game made 3.60 spent 1.40 (39%); cheap 10%
+  shares: plants 17% converter 30% upkeep 33% burns 5% make 4% other 10%
+  a seat-game: plants 0.63 converter 1.08 upkeep 1.18 burns 0.18 make 0.16 other 0.38
+  burns: all 0.354 a game, 13% in rounds 1-4; teardown 0.070 (0% r1-4, 56% last 2); meltdown 0.305 (3% r1-4, 26% last 2); reclaim 0.156 (40% r1-4, 45% last 2)
+c31cap greedy: 192 games, won 63.0%, rounds 8.76; antimatter a seat-game made 2.34 spent 1.21 (52%); cheap 20%
+  shares: plants 24% converter 44% upkeep 0% burns 8% make 8% other 16%
+  a seat-game: plants 0.55 converter 1.02 upkeep 0.00 burns 0.19 make 0.20 other 0.37
+  burns: all 0.380 a game, 11% in rounds 1-4; teardown 0.078 (0% r1-4, 60% last 2); meltdown 0.414 (4% r1-4, 26% last 2); reclaim 0.078 (60% r1-4, 30% last 2)
+c31cap strategist: 192 games, won 57.8%, rounds 9.15; antimatter a seat-game made 2.65 spent 1.27 (48%); cheap 18%
+  shares: plants 25% converter 43% upkeep 0% burns 7% make 8% other 16%
+  a seat-game: plants 0.67 converter 1.14 upkeep 0.00 burns 0.19 make 0.21 other 0.43
+  burns: all 0.380 a game, 12% in rounds 1-4; teardown 0.062 (0% r1-4, 50% last 2); meltdown 0.367 (2% r1-4, 26% last 2); reclaim 0.141 (44% r1-4, 39% last 2)

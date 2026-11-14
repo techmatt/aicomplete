@@ -42,7 +42,7 @@
   "cryo_sample_vault": "r88 (200): cube source, +1 research cube a round; values.json: pay 9.5; get 13.0 (+3.5); anchors: pay 15 (7 cr, 2 ins), get 1 cube a round x 4 rounds x 0.8 x 6 = 19 (1.27).",
   "cryptojacking_campaign": "r83 (191): insight to play spread, 18 cr, 1 ins to 22 cr, 0 ins; values.json: pay 22.0; get 29.0 (+7.0); anchors: pay 22.0 (+7.0).",
   "cyclotron_lease": "r94 (213, new): a dear tier-1 source: 22 cr; Action: 2 energy for 1 antimatter (+9 a use at the anchors); 4 uses: pay 62; get 72 = 1.16; values.json: pay 22; get 25.2.",
-  "dark_fiber_collider": "r97 (219, new): the Cyber plant, 6 cr; Action 2 insight for 1 antimatter; anchors: pay 6 + 16 = 22; get draw 2 10 + (+10 a use) x 3.5 = 45 (2.05), 30 at 2 uses (1.36); values.json: +13 a use.",
+  "dark_fiber_collider": "r97 (219, new; r101 (230): Cyber + Science, price kept): the Cyber plant, 6 cr; Action 2 insight for 1 antimatter; anchors: pay 6 + 16 = 22; get draw 2 10 + (+10 a use) x 3.5 = 45 (2.05), 30 at 2 uses (1.36); values.json: +13 a use.",
   "darknet_exchange": "r45 (112): back to r43's price (12 cr, 1 ins; 111 had cut it to 11 cr, 1 ins to reach a band); anchors: pay 20; get 27.6 = 1.38.",
   "data_licensing_deal": "r43 (108): 2-3: pays up front, back within 2 rounds; insight to play and keep at 2.5; get 12 when built, then 10 a round at a committed seat (a Dataset seat: Telemetry Archive, Synthetic Data Forge) over 3.5 rounds, back in 1.1 rounds; anchors: pay 22; get 47 = 2.14.",
   "dataset_scraper": "r45 (112): back to r43's price (6 cr, 1 ins; 111 had cut it to 6 cr, 0 ins to reach a band); anchors: pay 14; get 14.0 = 1.00.",

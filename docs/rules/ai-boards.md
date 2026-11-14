@@ -141,7 +141,7 @@ cards and the cities' energy (once per city a round, a city's `corp_energy` a bu
 counters** spend energy for good. **The Researcher's:** Patience with the cube converters (Cintamani's, a cube for 2
 insight, once a round; everyone's standard action, a cube for 1, with no limit) is the intended engine:
 capped by how many stations make cubes (and Open Archive's and Cryo Sample Vault's 1 a round) and, for Cintamani's, by its once a round and
-a Cintamani city in reach. **Antimatter (r97):** a plant's Action (a resource for 1) and Horizon's converter (2 cubes and 1 energy for 1) are once a
+a Cintamani city in reach. **Antimatter (r97):** a plant's Action (a resource for 1) and Horizon's converter (3 cubes and 1 energy for 1) are once a
 round, beside each board's rare burn ([ai-powers.md](ai-powers.md)) and the desperate standard action (5 cubes for 1, r97); it
 pays for the majors that print it ([economy.md](economy.md)). Patience banks all the
 Researcher's unspent insight, a gift too; only cards that print it pass insight, at their cost, and no standard

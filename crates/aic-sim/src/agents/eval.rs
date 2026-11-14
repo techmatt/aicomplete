@@ -382,6 +382,10 @@ pub struct Weights {
     /// ambassador on a node hex cancels an arrival rather
     /// than armoring it (r75); and the converge and push rules keep agents off a last node about to tip.
     pub last_node: f64,
+    /// 230 (Matt's ruling 3; 0: off, as before): a hand card short of antimatter counts the antimatter the seat
+    /// can make each round from its powers and built Actions (the keep plan's `am_makes`, no burn or Reclaim)
+    /// beside its antimatter income, not the income alone.
+    pub am_make: f64,
     /// 201: with troops striking nodes (`board.troop_node` reached), a seat's node an adversary troop can reach in
     /// its next march (hex distance at most `board.troop_steps`, the node's hex not walled) adds this much to the
     /// seat's exposure (half with a hardening token or the owner's ambassador on it), read like a node filling
@@ -646,6 +650,7 @@ impl Default for Weights {
             armor: 1.0,
             botnet_reach: 0.3,
             last_node: 0.0,
+            am_make: 1.0,
             troop_exposure: 1.0,
         }
     }
@@ -2125,7 +2130,9 @@ impl Eval {
                 ctx.energy_rate = self.energy_rate(g, s);
                 ctx.cubes_open =
                     w.cube_target <= 0.0 || !aic_core::modules::effects::cube_projects(&world, g, s, false).is_empty();
-                SeatData { s, tags, prices, income, ctx }
+                // 230 (`am_make`): the antimatter the seat makes each round, beside its income.
+                let am_make = if w.am_make > 0.0 { super::keep_plan::am_makes(&world, g, s) } else { 0 };
+                SeatData { s, tags, prices, income, ctx, am_make }
             })
             .collect();
         let mut packets: Vec<Vec<(f64, u8)>> = vec![Vec::new(); self.seats];
@@ -2234,7 +2241,7 @@ impl Eval {
         let mut p = 1.0;
         for (have, need, earn) in [
             (res(Resource::Credits), sd.prices.credits(d), sd.income[Resource::Credits]),
-            (res(Resource::Antimatter), d.antimatter, sd.income[Resource::Antimatter]),
+            (res(Resource::Antimatter), d.antimatter, sd.income[Resource::Antimatter] + sd.am_make),
             (res(Resource::ResearchCubes), d.research_cubes, 1),
         ] {
             let short = need - have;
@@ -2467,6 +2474,8 @@ struct SeatData {
     prices: cards::Prices,
     income: aic_core::content::PerResource,
     ctx: Ctx,
+    /// 230 (`am_make`): antimatter the seat's powers and built Actions make a round (0 with the weight off).
+    am_make: i64,
 }
 
 

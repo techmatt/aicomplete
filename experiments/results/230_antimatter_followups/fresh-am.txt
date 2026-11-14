@@ -1,0 +1,18 @@
+== base (r100, main)
+base greedy: 384 games, won 63.8%, rounds 8.65; antimatter a seat-game made 4.32 spent 1.64 (38%); cheap 17%
+  shares: plants 18% converter 33% upkeep 24% burns 6% make 11% other 8%
+  a seat-game: plants 0.78 converter 1.42 upkeep 1.03 burns 0.26 make 0.47 other 0.37
+  burns: all 0.513 a game, 37% in rounds 1-4; teardown 0.336 (57% r1-4, 22% last 2); meltdown 0.316 (10% r1-4, 27% last 2); reclaim 0.117 (50% r1-4, 13% last 2)
+base strategist: 384 games, won 59.9%, rounds 9.07; antimatter a seat-game made 4.66 spent 1.66 (36%); cheap 20%
+  shares: plants 17% converter 34% upkeep 25% burns 6% make 12% other 7%
+  a seat-game: plants 0.77 converter 1.57 upkeep 1.14 burns 0.28 make 0.58 other 0.31
+  burns: all 0.560 a game, 32% in rounds 1-4; teardown 0.352 (56% r1-4, 18% last 2); meltdown 0.406 (6% r1-4, 30% last 2); reclaim 0.082 (62% r1-4, 10% last 2)
+== new (r101)
+base greedy: 384 games, won 62.5%, rounds 8.71; antimatter a seat-game made 3.64 spent 1.50 (41%); cheap 14%
+  shares: plants 23% converter 32% upkeep 27% burns 4% make 4% other 10%
+  a seat-game: plants 0.85 converter 1.16 upkeep 0.98 burns 0.14 make 0.15 other 0.36
+  burns: all 0.271 a game, 13% in rounds 1-4; teardown 0.051 (0% r1-4, 38% last 2); meltdown 0.285 (5% r1-4, 30% last 2); reclaim 0.070 (56% r1-4, 6% last 2)
+base strategist: 384 games, won 65.4%, rounds 8.95; antimatter a seat-game made 3.78 spent 1.53 (41%); cheap 15%
+  shares: plants 20% converter 33% upkeep 29% burns 4% make 4% other 9%
+  a seat-game: plants 0.77 converter 1.25 upkeep 1.11 burns 0.14 make 0.15 other 0.35
+  burns: all 0.289 a game, 9% in rounds 1-4; teardown 0.059 (7% r1-4, 67% last 2); meltdown 0.305 (4% r1-4, 29% last 2); reclaim 0.070 (33% r1-4, 17% last 2)

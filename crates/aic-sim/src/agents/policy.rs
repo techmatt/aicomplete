@@ -293,6 +293,13 @@ macro_rules! behavior_table {
             /// Action that gains antimatter: the plants, then 219's burns Teardown and Meltdown and Reclaim) counts as a way to make
             /// the antimatter a hand card lacks, tried before Make antimatter's cubes (r94 left the new powers unused).
             (am_source: bool, 1.0, "213: with make_short, an antimatter power or built Action is used (before Make antimatter) when it lets the keep plan play a card this round it can't now")
+            /// 230 (with `am_source`): a board burn (Teardown, Meltdown) or Reclaim is no source before the adversary
+            /// deck's last two cards: a burn loses at `values.json` until the last rounds (Matt's ruling 5), and
+            /// 222 found Teardown and Reclaim firing here 63-68% in rounds 1-4.
+            (burn_late: usize, 1.0, "230: no board burn or Reclaim before the adversary deck's last two cards: 1 as make_short's antimatter source, 2 also in the search")
+            /// 230 (amendment 10186): Make antimatter is the desperate hedge: the search never takes it, only
+            /// `make_short` (a card the keep plan plays this round needs it).
+            (am_last: bool, 1.0, "230: Make antimatter only through make_short, never the search's pick")
         }
     };
 }
@@ -906,12 +913,20 @@ impl Policy {
     fn search_pick(&mut self, rules: &Rules, g: &GameState, legal: &[Action]) -> usize {
         let world = rules.world();
         let reserve = self.am_reserve(&world, g, legal);
-        if !self.forcing && reserve.is_none() {
+        // 230: `burn_late` 2 keeps the burns and Reclaim out of the search before the deck's last two cards;
+        // `am_last` keeps Make antimatter out of it (make_short alone takes it).
+        let early_burn = self.behaviors.burn_late >= 2 && super::eval::Eval::cards_left(g) > 2;
+        let am_last = self.behaviors.am_last;
+        let held = |a: &Action| {
+            (early_burn && burns(&world, a)) || (am_last && matches!(a, Action::Standard { act, .. } if act == "antimatter"))
+        };
+        if !self.forcing && reserve.is_none() && !legal.iter().any(held) {
             return self.inner.choose(rules, g, legal);
         }
         let keep: Vec<usize> = (0..legal.len())
             .filter(|&i| !self.ruled_out(&world, g, &legal[i]) && !self.spends_banned(rules, g, &legal[i]))
             .filter(|&i| !reserve.is_some_and(|(s, r)| below_reserve(rules, g, &legal[i], s, r)))
+            .filter(|&i| !held(&legal[i]))
             .collect();
         if keep.is_empty() || keep.len() == legal.len() {
             return self.inner.choose(rules, g, legal);
@@ -932,7 +947,15 @@ impl Policy {
         // 213 (`am_source`): the seat's antimatter powers and built Actions, each once a round, before the cubes.
         // 219: a plant's Action (a resource paid) before a board power (a burn or Reclaim): the burns are the rare way.
         let mut sources: Vec<usize> = if self.behaviors.am_source {
-            legal.iter().enumerate().filter(|(_, a)| a.seat() as usize == s && makes_antimatter(&world, a)).map(|(i, _)| i).collect()
+            // 230 (`burn_late`): the burns and Reclaim wait for the deck's last two cards.
+            let early = self.behaviors.burn_late > 0 && super::eval::Eval::cards_left(g) > 2;
+            legal
+                .iter()
+                .enumerate()
+                .filter(|(_, a)| a.seat() as usize == s && makes_antimatter(&world, a))
+                .filter(|(_, a)| !(early && burns(&world, a)))
+                .map(|(i, _)| i)
+                .collect()
         } else {
             Vec::new()
         };
@@ -1167,6 +1190,17 @@ fn makes_antimatter(w: &World, a: &Action) -> bool {
         Action::Power { seat, power } => ai::board(w, *seat as usize).powers.get(*power as usize).is_some_and(|p| gains(&p.effects)),
         // 221: every branch of an "A, OR B" Action, as the keep plan's `am_makes` reads it.
         Action::Use { card, .. } => cards::def(w, card).ability.as_ref().is_some_and(|ab| ab.branches().iter().any(|b| gains(&b.effects))),
+        _ => false,
+    }
+}
+
+/// 230 (`burn_late`): whether `a` is a board power that burns the seat's own piece or reclaims one (`Burn`, `Cleanse`).
+fn burns(w: &World, a: &Action) -> bool {
+    match a {
+        Action::Power { seat, power } => ai::board(w, *seat as usize)
+            .powers
+            .get(*power as usize)
+            .is_some_and(|p| p.effects.iter().any(|e| matches!(e, Op::Burn { .. } | Op::Cleanse { .. }))),
         _ => false,
     }
 }

@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 100. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 101. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -595,7 +595,7 @@ that country in reach** (any city, corrupted ones too) may use the converter, **
 
 | Megacorp (megaproject) | Payout, each of your cubes | Converter | Chip converter |
 |---|---|---|---|
-| Horizon (Tidal Grid) | 3 energy, 3 credits | 2 research cubes + 1 energy → 1 antimatter | 2 chips → 3 energy |
+| Horizon (Tidal Grid) | 3 energy, 3 credits | 3 research cubes + 1 energy → 1 antimatter | 2 chips → 3 energy |
 | Cintamani (Polar Compute Array) | draw 1 card, 5 credits | 1 research cube → 2 insight | 2 chips → draw 3 |
 | Onyx (Mountain Fusion Works) | 2 chips, 3 credits | 1 research cube → 1 chip | none |
 | Biomia (Delta Seawall) | 1 Unity, draw 1 card | 1 research cube → 1 Unity | 2 chips → 2 Unity, draw 1 |

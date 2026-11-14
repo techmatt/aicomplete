@@ -261,10 +261,10 @@ fn a_converter_needs_a_city_of_its_country_in_reach() {
     assert!(offered(&g));
     let (e, a) = (g.resource(0, Resource::Energy), g.resource(0, Resource::Antimatter));
     rules.apply_mut(&mut g, &convert, None).unwrap();
-    // Horizon (r94, 213): 2 cubes + 1 energy, 1 antimatter (r88: 1 cube for 2).
+    // Horizon (r101, 230): 3 cubes + 1 energy, 1 antimatter (r94: 2 cubes; r88: 1 cube for 2).
     assert_eq!(
         (g.resource(0, Resource::ResearchCubes), g.resource(0, Resource::Energy), g.resource(0, Resource::Antimatter)),
-        (1, e - 1, a + 1)
+        (0, e - 1, a + 1)
     );
     // r75 (content): Horizon's converter is once a round too (105 had no limit on it).
     assert_eq!(board::converter_blocked(&w, &g, 0, 0), Some("used this round"));
