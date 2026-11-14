@@ -85,10 +85,7 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
                 discard(g, cx, ctx, s, *count)?;
             }
         }
-        Op::ExtraWar { ongoing_use: true, .. } => {
-            // Read by the war step while its ongoing project stands (`board::war_steps`).
-        }
-        Op::ExtraWar { ongoing_use: false, .. } => {
+        Op::ExtraWar => {
             // Threats execute after the war step: "next round" is the next war step.
             if let Some(base) = token(&w, g, ctx, Some(Location::Base)) {
                 for (i, f) in w.map.fronts.iter().enumerate() {
@@ -198,7 +195,7 @@ fn op_name(e: &Op) -> &'static str {
         Op::DestroyFacility { .. } => "destroy_facility",
         Op::DisableBuilding { .. } => "disable_building",
         Op::Discard { .. } => "discard",
-        Op::ExtraWar { .. } => "extra_war",
+        Op::ExtraWar => "extra_war",
         Op::LoseAmbassadorsOr { .. } => "lose_ambassadors_or",
         Op::LoseIncome { .. } => "lose_income",
         Op::LoseOr { .. } => "lose_or",

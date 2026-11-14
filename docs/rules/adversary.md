@@ -93,23 +93,24 @@ is already tracked: an income, pieces, Fallout, a round flag), and acts **in eac
 <!-- generated: projects -->
 | Project | Tags | Cost a board | Size (effects) |
 |---|---|---|---|
-| Disinformation | diplomacy | 9 | small (1) |
-| Backdoor Research | cyber | 7 | small (1) |
-| Rolling Blackouts | power | 6 | small (1) |
-| Botnet Swarm | cyber | 12 | small (1) |
-| False Flag | universal | 7 | small (1) |
-| Night Raid | security | 8 | small (1) |
-| Containment Breach | power | 7 | small (1) |
-| Crackdown | security | 6 | small (1) |
-| Lab Purge | cyber | 9 | small (1) |
-| Asset Seizure | industry | 11 | small (1) |
-| Botnet Conscripts | cyber | 9 | small (1) |
-| Purge Lists | diplomacy | 5 | small (1) |
-| Dirty Bomb | power | 10 | small (1) |
-| Lab Seizure | cyber | 6 | small (1) |
-| Slander Campaign | diplomacy | 7 | small (1) |
-| Coastal Raids | security | 7 | small (1) |
-| Plant Seizure | industry | 7 | small (1) |
+| Disinformation | diplomacy | 11 | small (1) |
+| Backdoor Research | cyber | 9 | small (1) |
+| Rolling Blackouts | power | 8 | small (1) |
+| Botnet Swarm | cyber | 14 | small (1) |
+| False Flag | universal | 9 | small (1) |
+| Night Raid | security | 10 | small (1) |
+| Containment Breach | power | 9 | small (1) |
+| Crackdown | security | 8 | small (1) |
+| Lab Purge | cyber | 11 | small (1) |
+| Asset Seizure | industry | 13 | small (1) |
+| Botnet Conscripts | cyber | 11 | small (1) |
+| Purge Lists | diplomacy | 7 | small (1) |
+| Dirty Bomb | power | 12 | small (1) |
+| Lab Seizure | cyber | 8 | small (1) |
+| Slander Campaign | diplomacy | 9 | small (1) |
+| Coastal Raids | security | 9 | small (1) |
+| Plant Seizure | industry | 9 | small (1) |
+| Rumor Mill | diplomacy | 8 | small (1) |
 | Sabotage Teams | power | 10 | big (2) |
 | Mob Rule | diplomacy | 14 | big (2) |
 | Data Heist | cyber | 12 | big (2) |
@@ -121,6 +122,7 @@ is already tracked: an income, pieces, Fallout, a round flag), and acts **in eac
 | Infiltration Drive | diplomacy | 22 | big (3) |
 | Accelerated Timetable | universal | 20 | big (2) |
 | Grand Offensive | universal | 22 | big (3) |
+| Martial Law | security | 15 | big (2) |
 <!-- /generated -->
 
 Texts: [adversary-cards.md](../adversary-cards.md).

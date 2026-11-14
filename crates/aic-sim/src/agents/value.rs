@@ -397,9 +397,8 @@ pub struct Worth {
     /// A round, standing, that the heuristic's income already counts (income,
     /// income per tag, production).
     pub income: f64,
-    /// A round per tag, as `income`.
-    pub income_per_tag: [f64; TAGS.len()],
-    /// 229: a round per tag at the count frozen at play (`IncomePerTag`): times [`Ctx::play_tags`].
+    /// A round per tag at the count frozen at play (229: `IncomePerTag`; 233: `ProductionPerTag`, counted once at
+    /// play by the engine too): times [`Ctx::play_tags`].
     pub income_frozen_tag: [f64; TAGS.len()],
     /// A round, standing, that nothing else counts (a discount, a shelter rule).
     pub standing: f64,
@@ -422,7 +421,6 @@ impl std::ops::AddAssign for Worth {
         self.standing += o.standing;
         for t in 0..TAGS.len() {
             self.per_tag[t] += o.per_tag[t];
-            self.income_per_tag[t] += o.income_per_tag[t];
             self.income_frozen_tag[t] += o.income_frozen_tag[t];
             self.standing_tag[t] += o.standing_tag[t];
             self.team_tag[t] += o.team_tag[t];
@@ -458,7 +456,6 @@ impl Worth {
         self.standing *= k;
         for t in 0..TAGS.len() {
             self.per_tag[t] *= k;
-            self.income_per_tag[t] *= k;
             self.income_frozen_tag[t] *= k;
             self.standing_tag[t] *= k;
             self.team_tag[t] *= k;
@@ -488,9 +485,7 @@ impl Worth {
     }
 
     fn income_round_tags(&self, c: &Ctx) -> f64 {
-        (0..TAGS.len())
-            .map(|i| self.income_per_tag[i] * c.tags[i] as f64 + self.income_frozen_tag[i] * c.play_tags[i] as f64)
-            .sum()
+        (0..TAGS.len()).map(|i| self.income_frozen_tag[i] * c.play_tags[i] as f64).sum()
     }
 
     /// The standing part the heuristic's income doesn't count, a round.
@@ -582,10 +577,11 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::DrainProject { amount } => Worth::now(row("drain_project") * *amount as f64),
         Op::DiscardProject => Worth::now(row("discard_project")),
         Op::Production { resource, amount } => Worth::income(row("production") * income_rate(t, *resource) * *amount as f64),
-        // 106: an income per tag fixed at play, valued as one at the seat's count.
+        // 106: an income per tag fixed at play (`effects::ProductionPerTag` counts once); 233: valued at the
+        // seat's tags in play now, as `IncomePerTag` (229), not at the projected count.
         Op::ProductionPerTag { resource, tag, per } => {
             let mut w = Worth::default();
-            w.income_per_tag[tag_i(*tag)] = row("production_per_tag") * income_rate(t, *resource) / (*per).max(1) as f64;
+            w.income_frozen_tag[tag_i(*tag)] = row("production_per_tag") * income_rate(t, *resource) / (*per).max(1) as f64;
             w
         }
         Op::AddTokens { kind, amount, .. } => Worth::now(row("add_tokens") * t.feed(*kind) * *amount as f64),
@@ -684,7 +680,10 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::FreePurchases { count } => Worth::now(row("free_purchases") * t.rate("keep_tier1") * *count as f64),
         Op::CounterAll => Worth::now(row("counter_all")),
         Op::Pushback { ambassadors } => Worth::now(row("pushback") * t.rate("countries") * *ambassadors as f64),
-        Op::DealThreats { count, .. } => Worth::now(row("deal_threats") * *count as f64),
+        // 233: `each_country` deals in every country (a project's; `team_ops_price_per_country`).
+        Op::DealThreats { count, each_country, .. } => {
+            Worth::now(row("deal_threats") * *count as f64 * if *each_country { t.rate("countries") } else { 1.0 })
+        }
         Op::RemoveBotnets { count } => Worth::now(row("remove_botnets") * *count as f64),
         // 185: a cube on each open megaproject; a botnet turned into one.
         Op::AdversaryCubes { count } => Worth::now(row("adversary_cubes") * t.rate("countries") * *count as f64),
@@ -805,13 +804,16 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::TroopSteps { .. } => Worth::now(row("troop_steps")),
         Op::StandingTroopsBonus { .. } => Worth::now(row("standing_troops_bonus")),
         Op::ThreatCompute { .. } => Worth::now(row("threat_compute")),
-        Op::AdversaryFactory { count, .. } => Worth::now(row("adversary_factory") * *count as f64),
+        // 233: `where` each_country builds in every country (War Plants; `team_ops_price_per_country`).
+        Op::AdversaryFactory { count, where_, .. } => Worth::now(
+            row("adversary_factory") * *count as f64 * if where_.is_some() { t.rate("countries") } else { 1.0 },
+        ),
         Op::ComputePerMissing { amount, .. } => Worth::now(row("compute_per_missing") * *amount as f64),
         Op::CorpTroops { count, .. } => Worth::now(row("corp_troops") * (*count).max(1) as f64),
         Op::DestroyFacility { .. } => Worth::now(row("destroy_facility")),
         Op::DisableBuilding { count, .. } => Worth::now(row("disable_building") * *count as f64),
         Op::Discard { count } => Worth::now(row("discard") * t.rate("drawn_card") * *count as f64),
-        Op::ExtraWar { .. } => Worth::now(row("extra_war")),
+        Op::ExtraWar => Worth::now(row("extra_war")),
         Op::LoseAmbassadorsOr { count, resource, amount } => Worth::now(
             row("lose_ambassadors_or") * (r(*resource) * *amount as f64).min(r(Resource::Ambassadors) * *count as f64),
         ),
@@ -1029,7 +1031,7 @@ fn own_tags(w: &mut Worth, d: &CardDef) {
     for tag in &d.tags {
         let i = *tag as usize;
         w.now += w.per_tag[i];
-        w.income += w.income_per_tag[i] + w.income_frozen_tag[i];
+        w.income += w.income_frozen_tag[i];
     }
 }
 
@@ -1111,6 +1113,46 @@ pub fn power_worth(t: &Table, p: &Power) -> Worth {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// 233: every op the project deck prints is priced at 1 and 2 countries (`rates.countries`) as far as the
+    /// engine reaches with it ([`Op::team_reach`], measured by aic-core's `project_ops_reach_as_declared`): a
+    /// per-country op doubles, a table-wide one holds (231's IncreaseIncome miss priced a compute rise once).
+    /// Five arms price a threat's reach, one country (eval's threat harms read them; `one_country` below): a
+    /// project's give / get (`experiments/results/233_project_followups/projects_233.py`) multiplies those by the
+    /// countries.
+    #[test]
+    fn team_ops_price_per_country() {
+        use aic_core::op::TeamReach;
+        let at = |n: f64| {
+            let mut t = table().clone();
+            t.rates.insert("countries".into(), n);
+            t
+        };
+        let (one, two) = (at(1.0), at(2.0));
+        let c = Ctx::typical(table());
+        let worth = |t: &Table, e: &Op| {
+            let w = op_worth(t, e);
+            w.instant(t, &c) + w.per_round(&c)
+        };
+        let content = aic_core::content();
+        let mut wrong = Vec::new();
+        for p in &content.projects {
+            for e in &p.effects {
+                let Some(reach) = e.team_reach() else { continue };
+                let (w1, w2) = (worth(&one, e), worth(&two, e));
+                assert!(w1 != 0.0, "{} {e:?}: priced 0", p.id);
+                let one_country = matches!(
+                    e,
+                    Op::Corrupt { .. } | Op::Requisition { .. } | Op::LoseTokens { .. } | Op::LoseAmbassador | Op::AdversaryBuild
+                );
+                let want = if reach == TeamReach::EachCountry && !one_country { 2.0 } else { 1.0 };
+                if ((w2 / w1) - want).abs() > 1e-9 {
+                    wrong.push(format!("{} {e:?}: {reach:?}, worth {w1:.2} at 1 country, {w2:.2} at 2 (want x{want})", p.id));
+                }
+            }
+        }
+        assert!(wrong.is_empty(), "team ops priced off the engine's reach:\n{}", wrong.join("\n"));
+    }
 
     /// Every op has its row, and every row is an op's or a named part of one.
     #[test]

@@ -181,7 +181,7 @@ fn op_harms(op: &Op) -> Vec<usize> {
         Op::LoseAmbassadorsOr { resource, .. } => [vec![AMBASSADORS_LOST], lost(*resource)].concat(),
         Op::LoseAmbassador => vec![AMBASSADORS_LOST],
         Op::DestroyFacility { .. } => vec![FACILITIES_DESTROYED, NODE_DESTROYED],
-        Op::ExtraWar { .. } => vec![FACILITIES_DESTROYED],
+        Op::ExtraWar => vec![FACILITIES_DESTROYED],
         // A corrupted factory or flipped station takes its hex: the node and ambassadors on it go too (197).
         Op::CorruptFactory | Op::FlipStation { .. } => vec![FACILITIES_CORRUPTED, NODE_DESTROYED, AMBASSADORS_LOST],
         // A troop on the factory: it makes nothing while the troop stands.

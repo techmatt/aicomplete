@@ -1,0 +1,101 @@
+{
+  "name": "s233a",
+  "note": "233: screen on spent 47088-47135: stated (potency, deck 30, small +1), nopot (231's big-project numbers), rm6 (Rumor Mill 6)",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_nopot",
+      "set": [
+        "projects.mob_rule.effects.1.amount=3",
+        "projects.data_heist.effects.0.amount=3",
+        "projects.data_heist.effects.1.amount=8",
+        "projects.data_heist.effects.1.cards=2",
+        "projects.hostile_takeover.effects.1.cut=0",
+        "projects.recruitment_drive.effects.1.count=2",
+        "projects.propaganda_network.effects.1.amount=6",
+        "projects.grand_offensive.effects.1.cut=0",
+        "projects.grand_offensive.effects.2.cut=0"
+      ]
+    },
+    {
+      "name": "br_nopot",
+      "set": [
+        "ai.boards=0,2",
+        "projects.mob_rule.effects.1.amount=3",
+        "projects.data_heist.effects.0.amount=3",
+        "projects.data_heist.effects.1.amount=8",
+        "projects.data_heist.effects.1.cards=2",
+        "projects.hostile_takeover.effects.1.cut=0",
+        "projects.recruitment_drive.effects.1.count=2",
+        "projects.propaganda_network.effects.1.amount=6",
+        "projects.grand_offensive.effects.1.cut=0",
+        "projects.grand_offensive.effects.2.cut=0"
+      ]
+    },
+    {
+      "name": "pr_nopot",
+      "set": [
+        "ai.boards=1,2",
+        "projects.mob_rule.effects.1.amount=3",
+        "projects.data_heist.effects.0.amount=3",
+        "projects.data_heist.effects.1.amount=8",
+        "projects.data_heist.effects.1.cards=2",
+        "projects.hostile_takeover.effects.1.cut=0",
+        "projects.recruitment_drive.effects.1.count=2",
+        "projects.propaganda_network.effects.1.amount=6",
+        "projects.grand_offensive.effects.1.cut=0",
+        "projects.grand_offensive.effects.2.cut=0"
+      ]
+    },
+    {
+      "name": "bp_rm6",
+      "set": [
+        "projects.rumor_mill.cost=6"
+      ]
+    },
+    {
+      "name": "br_rm6",
+      "set": [
+        "ai.boards=0,2",
+        "projects.rumor_mill.cost=6"
+      ]
+    },
+    {
+      "name": "pr_rm6",
+      "set": [
+        "ai.boards=1,2",
+        "projects.rumor_mill.cost=6"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "greedy",
+    "strategist"
+  ],
+  "games": 48,
+  "records": 0
+}

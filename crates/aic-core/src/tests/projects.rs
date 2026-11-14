@@ -366,3 +366,125 @@ fn the_board_verbs_take_the_targets_the_board_shows() {
     run_ops(&rules, &mut g, &[Op::Clock { count: 1 }]);
     assert_eq!(g.pile(adversary::DISCARD).first(), next.get(1));
 }
+
+/// 233: what `after` changed from `before`: per country (its hexes' tokens, its seat's resources, and the state
+/// keys and piles whose first number is its own: `board.project.1.adversary`) and for the table (every other key
+/// and pile).
+fn footprint(w: &module::World, before: &GameState, after: &GameState) -> (Vec<i64>, i64) {
+    let n = w.map.countries.len();
+    let mut by = vec![0; n];
+    let mut table = 0;
+    for (h, cell) in w.map.hexes.iter().enumerate() {
+        let (a, b) = (&before.hexes[h].tokens, &after.hexes[h].tokens);
+        let d: i64 = a.keys().chain(b.keys()).map(|k| (a.get(k).copied().unwrap_or(0) - b.get(k).copied().unwrap_or(0)).abs()).sum();
+        by[cell.country as usize] += d;
+    }
+    for (s, (a, b)) in before.seats.iter().zip(&after.seats).enumerate() {
+        by[s] += a.resources.keys().chain(b.resources.keys())
+            .map(|r| (a.resources.get(r).copied().unwrap_or(0) - b.resources.get(r).copied().unwrap_or(0)).abs())
+            .sum::<i64>();
+    }
+    let owner = |k: &str| k.split('.').find_map(|t| t.parse::<usize>().ok()).filter(|&c| c < n);
+    let (a, b) = (&before.vars, &after.vars);
+    for k in a.keys().chain(b.keys()) {
+        let d = (a.get(k).copied().unwrap_or(0) - b.get(k).copied().unwrap_or(0)).abs();
+        match owner(k.as_str()) {
+            Some(c) => by[c] += d,
+            None => table += d,
+        }
+    }
+    let (a, b) = (&before.piles, &after.piles);
+    for k in a.keys().chain(b.keys()) {
+        if a.get(k) != b.get(k) {
+            match owner(k.as_str()) {
+                Some(c) => by[c] += 1,
+                None => table += 1,
+            }
+        }
+    }
+    (by, table)
+}
+
+/// 233: every op the project deck prints reaches as [`Op::team_reach`] says (231, Matt: a project's effect lands in
+/// each country), measured on the engine: resolved once as a project resolves it, on a 2-country board where each
+/// op has a target in each country, a per-country op changes both countries, a table-wide op neither. The worth's
+/// twin is aic-sim's `team_ops_price_per_country` (231's IncreaseIncome miss).
+#[test]
+fn project_ops_reach_as_declared() {
+    use crate::op::{CorruptSite, FactoryWhere, Op, RallyAt, TeamReach};
+    use crate::modules::effects;
+    let team = |rules: &Rules, g: &mut GameState, ops: &[Op]| {
+        with_answers(rules, g, |_| 0, |g, cx| effects::run(g, cx, ops, &mut effects::Ctx::team()));
+    };
+    // Boards 1 and 2: both print a research station (board 0 prints none, so a station op has nothing there).
+    let rules = rules_of(&baseline_with(&["ai.boards=1,2"]), "baseline_with", &["ai.boards=1,2"]);
+    let w = rules.world();
+    let m = &w.map;
+    assert_eq!(m.countries.len(), 2);
+    let mut rich = rules.new_game(1);
+    answer_all(&rules, &mut rich);
+    // A target for every op in each country: agent stacks by every site, a corrupted city, an adversary factory,
+    // then fresh stacks (something left to corrupt), and a seat's hardened factory with its ambassadors on it and
+    // its cubes on the country's megaproject.
+    let rally = [RallyAt::City, RallyAt::Station, RallyAt::Factory].map(|site| Op::Rally { site, count: 4 });
+    team(&rules, &mut rich, &rally);
+    team(&rules, &mut rich, &[Op::Corrupt { site: CorruptSite::City, cut: 0 }]);
+    team(&rules, &mut rich, &[Op::AdversaryFactory { count: 1, where_: Some(FactoryWhere::EachCountry), fallback_ambassadors: 0 }]);
+    team(&rules, &mut rich, &rally);
+    for c in 0..m.countries.len() {
+        let empty = |h: usize| rich.hexes[h].tokens.is_empty();
+        let open = hexes_where(m, |h| m.hexes[h].country as usize == c && kind(m, h) == HexKind::Open && empty(h));
+        let h = open[open.len() - 1];
+        put(&mut rich, h, FACTORY, 1);
+        put(&mut rich, h, cube(c), 1);
+        put(&mut rich, h, HARDEN, 1);
+        put(&mut rich, h, ambassador(c), 2);
+        rich.vars.insert(crate::modules::board::project_key(c, Some(c)).into(), 3);
+    }
+    // An income rise is one number: compute is kept times the countries (`rally::increase_income`), agents a
+    // country, each country's pool gaining it at the Rally (`rally::fill_pools`).
+    {
+        use crate::modules::adversary::{INCOME_AMBASSADORS, INCOME_COMPUTE};
+        let mut g = rich.clone();
+        team(&rules, &mut g, &[Op::IncreaseIncome { compute: 1, ambassadors: 1 }]);
+        assert_eq!(g.var(INCOME_COMPUTE) - rich.var(INCOME_COMPUTE), m.countries.len() as i64);
+        assert_eq!(g.var(INCOME_AMBASSADORS) - rich.var(INCOME_AMBASSADORS), 1, "a country, read by each pool");
+    }
+    // Not staged here: a Unity pull needs a Unity tip on the track, a token loss cards in play holding tokens; Fallout
+    // by a corrupted station, because board 1's lowest-numbered one (hex 3) has no free land beside it (the
+    // Fallout arm's city sites are measured). Each reads its seats, the track or its countries as the rest do.
+    let staged_elsewhere = |e: &Op| {
+        matches!(e, Op::PullUnity { .. } | Op::LoseTokens { .. } | Op::IncreaseIncome { .. })
+            || matches!(e, Op::Fallout { at: crate::op::FalloutAt::CorruptedStation, .. })
+    };
+    let mut seen = Vec::new();
+    let mut wrong = Vec::new();
+    for p in &crate::content().projects {
+        for (i, e) in p.effects.iter().enumerate() {
+            let Some(reach) = e.team_reach() else { continue };
+            if seen.contains(e) || staged_elsewhere(e) {
+                continue;
+            }
+            seen.push(e.clone());
+            // After the card's earlier effects, as the project resolves (Station Coup's Fallout lands by the station
+            // it just corrupted).
+            let mut before = rich.clone();
+            team(&rules, &mut before, &p.effects[..i]);
+            let mut g = before.clone();
+            team(&rules, &mut g, std::slice::from_ref(e));
+            let (by, table) = footprint(&w, &before, &g);
+            let measured = if by.iter().all(|&d| d > 0) {
+                Some(TeamReach::EachCountry)
+            } else if by.iter().all(|&d| d == 0) && table > 0 {
+                Some(TeamReach::Once)
+            } else {
+                None
+            };
+            if measured != Some(reach) {
+                wrong.push(format!("{} {e:?}: declared {reach:?}; changed {by:?} by country, {table} for the table", p.id));
+            }
+        }
+    }
+    assert!(wrong.is_empty(), "project ops off their declared reach:\n{}", wrong.join("\n"));
+}
+

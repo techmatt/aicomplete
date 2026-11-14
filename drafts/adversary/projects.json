@@ -7,8 +7,7 @@
    "tags": [
     "diplomacy"
    ],
-   "cost": 9,
-   "ongoing": false,
+   "cost": 11,
    "text": "Sway 8 toward Discord.",
    "effects": [
     {
@@ -21,10 +20,11 @@
    "harms": [
     "Discord sway"
    ],
-   "value": "give 9 compute a board (18 at 2 countries, 19.8 at values.json compute 1.1); get 32.0; 1.62 a compute.",
+   "value": "give 11 compute a board (22 at 2 countries, 24.2 at values.json compute 1.1); get 32.0; 1.32 a compute.",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: drain or Audit it.",
    "flags": [
-    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): Sway 5 to 8"
+    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): Sway 5 to 8",
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
    ],
    "reuses": null
   },
@@ -34,8 +34,7 @@
    "tags": [
     "cyber"
    ],
-   "cost": 7,
-   "ongoing": false,
+   "cost": 9,
    "text": "4 adversary research cubes onto each open megaproject.",
    "effects": [
     {
@@ -47,10 +46,11 @@
     "adversary cubes on megaprojects",
     "Discord sway"
    ],
-   "value": "give 7 compute a board (14 at 2 countries, 15.4 at values.json compute 1.1); get 24.0; 1.56 a compute.",
+   "value": "give 9 compute a board (18 at 2 countries, 19.8 at values.json compute 1.1); get 24.0; 1.21 a compute.",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: while megaprojects are open (early to mid). Who plays it: automatic for the adversary (compute step); players answer: finish megaprojects first; drain.",
    "flags": [
-    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): 2 to 4 cubes"
+    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): 2 to 4 cubes",
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
    ],
    "reuses": null
   },
@@ -60,8 +60,7 @@
    "tags": [
     "power"
    ],
-   "cost": 6,
-   "ongoing": false,
+   "cost": 8,
    "text": "Until the end of next round, cities make no energy.",
    "effects": [
     {
@@ -73,10 +72,11 @@
    "harms": [
     "production blacked out"
    ],
-   "value": "give 6 compute a board (12 at 2 countries, 13.2 at values.json compute 1.1); get 12.0; 0.91 a compute.",
+   "value": "give 8 compute a board (16 at 2 countries, 17.6 at values.json compute 1.1); get 12.0; 0.68 a compute.",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round; worst when energy is short. Who plays it: automatic for the adversary (compute step); players answer: bank energy a round ahead (the compute beside it is public).",
    "flags": [
-    "231: kept, repriced per board"
+    "231: kept, repriced per board",
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
    ],
    "reuses": null
   },
@@ -86,8 +86,7 @@
    "tags": [
     "cyber"
    ],
-   "cost": 12,
-   "ongoing": false,
+   "cost": 14,
    "text": "Each country, twice: a botnet spreads to its lowest-numbered city, research station or factory next to one of its botnets (no botnet there: its lowest-numbered research station).",
    "effects": [
     {
@@ -99,10 +98,11 @@
     "adversary pieces placed",
     "projects advanced (compute)"
    ],
-   "value": "give 12 compute a board (24 at 2 countries, 26.4 at values.json compute 1.1); get 64.0; 2.42 a compute.",
+   "value": "give 14 compute a board (28 at 2 countries, 30.8 at values.json compute 1.1); get 64.0; 2.08 a compute.",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: take botnets down; stand ambassadors on them.",
    "flags": [
-    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): 2 botnets a country"
+    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): 2 botnets a country",
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
    ],
    "reuses": null
   },
@@ -112,8 +112,7 @@
    "tags": [
     "universal"
    ],
-   "cost": 7,
-   "ongoing": false,
+   "cost": 9,
    "text": "Each country: an extra tier-2 threat, any tag.",
    "effects": [
     {
@@ -126,10 +125,11 @@
    "harms": [
     "extra threats"
    ],
-   "value": "give 7 compute a board (14 at 2 countries, 15.4 at values.json compute 1.1); get 14.0; 0.91 a compute.",
+   "value": "give 9 compute a board (18 at 2 countries, 19.8 at values.json compute 1.1); get 14.0; 0.71 a compute.",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: keep counter resources; drain.",
    "flags": [
-    "231: kept, repriced per board"
+    "231: kept, repriced per board",
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
    ],
    "reuses": null
   },
@@ -139,8 +139,7 @@
    "tags": [
     "security"
    ],
-   "cost": 8,
-   "ongoing": false,
+   "cost": 10,
    "text": "Each country: 1 Agent onto each of two different hexes holding a player node (those holding the most Agents first; ties: lowest-numbered). 2 Agents on your node's hex destroy your node in the next Corrupt beat.",
    "effects": [
     {
@@ -152,10 +151,11 @@
     "adversary pieces placed",
     "node destroyed"
    ],
-   "value": "give 8 compute a board (16 at 2 countries, 17.6 at values.json compute 1.1); get 16.0; 0.91 a compute.",
+   "value": "give 10 compute a board (20 at 2 countries, 22.0 at values.json compute 1.1); get 16.0; 0.73 a compute.",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late, once agents stand by nodes. Who plays it: automatic for the adversary (compute step); players answer: remove agents from node hexes in the action phase; firewall.",
    "flags": [
-    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): agents land, the 2-agent rule destroys (players answer first)"
+    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): agents land, the 2-agent rule destroys (players answer first)",
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
    ],
    "reuses": null
   },
@@ -165,8 +165,7 @@
    "tags": [
     "power"
    ],
-   "cost": 7,
-   "ongoing": false,
+   "cost": 9,
    "text": "Each player pays 1 antimatter or discards 3 cards.",
    "effects": [
     {
@@ -180,10 +179,11 @@
     "antimatter lost",
     "cards discarded"
    ],
-   "value": "give 7 compute a board (14 at 2 countries, 15.4 at values.json compute 1.1); get 24.0; 1.56 a compute.",
+   "value": "give 9 compute a board (18 at 2 countries, 19.8 at values.json compute 1.1); get 24.0; 1.21 a compute.",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late, once antimatter is made. Who plays it: automatic for the adversary (compute step); players answer: spend antimatter before it lands, or keep spare cards.",
    "flags": [
-    "231: new (a ledger gap)"
+    "231: new (a ledger gap)",
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
    ],
    "reuses": null
   },
@@ -193,8 +193,7 @@
    "tags": [
     "security"
    ],
-   "cost": 6,
-   "ongoing": false,
+   "cost": 8,
    "text": "Each country: every player Ambassador on its hex holding the most (ties: lowest-numbered) goes back to its owner's supply.",
    "effects": [
     {
@@ -204,10 +203,11 @@
    "harms": [
     "pieces pushed or reach cut"
    ],
-   "value": "give 6 compute a board (12 at 2 countries, 13.2 at values.json compute 1.1); get 10.0; 0.76 a compute.",
+   "value": "give 8 compute a board (16 at 2 countries, 17.6 at values.json compute 1.1); get 10.0; 0.57 a compute.",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late, when ambassadors guard stacks. Who plays it: automatic for the adversary (compute step); players answer: spread ambassadors; Dispatch them back.",
    "flags": [
-    "231: new (a ledger gap)"
+    "231: new (a ledger gap)",
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
    ],
    "reuses": null
   },
@@ -217,8 +217,7 @@
    "tags": [
     "cyber"
    ],
-   "cost": 9,
-   "ongoing": false,
+   "cost": 11,
    "text": "Each open megaproject loses 4 player research cubes, from the player with the most on it first.",
    "effects": [
     {
@@ -229,10 +228,11 @@
    "harms": [
     "a megaproject or converter denied"
    ],
-   "value": "give 9 compute a board (18 at 2 countries, 19.8 at values.json compute 1.1); get 32.0; 1.62 a compute.",
+   "value": "give 11 compute a board (22 at 2 countries, 24.2 at values.json compute 1.1); get 32.0; 1.32 a compute.",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: while megaprojects are open. Who plays it: automatic for the adversary (compute step); players answer: finish a megaproject before it fills.",
    "flags": [
-    "231: new (a ledger gap)"
+    "231: new (a ledger gap)",
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
    ],
    "reuses": null
   },
@@ -242,8 +242,7 @@
    "tags": [
     "industry"
    ],
-   "cost": 11,
-   "ongoing": false,
+   "cost": 13,
    "text": "Each country: its neutral factory with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned factory picked the same way turns neutral.",
    "effects": [
     {
@@ -254,10 +253,11 @@
    "harms": [
     "facilities destroyed or corrupted"
    ],
-   "value": "give 11 compute a board (22 at 2 countries, 24.2 at values.json compute 1.1); get 30.0; 1.24 a compute.",
+   "value": "give 13 compute a board (26 at 2 countries, 28.6 at values.json compute 1.1); get 30.0; 1.05 a compute.",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: claim factories; stand ambassadors on them.",
    "flags": [
-    "231: kept, repriced per board"
+    "231: kept, repriced per board",
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
    ],
    "reuses": null
   },
@@ -267,8 +267,7 @@
    "tags": [
     "cyber"
    ],
-   "cost": 9,
-   "ongoing": false,
+   "cost": 11,
    "text": "Each country: its lowest-numbered botnet becomes 3 Troops on its hex.",
    "effects": [
     {
@@ -280,10 +279,11 @@
    "harms": [
     "troops made"
    ],
-   "value": "give 9 compute a board (18 at 2 countries, 19.8 at values.json compute 1.1); get 30.0; 1.52 a compute.",
+   "value": "give 11 compute a board (22 at 2 countries, 24.2 at values.json compute 1.1); get 30.0; 1.24 a compute.",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round with botnets. Who plays it: automatic for the adversary (compute step); players answer: take botnets down.",
    "flags": [
-    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): 2 to 3 troops"
+    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): 2 to 3 troops",
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
    ],
    "reuses": null
   },
@@ -293,8 +293,7 @@
    "tags": [
     "diplomacy"
    ],
-   "cost": 5,
-   "ongoing": false,
+   "cost": 7,
    "text": "Each player loses 1 Ambassador (from their supply, else one of theirs on the board).",
    "effects": [
     {
@@ -304,10 +303,11 @@
    "harms": [
     "ambassadors lost"
    ],
-   "value": "give 5 compute a board (10 at 2 countries, 11.0 at values.json compute 1.1); get 8.0; 0.73 a compute.",
+   "value": "give 7 compute a board (14 at 2 countries, 15.4 at values.json compute 1.1); get 8.0; 0.52 a compute.",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: keep a spare ambassador in supply.",
    "flags": [
-    "231: new (small, a deck margin)"
+    "231: new (small, a deck margin)",
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
    ],
    "reuses": null
   },
@@ -317,8 +317,7 @@
    "tags": [
     "power"
    ],
-   "cost": 10,
-   "ongoing": false,
+   "cost": 12,
    "text": "Each country: 1 Fallout lands next to each of its two lowest-numbered corrupted cities.",
    "effects": [
     {
@@ -330,10 +329,11 @@
    "harms": [
     "Fallout placed"
    ],
-   "value": "give 10 compute a board (20 at 2 countries, 22.0 at values.json compute 1.1); get 33.6; 1.53 a compute.",
+   "value": "give 12 compute a board (24 at 2 countries, 26.4 at values.json compute 1.1); get 33.6; 1.27 a compute.",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late, once cities are corrupted. Who plays it: automatic for the adversary (compute step); players answer: liberate cities; Lift Fallout.",
    "flags": [
-    "231: new (small, a deck margin)"
+    "231: new (small, a deck margin)",
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
    ],
    "reuses": null
   },
@@ -343,8 +343,7 @@
    "tags": [
     "cyber"
    ],
-   "cost": 6,
-   "ongoing": false,
+   "cost": 8,
    "text": "Corrupt: research stations.",
    "effects": [
     {
@@ -356,10 +355,11 @@
     "adversary pieces placed",
     "facilities destroyed or corrupted"
    ],
-   "value": "give 6 compute a board (12 at 2 countries, 13.2 at values.json compute 1.1); get 10.0; 0.76 a compute.",
+   "value": "give 8 compute a board (16 at 2 countries, 17.6 at values.json compute 1.1); get 20.0; 1.14 a compute.",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round with agents by stations. Who plays it: automatic for the adversary (compute step); players answer: clear agents next to stations.",
    "flags": [
-    "231: new (small, a deck margin)"
+    "231: new (small, a deck margin)",
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
    ],
    "reuses": null
   },
@@ -369,8 +369,7 @@
    "tags": [
     "diplomacy"
    ],
-   "cost": 7,
-   "ongoing": false,
+   "cost": 9,
    "text": "Pull 4 Sway back off the Unity track.",
    "effects": [
     {
@@ -381,10 +380,11 @@
    "harms": [
     "Unity pulled back"
    ],
-   "value": "give 7 compute a board (14 at 2 countries, 15.4 at values.json compute 1.1); get 16.0; 1.04 a compute.",
+   "value": "give 9 compute a board (18 at 2 countries, 19.8 at values.json compute 1.1); get 16.0; 0.81 a compute.",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late, once Unity leads. Who plays it: automatic for the adversary (compute step); players answer: drain it.",
    "flags": [
-    "231: new (small, a deck margin)"
+    "231: new (small, a deck margin)",
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
    ],
    "reuses": null
   },
@@ -394,8 +394,7 @@
    "tags": [
     "security"
    ],
-   "cost": 7,
-   "ongoing": false,
+   "cost": 9,
    "text": "Rally 3, each country: coastal cities.",
    "effects": [
     {
@@ -407,10 +406,11 @@
    "harms": [
     "adversary pieces placed"
    ],
-   "value": "give 7 compute a board (14 at 2 countries, 15.4 at values.json compute 1.1); get 19.8; 1.29 a compute.",
+   "value": "give 9 compute a board (18 at 2 countries, 19.8 at values.json compute 1.1); get 19.8; 1.00 a compute.",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: clear coastal stacks; ambassadors on coastal cities.",
    "flags": [
-    "231: new (small, a deck margin)"
+    "231: new (small, a deck margin)",
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
    ],
    "reuses": null
   },
@@ -420,8 +420,7 @@
    "tags": [
     "industry"
    ],
-   "cost": 7,
-   "ongoing": false,
+   "cost": 9,
    "text": "Corrupt: factories.",
    "effects": [
     {
@@ -433,12 +432,39 @@
     "adversary pieces placed",
     "facilities destroyed or corrupted"
    ],
-   "value": "give 7 compute a board (14 at 2 countries, 15.4 at values.json compute 1.1); get 10.0; 0.65 a compute.",
+   "value": "give 9 compute a board (18 at 2 countries, 19.8 at values.json compute 1.1); get 20.0; 1.01 a compute.",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round with agents by factories. Who plays it: automatic for the adversary (compute step); players answer: clear agents next to factories.",
    "flags": [
-    "231: new (small, a deck margin)"
+    "231: new (small, a deck margin)",
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
    ],
    "reuses": null
+  },
+  {
+   "id": "rumor_mill",
+   "name": "Rumor Mill",
+   "tags": [
+    "diplomacy"
+   ],
+   "cost": 8,
+   "text": "Sway 4 toward Discord.",
+   "effects": [
+    {
+     "op": "sway",
+     "side": "discord",
+     "narrative": "fear",
+     "amount": 4
+    }
+   ],
+   "harms": [
+    "Discord sway"
+   ],
+   "flags": [
+    "233: new (231's draft; the deck to 30)"
+   ],
+   "reuses": null,
+   "value": "give 8 compute a board (16 at 2 countries, 17.6 at values.json compute 1.1); get 16.0; 0.91 a compute.",
+   "check": "233: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: drain or Audit it."
   },
   {
    "id": "sabotage_teams",
@@ -447,7 +473,6 @@
     "power"
    ],
    "cost": 10,
-   "ongoing": false,
    "text": "Each country: the hardened facility with the most Agents on or next to it (ties: lowest-numbered) loses its hardening. Until the end of next round, players make no energy from their nodes in upkeep.",
    "effects": [
     {
@@ -477,8 +502,7 @@
     "diplomacy"
    ],
    "cost": 14,
-   "ongoing": false,
-   "text": "Rally 3, each country: cities. Sway 3 toward Discord.",
+   "text": "Rally 3, each country: cities. Sway 5 toward Discord.",
    "effects": [
     {
      "op": "rally",
@@ -488,18 +512,19 @@
     {
      "op": "sway",
      "side": "discord",
-     "amount": 3,
-     "narrative": "fear"
+     "narrative": "fear",
+     "amount": 5
     }
    ],
    "harms": [
     "adversary pieces placed",
     "Discord sway"
    ],
-   "value": "give 14 compute a board (28 at 2 countries, 30.8 at values.json compute 1.1); get 31.8; 1.03 a compute.",
+   "value": "give 14 compute a board (28 at 2 countries, 30.8 at values.json compute 1.1); get 39.8; 1.29 a compute.",
    "check": "231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: clear city stacks; drain.",
    "flags": [
-    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): the node raid out, Discord in"
+    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): the node raid out, Discord in",
+    "233: potency at the same cost (231's screen-5 overlay): Sway 3 to 5"
    ],
    "reuses": null
   },
@@ -510,18 +535,17 @@
     "cyber"
    ],
    "cost": 12,
-   "ongoing": false,
-   "text": "Each player removes 3 tokens from their cards (their choice of cards). Each player pays 8 credits or discards 2 cards.",
+   "text": "Each player removes 4 tokens from their cards (their choice of cards). Each player pays 10 credits or discards 3 cards.",
    "effects": [
     {
      "op": "lose_tokens",
-     "amount": 3
+     "amount": 4
     },
     {
      "op": "requisition",
      "resource": "credits",
-     "amount": 8,
-     "cards": 2
+     "amount": 10,
+     "cards": 3
     }
    ],
    "harms": [
@@ -529,10 +553,11 @@
     "cards discarded",
     "credits or income lost"
    ],
-   "value": "give 12 compute a board (24 at 2 countries, 26.4 at values.json compute 1.1); get 22.0; 0.83 a compute.",
+   "value": "give 12 compute a board (24 at 2 countries, 26.4 at values.json compute 1.1); get 28.0; 1.06 a compute.",
    "check": "231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late. Who plays it: automatic for the adversary (compute step); players answer: spend tokens and credits ahead.",
    "flags": [
-    "231: kept, repriced per board"
+    "231: kept, repriced per board",
+    "233: potency at the same cost (231's screen-5 overlay): 4 tokens (was 3); 10 credits or 3 cards (was 8 or 2)"
    ],
    "reuses": null
   },
@@ -543,8 +568,7 @@
     "industry"
    ],
    "cost": 15,
-   "ongoing": false,
-   "text": "Rally 3, each country: factories. Corrupt: factories.",
+   "text": "Rally 3, each country: factories. Corrupt: factories (1 fewer).",
    "effects": [
     {
      "op": "rally",
@@ -553,17 +577,19 @@
     },
     {
      "op": "corrupt",
-     "site": "factory"
+     "site": "factory",
+     "cut": 1
     }
    ],
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"
    ],
-   "value": "give 15 compute a board (30 at 2 countries, 33.0 at values.json compute 1.1); get 29.8; 0.90 a compute.",
+   "value": "give 15 compute a board (30 at 2 countries, 33.0 at values.json compute 1.1); get 49.8; 1.51 a compute.",
    "check": "231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: clear factory stacks; ambassadors on factories.",
    "flags": [
-    "231: kept, repriced per board"
+    "231: kept, repriced per board",
+    "233: potency at the same cost (231's screen-5 overlay): corrupts with 1 fewer"
    ],
    "reuses": null
   },
@@ -574,7 +600,6 @@
     "cyber"
    ],
    "cost": 19,
-   "ongoing": false,
    "text": "Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station.",
    "effects": [
     {
@@ -604,7 +629,6 @@
     "industry"
    ],
    "cost": 19,
-   "ongoing": false,
    "text": "Each country: the adversary builds a factory on its free industrial zone next to an Agent, else its lowest-numbered (none free: 2 Agents on one of its factories). Every adversary factory makes 2 Troops on its hex (a player Ambassador on it stops them).",
    "effects": [
     {
@@ -636,8 +660,7 @@
     "diplomacy"
    ],
    "cost": 20,
-   "ongoing": false,
-   "text": "Income: +1 Agent a country a round. Rally 2, each country: cities.",
+   "text": "Income: +1 Agent a country a round. Rally 3, each country: cities.",
    "effects": [
     {
      "op": "increase_income",
@@ -646,16 +669,17 @@
     {
      "op": "rally",
      "site": "city",
-     "count": 2
+     "count": 3
     }
    ],
    "harms": [
     "adversary pieces placed"
    ],
-   "value": "give 20 compute a board (40 at 2 countries, 44.0 at values.json compute 1.1); get 39.6; 0.90 a compute.",
+   "value": "give 20 compute a board (40 at 2 countries, 44.0 at values.json compute 1.1); get 46.2; 1.05 a compute.",
    "check": "231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: early is worst. Who plays it: automatic for the adversary (compute step); players answer: drain it; clear city stacks.",
    "flags": [
-    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): a rally now beside the income"
+    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): a rally now beside the income",
+    "233: potency at the same cost (231's screen-5 overlay): Rally 2 to 3"
    ],
    "reuses": null
   },
@@ -666,8 +690,7 @@
     "universal"
    ],
    "cost": 18,
-   "ongoing": false,
-   "text": "Income: +1 compute a country a round. Sway 6 toward Discord.",
+   "text": "Income: +1 compute a country a round. Sway 8 toward Discord.",
    "effects": [
     {
      "op": "increase_income",
@@ -676,18 +699,19 @@
     {
      "op": "sway",
      "side": "discord",
-     "amount": 6,
-     "narrative": "fear"
+     "narrative": "fear",
+     "amount": 8
     }
    ],
    "harms": [
     "projects advanced (compute)",
     "Discord sway"
    ],
-   "value": "give 18 compute a board (36 at 2 countries, 39.6 at values.json compute 1.1); get 32.8; 0.83 a compute.",
+   "value": "give 18 compute a board (36 at 2 countries, 39.6 at values.json compute 1.1); get 40.8; 1.03 a compute.",
    "check": "231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: early is worst. Who plays it: automatic for the adversary (compute step); players answer: drain it.",
    "flags": [
-    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): one-shot (was ongoing Sway 2 a round)"
+    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): one-shot (was ongoing Sway 2 a round)",
+    "233: potency at the same cost (231's screen-5 overlay): Sway 6 to 8"
    ],
    "reuses": null
   },
@@ -698,7 +722,6 @@
     "diplomacy"
    ],
    "cost": 22,
-   "ongoing": false,
    "text": "Rally 3, each country: cities. Corrupt: cities (1 fewer). Then each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
    "effects": [
     {
@@ -721,7 +744,7 @@
     "facilities destroyed or corrupted",
     "Fallout placed"
    ],
-   "value": "give 22 compute a board (44 at 2 countries, 48.4 at values.json compute 1.1); get 51.6; 1.07 a compute.",
+   "value": "give 22 compute a board (44 at 2 countries, 48.4 at values.json compute 1.1); get 66.6; 1.38 a compute.",
    "check": "231: 3 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late. Who plays it: automatic for the adversary (compute step); players answer: clear city stacks; ambassadors on cities.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): Fallout added"
@@ -735,7 +758,6 @@
     "universal"
    ],
    "cost": 20,
-   "ongoing": false,
    "text": "Discard the top face-down card of the adversary's event deck, if any: the round cap comes a round sooner. Each country: an extra tier-2 threat, any tag.",
    "effects": [
     {
@@ -767,31 +789,63 @@
     "universal"
    ],
    "cost": 22,
-   "ongoing": false,
-   "text": "Each country rallies its Agent income now, to this round's Rally. Corrupt: cities. Corrupt: factories.",
+   "text": "Each country rallies its Agent income now, to this round's Rally. Corrupt: cities (1 fewer). Corrupt: factories (1 fewer).",
    "effects": [
     {
      "op": "adversary_build"
     },
     {
      "op": "corrupt",
-     "site": "city"
+     "site": "city",
+     "cut": 1
     },
     {
      "op": "corrupt",
-     "site": "factory"
+     "site": "factory",
+     "cut": 1
     }
    ],
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"
    ],
-   "value": "give 22 compute a board (44 at 2 countries, 48.4 at values.json compute 1.1); get 33.2; 0.69 a compute.",
+   "value": "give 22 compute a board (44 at 2 countries, 48.4 at values.json compute 1.1); get 73.2; 1.51 a compute.",
    "check": "231: 3 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late. Who plays it: automatic for the adversary (compute step); players answer: clear stacks by cities and factories.",
    "flags": [
-    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): Corrupt factories added"
+    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): Corrupt factories added",
+    "233: potency at the same cost (231's screen-5 overlay): both corrupts with 1 fewer"
    ],
    "reuses": null
+  },
+  {
+   "id": "martial_law",
+   "name": "Martial Law",
+   "tags": [
+    "security"
+   ],
+   "cost": 15,
+   "text": "Rally 3, each country: research stations. Corrupt: research stations.",
+   "effects": [
+    {
+     "op": "rally",
+     "site": "station",
+     "count": 3
+    },
+    {
+     "op": "corrupt",
+     "site": "station"
+    }
+   ],
+   "harms": [
+    "adversary pieces placed",
+    "facilities destroyed or corrupted"
+   ],
+   "flags": [
+    "233: new (231's draft; the deck to 30)"
+   ],
+   "reuses": null,
+   "value": "give 15 compute a board (30 at 2 countries, 33.0 at values.json compute 1.1); get 39.8; 1.21 a compute.",
+   "check": "233: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: clear station stacks; ambassadors on stations."
   }
  ]
 }

@@ -83,8 +83,7 @@ pub(super) fn battle(g: &mut GameState, cx: &mut Cx) -> Res {
 
 /// The war steps each front fights this round (135): 1 every round (139: no clock), 1
 /// more where a threat brought war forward on it for this round (Casus
-/// Belli). 231: an ongoing project's "the front with the most corp troops fights twice" is gone with ongoing
-/// projects.
+/// Belli).
 pub fn war_steps(w: &World, g: &GameState) -> Vec<i64> {
     (0..w.map.fronts.len()).map(|i| 1 + (g.var(&extra_war_key(i)) == g.round as i64) as i64).collect()
 }

@@ -415,11 +415,11 @@ def project_breaks(p):
     # 227 (Matt, 2026-11-13): bundles sized by cost; a third effect only at cost 18 and up (231's per-board scale;
     # content::THIRD_EFFECT_COST).
     most = 3 if p.get("cost", 0) >= 18 else 2
-    if len(p.get("effects", [])) + len(p.get("resolve", [])) > most:
+    if len(p.get("effects", [])) > most:
         out.append(f"more than {most} consequences")
     # 231 (Matt, 2026-11-14): one-shot only, and every board.
-    if p.get("ongoing"):
-        out.append("ongoing (231: one-shot only)")
+    if "ongoing" in p:
+        out.append("an ongoing field (231: one-shot only; 233: the field is gone)")
     if "most free" in p.get("text", "").lower():
         out.append("a single-country target (231: every board)")
     return out

@@ -35,7 +35,7 @@ and tier-1 cards have a median of 10 credits with tier 2 15 (r59).
   1".
 - **Credit sinks priced off that income:** threat counters 12 / 17 credits by tier (the last option on every menu; dearer from d1, threats.md); a research cube is worth about 3
   credits (payouts are per card); a player ambassador costs `ambassador_credits` (it pays for removals, and is priced dear because it stays); a card
-  sells for `sell_credits` 1 and chips don't sell; Data Heist takes 8 credits (or 2 cards) from each player.
+  sells for `sell_credits` 1 and chips don't sell; Data Heist takes 10 credits (or 3 cards) from each player.
 - **Adversary compute:** project costs are 5–22 *a board* (231), so 15–66 at 3 countries and
   20–88 at 4: the big ones at 3-4 countries go past 50 (a few a game, as Matt asked). A botnet makes 1.
 - Within the principle: energy (cities make 1, a node costs 1), chips (a factory

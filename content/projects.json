@@ -5,8 +5,7 @@
   "tags": [
    "diplomacy"
   ],
-  "cost": 9,
-  "ongoing": false,
+  "cost": 11,
   "text": "Sway 8 toward Discord.",
   "effects": [
    {
@@ -26,8 +25,7 @@
   "tags": [
    "cyber"
   ],
-  "cost": 7,
-  "ongoing": false,
+  "cost": 9,
   "text": "4 adversary research cubes onto each open megaproject.",
   "effects": [
    {
@@ -46,8 +44,7 @@
   "tags": [
    "power"
   ],
-  "cost": 6,
-  "ongoing": false,
+  "cost": 8,
   "text": "Until the end of next round, cities make no energy.",
   "effects": [
    {
@@ -66,8 +63,7 @@
   "tags": [
    "cyber"
   ],
-  "cost": 12,
-  "ongoing": false,
+  "cost": 14,
   "text": "Each country, twice: a botnet spreads to its lowest-numbered city, research station or factory next to one of its botnets (no botnet there: its lowest-numbered research station).",
   "effects": [
    {
@@ -86,8 +82,7 @@
   "tags": [
    "universal"
   ],
-  "cost": 7,
-  "ongoing": false,
+  "cost": 9,
   "text": "Each country: an extra tier-2 threat, any tag.",
   "effects": [
    {
@@ -107,8 +102,7 @@
   "tags": [
    "security"
   ],
-  "cost": 8,
-  "ongoing": false,
+  "cost": 10,
   "text": "Each country: 1 Agent onto each of two different hexes holding a player node (those holding the most Agents first; ties: lowest-numbered). 2 Agents on your node's hex destroy your node in the next Corrupt beat.",
   "effects": [
    {
@@ -127,8 +121,7 @@
   "tags": [
    "power"
   ],
-  "cost": 7,
-  "ongoing": false,
+  "cost": 9,
   "text": "Each player pays 1 antimatter or discards 3 cards.",
   "effects": [
    {
@@ -149,8 +142,7 @@
   "tags": [
    "security"
   ],
-  "cost": 6,
-  "ongoing": false,
+  "cost": 8,
   "text": "Each country: every player Ambassador on its hex holding the most (ties: lowest-numbered) goes back to its owner's supply.",
   "effects": [
    {
@@ -167,8 +159,7 @@
   "tags": [
    "cyber"
   ],
-  "cost": 9,
-  "ongoing": false,
+  "cost": 11,
   "text": "Each open megaproject loses 4 player research cubes, from the player with the most on it first.",
   "effects": [
    {
@@ -186,8 +177,7 @@
   "tags": [
    "industry"
   ],
-  "cost": 11,
-  "ongoing": false,
+  "cost": 13,
   "text": "Each country: its neutral factory with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned factory picked the same way turns neutral.",
   "effects": [
    {
@@ -205,8 +195,7 @@
   "tags": [
    "cyber"
   ],
-  "cost": 9,
-  "ongoing": false,
+  "cost": 11,
   "text": "Each country: its lowest-numbered botnet becomes 3 Troops on its hex.",
   "effects": [
    {
@@ -225,8 +214,7 @@
   "tags": [
    "diplomacy"
   ],
-  "cost": 5,
-  "ongoing": false,
+  "cost": 7,
   "text": "Each player loses 1 Ambassador (from their supply, else one of theirs on the board).",
   "effects": [
    {
@@ -243,8 +231,7 @@
   "tags": [
    "power"
   ],
-  "cost": 10,
-  "ongoing": false,
+  "cost": 12,
   "text": "Each country: 1 Fallout lands next to each of its two lowest-numbered corrupted cities.",
   "effects": [
    {
@@ -263,8 +250,7 @@
   "tags": [
    "cyber"
   ],
-  "cost": 6,
-  "ongoing": false,
+  "cost": 8,
   "text": "Corrupt: research stations.",
   "effects": [
    {
@@ -283,8 +269,7 @@
   "tags": [
    "diplomacy"
   ],
-  "cost": 7,
-  "ongoing": false,
+  "cost": 9,
   "text": "Pull 4 Sway back off the Unity track.",
   "effects": [
    {
@@ -302,8 +287,7 @@
   "tags": [
    "security"
   ],
-  "cost": 7,
-  "ongoing": false,
+  "cost": 9,
   "text": "Rally 3, each country: coastal cities.",
   "effects": [
    {
@@ -322,8 +306,7 @@
   "tags": [
    "industry"
   ],
-  "cost": 7,
-  "ongoing": false,
+  "cost": 9,
   "text": "Corrupt: factories.",
   "effects": [
    {
@@ -337,13 +320,32 @@
   ]
  },
  {
+  "id": "rumor_mill",
+  "name": "Rumor Mill",
+  "tags": [
+   "diplomacy"
+  ],
+  "cost": 8,
+  "text": "Sway 4 toward Discord.",
+  "effects": [
+   {
+    "op": "sway",
+    "side": "discord",
+    "narrative": "fear",
+    "amount": 4
+   }
+  ],
+  "harms": [
+   "Discord sway"
+  ]
+ },
+ {
   "id": "sabotage_teams",
   "name": "Sabotage Teams",
   "tags": [
    "power"
   ],
   "cost": 10,
-  "ongoing": false,
   "text": "Each country: the hardened facility with the most Agents on or next to it (ties: lowest-numbered) loses its hardening. Until the end of next round, players make no energy from their nodes in upkeep.",
   "effects": [
    {
@@ -367,8 +369,7 @@
    "diplomacy"
   ],
   "cost": 14,
-  "ongoing": false,
-  "text": "Rally 3, each country: cities. Sway 3 toward Discord.",
+  "text": "Rally 3, each country: cities. Sway 5 toward Discord.",
   "effects": [
    {
     "op": "rally",
@@ -378,8 +379,8 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 3,
-    "narrative": "fear"
+    "narrative": "fear",
+    "amount": 5
    }
   ],
   "harms": [
@@ -394,18 +395,17 @@
    "cyber"
   ],
   "cost": 12,
-  "ongoing": false,
-  "text": "Each player removes 3 tokens from their cards (their choice of cards). Each player pays 8 credits or discards 2 cards.",
+  "text": "Each player removes 4 tokens from their cards (their choice of cards). Each player pays 10 credits or discards 3 cards.",
   "effects": [
    {
     "op": "lose_tokens",
-    "amount": 3
+    "amount": 4
    },
    {
     "op": "requisition",
     "resource": "credits",
-    "amount": 8,
-    "cards": 2
+    "amount": 10,
+    "cards": 3
    }
   ],
   "harms": [
@@ -421,8 +421,7 @@
    "industry"
   ],
   "cost": 15,
-  "ongoing": false,
-  "text": "Rally 3, each country: factories. Corrupt: factories.",
+  "text": "Rally 3, each country: factories. Corrupt: factories (1 fewer).",
   "effects": [
    {
     "op": "rally",
@@ -431,7 +430,8 @@
    },
    {
     "op": "corrupt",
-    "site": "factory"
+    "site": "factory",
+    "cut": 1
    }
   ],
   "harms": [
@@ -446,7 +446,6 @@
    "cyber"
   ],
   "cost": 19,
-  "ongoing": false,
   "text": "Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station.",
   "effects": [
    {
@@ -470,7 +469,6 @@
    "industry"
   ],
   "cost": 19,
-  "ongoing": false,
   "text": "Each country: the adversary builds a factory on its free industrial zone next to an Agent, else its lowest-numbered (none free: 2 Agents on one of its factories). Every adversary factory makes 2 Troops on its hex (a player Ambassador on it stops them).",
   "effects": [
    {
@@ -496,8 +494,7 @@
    "diplomacy"
   ],
   "cost": 20,
-  "ongoing": false,
-  "text": "Income: +1 Agent a country a round. Rally 2, each country: cities.",
+  "text": "Income: +1 Agent a country a round. Rally 3, each country: cities.",
   "effects": [
    {
     "op": "increase_income",
@@ -506,7 +503,7 @@
    {
     "op": "rally",
     "site": "city",
-    "count": 2
+    "count": 3
    }
   ],
   "harms": [
@@ -520,8 +517,7 @@
    "universal"
   ],
   "cost": 18,
-  "ongoing": false,
-  "text": "Income: +1 compute a country a round. Sway 6 toward Discord.",
+  "text": "Income: +1 compute a country a round. Sway 8 toward Discord.",
   "effects": [
    {
     "op": "increase_income",
@@ -530,8 +526,8 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 6,
-    "narrative": "fear"
+    "narrative": "fear",
+    "amount": 8
    }
   ],
   "harms": [
@@ -546,7 +542,6 @@
    "diplomacy"
   ],
   "cost": 22,
-  "ongoing": false,
   "text": "Rally 3, each country: cities. Corrupt: cities (1 fewer). Then each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
   "effects": [
    {
@@ -577,7 +572,6 @@
    "universal"
   ],
   "cost": 20,
-  "ongoing": false,
   "text": "Discard the top face-down card of the adversary's event deck, if any: the round cap comes a round sooner. Each country: an extra tier-2 threat, any tag.",
   "effects": [
    {
@@ -603,19 +597,44 @@
    "universal"
   ],
   "cost": 22,
-  "ongoing": false,
-  "text": "Each country rallies its Agent income now, to this round's Rally. Corrupt: cities. Corrupt: factories.",
+  "text": "Each country rallies its Agent income now, to this round's Rally. Corrupt: cities (1 fewer). Corrupt: factories (1 fewer).",
   "effects": [
    {
     "op": "adversary_build"
    },
    {
     "op": "corrupt",
-    "site": "city"
+    "site": "city",
+    "cut": 1
    },
    {
     "op": "corrupt",
-    "site": "factory"
+    "site": "factory",
+    "cut": 1
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "facilities destroyed or corrupted"
+  ]
+ },
+ {
+  "id": "martial_law",
+  "name": "Martial Law",
+  "tags": [
+   "security"
+  ],
+  "cost": 15,
+  "text": "Rally 3, each country: research stations. Corrupt: research stations.",
+  "effects": [
+   {
+    "op": "rally",
+    "site": "station",
+    "count": 3
+   },
+   {
+    "op": "corrupt",
+    "site": "station"
    }
   ],
   "harms": [

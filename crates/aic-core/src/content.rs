@@ -623,8 +623,8 @@ impl AlignmentCard {
 
 /// An adversary project (017): one shared deck, staged (stage 1 cheap,
 /// stage 2 big). Adversary compute fills the leftmost visible project; a
-/// full one resolves its effects once, or, `ongoing`, every round from then
-/// on. Team choices are asked of seat 0.
+/// full one resolves its effects once (231: one-shot only; 233: the `ongoing`
+/// field is gone, so content with it is rejected). Team choices are asked of seat 0.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ProjectCard {
@@ -634,9 +634,6 @@ pub struct ProjectCard {
     pub tags: Vec<ThreatTag>,
     /// Compute to fill it, per board (231: times the countries in play).
     pub cost: i64,
-    /// 231: always false (`Content::check` refuses an ongoing project; one-shot only).
-    #[serde(default)]
-    pub ongoing: bool,
     pub text: String,
     /// What it does when it resolves, once.
     pub effects: Vec<Op>,
@@ -1396,10 +1393,6 @@ fn check_project(p: &ProjectCard) -> Result<(), String> {
         ));
     }
     check_ops(&p.effects, Slot::Team, &format!("project {:?}", p.id))?;
-    // 231 (Matt, 2026-11-14): one-shot only; a lasting effect rides on something already tracked (an income).
-    if p.ongoing {
-        return Err(format!("project {:?}: one-shot only (231: no ongoing projects)", p.id));
-    }
     if let Some(why) = project_rule_break(p) {
         return Err(format!("project {:?}: off the standard: {why}", p.id));
     }

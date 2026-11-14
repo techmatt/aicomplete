@@ -47,10 +47,8 @@ def threat(c):
 
 
 def project(c):
-    out = {"id": c["id"], "name": c["name"], "tags": c["tags"], "cost": c["cost"], "ongoing": c["ongoing"],
+    out = {"id": c["id"], "name": c["name"], "tags": c["tags"], "cost": c["cost"],
            "text": c["text"], "effects": ops(c["effects"])}
-    if c.get("resolve"):
-        out["resolve"] = ops(c["resolve"])
     out["harms"] = c["harms"]
     return out
 

@@ -397,7 +397,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         | Op::DestroyFacility { .. }
         | Op::DisableBuilding { .. }
         | Op::Discard { .. }
-        | Op::ExtraWar { .. }
+        | Op::ExtraWar
         | Op::LoseAmbassadorsOr { .. }
         | Op::LoseIncome { .. }
         | Op::LoseOr { .. }

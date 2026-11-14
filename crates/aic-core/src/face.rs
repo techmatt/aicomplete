@@ -776,7 +776,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::DestroyFacility { .. }
         | Op::DisableBuilding { .. }
         | Op::Discard { .. }
-        | Op::ExtraWar { .. }
+        | Op::ExtraWar
         | Op::LoseAmbassadorsOr { .. }
         | Op::LoseIncome { .. }
         | Op::LoseOr { .. }

@@ -20,6 +20,15 @@ use serde::{Deserialize, Serialize};
 
 use crate::vocab::{Location, Resource, Side, Story, Tag, TagOrAny, ThreatSource, TokenKind};
 
+/// 233: how far a project's op reaches ([`Op::team_reach`]).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TeamReach {
+    /// In each country in play (one seat a country: each player too).
+    EachCountry,
+    /// Once, for the whole table (a sway, the clock).
+    Once,
+}
+
 /// The kinds of content list an op can sit in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Slot {
@@ -112,14 +121,6 @@ pub enum CorpNear {
 pub enum CorpWhen {
     Now,
     EachProduction,
-}
-
-/// Which front fights twice (135).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum FrontPick {
-    /// The front with the most corp troops (ties: the first).
-    MostCorpTroops,
 }
 
 /// Who a theft hits (135).
@@ -1083,14 +1084,8 @@ pub enum Op {
     Discard {
         count: i64,
     },
-    /// The fronts next to the threat's base fight twice next round; `ongoing_use`: `front` fights twice every war
-    /// step.
-    ExtraWar {
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        front: Option<FrontPick>,
-        #[serde(default, skip_serializing_if = "is_false")]
-        ongoing_use: bool,
-    },
+    /// The fronts next to the threat's base fight twice next round.
+    ExtraWar,
     /// The player it hits pays `amount` `resource` or loses `count` ambassadors.
     LoseAmbassadorsOr {
         count: i64,
@@ -1449,6 +1444,44 @@ impl Op {
         }
     }
 
+    /// 233: how far one copy of this op reaches when a project (the team list) resolves it: in each country (one
+    /// seat a country, so "each player" too), or once for the table. 231 (Matt): a project's effect lands in each
+    /// country, so the agents' worth of a team op (`value::op_worth` at `rates.countries`) scales with the
+    /// countries exactly when this says so. Twin tests: `project_ops_reach_as_declared` (the engine) and
+    /// `team_ops_price_per_country` (the worth). `None`: no project prints it (`Flag`'s rule reads it later).
+    pub fn team_reach(&self) -> Option<TeamReach> {
+        use TeamReach::*;
+        Some(match self {
+            Op::Sway { .. } | Op::PullUnity { .. } | Op::Clock { .. } => Once,
+            Op::DealThreats { each_country, .. } => {
+                if *each_country {
+                    EachCountry
+                } else {
+                    Once
+                }
+            }
+            Op::Rally { .. }
+            | Op::IncreaseIncome { .. }
+            | Op::AdversaryCubes { .. }
+            | Op::SpreadBotnets { .. }
+            | Op::AgentsOnNodes { .. }
+            | Op::RecallAmbassadors
+            | Op::StripCubes { .. }
+            | Op::TakeSite { .. }
+            | Op::BotnetTroops { .. }
+            | Op::StripHarden
+            | Op::Fallout { .. }
+            | Op::AdversaryFactory { .. }
+            | Op::FactoryTroops { .. }
+            | Op::Corrupt { .. }
+            | Op::AdversaryBuild
+            | Op::Requisition { .. }
+            | Op::LoseTokens { .. }
+            | Op::LoseAmbassador => EachCountry,
+            _ => return None,
+        })
+    }
+
     /// The lists that may print this op: the home of "what can go where".
     pub fn slots(&self) -> &'static [Slot] {
         use Slot::*;
@@ -1466,7 +1499,7 @@ impl Op {
             | Op::AdversaryBuild
             | Op::AdversaryFactory { .. }
             | Op::CorpTroops { .. }
-            | Op::ExtraWar { .. }
+            | Op::ExtraWar
             | Op::LoseIncome { .. }
             | Op::Flag { .. }
             | Op::LoseAmbassador

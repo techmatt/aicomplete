@@ -1,0 +1,94 @@
+{
+  "name": "s233b",
+  "note": "233: screen 2 on spent 47088-47135: P2 (Mob Rule Sway 6, Propaganda Sway 10, Recruitment Rally 4, Data Heist 5 tokens / 12 credits), P3 (P2 + Rally 4 on Mob Rule, Hostile Takeover, Martial Law); the stated cell is s233a's (same build, same seeds)",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_p2",
+      "set": [
+        "projects.mob_rule.effects.1.amount=6",
+        "projects.propaganda_network.effects.1.amount=10",
+        "projects.recruitment_drive.effects.1.count=4",
+        "projects.data_heist.effects.0.amount=5",
+        "projects.data_heist.effects.1.amount=12"
+      ]
+    },
+    {
+      "name": "br_p2",
+      "set": [
+        "ai.boards=0,2",
+        "projects.mob_rule.effects.1.amount=6",
+        "projects.propaganda_network.effects.1.amount=10",
+        "projects.recruitment_drive.effects.1.count=4",
+        "projects.data_heist.effects.0.amount=5",
+        "projects.data_heist.effects.1.amount=12"
+      ]
+    },
+    {
+      "name": "pr_p2",
+      "set": [
+        "ai.boards=1,2",
+        "projects.mob_rule.effects.1.amount=6",
+        "projects.propaganda_network.effects.1.amount=10",
+        "projects.recruitment_drive.effects.1.count=4",
+        "projects.data_heist.effects.0.amount=5",
+        "projects.data_heist.effects.1.amount=12"
+      ]
+    },
+    {
+      "name": "bp_p3",
+      "set": [
+        "projects.mob_rule.effects.1.amount=6",
+        "projects.propaganda_network.effects.1.amount=10",
+        "projects.recruitment_drive.effects.1.count=4",
+        "projects.data_heist.effects.0.amount=5",
+        "projects.data_heist.effects.1.amount=12",
+        "projects.mob_rule.effects.0.count=4",
+        "projects.hostile_takeover.effects.0.count=4",
+        "projects.martial_law.effects.0.count=4"
+      ]
+    },
+    {
+      "name": "br_p3",
+      "set": [
+        "ai.boards=0,2",
+        "projects.mob_rule.effects.1.amount=6",
+        "projects.propaganda_network.effects.1.amount=10",
+        "projects.recruitment_drive.effects.1.count=4",
+        "projects.data_heist.effects.0.amount=5",
+        "projects.data_heist.effects.1.amount=12",
+        "projects.mob_rule.effects.0.count=4",
+        "projects.hostile_takeover.effects.0.count=4",
+        "projects.martial_law.effects.0.count=4"
+      ]
+    },
+    {
+      "name": "pr_p3",
+      "set": [
+        "ai.boards=1,2",
+        "projects.mob_rule.effects.1.amount=6",
+        "projects.propaganda_network.effects.1.amount=10",
+        "projects.recruitment_drive.effects.1.count=4",
+        "projects.data_heist.effects.0.amount=5",
+        "projects.data_heist.effects.1.amount=12",
+        "projects.mob_rule.effects.0.count=4",
+        "projects.hostile_takeover.effects.0.count=4",
+        "projects.martial_law.effects.0.count=4"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "greedy",
+    "strategist"
+  ],
+  "games": 48,
+  "records": 0
+}
