@@ -174,7 +174,9 @@ impl Config {
     /// - `<module>=off`: removes the module and its phases from the round
     /// - `<table>.<id>.<path>=<JSON>` (two dots or more, so never a parameter):
     ///   a content overlay entry, as `cards.factory.cost=4`, replacing any
-    ///   entry of the same key; an empty value drops the entry
+    ///   entry of the same key; an empty value drops the entry. A last path step
+    ///   `+` appends to a list (`cards.x.passives.+={...}`), and never replaces
+    ///   an earlier append
     pub fn apply_override(&mut self, spec: &str) -> Result<(), String> {
         let (key, value) = spec
             .split_once('=')
@@ -186,10 +188,13 @@ impl Config {
                 .content
                 .iter()
                 .position(|e| e.split_once('=').is_some_and(|(k, _)| k == key));
+            // 229: an append (`....+=`) never replaces another append to the same list.
+            let append = key.ends_with(".+");
             match (at, value.is_empty()) {
                 (Some(i), true) => {
                     self.content.remove(i);
                 }
+                (Some(_), false) if append => self.content.push(entry),
                 (Some(i), false) => self.content[i] = entry,
                 (None, true) => {}
                 (None, false) => self.content.push(entry),

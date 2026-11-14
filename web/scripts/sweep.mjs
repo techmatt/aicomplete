@@ -38,7 +38,7 @@ const CASES = [
   { name: 'c2-d0', config: 'baseline.json', set: [] },
   { name: 'c4-d0', config: 'baseline.json', set: ['countries=4'] },
   { name: 'c1-d4', config: 'baseline.json', set: ['countries=1', 'adversary.difficulty=4'] },
-  { name: 'shared-row', config: 'shared_row.json', set: ['countries=3'] },
+  { name: 'c3-d0', config: 'baseline.json', set: ['countries=3'] },
   { name: 'c3-d2', config: 'baseline.json', set: ['countries=3', 'adversary.difficulty=2'] },
   { name: 'c2-d4', config: 'baseline.json', set: ['adversary.difficulty=4'] },
   { name: 'threats-off', config: 'baseline.json', set: ['threats.variant=off'] },
@@ -58,22 +58,23 @@ const CASES = [
   { name: 'c3-d0-engine', config: 'baseline.json', set: ['countries=3'], agent: 'engine' },
   { name: 'c4-d2-engine', config: 'baseline.json', set: ['countries=4', 'adversary.difficulty=2'], agent: 'engine' },
   { name: 'cubes-3', config: 'baseline.json', set: ['countries=3', 'board.station_cubes=3'], agent: 'engine' },
-  // 118: r41-r46's engines (triggers, At N, reuse, discounts) as the strategist plays them, and
+  // The `-strategist` cases run the `strategist` alias (229: they ran `engine:strategy=1`, the strategy
+  // player since 222, not the judge). 118: r41-r46's engines (triggers, At N, reuse, discounts) as the strategist plays them, and
   // the 1-player game's "another player means you" with the engine agent.
-  { name: 'c2-d2-strategist', config: 'baseline.json', set: ['adversary.difficulty=2'], agent: 'engine:strategy=1' },
+  { name: 'c2-d2-strategist', config: 'baseline.json', set: ['adversary.difficulty=2'], agent: 'strategist' },
   { name: 'c1-d2-engine', config: 'baseline.json', set: ['countries=1', 'adversary.difficulty=2'], agent: 'engine' },
   // 145: r55-r59's pieces: claims, liberations and Envoy, Corrupt X on land at 4 countries,
   // war every round, d3's dearer menus and harsher harms, as the strategist and engine play them.
-  { name: 'c2-d3-strategist', config: 'baseline.json', set: ['adversary.difficulty=3'], agent: 'engine:strategy=1' },
+  { name: 'c2-d3-strategist', config: 'baseline.json', set: ['adversary.difficulty=3'], agent: 'strategist' },
   { name: 'c4-d3-engine', config: 'baseline.json', set: ['countries=4', 'adversary.difficulty=3'], agent: 'engine' },
   // 169: r70-r72's moving pieces (gather, push, Patrol, standing liberations) and fear cards
   // (prohibitions, remove_where): the strategist at 3 countries seats the Protector beside
   // the Researcher, and d1's long games tip the most Unity cards.
-  { name: 'c3-d1-strategist', config: 'baseline.json', set: ['countries=3', 'adversary.difficulty=1'], agent: 'engine:strategy=1' },
-  { name: 'c2-d1-strategist', config: 'baseline.json', set: ['adversary.difficulty=1'], agent: 'engine:strategy=1' },
+  { name: 'c3-d1-strategist', config: 'baseline.json', set: ['countries=3', 'adversary.difficulty=1'], agent: 'strategist' },
+  { name: 'c2-d1-strategist', config: 'baseline.json', set: ['adversary.difficulty=1'], agent: 'strategist' },
   // 197: r85-r86's project ops (botnets, sites taken, factory troops, raids, stripped hardening,
   // the clock) as the strategist meets them at d4, with the card-play track at 3.
-  { name: 'c3-d4-strategist', config: 'baseline.json', set: ['countries=3', 'adversary.difficulty=4'], agent: 'engine:strategy=1' },
+  { name: 'c3-d4-strategist', config: 'baseline.json', set: ['countries=3', 'adversary.difficulty=4'], agent: 'strategist' },
 ];
 const unknown = only.filter((n) => !CASES.some((c) => c.name === n));
 if (unknown.length) throw new Error(`no case ${unknown.join(', ')}; cases: ${CASES.map((c) => c.name).join(', ')}`);
@@ -241,7 +242,7 @@ const PAGE_LIB = String.raw`(() => {
       if (own) {
         const t = [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join(' ');
         if (PLACEHOLDER.test(t)) add('placeholder', label(el));
-        // #source names the config file and the config's own name (shared_row): not a raw id.
+        // #source names the config file and the config's own name (baseline): not a raw id.
         // (No backticks in here: this code sits inside a template string.)
         if (!el.closest('code, pre, #data, #source') && RAW_ID.test(t)) add('raw-id', label(el) + ' (' + t.match(RAW_ID)[0] + ')');
         // The engine's hex names (C1 #13) are shown with the country's name (020).

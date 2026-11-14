@@ -108,7 +108,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("botnet_credits", 1, 50, "standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays)"),
         ],
         phases: &[
-            PhaseSpec::decision("act", "standard actions and projects: station, remove, lift Fallout, dispatch (from the round's Dispatches), ambassador, claim, liberate, harden (a card's), sell, take down a botnet, buy a neutral city's energy, place a node, remove a troop; completed megaprojects' converters"),
+            PhaseSpec::decision("act", "standard actions and projects: station, remove, lift Fallout, dispatch (from the round's Dispatches), ambassador, claim, liberate, sell, take down a botnet, buy a neutral city's energy, place a node, remove a troop; completed megaprojects' converters"),
             PhaseSpec::auto("bases", "growth, after the income step: extra Drones, then each city grows a factory on a free zone next to it"),
             PhaseSpec::auto("war", "at the end of the round, the Drones on either side of each front fight"),
             PhaseSpec::auto("march", "each adversary troop takes its steps: remove an ambassador on its hex, else destroy a target next to it, else move toward the nearest"),
@@ -385,7 +385,7 @@ impl Module for Board {
     fn legal(&self, _phase: usize, g: &GameState, w: &World, seat: u8, out: &mut Vec<Action>) {
         let s = seat as usize;
         for act in STANDARD {
-            if !seat_price(w, g, s, act).affordable(g, s) {
+            if !printed_price(w, act).affordable(g, s) {
                 continue;
             }
             if !std_targets(w, g, s, act).is_empty() {
@@ -440,7 +440,7 @@ impl Module for Board {
                     return Err(Halt::Illegal("no such standard action".into()));
                 };
                 let targets = std_targets(&w, g, s, act);
-                let price = seat_price(&w, g, s, act);
+                let price = printed_price(&w, act);
                 if !price.affordable(g, s) || targets.is_empty() {
                     return Err("can't take that standard action now".into());
                 }

@@ -3,9 +3,8 @@ use crate::modules::{board, threats};
 
 #[test]
 fn the_view_shows_the_board_the_fronts_the_projects_and_the_next_card() {
-    // This reads an opening that stops at the draft. 080: the Wall pressure's
-    // landing may not ask where.
-    let rules = Rules::new(&baseline_with(&["adversary.wall_troops=0"])).unwrap();
+    // This reads an opening that stops at the draft.
+    let rules = Rules::new(&baseline()).unwrap();
     let m = &rules.map;
     // A seed whose opening stops at the draft, not at a build choice
     // before next round's card is revealed.

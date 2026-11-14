@@ -72,7 +72,6 @@ const STANDARD_NAMES: Record<string, string> = {
   ambassador: 'Gain a player ambassador',
   claim: 'Claim a site',
   liberate: 'Liberate a site',
-  harden_chips: 'Harden a facility',
   insight: 'Turn a cube into insight',
   envoy: 'Envoy',
   botnet: 'Take down a botnet',
@@ -150,9 +149,7 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       const s = cx.view?.standard.find((x) => x.act === String(a.act));
       // 184: with no view (the step line, the log) the key printed: "standard: move" for Dispatch (r77).
       if (!s) return STANDARD_NAMES[String(a.act)] ?? `standard: ${words(String(a.act))}`;
-      // 099: a card-set price (the Harden action a card grants) is the seat's own.
-      const chips = s.seat_chips?.[Number(a.seat)] ?? s.chips;
-      const costs = ([[s.energy, 'energy'], [s.credits, 'credits'], [chips, 'chips'], [s.ambassadors, 'ambassadors']] as const)
+      const costs = ([[s.energy, 'energy'], [s.credits, 'credits'], [s.chips, 'chips'], [s.ambassadors, 'ambassadors']] as const)
         .filter(([v]) => v > 0)
         .map(([v, what]) => amount(v, what));
       return `${s.doc.split(';')[0]}${costs.length ? ` (${costs.join(', ')})` : ''}`;

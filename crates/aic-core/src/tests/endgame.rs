@@ -339,11 +339,13 @@ fn discord_tier_two_is_reached_at_every_difficulty() {
 fn the_round_cap_is_the_deck_and_higher_difficulty_shortens_it() {
     let cap = |d: i64| {
         let arg = format!("adversary.difficulty={d}");
-        let (_, g) = lab_with(&[], &[&arg]);
+        let mut sets: Vec<&str> = super::setup::DEAL.to_vec();
+        sets.push(&arg);
+        let (_, g) = lab_with(&[], &sets);
         g.pile(DECK).len() + g.pile(NEXT).len()
     };
-    // 150: d3 removes two stage-II cards (`stage2_removed` 2). 200: d0 deals as d1 (196's `stage_extra` is gone).
-    // 215: the deck 5, 5, 3 (was 4, 4, 3).
+    // The deal is pinned (`setup::DEAL`: 5, 5, 3 cards). 150: d3 removes two stage-II cards. 200: d0 deals as
+    // d1 (196's `stage_extra` is gone).
     assert_eq!((cap(0), cap(1), cap(2), cap(3), cap(4)), (13, 13, 13, 11, 11));
 }
 

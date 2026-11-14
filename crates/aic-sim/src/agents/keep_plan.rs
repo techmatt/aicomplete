@@ -194,7 +194,7 @@ pub fn plan_keeps(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx) 
 /// plan's order: the ones worth their price at the plan's rates and affordable together.
 pub fn plan_now(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx) -> Vec<Key> {
     let pt = PlanTable::read(pc.t, w, g, s, f);
-    let one = Forced { plan_rounds: 1, plan_chain: false, ..f.clone() };
+    let one = Forced { plan_rounds: 1, ..f.clone() };
     plan(w, g, s, &[], &one, pc, &pt).map(|(_, p)| p).unwrap_or_default()
 }
 
@@ -618,28 +618,6 @@ fn plan(
                         tags[*t as usize] += 1;
                     }
                 }
-            }
-        }
-    }
-    // 107 (`plan_chain`): the chain cards the plan builds toward but can't play
-    // within its rounds count their value after it, times their share reached.
-    if f.plan_chain && pc.table {
-        let last = rounds.max(1);
-        for id in &pool {
-            let d = cards::def(w, id);
-            if planned.contains(id) || d.needs.is_empty() || !committed(d) {
-                continue;
-            }
-            let short: i64 = d.needs.iter().map(|(t, n)| (n - needs[*t as usize]).max(0)).sum();
-            if short == 0 || short > f.plan_short as i64 {
-                continue;
-            }
-            let want: i64 = d.needs.iter().map(|(_, n)| *n).sum();
-            let share = (want - short) as f64 / want.max(1) as f64;
-            let v = value(w, g, s, d, f, pc, pt, last, &tags, &planned) - spend(w, g, s, d, pc, pt);
-            if v > 0.0 {
-                total += share * share * v * (1.0 - WAIT * last as f64).max(0.1);
-                planned.push(*id);
             }
         }
     }

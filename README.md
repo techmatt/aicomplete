@@ -22,8 +22,8 @@ Where to look: how to build and test is below; the rest has its own page.
 - [docs/rules/](docs/rules/README.md): the rules as implemented, at `RULES_REVISION`, one file
   per area; its `README.md` maps them. Its tables are generated (*Generated docs* in architecture.md).
 - [docs/rulebook.md](docs/rulebook.md): the player-facing rulebook (a third draft, 180), hand-written from the
-  engine; [docs/rulebook-friction.md](docs/rulebook-friction.md) ranks what was hard to say. Not generated: a rules
-  change that moves it updates it.
+  engine; [docs/rulebook-friction.md](docs/rulebook-friction.md) ranks what was hard to say. Not generated but for
+  §21's difficulty table (`aic-sim docs` writes it): a rules change that moves the rest updates it.
 - [docs/rules-history.md](docs/rules-history.md): what each revision changed and whether
   each rule is locked or a candidate (recent revisions; older rows are in git history).
 - [docs/ops.md](docs/ops.md): every op content can print and how often it is printed,
@@ -49,7 +49,7 @@ Where to look: how to build and test is below; the rest has its own page.
 | `crates/aic-farm` | The farm's wasm bundle: `aic-sim`'s farm in a browser tab, with the configs and `experiments/farm/` specs built in ([docs/simulator.md](docs/simulator.md), *The farm*). |
 | `content/` | Data embedded at compile time: `map.json` (pieces, layouts for 1–4 countries, setup), `cards.json`, `threats.json`, `adversary.json`, `ais.json`, `alignment.json` (the Unity and Discord decks), `projects.json` (the adversary's project deck), all built from code primitives. |
 | `drafts/adversary/` | The source of `threats.json`, `projects.json` and `adversary.json` (threat tiers, projects, the Militarist): edit these, not `content/`. `python scripts/content/load_adversary.py` writes `content/` and docs/adversary-cards.md; `--check` (regen runs it) refuses a stale `content/`. |
-| `configs/` | Game configs: modules, variants, every parameter. `baseline.json` is the current baseline at `RULES_REVISION`: the deck, 2 countries (3 seat the Researcher), difficulty 0, every number still a candidate; `shared_row.json` differs only in the threat variant (and name): it is derived (`python scripts/configs/shared_row.py` after a baseline edit; a core test checks). Other country counts, difficulties, off-variants and optional modules are `--set` lines ([docs/simulator.md](docs/simulator.md)). `configs/agents/` is agent numbers, not a game config: `values.json` (the value table) and `strategies.json`; changing one changes no rule (docs/agents.md). |
+| `configs/` | Game configs: modules, variants, every parameter. `baseline.json` is the current baseline at `RULES_REVISION`: the deck, 2 countries (3 seat the Researcher), difficulty 0, every number still a candidate; `experiments/configs/no_liberate.json` and `no_tier2.json` are derived from it (`regen.py` rewrites them). Other country counts, difficulties, off-variants and optional modules are `--set` lines ([docs/simulator.md](docs/simulator.md)). `configs/agents/` is agent numbers, not a game config: `values.json` (the value table) and `strategies.json`; changing one changes no rule (docs/agents.md). |
 | `scripts/` | See [docs/scripts.md](docs/scripts.md). |
 | `docs/` | The pages listed above. |
 | `tools/card-art/` | Card frames, icons, scenes and print ([README](tools/card-art/README.md)). |
@@ -103,7 +103,7 @@ cargo build --release -p aic-sim                   # ~30 s after an aic-sim edit
 wasm-pack build crates/aic-wasm --target web       # ~20 s cold, ~9 s warm -> crates/aic-wasm/pkg (git-ignored)
 node scripts/farm/build.mjs out/bundle             # the farm's wasm bundle (~1 min cold)
 node scripts/wasm-smoke.mjs                        # needs the wasm-pack line's pkg (`npm run wasm`'s web/src/wasm/ won't do); checks native = wasm
-node scripts/wasm-parity.mjs [games]               # native = wasm over the variant matrix; ~22 s with 2 games a variant and agent; rebuilds pkg if older than crates/aic-core, crates/aic-wasm, content/ or configs/
+node scripts/wasm-parity.mjs [games]               # native = wasm over the variant matrix; ~22 s with 2 games a variant and agent; rebuilds a stale pkg
 ```
 
 **Test lanes.** The slow lane is the tests marked `#[ignore = "slow lane: ..."]`: whole
@@ -127,9 +127,9 @@ in `scripts/wasm-smoke.mjs` (`wasm_smoke_expects_the_golden_fingerprint` fails u
 fingerprint covers the config and the final state less its measures (`stats`), so a rename that
 plays the same moves it with no bump; a new counter doesn't. (A fast-lane test.) It also pins
 `GOLDEN_CONTENT_HASH` (wasm-smoke `GOLDEN_CONTENT`), the content hash over raw bytes: a
-content-only edit moves it with no bump unless play changes; update both (the new hash is
-`content_hash` in any run's `games.jsonl` first line, or `regen.py`'s "content hash" line; the new fingerprint is
-the failing `golden_game` assertion's left side: copy both, never type them).
+content-only edit moves it with no bump unless play changes. Set the hash first, from `regen.py`'s "content hash"
+line; then one `golden_game` run gives the fingerprint (it checks revision and fingerprint as a pair before the hash):
+the failing assertion's left side. Copy both, never type them.
 A new phase goes in `configs/baseline.json`'s `round` list and in every lab test config that lists its neighbor
 (`adversary.compute` beside `adversary.reveal`), or it silently never runs there.
 
@@ -165,7 +165,8 @@ A new phase goes in `configs/baseline.json`'s `round` list and in every lab test
   reason. Background it with a log. `npm run wasm` can pass 60 s under load: the same.
 - A conductor `wait_for` on a cargo test log needs `fail: ""`: passing test names hold "errors"
   (`..._are_errors_not_panics ... ok`), which the default pattern stops on.
-- In Git Bash `rm -rf out/x` also deletes `out/x.exe` (Cygwin's `.exe` matching).
+- In Git Bash `rm -rf out/x` also deletes `out/x.exe` (Cygwin's `.exe` matching). Bash turns `/c/...` into `C:/...`
+  for a native program but not after an `=`: a `FILE=SPEC` argument takes `C:/...` paths.
 - PowerShell `*>` writes UTF-16 logs, which Git Bash `grep` reads as empty: read them in PowerShell
   or write with `-Encoding utf8`.
 - A marker from `Start-Process powershell -Command '...; "done" | Out-File'` may never appear.

@@ -298,8 +298,11 @@ pub struct Ctx {
     pub horizon: f64,
     /// The seat's nodes on the board.
     pub node: f64,
-    /// The seat's tags on its cards in play.
+    /// The seat's tags on its cards in play (128: with `tag_hand`, plus a share of those in hand).
     pub tags: [i64; TAGS.len()],
+    /// 229: the seat's tags in play now, never projected: a building's per-tag income freezes its count at
+    /// play (`cards::freeze_tag_income`), so a card's [`Worth::income_frozen_tag`] reads this count.
+    pub play_tags: [i64; TAGS.len()],
     /// Whether a city is corrupted (a liberation has a target).
     pub corrupted: bool,
     /// 107: the share of the seat's cards carrying each tag (`rates.tag_share`
@@ -326,6 +329,7 @@ impl Ctx {
             horizon: t.rate("income_rounds"),
             node: t.rate("node_count"),
             tags: [t.rate("tag_count") as i64; TAGS.len()],
+            play_tags: [t.rate("tag_count") as i64; TAGS.len()],
             corrupted: true,
             share: [t.fast.tag_share; TAGS.len()],
             team: None,
@@ -364,6 +368,7 @@ impl Ctx {
             horizon: left,
             node,
             tags,
+            play_tags: tags,
             corrupted,
             share: [t.fast.tag_share; TAGS.len()],
             team: None,
@@ -394,6 +399,8 @@ pub struct Worth {
     pub income: f64,
     /// A round per tag, as `income`.
     pub income_per_tag: [f64; TAGS.len()],
+    /// 229: a round per tag at the count frozen at play (`IncomePerTag`): times [`Ctx::play_tags`].
+    pub income_frozen_tag: [f64; TAGS.len()],
     /// A round, standing, that nothing else counts (a discount, a shelter rule).
     pub standing: f64,
     /// 107: a round, standing, per share of the seat's cards carrying a tag (a
@@ -416,6 +423,7 @@ impl std::ops::AddAssign for Worth {
         for t in 0..TAGS.len() {
             self.per_tag[t] += o.per_tag[t];
             self.income_per_tag[t] += o.income_per_tag[t];
+            self.income_frozen_tag[t] += o.income_frozen_tag[t];
             self.standing_tag[t] += o.standing_tag[t];
             self.team_tag[t] += o.team_tag[t];
         }
@@ -451,6 +459,7 @@ impl Worth {
         for t in 0..TAGS.len() {
             self.per_tag[t] *= k;
             self.income_per_tag[t] *= k;
+            self.income_frozen_tag[t] *= k;
             self.standing_tag[t] *= k;
             self.team_tag[t] *= k;
         }
@@ -479,7 +488,9 @@ impl Worth {
     }
 
     fn income_round_tags(&self, c: &Ctx) -> f64 {
-        (0..TAGS.len()).map(|i| self.income_per_tag[i] * c.tags[i] as f64).sum()
+        (0..TAGS.len())
+            .map(|i| self.income_per_tag[i] * c.tags[i] as f64 + self.income_frozen_tag[i] * c.play_tags[i] as f64)
+            .sum()
     }
 
     /// The standing part the heuristic's income doesn't count, a round.
@@ -728,16 +739,14 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         }
         Op::Prohibit { .. } => Worth::now(row("prohibit")),
         Op::Income { resource, amount } => Worth::income(row("income") * income_rate(t, *resource) * *amount as f64),
+        // 229: counted once, at play (r98, `cards::freeze_tag_income`): valued at the seat's tags in play.
         Op::IncomePerTag { resource, tag, per, amount } => {
             let mut w = Worth::default();
-            w.income_per_tag[tag_i(*tag)] =
+            w.income_frozen_tag[tag_i(*tag)] =
                 row("income_per_tag") * income_rate(t, *resource) * *amount as f64 / (*per).max(1) as f64;
             w
         }
         Op::BuildingDiscount { amount } => Worth::standing(row("building_discount") * *amount as f64),
-        Op::HardenAction { chips } => {
-            Worth::standing((row("harden_action") - 0.5 * r(Resource::Chips) * *chips as f64 / 2.0).max(0.0))
-        }
         Op::Slots { amount } => Worth::standing(row("slots") * *amount as f64),
         Op::Logistics { resource, amount } => Worth::standing(row("logistics") * r(*resource) * *amount as f64),
         Op::ProjectDrain { amount } => Worth::standing(row("project_drain") * *amount as f64),
@@ -1017,7 +1026,7 @@ fn own_tags(w: &mut Worth, d: &CardDef) {
     for tag in &d.tags {
         let i = *tag as usize;
         w.now += w.per_tag[i];
-        w.income += w.income_per_tag[i];
+        w.income += w.income_per_tag[i] + w.income_frozen_tag[i];
     }
 }
 

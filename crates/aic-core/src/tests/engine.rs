@@ -266,7 +266,7 @@ fn fight_triggers_fire_once_an_action() {
     // Ambassadors: once for the action, however many.
     let (r, n) = trigger_gain(&rules, "honeypot_relay");
     put(&mut g, near, ADV_AMBASSADOR, 3);
-    set_res(&mut g, 0, Resource::Ambassadors, 2);
+    set_res(&mut g, 0, Resource::Ambassadors, w.int("board.remove_ambassadors"));
     let before = g.resource(0, r);
     act(&rules, &mut g, std_act(0, "remove"));
     answer_all(&rules, &mut g);
@@ -411,6 +411,24 @@ fn income_per_tag_pays_its_amount_per_tag() {
     assert_eq!(economy::income(&w, &g, 0)[Resource::Credits], base + 3 * science);
     play(&rules, &mut g, 0, "payroll_automation");
     assert_eq!(economy::income(&w, &g, 0)[Resource::Credits], base + 6 * science, "the copy pays 3 a tag too");
+}
+
+/// 229 (Matt, #10233): a copy of a per-tag income pays at the count frozen at that building's play (r98), as the
+/// building does, not at the seat's tags now.
+#[test]
+fn a_copy_of_a_per_tag_income_pays_its_frozen_count() {
+    let copy = r#"cards.payroll_automation.effects=[{"op":"copy_income"}]"#;
+    let campus = r#"cards.foundation_model_campus.passives=[{"op":"income_per_tag","resource":"credits","tag":"science","per":1,"amount":3}]"#;
+    let (rules, mut g) = table_with(&[copy, campus], &["payroll_automation"], &[]);
+    let w = rules.world();
+    set_pile(&mut g, &cards::built(0), &["foundation_model_campus"]);
+    set_pile(&mut g, &cards::played(0), &["dataset_scraper", "red_team_audit"]);
+    assert_eq!(cards::tags(&w, &g, 0, Tag::Science), 3);
+    // Frozen at 1 Science tag (the key holds the count plus 1).
+    g.vars.insert(cards::tag_frozen_key(0, "foundation_model_campus").as_str().into(), 2);
+    let before = economy::income(&w, &g, 0)[Resource::Credits];
+    play(&rules, &mut g, 0, "payroll_automation");
+    assert_eq!(economy::income(&w, &g, 0)[Resource::Credits], before + 3, "the copy pays the frozen 1 tag, not 3");
 }
 
 /// 106: Interdisciplinary Institute's trigger names no tag: it fires once per

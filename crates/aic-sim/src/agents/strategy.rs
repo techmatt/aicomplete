@@ -170,7 +170,6 @@ fn op_categories(all: &[&Op], c: &mut [bool; CATEGORIES.len()]) {
                 | Op::Firewall
                 | Op::Prohibit { .. }
                 | Op::Harden { .. }
-                | Op::HardenAction { .. }
                 | Op::ShieldNode { .. }
                 | Op::CivicShelter
                 | Op::CorruptionShield

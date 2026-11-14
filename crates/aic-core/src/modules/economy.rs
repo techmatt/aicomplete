@@ -128,7 +128,7 @@ pub fn income_with(w: &World, g: &GameState, seat: usize, counts: &[i64; TAGS.le
             add(*resource, *amount)
         }
     });
-    // 223: per-tag income, a frozen count where `cards.tag_income_once` froze one.
+    // r98: per-tag income, a building's at the count frozen at its play.
     cards::each_tag_income(w, g, seat, counts, &mut add);
     // A walk of the seat's keys: most seats hold none of them.
     let prefix = KeyBuf::new("economy.production.").num(seat).text(".");

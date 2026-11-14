@@ -19,7 +19,7 @@ const DRAWN_GLOBALS = new Set([
 ]);
 /** Piles drawn by the status strip, the adversary row or the countries strip. */
 const DRAWN_PILES = new Set([
-  'adversary.deck', 'adversary.next', 'adversary.current', 'adversary.discard', 'threats.row',
+  'adversary.deck', 'adversary.next', 'adversary.current', 'adversary.discard',
   'alignment.deck.unity', 'alignment.deck.discord', 'alignment.resolved.unity', 'alignment.resolved.discord',
   'adversary.projects', 'adversary.projects_ongoing', 'adversary.projects_done', 'adversary.project_deck',
 ]);
@@ -322,10 +322,6 @@ export function countriesHtml(v: View): string {
       ${project}
       ${groups || (project ? '' : '<div class="none">no threat</div>')}</div>`;
   });
-  const row = pile(v, 'threats.row');
-  if (row) {
-    boxes.push(`<div class="country shared" style="--tint:#555;--soft:#eee"><div class="chead"><b>${esc(row.label)}</b></div>${row.visible.map((x) => threatCard(x, `pile:${row.key}`, v)).join('') || '<div class="none">none</div>'}</div>`);
-  }
   return boxes.join('');
 }
 

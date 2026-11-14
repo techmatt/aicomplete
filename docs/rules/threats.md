@@ -4,8 +4,8 @@
 [README.md](README.md). Every threat, with its text and counter menu, is in [adversary-cards.md](../adversary-cards.md). Source: `drafts/adversary/`, loaded into `content/` by
 `scripts/content/load_adversary.py`: edit the drafts.*
 
-- Variant **`countries`** (default): the model below. Variant **`shared_row`** plays the same (135: the row went with
-  the old sources; it stays so its config loads). Variant **`off`**: no threats ([README.md](README.md#off-variants)).
+- Variant **`countries`** (default): the model below. Variant **`off`**: no threats
+  ([README.md](README.md#off-variants)).
 
 **The decks (candidate; Matt's threat card standard, 2026-11-07, locked).** One threat deck per tier, each card
 printed once and shuffled at setup: tier 1 and tier 2; **there is no tier 3**. A tier-2 card is about two tier-1s
@@ -29,9 +29,8 @@ that tier's deck; it stays if it carries a listed tag (Universal fits any; "any"
 a site of one of its location types not the adversary's (*Location tokens*); otherwise it goes to that tier's discard and the next is turned up. An empty deck
 reshuffles its discard; **if a reshuffled deck has no card that fits, take the next card anyway** (counted as
 `threats.pull_forced`, a content bug: `drafts/adversary/check.py`'s simulated pulls never need one, but threats a
-threat deals and the ones waiting a round are out of the deck there too). From
-difficulty `extra_threats_at` (5, past the top level 4, so never) the card adds `extra_threats` more pulls of its first
-pull, countries in turn: the ladder raises intensity, never the count (142, Matt). A threat that deals a threat
+threat deals and the ones waiting a round are out of the deck there too). The ladder raises intensity,
+never the count of threats dealt (142, Matt). A threat that deals a threat
 (Provocation, Full Spectrum Assault, Last Ultimatum) deals it now, into its own country, at its printed tier, any tag
 (the draw rule's location check still holds); it executes next round.
 

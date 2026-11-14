@@ -121,8 +121,6 @@ export interface StandardView {
   chips: number;
   ambassadors: number;
   doc: string;
-  /** Chips each seat pays where its cards set the price (the Harden action a card grants). */
-  seat_chips?: number[];
 }
 
 export interface View {

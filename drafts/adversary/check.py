@@ -66,7 +66,7 @@ def stage_deals():
         if d >= 3:  # adversary.rs `build`'s literal 3, not a config key (182: deferred)
             s1, s2 = s1 + a["stage1_added"], s2 - a["stage2_removed"]
         s1, s2 = max(s1, 0), max(s2, 0)
-        out.append((d, (s1, s2, s3), a["extra_threats"] if d >= a["extra_threats_at"] else 0))
+        out.append((d, (s1, s2, s3), 0))  # 229: no extra threats (`extra_threats` and its level step are gone)
     return out
 
 
@@ -98,7 +98,7 @@ def load_content():
     a = adversary_params()
     # 138: the build numbers left after creation lines replaced city_build, arrivals and escalation.
     build = {k: a[k] for k in ("corrupt_at", "corrupt_station_at", "corrupt_factory_at", "corrupt_land_at",
-                               "wall_troops", "botnet_compute") if k in a}
+                               "botnet_compute") if k in a}
     return t, read("projects.json"), {"board": dict(adv["board"], build=build), "events": events}
 
 
@@ -332,7 +332,7 @@ def simulate(t, mil, games=4000, seed=134):
         for ev in order:
             out = defaultdict(list)  # this round's threats, out of the deck until cleanup
             for i, p in enumerate(ev["pulls"]):
-                # from `extra_threats_at`: `extra_threats` more pulls of the card's first pull, countries in turn
+                # `extra` more pulls of the card's first pull, countries in turn (0 since 229)
                 for _ in range(countries * p.get("count", 1) + (extra if i == 0 else 0)):
                     pulls += 1
                     card, rs = decks[p["tier"]].pull(p["tags"], countries)

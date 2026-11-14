@@ -58,7 +58,6 @@ publishes each action with its cost (`View.standard`).
 | Liberate a site | Claim's: `liberate_at` 5 ambassadors for a city, `claim_station` 3 for a station, `claim_factory` 2 for a factory; used up: yours on the site first, your supply the rest | an adversary city, station or factory in reach with no agent on it: the adversary's cube comes off, yours goes on, and it sways Unity (`alignment.free_city` 5 for a city, `free_facility` 2 for a station or factory) |
 | Take down a botnet | `botnet_credits` 16 credits | a botnet on a hex holding your ambassador (it stays) comes off |
 | Buy a city's energy | `city_energy_credits` 5 credits | a neutral city in reach that is producing (no blackout, no agent on it), once per city a round: gain its energy |
-| Harden a facility (a card that grants it; none does: Faraday Yard hardens when played) | the chips the card prints, per token | a player-owned station or factory in reach that is not corrupted, one a troop can strike |
 | Sell a card | gain `sell_credits` 1 | from your hand |
 | Turn a cube into insight | 1 research cube | gain `cube_insight` 1 insight, as often as you have cubes |
 | Envoy | `envoy_ambassadors` 1 of your ambassadors, from your supply, used up | move 1 Discord off the Discord track |

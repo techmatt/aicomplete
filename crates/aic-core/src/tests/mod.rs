@@ -59,7 +59,6 @@ mod view;
 mod war;
 
 const BASELINE: &str = include_str!("../../../../configs/baseline.json");
-const SHARED_ROW: &str = include_str!("../../../../configs/shared_row.json");
 
 /// The action phase of the baseline round.
 const ACTIONS: &str = "cards.play+threats.counter+board.act+ai.power";
@@ -130,11 +129,9 @@ fn lab_config(round: &[&str]) -> Config {
         "board.liberate_at=1",
         "board.troop_steps=2",
         "board.troop_spent=1",
-        // The build asks nothing: no Wall-pressure landing (080). Pin any new
-        // build-step choice off here. (138: the board's creation line lands
-        // only on adversary cities, which a lab board has none of until a test
-        // puts one.)
-        "adversary.wall_troops=0",
+        // The build asks nothing: pin any new build-step choice off here. (138:
+        // the board's creation line lands only on adversary cities, which a lab
+        // board has none of until a test puts one.)
         // 021: no credits, so no neutral city's energy is bought unasked.
         "ai.start_credits=0",
     ]);
@@ -641,7 +638,7 @@ fn variant_matrix() -> Vec<Config> {
 // ---------- the golden game ----------
 
 const GOLDEN_REVISION: u32 = 100;
-const GOLDEN_FINGERPRINT: &str = "50dc29bac76e21be";
+const GOLDEN_FINGERPRINT: &str = "768d3895bab7a78b";
 const GOLDEN_CONTENT_HASH: &str = "178d9487e7c1895e";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action

@@ -54,8 +54,10 @@ fn standard_actions_are_offered_only_when_affordable_and_targeted() {
     assert!(!o0.contains("factory"), "206: Build a factory is off (`factory_build_chips` 0)");
     let d = node_of(&g, 0)[0];
     put(&mut g, d, ADV_AMBASSADOR, 1);
-    assert!(!standard_offered(&rules, &g, 0).contains("remove"), "228: 2 ambassadors");
-    set_res(&mut g, 0, Resource::Ambassadors, 2);
+    let price = rules.world().int("board.remove_ambassadors");
+    set_res(&mut g, 0, Resource::Ambassadors, price - 1);
+    assert!(!standard_offered(&rules, &g, 0).contains("remove"), "one short of `remove_ambassadors`");
+    set_res(&mut g, 0, Resource::Ambassadors, price);
     assert!(standard_offered(&rules, &g, 0).contains("remove"));
     set_res(&mut g, 0, Resource::Ambassadors, 1);
     // r75 (Matt's ruling 3): taking a botnet down needs the seat's ambassador on its hex.
@@ -126,9 +128,9 @@ fn standard_actions_cost_what_the_config_says() {
     let d = node_of(&g, 0)[0];
     put(&mut g, d, ADV_AMBASSADOR, 1);
     let supply = g.var(SUPPLY);
-    set_res(&mut g, 0, Resource::Ambassadors, 2);
+    set_res(&mut g, 0, Resource::Ambassadors, w.int("board.remove_ambassadors"));
     act(&rules, &mut g, std_act(0, "remove"));
-    // 066: ambassadors pay for it (228: 2), and nothing else does.
+    // 066: ambassadors pay for it (`remove_ambassadors`), and nothing else does.
     assert_eq!(
         (spent(&g, 0), g.tokens(d, ADV_AMBASSADOR), g.var(SUPPLY), g.resource(0, Resource::Ambassadors)),
         ((0, 0, 0), 0, supply + 1, 0)
@@ -166,22 +168,6 @@ fn no_resource_has_a_holding_limit() {
     let before = g.var(key.as_str());
     run_ops(&rules, &mut g, &[Op::Production { resource: Resource::Credits, amount: 200 }]);
     assert_eq!(g.var(key.as_str()) - before, 200, "no cap on credit production");
-}
-
-#[test]
-fn a_card_s_harden_action_costs_chips() {
-    // No card prints a chip Harden since r42: a building is given it here.
-    let (rules, mut g) = lab_actions_with(&[r#"cards.darknet_exchange.passives=[{"op":"harden_action","chips":1}]"#]);
-    let p = node_of(&g, 0)[0];
-    put(&mut g, p, STATION, 1);
-    put(&mut g, p, cube(0), 1);
-    set_res(&mut g, 0, Resource::Energy, 0);
-    set_res(&mut g, 0, Resource::Chips, 1);
-    assert!(!standard_offered(&rules, &g, 0).contains("harden_chips"));
-    set_pile(&mut g, &crate::modules::cards::built(0), &["darknet_exchange"]);
-    assert!(standard_offered(&rules, &g, 0).contains("harden_chips"));
-    act(&rules, &mut g, std_act(0, "harden_chips"));
-    assert_eq!((g.resource(0, Resource::Chips), total(&g, HARDEN)), (0, 1));
 }
 
 

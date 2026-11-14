@@ -646,33 +646,6 @@ fn every_project_slot_is_open() {
     assert!(crate::content().adversary_board.project_slots.iter().all(|s| s.tag.is_none()));
 }
 
-/// r80 (ruling #48): the Protector's landing is a normal Muster 1 in each country where the Protector has a node:
-/// the lowest-numbered factory, a player's included (178-r79 skipped players' factories), else a city.
-#[test]
-fn the_protectors_landing_is_a_normal_muster() {
-    let (rules, mut g) = lab_with(&[], &["adversary.wall_troops=1"]);
-    let m = &rules.map;
-    let w = rules.world();
-    let s = (0..g.seats.len()).find(|&s| board::has_wall(&w, s)).expect("a seat with Wall");
-    let c = 0u8;
-    let open = numbered_where(m, c, |h| kind(m, h) == HexKind::Open);
-    put(&mut g, open[0], node(s), 1);
-    let zones = numbered_where(m, c, |h| m.hexes[h].industrial && !m.hexes[open[0]].neighbors.contains(&h) && h != open[0]);
-    assert!(zones.len() >= 2);
-    put(&mut g, zones[0], FACTORY, 1);
-    put(&mut g, zones[0], cube(0), 1);
-    put(&mut g, zones[1], FACTORY, 1);
-    with_cx(&rules, |cx| adversary::wall_pressure(&mut g, cx)).unwrap();
-    assert_eq!(g.tokens(zones[0], TROOP), 1, "the lowest-numbered factory, a player's");
-    assert_eq!(total(&g, TROOP), 1, "Muster 1, one country");
-    // No factory in the country: the lowest-numbered city.
-    let (_, mut g) = lab_with(&[], &["adversary.wall_troops=1"]);
-    put(&mut g, open[0], node(s), 1);
-    with_cx(&rules, |cx| adversary::wall_pressure(&mut g, cx)).unwrap();
-    let city = numbered_where(m, c, |h| kind(m, h) == HexKind::City)[0];
-    assert_eq!(g.tokens(city, TROOP), 1);
-}
-
 /// r80 (184's D79 a): an adversary-factory line with no free zone lands its fallback agents on a factory, never a
 /// firewalled one (as a creation line skips it).
 #[test]

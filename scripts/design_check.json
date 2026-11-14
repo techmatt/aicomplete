@@ -305,7 +305,6 @@
       {"key": "standard:envoy", "name": "Envoy", "role": "sway-tool", "band": [0.0, 2.0], "why": "228: a standard action is a poorly priced hedge, never the better route (Matt): an ambassador (8) for 1 Discord off (4), when the same ambassador is a fifth of a Liberate (the win route), so zero use is the design, not a fault"},
       {"key": "standard:botnet", "name": "Take down a botnet", "role": "sway-tool"},
       {"key": "standard:factory", "name": "Build a factory", "role": "off", "off": "board.factory_build_chips"},
-      {"key": "standard:harden_chips", "name": "Harden for chips", "role": "off", "off": true},
       {"key": "play", "name": "Play a card", "role": "cards"},
       {"key": "use", "name": "A building's Action", "role": "building"},
       {"key": "convert:Tidal Grid", "name": "Tidal Grid converter", "role": "converter"},

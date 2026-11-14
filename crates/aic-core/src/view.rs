@@ -90,10 +90,6 @@ pub struct StandardView {
     pub ambassadors: i64,
     /// What it does and costs, in words.
     pub doc: String,
-    /// 099: chips each seat pays where its cards set the price (the Harden
-    /// action a card grants), by seat; empty when the printed price stands.
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub seat_chips: Vec<i64>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -352,15 +348,7 @@ impl ViewOut<'_> {
             chips,
             ambassadors,
             doc: doc.to_string(),
-            seat_chips: Vec::new(),
         });
-    }
-
-    /// 099: the chips each seat pays for the last standard action added.
-    pub fn standard_seat_chips(&mut self, chips: Vec<i64>) {
-        if let Some(s) = self.view.standard.last_mut() {
-            s.seat_chips = chips;
-        }
     }
 
     /// A value of the whole game. One with the key of a `vars` track

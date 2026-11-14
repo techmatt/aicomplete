@@ -23,23 +23,16 @@ pub fn each_passive<'w>(w: &World<'w>, g: &GameState, seat: usize, mut f: impl F
     }
 }
 
-/// 223 (224 #6, candidate `cards.tag_income_once`): the key holding a building's per-tag count frozen at play,
-/// plus 1 (0: never frozen).
+/// r98 (223, 224 #6): the key holding a building's per-tag count frozen at play, plus 1 (0: never frozen:
+/// a game saved before r98).
 pub fn tag_frozen_key(seat: usize, id: &str) -> KeyBuf {
     KeyBuf::new("cards.tag_frozen.").num(seat).text(".").text(id)
 }
 
-/// `cards.tag_income_once` is 1 (a param of the draft variant only: with cards off there are no buildings).
-fn tag_income_once(w: &World) -> bool {
-    w.variant("cards") == Some("draft") && w.int("cards.tag_income_once") > 0
-}
-
-/// With `cards.tag_income_once` 1, building `id` just played freezes its per-tag income's count.
+/// r98: building `id` just played freezes its per-tag income's count (229: always; the live count, param
+/// `cards.tag_income_once` 0, is gone).
 pub fn freeze_tag_income(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &CardDef) {
     let w = cx.world;
-    if !tag_income_once(&w) {
-        return;
-    }
     for p in &d.passives {
         if let Op::IncomePerTag { tag, .. } = p {
             let n = tags(&w, g, seat, *tag);
@@ -48,13 +41,12 @@ pub fn freeze_tag_income(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, 
     }
 }
 
-/// A building's per-tag income for seat `s` (with `counts`, its live tag counts): the frozen count when one was
-/// frozen, else the live one; every active building's, through `add`.
+/// The per-tag income for seat `s` (with `counts`, its live tag counts): a building's at the count frozen at its
+/// play, the board's innate and capstones' at the live count; every active one's, through `add`.
 pub fn each_tag_income(w: &World, g: &GameState, seat: usize, counts: &[i64; TAGS.len()], mut add: impl FnMut(Resource, i64)) {
-    let once = tag_income_once(w);
     let mut one = |p: &Op, frozen: i64| {
         if let Op::IncomePerTag { resource, tag, per, amount } = p {
-            let n = if once && frozen > 0 { frozen - 1 } else { counts[*tag as usize] };
+            let n = if frozen > 0 { frozen - 1 } else { counts[*tag as usize] };
             add(*resource, amount * (n / (*per).max(1)));
         }
     };
@@ -63,7 +55,7 @@ pub fn each_tag_income(w: &World, g: &GameState, seat: usize, counts: &[i64; TAG
     let down = has_disabled(g, seat);
     for id in g.pile(&built(seat)) {
         if !(down && disabled(g, seat, id)) {
-            let frozen = if once { g.var(&tag_frozen_key(seat, id)) } else { 0 };
+            let frozen = g.var(&tag_frozen_key(seat, id));
             def(w, id).passives.iter().for_each(|p| one(p, frozen));
         }
     }

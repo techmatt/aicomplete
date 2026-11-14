@@ -169,7 +169,6 @@
     "income": {"credits": 1, "per": "the resource at its rate, a round"},
     "income_per_tag": {"credits": 1, "per": "the resource at its rate, a round, per `per` tags (rates.tag_count when not known)"},
     "building_discount": {"credits": 0.5, "per": "credit off, a round (about a building every other round)"},
-    "harden_action": {"credits": 0.5, "per": "the Harden standard action open, a round"},
     "slots": {"credits": 1, "per": "slot, a round"},
     "logistics": {"credits": 0.3, "per": "the resource at its rate, a round (a counter you paid toward lands about a third of rounds)"},
     "project_drain": {"credits": 1.65, "per": "compute off each project in upkeep, a round: 1.1 x 1.5"},

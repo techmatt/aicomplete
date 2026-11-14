@@ -409,6 +409,8 @@ impl AgentSpec {
                     ));
                 }
                 params.insert(k.to_string(), v);
+            } else if let Some((_, why)) = policy::RETIRED.iter().find(|(name, _)| *name == k) {
+                return Err(format!("agent {spec:?}: parameter {k:?} is retired (229): {why}"));
             } else {
                 let names: Vec<&str> = known.iter().map(|(k, _, _)| *k).collect();
                 return Err(format!(
@@ -936,6 +938,11 @@ mod tests {
             assert!(e.contains("retired"), "{e}");
             assert!(!eval::Weights::default().set(name, 1.0), "{name} is still a weight");
         }
+        // 229: a retired keep-plan or forced probe likewise.
+        for (name, _) in policy::RETIRED {
+            let e = AgentSpec::parse(&format!("greedy:{name}=1")).unwrap_err();
+            assert!(e.contains("retired"), "{e}");
+        }
         assert!(AgentSpec::parse("mcts").is_err());
         assert!(AgentSpec::parse("random:samples=2").is_err());
         // 020: a 0 that would be played as 1 is refused; engine's width 0 (no beam) is not.
@@ -962,10 +969,9 @@ mod tests {
     /// is on course.
     #[test]
     fn deck_clock_penalizes_a_team_behind_the_deck() {
-        // 080: the Wall pressure's landing may not ask where. 137: round 1's
-        // card may ask where its troops land: a seed whose opening asks nothing. 215: the purge's
+        // 137: round 1's card may ask where its troops land: a seed whose opening asks nothing. 215: the purge's
         // last step pinned at 6 (the baseline's 7 since r96), as the arithmetic below reads.
-        let r = config_rules_with("baseline", 0, &["adversary.wall_troops=0", "alignment.purge_at=3,6,6"]);
+        let r = config_rules_with("baseline", 0, &["alignment.purge_at=3,6,6"]);
         let mut g = (1..64).map(|s| r.new_game(s)).find(|g| g.pending.is_none()).unwrap();
         let value = |clock: f64, g: &aic_core::GameState| {
             let w = eval::Weights { clock, ..Default::default() };

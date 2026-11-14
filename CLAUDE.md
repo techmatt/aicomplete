@@ -28,7 +28,8 @@ machine's traps, are in the [README](README.md), which also lists the page for e
   resources, tags and token types are enums (`vocab.rs`): *The op schema* in docs/architecture.md.
 - **Removing a power, op, param or standard action:** `git grep` its name in `crates/*/src/tests`, `agents/`,
   `scripts/design_check.json` and `web/scripts` before the first build (206 found 19 tests by running them; 219 left
-  two browser checks on a removed power).
+  two browser checks on a removed power). **Changing a tunable's baseline value:** `git grep` its name and old value
+  in `crates/*/src` first: tests that pin a baseline number break (215 broke five).
 - **Any change to how games play out:** bump `RULES_REVISION` and update the golden constants
   (README, *Rules changes*). Bump from the constant, not from the prompt's revision number (a bug
   hunt may have taken it), and say so in the rules-history row and the report. A content-only
@@ -52,8 +53,8 @@ machine's traps, are in the [README](README.md), which also lists the page for e
   display rename keeps the id: notes, `scenes.json` and records key on it. Card id order feeds
   play, so an id changes only to fix a spelling `docs --check` refuses, in a rules item, with a
   `RULES_REVISION` bump; it strands any note on the old id.
-- **Adding or removing a card** edits `configs/baseline.json`, then `python
-  scripts/configs/shared_row.py` (`regen.py` runs it); a core test fails until you do.
+- **Adding or removing a card** edits `configs/baseline.json`, then `python scripts/regen.py`, which
+  rewrites the configs derived from it (`experiments/configs/no_liberate.json`, `no_tier2.json`).
 - A pass editing many cards keeps its edits as one overlay file, written with
   `scripts/cards/apply_overlay.py`, so it reruns from any revision.
 - **Give / get before any sim.** An item that adds or reprices a card, a building Action or a

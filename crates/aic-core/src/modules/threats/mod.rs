@@ -2,8 +2,7 @@
 //! pull a country, each with location tokens on the board; countered by the
 //! players near it (one option of its counter menu), executed in
 //! `threats.execute`, before war, if still uncountered.
-//! Variants: `countries` (each threat sits on a country), `shared_row` (135:
-//! the same as `countries`; the shared row is gone) and `off` (no threats).
+//! Variants: `countries` (each threat sits on a country) and `off` (no threats).
 
 use crate::action::Action;
 use crate::content::{
@@ -60,15 +59,6 @@ pub static DEF: ModuleDef = ModuleDef {
         VariantDef {
             name: "countries",
             summary: "Each threat sits on one country with location tokens; only players near a token may counter it",
-            params: &[],
-            phases: PHASES,
-            rng: &["threats"],
-            uses_cards: false,
-            build: build_on,
-        },
-        VariantDef {
-            name: "shared_row",
-            summary: "The same as countries (135: the shared row is gone)",
             params: &[],
             phases: PHASES,
             rng: &["threats"],
@@ -178,7 +168,7 @@ fn scope_of(g: &GameState, threat: &str) -> Option<usize> {
 
 /// Whether threats are in play (not variant `off`).
 fn in_play(w: &World) -> bool {
-    matches!(w.variant("threats"), Some("countries") | Some("shared_row"))
+    w.variant("threats") == Some("countries")
 }
 
 /// Refills an empty `tier` deck from its shuffled discard. False if both are empty.
@@ -380,14 +370,6 @@ fn deal_round(g: &mut GameState, cx: &mut Cx) {
     for p in &card.pulls {
         for c in 0..n {
             pull(g, cx, tier(p.tier), &p.tags, c, None);
-        }
-    }
-    // From difficulty `extra_threats_at` (5 since 177, so no level; 4 at 142, 0 at 139, 1 before): `extra_threats` more pulls of the
-    // card's first pull, one per country in turn (country 0 first in round 1, then 1, ...).
-    if let (true, Some(p)) = (adversary::level(&w, w.int("adversary.extra_threats_at")), card.pulls.first()) {
-        let first = (g.round.max(1) as usize - 1) % n.max(1);
-        for k in 0..w.int("adversary.extra_threats").max(0) as usize {
-            pull(g, cx, tier(p.tier), &p.tags, (first + k) % n.max(1), None);
         }
     }
 }

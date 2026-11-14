@@ -31,6 +31,20 @@ fn an_overlay_changes_only_its_own_rules_and_names_its_content() {
     assert_ne!(cheap.config_hash, plain.config_hash);
 }
 
+/// 229: a last step `+` appends to a list, and two appends to one list both stand.
+#[test]
+fn a_plus_step_appends_to_a_list() {
+    let passives = |r: &Rules| {
+        let c = r.world().content;
+        c.cards[c.card_index(CARD).unwrap()].passives.len()
+    };
+    let plain = Rules::new(&baseline()).unwrap();
+    let one = r#"cards.telemetry_archive.passives.+={"op":"slots","amount":1}"#;
+    let two = Rules::new(&baseline_with(&[one, one])).unwrap();
+    assert_eq!(passives(&two), passives(&plain) + 2);
+    assert!(Rules::new(&baseline_with(&["cards.telemetry_archive.cost.+=1"])).is_err(), "+ on a number");
+}
+
 #[test]
 fn an_empty_overlay_leaves_the_config_hash_alone() {
     let mut c = baseline();

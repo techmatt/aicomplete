@@ -52,7 +52,6 @@
   ],
   "build": {
    "corrupt_at": 4,
-   "wall_troops": 0,
    "war_node": 1,
    "botnet_compute": 1
   },

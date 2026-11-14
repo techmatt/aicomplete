@@ -4,33 +4,10 @@ use crate::config::{ModuleConfig, ParamValue};
 #[test]
 fn config_diff_names_a_changed_variant() {
     let a = Rules::new(&baseline()).unwrap();
-    let b = Rules::new(&Config::from_json(SHARED_ROW).unwrap()).unwrap();
+    let b = Rules::new(&baseline_with(&["threats.variant=off"])).unwrap();
     assert_eq!(
         a.config.diff(&b.config),
-        ["threats.variant: countries -> shared_row"]
-    );
-}
-
-/// `shared_row.json` is derived from the baseline, not tuned on its own: the
-/// file must be the baseline with the threat variant and the name changed,
-/// parameters and all, so a baseline edit can't leave it behind.
-#[test]
-fn the_shared_row_config_is_the_baseline_with_the_shared_row_threats() {
-    let mut derived = baseline();
-    derived.name = "shared_row".into();
-    let threats: Vec<&mut ModuleConfig> = derived
-        .modules
-        .iter_mut()
-        .filter(|m| m.module == "threats")
-        .collect();
-    assert_eq!(threats.len(), 1, "the baseline has one threats module");
-    for m in threats {
-        m.variant = "shared_row".into();
-    }
-    assert!(
-        derived == Config::from_json(SHARED_ROW).unwrap(),
-        "configs/shared_row.json has drifted from configs/baseline.json; regenerate it with \
-         `python scripts/configs/shared_row.py`"
+        ["threats.variant: countries -> off"]
     );
 }
 
@@ -237,7 +214,7 @@ fn a_bad_parameter_value_names_its_key() {
 #[test]
 fn every_shipped_config_rounds_every_module_phase() {
     let no_liberate = include_str!("../../../../experiments/configs/no_liberate.json");
-    for (name, text) in [("baseline", BASELINE), ("shared_row", SHARED_ROW), ("no_liberate", no_liberate)] {
+    for (name, text) in [("baseline", BASELINE), ("no_liberate", no_liberate)] {
         let c = Config::from_json(text).unwrap();
         let listed: BTreeSet<&str> = c.round.iter().flat_map(|e| e.split('+')).collect();
         for m in &c.modules {

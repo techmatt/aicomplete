@@ -61,7 +61,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   permanent income lives, flat ("raise your credit income by 8") or per tag ("by 1 per 2 Science tags on your cards",
   one such program per tag, needs 2 of it). Buildings are the blue cards: triggers, Actions and Effects; a building's
   income is per tag, 3 a tag (Foundation Model Campus, Vertical Monopoly), counted once when it is played as a
-  program's is (r98, `cards.tag_income_once`, Matt's candidate from 224 #6), or flat on a strong tier-2 one. **An engine
+  program's is (r98, Matt, 224 #6), or flat on a strong tier-2 one. **An engine
   pays up front (Matt):** a building with a trigger, threshold, discount or income also gives a one-time gain
   when built, worth about two of its fires: draw 2-4 cards, 2 energy on three Power ones (not Positron Storage Ring), or its first tokens here
   (the At N cards, *Tokens* below), so its own play fills the

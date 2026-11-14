@@ -26,7 +26,7 @@ use super::value::{self, CardValue, Ctx};
 use super::Strategic;
 
 pub use super::cards::cards_csv;
-pub(crate) use super::cards::{is_capstone, is_engine, is_liberate};
+pub(crate) use super::cards::{is_capstone, is_liberate};
 
 /// One value of a forced behavior, read from its agent parameter.
 trait ForcedValue {
@@ -80,6 +80,17 @@ impl ForcedValue for Option<Tag> {
     }
 }
 
+/// 229: the keep-plan numbers and forced probes retired, (name, why): a spec naming one is refused with the
+/// reason rather than as an unknown parameter (as `eval::RETIRED` does for weights).
+pub(crate) const RETIRED: [(&str, &str); 6] = [
+    ("plan_hand", "024's probe guard (keep nothing with this many cards in hand); always 0 since 082"),
+    ("old_counters", "135's off arm of the new counter kinds' read; not read since"),
+    ("always_liberate", "080's fixed policy (keep and play every liberate card); not read since"),
+    ("strat_power_uses", "092: always 1 (one use of each board power in the strategy choice)"),
+    ("plan_chain", "107: off (-2.8 +-2.2 for the strategist on 96 dev seeds: chain cards kept, never played)"),
+    ("engine_rush", "107's probe (keep and play every engine card at once); not read since"),
+];
+
 /// The one list of keep-plan numbers and forced behaviors: a new check is a row
 /// here and its arm in [`Policy`]. A row is `(name: type, active, default, what it
 /// does)`, `active` saying whether a value on its own makes the agent a [`Policy`]
@@ -97,10 +108,6 @@ macro_rules! forced_table {
             /// Rounds the keep plan looks at: this round's action phase and the
             /// ones after it.
             (plan_rounds: usize, false, 4.0, "rounds the keep plan sketches, this one included")
-            /// The keep plan keeps nothing while the hand holds this many cards
-            /// (024; 0: off). A probe guard (082): hands of 8-10 held cards never
-            /// played, and at a table a player stops paying for cards they can't use.
-            (plan_hand: usize, false, 0.0, "probe guard: keep nothing while the hand holds this many cards (0: off)")
             /// What a credit paid for a keep costs the plan (024).
             (plan_credit: f64, false, 3.0, "what a credit paid for a keep costs the keep plan")
             /// What the keep plan adds, in credits, for each marker a card would clear,
@@ -125,10 +132,6 @@ macro_rules! forced_table {
             (no_powers: bool, true, 0.0, "dominance check: never use an AI-board power but the node powers")
             /// Never pay toward a threat's counter.
             (no_counters: bool, true, 0.0, "dominance check: never counter a threat")
-            /// 135: counter only with credits, energy, insight or chips: no tag
-            /// sacrifice, no ambassadors, no research cubes, no nodes spent (the
-            /// off arm of the new counter kinds' read).
-            (old_counters: bool, true, 0.0, "135 read: counter only with credits, energy, insight or chips (no tags, ambassadors, research cubes or nodes)")
             /// Place no nodes beyond setup (no power or card that places one).
             (no_node: bool, true, 0.0, "dominance check: place no nodes beyond setup")
             /// Mono-tag (023): keep and play only cards carrying this tag.
@@ -140,8 +143,8 @@ macro_rules! forced_table {
             /// Exploit check (027): no counter paid and no card that counters a threat.
             (ignore_threats: bool, true, 0.0, "exploit check (027): no counters, no card that counters a threat")
             /// Exploit check (027): stay on the setup hex and defend it: no nodes,
-            /// only the remove, lift, ambassador and harden standard actions (221: r91's Lift for Clear).
-            (turtle: bool, true, 0.0, "exploit check (027): no nodes beyond setup; only the remove, lift, ambassador and harden actions")
+            /// only the remove, lift and ambassador standard actions (221: r91's Lift for Clear).
+            (turtle: bool, true, 0.0, "exploit check (027): no nodes beyond setup; only the remove, lift and ambassador actions")
             /// Exploit check (027): only free cities: Diplomacy cards, the ambassador,
             /// dispatch (move), remove and lift standard actions, no counters, no nodes,
             /// no powers.
@@ -163,8 +166,6 @@ macro_rules! forced_table {
             (never_second_node: bool, true, 0.0, "fixed policy (066): never use the board's second node power")
             /// Fixed policy (068): no power that sacrifices.
             (never_sacrifice: bool, true, 0.0, "fixed policy (068): never use a power that sacrifices")
-            /// Fixed policy (080): keep every liberate card, play one the first round it is legal.
-            (always_liberate: bool, true, 0.0, "fixed policy (080): draft and keep every liberate card, and play one the first round it is legal")
             /// Fixed policy (068): buy every ambassador it can.
             (ambassador_mass: bool, true, 0.0, "fixed policy (068): before anything else, buy every ambassador it can afford")
             /// Fixed policy (068): the Builder's expensive power at every chance.
@@ -209,8 +210,6 @@ macro_rules! forced_table {
             (plan_am: bool, false, 1.0, "211: keep plan: antimatter the seat's powers and built Actions make each round counts from the next round, and a shortfall is made from cubes at Make antimatter's price")
             /// 092: the opening's strategy choice reads the board's powers too.
             (strat_powers: bool, false, 1.0, "092: the strategy choice reads the board's powers as well as the opening 10")
-            /// 092: the uses of each power the strategy choice counts.
-            (strat_power_uses: f64, false, 1.0, "092: uses of each board power the strategy choice counts (with strat_powers)")
             /// 082: each seat commits to a strategy at its round-1 keep.
             (strategy: bool, true, 0.0, "082: each seat commits to a strategy at its round-1 keep, from its board and opening 10")
             /// 082: seat 0's strategy, fixed (1-based in its board's menu; 0: chosen).
@@ -227,20 +226,9 @@ macro_rules! forced_table {
             /// 107: a building that must go over one of the seat's may go over a
             /// building the plan plays before it ("build the under-card first").
             (plan_under: bool, false, 1.0, "107: keep plan: a built-over card may go over a building the plan plays first")
-            /// 107: a chain card in hand or kept that the plan can't play yet, but
-            /// whose `needs` the plan's cards bring within `plan_short` tags, counts
-            /// its value at the plan's last round times the square of the share of
-            /// its tags reached ("build toward the chain card you hold"): a feeder
-            /// adds progress, and the chain card is kept for it. Off (107: -2.8
-            /// ±2.2 for the strategist on 96 dev seeds; it kept chain cards it never played).
-            (plan_chain: bool, false, 0.0, "107, off: keep plan: a chain card the plan's tags bring within plan_short counts its later value times its share reached, squared")
             /// 107: a card that copies a building's income is planned only with one
             /// built or planned before it to copy.
             (plan_copy: bool, false, 1.0, "107: keep plan: plan a copy-income card only with an income building built or planned before it")
-            /// 107, a probe: draft and keep every engine card (a trigger, a
-            /// threshold, a per-tag income or discount, a copy) and play one the
-            /// moment it is legal: what the engines win when they are played.
-            (engine_rush: usize, true, 0.0, "107, a probe: 1 drafts and keeps every engine card and plays one as soon as it is legal; 2 only plays a kept one at once")
             /// 124: insight beyond the heuristic's `insight_cap` buys the picks the
             /// plan can't fit, each worth its price at the table, while it pays the
             /// whole keep ("with insight to burn, keep every card worth having").
@@ -404,7 +392,7 @@ fn buy_energy(w: &World, g: &GameState, legal: &[Action], idle: f64) -> Option<u
             if legal.iter().any(|b| matches!(b, Action::Play { seat, .. } if *seat as usize == s)) {
                 return false;
             }
-            let price = board::seat_price(w, g, s, board::StandardAction::BuyEnergy).credits;
+            let price = board::printed_price(w, board::StandardAction::BuyEnergy).credits;
             let after = g.resource(s, Resource::Credits) + economy::income(w, g, s)[Resource::Credits] - price;
             after as f64 >= idle
         }
@@ -557,7 +545,6 @@ impl Policy {
         }
         let world = rules.world();
         let drafted = g.pile(&cards::drafted(s)).to_vec();
-        let full = self.forced.plan_hand > 0 && g.pile(&cards::hand(s)).len() >= self.forced.plan_hand;
         let strat = self.strat.get(s).copied().flatten();
         let pc = plan_ctx(self.inner.as_ref(), &self.forced, strat, &mut self.mults, &mut self.rates, &world, g, s);
         let set = if self.forced.keep_none {
@@ -570,17 +557,11 @@ impl Policy {
         } else if self.forced.science_rush
             || self.forced.science_board
             || self.forced.capstone_rush
-            || self.forced.always_liberate
-            || self.forced.engine_rush == 1
         {
             let mut set = plan_keeps(&world, g, s, &self.forced, &pc);
             for id in &drafted {
                 let d = cards::def(&world, id);
-                let rush = if self.forced.engine_rush == 1 {
-                    is_engine(d)
-                } else if self.forced.always_liberate {
-                    is_liberate(d)
-                } else if self.forced.capstone_rush {
+                let rush = if self.forced.capstone_rush {
                     is_capstone(d)
                 } else {
                     d.tags.contains(&Tag::Science)
@@ -599,8 +580,6 @@ impl Policy {
             });
             d.truncate(self.forced.keep_k);
             d
-        } else if full {
-            Vec::new()
         } else {
             plan_keeps(&world, g, s, &self.forced, &pc)
         };
@@ -644,8 +623,7 @@ impl Policy {
             {
                 true
             }
-            Action::Pay { resource: Resource::Ambassadors | Resource::ResearchCubes, .. } if f.old_counters => true,
-            Action::CounterWith { .. } => f.no_counters || f.ignore_threats || f.free_only || f.old_counters,
+            Action::CounterWith { .. } => f.no_counters || f.ignore_threats || f.free_only,
             Action::Choose { seat, option, .. } if f.home_only && abroad(world, g, *seat as usize, option) => true,
             Action::Choose { option, target, .. } if f.abandon => {
                 on_given_up(world, g, option)
@@ -671,7 +649,7 @@ impl Policy {
                 // 206: the standard node placement places as a node power does.
                 (f.stays_put() && act == "node")
                     || (f.never_clear && act == "lift")
-                    || (f.turtle && !matches!(act.as_str(), "remove" | "lift" | "ambassador" | "harden_chips"))
+                    || (f.turtle && !matches!(act.as_str(), "remove" | "lift" | "ambassador"))
                     || (f.free_only && !matches!(act.as_str(), "remove" | "lift" | "ambassador" | "move"))
             }
             Action::Play { card, seat } => {
@@ -884,22 +862,6 @@ impl Agent for Policy {
                 if let Some(i) = first_card(legal, |id| science(id, board)) {
                     return i;
                 }
-            }
-        }
-        if self.forced.always_liberate && !pending {
-            if let Some(i) = first_card(legal, |id| is_liberate(cards::def(&world, id))) {
-                return i;
-            }
-        }
-        if self.forced.engine_rush > 0 && !pending {
-            let engine = |id: &Key| is_engine(cards::def(&world, id));
-            let at = if self.forced.engine_rush == 1 {
-                first_card(legal, engine)
-            } else {
-                legal.iter().position(|a| matches!(a, Action::Play { card, .. } if engine(card)))
-            };
-            if let Some(i) = at {
-                return i;
             }
         }
         if self.forced.capstone_rush && !pending {
@@ -1155,7 +1117,7 @@ pub fn opening_choice(t: &value::Table, w: &World, g: &GameState, f: &Forced, co
     // (every Builder Power grid, every Researcher Patience burst, seeds 31100).
     let power = |p: &aic_core::content::Power| {
         let typical = Ctx::typical_for(t, 1);
-        (value::power_worth(t, p).instant(t, &typical), f.strat_power_uses)
+        (value::power_worth(t, p).instant(t, &typical), 1.0)
     };
     let power: strategy::PowerWorth = if f.strat_powers { Some(&power) } else { None };
     let fixed = [f.strat0, f.strat1, f.strat2, 0];

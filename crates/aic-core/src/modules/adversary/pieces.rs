@@ -2,33 +2,6 @@
 
 use super::*;
 
-/// Troop pressure where the Protector stands (080, candidate): in the round's Card beat, r80 (ruling #48) a normal
-/// Muster `wall_troops` in each country where a seat with Wall has a node: the lowest-numbered factory, anyone's,
-/// else city (178-r79 took only an adversary or neutral factory, none landing without one), so Wall has strikes
-/// to stop.
-pub fn wall_pressure(g: &mut GameState, cx: &mut Cx) -> Res {
-    let w = cx.world;
-    let n = w.int("adversary.wall_troops");
-    if n == 0 {
-        return Ok(());
-    }
-    let walls: Vec<usize> = (0..g.seats.len()).filter(|&s| board::has_wall(&w, s)).collect();
-    for c in 0..w.map.countries.len() {
-        if !walls.iter().any(|&s| has_node_in(&w, g, s, c)) {
-            continue;
-        }
-        // 175: a Muster like any other: the level surcharge, a Muster prohibition, Wall keeping it in the supply.
-        let n = n + muster_bonus(&w);
-        let mut hexes = w.map.countries[c].hexes.clone();
-        // 192: with `wall_landing` 1 a player's factory is not a landing site (the Muster takes the next factory).
-        if w.int("adversary.wall_landing") != 0 {
-            hexes.retain(|&h| !(g.tokens(h, FACTORY) > 0 && cube_owner(g, h).is_some()));
-        }
-        land_troops(g, cx, &hexes, n, "Troops land where the Protector stands: on which hex?", "adversary.wall_troops", None, true)?;
-    }
-    Ok(())
-}
-
 /// Places `n` agents from the supply on hex `h`. The supply
 /// is a cap (027): a placement it can't make doesn't happen.
 pub fn place(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) -> Res {
@@ -174,9 +147,7 @@ pub fn land_troops(
             cx.tally(g, "adversary.walled_landing", 1);
             continue;
         }
-        let source = if tally == "adversary.wall_troops" {
-            "wall"
-        } else if muster {
+        let source = if muster {
             "muster"
         } else if tally.starts_with("threats.") {
             "threat"

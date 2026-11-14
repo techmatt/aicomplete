@@ -18,8 +18,6 @@ pub enum StandardAction {
     /// 137: liberate an adversary site with massed ambassadors (it replaced
     /// Free a station and the city fallback).
     Liberate,
-    /// 066: the Harden action a card grants, paid in chips.
-    HardenChips,
     /// 105: the general converter, a research cube for insight, no limit a round.
     Insight,
     /// 136: spend an ambassador to move 1 Discord off the Discord track.
@@ -39,7 +37,7 @@ pub enum StandardAction {
 }
 
 /// The standard actions, in the order they are offered and published.
-pub const STANDARD: [StandardAction; 16] = [
+pub const STANDARD: [StandardAction; 15] = [
     StandardAction::Station,
     StandardAction::Remove,
     StandardAction::Lift,
@@ -47,7 +45,6 @@ pub const STANDARD: [StandardAction; 16] = [
     StandardAction::Ambassador,
     StandardAction::Claim,
     StandardAction::Liberate,
-    StandardAction::HardenChips,
     StandardAction::Insight,
     StandardAction::Envoy,
     StandardAction::Botnet,
@@ -69,7 +66,6 @@ impl StandardAction {
             StandardAction::Ambassador => "ambassador",
             StandardAction::Claim => "claim",
             StandardAction::Liberate => "liberate",
-            StandardAction::HardenChips => "harden_chips",
             StandardAction::Insight => "insight",
             StandardAction::Envoy => "envoy",
             StandardAction::Botnet => "botnet",
@@ -136,7 +132,7 @@ impl Price {
 
 /// A standard action's price as the rules print it (066: each resource paid
 /// in its home domain).
-pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
+pub fn printed_price(w: &World, act: StandardAction) -> Price {
     let i = |k: &str| w.int(&format!("board.{k}"));
     let credits = |credits| Price { credits, ..Price::default() };
     let chips = |chips| Price { chips, ..Price::default() };
@@ -150,8 +146,6 @@ pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::Ambassador => credits(i("ambassador_credits")),
         // 137: the ambassadors depend on the site: [`target_price`].
         StandardAction::Claim | StandardAction::Liberate => Price::default(),
-        // 080: the price is the card's (`seat_price`); none printed here.
-        StandardAction::HardenChips => Price::default(),
         StandardAction::Insight => Price { cubes: 1, ..Price::default() },
         StandardAction::Envoy => ambassadors(i("envoy_ambassadors")),
         StandardAction::Botnet => credits(i("botnet_credits")),
@@ -163,31 +157,10 @@ pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
     }
 }
 
-/// The chips seat `s` pays for the Harden action its cards grant (080: printed
-/// on the card; the cheapest if several): `None` with no such card.
-pub fn harden_card_chips(w: &World, g: &GameState, seat: usize) -> Option<i64> {
-    let mut best: Option<i64> = None;
-    cards::each_passive(w, g, seat, |p| {
-        if let Op::HardenAction { chips } = p {
-            best = Some(best.map_or(*chips, |b| b.min(*chips)));
-        }
-    });
-    best
-}
-
-/// A standard action's price for seat `s`: the printed price, or the card's
-/// for the Harden action a card grants (080).
-pub fn seat_price(w: &World, g: &GameState, seat: usize, act: StandardAction) -> Price {
-    match (act, harden_card_chips(w, g, seat)) {
-        (StandardAction::HardenChips, Some(chips)) => Price { chips, ..Price::default() },
-        _ => printed_price(w, act),
-    }
-}
-
 /// The part of seat `seat`'s standard action's price that depends on its target hex `h`
 /// (137; 140's hook): Claim's and Liberate's ambassadors from the supply, the site's
 /// `claim_cost` or `liberate_cost` less the seat's own ambassadors standing on it (r75's one payment rule;
-/// `None`: no such site there). The rest are priced whole by [`seat_price`] and add nothing here. The
+/// `None`: no such site there). The rest are priced whole by [`printed_price`] and add nothing here. The
 /// targets list only hexes the seat can pay this for, and the action pays it on the hex chosen.
 pub fn target_price(w: &World, g: &GameState, seat: usize, act: StandardAction, h: usize) -> Option<Price> {
     let ambassadors = |ambassadors| Price { ambassadors, ..Price::default() };
@@ -312,7 +285,6 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
                 liberate_ambassadors(w, SiteKind::Station)
             );
         }
-        StandardAction::HardenChips => "the Harden action a card grants: harden a facility in reach",
         StandardAction::Insight => {
             return format!("turn 1 research cube into {}", Resource::Insight.words(w.int("board.cube_insight")));
         }
@@ -398,11 +370,6 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
                 t("alignment.free_city"),
                 t("alignment.free_facility")
             ),
-        ),
-        StandardAction::HardenChips => (
-            "Harden a facility (a card that grants it; none does: Faraday Yard hardens when played)",
-            "the chips the card prints, per token".into(),
-            "a player-owned station or factory in reach that is not corrupted, one a troop can strike".into(),
         ),
         // 105: the general converter every player has.
         StandardAction::Insight => (
@@ -518,13 +485,6 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
         }
         StandardAction::Claim => all.filter(|&h| claimable(w, g, seat, h)).collect(),
         StandardAction::Liberate => all.filter(|&h| liberable(w, g, seat, h)).collect(),
-        StandardAction::HardenChips => {
-            if harden_card_chips(w, g, seat).is_some() {
-                all.filter(|&h| reach(h) && hardenable(g, h)).collect()
-            } else {
-                Vec::new()
-            }
-        }
         // Gaining an ambassador, credits or insight needs no target.
         StandardAction::Ambassador => vec![usize::MAX],
         StandardAction::Insight if w.int("board.cube_insight") > 0 => vec![usize::MAX],
@@ -655,11 +615,6 @@ pub(super) fn std_resolve(
             if let Some(h) = on_hex(cx)? {
                 pay_site(g, cx, s, h, true);
                 liberate_site(g, cx, s, h);
-            }
-        }
-        StandardAction::HardenChips => {
-            if let Some(h) = on_hex(cx)? {
-                cx.add_tokens(g, h, HARDEN, 1);
             }
         }
         StandardAction::Node | StandardAction::Troop | StandardAction::Factory => {

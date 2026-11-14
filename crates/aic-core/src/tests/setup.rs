@@ -1,19 +1,31 @@
 use super::*;
 
+/// 229: the adversary deal's tunables, pinned so the deck sizes below don't move with a dial item:
+/// 5, 5, 3 cards; difficulty 3 removes two stage-II cards; difficulty 4 swaps a stage-I card for a stage-III.
+pub(super) const DEAL: [&str; 6] = [
+    "adversary.stage_cards=5,5,3",
+    "adversary.stage1_added=0",
+    "adversary.stage2_removed=2",
+    "adversary.stage_swap_at=4",
+    "adversary.stage1_removed=1",
+    "adversary.stage3_added=1",
+];
+
 #[test]
 fn setup_places_the_printed_pieces() {
     // Difficulty 4's second corrupted city is a tunable, 0 in the baseline.
     let cases: [(i64, usize, usize, &str); 4] = [
-        // 200: d0 deals as d1 (196's two extra event cards are gone). 215: 5, 5, 3 cards.
+        // 200: d0 deals as d1 (196's two extra event cards are gone). 13 cards, one face up.
         (0, 1, 12, ""),
-        // 150: d3 removes two stage-II cards (`stage2_removed` 2).
+        // 150: d3 removes two stage-II cards.
         (3, 1, 10, ""),
         (4, 1, 10, ""),
         (4, 2, 10, "adversary.extra_corrupted=1"),
     ];
     for (d, corrupt, deck, set) in cases {
         let level = format!("adversary.difficulty={d}");
-        let mut sets = vec![level.as_str()];
+        let mut sets: Vec<&str> = DEAL.to_vec();
+        sets.push(level.as_str());
         if !set.is_empty() {
             sets.push(set);
         }

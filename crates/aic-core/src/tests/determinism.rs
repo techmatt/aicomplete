@@ -164,7 +164,7 @@ fn malformed_and_mismatched_states_are_errors_not_panics() {
 
 #[test]
 fn saved_games_round_trip_and_replay_to_the_saved_state() {
-    let config = baseline_with(&["threats.variant=shared_row"]);
+    let config = baseline();
     let rules = Rules::new(&config).unwrap();
     let (g, actions) = random_game(&rules, 21);
     let rec = SavedGame::new(&rules, 21, actions.clone(), &g, "a loss");

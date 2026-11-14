@@ -49,8 +49,6 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("counter_more_credits", 0, 20, "difficulty counter_more_at+: added again to every credits counter item (142)"),
     ParamSpec::int("counter_more_at", 0, 5, "the difficulty level from which counter_more_all and counter_more_credits apply (142)"),
     ParamSpec::int("counter_bonus_at", 0, 5, "the difficulty level from which counter_bonus and counter_bonus_all apply (142; 1 before)"),
-    ParamSpec::int("extra_threats", 0, 5, "difficulty extra_threats_at+: extra threats dealt each round in all, one per country in turn"),
-    ParamSpec::int("extra_threats_at", 0, 5, "the difficulty level from which extra_threats are dealt (139)"),
     ParamSpec::int("stage1_removed", 0, 3, "difficulty stage_swap_at+: stage-I cards removed"),
     ParamSpec::int("stage3_added", 0, 3, "difficulty stage_swap_at+: stage-III cards added (the cap holds, its end gets harder)"),
     ParamSpec::int("stage_swap_at", 0, 5, "the difficulty level from which stage1_removed and stage3_added apply (142; 2 before)"),
@@ -61,8 +59,6 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::list("ambassador_income", 0, 10, "151: the agent income a country a round (into each country's pool), at difficulty 0-4"),
     ParamSpec::int("tier2_early", 0, 3, "difficulty 4+: tier-2 threats start this many rounds sooner"),
     ParamSpec::int("discord_removed", 0, 3, "difficulty 4+: Discord cards removed at setup (from tier 1)"),
-    ParamSpec::int("wall_troops", 0, 5, "build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop)"),
-    ParamSpec::int("wall_landing", 0, 1, "192: 1: the Protector's Muster skips players' factories (the lowest-numbered neutral or adversary factory, else city); 0: anyone's"),
     ParamSpec::int("war_node", 0, 1, "build (r83, the Militarist's War Takes Ground): 1: a drone strike that destroys a factory destroys a node on its hex too"),
     ParamSpec::int("station_flip_at", 0, 5, "agents on a player's research station before an effect can flip it (short of that, one lands there instead)"),
     ParamSpec::int("botnet_compute", 0, 5, "adversary compute each botnet makes a round (none with a player ambassador on it)"),
@@ -405,7 +401,6 @@ impl Module for Adversary {
                         other => unreachable!("twist with no reader: {other:?}"),
                     }
                 }
-                wall_pressure(g, cx)?;
             }
             CORRUPT => {
                 // 138: the card's Corrupt X lines, in card order (they replace the spread).

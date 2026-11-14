@@ -5,8 +5,9 @@
     python scripts/bench/same_play.py compare SIM BASE NEW [--map OLD=NEW]...
         # SIM: the new binary
 
-The matrix covers both configs, 1-4 countries, three difficulties, the shared variant matrix
-(configs/variants.json, greedy), with the random, greedy, engine, rollout and planner agents (030), and one
+The matrix covers the baseline (229 dropped shared_row.json: a BASE played before then holds its
+`shared_row-*` files, which `compare` names and leaves out, as any cell NEW didn't play), 1-4 countries, three
+difficulties, the shared variant matrix (configs/variants.json, greedy), with the random, greedy, engine, rollout and planner agents (030), and one
 dominance check under the planner, saving every game. `compare` checks:
 
 - summaries match, timing and the content hash aside (renaming ops moves the hash);
@@ -36,7 +37,7 @@ import sys
 
 from same_results import diff, read, take_maps
 
-CONFIGS = ["baseline", "shared_row"]
+CONFIGS = ["baseline"]
 # Fields and trace lines that differ between runs of the same play.
 IGNORED = ("content_hash", "ms_per_game", "paths")
 TRACE_NOISE = ("wall ms/game", "seeds ")
@@ -175,16 +176,25 @@ def trace_lines(text, maps):
 def compare(sim, base, new, maps=()):
     bad = 0
     ignored = IGNORED + RENAME_IGNORED if maps else IGNORED
-    summaries = sorted(glob.glob(os.path.join(base, "*.json")))
+    # 229: a cell BASE played that NEW's matrix no longer has (shared_row) is left out, named.
+    gone = sorted(os.path.basename(f) for f in glob.glob(os.path.join(base, "*.json"))
+                  if not os.path.exists(os.path.join(new, os.path.basename(f))))
+    if gone:
+        print(f"{len(gone)} BASE cells not in NEW's matrix, left out: {', '.join(gone[:6])}"
+              + (" ..." if len(gone) > 6 else ""))
+    left = {os.path.splitext(g)[0] for g in gone}
+    kept = lambda f: os.path.splitext(os.path.basename(f))[0] not in left
+    summaries = sorted(f for f in glob.glob(os.path.join(base, "*.json")) if kept(f))
     for f in summaries:
         g = os.path.join(new, os.path.basename(f))
         bad += differs("summary", os.path.basename(f), clean(json.loads(read(f, maps)), ignored),
                        clean(json.loads(read(g)), ignored))
-    traces = sorted(glob.glob(os.path.join(base, "*.trace")))
+    traces = sorted(f for f in glob.glob(os.path.join(base, "*.trace")) if kept(f))
     for f in traces:
         g = os.path.join(new, os.path.basename(f))
         bad += trace_differs(os.path.basename(f), trace_lines(read(f, maps), maps), trace_lines(read(g), maps))
-    records = sorted(glob.glob(os.path.join(base, "rec", "*", "*.json")))
+    records = sorted(f for f in glob.glob(os.path.join(base, "rec", "*", "*.json"))
+                     if os.path.basename(os.path.dirname(f)) not in left)
     bad += same_records(records, base, new, maps) if maps else replays(sim, records)
     print(f"{len(summaries)} summaries, {len(traces)} traces, {len(records)} records: {bad} difference(s)")
     return 1 if bad else 0

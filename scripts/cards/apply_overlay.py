@@ -8,10 +8,12 @@ takes (a line starting `#` is a comment; blank lines are skipped). The paths fol
 countries, by lowercase name), cards, threats, adversary, ais, alignment, projects; `id` may
 be `*` (every row); `<table>.<id>=<JSON object>` with no path writes a whole row (125: a new card
 is appended, an existing row replaced; this form is apply_overlay's own, the engine's `--set` has
-none). Nothing deletes a row: to drop a card, take it out of the deck in configs/baseline.json and
-run scripts/configs/shared_row.py, then edit content/cards.json by hand and run
+none). Nothing deletes a row: to drop a card, take it out of the deck in configs/baseline.json,
+then edit content/cards.json by hand and run
 `python tools/card-art/scenes_io.py release CARD`. The path walks object fields and list indexes, its last step may add a
-field; the value is JSON (`null` drops an object's field), or a bare word taken as a string. An entry setting a value already
+field, or be `+` to append the value to the list it reaches (`cards.<id>.passives.+={"op":"..."}`, as the engine's
+`--set`; `+` elsewhere, or on what isn't a list, is refused; a list already holding an equal value is left as it
+is, so a rerun appends nothing); the value is JSON (`null` drops an object's field), or a bare word taken as a string. An entry setting a value already
 there changes nothing, so a card pass keeps its edits as one overlay file and reruns it.
 
 `--check` prints each entry that would change something and writes nothing (exit 1 if any
@@ -63,7 +65,7 @@ def apply_entry(files, entry):
     if parts[0] in DRAFTED:
         raise ValueError(f'{entry!r}: content/{TABLES[parts[0]]} is written from drafts/adversary/ by '
                          'scripts/content/load_adversary.py, so an overlay there is lost: edit the drafts')
-    if sep and len(parts) == 2 and parts[0] in TABLES and parts[0] != 'corps' and parts[1] != '*':
+    if sep and len(parts) == 2 and parts[0] in TABLES and parts[0] != 'corps' and parts[1] not in ('*', '+'):
         return put_row(files, parts[0], parts[1], parse_value(value.strip()), entry)
     if not sep or parts[0] not in TABLES or len(parts) < 3:
         raise ValueError(f'{entry!r}: expected <table>.<id>.<path>=<value>')
@@ -83,6 +85,8 @@ def apply_entry(files, entry):
         hit = True
         at = row
         for step in path[:-1]:
+            if step == '+':
+                raise ValueError(f"{entry!r}: '+' appends, so it is only the last step")
             if isinstance(at, list) and step.isdigit() and int(step) < len(at):
                 at = at[int(step)]
             elif isinstance(at, dict) and step in at:
@@ -90,7 +94,15 @@ def apply_entry(files, entry):
             else:
                 raise ValueError(f'{entry!r}: no {step!r} on the way')
         last = path[-1]
-        if isinstance(at, list):
+        if last == '+':
+            # 229 (Matt): `+` appends to the list it names, as the engine's `--set` does. A list already
+            # holding an equal value is left alone, so a rerun of the overlay changes nothing.
+            if not isinstance(at, list):
+                raise ValueError(f"{entry!r}: '+' appends to a list, and this is not one")
+            if not any(x == value and type(x) is type(value) for x in at):
+                at.append(value)
+                changed = True
+        elif isinstance(at, list):
             if not (last.isdigit() and int(last) < len(at)):
                 raise ValueError(f'{entry!r}: no list entry {last!r}')
             i = int(last)

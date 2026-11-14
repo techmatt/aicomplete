@@ -328,7 +328,6 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::CardDiscount { .. }
         | Op::When { .. }
         | Op::Threshold { .. }
-        | Op::HardenAction { .. }
         | Op::Slots { .. }
         | Op::Logistics { .. }
         | Op::ProjectDrain { .. }

@@ -1112,6 +1112,6 @@ mod tests {
         );
         // Not a pure removal: other numbers change too.
         assert!(switched_off(&set(&["alignment.variant=off", "x.y=2"])).is_empty());
-        assert!(switched_off(&set(&["threats.variant=shared_row"])).is_empty());
+        assert!(switched_off(&set(&["threats.variant=countries"])).is_empty());
     }
 }

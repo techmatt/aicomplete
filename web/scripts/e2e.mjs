@@ -356,15 +356,6 @@ try {
   }
   await size(1366, 768);
 
-  // The shared-row threat variant shows its threats in their own box by the countries.
-  if (await js(`[...document.querySelectorAll('#config option')].some((o) => o.value === 'shared_row.json')`)) {
-    await newGame(page, 'shared_row.json', 3);
-    for (let i = 0; i < 12; i++) await js(`document.getElementById('random-action').click()`);
-    const row = await js(`({ pile: !!window.aic.view.piles.find((p) => p.key === 'threats.row'), shown: document.querySelectorAll('#countries .shared .threat').length })`);
-    check(!row.pile || row.shown > 0, `shared threat row shown (${row.shown} threats)`);
-    await shot('shared-row-1366');
-  }
-
   // Watch a record from the simulator: load, step forward and back, reach its end.
   if (recordPath) {
     const text = readFileSync(recordPath, 'utf8');

@@ -413,13 +413,14 @@ fn the_aegis_doctrine_guards_only_its_holders_own_pieces() {
 }
 
 /// r75 (Matt's ruling 1): Remove agents spends its ambassadors from the supply, used up, and places none (it
-/// stood on the hex it cleared). 228 (r100): 2 ambassadors (`board.remove_ambassadors`), was 1.
+/// stood on the hex it cleared). Its price is `board.remove_ambassadors`, read from the world.
 #[test]
 fn remove_agents_uses_its_ambassador_up_and_places_none() {
     let (rules, mut g) = lab_actions();
+    let price = rules.world().int("board.remove_ambassadors");
     let d = node_of(&g, 0)[0];
     put(&mut g, d, ADV_AMBASSADOR, 2);
-    set_res(&mut g, 0, Resource::Ambassadors, 2);
+    set_res(&mut g, 0, Resource::Ambassadors, price);
     act(&rules, &mut g, std_act(0, "remove"));
     assert_eq!((g.tokens(d, ADV_AMBASSADOR), g.tokens(d, ambassador(0))), (0, 0));
     assert_eq!((g.resource(0, Resource::Ambassadors), board::ambassadors_on_board(&g, 0)), (0, 0));
@@ -437,7 +438,7 @@ fn remove_agents_spreads_over_hexes_in_reach() {
     put(&mut g0, d, node(0), 1);
     put(&mut g0, d, ADV_AMBASSADOR, 1);
     put(&mut g0, x, ADV_AMBASSADOR, 3);
-    set_res(&mut g0, 0, Resource::Ambassadors, 2);
+    set_res(&mut g0, 0, Resource::Ambassadors, rules.world().int("board.remove_ambassadors"));
 
     let mut g = g0.clone();
     rules.apply_mut(&mut g, &std_act(0, "remove"), None).unwrap();

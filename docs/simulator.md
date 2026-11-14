@@ -72,6 +72,20 @@ replay big sets in batches.
 The random agent picks uniformly among all seats' legal actions, passes and choice
 answers included. Treat it as a floor, not as a model of a weak team.
 
+## Keys in a games.jsonl line
+
+What the read scripts quote most (`screens.cnt(game, key)`; more in experiments.md, *Counters*):
+
+| Key | What it holds, per game |
+|---|---|
+| `counters['ai.power.<board>.<power>']` | a board power's uses (`modules/ai.rs`; the seats on that board summed), `.rNN` a round's; names: `scripts/powers.py` |
+| `counters['board.std.<name>']` | a standard action's uses; `board.std_actions` all of them |
+| `counters['fx.<card>.tN']` / `['fx.<card>.<measure>']` | an Alignment card resolved at tier N / the change it made to a `FX_MEASURES` total (`alignment.rs`): a signed delta, not a count (`fx.network_cleanup.land` −1: one Fallout token gone) |
+| `sources[seat]` / `uses[seat]` | each resource gained / spent by where, `{label: [...]}`: `own:` or `other:` an action, `phase:` an automatic phase |
+| `start`, `gained`, `spent`, `peaks` | per seat, totals (`start + gained - spent` is the end) |
+
+Each row is in `PEAKS` order (credits, insight, energy, chips, antimatter, research cubes, card tokens, ambassadors).
+
 ## The farm
 
 A read's games, cut into seed ranges for conductor's remote workers (browser tabs on other machines, 160). The

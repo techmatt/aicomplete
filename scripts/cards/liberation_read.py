@@ -49,8 +49,8 @@ def main():
     cells = load(a.dirs)
     print('| config | pair | agent | games | win % | ±SE | rounds | corrupted / game (games with one) | '
           'liberated: all (card / Liberate action) | per won game | games with a liberation | Grant / game | '
-          'Wall strikes stopped / game | troops landed by Wall pressure |')
-    print('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|')
+          'Wall strikes stopped / game |')
+    print('|---|---|---|---|---|---|---|---|---|---|---|---|---|')
     for (cfg, var, agent), gs in sorted(cells.items()):
         n = len(gs)
         p = sum(g['won'] for g in gs) / n
@@ -63,8 +63,7 @@ def main():
               f"{per(gs, 'adversary.corruptions.city'):.2f} ({corrupting:.0f}%) | {per(gs, 'board.cities_freed'):.2f} ({per(gs, 'board.liberated_card'):.2f} / "
               f"{per(gs, 'board.liberated.city') - per(gs, 'board.liberated_card'):.2f}) | {per(won, 'board.cities_freed') if won else 0:.2f} | "
               f"{sum(1 for x in freed if x) / n * 100:.0f}% | "
-              f"{per(gs, 'ai.power.researcher.grant'):.2f} | {per(gs, 'board.wall_strikes'):.2f} | "
-              f"{per(gs, 'adversary.wall_troops'):.2f} |")
+              f"{per(gs, 'ai.power.researcher.grant'):.2f} | {per(gs, 'board.wall_strikes'):.2f} |")
     if a.cards:
         print()
         print('| config | pair | agent | ' + ' | '.join(LIBERATE) + ' |')

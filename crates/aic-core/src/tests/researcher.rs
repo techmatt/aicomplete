@@ -22,7 +22,12 @@ fn c2_seats_builder_and_protector_and_c3_adds_the_researcher() {
     let (rules, _) = c3();
     let w = rules.world();
     assert_eq!(ai::board(&w, 2).id, "researcher");
-    assert_eq!(ai::slots(&w, 2), 4);
+    // Its slots are the baseline's `ai.slots` entry for the Researcher board, whichever seat plays it.
+    let base = Rules::new(&baseline()).unwrap();
+    let bw = base.world();
+    let slots = bw.list("ai.slots");
+    let i = bw.content.ais.iter().position(|b| b.id == "researcher").unwrap();
+    assert_eq!(ai::slots(&w, 2), slots[i % slots.len()]);
 }
 
 #[test]

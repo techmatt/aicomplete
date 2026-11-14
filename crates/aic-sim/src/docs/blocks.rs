@@ -394,7 +394,7 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
         let k: Vec<String> = keys.iter().map(|k| tick(r, k)).collect();
         k.join(", ")
     };
-    // Each of `steps`' six dials (`corrupt_cut_at` .. `stage_swap_at`) sits at whatever level its `_at` value names.
+    // Each of `steps`' five dials (`corrupt_cut_at` .. `stage_swap_at`) sits at whatever level its `_at` value names.
     let mut rows: Vec<(String, Vec<&str>)> = vec![
         // The incomes are a list with an entry a level, not a step: every level reads its own entry.
         (
@@ -420,7 +420,7 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
         "{} corrupt with fewer agents (from `corrupt_cut_at`)",
         if cut_sites.is_empty() { "no site".to_string() } else { cut_sites.join(", ") }
     );
-    let steps: [(&str, &str, &[&str]); 6] = [
+    let steps: [(&str, &str, &[&str]); 5] = [
         ("adversary.corrupt_cut_at", &cut_text,
             &["adversary.corrupt_cut", "adversary.corrupt_cut_at"]),
         ("adversary.counter_bonus_at", "counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`)",
@@ -429,8 +429,6 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
             &["adversary.counter_more_all", "adversary.counter_more_credits", "adversary.counter_more_at"]),
         ("adversary.board_difficulty_at", "the adversary board's difficulty line (from `board_difficulty_at`)",
             &["adversary.board_difficulty_at"]),
-        ("adversary.extra_threats_at", "extra threats each round in all, countries in turn",
-            &["adversary.extra_threats", "adversary.extra_threats_at"]),
         ("adversary.stage_swap_at", "a stage-I card swapped for a stage-III card (the table above; from `stage_swap_at`)",
             &["adversary.stage1_removed", "adversary.stage3_added", "adversary.stage_swap_at"]),
     ];
@@ -459,6 +457,100 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
         .map(|(i, (adds, keys))| vec![i.to_string(), adds.to_string(), keys])
         .collect();
     table(&["Level", "Adds", "Tunable"], rows)
+}
+
+/// 229 (Matt's ruling): the rulebook's §21 table, each level whole, in players' words, read from the same
+/// tunables and deal as [`difficulty_block`] and [`round_cap_block`], so it can't go stale.
+pub(super) fn rulebook_difficulty_block(r: &Rules) -> String {
+    let d = tunable(r, "adversary.difficulty");
+    let at = |key: &str, level: i64| level >= int(r, key);
+    let base = [
+        int(r, "adversary.corrupt_at"),
+        int(r, "adversary.corrupt_station_at"),
+        int(r, "adversary.corrupt_factory_at"),
+        int(r, "adversary.corrupt_land_at"),
+        int(r, "adversary.corrupt_node_at"),
+    ];
+    let cut = list(r, "adversary.corrupt_cut");
+    let compute = list(r, "adversary.compute_income");
+    let agents = list(r, "adversary.ambassador_income");
+    let entry = |l: &[i64], level: i64| l[(level as usize).min(l.len() - 1)];
+    let rows = (d.min..=d.max)
+        .map(|level| {
+            let corrupt: Vec<String> = base
+                .iter()
+                .enumerate()
+                .map(|(i, n)| {
+                    let c = if at("adversary.corrupt_cut_at", level) { cut.get(i).copied().unwrap_or(0) } else { 0 };
+                    (n - c).to_string()
+                })
+                .collect();
+            let (mut credits, mut other, mut first) = (0, 0, 0);
+            if at("adversary.counter_bonus_at", level) {
+                credits += int(r, "adversary.counter_bonus_credits");
+                other += int(r, "adversary.counter_bonus_all");
+                first += int(r, "adversary.counter_bonus");
+            }
+            if at("adversary.counter_more_at", level) {
+                credits += int(r, "adversary.counter_more_credits");
+                other += int(r, "adversary.counter_more_all");
+            }
+            let mut items: Vec<String> = Vec::new();
+            if credits > 0 {
+                items.push(format!("credits +{credits}"));
+            }
+            if other > 0 {
+                items.push(format!("other resources +{other}"));
+            }
+            if first > 0 {
+                items.push(format!("the first option's +{first} more"));
+            }
+            let n = dealt(r, level);
+            // The level-4 dials ("difficulty 4+" in the engine, not a tunable step).
+            let mut more: Vec<String> = Vec::new();
+            if level >= 4 {
+                let t2 = int(r, "adversary.tier2_early");
+                if t2 > 0 {
+                    more.push(format!("tier-2 threats {t2} round{} sooner", if t2 == 1 { "" } else { "s" }));
+                }
+                let disc = int(r, "adversary.discord_removed");
+                if disc > 0 {
+                    more.push(format!("{disc} Discord card{} removed", if disc == 1 { "" } else { "s" }));
+                }
+                let extra = int(r, "adversary.extra_corrupted");
+                if extra > 0 {
+                    more.push(format!("{extra} more corrupted cit{} a country", if extra == 1 { "y" } else { "ies" }));
+                }
+            }
+            let dash = |v: String| if v.is_empty() { "—".to_string() } else { v };
+            let extra_agents = entry(&agents, level);
+            vec![
+                level.to_string(),
+                corrupt.join(" / "),
+                dash(items.join(", ")),
+                if at("adversary.board_difficulty_at", level) { "yes".into() } else { "—".into() },
+                format!("{} / {} / {}", n[0], n[1], n[2]),
+                n.iter().sum::<usize>().to_string(),
+                entry(&compute, level).to_string(),
+                if extra_agents > 0 { format!("+{extra_agents}") } else { "—".into() },
+                dash(more.join("; ")),
+            ]
+        })
+        .collect();
+    table(
+        &[
+            "Level",
+            "Corrupt numbers (city / station / factory / land / node)",
+            "Threat items",
+            "Adversary board's harder line",
+            "Event cards (I / II / III)",
+            "Rounds",
+            "Compute income",
+            "More agent income a country",
+            "Other",
+        ],
+        rows,
+    )
 }
 
 /// What `key`, a list by board (093; one value sets every board), gives `board`.
@@ -607,7 +699,7 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
     // (149: chips can't be sold).
     let order = [
         A::Node, A::Station, A::Factory, A::Remove, A::Troop, A::Lift, A::Move, A::Ambassador, A::Claim, A::Liberate, A::Botnet,
-        A::BuyEnergy, A::HardenChips,
+        A::BuyEnergy,
     ];
     let mut rows: Vec<[String; 3]> = order.iter().filter(on).map(|&a| std_rule_text(a, &w, &t)).collect();
     rows.push(["Sell a card".to_string(), format!("gain {}", t("board.sell_credits")), "from your hand".to_string()]);

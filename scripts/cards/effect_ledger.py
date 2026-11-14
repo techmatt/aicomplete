@@ -312,8 +312,6 @@ def op_worth(t, o):
         return Worth(standing=row(op) * n('amount'))
     if op == 'auto_counter':
         return Worth(standing=row(op) * n('amount'))
-    if op == 'harden_action':
-        return Worth(standing=max(row(op) - 0.5 * r('chips') * n('chips') / 2.0, 0.0))
     if op == 'logistics':
         return Worth(standing=row(op) * r(o['resource']) * n('amount'))
     if op in ('spread_shield', 'civic_shelter', 'tags_from_hand'):
@@ -628,16 +626,22 @@ def load_path(path):
 
 def overlaid(cards, paths):
     """`cards` with the `cards.` entries of overlay files applied, as
-    apply_overlay.py would write them (in memory; a whole row adds a card)."""
+    apply_overlay.py would write them (in memory; a whole row adds a card). A line that is
+    not a card entry (another table, a param such as `countries=3`) is skipped with a note on
+    stderr (229, Matt): an overlay file may also carry a screen's other `--set` lines."""
     import apply_overlay
     files = {'cards.json': cards}
+    skipped = []
     for entry in apply_overlay.read_entries(paths, []):
         if not entry.startswith('cards.'):
-            sys.exit(f'{entry!r}: the ledger reads cards only; --overlay takes `cards.` entries')
+            skipped.append(entry)
+            continue
         try:
             apply_overlay.apply_entry(files, entry)
         except (ValueError, KeyError) as e:
             sys.exit(str(e))
+    for entry in skipped:
+        print(f'note: --overlay skips {entry!r}: the ledger reads cards only', file=sys.stderr)
     return files['cards.json']
 
 
@@ -958,7 +962,7 @@ def args():
                         'cards.csv (git show REV:experiments/results/effect-ledger/cards.csv > out/old.csv)')
     p.add_argument('--overlay', action='append', default=[], metavar='FILE',
                    help='with --stdout: an overlay file (apply_overlay.py format, `cards.` entries) applied to the '
-                        'cards before pricing; repeatable')
+                        'cards before pricing (other lines are skipped with a note); repeatable')
     a = p.parse_args()
     if a.hold_ratio and not a.stdout:
         p.error('--hold-ratio prints: pass --stdout')

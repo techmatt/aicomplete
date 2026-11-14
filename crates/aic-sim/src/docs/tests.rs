@@ -4,7 +4,7 @@ use aic_core::{Config, Rules};
 use super::blocks::*;
 use super::run::{
     block, budget_warnings, card_note_failures, card_quote_failures, op_docs, revision_line_failures, rulebook_revision_failure, rules_file_failures, unknown_params, BLOCKS,
-    DOC_BUDGET, DOC_WARN,
+    DOC_BUDGET, DOC_WARN, PALETTE_OPS,
 };
 
 const BASELINE_JSON: &str = include_str!("../../../../configs/baseline.json");
@@ -28,18 +28,32 @@ fn row(block: &str, first: &str) -> Vec<String> {
 
 #[test]
 fn the_round_cap_comes_from_the_engines_deal() {
-    let base = round_cap_block(&baseline(&[]));
-    // At the baseline (215: 5, 5, 3 cards; 138-214: 4, 4, 3); difficulty 3 removes two stage-II cards
-    // (150: `stage2_removed` 2); difficulty 4 (142: stage_swap_at, 2 before) swaps a
-    // stage-I card for a stage-III. 200: difficulty 0 deals as 1 (196's `stage_extra` is gone).
+    // 229: the deal's tunables are pinned here, so a dial item moving the baseline doesn't break this test
+    // (`a_config_change_changes_its_block` checks the block moves with them). With them: 5, 5, 3 cards;
+    // difficulty 3 removes two stage-II cards; difficulty 4 swaps a stage-I card for a stage-III.
+    // 200: difficulty 0 deals as 1 (196's `stage_extra` is gone).
+    const DEAL: [&str; 6] = [
+        "adversary.stage_cards=5,5,3",
+        "adversary.stage1_added=0",
+        "adversary.stage2_removed=2",
+        "adversary.stage_swap_at=4",
+        "adversary.stage1_removed=1",
+        "adversary.stage3_added=1",
+    ];
+    let cap = |more: &[&str]| {
+        let mut sets: Vec<&str> = DEAL.to_vec();
+        sets.extend_from_slice(more);
+        round_cap_block(&baseline(&sets))
+    };
+    let base = cap(&[]);
     assert_eq!(row(&base, "0"), ["0", "5", "5", "3", "6", "13"]);
     assert_eq!(row(&base, "1"), ["1", "5", "5", "3", "6", "13"]);
     assert_eq!(row(&base, "2"), ["2", "5", "5", "3", "6", "13"]);
     assert_eq!(row(&base, "3"), ["3", "5", "3", "3", "6", "11"]);
     assert_eq!(row(&base, "4"), ["4", "4", "3", "4", "5", "11"]);
-    let shorter = round_cap_block(&baseline(&["adversary.stage_cards=4,4,2"]));
+    let shorter = cap(&["adversary.stage_cards=4,4,2"]);
     assert_eq!(row(&shorter, "1")[5], "10");
-    let harsher = round_cap_block(&baseline(&["adversary.stage1_removed=2"]));
+    let harsher = cap(&["adversary.stage1_removed=2"]);
     assert_eq!(row(&base, "3")[5], row(&harsher, "3")[5], "difficulty 3 removes no stage-I card");
     assert_eq!(row(&harsher, "4")[5], "10");
 }
@@ -158,8 +172,29 @@ fn check_flags_a_card_quote_its_face_no_longer_prints() {
 #[test]
 fn check_flags_a_bare_name_that_is_no_tunable() {
     let r = baseline(&[]);
-    assert!(unknown_params("`legal_actions`, `shared_row`", &r, &[]).is_empty());
+    assert!(unknown_params("`legal_actions`, `play_tag`", &r, &[]).is_empty());
     assert_eq!(unknown_params("`hold_bass`", &r, &[]), ["hold_bass"]);
+}
+
+/// 229 (Matt's ruling): rulebook §21's difficulty table is generated, in players' words (no tunable names).
+#[test]
+fn the_rulebook_difficulty_table_is_in_players_words() {
+    let book = include_str!("../../../../docs/rulebook.md");
+    let open = "<!-- generated: difficulty -->
+";
+    assert_eq!(book.matches(open).count(), 1);
+    let body = book.split_once(open).unwrap().1.split_once("<!-- /generated -->").expect("closed").0;
+    assert!(body.starts_with("| Level | Corrupt numbers"), "{body}");
+    assert!(!body.contains('`'), "a tunable name in the rulebook: {body}");
+}
+
+/// 229: every palette op the ops doc names is an op.
+#[test]
+fn the_palette_ops_are_ops() {
+    let ops: Vec<String> = op_docs(include_str!("../../../aic-core/src/op.rs")).into_iter().map(|o| o.name).collect();
+    for p in PALETTE_OPS {
+        assert!(ops.iter().any(|o| o == p), "{p} is no op");
+    }
 }
 
 #[test]

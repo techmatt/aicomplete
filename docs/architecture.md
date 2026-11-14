@@ -123,6 +123,9 @@ talks it through.
   (`modules/mod.rs`), with a config entry and its phases in `round`. For player input,
   reuse an `Action` (claimed by `owns`) and `cx.choose`; add an `Action` variant only if
   neither fits. A `view` hook adds only what the engine doesn't show ([The generic view](#the-generic-view)).
+- A rule that outlives the variant it was screened in gets a module-level param (Matt, 229), never one only that
+  variant takes: every reader would have to check the variant first (223 panicked on it). Params live on
+  `VariantDef` today; the first such rule adds the module-level list to `ModuleDef`.
 - Either way: add it to `configs/variants.json` (the core tests' `variant_matrix`, `wasm-parity.mjs` and
   `same_play.py` read it), bump
   `RULES_REVISION` if existing games change, and document it in `docs/rules/`.
@@ -163,13 +166,15 @@ its dispatch (`effects/mod.rs`, whose arm keeps the old behavior by matching the
 rest to `effects/new_ops.rs`; or the rule that reads a standing op), and its price: `agents/value.rs`, `agents/strategy.rs`, `configs/agents/values.json` and the
 ledger's hand mirror, `scripts/cards/effect_ledger.py`. A new op touches the same, plus `effects/feasible.rs` (what
 it acts on) and its harms row (`docs/harms.rs`, `op_harms`: every op has an arm, 191). The compiler finds the Rust
-sites (`face.rs` lists every non-player op); the
-mirror test finds the ledger.
+sites (`face.rs` lists every non-player op) but `Op::contexts` (`op.rs`) and the `values.json` row; the mirror test finds
+the ledger.
 
 ### Generated docs
 
 `aic-sim docs` rewrites the `<!-- generated: NAME -->` blocks in [rules/](rules/README.md)
-(each in one file, listed in `BLOCKS`) and the `strategies` block of [agents.md](agents.md),
+(each in one file, listed in `BLOCKS`), the `strategies` block of [agents.md](agents.md), the
+`difficulty` block again in [rulebook.md](rulebook.md) §21 (the rest of the rulebook is hand-written, as are the
+"for new players" paragraphs in rules/ai-boards.md and a threat or project's `text` in `drafts/adversary/`),
 all of [ops.md](ops.md), [harms.md](harms.md) and [player-aid.md](player-aid.md), and
 `web/card/faces.json`; `python scripts/cards/cards_doc.py` reads the faces and writes
 [cards.md](cards.md) (the fast lane checks it); `scripts/content/load_adversary.py` writes the adversary's `content/` from

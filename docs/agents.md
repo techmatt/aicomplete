@@ -139,7 +139,7 @@ Rules a player could say that a one-step search misses, each a switch (on), rule
   worth `w.insight_idle`, held or as income, and so is a keep paid from it (`keep_spare`, `plan_spare`).
 - *A trigger that pays credits is a credits card*: strategies read triggers' and
   thresholds' ops (`w.strat_contents`). Insight income is worth `w.insight_income` (D53).
-  Off (no gain read): `plan_team`. Retired probes: `eval::RETIRED`.
+  Off (no gain read): `plan_team`. Retired probes: `eval::RETIRED` (weights) and `policy::RETIRED` (keep-plan numbers and forced probes, 229); a spec naming one is refused with the reason.
 - *A per-tag card pays at the count you'll play it at*: table `tag_count` 5 plus the card's own
   tags; the engine adds `w.tag_hand` of its hand's.
 - *Spare energy is cheap: draft and use what spends it* (engine): energy over `w.energy_cap`

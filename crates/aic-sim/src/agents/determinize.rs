@@ -402,17 +402,13 @@ mod tests {
     /// Fast lane: seeds 0..8; the slow lane plays 8..40.
     #[test]
     fn pending_choices_replay_on_the_guess() {
-        for name in ["baseline", "shared_row"] {
-            pending_choices_replay(&config_rules(name, 0), 0..8);
-        }
+        pending_choices_replay(&config_rules("baseline", 0), 0..8);
     }
 
     #[test]
     #[ignore = "slow lane: more seeds of the pending-choice guess check"]
     fn pending_choices_replay_on_the_guess_more_seeds() {
-        for name in ["baseline", "shared_row"] {
-            pending_choices_replay(&config_rules(name, 0), 8..40);
-        }
+        pending_choices_replay(&config_rules("baseline", 0), 8..40);
     }
 
     /// 3 countries at d0 and d4 (017, before 027: the Discord deck reshuffled mid-step

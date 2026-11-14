@@ -253,7 +253,8 @@ class Sweep:
         if diff:
             raise SystemExit(f'the hand-set values in {self.a.config} play differently from plain '
                              f'{self.cfg["agent"]} on {len(diff)} games (first {diff[0]}): update their "hand" '
-                             'to the agent\'s current defaults (eval.rs, Weights::engine; policy.rs, forced_table)')
+                             'to the agent\'s current defaults (mod.rs, STRATEGIST; eval.rs, Weights::engine; '
+                             'policy.rs, forced_table)')
         self.log(f'hand-set check: {h} plays as {self.cfg["agent"]} ({len(a)} games, {self.win(a):.1f}% won)')
 
     def sweep(self):

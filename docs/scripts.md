@@ -10,28 +10,30 @@ What each script under `scripts/` does. Run from the repo root.
   gap, ms a game (simulator.md, *The farm*).
 - `regen.py [--no-build] [--check]`: builds release, runs `drafts/adversary/check.py`, checks `content/` against
   `drafts/adversary/` (`load_adversary.py --check`), writes `RULES_REVISION` into `docs/rules/README.md`, runs `aic-sim
-  docs`, `cards_doc.py`, `effect_ledger.py`, `shared_row.py`, `no_liberate.py`, `no_tier2.py`; warns of a content file
+  docs`, `cards_doc.py`, `effect_ledger.py`, `no_liberate.py`, `no_tier2.py`; warns of a content file
   `apply_overlay.py` would refuse (not `json.dumps(indent=1)`); prints the content hash and `git status`. `--check`: the checks and the revision line only.
-- `design_check.py [DIR] [--old DIR] [--base REV] [--config FILE] [--quiet] [--usage]`: the design warnings ([principles.md](principles.md)):
-  content checks, plus play checks on DIR, a read's `games.jsonl` or a farm's out file (`--old` the previous
-  revision's read on its seeds, `--base` the dials' start, default the merge base with main). First line: the
-  report's `warnings:`. Thresholds and use bands: `design_check.json`. `--usage` prints instead each action's
-  role, band and use, pooled, by board and by level. Never exits 1.
-- `configs/shared_row.py`: regenerates `configs/shared_row.json` from the baseline.
+- `design_check.py [DIR] [--old DIR] [--base REV] [--config FILE] [--quiet] [--usage] [--variant V,...]`: the design
+  warnings ([principles.md](principles.md)): content checks, plus play checks on DIR, a read's `games.jsonl` or a
+  farm's out file as FILE=SPEC (`--old` the previous revision's read on its seeds, `--base` the dials' start, default
+  the merge base with main; `--variant` only those variants' games, or a lever's `PAIR-LEVER`/`PAIR_LEVER` cells,
+  `base` the bare pairs: a screen's frozen cell, no split). First line: the report's `warnings:`. Thresholds and use
+  bands: `design_check.json`. `--usage` prints instead each action's role, band and use. Never exits 1.
 - `cards/cards_doc.py`: regenerates `docs/cards.md`. `cards/deck_text.py DECK...` prints a deck as plain text for
   review (`--list` the decks; README, *Card text for review*).
 - `cards/apply_overlay.py FILE... [--set ENTRY]... [--check]`: writes overlays (`cards.<id>.<path>=JSON` lines, the
-  engine `--set`'s keys; `#` comments) into `content/*.json` in place, path rules as `apply_entry` in content.rs.
+  engine `--set`'s keys; `#` comments) into `content/*.json` in place, path rules as `apply_entry` in content.rs; a
+  last step `+` appends to a list (`cards.<id>.passives.+={...}`; not again if an equal value is there).
   `cards.<id>=<JSON object>` writes a whole row, new or replaced. Nothing deletes: drop a card from the baseline deck
-  (then `shared_row.py`) and `cards.json` by hand, and `tools/card-art/scenes_io.py release CARD`. `--check`: dry run. Then `regen.py`. It refuses hand-laid
-  `alignment.json`; threats, adversary and projects: edit `drafts/adversary/`.
+  and `cards.json` by hand, and `tools/card-art/scenes_io.py release CARD`. `--check`: dry run. Then `regen.py`. It
+  refuses hand-laid `alignment.json`; threats, adversary and projects: edit `drafts/adversary/`.
 - `cards/loop_smoke.py [DIR...] [--run] [--spec S] [--games 16] [--seed S] [--threads 6] [--max-plays 12]`: the loop
   smoke (no DIR: runs `use.json` to `out/loop-smoke`): timeouts, ends, most plays of one card a game; exits 1 on a
   timeout or `--max-plays`.
 - `cards/counter_names.py DIR... [--all]`: counter keys the read scripts, web scripts and `crates/aic-sim` (agents
   aside) quote that no game in DIR wrote. Rare events and test strings list too: read it, don't gate on it.
 - `cards/screen.py`: named columns over experiment outputs (`--columns a,b,c`, `--preset tiers|041|034|018|016`,
-  `--sources`, `--list`); `--gate DIR` each check against its own agent (paired SE), then unspent resources.
+  `--sources`, `--list`); `--gate DIR` (gates are suspended) each check against its own agent (paired SE), then
+  unspent resources.
   `--preset tiers` (offered, kept, played by tier): a card rework's first screen. `scripts/screens.py` reads a run from Python: `load(dir)` the games with their cells
   (`stream` also takes `FILE=SPEC`), `cnt(game, key)` a counter (a power is `ai.power.<board>.<name>`:
   `scripts/powers.py`). `screens.py assemble SPEC FIRST COUNT OUT_DIR SHARD... [--exe EXE]` writes farmed shards (seed
@@ -42,7 +44,8 @@ What each script under `scripts/` does. Run from the repo root.
   Writes nothing if `drafts/adversary/check.py` gives any ERROR; `--check` only compares.
 - `cards/play_read.py DIR... [--min PCT] [--agents A,B]`: per agent, pooled over cells and DIRs: draft cards kept in
   over `--min` percent of games (default 1) and played in none, and those no game kept. Seconds. A farmed read (no
-  `results.json`) takes agents by its header spec's names.
+  `results.json`) takes agents by its header spec's names. It doesn't say why: a card is offered only when some part
+  of it has something to act on (`feasible` in `crates/aic-core/src/modules/effects/feasible.rs`).
 - `cards/runaway_read.py DIR... [--times 5] [--floor 20] [--held 150] [--peak-times 3] [--peak-floor 10] [--top 15]`:
   loops: each trigger, threshold, reuse, discount or converter counter whose per-game max is over `--times` its mean
   where used; games whose insight grew three rounds running past `--held`; per cell, seat and resource the mean peak
@@ -80,51 +83,51 @@ What each script under `scripts/` does. Run from the repo root.
   (`configs/agents/values.json`, an income over its tier's horizon), fits a price multiplier per effect, writes CSVs,
   `ledger.html` and `outliers.md` (tier-2 cards over the ceiling) to `experiments/results/effect-ledger/`.
   `--stdout` prints each card's fit and fair price (card-pricing.md, *A fair price*), writing nothing; `--cards FILE`,
-  `--values FILE` read proposed files; `--overlay FILE` (with `--stdout`) prices an unwritten overlay; `--hold-ratio
+  `--values FILE` read proposed files; `--overlay FILE` (with `--stdout`) prices an unwritten overlay (other lines skipped, noted); `--hold-ratio
   OLD.csv` adds the price keeping an older `cards.csv`'s printed / reasoned ratio. Seconds.
 - `cards/payback.py [--cards CARDS.json] [--old CARDS.json [--old-keep-tier2 N]]`: rounds each engine building takes to
   pay back at a committed seat's fire rates (card-pricing.md *Engines*); `--old` adds an older deck.
 - `run_sim.ps1 NAME [-NoBuild] ARGS...`: any long run: builds, copies the exe to `out/NAME.exe`, starts it below
   normal, detached; wait on `out/NAME.exit` (its header says more).
 - `bench/same_results.py A B`: compares two `aic-sim experiment` outputs (`results.json`, `games.csv`); a farmed read
-  has neither: compare its `games.jsonl` with `farm/compare.py` (0 games differ when play matches). A cell whose agent
-  string differs is listed, no difference if the games match. `--map OLD=NEW` renames in the old output first;
+  has neither: use `farm/compare.py`. `--map OLD=NEW` renames in the old output first;
   `--ignore-content-hash` for a content refactor, `--ignore-config-hash` for a dead param removed (`same_play.py`
   can't prove that one: its replays compare fingerprints, which hash the config).
-- `bench/same_play.py`: proves a refactor left play unchanged over configs, countries, difficulties and variants,
-  every agent but the beam, old and new binaries (~20 min, 6 threads); saved games replay on the new one. `--map` as above. An old binary that refuses today's
-  configs plays its own: `run ... --root out/old`.
-- `bench/speed.py`: games a minute per agent. `pair OLD NEW --out FILE` runs each row on both
-  binaries in turn, so the ratio holds on a busy machine (`--old-config` for an OLD on another baseline). `table SIM --out FILE` is one binary's rates, `compare` reads two; `specs SIM
-  A B` two agent specs on one binary, same seeds. `check
-  SIM` (about 2 min, quiet machine, one thread) fails at 1.3 × `speed_baseline.json`, `--update` moves it; across a
-  revision: NO VERDICT. More in [speed.md](speed.md).
+- `bench/same_play.py`: proves a refactor left play unchanged over countries, difficulties and variants, every
+  agent but the beam, old and new binaries (~20 min, 6 threads); saved games replay on the new one. `--map` as above.
+  An old binary that refuses today's configs plays its own: `run ... --root out/old`.
+- `bench/speed.py`: games a minute per agent: `pair OLD NEW` (each row on both in turn; `--old-config` for an OLD on
+  another baseline), `table`, `compare`, `specs SIM A B`; `check SIM` (~2 min, one thread, quiet machine) fails at
+  1.3 × `speed_baseline.json` (`--update` moves it; across a revision: NO VERDICT). [speed.md](speed.md).
 - `bench/per_decision.py OLD_ROOT NEW_ROOT`: rounds, decisions and ms a game and a decision on the same seeds.
   Across revisions use `--games 16`+ and name the agents a change touched. A
   root is an `.exe` or a directory with `aic-sim.exe` (or `target/release/`'s) and its `configs/`. `--set K=V`
   (repeatable) goes to both sides after the built-ins: a content overlay runs the new binary on old content.
 - `bench/seeds.py next N [--take] [--doc FILE]`: the next N fresh seeds from experiments.md; `--take` moves `Next free`.
-- `bench/gate_stop_rate.py`: how often the gate's early stop flips a verdict (at `z` 2, about 1%).
+- `bench/gate_stop_rate.py` (gates are suspended): how often the gate's early stop flips a verdict (`z` 2: about 1%).
 - `bench/skilled_rows.py READ.json [--games 24] [--levels 3,4] [--rows ...] [--out ...]`: the oracle's companion spec to a read (experiments.md, *Skilled rows*).
 - `bench/read_specs.py {offs|screen|read} ... --tag NNN [--cards a,b,c] [--out-dir DIR]`: a rules item's specs into
   `out/`: `read TAG SEED [AGENT] [--probe] [--levels 0,1,2,3] [SET...]` three 48-seed sets, the three pairs,
   d0-d3; `screen NAME AGENTS LEVELS SEEDS [--offs] [--first N] [LEVER...]` a dev screen (lever `tag:a=1;b=2`);
   `offs` a config per `--cards` card switched off. `bench/run_read.sh NNN EXE ROOT TAG OUT THREADS` runs a read's
   three sets on one binary (ROOT its configs; EXE, OUT absolute or from the repo root).
-- `bench/ladder.py NEW[,...] OLD[,...] [--measures] [--bands 85-100,65-80,50-65,35-50] [--deck N]`: the paired ladder
-  per difficulty, sides labeled by revision; `--screen DIR[,...]` a screen's levers against base, paired across DIRs.
-  Takes a farmed read or a farm's out file as `FILE=SPEC.json`; agents as the spec names them; engines and
-  `--same-engine` as `paired.py`. `--measures` adds per level the adversary's measures and rounds, and by board: slack
-  and bound seat-rounds, land tokens a round, node spread. A lever screen (`PAIR_LEVER` variants) splits into plain
-  per-lever reads with `bench/split_read.py READ_DIR|FILE=SPEC OUT_PREFIX`, for this and `design_check.py`.
-- `bench/gate_close.py`: `plan GATE_DIR OUT_DIR [--z 2] [--cap 96] [--fill 48]` writes specs carrying the rows within z paired SE on to the cap,
-  reusing their games; `read` merges the runs (`--min-seeds N` drops rows short of N seeds).
+- `bench/ladder.py NEW[,...] OLD[,...] [--measures] [--bands B] [--deck N]`: the paired ladder per level by revision;
+  `--screen DIR[,...]` a screen's levers (`PAIR_L`, `PAIR-L`) against base, paired across DIRs. `FILE=SPEC.json`,
+  engines, `--same-engine` as `paired.py`. `--measures`: the adversary's measures; by board slack, bound, land tokens,
+  node spread; a screen's rounds (paired gap, won, lost). `--pairs [1-2,0-3]`: win % by unordered board pair (`bp`,
+  `pb` pool), gaps to the mean, paired gap, seat order. `bench/split_read.py READ OUT` splits a lever screen.
+- `bench/gate_close.py` (gates are suspended): `plan GATE_DIR OUT_DIR [--z 2] [--cap 96] [--fill 48]` writes specs
+  carrying the rows within z paired SE on to the cap, reusing their games; `read` merges the runs.
 - `bench/paired.py DIR... [--pair A B]... [--against-base] [--same-engine]`: any run's cells with win %, SE, rounds
   and ends, and paired gaps pooled over `--pair`s on the seeds both played (`--same-engine`: one engine's seeds only).
-  `bench/test_read_tools.py` tests ladder.py, paired.py and screens.py: run it after editing
-  any of them. A `--pair` cell is its exact name (`bp/strategist`, `DIR/bp/strategist`);
-  with several configs or difficulties, led by config stem and `dN` (`no_liberate/d2/bp/strategist`). `--against-base` reads a price sweep: every variant `cN-x` against `cN`, per agent, each
-  lever pooled over its sizes.
+  `bench/test_read_tools.py` tests ladder.py, paired.py and screens.py: run it after editing any of them. A `--pair`
+  cell is its exact name (`bp/strategist`, `DIR/bp/strategist`), led by config stem and `dN` where they vary
+  (`no_liberate/d2/bp/strategist`). `--against-base`: a price sweep's `cN-x` against `cN`, each lever pooled over
+  sizes. Per agent (or lever) by difficulty, pair and all: `--against-agent A` each agent against A (222),
+  `--lever-suffix L` each `PAIR-L` (or `PAIR_L`) cell against `PAIR` (226). `--pool`: the DIRs are one read's seed
+  ranges; `--other DIR` a read of another build on the same seeds, its agents as `other:AGENT`.
+- `bench/shards.sh EXE DIR SPEC FIRST COUNT OUT`: a farm spec natively as `SHARDS` (default 6) one-thread `aic-sim
+  farm` shards side by side in DIR, concatenated under the header into OUT: a paired read's base side.
 - `bench/first_divergence.py OLD NEW`: where two runs of one spec first differ, per game; `--cells DIR A B` two cells
   of one run.
 - `bench/profile_win.py SIM OUT -- run ...`: a sampling profile, no admin (speed.md, *Profiling*). `--runs K` on the

@@ -756,7 +756,6 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::CardDiscount { .. }
         | Op::When { .. }
         | Op::Threshold { .. }
-        | Op::HardenAction { .. }
         | Op::Slots { .. }
         | Op::Logistics { .. }
         | Op::ProjectDrain { .. }
@@ -908,11 +907,6 @@ fn standing(op: &Op, kind: Option<TokenKind>) -> Standing {
             let mut parts = vec![w("building"), w(":")];
             parts.extend(less(*n, "credits"));
             effect(parts, format!("your buildings cost {} less", amount(Resource::Credits, *n)))
-        }
-        Op::HardenAction { chips: n } => {
-            let mut parts = vec![w("ACT"), w("harden")];
-            parts.extend(minus(*n, "chips"));
-            effect(parts, format!("you gain the Harden action, paid {}", amount(Resource::Chips, *n)))
         }
         Op::Slots { amount: n } => effect(
             vec![Part::Word(format!("+{n}")), w("slot")],

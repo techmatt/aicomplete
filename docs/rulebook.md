@@ -162,7 +162,7 @@ rules/README.md (Terms); content/map.json; crates/aic-core/src/map.rs, modules/c
    tracks start empty.
 5. **Players** take AI boards in this order, which is the **player order**: Builder, Protector, Researcher, then a
    second Builder. Sit in player order: cards pass around the table by it (§7). Player 1 plays in country 1, and so
-   on. With 2 players there is no Researcher; solo, only the Builder plays. Each player:
+   on. With 2 players, pick any two of the three boards; solo, only the Builder plays. Each player:
    - places the first node from their **economy track** on their country's starting hex. This uncovers the track's
      first space, which shows nothing (§5);
    - takes 1 ambassador, 3 energy and their board's starting credits;
@@ -285,7 +285,7 @@ conversions, draws, a **troop power** and **sacrifice powers**, paid by discardi
 
 *Sources: rules/ai-boards.md, rules/ai-powers.md, rules/economy.md (resource table); content/ais.json;
 crates/aic-core/src/modules/ai.rs, modules/economy.rs, modules/board/node.rs, modules/board/troops.rs (Vigil),
-modules/adversary/ (`wall_pressure`), modules/cards/sacrifice.rs.*
+modules/cards/sacrifice.rs.*
 
 ---
 
@@ -1028,24 +1028,28 @@ Every player also has the standard action **Place a node** (6 credits, twice a r
 
 ## 21. Difficulty
 
-Each row is the whole level. Your own costs (claim, liberate, cards, actions) never change.
+Each row is the whole level. Your own costs (claim, liberate, cards, actions) never change. The table is generated
+from the rules (`aic-sim docs`); the words below are not.
 
-| Level | Corrupt numbers (city / station / factory / land / node) | Threat items | Muster | Each unpaid threat | Event cards (I / II / III) | Rounds | Compute income | Starting agent income a country (with Garrisons) | Other |
-|---|---|---|---|---|---|---|---|---|---|
-| 0 | 4 / 3 / 3 / 3 / 2 | as printed | as printed | — | 5 / 5 / 3 | 13 | 0 | 1 | — |
-| 1 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +1 | as printed | — | 5 / 5 / 3 | 13 | 13 | 1 | — |
-| 2 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | +1 troop | +4 compute | 5 / 5 / 3 | 13 | 17 | 1 | — |
-| 3 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 troop | +4 compute | 5 / 3 / 3 | 11 | 21 | 1 | — |
-| 4 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 troop | +4 compute | 4 / 3 / 4 | 11 | 30 | 2 | the last stage-I card deals tier-2 threats |
+<!-- generated: difficulty -->
+| Level | Corrupt numbers (city / station / factory / land / node) | Threat items | Adversary board's harder line | Event cards (I / II / III) | Rounds | Compute income | More agent income a country | Other |
+|---|---|---|---|---|---|---|---|---|
+| 0 | 4 / 3 / 3 / 3 / 2 | — | — | 5 / 5 / 3 | 13 | 0 | — | — |
+| 1 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +1 | — | 5 / 5 / 3 | 13 | 13 | — | — |
+| 2 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | yes | 5 / 5 / 3 | 13 | 17 | — | — |
+| 3 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | yes | 5 / 3 / 3 | 11 | 21 | — | — |
+| 4 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | yes | 4 / 3 / 4 | 11 | 30 | +1 | tier-2 threats 1 round sooner |
+<!-- /generated -->
 
 - **Threat items:** each resource item on a threat costs that much more; a tag item ("2 Security") never changes.
-- **Muster:** every Muster (a stage-III event card's) lands 1 more troop in each country it lands in.
-- **Agent income:** the event cards raise it as the game goes on (§6), at every level.
-- **Each unpaid threat:** a threat that takes effect unpaid also gives the adversary 4 compute, at its next compute
-  step (§17). A threat that only waits gives none.
+- **The adversary board's harder line:** every Muster (a stage-III event card's) lands 1 more troop in each country it
+  lands in, and a threat that takes effect unpaid also gives the adversary 4 compute, at its next compute step (§17).
+  A threat that only waits gives none.
+- **Agent income:** each country starts with 1 a round (Garrisons), plus the column's; the event cards raise it as
+  the game goes on (§6), at every level.
+- **Tier-2 threats sooner:** the last stage-I card deals tier-2 threats.
 
 Both incomes climb with the level (never down). Level 0 deals the same event deck as level 1.
-Level 4 is level 3 with a stage-I card swapped for a stage-III card, tier-2 threats a card sooner, and higher incomes.
 
 *Sources: rules/adversary.md (Difficulty, The event deck), rules/threats.md (Countering); configs/baseline.json
 `adversary` (`compute_income`, `ambassador_income`, `counter_bonus_*`, `counter_more_*`); content/adversary.json
@@ -1057,7 +1061,8 @@ Level 4 is level 3 with a stage-I card swapped for a stage-III card, tier-2 thre
 
 - **Countries:** one per player, 1-4. 2 countries share one front; 3 countries have three fronts; 4 form a ring of
   four.
-- **Boards:** Builder, Protector, Researcher, then a second Builder. 2 players: no Researcher. Solo: the Builder only.
+- **Boards:** Builder, Protector, Researcher, then a second Builder. 2 players: any two of the three. Solo: the Builder
+  only.
 - **Tipping:** the Unity track tips at 3 × the number of players, the Discord track at 4 ×.
 - **Projects** print a cost for each number of players (§17).
 - **Drones:** at 3-4 countries every corp has two bases, so a neutral factory makes 2 drones at a Discord tip.

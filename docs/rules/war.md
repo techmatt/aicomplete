@@ -85,7 +85,7 @@ landing, the players' choice, is offered only open hexes), and none enters it: a
 facility on a hex with the Protector's node is no target, so it stands until the node goes.
 A troop already standing on a hex when the Protector places there leaves as it likes. Vigil pays 1 insight for each
 of the first two that end a march next to its node each round ([ai-powers.md](ai-powers.md); r89: the board's Muster
-where the Protector stands is gone, `wall_troops` 0). With no open way to a target a troop stays where it is.
+where the Protector stands is gone). With no open way to a target a troop stays where it is.
 
 **A troop that strikes
 is used up** (`troop_spent`), whether the target is destroyed or the hit absorbed.

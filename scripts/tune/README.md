@@ -5,7 +5,7 @@
 
 ## The agent sweep
 
-How much better than its hand-set values the judge (the strategist, `engine:strategy=1`) could play
+How much better than its hand-set values the judge (the strategist: `engine` with `STRATEGIST`'s overrides in `agents/mod.rs`, `strategy=0` since 222) could play
 under the current rules, and which of its parameters matter. Report only: a swept setting is a spec
 string, and the agents' defaults change only when Matt adopts one.
 
@@ -25,7 +25,7 @@ keyed by agent spec, seeds and the binary's hash, so a new build plays everythin
 **What it plays.** The three board pairs (B+P, B+R, P+R) at d2, two players, every setting on the
 same seeds. A setting names every swept parameter in the spec. Before the search it checks that the
 hand-set setting plays game for game as plain `strategist`. If it doesn't, the hand-set values in
-`agent_sweep.json` are stale: update them to the agent's defaults (`Weights::engine` and
+`agent_sweep.json` are stale: update them to the agent's defaults (`STRATEGIST` in `agents/mod.rs` first, then `Weights::engine` and
 `Weights::default` in `agents/eval.rs`, the keep plan's rows in `agents/policy.rs`).
 
 **The parameters** are in `agent_sweep.json`: each one's spec key, hand-set value and grid of five

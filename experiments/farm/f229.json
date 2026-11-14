@@ -1,0 +1,37 @@
+{
+  "name": "f229",
+  "note": "229: IncomePerTag valued at the count frozen at play (agents/value.rs), fresh seeds 46976-47007: greedy and the strategist on the three board pairs, d0-d3; base (r100, 1aa6b5e) and new on the same seeds, both native",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "greedy",
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

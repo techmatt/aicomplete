@@ -145,6 +145,19 @@ class TwoAgentsTwoConfigs(unittest.TestCase):
         text = run(ladder.screen, [d], False)
         self.assertRegex(text, r'\| base \| strategist \| d0 \| 100\.0 ')
         self.assertRegex(text, r'\| x_off \| strategist \| d0 \| 0\.0 \| [\d.]+ \| -100\.0 ')
+        # 229: --measures adds rounds, paired on the same pair and seed, split by win and loss
+        text = run(ladder.screen, [d], True)
+        self.assertRegex(text, rf'\| x_off \| strategist \| d0 \| 8\.00 \| \+0\.00 ± 0\.00 \| nan \| 8\.00 \| {2 * len(SEEDS)} \|')
+
+    def test_pairs_pool_seat_orders(self):
+        # 229: --pairs pools bp and pb (lever variants `bp-A` split on `-` too); identical sides gap +0.0
+        spec = dict(SPEC, variants=[{'name': 'bp', 'set': []}, {'name': 'pb', 'set': []}, {'name': 'br', 'set': []}])
+        d = os.path.join(self.tmp.name, 'P')
+        write_read(d, set(), spec, lambda c, s: c < 2)  # bp wins at d0 and d2, pb and br never
+        text = run(ladder.ladder, [d], [d], ladder.parse_bands(ladder.BANDS), False, ladder.parse_pools('0-2'))
+        self.assertIn('| strategist | r69 new | 50.0 (+25.0) | 0.0 (-25.0) | 25.0 | +25.0 | 25.0 | 50.0 | 0.0 | 33.3 | +0.0 ± 0.0 |', text)
+        self.assertIn('| strategist | r69 new | 100.0 | 0.0 | 0.0 |', text)
+        self.assertEqual(ladder.split_variant('bp-A'), ('bp', 'A'))
 
 
 def write_bare(path, spec, won, seeds=SEEDS):

@@ -2,13 +2,16 @@
 prints every design warning it trips, each with its number. Warnings never stop work: no exit code but 0.
 
     python scripts/design_check.py [DIR[,DIR...]] [--old DIR[,DIR...]] [--base REV] [--config FILE] [--quiet] [--usage]
+                                   [--variant V[,V...]]
 
 207: `usage` warns on every player action (standard actions, board powers, converters, card plays, building Actions,
 threat counters, resource spends) whose use falls outside its expected band, both ways; `--usage` prints the inventory
 table (role, band, use pooled, by board and by level) instead of the warnings. Bands: design_check.json's `usage`.
 
 DIR is a read's folder (its games.jsonl: a farmed read assembled with its header, or an experiment's output); comma
-lists pool. With no DIR only the content checks run. `--old` is the previous revision's read on the same seeds (the
+lists pool; a farm's bare out file goes as FILE=SPEC. With no DIR only the content checks run. `--variant` (229)
+keeps only the games of those variants on DIR's side (`--old` reads whole): a name, or a lever screen's lever
+(`PAIR_LEVER` or `PAIR-LEVER` variants; `base` the bare pairs), so a screen's frozen cell reads without `bench/split_read.py`. `--old` is the previous revision's read on the same seeds (the
 tokens-a-round check reads against it). `--base` is the revision the item started from (default: the merge base with
 main); the dials check diffs configs/baseline.json against it. Thresholds and source classes are in
 scripts/design_check.json, all candidates. The principles are docs/principles.md, *Design warnings*.
@@ -37,16 +40,41 @@ def jload(rel):
 
 # ---- inputs -----------------------------------------------------------------------------------------------------
 
-def load_games(dirs):
+def keeps_variant(name, want):
+    """229: whether variant NAME is in `--variant`'s list WANT: the name itself, or a lever screen's
+    `PAIR_LEVER` or `PAIR-LEVER` whose LEVER is named (`base`: the bare pairs)."""
+    parts = re.split(r'[_-]', name, maxsplit=1)
+    return name in want or (parts[1] if len(parts) > 1 else 'base') in want
+
+
+def load_games(dirs, variants=None):
+    """The games of DIRS (comma list: a read folder, a games file, or FILE=SPEC for a farm's bare out file).
+    VARIANTS (`--variant`): only the games of those variants, read by cell from the header's spec."""
     games = []
     for d in dirs.split(','):
+        d, _, spec_path = d.partition('=')
         path = d if d.endswith('.jsonl') else os.path.join(d, 'games.jsonl')
+        spec = cells = None
+        if spec_path:
+            with open(spec_path, encoding='utf-8') as f:
+                spec = json.load(f)
         with open(path, encoding='utf-8') as f:
             for line in f:
                 g = json.loads(line)
                 if 'format' in g:
+                    spec = spec or g.get('spec')
                     continue
+                if variants:
+                    if spec is None:
+                        sys.exit(f'--variant: {d} has no header; give it as FILE=SPEC')
+                    if cells is None:  # the cell order of crates/aic-sim/src/experiment.rs, as screens.cells_of
+                        cells = [v['name'] for _ in spec['configs'] for v in spec['variants']
+                                 for _ in spec['difficulties'] for _ in spec['agents']]
+                    if not keeps_variant(cells[g['cell']], variants):
+                        continue
                 games.append(g)
+    if variants and not games:
+        sys.exit(f'--variant {",".join(variants)}: no game in {dirs}')
     return games
 
 
@@ -638,6 +666,8 @@ def main():
     cfg_path = opt('--config') or os.path.join(ROOT, 'scripts', 'design_check.json')
     old_dirs = opt('--old')
     base_rev = opt('--base')
+    variants = opt('--variant')
+    variants = set(variants.split(',')) if variants else None
     quiet = '--quiet' in argv
     table = '--usage' in argv
     argv = [a for a in argv if a not in ('--quiet', '--usage')]
@@ -646,7 +676,9 @@ def main():
     cards = jload('content/cards.json')
     boards = jload('content/ais.json')
     base = flat_baseline(jload('configs/baseline.json'))
-    games = load_games(argv[0]) if argv else []
+    games = load_games(argv[0], variants) if argv else []
+    if variants and not argv:
+        sys.exit('--variant needs a read')
     old = load_games(old_dirs) if old_dirs else []
     countries = jload('content/map.json')['countries']
     if table:

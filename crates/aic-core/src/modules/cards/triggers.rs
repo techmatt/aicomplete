@@ -276,10 +276,15 @@ pub fn copy_income(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
         return Ok(());
     };
     let counts = tag_counts(&w, g, seat);
+    // 229 (Matt, #10233): a per-tag income pays at the count frozen at its building's play (r98), so its copy does.
+    let frozen = g.var(&tag_frozen_key(seat, &ids[i]));
     for p in def(&w, &ids[i]).passives.iter().filter(|p| copies(p)) {
         let (r, n) = match p {
             Op::Income { resource, amount } => (*resource, *amount),
-            Op::IncomePerTag { resource, tag, per, amount } => (*resource, amount * (counts[*tag as usize] / (*per).max(1))),
+            Op::IncomePerTag { resource, tag, per, amount } => {
+                let count = if frozen > 0 { frozen - 1 } else { counts[*tag as usize] };
+                (*resource, amount * (count / (*per).max(1)))
+            }
             _ => continue,
         };
         economy::raise_production(g, cx, seat, r, n);

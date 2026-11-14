@@ -67,8 +67,6 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.counter_more_credits` | 0 | 0..20 | difficulty counter_more_at+: added again to every credits counter item (142) |
 | `adversary.counter_more_at` | 2 | 0..5 | the difficulty level from which counter_more_all and counter_more_credits apply (142) |
 | `adversary.counter_bonus_at` | 1 | 0..5 | the difficulty level from which counter_bonus and counter_bonus_all apply (142; 1 before) |
-| `adversary.extra_threats` | 1 | 0..5 | difficulty extra_threats_at+: extra threats dealt each round in all, one per country in turn |
-| `adversary.extra_threats_at` | 5 | 0..5 | the difficulty level from which extra_threats are dealt (139) |
 | `adversary.stage1_removed` | 1 | 0..3 | difficulty stage_swap_at+: stage-I cards removed |
 | `adversary.stage3_added` | 1 | 0..3 | difficulty stage_swap_at+: stage-III cards added (the cap holds, its end gets harder) |
 | `adversary.stage_swap_at` | 4 | 0..5 | the difficulty level from which stage1_removed and stage3_added apply (142; 2 before) |
@@ -79,8 +77,6 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.ambassador_income` | 0, 0, 0, 0, 1 | 0..10 | 151: the agent income a country a round (into each country's pool), at difficulty 0-4 |
 | `adversary.tier2_early` | 1 | 0..3 | difficulty 4+: tier-2 threats start this many rounds sooner |
 | `adversary.discord_removed` | 0 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
-| `adversary.wall_troops` | 0 | 0..5 | build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop) |
-| `adversary.wall_landing` | 0 | 0..1 | 192: 1: the Protector's Muster skips players' factories (the lowest-numbered neutral or adversary factory, else city); 0: anyone's |
 | `adversary.war_node` | 1 | 0..1 | build (r83, the Militarist's War Takes Ground): 1: a drone strike that destroys a factory destroys a node on its hex too |
 | `adversary.station_flip_at` | 2 | 0..5 | agents on a player's research station before an effect can flip it (short of that, one lands there instead) |
 | `adversary.botnet_compute` | 1 | 0..5 | adversary compute each botnet makes a round (none with a player ambassador on it) |
@@ -111,5 +107,4 @@ Every parameter of the baseline config, with its value and range, generated from
 | `cards.science_every` | 2 | 0..10 | 1 insight off tier-2 keeps and card plays per this many Science tags (0: off) |
 | `cards.industry_every` | 2 | 0..10 | 1 credit off buildings per this many Industry tags (0: off) |
 | `cards.discount_floor` | 1 | 0..5 | tag and building discounts stop at this cost; a cost printed under it stays |
-| `cards.tag_income_once` | 1 | 0..1 | 223 (224 #6, candidate): 1: a building's per-tag income counts its tags once, at play, as a program's does (0: recounted every round) |
 <!-- /generated -->

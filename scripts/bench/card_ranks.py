@@ -3,8 +3,8 @@ and play rates between agent A and agent B in one experiment (103).
 
     python scripts/bench/card_ranks.py DIR AGENT_A AGENT_B [--variant V]...
 
-Agents go as cards.csv names them, resolved: the strategist is `engine:strategy=1`, and an
-override follows it (`engine:strategy=1,w.packet_keep=0`).
+Agents go as cards.csv names them, resolved: the strategist is `engine:` and `STRATEGIST`'s
+overrides in agents/mod.rs (`engine:w.built=4,...`, as results.json prints it), an override among them.
 Reads DIR/cards.csv, pooled over its variants, configs and difficulties (or only `--variant`s).
 A card's keep rate is kept per offer, its play rate played per kept; a card neither agent
 kept is left out of the play ranks. The bar an agent approximation is held to is `sweep`'s

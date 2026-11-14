@@ -889,7 +889,7 @@ pub enum Op {
     },
     /// Copy (105, a program's): raise your income by one of your active
     /// buildings' Each round output, as it pays at the time of play (a
-    /// per-tag income at its count then).
+    /// per-tag income at the count frozen at that building's play, r98).
     CopyIncome,
     /// Reuse (105, a building's Action): use another of your buildings'
     /// Actions again this round. Not one whose own Action is a reuse.
@@ -1349,11 +1349,6 @@ pub enum Op {
         at: i64,
         then: Vec<Op>,
     },
-    /// You may use the Harden standard action, paid `chips` chips (080: the
-    /// price is printed on the card; r33 read `board.harden_chips`).
-    HardenAction {
-        chips: i64,
-    },
     /// `amount` more building slots.
     Slots {
         amount: i64,
@@ -1516,7 +1511,6 @@ impl Op {
             | Op::CardDiscount { .. }
             | Op::When { .. }
             | Op::Threshold { .. }
-            | Op::HardenAction { .. }
             | Op::Slots { .. }
             | Op::Logistics { .. }
             | Op::ProjectDrain { .. }

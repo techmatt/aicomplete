@@ -413,7 +413,6 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         | Op::CardDiscount { .. }
         | Op::When { .. }
         | Op::Threshold { .. }
-        | Op::HardenAction { .. }
         | Op::Slots { .. }
         | Op::Logistics { .. }
         | Op::ProjectDrain { .. }

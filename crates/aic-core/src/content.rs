@@ -1676,6 +1676,7 @@ pub fn is_overlay_key(key: &str) -> bool {
 
 /// One overlay entry applied to the parsed content files. `path` walks
 /// object fields and list indexes (`effects.0.amount`, `economy_track.4.cost`);
+/// a last step `+` appends to a list (229: `passives.+={"op":"slots","amount":1}`);
 /// the last step may add a field the JSON left at its default, and parsing
 /// rejects one the schema doesn't have. `id` may be `*`: every row of the
 /// table. The value is JSON, or a bare word taken as a string.
@@ -1727,10 +1728,13 @@ fn apply_entry(files: &mut [serde_json::Value], entry: &str) -> Result<(), Strin
             .ok_or_else(|| fail(format!("no {step:?} on the way")))?;
         }
         match at {
+            // 229: `+` as the last step appends to the list (`cards.x.passives.+={...}`).
+            Value::Array(a) if *last == "+" => a.push(value.clone()),
             Value::Array(a) => {
                 let slot = last.parse::<usize>().ok().and_then(|i| a.get_mut(i));
                 *slot.ok_or_else(|| fail(format!("no list entry {last:?}")))? = value.clone();
             }
+            _ if *last == "+" => return Err(fail("`+` appends to a list only".into())),
             Value::Object(o) => {
                 o.insert(last.to_string(), value.clone());
             }

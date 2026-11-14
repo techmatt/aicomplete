@@ -19,7 +19,13 @@ and reshuffles; then (210) by board, levels pooled: slack seat-rounds (the seat 
 card it could have played and had insight left) beside bound ones (a keep or play held for want of insight alone),
 Fallout tokens on the board a round, where node placements land (on or next to a factory, city or station;
 `own`: one holding the seat's cube) and each seat's nodes at the end (count, countries, connected groups, farthest
-apart). A side that predates a measure prints 0 for it.
+apart). A side that predates a measure prints 0 for it. On a screen, `--measures` also prints rounds per lever: the
+mean, the paired gap to base and its SE, and the mean of the games won and of those lost (229, from 215's
+screen_read.py). A variant `PAIR-LEVER` (228's screens) reads as `PAIR_LEVER`.
+
+`--pairs [POOLS]` (229, from 228's fread.py) adds balance by board pair: per pool of difficulties (default `1-2,0-3`),
+agent and side, each unordered pair's win % (`bp` and `pb` pooled) and its gap to the pairs' mean, each board's mean
+over its pairs, and the new-minus-old gap paired on seat order and seed; then the win % by seat order.
 
 A farmed read (160: shards assembled by `screens.assemble`, no results.json) reads its cells from the header; a
 bare farmed JSONL (`farm-seeds ... OUT`, no header) reads as FILE=SPEC wherever a DIR goes, SPEC its farm spec's JSON
@@ -223,23 +229,55 @@ def across(lever, base):
     return out
 
 
+def split_variant(v):
+    """`bp_LEVER` or `bp-LEVER` (228's screens) -> ("bp", "LEVER"); `bp` -> ("bp", "base")."""
+    cut = min((i for i in (v.find("_"), v.find("-")) if i >= 0), default=-1)
+    return (v, "base") if cut < 0 else (v[:cut], v[cut + 1:])
+
+
+def mean_se(xs, nd):
+    """`+m ± se` of XS (an SE of the mean), `nd` decimals; blank with none."""
+    if not xs:
+        return ""
+    n, m = len(xs), sum(xs) / len(xs)
+    sd = math.sqrt(sum((x - m) ** 2 for x in xs) / (n - 1)) if n > 1 else 0.0
+    return f"{m:+.{nd}f} ± {sd / math.sqrt(n):.{nd}f}"
+
+
+def avg(xs):
+    return sum(xs) / len(xs) if xs else float("nan")
+
+
+def rounds_table(rows):
+    """229 (from 215's screen_read.py): per lever, agent and difficulty, mean rounds, the paired rounds gap to base on
+    the same pair and seed (as the win gap is), and mean rounds of the games won and lost."""
+    print("| lever | agent | d | rounds | Δrounds vs base ± SE (paired) | win rounds | loss rounds | games |")
+    print("|---|---|---|---|---|---|---|---|")
+    for lever, agent, diff, n, base in rows:
+        gs = list(n.values())
+        common = pair_seeds(n, base, SAME_ENGINE)[0] if lever != "base" else []
+        dr = mean_se([n[k]["rounds"] - base[k]["rounds"] for k in common], 2)
+        print(f"| {lever} | {agent} | d{diff} | {avg([g['rounds'] for g in gs]):.2f} | {dr} | "
+              f"{avg([g['rounds'] for g in gs if g['won']]):.2f} | {avg([g['rounds'] for g in gs if not g['won']]):.2f} | {len(gs)} |")
+
+
 def screen(dirs, with_measures):
     wins = defaultdict(dict)
     ms = defaultdict(lambda: defaultdict(list))
     for i, d in enumerate(dirs):
         for c, g in load(d):
             v = c["variant"]
-            lever = v.split("_", 1)[1] if "_" in v else "base"
+            pair, lever = split_variant(v)
             if c["config_lever"]:
                 # 169: each config's game for a seed overwrote the one before it (the last config read as base).
                 lever = c["config_lever"] if lever == "base" else f"{c['config_lever']} {lever}"
-            pair = v.split("_", 1)[0]
             key = (lever, c["agent"], c["difficulty"])
             wins[key][(i, pair, g["seed"])] = g
             ms[f"{lever} {c['agent']}"][c["difficulty"]].append(measures(g))
     print("| lever | agent | d | win % | ±SE | gap vs base | ±SE (paired) | games |")
     print("|---|---|---|---|---|---|---|---|")
     mixed = {}
+    rounds = []
     for key in sorted(wins):
         lever, agent, diff = key
         n = wins[key]
@@ -248,13 +286,75 @@ def screen(dirs, with_measures):
         base = across(n, wins.get(("base", agent, diff), {}))
         _, m, gse, mixed[f"{lever} {agent} d{diff}"] = paired(n, base) if lever != "base" else (0, float("nan"), float("nan"), 0)
         print(f"| {lever} | {agent} | d{diff} | {100 * p:.1f} | {se:.1f} | {m:+.1f} | {gse:.1f} | {len(n)} |")
+        rounds.append((lever, agent, diff, n, base))
     mixed_line(mixed)
     if with_measures:
+        print()
+        rounds_table(rounds)
         print()
         print(mean_table(ms))
 
 
-def ladder(new_dirs, old_dirs, bands, with_measures):
+BOARDS = {"b": "Builder", "p": "Protector", "r": "Researcher"}
+
+
+def parse_pools(text):
+    """`1-2,0-3` -> [("d1-d2", (1, 2)), ("d0-d3", (0, 1, 2, 3))]; `2` -> [("d2", (2,))]."""
+    out = []
+    for p in text.split(","):
+        lo, _, hi = p.partition("-")
+        lo, hi = int(lo), int(hi or lo)
+        out.append((f"d{lo}" if lo == hi else f"d{lo}-d{hi}", tuple(range(lo, hi + 1))))
+    return out
+
+
+def pairs_tables(games, labels, names, pools):
+    """229 (228's fread.py): balance by board pair. GAMES {side label: {(set, variant, rank, d, seed): game}}, the
+    old side first. A pair is unordered: `bp` and `pb` (each board in seat 0) pool. Per pool of difficulties, agent
+    and side: each pair's win % and its gap to the mean of the pairs, the largest gap, each board's mean over its
+    pairs, all games, and new minus old paired on set, seat order, agent, difficulty and seed; then the seat-order
+    split over all difficulties."""
+    upair = {v: "".join(sorted(split_variant(v)[0])) for G in games.values() for (_, v, _, _, _) in G}
+    plist = sorted(set(upair.values()))
+    boards = sorted({b for p in plist for b in p})
+    old, new = labels
+
+    def win(G, keep):
+        gs = [g for k, g in G.items() if keep(k)]
+        return 100 * sum(map(won, gs)) / len(gs) if gs else float("nan")
+
+    for title, levels in pools:
+        print(f"\n## Pairs, {title} (both seat orders pooled)\n")
+        print("| agent | side | " + " | ".join(plist) + " | mean | max gap | "
+              + " | ".join(BOARDS.get(b, b) for b in boards) + f" | all | {new} − {old} ± SE |")
+        print("|---|---|" + "---|" * (len(plist) + len(boards) + 4))
+        for rank in sorted(names):
+            for side in (old, new):
+                G = games[side]
+                at = lambda k: k[2] == rank and k[3] in levels  # noqa: E731
+                w = {p: win(G, lambda k: at(k) and upair[k[1]] == p) for p in plist}
+                m = sum(w.values()) / len(w)
+                worst = max((w[p] - m for p in plist), key=abs)
+                per_board = [avg([w[p] for p in plist if b in p]) for b in boards]
+                vs = ""
+                if side == new:
+                    common = [k for k in G if at(k) and k in games[old]]
+                    gm, gse, _ = gap([won(G[k]) - won(games[old][k]) for k in common])
+                    vs = f"{gm:+.1f} ± {gse:.1f}"
+                print(f"| {names[rank]} | {side} | " + " | ".join(f"{w[p]:.1f} ({w[p] - m:+.1f})" for p in plist)
+                      + f" | {m:.1f} | {worst:+.1f} | " + " | ".join(f"{x:.1f}" for x in per_board)
+                      + f" | {win(G, at):.1f} | {vs} |")
+    orders = sorted(upair, key=lambda v: (upair[v], split_variant(v)[0] != upair[v], v))
+    print("\n## Seat order, all difficulties (reported only): first-named board in seat 0\n")
+    print("| agent | side | " + " | ".join(orders) + " |")
+    print("|---|---|" + "---|" * len(orders))
+    for rank in sorted(names):
+        for side in (old, new):
+            print(f"| {names[rank]} | {side} | "
+                  + " | ".join(f"{win(games[side], lambda k: k[2] == rank and k[1] == v):.1f}" for v in orders) + " |")
+
+
+def ladder(new_dirs, old_dirs, bands, with_measures, pools=None):
     new, old = defaultdict(dict), defaultdict(dict)
     per_set = defaultdict(lambda: defaultdict(list))
     nl, ol = rev(new_dirs[0]), rev(old_dirs[0])
@@ -305,6 +405,10 @@ def ladder(new_dirs, old_dirs, bands, with_measures):
         print(mean_table({side: {(f"{names[r]} d{d}" if many else d): v for (r, d), v in by.items()} for side, by in ms.items()}))
         print()
         print(board_table(sides))
+    if pools:
+        flat = {lab: {k[:3] + (d,) + k[3:]: g for (_, d), by in side.items() for k, g in by.items()}
+                for lab, side in ((ol, old), (nl, new))}
+        pairs_tables(flat, (ol, nl), names, pools)
 
 
 def main():
@@ -318,6 +422,9 @@ def main():
     ap.add_argument("--bands", default=BANDS, help=f"each difficulty's band from d0, lo-hi ','-separated (default {BANDS})")
     ap.add_argument("--same-engine", action="store_true",
                     help="pair a seed only when both sides played it on one engine (default: across engines)")
+    ap.add_argument("--pairs", nargs="?", const="1-2,0-3", metavar="POOLS",
+                    help="add balance by unordered board pair (bp pools bp and pb), per pool of difficulties "
+                         "(default %(const)s), and the seat-order split")
     a = ap.parse_args()
     DECK = a.deck
     SAME_ENGINE = a.same_engine
@@ -326,7 +433,8 @@ def main():
         return
     if len(a.dirs) != 2:
         ap.error("give NEW_DIRS OLD_DIRS, or --screen DIRS")
-    ladder(a.dirs[0].split(","), a.dirs[1].split(","), parse_bands(a.bands), a.measures)
+    ladder(a.dirs[0].split(","), a.dirs[1].split(","), parse_bands(a.bands), a.measures,
+           parse_pools(a.pairs) if a.pairs else None)
 
 
 if __name__ == "__main__":
