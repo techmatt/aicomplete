@@ -169,6 +169,8 @@
       "corridor_through_forest": { "was": "transmission_corridor", "subject": "A straight wide cleared corridor through dark forest, giant pylons striding down it toward a distant city." },
       "supergrid_continent": { "card": "continental_supergrid", "subject": "A high aerial view of a coastline and continent with huge bright transmission lines knitting its cities together." },
       "dyson_swarm_panels": { "card": "dyson_swarm_tranche", "subject": "Thousands of mirror-bright collector panels unfolding in a curving swarm around a huge sun, a tug placing the next one." },
+      "dark_fiber_collider": { "card": "dark_fiber_collider", "subject": "A small collider ring threaded through a dim server hall, fiber bundles glowing violet along it, an engineer reading a terminal." },
+      "treaty_isotope_bank": { "card": "treaty_isotope_bank", "subject": "A neutral-flagged vault of shielded flasks behind glass, two delegations signing a ledger at a long table before it." },
       "positron_ring": { "card": "positron_storage_ring", "subject": "A vast ring-shaped accelerator tunnel curving out of sight, magnets in amber housings and one worker on a bicycle." },
       "aegis_grid_shutters": { "card": "aegis_grid_lockdown", "subject": "A great power station with blast shutters closing across it and a shimmering shield line rising over the surrounding grid." },
       "antiproton_flask": { "card": "particle_accelerator", "was": "antiproton_offtake_deal", "subject": "A shielded magnetic flask holding one bright point of antimatter, carried on a padded cradle by two suited technicians." },

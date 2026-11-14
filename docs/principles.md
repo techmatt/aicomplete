@@ -103,7 +103,7 @@ all candidates, in `scripts/design_check.json`) on every rules item's first scre
 stops work: an item whose own change trips one still finishes and calibrates, and reports the warning first.
 
 - **Capstone and tier-2 resources (antimatter, and any later) are scarce and earned.** No cheap standard-action
-  source; the only standard source is a desperate one (3-4 research cubes → 1 antimatter, say). *Warns:* over 20% of
+  source; the only standard source is a desperate one (5 research cubes → 1 antimatter, say). *Warns:* over 20% of
   the supply from standard actions or tier-1 cards; any one source over 40% of a resource's supply, or one spend
   over 50% of its use.
 - **Boards differ:** no power or effect repeated on every board. *Warns:* one power name or one effect on 2+ boards.

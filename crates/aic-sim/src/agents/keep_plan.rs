@@ -218,6 +218,8 @@ fn am_makes(w: &World, g: &GameState, s: usize) -> i64 {
         .powers
         .iter()
         .filter(|p| p.tags.iter().all(|(t, n)| has(t, *n)))
+        // 219: a burn (your own piece) or a seize (a target in reach) is no round's income.
+        .filter(|p| !p.effects.iter().any(|e| matches!(e, Op::Burn { .. } | Op::Cleanse { .. })))
         .map(|p| gains(&p.effects))
         .sum();
     let built: i64 = g

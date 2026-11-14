@@ -48,7 +48,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.ambassador_credits` | 20 | 1..50 | standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit) |
 | `board.sell_credits` | 1 | 0..20 | standard action: credits for selling a card from hand |
 | `board.cube_insight` | 1 | 0..5 | standard action, no limit a round: insight for 1 research cube (0: no such action) |
-| `board.antimatter_cubes` | 4 | 0..10 | standard action, the desperate source (204): research cubes for 1 antimatter, no limit a round (0: no such action) |
+| `board.antimatter_cubes` | 5 | 0..10 | standard action, the desperate source (204): research cubes for 1 antimatter, no limit a round (0: no such action) |
 | `board.breakthrough_antimatter` | 1 | 1..10 | standard action Breakthrough (204): antimatter it spends |
 | `board.breakthrough_unity` | 0 | 0..10 | standard action Breakthrough (204): Sway toward Unity, once a round (0: no such action) |
 | `board.botnet_credits` | 16 | 1..50 | standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays) |

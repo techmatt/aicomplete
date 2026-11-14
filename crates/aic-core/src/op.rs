@@ -631,6 +631,14 @@ pub enum Op {
     },
     /// Build a factory on a free industrial zone in your reach.
     BuildFactory,
+    /// 219 (Matt, 2026-11-13: the board burns): destroy one of your own `facility` pieces, anywhere, your choice;
+    /// it is gone (no protection is spent: you chose it), your cube and any hardening with it. With `blight`, a
+    /// land-corruption token goes on its hex. Rebuilt only the normal way.
+    Burn {
+        facility: Facility,
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        blight: bool,
+    },
     /// Take the adversary cube off up to `amount` corrupted stations or
     /// factories, one at a time (`one_country`: all in the first one's
     /// country). `cities` (024): corrupted cities too, each liberated as `Liberate`
@@ -1493,6 +1501,7 @@ impl Op {
             | Op::RemoveTroops { .. }
             | Op::GainPerTag { .. }
             | Op::BuildFactory
+            | Op::Burn { .. }
             | Op::Cleanse { .. }
             | Op::Liberate { .. }
             | Op::ClearCity { .. }

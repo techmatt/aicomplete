@@ -1,0 +1,57 @@
+{
+  "name": "f219",
+  "note": "219: the fresh read (strategist), new seeds 46624-46719; mc4 the asked Make antimatter",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_mc4",
+      "set": [
+        "board.antimatter_cubes=4"
+      ]
+    },
+    {
+      "name": "br_mc4",
+      "set": [
+        "ai.boards=0,2",
+        "board.antimatter_cubes=4"
+      ]
+    },
+    {
+      "name": "pr_mc4",
+      "set": [
+        "ai.boards=1,2",
+        "board.antimatter_cubes=4"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 96,
+  "records": 0
+}

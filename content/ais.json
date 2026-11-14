@@ -229,20 +229,21 @@
     ]
    },
    {
-    "name": "Refine",
+    "name": "Teardown",
     "tags": [],
     "cost": [
      [
       "chips",
-      2
-     ],
-     [
-      "energy",
       1
      ]
     ],
-    "text": "gain 1 antimatter",
+    "text": "destroy one of your factories; land corruption goes on its hex; gain 1 antimatter",
     "effects": [
+     {
+      "op": "burn",
+      "facility": "factory",
+      "blight": true
+     },
      {
       "op": "gain",
       "resource": "antimatter",
@@ -580,20 +581,30 @@
     ]
    },
    {
-    "name": "Joint Facility",
-    "tags": [],
-    "cost": [
+    "name": "Seize",
+    "tags": [
      [
-      "credits",
-      12
-     ],
-     [
-      "energy",
+      "security",
       1
      ]
     ],
-    "text": "gain 1 antimatter",
+    "cost": [
+     [
+      "credits",
+      6
+     ],
+     [
+      "energy",
+      2
+     ]
+    ],
+    "text": "free 1 corrupted station or factory in reach; gain 1 antimatter",
     "effects": [
+     {
+      "op": "cleanse",
+      "amount": 1,
+      "one_country": false
+     },
      {
       "op": "gain",
       "resource": "antimatter",
@@ -852,15 +863,14 @@
     ]
    },
    {
-    "name": "Particle Run",
-    "tags": [
-     [
-      "power",
-      1
-     ]
-    ],
-    "text": "gain 1 antimatter",
+    "name": "Overload",
+    "tags": [],
+    "text": "destroy one of your research stations; gain 1 antimatter",
     "effects": [
+     {
+      "op": "burn",
+      "facility": "station"
+     },
      {
       "op": "gain",
       "resource": "antimatter",
@@ -869,8 +879,8 @@
     ],
     "cost": [
      [
-      "energy",
-      1
+      "research_cubes",
+      2
      ]
     ]
    },

@@ -1,0 +1,21 @@
+# 219: antimatter converter plants (Matt, 2026-11-13: pay a resource each use -> 1 antimatter, a different one per
+# plant, no free producers; spread across tags; amendment 9855: at least 4 tier-2 plants, each a different resource).
+# Prices at the anchors with a tier-2 keep of 3 (README, *The plants*). Use costs: the dev screen's `cheap` cell
+# (s219-lev), the base cell's (2 cubes, 2 chips, 3 energy) left the Actions near unused.
+# python scripts/cards/apply_overlay.py experiments/results/219_antimatter_sources/overlay.txt
+#
+# Reworked: the two near-dead 30-credit plants (214) and the one free producer.
+cards.penning_trap_array.cost=10
+cards.penning_trap_array.ability={"cost": [["research_cubes", 1]], "effects": [{"op": "gain", "resource": "antimatter", "amount": 1}]}
+cards.antiproton_foundry.cost=10
+cards.antiproton_foundry.ability={"cost": [["chips", 1]], "effects": [{"op": "gain", "resource": "antimatter", "amount": 1}]}
+cards.positron_storage_ring.cost=10
+cards.positron_storage_ring.passives=[{"op": "when", "on": {"event": "play", "tag": "power"}, "then": [{"op": "gain", "resource": "energy", "amount": 2}]}]
+cards.positron_storage_ring.ability={"cost": [["energy", 2]], "effects": [{"op": "gain", "resource": "antimatter", "amount": 1}]}
+# New: a Cyber plant (insight: amendment 9855's fourth resource) and a Diplomacy plant (credits; ambassadors are no
+# printable cost, content.rs `resource`).
+cards.dark_fiber_collider={"id": "dark_fiber_collider", "name": "Dark Fiber Collider", "tier": 2, "kind": "building", "cost": 6, "insight": 1, "needs": [["cyber", 1]], "tags": ["cyber"], "effects": [{"op": "draw", "count": 2}], "ability": {"cost": [["insight", 2]], "effects": [{"op": "gain", "resource": "antimatter", "amount": 1}]}}
+cards.treaty_isotope_bank={"id": "treaty_isotope_bank", "name": "Treaty Isotope Bank", "tier": 2, "kind": "building", "cost": 6, "insight": 1, "needs": [["diplomacy", 1]], "tags": ["diplomacy"], "effects": [{"op": "gain_ambassadors", "count": 1}], "ability": {"cost": [["credits", 8]], "effects": [{"op": "gain", "resource": "antimatter", "amount": 1}]}}
+# Tier 1's Cyclotron Lease (2 energy for 1, 22 cr) is left as r96 had it: the tier-2 energy plants now match its rate.
+cards.cyclotron_lease.cost=22
+cards.cyclotron_lease.ability.cost=[["energy", 2]]

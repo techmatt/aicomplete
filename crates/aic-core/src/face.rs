@@ -391,6 +391,21 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             one(clause(icons, format!("{gain} 1 {} per {tags} on your cards", noun(*resource, 1))))
         }
         Op::BuildFactory => one(clause(vec![w("factory")], "build a factory in reach")),
+        // 219: a board burn; its minus is a loss (179), the land token the adversary's mark.
+        Op::Burn { facility, blight } => {
+            let (piece, pieces) =
+                if *facility == Facility::Factory { ("factory", "factories") } else { ("station", "research stations") };
+            let mut icons = minus(1, piece);
+            if *blight {
+                icons.extend(adversary(vec![w("hex")]));
+            }
+            let say = if *blight {
+                format!("destroy one of your {pieces}; land corruption goes on its hex")
+            } else {
+                format!("destroy one of your {pieces}")
+            };
+            one(clause(icons, say))
+        }
         Op::Cleanse { amount: n, one_country, cities, only } => {
             let what = match (*cities, only, *n) {
                 (true, _, _) => "corrupted cities, stations or factories",

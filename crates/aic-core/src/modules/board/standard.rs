@@ -468,7 +468,7 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
             "a neutral city in reach that is producing (no blackout, no agent on it), once per city a round: gain its energy".into(),
         ),
         // 204 (Matt, 2026-11-12): the one standard source, a desperate one; the engines (plants, the Builder's
-        // Forge, Particle Run, Tidal Grid) are the real supply.
+        // Forge, the plants, Tidal Grid) are the real supply.
         StandardAction::Antimatter => (
             "Make antimatter",
             format!("{} research cubes", t("board.antimatter_cubes")),

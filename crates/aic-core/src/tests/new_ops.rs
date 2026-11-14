@@ -170,3 +170,29 @@ fn a_standing_troop_never_marches_or_strikes() {
     answer_all(&rules, &mut g);
     assert_eq!((g.tokens(z, FACTORY), g.tokens(next, TROOP)), (1, 1));
 }
+
+/// 219 (Matt, 2026-11-13): a burn destroys one of the seat's own factories (its cube and hardening with it, no
+/// protection asked), and with `blight` leaves land corruption; a neutral or corrupted factory is never a target.
+#[test]
+fn a_burn_destroys_your_own_factory_and_leaves_land_corruption() {
+    use crate::content::Facility;
+    use crate::modules::common::LAND_CORRUPTION;
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let mut zones = (0..g.hexes.len()).filter(|&h| w.map.hexes[h].industrial);
+    let (mine, neutral) = (zones.next().unwrap(), zones.next().unwrap());
+    put(&mut g, mine, FACTORY, 1);
+    put(&mut g, mine, cube(0), 1);
+    put(&mut g, mine, HARDEN, 1);
+    put(&mut g, mine, ambassador(0), 1);
+    put(&mut g, neutral, FACTORY, 1);
+    assert_eq!(effects::own_facilities(&g, 0, Facility::Factory), vec![mine]);
+    run_ops(&rules, &mut g, &[content::Op::Burn { facility: Facility::Factory, blight: true }]);
+    assert_eq!(g.tokens(mine, FACTORY), 0);
+    assert_eq!(g.tokens(mine, cube(0)), 0);
+    assert_eq!(g.tokens(mine, HARDEN), 0);
+    assert_eq!(g.tokens(mine, ambassador(0)), 1, "no protection is spent: you chose it");
+    assert_eq!(g.tokens(mine, LAND_CORRUPTION), 1);
+    assert_eq!(g.tokens(neutral, FACTORY), 1);
+    assert!(effects::own_facilities(&g, 0, Facility::Factory).is_empty());
+}

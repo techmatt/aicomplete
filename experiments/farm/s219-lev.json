@@ -1,0 +1,149 @@
+{
+  "name": "s219-lev",
+  "note": "219: dev-seed levers (Make antimatter price, cheaper plants), 36800-36815",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_mc5",
+      "set": [
+        "board.antimatter_cubes=5"
+      ]
+    },
+    {
+      "name": "br_mc5",
+      "set": [
+        "ai.boards=0,2",
+        "board.antimatter_cubes=5"
+      ]
+    },
+    {
+      "name": "pr_mc5",
+      "set": [
+        "ai.boards=1,2",
+        "board.antimatter_cubes=5"
+      ]
+    },
+    {
+      "name": "bp_mc6",
+      "set": [
+        "board.antimatter_cubes=6"
+      ]
+    },
+    {
+      "name": "br_mc6",
+      "set": [
+        "ai.boards=0,2",
+        "board.antimatter_cubes=6"
+      ]
+    },
+    {
+      "name": "pr_mc6",
+      "set": [
+        "ai.boards=1,2",
+        "board.antimatter_cubes=6"
+      ]
+    },
+    {
+      "name": "bp_cheap",
+      "set": [
+        "cards.penning_trap_array.ability.cost.0.1=1",
+        "cards.antiproton_foundry.ability.cost.0.1=1",
+        "cards.treaty_isotope_bank.ability.cost.0.1=1",
+        "cards.positron_storage_ring.ability.cost.0.1=2",
+        "cards.dark_fiber_collider.ability.cost.0.1=2",
+        "cards.cyclotron_lease.ability.cost.0.1=2"
+      ]
+    },
+    {
+      "name": "br_cheap",
+      "set": [
+        "ai.boards=0,2",
+        "cards.penning_trap_array.ability.cost.0.1=1",
+        "cards.antiproton_foundry.ability.cost.0.1=1",
+        "cards.treaty_isotope_bank.ability.cost.0.1=1",
+        "cards.positron_storage_ring.ability.cost.0.1=2",
+        "cards.dark_fiber_collider.ability.cost.0.1=2",
+        "cards.cyclotron_lease.ability.cost.0.1=2"
+      ]
+    },
+    {
+      "name": "pr_cheap",
+      "set": [
+        "ai.boards=1,2",
+        "cards.penning_trap_array.ability.cost.0.1=1",
+        "cards.antiproton_foundry.ability.cost.0.1=1",
+        "cards.treaty_isotope_bank.ability.cost.0.1=1",
+        "cards.positron_storage_ring.ability.cost.0.1=2",
+        "cards.dark_fiber_collider.ability.cost.0.1=2",
+        "cards.cyclotron_lease.ability.cost.0.1=2"
+      ]
+    },
+    {
+      "name": "bp_mc6cheap",
+      "set": [
+        "board.antimatter_cubes=6",
+        "cards.penning_trap_array.ability.cost.0.1=1",
+        "cards.antiproton_foundry.ability.cost.0.1=1",
+        "cards.treaty_isotope_bank.ability.cost.0.1=1",
+        "cards.positron_storage_ring.ability.cost.0.1=2",
+        "cards.dark_fiber_collider.ability.cost.0.1=2",
+        "cards.cyclotron_lease.ability.cost.0.1=2"
+      ]
+    },
+    {
+      "name": "br_mc6cheap",
+      "set": [
+        "ai.boards=0,2",
+        "board.antimatter_cubes=6",
+        "cards.penning_trap_array.ability.cost.0.1=1",
+        "cards.antiproton_foundry.ability.cost.0.1=1",
+        "cards.treaty_isotope_bank.ability.cost.0.1=1",
+        "cards.positron_storage_ring.ability.cost.0.1=2",
+        "cards.dark_fiber_collider.ability.cost.0.1=2",
+        "cards.cyclotron_lease.ability.cost.0.1=2"
+      ]
+    },
+    {
+      "name": "pr_mc6cheap",
+      "set": [
+        "ai.boards=1,2",
+        "board.antimatter_cubes=6",
+        "cards.penning_trap_array.ability.cost.0.1=1",
+        "cards.antiproton_foundry.ability.cost.0.1=1",
+        "cards.treaty_isotope_bank.ability.cost.0.1=1",
+        "cards.positron_storage_ring.ability.cost.0.1=2",
+        "cards.dark_fiber_collider.ability.cost.0.1=2",
+        "cards.cyclotron_lease.ability.cost.0.1=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 16,
+  "records": 0
+}

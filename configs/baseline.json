@@ -48,7 +48,7 @@
         ],
         "city_energy_credits": 5,
         "cube_insight": 1,
-        "antimatter_cubes": 4,
+        "antimatter_cubes": 5,
         "breakthrough_antimatter": 1,
         "breakthrough_unity": 0,
         "botnet_credits": 16
@@ -265,6 +265,8 @@
         "positron_storage_ring",
         "penning_trap_array",
         "antiproton_foundry",
+        "dark_fiber_collider",
+        "treaty_isotope_bank",
         "cryo_sample_vault",
         "field_assay_team",
         "dyson_swarm_tranche",

@@ -21,7 +21,7 @@ still help.
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
 | Builder | Procure | 1 chip | draw 2 cards |
 | Builder | Fortify | 2 chips | remove 1 Troop in reach and harden 1 facility in reach |
-| Builder | Refine | 2 chips + 1 energy | gain 1 antimatter |
+| Builder | Teardown | 1 chip | destroy one of your factories; land corruption goes on its hex; gain 1 antimatter |
 | Protector | Bulwark | 1 energy | harden 1 facility in reach |
 | Protector | Accord | 1 Diplomacy | place 1 Node; if it is on or next to a city none of your other nodes is on or next to, also put a new ambassador on that city |
 | Protector | Stand Down | 1 Security | remove 1 Troop in reach |
@@ -30,20 +30,20 @@ still help.
 | Protector | Debrief | 1 Security | draw 1 card and remove 1 Agent in a hex in reach |
 | Protector | Patrol | 1 energy | push up to 3 Agents or Troops from a hex in reach, each to a hex next to it |
 | Protector | Interdict | 1 Security + 1 energy | remove up to 2 Troops in one hex in reach |
-| Protector | Joint Facility | 12 credits + 1 energy | gain 1 antimatter |
+| Protector | Seize | 1 Security + 6 credits + 2 energy | free 1 corrupted station or factory in reach; gain 1 antimatter |
 | Researcher | Peer Review | 1 research cube | place 1 Node; if it is on or next to a research station none of your other nodes is on or next to, also gain 1 insight |
 | Researcher | Grant | 3 credits | add 1 research cube in your color to an open megaproject |
 | Researcher | Field Station | 1 Industry | build a research station in reach, paying no chips |
 | Researcher | Audit | 1 Cyber | remove 3 compute from one adversary project |
 | Researcher | Disrupt | 1 Cyber + 1 research cube | remove up to 2 Troops in one country |
-| Researcher | Particle Run | 1 Power + 1 energy | gain 1 antimatter |
+| Researcher | Overload | 2 research cubes | destroy one of your research stations; gain 1 antimatter |
 | Researcher | Synthesis | 2 insight | draw 1 card |
 <!-- /generated -->
 
 **Sacrifice is late-game liquidation.** Once the cards needing a tag are played, its tags turn into engine rewards,
 each payoff priced to be worth the card: 1 chip (r83: worth 2 before), 2 energy, a troop removed (Stand Down, r93: 3 credits
 before), a marker with its Sway, a card and an agent removed (Debrief, r91); a tag and an energy buy a building, a sheltered
-country, 2 troops removed or an antimatter (r35).
+country or 2 troops removed (r35).
 
 **Each power's tag is its story (r93, Matt, amendment 9513).** A tag-paid power is paid in the tag its effect fits
 (the tag table is below): the Protector's Accord and Recovery in Diplomacy (trust, cleanup), its Stand Down, Debrief,
@@ -81,11 +81,14 @@ two alike: the Protector's **Interdict** (a Security card and 1 energy: up to 2 
 hardened); the Researcher's **Disrupt** (a Cyber card and a research cube: up to 2 troops in one country, no reach
 needed). The standard action Remove a troop (`troop_credits` 10 credits, `troop_per_round` once a round) is the hedge.
 
-**Antimatter, each board its own (r90, Matt's ruling, 2026-11-12; r94).** Every board makes 1 antimatter once a round,
-each paid its own way and each costly (about 16.5 at the anchors for 18): the Builder's **Refine** (2 chips and 1
-energy), the Protector's **Joint Facility** (12 credits and 1 energy), the Researcher's **Particle Run** (a Power tag and
-1 energy). No power spends antimatter: the spends are the majors, tier-2 cards and a few dear tier-1 ones
-([economy.md](economy.md)).
+**Antimatter: each board a rare burn of its own engine (r97, Matt's ruling, 2026-11-13).** The steady source is the
+tier-2 converter plants ([economy.md](economy.md)); each board's own power is a different decision, once a round, for
+1 antimatter: the Builder's **Teardown** (1 chip: destroy one of your own factories, and a land-corruption token goes on
+its hex), the Researcher's **Overload** (2 research cubes: destroy one of your own research stations), the Protector's
+**Seize** (a Security card, 6 credits and 2 energy: free a corrupted station or factory in reach, its adversary cube
+off, well above Remove a troop's 10). A burned piece is gone, no protection asked (you chose it), unless rebuilt the
+normal way; with no piece or target the power can't be used. No power spends antimatter: the spends are the majors,
+tier-2 cards and a few dear tier-1 ones.
 
 ## Insight conversions (candidate, r41)
 

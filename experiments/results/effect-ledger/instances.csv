@@ -23,9 +23,9 @@ annihilation_lance,sway discord [play],play,"side=discord, amount=2, narrative=c
 antimatter_accord,gain_ambassadors [play],play,count=6,6.0,24.0,4.0,16.68,2.78
 antimatter_accord,sway unity [play],play,"side=unity, amount=4, narrative=cooperation",4.0,16.0,4.0,11.12,2.78
 antimatter_accord,tags [card],card,diplomacy,1.0,1.0,1.0,0.7,0.7
-antiproton_foundry,gain antimatter [play],play,"resource=antimatter, amount=1",1.0,18.0,18.0,8.65,8.65
-antiproton_foundry,gain antimatter [action],action,"resource=antimatter, amount=2; pays 1 chips 1 energy",2.0,48.12,24.06,23.13,11.56
-antiproton_foundry,tags [card],card,industry power,2.0,1.5,0.75,0.72,0.36
+antiproton_foundry,gain antimatter [play],play,"resource=antimatter, amount=1",1.0,18.0,18.0,5.11,5.11
+antiproton_foundry,gain antimatter [action],action,"resource=antimatter, amount=1; pays 1 chips",1.0,24.5,24.5,6.96,6.96
+antiproton_foundry,tags [card],card,industry power,2.0,1.5,0.75,0.43,0.21
 antitrust_action,jam typed [play],play,"amount=5, source=industry",5.0,3.5,0.7,2.33,0.47
 antitrust_action,gain_per_tag chips [play],play,"resource=chips, tag=industry, per=4",0.25,6.0,24.0,4.0,16.0
 antitrust_action,tags [card],card,industry,1.0,1.0,1.0,0.67,0.67
@@ -111,6 +111,9 @@ cryptojacking_campaign,production credits [play],play,"resource=credits, amount=
 cryptojacking_campaign,tags [card],card,cyber,1.0,1.0,1.0,1.07,1.07
 cyclotron_lease,gain antimatter [action],action,"resource=antimatter, amount=1; pays 2 energy",1.0,25.2,25.2,21.16,21.16
 cyclotron_lease,tags [card],card,power,1.0,1.0,1.0,0.84,0.84
+dark_fiber_collider,draw [play],play,count=2,2.0,8.0,4.0,2.14,1.07
+dark_fiber_collider,gain antimatter [action],action,"resource=antimatter, amount=1; pays 2 insight",1.0,22.75,22.75,6.09,6.09
+dark_fiber_collider,tags [card],card,cyber,1.0,1.0,1.0,0.27,0.27
 darknet_exchange,draw [play],play,count=2,2.0,8.0,4.0,6.44,3.22
 darknet_exchange,card_discount credits [passive],passive,"tag=cyber, resource=credits, amount=5",5.0,9.0,1.8,7.25,1.45
 darknet_exchange,tags [card],card,cyber,1.0,1.0,1.0,0.81,0.81
@@ -355,18 +358,18 @@ peacekeeping_mission,liberate troops [play],play,troops=3,1.0,59.0,59.0,38.0,38.
 peaker_turbines,production energy [play],play,"resource=energy, amount=1",1.0,14.4,14.4,9.93,9.93
 peaker_turbines,production chips [play],play,"resource=chips, amount=1",1.0,16.0,16.0,11.03,11.03
 peaker_turbines,tags [card],card,power industry,2.0,1.5,0.75,1.03,0.52
-penning_trap_array,gain antimatter [play],play,"resource=antimatter, amount=1",1.0,18.0,18.0,8.49,8.49
-penning_trap_array,gain antimatter [action],action,"resource=antimatter, amount=2; pays 1 research_cubes 1 energy",2.0,49.88,24.94,23.53,11.77
-penning_trap_array,tags [card],card,science,1.0,1.0,1.0,0.47,0.47
+penning_trap_array,gain antimatter [play],play,"resource=antimatter, amount=1",1.0,18.0,18.0,4.97,4.97
+penning_trap_array,gain antimatter [action],action,"resource=antimatter, amount=1; pays 1 research_cubes",1.0,26.25,26.25,7.25,7.25
+penning_trap_array,tags [card],card,science,1.0,1.0,1.0,0.28,0.28
 planetary_referendum,sway unity [play],play,"side=unity, amount=8, narrative=trust",8.0,32.0,4.0,19.0,2.38
 plant_overdrive,gain_per_tag energy [play],play,"resource=energy, tag=industry, per=1",1.0,22.5,22.5,9.0,9.0
 popular_uprising,"add_tokens followers [action, unused branch]","action, unused branch","kind=followers, amount=1, here=True",1.0,0.0,0.0,0.0,0.0
 popular_uprising,liberate [action],action,; spends 4 tokens,1.0,28.0,28.0,25.1,25.1
 popular_uprising,tags [card],card,diplomacy,1.0,1.0,1.0,0.9,0.9
-positron_storage_ring,draw [play],play,count=2,2.0,8.0,4.0,3.99,2.0
-positron_storage_ring,income antimatter [passive],passive,"resource=antimatter, amount=1",1.0,45.0,45.0,22.46,22.46
-positron_storage_ring,when play power [passive],passive,"on={'event': 'play', 'tag': 'power'}, then=[{'op': 'gain', 'resource': 'energy', 'amount': 2}]",1.0,10.12,10.12,5.05,5.05
-positron_storage_ring,tags [card],card,power,1.0,1.0,1.0,0.5,0.5
+positron_storage_ring,draw [play],play,count=2,2.0,8.0,4.0,5.51,2.75
+positron_storage_ring,when play power [passive],passive,"on={'event': 'play', 'tag': 'power'}, then=[{'op': 'gain', 'resource': 'energy', 'amount': 2}]",1.0,10.12,10.12,6.97,6.97
+positron_storage_ring,gain antimatter [action],action,"resource=antimatter, amount=1; pays 2 energy",1.0,15.75,15.75,10.84,10.84
+positron_storage_ring,tags [card],card,power,1.0,1.0,1.0,0.69,0.69
 power_purchase_agreement,claim_station [play],play,,1.0,20.0,20.0,11.0,11.0
 power_to_the_people,liberate [play],play,,1.0,50.0,50.0,30.08,30.08
 power_to_the_people,income_per_tag credits [passive],passive,"resource=credits, tag=power, per=1",1.0,15.0,15.0,9.02,9.02
@@ -504,6 +507,9 @@ trade_delegation,tags [card],card,diplomacy industry,2.0,1.5,0.75,1.12,0.56
 transmission_corridor,place_node [play],play,count=2,2.0,16.0,8.0,7.44,3.72
 transmission_corridor,move_ambassadors [play],play,max=2,2.0,4.0,2.0,1.86,0.93
 transmission_corridor,tags [card],card,power diplomacy,2.0,1.5,0.75,0.7,0.35
+treaty_isotope_bank,gain_ambassadors [play],play,count=1,1.0,4.0,4.0,1.51,1.51
+treaty_isotope_bank,gain antimatter [action],action,"resource=antimatter, amount=1; pays 8 credits",1.0,17.5,17.5,6.61,6.61
+treaty_isotope_bank,tags [card],card,diplomacy,1.0,1.0,1.0,0.38,0.38
 truth_commission,jam typed [play],play,"amount=5, source=diplomacy",5.0,3.5,0.7,1.68,0.34
 truth_commission,sway unity [play],play,"side=unity, amount=2, narrative=trust",2.0,8.0,4.0,3.84,1.92
 truth_commission,tags [card],card,diplomacy,1.0,1.0,1.0,0.48,0.48

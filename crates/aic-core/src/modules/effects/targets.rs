@@ -22,6 +22,12 @@ pub(super) fn cleansable(w: &World, g: &GameState, h: usize, cities: bool, only:
         && ((cities && is_city(w, h)) || (stations && g.tokens(h, STATION) > 0) || (factories && g.tokens(h, FACTORY) > 0))
 }
 
+/// 219: seat `seat`'s own (its cube on, not corrupted) factories or stations: what a burn may destroy.
+pub fn own_facilities(g: &GameState, seat: usize, facility: Facility) -> Vec<usize> {
+    let kind = if facility == Facility::Factory { FACTORY } else { STATION };
+    (0..g.hexes.len()).filter(|&h| g.tokens(h, kind) > 0 && g.tokens(h, cube(seat)) > 0 && !corrupted(g, h)).collect()
+}
+
 /// Corrupted cities in seat `s`'s reach that a liberate card can take (080).
 pub fn liberable_cities(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
     (0..g.hexes.len())

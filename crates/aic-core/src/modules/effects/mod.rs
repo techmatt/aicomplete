@@ -125,6 +125,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             removal::remove_ambassadors_country(g, cx, seat, *unity_per, *max, *reach)?
         }
         Op::BuildFactory => resources::build_factory(g, cx, seat)?,
+        Op::Burn { facility, blight } => resources::burn(g, cx, seat, *facility, *blight)?,
         Op::Cleanse { amount, one_country, cities, only } => {
             removal::cleanse(g, cx, seat, *amount, *one_country, *cities, *only)?
         }

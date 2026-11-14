@@ -204,7 +204,7 @@ macro_rules! forced_table {
             /// cube cards are not planned on the same cubes.
             (plan_cubes: bool, false, 1.0, "092: keep plan: research cubes are a budget, spent by each card planned and earned by income")
             /// 211 (with `am_save`): the antimatter the seat's board powers and built Actions make once a round
-            /// (Particle Run, the plants) counts as income in the plan's later rounds, so a card that spends it is
+            /// (the plants; 219: never a burn or a seize) counts as income in the plan's later rounds, so a card that spends it is
             /// kept toward it.
             (plan_am: bool, false, 1.0, "211: keep plan: antimatter the seat's powers and built Actions make each round counts from the next round, and a shortfall is made from cubes at Make antimatter's price")
             /// 092: the opening's strategy choice reads the board's powers too.
@@ -214,7 +214,7 @@ macro_rules! forced_table {
             /// 082, a player's rule, kept as a probe: with a card in hand that needs
             /// antimatter the seat lacks, and a board power that trades spent cards for
             /// antimatter, use it. It never fired in 288 games at d2 (seeds 31000): the
-            /// Researcher, whose Particle Run it is, rarely holds two Power cards.
+            /// Researcher, whose Particle Run it was (r97: Overload, a burn), rarely held two Power cards.
             (antimatter_rule: bool, true, 0.0, "082, a probe: use a power that trades spent cards for antimatter when a card in hand needs the antimatter (never fired at d2: off)")
             /// 082: each seat commits to a strategy at its round-1 keep.
             (strategy: bool, true, 0.0, "082: each seat commits to a strategy at its round-1 keep, from its board and opening 10")
@@ -310,7 +310,7 @@ macro_rules! behavior_table {
             /// insight and antimatter, so it never converted, 207).
             (make_short: bool, 1.0, "211: convert cubes to insight or antimatter when, after up to three conversions, the keep plan plays a card this round it can't now")
             /// 213 (with `make_short`): an antimatter source the seat can use this round (a board power or a built
-            /// Action that gains antimatter: Refine, Joint Facility, Particle Run, the plants) counts as a way to make
+            /// Action that gains antimatter: the plants, then 219's burns Teardown and Overload and the seize) counts as a way to make
             /// the antimatter a hand card lacks, tried before Make antimatter's cubes (r94 left the new powers unused).
             (am_source: bool, 1.0, "213: with make_short, an antimatter power or built Action is used (before Make antimatter) when it lets the keep plan play a card this round it can't now")
         }
@@ -992,11 +992,13 @@ impl Policy {
         }
         let standard = |n: &str| legal.iter().position(|a| matches!(a, Action::Standard { act, .. } if act == n));
         // 213 (`am_source`): the seat's antimatter powers and built Actions, each once a round, before the cubes.
-        let sources: Vec<usize> = if self.behaviors.am_source {
+        // 219: a plant's Action (a resource paid) before a board power (a burn or a seize): the burns are the rare way.
+        let mut sources: Vec<usize> = if self.behaviors.am_source {
             legal.iter().enumerate().filter(|(_, a)| a.seat() as usize == s && makes_antimatter(&world, a)).map(|(i, _)| i).collect()
         } else {
             Vec::new()
         };
+        sources.sort_by_key(|&i| matches!(legal[i], Action::Power { .. }));
         let mut acts: Vec<(usize, &str)> = standard("insight").map(|i| (i, "insight")).into_iter().collect();
         acts.extend(sources.iter().map(|&i| (i, "source")));
         acts.extend(standard("antimatter").map(|i| (i, "antimatter")));

@@ -1732,7 +1732,7 @@
   "name": "Positron Storage Ring",
   "tier": 2,
   "kind": "building",
-  "cost": 18,
+  "cost": 10,
   "insight": 2,
   "needs": [
    [
@@ -1744,11 +1744,6 @@
    "power"
   ],
   "passives": [
-   {
-    "op": "income",
-    "resource": "antimatter",
-    "amount": 1
-   },
    {
     "op": "when",
     "on": {
@@ -1770,7 +1765,22 @@
     "op": "draw",
     "count": 2
    }
-  ]
+  ],
+  "ability": {
+   "cost": [
+    [
+     "energy",
+     2
+    ]
+   ],
+   "effects": [
+    {
+     "op": "gain",
+     "resource": "antimatter",
+     "amount": 1
+    }
+   ]
+  }
  },
  {
   "id": "dyson_swarm_tranche",
@@ -5346,7 +5356,7 @@
   "name": "Penning Trap Array",
   "tier": 2,
   "kind": "building",
-  "cost": 30,
+  "cost": 10,
   "insight": 1,
   "needs": [
    [
@@ -5369,17 +5379,13 @@
     [
      "research_cubes",
      1
-    ],
-    [
-     "energy",
-     1
     ]
    ],
    "effects": [
     {
      "op": "gain",
      "resource": "antimatter",
-     "amount": 2
+     "amount": 1
     }
    ]
   }
@@ -5389,7 +5395,7 @@
   "name": "Antiproton Foundry",
   "tier": 2,
   "kind": "building",
-  "cost": 30,
+  "cost": 10,
   "insight": 1,
   "needs": [
    [
@@ -5413,17 +5419,13 @@
     [
      "chips",
      1
-    ],
-    [
-     "energy",
-     1
     ]
    ],
    "effects": [
     {
      "op": "gain",
      "resource": "antimatter",
-     "amount": 2
+     "amount": 1
     }
    ]
   }
@@ -5605,5 +5607,81 @@
     "count": 2
    }
   ]
+ },
+ {
+  "id": "dark_fiber_collider",
+  "name": "Dark Fiber Collider",
+  "tier": 2,
+  "kind": "building",
+  "cost": 6,
+  "insight": 1,
+  "needs": [
+   [
+    "cyber",
+    1
+   ]
+  ],
+  "tags": [
+   "cyber"
+  ],
+  "effects": [
+   {
+    "op": "draw",
+    "count": 2
+   }
+  ],
+  "ability": {
+   "cost": [
+    [
+     "insight",
+     2
+    ]
+   ],
+   "effects": [
+    {
+     "op": "gain",
+     "resource": "antimatter",
+     "amount": 1
+    }
+   ]
+  }
+ },
+ {
+  "id": "treaty_isotope_bank",
+  "name": "Treaty Isotope Bank",
+  "tier": 2,
+  "kind": "building",
+  "cost": 6,
+  "insight": 1,
+  "needs": [
+   [
+    "diplomacy",
+    1
+   ]
+  ],
+  "tags": [
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "gain_ambassadors",
+    "count": 1
+   }
+  ],
+  "ability": {
+   "cost": [
+    [
+     "credits",
+     8
+    ]
+   ],
+   "effects": [
+    {
+     "op": "gain",
+     "resource": "antimatter",
+     "amount": 1
+    }
+   ]
+  }
  }
 ]

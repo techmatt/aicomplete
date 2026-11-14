@@ -1,0 +1,22 @@
+out/f219-r96 [base]: 1440 games, 2880 seat-games, won 51.5%
+  antimatter a seat-game: gained 3.73, spent 1.55 (42%); Make antimatter 1.36
+  source standard:antimatter: 1.364 a seat-game (37%)
+  source phase:economy.upkeep: 0.953 a seat-game (26%)
+  source convert:0: 0.495 a seat-game (13%)
+  source power:Particle Run: 0.170 a seat-game (5%)
+  source use:penning_trap_array: 0.165 a seat-game (4%)
+  source power:Joint Facility: 0.139 a seat-game (4%)
+  source use:cyclotron_lease: 0.129 a seat-game (3%)
+  source power:Refine: 0.102 a seat-game (3%)
+  source play:zero_day_auction: 0.062 a seat-game (2%)
+  source play:antiproton_foundry: 0.057 a seat-game (2%)
+  power builder Refine: 0.307 a builder seat-game
+  power protector Joint Facility: 0.418 a protector seat-game
+  power researcher Particle Run: 0.511 a researcher seat-game
+  plants: 0.305 antimatter a seat-game from their Actions (8%); games with 1+ tier-2 plant built 23%, 2+ 4%
+  plant penning_trap_array: 0.165 a seat-game from its Action; played in 8% of games, 4.0% of seat-games
+  plant antiproton_foundry: 0.011 a seat-game from its Action; played in 11% of games, 5.7% of seat-games
+  plant positron_storage_ring: 0.000 a seat-game from its Action; played in 7% of games, 3.5% of seat-games
+  plant dark_fiber_collider: 0.000 a seat-game from its Action; played in 0% of games, 0.0% of seat-games
+  plant treaty_isotope_bank: 0.000 a seat-game from its Action; played in 0% of games, 0.0% of seat-games
+  plant cyclotron_lease: 0.129 a seat-game from its Action; played in 9% of games, 4.6% of seat-games

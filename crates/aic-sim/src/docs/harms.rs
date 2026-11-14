@@ -43,7 +43,7 @@ pub const HARMS: [&str; 26] = [
 
 /// The sources of the ledger, in its column order. The first six read
 /// content; `RULE_HARMS` says what the rest do.
-pub const SOURCES: [&str; 12] = [
+pub const SOURCES: [&str; 13] = [
     "tier-1 threats",
     "tier-2 threats",
     "Discord cards",
@@ -56,11 +56,16 @@ pub const SOURCES: [&str; 12] = [
     "uncountered threats",
     "war",
     "march",
+    "your burns",
 ];
+
+/// 219: the column of the boards' own antimatter burns, a harm a player chooses: shown, never counted toward the
+/// adversary's gaps.
+const OWN_BURNS: usize = 12;
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 22] = [
+pub const RULE_HARMS: [(&str, &str, &str); 24] = [
     ("income and rally", "adversary pieces placed", "agent income fills each country's pool; every event's Rally X deals it one at a time onto the sites of its type (151; r80)"),
     ("income and rally", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
     ("income and rally", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
@@ -88,6 +93,9 @@ pub const RULE_HARMS: [(&str, &str, &str); 22] = [
     ("march", "facilities destroyed", "a troop strikes player-owned facilities, walking past ambassadors (r83, #44); it can't enter or strike a hex with the Protector's node"),
     // 201 (r89, Matt 2026-11-12: troops are few and deadly): troops strike nodes from the start (`troop_node` 0).
     ("march", "node destroyed", "a troop strikes a player's node on or next to its hex (r89, `troop_node` 0; protections apply), one step a march"),
+    // 219 (Matt, 2026-11-13): the board burns, each a rare trade of your own engine for 1 antimatter.
+    ("your burns", "facilities destroyed", "the Builder's Teardown destroys one of its own factories, the Researcher's Overload one of its own research stations (r97); gone unless rebuilt the normal way"),
+    ("your burns", "Discord sway", "Teardown leaves land corruption on the factory's hex, which drips `blight_discord` toward Discord each round until lifted (r97)"),
 ];
 
 /// Columns of [`SOURCES`] that read content, for [`harm_marks`].
@@ -263,6 +271,7 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::RemoveAmbassadorsCountry { .. }
         | Op::RemoveTroops { .. }
         | Op::BuildFactory
+        | Op::Burn { .. }
         | Op::Cleanse { .. }
         | Op::Liberate { .. }
         | Op::ClearCity { .. }
@@ -399,7 +408,7 @@ fn harm_marks() -> BTreeMap<(usize, usize), Mark> {
 
 /// How many kinds of source do each harm.
 fn kinds(marks: &BTreeMap<(usize, usize), Mark>, h: usize) -> usize {
-    (0..SOURCES.len()).filter(|&s| marks.contains_key(&(h, s))).count()
+    (0..SOURCES.len()).filter(|&s| s != OWN_BURNS && marks.contains_key(&(h, s))).count()
 }
 
 /// 191: the harms in under 2 kinds of source, with their count: gaps, the list for the adversary-card pass, not

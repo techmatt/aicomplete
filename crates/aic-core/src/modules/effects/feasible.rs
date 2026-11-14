@@ -94,6 +94,7 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
                 any_hex(g, |h| g.tokens(h, ADV_AMBASSADOR) > 0 && (!*reach || in_reach(w, g, seat, h)))
             }
             Op::BuildFactory => !factory_sites(w, g, seat).is_empty(),
+            Op::Burn { facility, .. } => !own_facilities(g, seat, *facility).is_empty(),
             Op::Cleanse { cities, only, .. } => {
                 any_hex(g, |h| cleansable(w, g, h, *cities, *only) && in_reach(w, g, seat, h))
             }

@@ -1,0 +1,13 @@
+strategist, c2, d2, 6 games from seed 1000, one thread, best of 2
+| | rules | wins | rounds | decisions | options/decision | ms/game | ms/decision |
+|---|---|---|---|---|---|---|---|
+| old | r96 | 5 | 7.33 | 434 | 21.06 | 758 | 1.7 |
+| new | r97 | 4 | 6.83 | 409 | 21.08 | 643 | 1.6 |
+| new / old | | | 0.93 | 0.94 | 1.00 | 0.85 | 0.90 |
+greedy, c2, d2, 6 games from seed 1000, one thread, best of 2
+| | rules | wins | rounds | decisions | options/decision | ms/game | ms/decision |
+|---|---|---|---|---|---|---|---|
+| old | r96 | 5 | 6.17 | 364 | 18.43 | 494 | 1.4 |
+| new | r97 | 5 | 6.83 | 400 | 17.62 | 547 | 1.4 |
+| new / old | | | 1.11 | 1.10 | 0.96 | 1.11 | 1.01 |
+SPEEDDONE

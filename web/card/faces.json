@@ -61,7 +61,7 @@
  "substation_hub": {"top":[[{"other":["play","#power"]},":","energy",{"other":["energy"]}]],"top_text":"Effect: when another player plays a Power card, you both gain 1 energy.","effect":[["2","energy"]],"text":"Gain 2 energy."},
  "faraday_yard": {"top":[],"top_text":"","effect":[[{"income":["raise","energy"]}],["3","harden"]],"text":"Raise your energy income by 1. Harden 3 facilities in reach."},
  "capacitor_discharge": {"top":[],"top_text":"","effect":[["energy","/","#power"]],"text":"Gain 1 energy per Power tag on your cards."},
- "positron_storage_ring": {"top":[[{"income":["antimatter"]}],["play","#power",":","2","energy"]],"top_text":"Each round, 1 antimatter. Effect: when you play a Power card, gain 2 energy.","effect":[["−2","energy"],["2","cards"]],"text":"Pay 2 energy. Draw 2 cards."},
+ "positron_storage_ring": {"top":[["play","#power",":","2","energy"],["−2","energy","→","antimatter"]],"top_text":"Effect: when you play a Power card, gain 2 energy. Action: pay 2 energy, get 1 antimatter.","effect":[["−2","energy"],["2","cards"]],"text":"Pay 2 energy. Draw 2 cards."},
  "dyson_swarm_tranche": {"top":[],"top_text":"","effect":[["−1","antimatter"],["10","energy"],[{"income":["raise","2","energy"]}]],"text":"Pay 1 antimatter. Gain 10 energy. Raise your energy income by 2."},
  "continental_supergrid": {"top":[],"top_text":"","effect":[[{"income":["raise","2","energy"]}],[{"income":["raise","credits","/","#power"]}]],"text":"Raise your energy income by 2. Raise your credit income by 1 per Power tag on your cards (including this)."},
  "beamed_power_constellation": {"top":[],"top_text":"","effect":[["3","node"],["energy","/","node"]],"text":"Place 3 Nodes. Gain 1 energy per Node you have on the board."},
@@ -187,13 +187,15 @@
  "rally_the_allies": {"top":[],"top_text":"","effect":[["5","ambassador"],["≤3","ambassador","move","hex"],["2","sway"]],"text":"Gain 5 Ambassadors. Gather up to 3 Ambassadors into a hex in reach, each from a hex next to it. Sway 2 toward Unity."},
  "surgical_strike": {"top":[],"top_text":"","effect":[[{"adversary":["−4","agent","OR","−3","troop","hex"]}],["sway"]],"text":"Remove 4 Agents or 3 Troops from a hex in reach. Sway 1 toward Discord."},
  "open_source_uprising": {"top":[],"top_text":"","effect":[[{"adversary":["−4","agent","city"]},"4","ambassador"],["2","cards"],["sway"]],"text":"Convert 4 Agents around a city in reach. Draw 2 cards. Sway 1 toward Unity."},
- "penning_trap_array": {"top":[["−1","research_cubes","−1","energy","→","2","antimatter"]],"top_text":"Action: pay 1 research cube and 1 energy, get 2 antimatter.","effect":[["antimatter"]],"text":"Gain 1 antimatter."},
- "antiproton_foundry": {"top":[["−1","chips","−1","energy","→","2","antimatter"]],"top_text":"Action: pay 1 chip and 1 energy, get 2 antimatter.","effect":[["antimatter"]],"text":"Gain 1 antimatter."},
+ "penning_trap_array": {"top":[["−1","research_cubes","→","antimatter"]],"top_text":"Action: pay 1 research cube, get 1 antimatter.","effect":[["antimatter"]],"text":"Gain 1 antimatter."},
+ "antiproton_foundry": {"top":[["−1","chips","→","antimatter"]],"top_text":"Action: pay 1 chip, get 1 antimatter.","effect":[["antimatter"]],"text":"Gain 1 antimatter."},
  "cryo_sample_vault": {"top":[[{"income":["research_cubes"]}]],"top_text":"Each round, 1 research cube.","effect":[],"text":""},
  "field_assay_team": {"top":[["−1","research_cubes","→",{"adversary":["−2","agent","hex"]}]],"top_text":"Action: pay 1 research cube, remove 2 Agents from a hex in reach.","effect":[],"text":""},
  "collider_consortium": {"top":[],"top_text":"","effect":[["−1","antimatter"],["8","research_cubes"],[{"other":["3","research_cubes"]}]],"text":"Pay 1 antimatter. Gain 8 research cubes. Another player gains 3 research cubes."},
  "catalyzed_fab_run": {"top":[],"top_text":"","effect":[["−1","antimatter"],["6","chips"],[{"other":["2","chips"]}]],"text":"Pay 1 antimatter. Gain 6 chips. Another player gains 2 chips."},
  "antimatter_accord": {"top":[],"top_text":"","effect":[["−1","antimatter"],["6","ambassador"],["4","sway"]],"text":"Pay 1 antimatter. Gain 6 Ambassadors. Sway 4 toward Unity."},
  "cyclotron_lease": {"top":[["−2","energy","→","antimatter"]],"top_text":"Action: pay 2 energy, get 1 antimatter.","effect":[],"text":""},
- "accelerator_diplomacy": {"top":[],"top_text":"","effect":[["−1","antimatter"],["5","sway"],["2","ambassador"]],"text":"Pay 1 antimatter. Sway 5 toward Unity. Gain 2 Ambassadors."}
+ "accelerator_diplomacy": {"top":[],"top_text":"","effect":[["−1","antimatter"],["5","sway"],["2","ambassador"]],"text":"Pay 1 antimatter. Sway 5 toward Unity. Gain 2 Ambassadors."},
+ "dark_fiber_collider": {"top":[["−2","insight","→","antimatter"]],"top_text":"Action: pay 2 insight, get 1 antimatter.","effect":[["2","cards"]],"text":"Draw 2 cards."},
+ "treaty_isotope_bank": {"top":[["−8","credits","→","antimatter"]],"top_text":"Action: pay 8 credits, get 1 antimatter.","effect":[["ambassador"]],"text":"Gain 1 Ambassador."}
 }

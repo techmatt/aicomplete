@@ -92,7 +92,7 @@ pub struct Override {
 #[cfg(test)]
 pub(crate) const PART_ROWS: &[&str] =
     &["remove_ambassador", "remove_troop", "typed_jam", "liberate_align", "liberate_troops", "liberate_botnet", "cleanse_station",
-      "if_node_next_fresh"];
+      "if_node_next_fresh", "burn_station", "burn_blight"];
 
 const SOURCE: &str = include_str!("../../../../configs/agents/values.json");
 
@@ -523,6 +523,11 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         }
         Op::RemoveTroops { count, .. } => Worth::now(row("remove_troops") * t.troops_removed(*count)),
         Op::BuildFactory => Worth::now(row("build_factory")),
+        // 219: a board burn loses the piece's output for the rounds left, and a blight's Discord drip.
+        Op::Burn { facility, blight } => Worth::now(
+            if *facility == Facility::Factory { row("burn") } else { row("burn_station") }
+                + if *blight { row("burn_blight") } else { 0.0 },
+        ),
         Op::Cleanse { amount, one_country, cities, only } => {
             let share = if *one_country { 0.8 } else { 1.0 };
             if *cities {

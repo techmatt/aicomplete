@@ -265,7 +265,7 @@ fn builds_after(w: &World, g: &mut GameState, seat: usize, s: &cards::SacrificeS
 }
 
 /// A dear power: one that sacrifices 2 or more tags (075), or a tag and an
-/// energy and places no node (r35's Rush Build, Shelter, Particle Run; Accord
+/// energy and places no node (r35's Rush Build, Shelter; Accord
 /// is a node power). 099: the 2-tag test alone matched no power after r35, and
 /// the measure went silent.
 pub fn power_is_dear(p: &Power) -> bool {

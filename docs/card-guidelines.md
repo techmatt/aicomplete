@@ -100,8 +100,8 @@ price ([card-pricing.md](card-pricing.md), *The method*).
 | 1 ambassador | 8 (r91, candidate) | | | |
 
 Derived: the keep, 4 a tier-1 card and 12 a tier-2 one (1 and 3 insight, r95); +1 energy income 14 (4 rounds × 4.5 × 0.8);
-+1 chip income about 19 (4 rounds × 6 × 0.8). Antimatter's 18 is three research cubes (the desperate standard action,
-at par, never a gain), so every engine that makes it (a plant's Action, Pair Forge, Particle Run) shows a clear gain
++1 chip income about 19 (4 rounds × 6 × 0.8). Antimatter's 18 is under four research cubes (the desperate standard action,
+at a loss), so every engine that makes it (a plant's Action, Pair Forge) shows a clear gain
 and every spend is a big one. Units with no anchor take `values.json` (a sway 4, a node 8)
 or [card-pricing.md](card-pricing.md) (a city liberated 45). From past checks: a research cube 6
 (9 when the play completes the megaproject), a botnet removed 16.

@@ -41,7 +41,7 @@ is worth more with it. A play waiting a round is worth 15% less; `needs` may be 
 planned earlier, or short now by at most `plan_short` tags; a building over one of the seat's
 adds only what it beats the weakest by (`plan_cover`). Each switch's default and rule, and each
 **dominance check** (principles.md), is a row of `forced_table!`, `no_spend` (200's ablation) too. The eval holds an
-antimatter at 2 points (204). **`plan_am`** (211): the antimatter the seat's powers and built Actions make once a round
+antimatter at 2 points (204). **`plan_am`** (211): the antimatter the seat's built Actions make once a round (219: no burn or seize)
 counts from the plan's next round, and a shortfall is made from cubes at Make antimatter's price.
 
 **Agent behaviors** (`behavior_table!`, on for every agent; a dominance check's ban wins; each row says its rule).
@@ -54,7 +54,7 @@ action. **Sell a dead card** (211, `sell_rule` 1): a card the plan won't play (t
 before: over its rounds), when up to three sales let the plan play a card it otherwise wouldn't. **Save antimatter**
 (211, `am_save`): no spend takes the seat below a reachable hand card's antimatter. **Convert for a play** (211,
 `make_short`): cubes to insight or antimatter when the plan then plays a card it can't now; with `am_source` (213)
-an antimatter power or built Action first. **Botnet reach**
+a plant's Action first, then a board burn (219). **Botnet reach**
 (176, `w.botnet_reach` 0.3): an ambassador on a botnet's hex is worth that share of it.
 
 Spec syntax: `kind[:key=value,...]`; a weight takes `w.` (`greedy:w.corrupted=40`), a table
