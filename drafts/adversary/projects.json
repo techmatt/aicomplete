@@ -87,7 +87,7 @@
     "cyber"
    ],
    "cost": 14,
-   "text": "Each country, twice: a botnet spreads to its lowest-numbered city, research station or factory next to one of its botnets (no botnet there: its lowest-numbered research station).",
+   "text": "Each country, twice: a botnet spreads to its lowest-numbered city, research station or factory without one next to one of its botnets (a country with no botnet: its lowest-numbered research station).",
    "effects": [
     {
      "op": "spread_botnets",
@@ -218,7 +218,7 @@
     "cyber"
    ],
    "cost": 11,
-   "text": "Each open megaproject loses 4 player research cubes, from the player with the most on it first.",
+   "text": "Each open megaproject loses 4 player research cubes, one at a time, each from the player with the most on it (ties: the earliest in player order).",
    "effects": [
     {
      "op": "strip_cubes",
@@ -370,7 +370,7 @@
     "diplomacy"
    ],
    "cost": 9,
-   "text": "Pull 4 Sway back off the Unity track.",
+   "text": "Remove 4 Unity from the Unity track.",
    "effects": [
     {
      "op": "pull_unity",
@@ -473,7 +473,7 @@
     "power"
    ],
    "cost": 10,
-   "text": "Each country: the hardened facility with the most Agents on or next to it (ties: lowest-numbered) loses its hardening. Until the end of next round, players make no energy from their nodes in upkeep.",
+   "text": "Each country: the hardened facility with the most Agents on or next to it (ties: lowest-numbered) loses its hardening. Until the end of next round, players' boards and cards make no energy income.",
    "effects": [
     {
      "op": "strip_harden"

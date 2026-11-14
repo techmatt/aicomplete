@@ -378,7 +378,7 @@ fn draw(g: &mut GameState, cx: &mut Cx, side: Side) -> Option<Key> {
 fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
     let w = cx.world;
     let round = g.round;
-    cx.note(None, || format!("The {} track tips", side.name()));
+    cx.note(None, || format!("The {} track tips", side.title()));
     let before = g.var(tips_key(side));
     // r48 (Matt, 2026-11-05): a tip takes one tip's worth of Sway off; the
     // overflow stays on the track toward the next tip.
@@ -407,7 +407,7 @@ fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
     let tier = tier_of(&w, before + 1);
     let printed = &c.tiers[tier - 1];
     cx.note(None, || {
-        format!("{} ({}, strength {}) resolves: {}", c.name, side.name(), crate::content::TIER_NUMERALS[tier - 1], printed.text)
+        format!("{} ({}, strength {}) resolves: {}", c.name, side.title(), crate::content::TIER_NUMERALS[tier - 1], printed.text)
     });
     let source = if side == Side::Discord { "discord" } else { "unity" };
     let fx0 = fx_snapshot(g);
@@ -497,9 +497,13 @@ impl Module for Alignment {
         // 136: the board's printed drip (it was `adversary_discord`, 0).
         let drip = cx.world.content.adversary_board.discord_drip;
         discord_from(g, cx, "drip", drip);
-        // 138: each Fallout token drips 1 Discord; 192: a face-down one (a node hex's) its own rate.
+        // 138: each Fallout token drips 1 Discord (r98: none lies face down).
         let blight = adversary::blight_drip(&cx.world, g);
         discord_from(g, cx, "blight", blight);
+        // 235: say where the round's Discord came from (the log showed a bare var change).
+        if drip + blight > 0 && cx.world.variant("alignment") != Some("off") {
+            cx.note(None, || format!("The round's Discord drip: {drip} printed, {blight} from Fallout"));
+        }
         // 210 (stats only): Fallout tokens on the board as the round's drip reads them.
         let land: i64 = (0..g.hexes.len()).map(|h| g.tokens(h, FALLOUT)).sum();
         cx.per_round(g, "adversary.land_tokens", land);
@@ -650,7 +654,7 @@ impl Module for Alignment {
             CardView {
                 id: id.to_string(),
                 name: c.name.clone(),
-                text: format!("{}: {}", c.side.name(), c.text()),
+                text: format!("{}: {}", c.side.title(), c.text()),
                 status: status.to_string(),
                 cost: None,
             }

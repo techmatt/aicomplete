@@ -768,7 +768,7 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
         // 145: the Fallout drip (138) the table left out.
         [
             "Discord".to_string(),
-            "each Fallout token (Blitzkrieg, Naval Blockade), at the start of every round".to_string(),
+            "each Fallout token, at the start of every round".to_string(),
             t("adversary.blight_discord"),
         ],
     ];
@@ -852,7 +852,7 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          deck; you take one card and pass the rest to the next player in seat order until the hands are gone, then \
          pay insight to keep what you drafted ({} for tier 1, {} for tier 2; nothing else buys a keep). \
          Insight is this round's attention: your card-play track shows it, the number on the rightmost \
-         space you've uncovered ({} before any), and what you don't spend is lost. Playing a card costs its credits and {} insight, \
+         space you've uncovered that shows one ({} before any), and what you don't spend is lost. Playing a card costs its credits and {} insight, \
          from the same insight as keeps. Buildings go into your AI board's {} slots; once they are \
          full, a new building goes on top of an old one, which stops working but keeps its tags. \
          Programs stay in front of you and are where lasting income comes from (\"raise your credit \
@@ -863,7 +863,7 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          limit on what you hold or on how far cards raise your income; energy you don't spend stays \
          energy, so drafting cards that spend it is up to you.\n\n\
          **Nodes, for new players.** Nodes don't grow on their own. In the action phase you place \
-         nodes with your board's node power, once a round, which costs a tag or the board's own currency and does a \
+         nodes with your board's node power, once a round, which costs what your board prints (credits, a research cube or a tag) and does a \
          little more besides, or with the standard action Place a node, which any player may take twice a round for \
          credits; cards can add more. Every placement, by power, action or card, pays the energy printed on the track space you uncover. You \
          start with {} energy and one city bound to you, which makes energy every round.\n\n\
@@ -923,7 +923,7 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          you lose. Discord cards never destroy your nodes directly, only through the threats and corruptions \
          they bring: they deal more or stronger threats (Offensive \
          aims one at the node hex most crowded with adversary pieces), create agents, run Corrupt \
-         lines, and take credits, more of each the more sites are corrupted. Unity has its own track, which nothing on the \
+         lines, take credits and land Fallout (Scorched Earth), more of each the more sites are corrupted. Unity has its own track, which nothing on the \
          Discord side empties: free a corrupted \
          city and you sway Unity (removing a botnet sways none), and each Unity \
          tip brings a good card. \

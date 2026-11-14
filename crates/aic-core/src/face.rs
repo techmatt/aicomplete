@@ -528,7 +528,8 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         )),
         Op::Jam { amount: n, source: Some(s) } => one(clause(
             { let mut p = less(*n, "jam"); p.push(w(&format!("#{}", s.name()))); p },
-            format!("counts as {n} toward {} threat", s.a_word()),
+            // 235: one op, one wording: "counts as N toward" read as N paid on one option (a jam cuts each).
+            format!("{} threat needs {n} less of each resource", s.a_word()),
         )),
         Op::CounterThreat => one(clause(adversary(vec![w("counter")]), "counter one threat")),
         Op::DrainProject { amount: n } => {
@@ -952,15 +953,15 @@ fn standing(op: &Op, kind: Option<TokenKind>) -> Standing {
         ),
         Op::AutoCounter { source, amount: n } => effect(
             { let mut p = less(*n, "jam"); p.push(w(&format!("#{}", source.name()))); p },
-            format!("{source} threats need {n} less to counter"),
+            format!("{source} threats need {n} less of each resource"),
         ),
         Op::UnityBonus { amount: n } => effect(
             { let mut p = adversary(minus(1, "troop")); p.push(w(":")); p.extend(counted(*n, "sway")); p },
             format!("when you remove an adversary troop, sway {n} more toward Unity"),
         ),
         // 179 (Matt, friction #37; Aegis by amendment 8227): the shield is one stop on one piece (a token); the roof
-        // covers many pieces (Shelter: a whole country for the round; with a node, all of your pieces: Aegis keeps
-        // any one of them once a round, Sanctuary every node against corruption).
+        // covers many pieces (with a node: a card's Shelter, your nodes and facilities in reach this round (234);
+        // Aegis keeps any one of them once a round, Sanctuary every node against corruption and agents).
         Op::CorruptionShield => effect(
             vec![w("corrupt"), w(":"), w("shelter"), w("node")],
             "neither corruption nor agents destroy your nodes".to_string(),

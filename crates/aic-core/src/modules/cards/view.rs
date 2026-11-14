@@ -101,7 +101,8 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
             .pile(&packet(s))
             .iter()
             // 118: a draft or keep tile names its price (keeps were picked blind to it).
-            .map(|id| card(s, id, "draft", Some(play_cost(w, g, s, def(w, id)))))
+            // 235: and its tier, which sets the keep price the pick commits to (a tier 2 looked like a tier 1).
+            .map(|id| card(s, id, &format!("draft, tier {}", def(w, id).tier), Some(play_cost(w, g, s, def(w, id)))))
             .collect();
         if !pk.is_empty() {
             out.cards(s, "packet", "draft hand", pk);
@@ -120,8 +121,8 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
             })
             .collect();
         if !dr.is_empty() {
-            let label = if g.round <= 1 { "opening hand (keep?)" } else { "drafted (keep?)" };
-            out.cards(s, "drafted", label, dr);
+            // 235: the opening hand is the free cards in hand (r82 on); round 1's draft is a draft like any other.
+            out.cards(s, "drafted", "drafted (keep?)", dr);
         }
         out.seat(
             s,

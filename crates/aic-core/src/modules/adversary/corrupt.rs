@@ -66,14 +66,22 @@ fn corrupt_node(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
     let w = cx.world;
     let n = g.tokens(h, ADV_AMBASSADOR);
     remove(g, cx, h, n);
+    let mut destroyed = false;
     if let Some(s) = node_owner(g, h) {
         if !cards::has_passive(&w, g, s, |p| matches!(p, Op::CorruptionShield)) {
-            board::destroy_piece(g, cx, h, node(s), board::Cause::Effect("corruption"))?;
+            destroyed = board::destroy_piece(g, cx, h, node(s), board::Cause::Effect("corruption"))?;
         }
     }
     cx.tally(g, "adversary.corruptions", 1);
     cx.tally(g, "adversary.corruptions.node", 1);
-    cx.note(Some(h), || format!("Agents destroy the node at {}", hex_name(&w, h)));
+    // 235: the log said "destroy" when Sanctuary, a Shelter, Aegis or a hardening kept the node.
+    cx.note(Some(h), || {
+        if destroyed {
+            format!("Agents destroy the node at {}", hex_name(&w, h))
+        } else {
+            format!("The agents at {} go to the supply; the node holds", hex_name(&w, h))
+        }
+    });
     Ok(())
 }
 

@@ -169,7 +169,8 @@ pub fn sacrifice_keeping(
             return Err(Halt::Illegal("not enough tags to sacrifice".into()));
         }
         let opts = helping.iter().map(|s| opt(format!("sacrifice {}", s.label))).collect();
-        let prompt = || format!("Seat {seat}: sacrifice what for the power's tags?");
+        // 235: "sacrifice what for the power's tags?" read as engine words.
+        let prompt = || format!("Seat {seat}: what do you sacrifice (a card, or a building stack) to pay the power's tag cost?");
         let Some(i) = cx.choose_loss(seat, prompt, opts)? else {
             return Err(Halt::Illegal("no sacrifice chosen".into()));
         };

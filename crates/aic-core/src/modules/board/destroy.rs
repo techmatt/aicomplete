@@ -57,8 +57,8 @@ pub fn guards(g: &GameState, h: usize, owner: Option<usize>) -> Vec<Guard> {
     out
 }
 
-/// A piece of `kind` on hex `h` would be destroyed (175: a last node too). A Shelter Order in its country
-/// keeps it, spending nothing. Otherwise r75 (Matt's ruling 5): its owner (seat 0 for a neutral piece)
+/// A piece of `kind` on hex `h` would be destroyed (175: a last node too). A country Shelter flag, or (234) its
+/// owner's reach Shelter on the hex, keeps it, spending nothing. Otherwise r75 (Matt's ruling 5): its owner (seat 0 for a neutral piece)
 /// chooses which protection to spend, or none: a hardening token, the owner's own ambassador on the hex (137: armor; only your own
 /// guards your piece), or the Aegis Doctrine capstone (the Protector's own pieces). Unprotected it goes, and
 /// a war destruction ([`Cause::War`]) sways toward Discord. Returns whether it was destroyed.
@@ -135,8 +135,15 @@ pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause
         cx.tally(g, "board.factories_destroyed", 1);
     }
     cx.tally(g, "board.destroyed", 1);
+    // 235: a war-destroyed factory's Discord is named in its line (the log showed a bare var change).
+    let sway = if cause == Cause::War && kind == FACTORY && w.variant("alignment") != Some("off") {
+        w.int("board.destruction_discord")
+    } else {
+        0
+    };
     cx.note(Some(h), || {
-        format!("{} at {} destroyed", piece_name(kind), hex_name(&w, h))
+        let more = if sway > 0 { format!(": {sway} Discord") } else { String::new() };
+        format!("{} at {} destroyed{more}", piece_name(kind), hex_name(&w, h))
     });
     // r83: only the factory sways (War Takes Ground's node on its hex sways nothing more).
     if cause == Cause::War && kind == FACTORY {

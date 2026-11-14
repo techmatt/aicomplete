@@ -273,9 +273,12 @@ function playerCard(c, face, keep) {
     ['Keep', keepCost],
     c.ability?.cost?.length && ['Action cost', costs(c.ability.cost)],
     c.ability?.tokens && ['Action tokens', c.ability.tokens],
+    c.ability?.or?.cost?.length && ['Action (or) cost', costs(c.ability.or.cost)],
+    c.ability?.or?.tokens && ['Action (or) tokens', c.ability.or.tokens],
     c.tokens && ['Tokens', c.tokens.kind],
   ].filter(Boolean);
-  const ops = { effects: c.effects, passives: c.passives, ability: c.ability?.effects };
+  // 235: an Action's OR half was left out (its face prints both).
+  const ops = { effects: c.effects, passives: c.passives, ability: c.ability?.effects, 'ability (or)': c.ability?.or?.effects };
   return {
     id: c.id,
     kind: c.kind,
@@ -397,7 +400,8 @@ function aiBoard(b, cardName) {
   const effect = (e) => (e.op === 'build_station' ? 'builds a free research station in reach' : e.op.replaceAll('_', ' '));
   // 118: a space's income reads +N, apart from the energy that places it.
   // 184: a Dispatch +N space (r77's name for the Movement add-on) printed nothing.
-  const step = (u) => [(u.income ?? []).map((x) => `+${costs([x])}`).join(", "), ...(u.effects ?? []).map(effect), u.moves && `Dispatch +${u.moves}`, u.cost && `${u.cost} energy to place`, u.keep2 && 'tier-2 keep upgrade', ...(u.tags ?? []).map((t) => `${t} tag`), u.capstone && `capstone: ${u.capstone.name}`];
+  // 235: a card-play space's insight (printed as totals) was dropped: the Researcher's first space read '—'.
+  const step = (u) => [(u.income ?? []).map((x) => `+${costs([x])}`).join(", "), u.insight && `insight ${u.insight}`, ...(u.effects ?? []).map(effect), u.moves && `Dispatch +${u.moves}`, u.cost && `${u.cost} energy to place`, u.keep2 && 'tier-2 keep upgrade', ...(u.tags ?? []).map((t) => `${t} tag`), u.capstone && `capstone: ${u.capstone.name}`];
   const track = (l) => l.map((u) => step(u).filter(Boolean).join('; ') || '—').join(' · ');
   const capstones = [...b.economy_track, ...(b.play_track ?? [])].flatMap((u) => u.capstone ?? []);
   return frameless('ai', b, {
@@ -406,6 +410,7 @@ function aiBoard(b, cardName) {
     tags: b.tags ?? [],
     price: [
       ['Credits a round', b.credits],
+      ...(b.insight ? [['Insight a round before any card-play space', b.insight]] : []),
       ...(b.moves ? [['Dispatches a round', b.moves]] : []),
       ...(b.income?.length ? [['Income', costs(b.income)]] : []),
       // 118: a power with no cost and no tags (Synthesis) priced as an empty string.
@@ -494,6 +499,8 @@ export function exportCards(root = REPO) {
     revision,
     commit: git.status === 0 ? git.stdout.trim() : null,
     layout: readJson(join(root, 'web', 'card', 'layout.json')),
+    // 235: the backs print each tier's keep cost from the config (the renderer had tier 2 at 2 since r95's 3).
+    keep: { 1: keep.keep_tier1, 2: keep.keep_tier2 },
     fits: readJson(join(root, 'art', 'frames', 'r3', 'fit.json')),
     cards: out,
     stats: { source: stats.source, columns: stats.columns, byAgent: stats.byAgent, reasoned_from: stats.reasoned_from, reasoned_stale: stats.reasoned_stale },

@@ -59,7 +59,7 @@
    "locations": [
     "factory"
    ],
-   "text": "The factory here is destroyed. 1 Fallout lands on its hex.",
+   "text": "The factory here is destroyed, with any Node on its hex. 1 Fallout lands on or next to here.",
    "counters": [
     [
      {

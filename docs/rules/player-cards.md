@@ -70,7 +70,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   trigger and a tier-2 one that counts every tag on the played card, and its engines' payoffs
   ([card-grammar.md](card-grammar.md), *The engine wording*). Cyber and Industry each keep a standing
   automatic counter (Autonomous Defense Grid, Market Stabilization Board: Cyber or Industry threats anywhere need 6
-  less to counter); no other tag has one. No capstone prints a hardening token or a delay.
+  less of each resource); no other tag has one. No capstone prints a hardening token or a delay.
 - **The liberate capstones (candidate; Matt).** Liberating a corrupted city is a core mechanic, and its main route is
   a family of tier-2 cards, one an engine, each paid mostly in its engine's resource and each liberating one corrupted
   city in your reach as the Liberate action does, unpaid: its agents come off and your cube goes on

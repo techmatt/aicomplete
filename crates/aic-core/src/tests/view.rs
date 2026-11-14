@@ -1,6 +1,25 @@
 use super::*;
 use crate::modules::{board, threats};
 
+/// 235 (D101): a power whose tags one source alone can pay takes it unasked; the view names it (the playtest's Audit
+/// took an 11-credit building with no word). Two sources: it asks, and names none.
+#[test]
+fn a_power_names_its_lone_sacrifice() {
+    let (rules, mut g) = lab_actions();
+    let power = |rules: &Rules, g: &GameState, name: &str| {
+        let v = rules.view(g);
+        let b = v.seats[0].board.as_ref().expect("seat 0's board");
+        b.cards.iter().find(|c| c.name == name).expect("the power").text.clone()
+    };
+    let pile = crate::modules::cards::played(0);
+    set_pile(&mut g, pile.as_str(), &["payroll_automation"]);
+    let one = power(&rules, &g, "Scrap");
+    assert!(one.contains("Sacrifices: Payroll Automation."), "{one}");
+    set_pile(&mut g, pile.as_str(), &["payroll_automation", "vendor_financing"]);
+    let two = power(&rules, &g, "Scrap");
+    assert!(!two.contains("Sacrifices:"), "{two}");
+}
+
 #[test]
 fn the_view_shows_the_board_the_fronts_the_projects_and_the_next_card() {
     // This reads an opening that stops at the draft.

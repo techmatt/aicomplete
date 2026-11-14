@@ -66,7 +66,7 @@ play; keeping a drafted card costs 1 (tier 1) or 3 (tier 2) more.
 
 | card | tier | kind | cost | insight | other tags | effect |
 |---|---|---|---|---|---|---|
-| Antitrust Action | 1 | program | 7 cr | 0 | - | Counts as 5 toward an industry threat. Gain 1 chip per 4 Industry tags on your cards (including this). |
+| Antitrust Action | 1 | program | 7 cr | 0 | - | An industry threat needs 5 less of each resource. Gain 1 chip per 4 Industry tags on your cards (including this). |
 | Capital Injection | 1 | event | 12 cr | 1 | - | Draw 3 cards. Add 2 Capital to one of your Capital buildings. |
 | Economies of Scale | 1 | program | 6 cr; needs 2 industry | 0 | - | Raise your credit income by 1 per 2 Industry tags on your cards (including this). |
 | Fabrication Megaplex | 1 | building | 21 cr; 2 en | 2 | - | Each round, 6 credits and 1 chip. Pay 2 energy. Draw 3 cards. |
@@ -74,7 +74,7 @@ play; keeping a drafted card costs 1 (tier 1) or 3 (tier 2) more.
 | Joint Fabrication Pact | 1 | program (help) | 14 cr | 0 | power, diplomacy | Gain 3 chips. Another player gains 2 chips. |
 | Lights-Out Assembly | 1 | building | 6 cr; 1 en | 2 | power | Effect: when you play a card printed at 10 credits or more, gain 5 credits. Pay 1 energy. Draw 2 cards. |
 | Liquidity Event *(not in deck)* | 1 | event | 11 cr | 0 | - | Remove the Capital from one of your cards for 5 credits each. |
-| Market Watchdog | 1 | building | 7 cr | 0 | - | Action: counts as 6 toward an industry threat. |
+| Market Watchdog | 1 | building | 7 cr | 0 | - | Action: an industry threat needs 6 less of each resource. |
 | Parts Exchange | 1 | building | 9 cr | 1 | - | Action: pay 1 chip, draw 2 cards. |
 | Payroll Automation | 1 | program | 16 cr | 0 | - | Raise your credit income by 3. Add 2 Capital to one of your Capital buildings. |
 | Plant Overdrive *(not in deck)* | 1 | event | 9 cr | 0 | - | Gain 1 energy per Industry tag on your cards. |
@@ -84,7 +84,7 @@ play; keeping a drafted card costs 1 (tier 1) or 3 (tier 2) more.
 | Robotic Foundry | 1 | program | 13 cr; 1 en | 0 | power | Pay 1 energy. Raise your credit income by 4. |
 | Standardized Tooling | 1 | building | 11 cr | 1 | - | Effect: your Industry cards cost 5 credits less to play. Draw 2 cards. |
 | Supplier Network | 1 | building | 12 cr | 1 | - | Effect: when you play an Industry card, draw 1 card. Draw 1 card. |
-| Supply Chain Audit | 1 | program | 7 cr | 0 | - | Counts as 6 toward an industry threat. Raise your credit income by 1. |
+| Supply Chain Audit | 1 | program | 7 cr | 0 | - | An industry threat needs 6 less of each resource. Raise your credit income by 1. |
 | Vendor Financing | 1 | program (help) | 14 cr | 0 | - | Another player gains 1 chip. Raise your credit income by 3. |
 | Wafer Fab Line | 1 | building | 12 cr | 1 | power | Action: pay 2 energy, draw 2 cards, get 1 chip. |
 | Wartime Retooling | 1 | program | 26 cr | 2 | power | Raise your energy income by 2. Draw 4 cards. |
@@ -94,7 +94,7 @@ play; keeping a drafted card costs 1 (tier 1) or 3 (tier 2) more.
 | Catalyzed Fab Run | 2 | event (help) | 2 cr; 1 am | 0 | power | Pay 1 antimatter. Gain 6 chips. Another player gains 2 chips. |
 | Collateralized Grid | 2 | program | 15 cr | 0 | power | Gain 2 energy. Raise your energy income by 2. Remove the Capital from one of your cards for 1 energy each. |
 | Conglomerate Headquarters | 2 | building | 18 cr; needs 2 industry | 0 | - | Effect: when you play a card, add 1 Capital here per tag on it; at 3, gain 12 credits. Add 2 Capital here. |
-| Market Stabilization Board | 2 | building | 13 cr; needs 2 industry | 0 | - | Effect: industry threats need 6 less to counter. |
+| Market Stabilization Board | 2 | building | 13 cr; needs 2 industry | 0 | - | Effect: industry threats need 6 less of each resource. |
 | Orbital Mass Driver | 2 | building | 15 cr; 3 en; 1 ch; needs 3 industry | 2 | power | Each round, 13 credits and 2 chips. Pay 1 chip and 3 energy. Draw 3 cards. |
 | Vertical Monopoly | 2 | building | 20 cr; needs 3 industry | 2 | - | Each round, 3 credits per Industry tag on your cards (including this). Draw 4 cards. |
 
@@ -116,14 +116,14 @@ play; keeping a drafted card costs 1 (tier 1) or 3 (tier 2) more.
 | Ransomware Syndicate | 1 | program | 6 cr; needs 2 cyber | 0 | - | Raise your credit income by 1 per 2 Cyber tags on your cards (including this). |
 | Relay Mast Rollout | 1 | program | 6 cr | 1 | - | Place 2 Nodes. Draw 2 cards. |
 | Security Ops Floor | 1 | building | 13 cr | 1 | - | Effect: when you remove adversary compute, gain 1 insight. Draw 2 cards. |
-| Sentinel Mesh | 1 | building | 7 cr | 0 | security | Action: counts as 6 toward a cyber threat. |
+| Sentinel Mesh | 1 | building | 7 cr | 0 | security | Action: a cyber threat needs 6 less of each resource. |
 | Shadow Broker Scrub *(not in deck)* | 1 | program | 2 cr | 2 | diplomacy | Target: Fallout. Lift 2 Fallout tokens on or next to it. Draw 2 cards. |
 | Shared Exploit Kit | 1 | program (help) | 13 cr | 0 | science, security | Remove 6 compute from an adversary project. Another player gains 3 insight. |
 | Signal Hijack *(not in deck)* | 1 | event | 3 cr | 0 | security | Target: Troops. Remove 2 Troops on it. |
-| Threat Hunt | 1 | program | 8 cr | 0 | - | Counts as 6 toward a cyber threat. Remove 5 compute from an adversary project. |
+| Threat Hunt | 1 | program | 8 cr | 0 | - | A cyber threat needs 6 less of each resource. Remove 5 compute from an adversary project. |
 | Zero-Click Breach *(not in deck)* | 1 | program | 18 cr | 0 | - | Remove 18 compute from an adversary project. |
 | Air Gap | 2 | event | 6 cr | 0 | - | Target: Agents. Firewall it. Remove 3 Agents on it. |
-| Autonomous Defense Grid | 2 | building | 13 cr; needs 2 cyber | 0 | - | Effect: cyber threats need 6 less to counter. |
+| Autonomous Defense Grid | 2 | building | 13 cr; needs 2 cyber | 0 | - | Effect: cyber threats need 6 less of each resource. |
 | Botnet Takedown | 2 | event | 11 cr; needs 1 cyber | 1 | security | Target: a Botnet. Remove a Botnet on it. Remove 6 compute from an adversary project. |
 | Command-and-Control Grid | 2 | building | 18 cr; needs 2 cyber | 2 | - | Effect: when you play a card, gain 5 credits per tag on it. Draw 3 cards. |
 | Dark Fiber Collider | 2 | building | 6 cr; needs 1 cyber | 1 | science | Action: pay 2 insight, get 1 antimatter. Draw 2 cards. |
@@ -181,11 +181,11 @@ play; keeping a drafted card costs 1 (tier 1) or 3 (tier 2) more.
 | Amnesty Decree | 1 | program | 15 cr | 0 | - | Target: a corrupted city. Remove 4 Agents on or next to it. Place 2 Ambassadors on it. |
 | Back-Channel Talks | 1 | program | 11 cr | 0 | - | Target: a corrupted factory. Free it and 1 corrupted factory next to it. Sway 2 toward Unity. |
 | Ceasefire Monitors | 1 | program | 12 cr | 0 | security, cyber | Target: Agents or Troops. Remove 3 Agents or 1 Troop on it. Gain 2 Ambassadors. |
-| Civic Watch | 1 | building | 7 cr | 0 | - | Action: counts as 6 toward a diplomacy threat. |
+| Civic Watch | 1 | building | 7 cr | 0 | - | Action: a diplomacy threat needs 6 less of each resource. |
 | Consular Pouch | 1 | program | 13 cr; needs 2 diplomacy | 0 | - | Gain 1 Ambassador per Diplomacy tag on your cards (including this). |
 | Consulate Tower | 1 | building | 8 cr; needs 2 diplomacy | 2 | - | Effect: when another player plays a Diplomacy card, you both gain 6 credits. Draw 3 cards. |
 | Envoy Briefings | 1 | program | 9 cr | 1 | - | Draw 3 cards. Gain 2 Ambassadors. |
-| Fact-Check Network | 1 | program | 6 cr | 0 | - | Counts as 5 toward a diplomacy threat. Gain 2 Ambassadors. |
+| Fact-Check Network | 1 | program | 6 cr | 0 | - | A diplomacy threat needs 5 less of each resource. Gain 2 Ambassadors. |
 | Holographic Assembly Hall | 1 | building | 13 cr | 0 | power | Action: pay 2 energy, sway 2 toward Unity, get 2 Ambassadors. |
 | Liaison Corps | 1 | program | 12 cr | 0 | - | Target: a piece. Gain 3 Ambassadors. Move up to 4 Ambassadors onto pieces on or next to it. |
 | Manifesto Leak | 1 | event | 8 cr | 0 | - | Sway 3 toward Unity. Add 1 Follower to one of your Follower buildings. |
@@ -198,7 +198,7 @@ play; keeping a drafted card costs 1 (tier 1) or 3 (tier 2) more.
 | Reconciliation Office | 1 | building | 13 cr | 2 | security | Effect: when you remove Agents, draw 1 card. Draw 2 cards. |
 | Summit Caucus | 1 | program | 14 cr | 0 | - | Target: a piece. Move up to 6 Ambassadors on or next to it onto it. Gain 3 Ambassadors. |
 | Trade Delegation | 1 | program | 16 cr; needs 2 diplomacy | 0 | industry | Raise your credit income by 3. Gain 2 Ambassadors. |
-| Truth Commission *(not in deck)* | 1 | program | 6 cr | 0 | - | Counts as 5 toward a diplomacy threat. Sway 2 toward Unity. |
+| Truth Commission *(not in deck)* | 1 | program | 6 cr | 0 | - | A diplomacy threat needs 5 less of each resource. Sway 2 toward Unity. |
 | Antimatter Accord | 2 | program | 8 cr; 1 am | 1 | - | Pay 1 antimatter. Gain 6 Ambassadors. Sway 4 toward Unity. |
 | Coalition Charter | 2 | program (help) | 18 cr | 1 | - | Another player gains 4 insight. Sway 6 toward Unity. |
 | Embassy of Exiles | 2 | building | 30 cr | 0 | - | Target: a city with Agents on or next to it. Action: convert 2 Agents on or next to it. Gain 3 Ambassadors. |
@@ -226,8 +226,8 @@ play; keeping a drafted card costs 1 (tier 1) or 3 (tier 2) more.
 | Directed-Energy Array | 1 | building | 8 cr | 0 | power | Target: Agents. Action: pay 2 energy, remove 3 Agents on or next to it. |
 | Early Warning Drill | 1 | program | 10 cr | 0 | cyber, science | Delay 1 threat one round. Harden 3 of your Nodes. |
 | Field Assay Team | 1 | building | 6 cr | 1 | - | Target: Agents. Action: pay 1 research cube, remove 2 Agents on it. |
-| Force Protection Order | 1 | program | 6 cr | 1 | - | Counts as 6 toward a security threat. Draw 2 cards. |
-| Garrison Command | 1 | building | 7 cr | 0 | - | Action: counts as 6 toward a security threat. |
+| Force Protection Order | 1 | program | 6 cr | 1 | - | A security threat needs 6 less of each resource. Draw 2 cards. |
+| Garrison Command | 1 | building | 7 cr | 0 | - | Action: a security threat needs 6 less of each resource. |
 | Hardened Bunker Complex *(not in deck)* | 1 | program | 18 cr | 0 | power | Raise your energy income by 1. Raise your credit income by 1. |
 | Hardpoint Lockdown | 1 | event | 5 cr | 0 | - | Target: a land hex. Shelter your Nodes and facilities in reach this round. Cordon its country until the end of the next adversary turn. |
 | Headquarters Raid | 1 | event | 22 cr; needs 2 security | 1 | - | Target: Agents. Remove 5 Agents on or next to it. Draw 4 cards. |

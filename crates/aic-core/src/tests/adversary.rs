@@ -317,6 +317,43 @@ fn the_corruption_shield_keeps_a_node_on_a_corrupted_hex() {
     assert_eq!((g.tokens(h, ADV_CUBE), g.tokens(h, node(1))), (1, 1));
 }
 
+/// 235: 2 agents on a Sanctuary seat's node hex go to the supply and the node holds; the log says so (it said
+/// "Agents destroy the node" with the node still standing). Unshielded, the log says destroy.
+#[test]
+fn the_node_rule_logs_what_happened_to_the_node() {
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    g.vars.insert(STAGE.into(), 2);
+    let h = m.numbered(1, piece(1).node);
+    put(&mut g, h, node(1), 1);
+    put(&mut g, m.numbered(0, piece(0).node), node(1), 1);
+    let notes = |rules: &Rules, g: &mut GameState| {
+        let mut events = Vec::new();
+        let mut choices = module::Choices::new(Vec::new());
+        let mut cx = test_cx(rules, &mut choices);
+        cx.events = Some(&mut events);
+        adversary::corrupt_hex(g, &mut cx, h, CorruptSite::Node).unwrap();
+        events
+            .into_iter()
+            .filter_map(|e| match e {
+                crate::Event::Note { text, .. } => Some(text),
+                _ => None,
+            })
+            .collect::<Vec<_>>()
+            .join(" | ")
+    };
+    g.vars.insert(board::track_key(1).into(), 7);
+    put(&mut g, h, ADV_AMBASSADOR, 2);
+    let said = notes(&rules, &mut g);
+    assert_eq!((g.tokens(h, node(1)), g.tokens(h, ADV_AMBASSADOR)), (1, 0));
+    assert!(said.contains("the node holds") && !said.contains("destroy"), "{said}");
+    g.vars.insert(board::track_key(1).into(), 0);
+    put(&mut g, h, ADV_AMBASSADOR, 2);
+    let said = notes(&rules, &mut g);
+    assert_eq!(g.tokens(h, node(1)), 0);
+    assert!(said.contains("Agents destroy the node"), "{said}");
+}
+
 /// 138: Corrupt land puts Fallout on an empty land hex that gathers
 /// its number, and no node goes there after.
 #[test]

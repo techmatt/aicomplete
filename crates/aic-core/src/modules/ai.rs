@@ -376,6 +376,24 @@ fn power_cost(p: &Power) -> String {
     cost.join(", ")
 }
 
+/// 235: when one source alone can pay a power's tags, the power takes it unasked (a single option): name it, so the
+/// button says which card goes (Audit took an 11-credit building just built).
+fn lone_sacrifice(w: &World, g: &GameState, s: usize, p: &Power) -> String {
+    if p.tags.is_empty() {
+        return String::new();
+    }
+    let need = cards::TagNeed::new(&p.tags);
+    let helping: Vec<cards::SacrificeSource> =
+        cards::sources(w, g, s).into_iter().filter(|x| need.helps(&x.tags)).collect();
+    match helping.as_slice() {
+        [only] => match only.cards.last() {
+            Some((_, top)) => format!(" Sacrifices: {}.", cards::def(w, top).name),
+            None => String::new(),
+        },
+        _ => String::new(),
+    }
+}
+
 fn power_text(p: &Power) -> String {
     let cap = |s: &str| {
         let mut first = s.chars();
@@ -577,7 +595,7 @@ impl Module for Ai {
                 .map(|(k, p)| CardView {
                     id: format!("{}.power.{k}", b.id),
                     name: p.name.clone(),
-                    text: power_text(p),
+                    text: format!("{}{}", power_text(p), lone_sacrifice(w, g, s, p)),
                     status: power_blocked(w, g, s, k).unwrap_or("ready").into(),
                     cost: None,
                 })

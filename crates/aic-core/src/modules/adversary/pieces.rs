@@ -194,7 +194,11 @@ pub fn damage(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, ambassadors
         _ => {
             let opts = kinds
                 .iter()
-                .map(|(k, n)| opt(format!("remove {} {} at {}", (*n).min(g.tokens(h, k)), piece_name(k), hex_name(&w, h))))
+                .map(|(k, n)| {
+                    // 235: "remove 3 agent" read wrong: the shown count sets the plural.
+                    let m = (*n).min(g.tokens(h, k));
+                    opt(format!("remove {m} {}{} at {}", piece_name(k), if m == 1 { "" } else { "s" }, hex_name(&w, h)))
+                })
                 .collect();
             let prompt = || format!("Seat {seat}: remove which pieces?");
             let Some(i) = cx.choose(seat, prompt, opts)? else {

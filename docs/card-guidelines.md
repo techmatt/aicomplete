@@ -12,7 +12,7 @@ card that breaks one is a bug, or a design call for Matt, never a quiet exceptio
    one thing; "you have" is spelled out on the face ("on your cards"); every icon keeps its locked meaning (ruling 5). Fix a phrase in `face.rs`, and every card using it improves.
 3. **No arithmetic.** At most a simple "per X". No sums, series, formulas or running totals. **No "per hex of a
    country"** (ruling 6): every country has 16 hexes, so "1 per hex" is a hidden fixed number; print the number
-   ("remove 6 troops in one country"). **Big numbers over "remove all X"** (*Martial Cordon*).
+   ("remove 6 troops in its country"). **Big numbers over "remove all X"** (*Martial Cordon*).
 4. **No trivial cards; every rider earns its text.** Drafting costs a keep (1 insight at tier 1, 2 at tier 2; never credits) before the play
    cost, so a card must be worth that (ruling 1: *Surplus Auction*). A rider or conditional extra that adds
    symbols and parsing but no decision ("gain 1 credit") is noise: fold its value into the base number, or cut it. **Fold a near-constant rider into the number**
@@ -68,8 +68,8 @@ A card that prices out on the value table but reads absurd to a Terraforming Mar
 20. **Feeders carry a main effect.** A token feeder ("add N X to one of your X buildings") has a standalone main effect
     (credit or insight income, say) priced a little below the rate; its tokens are a bonus that beats the rate with a
     target, as Terraforming Mars' Large Convoy does (*Dataset Scraper*, *Recruit Operatives*).
-21. **Removal is in reach.** Removing troops or ambassadors is "in reach", not "in one country", bar a few big
-    tier-2 sweeps kept as a deliberate power step (*Counterinsurgency Campaign*).
+21. **Removal is at the target.** Removing troops or agents acts on the card's one target, on or next to it, or in
+    its country where printed (*Target*, card-grammar.md); no card picks a country freely.
 22. **Numbers make sense, not only price out.** A card beats its anchors (below) by about 1.5× at tier 1 and about 2.5×
     at tier 2, never more: beyond that, report it rather than ship it. A ceiling, not a target: a card at 1.0-1.5 is
     fair, its price never cut toward the ceiling. A dearer card has a stronger or different effect,
@@ -119,7 +119,7 @@ card cost or rider prints 1 credit: fold it into the price or raise it. A counte
 a per-tag rate of 1 is a rate, not an amount.
 
 **Board state to size removals against:** agents median 6 a country (p90 10) and 6 in a seat's
-reach (p90 12); troops 0-1 a country (p90 3); a project holds under its cost (5-22 compute a board, 231).
+reach (p90 12: a power's or standard action's area; a card's is its target); troops 0-1 a country (p90 3); a project holds under its cost (7-22 compute a board, 231).
 
 ## House wording
 
@@ -139,7 +139,7 @@ The sheet is `icons.png` from `node tools/card-art/render.mjs`.
 | Square tile | a resource (cards included) |
 | Disc | a token on a card: alone, on this card ("here") |
 | Bare silhouette | a piece on the board, or moving one. Each piece has one symbol, the map's where the map draws one: ambassador, agent (a figure in a brimmed hat), node, botnet, troop, drone (chevrons) |
-| Place after a piece (dark frame) | where: a city, station or factory glyph, only that kind (a cube) or on or next to it (a botnet, agents, ambassadors); a country, in one country |
+| Place after a piece (dark frame) | where: a city, station or factory glyph, only that kind (a cube) or on or next to it (a botnet, agents, ambassadors); a country, in the target's country |
 | Ringed circle | a tag; an empty ring, a tag of any kind |
 | Number before an icon | how many; no number means 1 |
 | Minus before an icon | pay or lose it, 1 included, and nothing else: every paid cost, an Action's included |
@@ -160,7 +160,7 @@ The sheet is `icons.png` from `node tools/card-art/render.mjs`.
 | `/` | per |
 | OR, ALL, ACT | written out; ACT is an Action granted |
 | Shield | one stop on one piece: alone, a hardening token on a facility; with a node, a shield |
-| Roof | cover over many pieces: with a country, Shelter (this round); with a node, all your pieces (Aegis: any one, once a round; Sanctuary: nodes, from corruption) |
+| Roof | cover over many pieces, with a node: Shelter (your nodes and facilities in reach, this round); Aegis (any one, once a round); Sanctuary (nodes, from corruption and agents) |
 | Node | place it, paying its track step |
 | Threat (`!`) | a threat. Counter is the threat struck through |
 | Jam (threat with a down arrow) | after the less mark: one threat needs that much less of each resource |

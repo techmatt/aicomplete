@@ -131,11 +131,9 @@ each later step adds 1, so a tier-2 keep (3 insight, r95) fits from round 2.
 **Loops and caps.** No resource has a holding limit and no cap limits production ([economy.md](economy.md), *No
 limits*): a runaway is fixed at the cards that feed it. Program credit income stacked by draw chains is bounded by
 insight (every card that draws costs at least 1 to play, and credits can't buy it) and by the per-tag programs' rate
-of 1 a 2 tags. Credits → chips → buildings → income → credits runs once a round and in 5 slots at most; chips
-can't be sold back. Rush Build
-takes 1 Industry tag and 1 energy out and puts a building with 1-3 tags in, once a round: the Industry count can hold
-level, but each use spends an energy and a card for good, and the building still pays its insight, so energy and the
-hand cap it. **The energy gift** (Shared Grid Accord and Interconnector Treaty, programs) is one-shot. Energy bought
+of 1 a 2 tags. Credits → chips → buildings → income → credits runs once a round and in the slots at most; chips
+can't be sold back. Rush Build (once a round) spends an energy and a card for good, so energy and the hand cap
+it. **The energy gift** (Shared Grid Accord and Interconnector Treaty, programs) is one-shot. Energy bought
 from a neutral city (Buy energy) costs `city_energy_credits`; credits → energy → a card's income is capped by the
 cards and the cities' energy (once per city a round, a city's `corp_energy` a buy, none while an agent stands on it). **Energy
 counters** spend energy for good. **The Researcher's:** Patience with the cube converters (Cintamani's, a cube for 2
@@ -144,11 +142,10 @@ capped by how many stations make cubes (and Open Archive's and Cryo Sample Vault
 a Cintamani city in reach. **Antimatter (r97):** a plant's Action (a resource for 1) and Horizon's converter (3 cubes and 1 energy for 1) are once a
 round, beside each board's rare burn ([ai-powers.md](ai-powers.md)) and the desperate standard action (5 cubes for 1, r97); it
 pays for the majors that print it ([economy.md](economy.md)). Patience banks all the
-Researcher's unspent insight, a gift too; only cards that print it pass insight, at their cost, and no standard
-action gives it. Open Science's insight goes only to other players; alone it is the Researcher's own, and Patience
-keeps it.
+Researcher's unspent insight, a gift too; only cards that print it pass insight, at their cost. Open Science's
+insight goes only to other players.
 Followers → ambassadors → alignment → city energy → node is capped by building count and the Followers each
-ambassador costs. Remove agents spends its ambassador and places nothing (r75), capped by the supply.
+ambassador costs. Remove agents costs 2 ambassadors (`remove_ambassadors`) and places nothing (r75), capped by the supply.
 **Dispatches** have no loop: a number a round, used up, gaining nothing held. Wall has no loop, but it takes
 troops away as a harm where the Protector stands; `docs/harms.md`'s checks count sources, so they hold.
 

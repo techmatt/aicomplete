@@ -217,19 +217,18 @@ export async function fitCards(root = document) {
   return rows;
 }
 
-/** A player card's keep cost by tier: what drafting it into your hand costs, in insight (r82). */
-export const keepCost = (tier) => (tierOf(tier) >= 2 ? 2 : 1);
-
 /**
  * A player card's back (191, amendment 8617): the tier's frame color and its keep cost, one insight hexagon a point,
  * centered low, so a drafted card's price reads from the deck. No art yet: a placeholder ground.
  *
  * @param tier   1 or 2 (0, unique, shares tier 1's back)
  * @param layout web/card/layout.json, through inset()
+ * @param keep   the tier's keep cost in insight (`cards.keep_tier1`/`keep_tier2`, the export's `keep`; 235: it was
+ *               hard-coded here, tier 2 at 2 after r95 made it 3)
  */
-export function renderBack(tier, layout) {
+export function renderBack(tier, layout, keep) {
   const t = tierOf(tier);
-  const n = keepCost(tier);
+  const n = keep;
   const [W, H] = layout.bleed_mm;
   const [x0, y0, x1, y1] = layout.common.insight;
   const w = x1 - x0;

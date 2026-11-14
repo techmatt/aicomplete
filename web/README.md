@@ -111,14 +111,19 @@ checker, checks the page at the moments that matter over many games. It needs a 
   at random (choices, hex picks, the odd undo). `AIC_SWEEP_SEEDS` games per case and mode (3; `--quick` 1), the
   simulated ones from seed `AIC_SWEEP_SEED` (100).
 - **Moments:** new rounds, prompts, the first of each key event and counter rise
-  (`COUNTER_EVENTS`, `_R41` to `_R85`: r85's are the project ops), the end. At each, the checks at 1366×768, layout at the two
+  (`COUNTER_EVENTS`, `_R41` to `_R99`: r99's are Fallout, Night Raid, Crackdown, Lab Purge, antimatter, burns,
+  reach Shelters and targets), the end. At each, the checks at 1366×768, layout at the two
   larger sizes, and a screenshot (at most 14 a game, plus the end and any failure).
 - **Fail the run** (exit 1): console errors and blocking dialogs, `stuck` (no legal action
   without an outcome), the error bar, page scroll, placeholder text (`undefined`, `NaN`),
   elements off screen with no scroll to them, `hidden-target`, `clipped` (no ellipsis),
   `token-unknown`, `stale-word` (an old house word on screen: agents, Operatives), `case` (`aic-sim` could not play it). **Reported for a look:** `no-control`
   (a legal action with no control on screen), `raw-id`, `truncated-no-hover`, `truncated`,
-  overlaps, undrawn view tokens, steps over 150 ms, heap growth over 50 MB.
+  overlaps, undrawn view tokens, steps over 150 ms, heap growth over 50 MB, `mark-over-number` (a highlight ring
+  painted across a hex number) and `warn-at-start` (a value drawn as a warning at a game's first phase: a full
+  allotment drawn as danger).
+- **Don't rebuild mid-sweep:** records from an `aic-sim` built after the served wasm load with a content-hash
+  warning in the error bar, which fails the run (`error-banner`).
 - **Output** in `web/sweep-out/` (`AIC_SWEEP_OUT`): `shots/`, `issues.json` (game, step,
   moment), `index.html`, `sheet-N.png` contact sheets (failures framed red), the records.
   `AIC_SWEEP_VERBOSE=1` times each moment. Hooks: `window.aic` (main.ts), `scripts/cdp.mjs`.

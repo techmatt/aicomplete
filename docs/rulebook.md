@@ -55,7 +55,7 @@ Everyone wins or loses together.
   every corrupted city, botnet, adversary troop and agent. As the world swings toward **Unity**, it asks for less; in
   the end, only the corrupted cities (§14).
 - **You lose** if any of these happens:
-  - the Discord deck is empty when Discord needs a card. **The Discord deck is the game's clock**: 6 cards, never
+  - the Discord deck is empty when Discord needs a card. **The Discord deck is the game's clock**: 7 cards, never
     reshuffled (§12);
   - any player has no nodes left on the map;
   - the adversary's event deck runs out: 13 rounds at most at levels 0-2, 11 at the hardest levels.
@@ -96,10 +96,10 @@ by the cube on it:
 |---|---|---|---|---|
 | **Neutral** | none | its energy may be bought (Buy energy, §8) | 1 neutral cube onto its megaproject | nothing |
 | **A player's** | that player's | 1 energy to its owner | 2 cubes in its owner's color | 1 chip to its owner |
-| **Corrupted** (the adversary's) | adversary | 1 Discord | 1 compute for the adversary | 1 adversary troop on its hex |
+| **Corrupted** (the adversary's) | adversary | 1 Discord | 1 adversary cube onto its megaproject; once that is complete, 1 compute for the adversary | 1 adversary troop on its hex |
 
 Sites make this in production (§9), except a neutral city's energy (bought, §8) and a corrupted station's compute
-(the adversary's turn, §6).
+once its megaproject is complete (the adversary's compute step, §6).
 
 **Blocked.** A site with an **opposing piece** on it makes nothing. An agent blocks a neutral or player site. A
 player's ambassador blocks a corrupted site, so a corrupted city with your ambassador on it makes no Discord. Nodes
@@ -255,7 +255,7 @@ Nothing has a holding limit, and nothing caps your income.
 **Insight is this round's attention.** Your card-play track prints it, as in Spirit Island: 3 at its start, and on
 later spaces the new total, each board at its own rate (the Builder 7, 8, 9, 10; the Protector
 and the Researcher 7, 8, 9): a big jump on the first space, then a step at a time. At the start of each round, set your insight to the number on the rightmost
-space you've uncovered (3 before any), plus what your cards add. Insight you don't spend is lost (except under Patience),
+space you've uncovered that shows one (3 before any), plus what your cards add. Insight you don't spend is lost (except under Patience),
 and no threat or project takes it: it is spent the turn it comes. Everything else on your
 board and cards pays at the end of production's **income step** (§9).
 
@@ -305,7 +305,7 @@ which threats it deals (§10).
 
 The adversary in this book is **the Militarist**. Its board has three project slots and three rules:
 
-- **Garrisons:** +1 agent income in each country. (The agent income in §21's table already includes it.)
+- **Garrisons:** +1 agent income in each country. (§21's table lists only what a level adds on top of it.)
 - **Warmongering:** in production's growth (§9), each military base with an adversary troop on or next to it gains 1
   extra drone, even past its limit (§19).
 - **War Takes Ground:** when a drone destroys a factory in war (§19), it also destroys a node on that hex (§13
@@ -328,8 +328,8 @@ The adversary's board prints its turn as a strip of four beats, played in order.
   each country, Discord, Unity taken back, a blackout, node loss by a front, a forced march, botnets spreading.
   Every stage-II and stage-III card (and Long Patrols in stage I) raises the agent income by 1 a country for the rest
   of the game, so the agents grow as the game goes on. **Botnets spread** puts a botnet in each country onto its
-  lowest-numbered site (city, station or factory) next to one of its botnets; with no such site, onto its
-  lowest-numbered research station.
+  lowest-numbered site (city, station or factory) without one next to one of its botnets, or nowhere if it has no such
+  site; a country with no botnet gets one on its lowest-numbered research station.
 
 **2. Corrupt.** Each Corrupt line on the card, in order; then natural corruption (both below).
 
@@ -381,8 +381,8 @@ corrupt the site they name. Corruption never spreads by itself.
 - **Open land** takes a **Fallout** token, the one scar on the map. Any node there is destroyed and every
   ambassador removed, as for a site. Nothing can be built or placed on Fallout (no node, factory or research
   station), and each token adds 1 Discord every round until a player lifts it (Lift Fallout, §8; some
-  cards). Threats, projects and the Discord card Scorched Earth also drop Fallout on free open land next
-  to their site: never on a node, a building or another Fallout.
+  cards). Threats also drop Fallout on free open land on or next to their location, and projects and the
+  Discord card Scorched Earth next to the corrupted sites they name: never on a node, a facility or another Fallout.
 
 §15 has every detail.
 
@@ -554,8 +554,8 @@ Standard actions are always there, a hedge against bad luck: cards and your boar
 | **Remove a troop** | 10 credits | once a round: remove 1 adversary troop in your reach |
 | **Take down a botnet** | 16 credits | remove a botnet in your reach where your ambassador stands (the ambassador stays) |
 | **Buy energy** | 5 credits | gain the energy (1) of a neutral city in your reach that isn't blocked or blacked out; each city once a round, for all players together |
-| **Lift Fallout** | 2 research cubes | remove 1 Fallout token in your reach; the only standard action that removes corruption |
-| **Build a research station** | 1 chip | on an open hex in reach that isn't an industrial zone or corrupted land; it is yours |
+| **Lift Fallout** | 2 research cubes | remove 1 Fallout token in your reach; the one standard action that removes Fallout |
+| **Build a research station** | 1 chip | on an open hex in reach that isn't an industrial zone or Fallout; it is yours |
 | **Envoy** | 1 ambassador from your supply | remove 1 Discord from the Discord track |
 | **Gain an ambassador** | 20 credits | into your supply |
 | **Research cube** | 1 research cube | gain 1 insight |
@@ -746,7 +746,7 @@ Effects **sway** Unity or Discord ("add 2 Unity"): put that many on that side's 
 
 - **Unity** is trust and cooperation: liberating sites (city 5, station or factory 2), Biomia,
   and cards that build or bring people together.
-- **Discord** is fear, force and collateral harm: corrupted cities (1 each a round), face-up Fallout (1 each a
+- **Discord** is fear, force and collateral harm: corrupted cities (1 each a round), Fallout (1 each a
   round), factories destroyed in war (1 each), threats and projects, and your own strikes (Surgical Strike, Kettle
   Operation, Martial Cordon, Kinetic Interdiction, Annihilation Lance, The Nuclear Option). Taking a botnet down sways
   nothing.
@@ -782,8 +782,8 @@ its token, and what it would have placed there stays in the supply; a no-Corrupt
 and every agent moving onto it. The tokens come off at the end of the next adversary turn, like a firewall.
 
 - **The Unity deck** (23 cards) reshuffles when it runs out.
-- **The Discord deck** (6 cards) **never reshuffles.** A Discord tip with no card left loses the game: you survive 6
-  Discord tips and lose on the 7th, at every level (§21).
+- **The Discord deck** (7 cards) **never reshuffles.** A Discord tip with no card left loses the game: you survive 7
+  Discord tips and lose on the 8th, at every level (§21).
 
 *Sources: rules/alignment.md; configs/baseline.json (`tip_per_player` 3, `discord_tip_per_player` 4, `carry` 2, `hold_off` 1, `tier_at` 3, 6); content/alignment.json;
 crates/aic-core/src/modules/alignment.rs, modules/board/production.rs (the tip's drones).*
@@ -946,8 +946,8 @@ modules/effects/endgame.rs, modules/effects/removal.rs, modules/adversary/.*
 ## 17. Projects
 
 The adversary board has **slots** (the Militarist: three open slots that take any project). **To deal**, turn up
-projects one at a time until every slot is full: each goes into the first empty slot. When the deck runs out, shuffle the
-discard back in.
+projects one at a time until every slot is full: each goes into the first empty slot. A project that resolves or is discarded leaves the
+game; once the deck runs out, no more are dealt.
 
 A project prints **one cost a board**: in play it costs that times the number of countries. All compute arrives in one
 step, the **compute step** of the Income beat: the compute income (printed a country, so times the countries), 1 for
@@ -1018,7 +1018,7 @@ Each power can be used once a round, in the action phase. A tag in a cost means 
 
 | Board | Node power | Conversions | Draw | Sacrifice and other powers |
 |---|---|---|---|---|
-| Builder | **Buy In** (6 credits: a node; 1 chip if the new node brings a factory into your reach) | **Mint** (3 credits: 1 chip) | **Procure** (1 chip: draw 2) | **Fortify** (2 chips: remove 1 adversary troop in reach and harden a facility in reach), **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand), **Teardown** (1 chip: destroy one of your own factories anywhere, Fallout goes on its hex; 1 antimatter) |
+| Builder | **Buy In** (6 credits: a node; 1 chip if the new node brings a factory into your reach) | **Mint** (3 credits: 1 chip) | **Procure** (1 chip: draw 2) | **Fortify** (2 chips: remove 1 adversary troop in reach and harden a facility in reach), **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand), **Teardown** (1 chip: destroy one of your own factories anywhere, Fallout goes on its hex, under any node there, which stays; 1 antimatter) |
 | Protector | **Accord** (1 Diplomacy: a node; if the new node brings a city into your reach, a new ambassador onto one such city) | **Interdict** (1 Security: remove up to 2 adversary troops in one hex in reach) | **Debrief** (1 Security: draw 1, and remove 1 agent in a hex in reach) | **Bulwark** (1 energy: harden a facility in reach), **Patrol** (1 energy: push up to 3 agents or adversary troops from a hex in reach), **Reclaim** (1 Security, 6 credits, 2 energy: turn a corrupted station or factory in reach neutral; 1 antimatter) |
 | Researcher | **Peer Review** (1 research cube: a node; 1 insight if the new node brings a research station into your reach) | **Grant** (3 credits: 1 cube in your color on a megaproject that isn't complete) | **Synthesis** (1 insight: draw 1) | **Disrupt** (1 Cyber, 1 research cube: remove up to 2 adversary troops in one country), **Field Station** (1 Industry: a research station without the chips, where Build a research station could go), **Audit** (1 Cyber: remove 3 compute from a project), **Meltdown** (2 research cubes: destroy one of your own research stations anywhere; 1 antimatter) |
 
@@ -1145,7 +1145,7 @@ The shape says the kind of thing; the picture inside says which. (The art is not
 | Node | place a node, paying its track space |
 | Move (a figure with an arrow) | move ambassadors onto pieces; with a pin after it, all onto one piece |
 | Shield | one stop on one piece: a hardening token, on a facility or with a node |
-| Roof | cover over many pieces: with a node, a card's Shelter (your pieces in your reach, this round); with a node, all your pieces (the Aegis Doctrine shelters the first of your nodes or facilities that would be destroyed each round; Sanctuary, every node from corruption) |
+| Roof | cover over many pieces, always with a node. On a card's effect line, its Shelter: your nodes and facilities in your reach, this round. On a capstone, standing cover for your pieces: the Aegis Doctrine shelters the first of your nodes or facilities that would be destroyed each round; Sanctuary (after the corrupt mark and a colon) keeps every node from corruption and agents |
 | Sway (a marker on a track) | add that much Unity (you may put it against Discord, §12), or Discord on the one card that says so |
 | Peek (a card with an eye) | look at the next event cards under the face-up one |
 | Threat (`!`) | a threat; struck through: pay it off |
@@ -1178,7 +1178,7 @@ crates/aic-core/src/face.rs, modules/cards/triggers.rs.*
   number corrupts, §6 and §15.
 - **Corrupted:** owned by the adversary. **Neutral:** owned by nobody.
 - **A country you're in:** a country where you have a node. **Your home country:** the one you start in.
-- **Discord:** the adversary's track; 6 Discord cards, and a 7th tip loses, §12. **Unity:** your track, §12.
+- **Discord:** the adversary's track; 7 Discord cards, and an 8th tip loses, §12. **Unity:** your track, §12.
 - **Dispatch:** the standard action that puts one of your ambassadors onto a piece or botnet in reach; **Dispatches:** how many
   you have each round, §5 and §8.
 - **Draw:** take the top tier-1 card, free.
@@ -1204,12 +1204,12 @@ crates/aic-core/src/face.rs, modules/cards/triggers.rs.*
 - **Remove up to N:** as many as there are, up to N.
 - **Shelter:** none of your nodes or facilities in your reach can be destroyed until cleanup, §13 (a card's Shelter
   takes no target).
-- **Target:** the one hex in your reach a card that touches the map acts on, meeting its target box, §2.
 - **Site:** a city, research station or factory.
 - **Stage:** I, II or III, printed on each event card, §6.
 - **Strength:** Unity and Discord cards resolve at strength I, II or III (by tip count), §12.
 - **Sway:** add Unity or Discord to its track. **Tip:** §12.
-- **Target:** a place a Corrupt line can corrupt, §15; an adversary troop's targets are players' nodes and facilities, §6.
+- **Target:** the one hex in your reach a card that touches the map acts on, meeting its target box, §2. Also a place
+  a Corrupt line can corrupt, §15; an adversary troop's targets are players' nodes and facilities, §6.
 - **Tier:** player cards and threats come in tier 1 and tier 2 (decks).
 - **Troop:** always the adversary's; a megacorp's piece is a drone.
 

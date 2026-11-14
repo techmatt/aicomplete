@@ -174,7 +174,7 @@ function grid(list) {
 /** 191: the player cards' two backs, each with its tier's keep cost. */
 function backs() {
   $('cards').className = 'grid';
-  $('cards').innerHTML = [1, 2].map((t) => `<div class="tile"><div class="scaled">${renderBack(t, layout)}</div></div>`).join('');
+  $('cards').innerHTML = [1, 2].map((t) => `<div class="tile"><div class="scaled">${renderBack(t, layout, data.keep[t])}</div></div>`).join('');
 }
 
 function table(list) {

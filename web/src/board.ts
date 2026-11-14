@@ -294,6 +294,8 @@ export function renderBoard(svg: SVGSVGElement, view: View, marks: Marks) {
   const labelLayer = el('g', { class: 'labels' });
   const tokenLayer = el('g', { class: 'tokens' });
   const markLayer = el('g', { class: 'marks' });
+  // 235: hex numbers over the highlight rings (the threat-source ring struck through the numbers prompts name).
+  const numLayer = el('g', { class: 'nums' });
 
   view.hexes.forEach((h, i) => {
     const [x, y] = pts[i];
@@ -303,7 +305,7 @@ export function renderBoard(svg: SVGSVGElement, view: View, marks: Marks) {
     if (marks.changed.has(key)) cls.push('changed');
     const g = el('g', { class: cls.join(' '), 'data-hex': key, 'data-index': h.index, 'data-country': h.country });
     g.append(el('polygon', { points: corners(x, y), fill: kindFill(h.kind), class: 'cell' }));
-    g.append(el('text', { x: f(x), y: f(y - 0.66), class: 'num' }, String(h.number)));
+    numLayer.append(el('text', { x: f(x), y: f(y - 0.66), class: 'num', 'data-hex': key }, String(h.number)));
     // A printed industrial zone: a cog outline low on the hex.
     if (h.industrial) {
       g.append(el('circle', { cx: f(x), cy: f(y + 0.62), r: 0.13, class: 'zone-mark' }));
@@ -355,5 +357,5 @@ export function renderBoard(svg: SVGSVGElement, view: View, marks: Marks) {
     labelLayer.append(g);
   }
 
-  svg.append(hexLayer, labelLayer, borderLayer, frontLayer, tokenLayer, arrowLayer(view, pts), markLayer);
+  svg.append(hexLayer, labelLayer, borderLayer, frontLayer, tokenLayer, arrowLayer(view, pts), markLayer, numLayer);
 }

@@ -485,12 +485,14 @@ fn requisition(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, r: Resource, amount: i
             let words = if next_round { format!("{} less next round", r.amount(amount)) } else { format!("pay {}", r.amount(amount)) };
             opts.push(opt(words));
         }
+        // 235: "discard 1 cards".
+        let cards_w = if n == 1 { "1 card".to_string() } else { format!("{n} cards") };
         if g.pile(&cards::hand(s)).len() as i64 >= n {
-            opts.push(opt(format!("discard {n} cards")));
+            opts.push(opt(format!("discard {cards_w}")));
         }
         // 184: Data Heist's "pays 3 insight next round" asked "lose 3 insight" (as if from what the seat holds).
         let when = if next_round { " next round" } else { "" };
-        let prompt = || format!("{}: lose {}{when} or discard {n} cards?", head(ctx, s), r.amount(amount));
+        let prompt = || format!("{}: lose {}{when} or discard {cards_w}?", head(ctx, s), r.amount(amount));
         match cx.choose_loss(s, prompt, opts)? {
             Some(0) if can_pay => {
                 if !next_round {
@@ -544,7 +546,7 @@ fn lose_node_or(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, r: Resource, amount: 
         let off = opts.len();
         let first = mine(g);
         opts.extend(first.iter().map(|&h| labeled_hex_opt(&w, "lose nodes", h)));
-        let prompt = || format!("{}: pay {} or lose {count} nodes?", head(ctx, s), r.amount(amount));
+        let prompt = || format!("{}: pay {} or lose {count} node{}?", head(ctx, s), r.amount(amount), if count == 1 { "" } else { "s" });
         match cx.choose_loss(s, prompt, opts)? {
             Some(i) if i < off => cx.add_resource(g, s, r, -amount),
             Some(i) => {
@@ -579,10 +581,12 @@ fn lose_ambassadors_or(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, s: usize, coun
     if can_pay {
         opts.push(opt(format!("pay {}", r.amount(amount))));
     }
+    // 235: "lose 1 ambassadors".
+    let lost = if count == 1 { "1 ambassador".to_string() } else { format!("{count} ambassadors") };
     if held > 0 {
-        opts.push(opt(format!("lose {count} ambassadors")));
+        opts.push(opt(format!("lose {lost}")));
     }
-    let prompt = || format!("{}: pay {} or lose {count} ambassadors?", head(ctx, s), r.amount(amount));
+    let prompt = || format!("{}: pay {} or lose {lost}?", head(ctx, s), r.amount(amount));
     match cx.choose_loss(s, prompt, opts)? {
         Some(0) if can_pay => cx.add_resource(g, s, r, -amount),
         Some(_) => {
@@ -740,7 +744,7 @@ fn corp_troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, c: Corp, when: CorpWhe
     }
 }
 
-/// Scorched Earth: the factory under the threat's token is destroyed (as any
+/// Siege: the factory under the threat's token is destroyed (as any
 /// destruction, absorbed the same way), with the nodes on its hex, a last
 /// one too (175).
 fn destroy_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx) -> Res {

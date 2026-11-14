@@ -112,11 +112,12 @@ const PAGE_LIB = String.raw`(() => {
     if (e.type === 'tokens_changed' && e.token === 'cube:adversary' && up) return 'corruption';
     if (e.type === 'tokens_changed' && e.token === 'troop' && up) return 'troop';
     // 044: r19 and r20's table: markers, shields on nodes, delays, the rich action.
-    if (e.type === 'tokens_changed' && e.token === 'corruption') return up ? 'marker placed' : 'marker cleared';
+    // 235: the corruption marker went at r98; Fallout is the one scar (r99).
+    if (e.type === 'tokens_changed' && e.token === 'fallout') return up ? 'fallout placed' : 'fallout lifted';
     if (e.type === 'tokens_changed' && e.token === 'harden' && up) return 'hardened';
     if (e.type === 'var_changed' && /^threats\.late\./.test(e.key)) return 'threat waits';
     if (e.type === 'var_changed' && e.key === 'adversary.stage' && up) return 'stage ' + e.total;
-    if (e.type === 'note' && / destroyed$/.test(e.text ?? '')) return 'destruction';
+    if (e.type === 'note' && / destroyed(: \d+ Discord)?$/.test(e.text ?? '')) return 'destruction';
     return null;
   }
   /** 099: r35-r38's rules show in the engine's counters, not in its events: a counter
@@ -141,9 +142,13 @@ const PAGE_LIB = String.raw`(() => {
   // r85 (195, 197): each project op acting: a project's act, botnet troops, botnets made and spread,
   // a site taken or neutralized, factory troops (and blocked), a node raid, hardening stripped, the clock.
   const COUNTER_EVENTS_R85 = /^adversary\.(project_acts\.[a-z_]+|botnet_troops|botnets_(made|spread)|sites_(taken|neutralized)|factory_troops(_blocked)?|node_raids|hardening_stripped|clock_cards)$/;
+  // 235: r99-r106: Fallout placed and lifted, Night Raid's agents on nodes, Crackdown's recall, Lab Purge's
+  // stripped cubes, cubes made antimatter, a board burn, a placed ambassador, a reach Shelter, a card's target in reach.
+  const COUNTER_EVENTS_R99 = /^(fallout\.(placed|lifted)|adversary\.(night_raid_agents|ambassadors_recalled|cubes_stripped)|board\.(cubes_to_antimatter|burned\.[a-z_]+)|effects\.(ambassadors_placed|shelter_reach)|cards\.(agents|troops)_in_reach)$/;
+  const COUNTER_ALL = [COUNTER_EVENTS, COUNTER_EVENTS_R41, COUNTER_EVENTS_R55, COUNTER_EVENTS_R70, COUNTER_EVENTS_R74, COUNTER_EVENTS_R85, COUNTER_EVENTS_R99];
   const counters = () => { const c = aic.timeline.frame.snap.state.stats?.counters ?? {}; return Array.isArray(c) ? Object.fromEntries(c) : c; };
   function counterEvents(c0, c1) {
-    return Object.keys(c1).filter((k) => (COUNTER_EVENTS.test(k) || COUNTER_EVENTS_R41.test(k) || COUNTER_EVENTS_R55.test(k) || COUNTER_EVENTS_R70.test(k) || COUNTER_EVENTS_R74.test(k) || COUNTER_EVENTS_R85.test(k)) && (c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);
+    return Object.keys(c1).filter((k) => COUNTER_ALL.some((re) => re.test(k)) && (c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);
   }
   /** Why the step from a to b is worth a capture, or null. */
   function moment(a, b, events, extra = []) {
@@ -290,6 +295,39 @@ const PAGE_LIB = String.raw`(() => {
       const w = Math.min(a.right, c.right) - Math.max(a.left, c.left), h = Math.min(a.bottom, c.bottom) - Math.max(a.top, c.top);
       if (w > 1.5 && h > 1.5) add('board-text-overlap', label(texts[i].t) + ' and ' + label(texts[j].t));
     }
+    // 235: a highlight ring's edge must not cross a hex number (the threat-source ring struck through the numbers
+    // prompts name). Each mark polygon's edges, in screen space, against its hex's number box (inset a fifth up and
+    // down: the font box is taller than the digits).
+    const nums = new Map([...document.querySelectorAll('#board text.num')].map((t) => [t.dataset.hex, t]));
+    for (const m of document.querySelectorAll('#board .mark')) {
+      const ctm = m.getScreenCTM();
+      if (!ctm || !m.points) continue;
+      const p = [...m.points].map((q) => ({ x: q.x * ctm.a + q.y * ctm.c + ctm.e, y: q.x * ctm.b + q.y * ctm.d + ctm.f }));
+      const xs = p.map((q) => q.x), ys = p.map((q) => q.y);
+      const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+      // The number of the hex whose center the ring shares.
+      let num = null, best = Infinity;
+      for (const t of nums.values()) {
+        if (!t) continue;
+        const r = t.getBoundingClientRect();
+        if (Math.abs((r.left + r.right) / 2 - cx) < 2 && r.bottom < cy && cy - r.bottom < best) { best = cy - r.bottom; num = t; }
+      }
+      // Only a ring painted over the number strikes it (numbers draw above the marks since 235).
+      if (!num || !vis(num) || !(num.compareDocumentPosition(m) & Node.DOCUMENT_POSITION_FOLLOWING)) continue;
+      const r0 = num.getBoundingClientRect(), dy = (r0.bottom - r0.top) / 5;
+      const r = { left: r0.left, right: r0.right, top: r0.top + dy, bottom: r0.bottom - dy };
+      const hits = p.some((a, i) => { const b = p[(i + 1) % p.length];
+        for (let k = 0; k <= 20; k++) { const x = a.x + (b.x - a.x) * k / 20, y = a.y + (b.y - a.y) * k / 20;
+          if (x > r.left && x < r.right && y > r.top && y < r.bottom) return true; }
+        return false; });
+      if (hits) add('mark-over-number', (m.getAttribute('class') ?? 'mark') + ' crosses hex number ' + num.textContent);
+    }
+    // 235: nothing is near danger when a game starts: a value chip drawn as a warning in round 1 (the agent
+    // supply and the Dispatches were drawn so while full, the safe end) is an inverted warning.
+    // (Round 1, not its first phase: a game's first capture is its first choice.)
+    if (aic.view.round <= 1)
+      // (A seat's last node is real danger from the start: the baseline deals one node.)
+      for (const el of document.querySelectorAll('.value.near, .value.danger')) if (vis(el) && !el.dataset.loss) add('warn-at-start', label(el));
     // Every token in the view is drawn.
     for (const h of aic.view.hexes) for (const tok of h.tokens) {
       if (tok.count > 0 && !document.querySelector('#board [data-hex="' + h.hex.join(',') + '"][data-token="' + tok.kind + '"]'))

@@ -39,7 +39,7 @@ pub(super) fn token_card(
         .filter(|c| g.var(&cards::tokens_key(seat, c)) >= least.max(1))
         .collect();
     let opts = ids.iter().map(|c| opt(*c)).collect();
-    let prompt = || format!("Seat {seat}: count the {kind} on which card?");
+    let prompt = || format!("Seat {seat}: count the {} on which card?", kind.plural());
     Ok(cx.choose(seat, prompt, opts)?.map(|i| ids[i]))
 }
 

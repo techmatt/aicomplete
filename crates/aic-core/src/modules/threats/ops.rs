@@ -50,10 +50,12 @@ pub fn requisition(
         if can_pay {
             opts.push(opt(format!("pay {}", resource.amount(amount))));
         }
+        // 235: "discard 1 cards".
+        let cards_w = if n == 1 { "1 card".to_string() } else { format!("{n} cards") };
         if g.pile(&cards::hand(s)).len() as i64 >= n {
-            opts.push(opt(format!("discard {n} cards")));
+            opts.push(opt(format!("discard {cards_w}")));
         }
-        let prompt = || format!("{}: pay {} or discard {n} cards?", head(why, s), resource.amount(amount));
+        let prompt = || format!("{}: pay {} or discard {cards_w}?", head(why, s), resource.amount(amount));
         match cx.choose(s, prompt, opts)? {
             Some(0) if can_pay => {
                 cx.add_resource(g, s, resource, -amount);

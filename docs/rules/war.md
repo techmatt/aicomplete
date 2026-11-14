@@ -142,7 +142,8 @@ punishment enough), whatever took it. Fallout, the one scar, comes off by the st
 (`land_cubes` research cubes; [economy.md](economy.md)) or a card that says so, for no reward but the drip and the hex back (r98: the Unity a marker paid is gone, a candidate).
 **Destruction.** Only war sways Discord: a factory destroyed by the drones crossing a
 front sways `destruction_discord` Discord. An adversary troop's strike (in the march) sways
-nothing (Matt). A shelter on the country stops a destruction, spending nothing, and so
+nothing (Matt). A Shelter card stops a destruction of its player's own nodes and facilities on the hexes in their reach when it is played, to the round's end,
+spending nothing, and so
 does the Aegis Doctrine capstone, a shelter on the Protector's own pieces once a round (r82: the first time each round
 one of its nodes or facilities would be destroyed, automatically, asking nothing). Otherwise **the piece's owner
 chooses which protection to spend, or none** (r75, Matt's ruling 5; seat 0 for a neutral piece): a hardening token on the hex, **the owner's own ambassador on the hex**

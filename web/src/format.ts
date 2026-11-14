@@ -21,7 +21,8 @@ const amount = (n: number, what: string) => `${n} ${(n === 1 ? (SINGULAR[what] ?
 
 function field(k: string, v: unknown): string {
   if (isHex(v)) return `@${hexKey(v)}`;
-  if (k === 'card' && typeof v === 'string') return cardName(v);
+  // 235: a moved threat, project or Alignment card read as its one-word id ("card backdoor").
+  if (k === 'card' && typeof v === 'string') return contentName(v);
   if (k === 'threat' && typeof v === 'string') return threatName(v);
   if (typeof v === 'number' && k === 'delta') return v > 0 ? `+${v}` : `${v}`;
   return typeof v === 'string' ? v : JSON.stringify(v);
@@ -54,7 +55,11 @@ function builtCard(view: View | undefined, seat: number, id: string | undefined)
 
 /** The "Action: ..." sentence of a card's text, without its period (099: the use button named no cost). */
 function actionClause(text: string | undefined): string {
-  return (text ?? '').match(/Action: ([^.]*)\./)?.[1] ?? '';
+  const action = (text ?? '').match(/Action: ([^.]*)\./)?.[1] ?? '';
+  // 235: a targeted card's Action says "on or next to it": name the target (234's "Target: Agents.").
+  const target = (text ?? '').match(/Target: ([^.]*)\./)?.[1];
+  // (Citywide Microgrid's "it" is in a later sentence: any targeted Action names its target.)
+  return action && target ? `target ${target}, then ${action}` : action;
 }
 
 /** " (5 credits + 1 insight)", or nothing for a free card. */
@@ -89,7 +94,8 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
     case 'pass':
       return 'pass';
     case 'choose': {
-      const t = withTarget && isHex(a.target) ? ` @${hexKey(a.target)}` : '';
+      // 235: an option that already names its hex ("Onyx #12") drops the axial " @-1,2" beside it.
+      const t = withTarget && isHex(a.target) && !/#\d+/.test(String(a.option ?? '')) ? ` @${hexKey(a.target)}` : '';
       // An option that is a content id (one word ids too: `sweep`) shows its name.
       // The option is a record key, so it keeps its number; the track step's hover has it.
       // 099: an Action's second half is named by its op (`CashOut`, `GainPerTokens`): in words.
@@ -105,7 +111,11 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       // 184: a card answer (a discard, say) read as if the card were played: "seat 0: Liberation Accords".
       const named = contentName(opName);
       if (named !== opName) return `choose ${named}${t}`;
-      return `${contentIds(named).replace('T2 keep -1', 'T2 keep')}${t}`;
+      // 235: a sacrifice option names its source by the engine's word ("sacrifice stack Intrusion Lab").
+      const plain = contentIds(named).replace('T2 keep -1', 'T2 keep')
+        .replace(/^sacrifice stack (.*)$/, 'sacrifice $1 (with any buildings under it)')
+        .replace(/^sacrifice (program|hand) /, 'sacrifice ');
+      return `${plain}${t}`;
     }
     case 'tier':
       return `draft from tier ${a.tier}`;
@@ -128,11 +138,22 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       const paid = (p.cost ?? []).map(([r, n]) => amount(n, r));
       const tags = p.tags.map(([t, n]) => `${n} ${t}`).join(' + ');
       const cost = [...paid, ...(tags ? [`sacrifice ${tags}`] : [])].join(', ');
+      // 235: one source alone can pay its tags, so it goes unasked: the view names it.
+      const shown = cx.view?.seats[a.seat]?.board?.cards.find((c) => c.id.endsWith(`.power.${a.power}`));
+      const lone = /Sacrifices: ([^.]*)\./.exec(shown?.text ?? '')?.[1];
+      const takes = lone ? ` (sacrifices ${lone})` : '';
       // 118: Synthesis has no price: no empty "()".
-      return `power: ${p.name}${cost ? ` (${cost})` : ''}: ${p.text ?? ''}`;
+      return `power: ${p.name}${cost ? ` (${cost})` : ''}${takes}: ${p.text ?? ''}`;
     }
-    case 'pay':
-      return `pay ${amount(Number(a.amount), String(a.resource))} → ${threatName(String(a.threat))}`;
+    case 'pay': {
+      // 235: a part payment read like a full one ("pay 8 credits" toward 12): say what it still needs.
+      const t = String(a.threat);
+      const shown = cx.view?.countries.flatMap((c) => c.cards.flatMap((g) => g.cards)).find((c) => c.id === t);
+      const m = shown?.status.match(new RegExp(`(\\d+)/(\\d+) ${words(String(a.resource))}`));
+      const left = m ? Number(m[2]) - Number(m[1]) - Number(a.amount) : 0;
+      const more = left > 0 ? ` (${left} more to counter)` : '';
+      return `pay ${amount(Number(a.amount), String(a.resource))} → ${threatName(t)}${more}`;
+    }
     case 'withdraw':
       // 145: "research_cubes" read raw (the sweep's raw-id).
       return `take back ${words(String(a.resource))} ← ${threatName(String(a.threat))}`;
@@ -216,7 +237,32 @@ function contentName(id: string): string {
 export const contentIds = (text: string) => text.replace(/(?<![\w.])[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b(?!\.)/g, (m) => contentName(m));
 
 /** "cards.play+threats.counter" → "play + counter". */
-export const shortPhase = (name: string) => name.split('+').map((x) => x.split('.').pop()).join(' + ');
+export const shortPhase = (name: string) => RULEBOOK_PHASE[name] ?? name.split('+').map((x) => x.split('.').pop()).join(' + ');
+
+/** 235: the baseline round's phases in the rulebook's words (§4's steps A-H and §6's beats): the bar read engine keys
+ *  ("deal" twice, "build" for the Card beat's lines, "bases" for growth). The hover keeps the config name. */
+const RULEBOOK_PHASE: Record<string, string> = {
+  'alignment.sway': 'A Sway',
+  'adversary.event': 'B Card',
+  'threats.deal': 'B threats',
+  'adversary.build': 'B lines',
+  'adversary.corrupt': 'B Corrupt',
+  'adversary.natural': 'B natural',
+  'board.march': 'B March',
+  'adversary.reveal': 'B Income',
+  'adversary.compute': 'B compute',
+  'cards.deal': 'C opening',
+  'cards.tier': 'C build',
+  'cards.draft': 'C draft',
+  'cards.keep': 'C keep',
+  'cards.play+threats.counter+board.act+ai.power': 'D Actions',
+  'board.produce': 'E income',
+  'economy.upkeep': 'E boards',
+  'board.bases': 'E growth',
+  'threats.execute': 'F Threats',
+  'board.war': 'G War',
+  'board.cleanup': 'H Cleanup',
+};
 
 /** A one-line event: its type, then its fields. */
 export function eventText(e: GameEvent): string {

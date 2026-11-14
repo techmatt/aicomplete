@@ -579,7 +579,12 @@ impl Module for Adversary {
             CardView {
                 id: id.to_string(),
                 name: p.name.clone(),
-                text: format!("{kind}: {}", p.text),
+                // 235: the card prints one cost a board; say the sum it shows ("0/52" for a printed 13).
+                text: {
+                    let n = w.map.countries.len().max(1);
+                    let c = if n == 1 { "country" } else { "countries" };
+                    format!("{kind}: {} Cost: {} a board × {n} {c}.", p.text, p.cost)
+                },
                 status: status.to_string(),
                 cost: Some(project_cost(w, g, id)),
             }

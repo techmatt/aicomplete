@@ -145,7 +145,8 @@ function act(a: Action) {
   if (!confirmDropLater()) return;
   // Acting from a focused action button (the keyboard): keep focus in that seat's
   // buttons across the re-render (020: it fell back to the page body every time).
-  const fromButton = !!(document.activeElement as Element | null)?.closest?.('#seats .actions');
+  // (235: only when the keyboard put it there: after a click the refocused button took the next Space.)
+  const fromButton = !pointerFocus && !!(document.activeElement as Element | null)?.closest?.('#seats .actions');
   guard(() => {
     tl.act(a);
     showError(null);
@@ -210,10 +211,11 @@ function render() {
 }
 
 /** What a phase asks of the seats, where its key alone doesn't say (the buttons are at a panel's foot). */
+// 235: keyed by the config's phase name (the bar's names are the rulebook's now).
 const PHASE_HINTS: Record<string, string> = {
-  tier: 'pick the tier deck to draft from, at the foot of the panel',
-  draft: 'draft a card, at the foot of the panel',
-  keep: 'choose which drafted cards to keep, each at its keep price, at the foot of the panel',
+  'cards.tier': 'pick the tier deck to draft from, at the foot of the panel',
+  'cards.draft': 'draft a card, at the foot of the panel',
+  'cards.keep': 'choose which drafted cards to keep, each at its keep price, at the foot of the panel',
 };
 
 /** Who the game waits for, and the open choice's question, above the board. */
@@ -237,7 +239,7 @@ function renderPrompt(targets: number) {
   const acting = [...new Set(legal.map((a) => a.seat))];
   // 184: a draft phase named only its key ("tier: Seat 0 to act"); say what the panel's buttons are for.
   const short = v.phase ? shortPhase(v.phase.name) : '';
-  const what = PHASE_HINTS[short];
+  const what = v.phase ? PHASE_HINTS[v.phase.name] : undefined;
   ui.prompt.innerHTML = v.phase && acting.length
     ? `<b>${escapeHtml(short)}:</b> ${acting.map(seatName).join(', ')} to act${what ? ` <span class="how">— ${what}</span>` : ''}`
     : '';
@@ -260,8 +262,8 @@ function renderPhase() {
   let status: string;
   if (v.outcome) {
     const o = v.outcome;
-    // The sentence first, the reason code (what `--save-when` takes) after it.
-    status = `<span class="outcome ${o.won ? 'won' : 'lost'}">${o.won ? 'WON' : 'LOST'} in round ${o.round}: ${escapeHtml(o.detail)} <code>${escapeHtml(o.reason)}</code></span>`;
+    // The sentence; the reason code (what `--save-when` takes) in its hover (235: "on the board node" read as a typo).
+    status = `<span class="outcome ${o.won ? 'won' : 'lost'}" title="reason code: ${escapeHtml(o.reason)}">${o.won ? 'WON' : 'LOST'} in round ${o.round}: ${escapeHtml(o.detail)}</span>`;
   } else status = ''; // who is to act is in #prompt
   ui.phaseBar.innerHTML = `<b>Round ${v.round}</b> <span class="order">${order}</span> ${status}`;
 }
@@ -639,7 +641,13 @@ ui.play.onclick = () => {
   render();
 };
 
+// 235: how focus last moved: a pointer click focuses its button unseen (:focus-visible turns on at the next keydown in
+// Chromium, so it can't tell); Tab or an arrow key moves focus on purpose.
+let pointerFocus = false;
+document.addEventListener('pointerdown', () => { pointerFocus = true; }, true);
+
 document.addEventListener('keydown', (e) => {
+  if (e.key === 'Tab' || e.key.startsWith('Arrow')) pointerFocus = false;
   // Keys and the toolbar do nothing until the engine has loaded (020: they threw).
   if (!tl) return;
   const target = e.target as Element;
@@ -647,8 +655,9 @@ document.addEventListener('keydown', (e) => {
   // and the other keys still work (020: Space, R and Ctrl+Z stopped after using it).
   if (target.closest('input[type=range]') && ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
   if (target.closest('input:not([type=range]), textarea, select, dialog')) return;
-  // Space on a focused button presses that button (020: it started autoplay instead).
-  if (e.key === ' ' && target.closest('button')) return;
+  // Space on a focused button presses that button (020: it started autoplay instead), when the focus came from the
+  // keyboard (235: a mouse click leaves its button focused, unseen, and Space then took, undid or replaced a game).
+  if (e.key === ' ' && target.closest('button') && !pointerFocus) return;
   const keys: Record<string, () => void> = {
     ArrowLeft: () => seek(tl.cursor - 1),
     ArrowRight: () => seek(tl.cursor + 1),

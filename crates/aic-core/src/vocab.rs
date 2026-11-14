@@ -293,11 +293,15 @@ impl TokenKind {
             // 166: printed Operatives (the adversary's pieces are agents); the code name stays.
             TokenKind::Agents => "operative",
         };
-        let many = match self {
+        format!("{n} {}", if n == 1 { one } else { self.plural() })
+    }
+
+    /// The printed plural ("operatives", not the key "agents": the adversary's piece; 235).
+    pub fn plural(self) -> &'static str {
+        match self {
             TokenKind::Agents => "operatives",
             _ => self.name(),
-        };
-        format!("{n} {}", if n == 1 { one } else { many })
+        }
     }
 }
 
@@ -321,6 +325,14 @@ impl Side {
         match self {
             Side::Unity => "unity",
             Side::Discord => "discord",
+        }
+    }
+
+    /// 235: the house word as players read it ("Unity", "Discord"); `name` is the key.
+    pub fn title(self) -> &'static str {
+        match self {
+            Side::Unity => "Unity",
+            Side::Discord => "Discord",
         }
     }
 }

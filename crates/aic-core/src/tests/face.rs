@@ -38,7 +38,7 @@ fn a_bare_arrow_is_a_free_action() {
         r#"{"id": "sentinel_mesh", "name": "Sentinel Mesh", "tier": 1, "kind": "building", "cost": 7, "insight": 0,
         "tags": ["cyber", "security"], "ability": {"effects": [{"op": "jam", "amount": 6, "source": "cyber"}]}}"#,
     );
-    assert_eq!(f.top_text, "Action: counts as 6 toward a cyber threat.");
+    assert_eq!(f.top_text, "Action: a cyber threat needs 6 less of each resource.");
     // 076: an OR Action prints each half; the second line opens with OR.
     let f = pinned(FORGE);
     let json = serde_json::to_string(&f.top).unwrap();

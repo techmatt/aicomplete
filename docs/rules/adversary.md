@@ -57,13 +57,14 @@ or a node's). **One aftermath: whatever corrupts takes one adversary mark.**
 - **Fallout** is the one scar (r98; named by 227): a hex token on free open land; nothing is built there, and each
   drips `blight_discord` (1) Discord a round. All four adversity sources print it (227, Matt): Call-Up (tier 1),
   Casus Belli (2) and Siege (tier 2), Station Coup, Infiltration Drive and Dirty Bomb (projects: by a country's
-  corrupted stations or cities), the Discord card Scorched Earth; also Corrupt open land and Teardown. A token lands on a free open hex (no building, node or
-  Fallout) on or next to its anchor, lowest-numbered first; none free, it is lost. Lift Fallout (a standard action,
-  `land_cubes` 2 research cubes, r92) and some cards take one in reach off.
-**Botnets spread quickly**. Each country starts with one (on its
-research station); more come from printed lines, among them four event cards' **Botnets spread** (each country, a
-botnet onto its lowest-numbered site next to a botnet; none: its lowest-numbered research station). A botnet stays
-until removed: it makes `botnet_compute` compute (none with a player ambassador on it) and counts against the purge
+  corrupted stations or cities), the Discord card Scorched Earth; also Corrupt open land and Teardown (on their own
+  hex, Teardown's under a node there). The rest land on a free open hex (no facility, node or Fallout), a threat's
+  on or next to its anchor, the others next to it, lowest-numbered first; none free, it is lost. Lift Fallout (a
+  standard action, `land_cubes` 2 research cubes, r92) and some cards take one in reach off.
+**Botnets spread quickly**. Each country starts with one (on its research station); more come from printed lines,
+among them four event cards' **Botnets spread** (each country, a botnet onto its lowest-numbered site without one next to a
+botnet, none if no such site; with no botnet: its lowest-numbered research station). A botnet stays until removed:
+it makes `botnet_compute` compute (none with a player ambassador on it) and counts against the purge
 until Unity eases it ([alignment.md](alignment.md)). Removed by tier-2 cards, Decommission and the Take down a botnet
 action (`botnet_credits`; in reach with your ambassador on it); removing one sways `alignment.botnet` (0: neither).
 

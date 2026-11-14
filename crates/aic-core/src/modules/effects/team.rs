@@ -187,7 +187,7 @@ fn most_agents_around(w: &World, g: &GameState, hexes: &[usize]) -> Option<usize
 }
 
 /// 195 (`BotnetTroops`): in each country, up to `count` botnets, lowest-numbered first, become `troops` troops each.
-/// They are made on the botnet's own hex, as a factory's output is: they enter no hex, so Wall doesn't stop them.
+/// They are made on the botnet's own hex, as a factory's output is; Wall (r98) keeps any off the Protector's hex.
 pub(super) fn botnet_troops(g: &mut GameState, cx: &mut Cx, count: i64, troops: i64) {
     let w = cx.world;
     for c in 0..w.map.countries.len() {
@@ -195,12 +195,12 @@ pub(super) fn botnet_troops(g: &mut GameState, cx: &mut Cx, count: i64, troops: 
         for &h in botnets.iter().take(count.max(0) as usize) {
             cx.add_tokens(g, h, BOTNET, -1);
             cx.set_key(g, &adversary::cut_key(h), 0);
-            for _ in 0..troops {
-                adversary::place_troop(g, cx, h, "project");
-            }
-            cx.tally(g, "adversary.botnet_troops", troops);
-            cx.tally(g, "adversary.project_troops", troops);
-            cx.note(Some(h), || format!("The botnet at {} becomes {troops} adversary troops", hex_name(&w, h)));
+            let placed = (0..troops).filter(|_| adversary::place_troop(g, cx, h, "project")).count();
+            // 235: what landed (Wall's are tallied as `troops_walled`).
+            cx.tally(g, "adversary.botnet_troops", placed as i64);
+            cx.tally(g, "adversary.project_troops", placed as i64);
+            // 235: the log says what landed: Wall (r98) keeps a troop off the Protector's hex.
+            cx.note(Some(h), || format!("The botnet at {} becomes {}", hex_name(&w, h), troop_words(placed, troops)));
         }
     }
 }
@@ -284,13 +284,21 @@ pub(super) fn factory_troops(g: &mut GameState, cx: &mut Cx, count: i64) {
             cx.tally(g, "adversary.factory_troops_blocked", 1);
             continue;
         }
-        for _ in 0..count {
-            adversary::place_troop(g, cx, h, "project");
-        }
-        cx.tally(g, "adversary.factory_troops", count);
-        cx.tally(g, "adversary.project_troops", count);
-        // 197: "makes", not "musters": no Muster rule (surcharge, Wall, no-Muster token) applies here.
-        cx.note(Some(h), || format!("The adversary factory at {} makes {count} troop", hex_name(&w, h)));
+        let placed = (0..count).filter(|_| adversary::place_troop(g, cx, h, "project")).count();
+        cx.tally(g, "adversary.factory_troops", placed as i64);
+        cx.tally(g, "adversary.project_troops", placed as i64);
+        // 197: "makes", not "musters": no Muster rule (surcharge, no-Muster token) applies here; Wall (r98) does.
+        cx.note(Some(h), || format!("The adversary factory at {} makes {}", hex_name(&w, h), troop_words(placed, count)));
+    }
+}
+
+/// 235: "1 adversary troop", "2 adversary troops", or what Wall kept off the hex.
+fn troop_words(placed: usize, asked: i64) -> String {
+    let n = |k: usize| format!("{k} adversary troop{}", if k == 1 { "" } else { "s" });
+    if placed as i64 == asked {
+        n(placed)
+    } else {
+        format!("{} (Wall keeps {} off)", n(placed), asked - placed as i64)
     }
 }
 
@@ -306,8 +314,20 @@ pub(super) fn agents_on_nodes(g: &mut GameState, cx: &mut Cx, count: i64) -> Res
         hexes.sort_by_key(|&h| std::cmp::Reverse(g.tokens(h, ADV_AMBASSADOR)));
         for &h in hexes.iter().take(count.max(0) as usize) {
             cx.tally(g, "adversary.night_raid_agents", 1);
-            cx.note(Some(h), || format!("Night Raid: an agent lands on the node at {}", hex_name(&w, h)));
+            // 235: the note follows the placement: an empty supply lands nothing, an ambassador there cancels it.
+            let (before, supply) = (g.tokens(h, ADV_AMBASSADOR), g.var(adversary::SUPPLY));
             adversary::place(g, cx, h, 1)?;
+            let landed = g.tokens(h, ADV_AMBASSADOR) > before;
+            cx.note(Some(h), || {
+                let at = hex_name(&w, h);
+                if landed {
+                    format!("Night Raid: an agent lands on the node at {at}")
+                } else if supply <= 0 {
+                    format!("Night Raid: no agent left in the supply for the node at {at}")
+                } else {
+                    format!("Night Raid: the agent sent to the node at {at} cancels an ambassador there")
+                }
+            });
         }
     }
     Ok(())

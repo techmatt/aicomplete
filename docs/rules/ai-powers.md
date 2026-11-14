@@ -94,7 +94,7 @@ Insight is this round's attention, readable off the board: it pays keeps and pla
 and credits never buy a keep (r82). The card-play track prints it as totals, Spirit Island style (r82): 3 at its
 start, then the new total on each space that raises it, each board at its own rate (r87: the Builder to 10, the
 Protector and the Researcher to 9 (r100; the Researcher 8 before); 7 from the first space (r95; the Researcher 6 until r100), then a step at a time); a seat's insight is the number on the rightmost space it has
-uncovered. The economy track prints none. Every player has the
+uncovered that shows one. The economy track prints none. Every player has the
 cube converter, a standard action with no limit a round ([economy.md](economy.md)). **Insight must bind** (Matt,
 2026-11-12: about 6 a round to drafting and 2-4 to plays is the target); r91 cut the Builder's Focus (2 credits → 1
 insight, used 0.01-0.04 a Builder game: an uninteresting conversion), so the boards' own insight ways are:
@@ -110,7 +110,7 @@ insight, used 0.01-0.04 a Builder game: an uninteresting conversion), so the boa
   the anchors (a card kept at 1 insight is 4 more): a draw, not a gain. Peer Review, its node power, pays 1 insight by a fresh station.
 
 **For new players.** Insight is what you spend to keep and play cards: each round, the number on the rightmost space you've uncovered on
-your card-play track (3 at the start). When you
+your card-play track that shows one (3 at the start). When you
 are short, turn a research cube into 1 insight at any time (Cintamani's converter gives 2), and use your board's own
 way: the Protector gains 1 each of the first two times each round a troop ends its march next to its node (Vigil), the
 Researcher gains 1 with each node Peer Review places by a station new to its nodes and may spend 1 for a card (Synthesis). Insight you don't spend still goes at the round's end (the Researcher

@@ -44,7 +44,9 @@ function cardChip(c: CardView, where: string, printed = false): string {
   // could have no visible reason. A card with no price showing (built, played) owes nothing.
   const extra = c.cost !== undefined ? extraCosts(c.text).map((x) => ` <small title="also costs">+${esc(x)}</small>`).join('') : '';
   const cost = (c.cost !== undefined ? ` <small title="cost">${c.cost}</small>` : '') + extra;
-  const status = c.status && !['draft', 'built', 'resolved', 'done', 'ongoing'].includes(c.status) ? `<em>${esc(c.status)}</em>` : '';
+  // 235: a draft tile's status is "draft, tier N": the tier shows (it sets the keep price), "draft" doesn't.
+  const shownStatus = (c.status ?? '').replace(/^draft, /, '');
+  const status = shownStatus && !['draft', 'built', 'resolved', 'done'].includes(shownStatus) ? `<em>${esc(shownStatus)}</em>` : '';
   // 118: a draft or keep tile says what the card needs (keeps were picked blind to it).
   const need = /^(draft|keep)/.test(c.status) ? /needs ([^\]]*?)(?:, built over|\])/.exec(c.text ?? '')?.[1] : undefined;
   const needs = need ? ` <small class="needs" title="tags it needs on your cards to play">needs ${esc(need)}</small>` : '';
@@ -56,15 +58,17 @@ function cardChip(c: CardView, where: string, printed = false): string {
   return `<span class="card${printed ? ' printed' : ''} ${esc(c.status.replace(/\s+/g, '-'))}" data-card="${esc(c.id)}" data-where="${where}">${esc(c.name)}${cost}${needs}${status}${text}</span>`;
 }
 
-/** "1/2 energy, 0/3 credits" → bars. */
+/** "1/2 energy, 0/3 credits" → bars; a threat's options ("sacrifice 3 power tags or 0/17 credits") each show (235:
+ *  the split took only commas, so a sacrifice option vanished and "or" options ran into one bar). */
 function progressBars(status: string): string {
-  return status.split(',').map((part) => {
-    const m = /(\d+)\s*\/\s*(\d+)\s*(.*)/.exec(part.trim());
-    if (!m) return part.trim() ? `<span class="prog">${esc(part.trim())}</span>` : '';
+  // The options stay apart with an "or"; one option's items (" + ", ",") sit side by side.
+  return status.split(/\s+or\s+/).map((option) => option.split(/,|\s+\+\s+/).map((part) => {
+    const m = /^(\d+)\s*\/\s*(\d+)\s*(.*)$/.exec(part.trim());
+    if (!m) return part.trim() ? `<span class="prog"><span class="ptext">${esc(part.trim())}</span></span>` : '';
     const [have, need] = [Number(m[1]), Number(m[2])];
     const pct = need ? Math.min(100, (100 * have) / need) : 100;
     return `<span class="prog${have >= need ? ' done' : ''}"><span class="fill" style="width:${pct}%"></span><span class="ptext">${have}/${need} ${esc(m[3])}</span></span>`;
-  }).join('');
+  }).join('')).join('<small class="or"> or </small>');
 }
 
 /** Adversary pieces on the board, by kind. */
@@ -109,7 +113,8 @@ function alignmentHtml(v: View): { track: string; cards: string[] } {
     .map(([key, cls]) => [pile(v, key), cls] as const)
     .filter(([p]) => p && p.visible.length)
     .map(([p, cls]) => `<span class="agroup ${cls}" data-pile="${esc(p!.key)}"><span class="what">${esc(p!.label)}</span>${p!.visible.map((c) => cardChip(c, `pile:${p!.key}`)).join('')}</span>`);
-  const decks = ['unity', 'discord'].map((s) => pile(v, `alignment.deck.${s}`)).filter((p): p is PileView => !!p)
+  // 235: the Discord deck's count shows in "Lose if" (the clock); a second chip here repeated it beside it.
+  const decks = ['unity'].map((s) => pile(v, `alignment.deck.${s}`)).filter((p): p is PileView => !!p)
     .map((p) => `<span class="adeck" data-pile="${esc(p.key)}">${esc(p.label)} <b>${p.count}</b></span>`);
   return { track, cards: [...groups, ...decks] };
 }
@@ -134,10 +139,11 @@ function lossesHtml(v: View, config: Config): string[] {
   const counts = v.seats.map((s) => s.values.find((x) => x.key === 'board.node')?.value);
   if (param(config, 'alignment', 'node_loss') && counts.every((n) => n !== undefined) && counts.length) {
     const least = Math.min(...(counts as number[]));
-    loss.push(`<span class="value${live && least <= 1 ? ' danger' : ''}" title="a seat with no nodes on the board loses the game (no stage protects a last node: 175)"><span class="label">a seat's last node gone</span> <b>${least}</b><small> fewest held</small></span>`);
+    loss.push(`<span class="value${live && least <= 1 ? ' danger' : ''}" data-loss="node" title="a seat with no nodes on the board loses the game (no stage protects a last node: 175)"><span class="label">a seat's last node gone</span> <b>${least}</b><small> fewest held</small></span>`);
   }
   // Unlabeled `vars` (source "engine") are folded under the piles: see `varsHtml`.
-  const other = g.filter((x) => !DRAWN_GLOBALS.has(x.key) && x.source !== 'engine').map((x) => valueChip(x, 'global'));
+  // 235: a full agent supply is the safe end (it drew the warning color from round 1, calming as it emptied).
+  const other = g.filter((x) => !DRAWN_GLOBALS.has(x.key) && x.source !== 'engine').map((x) => valueChip(x, 'global', x.label, x.key !== 'adversary.supply'));
   // The other tracks (Unity bonuses) beside the losses, not in them
   // (020: drawn inside the red "Lose if" group).
   return [
@@ -368,7 +374,8 @@ export function seatValuesHtml(v: View, seatIndex: number): string {
     const used = /(\d+)\s*\/\s*\d+/.exec(built?.label ?? '')?.[1] ?? String(built?.cards.length ?? 0);
     ai.push(`<span class="value" data-value="cards.slots" data-scope="${scope}"><span class="label">slots</span> <b>${used}<small>/${slots.value}</small></b></span>`);
   }
-  const other = s.values.filter((x) => !SEAT_DRAWN(x.key)).map((x) => valueChip(x, scope)).join('');
+  // 235: Dispatches left of the round's allotment: full is the start of a round, not a warning.
+  const other = s.values.filter((x) => !SEAT_DRAWN(x.key)).map((x) => valueChip(x, scope, x.label, !x.key.endsWith('.movement'))).join('');
   // 074: every completed card's converter; one this seat can't use says why.
   const converters = s.values.filter((x) => x.key.startsWith('board.converter.') || x.key.startsWith('board.chip_converter.')).map((x) =>
     `<span class="converter ${x.value ? 'usable' : 'unusable'}" data-value="${esc(x.key)}" data-scope="${scope}">${esc(x.label)}</span>`).join('');
@@ -443,7 +450,8 @@ export function varsHtml(v: View, open: boolean): string {
 // ---------- other piles ----------
 
 export function pilesHtml(v: View): string {
-  const rest = v.piles.filter((p) => !DRAWN_PILES.has(p.key));
+  // 235: the project discard holds only a project no slot fits; the Militarist's slots fit any, so it stays empty.
+  const rest = v.piles.filter((p) => !DRAWN_PILES.has(p.key) && !(p.key === 'adversary.project_discard' && !p.count));
   if (!rest.length) return '';
   return `<h3>Piles</h3><div class="pile-list">${rest.map((p) => {
     const shown = p.visible.slice(-3).map((c) => cardChip(c, `pile:${p.key}`)).join('');

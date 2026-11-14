@@ -75,6 +75,15 @@ fn standard_actions_are_offered_only_when_affordable_and_targeted() {
     let w = rules.world();
     let offered: Vec<&str> = board::STANDARD.iter().filter(|&&a| board::std_offered(&w, a)).map(|a| a.name()).collect();
     assert_eq!(acts, offered, "206: a cut action is not published");
+    // 235: the view's price carries no cubes, and the viewer's button shows the doc up to its ';': a cube cost
+    // must be in those words (Lift Fallout's button read free).
+    for x in &v.standard {
+        let act = *board::STANDARD.iter().find(|a| a.name() == x.act).unwrap();
+        if board::printed_price(&w, act).cubes > 0 {
+            let words = x.doc.split(';').next().unwrap();
+            assert!(words.contains("research cube"), "{}: {words}", x.act);
+        }
+    }
     let station = v.standard.iter().find(|x| x.act == "station").unwrap();
     assert_eq!(
         (station.energy, station.credits, station.chips),

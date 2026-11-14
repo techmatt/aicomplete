@@ -114,6 +114,11 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             let prompt = || format!("Seat {seat}: {TARGET_PROMPT} ({}){card}", on.words());
             let t = cx.choose(seat, prompt, opts)?.map(|i| hexes[i]);
             cx.tally(g, if t.is_some() { "effects.targets" } else { "effects.targets_missed" }, 1);
+            // 235: a lone target is taken unasked and a missing one skips the map lines in silence: say which.
+            cx.note(t, || match t {
+                Some(h) => format!("Seat {seat}{card} targets {} ({})", hex_name(&w, h), on.words()),
+                None => format!("Seat {seat}{card}: nothing in reach to target ({}); its map lines do nothing", on.words()),
+            });
             ctx.target = Some(t);
         }
         Op::LiftFallout { count, at } => {
@@ -312,7 +317,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::AddTokens { kind, amount, here: false } => {
             let ids = cards::token_cards(&w, g, seat, Some(*kind));
             let opts = ids.iter().map(|c| opt(*c)).collect();
-            let prompt = || format!("Seat {seat}: add {amount} {kind} to which card?");
+            // 235: the printed word ("1 operative"), not the token key ("1 agents": the adversary's piece).
+            let prompt = || format!("Seat {seat}: add {} to which card?", kind.amount(*amount));
             if let Some(i) = cx.choose(seat, prompt, opts)? {
                 cards::add_tokens(g, cx, seat, &ids[i], *amount);
                 cards::on_tokens(g, cx, seat, *kind, *amount)?;

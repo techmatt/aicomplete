@@ -16,13 +16,13 @@ Project slots: Open, Open, Open.
 | Card | Stage | Text |
 |---|---|---|
 | Probing Strikes | 1 | Threat, each country: Security 1. Rally: coastal cities. Corrupt: cities. |
-| Factory Drive | 1 | Threat, each country: Security 1 or Industry 1. Rally: factories. Each country: a neutral factory opens on its lowest-numbered free site. Corrupt: factories. |
-| Long Patrols | 1 | Threat, each country: Security 1 or Cyber 1. Rally: research stations. Income: +1 Agent a country a round. Botnets spread: each country, a Botnet onto its lowest-numbered site next to a Botnet (none: its lowest-numbered research station). Corrupt: research stations. |
+| Factory Drive | 1 | Threat, each country: Security 1 or Industry 1. Rally: factories. Each country: a neutral factory opens on its lowest-numbered free industrial zone. Corrupt: factories. |
+| Long Patrols | 1 | Threat, each country: Security 1 or Cyber 1. Rally: research stations. Income: +1 Agent a country a round. Botnets spread: each country, a Botnet onto its lowest-numbered site without one next to a Botnet (a country with no Botnet: its lowest-numbered research station). Corrupt: research stations. |
 | War Drums | 1 | Threat, each country: Security 1 or Diplomacy 1. Rally: cities. Sway 1 toward Discord. Corrupt: cities. |
-| Signal Jamming | 1 | Threat, each country: Security 1 or Power 1. Rally: Botnet hexes. Income: +1 compute a country a round. Botnets spread: each country, a Botnet onto its lowest-numbered site next to a Botnet (none: its lowest-numbered research station). Corrupt: cities. |
+| Signal Jamming | 1 | Threat, each country: Security 1 or Power 1. Rally: Botnet hexes. Income: +1 compute a country a round. Botnets spread: each country, a Botnet onto its lowest-numbered site without one next to a Botnet (a country with no Botnet: its lowest-numbered research station). Corrupt: cities. |
 | Mobilization | 2 | Threat, each country: Security 2. Rally: coastal cities. Income: +1 Agent a country a round. Corrupt: cities. |
-| Station Raids | 2 | Threat, each country: Security 2 or Cyber 2. Rally: research stations. Botnets spread: each country, a Botnet onto its lowest-numbered site next to a Botnet (none: its lowest-numbered research station). Income: +1 Agent a country a round. Corrupt: research stations. |
-| Fifth Column | 2 | Threat, each country: Diplomacy 2 or Cyber 2. Rally: cities. Income: +1 Agent a country a round. Botnets spread: each country, a Botnet onto its lowest-numbered site next to a Botnet (none: its lowest-numbered research station). Corrupt: cities (1 fewer). |
+| Station Raids | 2 | Threat, each country: Security 2 or Cyber 2. Rally: research stations. Botnets spread: each country, a Botnet onto its lowest-numbered site without one next to a Botnet (a country with no Botnet: its lowest-numbered research station). Income: +1 Agent a country a round. Corrupt: research stations. |
+| Fifth Column | 2 | Threat, each country: Diplomacy 2 or Cyber 2. Rally: cities. Income: +1 Agent a country a round. Botnets spread: each country, a Botnet onto its lowest-numbered site without one next to a Botnet (a country with no Botnet: its lowest-numbered research station). Corrupt: cities (1 fewer). |
 | Border War | 2 | Threat, each country: Security 2. Rally: factories. Each player with a Node on or next to a front's base destroys 1 of those Nodes. Income: +1 Agent a country a round. Corrupt: factories. |
 | Supply Lines | 2 | Threat, each country: Security 1 or Industry 1, and Security 2 or Industry 2. Rally: factories. Income: +1 compute and +1 Agent a country a round. Corrupt: factories. |
 | Forced March | 2 | Threat, each country: any tier-2 threat. Rally: cities. Income: +1 Agent a country a round. Every adversary Troop takes 1 more step this round. Corrupt: cities. |
@@ -66,7 +66,7 @@ Project slots: Open, Open, Open.
 | Threat | Tags | Locations | If not countered | Counter (one of) |
 |---|---|---|---|---|
 | Total War | Security | base | 2 adversary Troops land here and march at once. | 4 energy; 17 credits |
-| Siege | Security | factory | The factory here is destroyed. 1 Fallout lands on its hex. | 4 Ambassadors; 17 credits |
+| Siege | Security | factory | The factory here is destroyed, with any Node on its hex. 1 Fallout lands on or next to here. | 4 Ambassadors; 17 credits |
 | Manhunt | Security | base, city | The nearest player pays 3 Ambassadors or discards 3 cards. 1 adversary Troop lands on the base here. | 4 energy; 17 credits |
 | Conscription | Security + Industry | base | 1 adversary Troop lands here. The nearest player pays 2 chips or discards 2 cards. | 4 energy; 17 credits |
 | Casus Belli | Security | base | This base's front has a second war step next round. 2 Fallout land next to here. | 4 Ambassadors; 17 credits |
@@ -107,22 +107,22 @@ Each project resolves once, at once, in the compute step. Its compute in play is
 | Disinformation | Diplomacy | 11 (11 / 22 / 33 / 44) | Sway 8 toward Discord. |
 | Backdoor Research | Cyber | 9 (9 / 18 / 27 / 36) | 4 adversary research cubes onto each open megaproject. |
 | Rolling Blackouts | Power | 8 (8 / 16 / 24 / 32) | Until the end of next round, cities make no energy. |
-| Botnet Swarm | Cyber | 14 (14 / 28 / 42 / 56) | Each country, twice: a botnet spreads to its lowest-numbered city, research station or factory next to one of its botnets (no botnet there: its lowest-numbered research station). |
+| Botnet Swarm | Cyber | 14 (14 / 28 / 42 / 56) | Each country, twice: a botnet spreads to its lowest-numbered city, research station or factory without one next to one of its botnets (a country with no botnet: its lowest-numbered research station). |
 | False Flag | Universal | 9 (9 / 18 / 27 / 36) | Each country: an extra tier-2 threat, any tag. |
 | Night Raid | Security | 10 (10 / 20 / 30 / 40) | Each country: 1 Agent onto each of two different hexes holding a player node (those holding the most Agents first; ties: lowest-numbered). 2 Agents on your node's hex destroy your node in the next Corrupt beat. |
 | Containment Breach | Power | 9 (9 / 18 / 27 / 36) | Each player pays 1 antimatter or discards 3 cards. |
 | Crackdown | Security | 8 (8 / 16 / 24 / 32) | Each country: every player Ambassador on its hex holding the most (ties: lowest-numbered) goes back to its owner's supply. |
-| Lab Purge | Cyber | 11 (11 / 22 / 33 / 44) | Each open megaproject loses 4 player research cubes, from the player with the most on it first. |
+| Lab Purge | Cyber | 11 (11 / 22 / 33 / 44) | Each open megaproject loses 4 player research cubes, one at a time, each from the player with the most on it (ties: the earliest in player order). |
 | Asset Seizure | Industry | 13 (13 / 26 / 39 / 52) | Each country: its neutral factory with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned factory picked the same way turns neutral. |
 | Botnet Conscripts | Cyber | 11 (11 / 22 / 33 / 44) | Each country: its lowest-numbered botnet becomes 3 Troops on its hex. |
 | Purge Lists | Diplomacy | 7 (7 / 14 / 21 / 28) | Each player loses 1 Ambassador (from their supply, else one of theirs on the board). |
 | Dirty Bomb | Power | 12 (12 / 24 / 36 / 48) | Each country: 1 Fallout lands next to each of its two lowest-numbered corrupted cities. |
 | Lab Seizure | Cyber | 8 (8 / 16 / 24 / 32) | Corrupt: research stations. |
-| Slander Campaign | Diplomacy | 9 (9 / 18 / 27 / 36) | Pull 4 Sway back off the Unity track. |
+| Slander Campaign | Diplomacy | 9 (9 / 18 / 27 / 36) | Remove 4 Unity from the Unity track. |
 | Coastal Raids | Security | 9 (9 / 18 / 27 / 36) | Rally 3, each country: coastal cities. |
 | Plant Seizure | Industry | 9 (9 / 18 / 27 / 36) | Corrupt: factories. |
 | Rumor Mill | Diplomacy | 8 (8 / 16 / 24 / 32) | Sway 4 toward Discord. |
-| Sabotage Teams | Power | 10 (10 / 20 / 30 / 40) | Each country: the hardened facility with the most Agents on or next to it (ties: lowest-numbered) loses its hardening. Until the end of next round, players make no energy from their nodes in upkeep. |
+| Sabotage Teams | Power | 10 (10 / 20 / 30 / 40) | Each country: the hardened facility with the most Agents on or next to it (ties: lowest-numbered) loses its hardening. Until the end of next round, players' boards and cards make no energy income. |
 | Mob Rule | Diplomacy | 14 (14 / 28 / 42 / 56) | Rally 3, each country: cities. Sway 5 toward Discord. |
 | Data Heist | Cyber | 12 (12 / 24 / 36 / 48) | Each player removes 4 tokens from their cards (their choice of cards). Each player pays 10 credits or discards 3 cards. |
 | Hostile Takeover | Industry | 15 (15 / 30 / 45 / 60) | Rally 3, each country: factories. Corrupt: factories (1 fewer). |

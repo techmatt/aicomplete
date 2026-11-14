@@ -166,6 +166,21 @@ fn each_game<R: Send>(configs: &[Config], seeds: std::ops::Range<u64>, f: impl F
     out.into_iter().map(Option::unwrap).collect()
 }
 
+/// 235: a log line that says a node was destroyed, checked against the board after the step: "Agents destroy the
+/// node at X" leaves no node on X (the log said so with Sanctuary's node still standing). Only this direction: no
+/// node is placed later in the same step, but one that held can fall to a later automatic step.
+fn log_lies(rules: &Rules, g: &GameState, events: &[Event]) -> Vec<String> {
+    let mut out = Vec::new();
+    for e in events {
+        let Event::Note { text, hex: Some(at) } = e else { continue };
+        let Some(h) = rules.map.hexes.iter().position(|x| x.hex == *at) else { continue };
+        if text.starts_with("Agents destroy the node") && node_owner(g, h).is_some() {
+            out.push(format!("log says \"{text}\" but a node stands there"));
+        }
+    }
+    out
+}
+
 fn check_games(configs: &[Config], seeds: std::ops::Range<u64>) {
     let failures: Vec<String> = each_game(configs, seeds, |config, rules, seed| {
         let mut failures = Vec::new();
@@ -184,7 +199,11 @@ fn check_games(configs: &[Config], seeds: std::ops::Range<u64>) {
                 break;
             }
             let a = legal[agent.choose(rules, &g, &legal)].clone();
-            rules.apply_mut(&mut g, &a, None).unwrap();
+            let mut events = Vec::new();
+            rules.apply_mut(&mut g, &a, Some(&mut events)).unwrap();
+            for b in log_lies(rules, &g, &events) {
+                failures.push(format!("{} seed {seed} step {step} round {}: {b}", config.hash(), g.round));
+            }
             step += 1;
         }
         for b in broken(rules, &g) {

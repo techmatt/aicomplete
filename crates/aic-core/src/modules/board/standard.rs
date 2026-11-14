@@ -260,7 +260,13 @@ pub fn std_offered(w: &World, act: StandardAction) -> bool {
 /// What a standard action does, for the view.
 pub(super) fn std_text(w: &World, act: StandardAction) -> String {
     let text = match act {
-        StandardAction::Lift => "lift 1 Fallout token in reach",
+        // 235: the cubes in the words, as Antimatter's: the view's price has no cubes, so the button showed it free.
+        StandardAction::Lift => {
+            return format!(
+                "spend {}: lift 1 Fallout token in reach",
+                Resource::ResearchCubes.words(w.int("board.land_cubes"))
+            )
+        }
         StandardAction::Station => "build a research station in reach (yours)",
         StandardAction::Remove => {
             let n = w.int("board.remove_ambassadors");
@@ -280,9 +286,11 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         }
         StandardAction::Liberate => {
             return format!(
-                "liberate an adversary site in reach: {} ambassadors for a city, {} for a station or factory, with no agent on it; yours on it pay first; it becomes yours",
+                // 235: a factory's price is its own (claim_factory), not the station's.
+                "liberate an adversary site in reach: {} ambassadors for a city, {} for a station, {} for a factory, with no agent on it; yours on it pay first; it becomes yours",
                 liberate_ambassadors(w, SiteKind::City),
-                liberate_ambassadors(w, SiteKind::Station)
+                liberate_ambassadors(w, SiteKind::Station),
+                liberate_ambassadors(w, SiteKind::Factory)
             );
         }
         StandardAction::Insight => {
@@ -320,7 +328,7 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
             } else {
                 format!("{} chips", t("board.station_chips"))
             },
-            "on an open hex in reach that is not an industrial zone or corrupted land; it is yours (your cube)".into(),
+            "on an open hex in reach that is not an industrial zone or Fallout; it is yours (your cube)".into(),
         ),
         // r75 (Matt's ruling 1): it places nothing (it stood on the hex and removed up to 3 there).
         StandardAction::Remove => (
@@ -332,7 +340,7 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
         StandardAction::Lift => (
             "Lift Fallout",
             format!("{} research cubes", t("board.land_cubes")),
-            "a Fallout token in reach, face up or face down, comes off: the one standard action that removes corruption".into(),
+            "a Fallout token in reach comes off: the one standard action that removes Fallout".into(),
         ),
         StandardAction::Move => (
             "Dispatch a player ambassador",
