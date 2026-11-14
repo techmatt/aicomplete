@@ -54,27 +54,40 @@ fn random_games_replay_exactly_in_every_variant_more_seeds() {
     random_games_replay_in_every_variant(1..6, 1);
 }
 
+/// The variants split over four threads (232: the slow lane's seeds took 11 s on one).
 fn random_games_replay_in_every_variant(seeds: std::ops::Range<u64>, json_every: usize) {
-    for (i, config) in variant_matrix().into_iter().enumerate() {
-        let rules = Rules::new(&config).unwrap();
-        for seed in seeds.clone() {
-            let (g, actions) = random_game(&rules, seed);
-            assert!(g.is_over(), "{} seed {seed} did not finish", config.hash());
-            assert_eq!(replay(&rules, seed, &actions).unwrap(), g);
-            if i % json_every != 0 {
-                continue;
-            }
-            // The slow, JSON-shaped path agrees with the hot path, and a
-            // state survives serialization at any point (mid-choice too).
-            let mut s = Rules::new(&config).unwrap().new_game(seed);
-            for (k, a) in actions.iter().enumerate() {
-                if k % 5 == 0 {
-                    s = serde_json::from_str(&s.to_json()).unwrap();
+    let configs = variant_matrix();
+    std::thread::scope(|s| {
+        for part in 0..4 {
+            let (configs, seeds) = (&configs, seeds.clone());
+            s.spawn(move || {
+                for (i, config) in configs.iter().enumerate().skip(part).step_by(4) {
+                    replay_variant(i, config, seeds.clone(), json_every);
                 }
-                s = apply(&s, a).unwrap().0;
-            }
-            assert_eq!(s, g);
+            });
         }
+    });
+}
+
+fn replay_variant(i: usize, config: &Config, seeds: std::ops::Range<u64>, json_every: usize) {
+    let rules = Rules::new(config).unwrap();
+    for seed in seeds {
+        let (g, actions) = random_game(&rules, seed);
+        assert!(g.is_over(), "{} seed {seed} did not finish", config.hash());
+        assert_eq!(replay(&rules, seed, &actions).unwrap(), g);
+        if !i.is_multiple_of(json_every) {
+            continue;
+        }
+        // The slow, JSON-shaped path agrees with the hot path, and a
+        // state survives serialization at any point (mid-choice too).
+        let mut s = Rules::new(config).unwrap().new_game(seed);
+        for (k, a) in actions.iter().enumerate() {
+            if k % 5 == 0 {
+                s = serde_json::from_str(&s.to_json()).unwrap();
+            }
+            s = apply(&s, a).unwrap().0;
+        }
+        assert_eq!(s, g);
     }
 }
 

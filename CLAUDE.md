@@ -108,8 +108,8 @@ machine's traps, are in the [README](README.md), which also lists the page for e
 ## Working rules
 
 - **Commit to the branch you are on.** Leave nothing uncommitted.
-- **Two test lanes** (README, *Build and test*). Run `cargo test --workspace`, the fast lane, after
-  every change, and `cargo test-all`, the full run, before every commit; a commit touching only
+- **Two test lanes** (README, *Build and test*). Run `cargo test --workspace`, the fast lane and the
+  default (~6 s built), after every change, and `cargo test-all`, the full run (~1 min), before every commit; a commit touching only
   Markdown outside the generated docs skips the full run. A test slower than about a second goes in
   the slow lane, with a cheaper fast-lane twin where one makes sense. Leave `cargo clippy --workspace
   --all-targets` clean. The repo doesn't use rustfmt. Web's checks: [web/README.md](web/README.md).

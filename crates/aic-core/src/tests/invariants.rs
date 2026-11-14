@@ -141,37 +141,61 @@ fn broken(rules: &Rules, g: &GameState) -> Vec<String> {
     out
 }
 
-fn check_games(configs: &[Config], seeds: std::ops::Range<u64>) {
-    let mut failures = Vec::new();
-    for config in configs {
-        let rules = Rules::new(config).unwrap();
-        for seed in seeds.clone() {
-            let mut agent = Busy(rand_chacha::ChaCha8Rng::seed_from_u64(seed ^ 0xb57));
-            let mut g = rules.new_game(seed);
-            let mut step = 0;
-            while !g.is_over() && step < 20_000 {
-                for b in broken(&rules, &g) {
-                    failures.push(format!("{} seed {seed} step {step} round {}: {b}", config.hash(), g.round));
-                }
-                if failures.len() > 20 {
-                    break;
-                }
-                let legal = rules.legal_actions(&g);
-                if legal.is_empty() {
-                    break;
-                }
-                let a = legal[agent.choose(&rules, &g, &legal)].clone();
-                rules.apply_mut(&mut g, &a, None).unwrap();
-                step += 1;
-            }
-            for b in broken(&rules, &g) {
-                failures.push(format!("{} seed {seed} at the end: {b}", config.hash()));
-            }
-            if !g.is_over() {
-                failures.push(format!("{} seed {seed}: not over after {step} actions", config.hash()));
+/// `f` on every (config, seed) game over four threads, its results in config then seed order (232: the slow
+/// lane's loops over random games ran on one).
+fn each_game<R: Send>(configs: &[Config], seeds: std::ops::Range<u64>, f: impl Fn(&Config, &Rules, u64) -> R + Sync) -> Vec<R> {
+    let rules: Vec<Rules> = configs.iter().map(|c| Rules::new(c).unwrap()).collect();
+    let games: Vec<(usize, u64)> = (0..configs.len()).flat_map(|i| seeds.clone().map(move |seed| (i, seed))).collect();
+    let mut out: Vec<Option<R>> = games.iter().map(|_| None).collect();
+    std::thread::scope(|sc| {
+        let (f, rules, games) = (&f, &rules, &games);
+        let parts: Vec<_> = (0..4)
+            .map(|part| {
+                sc.spawn(move || {
+                    let mine = games.iter().enumerate().skip(part).step_by(4);
+                    mine.map(|(k, &(i, seed))| (k, f(&configs[i], &rules[i], seed))).collect::<Vec<_>>()
+                })
+            })
+            .collect();
+        for h in parts {
+            for (k, r) in h.join().unwrap() {
+                out[k] = Some(r);
             }
         }
-    }
+    });
+    out.into_iter().map(Option::unwrap).collect()
+}
+
+fn check_games(configs: &[Config], seeds: std::ops::Range<u64>) {
+    let failures: Vec<String> = each_game(configs, seeds, |config, rules, seed| {
+        let mut failures = Vec::new();
+        let mut agent = Busy(rand_chacha::ChaCha8Rng::seed_from_u64(seed ^ 0xb57));
+        let mut g = rules.new_game(seed);
+        let mut step = 0;
+        while !g.is_over() && step < 20_000 {
+            for b in broken(rules, &g) {
+                failures.push(format!("{} seed {seed} step {step} round {}: {b}", config.hash(), g.round));
+            }
+            if failures.len() > 20 {
+                break;
+            }
+            let legal = rules.legal_actions(&g);
+            if legal.is_empty() {
+                break;
+            }
+            let a = legal[agent.choose(rules, &g, &legal)].clone();
+            rules.apply_mut(&mut g, &a, None).unwrap();
+            step += 1;
+        }
+        for b in broken(rules, &g) {
+            failures.push(format!("{} seed {seed} at the end: {b}", config.hash()));
+        }
+        if !g.is_over() {
+            failures.push(format!("{} seed {seed}: not over after {step} actions", config.hash()));
+        }
+        failures
+    })
+    .concat();
     assert!(failures.is_empty(), "{} broken invariants:\n{}", failures.len(), failures.join("\n"));
 }
 
@@ -203,47 +227,45 @@ fn got_something(before: &GameState, after: &GameState, s: usize, played: bool) 
 }
 
 fn paid_for_nothing(configs: &[Config], seeds: std::ops::Range<u64>) -> Vec<String> {
-    let mut found = Vec::new();
-    for config in configs {
-        let rules = Rules::new(config).unwrap();
-        for seed in seeds.clone() {
-            let mut agent = Busy(rand_chacha::ChaCha8Rng::seed_from_u64(seed ^ 0xc0));
-            let mut g = rules.new_game(seed);
-            for _ in 0..20_000 {
-                if g.is_over() {
-                    break;
+    each_game(configs, seeds, |_, rules, seed| {
+        let mut found = Vec::new();
+        let mut agent = Busy(rand_chacha::ChaCha8Rng::seed_from_u64(seed ^ 0xc0));
+        let mut g = rules.new_game(seed);
+        for _ in 0..20_000 {
+            if g.is_over() {
+                break;
+            }
+            let legal = rules.legal_actions(&g);
+            let a = legal[agent.choose(rules, &g, &legal)].clone();
+            let watched = match &a {
+                Action::Use { seat, card } | Action::Play { seat, card } => {
+                    Some((*seat as usize, format!("{:?} {card}", std::mem::discriminant(&a))))
                 }
+                Action::Standard { seat, .. } | Action::Power { seat, .. } => Some((*seat as usize, format!("{a:?}"))),
+                _ => None,
+            };
+            let before = g.clone();
+            rules.apply_mut(&mut g, &a, None).unwrap();
+            // Answering "stop" to a "you may" is the player's own choice, not a use that paid for nothing.
+            let mut declined = false;
+            while g.pending.is_some() && !g.is_over() {
                 let legal = rules.legal_actions(&g);
-                let a = legal[agent.choose(&rules, &g, &legal)].clone();
-                let watched = match &a {
-                    Action::Use { seat, card } | Action::Play { seat, card } => {
-                        Some((*seat as usize, format!("{:?} {card}", std::mem::discriminant(&a))))
-                    }
-                    Action::Standard { seat, .. } | Action::Power { seat, .. } => Some((*seat as usize, format!("{a:?}"))),
-                    _ => None,
-                };
-                let before = g.clone();
-                rules.apply_mut(&mut g, &a, None).unwrap();
-                // Answering "stop" to a "you may" is the player's own choice, not a use that paid for nothing.
-                let mut declined = false;
-                while g.pending.is_some() && !g.is_over() {
-                    let legal = rules.legal_actions(&g);
-                    let c = legal[agent.choose(&rules, &g, &legal)].clone();
-                    declined |= matches!(&c, Action::Choose { option, .. } if option == "stop");
-                    rules.apply_mut(&mut g, &c, None).unwrap();
-                }
-                if let (false, Some((s, what))) = (declined, watched) {
-                    // A program, a building and a card's own tags are worth something
-                    // in play: only an event or a use has to do something.
-                    let lasts = matches!(&a, Action::Play { card, .. } if rules.world().content.card_index(card).is_some_and(|i| rules.world().content.cards[i].kind != content::CardKind::Event));
-                    if !lasts && !got_something(&before, &g, s, matches!(a, Action::Play { .. })) {
-                        found.push(format!("seed {seed} round {}: {what}", g.round));
-                    }
+                let c = legal[agent.choose(rules, &g, &legal)].clone();
+                declined |= matches!(&c, Action::Choose { option, .. } if option == "stop");
+                rules.apply_mut(&mut g, &c, None).unwrap();
+            }
+            if let (false, Some((s, what))) = (declined, watched) {
+                // A program, a building and a card's own tags are worth something
+                // in play: only an event or a use has to do something.
+                let lasts = matches!(&a, Action::Play { card, .. } if rules.world().content.card_index(card).is_some_and(|i| rules.world().content.cards[i].kind != content::CardKind::Event));
+                if !lasts && !got_something(&before, &g, s, matches!(a, Action::Play { .. })) {
+                    found.push(format!("seed {seed} round {}: {what}", g.round));
                 }
             }
         }
-    }
-    found
+        found
+    })
+    .concat()
 }
 
 /// 099: wherever Rush Build is offered in random games (106: 2..48 seeds, the
@@ -252,51 +274,48 @@ fn paid_for_nothing(configs: &[Config], seeds: std::ops::Range<u64>) -> Vec<Stri
 /// the proof: with 099's fix taken out these games still never reached a
 /// stranding hand (the `boards.rs` tests do), as `paid_for_nothing` never did.
 fn rush_build_strandings(configs: &[Config], seeds: std::ops::Range<u64>) -> (usize, Vec<String>) {
-    let mut tried = 0;
-    let mut found = Vec::new();
-    for config in configs {
-        let rules = Rules::new(config).unwrap();
+    let games = each_game(configs, seeds, |_, rules, seed| {
+        let (mut tried, mut found) = (0, Vec::new());
         let w = rules.world();
-        for seed in seeds.clone() {
-            let mut agent = Busy(rand_chacha::ChaCha8Rng::seed_from_u64(seed ^ 0x99));
-            let mut g = rules.new_game(seed);
-            for _ in 0..20_000 {
-                if g.is_over() {
-                    break;
-                }
-                let legal = rules.legal_actions(&g);
-                for a in &legal {
-                    let Action::Power { seat, power } = a else { continue };
-                    let s = *seat as usize;
-                    let free = ai::board(&w, s).powers[*power as usize].effects.iter().any(|e| matches!(e, content::Op::FreeBuilding));
-                    if !free {
-                        continue;
-                    }
-                    let built = |x: &GameState| x.pile(&crate::modules::cards::built(s)).to_vec();
-                    let before = built(&g);
-                    let mut t = g.clone();
-                    rules.apply_mut(&mut t, a, None).unwrap();
-                    let first: Vec<usize> = t.pending.as_ref().map_or(vec![0], |p| (0..p.ask.options.len()).collect());
-                    for i in first {
-                        tried += 1;
-                        let mut u = t.clone();
-                        let mut k = i;
-                        while u.pending.is_some() && !u.is_over() {
-                            let l = rules.legal_actions(&u);
-                            rules.apply_mut(&mut u, &l[k.min(l.len() - 1)], None).unwrap();
-                            k = 0;
-                        }
-                        if built(&u).iter().all(|c| before.contains(c)) {
-                            found.push(format!("seed {seed} round {}: seat {s} answer {i} built nothing", g.round));
-                        }
-                    }
-                }
-                let a = legal[agent.choose(&rules, &g, &legal)].clone();
-                rules.apply_mut(&mut g, &a, None).unwrap();
+        let mut agent = Busy(rand_chacha::ChaCha8Rng::seed_from_u64(seed ^ 0x99));
+        let mut g = rules.new_game(seed);
+        for _ in 0..20_000 {
+            if g.is_over() {
+                break;
             }
+            let legal = rules.legal_actions(&g);
+            for a in &legal {
+                let Action::Power { seat, power } = a else { continue };
+                let s = *seat as usize;
+                let free = ai::board(&w, s).powers[*power as usize].effects.iter().any(|e| matches!(e, content::Op::FreeBuilding));
+                if !free {
+                    continue;
+                }
+                let built = |x: &GameState| x.pile(&crate::modules::cards::built(s)).to_vec();
+                let before = built(&g);
+                let mut t = g.clone();
+                rules.apply_mut(&mut t, a, None).unwrap();
+                let first: Vec<usize> = t.pending.as_ref().map_or(vec![0], |p| (0..p.ask.options.len()).collect());
+                for i in first {
+                    tried += 1;
+                    let mut u = t.clone();
+                    let mut k = i;
+                    while u.pending.is_some() && !u.is_over() {
+                        let l = rules.legal_actions(&u);
+                        rules.apply_mut(&mut u, &l[k.min(l.len() - 1)], None).unwrap();
+                        k = 0;
+                    }
+                    if built(&u).iter().all(|c| before.contains(c)) {
+                        found.push(format!("seed {seed} round {}: seat {s} answer {i} built nothing", g.round));
+                    }
+                }
+            }
+            let a = legal[agent.choose(rules, &g, &legal)].clone();
+            rules.apply_mut(&mut g, &a, None).unwrap();
         }
-    }
-    (tried, found)
+        (tried, found)
+    });
+    (games.iter().map(|g| g.0).sum(), games.into_iter().flat_map(|g| g.1).collect())
 }
 
 #[test]

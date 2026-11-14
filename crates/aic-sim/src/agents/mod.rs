@@ -710,29 +710,39 @@ mod tests {
     const ENGINE: &str = "engine";
     const PLANNER: &str = "planner:budget=2";
     const ORACLE: &str = "oracle:budget=2,reseeds=1";
+    // 232: the whole-game tests' beam and rollout are cheaper still; the openings keep BEAM and ROLLOUT.
+    // Between them the two games cover the beam at full depth (the rollout's, one level of choices) and the beam
+    // with two levels of choices (depth 15). Test build, two plays side by side: beam 70 s -> 8 s, rollout 110 s -> 25 s.
+    const BEAM_GAME: &str = "beam:width=2,depth=15";
+    const ROLLOUT_GAME: &str = "rollout:width=2,choices=1,candidates=2,rollouts=1,horizon=1";
 
     /// The agent plays seed 3 at difficulty 0 for up to `max_actions`; the
     /// game replays from seed + actions, and the same agent on the same seed
     /// plays the same actions: its RNG is its own and seeded per game.
     /// (014: not difficulty 4, where the adversary's supply runs out in the
-    /// first build step, before any decision.)
+    /// first build step, before any decision.) The two plays are independent, so they run
+    /// side by side (232): a search agent's whole game is the slow lane's longest test.
     fn replay_and_repeat(spec: &str, max_actions: usize, to_the_end: bool) {
         let r = rules(0);
         let spec = AgentSpec::parse(spec).unwrap();
         let seed = 3;
-        let (g, rec) = play(&r, seed, &mut *spec.build(&r, seed), max_actions);
+        let ((g, rec), (_, again)) = std::thread::scope(|s| {
+            let second = s.spawn(|| play(&r, seed, &mut *spec.build(&r, seed), max_actions));
+            let first = play(&r, seed, &mut *spec.build(&r, seed), max_actions);
+            (first, second.join().unwrap())
+        });
         if to_the_end {
             assert!(g.is_over(), "{}", spec.label());
         } else if !g.is_over() {
             // 214: a weak fixed policy may lose before the cap (free_only's nodes are all gone in round 3 at r95).
             assert_eq!(rec.actions.len(), max_actions, "{}", spec.label());
+            assert!(g.round >= 1, "{}: an opening reaches round 2", spec.label());
         }
         assert_eq!(replay(&r, seed, &rec.actions).unwrap(), g);
-        let (_, again) = play(&r, seed, &mut *spec.build(&r, seed), max_actions);
         assert_eq!(rec.actions, again.actions, "{}", spec.label());
     }
 
-    /// Fast lane: the first 30 actions, which take every agent into round 2
+    /// Fast lane: the first 30 actions (the oracle's 20), which take every agent into round 2
     /// (whole games are 200–300 actions). One test an agent, so they run side by side.
     #[test]
     fn greedy_replays_and_repeats_opening() {
@@ -759,9 +769,10 @@ mod tests {
         replay_and_repeat(PLANNER, 30, false);
     }
 
+    /// 20 actions, into round 2 still (232: actions 21-30 were 4 of the fast lane's ~12 s).
     #[test]
     fn oracle_replays_and_repeats_opening() {
-        replay_and_repeat(ORACLE, 30, false);
+        replay_and_repeat(ORACLE, 20, false);
     }
 
     /// 022: the dominance checks parse, label and replay (into round 3,
@@ -825,9 +836,7 @@ mod tests {
     ];
 
     // Slow lane: whole games, one test per agent so they run side by side
-    // (014 board, 015 timings, each run alone: beam ~18 s, engine ~3 s, greedy
-    // ~1 s; the beam's cost is in the action phase's wide menus. `rollout` does
-    // a full beam search per decision: ~92 s a game at c2, ~373 s at c3, r17, 030.)
+    // (232, r100, test build: planner ~26 s, rollout ~25 s, the rest 4-13 s).
     #[test]
     #[ignore = "slow lane: a whole search-agent game"]
     fn greedy_replays_and_repeats() {
@@ -837,13 +846,13 @@ mod tests {
     #[test]
     #[ignore = "slow lane: a whole search-agent game"]
     fn beam_replays_and_repeats() {
-        replay_and_repeat(BEAM, 3000, true);
+        replay_and_repeat(BEAM_GAME, 3000, true);
     }
 
     #[test]
     #[ignore = "slow lane: a whole search-agent game"]
     fn rollout_replays_and_repeats() {
-        replay_and_repeat(ROLLOUT, 3000, true);
+        replay_and_repeat(ROLLOUT_GAME, 3000, true);
     }
 
     #[test]

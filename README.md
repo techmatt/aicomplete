@@ -86,7 +86,7 @@ generated docs, so after a content edit run `python scripts/regen.py` first. Red
 
 ## Toolchain
 
-- Rust stable (built with 1.98.1), target `wasm32-unknown-unknown`
+- Rust stable (built with 1.100), target `wasm32-unknown-unknown`
   (`rustup target add wasm32-unknown-unknown`).
 - wasm-pack (`cargo install wasm-pack --locked`); Node (built with 24) for the smoke test.
 
@@ -95,9 +95,9 @@ generated docs, so after a content edit run `python scripts/regen.py` first. Red
 ```sh
 cargo build --workspace
 cargo check --tests                                # a missing import in ~1 min, before a full test build
-cargo test --workspace                             # fast lane: ~5 s once built, ~13 s after an aic-sim edit; 4-6 min on a loaded box
-cargo test-all                                     # full run, slow lane included: ~3.5 min on 6 test threads, rebuild included
-cargo test-slow                                    # the slow lane alone: nearly all of that
+cargo test --workspace                             # fast lane, the default: ~6 s once built, ~20 s after an aic-sim edit
+cargo test-all                                     # full run, slow lane included: ~1 min on 6 test threads once built
+cargo test-slow                                    # the slow lane alone: ~50 s
 cargo build --release -p aic-sim                   # ~30 s after an aic-sim edit, ~45 s after aic-core, ~1 min cold
 ./target/release/aic-sim docs                      # regenerate the generated docs (--check: report only)
 wasm-pack build crates/aic-wasm --target web       # ~20 s cold, ~9 s warm -> crates/aic-wasm/pkg (git-ignored)
@@ -110,14 +110,15 @@ node scripts/wasm-parity.mjs [games]               # native = wasm over the vari
 search-agent games, the greedy experiment grid, and more seeds of the replay checks
 whose first seed runs in the fast lane. `test-all` and `test-slow` are cargo aliases
 (`.cargo/config.toml`) for `cargo test --workspace -- --include-ignored` and
-`-- --ignored`; one slow test runs with `cargo test -p aic-sim -- --ignored <name>`.
-Anything after an alias goes to the test binary, with no second `--` (`crates/aic-sim/tests/args_guard.rs`):
+`-- --ignored`; one slow test runs with `cargo test-slow <name>` (a `-p aic-sim` build differs from the workspace's: a
+~1 min rebuild each way). Anything after an alias goes to the test binary, with no second `--` (`crates/aic-sim/tests/args_guard.rs`):
 `cargo test-all --test-threads=3` caps test threads; cap build jobs with `CARGO_BUILD_JOBS=3` (a `-j` stops in a second,
-which looks like a fast pass: check the exit code). Times are on this
-machine, otherwise idle; the first test-profile build takes ~80 s more. `cargo test` runs
-test binaries one after another, so the fast lane's wall clock is about the sum of each binary's
-slowest test: a test looping over agents or variants splits into one test (or scoped thread) each. A red crate stops
-the run: `cargo test --workspace --no-fail-fast [-- --include-ignored]` (a cargo flag: not through `test-all`, 177).
+which looks like a fast pass: check the exit code). Times are on this machine, otherwise idle; a cold test build is ~2.5
+min. `cargo test` runs test binaries one after another, so a lane's wall clock is about the sum of each binary's
+slowest test: a loop over agents, variants or independent plays splits into tests or scoped threads. Search agents
+run slow in the test build (the seat-terms cache's `debug_assert` recomputes each hit; `opt-level` 3 bought little,
+232): a whole-game test takes cheap agent params. No crate has doctests (`doctest = false`).
+A red crate stops the run: `cargo test --workspace --no-fail-fast [-- --include-ignored]` (177).
 
 **Rules changes:** the `golden_game` test pins the final state of one fixed game
 (baseline, seed `u64::MAX`, action *k* = legal action `(k × 7919) mod count`). If a rules change is
@@ -141,10 +142,8 @@ A new phase goes in `configs/baseline.json`'s `round` list and in every lab test
 - A fresh worktree has no `web/node_modules`: `npm ci` in `web/` (about a minute) before `npm run cards:fit`.
 - 6 cores, 12 threads: 12 workers give about 6 × one, not 12 ×.
 - `samply` waits on a UAC prompt: profile with `bench/profile_win.py` (docs/speed.md).
-- Check processes with PowerShell `Get-Process` or `Get-CimInstance`. `wmic` and `tasklist`
-  hang for minutes under load, and a script guard on one stalls silently.
-- Timing has no warning of other load (another session's tests can take half the cores): two
-  separate runs don't compare; `speed.py pair` does.
+- Check processes with PowerShell `Get-Process`: `wmic` and `tasklist` hang for minutes under load.
+- Timing has no warning of other load: two separate runs don't compare; `speed.py pair` does.
 - In a Bash background call `timeout` is the kill limit (default 10 minutes), and a waiter
   killed at it can leave `bash.exe.stackdump` in the repo root: delete it. Git Bash loops overrun their `timeout` when
   every thread is busy.
@@ -161,13 +160,11 @@ A new phase goes in `configs/baseline.json`'s `round` list and in every lab test
 - Python writes cp1252 and CRLF here, to `open(p, 'w')` and to a redirected stdout: scripts
   `sys.stdout.reconfigure(encoding='utf-8', newline='\n')` and open with `encoding='utf-8',
   newline='\n'`. A CRLF list read by a Bash `read -r` loop hands on `20\r`.
-- `timeout N cargo test` under load kills the compile and prints "could not compile" with no
-  reason. Background it with a log. `npm run wasm` can pass 60 s under load: the same.
-- A conductor `wait_for` on a cargo test log needs `fail: ""`: passing test names hold "errors"
-  (`..._are_errors_not_panics ... ok`), which the default pattern stops on.
+- `timeout N cargo test` under load kills the compile with no reason given: background it with a log.
+- A conductor `wait_for` on a cargo test log needs `fail: "FAILED"`: passing test names hold "errors" and
+  "panicked" (`a_panicked_seed_...`), which the default pattern stops on.
 - In Git Bash `rm -rf out/x` also deletes `out/x.exe` (Cygwin's `.exe` matching). Bash turns `/c/...` into `C:/...`
   for a native program but not after an `=`: a `FILE=SPEC` argument takes `C:/...` paths.
 - PowerShell `*>` writes UTF-16 logs, which Git Bash `grep` reads as empty: read them in PowerShell
   or write with `-Encoding utf8`.
-- A marker from `Start-Process powershell -Command '...; "done" | Out-File'` may never appear.
-  End a log with a line from a `-File` script, and wait on that.
+- A marker from `Start-Process powershell -Command '...'` may never appear: end a log from a `-File` script.

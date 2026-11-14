@@ -5,6 +5,10 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 
+# No doc comment holds a doctest; the empty doctest pass cost ~1 s a crate in the fast lane (232).
+[lib]
+doctest = false
+
 [dependencies]
 aic-core.workspace = true
 serde.workspace = true
