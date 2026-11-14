@@ -359,7 +359,7 @@ pub struct Weights {
     /// dealt round-robin) counts this share of its expected ambassadors on each site toward corrupting, a round
     /// ahead: the pressure, at-risk and exposure terms read them as if landed.
     pub rally_read: f64,
-    /// 147 (D67), above 0: each land-corruption token, and open land filling
+    /// 147 (D67), above 0: each Fallout token, and open land filling
     /// toward one, costs its Discord drip over the rounds left (up to 3) at its
     /// share of a Discord tip.
     pub blight: f64,
@@ -487,7 +487,7 @@ fn lasting(op: &Op) -> bool {
             | Op::Compute { .. }
             | Op::ComputeEvery { .. }
             | Op::AdversaryFactory { .. }
-            | Op::SeizeFactory
+            | Op::CorruptFactory
             | Op::OccupyFactory { .. }
             | Op::FlipStation { .. }
             | Op::CorruptCity { .. }
@@ -824,7 +824,7 @@ struct HexTokens {
     harden: i64,
     troop: i64,
     botnet: i64,
-    /// 147: land-corruption tokens (D67).
+    /// 147: Fallout tokens (D67).
     land: i64,
     node: [i64; 4],
     cube: [i64; 4],
@@ -858,7 +858,7 @@ impl TokenKeys {
             harden: k(HARDEN),
             troop: k(TROOP),
             botnet: k(common::BOTNET),
-            land: k(common::LAND_CORRUPTION),
+            land: k(common::FALLOUT),
             node: std::array::from_fn(|s| k(common::node(s))),
             cube: std::array::from_fn(|s| k(common::cube(s))),
             ambassador: std::array::from_fn(|s| k(common::ambassador(s))),
@@ -1258,7 +1258,7 @@ impl Eval {
         let (factory_at, factory_gather) = plan::next_corrupt_n(&world, g, CorruptSite::Factory);
         // 147 (D67): land corrupts only by a Corrupt land line (no natural corruption).
         let (land_at, land_line) = plan::next_corrupt_n(&world, g, CorruptSite::Land);
-        // 175: a node hex's own number, and whether a Corrupt nodes line ahead gathers onto it.
+        // 175: a node hex's own number, and whether a node line (Night Raid's) ahead gathers onto it.
         let (node_at, node_gather) = plan::next_corrupt_n(&world, g, CorruptSite::Node);
         // 167: a Corrupt prohibition ahead (public): a hex its condition covers now carries no corruption
         // pressure, so meeting the condition before the adversary turn scores (the Rally forecast skips its sites).
@@ -1405,7 +1405,7 @@ impl Eval {
                     let open = !common::firewalled(g, h);
                     let mut k = at(h);
                     if node_gather && open {
-                        // A Corrupt nodes line: agents next door move on, but not those on another node hex.
+                        // A node line: agents next door move on, but not those on another node hex.
                         k += world.map.hexes[h]
                             .neighbors
                             .iter()
@@ -1639,7 +1639,7 @@ impl Eval {
         // The Discord deck: the tip that finds it empty loses.
         let discord_left = alignment::cards_left(g, Side::Discord) as i64;
         v -= w.discord_danger * (3 - discord_left).max(0) as f64;
-        // 147 (D67): each land-corruption token (and land filling toward one)
+        // 147 (D67): each Fallout token (and land filling toward one)
         // drips Discord every round left, at its share of a Discord tip.
         if w.blight > 0.0 {
             let land = tokens.iter().map(|t| t.land).sum::<i64>() as f64 + blight;

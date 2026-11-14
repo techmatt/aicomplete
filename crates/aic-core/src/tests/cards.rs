@@ -311,7 +311,7 @@ fn no_tag_owns_an_effect() {
     for card in &mut c.cards {
         card.text.clear();
     }
-    let niche = |d: &CardDef| d.effects.iter().any(|o| matches!(o, Op::LiftLand { .. }));
+    let niche = |d: &CardDef| d.effects.iter().any(|o| matches!(o, Op::LiftFallout { .. }));
     let card = c.cards.iter_mut().find(|d| niche(d)).unwrap();
     card.tags = vec![Tag::Industry];
     card.needs = vec![(Tag::Science, 1)];

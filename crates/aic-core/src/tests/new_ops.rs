@@ -171,12 +171,50 @@ fn a_standing_troop_never_marches_or_strikes() {
     assert_eq!((g.tokens(z, FACTORY), g.tokens(next, TROOP)), (1, 1));
 }
 
-/// 219 (Matt, 2026-11-13): a burn destroys one of the seat's own factories (its cube and hardening with it, no
-/// protection asked), and with `blight` leaves land corruption; a neutral or corrupted factory is never a target.
+/// 227: a threat's Fallout lands next to its token (a city is no open land), the lowest-numbered free hex first,
+/// never on a node; two tokens take two hexes.
 #[test]
-fn a_burn_destroys_your_own_factory_and_leaves_land_corruption() {
+fn a_threats_fallout_lands_next_to_its_token_never_on_a_node() {
+    use crate::modules::adversary::fallout_free;
+    use crate::modules::common::FALLOUT;
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let city = rules.map.countries[0].hexes.iter().copied().find(|&h| is_city(&w, h)).unwrap();
+    let mut free: Vec<usize> = w.map.hexes[city].neighbors.iter().copied().filter(|&n| fallout_free(&w, &g, n)).collect();
+    free.sort_by_key(|&n| w.map.hexes[n].number);
+    assert!(free.len() >= 3, "a city with three free open neighbors");
+    put(&mut g, free[0], node(0), 1);
+    token_on(&mut g, "agitators", city);
+    run_threat(&rules, &mut g, "agitators", 0, &[content::Op::Fallout { count: 2, at: crate::op::FalloutAt::Location }]);
+    let on = |h: usize| g.tokens(h, FALLOUT);
+    assert_eq!((on(city), on(free[0]), on(free[1]), on(free[2])), (0, 0, 1, 1));
+    assert_eq!(g.stats.counters["fallout.placed"], 2);
+}
+
+/// 227: a site-anchored line puts one token next to each of a country's lowest-numbered `count` corrupted sites of
+/// its kind, and nothing in a country with none.
+#[test]
+fn a_site_anchored_fallout_needs_a_corrupted_site() {
+    use crate::modules::common::FALLOUT;
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let total = |g: &GameState| (0..g.hexes.len()).map(|h| g.tokens(h, FALLOUT)).sum::<i64>();
+    let ops = [content::Op::Fallout { count: 1, at: crate::op::FalloutAt::CorruptedCity }];
+    run_ops(&rules, &mut g, &ops);
+    assert_eq!(total(&g), 0, "no corrupted city, no Fallout");
+    let city = rules.map.countries[0].hexes.iter().copied().find(|&h| is_city(&w, h)).unwrap();
+    put(&mut g, city, ADV_CUBE, 1);
+    run_ops(&rules, &mut g, &ops);
+    assert_eq!(total(&g), 1);
+    assert!(w.map.hexes[city].neighbors.iter().any(|&n| g.tokens(n, FALLOUT) == 1));
+}
+
+/// 219 (Matt, 2026-11-13): a burn destroys one of the seat's own factories (its cube and hardening with it, no
+/// protection asked), and with `blight` leaves Fallout; a neutral or corrupted factory is never a target.
+#[test]
+fn a_burn_destroys_your_own_factory_and_leaves_fallout() {
     use crate::content::Facility;
-    use crate::modules::common::LAND_CORRUPTION;
+    use crate::modules::common::FALLOUT;
     let (rules, mut g) = lab(&[]);
     let w = rules.world();
     let mut zones = (0..g.hexes.len()).filter(|&h| w.map.hexes[h].industrial);
@@ -192,7 +230,7 @@ fn a_burn_destroys_your_own_factory_and_leaves_land_corruption() {
     assert_eq!(g.tokens(mine, cube(0)), 0);
     assert_eq!(g.tokens(mine, HARDEN), 0);
     assert_eq!(g.tokens(mine, ambassador(0)), 1, "no protection is spent: you chose it");
-    assert_eq!(g.tokens(mine, LAND_CORRUPTION), 1);
+    assert_eq!(g.tokens(mine, FALLOUT), 1);
     assert_eq!(g.tokens(neutral, FACTORY), 1);
     assert!(effects::own_facilities(&g, 0, Facility::Factory).is_empty());
 }

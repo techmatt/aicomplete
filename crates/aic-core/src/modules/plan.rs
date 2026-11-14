@@ -17,7 +17,7 @@ use crate::state::GameState;
 use super::{adversary, board};
 use super::common::{
     corrupted, cube_owner, firewalled, has_building, is_city, is_ocean, next_to, node_owner, player_ambassador, ADV_AMBASSADOR,
-    LAND_CORRUPTION, BOTNET, FACTORY, STATION, prohibit_token,
+    FALLOUT, BOTNET, FACTORY, STATION, prohibit_token,
 };
 use crate::content::HexKind;
 
@@ -98,7 +98,7 @@ pub fn create_plan(
 }
 
 /// Whether hex `h` is a target of Corrupt `site` (not yet the adversary's;
-/// land: an empty land hex, no city, base, building or land corruption; 175: a node: a hex with a player's node).
+/// land: an empty land hex, no city, base, building or Fallout; 175: a node: a hex with a player's node).
 pub fn corrupt_target(w: &World, g: &GameState, h: usize, site: CorruptSite) -> bool {
     match site {
         CorruptSite::City => is_city(w, h) && !corrupted(g, h),
@@ -106,7 +106,7 @@ pub fn corrupt_target(w: &World, g: &GameState, h: usize, site: CorruptSite) -> 
         CorruptSite::Station => g.tokens(h, STATION) > 0 && !corrupted(g, h),
         CorruptSite::Factory => g.tokens(h, FACTORY) > 0 && !corrupted(g, h),
         CorruptSite::Land => {
-            !is_ocean(w, h) && w.map.hexes[h].kind == HexKind::Open && !has_building(g, h) && g.tokens(h, LAND_CORRUPTION) == 0
+            !is_ocean(w, h) && w.map.hexes[h].kind == HexKind::Open && !has_building(g, h) && g.tokens(h, FALLOUT) == 0
         }
         CorruptSite::Node => node_owner(g, h).is_some(),
     }

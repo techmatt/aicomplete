@@ -281,7 +281,7 @@ pub fn city_builds_factory(w: &World, g: &GameState, city: usize) -> bool {
 pub fn city_build_sites(w: &World, g: &GameState, city: usize, factory: bool) -> Vec<usize> {
     let fits = |h: usize| {
         if factory {
-            w.map.hexes[h].industrial && !has_building(g, h) && g.tokens(h, LAND_CORRUPTION) == 0
+            w.map.hexes[h].industrial && !has_building(g, h) && g.tokens(h, FALLOUT) == 0
         } else {
             buildable(w, g, h) && !w.map.hexes[h].industrial && !is_base(w, h)
         }

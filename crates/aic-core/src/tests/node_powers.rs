@@ -237,14 +237,14 @@ fn a_rider_finds_its_spot_and_a_fresh_one_no_other_node_of_yours() {
     assert!(board::spots_near(&w, &g, 0, h, &[NodeSpot::Factory], false).contains(&f));
 }
 
-/// 212: a green card's side bonus lifts a land-corruption token in reach.
+/// 212: a green card's side bonus lifts a Fallout token in reach.
 #[test]
-fn lift_land_takes_a_token_in_reach() {
+fn lift_fallout_takes_a_token_in_reach() {
     let (rules, mut g) = at_step(&[], 1);
     let a = rules.map.numbered(0, piece(0).node);
-    put(&mut g, a, crate::modules::common::LAND_CORRUPTION, 1);
-    run_ops(&rules, &mut g, &[Op::LiftLand { count: 1, unity: 0 }]);
-    assert_eq!(g.tokens(a, crate::modules::common::LAND_CORRUPTION), 0);
+    put(&mut g, a, crate::modules::common::FALLOUT, 1);
+    run_ops(&rules, &mut g, &[Op::LiftFallout { count: 1 }]);
+    assert_eq!(g.tokens(a, crate::modules::common::FALLOUT), 0);
 }
 
 #[test]

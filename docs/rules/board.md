@@ -12,7 +12,7 @@ Hex kinds: **city**, **open** land and **ocean** are printed; a **military base*
 on an open hex of each front (below). **Industrial zones** are a printed marking on open
 hexes next to cities: factories go only there. Research stations go on other open hexes,
 one facility per hex. **Empty station sites** are printed too (137, one a country, never a base): content may create
-a neutral station on one (none does yet). Nothing builds on ocean or on a land corruption token (no node, factory or
+a neutral station on one (none does yet). Nothing builds on ocean or on a Fallout token (no node, factory or
 station) until it is cleared ([war.md](war.md)).
 
 <!-- generated: countries -->

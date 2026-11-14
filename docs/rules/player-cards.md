@@ -40,7 +40,7 @@ The cards config lists which cards are in the game (baseline: all of them).
 - **Tier 2 is the majors (r94, Matt, candidate).** Spirit Island's major powers: big payoffs, most paid in antimatter
   (15 tier-2 cards, and two dear tier-1 ones), giving lots to funnel into your own or another player's board actions:
   liberations, troop strikes, ambassadors and Unity, energy, chips, cubes. The draft price is their only acquisition
-  cost; no tier-2 card clears many land corruption tokens (green cards do).
+  cost; no tier-2 card clears many Fallout tokens (green cards do).
 - **The end-game cards (drafts; Matt, 2026-11-09).** Ten tier-2 cards for the last 3-4 rounds act where the
   agents stand, in reach: **convert** them into your ambassadors where they stand (Mass Defection, Double
   Agents, Open Source Uprising, Embassy of Exiles), **strike** them (Kettle Operation: and troops) on or next to a hex in
@@ -51,8 +51,8 @@ The cards config lists which cards are in the game (baseline: all of them).
 - **Tags are story, not rules (r93, Matt).** No tag owns an effect, as Magic's colors don't: each tag has its usual
   effects (the tag table in [ai-powers.md](ai-powers.md)), and a card whose effect fits none of its tags is a soft
   design warning, never a refusal. Shields on a node hex lean Security, land lifts Diplomacy or Power, delays (a threat
-  skips this round's execution, stays up, and can be countered next round) Science. No board power prints a shield or
-  a delay; the Protector's Recovery lifts land corruption. No card `needs` a tag for any of the three.
+  skips this round's execution, stays up, and can be countered next round) Science. No board power prints a shield, a
+  delay or a lift (227 cut the Protector's Recovery). No card `needs` a tag for any of the three.
 - **Typed counters (candidate).** Nine tier-1 cards fight one threat tag, and count for more than they cost toward
   threats carrying it (or Universal) that the player is near, a threat's tag being the card's own (Security,
   Diplomacy, Cyber, Industry; Science's and Power's tools stay general). Industry has two programs and an Action building;

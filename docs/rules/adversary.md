@@ -15,7 +15,7 @@ The adversary is a **board** (the Militarist's: project slots, three rules, a di
    and its twists.
 2. **Corrupt**: the card's **Corrupt X** lines, in order (`adversary.corrupt`); then **natural corruption**
    (`adversary.natural`): every city, research station or factory already holding its number of agents corrupts,
-   with no move; then every hex with a player's node holding a node's number (`corrupt_node_at` 2).
+   with no move; then 2 agents on a player's node hex destroy the node (below).
 3. **March** (`board.march`, [war.md](war.md)).
 4. **Income**: the top card goes face up as next round's (`adversary.reveal`), the agent income into the pools, the
    **compute step** (`adversary.compute`); ongoing **projects** act; firewalls, cordons and prohibition tokens come off.
@@ -23,9 +23,9 @@ The adversary is a **board** (the Militarist's: project slots, three rules, a di
 **Income (151, Matt, locked; numbers candidates).** Two incomes, lists by difficulty: **compute income**
 (`compute_income`, not per country), added in the compute step, and **agent income** (`ambassador_income`) into **each
 country's pool** (the supply caps it when it lands; setup fills the pools once). Boards, events and projects **raise**
-an income for the rest of the game (the Militarist's **Garrisons**). No troop income. **Agents grow by stage** (r89,
-Matt, 2026-11-12): the base agent income is 0 below level 4,
-and every stage-II and stage-III card (and Long Patrols in stage I) prints +1 agent a country a round, so the pools fill as the game goes on.
+an income for the rest of the game (the Militarist's **Garrisons**). No troop income. **Agents grow by stage** (r89):
+the base agent income is 0 below level 4, and every stage-II and stage-III card (and Long Patrols) prints +1 agent a
+country a round.
 
 **Rally X (locked).** Every event prints one Rally X: each country's
 whole pool is **dealt one agent at a time onto each site of type X** in that country (city, coastal city, research
@@ -34,11 +34,9 @@ or no-Rally site keeps its turn and its share stays in the supply; with no site 
 cordoned country's pool waits. A project's "Rally 2: factories" is 2 a country. An arrival on player ambassadors
 cancels one (players choose whose).
 
-**A blocked landing stays in the supply (175).** A **firewall** ([ambassadors.md](ambassadors.md)), to the end of the
-next adversary turn: no agent lands or moves onto its hex, its site doesn't corrupt. A Unity **prohibition** (r80,
-ruling #53) puts a no-Rally, no-Muster or no-Corrupt token on every hex where its condition holds when the card
-resolves ([alignment.md](alignment.md)); that step skips the hex, and the tokens come off with the firewalls. A Muster
-onto a hex Wall holds, or with a no-Muster token, stays in the supply.
+**A blocked landing stays in the supply (175).** A **firewall** ([ambassadors.md](ambassadors.md)) or a Unity
+**prohibition** token (no-Rally, no-Muster, no-Corrupt; [alignment.md](alignment.md)) blocks its step on its hex until
+the end of the next adversary turn; so does Wall for a Muster.
 
 **Muster N (175).** N troops on each country's lowest-numbered factory, anyone's, else its lowest-numbered city, +1
 from the difficulty surcharge. No project musters. r89: only the stage-III cards muster, 1 each (troops are few
@@ -46,21 +44,25 @@ and deadly, [war.md](war.md)).
 
 **Corrupt X (175, Matt's ruling; numbers candidates).** X is a type: **cities** (`corrupt_at` 4), **coastal cities**
 (a city's number), **research stations** (`corrupt_station_at` 3), **factories** (`corrupt_factory_at` 3), **open
-land** (`corrupt_land_at` 3; an empty land hex: no city, base or building) or **nodes** (`corrupt_node_at` 2; a hex
-with a player's node). Only an X not yet the adversary's counts. In each country: **every agent next to exactly one X moves
-onto it** (across borders too; r98, Matt, 2026-11-13: an agent next to two or more stays where it is; agents already on an X stay); then **every X holding its number of agents corrupts** (agents
-only), and its agents go back to the supply.
+land** (`corrupt_land_at` 3; an empty land hex; it takes Fallout). Night Raid's node line gathers the same way onto
+**nodes**, where 2 agents destroy your node (node loss, never a corruption: 227). Only an X not yet the adversary's
+counts. In each country: **every agent next to exactly one X moves onto it** (across borders too; r98: one next to
+two or more stays); then **every X holding its number of agents corrupts**, and its agents go to the supply.
 A line may print "(1 fewer)"; difficulty lowers a city's, station's and factory's number (`corrupt_cut`; not land's
 or a node's). **One aftermath: whatever corrupts takes one adversary mark.**
 - **A corrupted site** takes the adversary's cube (a player cube comes off; [ambassadors.md](ambassadors.md)).
   **It destroys only a node on its own hex** (protections apply, [war.md](war.md)); player ambassadors there are
-  lost. Sanctuary (capstone): corruption never destroys your nodes.
-- **2 agents on a player's node hex destroy the node** (a node rule, not corruption: protections apply, a last node
-  too; a city hex with a node loses it at 2 though the city corrupts at 4); its agents go to the supply and **it leaves
-  no mark** (r98, Matt, 2026-11-13: losing it is punishment enough).
-- **Land corruption** is the one scar (r98): a hex token on corrupted open land; nothing
-  is built there, and each drips `blight_discord` (1) Discord a round. Lift land corruption (a standard action,
-  `land_cubes` 2 research cubes, r92), the Protector's Recovery and some cards take one in reach off.
+  lost. Sanctuary (capstone): neither corruption nor agents destroy your nodes.
+- **2 agents on a player's node hex destroy the node** (`corrupt_node_at`; a node rule, not corruption: protections
+  apply; a city hex loses its node at 2, though the city corrupts at 4); its agents go to the supply and **it leaves
+  no mark** (r98).
+- **Fallout** is the one scar (r98; named by 227): a hex token on free open land; nothing is built there, and each
+  drips `blight_discord` (1) Discord a round. All four adversity sources print it (227, Matt): Call-Up (tier 1),
+  Casus Belli (2) and Siege (tier 2), Station Coup (a project: 1 a country by a corrupted station), the Discord card
+  Scorched Earth; also Corrupt open land and Teardown. A token lands on a free open hex (no building, node or
+  Fallout) on or next to its anchor, lowest-numbered first; none free, it is lost. Lift Fallout (a standard action,
+  `land_cubes` 2 research cubes, r92) and some cards take one in reach off. A project bundles a third effect only
+  at cost 14 and up.
 **Botnets spread quickly**. Each country starts with one (on its
 research station); more come from printed lines, among them four event cards' **Botnets spread** (each country, a
 botnet onto its lowest-numbered site next to a botnet; none: its lowest-numbered research station). A botnet stays
@@ -83,14 +85,13 @@ printed per player count (the table below).
 - **Spending:** each point onto the **leftmost** visible project (r80; `compute_every` on every one, first). A
   project holding its cost **resolves** then and there, once or **ongoing** (each Income beat from the next round);
   never outside the compute step. With no project left, compute is lost.
-- **Board verbs.** A project is a small, visible plan on the map; one tax is left
-  (Data Heist). A botnet's troops are made on its hex (none on the Protector's node hex: Wall, r98). **Targets are read off the board as it resolves**, in each country, no marker: "the X with the most
-  agents on or next to it" (the hex and its neighbors), "the node hex holding the most agents" (at least 1, the hex
-  alone), "its lowest-numbered botnet"; ties: the lowest-numbered. "Turns neutral": the owner's cube comes off.
-  **Factory troops** are an adversary factory's own output (a player ambassador on it stops them). **The clock**:
-  the top event card is discarded, the round cap a round nearer.
-- **Counterplay:** an ambassador on a botnet or a corrupted station; Cyber's hacks; the Researcher's Audit
-  ([economy.md](economy.md)), off a project, not the waiting compute.
+- **Board verbs.** A project is a small, visible plan on the map (one tax left: Data Heist), its bundle sized by
+  cost (227). No troop is made on the Protector's node hex (Wall, r98). **Targets are read off the board as it
+  resolves**, in each country: "the X with the most agents on or next to it", "the node hex holding the most agents"
+  (at least 1), "its lowest-numbered botnet"; ties: the lowest-numbered. "Turns neutral": the owner's cube comes off.
+  **Factory troops**: an adversary factory's own output (a player ambassador on it stops them). **The clock**: the
+  top event card is discarded.
+- **Counterplay:** an ambassador on a botnet or a corrupted station; Cyber's hacks; Audit, off a project.
 
 <!-- generated: projects -->
 | Project | Tags | 1 player | 2 players | 3 players | 4 players | Resolves |

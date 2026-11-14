@@ -166,8 +166,8 @@ fn check_flags_a_bare_name_that_is_no_tunable() {
 fn check_takes_an_op_name() {
     let r = baseline(&[]);
     let ops: Vec<String> = op_docs(include_str!("../../../aic-core/src/op.rs")).into_iter().map(|o| o.name).collect();
-    assert!(ops.iter().any(|o| o == "lift_land"));
-    assert!(unknown_params("`lift_land`, `move_one`", &r, &ops).is_empty());
+    assert!(ops.iter().any(|o| o == "lift_fallout"));
+    assert!(unknown_params("`lift_fallout`, `move_one`", &r, &ops).is_empty());
 }
 
 #[test]

@@ -895,7 +895,7 @@ impl Content {
                 last = n;
             }
         }
-        // 068: shields and delays are the cards' (the Protector's Recovery clears markers).
+        // 068: shields and delays are the cards' (no board power lifts Fallout since 227 cut Recovery).
         if b.powers.iter().flat_map(|p| &p.effects).any(card_only) {
             return Err(format!("{what}: shields and delays are the cards'"));
         }
@@ -1351,11 +1351,17 @@ pub fn project_rule_break(p: &ProjectCard) -> Option<String> {
     if says_each_board(&p.text) {
         return Some("it says \"each board\" (each country)".into());
     }
-    if p.effects.len() + p.resolve.len() > 2 {
-        return Some("more than two consequences".into());
+    // 227 (Matt, 2026-11-13): bundles sized by cost; only the most expensive (`THIRD_EFFECT_COST` and up) may
+    // carry a third effect.
+    let most = if p.cost >= THIRD_EFFECT_COST { 3 } else { 2 };
+    if p.effects.len() + p.resolve.len() > most {
+        return Some(format!("more than {most} consequences (a third only at cost {THIRD_EFFECT_COST} and up)"));
     }
     None
 }
+
+/// 227: the project cost from which a third bundled effect is allowed.
+pub const THIRD_EFFECT_COST: i64 = 14;
 
 fn check_adversary_board(b: &AdversaryBoard) -> Result<(), String> {
     let what = format!("adversary board {:?}", b.id);
@@ -1514,8 +1520,8 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
                     return Err(format!("{what}: if_node_next follows a place_node in the same list"));
                 }
             }
-            Op::LiftLand { count, .. } if *count < 1 => {
-                return Err(format!("{what}: lift_land needs count >= 1"));
+            Op::LiftFallout { count, .. } if *count < 1 => {
+                return Err(format!("{what}: lift_fallout needs count >= 1"));
             }
             // 142 (P1): the no-location form (the most infiltrated city) is gone.
             Op::CorruptCity { at: None } => {

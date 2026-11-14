@@ -25,8 +25,8 @@ end their march next to your node pay you 1 insight each (Vigil; r79 once a roun
 facilities with Bulwark, and your board prints 2 energy a round. You earn fewer credits (13 a round), so you start with
 more: 46. Each credit space of your economy track adds 2 or 3 credits, the first one 1 energy too. Round 1 deals as
 for the Builder. Late in the game, sacrifice
-cards you have finished with: a Security card removes up to 2 troops in a hex (Interdict) or draws 1 and removes an agent (Debrief), and a
-Diplomacy card lifts a land corruption token for 2 Unity (Recovery). Each round you may Dispatch 1
+cards you have finished with: a Security card removes up to 2 troops in a hex (Interdict) or draws 1 and removes an
+agent (Debrief). Each round you may Dispatch 1
 ambassador for free (2 from your fourth economy space). Your printed Security tag counts like one on your
 cards.
 
@@ -95,13 +95,13 @@ energy income; each is limited a round; and every tag sacrifice permanently lose
 <!-- generated: node_track -->
 | Space | Builder | Protector | Researcher |
 |---|---|---|---|
-| 1 (on the board at setup) | nothing | nothing | nothing |
+| 1 (on the board at setup) | toward the capstone | toward the capstone | toward the capstone |
 | 2 | +3 credits | +1 energy, +2 credits | +3 credits |
 | 3 | +2 credits | +3 credits | builds a free research station in reach |
 | 4 | pay 1 energy: +3 credits, **Dispatch +1** | pay 1 energy: +3 credits, **Dispatch +1** | pay 1 energy: +3 credits, **Dispatch +1** |
 | 5 | pay 2 energy: +3 credits | pay 2 energy: +3 credits | pay 2 energy: +3 credits |
 | 6 | pay 3 energy: +3 credits, Power tag | pay 3 energy: +2 credits, Cyber tag | pay 3 energy: +3 credits, Power tag |
-| 7 | pay 5 energy: **Full Capacity** (capstone): 1 chip each round per 4 Industry tags on your cards. | pay 5 energy: **Sanctuary** (capstone): Corruption never destroys your Nodes. Each round, 1 antimatter. | pay 5 energy: **Open Archive** (capstone): Each round, 1 research cube and 1 antimatter onto your board. |
+| 7 | pay 5 energy: **Full Capacity** (capstone): 1 chip each round per 4 Industry tags on your cards. | pay 5 energy: **Sanctuary** (capstone): Neither corruption nor Agents destroy your Nodes. Each round, 1 antimatter. | pay 5 energy: **Open Archive** (capstone): Each round, 1 research cube and 1 antimatter onto your board. |
 <!-- /generated -->
 
 The **keep upgrade**: tier-2 keeps cost `keep_tier2_upgraded` instead of `keep_tier2` ([player-cards.md](player-cards.md)).
@@ -123,7 +123,7 @@ each later step adds 1, so a tier-2 keep (3 insight, r95) fits from round 2.
 | 2 | **keep upgrade** | **keep upgrade** | **Dispatch +1** |
 | 3 | pay 1 energy: **insight 8** | pay 1 energy: **insight 8** | pay 1 energy: **keep upgrade** |
 | 4 | pay 2 energy: +2 credits | pay 2 energy: +2 credits | pay 2 energy: **insight 7** |
-| 5 | pay 2 energy: nothing | pay 2 energy: nothing | pay 2 energy: nothing |
+| 5 | pay 2 energy: toward the capstone | pay 2 energy: toward the capstone | pay 2 energy: toward the capstone |
 | 6 | pay 3 energy: **insight 9**, Cyber tag | pay 3 energy: Diplomacy tag | pay 3 energy: +2 credits, Industry tag |
 | 7 | pay 5 energy: **insight 10**, **Master Plan** (capstone): Your buildings cost 2 credits less. | pay 5 energy: **insight 9**, **Aegis Doctrine** (capstone): Once a round, the first time one of your Nodes or facilities would be destroyed, it is sheltered. | pay 5 energy: **insight 8**, **Open Science** (capstone): Each round, 2 insight from the supply, split among other players. |
 <!-- /generated -->

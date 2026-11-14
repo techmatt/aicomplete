@@ -19,6 +19,7 @@ use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, OnceLock};
 
 use aic_core::content::{Ability, CardDef, CardKind, Event, Facility, Op, Piece, Power, Resource, RoundFlag, Side, TokenKind, TAGS};
+use aic_core::op::FalloutAt;
 use serde::Deserialize;
 
 /// The table as loaded.
@@ -612,9 +613,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             w.scaled(row(if *fresh { "if_node_next_fresh" } else { "if_node_next" }))
         }
         Op::AmbassadorToSpot => Worth::now(row("ambassador_to_spot") * r(Resource::Ambassadors)),
-        Op::LiftLand { count, unity } => Worth::now(
-            (row("lift_land") + row("sway") * t.rate("sway") * *unity as f64) * t.rate("target_share") * *count as f64,
-        ),
+        Op::LiftFallout { count } => Worth::now(row("lift_fallout") * t.rate("target_share") * *count as f64),
         Op::Draw { count } => Worth::now(row("draw") * t.rate("drawn_card") * *count as f64),
         Op::DrainAll { amount } => Worth::now(row("drain_all") * *amount as f64),
         Op::GainPerTokens { resource, per, .. } => {
@@ -688,6 +687,11 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::FactoryTroops { count } => Worth::now(row("factory_troops") * t.rate("countries") * *count as f64),
         Op::RaidNode => Worth::now(row("raid_node") * t.rate("countries")),
         Op::StripHarden => Worth::now(row("strip_harden") * t.rate("countries")),
+        // 227: a threat's tokens all land; a site-anchored line's land in each country with such a site.
+        Op::Fallout { count, at } => {
+            let reach = if *at == FalloutAt::Location { 1.0 } else { t.rate("countries") * t.rate("target_share") };
+            Worth::now(row("fallout") * reach * *count as f64)
+        }
         Op::Clock { count } => Worth::now(row("clock") * *count as f64),
         // 156: one player resolves seat ops: their worth, at the row's share.
         Op::OnePlayer { then } => {
@@ -713,7 +717,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
                 Removable::Agents => row("pushback"),
                 Removable::Troops => row("remove_troops"),
                 Removable::Botnets => row("remove_botnet"),
-                Removable::Land => row("lift_land"),
+                Removable::Fallout => row("lift_fallout"),
                 Removable::Cubes => row("cleanse"),
             };
             let reach = match per {
@@ -806,7 +810,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::MarchNow { .. } => Worth::now(row("march_now")),
         Op::OccupyFactory { .. } => Worth::now(row("occupy_factory")),
         Op::PlaceBotnet { count } => Worth::now(row("place_botnet") * *count as f64),
-        Op::SeizeFactory => Worth::now(row("seize_factory")),
+        Op::CorruptFactory => Worth::now(row("corrupt_factory")),
         Op::Theft { resource, amount, cards, .. } => {
             Worth::now(row("theft") * (r(*resource) * *amount as f64).min(t.rate("drawn_card") * *cards as f64))
         }

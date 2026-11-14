@@ -206,12 +206,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Lift the land corruption on each hex on or next to an Ambassador.",
-    "effects": [{"op": "remove_where", "pieces": "land", "count": 1, "per": "hex", "where": "by_ambassador"}]},
-   {"text": "Lift the land corruption on each hex on or next to an Ambassador or a Node.",
-    "effects": [{"op": "remove_where", "pieces": "land", "count": 1, "per": "hex", "where": "by_player"}]},
-   {"text": "Lift the land corruption on each hex within 2 of an Ambassador or a Node.",
-    "effects": [{"op": "remove_where", "pieces": "land", "count": 1, "per": "hex", "where": "near_player"}]}
+   {"text": "Lift the Fallout on each hex on or next to an Ambassador.",
+    "effects": [{"op": "remove_where", "pieces": "fallout", "count": 1, "per": "hex", "where": "by_ambassador"}]},
+   {"text": "Lift the Fallout on each hex on or next to an Ambassador or a Node.",
+    "effects": [{"op": "remove_where", "pieces": "fallout", "count": 1, "per": "hex", "where": "by_player"}]},
+   {"text": "Lift the Fallout on each hex within 2 of an Ambassador or a Node.",
+    "effects": [{"op": "remove_where", "pieces": "fallout", "count": 1, "per": "hex", "where": "near_player"}]}
   ]
  },
  {
@@ -349,6 +349,19 @@
     "effects": [{"op": "per_site", "where": "corrupted_city", "max": 3, "then": [{"op": "players_lose", "resource": "credits", "amount": 2}]}]},
    {"text": "Every player loses 2 credits for each corrupted city (at most 4).",
     "effects": [{"op": "per_site", "where": "corrupted_city", "max": 4, "then": [{"op": "players_lose", "resource": "credits", "amount": 2}]}]}
+  ]
+ },
+ {
+  "id": "scorched_earth",
+  "name": "Scorched Earth",
+  "side": "discord",
+  "tiers": [
+   {"text": "Each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
+    "effects": [{"op": "fallout", "at": "corrupted_city"}]},
+   {"text": "Each country: 1 Fallout lands next to each of its 2 lowest-numbered corrupted cities.",
+    "effects": [{"op": "fallout", "count": 2, "at": "corrupted_city"}]},
+   {"text": "Each country: 1 Fallout lands next to each of its 2 lowest-numbered corrupted cities and next to its lowest-numbered corrupted factory.",
+    "effects": [{"op": "fallout", "count": 2, "at": "corrupted_city"}, {"op": "fallout", "at": "corrupted_factory"}]}
   ]
  },
  {

@@ -174,7 +174,7 @@
   "locations": [
    "base"
   ],
-  "text": "1 adversary Troop lands here. Sway 2 toward Discord.",
+  "text": "1 adversary Troop lands here. 1 Fallout lands next to here.",
   "counters": [
    [
     {
@@ -196,15 +196,13 @@
     "at": "location"
    },
    {
-    "op": "sway",
-    "side": "discord",
-    "amount": 2,
-    "narrative": "fear"
+    "op": "fallout",
+    "count": 1
    }
   ],
   "harms": [
    "adversary pieces placed",
-   "Discord sway"
+   "Fallout placed"
   ]
  },
  {
@@ -1079,7 +1077,7 @@
   "locations": [
    "factory"
   ],
-  "text": "The factory here is destroyed. The adversary gains 4 compute.",
+  "text": "The factory here is destroyed. 1 Fallout lands on its hex.",
   "counters": [
    [
     {
@@ -1100,13 +1098,13 @@
     "at": "factory"
    },
    {
-    "op": "compute",
-    "amount": 4
+    "op": "fallout",
+    "count": 1
    }
   ],
   "harms": [
-   "facilities destroyed or seized",
-   "projects advanced (compute)"
+   "facilities destroyed or corrupted",
+   "Fallout placed"
   ]
  },
  {
@@ -1208,7 +1206,7 @@
   "locations": [
    "base"
   ],
-  "text": "This base's front has a second war step next round. Sway 3 toward Discord.",
+  "text": "This base's front has a second war step next round. 2 Fallout land next to here.",
   "counters": [
    [
     {
@@ -1228,15 +1226,13 @@
     "op": "extra_war"
    },
    {
-    "op": "sway",
-    "side": "discord",
-    "amount": 3,
-    "narrative": "fear"
+    "op": "fallout",
+    "count": 2
    }
   ],
   "harms": [
    "war brought forward",
-   "Discord sway"
+   "Fallout placed"
   ]
  },
  {
@@ -1271,7 +1267,7 @@
    }
   ],
   "harms": [
-   "facilities destroyed or seized"
+   "facilities destroyed or corrupted"
   ]
  },
  {
@@ -1563,7 +1559,7 @@
    }
   ],
   "harms": [
-   "facilities destroyed or seized"
+   "facilities destroyed or corrupted"
   ]
  },
  {
@@ -1807,7 +1803,7 @@
    }
   ],
   "harms": [
-   "facilities destroyed or seized",
+   "facilities destroyed or corrupted",
    "projects advanced (compute)"
   ]
  },
@@ -1822,7 +1818,7 @@
   "locations": [
    "factory"
   ],
-  "text": "The adversary seizes the factory here, even a player's. The adversary gains 5 compute.",
+  "text": "The adversary corrupts the factory here, even a player's. The adversary gains 5 compute.",
   "counters": [
    [
     {
@@ -1839,7 +1835,7 @@
   ],
   "effects": [
    {
-    "op": "seize_factory"
+    "op": "corrupt_factory"
    },
    {
     "op": "compute",
@@ -1847,7 +1843,7 @@
    }
   ],
   "harms": [
-   "facilities destroyed or seized",
+   "facilities destroyed or corrupted",
    "projects advanced (compute)"
   ]
  },
@@ -2311,7 +2307,7 @@
    }
   ],
   "harms": [
-   "facilities destroyed or seized",
+   "facilities destroyed or corrupted",
    "adversary pieces placed"
   ]
  },

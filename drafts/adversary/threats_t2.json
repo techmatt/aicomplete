@@ -59,7 +59,7 @@
    "locations": [
     "factory"
    ],
-   "text": "The factory here is destroyed. The adversary gains 4 compute.",
+   "text": "The factory here is destroyed. 1 Fallout lands on its hex.",
    "counters": [
     [
      {
@@ -80,15 +80,15 @@
      "at": "factory"
     },
     {
-     "op": "compute",
-     "amount": 4
+     "op": "fallout",
+     "count": 1
     }
    ],
    "harms": [
-    "facilities destroyed or seized",
-    "projects advanced (compute)"
+    "facilities destroyed or corrupted",
+    "Fallout placed"
    ],
-   "value": "counter 4 ambassadors (16) or 17 credits (17); uncountered 19.4 at values.json (a troop 9 with its strike), 1.21x the cheapest counter",
+   "value": "counter 4 ambassadors (16) or 17 credits (17); uncountered 27 at values.json (a factory 15, a Fallout 12), 1.69x the cheapest counter",
    "check": "bites the factory's owner (a node on it goes with it, a last node too: 175)",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
@@ -207,7 +207,7 @@
    "locations": [
     "base"
    ],
-   "text": "This base's front has a second war step next round. Sway 3 toward Discord.",
+   "text": "This base's front has a second war step next round. 2 Fallout land next to here.",
    "counters": [
     [
      {
@@ -227,16 +227,15 @@
      "op": "extra_war"
     },
     {
-     "op": "sway",
-     "side": "discord",
-     "amount": 3, "narrative": "fear"
+     "op": "fallout",
+     "count": 2
     }
    ],
    "harms": [
     "war brought forward",
-    "Discord sway"
+    "Fallout placed"
    ],
-   "value": "counter 4 ambassadors (16) or 17 credits (17); uncountered 20 at values.json (a troop 9 with its strike), 1.25x the cheapest counter",
+   "value": "counter 4 ambassadors (16) or 17 credits (17); uncountered 32 at values.json (a war step 8, 2 Fallout 24), 2.00x the cheapest counter",
    "check": "bites where corp troops can win a front; Discord rides with Security here",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
@@ -275,7 +274,7 @@
     }
    ],
    "harms": [
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "counter 4 insight (17.5) or 17 credits (17); uncountered 25 at values.json (a troop 9 with its strike), 1.47x the cheapest counter",
    "check": "a lasting harm: the city corrupts as by the Corrupt line (a node on it is destroyed, an ambassador there is armor)",
@@ -608,7 +607,7 @@
     }
    ],
    "harms": [
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "counter 3 Cyber tags (15) or 17 credits (17); uncountered about 15 at values.json (the flip, with its 2 agents; the 4 compute went, 4.4), about 1.0x the cheapest counter",
    "check": "a lasting harm on the station's owner; r83 (M1): a player's ambassador or guard on the station now saves it",
@@ -889,7 +888,7 @@
     }
    ],
    "harms": [
-    "facilities destroyed or seized",
+    "facilities destroyed or corrupted",
     "projects advanced (compute)"
    ],
    "value": "counter 4 chips (14) or 17 credits (17); uncountered 20.5 at values.json (a troop 9 with its strike), 1.46x the cheapest counter",
@@ -910,7 +909,7 @@
    "locations": [
     "factory"
    ],
-   "text": "The adversary seizes the factory here, even a player's. The adversary gains 5 compute.",
+   "text": "The adversary corrupts the factory here, even a player's. The adversary gains 5 compute.",
    "counters": [
     [
      {
@@ -927,7 +926,7 @@
    ],
    "effects": [
     {
-     "op": "seize_factory"
+     "op": "corrupt_factory"
     },
     {
      "op": "compute",
@@ -935,7 +934,7 @@
     }
    ],
    "harms": [
-    "facilities destroyed or seized",
+    "facilities destroyed or corrupted",
     "projects advanced (compute)"
    ],
    "value": "counter 4 energy (18) or 17 credits (17); uncountered 20.5 at values.json (a troop 9 with its strike), 1.21x the cheapest counter",
@@ -1468,7 +1467,7 @@
     }
    ],
    "harms": [
-    "facilities destroyed or seized",
+    "facilities destroyed or corrupted",
     "adversary pieces placed"
    ],
    "value": "counter 4 energy (18) or 17 credits (17); uncountered 24 at values.json (a troop 9 with its strike), 1.41x the cheapest counter",

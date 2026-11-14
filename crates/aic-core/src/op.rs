@@ -250,7 +250,7 @@ pub enum CorruptSite {
     City,
     Station,
     Factory,
-    /// Open land: an empty land hex (no piece, not ocean): it takes the land-corruption token.
+    /// Open land: an empty land hex (no piece, not ocean): it takes the Fallout token.
     Land,
     /// 175: a coastal city (a city's corrupt number).
     CoastalCity,
@@ -421,8 +421,8 @@ pub enum Removable {
     Agents,
     Troops,
     Botnets,
-    /// Land-corruption tokens (223, r98: the one scar).
-    Land,
+    /// Fallout tokens (223, r98: the one scar; 227 renamed it).
+    Fallout,
     /// The adversary's cube off a corrupted research station or factory (never a city: tier III frees none).
     Cubes,
 }
@@ -433,7 +433,7 @@ impl Removable {
             Removable::Agents => "agents",
             Removable::Troops => "troops",
             Removable::Botnets => "botnets",
-            Removable::Land => "land corruption",
+            Removable::Fallout => "Fallout",
             Removable::Cubes => "adversary cubes",
         }
     }
@@ -449,6 +449,33 @@ pub enum Per {
     Country,
     /// Each player, from one hex where it holds (their choice).
     Player,
+}
+
+/// 227: where a `fallout` line's tokens land.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum FalloutAt {
+    /// The threat's token: on it or next to it.
+    #[default]
+    Location,
+    /// Next to a corrupted city.
+    CorruptedCity,
+    /// Next to a corrupted factory.
+    CorruptedFactory,
+    /// Next to a corrupted research station.
+    CorruptedStation,
+}
+
+impl FalloutAt {
+    /// The printed anchor ("next to a corrupted city").
+    pub fn words(self) -> &'static str {
+        match self {
+            FalloutAt::Location => "here",
+            FalloutAt::CorruptedCity => "corrupted city",
+            FalloutAt::CorruptedFactory => "corrupted factory",
+            FalloutAt::CorruptedStation => "corrupted research station",
+        }
+    }
 }
 
 /// A facility kind: a research station or a factory (a cleanse's limit since r35; Burn, CreateSite, TakeSite).
@@ -638,7 +665,7 @@ pub enum Op {
     BuildFactory,
     /// 219 (Matt, 2026-11-13: the board burns): destroy one of your own `facility` pieces, anywhere, your choice;
     /// it is gone (no protection is spent: you chose it), your cube and any hardening with it. With `blight`, a
-    /// land-corruption token goes on its hex. Rebuilt only the normal way.
+    /// Fallout token goes on its hex. Rebuilt only the normal way.
     Burn {
         facility: Facility,
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
@@ -818,13 +845,10 @@ pub enum Op {
     /// 212: one new ambassador of yours onto a city on or next to the node just placed (the player
     /// choosing among several); it stands there as any ambassador does, toward the city's claim.
     AmbassadorToSpot,
-    /// 212: lift up to `count` land-corruption tokens in your reach (Lift land corruption's effect; r98: the
-    /// Protector's Recovery and some cards).
-    LiftLand {
+    /// 212: lift up to `count` Fallout tokens in your reach (Lift Fallout's effect; cards). 227: the `unity` field
+    /// went with the Protector's Recovery, its one user.
+    LiftFallout {
         count: i64,
-        /// r98: Sway toward Unity for each token lifted (the Protector's Recovery: 2), so the Unity rides on the lift.
-        #[serde(default, skip_serializing_if = "is_zero")]
-        unity: i64,
     },
     /// Draw `count` tier-1 cards into your hand, no keep paid (023: Science's
     /// card draw).
@@ -1097,8 +1121,8 @@ pub enum Op {
         #[serde(default = "one", skip_serializing_if = "is_one")]
         count: i64,
     },
-    /// The adversary seizes the factory under the token, even a player's; a free zone gets a new one.
-    SeizeFactory,
+    /// The adversary corrupts the factory under the token, even a player's; a free zone gets a new one.
+    CorruptFactory,
     /// The player it hits (146: the nearest) pays `amount` `resource` or discards `cards` cards, as `Requisition`
     /// (146, D62: a harm can't be dodged by holding none); the adversary gains `compute` either way.
     Theft {
@@ -1228,6 +1252,16 @@ pub enum Op {
     /// 195 (a project's): in each country, the hardened facility with the most agents on or next to it (ties: the
     /// lowest-numbered) loses its hardening tokens (a node shield on a hex with no facility is no target).
     StripHarden,
+    /// 227: Fallout lands, each token on a free open hex (open land with no building, node or Fallout): with `at`
+    /// `location` (a threat's), `count` tokens on the threat's token hex or next to it, the lowest-numbered free hex
+    /// first; with a corrupted-site `at` (a project's or a Discord card's), in each country in scope, one token next
+    /// to each of its lowest-numbered `count` such sites. A token with no free hex is lost.
+    Fallout {
+        #[serde(default = "one", skip_serializing_if = "is_one")]
+        count: i64,
+        #[serde(default)]
+        at: FalloutAt,
+    },
     /// 195 (a project's): the top `count` cards of the adversary's face-down event deck are discarded (into its
     /// discard, face up): the round cap comes that many rounds sooner (none left: nothing).
     Clock {
@@ -1343,7 +1377,8 @@ pub enum Op {
     UnityBonus {
         amount: i64,
     },
-    /// 138: corruption never destroys your nodes (Sanctuary; was the spread shield).
+    /// 138: neither corruption nor agents (the 2-agent node loss, 227's wording) destroy your nodes (Sanctuary; was the
+    /// spread shield).
     CorruptionShield,
     /// Shelter on your own pieces once a round: the first time each round one of your nodes or facilities
     /// would be destroyed, it is sheltered, automatically (r82, Matt; r75-r81 the owner chose to spend it).
@@ -1443,7 +1478,7 @@ impl Op {
             | Op::MarchNow { .. }
             | Op::OccupyFactory { .. }
             | Op::PlaceBotnet { .. }
-            | Op::SeizeFactory
+            | Op::CorruptFactory
             | Op::Theft { .. } => &[Threat],
             Op::Compute { .. } => &[Threat, Team],
             Op::TeamIncome { .. }
@@ -1461,6 +1496,8 @@ impl Op {
             | Op::Rally { .. }
             | Op::IncreaseIncome { .. } => &[Team],
             Op::AdversaryCubes { .. } | Op::BotnetCubes { .. } => &[Threat, Team],
+            // 227: Fallout from all four adversity sources (threats, projects, Discord cards).
+            Op::Fallout { .. } => &[Threat, Team, Twist],
             // 195: the project deck's board verbs.
             Op::BotnetTroops { .. }
             | Op::SpreadBotnets { .. }
@@ -1539,7 +1576,7 @@ impl Op {
             | Op::IfTags { .. }
             | Op::IfNodeNext { .. }
             | Op::AmbassadorToSpot
-            | Op::LiftLand { .. }
+            | Op::LiftFallout { .. }
             | Op::Draw { .. }
             | Op::DrainAll { .. }
             | Op::GainPerTokens { .. }

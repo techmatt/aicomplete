@@ -6,7 +6,7 @@
 //! something under it, every token off a track accounted for.
 
 use super::*;
-use crate::modules::common::{has_building, node_owner, LAND_CORRUPTION};
+use crate::modules::common::{has_building, node_owner, FALLOUT};
 use crate::modules::{ai, board};
 
 /// Random play that mostly acts: a pass only now and then, so games reach the
@@ -54,10 +54,10 @@ fn broken(rules: &Rules, g: &GameState) -> Vec<String> {
         if g.tokens(h, BOTNET) > 1 {
             out.push(format!("hex {h}: {} botnets", g.tokens(h, BOTNET)));
         }
-        // 044: what land corruption and a shield promise (r98: land corruption is the one scar).
-        let land = g.tokens(h, LAND_CORRUPTION);
+        // 044: what Fallout and a shield promise (r98: Fallout is the one scar).
+        let land = g.tokens(h, FALLOUT);
         if land > 1 {
-            out.push(format!("hex {h}: {land} land corruption tokens"));
+            out.push(format!("hex {h}: {land} Fallout tokens"));
         }
         if g.tokens(h, HARDEN) > 0 && node_owner(g, h).is_none() && !has_building(g, h) {
             out.push(format!("hex {h}: a hardening token with nothing under it"));

@@ -99,7 +99,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("city_chip_cap", 1, 10, "190: chips a city holds at most while they wait (one each round from each unclaimed neutral factory next to it)"),
             ParamSpec::int("remove_ambassadors", 1, 5, "standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing)"),
             ParamSpec::int("remove_count", 1, 3, "standard action Remove agents: agents it removes, at most, from any hexes in reach (the player's choice)"),
-            ParamSpec::int("land_cubes", 0, 10, "210: standard action Lift land corruption: research cubes to lift 1 land-corruption token in reach (0: no such action)"),
+            ParamSpec::int("land_cubes", 0, 10, "210: standard action Lift Fallout: research cubes to lift 1 Fallout token in reach (0: no such action)"),
             ParamSpec::int("envoy_ambassadors", 0, 5, "standard action Envoy: your ambassadors from the supply, used up, to move 1 Discord off the Discord track (0: no such action)"),
             ParamSpec::int("ambassador_credits", 1, 50, "standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit)"),
             ParamSpec::int("sell_credits", 0, 20, "standard action: credits for selling a card from hand"),
@@ -108,7 +108,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("botnet_credits", 1, 50, "standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays)"),
         ],
         phases: &[
-            PhaseSpec::decision("act", "standard actions and projects: station, remove, lift land corruption, dispatch (from the round's Dispatches), ambassador, claim, liberate, harden (a card's), sell, take down a botnet, buy a neutral city's energy, place a node, remove a troop; completed megaprojects' converters"),
+            PhaseSpec::decision("act", "standard actions and projects: station, remove, lift Fallout, dispatch (from the round's Dispatches), ambassador, claim, liberate, harden (a card's), sell, take down a botnet, buy a neutral city's energy, place a node, remove a troop; completed megaprojects' converters"),
             PhaseSpec::auto("bases", "growth, after the income step: extra Drones, then each city grows a factory on a free zone next to it"),
             PhaseSpec::auto("war", "at the end of the round, the Drones on either side of each front fight"),
             PhaseSpec::auto("march", "each adversary troop takes its steps: remove an ambassador on its hex, else destroy a target next to it, else move toward the nearest"),

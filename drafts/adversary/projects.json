@@ -34,7 +34,7 @@
    ],
    "cost": 9,
    "ongoing": false,
-   "text": "Corrupt: nodes. Each country: the node hex holding the most Agents (at least 1; ties: lowest-numbered) loses its node.",
+   "text": "Agents next to a node move onto it: 2 Agents destroy your node. Each country: the node hex holding the most Agents (at least 1; ties: lowest-numbered) loses its node.",
    "effects": [
     {
      "op": "corrupt",
@@ -101,7 +101,7 @@
     }
    ],
    "harms": [
-    "facilities destroyed or seized",
+    "facilities destroyed or corrupted",
     "troops made"
    ],
    "value": "give 7 compute a player (14 at 2 players, 15.4 at values.json compute 1.1); get 15; 1.07 a compute.",
@@ -133,7 +133,7 @@
    ],
    "harms": [
     "adversary pieces placed",
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "give 8 compute a player (16 at 2 players, 17.6 at values.json compute 1.1); get 18; 1.12 a compute.",
    "check": "195: 2 consequence(s) (two at most), targets read off the board at completion. When it matters: any round: factories with agents beside them corrupt; strongest once agents gather (round 3 on). Who plays it: automatic; players remove agents near factories, firewall them, or drain.",
@@ -158,7 +158,7 @@
     }
    ],
    "harms": [
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "give 9 compute a player (18 at 2 players, 19.8 at values.json compute 1.1); get 30; 1.67 a compute.",
    "check": "195: 1 consequence(s) (two at most), targets read off the board at completion. When it matters: any round: early it takes a neutral factory (a troop a round from then on); late, a claimed one. Who plays it: automatic; players claim neutral factories first, or firewall the target.",
@@ -189,7 +189,7 @@
     }
    ],
    "harms": [
-    "facilities destroyed or seized",
+    "facilities destroyed or corrupted",
     "troops made"
    ],
    "value": "give 11 compute a player (22 at 2 players, 24.2 at values.json compute 1.1); get 29; 1.32 a compute.",
@@ -233,15 +233,20 @@
    ],
    "cost": 9,
    "ongoing": false,
-   "text": "Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral.",
+   "text": "Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station.",
    "effects": [
     {
      "op": "take_site",
      "site": "station"
+    },
+    {
+     "op": "fallout",
+     "at": "corrupted_station"
     }
    ],
    "harms": [
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted",
+    "Fallout placed"
    ],
    "value": "give 9 compute a player (18 at 2 players, 19.8 at values.json compute 1.1); get 30; 1.67 a compute.",
    "check": "195: 1 consequence(s) (two at most), targets read off the board at completion. When it matters: any round; an adversary station puts cubes on its megaproject until it completes, then compute. Who plays it: automatic; players claim stations or firewall them.",
@@ -383,7 +388,7 @@
    ],
    "harms": [
     "adversary pieces placed",
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "give 14 compute a player (28 at 2 players, 30.8 at values.json compute 1.1); get 22; 0.79 a compute.",
    "check": "195: 2 consequence(s) (two at most), targets read off the board at completion. When it matters: mid: cities with 2 agents beside them corrupt. Who plays it: automatic.",
@@ -549,7 +554,7 @@
    ],
    "harms": [
     "adversary pieces placed",
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "give 10 compute a player (20 at 2 players, 22.0 at values.json compute 1.1); get 22; 1.10 a compute.",
    "check": "195: 2 consequence(s) (two at most), targets read off the board at completion. When it matters: mid. Who plays it: automatic.",

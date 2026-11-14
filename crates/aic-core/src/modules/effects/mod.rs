@@ -103,15 +103,14 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                 board::place_ambassador(g, cx, seat, cities[i]);
             }
         }
-        Op::LiftLand { count, unity } => {
+        Op::LiftFallout { count } => {
             for _ in 0..*count {
                 let hexes = board::land_in_reach(&w, g, seat);
                 let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-                let prompt = || format!("Seat {seat}: lift land corruption on which hex?");
+                let prompt = || format!("Seat {seat}: lift Fallout on which hex?");
                 let Some(i) = cx.choose(seat, prompt, opts)? else { break };
-                adversary::lift_land_corruption(g, cx, hexes[i]);
+                adversary::lift_fallout(g, cx, hexes[i]);
                 cx.tally(g, "effects.land_lifted", 1);
-                alignment::unity_from(g, cx, "lift", *unity);
             }
         }
         // 044: "up to": after the first, "stop" (as Cleanse does).
@@ -403,7 +402,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         | Op::MarchNow { .. }
         | Op::OccupyFactory { .. }
         | Op::PlaceBotnet { .. }
-        | Op::SeizeFactory
+        | Op::CorruptFactory
+        | Op::Fallout { .. }
         | Op::Theft { .. } => new_ops::one(g, cx, e, ctx)?,
 
         // Read, not resolved; `Content::check` keeps them out of resolving lists.

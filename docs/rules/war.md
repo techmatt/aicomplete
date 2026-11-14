@@ -22,8 +22,8 @@ cancel once, the surplus strikes twice).
   `factory_chips` (1) chip for its owner (r83); an adversary factory makes 1 adversary troop on its hex (**locked**); a
   neutral factory makes nothing for anyone, but **feeds the cities next to it** (growth, below) and **at a Discord tip
   it arms its country's bases** (below). One opposing ambassador or agent blocks a
-  factory's output while it stands. Threats build adversary factories (Mass Production, War Economy), seize them
-  (Factory Occupation: corruption, with its cleanup) and destroy them (Siege); projects build or take them (Shadow Factories, War Plants, Asset Seizure, Hostile Takeover).
+  factory's output while it stands. Threats build adversary factories (Mass Production, War Economy), corrupt them
+  (Factory Occupation, with its cleanup) and destroy them (Siege, leaving Fallout); projects build or take them (Shadow Factories, War Plants, Asset Seizure, Hostile Takeover).
 - **City growth** (r83, Matt 2026-11-11, candidate; each round, after the income step and the extra drones): every
   city, aligned, neutral or corrupted, puts **1 chip on itself for each unclaimed neutral factory next to it** (none
   of its own; a claimed or adversary factory feeds nothing; an agent on the city blocks nothing), holding at most
@@ -139,9 +139,8 @@ lowest-numbered free land hexes next to the start, off no track; 177 calibrates 
 uncovered.
 
 **A lost node leaves no mark** (r98, Matt, 2026-11-13, locked: one scar, and losing the node is
-punishment enough), whatever took it. Land corruption, the one scar, comes off by the standard action Lift land
-corruption (`land_cubes` research cubes; [economy.md](economy.md)), the Protector's Recovery (+2 Unity, printed) or a
-card that says so, for no reward but the drip and the hex back (r98: the Unity a marker paid is gone, a candidate).
+punishment enough), whatever took it. Fallout, the one scar, comes off by the standard action Lift Fallout
+(`land_cubes` research cubes; [economy.md](economy.md)) or a card that says so, for no reward but the drip and the hex back (r98: the Unity a marker paid is gone, a candidate).
 **Destruction.** Only war sways Discord: a factory destroyed by the drones crossing a
 front sways `destruction_discord` Discord. An adversary troop's strike (in the march) sways
 nothing (Matt). A shelter on the country stops a destruction, spending nothing, and so

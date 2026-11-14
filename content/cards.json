@@ -366,7 +366,7 @@
   ],
   "effects": [
    {
-    "op": "lift_land",
+    "op": "lift_fallout",
     "count": 3
    },
    {
@@ -570,7 +570,7 @@
   ],
   "effects": [
    {
-    "op": "lift_land",
+    "op": "lift_fallout",
     "count": 4
    },
    {
@@ -1066,7 +1066,7 @@
   ],
   "effects": [
    {
-    "op": "lift_land",
+    "op": "lift_fallout",
     "count": 2
    },
    {
@@ -1568,7 +1568,7 @@
     "narrative": "cooperation"
    },
    {
-    "op": "lift_land",
+    "op": "lift_fallout",
     "count": 1
    }
   ]
@@ -1620,7 +1620,7 @@
     "amount": 3
    },
    {
-    "op": "lift_land",
+    "op": "lift_fallout",
     "count": 1
    }
   ]
@@ -4008,7 +4008,7 @@
     "amount": 4
    },
    {
-    "op": "lift_land",
+    "op": "lift_fallout",
     "count": 1
    }
   ]

@@ -75,7 +75,7 @@
   "harms": [
    "adversary pieces placed",
    "troops made",
-   "facilities destroyed or seized"
+   "facilities destroyed or corrupted"
   ],
   "value": "Garrisons: +1 agent a board a round, 2 at values.json (rally) a board a round, 4 a round at 2 boards, against one removal (5): 0.8x a round, but it lands every round of the game (about 40 over 10 rounds, the old board line's 2 on the corrupted city reworded as income). Wall troops: 1 troop (9) a round where the Protector stands, against one removal (5): 1.8x. Warmongering: 1 extra corp troop a qualifying base a production step (4), against removing the adversary troop (5).",
   "check": "151: the board's creation line (2 on the lowest-numbered corrupted city, build_bonus more from d3) is now Garrisons, an income line; its two powers keep their effect, worded for boards, and land deterministically.",
@@ -113,7 +113,7 @@
    "text": "Threat, each country: Security 1. Rally: coastal cities. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "harm 40 at values.json (Rally: coastal cities: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Corrupt: cities: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.00x. Pulls priced on their own threat cards.",
    "check": "Lands the pool on the neutral coastal cities and drops a troop on each board's first factory; Corrupt cities then takes a coastal city that 4 can gather around.",
@@ -156,7 +156,7 @@
    "text": "Threat, each country: Security 1 or Industry 1. Rally: factories. Each country: a neutral factory opens on its lowest-numbered free site. Corrupt: factories.",
    "harms": [
     "adversary pieces placed",
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "harm 34 at values.json (Rally: factories: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Each board: a neutral factory opens on its lowest-numbered free site: -6; Corrupt: factories: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 0.85x. Pulls priced on their own threat cards.",
    "check": "Contests the factories: the pool and a troop land on them, a new neutral factory opens (a target for both sides), and Corrupt factories takes one 3 gather on.",
@@ -203,7 +203,7 @@
    "text": "Threat, each country: Security 1 or Cyber 1. Rally: research stations. Income: +1 Agent a country a round. Botnets spread: each country, a Botnet onto its lowest-numbered site next to a Botnet (none: its lowest-numbered research station). Corrupt: research stations.",
    "harms": [
     "adversary pieces placed",
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "harm 57 at values.json (Rally: research stations: 12; Income: +1 agent a board a round: 35; Corrupt: research stations: 10); the players' cheapest answer, a removal a piece it lands (6 at 2 boards, 5 each): 30; 1.91x. Pulls priced on their own threat cards.",
    "check": "Contests the one neutral research station a board: the whole pool lands on it, and Corrupt stations needs only 3; income +1 agent a board for the rest of the game.",
@@ -248,7 +248,7 @@
    "harms": [
     "adversary pieces placed",
     "Discord sway",
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "harm 44 at values.json (Rally: cities: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Sway 1 toward Discord: 4; Corrupt: cities: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.10x. Pulls priced on their own threat cards.",
    "check": "Spreads the pool over the neutral cities, a troop on each board's first factory, and Discord; Corrupt cities takes any city 4 gather around.",
@@ -296,7 +296,7 @@
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "harm 40 at values.json (Rally: botnet hexes: 12; Income: +2 compute a round: 18; Corrupt: cities: 10); the players' cheapest answer, a removal a piece it lands (6 at 2 boards, 5 each): 30; 1.32x. Pulls priced on their own threat cards.",
    "check": "Lands the pool on the botnet hexes (the adversary's own stations at first): it feeds the gather of the cities next to them; compute income +2 for the rest of the game.",
@@ -338,7 +338,7 @@
    "text": "Threat, each country: Security 2. Rally: coastal cities. Income: +1 Agent a country a round. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "harm 62 at values.json (Rally: coastal cities: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Income: +1 agent a board a round: 22; Corrupt: cities: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.55x. Pulls priced on their own threat cards.",
    "check": "Coastal cities again, a troop a board, and income +1 agent a board: the coast fills fastest from stage II.",
@@ -385,7 +385,7 @@
    "text": "Threat, each country: Security 2 or Cyber 2. Rally: research stations. Botnets spread: each country, a Botnet onto its lowest-numbered site next to a Botnet (none: its lowest-numbered research station). Income: +1 Agent a country a round. Corrupt: research stations.",
    "harms": [
     "adversary pieces placed",
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "harm 40 at values.json (Rally: research stations: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Corrupt: research stations: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.00x. Pulls priced on their own threat cards.",
    "check": "The pool on the neutral stations (else the players'), a troop a board; Corrupt stations takes a station 3 gather on, a player's included.",
@@ -435,7 +435,7 @@
    "text": "Threat, each country: Diplomacy 2 or Cyber 2. Rally: cities. Income: +1 Agent a country a round. Botnets spread: each country, a Botnet onto its lowest-numbered site next to a Botnet (none: its lowest-numbered research station). Corrupt: cities (1 fewer).",
    "harms": [
     "adversary pieces placed",
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "harm 44 at values.json (Rally: cities: 12; Income: +1 agent a board a round: 22; Corrupt: cities (1 fewer): 10); the players' cheapest answer, a removal a piece it lands (6 at 2 boards, 5 each): 30; 1.47x. Pulls priced on their own threat cards.",
    "check": "The pool over the neutral cities and Corrupt cities one fewer (3 at d0): the city cascade card; income +1 agent a board.",
@@ -483,7 +483,7 @@
    "harms": [
     "adversary pieces placed",
     "node destroyed",
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "harm 48 at values.json (Rally: factories: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Each player with a node on or next to a front's base destroys 1 of those nodes: 8; Corrupt: factories: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.20x. Pulls priced on their own threat cards.",
    "check": "Factories and the fronts: the pool and a troop on the factories, nodes at the fronts' bases lost, Corrupt factories.",
@@ -540,7 +540,7 @@
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "harm 51 at values.json (Rally: factories: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Income: +2 compute a round: 11; Corrupt: factories: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.27x. Pulls priced on their own threat cards.",
    "check": "Two pulls, the pool on the factories, a troop a board, compute income +2: the projects fill faster from here.",
@@ -588,7 +588,7 @@
    "harms": [
     "adversary pieces placed",
     "war brought forward",
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "harm 45 at values.json (Rally: cities: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Every adversary troop takes 1 more step this round: 5; Corrupt: cities: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.12x. Pulls priced on their own threat cards.",
    "check": "Cities and the march: the pool over the neutral cities, a troop a board, every troop a step further this round.",
@@ -654,7 +654,7 @@
     "adversary pieces placed",
     "troops made",
     "Unity pulled back",
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "harm 85 at values.json (Rally: factories: 12; Deploy 2: each board, 2 troops on its lowest-numbered factory (else city): 36; Income: +1 agent a board a round: 9; Remove 2 Unity from the Unity track: 8; Corrupt: factories: 10; Corrupt: cities: 10); the players' cheapest answer, a removal a piece it lands (10 at 2 boards, 5 each): 50; 1.70x. Pulls priced on their own threat cards.",
    "check": "Two tier-2 pulls, the pool on the factories, 2 troops a board, Unity pulled back, then both Corrupt lines.",
@@ -720,7 +720,7 @@
     "adversary pieces placed",
     "troops made",
     "Discord sway",
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "harm 72 at values.json (Rally: cities: 12; Deploy 2: each board, 2 troops on its lowest-numbered factory (else city): 36; Sway 1 toward Discord: 4; Corrupt: cities: 10; Corrupt: land: 10); the players' cheapest answer, a removal a piece it lands (10 at 2 boards, 5 each): 50; 1.44x. Pulls priced on their own threat cards.",
    "check": "The pool over the cities, 2 troops a board, then Corrupt cities and Corrupt land (empty land 3 gather around).",
@@ -782,7 +782,7 @@
    "harms": [
     "adversary pieces placed",
     "troops made",
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "harm 59 at values.json (Rally: research stations: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Income: +1 agent a board a round: 9; Corrupt: research stations: 10; Corrupt: cities (1 fewer): 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.47x. Pulls priced on their own threat cards.",
    "check": "The pool on the stations, a troop a board, then Corrupt stations and Corrupt cities one fewer.",
@@ -848,7 +848,7 @@
     "adversary pieces placed",
     "troops made",
     "production blacked out",
-    "facilities destroyed or seized"
+    "facilities destroyed or corrupted"
    ],
    "value": "harm 86 at values.json (Rally: coastal cities: 12; Deploy 2: each board, 2 troops on its lowest-numbered factory (else city): 36; Until the end of next round, cities make no energy: 18; Corrupt: cities: 10; Corrupt: land: 10); the players' cheapest answer, a removal a piece it lands (10 at 2 boards, 5 each): 50; 1.72x. Pulls priced on their own threat cards.",
    "check": "The coast: the pool on the coastal cities, 2 troops a board, cities dark for two rounds' production, Corrupt cities and Corrupt land.",

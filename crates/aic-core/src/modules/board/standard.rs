@@ -7,7 +7,7 @@ use super::*;
 pub enum StandardAction {
     Station,
     Remove,
-    /// 210 (Matt, candidate): research cubes lift 1 land-corruption token in reach, the one standard action that
+    /// 210 (Matt, candidate): research cubes lift 1 Fallout token in reach, the one standard action that
     /// removes corruption (r91 cut Clear, which took markers for credits).
     Lift,
     /// 149: a free move from the seat's Dispatch (the paid Move is gone).
@@ -287,7 +287,7 @@ pub fn std_offered(w: &World, act: StandardAction) -> bool {
 /// What a standard action does, for the view.
 pub(super) fn std_text(w: &World, act: StandardAction) -> String {
     let text = match act {
-        StandardAction::Lift => "lift 1 land-corruption token in reach",
+        StandardAction::Lift => "lift 1 Fallout token in reach",
         StandardAction::Station => "build a research station in reach (yours)",
         StandardAction::Remove => {
             let n = w.int("board.remove_ambassadors");
@@ -358,9 +358,9 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
         ),
         // 210 (Matt, candidate: "costly but not absurd").
         StandardAction::Lift => (
-            "Lift land corruption",
+            "Lift Fallout",
             format!("{} research cubes", t("board.land_cubes")),
-            "a land-corruption token in reach, face up or face down, comes off: the one standard action that removes corruption".into(),
+            "a Fallout token in reach, face up or face down, comes off: the one standard action that removes corruption".into(),
         ),
         StandardAction::Move => (
             "Dispatch a player ambassador",
@@ -485,9 +485,9 @@ pub fn liberable(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
     target_price(w, g, seat, StandardAction::Liberate, h).is_some_and(|p| p.affordable(g, seat)) && in_reach(w, g, seat, h)
 }
 
-/// The land-corruption tokens seat `seat` can lift: any in its reach (210's Lift, 212's card bonus).
+/// The Fallout tokens seat `seat` can lift: any in its reach (210's Lift, 212's card bonus).
 pub fn land_in_reach(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
-    (0..g.hexes.len()).filter(|&h| in_reach(w, g, seat, h) && g.tokens(h, LAND_CORRUPTION) > 0).collect()
+    (0..g.hexes.len()).filter(|&h| in_reach(w, g, seat, h) && g.tokens(h, FALLOUT) > 0).collect()
 }
 
 /// The hexes a standard action of `seat` may target (empty: not offered).
@@ -575,7 +575,7 @@ pub(super) fn std_resolve(
             StandardAction::BuyEnergy => format!("Seat {s}: buy energy from which city?"),
             StandardAction::Station => format!("Seat {s}: build a research station on which hex?"),
             StandardAction::Remove => format!("Seat {s}: remove an agent, from which hex?"),
-            StandardAction::Lift => format!("Seat {s}: lift land corruption on which hex?"),
+            StandardAction::Lift => format!("Seat {s}: lift Fallout on which hex?"),
             _ => format!("Seat {s}: {} on which hex?", act.name().split('_').next().unwrap_or_default()),
         };
         Ok(cx.choose(s, prompt, opts)?.map(|i| targets[i]))
@@ -634,7 +634,7 @@ pub(super) fn std_resolve(
         }
         StandardAction::Lift => {
             if let Some(h) = on_hex(cx)? {
-                adversary::lift_land_corruption(g, cx, h);
+                adversary::lift_fallout(g, cx, h);
                 cx.tally(g, "board.land_lifted", 1);
             }
         }

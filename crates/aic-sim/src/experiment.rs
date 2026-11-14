@@ -1199,7 +1199,7 @@ pub const PER_ROUND_EXPORT: &[&str] = &[
     "threats.",
     // 190: facilities by owner, claims, city growth and its token moves, troops on the map, round by round.
     "map.",
-    // 210: land-corruption tokens on the board, round by round.
+    // 210: Fallout tokens on the board, round by round.
     "adversary.land_tokens",
 ];
 

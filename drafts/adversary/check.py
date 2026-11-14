@@ -24,16 +24,18 @@ HERE = ROOT / "drafts" / "adversary"
 TAGS = ["security", "diplomacy", "cyber", "industry", "power"]
 HARMS = [
     "node destroyed", "credits or income lost", "cards discarded", "ambassadors lost",
-    "tokens stripped from cards", "facilities destroyed or seized", "production blacked out",
+    "tokens stripped from cards", "facilities destroyed or corrupted", "production blacked out",
     "adversary pieces placed", "projects advanced (compute)", "extra threats", "Discord sway", "Unity pulled back",
     "actions or claims blocked", "energy lost", "war brought forward", "troops made",
     # 195: the project deck's new harms (the ledger's rows).
     "protections stripped", "the clock sped up", "adversary cubes on megaprojects",
+    # 227: the land scar on all four adversity sources.
+    "Fallout placed",
 ]
 # 195: harms the drafts may print from one kind of source: the project deck's new rows (the engine's ledger,
 # docs/harms.md, counts the board rules beside them and lists any thin one under *Gaps*).
 ONE_SOURCE = {"protections stripped", "the clock sped up", "adversary cubes on megaprojects"}
-PERMANENT = {"node destroyed", "facilities destroyed or seized"}
+PERMANENT = {"node destroyed", "facilities destroyed or corrupted"}
 LOCATIONS = {"city", "coastal_city", "station", "factory", "base"}
 SACRIFICE = {"security", "diplomacy", "cyber", "industry", "power", "science"}
 RESOURCES = {"credits", "energy", "insight", "research_cubes", "chips", "ambassadors"}
@@ -407,8 +409,10 @@ def project_breaks(p):
     out = []
     if "each board" in p.get("text", "").lower():
         out.append('says "each board" (each country)')
-    if len(p.get("effects", [])) + len(p.get("resolve", [])) > 2:
-        out.append("more than two consequences")
+    # 227 (Matt, 2026-11-13): bundles sized by cost; a third effect only at cost 14 and up (content::THIRD_EFFECT_COST).
+    most = 3 if p.get("cost", 0) >= 14 else 2
+    if len(p.get("effects", [])) + len(p.get("resolve", [])) > most:
+        out.append(f"more than {most} consequences")
     return out
 
 

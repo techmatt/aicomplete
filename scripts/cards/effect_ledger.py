@@ -265,8 +265,8 @@ def op_worth(t, o):
         return w.scaled(row(op + ('_fresh' if o.get('fresh') else '')))
     if op == 'ambassador_to_spot':
         return Worth(now=row(op) * r('ambassadors'))
-    if op == 'lift_land':  # r98: `unity` Sway on each lift (Recovery), as value.rs reads it
-        return Worth(now=(row(op) + row('sway') * t.rate('sway') * o.get('unity', 0)) * t.rate('target_share') * n('count'))
+    if op == 'lift_fallout':  # as value.rs reads it (227: the `unity` field went with Recovery)
+        return Worth(now=row(op) * t.rate('target_share') * n('count'))
     if op == 'project_cube':
         return Worth(now=row(op) * n('count'))
     if op == 'jam':

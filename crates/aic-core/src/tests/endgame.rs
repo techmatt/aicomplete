@@ -3,7 +3,7 @@
 
 use super::*;
 use crate::content::Op;
-use crate::modules::common::{is_ocean, LAND_CORRUPTION};
+use crate::modules::common::{is_ocean, FALLOUT};
 use crate::modules::{adversary, alignment, board};
 
 /// Liberate's city numbers (the lab pins them off).
@@ -273,7 +273,7 @@ fn a_city_that_corrupts_destroys_node_on_it_and_takes_only_its_cube() {
     put(&mut g, far, node(0), 1);
     g.vars.insert(STAGE.into(), 2);
     with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h)).unwrap();
-    assert_eq!((g.tokens(h, node(0)), g.tokens(h, ADV_CUBE), g.tokens(h, LAND_CORRUPTION)), (0, 1, 0));
+    assert_eq!((g.tokens(h, node(0)), g.tokens(h, ADV_CUBE), g.tokens(h, FALLOUT)), (0, 1, 0));
 }
 
 /// r98 (Matt, 2026-11-13, 224 #2): a lost node leaves no mark, so another node may go on its hex.
@@ -292,9 +292,9 @@ fn a_lost_node_leaves_the_game_and_its_income_stays() {
     assert!(board::node_sites(&w, &g, 0).contains(&c), "no mark: the hex takes a node again");
 }
 
-/// 210: Lift land corruption takes a land-corruption token in reach for `land_cubes` research cubes.
+/// 210: Lift Fallout takes a Fallout token in reach for `land_cubes` research cubes.
 #[test]
-fn lift_takes_land_corruption() {
+fn lift_takes_fallout() {
     let (rules, mut g) = at_step(&[], 1);
     let w = rules.world();
     let a = rules.map.numbered(0, piece(0).node);
@@ -303,14 +303,14 @@ fn lift_takes_land_corruption() {
     assert!(cubes > 0);
     set_res(&mut g, 0, Resource::ResearchCubes, cubes);
     assert!(rules.apply_mut(&mut g.clone(), &std_act(0, "lift"), None).is_err(), "nothing to lift");
-    put(&mut g, marked, LAND_CORRUPTION, 1);
-    assert!(!board::node_sites(&w, &g, 0).contains(&marked), "no nodes on land corruption");
+    put(&mut g, marked, FALLOUT, 1);
+    assert!(!board::node_sites(&w, &g, 0).contains(&marked), "no nodes on Fallout");
     set_res(&mut g, 0, Resource::ResearchCubes, cubes - 1);
     assert!(!rules.legal_actions(&g).contains(&std_act(0, "lift")), "short a cube");
     set_res(&mut g, 0, Resource::ResearchCubes, cubes);
     rules.apply_mut(&mut g, &std_act(0, "lift"), None).unwrap();
     pick(&rules, &mut g, marked);
-    assert_eq!((g.tokens(marked, LAND_CORRUPTION), g.resource(0, Resource::ResearchCubes)), (0, 0));
+    assert_eq!((g.tokens(marked, FALLOUT), g.resource(0, Resource::ResearchCubes)), (0, 0));
     assert_eq!(g.stats.counters.get("board.land_lifted").copied(), Some(1));
 }
 

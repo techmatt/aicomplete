@@ -128,7 +128,7 @@ const PAGE_LIB = String.raw`(() => {
   // 145: r55-r59's sites, war, Corrupt X and menus: a claim or liberation by site, Envoy, a
   // hold-off, a node lost by cause, war's destroys, a corruption by site, a created site, a
   // top-tier counter by currency (tier 3 until 146, tier 2 since). (144's blackout and sabotage flags and the "is freed" note are gone.)
-  const COUNTER_EVENTS_R55 = /^(board\.(claimed|liberated)\.(city|station|factory)|board\.(std\.envoy|cities_freed|war_destroyed)|board\.node_lost\.[a-z0-9]+|adversary\.(corruptions\.(city|station|factory|land)|sites_created\.(station|factory)|factories_seized|stations_flipped)|alignment\.(unity|discord)_held_off|alignment\.unity_pulled|threats\.(countered_by\.t2\.[a-z_]+|dealt_at_node))$/;
+  const COUNTER_EVENTS_R55 = /^(board\.(claimed|liberated)\.(city|station|factory)|board\.(std\.envoy|cities_freed|war_destroyed)|board\.node_lost\.[a-z0-9]+|adversary\.(corruptions\.(city|station|factory|land)|sites_created\.(station|factory)|factories_corrupted|stations_flipped)|alignment\.(unity|discord)_held_off|alignment\.unity_pulled|threats\.(countered_by\.t2\.[a-z_]+|dealt_at_node))$/;
   // 169: r70-r71's moving pieces and fear cards: a gather, a push, an arrival that cancels, a
   // gather-then-strike, a claim or liberation spending your standing ambassadors (r75), a prohibition made or fired,
   // a remove_where sweep and a cleanse.

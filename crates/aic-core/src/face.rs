@@ -396,7 +396,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
                 icons.extend(adversary(vec![w("hex")]));
             }
             let say = if *blight {
-                format!("destroy one of your {pieces}; land corruption goes on its hex")
+                format!("destroy one of your {pieces}; Fallout goes on its hex")
             } else {
                 format!("destroy one of your {pieces}")
             };
@@ -626,13 +626,9 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             say: "put a new ambassador on that city".to_string(),
             share: Share::Mine,
         }),
-        Op::LiftLand { count, unity } => one(clause(
+        Op::LiftFallout { count } => one(clause(
             adversary(minus(*count, "hex")),
-            if *unity > 0 {
-                format!("lift {} in reach, sway {unity} toward Unity for each", plural(*count, "land-corruption token"))
-            } else {
-                format!("lift {} in reach", plural(*count, "land-corruption token"))
-            },
+            format!("lift {} in reach", plural(*count, "Fallout token")),
         )),
         Op::IfTags { tag: t, count, then } => {
             let inner = clauses(then, gain);
@@ -746,6 +742,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::FactoryTroops { .. }
         | Op::RaidNode
         | Op::StripHarden
+        | Op::Fallout { .. }
         | Op::Clock { .. }
         | Op::OnePlayer { .. }
         | Op::PerSite { .. }
@@ -785,7 +782,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::MarchNow { .. }
         | Op::OccupyFactory { .. }
         | Op::PlaceBotnet { .. }
-        | Op::SeizeFactory
+        | Op::CorruptFactory
         | Op::StandingTroopsBonus { .. }
         | Op::ThreatCompute { .. }
         | Op::Theft { .. }
@@ -942,7 +939,7 @@ fn standing(op: &Op, kind: Option<TokenKind>) -> Standing {
         // any one of them once a round, Sanctuary every node against corruption).
         Op::CorruptionShield => effect(
             vec![w("corrupt"), w(":"), w("shelter"), w("node")],
-            "corruption never destroys your nodes".to_string(),
+            "neither corruption nor agents destroy your nodes".to_string(),
         ),
         Op::CivicShelter => effect(
             vec![w("shelter"), w("node")],

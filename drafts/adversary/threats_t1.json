@@ -202,7 +202,7 @@
    "locations": [
     "base"
    ],
-   "text": "1 adversary Troop lands here. Sway 2 toward Discord.",
+   "text": "1 adversary Troop lands here. 1 Fallout lands next to here.",
    "counters": [
     [
      {
@@ -224,16 +224,15 @@
      "at": "location"
     },
     {
-     "op": "sway",
-     "side": "discord",
-     "amount": 2, "narrative": "fear"
+     "op": "fallout",
+     "count": 1
     }
    ],
    "harms": [
     "adversary pieces placed",
-    "Discord sway"
+    "Fallout placed"
    ],
-   "value": "counter 3 ambassadors (12) or 12 credits (12); uncountered 17 at values.json (a troop 9 with its strike), 1.42x the cheapest counter",
+   "value": "counter 3 ambassadors (12) or 12 credits (12); uncountered 21 at values.json (a troop 9 with its strike, a Fallout 12), 1.75x the cheapest counter",
    "check": "bites all game; Discord rides with Security here",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"

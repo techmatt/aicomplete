@@ -29,7 +29,7 @@ fn a_shield_goes_with_a_token_lost_another_way() {
 /// niche is gone); a board power still prints no shield or delay.
 #[test]
 fn shields_delays_and_land_lifts_go_on_any_tag_but_shields_and_delays_on_no_power() {
-    for op in ["shield_node", "delay_threat", "lift_land"] {
+    for op in ["shield_node", "delay_threat", "lift_fallout"] {
         let set = format!("cards.payroll_automation.effects=[{{\"op\":\"{op}\",\"count\":1}}]");
         assert!(Rules::new(&baseline_with(&[&set])).is_ok(), "{op} on an Industry card");
     }

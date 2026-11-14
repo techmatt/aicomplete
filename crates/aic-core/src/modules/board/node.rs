@@ -35,13 +35,13 @@ pub fn track2_taken(g: &GameState, seat: usize) -> usize {
 }
 
 /// Where seat `s` may place nodes: a land hex holding no nodes and no
-/// land corruption, adjacent to one of its own (with none left, any such
+/// Fallout, adjacent to one of its own (with none left, any such
 /// hex in its home country).
 pub fn node_sites(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
     let mine = node(seat);
-    // 138: no node goes on land corruption.
+    // 138: no node goes on Fallout.
     let free = |h: usize| {
-        !is_ocean(w, h) && node_owner(g, h).is_none() && g.tokens(h, LAND_CORRUPTION) == 0
+        !is_ocean(w, h) && node_owner(g, h).is_none() && g.tokens(h, FALLOUT) == 0
     };
     if node_count(g, seat) == 0 {
         let c = home_country(w, seat);

@@ -112,7 +112,7 @@ fn the_decks_name_board_conditions() {
                             | Op::Corrupt { .. }
                             | Op::ThreatAtNode { .. }
                             | Op::AdversaryBuild
-                    ),
+                    ) || matches!(e, Op::Fallout { at, .. } if *at != crate::op::FalloutAt::Location),
                     "{}: {e:?} names no board condition",
                     c.id
                 );

@@ -94,7 +94,7 @@ fn last_node_at(w: &World, g: &GameState, h: usize) -> bool {
         && !cards::has_passive(w, g, s, |p| matches!(p, Op::CorruptionShield))
 }
 
-/// 177: pushing `n` agents from `from` onto `d` lets a Corrupt nodes line gather a last node's hex next to `d` up
+/// 177: pushing `n` agents from `from` onto `d` lets a node line gather a last node's hex next to `d` up
 /// to its number (`adversary.corrupt_node_at`): its agents and those next door (not on another node hex, which
 /// stay: `plan::converge`), after the move.
 fn tips_last_node(w: &World, g: &GameState, from: usize, d: usize, n: i64) -> bool {

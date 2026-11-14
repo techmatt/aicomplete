@@ -18,7 +18,7 @@ pub fn corrupt_city(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
 
 /// 138: hex `h` corrupts as a `site`: a city, research station or factory
 /// takes the adversary's cube (a player's comes off); an empty land hex takes
-/// land corruption. Its agents return to the supply; a node on
+/// Fallout. Its agents return to the supply; a node on
 /// the hex is destroyed (its owner's ambassador there is armor, used up
 /// instead; the Sanctuary capstone keeps it); player ambassadors still there
 /// are lost (024: they would free it in the same step).
@@ -28,7 +28,9 @@ pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) 
         return corrupt_node(g, cx, h);
     }
     if site == CorruptSite::Land {
-        cx.add_tokens(g, h, LAND_CORRUPTION, 1);
+        cx.add_tokens(g, h, FALLOUT, 1);
+        cx.tally(g, "fallout.placed", 1);
+        cx.tally(g, "fallout.placed.event", 1);
     } else {
         take_for_adversary(g, cx, h);
     }
@@ -51,7 +53,7 @@ pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) 
         cx.tally(g, "adversary.first_corruption_round", g.round as i64);
     }
     cx.note(Some(h), || match site {
-        CorruptSite::Land => format!("{} takes land corruption", hex_name(&w, h)),
+        CorruptSite::Land => format!("{} takes Fallout", hex_name(&w, h)),
         _ => format!("{} is corrupted", hex_name(&w, h)),
     });
     Ok(())
@@ -59,7 +61,7 @@ pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) 
 
 /// 175, 2 agents on a player's node hex destroy the node: the agents go to the supply and the node is destroyed
 /// (the protections apply; the Sanctuary capstone keeps it). r98 (Matt, 2026-11-13, 224 #2): a node rule, not
-/// corruption, and it leaves no mark (r83-r97 laid face-down land corruption): losing it is punishment enough.
+/// corruption, and it leaves no mark (r83-r97 laid face-down Fallout): losing it is punishment enough.
 fn corrupt_node(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
     let w = cx.world;
     let n = g.tokens(h, ADV_AMBASSADOR);
@@ -75,14 +77,30 @@ fn corrupt_node(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
     Ok(())
 }
 
-/// A land-corruption token comes off hex `h`.
-pub fn lift_land_corruption(g: &mut GameState, cx: &mut Cx, h: usize) {
-    cx.add_tokens(g, h, LAND_CORRUPTION, -1);
+/// A Fallout token comes off hex `h`. 227: tallied `fallout.lifted`.
+pub fn lift_fallout(g: &mut GameState, cx: &mut Cx, h: usize) {
+    cx.add_tokens(g, h, FALLOUT, -1);
+    cx.tally(g, "fallout.lifted", 1);
 }
 
-/// Discord the land corruption on the board sways a round: `blight_discord` a token (r98: no token lies face down).
+/// 227: a hex Fallout may land on: open land with no building, node or Fallout (agents and ambassadors may stand).
+pub fn fallout_free(w: &World, g: &GameState, h: usize) -> bool {
+    buildable(w, g, h) && node_owner(g, h).is_none()
+}
+
+/// 227: a Fallout token goes on hex `h`, tallied `fallout.placed` and by `source` (a threat tier, `project`,
+/// `discord`, `event`, `burn`).
+pub fn place_fallout(g: &mut GameState, cx: &mut Cx, h: usize, source: &str) {
+    let w = cx.world;
+    cx.add_tokens(g, h, FALLOUT, 1);
+    cx.tally(g, "fallout.placed", 1);
+    cx.tally(g, &format!("fallout.placed.{source}"), 1);
+    cx.note(Some(h), || format!("Fallout lands on {}", hex_name(&w, h)));
+}
+
+/// Discord the Fallout on the board sways a round: `blight_discord` a token (r98: no token lies face down).
 pub fn blight_drip(w: &World, g: &GameState) -> i64 {
-    let all: i64 = (0..g.hexes.len()).map(|h| g.tokens(h, LAND_CORRUPTION)).sum();
+    let all: i64 = (0..g.hexes.len()).map(|h| g.tokens(h, FALLOUT)).sum();
     all * w.int("adversary.blight_discord")
 }
 
@@ -246,7 +264,7 @@ pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
 pub fn corrupt_factory(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
     let w = cx.world;
     corrupt_hex(g, cx, h, CorruptSite::Factory)?;
-    cx.tally(g, "adversary.factories_seized", 1);
+    cx.tally(g, "adversary.factories_corrupted", 1);
     cx.note(Some(h), || format!("The factory at {} goes to the adversary", hex_name(&w, h)));
     Ok(())
 }

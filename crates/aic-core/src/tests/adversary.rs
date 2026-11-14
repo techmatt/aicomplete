@@ -1,7 +1,7 @@
 
 use super::*;
 use crate::content::Op;
-use crate::modules::common::{FIREWALL, LAND_CORRUPTION};
+use crate::modules::common::{FIREWALL, FALLOUT};
 use crate::modules::{adversary, alignment, board, effects, plan};
 use crate::op::{CorruptSite, CreateAt, CreateIf, Facility, RallyAt};
 use crate::modules::common::STATION;
@@ -317,10 +317,10 @@ fn the_corruption_shield_keeps_a_node_on_a_corrupted_hex() {
     assert_eq!((g.tokens(h, ADV_CUBE), g.tokens(h, node(1))), (1, 1));
 }
 
-/// 138: Corrupt land puts land corruption on an empty land hex that gathers
+/// 138: Corrupt land puts Fallout on an empty land hex that gathers
 /// its number, and no node goes there after.
 #[test]
-fn land_corruption_blocks_a_node() {
+fn fallout_blocks_a_node() {
     let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let w = rules.world();
@@ -330,7 +330,7 @@ fn land_corruption_blocks_a_node() {
     assert!(board::node_sites(&w, &g, 0).contains(&x));
     put(&mut g, x, ADV_AMBASSADOR, adversary::corrupt_n(&w, CorruptSite::Land, 0));
     with_cx(&rules, |cx| adversary::corrupt_sites(&mut g, cx, CorruptSite::Land, 0, Some(0))).unwrap();
-    assert_eq!((g.tokens(x, LAND_CORRUPTION), g.tokens(x, ADV_AMBASSADOR), g.tokens(x, ADV_CUBE)), (1, 0, 0));
+    assert_eq!((g.tokens(x, FALLOUT), g.tokens(x, ADV_AMBASSADOR), g.tokens(x, ADV_CUBE)), (1, 0, 0));
     assert!(!board::node_sites(&w, &g, 0).contains(&x));
     assert!(!plan::corrupt_target(&w, &g, x, CorruptSite::Land), "it corrupts once");
 }
@@ -595,13 +595,16 @@ fn the_load_check_refuses_an_event_or_a_project_off_the_standard() {
         "more than two other lines",
     );
     refused(&|a| a.text = "Muster 1 on each board.".into(), "each board");
-    // Hostile Takeover prints two consequences; a third is refused.
+    // Hostile Takeover (cost 8) prints two consequences; a third is refused below cost 14 (227, ruling 4) and allowed
+    // from it.
     let p = c.projects.iter().find(|p| p.id == "hostile_takeover").unwrap();
     assert_eq!(p.effects.len() + p.resolve.len(), 2);
     assert_eq!(project_rule_break(p), None);
     let mut three = p.clone();
     three.effects.push(p.effects[0].clone());
-    assert!(project_rule_break(&three).is_some_and(|r| r.contains("more than two")));
+    assert!(project_rule_break(&three).is_some_and(|r| r.contains("more than 2")));
+    three.cost = crate::content::THIRD_EFFECT_COST;
+    assert_eq!(project_rule_break(&three), None);
     let mut country = p.clone();
     country.text = "Each board: a threat.".into();
     assert!(project_rule_break(&country).is_some_and(|r| r.contains("each board")));
@@ -618,10 +621,10 @@ fn two_agents_destroy_a_node_and_leave_no_mark() {
     put(&mut g, h, ADV_AMBASSADOR, 2);
     run_answered(&rules, &mut g);
     assert_eq!((g.tokens(h, node(0)), g.tokens(h, ADV_AMBASSADOR)), (0, 0));
-    assert_eq!(g.tokens(h, LAND_CORRUPTION), 0);
+    assert_eq!(g.tokens(h, FALLOUT), 0);
 }
 
-/// r98: a node a protection saves leaves no mark either (r83-r97 laid land corruption saved or not).
+/// r98: a node a protection saves leaves no mark either (r83-r97 laid Fallout saved or not).
 #[test]
 fn a_saved_node_hex_takes_no_mark() {
     let (rules, mut g) = lab(&["adversary.natural"]);
@@ -634,7 +637,7 @@ fn a_saved_node_hex_takes_no_mark() {
     answer_with(&rules, &mut g, "spend the hardening token");
     answer_all(&rules, &mut g);
     assert_eq!((g.tokens(h, node(0)), g.tokens(h, HARDEN)), (1, 0), "saved");
-    assert_eq!(g.tokens(h, LAND_CORRUPTION), 0);
+    assert_eq!(g.tokens(h, FALLOUT), 0);
 }
 
 /// r83 (Matt, 2026-11-11, #57): project slot 1's tag is gone: every slot of the Militarist's board is open.

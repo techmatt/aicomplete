@@ -26,7 +26,7 @@
   ],
   "cost": 9,
   "ongoing": false,
-  "text": "Corrupt: nodes. Each country: the node hex holding the most Agents (at least 1; ties: lowest-numbered) loses its node.",
+  "text": "Agents next to a node move onto it: 2 Agents destroy your node. Each country: the node hex holding the most Agents (at least 1; ties: lowest-numbered) loses its node.",
   "effects": [
    {
     "op": "corrupt",
@@ -81,7 +81,7 @@
    }
   ],
   "harms": [
-   "facilities destroyed or seized",
+   "facilities destroyed or corrupted",
    "troops made"
   ]
  },
@@ -107,7 +107,7 @@
   ],
   "harms": [
    "adversary pieces placed",
-   "facilities destroyed or seized"
+   "facilities destroyed or corrupted"
   ]
  },
  {
@@ -126,7 +126,7 @@
    }
   ],
   "harms": [
-   "facilities destroyed or seized"
+   "facilities destroyed or corrupted"
   ]
  },
  {
@@ -151,7 +151,7 @@
    }
   ],
   "harms": [
-   "facilities destroyed or seized",
+   "facilities destroyed or corrupted",
    "troops made"
   ]
  },
@@ -183,15 +183,20 @@
   ],
   "cost": 9,
   "ongoing": false,
-  "text": "Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral.",
+  "text": "Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station.",
   "effects": [
    {
     "op": "take_site",
     "site": "station"
+   },
+   {
+    "op": "fallout",
+    "at": "corrupted_station"
    }
   ],
   "harms": [
-   "facilities destroyed or seized"
+   "facilities destroyed or corrupted",
+   "Fallout placed"
   ]
  },
  {
@@ -303,7 +308,7 @@
   ],
   "harms": [
    "adversary pieces placed",
-   "facilities destroyed or seized"
+   "facilities destroyed or corrupted"
   ]
  },
  {
@@ -434,7 +439,7 @@
   ],
   "harms": [
    "adversary pieces placed",
-   "facilities destroyed or seized"
+   "facilities destroyed or corrupted"
   ]
  },
  {

@@ -12,7 +12,7 @@ predict from the board or card. **Fix** names the kind of change: **P** a rules 
 
 **Closed since r82:** #57 (project slot tag: r83, three open slots), #55 (a station's two outputs: kept by Matt's
 ruling, board.md), M1 (Station Seizure is the unforced flip, which checks 2 agents), #56 (the node hex: r98, "2 agents
-on your node's hex destroy it", no mark), and r98's one scar (land corruption only), Corrupt X's tie (an agent
+on your node's hex destroy it", no mark), and r98's one scar (Fallout only), Corrupt X's tie (an agent
 next to two targets stays), Wall (no troop is ever placed on the Protector's node hex) and the Protector's powers
 (9 to 7). #44 (ambassador fates) was mostly built by r83; what is left is row 5.
 

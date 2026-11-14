@@ -5,7 +5,7 @@
 
 use super::*;
 use crate::key::KeyBuf;
-use crate::op::{CorpAt, CorpNear, CorpWhen, DestroyAt, FactoryWhere, Scope, TheftWho, TroopAt, TroopIf, Until};
+use crate::op::{CorpAt, CorpNear, CorpWhen, DestroyAt, FactoryWhere, FalloutAt, Scope, TheftWho, TroopAt, TroopIf, Until};
 use crate::vocab::{Location, PullTag};
 
 /// Resolve one of the 135 ops (or an old op with a 135 field set).
@@ -151,7 +151,7 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
                 }
             }
         }
-        Op::SeizeFactory => {
+        Op::CorruptFactory => {
             if let Some(h) = token(&w, g, ctx, Some(Location::Factory)) {
                 if g.tokens(h, FACTORY) > 0 {
                     if !corrupted(g, h) {
@@ -162,6 +162,7 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
                 }
             }
         }
+        Op::Fallout { count, at } => fallout(g, cx, ctx, *count, *at),
         Op::Theft { who: TheftWho::Nearest, resource, amount, compute, cards } => {
             // 146: the nearest player, as every threat harm hits (was the richest near it); D62: pay or discard,
             // as `Requisition`, so holding none dodges nothing.
@@ -204,7 +205,8 @@ fn op_name(e: &Op) -> &'static str {
         Op::MarchNow { .. } => "march_now",
         Op::OccupyFactory { .. } => "occupy_factory",
         Op::PlaceBotnet { .. } => "place_botnet",
-        Op::SeizeFactory => "seize_factory",
+        Op::CorruptFactory => "corrupt_factory",
+        Op::Fallout { .. } => "fallout",
         Op::Theft { .. } => "theft",
         _ => unreachable!("new_ops::one runs only the ops listed here"),
     }
@@ -224,6 +226,52 @@ fn token(w: &World, g: &GameState, ctx: &Ctx, loc: Option<Location>) -> Option<u
     match loc {
         Some(l) => threats::token_of(w, g, t, l).or_else(|| threats::tokens(g, t).first().copied()),
         None => threats::tokens(g, t).first().copied(),
+    }
+}
+
+/// 227: the free open hex on or next to `h` a Fallout token lands on: `h` itself if free, else its
+/// lowest-numbered free neighbor.
+fn fallout_spot(w: &World, g: &GameState, h: usize, on_it: bool) -> Option<usize> {
+    if on_it && adversary::fallout_free(w, g, h) {
+        return Some(h);
+    }
+    let mut next: Vec<usize> =
+        w.map.hexes[h].neighbors.iter().copied().filter(|&n| adversary::fallout_free(w, g, n)).collect();
+    next.sort_by_key(|&n| w.map.hexes[n].number);
+    next.first().copied()
+}
+
+/// 227 (`Fallout`): a threat's tokens on or next to its token; a project's or Discord card's, in each country in
+/// scope, one next to each of its lowest-numbered `count` corrupted sites of the kind.
+fn fallout(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64, at: FalloutAt) {
+    let w = cx.world;
+    let source = ctx.label;
+    if at == FalloutAt::Location {
+        let Some(h) = token(&w, g, ctx, None) else { return };
+        for _ in 0..count {
+            match fallout_spot(&w, g, h, true) {
+                Some(x) => adversary::place_fallout(g, cx, x, source),
+                None => break,
+            }
+        }
+        return;
+    }
+    let kind = |g: &GameState, h: usize| match at {
+        FalloutAt::CorruptedCity => is_city(&w, h),
+        FalloutAt::CorruptedFactory => g.tokens(h, FACTORY) > 0,
+        FalloutAt::CorruptedStation => g.tokens(h, STATION) > 0,
+        FalloutAt::Location => false,
+    };
+    for c in scope_countries(&w, ctx.scope) {
+        let mut hexes = w.map.countries[c].hexes.clone();
+        hexes.sort_by_key(|&h| w.map.hexes[h].number);
+        let sites: Vec<usize> =
+            hexes.into_iter().filter(|&h| corrupted(g, h) && kind(g, h)).take(count.max(0) as usize).collect();
+        for h in sites {
+            if let Some(x) = fallout_spot(&w, g, h, false) {
+                adversary::place_fallout(g, cx, x, source);
+            }
+        }
     }
 }
 

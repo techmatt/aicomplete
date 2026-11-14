@@ -356,7 +356,7 @@ fn removable(w: &World, g: &GameState, h: usize, pieces: Removable) -> bool {
         Removable::Agents => g.tokens(h, ADV_AMBASSADOR) > 0,
         Removable::Troops => g.tokens(h, TROOP) > 0,
         Removable::Botnets => g.tokens(h, BOTNET) > 0,
-        Removable::Land => g.tokens(h, LAND_CORRUPTION) > 0,
+        Removable::Fallout => g.tokens(h, FALLOUT) > 0,
         Removable::Cubes => corrupted(g, h) && !is_city(w, h),
     }
 }
@@ -370,8 +370,8 @@ fn take(g: &mut GameState, cx: &mut Cx, h: usize, pieces: Removable, n: i64) -> 
             Removable::Agents => adversary::remove_piece(g, cx, None, h, ADV_AMBASSADOR),
             Removable::Troops => adversary::remove_piece(g, cx, None, h, TROOP),
             Removable::Botnets => adversary::remove_botnet(g, cx, h),
-            Removable::Land => {
-                adversary::lift_land_corruption(g, cx, h);
+            Removable::Fallout => {
+                adversary::lift_fallout(g, cx, h);
                 cx.tally(g, "effects.land_lifted", 1);
             }
             Removable::Cubes => {

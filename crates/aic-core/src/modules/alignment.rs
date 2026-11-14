@@ -43,7 +43,7 @@ const PARAMS: &[ParamSpec] = &[
 const PHASES: &[PhaseSpec] = &[
     PhaseSpec::auto(
         "sway",
-        "the round's Sway: the adversary board's printed drip toward Discord (the Militarist prints none) and each land-corruption token's",
+        "the round's Sway: the adversary board's printed drip toward Discord (the Militarist prints none) and each Fallout token's",
     ),
 ];
 
@@ -439,7 +439,7 @@ fn fx_snapshot(g: &GameState) -> [i64; 16] {
         board(ADV_AMBASSADOR),
         board(TROOP),
         board(BOTNET),
-        board(LAND_CORRUPTION),
+        board(FALLOUT),
         (0..g.hexes.len()).filter(|&h| corrupted(g, h)).count() as i64,
         super::threats::active(g).len() as i64,
         seats(Resource::Credits),
@@ -497,11 +497,11 @@ impl Module for Alignment {
         // 136: the board's printed drip (it was `adversary_discord`, 0).
         let drip = cx.world.content.adversary_board.discord_drip;
         discord_from(g, cx, "drip", drip);
-        // 138: each land-corruption token drips 1 Discord; 192: a face-down one (a node hex's) its own rate.
+        // 138: each Fallout token drips 1 Discord; 192: a face-down one (a node hex's) its own rate.
         let blight = adversary::blight_drip(&cx.world, g);
         discord_from(g, cx, "blight", blight);
-        // 210 (stats only): land-corruption tokens on the board as the round's drip reads them.
-        let land: i64 = (0..g.hexes.len()).map(|h| g.tokens(h, LAND_CORRUPTION)).sum();
+        // 210 (stats only): Fallout tokens on the board as the round's drip reads them.
+        let land: i64 = (0..g.hexes.len()).map(|h| g.tokens(h, FALLOUT)).sum();
         cx.per_round(g, "adversary.land_tokens", land);
         Ok(())
     }

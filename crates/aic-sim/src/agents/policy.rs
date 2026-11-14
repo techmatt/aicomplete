@@ -153,8 +153,8 @@ macro_rules! forced_table {
             (abandon: bool, true, 0.0, "exploit check (053): give up the last country: no counter on it, no hex in it while another pick is open, losses aside")
             /// Exploit check (034): draft, keep and play Science first, for its discounts.
             (science_rush: bool, true, 0.0, "exploit check (034): draft, keep and play Science first, for its discounts")
-            /// Fixed policy (041): never lift land corruption.
-            (never_clear: bool, true, 0.0, "fixed policy (041): never lift land corruption")
+            /// Fixed policy (041): never lift Fallout.
+            (never_clear: bool, true, 0.0, "fixed policy (041): never lift Fallout")
             /// Fixed policy (041): the Science rush, board cards first.
             (science_board: bool, true, 0.0, "fixed policy (041): the Science rush, board cards first")
             /// Fixed policy (066): both node powers whenever affordable.
@@ -204,7 +204,7 @@ macro_rules! forced_table {
             /// cube cards are not planned on the same cubes.
             (plan_cubes: bool, false, 1.0, "092: keep plan: research cubes are a budget, spent by each card planned and earned by income")
             /// 211 (with `am_save`): the antimatter the seat's board powers and built Actions make once a round
-            /// (the plants; 219: never a burn or a seize) counts as income in the plan's later rounds, so a card that spends it is
+            /// (the plants; 219: never a burn or a Reclaim) counts as income in the plan's later rounds, so a card that spends it is
             /// kept toward it.
             (plan_am: bool, false, 1.0, "211: keep plan: antimatter the seat's powers and built Actions make each round counts from the next round, and a shortfall is made from cubes at Make antimatter's price")
             /// 092: the opening's strategy choice reads the board's powers too.
@@ -302,7 +302,7 @@ macro_rules! behavior_table {
             /// insight and antimatter, so it never converted, 207).
             (make_short: bool, 1.0, "211: convert cubes to insight or antimatter when, after up to three conversions, the keep plan plays a card this round it can't now")
             /// 213 (with `make_short`): an antimatter source the seat can use this round (a board power or a built
-            /// Action that gains antimatter: the plants, then 219's burns Teardown and Meltdown and the seize) counts as a way to make
+            /// Action that gains antimatter: the plants, then 219's burns Teardown and Meltdown and Reclaim) counts as a way to make
             /// the antimatter a hand card lacks, tried before Make antimatter's cubes (r94 left the new powers unused).
             (am_source: bool, 1.0, "213: with make_short, an antimatter power or built Action is used (before Make antimatter) when it lets the keep plan play a card this round it can't now")
         }
@@ -383,7 +383,7 @@ impl Forced {
             && (!self.events_only || d.is_event())
             && (!self.free_only || d.tags.contains(&Tag::Diplomacy))
             && (!self.ignore_threats || !counters_threats(d))
-            && (!self.never_clear || !d.effects.iter().any(|e| matches!(e, Op::LiftLand { .. })))
+            && (!self.never_clear || !d.effects.iter().any(|e| matches!(e, Op::LiftFallout { .. })))
     }
 }
 
@@ -747,7 +747,7 @@ fn acts_on_board(d: &CardDef) -> bool {
     d.effects.iter().any(|e| {
         matches!(
             e,
-            Op::LiftLand { .. } | Op::ShieldNode { .. } | Op::DelayThreat { .. } | Op::MoveOne { .. }
+            Op::LiftFallout { .. } | Op::ShieldNode { .. } | Op::DelayThreat { .. } | Op::MoveOne { .. }
         )
     })
 }
@@ -968,7 +968,7 @@ impl Policy {
         }
         let standard = |n: &str| legal.iter().position(|a| matches!(a, Action::Standard { act, .. } if act == n));
         // 213 (`am_source`): the seat's antimatter powers and built Actions, each once a round, before the cubes.
-        // 219: a plant's Action (a resource paid) before a board power (a burn or a seize): the burns are the rare way.
+        // 219: a plant's Action (a resource paid) before a board power (a burn or Reclaim): the burns are the rare way.
         let mut sources: Vec<usize> = if self.behaviors.am_source {
             legal.iter().enumerate().filter(|(_, a)| a.seat() as usize == s && makes_antimatter(&world, a)).map(|(i, _)| i).collect()
         } else {

@@ -539,7 +539,8 @@ pub(super) fn space(u: &Uncover) -> String {
     }
     let mut parts: Vec<String> = parts.into_iter().filter(|p| !p.is_empty()).collect();
     if parts.is_empty() {
-        parts.push("nothing".to_string());
+        // 226 (Matt, 224 friction #18): a paid space with no gain is a step toward the capstone, not a misprint.
+        parts.push("toward the capstone".to_string());
     }
     // 179 (Matt, friction #16): the space's cost prints as a cost, first: what you pay to uncover it.
     let out = parts.join(", ");
@@ -676,10 +677,10 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
             "the adversary board's drip, at the start of every round".to_string(),
             format!("as printed ({}: {})", content().adversary_board.name, content().adversary_board.discord_drip),
         ],
-        // 145: the land-corruption drip (138) the table left out.
+        // 145: the Fallout drip (138) the table left out.
         [
             "Discord".to_string(),
-            "each land-corruption token (Blitzkrieg, Naval Blockade), at the start of every round".to_string(),
+            "each Fallout token (Blitzkrieg, Naval Blockade), at the start of every round".to_string(),
             t("adversary.blight_discord"),
         ],
     ];
@@ -833,7 +834,7 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          aims one at the node hex most crowded with adversary pieces), create agents, run Corrupt \
          lines, and take credits, more of each the more sites are corrupted. Unity has its own track, which nothing on the \
          Discord side empties: free a corrupted \
-         city or use the Protector's Recovery and you sway Unity (removing a botnet sways none), and each Unity \
+         city and you sway Unity (removing a botnet sways none), and each Unity \
          tip brings a good card. \
          Like fear cards, each acts by what is on the board, never by your reach: for each site a player owns or \
          each corrupted one, on each hex on or next to your pieces or a corrupted city, or each player from one such \
@@ -847,7 +848,7 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          Discord card. You also lose if any player has no nodes left on the board. \
          Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of \
          their own hex (or agents on it), war taking a factory on their hex, a project's raid (the node \
-         hex with the most agents), and Border War (nodes by a front's base). A lost token leaves the game and marks its hex, so you can't act from there any more; its \
+         hex with the most agents), and Border War (nodes by a front's base). A lost token leaves the game and nothing marks its hex; its \
          income stays. {safe}The adversary deck is a round cap too, {} rounds at \
          most (fewer at the harder levels), and reaching it loses. So there are three different \
          pressures: the Discord deck (politics), your nodes (the board) and the cap.\n",

@@ -41,7 +41,7 @@ is worth more with it. A play waiting a round is worth 15% less; `needs` may be 
 planned earlier, or short now by at most `plan_short` tags; a building over one of the seat's
 adds only what it beats the weakest by (`plan_cover`). Each switch's default and rule, and each
 **dominance check** (principles.md), is a row of `forced_table!`, `no_spend` too. The eval holds an
-antimatter at 2 points. **`plan_am`**: the antimatter the seat's built Actions make once a round (no burn or seize)
+antimatter at 2 points. **`plan_am`**: the antimatter the seat's built Actions make once a round (no burn or Reclaim)
 counts from the plan's next round, and a shortfall is made from cubes at Make antimatter's price.
 
 **Agent behaviors** (`behavior_table!`, on for every agent; a dominance check's ban wins; each row says its rule).

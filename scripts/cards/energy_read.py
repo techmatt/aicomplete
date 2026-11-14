@@ -26,7 +26,7 @@ sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 
 BOARDS = ['builder', 'protector', 'researcher']
 # The dear powers before r35, by board and index in content/ais.json.
-DEAR = {'Rush Build': 'builder', 'Shelter': 'protector', 'Seize': 'protector'}  # 219: Particle Run is gone
+DEAR = {'Rush Build': 'builder', 'Shelter': 'protector', 'Reclaim': 'protector'}  # 219: Particle Run is gone; 227: Seize is Reclaim
 
 
 def power_index():

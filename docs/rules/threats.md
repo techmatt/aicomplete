@@ -9,7 +9,7 @@
 
 **The decks (candidate; Matt's threat card standard, 2026-11-07, locked).** One threat deck per tier, each card
 printed once and shuffled at setup: tier 1 and tier 2; **there is no tier 3**. A tier-2 card is about two tier-1s
-(bigger consequences: a node, a site corrupted or seized, a botnet, troops, Unity pulled back), so no pull asks for
+(bigger consequences: a node, a site corrupted, a botnet, more Fallout, troops, Unity pulled back), so no pull asks for
 two tier-1s. Each card carries 1 or 2 **tags**, the player cards' own (Security, Diplomacy, Cyber, Industry, Power, with their icons; r81, friction #47; **Universal** counts as every tag) and 1 or 2 **location
 types** (city, coastal city, research station, factory, military base).
 
@@ -113,7 +113,8 @@ the type it names, in hex order) and musters its troops, then its other lines, i
 the type moves onto it, and each site holding its number corrupts) and the march. You draft and act; production then runs from one
 snapshot of the board. At the end of the round each threat nobody paid does what it prints, and nothing else: one
 consequence, sometimes two, from a short list (troops or agents on its spot, compute, Sway toward
-Discord, Unity pulled back, a site corrupted or seized, a botnet, or the nearest player paying energy, chips, cubes or
+Discord, Unity pulled back, a site corrupted, a botnet, Fallout next to its token (227: mild and lifted, so tier 1
+carries 1 and tier 2 up to 2), or the nearest player paying energy, chips, cubes or
 ambassadors or discarding cards, losing a building, or a node; never insight, spent the turn it comes, r82). A player harm always hits the one player whose
 node is nearest the threat. Tier 1 is small; tier 2 is about two tier-1s. Compute waits for the adversary's compute
 step, then fills the leftmost project on its board; a full project fires there, the rest slide left and the right

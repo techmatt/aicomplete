@@ -12,11 +12,11 @@ use super::table;
 
 /// The harms of the ledger, in its row order. 191 (Matt, 2026-11-11): every harm an adversary source can do has a
 /// row; none for insight (not an adversary harm, r82) and none yet for costs raised (paged as a harm, no card).
-pub const HARMS: [&str; 26] = [
+pub const HARMS: [&str; 27] = [
     "node destroyed",
     "city lost",
     "facilities destroyed",
-    "facilities seized",
+    "facilities corrupted",
     "credits or income lost",
     "energy lost",
     "chips lost",
@@ -39,6 +39,8 @@ pub const HARMS: [&str; 26] = [
     "a megaproject or converter denied",
     "the card market disrupted",
     "actions or claims blocked",
+    // 227 (Matt, 2026-11-13): the land scar, a common harm on all four adversity sources.
+    "Fallout placed",
 ];
 
 /// The sources of the ledger, in its column order. The first six read
@@ -65,7 +67,7 @@ const OWN_BURNS: usize = 12;
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 23] = [
+pub const RULE_HARMS: [(&str, &str, &str); 24] = [
     ("income and rally", "adversary pieces placed", "agent income fills each country's pool; every event's Rally X deals it one at a time onto the sites of its type (151; r80)"),
     ("income and rally", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
     ("income and rally", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
@@ -74,7 +76,7 @@ pub const RULE_HARMS: [(&str, &str, &str); 23] = [
     ("corruption", "node destroyed", "`corrupt_node_at` agents on a hex with a player's node destroy the node and leave no mark (175, r98; protections apply)"),
     ("corruption", "node destroyed", "a node on the corrupted hex itself is destroyed (its owner may spend a protection: r75)"),
     ("corruption", "city lost", "a city holding its corrupt number of agents becomes the adversary's until a player liberates it"),
-    ("corruption", "facilities seized", "a research station or factory that corrupts becomes the adversary's; a firewall or a Corrupt prohibition's token guards every path, flips and threats included (r79, D77; r80)"),
+    ("corruption", "facilities corrupted", "a research station or factory that corrupts becomes the adversary's; a firewall or a Corrupt prohibition's token guards every path, flips and threats included (r79, D77; r80)"),
     ("corruption", "ambassadors lost", "player ambassadors on it are lost"),
     ("corruption", "production blacked out", "its energy goes to the adversary"),
     ("corruption", "Discord sway", "its energy sways Discord each round"),
@@ -94,7 +96,8 @@ pub const RULE_HARMS: [(&str, &str, &str); 23] = [
     ("march", "node destroyed", "a troop strikes a player's node on or next to its hex (r89, `troop_node` 0; protections apply), one step a march"),
     // 219 (Matt, 2026-11-13): the board burns, each a rare trade of your own engine for 1 antimatter.
     ("your burns", "facilities destroyed", "the Builder's Teardown destroys one of its own factories, the Researcher's Meltdown one of its own research stations (r97); gone unless rebuilt the normal way"),
-    ("your burns", "Discord sway", "Teardown leaves land corruption on the factory's hex, which drips `blight_discord` toward Discord each round until lifted (r97)"),
+    ("your burns", "Fallout placed", "Teardown leaves Fallout on the factory's hex (r97)"),
+    ("your burns", "Discord sway", "Teardown leaves Fallout on the factory's hex, which drips `blight_discord` toward Discord each round until lifted (r97)"),
 ];
 
 /// Columns of [`SOURCES`] that read content, for [`harm_marks`].
@@ -109,7 +112,7 @@ const THREAT_TIERS: usize = 2;
 const NODE_DESTROYED: usize = 0;
 const CITY_LOST: usize = 1;
 const FACILITIES_DESTROYED: usize = 2;
-const FACILITIES_SEIZED: usize = 3;
+const FACILITIES_CORRUPTED: usize = 3;
 const CREDITS_LOST: usize = 4;
 const ENERGY_LOST: usize = 5;
 const CHIPS_LOST: usize = 6;
@@ -129,6 +132,7 @@ const CLOCK_SPED_UP: usize = 20;
 const DISCORD_SWAY: usize = 21;
 const UNITY_PULLED: usize = 22;
 const BLOCKED: usize = 25;
+const FALLOUT_PLACED: usize = 26;
 
 /// The row a lost resource falls in. Insight is never a harm (r82: `Content::check` refuses one).
 fn lost(r: Resource) -> Vec<usize> {
@@ -176,8 +180,8 @@ fn op_harms(op: &Op) -> Vec<usize> {
         Op::LoseAmbassador => vec![AMBASSADORS_LOST],
         Op::DestroyFacility { .. } => vec![FACILITIES_DESTROYED, NODE_DESTROYED],
         Op::ExtraWar { .. } => vec![FACILITIES_DESTROYED],
-        // A seized factory or flipped station corrupts its hex: the node and ambassadors on it go too (197).
-        Op::SeizeFactory | Op::FlipStation { .. } => vec![FACILITIES_SEIZED, NODE_DESTROYED, AMBASSADORS_LOST],
+        // A corrupted factory or flipped station takes its hex: the node and ambassadors on it go too (197).
+        Op::CorruptFactory | Op::FlipStation { .. } => vec![FACILITIES_CORRUPTED, NODE_DESTROYED, AMBASSADORS_LOST],
         // A troop on the factory: it makes nothing while the troop stands.
         Op::OccupyFactory { .. } => vec![BLACKED_OUT, PIECES_PLACED],
         Op::DisableBuilding { .. } => vec![BLOCKED],
@@ -226,9 +230,11 @@ fn op_harms(op: &Op) -> Vec<usize> {
         // destruction here; it takes the site it corrupts and the ambassadors on it.
         Op::Corrupt { site, .. } => match site {
             CorruptSite::City | CorruptSite::CoastalCity => vec![PIECES_PLACED, CITY_LOST, AMBASSADORS_LOST],
-            CorruptSite::Station | CorruptSite::Factory => vec![PIECES_PLACED, FACILITIES_SEIZED, AMBASSADORS_LOST],
-            CorruptSite::Land | CorruptSite::Node => vec![PIECES_PLACED, AMBASSADORS_LOST],
+            CorruptSite::Station | CorruptSite::Factory => vec![PIECES_PLACED, FACILITIES_CORRUPTED, AMBASSADORS_LOST],
+            CorruptSite::Land => vec![PIECES_PLACED, AMBASSADORS_LOST, FALLOUT_PLACED],
+            CorruptSite::Node => vec![PIECES_PLACED, AMBASSADORS_LOST],
         },
+        Op::Fallout { .. } => vec![FALLOUT_PLACED],
         Op::Troops { destroy, .. } => {
             if *destroy {
                 vec![PIECES_PLACED, NODE_DESTROYED]
@@ -245,9 +251,9 @@ fn op_harms(op: &Op) -> Vec<usize> {
         // 195: the project deck's board verbs.
         Op::BotnetTroops { .. } | Op::FactoryTroops { .. } => vec![PIECES_PLACED],
         Op::SpreadBotnets { .. } => vec![PIECES_PLACED, PROJECTS_ADVANCED],
-        // A neutral site corrupts (a node on its hex goes with it, 197), else a player's turns neutral: seized
-        // either way.
-        Op::TakeSite { .. } => vec![FACILITIES_SEIZED, NODE_DESTROYED, AMBASSADORS_LOST],
+        // A neutral site corrupts (a node on its hex goes with it, 197), else a player's turns neutral: a facility
+        // lost either way.
+        Op::TakeSite { .. } => vec![FACILITIES_CORRUPTED, NODE_DESTROYED, AMBASSADORS_LOST],
         Op::RaidNode => vec![NODE_DESTROYED],
         Op::StripHarden => vec![PROTECTIONS_STRIPPED],
         Op::Clock { .. } => vec![CLOCK_SPED_UP],
@@ -301,7 +307,7 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::IfTags { .. }
         | Op::IfNodeNext { .. }
         | Op::AmbassadorToSpot
-        | Op::LiftLand { .. }
+        | Op::LiftFallout { .. }
         | Op::Draw { .. }
         | Op::DrainAll { .. }
         | Op::GainPerTokens { .. }
@@ -519,7 +525,7 @@ mod tests {
             (NODE_DESTROYED, "node destroyed"),
             (CITY_LOST, "city lost"),
             (FACILITIES_DESTROYED, "facilities destroyed"),
-            (FACILITIES_SEIZED, "facilities seized"),
+            (FACILITIES_CORRUPTED, "facilities corrupted"),
             (CREDITS_LOST, "credits or income lost"),
             (ENERGY_LOST, "energy lost"),
             (CHIPS_LOST, "chips lost"),
@@ -539,6 +545,7 @@ mod tests {
             (DISCORD_SWAY, "Discord sway"),
             (UNITY_PULLED, "Unity pulled back"),
             (BLOCKED, "actions or claims blocked"),
+            (FALLOUT_PLACED, "Fallout placed"),
         ];
         for (i, name) in harms {
             assert_eq!(HARMS[i], name, "HARMS[{i}]");

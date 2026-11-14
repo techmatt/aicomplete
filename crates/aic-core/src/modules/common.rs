@@ -33,9 +33,9 @@ pub const DRONE: &str = "Drone";
 pub const HARDEN: &str = "harden";
 /// A botnet: persistent, makes adversary compute, an ambassador on its hex may take it down (r75's standard action).
 pub const BOTNET: &str = "botnet";
-/// Land corruption (138): a rare hex token a Corrupt land line leaves on an
+/// Fallout (138): a rare hex token a Corrupt land line leaves on an
 /// empty land hex. No node may be placed there, and it drips Discord.
-pub const LAND_CORRUPTION: &str = "land_corruption";
+pub const FALLOUT: &str = "fallout";
 /// A firewall (158): no agent arrives on its hex; it comes off at
 /// the end of the next adversary turn.
 pub const FIREWALL: &str = "firewall";
@@ -118,10 +118,10 @@ pub fn has_building(g: &GameState, h: usize) -> bool {
     g.tokens(h, FACTORY) > 0 || g.tokens(h, STATION) > 0
 }
 
-/// An open hex with no building and no land corruption: where buildings go (178, Matt's ruling #28: corrupted
+/// An open hex with no building and no Fallout: where buildings go (178, Matt's ruling #28: corrupted
 /// land forbids building).
 pub fn buildable(w: &World, g: &GameState, h: usize) -> bool {
-    w.map.hexes[h].kind == HexKind::Open && !has_building(g, h) && g.tokens(h, LAND_CORRUPTION) == 0
+    w.map.hexes[h].kind == HexKind::Open && !has_building(g, h) && g.tokens(h, FALLOUT) == 0
 }
 
 /// Whether hex `h` holds a piece an ambassador can sit on (node included).
@@ -163,11 +163,11 @@ pub fn scope_countries(w: &World, scope: Option<usize>) -> Vec<usize> {
     }
 }
 
-/// Free industrial zones: printed zones holding no building and no land corruption (178), where a factory
+/// Free industrial zones: printed zones holding no building and no Fallout (178), where a factory
 /// may be built.
 pub fn free_zones(w: &World, g: &GameState) -> Vec<usize> {
     (0..g.hexes.len())
-        .filter(|&h| w.map.hexes[h].industrial && !has_building(g, h) && g.tokens(h, LAND_CORRUPTION) == 0)
+        .filter(|&h| w.map.hexes[h].industrial && !has_building(g, h) && g.tokens(h, FALLOUT) == 0)
         .collect()
 }
 

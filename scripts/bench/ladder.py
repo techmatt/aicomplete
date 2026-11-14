@@ -17,7 +17,7 @@ lost to corruption, adversary ambassadors placed (created or rallied), corruptio
 (amendment 6618): projects revealed and resolved as a share of the deck (`--deck`; default the number of projects in `content/projects.json`), distinct projects revealed,
 and reshuffles; then (210) by board, levels pooled: slack seat-rounds (the seat kept every card it drafted, held no
 card it could have played and had insight left) beside bound ones (a keep or play held for want of insight alone),
-land-corruption tokens on the board a round, where node placements land (on or next to a factory, city or station;
+Fallout tokens on the board a round, where node placements land (on or next to a factory, city or station;
 `own`: one holding the seat's cube) and each seat's nodes at the end (count, countries, connected groups, farthest
 apart). A side that predates a measure prints 0 for it.
 
@@ -126,7 +126,7 @@ KINDS = ("factory", "city", "station", "none", "own_factory", "own_city", "own_s
 
 
 def board_table(games_by_side):
-    """210's standing measures by board, levels pooled: slack and bound seat-rounds, land-corruption tokens a round,
+    """210's standing measures by board, levels pooled: slack and bound seat-rounds, Fallout tokens a round,
     where node placements land and how spread each seat's nodes end (docs/experiments.md, *Standing measures*)."""
     head = ("| side | board | seat-rounds | slack | bound | land tokens a round | placements a seat-game | "
             + " | ".join(k.replace("_", " ") for k in KINDS) + " | nodes at end | countries | groups | farthest |")

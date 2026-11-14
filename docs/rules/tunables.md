@@ -40,7 +40,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.city_chip_cap` | 3 | 1..10 | 190: chips a city holds at most while they wait (one each round from each unclaimed neutral factory next to it) |
 | `board.remove_ambassadors` | 1 | 1..5 | standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing) |
 | `board.remove_count` | 3 | 1..3 | standard action Remove agents: agents it removes, at most, from any hexes in reach (the player's choice) |
-| `board.land_cubes` | 2 | 0..10 | 210: standard action Lift land corruption: research cubes to lift 1 land-corruption token in reach (0: no such action) |
+| `board.land_cubes` | 2 | 0..10 | 210: standard action Lift Fallout: research cubes to lift 1 Fallout token in reach (0: no such action) |
 | `board.envoy_ambassadors` | 1 | 0..5 | standard action Envoy: your ambassadors from the supply, used up, to move 1 Discord off the Discord track (0: no such action) |
 | `board.ambassador_credits` | 20 | 1..50 | standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit) |
 | `board.sell_credits` | 1 | 0..20 | standard action: credits for selling a card from hand |
@@ -53,11 +53,11 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.corrupt_at` | 4 | 1..20 | a city's corrupt number: the agents on it that corrupt it (coastal cities too) |
 | `adversary.corrupt_station_at` | 3 | 1..20 | a research station's corrupt number |
 | `adversary.corrupt_factory_at` | 3 | 1..20 | a factory's corrupt number |
-| `adversary.corrupt_land_at` | 3 | 1..20 | open land's corrupt number (only a Corrupt open land line; it takes land corruption) |
+| `adversary.corrupt_land_at` | 3 | 1..20 | open land's corrupt number (only a Corrupt open land line; it takes Fallout) |
 | `adversary.corrupt_node_at` | 2 | 1..20 | 175: a node's corrupt number: a hex with a player's node and this many agents loses the node |
 | `adversary.corrupt_cut` | 1, 1, 1, 0 | 0..5 | difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land) |
 | `adversary.corrupt_cut_at` | 1 | 0..5 | the difficulty level from which corrupt_cut applies |
-| `adversary.blight_discord` | 1 | 0..5 | Discord each land-corruption token sways each round |
+| `adversary.blight_discord` | 1 | 0..5 | Discord each Fallout token sways each round |
 | `adversary.counter_pct` | 100, 100 | 50..300 | every resource counter item of a tier 1, 2 threat costs this percent of its printed amount (rounded up) |
 | `adversary.counter_credit_pct` | 100 | 50..300 | every credits counter item costs this percent of its amount after counter_pct (rounded up; 100 = unchanged; 142's dial) |
 | `adversary.counter_bonus` | 0 | 0..10 | difficulty counter_bonus_at+: added to every resource item of each threat's first counter option (142; its credits before) |

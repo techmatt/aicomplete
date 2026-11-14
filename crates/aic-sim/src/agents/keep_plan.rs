@@ -218,7 +218,7 @@ fn am_makes(w: &World, g: &GameState, s: usize) -> i64 {
         .powers
         .iter()
         .filter(|p| p.tags.iter().all(|(t, n)| has(t, *n)))
-        // 219: a burn (your own piece) or a seize (a target in reach) is no round's income.
+        // 219: a burn (your own piece) or a Reclaim (a target in reach) is no round's income.
         .filter(|p| !p.effects.iter().any(|e| matches!(e, Op::Burn { .. } | Op::Cleanse { .. })))
         .map(|p| gains(&p.effects))
         .sum();
@@ -258,13 +258,13 @@ fn plan_value(w: &World, g: &GameState, s: usize, kept: &[Key], f: &Forced, pc: 
     plan(w, g, s, kept, f, pc, pt).map_or(f64::NEG_INFINITY, |(v, _)| v)
 }
 
-/// The jobs `d` would do for seat `s` on this table: land corruption in reach
+/// The jobs `d` would do for seat `s` on this table: Fallout in reach
 /// to lift, threats to delay, nodes with no token to shield.
 fn niche_jobs(w: &World, g: &GameState, s: usize, d: &CardDef) -> i64 {
     d.effects
         .iter()
         .map(|e| match e {
-            Op::LiftLand { count, .. } => (*count).min(aic_core::modules::board::land_in_reach(w, g, s).len() as i64),
+            Op::LiftFallout { count, .. } => (*count).min(aic_core::modules::board::land_in_reach(w, g, s).len() as i64),
             // 118: only threats the seat may counter, as the engine delays (F136).
             Op::DelayThreat { count } => {
                 (*count).min(threats::counterable(w, g, s, None).iter().filter(|t| !threats::waits(g, t)).count() as i64)

@@ -22,14 +22,13 @@ still help.
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
 | Builder | Procure | 1 chip | draw 2 cards |
 | Builder | Fortify | 2 chips | remove 1 Troop in reach and harden 1 facility in reach |
-| Builder | Teardown | 1 chip | destroy one of your factories anywhere; land corruption goes on its hex; gain 1 antimatter |
+| Builder | Teardown | 1 chip | destroy one of your factories anywhere; Fallout goes on its hex; gain 1 antimatter |
 | Protector | Bulwark | 1 energy | harden 1 facility in reach |
 | Protector | Accord | 1 Diplomacy | place 1 Node; if the new node brings a city into your reach, also put a new ambassador on one such city |
-| Protector | Recovery | 1 Diplomacy | lift a land-corruption token in reach and sway 2 toward Unity |
 | Protector | Debrief | 1 Security | draw 1 card and remove 1 Agent in a hex in reach |
 | Protector | Patrol | 1 energy | push up to 3 Agents or Troops from a hex in reach, each to a hex next to it |
 | Protector | Interdict | 1 Security | remove up to 2 Troops in one hex in reach |
-| Protector | Seize | 1 Security + 6 credits + 2 energy | turn 1 corrupted station or factory in reach neutral; gain 1 antimatter |
+| Protector | Reclaim | 1 Security + 6 credits + 2 energy | turn 1 corrupted station or factory in reach neutral; gain 1 antimatter |
 | Researcher | Peer Review | 1 research cube | place 1 Node; if the new node brings a research station into your reach, also gain 1 insight |
 | Researcher | Grant | 3 credits | add 1 research cube in your color to an open megaproject |
 | Researcher | Field Station | 1 Industry | build a research station in reach, paying no chips |
@@ -40,12 +39,11 @@ still help.
 <!-- /generated -->
 
 **Sacrifice is late-game liquidation.** Once the cards needing a tag are played, its tags turn into engine rewards,
-each payoff priced to be worth the card: 1 chip (r83: worth 2 before), 2 energy, up to 2 troops removed in a hex (Interdict, r98), a
-land corruption token lifted with its Sway (Recovery, r98), a card and an agent removed (Debrief, r91); a tag and an
+each payoff priced to be worth the card: 1 chip (r83: worth 2 before), 2 energy, up to 2 troops removed in a hex (Interdict, r98), a card and an agent removed (Debrief, r91); a tag and an
 energy buy a building (r35).
 
 **Each power's tag is its story (r93, Matt, amendment 9513).** A tag-paid power is paid in the tag its effect fits
-(the tag table is below): the Protector's Accord and Recovery in Diplomacy (trust, cleanup), its Debrief and
+(the tag table is below): the Protector's Accord in Diplomacy (trust), its Debrief and
 Interdict in Security (force, protection). The one exception is the Researcher's Disrupt, paid in Cyber: it
 hacks troops anywhere in a country, no reach.
 
@@ -82,9 +80,9 @@ needed). The standard action Remove a troop (`troop_credits` 10 credits, `troop_
 
 **Antimatter: each board a rare burn of its own engine (r97, Matt's ruling, 2026-11-13).** The steady source is the
 tier-2 converter plants ([economy.md](economy.md)); each board's own power is a different decision, once a round, for
-1 antimatter: the Builder's **Teardown** (1 chip: destroy one of your own factories, and a land-corruption token goes on
+1 antimatter: the Builder's **Teardown** (1 chip: destroy one of your own factories, and a Fallout token goes on
 its hex), the Researcher's **Meltdown** (2 research cubes: destroy one of your own research stations; r98: renamed from
-Overload, a tier-2 threat's name), the Protector's **Seize** (a Security card, 6 credits and 2 energy: turn a
+Overload, a tier-2 threat's name), the Protector's **Reclaim** (227: renamed from Seize; a Security card, 6 credits and 2 energy: turn a
 corrupted station or factory in reach neutral, its adversary cube off, well above Remove a troop's 10). Teardown and
 Meltdown reach anywhere. A burned piece is gone, no protection asked (you chose it), unless rebuilt the
 normal way; with no piece or target the power can't be used. No power spends antimatter: the spends are the majors,

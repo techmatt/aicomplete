@@ -73,7 +73,7 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
             Op::IfTags { tag, count, then } => cards::tags(w, g, seat, *tag) >= *count && feasible(w, g, seat, then),
             // 212: a rider on the node placed before it: never a part that acts on its own.
             Op::IfNodeNext { .. } | Op::AmbassadorToSpot => false,
-            Op::LiftLand { .. } => !board::land_in_reach(w, g, seat).is_empty(),
+            Op::LiftFallout { .. } => !board::land_in_reach(w, g, seat).is_empty(),
             Op::DelayThreat { .. } => !undelayed_threats(w, g, seat).is_empty(),
             // 184: a Discord sway is the card's price (The Nuclear Option), never a part that acts.
             Op::Sway { side, .. } => *side == Side::Unity && w.variant("alignment") != Some("off"),

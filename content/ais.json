@@ -237,7 +237,7 @@
       1
      ]
     ],
-    "text": "destroy one of your factories anywhere; land corruption goes on its hex; gain 1 antimatter",
+    "text": "destroy one of your factories anywhere; Fallout goes on its hex; gain 1 antimatter",
     "effects": [
      {
       "op": "burn",
@@ -402,7 +402,7 @@
     "cost": 5,
     "capstone": {
      "name": "Sanctuary",
-     "text": "Corruption never destroys your Nodes. Each round, 1 antimatter.",
+     "text": "Neither corruption nor Agents destroy your Nodes. Each round, 1 antimatter.",
      "passives": [
       {
        "op": "corruption_shield"
@@ -464,23 +464,6 @@
     ]
    },
    {
-    "name": "Recovery",
-    "tags": [
-     [
-      "diplomacy",
-      1
-     ]
-    ],
-    "text": "lift a land-corruption token in reach and sway 2 toward Unity",
-    "effects": [
-     {
-      "op": "lift_land",
-      "count": 1,
-      "unity": 2
-     }
-    ]
-   },
-   {
     "name": "Debrief",
     "tags": [
      [
@@ -538,7 +521,7 @@
     ]
    },
    {
-    "name": "Seize",
+    "name": "Reclaim",
     "tags": [
      [
       "security",
