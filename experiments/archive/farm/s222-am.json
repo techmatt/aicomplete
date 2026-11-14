@@ -1,0 +1,39 @@
+{
+  "name": "s222-am",
+  "note": "222: screen 3, the purge term and burn_last as a factorial, 219 fresh seeds",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist",
+    "strategist:burn_last=0",
+    "strategist:w.purge=3.6",
+    "strategist:w.purge=3.6,burn_last=0"
+  ],
+  "games": 16,
+  "records": 0
+}

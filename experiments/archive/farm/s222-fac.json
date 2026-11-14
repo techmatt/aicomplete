@@ -1,0 +1,42 @@
+{
+  "name": "s222-fac",
+  "note": "222: greedy against the strategist and its switches off one at a time and all off",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "greedy",
+    "strategist",
+    "strategist:strategy=0",
+    "strategist:w.purge=0",
+    "strategist:w.last_node=0",
+    "strategist:strategy=0,w.purge=0,w.last_node=0",
+    "greedy:strategy=1"
+  ],
+  "games": 16,
+  "records": 0
+}

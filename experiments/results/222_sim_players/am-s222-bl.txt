@@ -1,0 +1,40 @@
+strategist: 1152 games
+  burn teardown: 0.328 a builder seat-game, mean round 4.0, last two rounds 17%, rounds 1-4 63%
+  burn overload: 0.098 a researcher seat-game, mean round 8.8, last two rounds 39%, rounds 1-4 3%
+  burn seize: 0.121 a protector seat-game, mean round 3.5, last two rounds 18%, rounds 1-4 68%
+  plant penning_trap_array: built 0.210 a game; its Action 1.06 antimatter a seat-game that built it
+  plant antiproton_foundry: built 0.262 a game; its Action 0.04 antimatter a seat-game that built it
+  plant positron_storage_ring: built 0.144 a game; its Action 1.95 antimatter a seat-game that built it
+  plant dark_fiber_collider: built 0.257 a game; its Action 1.04 antimatter a seat-game that built it
+  plant treaty_isotope_bank: built 0.198 a game; its Action 0.05 antimatter a seat-game that built it
+  plant cyclotron_lease: built 0.107 a game; its Action 3.33 antimatter a seat-game that built it
+strategist:burn_late=0: 1152 games
+  burn teardown: 0.337 a builder seat-game, mean round 4.2, last two rounds 19%, rounds 1-4 61%
+  burn overload: 0.352 a researcher seat-game, mean round 7.4, last two rounds 30%, rounds 1-4 10%
+  burn seize: 0.121 a protector seat-game, mean round 3.5, last two rounds 19%, rounds 1-4 68%
+  plant penning_trap_array: built 0.210 a game; its Action 1.05 antimatter a seat-game that built it
+  plant antiproton_foundry: built 0.257 a game; its Action 0.03 antimatter a seat-game that built it
+  plant positron_storage_ring: built 0.148 a game; its Action 1.94 antimatter a seat-game that built it
+  plant dark_fiber_collider: built 0.255 a game; its Action 1.03 antimatter a seat-game that built it
+  plant treaty_isotope_bank: built 0.193 a game; its Action 0.05 antimatter a seat-game that built it
+  plant cyclotron_lease: built 0.106 a game; its Action 3.31 antimatter a seat-game that built it
+strategist:strategy=0: 1152 games
+  burn teardown: 0.332 a builder seat-game, mean round 4.1, last two rounds 15%, rounds 1-4 60%
+  burn overload: 0.092 a researcher seat-game, mean round 9.5, last two rounds 37%, rounds 1-4 3%
+  burn seize: 0.117 a protector seat-game, mean round 3.6, last two rounds 12%, rounds 1-4 66%
+  plant penning_trap_array: built 0.235 a game; its Action 1.23 antimatter a seat-game that built it
+  plant antiproton_foundry: built 0.253 a game; its Action 0.03 antimatter a seat-game that built it
+  plant positron_storage_ring: built 0.130 a game; its Action 1.82 antimatter a seat-game that built it
+  plant dark_fiber_collider: built 0.259 a game; its Action 0.97 antimatter a seat-game that built it
+  plant treaty_isotope_bank: built 0.194 a game; its Action 0.08 antimatter a seat-game that built it
+  plant cyclotron_lease: built 0.145 a game; its Action 3.30 antimatter a seat-game that built it
+strategist:w.strat_scale=0.5: 1152 games
+  burn teardown: 0.341 a builder seat-game, mean round 4.0, last two rounds 18%, rounds 1-4 65%
+  burn overload: 0.113 a researcher seat-game, mean round 8.8, last two rounds 32%, rounds 1-4 2%
+  burn seize: 0.109 a protector seat-game, mean round 3.4, last two rounds 10%, rounds 1-4 69%
+  plant penning_trap_array: built 0.220 a game; its Action 1.40 antimatter a seat-game that built it
+  plant antiproton_foundry: built 0.261 a game; its Action 0.04 antimatter a seat-game that built it
+  plant positron_storage_ring: built 0.157 a game; its Action 1.93 antimatter a seat-game that built it
+  plant dark_fiber_collider: built 0.253 a game; its Action 1.13 antimatter a seat-game that built it
+  plant treaty_isotope_bank: built 0.203 a game; its Action 0.11 antimatter a seat-game that built it
+  plant cyclotron_lease: built 0.137 a game; its Action 3.28 antimatter a seat-game that built it

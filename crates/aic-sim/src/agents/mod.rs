@@ -325,7 +325,12 @@ const SWEEP: &str = "deals=1,lead=0";
 /// so the old judge bought 0.7-0.9 a game and freed 2.6-3.0 cities to greedy's 4.3-5.1.
 /// Dev seeds 36800-36831 (screen in `experiments/results/162_judge_purge`); the old
 /// judge is `engine:strategy=1,w.clock=0`.
-const STRATEGIST: &str = "strategy=1,w.built=4,w.built_cost=0.5,w.clock=0,w.energy_cap=0,w.hand=3,w.hand_cost=0.4,\
+/// 222 (r97): the purge term off (`w.purge=0`) read +7.8 ± 2.7 on the dev seeds but −1.0 ± 2.6 fresh and
+/// +1.0 ± 1.5 on 219's 96 seeds: kept. Greedy led the judge by 4.0 ± 1.6 there, and `strategy=0` gained
+/// +4.1 ± 1.6: the strategy commitment is the deficit. Matt (2026-11-13): the judge drops it (`strategy=0`;
+/// fresh 46752-46783 at or above greedy at d0-d3, +3.9 ± 2.9 pooled); `strategist:strategy=1` is the strategy
+/// player, an information cell. The strategist differs from greedy only in `w.purge`, `w.last_node` and its RNG stream.
+const STRATEGIST: &str = "strategy=0,w.built=4,w.built_cost=0.5,w.clock=0,w.energy_cap=0,w.hand=3,w.hand_cost=0.4,\
 w.horizon=0,w.insight_income=0,w.movement=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,\
 w.tag_hand=0,w.purge=3.6,w.last_node=120";
 
@@ -632,7 +637,7 @@ mod tests {
     #[test]
     fn sweep_is_a_planner_profile() {
         let named = |spec: &str| AgentSpec::parse(spec).unwrap().params;
-        assert_eq!(named("strategist"), named("engine:strategy=1"));
+        assert_eq!(named("strategist"), named("engine:strategy=0"));
         assert_eq!(named("sweep"), named("planner:deals=1,lead=0"));
         assert_eq!(named("sweep:budget=4"), named("planner:deals=1,lead=0,budget=4"));
         assert_eq!(named("sweep:deals=2"), named("planner:deals=2,lead=0"));

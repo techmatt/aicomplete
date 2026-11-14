@@ -1,0 +1,27 @@
+base strategist:w.purge=3.6,burn_last=0; gap = agent - base, paired on pair, difficulty and seed, +- 1 SE
+agent                                                        d    n    win     gap    se rounds
+strategist                                                   0  288   86.5    +4.5   2.6  10.11
+strategist                                                   1  288   58.7    -3.8   3.4   9.53
+strategist                                                   2  288   49.0    -0.3   3.2   8.24
+strategist                                                   3  288   43.1    +3.5   3.0   7.97
+strategist                                                 all 1152   59.3    +1.0   1.5   8.96
+strategist:burn_last=0                                       0  288   86.5    +4.5   2.6  10.12
+strategist:burn_last=0                                       1  288   59.0    -3.5   3.4   9.52
+strategist:burn_last=0                                       2  288   49.0    -0.3   3.2   8.24
+strategist:burn_last=0                                       3  288   43.1    +3.5   3.0   7.98
+strategist:burn_last=0                                     all 1152   59.4    +1.0   1.5   8.96
+strategist:w.purge=3.6                                       0  288   81.6    -0.3   0.3  10.33
+strategist:w.purge=3.6                                       1  288   62.2    -0.3   0.3   9.23
+strategist:w.purge=3.6                                       2  288   49.0    -0.3   0.3   8.23
+strategist:w.purge=3.6                                       3  288   39.9    +0.3   0.3   7.89
+strategist:w.purge=3.6                                     all 1152   58.2    -0.2   0.2   8.92
+strategist:w.purge=3.6,burn_last=0                           0  288   81.9                10.31
+strategist:w.purge=3.6,burn_last=0                           1  288   62.5                 9.22
+strategist:w.purge=3.6,burn_last=0                           2  288   49.3                 8.22
+strategist:w.purge=3.6,burn_last=0                           3  288   39.6                 7.91
+strategist:w.purge=3.6,burn_last=0                         all 1152   58.3                 8.91
+other:greedy                                                 0  288   82.6    +0.7   2.9   9.98
+other:greedy                                                 1  288   69.1    +6.6   3.5   8.88
+other:greedy                                                 2  288   53.5    +4.2   3.3   8.39
+other:greedy                                                 3  288   44.1    +4.5   3.4   8.12
+other:greedy                                               all 1440   54.3    +4.0   1.6   8.47

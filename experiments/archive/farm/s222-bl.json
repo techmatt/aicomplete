@@ -1,0 +1,39 @@
+{
+  "name": "s222-bl",
+  "note": "222: screen 4, burn_late on/off and the strategy lever, 219 fresh seeds",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist",
+    "strategist:burn_late=0",
+    "strategist:strategy=0",
+    "strategist:w.strat_scale=0.5"
+  ],
+  "games": 16,
+  "records": 0
+}

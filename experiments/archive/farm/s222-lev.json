@@ -1,0 +1,42 @@
+{
+  "name": "s222-lev",
+  "note": "222: screen 2, levers on the strategy x purge interaction; keep_tier2 at a 3-insight keep",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "greedy",
+    "strategist",
+    "strategist:w.purge_one=1",
+    "strategist:w.purge=1.8",
+    "strategist:w.strat_scale=0.5",
+    "strategist:w.purge_one=1,w.strat_scale=0.5",
+    "strategist:t.keep_tier2=7.5"
+  ],
+  "games": 16,
+  "records": 0
+}

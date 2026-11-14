@@ -28,7 +28,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
 | `beam` | Beam search over the round's remaining action sequences, scored at the next round's start; replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 |
 | `rollout` | Across rounds: the beam's `candidates` best end-of-round positions, each run `horizon` more rounds by `rollouts` greedy playouts on fresh guesses; best mean wins. | `width` 4, `depth` 120, `branch` 0, `choices` 2, `candidates` 3, `rollouts` 4, `horizon` 2 |
 | `engine` | The heuristic in **horizon mode** (`w.horizon`: income × the rounds left, discounted by danger); holdings by the value table (`w.table=0`: flat terms); the **deck clock** (`w.clock`) charges each round the team's Unity rate would leave it short. Searched like greedy; `width` > 0: a beam, `candidates` > 0: rollouts. | `width` 0, `samples` 1, `choices` 2, `answers` 99 (prompts an answer looks on; 1 loses wins); weights: `Weights::engine` |
-| `strategist` | Greedy's flat weights with strategy and the **purge term** (`w.purge`: supply ambassadors toward the Liberate bills in reach), no search. **The screens' judge**. | `STRATEGIST`, `agents/mod.rs` |
+| `strategist` | Greedy's flat weights with `w.last_node` and the **purge term** (`w.purge`: supply ambassadors toward the Liberate bills in reach), no search, no strategy (Matt, 2026-11-13: committing to one cost it greedy's 4-point lead; `strategist:strategy=1` is the strategy player). **The screens' judge**. | `STRATEGIST`, `agents/mod.rs` |
 | `planner` | The engine, rolling out a shortlist of action-phase alternatives `horizon` rounds with the engine as policy; the heuristic's best line is taken. A line runs on **full information** but the Alignment deal, valued over `deals` guesses of it; decisions inside it are scored on a guess (`agents/planner.rs`). | `horizon` 2, `alts` 2, `budget` 8, `margin` 40, `deals` 4, `lead` 0. `sweep[:...]` is `planner:deals=1,lead=0`. |
 | `oracle` | **A measuring stick, opt in**: the planner's search on **full information**, the deal too, each line played to the game's end; a winning line is followed, so the win rate is a floor on perfect play (`agents/oracle.rs`). | the planner's four, `reseeds` 0, `threads` 1 |
 
@@ -62,7 +62,8 @@ moves; the other forced rules and `kept_rule` 2; else the agent's search over wh
 rules out, the plan's card replacing its pick under `kept_rule` 1, 3, 4.
 
 Spec syntax: `kind[:key=value,...]`; a weight takes `w.` (`greedy:w.corrupted=40`), a plan or strategy switch goes bare (`strategist:plan_bury=0`). Greedy and the
-strategist read flat terms: the table's and horizon's levers reach only their keep plan. Sweeps: [`scripts/tune/`](../scripts/tune/README.md).
+strategist read flat terms: the table's and horizon's levers reach only their keep plan, and a packet card's keep is
+2 credits an insight, not `rates.keep_tier2`. No-op weights: `scripts/tune/noop_weights.py`. Sweeps: [`scripts/tune/`](../scripts/tune/README.md).
 
 ## The value table
 
@@ -157,7 +158,8 @@ Rules a player could say that a one-step search misses, each a switch (on), rule
 | Tier | Stands for | Spec | Target win % |
 |---|---|---|---|
 | Greedy, flat terms | A new player (Matt, 2026-11-03) | `greedy` | none; the strategist's lead over it measures depth |
-| Greedy with strategy | The judge | `strategist` | the per-level bands ([principles.md](principles.md)) |
+| Greedy with the purge term and last-node guard | The judge | `strategist` | the per-level bands ([principles.md](principles.md)) |
+| Greedy with strategy | A strategy player, information | `strategist:strategy=1` | none |
 | Planner with strategy rollouts | Spot checks | `planner:strategy=1` | none |
 | Oracle | A skilled player with full information | `oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1` | d4 95 (Matt, 2026-11-08) |
 

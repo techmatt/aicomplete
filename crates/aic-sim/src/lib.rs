@@ -52,11 +52,11 @@ pub fn main() {
         "strategies" => {
             let path = &o.paths[0];
             let r = rules(path, &load(path, &o.set.iter().collect::<Vec<_>>()));
-            // 102 (D36): the strategies the screens' judge plays, unless --agent says.
+            // 102 (D36): the strategies the strategy player picks (222: the judge plays none), unless --agent says.
             let agent = if o.given.contains("--agent") {
                 o.agent.clone()
             } else {
-                agents::AgentSpec::parse("strategist").expect("strategist is an agent")
+                agents::AgentSpec::parse("strategist:strategy=1").expect("strategist is an agent")
             };
             agents::policy::print_choices(&r, &agent, o.seed, o.games);
         }

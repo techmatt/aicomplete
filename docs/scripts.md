@@ -133,4 +133,6 @@ What each script under `scripts/` does. Run from the repo root.
   `cards.csv` names them).
 - `bench/item_time.py ITEM... [--top N]`: a done conductor item's wall time: sims, builds, tests, the rest.
 - `tune/`: `agent_sweep.py`, `sweep.py`, `log_table.py`, `engine_sweep.py` ([README](../scripts/tune/README.md)).
+  `noop_weights.py spec [--agent A] [--seeds N]` / `read OUT SPEC`: each `Weights` field moved (to 0, or 1 where 0),
+  one pair at d1-d2; lists the weights that change no game of the agent (222).
 - Past items' one-off readers: `experiments/archive/scripts/`, kept for the write-ups citing them.

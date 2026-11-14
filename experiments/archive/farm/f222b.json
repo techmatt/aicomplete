@@ -1,0 +1,39 @@
+{
+  "name": "f222b",
+  "note": "222: the second fresh read, 46752-46783; strategist:w.strat_scale=1 is the r97 judge",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "greedy",
+    "strategist",
+    "strategist:w.strat_scale=1",
+    "strategist:strategy=0"
+  ],
+  "games": 16,
+  "records": 0
+}

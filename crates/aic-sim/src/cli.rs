@@ -22,7 +22,7 @@ usage: aic-sim run <config.json> [options]
                                                      each seed's strategies as the agent's
                                                      seats choose them at the round-1 keep
                                                      (CSV: seed,seat,board,strategy;
-                                                     --agent defaults to strategist here)
+                                                     --agent defaults to strategist:strategy=1)
        aic-sim cards                                 every content card as CSV: id,kind,tier,
                                                      engine,liberate (the agents' card tests)
 
@@ -36,8 +36,8 @@ options:
   --set-a K=V       override for config A only (repeatable)
   --set-b K=V       override for config B only (repeatable)
   --agent SPEC      the team agent: random (default), greedy, beam, rollout, engine,
-                    planner, sweep (a planner profile), strategist (the engine
-                    with strategies, the screens' judge), oracle (full-information
+                    planner, sweep (a planner profile), strategist (greedy's
+                    terms with the purge term, the screens' judge), oracle (full-information
                     search, opt in), with budget parameters as
                     kind:key=value,... (see docs/agents.md)
   --max-actions N   per-game action cap; a capped game is a timeout (default 100000)

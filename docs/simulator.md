@@ -19,7 +19,7 @@ $S map configs/baseline.json                       # each country's hexes by num
 $S modules                                         # registry: modules, variants, params, phases
 $S run configs/baseline.json --games 2000 --save out/games              # first 20 losses as records
 $S replay out/games/*.json                         # check records natively (also browser bug reports)
-$S strategies configs/baseline.json --agent strategist --games 48 --seed 30700 --set adversary.difficulty=2  # each seat's strategy at its round-1 keep, CSV seed,seat,board,strategy (--agent defaults to strategist)
+$S strategies configs/baseline.json --agent strategist:strategy=1 --games 48 --seed 30700 --set adversary.difficulty=2  # each seat's strategy at its round-1 keep, CSV seed,seat,board,strategy (--agent defaults to strategist:strategy=1)
 $S cards                                           # every content card, CSV id,kind,tier,engine,liberate: the agents' engine and liberate tests (agents/cards.rs) for scripts
 ```
 

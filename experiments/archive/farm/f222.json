@@ -1,0 +1,38 @@
+{
+  "name": "f222",
+  "note": "222: the fresh read, new seeds 46720-46751; strategist:w.purge=3.6 is the base judge",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "greedy",
+    "strategist",
+    "strategist:w.purge=3.6"
+  ],
+  "games": 16,
+  "records": 0
+}
