@@ -179,7 +179,11 @@ try {
     if (st.round >= 1 && st.phase.includes('cards.play') && !shots.has('powers')) {
       shots.add('powers');
       const powers = await js(`[...document.querySelectorAll('#seats ul.powers')].map((u) => u.textContent).join(' | ')`);
-      for (const name of ['Mint', 'Expand', 'Buy In', 'Scrap', 'Overcharge', 'Rush Build', 'Bulwark', 'Accord', 'Stand Down', 'Recovery', 'Shelter']) check(powers.includes(name), `the seat panels show ${name}`);
+      // Every seated board's powers, read from content so a renamed or cut power can't go stale here. Seat s plays
+      // `ai.boards[s % n]`, and baseline's list is 0, 1, 2 in content order, so the seats play the first boards.
+      const ais = JSON.parse(readFileSync(join(web, '..', 'content', 'ais.json'), 'utf8'));
+      const seated = await js(`window.aic.view.seats.length`);
+      for (const name of ais.slice(0, seated).flatMap((b) => b.powers.map((p) => p.name))) check(powers.includes(name), `the seat panels show ${name}`);
       // 068: both boards' special rules, printed tags and tracks, capstones at the ends.
       const boards = await js(`({ innate: [...document.querySelectorAll('#seats .innate')].map((e) => e.textContent).join(' | '),
         tracks: [...document.querySelectorAll('#seats .track-row .label')].map((e) => e.textContent).join(' | '),

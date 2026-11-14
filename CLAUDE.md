@@ -26,6 +26,9 @@ machine's traps, are in the [README](README.md), which also lists the page for e
 - One home per rule: its number in a config or in content, its effect in one `Op` arm or the
   rule that reads it. What content does is one schema, `Op` (`crates/aic-core/src/op.rs`);
   resources, tags and token types are enums (`vocab.rs`): *The op schema* in docs/architecture.md.
+- **Removing a power, op, param or standard action:** `git grep` its name in `crates/*/src/tests`, `agents/`,
+  `scripts/design_check.json` and `web/scripts` before the first build (206 found 19 tests by running them; 219 left
+  two browser checks on a removed power).
 - **Any change to how games play out:** bump `RULES_REVISION` and update the golden constants
   (README, *Rules changes*). Bump from the constant, not from the prompt's revision number (a bug
   hunt may have taken it), and say so in the rules-history row and the report. A content-only
@@ -90,7 +93,8 @@ machine's traps, are in the [README](README.md), which also lists the page for e
   spent the moment you change the build because of it: confirm any later change on the next free
   seeds. A lever added beside the asked one is screened on and off as a factorial. A change to a core
   rules file after a run was frozen replays that run's seeds on the final build before the report,
-  compared with `bench/same_results.py`: keep the frozen run's output directory.
+  compared with `bench/same_results.py` (an experiment output) or `farm/compare.py` (a farmed read's `games.jsonl`):
+  keep the frozen run's output directory.
 - **On tuning**, settle every dial on screens first and run the full test lane once, at the end.
 - **Agents stay fast.** After a change to rules, state or agents, run `python scripts/bench/speed.py
   check target/release/aic-sim.exe` after the first screen, while a fix can still be tested; an item
@@ -142,7 +146,7 @@ Write the report to the path conductor's preamble gives, starting with the heade
 - Answer every amendment and message by number.
 - **A rules item with new or changed cards** ticks this list: give / get before the first screen;
   `npm run cards:fit`; `play_read.py`; `loop_smoke.py --run`; `speed.py check`;
-  `bench/same_results.py` on a frozen run's seeds.
+  `bench/same_results.py` (or `farm/compare.py`) on a frozen run's seeds.
 - A rules item's report ends with a short new-player summary of its rule changes, naming any rule
   that resisted one.
 - End your final message with `Report written to <path>`.

@@ -77,6 +77,10 @@ const STANDARD_NAMES: Record<string, string> = {
   envoy: 'Envoy',
   botnet: 'Take down a botnet',
   buy_energy: "Buy a city's energy",
+  antimatter: 'Make antimatter',
+  node: 'Place a node',
+  troop: 'Remove a troop',
+  factory: 'Build a factory',
 };
 
 /** The action's own words, without seat; null for a type with no special label. */
@@ -269,9 +273,9 @@ export function strong(hex: string): string {
   return `hsl(${Math.round((h * 60 + 360) % 360)} 70% 42%)`;
 }
 
-/** The adversary's color: its owner cubes, its agents, its cubes on megaprojects. */
 /** Neutral stations' cubes on megaprojects (074). */
 export const NEUTRAL_COLOR = '#9a9a9a';
+/** The adversary's color: its owner cubes, its agents, its cubes on megaprojects. */
 export const ADVERSARY_COLOR = '#5b1a8c';
 
 // Token colors: chosen colors for the kinds the board draws, every other kind

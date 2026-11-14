@@ -48,7 +48,7 @@ pub(super) fn token_card(
 pub(super) fn burn(g: &mut GameState, cx: &mut Cx, seat: usize, facility: Facility, blight: bool) -> Res {
     let w = cx.world;
     let hexes = own_facilities(g, seat, facility);
-    let kind = if facility == Facility::Factory { FACTORY } else { STATION };
+    let kind = facility.token();
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || format!("Seat {seat}: destroy which of your {}?", if kind == FACTORY { "factories" } else { "stations" });
     if let Some(i) = cx.choose(seat, prompt, opts)? {

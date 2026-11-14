@@ -1173,7 +1173,7 @@ fn finish(r: &mut GameResult, rules: &Rules, g: GameState) {
     // included, so an absent `.rNN` means no record by round NN (for a counter
     // recorded every round, such as `unspent.*`, the round was not reached).
     for (k, v) in &g.stats.per_round {
-        if PER_ROUND_EXPORT.iter().any(|(pre, suf)| k.starts_with(pre) && k.ends_with(suf)) {
+        if PER_ROUND_EXPORT.iter().any(|pre| k.starts_with(pre)) {
             for (i, n) in v.iter().enumerate().skip(1) {
                 r.counters.insert(format!("{k}.r{i:02}"), *n);
             }
@@ -1183,24 +1183,24 @@ fn finish(r: &mut GameResult, rules: &Rules, g: GameState) {
     r.final_state = Some(Box::new(g));
 }
 
-/// The per-round counters games.jsonl carries, as (prefix, suffix) pairs: a
-/// key matching both is written round by round (`<key>.rNN`). Others
-/// (`adversary.*`) stay out, to keep games.jsonl small; a new by-round read
-/// adds its pair here. `unspent.<seat>.<resource>` is what a seat holds as the
-/// action phase ends, before production and upkeep pay (090: energy; 148: every
-/// resource, research cubes included, for the leftover read).
-pub const PER_ROUND_EXPORT: &[(&str, &str)] = &[
-    ("cards.", ""),
-    ("ai.", ""),
-    ("economy.", ""),
-    ("board.node", ""),
-    ("unspent.", ""),
+/// The prefixes of the per-round counters games.jsonl carries: a key starting
+/// with one is written round by round (`<key>.rNN`). Others (`adversary.*` but
+/// `adversary.land_tokens`) stay out, to keep games.jsonl small; a new by-round
+/// read adds its prefix here. `unspent.<seat>.<resource>` is what a seat holds as
+/// the action phase ends, before production and upkeep pay (090: energy; 148:
+/// every resource, research cubes included, for the leftover read).
+pub const PER_ROUND_EXPORT: &[&str] = &[
+    "cards.",
+    "ai.",
+    "economy.",
+    "board.node",
+    "unspent.",
     // 135: threats countered and uncountered, round by round.
-    ("threats.", ""),
+    "threats.",
     // 190: facilities by owner, claims, city growth and its token moves, troops on the map, round by round.
-    ("map.", ""),
+    "map.",
     // 210: land-corruption tokens on the board, round by round.
-    ("adversary.land_tokens", ""),
+    "adversary.land_tokens",
 ];
 
 fn ms_since(t: Instant) -> f64 {

@@ -12,7 +12,7 @@ gap and its SE, each set's new win %, the band and whether the new rate is in it
 difficulty from d0 up, `lo-hi` ','-separated (default `85-100,65-80,50-65,35-50`, Matt's soft bands of 2026-11-13); a difficulty with no
 band prints `-`. A read of two or more agents prints a row per agent and difficulty. `--screen` reads a screen's
 cells: a variant `PAIR_LEVER` is lever LEVER (no suffix: `base`), a config after the spec's first is a lever named by
-its file (`x_off`, `x_off LEVER`), each with its gap to base paired on the same pair and seed. `--measures` adds, per difficulty and side, a game's means: nodes
+its file (`x_off`, `x_off LEVER`), each with its gap to base paired on the same pair and seed. `--measures` adds, per difficulty and side, a game's means: rounds, nodes
 lost to corruption, adversary ambassadors placed (created or rallied), corruptions, compute made, and the project deck
 (amendment 6618): projects revealed and resolved as a share of the deck (`--deck`; default the number of projects in `content/projects.json`), distinct projects revealed,
 and reshuffles; then (210) by board, levels pooled: slack seat-rounds (the seat kept every card it drafted, held no

@@ -24,7 +24,7 @@ pub(super) fn cleansable(w: &World, g: &GameState, h: usize, cities: bool, only:
 
 /// 219: seat `seat`'s own (its cube on, not corrupted) factories or stations: what a burn may destroy.
 pub fn own_facilities(g: &GameState, seat: usize, facility: Facility) -> Vec<usize> {
-    let kind = if facility == Facility::Factory { FACTORY } else { STATION };
+    let kind = facility.token();
     (0..g.hexes.len()).filter(|&h| g.tokens(h, kind) > 0 && g.tokens(h, cube(seat)) > 0 && !corrupted(g, h)).collect()
 }
 

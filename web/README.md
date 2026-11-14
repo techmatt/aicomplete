@@ -43,8 +43,8 @@ npm run e2e:sources            # the same way, as are e2e:corps and e2e:research
   row in the seat's color, the adversary's on the lower row in purple. Hover anything for
   details; hexes the shown step changed have an amber outline.
 - **Actions:** each seat panel offers cards, threats, gifts, the view's `standard`
-  actions, a *power* button per AI-board power, *antimatter* and a *sell* per card in
-  hand. AI board tracks (`seats[].board`): solid spaces uncovered, dashed under nodes,
+  actions, a *power* button per AI-board power, a *convert* per usable converter and a
+  *sell* per card in hand. AI board tracks (`seats[].board`): solid spaces uncovered, dashed under nodes,
   boxed the last uncovered.
 - **Globals:** a `vars` track no module labels folds under *Unlabeled tracks*.
 - **Timeline:** Ctrl+Z undoes (every state is a replay of config + seed + actions). ⏮ ◀

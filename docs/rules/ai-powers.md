@@ -4,11 +4,12 @@
 The boards, their special rules and tracks are in [ai-boards.md](ai-boards.md); terms and conventions in
 [README.md](README.md).*
 
-**Powers (locked: tag costs are sacrifices).** A power's cost names tags (`any` for any tag) and optional other
-resources; in the table a tag in the cost is a sacrifice, and thresholds are for powerful cards only. It is paid by
+**Powers (locked: tag costs are sacrifices).** A power's cost names N of one tag or N of `any` tag, never a mix,
+plus optional other resources; in the table a tag in the cost is a sacrifice, and thresholds above 1 are for powerful
+cards only. `Content::check` refuses a mix, and refuses shields and delays on a board power (they are the cards'). It is paid by
 discarding played cards that carry those tags: a program from your play area, or a building **with its whole stack**
-beneath it; events can't be sacrificed (they are gone once played). A card pays with all its tags, each tag first
-toward its own requirement, then toward `any`; extra tags are wasted. Each power is usable once a round. What can be sacrificed is fixed when the power is used; the player chooses the cards one at a time among those that
+beneath it; events can't be sacrificed (they are gone once played). A card pays with all its tags that match; extra
+tags are wasted. Each power is usable once a round. What can be sacrificed is fixed when the power is used; the player chooses the cards one at a time among those that
 still help.
 
 <!-- generated: powers -->
@@ -116,7 +117,7 @@ your card-play track (3 at the start). When you
 are short, turn a research cube into 1 insight at any time (Cintamani's converter gives 2), and use your board's own
 way: the Protector gains 1 each of the first two times each round a troop ends its march next to its node (Vigil), the
 Researcher gains 1 with each node Peer Review places by a station new to its nodes and may spend 2 for a card (Synthesis). Insight you don't spend still goes at the round's end (the Researcher
-keeps all of it), but a few threat counters offer insight (6 at tier 1, 7 at tier 2: [threats.md](threats.md) *Counters*),
+keeps all of it), but a few threat counters offer insight (3 at tier 1, 4 at tier 2: [threats.md](threats.md) *Counters*),
 so spare insight can stop one.
 
 **Insight loops (r41).** Nothing turns insight back into what makes it: insight buys cards, and a card that pays insight

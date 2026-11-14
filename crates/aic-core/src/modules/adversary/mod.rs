@@ -422,8 +422,8 @@ impl Module for Adversary {
             NATURAL => {
                 natural_corruption(g, cx)?;
                 // Botnets at their peak, per board (country).
-                for c in 0..w.map.countries.len() {
-                    let n = botnet_count(g, Some(&w.map.countries[c].hexes));
+                for (c, country) in w.map.countries.iter().enumerate() {
+                    let n = botnet_count(g, Some(&country.hexes));
                     cx.peak(g, &format!("adversary.botnets_peak.c{c}"), n);
                 }
                 let on_board: i64 = (0..g.hexes.len())

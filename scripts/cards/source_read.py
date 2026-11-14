@@ -25,8 +25,8 @@ import sys
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from screens import cell_labels, stream  # noqa: E402
-from runaway_read import PEAKS, flagged_peak, rise_of  # noqa: E402
+from screens import PEAKS, cell_labels, stream  # noqa: E402
+from runaway_read import flagged_peak, rise_of  # noqa: E402
 
 INSIGHT = PEAKS.index('insight')
 

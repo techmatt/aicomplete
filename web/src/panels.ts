@@ -32,7 +32,7 @@ const pile = (v: View, key: string) => v.piles.find((p) => p.key === key);
 /** A value chip; `near` marks a value close to its max (where that is a warning). */
 function valueChip(v: Value, scope: string, label = v.label, near = true): string {
   const val = v.max !== undefined ? `${v.value}<small>/${v.max}</small>` : `${v.value}`;
-  // A countdown ("antimatter actions left 1/1") is full when it is safe: no warning
+  // A countdown ("adversary cards left 9/11") is full when it is safe: no warning
   // near its max (020: drawn red all round).
   const countdown = /left/.test(label);
   const warn = near && !countdown && v.max !== undefined && v.max > 0 && v.value >= v.max * 0.75 ? ' near' : '';

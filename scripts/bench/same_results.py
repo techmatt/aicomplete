@@ -1,7 +1,7 @@
 """Checks that two experiment output directories hold the same games.
 
 Usage: python scripts/bench/same_results.py DIR_A DIR_B [--ignore-content-hash]
-           [--map OLD=NEW]...
+           [--ignore-config-hash] [--map OLD=NEW]...
 
 Compares games.csv row by row and results.json field by field, ignoring
 what is timing (any `ms` field or column, wall seconds, threads), record
@@ -10,6 +10,8 @@ difference. For checking that a speed change left play unchanged, or that
 a stopped and resumed run matches an unbroken one (012).
 --ignore-content-hash is for a content refactor that renames ops but must
 play the same (025).
+--ignore-config-hash is for removing a dead config param (221: Breakthrough's
+two params): the hash covers every key, so it moves while play doesn't.
 --map is for a rename (026): each OLD becomes NEW in DIR_A's text before
 parsing, in the order given, so the longest words go first. Implies
 ignoring the content and config hashes, since the names are in them.
@@ -108,10 +110,11 @@ def main():
         return 0
     maps = take_maps(args)
     flagged = "--ignore-content-hash" in args
-    args = [x for x in args if x != "--ignore-content-hash"]
+    config = "--ignore-config-hash" in args
+    args = [x for x in args if x not in ("--ignore-content-hash", "--ignore-config-hash")]
     if flagged or maps:
         IGNORED.append("content_hash")
-    if maps:
+    if config or maps:
         IGNORED.append("config_hash")
     if len(args) != 2:
         sys.exit(f"needs two output directories, got {args}\n{__doc__.splitlines()[2]}")

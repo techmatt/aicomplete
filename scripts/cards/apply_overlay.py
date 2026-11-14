@@ -9,17 +9,18 @@ countries, by lowercase name), cards, threats, adversary, ais, alignment, projec
 be `*` (every row); `<table>.<id>=<JSON object>` with no path writes a whole row (125: a new card
 is appended, an existing row replaced; this form is apply_overlay's own, the engine's `--set` has
 none). Nothing deletes a row: to drop a card, take it out of the deck in configs/baseline.json and
-run scripts/configs/shared_row.py, then edit content/cards.json and tools/card-art/scenes.json by
-hand. The path walks object fields and list indexes, its last step may add a
+run scripts/configs/shared_row.py, then edit content/cards.json by hand and run
+`python tools/card-art/scenes_io.py release CARD`. The path walks object fields and list indexes, its last step may add a
 field; the value is JSON (`null` drops an object's field), or a bare word taken as a string. An entry setting a value already
 there changes nothing, so a card pass keeps its edits as one overlay file and reruns it.
 
 `--check` prints each entry that would change something and writes nothing (exit 1 if any
 would). A file whose text isn't what `json.dumps(indent=1)` writes (today only alignment.json, its
 tiers laid out by hand; 157 wrote experiments/results/157_strategist_purge_r68/apply_tiers.py for
-it) is refused: edit it by hand. threats.json, adversary.json and projects.json are written from
-drafts/adversary/ by scripts/content/load_adversary.py: an overlay there is lost on the next load
-and fails regen.py's `load_adversary.py --check`, so edit the drafts instead. Afterwards run `python scripts/regen.py`, which
+it) is refused: edit it by hand. A `threats.`, `adversary.` or `projects.` entry is refused too:
+those files are written from drafts/adversary/ by scripts/content/load_adversary.py, so an overlay
+there is lost on the next load and fails regen.py's `load_adversary.py --check`; edit the drafts
+instead (the engine's `--set` still takes them for a one-off run). Afterwards run `python scripts/regen.py`, which
 builds, regenerates the docs and validates the content as the engine parses it.
 """
 import argparse
@@ -40,6 +41,8 @@ TABLES = {
     'alignment': 'alignment.json',
     'projects': 'projects.json',
 }
+# Written from drafts/adversary/ by scripts/content/load_adversary.py: an overlay there is lost.
+DRAFTED = ('threats', 'adversary', 'projects')
 
 
 def dump(data):
@@ -57,6 +60,9 @@ def apply_entry(files, entry):
     """Apply one entry to the loaded files; returns True if it changed a value."""
     key, sep, value = entry.partition('=')
     parts = key.strip().split('.')
+    if parts[0] in DRAFTED:
+        raise ValueError(f'{entry!r}: content/{TABLES[parts[0]]} is written from drafts/adversary/ by '
+                         'scripts/content/load_adversary.py, so an overlay there is lost: edit the drafts')
     if sep and len(parts) == 2 and parts[0] in TABLES and parts[0] != 'corps' and parts[1] != '*':
         return put_row(files, parts[0], parts[1], parse_value(value.strip()), entry)
     if not sep or parts[0] not in TABLES or len(parts) < 3:

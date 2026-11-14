@@ -33,13 +33,10 @@ import sys
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-from screens import cell_labels, stream  # noqa: E402
+from screens import PEAKS, cell_labels, stream  # noqa: E402
 
 LOOPY = re.compile(r'^(cards\.(trigger\.|threshold\.|triggers$|thresholds$|reused$|hand_discarded$|discount_credits$|drawn$|tokens_gained$)'
                    r'|board\.(cubes_converted|chips_made)$)')
-
-# The order of `peaks` and `gained`: `PEAKS` in crates/aic-sim/src/experiment.rs.
-PEAKS = ['credits', 'insight', 'energy', 'chips', 'antimatter', 'research_cubes', 'card_tokens', 'ambassadors']
 
 
 def rise_of(peak, start, s, i):

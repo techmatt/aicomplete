@@ -20,8 +20,7 @@ rules revision, step time). What they already catch, so a hunt needn't hand-chec
   glyph).
 - `invariants.rs` fails on a raw token key in any label, and `no_action_is_paid_for_nothing` on an action that costs
   something and changes nothing.
-- The adversary's twist loop names where each twist op is read; an unread one panics (a catch-all arm once hid a
-  twist that never ran).
+- The adversary's twist loop names where each twist op is read; an unread one panics.
 - The sweep's `no-control` (099) flags a legal action with no button or hex pick on screen.
 - `runaway_read.py` (loops in counters, 118), `counter_names.py` (keys no game writes, 145); `docs --check` on a rules
   quote a card no longer prints (118) and on a stale house word in what players read, the rulebook too (169, 184).
@@ -94,7 +93,7 @@ Closed by 121 and 124 (git has them): D16, D43, D44, D47, D48, D51, D53, D54; by
 | D87 | viewer | Five small faults from sweep 2's sheets (184's deferred.md). | One viewer item. **Pick**. |
 | D86 | rules | A forced threat pull (0.1 a game) has no end in the rulebook's draw (§18): it reshuffles forever. | One rulebook sentence: take the next card. **Matt's call**. |
 | D82 | cards | Five cards print under 7.5 pt with no recorded exception (Rally the Allies 5.4 pt). | Cut words or record. **Matt's call**. |
-| D83 | art | Ten tier-2 cards (158) have no drawn scene: `cards:check` fails on main. | An art batch. **Pick**. |
+| D83 | art | 204's Annihilation Lance, Fusion Commons, Containment Reactor have no scene: `cards:check` fails. | An art batch or a pool scene. **Pick**. |
 | D84 | boards | Focus (Builder) and Recovery (Protector) are never used (r77, 96 games). Focus cut at r86 (196: 0.03 uses a Builder game even at 2 credits), back at r87 at 2 credits (Matt; 199: 0.01-0.04 uses, credits bind first). D88 fixed at r87 (199: a guarded neutral site counts as neutral). | Recovery with the board redesign. **Matt's call**. |
 | D85 | viewer | Prompts: "which other player?" names no card; "Corrupt factories (at 2): ... onto which?" (agents parse it); "1 seat 1's ambassador" (a record key). | Prompts and the agents' parser together. **Pick**. |
 

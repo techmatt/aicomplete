@@ -271,6 +271,9 @@ pub enum TokenKind {
     Agents,
 }
 
+/// Every token type, in declaration order (221: for checks that would otherwise type the names).
+pub const TOKEN_KINDS: [TokenKind; 4] = [TokenKind::Datasets, TokenKind::Followers, TokenKind::Capital, TokenKind::Agents];
+
 impl TokenKind {
     pub fn name(self) -> &'static str {
         match self {

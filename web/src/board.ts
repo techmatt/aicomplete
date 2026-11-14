@@ -173,6 +173,9 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
       );
       break;
     default:
+      // 221: the one list of drawn kinds is this switch; web/scripts/sweep.mjs fails a token drawn here
+      // (`token-unknown`), so a new token kind needs only its case.
+      g.setAttribute('data-glyph', 'fallback');
       g.append(el('circle', { cx: 0, cy: 0, r: f(0.9 * s), fill: c, class: 'glyph' }));
   }
   return g;

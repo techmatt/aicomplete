@@ -451,12 +451,22 @@ pub enum Per {
     Player,
 }
 
-/// A facility kind a cleanse may be limited to (r35).
+/// A facility kind: a research station or a factory (a cleanse's limit since r35; Burn, CreateSite, TakeSite).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Facility {
     Station,
     Factory,
+}
+
+impl Facility {
+    /// Its token on the board (`common::STATION`, `common::FACTORY`).
+    pub const fn token(self) -> &'static str {
+        match self {
+            Facility::Station => crate::modules::common::STATION,
+            Facility::Factory => crate::modules::common::FACTORY,
+        }
+    }
 }
 
 /// 166 (Matt, 2026-11-09, *Moving pieces*): a board piece a Gather or Push may move. Botnets and

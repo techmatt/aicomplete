@@ -41,6 +41,15 @@ const MARCH: usize = 3;
 const PRODUCE: usize = 4;
 const CLEANUP: usize = 5;
 
+/// 221: the view hides every mark a round's end clears ([`ROUND_MARKS`] within [`MARKS`]).
+#[cfg(test)]
+#[test]
+fn round_marks_are_hidden_marks() {
+    for m in ROUND_MARKS {
+        assert!(MARKS.contains(&m), "{m} is cleared each round but not in MARKS (the view would show it)");
+    }
+}
+
 #[cfg(test)]
 #[test]
 fn phase_indices_match_phases() {
@@ -99,8 +108,6 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("sell_credits", 0, 20, "standard action: credits for selling a card from hand"),
             ParamSpec::int("cube_insight", 0, 5, "standard action, no limit a round: insight for 1 research cube (0: no such action)"),
             ParamSpec::int("antimatter_cubes", 0, 10, "standard action, the desperate source (204): research cubes for 1 antimatter, no limit a round (0: no such action)"),
-            ParamSpec::int("breakthrough_antimatter", 1, 10, "standard action Breakthrough (204): antimatter it spends"),
-            ParamSpec::int("breakthrough_unity", 0, 10, "standard action Breakthrough (204): Sway toward Unity, once a round (0: no such action)"),
             ParamSpec::int("botnet_credits", 1, 50, "standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays)"),
         ],
         phases: &[
@@ -154,14 +161,14 @@ const DESTROYED_AT: &str = "board.destroyed_at.";
 const LANDED_AT: &str = "board.landed_at.";
 const LANDED_N: &str = "board.landed_n.";
 
-/// The marks a round's end clears outright ([`expire_marks`]).
-const ROUND_MARKS: [&str; 8] = [NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED, BOUGHT, BROKE_THROUGH, STD_ONCE];
+/// The marks a round's end clears outright ([`expire_marks`]); each is in [`MARKS`] too (221: a test checks).
+const ROUND_MARKS: [&str; 7] = [NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED, BOUGHT, STD_ONCE];
 
 /// 135: every per-round mark [`expire_marks`] counts down, trues or clears
 /// (the view lists them as bookkeeping).
-pub(super) const MARKS: [&str; 13] = [
+pub(super) const MARKS: [&str; 12] = [
     HEX_FLAGS, STAND, OCCUPIED, CORP_EXTRA, EXTRA_WAR, NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED, BOUGHT,
-    BROKE_THROUGH, STD_ONCE,
+    STD_ONCE,
 ];
 
 /// How many of hex `h`'s adversary troops stand.
@@ -257,7 +264,7 @@ pub fn shelter(g: &mut GameState, cx: &mut Cx, country: usize) {
 
 /// Cubes on country `c`'s megaproject: `None` for the adversary's.
 pub fn project_key(c: usize, owner: Option<usize>) -> KeyBuf {
-    let k = KeyBuf::new("board.project.").num(c).text(".");
+    let k = KeyBuf::new(PROJECT).num(c).text(".");
     match owner {
         Some(s) => k.num(s),
         None => k.text("adversary"),
@@ -266,34 +273,56 @@ pub fn project_key(c: usize, owner: Option<usize>) -> KeyBuf {
 
 /// Neutral cubes on country `c`'s megaproject (074).
 pub fn project_neutral(c: usize) -> KeyBuf {
-    KeyBuf::new("board.project.").num(c).text(".neutral")
+    KeyBuf::new(PROJECT).num(c).text(".neutral")
 }
 
 /// Set once country `c`'s megaproject has completed.
 pub fn project_done(c: usize) -> KeyBuf {
-    KeyBuf::new("board.project_done.").num(c)
+    KeyBuf::new(PROJECT_DONE).num(c)
 }
 
 /// What country `c`'s completed megaproject paid, cubes by color: `player`,
 /// `adversary`, `neutral`. Only the card shows it (074).
 pub fn project_paid(c: usize, color: &str) -> KeyBuf {
-    KeyBuf::new("board.project_paid.").num(c).text(".").text(color)
+    KeyBuf::new(PROJECT_PAID).num(c).text(".").text(color)
 }
 
 /// 185: the last round seat `s`'s Vigil paid, and how many troops it paid for that round.
 fn vigil_round(s: usize) -> KeyBuf {
-    KeyBuf::new("board.vigil_round.").num(s)
+    KeyBuf::new(VIGIL_ROUND).num(s)
 }
 
 fn vigil_paid(s: usize) -> KeyBuf {
-    KeyBuf::new("board.vigil_paid.").num(s)
+    KeyBuf::new(VIGIL_PAID).num(s)
 }
 
 /// The last round seat `s` used country `c`'s converter (`chips`: its chip converter, 199).
 fn converter_round(c: usize, s: usize, chips: bool) -> KeyBuf {
-    let pre = if chips { "board.chip_converter_round." } else { "board.converter_round." };
+    let pre = if chips { CHIP_CONVERTER_ROUND } else { CONVERTER_ROUND };
     KeyBuf::new(pre).num(c).text(".").num(s)
 }
+
+const PROJECT: &str = "board.project.";
+const PROJECT_DONE: &str = "board.project_done.";
+const PROJECT_PAID: &str = "board.project_paid.";
+const VIGIL_ROUND: &str = "board.vigil_round.";
+const VIGIL_PAID: &str = "board.vigil_paid.";
+const CONVERTER_ROUND: &str = "board.converter_round.";
+const CHIP_CONVERTER_ROUND: &str = "board.chip_converter_round.";
+
+/// 221: the prefixes of the per-seat, per-country keys above and the node tracks', which the view lists as bookkeeping
+/// (one home beside their key builders, not literals in view.rs).
+pub(super) const KEYED: [&str; 9] = [
+    PROJECT,
+    PROJECT_DONE,
+    PROJECT_PAID,
+    CONVERTER_ROUND,
+    CHIP_CONVERTER_ROUND,
+    VIGIL_ROUND,
+    VIGIL_PAID,
+    node::TRACK,
+    node::TRACK2,
+];
 
 
 #[derive(Debug)]

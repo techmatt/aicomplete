@@ -1,4 +1,4 @@
-# Rulebook friction (rules revision 82)
+# Rulebook friction (as of rules revision 82)
 
 *What is still hard to say in [rulebook.md](rulebook.md) (third draft), ranked by how much each costs a reader, with
 the rule change that would fix it. Matt's test: a rule that can't be said well is a bad sign about the rule. Only what

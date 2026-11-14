@@ -292,8 +292,10 @@ impl Spec {
     #[cfg(test)]
     pub fn check(&self) -> Result<(), String> {
         let tags: Vec<&str> = aic_core::content::TAGS.iter().map(|t| t.name()).collect();
-        let res = ["credits", "chips", "energy", "antimatter", "insight", "research_cubes", "ambassadors"];
-        let toks = ["datasets", "followers", "capital", "agents"];
+        // 221: from the vocab, so a new resource or token type needs no edit here.
+        use aic_core::vocab::{Resource, RESOURCES, TOKEN_KINDS};
+        let res: Vec<&str> = RESOURCES.iter().chain([&Resource::Ambassadors]).map(|r| r.name()).collect();
+        let toks: Vec<&str> = TOKEN_KINDS.iter().map(|t| t.name()).collect();
         let kinds = ["building", "program", "event"];
         for (m, ok) in [
             (&self.tags, &tags[..]),

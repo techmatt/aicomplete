@@ -1,7 +1,8 @@
 # Threats (module `threats`; [`content/threats.json`](../../content/threats.json))
 
 *The threat decks, dealing, location tokens, who is near, countering and what threats do. Terms and conventions are in
-[README.md](README.md). Every threat, with its text and counter menu, is in [adversary-cards.md](../adversary-cards.md).*
+[README.md](README.md). Every threat, with its text and counter menu, is in [adversary-cards.md](../adversary-cards.md). Source: `drafts/adversary/`, loaded into `content/` by
+`scripts/content/load_adversary.py`: edit the drafts.*
 
 - Variant **`countries`** (default): the model below. Variant **`shared_row`** plays the same (135: the row went with
   the old sources; it stays so its config loads). Variant **`off`**: no threats ([README.md](README.md#off-variants)).

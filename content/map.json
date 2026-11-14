@@ -229,7 +229,8 @@
      {
       "op": "sway",
       "side": "discord",
-      "amount": 1, "narrative": "fear"
+      "amount": 1,
+      "narrative": "fear"
      }
     ],
     "converter": {
@@ -416,7 +417,8 @@
      {
       "op": "sway",
       "side": "discord",
-      "amount": 1, "narrative": "fear"
+      "amount": 1,
+      "narrative": "fear"
      }
     ],
     "converter": {
@@ -483,7 +485,8 @@
      {
       "op": "sway",
       "side": "unity",
-      "amount": 1, "narrative": "cooperation"
+      "amount": 1,
+      "narrative": "cooperation"
      },
      {
       "op": "draw",
@@ -494,7 +497,8 @@
      {
       "op": "sway",
       "side": "discord",
-      "amount": 1, "narrative": "fear"
+      "amount": 1,
+      "narrative": "fear"
      }
     ],
     "converter": {
@@ -508,7 +512,8 @@
       {
        "op": "sway",
        "side": "unity",
-       "amount": 1, "narrative": "cooperation"
+       "amount": 1,
+       "narrative": "cooperation"
       }
      ],
      "once": true
@@ -524,7 +529,8 @@
       {
        "op": "sway",
        "side": "unity",
-       "amount": 2, "narrative": "cooperation"
+       "amount": 2,
+       "narrative": "cooperation"
       },
       {
        "op": "draw",

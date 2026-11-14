@@ -24,17 +24,15 @@ from collections import defaultdict
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PEAKS = ['credits', 'insight', 'energy', 'chips', 'antimatter', 'research_cubes', 'card_tokens', 'ambassadors']
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from screens import PEAKS  # noqa: E402
+
 SHARE_RES = ['energy', 'chips', 'antimatter', 'research_cubes', 'ambassadors']
 
 
 def jload(rel):
     with open(os.path.join(ROOT, rel), encoding='utf-8') as f:
         return json.load(f)
-
-
-def snake(name):
-    return re.sub(r'[^a-z0-9]+', '_', name.lower()).strip('_')
 
 
 # ---- inputs -----------------------------------------------------------------------------------------------------

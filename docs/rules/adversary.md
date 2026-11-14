@@ -1,10 +1,11 @@
 # The adversary (module `adversary`, variant `militarist`)
 
-*The adversary's round, its project deck, its card deck and round cap, and difficulty. Terms and conventions: [README.md](README.md).*
+*The adversary's round, its project deck, its card deck and round cap, and difficulty. Terms and conventions: [README.md](README.md). Source: `drafts/adversary/`, loaded into
+`content/` by `scripts/content/load_adversary.py`: edit the drafts.*
 
 ## Each round
 
-The adversary is a **board** (the Militarist's: project slots, four rules, a difficulty line, printed in
+The adversary is a **board** (the Militarist's: project slots, three rules, a difficulty line, printed in
 [adversary-cards.md](../adversary-cards.md); r83's **War Takes Ground** is in [war.md](war.md)), an **income** and an
 **event deck** (below). Its turn, after the round's Sway step, is **four beats** (r80, ruling #41; `adversary::BEATS`). Threats still execute in their own step after production ([threats.md](threats.md)).
 
@@ -23,8 +24,8 @@ The adversary is a **board** (the Militarist's: project slots, four rules, a dif
 (`compute_income`, not per country), added in the compute step, and **agent income** (`ambassador_income`) into **each
 country's pool** (the supply caps it when it lands; setup fills the pools once). Boards, events and projects **raise**
 an income for the rest of the game (the Militarist's **Garrisons**). No troop income. **Agents grow by stage** (r89,
-Matt, 2026-11-12: a problem on par with ambassadors, overwhelming them late): the base agent income is 0 below level 4,
-and every stage-II and stage-III card prints +1 agent a country a round, so the pools fill as the game goes on.
+Matt, 2026-11-12): the base agent income is 0 below level 4,
+and every stage-II and stage-III card (and Long Patrols in stage I) prints +1 agent a country a round, so the pools fill as the game goes on.
 
 **Rally X (151, Matt, locked; r80: round-robin, Matt's ruling #43).** Every event prints one Rally X: each country's
 whole pool is **dealt one agent at a time onto each site of type X** in that country (city, coastal city, research
@@ -59,12 +60,12 @@ or a node's). **One aftermath (r80, Matt's ruling #42): whatever corrupts takes 
 - **Land corruption** is a hex token: nothing is built there; open land's drips `blight_discord` (1) Discord a round,
   a node hex's lies face down and drips `blight_node_discord` (0). Lift land corruption (a standard action, `land_cubes` 2 research cubes, r92) takes one in reach off,
   face up or down.
-**Botnets spread quickly but are cheap to clear** (r89, Matt, 2026-11-12). Each country starts with one (on its
+**Botnets spread quickly** (r89, Matt, 2026-11-12). Each country starts with one (on its
 research station); more come from printed lines, among them four event cards' **Botnets spread** (each country, a
 botnet onto its lowest-numbered site next to a botnet; none: its lowest-numbered research station). A botnet stays
 until removed: it makes `botnet_compute` compute (none with a player ambassador on it) and counts against the purge
 until Unity eases it ([alignment.md](alignment.md)). Removed by tier-2 cards, Decommission and the Take down a botnet
-action (`botnet_credits` 16, r91: was 3; in reach with your ambassador on it); removing one sways Unity.
+action (`botnet_credits`; in reach with your ambassador on it); removing one sways `alignment.botnet` (0: neither).
 
 ## The project deck (candidate)
 
@@ -123,7 +124,7 @@ Night Raid, Mob Rule and Sabotage Teams raid a node (a protection saves it). Tex
 
 A game deals `stage_cards` at random per stage (counts below), each stage shuffled on its own, stage I on top: as many
 rounds as cards, **the round cap** (**locked** that a cap exists and can shorten; the number a candidate). A card
-prints its lines in the Card and Corrupt beats' order (`check.py` refuses another, or more than two other lines).
+prints its lines in the Card and Corrupt beats' order (`drafts/adversary/check.py` refuses another, or more than two other lines).
 
 <!-- generated: round_cap -->
 | Difficulty | Stage I cards | Stage II | Stage III | Stage II from round | Round cap |

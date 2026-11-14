@@ -76,6 +76,22 @@ def source_revision():
     return m.group(1)
 
 
+def content_form():
+    """221: warns of each content/*.json (alignment.json aside, hand-laid by design) not in the form
+    `scripts/cards/apply_overlay.py` writes, which refuses such a file: 212 (cards.json) and 213 (map.json) each lost
+    an overlay to a hand-joined line."""
+    import json
+    d = os.path.join(ROOT, 'content')
+    for name in sorted(os.listdir(d)):
+        if not name.endswith('.json') or name == 'alignment.json':
+            continue
+        with open(os.path.join(d, name), encoding='utf-8') as f:
+            text = f.read()
+        if text != json.dumps(json.loads(text), indent=1, ensure_ascii=True) + '\n':
+            print(f'warning: content/{name} is not in json.dumps(indent=1) form, so apply_overlay.py refuses it: '
+                  f'rewrite it once (data unchanged; the content hash moves)')
+
+
 def need_sim():
     if not os.path.exists(SIM):
         print(f'FAILED: no binary at {SIM} (build it, or drop --no-build)')
@@ -115,7 +131,8 @@ def main():
     step('shared_row.py', [PY, os.path.join('scripts', 'configs', 'shared_row.py')])
     step('no_liberate.py', [PY, os.path.join('scripts', 'configs', 'no_liberate.py')])
     step('no_tier2.py', [PY, os.path.join('scripts', 'configs', 'no_tier2.py')])
-    out =step('aic-sim show', [SIM, 'show', os.path.join('configs', 'baseline.json')], capture=True)
+    content_form()
+    out = step('aic-sim show', [SIM, 'show', os.path.join('configs', 'baseline.json')], capture=True)
     first = out.splitlines()[0] if out else ''
     m = re.search(r'content hash (\S+)\s+rules revision (\S+)', first)
     if m:

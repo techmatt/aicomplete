@@ -140,12 +140,12 @@ macro_rules! forced_table {
             /// Exploit check (027): no counter paid and no card that counters a threat.
             (ignore_threats: bool, true, 0.0, "exploit check (027): no counters, no card that counters a threat")
             /// Exploit check (027): stay on the setup hex and defend it: no nodes,
-            /// only the remove, clear, ambassador, hardening and chips standard actions.
-            (turtle: bool, true, 0.0, "exploit check (027): no nodes beyond setup; only remove, clear, chips, ambassador and hardening actions")
+            /// only the remove, lift, ambassador and harden standard actions (221: r91's Lift for Clear).
+            (turtle: bool, true, 0.0, "exploit check (027): no nodes beyond setup; only the remove, lift, ambassador and harden actions")
             /// Exploit check (027): only free cities: Diplomacy cards, the ambassador,
-            /// move, remove, clear and chips standard actions, no counters, no nodes,
+            /// dispatch (move), remove and lift standard actions, no counters, no nodes,
             /// no powers.
-            (free_only: bool, true, 0.0, "exploit check (027): only Diplomacy cards and the ambassador, move, remove, clear and chips actions")
+            (free_only: bool, true, 0.0, "exploit check (027): only Diplomacy cards and the ambassador, dispatch, remove and lift actions")
             /// Exploit check (053): give up the last country: never counter a threat
             /// on it and never pick a hex in it while another pick is open, losses
             /// aside (those may land there), so the team concentrates on the rest. Pressure counts countries at setup, so
@@ -153,8 +153,8 @@ macro_rules! forced_table {
             (abandon: bool, true, 0.0, "exploit check (053): give up the last country: no counter on it, no hex in it while another pick is open, losses aside")
             /// Exploit check (034): draft, keep and play Science first, for its discounts.
             (science_rush: bool, true, 0.0, "exploit check (034): draft, keep and play Science first, for its discounts")
-            /// Fixed policy (041): never clear a corruption marker.
-            (never_clear: bool, true, 0.0, "fixed policy (041): never clear a corruption marker")
+            /// Fixed policy (041): never clear a corruption marker (a card) or lift land corruption.
+            (never_clear: bool, true, 0.0, "fixed policy (041): never clear a corruption marker or lift land corruption")
             /// Fixed policy (041): the Science rush, board cards first.
             (science_board: bool, true, 0.0, "fixed policy (041): the Science rush, board cards first")
             /// Fixed policy (066): both node powers whenever affordable.
@@ -211,11 +211,6 @@ macro_rules! forced_table {
             (strat_powers: bool, false, 1.0, "092: the strategy choice reads the board's powers as well as the opening 10")
             /// 092: the uses of each power the strategy choice counts.
             (strat_power_uses: f64, false, 1.0, "092: uses of each board power the strategy choice counts (with strat_powers)")
-            /// 082, a player's rule, kept as a probe: with a card in hand that needs
-            /// antimatter the seat lacks, and a board power that trades spent cards for
-            /// antimatter, use it. It never fired in 288 games at d2 (seeds 31000): the
-            /// Researcher, whose Particle Run it was (r97: Overload, a burn), rarely held two Power cards.
-            (antimatter_rule: bool, true, 0.0, "082, a probe: use a power that trades spent cards for antimatter when a card in hand needs the antimatter (never fired at d2: off)")
             /// 082: each seat commits to a strategy at its round-1 keep.
             (strategy: bool, true, 0.0, "082: each seat commits to a strategy at its round-1 keep, from its board and opening 10")
             /// 082: seat 0's strategy, fixed (1-based in its board's menu; 0: chosen).
@@ -303,7 +298,7 @@ macro_rules! behavior_table {
             (sell_rule: usize, 1.0, "211: sell a card the seat won't play (the last round: not this round; before: not in the keep plan) when up to three sales let the plan play a card (1) or also the search take a costly standard action (2) it can't now; 3: a probe, the card opened need only be one the plan doesn't play this round")
             /// 211: keep the antimatter a hand card needs: while the seat holds a card that spends antimatter whose
             /// `needs` are met and whose credits it can reach in two rounds' income, nothing but such a card's play may
-            /// take the seat's antimatter below the dearest one's (Breakthrough took 87% of antimatter use, 204).
+            /// take the seat's antimatter below the dearest one's (204's Breakthrough, since deleted, took 87% of antimatter use).
             (am_save: bool, 1.0, "211: save antimatter for a hand card that spends it (needs met, credits within two rounds): no other spend below its antimatter")
             /// 211: turn research cubes into insight or antimatter (the standard actions) when, after up to three of
             /// them, the keep plan plays a card this round it can't now (the eval held the Researcher's cubes over its
@@ -470,7 +465,6 @@ fn playable(legal: &[Action], s: usize, c: &Key) -> bool {
 /// does (it is what the antimatter is kept for), nor an action that can't spend it.
 fn below_reserve(rules: &Rules, g: &GameState, a: &Action, s: usize, r: i64) -> bool {
     let may = match a {
-        Action::Standard { act, .. } => act == "breakthrough",
         Action::Pay { resource, .. } => *resource == Resource::Antimatter,
         Action::Use { .. } | Action::Power { .. } | Action::Convert { .. } | Action::CounterWith { .. } => true,
         _ => false,
@@ -809,13 +803,6 @@ impl Agent for Policy {
                     .iter()
                     .position(|a| matches!(a, Action::Pass { seat } if *seat as usize == s))
                 {
-                    return i;
-                }
-            }
-        }
-        if self.forced.antimatter_rule && !pending {
-            if let Some(i) = first_power(legal, |s, k| antimatter_wanted(&world, g, s, k)) {
-                if !self.ruled_out(&world, g, &legal[i]) {
                     return i;
                 }
             }
@@ -1222,30 +1209,15 @@ pub fn print_choices(rules: &Rules, spec: &super::AgentSpec, first: u64, games: 
     }
 }
 
-/// 082's antimatter rule: whether power `k` of seat `s` sacrifices cards for
-/// antimatter while a card in the seat's hand needs antimatter it lacks and is
-/// otherwise within reach (its credits held).
 /// 213 (`am_source`): whether `a` is a board power or a built Action that gains antimatter.
 fn makes_antimatter(w: &World, a: &Action) -> bool {
     let gains = |effects: &[Op]| effects.iter().any(|e| matches!(e, Op::Gain { resource: Resource::Antimatter, .. }));
     match a {
         Action::Power { seat, power } => ai::board(w, *seat as usize).powers.get(*power as usize).is_some_and(|p| gains(&p.effects)),
-        Action::Use { card, .. } => cards::def(w, card).ability.as_ref().is_some_and(|ab| gains(&ab.effects)),
+        // 221: every branch of an "A, OR B" Action, as the keep plan's `am_makes` reads it.
+        Action::Use { card, .. } => cards::def(w, card).ability.as_ref().is_some_and(|ab| ab.branches().iter().any(|b| gains(&b.effects))),
         _ => false,
     }
-}
-
-fn antimatter_wanted(w: &World, g: &GameState, s: usize, k: usize) -> bool {
-    let p = &ai::board(w, s).powers[k];
-    let gains = p.effects.iter().any(|e| matches!(e, Op::Gain { resource: Resource::Antimatter, .. }));
-    if !gains || p.tags.is_empty() {
-        return false;
-    }
-    let have = g.resource(s, Resource::Antimatter);
-    g.pile(&cards::hand(s)).iter().any(|id| {
-        let d = cards::def(w, id);
-        d.antimatter > have && d.antimatter <= have + 1 && g.resource(s, Resource::Credits) >= cards::play_cost(w, g, s, d)
-    })
 }
 
 /// The country the abandon check gives up.

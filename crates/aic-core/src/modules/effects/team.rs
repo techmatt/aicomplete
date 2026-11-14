@@ -242,10 +242,7 @@ pub(super) fn spread_botnets(g: &mut GameState, cx: &mut Cx, count: i64) {
 /// and a guarded neutral one still counts as neutral (D88).
 pub(super) fn take_site(g: &mut GameState, cx: &mut Cx, site: Facility) -> Res {
     let w = cx.world;
-    let kind = match site {
-        Facility::Station => STATION,
-        Facility::Factory => FACTORY,
-    };
+    let kind = site.token();
     for c in 0..w.map.countries.len() {
         let hexes: Vec<usize> = by_number(&w, c).into_iter().filter(|&h| g.tokens(h, kind) > 0 && !corrupted(g, h)).collect();
         let guarded: Vec<usize> = hexes.iter().copied().filter(|&h| adversary::guard_holds(g, cx, h, "take_site")).collect();

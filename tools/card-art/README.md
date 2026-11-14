@@ -114,7 +114,7 @@ browser; `npm ci` first):
   Matt's pick moves the winner to `card`. An unused drawn scene put up as a candidate gets `for`
   beside its `was` and its raw draw copied into the round's `raw/`; then run `scene-gen` naming
   only the new ids and `scene-picker --one`, since `art:alts` would redraw the whole batch (186).
-- Every deck card has a suggested scene, drawn. A scene whose card was cut or
+- Every deck card should have a suggested scene, drawn (`cards:check` names any without). A scene whose card was cut or
   redrawn has `was` in place of `card`: drawn, in the pool, suggested for nothing. A scene with
   both was drawn for `was` and reused on `card`: an unused scene that broadly fits a new card's
   name goes there before a new draw (Matt, 110). `npm run cards:check` in `web/` fails on a deck

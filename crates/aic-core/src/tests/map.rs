@@ -12,8 +12,8 @@ fn a_neutral_station_can_be_claimed_at_setup_in_every_layout() {
             let h = map.numbered(c, p.neutral_station);
             assert_eq!(map.hexes[h].kind, HexKind::Open, "{n} countries, country {c}");
             assert!(map.adjacent(h, map.numbered(c, p.node)), "{n} countries, country {c}: in reach");
-            for o in 0..n as usize {
-                for &s in &content.map.countries[o].stations {
+            for (o, country) in content.map.countries.iter().enumerate().take(n as usize) {
+                for &s in &country.stations {
                     assert!(!map.adjacent(h, map.numbered(o, s)), "{n} countries, country {c}: next to a botnet");
                 }
             }
@@ -201,8 +201,7 @@ fn station_sites_are_open_free_land_and_never_a_base() {
     let content = crate::content();
     for n in 1..=4u8 {
         let map = Map::build(content, n).unwrap();
-        for c in 0..n as usize {
-            let p = &content.map.countries[c];
+        for (c, p) in content.map.countries.iter().enumerate().take(n as usize) {
             assert!(p.station_sites.len() <= 2, "country {c}");
             for &s in &p.station_sites {
                 let h = map.numbered(c, s);
@@ -222,8 +221,7 @@ fn every_city_starts_with_a_neutral_factory_and_a_neutral_station_next_to_it() {
     let content = crate::content();
     for n in 1..=4u8 {
         let map = Map::build(content, n).unwrap();
-        for c in 0..n as usize {
-            let p = &content.map.countries[c];
+        for (c, p) in content.map.countries.iter().enumerate().take(n as usize) {
             let stations: Vec<u8> = [&[p.neutral_station][..], &p.more_stations].concat();
             for &city in &p.cities {
                 let h = map.numbered(c, city);

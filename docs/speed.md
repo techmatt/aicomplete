@@ -149,7 +149,7 @@ an action against one guess (`deals=1,lead=0`), and `deals=4,lead=60` about 1.25
 
 | agent | ms / decision before | after | ms / game after | games |
 |---|---|---|---|---|
-| strategist (`engine:strategy=1`, the judge) | 8.94 | 1.94 | 929 | read set a |
+| strategist (`engine:strategy=1` plus its weights, the judge) | 8.94 | 1.94 | 929 | read set a |
 | greedy (flat terms) | 12.1 | 1.93 | 953 | read set a, 8 seeds |
 | engine (horizon mode) | 2.43 | 1.83 | 1076 | `same.json` |
 | planner (4 deals) | 54.3 | 34.6 | 20769 | `same.json` |

@@ -17,7 +17,7 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
             let land = Landing { count: *count, each_country: *each_country, destroy: *destroy, stand: *stand };
             troops(g, cx, ctx, land, *at, *location, *if_)?
         }
-        Op::FlipStation { each_country, force: false } => team::flip_station(g, cx, ctx, *each_country)?,
+        // 221: the unforced flip is effects::one's own arm; only the forced one reaches here.
         Op::FlipStation { each_country, force: true } => force_flip(g, cx, ctx, *each_country)?,
         Op::CorruptCity { at } => corrupt_city(g, cx, ctx, *at)?,
         Op::PlayersLose { resource, amount, all } => {
@@ -391,13 +391,11 @@ fn create_site(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, kind: Facility) {
         let Some(&h) = spots.first() else {
             continue;
         };
-        let (token, name) = match kind {
-            Facility::Station => (STATION, "research station"),
-            Facility::Factory => (FACTORY, "factory"),
-        };
+        let token = kind.token();
+        let name = if kind == Facility::Station { "research station" } else { "factory" };
         cx.add_tokens(g, h, token, 1);
         adversary::clear_markers_on(g, cx, h);
-        cx.tally(g, &format!("adversary.sites_created.{}", if kind == Facility::Station { "station" } else { "factory" }), 1);
+        cx.tally(g, &format!("adversary.sites_created.{token}"), 1);
         cx.note(Some(h), || format!("A neutral {name} opens at {}", hex_name(&w, h)));
     }
 }

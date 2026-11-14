@@ -424,7 +424,7 @@ const COUNTERS: [&str; 1] = ["threats.short"];
 /// Bare `snake_case` names the rules may print that are no tunable or op:
 /// action names and content fields.
 // 105: a trigger's events (`Event` in op.rs) are content words, not ops.
-const NOT_TUNABLES: [&str; 8] = ["harden_buy", "harden_chips", "legal_actions", "shared_row", "play_tag", "team_play", "play_cost", "place_tokens"];
+const NOT_TUNABLES: [&str; 7] = ["harden_chips", "legal_actions", "shared_row", "play_tag", "team_play", "play_cost", "place_tokens"];
 
 /// Backticked `module.name` words in `text` that are no tunable, phase or
 /// counter of the baseline, and bare `snake_case` words that are no tunable

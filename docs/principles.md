@@ -31,16 +31,15 @@ and tier-1 cards have a median of 10 credits with tier 2 15 (r59).
 - **Credits are the outlier.** 40 / 46 / 40 to start (`ai.start_credits`, the Protector higher; the starting-economy scaffold), 15 / 13 / 11 a
   round printed on the Builder, Protector and Researcher (r59), plus 2-3 a
   node on the economy track and Unity income (Grassroots Funding, New Deal +2 each): a seat sees about 200 to 250 credits
-  over a 9-round game before cards, so totals reach the hundreds. Card costs run 2–46 (Moonshot Grant 46, Hostile Buyout 42, Peacekeeping
-  Mission 41): within "about 50", but the income is not "produce
+  over a 9-round game before cards, so totals reach the hundreds. Card costs run 0–42 (Moonshot Grant 42, Multiyear Defense Budget 34): within "about 50", but the income is not "produce
   1".
-- **Credit sinks priced off that income:** threat counters 15 / 23 / 33 credits by tier (the last option on every menu); a research cube is worth about 3
+- **Credit sinks priced off that income:** threat counters 12 / 17 credits by tier (the last option on every menu; dearer from d1, threats.md); a research cube is worth about 3
   credits (payouts are per card); a player ambassador costs `ambassador_credits` (it pays for removals, and is priced dear because it stays); a card
   sells for `sell_credits` 1 and chips don't sell; Data Heist takes 8 credits (or 2 cards) from each player.
 - **Adversary compute:** project costs are 5–14 *a player*, so 15–42 at 3 players and
   20–56 at 4: only the dearest at 4 go past 50. A botnet makes 1.
 - Within the principle: energy (cities make 1, a node costs 1), chips (a factory
-  makes `factory_chips` 2), insight, antimatter, Sway (tips at `tip_per_player` 3 a player, Discord's 4), the supply (24 a country,
+  makes `factory_chips` 1), insight, antimatter, Sway (tips at `tip_per_player` 3 a player, Discord's 4), the supply (24 a country,
   pieces rather than a currency).
 
 ## Difficulty targets

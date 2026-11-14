@@ -265,6 +265,10 @@ def gap(pairs):
 # each with `UNSPENT_HIGH` there.
 UNSPENT = (('credits', 12), ('chips', 4), ('energy', 4), ('antimatter', 2), ('ambassadors', 3))
 
+# The order of games.jsonl's `peaks`, `gained`, `spent`, `start`, `sources` and `uses` rows: `PEAKS` in
+# crates/aic-sim/src/experiment.rs, which this must match.
+PEAKS = ['credits', 'insight', 'energy', 'chips', 'antimatter', 'research_cubes', 'card_tokens', 'ambassadors']
+
 
 def unspent(cells, games):
     """Resources a seat held after its last action phase: each cell's mean by seat, ! over the flag

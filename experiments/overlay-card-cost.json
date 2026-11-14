@@ -1,6 +1,6 @@
 {
   "name": "overlay-card-cost",
-  "note": "A card cost swept through the content overlay on one binary (040; prices to r69 by 159): Telemetry Archive at its printed 15 and three other costs, with a track number beside them (the fifth economy-track step 2 -> 3).",
+  "note": "A card cost swept through the content overlay on one binary (040; prices to r69 by 159): Telemetry Archive at its printed cost (content/cards.json; 15 when written, 17 since) and three other costs, with a track number beside them (the fifth economy-track step 2 -> 3).",
   "configs": ["configs/baseline.json"],
   "variants": [
     {"name": "base", "set": []},

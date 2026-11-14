@@ -247,15 +247,15 @@ fn removing_a_botnet_clears_a_hack_on_its_hex() {
 }
 
 /// A Discord tip that leaves a seat with no nodes loses before a Unity tip
-/// in the same check can draw the last card.
+/// in the same check draws its card. (221: the Unity card sat on the pre-156
+/// per-tier pile `alignment.deck.unity.1`, which nothing reads.)
 #[test]
 fn a_lost_last_node_comes_before_a_unity_tip_in_the_same_check() {
     let (rules, mut g) = action_only(&[]);
     for h in 0..g.hexes.len() {
         put(&mut g, h, node(1), 0);
     }
-    empty_deck(&mut g, "unity");
-    set_pile(&mut g, "alignment.deck.unity.1", &["civil_defense"]);
+    next_alignment_card(&mut g, Side::Unity, "civil_defense");
     fill_bucket(&rules, &mut g, Side::Discord);
     fill_bucket(&rules, &mut g, Side::Unity);
     any_action(&rules, &mut g);

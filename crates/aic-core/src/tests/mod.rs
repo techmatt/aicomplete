@@ -223,6 +223,7 @@ fn counterable_manhunt(rules: &Rules, g: &mut GameState) {
     deal(g, "manhunt", 0);
 }
 
+/// Sets hex `h`'s count of token `kind` to `n` (0 removes it): a set, not an add.
 fn put(g: &mut GameState, h: usize, kind: &str, n: i64) {
     if n == 0 {
         Arc::make_mut(&mut Arc::make_mut(&mut g.hexes)[h]).tokens.remove(kind);
@@ -640,8 +641,8 @@ fn variant_matrix() -> Vec<Config> {
 // ---------- the golden game ----------
 
 const GOLDEN_REVISION: u32 = 97;
-const GOLDEN_FINGERPRINT: &str = "c3be1a5993ce7cbd";
-const GOLDEN_CONTENT_HASH: &str = "f6162e2ebf039641";
+const GOLDEN_FINGERPRINT: &str = "63f56da0e19cc910";
+const GOLDEN_CONTENT_HASH: &str = "3d3aca30b59bcae1";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

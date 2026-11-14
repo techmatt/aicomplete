@@ -15,7 +15,7 @@ a rate moved there moves the agents' read of every card that prints it. Change a
 Two other places hold rates, and neither is a price:
 
 - **The search's weights** (`Weights` in `crates/aic-sim/src/agents/eval.rs`) are points tuned against win rate, not
-  credits. Where one shadows a table row (held energy `energy` 0.8, `antimatter` 5 (r88), `liberated` and
+  credits. Where one shadows a table row (held energy `energy` 0.8, `antimatter` 2 (204), `liberated` and
   `liberate_progress`, `station_flip`), the gap is deliberate until a screen moves it: held energy below the table's
   price is on purpose (100; the probes pricing them at the table are retired). A table edit does not
   move them; say in the write-up when a price and its weight part further.
@@ -49,19 +49,18 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   compute). The recipe and fit below are the agents' view and the effect ledger's.
 - **Tier is power** (ruling 4): costs and effects go up a lot with tier, few cards cost 0, and tier is not a proxy for
   cost.
-- **The recipe:** value the effect at the rates; then credits = value − the keep (tier 1 2.5, tier 2 5 at r43's 2 insight) − 2.5 × the
+- **The recipe:** value the effect at the rates; then credits = value − the keep (`rates.keep_tier1`, `keep_tier2`) − 2.5 × the
   insight to play − about 1, so the card beats the plain route it replaces (ruling 7). **Insight to play is a price**
   (191, Matt): spread over 0, 1 and 2, most tier-1 cards at 0; moving a card 1 insight moves its credits the
   anchor's 4, less what would leave it under a 1-credit gain at the table.
 - **A `needs` chain is the price** (ruling 10): needs 2-3 of a tag on an engine (108), needs 3-4 sits 2-4 under the
   recipe, needs 5-6 about half and much bigger (Zero-Day Auction, needs 5 Cyber: 2 antimatter and draw 6).
-- **The cost curve** (r46, Terraforming Mars scale; Matt: fewer cheap cards, more dear and high-impact ones): tier 1
-  median 10 (most 6-20; the big income and late cards 20-46, Moonshot Grant's 46 the top, Gigafactory Charter's "31 credits and
-  2 energy, +10 credit income, draw 2" among them), tier 2 median 15 (most 7-30; the liberate capstones 4-42, Citywide Microgrid's 4 credits beside 8 energy). 6 cards cost 5 or less, 11 cost 30 or more. The deck's median is 11. Nine credits is about two thirds of a round's printed credits on the boards (15 / 13 / 11).
-- **Big early and late cards** (r46, Matt): early jump-starts at 25-34 credits (Fabrication Megaplex 25 and 2 energy), no `needs`, playable in rounds 1-3 from
+- **The cost curve** (r46, Terraforming Mars scale; Matt: fewer cheap cards, more dear and high-impact ones): most
+  cards in the middle, the big income and late cards dearest, a few cheap ones (each card's cost: `docs/cards.md`). Nine credits is about two thirds of a round's printed credits on the boards (15 / 13 / 11).
+- **Big early and late cards** (r46, Matt): early jump-starts, no `needs`, playable in rounds 1-3 from
   the starting 40-46 (Fabrication Megaplex, Frontier Lab Charter, National Grid Buildout, beside Gigafactory Charter,
   Wartime Retooling and Multiyear Defense Budget). The anchors price income at mid-game; bought in round 1-3 it runs
-  about 5 rounds (about 1.25× the anchor), so a jump-start reads 1.0-1.3 at the anchors and stays under 1.5 early. Late objectives at 30-46 reach a goal in one play: Moonshot Grant's 8 cubes fill a megaproject (cubes at 9
+  about 5 rounds (about 1.25× the anchor), so a jump-start reads 1.0-1.3 at the anchors and stays under 1.5 early. Late objectives reach a goal in one play: Moonshot Grant's 8 cubes fill a megaproject (cubes at 9
   when they complete it), the liberate capstones. **The majors (r94, 213):** tier-2 cards paying 1 antimatter (18) for a
   big payoff, priced at the anchors at 1.0-2.5 (214; each card's line in `docs/card-pricing-notes.json`).
 - **Sway past a tip carries over** (r48): a tip returns one tip's worth and the rest waits for the next (alignment.md),
@@ -78,13 +77,11 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   credit cost would be a circular payment (guideline 5). In a game the
   agents read a one-tag trigger at the seat's own share of the tag's cards (107, `rates.own_mix`), and a threshold
   at its own trigger's fill (`own_fill`).
-- **Antimatter only on true ultimates** (108): Orbital Mass Driver, Recursive Self-Improvement and Dyson Swarm
-  Tranche pay its 7 in credits; the liberate and removal ultimates keep it.
 - **Card throughput** (108): credits pile up, so the fix is dearer, bigger
   cards and more of them: engines draw when built, Action buildings turn spare credits (Patent Library, Bug Bounty
   Board), chips (Parts Exchange), energy (Grid Analytics Desk) or Operatives (Safehouse Network) into cards, three engines
   draw on their tag's plays (Preprint Server, Supplier Network, Fusion Research Campus), and two board powers do the
-  same (the Builder's Procure, the Protector's Debrief). Late cards costing 28-46 credits (Moonshot Grant, Headquarters
+  same (the Builder's Procure, the Protector's Debrief). Late, dear cards (Moonshot Grant, Headquarters
   Raid, Wartime Retooling, Gigafactory Charter) take spare credits (111). A flat credit sink stays the last resort.
 - **Insight off every card** counts `rates.insight_discount_share` (0.25) of the plays (107): the floor below.
 - **Insight discounts mostly sit at the floor** (106): `discount_floor` 1 holds insight too, and `science_every` already
@@ -110,8 +107,8 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   Array's removal, Holographic Assembly Hall's Sway, Wafer Fab Line's draw and chips, Microgrid Lab Compact's station
   claim) take energy.
 - **Energy as a second cost** (r50, Matt): a card whose title reads power-hungry prints energy and costs 4.5 credits
-  less an energy, so pay holds at the anchors; uncommon (14 of 157 deck cards). The late sinks price energy at its 4.5
-  anchor too: Citywide Microgrid's 8 energy is 36 of its 56, Exascale Training Cluster's 5 is 22.5 of its 53.5 (r62), and each
+  less an energy, so pay holds at the anchors; uncommon (14 of 182 deck cards). The late sinks price energy at its 4.5
+  anchor too: Citywide Microgrid's 8 energy is 36 of its 44, Exascale Training Cluster's 5 is 22.5 of its 37.5 (r62), and each
   2-energy Action is a use's 9. The table prices energy at the full anchor while its insight, draw and chip rates sit
   at about 0.6 of theirs, so an energy-for-X Action reads as a loss at `values.json` for a seat short of energy and a
   gain only through the spare-energy rate (128); two of the three sinks whose output the table prices lowest (an ambassador

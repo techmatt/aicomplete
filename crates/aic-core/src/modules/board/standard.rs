@@ -30,8 +30,6 @@ pub enum StandardAction {
     BuyEnergy,
     /// 204 (Matt, 2026-11-12): the desperate source, research cubes for 1 antimatter.
     Antimatter,
-    /// 204: the standard antimatter spend, a shared breakthrough: antimatter for Unity (0: off).
-    Breakthrough,
     /// 206 (Matt, 2026-11-12): the one node placement every board has, poorly priced (Expand left every board).
     Node,
     /// 206 (amendment 9247): a very expensive hedge against troops: credits for 1 troop in reach.
@@ -41,7 +39,7 @@ pub enum StandardAction {
 }
 
 /// The standard actions, in the order they are offered and published.
-pub const STANDARD: [StandardAction; 17] = [
+pub const STANDARD: [StandardAction; 16] = [
     StandardAction::Station,
     StandardAction::Remove,
     StandardAction::Lift,
@@ -55,7 +53,6 @@ pub const STANDARD: [StandardAction; 17] = [
     StandardAction::Botnet,
     StandardAction::BuyEnergy,
     StandardAction::Antimatter,
-    StandardAction::Breakthrough,
     StandardAction::Node,
     StandardAction::Troop,
     StandardAction::Factory,
@@ -78,7 +75,6 @@ impl StandardAction {
             StandardAction::Botnet => "botnet",
             StandardAction::BuyEnergy => "buy_energy",
             StandardAction::Antimatter => "antimatter",
-            StandardAction::Breakthrough => "breakthrough",
             StandardAction::Node => "node",
             StandardAction::Troop => "troop",
             StandardAction::Factory => "factory",
@@ -102,20 +98,17 @@ pub struct Price {
     pub ambassadors: i64,
     /// 105: research cubes (the general converter).
     pub cubes: i64,
-    /// 204: antimatter (Breakthrough).
-    pub antimatter: i64,
 }
 
 impl Price {
     /// What it charges, in print order.
-    fn parts(self) -> [(i64, Resource); 6] {
+    fn parts(self) -> [(i64, Resource); 5] {
         [
             (self.energy, Resource::Energy),
             (self.credits, Resource::Credits),
             (self.chips, Resource::Chips),
             (self.ambassadors, Resource::Ambassadors),
             (self.cubes, Resource::ResearchCubes),
-            (self.antimatter, Resource::Antimatter),
         ]
     }
 
@@ -164,7 +157,6 @@ pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::Botnet => credits(i("botnet_credits")),
         StandardAction::BuyEnergy => credits(i("city_energy_credits")),
         StandardAction::Antimatter => Price { cubes: i("antimatter_cubes"), ..Price::default() },
-        StandardAction::Breakthrough => Price { antimatter: i("breakthrough_antimatter"), ..Price::default() },
         StandardAction::Node => credits(i("node_credits")),
         StandardAction::Troop => credits(i("troop_credits")),
         StandardAction::Factory => chips(i("factory_build_chips")),
@@ -214,14 +206,6 @@ pub fn bought_key(h: usize) -> KeyBuf {
 
 /// Prefix of [`bought_key`].
 pub(super) const BOUGHT: &str = "board.energy_bought.";
-
-/// 204: set while seat `s` has taken Breakthrough this round (once a round), a round mark.
-pub fn broke_through_key(seat: usize) -> KeyBuf {
-    KeyBuf::new(BROKE_THROUGH).num(seat)
-}
-
-/// Prefix of [`broke_through_key`].
-pub(super) const BROKE_THROUGH: &str = "board.broke_through.";
 
 /// 206: how often seat `s` has taken limited standard action `act` (Place a node, Remove a troop) this round, a
 /// round mark.
@@ -302,17 +286,10 @@ pub fn std_ops(act: StandardAction) -> &'static [Op] {
 
 /// 206: a standard action whose price param is 0 is off (Lift, Node, Troop, Factory). 210 (P2) deleted the cut Clear,
 /// Drain and Harden project.
+/// 221: the price params live in [`printed_price`] alone (their minimum is 0, so "free" is "off").
 fn cut(w: &World, act: StandardAction) -> bool {
-    let k = match act {
-        StandardAction::Lift => "land_cubes",
-        StandardAction::Node => "node_credits",
-        StandardAction::Troop => "troop_credits",
-        StandardAction::Factory => "factory_build_chips",
-        // 213 (r94): Breakthrough is gone (Matt: temporary until tier 2 carried antimatter); its Unity 0 cuts it.
-        StandardAction::Breakthrough => "breakthrough_unity",
-        _ => return false,
-    };
-    w.int(&format!("board.{k}")) <= 0
+    matches!(act, StandardAction::Lift | StandardAction::Node | StandardAction::Troop | StandardAction::Factory)
+        && printed_price(w, act) == Price::default()
 }
 
 /// Whether standard action `act` is in the rules (206: a cut one prints no row and is never offered).
@@ -360,13 +337,6 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         StandardAction::Antimatter => {
             return format!("turn {} into 1 antimatter", Resource::ResearchCubes.words(w.int("board.antimatter_cubes")));
         }
-        StandardAction::Breakthrough => {
-            return format!(
-                "a shared breakthrough: {} for {} Sway toward Unity",
-                Resource::Antimatter.words(w.int("board.breakthrough_antimatter")),
-                w.int("board.breakthrough_unity")
-            );
-        }
         StandardAction::Node => {
             return format!("place 1 node next to yours (paying its track step), {} a round", times(w.int("board.node_per_round")));
         }
@@ -381,12 +351,16 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
 /// What a standard action does, in the rule book's longer words: its name,
 /// cost and effect, the row `aic-sim docs` prints in docs/rules/economy.md
 /// (121: one home for them, beside the view's [`std_text`]). `t` prints a
-/// tunable by its key (the docs print `` `remove_count` 3 ``).
-pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String; 3] {
+/// tunable by its key (the docs print `` `remove_count` 3 ``); `w` drops a clause whose tunable is 0 (221).
+pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String) -> [String; 3] {
     let (name, cost, what): (&str, String, String) = match act {
         StandardAction::Station => (
             "Build a research station",
-            format!("{} chips (and {} ambassadors, used up: a candidate, 0 none)", t("board.station_chips"), t("board.station_ambassadors")),
+            if w.int("board.station_ambassadors") > 0 {
+                format!("{} chips and {} ambassadors, used up", t("board.station_chips"), t("board.station_ambassadors"))
+            } else {
+                format!("{} chips", t("board.station_chips"))
+            },
             "on an open hex in reach that is not an industrial zone or corrupted land; it is yours (your cube)".into(),
         ),
         // r75 (Matt's ruling 1): it places nothing (it stood on the hex and removed up to 3 there).
@@ -459,7 +433,11 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
         StandardAction::Botnet => (
             "Take down a botnet",
             format!("{} credits", t("board.botnet_credits")),
-            format!("a botnet on a hex holding your ambassador (it stays) comes off: sway {} toward Unity", t("alignment.botnet")),
+            if w.int("alignment.botnet") > 0 {
+                format!("a botnet on a hex holding your ambassador (it stays) comes off: sway {} toward Unity", t("alignment.botnet"))
+            } else {
+                "a botnet on a hex holding your ambassador (it stays) comes off".into()
+            },
         ),
         // r75 (Matt's ruling 6): it was a sale in production.
         StandardAction::BuyEnergy => (
@@ -467,25 +445,19 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
             format!("{} credits", t("board.city_energy_credits")),
             "a neutral city in reach that is producing (no blackout, no agent on it), once per city a round: gain its energy".into(),
         ),
-        // 204 (Matt, 2026-11-12): the one standard source, a desperate one; the engines (plants, the Builder's
-        // Forge, the plants, Tidal Grid) are the real supply.
+        // 204 (Matt, 2026-11-12): the one standard source, a desperate one; the engines (the plants, r97) are the
+        // real supply.
         StandardAction::Antimatter => (
             "Make antimatter",
             format!("{} research cubes", t("board.antimatter_cubes")),
             "gain 1 antimatter, as often as you have cubes (a desperate trade: the engines make it cheaper)".into(),
-        ),
-        // 204: the standard antimatter spend, off unless `breakthrough_unity` is above 0.
-        StandardAction::Breakthrough => (
-            "Breakthrough",
-            format!("{} antimatter", t("board.breakthrough_antimatter")),
-            format!("sway {} toward Unity, once a round (`breakthrough_unity` 0: no such action)", t("board.breakthrough_unity")),
         ),
         // 206 (Matt, 2026-11-12): Expand, Buy In, Accord and Peer Review were one power under four names.
         StandardAction::Node => (
             "Place a node",
             format!("{} credits, and the track step's energy", t("board.node_credits")),
             format!(
-                "place 1 node next to yours, off either track, up to {} times a round (the boards' own node powers are the better route)",
+                "place 1 node next to yours, off either track, at most {} a round (the boards' own node powers are the better route)",
                 t("board.node_per_round")
             ),
         ),
@@ -493,7 +465,7 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
         StandardAction::Troop => (
             "Remove a troop",
             format!("{} credits", t("board.troop_credits")),
-            format!("remove 1 adversary troop in reach, up to {} times a round", t("board.troop_per_round")),
+            format!("remove 1 adversary troop in reach, at most {} a round", t("board.troop_per_round")),
         ),
         // 206 (amendment 9212, candidate).
         StandardAction::Factory => (
@@ -579,14 +551,6 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
         StandardAction::BuyEnergy => all.filter(|&h| energy_for_sale(w, g, seat, h)).collect(),
         StandardAction::Antimatter if w.int("board.antimatter_cubes") > 0 => vec![usize::MAX],
         StandardAction::Antimatter => Vec::new(),
-        StandardAction::Breakthrough
-            if w.int("board.breakthrough_unity") > 0
-                && g.var(&broke_through_key(seat)) == 0
-                && w.variant("alignment") != Some("off") =>
-        {
-            vec![usize::MAX]
-        }
-        StandardAction::Breakthrough => Vec::new(),
         StandardAction::Node | StandardAction::Troop | StandardAction::Factory => {
             if per_round(w, act).is_none_or(|n| g.var(&std_once_key(act, seat)) < n) && effects::feasible(w, g, seat, std_ops(act)) {
                 vec![usize::MAX]
@@ -641,10 +605,6 @@ pub(super) fn std_resolve(
         StandardAction::Antimatter => {
             cx.add_resource(g, s, Resource::Antimatter, 1);
             cx.tally(g, "board.cubes_to_antimatter", 1);
-        }
-        StandardAction::Breakthrough => {
-            cx.set_key(g, &broke_through_key(s), 1);
-            alignment::unity_from(g, cx, "breakthrough", w.int("board.breakthrough_unity"));
         }
         StandardAction::Station => {
             if let Some(h) = on_hex(cx)? {

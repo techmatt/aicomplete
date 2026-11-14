@@ -200,11 +200,11 @@ pub fn compute_step(g: &mut GameState, cx: &mut Cx) -> Res {
     // country's megaproject is complete (before that it puts adversary cubes on it, in production).
     let cubes = w.int("board.station_cubes");
     let mut stations = 0;
-    for h in 0..g.hexes.len() {
+    for (h, hex) in w.map.hexes.iter().enumerate().take(g.hexes.len()) {
         if g.tokens(h, STATION) == 0 || !corrupted(g, h) {
             continue;
         }
-        if g.var(&board::project_done(w.map.hexes[h].country as usize)) == 0 {
+        if g.var(&board::project_done(hex.country as usize)) == 0 {
             continue;
         }
         if player_ambassador(g, h).is_some() {

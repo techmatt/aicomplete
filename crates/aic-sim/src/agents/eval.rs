@@ -385,8 +385,10 @@ pub struct Weights {
     /// than armoring it (r75); and the converge and push rules keep agents off a last node about to tip.
     pub last_node: f64,
     /// 201: with troops striking nodes (`board.troop_node` reached), a seat's node an adversary troop can reach in
-    /// its next march (hex distance at most `board.troop_steps`, the node's hex not walled) counts this much exposed
-    /// (half with a hardening token or the owner's ambassador on it), read like a node filling toward corruption.
+    /// its next march (hex distance at most `board.troop_steps`, the node's hex not walled) adds this much to the
+    /// seat's exposure (half with a hardening token or the owner's ambassador on it), read like a node filling
+    /// toward corruption: charged at `corrupt_exposure` times a node's worth (`node` + `shelter_node`), and,
+    /// rounded, taken off the node count `node_danger` reads.
     pub troop_exposure: f64,
 }
 
@@ -1570,8 +1572,8 @@ impl Eval {
             if held {
                 v += w.node;
             }
-            for s in 0..self.seats {
-                v += w.ambassador_board * t.ambassador[s] as f64;
+            for &n in t.ambassador.iter().take(self.seats) {
+                v += w.ambassador_board * n as f64;
             }
             let counts = city || base || t.station > 0;
             if counts && (0..self.seats).any(|s| near[s] >> h & 1 != 0) {

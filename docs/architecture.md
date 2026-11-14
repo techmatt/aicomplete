@@ -42,7 +42,7 @@ rules are in [rules/](rules/README.md).
 
 Compile `Rules::new(&config)` once per config; the hot path is `legal_actions_into`
 and `apply_mut(&mut g, &action, None)` (no event log). The free
-functions `new_game`, `legal_actions` and `apply` rebuild `Rules` every call (a UI's, not a
+functions `legal_actions`, `apply` and `view` rebuild `Rules` every call (a UI's, not a
 sweep's) and run `check_state` first. `driver::play` plays a game with one team `Agent` for every seat;
 `driver::replay` rebuilds one.
 
@@ -198,7 +198,8 @@ The engine fills every token stack, each seat's resources, exhausted cards no mo
 shows (`engine.exhausted`) and every `vars` track as a global. `Module::view` adds, through
 `ViewOut`, only what it can't derive: derived values, card groups, piles, a seat's `board`,
 standard actions, arrows, and `bookkeeping` (per-seat, per-country or per-card `vars`, a
-key ending in `.` a prefix, shown where they belong). An undeclared key stays a global.
+key ending in `.` a prefix, shown where they belong). An undeclared key stays a global, and the view and
+invariants tests refuse a global with more than one dot: a new state key's prefix goes in its module's `bookkeeping`.
 
 A card's `status` is a word the module chooses; the viewer styles `ready`, `used`,
 `unaffordable` and `no target` and shows any other as text. The view is display data:

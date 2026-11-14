@@ -194,7 +194,8 @@ COLUMNS = {
     'compute': ('compute made / blocked', per_game('adversary.compute_made', 'adversary.compute_blocked')),
     'left': ('left: corrupted / botnets / troops', lambda c, gs: ' / '.join(
         f"{mean(gs, lambda g: g['margin'].get(k, 0)):.1f}" for k in ('cities_corrupted_end', 'botnets_end', 'troops_end'))),
-    'factories': ('factories P / A / N', per_game('board.factories_built.player', 'board.factories_built.adversary', 'board.factories_built.neutral')),
+    # 221: a neutral factory is a city's growth (190), tallied `board.factory_built_by_city` (production.rs).
+    'factories': ('factories P / A / N', per_game('board.factories_built.player', 'board.factories_built.adversary', 'board.factory_built_by_city')),
     'factories_end': ('owned at end', per_game('board.factories_end.player')),
     'chips': ('chips made / spent', per_game('board.chips_made', 'board.chips_spent')),
     'troop_strikes': ('steps / moves / strikes', per_game('board.troop_steps', 'board.troop_moves', 'board.troop_strikes')),

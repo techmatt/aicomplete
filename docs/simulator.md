@@ -92,8 +92,8 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
   thread (an agent's `threads` dial must be 1). A strategist game costs about 1 s natively on one core since 174
   (178: 2,160 games in ~9 min on 4 threads), so a read seed (12 cells) about 12 s; wasm is ~1.5× native (160); the
   laptop tab is best at 2-3 cores (163, B5). A job of few shards is bound by its slowest shard.
-- **A farmed spec** is a file in `experiments/farm/` (`read`: the strategist, three pairs, d0-d3; `cell-d2`: one
-  cell); the argument is its name. A gated spec, win-probability probes and `inject_panic` are refused: their games
+- **A farmed spec** is a file in `experiments/farm/` (`read`: the strategist, three pairs, d0-d3, a subset: an
+  item's read writes its own d0-d4 spec; `cell-d2`: one cell); the argument is its name. A gated spec, win-probability probes and `inject_panic` are refused: their games
   depend on more than their seed. The bundle reads no files: `configs/`, `experiments/configs/` and
   `experiments/farm/` are built into it (`crates/aic-farm/build.rs`), so a spec to farm is committed first: a spec
   missing from the workers' bundle fails there and the main box reruns its shards late, one at a time (167: a

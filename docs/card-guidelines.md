@@ -9,8 +9,7 @@ card that breaks one is a bug, or a design call for Matt, never a quiet exceptio
    another way to get that play and take it to Matt.
 2. **Plain words, one reading only.** A player reads a card once and knows what to do. Name the pieces
    and the number: "remove 2 agents or 1 troop", never "2 worth". A "per" or an OR binds to exactly
-   one thing; "you have" is spelled out on the face ("on your cards"); every icon keeps its locked meaning (ruling 5:
-   *Kinetic Interdiction* read as in every hex or in one). Fix a phrase in `face.rs`, and every card using it improves.
+   one thing; "you have" is spelled out on the face ("on your cards"); every icon keeps its locked meaning (ruling 5). Fix a phrase in `face.rs`, and every card using it improves.
 3. **No arithmetic.** At most a simple "per X". No sums, series, formulas or running totals. **No "per hex of a
    country"** (ruling 6): every country has 16 hexes, so "1 per hex" is a hidden fixed number; print the number
    ("remove 6 troops in one country"). **Big numbers over "remove all X"** (*Martial Cordon*).
@@ -43,7 +42,7 @@ card that breaks one is a bug, or a design call for Matt, never a quiet exceptio
     not required. Tier-2 income is far stronger, and few cards cost 0 credits; tier is not a proxy for cost (23). The curve in use is in
     [card-pricing.md](card-pricing.md), *The method*.
 13. **A card beats the plain route it replaces** (direct payment, standard action, board power), counting its
-    keep and insight (ruling 7; *Threat Hunt*'s "counts as 5 credits toward a cyber threat" lost to paying 5 credits).
+    keep and insight (ruling 7: *Threat Hunt* lost to paying 5 credits).
 14. **Outright threat counters stay rare** (ruling 8): a special case, not the common fix. A typed counter is a big
     jam of its type plus a rider of its tag, never a full counter (*Rapid Response*).
 15. **No recounting across cards** (ruling 12). A token effect counts only the tokens **on that card**, never "you
@@ -65,7 +64,7 @@ card that breaks one is a bug, or a design call for Matt, never a quiet exceptio
 A card that prices out on the value table but reads absurd to a Terraforming Mars or Spirit Island player is a bug (*Eviction Worm*: "remove 8 agents in one country" for 10 credits).
 
 19. **Useful alone.** A card is never useless alone, even if it is better with others; tag payoffs ("1 income per X
-    tag") are the exception (*Collateralized Grid* needed a Capital card).
+    tag") are the exception.
 20. **Feeders carry a main effect.** A token feeder ("add N X to one of your X buildings") has a standalone main effect
     (credit or insight income, say) priced a little below the rate; its tokens are a bonus that beats the rate with a
     target, as Terraforming Mars' Large Convoy does (*Dataset Scraper*, *Recruit Operatives*).
@@ -74,7 +73,7 @@ A card that prices out on the value table but reads absurd to a Terraforming Mar
 22. **Numbers make sense, not only price out.** A card beats its anchors (below) by about 1.5× at tier 1 and about 2.5×
     at tier 2, never more: beyond that, report it rather than ship it. A ceiling, not a target: a card at 1.0-1.5 is
     fair, its price never cut toward the ceiling. A dearer card has a stronger or different effect,
-    never the same effect with a multiplied number (*Diplomatic Expulsion* went from 4 to 8 ambassadors). A
+    never the same effect with a multiplied number. A
     printed number larger than what is usually within reach is a disguised "remove all", or the piece is too common:
     size every removal against the board state below.
 23. **Tier is efficiency, not magnitude.** Tier 1 is not "cheap": a tier-1 card at 40 credits for more than +4 income is
@@ -92,19 +91,20 @@ price ([card-pricing.md](card-pricing.md), *The method*).
 
 | Unit | Credits | | Unit | Credits |
 |---|---|---|---|---|
-| Remove 1 agent | 5 | | 1 chip | 6 (r83: 3 before) |
+| Remove 1 agent | 5 | | 1 chip | 6 |
 | Remove 1 troop | 5 | | +1 credit income | 4 at mid-game |
 | 1 energy | 4.5 | | +1 insight income | 12 at mid-game |
 | 1 insight | 4 | | Remove 1 compute from a project | 2 (stopping projects is hard) |
-| Draw 1 card | 5 | | 1 antimatter | 18 (r90: a big investment that pays off) |
-| 1 ambassador | 8 (r91, candidate) | | | |
+| Draw 1 card | 5 | | 1 antimatter | 18 (a big investment that pays off) |
+| 1 ambassador | 8 | | | |
 
-Derived: the keep, 4 a tier-1 card and 12 a tier-2 one (1 and 3 insight, r95); +1 energy income 14 (4 rounds × 4.5 × 0.8);
-+1 chip income about 19 (4 rounds × 6 × 0.8). Antimatter's 18 is under four research cubes (the desperate standard action,
-at a loss), so every engine that makes it (a plant's Action, Pair Forge) shows a clear gain
-and every spend is a big one. Units with no anchor take `values.json` (a sway 4, a node 8)
-or [card-pricing.md](card-pricing.md) (a city liberated 45). From past checks: a research cube 6
-(9 when the play completes the megaproject), a botnet removed 16.
+Derived: the keep, 4 a tier-1 card and 12 a tier-2 one (1 and 3 insight); +1 energy income 14 (4 rounds × 4.5 × 0.8);
++1 chip income about 19 (4 rounds × 6 × 0.8). A research cube is 6 (9 when the play completes the megaproject), so
+Make antimatter (5 cubes, 30) loses against antimatter's 18: every engine that makes it (a plant's Action, Pair Forge)
+shows a clear gain, and every spend is a big one. Other units take `values.json` (a sway 4, a node 8) or
+[card-pricing.md](card-pricing.md) (a city liberated 45); past checks priced a botnet removed at 16. A card whose unit has no anchor sits
+inside 1.0-2.5× under both readings: a convert at its output's anchor and at its input's, an engine's uses at the
+measured count and the conservative one.
 
 **The anchor check**, one line per card in its item's write-up: pay = credits + 4 × (keep + play insight) + other
 costs at the anchors; get = the effects at the anchors (an engine at a committed seat's rate: about 1 card of its tag
@@ -170,9 +170,9 @@ The sheet is `icons.png` from `node tools/card-art/render.mjs`.
 
 ## Event lines
 
-An event card prints only the line kinds in `content::EVENT_LINE_KINDS` (r80, ruling #31; `Content::check` holds
+An event card prints only the line kinds in `content::EVENT_LINE_KINDS` (`Content::check` holds
 to it), each with its icon there: Rally, Muster, Income, New factory, Discord, Unity back, Blackout, Node loss, Forced
-March, Botnet spread (r89, Matt's amendment 9026), Corrupt. Event faces have no icon row yet. A new kind is Matt's call.
+March, Botnet spread, Corrupt. Event faces have no icon row yet. A new kind is Matt's call.
 
 A price rise on paper needs a screen: small raises add up. Reason every price in
 [card-pricing.md](card-pricing.md), and record the change in [rules-history.md](rules-history.md). Center a rate sheet

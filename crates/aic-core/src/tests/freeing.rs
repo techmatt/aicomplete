@@ -118,7 +118,7 @@ fn freeing_a_city_and_removing_a_botnet_sway_unity() {
     answer_all(&rules, &mut g);
     assert_eq!(g.tokens(city, ADV_CUBE), 0);
     assert_eq!(g.var("alignment.unity"), 5);
-    // No standard action removes a botnet (019); the Decommission Unity card does.
+    // Take down a botnet is refused: no seat-0 ambassador stands on the city (r75); the card op does it.
     put(&mut g, city, BOTNET, 1);
     assert!(rules.apply_mut(&mut g.clone(), &std_act(0, "botnet"), None).is_err());
     with_cx(&rules, |cx| {

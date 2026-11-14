@@ -25,20 +25,20 @@ end their march next to your node pay you 1 insight each (Vigil; r79 once a roun
 facilities with Bulwark, and your board prints 2 energy a round. You earn fewer credits (13 a round), so you start with
 more: 46. Each credit space of your economy track adds 2 or 3 credits, the first one 1 energy too. Round 1 deals as
 for the Builder. Late in the game, sacrifice
-cards you have finished with: a Security card pays out credits or clears a corruption marker, a Diplomacy card draws 2
-cards (Debrief), and a Security card with an energy shelters a whole country for the round. Each round you may Dispatch 1
+cards you have finished with: a Security card removes a troop (Stand Down) or draws 1 and removes an agent (Debrief), a
+Diplomacy card clears a corruption marker (Recovery), and a Security card with an energy shelters a whole country for the round. Each round you may Dispatch 1
 ambassador for free (2 from your fourth economy space). Your printed Security tag counts like one on your
 cards.
 
 **The Researcher, for new players.** Your special rule is Patience: insight you don't spend stays with you
-into the next round, so you can save up for a big round (r82: all of it, including insight another player gave you). You start with 40 credits and earn 11 a round, 3 more for each credit
+into the next round, so you can save up for a big round (all of it, even insight another player gave you). You start with 40 credits and earn 11 a round, 3 more for each credit
 space of your economy track; round 1 deals as for the Builder. You play off
 the board, on your turn budget and on research cubes. Each round you may turn 2 insight into a card (Synthesis, your draw), a Cyber card and a research cube into up to 2
 troops removed in one country (Disrupt), and 3
 credits into a research cube on a megaproject that isn't complete yet. Your node power, Peer Review, costs 1 research cube and, like any node, the uncovered space's energy, and gives 1 insight by a fresh station,
 so build stations early: once their country's card completes they put cubes on your board. Sacrifice an Industry card
-to build a station for free, a Cyber card to strip 3 compute off an adversary project, a Power card and an energy
-for an antimatter. Your printed Science tag counts like one on your cards (1 Science card makes 2 for the discount). Each round you may Dispatch 2
+to build a station for free, a Cyber card to strip 3 compute off an adversary project; 2 research cubes
+destroy one of your stations for an antimatter (Overload). Your printed Science tag counts like one on your cards (1 Science card makes 2 for the discount). Each round you may Dispatch 2
 ambassadors for free (up to 4), to stand guard on your stations. The hard part to explain: Open
 Science's insight is handed out in upkeep and lands at the start of the next round.
 
@@ -109,9 +109,9 @@ The **keep upgrade**: tier-2 keeps cost `keep_tier2_upgraded` instead of `keep_t
 **The card-play track (draft candidates, reasoning in `experiments/results/screen-068-boards/boards.md`).** None of it
 is uncovered at setup. A placement takes the next token from the track the player chooses (asked when both
 have tokens). **Insight prints here only, as totals** (r82, Matt's amendment, Spirit Island style): the printed start
-shows 3 (r86; 6 before) and a space that raises it shows the new total; your insight is the number on the rightmost space you've
+shows 3 and a space that raises it shows the new total; your insight is the number on the rightmost space you've
 uncovered that shows one. **Each board grows it at its own rate** (r87, Matt: income is the lever, as Spirit Island's
-energy): the Builder to 10, the Protector 9, the Researcher, whose Patience banks it, 8 (r86: 13 on all three).
+energy): the Builder to 10, the Protector 9, the Researcher, whose Patience banks it, 8.
 **Early-heavy, late-flat** (r95, 199's `t4`): the first space jumps to 7 (Builder, Protector) or 6 (Researcher), then
 each later step adds 1, so a tier-2 keep (3 insight, r95) fits from round 2.
 
@@ -136,15 +136,15 @@ can't be sold back. Rush Build
 takes 1 Industry tag and 1 energy out and puts a building with 1-3 tags in, once a round: the Industry count can hold
 level, but each use spends an energy and a card for good, and the building still pays its insight, so energy and the
 hand cap it. **The energy gift** (Shared Grid Accord and Interconnector Treaty, programs) is one-shot. Energy bought
-from a neutral city (Buy energy) costs `city_energy_credits` (4); credits → energy → a card's income is capped by the
+from a neutral city (Buy energy) costs `city_energy_credits`; credits → energy → a card's income is capped by the
 cards and the cities' energy (once per city a round, a city's `corp_energy` a buy, none while an agent stands on it). **Energy
 counters** spend energy for good. **The Researcher's:** Patience with the cube converters (Cintamani's, a cube for 2
-insight, once a round since r75; everyone's standard action, a cube for 1, with no limit) is the intended engine:
+insight, once a round; everyone's standard action, a cube for 1, with no limit) is the intended engine:
 capped by how many stations make cubes (and Open Archive's and Cryo Sample Vault's 1 a round) and, for Cintamani's, by its once a round and
 a Cintamani city in reach. **Antimatter (r97):** a plant's Action (a resource for 1) and Horizon's converter (2 cubes and 1 energy for 1) are once a
 round, beside each board's rare burn ([ai-powers.md](ai-powers.md)) and the desperate standard action (5 cubes for 1, r97); it
 pays for the majors that print it ([economy.md](economy.md)). Patience banks all the
-Researcher's unspent insight (r82: a gift too); only cards that print it pass insight, at their cost, and no standard
+Researcher's unspent insight, a gift too; only cards that print it pass insight, at their cost, and no standard
 action gives it. Open Science's insight goes only to other players; alone it is the Researcher's own, and Patience
 keeps it.
 Followers → ambassadors → alignment → city energy → node is capped by building count and the Followers each

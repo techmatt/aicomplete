@@ -123,8 +123,8 @@ fn measure_round(g: &mut GameState, cx: &mut Cx) {
     let pools: i64 = (0..w.map.countries.len()).map(|c| g.var(&adversary::pool_key(c))).sum();
     cx.per_round(g, "map.agent_pool", pools);
     // 201: countries where agents on the map outnumber the players' ambassadors there.
-    for c in 0..w.map.countries.len() {
-        let hexes = &w.map.countries[c].hexes;
+    for country in &w.map.countries {
+        let hexes = &country.hexes;
         let a: i64 = hexes.iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).sum();
         let p: i64 = hexes.iter().map(|&h| (0..g.seats.len()).map(|s| g.tokens(h, ambassador(s))).sum::<i64>()).sum();
         if a > p {
@@ -480,11 +480,12 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
 /// neutral cube nothing.
 fn complete_projects(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
-    for c in 0..w.map.countries.len() {
+    // The map's countries (a game may seat fewer than content prints), each with its content row.
+    for (c, country) in w.content.map.countries.iter().enumerate().take(w.map.countries.len()) {
         if g.var(&project_done(c)) > 0 {
             continue;
         }
-        let p = &w.content.map.countries[c].megaproject;
+        let p = &country.megaproject;
         let adv = g.var(&project_key(c, None));
         let neutral = g.var(&project_neutral(c));
         let mine: Vec<i64> = (0..g.seats.len()).map(|s| g.var(&project_key(c, Some(s)))).collect();

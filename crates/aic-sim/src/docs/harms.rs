@@ -496,3 +496,54 @@ pub(super) fn harms_md(r: &Rules) -> String {
         amb_discord = tick(r, "board.ambassador_discord"),
     )
 }
+
+/// 221: the hand-numbered columns and rows above name the entries they index, so an inserted harm or source that
+/// shifts them fails here rather than moving a ledger mark to the wrong row.
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn each_index_names_its_entry() {
+        let sources = [
+            (DISCORD_CARDS, "Discord cards"),
+            (ADVERSARY_EVENTS, "adversary events"),
+            (ADVERSARY_PROJECTS, "adversary projects"),
+            (MEGAPROJECTS, "megaprojects"),
+            // A count, not a column: the threat tiers are the first THREAT_TIERS columns.
+            (THREAT_TIERS - 1, "tier-2 threats"),
+            (OWN_BURNS, "your burns"),
+        ];
+        for (i, name) in sources {
+            assert_eq!(SOURCES[i], name, "SOURCES[{i}]");
+        }
+        let harms = [
+            (NODE_DESTROYED, "node destroyed"),
+            (CITY_LOST, "city lost"),
+            (FACILITIES_DESTROYED, "facilities destroyed"),
+            (FACILITIES_SEIZED, "facilities seized"),
+            (CREDITS_LOST, "credits or income lost"),
+            (ENERGY_LOST, "energy lost"),
+            (CHIPS_LOST, "chips lost"),
+            (ANTIMATTER_LOST, "antimatter lost"),
+            (CUBES_LOST, "research cubes lost"),
+            (CARDS_DISCARDED, "cards discarded"),
+            (AMBASSADORS_LOST, "ambassadors lost"),
+            (TOKENS_STRIPPED, "tokens stripped from cards"),
+            (PROTECTIONS_STRIPPED, "protections stripped"),
+            (BLACKED_OUT, "production blacked out"),
+            (PIECES_PLACED, "adversary pieces placed"),
+            (ADVERSARY_CUBES, "adversary cubes on megaprojects"),
+            (INCOME_RAISED, "adversary income raised"),
+            (PROJECTS_ADVANCED, "projects advanced (compute)"),
+            (EXTRA_THREATS, "extra threats"),
+            (CLOCK_SPED_UP, "the clock sped up"),
+            (DISCORD_SWAY, "Discord sway"),
+            (UNITY_PULLED, "Unity pulled back"),
+            (BLOCKED, "actions or claims blocked"),
+        ];
+        for (i, name) in harms {
+            assert_eq!(HARMS[i], name, "HARMS[{i}]");
+        }
+    }
+}

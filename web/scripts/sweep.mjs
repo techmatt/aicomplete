@@ -123,8 +123,8 @@ const PAGE_LIB = String.raw`(() => {
    *  twist, a dark city, a converter, a one-shot Action discarded, troops removed). */
   const COUNTER_EVENTS = /^(board\.(liberated_[a-z]+|city_dark(_aligned)?|cubes_converted)|adversary\.station_flip_held|cards\.(once_discarded|free_built|remove_troops\.\d+))$/;
   // 118: r41-r46's engine wording and insight economy: a trigger, an At N cash-in, a reuse, a
-  // discard from hand, a discount, insight bought, given or paid for a counter.
-  const COUNTER_EVENTS_R41 = /^(cards\.(triggers|thresholds|reused|hand_discarded|discount_credits|insight_bought)|threats\.counter_paid\.insight)$/;
+  // discard from hand, a discount, insight paid for a counter.
+  const COUNTER_EVENTS_R41 = /^(cards\.(triggers|thresholds|reused|hand_discarded|discount_credits)|threats\.counter_paid\.insight)$/;
   // 145: r55-r59's sites, war, Corrupt X and menus: a claim or liberation by site, Envoy, a
   // hold-off, a node lost by cause, war's destroys, a corruption by site, a created site, a
   // top-tier counter by currency (tier 3 until 146, tier 2 since). (144's blackout and sabotage flags and the "is freed" note are gone.)
@@ -134,9 +134,9 @@ const PAGE_LIB = String.raw`(() => {
   // a remove_where sweep and a cleanse.
   const COUNTER_EVENTS_R70 = /^(effects\.(gathered|pushed|moved_canceled|struck|cleansed|firewalls|remove_where\..+)|board\.(site_standing_spent|std\.(botnet|buy_energy)|aegis_used|protection_declined)|prohibit\.[a-z]+\.[a-z_]+\.(made|fired))$/;
   // 184: r74-r77's contact and corruption: a meeting that cancels an agent and an ambassador, agents
-  // converging on a site, a node corrupted at 2, natural corruption, Remove agents, Dispatch, troops
-  // taking an ambassador, the last node lost.
-  const COUNTER_EVENTS_R74 = /^(adversary\.(canceled|converged|ambassadors_removed|troops_removed|corruptions\.node|corruptions_natural)|board\.(std\.(remove|move|clear|claim|liberate)|troop_removed_ambassador|last_node_lost))$/;
+  // converging on a site, a node corrupted at 2, natural corruption, Remove agents, Dispatch, a claim
+  // or liberation, the last node lost.
+  const COUNTER_EVENTS_R74 = /^(adversary\.(canceled|converged|ambassadors_removed|troops_removed|corruptions\.node|corruptions_natural)|board\.(std\.(remove|move|claim|liberate)|last_node_lost))$/;
   // r85 (195, 197): each project op acting: a project's act, botnet troops, botnets made and spread,
   // a site taken or neutralized, factory troops (and blocked), a node raid, hardening stripped, the clock.
   const COUNTER_EVENTS_R85 = /^adversary\.(project_acts\.[a-z_]+|botnet_troops|botnets_(made|spread)|sites_(taken|neutralized)|factory_troops(_blocked)?|node_raids|hardening_stripped|clock_cards)$/;
@@ -214,7 +214,6 @@ const PAGE_LIB = String.raw`(() => {
   const RAW_ID = /\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b/;
   // The words docs/spelling.rs refuses in source (STALE there), plus the engine's labels it can't read.
   const STALE = /adversary(?:'s)? ambassadors?|enemy ambassadors?|adv\. ambassadors?|agents token|Matt to confirm|Security agents?\b|on board: \d+ ambassadors?|corp troops?|\bDeploy(s|ed)?\b|each board|\btier (I|II|III)\b|Movement \+\d/i;
-  const TOKENS = new Set(['cube', 'station', 'factory', 'node', 'harden', 'unit', 'ambassador', 'corruption', 'land_corruption', 'botnet', 'troop', 'firewall', 'city_chip', 'no_rally', 'no_muster', 'no_corrupt']);
 
   function checks() {
     const issues = [];
@@ -295,9 +294,10 @@ const PAGE_LIB = String.raw`(() => {
       if (tok.count > 0 && !document.querySelector('#board [data-hex="' + h.hex.join(',') + '"][data-token="' + tok.kind + '"]'))
         add('token-missing', tok.kind + ' x' + tok.count + ' on hex ' + h.hex.join(','));
     }
-    // 044: every token has its own glyph and name (r19's marker fell to a hashed-color disc).
-    for (const h of aic.view.hexes) for (const tok of h.tokens)
-      if (!TOKENS.has(tok.kind.split(':')[0])) add('token-unknown', tok.kind + ' has no glyph');
+    // 044: every token has its own glyph (r19's marker fell to a hashed-color disc). 221: board.ts's glyph switch is
+    // the one list of drawn kinds; its fallback disc carries data-glyph="fallback".
+    for (const g of document.querySelectorAll('#board .token [data-glyph="fallback"]'))
+      add('token-unknown', g.closest('.token').getAttribute('data-token') + ' has no glyph');
     // 099: input is accepted: every legal action has a control on screen (a button with
     // its action, or a hex pick naming its hex), so no stretch of play has a move the
     // page can't take.

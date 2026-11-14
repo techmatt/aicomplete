@@ -85,8 +85,8 @@ pub fn failures() -> Vec<String> {
 }
 
 /// 169, the house words (r70; Matt, amendment 7657): printed text calls the adversary's pieces agents and the
-/// Security token Operatives; 184, r77's renames (178): corp troops are Drones, the node power is Expand and the
-/// troop line Muster (a substring match: "deployed" is refused too). An old name, or the open naming note, in what a
+/// Security token Operatives; 184, r77's renames (178): corp troops are Drones, the node power was Expand (gone at r91) and
+/// the troop line Muster (a substring match: "deployed" is refused too). An old name, or the open naming note, in what a
 /// player reads is refused. Code names may stay, so the crates are not read.
 const STALE: &[&str] = &[
     "adversary ambassador", "adversary's ambassador", "enemy ambassador", "adv. ambassador", "matt to confirm",
@@ -119,7 +119,7 @@ pub fn stale_failures() -> Vec<String> {
             for b in stale(line) {
                 let now = match b {
                     "corp troop" => "Drones (r77)",
-                    "deploy" => "Muster or Expand (r77)",
+                    "deploy" => "Muster (troops) or Place a node (r77; Expand left the boards at r91)",
                     _ => "agents, Operatives: docs/rules/README.md, Terms",
                 };
                 out.push(format!("{}:{}: stale house word {b:?} ({now})", path.display(), i + 1));

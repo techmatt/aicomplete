@@ -13,8 +13,13 @@ pub const NODE_PROMPT: &str = "place a node";
 /// Nodes seat `s` has taken off its AI board's track (the
 /// starting one included); AI boards read their uncovered spaces from it.
 pub fn track_key(seat: usize) -> KeyBuf {
-    KeyBuf::new("board.track.").num(seat)
+    KeyBuf::new(TRACK).num(seat)
 }
+
+/// Prefix of [`track_key`].
+pub(super) const TRACK: &str = "board.track.";
+/// Prefix of [`track2_key`].
+pub(super) const TRACK2: &str = "board.track2.";
 
 pub fn track_taken(g: &GameState, seat: usize) -> usize {
     g.var(&track_key(seat)).max(0) as usize
@@ -22,7 +27,7 @@ pub fn track_taken(g: &GameState, seat: usize) -> usize {
 
 /// Tokens seat `s` has taken off its board's second node track (021).
 pub fn track2_key(seat: usize) -> KeyBuf {
-    KeyBuf::new("board.track2.").num(seat)
+    KeyBuf::new(TRACK2).num(seat)
 }
 
 pub fn track2_taken(g: &GameState, seat: usize) -> usize {

@@ -27,18 +27,6 @@
     "note": "each standard action's give and get at the unit anchors (docs/card-guidelines.md, *Unit anchors*; values.json for units with none). A number is a count; a string is a baseline.json param (module.param). 'src' is its games.jsonl source key, for its uses a game. 'off' (208, P1): the tunable that turns the action off at 0; such a row is skipped. 'narrative' (204): the story tag of its Sway.",
     "rows": [
       {
-        "name": "Breakthrough",
-        "src": "standard:breakthrough",
-        "off": "board.breakthrough_unity",
-        "give": {
-          "antimatter": "board.breakthrough_antimatter"
-        },
-        "get": {
-          "sway": "board.breakthrough_unity"
-        },
-        "narrative": "cooperation"
-      },
-      {
         "name": "Make antimatter",
         "src": "standard:antimatter",
         "off": "board.antimatter_cubes",
@@ -310,7 +298,6 @@
       {"key": "standard:ambassador", "name": "Gain a player ambassador", "role": "hedge", "why": "20 credits: the ambassador hedge"},
       {"key": "sell", "name": "Sell a card", "role": "hedge", "why": "a dead hand's 1 credit"},
       {"key": "standard:liberate", "name": "Liberate a site", "role": "win-route"},
-      {"key": "standard:breakthrough", "name": "Breakthrough", "role": "win-route", "why": "the standard antimatter spend, Unity (204)"},
       {"key": "standard:claim", "name": "Claim a site", "role": "sway-tool"},
       {"key": "standard:envoy", "name": "Envoy", "role": "sway-tool"},
       {"key": "standard:botnet", "name": "Take down a botnet", "role": "sway-tool"},

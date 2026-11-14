@@ -158,7 +158,7 @@ fn check_flags_a_card_quote_its_face_no_longer_prints() {
 #[test]
 fn check_flags_a_bare_name_that_is_no_tunable() {
     let r = baseline(&[]);
-    assert!(unknown_params("`legal_actions`, `harden_buy`", &r, &[]).is_empty());
+    assert!(unknown_params("`legal_actions`, `shared_row`", &r, &[]).is_empty());
     assert_eq!(unknown_params("`hold_bass`", &r, &[]), ["hold_bass"]);
 }
 
