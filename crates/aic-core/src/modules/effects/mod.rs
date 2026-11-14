@@ -331,7 +331,9 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::SpreadBotnets { count } => team::spread_botnets(g, cx, *count),
         Op::TakeSite { site } => team::take_site(g, cx, *site)?,
         Op::FactoryTroops { count } => team::factory_troops(g, cx, *count),
-        Op::RaidNode => team::raid_node(g, cx, ctx)?,
+        Op::AgentsOnNodes { count } => team::agents_on_nodes(g, cx, *count)?,
+        Op::RecallAmbassadors => team::recall_ambassadors(g, cx),
+        Op::StripCubes { count } => team::strip_cubes(g, cx, *count),
         Op::StripHarden => team::strip_harden(g, cx),
         Op::Clock { count } => team::clock(g, cx, *count),
         Op::OnePlayer { then } => {

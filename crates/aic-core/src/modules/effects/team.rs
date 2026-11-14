@@ -294,29 +294,69 @@ pub(super) fn factory_troops(g: &mut GameState, cx: &mut Cx, count: i64) {
     }
 }
 
-/// 195 (`RaidNode`): in each country, the node hex holding the most agents (at least one; ties: the lowest-numbered)
-/// loses its node; its protections apply.
-pub(super) fn raid_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx) -> Res {
+/// 231 (`AgentsOnNodes`, Night Raid): in each country, 1 agent onto each of `count` different hexes holding a
+/// player's node, those holding the most agents first (ties: the lowest-numbered); a firewalled hex is passed over.
+/// The node is lost only to the Corrupt beat's 2-agent rule, after the players' action phase.
+pub(super) fn agents_on_nodes(g: &mut GameState, cx: &mut Cx, count: i64) -> Res {
     let w = cx.world;
     for c in 0..w.map.countries.len() {
-        let hexes: Vec<usize> = by_number(&w, c).into_iter().filter(|&h| node_owner(g, h).is_some()).collect();
-        let best = hexes.iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).max().unwrap_or(0);
-        if best < 1 {
-            continue;
-        }
-        let Some(h) = hexes.iter().copied().find(|&h| g.tokens(h, ADV_AMBASSADOR) == best) else {
-            continue;
-        };
-        let Some(s) = node_owner(g, h) else {
-            continue;
-        };
-        cx.tally(g, "adversary.node_raids", 1);
-        board::destroy_piece(g, cx, h, node(s), board::Cause::Effect(ctx.label))?;
-        if g.is_over() {
-            break;
+        let mut hexes: Vec<usize> =
+            by_number(&w, c).into_iter().filter(|&h| node_owner(g, h).is_some() && !firewalled(g, h)).collect();
+        // A stable sort keeps hex-number order among equals.
+        hexes.sort_by_key(|&h| std::cmp::Reverse(g.tokens(h, ADV_AMBASSADOR)));
+        for &h in hexes.iter().take(count.max(0) as usize) {
+            cx.tally(g, "adversary.night_raid_agents", 1);
+            cx.note(Some(h), || format!("Night Raid: an agent lands on the node at {}", hex_name(&w, h)));
+            adversary::place(g, cx, h, 1)?;
         }
     }
     Ok(())
+}
+
+/// 231 (`RecallAmbassadors`): in each country, the hex holding the most player ambassadors (at least one; ties:
+/// the lowest-numbered) sends them all back to their owners' supplies.
+pub(super) fn recall_ambassadors(g: &mut GameState, cx: &mut Cx) {
+    let w = cx.world;
+    let seats = g.seats.len();
+    for c in 0..w.map.countries.len() {
+        let on = |g: &GameState, h: usize| (0..seats).map(|s| g.tokens(h, ambassador(s))).sum::<i64>();
+        let hexes = by_number(&w, c);
+        let best = hexes.iter().map(|&h| on(g, h)).max().unwrap_or(0);
+        if best < 1 {
+            continue;
+        }
+        let Some(h) = hexes.iter().copied().find(|&h| on(g, h) == best) else {
+            continue;
+        };
+        for s in 0..seats {
+            let n = g.tokens(h, ambassador(s));
+            if n > 0 {
+                cx.add_tokens(g, h, ambassador(s), -n);
+                cx.add_resource(g, s, Resource::Ambassadors, n);
+                cx.tally(g, "adversary.ambassadors_recalled", n);
+            }
+        }
+        cx.note(Some(h), || format!("The player ambassadors at {} go back to their supplies", hex_name(&w, h)));
+    }
+}
+
+/// 231 (`StripCubes`): each open megaproject loses up to `count` player research cubes, one at a time from the
+/// player with the most on it (ties: the first seat).
+pub(super) fn strip_cubes(g: &mut GameState, cx: &mut Cx, count: i64) {
+    let w = cx.world;
+    for c in 0..w.map.countries.len() {
+        if g.var(&board::project_done(c)) != 0 {
+            continue;
+        }
+        for _ in 0..count.max(0) {
+            let most = (0..g.seats.len()).rev().max_by_key(|&s| g.var(&board::project_key(c, Some(s))));
+            let Some(s) = most.filter(|&s| g.var(&board::project_key(c, Some(s))) > 0) else {
+                break;
+            };
+            cx.add_key(g, &board::project_key(c, Some(s)), -1);
+            cx.tally(g, "adversary.cubes_stripped", 1);
+        }
+    }
 }
 
 /// 195 (`StripHarden`): in each country, the hardened facility with the most agents on or next to it loses its

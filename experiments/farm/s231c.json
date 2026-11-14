@@ -1,0 +1,77 @@
+{
+  "name": "s231c",
+  "note": "231: screen 3 on spent 47008-47039: deck v2 (P adopted, 26 cards, big +2) at three dials",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_B",
+      "set": [
+        "adversary.compute_income=0,3,5,9,14"
+      ]
+    },
+    {
+      "name": "br_B",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=0,3,5,9,14"
+      ]
+    },
+    {
+      "name": "pr_B",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=0,3,5,9,14"
+      ]
+    },
+    {
+      "name": "bp_C",
+      "set": [
+        "adversary.compute_income=0,3,4,9,14"
+      ]
+    },
+    {
+      "name": "br_C",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=0,3,4,9,14"
+      ]
+    },
+    {
+      "name": "pr_C",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=0,3,4,9,14"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "greedy",
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

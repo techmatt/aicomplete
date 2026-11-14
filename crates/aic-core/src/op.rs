@@ -84,8 +84,8 @@ pub enum TroopIf {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum FactoryWhere {
-    /// In the country with the most free industrial zones.
-    MostFreeZones,
+    /// 231: in each country, one factory (every board; was the country with the most free zones).
+    EachCountry,
 }
 
 /// Which bases make extra corp troops (135).
@@ -942,7 +942,7 @@ pub enum Op {
     ThreatAtNode { tier: u8 },
     /// Each player in scope destroys `count` of their nodes in scope (their choice), unless absorbed
     /// (175: a last node too). 139: a threat's or a twist's only (Border War); the team
-    /// slot destroys a node only by a raid (`RaidNode`, 195: projects). `bases` (139, Border War): only nodes on or next to a
+    /// slot destroys no node directly (231: Night Raid lands agents on node hexes, `AgentsOnNodes`). `bases` (139, Border War): only nodes on or next to a
     /// front's military base, so a player with none there loses none.
     EachDestroyNode {
         count: i64,
@@ -1037,8 +1037,8 @@ pub enum Op {
     LoseTokens {
         amount: i64,
     },
-    /// The adversary builds `count` factories by the token (`where`: in the country with most free zones); none
-    /// free: `fallback_ambassadors` on a factory.
+    /// The adversary builds `count` factories by the token (`where` each_country: one in each country); none
+    /// free: `fallback_ambassadors` on a factory (each_country: one of that country's).
     AdversaryFactory {
         #[serde(default = "one", skip_serializing_if = "is_one")]
         count: i64,
@@ -1241,14 +1241,26 @@ pub enum Op {
         site: Facility,
     },
     /// 195 (a project's): every adversary factory makes `count` troops on its hex, as its own output (a player
-    /// ambassador on it stops it); on an ongoing project, every Income beat.
+    /// ambassador on it stops it).
     FactoryTroops {
         #[serde(default = "one", skip_serializing_if = "is_one")]
         count: i64,
     },
-    /// 195 (a project's): in each country, the hex with a player's node holding the most agents (at least one;
-    /// ties: the lowest-numbered) loses its node (its protections apply).
-    RaidNode,
+    /// 231 (Night Raid): in each country, 1 agent from the supply onto each of `count` different hexes holding a
+    /// player's node: those holding the most agents first (ties: the lowest-numbered). An arrival is a landing (a
+    /// firewall skips its hex; it cancels a player ambassador there); the agents destroy a node only by the Corrupt
+    /// beat's 2-agent rule, so the players get their action phase to answer.
+    AgentsOnNodes {
+        count: i64,
+    },
+    /// 231 (a project's): in each country, the hex holding the most player ambassadors (at least one; ties: the
+    /// lowest-numbered) sends every player ambassador on it back to its owner's supply.
+    RecallAmbassadors,
+    /// 231 (a project's): each open megaproject loses up to `count` player research cubes, one at a time from the
+    /// player with the most on it (ties: the first seat).
+    StripCubes {
+        count: i64,
+    },
     /// 195 (a project's): in each country, the hardened facility with the most agents on or next to it (ties: the
     /// lowest-numbered) loses its hardening tokens (a node shield on a hex with no facility is no target).
     StripHarden,
@@ -1498,7 +1510,9 @@ impl Op {
             | Op::SpreadBotnets { .. }
             | Op::TakeSite { .. }
             | Op::FactoryTroops { .. }
-            | Op::RaidNode
+            | Op::AgentsOnNodes { .. }
+            | Op::RecallAmbassadors
+            | Op::StripCubes { .. }
             | Op::StripHarden
             | Op::Clock { .. } => &[Team],
             Op::ComputeEvery { .. } => &[Threat, Team],

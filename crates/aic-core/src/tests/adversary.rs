@@ -434,6 +434,8 @@ fn the_adversary_gains_its_income_at_the_end_of_its_turn() {
         let mut g = rules.new_game(1);
         answer_all(&rules, &mut g);
         let boards = rules.map.countries.len();
+        // 231: the compute income is a country's.
+        let compute = compute * boards as i64;
         assert_eq!(g.var(adversary::INCOME_COMPUTE), compute, "d{d}");
         assert_eq!(g.var(adversary::INCOME_AMBASSADORS), ambassadors + 1, "d{d}: Garrisons");
         // Setup's pools, then round 1's reveal step (no build here to land them).
@@ -595,10 +597,11 @@ fn the_load_check_refuses_an_event_or_a_project_off_the_standard() {
         "more than two other lines",
     );
     refused(&|a| a.text = "Muster 1 on each board.".into(), "each board");
-    // Hostile Takeover (cost 8) prints two consequences; a third is refused below cost 14 (227, ruling 4) and allowed
-    // from it.
+    // Hostile Takeover (15 a board) prints two consequences; a third is refused below `THIRD_EFFECT_COST` (227,
+    // ruling 4; 231: 18 on the per-board scale) and allowed from it.
     let p = c.projects.iter().find(|p| p.id == "hostile_takeover").unwrap();
-    assert_eq!(p.effects.len() + p.resolve.len(), 2);
+    assert_eq!(p.effects.len(), 2);
+    assert!(p.cost < crate::content::THIRD_EFFECT_COST);
     assert_eq!(project_rule_break(p), None);
     let mut three = p.clone();
     three.effects.push(p.effects[0].clone());

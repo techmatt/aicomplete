@@ -118,14 +118,14 @@ def cards_page(threats, projects, adversary):
             locs = ", ".join(x.replace("_", " ") for x in t["locations"])
             menu = "; ".join(counter_words(o) for o in t["counters"])
             out.append(f"| {cell(t['name'])} | {tags} | {locs} | {cell(t['text'])} | {cell(menu)} |")
-    # 175: a project prints its cost for each player count (the per-player cost times 1, 2, 3, 4; 184 added solo).
-    out += ["", "## Projects", "", "| Project | Tags | Compute (1 / 2 / 3 / 4 players) | Resolves | Text |",
-            "|---|---|---|---|---|"]
+    # 231 (Matt): a project prints one per-board cost; in play it is that times the countries. One-shot only.
+    out += ["", "## Projects", "", "Each project resolves once, at once, in the compute step. Its compute in play is "
+            "its per-board cost times the countries.", "",
+            "| Project | Tags | Compute a board (in play: 1 / 2 / 3 / 4 countries) | Text |", "|---|---|---|---|"]
     for p in projects:
         tags = " + ".join(x.capitalize() for x in p["tags"])
         costs = " / ".join(str(p["cost"] * n) for n in (1, 2, 3, 4))
-        out.append(f"| {cell(p['name'])} | {tags} | {costs} | {'ongoing' if p['ongoing'] else 'once'} | "
-                   f"{cell(p['text'])} |")
+        out.append(f"| {cell(p['name'])} | {tags} | {p['cost']} ({costs}) | {cell(p['text'])} |")
     return "\n".join(out) + "\n"
 
 

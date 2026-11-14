@@ -278,7 +278,7 @@
     },
     {
      "op": "increase_income",
-     "compute": 2
+     "compute": 1
     },
     {
      "op": "spread_botnets",
@@ -291,14 +291,14 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each country: Security 1 or Power 1. Rally: Botnet hexes. Income: +2 compute a round. Botnets spread: each country, a Botnet onto its lowest-numbered site next to a Botnet (none: its lowest-numbered research station). Corrupt: cities.",
+   "text": "Threat, each country: Security 1 or Power 1. Rally: Botnet hexes. Income: +1 compute a country a round. Botnets spread: each country, a Botnet onto its lowest-numbered site next to a Botnet (none: its lowest-numbered research station). Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
     "facilities destroyed or corrupted"
    ],
    "value": "harm 40 at values.json (Rally: botnet hexes: 12; Income: +2 compute a round: 18; Corrupt: cities: 10); the players' cheapest answer, a removal a piece it lands (6 at 2 boards, 5 each): 30; 1.32x. Pulls priced on their own threat cards.",
-   "check": "Lands the pool on the botnet hexes (the adversary's own stations at first): it feeds the gather of the cities next to them; compute income +2 for the rest of the game.",
+   "check": "Lands the pool on the botnet hexes (the adversary's own stations at first): it feeds the gather of the cities next to them; compute income +1 a country (231: per board) for the rest of the game.",
    "flags": [
     "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)",
     "201 (r89, Matt 2026-11-12): a Botnet spread line (botnets spread quickly)"
@@ -522,7 +522,7 @@
     },
     {
      "op": "increase_income",
-     "compute": 2
+     "compute": 1
     },
     {
      "op": "increase_income",
@@ -535,14 +535,14 @@
      "site": "factory"
     }
    ],
-   "text": "Threat, each country: Security 1 or Industry 1, and Security 2 or Industry 2. Rally: factories. Income: +2 compute and +1 Agent a country a round. Corrupt: factories.",
+   "text": "Threat, each country: Security 1 or Industry 1, and Security 2 or Industry 2. Rally: factories. Income: +1 compute and +1 Agent a country a round. Corrupt: factories.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
     "facilities destroyed or corrupted"
    ],
    "value": "harm 51 at values.json (Rally: factories: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Income: +2 compute a round: 11; Corrupt: factories: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.27x. Pulls priced on their own threat cards.",
-   "check": "Two pulls, the pool on the factories, a troop a board, compute income +2: the projects fill faster from here.",
+   "check": "Two pulls, the pool on the factories, a troop a board, compute income +1 a country: the projects fill faster from here.",
    "flags": [
     "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)",
     "201 (r89, Matt 2026-11-12): Muster 1 removed (fewer troops, each deadlier)",

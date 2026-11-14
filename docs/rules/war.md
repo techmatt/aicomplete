@@ -23,7 +23,7 @@ cancel once, the surplus strikes twice).
   neutral factory makes nothing for anyone, but **feeds the cities next to it** (growth, below) and **at a Discord tip
   it arms its country's bases** (below). One opposing ambassador or agent blocks a
   factory's output while it stands. Threats build adversary factories (Mass Production, War Economy), corrupt them
-  (Factory Occupation, with its cleanup) and destroy them (Siege, leaving Fallout); projects build or take them (Shadow Factories, War Plants, Asset Seizure, Hostile Takeover).
+  (Factory Occupation, with its cleanup) and destroy them (Siege, leaving Fallout); projects build or take them (War Plants, Asset Seizure, Hostile Takeover, Grand Offensive).
 - **City growth** (r83, Matt 2026-11-11, candidate; each round, after the income step and the extra drones): every
   city, aligned, neutral or corrupted, puts **1 chip on itself for each unclaimed neutral factory next to it** (none
   of its own; a claimed or adversary factory feeds nothing; an agent on the city blocks nothing), holding at most
@@ -49,7 +49,7 @@ wait at its bases.
   up; a full base takes no drone and spends no ambassador; among several players' ambassadors the lowest seat's goes first.
 - **Peacetime:** at most `unit_cap` drones wait at each base. Drones never protect anything (r81, friction #51).
 - **Extra drones** (135, candidate) go past the cap: Warmongering (the Militarist's board: a base with an
-  adversary troop on or next to it), at most 1 extra a base a round (Matt, 2026-11-06). War Footing (a project) fills every base to its cap. No threat makes drones
+  adversary troop on or next to it), at most 1 extra a base a round (Matt, 2026-11-06). No threat or project makes drones
   (146: no special pieces).
 - **War, at the end of every round:** on each front the piles at the two bases cancel 1 for 1. Each surplus drone
   crosses, acts at once and is used up: it destroys the rival corp's factory nearest its base (not an
@@ -61,7 +61,7 @@ wait at its bases.
 **Adversary troops (candidate): the march.** Troops are **few and deadly** (r89, Matt, 2026-11-12): they come from
 adversary-owned factories (each round), the stage-III event cards' Muster 1 (each country's lowest-numbered factory,
 else city; r89: no stage-I or stage-II card musters), threats (Orbital Strike, Total War: r89, one troop fewer each)
-and projects, only from adversary factories or botnets (Factory Garrisons, War Plants, Botnet Conscripts). **Targets:**
+and projects, only from adversary factories or botnets (War Plants, Botnet Conscripts). **Targets:**
 player-owned research stations and factories, **and nodes** (r89: `troop_node` 0, from the start), never cities
 (corruption is the adversary's way in) or neutral or adversary-owned facilities.
 
@@ -125,9 +125,8 @@ drones (Warmongering) ignore the pile's cap.
 their node closest to it; Siege takes the node on its factory's hex), a site that corrupts (138: only a node on its
 own hex), a node hex holding `corrupt_node_at` (2) agents (175, [adversary.md](adversary.md)) and Border War (each
 player with a node on or next to a front's base destroys 1 of those). War takes a node on the hex of a factory it
-destroys (r83, the Militarist's War Takes Ground). A project's raid (r85: Night Raid, Mob Rule, Sabotage Teams) takes,
-in each country, the node on the hex holding the most agents (at least 1; ties lowest-numbered,
-[adversary.md](adversary.md)); an adversary troop's strike (r89, the march above). **Nothing else destroys a node:** Discord cards, the other projects and the other event
+destroys (r83, the Militarist's War Takes Ground). No project destroys a node itself (231: Night Raid lands agents on
+node hexes, for the 2-agent rule, [adversary.md](adversary.md)); an adversary troop's strike (r89, the march above). **Nothing else destroys a node:** Discord cards, the other projects and the other event
 cards print board pressure instead ([alignment.md](alignment.md)); Offensive deals a threat onto the node hex with the
 most agents and troops. A hit is each player's own pick of which token, absorbed as any destruction is (below).
 **No last-node safety (175, Matt's ruling).** Every source above takes a last node, at any stage; a player with no

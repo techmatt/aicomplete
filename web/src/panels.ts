@@ -21,7 +21,7 @@ const DRAWN_GLOBALS = new Set([
 const DRAWN_PILES = new Set([
   'adversary.deck', 'adversary.next', 'adversary.current', 'adversary.discard',
   'alignment.deck.unity', 'alignment.deck.discord', 'alignment.resolved.unity', 'alignment.resolved.discord',
-  'adversary.projects', 'adversary.projects_ongoing', 'adversary.projects_done', 'adversary.project_deck',
+  'adversary.projects', 'adversary.projects_done', 'adversary.project_deck',
 ]);
 
 const findValue = (vs: Value[], key: string) => vs.find((v) => v.key === key);
@@ -209,24 +209,19 @@ export function pipelineHtml(v: View): string {
 
 /**
  * The adversary's projects (017): the visible row, each with its compute bar (the view's
- * status is "n/cost compute"), then ongoing projects in play, the resolved count and
- * the deck.
+ * status is "n/cost compute"), then the resolved count and the deck (231: no project is ongoing).
  */
 function projectsHtml(v: View): string {
   const row = pile(v, 'adversary.projects');
-  const on = pile(v, 'adversary.projects_ongoing');
   const done = pile(v, 'adversary.projects_done');
   const deck = pile(v, 'adversary.project_deck');
-  if (!row && !on && !done && !deck) return '';
+  if (!row && !done && !deck) return '';
   const cards = (row?.visible ?? []).map((c) =>
     `<div class="project" data-card="${esc(c.id)}" data-where="pile:adversary.projects"><span class="tname"><b>${esc(c.name)}</b>${progressBars(c.status)}</span><span class="ttext">${esc(c.text ?? '')}</span></div>`);
-  const ongoing = on?.visible.length
-    ? `<span class="agroup ongoing" data-pile="adversary.projects_ongoing"><span class="what">ongoing</span>${on.visible.map((c) => cardChip(c, 'pile:adversary.projects_ongoing')).join('')}</span>`
-    : '';
   const last = done?.visible[done.visible.length - 1];
   const doneText = done ? `<span class="adeck" data-pile="adversary.projects_done" title="resolved or discarded">done <b>${done.count}</b>${last ? ` <small>last: <span data-card="${esc(last.id)}" data-where="pile:adversary.projects_done">${esc(last.name)}</span></small>` : ''}</span>` : '';
   const deckText = deck ? `<span class="adeck" data-pile="adversary.project_deck">deck <b>${deck.count}</b></span>` : '';
-  return `<div class="projects-row" data-pile="adversary.projects"><span class="stitle">Projects</span>${cards.join('') || '<span class="empty">none visible</span>'}${ongoing}${doneText}${deckText}</div>`;
+  return `<div class="projects-row" data-pile="adversary.projects"><span class="stitle">Projects</span>${cards.join('') || '<span class="empty">none visible</span>'}${doneText}${deckText}</div>`;
 }
 
 // ---------- countries strip: threats ----------

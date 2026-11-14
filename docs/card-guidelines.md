@@ -119,7 +119,7 @@ card cost or rider prints 1 credit: fold it into the price or raise it. A counte
 a per-tag rate of 1 is a rate, not an amount.
 
 **Board state to size removals against:** agents median 6 a country (p90 10) and 6 in a seat's
-reach (p90 12); troops 0-1 a country (p90 3); a project holds under its cost (5-10 compute a player).
+reach (p90 12); troops 0-1 a country (p90 3); a project holds under its cost (5-22 compute a board, 231).
 
 ## House wording
 

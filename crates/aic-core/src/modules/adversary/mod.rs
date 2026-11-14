@@ -55,7 +55,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("stage2_removed", 0, 3, "difficulty 3+: stage-II cards removed (a shorter round cap)"),
     ParamSpec::int("stage1_added", 0, 3, "151: difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step)"),
     ParamSpec::int("extra_corrupted", 0, 3, "difficulty 4: more cities per country start corrupted"),
-    ParamSpec::list("compute_income", 0, 30, "151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board)"),
+    ParamSpec::list("compute_income", 0, 30, "231: the adversary's base compute income a country a round, at difficulty 0-4 (times the countries: per board)"),
     ParamSpec::list("ambassador_income", 0, 10, "151: the agent income a country a round (into each country's pool), at difficulty 0-4"),
     ParamSpec::int("tier2_early", 0, 3, "difficulty 4+: tier-2 threats start this many rounds sooner"),
     ParamSpec::int("discord_removed", 0, 3, "difficulty 4+: Discord cards removed at setup (from tier 1)"),
@@ -87,7 +87,7 @@ const PHASES: &[PhaseSpec] = &[
     PhaseSpec::auto("event", "the face-up event card becomes this round's (none left: the adversary wins)"),
     // 178 (amendment 8112): its own phase, so a project's prompt doesn't follow the reveal's hidden draw in one
     // phase (a determinized replay of it could resolve another project first). No play change.
-    PhaseSpec::auto("compute", "the Income beat's compute (income, botnets, corrupted stations and the compute banked since the last turn onto the leftmost project, which resolves as it fills); ongoing projects act; then every firewall, cordon and prohibition token comes off: the adversary turn ends"),
+    PhaseSpec::auto("compute", "the Income beat's compute (income, botnets, corrupted stations and the compute banked since the last turn onto the leftmost project, which resolves as it fills); then every firewall, cordon and prohibition token comes off: the adversary turn ends"),
 ];
 
 // `run`'s phase indices: each is its phase's position in `PHASES`.
@@ -129,13 +129,12 @@ pub const STAGE: &str = "adversary.stage";
 pub const PEEK: &str = "adversary.peek";
 /// Adversary compute made so far (all of it goes onto projects).
 pub const COMPUTE: &str = "adversary.compute";
-/// The project deck (face down), the visible row (in slot order), ongoing
-/// projects in play, and resolved or discarded ones. The draw rule's misses
-/// go to the project discard, which reshuffles into the deck (135).
+/// The project deck (face down), the visible row (in slot order), and resolved
+/// or discarded ones (231: none is ongoing). The draw rule's misses go to the
+/// project discard, which reshuffles into the deck (135).
 pub const PROJECT_DECK: &str = "adversary.project_deck";
 pub const PROJECT_DISCARD: &str = "adversary.project_discard";
 pub const PROJECTS: &str = "adversary.projects";
-pub const PROJECTS_ONGOING: &str = "adversary.projects_ongoing";
 pub const PROJECTS_DONE: &str = "adversary.projects_done";
 /// 151: the adversary's compute income a round (base, raised by "increase income" lines).
 pub const INCOME_COMPUTE: &str = "adversary.income_compute";
@@ -358,7 +357,8 @@ impl Module for Adversary {
                 ambassadors += a;
             }
         }
-        cx.set_key(g, INCOME_COMPUTE, compute);
+        // 231 (Matt): compute is per board: the income and every printed compute line, times the countries.
+        cx.set_key(g, INCOME_COMPUTE, compute * w.map.countries.len() as i64);
         cx.set_key(g, INCOME_AMBASSADORS, ambassadors);
         fill_pools(g, cx);
         // The project deck (135): one shuffled deck, dealt into the board's slots.
@@ -438,11 +438,6 @@ impl Module for Adversary {
             COMPUTE_STEP => {
                 if !g.is_over() {
                     compute_step(g, cx)?;
-                }
-                // r80 (ruling #41): ongoing projects act in the Income beat, after compute, in the order they came
-                // into play (they acted in the build, between Muster and Corrupt).
-                if !g.is_over() {
-                    ongoing_projects_act(g, cx)?;
                 }
                 // 158: firewalls come off at the end of the adversary turn after they went on; r80 (#53) so do
                 // prohibition tokens.
@@ -600,14 +595,6 @@ impl Module for Adversary {
             row.len(),
             row.iter().map(|id| pshow(id, &fill(id))).collect(),
         );
-        let on = g.pile(PROJECTS_ONGOING);
-        out.pile(
-            "projects_ongoing",
-            "Ongoing adversary projects",
-            None,
-            on.len(),
-            on.iter().map(|id| pshow(id, "ongoing")).collect(),
-        );
         let done = g.pile(PROJECTS_DONE);
         out.pile(
             "projects_done",
@@ -669,30 +656,11 @@ impl Module for Adversary {
             FIRST_CORRUPTION,
             FIRST_PROJECT,
             "adversary.project.",
-            "adversary.ongoing_from.",
             "adversary.cut.",
             "adversary.pool.",
             "adversary.slot.",
         ]);
     }
-}
-
-/// Ongoing projects act, in the order they came into play (r80: in the Income beat).
-fn ongoing_projects_act(g: &mut GameState, cx: &mut Cx) -> Res {
-    let w = cx.world;
-    for id in ongoing_acting(g) {
-        let p = project(&w, &id);
-        let acts: Vec<Op> = p.effects.iter().filter(|e| !standing_project_op(e)).cloned().collect();
-        let before = g.hexes.clone();
-        effects::run(g, cx, &acts, &mut effects::Ctx::team().named("project").why(&p.name))?;
-        // 195: an ongoing project's rounds, and its moves (measures).
-        cx.tally(g, &KeyBuf::new("adversary.project_acts.").text(&id), 1);
-        projects::tally_moves(g, cx, &id, &before);
-        if g.is_over() {
-            break;
-        }
-    }
-    Ok(())
 }
 
 /// Shows the next `n` deck cards beyond the face-up one (Recon Sweep); a

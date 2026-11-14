@@ -632,18 +632,14 @@ pub struct ProjectCard {
     pub name: String,
     /// What slots it fits (135; Universal: every slot).
     pub tags: Vec<ThreatTag>,
-    /// Compute to fill it, per player.
+    /// Compute to fill it, per board (231: times the countries in play).
     pub cost: i64,
+    /// 231: always false (`Content::check` refuses an ongoing project; one-shot only).
     #[serde(default)]
     pub ongoing: bool,
     pub text: String,
-    /// A one-shot project's effect; an ongoing one's acts each round (its
-    /// standing ops, `ongoing_use` and `each_production`, are read where they act).
+    /// What it does when it resolves, once.
     pub effects: Vec<Op>,
-    /// What an ongoing project does once, when it resolves (135: Declaration of
-    /// War's troops).
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub resolve: Vec<Op>,
     #[serde(default)]
     pub harms: Vec<String>,
 }
@@ -1354,14 +1350,14 @@ pub fn project_rule_break(p: &ProjectCard) -> Option<String> {
     // 227 (Matt, 2026-11-13): bundles sized by cost; only the most expensive (`THIRD_EFFECT_COST` and up) may
     // carry a third effect.
     let most = if p.cost >= THIRD_EFFECT_COST { 3 } else { 2 };
-    if p.effects.len() + p.resolve.len() > most {
+    if p.effects.len() > most {
         return Some(format!("more than {most} consequences (a third only at cost {THIRD_EFFECT_COST} and up)"));
     }
     None
 }
 
-/// 227: the project cost from which a third bundled effect is allowed.
-pub const THIRD_EFFECT_COST: i64 = 14;
+/// 227: the project cost from which a third bundled effect is allowed (231: on the per-board scale, 6-20).
+pub const THIRD_EFFECT_COST: i64 = 18;
 
 fn check_adversary_board(b: &AdversaryBoard) -> Result<(), String> {
     let what = format!("adversary board {:?}", b.id);
@@ -1400,9 +1396,9 @@ fn check_project(p: &ProjectCard) -> Result<(), String> {
         ));
     }
     check_ops(&p.effects, Slot::Team, &format!("project {:?}", p.id))?;
-    check_ops(&p.resolve, Slot::Team, &format!("project {:?}", p.id))?;
-    if !p.ongoing && !p.resolve.is_empty() {
-        return Err(format!("project {:?}: only an ongoing project prints a resolve line", p.id));
+    // 231 (Matt, 2026-11-14): one-shot only; a lasting effect rides on something already tracked (an income).
+    if p.ongoing {
+        return Err(format!("project {:?}: one-shot only (231: no ongoing projects)", p.id));
     }
     if let Some(why) = project_rule_break(p) {
         return Err(format!("project {:?}: off the standard: {why}", p.id));

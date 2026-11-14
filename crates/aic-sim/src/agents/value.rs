@@ -659,10 +659,10 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::CreateSite { .. } => Worth::now(row("create_site") * t.rate("countries")),
         // 151: a rally lands its count (an event's: the pool, about three a board) on each board.
         Op::Rally { count, .. } => Worth::now(row("rally") * t.rate("countries") * if *count > 0 { *count } else { 3 } as f64),
-        // 151: an income rise, a compute point a round, an ambassador a board a round (about two compute).
-        Op::IncreaseIncome { compute, ambassadors } => {
-            Worth::income(row("increase_income") * (*compute as f64 + 2.0 * t.rate("countries") * *ambassadors as f64))
-        }
+        // 151: an income rise, an ambassador a board a round (about two compute); 231: a compute point a country.
+        Op::IncreaseIncome { compute, ambassadors } => Worth::income(
+            row("increase_income") * t.rate("countries") * (*compute as f64 + 2.0 * *ambassadors as f64),
+        ),
         Op::Corrupt { .. } => Worth::now(row("corrupt")),
         Op::LoseNodeOr { resource, amount, count } => Worth::now(
             row("lose_node_or") * (r(*resource) * *amount as f64).min(t.rate("node") * *count as f64),
@@ -696,7 +696,10 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::SpreadBotnets { count } => Worth::now(row("spread_botnets") * t.rate("countries") * *count as f64),
         Op::TakeSite { .. } => Worth::now(row("take_site") * t.rate("countries")),
         Op::FactoryTroops { count } => Worth::now(row("factory_troops") * t.rate("countries") * *count as f64),
-        Op::RaidNode => Worth::now(row("raid_node") * t.rate("countries")),
+        // 231: Night Raid's agents, each a step toward a node lost by the 2-agent rule.
+        Op::AgentsOnNodes { count } => Worth::now(row("agents_on_nodes") * t.rate("countries") * *count as f64),
+        Op::RecallAmbassadors => Worth::now(row("recall_ambassadors") * t.rate("countries")),
+        Op::StripCubes { count } => Worth::now(row("strip_cubes") * t.rate("countries") * *count as f64),
         Op::StripHarden => Worth::now(row("strip_harden") * t.rate("countries")),
         // 227: a threat's tokens all land; a site-anchored line's land in each country with such a site.
         Op::Fallout { count, at } => {

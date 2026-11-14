@@ -1,202 +1,23 @@
 [
  {
-  "id": "factory_garrisons",
-  "name": "Factory Garrisons",
+  "id": "disinformation",
+  "name": "Disinformation",
   "tags": [
-   "security"
-  ],
-  "cost": 12,
-  "ongoing": true,
-  "text": "Ongoing: each round, every adversary factory makes 1 Troop on its hex (a player Ambassador on it stops it).",
-  "effects": [
-   {
-    "op": "factory_troops",
-    "count": 1
-   }
-  ],
-  "harms": [
-   "troops made"
-  ]
- },
- {
-  "id": "night_raid",
-  "name": "Night Raid",
-  "tags": [
-   "security"
+   "diplomacy"
   ],
   "cost": 9,
   "ongoing": false,
-  "text": "Agents next to a node move onto it: 2 Agents destroy your node. Each country: the node hex holding the most Agents (at least 1; ties: lowest-numbered) loses its node.",
+  "text": "Sway 8 toward Discord.",
   "effects": [
    {
-    "op": "corrupt",
-    "site": "node"
-   },
-   {
-    "op": "raid_node"
+    "op": "sway",
+    "side": "discord",
+    "amount": 8,
+    "narrative": "fear"
    }
   ],
   "harms": [
-   "node destroyed",
-   "adversary pieces placed"
-  ]
- },
- {
-  "id": "war_footing",
-  "name": "War Footing",
-  "tags": [
-   "security"
-  ],
-  "cost": 7,
-  "ongoing": false,
-  "text": "Every military base fills with Drones to its cap.",
-  "effects": [
-   {
-    "op": "corp_troops",
-    "fill": true,
-    "at": "every_base",
-    "when": "now",
-    "past_cap": false
-   }
-  ],
-  "harms": [
-   "troops made"
-  ]
- },
- {
-  "id": "shadow_factories",
-  "name": "Shadow Factories",
-  "tags": [
-   "industry"
-  ],
-  "cost": 7,
-  "ongoing": false,
-  "text": "The adversary builds a factory in the country with the most free industrial zones (none free: 2 Agents on a factory).",
-  "effects": [
-   {
-    "op": "adversary_factory",
-    "count": 1,
-    "where": "most_free_zones",
-    "fallback_ambassadors": 2
-   }
-  ],
-  "harms": [
-   "facilities destroyed or corrupted",
-   "troops made"
-  ]
- },
- {
-  "id": "hostile_takeover",
-  "name": "Hostile Takeover",
-  "tags": [
-   "industry"
-  ],
-  "cost": 8,
-  "ongoing": false,
-  "text": "Rally 2, each country: factories. Corrupt: factories.",
-  "effects": [
-   {
-    "op": "rally",
-    "site": "factory",
-    "count": 2
-   },
-   {
-    "op": "corrupt",
-    "site": "factory"
-   }
-  ],
-  "harms": [
-   "adversary pieces placed",
-   "facilities destroyed or corrupted"
-  ]
- },
- {
-  "id": "asset_seizure",
-  "name": "Asset Seizure",
-  "tags": [
-   "industry"
-  ],
-  "cost": 9,
-  "ongoing": false,
-  "text": "Each country: its neutral factory with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned factory picked the same way turns neutral.",
-  "effects": [
-   {
-    "op": "take_site",
-    "site": "factory"
-   }
-  ],
-  "harms": [
-   "facilities destroyed or corrupted"
-  ]
- },
- {
-  "id": "war_plants",
-  "name": "War Plants",
-  "tags": [
-   "industry"
-  ],
-  "cost": 11,
-  "ongoing": false,
-  "text": "The adversary builds a factory in the country with the most free industrial zones (none free: 2 Agents on a factory). Every adversary factory makes 1 Troop on its hex (a player Ambassador on it stops it).",
-  "effects": [
-   {
-    "op": "adversary_factory",
-    "count": 1,
-    "where": "most_free_zones",
-    "fallback_ambassadors": 2
-   },
-   {
-    "op": "factory_troops",
-    "count": 1
-   }
-  ],
-  "harms": [
-   "facilities destroyed or corrupted",
-   "troops made"
-  ]
- },
- {
-  "id": "botnet_swarm",
-  "name": "Botnet Swarm",
-  "tags": [
-   "cyber"
-  ],
-  "cost": 9,
-  "ongoing": false,
-  "text": "Each country: a botnet spreads to its lowest-numbered city, research station or factory next to one of its botnets (no botnet there: its lowest-numbered research station).",
-  "effects": [
-   {
-    "op": "spread_botnets",
-    "count": 1
-   }
-  ],
-  "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)"
-  ]
- },
- {
-  "id": "station_coup",
-  "name": "Station Coup",
-  "tags": [
-   "cyber"
-  ],
-  "cost": 9,
-  "ongoing": false,
-  "text": "Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station.",
-  "effects": [
-   {
-    "op": "take_site",
-    "site": "station"
-   },
-   {
-    "op": "fallout",
-    "at": "corrupted_station"
-   }
-  ],
-  "harms": [
-   "facilities destroyed or corrupted",
-   "Fallout placed"
+   "Discord sway"
   ]
  },
  {
@@ -205,154 +26,17 @@
   "tags": [
    "cyber"
   ],
-  "cost": 5,
+  "cost": 7,
   "ongoing": false,
-  "text": "2 adversary research cubes onto each open megaproject.",
+  "text": "4 adversary research cubes onto each open megaproject.",
   "effects": [
    {
     "op": "adversary_cubes",
-    "count": 2
+    "count": 4
    }
   ],
   "harms": [
    "adversary cubes on megaprojects",
-   "Discord sway"
-  ]
- },
- {
-  "id": "data_heist",
-  "name": "Data Heist",
-  "tags": [
-   "cyber"
-  ],
-  "cost": 6,
-  "ongoing": false,
-  "text": "Each player removes 3 tokens from their cards (their choice of cards). Each player pays 8 credits or discards 2 cards.",
-  "effects": [
-   {
-    "op": "lose_tokens",
-    "amount": 3
-   },
-   {
-    "op": "requisition",
-    "resource": "credits",
-    "amount": 8,
-    "cards": 2
-   }
-  ],
-  "harms": [
-   "tokens stripped from cards",
-   "cards discarded",
-   "credits or income lost"
-  ]
- },
- {
-  "id": "botnet_conscripts",
-  "name": "Botnet Conscripts",
-  "tags": [
-   "cyber"
-  ],
-  "cost": 7,
-  "ongoing": false,
-  "text": "Each country: its lowest-numbered botnet becomes 2 Troops on its hex.",
-  "effects": [
-   {
-    "op": "botnet_troops",
-    "count": 1,
-    "troops": 2
-   }
-  ],
-  "harms": [
-   "troops made"
-  ]
- },
- {
-  "id": "recruitment_drive",
-  "name": "Recruitment Drive",
-  "tags": [
-   "diplomacy"
-  ],
-  "cost": 11,
-  "ongoing": false,
-  "text": "Income: +1 Agent a country a round.",
-  "effects": [
-   {
-    "op": "increase_income",
-    "ambassadors": 1
-   }
-  ],
-  "harms": [
-   "adversary pieces placed"
-  ]
- },
- {
-  "id": "infiltration_drive",
-  "name": "Infiltration Drive",
-  "tags": [
-   "diplomacy"
-  ],
-  "cost": 14,
-  "ongoing": false,
-  "text": "Rally 3, each country: cities. Corrupt: cities (1 fewer).",
-  "effects": [
-   {
-    "op": "rally",
-    "site": "city",
-    "count": 3
-   },
-   {
-    "op": "corrupt",
-    "site": "city",
-    "cut": 1
-   }
-  ],
-  "harms": [
-   "adversary pieces placed",
-   "facilities destroyed or corrupted"
-  ]
- },
- {
-  "id": "mob_rule",
-  "name": "Mob Rule",
-  "tags": [
-   "diplomacy"
-  ],
-  "cost": 8,
-  "ongoing": false,
-  "text": "Rally 2, each country: cities. Each country: the node hex holding the most Agents (at least 1; ties: lowest-numbered) loses its node.",
-  "effects": [
-   {
-    "op": "rally",
-    "site": "city",
-    "count": 2
-   },
-   {
-    "op": "raid_node"
-   }
-  ],
-  "harms": [
-   "adversary pieces placed",
-   "node destroyed"
-  ]
- },
- {
-  "id": "disinformation",
-  "name": "Disinformation",
-  "tags": [
-   "diplomacy"
-  ],
-  "cost": 5,
-  "ongoing": false,
-  "text": "Sway 5 toward Discord.",
-  "effects": [
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 5,
-    "narrative": "fear"
-   }
-  ],
-  "harms": [
    "Discord sway"
   ]
  },
@@ -377,25 +61,23 @@
   ]
  },
  {
-  "id": "sabotage_teams",
-  "name": "Sabotage Teams",
+  "id": "botnet_swarm",
+  "name": "Botnet Swarm",
   "tags": [
-   "power"
+   "cyber"
   ],
-  "cost": 6,
+  "cost": 12,
   "ongoing": false,
-  "text": "Each country: the hardened facility with the most Agents on or next to it (ties: lowest-numbered) loses its hardening. Each country: the node hex holding the most Agents (at least 1; ties: lowest-numbered) loses its node.",
+  "text": "Each country, twice: a botnet spreads to its lowest-numbered city, research station or factory next to one of its botnets (no botnet there: its lowest-numbered research station).",
   "effects": [
    {
-    "op": "strip_harden"
-   },
-   {
-    "op": "raid_node"
+    "op": "spread_botnets",
+    "count": 2
    }
   ],
   "harms": [
-   "protections stripped",
-   "node destroyed"
+   "adversary pieces placed",
+   "projects advanced (compute)"
   ]
  },
  {
@@ -404,7 +86,7 @@
   "tags": [
    "universal"
   ],
-  "cost": 6,
+  "cost": 7,
   "ongoing": false,
   "text": "Each country: an extra tier-2 threat, any tag.",
   "effects": [
@@ -420,21 +102,174 @@
   ]
  },
  {
-  "id": "grand_offensive",
-  "name": "Grand Offensive",
+  "id": "night_raid",
+  "name": "Night Raid",
   "tags": [
-   "universal"
+   "security"
+  ],
+  "cost": 8,
+  "ongoing": false,
+  "text": "Each country: 1 Agent onto each of two different hexes holding a player node (those holding the most Agents first; ties: lowest-numbered). 2 Agents on your node's hex destroy your node in the next Corrupt beat.",
+  "effects": [
+   {
+    "op": "agents_on_nodes",
+    "count": 2
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "node destroyed"
+  ]
+ },
+ {
+  "id": "containment_breach",
+  "name": "Containment Breach",
+  "tags": [
+   "power"
+  ],
+  "cost": 7,
+  "ongoing": false,
+  "text": "Each player pays 1 antimatter or discards 3 cards.",
+  "effects": [
+   {
+    "op": "requisition",
+    "resource": "antimatter",
+    "amount": 1,
+    "cards": 3
+   }
+  ],
+  "harms": [
+   "antimatter lost",
+   "cards discarded"
+  ]
+ },
+ {
+  "id": "crackdown",
+  "name": "Crackdown",
+  "tags": [
+   "security"
+  ],
+  "cost": 6,
+  "ongoing": false,
+  "text": "Each country: every player Ambassador on its hex holding the most (ties: lowest-numbered) goes back to its owner's supply.",
+  "effects": [
+   {
+    "op": "recall_ambassadors"
+   }
+  ],
+  "harms": [
+   "pieces pushed or reach cut"
+  ]
+ },
+ {
+  "id": "lab_purge",
+  "name": "Lab Purge",
+  "tags": [
+   "cyber"
+  ],
+  "cost": 9,
+  "ongoing": false,
+  "text": "Each open megaproject loses 4 player research cubes, from the player with the most on it first.",
+  "effects": [
+   {
+    "op": "strip_cubes",
+    "count": 4
+   }
+  ],
+  "harms": [
+   "a megaproject or converter denied"
+  ]
+ },
+ {
+  "id": "asset_seizure",
+  "name": "Asset Seizure",
+  "tags": [
+   "industry"
+  ],
+  "cost": 11,
+  "ongoing": false,
+  "text": "Each country: its neutral factory with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned factory picked the same way turns neutral.",
+  "effects": [
+   {
+    "op": "take_site",
+    "site": "factory"
+   }
+  ],
+  "harms": [
+   "facilities destroyed or corrupted"
+  ]
+ },
+ {
+  "id": "botnet_conscripts",
+  "name": "Botnet Conscripts",
+  "tags": [
+   "cyber"
+  ],
+  "cost": 9,
+  "ongoing": false,
+  "text": "Each country: its lowest-numbered botnet becomes 3 Troops on its hex.",
+  "effects": [
+   {
+    "op": "botnet_troops",
+    "count": 1,
+    "troops": 3
+   }
+  ],
+  "harms": [
+   "troops made"
+  ]
+ },
+ {
+  "id": "purge_lists",
+  "name": "Purge Lists",
+  "tags": [
+   "diplomacy"
+  ],
+  "cost": 5,
+  "ongoing": false,
+  "text": "Each player loses 1 Ambassador (from their supply, else one of theirs on the board).",
+  "effects": [
+   {
+    "op": "lose_ambassador"
+   }
+  ],
+  "harms": [
+   "ambassadors lost"
+  ]
+ },
+ {
+  "id": "dirty_bomb",
+  "name": "Dirty Bomb",
+  "tags": [
+   "power"
   ],
   "cost": 10,
   "ongoing": false,
-  "text": "Each country rallies its Agent income now, to this round's Rally. Corrupt: cities.",
+  "text": "Each country: 1 Fallout lands next to each of its two lowest-numbered corrupted cities.",
   "effects": [
    {
-    "op": "adversary_build"
-   },
+    "op": "fallout",
+    "count": 2,
+    "at": "corrupted_city"
+   }
+  ],
+  "harms": [
+   "Fallout placed"
+  ]
+ },
+ {
+  "id": "lab_seizure",
+  "name": "Lab Seizure",
+  "tags": [
+   "cyber"
+  ],
+  "cost": 6,
+  "ongoing": false,
+  "text": "Corrupt: research stations.",
+  "effects": [
    {
     "op": "corrupt",
-    "site": "city"
+    "site": "station"
    }
   ],
   "harms": [
@@ -443,31 +278,296 @@
   ]
  },
  {
+  "id": "slander_campaign",
+  "name": "Slander Campaign",
+  "tags": [
+   "diplomacy"
+  ],
+  "cost": 7,
+  "ongoing": false,
+  "text": "Pull 4 Sway back off the Unity track.",
+  "effects": [
+   {
+    "op": "pull_unity",
+    "amount": 4
+   }
+  ],
+  "harms": [
+   "Unity pulled back"
+  ]
+ },
+ {
+  "id": "coastal_raids",
+  "name": "Coastal Raids",
+  "tags": [
+   "security"
+  ],
+  "cost": 7,
+  "ongoing": false,
+  "text": "Rally 3, each country: coastal cities.",
+  "effects": [
+   {
+    "op": "rally",
+    "site": "coastal_city",
+    "count": 3
+   }
+  ],
+  "harms": [
+   "adversary pieces placed"
+  ]
+ },
+ {
+  "id": "plant_seizure",
+  "name": "Plant Seizure",
+  "tags": [
+   "industry"
+  ],
+  "cost": 7,
+  "ongoing": false,
+  "text": "Corrupt: factories.",
+  "effects": [
+   {
+    "op": "corrupt",
+    "site": "factory"
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "facilities destroyed or corrupted"
+  ]
+ },
+ {
+  "id": "sabotage_teams",
+  "name": "Sabotage Teams",
+  "tags": [
+   "power"
+  ],
+  "cost": 10,
+  "ongoing": false,
+  "text": "Each country: the hardened facility with the most Agents on or next to it (ties: lowest-numbered) loses its hardening. Until the end of next round, players make no energy from their nodes in upkeep.",
+  "effects": [
+   {
+    "op": "strip_harden"
+   },
+   {
+    "op": "flag",
+    "name": "sabotage",
+    "everywhere": true
+   }
+  ],
+  "harms": [
+   "protections stripped",
+   "energy lost"
+  ]
+ },
+ {
+  "id": "mob_rule",
+  "name": "Mob Rule",
+  "tags": [
+   "diplomacy"
+  ],
+  "cost": 14,
+  "ongoing": false,
+  "text": "Rally 3, each country: cities. Sway 3 toward Discord.",
+  "effects": [
+   {
+    "op": "rally",
+    "site": "city",
+    "count": 3
+   },
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 3,
+    "narrative": "fear"
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "Discord sway"
+  ]
+ },
+ {
+  "id": "data_heist",
+  "name": "Data Heist",
+  "tags": [
+   "cyber"
+  ],
+  "cost": 12,
+  "ongoing": false,
+  "text": "Each player removes 3 tokens from their cards (their choice of cards). Each player pays 8 credits or discards 2 cards.",
+  "effects": [
+   {
+    "op": "lose_tokens",
+    "amount": 3
+   },
+   {
+    "op": "requisition",
+    "resource": "credits",
+    "amount": 8,
+    "cards": 2
+   }
+  ],
+  "harms": [
+   "tokens stripped from cards",
+   "cards discarded",
+   "credits or income lost"
+  ]
+ },
+ {
+  "id": "hostile_takeover",
+  "name": "Hostile Takeover",
+  "tags": [
+   "industry"
+  ],
+  "cost": 15,
+  "ongoing": false,
+  "text": "Rally 3, each country: factories. Corrupt: factories.",
+  "effects": [
+   {
+    "op": "rally",
+    "site": "factory",
+    "count": 3
+   },
+   {
+    "op": "corrupt",
+    "site": "factory"
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "facilities destroyed or corrupted"
+  ]
+ },
+ {
+  "id": "station_coup",
+  "name": "Station Coup",
+  "tags": [
+   "cyber"
+  ],
+  "cost": 19,
+  "ongoing": false,
+  "text": "Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station.",
+  "effects": [
+   {
+    "op": "take_site",
+    "site": "station"
+   },
+   {
+    "op": "fallout",
+    "at": "corrupted_station"
+   }
+  ],
+  "harms": [
+   "facilities destroyed or corrupted",
+   "Fallout placed"
+  ]
+ },
+ {
+  "id": "war_plants",
+  "name": "War Plants",
+  "tags": [
+   "industry"
+  ],
+  "cost": 19,
+  "ongoing": false,
+  "text": "Each country: the adversary builds a factory on its free industrial zone next to an Agent, else its lowest-numbered (none free: 2 Agents on one of its factories). Every adversary factory makes 2 Troops on its hex (a player Ambassador on it stops them).",
+  "effects": [
+   {
+    "op": "adversary_factory",
+    "count": 1,
+    "where": "each_country",
+    "fallback_ambassadors": 2
+   },
+   {
+    "op": "factory_troops",
+    "count": 2
+   }
+  ],
+  "harms": [
+   "facilities destroyed or corrupted",
+   "troops made"
+  ]
+ },
+ {
+  "id": "recruitment_drive",
+  "name": "Recruitment Drive",
+  "tags": [
+   "diplomacy"
+  ],
+  "cost": 20,
+  "ongoing": false,
+  "text": "Income: +1 Agent a country a round. Rally 2, each country: cities.",
+  "effects": [
+   {
+    "op": "increase_income",
+    "ambassadors": 1
+   },
+   {
+    "op": "rally",
+    "site": "city",
+    "count": 2
+   }
+  ],
+  "harms": [
+   "adversary pieces placed"
+  ]
+ },
+ {
   "id": "propaganda_network",
   "name": "Propaganda Network",
   "tags": [
    "universal"
   ],
-  "cost": 14,
-  "ongoing": true,
-  "text": "Now: Income: +2 compute a round. Ongoing: Sway 2 toward Discord.",
+  "cost": 18,
+  "ongoing": false,
+  "text": "Income: +1 compute a country a round. Sway 6 toward Discord.",
   "effects": [
+   {
+    "op": "increase_income",
+    "compute": 1
+   },
    {
     "op": "sway",
     "side": "discord",
-    "amount": 2,
+    "amount": 6,
     "narrative": "fear"
    }
   ],
-  "resolve": [
+  "harms": [
+   "projects advanced (compute)",
+   "Discord sway"
+  ]
+ },
+ {
+  "id": "infiltration_drive",
+  "name": "Infiltration Drive",
+  "tags": [
+   "diplomacy"
+  ],
+  "cost": 22,
+  "ongoing": false,
+  "text": "Rally 3, each country: cities. Corrupt: cities (1 fewer). Then each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
+  "effects": [
    {
-    "op": "increase_income",
-    "compute": 2
+    "op": "rally",
+    "site": "city",
+    "count": 3
+   },
+   {
+    "op": "corrupt",
+    "site": "city",
+    "cut": 1
+   },
+   {
+    "op": "fallout",
+    "at": "corrupted_city"
    }
   ],
   "harms": [
-   "Discord sway",
-   "projects advanced (compute)"
+   "adversary pieces placed",
+   "facilities destroyed or corrupted",
+   "Fallout placed"
   ]
  },
  {
@@ -476,17 +576,51 @@
   "tags": [
    "universal"
   ],
-  "cost": 14,
+  "cost": 20,
   "ongoing": false,
-  "text": "Discard the top face-down card of the adversary's event deck, if any: the round cap comes a round sooner.",
+  "text": "Discard the top face-down card of the adversary's event deck, if any: the round cap comes a round sooner. Each country: an extra tier-2 threat, any tag.",
   "effects": [
    {
     "op": "clock",
     "count": 1
+   },
+   {
+    "op": "deal_threats",
+    "count": 1,
+    "each_country": true,
+    "tier": 2
    }
   ],
   "harms": [
-   "the clock sped up"
+   "the clock sped up",
+   "extra threats"
+  ]
+ },
+ {
+  "id": "grand_offensive",
+  "name": "Grand Offensive",
+  "tags": [
+   "universal"
+  ],
+  "cost": 22,
+  "ongoing": false,
+  "text": "Each country rallies its Agent income now, to this round's Rally. Corrupt: cities. Corrupt: factories.",
+  "effects": [
+   {
+    "op": "adversary_build"
+   },
+   {
+    "op": "corrupt",
+    "site": "city"
+   },
+   {
+    "op": "corrupt",
+    "site": "factory"
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "facilities destroyed or corrupted"
   ]
  }
 ]

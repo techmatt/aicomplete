@@ -122,6 +122,7 @@ const CARDS_DISCARDED: usize = 9;
 const AMBASSADORS_LOST: usize = 10;
 const TOKENS_STRIPPED: usize = 11;
 const PROTECTIONS_STRIPPED: usize = 12;
+const PIECES_PUSHED: usize = 13;
 const BLACKED_OUT: usize = 14;
 const PIECES_PLACED: usize = 15;
 const ADVERSARY_CUBES: usize = 16;
@@ -131,6 +132,7 @@ const EXTRA_THREATS: usize = 19;
 const CLOCK_SPED_UP: usize = 20;
 const DISCORD_SWAY: usize = 21;
 const UNITY_PULLED: usize = 22;
+const MEGAPROJECT_DENIED: usize = 23;
 const BLOCKED: usize = 25;
 const FALLOUT_PLACED: usize = 26;
 
@@ -254,7 +256,10 @@ fn op_harms(op: &Op) -> Vec<usize> {
         // A neutral site corrupts (a node on its hex goes with it, 197), else a player's turns neutral: a facility
         // lost either way.
         Op::TakeSite { .. } => vec![FACILITIES_CORRUPTED, NODE_DESTROYED, AMBASSADORS_LOST],
-        Op::RaidNode => vec![NODE_DESTROYED],
+        // 231: Night Raid's agents on node hexes destroy a node by the 2-agent rule in the Corrupt beat.
+        Op::AgentsOnNodes { .. } => vec![PIECES_PLACED, NODE_DESTROYED],
+        Op::RecallAmbassadors => vec![PIECES_PUSHED],
+        Op::StripCubes { .. } => vec![MEGAPROJECT_DENIED],
         Op::StripHarden => vec![PROTECTIONS_STRIPPED],
         Op::Clock { .. } => vec![CLOCK_SPED_UP],
         // The player's side: gains, removals, protections and passives.
@@ -393,8 +398,7 @@ fn harm_marks() -> BTreeMap<(usize, usize), Mark> {
         add(ADVERSARY_EVENTS, &r.effects);
     }
     for p in &c.projects {
-        // An ongoing project's resolve line counts too, once per harm with its effects.
-        add(ADVERSARY_PROJECTS, &[&p.effects[..], &p.resolve[..]].concat());
+        add(ADVERSARY_PROJECTS, &p.effects);
     }
     for p in &c.map.countries {
         add(MEGAPROJECTS, &p.megaproject.adversary);

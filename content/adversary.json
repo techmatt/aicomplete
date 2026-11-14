@@ -226,7 +226,7 @@
     },
     {
      "op": "increase_income",
-     "compute": 2
+     "compute": 1
     },
     {
      "op": "spread_botnets",
@@ -239,7 +239,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each country: Security 1 or Power 1. Rally: Botnet hexes. Income: +2 compute a round. Botnets spread: each country, a Botnet onto its lowest-numbered site next to a Botnet (none: its lowest-numbered research station). Corrupt: cities.",
+   "text": "Threat, each country: Security 1 or Power 1. Rally: Botnet hexes. Income: +1 compute a country a round. Botnets spread: each country, a Botnet onto its lowest-numbered site next to a Botnet (none: its lowest-numbered research station). Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
@@ -426,7 +426,7 @@
     },
     {
      "op": "increase_income",
-     "compute": 2
+     "compute": 1
     },
     {
      "op": "increase_income",
@@ -439,7 +439,7 @@
      "site": "factory"
     }
    ],
-   "text": "Threat, each country: Security 1 or Industry 1, and Security 2 or Industry 2. Rally: factories. Income: +2 compute and +1 Agent a country a round. Corrupt: factories.",
+   "text": "Threat, each country: Security 1 or Industry 1, and Security 2 or Industry 2. Rally: factories. Income: +1 compute and +1 Agent a country a round. Corrupt: factories.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",

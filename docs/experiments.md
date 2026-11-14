@@ -127,7 +127,7 @@ off the value table.
   natively; read by `scripts/bench/ladder.py NEW OLD --measures` (pooled, paired, by set).
   `scripts/bench/read_specs.py read` and `run_read.sh` are the native route.
 - **Standing measures, old against new every read** (`--measures`): corruption node losses and adversary ambassadors
-  placed a game; per level, projects revealed (`adversary.projects_revealed`) and resolved as a share of the deck,
+  placed a game; per level, projects revealed (`adversary.projects_revealed`, every draw: a game's deck use) and resolved as a share of the deck,
   distinct projects revealed, reshuffles; by board, slack beside bound seat-rounds, land tokens a round and node
   placement spread. A measure the old binary never tallied is patched into its tree before its first read.
 - **Costs (r73):** a 720-game strategist or greedy set (d0-d4) about 2 min on 6 threads; double on a busy box.
@@ -165,7 +165,7 @@ rollout policy or `prune` change, the line alone reads near the engine.
 
 **Fresh seeds.** Specs start at seed 0: give a confirming read a `--seed` no screen of this revision used. An item
 that spends seeds updates the ledger after its last read: `python scripts/bench/seeds.py next N` prints the next N,
-`--take` moves *Next free* (all below it used) past them. Next free: 47040. **The dev seeds are
+`--take` moves *Next free* (all below it used) past them. Next free: 47136. **The dev seeds are
 36800-36831**, for on/off checks and crash-finding (SE ~5 a cell). A 2-8 point effect (a level's income step):
 screen it paired on this revision's spent fresh sets (~500+ games a cell, SE ~2), then confirm once on new seeds.
 

@@ -740,7 +740,9 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::SpreadBotnets { .. }
         | Op::TakeSite { .. }
         | Op::FactoryTroops { .. }
-        | Op::RaidNode
+        | Op::AgentsOnNodes { .. }
+        | Op::RecallAmbassadors
+        | Op::StripCubes { .. }
         | Op::StripHarden
         | Op::Fallout { .. }
         | Op::Clock { .. }

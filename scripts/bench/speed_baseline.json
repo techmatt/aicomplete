@@ -1,13 +1,13 @@
 {
- "rules_revision": 100,
+ "rules_revision": 102,
  "games": {
-  "random": "72b36ff4c60b",
-  "greedy": "084c170582f7",
-  "engine": "107a6123d5f7",
-  "planner": "629025386bf8"
+  "random": "8908c0d2beb4",
+  "greedy": "554806a2ba59",
+  "engine": "e2e0fa6dc721",
+  "planner": "b515b3e372c7"
  },
- "random": 7.2,
- "greedy": 663.5,
- "engine": 966.5,
- "planner": 21599.1
+ "random": 9.1,
+ "greedy": 524.1,
+ "engine": 991.3,
+ "planner": 26718.3
 }

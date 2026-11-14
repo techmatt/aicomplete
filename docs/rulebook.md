@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 101. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 102. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -329,7 +329,7 @@ The adversary's board prints its turn as a strip of four beats, played in order.
 
 **4. Income.** Turn the next event card face up. Put one round of agent income into each country's pool. Then all the
 adversary's compute arrives: its income, each botnet and corrupted station (once its country's megaproject is complete, §9) without a player's ambassador on it, and
-what was made since the last turn, onto the projects (§17). Then ongoing projects act. Firewalls, cordons (§16) and
+what was made since the last turn, onto the projects (§17). Firewalls, cordons (§16) and
 no-Rally, no-Muster and no-Corrupt tokens (§12) come off.
 
 **Every Muster** is raised by the level surcharge (§21). A troop that
@@ -352,8 +352,7 @@ Both happen in the Corrupt beat, two ways:
 - **A Corrupt line** (first, when the card prints one): "Corrupt X" names a type (cities, coastal cities, stations,
   factories or open land). Its **targets** are the places of that type the adversary doesn't own. **Every agent next
   to exactly one target moves onto it**; an agent next to two or more stays where it is, as do agents already on a
-  target. Then **every target holding its number** corrupts, and its agents go back to the supply. Night Raid's node
-  line gathers agents onto your nodes the same way: 2 agents there destroy your node (node loss, not corruption).
+  target. Then **every target holding its number** corrupts, and its agents go back to the supply.
 - **Natural corruption** (then, every round): every city, station and factory not already the adversary's that holds
   its corrupt number **on its own hex** corrupts; then every hex with a player's node and **2 agents** loses the node.
 
@@ -708,7 +707,7 @@ never march, and they never strike your stations.
 
 - **each time the Discord track tips** (§12): each country with a neutral factory that has no agent and no ambassador
   on it puts 1 drone on each of its bases, however many such factories it has;
-- from Warmongering, in production's growth (§9, §19), and the War Footing project (to the limit).
+- from Warmongering, in production's growth (§9, §19).
 
 **An ambassador on a base** stops each drone that would land there, from any source, one ambassador a drone, and is
 spent. A drone already at a base stays until war uses it up.
@@ -795,7 +794,7 @@ Your **nodes** and your **facilities** (stations and factories) can be destroyed
 | **2 agents on your node's hex** (§6) | that node; the agents go to the supply |
 | **An adversary troop's strike** | the node, or player-owned station or factory, it strikes (§6) |
 | **War** | the factory a drone strikes, then a node on its hex (War Takes Ground) |
-| **A project's raid** (Night Raid, Mob Rule, Sabotage Teams) | in each country, the node on the hex holding the most agents (at least 1) |
+| **Night Raid** (a project) | lands 1 agent on each of two node hexes in each country; the 2-agent rule then takes the node in the next Corrupt beat |
 | **Threats and event lines** | what they print ("destroy a node", Border War's node near a base) |
 
 A destroyed facility takes its owner's cube with it. A destroyed node leaves the game and leaves no mark on its hex.
@@ -828,7 +827,7 @@ destroy the node of a player with **Sanctuary** (a Protector capstone), and spen
 Nothing protects a last node but the protection order above: anything that destroys a node can destroy your last
 one, at any stage. Any player with no nodes loses the game for everyone, so keep a second node on the board: the
 first spaces of both tracks cost no energy, so an early second node costs only your node power's price or Place a node's 6 credits. Watch the hexes next to a
-lone node: two agents on it destroy it, and Night Raid's node line pulls in every agent next to it and no other target.
+lone node: two agents on it destroy it, and Night Raid lands an agent on two node hexes in each country.
 
 *Sources: rules/war.md (Node loss), rules/ai-powers.md (Shelters and hardening), rules/ambassadors.md
 (Armor); crates/aic-core/src/modules/board/destroy.rs, modules/board/node.rs, modules/adversary/ (corrupt_hex),
@@ -874,7 +873,7 @@ The adversary running out of agents is not a loss: a placement it can't make doe
 
 **Corrupt X** names a type: cities, coastal cities, research stations, factories or open land. A **target** is a
 place of that type the adversary doesn't own ("open land": an open hex with no base, station, factory or Fallout, a
-node on it or not). Night Raid's node line uses the same move with every hex holding a player's node as a target.
+node on it or not).
 
 1. **Move.** Every agent next to exactly one target moves onto it, across borders too, even off one of the
    adversary's own sites. An agent next to two or more targets stays where it is; agents already on a target stay. An
@@ -942,29 +941,31 @@ The adversary board has **slots** (the Militarist: three open slots that take an
 projects one at a time until every slot is full: each goes into the first empty slot. When the deck runs out, shuffle the
 discard back in.
 
-A project prints its cost **for each number of players**. All compute arrives in one step, the **compute step** of
-the Income beat: its printed compute income, 1 for each botnet and each corrupted research station (once its country's megaproject is complete,
-§9) without a player's ambassador on it, and every compute made since the last compute step (threats taking effect, cards and projects that
-print it), which waits beside the projects until then. All of it goes onto the **leftmost** project. The moment a
-project holds its cost, it **resolves** and leaves its slot:
-
-- a **one-time** project does what it prints and leaves the game;
-- an **ongoing** project does its "Now:" line at once, then goes beside the board and acts every round from the next:
-  in the Income beat after the compute step, or in production or war if that is what it prints.
+A project prints **one cost a board**: in play it costs that times the number of countries. All compute arrives in one
+step, the **compute step** of the Income beat: the compute income (printed a country, so times the countries), 1 for
+each botnet and each corrupted research station (once its country's megaproject is complete, §9) without a player's
+ambassador on it, and every compute made since the last compute step (threats taking effect, cards and projects that
+print it), which waits beside the projects until then: that public pile is your warning. All of it goes onto the
+**leftmost** project. The moment a project holds its cost, it **resolves** at once, does what it prints in **every
+country**, and leaves the game. No project is ongoing; one that lasts does it through something already on the table
+(an income raised, pieces on the board, Fallout).
 
 **Slide and refill:** when a project leaves (resolved or discarded), the projects to its right slide one slot left,
 and the empty rightmost slot is dealt a new project at once; the rest of the compute goes onto the new leftmost.
 Compute with no project to go on is lost. No project resolves outside the compute step.
 
-**What projects do.** A project is a small plan on the board: it builds or corrupts a factory, corrupts a research station, drops Fallout, spreads or converts a
-botnet, makes troops on the adversary's factories, raids a node, strips hardening, or runs the clock. **Its target
-is read off the board when it resolves**, in each country: "the factory with the most agents on or next to it" counts
-the agents on that hex and the six around it; "the node hex holding the most agents" counts only the hex itself; ties
-go to the lowest hex number. Nothing is marked in advance: look at the leftmost project and the board to see what it
+**What projects do.** A project is one of the adversary's big moves: a cheap one does one thing, a costly one two or
+three. It builds or corrupts a factory in each country, corrupts a research station, rallies and corrupts cities,
+drops Fallout, spreads or converts a botnet, makes troops on the adversary's factories, lands agents on your nodes
+(Night Raid: 2 agents there destroy your node in the next Corrupt beat, after your action phase), sends the
+ambassadors on a country's busiest hex home, takes research cubes off megaprojects, strips hardening, or runs the
+clock. **Its target is read off the board when it resolves**, in each country: "the factory with the most agents on
+or next to it" counts the agents on that hex and the six around it; "the node hexes holding the most agents" count
+only the hex itself; ties go to the lowest hex number. Nothing is marked in advance: look at the leftmost project and the board to see what it
 will hit, and move agents off, claim the site or firewall it first. A firewalled neutral site still counts as neutral,
 so a seizure finds nothing to take in that country and your own site is safe. "Turns neutral" takes the owner's cube off a site;
-"discard the top card of the event deck" brings the round cap a round nearer. Only Data Heist makes you pay or
-discard. A botnet's troops are made on its own hex, as a factory's are; on the Protector's node hex none is (Wall).
+"discard the top card of the event deck" brings the round cap a round nearer. Only Data Heist and Containment Breach
+make you pay or discard. A botnet's troops are made on its own hex, as a factory's are; on the Protector's node hex none is (Wall).
 
 *Sources: rules/adversary.md (The project deck); content/projects.json; crates/aic-core/src/modules/adversary/.*
 
@@ -997,8 +998,7 @@ adversary's). A threat's two tokens never share a hex; a token with no place lef
 - **One ambassador always stops one drone**, and is spent. A player's ambassador on a base stops the drone that base
   would get, whatever makes it. A full base takes no drone and spends no ambassador. With several players'
   ambassadors on one base, the earliest in player order is spent first.
-- **Warmongering** adds 1 drone to a base even past its limit (at most 1 extra a base a round). The War Footing
-  project fills every base.
+- **Warmongering** adds 1 drone to a base even past its limit (at most 1 extra a base a round).
 
 *Sources: rules/war.md; crates/aic-core/src/modules/board/production.rs.*
 
@@ -1032,13 +1032,13 @@ Each row is the whole level. Your own costs (claim, liberate, cards, actions) ne
 from the rules (`aic-sim docs`); the words below are not.
 
 <!-- generated: difficulty -->
-| Level | Corrupt numbers (city / station / factory / land / node) | Threat items | Adversary board's harder line | Event cards (I / II / III) | Rounds | Compute income | More agent income a country | Other |
+| Level | Corrupt numbers (city / station / factory / land / node) | Threat items | Adversary board's harder line | Event cards (I / II / III) | Rounds | Compute income a country | More agent income a country | Other |
 |---|---|---|---|---|---|---|---|---|
 | 0 | 4 / 3 / 3 / 3 / 2 | — | — | 5 / 5 / 3 | 13 | 0 | — | — |
-| 1 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +1 | — | 5 / 5 / 3 | 13 | 13 | — | — |
-| 2 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | yes | 5 / 5 / 3 | 13 | 17 | — | — |
-| 3 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | yes | 5 / 3 / 3 | 11 | 21 | — | — |
-| 4 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | yes | 4 / 3 / 4 | 11 | 30 | +1 | tier-2 threats 1 round sooner |
+| 1 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +1 | — | 5 / 5 / 3 | 13 | 3 | — | — |
+| 2 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | yes | 5 / 5 / 3 | 13 | 5 | — | — |
+| 3 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | yes | 5 / 3 / 3 | 11 | 13 | — | — |
+| 4 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | yes | 4 / 3 / 4 | 11 | 18 | +1 | tier-2 threats 1 round sooner |
 <!-- /generated -->
 
 - **Threat items:** each resource item on a threat costs that much more; a tag item ("2 Security") never changes.
@@ -1064,7 +1064,8 @@ Both incomes climb with the level (never down). Level 0 deals the same event dec
 - **Boards:** Builder, Protector, Researcher, then a second Builder. 2 players: any two of the three. Solo: the Builder
   only.
 - **Tipping:** the Unity track tips at 3 × the number of players, the Discord track at 4 ×.
-- **Projects** print a cost for each number of players (§17).
+- **Projects** print one cost a board, times the number of countries in play (§17); the compute income and every
+  "+N compute" line are a country's too.
 - **Drones:** at 3-4 countries every corp has two bases, so a neutral factory makes 2 drones at a Discord tip.
 - **Solo:** one country, so no fronts, no bases and no war. You take all 4 cards in the draft and keep those you want, paying as usual (§7). "Another
   player" on a card means you: an Effect that fires when another player plays a card fires on your own plays, and a

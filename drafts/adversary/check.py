@@ -31,10 +31,13 @@ HARMS = [
     "protections stripped", "the clock sped up", "adversary cubes on megaprojects",
     # 227: the land scar on all four adversity sources.
     "Fallout placed",
+    # 231: ledger gaps the project deck prints.
+    "antimatter lost", "pieces pushed or reach cut", "a megaproject or converter denied",
 ]
 # 195: harms the drafts may print from one kind of source: the project deck's new rows (the engine's ledger,
 # docs/harms.md, counts the board rules beside them and lists any thin one under *Gaps*).
-ONE_SOURCE = {"protections stripped", "the clock sped up", "adversary cubes on megaprojects"}
+ONE_SOURCE = {"protections stripped", "the clock sped up", "adversary cubes on megaprojects", "antimatter lost",
+              "pieces pushed or reach cut", "a megaproject or converter denied"}
 PERMANENT = {"node destroyed", "facilities destroyed or corrupted"}
 LOCATIONS = {"city", "coastal_city", "station", "factory", "base"}
 SACRIFICE = {"security", "diplomacy", "cyber", "industry", "power", "science"}
@@ -409,10 +412,16 @@ def project_breaks(p):
     out = []
     if "each board" in p.get("text", "").lower():
         out.append('says "each board" (each country)')
-    # 227 (Matt, 2026-11-13): bundles sized by cost; a third effect only at cost 14 and up (content::THIRD_EFFECT_COST).
-    most = 3 if p.get("cost", 0) >= 14 else 2
+    # 227 (Matt, 2026-11-13): bundles sized by cost; a third effect only at cost 18 and up (231's per-board scale;
+    # content::THIRD_EFFECT_COST).
+    most = 3 if p.get("cost", 0) >= 18 else 2
     if len(p.get("effects", [])) + len(p.get("resolve", [])) > most:
         out.append(f"more than {most} consequences")
+    # 231 (Matt, 2026-11-14): one-shot only, and every board.
+    if p.get("ongoing"):
+        out.append("ongoing (231: one-shot only)")
+    if "most free" in p.get("text", "").lower():
+        out.append("a single-country target (231: every board)")
     return out
 
 

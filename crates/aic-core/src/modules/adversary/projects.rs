@@ -34,9 +34,9 @@ pub(super) fn project<'w>(w: &World<'w>, id: &str) -> &'w ProjectCard {
     w.content.project(id)
 }
 
-/// Compute that fills project `id`: its printed cost per player.
-pub fn project_cost(w: &World, g: &GameState, id: &str) -> i64 {
-    project(w, id).cost * g.seats.len().max(1) as i64
+/// Compute that fills project `id`: its printed per-board cost times the countries (231; one country a seat).
+pub fn project_cost(w: &World, _g: &GameState, id: &str) -> i64 {
+    project(w, id).cost * w.map.countries.len().max(1) as i64
 }
 
 /// Draws the top of the project deck; an empty deck reshuffles the discard
@@ -284,30 +284,13 @@ fn spend_every(g: &mut GameState, cx: &mut Cx, n: i64) -> Res {
     Ok(())
 }
 
-fn ongoing_from_key(id: &str) -> KeyBuf {
-    KeyBuf::new("adversary.ongoing_from.").text(id)
-}
-
-/// The ongoing projects acting this round, in the order they came into play:
-/// one that resolved this round acts from the next (145).
-pub fn ongoing_acting(g: &GameState) -> Vec<Key> {
-    g.pile(PROJECTS_ONGOING).iter().filter(|id| g.var(&ongoing_from_key(id.as_str())) <= g.round as i64).copied().collect()
-}
-
-/// A full project resolves: once (to the resolved pile), or as an ongoing
-/// project from next round's build on. An empty row deals a new one.
+/// A full project resolves once, at once, to the resolved pile (231: none is
+/// ongoing). An empty row deals a new one.
 fn resolve_project(g: &mut GameState, cx: &mut Cx, id: &str) -> Res {
     let w = cx.world;
     let p = project(&w, id);
     cx.set_key(g, &project_key(id), 0);
-    let to = if p.ongoing {
-        // 145: it acts from next round on (it acted in the build that filled it).
-        cx.set_key(g, &ongoing_from_key(id), g.round as i64 + 1);
-        PROJECTS_ONGOING
-    } else {
-        PROJECTS_DONE
-    };
-    cx.move_card(g, id, PROJECTS, to, false)
+    cx.move_card(g, id, PROJECTS, PROJECTS_DONE, false)
         .expect("visible project");
     cx.tally(g, "adversary.projects_resolved", 1);
     cx.tally(g, &KeyBuf::new("adversary.project.").text(id), 1);
@@ -319,15 +302,13 @@ fn resolve_project(g: &mut GameState, cx: &mut Cx, id: &str) -> Res {
         format!("Adversary project {} resolves: {}", p.name, p.text)
     });
     leave_slot(g, cx, id);
-    let once = if p.ongoing { &p.resolve } else { &p.effects };
     let before = g.hexes.clone();
-    effects::run(g, cx, once, &mut effects::Ctx::team().named("project").why(&p.name))?;
+    effects::run(g, cx, &p.effects, &mut effects::Ctx::team().named("project").why(&p.name))?;
     tally_moves(g, cx, id, &before);
     Ok(())
 }
 
-/// 195 (a measure, not a rule): the token moves a project's resolution, or an ongoing project's round, made on the
-/// map: each token added to or taken off a hex counts one (`adversary.project_moves.<id>`).
+/// 195 (a measure, not a rule): the token moves a project's resolution made on the map: each token added to or taken off a hex counts one (`adversary.project_moves.<id>`).
 pub(super) fn tally_moves(g: &mut GameState, cx: &mut Cx, id: &str, before: &[std::sync::Arc<crate::state::HexState>]) {
     let mut n = 0;
     for (a, b) in before.iter().zip(g.hexes.iter()) {
@@ -369,14 +350,4 @@ pub fn discard_project(g: &mut GameState, cx: &mut Cx, id: &str) {
         format!("Adversary project {} is discarded", project(&w, id).name)
     });
     leave_slot(g, cx, id);
-}
-
-/// An ongoing project's op that is read where it acts, not resolved each
-/// round (135): a front fighting twice, corp troops each production.
-pub(super) fn standing_project_op(e: &Op) -> bool {
-    matches!(
-        e,
-        Op::ExtraWar { ongoing_use: true, .. }
-            | Op::CorpTroops { when: crate::op::CorpWhen::EachProduction, .. }
-    )
 }

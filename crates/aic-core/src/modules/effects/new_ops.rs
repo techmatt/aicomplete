@@ -635,26 +635,32 @@ fn build_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, z: usize) {
 }
 
 /// AdversaryFactory: on the free zone nearest the threat's token (ties:
-/// country, then hex number); `where` most_free_zones, in the country with the
-/// most free zones (ties: the first), on its zone next to an adversary
-/// ambassador if any, else its lowest-numbered. None free: `fallback`
-/// agents on a factory (players choose).
+/// country, then hex number); `where` each_country (231), one in each country, on
+/// its free zone next to an agent if any, else its lowest-numbered. None free:
+/// `fallback` agents on a factory (players choose; each_country: that country's).
 fn adversary_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Option<FactoryWhere>, fallback: i64) -> Res {
+    let w = cx.world;
+    if at == Some(FactoryWhere::EachCountry) {
+        for c in 0..w.map.countries.len() {
+            factory_in(g, cx, ctx, Some(c), fallback)?;
+        }
+        return Ok(());
+    }
+    factory_in(g, cx, ctx, None, fallback)
+}
+
+/// One adversary factory: in country `c` (231), else by the threat's token.
+fn factory_in(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, c: Option<usize>, fallback: i64) -> Res {
     let w = cx.world;
     let zones = free_zones(&w, g);
     let country = |z: usize| w.map.hexes[z].country as usize;
     let number = |z: usize| w.map.hexes[z].number;
-    let pick = match at {
-        Some(FactoryWhere::MostFreeZones) => {
-            let most = (0..w.map.countries.len()).rev().max_by_key(|&c| zones.iter().filter(|&&z| country(z) == c).count());
-            most.and_then(|c| {
-                zones
-                    .iter()
-                    .copied()
-                    .filter(|&z| country(z) == c)
-                    .min_by_key(|&z| (!next_to(&w, z, |x| g.tokens(x, ADV_AMBASSADOR) > 0), number(z)))
-            })
-        }
+    let pick = match c {
+        Some(c) => zones
+            .iter()
+            .copied()
+            .filter(|&z| country(z) == c)
+            .min_by_key(|&z| (!next_to(&w, z, |x| g.tokens(x, ADV_AMBASSADOR) > 0), number(z))),
         None => {
             let from = token(&w, g, ctx, Some(Location::Factory));
             zones.iter().copied().min_by_key(|&z| (from.map_or(0, |f| w.map.distance(f, z)), country(z), number(z)))
@@ -669,7 +675,9 @@ fn adversary_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Option<Facto
     }
     if fallback > 0 {
         // r80 (184's D79 a): a firewalled factory isn't offered, as a creation line skips it.
-        let factories: Vec<usize> = (0..g.hexes.len()).filter(|&h| g.tokens(h, FACTORY) > 0 && !firewalled(g, h)).collect();
+        let in_scope = |h: usize| c.is_none_or(|c| country(h) == c);
+        let factories: Vec<usize> =
+            (0..g.hexes.len()).filter(|&h| g.tokens(h, FACTORY) > 0 && !firewalled(g, h) && in_scope(h)).collect();
         let opts = factories.iter().map(|&h| hex_opt(&w, h)).collect();
         let prompt = || format!("{}: agents land on which factory?", ctx.why.as_deref().unwrap_or("The adversary"));
         if let Some(i) = cx.choose_loss(0, prompt, opts)? {
@@ -691,7 +699,7 @@ struct Corp {
 }
 
 /// CorpTroops. `now`: the bases (the threat's base, or every base) make them
-/// at once (General Mobilization past the cap, War Footing to the cap).
+/// at once (General Mobilization past the cap; `fill` to the cap, which War Footing printed until 231 cut it).
 /// `each_production` from a threat registers them on its base for `rounds`
 /// rounds from the next (or for good, `permanent`); an ongoing project's and
 /// the adversary board's are read by the production step, so here do nothing.

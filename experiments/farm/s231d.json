@@ -1,0 +1,75 @@
+{
+  "name": "s231d",
+  "note": "231: screen 4 on spent 47008-47087 (agent value fix in): d2/d3 dials",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_G",
+      "set": [
+        "adversary.compute_income=0,3,5,12,16"
+      ]
+    },
+    {
+      "name": "br_G",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=0,3,5,12,16"
+      ]
+    },
+    {
+      "name": "pr_G",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=0,3,5,12,16"
+      ]
+    },
+    {
+      "name": "bp_E",
+      "set": [
+        "adversary.compute_income=0,3,6,13,17"
+      ]
+    },
+    {
+      "name": "br_E",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=0,3,6,13,17"
+      ]
+    },
+    {
+      "name": "pr_E",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=0,3,6,13,17"
+      ]
+    }
+  ],
+  "difficulties": [
+    2,
+    3
+  ],
+  "agents": [
+    "greedy",
+    "strategist"
+  ],
+  "games": 80,
+  "records": 0
+}

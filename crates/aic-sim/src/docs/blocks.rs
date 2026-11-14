@@ -159,20 +159,13 @@ pub(super) fn projects_block() -> String {
         .iter()
         .map(|p| {
             let tags: Vec<&str> = p.tags.iter().map(|t| t.name()).collect();
-            // 175: printed per player count (the cost is per player: 2, 3 and 4 players read off the card;
-            // 184: and the solo game's, 1 player).
-            vec![
-                p.name.clone(),
-                tags.join(" + "),
-                p.cost.to_string(),
-                (2 * p.cost).to_string(),
-                (3 * p.cost).to_string(),
-                (4 * p.cost).to_string(),
-                if p.ongoing { "ongoing" } else { "once" }.to_string(),
-            ]
+            // 231 (Matt): one per-board cost printed; in play it is that times the countries (one a player).
+            // Small does one thing; big bundles a main effect and a side harm, three from THIRD_EFFECT_COST.
+            let n = p.effects.len();
+            vec![p.name.clone(), tags.join(" + "), p.cost.to_string(), format!("{} ({n})", if n > 1 { "big" } else { "small" })]
         })
         .collect();
-    table(&["Project", "Tags", "1 player", "2 players", "3 players", "4 players", "Resolves"], rows)
+    table(&["Project", "Tags", "Cost a board", "Size (effects)"], rows)
 }
 
 fn value(v: &ParamValue) -> String {
@@ -545,7 +538,7 @@ pub(super) fn rulebook_difficulty_block(r: &Rules) -> String {
             "Adversary board's harder line",
             "Event cards (I / II / III)",
             "Rounds",
-            "Compute income",
+            "Compute income a country",
             "More agent income a country",
             "Other",
         ],
@@ -939,8 +932,8 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          ambassadors for the same, so you choose between racing toward Unity and holding off the next \
          Discord card. You also lose if any player has no nodes left on the board. \
          Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of \
-         their own hex (or agents on it), war taking a factory on their hex, a project's raid (the node \
-         hex with the most agents), and Border War (nodes by a front's base). A lost token leaves the game and nothing marks its hex; its \
+         their own hex (or two agents on it: Night Raid lands them), war taking a factory on their hex, \
+         and Border War (nodes by a front's base). A lost token leaves the game and nothing marks its hex; its \
          income stays. {safe}The adversary deck is a round cap too, {} rounds at \
          most (fewer at the harder levels), and reaching it loses. So there are three different \
          pressures: the Discord deck (politics), your nodes (the board) and the cap.\n",

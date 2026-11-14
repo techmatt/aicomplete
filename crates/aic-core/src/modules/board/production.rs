@@ -166,8 +166,7 @@ fn measure_round(g: &mut GameState, cx: &mut Cx) {
 
 /// The extra corp troops a base asks for this production step (135): (past
 /// its cap, held to it), from the threats registered on it (Conscription),
-/// the ongoing projects (none since r85; Arms Race was one) and the adversary board's rules
-/// (Warmongering).
+/// and the adversary board's rules (Warmongering; 231: no project is ongoing).
 fn extra_asked(w: &World, g: &GameState, base: usize, registered: &[(usize, u32, i64)]) -> (i64, i64) {
     let (mut past, mut capped) = (0, 0);
     for &(b, until, n) in registered {
@@ -175,10 +174,9 @@ fn extra_asked(w: &World, g: &GameState, base: usize, registered: &[(usize, u32,
             past += n;
         }
     }
-    let acting = adversary::ongoing_acting(g);
-    let ongoing = acting.iter().flat_map(|id| w.content.project(id).effects.iter());
+    // 231: the adversary board's rules only (no project is ongoing).
     let rules = w.content.adversary_board.rules.iter().flat_map(|r| r.effects.iter());
-    for op in ongoing.chain(rules) {
+    for op in rules {
         if let Op::CorpTroops { count, at: CorpAt::EveryBase, near, when: CorpWhen::EachProduction, past_cap, .. } = op {
             if matches!(near, Some(CorpNear::AdversaryTroop)) && !next_to(w, base, |x| g.tokens(x, TROOP) > 0) {
                 continue;

@@ -26,6 +26,8 @@ pub(super) fn fill_pools(g: &mut GameState, cx: &mut Cx) {
 
 /// 151: "increase income": for the rest of the game.
 pub fn increase_income(g: &mut GameState, cx: &mut Cx, compute: i64, ambassadors: i64) {
+    // 231 (Matt): "+N compute a round" is N a country, as the compute income is.
+    let compute = compute * cx.world.map.countries.len() as i64;
     cx.add_key(g, INCOME_COMPUTE, compute);
     cx.add_key(g, INCOME_AMBASSADORS, ambassadors);
     cx.tally(g, "adversary.income_raised_compute", compute);

@@ -1,0 +1,144 @@
+{
+  "name": "s231b",
+  "note": "231: screen 2 on spent 47008-47039: potency overlay P x dial D (base in s231a)",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_P",
+      "set": [
+        "projects.disinformation.effects.0.amount=8",
+        "projects.backdoor_research.effects.0.count=4",
+        "projects.botnet_swarm.effects.0.count=2",
+        "projects.containment_breach.effects.0.cards=3",
+        "projects.lab_purge.effects.0.count=4",
+        "projects.botnet_conscripts.effects.0.troops=3",
+        "projects.mob_rule.effects.0.count=3",
+        "projects.hostile_takeover.effects.0.count=3",
+        "projects.war_plants.effects.1.count=2",
+        "projects.propaganda_network.effects.1.amount=6",
+        "projects.accelerated_timetable.effects.1.tier=2"
+      ]
+    },
+    {
+      "name": "br_P",
+      "set": [
+        "ai.boards=0,2",
+        "projects.disinformation.effects.0.amount=8",
+        "projects.backdoor_research.effects.0.count=4",
+        "projects.botnet_swarm.effects.0.count=2",
+        "projects.containment_breach.effects.0.cards=3",
+        "projects.lab_purge.effects.0.count=4",
+        "projects.botnet_conscripts.effects.0.troops=3",
+        "projects.mob_rule.effects.0.count=3",
+        "projects.hostile_takeover.effects.0.count=3",
+        "projects.war_plants.effects.1.count=2",
+        "projects.propaganda_network.effects.1.amount=6",
+        "projects.accelerated_timetable.effects.1.tier=2"
+      ]
+    },
+    {
+      "name": "pr_P",
+      "set": [
+        "ai.boards=1,2",
+        "projects.disinformation.effects.0.amount=8",
+        "projects.backdoor_research.effects.0.count=4",
+        "projects.botnet_swarm.effects.0.count=2",
+        "projects.containment_breach.effects.0.cards=3",
+        "projects.lab_purge.effects.0.count=4",
+        "projects.botnet_conscripts.effects.0.troops=3",
+        "projects.mob_rule.effects.0.count=3",
+        "projects.hostile_takeover.effects.0.count=3",
+        "projects.war_plants.effects.1.count=2",
+        "projects.propaganda_network.effects.1.amount=6",
+        "projects.accelerated_timetable.effects.1.tier=2"
+      ]
+    },
+    {
+      "name": "bp_D",
+      "set": [
+        "adversary.compute_income=0,4,7,10,15"
+      ]
+    },
+    {
+      "name": "br_D",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=0,4,7,10,15"
+      ]
+    },
+    {
+      "name": "pr_D",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=0,4,7,10,15"
+      ]
+    },
+    {
+      "name": "bp_PD",
+      "set": [
+        "projects.disinformation.effects.0.amount=8",
+        "projects.backdoor_research.effects.0.count=4",
+        "projects.botnet_swarm.effects.0.count=2",
+        "projects.containment_breach.effects.0.cards=3",
+        "projects.lab_purge.effects.0.count=4",
+        "projects.botnet_conscripts.effects.0.troops=3",
+        "projects.mob_rule.effects.0.count=3",
+        "projects.hostile_takeover.effects.0.count=3",
+        "projects.war_plants.effects.1.count=2",
+        "projects.propaganda_network.effects.1.amount=6",
+        "projects.accelerated_timetable.effects.1.tier=2",
+        "adversary.compute_income=0,4,7,10,15"
+      ]
+    },
+    {
+      "name": "br_PD",
+      "set": [
+        "ai.boards=0,2",
+        "projects.disinformation.effects.0.amount=8",
+        "projects.backdoor_research.effects.0.count=4",
+        "projects.botnet_swarm.effects.0.count=2",
+        "projects.containment_breach.effects.0.cards=3",
+        "projects.lab_purge.effects.0.count=4",
+        "projects.botnet_conscripts.effects.0.troops=3",
+        "projects.mob_rule.effects.0.count=3",
+        "projects.hostile_takeover.effects.0.count=3",
+        "projects.war_plants.effects.1.count=2",
+        "projects.propaganda_network.effects.1.amount=6",
+        "projects.accelerated_timetable.effects.1.tier=2",
+        "adversary.compute_income=0,4,7,10,15"
+      ]
+    },
+    {
+      "name": "pr_PD",
+      "set": [
+        "ai.boards=1,2",
+        "projects.disinformation.effects.0.amount=8",
+        "projects.backdoor_research.effects.0.count=4",
+        "projects.botnet_swarm.effects.0.count=2",
+        "projects.containment_breach.effects.0.cards=3",
+        "projects.lab_purge.effects.0.count=4",
+        "projects.botnet_conscripts.effects.0.troops=3",
+        "projects.mob_rule.effects.0.count=3",
+        "projects.hostile_takeover.effects.0.count=3",
+        "projects.war_plants.effects.1.count=2",
+        "projects.propaganda_network.effects.1.amount=6",
+        "projects.accelerated_timetable.effects.1.tier=2",
+        "adversary.compute_income=0,4,7,10,15"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "greedy",
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

@@ -367,14 +367,14 @@ function alignment(a) {
 
 function project(p) {
   return frameless('project', p, {
-    // Projects have no stage (one deck); the label says whether it stays in play.
+    // Projects have no stage (one deck); 231: all one-shot.
     tier: null,
-    tierLabel: p.ongoing ? 'Ongoing project' : 'Project',
+    tierLabel: 'Project',
     cost: p.cost,
-    // 175: printed per player count (184: the solo game's too).
-    costLabel: `${p.cost} / ${2 * p.cost} / ${3 * p.cost} / ${4 * p.cost} compute (1 / 2 / 3 / 4 players)`,
-    keywords: p.ongoing ? ['ongoing'] : [],
-    price: [['1 player', p.cost], ['2 players', 2 * p.cost], ['3 players', 3 * p.cost], ['4 players', 4 * p.cost]],
+    // 231: one cost a board, times the countries in play.
+    costLabel: `${p.cost} compute a board (${2 * p.cost} / ${3 * p.cost} / ${4 * p.cost} at 2 / 3 / 4 countries)`,
+    keywords: [],
+    price: [['1 country', p.cost], ['2 countries', 2 * p.cost], ['3 countries', 3 * p.cost], ['4 countries', 4 * p.cost]],
     ops: { effects: p.effects },
   });
 }
