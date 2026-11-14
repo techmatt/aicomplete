@@ -1,0 +1,19 @@
+{
+  "name": "f228",
+  "note": "228: fresh read, seeds 46912-46975: greedy and the strategist on the three board pairs in both seat orders (bp = Builder seat 0; pb = Protector seat 0), d0-d3. The base (r99, 3acba79) runs the same spec natively on the same seeds.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]},
+    {"name": "pb", "set": ["ai.boards=1,0"]},
+    {"name": "rb", "set": ["ai.boards=2,0"]},
+    {"name": "rp", "set": ["ai.boards=2,1"]}
+  ],
+  "difficulties": [0, 1, 2, 3],
+  "agents": ["greedy", "strategist"],
+  "games": 64,
+  "records": 0
+}

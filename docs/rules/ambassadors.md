@@ -98,10 +98,10 @@ One agent on it costs nothing.
   players' there, the players choose whose (seat 0 asks for the team). An ambassador arriving on agents cancels one.
   Both go (the agent to the adversary's supply), with no Unity, so a position is held only until the next arrival.
   Claim and Liberate refuse a site with an agent on it (206): clear it first.
-- **Remove agents** (the standard action, [economy.md](economy.md)): spend `remove_ambassadors` (1) ambassador from
+- **Remove agents** (the standard action, [economy.md](economy.md)): spend `remove_ambassadors` (2) ambassadors from
   your supply, used up, and remove up to `remove_count` (3) agents in reach, one at a time from any hexes in reach,
   your choice, stopping when you like. It places nothing (r75; it stood on one hex and removed 3 there). The supply
-  caps it: each use needs a new ambassador.
+  caps it: each use needs two new ambassadors (r100: 2 for 3 agents, 0.94 at the anchors, was 1 at 1.88).
 - **Consumed or standing:** claiming, liberating, Remove agents, Envoy, armor and the troop rule use a player
   ambassador up; blocking and moving leave it standing. A consumed ambassador is gone: new ones come from cards,
   Followers and the standard project. Player ambassadors move through cards (any player's Gather of

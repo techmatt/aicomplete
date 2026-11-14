@@ -22,7 +22,7 @@ fn c2_seats_builder_and_protector_and_c3_adds_the_researcher() {
     let (rules, _) = c3();
     let w = rules.world();
     assert_eq!(ai::board(&w, 2).id, "researcher");
-    assert_eq!(ai::slots(&w, 2), 3);
+    assert_eq!(ai::slots(&w, 2), 4);
 }
 
 #[test]

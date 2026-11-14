@@ -1,0 +1,19 @@
+{
+  "name": "s228r",
+  "note": "228: Researcher board levers on the A build, its two pairs, same seeds 46784-46879, d1-d2, paired with s228's A cells. S: 4 building slots (was 3). I: the card-play track's insight one higher, 7/8/9 (was 6/7/8; the Protector prints 7/8/9). SI: both.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "br-AS", "set": ["ai.boards=0,2", "board.remove_ambassadors=2", "ai.slots=5,4,4"]},
+    {"name": "pr-AS", "set": ["ai.boards=1,2", "board.remove_ambassadors=2", "ai.slots=5,4,4"]},
+    {"name": "br-AI", "set": ["ai.boards=0,2", "board.remove_ambassadors=2", "ais.researcher.play_track.0.insight=7", "ais.researcher.play_track.3.insight=8", "ais.researcher.play_track.6.insight=9"]},
+    {"name": "pr-AI", "set": ["ai.boards=1,2", "board.remove_ambassadors=2", "ais.researcher.play_track.0.insight=7", "ais.researcher.play_track.3.insight=8", "ais.researcher.play_track.6.insight=9"]},
+    {"name": "br-ASI", "set": ["ai.boards=0,2", "board.remove_ambassadors=2", "ai.slots=5,4,4", "ais.researcher.play_track.0.insight=7", "ais.researcher.play_track.3.insight=8", "ais.researcher.play_track.6.insight=9"]},
+    {"name": "pr-ASI", "set": ["ai.boards=1,2", "board.remove_ambassadors=2", "ai.slots=5,4,4", "ais.researcher.play_track.0.insight=7", "ais.researcher.play_track.3.insight=8", "ais.researcher.play_track.6.insight=9"]}
+  ],
+  "difficulties": [1, 2],
+  "agents": ["greedy", "strategist"],
+  "games": 96,
+  "records": 0
+}

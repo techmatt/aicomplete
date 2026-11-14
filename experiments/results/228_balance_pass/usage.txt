@@ -1,0 +1,55 @@
+| action | key | role | measure | band | use | in? | builder | protector | researcher | d0 | d1 | d2 | d3 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Builder Buy In | `power:builder:Buy In` | node-power | seat_round | 0.30-0.90 | 0.41 | in | 0.41 | - | - | 0.38 | 0.41 | 0.42 | 0.44 |
+| Protector Accord | `power:protector:Accord` | node-power | seat_round | 0.30-0.90 | 0.43 | in | - | 0.43 | - | 0.42 | 0.43 | 0.42 | 0.42 |
+| Researcher Peer Review | `power:researcher:Peer Review` | node-power | seat_round | 0.30-0.90 | 0.39 | in | - | - | 0.39 | 0.43 | 0.38 | 0.37 | 0.37 |
+| Builder Mint | `power:builder:Mint` | board-engine | seat_round | 0.15-0.90 | 0.36 | in | 0.36 | - | - | 0.36 | 0.36 | 0.36 | 0.36 |
+| Builder Procure | `power:builder:Procure` | board-engine | seat_round | 0.40-0.90 | 0.69 | in | 0.69 | - | - | 0.67 | 0.69 | 0.70 | 0.71 |
+| Protector Bulwark | `power:protector:Bulwark` | board-engine | seat_round | 0.40-0.90 | 0.55 | in | - | 0.55 | - | 0.61 | 0.55 | 0.52 | 0.52 |
+| Researcher Synthesis | `power:researcher:Synthesis` | board-engine | seat_round | 0.40-0.90 | 0.78 | in | - | - | 0.78 | 0.80 | 0.79 | 0.76 | 0.76 |
+| Researcher Grant | `power:researcher:Grant` | board-engine | seat_round | 0.15-0.90 | 0.15 | in | - | - | 0.15 | 0.14 | 0.15 | 0.16 | 0.16 |
+| Builder Scrap | `power:builder:Scrap` | sacrifice | seat_game | 0.25-2.00 | 1.13 | in | 1.13 | - | - | 1.41 | 1.23 | 1.07 | 0.82 |
+| Builder Overcharge | `power:builder:Overcharge` | sacrifice | seat_game | 0.25-2.00 | 0.93 | in | 0.93 | - | - | 1.20 | 1.06 | 0.84 | 0.65 |
+| Builder Rush Build | `power:builder:Rush Build` | sacrifice | seat_game | 0.25-2.00 | 1.11 | in | 1.11 | - | - | 1.35 | 1.17 | 1.04 | 0.86 |
+| Protector Debrief | `power:protector:Debrief` | sacrifice | seat_game | 0.25-2.75 | 2.40 | in | - | 2.40 | - | 3.64 | 2.40 | 1.82 | 1.73 |
+| Researcher Field Station | `power:researcher:Field Station` | sacrifice | seat_game | 0.25-2.00 | 0.80 | in | - | - | 0.80 | 1.00 | 0.83 | 0.71 | 0.66 |
+| Researcher Audit | `power:researcher:Audit` | sacrifice | seat_game | 0.25-2.00 | 1.49 | in | - | - | 1.49 | 2.33 | 1.54 | 1.04 | 1.03 |
+| Researcher Meltdown | `power:researcher:Meltdown` | burn | seat_game | 0.02-0.50 | 0.42 | in | - | - | 0.42 | 0.39 | 0.44 | 0.40 | 0.43 |
+| Builder Teardown | `power:builder:Teardown` | burn | seat_game | 0.02-0.50 | 0.18 | in | 0.18 | - | - | 0.17 | 0.19 | 0.17 | 0.18 |
+| Protector Reclaim | `power:protector:Reclaim` | burn | seat_game | 0.02-0.50 | 0.11 | in | - | 0.11 | - | 0.12 | 0.12 | 0.10 | 0.10 |
+| Builder Fortify | `power:builder:Fortify` | troop-response | seat_game | 0.25-2.50 | 0.26 | in | 0.26 | - | - | 0.06 | 0.28 | 0.36 | 0.34 |
+| Protector Patrol | `power:protector:Patrol` | troop-response | seat_game | 0.25-3.00 | 2.58 | in | - | 2.58 | - | 2.62 | 2.59 | 2.55 | 2.55 |
+| Protector Interdict | `power:protector:Interdict` | troop-response | seat_game | 0.25-2.50 | 0.86 | in | - | 0.86 | - | 0.31 | 0.78 | 1.14 | 1.20 |
+| Researcher Disrupt | `power:researcher:Disrupt` | troop-response | seat_game | 0.25-2.50 | 1.22 | in | - | - | 1.22 | 0.56 | 1.40 | 1.52 | 1.41 |
+| Place a node | `standard:node` | staple | seat_round | 0.10-1.20 | 0.45 | in | 0.37 | 0.50 | 0.47 | 0.39 | 0.44 | 0.47 | 0.50 |
+| Dispatch | `standard:move` | staple | seat_round | 0.10-1.20 | 0.85 | in | 0.83 | 0.76 | 0.95 | 0.99 | 0.85 | 0.76 | 0.74 |
+| Buy a city's energy | `standard:buy_energy` | staple | seat_round | 0.10-1.20 | 0.21 | in | 0.17 | 0.30 | 0.16 | 0.22 | 0.21 | 0.20 | 0.20 |
+| Turn a cube into insight | `standard:insight` | staple | seat_round | 0.10-1.20 | 0.29 | in | 0.50 | 0.36 | 0.01 | 0.33 | 0.29 | 0.27 | 0.25 |
+| Remove agents | `standard:remove` | hedge | seat_game | 0.05-0.75 | 0.40 | in | 0.47 | 0.36 | 0.37 | 0.60 | 0.37 | 0.32 | 0.31 |
+| Build a research station | `standard:station` | staple | seat_round | 0.10-1.20 | 0.14 | in | 0.19 | 0.15 | 0.08 | 0.12 | 0.14 | 0.15 | 0.15 |
+| Make antimatter | `standard:antimatter` | hedge | seat_game | 0.05-0.75 | 0.51 | in | 0.53 | 0.62 | 0.38 | 0.81 | 0.53 | 0.40 | 0.31 |
+| Remove a troop | `standard:troop` | hedge | seat_game | 0.05-0.75 | 0.50 | in | 0.40 | 0.68 | 0.42 | 0.20 | 0.53 | 0.66 | 0.62 |
+| Lift Fallout | `standard:lift` | hedge | seat_game | 0.01-0.50 | 0.22 | in | 0.21 | 0.28 | 0.16 | 0.19 | 0.21 | 0.25 | 0.22 |
+| Gain a player ambassador | `standard:ambassador` | hedge | seat_game | 0.05-0.75 | 0.31 | in | 0.33 | 0.40 | 0.21 | 0.33 | 0.38 | 0.31 | 0.23 |
+| Sell a card | `sell` | hedge | seat_game | 0.05-0.75 | 0.50 | in | 0.58 | 0.30 | 0.61 | 0.70 | 0.49 | 0.35 | 0.44 |
+| Liberate a site | `standard:liberate` | win-route | games | 50%-95% | 88% | in | 90% | 90% | 83% | 91% | 93% | 84% | 83% |
+| Claim a site | `standard:claim` | sway-tool | seat_game | 0.10-2.00 | 0.26 | in | 0.25 | 0.37 | 0.17 | 0.60 | 0.22 | 0.12 | 0.11 |
+| Envoy | `standard:envoy` | sway-tool | seat_game | 0.00-2.00 | 0.00 | in | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| Take down a botnet | `standard:botnet` | sway-tool | seat_game | 0.10-2.00 | 0.65 | in | 0.61 | 0.83 | 0.51 | 1.12 | 0.63 | 0.45 | 0.40 |
+| Build a factory | `standard:factory` | off | seat_game |  | - | off | - | - | - | - | - | - | - |
+| Harden for chips | `standard:harden_chips` | off | seat_game |  | - | off | - | - | - | - | - | - | - |
+| Play a card | `play` | cards | seat_round | 1.00-4.00 | 3.25 | in | 3.67 | 3.13 | 2.97 | 3.58 | 3.31 | 3.08 | 2.94 |
+| A building's Action | `use` | building | seat_round | 0.20-1.50 | 0.51 | in | 0.56 | 0.45 | 0.51 | 0.54 | 0.52 | 0.50 | 0.46 |
+| Tidal Grid converter | `convert:Tidal Grid` | converter | seat_game | 0.30-3.00 | 1.29 | in | 2.32 | 1.54 | 0.00 | 1.98 | 1.33 | 1.02 | 0.82 |
+| Tidal Grid chip converter | `convert:Tidal Grid:chips` | converter | seat_game | 0.30-3.00 | 0.00 | low | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| Polar Compute Array converter | `convert:Polar Compute Array` | converter | seat_game | 0.30-3.00 | 1.50 | in | 2.04 | 1.82 | 0.65 | 2.11 | 1.57 | 1.26 | 1.09 |
+| Polar Compute Array chip converter | `convert:Polar Compute Array:chips` | converter | seat_game | 0.30-3.00 | 1.13 | in | 1.15 | 1.27 | 0.97 | 1.45 | 1.20 | 1.00 | 0.88 |
+| Pay a threat's counter | `pay` | threat | seat_game | 0.50-5.00 | 2.45 | in | 2.22 | 3.11 | 2.02 | 3.40 | 2.51 | 1.99 | 1.90 |
+| Counter a threat whole | `counter_with` | hedge | seat_game | 0.05-0.75 | 0.20 | in | 0.31 | 0.13 | 0.17 | 0.24 | 0.22 | 0.19 | 0.16 |
+| Withdraw from a threat | `withdraw` | correction | seat_game | 0.00-0.50 | 0.00 | in | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| Credits spent | `spend:credits` | resource | spent | 50%-110% | 106% | in | 104% | 107% | 107% | 104% | 106% | 106% | 107% |
+| Energy spent | `spend:energy` | resource | spent | 50%-110% | 73% | in | 70% | 77% | 70% | 70% | 74% | 74% | 74% |
+| Chips spent | `spend:chips` | resource | spent | 50%-110% | 59% | in | 69% | 52% | 42% | 53% | 57% | 61% | 67% |
+| Antimatter spent | `spend:antimatter` | resource | spent | 50%-110% | 38% | low | 41% | 27% | 58% | 36% | 39% | 39% | 41% |
+| Research cubes spent | `spend:research_cubes` | resource | spent | 50%-110% | 65% | in | 80% | 77% | 42% | 63% | 65% | 67% | 66% |
+| Ambassadors spent | `spend:ambassadors` | resource | spent | 50%-110% | 73% | in | 67% | 80% | 72% | 68% | 74% | 76% | 76% |

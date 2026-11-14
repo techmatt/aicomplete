@@ -1,0 +1,16 @@
+{
+  "name": "s228c",
+  "note": "228: the kept-not-played cards on the A build (Remove agents at 2), same seeds 46784-46879, d1-d2, paired with s228's A cells. F: Field Grant puts 2 cubes on any open megaproject (was 3, only where you own a station: unplayable without one). C: Collateralized Grid also gains 2 energy now (its cash-out needs capital tokens few seats hold).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp-AFC", "set": ["board.remove_ambassadors=2", "cards.field_grant.effects=[{\"op\":\"project_cube\",\"count\":2}]", "cards.collateralized_grid.effects=[{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":2},{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2},{\"op\":\"cash_out\",\"kind\":\"capital\",\"resource\":\"energy\",\"rate\":1}]"]},
+    {"name": "br-AFC", "set": ["ai.boards=0,2", "board.remove_ambassadors=2", "cards.field_grant.effects=[{\"op\":\"project_cube\",\"count\":2}]", "cards.collateralized_grid.effects=[{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":2},{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2},{\"op\":\"cash_out\",\"kind\":\"capital\",\"resource\":\"energy\",\"rate\":1}]"]},
+    {"name": "pr-AFC", "set": ["ai.boards=1,2", "board.remove_ambassadors=2", "cards.field_grant.effects=[{\"op\":\"project_cube\",\"count\":2}]", "cards.collateralized_grid.effects=[{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":2},{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2},{\"op\":\"cash_out\",\"kind\":\"capital\",\"resource\":\"energy\",\"rate\":1}]"]}
+  ],
+  "difficulties": [1, 2],
+  "agents": ["greedy", "strategist"],
+  "games": 96,
+  "records": 0
+}

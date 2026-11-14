@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 99. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 100. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -210,13 +210,13 @@ modules/alignment.rs.*
 
 Each player is one AI board: the **Builder**, the **Protector** or the **Researcher**. Your board shows a **special
 rule**, your **income**, one **tag** (§7), your **building slots**, your **Dispatches**, two **node tracks** and six to
-eight **powers** (Researcher 6, Protector 7, Builder 8).
+eight **powers** (Protector 6, Researcher 7, Builder 8).
 
 | Board | Special rule | Income each round | Insight a round | Slots | Tag | Dispatches | Starting credits |
 |---|---|---|---|---|---|---|---|
 | Builder | *Breadth*: 5 slots | 15 credits, 1 energy | 3 | 5 | Industry | 1 | 40 |
 | Protector | *Wall* and *Vigil* | 13 credits, 2 energy | 3 | 4 | Security | 1 | 46 |
-| Researcher | *Patience* | 11 credits, 1 energy | 3 | 3 | Science | 2 | 40 |
+| Researcher | *Patience* | 11 credits, 1 energy | 3 | 4 | Science | 2 | 40 |
 
 - **Patience** (Researcher): all your unspent insight carries over to the next round, including insight another
   player gave you.
@@ -246,7 +246,7 @@ Nothing has a holding limit, and nothing caps your income.
 
 **Insight is this round's attention.** Your card-play track prints it, as in Spirit Island: 3 at its start, and on
 later spaces the new total, each board at its own rate (the Builder 7, 8, 9, 10; the Protector
-7, 8, 9; the Researcher 6, 7, 8): a big jump on the first space, then a step at a time. At the start of each round, set your insight to the number on the rightmost
+and the Researcher 7, 8, 9): a big jump on the first space, then a step at a time. At the start of each round, set your insight to the number on the rightmost
 space you've uncovered (3 before any), plus what your cards add. Insight you don't spend is lost (except under Patience),
 and no threat or project takes it: it is spent the turn it comes. Everything else on your
 board and cards pays at the end of production's **income step** (§9).
@@ -543,7 +543,7 @@ Standard actions are always there, a hedge against bad luck: cards and your boar
 | **Place a node** | 6 credits, plus the space's energy | twice a round: a node next to yours, off either track (§5) |
 | **Claim** | ambassadors: city 5, station 3, factory 2 (below) | take a neutral site in reach with no agent on it: it becomes yours |
 | **Liberate** | ambassadors, as Claim | take a corrupted site in reach: it becomes yours |
-| **Remove agents** | 1 ambassador from your supply, spent | remove up to 3 agents in your reach, from one hex or several; nothing is placed |
+| **Remove agents** | 2 ambassadors from your supply, spent | remove up to 3 agents in your reach, from one hex or several; nothing is placed |
 | **Remove a troop** | 10 credits | once a round: remove 1 adversary troop in your reach |
 | **Take down a botnet** | 16 credits | remove a botnet in your reach where your ambassador stands (the ambassador stays) |
 | **Buy energy** | 5 credits | gain the energy (1) of a neutral city in your reach that isn't blocked or blacked out; each city once a round, for all players together |
@@ -1012,7 +1012,7 @@ Each power can be used once a round, in the action phase. A tag in a cost means 
 |---|---|---|---|---|
 | Builder | **Buy In** (6 credits: a node; 1 chip if the new node brings a factory into your reach) | **Mint** (3 credits: 1 chip) | **Procure** (1 chip: draw 2) | **Fortify** (2 chips: remove 1 adversary troop in reach and harden a facility in reach), **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand), **Teardown** (1 chip: destroy one of your own factories anywhere, Fallout goes on its hex; 1 antimatter) |
 | Protector | **Accord** (1 Diplomacy: a node; if the new node brings a city into your reach, a new ambassador onto one such city) | **Interdict** (1 Security: remove up to 2 adversary troops in one hex in reach) | **Debrief** (1 Security: draw 1, and remove 1 agent in a hex in reach) | **Bulwark** (1 energy: harden a facility in reach), **Patrol** (1 energy: push up to 3 agents or adversary troops from a hex in reach), **Reclaim** (1 Security, 6 credits, 2 energy: turn a corrupted station or factory in reach neutral; 1 antimatter) |
-| Researcher | **Peer Review** (1 research cube: a node; 1 insight if the new node brings a research station into your reach) | **Grant** (3 credits: 1 cube in your color on a megaproject that isn't complete) | **Synthesis** (2 insight: draw 1) | **Disrupt** (1 Cyber, 1 research cube: remove up to 2 adversary troops in one country), **Field Station** (1 Industry: a research station without the chips, where Build a research station could go), **Audit** (1 Cyber: remove 3 compute from a project), **Meltdown** (2 research cubes: destroy one of your own research stations anywhere; 1 antimatter) |
+| Researcher | **Peer Review** (1 research cube: a node; 1 insight if the new node brings a research station into your reach) | **Grant** (3 credits: 1 cube in your color on a megaproject that isn't complete) | **Synthesis** (1 insight: draw 1) | **Disrupt** (1 Cyber, 1 research cube: remove up to 2 adversary troops in one country), **Field Station** (1 Industry: a research station without the chips, where Build a research station could go), **Audit** (1 Cyber: remove 3 compute from a project), **Meltdown** (2 research cubes: destroy one of your own research stations anywhere; 1 antimatter) |
 
 Every player also has the standard action **Place a node** (6 credits, twice a round). Every placement also pays the track space's energy (§5).
 

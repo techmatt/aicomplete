@@ -35,7 +35,7 @@ still help.
 | Researcher | Audit | 1 Cyber | remove 3 compute from one adversary project |
 | Researcher | Disrupt | 1 Cyber + 1 research cube | remove up to 2 Troops in one country |
 | Researcher | Meltdown | 2 research cubes | destroy one of your research stations anywhere; gain 1 antimatter |
-| Researcher | Synthesis | 2 insight | draw 1 card |
+| Researcher | Synthesis | 1 insight | draw 1 card |
 <!-- /generated -->
 
 **Sacrifice is late-game liquidation.** Once the cards needing a tag are played, its tags turn into engine rewards,
@@ -69,8 +69,8 @@ is kept for a stronger version (a track upgrade or a card), never a board's own 
 player expects; a card whose effects fit none of its tags is a soft design warning (`design_check.py`'s tag-story),
 never refused. Draws, credits, triggers, threat counters, liberation and a tag's own payoffs fit any tag.
 
-**Card throughput:** the Builder's Procure turns a spare chip into 2 cards; the Researcher's Synthesis turns 2 insight
-into a card (r91, Matt: the Researcher's draw outlet; Fieldwork, 1 energy for 3 cards, is cut, since it starved it).
+**Card throughput:** the Builder's Procure turns a spare chip into 2 cards; the Researcher's Synthesis turns 1 insight
+into a card (r100; 2 before) (r91, Matt: the Researcher's draw outlet; Fieldwork, 1 energy for 3 cards, is cut, since it starved it).
 
 **Troop powers (r91, amendment 9247: early troops decide games).** Each board removes or stops troops its own way, no
 two alike: the Protector's **Interdict** (a Security card: up to 2 troops in one hex in reach; r98, Matt's ruling: Stand Down
@@ -93,7 +93,7 @@ tier-2 cards and a few dear tier-1 ones.
 Insight is this round's attention, readable off the board: it pays keeps and plays ([player-cards.md](player-cards.md)),
 and credits never buy a keep (r82). The card-play track prints it as totals, Spirit Island style (r82): 3 at its
 start, then the new total on each space that raises it, each board at its own rate (r87: the Builder to 10, the
-Protector to 9, the Researcher to 8; r95: 7, 7 and 6 from the first space, then a step at a time); a seat's insight is the number on the rightmost space it has
+Protector and the Researcher to 9 (r100; the Researcher 8 before); 7 from the first space (r95; the Researcher 6 until r100), then a step at a time); a seat's insight is the number on the rightmost space it has
 uncovered. The economy track prints none. Every player has the
 cube converter, a standard action with no limit a round ([economy.md](economy.md)). **Insight must bind** (Matt,
 2026-11-12: about 6 a round to drafting and 2-4 to plays is the target); r91 cut the Builder's Focus (2 credits → 1
@@ -105,15 +105,15 @@ insight, used 0.01-0.04 a Builder game: an uninteresting conversion), so the boa
   Any march counts (a threat's immediate march too); a troop used up striking has no end to its march. An Effect
   because it happens in a march, outside the action phase where powers are used: the march's (phase 7) pays this
   round's keeps and plays, an immediate march's (phase 18) comes after them. (r77-r78 paid every troop every march.)
-- **Researcher, Synthesis reversed** (r91, Matt, 2026-11-12; a power, once a round): 2 insight → draw a card, the
-  Researcher's draw outlet and a use for Patience's bank. No other insight → card action exists. Give / get 8 for 5 at
+- **Researcher, Synthesis reversed** (r91, Matt, 2026-11-12; a power, once a round): 1 insight → draw a card (r100: was 2), the
+  Researcher's draw outlet and a use for Patience's bank. No other insight → card action exists. Give / get 4 for 5 at
   the anchors (a card kept at 1 insight is 4 more): a draw, not a gain. Peer Review, its node power, pays 1 insight by a fresh station.
 
 **For new players.** Insight is what you spend to keep and play cards: each round, the number on the rightmost space you've uncovered on
 your card-play track (3 at the start). When you
 are short, turn a research cube into 1 insight at any time (Cintamani's converter gives 2), and use your board's own
 way: the Protector gains 1 each of the first two times each round a troop ends its march next to its node (Vigil), the
-Researcher gains 1 with each node Peer Review places by a station new to its nodes and may spend 2 for a card (Synthesis). Insight you don't spend still goes at the round's end (the Researcher
+Researcher gains 1 with each node Peer Review places by a station new to its nodes and may spend 1 for a card (Synthesis). Insight you don't spend still goes at the round's end (the Researcher
 keeps all of it), but a few threat counters offer insight (3 at tier 1, 4 at tier 2: [threats.md](threats.md) *Counters*),
 so spare insight can stop one.
 

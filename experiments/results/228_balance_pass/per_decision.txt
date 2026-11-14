@@ -1,0 +1,6 @@
+planner, c2, d2, 16 games from seed 1000, one thread, best of 2
+| | rules | wins | rounds | decisions | options/decision | ms/game | ms/decision |
+|---|---|---|---|---|---|---|---|
+| old | r99 | 11 | 9.25 | 565 | 18.24 | 18992 | 33.6 |
+| new | r100 | 8 | 10.38 | 626 | 19.13 | 20343 | 32.5 |
+| new / old | | | 1.12 | 1.11 | 1.05 | 1.07 | 0.97 |

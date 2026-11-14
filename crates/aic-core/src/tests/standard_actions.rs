@@ -54,7 +54,10 @@ fn standard_actions_are_offered_only_when_affordable_and_targeted() {
     assert!(!o0.contains("factory"), "206: Build a factory is off (`factory_build_chips` 0)");
     let d = node_of(&g, 0)[0];
     put(&mut g, d, ADV_AMBASSADOR, 1);
+    assert!(!standard_offered(&rules, &g, 0).contains("remove"), "228: 2 ambassadors");
+    set_res(&mut g, 0, Resource::Ambassadors, 2);
     assert!(standard_offered(&rules, &g, 0).contains("remove"));
+    set_res(&mut g, 0, Resource::Ambassadors, 1);
     // r75 (Matt's ruling 3): taking a botnet down needs the seat's ambassador on its hex.
     put(&mut g, d, BOTNET, 1);
     assert!(!standard_offered(&rules, &g, 0).contains("botnet"));
@@ -123,8 +126,9 @@ fn standard_actions_cost_what_the_config_says() {
     let d = node_of(&g, 0)[0];
     put(&mut g, d, ADV_AMBASSADOR, 1);
     let supply = g.var(SUPPLY);
+    set_res(&mut g, 0, Resource::Ambassadors, 2);
     act(&rules, &mut g, std_act(0, "remove"));
-    // 066: an ambassador pays for it, and nothing else does.
+    // 066: ambassadors pay for it (228: 2), and nothing else does.
     assert_eq!(
         (spent(&g, 0), g.tokens(d, ADV_AMBASSADOR), g.var(SUPPLY), g.resource(0, Resource::Ambassadors)),
         ((0, 0, 0), 0, supply + 1, 0)

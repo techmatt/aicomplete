@@ -163,7 +163,10 @@ def check_shares(games, cfg, o):
                 continue
             s, v = max(rest.items(), key=lambda x: x[1])
             line = f'{r}: one {word}, {s}, is {v / tot:.0%} of its {key} ({v:.2f} of {tot:.2f} a seat-game; max {cap:.0%})'
-            if v / tot > cap:
+            why = cfg.get('share_exempt', {}).get(f'{r} {s}')
+            if v / tot > cap and why:
+                o.i(f'{line}; exempt: {why}')
+            elif v / tot > cap:
                 o.w(f'one-{word}', f'{r} {s} {v / tot:.0%}', line)
             else:
                 o.i(line)
@@ -195,12 +198,16 @@ def check_standard(cfg, base, o, games):
     cap = cfg['standard_anchor_max']
     n = len(games) or 1
 
-    def val(side):
+    def val(side, priced_in=()):
         tot, parts = 0.0, []
         for unit, q in side.items():
             qty = base.get(q, 0) if isinstance(q, str) else q
             if isinstance(qty, list):
                 qty = qty[0]
+            if unit in priced_in:
+                # 226: a unit another unit's anchor already holds (a liberated city's 45 holds its Sway)
+                parts.append(f'{qty} {unit} (in the anchor)')
+                continue
             tot += qty * a[unit]
             parts.append(f'{qty} {unit}')
         return tot, ' + '.join(parts)
@@ -210,14 +217,16 @@ def check_standard(cfg, base, o, games):
             o.i(f'{row["name"]}: off (`{row["off"]}` 0)')
             continue
         give, gtxt = val(row['give'])
-        get, ttxt = val(row['get'])
+        get, ttxt = val(row['get'], row.get('priced_in', ()))
         ratio = get / give if give else float('inf')
         c = row['src']
         counter = 'board.std.' + c.split(':', 1)[-1]
         uses = sum(g['counters'].get(counter, 0) for g in games) / n if games else None
         used = f'; {uses:.2f} uses a game' if uses is not None else ''
         line = f'{row["name"]}: give {gtxt} = {give:g}, get {ttxt} = {get:g} at the anchors: {ratio:.2f}{used} (max {cap})'
-        if ratio > cap:
+        if ratio > cap and row.get('exempt'):
+            o.i(f'{line}; exempt: {row["exempt"]}')
+        elif ratio > cap:
             o.w('standard-over-anchor', f'{row["name"]} {ratio:.2f}', line)
         else:
             o.i(line)

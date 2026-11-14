@@ -718,6 +718,11 @@
   ],
   "effects": [
    {
+    "op": "gain",
+    "resource": "energy",
+    "amount": 2
+   },
+   {
     "op": "production",
     "resource": "energy",
     "amount": 2
@@ -3347,8 +3352,7 @@
   "effects": [
    {
     "op": "project_cube",
-    "count": 3,
-    "station": true
+    "count": 2
    }
   ]
  },

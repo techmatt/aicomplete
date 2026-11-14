@@ -266,7 +266,7 @@ fn fight_triggers_fire_once_an_action() {
     // Ambassadors: once for the action, however many.
     let (r, n) = trigger_gain(&rules, "honeypot_relay");
     put(&mut g, near, ADV_AMBASSADOR, 3);
-    set_res(&mut g, 0, Resource::Ambassadors, 1);
+    set_res(&mut g, 0, Resource::Ambassadors, 2);
     let before = g.resource(0, r);
     act(&rules, &mut g, std_act(0, "remove"));
     answer_all(&rules, &mut g);
@@ -494,14 +494,14 @@ fn the_boards_insight_powers() {
         out_of_decks(&mut g, card);
     }
     set_pile(&mut g, "cards.hand.0", &["signal_hijack", "baseload_contract"]);
-    // 206 (Matt, 2026-11-12): Synthesis reversed, 2 insight for a card.
-    set_res(&mut g, 0, Resource::Insight, 1);
-    assert!(rules.apply_mut(&mut g.clone(), &power(&rules, 0, "Synthesis"), None).is_err(), "2 insight");
+    // 206 (Matt, 2026-11-12): Synthesis reversed, insight for a card; 228 (r100): 1 insight, was 2.
+    set_res(&mut g, 0, Resource::Insight, 0);
+    assert!(rules.apply_mut(&mut g.clone(), &power(&rules, 0, "Synthesis"), None).is_err(), "1 insight");
     set_res(&mut g, 0, Resource::Insight, 3);
     rules.apply_mut(&mut g, &power(&rules, 0, "Synthesis"), None).unwrap();
     answer_all(&rules, &mut g);
     assert_eq!(g.pile("cards.hand.0").len(), 3, "a card drawn");
-    assert_eq!(g.resource(0, Resource::Insight), 1);
+    assert_eq!(g.resource(0, Resource::Insight), 2);
     // 206: the Builder's Focus is cut.
     let rules = Rules::new(&lab_config(&[ACTIONS])).unwrap();
     let w = rules.world();

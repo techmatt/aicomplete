@@ -1,0 +1,43 @@
+{
+  "name": "s228y",
+  "note": "228: the ASI Researcher (4 slots, card-play insight 7/8/9) with Synthesis at 1 insight a card (was 2), its two pairs, same seeds 46784-46879, d1-d2, paired with s228's A cells.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "br-ASIY",
+      "set": [
+        "ai.boards=0,2",
+        "board.remove_ambassadors=2",
+        "ai.slots=5,4,4",
+        "ais.researcher.play_track.0.insight=7",
+        "ais.researcher.play_track.3.insight=8",
+        "ais.researcher.play_track.6.insight=9",
+        "ais.researcher.powers.6.cost=[[\"insight\",1]]"
+      ]
+    },
+    {
+      "name": "pr-ASIY",
+      "set": [
+        "ai.boards=1,2",
+        "board.remove_ambassadors=2",
+        "ai.slots=5,4,4",
+        "ais.researcher.play_track.0.insight=7",
+        "ais.researcher.play_track.3.insight=8",
+        "ais.researcher.play_track.6.insight=9",
+        "ais.researcher.powers.6.cost=[[\"insight\",1]]"
+      ]
+    }
+  ],
+  "difficulties": [
+    1,
+    2
+  ],
+  "agents": [
+    "greedy",
+    "strategist"
+  ],
+  "games": 96,
+  "records": 0
+}

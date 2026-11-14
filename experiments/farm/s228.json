@@ -1,0 +1,22 @@
+{
+  "name": "s228",
+  "note": "228: balance screen on r98/r99 spent seeds 46784-46879, d1-d2: base; A = Remove agents at 2 ambassadors for 3 (asked); AG = A + Grant also gains 1 insight (the Researcher's skipped engine). Each on the three board pairs.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]},
+    {"name": "bp-A", "set": ["board.remove_ambassadors=2"]},
+    {"name": "br-A", "set": ["ai.boards=0,2", "board.remove_ambassadors=2"]},
+    {"name": "pr-A", "set": ["ai.boards=1,2", "board.remove_ambassadors=2"]},
+    {"name": "bp-AG", "set": ["board.remove_ambassadors=2", "ais.researcher.powers.1.effects=[{\"op\":\"project_cube\",\"count\":1},{\"op\":\"gain\",\"resource\":\"insight\",\"amount\":1}]"]},
+    {"name": "br-AG", "set": ["ai.boards=0,2", "board.remove_ambassadors=2", "ais.researcher.powers.1.effects=[{\"op\":\"project_cube\",\"count\":1},{\"op\":\"gain\",\"resource\":\"insight\",\"amount\":1}]"]},
+    {"name": "pr-AG", "set": ["ai.boards=1,2", "board.remove_ambassadors=2", "ais.researcher.powers.1.effects=[{\"op\":\"project_cube\",\"count\":1},{\"op\":\"gain\",\"resource\":\"insight\",\"amount\":1}]"]}
+  ],
+  "difficulties": [1, 2],
+  "agents": ["greedy", "strategist"],
+  "games": 96,
+  "records": 0
+}

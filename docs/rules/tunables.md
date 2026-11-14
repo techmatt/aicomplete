@@ -38,7 +38,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.factory_chips` | 1 | 0..5 | chips a player-owned factory makes its owner each round |
 | `board.city_build_chips` | 3 | 1..10 | 190: chips a city spends to build a neutral factory or research station |
 | `board.city_chip_cap` | 3 | 1..10 | 190: chips a city holds at most while they wait (one each round from each unclaimed neutral factory next to it) |
-| `board.remove_ambassadors` | 1 | 1..5 | standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing) |
+| `board.remove_ambassadors` | 2 | 1..5 | standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing) |
 | `board.remove_count` | 3 | 1..3 | standard action Remove agents: agents it removes, at most, from any hexes in reach (the player's choice) |
 | `board.land_cubes` | 2 | 0..10 | 210: standard action Lift Fallout: research cubes to lift 1 Fallout token in reach (0: no such action) |
 | `board.envoy_ambassadors` | 1 | 0..5 | standard action Envoy: your ambassadors from the supply, used up, to move 1 Discord off the Discord track (0: no such action) |
@@ -101,7 +101,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `ai.boards` | 0, 1, 2 | 0..99 | AI board (index into content/ais.json) of each seat; the list repeats for more seats |
 | `ai.start_credits` | 40, 46, 40 | 0..100 | credits each AI board starts with, by board (Builder, Protector, Researcher), whichever seat plays it; one value sets every board |
 | `ai.start_energy` | 3 | 0..20 | energy each player starts with |
-| `ai.slots` | 5, 4, 3 | 1..10 | building slots of each AI board, by board (Builder, Protector, Researcher), whichever seat plays it; one value sets every board |
+| `ai.slots` | 5, 4, 4 | 1..10 | building slots of each AI board, by board (Builder, Protector, Researcher), whichever seat plays it; one value sets every board |
 | `cards.deal` | 4 | 0..10 | cards each player drafts from each round, choosing each one's tier |
 | `cards.opening_deal` | 2 | 0..20 | tier-1 cards dealt into each player's hand in round 1, kept free (the opening; r82) |
 | `cards.opening_deal_tier2` | 2 | 0..10 | tier-2 cards also dealt into each player's hand in the opening, kept free (r82) |

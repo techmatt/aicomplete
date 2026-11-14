@@ -1,0 +1,15 @@
+{
+  "name": "s228v",
+  "note": "228: is the agents' table why Mint is skipped? The A cells of s228 (Builder pairs) with the agents' chip value at its anchor, 6 (values.json has 4). Same seeds 46784-46879, d1-d2.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp-AV", "set": ["board.remove_ambassadors=2"]},
+    {"name": "br-AV", "set": ["ai.boards=0,2", "board.remove_ambassadors=2"]}
+  ],
+  "difficulties": [1, 2],
+  "agents": ["greedy:t.resources.chips=6", "strategist:t.resources.chips=6"],
+  "games": 96,
+  "records": 0
+}

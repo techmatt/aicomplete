@@ -33,7 +33,7 @@ cards.
 **The Researcher, for new players.** Your special rule is Patience: insight you don't spend stays with you
 into the next round, so you can save up for a big round (all of it, even insight another player gave you). You start with 40 credits and earn 11 a round, 3 more for each credit
 space of your economy track; round 1 deals as for the Builder. You play off
-the board, on your turn budget and on research cubes. Each round you may turn 2 insight into a card (Synthesis, your draw), a Cyber card and a research cube into up to 2
+the board, on your turn budget and on research cubes. Each round you may turn 1 insight into a card (Synthesis, your draw), a Cyber card and a research cube into up to 2
 troops removed in one country (Disrupt), and 3
 credits into a research cube on a megaproject that isn't complete yet. Your node power, Peer Review, costs 1 research cube and, like any node, the uncovered space's energy, and gives 1 insight by a fresh station,
 so build stations early: once their country's card completes they put cubes on your board. Sacrifice an Industry card
@@ -66,7 +66,7 @@ placements a round it is reachable about round 8.
 |---|---|---|---|---|---|---|---|---|
 | Builder | 15 credits, 1 energy | 40 | 5 | Industry | 1 (up to 2) | 7 | 7 | 14 |
 | Protector | 13 credits, 2 energy | 46 | 4 | Security | 1 (up to 2) | 7 | 7 | 14 |
-| Researcher | 11 credits, 1 energy | 40 | 3 | Science | 2 (up to 4) | 7 | 7 | 14 |
+| Researcher | 11 credits, 1 energy | 40 | 4 | Science | 2 (up to 4) | 7 | 7 | 14 |
 <!-- /generated -->
 
 **The starting-economy scaffold (candidate; Matt).** Until engines carry the economy, the boards start and earn much
@@ -111,21 +111,21 @@ is uncovered at setup. A placement takes the next token from the track the playe
 have tokens). **Insight prints here only, as totals** (r82, Matt's amendment, Spirit Island style): the printed start
 shows 3 and a space that raises it shows the new total; your insight is the number on the rightmost space you've
 uncovered that shows one. **Each board grows it at its own rate** (r87, Matt: income is the lever, as Spirit Island's
-energy): the Builder to 10, the Protector 9, the Researcher, whose Patience banks it, 8.
-**Early-heavy, late-flat** (r95, 199's `t4`): the first space jumps to 7 (Builder, Protector) or 6 (Researcher), then
+energy): the Builder to 10, the Protector and the Researcher 9 (r100: the Researcher was 6/7/8).
+**Early-heavy, late-flat** (r95, 199's `t4`): the first space jumps to 7, then
 each later step adds 1, so a tier-2 keep (3 insight, r95) fits from round 2.
 
 <!-- generated: node_track2 -->
 | Space | Builder | Protector | Researcher |
 |---|---|---|---|
 | printed start | insight 3 | insight 3 | insight 3 |
-| 1 | **insight 7** | **insight 7** | **insight 6** |
+| 1 | **insight 7** | **insight 7** | **insight 7** |
 | 2 | **keep upgrade** | **keep upgrade** | **Dispatch +1** |
 | 3 | pay 1 energy: **insight 8** | pay 1 energy: **insight 8** | pay 1 energy: **keep upgrade** |
-| 4 | pay 2 energy: +2 credits | pay 2 energy: +2 credits | pay 2 energy: **insight 7** |
+| 4 | pay 2 energy: +2 credits | pay 2 energy: +2 credits | pay 2 energy: **insight 8** |
 | 5 | pay 2 energy: toward the capstone | pay 2 energy: toward the capstone | pay 2 energy: toward the capstone |
 | 6 | pay 3 energy: **insight 9**, Cyber tag | pay 3 energy: Diplomacy tag | pay 3 energy: +2 credits, Industry tag |
-| 7 | pay 5 energy: **insight 10**, **Master Plan** (capstone): Your buildings cost 2 credits less. | pay 5 energy: **insight 9**, **Aegis Doctrine** (capstone): Once a round, the first time one of your Nodes or facilities would be destroyed, it is sheltered. | pay 5 energy: **insight 8**, **Open Science** (capstone): Each round, 2 insight from the supply, split among other players. |
+| 7 | pay 5 energy: **insight 10**, **Master Plan** (capstone): Your buildings cost 2 credits less. | pay 5 energy: **insight 9**, **Aegis Doctrine** (capstone): Once a round, the first time one of your Nodes or facilities would be destroyed, it is sheltered. | pay 5 energy: **insight 9**, **Open Science** (capstone): Each round, 2 insight from the supply, split among other players. |
 <!-- /generated -->
 
 **Loops and caps.** No resource has a holding limit and no cap limits production ([economy.md](economy.md), *No
@@ -159,7 +159,7 @@ so 4 players repeat the Builder. A board has no unique cards or starting buildin
 <!-- generated: board_details -->
 | Board | Special rule |
 |---|---|
-| Builder | *Breadth*: You have 5 building slots; the Protector has 4 and the Researcher 3. |
+| Builder | *Breadth*: You have 5 building slots; the Protector and the Researcher have 4. |
 | Protector | *Wall*: Adversary Troops can't enter or strike a hex with your Node. Vigil: the first two times each round a Troop ends its march next to your Node, gain 1 insight. |
 | Researcher | *Patience*: All your unspent insight carries over to the next round, including insight other players gave you. |
 <!-- /generated -->

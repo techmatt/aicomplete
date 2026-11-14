@@ -1,0 +1,64 @@
+
+## Pairs, d1-d2 (both seat orders pooled)
+
+| agent | side | bp | br | pr | mean | max gap | Builder | Protector | Researcher | all | new − base ± SE |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| greedy | base | 76.2 (+10.0) | 60.5 (-5.6) | 61.7 (-4.4) | 66.1 | +10.0 | 68.4 | 68.9 | 61.1 | 66.1 |  |
+| greedy | new | 73.8 (+6.8) | 61.3 (-5.7) | 66.0 (-1.0) | 67.1 | +6.8 | 67.6 | 69.9 | 63.7 | 67.1 | +0.9 ± 1.8 |
+| strategist | base | 79.7 (+9.6) | 65.6 (-4.4) | 64.8 (-5.2) | 70.1 | +9.6 | 72.7 | 72.3 | 65.2 | 70.1 |  |
+| strategist | new | 72.7 (+6.5) | 62.9 (-3.3) | 62.9 (-3.3) | 66.1 | +6.5 | 67.8 | 67.8 | 62.9 | 66.1 | -3.9 ± 1.8 |
+
+## Pairs, d0-d3 (both seat orders pooled)
+
+| agent | side | bp | br | pr | mean | max gap | Builder | Protector | Researcher | all | new − base ± SE |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| greedy | base | 77.7 (+11.0) | 62.5 (-4.2) | 60.0 (-6.8) | 66.7 | +11.0 | 70.1 | 68.8 | 61.2 | 66.7 |  |
+| greedy | new | 75.6 (+7.0) | 64.1 (-4.5) | 66.0 (-2.5) | 68.6 | +7.0 | 69.8 | 70.8 | 65.0 | 68.6 | +1.8 ± 1.2 |
+| strategist | base | 78.1 (+9.2) | 64.6 (-4.2) | 63.9 (-5.0) | 68.9 | +9.2 | 71.4 | 71.0 | 64.3 | 68.9 |  |
+| strategist | new | 72.9 (+5.9) | 63.5 (-3.5) | 64.5 (-2.5) | 66.9 | +5.9 | 68.2 | 68.7 | 64.0 | 66.9 | -2.0 ± 1.3 |
+
+## By level (all pairs and orders)
+
+| agent | side | d0 | d1 | d2 | d3 | rounds |
+|---|---|---|---|---|---|---|
+| greedy | base | 85.9 | 71.1 | 61.2 | 48.7 | 8.69 |
+| greedy | new | 86.2 | 75.3 | 58.9 | 53.9 | 8.58 |
+| strategist | base | 87.8 | 78.4 | 61.7 | 47.7 | 8.65 |
+| strategist | new | 86.5 | 74.2 | 58.1 | 49.0 | 8.58 |
+
+## Seat order, d0-d3 (reported only): first-named board in seat 0
+
+| agent | side | bp | pb | br | rb | pr | rp |
+|---|---|---|---|---|---|---|---|
+| greedy | base | 73.8 | 81.6 | 62.1 | 62.9 | 62.1 | 57.8 |
+| greedy | new | 74.6 | 76.6 | 65.6 | 62.5 | 68.8 | 63.3 |
+| strategist | base | 77.0 | 79.3 | 62.9 | 66.4 | 67.6 | 60.2 |
+| strategist | new | 70.3 | 75.4 | 63.7 | 63.3 | 70.3 | 58.6 |
+
+## Uses a seat-game (pooled d0-d3; a power over its board's seats, a standard action over all seats)
+
+| counter | greedy base | greedy new | strategist base | strategist new |
+|---|---|---|---|---|
+| ai.power.builder.buy_in | 3.46 | 3.46 | 3.48 | 3.50 |
+| ai.power.builder.fortify | 0.20 | 0.25 | 0.27 | 0.26 |
+| ai.power.builder.mint | 3.01 | 3.04 | 3.04 | 3.08 |
+| ai.power.builder.overcharge | 0.93 | 0.96 | 0.92 | 0.91 |
+| ai.power.builder.procure | 5.84 | 5.81 | 5.94 | 5.90 |
+| ai.power.builder.rush_build | 1.15 | 1.08 | 1.11 | 1.13 |
+| ai.power.builder.scrap | 1.13 | 1.18 | 1.11 | 1.09 |
+| ai.power.builder.teardown | 0.19 | 0.21 | 0.15 | 0.15 |
+| ai.power.protector.accord | 3.74 | 3.70 | 3.73 | 3.66 |
+| ai.power.protector.bulwark | 5.21 | 4.98 | 4.79 | 4.61 |
+| ai.power.protector.debrief | 2.40 | 2.41 | 2.41 | 2.38 |
+| ai.power.protector.interdict | 0.95 | 0.88 | 0.90 | 0.84 |
+| ai.power.protector.patrol | 2.19 | 2.42 | 2.36 | 2.74 |
+| ai.power.protector.reclaim | 0.13 | 0.12 | 0.12 | 0.09 |
+| ai.power.researcher.audit | 1.53 | 1.54 | 1.39 | 1.44 |
+| ai.power.researcher.disrupt | 1.30 | 1.26 | 1.25 | 1.19 |
+| ai.power.researcher.field_station | 0.81 | 0.80 | 0.79 | 0.80 |
+| ai.power.researcher.grant | 1.34 | 1.33 | 1.36 | 1.31 |
+| ai.power.researcher.meltdown | 0.42 | 0.40 | 0.40 | 0.43 |
+| ai.power.researcher.peer_review | 3.43 | 3.37 | 3.44 | 3.35 |
+| ai.power.researcher.synthesis | 6.28 | 6.69 | 6.24 | 6.73 |
+| board.std.liberate | 2.86 | 2.93 | 2.94 | 3.01 |
+| board.std.remove | 1.41 | 0.41 | 1.55 | 0.39 |

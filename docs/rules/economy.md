@@ -49,7 +49,7 @@ publishes each action with its cost (`View.standard`).
 |---|---|---|
 | Place a node | `node_credits` 6 credits, and the track step's energy | place 1 node next to yours, off either track, at most `node_per_round` 2 a round (the boards' own node powers are the better route) |
 | Build a research station | `station_chips` 1 chips | on an open hex in reach that is not an industrial zone or corrupted land; it is yours (your cube) |
-| Remove agents | `remove_ambassadors` 1 of your ambassadors, from your supply, used up | remove up to `remove_count` 3 agents in reach, from any hexes, your choice |
+| Remove agents | `remove_ambassadors` 2 of your ambassadors, from your supply, used up | remove up to `remove_count` 3 agents in reach, from any hexes, your choice |
 | Remove a troop | `troop_credits` 10 credits | remove 1 adversary troop in reach, at most `troop_per_round` 1 a round |
 | Lift Fallout | `land_cubes` 2 research cubes | a Fallout token in reach, face up or face down, comes off: the one standard action that removes corruption |
 | Dispatch a player ambassador | 1 of your Dispatches this round (your board's, unused ones lost) | from your supply or the board onto a piece or botnet in reach (not the hex it comes from) |

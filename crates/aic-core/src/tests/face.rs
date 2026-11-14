@@ -241,12 +241,12 @@ fn the_icon_rulings_give_each_mark_one_meaning() {
 }
 
 /// r48 (D48): icons say what the words say: Great Liberation's city on its cube,
-/// Field Grant's station limit. 178 (#29): every liberation puts your cube on, so no card prints the align mark
-/// (Hostile Buyout's was the one).
+/// and Field Grant's station limit, while it had one (228, r100: any open megaproject, so no station icon).
+/// 178 (#29): every liberation puts your cube on, so no card prints the align mark (Hostile Buyout's was the one).
 #[test]
 fn icons_show_the_city_and_the_station() {
     let line = |id: &str| serde_json::to_string(&face_of(id).effect).unwrap();
     assert!(line("great_liberation").contains(r#""cube","city""#), "{}", line("great_liberation"));
-    assert!(line("field_grant").contains(r#""megaproject","/","station""#), "{}", line("field_grant"));
+    assert!(!line("field_grant").contains(r#""station""#), "{}", line("field_grant"));
     assert!(!line("hostile_buyout").contains(r#""→","cube""#), "{}", line("hostile_buyout"));
 }
