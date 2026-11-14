@@ -238,7 +238,7 @@ pub fn moves_left(w: &World, g: &GameState, seat: usize) -> i64 {
 pub fn std_ops(act: StandardAction) -> &'static [Op] {
     match act {
         StandardAction::Node => &[Op::PlaceNode { count: 1 }],
-        StandardAction::Troop => &[Op::RemoveTroops { count: 1, reach: true }],
+        StandardAction::Troop => &[Op::RemoveTroops { count: 1, reach: true, at: crate::op::Area::On }],
         StandardAction::Factory => &[Op::BuildFactory],
         _ => &[],
     }

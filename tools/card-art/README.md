@@ -32,7 +32,7 @@ master's). The frame holds the fixed structure; the renderer draws what varies: 
 insight hexagon, requirement plates and 0–3 tags.
 
 **Where it sits is what it is** (locked by Matt, 2026-10-29). Top strip: cost octagon,
-insight hexagon, requirements, tags, nothing else. Above the art (buildings): what lasts,
+insight hexagon, requirements, tags, nothing else; a map card's target box is a tab under the title (r106). Above the art (buildings): what lasts,
 income, *Effect:*, *Action:*. Below the art: what happens once, extra costs first, as
 minus-icons. No box: gain now. Brown box: income. Dark frame: the adversary's pieces or
 projects. Dashed outline: another player; thin solid outline: counted across your cards. A square tile is a resource, a disc a

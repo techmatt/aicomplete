@@ -212,14 +212,20 @@ def op_worth(t, o):
     if op in ('destroy_all', 'remove_botnet', 'build_factory', 'free_building', 'build_station', 'claim_station',
               'counter_threat', 'discard_project', 'spread_ambassadors', 'move_one'):
         return Worth(now=row(op))
+    # 234: a card's one target; a targeted count finds area_share of its number around it (value.rs area_share).
+    if op == 'target':
+        return Worth(now=row(op))
+    if op == 'place_ambassadors':
+        return Worth(now=row(op) * r('ambassadors') * n('count'))
     if op == 'remove_ambassadors_country':
-        m = t.rate('token_pile') if n('max') == 0 else n('max')
+        m = (t.rate('token_pile') if n('max') == 0 else n('max')) * area_share(t, o)
         sway = math.floor(m / n('unity_per')) * t.rate('sway') if n('unity_per') > 0 else 0.0
         return Worth(now=row(op) * m + sway)
     if op == 'remove_troops':
-        return Worth(now=row(op) * expected_troops(n('count')))
+        return Worth(now=row(op) * expected_troops(n('count')) * area_share(t, o))
     if op == 'cleanse':
-        share = 0.8 if o.get('one_country') else 1.0
+        found = (1 + max(n('amount') - 1, 0) * area_share(t, o)) / max(n('amount'), 1)
+        share = (0.8 if o.get('one_country') else 1.0) * found
         if o.get('cities'):
             # 184: a freed city is liberated through the action's path (178), the seat's cube on too.
             return Worth(city=(row('liberate') + row('liberate_align')) * share * n('amount'))
@@ -234,14 +240,16 @@ def op_worth(t, o):
     if op == 'clear_city':
         m = t.rate('token_pile') if n('max') == 0 else n('max')
         return Worth(now=row(op) * m)
-    if op in ('harden', 'peek'):
+    if op == 'harden':
+        return Worth(now=row(op) * (1 + max(n('count') - 1, 0) * area_share(t, o)))
+    if op == 'peek':
         return Worth(now=row(op) * n('count'))
     if op == 'move_ambassadors' or op == 'consolidate':
         return Worth(now=row(op) * n('max'))
     if op == 'gain_ambassadors':
         return Worth(now=row(op) * r('ambassadors') * n('count'))
     if op == 'shelter':
-        return Worth(now=row('shelter') * t.rate('target_share'))
+        return Worth(now=row('shelter_reach' if o.get('reach') else 'shelter') * t.rate('target_share'))
     if op == 'cordon':
         return Worth(now=row('cordon'))
     # 158: the end-game shapes.
@@ -266,7 +274,7 @@ def op_worth(t, o):
     if op == 'ambassador_to_spot':
         return Worth(now=row(op) * r('ambassadors'))
     if op == 'lift_fallout':  # as value.rs reads it (227: the `unity` field went with Recovery)
-        return Worth(now=row(op) * t.rate('target_share') * n('count'))
+        return Worth(now=row(op) * t.rate('target_share') * (1 + max(n('count') - 1, 0) * area_share(t, o)))
     if op == 'project_cube':
         return Worth(now=row(op) * n('count'))
     if op == 'jam':
@@ -337,6 +345,12 @@ def op_worth(t, o):
     if op == 'discard_hand':
         return Worth(now=row(op) * t.rate('hand_discards') * (r(o['resource']) * n('amount') - t.rate('dead_card')))
     raise KeyError(f'effect_ledger.py has no arm for op {op!r}: mirror value.rs op_worth')
+
+
+def area_share(t, o):
+    """value.rs `area_share` (234): the share of a targeted count its area finds (no `at`: reach, all of it)."""
+    at = o.get('at', 'reach')
+    return 1.0 if at == 'reach' else t.rate('area_' + at)
 
 
 def fires(t, on):

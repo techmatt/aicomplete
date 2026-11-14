@@ -271,6 +271,9 @@ macro_rules! behavior_table {
             /// 178: a strike's batches (`agents::moves::strike`): the largest of troops, then of agents, never a
             /// stop; its hex stays the search's. Its own lever since 185 (it sat under `move_rules`).
             (strike_rule: bool, 1.0, "178: a strike's batches go largest troops first, then agents, never a stop (its hex is the search's)")
+            /// 234: a card's target (`agents::moves::target`): the hex where its map ops find the most, at their
+            /// `values.json` rows; a Gather's or Push's the move heuristic's; a tie, the search's.
+            (target_rule: bool, 1.0, "234: a card's target is the hex where its map ops find the most, at their values.json rows (a move's, its move heuristic's; a tie, the search's)")
             /// 203: play the hand cards the keep plan plays this round (`keep_plan::plan_now`: worth their price at
             /// its rates, affordable from what the seat holds now): 1 when the search would pass, 2 before the
             /// search's pick (ahead of standard actions and powers that would spend the credits).
@@ -830,6 +833,14 @@ impl Agent for Policy {
         }
         if b.strike_rule && pending {
             if let Some((i, which)) = super::moves::strike(g, legal) {
+                if !self.ruled_out(&world, g, &legal[i]) {
+                    super::moves::fired(which);
+                    return i;
+                }
+            }
+        }
+        if b.target_rule && pending {
+            if let Some((i, which)) = super::moves::target(&world, g, legal) {
                 if !self.ruled_out(&world, g, &legal[i]) {
                     super::moves::fired(which);
                     return i;

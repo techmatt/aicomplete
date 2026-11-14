@@ -30,7 +30,10 @@ fn a_shield_goes_with_a_token_lost_another_way() {
 #[test]
 fn shields_delays_and_land_lifts_go_on_any_tag_but_shields_and_delays_on_no_power() {
     for op in ["shield_node", "delay_threat", "lift_fallout"] {
-        let set = format!("cards.payroll_automation.effects=[{{\"op\":\"{op}\",\"count\":1}}]");
+        // 234: a lift touches the map, so it acts on the card's target.
+        let target = if op == "lift_fallout" { r#"{"op":"target","on":"fallout"},"# } else { "" };
+        let at = if op == "lift_fallout" { r#","at":"on""# } else { "" };
+        let set = format!("cards.payroll_automation.effects=[{target}{{\"op\":\"{op}\",\"count\":1{at}}}]");
         assert!(Rules::new(&baseline_with(&[&set])).is_ok(), "{op} on an Industry card");
     }
     for op in ["shield_node", "delay_threat"] {

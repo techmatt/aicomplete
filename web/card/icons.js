@@ -65,6 +65,10 @@ const PIECES = {
   megaproject: `<rect x="3.500" y="3" width="17" height="18" rx="1" fill="none" stroke="currentColor" stroke-width="2.200"/>${fill('M12 7l4.500 2.500v5L12 17l-4.500-2.500v-5z')}`,
   project: `<rect x="3.500" y="4" width="17" height="16" rx="1" fill="none" stroke="currentColor" stroke-width="2.200"/>${fill('M7 8h10v2H7zM7 12h6v2H7z')}`,
   hex: line('M12 2 20.700 7v10L12 22 3.300 17V7z', 2.4),
+  // 234: on or next to the card's target: a solid hex in a dashed ring, the hexes around it.
+  near: `${fill('M12 6.500 16.800 9.250v5.500L12 17.500 7.200 14.750V9.250z')}<circle cx="12" cy="12" r="9.800" fill="none" stroke="currentColor" stroke-width="1.900" stroke-dasharray="3.100 2.040"/>`,
+  // 234: a Fallout token, for the target box: the trefoil.
+  fallout: `<circle cx="12" cy="12" r="2" fill="currentColor"/>${fill('M13.500 9.400 17 3.340A10 10 0 0 1 22 12h-7a3 3 0 0 0-1.500-2.600zM9 12H2a10 10 0 0 1 5-8.660l3.500 6.060A3 3 0 0 0 9 12zM13.500 14.600 17 20.660a10 10 0 0 1-10 0l3.500-6.060a3 3 0 0 0 3 0z')}`,
   troop: fill('M12 2.500 15 7.500h-1.800v2.300l6.800 3.700v3l-6.800-1.800V19l2.300 1.700V22L12 21l-3.500 1v-1.300L10.800 19v-4.300L4 16.500v-3l6.800-3.700V7.500H9z'),
   botnet: `<circle cx="12" cy="12" r="4.200" fill="currentColor"/>${line('M12 2.500v5M12 16.500v5M2.500 12h5M16.500 12h5M5.300 5.300l3.500 3.500M15.200 15.200l3.500 3.500M18.700 5.300l-3.500 3.500M8.800 15.200l-3.500 3.500', 1.900)}`,
   cube: fill('M12 2 21 7v10l-9 5-9-5V7zm0 2.300L6 7.600l6 3.300 6-3.300zM5 9.300v6.500l6 3.300v-6.500z'),
@@ -101,6 +105,12 @@ const TAGS = {
 
 /** Every icon's name, tags as `#tag`: the render script's review sheet shows them all. */
 export const ICON_NAMES = [...Object.keys(RESOURCES), ...Object.keys(TOKENS), ...Object.keys(PIECES), ...Object.keys(TAGS).map((t) => `#${t}`)];
+
+/**
+ * 234: the target box's glyph names (face.rs `TargetBox::glyph`) as icons: the same word but for
+ * shield, which is the harden glyph.
+ */
+export const targetIcon = (glyph) => icon(glyph === 'shield' ? 'harden' : glyph);
 
 /** Is this word in a card's icon line an icon, rather than a number or connector? */
 export const isIcon = (name) => Object.hasOwn(RESOURCES, name) || Object.hasOwn(TOKENS, name) || Object.hasOwn(PIECES, name);

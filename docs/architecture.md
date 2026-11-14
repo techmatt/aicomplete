@@ -101,7 +101,8 @@ log and counters stay consistent). Counter and var names are `"<module>.<name>"`
 Every point where the rules say players choose is a choice in `legal_actions`:
 
 - A module calls `cx.choose(seat, prompt, options)?` mid-resolution; unless the answer is
-  given or forced, the first pass stops with `Halt::Ask` (more on `Cx::choose`).
+  given or forced, the first pass stops with `Halt::Ask` (more on `Cx::choose`). A prompt names cards by their
+  printed name, never a raw id (the invariants test refuses one).
 - The engine stores `GameState::pending` (the question, the answers so far and a
   snapshot from before); `legal_actions` is only the options (`Action::Choose`), no pass.
 - An answer restores the snapshot and resolves again from the start, replaying the

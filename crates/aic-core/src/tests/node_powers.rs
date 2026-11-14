@@ -243,7 +243,7 @@ fn lift_fallout_takes_a_token_in_reach() {
     let (rules, mut g) = at_step(&[], 1);
     let a = rules.map.numbered(0, piece(0).node);
     put(&mut g, a, crate::modules::common::FALLOUT, 1);
-    run_ops(&rules, &mut g, &[Op::LiftFallout { count: 1 }]);
+    run_ops(&rules, &mut g, &[Op::LiftFallout { count: 1, at: Default::default() }]);
     assert_eq!(g.tokens(a, crate::modules::common::FALLOUT), 0);
 }
 

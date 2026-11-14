@@ -50,6 +50,16 @@
 .card .tag { box-shadow: 0 0.3mm 0.6mm 0.2mm rgb(0 0 0 / 40%); border-radius: 50%; }
 .card .tag .medallion { width: 100%; height: 100%; }
 
+/* 234: the target box, a tab on the banner's lower rim: the target's glyph and condition, read before the body. */
+.card .target { align-items: flex-start; font-size: 7.500pt; z-index: 1; }
+.card .target-plate {
+  box-sizing: border-box; height: 100%; display: flex; align-items: center; gap: 0.5mm; padding: 0 1.4mm 0 0.9mm; white-space: nowrap;
+  font-family: 'Saira Condensed', sans-serif; font-weight: 600; line-height: 1; letter-spacing: 0.02em;
+  background: var(--plate, #efeadc); border: 0.3mm solid #23262a; border-radius: 1.2mm;
+  box-shadow: 0 0 0 0.2mm #e9edf0, 0 0.3mm 0.6mm 0.2mm rgb(0 0 0 / 45%), inset 0 0.25mm 0.3mm rgb(255 255 255 / 70%);
+}
+.card .target-plate .ico { width: 2.400mm; height: 2.400mm; }
+
 .card .name { font-family: 'Saira Condensed', sans-serif; font-weight: 600; font-size: 15pt; letter-spacing: 0.02em; line-height: 1; white-space: nowrap; padding-bottom: 0.7mm; box-sizing: border-box; }
 
 /* The icons. A tile or disc is the painted blank with its face multiplied to the color. */

@@ -17,7 +17,7 @@ cancel once, the surplus strikes twice).
 - **Ownership:** an owner cube, as stations and cities have. A facility a city builds is always **neutral** (r83).
   A neutral factory is claimed, and an adversary one liberated, as any site is
   ([ambassadors.md](ambassadors.md)). Cards that build a factory (Prefab Plant Kit) build the
-  player's own, on a free zone in reach.
+  player's own, on the card's target, a free zone in reach.
 - **Output** (each round; the site table in [ambassadors.md](ambassadors.md)): a player's factory makes
   `factory_chips` (1) chip for its owner (r83); an adversary factory makes 1 adversary troop on its hex (**locked**); a
   neutral factory makes nothing for anyone, but **feeds the cities next to it** (growth, below) and **at a Discord tip
@@ -92,7 +92,7 @@ is used up** (`troop_spent`), whether the target is destroyed or the hit absorbe
 Troops cross borders and never enter ocean; "nearest" and "toward" count the walk over land,
 around walls (above). **Players see each hit coming:** the view draws each
 troop's next target (the nearest; the arrow is solid when the hit lands in the next march). Cards remove troops, each
-naming how many; a strike card's "on or next to a hex in reach" counts the hex itself, and the player picks which
+naming how many; a strike card's "on or next to it" (its target) counts the target itself, and the player picks which
 pieces. Removing a troop sways `alignment.troop` (0).
 
 **For new players.** Adversary troops are the adversary's raiders: few, slow and deadly. They appear on adversary

@@ -1,8 +1,9 @@
 // `npm run cards:fit`: what size every player card prints at. Puts each one through the real
 // renderer and fitCards in a headless browser, from content and web/card/faces.json as they
 // stand in the working tree, and writes out/card-fit.json:
-//   { goal, cards: { <id>: { name, top, effect, title, overflow, where, tight } } }
-// top and effect are pt (null: nothing in that box), title is pt, overflow says something
+//   { goal, cards: { <id>: { name, top, effect, title, target, overflow, where, tight } } }
+// top and effect are pt (null: nothing in that box), title is pt, target the target box's pt
+// (null: none), overflow says something
 // still breaks its box or plate, where says what, and tight lists boxes inside but short of
 // the clearance. Prints the cards below the goal, and what overflows by how much (px, and
 // roughly in characters). Exits 1 if anything overflows. No server.
@@ -99,8 +100,8 @@ if (fonts < 3) throw new Error(`cards-fit: only ${fonts} fonts loaded: these siz
 
 const cards = Object.fromEntries(
   players.map((c, i) => {
-    const { top, effect, title, overflow, tight } = rows[i];
-    return [c.id, { name: c.name, top, effect, title, overflow: overflow.length > 0, where: overflow, tight }];
+    const { top, effect, title, target, overflow, tight } = rows[i];
+    return [c.id, { name: c.name, top, effect, title, target, overflow: overflow.length > 0, where: overflow, tight }];
   }),
 );
 writeFileSync(join(OUT, 'card-fit.json'), `${JSON.stringify({ goal: GOAL_PT, cards }, null, 1)}\n`);
@@ -122,6 +123,8 @@ for (const [box, label] of [['top', 'top box'], ['effect', 'effect box']]) {
 }
 const titled = list.filter(([, c]) => c.title < 15).sort(([, a], [, b]) => a.title - b.title);
 console.log(`titles under 15 pt: ${titled.length}${titled.length ? `, smallest ${titled[0][1].title} pt (${titled[0][0]})` : ''}`);
+const targeted = list.filter(([, c]) => c.target != null).sort(([, a], [, b]) => a.target - b.target);
+if (targeted.length) console.log(`target boxes: ${targeted.length}, smallest ${targeted[0][1].target} pt (${targeted[0][0]})`);
 const tight = list.filter(([, c]) => c.tight.length);
 if (tight.length) console.log(`short of the clearance: ${tight.map(([id]) => id).join(', ')}`);
 const broken = list.filter(([, c]) => c.overflow);

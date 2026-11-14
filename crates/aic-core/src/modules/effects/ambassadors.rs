@@ -11,7 +11,7 @@ fn walk(g: &mut GameState, cx: &mut Cx, seat: usize, from: usize, to: usize) {
     cx.tally(g, &crate::key::KeyBuf::new("board.amb_moves.").num(seat), 1);
 }
 
-pub(super) fn move_ambassadors(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64) -> Res {
+pub(super) fn move_ambassadors(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, zone: &[usize]) -> Res {
     let w = cx.world;
     for k in 0..max {
         if movable_ambassadors(g, seat) == 0 {
@@ -21,7 +21,11 @@ pub(super) fn move_ambassadors(g: &mut GameState, cx: &mut Cx, seat: usize, max:
         // supply, or from another hex (the hex holding the seat's only one moved nothing).
         let supply = g.resource(seat, Resource::Ambassadors) > 0;
         let mine = ambassador_hexes(g, seat);
-        let dest: Vec<usize> = pieces_in_reach(&w, g, seat).into_iter().filter(|d| supply || mine.iter().any(|a| a != d)).collect();
+        let dest: Vec<usize> = zone
+            .iter()
+            .copied()
+            .filter(|&d| has_piece(&w, g, d) && (supply || mine.iter().any(|&a| a != d)))
+            .collect();
         if dest.is_empty() {
             break;
         }
@@ -38,6 +42,24 @@ pub(super) fn move_ambassadors(g: &mut GameState, cx: &mut Cx, seat: usize, max:
             break;
         }
         board::move_ambassador(g, cx, seat, dest[i])?;
+    }
+    Ok(())
+}
+
+/// 234 (Matt: Place means onto the map): `count` new ambassadors of seat `seat`'s onto pieces in `zone` (the
+/// target, or on or next to it), one at a time, each arriving as any ambassador does (`board::place_ambassador`:
+/// onto agents it cancels one).
+pub(super) fn place_ambassadors(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64, zone: &[usize]) -> Res {
+    let w = cx.world;
+    let dest: Vec<usize> = zone.iter().copied().filter(|&h| has_piece(&w, g, h)).collect();
+    for k in 0..count {
+        let opts = dest.iter().map(|&h| hex_opt(&w, h)).collect();
+        let prompt = || format!("Seat {seat}: place ambassador {} of {count} on which piece?", k + 1);
+        let Some(i) = cx.choose(seat, prompt, opts)? else {
+            break;
+        };
+        board::place_ambassador(g, cx, seat, dest[i]);
+        cx.tally(g, "effects.ambassadors_placed", 1);
     }
     Ok(())
 }
@@ -91,14 +113,24 @@ pub(super) fn spread_ambassadors(g: &mut GameState, cx: &mut Cx, seat: usize) ->
     Ok(())
 }
 
-pub(super) fn consolidate(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64) -> Res {
+/// 234: with a target, the ambassadors on or next to it come onto it (`target` `Some(None)`: no target found,
+/// nothing moves); with none, as before: any in reach onto one piece in reach.
+pub(super) fn consolidate(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, target: Option<Option<usize>>) -> Res {
     let w = cx.world;
+    let from_ok = |g: &GameState, h: usize| match target {
+        Some(Some(t)) => in_area(&w, t, Area::Near, h),
+        Some(None) => false,
+        None => in_reach(&w, g, seat, h),
+    };
     // 118: with no ambassador of yours in reach there is nothing to bring (Summit
     // Caucus still gains its ambassadors): no piece to pick.
-    let mine: Vec<usize> = ambassador_hexes(g, seat).into_iter().filter(|&h| in_reach(&w, g, seat, h)).collect();
+    let mine: Vec<usize> = ambassador_hexes(g, seat).into_iter().filter(|&h| from_ok(g, h)).collect();
     // A piece is a destination only if some ambassador in reach stands elsewhere: the hex
     // holding all of them moved nothing (D8's pattern).
-    let dest: Vec<usize> = pieces_in_reach(&w, g, seat).into_iter().filter(|d| mine.iter().any(|a| a != d)).collect();
+    let dest: Vec<usize> = match target {
+        Some(t) => t.into_iter().filter(|&d| has_piece(&w, g, d) && mine.iter().any(|&a| a != d)).collect(),
+        None => pieces_in_reach(&w, g, seat).into_iter().filter(|d| mine.iter().any(|a| a != d)).collect(),
+    };
     if dest.is_empty() {
         return Ok(());
     }
@@ -109,7 +141,7 @@ pub(super) fn consolidate(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64)
         for _ in 0..max {
             let from: Vec<usize> = ambassador_hexes(g, seat)
                 .into_iter()
-                .filter(|&h| h != to && in_reach(&w, g, seat, h))
+                .filter(|&h| h != to && from_ok(g, h))
                 .collect();
             if from.is_empty() {
                 break;

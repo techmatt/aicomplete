@@ -201,7 +201,8 @@ says so and exits.
 - **Text sizes:** `npm run cards:fit` (about 2.5 s, no server) fits every player card
   headless with the real renderer and writes `out/card-fit.json` (the repo root's `out/`, as for every `out/` path
   in this section): per id,
-  `top` and `effect` box sizes in pt (null: empty box), `title` in pt, `overflow` and
+  `top` and `effect` box sizes in pt (null: empty box), `title` in pt, `target` the target box's pt (7.5 down to
+  6; null: none; it takes no height from a building's top box), `overflow` and
   `where`, and `tight` for a box inside its panel but short of the clearance. It prints
   cards below 7.5 pt and exits 1 on any overflow. It reads the working tree: re-run after
   an edit.

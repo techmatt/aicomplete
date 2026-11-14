@@ -125,7 +125,7 @@ station's card is complete, which would otherwise double its cubes each round, c
 
 ## Shelters and hardening
 
-A **shelter** (a card's "shelter one country", no reach needed; r98 cut the Protector's Shelter power) lasts until cleanup (phase 20) of the round
+A **shelter** (a card's "Shelter your Nodes and facilities in reach", no target, r106: yours on the hexes in your reach when it resolves; r98 cut the Protector's Shelter power) lasts until cleanup (phase 20) of the round
 it is used in. Used in the actions, it covers the rest of the actions and what comes after them: the income step,
 growth, the threats that execute and war (phases 15-19). The march (phase 7) has already happened, but a threat's
 immediate march (Total War's, phase 18) meets it. It stops a destruction automatically, spending nothing, and so does the Protector's Aegis Doctrine capstone, a shelter

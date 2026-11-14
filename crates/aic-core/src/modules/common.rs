@@ -148,6 +148,30 @@ pub fn next_to(w: &World, h: usize, pred: impl Fn(usize) -> bool) -> bool {
     pred(h) || w.map.hexes[h].neighbors.iter().any(|&n| pred(n))
 }
 
+/// 234: the hexes `at` names around target `t`, ascending: the target, it and the hexes next to it, or its
+/// country.
+pub fn area_of(w: &World, t: usize, at: crate::op::Area) -> Vec<usize> {
+    use crate::op::Area;
+    let mut out: Vec<usize> = match at {
+        Area::On | Area::Reach => vec![t],
+        Area::Near => std::iter::once(t).chain(w.map.hexes[t].neighbors.iter().copied()).collect(),
+        Area::Country => w.map.countries[w.map.hexes[t].country as usize].hexes.to_vec(),
+    };
+    out.sort_unstable();
+    out.dedup();
+    out
+}
+
+/// 234: whether hex `h` is in [`area_of`] `t`, `at`.
+pub fn in_area(w: &World, t: usize, at: crate::op::Area, h: usize) -> bool {
+    use crate::op::Area;
+    match at {
+        Area::On | Area::Reach => h == t,
+        Area::Near => h == t || w.map.hexes[t].neighbors.contains(&h),
+        Area::Country => w.map.hexes[h].country == w.map.hexes[t].country,
+    }
+}
+
 /// Hexes of country `c`, or of the whole board for `None`, in board order.
 pub fn scope_hexes(w: &World, scope: Option<usize>) -> Vec<usize> {
     match scope {

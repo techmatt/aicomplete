@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 use crate::hash::fnv1a64;
 use crate::hex::{Dir, Hex};
 use crate::key::FastMap;
-pub use crate::op::{Event, Facility, Op, Piece, RoundFlag, Slot, Spot};
+pub use crate::op::{Area, Event, Facility, Op, Piece, RoundFlag, Slot, Spot, TargetSpec};
 pub use crate::vocab::{
     Location, PerResource, PullTag, Resource, Side, Story, Tag, TagOrAny, ThreatSource, ThreatTag, TokenKind,
     RESOURCES, TAGS,
@@ -1036,8 +1036,70 @@ fn card_only(op: &Op) -> bool {
     matches!(op, Op::ShieldNode { .. } | Op::DelayThreat { .. })
 }
 
+/// 234 (Matt, 2026-11-14): a player card that touches the map names one target, printed in its header, and its
+/// map ops act on it. Each list that resolves (its effects, an Action's branch, a trigger's ops) opens with the
+/// target before any map op; a card names one target condition, however many lists print it; nothing picks a
+/// country freely or moves a piece further than next to the target.
+fn check_targets(c: &CardDef, what: &str) -> Result<(), String> {
+    fn walk(ops: &[Op], aimed: bool, specs: &mut Vec<TargetSpec>, what: &str) -> Result<bool, String> {
+        let mut aimed_here = aimed;
+        let mut used = false;
+        for op in ops {
+            match op {
+                Op::Target { on } => {
+                    if aimed_here {
+                        return Err(format!("{what}: two targets in one list (a card names one target)"));
+                    }
+                    aimed_here = true;
+                    if !specs.contains(on) {
+                        specs.push(*on);
+                    }
+                }
+                Op::DamageCountry { .. } | Op::Shelter { reach: false } => {
+                    return Err(format!("{what}: {op:?} picks a country freely (234: say \"in the target's country\")"));
+                }
+                Op::MoveOne { .. } | Op::SpreadAmbassadors => {
+                    return Err(format!("{what}: {op:?} reaches past the target (234: nothing past 1 from it)"));
+                }
+                _ if op.is_map() => {
+                    if !aimed_here {
+                        return Err(format!("{what}: {op:?} touches the map with no target before it"));
+                    }
+                    if op.area() == Some(Area::Reach) {
+                        return Err(format!("{what}: {op:?} needs its `at` (on, near or country): a card's op acts on its target"));
+                    }
+                    used = true;
+                }
+                _ => {}
+            }
+            if walk(op.nested(), aimed_here, specs, what)? {
+                used = true;
+            }
+        }
+        if aimed_here && !aimed && !used {
+            return Err(format!("{what}: a target with no map effect after it"));
+        }
+        Ok(used)
+    }
+    let mut specs = Vec::new();
+    walk(&c.effects, false, &mut specs, what)?;
+    for a in c.ability.iter().flat_map(|a| a.branches()) {
+        walk(&a.effects, false, &mut specs, what)?;
+    }
+    for p in &c.passives {
+        if let Op::When { then, .. } | Op::Threshold { then, .. } = p {
+            walk(then, false, &mut specs, what)?;
+        }
+    }
+    if specs.len() > 1 {
+        return Err(format!("{what}: two target conditions {specs:?} (a card prints one target box)"));
+    }
+    Ok(())
+}
+
 fn check_card(c: &CardDef) -> Result<(), String> {
     let what = format!("card {:?}", c.id);
+    check_targets(c, &what)?;
     check_ops(&c.effects, Slot::Player, &what)?;
     check_ops(&c.passives, Slot::Standing, &what)?;
     innate_only(&c.passives, &what)?;

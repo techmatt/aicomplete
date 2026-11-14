@@ -1,0 +1,37 @@
+{
+  "name": "f234b",
+  "note": "234: confirming read 47280-47327 (message 10485: Amnesty Decree's clear_city came from f234's design check), the shipped build (r106) against main r103 on the same seeds",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "greedy",
+    "strategist"
+  ],
+  "games": 48,
+  "records": 0
+}

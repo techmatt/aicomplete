@@ -4,7 +4,7 @@
 //! stay there; an arm here calls them. Standing ops and the twist-only ops are
 //! read by the rule they change and never resolve.
 
-use crate::content::{Facility, Op, RoundFlag, Side};
+use crate::content::{Area, Facility, Op, RoundFlag, Side, TargetSpec};
 use crate::op::{NodeSpot, Spot};
 use crate::key::Key;
 use crate::module::{Cx, PromptText, Res, World};
@@ -31,6 +31,9 @@ pub use endgame::{convert_cities, firewall_hexes};
 pub use moves::{gather_hexes, push_hexes, GATHER_INTO, GATHER_PIECE, PUSH_FROM, PUSH_PIECE, STOP, STRIKE_AT, STRIKE_PIECE};
 pub use feasible::*;
 pub use targets::*;
+
+/// 234: the prompt that asks for a card's target (the agents' target rule reads it).
+pub const TARGET_PROMPT: &str = "target which hex?";
 
 /// Resolves `ops` in order.
 pub fn run(g: &mut GameState, cx: &mut Cx, ops: &[Op], ctx: &mut Ctx) -> Res {
@@ -103,9 +106,23 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                 board::place_ambassador(g, cx, seat, cities[i]);
             }
         }
-        Op::LiftFallout { count } => {
+        Op::Target { on } => {
+            let hexes = target_hexes(&w, g, seat, *on);
+            let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
+            // The card whose Action or Effect this is, when one is (the agents' target rule reads it).
+            let card = ctx.card.map(|c| format!(" [{}]", cards::def(&w, &c).name)).unwrap_or_default();
+            let prompt = || format!("Seat {seat}: {TARGET_PROMPT} ({}){card}", on.words());
+            let t = cx.choose(seat, prompt, opts)?.map(|i| hexes[i]);
+            cx.tally(g, if t.is_some() { "effects.targets" } else { "effects.targets_missed" }, 1);
+            ctx.target = Some(t);
+        }
+        Op::LiftFallout { count, at } => {
+            let zone = ctx.area(&w, g, seat, *at);
             for _ in 0..*count {
-                let hexes = board::land_in_reach(&w, g, seat);
+                let mut hexes = board::land_in_reach(&w, g, seat);
+                if ctx.target.is_some() {
+                    hexes = zone.iter().copied().filter(|&h| g.tokens(h, FALLOUT) > 0).collect();
+                }
                 let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
                 let prompt = || format!("Seat {seat}: lift Fallout on which hex?");
                 let Some(i) = cx.choose(seat, prompt, opts)? else { break };
@@ -116,26 +133,72 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         // 044: "up to": after the first, "stop" (as Cleanse does).
         Op::ShieldNode { count } => science::shield_node(g, cx, seat, *count)?,
         Op::DelayThreat { count } => science::delay_threat(g, cx, seat, *count)?,
-        Op::Damage { ambassadors, troops } => removal::damage(g, cx, seat, *ambassadors, *troops)?,
-        Op::DamageCountry { ambassadors, troops } => removal::damage_country(g, cx, seat, *ambassadors, *troops)?,
-        Op::DestroyAll => removal::destroy_all(g, cx, seat)?,
-        Op::RemoveBotnet => removal::remove_botnet(g, cx, seat)?,
-        Op::RemoveAmbassadorsCountry { unity_per, max, reach } => {
-            removal::remove_ambassadors_country(g, cx, seat, *unity_per, *max, *reach)?
+        Op::Damage { ambassadors, troops } => {
+            let zone = ctx.area(&w, g, seat, Area::On);
+            removal::damage(g, cx, seat, *ambassadors, *troops, &zone)?
         }
-        Op::BuildFactory => resources::build_factory(g, cx, seat)?,
+        Op::DamageCountry { ambassadors, troops } => removal::damage_country(g, cx, seat, *ambassadors, *troops)?,
+        Op::DestroyAll => {
+            let zone = ctx.target.map(|_| ctx.area(&w, g, seat, Area::On));
+            removal::destroy_all(g, cx, seat, zone.as_deref())?
+        }
+        Op::RemoveBotnet => {
+            let zone = ctx.area(&w, g, seat, Area::On);
+            removal::remove_botnet(g, cx, seat, &zone)?
+        }
+        Op::RemoveAmbassadorsCountry { unity_per, max, reach, at } => {
+            let zone = ctx.target.map(|_| ctx.area(&w, g, seat, *at));
+            removal::remove_ambassadors_country(g, cx, seat, *unity_per, *max, *reach, zone.as_deref())?
+        }
+        Op::BuildFactory => {
+            let zone = ctx.area(&w, g, seat, Area::On);
+            resources::build_factory(g, cx, seat, &zone)?
+        }
         Op::Burn { facility, blight } => resources::burn(g, cx, seat, *facility, *blight)?,
-        Op::Cleanse { amount, one_country, cities, only } => {
-            removal::cleanse(g, cx, seat, *amount, *one_country, *cities, *only)?
+        Op::Cleanse { amount, one_country, cities, only, at } => {
+            let zone = ctx.area(&w, g, seat, *at);
+            let target = ctx.target.flatten();
+            removal::cleanse(g, cx, seat, *amount, *one_country, *cities, *only, &zone, target)?
         }
         Op::Liberate { ambassadors, troops, botnet } => {
-            removal::liberate_city(g, cx, seat, *ambassadors, *troops, *botnet)?
+            let zone = ctx.area(&w, g, seat, Area::On);
+            removal::liberate_city(g, cx, seat, *ambassadors, *troops, *botnet, &zone)?
         }
-        Op::ClearCity { max } => removal::clear_city(g, cx, seat, *max)?,
-        Op::Harden { count } => resources::harden(g, cx, seat, *count)?,
-        Op::MoveAmbassadors { max } => ambassadors::move_ambassadors(g, cx, seat, *max)?,
+        Op::ClearCity { max } => {
+            let zone = ctx.area(&w, g, seat, Area::On);
+            removal::clear_city(g, cx, seat, *max, &zone)?
+        }
+        Op::Harden { count, at } => {
+            let zone = ctx.area(&w, g, seat, *at);
+            resources::harden(g, cx, seat, *count, &zone, ctx.target.flatten())?
+        }
+        Op::MoveAmbassadors { max, at } => {
+            let zone = ctx.area(&w, g, seat, *at);
+            ambassadors::move_ambassadors(g, cx, seat, *max, &zone)?
+        }
         Op::GainAmbassadors { count } => cx.add_resource(g, seat, Resource::Ambassadors, *count),
-        Op::Shelter => {
+        Op::PlaceAmbassadors { count, at } => {
+            let zone = ctx.area(&w, g, seat, *at);
+            ambassadors::place_ambassadors(g, cx, seat, *count, &zone)?
+        }
+        // 234 (Matt: "Shelter your nodes and facilities in reach this round"): a player card picks no country;
+        // the seat's own pieces on every hex in its reach, this round.
+        Op::Shelter { reach: true } => {
+            for h in (0..g.hexes.len()).filter(|&h| in_reach(&w, g, seat, h)).collect::<Vec<_>>() {
+                cx.set_key(g, &board::reach_shelter(seat, h), 1);
+            }
+            cx.tally(g, "effects.shelter_reach", 1);
+        }
+        // 234: with a target, the target's country (Hardpoint Lockdown).
+        Op::Cordon if ctx.target.is_some() => {
+            if let Some(t) = ctx.target.flatten() {
+                let c = w.map.hexes[t].country as usize;
+                if g.var(&board::flag(RoundFlag::Cordon, c)) < 2 {
+                    cx.set_key(g, &board::flag(RoundFlag::Cordon, c), 2);
+                }
+            }
+        }
+        Op::Shelter { reach: false } => {
             let cs = unsheltered(&w, g);
             let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
             let prompt = || format!("Seat {seat}: shelter which country?");
@@ -155,8 +218,14 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             }
         }
         Op::FreeBuilding => cards::play_free_building(g, cx, seat)?,
-        Op::BuildStation => resources::build_station(g, cx, seat)?,
-        Op::ClaimStation => resources::claim_station(g, cx, seat)?,
+        Op::BuildStation => {
+            let zone = ctx.area(&w, g, seat, Area::On);
+            resources::build_station(g, cx, seat, &zone)?
+        }
+        Op::ClaimStation => {
+            let zone = ctx.area(&w, g, seat, Area::On);
+            resources::claim_station(g, cx, seat, &zone)?
+        }
         Op::ProjectCube { count, station } => resources::project_cube(g, cx, seat, *count, *station)?,
         Op::Peek { count } => adversary::peek(g, cx, *count),
         Op::Jam { amount, source } => {
@@ -217,7 +286,10 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             let n = cards::tags(&w, g, seat, *tag) / (*per).max(1);
             cx.add_resource(g, seat, *resource, n);
         }
-        Op::RemoveTroops { count, reach } => removal::remove_troops(g, cx, seat, *count, *reach)?,
+        Op::RemoveTroops { count, reach, at } => {
+            let zone = ctx.target.map(|_| ctx.area(&w, g, seat, *at));
+            removal::remove_troops(g, cx, seat, *count, *reach, zone.as_deref())?
+        }
         Op::Sway { side: Side::Discord, amount, .. } => alignment::discord_from(g, cx, ctx.label, *amount),
         Op::Sway { side: _, amount, .. } => alignment::unity_from(g, cx, ctx.label, *amount),
         Op::Production { resource, amount } => economy::raise_production(g, cx, seat, *resource, *amount),
@@ -252,18 +324,33 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::DiscardHand { resource, amount } => cards::discard_hand(g, cx, seat, *resource, *amount)?,
         Op::MoveOne { range } => ambassadors::move_one(g, cx, seat, *range)?,
         Op::SpreadAmbassadors => ambassadors::spread_ambassadors(g, cx, seat)?,
-        Op::Consolidate { max } => ambassadors::consolidate(g, cx, seat, *max)?,
-        Op::Convert { max } => endgame::convert(g, cx, seat, *max)?,
-        Op::Gather { max, pieces, strike } => moves::gather(g, cx, seat, *max, pieces, *strike)?,
-        Op::Push { max, pieces } => moves::push(g, cx, seat, *max, pieces)?,
-        Op::Firewall => endgame::firewall(g, cx, seat)?,
+        Op::Consolidate { max } => ambassadors::consolidate(g, cx, seat, *max, ctx.target)?,
+        Op::Convert { max } => {
+            let zone = ctx.area(&w, g, seat, Area::On);
+            endgame::convert(g, cx, seat, *max, &zone)?
+        }
+        Op::Gather { max, pieces, strike } => {
+            let zone = ctx.area(&w, g, seat, Area::On);
+            moves::gather(g, cx, seat, *max, pieces, *strike, &zone)?
+        }
+        Op::Push { max, pieces } => {
+            let zone = ctx.area(&w, g, seat, Area::On);
+            moves::push(g, cx, seat, *max, pieces, &zone)?
+        }
+        Op::Firewall => {
+            let zone = ctx.area(&w, g, seat, Area::On);
+            endgame::firewall(g, cx, seat, &zone)?
+        }
         Op::IfTags { tag, count, then } => {
             if cards::tags(&w, g, seat, *tag) >= *count {
                 cx.tally(g, "effects.if_tags_met", 1);
                 run(g, cx, then, ctx)?;
             }
         }
-        Op::CutBotnet => removal::cut_botnet(g, cx, seat)?,
+        Op::CutBotnet => {
+            let zone = ctx.area(&w, g, seat, Area::On);
+            removal::cut_botnet(g, cx, seat, &zone)?
+        }
 
         // Threats and the team: the wordings differ, the rule doesn't.
         Op::Troops { count, each_country, destroy, at: None, stand: false, location: None, if_: None } => {

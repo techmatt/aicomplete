@@ -12,9 +12,10 @@ pub fn convert_cities(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
 /// 158 (amendment 6949): up to `max` agents on or next to one city in reach become the seat's. 178 (Matt's
 /// ruling #32): each becomes the seat's ambassador where it stood (it was on the node whose reach the card
 /// used); another agent still there meets it as any arrival does, 1 for 1 (`board::place_ambassador`).
-pub(super) fn convert(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64) -> Res {
+pub(super) fn convert(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, zone: &[usize]) -> Res {
     let w = cx.world;
-    let cities = convert_cities(&w, g, seat);
+    let mut cities = convert_cities(&w, g, seat);
+    cities.retain(|h| zone.contains(h));
     let opts = cities.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || format!("Seat {seat}: convert agents around which city?");
     let Some(i) = cx.choose(seat, prompt, opts)? else {
@@ -61,9 +62,10 @@ pub fn firewall_hexes(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
 }
 
 /// 158: a firewall on one hex in reach (it comes off at the end of the next adversary turn).
-pub(super) fn firewall(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
+pub(super) fn firewall(g: &mut GameState, cx: &mut Cx, seat: usize, zone: &[usize]) -> Res {
     let w = cx.world;
-    let hexes = firewall_hexes(&w, g, seat);
+    let mut hexes = firewall_hexes(&w, g, seat);
+    hexes.retain(|h| zone.contains(h));
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || format!("Seat {seat}: put a firewall on which hex?");
     if let Some(i) = cx.choose(seat, prompt, opts)? {

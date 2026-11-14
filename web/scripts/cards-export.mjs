@@ -288,7 +288,8 @@ function playerCard(c, face, keep) {
     costLabel: `${c.cost} credits`,
     tags: c.tags ?? [],
     keywords: c.keywords ?? [],
-    text: [face?.top_text, face?.text].filter(Boolean).join(' '),
+    // 234: the target box first, as face.rs `Face::full_text` prints it.
+    text: [face?.target && `${face.target.text}.`, face?.top_text, face?.text].filter(Boolean).join(' '),
     sections: [],
     price,
     ops,

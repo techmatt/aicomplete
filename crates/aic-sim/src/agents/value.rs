@@ -18,7 +18,7 @@
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, OnceLock};
 
-use aic_core::content::{Ability, CardDef, CardKind, Event, Facility, Op, Piece, Power, Resource, RoundFlag, Side, TokenKind, TAGS};
+use aic_core::content::{Ability, Area, CardDef, CardKind, Event, Facility, Op, Piece, Power, Resource, RoundFlag, Side, TokenKind, TAGS};
 use aic_core::op::FalloutAt;
 use serde::Deserialize;
 
@@ -93,7 +93,7 @@ pub struct Override {
 #[cfg(test)]
 pub(crate) const PART_ROWS: &[&str] =
     &["remove_ambassador", "remove_troop", "typed_jam", "liberate_align", "liberate_troops", "liberate_botnet", "cleanse_station",
-      "if_node_next_fresh", "burn_station", "burn_blight"];
+      "if_node_next_fresh", "burn_station", "burn_blight", "shelter_reach"];
 
 const SOURCE: &str = include_str!("../../../../configs/agents/values.json");
 
@@ -504,6 +504,17 @@ fn income_rate(t: &Table, res: Resource) -> f64 {
     t.res(res) * share
 }
 
+/// 234: the share of a targeted count an area finds: the target alone (`rates.area_on`), on or next to it
+/// (`area_near`), or its country (`area_country`).
+fn area_share(t: &Table, at: Area) -> f64 {
+    match at {
+        Area::Reach => 1.0,
+        Area::On => t.rate("area_on"),
+        Area::Near => t.rate("area_near"),
+        Area::Country => t.rate("area_country"),
+    }
+}
+
 /// What one op is worth when the seat that resolves it is a player.
 pub fn op_worth(t: &Table, op: &Op) -> Worth {
     let r = |res: Resource| t.res(res);
@@ -522,20 +533,31 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::DamageCountry { ambassadors, troops } => Worth::now(row("damage_country") * damage(t, *ambassadors, *troops)),
         Op::DestroyAll => Worth::now(row("destroy_all")),
         Op::RemoveBotnet => Worth::now(row("remove_botnet")),
-        Op::RemoveAmbassadorsCountry { unity_per, max, .. } => {
-            let n = if *max == 0 { t.rate("token_pile") } else { *max as f64 };
+        // 234: a targeted count finds `area_share` of its number: the target alone, or on or next to it.
+        Op::RemoveAmbassadorsCountry { unity_per, max, at, .. } => {
+            let n = if *max == 0 { t.rate("token_pile") } else { *max as f64 } * area_share(t, *at);
             let sway = if *unity_per > 0 { (n / *unity_per as f64).floor() * t.rate("sway") } else { 0.0 };
             Worth::now(row("remove_ambassadors_country") * n + sway)
         }
-        Op::RemoveTroops { count, .. } => Worth::now(row("remove_troops") * t.troops_removed(*count)),
+        Op::RemoveTroops { count, at, .. } => {
+            Worth::now(row("remove_troops") * t.troops_removed(*count) * area_share(t, *at))
+        }
+        Op::Target { .. } => Worth::now(row("target")),
+        Op::PlaceAmbassadors { count, at } => {
+            let _ = at;
+            Worth::now(row("place_ambassadors") * r(Resource::Ambassadors) * *count as f64)
+        }
         Op::BuildFactory => Worth::now(row("build_factory")),
         // 219: a board burn loses the piece's output for the rounds left, and a blight's Discord drip.
         Op::Burn { facility, blight } => Worth::now(
             if *facility == Facility::Factory { row("burn") } else { row("burn_station") }
                 + if *blight { row("burn_blight") } else { 0.0 },
         ),
-        Op::Cleanse { amount, one_country, cities, only } => {
-            let share = if *one_country { 0.8 } else { 1.0 };
+        Op::Cleanse { amount, one_country, cities, only, at } => {
+            // 234: the target always frees; the rest find `area_share` of their number around it.
+            let more = (*amount - 1).max(0) as f64;
+            let found = (1.0 + more * area_share(t, *at)) / (*amount).max(1) as f64;
+            let share = if *one_country { 0.8 } else { 1.0 } * found;
             if *cities {
                 // 184: a freed city is liberated through the action's path (178), the seat's cube on too.
                 Worth { city: (row("liberate") + row("liberate_align")) * share * *amount as f64, ..Worth::default() }
@@ -559,10 +581,15 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             let n = if *max == 0 { t.rate("token_pile") } else { *max as f64 };
             Worth::now(row("clear_city") * n)
         }
-        Op::Harden { count } => Worth::now(row("harden") * *count as f64),
-        Op::MoveAmbassadors { max } => Worth::now(row("move_ambassadors") * *max as f64),
+        Op::Harden { count, at } => {
+            let more = (*count - 1).max(0) as f64;
+            Worth::now(row("harden") * (1.0 + more * area_share(t, *at)))
+        }
+        Op::MoveAmbassadors { max, .. } => Worth::now(row("move_ambassadors") * *max as f64),
         Op::GainAmbassadors { count } => Worth::now(row("gain_ambassadors") * r(Resource::Ambassadors) * *count as f64),
-        Op::Shelter => Worth::unseen(row("shelter") * t.rate("target_share")),
+        Op::Shelter { reach: false } => Worth::unseen(row("shelter") * t.rate("target_share")),
+        // 234: the hexes in reach, where the seat's own nodes and nearby facilities stand.
+        Op::Shelter { reach: true } => Worth::unseen(row("shelter_reach") * t.rate("target_share")),
         Op::Cordon => Worth::unseen(row("cordon")),
         Op::FreeBuilding => Worth::now(row("free_building")),
         Op::BuildStation => Worth::now(row("build_station")),
@@ -620,7 +647,10 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             w.scaled(row(if *fresh { "if_node_next_fresh" } else { "if_node_next" }))
         }
         Op::AmbassadorToSpot => Worth::now(row("ambassador_to_spot") * r(Resource::Ambassadors)),
-        Op::LiftFallout { count } => Worth::now(row("lift_fallout") * t.rate("target_share") * *count as f64),
+        Op::LiftFallout { count, at } => {
+            let more = (*count - 1).max(0) as f64;
+            Worth::now(row("lift_fallout") * t.rate("target_share") * (1.0 + more * area_share(t, *at)))
+        }
         Op::Draw { count } => Worth::now(row("draw") * t.rate("drawn_card") * *count as f64),
         Op::DrainAll { amount } => Worth::now(row("drain_all") * *amount as f64),
         Op::GainPerTokens { resource, per, .. } => {

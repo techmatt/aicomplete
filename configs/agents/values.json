@@ -57,7 +57,10 @@
     "insight_discount_share": 0.25,
     "own_mix": 1,
     "mix_prior": 4,
-    "sites_expected": 2
+    "sites_expected": 2,
+    "area_on": 0.75,
+    "area_near": 0.8,
+    "area_country": 1
   },
   "ops": {
     "gain": {"credits": 1, "per": "the resource gained, at its rate"},
@@ -90,7 +93,10 @@
     "harden": {"credits": 1.5, "per": "hardening token on a facility"},
     "move_ambassadors": {"credits": 2, "per": "ambassador moved up to its reach (149: no paid Move to buy one, so a card's move is a scarce one)"},
     "gain_ambassadors": {"credits": 1, "per": "ambassador gained, at resources.ambassadors"},
+    "place_ambassadors": {"credits": 1.5, "per": "234: ambassador placed on the target, at resources.ambassadors: a gain plus the Dispatch it saves"},
+    "target": {"credits": 0, "per": "234: the card's target itself (what acts on it is its own rows)"},
     "shelter": {"credits": 4, "per": "country sheltered this round (conditional on a destruction)"},
+    "shelter_reach": {"credits": 4, "per": "234: your nodes and facilities in your reach sheltered this round (every node; the facilities near them)"},
     "cordon": {"credits": 3, "per": "country cordoned: about 2 arrivals stopped; 178: its pool waits for the next Rally (was lost), so the Rally's are only delayed"},
     "free_building": {"credits": 8, "per": "building played paying no credits (a building's credits saved)"},
     "build_station": {"credits": 8, "per": "station built free (1 chip and about 3 cubes before its card completes)"},

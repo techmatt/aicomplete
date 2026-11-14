@@ -1,0 +1,30 @@
+1152 games
+| removal | N | plays | found a play | share of N | reach would find | share |
+|---|---|---|---|---|---|---|
+| agents on | 1 | 2446 | 1.00 | 1.00 | | |
+| agents on | 2 | 305 | 1.14 | 0.57 | | |
+| agents on | 3 | 788 | 1.61 | 0.54 | | |
+| agents on | 4 | 643 | 1.49 | 0.37 | | |
+| agents near | 1 | 1195 | 0.00 | 0.00 | | |
+| agents near | 2 | 273 | 0.00 | 0.00 | | |
+| agents near | 3 | 426 | 0.67 | 0.22 | | |
+| agents near | 4 | 778 | 0.95 | 0.24 | | |
+| agents near | 5 | 614 | 1.80 | 0.36 | | |
+| agents near | 6 | 794 | 1.88 | 0.31 | | |
+| agents reach (r103) | 1 | 3641 | | | 0.67 | 0.67 |
+| agents reach (r103) | 2 | 578 | | | 0.84 | 0.42 |
+| agents reach (r103) | 3 | 1214 | | | 1.77 | 0.59 |
+| agents reach (r103) | 4 | 1421 | | | 1.83 | 0.46 |
+| agents reach (r103) | 5 | 614 | | | 2.47 | 0.49 |
+| agents reach (r103) | 6 | 794 | | | 2.58 | 0.43 |
+| troops on | 1 | 248 | 1.00 | 1.00 | | |
+| troops near | 1 | 448 | 0.00 | 0.00 | | |
+| troops near | 2 | 619 | 0.50 | 0.25 | | |
+| troops near | 3 | 213 | 0.31 | 0.10 | | |
+| troops reach (r103) | 1 | 696 | | | 0.36 | 0.36 |
+| troops reach (r103) | 2 | 619 | | | 0.47 | 0.24 |
+| troops reach (r103) | 3 | 213 | | | 0.29 | 0.10 |
+on: agents 5017/7992 = 0.63; troops 248/248 = 1.00
+near: agents 3625/13965 = 0.26; troops 377/2325 = 0.16
+r103's reach would have found: agents 11257/21957 = 0.51; troops 604/2573 = 0.23
+targets found 20176, missed 6875 (17.51 a game)

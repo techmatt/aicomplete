@@ -68,9 +68,10 @@ pub(super) fn burn(g: &mut GameState, cx: &mut Cx, seat: usize, facility: Facili
     Ok(())
 }
 
-pub(super) fn build_factory(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
+pub(super) fn build_factory(g: &mut GameState, cx: &mut Cx, seat: usize, zone: &[usize]) -> Res {
     let w = cx.world;
-    let hexes = factory_sites(&w, g, seat);
+    let mut hexes = factory_sites(&w, g, seat);
+    hexes.retain(|h| zone.contains(h));
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || format!("Seat {seat}: build a factory on which zone?");
     if let Some(i) = cx.choose(seat, prompt, opts)? {
@@ -82,9 +83,10 @@ pub(super) fn build_factory(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res 
 }
 
 /// Builds a research station of `seat`'s in reach, paying no chips (075).
-pub(super) fn build_station(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
+pub(super) fn build_station(g: &mut GameState, cx: &mut Cx, seat: usize, zone: &[usize]) -> Res {
     let w = cx.world;
-    let hexes = board::station_sites(&w, g, seat);
+    let mut hexes = board::station_sites(&w, g, seat);
+    hexes.retain(|h| zone.contains(h));
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || format!("Seat {seat}: build a research station on which hex?");
     if let Some(i) = cx.choose(seat, prompt, opts)? {
@@ -97,9 +99,10 @@ pub(super) fn build_station(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res 
 }
 
 /// Claim a neutral research station in reach with a card (142).
-pub(super) fn claim_station(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
+pub(super) fn claim_station(g: &mut GameState, cx: &mut Cx, seat: usize, zone: &[usize]) -> Res {
     let w = cx.world;
-    let hexes = board::card_claim_stations(&w, g, seat);
+    let mut hexes = board::card_claim_stations(&w, g, seat);
+    hexes.retain(|h| zone.contains(h));
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || format!("Seat {seat}: claim the research station on which hex?");
     if let Some(i) = cx.choose(seat, prompt, opts)? {
@@ -125,13 +128,22 @@ pub(super) fn project_cube(g: &mut GameState, cx: &mut Cx, seat: usize, count: i
     Ok(())
 }
 
-pub(super) fn harden(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64) -> Res {
+pub(super) fn harden(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64, zone: &[usize], target: Option<usize>) -> Res {
     let w = cx.world;
     // 022: only facilities a token can protect, each at most once ("harden 2
-    // facilities" is two facilities; fewer if fewer exist).
-    let mut hexes = harden_hexes(&w, g, seat);
+    // facilities" is two facilities; fewer if fewer exist). 234: in the zone (reach, or the target's area).
+    let mut hexes: Vec<usize> = zone.iter().copied().filter(|&h| board::hardenable(g, h)).collect();
     for k in 0..count {
-        let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
+        // 234: "harden it and N next to it": the target first.
+        let first = target.filter(|t| k == 0 && hexes.contains(t));
+        let opts = match first {
+            Some(t) => vec![hex_opt(&w, t)],
+            None => hexes.iter().map(|&h| hex_opt(&w, h)).collect(),
+        };
+        if let Some(t) = first {
+            hexes.retain(|&h| h != t);
+            hexes.insert(0, t);
+        }
         let prompt = || format!("Seat {seat}: hardening {} of {count} on which facility?", k + 1);
         let Some(j) = cx.choose(seat, prompt, opts)? else {
             break;

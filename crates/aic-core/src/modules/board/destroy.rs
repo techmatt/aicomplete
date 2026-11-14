@@ -64,11 +64,14 @@ pub fn guards(g: &GameState, h: usize, owner: Option<usize>) -> Vec<Guard> {
 /// a war destruction ([`Cause::War`]) sways toward Discord. Returns whether it was destroyed.
 pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause: Cause) -> Res<bool> {
     let w = cx.world;
-    let c = w.map.hexes[h].country as usize;
-    if flagged(g, RoundFlag::Shelter, c) {
+    if flagged(g, RoundFlag::Shelter, w.map.hexes[h].country as usize) {
         return Ok(false);
     }
     let owner = piece_owner(g, h, kind);
+    // 234: a card's Shelter shelters its player's own nodes and facilities on the hexes in their reach.
+    if owner.is_some_and(|s| g.var(&reach_shelter(s, h)) > 0) {
+        return Ok(false);
+    }
     // r82 (Matt, 2026-11-11): Aegis Doctrine is Shelter on the owner's own pieces once a round: the first
     // destruction a round is stopped automatically, spending nothing else.
     if let Some(s) = owner.filter(|&s| aegis_ready(&w, g, s)) {

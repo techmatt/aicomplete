@@ -42,9 +42,9 @@ The cards config lists which cards are in the game (baseline: all of them).
   liberations, troop strikes, ambassadors and Unity, energy, chips, cubes. The draft price is their only acquisition
   cost; no tier-2 card clears many Fallout tokens (green cards do).
 - **The end-game cards (drafts; Matt, 2026-11-09).** Ten tier-2 cards for the last 3-4 rounds act where the
-  agents stand, in reach: **convert** them into your ambassadors where they stand (Mass Defection, Double
-  Agents, Open Source Uprising, Embassy of Exiles), **strike** them (Kettle Operation: and troops) on or next to a hex in
-  reach (Kettle Operation, Lure Network), **firewall** a hex until the end of the next adversary turn (Firewall Array, Air Gap), mass your own
+  agents stand, at the card's target: **convert** them into your ambassadors where they stand (Mass Defection, Double
+  Agents, Open Source Uprising, Embassy of Exiles), **strike** them (Kettle Operation: and troops) on or next to the
+  target (Kettle Operation, Lure Network), **firewall** a hex until the end of the next adversary turn (Firewall Array, Air Gap), mass your own
   (Rally the Allies), or remove them, or troops, on one hex (Surgical Strike). The six events and Open Source Uprising also sway 1-2 Unity; three print a tag threshold ("with 3 Diplomacy tags,
   also …"). None frees a city, none is
   global, none makes a liberation cheaper the next time ([ambassadors.md](ambassadors.md)).
@@ -89,7 +89,7 @@ The cards config lists which cards are in the game (baseline: all of them).
 
   Each is priced at its own value at the rates, 4-42 credits (the three antimatter ones 18-22 and 1 antimatter, r94), well under the Liberate action's 5 ambassadors (~100
   credits) and out of reach before mid-game; they read 1.0-1.35 at Matt's unit anchors: the deck's late credit sinks
-  ([card-pricing.md](../card-pricing.md), *The liberate capstones*). Great Liberation (Diplomacy, three cleanses in one country, cities included)
+  ([card-pricing.md](../card-pricing.md), *The liberate capstones*). Great Liberation (Diplomacy: its target and 2 more in the target's country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the
   seat that can use it. Loops: each card is one-shot and tier 2, and every route needs nodes next to the city, so
   liberation → clean city → energy → more liberation is capped; Popular Uprising repeats, capped by its once-a-round
@@ -103,7 +103,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   ([ai-boards.md](ai-boards.md)), which can't be sacrificed.
 - **Programs** resolve and stay in your play area (their tags count; powers can sacrifice them). **Events** resolve
   and go to your played pile (their tags don't count). **Nothing to act on never blocks a card** (Matt): a part
-  of a card with nothing to act on (a removal with no target in reach, a move, a gain per tag with too few tags, a draw
+  of a card with nothing to act on (a map effect whose target condition no hex in reach meets, a move, a gain per tag with too few tags, a draw
   with no card left) does nothing, and the rest resolves. A program, event or ability is offered when at least one of
   its parts acts; one that would do nothing at all is not. A Discord sway is a price, never a part that acts (184). A removal's target is a hex with a piece the card names:
   "remove 1 agent" can't name a hex holding only a troop. A building's when-built effect is not checked.

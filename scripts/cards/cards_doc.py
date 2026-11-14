@@ -35,7 +35,9 @@ def load_faces():
 
 
 def face_text(face):
-    return ' '.join(t for t in (face['top_text'], face['text']) if t)
+    """The card's words in print order, as `Face::full_text`: the target box (234) first."""
+    target = face['target']['text'] + '.' if face.get('target') else ''
+    return ' '.join(t for t in (target, face['top_text'], face['text']) if t)
 
 
 def cards_module():

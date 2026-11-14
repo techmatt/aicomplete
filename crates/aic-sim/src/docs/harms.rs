@@ -287,7 +287,9 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::Harden { .. }
         | Op::MoveAmbassadors { .. }
         | Op::GainAmbassadors { .. }
-        | Op::Shelter
+        | Op::PlaceAmbassadors { .. }
+        | Op::Target { .. }
+        | Op::Shelter { .. }
         | Op::Cordon
         | Op::FreeBuilding
         | Op::BuildStation

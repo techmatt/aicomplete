@@ -18,6 +18,35 @@ pub fn feasible_after(w: &World, g: &GameState, seat: usize, effects: &[Op], spe
 /// [`feasible_after`] for the Action of seat `seat`'s building `card`: what
 /// "here" counts (076).
 pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent: i64, card: Option<&str>) -> bool {
+    feasible_aimed(w, g, seat, effects, spent, card, None)
+}
+
+/// 234: `aim` is the hexes an enclosing list's target may take. A map op after a target acts when some such hex
+/// lets it act (the condition names what the card acts on; a move or firewall checks its own hex test there);
+/// the target itself is no part.
+fn feasible_aimed(
+    w: &World,
+    g: &GameState,
+    seat: usize,
+    effects: &[Op],
+    spent: i64,
+    card: Option<&str>,
+    aim: Option<&[usize]>,
+) -> bool {
+    let own: Option<Vec<usize>> = effects.iter().find_map(|e| match e {
+        Op::Target { on } => Some(target_hexes(w, g, seat, *on)),
+        _ => None,
+    });
+    let aim: Option<&[usize]> = own.as_deref().or(aim);
+    let aimed_acts = |e: &Op, at: &[usize]| -> bool {
+        let any = |hexes: Vec<usize>| hexes.iter().any(|h| at.contains(h));
+        match e {
+            Op::Push { pieces, .. } => any(push_hexes(w, g, seat, pieces)),
+            Op::Gather { pieces, strike, .. } => any(gather_hexes(w, g, seat, pieces, *strike)),
+            Op::Firewall => any(firewall_hexes(w, g, seat)),
+            _ => !at.is_empty(),
+        }
+    };
     let here_held = || card.map_or(0, |c| g.var(&cards::tokens_key(seat, c)));
     // 041: energy the same effects gain first can pay a placement's step.
     let gained: i64 = effects
@@ -48,7 +77,13 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
     // part. A list where nothing acts would be a play for nothing, so it isn't
     // offered.
     let acts = |at: usize, e: &Op| -> bool {
+        if let Some(at) = aim.filter(|_| e.is_map()) {
+            return aimed_acts(e, at);
+        }
         match e {
+            Op::Target { .. } => false,
+            Op::Shelter { reach: true } => node_count(g, seat) > 0,
+            Op::PlaceAmbassadors { .. } => false,
             Op::Harden { .. } => !harden_hexes(w, g, seat).is_empty(),
             Op::MoveOne { range } => !movable_one(w, g, seat, *range).is_empty(),
             Op::GainPerTag { tag, per, .. } => cards::tags(w, g, seat, *tag) >= *per,
@@ -70,7 +105,9 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
             Op::Push { pieces, .. } => !push_hexes(w, g, seat, pieces).is_empty(),
             Op::Firewall => !firewall_hexes(w, g, seat).is_empty(),
             // The threshold is a rider: it acts only with the tags, and then as its own ops do.
-            Op::IfTags { tag, count, then } => cards::tags(w, g, seat, *tag) >= *count && feasible(w, g, seat, then),
+            Op::IfTags { tag, count, then } => {
+                cards::tags(w, g, seat, *tag) >= *count && feasible_aimed(w, g, seat, then, 0, None, aim)
+            }
             // 212: a rider on the node placed before it: never a part that acts on its own.
             Op::IfNodeNext { .. } | Op::AmbassadorToSpot => false,
             Op::LiftFallout { .. } => !board::land_in_reach(w, g, seat).is_empty(),
@@ -82,7 +119,7 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
             Op::DestroyAll => any_hex(g, |h| adversary::can_destroy_all(g, h)),
             Op::RemoveBotnet => any_hex(g, |h| botnet_in_reach(w, g, seat, h)),
             Op::CutBotnet => !cuttable_botnets(w, g, seat).is_empty(),
-            Op::Shelter => !unsheltered(w, g).is_empty(),
+            Op::Shelter { .. } => !unsheltered(w, g).is_empty(),
             Op::FreeBuilding => cards::free_building_exists(w, g, seat),
             Op::BuildStation => !board::station_sites(w, g, seat).is_empty(),
             Op::ClaimStation => !board::card_claim_stations(w, g, seat).is_empty(),

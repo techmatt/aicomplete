@@ -313,6 +313,117 @@ impl NodeSpot {
     }
 }
 
+/// 234 (Matt, 2026-11-14: one target, Spirit Island style): the condition a player card's one target meets,
+/// printed in its header's target box. The target is a hex in your reach (within 1 of any of your nodes).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum TargetSpec {
+    /// A hex with an agent on it.
+    Agents,
+    /// A hex with a troop on it.
+    Troops,
+    /// A hex with an agent or a troop on it.
+    Adversary,
+    /// A botnet.
+    Botnet,
+    CorruptedCity,
+    CorruptedStation,
+    CorruptedFactory,
+    /// A corrupted city, research station or factory.
+    CorruptedSite,
+    /// A neutral research station a card can claim.
+    NeutralStation,
+    /// A free industrial zone (a factory's site).
+    FreeZone,
+    /// A hex with a Fallout token.
+    Fallout,
+    /// A facility a hardening token can protect.
+    Facility,
+    /// A city with an agent on or next to it.
+    AgentCity,
+    /// A piece an ambassador can stand on (a city, base, facility or node).
+    Piece,
+    /// Any land hex.
+    Land,
+}
+
+impl TargetSpec {
+    /// The target box's words ("corrupted city").
+    pub fn words(self) -> &'static str {
+        match self {
+            TargetSpec::Agents => "Agents",
+            TargetSpec::Troops => "Troops",
+            TargetSpec::Adversary => "Agents or Troops",
+            TargetSpec::Botnet => "a Botnet",
+            TargetSpec::CorruptedCity => "a corrupted city",
+            TargetSpec::CorruptedStation => "a corrupted research station",
+            TargetSpec::CorruptedFactory => "a corrupted factory",
+            TargetSpec::CorruptedSite => "a corrupted site",
+            TargetSpec::NeutralStation => "a neutral research station",
+            TargetSpec::FreeZone => "a free industrial zone",
+            TargetSpec::Fallout => "Fallout",
+            TargetSpec::Facility => "a facility",
+            TargetSpec::AgentCity => "a city with Agents on or next to it",
+            TargetSpec::Piece => "a piece",
+            TargetSpec::Land => "a land hex",
+        }
+    }
+
+    /// The target box's glyph: an icon `web/card/card.js` draws.
+    pub fn glyph(self) -> &'static str {
+        match self {
+            TargetSpec::Agents => "agent",
+            TargetSpec::Troops => "troop",
+            TargetSpec::Adversary => "agent",
+            TargetSpec::Botnet => "botnet",
+            TargetSpec::CorruptedCity => "city",
+            TargetSpec::CorruptedStation => "station",
+            TargetSpec::CorruptedFactory | TargetSpec::FreeZone => "factory",
+            TargetSpec::CorruptedSite => "city",
+            TargetSpec::NeutralStation => "station",
+            TargetSpec::Fallout => "fallout",
+            TargetSpec::Facility => "shield",
+            TargetSpec::AgentCity => "city",
+            TargetSpec::Piece => "ambassador",
+            TargetSpec::Land => "hex",
+        }
+    }
+}
+
+/// 234: where a targeted op acts: on the target, on or next to it, or in its country. Nothing reaches past 1
+/// from the target. With no target (a board power, a standard action, the adversary) an op keeps its own reach.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Area {
+    /// No target: the op's own reach (a board power, a standard action). `Content::check` refuses it on a
+    /// player card's targeted op.
+    #[default]
+    Reach,
+    On,
+    Near,
+    Country,
+}
+
+impl Area {
+    pub fn is_reach(&self) -> bool {
+        *self == Area::Reach
+    }
+
+    pub fn is_on(&self) -> bool {
+        *self == Area::On
+    }
+
+    /// The printed place: "on it", "on or next to it", "in its country" ("in reach" with no target).
+    pub fn words(self) -> &'static str {
+        match self {
+            Area::Reach => "in reach",
+            Area::On => "on it",
+            Area::Near => "on or next to it",
+            Area::Country => "in its country",
+        }
+    }
+}
+
 /// 167: a board condition a Unity or Discord card scopes by (fear-card shape, Matt 2026-11-09: never reach).
 /// "An ambassador" is any seat's; "a player's piece" is an ambassador or a node.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -645,7 +756,8 @@ pub enum Op {
     /// Remove up to `max` agents in one country (0: every one);
     /// sway 1 toward Unity per `unity_per` removed (0: none). 076: a number, not "every".
     /// `reach` (111, Matt's ruling 3): in reach instead, any hexes within reach
-    /// of your nodes, across countries.
+    /// of your nodes, across countries. 234: after a card's target, up to `max` in its `at` area (a player card's
+    /// only form).
     RemoveAmbassadorsCountry {
         #[serde(default)]
         unity_per: i64,
@@ -653,14 +765,20 @@ pub enum Op {
         max: i64,
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         reach: bool,
+        /// 234: where it acts once a target is chosen (on it, on or next to it, in its country).
+        #[serde(default, skip_serializing_if = "Area::is_reach")]
+        at: Area,
     },
     /// Remove up to `count` adversary troops in one country, any country
     /// (076, Matt's ruling 6: a printed number, never "per hex"); with `reach`
-    /// (111), in reach instead.
+    /// (111), in reach instead; after a card's target (234), in its `at` area.
     RemoveTroops {
         count: i64,
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         reach: bool,
+        /// 234: where it acts once a target is chosen (on it, on or next to it, in its country).
+        #[serde(default, skip_serializing_if = "Area::is_reach")]
+        at: Area,
     },
     /// Build a factory on a free industrial zone in your reach.
     BuildFactory,
@@ -685,6 +803,9 @@ pub enum Op {
         cities: bool,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         only: Option<Facility>,
+        /// 234: where it acts once a target is chosen (on it, on or next to it, in its country).
+        #[serde(default, skip_serializing_if = "Area::is_reach")]
+        at: Area,
     },
     /// Liberate one corrupted city in your reach (080, r34: the liberate
     /// capstones): as the Liberate action does (178, Matt's ruling #29), the
@@ -709,21 +830,44 @@ pub enum Op {
     /// Put `count` hardening tokens on different facilities in reach.
     Harden {
         count: i64,
+        /// 234: where it acts once a target is chosen (on it, on or next to it, in its country).
+        #[serde(default, skip_serializing_if = "Area::is_reach")]
+        at: Area,
     },
     /// Move up to `max` of your ambassadors (from your supply or the board)
     /// onto pieces within your reach, one at a time.
     MoveAmbassadors {
         max: i64,
+        /// 234: where it acts once a target is chosen (on it, on or next to it, in its country).
+        #[serde(default, skip_serializing_if = "Area::is_reach")]
+        at: Area,
     },
     /// Gain `count` player ambassadors into your supply.
     GainAmbassadors {
         count: i64,
     },
-    /// In one country, facilities and nodes can't be destroyed this round.
-    Shelter,
+    /// 234 (Matt: Gain means your supply, Place means onto the map): `count` new ambassadors of yours onto the
+    /// target (or onto pieces on or next to it, `at`), each arriving as any ambassador does.
+    PlaceAmbassadors {
+        count: i64,
+        /// 234: where it acts once a target is chosen (on it, on or next to it, in its country).
+        #[serde(default, skip_serializing_if = "Area::is_reach")]
+        at: Area,
+    },
+    /// 234: a player card's one target, the first op of the list it scopes: a hex in your reach meeting `on`.
+    /// The map ops after it act on it (their `at`); with no such hex they do nothing.
+    Target {
+        on: TargetSpec,
+    },
+    /// In one country, facilities and nodes can't be destroyed this round. With `reach` (234: a player card picks
+    /// no country), every hex in your reach instead: your nodes and the facilities there.
+    Shelter {
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        reach: bool,
+    },
     /// In one country, no Rally or creation line places agents until the end of the next adversary turn (118; 068:
     /// a Security card does an ambassador's job); its agent pool waits for the next Rally (178, Matt's ruling #30);
-    /// troops still land.
+    /// troops still land. 234: after a card's target, the target's country.
     Cordon,
     /// Play a building from your hand paying no credits; its other costs and
     /// its requirements stand (068: the Builder's expensive power).
@@ -850,6 +994,9 @@ pub enum Op {
     /// went with the Protector's Recovery, its one user.
     LiftFallout {
         count: i64,
+        /// 234: where it acts once a target is chosen (on it, on or next to it, in its country).
+        #[serde(default, skip_serializing_if = "Area::is_reach")]
+        at: Area,
     },
     /// Draw `count` tier-1 cards into your hand, no keep paid (023: Science's
     /// card draw).
@@ -1431,6 +1578,55 @@ fn two() -> i64 {
 
 impl Op {
     /// The ops printed inside this one (a `then`, a choice's `options`).
+    /// 234: an op that acts at a place on the map a player picks: on a player card it needs the card's one
+    /// target before it (`Content::check`), and acts on that target's area. Your own nodes (`shield_node`,
+    /// `place_node`) and burns of your own pieces are not picked places. A reach Shelter takes no target.
+    pub fn is_map(&self) -> bool {
+        matches!(
+            self,
+            Op::Damage { .. }
+                | Op::DamageCountry { .. }
+                | Op::DestroyAll
+                | Op::RemoveBotnet
+                | Op::RemoveAmbassadorsCountry { .. }
+                | Op::RemoveTroops { .. }
+                | Op::BuildFactory
+                | Op::Cleanse { .. }
+                | Op::Liberate { .. }
+                | Op::ClearCity { .. }
+                | Op::Harden { .. }
+                | Op::MoveAmbassadors { .. }
+                | Op::PlaceAmbassadors { .. }
+                | Op::Shelter { reach: false }
+                | Op::Cordon
+                | Op::BuildStation
+                | Op::ClaimStation
+                | Op::CutBotnet
+                | Op::MoveOne { .. }
+                | Op::SpreadAmbassadors
+                | Op::Consolidate { .. }
+                | Op::Convert { .. }
+                | Op::Gather { .. }
+                | Op::Push { .. }
+                | Op::Firewall
+                | Op::LiftFallout { .. }
+        )
+    }
+
+    /// 234: the `at` an op prints, where it has one.
+    pub fn area(&self) -> Option<Area> {
+        match self {
+            Op::RemoveAmbassadorsCountry { at, .. }
+            | Op::RemoveTroops { at, .. }
+            | Op::Cleanse { at, .. }
+            | Op::Harden { at, .. }
+            | Op::MoveAmbassadors { at, .. }
+            | Op::PlaceAmbassadors { at, .. }
+            | Op::LiftFallout { at, .. } => Some(*at),
+            _ => None,
+        }
+    }
+
     pub fn nested(&self) -> &[Op] {
         match self {
             Op::IfTags { then, .. }
@@ -1593,7 +1789,9 @@ impl Op {
             | Op::Harden { .. }
             | Op::MoveAmbassadors { .. }
             | Op::GainAmbassadors { .. }
-            | Op::Shelter
+            | Op::PlaceAmbassadors { .. }
+            | Op::Target { .. }
+            | Op::Shelter { .. }
             | Op::Cordon
             | Op::FreeBuilding
             | Op::BuildStation

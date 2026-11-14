@@ -83,6 +83,17 @@ function stat(c, key) {
   if (key === 'price_gap') return c.priceGap;
   return data.stats.byAgent[$('agent').value]?.[c.id]?.[key] ?? null;
 }
+/**
+ * 234: a stats agent's short label, its base player and the read ("engine, r94 (s213b)"), never
+ * its spec line (`engine:strategy=1,w.built=4,…`); two profiles of one base are numbered.
+ */
+function agentLabel(agent) {
+  const src = data.stats.source;
+  const base = agent.split(':')[0];
+  const same = src.agents.filter((a) => a.split(':')[0] === base);
+  const n = same.length > 1 ? ` ${same.indexOf(agent) + 1}` : '';
+  return `${base}${n}${src.revision ? `, r${src.revision}` : ''} (${src.path.split('/').at(-1)})`;
+}
 const fmt = (v, col) => (v == null ? '' : `${col.key === 'win_delta' && v > 0 ? '+' : ''}${Number.isInteger(v) ? v : v.toFixed(col.unit === '' ? 1 : 0)}${col.unit}`);
 
 // ---------- faces ----------
@@ -243,7 +254,7 @@ function controls() {
   $('agent-box').hidden = !src;
   if (src) {
     const was = $('agent').value;
-    setSelect($('agent'), src.agents.map((a) => [a, a]));
+    setSelect($('agent'), src.agents.map((a) => [a, agentLabel(a)]));
     if (!was || was !== $('agent').value) $('agent').value = src.agent;
   }
   const notes = [...data.warnings];
@@ -277,7 +288,7 @@ function statsBlock(c) {
   if (!rows.length) return '';
   const src = data.stats.source;
   const raw = data.stats.byAgent[$('agent').value]?.[c.id];
-  return `<h4>Measured${src ? `: ${esc($('agent').value)}, r${src.revision}` : ''}</h4><dl>${rows.map(([col, v]) => `<dt title="${esc(col.title)}">${esc(col.label)}</dt><dd>${esc(fmt(v, col))}</dd>`).join('')}${raw ? `<dt>Offered / kept / drawn / played</dt><dd>${raw.offered} / ${raw.kept} / ${raw.drawn} / ${raw.played}</dd>` : ''}</dl>`;
+  return `<h4>Measured${src ? `: ${esc(agentLabel($('agent').value))}` : ''}</h4><dl>${rows.map(([col, v]) => `<dt title="${esc(col.title)}">${esc(col.label)}</dt><dd>${esc(fmt(v, col))}</dd>`).join('')}${raw ? `<dt>Offered / kept / drawn / played</dt><dd>${raw.offered} / ${raw.kept} / ${raw.drawn} / ${raw.played}</dd>` : ''}</dl>`;
 }
 
 function detail(id) {

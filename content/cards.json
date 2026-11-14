@@ -366,8 +366,13 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "fallout"
+   },
+   {
     "op": "lift_fallout",
-    "count": 3
+    "count": 3,
+    "at": "near"
    },
    {
     "op": "draw",
@@ -570,8 +575,13 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "fallout"
+   },
+   {
     "op": "lift_fallout",
-    "count": 4
+    "count": 4,
+    "at": "near"
    },
    {
     "op": "choose_player"
@@ -672,6 +682,10 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "free_zone"
+   },
+   {
     "op": "build_factory"
    },
    {
@@ -695,10 +709,15 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "corrupted_station"
+   },
+   {
     "op": "cleanse",
     "amount": 1,
     "one_country": false,
-    "only": "station"
+    "only": "station",
+    "at": "on"
    }
   ]
  },
@@ -970,7 +989,7 @@
   "name": "Eviction Worm",
   "tier": 1,
   "kind": "program",
-  "cost": 12,
+  "cost": 9,
   "insight": 0,
   "tags": [
    "cyber"
@@ -980,9 +999,13 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "agents"
+   },
+   {
     "op": "remove_ambassadors_country",
     "max": 3,
-    "reach": true
+    "at": "on"
    },
    {
     "op": "drain_project",
@@ -1049,6 +1072,10 @@
     "count": 1
    },
    {
+    "op": "target",
+    "on": "agents"
+   },
+   {
     "op": "gather",
     "max": 2,
     "pieces": [
@@ -1071,8 +1098,13 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "fallout"
+   },
+   {
     "op": "lift_fallout",
-    "count": 2
+    "count": 2,
+    "at": "near"
    },
    {
     "op": "draw",
@@ -1215,9 +1247,13 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "troops"
+   },
+   {
     "op": "remove_troops",
     "count": 2,
-    "reach": true
+    "at": "on"
    }
   ]
  },
@@ -1346,6 +1382,10 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "botnet"
+   },
+   {
     "op": "remove_botnet"
    },
    {
@@ -1359,7 +1399,7 @@
   "name": "Killswitch Directive",
   "tier": 2,
   "kind": "event",
-  "cost": 16,
+  "cost": 12,
   "insight": 1,
   "tags": [
    "cyber"
@@ -1372,10 +1412,13 @@
     "op": "discard_project"
    },
    {
+    "op": "target",
+    "on": "agents"
+   },
+   {
     "op": "remove_ambassadors_country",
-    "unity_per": 0,
     "max": 4,
-    "reach": true
+    "at": "near"
    }
   ]
  },
@@ -1400,6 +1443,10 @@
    "hack"
   ],
   "effects": [
+   {
+    "op": "target",
+    "on": "botnet"
+   },
    {
     "op": "remove_botnet"
    },
@@ -1573,8 +1620,13 @@
     "narrative": "cooperation"
    },
    {
+    "op": "target",
+    "on": "fallout"
+   },
+   {
     "op": "lift_fallout",
-    "count": 1
+    "count": 1,
+    "at": "on"
    }
   ]
  },
@@ -1598,8 +1650,13 @@
     "count": 2
    },
    {
+    "op": "target",
+    "on": "piece"
+   },
+   {
     "op": "move_ambassadors",
-    "max": 2
+    "max": 2,
+    "at": "on"
    }
   ]
  },
@@ -1625,8 +1682,13 @@
     "amount": 3
    },
    {
+    "op": "target",
+    "on": "fallout"
+   },
+   {
     "op": "lift_fallout",
-    "count": 1
+    "count": 1,
+    "at": "on"
    }
   ]
  },
@@ -1708,8 +1770,13 @@
     "amount": 1
    },
    {
+    "op": "target",
+    "on": "facility"
+   },
+   {
     "op": "harden",
-    "count": 3
+    "count": 3,
+    "at": "near"
    }
   ]
  },
@@ -1926,7 +1993,8 @@
   ],
   "effects": [
    {
-    "op": "shelter"
+    "op": "shelter",
+    "reach": true
    },
    {
     "op": "place_node",
@@ -1974,6 +2042,10 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "piece"
+   },
+   {
     "op": "consolidate",
     "max": 6
    },
@@ -2002,8 +2074,13 @@
     "count": 3
    },
    {
+    "op": "target",
+    "on": "piece"
+   },
+   {
     "op": "move_ambassadors",
-    "max": 4
+    "max": 4,
+    "at": "near"
    }
   ]
  },
@@ -2131,12 +2208,17 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "corrupted_city"
+   },
+   {
     "op": "clear_city",
     "max": 4
    },
    {
-    "op": "gain_ambassadors",
-    "count": 2
+    "op": "place_ambassadors",
+    "count": 2,
+    "at": "on"
    }
   ]
  },
@@ -2219,6 +2301,10 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "adversary"
+   },
+   {
     "op": "damage",
     "ambassadors": 3,
     "troops": 1
@@ -2234,17 +2320,22 @@
   "name": "Back-Channel Talks",
   "tier": 1,
   "kind": "program",
-  "cost": 14,
+  "cost": 11,
   "insight": 0,
   "tags": [
    "diplomacy"
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "corrupted_factory"
+   },
+   {
     "op": "cleanse",
     "amount": 2,
     "one_country": false,
-    "only": "factory"
+    "only": "factory",
+    "at": "near"
    },
    {
     "op": "sway",
@@ -2289,7 +2380,7 @@
   "name": "Liberation Accords",
   "tier": 2,
   "kind": "program",
-  "cost": 15,
+  "cost": 11,
   "insight": 2,
   "needs": [
    [
@@ -2302,10 +2393,14 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "agents"
+   },
+   {
     "op": "remove_ambassadors_country",
     "unity_per": 0,
     "max": 6,
-    "reach": true
+    "at": "near"
    },
    {
     "op": "gain_ambassadors",
@@ -2332,6 +2427,10 @@
   ],
   "keywords": [],
   "effects": [
+   {
+    "op": "target",
+    "on": "land"
+   },
    {
     "op": "gather",
     "max": 6,
@@ -2384,10 +2483,15 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "corrupted_site"
+   },
+   {
     "op": "cleanse",
     "amount": 3,
-    "one_country": true,
-    "cities": true
+    "one_country": false,
+    "cities": true,
+    "at": "country"
    }
   ]
  },
@@ -2495,6 +2599,10 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "troops"
+   },
+   {
     "op": "damage",
     "troops": 1
    },
@@ -2522,13 +2630,17 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "troops"
+   },
+   {
     "op": "damage",
     "ambassadors": 0,
     "troops": 2
    },
    {
-    "op": "move_one",
-    "range": 2
+    "op": "consolidate",
+    "max": 1
    }
   ]
  },
@@ -2537,7 +2649,7 @@
   "name": "Diplomatic Expulsion",
   "tier": 1,
   "kind": "program",
-  "cost": 12,
+  "cost": 8,
   "insight": 0,
   "tags": [
    "security",
@@ -2545,9 +2657,13 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "agents"
+   },
+   {
     "op": "remove_ambassadors_country",
     "max": 4,
-    "reach": true
+    "at": "on"
    },
    {
     "op": "sway",
@@ -2599,9 +2715,13 @@
     },
     "then": [
      {
+      "op": "target",
+      "on": "agents"
+     },
+     {
       "op": "remove_ambassadors_country",
       "max": 1,
-      "reach": true
+      "at": "on"
      }
     ]
    }
@@ -2650,6 +2770,10 @@
   "ability": {
    "effects": [
     {
+     "op": "target",
+     "on": "adversary"
+    },
+    {
      "op": "push",
      "max": 2,
      "pieces": [
@@ -2660,6 +2784,10 @@
    ]
   },
   "effects": [
+   {
+    "op": "target",
+    "on": "adversary"
+   },
    {
     "op": "push",
     "max": 3,
@@ -2720,9 +2848,13 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "troops"
+   },
+   {
     "op": "remove_troops",
     "count": 1,
-    "reach": true
+    "at": "on"
    },
    {
     "op": "draw",
@@ -2742,7 +2874,12 @@
   ],
   "effects": [
    {
-    "op": "shelter"
+    "op": "shelter",
+    "reach": true
+   },
+   {
+    "op": "target",
+    "on": "land"
    },
    {
     "op": "cordon"
@@ -2812,7 +2949,7 @@
   "name": "Martial Cordon",
   "tier": 2,
   "kind": "program",
-  "cost": 8,
+  "cost": 3,
   "insight": 1,
   "needs": [
    [
@@ -2826,8 +2963,13 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "agents"
+   },
+   {
     "op": "remove_ambassadors_country",
-    "max": 6
+    "max": 6,
+    "at": "near"
    },
    {
     "op": "sway",
@@ -2875,7 +3017,7 @@
   "name": "Kinetic Interdiction",
   "tier": 2,
   "kind": "event",
-  "cost": 2,
+  "cost": 0,
   "antimatter": 1,
   "insight": 0,
   "needs": [
@@ -2889,13 +3031,18 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "adversary"
+   },
+   {
     "op": "remove_troops",
-    "count": 2
+    "count": 2,
+    "at": "near"
    },
    {
     "op": "remove_ambassadors_country",
     "max": 6,
-    "reach": true
+    "at": "near"
    },
    {
     "op": "sway",
@@ -2910,7 +3057,7 @@
   "name": "Annihilation Lance",
   "tier": 2,
   "kind": "event",
-  "cost": 10,
+  "cost": 8,
   "antimatter": 1,
   "insight": 0,
   "tags": [
@@ -2918,12 +3065,16 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "adversary"
+   },
+   {
     "op": "destroy_all"
    },
    {
     "op": "remove_troops",
     "count": 2,
-    "reach": true
+    "at": "near"
    },
    {
     "op": "sway",
@@ -3019,11 +3170,17 @@
   ],
   "effects": [
    {
-    "op": "remove_troops",
-    "count": 4
+    "op": "target",
+    "on": "troops"
    },
    {
-    "op": "shelter"
+    "op": "remove_troops",
+    "count": 4,
+    "at": "near"
+   },
+   {
+    "op": "shelter",
+    "reach": true
    }
   ]
  },
@@ -3396,6 +3553,10 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "corrupted_city"
+   },
+   {
     "op": "liberate"
    },
    {
@@ -3427,6 +3588,10 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "corrupted_city"
+   },
+   {
     "op": "liberate"
    }
   ],
@@ -3451,6 +3616,10 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "corrupted_city"
+   },
+   {
     "op": "liberate",
     "ambassadors": 3
    }
@@ -3469,6 +3638,10 @@
    "science"
   ],
   "effects": [
+   {
+    "op": "target",
+    "on": "corrupted_city"
+   },
    {
     "op": "liberate"
    },
@@ -3496,6 +3669,10 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "corrupted_city"
+   },
+   {
     "op": "liberate",
     "botnet": true
    }
@@ -3519,6 +3696,10 @@
    "security"
   ],
   "effects": [
+   {
+    "op": "target",
+    "on": "corrupted_city"
+   },
    {
     "op": "liberate",
     "troops": 3
@@ -3555,6 +3736,10 @@
    "or": {
     "tokens": 4,
     "effects": [
+     {
+      "op": "target",
+      "on": "corrupted_city"
+     },
      {
       "op": "liberate"
      }
@@ -4012,8 +4197,13 @@
     "amount": 4
    },
    {
+    "op": "target",
+    "on": "fallout"
+   },
+   {
     "op": "lift_fallout",
-    "count": 1
+    "count": 1,
+    "at": "on"
    }
   ]
  },
@@ -4241,7 +4431,7 @@
   "name": "Joint Task Force",
   "tier": 1,
   "kind": "building",
-  "cost": 14,
+  "cost": 11,
   "insight": 1,
   "needs": [
    [
@@ -4261,9 +4451,13 @@
     },
     "then": [
      {
+      "op": "target",
+      "on": "agents"
+     },
+     {
       "op": "remove_ambassadors_country",
       "max": 2,
-      "reach": true
+      "at": "on"
      }
     ]
    }
@@ -4359,16 +4553,20 @@
   "name": "Counterinsurgency Campaign",
   "tier": 1,
   "kind": "program",
-  "cost": 15,
+  "cost": 12,
   "insight": 0,
   "tags": [
    "security"
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "agents"
+   },
+   {
     "op": "remove_ambassadors_country",
     "max": 3,
-    "reach": true
+    "at": "on"
    },
    {
     "op": "production",
@@ -4722,7 +4920,7 @@
   "name": "Headquarters Raid",
   "tier": 1,
   "kind": "event",
-  "cost": 28,
+  "cost": 22,
   "insight": 1,
   "needs": [
    [
@@ -4735,9 +4933,13 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "agents"
+   },
+   {
     "op": "remove_ambassadors_country",
     "max": 5,
-    "reach": true
+    "at": "near"
    },
    {
     "op": "draw",
@@ -4838,11 +5040,16 @@
   ],
   "effects": [
    {
-    "op": "remove_troops",
-    "count": 3
+    "op": "target",
+    "on": "botnet"
    },
    {
     "op": "remove_botnet"
+   },
+   {
+    "op": "remove_troops",
+    "count": 3,
+    "at": "near"
    }
   ],
   "antimatter": 1
@@ -4860,6 +5067,10 @@
    "diplomacy"
   ],
   "effects": [
+   {
+    "op": "target",
+    "on": "corrupted_city"
+   },
    {
     "op": "liberate"
    }
@@ -4924,7 +5135,7 @@
   "name": "Directed-Energy Array",
   "tier": 1,
   "kind": "building",
-  "cost": 11,
+  "cost": 8,
   "insight": 0,
   "tags": [
    "security",
@@ -4939,9 +5150,13 @@
    ],
    "effects": [
     {
+     "op": "target",
+     "on": "agents"
+    },
+    {
      "op": "remove_ambassadors_country",
      "max": 3,
-     "reach": true
+     "at": "near"
     }
    ]
   }
@@ -5050,6 +5265,10 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "neutral_station"
+   },
+   {
     "op": "claim_station"
    }
   ]
@@ -5074,6 +5293,10 @@
    ],
    "effects": [
     {
+     "op": "target",
+     "on": "neutral_station"
+    },
+    {
      "op": "claim_station"
     }
    ]
@@ -5090,6 +5313,10 @@
    "diplomacy"
   ],
   "effects": [
+   {
+    "op": "target",
+    "on": "agent_city"
+   },
    {
     "op": "convert",
     "max": 5
@@ -5122,6 +5349,10 @@
   "ability": {
    "effects": [
     {
+     "op": "target",
+     "on": "agent_city"
+    },
+    {
      "op": "convert",
      "max": 2
     }
@@ -5141,13 +5372,17 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "agent_city"
+   },
+   {
     "op": "convert",
     "max": 3
    },
    {
     "op": "remove_troops",
     "count": 2,
-    "reach": true
+    "at": "near"
    }
   ],
   "draft": true
@@ -5169,6 +5404,10 @@
    "security"
   ],
   "effects": [
+   {
+    "op": "target",
+    "on": "adversary"
+   },
    {
     "op": "gather",
     "max": 6,
@@ -5205,6 +5444,10 @@
   ],
   "ability": {
    "effects": [
+    {
+     "op": "target",
+     "on": "agents"
+    },
     {
      "op": "gather",
      "max": 3,
@@ -5243,6 +5486,10 @@
   "ability": {
    "effects": [
     {
+     "op": "target",
+     "on": "land"
+    },
+    {
      "op": "firewall"
     }
    ]
@@ -5260,6 +5507,10 @@
    "cyber"
   ],
   "effects": [
+   {
+    "op": "target",
+    "on": "agents"
+   },
    {
     "op": "firewall"
    },
@@ -5284,6 +5535,10 @@
    {
     "op": "gain_ambassadors",
     "count": 5
+   },
+   {
+    "op": "target",
+    "on": "land"
    },
    {
     "op": "gather",
@@ -5313,6 +5568,10 @@
   ],
   "effects": [
    {
+    "op": "target",
+    "on": "adversary"
+   },
+   {
     "op": "damage",
     "ambassadors": 4,
     "troops": 3
@@ -5338,6 +5597,10 @@
    "diplomacy"
   ],
   "effects": [
+   {
+    "op": "target",
+    "on": "agent_city"
+   },
    {
     "op": "convert",
     "max": 4
@@ -5470,6 +5733,10 @@
     ]
    ],
    "effects": [
+    {
+     "op": "target",
+     "on": "agents"
+    },
     {
      "op": "damage",
      "ambassadors": 2

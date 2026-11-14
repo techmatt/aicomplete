@@ -1,0 +1,37 @@
+{
+  "name": "f234",
+  "note": "234: fresh read 47232-47279, the shipped build (r105: one target per map-touching player card, its re-pricing, the agents' target rule) against main r103 on the same seeds",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "greedy",
+    "strategist"
+  ],
+  "games": 48,
+  "records": 0
+}

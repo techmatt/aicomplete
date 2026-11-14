@@ -13,7 +13,7 @@ fn table(hand: &[&str], built: &[&str]) -> (Rules, GameState) {
 }
 
 /// [`table`] with content overrides: a card built for the test.
-fn table_with(sets: &[&str], hand: &[&str], built: &[&str]) -> (Rules, GameState) {
+pub(super) fn table_with(sets: &[&str], hand: &[&str], built: &[&str]) -> (Rules, GameState) {
     let (rules, mut g) = lab_actions_with(sets);
     for c in hand.iter().chain(built) {
         out_of_decks(&mut g, c);
@@ -249,7 +249,7 @@ fn reuse_may_take_the_other_half() {
 #[test]
 fn fight_triggers_fire_once_an_action() {
     // 119: Signal Hijack's 2 troops pinned (r46), so both troops near go.
-    let hijack = r#"cards.signal_hijack.effects=[{"op":"remove_troops","count":2,"reach":true}]"#;
+    let hijack = r#"cards.signal_hijack.effects=[{"op":"target","on":"troops"},{"op":"remove_troops","count":2,"at":"on"}]"#;
     let (rules, mut g) = table_with(&[hijack], &["signal_hijack"], &["security_contractor_hq", "honeypot_relay", "security_ops_floor"]);
     let m = &rules.map;
     let home = m.numbered(0, piece(0).node);
@@ -315,8 +315,9 @@ fn a_threshold_pays_when_a_feeder_fills_it() {
 
 #[test]
 fn a_move_up_to_n_does_not_veto_a_card_that_also_gains() {
-    // 118: Summit Caucus with no ambassador of yours in reach still gains its 3.
-    let caucus = r#"cards.summit_caucus.effects=[{"op":"consolidate","max":6},{"op":"gain_ambassadors","count":3}]"#;
+    // 118: Summit Caucus with no ambassador of yours in reach still gains its 3. 234: it still names its target
+    // (a piece), and brings nothing to it.
+    let caucus = r#"cards.summit_caucus.effects=[{"op":"target","on":"piece"},{"op":"consolidate","max":6},{"op":"gain_ambassadors","count":3}]"#;
     let (rules, mut g) = table_with(&[caucus], &["summit_caucus"], &[]);
     for h in 0..g.hexes.len() {
         put(&mut g, h, crate::modules::common::ambassador(0), 0);
@@ -324,7 +325,8 @@ fn a_move_up_to_n_does_not_veto_a_card_that_also_gains() {
     assert!(rules.legal_actions(&g).iter().any(|a| matches!(a, Action::Play { seat: 0, card } if card == "summit_caucus")));
     let before = g.resource(0, Resource::Ambassadors);
     play(&rules, &mut g, 0, "summit_caucus");
-    assert!(g.pending.is_none(), "no piece to pick with nothing to bring");
+    answer_all(&rules, &mut g);
+    assert!(g.pending.is_none(), "nothing to bring after the target");
     assert_eq!(g.resource(0, Resource::Ambassadors), before + 3);
 }
 

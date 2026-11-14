@@ -78,21 +78,19 @@ fn no_face_prints_an_exception() {
 /// 059: a removal names its pieces, and a choice of pieces is one kind from one hex.
 #[test]
 fn a_removal_says_which_pieces() {
-    let monitors = face_of("ceasefire_monitors").text;
-    // 178 (amendment 8044): piece names print capitalized on cards.
-    assert!(monitors.starts_with("Remove 3 Agents or 1 Troop from a hex in reach."), "{monitors}");
+    let monitors = face_of("ceasefire_monitors");
+    // 178 (amendment 8044): piece names print capitalized on cards. 234: on the card's one target.
+    assert!(monitors.text.starts_with("Remove 3 Agents or 1 Troop on it."), "{}", monitors.text);
+    assert_eq!(monitors.target.expect("a target box").text, "Target: Agents or Troops");
     assert_eq!(
         face_of("bounty_board").text,
-        "Remove 1 Troop in reach. Gain 1 credit per Security tag on your cards (including this)."
+        "Remove 1 Troop on it. Gain 1 credit per Security tag on your cards (including this)."
     );
-    // 076 (ruling 6): a printed number in one country, never "per hex"; 111 (Matt's ruling 3): most in reach.
-    assert_eq!(
-        face_of("eviction_worm").text,
-        "Remove 3 Agents in reach. Remove 4 compute from an adversary project."
-    );
+    // 076 (ruling 6): a printed number, never "per hex"; 234: on the target, or on or next to it.
+    assert_eq!(face_of("eviction_worm").text, "Remove 3 Agents on it. Remove 4 compute from an adversary project.");
     assert_eq!(
         face_of("kinetic_interdiction").text,
-        "Pay 1 antimatter. Remove 2 Troops in one country. Remove 6 Agents in reach. Sway 1 toward Discord."
+        "Pay 1 antimatter. Remove 2 Troops on or next to it. Remove 6 Agents on or next to it. Sway 1 toward Discord."
     );
     for c in &content().cards {
         assert!(!c.text.contains("per hex"), "{}: {}", c.id, c.text);
@@ -103,7 +101,7 @@ fn a_removal_says_which_pieces() {
 /// one name, so a node's is a hardening token too.
 #[test]
 fn harden_says_facility_and_a_node_s_token_is_hardening_too() {
-    assert_eq!(face_of("faraday_yard").text, "Raise your energy income by 1. Harden 3 facilities in reach.");
+    assert_eq!(face_of("faraday_yard").text, "Raise your energy income by 1. Harden it and 2 facilities next to it.");
     assert_eq!(face_of("benchmark_suite").text, "Harden 3 of your Nodes.");
     for c in &content().cards {
         assert!(!c.text.to_lowercase().contains("shield"), "{}: {}", c.id, c.text);

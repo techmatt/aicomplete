@@ -21,12 +21,16 @@ use aic_core::module::World;
 use aic_core::{Action, GameState};
 
 /// Which heuristic answered: the names [`report`] prints, indexed as [`pick`] returns them.
-pub const NAMES: [&str; 4] = ["push", "cancel", "liberate", "strike"];
+pub const NAMES: [&str; 5] = ["push", "cancel", "liberate", "strike", "target"];
+
+/// [`NAMES`]' index of the target rule (234).
+const TARGET: usize = 4;
 
 /// How often each heuristic answered a prompt: one process-wide count, pooled across every cell and game the
 /// process played and including the answers given inside planner rollouts, not a per-game tally (a run prints
 /// it divided by its game count: fires a game).
-static FIRES: [AtomicU64; 4] = [AtomicU64::new(0), AtomicU64::new(0), AtomicU64::new(0), AtomicU64::new(0)];
+static FIRES: [AtomicU64; 5] =
+    [AtomicU64::new(0), AtomicU64::new(0), AtomicU64::new(0), AtomicU64::new(0), AtomicU64::new(0)];
 
 /// Counts one answer by heuristic `which`.
 pub fn fired(which: usize) {
@@ -83,6 +87,117 @@ pub fn pick(w: &World, g: &GameState, legal: &[Action], last_node: bool) -> Opti
         return push_piece(w, g, legal, from, last_node);
     }
     None
+}
+
+/// 234 (Matt, 2026-11-14): the target rule, one sentence: **target the hex where the card's map ops find the
+/// most, each op's finds (up to its number, in its area around the hex) priced at its `values.json` row**; a
+/// Gather's or Push's target is its move heuristic's hex; with nothing to tell the hexes apart, the search's.
+/// Answers only the target prompt (`effects::TARGET_PROMPT`), for the card the open resolution plays or uses, or
+/// the seat's building whose trigger it is.
+pub fn target(w: &World, g: &GameState, legal: &[Action]) -> Option<(usize, usize)> {
+    let p = g.pending.as_ref()?;
+    if !p.ask.prompt.contains(effects::TARGET_PROMPT) {
+        return None;
+    }
+    let ops = target_ops(w, g, &p.ask.prompt)?;
+    // A move's target is its own heuristic's (its legal options are the target's hexes).
+    for o in &ops {
+        match o {
+            Op::Gather { pieces, strike: false, .. } => return gather_into(w, g, legal, pieces).map(|(i, _)| (i, TARGET)),
+            Op::Push { .. } => return push_from(w, g, legal).map(|(i, _)| (i, TARGET)),
+            _ => {}
+        }
+    }
+    let t = super::value::table();
+    let mut scores: Vec<(f64, usize)> = Vec::new();
+    for (i, a) in legal.iter().enumerate() {
+        let Some(h) = option_hex(w, a) else { continue };
+        // Every Agent and Troop on the target gone first: what comes after it finds the rest.
+        let cleared = ops.iter().any(|o| matches!(o, Op::DestroyAll));
+        scores.push((ops.iter().map(|o| finds(w, g, t, o, h, cleared)).sum(), i));
+    }
+    let best = scores.iter().map(|s| s.0).fold(f64::NEG_INFINITY, f64::max);
+    // A tie at the top is the search's.
+    if !best.is_finite() || best <= 0.0 || scores.iter().filter(|s| s.0 == best).count() > 1 {
+        return None;
+    }
+    scores.iter().find(|s| s.0 == best).map(|s| (s.1, TARGET))
+}
+
+/// The ops after the target of the card whose target prompt is open: the building the prompt names (" [id]", an
+/// Action's or an Effect's), else the card played or used (its condition, "(words)", must match).
+fn target_ops(w: &World, g: &GameState, prompt: &str) -> Option<Vec<Op>> {
+    let p = g.pending.as_ref()?;
+    let after = |list: &[Op]| -> Option<Vec<Op>> {
+        let at = list.iter().position(|o| matches!(o, Op::Target { on } if prompt.contains(&format!("({})", on.words()))))?;
+        Some(list[at + 1..].to_vec())
+    };
+    let lists = |id: &aic_core::Key| -> Vec<Vec<Op>> {
+        let d = cards::def(w, id);
+        let mut out = vec![d.effects.clone()];
+        out.extend(d.ability.iter().flat_map(|a| a.branches()).map(|b| b.effects.clone()));
+        for o in &d.passives {
+            if let Op::When { then, .. } | Op::Threshold { then, .. } = o {
+                out.push(then.clone());
+            }
+        }
+        out
+    };
+    // The building whose Action or Effect resolves names itself (by its printed name, among the seat's cards).
+    if let Some(name) = prompt.rsplit_once(" [").and_then(|(_, rest)| rest.strip_suffix(']')) {
+        let named = cards::in_play(g, p.ask.seat as usize).into_iter().find(|c| cards::def(w, c).name == name);
+        return named.and_then(|c| lists(&c).iter().find_map(|l| after(l)));
+    }
+    if let aic_core::state::Trigger::Action { action: Action::Play { card, .. } | Action::Use { card, .. } } = &p.trigger {
+        return lists(card).iter().find_map(|l| after(l));
+    }
+    None
+}
+
+/// What op `o` finds acting on target `h`, at its row: pieces removed or converted, sites freed, tokens lifted,
+/// facilities hardened, each up to its number.
+fn finds(w: &World, g: &GameState, t: &super::value::Table, o: &Op, h: usize, cleared: bool) -> f64 {
+    use aic_core::content::Area;
+    let near = |at: Area| common::area_of(w, h, at);
+    let count = |at: Area, f: &dyn Fn(usize) -> i64| -> i64 { near(at).into_iter().map(f).sum() };
+    // A removal after "remove every Agent and Troop on it" finds none on the target.
+    let gone = |x: usize| cleared && x == h && !matches!(o, Op::DestroyAll);
+    let troops = |x: usize| if gone(x) { 0 } else { g.tokens(x, common::TROOP) };
+    let agents = |g: &GameState, x: usize| if gone(x) { 0 } else { agents(g, x) };
+    match o {
+        Op::RemoveAmbassadorsCountry { max, at, .. } => {
+            let n = count(*at, &|x| agents(g, x));
+            (if *max > 0 { n.min(*max) } else { n }) as f64 * t.op("remove_ambassadors_country")
+        }
+        Op::RemoveTroops { count: k, at, .. } => count(*at, &troops).min(*k) as f64 * t.op("remove_troop"),
+        Op::Damage { ambassadors, troops: k } => {
+            let a = agents(g, h).min(*ambassadors) as f64 * t.op("remove_ambassador");
+            let b = troops(h).min(*k) as f64 * t.op("remove_troop");
+            a.max(b)
+        }
+        Op::DestroyAll => agents(g, h) as f64 * t.op("remove_ambassador") + troops(h) as f64 * t.op("remove_troop"),
+        Op::Gather { max, pieces, strike: true } => {
+            let take = |x: usize| {
+                (if pieces.contains(&Piece::Troops) { troops(x) } else { 0 }) * 5
+                    + if pieces.contains(&Piece::Agents) { agents(g, x) } else { 0 }
+            };
+            count(Area::Near, &take).min(*max * 5) as f64 * t.op("remove_ambassador")
+        }
+        Op::Convert { max } => count(Area::Near, &|x| agents(g, x)).min(*max) as f64 * t.op("convert"),
+        Op::LiftFallout { count: k, at } => count(*at, &|x| g.tokens(x, common::FALLOUT)).min(*k) as f64 * t.op("lift_fallout"),
+        Op::Cleanse { amount, at, cities, only, .. } => {
+            count(*at, &|x| i64::from(effects::cleansable(w, g, x, *cities, *only))).min(*amount) as f64 * t.op("cleanse")
+        }
+        Op::Harden { count: k, at } => count(*at, &|x| i64::from(board::hardenable(g, x))).min(*k) as f64 * t.op("harden"),
+        Op::ClearCity { max } => count(Area::Near, &|x| agents(g, x)).min(if *max > 0 { *max } else { i64::MAX }) as f64 * t.op("clear_city"),
+        // Liberating: the agents on and next to the city come off with it, the twist's troops in its country.
+        Op::Liberate { troops: k, .. } => {
+            count(Area::Near, &|x| agents(g, x)) as f64 * t.op("remove_ambassador") * 0.5
+                + count(Area::Country, &troops).min(*k) as f64 * t.op("liberate_troops")
+        }
+        Op::RemoveBotnet => count(Area::Near, &troops) as f64 * 0.1,
+        _ => 0.0,
+    }
 }
 
 /// 177: hex `h` holds a seat's only node, which a corruption there would destroy (`adversary::corrupt_hex`,

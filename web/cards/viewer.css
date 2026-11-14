@@ -82,9 +82,11 @@ tbody tr { cursor: pointer; }
 tbody tr:hover { background: #22262d; }
 td .badge { box-shadow: none; margin-right: 3px; }
 
-dialog { background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 0; width: min(1120px, 96vw); max-height: 94vh; }
+dialog { background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 0; width: min(1120px, 96vw); max-height: 94vh; overflow: hidden; }
 dialog::backdrop { background: #000a; }
-.detail { display: grid; grid-template-columns: auto 1fr; gap: 18px; padding: 16px; max-height: 94vh; overflow: auto; }
+/* 234: the text column may not widen past the panel: long text wraps, nothing scrolls sideways. */
+.detail { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; padding: 16px; max-height: 94vh; overflow: hidden auto; }
+.detail > :last-child { min-width: 0; overflow-wrap: anywhere; }
 .detail .left { position: sticky; top: 0; align-self: start; }
 .detail .scaled { --zoom: 1.35; }
 .detail h2 { margin: 0; font-size: 20px; }
@@ -92,7 +94,7 @@ dialog::backdrop { background: #000a; }
 .detail .sub { color: var(--dim); }
 .detail .top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
 .detail .nav { display: flex; gap: 4px; flex: none; }
-.detail dl { display: grid; grid-template-columns: max-content 1fr; gap: 1px 12px; margin: 0; }
+.detail dl { display: grid; grid-template-columns: minmax(0, max-content) minmax(0, 1fr); gap: 1px 12px; margin: 0; }
 .detail dt { color: var(--dim); }
 .detail dd { margin: 0; }
 pre.ops { margin: 0; white-space: pre-wrap; font: 12px/1.4 Consolas, monospace; background: #15171a; padding: 6px 8px; border-radius: 4px; overflow-wrap: anywhere; }

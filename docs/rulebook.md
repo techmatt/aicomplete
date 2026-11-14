@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 103. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 106. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -131,8 +131,16 @@ stand on a base. A one-player game has no fronts and no bases.
 
 ### Reach
 
-A hex is **in your reach** if it is on or next to one of your nodes. Unless a card says otherwise ("in one country"),
-everything you target on the map must be in your reach. Your ambassadors don't give you reach.
+A hex is **in your reach** if it is on or next to one of your nodes. Everything you target on the map must be in your
+reach. Your ambassadors don't give you reach.
+
+**One target.** A card that touches the map names **one target**: a hex in your reach that meets the condition in
+its **target box**, printed in the card's header ("Target: a corrupted city"). You pick the hex when the card
+resolves (an Action when you use it, an Effect each time it fires). The card then acts **on it**, or **on or next to
+it**, or **in its country**, exactly as printed, and never further: Back-Channel Talks targets a corrupted factory
+and frees "it and 1 corrupted factory next to it". **Gain** puts pieces in your supply; **Place** puts new ones on the
+map, on the target (Amnesty Decree: "Place 2 Ambassadors on it"). With no hex meeting the condition, the card's map
+effects do nothing.
 
 *Sources: rules/board.md (Country pieces), rules/ambassadors.md (One site model, Blocking), rules/war.md (Bases),
 rules/README.md (Terms); content/map.json; crates/aic-core/src/map.rs, modules/common.rs.*
@@ -472,7 +480,7 @@ except on an event. A per-tag income, on a program or a building, counts the tag
 - every 2 Industry tags take 1 credit off each building;
 - some cards make all your cards of one tag cheaper.
 
-**Play a card if any part of it can act.** Parts with nothing to act on (no target in reach, say) are skipped. A
+**Play a card if any part of it can act.** Parts with nothing to act on (no hex in reach meets its target box, say) are skipped. A
 program or event with nothing at all to do can't be played; a building always can. A sway toward Discord is a price,
 not a part that acts.
 
@@ -579,7 +587,7 @@ and an ambassador never share a hex.
 > on it), your standing ambassador pays 1 and your supply pays 4. The adversary's cube comes off, yours goes on, and
 > you add 5 Unity. The city is yours: from this round's production it makes you 1 energy a round.
 
-**Liberate cards** (Popular Uprising and some tier-2 cards) liberate a corrupted city in reach as Liberate does, for the card's own price
+**Liberate cards** (Popular Uprising and some tier-2 cards) liberate their target, a corrupted city in reach, as Liberate does, for the card's own price
 instead of ambassadors.
 
 A card that lets you **claim** a neutral research station claims it as Claim does, unpaid: a station with an agent on
@@ -804,7 +812,7 @@ Corruption leaves its own (§6: the adversary's cube, or Fallout).
 
 When a node or facility would be destroyed:
 
-1. **Shelter** on that country this round (some cards) stops it, automatically, spending
+1. **Shelter** this round (a card shelters its player's nodes and facilities in their reach) stops it, automatically, spending
    nothing. It lasts from the action phase to cleanup, so it covers production, threats and war, never the
    adversary's turn. It stops only what goes through this order: cubes still change hands, ambassadors are still
    removed, and a node you give up to pay something is still lost.
@@ -914,7 +922,7 @@ them (§8).
 No agent enters a firewall; no adversary troop enters the Protector's node hex.
 
 **Remove around a hex.** Some cards (Kettle Operation, Lure Network, Honeypot Relay) remove up to N agents, or
-agents and troops, **on or next to** a hex you pick in reach: the hex itself counts, and you choose which pieces, a
+agents and troops, **on or next to** the card's target: the target itself counts, and you choose which pieces, a
 batch at a time, and may stop early. Nothing moves.
 
 **Convert.** Some late cards turn agents into your ambassadors: up to N agents on or next to a city in your reach
@@ -1114,7 +1122,8 @@ The shape says the kind of thing; the picture inside says which. (The art is not
 | Brown box above the art | income, each round |
 | Brown box with a track arrow | raise your income of that resource for the rest of the game (arrow down would lower it; no card prints one yet); below the art, or after an Effect's `:` |
 | **Dark frame** | acts on the adversary: its pieces, projects or threats. Inside it a minus number means "remove up to N" (the adversary loses them) |
-| A place after a piece | where: after a cube, only that kind of site; after a botnet, agents or ambassadors, on or next to that place; after a country, in one country |
+| Target box | the header's plate: the target's condition and glyph; the card acts on that hex |
+| A place after a piece | where: after a cube, only that kind of site; after a botnet, agents or ambassadors, on or next to that place; the near mark, on or next to the target; after a country, in the target's country |
 | Dashed outline | another player |
 | Thin solid outline | one of your cards: a disc in it goes to, or comes from, one of your cards |
 | A disc alone | a token on this card ("here") |
@@ -1136,7 +1145,7 @@ The shape says the kind of thing; the picture inside says which. (The art is not
 | Node | place a node, paying its track space |
 | Move (a figure with an arrow) | move ambassadors onto pieces; with a pin after it, all onto one piece |
 | Shield | one stop on one piece: a hardening token, on a facility or with a node |
-| Roof | cover over many pieces: with a country, Shelter (the whole country, this round); with a node, all your pieces (the Aegis Doctrine shelters the first of your nodes or facilities that would be destroyed each round; Sanctuary, every node from corruption) |
+| Roof | cover over many pieces: with a node, a card's Shelter (your pieces in your reach, this round); with a node, all your pieces (the Aegis Doctrine shelters the first of your nodes or facilities that would be destroyed each round; Sanctuary, every node from corruption) |
 | Sway (a marker on a track) | add that much Unity (you may put it against Discord, §12), or Discord on the one card that says so |
 | Peek (a card with an eye) | look at the next event cards under the face-up one |
 | Threat (`!`) | a threat; struck through: pay it off |
@@ -1193,7 +1202,9 @@ crates/aic-core/src/face.rs, modules/cards/triggers.rs.*
 - **Purge:** the win, §14.
 - **Rally X:** an event line: each country's pool is dealt one agent at a time onto its sites of type X, §6.
 - **Remove up to N:** as many as there are, up to N.
-- **Shelter:** in one country, no node or facility can be destroyed until cleanup, §13.
+- **Shelter:** none of your nodes or facilities in your reach can be destroyed until cleanup, §13 (a card's Shelter
+  takes no target).
+- **Target:** the one hex in your reach a card that touches the map acts on, meeting its target box, §2.
 - **Site:** a city, research station or factory.
 - **Stage:** I, II or III, printed on each event card, §6.
 - **Strength:** Unity and Discord cards resolve at strength I, II or III (by tip count), §12.

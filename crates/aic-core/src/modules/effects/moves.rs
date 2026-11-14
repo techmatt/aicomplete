@@ -115,9 +115,10 @@ fn sizes(count: i64, left: i64) -> Vec<i64> {
 /// X", as often as they like until `max` (one answer may take a whole stack, so a search sees a gather whole).
 /// A strike is no gather any more (178, Matt's ruling #27, reversing 169's D76): it removes up to `max` adversary
 /// pieces on or next to the hex, the player choosing each batch ([`strike`]).
-pub(super) fn gather(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, pieces: &[Piece], strike: bool) -> Res {
+pub(super) fn gather(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, pieces: &[Piece], strike: bool, zone: &[usize]) -> Res {
     let w = cx.world;
-    let hexes = gather_hexes(&w, g, seat, pieces, strike);
+    let mut hexes = gather_hexes(&w, g, seat, pieces, strike);
+    hexes.retain(|h| zone.contains(h));
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = if strike { STRIKE_AT } else { GATHER_INTO };
     let Some(i) = cx.choose(seat, || format!("Seat {seat}: {prompt}"), opts)? else {
@@ -203,9 +204,10 @@ fn strike(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, pieces: &[Piece
 
 /// Push up to `max` `pieces` from one hex in reach, each to a hex next to it (166): the player picks the hex, then
 /// batches, "2 agents to Y", as often as they like until `max`, so pieces may go to different hexes.
-pub(super) fn push(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, pieces: &[Piece]) -> Res {
+pub(super) fn push(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, pieces: &[Piece], zone: &[usize]) -> Res {
     let w = cx.world;
-    let hexes = push_hexes(&w, g, seat, pieces);
+    let mut hexes = push_hexes(&w, g, seat, pieces);
+    hexes.retain(|h| zone.contains(h));
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let Some(i) = cx.choose(seat, || format!("Seat {seat}: {PUSH_FROM}"), opts)? else {
         return Ok(());

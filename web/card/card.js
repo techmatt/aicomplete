@@ -3,7 +3,7 @@
 // Needs card.css. Geometry comes from layout.json; the icon set is in icons.js. The frame
 // holds the fixed structure only: what changes card by card is drawn here. Where a thing
 // sits is what it is: see tools/card-art/README.md.
-import { arrow, atRing, eye, icon, isIcon, isTag, less, stacked, tagMedallion } from './icons.js';
+import { arrow, atRing, eye, icon, isIcon, isTag, less, stacked, tagMedallion, targetIcon } from './icons.js';
 
 /** HTML-escapes text for an element or a quoted attribute (null and undefined print nothing). The one
  * escaper of the card renderer, the viewer and the node scripts; the client's is `escapeHtml` in src/format.ts. */
@@ -87,6 +87,27 @@ const iconLine = (parts) => `<div class="fx-line" data-safe>${parts.map(part).jo
  */
 const rulesText = (s) => esc(s).replace(/\{(\w+)\}/g, (m, n) => (isIcon(n) ? `<span class="fx-inline">${icon(n)}</span>` : m));
 
+/**
+ * 234: the target box's height, and how far its bottom hangs below the banner's. It rides over the
+ * banner's lower rim (under the name's glyphs) and into the steel gap above a building's top box,
+ * reaching no deeper than that box's clearance, so it takes no height from it.
+ */
+const TARGET_MM = 2.9;
+const TARGET_DROP_MM = 2.7;
+
+/**
+ * 234 (Matt, 2026-11-14): a card that touches the map names one target, a hex in your reach. Its
+ * condition prints in a plate hanging from the banner ("Target: a corrupted city", with its glyph),
+ * so it reads before the body text: over the top of the art on a program or event, over the gap
+ * above the top box on a building.
+ */
+function targetBox(card, [x0, , x1, y1]) {
+  const t = card.target;
+  if (!t) return '';
+  const bottom = y1 + TARGET_DROP_MM;
+  return `<div class="target" style="${place([x0, bottom - TARGET_MM, x1, bottom])}"><span class="target-plate" data-safe>${targetIcon(t.glyph)}<span class="target-text">${esc(t.text)}</span></span></div>`;
+}
+
 /** Icon lines over rules text: the panel below the art, and a building's top box. */
 const effectBox = (cls, box, lines = [], text = '') => `<div class="effect ${cls}" style="${place(box)}">
       ${lines.length ? `<div class="fx-icons">${lines.map(iconLine).join('')}</div>` : ''}
@@ -104,8 +125,12 @@ const effectBox = (cls, box, lines = [], text = '') => `<div class="effect ${cls
  * done on a copy at true size outside `root`, so a card comes out the same at any zoom and
  * on any page.
  *
+ * A target box (234) shrinks the same way, 7.5 pt to a 6 pt floor, until its plate clears the
+ * card's width by 2 mm a side.
+ *
  * @returns one row per card, in page order: `top` and `effect`, the ladder's pt for that box
- *          (null: nothing in it); `title`, pt; `overflow`, what breaks its box or plate even
+ *          (null: nothing in it); `title`, pt; `target`, pt (null: no target box); `overflow`,
+ *          what breaks its box or plate even
  *          so; `tight`, the boxes inside it but short of the clearance.
  */
 export async function fitCards(root = document) {
@@ -115,6 +140,9 @@ export async function fitCards(root = document) {
   const TITLE_PT = 15;
   const TITLE_FLOOR_PT = 10.5;
   const TITLE_STEP_PT = 0.25;
+  const TARGET_PT = 7.5;
+  const TARGET_FLOOR_PT = 6;
+  const TARGET_MARGIN_MM = 2;
   const LADDER = [[7.5, ''], [6.9, 'fit-1'], [6.3, 'fit-2'], [5.8, 'fit-3'], [5.4, 'dense']];
   const FACES = ['600 15pt "Saira Condensed"', '700 15pt "Saira Condensed"', '400 7.5pt "Source Serif 4"'];
   const EPSILON_PX = 0.01;
@@ -150,7 +178,7 @@ export async function fitCards(root = document) {
     const copy = card.cloneNode(false);
     copy.append(content.cloneNode(true));
     host.replaceChildren(copy);
-    const row = { top: null, effect: null, title: TITLE_PT, overflow: [], tight: [] };
+    const row = { top: null, effect: null, title: TITLE_PT, target: null, overflow: [], tight: [] };
 
     const boxes = [...content.querySelectorAll('.effect')];
     [...copy.querySelectorAll('.effect')].forEach((box, i) => {
@@ -173,6 +201,16 @@ export async function fitCards(root = document) {
     for (name.style.fontSize = ''; wide() && row.title > TITLE_FLOOR_PT; name.style.fontSize = `${row.title}pt`) row.title -= TITLE_STEP_PT;
     content.querySelector('.name').style.fontSize = name.style.fontSize;
     if (wide()) row.overflow.push('title');
+
+    // 234: the target plate, one line across the banner's width, shrinks as a title does.
+    const target = copy.querySelector('.target');
+    if (target) {
+      const plate = target.firstElementChild;
+      const across = () => plate.getBoundingClientRect().width > target.getBoundingClientRect().width - 2 * TARGET_MARGIN_MM * MM + EPSILON_PX;
+      for (row.target = TARGET_PT, target.style.fontSize = ''; across() && row.target > TARGET_FLOOR_PT; target.style.fontSize = `${row.target}pt`) row.target -= TITLE_STEP_PT;
+      content.querySelector('.target').style.fontSize = target.style.fontSize;
+      if (across()) row.overflow.push('target');
+    }
     rows.push(row);
   }
   host.remove();
@@ -210,8 +248,9 @@ export function renderBack(tier, layout) {
 
 /**
  * @param card     content: name, kind, cost, insight, needs, replaces, tags, and
- *                 the generated face (faces.json): top and top_text above the art
- *                 (buildings), effect and text below it
+ *                 the generated face (faces.json): target, the header's target box (234,
+ *                 optional: glyph and text); top and top_text above the art (buildings),
+ *                 effect and text below it
  * @param layout   web/card/layout.json, through inset()
  * @param frameUrl the frame for this kind and tier
  * @param fit      optional measured zones of this frame (art/frames/r3/fit.json), in mm:
@@ -232,6 +271,7 @@ export function renderCard(card, layout, frameUrl, fit = {}, artUrl) {
     ${requirement(card, reqX, z.requirement)}
     ${tags(card, z.tags)}
     <div class="name" style="${place(z.banner)}"><span data-safe>${esc(card.name)}</span></div>
+    ${targetBox(card, z.banner)}
     ${z.top ? effectBox('lasting', z.top, card.top, card.top_text) : ''}
     ${effectBox('once', z.effect, card.effect, card.text)}
   </div>

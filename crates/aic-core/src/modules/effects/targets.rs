@@ -4,6 +4,33 @@ use crate::key::Key;
 
 use super::*;
 
+/// 234: whether hex `h` meets a card's target condition `on` (reach aside).
+pub fn meets(w: &World, g: &GameState, seat: usize, on: TargetSpec, h: usize) -> bool {
+    let land = !is_ocean(w, h);
+    match on {
+        TargetSpec::Agents => g.tokens(h, ADV_AMBASSADOR) > 0,
+        TargetSpec::Troops => adversary::can_damage(g, h, 0, 1),
+        TargetSpec::Adversary => adversary::can_damage(g, h, 1, 1),
+        TargetSpec::Botnet => g.tokens(h, BOTNET) > 0,
+        TargetSpec::CorruptedCity => corrupted_city(w, g, h),
+        TargetSpec::CorruptedStation => cleansable(w, g, h, false, Some(Facility::Station)),
+        TargetSpec::CorruptedFactory => cleansable(w, g, h, false, Some(Facility::Factory)),
+        TargetSpec::CorruptedSite => cleansable(w, g, h, true, None),
+        TargetSpec::NeutralStation => board::card_claim_stations(w, g, seat).contains(&h),
+        TargetSpec::FreeZone => free_zones(w, g).contains(&h),
+        TargetSpec::Fallout => g.tokens(h, FALLOUT) > 0,
+        TargetSpec::Facility => board::hardenable(g, h),
+        TargetSpec::AgentCity => is_city(w, h) && board::guarded(w, g, h),
+        TargetSpec::Piece => has_piece(w, g, h),
+        TargetSpec::Land => land,
+    }
+}
+
+/// 234: the hexes seat `seat` may target with a card's `on`: in its reach, meeting the condition.
+pub fn target_hexes(w: &World, g: &GameState, seat: usize, on: TargetSpec) -> Vec<usize> {
+    (0..g.hexes.len()).filter(|&h| in_reach(w, g, seat, h) && meets(w, g, seat, on, h)).collect()
+}
+
 /// Hexes a removal effect of seat `s` may target: every card's map target
 /// is within the seat's reach (016).
 pub fn damage_hexes(w: &World, g: &GameState, seat: usize, ambassadors: i64, troops: i64) -> Vec<usize> {
@@ -15,7 +42,7 @@ pub fn damage_hexes(w: &World, g: &GameState, seat: usize, ambassadors: i64, tro
 /// A corrupted research station or factory, or with `cities` (024: tier-2
 /// ultimates only) a corrupted city: a cleanse target. `only` (r35) limits it
 /// to one facility kind.
-pub(super) fn cleansable(w: &World, g: &GameState, h: usize, cities: bool, only: Option<Facility>) -> bool {
+pub fn cleansable(w: &World, g: &GameState, h: usize, cities: bool, only: Option<Facility>) -> bool {
     let stations = only != Some(Facility::Factory);
     let factories = only != Some(Facility::Station);
     corrupted(g, h)

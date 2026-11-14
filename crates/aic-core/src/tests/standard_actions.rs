@@ -374,6 +374,7 @@ fn hardening_goes_on_different_buildings_a_token_can_protect() {
     put(&mut g0, adv, ADV_CUBE, 1);
     let harden = [Op::Harden {
         count: 2,
+        at: Default::default(),
     }];
     // One building it can protect: one token, not two on it, none on the
     // adversary's factory.

@@ -139,7 +139,7 @@ off the value table.
   compiled into both: commit the spec, code and content first, then edit neither `content/` nor `configs/` (read
   from the tree at run time) until it returns, nor run the release binary while it builds. The exe is built once,
   at launch (`native_build` in conductor.toml), so scripts and Rust source may change during the run. A 720-game
-  set farms in 75-240 s with the laptop joined. If the broker goes away mid-job (logged only after the first
+  set farms in 75-240 s with the laptop joined (234: 1,152 games in 250-330 s; the old side's on 4 shards, 11 min). If the broker goes away mid-job (logged only after the first
   shard), shards run one at a time on one thread: stop it, keep the finished 2-seed shards in
   `C:\Code\aicomplete-control\.conductor\remote\jobs\<job>\shards\` (`<first seed>.out`; `job.json` names the
   out file) and play the missing ranges natively as 2-seed shards, then `screens.py assemble` all in seed order.
@@ -165,7 +165,7 @@ rollout policy or `prune` change, the line alone reads near the engine.
 
 **Fresh seeds.** Specs start at seed 0: give a confirming read a `--seed` no screen of this revision used. An item
 that spends seeds updates the ledger after its last read: `python scripts/bench/seeds.py next N` prints the next N,
-`--take` moves *Next free* (all below it used) past them. Next free: 47232. **The dev seeds are
+`--take` moves *Next free* (all below it used) past them. Next free: 47328. **The dev seeds are
 36800-36831**, for on/off checks and crash-finding (SE ~5 a cell). A 2-8 point effect (a level's income step):
 screen it paired on this revision's spent fresh sets (~500+ games a cell, SE ~2), then confirm once on new seeds.
 

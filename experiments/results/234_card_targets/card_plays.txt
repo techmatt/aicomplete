@@ -1,0 +1,126 @@
+## greedy (576 games)
+
+| card | kept % | played % | plays a game | r103 played % | r103 plays a game |
+|---|---|---|---|---|---|
+| aegis_grid_lockdown | 27.6 | 81.9 | 0.82 | 78.0 | 0.78 |
+| agency_field_station | 12.2 | 62.3 | 0.66 | 63.8 | 0.67 |
+| air_gap | 40.8 | 22.9 | 0.23 | 36.2 | 0.36 |
+| amnesty_decree | 15.6 | 48.6 | 0.51 | 53.1 | 0.57 |
+| annihilation_lance | 5.9 | 2.4 | 0.02 | 4.2 | 0.04 |
+| back_channel_talks | 24.8 | 66.3 | 0.74 | 62.9 | 0.67 |
+| botnet_takedown | 35.9 | 25.7 | 0.26 | 26.1 | 0.26 |
+| breach_and_clear | 19.8 | 61.5 | 0.61 | 65.5 | 0.65 |
+| ceasefire_monitors | 26.2 | 78.0 | 1.17 | 78.0 | 1.12 |
+| citywide_microgrid | 48.8 | 38.0 | 0.38 | 39.2 | 0.39 |
+| counterinsurgency_campaign | 21.2 | 36.1 | 0.39 | 43.4 | 0.47 |
+| decapitation_strike | 31.2 | 20.0 | 0.20 | 20.5 | 0.20 |
+| diplomatic_expulsion | 18.1 | 65.8 | 0.79 | 70.7 | 0.83 |
+| directed_energy_array | 17.0 | 36.6 | 0.39 | 22.6 | 0.24 |
+| double_agents | 46.7 | 34.7 | 0.35 | 42.4 | 0.42 |
+| embassy_of_exiles | 18.4 | 14.1 | 0.14 | 13.1 | 0.13 |
+| eviction_worm | 20.8 | 47.7 | 0.53 | 54.7 | 0.60 |
+| exodus_corridors | 28.3 | 18.2 | 0.18 | 20.4 | 0.20 |
+| faraday_yard | 8.9 | 9.4 | 0.10 | 10.6 | 0.11 |
+| field_assay_team | 21.0 | 46.4 | 0.51 | 45.8 | 0.51 |
+| field_sensor_grid | 28.5 | 80.2 | 0.90 | 82.1 | 0.92 |
+| firewall_array | 33.5 | 17.2 | 0.17 | 13.6 | 0.14 |
+| forensic_audit | 26.4 | 20.7 | 0.21 | 23.9 | 0.24 |
+| fusion_startup_stake | 15.1 | 14.9 | 0.15 | 13.4 | 0.14 |
+| great_liberation | 22.7 | 7.5 | 0.07 | 7.7 | 0.08 |
+| hardpoint_lockdown | 22.6 | 63.9 | 0.64 | 65.6 | 0.66 |
+| headquarters_raid | 3.6 | 55.2 | 0.55 | 44.4 | 0.44 |
+| honeypot_relay | 16.8 | 51.7 | 0.54 | 34.3 | 0.35 |
+| hostile_buyout | 31.1 | 18.6 | 0.19 | 18.8 | 0.19 |
+| interceptor_battery | 15.8 | 28.6 | 0.32 | 29.5 | 0.31 |
+| joint_task_force | 9.5 | 31.2 | 0.32 | 23.9 | 0.25 |
+| kettle_operation | 34.5 | 19.3 | 0.19 | 20.8 | 0.21 |
+| killswitch_directive | 35.1 | 44.4 | 0.44 | 39.6 | 0.40 |
+| kinetic_interdiction | 33.7 | 14.4 | 0.14 | 15.3 | 0.15 |
+| liaison_corps | 26.2 | 73.6 | 0.84 | 78.6 | 0.90 |
+| liberation_accords | 36.5 | 34.5 | 0.35 | 35.0 | 0.35 |
+| lure_network | 29.2 | 18.4 | 0.18 | 16.6 | 0.17 |
+| martial_cordon | 34.5 | 17.2 | 0.17 | 9.3 | 0.09 |
+| mass_defection | 30.6 | 32.6 | 0.33 | 30.6 | 0.31 |
+| microgrid_lab_compact | 49.5 | 22.6 | 0.23 | 20.8 | 0.21 |
+| nuclear_option | 27.3 | 13.9 | 0.14 | 17.4 | 0.17 |
+| open_source_uprising | 45.1 | 48.4 | 0.48 | 51.6 | 0.52 |
+| open_weights_release | 44.1 | 20.0 | 0.20 | 25.0 | 0.25 |
+| peacekeeping_mission | 30.0 | 12.2 | 0.12 | 11.7 | 0.12 |
+| popular_uprising | 18.1 | 21.0 | 0.21 | 16.9 | 0.17 |
+| power_purchase_agreement | 20.3 | 70.5 | 0.70 | 72.7 | 0.73 |
+| power_to_the_people | 26.7 | 16.7 | 0.17 | 16.1 | 0.16 |
+| prefab_plant_kit | 16.0 | 17.4 | 0.20 | 18.6 | 0.22 |
+| pumped_hydro_storage | 5.4 | 5.9 | 0.06 | 6.7 | 0.07 |
+| rally_the_allies | 56.6 | 59.2 | 0.59 | 58.9 | 0.59 |
+| root_access | 32.5 | 13.9 | 0.14 | 13.5 | 0.13 |
+| shared_grid_accord | 30.2 | 75.0 | 1.08 | 77.4 | 1.12 |
+| singularity_exploit | 26.7 | 17.5 | 0.18 | 18.0 | 0.18 |
+| station_prefab_order | 13.0 | 16.7 | 0.18 | 17.5 | 0.18 |
+| summit_caucus | 19.1 | 60.2 | 0.66 | 65.8 | 0.72 |
+| surgical_strike | 48.4 | 40.1 | 0.40 | 37.7 | 0.38 |
+
+never played: none
+
+## strategist (576 games)
+
+| card | kept % | played % | plays a game | r103 played % | r103 plays a game |
+|---|---|---|---|---|---|
+| aegis_grid_lockdown | 27.8 | 79.3 | 0.79 | 78.0 | 0.78 |
+| agency_field_station | 9.9 | 65.3 | 0.69 | 63.8 | 0.67 |
+| air_gap | 39.8 | 21.9 | 0.22 | 36.2 | 0.36 |
+| amnesty_decree | 17.4 | 45.8 | 0.48 | 53.1 | 0.57 |
+| annihilation_lance | 6.1 | 1.7 | 0.02 | 4.2 | 0.04 |
+| back_channel_talks | 25.9 | 65.5 | 0.72 | 62.9 | 0.67 |
+| botnet_takedown | 37.3 | 27.1 | 0.27 | 26.1 | 0.26 |
+| breach_and_clear | 19.3 | 59.4 | 0.59 | 65.5 | 0.65 |
+| ceasefire_monitors | 27.8 | 82.5 | 1.20 | 78.0 | 1.12 |
+| citywide_microgrid | 50.3 | 39.6 | 0.40 | 39.2 | 0.39 |
+| counterinsurgency_campaign | 20.8 | 35.2 | 0.40 | 43.4 | 0.47 |
+| decapitation_strike | 29.9 | 17.0 | 0.17 | 20.5 | 0.20 |
+| diplomatic_expulsion | 19.6 | 69.3 | 0.81 | 70.7 | 0.83 |
+| directed_energy_array | 13.0 | 36.6 | 0.41 | 22.6 | 0.24 |
+| double_agents | 49.7 | 39.9 | 0.40 | 42.4 | 0.42 |
+| embassy_of_exiles | 16.7 | 14.4 | 0.14 | 13.1 | 0.13 |
+| eviction_worm | 21.4 | 48.3 | 0.54 | 54.7 | 0.60 |
+| exodus_corridors | 31.1 | 22.9 | 0.23 | 20.4 | 0.20 |
+| faraday_yard | 11.8 | 12.2 | 0.12 | 10.6 | 0.11 |
+| field_assay_team | 21.4 | 43.1 | 0.46 | 45.8 | 0.51 |
+| field_sensor_grid | 30.2 | 79.7 | 0.91 | 82.1 | 0.92 |
+| firewall_array | 33.7 | 14.4 | 0.14 | 13.6 | 0.14 |
+| forensic_audit | 28.0 | 24.1 | 0.24 | 23.9 | 0.24 |
+| fusion_startup_stake | 15.1 | 13.7 | 0.15 | 13.4 | 0.14 |
+| great_liberation | 21.7 | 6.9 | 0.07 | 7.7 | 0.08 |
+| hardpoint_lockdown | 25.7 | 66.8 | 0.67 | 65.6 | 0.66 |
+| headquarters_raid | 6.1 | 51.4 | 0.51 | 44.4 | 0.44 |
+| honeypot_relay | 19.4 | 50.9 | 0.54 | 34.3 | 0.35 |
+| hostile_buyout | 30.0 | 18.1 | 0.18 | 18.8 | 0.19 |
+| interceptor_battery | 21.4 | 29.7 | 0.32 | 29.5 | 0.31 |
+| joint_task_force | 8.5 | 28.3 | 0.29 | 23.9 | 0.25 |
+| kettle_operation | 37.3 | 20.7 | 0.21 | 20.8 | 0.21 |
+| killswitch_directive | 32.6 | 42.4 | 0.42 | 39.6 | 0.40 |
+| kinetic_interdiction | 31.9 | 14.2 | 0.14 | 15.3 | 0.15 |
+| liaison_corps | 22.4 | 71.9 | 0.81 | 78.6 | 0.90 |
+| liberation_accords | 38.9 | 39.2 | 0.39 | 35.0 | 0.35 |
+| lure_network | 30.7 | 18.1 | 0.18 | 16.6 | 0.17 |
+| martial_cordon | 37.3 | 18.2 | 0.18 | 9.3 | 0.09 |
+| mass_defection | 36.5 | 37.8 | 0.38 | 30.6 | 0.31 |
+| microgrid_lab_compact | 53.0 | 24.8 | 0.25 | 20.8 | 0.21 |
+| nuclear_option | 28.8 | 16.0 | 0.16 | 17.4 | 0.17 |
+| open_source_uprising | 47.2 | 50.9 | 0.51 | 51.6 | 0.52 |
+| open_weights_release | 46.5 | 21.9 | 0.22 | 25.0 | 0.25 |
+| peacekeeping_mission | 24.8 | 10.6 | 0.11 | 11.7 | 0.12 |
+| popular_uprising | 16.7 | 14.4 | 0.15 | 16.9 | 0.17 |
+| power_purchase_agreement | 22.6 | 72.9 | 0.73 | 72.7 | 0.73 |
+| power_to_the_people | 25.5 | 13.2 | 0.13 | 16.1 | 0.16 |
+| prefab_plant_kit | 19.1 | 15.8 | 0.19 | 18.6 | 0.22 |
+| pumped_hydro_storage | 3.6 | 6.2 | 0.07 | 6.7 | 0.07 |
+| rally_the_allies | 54.5 | 55.7 | 0.56 | 58.9 | 0.59 |
+| root_access | 30.4 | 16.3 | 0.16 | 13.5 | 0.13 |
+| shared_grid_accord | 32.5 | 76.2 | 1.05 | 77.4 | 1.12 |
+| singularity_exploit | 29.5 | 16.8 | 0.17 | 18.0 | 0.18 |
+| station_prefab_order | 18.9 | 16.5 | 0.18 | 17.5 | 0.18 |
+| summit_caucus | 24.0 | 65.1 | 0.72 | 65.8 | 0.72 |
+| surgical_strike | 49.3 | 43.1 | 0.43 | 37.7 | 0.38 |
+
+never played: none
+

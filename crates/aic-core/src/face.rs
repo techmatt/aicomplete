@@ -35,16 +35,27 @@ pub enum Part {
 /// What a card prints: icon lines, rules text, above and below the art.
 #[derive(Debug, Clone, PartialEq, Default, Serialize)]
 pub struct Face {
+    /// 234 (Matt, 2026-11-14): the header's target box, when the card touches the map.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub target: Option<TargetBox>,
     pub top: Vec<Vec<Part>>,
     pub top_text: String,
     pub effect: Vec<Vec<Part>>,
     pub text: String,
 }
 
+/// 234: the target box: its glyph and its condition ("Target: a corrupted city").
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct TargetBox {
+    pub glyph: String,
+    pub text: String,
+}
+
 impl Face {
-    /// All of the card's rules text, in print order.
+    /// All of the card's rules text, in print order: the target box first.
     pub fn full_text(&self) -> String {
-        [self.top_text.as_str(), self.text.as_str()]
+        let target = self.target.as_ref().map(|t| format!("{}.", t.text)).unwrap_or_default();
+        [target.as_str(), self.top_text.as_str(), self.text.as_str()]
             .iter()
             .filter(|s| !s.is_empty())
             .copied()
@@ -101,6 +112,17 @@ fn minus(n: i64, icon: &str) -> Vec<Part> {
 /// 179 (friction #34): "less", a discount or a jam: its own mark (`less:N`), never the minus.
 fn less(n: i64, icon: &str) -> Vec<Part> {
     vec![Part::Word(format!("less:{n}")), w(icon)]
+}
+
+/// 234: a targeted op's place after its icons: nothing on the target, the near mark (on or next to it), the
+/// country mark (in its country).
+fn area_icons(mut parts: Vec<Part>, at: crate::op::Area) -> Vec<Part> {
+    match at {
+        crate::op::Area::On | crate::op::Area::Reach => {}
+        crate::op::Area::Near => parts.push(w("near")),
+        crate::op::Area::Country => parts.push(w("country")),
+    }
+    parts
 }
 
 /// 179 (friction #38): At N, when the tokens here reach N: the number in a ring (`at:N`), then the disc.
@@ -329,12 +351,13 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             adversary(counted(*count, "clock")),
             format!("delay {} one round", plural(*count, "threat")),
         )),
+        // 234 (Matt, 2026-11-14): every map op acts on the card's one target, printed in the header's target
+        // box ([`Face::target`]): "on it", "on or next to it", "in its country" (`Content::check` refuses a map op
+        // with no target before it).
+        Op::Target { .. } => Vec::new(),
         Op::Damage { ambassadors, troops } => {
-            let mut parts = removal_icons(*ambassadors, *troops);
-            parts.push(w("hex"));
-            // One piece names its hex; a choice of pieces all come from one.
-            let place = if ambassadors + troops == 1 { "in reach" } else { "from a hex in reach" };
-            one(clause(adversary(parts), format!("remove {} {place}", pieces(*ambassadors, *troops))))
+            let parts = removal_icons(*ambassadors, *troops);
+            one(clause(adversary(parts), format!("remove {} on it", pieces(*ambassadors, *troops))))
         }
         Op::DamageCountry { ambassadors, troops } => {
             let mut parts = removal_icons(*ambassadors, *troops);
@@ -344,23 +367,15 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             one(clause(icons, format!("remove {} per hex of a country", pieces(*ambassadors, *troops))))
         }
         Op::DestroyAll => one(clause(
-            adversary(vec![w("ALL"), w("agent"), w("troop"), w("hex")]),
-            "remove every agent and troop in one hex",
+            adversary(vec![w("ALL"), w("agent"), w("troop")]),
+            "remove every agent and troop on it",
         )),
-        Op::RemoveBotnet => one(clause(adversary(minus(1, "botnet")), "remove a botnet in reach")),
-        Op::RemoveAmbassadorsCountry { unity_per, max, reach } => {
-            // 111: "in reach" prints no place, as a botnet or a marker in reach.
-            let (mut icons, what) = if *max > 0 && *reach {
-                (adversary(minus(*max, "agent")), format!("remove {} in reach", plural(*max, "agent")))
-            } else if *max > 0 {
-                let mut p = minus(*max, "agent");
-                p.push(w("country"));
-                (adversary(p), format!("remove {} in one country", plural(*max, "agent")))
+        Op::RemoveBotnet => one(clause(adversary(minus(1, "botnet")), "remove a botnet on it")),
+        Op::RemoveAmbassadorsCountry { unity_per, max, at, .. } => {
+            let (mut icons, what) = if *max > 0 {
+                (adversary(area_icons(minus(*max, "agent"), *at)), format!("remove {} {}", plural(*max, "agent"), at.words()))
             } else {
-                (
-                    adversary(vec![w("ALL"), w("agent"), w("country")]),
-                    "remove every agent in one country".to_string(),
-                )
+                (adversary(area_icons(vec![w("ALL"), w("agent")], *at)), format!("remove every agent {}", at.words()))
             };
             if *unity_per == 0 {
                 return one(clause(icons, what));
@@ -369,13 +384,9 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             icons.extend(adversary(vec![Part::Word(unity_per.to_string()), w("agent")]));
             one(clause(icons, format!("{what}, and sway 1 toward Unity per {unity_per} removed")))
         }
-        Op::RemoveTroops { count, reach } => {
-            let mut parts = minus(*count, "troop");
-            if *reach {
-                return one(clause(adversary(parts), format!("remove {} in reach", plural(*count, "troop"))));
-            }
-            parts.push(w("country"));
-            one(clause(adversary(parts), format!("remove {} in one country", plural(*count, "troop"))))
+        Op::RemoveTroops { count, at, .. } => {
+            let parts = area_icons(minus(*count, "troop"), *at);
+            one(clause(adversary(parts), format!("remove {} {}", plural(*count, "troop"), at.words())))
         }
         Op::GainPerTag { resource, tag: t, per } => {
             let mut icons = vec![w(icon(*resource)), w("/")];
@@ -386,7 +397,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             let tags = if *per == 1 { format!("{} tag", tag(*t)) } else { format!("{per} {} tags", tag(*t)) };
             one(clause(icons, format!("{gain} 1 {} per {tags} on your cards", noun(*resource, 1))))
         }
-        Op::BuildFactory => one(clause(vec![w("factory")], "build a factory in reach")),
+        Op::BuildFactory => one(clause(vec![w("factory")], "build a factory on it")),
         // 219: a board burn; its minus is a loss (179), the land token the adversary's mark.
         Op::Burn { facility, blight } => {
             let (piece, pieces) =
@@ -402,8 +413,10 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             };
             one(clause(icons, say))
         }
-        Op::Cleanse { amount: n, one_country, cities, only } => {
-            let what = match (*cities, only, *n) {
+        Op::Cleanse { amount: n, one_country, cities, only, at } => {
+            let more = n - 1;
+            let what = match (*cities, only, more) {
+                (true, _, 1) => "corrupted city, station or factory",
                 (true, _, _) => "corrupted cities, stations or factories",
                 (false, Some(Facility::Station), 1) => "corrupted station",
                 (false, Some(Facility::Station), _) => "corrupted stations",
@@ -412,10 +425,14 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
                 (false, None, 1) => "corrupted station or factory",
                 (false, None, _) => "corrupted stations or factories",
             };
-            let place = if *one_country { "in reach, in one country" } else { "in reach" };
             // 191 (184's D80): a city is liberated, a station or factory freed, so the city form prints both.
             let verb = if *cities { "liberate or free" } else { "free" };
-            let say = format!("{verb} {n} {what} {place}");
+            // 234: the target first, then the rest next to it or in its country.
+            let say = match (more, at) {
+                (0, _) => format!("{verb} it"),
+                (_, crate::op::Area::Country) => format!("{verb} it and {more} more {what} in its country"),
+                _ => format!("{verb} it and {more} {what} next to it"),
+            };
             let mut parts = minus(*n, "cube");
             // D37: a narrowed cube names its facility, so the bare cube keeps one meaning.
             match (*cities, only) {
@@ -425,17 +442,15 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
                 (true, _) => parts.push(w("city")),
                 _ => {}
             }
-            if *one_country {
-                parts.push(w("country"));
-            }
-            one(clause(adversary(parts), say))
+            let _ = one_country;
+            one(clause(adversary(area_icons(parts, *at)), say))
         }
         Op::Liberate { ambassadors, troops, botnet } => {
             let mut parts = minus(1, "cube");
             parts.push(w("city"));
             // 178 (#29): every liberation is the Liberate action's, so the house term carries it (the Agents on
             // it come off, your cube goes on); the align mark (D48) would say it on every card, so none prints it.
-            let say = "liberate a corrupted city in reach".to_string();
+            let say = "liberate it".to_string();
             let mut out = vec![clause(adversary(parts), say)];
             if *ambassadors > 0 {
                 let n = *ambassadors;
@@ -463,27 +478,40 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             } else {
                 (vec![w("ALL"), w("agent"), w("city")], "every agent".to_string())
             };
-            one(clause(adversary(parts), format!("remove {what} on or next to one corrupted city in reach")))
+            one(clause(adversary(parts), format!("remove {what} on or next to it")))
         }
-        Op::Harden { count } => {
-            let icons = counted(*count, "harden");
-            let what = if *count == 1 { "1 facility".to_string() } else { format!("{count} facilities") };
-            one(clause(icons, format!("harden {what} in reach")))
+        Op::Harden { count, at } => {
+            let icons = area_icons(counted(*count, "harden"), *at);
+            let say = match count - 1 {
+                0 => "harden it".to_string(),
+                1 => "harden it and 1 facility next to it".to_string(),
+                more => format!("harden it and {more} facilities next to it"),
+            };
+            one(clause(icons, say))
         }
-        Op::MoveAmbassadors { max } => one(clause(
-            vec![Part::Word(max.to_string()), w("move")],
-            format!("move up to {max} ambassadors onto pieces in reach"),
+        Op::MoveAmbassadors { max, at } => {
+            let onto = if at.is_on() { "onto it".to_string() } else { format!("onto pieces {}", at.words()) };
+            one(clause(area_icons(vec![Part::Word(max.to_string()), w("move")], *at), format!("move up to {max} ambassadors {onto}")))
+        }
+        // 234 (Matt: Place means onto the map).
+        Op::PlaceAmbassadors { count, at } => one(clause(
+            area_icons(counted(*count, "ambassador"), *at),
+            format!("place {} {}", plural(*count, "ambassador"), at.words()),
         )),
-        Op::Shelter => one(clause(
+        // 234: a player card's Shelter takes no target: the hexes in your reach.
+        Op::Shelter { reach: true } => one(clause(
+            vec![w("shelter"), w("node")],
+            "shelter your nodes and facilities in reach this round",
+        )),
+        Op::Shelter { reach: false } => one(clause(
             vec![w("shelter"), w("country")],
-            // 178 (Matt's ruling #24): any country, no reach needed.
             "shelter any country this round",
         )),
         // 178 (Matt's ruling #30): the cordon's span is the firewall's. 179 (friction #35): the wall mark (the
-        // clock is a delay only).
+        // clock is a delay only). 234: the target's country.
         Op::Cordon => one(clause(
             adversary(vec![w("agent"), w("country"), w("wall")]),
-            "cordon a country until the end of the next adversary turn",
+            "cordon its country until the end of the next adversary turn",
         )),
         Op::Peek { count } => {
             let say = if *count == 1 {
@@ -545,7 +573,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         )),
         Op::CutBotnet => one(clause(
             adversary(vec![w("botnet")]),
-            "a botnet in reach makes no compute next build",
+            "the botnet on it makes no compute next build",
         )),
         Op::MoveOne { range } => one(clause(
             vec![w("move"), Part::Word(range.to_string()), w("hex")],
@@ -558,7 +586,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         // 179 (friction #39): onto one piece, the destination mark (Liaison Corps' plain move is onto pieces).
         Op::Consolidate { max } => one(clause(
             vec![Part::Word(max.to_string()), w("move"), w("onto")],
-            format!("move up to {max} ambassadors in reach onto one piece"),
+            format!("move up to {} on or next to it onto it", plural(*max, "ambassador")),
         )),
         // 158: convert, gather and the firewall (Matt, 2026-11-09).
         Op::Convert { max } => {
@@ -570,7 +598,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             // 184: each becomes your ambassador where it stood (r77, 178 #32): no node.
             icons.extend(counted(*max, "ambassador"));
             let what = if *max == 1 { "1 agent".to_string() } else { format!("{max} agents") };
-            one(clause(icons, format!("convert {what} around a city in reach")))
+            one(clause(icons, format!("convert {what} on or next to it")))
         }
         // 166 (Matt, 2026-11-09, *Moving pieces*): bare silhouettes, a number before its icon, "up to"
         // printed (≤N); the dark frame only around the adversary's pieces.
@@ -578,7 +606,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             let mut icons = vec![Part::Word(format!("\u{2264}{max}"))];
             icons.extend(piece_icons(pieces));
             icons.extend([w("move"), w("hex")]);
-            let say = format!("gather up to {max} {} into a hex in reach, each from a hex next to it", piece_words(pieces));
+            let say = format!("gather up to {max} {} onto it, each from a hex next to it", piece_words(pieces));
             one(clause(icons, say))
         }
         // The strike (178, Matt's ruling #27): a removal around a hex, the hex included, the player's choice (the
@@ -587,20 +615,20 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             let mut icons = vec![Part::Word(format!("\u{2212}\u{2264}{max}"))];
             icons.extend(piece_icons(pieces));
             icons.push(w("hex"));
-            let say = format!("remove up to {max} {} on or next to a hex in reach, your choice", piece_words(pieces));
+            let say = format!("remove up to {max} {} on or next to it, your choice", piece_words(pieces));
             one(clause(icons, say))
         }
         Op::Push { max, pieces } => {
             let mut icons = vec![w("hex"), w("move"), Part::Word(format!("\u{2264}{max}"))];
             icons.extend(piece_icons(pieces));
-            let say = format!("push up to {max} {} from a hex in reach, each to a hex next to it", piece_words(pieces));
+            let say = format!("push up to {max} {} from it, each to a hex next to it", piece_words(pieces));
             one(clause(icons, say))
         }
         Op::Firewall => one(clause(
             adversary(vec![w("agent"), w("hex"), w("wall")]),
             // 178: its span ("until the end of the next adversary turn") prints on the token and in the house
             // term; Air Gap's box has no room for it twice.
-            "firewall a hex in reach",
+            "firewall it",
         )),
         // 212: "if it is on or next to a factory, also gain 1 chip".
         Op::IfNodeNext { spots, then, fresh } => {
@@ -626,9 +654,9 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             say: "put a new ambassador on that city".to_string(),
             share: Share::Mine,
         }),
-        Op::LiftFallout { count } => one(clause(
-            adversary(minus(*count, "hex")),
-            format!("lift {} in reach", plural(*count, "Fallout token")),
+        Op::LiftFallout { count, at } => one(clause(
+            adversary(area_icons(minus(*count, "hex"), *at)),
+            format!("lift {} {}", plural(*count, "Fallout token"), at.words()),
         )),
         Op::IfTags { tag: t, count, then } => {
             let inner = clauses(then, gain);
@@ -675,11 +703,11 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         )),
         Op::BuildStation => one(clause(
             vec![w("station"), w("free")],
-            "build a research station in reach, paying no chips",
+            "build a research station on it, paying no chips",
         )),
         Op::ClaimStation => one(clause(
             vec![w("station")],
-            "claim a neutral research station in reach",
+            "claim it",
         )),
         Op::ProjectCube { count, station } => {
             let mut icons = counted(*count, "research_cubes");
@@ -993,7 +1021,11 @@ fn sentence(s: &str) -> String {
 
 /// The face of `c`, generated from its ops.
 pub fn card_face(c: &CardDef) -> Face {
-    let mut f = Face::default();
+    let target = c.all_ops().into_iter().find_map(|o| match o {
+        Op::Target { on } => Some(TargetBox { glyph: on.glyph().to_string(), text: pieces_capitalized(&format!("Target: {}", on.words())) }),
+        _ => None,
+    });
+    let mut f = Face { target, ..Face::default() };
     above_art(c, &mut f);
     below_art(c, &mut f);
     including_this(c, &mut f);

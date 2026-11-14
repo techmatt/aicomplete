@@ -27,12 +27,15 @@ pub fn strategies_block() -> String {
 }
 
 /// The words cards lean on, once: `docs/rules/README.md`'s *Terms* and the player aid print these.
-pub const HOUSE_TERMS: [(&str, &str); 22] = [
+pub const HOUSE_TERMS: [(&str, &str); 25] = [
     ("Facility", "a research station or factory on the board. A building is always a card. Harden goes on a facility and nothing else"),
     ("Ambassador", "a player's piece, any player's: a card never says whose"),
     ("Agent", "the adversary's piece on the board (the Security token is an Operative)"),
     ("Troop", "an adversary troop; a megacorp's is a Drone, its own piece, waiting at its military bases"),
     ("In reach", "on a hex within 1 of your nodes"),
+    ("Target", "a card that touches the map names one target, a hex in your reach meeting its target box (\"Target: a corrupted city\"): it acts on it, or on or next to it, or in its country, as printed"),
+    ("Gain", "into your supply"),
+    ("Place", "onto the map: on the target, or next to it where printed"),
     ("A country you're in", "a country where you have a node"),
     ("Your home country", "the country you start in"),
     ("A threat", "on your card: one you may counter, near it (your node or ambassador on or next to one of its tokens)"),
@@ -46,8 +49,8 @@ pub const HOUSE_TERMS: [(&str, &str); 22] = [
     ("Open megaproject", "one that isn't complete; research cubes in your color go only onto one"),
     ("Liberate", "a corrupted site: the agents on it come off, the adversary's cube comes off and yours goes on (the action pays for it in ambassadors; a card's is unpaid)"),
     ("Convert", "an agent on or next to the city leaves its stack and becomes your ambassador where it stood"),
-    ("Gather up to N", "pieces (ambassadors, agents, troops; botnets never move) into a hex in your reach, each from a hex next to it; you may stop at any piece (a strike, \"remove up to N on or next to a hex\", moves nothing)"),
-    ("Push up to N", "pieces from a hex in your reach, each to a hex next to it that you choose; you may stop at any piece"),
+    ("Gather up to N", "pieces (ambassadors, agents, troops; botnets never move) onto the target (a board power's: a hex in your reach), each from a hex next to it; you may stop at any piece (a strike, \"remove up to N on or next to it\", moves nothing)"),
+    ("Push up to N", "pieces from the target (a board power's: a hex in your reach), each to a hex next to it that you choose; you may stop at any piece"),
     ("Firewall", "a token on a hex: no agent lands or moves there (a Rally's share for it stays in the supply) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn"),
     ("In the next adversary turn, no X", "a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (a Rally's share for it stays in the supply), and the tokens come off with the firewalls"),
 ];
@@ -870,7 +873,10 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          uncovered), and what you don't use is lost, like insight. **One tag rule:** \
          the tag printed on your AI board, and any a late, costly track space reveals, count like the \
          tags on your cards, for everything a tag does; the only difference is that a board tag can't \
-         be sacrificed. You may sell a card from your hand for {} credit; chips can't be sold.\n",
+         be sacrificed. You may sell a card from your hand for {} credit; chips can't be sold.\n\n\
+         **Targets, for new players.** A card that does something on the map shows a **target box** under its \
+         name (\"Target: Agents\"): pick one hex in your reach that matches it, and the card acts there, on it or \
+         on or next to it, just as it says. **Gain** puts pieces in your supply; **Place** puts them on the map.\n",
         n("cards.opening_deal"),
         n("cards.opening_deal_tier2"),
         n("cards.deal"),

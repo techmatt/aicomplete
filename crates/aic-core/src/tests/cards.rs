@@ -194,7 +194,7 @@ fn the_023_primitives_draw_drain_all_count_and_cash_out() {
 fn a_card_that_only_hardens_or_moves_needs_a_target_but_one_that_also_gains_does_not() {
     let (rules, g) = lab(&[]);
     let w = rules.world();
-    let harden = Op::Harden { count: 2 };
+    let harden = Op::Harden { count: 2, at: Default::default() };
     let moves = Op::MoveOne { range: 2 };
     assert!(!effects::feasible(&w, &g, 0, std::slice::from_ref(&harden)), "no building, no nodes");
     assert!(!effects::feasible(&w, &g, 0, std::slice::from_ref(&moves)), "no ambassador");
@@ -409,7 +409,7 @@ fn remove_troops_takes_up_to_its_number_in_one_country() {
     for &h in &hexes {
         put(&mut g, h, TROOP, 1);
     }
-    run_ops(&rules, &mut g, &[Op::RemoveTroops { count: 6, reach: false }]);
+    run_ops(&rules, &mut g, &[Op::RemoveTroops { count: 6, reach: false, at: Default::default() }]);
     assert_eq!(total(&g, TROOP), 0, "3 troops, all of them: nothing to ask");
 }
 
@@ -543,7 +543,7 @@ fn a_part_with_nothing_to_act_on_never_blocks_the_rest() {
     let w = rules.world();
     let none_in_reach = (0..g.hexes.len()).all(|h| g.tokens(h, TROOP) == 0);
     assert!(none_in_reach, "the lab starts with no troop");
-    let remove = Op::RemoveTroops { count: 1, reach: true };
+    let remove = Op::RemoveTroops { count: 1, reach: true, at: Default::default() };
     assert!(!effects::feasible(&w, &g, 0, std::slice::from_ref(&remove)), "alone it would do nothing");
     let with_gain = [remove, Op::Gain { resource: Resource::Credits, amount: 5 }];
     assert!(effects::feasible(&w, &g, 0, &with_gain), "beside a gain, the removal is a bonus");
@@ -582,7 +582,7 @@ fn a_building_s_own_play_fires_its_fight_trigger() {
         "cards.honeypot_relay.needs=[]",
         "cards.honeypot_relay.cost=0",
         "cards.honeypot_relay.insight=0",
-        r#"cards.honeypot_relay.effects=[{"op":"gather","max":2,"pieces":["agents"],"strike":true}]"#,
+        r#"cards.honeypot_relay.effects=[{"op":"target","on":"agents"},{"op":"gather","max":2,"pieces":["agents"],"strike":true}]"#,
     ]);
     out_of_decks(&mut g, "honeypot_relay");
     set_pile(&mut g, "cards.hand.1", &["honeypot_relay"]);
@@ -599,13 +599,8 @@ fn a_building_s_own_play_fires_its_fight_trigger() {
     // Played free (Rush Build), the same.
     let mut g = free;
     let w = rules.world();
-    let hexes = effects::gather_hexes(&w, &g, 1, &[crate::op::Piece::Agents], true);
-    let mut picks = if hexes.len() > 1 {
-        let o = crate::modules::common::hex_opt(&w, hexes[0]);
-        vec![o.into()]
-    } else {
-        Vec::new()
-    };
+    // 234: the target is the one hex in reach holding agents, so nothing asks for it.
+    let mut picks = Vec::new();
     // 178: the strike asks which pieces (on or next to the hex).
     let name = crate::modules::common::hex_name(&w, next);
     picks.push(crate::state::Pick { option: format!("2 agents on {name}"), target: Some(m.hexes[next].hex) });

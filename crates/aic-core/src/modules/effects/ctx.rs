@@ -37,11 +37,45 @@ pub struct Ctx {
     pub node: Option<usize>,
     /// 212: the rider resolving asked for a fresh spot (its ambassador goes onto one).
     pub fresh: bool,
+    /// 234: a `target` op has resolved in this list: `Some(None)` when it found no hex (the map ops after it
+    /// do nothing), `Some(Some(h))` its hex. `None`: no target, so each op keeps its own reach.
+    pub target: Option<Option<usize>>,
 }
 
 impl Ctx {
     pub(super) fn new(source: EffectSource, scope: Option<usize>) -> Ctx {
-        Ctx { source, scope, other: None, label: "card", card: None, why: None, threat: None, hit: None, node: None, fresh: false }
+        Ctx {
+            source,
+            scope,
+            other: None,
+            label: "card",
+            card: None,
+            why: None,
+            threat: None,
+            hit: None,
+            node: None,
+            fresh: false,
+            target: None,
+        }
+    }
+
+    /// 234: the hexes a map op of `seat` may act in: with a target, its `at` area around it (none when the
+    /// target found no hex); with none, the seat's reach, as before targets.
+    pub fn area(&self, w: &World, g: &GameState, seat: usize, at: Area) -> Vec<usize> {
+        match self.target {
+            None => (0..g.hexes.len()).filter(|&h| in_reach(w, g, seat, h)).collect(),
+            Some(None) => Vec::new(),
+            Some(Some(t)) => area_of(w, t, at),
+        }
+    }
+
+    /// Whether hex `h` is in [`Ctx::area`]; `reach` is the op's own test with no target.
+    pub fn allows(&self, w: &World, h: usize, at: Area, reach: impl FnOnce() -> bool) -> bool {
+        match self.target {
+            None => reach(),
+            Some(None) => false,
+            Some(Some(t)) => in_area(w, t, at, h),
+        }
     }
 
     /// The threat whose effects these are (135).

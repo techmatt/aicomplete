@@ -2,9 +2,12 @@
 
 use super::*;
 
-pub(super) fn damage(g: &mut GameState, cx: &mut Cx, seat: usize, ambassadors: i64, troops: i64) -> Res {
+/// 234: `zone` is where a card's ops may act ([`Ctx::area`]): the seat's reach with no target, else the target's
+/// area. Every map op below keeps its own condition and takes only the hexes in it.
+pub(super) fn damage(g: &mut GameState, cx: &mut Cx, seat: usize, ambassadors: i64, troops: i64, zone: &[usize]) -> Res {
     let w = cx.world;
-    let hexes = damage_hexes(&w, g, seat, ambassadors, troops);
+    let mut hexes = damage_hexes(&w, g, seat, ambassadors, troops);
+    hexes.retain(|h| zone.contains(h));
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || format!("Seat {seat}: remove adversary pieces in which hex?");
     if let Some(i) = cx.choose(seat, prompt, opts)? {
@@ -32,10 +35,11 @@ pub(super) fn damage_country(g: &mut GameState, cx: &mut Cx, seat: usize, ambass
     Ok(())
 }
 
-pub(super) fn destroy_all(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
+/// Any hex with no target (`zone` None); the target's with one.
+pub(super) fn destroy_all(g: &mut GameState, cx: &mut Cx, seat: usize, zone: Option<&[usize]>) -> Res {
     let w = cx.world;
     let hexes: Vec<usize> = (0..g.hexes.len())
-        .filter(|&h| adversary::can_destroy_all(g, h))
+        .filter(|&h| adversary::can_destroy_all(g, h) && zone.is_none_or(|z| z.contains(&h)))
         .collect();
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt =
@@ -46,11 +50,9 @@ pub(super) fn destroy_all(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
     Ok(())
 }
 
-pub(super) fn remove_botnet(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
+pub(super) fn remove_botnet(g: &mut GameState, cx: &mut Cx, seat: usize, zone: &[usize]) -> Res {
     let w = cx.world;
-    let hexes: Vec<usize> = (0..g.hexes.len())
-        .filter(|&h| botnet_in_reach(&w, g, seat, h))
-        .collect();
+    let hexes: Vec<usize> = zone.iter().copied().filter(|&h| g.tokens(h, BOTNET) > 0).collect();
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || format!("Seat {seat}: remove the botnet in which hex?");
     if let Some(i) = cx.choose(seat, prompt, opts)? {
@@ -66,9 +68,19 @@ pub(super) fn remove_ambassadors_country(
     unity_per: i64,
     max: i64,
     reach: bool,
+    zone: Option<&[usize]>,
 ) -> Res {
     let w = cx.world;
-    let removed = if reach {
+    // 234: what the same removal would have found anywhere in reach (r103's wording), for the pricing read.
+    if zone.is_some() {
+        let held: i64 = reach_hexes(&w, g, seat).iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).sum();
+        cx.tally(g, "cards.agents_in_reach", held.min(max));
+        cx.tally(g, &format!("cards.agents_in_reach.{max}"), held.min(max));
+    }
+    let removed = if let Some(area) = zone {
+        // 234: a card's target names the place; no country is picked.
+        up_to_in(g, cx, seat, area, max, ADV_AMBASSADOR)?
+    } else if reach {
         // 111 (Matt's ruling 3): in reach, across countries; no country to name.
         let area = reach_hexes(&w, g, seat);
         up_to_in(g, cx, seat, &area, max, ADV_AMBASSADOR)?
@@ -88,14 +100,29 @@ pub(super) fn remove_ambassadors_country(
     if unity_per > 0 {
         alignment::unity_from(g, cx, "pushback", removed / unity_per);
     }
+    // 234: what a targeted "remove N agents" finds, for values.json's area rates.
+    if let Some(area) = zone {
+        let at = if area.len() == 1 { "on" } else { "near" };
+        cx.tally(g, &format!("cards.remove_agents.{at}"), max);
+        cx.tally(g, &format!("cards.agents_removed.{at}"), removed);
+        cx.tally(g, &format!("cards.remove_agents.{at}.{max}"), 1);
+        cx.tally(g, &format!("cards.agents_removed.{at}.{max}"), removed);
+    }
     Ok(())
 }
 
 /// 076 (ruling 6): up to `count` adversary troops in one country, any country;
 /// with `reach` (111, ruling 3), in reach instead.
-pub(super) fn remove_troops(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64, reach: bool) -> Res {
+pub(super) fn remove_troops(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64, reach: bool, zone: Option<&[usize]>) -> Res {
     let w = cx.world;
-    let removed = if reach {
+    if zone.is_some() {
+        let held: i64 = reach_hexes(&w, g, seat).iter().map(|&h| g.tokens(h, TROOP)).sum();
+        cx.tally(g, "cards.troops_in_reach", held.min(count));
+        cx.tally(g, &format!("cards.troops_in_reach.{count}"), held.min(count));
+    }
+    let removed = if let Some(area) = zone {
+        up_to_in(g, cx, seat, area, count, TROOP)?
+    } else if reach {
         let area = reach_hexes(&w, g, seat);
         up_to_in(g, cx, seat, &area, count, TROOP)?
     } else {
@@ -110,6 +137,13 @@ pub(super) fn remove_troops(g: &mut GameState, cx: &mut Cx, seat: usize, count: 
     // 093: what "up to N" removes in play, for the effect ledger.
     cx.tally(g, &format!("cards.remove_troops.{count}"), 1);
     cx.tally(g, &format!("cards.troops_removed.{count}"), removed);
+    if let Some(area) = zone {
+        let at = if area.len() == 1 { "on" } else { "near" };
+        cx.tally(g, &format!("cards.remove_troops_at.{at}"), count);
+        cx.tally(g, &format!("cards.troops_removed_at.{at}"), removed);
+        cx.tally(g, &format!("cards.remove_troops_at.{at}.{count}"), 1);
+        cx.tally(g, &format!("cards.troops_removed_at.{at}.{count}"), removed);
+    }
     Ok(())
 }
 
@@ -155,6 +189,7 @@ fn up_to_in(g: &mut GameState, cx: &mut Cx, seat: usize, area: &[usize], max: i6
     Ok(removed)
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(super) fn cleanse(
     g: &mut GameState,
     cx: &mut Cx,
@@ -163,14 +198,22 @@ pub(super) fn cleanse(
     one_country: bool,
     cities: bool,
     only: Option<Facility>,
+    zone: &[usize],
+    target: Option<usize>,
 ) -> Res {
     let w = cx.world;
     let mut country: Option<u8> = None;
     for k in 0..amount {
-        let hexes: Vec<usize> = (0..g.hexes.len())
-            .filter(|&h| cleansable(&w, g, h, cities, only) && in_reach(&w, g, seat, h))
+        let mut hexes: Vec<usize> = zone
+            .iter()
+            .copied()
+            .filter(|&h| cleansable(&w, g, h, cities, only))
             .filter(|&h| country.is_none_or(|c| w.map.hexes[h].country == c))
             .collect();
+        // 234: "free it and N more": the target goes first when the card can free it.
+        if let Some(t) = target.filter(|t| k == 0 && hexes.contains(t)) {
+            hexes = vec![t];
+        }
         if hexes.is_empty() {
             break;
         }
@@ -198,9 +241,10 @@ pub(super) fn cleanse(
 /// ruling #29): the agents on it come off, the adversary's cube comes off, Unity sways, and the seat's cube goes on;
 /// nothing is paid. Each engine's twist (r35): `ambassadors` gained, up to `troops` adversary troops off in the
 /// city's country, and with `botnet` one botnet on or next to the city off.
-pub(super) fn liberate_city(g: &mut GameState, cx: &mut Cx, seat: usize, ambassadors: i64, troops: i64, botnet: bool) -> Res {
+pub(super) fn liberate_city(g: &mut GameState, cx: &mut Cx, seat: usize, ambassadors: i64, troops: i64, botnet: bool, zone: &[usize]) -> Res {
     let w = cx.world;
-    let cities = liberable_cities(&w, g, seat);
+    let mut cities = liberable_cities(&w, g, seat);
+    cities.retain(|h| zone.contains(h));
     let opts = cities.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || format!("Seat {seat}: liberate which corrupted city?");
     if let Some(i) = cx.choose(seat, prompt, opts)? {
@@ -235,9 +279,10 @@ pub(super) fn liberate_city(g: &mut GameState, cx: &mut Cx, seat: usize, ambassa
     Ok(())
 }
 
-pub(super) fn clear_city(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64) -> Res {
+pub(super) fn clear_city(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, zone: &[usize]) -> Res {
     let w = cx.world;
-    let cities = guarded_cities(&w, g, seat);
+    let mut cities = guarded_cities(&w, g, seat);
+    cities.retain(|h| zone.contains(h));
     let opts = cities.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || format!("Seat {seat}: clear agents around which corrupted city?");
     if let Some(i) = cx.choose(seat, prompt, opts)? {
@@ -271,9 +316,10 @@ pub(super) fn clear_city(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64) 
     Ok(())
 }
 
-pub(super) fn cut_botnet(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
+pub(super) fn cut_botnet(g: &mut GameState, cx: &mut Cx, seat: usize, zone: &[usize]) -> Res {
     let w = cx.world;
-    let hexes = cuttable_botnets(&w, g, seat);
+    let mut hexes = cuttable_botnets(&w, g, seat);
+    hexes.retain(|h| zone.contains(h));
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || format!("Seat {seat}: cut off the botnet in which hex?");
     if let Some(i) = cx.choose(seat, prompt, opts)? {

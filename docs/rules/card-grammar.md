@@ -6,7 +6,8 @@
 from how it plays.)
 
 **Where it sits is what it is.** The top strip holds the credit octagon, the insight hexagon, requirement plates
-(yellow: at least that many of a tag, never at most; stacked cards: built over) and tags, and nothing else. Above the art, on buildings
+(yellow: at least that many of a tag, never at most; stacked cards: built over) and tags, and nothing else; the
+**target box**, a tab under the title, holds a map card's target (r106). Above the art, on buildings
 only, is what lasts while the building is active: income, *Effect:*, *Action:*. Cover the building and it stops.
 Below the art is what happens once, when you play the card: extra costs first, then gains, placements and moves.
 
@@ -26,8 +27,8 @@ on the board and moving them (each piece one symbol: ambassador, agent, node, bo
 tags. A number goes before its icon, no number means 1. The less mark (a number over a double chevron) is a discount
 or, before the jam mark outside the dark frame, a jam. A ringed number before discs is At N. The clock is a delay only;
 the wall is a firewall (agent, hex) or cordon (agent, country). `≤`N is up to N, your choice: a give. A pin after a
-move is onto one piece. The shield icon is one stop on one piece (a hardening token, on a facility or with a node); the roof
-covers many (Shelter's country; with a node, all your pieces). The text says what the icons
+move is onto one piece. The near mark is on or next to the target. The shield icon is one stop on one piece (a
+hardening token); the roof covers many (Shelter's reach; Aegis Doctrine's pieces). The text says what the icons
 say, in order, opening with the box's word.
 
 Card details beyond the card text:
@@ -37,20 +38,28 @@ cards.md); their counts are the generated *draft set in numbers* line in [player
 raises are on programs, the engines' triggers, Actions and Effects on buildings; each tag is primary on 24 to 29. Every card is in [cards.md](../cards.md)
 (generated), priced in [card-pricing.md](../card-pricing.md). How each primitive resolves:
 
-- **Reach:** a card's map target is in your reach (within 1 of your node) where its text says so; a removal in one
-  country (a tier-2 sweep) is not. A removal (`damage`) takes a hex in reach holding adversary
-  pieces; a country removal any country holding them. A card names the pieces it removes: where it says "2 agents or 1 troop" you choose one kind.
-- **Hardening:** a different facility in reach for each token, each one a token can protect ([ai-powers.md](ai-powers.md)).
-- **Factories:** "build a factory" is always on a free industrial zone in reach; the factory is yours (your cube). A
-  building that builds one can be played with no such zone and then builds nothing.
-- **Moving ambassadors** (`move_ambassadors`, `move_one`, `consolidate`, `spread_ambassadors`): onto pieces (city,
-  base, facility or node), each arriving as in [ambassadors.md](ambassadors.md); stop at any time. "Move up to N" (Summit
-  Caucus, Liaison Corps) is a "you may move": it never vetoes a card that does something else.
-- **Convert, firewall** (`convert`, `firewall`; house terms): a city in reach with agents on or next to it; a land
-  hex in reach. How each resolves is in [ambassadors.md](ambassadors.md), *Convert and firewall*.
-- **Gather, push** (`gather`, `push`; house terms, r70): a land hex in reach, with a piece the card names next to it
-  (gather) or on it (push). A strike (`gather` with `strike`) moves nothing: it removes up to N of the pieces it
-  names on or next to a land hex in reach, your choice. How they resolve: [ambassadors.md](ambassadors.md), *Moving pieces*.
+- **Target** (r106, **locked**, Matt 2026-11-14): a card that touches the map names **one target**, a hex in your
+  reach (within 1 of any of your nodes; no card prints a range). The **target box** in the header prints its
+  condition with its glyph ("Target: a corrupted city"); you pick the hex when the card (or its Action, or its
+  Effect each time it fires) resolves. Its effects act **on it**, or **on or next to it** where printed, or **in its
+  country** where printed; nothing reaches past 1 from it, no card picks a country freely, and no card has two
+  targets: one that wants two places says "it and N next to it" (Back-Channel Talks: "free it and 1 corrupted
+  factory next to it"). With no hex meeting the condition the card's map effects do nothing; its other parts still
+  play. `target` is an op opening the list it scopes; `Content::check` refuses a map op with no target before it,
+  two targets, or a free country. A card names the pieces it removes: "3 Agents or 1 Troop" is one kind, your choice.
+- **Gain, Place:** Gain puts pieces in your supply; Place puts new ones onto the map, on the target (Amnesty Decree:
+  "Place 2 Ambassadors on it"), each arriving as any ambassador does.
+- **Hardening:** a different facility for each token, each one a token can protect ([ai-powers.md](ai-powers.md)):
+  the target, then facilities next to it.
+- **Factories:** "build a factory on it": the target is a free industrial zone; the factory is yours (your cube).
+- **Moving ambassadors** (`move_ambassadors`, `consolidate`): onto the target (or onto pieces on or next to it),
+  each arriving as in [ambassadors.md](ambassadors.md); stop at any time. "Move up to N" (Summit Caucus, Liaison
+  Corps) is a "you may move": it never vetoes a card that does something else.
+- **Convert, firewall** (`convert`, `firewall`; house terms): the target is a city with agents on or next to it; a
+  land hex. How each resolves is in [ambassadors.md](ambassadors.md), *Convert and firewall*.
+- **Gather, push** (`gather`, `push`; house terms, r70): onto the target, each from a hex next to it (gather), or
+  from it (push). A strike (`gather` with `strike`) moves nothing: it removes up to N of the pieces it names on or
+  next to the target, your choice. How they resolve: [ambassadors.md](ambassadors.md), *Moving pieces*.
 - **"With N X tags, also …"** (`if_tags`): the rest resolves only if you hold N tags of X on your cards when
   the card resolves (an event's own tags never count, as for a gain per tag); it never blocks the card.
 - **Peek:** the top cards of the adversary deck, behind the face-up card, are shown; one fewer after each reveal.
@@ -58,23 +67,21 @@ raises are on programs, the engines' triggers, Actions and Effects on buildings;
   is countered at once. **Counter a threat:** partial payments on it are refunded. **Delay N threats** (Predictive
   Modeling, Early Warning Drill): only threats you may counter, as countering and jamming; with none, the card still
   plays for its draw or hardening tokens.
-- **Cleanse:** take the adversary cube off a corrupted research station or factory in reach, one hex at a time (some
-  cards: all in the first hex's country). A station becomes neutral. `only` limits it to stations (Reclamation Crew,
+- **Cleanse:** take the adversary cube off the target, a corrupted research station or factory, then off the rest
+  the card counts next to it (or in its country), one hex at a time. A station becomes neutral. `only` limits it to stations (Reclamation Crew,
   priced as a station flip) or to factories (Back-Channel Talks, cheap); its cube icon then carries that facility's glyph. With `cities` (Great Liberation) a corrupted
   city counts too (its cube carries the city glyph), and it is liberated ([ambassadors.md](ambassadors.md)).
-- **Liberate:** liberate one corrupted city in your reach as the Liberate action does, unpaid
+- **Liberate:** liberate the target, a corrupted city, as the Liberate action does, unpaid
   ([ambassadors.md](ambassadors.md)): its agents and the adversary's cube come off, Unity sways, your cube goes on
   (the word Liberate carries your cube). Each
   engine's twist: `ambassadors` (gain that many), `troops` (up to that many adversary troops in the city's country come
   off), `botnet` (a botnet on or next to the city comes off; its icon carries the city glyph). Only the liberate capstones print it ([player-cards.md](player-cards.md)).
-- **Clear a city (`clear_city`):** remove up to N agents (Amnesty Decree: 4) around one corrupted
-  city in reach, on it or next to it, your choice which (with no more there than the card takes, all go). A city with an agent on it can't be liberated ([ambassadors.md](ambassadors.md)); clearing
-  those next to it only thins what a Corrupt line could move onto it.
-- **Card text:** extra costs and lowered income included; a long card sets smaller. **Shelter any country** (no
-  reach needed): nothing in it, facility or node, can be destroyed this round.
+- **Card text:** extra costs and lowered income included; a long card sets smaller. **Shelter** takes no target
+  (r106): "Shelter your Nodes and facilities in reach this round": none of your nodes or facilities on a hex in
+  your reach when it resolves can be destroyed this round.
 - **Projects:** a drain removes compute from one visible adversary project; **drain all** from every visible one; a
   discard takes one with its compute; the rest slide left and the right slot refills.
-- **Botnets:** removing a botnet (tier 2, in reach) is, with Decommission (a Unity card, [alignment.md](alignment.md)), the only way to remove
+- **Botnets:** removing a botnet (tier 2, the target) is, with Decommission (a Unity card, [alignment.md](alignment.md)), the only way to remove
   one ([adversary.md](adversary.md)); cutting one off (`cut_botnet`; no content prints it) makes it produce no compute in the next compute step.
 - **Draw:** every draw takes the top cards of the tier-1 deck into your hand, no keep paid. An empty tier-1 deck
   reshuffles its discard; with both empty it does nothing, and a card or power that only draws (Procure) is
@@ -85,15 +92,12 @@ raises are on programs, the engines' triggers, Actions and Effects on buildings;
   program's, one of your cards you pick); gain the card's rate of a resource for each.
 - **Per tag (`gain_per_tag`):** once, 1 of a resource per N tags of a kind on your cards in play; a program counts
   itself (it enters play before it resolves) and prints "(including this)" after the tag, an event doesn't.
-- **Troops or ambassadors in reach (`remove_troops`, `remove_ambassadors_country` with `reach`; Matt's ruling
-  of 2026-11-04):** remove up to N from any hexes in your reach, across countries, your pick of hexes when there are
-  more than N. **In one country** (the same ops without `reach`): up to N in one country, any country, the same way;
-  only a few big tier-2 sweeps print it, as a deliberate power step. Neither reads "per hex": Matt's ruling 6.
+- **Troops or agents (`remove_troops`, `remove_ambassadors_country`):** up to N on the target, or on or next to it,
+  your pick of hexes when there are more than N; never "per hex" (Matt's ruling 6). Board powers and the standard
+  actions, which have no target, still remove in reach (or one country, where printed).
 - **Help cards** (keyword `help`, ~10%): the player chooses another player; both gain, the helper paying. **In a
   1-player game, "another player" means you** (Matt's ruling of 2026-11-04): the gift is yours.
-- **Moves of "up to N hexes"** (`move_one`'s `range`; no deck card prints one) count hex distance (`Map::distance`,
-  over land and sea); the destination must be a piece.
-- **Cordon (`cordon`):** "cordon a country until the end of the next adversary turn": until then no Rally or
+- **Cordon (`cordon`):** "cordon its country until the end of the next adversary turn" (the target's): until then no Rally or
   creation line places agents there, a project's included (118); its pool waits in the supply and lands at its next
   Rally; the rest of a build goes on. Like a firewall it comes off at that turn's compute step. Hardpoint Lockdown prints it: a Security card that does an
   ambassador's job.
@@ -111,8 +115,8 @@ building with a Science trigger fires it. The `play` mark is a card you play.
   card. **Per tag** (`play_tag`): "when you play a card, gain 1 insight per tag on it" (Interdisciplinary Institute), the tier-2
   form, once for each tag of any kind on the played card (the empty ring), or per tag of one kind, the
   ringed tag after `/` on the right of the `:`.
-- **Teammate triggers (`team_play`):** "When another player plays a Security card, remove 2 agents in reach"
-  (Joint Task Force): what it removes is the owner's, so the owner's "when you remove agents" triggers
+- **Teammate triggers (`team_play`):** "When another player plays a Security card, remove 2 Agents on it"
+  (Joint Task Force; the owner picks the target, in the owner's reach): what it removes is the owner's, so the owner's "when you remove agents" triggers
   fire for it, not the player's whose card set it off. With `both`, "you both gain" (Consulate Tower, Substation Hub), the dashed box holding the other's gain. Your own plays don't fire them, except in a 1-player game
   (*Help cards*, above): they fire on your plays and a shared gain lands once.
 - **Rebate (`play_cost`):** "when you play a card printed at 10 credits or more, gain 5 credits" (Lights-Out Assembly):
@@ -120,17 +124,12 @@ building with a Science trigger fires it. The `play` mark is a card you play.
 - **Fight triggers:** "when you remove a Troop" (Security Contractor HQ), "when you remove adversary compute"
   (Security Ops Floor) and "when you remove Agents" (Honeypot Relay) fire once for the card, Action, power, converter
   or standard action that removed any, however many, canceling an arrival included.
-- **Placing tokens (`place_tokens`):** "when you place a Dataset on one of your cards" fires once a placement, however
-  many tokens (no deck card prints it); a trigger's own tokens count too.
 - **Discounts (`card_discount`):** "your Cyber cards cost 5 credits less to play" (Darknet Exchange), or insight (no
   deck card prints it). A card with the tag twice is discounted once. Like every discount, never
   below `discount_floor`, and a cost under it stays.
 - **Threshold counter (`threshold`):** a trigger adds a token here; **At N** (a house term): whenever the tokens here reach
   N, whatever put them there (a feeder card's too), N come off and the reward happens (Telemetry Archive: a
   Science card played adds 2 Datasets; at 4, 3 insight).
-- **Copy (`copy_income`, a program):** raise your income by one of your buildings' Each round output, as it pays when
-  you play the copy (a per-tag income at its count then); the building may be covered or sacrificed later. No card
-  prints it.
 - **When built:** an engine building's one-time gain prints below the art and resolves when it is built,
   before its own play fires its trigger (Telemetry Archive's 2 Datasets then the 2 its Science play adds: At 4 pays at
   once).
