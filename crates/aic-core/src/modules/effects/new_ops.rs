@@ -394,7 +394,6 @@ fn create_site(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, kind: Facility) {
         let token = kind.token();
         let name = if kind == Facility::Station { "research station" } else { "factory" };
         cx.add_tokens(g, h, token, 1);
-        adversary::clear_markers_on(g, cx, h);
         cx.tally(g, &format!("adversary.sites_created.{token}"), 1);
         cx.note(Some(h), || format!("A neutral {name} opens at {}", hex_name(&w, h)));
     }
@@ -579,7 +578,6 @@ fn build_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, z: usize) {
     let w = cx.world;
     cx.add_tokens(g, z, FACTORY, 1);
     cx.add_tokens(g, z, ADV_CUBE, 1);
-    adversary::clear_markers_on(g, cx, z);
     cx.tally(g, "board.factories_built.adversary", 1);
     cx.tally(g, "effects.adversary_factories", 1);
     if let Some(t) = &ctx.threat {

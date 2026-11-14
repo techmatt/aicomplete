@@ -260,19 +260,6 @@ pub fn moves_left(w: &World, g: &GameState, seat: usize) -> i64 {
     ai::movement(w, g, seat) - g.var(&moved_key(seat))
 }
 
-/// Takes the corruption marker off hex `h` (the action or a card), for its
-/// reward (041): `clear_unity` Sway toward Unity and `clear_credits` to `seat`.
-pub fn clear_marker(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
-    let w = cx.world;
-    cx.add_tokens(g, h, MARKER, -1);
-    cx.tally(g, "board.markers_removed", 1);
-    if is_city(&w, h) {
-        cx.tally(g, "board.markers_removed_city", 1);
-    }
-    alignment::unity_from(g, cx, "clear", w.int("board.clear_unity"));
-    cx.add_resource(g, seat, Resource::Credits, w.int("board.clear_credits"));
-}
-
 /// 206: the ops an op-backed standard action runs (node placement, troop removal, factory building), so its
 /// targets and effect are the cards' own (`effects::feasible`, `effects::run`).
 pub fn std_ops(act: StandardAction) -> &'static [Op] {
@@ -312,7 +299,7 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         StandardAction::Ambassador => "gain a player ambassador",
         StandardAction::Claim => {
             return format!(
-                "claim a neutral site in reach: {} ambassadors for a city, {} for a station, {} for a factory, plus 1 for each agent on it; yours on it pay first",
+                "claim a neutral site in reach: {} ambassadors for a city, {} for a station, {} for a factory, with no agent on it; yours on it pay first",
                 claim_ambassadors(w, SiteKind::City),
                 claim_ambassadors(w, SiteKind::Station),
                 claim_ambassadors(w, SiteKind::Factory)
@@ -320,7 +307,7 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         }
         StandardAction::Liberate => {
             return format!(
-                "liberate an adversary site in reach: {} ambassadors for a city, {} for a station or factory, plus 1 for each agent on it; yours on it pay first; it becomes yours",
+                "liberate an adversary site in reach: {} ambassadors for a city, {} for a station or factory, with no agent on it; yours on it pay first; it becomes yours",
                 liberate_ambassadors(w, SiteKind::City),
                 liberate_ambassadors(w, SiteKind::Station)
             );
@@ -330,7 +317,7 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
             return format!("turn 1 research cube into {}", Resource::Insight.words(w.int("board.cube_insight")));
         }
         StandardAction::Envoy => "move 1 Discord off the Discord track",
-        StandardAction::Botnet => "take down a botnet in reach on a hex holding your ambassador (it stays): Unity",
+        StandardAction::Botnet => "take down a botnet in reach on a hex holding your ambassador (it stays)",
         StandardAction::BuyEnergy => {
             return format!("buy a neutral city's energy (in reach, producing; once per city a round): {} credits", w.int("board.city_energy_credits"));
         }

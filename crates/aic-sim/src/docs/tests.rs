@@ -69,7 +69,7 @@ fn a_config_change_changes_its_block() {
     let blocks: [(&str, Block); 8] = [
         (&stage2_removed, difficulty_block),
         ("board.remove_count=2", standard_actions_block),
-        ("board.clear_unity=3", sway_sources_block),
+        ("alignment.botnet=2", sway_sources_block),
         ("alignment.purge_at=1,3,5", purge_ease_block),
         ("cards.keep_tier2=5", new_players_block),
         ("adversary.corrupt_at=7", game_end_block),
@@ -88,7 +88,7 @@ fn a_content_change_changes_its_block() {
     let mut c = base.clone();
     c.ais[0].economy_track[1].income[0].1 += 1;
     c.ais[1].play_track[2].cost += 1;
-    c.ais[1].powers.iter_mut().find(|p| p.name == "Stand Down").unwrap().tags[0].1 += 1;
+    c.ais[1].powers.iter_mut().find(|p| p.name == "Interdict").unwrap().tags[0].1 += 1;
     c.ais[0].innate.name = "Something else".to_string();
     c.map.countries[0].megaproject.cubes += 1;
     assert_ne!(node_track_block(base), node_track_block(&c));
@@ -166,8 +166,8 @@ fn check_flags_a_bare_name_that_is_no_tunable() {
 fn check_takes_an_op_name() {
     let r = baseline(&[]);
     let ops: Vec<String> = op_docs(include_str!("../../../aic-core/src/op.rs")).into_iter().map(|o| o.name).collect();
-    assert!(ops.iter().any(|o| o == "clear_markers"));
-    assert!(unknown_params("`clear_markers`, `move_one`", &r, &ops).is_empty());
+    assert!(ops.iter().any(|o| o == "lift_land"));
+    assert!(unknown_params("`lift_land`, `move_one`", &r, &ops).is_empty());
 }
 
 #[test]

@@ -120,16 +120,18 @@ pub fn held(_w: &World, _g: &GameState, h: usize, counts: &[i64], _site: Corrupt
 
 /// 175, a Corrupt X line's convergence: the targets in scope (hex order, country by country), the ones a
 /// prohibition switches off (they take no agents and don't corrupt), and each hex whose agents move: one not
-/// itself a target, with the open targets next to it (any country; not a firewalled or prohibited one). An
-/// agent with one such target moves there; with several, players choose.
+/// itself a target, with the one open target next to it (any country; not a firewalled or prohibited one). r98
+/// (Matt, 2026-11-13, 224 #6): an agent next to two or more open targets stays where it is.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Converge {
     /// Every target in scope, in order (the blocked ones included).
     pub targets: Vec<usize>,
     /// Targets a Corrupt prohibition holds, with its condition.
     pub blocked: Vec<(usize, Where)>,
-    /// `(hex, open targets next to it)`, in hex order; only hexes holding agents.
-    pub sources: Vec<(usize, Vec<usize>)>,
+    /// `(hex, the one open target next to it)`, in hex order; only hexes holding agents.
+    pub sources: Vec<(usize, usize)>,
+    /// Hexes holding agents next to two or more open targets: they stay.
+    pub ties: Vec<usize>,
 }
 
 /// 175: what a Corrupt `site` line in country `scope` or every country moves (see [`Converge`]).
@@ -160,50 +162,26 @@ pub fn converge(w: &World, g: &GameState, site: CorruptSite, scope: Option<usize
         if target || g.tokens(h, ADV_AMBASSADOR) == 0 {
             continue;
         }
-        let mut to: Vec<usize> = w.map.hexes[h].neighbors.iter().copied().filter(|&x| open[x]).collect();
-        if to.is_empty() {
-            continue;
+        let to: Vec<usize> = w.map.hexes[h].neighbors.iter().copied().filter(|&x| open[x]).collect();
+        match to[..] {
+            [] => {}
+            [t] => out.sources.push((h, t)),
+            _ => out.ties.push(h),
         }
-        to.sort_by_key(|&x| (w.map.hexes[x].country, w.map.hexes[x].number));
-        out.sources.push((h, to));
     }
     out
 }
 
-/// 175: the players' pick for one converging agent, as the forecasts assume it (the engine asks): a target
-/// already at its number if one is open (it corrupts anyway), else the one holding fewest, then the first.
-#[allow(clippy::too_many_arguments)]
-pub fn converge_pick(w: &World, g: &GameState, site: CorruptSite, to: &[usize], counts: &[i64], amb: &[i64], n: i64) -> usize {
-    // What a target will hold after one more arrival is read as its agents, less the ambassadors still to cancel.
-    let after = |t: usize| held(w, g, t, counts, site) - amb[t];
-    if let Some(i) = to.iter().position(|&t| held(w, g, t, counts, site) >= n) {
-        return i;
-    }
-    (0..to.len()).min_by_key(|&i| after(to[i])).unwrap_or(0)
-}
-
-/// 175, what a Corrupt `site` line at number `n` does in country `scope` or every country, the players
-/// choosing by [`converge_pick`]: `(target, agents it holds)` for every target that corrupts, in order. One
-/// pick at a time, single-target agents first, so a choice sees where the forced ones went.
+/// 175, what a Corrupt `site` line at number `n` does in country `scope` or every country: `(target, agents it
+/// holds)` for every target that corrupts, in order.
 pub fn corrupt_plan(w: &World, g: &GameState, site: CorruptSite, n: i64, scope: Option<usize>) -> Vec<(usize, i64)> {
     let cv = converge(w, g, site, scope);
     let mut counts: Vec<i64> = (0..g.hexes.len()).map(|h| g.tokens(h, ADV_AMBASSADOR)).collect();
     let mut amb: Vec<i64> =
         (0..g.hexes.len()).map(|h| (0..g.seats.len()).map(|s| g.tokens(h, super::common::ambassador(s))).sum()).collect();
-    let mut flexible = Vec::new();
-    for (h, to) in &cv.sources {
-        if to.len() == 1 {
-            for _ in 0..counts[*h] {
-                arrive_count(&mut counts, &mut amb, *h, to[0]);
-            }
-        } else {
-            flexible.push((*h, to.clone()));
-        }
-    }
-    for (h, to) in flexible {
+    for &(h, t) in &cv.sources {
         for _ in 0..counts[h] {
-            let i = converge_pick(w, g, site, &to, &counts, &amb, n);
-            arrive_count(&mut counts, &mut amb, h, to[i]);
+            arrive_count(&mut counts, &mut amb, h, t);
         }
     }
     cv.targets

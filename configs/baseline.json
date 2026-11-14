@@ -24,7 +24,6 @@
         "troop_steps": 1,
         "troop_node": 0,
         "vigil_cap": 2,
-        "node_marker": 1,
         "station_chips": 1,
         "station_ambassadors": 0,
         "node_credits": 6,
@@ -38,8 +37,6 @@
         "remove_ambassadors": 1,
         "remove_count": 3,
         "land_cubes": 2,
-        "clear_unity": 2,
-        "clear_credits": 0,
         "envoy_ambassadors": 1,
         "ambassador_credits": 20,
         "sell_credits": 1,
@@ -76,7 +73,6 @@
         ],
         "corrupt_cut_at": 1,
         "blight_discord": 1,
-        "blight_node_discord": 0,
         "counter_pct": [
           100,
           100
@@ -191,7 +187,8 @@
         "keep_tier2_upgraded": 2,
         "science_every": 2,
         "industry_every": 2,
-        "discount_floor": 1
+        "discount_floor": 1,
+        "tag_income_once": 1
       },
       "cards": [
         "field_grant",

@@ -6,7 +6,7 @@
 //! something under it, every token off a track accounted for.
 
 use super::*;
-use crate::modules::common::{corrupted, has_building, node_owner, MARKER};
+use crate::modules::common::{has_building, node_owner, LAND_CORRUPTION};
 use crate::modules::{ai, board};
 
 /// Random play that mostly acts: a pass only now and then, so games reach the
@@ -54,16 +54,10 @@ fn broken(rules: &Rules, g: &GameState) -> Vec<String> {
         if g.tokens(h, BOTNET) > 1 {
             out.push(format!("hex {h}: {} botnets", g.tokens(h, BOTNET)));
         }
-        // 044: what a marker and a shield promise (r19, r20).
-        let marker = g.tokens(h, MARKER);
-        if marker > 1 {
-            out.push(format!("hex {h}: {marker} corruption markers"));
-        }
-        if marker > 0 && node_owner(g, h).is_some() {
-            out.push(format!("hex {h}: a marked hex holds node"));
-        }
-        if marker > 0 && corrupted(g, h) {
-            out.push(format!("hex {h}: a marker on a hex with corruption"));
+        // 044: what land corruption and a shield promise (r98: land corruption is the one scar).
+        let land = g.tokens(h, LAND_CORRUPTION);
+        if land > 1 {
+            out.push(format!("hex {h}: {land} land corruption tokens"));
         }
         if g.tokens(h, HARDEN) > 0 && node_owner(g, h).is_none() && !has_building(g, h) {
             out.push(format!("hex {h}: a hardening token with nothing under it"));

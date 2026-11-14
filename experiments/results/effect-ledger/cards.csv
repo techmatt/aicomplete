@@ -1,200 +1,200 @@
 card,name,tier,kind,needs,cost,insight,printed,reasoned,gap,ratio,fit,fit_resid,effects
-great_liberation,Great Liberation,2,event,diplomacy 4,32,2,55.0,120.0,-65.0,0.46,103.07,-48.07,cleanse cities [play] 120.0
-zero_day_auction,Zero-Day Auction,2,program,cyber 5,14,2,19.0,61.5,-42.5,0.31,17.01,1.99,gain antimatter [play] 36.0 + draw [play] 24.0 + tags [card] 1.5
-forensic_audit,Forensic Audit,2,event,,6,1,20.5,58.0,-37.5,0.35,29.97,-9.47,liberate [play] 50.0 + draw [play] 8.0
+great_liberation,Great Liberation,2,event,diplomacy 4,32,2,55.0,120.0,-65.0,0.46,103.09,-48.09,cleanse cities [play] 120.0
+zero_day_auction,Zero-Day Auction,2,program,cyber 5,14,2,19.0,61.5,-42.5,0.31,17.04,1.96,gain antimatter [play] 36.0 + draw [play] 24.0 + tags [card] 1.5
+forensic_audit,Forensic Audit,2,event,,6,1,20.5,58.0,-37.5,0.35,29.99,-9.49,liberate [play] 50.0 + draw [play] 8.0
 vertical_monopoly,Vertical Monopoly,2,building,industry 3,20,2,25.0,62.0,-37.0,0.4,27.48,-2.48,draw [play] 16.0 + income_per_tag credits [passive] 45.0 + tags [card] 1.0
 foundation_model_campus,Foundation Model Campus,2,building,science 3,13,2,27.0,62.5,-35.5,0.43,27.98,-0.98,draw [play] 16.0 + income_per_tag credits [passive] 45.0 + tags [card] 1.5
-kettle_operation,Kettle Operation,2,event,security 2,2,2,7.0,42.2,-35.2,0.17,8.63,-1.63,gather [play] 46.2 + sway discord [play] -4.0
-penning_trap_array,Penning Trap Array,2,building,science 1,10,1,12.5,45.25,-32.75,0.28,14.83,-2.33,gain antimatter [play] 18.0 + gain antimatter [action] 26.2 + tags [card] 1.0
-dyson_swarm_tranche,Dyson Swarm Tranche,2,program,power 2,12,1,32.5,64.5,-32.0,0.5,40.35,-7.85,gain energy [play] 45.0 + production energy [play] 18.0 + tags [card] 1.5
-national_grid_buildout,National Grid Buildout,1,program,,22,0,22.0,53.8,-31.8,0.41,24.57,-2.57,production energy [play] 28.8 + place_node [play] 24.0 + tags [card] 1.0
-antiproton_foundry,Antiproton Foundry,2,building,industry 1,10,1,12.5,44.0,-31.5,0.28,14.15,-1.65,gain antimatter [play] 18.0 + gain antimatter [action] 24.5 + tags [card] 1.5
-beamed_power_constellation,Beamed Power Constellation,2,program,power 3,14,1,16.5,47.5,-31.0,0.35,14.47,2.03,place_node [play] 24.0 + gain_per_node energy [play] 22.5 + tags [card] 1.0
-orbital_mass_driver,Orbital Mass Driver,2,building,industry 3,15,2,37.5,66.0,-28.5,0.57,49.49,-11.99,draw [play] 12.0 + income credits [passive] 32.5 + income chips [passive] 20.0 + tags [card] 1.5
-surgical_strike,Surgical Strike,2,event,,2,0,2.0,29.0,-27.0,0.07,9.19,-7.19,damage troops [play] 33.0 + sway discord [play] -4.0
-power_to_the_people,Power to the People,2,building,power 2,22,0,40.0,66.5,-26.5,0.6,29.62,10.38,liberate [play] 50.0 + income_per_tag credits [passive] 15.0 + tags [card] 1.5
-field_sensor_grid,Field Sensor Grid,1,program,,6,2,11.0,34.5,-23.5,0.32,14.54,-3.54,clear_markers [play] 21.0 + draw [play] 12.0 + tags [card] 1.5
-dark_fiber_collider,Dark Fiber Collider,2,building,cyber 1,6,1,8.5,31.75,-23.25,0.27,12.47,-3.97,draw [play] 8.0 + gain antimatter [action] 22.8 + tags [card] 1.0
-aegis_grid_lockdown,Aegis Grid Lockdown,1,event,,4,0,4.0,26.8,-22.8,0.15,7.12,-3.12,shelter [play] 2.8 + place_node [play] 24.0
-open_weights_release,Open-Weights Release,2,program,,16,1,18.5,40.75,-22.25,0.45,14.93,3.57,clear_markers [play] 28.0 + other_gain insight [play] 11.2 + tags [card] 1.5
+kettle_operation,Kettle Operation,2,event,security 2,2,2,7.0,42.2,-35.2,0.17,8.62,-1.62,gather [play] 46.2 + sway discord [play] -4.0
+penning_trap_array,Penning Trap Array,2,building,science 1,10,1,12.5,45.25,-32.75,0.28,14.8,-2.3,gain antimatter [play] 18.0 + gain antimatter [action] 26.2 + tags [card] 1.0
+dyson_swarm_tranche,Dyson Swarm Tranche,2,program,power 2,12,1,32.5,64.5,-32.0,0.5,40.1,-7.6,gain energy [play] 45.0 + production energy [play] 18.0 + tags [card] 1.5
+national_grid_buildout,National Grid Buildout,1,program,,22,0,22.0,53.8,-31.8,0.41,24.47,-2.47,production energy [play] 28.8 + place_node [play] 24.0 + tags [card] 1.0
+antiproton_foundry,Antiproton Foundry,2,building,industry 1,10,1,12.5,44.0,-31.5,0.28,14.13,-1.63,gain antimatter [play] 18.0 + gain antimatter [action] 24.5 + tags [card] 1.5
+beamed_power_constellation,Beamed Power Constellation,2,program,power 3,14,1,16.5,47.5,-31.0,0.35,14.54,1.96,place_node [play] 24.0 + gain_per_node energy [play] 22.5 + tags [card] 1.0
+orbital_mass_driver,Orbital Mass Driver,2,building,industry 3,15,2,37.5,66.0,-28.5,0.57,49.54,-12.04,draw [play] 12.0 + income credits [passive] 32.5 + income chips [passive] 20.0 + tags [card] 1.5
+open_weights_release,Open-Weights Release,2,program,,16,1,18.5,46.35,-27.85,0.4,14.66,3.84,lift_land [play] 33.6 + other_gain insight [play] 11.2 + tags [card] 1.5
+field_sensor_grid,Field Sensor Grid,1,program,,6,2,11.0,38.7,-27.7,0.28,14.16,-3.16,lift_land [play] 25.2 + draw [play] 12.0 + tags [card] 1.5
+surgical_strike,Surgical Strike,2,event,,2,0,2.0,29.0,-27.0,0.07,9.21,-7.21,damage troops [play] 33.0 + sway discord [play] -4.0
+power_to_the_people,Power to the People,2,building,power 2,22,0,40.0,66.5,-26.5,0.6,29.6,10.4,liberate [play] 50.0 + income_per_tag credits [passive] 15.0 + tags [card] 1.5
+dark_fiber_collider,Dark Fiber Collider,2,building,cyber 1,6,1,8.5,31.75,-23.25,0.27,12.51,-4.01,draw [play] 8.0 + gain antimatter [action] 22.8 + tags [card] 1.0
+aegis_grid_lockdown,Aegis Grid Lockdown,1,event,,4,0,4.0,26.8,-22.8,0.15,7.14,-3.14,shelter [play] 2.8 + place_node [play] 24.0
 hostile_buyout,Hostile Buyout,2,event,,22,0,40.0,62.0,-22.0,0.65,53.33,-13.33,liberate ambassadors [play] 62.0
-peacekeeping_mission,Peacekeeping Mission,2,event,security 2,20,0,38.0,59.0,-21.0,0.64,46.2,-8.2,liberate troops [play] 59.0
-root_access,Root Access,2,event,cyber 2,18,0,36.0,57.0,-21.0,0.63,44.2,-8.2,liberate botnet [play] 57.0
-capital_projects_office,Capital Projects Office,2,building,,16,1,18.5,38.88,-20.38,0.48,28.01,-9.51,draw [play] 16.0 + when play_cost 10 [passive] 21.9 + tags [card] 1.0
+peacekeeping_mission,Peacekeeping Mission,2,event,security 2,20,0,38.0,59.0,-21.0,0.64,46.21,-8.21,liberate troops [play] 59.0
+root_access,Root Access,2,event,cyber 2,18,0,36.0,57.0,-21.0,0.63,44.21,-8.21,liberate botnet [play] 57.0
+capital_projects_office,Capital Projects Office,2,building,,16,1,18.5,38.88,-20.38,0.48,28.06,-9.56,draw [play] 16.0 + when play_cost 10 [passive] 21.9 + tags [card] 1.0
 rally_the_allies,Rally the Allies,2,event,,12,0,12.0,32.2,-20.2,0.37,19.0,-7.0,gain_ambassadors [play] 20.0 + gather [play] 4.2 + sway unity [play] 8.0
-tidal_barrage,Tidal Barrage,1,program,power 3,24,0,24.0,44.2,-20.2,0.54,33.91,-9.91,production_per_tag energy [play] 43.2 + tags [card] 1.0
-neural_mirror,Neural Mirror,1,program,,12,0,12.0,31.5,-19.5,0.38,27.4,-15.4,production_per_tag insight [play] 30.0 + tags [card] 1.5
-prefab_plant_kit,Prefab Plant Kit,1,program,,13,0,13.0,32.5,-19.5,0.4,15.74,-2.74,build_factory [play] 4.0 + gain_per_tag energy [play] 27.0 + tags [card] 1.5
-citywide_microgrid,Citywide Microgrid,2,building,,8,1,46.5,65.5,-19.0,0.71,41.86,4.64,liberate [play] 50.0 + sway unity [action] 14.0 + tags [card] 1.5
-consulate_tower,Consulate Tower,1,building,diplomacy 2,8,2,13.0,31.9,-18.9,0.41,22.02,-9.02,draw [play] 12.0 + when team_play diplomacy True [passive] 18.9 + tags [card] 1.0
-collateralized_grid,Collateralized Grid,2,program,,15,0,15.0,33.0,-18.0,0.45,19.98,-4.98,production energy [play] 18.0 + cash_out energy capital [play] 13.5 + tags [card] 1.5
+tidal_barrage,Tidal Barrage,1,program,power 3,24,0,24.0,44.2,-20.2,0.54,33.89,-9.89,production_per_tag energy [play] 43.2 + tags [card] 1.0
+neural_mirror,Neural Mirror,1,program,,12,0,12.0,31.5,-19.5,0.38,27.37,-15.37,production_per_tag insight [play] 30.0 + tags [card] 1.5
+prefab_plant_kit,Prefab Plant Kit,1,program,,13,0,13.0,32.5,-19.5,0.4,15.75,-2.75,build_factory [play] 4.0 + gain_per_tag energy [play] 27.0 + tags [card] 1.5
+shadow_broker_feed,Shadow Broker Scrub,1,program,,2,2,7.0,26.3,-19.3,0.27,8.57,-1.57,lift_land [play] 16.8 + draw [play] 8.0 + tags [card] 1.5
+citywide_microgrid,Citywide Microgrid,2,building,,8,1,46.5,65.5,-19.0,0.71,41.87,4.63,liberate [play] 50.0 + sway unity [action] 14.0 + tags [card] 1.5
+consulate_tower,Consulate Tower,1,building,diplomacy 2,8,2,13.0,31.9,-18.9,0.41,22.04,-9.04,draw [play] 12.0 + when team_play diplomacy True [passive] 18.9 + tags [card] 1.0
+collateralized_grid,Collateralized Grid,2,program,,15,0,15.0,33.0,-18.0,0.45,19.9,-4.9,production energy [play] 18.0 + cash_out energy capital [play] 13.5 + tags [card] 1.5
 fabrication_megaplex,Fabrication Megaplex,1,building,,21,2,35.0,53.0,-18.0,0.66,47.26,-12.26,draw [play] 12.0 + income credits [passive] 24.0 + income chips [passive] 16.0 + tags [card] 1.0
-nuclear_option,The Nuclear Option,2,event,,6,0,24.0,42.0,-18.0,0.57,29.56,-5.56,liberate [play] 50.0 + sway discord [play] -8.0
-shared_grid_accord,Shared Grid Accord,1,program,,7,0,7.0,24.65,-17.65,0.28,12.29,-5.29,other_gain energy [play] 6.8 + sway unity [play] 8.0 + lift_land [play] 8.4 + tags [card] 1.5
+nuclear_option,The Nuclear Option,2,event,,6,0,24.0,42.0,-18.0,0.57,29.55,-5.55,liberate [play] 50.0 + sway discord [play] -8.0
+shared_grid_accord,Shared Grid Accord,1,program,,7,0,7.0,24.65,-17.65,0.28,13.26,-6.26,other_gain energy [play] 6.8 + sway unity [play] 8.0 + lift_land [play] 8.4 + tags [card] 1.5
 annihilation_lance,Annihilation Lance,2,event,,10,0,28.0,10.36,17.64,2.7,16.09,11.91,destroy_all [play] 8.0 + remove_troops [play] 10.4 + sway discord [play] -8.0
-hyperscale_botnet,Hyperscale Botnet,2,building,cyber 2,18,1,20.5,38.0,-17.5,0.54,23.56,-3.06,draw [play] 12.0 + income insight [passive] 25.0 + tags [card] 1.0
-command_and_control_grid,Command-and-Control Grid,2,building,cyber 2,18,2,23.0,40.19,-17.19,0.57,30.62,-7.62,draw [play] 12.0 + when play_tag [passive] 27.2 + tags [card] 1.0
-relay_mast_rollout,Relay Mast Rollout,1,program,,6,1,8.5,25.0,-16.5,0.34,7.7,0.8,place_node [play] 16.0 + draw [play] 8.0 + tags [card] 1.0
-shadow_broker_feed,Shadow Broker Scrub,1,program,,2,2,7.0,23.5,-16.5,0.3,8.83,-1.83,clear_markers [play] 14.0 + draw [play] 8.0 + tags [card] 1.5
-open_source_uprising,Open Source Uprising,2,program,,9,1,11.5,27.5,-16.0,0.42,15.28,-3.78,convert [play] 14.0 + draw [play] 8.0 + sway unity [play] 4.0 + tags [card] 1.5
-wartime_retooling,Wartime Retooling,1,program,,26,2,31.0,46.3,-15.3,0.67,33.04,-2.04,production energy [play] 28.8 + draw [play] 16.0 + tags [card] 1.5
-treaty_isotope_bank,Treaty Isotope Bank,2,building,diplomacy 1,6,1,8.5,22.5,-14.0,0.38,5.84,2.66,gain_ambassadors [play] 4.0 + gain antimatter [action] 17.5 + tags [card] 1.0
-pumped_hydro_storage,Pumped Hydro Storage,1,program,,28,0,28.0,41.8,-13.8,0.67,24.13,3.87,production energy [play] 14.4 + gain energy [play] 18.0 + lift_land [play] 8.4 + tags [card] 1.0
+hyperscale_botnet,Hyperscale Botnet,2,building,cyber 2,18,1,20.5,38.0,-17.5,0.54,23.6,-3.1,draw [play] 12.0 + income insight [passive] 25.0 + tags [card] 1.0
+command_and_control_grid,Command-and-Control Grid,2,building,cyber 2,18,2,23.0,40.19,-17.19,0.57,30.64,-7.64,draw [play] 12.0 + when play_tag [passive] 27.2 + tags [card] 1.0
+relay_mast_rollout,Relay Mast Rollout,1,program,,6,1,8.5,25.0,-16.5,0.34,7.72,0.78,place_node [play] 16.0 + draw [play] 8.0 + tags [card] 1.0
+open_source_uprising,Open Source Uprising,2,program,,9,1,11.5,27.5,-16.0,0.42,15.3,-3.8,convert [play] 14.0 + draw [play] 8.0 + sway unity [play] 4.0 + tags [card] 1.5
+wartime_retooling,Wartime Retooling,1,program,,26,2,31.0,46.3,-15.3,0.67,32.94,-1.94,production energy [play] 28.8 + draw [play] 16.0 + tags [card] 1.5
+treaty_isotope_bank,Treaty Isotope Bank,2,building,diplomacy 1,6,1,8.5,22.5,-14.0,0.38,5.85,2.65,gain_ambassadors [play] 4.0 + gain antimatter [action] 17.5 + tags [card] 1.0
+pumped_hydro_storage,Pumped Hydro Storage,1,program,,28,0,28.0,41.8,-13.8,0.67,24.99,3.01,production energy [play] 14.4 + gain energy [play] 18.0 + lift_land [play] 8.4 + tags [card] 1.0
 plant_overdrive,Plant Overdrive,1,event,,9,0,9.0,22.5,-13.5,0.4,7.85,1.15,gain_per_tag energy [play] 22.5
-peace_conference,Peace Conference,1,program,diplomacy 3,32,0,32.0,45.0,-13.0,0.71,30.19,1.81,sway unity [play] 32.0 + gain_ambassadors [play] 12.0 + tags [card] 1.0
-planetary_referendum,Planetary Referendum,2,event,,14,2,19.0,32.0,-13.0,0.59,19.42,-0.42,sway unity [play] 32.0
+peace_conference,Peace Conference,1,program,diplomacy 3,32,0,32.0,45.0,-13.0,0.71,30.11,1.89,sway unity [play] 32.0 + gain_ambassadors [play] 12.0 + tags [card] 1.0
+planetary_referendum,Planetary Referendum,2,event,,14,2,19.0,32.0,-13.0,0.59,19.33,-0.33,sway unity [play] 32.0
 double_agents,Double Agents,2,event,,8,0,8.0,20.86,-12.86,0.38,10.63,-2.63,convert [play] 10.5 + remove_troops [play] 10.4
-antimatter_accord,Antimatter Accord,2,program,,8,1,28.5,41.0,-12.5,0.7,29.17,-0.67,gain_ambassadors [play] 24.0 + sway unity [play] 16.0 + tags [card] 1.0
+antimatter_accord,Antimatter Accord,2,program,,8,1,28.5,41.0,-12.5,0.7,29.16,-0.66,gain_ambassadors [play] 24.0 + sway unity [play] 16.0 + tags [card] 1.0
 capacitor_discharge,Capacitor Discharge,1,event,,10,0,10.0,22.5,-12.5,0.44,7.85,2.15,gain_per_tag energy [play] 22.5
-multiyear_defense_budget,Multiyear Defense Budget,1,program,,34,0,34.0,46.3,-12.3,0.73,37.43,-3.43,production credits [play] 16.0 + production energy [play] 28.8 + tags [card] 1.5
-coalition_charter,Coalition Charter,2,program,,18,1,20.5,32.5,-12.0,0.63,22.1,-1.6,other_gain insight [play] 7.5 + sway unity [play] 24.0 + tags [card] 1.0
-consular_pouch,Consular Pouch,1,program,diplomacy 2,13,0,13.0,25.0,-12.0,0.52,16.77,-3.77,gain_per_tag ambassadors [play] 24.0 + tags [card] 1.0
-fusion_startup_stake,Fusion Startup Stake,1,program,,24,0,24.0,35.8,-11.8,0.67,22.58,1.42,production energy [play] 14.4 + production credits [play] 12.0 + lift_land [play] 8.4 + tags [card] 1.0
-homeland_security_act,Homeland Security Act,2,program,security 3,18,2,23.0,34.5,-11.5,0.67,19.28,3.72,production energy [play] 18.0 + production_per_tag credits [play] 15.0 + tags [card] 1.5
-lights_out_assembly,Lights-Out Assembly,1,building,,6,2,15.5,27.0,-11.5,0.57,21.81,-6.31,draw [play] 8.0 + when play_cost 10 [passive] 17.5 + tags [card] 1.5
-simulation_cluster,Simulation Cluster,1,building,,7,2,12.0,23.5,-11.5,0.51,18.31,-6.31,draw [play] 8.0 + reuse [action] 14.0 + tags [card] 1.5
+multiyear_defense_budget,Multiyear Defense Budget,1,program,,34,0,34.0,46.3,-12.3,0.73,37.27,-3.27,production credits [play] 16.0 + production energy [play] 28.8 + tags [card] 1.5
+coalition_charter,Coalition Charter,2,program,,18,1,20.5,32.5,-12.0,0.63,22.2,-1.7,other_gain insight [play] 7.5 + sway unity [play] 24.0 + tags [card] 1.0
+consular_pouch,Consular Pouch,1,program,diplomacy 2,13,0,13.0,25.0,-12.0,0.52,16.75,-3.75,gain_per_tag ambassadors [play] 24.0 + tags [card] 1.0
+fusion_startup_stake,Fusion Startup Stake,1,program,,24,0,24.0,35.8,-11.8,0.67,23.5,0.5,production energy [play] 14.4 + production credits [play] 12.0 + lift_land [play] 8.4 + tags [card] 1.0
+homeland_security_act,Homeland Security Act,2,program,security 3,18,2,23.0,34.5,-11.5,0.67,19.25,3.75,production energy [play] 18.0 + production_per_tag credits [play] 15.0 + tags [card] 1.5
+lights_out_assembly,Lights-Out Assembly,1,building,,6,2,15.5,27.0,-11.5,0.57,21.8,-6.3,draw [play] 8.0 + when play_cost 10 [passive] 17.5 + tags [card] 1.5
+simulation_cluster,Simulation Cluster,1,building,,7,2,12.0,23.5,-11.5,0.51,18.3,-6.3,draw [play] 8.0 + reuse [action] 14.0 + tags [card] 1.5
 transmission_corridor,Transmission Corridor,1,program,,10,0,10.0,21.5,-11.5,0.47,5.3,4.7,place_node [play] 16.0 + move_ambassadors [play] 4.0 + tags [card] 1.5
-field_grant,Field Grant,1,program,,8,0,8.0,19.0,-11.0,0.42,14.9,-6.9,project_cube [play] 18.0 + tags [card] 1.0
-fusion_commons,Fusion Commons,2,event,science 2,4,0,40.0,51.0,-11.0,0.78,30.89,9.11,gain energy [play] 27.0 + draw [play] 12.0 + sway unity [play] 12.0
-quick_reaction_force,Quick Reaction Force,1,building,security 2,7,2,12.0,23.0,-11.0,0.52,13.67,-1.67,draw [play] 8.0 + reuse [action] 14.0 + tags [card] 1.0
-positron_storage_ring,Positron Storage Ring,2,building,power 2,10,2,24.0,34.88,-10.88,0.69,27.81,-3.81,draw [play] 8.0 + when play power [passive] 10.1 + gain antimatter [action] 15.8 + tags [card] 1.0
-conglomerate_headquarters,Conglomerate Headquarters,2,building,industry 2,18,0,18.0,28.75,-10.75,0.63,19.94,-1.94,add_tokens capital [play] 6.0 + when play_tag [passive] 0.0 + threshold [passive] 21.8 + tags [card] 1.0
+field_grant,Field Grant,1,program,,8,0,8.0,19.0,-11.0,0.42,14.87,-6.87,project_cube [play] 18.0 + tags [card] 1.0
+fusion_commons,Fusion Commons,2,event,science 2,4,0,40.0,51.0,-11.0,0.78,30.79,9.21,gain energy [play] 27.0 + draw [play] 12.0 + sway unity [play] 12.0
+quick_reaction_force,Quick Reaction Force,1,building,security 2,7,2,12.0,23.0,-11.0,0.52,13.68,-1.68,draw [play] 8.0 + reuse [action] 14.0 + tags [card] 1.0
+positron_storage_ring,Positron Storage Ring,2,building,power 2,10,2,24.0,34.88,-10.88,0.69,27.84,-3.84,draw [play] 8.0 + when play power [passive] 10.1 + gain antimatter [action] 15.8 + tags [card] 1.0
+conglomerate_headquarters,Conglomerate Headquarters,2,building,industry 2,18,0,18.0,28.75,-10.75,0.63,19.97,-1.97,add_tokens capital [play] 6.0 + when play_tag [passive] 0.0 + threshold [passive] 21.8 + tags [card] 1.0
 air_gap,Air Gap,2,event,,6,0,6.0,16.6,-10.6,0.36,7.93,-1.93,firewall [play] 10.0 + damage ambassadors [play] 6.6
-interdisciplinary_institute,Interdisciplinary Institute,2,building,science 2,12,2,17.0,27.09,-10.09,0.63,15.09,1.91,draw [play] 12.0 + when play_tag [passive] 13.6 + tags [card] 1.5
-catalyzed_fab_run,Catalyzed Fab Run,2,event,,2,0,20.0,30.0,-10.0,0.67,19.99,0.01,gain chips [play] 24.0 + other_gain chips [play] 6.0
-moonshot_grant,Moonshot Grant,1,program,science 3,42,2,47.0,57.0,-10.0,0.82,45.61,1.39,project_cube [play] 48.0 + draw [play] 8.0 + tags [card] 1.0
-security_contractor_hq,Security Contractor HQ,1,building,security 2,10,2,15.0,25.0,-10.0,0.6,15.12,-0.12,draw [play] 12.0 + when remove_troop [passive] 12.0 + tags [card] 1.0
-peaker_turbines,Peaker Turbines,1,program,,22,0,22.0,31.9,-9.9,0.69,24.32,-2.32,production energy [play] 14.4 + production chips [play] 16.0 + tags [card] 1.5
-continental_supergrid,Continental Supergrid,2,program,power 3,20,2,25.0,34.5,-9.5,0.72,19.28,5.72,production energy [play] 18.0 + production_per_tag credits [play] 15.0 + tags [card] 1.5
-envoy_briefings,Envoy Briefings,1,program,,9,1,11.5,21.0,-9.5,0.55,14.85,-3.35,draw [play] 12.0 + gain_ambassadors [play] 8.0 + tags [card] 1.0
-firewall_array,Firewall Array,2,building,cyber 2,15,1,17.5,27.0,-9.5,0.65,13.1,4.4,draw [play] 8.0 + firewall [action] 17.5 + tags [card] 1.5
-peacekeeper_rotation,Peacekeeper Rotation,1,program,,16,0,16.0,25.5,-9.5,0.63,9.14,6.86,damage troops [play] 22.0 + move_one [play] 2.0 + tags [card] 1.5
-ceasefire_monitors,Ceasefire Monitors,1,program,,12,0,12.0,21.0,-9.0,0.57,10.37,1.63,damage troops [play] 11.0 + gain_ambassadors [play] 8.0 + tags [card] 2.0
-liaison_corps,Liaison Corps,1,program,,12,0,12.0,21.0,-9.0,0.57,16.3,-4.3,gain_ambassadors [play] 12.0 + move_ambassadors [play] 8.0 + tags [card] 1.0
-liberation_accords,Liberation Accords,2,program,diplomacy 1,15,2,20.0,29.0,-9.0,0.69,25.29,-5.29,remove_ambassadors_country [play] 12.0 + gain_ambassadors [play] 16.0 + tags [card] 1.0
-power_purchase_agreement,Power Purchase Agreement,1,event,,2,0,11.0,20.0,-9.0,0.55,15.9,-4.9,claim_station [play] 20.0
-substation_hub,Substation Hub,1,building,,16,0,16.0,24.67,-8.67,0.65,19.18,-3.18,gain energy [play] 9.0 + when team_play power True [passive] 14.2 + tags [card] 1.5
-mutual_aid_pact,Mutual Aid Pact,1,program,,10,0,10.0,18.62,-8.62,0.54,14.83,-4.83,other_gain insight [play] 5.6 + gain_ambassadors [play] 12.0 + tags [card] 1.0
+interdisciplinary_institute,Interdisciplinary Institute,2,building,science 2,12,2,17.0,27.09,-10.09,0.63,15.12,1.88,draw [play] 12.0 + when play_tag [passive] 13.6 + tags [card] 1.5
+catalyzed_fab_run,Catalyzed Fab Run,2,event,,2,0,20.0,30.0,-10.0,0.67,20.02,-0.02,gain chips [play] 24.0 + other_gain chips [play] 6.0
+moonshot_grant,Moonshot Grant,1,program,science 3,42,2,47.0,57.0,-10.0,0.82,45.62,1.38,project_cube [play] 48.0 + draw [play] 8.0 + tags [card] 1.0
+security_contractor_hq,Security Contractor HQ,1,building,security 2,10,2,15.0,25.0,-10.0,0.6,15.14,-0.14,draw [play] 12.0 + when remove_troop [passive] 12.0 + tags [card] 1.0
+peaker_turbines,Peaker Turbines,1,program,,22,0,22.0,31.9,-9.9,0.69,24.23,-2.23,production energy [play] 14.4 + production chips [play] 16.0 + tags [card] 1.5
+continental_supergrid,Continental Supergrid,2,program,power 3,20,2,25.0,34.5,-9.5,0.72,19.25,5.75,production energy [play] 18.0 + production_per_tag credits [play] 15.0 + tags [card] 1.5
+envoy_briefings,Envoy Briefings,1,program,,9,1,11.5,21.0,-9.5,0.55,14.87,-3.37,draw [play] 12.0 + gain_ambassadors [play] 8.0 + tags [card] 1.0
+firewall_array,Firewall Array,2,building,cyber 2,15,1,17.5,27.0,-9.5,0.65,13.14,4.36,draw [play] 8.0 + firewall [action] 17.5 + tags [card] 1.5
+peacekeeper_rotation,Peacekeeper Rotation,1,program,,16,0,16.0,25.5,-9.5,0.63,9.13,6.87,damage troops [play] 22.0 + move_one [play] 2.0 + tags [card] 1.5
+ceasefire_monitors,Ceasefire Monitors,1,program,,12,0,12.0,21.0,-9.0,0.57,10.36,1.64,damage troops [play] 11.0 + gain_ambassadors [play] 8.0 + tags [card] 2.0
+liaison_corps,Liaison Corps,1,program,,12,0,12.0,21.0,-9.0,0.57,16.28,-4.28,gain_ambassadors [play] 12.0 + move_ambassadors [play] 8.0 + tags [card] 1.0
+liberation_accords,Liberation Accords,2,program,diplomacy 1,15,2,20.0,29.0,-9.0,0.69,25.32,-5.32,remove_ambassadors_country [play] 12.0 + gain_ambassadors [play] 16.0 + tags [card] 1.0
+power_purchase_agreement,Power Purchase Agreement,1,event,,2,0,11.0,20.0,-9.0,0.55,15.87,-4.87,claim_station [play] 20.0
+substation_hub,Substation Hub,1,building,,16,0,16.0,24.67,-8.67,0.65,19.11,-3.11,gain energy [play] 9.0 + when team_play power True [passive] 14.2 + tags [card] 1.5
+mutual_aid_pact,Mutual Aid Pact,1,program,,10,0,10.0,18.62,-8.62,0.54,14.93,-4.93,other_gain insight [play] 5.6 + gain_ambassadors [play] 12.0 + tags [card] 1.0
 predictive_modeling,Predictive Modeling,1,program,,7,1,9.5,18.0,-8.5,0.53,12.26,-2.76,delay_threat [play] 5.0 + draw [play] 12.0 + tags [card] 1.0
 decapitation_strike,Decapitation Strike,2,event,security 2,0,0,18.0,26.25,-8.25,0.69,25.26,-7.26,remove_troops [play] 12.2 + remove_botnet [play] 8.0 + override [card] 6.0
-holographic_assembly_hall,Holographic Assembly Hall,1,building,,13,0,13.0,21.1,-8.1,0.62,19.31,-6.31,sway unity [action] 9.8 + gain_ambassadors [action] 9.8 + tags [card] 1.5
-data_licensing_deal,Data Licensing Deal,2,building,,15,1,17.5,25.5,-8.0,0.69,15.19,2.31,draw [play] 12.0 + when place_tokens datasets [passive] 12.5 + tags [card] 1.0
-gigafactory_charter,Gigafactory Charter,1,program,,27,2,41.0,49.0,-8.0,0.84,49.3,-8.3,production credits [play] 40.0 + draw [play] 8.0 + tags [card] 1.0
-summit_caucus,Summit Caucus,1,program,,14,0,14.0,22.0,-8.0,0.64,17.3,-3.3,consolidate [play] 9.0 + gain_ambassadors [play] 12.0 + tags [card] 1.0
-breakthrough_leak,Breakthrough Leak,1,event,science 3,6,1,8.5,16.0,-7.5,0.53,3.51,4.99,draw [play] 16.0
-mass_defection,Mass Defection,2,event,,18,0,18.0,25.5,-7.5,0.71,13.4,4.6,convert [play] 17.5 + sway unity [play] 8.0
+holographic_assembly_hall,Holographic Assembly Hall,1,building,,13,0,13.0,21.1,-8.1,0.62,19.29,-6.29,sway unity [action] 9.8 + gain_ambassadors [action] 9.8 + tags [card] 1.5
+data_licensing_deal,Data Licensing Deal,2,building,,15,1,17.5,25.5,-8.0,0.69,15.22,2.28,draw [play] 12.0 + when place_tokens datasets [passive] 12.5 + tags [card] 1.0
+gigafactory_charter,Gigafactory Charter,1,program,,27,2,41.0,49.0,-8.0,0.84,49.25,-8.25,production credits [play] 40.0 + draw [play] 8.0 + tags [card] 1.0
+summit_caucus,Summit Caucus,1,program,,14,0,14.0,22.0,-8.0,0.64,17.28,-3.28,consolidate [play] 9.0 + gain_ambassadors [play] 12.0 + tags [card] 1.0
+breakthrough_leak,Breakthrough Leak,1,event,science 3,6,1,8.5,16.0,-7.5,0.53,3.54,4.96,draw [play] 16.0
+mass_defection,Mass Defection,2,event,,18,0,18.0,25.5,-7.5,0.71,13.38,4.62,convert [play] 17.5 + sway unity [play] 8.0
 singularity_exploit,Singularity Exploit,2,program,cyber 3,4,1,24.5,17.0,7.5,1.44,14.06,10.44,remove_botnet [play] 8.0 + discard_project [play] 8.0 + tags [card] 1.0
-signal_hijack,Signal Hijack,1,event,,3,0,3.0,10.36,-7.36,0.29,6.17,-3.17,remove_troops [play] 10.4
-back_channel_talks,Back-Channel Talks,1,program,,14,0,14.0,21.0,-7.0,0.67,15.93,-1.93,cleanse factory [play] 12.0 + sway unity [play] 8.0 + tags [card] 1.0
-capacity_market,Capacity Market,1,program,power 2,6,0,6.0,13.0,-7.0,0.46,7.97,-1.97,production_per_tag credits [play] 12.0 + tags [card] 1.0
-defense_appropriations,Defense Appropriations,1,program,security 2,6,0,6.0,13.0,-7.0,0.46,7.97,-1.97,production_per_tag credits [play] 12.0 + tags [card] 1.0
-economies_of_scale,Economies of Scale,1,program,industry 2,6,0,6.0,13.0,-7.0,0.46,7.97,-1.97,production_per_tag credits [play] 12.0 + tags [card] 1.0
-orbital_embassy,Orbital Embassy,2,building,diplomacy 2,10,2,15.0,22.0,-7.0,0.68,7.01,7.99,draw [play] 16.0 + when play_tag diplomacy [passive] 4.5 + tags [card] 1.5
-peace_dividend,Peace Dividend,1,program,diplomacy 2,6,0,6.0,13.0,-7.0,0.46,7.97,-1.97,production_per_tag credits [play] 12.0 + tags [card] 1.0
-ransomware_syndicate,Ransomware Syndicate,1,program,cyber 2,6,0,6.0,13.0,-7.0,0.46,7.97,-1.97,production_per_tag credits [play] 12.0 + tags [card] 1.0
-research_royalties,Research Royalties,1,program,science 2,6,0,6.0,13.0,-7.0,0.46,7.97,-1.97,production_per_tag credits [play] 12.0 + tags [card] 1.0
-intrusion_lab,Intrusion Lab,1,building,,11,0,11.0,17.9,-6.9,0.61,17.05,-6.05,add_tokens agents [play] 2.0 + when remove_compute [passive] 0.0 + threshold [passive] 14.4 + tags [card] 1.5
-particle_accelerator,Particle Accelerator,1,building,,20,0,20.0,26.7,-6.7,0.75,22.6,-2.6,"project_cube [action] 25.2 + gain research_cubes [action, unused branch] 0.0 + tags [card] 1.5"
+signal_hijack,Signal Hijack,1,event,,3,0,3.0,10.36,-7.36,0.29,6.14,-3.14,remove_troops [play] 10.4
+back_channel_talks,Back-Channel Talks,1,program,,14,0,14.0,21.0,-7.0,0.67,15.87,-1.87,cleanse factory [play] 12.0 + sway unity [play] 8.0 + tags [card] 1.0
+capacity_market,Capacity Market,1,program,power 2,6,0,6.0,13.0,-7.0,0.46,7.98,-1.98,production_per_tag credits [play] 12.0 + tags [card] 1.0
+defense_appropriations,Defense Appropriations,1,program,security 2,6,0,6.0,13.0,-7.0,0.46,7.98,-1.98,production_per_tag credits [play] 12.0 + tags [card] 1.0
+economies_of_scale,Economies of Scale,1,program,industry 2,6,0,6.0,13.0,-7.0,0.46,7.98,-1.98,production_per_tag credits [play] 12.0 + tags [card] 1.0
+orbital_embassy,Orbital Embassy,2,building,diplomacy 2,10,2,15.0,22.0,-7.0,0.68,7.06,7.94,draw [play] 16.0 + when play_tag diplomacy [passive] 4.5 + tags [card] 1.5
+peace_dividend,Peace Dividend,1,program,diplomacy 2,6,0,6.0,13.0,-7.0,0.46,7.98,-1.98,production_per_tag credits [play] 12.0 + tags [card] 1.0
+ransomware_syndicate,Ransomware Syndicate,1,program,cyber 2,6,0,6.0,13.0,-7.0,0.46,7.98,-1.98,production_per_tag credits [play] 12.0 + tags [card] 1.0
+research_royalties,Research Royalties,1,program,science 2,6,0,6.0,13.0,-7.0,0.46,7.98,-1.98,production_per_tag credits [play] 12.0 + tags [card] 1.0
+intrusion_lab,Intrusion Lab,1,building,,11,0,11.0,17.9,-6.9,0.61,17.02,-6.02,add_tokens agents [play] 2.0 + when remove_compute [passive] 0.0 + threshold [passive] 14.4 + tags [card] 1.5
+particle_accelerator,Particle Accelerator,1,building,,20,0,20.0,26.7,-6.7,0.75,22.57,-2.57,"project_cube [action] 25.2 + gain research_cubes [action, unused branch] 0.0 + tags [card] 1.5"
 breach_and_clear,Breach and Clear,1,event,,6,1,8.5,15.0,-6.5,0.57,9.74,-1.24,remove_troops [play] 7.0 + draw [play] 8.0
-fact_check_network,Fact-Check Network,1,program,,6,0,6.0,12.5,-6.5,0.48,8.02,-2.02,jam typed [play] 3.5 + gain_ambassadors [play] 8.0 + tags [card] 1.0
-manifesto_leak,Manifesto Leak,1,event,,8,0,8.0,14.5,-6.5,0.55,8.94,-0.94,sway unity [play] 12.0 + add_tokens followers [play] 2.5
-truth_commission,Truth Commission,1,program,,6,0,6.0,12.5,-6.5,0.48,7.45,-1.45,jam typed [play] 3.5 + sway unity [play] 8.0 + tags [card] 1.0
-sentinel_mesh,Sentinel Mesh,1,building,,7,0,7.0,13.26,-6.26,0.53,7.37,-0.37,jam typed [action] 11.8 + tags [card] 1.5
-accelerator_diplomacy,Accelerator Diplomacy,1,event,,4,0,22.0,28.0,-6.0,0.79,21.06,0.94,sway unity [play] 20.0 + gain_ambassadors [play] 8.0
+fact_check_network,Fact-Check Network,1,program,,6,0,6.0,12.5,-6.5,0.48,8.03,-2.03,jam typed [play] 3.5 + gain_ambassadors [play] 8.0 + tags [card] 1.0
+manifesto_leak,Manifesto Leak,1,event,,8,0,8.0,14.5,-6.5,0.55,8.87,-0.87,sway unity [play] 12.0 + add_tokens followers [play] 2.5
+truth_commission,Truth Commission,1,program,,6,0,6.0,12.5,-6.5,0.48,7.42,-1.42,jam typed [play] 3.5 + sway unity [play] 8.0 + tags [card] 1.0
+sentinel_mesh,Sentinel Mesh,1,building,,7,0,7.0,13.26,-6.26,0.53,7.38,-0.38,jam typed [action] 11.8 + tags [card] 1.5
+accelerator_diplomacy,Accelerator Diplomacy,1,event,,4,0,22.0,28.0,-6.0,0.79,20.98,1.02,sway unity [play] 20.0 + gain_ambassadors [play] 8.0
 arcology_foundry,Arcology Foundry,2,program,industry 3,11,1,22.5,28.5,-6.0,0.79,16.04,6.46,production credits [play] 17.5 + production chips [play] 10.0 + tags [card] 1.0
-cryo_compute_burn,Cryo-Compute Burn,1,event,,2,0,6.5,12.5,-6.0,0.52,8.4,-1.9,gain_per_tag insight [play] 12.5
+cryo_compute_burn,Cryo-Compute Burn,1,event,,2,0,6.5,12.5,-6.0,0.52,8.37,-1.87,gain_per_tag insight [play] 12.5
 joint_fabrication_pact,Joint Fabrication Pact,1,program,,14,0,14.0,20.0,-6.0,0.7,14.56,-0.56,gain chips [play] 12.0 + other_gain chips [play] 6.0 + tags [card] 2.0
-faraday_yard,Faraday Yard,1,program,,14,0,14.0,19.9,-5.9,0.7,12.32,1.68,production energy [play] 14.4 + harden [play] 4.5 + tags [card] 1.0
-total_containment,Total Containment,2,program,security 1,12,1,14.5,20.39,-5.89,0.71,12.09,2.41,remove_troops [play] 16.6 + shelter [play] 2.8 + tags [card] 1.0
-baseload_contract,Baseload Contract,1,program,,24,0,24.0,29.8,-5.8,0.81,18.73,5.27,production energy [play] 28.8 + tags [card] 1.0
-civic_watch,Civic Watch,1,building,,7,0,7.0,12.76,-5.76,0.55,6.87,0.13,jam typed [action] 11.8 + tags [card] 1.0
-garrison_command,Garrison Command,1,building,,7,0,7.0,12.76,-5.76,0.55,6.87,0.13,jam typed [action] 11.8 + tags [card] 1.0
-market_watchdog,Market Watchdog,1,building,,7,0,7.0,12.76,-5.76,0.55,6.87,0.13,jam typed [action] 11.8 + tags [card] 1.0
-grid_census,Grid Census,1,program,,18,0,18.0,23.5,-5.5,0.77,19.4,-1.4,gain_per_node energy [play] 22.5 + tags [card] 1.0
-red_team_audit,Red-Team Audit,1,program,,8,1,10.5,16.0,-5.5,0.66,10.81,-0.31,jam any [play] 6.0 + draw [play] 8.0 + tags [card] 2.0
-spoofed_credentials,Credential Harvest,1,event,,7,0,7.0,12.5,-5.5,0.56,8.4,-1.4,gain_per_tag insight [play] 12.5
-trade_delegation,Trade Delegation,1,program,diplomacy 2,16,0,16.0,21.5,-5.5,0.74,14.52,1.48,production credits [play] 12.0 + gain_ambassadors [play] 8.0 + tags [card] 1.5
-exodus_corridors,Exodus Corridors,2,program,diplomacy 1,18,1,20.5,25.9,-5.4,0.79,9.27,11.23,gather [play] 8.4 + gain_ambassadors [play] 16.0 + tags [card] 1.5
-wafer_fab_line,Wafer Fab Line,1,building,,12,1,14.5,19.9,-5.4,0.73,17.39,-2.89,draw [action] 5.6 + gain chips [action] 2.8 + tags [card] 1.5 + override [card] 10.0
-containment_reactor,Containment Reactor,1,building,,7,0,7.0,12.2,-5.2,0.57,8.58,-1.58,gain energy [action] 9.2 + sway unity [action] 2.0 + tags [card] 1.0
-endowed_research_chair,Endowed Research Chair,1,program,science 2,16,0,16.0,21.0,-5.0,0.76,18.51,-2.51,production insight [play] 20.0 + tags [card] 1.0
-sample_repository,Sample Repository,1,program,science 2,8,0,8.0,13.0,-5.0,0.62,4.77,3.23,production research_cubes [play] 12.0 + tags [card] 1.0
-embassy_of_exiles,Embassy of Exiles,2,building,,30,0,30.0,25.25,4.75,1.19,15.98,14.02,gain_ambassadors [play] 12.0 + convert [action] 12.2 + tags [card] 1.0
-force_protection_order,Force Protection Order,1,program,,6,1,8.5,13.2,-4.7,0.64,8.03,0.47,jam typed [play] 4.2 + draw [play] 8.0 + tags [card] 1.0
+faraday_yard,Faraday Yard,1,program,,14,0,14.0,19.9,-5.9,0.7,12.23,1.77,production energy [play] 14.4 + harden [play] 4.5 + tags [card] 1.0
+total_containment,Total Containment,2,program,security 1,12,1,14.5,20.39,-5.89,0.71,12.1,2.4,remove_troops [play] 16.6 + shelter [play] 2.8 + tags [card] 1.0
+baseload_contract,Baseload Contract,1,program,,24,0,24.0,29.8,-5.8,0.81,18.58,5.42,production energy [play] 28.8 + tags [card] 1.0
+civic_watch,Civic Watch,1,building,,7,0,7.0,12.76,-5.76,0.55,6.88,0.12,jam typed [action] 11.8 + tags [card] 1.0
+garrison_command,Garrison Command,1,building,,7,0,7.0,12.76,-5.76,0.55,6.88,0.12,jam typed [action] 11.8 + tags [card] 1.0
+market_watchdog,Market Watchdog,1,building,,7,0,7.0,12.76,-5.76,0.55,6.88,0.12,jam typed [action] 11.8 + tags [card] 1.0
+grid_census,Grid Census,1,program,,18,0,18.0,23.5,-5.5,0.77,19.37,-1.37,gain_per_node energy [play] 22.5 + tags [card] 1.0
+red_team_audit,Red-Team Audit,1,program,,8,1,10.5,16.0,-5.5,0.66,10.8,-0.3,jam any [play] 6.0 + draw [play] 8.0 + tags [card] 2.0
+spoofed_credentials,Credential Harvest,1,event,,7,0,7.0,12.5,-5.5,0.56,8.37,-1.37,gain_per_tag insight [play] 12.5
+trade_delegation,Trade Delegation,1,program,diplomacy 2,16,0,16.0,21.5,-5.5,0.74,14.5,1.5,production credits [play] 12.0 + gain_ambassadors [play] 8.0 + tags [card] 1.5
+exodus_corridors,Exodus Corridors,2,program,diplomacy 1,18,1,20.5,25.9,-5.4,0.79,9.29,11.21,gather [play] 8.4 + gain_ambassadors [play] 16.0 + tags [card] 1.5
+wafer_fab_line,Wafer Fab Line,1,building,,12,1,14.5,19.9,-5.4,0.73,17.37,-2.87,draw [action] 5.6 + gain chips [action] 2.8 + tags [card] 1.5 + override [card] 10.0
+containment_reactor,Containment Reactor,1,building,,7,0,7.0,12.2,-5.2,0.57,8.55,-1.55,gain energy [action] 9.2 + sway unity [action] 2.0 + tags [card] 1.0
+endowed_research_chair,Endowed Research Chair,1,program,science 2,16,0,16.0,21.0,-5.0,0.76,18.5,-2.5,production insight [play] 20.0 + tags [card] 1.0
+sample_repository,Sample Repository,1,program,science 2,8,0,8.0,13.0,-5.0,0.62,4.75,3.25,production research_cubes [play] 12.0 + tags [card] 1.0
+embassy_of_exiles,Embassy of Exiles,2,building,,30,0,30.0,25.25,4.75,1.19,15.99,14.01,gain_ambassadors [play] 12.0 + convert [action] 12.2 + tags [card] 1.0
+force_protection_order,Force Protection Order,1,program,,6,1,8.5,13.2,-4.7,0.64,8.06,0.44,jam typed [play] 4.2 + draw [play] 8.0 + tags [card] 1.0
 grad_student_pool,Grad Student Pool,1,building,,11,1,13.5,18.0,-4.5,0.75,13.75,-0.25,draw [play] 8.0 + card_discount credits [passive] 9.0 + tags [card] 1.0
-headquarters_raid,Headquarters Raid,1,event,security 2,28,1,30.5,26.0,4.5,1.17,22.1,8.4,remove_ambassadors_country [play] 10.0 + draw [play] 16.0
+headquarters_raid,Headquarters Raid,1,event,security 2,28,1,30.5,26.0,4.5,1.17,22.13,8.37,remove_ambassadors_country [play] 10.0 + draw [play] 16.0
 protocol_office,Protocol Office,1,building,,11,1,13.5,18.0,-4.5,0.75,13.75,-0.25,draw [play] 8.0 + card_discount credits [passive] 9.0 + tags [card] 1.0
 standardized_tooling,Standardized Tooling,1,building,,11,1,13.5,18.0,-4.5,0.75,13.75,-0.25,draw [play] 8.0 + card_discount credits [passive] 9.0 + tags [card] 1.0
-station_prefab_order,Reclamation Crew,1,program,,12,0,12.0,16.5,-4.5,0.73,12.4,-0.4,cleanse station [play] 15.0 + tags [card] 1.5
-smart_grid_backbone,Smart Grid Backbone,2,building,power 3,25,2,30.0,34.47,-4.47,0.87,22.6,7.4,gain energy [play] 9.0 + when play_tag [passive] 24.5 + tags [card] 1.0
-reconciliation_office,Reconciliation Office,1,building,,13,2,18.0,22.3,-4.3,0.81,17.11,0.89,draw [play] 8.0 + when remove_ambassadors [passive] 12.8 + tags [card] 1.5
+station_prefab_order,Reclamation Crew,1,program,,12,0,12.0,16.5,-4.5,0.73,12.37,-0.37,cleanse station [play] 15.0 + tags [card] 1.5
+smart_grid_backbone,Smart Grid Backbone,2,building,power 3,25,2,30.0,34.47,-4.47,0.87,22.55,7.45,gain energy [play] 9.0 + when play_tag [passive] 24.5 + tags [card] 1.0
+reconciliation_office,Reconciliation Office,1,building,,13,2,18.0,22.3,-4.3,0.81,17.1,0.9,draw [play] 8.0 + when remove_ambassadors [passive] 12.8 + tags [card] 1.5
 exascale_training_cluster,Exascale Training Cluster,2,building,,15,2,42.5,38.25,4.25,1.11,29.58,12.92,gain research_cubes [play] 18.0 + income insight [passive] 18.8 + tags [card] 1.5
-recursive_self_improvement,Recursive Self-Improvement,2,program,science 2,5,2,28.0,32.25,-4.25,0.87,23.19,4.81,production insight [play] 18.8 + draw [play] 12.0 + tags [card] 1.5
-shared_threat_intel,Shared Threat Intel,1,program,,7,0,7.0,11.25,-4.25,0.62,7.76,-0.76,jam any [play] 6.0 + other_gain insight [play] 3.8 + tags [card] 1.5
-adaptive_malware,Adaptive Malware,1,program,cyber 3,10,0,10.0,14.2,-4.2,0.7,3.91,6.09,drain_all [play] 13.2 + tags [card] 1.0
-cyclotron_lease,Cyclotron Lease,1,building,,22,0,22.0,26.2,-4.2,0.84,13.85,8.15,gain antimatter [action] 25.2 + tags [card] 1.0
-bounty_board,Bounty Board,1,program,,14,0,14.0,18.0,-4.0,0.78,7.77,6.23,damage troops [play] 11.0 + gain_per_tag credits [play] 6.0 + tags [card] 1.0
-dataset_scraper,Dataset Scraper,1,program,,6,1,8.5,12.5,-4.0,0.68,11.28,-2.78,draw [play] 8.0 + add_tokens datasets [play] 3.0 + tags [card] 1.5
-liquidity_event,Liquidity Event,1,event,,11,0,11.0,15.0,-4.0,0.73,10.9,0.1,cash_out credits capital [play] 15.0
-orbital_observatory_array,Orbital Observatory Array,2,building,cyber 1,10,2,15.0,19.0,-4.0,0.79,13.23,1.77,draw [action] 17.5 + tags [card] 1.5
-shared_compute_grant,Shared Compute Grant,1,program,,6,1,8.5,12.5,-4.0,0.68,9.06,-0.56,other_gain insight [play] 7.5 + draw [play] 4.0 + tags [card] 1.0
-agency_field_station,Agency Field Station,1,building,,14,1,16.5,12.6,3.9,1.31,7.41,9.09,draw [play] 8.0 + when play security [passive] 3.6 + tags [card] 1.0
-retained_earnings,Retained Earnings,1,building,,16,0,16.0,12.4,3.6,1.29,11.06,4.94,add_tokens capital [play] 6.0 + when play industry [passive] 0.0 + threshold [passive] 5.4 + tags [card] 1.0
-antitrust_action,Antitrust Action,1,program,,7,0,7.0,10.5,-3.5,0.67,6.43,0.57,jam typed [play] 3.5 + gain_per_tag chips [play] 6.0 + tags [card] 1.0
-cryo_sample_vault,Cryo Sample Vault,1,building,,7,1,9.5,13.0,-3.5,0.73,8.9,0.6,income research_cubes [passive] 12.0 + tags [card] 1.0
+recursive_self_improvement,Recursive Self-Improvement,2,program,science 2,5,2,28.0,32.25,-4.25,0.87,23.24,4.76,production insight [play] 18.8 + draw [play] 12.0 + tags [card] 1.5
+shared_threat_intel,Shared Threat Intel,1,program,,7,0,7.0,11.25,-4.25,0.62,7.8,-0.8,jam any [play] 6.0 + other_gain insight [play] 3.8 + tags [card] 1.5
+adaptive_malware,Adaptive Malware,1,program,cyber 3,10,0,10.0,14.2,-4.2,0.7,3.89,6.11,drain_all [play] 13.2 + tags [card] 1.0
+cyclotron_lease,Cyclotron Lease,1,building,,22,0,22.0,26.2,-4.2,0.84,13.84,8.16,gain antimatter [action] 25.2 + tags [card] 1.0
+bounty_board,Bounty Board,1,program,,14,0,14.0,18.0,-4.0,0.78,7.75,6.25,damage troops [play] 11.0 + gain_per_tag credits [play] 6.0 + tags [card] 1.0
+dataset_scraper,Dataset Scraper,1,program,,6,1,8.5,12.5,-4.0,0.68,11.29,-2.79,draw [play] 8.0 + add_tokens datasets [play] 3.0 + tags [card] 1.5
+liquidity_event,Liquidity Event,1,event,,11,0,11.0,15.0,-4.0,0.73,10.87,0.13,cash_out credits capital [play] 15.0
+orbital_observatory_array,Orbital Observatory Array,2,building,cyber 1,10,2,15.0,19.0,-4.0,0.79,13.26,1.74,draw [action] 17.5 + tags [card] 1.5
+shared_compute_grant,Shared Compute Grant,1,program,,6,1,8.5,12.5,-4.0,0.68,9.2,-0.7,other_gain insight [play] 7.5 + draw [play] 4.0 + tags [card] 1.0
+agency_field_station,Agency Field Station,1,building,,14,1,16.5,12.6,3.9,1.31,7.4,9.1,draw [play] 8.0 + when play security [passive] 3.6 + tags [card] 1.0
+retained_earnings,Retained Earnings,1,building,,16,0,16.0,12.4,3.6,1.29,11.04,4.96,add_tokens capital [play] 6.0 + when play industry [passive] 0.0 + threshold [passive] 5.4 + tags [card] 1.0
+antitrust_action,Antitrust Action,1,program,,7,0,7.0,10.5,-3.5,0.67,6.42,0.58,jam typed [play] 3.5 + gain_per_tag chips [play] 6.0 + tags [card] 1.0
+cryo_sample_vault,Cryo Sample Vault,1,building,,7,1,9.5,13.0,-3.5,0.73,8.87,0.63,income research_cubes [passive] 12.0 + tags [card] 1.0
 darknet_exchange,Darknet Exchange,1,building,,12,1,14.5,18.0,-3.5,0.81,13.75,0.75,draw [play] 8.0 + card_discount credits [passive] 9.0 + tags [card] 1.0
-materials_hedge_desk,Capital Injection,1,event,,12,1,14.5,18.0,-3.5,0.81,14.6,-0.1,draw [play] 12.0 + add_tokens capital [play] 6.0
+materials_hedge_desk,Capital Injection,1,event,,12,1,14.5,18.0,-3.5,0.81,14.62,-0.12,draw [play] 12.0 + add_tokens capital [play] 6.0
 patent_library,Patent Library,1,building,,9,1,11.5,15.0,-3.5,0.77,14.87,-3.37,draw [action] 14.0 + tags [card] 1.0
 recruit_operatives,Recruit Operatives,1,program,,9,1,11.5,15.0,-3.5,0.77,11.41,0.09,draw [play] 12.0 + add_tokens agents [play] 2.0 + tags [card] 1.0
 collider_consortium,Collider Consortium,2,program,,8,1,28.5,31.75,-3.25,0.9,23.08,5.42,gain research_cubes [play] 24.0 + other_gain research_cubes [play] 6.8 + tags [card] 1.0
 telemetry_archive,Telemetry Archive,1,building,,17,0,17.0,13.75,3.25,1.24,18.11,-1.11,add_tokens datasets [play] 6.0 + when play science [passive] 0.0 + threshold [passive] 6.7 + tags [card] 1.0
-honeypot_relay,Honeypot Relay,1,building,,12,1,14.5,17.68,-3.18,0.82,11.17,3.33,draw [play] 4.0 + gather [play] 3.1 + when remove_ambassadors [passive] 9.6 + tags [card] 1.0
-autonomous_defense_grid,Autonomous Defense Grid,2,building,cyber 2,13,0,13.0,16.0,-3.0,0.81,3.2,9.8,auto_counter [passive] 15.0 + tags [card] 1.0
-interconnector_treaty,Interconnector Treaty,1,program,power 2,28,0,28.0,31.0,-3.0,0.9,24.97,3.03,other_gain energy [play] 13.5 + production credits [play] 16.0 + tags [card] 1.5
-market_stabilization_board,Market Stabilization Board,2,building,industry 2,13,0,13.0,16.0,-3.0,0.81,3.2,9.8,auto_counter [passive] 15.0 + tags [card] 1.0
-payroll_automation,Payroll Automation,1,program,,16,0,16.0,19.0,-3.0,0.84,18.9,-2.9,production credits [play] 12.0 + add_tokens capital [play] 6.0 + tags [card] 1.0
-popular_uprising,Popular Uprising,1,building,,26,0,26.0,29.0,-3.0,0.9,24.9,1.1,"add_tokens followers [action, unused branch] 0.0 + liberate [action] 28.0 + tags [card] 1.0"
-threat_forecast_engine,Early Warning Drill,1,program,,10,0,10.0,12.9,-2.9,0.78,8.8,1.2,delay_threat [play] 2.5 + shield_node [play] 8.4 + tags [card] 2.0
-zero_click_breach,Zero-Click Breach,1,program,,18,0,18.0,20.8,-2.8,0.87,19.37,-1.37,drain_project [play] 19.8 + tags [card] 1.0
+honeypot_relay,Honeypot Relay,1,building,,12,1,14.5,17.68,-3.18,0.82,11.15,3.35,draw [play] 4.0 + gather [play] 3.1 + when remove_ambassadors [passive] 9.6 + tags [card] 1.0
+autonomous_defense_grid,Autonomous Defense Grid,2,building,cyber 2,13,0,13.0,16.0,-3.0,0.81,3.21,9.79,auto_counter [passive] 15.0 + tags [card] 1.0
+interconnector_treaty,Interconnector Treaty,1,program,power 2,28,0,28.0,31.0,-3.0,0.9,24.93,3.07,other_gain energy [play] 13.5 + production credits [play] 16.0 + tags [card] 1.5
+market_stabilization_board,Market Stabilization Board,2,building,industry 2,13,0,13.0,16.0,-3.0,0.81,3.21,9.79,auto_counter [passive] 15.0 + tags [card] 1.0
+payroll_automation,Payroll Automation,1,program,,16,0,16.0,19.0,-3.0,0.84,18.87,-2.87,production credits [play] 12.0 + add_tokens capital [play] 6.0 + tags [card] 1.0
+popular_uprising,Popular Uprising,1,building,,26,0,26.0,29.0,-3.0,0.9,24.87,1.13,"add_tokens followers [action, unused branch] 0.0 + liberate [action] 28.0 + tags [card] 1.0"
+threat_forecast_engine,Early Warning Drill,1,program,,10,0,10.0,12.9,-2.9,0.78,8.77,1.23,delay_threat [play] 2.5 + shield_node [play] 8.4 + tags [card] 2.0
+zero_click_breach,Zero-Click Breach,1,program,,18,0,18.0,20.8,-2.8,0.87,19.36,-1.36,drain_project [play] 19.8 + tags [card] 1.0
 microgrid_lab_compact,Microgrid Lab Compact,2,building,,18,0,18.0,20.75,-2.75,0.87,12.08,5.92,claim_station [action] 19.2 + tags [card] 1.5
-demand_response_grid,Grid Analytics Desk,1,building,,11,1,13.5,10.8,2.7,1.25,9.48,4.02,draw [action] 9.8 + tags [card] 1.0
-open_assembly,Open Assembly,1,building,,17,0,17.0,14.3,2.7,1.19,11.02,5.98,add_tokens followers [play] 2.5 + when play diplomacy [passive] 0.0 + threshold [passive] 10.8 + tags [card] 1.0
-threat_hunt,Threat Hunt,1,program,,8,0,8.0,10.7,-2.7,0.75,7.37,0.63,jam typed [play] 4.2 + drain_project [play] 5.5 + tags [card] 1.0
-lure_network,Lure Network,2,building,,12,1,14.5,17.09,-2.59,0.85,7.32,7.18,draw [play] 8.0 + gather [action] 8.1 + tags [card] 1.0
+demand_response_grid,Grid Analytics Desk,1,building,,11,1,13.5,10.8,2.7,1.25,9.47,4.03,draw [action] 9.8 + tags [card] 1.0
+open_assembly,Open Assembly,1,building,,17,0,17.0,14.3,2.7,1.19,10.99,6.01,add_tokens followers [play] 2.5 + when play diplomacy [passive] 0.0 + threshold [passive] 10.8 + tags [card] 1.0
+threat_hunt,Threat Hunt,1,program,,8,0,8.0,10.7,-2.7,0.75,7.38,0.62,jam typed [play] 4.2 + drain_project [play] 5.5 + tags [card] 1.0
+lure_network,Lure Network,2,building,,12,1,14.5,17.09,-2.59,0.85,7.34,7.16,draw [play] 8.0 + gather [action] 8.1 + tags [card] 1.0
 killswitch_directive,Killswitch Directive,2,event,,16,1,18.5,16.0,2.5,1.16,12.55,5.95,discard_project [play] 8.0 + remove_ambassadors_country [play] 8.0
-security_ops_floor,Security Ops Floor,1,building,,13,1,15.5,13.0,2.5,1.19,7.81,7.69,draw [play] 8.0 + when remove_compute [passive] 4.0 + tags [card] 1.0
-field_assay_team,Field Assay Team,1,building,,6,1,8.5,10.92,-2.42,0.78,6.82,1.68,damage ambassadors [action] 3.9 + tags [card] 1.0 + override [card] 6.0
-benchmark_suite,Stress Test Suite,1,program,,7,0,7.0,9.4,-2.4,0.74,5.3,1.7,shield_node [play] 8.4 + tags [card] 1.0
-agency_directorate,Agency Directorate,2,building,security 2,16,2,21.0,23.31,-2.31,0.9,18.2,2.8,add_tokens agents [play] 6.0 + when play_tag [passive] 0.0 + threshold [passive] 16.3 + tags [card] 1.0
-supplier_network,Supplier Network,1,building,,12,1,14.5,12.2,2.3,1.19,7.56,6.94,draw [play] 4.0 + when play industry [passive] 7.2 + tags [card] 1.0
-bug_bounty_board,Bug Bounty Board,1,building,,10,1,12.5,10.24,2.26,1.22,7.58,4.92,drain_project [action] 4.2 + draw [action] 5.1 + tags [card] 1.0
+security_ops_floor,Security Ops Floor,1,building,,13,1,15.5,13.0,2.5,1.19,7.8,7.7,draw [play] 8.0 + when remove_compute [passive] 4.0 + tags [card] 1.0
+field_assay_team,Field Assay Team,1,building,,6,1,8.5,10.92,-2.42,0.78,6.79,1.71,damage ambassadors [action] 3.9 + tags [card] 1.0 + override [card] 6.0
+benchmark_suite,Stress Test Suite,1,program,,7,0,7.0,9.4,-2.4,0.74,5.27,1.73,shield_node [play] 8.4 + tags [card] 1.0
+agency_directorate,Agency Directorate,2,building,security 2,16,2,21.0,23.31,-2.31,0.9,18.21,2.79,add_tokens agents [play] 6.0 + when play_tag [passive] 0.0 + threshold [passive] 16.3 + tags [card] 1.0
+supplier_network,Supplier Network,1,building,,12,1,14.5,12.2,2.3,1.19,7.54,6.96,draw [play] 4.0 + when play industry [passive] 7.2 + tags [card] 1.0
+bug_bounty_board,Bug Bounty Board,1,building,,10,1,12.5,10.24,2.26,1.22,7.56,4.94,drain_project [action] 4.2 + draw [action] 5.1 + tags [card] 1.0
 supply_chain_audit,Supply Chain Audit,1,program,,7,0,7.0,9.2,-2.2,0.76,5.68,1.32,jam typed [play] 4.2 + production credits [play] 4.0 + tags [card] 1.0
-interceptor_battery,Checkpoint Network,1,building,,11,0,11.0,13.04,-2.04,0.84,8.94,2.06,push [play] 4.2 + push [action] 7.8 + tags [card] 1.0
-amnesty_decree,Amnesty Decree,1,program,,15,0,15.0,17.0,-2.0,0.88,12.5,2.5,clear_city [play] 8.0 + gain_ambassadors [play] 8.0 + tags [card] 1.0
-cryptojacking_campaign,Cryptojacking Campaign,1,program,,22,0,31.0,29.0,2.0,1.07,28.75,2.25,production credits [play] 28.0 + tags [card] 1.0
-vendor_financing,Vendor Financing,1,program,,14,0,14.0,16.0,-2.0,0.88,12.88,1.12,other_gain chips [play] 3.0 + production credits [play] 12.0 + tags [card] 1.0
-hardened_bunker_complex,Hardened Bunker Complex,1,program,,18,0,18.0,19.9,-1.9,0.9,12.87,5.13,production energy [play] 14.4 + production credits [play] 4.0 + tags [card] 1.5
-exploit_broker,Exploit Broker,1,building,cyber 2,12,1,14.5,16.2,-1.7,0.9,6.87,7.63,draw [play] 8.0 + when play cyber [passive] 7.2 + tags [card] 1.0
-kinetic_interdiction,Kinetic Interdiction,2,event,security 2,2,0,20.0,18.36,1.64,1.09,20.54,-0.54,remove_troops [play] 10.4 + remove_ambassadors_country [play] 12.0 + sway discord [play] -4.0
-diplomatic_expulsion,Diplomatic Expulsion,1,program,,12,0,12.0,13.5,-1.5,0.89,14.13,-2.13,remove_ambassadors_country [play] 8.0 + sway unity [play] 4.0 + tags [card] 1.5
-directed_energy_array,Directed-Energy Array,1,building,,11,0,11.0,12.5,-1.5,0.88,8.4,2.6,remove_ambassadors_country [action] 0.0 + tags [card] 1.5 + override [card] 11.0
-fusion_research_campus,Fusion Research Campus,2,building,power 3,16,2,21.0,22.5,-1.5,0.93,16.65,4.35,draw [play] 12.0 + when play power [passive] 9.0 + tags [card] 1.5
-preprint_server,Preprint Server,1,building,science 2,15,1,17.5,16.2,1.3,1.08,6.87,10.63,draw [play] 8.0 + when play science [passive] 7.2 + tags [card] 1.0
-deep_state_ledger,Deep State Ledger,2,program,security 2,18,2,23.0,24.25,-1.25,0.95,21.14,1.86,production insight [play] 18.8 + add_tokens agents [play] 4.0 + tags [card] 1.5
-shared_exploit_kit,Shared Exploit Kit,1,program,,13,0,13.0,14.23,-1.23,0.91,11.92,1.08,drain_project [play] 6.6 + other_gain insight [play] 5.6 + tags [card] 2.0
+interceptor_battery,Checkpoint Network,1,building,,11,0,11.0,13.04,-2.04,0.84,8.91,2.09,push [play] 4.2 + push [action] 7.8 + tags [card] 1.0
+amnesty_decree,Amnesty Decree,1,program,,15,0,15.0,17.0,-2.0,0.88,12.48,2.52,clear_city [play] 8.0 + gain_ambassadors [play] 8.0 + tags [card] 1.0
+cryptojacking_campaign,Cryptojacking Campaign,1,program,,22,0,31.0,29.0,2.0,1.07,28.69,2.31,production credits [play] 28.0 + tags [card] 1.0
+vendor_financing,Vendor Financing,1,program,,14,0,14.0,16.0,-2.0,0.88,12.85,1.15,other_gain chips [play] 3.0 + production credits [play] 12.0 + tags [card] 1.0
+hardened_bunker_complex,Hardened Bunker Complex,1,program,,18,0,18.0,19.9,-1.9,0.9,12.77,5.23,production energy [play] 14.4 + production credits [play] 4.0 + tags [card] 1.5
+exploit_broker,Exploit Broker,1,building,cyber 2,12,1,14.5,16.2,-1.7,0.9,6.88,7.62,draw [play] 8.0 + when play cyber [passive] 7.2 + tags [card] 1.0
+kinetic_interdiction,Kinetic Interdiction,2,event,security 2,2,0,20.0,18.36,1.64,1.09,20.55,-0.55,remove_troops [play] 10.4 + remove_ambassadors_country [play] 12.0 + sway discord [play] -4.0
+diplomatic_expulsion,Diplomatic Expulsion,1,program,,12,0,12.0,13.5,-1.5,0.89,14.09,-2.09,remove_ambassadors_country [play] 8.0 + sway unity [play] 4.0 + tags [card] 1.5
+directed_energy_array,Directed-Energy Array,1,building,,11,0,11.0,12.5,-1.5,0.88,8.37,2.63,remove_ambassadors_country [action] 0.0 + tags [card] 1.5 + override [card] 11.0
+fusion_research_campus,Fusion Research Campus,2,building,power 3,16,2,21.0,22.5,-1.5,0.93,16.68,4.32,draw [play] 12.0 + when play power [passive] 9.0 + tags [card] 1.5
+preprint_server,Preprint Server,1,building,science 2,15,1,17.5,16.2,1.3,1.08,6.88,10.62,draw [play] 8.0 + when play science [passive] 7.2 + tags [card] 1.0
+deep_state_ledger,Deep State Ledger,2,program,security 2,18,2,23.0,24.25,-1.25,0.95,21.15,1.85,production insight [play] 18.8 + add_tokens agents [play] 4.0 + tags [card] 1.5
+shared_exploit_kit,Shared Exploit Kit,1,program,,13,0,13.0,14.23,-1.23,0.91,12.02,0.98,drain_project [play] 6.6 + other_gain insight [play] 5.6 + tags [card] 2.0
 botnet_takedown,Botnet Takedown,2,event,cyber 1,11,1,13.5,14.6,-1.1,0.92,16.68,-3.18,remove_botnet [play] 8.0 + drain_project [play] 6.6
-frontier_lab_charter,Frontier Lab Charter,1,program,,28,0,28.0,29.0,-1.0,0.97,31.74,-3.74,production insight [play] 20.0 + production credits [play] 8.0 + tags [card] 1.0
+frontier_lab_charter,Frontier Lab Charter,1,program,,28,0,28.0,29.0,-1.0,0.97,31.71,-3.71,production insight [play] 20.0 + production credits [play] 8.0 + tags [card] 1.0
 martial_cordon,Martial Cordon,2,program,diplomacy 1,8,1,10.5,9.5,1.0,1.11,13.84,-3.34,remove_ambassadors_country [play] 12.0 + sway discord [play] -4.0 + tags [card] 1.5
-zero_knowledge_exploit,Zero-Knowledge Exploit,1,event,,6,1,8.5,9.5,-1.0,0.89,5.6,2.9,drain_project [play] 5.5 + draw [play] 4.0
-citation_engine,Citation Engine,1,building,science 2,20,1,22.5,21.6,0.9,1.04,12.27,10.23,draw [play] 8.0 + when play science [passive] 12.6 + tags [card] 1.0
-hardpoint_lockdown,Hardpoint Lockdown,1,event,,5,0,5.0,5.8,-0.8,0.86,4.29,0.71,shelter [play] 2.8 + cordon [play] 3.0
-synthetic_data_forge,Synthetic Data Forge,1,building,science 2,10,0,10.0,9.25,0.75,1.08,5.0,5.0,"add_tokens datasets [play] 3.0 + add_tokens datasets [action, unused branch] 0.0 + gain_per_tokens insight datasets [action] 5.2 + tags [card] 1.0"
-parts_exchange,Parts Exchange,1,building,,9,1,11.5,12.2,-0.7,0.94,11.28,0.22,draw [action] 11.2 + tags [card] 1.0
-eviction_worm,Eviction Worm,1,program,,12,0,12.0,11.4,0.6,1.05,11.81,0.19,remove_ambassadors_country [play] 6.0 + drain_project [play] 4.4 + tags [card] 1.0
-logic_bomb,Logic Bomb,1,program,,9,1,11.5,12.1,-0.6,0.95,8.34,3.16,drain_project [play] 6.6 + draw [play] 4.0 + tags [card] 1.5
-university_spinout,University Spinout,1,program,science 2,26,0,26.0,25.5,0.5,1.02,20.57,5.43,production credits [play] 24.0 + tags [card] 1.5
-joint_task_force,Joint Task Force,1,building,security 2,14,1,16.5,16.2,0.3,1.02,6.87,9.63,draw [play] 8.0 + when team_play security [passive] 7.2 + tags [card] 1.0
-safehouse_network,Safehouse Network,1,building,,14,1,16.5,16.2,0.3,1.02,19.58,-3.08,"add_tokens agents [play] 4.0 + add_tokens agents [action, unused branch] 0.0 + draw [action] 11.2 + tags [card] 1.0"
-dispatch_control_room,Dispatch Control Room,1,building,power 2,18,0,18.0,18.1,-0.1,0.99,18.07,-0.07,gain energy [play] 9.0 + when play power [passive] 8.1 + tags [card] 1.0
-counterinsurgency_campaign,Counterinsurgency Campaign,1,program,,15,0,15.0,15.0,0.0,1.0,15.92,-0.92,remove_ambassadors_country [play] 6.0 + production credits [play] 8.0 + tags [card] 1.0
-robotic_foundry,Robotic Foundry,1,program,,13,0,17.5,17.5,0.0,1.0,15.6,1.9,production credits [play] 16.0 + tags [card] 1.5
+zero_knowledge_exploit,Zero-Knowledge Exploit,1,event,,6,1,8.5,9.5,-1.0,0.89,5.58,2.92,drain_project [play] 5.5 + draw [play] 4.0
+citation_engine,Citation Engine,1,building,science 2,20,1,22.5,21.6,0.9,1.04,12.28,10.22,draw [play] 8.0 + when play science [passive] 12.6 + tags [card] 1.0
+hardpoint_lockdown,Hardpoint Lockdown,1,event,,5,0,5.0,5.8,-0.8,0.86,4.26,0.74,shelter [play] 2.8 + cordon [play] 3.0
+synthetic_data_forge,Synthetic Data Forge,1,building,science 2,10,0,10.0,9.25,0.75,1.08,4.99,5.01,"add_tokens datasets [play] 3.0 + add_tokens datasets [action, unused branch] 0.0 + gain_per_tokens insight datasets [action] 5.2 + tags [card] 1.0"
+parts_exchange,Parts Exchange,1,building,,9,1,11.5,12.2,-0.7,0.94,11.27,0.23,draw [action] 11.2 + tags [card] 1.0
+eviction_worm,Eviction Worm,1,program,,12,0,12.0,11.4,0.6,1.05,11.78,0.22,remove_ambassadors_country [play] 6.0 + drain_project [play] 4.4 + tags [card] 1.0
+logic_bomb,Logic Bomb,1,program,,9,1,11.5,12.1,-0.6,0.95,8.33,3.17,drain_project [play] 6.6 + draw [play] 4.0 + tags [card] 1.5
+university_spinout,University Spinout,1,program,science 2,26,0,26.0,25.5,0.5,1.02,20.52,5.48,production credits [play] 24.0 + tags [card] 1.5
+joint_task_force,Joint Task Force,1,building,security 2,14,1,16.5,16.2,0.3,1.02,6.88,9.62,draw [play] 8.0 + when team_play security [passive] 7.2 + tags [card] 1.0
+safehouse_network,Safehouse Network,1,building,,14,1,16.5,16.2,0.3,1.02,19.57,-3.07,"add_tokens agents [play] 4.0 + add_tokens agents [action, unused branch] 0.0 + draw [action] 11.2 + tags [card] 1.0"
+dispatch_control_room,Dispatch Control Room,1,building,power 2,18,0,18.0,18.1,-0.1,0.99,17.99,0.01,gain energy [play] 9.0 + when play power [passive] 8.1 + tags [card] 1.0
+counterinsurgency_campaign,Counterinsurgency Campaign,1,program,,15,0,15.0,15.0,0.0,1.0,15.88,-0.88,remove_ambassadors_country [play] 6.0 + production credits [play] 8.0 + tags [card] 1.0
+robotic_foundry,Robotic Foundry,1,program,,13,0,17.5,17.5,0.0,1.0,15.55,1.95,production credits [play] 16.0 + tags [card] 1.5

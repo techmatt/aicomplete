@@ -417,6 +417,7 @@ fn enter_play(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &CardDef
     if d.is_building() {
         place_building(g, cx, seat, id, d)?;
         cx.move_card(g, id, &hand(seat), &built(seat), false)?;
+        freeze_tag_income(g, cx, seat, id, d);
     } else if d.is_event() {
         // 111: an event sits aside while it resolves, then goes to its
         // player's played events (r48), never the discard: a draw that

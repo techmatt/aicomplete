@@ -47,6 +47,7 @@ const DRAFT_PARAMS: &[ParamSpec] = &[
     ParamSpec::int("science_every", 0, 10, "1 insight off tier-2 keeps and card plays per this many Science tags (0: off)"),
     ParamSpec::int("industry_every", 0, 10, "1 credit off buildings per this many Industry tags (0: off)"),
     ParamSpec::int("discount_floor", 0, 5, "tag and building discounts stop at this cost; a cost printed under it stays"),
+    ParamSpec::int("tag_income_once", 0, 1, "223 (224 #6, candidate): 1: a building's per-tag income counts its tags once, at play, as a program's does (0: recounted every round)"),
 ];
 
 pub static DEF: ModuleDef = ModuleDef {

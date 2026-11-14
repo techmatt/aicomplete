@@ -1,0 +1,27 @@
+{
+  "name": "s223-r6",
+  "note": "223: ruling 6 screen, per-tag income counted once (cards.tag_income_once) off and on, on each board pair; spent seeds 46784-46815",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]},
+    {"name": "bp-once", "set": ["cards.tag_income_once=1"]},
+    {"name": "br-once", "set": ["ai.boards=0,2", "cards.tag_income_once=1"]},
+    {"name": "pr-once", "set": ["ai.boards=1,2", "cards.tag_income_once=1"]}
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "greedy",
+    "strategist"
+  ],
+  "games": 16,
+  "records": 0
+}

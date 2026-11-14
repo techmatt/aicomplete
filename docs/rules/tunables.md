@@ -28,7 +28,6 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.troop_steps` | 1 | 0..5 | steps each adversary troop takes in the march: destroy a target on or next to it, else move 1 hex toward the nearest |
 | `board.troop_node` | 0 | 0..4 | adversary troops strike nodes from this stage of adversary card on (0: always, 4: never) |
 | `board.vigil_cap` | 2 | 1..10 | 185: troops a round whose march ending next to a seat's node pays its Vigil (later ones that round pay nothing) |
-| `board.node_marker` | 1 | 0..1 | 1: a destroyed node leaves a corruption marker on its hex |
 | `board.station_chips` | 1 | 0..20 | standard action: chips to build a research station |
 | `board.station_ambassadors` | 0 | 0..5 | standard action: ambassadors a research station also uses up (206, candidate; 0: none) |
 | `board.node_credits` | 6 | 0..30 | 206: standard action Place a node: credits, beside the track step's energy (0: no such action) |
@@ -42,8 +41,6 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.remove_ambassadors` | 1 | 1..5 | standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing) |
 | `board.remove_count` | 3 | 1..3 | standard action Remove agents: agents it removes, at most, from any hexes in reach (the player's choice) |
 | `board.land_cubes` | 2 | 0..10 | 210: standard action Lift land corruption: research cubes to lift 1 land-corruption token in reach (0: no such action) |
-| `board.clear_unity` | 2 | 0..5 | Sway toward Unity for clearing a corruption marker |
-| `board.clear_credits` | 0 | 0..5 | credits back for clearing a corruption marker |
 | `board.envoy_ambassadors` | 1 | 0..5 | standard action Envoy: your ambassadors from the supply, used up, to move 1 Discord off the Discord track (0: no such action) |
 | `board.ambassador_credits` | 20 | 1..50 | standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit) |
 | `board.sell_credits` | 1 | 0..20 | standard action: credits for selling a card from hand |
@@ -61,7 +58,6 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.corrupt_cut` | 1, 1, 1, 0 | 0..5 | difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land) |
 | `adversary.corrupt_cut_at` | 1 | 0..5 | the difficulty level from which corrupt_cut applies |
 | `adversary.blight_discord` | 1 | 0..5 | Discord each land-corruption token sways each round |
-| `adversary.blight_node_discord` | 0 | 0..5 | 192: Discord each land-corruption token a corrupted node hex took (placed face down) sways each round, in place of blight_discord |
 | `adversary.counter_pct` | 100, 100 | 50..300 | every resource counter item of a tier 1, 2 threat costs this percent of its printed amount (rounded up) |
 | `adversary.counter_credit_pct` | 100 | 50..300 | every credits counter item costs this percent of its amount after counter_pct (rounded up; 100 = unchanged; 142's dial) |
 | `adversary.counter_bonus` | 0 | 0..10 | difficulty counter_bonus_at+: added to every resource item of each threat's first counter option (142; its credits before) |
@@ -115,4 +111,5 @@ Every parameter of the baseline config, with its value and range, generated from
 | `cards.science_every` | 2 | 0..10 | 1 insight off tier-2 keeps and card plays per this many Science tags (0: off) |
 | `cards.industry_every` | 2 | 0..10 | 1 credit off buildings per this many Industry tags (0: off) |
 | `cards.discount_floor` | 1 | 0..5 | tag and building discounts stop at this cost; a cost printed under it stays |
+| `cards.tag_income_once` | 1 | 0..1 | 223 (224 #6, candidate): 1: a building's per-tag income counts its tags once, at play, as a program's does (0: recounted every round) |
 <!-- /generated -->

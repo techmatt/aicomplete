@@ -139,7 +139,8 @@ off the value table.
   from the tree at run time) until it returns, nor run the release binary while it builds. A 720-game set farms in
   75-240 s with the laptop joined; if the broker goes away (logged only after the first shard), shards run one at a
   time on one thread: stop it and run natively (`--threads 6`: 2880 games in 4 min). The old side runs on its
-  folder's configs (`aic-sim experiment SPEC --seed F`, or shards: `aic-sim farm read --seed S --games 8`).
+  folder's configs (`aic-sim experiment SPEC --seed F`, or shards: `aic-sim farm read --seed S --games 8`; `farm`
+  takes no `--threads`, a shard is one thread: run 6 side by side and concatenate their out files, as 223 did).
   `ladder.py` reads the farm's out file as `OUT=SPEC.json`; shards, after `python scripts/screens.py assemble SPEC
   FIRST COUNT OUT_DIR SHARD...`.
 - **Same games:** `experiments/same-noplanner.json` is same.json ([speed.md](speed.md)) with greedy for the planner,

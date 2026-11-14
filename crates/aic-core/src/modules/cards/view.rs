@@ -164,6 +164,7 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
         "cards.tokens.",
         "cards.disabled.",
         "cards.disabled_n.",
+        "cards.tag_frozen.",
     ]);
     for tier in [1u8, 2] {
         out.pile(

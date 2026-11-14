@@ -2,36 +2,12 @@
 
 use super::*;
 
-/// 175: a Corrupt X line's converging agent asks "Corrupt cities (at 4): the agent at .. moves onto which?". The
-/// agents read it back ([`read_converge_prompt`]; 182: one home for the words, so a rewording can't silently turn
-/// `converge_rule` off).
-pub fn converge_prompt(site: CorruptSite, n: i64, at: &str) -> String {
-    format!("Corrupt {} (at {n}): the agent at {at} moves onto which?", site.plural())
-}
-
-/// The site and number a [`converge_prompt`] prints, if `prompt` is one.
-pub fn read_converge_prompt(prompt: &str) -> Option<(CorruptSite, i64)> {
-    let rest = prompt.strip_prefix("Corrupt ")?;
-    if !rest.contains("moves onto which?") {
-        return None;
-    }
-    let site = CorruptSite::ALL.into_iter().find(|s| rest.starts_with(&format!("{} (at ", s.plural())))?;
-    let n = rest[site.plural().len() + " (at ".len()..].split(')').next()?.parse().ok()?;
-    Some((site, n))
-}
-
 /// Any player cube on hex `h` comes off and the adversary's goes on.
 fn take_for_adversary(g: &mut GameState, cx: &mut Cx, h: usize) {
     if let Some(s) = cube_owner(g, h) {
         cx.add_tokens(g, h, cube(s), -1);
     }
     cx.add_tokens(g, h, ADV_CUBE, 1);
-}
-
-/// Every corruption marker on hex `h` comes off: corruption replaces them.
-pub fn clear_markers_on(g: &mut GameState, cx: &mut Cx, h: usize) {
-    let marked = g.tokens(h, MARKER);
-    cx.add_tokens(g, h, MARKER, -marked);
 }
 
 /// City `h` is corrupted, as [`corrupt_hex`] with [`CorruptSite::City`]. It checks no guard: a caller that a
@@ -45,7 +21,7 @@ pub fn corrupt_city(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
 /// land corruption. Its agents return to the supply; a node on
 /// the hex is destroyed (its owner's ambassador there is armor, used up
 /// instead; the Sanctuary capstone keeps it); player ambassadors still there
-/// are lost (024: they would free it in the same step); a marker comes off.
+/// are lost (024: they would free it in the same step).
 pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) -> Res {
     let w = cx.world;
     if site == CorruptSite::Node {
@@ -68,7 +44,6 @@ pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) 
         let mine = g.tokens(h, k);
         cx.add_tokens(g, h, k, -mine);
     }
-    clear_markers_on(g, cx, h);
     cx.tally(g, "adversary.corruptions", 1);
     cx.tally(g, &format!("adversary.corruptions.{}", site.name()), 1);
     if g.round > 0 && g.var(FIRST_CORRUPTION) == 0 {
@@ -82,10 +57,9 @@ pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) 
     Ok(())
 }
 
-/// 175, a node hex corrupts: its agents go to the supply and the node is destroyed (the protections apply;
-/// the Sanctuary capstone keeps it). r83 (Matt, 2026-11-11, #56): a node hex corrupts like open land: it always
-/// takes land corruption, the one adversary mark, whether or not a protection saves the node (r80 marked it only
-/// when the node was lost).
+/// 175, 2 agents on a player's node hex destroy the node: the agents go to the supply and the node is destroyed
+/// (the protections apply; the Sanctuary capstone keeps it). r98 (Matt, 2026-11-13, 224 #2): a node rule, not
+/// corruption, and it leaves no mark (r83-r97 laid face-down land corruption): losing it is punishment enough.
 fn corrupt_node(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
     let w = cx.world;
     let n = g.tokens(h, ADV_AMBASSADOR);
@@ -95,43 +69,21 @@ fn corrupt_node(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
             board::destroy_piece(g, cx, h, node(s), board::Cause::Effect("corruption"))?;
         }
     }
-    clear_markers_on(g, cx, h);
-    if g.tokens(h, LAND_CORRUPTION) == 0 {
-        cx.add_tokens(g, h, LAND_CORRUPTION, 1);
-        // 192: placed face down, so its drip is `blight_node_discord`'s, and counted for the agents.
-        cx.set_key(g, &node_blight_hex(h), 1);
-        let n = g.var(NODE_BLIGHT);
-        cx.set_key(g, NODE_BLIGHT, n + 1);
-    }
     cx.tally(g, "adversary.corruptions", 1);
     cx.tally(g, "adversary.corruptions.node", 1);
-    cx.note(Some(h), || format!("The node at {} is corrupted", hex_name(&w, h)));
+    cx.note(Some(h), || format!("Agents destroy the node at {}", hex_name(&w, h)));
     Ok(())
 }
 
-/// 192: face-down land corruption (a corrupted node hex's) on the board, and the hex flag that marks one.
-pub const NODE_BLIGHT: &str = "adversary.node_blight";
-
-pub fn node_blight_hex(h: usize) -> KeyBuf {
-    KeyBuf::new("adversary.node_blight.").num(h)
-}
-
-/// 192: a land-corruption token comes off hex `h`: a face-down one leaves the count.
+/// A land-corruption token comes off hex `h`.
 pub fn lift_land_corruption(g: &mut GameState, cx: &mut Cx, h: usize) {
     cx.add_tokens(g, h, LAND_CORRUPTION, -1);
-    if g.var(&node_blight_hex(h)) > 0 {
-        cx.set_key(g, &node_blight_hex(h), 0);
-        let n = g.var(NODE_BLIGHT);
-        cx.set_key(g, NODE_BLIGHT, n - 1);
-    }
 }
 
-/// 192: Discord the land corruption on the board sways a round: face-up tokens at `blight_discord`, face-down
-/// (a corrupted node hex's) at `blight_node_discord`.
+/// Discord the land corruption on the board sways a round: `blight_discord` a token (r98: no token lies face down).
 pub fn blight_drip(w: &World, g: &GameState) -> i64 {
     let all: i64 = (0..g.hexes.len()).map(|h| g.tokens(h, LAND_CORRUPTION)).sum();
-    let down = g.var(NODE_BLIGHT).min(all);
-    (all - down) * w.int("adversary.blight_discord") + down * w.int("adversary.blight_node_discord")
+    all * w.int("adversary.blight_discord")
 }
 
 /// 138: the corrupt number of `site` this game: its config number, less the
@@ -156,33 +108,22 @@ pub fn corrupt_n(w: &World, site: CorruptSite, cut: i64) -> i64 {
 }
 
 /// 175, a Corrupt X line in country `scope` or everywhere: every agent next to an X ([`super::plan::converge`])
-/// moves onto it, players choosing for one next to several; then every X holding its number corrupts. A
+/// moves onto it (r98: one next to several stays where it is); then every X holding its number corrupts. A
 /// moving agent arriving on a player ambassador cancels it, as any arrival does.
 pub fn corrupt_sites(g: &mut GameState, cx: &mut Cx, site: CorruptSite, cut: i64, scope: Option<usize>) -> Res {
     let w = cx.world;
     let n = corrupt_n(&w, site, cut);
     let cv = super::plan::converge(&w, g, site, scope);
-    // Single-target agents first, so a choice sees where the forced ones went.
-    let mut flexible = Vec::new();
-    for (h, to) in &cv.sources {
-        if to.len() == 1 {
-            let k = g.tokens(*h, ADV_AMBASSADOR);
-            for _ in 0..k {
-                converge_one(g, cx, *h, to[0])?;
-            }
-        } else {
-            flexible.push((*h, to.clone()));
+    // r98 (Matt, 2026-11-13, 224 #6): an agent next to two or more targets stays where it is.
+    for &(h, t) in &cv.sources {
+        for _ in 0..g.tokens(h, ADV_AMBASSADOR) {
+            converge_one(g, cx, h, t)?;
         }
     }
-    for (h, to) in flexible {
-        while g.tokens(h, ADV_AMBASSADOR) > 0 {
-            let opts = to.iter().map(|&t| hex_opt(&w, t)).collect();
-            let prompt = || converge_prompt(site, n, &hex_name(&w, h));
-            let Some(i) = cx.choose(0, prompt, opts)? else {
-                break;
-            };
-            converge_one(g, cx, h, to[i])?;
-        }
+    for &h in &cv.ties {
+        let k = g.tokens(h, ADV_AMBASSADOR);
+        cx.tally(g, "adversary.converge_ties", k);
+        cx.tally(g, "adversary.converge_tie_hexes", 1);
     }
     for t in cv.targets {
         // r80 (ruling #42): agents only; a marker no longer counts.

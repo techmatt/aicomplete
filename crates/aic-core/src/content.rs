@@ -1514,7 +1514,7 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
                     return Err(format!("{what}: if_node_next follows a place_node in the same list"));
                 }
             }
-            Op::LiftLand { count } if *count < 1 => {
+            Op::LiftLand { count, .. } if *count < 1 => {
                 return Err(format!("{what}: lift_land needs count >= 1"));
             }
             // 142 (P1): the no-location form (the most infiltrated city) is gone.

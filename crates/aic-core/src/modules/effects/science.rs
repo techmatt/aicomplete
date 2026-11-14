@@ -1,26 +1,7 @@
-//! Marker clearing, shields and delays ("up to N"): Science's niche until 212, now any tag's (usually
-//! Diplomacy, Security and Science: the tag table in docs/rules/ai-powers.md).
+//! Shields and delays ("up to N"): Science's niche until 212, now any tag's (usually Security and Science: the
+//! tag table in docs/rules/ai-powers.md).
 
 use super::*;
-
-pub(super) fn clear_markers(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64) -> Res {
-    let w = cx.world;
-    for k in 0..count {
-        let hexes: Vec<usize> = (0..g.hexes.len())
-            .filter(|&h| marker_in_reach(&w, g, seat, h))
-            .collect();
-        if hexes.is_empty() {
-            break;
-        }
-        let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-        let prompt = || format!("Seat {seat}: clear the corruption marker on which hex?");
-        let Some(i) = pick_or_stop(cx, seat, prompt, opts, k == 0)? else {
-            break;
-        };
-        board::clear_marker(g, cx, seat, hexes[i]);
-    }
-    Ok(())
-}
 
 pub(super) fn shield_node(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64) -> Res {
     let w = cx.world;

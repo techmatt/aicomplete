@@ -3,9 +3,8 @@
 
 use super::*;
 use crate::content::Op;
-use crate::modules::common::{hex_opt, is_ocean, LAND_CORRUPTION, MARKER};
+use crate::modules::common::{is_ocean, LAND_CORRUPTION};
 use crate::modules::{adversary, alignment, board};
-use crate::state::Pick;
 
 /// Liberate's city numbers (the lab pins them off).
 const HOLD: [&str; 1] = ["board.liberate_at=5"];
@@ -263,10 +262,10 @@ fn a_lost_last_node_comes_before_a_unity_tip_in_the_same_check() {
     assert_eq!((o.won, o.reason.as_str()), (false, "node"));
 }
 
-// ---------- 034: node leaves the game, the marker ----------
+// ---------- 034: node leaves the game; r98: it leaves no mark ----------
 
 #[test]
-fn a_city_that_corrupts_destroys_node_on_it_and_leaves_no_marker() {
+fn a_city_that_corrupts_destroys_node_on_it_and_takes_only_its_cube() {
     let (rules, mut g) = lab(&[]);
     let h = rules.map.numbered(0, piece(0).cities[0]);
     let far = rules.map.numbered(1, piece(1).cities[0]);
@@ -274,9 +273,10 @@ fn a_city_that_corrupts_destroys_node_on_it_and_leaves_no_marker() {
     put(&mut g, far, node(0), 1);
     g.vars.insert(STAGE.into(), 2);
     with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h)).unwrap();
-    assert_eq!((g.tokens(h, node(0)), g.tokens(h, MARKER)), (0, 0), "it has corruption already");
+    assert_eq!((g.tokens(h, node(0)), g.tokens(h, ADV_CUBE), g.tokens(h, LAND_CORRUPTION)), (0, 1, 0));
 }
 
+/// r98 (Matt, 2026-11-13, 224 #2): a lost node leaves no mark, so another node may go on its hex.
 #[test]
 fn a_lost_node_leaves_the_game_and_its_income_stays() {
     use crate::modules::ai;
@@ -289,76 +289,20 @@ fn a_lost_node_leaves_the_game_and_its_income_stays() {
     with_cx(&rules, |cx| board::lose_node(&mut g, cx, c, 0, "test"));
     assert_eq!(board::track_taken(&g, 0), 3, "it does not go back on the track");
     assert_eq!(ai::track_income(&w, &g, 0), income);
-    assert_eq!(g.tokens(c, MARKER), 1);
+    assert!(board::node_sites(&w, &g, 0).contains(&c), "no mark: the hex takes a node again");
 }
 
+/// 210: Lift land corruption takes a land-corruption token in reach for `land_cubes` research cubes.
 #[test]
-fn a_marker_adds_nothing_where_there_is_corruption_and_blocks_the_hex() {
-    let (rules, mut g) = lab(&[]);
-    let a = rules.map.numbered(0, piece(0).node);
-    let n = rules.map.hexes[a].neighbors[0];
-    put(&mut g, a, node(0), 1);
-    put(&mut g, n, node(1), 1);
-    put(&mut g, n, BOTNET, 1);
-    g.vars.insert(STAGE.into(), 2);
-    with_cx(&rules, |cx| board::lose_node(&mut g, cx, n, 1, "test"));
-    assert_eq!(g.tokens(n, MARKER), 0, "a botnet is corruption");
-    put(&mut g, n, MARKER, 1);
-    let w = rules.world();
-    assert!(!board::node_sites(&w, &g, 0).contains(&n));
-    with_cx(&rules, |cx| board::lose_node(&mut g, cx, a, 0, "test"));
-    assert_eq!(g.tokens(a, MARKER), 1);
-}
-
-/// r80 (ruling #42): a marker no longer counts as an agent toward a city's corruption (034-r79 counted it); a
-/// city that does corrupt takes the cube, its one mark, and the marker comes off.
-#[test]
-fn a_marker_no_longer_counts_toward_corrupting_a_city() {
-    let (rules, mut g0) = lab_with(&["adversary.natural"], &["adversary.corrupt_at=2"]);
-    let h = rules.map.numbered(0, piece(0).cities[1]);
-    put(&mut g0, h, MARKER, 1);
-    put(&mut g0, h, ADV_AMBASSADOR, 1);
-    let mut g = g0.clone();
-    run(&rules, &mut g);
-    assert_eq!((g.tokens(h, ADV_CUBE), g.tokens(h, MARKER)), (0, 1), "one agent and a marker: short of 2");
-    let mut g = g0.clone();
-    put(&mut g, h, ADV_AMBASSADOR, 2);
-    run(&rules, &mut g);
-    assert_eq!(g.tokens(h, ADV_CUBE), 1);
-    assert_eq!(g.tokens(h, MARKER), 0, "the city's corruption replaces it");
-}
-
-#[test]
-fn up_to_two_markers_can_stop_after_one() {
-    let (rules, mut g) = lab(&[]);
-    let w = rules.world();
-    let c = rules.map.numbered(0, piece(0).node);
-    let n: Vec<usize> = w.map.hexes[c].neighbors.iter().copied().filter(|&h| !is_ocean(&w, h)).take(2).collect();
-    put(&mut g, c, node(0), 1);
-    for &h in &n {
-        put(&mut g, h, MARKER, 1);
-    }
-    let first = hex_opt(&w, n[0]);
-    let picks = vec![Pick { option: first.option, target: first.target }, Pick { option: "stop".into(), target: None }];
-    run_ops_with(&rules, &mut g, picks, &[Op::ClearMarkers { count: 2 }]);
-    assert_eq!(n.iter().map(|&h| g.tokens(h, MARKER)).sum::<i64>(), 1, "the second pick was stop");
-}
-
-/// 206 (amendment 9208): no standard action removes a marker. 210: Lift land corruption takes a land-corruption
-/// token in reach for `land_cubes` research cubes, never a marker.
-#[test]
-fn lift_takes_land_corruption_never_a_marker() {
+fn lift_takes_land_corruption() {
     let (rules, mut g) = at_step(&[], 1);
     let w = rules.world();
     let a = rules.map.numbered(0, piece(0).node);
     let marked = w.map.hexes[a].neighbors.iter().copied().find(|&h| !is_ocean(&w, h)).unwrap();
-    put(&mut g, marked, MARKER, 1);
-    assert!(!board::node_sites(&w, &g, 0).contains(&marked), "no nodes on a marker");
     let cubes = w.int("board.land_cubes");
     assert!(cubes > 0);
     set_res(&mut g, 0, Resource::ResearchCubes, cubes);
-    assert!(rules.apply_mut(&mut g.clone(), &std_act(0, "lift"), None).is_err(), "a marker is not land corruption");
-    put(&mut g, marked, MARKER, -1);
+    assert!(rules.apply_mut(&mut g.clone(), &std_act(0, "lift"), None).is_err(), "nothing to lift");
     put(&mut g, marked, LAND_CORRUPTION, 1);
     assert!(!board::node_sites(&w, &g, 0).contains(&marked), "no nodes on land corruption");
     set_res(&mut g, 0, Resource::ResearchCubes, cubes - 1);

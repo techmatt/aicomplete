@@ -50,9 +50,9 @@ The cards config lists which cards are in the game (baseline: all of them).
   global, none makes a liberation cheaper the next time ([ambassadors.md](ambassadors.md)).
 - **Tags are story, not rules (r93, Matt).** No tag owns an effect, as Magic's colors don't: each tag has its usual
   effects (the tag table in [ai-powers.md](ai-powers.md)), and a card whose effect fits none of its tags is a soft
-  design warning, never a refusal. Shields on a node hex lean Security, marker clearing Diplomacy, delays (a threat
+  design warning, never a refusal. Shields on a node hex lean Security, land lifts Diplomacy or Power, delays (a threat
   skips this round's execution, stays up, and can be countered next round) Science. No board power prints a shield or
-  a delay; the Protector's Recovery clears a marker. No card `needs` a tag for any of the three.
+  a delay; the Protector's Recovery lifts land corruption. No card `needs` a tag for any of the three.
 - **Typed counters (candidate).** Nine tier-1 cards fight one threat tag, and count for more than they cost toward
   threats carrying it (or Universal) that the player is near, a threat's tag being the card's own (Security,
   Diplomacy, Cyber, Industry; Science's and Power's tools stay general). Industry has two programs and an Action building;
@@ -60,7 +60,8 @@ The cards config lists which cards are in the game (baseline: all of them).
 - **Engines (candidate; the Terraforming Mars pattern).** Programs are the green cards: one-shot, and where
   permanent income lives, flat ("raise your credit income by 8") or per tag ("by 1 per 2 Science tags on your cards",
   one such program per tag, needs 2 of it). Buildings are the blue cards: triggers, Actions and Effects; a building's
-  income is per tag, 3 a tag (Foundation Model Campus, Vertical Monopoly), or flat on a strong tier-2 one. **An engine
+  income is per tag, 3 a tag (Foundation Model Campus, Vertical Monopoly), counted once when it is played as a
+  program's is (r98, `cards.tag_income_once`, Matt's candidate from 224 #6), or flat on a strong tier-2 one. **An engine
   pays up front (Matt):** a building with a trigger, threshold, discount or income also gives a one-time gain
   when built, worth about two of its fires: draw 2-4 cards, 2 energy on three Power ones (not Positron Storage Ring), or its first tokens here
   (the At N cards, *Tokens* below), so its own play fills the

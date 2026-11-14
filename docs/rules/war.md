@@ -79,14 +79,13 @@ lands to "march at once" (Total War) take their steps as it executes. A step is 
 facilities; agents meet ambassadors. The owner's own ambassador on a facility is still armor against a strike
 ([ambassadors.md](ambassadors.md)).
 
-**Wall (candidate, Matt).** Adversary troops can't enter a hex with the Protector's node: a
-march goes around it, and a Muster there stays in the supply (175: one rule for a blocked landing; a threat's
-landing, the players' choice, is offered only open hexes). **Nor can a troop strike into it (Matt):** a
+**Wall (locked, r98, Matt, 2026-11-13).** **No troop is ever placed on the Protector's node hex** (a Muster's, a
+factory's, a botnet's, a threat's or a project's: it stays in the supply; a threat's
+landing, the players' choice, is offered only open hexes), and none enters it: a march goes around it. **Nor can a troop strike into it (Matt):** a
 facility on a hex with the Protector's node is no target, so it stands until the node goes.
 A troop already standing on a hex when the Protector places there leaves as it likes. Vigil pays 1 insight for each
 of the first two that end a march next to its node each round ([ai-powers.md](ai-powers.md); r89: the board's Muster
-where the Protector stands is gone, `wall_troops` 0). A landing enters a hex; a troop made by a factory on its own hex
-doesn't. With no open way to a target a troop stays where it is.
+where the Protector stands is gone, `wall_troops` 0). With no open way to a target a troop stays where it is.
 
 **A troop that strikes
 is used up** (`troop_spent`), whether the target is destroyed or the hit absorbed.
@@ -115,8 +114,7 @@ each drone left over destroys a factory across the border, and a node on it, swa
 unclaimed neutral factory puts a chip on each city next to it; at 3 the city builds a neutral factory or research
 station beside it, whichever it has fewer of. Claim the factory and that city stops growing. So Discord feeds war and war feeds
 Discord: keep neutral factories quiet and the Discord track low. **What resisted this summary:** the extra
-drones (Warmongering) ignore the pile's cap, and the agent count you pay for
-grows by one for each agent already on the site.
+drones (Warmongering) ignore the pile's cap.
 
 **This is the troops' own movement rule**; Push (Interceptor Battery, the Protector's Patrol) moves troops too
 ([ambassadors.md](ambassadors.md)). **A Discord tip doesn't move troops**, and
@@ -140,14 +138,10 @@ lowest-numbered free land hexes next to the start, off no track; 177 calibrates 
 **leaves the game**: it does not go back on its track, and what it uncovered stays
 uncovered.
 
-**Corruption markers (candidate; `node_marker`).** A node lost to anything but corruption (a threat, Border War)
-leaves a corruption marker on its hex, unless the hex is a corrupted site, holds a botnet or a marker
-already. Corruption leaves its own mark instead (r80, Matt's ruling #42: a site's cube, a node hex's land
-corruption; [adversary.md](adversary.md)). A marked hex can't take a node. **A marker only blocks** (r80): it never
-counts toward corruption and never destroys nodes. It doesn't count against the purge. **Clearing
-one** (r91, Matt, 2026-11-12: no standard action removes a marker; r92's Lift land corruption takes land tokens only): the Protector's Recovery and some cards (usually Diplomacy, r93) take a marker off in reach for `clear_unity` Sway toward Unity
-and `clear_credits` credits. A land corruption token comes off by a card that says so or by the standard action
-Lift land corruption (r92: `land_cubes` research cubes, no reward but the drip and the hex back; [economy.md](economy.md)).
+**A lost node leaves no mark** (r98, Matt, 2026-11-13, locked: one scar, and losing the node is
+punishment enough), whatever took it. Land corruption, the one scar, comes off by the standard action Lift land
+corruption (`land_cubes` research cubes; [economy.md](economy.md)), the Protector's Recovery (+2 Unity, printed) or a
+card that says so, for no reward but the drip and the hex back (r98: the Unity a marker paid is gone, a candidate).
 **Destruction.** Only war sways Discord: a factory destroyed by the drones crossing a
 front sways `destruction_discord` Discord. An adversary troop's strike (in the march) sways
 nothing (Matt). A shelter on the country stops a destruction, spending nothing, and so

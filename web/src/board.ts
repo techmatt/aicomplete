@@ -135,15 +135,8 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
       g.append(p(`M0,${f(-s)} L${f(0.85 * s)},${f(-0.62 * s)} V${f(0.05 * s)} Q${f(0.8 * s)},${f(0.75 * s)} 0,${f(1.02 * s)} Q${f(-0.8 * s)},${f(0.75 * s)} ${f(-0.85 * s)},${f(0.05 * s)} V${f(-0.62 * s)} Z`, c));
       g.append(p(`M0,${f(-0.6 * s)} V${f(0.65 * s)}`, 'none', 'detail'));
       break;
-    case 'corruption':
-      // A corruption marker: a burned patch with a cross through it, where a node fell.
-      g.append(
-        el('circle', { cx: 0, cy: 0, r: f(0.9 * s), fill: '#e1bee7', stroke: ADVERSARY_COLOR, 'stroke-width': f(0.22 * s), class: 'glyph' }),
-        el('path', { d: `M${f(-0.45 * s)},${f(-0.45 * s)} L${f(0.45 * s)},${f(0.45 * s)} M${f(0.45 * s)},${f(-0.45 * s)} L${f(-0.45 * s)},${f(0.45 * s)}`, fill: 'none', stroke: ADVERSARY_COLOR, 'stroke-width': f(0.24 * s), 'stroke-linecap': 'round' }),
-      );
-      break;
     case 'land_corruption':
-      // 145: land corruption (138): a scorched square of land with the marker's cross; nothing may be built (node, factory or station: r77).
+      // 145: land corruption (138), the one scar (r98): a scorched square of land with a cross; nothing may be built (node, factory or station: r77).
       g.append(
         el('rect', { x: f(-0.85 * s), y: f(-0.85 * s), width: f(1.7 * s), height: f(1.7 * s), rx: f(0.2 * s), fill: '#bcaaa4', stroke: ADVERSARY_COLOR, 'stroke-width': f(0.22 * s), class: 'glyph' }),
         el('path', { d: `M${f(-0.45 * s)},${f(-0.45 * s)} L${f(0.45 * s)},${f(0.45 * s)} M${f(0.45 * s)},${f(-0.45 * s)} L${f(-0.45 * s)},${f(0.45 * s)}`, fill: 'none', stroke: ADVERSARY_COLOR, 'stroke-width': f(0.24 * s), 'stroke-linecap': 'round' }),
@@ -182,10 +175,10 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
 }
 
 /** Glyph scale per kind: owner cubes and facilities a little larger than pawns. */
-const SCALE: Record<string, number> = { cube: 1.05, station: 1.1, factory: 1, node: 1, ambassador: 0.9, troop: 0.95, unit: 0.95, harden: 0.85, botnet: 1, corruption: 0.95, land_corruption: 0.95, firewall: 0.9, city_chip: 0.7, no_rally: 0.8, no_muster: 0.8, no_corrupt: 0.8 };
-/** The adversary's tokens: its owner cube, its ambassadors, its troops, its botnets, a corruption marker, land corruption. */
-const isAdversary = (kind: string) => kind === 'troop' || kind === 'botnet' || kind === 'corruption' || kind === 'land_corruption' || kind.endsWith(':adversary');
-const ORDER = ['cube', 'station', 'factory', 'node', 'harden', 'firewall', 'no_rally', 'no_muster', 'no_corrupt', 'city_chip', 'unit', 'ambassador', 'corruption', 'land_corruption', 'botnet', 'troop'];
+const SCALE: Record<string, number> = { cube: 1.05, station: 1.1, factory: 1, node: 1, ambassador: 0.9, troop: 0.95, unit: 0.95, harden: 0.85, botnet: 1, land_corruption: 0.95, firewall: 0.9, city_chip: 0.7, no_rally: 0.8, no_muster: 0.8, no_corrupt: 0.8 };
+/** The adversary's tokens: its owner cube, its ambassadors, its troops, its botnets, land corruption. */
+const isAdversary = (kind: string) => kind === 'troop' || kind === 'botnet' || kind === 'land_corruption' || kind.endsWith(':adversary');
+const ORDER = ['cube', 'station', 'factory', 'node', 'harden', 'firewall', 'no_rally', 'no_muster', 'no_corrupt', 'city_chip', 'unit', 'ambassador', 'land_corruption', 'botnet', 'troop'];
 const rank = (k: string) => {
   const i = ORDER.indexOf(k.split(':')[0]);
   return i < 0 ? ORDER.length : i;

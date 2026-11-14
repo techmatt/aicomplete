@@ -22,7 +22,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 97 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 98 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -72,7 +72,7 @@ The house words, as the player aid prints them ([player-aid.md](../player-aid.md
 - **Open megaproject**: one that isn't complete; research cubes in your color go only onto one.
 - **Liberate**: a corrupted site: the agents on it come off, the adversary's cube comes off and yours goes on (the action pays for it in ambassadors; a card's is unpaid).
 - **Convert**: an agent on or next to the city leaves its stack and becomes your ambassador where it stood.
-- **Gather up to N**: pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece (a strike, "remove up to N on or next to a hex", moves nothing).
+- **Gather up to N**: pieces (ambassadors, agents, troops; botnets never move) into a hex in your reach, each from a hex next to it; you may stop at any piece (a strike, "remove up to N on or next to a hex", moves nothing).
 - **Push up to N**: pieces from a hex in your reach, each to a hex next to it that you choose; you may stop at any piece.
 - **Firewall**: a token on a hex: no agent lands or moves there (a Rally's share for it stays in the supply) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn.
 - **In the next adversary turn, no X**: a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (a Rally's share for it stays in the supply), and the tokens come off with the firewalls.

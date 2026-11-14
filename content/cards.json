@@ -366,7 +366,7 @@
   ],
   "effects": [
    {
-    "op": "clear_markers",
+    "op": "lift_land",
     "count": 3
    },
    {
@@ -570,7 +570,7 @@
   ],
   "effects": [
    {
-    "op": "clear_markers",
+    "op": "lift_land",
     "count": 4
    },
    {
@@ -1066,7 +1066,7 @@
   ],
   "effects": [
    {
-    "op": "clear_markers",
+    "op": "lift_land",
     "count": 2
    },
    {

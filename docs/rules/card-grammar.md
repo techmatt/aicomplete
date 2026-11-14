@@ -68,8 +68,8 @@ raises are on programs, the engines' triggers, Actions and Effects on buildings;
   engine's twist: `ambassadors` (gain that many), `troops` (up to that many adversary troops in the city's country come
   off), `botnet` (a botnet on or next to the city comes off; its icon carries the city glyph). Only the liberate capstones print it ([player-cards.md](player-cards.md)).
 - **Clear a city (`clear_city`):** remove up to N agents (Amnesty Decree: 4) around one corrupted
-  city in reach, on it or next to it, your choice which (with no more there than the card takes, all go). Each on the city adds one to the Liberate action's bill ([ambassadors.md](ambassadors.md)); those
-  next to it don't, so clearing them only thins what a Corrupt line could move onto it.
+  city in reach, on it or next to it, your choice which (with no more there than the card takes, all go). A city with an agent on it can't be liberated ([ambassadors.md](ambassadors.md)); clearing
+  those next to it only thins what a Corrupt line could move onto it.
 - **Card text:** extra costs and lowered income included; a long card sets smaller. **Shelter any country** (no
   reach needed): nothing in it, facility or node, can be destroyed this round.
 - **Projects:** a drain removes compute from one visible adversary project; **drain all** from every visible one; a

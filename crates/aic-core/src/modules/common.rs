@@ -33,8 +33,6 @@ pub const DRONE: &str = "Drone";
 pub const HARDEN: &str = "harden";
 /// A botnet: persistent, makes adversary compute, an ambassador on its hex may take it down (r75's standard action).
 pub const BOTNET: &str = "botnet";
-/// A corruption marker (034): what a destroyed node leaves on its hex.
-pub const MARKER: &str = "corruption";
 /// Land corruption (138): a rare hex token a Corrupt land line leaves on an
 /// empty land hex. No node may be placed there, and it drips Discord.
 pub const LAND_CORRUPTION: &str = "land_corruption";

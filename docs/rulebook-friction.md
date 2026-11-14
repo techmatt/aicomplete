@@ -1,62 +1,41 @@
-# Rulebook friction (as of rules revision 82)
+# Rulebook friction (as of rules revision 98)
 
-*What is still hard to say in [rulebook.md](rulebook.md) (third draft), ranked by how much each costs a reader, with
-the rule change that would fix it. Matt's test: a rule that can't be said well is a bad sign about the rule. Only what
-**wording can't fix** stays here: the third draft rewords everything wording could (what it fixed is listed in
-[experiments/results/180_rulebook_check/](../experiments/results/180_rulebook_check/README.md)). The table states the
-engine; the engine facts with file:line are in 173's and 180's working papers.*
+*What is still hard to say in [rulebook.md](rulebook.md), ranked by how much each costs a reader, with the change that
+would fix it. Matt's test: a rule that can't be said well is a bad sign about the rule. Only what **wording can't fix**
+stays here. The full r97 list, with evidence and the options weighed, is 224's working paper (kept, not in the repo);
+r98 (item 223, Matt's rulings 2026-11-13) built its entries 1, 2, 6, 10 and 11, so they are gone from this page.*
 
 **How it's ranked.** Cost is how often a player meets the rule (every round, most games, rarely) times how much it asks
 of them: an exception, a forward reference, more than about three sentences to state, or a result a player wouldn't
-predict from the board or card. **Evidence** is from 180's review of the r77 book: two fresh cold readers (a general
-hobby gamer **G** and a Spirit Island veteran **V**) read it paragraph by paragraph and answered 28 rules questions
-each, checked against the engine; a critical designer (**D**) rated every paragraph and proposed rows; two more fresh
-readers (**G2**, **V2**) read the third draft. "Flagged" means a reader marked the paragraph at severity 2-3 (of 3);
-"D 2/5" is the designer's rating (5 = ready to print).
+predict from the board or card. **Fix** names the kind of change: **P** a rules change, **W** wording or layout,
+**C** a component.
 
-**Length.** At r81 Part 1 (sections 1-14, without Sources lines) runs **7,873 words**, the whole page **12,001**,
-against r80's 7,969 and 12,128 and r79's 8,060 and 12,244 (187's `wc_part1.py` in its results folder; 172's regex had r79 at 7,992); the r77
-second draft was 7,790 and 11,712. Spirit Island's base-game
-core rules are about 6,000-8,000 words (172's estimate, not a count), so Part 1 sits at the top of that range, still
-with no diagrams. Its density: r73 had 40 rows only a rule or component change would fix, 17 met every round; r74-r77
-and 179's icons cut that to 3, all every round. 180's fresh read of the r77 book found 14 more (9 every round), so 17
-and 12, mostly in the adversary's turn: with the bigger faults gone, readers reach the next layer.
-
-## The worst left
-
-The rows before #41 keep their r73 numbers; what r74-r77 and 179 fixed is in their write-ups (175-179) and in git
-history of this page. 180's rows are #41 on; r80 (187, Matt's rulings, 2026-11-11) built #41-#43, #46, #48-#50,
-#52 and #53, r81 (188, Matt's rulings, 2026-11-11) #16, #47, #51 and #54, and r82 (189, Matt's rulings,
-2026-11-11) #2: every board prints 6 insight (the setup space adds none), no adversary card takes insight, Patience
-keeps all of it, credits never buy a keep, keeps cost 1 insight a tier-1 card and 2 a tier-2 every round, and the
-opening deals 2 tier-1 and 2 tier-2 cards into each hand free before round 1's normal draft
-([rules-history.md](rules-history.md)).
-
-1. **What removes an ambassador** (#44): five fates, and the troop that removes one isn't used up.
-2. **Growth every round** (#45): every city builds, a blocked one too.
-3. **Event lines** (#31): event faces print no icon row yet, so each line is read in words.
+**Closed since r82:** #57 (project slot tag: r83, three open slots), #55 (a station's two outputs: kept by Matt's
+ruling, board.md), M1 (Station Seizure is the unforced flip, which checks 2 agents), #56 (the node hex: r98, "2 agents
+on your node's hex destroy it", no mark), and r98's one scar (land corruption only), Corrupt X's tie (an agent
+next to two targets stays), Wall (no troop is ever placed on the Protector's node hex) and the Protector's powers
+(9 to 7). #44 (ambassador fates) was mostly built by r83; what is left is row 5.
 
 ## The table
 
-| # | Rule | What makes it hard (evidence) | Proposed change |
+| # | Rule | What makes it hard | Proposed change |
 |---|---|---|---|
-| 44 | [What removes an ambassador](rulebook.md#ambassadors-meet-agents) (every round) | An agent cancels one 1 for 1; a troop removes one and **stays** (it can remove two in a turn); corruption removes all; a drone stop and a protection each spend one (D, rank 3; G flagged the march line, "ambassadors don't fight" while troops remove them). | One contact rule for every adversary piece: a troop meeting an ambassador removes it and is removed, 1 for 1, as an agent does. |
-| 45 | [Growth](rulebook.md#9-production) (every round) | Every city builds a factory every round it has a free zone next to it, a blocked city too, though blocking stops everything else a site does; a corrupted city's goes by agents nearby (G, V flagged: "the map fills with factories", "'blocked or not' contradicts 'blocked sites make nothing'"; G2 flagged the corrupted city's zone choice). | A blocked city doesn't build (blocking means the site does nothing). Optionally, a city builds only while it has no factory next to it. |
-| 31 | [Event lines](rulebook.md#the-turn) (every round) | r80 closed the list (seven other-line kinds, `content::EVENT_LINE_KINDS`, each with an icon named), but event faces print no icon row yet, so a reader still reads each line's words. | Draw the two missing glyphs (Blackout, Forced March) and give event faces an icon row. |
-| 56 | [Corruption](rulebook.md#corruption) (every round) | r80: one mark for all, but a node hex still needs its own clause: only the node goes (ambassadors stay), and land corruption goes on only if the node is lost (a protection or Sanctuary leaves none) (187's doc pass). | A corrupted node hex is open land that corrupts: everything on it goes, as on a site. |
-| 57 | [Projects](rulebook.md#17-projects) (every round) | r80's slide-left: slot 1's Security tag limits only a card dealt into it, never one that slides in (187's doc pass). | Drop the slot tag, or refill at the tagged slot. |
-| 55 | [Stations](rulebook.md#9-production) (every round with a corrupted station) | r79: a corrupted station has two outputs by its megaproject's state: an adversary cube onto the card until it completes, compute in the adversary's compute step (another phase) after; Vigil's once-a-round cap needs a marker per Protector (185, not yet read by a cold reader). | A corrupted station always makes an adversary cube: onto the megaproject while it is open, else onto the adversary's compute track as 1 compute in the same step. |
+| 1 | [City growth](rulebook.md#9-production) (every round) | Every city (up to 12) counts the unclaimed neutral factories beside it, takes that many chips (cap 3), and at 3 builds whichever of factory and station it has fewer of next to it, on a free hex next to it, else within 2 in its country, else waits; a blocked or corrupted city still grows. Bookkeeping for 12 cities a round, for an effect a player rarely steers (old #45; 224 #3). | Open: Matt is open to another design (a later item). Candidates: a blocked or corrupted city doesn't grow; a city takes 1 chip if any unclaimed neutral factory is beside it. **P** |
+| 2 | [Unity tips](rulebook.md#12-unity-and-discord) (most games, late) | One tip count read against two tables: strength I/II/III at tips 1-2, 3-5, 6+, the purge easing at 3 and 7; a player who learned "6 is the big one" waits a tip too few (224 #7). | A tip-count track per side with every mark printed on it (strength steps, purge steps), each track's length printed per player count. **C** |
+| 3 | [Projects](rulebook.md#17-projects) (every round) | "The X with the most agents on or next to it" counts seven hexes; "the node hex holding the most agents" counts one; both read at resolution (224 #12). | Two agent-count glyphs on project faces: hex and ring, hex alone. **W/C** |
+| 4 | [Event lines](rulebook.md#the-turn-four-beats) (every round) | The other-line kinds are closed (`content::EVENT_LINE_KINDS`, each with an icon named), but event faces print no icon row yet, so each line is read in words (old #31; 224 #13). | Draw the two missing glyphs (Blackout, Forced March) and give event faces an icon row. **C** |
+| 5 | [What spends an ambassador](rulebook.md#ambassadors-meet-agents) (every round) | Many short rules, each fine alone: an agent contact cancels 1 for 1 either way, corruption removes all on the hex, a base spends one per drone, armor spends one, Claim, Liberate, Remove agents and Envoy spend from the supply, blocking and Dispatch leave one standing (old #44; 224 #15). | One "what spends an ambassador" box on the player aid. **W** |
+
+224's other open entries (the income tally, once-a-round bookkeeping, near against nearest, the insight that arrives
+outside the action phase) were judged wording or player-aid work in its paper; the small wording fixes it listed went
+to the planner's parked edits.
 
 ## Engine against docs/rules
 
 A mismatch between the engine and `docs/rules/` goes here as an M-row (doc says, engine does, where), ranked by how
-badly the doc misleads.
-
-| # | Doc says | Engine does | Where |
-|---|---|---|---|
-| M1 | A threat that flips a player's station (Station Coup, **Station Seizure**) takes it only with 2 agents and no player ambassador on it. | Only the unforced flip (Station Coup) checks that; Station Seizure (`force`) corrupts the station outright, even a player's (146, D60). | `rules/board.md:84-88`; `effects/new_ops.rs:20-21, 312-330` |
+badly the doc misleads. None is open at r98.
 
 **Not rules for a player** (left out of the rulebook): the engine's 64-tip safety cap in one check, the round-1000
 stop, `pull_forced`, the embargo state that would forbid a Claim (no content sets it; the threat named Embargo lands
 agents and charges energy or cards), and mechanisms no deck card prints (lowered income, slot-adding buildings, tags
-from hand, place-token triggers, copy income, the chip-paid Harden action, building upkeep, Sabotage).
+from hand, place-token triggers, copy income, building upkeep, Sabotage).

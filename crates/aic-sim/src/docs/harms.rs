@@ -65,14 +65,13 @@ const OWN_BURNS: usize = 12;
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 24] = [
+pub const RULE_HARMS: [(&str, &str, &str); 23] = [
     ("income and rally", "adversary pieces placed", "agent income fills each country's pool; every event's Rally X deals it one at a time onto the sites of its type (151; r80)"),
     ("income and rally", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
     ("income and rally", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
     ("income and rally", "production blacked out", "an agent on a city or station blocks its output while it stands (137)"),
     ("botnets", "projects advanced (compute)", "each botnet makes compute"),
-    ("corruption", "node destroyed", "a hex with a player's node and `corrupt_node_at` agents loses the node (175; protections apply)"),
-    ("corruption", "Discord sway", "a node hex that corrupts takes land corruption, saved node or not (r83, #56), which sways `blight_discord` toward Discord each round (r80)"),
+    ("corruption", "node destroyed", "`corrupt_node_at` agents on a hex with a player's node destroy the node and leave no mark (175, r98; protections apply)"),
     ("corruption", "node destroyed", "a node on the corrupted hex itself is destroyed (its owner may spend a protection: r75)"),
     ("corruption", "city lost", "a city holding its corrupt number of agents becomes the adversary's until a player liberates it"),
     ("corruption", "facilities seized", "a research station or factory that corrupts becomes the adversary's; a firewall or a Corrupt prohibition's token guards every path, flips and threats included (r79, D77; r80)"),
@@ -94,7 +93,7 @@ pub const RULE_HARMS: [(&str, &str, &str); 24] = [
     // 201 (r89, Matt 2026-11-12: troops are few and deadly): troops strike nodes from the start (`troop_node` 0).
     ("march", "node destroyed", "a troop strikes a player's node on or next to its hex (r89, `troop_node` 0; protections apply), one step a march"),
     // 219 (Matt, 2026-11-13): the board burns, each a rare trade of your own engine for 1 antimatter.
-    ("your burns", "facilities destroyed", "the Builder's Teardown destroys one of its own factories, the Researcher's Overload one of its own research stations (r97); gone unless rebuilt the normal way"),
+    ("your burns", "facilities destroyed", "the Builder's Teardown destroys one of its own factories, the Researcher's Meltdown one of its own research stations (r97); gone unless rebuilt the normal way"),
     ("your burns", "Discord sway", "Teardown leaves land corruption on the factory's hex, which drips `blight_discord` toward Discord each round until lifted (r97)"),
 ];
 
@@ -261,7 +260,6 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::OtherGain { .. }
         | Op::Transfer { .. }
         | Op::PlaceNode { .. }
-        | Op::ClearMarkers { .. }
         | Op::ShieldNode { .. }
         | Op::DelayThreat { .. }
         | Op::Damage { .. }

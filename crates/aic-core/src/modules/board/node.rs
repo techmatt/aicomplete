@@ -35,13 +35,13 @@ pub fn track2_taken(g: &GameState, seat: usize) -> usize {
 }
 
 /// Where seat `s` may place nodes: a land hex holding no nodes and no
-/// corruption marker, adjacent to one of its own (with none left, any such
+/// land corruption, adjacent to one of its own (with none left, any such
 /// hex in its home country).
 pub fn node_sites(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
     let mine = node(seat);
     // 138: no node goes on land corruption.
     let free = |h: usize| {
-        !is_ocean(w, h) && node_owner(g, h).is_none() && g.tokens(h, MARKER) == 0 && g.tokens(h, LAND_CORRUPTION) == 0
+        !is_ocean(w, h) && node_owner(g, h).is_none() && g.tokens(h, LAND_CORRUPTION) == 0
     };
     if node_count(g, seat) == 0 {
         let c = home_country(w, seat);
@@ -226,10 +226,9 @@ fn tally_placement(w: &World, g: &mut GameState, cx: &mut Cx, seat: usize, h: us
 
 /// Seat `s` loses its nodes on hex `h` (175: a last node too: no stage protects it).
 /// It leaves the game, as in Spirit Island (034: what it uncovered stays
-/// uncovered), and leaves a corruption marker on the hex unless the hex has
-/// corruption already. The tally names `source`. Returns whether it went.
+/// uncovered), and leaves no mark (r98, Matt's ruling: losing it is punishment
+/// enough). The tally names `source`. Returns whether it went.
 pub fn lose_node(g: &mut GameState, cx: &mut Cx, h: usize, s: usize, source: &str) -> bool {
-    let w = cx.world;
     if node_count(g, s) <= 1 {
         cx.tally(g, "board.last_node_lost", 1);
     }
@@ -238,11 +237,6 @@ pub fn lose_node(g: &mut GameState, cx: &mut Cx, h: usize, s: usize, source: &st
     if !hardenable(g, h) {
         let shields = g.tokens(h, HARDEN);
         cx.add_tokens(g, h, HARDEN, -shields);
-    }
-    let tainted = g.tokens(h, MARKER) > 0 || g.tokens(h, BOTNET) > 0 || corrupted(g, h);
-    if w.int("board.node_marker") > 0 && !tainted {
-        cx.add_tokens(g, h, MARKER, 1);
-        cx.tally(g, "board.markers", 1);
     }
     cx.tally(g, "board.node_lost", 1);
     cx.tally(g, &KeyBuf::new("board.node_lost.").text(source), 1);

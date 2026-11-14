@@ -107,10 +107,18 @@ pub fn remove_all_in_country(g: &mut GameState, cx: &mut Cx, c: usize) -> i64 {
 }
 
 /// An adversary troop lands on hex `h` (the caller counts it). `source` names what made it for 201's by-round
-/// measure (`map.troops_placed.<source>`: factory, muster, wall, threat, project), a stat only.
-pub fn place_troop(g: &mut GameState, cx: &mut Cx, h: usize, source: &str) {
+/// measure (`map.troops_placed.<source>`: factory, muster, threat, project), a stat only. r98 (Matt, 2026-11-13,
+/// 224 #10): Wall: no troop is ever placed on the Protector's hex (a Muster, a factory's, a botnet's, a threat's
+/// or a project's): it stays in the supply. Returns whether it was placed.
+pub fn place_troop(g: &mut GameState, cx: &mut Cx, h: usize, source: &str) -> bool {
+    if board::walled(&cx.world, g, h) {
+        cx.tally(g, "adversary.troops_walled", 1);
+        cx.tally(g, &format!("adversary.troops_walled.{source}"), 1);
+        return false;
+    }
     cx.add_tokens(g, h, TROOP, 1);
     cx.per_round(g, &format!("map.troops_placed.{source}"), 1);
+    true
 }
 
 /// `count` adversary troops, each onto a factory among `hexes` (players

@@ -490,8 +490,6 @@ mod tests {
             b.powers.iter().find(|p| p.name == name).unwrap().clone()
         };
         let fit = |id: &str, p: &Power| list[by_id(id).unwrap() as usize].fit_power(p);
-        let shelter = power("protector", "Shelter");
-        assert!(fit("civic_shelter", &shelter) > fit("diplomacy_liberation", &shelter));
         for name in ["Grant", "Peer Review"] {
             let p = power("researcher", name);
             assert!(fit("cubes_stations", &p) > 1.0, "{name}");

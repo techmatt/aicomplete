@@ -356,13 +356,13 @@ fn removable(w: &World, g: &GameState, h: usize, pieces: Removable) -> bool {
         Removable::Agents => g.tokens(h, ADV_AMBASSADOR) > 0,
         Removable::Troops => g.tokens(h, TROOP) > 0,
         Removable::Botnets => g.tokens(h, BOTNET) > 0,
-        Removable::Markers => g.tokens(h, MARKER) > 0,
+        Removable::Land => g.tokens(h, LAND_CORRUPTION) > 0,
         Removable::Cubes => corrupted(g, h) && !is_city(w, h),
     }
 }
 
-/// 167: up to `n` of `pieces` come off hex `h`; returns how many. A marker is cleared for its reward to `seat`.
-fn take(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, pieces: Removable, n: i64) -> i64 {
+/// 167: up to `n` of `pieces` come off hex `h`; returns how many.
+fn take(g: &mut GameState, cx: &mut Cx, h: usize, pieces: Removable, n: i64) -> i64 {
     let w = cx.world;
     let mut k = 0;
     while k < n && removable(&w, g, h, pieces) {
@@ -370,7 +370,10 @@ fn take(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, pieces: Removable
             Removable::Agents => adversary::remove_piece(g, cx, None, h, ADV_AMBASSADOR),
             Removable::Troops => adversary::remove_piece(g, cx, None, h, TROOP),
             Removable::Botnets => adversary::remove_botnet(g, cx, h),
-            Removable::Markers => board::clear_marker(g, cx, seat, h),
+            Removable::Land => {
+                adversary::lift_land_corruption(g, cx, h);
+                cx.tally(g, "effects.land_lifted", 1);
+            }
             Removable::Cubes => {
                 cx.tally(g, "effects.cleansed", 1);
                 cx.add_tokens(g, h, ADV_CUBE, -1);
@@ -391,8 +394,7 @@ pub(super) fn remove_where(g: &mut GameState, cx: &mut Cx, pieces: Removable, co
         Per::Hex => {
             let hexes: Vec<usize> = (0..g.hexes.len()).filter(|&h| fits(g, h)).collect();
             for h in hexes {
-                let seat = player_ambassador(g, h).unwrap_or(0);
-                removed += take(g, cx, seat, h, pieces, count);
+                removed += take(g, cx, h, pieces, count);
             }
         }
         Per::Country => {
@@ -412,8 +414,7 @@ pub(super) fn remove_where(g: &mut GameState, cx: &mut Cx, pieces: Removable, co
                             }
                         }
                     };
-                    let seat = player_ambassador(g, hexes[i]).unwrap_or(0);
-                    removed += take(g, cx, seat, hexes[i], pieces, 1);
+                    removed += take(g, cx, hexes[i], pieces, 1);
                 }
             }
         }
@@ -433,7 +434,7 @@ pub(super) fn remove_where(g: &mut GameState, cx: &mut Cx, pieces: Removable, co
                         }
                     }
                 };
-                removed += take(g, cx, s, hexes[i], pieces, count);
+                removed += take(g, cx, hexes[i], pieces, count);
             }
         }
     }

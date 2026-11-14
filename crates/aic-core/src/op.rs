@@ -421,8 +421,8 @@ pub enum Removable {
     Agents,
     Troops,
     Botnets,
-    /// Corruption markers (each cleared for its reward, as Recovery clears one).
-    Markers,
+    /// Land-corruption tokens (223, r98: the one scar).
+    Land,
     /// The adversary's cube off a corrupted research station or factory (never a city: tier III frees none).
     Cubes,
 }
@@ -433,7 +433,7 @@ impl Removable {
             Removable::Agents => "agents",
             Removable::Troops => "troops",
             Removable::Botnets => "botnets",
-            Removable::Markers => "corruption markers",
+            Removable::Land => "land corruption",
             Removable::Cubes => "adversary cubes",
         }
     }
@@ -469,8 +469,8 @@ impl Facility {
     }
 }
 
-/// 166 (Matt, 2026-11-09, *Moving pieces*): a board piece a Gather or Push may move. Botnets and
-/// corruption markers never move.
+/// 166 (Matt, 2026-11-09, *Moving pieces*): a board piece a Gather or Push may move. Botnets never
+/// move.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Piece {
@@ -583,11 +583,6 @@ pub enum Op {
     /// Place `count` nodes off your AI board's tracks, paying each step's
     /// cost (041; r81, friction #16: every placement pays it).
     PlaceNode {
-        count: i64,
-    },
-    /// Clear up to `count` corruption markers in your reach, for each one's
-    /// reward (041).
-    ClearMarkers {
         count: i64,
     },
     /// A hardening token on up to `count` hexes of your nodes, in your
@@ -823,10 +818,13 @@ pub enum Op {
     /// 212: one new ambassador of yours onto a city on or next to the node just placed (the player
     /// choosing among several); it stands there as any ambassador does, toward the city's claim.
     AmbassadorToSpot,
-    /// 212: lift up to `count` land-corruption tokens in your reach, face up or down (Lift land
-    /// corruption's effect, printed as a green card's side bonus).
+    /// 212: lift up to `count` land-corruption tokens in your reach (Lift land corruption's effect; r98: the
+    /// Protector's Recovery and some cards).
     LiftLand {
         count: i64,
+        /// r98: Sway toward Unity for each token lifted (the Protector's Recovery: 2), so the Unity rides on the lift.
+        #[serde(default, skip_serializing_if = "is_zero")]
+        unity: i64,
     },
     /// Draw `count` tier-1 cards into your hand, no keep paid (023: Science's
     /// card draw).
@@ -1500,7 +1498,6 @@ impl Op {
             | Op::OtherGain { .. }
             | Op::Transfer { .. }
             | Op::PlaceNode { .. }
-            | Op::ClearMarkers { .. }
             | Op::ShieldNode { .. }
             | Op::DelayThreat { .. }
             | Op::Damage { .. }

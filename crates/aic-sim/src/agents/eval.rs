@@ -101,8 +101,6 @@ pub struct Weights {
     /// Each botnet on the board (a cost: adversary compute, contests nodes,
     /// blocks the purge).
     pub botnet: f64,
-    /// Each corruption marker (041: a hex lost to placement).
-    pub marker: f64,
     /// A hardening token on a node hex, on top of `harden` (041: it
     /// keeps a token that can't be replaced).
     pub shield: f64,
@@ -158,7 +156,7 @@ pub struct Weights {
     /// worth what the shelter saves (`agents/guide.rs`).
     pub shelter_read: f64,
     /// 092: a node a shelter saves, beyond `node` and the seat's `node_danger`
-    /// step (a lost node leaves the game, and its hex takes a marker).
+    /// step (a lost node leaves the game).
     pub shelter_node: f64,
     /// 092 (1: on): a shelter counts no threat the team can still counter from
     /// what it holds (a player counters first and shelters what it can't).
@@ -539,7 +537,6 @@ impl Default for Weights {
             // 022 (020's D9): a botnet is permanent since 019; at 6 agents made
             // botnets answering the spread when an equal free option existed.
             botnet: 25.0,
-            marker: 1.0,
             shield: 3.0,
             threat_waits: 0.5,
             threat_stranded: 1.25,
@@ -822,7 +819,6 @@ struct PowerFact {
 struct HexTokens {
     adv_ambassador: i64,
     adv_cube: i64,
-    marker: i64,
     factory: i64,
     station: i64,
     harden: i64,
@@ -840,7 +836,6 @@ struct HexTokens {
 struct TokenKeys {
     adv_ambassador: Key,
     adv_cube: Key,
-    marker: Key,
     factory: Key,
     station: Key,
     harden: Key,
@@ -858,7 +853,6 @@ impl TokenKeys {
         TokenKeys {
             adv_ambassador: k(ADV_AMBASSADOR),
             adv_cube: k(ADV_CUBE),
-            marker: k(common::MARKER),
             factory: k(FACTORY),
             station: k(STATION),
             harden: k(HARDEN),
@@ -889,8 +883,6 @@ impl TokenKeys {
                         t.adv_ambassador = n;
                     } else if k == self.adv_cube {
                         t.adv_cube = n;
-                    } else if k == self.marker {
-                        t.marker = n;
                     } else if k == self.factory {
                         t.factory = n;
                     } else if k == self.station {
@@ -1193,14 +1185,14 @@ impl Eval {
     }
 
     /// What site `h` would count toward corrupting: its own adversary
-    /// ambassadors (and a city's markers), plus, with a Corrupt line ahead,
+    /// ambassadors, plus, with a Corrupt line ahead,
     /// those next to it (175: every agent next door moves onto it, across borders, but one standing on a clean
     /// site of the same kind stays there).
     /// 151: `arriving` adds the coming Rally's expected ambassadors (empty: none).
     fn toward(rules: &Rules, t: &[HexTokens], arriving: &[f64], h: usize, gather: bool) -> f64 {
         let world = rules.world();
         let at = |x: usize| t[x].adv_ambassador as f64 + arriving.get(x).copied().unwrap_or(0.0);
-        let mut n = at(h) + if common::is_city(&world, h) { t[h].marker as f64 } else { 0.0 };
+        let mut n = at(h);
         if gather {
             // The clean site kind on a hex (0: none): 1 city, 2 station, 3 factory.
             let kind = |x: usize| -> u8 {
@@ -1363,8 +1355,7 @@ impl Eval {
                         // to the seats that could buy its energy, until it is cleared.
                         v -= w.city_dark;
                     }
-                    // 034: a corruption marker counts toward corrupting; 138: so do
-                    // the ambassadors next door when a gathering Corrupt line is ahead.
+                    // 138: the ambassadors next door count toward corrupting when a gathering Corrupt line is ahead.
                     // 158: a firewall stops the pull from next door (the Rally forecast already skips it).
                     let toward = if banned(h) {
                         0.0
@@ -1409,7 +1400,7 @@ impl Eval {
                 };
                 let net = |total: f64, base: f64| base + (total - base - cancels).max(0.0);
                 // 175: a node hex corrupts on its own number (2) of agents, whatever site it holds: a
-                // second read, the larger of the two counting. Agents only (a marker is a site's).
+                // second read, the larger of the two counting.
                 let node_r = if held && !banned(h) {
                     let open = !common::firewalled(g, h);
                     let mut k = at(h);
@@ -1427,8 +1418,7 @@ impl Eval {
                     } else if open && site.is_some_and(|(_, gathers, _)| gathers) {
                         // The site's own Corrupt line moves agents onto this hex: short of the site's number they
                         // stay, and the node goes at natural corruption.
-                        let markers = if city { t.marker as f64 } else { 0.0 };
-                        k = Self::toward(rules, &tokens, &arriving, h, true) - markers;
+                        k = Self::toward(rules, &tokens, &arriving, h, true);
                         if cancels > 0.0 {
                             k = net(k, at(h));
                         }
@@ -1448,7 +1438,7 @@ impl Eval {
                     let mut toward = if banned(h) { 0.0 } else { Self::toward(rules, &tokens, &arriving, h, pulls) };
                     if cancels > 0.0 && pulls && toward > 0.0 {
                         // 177: the site's own line gathers too: its arrivals cancel the ambassadors first.
-                        toward = net(toward, at(h) + if city { t.marker as f64 } else { 0.0 });
+                        toward = net(toward, at(h));
                     }
                     if toward > 0.0 || node_r > 0.0 {
                         let p = ((toward + 1.0) / n.max(1) as f64).min(1.0);
@@ -1560,7 +1550,6 @@ impl Eval {
             if t.botnet > 0 && t.ambassador[..seats].iter().any(|&n| n > 0) {
                 v += w.botnet_reach * w.botnet;
             }
-            v -= w.marker * t.marker as f64;
             if held && t.harden > 0 {
                 v += w.shield;
             }
@@ -1653,14 +1642,10 @@ impl Eval {
         // 147 (D67): each land-corruption token (and land filling toward one)
         // drips Discord every round left, at its share of a Discord tip.
         if w.blight > 0.0 {
-            let tokens_down: i64 = tokens.iter().map(|t| t.land).sum();
-            let land = tokens_down as f64 + blight;
+            let land = tokens.iter().map(|t| t.land).sum::<i64>() as f64 + blight;
             if land > 0.0 {
                 let cap = alignment::capacity(&world, g, Side::Discord).max(1) as f64;
-                // 192: a face-down token (a corrupted node hex's) drips at `blight_node_discord`.
-                let face_down = (g.var(adversary::NODE_BLIGHT).min(tokens_down)) as f64;
-                let drip = (land - face_down) * world.int("adversary.blight_discord") as f64
-                    + face_down * world.int("adversary.blight_node_discord") as f64;
+                let drip = land * world.int("adversary.blight_discord") as f64;
                 let rounds = (Self::cards_left(g) as f64).min(BLIGHT_ROUNDS);
                 v -= w.blight * drip * rounds * w.discord_tip / cap;
             }
@@ -2609,7 +2594,6 @@ mod tests {
             for (h, t) in tokens.iter().enumerate() {
                 assert_eq!(t.adv_ambassador, g.tokens(h, ADV_AMBASSADOR));
                 assert_eq!(t.adv_cube, g.tokens(h, ADV_CUBE));
-                assert_eq!(t.marker, g.tokens(h, common::MARKER));
                 assert_eq!(t.factory, g.tokens(h, FACTORY));
                 assert_eq!(t.station, g.tokens(h, STATION));
                 assert_eq!(t.harden, g.tokens(h, HARDEN));

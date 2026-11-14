@@ -123,16 +123,13 @@ pub fn income_with(w: &World, g: &GameState, seat: usize, counts: &[i64; TAGS.le
     let mut add = |r: Resource, n: i64| out.add(r, n);
     add(Resource::Credits, ai::board(w, seat).credits);
     ai::each_track_income(w, g, seat, &mut add);
-    cards::each_passive(w, g, seat, |p| match p {
-        Op::Income { resource, amount } => add(*resource, *amount),
-        Op::IncomePerTag {
-            resource,
-            tag,
-            per,
-            amount,
-        } => add(*resource, amount * (counts[*tag as usize] / per)),
-        _ => {}
+    cards::each_passive(w, g, seat, |p| {
+        if let Op::Income { resource, amount } = p {
+            add(*resource, *amount)
+        }
     });
+    // 223: per-tag income, a frozen count where `cards.tag_income_once` froze one.
+    cards::each_tag_income(w, g, seat, counts, &mut add);
     // A walk of the seat's keys: most seats hold none of them.
     let prefix = KeyBuf::new("economy.production.").num(seat).text(".");
     for (k, n) in g.vars.from_key(prefix.as_str()).map_while(|(k, n)| Some((k.strip_prefix(prefix.as_str())?, *n))) {

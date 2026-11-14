@@ -153,8 +153,8 @@ macro_rules! forced_table {
             (abandon: bool, true, 0.0, "exploit check (053): give up the last country: no counter on it, no hex in it while another pick is open, losses aside")
             /// Exploit check (034): draft, keep and play Science first, for its discounts.
             (science_rush: bool, true, 0.0, "exploit check (034): draft, keep and play Science first, for its discounts")
-            /// Fixed policy (041): never clear a corruption marker (a card) or lift land corruption.
-            (never_clear: bool, true, 0.0, "fixed policy (041): never clear a corruption marker or lift land corruption")
+            /// Fixed policy (041): never lift land corruption.
+            (never_clear: bool, true, 0.0, "fixed policy (041): never lift land corruption")
             /// Fixed policy (041): the Science rush, board cards first.
             (science_board: bool, true, 0.0, "fixed policy (041): the Science rush, board cards first")
             /// Fixed policy (066): both node powers whenever affordable.
@@ -275,9 +275,6 @@ macro_rules! behavior_table {
             /// 166: the move heuristics answer Gather and Push prompts (`agents::moves`: push agents off the
             /// next Corrupt site, gather agents onto ambassadors, gather ambassadors toward a Liberate).
             (move_rules: bool, 1.0, "166: move heuristics for Gather and Push (push agents off the next Corrupt site, gather agents onto ambassadors, gather ambassadors to a Liberate)")
-            /// 175: a Corrupt X line's agent next to several sites goes where the players lose least
-            /// (`plan::converge_pick`: onto a site corrupting anyway, else the one holding fewest).
-            (converge_rule: bool, 1.0, "175: a Corrupt line's converging agent goes onto a site corrupting anyway, else the one holding fewest")
             /// 176: Buy energy (r75's action-phase purchase) when the credits it costs would sit idle: the seat's
             /// credits and this round's credit income, less the price, still reach the eval's credit cap. A pass is
             /// scored on the table it leaves, before income, so the search alone never saw idle credits here
@@ -305,7 +302,7 @@ macro_rules! behavior_table {
             /// insight and antimatter, so it never converted, 207).
             (make_short: bool, 1.0, "211: convert cubes to insight or antimatter when, after up to three conversions, the keep plan plays a card this round it can't now")
             /// 213 (with `make_short`): an antimatter source the seat can use this round (a board power or a built
-            /// Action that gains antimatter: the plants, then 219's burns Teardown and Overload and the seize) counts as a way to make
+            /// Action that gains antimatter: the plants, then 219's burns Teardown and Meltdown and the seize) counts as a way to make
             /// the antimatter a hand card lacks, tried before Make antimatter's cubes (r94 left the new powers unused).
             (am_source: bool, 1.0, "213: with make_short, an antimatter power or built Action is used (before Make antimatter) when it lets the keep plan play a card this round it can't now")
         }
@@ -386,7 +383,7 @@ impl Forced {
             && (!self.events_only || d.is_event())
             && (!self.free_only || d.tags.contains(&Tag::Diplomacy))
             && (!self.ignore_threats || !counters_threats(d))
-            && (!self.never_clear || !d.effects.iter().any(|e| matches!(e, Op::ClearMarkers { .. })))
+            && (!self.never_clear || !d.effects.iter().any(|e| matches!(e, Op::LiftLand { .. })))
     }
 }
 
@@ -750,7 +747,7 @@ fn acts_on_board(d: &CardDef) -> bool {
     d.effects.iter().any(|e| {
         matches!(
             e,
-            Op::ClearMarkers { .. } | Op::ShieldNode { .. } | Op::DelayThreat { .. } | Op::MoveOne { .. }
+            Op::LiftLand { .. } | Op::ShieldNode { .. } | Op::DelayThreat { .. } | Op::MoveOne { .. }
         )
     })
 }
@@ -839,14 +836,6 @@ impl Agent for Policy {
         }
         // The agent behaviors (185): each pick stands only where no forced behavior rules it out (182's F32).
         let b = &self.behaviors;
-        if b.converge_rule && pending {
-            let last_node = self.eval().is_some_and(|e| e.w.last_node > 0.0);
-            if let Some(i) = super::moves::converge(&world, g, legal, last_node) {
-                if !self.ruled_out(&world, g, &legal[i]) {
-                    return i;
-                }
-            }
-        }
         if b.energy_rule && !pending {
             if let Some(i) = buy_energy(&world, g, legal, idle_credits(self.eval())) {
                 if !self.ruled_out(&world, g, &legal[i]) {
@@ -1268,7 +1257,7 @@ mod tests {
         let spec = crate::agents::AgentSpec::parse("greedy:plan_keep=0").unwrap();
         assert!(!spec.forced().is_active());
         let b = spec.behaviors();
-        assert!(b.is_active() && b.move_rules && b.converge_rule && b.energy_rule && b.strike_rule);
+        assert!(b.is_active() && b.move_rules && b.energy_rule && b.strike_rule);
         let off = crate::agents::AgentSpec::parse("greedy:move_rules=0").unwrap();
         assert!(!off.behaviors().move_rules && off.behaviors().strike_rule);
         assert_eq!(off.label(), "greedy:move_rules=0");

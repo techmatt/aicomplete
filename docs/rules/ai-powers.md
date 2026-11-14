@@ -16,39 +16,37 @@ still help.
 | Board | Power | Cost | Effect |
 |---|---|---|---|
 | Builder | Mint | 3 credits | gain 1 chip |
-| Builder | Buy In | 6 credits | place 1 Node; if it is on or next to a factory none of your other nodes is on or next to, also gain 1 chip |
+| Builder | Buy In | 6 credits | place 1 Node; if the new node brings a factory into your reach, also gain 1 chip |
 | Builder | Scrap | 1 Industry | gain 1 chip |
 | Builder | Overcharge | 1 Power | gain 2 energy |
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
 | Builder | Procure | 1 chip | draw 2 cards |
 | Builder | Fortify | 2 chips | remove 1 Troop in reach and harden 1 facility in reach |
-| Builder | Teardown | 1 chip | destroy one of your factories; land corruption goes on its hex; gain 1 antimatter |
+| Builder | Teardown | 1 chip | destroy one of your factories anywhere; land corruption goes on its hex; gain 1 antimatter |
 | Protector | Bulwark | 1 energy | harden 1 facility in reach |
-| Protector | Accord | 1 Diplomacy | place 1 Node; if it is on or next to a city none of your other nodes is on or next to, also put a new ambassador on that city |
-| Protector | Stand Down | 1 Security | remove 1 Troop in reach |
-| Protector | Recovery | 1 Diplomacy | clear a corruption marker in reach |
-| Protector | Shelter | 1 Security + 1 energy | in any country (no reach needed) this round, no Node or facility can be destroyed |
+| Protector | Accord | 1 Diplomacy | place 1 Node; if the new node brings a city into your reach, also put a new ambassador on one such city |
+| Protector | Recovery | 1 Diplomacy | lift a land-corruption token in reach and sway 2 toward Unity |
 | Protector | Debrief | 1 Security | draw 1 card and remove 1 Agent in a hex in reach |
 | Protector | Patrol | 1 energy | push up to 3 Agents or Troops from a hex in reach, each to a hex next to it |
-| Protector | Interdict | 1 Security + 1 energy | remove up to 2 Troops in one hex in reach |
-| Protector | Seize | 1 Security + 6 credits + 2 energy | free 1 corrupted station or factory in reach; gain 1 antimatter |
-| Researcher | Peer Review | 1 research cube | place 1 Node; if it is on or next to a research station none of your other nodes is on or next to, also gain 1 insight |
+| Protector | Interdict | 1 Security | remove up to 2 Troops in one hex in reach |
+| Protector | Seize | 1 Security + 6 credits + 2 energy | turn 1 corrupted station or factory in reach neutral; gain 1 antimatter |
+| Researcher | Peer Review | 1 research cube | place 1 Node; if the new node brings a research station into your reach, also gain 1 insight |
 | Researcher | Grant | 3 credits | add 1 research cube in your color to an open megaproject |
 | Researcher | Field Station | 1 Industry | build a research station in reach, paying no chips |
 | Researcher | Audit | 1 Cyber | remove 3 compute from one adversary project |
 | Researcher | Disrupt | 1 Cyber + 1 research cube | remove up to 2 Troops in one country |
-| Researcher | Overload | 2 research cubes | destroy one of your research stations; gain 1 antimatter |
+| Researcher | Meltdown | 2 research cubes | destroy one of your research stations anywhere; gain 1 antimatter |
 | Researcher | Synthesis | 2 insight | draw 1 card |
 <!-- /generated -->
 
 **Sacrifice is late-game liquidation.** Once the cards needing a tag are played, its tags turn into engine rewards,
-each payoff priced to be worth the card: 1 chip (r83: worth 2 before), 2 energy, a troop removed (Stand Down, r93: 3 credits
-before), a marker with its Sway, a card and an agent removed (Debrief, r91); a tag and an energy buy a building, a sheltered
-country or 2 troops removed (r35).
+each payoff priced to be worth the card: 1 chip (r83: worth 2 before), 2 energy, up to 2 troops removed in a hex (Interdict, r98), a
+land corruption token lifted with its Sway (Recovery, r98), a card and an agent removed (Debrief, r91); a tag and an
+energy buy a building (r35).
 
 **Each power's tag is its story (r93, Matt, amendment 9513).** A tag-paid power is paid in the tag its effect fits
-(the tag table is below): the Protector's Accord and Recovery in Diplomacy (trust, cleanup), its Stand Down, Debrief,
-Shelter and Interdict in Security (force, protection). The one exception is the Researcher's Disrupt, paid in Cyber: it
+(the tag table is below): the Protector's Accord and Recovery in Diplomacy (trust, cleanup), its Debrief and
+Interdict in Security (force, protection). The one exception is the Researcher's Disrupt, paid in Cyber: it
 hacks troops anywhere in a country, no reach.
 
 **Node powers' riders (r93, candidate; Matt, message 9565).** A node power places next to your nodes as any placement
@@ -63,7 +61,7 @@ is kept for a stronger version (a track upgrade or a card), never a board's own 
 | Tag | Story | Its usual effects (the tag story table of scripts/design_check.json) |
 |---|---|---|
 | Security | force and protection | troops and agents removed, pushes, shelters, cordons, hardening, shields on node hexes |
-| Diplomacy | cooperation: trust, Unity, green cleanup | ambassadors, Unity Sway, cleanses, marker clearing, land lifts, gifts |
+| Diplomacy | cooperation: trust, Unity, green cleanup | ambassadors, Unity Sway, cleanses, land lifts, gifts |
 | Science | discovery | insight, research cubes, stations, megaproject cubes, antimatter physics, delays |
 | Industry | building | chips, factories, capital, free buildings |
 | Power | energy and antimatter | energy, antimatter, the weapons it feeds |
@@ -77,17 +75,18 @@ never refused. Draws, credits, triggers, threat counters, liberation and a tag's
 into a card (r91, Matt: the Researcher's draw outlet; Fieldwork, 1 energy for 3 cards, is cut, since it starved it).
 
 **Troop powers (r91, amendment 9247: early troops decide games).** Each board removes or stops troops its own way, no
-two alike: the Protector's **Interdict** (a Security card and 1 energy: up to 2 troops in one hex in reach) and
-**Stand Down** (a Security card: 1 troop in reach, r93) beside its Patrol (pushes them away) and Shelter; the Builder's **Fortify** (2 chips: 1 troop in reach and a facility
+two alike: the Protector's **Interdict** (a Security card: up to 2 troops in one hex in reach; r98, Matt's ruling: Stand Down
+merged into it and Shelter cut, 9 powers to 7) beside its Patrol (pushes them away); the Builder's **Fortify** (2 chips: 1 troop in reach and a facility
 hardened); the Researcher's **Disrupt** (a Cyber card and a research cube: up to 2 troops in one country, no reach
 needed). The standard action Remove a troop (`troop_credits` 10 credits, `troop_per_round` once a round) is the hedge.
 
 **Antimatter: each board a rare burn of its own engine (r97, Matt's ruling, 2026-11-13).** The steady source is the
 tier-2 converter plants ([economy.md](economy.md)); each board's own power is a different decision, once a round, for
 1 antimatter: the Builder's **Teardown** (1 chip: destroy one of your own factories, and a land-corruption token goes on
-its hex), the Researcher's **Overload** (2 research cubes: destroy one of your own research stations), the Protector's
-**Seize** (a Security card, 6 credits and 2 energy: free a corrupted station or factory in reach, its adversary cube
-off, well above Remove a troop's 10). A burned piece is gone, no protection asked (you chose it), unless rebuilt the
+its hex), the Researcher's **Meltdown** (2 research cubes: destroy one of your own research stations; r98: renamed from
+Overload, a tier-2 threat's name), the Protector's **Seize** (a Security card, 6 credits and 2 energy: turn a
+corrupted station or factory in reach neutral, its adversary cube off, well above Remove a troop's 10). Teardown and
+Meltdown reach anywhere. A burned piece is gone, no protection asked (you chose it), unless rebuilt the
 normal way; with no piece or target the power can't be used. No power spends antimatter: the spends are the majors,
 tier-2 cards and a few dear tier-1 ones.
 
@@ -128,7 +127,7 @@ station's card is complete, which would otherwise double its cubes each round, c
 
 ## Shelters and hardening
 
-A **shelter** (the Protector's Shelter, in any country with no reach needed, or a card's "shelter one country") lasts until cleanup (phase 20) of the round
+A **shelter** (a card's "shelter one country", no reach needed; r98 cut the Protector's Shelter power) lasts until cleanup (phase 20) of the round
 it is used in. Used in the actions, it covers the rest of the actions and what comes after them: the income step,
 growth, the threats that execute and war (phases 15-19). The march (phase 7) has already happened, but a threat's
 immediate march (Total War's, phase 18) meets it. It stops a destruction automatically, spending nothing, and so does the Protector's Aegis Doctrine capstone, a shelter

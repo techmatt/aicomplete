@@ -53,7 +53,7 @@ Cities, research stations and factories follow one set of rules and differ only 
 
 ## Moving pieces: Gather and Push (r70; Matt, 2026-11-09, *Moving pieces*; numbers candidates)
 
-Pieces on the board move: **ambassadors** (any seat's), **agents** and **troops**. Botnets and corruption markers don't.
+Pieces on the board move: **ambassadors** (any seat's), **agents** and **troops**. Botnets don't.
 
 - **Gather up to N** pieces into a land hex in your reach, each from a hex next to it, one at a time; **Push up to N**
   pieces from a land hex in your reach, each to a land hex next to it, the player choosing where. "Up to": stop
@@ -88,15 +88,16 @@ for the last rounds, and never free a city: the players still reach it and Liber
 
 A **base** is no site: it is a front's troop pile ([war.md](war.md)). A player ambassador standing on a base is used
 up instead of the next drone made there; an agent on one does nothing.
-A **node**'s hex corrupts at `corrupt_node_at` (2) agents, whatever else stands there (175, [adversary.md](adversary.md)):
-the node is lost unless something absorbs it, the hex takes land corruption (r80), and the agents go to the supply.
+**2 agents on a player's node hex destroy the node** (`corrupt_node_at`), whatever else stands there (175,
+[adversary.md](adversary.md)): the node is lost unless something absorbs it, the agents go to the supply, and the hex
+takes no mark (r98).
 One agent on it costs nothing.
 
 - **Every contact is 1 for 1** (r75, Matt's ruling 1). An agent arriving (a Rally, a creation line, a Corrupt line's
   move, a Gather or Push, a fallback landing) on a hex holding player ambassadors cancels one of them; with several
   players' there, the players choose whose (seat 0 asks for the team). An ambassador arriving on agents cancels one.
   Both go (the agent to the adversary's supply), with no Unity, so a position is held only until the next arrival.
-  Claim and Liberate pay one ambassador for each agent on the site, the same rate.
+  Claim and Liberate refuse a site with an agent on it (206): clear it first.
 - **Remove agents** (the standard action, [economy.md](economy.md)): spend `remove_ambassadors` (1) ambassador from
   your supply, used up, and remove up to `remove_count` (3) agents in reach, one at a time from any hexes in reach,
   your choice, stopping when you like. It places nothing (r75; it stood on one hex and removed 3 there). The supply
@@ -116,9 +117,9 @@ Diplomacy tag on each card you play (127; at 1 a tag of any kind it piled 52-84 
 
 **For new players.** Every city, research station and factory belongs to a player, to the adversary, or to nobody,
 and makes something for its owner. Spend your ambassadors to claim a neutral one or to take one back from the
-adversary: 5 for a city, 3 for a station or factory either way, one more for each agent sitting on it; your own
-ambassadors standing on it pay first. Either way it becomes yours, and taking one back also sways Unity your way. A
-station or factory you own makes 2 a round, so a claim pays back in about 3 rounds; a few cards claim a station for
+adversary: 5 for a city, 3 for a station or factory either way (2 to claim a factory), never with an agent sitting on
+it; your own ambassadors standing on it pay first. Either way it becomes yours, and taking one back also sways Unity your way. A
+station you own makes 2 a round (a factory 1 chip), so a claim pays back in about 3 rounds; a few cards claim a station for
 energy instead. Every meeting of an agent and an ambassador is one for one. Stand one ambassador on an adversary site
 to shut it off, and clear agents off yours, which they shut off the same way. An ambassador of yours on your own piece
 can take a hit for it.

@@ -58,10 +58,6 @@ pub struct Pieces {
     /// a use from any hexes (r75). It ignores reach (the Remove action takes agents in reach). (178: no agent lands on a liberated city, so `remove_after_liberate` and
     /// `free_leaves` are gone.)
     pub remove_actions: i64,
-    /// Corruption markers (a card or Recovery clearing one sways `board.clear_unity` Unity), and of
-    /// them in some seat's reach.
-    pub markers: i64,
-    pub markers_in_reach: i64,
     /// The purge's count at the state's own level.
     pub purge: i64,
 }
@@ -121,11 +117,6 @@ pub fn pieces(rules: &Rules, g: &GameState) -> Pieces {
         p.botnets += g.tokens(h, common::BOTNET);
         p.troops += g.tokens(h, common::TROOP);
         p.ambassadors += amb;
-        let m = g.tokens(h, common::MARKER);
-        p.markers += m;
-        if m > 0 && (0..g.seats.len()).any(|s| common::in_reach(&w, g, s, h)) {
-            p.markers_in_reach += m;
-        }
         if common::corrupted_city(&w, g, h) {
             p.cities += 1;
             p.ambassadors_on_corrupted += amb;

@@ -82,14 +82,15 @@ megaproject is the corp's defining card.
   One opposing ambassador or agent on a station blocks its output while it stands; the Liberate action takes an
   adversary station for the liberator.
 - **A station is a defended investment (candidate, Matt).** The adversary needs weight to take
-  yours: an effect that flips a player's station (Station Coup; Station Seizure, r83's M1, after landing 2 agents) takes it
+  yours: an effect that flips a player's station (Station Seizure, after landing 2 agents; Station Coup instead turns a player's
+  station neutral with no agent test, `take_site`) takes it
   only when `adversary.station_flip_at` (2) agents and no player ambassador
   stand on it, those agents used up; short of that one agent lands on it
   instead (a player ambassador there cancels it). A neutral station flips as before. Cards
   that free a station are priced as a station flip, a cube a round both ways (Reclamation
   Crew); factories stay cheap to free (Back-Channel Talks). A card that liberates a site does it as the Liberate
-  action does, unpaid; a card that claims a neutral station pays only its extra (one ambassador per agent on it), as
-  Claim pays: your ambassadors on the station first, then your supply.
+  action does, unpaid; a card that claims a neutral station does it unpaid, and like Claim never on a station with an agent on it
+  (206).
 - **Until completion** a country's cubes go onto its megaproject. Cubes of any color fill it.
 - **Completion** is checked once, at the end of production (`board.produce`),
   before upkeep and threats, so a whole round's cubes land first. A card holding its size

@@ -103,7 +103,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                 board::place_ambassador(g, cx, seat, cities[i]);
             }
         }
-        Op::LiftLand { count } => {
+        Op::LiftLand { count, unity } => {
             for _ in 0..*count {
                 let hexes = board::land_in_reach(&w, g, seat);
                 let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
@@ -111,10 +111,10 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                 let Some(i) = cx.choose(seat, prompt, opts)? else { break };
                 adversary::lift_land_corruption(g, cx, hexes[i]);
                 cx.tally(g, "effects.land_lifted", 1);
+                alignment::unity_from(g, cx, "lift", *unity);
             }
         }
         // 044: "up to": after the first, "stop" (as Cleanse does).
-        Op::ClearMarkers { count } => science::clear_markers(g, cx, seat, *count)?,
         Op::ShieldNode { count } => science::shield_node(g, cx, seat, *count)?,
         Op::DelayThreat { count } => science::delay_threat(g, cx, seat, *count)?,
         Op::Damage { ambassadors, troops } => removal::damage(g, cx, seat, *ambassadors, *troops)?,

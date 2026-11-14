@@ -112,7 +112,7 @@
       6
      ]
     ],
-    "text": "place 1 Node; if it is on or next to a factory none of your other nodes is on or next to, also gain 1 chip",
+    "text": "place 1 Node; if the new node brings a factory into your reach, also gain 1 chip",
     "effects": [
      {
       "op": "place_node",
@@ -237,7 +237,7 @@
       1
      ]
     ],
-    "text": "destroy one of your factories; land corruption goes on its hex; gain 1 antimatter",
+    "text": "destroy one of your factories anywhere; land corruption goes on its hex; gain 1 antimatter",
     "effects": [
      {
       "op": "burn",
@@ -443,7 +443,7 @@
      ]
     ],
     "cost": [],
-    "text": "place 1 Node; if it is on or next to a city none of your other nodes is on or next to, also put a new ambassador on that city",
+    "text": "place 1 Node; if the new node brings a city into your reach, also put a new ambassador on one such city",
     "effects": [
      {
       "op": "place_node",
@@ -464,23 +464,6 @@
     ]
    },
    {
-    "name": "Stand Down",
-    "tags": [
-     [
-      "security",
-      1
-     ]
-    ],
-    "text": "remove 1 Troop in reach",
-    "effects": [
-     {
-      "op": "remove_troops",
-      "count": 1,
-      "reach": true
-     }
-    ]
-   },
-   {
     "name": "Recovery",
     "tags": [
      [
@@ -488,33 +471,13 @@
       1
      ]
     ],
-    "text": "clear a corruption marker in reach",
+    "text": "lift a land-corruption token in reach and sway 2 toward Unity",
     "effects": [
      {
-      "op": "clear_markers",
-      "count": 1
+      "op": "lift_land",
+      "count": 1,
+      "unity": 2
      }
-    ]
-   },
-   {
-    "name": "Shelter",
-    "tags": [
-     [
-      "security",
-      1
-     ]
-    ],
-    "text": "in any country (no reach needed) this round, no Node or facility can be destroyed",
-    "effects": [
-     {
-      "op": "shelter"
-     }
-    ],
-    "cost": [
-     [
-      "energy",
-      1
-     ]
     ]
    },
    {
@@ -566,12 +529,6 @@
       1
      ]
     ],
-    "cost": [
-     [
-      "energy",
-      1
-     ]
-    ],
     "text": "remove up to 2 Troops in one hex in reach",
     "effects": [
      {
@@ -598,7 +555,7 @@
       2
      ]
     ],
-    "text": "free 1 corrupted station or factory in reach; gain 1 antimatter",
+    "text": "turn 1 corrupted station or factory in reach neutral; gain 1 antimatter",
     "effects": [
      {
       "op": "cleanse",
@@ -770,7 +727,7 @@
       1
      ]
     ],
-    "text": "place 1 Node; if it is on or next to a research station none of your other nodes is on or next to, also gain 1 insight",
+    "text": "place 1 Node; if the new node brings a research station into your reach, also gain 1 insight",
     "effects": [
      {
       "op": "place_node",
@@ -863,9 +820,9 @@
     ]
    },
    {
-    "name": "Overload",
+    "name": "Meltdown",
     "tags": [],
-    "text": "destroy one of your research stations; gain 1 antimatter",
+    "text": "destroy one of your research stations anywhere; gain 1 antimatter",
     "effects": [
      {
       "op": "burn",

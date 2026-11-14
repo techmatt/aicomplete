@@ -245,7 +245,9 @@ fn factory_output(g: &mut GameState, cx: &mut Cx) {
                 cx.tally(g, "board.blocked.factory_adversary", 1);
                 continue;
             }
-            adversary::place_troop(g, cx, h, "factory");
+            if !adversary::place_troop(g, cx, h, "factory") {
+                continue;
+            }
             cx.tally(g, "board.troops_built", 1);
             cx.note(Some(h), || format!("The factory at {} makes an adversary troop", hex_name(&w, h)));
         }

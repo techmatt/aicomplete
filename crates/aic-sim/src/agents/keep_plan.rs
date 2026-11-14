@@ -258,16 +258,13 @@ fn plan_value(w: &World, g: &GameState, s: usize, kept: &[Key], f: &Forced, pc: 
     plan(w, g, s, kept, f, pc, pt).map_or(f64::NEG_INFINITY, |(v, _)| v)
 }
 
-/// The jobs `d` would do for seat `s` on this table: markers in reach to
-/// clear, threats to delay, nodes with no token to shield.
+/// The jobs `d` would do for seat `s` on this table: land corruption in reach
+/// to lift, threats to delay, nodes with no token to shield.
 fn niche_jobs(w: &World, g: &GameState, s: usize, d: &CardDef) -> i64 {
     d.effects
         .iter()
         .map(|e| match e {
-            Op::ClearMarkers { count } => {
-                let open = |h: &usize| g.tokens(*h, common::MARKER) > 0 && common::in_reach(w, g, s, *h);
-                (*count).min((0..g.hexes.len()).filter(open).count() as i64)
-            }
+            Op::LiftLand { count, .. } => (*count).min(aic_core::modules::board::land_in_reach(w, g, s).len() as i64),
             // 118: only threats the seat may counter, as the engine delays (F136).
             Op::DelayThreat { count } => {
                 (*count).min(threats::counterable(w, g, s, None).iter().filter(|t| !threats::waits(g, t)).count() as i64)

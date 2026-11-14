@@ -427,7 +427,7 @@ fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
 
 /// 167: the board and the team, measured around a Unity or Discord card (deltas tallied as `fx.<id>.<measure>`).
 const FX_MEASURES: [&str; 16] = [
-    "agents", "troops", "botnets", "markers", "corrupted", "threats", "credits", "energy", "insight", "ambassadors",
+    "agents", "troops", "botnets", "land", "corrupted", "threats", "credits", "energy", "insight", "ambassadors",
     "free_keeps", "income_credits", "income_insight", "unity", "unity_pulled", "discord",
 ];
 
@@ -439,7 +439,7 @@ fn fx_snapshot(g: &GameState) -> [i64; 16] {
         board(ADV_AMBASSADOR),
         board(TROOP),
         board(BOTNET),
-        board(MARKER),
+        board(LAND_CORRUPTION),
         (0..g.hexes.len()).filter(|&h| corrupted(g, h)).count() as i64,
         super::threats::active(g).len() as i64,
         seats(Resource::Credits),

@@ -321,10 +321,6 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             counted(*count, "node"),
             format!("place {}", plural(*count, "node")),
         )),
-        Op::ClearMarkers { count } => one(clause(
-            adversary(minus(*count, "marker")),
-            format!("clear {} in reach", plural(*count, "corruption marker")),
-        )),
         Op::ShieldNode { count } => one(clause(
             { let mut p = counted(*count, "harden"); p.push(w("node")); p },
             format!("harden {count} of your nodes"),
@@ -630,9 +626,13 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             say: "put a new ambassador on that city".to_string(),
             share: Share::Mine,
         }),
-        Op::LiftLand { count } => one(clause(
+        Op::LiftLand { count, unity } => one(clause(
             adversary(minus(*count, "hex")),
-            format!("lift {} in reach", plural(*count, "land-corruption token")),
+            if *unity > 0 {
+                format!("lift {} in reach, sway {unity} toward Unity for each", plural(*count, "land-corruption token"))
+            } else {
+                format!("lift {} in reach", plural(*count, "land-corruption token"))
+            },
         )),
         Op::IfTags { tag: t, count, then } => {
             let inner = clauses(then, gain);

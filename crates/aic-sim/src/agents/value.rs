@@ -509,7 +509,6 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::OtherGain { resource, amount } => Worth::now(row("other_gain") * r(*resource) * *amount as f64),
         Op::Transfer { resource, max } => Worth::now(row("transfer") * r(*resource) * *max as f64),
         Op::PlaceNode { count } => Worth { node: *count as f64, ..Worth::default() },
-        Op::ClearMarkers { count } => Worth::now(row("clear_markers") * t.rate("target_share") * *count as f64),
         Op::ShieldNode { count } => Worth::now(row("shield_node") * t.rate("target_share") * *count as f64),
         Op::DelayThreat { count } => Worth::now(row("delay_threat") * *count as f64),
         Op::Damage { ambassadors, troops } => Worth::now(row("damage") * damage(t, *ambassadors, *troops)),
@@ -613,7 +612,9 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             w.scaled(row(if *fresh { "if_node_next_fresh" } else { "if_node_next" }))
         }
         Op::AmbassadorToSpot => Worth::now(row("ambassador_to_spot") * r(Resource::Ambassadors)),
-        Op::LiftLand { count } => Worth::now(row("lift_land") * t.rate("target_share") * *count as f64),
+        Op::LiftLand { count, unity } => Worth::now(
+            (row("lift_land") + row("sway") * t.rate("sway") * *unity as f64) * t.rate("target_share") * *count as f64,
+        ),
         Op::Draw { count } => Worth::now(row("draw") * t.rate("drawn_card") * *count as f64),
         Op::DrainAll { amount } => Worth::now(row("drain_all") * *amount as f64),
         Op::GainPerTokens { resource, per, .. } => {
@@ -712,7 +713,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
                 Removable::Agents => row("pushback"),
                 Removable::Troops => row("remove_troops"),
                 Removable::Botnets => row("remove_botnet"),
-                Removable::Markers => row("clear_markers"),
+                Removable::Land => row("lift_land"),
                 Removable::Cubes => row("cleanse"),
             };
             let reach = match per {

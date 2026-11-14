@@ -85,30 +85,6 @@ pub fn pick(w: &World, g: &GameState, legal: &[Action], last_node: bool) -> Opti
     None
 }
 
-/// 175: the open prompt is a Corrupt X line's converging agent ("Corrupt cities (at 4): the agent at .. moves
-/// onto which?", `adversary::corrupt_sites`): the option [`plan::converge_pick`] takes, against the number the
-/// prompt prints (the resolving line's, cut included). `last_node` (177): unless a target corrupts anyway, not
-/// onto a target this agent tips while it holds a seat's last node, if another will do.
-pub fn converge(w: &World, g: &GameState, legal: &[Action], last_node: bool) -> Option<usize> {
-    let p = g.pending.as_ref()?;
-    let (site, n) = aic_core::modules::adversary::read_converge_prompt(&p.ask.prompt)?;
-    let to: Vec<usize> = legal.iter().map(|a| option_hex(w, a)).collect::<Option<Vec<_>>>()?;
-    let counts: Vec<i64> = (0..g.hexes.len()).map(|h| g.tokens(h, common::ADV_AMBASSADOR)).collect();
-    let amb: Vec<i64> =
-        (0..g.hexes.len()).map(|h| (0..g.seats.len()).map(|s| g.tokens(h, common::ambassador(s))).sum()).collect();
-    let first = plan::converge_pick(w, g, site, &to, &counts, &amb, n);
-    let held = |t: usize| plan::held(w, g, t, &counts, site);
-    if !last_node || to.iter().any(|&t| held(t) >= n) {
-        return Some(first);
-    }
-    // As `plan::converge_pick` reads it: one more arrival, less the ambassadors still to cancel, reaches `n`.
-    let tips = |t: usize| held(t) - amb[t] + 1 >= n && last_node_at(w, g, t);
-    if !tips(to[first]) {
-        return Some(first);
-    }
-    (0..to.len()).filter(|&i| !tips(to[i])).min_by_key(|&i| held(to[i]) - amb[to[i]]).or(Some(first))
-}
-
 /// 177: hex `h` holds a seat's only node, which a corruption there would destroy (`adversary::corrupt_hex`,
 /// `board::destroy_piece`): not sheltered, and the seat has no Sanctuary (`CorruptionShield`).
 fn last_node_at(w: &World, g: &GameState, h: usize) -> bool {

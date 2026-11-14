@@ -311,7 +311,6 @@ const TOKEN_NAMES: Record<string, string> = {
   cube: 'owner cube',
   node: 'node',
   botnet: 'botnet',
-  corruption: 'corruption marker',
   land_corruption: 'land corruption (nothing may be built here: no node, factory or station)',
   ambassador: 'ambassador',
   station: 'research station',

@@ -101,15 +101,20 @@ fn rng_draws_are_fixed_width_and_pinned() {
     assert_eq!(draws, GOLDEN_DRAWS);
 }
 
-/// A state waiting on an adversary-turn choice: 175, a Corrupt cities line's agent next to two cities, which
-/// the players choose to move it onto (151's Rally remainder, the old choice here, is now fixed).
+/// A state waiting on an adversary-turn choice: r75, a Corrupt cities line's agent moving onto a city where two
+/// players' ambassadors stand, the players choosing whose it cancels (r98: an agent next to two cities stays, so
+/// the old choice here is gone).
 fn build_choice() -> (Rules, GameState) {
     let (rules, mut g) = lab(&["adversary.corrupt"]);
     let m = &rules.map;
-    let between = (0..m.hexes.len())
-        .find(|&h| kind(m, h) == HexKind::Open && m.hexes[h].neighbors.iter().filter(|&&x| kind(m, x) == HexKind::City).count() >= 2)
-        .expect("an open hex next to two cities");
-    put(&mut g, between, ADV_AMBASSADOR, 1);
+    let cities = |h: usize| m.hexes[h].neighbors.iter().copied().filter(|&x| kind(m, x) == HexKind::City).collect::<Vec<_>>();
+    let by = (0..m.hexes.len())
+        .find(|&h| kind(m, h) == HexKind::Open && cities(h).len() == 1)
+        .expect("an open hex next to one city");
+    let city = cities(by)[0];
+    put(&mut g, by, ADV_AMBASSADOR, 1);
+    put(&mut g, city, crate::modules::common::ambassador(0), 1);
+    put(&mut g, city, crate::modules::common::ambassador(1), 1);
     set_pile(&mut g, CURRENT, &["mil_s1_war_drums"]);
     run(&rules, &mut g);
     assert!(g.pending.is_some());

@@ -4,7 +4,7 @@
 //! - **Push up to N** pieces from a land hex in your reach, each to a land hex next to it, the player choosing.
 //!
 //! "Up to": the player may stop after any piece. Pieces are ambassadors (any seat's), agents (the adversary's
-//! ambassadors) and troops; botnets and corruption markers don't move. A moved piece arrives as any piece does
+//! ambassadors) and troops; botnets don't move. A moved piece arrives as any piece does
 //! ([`arrive`]): an agent arriving on a standing ambassador cancels both, an ambassador arriving on agents cancels
 //! one, and a firewalled hex takes no agent. With a strike, each adversary piece gathered comes off instead.
 

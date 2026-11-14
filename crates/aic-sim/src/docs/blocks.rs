@@ -46,7 +46,7 @@ pub const HOUSE_TERMS: [(&str, &str); 22] = [
     ("Open megaproject", "one that isn't complete; research cubes in your color go only onto one"),
     ("Liberate", "a corrupted site: the agents on it come off, the adversary's cube comes off and yours goes on (the action pays for it in ambassadors; a card's is unpaid)"),
     ("Convert", "an agent on or next to the city leaves its stack and becomes your ambassador where it stood"),
-    ("Gather up to N", "pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece (a strike, \"remove up to N on or next to a hex\", moves nothing)"),
+    ("Gather up to N", "pieces (ambassadors, agents, troops; botnets never move) into a hex in your reach, each from a hex next to it; you may stop at any piece (a strike, \"remove up to N on or next to a hex\", moves nothing)"),
     ("Push up to N", "pieces from a hex in your reach, each to a hex next to it that you choose; you may stop at any piece"),
     ("Firewall", "a token on a hex: no agent lands or moves there (a Rally's share for it stays in the supply) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn"),
     ("In the next adversary turn, no X", "a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (a Rally's share for it stays in the supply), and the tokens come off with the firewalls"),
@@ -636,12 +636,7 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
             t("alignment.free_facility"),
         ],
         ["Unity".to_string(), "removing a botnet".to_string(), t("alignment.botnet")],
-        // 099: two Unity sources the table left out.
-        [
-            "Unity".to_string(),
-            "clearing a corruption marker (Recovery, cards)".to_string(),
-            t("board.clear_unity"),
-        ],
+        // 099: a Unity source the table left out.
         [
             "Unity".to_string(),
             "player cubes on a megaproject as it completes, as its corp's card prints (Delta Seawall)".to_string(),
@@ -838,7 +833,8 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          aims one at the node hex most crowded with adversary pieces), create agents, run Corrupt \
          lines, and take credits, more of each the more sites are corrupted. Unity has its own track, which nothing on the \
          Discord side empties: free a corrupted \
-         city, clear corruption or remove a botnet and you sway Unity, and each Unity tip brings a good card. \
+         city or use the Protector's Recovery and you sway Unity (removing a botnet sways none), and each Unity \
+         tip brings a good card. \
          Like fear cards, each acts by what is on the board, never by your reach: for each site a player owns or \
          each corrupted one, on each hex on or next to your pieces or a corrupted city, or each player from one such \
          hex; some forbid the adversary's next \

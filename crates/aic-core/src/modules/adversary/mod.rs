@@ -40,7 +40,6 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::list("corrupt_cut", 0, 5, "difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land)"),
     ParamSpec::int("corrupt_cut_at", 0, 5, "the difficulty level from which corrupt_cut applies"),
     ParamSpec::int("blight_discord", 0, 5, "Discord each land-corruption token sways each round"),
-    ParamSpec::int("blight_node_discord", 0, 5, "192: Discord each land-corruption token a corrupted node hex took (placed face down) sways each round, in place of blight_discord"),
     ParamSpec::list("counter_pct", 50, 300, "every resource counter item of a tier 1, 2 threat costs this percent of its printed amount (rounded up)"),
     ParamSpec::int("counter_credit_pct", 50, 300, "every credits counter item costs this percent of its amount after counter_pct (rounded up; 100 = unchanged; 142's dial)"),
     ParamSpec::int("counter_bonus", 0, 10, "difficulty counter_bonus_at+: added to every resource item of each threat's first counter option (142; its credits before)"),
@@ -671,9 +670,6 @@ impl Module for Adversary {
         }
         out.bookkeeping(&[
             "prohibit.",
-            // 192: which land corruption is face down (the view doesn't draw the face yet).
-            NODE_BLIGHT,
-            "adversary.node_blight.",
             PEEK,
             FIRST_CORRUPTION,
             FIRST_PROJECT,

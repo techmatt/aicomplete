@@ -121,7 +121,7 @@ fn the_protector_s_second_node_power_sacrifices_diplomacy() {
     assert_eq!(g.resource(1, Resource::Energy), 1, "Accord pays its tag only");
 }
 
-/// 212: Stand Down is force (a Security card for a troop in reach), no longer 3 credits.
+/// 212: a troop power is force (a Security card for troops in reach); r98: Stand Down merged into Interdict.
 #[test]
 fn the_cheap_powers_sacrifice_one_tag_for_a_chip_or_a_troop() {
     let (rules, mut g) = lab(&[]);
@@ -129,13 +129,13 @@ fn the_cheap_powers_sacrifice_one_tag_for_a_chip_or_a_troop() {
     g.piles.insert(cards::played(0).into(), Arc::new(vec![program(&w, Tag::Industry)]));
     g.piles.insert(cards::played(1).into(), Arc::new(vec![program(&w, Tag::Security)]));
     set_res(&mut g, 0, Resource::Chips, 0);
-    assert!(!rules.legal_actions(&g).contains(&power(&rules, 1, "Stand Down")), "no troop in reach");
+    assert!(!rules.legal_actions(&g).contains(&power(&rules, 1, "Interdict")), "no troop in reach");
     let h = rules.map.numbered(0, piece(0).node);
     put(&mut g, h, node(1), 1);
     put(&mut g, h, TROOP, 1);
     rules.apply_mut(&mut g, &power(&rules, 0, "Scrap"), None).unwrap();
     answer_all(&rules, &mut g);
-    rules.apply_mut(&mut g, &power(&rules, 1, "Stand Down"), None).unwrap();
+    rules.apply_mut(&mut g, &power(&rules, 1, "Interdict"), None).unwrap();
     answer_all(&rules, &mut g);
     // 190: Scrap pays 1 chip (a chip is worth 4 since r83).
     assert_eq!((g.resource(0, Resource::Chips), g.tokens(h, TROOP)), (1, 0));
@@ -243,7 +243,7 @@ fn lift_land_takes_a_token_in_reach() {
     let (rules, mut g) = at_step(&[], 1);
     let a = rules.map.numbered(0, piece(0).node);
     put(&mut g, a, crate::modules::common::LAND_CORRUPTION, 1);
-    run_ops(&rules, &mut g, &[Op::LiftLand { count: 1 }]);
+    run_ops(&rules, &mut g, &[Op::LiftLand { count: 1, unity: 0 }]);
     assert_eq!(g.tokens(a, crate::modules::common::LAND_CORRUPTION), 0);
 }
 

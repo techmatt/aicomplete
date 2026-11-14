@@ -7,12 +7,12 @@
 
 The adversary is a **board** (the Militarist's: project slots, three rules, a difficulty line, printed in
 [adversary-cards.md](../adversary-cards.md); r83's **War Takes Ground** is in [war.md](war.md)), an **income** and an
-**event deck** (below). Its turn, after the round's Sway step, is **four beats** (r80, ruling #41; `adversary::BEATS`). Threats still execute in their own step after production ([threats.md](threats.md)).
+**event deck** (below). Its turn, after the round's Sway step, is **four beats** (`adversary::BEATS`). Threats still execute in their own step after production ([threats.md](threats.md)).
 
 1. **Card**: next round's face-up event card becomes this round's (`adversary.event`; none left: below) and deals its
    threat pulls (`threats.deal`); then the build (`adversary.build`), in this order (151, Matt, locked): **Rally X**,
    **Muster N**, its other lines, at most two (an income increase, a Discord sway, a site opening, a botnet spread),
-   and its twists. (r89: the board's Muster where the Protector stands is gone, `wall_troops` 0.)
+   and its twists.
 2. **Corrupt**: the card's **Corrupt X** lines, in order (`adversary.corrupt`); then **natural corruption**
    (`adversary.natural`): every city, research station or factory already holding its number of agents corrupts,
    with no move; then every hex with a player's node holding a node's number (`corrupt_node_at` 2).
@@ -27,10 +27,10 @@ an income for the rest of the game (the Militarist's **Garrisons**). No troop in
 Matt, 2026-11-12): the base agent income is 0 below level 4,
 and every stage-II and stage-III card (and Long Patrols in stage I) prints +1 agent a country a round, so the pools fill as the game goes on.
 
-**Rally X (151, Matt, locked; r80: round-robin, Matt's ruling #43).** Every event prints one Rally X: each country's
+**Rally X (locked).** Every event prints one Rally X: each country's
 whole pool is **dealt one agent at a time onto each site of type X** in that country (city, coastal city, research
 station, factory or botnet hex), whoever owns it, in hex order, round and round until the pool is empty. A firewalled
-or no-Rally site keeps its turn and its share stays in the supply (r82); with no site of the type, nothing lands. A
+or no-Rally site keeps its turn and its share stays in the supply; with no site of the type, nothing lands. A
 cordoned country's pool waits. A project's "Rally 2: factories" is 2 a country. An arrival on player ambassadors
 cancels one (players choose whose).
 
@@ -41,26 +41,27 @@ resolves ([alignment.md](alignment.md)); that step skips the hex, and the tokens
 onto a hex Wall holds, or with a no-Muster token, stays in the supply.
 
 **Muster N (175).** N troops on each country's lowest-numbered factory, anyone's, else its lowest-numbered city, +1
-from the difficulty surcharge. No project musters (r85). r89: only the stage-III cards muster, 1 each (troops are few
+from the difficulty surcharge. No project musters. r89: only the stage-III cards muster, 1 each (troops are few
 and deadly, [war.md](war.md)).
 
 **Corrupt X (175, Matt's ruling; numbers candidates).** X is a type: **cities** (`corrupt_at` 4), **coastal cities**
 (a city's number), **research stations** (`corrupt_station_at` 3), **factories** (`corrupt_factory_at` 3), **open
 land** (`corrupt_land_at` 3; an empty land hex: no city, base or building) or **nodes** (`corrupt_node_at` 2; a hex
-with a player's node). Only an X not yet the adversary's counts. In each country: **every agent next to an X moves
-onto it** (across borders too; the players choose for an agent next to several; agents already on an X stay); then
-**every X holding its number of agents corrupts** (markers never count, r80), and its agents go back to the supply.
+with a player's node). Only an X not yet the adversary's counts. In each country: **every agent next to exactly one X moves
+onto it** (across borders too; r98, Matt, 2026-11-13: an agent next to two or more stays where it is; agents already on an X stay); then **every X holding its number of agents corrupts** (agents
+only), and its agents go back to the supply.
 A line may print "(1 fewer)"; difficulty lowers a city's, station's and factory's number (`corrupt_cut`; not land's
-or a node's). **One aftermath (r80, Matt's ruling #42): whatever corrupts takes one adversary mark.**
-- **A corrupted site** takes the adversary's cube (a player cube and any marker come off; [ambassadors.md](ambassadors.md)).
+or a node's). **One aftermath: whatever corrupts takes one adversary mark.**
+- **A corrupted site** takes the adversary's cube (a player cube comes off; [ambassadors.md](ambassadors.md)).
   **It destroys only a node on its own hex** (protections apply, [war.md](war.md)); player ambassadors there are
   lost. Sanctuary (capstone): corruption never destroys your nodes.
-- **A corrupted node hex** loses the node (protections apply, a last node too) and takes a land-corruption token
-  either way (r83, ruling #56); its agents go to the supply.
-- **Land corruption** is a hex token: nothing is built there; open land's drips `blight_discord` (1) Discord a round,
-  a node hex's lies face down and drips `blight_node_discord` (0). Lift land corruption (a standard action, `land_cubes` 2 research cubes, r92) takes one in reach off,
-  face up or down.
-**Botnets spread quickly** (r89, Matt, 2026-11-12). Each country starts with one (on its
+- **2 agents on a player's node hex destroy the node** (a node rule, not corruption: protections apply, a last node
+  too; a city hex with a node loses it at 2 though the city corrupts at 4); its agents go to the supply and **it leaves
+  no mark** (r98, Matt, 2026-11-13: losing it is punishment enough).
+- **Land corruption** is the one scar (r98): a hex token on corrupted open land; nothing
+  is built there, and each drips `blight_discord` (1) Discord a round. Lift land corruption (a standard action,
+  `land_cubes` 2 research cubes, r92), the Protector's Recovery and some cards take one in reach off.
+**Botnets spread quickly**. Each country starts with one (on its
 research station); more come from printed lines, among them four event cards' **Botnets spread** (each country, a
 botnet onto its lowest-numbered site next to a botnet; none: its lowest-numbered research station). A botnet stays
 until removed: it makes `botnet_compute` compute (none with a player ambassador on it) and counts against the purge
@@ -71,9 +72,9 @@ action (`botnet_credits`; in reach with your ambassador on it); removing one swa
 
 Adversary compute is spent on **projects**, one shared deck for every adversary
 ([`content/projects.json`](../../content/projects.json)), shuffled at setup and dealt into the adversary board's
-**slots** (the Militarist's: three open slots, r83, ruling #57) by **the draw rule**: turn up the top card; it goes
+**slots** (the Militarist's: three open slots) by **the draw rule**: turn up the top card; it goes
 into the first empty slot it fits, else to the discard, which reshuffles when the deck runs out. **When a project
-leaves**, those to its right slide one slot left and the rightmost slot refills at once (r80, ruling #49). Costs are
+leaves**, those to its right slide one slot left and the rightmost slot refills at once. Costs are
 printed per player count (the table below).
 
 - **The compute step (175).** All compute is added **once a round** (the Income beat, after the agent income): the
@@ -82,8 +83,8 @@ printed per player count (the table below).
 - **Spending:** each point onto the **leftmost** visible project (r80; `compute_every` on every one, first). A
   project holding its cost **resolves** then and there, once or **ongoing** (each Income beat from the next round);
   never outside the compute step. With no project left, compute is lost.
-- **Board verbs (r85, 195; Matt, 2026-11-11).** A project is a small, visible plan on the map; one tax is left
-  (Data Heist). A botnet's troops are made on its hex: Wall doesn't stop them. **Targets are read off the board as it resolves**, in each country, no marker: "the X with the most
+- **Board verbs.** A project is a small, visible plan on the map; one tax is left
+  (Data Heist). A botnet's troops are made on its hex (none on the Protector's node hex: Wall, r98). **Targets are read off the board as it resolves**, in each country, no marker: "the X with the most
   agents on or next to it" (the hex and its neighbors), "the node hex holding the most agents" (at least 1, the hex
   alone), "its lowest-numbered botnet"; ties: the lowest-numbered. "Turns neutral": the owner's cube comes off.
   **Factory troops** are an adversary factory's own output (a player ambassador on it stops them). **The clock**:
@@ -158,12 +159,12 @@ prints its lines in the Card and Corrupt beats' order (`drafts/adversary/check.p
 
 **For new players: the adversary's turn** is four beats. **Card:** a **threat** in each country; **rally** (each
 country's pool dealt one agent at a time onto the sites named, in number order); **muster** (troops on each country's
-lowest-numbered factory). **Corrupt:** "Corrupt cities": every agent next to a city moves onto it, then every city
-holding 4 corrupts, destroying a node on that hex only, unless your ambassador stands there; then any hex with your
-node and 2 agents loses the node and is corrupted land. **March:** the troops. **Income:** agents into the pools, and
+lowest-numbered factory). **Corrupt:** "Corrupt cities": every agent next to one city moves onto it (next to two, it stays),
+then every city holding 4 corrupts, destroying a node on that hex only, unless your ambassador stands there; then 2
+agents on your node's hex destroy the node, leaving no mark. **March:** the troops. **Income:** agents into the pools, and
 all the round's compute onto the leftmost project, which when full does one small thing on the map (takes a factory,
 spreads a botnet, raids the node hex with the most agents): look at it and the board to see where. The card ahead and
-the pools are face up: armor or clear sites a round ahead. **What resisted this:** an agent next to two sites asks the players to choose.
+the pools are face up: armor or clear sites a round ahead.
 
 Players **lose** when the Card beat finds no card to turn face up, after the round's Sway step and any tip
 it makes ([alignment.md](alignment.md)): a plain loss (Matt, 2026-11-08).

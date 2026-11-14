@@ -206,12 +206,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Clear the corruption marker on each hex on or next to an Ambassador, for its reward.",
-    "effects": [{"op": "remove_where", "pieces": "markers", "count": 1, "per": "hex", "where": "by_ambassador"}]},
-   {"text": "Clear the corruption marker on each hex on or next to an Ambassador or a Node, for its reward.",
-    "effects": [{"op": "remove_where", "pieces": "markers", "count": 1, "per": "hex", "where": "by_player"}]},
-   {"text": "Clear 2 corruption markers on each hex on or next to an Ambassador or a Node, for its reward.",
-    "effects": [{"op": "remove_where", "pieces": "markers", "count": 2, "per": "hex", "where": "by_player"}]}
+   {"text": "Lift the land corruption on each hex on or next to an Ambassador.",
+    "effects": [{"op": "remove_where", "pieces": "land", "count": 1, "per": "hex", "where": "by_ambassador"}]},
+   {"text": "Lift the land corruption on each hex on or next to an Ambassador or a Node.",
+    "effects": [{"op": "remove_where", "pieces": "land", "count": 1, "per": "hex", "where": "by_player"}]},
+   {"text": "Lift the land corruption on each hex within 2 of an Ambassador or a Node.",
+    "effects": [{"op": "remove_where", "pieces": "land", "count": 1, "per": "hex", "where": "near_player"}]}
   ]
  },
  {

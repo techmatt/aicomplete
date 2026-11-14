@@ -23,6 +23,52 @@ pub fn each_passive<'w>(w: &World<'w>, g: &GameState, seat: usize, mut f: impl F
     }
 }
 
+/// 223 (224 #6, candidate `cards.tag_income_once`): the key holding a building's per-tag count frozen at play,
+/// plus 1 (0: never frozen).
+pub fn tag_frozen_key(seat: usize, id: &str) -> KeyBuf {
+    KeyBuf::new("cards.tag_frozen.").num(seat).text(".").text(id)
+}
+
+/// `cards.tag_income_once` is 1 (a param of the draft variant only: with cards off there are no buildings).
+fn tag_income_once(w: &World) -> bool {
+    w.variant("cards") == Some("draft") && w.int("cards.tag_income_once") > 0
+}
+
+/// With `cards.tag_income_once` 1, building `id` just played freezes its per-tag income's count.
+pub fn freeze_tag_income(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &CardDef) {
+    let w = cx.world;
+    if !tag_income_once(&w) {
+        return;
+    }
+    for p in &d.passives {
+        if let Op::IncomePerTag { tag, .. } = p {
+            let n = tags(&w, g, seat, *tag);
+            cx.set_key(g, &tag_frozen_key(seat, id), n + 1);
+        }
+    }
+}
+
+/// A building's per-tag income for seat `s` (with `counts`, its live tag counts): the frozen count when one was
+/// frozen, else the live one; every active building's, through `add`.
+pub fn each_tag_income(w: &World, g: &GameState, seat: usize, counts: &[i64; TAGS.len()], mut add: impl FnMut(Resource, i64)) {
+    let once = tag_income_once(w);
+    let mut one = |p: &Op, frozen: i64| {
+        if let Op::IncomePerTag { resource, tag, per, amount } = p {
+            let n = if once && frozen > 0 { frozen - 1 } else { counts[*tag as usize] };
+            add(*resource, amount * (n / (*per).max(1)));
+        }
+    };
+    ai::board(w, seat).innate.passives.iter().for_each(|p| one(p, 0));
+    ai::capstones(w, g, seat).flat_map(|c| c.passives.iter()).for_each(|p| one(p, 0));
+    let down = has_disabled(g, seat);
+    for id in g.pile(&built(seat)) {
+        if !(down && disabled(g, seat, id)) {
+            let frozen = if once { g.var(&tag_frozen_key(seat, id)) } else { 0 };
+            def(w, id).passives.iter().for_each(|p| one(p, frozen));
+        }
+    }
+}
+
 pub fn has_passive(w: &World, g: &GameState, seat: usize, f: impl Fn(&Op) -> bool) -> bool {
     // A walk, not a list: the agents ask it of every seat in every eval (103).
     let mut found = false;

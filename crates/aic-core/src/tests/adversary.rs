@@ -1,7 +1,7 @@
 
 use super::*;
 use crate::content::Op;
-use crate::modules::common::{FIREWALL, LAND_CORRUPTION, MARKER};
+use crate::modules::common::{FIREWALL, LAND_CORRUPTION};
 use crate::modules::{adversary, alignment, board, effects, plan};
 use crate::op::{CorruptSite, CreateAt, CreateIf, Facility, RallyAt};
 use crate::modules::common::STATION;
@@ -283,7 +283,7 @@ fn corruption_destroys_only_the_node_on_its_hex_and_an_ambassador_is_armor() {
     let mut g = g0.clone();
     with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h)).unwrap();
     assert_eq!(g.tokens(h, node(0)), 0);
-    assert_eq!((g.tokens(next, node(1)), g.tokens(next, MARKER)), (1, 0), "no blast next to it");
+    assert_eq!(g.tokens(next, node(1)), 1, "no blast next to it");
     assert_eq!(g.stats.counters["board.node_lost.corruption"], 1);
 
     // r75 (Matt's ruling 5): the owner is asked whether to spend its ambassador there; spent, it keeps the node.
@@ -607,24 +607,23 @@ fn the_load_check_refuses_an_event_or_a_project_off_the_standard() {
     assert!(project_rule_break(&country).is_some_and(|r| r.contains("each board")));
 }
 
-/// r80 (ruling #42, one aftermath for all corruption): a node hex that corrupts takes a land-corruption token, its
-/// one adversary mark, and no marker (the node loss left a marker before).
+/// r98 (Matt, 2026-11-13, 224 #2): 2 agents on a node hex destroy the node and leave no mark; the agents go to the
+/// supply.
 #[test]
-fn a_corrupted_node_hex_takes_land_corruption_not_a_marker() {
+fn two_agents_destroy_a_node_and_leave_no_mark() {
     let (rules, mut g) = lab(&["adversary.natural"]);
     let m = &rules.map;
     let h = numbered_where(m, 0, |h| kind(m, h) == HexKind::Open)[0];
     put(&mut g, h, node(0), 1);
     put(&mut g, h, ADV_AMBASSADOR, 2);
     run_answered(&rules, &mut g);
-    assert_eq!(g.tokens(h, node(0)), 0);
-    assert_eq!((g.tokens(h, LAND_CORRUPTION), g.tokens(h, MARKER)), (1, 0));
+    assert_eq!((g.tokens(h, node(0)), g.tokens(h, ADV_AMBASSADOR)), (0, 0));
+    assert_eq!(g.tokens(h, LAND_CORRUPTION), 0);
 }
 
-/// r83 (Matt, 2026-11-11, #56): a node hex corrupts like open land: it takes land corruption even when a
-/// protection saves the node (r80 marked it only when the node was lost).
+/// r98: a node a protection saves leaves no mark either (r83-r97 laid land corruption saved or not).
 #[test]
-fn a_node_hex_takes_land_corruption_even_when_its_node_is_saved() {
+fn a_saved_node_hex_takes_no_mark() {
     let (rules, mut g) = lab(&["adversary.natural"]);
     let m = &rules.map;
     let h = numbered_where(m, 0, |h| kind(m, h) == HexKind::Open)[0];
@@ -635,7 +634,7 @@ fn a_node_hex_takes_land_corruption_even_when_its_node_is_saved() {
     answer_with(&rules, &mut g, "spend the hardening token");
     answer_all(&rules, &mut g);
     assert_eq!((g.tokens(h, node(0)), g.tokens(h, HARDEN)), (1, 0), "saved");
-    assert_eq!(g.tokens(h, LAND_CORRUPTION), 1);
+    assert_eq!(g.tokens(h, LAND_CORRUPTION), 0);
 }
 
 /// r83 (Matt, 2026-11-11, #57): project slot 1's tag is gone: every slot of the Militarist's board is open.

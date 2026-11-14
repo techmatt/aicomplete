@@ -122,7 +122,6 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
                 board::can_pay_placement(w, g, seat, gained)
                     && !board::node_sites(w, g, seat).is_empty()
             }
-            Op::ClearMarkers { .. } => any_hex(g, |h| marker_in_reach(w, g, seat, h)),
             Op::ShieldNode { .. } => any_hex(g, |h| shieldable(g, seat, h)),
             // Giving needs someone to give to (Vendor Financing and Development Loan still pay you).
             Op::Transfer { .. } => g.seats.len() > 1,

@@ -84,11 +84,6 @@ pub(super) fn botnet_in_reach(w: &World, g: &GameState, seat: usize, h: usize) -
     g.tokens(h, BOTNET) > 0 && in_reach(w, g, seat, h)
 }
 
-/// A corruption marker in seat `seat`'s reach.
-pub(super) fn marker_in_reach(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
-    g.tokens(h, MARKER) > 0 && in_reach(w, g, seat, h)
-}
-
 /// Seat `seat`'s node with no hardening token on it.
 pub fn shieldable(g: &GameState, seat: usize, h: usize) -> bool {
     g.tokens(h, node(seat)) > 0 && g.tokens(h, HARDEN) == 0

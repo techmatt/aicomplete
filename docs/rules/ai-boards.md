@@ -18,15 +18,15 @@ an Industry card pays out chips, a Power card energy, and an Industry card with 
 hand for no credits. Each round you may Dispatch 1 ambassador for free (2 from your fourth economy space). Your printed
 Industry tag counts like one on your cards.
 
-**The Protector, for new players.** Your special rule is Wall: adversary troops can't enter a hex with your node or
-strike into it, so where you stand is a barrier and no troop strikes your node or a facility under you (war, threats
+**The Protector, for new players.** Your special rule is Wall: no adversary troop is ever placed on a hex with your node,
+nor enters it or strikes into it, so where you stand is a barrier and no troop strikes your node or a facility under you (war, threats
 and corruption still can; r89: the adversary's Muster where you stand is gone). The first two troops each round that
 end their march next to your node pay you 1 insight each (Vigil; r79 once a round, r84 twice). You spend energy to harden
 facilities with Bulwark, and your board prints 2 energy a round. You earn fewer credits (13 a round), so you start with
 more: 46. Each credit space of your economy track adds 2 or 3 credits, the first one 1 energy too. Round 1 deals as
 for the Builder. Late in the game, sacrifice
-cards you have finished with: a Security card removes a troop (Stand Down) or draws 1 and removes an agent (Debrief), a
-Diplomacy card clears a corruption marker (Recovery), and a Security card with an energy shelters a whole country for the round. Each round you may Dispatch 1
+cards you have finished with: a Security card removes up to 2 troops in a hex (Interdict) or draws 1 and removes an agent (Debrief), and a
+Diplomacy card lifts a land corruption token for 2 Unity (Recovery). Each round you may Dispatch 1
 ambassador for free (2 from your fourth economy space). Your printed Security tag counts like one on your
 cards.
 
@@ -38,7 +38,7 @@ troops removed in one country (Disrupt), and 3
 credits into a research cube on a megaproject that isn't complete yet. Your node power, Peer Review, costs 1 research cube and, like any node, the uncovered space's energy, and gives 1 insight by a fresh station,
 so build stations early: once their country's card completes they put cubes on your board. Sacrifice an Industry card
 to build a station for free, a Cyber card to strip 3 compute off an adversary project; 2 research cubes
-destroy one of your stations for an antimatter (Overload). Your printed Science tag counts like one on your cards (1 Science card makes 2 for the discount). Each round you may Dispatch 2
+destroy one of your stations anywhere for an antimatter (Meltdown). Your printed Science tag counts like one on your cards (1 Science card makes 2 for the discount). Each round you may Dispatch 2
 ambassadors for free (up to 4), to stand guard on your stations. The hard part to explain: Open
 Science's insight is handed out in upkeep and lands at the start of the next round.
 
