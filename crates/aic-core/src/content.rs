@@ -893,6 +893,7 @@ impl Content {
             return Err(format!("{what}: shields and delays are the cards'"));
         }
         for p in &b.powers {
+            check_power_targets(p, &what)?;
             check_ops(&p.effects, Slot::Player, &what)?;
             for (r, _) in &p.cost {
                 resource(r, &what)?;
@@ -1041,11 +1042,40 @@ fn card_only(op: &Op) -> bool {
 /// target before any map op; a card names one target condition, however many lists print it; nothing picks a
 /// country freely or moves a piece further than next to the target.
 fn check_targets(c: &CardDef, what: &str) -> Result<(), String> {
-    fn walk(ops: &[Op], aimed: bool, specs: &mut Vec<TargetSpec>, what: &str) -> Result<bool, String> {
+    let mut lists: Vec<&[Op]> = vec![&c.effects];
+    lists.extend(c.ability.iter().flat_map(|a| a.branches()).map(|a| a.effects.as_slice()));
+    for p in &c.passives {
+        if let Op::When { then, .. } | Op::Threshold { then, .. } = p {
+            lists.push(then);
+        }
+    }
+    check_target_lists(&lists, what, false)
+}
+
+/// 236 (Matt, 2026-11-14): a board power that touches the map names one target as a card does, and its printed
+/// words open with it ("Target: Troops."). The one exception is the Researcher's Disrupt (206): a one-country
+/// troop removal (`remove_troops` with no reach), the Researcher's remote troop answer.
+pub(crate) fn check_power_targets(p: &Power, what: &str) -> Result<(), String> {
+    let what = format!("{what} power {:?}", p.name);
+    check_target_lists(&[&p.effects], &what, true)?;
+    if let Some(on) = p.effects.iter().find_map(|o| if let Op::Target { on } = o { Some(on) } else { None }) {
+        let head = format!("Target: {}.", on.words());
+        if !p.text.starts_with(&head) {
+            return Err(format!("{what}: its text opens with its target, {head:?}"));
+        }
+    }
+    Ok(())
+}
+
+/// [`check_targets`] over the lists that resolve (one target among them all); `power` allows Disrupt's country.
+pub(crate) fn check_target_lists(lists: &[&[Op]], what: &str, power: bool) -> Result<(), String> {
+    fn walk(ops: &[Op], aimed: bool, specs: &mut Vec<TargetSpec>, what: &str, power: bool) -> Result<bool, String> {
         let mut aimed_here = aimed;
         let mut used = false;
         for op in ops {
             match op {
+                // 206: Disrupt's "in one country", a board power's recorded exception.
+                Op::RemoveTroops { reach: false, at: Area::Reach, .. } if power && !aimed_here => {}
                 Op::Target { on } => {
                     if aimed_here {
                         return Err(format!("{what}: two targets in one list (a card names one target)"));
@@ -1072,7 +1102,7 @@ fn check_targets(c: &CardDef, what: &str) -> Result<(), String> {
                 }
                 _ => {}
             }
-            if walk(op.nested(), aimed_here, specs, what)? {
+            if walk(op.nested(), aimed_here, specs, what, power)? {
                 used = true;
             }
         }
@@ -1082,17 +1112,11 @@ fn check_targets(c: &CardDef, what: &str) -> Result<(), String> {
         Ok(used)
     }
     let mut specs = Vec::new();
-    walk(&c.effects, false, &mut specs, what)?;
-    for a in c.ability.iter().flat_map(|a| a.branches()) {
-        walk(&a.effects, false, &mut specs, what)?;
-    }
-    for p in &c.passives {
-        if let Op::When { then, .. } | Op::Threshold { then, .. } = p {
-            walk(then, false, &mut specs, what)?;
-        }
+    for l in lists {
+        walk(l, false, &mut specs, what, power)?;
     }
     if specs.len() > 1 {
-        return Err(format!("{what}: two target conditions {specs:?} (a card prints one target box)"));
+        return Err(format!("{what}: two target conditions {specs:?} (one target box)"));
     }
     Ok(())
 }

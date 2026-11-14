@@ -490,8 +490,15 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             one(clause(icons, say))
         }
         Op::MoveAmbassadors { max, at } => {
-            let onto = if at.is_on() { "onto it".to_string() } else { format!("onto pieces {}", at.words()) };
-            one(clause(area_icons(vec![Part::Word(max.to_string()), w("move")], *at), format!("move up to {max} ambassadors {onto}")))
+            // 236: from your supply or on or next to the target (next to it, moving onto it), never from anywhere.
+            let (from, onto) = if at.is_reach() {
+                ("", format!("onto pieces {}", at.words()))
+            } else if at.is_on() {
+                ("from your supply or next to it", "onto it".to_string())
+            } else {
+                ("from your supply or on or next to it", format!("onto pieces {}", at.words()))
+            };
+            one(clause(area_icons(vec![Part::Word(max.to_string()), w("move")], *at), format!("move up to {max} ambassadors {from}{}{onto}", if from.is_empty() { "" } else { " " })))
         }
         // 234 (Matt: Place means onto the map).
         Op::PlaceAmbassadors { count, at } => one(clause(

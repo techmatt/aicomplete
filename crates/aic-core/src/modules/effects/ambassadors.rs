@@ -11,16 +11,26 @@ fn walk(g: &mut GameState, cx: &mut Cx, seat: usize, from: usize, to: usize) {
     cx.tally(g, &crate::key::KeyBuf::new("board.amb_moves.").num(seat), 1);
 }
 
-pub(super) fn move_ambassadors(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, zone: &[usize]) -> Res {
+/// 236 (Matt, 2026-11-14): with a target, the moved ambassadors come from your supply or from hexes in `sources`
+/// (on or next to the target, as Summit Caucus reads), never from anywhere.
+pub(super) fn move_ambassadors(
+    g: &mut GameState,
+    cx: &mut Cx,
+    seat: usize,
+    max: i64,
+    zone: &[usize],
+    sources: Option<&[usize]>,
+) -> Res {
     let w = cx.world;
     for k in 0..max {
-        if movable_ambassadors(g, seat) == 0 {
+        let mut mine = ambassador_hexes(g, seat);
+        mine.retain(|h| sources.is_none_or(|s| s.contains(h)));
+        let supply = g.resource(seat, Resource::Ambassadors) > 0;
+        if !supply && mine.is_empty() {
             break;
         }
         // 118 (D8): a piece is a destination only if an ambassador can come to it: from the
         // supply, or from another hex (the hex holding the seat's only one moved nothing).
-        let supply = g.resource(seat, Resource::Ambassadors) > 0;
-        let mine = ambassador_hexes(g, seat);
         let dest: Vec<usize> = zone
             .iter()
             .copied()
@@ -41,7 +51,7 @@ pub(super) fn move_ambassadors(g: &mut GameState, cx: &mut Cx, seat: usize, max:
         if i >= dest.len() {
             break;
         }
-        board::move_ambassador(g, cx, seat, dest[i])?;
+        board::move_ambassador_from(g, cx, seat, dest[i], sources)?;
     }
     Ok(())
 }

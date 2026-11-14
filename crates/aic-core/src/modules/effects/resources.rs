@@ -133,6 +133,13 @@ pub(super) fn harden(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64, zo
     // 022: only facilities a token can protect, each at most once ("harden 2
     // facilities" is two facilities; fewer if fewer exist). 234: in the zone (reach, or the target's area).
     let mut hexes: Vec<usize> = zone.iter().copied().filter(|&h| board::hardenable(g, h)).collect();
+    // 236: what a targeted hardening finds beside what reach held (Fortify's pricing read; only it prints near 1).
+    if target.is_some() {
+        let held = (0..g.hexes.len()).filter(|&h| board::hardenable(g, h) && in_reach(&w, g, seat, h)).count() as i64;
+        let at = if zone.len() == 1 { "on" } else { "near" };
+        cx.tally(g, &format!("effects.harden_found.{at}.{count}"), (hexes.len() as i64).min(count));
+        cx.tally(g, &format!("effects.harden_in_reach.{at}.{count}"), held.min(count));
+    }
     for k in 0..count {
         // 234: "harden it and N next to it": the target first.
         let first = target.filter(|t| k == 0 && hexes.contains(t));

@@ -1,6 +1,8 @@
 //! 234 (Matt, 2026-11-14): one target per map-touching player card.
 use super::engine::table_with;
 use super::*;
+use crate::content::Op;
+use crate::modules::board;
 
 /// Plays seat 0's Signal Hijack (the tests' card), leaving its target prompt open.
 fn start(rules: &Rules, g: &mut GameState) {
@@ -80,6 +82,80 @@ fn place_goes_on_the_target_and_gain_to_the_supply() {
     assert_eq!(g.tokens(home, ambassador(0)), on + 2);
     assert_eq!(g.resource(0, Resource::Ambassadors), before + 1);
     assert_eq!(face_text("amnesty_decree"), "Target: a corrupted city. Remove 4 Agents on or next to it. Place 2 Ambassadors on it.");
+}
+
+/// 236 (Matt, 2026-11-14): every board power that touches the map names one target, its text opening with it,
+/// but Disrupt's one country (206); every standard action that touches the map prints one, and the op-backed ones
+/// pass the cards' check. The content check refuses a power with a map op and no target.
+#[test]
+fn powers_and_standard_actions_name_one_target() {
+    let mut aimed = Vec::new();
+    for b in &content().ais {
+        for p in &b.powers {
+            crate::content::check_power_targets(p, &b.id).unwrap();
+            let map = p.effects.iter().any(|o| o.is_map());
+            let target = p.effects.iter().any(|o| matches!(o, Op::Target { .. }));
+            assert_eq!(map && p.name != "Disrupt", target, "{} {}: {}", b.id, p.name, p.text);
+            assert!(!p.text.contains("in reach"), "{} {}: {}", b.id, p.name, p.text);
+            if target {
+                aimed.push(p.name.clone());
+            }
+        }
+    }
+    let names = ["Fortify", "Bulwark", "Debrief", "Patrol", "Interdict", "Reclaim", "Field Station"];
+    assert_eq!(aimed, names, "the powers that print a target");
+    let fortify = content().ais.iter().flat_map(|b| &b.powers).find(|p| p.name == "Fortify").unwrap();
+    let mut bare = fortify.clone();
+    bare.effects.retain(|o| !matches!(o, Op::Target { .. }));
+    let err = crate::content::check_power_targets(&bare, "builder").unwrap_err();
+    assert!(err.contains("no target before it"), "{err}");
+    let mut loose = fortify.clone();
+    loose.text = "remove 1 Troop in reach".into();
+    let err = crate::content::check_power_targets(&loose, "builder").unwrap_err();
+    assert!(err.contains("opens with its target"), "{err}");
+
+    let rules = Rules::new(&baseline()).unwrap();
+    let w = rules.world();
+    let t = |k: &str| k.to_string();
+    let mut printed = 0;
+    for act in board::STANDARD {
+        let what = &board::std_rule_text(act, &w, &t)[2];
+        assert_eq!(board::std_target(act).is_some(), what.starts_with("Target: "), "{act:?}: {what}");
+        assert!(!what.contains("in reach"), "{act:?}: {what}");
+        crate::content::check_target_lists(&[board::std_ops(act)], &format!("{act:?}"), false).unwrap();
+        if board::std_target(act).is_some() && board::std_offered(&w, act) {
+            printed += 1;
+        }
+    }
+    // Station, Remove agents, Lift, Dispatch, Claim, Liberate, Botnet, Buy energy, Remove a troop (Factory is off).
+    assert_eq!(printed, 9);
+}
+
+/// 236 (Matt, 2026-11-14; message 10585): a move card's board ambassadors come from on or next to its target, never
+/// from anywhere; the supply stays a source.
+#[test]
+fn a_move_takes_ambassadors_from_on_or_next_to_the_target() {
+    let set = r#"cards.signal_hijack.effects=[{"op":"target","on":"piece"},{"op":"move_ambassadors","max":2,"at":"on"}]"#;
+    let (rules, mut g) = table_with(&[set], &["signal_hijack"], &[]);
+    let m = &rules.map;
+    let home = m.numbered(0, piece(0).node);
+    let land = |h: usize| kind(m, h) != HexKind::Ocean;
+    let next = m.hexes[home].neighbors.iter().copied().find(|&h| land(h)).unwrap();
+    let far = (0..m.hexes.len()).find(|&h| land(h) && m.distance(home, h) >= 3).unwrap();
+    for h in 0..g.hexes.len() {
+        put(&mut g, h, ambassador(0), 0);
+    }
+    put(&mut g, next, ambassador(0), 1);
+    put(&mut g, far, ambassador(0), 1);
+    set_res(&mut g, 0, Resource::Ambassadors, 0);
+    start(&rules, &mut g);
+    pick(&rules, &mut g, home);
+    answer_all(&rules, &mut g);
+    assert_eq!((g.tokens(home, ambassador(0)), g.tokens(next, ambassador(0)), g.tokens(far, ambassador(0))), (1, 0, 1));
+    assert_eq!(
+        face_text("transmission_corridor"),
+        "Target: a piece. Place 2 Nodes. Move up to 2 Ambassadors from your supply or next to it onto it."
+    );
 }
 
 fn face_text(id: &str) -> String {

@@ -98,7 +98,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("city_build_chips", 1, 10, "190: chips a city spends to build a neutral factory or research station"),
             ParamSpec::int("city_chip_cap", 1, 10, "190: chips a city holds at most while they wait (one each round from each unclaimed neutral factory next to it)"),
             ParamSpec::int("remove_ambassadors", 1, 5, "standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing)"),
-            ParamSpec::int("remove_count", 1, 3, "standard action Remove agents: agents it removes, at most, from any hexes in reach (the player's choice)"),
+            ParamSpec::int("remove_count", 1, 3, "standard action Remove agents: agents it removes, at most, on or next to its target (236; the player's choice)"),
             ParamSpec::int("land_cubes", 0, 10, "210: standard action Lift Fallout: research cubes to lift 1 Fallout token in reach (0: no such action)"),
             ParamSpec::int("envoy_ambassadors", 0, 5, "standard action Envoy: your ambassadors from the supply, used up, to move 1 Discord off the Discord track (0: no such action)"),
             ParamSpec::int("ambassador_credits", 1, 50, "standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit)"),

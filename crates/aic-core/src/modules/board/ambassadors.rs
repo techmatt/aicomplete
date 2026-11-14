@@ -242,10 +242,16 @@ pub fn liberate_at(w: &World) -> i64 {
 /// Moves one of `seat`'s ambassadors (from its supply or a hex, the seat
 /// chooses) onto hex `to`.
 pub fn move_ambassador(g: &mut GameState, cx: &mut Cx, seat: usize, to: usize) -> Res {
+    move_ambassador_from(g, cx, seat, to, None)
+}
+
+/// [`move_ambassador`], the board ambassadors limited to hexes in `sources` when given (236: a move card takes
+/// them from on or next to its target; the supply stays a source).
+pub fn move_ambassador_from(g: &mut GameState, cx: &mut Cx, seat: usize, to: usize, sources: Option<&[usize]>) -> Res {
     let w = cx.world;
     let k = ambassador(seat);
     let mut from = ambassador_hexes(g, seat);
-    from.retain(|&h| h != to);
+    from.retain(|&h| h != to && sources.is_none_or(|s| s.contains(&h)));
     let mut opts = Vec::new();
     if g.resource(seat, Resource::Ambassadors) > 0 {
         opts.push(opt("from your supply"));

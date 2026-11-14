@@ -37,12 +37,50 @@ pub const TARGET_PROMPT: &str = "target which hex?";
 
 /// Resolves `ops` in order.
 pub fn run(g: &mut GameState, cx: &mut Cx, ops: &[Op], ctx: &mut Ctx) -> Res {
-    for e in ops {
-        one(g, cx, e, ctx)?;
+    for (i, e) in ops.iter().enumerate() {
+        match e {
+            Op::Target { on } => aim(g, cx, *on, &ops[i + 1..], ctx)?,
+            _ => one(g, cx, e, ctx)?,
+        }
         if g.is_over() {
             break;
         }
     }
+    Ok(())
+}
+
+/// 234: the seat picks its one target among the hexes in reach meeting `on`; `rest` is the list after it. 236: when
+/// every map op in `rest` moves pieces (a push, a gather, a firewall), only hexes where one of them can act are
+/// offered, as `feasible` reads them: a target where nothing could move paid for nothing (Patrol, 236's slow lane).
+fn aim(g: &mut GameState, cx: &mut Cx, on: TargetSpec, rest: &[Op], ctx: &mut Ctx) -> Res {
+    let w = cx.world;
+    let seat = ctx.chooser();
+    let mut hexes = target_hexes(&w, g, seat, on);
+    let map: Vec<&Op> = rest.iter().filter(|o| o.is_map()).collect();
+    let moving = |o: &&Op| matches!(o, Op::Push { .. } | Op::Gather { .. } | Op::Firewall);
+    if !map.is_empty() && map.iter().all(moving) {
+        let mut ok: Vec<usize> = Vec::new();
+        for o in &map {
+            ok.extend(match o {
+                Op::Push { pieces, .. } => push_hexes(&w, g, seat, pieces),
+                Op::Gather { pieces, strike, .. } => gather_hexes(&w, g, seat, pieces, *strike),
+                _ => firewall_hexes(&w, g, seat),
+            });
+        }
+        hexes.retain(|h| ok.contains(h));
+    }
+    let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
+    // The card whose Action or Effect this is, when one is (the agents' target rule reads it).
+    let card = ctx.card.map(|c| format!(" [{}]", cards::def(&w, &c).name)).unwrap_or_default();
+    let prompt = || format!("Seat {seat}: {TARGET_PROMPT} ({}){card}", on.words());
+    let t = cx.choose(seat, prompt, opts)?.map(|i| hexes[i]);
+    cx.tally(g, if t.is_some() { "effects.targets" } else { "effects.targets_missed" }, 1);
+    // 235: a lone target is taken unasked and a missing one skips the map lines in silence: say which.
+    cx.note(t, || match t {
+        Some(h) => format!("Seat {seat}{card} targets {} ({})", hex_name(&w, h), on.words()),
+        None => format!("Seat {seat}{card}: nothing in reach to target ({}); its map lines do nothing", on.words()),
+    });
+    ctx.target = Some(t);
     Ok(())
 }
 
@@ -106,21 +144,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                 board::place_ambassador(g, cx, seat, cities[i]);
             }
         }
-        Op::Target { on } => {
-            let hexes = target_hexes(&w, g, seat, *on);
-            let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-            // The card whose Action or Effect this is, when one is (the agents' target rule reads it).
-            let card = ctx.card.map(|c| format!(" [{}]", cards::def(&w, &c).name)).unwrap_or_default();
-            let prompt = || format!("Seat {seat}: {TARGET_PROMPT} ({}){card}", on.words());
-            let t = cx.choose(seat, prompt, opts)?.map(|i| hexes[i]);
-            cx.tally(g, if t.is_some() { "effects.targets" } else { "effects.targets_missed" }, 1);
-            // 235: a lone target is taken unasked and a missing one skips the map lines in silence: say which.
-            cx.note(t, || match t {
-                Some(h) => format!("Seat {seat}{card} targets {} ({})", hex_name(&w, h), on.words()),
-                None => format!("Seat {seat}{card}: nothing in reach to target ({}); its map lines do nothing", on.words()),
-            });
-            ctx.target = Some(t);
-        }
+        Op::Target { on } => aim(g, cx, *on, &[], ctx)?,
         Op::LiftFallout { count, at } => {
             let zone = ctx.area(&w, g, seat, *at);
             for _ in 0..*count {
@@ -179,7 +203,9 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         }
         Op::MoveAmbassadors { max, at } => {
             let zone = ctx.area(&w, g, seat, *at);
-            ambassadors::move_ambassadors(g, cx, seat, *max, &zone)?
+            // 236: from on or next to the target (or the supply); with no target, from anywhere.
+            let sources = ctx.target.map(|_| ctx.area(&w, g, seat, Area::Near));
+            ambassadors::move_ambassadors(g, cx, seat, *max, &zone, sources.as_deref())?
         }
         Op::GainAmbassadors { count } => cx.add_resource(g, seat, Resource::Ambassadors, *count),
         Op::PlaceAmbassadors { count, at } => {

@@ -215,16 +215,21 @@
       2
      ]
     ],
-    "text": "remove 1 Troop in reach and harden 1 facility in reach",
+    "text": "Target: Troops. Remove 1 Troop on it; harden a facility on or next to it",
     "effects": [
+     {
+      "op": "target",
+      "on": "troops"
+     },
      {
       "op": "remove_troops",
       "count": 1,
-      "reach": true
+      "at": "on"
      },
      {
       "op": "harden",
-      "count": 1
+      "count": 1,
+      "at": "near"
      }
     ]
    },
@@ -426,11 +431,16 @@
       1
      ]
     ],
-    "text": "harden 1 facility in reach",
+    "text": "Target: a facility. Harden it",
     "effects": [
      {
+      "op": "target",
+      "on": "facility"
+     },
+     {
       "op": "harden",
-      "count": 1
+      "count": 1,
+      "at": "on"
      }
     ]
    },
@@ -471,11 +481,15 @@
       1
      ]
     ],
-    "text": "draw 1 card and remove 1 Agent in a hex in reach",
+    "text": "Target: Agents. Draw 1 card and remove 1 Agent on it",
     "effects": [
      {
       "op": "draw",
       "count": 1
+     },
+     {
+      "op": "target",
+      "on": "agents"
      },
      {
       "op": "damage",
@@ -492,8 +506,12 @@
       1
      ]
     ],
-    "text": "push up to 3 Agents or Troops from a hex in reach, each to a hex next to it",
+    "text": "Target: Agents or Troops. Push up to 3 from it, each to a hex next to it",
     "effects": [
+     {
+      "op": "target",
+      "on": "adversary"
+     },
      {
       "op": "push",
       "max": 3,
@@ -512,8 +530,12 @@
       1
      ]
     ],
-    "text": "remove up to 2 Troops in one hex in reach",
+    "text": "Target: Troops. Remove up to 2 on it",
     "effects": [
+     {
+      "op": "target",
+      "on": "troops"
+     },
      {
       "op": "damage",
       "troops": 2
@@ -538,12 +560,17 @@
       2
      ]
     ],
-    "text": "turn 1 corrupted station or factory in reach neutral; gain 1 antimatter",
+    "text": "Target: a corrupted research station or factory. Turn it neutral; gain 1 antimatter",
     "effects": [
+     {
+      "op": "target",
+      "on": "corrupted_facility"
+     },
      {
       "op": "cleanse",
       "amount": 1,
-      "one_country": false
+      "one_country": false,
+      "at": "on"
      },
      {
       "op": "gain",
@@ -757,8 +784,12 @@
       1
      ]
     ],
-    "text": "build a research station in reach, paying no chips",
+    "text": "Target: an open hex. Build a research station on it, paying no chips",
     "effects": [
+     {
+      "op": "target",
+      "on": "station_site"
+     },
      {
       "op": "build_station"
      }

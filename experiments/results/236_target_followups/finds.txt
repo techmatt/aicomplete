@@ -1,0 +1,17 @@
+| side | games | fortify | bulwark | debrief | patrol | interdict | reclaim | field_station | audit | disrupt |
+|---|---|---|---|---|---|---|---|---|---|---|
+| new | 1152 | 0.19 | 5.07 | 3.11 | 3.02 | 0.70 | 0.10 | 0.65 | 1.88 | 0.90 |
+| base | 1152 | 0.21 | 5.25 | 3.14 | 2.94 | 0.70 | 0.09 | 0.67 | 1.88 | 0.93 |
+
+Uses a seat-game (a power: over its board's seats).
+
+| side | remove | troop | lift | station | move | claim | liberate | botnet | buy_energy |
+|---|---|---|---|---|---|---|---|---|---|
+| new | 0.407 | 0.356 | 0.216 | 1.250 | 8.358 | 0.289 | 3.194 | 0.771 | 2.015 |
+| base | 0.625 | 0.361 | 0.229 | 1.243 | 8.287 | 0.293 | 3.178 | 0.780 | 2.048 |
+
+Standard actions a seat-game (2 seats a game).
+
+Remove agents (new): 938 uses; removed 2.26 a use, reach held 2.50 (find share 0.91)
+Fortify (new): 145 uses; hardened 0.61 a use, reach held 0.89
+targets (new): 25.96 a game, missed 6.87

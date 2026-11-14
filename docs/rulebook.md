@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 106. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 107. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -136,7 +136,8 @@ reach. Your ambassadors don't give you reach.
 
 **One target.** A card that touches the map names **one target**: a hex in your reach that meets the condition in
 its **target box**, printed in the card's header ("Target: a corrupted city"). You pick the hex when the card
-resolves (an Action when you use it, an Effect each time it fires). The card then acts **on it**, or **on or next to
+resolves (an Action when you use it, an Effect each time it fires). Board powers and standard actions that touch the
+map do the same: their words open with the target ("Target: Troops. Remove up to 2 on it"). The card then acts **on it**, or **on or next to
 it**, or **in its country**, exactly as printed, and never further: Back-Channel Talks targets a corrupted factory
 and frees "it and 1 corrupted factory next to it". **Gain** puts pieces in your supply; **Place** puts new ones on the
 map, on the target (Amnesty Decree: "Place 2 Ambassadors on it"). With no hex meeting the condition, the card's map
@@ -546,16 +547,16 @@ Standard actions are always there, a hedge against bad luck: cards and your boar
 
 | Action | Cost | Effect |
 |---|---|---|
-| **Dispatch** | 1 Dispatch | put one of your ambassadors, from your supply or from anywhere on the map, onto a site, base, node or botnet in your reach (not the hex it is on) |
+| **Dispatch** | 1 Dispatch | target a site, base, node or botnet: put one of your ambassadors on it, from your supply or from anywhere on the map (not the hex it is on) |
 | **Place a node** | 6 credits, plus the space's energy | twice a round: a node next to yours, off either track (§5) |
-| **Claim** | ambassadors: city 5, station 3, factory 2 (below) | take a neutral site in reach with no agent on it: it becomes yours |
-| **Liberate** | ambassadors, as Claim | take a corrupted site in reach: it becomes yours |
-| **Remove agents** | 2 ambassadors from your supply, spent | remove up to 3 agents in your reach, from one hex or several; nothing is placed |
-| **Remove a troop** | 10 credits | once a round: remove 1 adversary troop in your reach |
-| **Take down a botnet** | 16 credits | remove a botnet in your reach where your ambassador stands (the ambassador stays) |
-| **Buy energy** | 5 credits | gain the energy (1) of a neutral city in your reach that isn't blocked or blacked out; each city once a round, for all players together |
-| **Lift Fallout** | 2 research cubes | remove 1 Fallout token in your reach; the one standard action that removes Fallout |
-| **Build a research station** | 1 chip | on an open hex in reach that isn't an industrial zone or Fallout; it is yours |
+| **Claim** | ambassadors: city 5, station 3, factory 2 (below) | target a neutral site with no agent on it: it becomes yours |
+| **Liberate** | ambassadors, as Claim | target a corrupted site: it becomes yours |
+| **Remove agents** | 2 ambassadors from your supply, spent | target agents: remove up to 3 on or next to it; nothing is placed |
+| **Remove a troop** | 10 credits | once a round: target troops, remove 1 on it |
+| **Take down a botnet** | 16 credits | target a botnet where your ambassador stands: remove it (the ambassador stays) |
+| **Buy energy** | 5 credits | target a neutral city that isn't blocked or blacked out: gain its energy (1); each city once a round, for all players together |
+| **Lift Fallout** | 2 research cubes | target Fallout: remove it; the one standard action that removes Fallout |
+| **Build a research station** | 1 chip | target an open hex that isn't an industrial zone or Fallout: the station is yours |
 | **Envoy** | 1 ambassador from your supply | remove 1 Discord from the Discord track |
 | **Gain an ambassador** | 20 credits | into your supply |
 | **Research cube** | 1 research cube | gain 1 insight |
@@ -1018,9 +1019,9 @@ Each power can be used once a round, in the action phase. A tag in a cost means 
 
 | Board | Node power | Conversions | Draw | Sacrifice and other powers |
 |---|---|---|---|---|
-| Builder | **Buy In** (6 credits: a node; 1 chip if the new node brings a factory into your reach) | **Mint** (3 credits: 1 chip) | **Procure** (1 chip: draw 2) | **Fortify** (2 chips: remove 1 adversary troop in reach and harden a facility in reach), **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand), **Teardown** (1 chip: destroy one of your own factories anywhere, Fallout goes on its hex, under any node there, which stays; 1 antimatter) |
-| Protector | **Accord** (1 Diplomacy: a node; if the new node brings a city into your reach, a new ambassador onto one such city) | **Interdict** (1 Security: remove up to 2 adversary troops in one hex in reach) | **Debrief** (1 Security: draw 1, and remove 1 agent in a hex in reach) | **Bulwark** (1 energy: harden a facility in reach), **Patrol** (1 energy: push up to 3 agents or adversary troops from a hex in reach), **Reclaim** (1 Security, 6 credits, 2 energy: turn a corrupted station or factory in reach neutral; 1 antimatter) |
-| Researcher | **Peer Review** (1 research cube: a node; 1 insight if the new node brings a research station into your reach) | **Grant** (3 credits: 1 cube in your color on a megaproject that isn't complete) | **Synthesis** (1 insight: draw 1) | **Disrupt** (1 Cyber, 1 research cube: remove up to 2 adversary troops in one country), **Field Station** (1 Industry: a research station without the chips, where Build a research station could go), **Audit** (1 Cyber: remove 3 compute from a project), **Meltdown** (2 research cubes: destroy one of your own research stations anywhere; 1 antimatter) |
+| Builder | **Buy In** (6 credits: a node; 1 chip if the new node brings a factory into your reach) | **Mint** (3 credits: 1 chip) | **Procure** (1 chip: draw 2) | **Fortify** (2 chips: target troops; remove 1 on it and harden a facility on or next to it), **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand), **Teardown** (1 chip: destroy one of your own factories anywhere, Fallout goes on its hex, under any node there, which stays; 1 antimatter) |
+| Protector | **Accord** (1 Diplomacy: a node; if the new node brings a city into your reach, a new ambassador onto one such city) | **Interdict** (1 Security: target troops; remove up to 2 on it) | **Debrief** (1 Security: target agents; draw 1, and remove 1 agent on it) | **Bulwark** (1 energy: target a facility; harden it), **Patrol** (1 energy: target agents or troops; push up to 3 from it), **Reclaim** (1 Security, 6 credits, 2 energy: target a corrupted station or factory; turn it neutral; 1 antimatter) |
+| Researcher | **Peer Review** (1 research cube: a node; 1 insight if the new node brings a research station into your reach) | **Grant** (3 credits: 1 cube in your color on a megaproject that isn't complete) | **Synthesis** (1 insight: draw 1) | **Disrupt** (1 Cyber, 1 research cube: remove up to 2 adversary troops in one country), **Field Station** (1 Industry: target an open hex where Build a research station could go; a station there without the chips), **Audit** (1 Cyber: remove 3 compute from a project), **Meltdown** (2 research cubes: destroy one of your own research stations anywhere; 1 antimatter) |
 
 Every player also has the standard action **Place a node** (6 credits, twice a round). Every placement also pays the track space's energy (§5).
 

@@ -1,0 +1,36 @@
+{
+  "name": "s236b",
+  "note": "236: the engine smoke on the dev seeds (36800-36815), the target rule (now answering board powers' and standard actions' targets) on and off, engine and strategist, d2, the three pairs.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "engine",
+    "engine:target_rule=0",
+    "strategist",
+    "strategist:target_rule=0"
+  ],
+  "games": 16,
+  "records": 0
+}

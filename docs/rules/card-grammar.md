@@ -53,13 +53,15 @@ raises are on programs, the engines' triggers, Actions and Effects on buildings;
   the target, then facilities next to it.
 - **Factories:** "build a factory on it": the target is a free industrial zone; the factory is yours (your cube).
 - **Moving ambassadors** (`move_ambassadors`, `consolidate`): onto the target (or onto pieces on or next to it),
-  each arriving as in [ambassadors.md](ambassadors.md); stop at any time. "Move up to N" (Summit Caucus, Liaison
+  each arriving as in [ambassadors.md](ambassadors.md); stop at any time. Yours come from your supply or from on or
+  next to the target (r107). "Move up to N" (Summit Caucus, Liaison
   Corps) is a "you may move": it never vetoes a card that does something else.
 - **Convert, firewall** (`convert`, `firewall`; house terms): the target is a city with agents on or next to it; a
   land hex. How each resolves is in [ambassadors.md](ambassadors.md), *Convert and firewall*.
 - **Gather, push** (`gather`, `push`; house terms, r70): onto the target, each from a hex next to it (gather), or
   from it (push). A strike (`gather` with `strike`) moves nothing: it removes up to N of the pieces it names on or
-  next to the target, your choice. How they resolve: [ambassadors.md](ambassadors.md), *Moving pieces*.
+  next to the target, your choice. When moving is all the effect does on the map, its target must be a hex where a
+  piece can move (r107). How they resolve: [ambassadors.md](ambassadors.md), *Moving pieces*.
 - **"With N X tags, also …"** (`if_tags`): the rest resolves only if you hold N tags of X on your cards when
   the card resolves (an event's own tags never count, as for a gain per tag); it never blocks the card.
 - **Peek:** the top cards of the adversary deck, behind the face-up card, are shown; one fewer after each reveal.

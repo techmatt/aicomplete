@@ -143,6 +143,22 @@ fn target_ops(w: &World, g: &GameState, prompt: &str) -> Option<Vec<Op>> {
         }
         out
     };
+    // 236: a board power's target, and Remove agents' (the first agent on it, up to `remove_count` on or next to it).
+    match &p.trigger {
+        aic_core::state::Trigger::Action { action: Action::Power { seat, power } } => {
+            let b = aic_core::modules::ai::board(w, *seat as usize);
+            return b.powers.get(*power as usize).and_then(|pw| after(&pw.effects));
+        }
+        aic_core::state::Trigger::Action { action: Action::Standard { act, .. } } if act == "remove" => {
+            let max = w.int("board.remove_count");
+            return Some(vec![Op::RemoveAmbassadorsCountry { unity_per: 0, max, reach: true, at: aic_core::content::Area::Near }]);
+        }
+        // Remove a troop and Build a factory run ops, as a card does.
+        aic_core::state::Trigger::Action { action: Action::Standard { act, .. } } => {
+            return board::StandardAction::parse(act).and_then(|a| after(board::std_ops(a)));
+        }
+        _ => {}
+    }
     // The building whose Action or Effect resolves names itself (by its printed name, among the seat's cards).
     if let Some(name) = prompt.rsplit_once(" [").and_then(|(_, rest)| rest.strip_suffix(']')) {
         let named = cards::in_play(g, p.ask.seat as usize).into_iter().find(|c| cards::def(w, c).name == name);

@@ -13,7 +13,7 @@ upkeep). The board module owns nodes and counts the tokens taken (`board.track.<
 economy track adds 2 or 3 more, so placing a node is how your income grows; you're short of energy. Round 1 deals
 you 2 tier-1 and 2 tier-2 cards into your hand, free (the tier-2s point a build direction), then drafts and keeps as
 every round does (r82). Each round you may turn credits into a chip with Mint, 1 chip into 2 cards with Procure, and 2 chips into a
-troop removed and a facility hardened with Fortify. Late in the game, sacrifice cards you have finished with:
+troop removed and a facility by it hardened with Fortify. Late in the game, sacrifice cards you have finished with:
 an Industry card pays out chips, a Power card energy, and an Industry card with an energy plays a building from your
 hand for no credits. Each round you may Dispatch 1 ambassador for free (2 from your fourth economy space). Your printed
 Industry tag counts like one on your cards.
@@ -77,7 +77,7 @@ buy a keep (r82), so insight is round 1's limit on keeps and credits on plays. A
 are a late-game choice.
 
 **One payment path (locked).** Every space prints a **cost** in energy, the last ones more. Every placement pays it,
-whatever places the node (r81, friction #16): a node power costs only its tag or currency (Buy In 6
+whatever places the node: a node power costs only its tag or currency (Buy In 6
 credits, Accord 1 Diplomacy, Peer Review 1 research cube; the standard Place a node, `node_credits` credits) and a card only its credits, so the energy is stated once,
 on the track; no card places a node free. Only tracks whose next step you can pay are offered, and a placement you
 can't pay doesn't happen.
@@ -88,8 +88,7 @@ can't pay doesn't happen.
 once a round, in its own currency or a tag, and each does more by a fresh spot (r93: Buy In a chip by a factory, Accord an
 ambassador onto a city, Peer Review an insight by a station; [ai-powers.md](ai-powers.md)); every player also has the standard action **Place a node**
 (`node_credits` 6 credits, `node_per_round` twice a round, [economy.md](economy.md)), a poorer route, so 0-3 nodes a round come from
-them (cards that place nodes add to that: cards aren't capped). Expand, once on every board, is gone (r91: no power on
-every board). Three things keep the loops short: 3 placements a round and rising step costs cap energy → node →
+them (cards that place nodes add to that: cards aren't capped). Three things keep the loops short: 3 placements a round and rising step costs cap energy → node →
 energy income; each is limited a round; and every tag sacrifice permanently loses cards.
 
 <!-- generated: node_track -->
@@ -138,14 +137,12 @@ from a neutral city (Buy energy) costs `city_energy_credits`; credits → energy
 cards and the cities' energy (once per city a round, a city's `corp_energy` a buy, none while an agent stands on it). **Energy
 counters** spend energy for good. **The Researcher's:** Patience with the cube converters (Cintamani's, a cube for 2
 insight, once a round; everyone's standard action, a cube for 1, with no limit) is the intended engine:
-capped by how many stations make cubes (and Open Archive's and Cryo Sample Vault's 1 a round) and, for Cintamani's, by its once a round and
-a Cintamani city in reach. **Antimatter (r97):** a plant's Action (a resource for 1) and Horizon's converter (3 cubes and 1 energy for 1) are once a
+capped by how many stations make cubes (and Open Archive's and Cryo Sample Vault's 1 a round) and Cintamani's once a round. **Antimatter (r97):** a plant's Action (a resource for 1) and Horizon's converter (3 cubes and 1 energy for 1) are once a
 round, beside each board's rare burn ([ai-powers.md](ai-powers.md)) and the desperate standard action (5 cubes for 1, r97); it
 pays for the majors that print it ([economy.md](economy.md)). Patience banks all the
-Researcher's unspent insight, a gift too; only cards that print it pass insight, at their cost. Open Science's
-insight goes only to other players.
+Researcher's unspent insight, a gift too; Open Science's insight goes only to other players.
 Followers → ambassadors → alignment → city energy → node is capped by building count and the Followers each
-ambassador costs. Remove agents costs 2 ambassadors (`remove_ambassadors`) and places nothing (r75), capped by the supply.
+ambassador costs. Remove agents places nothing (r75), capped by the supply.
 **Dispatches** have no loop: a number a round, used up, gaining nothing held. Wall has no loop, but it takes
 troops away as a harm where the Protector stands; `docs/harms.md`'s checks count sources, so they hold.
 

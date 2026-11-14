@@ -66,7 +66,7 @@ Pieces on the board move: **ambassadors** (any seat's), **agents** and **troops*
   batch by batch, and may stop. A card's gather or push acts on its target too ([card-grammar.md](card-grammar.md)).
 - **Where:** Kettle Operation, Lure Network, Honeypot Relay (strikes), Checkpoint Network (push; Action: push),
   Exodus Corridors and Rally the Allies (gather ambassadors), and the Protector's Patrol power (1 energy: push up to 3 agents or
-  troops). What a card moves is set by its price, not its tier: about 2 credits a piece (`values.json` `gather`, `push`).
+  troops from its target). What a card moves is set by its price, not its tier: about 2 credits a piece (`values.json` `gather`, `push`).
 
 ## Convert and firewall (r69; Matt, 2026-11-09; candidate)
 
@@ -99,14 +99,15 @@ One agent on it costs nothing.
   Both go (the agent to the adversary's supply), with no Unity, so a position is held only until the next arrival.
   Claim and Liberate refuse a site with an agent on it (206): clear it first.
 - **Remove agents** (the standard action, [economy.md](economy.md)): spend `remove_ambassadors` (2) ambassadors from
-  your supply, used up, and remove up to `remove_count` (3) agents in reach, one at a time from any hexes in reach,
-  your choice, stopping when you like. It places nothing (r75; it stood on one hex and removed 3 there). The supply
+  your supply, used up; target Agents and remove up to `remove_count` (3), the first on it, the rest one at a time
+  on or next to it (r107; any hexes in reach before), your choice, stopping when you like. It places nothing (r75; it stood on one hex and removed 3 there). The supply
   caps it: each use needs two new ambassadors (r100: 2 for 3 agents, 0.94 at the anchors, was 1 at 1.88).
 - **Consumed or standing:** claiming, liberating, Remove agents, Envoy, armor and the troop rule use a player
   ambassador up; blocking and moving leave it standing. A consumed ambassador is gone: new ones come from cards,
   Followers and the standard project. Player ambassadors move through cards (any player's Gather of
-  ambassadors moves yours too) and Dispatch. A Dispatch, like a card's "move up to N ambassadors", puts one onto a
-  piece in your reach, taken from your supply or from any hex on the board, however far; it is free, and a seat has
+  ambassadors moves yours too) and Dispatch. A Dispatch puts one onto a piece in your reach, taken from your supply
+  or from any hex on the board, however far (a card's "move up to N" takes them from your supply or on or next to
+  its target, r107); it is free, and a seat has
   its board's Dispatches a round ([ai-boards.md](ai-boards.md)). A Dispatch may also put one on a botnet's hex in
   reach, where the Take down a botnet action can use it (it stays).
 

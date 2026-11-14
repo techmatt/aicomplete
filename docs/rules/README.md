@@ -22,7 +22,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 106 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 107 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -61,7 +61,7 @@ The house words, as the player aid prints them ([player-aid.md](../player-aid.md
 - **Agent**: the adversary's piece on the board (the Security token is an Operative).
 - **Troop**: an adversary troop; a megacorp's is a Drone, its own piece, waiting at its military bases.
 - **In reach**: on a hex within 1 of your nodes.
-- **Target**: a card that touches the map names one target, a hex in your reach meeting its target box ("Target: a corrupted city"): it acts on it, or on or next to it, or in its country, as printed.
+- **Target**: a card, board power or standard action that touches the map names one target, a hex in your reach meeting its target box ("Target: a corrupted city"): it acts on it, or on or next to it, or in its country, as printed.
 - **Gain**: into your supply.
 - **Place**: onto the map: on the target, or next to it where printed.
 - **A country you're in**: a country where you have a node.
@@ -77,8 +77,8 @@ The house words, as the player aid prints them ([player-aid.md](../player-aid.md
 - **Open megaproject**: one that isn't complete; research cubes in your color go only onto one.
 - **Liberate**: a corrupted site: the agents on it come off, the adversary's cube comes off and yours goes on (the action pays for it in ambassadors; a card's is unpaid).
 - **Convert**: an agent on or next to the city leaves its stack and becomes your ambassador where it stood.
-- **Gather up to N**: pieces (ambassadors, agents, troops; botnets never move) onto the target (a board power's: a hex in your reach), each from a hex next to it; you may stop at any piece (a strike, "remove up to N on or next to it", moves nothing).
-- **Push up to N**: pieces from the target (a board power's: a hex in your reach), each to a hex next to it that you choose; you may stop at any piece.
+- **Gather up to N**: pieces (ambassadors, agents, troops; botnets never move) onto the target, each from a hex next to it; you may stop at any piece (a strike, "remove up to N on or next to it", moves nothing).
+- **Push up to N**: pieces from the target, each to a hex next to it that you choose; you may stop at any piece.
 - **Firewall**: a token on a hex: no agent lands or moves there (a Rally's share for it stays in the supply) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn.
 - **In the next adversary turn, no X**: a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (a Rally's share for it stays in the supply), and the tokens come off with the firewalls.
 <!-- /generated -->
@@ -91,10 +91,10 @@ The rest:
   board's node track ([ai-boards.md](ai-boards.md)). A node is a token, not a facility: it sits on any land
   hex, with or beside other pieces.
 - **Botnet**: the adversary's persistent token ([adversary.md](adversary.md)), placed only by printed lines. Nodes are always the players', botnets always the adversary's.
-- **Reach**: every map target of a standard action is in the acting player's reach. A card that touches the map
-  names **one target** in reach (r106, **locked**): its header's target box prints the condition, and its effects act
-  on it, on or next to it, or in its country, as printed ([card-grammar.md](card-grammar.md), *Target*); Shelter
-  takes no target (your reach). Reach is 1 for every player rule: no card's effect goes past 1 from its target unless it prints "in its country". Reach bounds where a piece goes, not where it comes from: a Dispatch, or a card's "move up to N ambassadors", takes one from anywhere. The adversary's distances (a Corrupt line moving agents from next door, a troop's
+- **Reach**: a card, board power or standard action that touches the map names **one target** in the acting
+  player's reach (r106 cards, r107 powers and standard actions, **locked**): it prints the condition first
+  ("Target: Troops."), and its effects act on it, on or next to it, or in its country, as printed
+  ([card-grammar.md](card-grammar.md), *Target*); Shelter takes no target (your reach), Disrupt one country (206). Reach is 1 for every player rule: no effect goes past 1 from its target unless it prints "in its country". A card's "move up to N ambassadors" takes yours from your supply or on or next to the target (r107); a Dispatch takes one from anywhere. The adversary's distances (a Corrupt line moving agents from next door, a troop's
   strike) are its own, not a player's reach ([adversary.md](adversary.md), [war.md](war.md)). A converter needs a city of its country in your
   reach ([board.md](board.md)).
 - **Site**: a city, research station or factory (137: one site model, [ambassadors.md](ambassadors.md)). A military

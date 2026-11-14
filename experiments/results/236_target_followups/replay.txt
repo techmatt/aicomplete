@@ -1,0 +1,10 @@
+1152 games on both (1152 in A, 1152 in B); engines A ['native', 'wasm'], B ['native', 'wasm']
+games that differ (engine and timings aside): 683
+  cell 0 seed 47328: options_total
+  cell 1 seed 47328: options_total
+  cell 2 seed 47328: options_total
+  cell 3 seed 47328: options_total
+  cell 4 seed 47328: actions, counters, decisions, options_total
+win % A: 75.1 ±1.3 (1152 games)
+win % B: 75.3 ±1.3 (1152 games)
+paired gap B - A: +0.3 ±0.2

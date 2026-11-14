@@ -48,16 +48,16 @@ publishes each action with its cost (`View.standard`).
 | Action | Cost | What |
 |---|---|---|
 | Place a node | `node_credits` 6 credits, and the track step's energy | place 1 node next to yours, off either track, at most `node_per_round` 2 a round (the boards' own node powers are the better route) |
-| Build a research station | `station_chips` 1 chips | on an open hex in reach that is not an industrial zone or Fallout; it is yours (your cube) |
-| Remove agents | `remove_ambassadors` 2 of your ambassadors, from your supply, used up | remove up to `remove_count` 3 agents in reach, from any hexes, your choice |
-| Remove a troop | `troop_credits` 10 credits | remove 1 adversary troop in reach, at most `troop_per_round` 1 a round |
-| Lift Fallout | `land_cubes` 2 research cubes | a Fallout token in reach comes off: the one standard action that removes Fallout |
-| Dispatch a player ambassador | 1 of your Dispatches this round (your board's, unused ones lost) | from your supply or the board onto a piece or botnet in reach (not the hex it comes from) |
+| Build a research station | `station_chips` 1 chips | Target: an open hex. A research station goes on it (not an industrial zone or Fallout); it is yours (your cube) |
+| Remove agents | `remove_ambassadors` 2 of your ambassadors, from your supply, used up | Target: Agents. Remove up to `remove_count` 3 agents on or next to it, your choice |
+| Remove a troop | `troop_credits` 10 credits | Target: Troops. Remove 1 troop on it, at most `troop_per_round` 1 a round |
+| Lift Fallout | `land_cubes` 2 research cubes | Target: Fallout. Its Fallout token comes off: the one standard action that removes Fallout |
+| Dispatch a player ambassador | 1 of your Dispatches this round (your board's, unused ones lost) | Target: a piece or a Botnet. A player ambassador goes on it, from your supply or anywhere on the board (not the target itself) |
 | Gain a player ambassador | `ambassador_credits` 20 credits | into your supply; a standard project too |
-| Claim a site | `claim_city` 5 ambassadors for a city, `claim_station` 3 for a station, `claim_factory` 2 for a factory (Liberate's table too); used up: yours on the site first, your supply the rest | a neutral city, research station or factory in reach with no agent on it (no embargo on it): your cube goes on |
-| Liberate a site | Claim's: `liberate_at` 5 ambassadors for a city, `claim_station` 3 for a station, `claim_factory` 2 for a factory; used up: yours on the site first, your supply the rest | an adversary city, station or factory in reach with no agent on it: the adversary's cube comes off, yours goes on, and it sways Unity (`alignment.free_city` 5 for a city, `free_facility` 2 for a station or factory) |
-| Take down a botnet | `botnet_credits` 16 credits | a botnet on a hex holding your ambassador (it stays) comes off |
-| Buy a city's energy | `city_energy_credits` 5 credits | a neutral city in reach that is producing (no blackout, no agent on it), once per city a round: gain its energy |
+| Claim a site | `claim_city` 5 ambassadors for a city, `claim_station` 3 for a station, `claim_factory` 2 for a factory (Liberate's table too); used up: yours on the site first, your supply the rest | Target: a neutral site with no Agent on it. A neutral city, research station or factory, no embargo on it: your cube goes on it |
+| Liberate a site | Claim's: `liberate_at` 5 ambassadors for a city, `claim_station` 3 for a station, `claim_factory` 2 for a factory; used up: yours on the site first, your supply the rest | Target: an adversary site with no Agent on it. An adversary city, station or factory: the adversary's cube comes off, yours goes on, and it sways Unity (`alignment.free_city` 5 for a city, `free_facility` 2 for a station or factory) |
+| Take down a botnet | `botnet_credits` 16 credits | Target: a Botnet on a hex holding your ambassador. The botnet comes off (your ambassador stays) |
+| Buy a city's energy | `city_energy_credits` 5 credits | Target: a producing neutral city. Producing (no blackout, no agent on it): gain its energy, once per city a round |
 | Sell a card | gain `sell_credits` 1 | from your hand |
 | Turn a cube into insight | 1 research cube | gain `cube_insight` 1 insight, as often as you have cubes |
 | Envoy | `envoy_ambassadors` 1 of your ambassadors, from your supply, used up | move 1 Discord off the Discord track |

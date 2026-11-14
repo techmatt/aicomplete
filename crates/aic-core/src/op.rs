@@ -331,6 +331,10 @@ pub enum TargetSpec {
     CorruptedFactory,
     /// A corrupted city, research station or factory.
     CorruptedSite,
+    /// 236: a corrupted research station or factory (the Protector's Reclaim).
+    CorruptedFacility,
+    /// 236: an open hex a research station can be built on (the Researcher's Field Station).
+    StationSite,
     /// A neutral research station a card can claim.
     NeutralStation,
     /// A free industrial zone (a factory's site).
@@ -359,6 +363,8 @@ impl TargetSpec {
             TargetSpec::CorruptedStation => "a corrupted research station",
             TargetSpec::CorruptedFactory => "a corrupted factory",
             TargetSpec::CorruptedSite => "a corrupted site",
+            TargetSpec::CorruptedFacility => "a corrupted research station or factory",
+            TargetSpec::StationSite => "an open hex",
             TargetSpec::NeutralStation => "a neutral research station",
             TargetSpec::FreeZone => "a free industrial zone",
             TargetSpec::Fallout => "Fallout",
@@ -380,7 +386,7 @@ impl TargetSpec {
             TargetSpec::CorruptedStation => "station",
             TargetSpec::CorruptedFactory | TargetSpec::FreeZone => "factory",
             TargetSpec::CorruptedSite => "city",
-            TargetSpec::NeutralStation => "station",
+            TargetSpec::CorruptedFacility | TargetSpec::StationSite | TargetSpec::NeutralStation => "station",
             TargetSpec::Fallout => "fallout",
             TargetSpec::Facility => "shield",
             TargetSpec::AgentCity => "city",
@@ -835,7 +841,8 @@ pub enum Op {
         at: Area,
     },
     /// Move up to `max` of your ambassadors (from your supply or the board)
-    /// onto pieces within your reach, one at a time.
+    /// onto pieces within your reach, one at a time. 236: with a target, the board's come only from on or next to
+    /// it (the supply stays a source).
     MoveAmbassadors {
         max: i64,
         /// 234: where it acts once a target is chosen (on it, on or next to it, in its country).

@@ -55,7 +55,8 @@ pub struct Pieces {
     pub liberate_cost: i64,
     /// Remove actions (one ambassador each) to clear the adversary
     /// ambassadors off every hex that is not a corrupted city, `remove_count`
-    /// a use from any hexes (r75). It ignores reach (the Remove action takes agents in reach). (178: no agent lands on a liberated city, so `remove_after_liberate` and
+    /// a use (r75), a lower bound: it ignores reach and where agents stand (236: Remove agents takes them on or next
+    /// to its target). (178: no agent lands on a liberated city, so `remove_after_liberate` and
     /// `free_leaves` are gone.)
     pub remove_actions: i64,
     /// The purge's count at the state's own level.
@@ -128,7 +129,7 @@ pub fn pieces(rules: &Rules, g: &GameState) -> Pieces {
             loose += amb;
         }
     }
-    // r75: one Remove takes up to `remove_count` agents from any hexes in reach.
+    // r75: one Remove takes up to `remove_count` agents (236: on or next to its target; a lower bound here).
     p.remove_actions = (loose + per_use - 1) / per_use;
     p.purge = adversary::purge_count(&w, g, level);
     p

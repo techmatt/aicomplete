@@ -426,16 +426,25 @@ fn remove_agents_uses_its_ambassador_up_and_places_none() {
     assert_eq!((g.resource(0, Resource::Ambassadors), board::ambassadors_on_board(&g, 0)), (0, 0));
 }
 
-/// r75 (Matt's ruling 1): Remove agents takes up to `remove_count` (3) agents from any hexes in reach: the
-/// target hex first, then one at a time from a hex of the player's choice, who may stop short.
+/// r75 (Matt's ruling 1): Remove agents takes up to `remove_count` (3) agents: the target hex first, then one at
+/// a time from a hex of the player's choice, who may stop short. 236: on or next to the target only (it took
+/// them from any hexes in reach): an agent 2 from the target stays, though it is in reach.
 #[test]
-fn remove_agents_spreads_over_hexes_in_reach() {
+fn remove_agents_spreads_on_or_next_to_its_target() {
     let (rules, mut g0) = lab(&[]);
     let m = &rules.map;
     assert_eq!(rules.world().int("board.remove_count"), 3);
     let d = m.numbered(0, piece(0).node);
     let x = m.hexes[d].neighbors.iter().copied().find(|&x| kind(m, x) != HexKind::Ocean).unwrap();
+    let y = m.hexes[x]
+        .neighbors
+        .iter()
+        .copied()
+        .find(|&y| y != d && kind(m, y) != HexKind::Ocean && !m.hexes[d].neighbors.contains(&y))
+        .unwrap();
     put(&mut g0, d, node(0), 1);
+    put(&mut g0, x, node(0), 1);
+    put(&mut g0, y, ADV_AMBASSADOR, 1);
     put(&mut g0, d, ADV_AMBASSADOR, 1);
     put(&mut g0, x, ADV_AMBASSADOR, 3);
     set_res(&mut g0, 0, Resource::Ambassadors, rules.world().int("board.remove_ambassadors"));
@@ -443,7 +452,7 @@ fn remove_agents_spreads_over_hexes_in_reach() {
     let mut g = g0.clone();
     rules.apply_mut(&mut g, &std_act(0, "remove"), None).unwrap();
     answer_hex(&rules, &mut g, d);
-    // d is empty now: only x and "stop removing" are offered.
+    // d is empty now: only x and "stop removing" are offered (y, in reach, is 2 from the target).
     let p = g.pending.as_ref().expect("asked for another agent");
     assert_eq!(p.ask.options.len(), 2);
     assert_eq!(p.ask.options[1].option, board::STOP_REMOVING);

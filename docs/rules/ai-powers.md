@@ -12,6 +12,12 @@ beneath it; events can't be sacrificed (they are gone once played). A card pays 
 tags are wasted. Each power is usable once a round. What can be sacrificed is fixed when the power is used; the player chooses the cards one at a time among those that
 still help.
 
+**One target (r107; Matt, 2026-11-14).** A power that touches the map names one target, a hex in your reach, as a
+card does ([card-grammar.md](card-grammar.md)): its text opens "Target: ...", and it acts on the target, or on or
+next to it where printed. `Content::check` holds powers to the cards' check and the opening words. Node placements
+(next to your nodes), the burns (your own piece anywhere) and Grant and Audit (off the map) take none; the one
+exception is Disrupt's country (206).
+
 <!-- generated: powers -->
 | Board | Power | Cost | Effect |
 |---|---|---|---|
@@ -21,17 +27,17 @@ still help.
 | Builder | Overcharge | 1 Power | gain 2 energy |
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
 | Builder | Procure | 1 chip | draw 2 cards |
-| Builder | Fortify | 2 chips | remove 1 Troop in reach and harden 1 facility in reach |
+| Builder | Fortify | 2 chips | Target: Troops. Remove 1 Troop on it; harden a facility on or next to it |
 | Builder | Teardown | 1 chip | destroy one of your factories anywhere; Fallout goes on its hex; gain 1 antimatter |
-| Protector | Bulwark | 1 energy | harden 1 facility in reach |
+| Protector | Bulwark | 1 energy | Target: a facility. Harden it |
 | Protector | Accord | 1 Diplomacy | place 1 Node; if the new node brings a city into your reach, also put a new ambassador on one such city |
-| Protector | Debrief | 1 Security | draw 1 card and remove 1 Agent in a hex in reach |
-| Protector | Patrol | 1 energy | push up to 3 Agents or Troops from a hex in reach, each to a hex next to it |
-| Protector | Interdict | 1 Security | remove up to 2 Troops in one hex in reach |
-| Protector | Reclaim | 1 Security + 6 credits + 2 energy | turn 1 corrupted station or factory in reach neutral; gain 1 antimatter |
+| Protector | Debrief | 1 Security | Target: Agents. Draw 1 card and remove 1 Agent on it |
+| Protector | Patrol | 1 energy | Target: Agents or Troops. Push up to 3 from it, each to a hex next to it |
+| Protector | Interdict | 1 Security | Target: Troops. Remove up to 2 on it |
+| Protector | Reclaim | 1 Security + 6 credits + 2 energy | Target: a corrupted research station or factory. Turn it neutral; gain 1 antimatter |
 | Researcher | Peer Review | 1 research cube | place 1 Node; if the new node brings a research station into your reach, also gain 1 insight |
 | Researcher | Grant | 3 credits | add 1 research cube in your color to an open megaproject |
-| Researcher | Field Station | 1 Industry | build a research station in reach, paying no chips |
+| Researcher | Field Station | 1 Industry | Target: an open hex. Build a research station on it, paying no chips |
 | Researcher | Audit | 1 Cyber | remove 3 compute from one adversary project |
 | Researcher | Disrupt | 1 Cyber + 1 research cube | remove up to 2 Troops in one country |
 | Researcher | Meltdown | 2 research cubes | destroy one of your research stations anywhere; gain 1 antimatter |
@@ -39,7 +45,7 @@ still help.
 <!-- /generated -->
 
 **Sacrifice is late-game liquidation.** Once the cards needing a tag are played, its tags turn into engine rewards,
-each payoff priced to be worth the card: 1 chip (r83: worth 2 before), 2 energy, up to 2 troops removed in a hex (Interdict, r98), a card and an agent removed (Debrief, r91); a tag and an
+each payoff priced to be worth the card: 1 chip (r83: worth 2 before), 2 energy, up to 2 troops removed on a target (Interdict, r98), a card and an agent removed (Debrief, r91); a tag and an
 energy buy a building (r35).
 
 **Each power's tag is its story (r93, Matt, amendment 9513).** A tag-paid power is paid in the tag its effect fits
@@ -73,17 +79,17 @@ never refused. Draws, credits, triggers, threat counters, liberation and a tag's
 into a card (r100; 2 before) (r91, Matt: the Researcher's draw outlet; Fieldwork, 1 energy for 3 cards, is cut, since it starved it).
 
 **Troop powers (r91, amendment 9247: early troops decide games).** Each board removes or stops troops its own way, no
-two alike: the Protector's **Interdict** (a Security card: up to 2 troops in one hex in reach; r98, Matt's ruling: Stand Down
-merged into it and Shelter cut, 9 powers to 7) beside its Patrol (pushes them away); the Builder's **Fortify** (2 chips: 1 troop in reach and a facility
-hardened); the Researcher's **Disrupt** (a Cyber card and a research cube: up to 2 troops in one country, no reach
+two alike: the Protector's **Interdict** (a Security card: up to 2 troops on its target; r98, Matt's ruling: Stand Down
+merged into it and Shelter cut, 9 powers to 7) beside its Patrol (pushes them away); the Builder's **Fortify** (2 chips: 1 troop on its target and
+a facility on or next to it hardened); the Researcher's **Disrupt** (a Cyber card and a research cube: up to 2 troops in one country, no reach
 needed). The standard action Remove a troop (`troop_credits` 10 credits, `troop_per_round` once a round) is the hedge.
 
 **Antimatter: each board a rare burn of its own engine (r97, Matt's ruling, 2026-11-13).** The steady source is the
 tier-2 converter plants ([economy.md](economy.md)); each board's own power is a different decision, once a round, for
 1 antimatter: the Builder's **Teardown** (1 chip: destroy one of your own factories, and a Fallout token goes on
 its hex), the Researcher's **Meltdown** (2 research cubes: destroy one of your own research stations; r98: renamed from
-Overload, a tier-2 threat's name), the Protector's **Reclaim** (227: renamed from Seize; a Security card, 6 credits and 2 energy: turn a
-corrupted station or factory in reach neutral, its adversary cube off, well above Remove a troop's 10). Teardown and
+Overload, a tier-2 threat's name), the Protector's **Reclaim** (227: renamed from Seize; a Security card, 6 credits and 2 energy: turn its
+target, a corrupted station or factory, neutral, its adversary cube off, well above Remove a troop's 10). Teardown and
 Meltdown reach anywhere. A burned piece is gone, no protection asked (you chose it), unless rebuilt the
 normal way; with no piece or target the power can't be used. No power spends antimatter: the spends are the majors,
 tier-2 cards and a few dear tier-1 ones.

@@ -1,0 +1,37 @@
+{
+  "name": "s236a",
+  "note": "236: dev-seed screen (36800-36831), one target for board powers, standard actions and move cards (r107) against main r106 (e192c96) on the same seeds; greedy and strategist, the three pairs, d0-d3. Finds read from the board.remove_agents_* and effects.harden_* tallies.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "greedy",
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}
