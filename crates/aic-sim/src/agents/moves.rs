@@ -221,24 +221,25 @@ fn finds(w: &World, g: &GameState, t: &super::value::Table, o: &Op, h: usize, cl
 fn last_node_at(w: &World, g: &GameState, h: usize) -> bool {
     let Some(s) = common::node_owner(g, h) else { return false };
     common::node_count(g, s) == 1
-        && !board::flagged(g, aic_core::content::RoundFlag::Shelter, w.map.hexes[h].country as usize)
+        && !board::sheltered(w, g, h, Some(s))
         && !cards::has_passive(w, g, s, |p| matches!(p, Op::CorruptionShield))
 }
 
 /// 177: pushing `n` agents from `from` onto `d` lets a node line gather a last node's hex next to `d` up
-/// to its number (`adversary.corrupt_node_at`): its agents and those next door (not on another node hex, which
-/// stay: `plan::converge`), after the move.
+/// to its number (`adversary.corrupt_node_at`): its agents and those next door that converge onto it
+/// (`plan::converge_map`: not those on another node hex, nor, r98, those next to two open node hexes), after the move.
 fn tips_last_node(w: &World, g: &GameState, from: usize, d: usize, n: i64) -> bool {
     let at = aic_core::modules::adversary::corrupt_n(w, CorruptSite::Node, 0);
-    let moves = |y: usize| common::node_owner(g, y).is_none();
+    // The push moves no node, so where each hex's agents converge is the same after it; only the counts move.
+    let after = |y: usize| agents(g, y) - if y == from { n } else { 0 } + if y == d { n } else { 0 };
+    let mut to: Option<Vec<Option<usize>>> = None;
     w.map.hexes[d].neighbors.iter().any(|&x| {
         if !last_node_at(w, g, x) || common::firewalled(g, x) {
             return false;
         }
-        let next = &w.map.hexes[x].neighbors;
-        let near: i64 = next.iter().filter(|&&y| moves(y)).map(|&y| agents(g, y)).sum();
-        let gone = if next.contains(&from) && moves(from) { n } else { 0 };
-        agents(g, x) + near - gone + n >= at
+        let to = to.get_or_insert_with(|| plan::converge_map(w, g, CorruptSite::Node));
+        let near: i64 = w.map.hexes[x].neighbors.iter().filter(|&&y| to[y] == Some(x)).map(|&y| after(y)).sum();
+        after(x) + near >= at
     })
 }
 
@@ -424,18 +425,31 @@ fn gather_piece(w: &World, g: &GameState, legal: &[Action], to: usize) -> Option
 /// How close each uncorrupted site is to the next Corrupt line of its type: (site, agents it counts, its number).
 fn at_risk(w: &World, g: &GameState) -> Vec<(usize, i64, i64, bool)> {
     let lines = [
-        (board::SiteKind::City, plan::next_corrupt_n(w, g, CorruptSite::City)),
-        (board::SiteKind::Station, plan::next_corrupt_n(w, g, CorruptSite::Station)),
-        (board::SiteKind::Factory, plan::next_corrupt_n(w, g, CorruptSite::Factory)),
-    ];
+        (board::SiteKind::City, CorruptSite::City),
+        (board::SiteKind::Station, CorruptSite::Station),
+        (board::SiteKind::Factory, CorruptSite::Factory),
+    ]
+    .map(|(k, site)| (k, site, plan::next_corrupt_n(w, g, site)));
     let (node_n, node_gathers) = plan::next_corrupt_n(w, g, CorruptSite::Node);
+    // 237 (229's pick): the agents next door that a gathering line moves onto `h`, as the engine moves them
+    // (`plan::converge_map`: not those on a target of their own, nor, r98, those next to two open targets).
+    // One map a gathering line, read once.
+    let maps: Vec<(CorruptSite, Vec<Option<usize>>)> = lines
+        .iter()
+        .filter(|(_, _, (_, gathers))| *gathers)
+        .map(|&(_, site, _)| site)
+        .chain(node_gathers.then_some(CorruptSite::Node))
+        .map(|site| (site, plan::converge_map(w, g, site)))
+        .collect();
+    let gathered = |h: usize, site: CorruptSite| -> i64 {
+        let Some((_, to)) = maps.iter().find(|(s, _)| *s == site) else { return 0 };
+        w.map.hexes[h].neighbors.iter().filter(|&&x| to[x] == Some(h)).map(|&x| agents(g, x)).sum()
+    };
     let mut out = Vec::new();
     for h in 0..g.hexes.len() {
         // 175: a player's node hex corrupts at its own number (2), whatever site it holds.
         if common::node_owner(g, h).is_some() && !common::firewalled(g, h) {
-            // 184: an agent on a neighboring node hex stays on its own target (plan::converge), as tips_last_node reads.
-            let near: i64 = w.map.hexes[h].neighbors.iter().filter(|&&x| common::node_owner(g, x).is_none()).map(|&x| agents(g, x)).sum();
-            let count = agents(g, h) + if node_gathers { near } else { 0 };
+            let count = agents(g, h) + if node_gathers { gathered(h, CorruptSite::Node) } else { 0 };
             if count > 0 && count + 1 >= node_n {
                 out.push((h, count, node_n, node_gathers));
             }
@@ -444,15 +458,8 @@ fn at_risk(w: &World, g: &GameState) -> Vec<(usize, i64, i64, bool)> {
         if common::corrupted(g, h) || common::firewalled(g, h) {
             continue;
         }
-        let Some(&(_, (n, gathers))) = lines.iter().find(|(k, _)| *k == kind) else { continue };
-        // 175: agents on a clean site of the same kind next door stay there (the line moves only the others).
-        let next: i64 = w.map.hexes[h]
-            .neighbors
-            .iter()
-            .filter(|&&x| !(board::site_kind(w, g, x) == Some(kind) && !common::corrupted(g, x)))
-            .map(|&x| agents(g, x))
-            .sum();
-        let count = agents(g, h) + if gathers { next } else { 0 };
+        let Some(&(_, site, (n, gathers))) = lines.iter().find(|(k, _, _)| *k == kind) else { continue };
+        let count = agents(g, h) + if gathers { gathered(h, site) } else { 0 };
         if count > 0 && count + 2 >= n {
             out.push((h, count, n, gathers));
         }

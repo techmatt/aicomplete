@@ -156,8 +156,14 @@ fn counterable(w: &World, g: &GameState, t: &str) -> bool {
 /// What sheltering `country` would save this round, were it not sheltered:
 /// the threats on it that destroy (each seat's nodes there, troops landing on
 /// its factories) and the war step's crossings into it.
-pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bool, armor: Armor) -> Saves {
+/// 237 (D97): `reach` reads seat `s`'s reach Shelter instead (`Some(s)`): only `s`'s pieces on the hexes it covers.
+/// The country's shelter (`None`) leaves out the pieces a reach Shelter keeps anyway.
+pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bool, armor: Armor, reach: Option<usize>) -> Saves {
     let absorbed = |h: usize| absorbed(w, g, h, armor);
+    let keeps = |s: usize, h: usize| match reach {
+        None => !board::reach_sheltered(g, s, h),
+        Some(o) => s == o && board::reach_sheltered(g, o, h),
+    };
     let mut out = Saves::default();
     let seats = g.seats.len().min(4);
     let hexes = &w.map.countries[country].hexes;
@@ -191,7 +197,7 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
                     if let Some(s) = hit.filter(|&s| s < seats) {
                         let near: Vec<usize> =
                             threats::nearest_nodes(w, g, s, &t).into_iter().filter(|h| hexes.contains(h)).collect();
-                        lost[s] += (near.iter().filter(|&&h| !absorbed(h)).count() as i64).min(*count);
+                        lost[s] += (near.iter().filter(|&&h| !absorbed(h) && keeps(s, h)).count() as i64).min(*count);
                     }
                 }
                 Op::DestroyNode { count } => {
@@ -218,7 +224,9 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
                         let Some(&i) = near.iter().find(|&&i| taken[i] < g.tokens(hexes[i], k)) else { break };
                         taken[i] += 1;
                         left[s] = Some(have - 1);
-                        lost[s] += 1;
+                        if keeps(s, hexes[i]) {
+                            lost[s] += 1;
+                        }
                     }
                 }
                 Op::Troops { count, destroy: true, .. } if armor == Armor::ByOwner => {
@@ -242,7 +250,9 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
                         }
                         taken[i] += 1;
                         left[s] = Some(have - 1);
-                        lost[s] += 1;
+                        if keeps(s, h) {
+                            lost[s] += 1;
+                        }
                         hit += 1;
                     }
                 }
@@ -262,7 +272,7 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
                         }
                         if let Some(s) = common::node_owner(g, h) {
                             if s < seats {
-                                lost[s] += 1;
+                                lost[s] += i64::from(keeps(s, h));
                                 hit += 1;
                             }
                         }
@@ -279,7 +289,7 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
             // armor runs out falls) and the nodes counted out of what stands
             // (148); before, an armored node never fell.
             let open = match armor {
-                Armor::AnyAmbassador => nodes_here(s).into_iter().filter(|&h| !absorbed(h)).count() as i64,
+                Armor::AnyAmbassador => nodes_here(s).into_iter().filter(|&h| !absorbed(h) && keeps(s, h)).count() as i64,
                 Armor::ByOwner => n,
             };
             out.nodes[s] += share * n.min(open) as f64;
@@ -308,7 +318,7 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
                 if factory_absorbed(w, g, h, armor) {
                     continue;
                 }
-                if common::cube_owner(g, h).is_some() {
+                if common::cube_owner(g, h).is_some_and(|o| keeps(o, h)) {
                     out.factories += WAR_SHARE;
                 }
             }
@@ -321,13 +331,21 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
 /// actions.
 const WAR_SHARE: f64 = 0.7;
 
-/// The countries sheltered now, each with what its shelter saves.
+/// The shelters up now, each with what it saves: each sheltered country, and (237, D97) each seat's reach Shelter
+/// in each country no country shelter covers.
 pub fn sheltered_saves(w: &World, g: &GameState, counter_first: bool, armor: Armor) -> Vec<Saves> {
-    (0..w.map.countries.len())
-        .filter(|&c| board::flagged(g, RoundFlag::Shelter, c))
-        .map(|c| shelter_saves(w, g, c, counter_first, armor))
-        .filter(Saves::any)
-        .collect()
+    let countries = w.map.countries.len();
+    let flagged = |c: usize| board::flagged(g, RoundFlag::Shelter, c);
+    let mut out: Vec<Saves> =
+        (0..countries).filter(|&c| flagged(c)).map(|c| shelter_saves(w, g, c, counter_first, armor, None)).collect();
+    for s in (0..g.seats.len().min(4)).filter(|&s| board::reach_sheltering(g, s)) {
+        let covers = |c: usize| w.map.countries[c].hexes.iter().any(|&h| board::reach_sheltered(g, s, h));
+        for c in (0..countries).filter(|&c| !flagged(c) && covers(c)) {
+            out.push(shelter_saves(w, g, c, counter_first, armor, Some(s)));
+        }
+    }
+    out.retain(Saves::any);
+    out
 }
 
 #[cfg(test)]
@@ -370,11 +388,11 @@ mod tests {
     fn armor_is_one_pool_across_a_countrys_threats() {
         let (r, g) = lab(&["dark_cities", "purge_protocols"], 3, 1);
         let w = r.world();
-        let saves = shelter_saves(&w, &g, 0, false, Armor::ByOwner);
+        let saves = shelter_saves(&w, &g, 0, false, Armor::ByOwner, None);
         assert_eq!(saves.nodes[0], 1.0, "one unit absorbs one destroy, not two");
         assert_eq!(saves.factories, 0.0);
         let (r, g) = lab(&["dark_cities", "purge_protocols"], 3, 2);
-        assert_eq!(shelter_saves(&r.world(), &g, 0, false, Armor::ByOwner).nodes[0], 0.0, "two units, two destroys");
+        assert_eq!(shelter_saves(&r.world(), &g, 0, false, Armor::ByOwner, None).nodes[0], 0.0, "two units, two destroys");
     }
 
     /// 175: the forecast takes a seat's last node as the engine does (148's floor is gone): three destroys
@@ -382,10 +400,25 @@ mod tests {
     #[test]
     fn the_forecast_takes_the_last_node() {
         let (r, g) = lab(&["overload", "dark_cities"], 2, 0);
-        assert_eq!(shelter_saves(&r.world(), &g, 0, false, Armor::ByOwner).nodes[0], 2.0, "three destroys, two nodes");
+        assert_eq!(shelter_saves(&r.world(), &g, 0, false, Armor::ByOwner, None).nodes[0], 2.0, "three destroys, two nodes");
         let (r, g) = lab(&["overload"], 1, 0);
-        let saves = shelter_saves(&r.world(), &g, 0, false, Armor::ByOwner);
+        let saves = shelter_saves(&r.world(), &g, 0, false, Armor::ByOwner, None);
         assert_eq!(saves.nodes[0], 1.0);
         assert!(saves.any());
+    }
+
+    /// 237 (D97): a seat's reach Shelter over its node is read as a shelter (no country flag is up), and a
+    /// country shelter no longer counts the node a reach Shelter keeps anyway.
+    #[test]
+    fn a_reach_shelter_saves_what_it_covers() {
+        let (r, mut g) = lab(&["overload"], 1, 0);
+        let w = r.world();
+        assert!(sheltered_saves(&w, &g, false, Armor::ByOwner).is_empty(), "nothing sheltered yet");
+        let h = w.map.countries[0].hexes[0];
+        g.vars.insert(board::reach_shelter(0, h).as_str().into(), 1);
+        let saves = sheltered_saves(&w, &g, false, Armor::ByOwner);
+        assert_eq!(saves.len(), 1);
+        assert_eq!(saves[0].nodes[0], 1.0);
+        assert_eq!(shelter_saves(&w, &g, 0, false, Armor::ByOwner, None).nodes[0], 0.0, "kept by the reach Shelter");
     }
 }

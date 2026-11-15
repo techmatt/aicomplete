@@ -608,3 +608,16 @@ fn a_building_s_own_play_fires_its_fight_trigger() {
     assert!(g.stats.counters["effects.struck"] >= 1);
     assert_eq!(g.resource(1, Resource::Credits), credits + 3);
 }
+
+/// 237: a kept card left in hand with no feasible part is unofferable (Root Access: no corrupted city on a fresh
+/// board); an unkept one isn't counted.
+#[test]
+fn a_kept_card_with_no_target_is_unofferable() {
+    let (rules, mut g) = lab_actions_with(&[]);
+    let w = rules.world();
+    out_of_decks(&mut g, "root_access");
+    set_pile(&mut g, "cards.hand.0", &["root_access"]);
+    assert!(cards::unofferable(&w, &g).is_empty(), "not kept");
+    g.stats.counters.insert("cards.keep_at.0.root_access".into(), 1);
+    assert_eq!(cards::unofferable(&w, &g), vec![crate::Key::from("root_access")]);
+}

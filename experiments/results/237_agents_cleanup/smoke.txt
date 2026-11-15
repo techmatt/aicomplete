@@ -1,0 +1,53 @@
+| agent | d | games | s237-base win % | s237-arm1 win % | s237-arm2 win % | s237-arm3 win % | s237-arm1 - s237-base | s237-arm2 - s237-arm1 | s237-arm3 - s237-arm2 | s237-arm3 - s237-base | games moved (last vs base) |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| greedy | 0 | 96 | 88.5 | 88.5 | 83.3 | 83.3 | +0.0 ±0.0 | -5.2 ±4.0 | +0.0 ±0.0 | -5.2 ±4.0 | 91% |
+| greedy | 1 | 96 | 83.3 | 83.3 | 82.3 | 82.3 | +0.0 ±0.0 | -1.0 ±4.6 | +0.0 ±0.0 | -1.0 ±4.6 | 91% |
+| greedy | 2 | 96 | 72.9 | 72.9 | 74.0 | 71.9 | +0.0 ±0.0 | +1.0 ±4.3 | -2.1 ±1.5 | -1.0 ±4.3 | 88% |
+| greedy | 3 | 96 | 54.2 | 54.2 | 60.4 | 62.5 | +0.0 ±1.5 | +6.2 ±5.3 | +2.1 ±1.5 | +8.3 ±5.1 | 91% |
+| greedy | all | 384 | 74.7 | 74.7 | 75.0 | 75.0 | +0.0 ±0.4 | +0.3 ±2.3 | +0.0 ±0.5 | +0.3 ±2.3 | 90% |
+| strategist | 0 | 96 | 86.5 | 86.5 | 83.3 | 84.4 | +0.0 ±0.0 | -3.1 ±4.3 | +1.0 ±1.0 | -2.1 ±4.4 | 99% |
+| strategist | 1 | 96 | 72.9 | 72.9 | 79.2 | 80.2 | +0.0 ±0.0 | +6.2 ±5.1 | +1.0 ±1.0 | +7.3 ±5.0 | 94% |
+| strategist | 2 | 96 | 77.1 | 78.1 | 74.0 | 75.0 | +1.0 ±1.0 | -4.2 ±4.9 | +1.0 ±1.0 | -2.1 ±4.7 | 88% |
+| strategist | 3 | 96 | 46.9 | 49.0 | 45.8 | 46.9 | +2.1 ±1.5 | -3.1 ±4.0 | +1.0 ±1.0 | +0.0 ±4.4 | 83% |
+| strategist | all | 384 | 70.8 | 71.6 | 70.6 | 71.6 | +0.8 ±0.4 | -1.0 ±2.3 | +1.0 ±0.5 | +0.8 ±2.3 | 91% |
+
+cards.unofferable in s237-arm3 (768 games), per game:
+- hostile_buyout: 0.173
+- peacekeeping_mission: 0.148
+- root_access: 0.125
+- nuclear_option: 0.098
+- field_grant: 0.096
+- great_liberation: 0.077
+- station_prefab_order: 0.056
+- forensic_audit: 0.055
+- amnesty_decree: 0.049
+- air_gap: 0.044
+- kettle_operation: 0.043
+- surgical_strike: 0.031
+- kinetic_interdiction: 0.031
+- double_agents: 0.022
+- martial_cordon: 0.021
+- antitrust_action: 0.020
+- decapitation_strike: 0.018
+- moonshot_grant: 0.018
+- dataset_scraper: 0.014
+- materials_hedge_desk: 0.014
+- annihilation_lance: 0.013
+- breakthrough_leak: 0.010
+- eviction_worm: 0.009
+- spoofed_credentials: 0.009
+- botnet_takedown: 0.009
+- recruit_operatives: 0.008
+- breach_and_clear: 0.007
+- logic_bomb: 0.007
+- zero_knowledge_exploit: 0.005
+- power_purchase_agreement: 0.005
+- capacitor_discharge: 0.004
+- relay_mast_rollout: 0.003
+- headquarters_raid: 0.001
+- benchmark_suite: 0.001
+- threat_forecast_engine: 0.001
+- field_sensor_grid: 0.001
+- force_protection_order: 0.001
+- threat_hunt: 0.001
+- red_team_audit: 0.001

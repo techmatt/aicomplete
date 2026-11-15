@@ -284,24 +284,29 @@ impl TokenKind {
         }
     }
 
+    /// 237 (229's pick): the one place a token's printed name lives, lowercase, for `n` of them: "dataset",
+    /// "followers", "capital" (no plural). 166: the Security token prints Operatives (the adversary's pieces are
+    /// agents); the code name stays. Faces capitalize it (`face::token`).
+    pub fn label(self, n: i64) -> &'static str {
+        match (self, n == 1) {
+            (TokenKind::Datasets, true) => "dataset",
+            (TokenKind::Datasets, false) => "datasets",
+            (TokenKind::Followers, true) => "follower",
+            (TokenKind::Followers, false) => "followers",
+            (TokenKind::Capital, _) => "capital",
+            (TokenKind::Agents, true) => "operative",
+            (TokenKind::Agents, false) => "operatives",
+        }
+    }
+
     /// `n` of them in words: "1 follower", "3 followers", "2 capital" (099: "1 followers").
     pub fn amount(self, n: i64) -> String {
-        let one = match self {
-            TokenKind::Datasets => "dataset",
-            TokenKind::Followers => "follower",
-            TokenKind::Capital => "capital",
-            // 166: printed Operatives (the adversary's pieces are agents); the code name stays.
-            TokenKind::Agents => "operative",
-        };
-        format!("{n} {}", if n == 1 { one } else { self.plural() })
+        format!("{n} {}", self.label(n))
     }
 
     /// The printed plural ("operatives", not the key "agents": the adversary's piece; 235).
     pub fn plural(self) -> &'static str {
-        match self {
-            TokenKind::Agents => "operatives",
-            _ => self.name(),
-        }
+        self.label(2)
     }
 }
 

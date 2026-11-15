@@ -203,17 +203,9 @@ fn track(r: Resource) -> &'static str {
     noun(r, 1)
 }
 
-fn token(kind: TokenKind, n: i64) -> &'static str {
-    match (kind, n) {
-        (TokenKind::Datasets, 1) => "Dataset",
-        (TokenKind::Followers, 1) => "Follower",
-        // 166 (Matt, 2026-11-09): printed Operatives, so "agents" are only the adversary's pieces (code name stays).
-        (TokenKind::Agents, 1) => "Operative",
-        (TokenKind::Datasets, _) => "Datasets",
-        (TokenKind::Followers, _) => "Followers",
-        (TokenKind::Agents, _) => "Operatives",
-        (TokenKind::Capital, _) => "Capital",
-    }
+/// A token's printed name on a face, capitalized ("Operative", "Capital"): `TokenKind::label` is its one home.
+fn token(kind: TokenKind, n: i64) -> String {
+    title(kind.label(n))
 }
 
 /// A lowercase word with its capital.

@@ -710,10 +710,11 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::FreePurchases { count } => Worth::now(row("free_purchases") * t.rate("keep_tier1") * *count as f64),
         Op::CounterAll => Worth::now(row("counter_all")),
         Op::Pushback { ambassadors } => Worth::now(row("pushback") * t.rate("countries") * *ambassadors as f64),
-        // 233: `each_country` deals in every country (a project's; `team_ops_price_per_country`).
-        Op::DealThreats { count, each_country, .. } => {
-            Worth::now(row("deal_threats") * *count as f64 * if *each_country { t.rate("countries") } else { 1.0 })
-        }
+        // 233, 237: priced per country where the engine deals in every one (`Op::deals_each_country`: a project's
+        // `each_country`, an alignment card's `{tier: 2}`; `team_ops_price_per_country`).
+        Op::DealThreats { count, .. } => Worth::now(
+            row("deal_threats") * *count as f64 * if op.deals_each_country() { t.rate("countries") } else { 1.0 },
+        ),
         Op::RemoveBotnets { count } => Worth::now(row("remove_botnets") * *count as f64),
         // 185: a cube on each open megaproject; a botnet turned into one.
         Op::AdversaryCubes { count } => Worth::now(row("adversary_cubes") * t.rate("countries") * *count as f64),
@@ -1166,18 +1167,27 @@ mod tests {
         };
         let content = aic_core::content();
         let mut wrong = Vec::new();
-        for p in &content.projects {
-            for e in &p.effects {
+        // 237: the alignment cards' threat deals too (Incursion's `{tier: 2}` deals in every country).
+        let mut lists: Vec<(&str, Vec<&Op>)> =
+            content.projects.iter().map(|p| (p.id.as_str(), p.effects.iter().collect())).collect();
+        for c in &content.alignment {
+            let deals = c.tiers.iter().flat_map(|t| t.effects.iter().flat_map(|e| e.nested().iter()));
+            lists.push((c.id.as_str(), deals.filter(|e| matches!(e, Op::DealThreats { .. })).collect()));
+        }
+        let tiered = |e: &Op| e.deals_each_country() && matches!(e, Op::DealThreats { each_country: false, .. });
+        assert!(lists.iter().any(|(_, es)| es.iter().any(|e| tiered(e))), "no alignment card deals in every country");
+        for (id, effects) in &lists {
+            for &e in effects {
                 let Some(reach) = e.team_reach() else { continue };
                 let (w1, w2) = (worth(&one, e), worth(&two, e));
-                assert!(w1 != 0.0, "{} {e:?}: priced 0", p.id);
+                assert!(w1 != 0.0, "{id} {e:?}: priced 0");
                 let one_country = matches!(
                     e,
                     Op::Corrupt { .. } | Op::Requisition { .. } | Op::LoseTokens { .. } | Op::LoseAmbassador | Op::AdversaryBuild
                 );
                 let want = if reach == TeamReach::EachCountry && !one_country { 2.0 } else { 1.0 };
                 if ((w2 / w1) - want).abs() > 1e-9 {
-                    wrong.push(format!("{} {e:?}: {reach:?}, worth {w1:.2} at 1 country, {w2:.2} at 2 (want x{want})", p.id));
+                    wrong.push(format!("{id} {e:?}: {reach:?}, worth {w1:.2} at 1 country, {w2:.2} at 2 (want x{want})"));
                 }
             }
         }

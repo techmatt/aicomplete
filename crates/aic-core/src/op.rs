@@ -1647,6 +1647,18 @@ impl Op {
         }
     }
 
+    /// 237: a `DealThreats` that deals `count` in every country (`effects::new_ops`): `each_country`, or any field
+    /// set without `scope: country` (an alignment card's `{tier: 2}`). No field set deals `count` in all, countries
+    /// in turn (`threats::deal_extra`); `scope: country` deals in the scope's. False for any other op.
+    pub fn deals_each_country(&self) -> bool {
+        match self {
+            Op::DealThreats { tier, scope, each_country, .. } => {
+                *each_country || ((tier.is_some() || scope.is_some()) && *scope != Some(Scope::Country))
+            }
+            _ => false,
+        }
+    }
+
     /// 233: how far one copy of this op reaches when a project (the team list) resolves it: in each country (one
     /// seat a country, so "each player" too), or once for the table. 231 (Matt): a project's effect lands in each
     /// country, so the agents' worth of a team op (`value::op_worth` at `rates.countries`) scales with the
@@ -1656,8 +1668,8 @@ impl Op {
         use TeamReach::*;
         Some(match self {
             Op::Sway { .. } | Op::PullUnity { .. } | Op::Clock { .. } => Once,
-            Op::DealThreats { each_country, .. } => {
-                if *each_country {
+            Op::DealThreats { .. } => {
+                if self.deals_each_country() {
                     EachCountry
                 } else {
                     Once

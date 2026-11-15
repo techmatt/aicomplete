@@ -33,7 +33,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
                 || (g.tokens(h, cube(s)) > 0 && (g.tokens(h, STATION) > 0 || g.tokens(h, FACTORY) > 0))
         };
         let sheltered: Vec<String> = (0..g.hexes.len())
-            .filter(|&h| g.var(&reach_shelter(s, h)) > 0 && mine(h))
+            .filter(|&h| reach_sheltered(g, s, h) && mine(h))
             .map(|h| hex_name(w, h))
             .collect();
         if !sheltered.is_empty() {

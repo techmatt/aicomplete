@@ -1160,6 +1160,10 @@ fn finish(r: &mut GameResult, rules: &Rules, g: GameState) {
         .map(|i| round_ops.get(i).copied().unwrap_or(0) as u32)
         .collect();
     r.counters = g.stats.counters.iter().map(|(k, v)| (k.to_string(), *v)).collect();
+    // 237: kept cards left in hand with no feasible part at the end (`cards::unofferable`), by id.
+    for id in aic_core::modules::cards::unofferable(&rules.world(), &g) {
+        *r.counters.entry(format!("cards.unofferable.{id}")).or_default() += 1;
+    }
     // 099: a card played by an effect (Rush Build's free building) is no Play
     // action: the engine's count of plays is the whole of it.
     for (k, v) in &g.stats.counters {

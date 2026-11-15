@@ -177,6 +177,24 @@ pub(super) fn blocked(w: &World, g: &GameState, seat: usize, id: &str) -> Option
     None
 }
 
+/// 237 (228's audit, 229's pick; stats only): the kept cards left in a hand at game end that no part of could
+/// resolve then (`effects::feasible` on the counted ops, as [`blocked`]'s "no target" / "too few tags"), one id per
+/// copy: what design_check's kept-not-played line can't say (Field Grant, a token card with no tokens). Read once,
+/// at game end, so it costs no decision anything.
+pub fn unofferable(w: &World, g: &GameState) -> Vec<Key> {
+    let mut out = Vec::new();
+    for seat in 0..g.seats.len() {
+        for id in g.pile(&hand(seat)).iter() {
+            let kept = g.stats.counters.get(keep_at(seat, id).as_str()).is_some_and(|&r0| r0 > 0);
+            let d = def(w, id);
+            if kept && !d.is_building() && !effects::feasible(w, g, seat, &effects::own_counted(d)) {
+                out.push(*id);
+            }
+        }
+    }
+    out
+}
+
 /// Why `d`, its requirements met, can't be paid for and placed: `short` says
 /// the seat lacks the credits, the rest is every cost but credits.
 fn blocked_beyond_credits(w: &World, g: &GameState, seat: usize, d: &CardDef, p: &Prices, short: bool) -> Option<&'static str> {

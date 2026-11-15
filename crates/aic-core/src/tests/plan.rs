@@ -1,6 +1,34 @@
 use super::*;
 use crate::modules::plan;
 
+/// 237: the agents' converge map moves each hex's agents exactly as a Corrupt line in every country does
+/// (`plan::converge`): to the one open target next door, staying put on a tie (r98) or a target. An agent on every
+/// hex, each site kind, a few set-up boards.
+#[test]
+fn the_converge_map_matches_the_line() {
+    use crate::op::CorruptSite;
+    let rules = Rules::new(&lab_config(&[ACTIONS])).unwrap();
+    let w = rules.world();
+    let mut ties = 0;
+    for seed in 0..3 {
+        let mut g = rules.new_game(seed);
+        answer_all(&rules, &mut g);
+        for h in Arc::make_mut(&mut g.hexes).iter_mut() {
+            Arc::make_mut(h).tokens.insert(ADV_AMBASSADOR.into(), 1);
+        }
+        for site in [CorruptSite::City, CorruptSite::Station, CorruptSite::Factory, CorruptSite::Land, CorruptSite::Node] {
+            let line = plan::converge(&w, &g, site, None);
+            let map = plan::converge_map(&w, &g, site);
+            ties += line.ties.len();
+            for (h, to) in map.iter().enumerate() {
+                let want = line.sources.iter().find(|&&(x, _)| x == h).map(|&(_, t)| t);
+                assert_eq!(*to, want, "seed {seed}, {site:?}, hex {h}");
+            }
+        }
+    }
+    assert!(ties > 0, "no tie staged");
+}
+
 /// 151: `plan::next_rally` must foresee what the build's Rally places, hex by hex (a share where players
 /// break a tie): for every event card face up, on set-up boards, with each board's pool at 0-5. Player
 /// ambassadors are taken off first (an arriving agent cancels one rather than landing), and

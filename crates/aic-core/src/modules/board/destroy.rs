@@ -64,12 +64,8 @@ pub fn guards(g: &GameState, h: usize, owner: Option<usize>) -> Vec<Guard> {
 /// a war destruction ([`Cause::War`]) sways toward Discord. Returns whether it was destroyed.
 pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause: Cause) -> Res<bool> {
     let w = cx.world;
-    if flagged(g, RoundFlag::Shelter, w.map.hexes[h].country as usize) {
-        return Ok(false);
-    }
     let owner = piece_owner(g, h, kind);
-    // 234: a card's Shelter shelters its player's own nodes and facilities on the hexes in their reach.
-    if owner.is_some_and(|s| g.var(&reach_shelter(s, h)) > 0) {
+    if sheltered(&w, g, h, owner) {
         return Ok(false);
     }
     // r82 (Matt, 2026-11-11): Aegis Doctrine is Shelter on the owner's own pieces once a round: the first
@@ -187,6 +183,19 @@ pub fn destroy_own_node(
 /// ruling 5) it guards only `s`'s own pieces; r82 it shelters the first of them a round, automatically.
 pub fn aegis_ready(w: &World, g: &GameState, s: usize) -> bool {
     g.var(&cards::civic_used(s)) == 0 && cards::has_passive(w, g, s, |p| matches!(p, Op::CivicShelter))
+}
+
+/// 237: a piece of `owner`'s on hex `h` is sheltered this round, so no destruction takes it, spending nothing: its
+/// country's Shelter flag, or (234) its owner's reach Shelter on the hex ([`destroy_piece`]; the agents' forecast).
+pub fn sheltered(w: &World, g: &GameState, h: usize, owner: Option<usize>) -> bool {
+    flagged(g, RoundFlag::Shelter, w.map.hexes[h].country as usize) || owner.is_some_and(|s| reach_sheltered(g, s, h))
+}
+
+/// 234: a card's Shelter shelters its player's own nodes and facilities on the hexes in their reach
+/// ([`reach_shelter`], set as the card resolves). 237: the one place that reads it (the engine and the agents'
+/// shelter forecast).
+pub fn reach_sheltered(g: &GameState, seat: usize, h: usize) -> bool {
+    g.var(&reach_shelter(seat, h)) > 0
 }
 
 /// Whether a destruction of the `owner`'s piece on hex `h` would be stopped by something of the owner's: a

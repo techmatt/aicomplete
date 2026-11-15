@@ -1,0 +1,37 @@
+{
+  "name": "s237",
+  "note": "237: agent-valuation smoke on the dev seeds (36800-36831): main r107 (0499631) against arms adding, in turn, alignment deal_threats {tier} priced in every country, the converge forecast's tie rule, and the reach-Shelter read (D97); greedy and strategist, the three pairs, d0-d3. Same spec as s236a.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "greedy",
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

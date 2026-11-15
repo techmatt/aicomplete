@@ -89,22 +89,20 @@ What each script under `scripts/` does. Run from the repo root.
   pay back at a committed seat's fire rates (card-pricing.md *Engines*); `--old` adds an older deck.
 - `run_sim.ps1 NAME [-NoBuild] ARGS...`: any long run: builds, copies the exe to `out/NAME.exe`, starts it below
   normal, detached; wait on `out/NAME.exit` (its header says more).
-- `bench/same_results.py A B`: compares two `aic-sim experiment` outputs (`results.json`, `games.csv`); a farmed read
-  has neither: use `farm/compare.py`. `--map OLD=NEW` renames in the old output first;
-  `--ignore-content-hash` for a content refactor, `--ignore-config-hash` for a dead param removed (`same_play.py`
-  can't prove that one: its replays compare fingerprints, which hash the config).
-- `bench/same_play.py`: proves a refactor left play unchanged over countries, difficulties and variants, every
-  agent but the beam, old and new binaries (~20 min, 6 threads); saved games replay on the new one. `--map` as above.
-  An old binary that refuses today's configs plays its own: `run ... --root out/old`.
+- `bench/same_results.py A B`: compares two `aic-sim experiment` outputs (a farmed read: `farm/compare.py`).
+  `--map OLD=NEW` renames in the old output first; `--ignore-content-hash` for a content refactor,
+  `--ignore-config-hash` for a dead param removed (`same_play.py` can't: its fingerprints hash the config).
+- `bench/same_play.py`: a refactor left play unchanged over countries, difficulties and variants, every agent but
+  the beam, old and new binaries (~20 min, 6 threads). `--map` as above; an old binary refusing today's configs:
+  `run ... --root out/old`.
 - `bench/speed.py`: games a minute per agent: `pair OLD NEW` (each row on both in turn; `--old-config` for an OLD on
   another baseline), `table`, `compare`, `specs SIM A B`; `check SIM` (~2 min, one thread, quiet machine) fails at
   1.3 × `speed_baseline.json` (`--update` moves it; across a revision: NO VERDICT). [speed.md](speed.md).
-- `bench/per_decision.py OLD_ROOT NEW_ROOT`: rounds, decisions and ms a game and a decision on the same seeds.
-  Across revisions use `--games 16`+ and name the agents a change touched. A
-  root is an `.exe` or a directory with `aic-sim.exe` (or `target/release/`'s) and its `configs/`. `--set K=V`
-  (repeatable) goes to both sides after the built-ins: a content overlay runs the new binary on old content.
+- `bench/per_decision.py OLD_ROOT NEW_ROOT`: rounds, decisions and ms a game and a decision on the same seeds
+  (across revisions `--games 16`+, the agents a change touched). A root is an `.exe` or a folder with `aic-sim.exe`
+  and its `configs/`. `--set K=V` goes to both sides: a content overlay runs the new binary on old content.
 - `bench/seeds.py next N [--take] [--doc FILE]`: the next N fresh seeds from experiments.md; `--take` moves `Next free`.
-- `bench/gate_stop_rate.py` (gates are suspended): how often the gate's early stop flips a verdict (`z` 2: about 1%).
+- `bench/gate_stop_rate.py` (gates suspended): how often early stops flip a verdict.
 - `bench/skilled_rows.py READ.json [--games 24] [--levels 3,4] [--rows ...] [--out ...]`: the oracle's companion spec to a read (experiments.md, *Skilled rows*).
 - `bench/read_specs.py {offs|screen|read} ... --tag NNN [--cards a,b,c] [--out-dir DIR]`: a rules item's specs into
   `out/`: `read TAG SEED [AGENT] [--probe] [--levels 0,1,2,3] [SET...]` three 48-seed sets, the three pairs,
@@ -128,13 +126,15 @@ What each script under `scripts/` does. Run from the repo root.
   ranges; `--other DIR` a read of another build on the same seeds, its agents as `other:AGENT`.
 - `bench/shards.sh EXE DIR SPEC FIRST COUNT OUT`: a farm spec natively as `SHARDS` (default 6) one-thread `aic-sim
   farm` shards side by side in DIR, concatenated under the header into OUT: a paired read's base side.
-- `bench/first_divergence.py OLD NEW`: where two runs of one spec first differ, per game; `--cells DIR A B` two cells
-  of one run.
+- `bench/first_divergence.py OLD NEW`: where two runs of one spec first differ, per game (`--cells DIR A B`: a run's two cells).
 - `bench/profile_win.py SIM OUT -- run ...`: a sampling profile, no admin (speed.md, *Profiling*). `--runs K` on the
   next seeds each; `--attach S1,S2,...` reads 5 s windows of a long run.
-- `bench/card_ranks.py DIR A B [--variant V]...`: Spearman of the cards' keep and play rates, agent B against A (as
-  `cards.csv` names them).
-- `bench/item_time.py ITEM... [--top N]`: a done conductor item's wall time: sims, builds, tests, the rest.
+- `bench/resource_use.py NEW [OLD] [--top 8] [--limits]`: chips, energy, cubes and antimatter gained and spent per
+  seat a game by level, what each buys, where it comes from (`--limits`: the `limit.*` table). Folder or games file.
+- `bench/projects_read.py GAMES.jsonl [--md OUT]`: each project's reveals, completions, compute drained and map
+  moves a completion, by level.
+- `bench/card_ranks.py DIR A B [--variant V]...`: Spearman of the cards' keep and play rates, agent B against A.
+- `bench/item_time.py ITEM... [--top N]`: a done item's wall time: sims, builds, tests, the rest.
 - `tune/`: `agent_sweep.py`, `sweep.py`, `log_table.py`, `engine_sweep.py` ([README](../scripts/tune/README.md)).
   `noop_weights.py spec [--agent A] [--seeds N]` / `read OUT SPEC`: each `Weights` field moved (to 0, or 1 where 0),
   one pair at d1-d2; lists the weights that change no game of the agent (222).

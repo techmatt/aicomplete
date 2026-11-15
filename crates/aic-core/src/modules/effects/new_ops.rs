@@ -40,9 +40,10 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
             requisition(g, cx, ctx, *resource, *amount, *n, *next_round)?
         }
         Op::LoseNodeOr { resource, amount, count } => lose_node_or(g, cx, ctx, *resource, *amount, *count)?,
-        Op::DealThreats { count, tier, scope, each_country } => {
+        Op::DealThreats { count, tier, .. } => {
             let tier = tier.unwrap_or_else(|| adversary::threat_tier(&w, g));
-            let countries = if *each_country || *scope != Some(Scope::Country) {
+            // 237: one home for the reach (the worth reads it too); the no-field form is `threats::deal_extra`.
+            let countries = if e.deals_each_country() {
                 (0..w.map.countries.len()).collect()
             } else {
                 scope_countries(&w, ctx.scope)

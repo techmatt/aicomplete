@@ -145,6 +145,13 @@ pub fn reach_shelter(seat: usize, h: usize) -> KeyBuf {
     KeyBuf::new(HEX_FLAGS).text("shelter_seat").num(seat).text(".").num(h)
 }
 
+/// 237: whether seat `seat` has a reach Shelter up on any hex this round (one range read: the agents' forecast
+/// asks every position).
+pub fn reach_sheltering(g: &GameState, seat: usize) -> bool {
+    let prefix = KeyBuf::new(HEX_FLAGS).text("shelter_seat").num(seat).text(".");
+    keys_under(g, prefix.as_str()).iter().any(|(_, v)| *v > 0)
+}
+
 /// Whether flag `f` is up on hex `h`: on the hex, or on its country.
 pub fn hex_flagged(w: &World, g: &GameState, f: RoundFlag, h: usize) -> bool {
     g.var(&hex_flag(f, h)) > 0 || flagged(g, f, w.map.hexes[h].country as usize)

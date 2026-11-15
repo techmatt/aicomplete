@@ -459,8 +459,11 @@ fn project_ops_reach_as_declared() {
     };
     let mut seen = Vec::new();
     let mut wrong = Vec::new();
-    for p in &crate::content().projects {
-        for (i, e) in p.effects.iter().enumerate() {
+    // 237: an alignment card's tiered deal (Incursion, Two Fronts: `{count 1, tier 2}`) reaches every country too.
+    let mut lists: Vec<(&str, Vec<Op>)> = crate::content().projects.iter().map(|p| (p.id.as_str(), p.effects.clone())).collect();
+    lists.push(("alignment", vec![Op::DealThreats { count: 1, tier: Some(2), scope: None, each_country: false }]));
+    for (id, effects) in &lists {
+        for (i, e) in effects.iter().enumerate() {
             let Some(reach) = e.team_reach() else { continue };
             if seen.contains(e) || staged_elsewhere(e) {
                 continue;
@@ -469,7 +472,7 @@ fn project_ops_reach_as_declared() {
             // After the card's earlier effects, as the project resolves (Station Coup's Fallout lands by the station
             // it just corrupted).
             let mut before = rich.clone();
-            team(&rules, &mut before, &p.effects[..i]);
+            team(&rules, &mut before, &effects[..i]);
             let mut g = before.clone();
             team(&rules, &mut g, std::slice::from_ref(e));
             let (by, table) = footprint(&w, &before, &g);
@@ -481,7 +484,7 @@ fn project_ops_reach_as_declared() {
                 None
             };
             if measured != Some(reach) {
-                wrong.push(format!("{} {e:?}: declared {reach:?}; changed {by:?} by country, {table} for the table", p.id));
+                wrong.push(format!("{id} {e:?}: declared {reach:?}; changed {by:?} by country, {table} for the table"));
             }
         }
     }

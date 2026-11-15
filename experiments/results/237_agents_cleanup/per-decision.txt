@@ -1,0 +1,39 @@
+First build (per-hex tie reads):
+greedy, c2, d2, 16 games from seed 1000, one thread, best of 2
+| | rules | wins | rounds | decisions | options/decision | ms/game | ms/decision |
+|---|---|---|---|---|---|---|---|
+| old | r107 | 13 | 8.81 | 562 | 25.48 | 1231 | 2.2 |
+| new | r107 | 11 | 9.06 | 563 | 26.16 | 1310 | 2.3 |
+| new / old | | | 1.03 | 1.00 | 1.03 | 1.06 | 1.06 |
+strategist, c2, d2, 16 games from seed 1000, one thread, best of 2
+| | rules | wins | rounds | decisions | options/decision | ms/game | ms/decision |
+|---|---|---|---|---|---|---|---|
+| old | r107 | 15 | 9.31 | 568 | 23.91 | 1080 | 1.9 |
+| new | r107 | 14 | 9.38 | 585 | 24.73 | 1218 | 2.1 |
+| new / old | | | 1.01 | 1.03 | 1.03 | 1.13 | 1.10 |
+engine, c2, d2, 16 games from seed 1000, one thread, best of 2
+| | rules | wins | rounds | decisions | options/decision | ms/game | ms/decision |
+|---|---|---|---|---|---|---|---|
+| old | r107 | 12 | 10.62 | 660 | 19.51 | 1198 | 1.8 |
+| new | r107 | 12 | 11.00 | 698 | 20.62 | 1468 | 2.1 |
+| new / old | | | 1.04 | 1.06 | 1.06 | 1.23 | 1.16 |
+
+Final build (one Sites table and one converge map a position; same games as the first, s237 replayed):
+greedy, c2, d2, 16 games from seed 1000, one thread, best of 2
+| | rules | wins | rounds | decisions | options/decision | ms/game | ms/decision |
+|---|---|---|---|---|---|---|---|
+| old | r107 | 13 | 8.81 | 562 | 25.48 | 1285 | 2.3 |
+| new | r107 | 11 | 9.06 | 563 | 26.16 | 1395 | 2.5 |
+| new / old | | | 1.03 | 1.00 | 1.03 | 1.09 | 1.08 |
+strategist, c2, d2, 16 games from seed 1000, one thread, best of 2
+| | rules | wins | rounds | decisions | options/decision | ms/game | ms/decision |
+|---|---|---|---|---|---|---|---|
+| old | r107 | 15 | 9.31 | 568 | 23.91 | 1120 | 2.0 |
+| new | r107 | 14 | 9.38 | 585 | 24.73 | 1219 | 2.1 |
+| new / old | | | 1.01 | 1.03 | 1.03 | 1.09 | 1.06 |
+engine, c2, d2, 16 games from seed 1000, one thread, best of 2
+| | rules | wins | rounds | decisions | options/decision | ms/game | ms/decision |
+|---|---|---|---|---|---|---|---|
+| old | r107 | 12 | 10.62 | 660 | 19.51 | 1310 | 2.0 |
+| new | r107 | 12 | 11.00 | 698 | 20.62 | 1456 | 2.1 |
+| new / old | | | 1.04 | 1.06 | 1.06 | 1.11 | 1.05 |

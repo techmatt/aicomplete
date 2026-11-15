@@ -1,0 +1,34 @@
+{
+  "name": "s237e",
+  "note": "237: the engine agent's 16-seed smoke on the dev seeds (36800-36815), main r107 (0499631) against the item's build (deal_threats {tier} worth, the converge tie rule, the reach-Shelter read), the three pairs, d1-d2.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    1,
+    2
+  ],
+  "agents": [
+    "engine"
+  ],
+  "games": 16,
+  "records": 0
+}

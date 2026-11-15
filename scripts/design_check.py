@@ -370,18 +370,23 @@ def check_tag_story(cfg, cards, boards, o):
 def check_dead(games, cfg, boards, o):
     d = cfg['dead']
     n = len(games)
-    kept, played = defaultdict(int), defaultdict(int)
+    kept, played, stuck = defaultdict(int), defaultdict(int), defaultdict(int)
     for g in games:
         for cid, c in (g.get('cards') or {}).items():
             kept[cid] += c.get('kept', 0)
             played[cid] += c.get('played', 0)
+        # 237: a kept card left in hand at the end with no feasible part (`cards::unofferable`).
+        for k, v in (g.get('counters') or {}).items():
+            if k.startswith('cards.unofferable.'):
+                stuck[k[len('cards.unofferable.'):]] += v
     dead = []
     for cid in kept:
         k, p = kept[cid] / n, played[cid] / n
         if k >= d['kept_min_per_game'] and p < d['played_max_per_game'] and p < d['played_per_kept_max'] * k:
             dead.append((cid, k, p))
     for cid, k, p in sorted(dead, key=lambda x: -x[1]):
-        o.w('kept-not-played', f'{cid} {p:.2f}', f'{cid}: kept {k:.2f} a game, played {p:.2f}')
+        why = f'; left unofferable (no target) {stuck[cid] / n:.2f} a game' if stuck.get(cid) else ''
+        o.w('kept-not-played', f'{cid} {p:.2f}', f'{cid}: kept {k:.2f} a game, played {p:.2f}{why}')
     # 207: powers unused (and dominant) are the usage check's; a resource gained and not spent is too, when the
     # usage config lists it
     listed = {r['key'] for r in cfg.get('usage', {}).get('rows', [])}

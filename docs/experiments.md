@@ -62,7 +62,8 @@ counts it; exit 1); `--resume` replays it. `run` and `compare` have no such net.
   A won game ends mid-round holding the last upkeep's income, so `margin.unspent` tracks late income: read credits
   held as `margin.held_after_actions[seat][0]` (after the last *completed* action phase).
 - **The limit**: `limit.keep_short.insight` / `limit.keep_passed` per drafted card unkept; `limit.play.short.<r>`,
-  `.needs_tags`, `.held` per card left in hand as the action phase ends. Read: 189's `resource_use.py NEW OLD`.
+  `.needs_tags`, `.held` per card left in hand as the action phase ends (read: `bench/resource_use.py NEW OLD --limits`).
+  `cards.unofferable.<id>`: a kept card left in hand at the end with no feasible part.
 - **Runaway check**: a resource's peak per seat (`peaks`) far above a round's income (`gained / rounds`):
   `scripts/cards/runaway_read.py`. `sources` / `uses` / `keeps`: `source_read.py`.
 - **Top agent**: highest win rate at the top difficulty (ties to the later). *Beats greedy*: ahead of the first
@@ -71,7 +72,7 @@ counts it; exit 1); `--resume` replays it. `run` and `compare` have no such net.
 - **Margin**: a win's adversary cards left and ambassador supply; a loss's adversary pieces over the bar
   (`margin.level`: the Unity level, not the difficulty); every game, `margin.cities_corrupted_end`, `_aligned_end`.
   A `deck_empty` loss (the round cap) counts `rounds` one past the cap's printed count, so a level's mean rounds run
-  over the rounds played by its round-cap share (215: d0 10.12 measured, 9.98 played, 14% at the cap).
+  over the rounds played by its round-cap share.
 
 **Counters.** `games.csv` carries the margin columns, `adversary.corruptions` and
 `adversary.first_corruption_round` (any site; cities alone: `adversary.corruptions.city`), `board.std_actions` and

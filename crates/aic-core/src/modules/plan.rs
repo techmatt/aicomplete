@@ -162,14 +162,48 @@ pub fn converge(w: &World, g: &GameState, site: CorruptSite, scope: Option<usize
         if target || g.tokens(h, ADV_AMBASSADOR) == 0 {
             continue;
         }
-        let to: Vec<usize> = w.map.hexes[h].neighbors.iter().copied().filter(|&x| open[x]).collect();
-        match to[..] {
-            [] => {}
-            [t] => out.sources.push((h, t)),
-            _ => out.ties.push(h),
+        match goes(w, h, |x| open[x]) {
+            Goes::Stays => {}
+            Goes::To(t) => out.sources.push((h, t)),
+            Goes::Tie => out.ties.push(h),
         }
     }
     out
+}
+
+/// Where the agents on a hex that is no target go, given which hexes are open targets.
+enum Goes {
+    Stays,
+    To(usize),
+    /// r98: next to two or more open targets, they stay.
+    Tie,
+}
+
+/// One home for the convergence move ([`converge`] and the agents' forecast, [`converge_map`]).
+fn goes(w: &World, h: usize, open: impl Fn(usize) -> bool) -> Goes {
+    let mut to = w.map.hexes[h].neighbors.iter().copied().filter(|&x| open(x));
+    match (to.next(), to.next()) {
+        (None, _) => Goes::Stays,
+        (Some(t), None) => Goes::To(t),
+        _ => Goes::Tie,
+    }
+}
+
+/// 237 (229's pick): where a `site` line in every country would move the agents on each hex, as [`converge`] does:
+/// the one open target next to it (a target, under no Corrupt prohibition, not firewalled); `None` on a target, with
+/// no open target next door, or (r98) with two or more (a tie: they stay). The agents' forecasts read it, so they
+/// follow the engine's tie rule.
+pub fn converge_map(w: &World, g: &GameState, site: CorruptSite) -> Vec<Option<usize>> {
+    let n = g.hexes.len();
+    let target: Vec<bool> = (0..n).map(|h| corrupt_target(w, g, h, site)).collect();
+    let open: Vec<bool> =
+        (0..n).map(|t| target[t] && prohibition_on(g, Step::Corrupt, t).is_none() && !firewalled(g, t)).collect();
+    (0..n)
+        .map(|h| match goes(w, h, |x| open[x]) {
+            Goes::To(t) if !target[h] => Some(t),
+            _ => None,
+        })
+        .collect()
 }
 
 /// 175, what a Corrupt `site` line at number `n` does in country `scope` or every country: `(target, agents it

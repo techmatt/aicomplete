@@ -12,14 +12,10 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
 - **Own randomness.** Each agent's RNG is the game seed on its kind's stream.
 - **Decides at the top level:** outside the action phase the planner follows its line. A node
   power is scored deeper than `choices` (`search.rs`: `PLACING_PROMPTS`, `SACRIFICE_PROMPTS`).
-- **`choices` counts prompts** (a placement is two: track, hex). An effect resolved a prompt a piece is scored
-  part of the way, so it reads as paid for little: the moves take a batch a prompt for this.
-- **A discard prompt resolves no further** (`discards` 0): a card to discard is valued by the table it leaves
-  (`discards=99`: resolved as other prompts).
-- **Heuristic** (`agents/eval.rs`, `Weights`, a rule on each field): win/loss, cities, last nodes, the adversary's
-  pieces, the Discord deck, Alignment (`w.tier_read`), projects, holdings, unpaid threats by **the tempo trade**
-  (`w.tempo`: harm over what paying now costs), corruption and troop risk, the Rally, Dispatches, botnets, cubes,
-  the liberation push, Patience insight and idle credits.
+- **`choices` counts prompts** (a placement is two: track, hex); the moves take a batch a prompt, so an effect
+  resolved a piece a prompt doesn't read as paid for little. A discard prompt resolves no further (`discards` 0).
+- **Heuristic** (`agents/eval.rs`, `Weights`, a rule on each field): the board, holdings, Alignment
+  (`w.tier_read`), projects, and unpaid threats by **the tempo trade** (`w.tempo`: harm over what paying now costs).
 
 | Spec | What it does | Budget parameters (defaults) |
 |---|---|---|
@@ -28,7 +24,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
 | `beam` | Beam search over the round's remaining action sequences, scored at the next round's start; replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 |
 | `rollout` | Across rounds: the beam's `candidates` best end-of-round positions, each run `horizon` more rounds by `rollouts` greedy playouts on fresh guesses; best mean wins. | `width` 4, `depth` 120, `branch` 0, `choices` 2, `candidates` 3, `rollouts` 4, `horizon` 2 |
 | `engine` | The heuristic in **horizon mode** (`w.horizon`: income × the rounds left, discounted by danger); holdings by the value table (`w.table=0`: flat terms); the **deck clock** (`w.clock`) charges each round the team's Unity rate would leave it short. Searched like greedy; `width` > 0: a beam, `candidates` > 0: rollouts. | `width` 0, `samples` 1, `choices` 2, `answers` 99 (prompts an answer looks on; 1 loses wins); weights: `Weights::engine` |
-| `strategist` | Greedy's flat weights with `w.last_node` and the **purge term** (`w.purge`: supply ambassadors toward the Liberate bills in reach), no search, no strategy (Matt, 2026-11-13: committing to one cost it greedy's 4-point lead; `strategist:strategy=1` is the strategy player). **The screens' judge**. | `STRATEGIST`, `agents/mod.rs` |
+| `strategist` | Greedy's flat weights with `w.last_node` and the **purge term** (`w.purge`: supply ambassadors toward the Liberate bills in reach), no search, no strategy (Matt, 2026-11-13; `strategist:strategy=1` plays one). **The screens' judge**. | `STRATEGIST`, `agents/mod.rs` |
 | `planner` | The engine, rolling out a shortlist of action-phase alternatives `horizon` rounds with the engine as policy; the heuristic's best line is taken. A line runs on **full information** but the Alignment deal, valued over `deals` guesses of it; decisions inside it are scored on a guess (`agents/planner.rs`). | `horizon` 2, `alts` 2, `budget` 8, `margin` 40, `deals` 4, `lead` 0. `sweep[:...]` is `planner:deals=1,lead=0`. |
 | `oracle` | **A measuring stick, opt in**: the planner's search on **full information**, the deal too, each line played to the game's end; a winning line is followed, so the win rate is a floor on perfect play (`agents/oracle.rs`). | the planner's four, `reseeds` 0, `threads` 1 |
 
@@ -40,14 +36,14 @@ table's rates, `plan_table=0`), and keeps each drafted card, best ratio first, o
 is worth more with it. A play waiting a round is worth 15% less; `needs` may be met by cards
 planned earlier, or short now by at most `plan_short` tags; a building over one of the seat's
 adds only what it beats the weakest by (`plan_cover`). Each switch's default and rule, and each
-**dominance check** (principles.md), is a row of `forced_table!`, `no_spend` too. The eval holds an
-antimatter at 2 points. **`plan_am`**: the antimatter the seat's built Actions make once a round (no burn or Reclaim)
+**dominance check** (principles.md), is a row of `forced_table!`, `no_spend` too. **`plan_am`**: the antimatter the seat's built Actions make once a round (no burn or Reclaim)
 counts from the plan's next round, and a shortfall is made from cubes at Make antimatter's price.
 
 **Agent behaviors** (`behavior_table!`, on for every agent; a dominance check's ban wins; each row says its rule).
 **Move heuristics** (`move_rules`, `agents/moves.rs`): push agents off the next Corrupt site; gather agents onto a
 spare ambassador to cancel; gather ambassadors onto a site the seat can then Liberate. **Strike** (`strike_rule`):
-largest batches first. **Converge** (`converge_rule`, `plan::converge_pick`). **Buy energy** (`energy_rule`): when its
+largest batches first. Corrupt forecasts move agents as the engine does (`plan::converge_map`: r98's tie stays).
+**Buy energy** (`energy_rule`): when its
 credits would sit idle. **Play the plan** (`kept_rule`): the keep plan's card this round over a pass, standard action,
 sale or the antimatter action. **Sell a dead card** (`sell_rule`): a card the plan won't play (the deck's last round:
 this round; before: over its rounds), when up to three sales let the plan play a card it otherwise wouldn't. **Save
@@ -57,13 +53,13 @@ plant's Action first, then a board burn. **Botnet reach** (`w.botnet_reach`): an
 worth that share of it.
 
 **Decision order** (`Policy::choose`; the first that picks wins): strategies at the round-1 keep; a keep by plan or
-forced rule; the ambassador, free-build and cube rushes; convert for a play; sell; converge, buy energy, strike,
+forced rule; the ambassador, free-build and cube rushes; convert for a play; sell; buy energy, strike,
 moves; the other forced rules and `kept_rule` 2; else the agent's search over what no ban or antimatter reserve
 rules out, the plan's card replacing its pick under `kept_rule` 1, 3, 4.
 
-Spec syntax: `kind[:key=value,...]`; a weight takes `w.` (`greedy:w.corrupted=40`), a plan or strategy switch goes bare (`strategist:plan_bury=0`). Greedy and the
-strategist read flat terms: the table's and horizon's levers reach only their keep plan, and a packet card's keep is
-2 credits an insight, not `rates.keep_tier2`. No-op weights: `scripts/tune/noop_weights.py`. Sweeps: [`scripts/tune/`](../scripts/tune/README.md).
+Spec syntax: `kind[:key=value,...]`; a weight takes `w.` (`greedy:w.corrupted=40`), a switch goes bare
+(`strategist:plan_bury=0`). Greedy and the strategist read flat terms: the table's and horizon's levers reach only
+their keep plan. No-op weights: `scripts/tune/noop_weights.py`. Sweeps: [`scripts/tune/`](../scripts/tune/README.md).
 
 ## The value table
 
@@ -130,8 +126,8 @@ Rules a player could say that a one-step search misses, each a switch (on), rule
 `forced_table!` row; the spare-insight rule is every agent's (Matt 2026-11-05).
 
 - *Shelter what a destruction showing would take, once you can't counter it* (`agents/guide.rs`,
-  the `w.shelter_` weights; armor from `board::guards`, D71).
-- *Guard your last node* (the strategist's 120, 0 elsewhere): `w.last_node` (eval, converge and push rules).
+  the `w.shelter_` weights; armor from `board::guards`, D71; a country Shelter or a card's reach Shelter, 237).
+- *Guard your last node* (the strategist's 120, 0 elsewhere): `w.last_node` (eval and push rules).
 - *Don't bury a building that still earns more than the new one adds* (`plan_bury`).
 - *Count your research cubes like credits* (`plan_cubes`).
 - *Pick the strategy your board's powers feed* (`strat_powers`).

@@ -1,0 +1,6 @@
+| agent | d | games | s237e-base win % | s237e-new win % | s237e-new - s237e-base | games moved (last vs base) |
+|---|---|---|---|---|---|---|
+| engine | 1 | 48 | 68.8 | 77.1 | +8.3 ±7.8 | 94% |
+| engine | 2 | 48 | 58.3 | 56.2 | -2.1 ±4.7 | 88% |
+| engine | all | 96 | 63.5 | 66.7 | +3.1 ±4.6 | 91% |
+
