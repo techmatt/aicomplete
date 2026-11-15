@@ -12,49 +12,44 @@ D77, W28 on), 197 (r86, F272, D88, W29 on), 235 (r106, F289, D92, W31 on; 238 fi
 `odd.mjs` (`npm run odd`), `crates/aic-core/src/tests/invariants.rs`, `scripts/wasm-parity.mjs` (native = wasm) and
 the e2e lanes. What they already catch, so a hunt needn't hand-check it:
 
-- The sweep flags step-time spikes over 150 ms, `raw-id` (a card or threat named by id), `clipped` (text cut with no
-  ellipsis: fails the run), `truncated-no-hover`, `console` errors and `token-unknown` (a token drawn with the default
-  glyph).
+- The sweep: what fails the run and what it reports for a look (raw ids, clipping, spikes, `no-control`,
+  `mark-over-number`, `warn-at-start`, `stale-word`, the moments by revision) are in web/README.md, *The sweep*.
 - `invariants.rs` fails on a raw token key in any label, `no_action_is_paid_for_nothing` on an action that costs
-  something and changes nothing, and (235) a log line saying a node was destroyed while one stands there.
-- The sweep's `mark-over-number` and `warn-at-start` (235): a ring across a hex number; a warning at the start.
+  something and changes nothing, and a log line saying a node was destroyed while one stands there.
 - The adversary's twist loop names where each twist op is read; an unread one panics.
-- The sweep's `no-control` (099) flags a legal action with no button or hex pick on screen.
-- `runaway_read.py` (loops in counters, 118), `counter_names.py` (keys no game writes, 145); `docs --check` on a rules
-  quote a card no longer prints (118) and on a stale house word in what players read, the rulebook too (169, 184).
-- The sweep's moments by revision (`COUNTER_EVENTS_*`: r35, r41, r55, r70, r74) and `stale-word` on screen (169, 184).
+- `runaway_read.py` (loops in counters), `counter_names.py` (keys no game writes); `docs --check` on a rules quote a
+  card no longer prints and on a stale house word in what players read, the rulebook too.
 
 ## Where hunts found faults
 
 Each hunt found most of its faults in the same places. Look there first:
 
 - **Options with nothing to act on**: a move onto the hex the ambassador already holds, a removal on a hex holding only
-  what it can't remove, a cost knob at 0 making a free endless action; a target hex where the card's op does nothing
-  (235). The invariants test catches what a seed reaches; `feasible.rs` and `targets.rs` hide the rest.
-- **Words that contradict the code**: hand-written faces, the rules and rulebook (235: 25 statements five revisions
-  behind), architecture.md and README. Check each against what runs.
-- **A log line ahead of its act** (235): a note written before a placement or protection decides ("lands",
-  "destroy"), a count with no plural. Read each note against what can stop it.
-- **An inverted warning** (235): a countdown or allotment drawn as danger while full.
+  what it can't remove, a cost knob at 0 making a free endless action; a target hex where the card's op does nothing.
+  The invariants test catches what a seed reaches; `feasible.rs` and `targets.rs` hide the rest.
+- **Words that contradict the code**: hand-written faces, the rules and rulebook (whole sections revisions behind),
+  architecture.md and README. Check each against what runs.
+- **A log line ahead of its act**: a note written before a placement or protection decides ("lands", "destroy"), a
+  count with no plural. Read each note against what can stop it.
+- **An inverted warning**: a countdown or allotment drawn as danger while full.
 - **Raw names in what players read**: ids, token keys, hex and country indices in prompts, notes, traces and labels.
 - **Printed cost against charge**: a button or prompt showing the printed base where a discount or surcharge applies.
 - **Report statistics**: a per-round mean over games that never reached the round; a label that hides its average.
 - **The hunt's own fixes**: every independent review of a hunt's diff found five to eight faults in it. Get one.
 - **Untestable here**: the scene tools' kill of a hung draw on Windows is not exercised (it needs a real hang).
-- **An offer judged before its price** (099): random games rarely reach it: write the state.
-- **Measures gone quiet** (099): a definition matching nothing after a rules change; an empty column reads as a measure.
-- **Kept, never played** (099): keep plan and play check price a card differently. `play_read.py`, then `npm run probe`.
-- **Rules prose quoting a card** (118): `docs --check` now catches a quoted face.
-- **Who an effect belongs to** (118): a trigger inside a teammate's action, a counter fed by another card.
-- **Agents matching words** (118): a prompt's rewording turned an agent heuristic off; grep the agents for a prompt.
-- **Order inside a round** (145): a Discord tip in the Sway phase read last round's card; a project acted in the build
-  that filled it; a troop rule spent an ambassador where no troop came. Ask what has happened yet at each phase.
-- **One op, two wordings** (145): faces of the same op printed differently (face down, standing troops, pay or
-  discard), and a face's "here" with two tokens. Group faces by op and read them side by side.
-- **A new verb against old guards** (169): Push skipped Wall. Check each new op against every rule about arrivals.
-- **A rename by one phrase** (169): replacing "adversary ambassador" left the bare word in labels, faces and prose.
-- **A rules item's other surfaces** (184): r74-r77 changed the code and the rules, and left icons, viewer labels,
-  prompts, pricing notes, the card viewer's export, e2e lanes and read scripts on the old rule. List every surface.
+- **An offer judged before its price**: random games rarely reach it: write the state.
+- **Measures gone quiet**: a definition matching nothing after a rules change; an empty column reads as a measure.
+- **Kept, never played**: keep plan and play check price a card differently. `play_read.py`, then `npm run probe`.
+- **Who an effect belongs to**: a trigger inside a teammate's action, a counter fed by another card.
+- **Agents matching words**: a prompt's rewording turned an agent heuristic off; grep the agents for a prompt.
+- **Order inside a round**: a Discord tip in the Sway phase read last round's card; a project acted in the build that
+  filled it; a troop rule spent an ambassador where no troop came. Ask what has happened yet at each phase.
+- **One op, two wordings**: faces of the same op printed differently (face down, standing troops, pay or discard),
+  and a face's "here" with two tokens. Group faces by op and read them side by side.
+- **A new verb against old guards**: Push skipped Wall. Check each new op against every rule about arrivals.
+- **A rename by one phrase**: replacing "adversary ambassador" left the bare word in labels, faces and prose.
+- **A rules item's other surfaces**: one changed the code and the rules, and left icons, viewer labels, prompts,
+  pricing notes, the card viewer's export, e2e lanes and read scripts on the old rule. List every surface.
 
 ## Open, deferred to Matt
 
@@ -63,8 +58,8 @@ Each hunt found most of its faults in the same places. Look there first:
 | D2 | variants | The off-variants don't measure what a module adds (the rules say so). | Leave; a stand-in; retire. **Open:** a stand-in for alignment if Matt measures with it. |
 | D6 | agents | After a mid-step reshuffle the pending-choice guess keeps the true RNG for every stream (`determinize.rs`). Rare. | Map pile to RNG purpose; leave. **Pick** leave. |
 | D32 | rules | A lost Follower leaves Popular Uprising short of 4 for good unless Manifesto Leak refills it. | A design note. **Matt's call**. |
-| D41 | rules | Aligning a dark city cancels one agent (r40); no agent takes it over Remove (102). | Leave; price Remove up. **Matt's call**. |
-| D42 | cards | Data Licensing Deal is unplayed: the agents spend every Dataset pile at once, so its 4-Dataset pile never stands (102). | A pile that holds; cash every pile; leave. **Matt's call**. |
+| D41 | rules | Aligning a dark city cancels one agent; no agent takes it over Remove. | Leave; price Remove up. **Matt's call**. |
+| D42 | cards | Data Licensing Deal is unplayed: the agents spend every Dataset pile at once, so its 4-Dataset pile never stands. | A pile that holds; cash every pile; leave. **Matt's call**. |
 | D21 | picks | `picks/card_frames_r2.json`, `scene_style_r1.json` point at gone images (superseded rounds). | Delete; keep as a record. **Pick** keep. |
 | D45 | engine | Fight triggers read the board's net count: a removal plus a placement in one action fires nothing. | Count at the removal ops. **Pick** when common. |
 | D46 | loops | Drain with Security Ops Floor and Intrusion Lab: ~12 for 10 credits. | Leave: compute caps it. **Pick**. |
@@ -74,7 +69,7 @@ Each hunt found most of its faults in the same places. Look there first:
 | D56 | content | `Content::check` lets through ops that never run (a `here` op on an AI board, `gain_per_tokens` in a trigger). | Widen the checks. **Pick**. |
 | D50 | viewer | A new player's notes from two real-speed sessions: [viewer-notes.md](../experiments/results/118_bug_hunt_r46/viewer-notes.md). | Picks there. |
 | D57 | cards | Exascale Training Cluster kept in 59-72% of games, played in 1-3% (r62). | One pricing for keep and play (an agents item). **Matt's call**. |
-| D58 | speed | At r68 86-91% of greedy's time answers threats' loss prompts (`score_choose`, 157). | A cheaper settle (moves play). **Pick**. |
+| D58 | speed | At r68 86-91% of greedy's time answers threats' loss prompts (`score_choose`). | A cheaper settle (moves play). **Pick**. |
 | D66 | docs | principles.md's credits a game and card-pricing's cost range unmeasured at r60. | Re-read, restate. **Pick**. |
 | D72 | agents | Push heuristics count agents across a border and drop firewalled sites; the liberate gather takes an ambassador off a neighbor's bill. | 169's `agent_moves_fix.diff` (greedy d2 -3.1). **Pick:** a sim players item. |
 | D74 | agents | The strategist keeps 43 cards it never plays (r77); the engine agent 18. | With D57. **Pick**. |
@@ -86,9 +81,9 @@ Each hunt found most of its faults in the same places. Look there first:
 | D87 | viewer | Five small faults from sweep 2's sheets (184's deferred.md). | One viewer item. **Pick**. |
 | D86 | rules | A forced threat pull (0.1 a game) has no end in the rulebook's draw (§18): it reshuffles forever. | One rulebook sentence: take the next card. **Matt's call**. |
 | D82 | cards | Five cards print under 7.5 pt with no recorded exception (Rally the Allies 5.4 pt). | Cut words or record. **Matt's call**. |
-| D83 | art | 204's Annihilation Lance, Fusion Commons, Containment Reactor have no scene: `cards:check` fails. | An art batch or a pool scene. **Pick**. |
-| D84 | boards | Focus (Builder) is never used (199: 0.01-0.04 uses at 2 credits; credits bind first). Recovery was cut at r99 (227). | With the board redesign. **Matt's call**. |
-| D85 | viewer | Prompts: "which other player?" names no card; "Corrupt factories (at 2): ... onto which?" (agents parse it); "1 seat 1's ambassador" (a record key); a node's protection prompt names no threat (235). | Prompts and the agents' parser together. **Pick**. |
+| D83 | art | Annihilation Lance, Fusion Commons, Containment Reactor have no scene: `cards:check` fails. | An art batch or a pool scene. **Pick**. |
+| D84 | boards | Focus (Builder) is never used (199: 0.01-0.04 uses at 2 credits; credits bind first). | With the board redesign. **Matt's call**. |
+| D85 | viewer | Prompts: "which other player?" names no card; "Corrupt factories (at 2): ... onto which?" (agents parse it); "1 seat 1's ambassador" (a record key); a node's protection prompt names no threat. | Prompts and the agents' parser together. **Pick**. |
 | D102 | tests | `e2e:corps` is red on main too. | Re-derive its numbers. **Pick**. |
 
 ## Won't fix
@@ -115,6 +110,6 @@ Each hunt found most of its faults in the same places. Look there first:
 | W24 | measures | Unspent read before threat refunds; `insight_lost` tallies the debt. | Fix with the read that needs it. |
 | W25 | report | "adversary ops/round" counts a game's last, partial round. | Small (1 game in 48). |
 | W20 | content | The place-token loop guard sees only a direct `add_tokens`. | No deck card prints such a trigger. |
-| W31 | cards | Peacekeeper Rotation's move onto a Troops target with no piece does nothing (235). | Not in the deck: fix with the card. |
-| W32 | words | "No one near it: no one can counter" beside "which of the nearest players takes its harm?" (235). | The rules' two tests: near pays, nearest is hit. |
-| W33 | rules | Teardown's Fallout lands under a node on the torn-down factory's hex (D99, 235). | Matt's ruling (238): Teardown is the player's own choice. |
+| W31 | cards | Peacekeeper Rotation's move onto a Troops target with no piece does nothing. | Not in the deck: fix with the card. |
+| W32 | words | "No one near it: no one can counter" beside "which of the nearest players takes its harm?". | The rules' two tests: near pays, nearest is hit. |
+| W33 | rules | Teardown's Fallout lands under a node on the torn-down factory's hex (D99). | Matt's ruling (238): Teardown is the player's own choice. |

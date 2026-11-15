@@ -5,18 +5,17 @@ The standards every module and every rules change is judged against.
 ## Pillars
 
 - **Cooperative, against an escalating adversary** (Spirit Island × Terraforming Mars).
-- **A real, printable board game.** Every rule is runnable by hand, and the digital
-  version adds nothing a physical copy couldn't have.
-- **Easy to model, with a predictable future.** The adversary seems smart but moves few
-  tokens, makes no free choices, and its threats are visible ahead.
+- **A real, printable board game.** Every rule is runnable by hand, and the digital version adds nothing a physical
+  copy couldn't have.
+- **Easy to model, with a predictable future.** The adversary seems smart but moves few tokens, makes no free
+  choices, and its threats are visible ahead.
 - **Adaptation over one strong general strategy**, especially at high difficulty.
-- **Light, rewarding cooperation.** Helping is optional and limited, costs the helper,
-  and nets more than it costs. Engines are never tightly interlinked.
+- **Light, rewarding cooperation.** Helping is optional and limited, costs the helper, and nets more than it costs.
+  Engines are never tightly interlinked.
 - **Scale "for each country"**, with as few "X per player" rules as possible.
 - **Complexity earns its place.**
-- **Explainable in prose.** The rules must be describable concisely to new players;
-  that is a prior on the design, and mechanics may be reworked to make the rules easier
-  to explain.
+- **Explainable in prose.** The rules must be describable concisely to new players; that is a prior on the design,
+  and mechanics may be reworked to make them easier to explain.
 
 ## Small numbers (Matt, 2026-10-29)
 
@@ -24,82 +23,78 @@ The standards every module and every rules change is judged against.
 > thing costs on the order of 50, as in Terraforming Mars. Prefer "things produce 1"
 > wherever it works, for every resource.
 
-**Current check (`configs/baseline.json`, `content/`):** the average cost of what is
-played should sit near credit income ÷ insight income: about 25-35 credits ÷ 5-7 insight ≈ 5 (read at r33),
-and tier-1 cards have a median of 10 credits with tier 2 15 (r59).
+**Current check (`configs/baseline.json`, `content/`):** the average cost of what is played should sit near credit
+income ÷ insight income (about 25-35 credits ÷ 5-7 insight ≈ 5); tier-1 cards have a median of 10 credits, tier 2 15.
 
-- **Credits are the outlier.** 40 / 46 / 40 to start (`ai.start_credits`, the Protector higher; the starting-economy scaffold), 15 / 13 / 11 a
-  round printed on the Builder, Protector and Researcher (r59), plus 2-3 a
-  node on the economy track and Unity income (Grassroots Funding, New Deal +2 each): a seat sees about 200 to 250 credits
-  over a 9-round game before cards, so totals reach the hundreds. Card costs run 0–42 (Moonshot Grant 42, Multiyear Defense Budget 34): within "about 50", but the income is not "produce
-  1".
-- **Credit sinks priced off that income:** threat counters 12 / 17 credits by tier (the last option on every menu; dearer from d1, threats.md); a research cube is worth about 3
-  credits (payouts are per card); a player ambassador costs `ambassador_credits` (it pays for removals, and is priced dear because it stays); a card
-  sells for `sell_credits` 1 and chips don't sell; Data Heist takes 10 credits (or 3 cards) from each player.
-- **Adversary compute:** project costs are 7–22 *a board* (231), so 21–66 at 3 countries and
-  28–88 at 4: the big ones at 3-4 countries go past 50 (a few a game, as Matt asked). A botnet makes 1.
-- Within the principle: energy (cities make 1, a node costs 1), chips (a factory
-  makes `factory_chips` 1), insight, antimatter, Sway (tips at `tip_per_player` 3 a player, Discord's 4), the supply (24 a country,
-  pieces rather than a currency).
+- **Credits are the outlier.** The Builder, Protector and Researcher start with 40 / 46 / 40 (`ai.start_credits`,
+  the scaffold below) and print 15 / 13 / 11 a round, plus 2-3 a node on the economy track and Unity
+  income (Grassroots Funding, New Deal +2 each): about 200-250 credits a seat over a 9-round game before cards, so
+  totals reach the hundreds. Card costs run 0–42 (Moonshot Grant 42, Multiyear Defense Budget 34): within "about
+  50", but the income is not "produce 1".
+- **Credit sinks, priced off it:** threat counters 12 / 17 credits by tier (the last option on every menu;
+  dearer from d1, threats.md); a research cube about 3 credits (payouts are per card); a player ambassador
+  `ambassador_credits` (it pays for removals; dear because it stays); a card sells for `sell_credits` 1, chips not
+  at all; Data Heist takes 10 credits (or 3 cards) from each player.
+- **Adversary compute:** project costs are 7–22 *a board*: 21–66 at 3 countries, 28–88 at 4, so a few a game pass
+  50 (as Matt asked). A botnet makes 1.
+- Within the principle: energy (cities make 1, a node costs 1), chips (a factory makes `factory_chips` 1), insight,
+  antimatter, Sway (tips at `tip_per_player` 3 a player, Discord's 4), the supply (24 a country, pieces rather than
+  a currency).
 
 ## Difficulty targets
 
-- **Difficulty 0:** random play almost never wins; moderately skilled play essentially
-  always wins.
+- **Difficulty 0:** random play almost never wins; moderately skilled play essentially always wins.
 - **Top difficulty:** the strongest agent wins consistently, but narrowly.
-- **In between:** win rate falls smoothly with difficulty, a stronger team always does
-  better, and the skill gap widens as difficulty rises.
+- **In between:** win rate falls smoothly with difficulty, a stronger team always does better, and the skill gap
+  widens as difficulty rises.
 
-**Calibration point (Matt, 2026-10-31): medium difficulty.** At d2 winning takes real skill and a
-skilled team wins fairly consistently: the `planner` at 60-75% at both 2 and 3 countries, the band
-where a gate can tell a good price from a bad one. A 48-seed band read is ±7 and a paired gap
-±8-10, so read a band over 96 seeds.
+**Calibration point (Matt, 2026-10-31): medium difficulty.** At d2 winning takes real skill and a skilled team wins
+fairly consistently: the `planner` at 60-75% at 2 and 3 countries, where a gate can tell a good price from a bad
+one. Read a band over 96 seeds: at 48 it is ±7, a paired gap ±8-10.
 
-**Ballpark simulation (Matt, 2026-11-03; supersedes the band above until he names a milestone).**
-Simulation is a ballpark check: two players only, rotating the board pairs (Builder + Protector, Builder + Researcher,
-Protector + Researcher), no c3, an engine smoke read first, then the judge (the strategist since the ruling's `sweep`) at 48 seeds a pair on one fresh set;
-the target is 45-85 a pair, aiming near 60-75 without chasing it; no gate and no pooled second set
+**Ballpark simulation (Matt, 2026-11-03; supersedes the band above until he names a milestone):** two players only,
+rotating the three board pairs, no c3; an engine smoke read, then the judge (the strategist) at 48 seeds a pair on
+one fresh set; the target is 45-85 a pair, near 60-75 without chasing it; no gate, no pooled second set
 ([experiments.md](experiments.md), *The ballpark read*).
 
-**Per-level bands (157; loosened and soft, Matt, 2026-11-13).** The judge (the strategist) reads each level against a band: d0 85-100, d1 65-80, d2 50-65, d3 35-50 (`bench/ladder.py`'s default `--bands`). They are soft: a miss of a few points is reported, never chased or dialed, and where a level can't meet both, its 8-10 rounds win over its band. Current: 215's write-up (r96). Earlier ladders are in the recalibration write-ups (168, 177, 178, 185, 192); d0 resisted every income dial
-(177, 192); 196 met it with two more event cards at d0, which 200 removed (Matt: engines over dials), so d0's band
-comes from the players' side.
+**Per-level bands (Matt, 2026-11-13: loosened and soft):** d0 85-100, d1 65-80, d2 50-65, d3 35-50 for the judge
+(`bench/ladder.py`'s default `--bands`). A miss of a few points is reported, never chased or dialed; a level that
+can't meet both keeps its 8-10 rounds over its band. d0 resisted every income dial: its band comes from the players'
+side (engines over dials).
 
-**Cities corrupted and liberated (Matt, 2026-11-03; measured from r34).** Cities corrupted and liberated per game are a
-measured target per difficulty: at easy levels a win may need no liberation at all (the adversary corrupts no new city);
-at d2 the adversary corrupts at least one new city in most games, and a won game liberates about one; at high difficulty
-expect to liberate at least 2. Read with `scripts/cards/liberation_read.py` (the share of games with a new corruption is
-`adversary.corruptions.city` > 0; the bare `adversary.corruptions` counts every site).
+**Cities corrupted and liberated (Matt, 2026-11-03),** a measured target per difficulty: at easy levels a win may
+need no liberation (the adversary corrupts no new city); at d2 it corrupts at least one new city in most
+games, and a won game liberates about one; at high difficulty expect to liberate at least 2. Read with
+`scripts/cards/liberation_read.py`.
 
-**Failure mix (Matt, 2026-10-31).** No clock over about 80% of losses: Discord may be the
-main cause, and the node clock stays live. The round cap is a backstop with no share target
-(locked): a plain loss, and its losses are examined (Matt, 2026-11-08).
+**Failure mix (Matt, 2026-10-31).** No clock over about 80% of losses: Discord may be the main cause, and the node
+clock stays live. The round cap is a backstop with no share target (locked): a plain loss, its losses examined
+(Matt, 2026-11-08).
 
-**Pressure scales per country (Matt, 2026-10-31).** Harm sources count the countries at setup, not a
-fixed amount and not the countries still standing, so no loop forms and sizes land in one band.
+**Pressure scales per country (Matt, 2026-10-31).** Harm sources count the countries at setup, not a fixed amount
+and not the countries still standing, so no loop forms and sizes land in one band.
 
 ## Scarcity (Matt, 2026-11-01)
 
-**Every resource stays scarce, credits most of all.** A seat ending with a pile unspent is a balance fault. Fix it with weaker
-credit engines, dearer cards or keeps, or lower starting credits; never by cheapening a standard project.
+**Every resource stays scarce, credits most of all.** A seat ending with a pile unspent is a balance fault. Fix it
+with weaker credit engines, dearer cards or keeps, or lower starting credits; never by cheapening a standard project.
 
-**The starting-economy scaffold (Matt, 2026-11-03).** Until engines carry the economy, every board starts and earns much more,
-and the economy track is the growing income; it comes down as engines take over, and adds no track. The pressure that keeps credits
-meaningful is on the adversary's side (corrupted cities make 2 ambassadors a round) and on the price of the plain route (the
-ambassador project at 20 credits): bought ambassadors take a big investment, and cards, buildings and powers are the better route.
+**The starting-economy scaffold (Matt, 2026-11-03).** Until engines carry the economy, every board starts and earns
+much more, the economy track the growing income; it comes down as engines take over, adding no track. Credits stay
+meaningful through the adversary (corrupted cities make 2 ambassadors a round) and the plain route's price (the
+ambassador project at 20 credits): bought ambassadors are a big investment; cards, buildings and powers the better
+route.
 
-**Unspent resources.** Resources left when a seat's last action phase ended (production and upkeep pay after that, and a seat
-can't spend what it was just paid), per seat and per resource, under each agent: `report.md`'s *Unspent
-resources* (in *Strategy health*), `results.json`'s `unspent`, and the readout of `scripts/cards/screen.py --gate`. Insight isn't
-one: what a round leaves of it is lost anyway. **A resource ends high** when a seat's mean passes about a round's income of it:
-credits 12, chips 4, energy 4, antimatter 2, ambassadors 3 (`UNSPENT_HIGH`, `crates/aic-sim/src/experiment.rs`). Games end at
-different rounds, so read the flag on the planner, whose games run longest toward a win, before a fixed policy's.
+**Unspent resources:** held as a seat's last action phase ends (the production and upkeep paid after can't be
+spent), per seat, resource and agent ([experiments.md](experiments.md)); not insight, which a round loses anyway.
+**A resource ends high** when a seat's mean passes about a round's income of it: credits 12, chips 4, energy 4,
+antimatter 2, ambassadors 3 (`UNSPENT_HIGH`, `crates/aic-sim/src/experiment.rs`). Games end at different rounds:
+read the flag on the planner (its games run longest toward a win) before a fixed policy's.
 
 ## Design warnings (Matt, 2026-11-12)
 
-Calibration measures use, not soundness, so these rules are checked by `scripts/design_check.py` (thresholds,
-all candidates, in `scripts/design_check.json`) on every rules item's first screen and fresh read. A warning never
-stops work: an item whose own change trips one still finishes and calibrates, and reports the warning first.
+Calibration measures use, not soundness, so `scripts/design_check.py` checks these (when: CLAUDE.md, *Warning
+checks*; thresholds, all candidates: `scripts/design_check.json`).
 
 - **Capstone and tier-2 resources (antimatter, and any later) are scarce and earned.** No cheap standard-action
   source; the only standard source is a desperate one (5 research cubes → 1 antimatter, say). *Warns:* over 20% of
@@ -122,16 +117,9 @@ stops work: an item whose own change trips one still finishes and calibrates, an
 
 ## Design lenses for every module
 
-- strategic: situational, never always right
-- modelable without heavy mental simulation
-- engine depth
-- fun
-- table cost: tokens moved, upkeep steps
-- scales naturally across 1–4 players
-- rewards adaptation
-- pulls players together
-- readable timing
-- printable
+Strategic (situational, never always right); modelable without heavy mental simulation; engine depth; fun; table
+cost (tokens moved, upkeep steps); scales naturally across 1–4 players; rewards adaptation; pulls players together;
+readable timing; printable.
 
 ## Measures per module, over many simulated games
 
@@ -139,74 +127,54 @@ stops work: an item whose own change trips one still finishes and calibrates, an
 - the effect of removing the module;
 - decision closeness (few forced moves);
 - pick and play rates (no dead cards, no must-picks);
-- build variety among wins, and an adaptation index (a fixed build loses ground against
-  some adversaries);
-- win probability by round (uncertain into the late game) and margin of victory (mostly
-  narrow);
+- build variety among wins, and an adaptation index (a fixed build loses ground against some adversaries);
+- win probability by round (uncertain into the late game) and margin of victory (mostly narrow);
 - game length (8–10 rounds) and adversary operations per round (low);
-- resources unspent at game end, per seat and resource (*Scarcity*, above);
+- resources unspent at game end, per seat and resource (*Scarcity*);
 - help and counter usage;
 - luck share (most outcome variance comes from decisions, not the shuffle).
 
-Agents get no help the printed game couldn't give players. **Information (Matt,
-2026-10-29):** for the foreseeable future agents may play with full information (deck
-orders and other hidden state revealed, one agent for the whole team, deterministic): it
-is simpler and should give similar balance. Where determinization or hidden-information
-handling gets in the way, it may be dropped. The `planner` plays its rollouts on the
-real state; each decision inside them still scores on a guess, because scored on open decks
-the one-step heuristic wins far less: it drafts by printed cost.
-**One exception (D20):** no agent knows which Alignment cards a game dealt, rollouts
-included. The planner values a line on a mean of guesses of the deal, never read from the
-table (`deals`, [agents.md](agents.md)).
-The `oracle` alone reads the deal too: it measures what perfect play could reach, and judges no balance.
+Agents get no help the printed game couldn't give players. **Information (Matt, 2026-10-29):** for the foreseeable
+future agents may play with full information (hidden state such as deck orders revealed, one agent for the team,
+deterministic): simpler, and it should balance alike; hidden-information handling that gets in the way may be
+dropped. The `planner` rolls out on the real state, each decision inside scored on a guess: on open
+decks the one-step heuristic drafts by printed cost and wins far less. **One exception (D20):** no agent, rollouts
+included, knows which Alignment cards a game dealt; the planner values a line on a mean of guesses (`deals`,
+[agents.md](agents.md)). Only the `oracle` reads the deal, to measure what perfect play could reach; it judges no
+balance.
 
 ## Dominance checks (Matt, 2026-10-29)
 
 > Balance should require thought, not an obvious heuristic dominating.
 
-Each check is a fixed, simple policy: the planner with one behavior forced
-(`planner:<check>=1` in an experiment spec; a `forced_table!` row in
-`crates/aic-sim/src/agents/policy.rs`). The strategy-health gate (*The gate*, below) is
-suspended until Matt names a milestone (the ballpark ruling, 2026-11-03).
+Each check is a fixed, simple policy: the planner with one behavior forced (`planner:<check>=1` in a spec), one per
+`forced_table!` row in `crates/aic-sim/src/agents/policy.rs`. The ballpark ruling suspends the gate (below) until
+Matt names a milestone.
 
-- **Healthy:** every check loses ground to the planner at d2. Report each check's gap
-  (planner win % minus the check's) with its noise.
-- **When one doesn't lose:** the check names a rule or price that makes thinking
-  unnecessary. Fix it when the fix is a number or a content change; otherwise report
-  the structural cause.
-- **Early stopping:** a spec's `gate` stops a check once its verdict is decided at
-  the stated noise (`crates/aic-sim/src/gate.rs`); a check that stays close runs to the cap.
+- **Healthy:** every check loses ground to the planner at d2. Report each check's gap (planner win % minus the
+  check's) with its noise.
+- **When one doesn't lose:** the check names a rule or price that makes thinking unnecessary. Fix it when the fix is
+  a number or a content change; otherwise report the structural cause.
+- **Early stopping:** a spec's `gate` stops a check once its verdict is decided at the stated noise (`gate.rs`); a
+  close one runs to the cap.
 - **The list grows:** a new mechanic adds the obvious fixed policy for it.
 
-The checks, by spec (`planner:<check>=1`), are the `forced_table!` rows, each saying its policy; the gate's specs
-below name the ones read.
-
-**The gate** is `experiments/gate.json` (gate-075): planner
-only, d2 (d4 is not winnable, so a d4 half could not pass), 2 and 3 countries, 48 paired seeds a check, those within 2 SE going on to 96, `never_tag` dropped to fit,
-summarized by `scripts/cards/screen.py --gate`. The rules are judged by play that can plan.
-`experiments/gate-exploit.json` is its fast first read: the fixed strategies most likely to beat thinking,
-under the engine, capped at 32 seeds. A direction; the full gate, under the planner, gives the verdict.
-`experiments/gate-c3.json` holds the Researcher's own checks, at 3 countries only.
+**The gate**, `experiments/gate.json` (its `note`: checks, seeds, stopping), runs the planner, so play that can plan
+judges the rules, at d2 (d4 is not winnable), 2 and 3 countries; `screen.py --gate` reads it. `gate-exploit.json`,
+under the engine, is a fast first direction, not a verdict; `gate-c3.json` holds the Researcher's checks, at c3.
 
 ## Sanity checks
 
-Cheap checks that the game rewards what it asks of players. Compute one occasionally, and
-only when it is nearly free; these are not a gate on every screen.
+Cheap checks that the game rewards what it asks, run occasionally when nearly free; they gate no screen.
 
-- **Drafting should improve an agent's win chances.** Compare an agent against the same
-  agent keeping nothing (`keep_none=1`) and keeping at random (`keep_random=1`), at d2. If
-  keeping nothing does as well, the draft is decoration.
+- **Drafting should improve an agent's win chances.** Compare an agent at d2 with itself keeping nothing
+  (`keep_none=1`) and keeping at random (`keep_random=1`). If keeping nothing does as well, the draft is decoration.
 
-Weigh each measure's cost against the decision it informs: screen cheaply first, and run expensive measures only on finalists.
+Weigh each measure's cost against the decision it informs: screen cheaply, run expensive measures only on
+finalists. Calibrate by reasoning first: think through when each decision, card and number can matter in an 8–10
+round game, and set its starting value so it does; simulation then adjusts and evaluates.
 
-Calibrate by reasoning first: before simulating, think through when each decision, card
-and number has a place to matter in an 8–10 round game, and set its starting value so
-it does; simulation then adjusts and evaluates.
-
-Until the rules are close to final, scoping runs use shallow, fast agents (greedy,
-engine, and the planner, Matt's standing ruling: rollouts before deeper search) and
-short runs (`aic-sim experiment --quick`); deep-search agents stay in the code, ready, but
-don't get run time until the rules settle.
-
-The agents and how each measure is computed are in [agents.md](agents.md) and
-[experiments.md](experiments.md); `aic-sim experiment` writes them up as a cycle report.
+Until the rules are close to final, scoping runs use shallow, fast agents (greedy, engine, and the planner; Matt's
+standing ruling: rollouts before deeper search) and short runs (`aic-sim experiment --quick`); deep-search agents
+stay in the code, unrun until the rules settle. Agents and measures: [agents.md](agents.md),
+[experiments.md](experiments.md).

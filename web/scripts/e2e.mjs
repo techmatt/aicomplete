@@ -1,5 +1,6 @@
 // End-to-end check of the viewer in a real browser (Edge or Chrome, headless, driven over
-// the DevTools protocol; no extra npm packages). Needs the dev server running.
+// the DevTools protocol; no extra npm packages). Needs a served viewer: the dev server, or a built
+// site under `vite preview` (web/README.md, *Against a built site*).
 //   node scripts/e2e.mjs [record.json]
 //   AIC_URL     viewer URL (default http://localhost:5173/)
 //   AIC_BROWSER browser executable (default: Edge, then Chrome, at their usual paths)

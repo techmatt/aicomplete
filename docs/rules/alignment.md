@@ -2,29 +2,23 @@
 
 *Sway, the two tracks and tipping, the Unity and Discord decks, the purge, and how the game is won and lost. Terms and conventions are in [README.md](README.md).*
 
-Alignment is where the AIs' world leans: toward **Unity** (the good AIs, the players) or
-**Discord** (the evil AI, the adversary). Everything on it is printed: two Sway tracks, two
-tip-count tracks and two decks of one-shot cards, each printing three strengths.
+**Unity** is the players' side, **Discord** the adversary's. All of it is printed: two Sway tracks, two tip-count
+tracks and two decks of one-shot cards.
 
-**Two independent tracks (r55, candidate).** Discord Sway fills the **Discord track** and Unity
-Sway the **Unity track**; both start empty, there is no shared pool and nothing on one side
-empties the other. **Holding Discord off:** each Unity a player sways may instead move 1 Discord
-off the Discord track (`hold_off` 1), and Envoy ([economy.md](economy.md), a standard action) does
-the same for one of your ambassadors, so the team chooses between racing toward Unity and putting
-off the next Discord card. Unity on its own track never stops a Discord tip. The choice is made as
-the action or automatic phase that swayed the Unity resolves, before any track tips, asked of
-the acting seat (238; seat 0 in a phase), one decision for the whole amount: **any amount, no filter** (r75, Matt's ruling 7). Variant `off` moves no Sway
-([README.md](README.md#off-variants)).
+**Two independent tracks (candidate).** Discord Sway fills the **Discord track**, Unity Sway the **Unity track**; both
+start empty, with no shared pool, and nothing on one side empties the other. **Holding Discord off:** each Unity a
+player sways may instead move 1 Discord off its track (`hold_off` 1), and Envoy (a standard action,
+[economy.md](economy.md)) does the same for one of your ambassadors. Unity on its own track never stops a Discord tip.
+The acting seat (seat 0 in a phase) chooses as the action or phase that swayed the Unity resolves, before any track
+tips, one decision for the whole amount: **any amount, no filter**.
 
-**Tipping.** The Unity track holding `tip_per_player` × players Sway, or the Discord track
-holding `discord_tip_per_player` × players (3 and 4), **tips**: one tip's worth comes off and the rest stays toward
-the next tip, **on both tracks** (`carry` 2, r75, Matt's ruling 7: a Discord tip emptied its track; a big Sway can
-tip more than once; 1 carries Unity's only, 0 neither); that side's tip count
-goes up by one; on a Discord tip each country with an unblocked neutral factory puts a drone on each of its bases ([war.md](war.md)); one card of its side is drawn and resolves (at the strength picked by its side's tip
-count, this tip included, below). Unity tips and Discord tips are counted separately and only count up.
-Tracks are checked when an action or automatic phase finishes resolving (with win and loss, below),
-so a track may overfill within one action. If both are full, **Discord tips first**; a tip's card may
-fill a track again, which then tips too. Thresholds: *Tunables*.
+**Tipping.** The Unity track holding `tip_per_player` × players Sway, or the Discord track holding
+`discord_tip_per_player` × players (3 and 4), **tips**: one tip's worth comes off and the rest stays toward the next
+tip, **on both tracks** (`carry` 2; a big Sway can tip more than once; 1 carries Unity's only, 0 neither); that side's
+tip count goes up by one (the two counts are separate and only count up); a Discord tip arms the bases by neutral
+factories ([war.md](war.md)); one card of its side is drawn and resolves (its strength: below). Tracks are checked
+with win and loss (last paragraph), so a track may overfill within one action; if both are full, **Discord tips
+first**; a tip's card may fill a track again, which then tips too.
 
 **Sources of Sway**
 
@@ -46,33 +40,28 @@ fill a track again, which then tips too. Thresholds: *Tunables*.
 | Discord | each Fallout token, at the start of every round | `blight_discord` 1 |
 <!-- /generated -->
 
-The round's Sway is the phase `alignment.sway`, first in the round: the board's drip and `blight_discord` (1) for
-each Fallout token ([adversary.md](adversary.md)), nothing else. A threat sways Discord only where it prints it.
+The round's Sway is the phase `alignment.sway`, first in the round: the table's two start-of-round rows
+([adversary.md](adversary.md)), nothing else. A threat sways Discord only where it prints it.
 
-**Sway by narrative (r90, Matt's ruling, 2026-11-12).** Every source's side is what the act means in the story:
-Unity for trust and cooperation (liberating, clearing corruption, accords, shared breakthroughs), Discord for fear,
-force and collateral harm (threats, propaganda, the adversary's projects, and the players' own strikes: Surgical
-Strike, Kettle Operation, Martial Cordon and Kinetic Interdiction 1, The Nuclear Option and Annihilation Lance 2).
-Each content sway prints its story tag (`narrative`); the table of every source is in 204's write-up.
+**Sway by narrative.** A source's side is its story: Unity for trust and cooperation (liberating, clearing
+corruption, accords, shared breakthroughs), Discord for fear, force and collateral harm (threats, propaganda, the
+adversary's projects, the players' own strikes); each content sway prints its tag (`narrative`).
 
-**The cards (one-shot and hidden, like fear cards: locked).** Each side has one face-down
-deck, shuffled at setup ([`content/alignment.json`](../../content/alignment.json)), every printed
-card dealt. **Three strengths (r67, candidate):** every card prints a strength I, II and III effect, as
-Spirit Island's fear cards; **the tip itself counts** (r68, Matt, 2026-11-09), for both sides: by
-`tier_at`, strength I on a side's 1st and 2nd tips, II on its 3rd to 5th, III from its 6th. The card
-resolves at once and goes face up on its side's resolved pile; there are no ongoing cards.
-**The Discord deck never reshuffles: it is the clock.** A Discord tip that finds it empty loses
-(**locked**, Matt); with 7 cards the 6th and 7th tips resolve strength III and the 8th loses. **The Unity deck reshuffles** its resolved pile
-when a tip finds it empty (r71: 23 cards, so it rarely does); drawing it out wins nothing.
-**Fear-card shape (r71, Matt, 2026-11-09; cards candidates):** each card is one verb scoped by a **board condition**,
-never reach or "one player"; its strengths widen the count or the condition. Shapes: "for each X (at most N)" (`per_site`,
-counted on the whole board); "remove up to N from each X / in each country piece from X / each player from one X"
-(`remove_where`); **prohibitions** (`prohibit`, 158's firewall generalized; r80,
-Matt's ruling #53): a no-Rally, no-Muster or no-Corrupt token goes on every hex where the condition holds **when the
-card resolves**; the step skips a hex holding its token: Rally's share for it stays in the supply (r82), a Muster troop (any Muster) stays
-in the supply, a site doesn't corrupt (by a line, naturally, or by any flip or threat) and no agent moves onto it. The tokens come off with the firewalls, at
-the end of the next adversary turn (one made during an adversary turn, at that turn's end). Choices are seat 0's (each player's own, theirs). Grassroots Funding and Think
-Tank move a printed income marker "for the rest of the game". Cards marked (draft) are for Matt to keep or prune.
+**The cards (one-shot and hidden, like fear cards: locked).** Each side has one face-down deck, shuffled at setup
+([`content/alignment.json`](../../content/alignment.json)), every printed card dealt. **Three strengths
+(candidate):** every card prints strengths I, II and III; **the tip itself counts**, for both sides, by `tier_at`
+(*How the game ends* below). The card resolves at once and
+goes face up on its side's resolved pile; there are no ongoing cards. **The Discord deck never reshuffles: it is the
+clock.** A Discord tip that finds it empty loses (**locked**). **The Unity deck reshuffles** its resolved pile when a
+tip finds it empty (rarely, at 23 cards); drawing it out wins nothing. **Fear-card shape (cards candidates):** each
+card is one verb scoped by a **board condition**, never reach or "one player"; its strengths widen the count or the
+condition. Shapes: "for each X (at most N)" (`per_site`, counted on the whole board); "remove up to N from each X / in
+each country piece from X / each player from one X" (`remove_where`); **prohibitions** (`prohibit`, the firewall
+generalized; *In the next adversary turn, no X*, [README.md](README.md#terms)): no Rally, Muster or Corrupt; at a
+token's hex a Muster troop (any Muster) stays in the supply, a site doesn't corrupt (by a line, naturally, or by any
+flip or threat) and no agent moves onto it. One made during an adversary turn comes off at that turn's end. Choices
+are seat 0's (each player's own, theirs). Grassroots Funding and Think Tank move a printed income marker "for the
+rest of the game".
 
 <!-- generated: alignment -->
 - **unity** (23): Grassroots Funding, Open Market, Think Tank, Ceasefire, Civil Defense, Volunteer Corps, Global Coalition, New Deal, Decommission, Peacekeepers (draft), Town Hall Accord (draft), Popular Mandate (draft), Reclamation (draft), Mutual Aid (draft), Disarmament Talks (draft), Network Cleanup (draft), Citizens' Assembly (draft), Rebuilding Fund (draft), Safe Corridors (draft), Reconciliation Panel (draft), Neighborhood Watch (draft), Rule of Law (draft), Demilitarized Zone (draft).
@@ -80,37 +69,30 @@ Tank move a printed income marker "for the rest of the game". Cards marked (draf
 - Each card's three strengths: [cards.md](../cards.md#unity-and-discord-cards).
 <!-- /generated -->
 
-A threat countered by a card is discarded and its partial payments are refunded.
 **Details:**
 
-- Open Market's free cards are keeps of drafted cards ([player-cards.md](player-cards.md)), by any player, used before
-  credits.
+- A threat countered by a card is discarded and its partial payments are refunded.
+- Open Market's free cards are keeps of drafted cards by any player, used first ([player-cards.md](player-cards.md)).
 - **Unity pulled back:** "Remove N Unity from the Unity track" removes up to N.
-- Extra threats come from the deck of the tier of this round's adversary card's first pull (an empty deck reshuffles), one per country in turn from country 0,
-  and are countered or execute like any other. One dealt after the round's counter
-  phase (a tip after the action phase) takes a waits token and executes next round. False Flag's come before the
-  counter phase: countered or executed that round.
-- Blight and Firestorm create on the lowest-numbered city holding agents (138: a creation line); a
-  country with none gains nothing. Blight also opens a neutral factory in each country.
-- **Discord cards destroy no nodes (139, Matt) and change no rule for the whole map (156):** their higher strengths add
-  pressure on the board (more or tier-2 threats, creation, Corrupt lines, Scorched Earth's Fallout) or take credits, scaled by the corrupted
-  sites (r71); nodes fall only where the board is overrun ([war.md](war.md)). "A tier-2 threat in each country piece"
-  pulls from the tier-2 deck, any tag (146).
-- Offensive acts at once: Corrupt cities (strength III: the adversary builds first, each country rallying its agent
-  income to this round's card's Rally site), then a tier-2 threat (two from strength II), any tag, is dealt into the
-  country of the node hex with the most agents and troops (ties: country, then lower hex number), its
-  first token on that hex; dealt after the counter phase, it waits a round. Before the build step this round's card
-  is the face-up one.
-- **Unity strength III never frees a city** (r68, Matt, 2026-11-09): it widens its card's condition or count, never to a
-  whole step or the whole map (a prohibition's strength III: on or next to, or within 2 of, an ambassador or a node); no strength III clears
-  around corrupted cities (r68's clearing, rejected) and Reclamation's cubes are stations' and factories' only. The
-  players still reach a city and Liberate it.
+- Extra threats come from the deck of the tier of this round's adversary card's first pull (an empty deck
+  reshuffles), one per country in turn from country 0, countered or executed like any other; one dealt after the
+  counter phase (by a tip after the action phase, or Offensive) waits a round ([threats.md](threats.md), *Executing*).
+  False Flag's come before the counter phase: countered or executed that round.
+- Blight and Firestorm create on the lowest-numbered city holding agents (a creation line); a country with none gains
+  nothing. Blight also opens a neutral factory in each country.
+- **Discord cards destroy no nodes and change no rule for the whole map:** their higher strengths add board pressure
+  or take credits, scaled by the corrupted sites (*How the game ends* below); nodes fall only where the board is
+  overrun ([war.md](war.md)). "A tier-2 threat in each country piece" pulls from the tier-2 deck, any tag.
+- Offensive acts at once: Corrupt cities (strength III builds first: each country rallies its agent income to this
+  round's card's Rally site, the face-up card before the build step), then deals its tier-2 threats, any tag, into the
+  country of the node hex with the most agents and troops (ties: country, then lower hex), first token on that hex.
+- **Unity strength III never frees a city:** it widens its card's condition or count, never to a whole step or the
+  whole map (a prohibition's: on or next to, or within 2 of, an ambassador or a node); none clears around corrupted
+  cities, and Reclamation's cubes are stations' and factories' only. The players still reach a city and Liberate it.
 
-**The purge: the only win (r67, locked: Matt, 2026-11-08), stepped by Unity tips** as Spirit
-Island's terror levels are. What you must remove from the board depends on the Unity tips made
-(`purge_at`: agents, troops, botnets stop counting at those counts): at 0 almost everything;
-from 7 only the cities, and the players win the moment the adversary owns no city. No round
-gate: the steps and liberating cities ([ambassadors.md](ambassadors.md)) set how early it comes.
+**The purge: the only win (locked), stepped by Unity tips** (`purge_at`, below) as Spirit Island's terror levels are;
+at the last step the players win the moment the adversary owns no city. No round gate: the steps and liberating
+cities ([ambassadors.md](ambassadors.md)) set how early it comes.
 
 <!-- generated: purge_ease -->
 - 0-2 Unity tips: remove the corrupted cities, botnets, adversary troops, agents;
@@ -119,28 +101,18 @@ gate: the steps and liberating cities ([ambassadors.md](ambassadors.md)) set how
 - corrupted cities always count.
 <!-- /generated -->
 
-The steps are a list: agents, then troops, then botnets (troops and botnets both at 7).
-**Why:** botnets are hard to remove and troops respawn from adversary factories every round. The
-level-0 purge counts only from this round's adversary card of stage `clear_win_stage` (1: from round 1).
-
-**No escalation in play:** Discord tips don't raise the difficulty; the cards' strengths escalate.
+**Why:** botnets are hard to remove and troops respawn from adversary factories every round. The level-0 purge counts
+only from an adversary card of stage `clear_win_stage` (1: from round 1).
 
 <!-- generated: game_end -->
 **How the game ends, for new players.** The only way to win is the purge, and Unity eases it, step by step, like terror levels. At 0 Unity tips you must purge almost everything: corrupted cities, botnets, adversary troops and agents. After 3 Unity tips the purge no longer asks you to clear agents; after 7, it asks only that the adversary owns no city, and you win the moment it doesn't. Pressure comes every round: the face-up adversary event card deals threats by your sites and says where its new agents land (dealt one at a time onto every site of a kind), so you always know where the next wave lands. Agents pile up, a card's Corrupt line moves every agent next to a city onto it, a city holding 4 corrupts, a hex with your node and 2 loses the node, and corrupted cities and uncountered threats fill the Discord track. Each time it fills, it tips: a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, you lose. Discord cards never destroy your nodes directly, only through the threats and corruptions they bring: they deal more or stronger threats (Offensive aims one at the node hex most crowded with adversary pieces), create agents, run Corrupt lines, take credits and land Fallout (Scorched Earth), more of each the more sites are corrupted. Unity has its own track, which nothing on the Discord side empties: free a corrupted city and you sway Unity (removing a botnet sways none), and each Unity tip brings a good card. Like fear cards, each acts by what is on the board, never by your reach; some forbid the adversary's next Rally, Muster or Corrupt where your pieces stand. Every Unity and Discord card prints three strengths, and the tip's own count on its side picks which one resolves (strength I on tips below 3, II from tip 3, III from tip 6): a later strength counts more or reaches wider, and Discord's late cards hit harder. The 23 Unity cards reshuffle when the deck runs out. Each Unity you sway may instead take 1 Discord off its track, and Envoy trades one of your ambassadors for the same, so you choose between racing toward Unity and holding off the next Discord card. You also lose if any player has no nodes left on the board. Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of their own hex (or two agents on it: Night Raid lands them), war taking a factory on their hex, and Border War (nodes by a front's base). A lost token leaves the game and nothing marks its hex; its income stays. No stage protects your last node: keep a second one on the board. The adversary deck is a round cap too, 13 rounds at most (fewer at the harder levels), and reaching it loses. So there are three different pressures: the Discord deck (politics), your nodes (the board) and the cap.
 <!-- /generated -->
 
-**Losing:**
+**Losing** (each **locked**): a Discord tip finds the Discord deck empty; a player has no nodes on the board (everyone
+loses, as when a spirit is destroyed); the adversary deck runs out (the **round cap**, a plain loss,
+[adversary.md](adversary.md)), found after the round's Sway step and its tips. Neither the supply running out (a cap)
+nor every city corrupted is a loss: a corrupted board drives Discord.
 
-- a Discord tip finds the Discord deck empty (**locked**);
-- a player has no nodes on the board: everyone loses, as when a spirit is destroyed
-  (**locked**);
-- the adversary deck runs out (the **round cap**, a plain loss, **locked**; [adversary.md](adversary.md)), found
-  after the round's Sway step and its tips.
-
-The supply running out is not a loss (it is a cap, [adversary.md](adversary.md)), nor is every city corrupted: a
-corrupted board drives Discord.
-
-Win and loss are checked whenever an action or automatic phase finishes resolving: the Unity
-just swayed is placed (or holds Discord off), full tracks tip (Discord before Unity), then
-losses, then the purge. A tip that ends the game ends it there, and a player with no node loses
-before a Unity tip is drawn.
+Win and loss are checked whenever an action or automatic phase finishes resolving: the Unity just swayed is placed (or
+holds Discord off), full tracks tip (Discord first), then losses, then the purge. A tip that ends the game ends it
+there; a player with no node loses before a Unity tip is drawn.

@@ -19,58 +19,50 @@ $S map configs/baseline.json                       # each country's hexes by num
 $S modules                                         # registry: modules, variants, params, phases
 $S run configs/baseline.json --games 2000 --save out/games              # first 20 losses as records
 $S replay out/games/*.json                         # check records natively (also browser bug reports)
-$S strategies configs/baseline.json --agent strategist:strategy=1 --games 48 --seed 30700 --set adversary.difficulty=2  # each seat's strategy at its round-1 keep, CSV seed,seat,board,strategy (--agent defaults to strategist:strategy=1)
-$S cards                                           # every content card, CSV id,kind,tier,engine,liberate: the agents' engine and liberate tests (agents/cards.rs) for scripts
+$S strategies configs/baseline.json --games 48 --seed 30700 --set adversary.difficulty=2  # CSV seed,seat,board,strategy: each seat's at its round-1 keep (--agent default strategist:strategy=1)
+$S cards                                           # CSV id,kind,tier,engine,liberate: the agents' tests (agents/cards.rs) for scripts
 ```
 
 | Option | Default | Meaning |
 |---|---|---|
 | `--games N` / `--seed S` | `200` / `0` | Seeds `S` to `S+N-1`, one game per seed per config (any `u64`, up to `u64::MAX`). |
-| `--set K=V` | | Override for every config. Repeatable. `countries=N`; `<module>.<param>=V` with `V` as `3` or `1,2,3`, or empty to unset; `<module>.variant=NAME` (keeps the parameters the new variant shares, drops the rest); `<module>=off` (removes the module and its phases: `threats`, `cards` and `economy` can go (economy off plays with no upkeep income at all); `board`, `adversary`, `alignment` and `ai` are required by another module, so the config is rejected: use `<module>.variant=off`). |
+| `--set K=V` | | Override for every config. Repeatable. `countries=N`; `<module>.<param>=V` with `V` as `3` or `1,2,3`, or empty to unset; `<module>.variant=NAME` (keeps the parameters the new variant shares, drops the rest); `<module>=off` removes the module and its phases (`threats`, `cards` or `economy`, which off plays with no upkeep income at all); `board`, `adversary`, `alignment` and `ai` are required by another module, so that is rejected: use `<module>.variant=off`. |
 | `--set-a K=V` / `--set-b K=V` | | Override for config A or config B only. |
-| `--agent SPEC` | `random` | The team agent (see [agents.md](agents.md)), e.g. `greedy`, `beam:width=4`. Shown in the table header and in `--json`. |
+| `--agent SPEC` | `random` | The team agent ([agents.md](agents.md)), e.g. `greedy`, `beam:width=4`; shown in the table header and `--json`. |
 | `--max-actions N` | `100000` | Per-game action cap. A capped game ends as `timeout`. |
 | `--threads N` | all cores | Results don't depend on it: agents are seeded per game. |
 | `--json` | off | Print the summary as JSON: every field below, plus the diff, agent, `max_actions` and rules revision. |
 | `--trace` | off | Print the first game of each config: every action (with its option count) and event. Goes to stderr with `--json`. |
-| `--save DIR` | off | `run`/`compare`: write the selected games as game records into `DIR` (created if needed), named `<config name>-<run\|A\|B>-seed<S>.json`, so A and B never collide. The paths are printed after the table, or listed under `saved` in each `--json` result with the match counts. A write failure exits 2. |
-| `--save-when W` | `loss` | Which games to save: `all`, `win`, `loss`, `timeout`, or an end reason code (`deck_empty`, `discord_deck`, `node`, `purge`, ...). Repeatable; a game matching any is saved. With only `--save-seed` given, no default: just those seeds. A reason code no game ended with gets a warning on stderr (likely a typo). |
-| `--save-seed S` | | Always save this seed, whatever `--save-when` says and not counted against `--save-max`. Repeatable. A seed outside the range played gets a warning. |
-| `--save-max N` | `20` | Per config, keep the first `N` games `--save-when` matched, in seed order. The output says how many matched, so a cap never truncates silently. |
+| `--save DIR` | off | `run`/`compare`: write the selected games as records into `DIR` (created if needed) as `<config name>-<run\|A\|B>-seed<S>.json`; the paths print after the table, or under `saved` in each `--json` result with the match counts. A write failure exits 2. |
+| `--save-when W` | `loss` | Which games to save: `all`, `win`, `loss`, `timeout`, or an end reason code (`deck_empty`, `discord_deck`, `node`, `purge`, ...). Repeatable; a game matching any is saved. With only `--save-seed` given, no default. A reason code no game ended with warns on stderr. |
+| `--save-seed S` | | Always save this seed, not counted against `--save-max`. Repeatable. A seed outside the range played warns. |
+| `--save-max N` | `20` | Per config, keep the first `N` games `--save-when` matched, in seed order; the output says how many matched. |
 
-The output shows each config's hash, content hash and engine version, plus an
-`A -> B` line listing every variant and parameter difference. The rows:
+The output shows each config's hash, content hash and engine version, an `A -> B` line listing every variant and
+parameter difference, then rows: `win %` (± SE); rounds (mean, min..max); games by end reason and by end round;
+decisions per game, options per decision, forced decisions %, max options; adversary ops per round (mean, and the
+most in one round) and at setup; every module counter per game, a `*_round` counter (the round of the first corruption, of the first
+project) over the games that reached it ("mean where reached"), and a round's own counter (`_rNN`, `.rNN`) over the
+games that reached that round; `replay ok`; `wall ms/game`: the run's wall time over its games, all threads at once
+(so it falls with `--threads`).
 
-- `win %` (± standard error);
-- rounds (mean, min..max);
-- games by end reason and by end round;
-- decisions per game, options per decision, forced decisions %, and max options;
-- adversary ops per round (mean, and the max in any one round), and at setup;
-- every module counter, averaged per game; a `*_round` counter (the round of the first corruption, of the first project) over the games that reached it ("mean where reached"), and a round's own counter (`_rNN`, `.rNN`) over the games that reached that round;
-- `replay ok`;
-- `wall ms/game`: the run's wall time over its games, all threads at once (so it falls with `--threads`).
+**Replay check:** each game is replayed from seed + actions through `Rules` rebuilt from the resolved config, and
+must equal the final state. Exit code 1 on any mismatch, 2 on a bad config or arguments (a seed range overflowing
+`u64` too).
 
-**Replay check:** each game is replayed from seed + actions through `Rules` rebuilt from
-the resolved config, and must equal the final state. The exit code is 1 on any
-mismatch, and 2 on a bad config or bad arguments (including a seed range that
-overflows `u64`).
+**Game records** (`aic-game-record/1`, `aic_core::SavedGame`) are JSON: the resolved config, the seed and the action
+list (one action per line), plus a `note` saying why the game was saved (command, outcome, seed, selector,
+overrides) and the outcome, rounds, final-state fingerprint, hashes, engine version and rules revision for checking
+the replay. A saved record is the game the summary counted, not a second play. Only `config`, `seed` and `actions`
+are required, so a hand-written record loads too. `aic-sim replay <record.json>...` prints each record's seed,
+outcome and warnings (a different rules revision, content or config hash, or final fingerprint), and exits 1 if any
+record fails to load or replay or has a warning. Browser bug reports are checked the same way.
 
-**Game records** (`aic-game-record/1`, `aic_core::SavedGame`) are JSON: the resolved
-config, the seed and the action list (one action per line), plus a `note` saying why the
-game was saved (command, outcome, seed, selector, overrides) and the outcome, rounds,
-final-state fingerprint, hashes, engine version and rules revision for checking the
-replay. A saved record is the game the summary counted, not a second play. Only
-`config`, `seed` and `actions` are required, so a hand-written record loads too. `aic-sim
-replay <record.json>...` prints each record's seed, outcome and warnings (a different
-rules revision, content or config hash, or final fingerprint), and exits 1 if any record
-fails to load or replay or has a warning. Browser bug reports are checked the same way.
+Saving every game of a big run is slow (Windows file writes). A glob of more than a few hundred records is "Argument
+list too long": replay big sets in batches.
 
-Saving every game of a big run is slow: Windows file writes are the bottleneck. A shell glob over more than a few
-hundred records hits Windows' command-line length limit ("Argument list too long"), so
-replay big sets in batches.
-
-The random agent picks uniformly among all seats' legal actions, passes and choice
-answers included. Treat it as a floor, not as a model of a weak team.
+The random agent picks uniformly among all seats' legal actions, passes and choice answers included: a floor, not a
+model of a weak team.
 
 ## Keys in a games.jsonl line
 
@@ -88,8 +80,8 @@ Each row is in `PEAKS` order (credits, insight, energy, chips, antimatter, resea
 
 ## The farm
 
-A read's games, cut into seed ranges for conductor's remote workers (browser tabs on other machines, 160). The
-native command and the wasm bundle (`crates/aic-farm`) run the same code (`crates/aic-sim/src/farm.rs`):
+A read's games, cut into seed ranges for conductor's remote workers (browser tabs on other machines). The native
+command and the wasm bundle (`crates/aic-farm`) run the same code (`crates/aic-sim/src/farm.rs`):
 
 ```sh
 $S farm read --seed 1000 --games 4 --out out/s0.jsonl    # every cell of experiments/farm/read.json, seeds 1000..1003
@@ -101,48 +93,39 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
 
 - **A shard's output** is one line per game, seed by seed and each seed's cells in grid order: `games.jsonl`'s line
   with every timing 0 and `engine` naming who played it (`native` or `wasm`). Shards concatenated in seed order are
-  byte for byte one run over the whole range. Each game's time goes to stderr. The file is written whole at the
-  end (a `.part` renamed), so a killed shard leaves none. `--seed` and `--games` are required. A shard is one
-  thread (an agent's `threads` dial must be 1). A strategist game costs about 1 s natively on one core since 174
-  (178: 2,160 games in ~9 min on 4 threads), so a read seed (12 cells) about 12 s; wasm is ~1.5× native (160); the
-  laptop tab is best at 2-3 cores (163, B5). A job of few shards is bound by its slowest shard.
-- **A farmed spec** is a file in `experiments/farm/` (`read`: the strategist, three pairs, d0-d3, a subset: an
-  item's read writes its own d0-d4 spec; `cell-d2`: one cell); the argument is its name. A gated spec, win-probability probes and `inject_panic` are refused: their games
-  depend on more than their seed. The bundle reads no files: `configs/`, `experiments/configs/` and
-  `experiments/farm/` are built into it (`crates/aic-farm/build.rs`), so a spec to farm is committed first: a spec
-  missing from the workers' bundle fails there and the main box reruns its shards late, one at a time (167: a
-  3,000-game screen took ~60 min). A finished item's specs move to `experiments/archive/farm/` (not built in).
-- **A farm job outlives its `farm-seeds`** (212): killing the client leaves the broker running the job's shards on
-  the main box with `target/release/aic-sim.exe`, which holds the CPU and locks that file, so `cargo build --release`
-  fails "Access is denied" until the job ends. Stop a read before you launch it, not mid-run; to build meanwhile, use
-  another `CARGO_TARGET_DIR`.
+  byte for byte one run over the whole range. Each game's time goes to stderr. The file is written whole at the end
+  (a `.part` renamed), so a killed shard leaves none. `--seed` and `--games` are required. A shard is one thread (an
+  agent's `threads` dial must be 1). A strategist game costs about 1 s natively on one core, a read seed (12 cells)
+  about 12 s; wasm is ~1.5× native; the laptop tab is best at 2-3 cores. A job of few shards is bound by its slowest.
+- **A farmed spec** is a file in `experiments/farm/` (`read`: the strategist, three pairs, d0-d3, a subset: an item's
+  read writes its own d0-d4 spec; `cell-d2`: one cell); the argument is its name. A gated spec, win-probability
+  probes and `inject_panic` are refused: their games depend on more than their seed. The bundle reads no files:
+  `configs/`, `experiments/configs/` and `experiments/farm/` are built in (`crates/aic-farm/build.rs`), so commit a
+  spec before farming it: one missing from the workers' bundle fails there and the main box reruns its shards late,
+  one at a time (~60 min for a 3,000-game screen). A finished item's specs move to `experiments/archive/farm/` (not built in). An arm with cards out of the deck is a derived config in `experiments/configs/` (`no_tier2.py`, `no_liberate.py`, run by
+  `regen.py`): no `--set` removes a card from a deck.
 - **The bundle's API** (`farm.mjs`): the default export `init()` (in Node it reads the wasm beside it),
   `fingerprint()`, `run(first, count, args)` returning the shard's text (`args`: one spec name), `engine()`.
 - **The fingerprint** is the rules revision, the content hash and a hash of two strategist games (baseline, d2, seeds
   36800-36801) with no engine named: the same line on native and wasm while they play alike. About 3 s.
-- **`farm-seeds`** (conductor's remote client) runs the worktree's `target/release/aic-sim.exe` on the main box and
-  builds the browsers' bundle from HEAD: commit a spec and its code before farming, and rebuild into another
-  `CARGO_TARGET_DIR` while a job runs (the running exe can't be replaced; rename it aside, then copy). Farm lines
-  carry no timings: a main-box game's ms is in the job's `main.log` (162's `cost162.py` reads it). It first runs a
-  native `cargo build --release`, which fails (`Access is denied`) while another `aic-sim` runs from that exe: run a
-  local oracle row from a copy (177). The shards write under conductor's job folder; the out file appears only at
-  the end.
+- **`farm-seeds`** (conductor's remote client) first runs a native `cargo build --release`, runs that
+  `target/release/aic-sim.exe` on the main box, and builds the browsers' bundle from HEAD: commit the spec, code and
+  `content/` before farming, or the two engines play different cards. Farm lines carry no timings: a main-box game's ms is in the job's `main.log`. The shards write
+  under conductor's job folder; the out file appears only at the end. **A job outlives its `farm-seeds`**: killing
+  the client leaves the broker running its shards on the main box, which holds the CPU. While a job runs, or another
+  `aic-sim` runs from that exe, it is locked (a build fails "Access is denied"): build into another
+  `CARGO_TARGET_DIR` (rename the running exe aside, then copy), and run a local row from a copy. Stop a read before
+  launching it, not mid-run.
 - **Reading a farmed read:** `screens.py` and `ladder.py` read the farm's out file as `OUT=SPEC.json` (no header
-  needed); for shards, `python scripts/screens.py assemble SPEC FIRST COUNT OUT_DIR SHARD...` writes
-  `games.jsonl` (the header, then the shards); `bench/paired.py` and `bench/ladder.py` read it with no `results.json`, and pair a seed
-  across engines, counting the seeds on mixed engines (`--same-engine` leaves them out, 163). `scripts/farm/compare.py A B` counts games
-  that differ between two engines' outputs. Make the out file's folder first: a missing one fails the merge after
-  every game is farmed (238; `screens.py assemble` recovers the job's shards). `farm-seeds`' out file has no header line: for a reader that needs one
+  needed); for shards, `screens.py assemble` (scripts.md) writes `games.jsonl`. `bench/paired.py` and `ladder.py`
+  read it with no `results.json` and pair a seed across engines, counting mixed-engine seeds (`--same-engine` leaves
+  them out); `farm/compare.py A B` counts games that differ between two engines' outputs.
+  Make the out file's folder first: a missing one fails the merge after every game is farmed (`screens.py assemble`
+  recovers the job's shards). `farm-seeds`' out file has no header line: for a reader that needs one
   (`design_check.py`, `play_read.py`), write `aic-sim farm SPEC --header --seed F --games N` first, then the out file.
-  A farmed run writes no `results.json` or `cards.csv`: the card viewer's stats need a native `aic-sim experiment` run
-  (213 reran the dev screen's base natively, the same games).
-- **An arm with cards out of the deck** is a derived config in `experiments/configs/` (`scripts/configs/no_tier2.py`,
-  `no_liberate.py`, both run by `regen.py`): the farm bundles that folder, and no `--set` removes a card from a deck.
+  A farmed run writes no `results.json` or `cards.csv`: the card viewer's stats need a native `aic-sim experiment` run.
 - **A ladder against the old revision:** `farm-seeds` runs only the worktree's build, so the old side runs natively
-  (`aic-sim experiment` on the farm spec with `first_seed`/`games` set) from a `git archive` export of the base commit
-  built into its own `CARGO_TARGET_DIR`, with its own configs; 178's 144-seed strategist read took 303 s farmed, the
-  old side about 9 min on 4 threads.
+  (`aic-sim experiment` on the farm spec with `first_seed`/`games` set): experiments.md, *A before/after read*.
 - **Math:** the play path calls no float function past IEEE's exact ones (`powi(2)` in the eval), so native and wasm
-  play the same games. The `libm` build flag (`cargo build --release -p aic-sim --features libm`, off by default)
-  makes native call the `libm` crate, as wasm does (`src/fmath.rs`); wasm has no clock, so its timings read 0
-  (`src/clock.rs`).
+  play the same games. The `libm` feature (`cargo build --release -p aic-sim --features libm`, off by default) makes
+  native call the `libm` crate as wasm does (`src/fmath.rs`). Wasm has no clock: its timings read 0 (`src/clock.rs`).

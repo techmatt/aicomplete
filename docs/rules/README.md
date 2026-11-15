@@ -2,44 +2,38 @@
 
 The rules are split by area. Read this page, then only the files your task touches:
 
-- This page: scope, conventions, the new-player summary, [Terms](#terms) (the house words, reach, site claims,
-  pieces, ownership, the ladder and who chooses) and the [off-variants](#off-variants).
-- [board.md](board.md): country pieces, fronts and bases, setup, research stations, megaprojects and converters.
-- [ambassadors.md](ambassadors.md): the one site model (cities, stations, factories), claiming, liberating, blocking,
-  armor, canceling, removing agents.
-- [adversary.md](adversary.md): the adversary board, its income and event deck (the round cap), Rally X, Corrupt X, botnets,
-  the project slots, difficulty.
-- [war.md](war.md): production and war every round, factories, bases as troop piles, war, the adversary march, Wall,
-  node loss.
+- This page: scope, conventions, the new-player summary, [Terms](#terms) and the [off-variants](#off-variants).
+- [board.md](board.md): country pieces, fronts and bases, setup, stations, megaprojects, converters.
+- [ambassadors.md](ambassadors.md): the one site model, claiming, liberating, blocking, armor, removing agents.
+- [adversary.md](adversary.md): the adversary's board, income, event deck (the round cap), Rally, Corrupt, botnets,
+  projects, difficulty.
+- [war.md](war.md): production, factories, bases, war, the adversary march, Wall, node loss.
 - [alignment.md](alignment.md): Sway, tipping, the Unity and Discord decks, the purge, winning and losing.
 - [economy.md](economy.md): each resource's sources and uses, city energy, standard actions, the round's phases.
 - [ai-boards.md](ai-boards.md): the three boards, their special rules, node tracks and capstones.
-- [ai-powers.md](ai-powers.md): the boards' powers (node, sacrifice and insight), the insight conversions and loops,
-  shelters and hardening.
-- [threats.md](threats.md): the threat decks, dealing, location tokens, who is near, the counter menu, what threats do.
-- [player-cards.md](player-cards.md): the opening, the draft, keeps, play, slots, tags, tokens, the liberate
-  capstones.
-- [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
-- [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
+- [ai-powers.md](ai-powers.md): the boards' powers, insight conversions and loops, shelters and hardening.
+- [threats.md](threats.md): the threat decks, dealing, location tokens, who is near, counters, what threats do.
+- [player-cards.md](player-cards.md): the opening, draft, keeps, play, slots, tags, tokens, liberate capstones.
+- [card-grammar.md](card-grammar.md): how a card's printed words resolve.
+- [tunables.md](tunables.md): every baseline config parameter (generated).
 
 What the code implements, at rules revision 108 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
 AI boards are **placeholders** pending redesign; the Unity and Discord decks are candidates in fear-card shape
-(r71, Matt's direction locked); the adversary's
-threat decks (rewritten by 146 to Matt's threat card standard, locked), event deck, board and project deck are drafts
+(the shape locked); the adversary's
+threat decks (to Matt's threat card standard, locked), event deck, board and project deck are drafts
 (`drafts/adversary/`), all in play until Matt's picks prune them. Every rule is a **candidate** unless marked **locked**; which, and what
-each revision changed and why, is in [rules-history.md](../rules-history.md). What content can
-print is in [ops.md](../ops.md).
+each revision changed and why: [rules-history.md](../rules-history.md). What content can
+print: [ops.md](../ops.md).
 
 **Every number below is a candidate**: a starting calibration reasoned for an 8–10
-round game (`docs/principles.md`), for simulation to adjust. Names in `code` are config
-tunables (`<module>.<param>`), with their values under [Tunables](tunables.md), from
+round game, for simulation to adjust. Names in `code` are config
+tunables (`<module>.<param>`), valued in [Tunables](tunables.md) from
 [`configs/baseline.json`](../../configs/baseline.json); card, threat, adversary-card,
 megaproject and AI-board numbers are content in [`content/`](../../content/).
-Design intent lives in [principles.md](../principles.md); the engine in
-[architecture.md](../architecture.md). **Keep these files current with every rules change**, each under 15 KB.
+Design intent: [principles.md](../principles.md); the engine: [architecture.md](../architecture.md).
 
 <!-- generated: new_players -->
 **For new players.** You start with 2 tier-1 and 2 tier-2 cards in your hand, free: the tier-2 cards are something to plan toward, to play once you meet their needs. Then every round, the first included, you build a hand of 4 cards one at a time, choosing for each whether it comes from the cheaper tier-1 deck or the stronger tier-2 deck; you take one card and pass the rest to the next player in seat order until the hands are gone, then pay insight to keep what you drafted (1 for tier 1, 3 for tier 2; nothing else buys a keep). Insight is this round's attention: your card-play track shows it, the number on the rightmost space you've uncovered that shows one (3 before any), and what you don't spend is lost. Playing a card costs its credits and 0-2 insight, from the same insight as keeps. Buildings go into your AI board's 4-5 slots; once they are full, a new building goes on top of an old one, which stops working but keeps its tags. Programs stay in front of you and are where lasting income comes from ("raise your credit income by 1 per 2 Science tags on your cards"); buildings are your engine: Actions you use once a round and Effects that pay each time their trigger happens; events are used once and set aside, never to return. Every card in front of you shows tags (Science, Industry, Cyber, Power, Diplomacy, Security): they unlock some cards, and you can sacrifice cards with the right tags to use your AI board's powers. There is no limit on what you hold or on how far cards raise your income; energy you don't spend stays energy, so drafting cards that spend it is up to you.
@@ -53,7 +47,7 @@ Design intent lives in [principles.md](../principles.md); the engine in
 
 ## Terms
 
-The house words, as the player aid prints them ([player-aid.md](../player-aid.md)):
+The house words, as [player-aid.md](../player-aid.md) prints them:
 
 <!-- generated: house_terms -->
 - **Facility**: a research station or factory on the board. A building is always a card. Harden goes on a facility and nothing else.
@@ -85,47 +79,36 @@ The house words, as the player aid prints them ([player-aid.md](../player-aid.md
 
 The rest:
 
-- **Adjacent**: a neighboring hex on the board, across country borders too.
-- **Next to X**: holding X, or adjacent to a hex holding X.
-- **Node**: one of a player's tokens on the board (one per hex, of any player), taken off their AI
-  board's node track ([ai-boards.md](ai-boards.md)). A node is a token, not a facility: it sits on any land
-  hex, with or beside other pieces.
+- **Adjacent**: a neighboring hex, across country borders too. **Next to X**: holding X, or adjacent to a hex holding X.
+- **Node**: a player's token on the board (one per hex, of any player), taken off their AI board's node track
+  ([ai-boards.md](ai-boards.md)); not a facility, it sits on any land hex, with or beside other pieces.
 - **Botnet**: the adversary's persistent token ([adversary.md](adversary.md)), placed only by printed lines. Nodes are always the players', botnets always the adversary's.
-- **Reach**: a card, board power or standard action that touches the map names **one target** in the acting
-  player's reach (r106 cards, r107 powers and standard actions, **locked**): it prints the condition first
-  ("Target: Troops."), and its effects act on it, on or next to it, or in its country, as printed
-  ([card-grammar.md](card-grammar.md), *Target*); Shelter takes no target (your reach), Disrupt one country (206). Reach is 1 for every player rule: no effect goes past 1 from its target unless it prints "in its country". A card's "move up to N ambassadors" takes yours from your supply or on or next to the target (r107); a Dispatch takes one from anywhere. The adversary's distances (a Corrupt line moving agents from next door, a troop's
-  strike) are its own, not a player's reach ([adversary.md](adversary.md), [war.md](war.md)). A converter needs a city of its country in your
+- **Reach** (**locked**): a card, board power or standard action that touches the map names **one target** in the
+  acting player's reach, printing the condition first ("Target: Troops."; [card-grammar.md](card-grammar.md), *Target*); Shelter takes no target (your reach), Disrupt one country. Reach is 1 for every player rule: no effect goes past 1 from its target unless it prints "in its country" (where ambassadors move from: [ambassadors.md](ambassadors.md)). The adversary's distances (a Corrupt line moving agents from next door, a troop's
+  strike) are its own, not a player's reach. A converter needs a city of its country in your
   reach ([board.md](board.md)).
-- **Site**: a city, research station or factory (137: one site model, [ambassadors.md](ambassadors.md)). A military
+- **Site**: a city, research station or factory (one site model, [ambassadors.md](ambassadors.md)). A military
   base is no site: it is a front's troop pile ([war.md](war.md)).
-- **Site claim**: claiming a neutral site (the Claim action) needs the site in the
-  player's reach and no embargo on it; a botnet on or next to it doesn't stop a claim (r75). Liberating an
-  adversary site needs reach only. Both pay with the player's own ambassadors on the site first, then the supply.
+- **Site claim**: claiming and liberating, their reach, embargo and payment: [ambassadors.md](ambassadors.md).
 - **Piece**: a site, a military base or a node. Ambassadors sit on pieces.
 - **Clean / corrupted / aligned / owned**: a city, research station or factory with no
   owner cube is clean (a station or factory: neutral); an adversary cube means corrupted
   (a factory: adversary-owned); a player cube means aligned (a city) or owned.
 - **The ladder**: the adversary's pieces, weakest first: agents (the explorers, used
   up when they act), **botnets** (the towns, persistent), troops, corrupted cities and
-  stations (the cities). The Liberate action takes a site off the ladder: its agents cancel and it becomes the
-  liberator's ([ambassadors.md](ambassadors.md)); a liberate card does the same, unpaid.
+  stations (the cities). Liberating (*Liberate* above) takes a site off the ladder.
 - **The supply is a cap**: a placement it can't make doesn't happen.
-- **Players choose**: an `Action::Choose` in `legal_actions`. Team choices in the
-  adversary's steps, production and threats are asked of seat 0 (an aligned city's
-  factory placement, of its owner; which protection a destruction spends, of the piece's
-  owner, [war.md](war.md)); a choice inside a player's own card, ability or
-  standard action is asked of that player.
-- **Hex number**: each piece's hexes are printed 1–16 row by row; ties go to the lower
-  number.
+- **Players choose**: an `Action::Choose` in `legal_actions`. Team choices (adversary steps, production, threats)
+  go to seat 0, but an aligned city's factory placement to its owner and which protection a destruction spends to
+  the piece's owner ([war.md](war.md)); a choice inside a player's own card, ability or standard action, to that player.
+- **Hex number**: each piece's hexes are printed 1–16 row by row; ties go to the lower number.
 
 ## Off-variants
 
-For measuring what a module adds, these variants remove its effect and keep the round: `threats.variant=off` (no
+To measure what a module adds, these variants remove its effect and keep the round: `threats.variant=off` (no
 threats), `alignment.variant=off` (no Sway moves, nothing tips; the purge, the node loss and the
-adversary deck-out stay; with no tips the Discord-deck loss can't happen and the purge never eases), `cards.variant=off`
-(no draft or drawing, so no player cards at all). Two don't isolate their module: with
-Alignment off nothing tips, so botnets always count against the purge; with cards off only Decommission and the Take down a botnet action
-remove a botnet. `board`, `adversary`, `alignment` and `ai` are not removable (each is read by another); `threats=off`,
-`cards=off` and `economy=off` remove the module. Parts switch off by parameters (`destruction_discord` 0, `factory_chips` 0,
-`board.troop_steps` 0 (no march), `adversary.botnet_compute` 0).
+adversary deck-out stay; with no tips the Discord-deck loss can't happen and the purge never eases, so botnets always count against it), `cards.variant=off`
+(no draft or drawing, so no player cards; only Decommission and the Take down a botnet action
+remove a botnet). `board`, `adversary`, `alignment` and `ai` are not removable (each is read by another); `threats=off`,
+`cards=off` and `economy=off` remove the module. Parameters switch off parts: `destruction_discord` 0, `factory_chips` 0,
+`board.troop_steps` 0 (no march), `adversary.botnet_compute` 0.

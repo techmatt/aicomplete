@@ -12,11 +12,11 @@ beneath it; events can't be sacrificed (they are gone once played). A card pays 
 tags are wasted. Each power is usable once a round. What can be sacrificed is fixed when the power is used; the player chooses the cards one at a time among those that
 still help.
 
-**One target (r107; Matt, 2026-11-14).** A power that touches the map names one target, a hex in your reach, as a
+**One target (locked).** A power that touches the map names one target, a hex in your reach, as a
 card does ([card-grammar.md](card-grammar.md)): its text opens "Target: ...", and it acts on the target, or on or
 next to it where printed. `Content::check` holds powers to the cards' check and the opening words. Node placements
 (next to your nodes), the burns (your own piece anywhere) and Grant and Audit (off the map) take none; the one
-exception is Disrupt's country (206).
+exception is Disrupt's country.
 
 <!-- generated: powers -->
 | Board | Power | Cost | Effect |
@@ -45,22 +45,22 @@ exception is Disrupt's country (206).
 <!-- /generated -->
 
 **Sacrifice is late-game liquidation.** Once the cards needing a tag are played, its tags turn into engine rewards,
-each payoff priced to be worth the card: 1 chip (r83: worth 2 before), 2 energy, up to 2 troops removed on a target (Interdict, r98), a card and an agent removed (Debrief, r91); a tag and an
-energy buy a building (r35).
+each payoff priced to be worth the card: 1 chip, 2 energy, up to 2 troops removed on a target (Interdict), a card and
+an agent removed (Debrief); a tag and an energy buy a building.
 
-**Each power's tag is its story (r93, Matt, amendment 9513).** A tag-paid power is paid in the tag its effect fits
+**Each power's tag is its story.** A tag-paid power is paid in the tag its effect fits
 (the tag table is below): the Protector's Accord in Diplomacy (trust), its Debrief and
 Interdict in Security (force, protection). The one exception is the Researcher's Disrupt, paid in Cyber: it
 hacks troops anywhere in a country, no reach.
 
-**Node powers' riders (r93, candidate; Matt, message 9565).** A node power places next to your nodes as any placement
-does, and its bonus comes only when the new node is **on or next to a fresh spot of its board's kind**, one none of your
-other nodes is on or next to: Buy In's chip by a factory, Accord's ambassador by a city (a new ambassador onto that
-city, standing toward its claim), Peer Review's insight by a research station (Peer Review costs 1 research cube, 3
-before). With no such spot it still places, without the bonus. Why fresh: a city, a factory and a station are on or
-next to almost every hex, so "on or next to" alone was met on 99-100% of placements (212's screen); a fresh spot, about
-72%, pays for reaching a new one. Nothing places a node anywhere; "within range 2 of one of your nodes"
-is kept for a stronger version (a track upgrade or a card), never a board's own power (Matt), and no content prints it yet.
+**Node powers' riders (candidate).** A node power places next to your nodes as any placement does, and its bonus comes
+only when the new node is **on or next to a fresh spot of its board's kind**, one none of your other nodes is on or
+next to: Buy In's chip by a factory, Accord's ambassador by a city (a new ambassador onto that city, standing toward
+its claim), Peer Review's insight by a research station. With no such spot it still places, without the bonus. Why
+fresh: a city, a factory and a station are on or next to almost every hex, so "on or next to" alone was met on 99-100%
+of placements; a fresh spot, about 72%, pays for reaching a new one. Nothing places a node anywhere; "within range 2
+of one of your nodes" is kept for a stronger version (a track upgrade or a card), never a board's own power, and no
+content prints it yet.
 
 | Tag | Story | Its usual effects (the tag story table of scripts/design_check.json) |
 |---|---|---|
@@ -71,48 +71,44 @@ is kept for a stronger version (a track upgrade or a card), never a board's own 
 | Power | energy and antimatter | energy, antimatter, the weapons it feeds |
 | Cyber | the network | botnets, compute drains, firewalls, node placement, information (insight) |
 
-**Tags are story, not rules (Matt, message 9548):** no tag owns an effect, as in Magic's colors. The table is what a
+**Tags are story, not rules:** no tag owns an effect, as in Magic's colors. The table is what a
 player expects; a card whose effects fit none of its tags is a soft design warning (`design_check.py`'s tag-story),
 never refused. Draws, credits, triggers, threat counters, liberation and a tag's own payoffs fit any tag.
 
-**Card throughput:** the Builder's Procure turns a spare chip into 2 cards; the Researcher's Synthesis turns 1 insight
-into a card (r100; 2 before) (r91, Matt: the Researcher's draw outlet; Fieldwork, 1 energy for 3 cards, is cut, since it starved it).
+**Card throughput:** the Builder's Procure turns a spare chip into 2 cards; the Researcher's Synthesis, its draw
+outlet, turns 1 insight into a card.
 
-**Troop powers (r91, amendment 9247: early troops decide games).** Each board removes or stops troops its own way, no
-two alike: the Protector's **Interdict** (a Security card: up to 2 troops on its target; r98, Matt's ruling: Stand Down
-merged into it and Shelter cut, 9 powers to 7) beside its Patrol (pushes them away); the Builder's **Fortify** (2 chips: 1 troop on its target and
-a facility on or next to it hardened); the Researcher's **Disrupt** (a Cyber card and a research cube: up to 2 troops in one country, no reach
-needed). The standard action Remove a troop (`troop_credits` 10 credits, `troop_per_round` once a round) is the hedge.
+**Troop powers (early troops decide games).** Each board removes or stops troops its own way, no two alike: the
+Protector's **Interdict** (a Security card: up to 2 troops on its target) beside its Patrol (pushes them away); the
+Builder's **Fortify** (2 chips: 1 troop on its target and a facility on or next to it hardened); the Researcher's
+**Disrupt** (a Cyber card and a research cube: up to 2 troops in one country, no reach needed). The standard action
+Remove a troop (`troop_credits` 10 credits, `troop_per_round` once a round) is the hedge.
 
-**Antimatter: each board a rare burn of its own engine (r97, Matt's ruling, 2026-11-13).** The steady source is the
-tier-2 converter plants ([economy.md](economy.md)); each board's own power is a different decision, once a round, for
-1 antimatter: the Builder's **Teardown** (1 chip: destroy one of your own factories, and a Fallout token goes on
-its hex), the Researcher's **Meltdown** (2 research cubes: destroy one of your own research stations; r98: renamed from
-Overload, a tier-2 threat's name), the Protector's **Reclaim** (227: renamed from Seize; a Security card, 6 credits and 2 energy: turn its
-target, a corrupted station or factory, neutral, its adversary cube off, well above Remove a troop's 10). Teardown and
-Meltdown reach anywhere. A burned piece is gone, no protection asked (you chose it), unless rebuilt the
+**Antimatter: each board a rare burn of its own engine.** The steady source is the tier-2 converter plants
+([economy.md](economy.md)); each board's own power is a different decision, once a round, for 1 antimatter: the
+Builder's **Teardown** (1 chip: destroy one of your own factories, and a Fallout token goes on its hex), the
+Researcher's **Meltdown** (2 research cubes: destroy one of your own research stations), the Protector's **Reclaim**
+(a Security card, 6 credits and 2 energy: turn its target, a corrupted station or factory, neutral, its adversary cube
+off, well above Remove a troop's 10). Teardown and Meltdown reach anywhere. A burned piece is gone, no protection asked (you chose it), unless rebuilt the
 normal way; with no piece or target the power can't be used. No power spends antimatter: the spends are the majors,
 tier-2 cards and a few dear tier-1 ones.
 
-## Insight conversions (candidate, r41)
+## Insight conversions (candidate)
 
 Insight is this round's attention, readable off the board: it pays keeps and plays ([player-cards.md](player-cards.md)),
-and credits never buy a keep (r82). The card-play track prints it as totals, Spirit Island style (r82): 3 at its
-start, then the new total on each space that raises it, each board at its own rate (r87: the Builder to 10, the
-Protector and the Researcher to 9 (r100; the Researcher 8 before); 7 from the first space (r95; the Researcher 6 until r100), then a step at a time); a seat's insight is the number on the rightmost space it has
-uncovered that shows one. The economy track prints none. Every player has the
-cube converter, a standard action with no limit a round ([economy.md](economy.md)). **Insight must bind** (Matt,
-2026-11-12: about 6 a round to drafting and 2-4 to plays is the target); r91 cut the Builder's Focus (2 credits → 1
-insight, used 0.01-0.04 a Builder game: an uninteresting conversion), so the boards' own insight ways are:
+and credits never buy a keep. The card-play track prints it as totals ([ai-boards.md](ai-boards.md), *The card-play
+track*); the economy track prints none. Every player has the cube converter, a standard action with no limit a round
+([economy.md](economy.md)). **Insight must bind** (the target: about 6 a round to drafting and 2-4 to plays), so the
+boards' own insight ways are few:
 
-- **Protector, Vigil** (an Effect of Wall, not a power; capped, r79, Matt's ruling: some cap is locked, its size a
-  candidate): the first two troops each round that end their march next to your node pay 1 insight each (`board.vigil_cap`
-  troops a round, 2 since r84, 192; 1 at r79-r83); later ones that round pay nothing, so a troop parked by your node no longer pays every march.
-  Any march counts (a threat's immediate march too); a troop used up striking has no end to its march. An Effect
-  because it happens in a march, outside the action phase where powers are used: the march's (phase 7) pays this
-  round's keeps and plays, an immediate march's (phase 18) comes after them. (r77-r78 paid every troop every march.)
-- **Researcher, Synthesis reversed** (r91, Matt, 2026-11-12; a power, once a round): 1 insight → draw a card (r100: was 2), the
-  Researcher's draw outlet and a use for Patience's bank. No other insight → card action exists. Give / get 4 for 5 at
+- **Protector, Vigil** (an Effect of Wall, not a power; some cap is locked, its size a candidate): the first two
+  troops each round that end their march next to your node pay 1 insight each (`board.vigil_cap` troops a round);
+  later ones that round pay nothing, so a troop parked by your node doesn't pay every march. Any march counts (a
+  threat's immediate march too); a troop used up striking has no end to its march. An Effect because it happens in a
+  march, outside the action phase where powers are used: the march's (phase 7) pays this round's keeps and plays, an
+  immediate march's (phase 18) comes after them.
+- **Researcher, Synthesis reversed** (a power, once a round): 1 insight → draw a card, the Researcher's draw outlet
+  and a use for Patience's bank. No other insight → card action exists. Give / get 4 for 5 at
   the anchors (a card kept at 1 insight is 4 more): a draw, not a gain. Peer Review, its node power, pays 1 insight by a fresh station.
 
 **For new players.** Insight is what you spend to keep and play cards: each round, the number on the rightmost space you've uncovered on
@@ -123,24 +119,23 @@ Researcher gains 1 with each node Peer Review places by a station new to its nod
 keeps all of it), but a few threat counters offer insight (3 at tier 1, 4 at tier 2: [threats.md](threats.md) *Counters*),
 so spare insight can stop one.
 
-**Insight loops (r41).** Nothing turns insight back into what makes it: insight buys cards, and a card that pays insight
-(a trigger, an income) is capped by plays and slots. No card makes research cubes since r44 (Sample Repository
-was cut), so cubes → insight → cards → cubes has no card in it. Every megaproject converter is once a round (r75, Matt's
-ruling 9; only Onyx's was), which caps Onyx's loop: 1 cube → 1 chip → a 1-chip station → 1 cube a round once the
+**Insight loops.** Nothing turns insight back into what makes it: insight buys cards, and a card that pays insight
+(a trigger, an income) is capped by plays and slots. No card makes research cubes, so cubes → insight → cards → cubes
+has no card in it. Every megaproject converter is once a round, which caps Onyx's loop: 1 cube → 1 chip → a 1-chip station → 1 cube a round once the
 station's card is complete, which would otherwise double its cubes each round, capped only by open hexes in reach.
 
 ## Shelters and hardening
 
-A **shelter** (a card's "Shelter your Nodes and facilities in reach", no target, r106: yours in your reach; 238: the reach when a piece would be destroyed, so nodes placed after it count; r98 cut the Protector's Shelter power) lasts until cleanup (phase 20) of the round
-it is used in. Used in the actions, it covers the rest of the actions and what comes after them: the income step,
+A **shelter** (a card's "Shelter your Nodes and facilities in reach", no target: yours in your reach when a piece would
+be destroyed, so nodes placed after it count) lasts until cleanup (phase 20) of the round it is used in. Used in the actions, it covers the rest of the actions and what comes after them: the income step,
 growth, the threats that execute and war (phases 15-19). The march (phase 7) has already happened, but a threat's
 immediate march (Total War's, phase 18) meets it. It stops a destruction automatically, spending nothing, and so does the Protector's Aegis Doctrine capstone, a shelter
-on its own pieces once a round (r82: the first time each round one of its nodes or facilities would be destroyed); the
-other protections (a hardening token below, your own ambassador) are the piece owner's choice; drones never protect
-(r81, friction #51) ([war.md](war.md), *Destruction*).
+on its own pieces (the first time each round one of its nodes or facilities would be destroyed); the other protections
+(a hardening token below, your own ambassador) are the piece owner's choice; drones never protect ([war.md](war.md),
+*Destruction*).
 
 Hardening (the standard actions, cards) goes only on facilities a token can protect, player-owned stations and
-factories that are not corrupted, and "harden N" is N different facilities, fewer if fewer qualify. A card's (a shield, usually Security's)
-hardening token on a hex of your nodes (one name for the token, r81) absorbs a destruction there and goes with the node if it is
+factories that are not corrupted, and "harden N" is N different facilities, fewer if fewer qualify. A card's (a
+shield, usually Security's) hardening token on a hex of your nodes absorbs a destruction there and goes with the node if it is
 lost another way. On your own facility it is the facility's hardening token: a table has one token, so it stays
 when the node goes, and protects the facility.

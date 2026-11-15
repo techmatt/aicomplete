@@ -22,14 +22,14 @@ and every game is replay-checked. Spec paths resolve against the working directo
 | `games`, `first_seed` | `first_seed` 0 | Seeds per cell. `--games`/`--seed` override. |
 | `selection_seeds` | none | `{"first": N, "games": M}`: the seeds that picked a winner. Adds *Fresh-seed confirmation*; `--resume` refuses a stream started without it. |
 | `max_actions` | `5000` | Per-game cap (`timeout`); `--max-actions` overrides. |
-| `winprob` | `{"games": 0, "rollouts": 8, "agent": "greedy"}` | **Off unless set.** Win probability: `rollouts` playouts by `agent` at each round's start, on a cell's first `games` seeds (`--winprob N`). |
-| `closeness` | `{"every": 0, "gap": 2.0}` | **Off unless set.** Every n-th real choice (`--closeness N`), close when the best two 1-ply greedy scores are within `gap` (about credits). |
+| `winprob` | `{"games": 0, "rollouts": 8, "agent": "greedy"}` | **Off unless set.** Win probability: `rollouts` playouts by `agent` at each round's start, on a cell's first `games` seeds. |
+| `closeness` | `{"every": 0, "gap": 2.0}` | **Off unless set.** Every n-th real choice, close when the best two 1-ply greedy scores are within `gap` (about credits). |
 | `endgame` | none | `{"back": 3, "agent": "", "rollouts": 1, "all_losses": false}`: each round-cap loss's (or every loss's) end state, and `agent`'s replays from the `back`-th last round (`endgame.rs`). |
 | `records` | `4` | Records saved per category. |
 | `gate` | none | Early stopping (suspended: *The ballpark read*). |
 | `inject_panic` | none | `{"cell", "seed"}`: that game panics, for a test. |
 
-`experiment` refuses a config naming a parameter the binary lacks, so an old binary needs its revision's configs.
+`experiment` refuses a config naming a parameter the binary lacks: an old binary needs its revision's configs.
 Agent search settings go bare, heuristic weights take `w.` (`engine:samples=2`, `engine:w.packet_keep=0.5`); an
 unprefixed weight is an error.
 
@@ -38,71 +38,66 @@ unprefixed weight is an error.
 `--out` (default `out/experiments/<name>/`) holds `report.md`, `results.json` (`aic-experiment/2`), `games.csv` (a row
 a game), `cards.csv` (per agent, variant, config, difficulty and card), `records/` and `games.jsonl` (`aic-games/2`).
 
-**Paired reads.** *Agents paired, per variant* (`agent_pairs`): A against B on the same seeds; `x:...` pairs with `x`
-if listed, a bare agent with the next bare agent. *Fresh-seed confirmation* (`fresh_confirmation`): each variant
-against the base on the seeds outside `selection_seeds` alone, never pooled.
+**Paired reads.** *Agents paired, per variant* (`agent_pairs`) and *Fresh-seed confirmation* (`fresh_confirmation`,
+the seeds outside `selection_seeds`): `report.md` says how each pairs.
 
-**Results as they go.** Each finished game is appended to `games.jsonl` (actions included); the report is rewritten
-every `--report-every` seconds (60), marked **Partial: N of M games**. `--resume` (same spec and `--out`) plays only
-the missing games and refuses any change; without it an earlier stream moves to `games.jsonl.bak`. `report.md` and
-`results.json` exist from the start: wait on `^time:` in stderr or on the process, not on the file.
+**Results as they go** (`--report-every`, `--resume`: `aic-sim` help). `games.jsonl` lines carry the actions.
+`--resume` needs the same spec and `--out` and refuses any change; without it an earlier
+stream moves to `games.jsonl.bak`. `report.md` and `results.json` exist from the start: wait on `^time:` in stderr
+or on the process, not on the file.
 
-**A game that panics** fails alone (`failed.jsonl`, *Failed games* in `report.md` with its replay line; no measure
-counts it; exit 1); `--resume` replays it. `run` and `compare` have no such net.
+**A game that panics** fails alone, exit 1 (`report.md`'s *Failed games* says the rest); `run` and `compare` have no
+such net.
 
 ## Measures
 
-- **Skill gap**: top tier's win rate minus the bottom's (each tier by its best agent), also on **survival**: a loss's
-  round; a win's rounds plus adversary cards left plus 2, so any win ranks above any loss. *Ordered*: no tier
-  below the one under it.
+- **Skill gap, survival, top agent, early lock-in, variants against the base**: `report.md` defines each where it
+  prints it. *Ordered*: no tier below the one under it. *Beats greedy*: ahead of the first greedy-kind agent on the
+  same seeds, exact sign test p < 0.05. A module switched off reads as its worth.
 - **Pick position** (how early a dealt card is drafted) is the card signal; played is per card gained.
 - **Economy buildings standing**: passive `income` or `income_per_tag` at the end, overlay included.
-- **Early lock-in**: p ≤ 0.05 or ≥ 0.95 from round 2 to the end; uncertain checkpoints are 0.1 < p < 0.9.
-- **Unspent resources**: at each seat's last action phase (`unspent.<seat>.<resource>`; flags at `UNSPENT_HIGH`).
-  A won game ends mid-round holding the last upkeep's income, so `margin.unspent` tracks late income: read credits
-  held as `margin.held_after_actions[seat][0]` (after the last *completed* action phase).
+- **Unspent resources**: at each seat's last action phase (flags at `UNSPENT_HIGH`; *Counters*). A won game ends
+  mid-round holding the last upkeep's income, so `margin.unspent` tracks late income: read credits held as
+  `margin.held_after_actions[seat][0]` (after the last *completed* action phase).
 - **The limit**: `limit.keep_short.insight` / `limit.keep_passed` per drafted card unkept; `limit.play.short.<r>`,
-  `.needs_tags`, `.held` per card left in hand as the action phase ends (read: `bench/resource_use.py NEW OLD --limits`).
+  `.needs_tags`, `.held` per card left in hand as the action phase ends (`bench/resource_use.py NEW OLD --limits`).
   `cards.unofferable.<id>`: a kept card left in hand at the end with no feasible part.
 - **Runaway check**: a resource's peak per seat (`peaks`) far above a round's income (`gained / rounds`):
-  `scripts/cards/runaway_read.py`. `sources` / `uses` / `keeps`: `source_read.py`.
-- **Top agent**: highest win rate at the top difficulty (ties to the later). *Beats greedy*: ahead of the first
-  greedy-kind agent on the same seeds, exact sign test p < 0.05.
-- **Variants against the base** pair on seeds; a module switched off reads as its worth.
+  `cards/runaway_read.py`. `sources` / `uses` / `keeps`: `source_read.py`.
 - **Margin**: a win's adversary cards left and ambassador supply; a loss's adversary pieces over the bar
   (`margin.level`: the Unity level, not the difficulty); every game, `margin.cities_corrupted_end`, `_aligned_end`.
   A `deck_empty` loss (the round cap) counts `rounds` one past the cap's printed count, so a level's mean rounds run
   over the rounds played by its round-cap share.
 
-**Counters.** `games.csv` carries the margin columns, `adversary.corruptions` and
-`adversary.first_corruption_round` (any site; cities alone: `adversary.corruptions.city`), `board.std_actions` and
-`board.war_destroyed`; `games.jsonl` has every whole-game counter, and a per-round stat (`cx.per_round`, summed
-over seats) as `<key>.rNN` only if `PER_ROUND_EXPORT` (experiment.rs) lists its prefix. `unspent.<seat>.<resource>` is held as the action phase ends, before production and
-upkeep, research cubes too, never insight (`economy.insight_unspent`, all seats); `cards.insight_bound|short.<seat>`
-mark a seat-round held for want of insight. A zero fills every round up to the key's last record, so an absent
-`unspent.*.rNN` means that action phase never ended. As a seat passes: `actions.skipped|blocked[_energy].<seat>.<card>`
-(a building's Action offered and not taken, or not offered: used, unaffordable or no target; `_energy` sums energy
-held), `energy_cards.held|short.<seat>[.<card>]`, `slots.*`.
+**Counters.** `games.csv` carries the margin columns and a few counters (its header; `adversary.corruptions` counts
+any site, cities alone `adversary.corruptions.city`); `games.jsonl` every whole-game counter, and a per-round stat (`cx.per_round`, summed over
+seats) as `<key>.rNN` only if `PER_ROUND_EXPORT` (experiment.rs) lists its prefix. `unspent.<seat>.<resource>` is
+held as the action phase ends, before production and upkeep, research cubes too, never insight
+(`economy.insight_unspent`, all seats); `cards.insight_bound|short.<seat>` mark a seat-round held for want of
+insight. A zero fills every round up to the key's last record: an absent `unspent.*.rNN` means that action phase
+never ended. As a seat passes: `actions.skipped|blocked[_energy].<seat>.<card>` (a building's Action offered and not
+taken, or not offered: used, unaffordable or no target; `_energy` sums energy held),
+`energy_cards.held|short.<seat>[.<card>]`, `slots.*`.
 
-**Saved records** (`records/`, reason in `note`): close losses (fewest pieces over the bar, top difficulty), early
-lock-ins, surprising wins (the weakest agent's, or at playout p ≤ 0.25).
+**Saved records** (`records/`, each `note` saying why): close losses at the top difficulty, early lock-ins,
+surprising wins (the weakest agent's, or at playout p ≤ 0.25).
 
 ## Opt-in measures and `--quick`
 
-**Screen first, probe finalists.** Win-probability probes cost about 5× an experiment, closeness one greedy decision
-a probe: `--variants keep2,uplinks --winprob 10 --closeness 1` (those variants plus the base). **`--quick`** drops deep
-search (beam, rollout, `samples`/`depth` > 1, `engine:width` > 0; the planner stays), caps seeds at 16 a cell unless
-`--games` is given, and drops probes not asked for.
+**Screen first, probe finalists** (flags: `aic-sim` help): `--variants keep2,uplinks --winprob 10 --closeness 1`.
+Win-probability probes cost about 5× an experiment, closeness one greedy decision a probe. **`--quick`**'s deep
+search is beam, rollout, `samples`/`depth` > 1 and `engine:width` > 0; the planner stays.
 
 ## Content levers
 
-**Content levers run on one binary** (a rule or map what-if needs a build). A variant's `set` (or `--set` on `run` and `compare`) takes an overlay,
-`<table>.<id>.<path>=<JSON>`: tables `cards`, `threats`, `adversary`, `ais`, `alignment`, `projects`; `*` for every id;
-a path through fields and list indexes (`ais.*.economy_track.4.cost=2`; `corps.horizon.project.cubes=8`: country
-pieces by lowercase name; `null` clears an optional field; an op's `amount` can't be 0: rewrite its list without it).
-It is checked like `content/` and lands in the config, so `replay` needs nothing else
-(a sweep: `overlay-card-cost.json`). Each variant repeats its whole list. Diagnose a rewrite's gap by part before
-tuning: restore the old content a part at a time (a side, a tier, a card group) as overlays.
+**Content levers run on one binary** (a rule or map what-if needs a build). A variant's `set` (or `--set` on `run`
+and `compare`) takes an overlay, `<table>.<id>.<path>=<JSON>`: tables `cards`, `threats`, `adversary`, `ais`,
+`alignment`, `projects`; `*` for every id; a path through fields and list indexes (`ais.*.economy_track.4.cost=2`;
+`corps.horizon.project.cubes=8`: country pieces by lowercase name; `null` clears an optional field; an op's `amount`
+can't be 0: rewrite its list without it). It is checked like `content/` and lands in the config, so `replay` needs
+nothing else (a sweep: `overlay-card-cost.json`). Each variant repeats its whole list. Diagnose a rewrite's gap by
+part before tuning: restore the old content a part at a time (a side, a tier, a card group) as overlays (a density
+or dial screen: 227's `density_specs.py`).
 
 ## Reading noise
 
@@ -110,74 +105,64 @@ tuning: restore the old content a part at a time (a side, a tier, a card group) 
 alone move a pair 10-25 points at 48. A screen's SE is about 50/√n points over n paired games: size it so its SE is
 at most half the effect it must resolve.
 
-`cards.csv` splits by variant and names agents as resolved (the strategist as `engine:strategy=1,w.built=4,…`; `games.jsonl` as the spec writes
-them). `kept` and `drawn` include the opening deal and `offered` doesn't: use share of games.
+`cards.csv` splits by variant and names agents as resolved (the strategist as its `engine:` spec;
+`games.jsonl` as the spec writes them). `kept` and `drawn` include the opening deal, `offered` doesn't: use share
+of games. A record's `cell` is an index, variant-major (each variant's levels × agents).
 
 ## The ballpark read
 
 The ruling and its targets: [principles.md](principles.md), *Ballpark simulation*. A board pair's variant sets
-`ai.boards`, as `ai.slots` and `ai.start_credits` are by board. Gates are suspended.
+`ai.boards`, as `ai.slots` and `ai.start_credits` are by board.
 
-**The judge is the strategist** (the alias for `engine:strategy=1` plus its weights, `STRATEGIST` in `agents/mod.rs`; [agents.md](agents.md), *The tiers*); `sweep` spot-checks a
-verdict that matters, `planner:strategy=1` is the ceiling, `sweep:plan_table=0,w.table=0,w.packet_keep=1` the judge
-off the value table.
+**The judge is the strategist** (`STRATEGIST` in `agents/mod.rs`; [agents.md](agents.md), *The tiers*); `sweep` spot-checks a verdict that matters, `planner:strategy=1` is the
+ceiling, `sweep:plan_table=0,w.table=0,w.packet_keep=1` the judge off the value table.
 
-- **Order:** the engine smoke read (`use.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read; after
-  a change to how the game is won, greedy first: a greedy lead stops calibration for a question.
-- **Recipe:** the new side farmed (d0-d4) from a spec in `experiments/farm/` (*Farming a read*), the old side
-  natively; read by `scripts/bench/ladder.py NEW OLD --measures` (pooled, paired, by set).
-  `scripts/bench/read_specs.py read` and `run_read.sh` are the native route.
-- **Standing measures, old against new every read** (`--measures`): corruption node losses and adversary ambassadors
-  placed a game; per level, projects revealed (`adversary.projects_revealed`, every draw: a game's deck use) and resolved as a share of the deck,
-  distinct projects revealed, reshuffles; by board, slack beside bound seat-rounds, land tokens a round and node
-  placement spread. A measure the old binary never tallied is patched into its tree before its first read.
+- **Order:** the engine smoke read (`use.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read;
+  greedy first after a change to how the game is won (agents.md, *The tiers*): a greedy lead stops calibration for a question.
+- **Recipe:** the new side farmed (d0-d4) from a spec in `experiments/farm/`, the old side natively (or both:
+  `bench/read_specs.py read`, `run_read.sh`); read by `bench/ladder.py NEW OLD --measures` (pooled, paired, by set).
+- **Standing measures, old against new every read** (`--measures`; the list: `ladder.py`'s docstring; projects
+  revealed is `adversary.projects_revealed`, every draw: a game's deck use). A measure the old binary never tallied
+  is patched into its tree before its first read.
 - **Costs (r73):** a 720-game strategist or greedy set (d0-d4) about 2 min on 6 threads; double on a busy box.
 - **A before/after read is paired**: the old binary and its configs (README, *This machine*), same seeds, own folder.
   Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` (own `CARGO_TARGET_DIR`); new
-  sim-only measures go in as `patch -p1` there (`git apply` in a worktree silently applies nothing).
-- **Farming a read:** `experiments/farm/read.json` is the read as one spec. `farm-seeds` builds the native exe from
-  the working tree and the browsers' bundle from HEAD ([simulator.md](simulator.md), *The farm*), and content is
-  compiled into both: commit the spec, code and content first, then edit neither `content/` nor `configs/` (read
-  from the tree at run time) until it returns, nor run the release binary while it builds. The exe is built once,
-  at launch (`native_build` in conductor.toml), so scripts and Rust source may change during the run. A 720-game
-  set farms in 75-240 s with the laptop joined (236: 1,152 games in 260 s; the old side's on 5 local shards, 6 min). If the broker goes away mid-job (logged only after the first
-  shard), shards run one at a time on one thread: stop it, keep the finished 2-seed shards in
-  `C:\Code\aicomplete-control\.conductor\remote\jobs\<job>\shards\` (`<first seed>.out`; `job.json` names the
-  out file) and play the missing ranges natively as 2-seed shards, then `screens.py assemble` all in seed order.
-  The old side is always local (`farm-seeds` builds only the worktree), on its folder's configs: `aic-sim experiment
-  SPEC --seed F`, or `scripts/bench/shards.sh EXE DIR SPEC FIRST COUNT OUT` (one thread a shard, `SHARDS` side by side;
-  768 games in about 3.5 min on 6). A record's `cell` is an index, variant-major (each variant's levels × agents).
-  A density or dial screen on one build: content overlays in each variant's `set` (227's `density_specs.py`).
-  `ladder.py` reads the farm's out file as `OUT=SPEC.json`; shards, after `python scripts/screens.py assemble SPEC
-  FIRST COUNT OUT_DIR SHARD...`.
-- **Same games:** `experiments/same-noplanner.json` is same.json ([speed.md](speed.md)) with greedy for the planner,
-  for a refactor not reaching the planner or oracle (~2 min a side).
-- **Copy the binary before a run, then rebuild freely.** **Preflight** a long run (`SPEC --games 1 --out
-  out/preflight`). Readers (`bench/paired.py DIR`, `cards/use_read.py DIR`):
-  [scripts.md](scripts.md).
+  sim-only measures go in as `patch -p1` there (`git apply` in a worktree silently applies nothing). The old side
+  runs on its folder's configs: `aic-sim experiment SPEC --seed F`, or `bench/shards.sh` (768 games in about 3.5
+  min on 6 threads).
+- **Farming a read:** `experiments/farm/read.json` is the read as one spec; what `farm-seeds` builds, what to commit
+  first and reading its output: [simulator.md](simulator.md), *The farm*. Until it returns edit neither `content/`
+  nor `configs/` (compiled in, and read from the tree at run time), nor run the release binary while it builds. The
+  exe is built once, at launch (`native_build` in conductor.toml): scripts and Rust source may change meanwhile. 720
+  games farm in 75-240 s with the laptop joined (1,152 in 260 s; that old side on 5 local shards, 6 min). If the
+  broker goes away mid-job (logged only after the first shard), shards run one at a time on one thread: stop it,
+  keep the finished 2-seed shards (`<first seed>.out` in `C:\Code\aicomplete-control\.conductor\remote\jobs\<job>\shards\`;
+  `job.json` names the out file), play the missing ranges natively as 2-seed shards, `screens.py assemble` all in
+  seed order.
+- **Same games:** `experiments/same-noplanner.json` (its `note`; same.json: [speed.md](speed.md)), ~45 s a side on 6 threads.
+- **Copy the binary before a run** (README, *This machine*); **preflight** a long one (`SPEC --games 1 --out
+  out/preflight`). Readers: [scripts.md](scripts.md).
 
-**Skilled rows.** `python scripts/bench/skilled_rows.py READ.json` writes a companion spec: the `oracle` and the
-strategist on the read's first 24 seeds a level, d3 and d4, the end-game probe on every loss; about 20 min on 3
-threads (r73): launch it with the read.
+**Skilled rows.** `bench/skilled_rows.py READ.json` writes the oracle's companion spec (its docstring); about 20 min
+on 3 threads (r73): launch it with the read.
 
-`experiments/band.json` places a win rate (`--seed S --games 96`, the planner at 2 and 3 countries); read its win
-mix (the purge by Unity step, `ends156.py`) before a rule touching the end state. `sanity-line.json`: after a
-rollout policy or `prune` change, the line alone reads near the engine.
+`experiments/band.json` and `sanity-line.json`: their `note`s. Read band's win mix (the purge by Unity step,
+`ends156.py`) before a rule touching the end state.
 
 **Fresh seeds.** Specs start at seed 0: give a confirming read a `--seed` no screen of this revision used. An item
-that spends seeds updates the ledger after its last read: `python scripts/bench/seeds.py next N` prints the next N,
-`--take` moves *Next free* (all below it used) past them. Next free: 47424. **The dev seeds are
-36800-36831**, for on/off checks and crash-finding (SE ~5 a cell). A 2-8 point effect (a level's income step):
-screen it paired on this revision's spent fresh sets (~500+ games a cell, SE ~2), then confirm once on new seeds.
+that spends seeds updates the ledger after its last read (`bench/seeds.py next N [--take]`; all below *Next free*
+are used). Next free: 47424. **The dev seeds are 36800-36831**, for on/off
+checks and crash-finding (SE ~5 a cell). A 2-8 point effect (a level's income step): screen it paired on this
+revision's spent fresh sets (~500+ games a cell, SE ~2), then confirm once on new seeds.
 
 ## Reading prices
 
-`python scripts/cards/price_read.py DIR` gives offered, kept and played per game and win deltas stratified on rounds
-(`cards.csv` has no outcome). A price sweep is overlays in `set`, paired against a base on the
-same seeds. How prices are set: [card-pricing.md](card-pricing.md).
+`cards/price_read.py DIR`: offered, kept and played per game, win deltas stratified on rounds (`cards.csv` has no
+outcome). A price sweep is overlays in `set`, paired against a base on the same seeds. How prices are set:
+[card-pricing.md](card-pricing.md).
 
 ## Past runs
 
 Write-ups: [experiments/history.md](../experiments/history.md). Specs the binary refuses go to
-`experiments/archive/` (a fast-lane test parses the rest). `scripts/tune/sweep.py` runs `aic-sim run
---json` per variant and agent into `out/tune/log.jsonl`; `log_table.py TAG...` tabulates it.
+`experiments/archive/` (a fast-lane test parses the rest). The older tuning drivers (`tune/sweep.py`,
+`log_table.py`) say what they do in their docstrings.
