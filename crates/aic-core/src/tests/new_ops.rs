@@ -181,7 +181,7 @@ fn a_threats_fallout_lands_next_to_its_token_never_on_a_node() {
     let w = rules.world();
     let city = rules.map.countries[0].hexes.iter().copied().find(|&h| is_city(&w, h)).unwrap();
     let mut free: Vec<usize> = w.map.hexes[city].neighbors.iter().copied().filter(|&n| fallout_free(&w, &g, n)).collect();
-    free.sort_by_key(|&n| w.map.hexes[n].number);
+    free.sort_by_key(|&n| (w.map.hexes[n].country, w.map.hexes[n].number));
     assert!(free.len() >= 3, "a city with three free open neighbors");
     put(&mut g, free[0], node(0), 1);
     token_on(&mut g, "agitators", city);
@@ -189,6 +189,29 @@ fn a_threats_fallout_lands_next_to_its_token_never_on_a_node() {
     let on = |h: usize| g.tokens(h, FALLOUT);
     assert_eq!((on(city), on(free[0]), on(free[1]), on(free[2])), (0, 0, 1, 1));
     assert_eq!(g.stats.counters["fallout.placed"], 2);
+}
+
+/// 238 (D103): across a border the rulebook's §2 tie-break holds: the lower country first, then the lower hex
+/// number (hex number alone put Onyx #14's Fallout on Cintamani #1).
+#[test]
+fn fallout_breaks_a_tie_by_country_then_number() {
+    use crate::modules::adversary::fallout_free;
+    use crate::modules::common::FALLOUT;
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let hx = |h: usize| (w.map.hexes[h].country, w.map.hexes[h].number);
+    // A hex whose free neighbors sort differently by number alone than by (country, number).
+    let found = (0..w.map.hexes.len()).find_map(|h| {
+        let free: Vec<usize> = w.map.hexes[h].neighbors.iter().copied().filter(|&n| fallout_free(&w, &g, n)).collect();
+        let by_rule = *free.iter().min_by_key(|&&n| hx(n))?;
+        let by_number = *free.iter().min_by_key(|&&n| w.map.hexes[n].number)?;
+        (by_rule != by_number).then_some((h, by_rule))
+    });
+    let (h, want) = found.expect("a hex with free neighbors across a border");
+    put(&mut g, h, node(0), 1);
+    token_on(&mut g, "agitators", h);
+    run_threat(&rules, &mut g, "agitators", 0, &[content::Op::Fallout { count: 1, at: crate::op::FalloutAt::Location }]);
+    assert_eq!(g.tokens(want, FALLOUT), 1, "{:?} first", hx(want));
 }
 
 /// 227: a site-anchored line puts one token next to each of a country's lowest-numbered `count` corrupted sites of

@@ -55,7 +55,9 @@ function cardChip(c: CardView, where: string, printed = false): string {
   // ..."): kind, tags and every cost but credits. Printed chips show the rules text only.
   const rules = (c.text ?? '').replace(/^\[[^\]]*\]\s*/, '');
   const text = printed && rules ? `<span class="ctext">${esc(rules)}</span>` : '';
-  return `<span class="card${printed ? ' printed' : ''} ${esc(c.status.replace(/\s+/g, '-'))}" data-card="${esc(c.id)}" data-where="${where}">${esc(c.name)}${cost}${needs}${status}${text}</span>`;
+  // 238 (D105): "ready · map part: no target" is ready, its map half marked (the warn color of `no-target`).
+  const cls = c.status.startsWith('ready · ') ? 'ready map-dead' : c.status.replace(/\s+/g, '-');
+  return `<span class="card${printed ? ' printed' : ''} ${esc(cls)}" data-card="${esc(c.id)}" data-where="${where}">${esc(c.name)}${cost}${needs}${status}${text}</span>`;
 }
 
 /** "1/2 energy, 0/3 credits" → bars; a threat's options ("sacrifice 3 power tags or 0/17 credits") each show (235:

@@ -366,6 +366,8 @@ pub struct Choices {
     pub(crate) made: Vec<Pick>,
     pub(crate) used: usize,
     pub(crate) asked: Option<Ask>,
+    /// 238 (D95): the seat whose action is resolving; `None` in an automatic phase.
+    pub(crate) acting: Option<usize>,
 }
 
 impl Choices {
@@ -374,6 +376,7 @@ impl Choices {
             made,
             used: 0,
             asked: None,
+            acting: None,
         }
     }
 
@@ -403,6 +406,11 @@ impl<'a> Cx<'a> {
     /// table passed its checks when it was first played.
     pub fn replaying(&self) -> bool {
         self.choices.replaying()
+    }
+
+    /// 238 (D95): the seat whose action is resolving (a card's player); `None` in an automatic phase.
+    pub fn acting(&self) -> Option<usize> {
+        self.choices.acting
     }
 
     pub fn emit(&mut self, e: impl FnOnce() -> Event) {

@@ -53,9 +53,16 @@ pub struct TargetBox {
 
 impl Face {
     /// All of the card's rules text, in print order: the target box first.
+    /// 238 (D105): with a lasting part above the art, the one-time part below reads "When played: ..." (the two ran
+    /// together in one line of text).
     pub fn full_text(&self) -> String {
         let target = self.target.as_ref().map(|t| format!("{}.", t.text)).unwrap_or_default();
-        [target.as_str(), self.top_text.as_str(), self.text.as_str()]
+        let below = if self.top_text.is_empty() || self.text.is_empty() {
+            self.text.clone()
+        } else {
+            format!("When played: {}", self.text)
+        };
+        [target.as_str(), self.top_text.as_str(), below.as_str()]
             .iter()
             .filter(|s| !s.is_empty())
             .copied()

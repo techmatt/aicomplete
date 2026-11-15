@@ -274,6 +274,24 @@ fn an_uncountered_threat_hits_only_the_nearest_seat() {
     assert_eq!(energies(&g), [8, 10], "the nearest, not near");
 }
 
+/// 238 (D92): a tie whose harm reads no seat (compute for the adversary) is asked of no one.
+#[test]
+fn a_tie_is_not_asked_when_the_harm_reads_no_seat() {
+    let (rules, mut g, factory, c) = supply_raid_lab(r#"[{"op":"compute","amount":1}]"#, &[]);
+    let m = &rules.map;
+    let a = at_distance(m, factory, 1, &[]);
+    let b = at_distance(m, factory, 1, &[a]);
+    put(&mut g, a, node(0), 1);
+    put(&mut g, b, node(1), 1);
+    deal_at(&mut g, "supply_raid", c, &[factory]);
+    pass_all(&rules, &mut g);
+    if let Some(p) = g.pending.as_ref() {
+        assert!(!p.ask.prompt.contains("takes its harm"), "{}", p.ask.prompt);
+    }
+    answer_all(&rules, &mut g);
+    assert_eq!((counted(&g, "threats.hit_ties"), counted(&g, "threats.hit_ties_unasked")), (0, 1));
+}
+
 /// 146: two seats equally near: the lowest tied seat picks which takes the
 /// harm (a loss choice among the tied seats); its first option is itself.
 #[test]

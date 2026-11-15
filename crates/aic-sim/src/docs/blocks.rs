@@ -927,10 +927,8 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          Discord side empties: free a corrupted \
          city and you sway Unity (removing a botnet sways none), and each Unity \
          tip brings a good card. \
-         Like fear cards, each acts by what is on the board, never by your reach: for each site a player owns or \
-         each corrupted one, on each hex on or next to your pieces or a corrupted city, or each player from one such \
-         hex; some forbid the adversary's next \
-         Rally, Muster or Corrupt where your pieces stand, so place them before its turn. \
+         Like fear cards, each acts by what is on the board, never by your reach; some forbid the adversary's next \
+         Rally, Muster or Corrupt where your pieces stand. \
          Every Unity and Discord card prints three strengths, and the tip's own count on its side picks which \
          one resolves (strength I on tips below {t2}, II from tip {t2}, III from tip {t3}): a later strength counts more \
          or reaches wider, and Discord's late cards hit harder. The {unity} Unity cards reshuffle when the deck runs out. \

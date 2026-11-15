@@ -7,7 +7,7 @@
 
 The adversary is a **board** (the Militarist's: project slots, three rules, a difficulty line, printed in
 [adversary-cards.md](../adversary-cards.md); r83's **War Takes Ground** is in [war.md](war.md)), an **income** and an
-**event deck** (below). Its turn, after the round's Sway step, is **four beats** (`adversary::BEATS`). Threats still execute in their own step after production ([threats.md](threats.md)).
+**event deck** (below). Its turn, after the round's Sway step, is **four beats** (`adversary::BEATS`); threats execute after production ([threats.md](threats.md)).
 
 1. **Card**: next round's face-up event card becomes this round's (`adversary.event`; none left: below) and deals its
    threat pulls (`threats.deal`); then the build (`adversary.build`), in this order (151, Matt, locked): **Rally X**,
@@ -29,8 +29,8 @@ country a round.
 
 **Rally X (locked).** Every event prints one Rally X: each country's
 whole pool is **dealt one agent at a time onto each site of type X** in that country (city, coastal city, research
-station, factory or botnet hex), whoever owns it, in hex order, round and round until the pool is empty. A firewalled
-or no-Rally site keeps its turn and its share stays in the supply; with no site of the type, nothing lands. A
+station, factory or botnet hex), whoever owns it, in hex order, round and round until the pool is empty (a blocked
+site's share stays in the supply, below); with no site of the type, nothing lands. A
 cordoned country's pool waits. A project's "Rally 2: factories" is 2 a country. An arrival on player ambassadors
 cancels one (players choose whose).
 
@@ -39,8 +39,7 @@ cancels one (players choose whose).
 the end of the next adversary turn; so does Wall for a Muster.
 
 **Muster N (175).** N troops on each country's lowest-numbered factory, anyone's, else its lowest-numbered city, +1
-from the difficulty surcharge. No project musters. r89: only the stage-III cards muster, 1 each (troops are few
-and deadly, [war.md](war.md)).
+from the difficulty surcharge. No project musters. r89: only the stage-III cards muster, 1 each.
 
 **Corrupt X (175, Matt's ruling; numbers candidates).** X is a type: **cities** (`corrupt_at` 4), **coastal cities**
 (a city's number), **research stations** (`corrupt_station_at` 3), **factories** (`corrupt_factory_at` 3), **open
@@ -55,11 +54,11 @@ or a node's). **One aftermath: whatever corrupts takes one adversary mark.**
   apply; a city hex loses its node at 2, though the city corrupts at 4); its agents go to the supply and **it leaves
   no mark** (r98).
 - **Fallout** is the one scar (r98; named by 227): a hex token on free open land; nothing is built there, and each
-  drips `blight_discord` (1) Discord a round. All four adversity sources print it (227, Matt): Call-Up (tier 1),
-  Casus Belli (2) and Siege (tier 2), Station Coup, Infiltration Drive and Dirty Bomb (projects: by a country's
-  corrupted stations or cities), the Discord card Scorched Earth; also Corrupt open land and Teardown (on their own
-  hex, Teardown's under a node there). The rest land on a free open hex (no facility, node or Fallout), a threat's
-  on or next to its anchor, the others next to it, lowest-numbered first; none free, it is lost. Lift Fallout (a
+  drips `blight_discord` (1) Discord a round. All four adversity sources print it (227, Matt: threats, projects by a
+  country's corrupted stations or cities, Scorched Earth; which ones: [harms.md](../harms.md)); also Corrupt open land
+  and Teardown (on their own hex, Teardown's under a node there). The rest land on a free open hex (no facility, node
+  or Fallout), a threat's on or next to its anchor, the others next to it, by the rulebook's §2 tie-break (238: lower
+  country, then number); none free, it is lost. Lift Fallout (a
   standard action, `land_cubes` 2 research cubes, r92) and some cards take one in reach off.
 **Botnets spread quickly**. Each country starts with one (on its research station); more come from printed lines,
 among them four event cards' **Botnets spread** (each country, a botnet onto its lowest-numbered site without one next to a
@@ -80,15 +79,16 @@ is already tracked: an income, pieces, Fallout, a round flag), and acts **in eac
 
 - **The compute step (175).** Once a round, after the agent income: the compute income, each botnet and corrupted
   station (`station_cubes`, its megaproject complete) with no player ambassador on it, and all made since the last
-  step (uncountered threats, cards, Cintamani), which **waits beside the projects** (public: the warning).
+  step (uncountered threats, cards, Cintamani), which **waits beside the projects** (public: the warning;
+  238: the viewer marks the projects it would fill).
 - **Spending:** each point onto the **leftmost** project (r80; `compute_every` on every one first); one holding its
   cost **resolves** at once. With no project left, compute is lost.
 - **Targets are read off the board as it resolves**, in each country: "the X with the most agents on or next to
   it", "the hex holding the most player ambassadors", "its lowest-numbered botnet"; ties: the lowest-numbered. "Turns
   neutral": the owner's cube comes off. **Factory troops**: an adversary factory's own output (a player ambassador on
   it stops them; none on the Protector's node hex, Wall). **The clock**: the top event card is discarded.
-- **Night Raid** (231): each country, 1 agent onto each of two node hexes (most agents first). 2 agents destroy
-  your node in the next Corrupt beat, after your action phase.
+- **Night Raid** (231): each country, 1 agent onto each of two node hexes (most agents first); 2 there destroy
+  the node in the next Corrupt beat.
 - **Counterplay:** an ambassador on a botnet or a corrupted station; Cyber's hacks; Audit, off a project.
 
 <!-- generated: projects -->
@@ -130,7 +130,7 @@ Texts: [adversary-cards.md](../adversary-cards.md).
 
 ## The event deck (the clock and the stager)
 
-A game deals `stage_cards` at random per stage (counts below; content holds 5, 6 and 4, the most a stage can deal), each stage shuffled on its own, stage I on top: as many
+A game deals `stage_cards` at random per stage (counts below), each stage shuffled on its own, stage I on top: as many
 rounds as cards, **the round cap** (**locked** that a cap exists and can shorten; the number a candidate). A card
 prints its lines in the Card and Corrupt beats' order (`drafts/adversary/check.py` refuses another, or more than two other lines).
 
@@ -165,13 +165,11 @@ prints its lines in the Card and Corrupt beats' order (`drafts/adversary/check.p
 <!-- /generated -->
 
 **For new players: the adversary's turn** is four beats. **Card:** a **threat** in each country; **rally** (each
-country's pool dealt one agent at a time onto the sites named, in number order); **muster** (troops on each country's
+country's pool, one agent at a time, onto the sites named); **muster** (troops on each country's
 lowest-numbered factory). **Corrupt:** "Corrupt cities": every agent next to one city moves onto it (next to two, it stays),
 then every city holding 4 corrupts, destroying a node on that hex only, unless your ambassador stands there; then 2
 agents on your node's hex destroy the node, leaving no mark. **March:** the troops. **Income:** agents into the pools, and
-all the round's compute onto the leftmost project: about one a round lands, once, in every country (a factory taken,
-cities rallied and corrupted, agents on your nodes, a round off the clock); a cheap one does one thing, a costly one
-two or three. The compute pile, the card ahead and the pools are face up: armor or clear sites a round ahead.
+all the round's compute onto the leftmost project: about one a round lands, once, in every country. The compute pile, the card ahead and the pools are face up: armor or clear sites a round ahead.
 
 Players **lose** when the Card beat finds no card to turn face up, after the round's Sway step and any tip
 it makes ([alignment.md](alignment.md)): a plain loss (Matt, 2026-11-08).

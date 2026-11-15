@@ -123,6 +123,12 @@ pub(super) fn spread_ambassadors(g: &mut GameState, cx: &mut Cx, seat: usize) ->
     Ok(())
 }
 
+/// 238: a consolidate targeted at hex `d` moves one: `d` is a piece, with one of seat `seat`'s ambassadors next to
+/// it (the `your_ambassadors_next` target's test).
+pub fn consolidate_onto(w: &World, g: &GameState, seat: usize, d: usize) -> bool {
+    has_piece(w, g, d) && w.map.hexes[d].neighbors.iter().any(|&a| g.tokens(a, ambassador(seat)) > 0)
+}
+
 /// 234: with a target, the ambassadors on or next to it come onto it (`target` `Some(None)`: no target found,
 /// nothing moves); with none, as before: any in reach onto one piece in reach.
 pub(super) fn consolidate(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, target: Option<Option<usize>>) -> Res {
@@ -138,7 +144,7 @@ pub(super) fn consolidate(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64,
     // A piece is a destination only if some ambassador in reach stands elsewhere: the hex
     // holding all of them moved nothing (D8's pattern).
     let dest: Vec<usize> = match target {
-        Some(t) => t.into_iter().filter(|&d| has_piece(&w, g, d) && mine.iter().any(|&a| a != d)).collect(),
+        Some(t) => t.into_iter().filter(|&d| consolidate_onto(&w, g, seat, d)).collect(),
         None => pieces_in_reach(&w, g, seat).into_iter().filter(|d| mine.iter().any(|a| a != d)).collect(),
     };
     if dest.is_empty() {

@@ -1,0 +1,35 @@
+1152 paired games
+  same won: 1148 (99.7%)
+  same reason: 1146 (99.5%)
+  same rounds: 1142 (99.1%)
+  same decisions: 528 (45.8%)
+  outcome flips: 4 (base won, new lost: 1)
+
+watched counters, a game (base / new / diff):
+  threats.hit_ties                      1.098    0.679   -0.419
+  threats.hit_ties_unasked              0.000    0.420   +0.420
+  board.march_cut_by_loss               0.000    0.097   +0.097
+  effects.targets                      26.177   25.890   -0.287
+  effects.targets_missed                6.370    6.648   +0.278
+  effects.shelter_reach                 1.444    1.444   +0.000
+  alignment.unity_held_off              6.198    6.174   -0.023
+  fallout.placed                        1.385    1.386   +0.001
+  board.troop_destroyed.node            4.448    4.437   -0.011
+  cards.played                          0.000    0.000   +0.000
+
+largest other moves, a game:
+  limit.play.short.credits                       254.151   253.616   -0.535
+  economy.credits_income                         470.476   469.995   -0.481
+  board.troop_steps                               16.354    16.089   -0.266
+  board.vigil_capped                               3.365     3.109   -0.257
+  board.troop_moves                                9.278     9.060   -0.218
+  cards.hand_size.r11                             23.546    23.341   -0.205
+  cards.triggers                                  55.790    55.626   -0.164
+  cards.discount_credits                          27.406    27.261   -0.145
+  cards.hand_size.r10                             30.658    30.541   -0.117
+  actions.blocked_energy.0.sentinel_mesh           7.935     7.842   -0.093
+  cards.hand_size.r12                             15.074    15.000   -0.074
+  cards.played.r11                                 3.195     3.126   -0.069
+  cards.played_t1.r11                              2.294     2.225   -0.069
+  cards.tokens_gained.r11                          1.257     1.191   -0.066
+  economy.insight_carried                         57.751    57.688   -0.063

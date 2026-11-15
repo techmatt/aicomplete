@@ -131,7 +131,8 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
   needed); for shards, `python scripts/screens.py assemble SPEC FIRST COUNT OUT_DIR SHARD...` writes
   `games.jsonl` (the header, then the shards); `bench/paired.py` and `bench/ladder.py` read it with no `results.json`, and pair a seed
   across engines, counting the seeds on mixed engines (`--same-engine` leaves them out, 163). `scripts/farm/compare.py A B` counts games
-  that differ between two engines' outputs. `farm-seeds`' out file has no header line: for a reader that needs one
+  that differ between two engines' outputs. Make the out file's folder first: a missing one fails the merge after
+  every game is farmed (238; `screens.py assemble` recovers the job's shards). `farm-seeds`' out file has no header line: for a reader that needs one
   (`design_check.py`, `play_read.py`), write `aic-sim farm SPEC --header --seed F --games N` first, then the out file.
   A farmed run writes no `results.json` or `cards.csv`: the card viewer's stats need a native `aic-sim experiment` run
   (213 reran the dev screen's base natively, the same games).

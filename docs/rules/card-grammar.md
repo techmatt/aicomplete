@@ -57,11 +57,11 @@ raises are on programs, the engines' triggers, Actions and Effects on buildings;
   next to the target (r107). "Move up to N" (Summit Caucus, Liaison
   Corps) is a "you may move": it never vetoes a card that does something else.
 - **Convert, firewall** (`convert`, `firewall`; house terms): the target is a city with agents on or next to it; a
-  land hex. How each resolves is in [ambassadors.md](ambassadors.md), *Convert and firewall*.
+  land hex with no firewall. How each resolves is in [ambassadors.md](ambassadors.md), *Convert and firewall*.
 - **Gather, push** (`gather`, `push`; house terms, r70): onto the target, each from a hex next to it (gather), or
   from it (push). A strike (`gather` with `strike`) moves nothing: it removes up to N of the pieces it names on or
-  next to the target, your choice. When moving is all the effect does on the map, its target must be a hex where a
-  piece can move (r107). How they resolve: [ambassadors.md](ambassadors.md), *Moving pieces*.
+  next to the target, your choice. The target box names a hex where a piece can move (238: "a land hex next to an
+  Ambassador"; a consolidate's "a piece next to your Ambassador"). How they resolve: [ambassadors.md](ambassadors.md), *Moving pieces*.
 - **"With N X tags, also …"** (`if_tags`): the rest resolves only if you hold N tags of X on your cards when
   the card resolves (an event's own tags never count, as for a gain per tag); it never blocks the card.
 - **Peek:** the top cards of the adversary deck, behind the face-up card, are shown; one fewer after each reveal.
@@ -79,8 +79,8 @@ raises are on programs, the engines' triggers, Actions and Effects on buildings;
   engine's twist: `ambassadors` (gain that many), `troops` (up to that many adversary troops in the city's country come
   off), `botnet` (a botnet on or next to the city comes off; its icon carries the city glyph). Only the liberate capstones print it ([player-cards.md](player-cards.md)).
 - **Card text:** extra costs and lowered income included; a long card sets smaller. **Shelter** takes no target
-  (r106): "Shelter your Nodes and facilities in reach this round": none of your nodes or facilities on a hex in
-  your reach when it resolves can be destroyed this round.
+  (r106): "Shelter your Nodes and facilities in reach this round": none of your nodes or facilities in your reach
+  can be destroyed this round (238: reach as it stands when one would be).
 - **Projects:** a drain removes compute from one visible adversary project; **drain all** from every visible one; a
   discard takes one with its compute; the rest slide left and the right slot refills.
 - **Botnets:** removing a botnet (tier 2, the target) is, with Decommission (a Unity card, [alignment.md](alignment.md)), the only way to remove
@@ -95,14 +95,13 @@ raises are on programs, the engines' triggers, Actions and Effects on buildings;
 - **Per tag (`gain_per_tag`):** once, 1 of a resource per N tags of a kind on your cards in play; a program counts
   itself (it enters play before it resolves) and prints "(including this)" after the tag, an event doesn't.
 - **Troops or agents (`remove_troops`, `remove_ambassadors_country`):** up to N on the target, or on or next to it,
-  your pick of hexes when there are more than N; never "per hex" (Matt's ruling 6). Board powers and the standard
-  actions, which have no target, still remove in reach (or one country, where printed).
+  your pick of hexes when there are more than N; never "per hex" (Matt's ruling 6). Powers and standard actions
+  target too (r107); Disrupt removes in one country.
 - **Help cards** (keyword `help`, ~10%): the player chooses another player; both gain, the helper paying. **In a
   1-player game, "another player" means you** (Matt's ruling of 2026-11-04): the gift is yours.
 - **Cordon (`cordon`):** "cordon its country until the end of the next adversary turn" (the target's): until then no Rally or
   creation line places agents there, a project's included (118); its pool waits in the supply and lands at its next
-  Rally; the rest of a build goes on. Like a firewall it comes off at that turn's compute step. Hardpoint Lockdown prints it: a Security card that does an
-  ambassador's job.
+  Rally; the rest of a build goes on. Like a firewall it comes off at that turn's compute step (Hardpoint Lockdown).
 - **Play a building, paying no credits (`free_building`):** the Builder's Rush Build (1 Industry and 1 energy). Its tags are sacrificed first,
   so a building that needed those tags or the sacrificed stack can't then be played; its other costs and requirements
   stand, paid from what is left after the power's energy. The power isn't offered when no building in hand would still

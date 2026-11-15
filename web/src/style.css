@@ -315,7 +315,7 @@ code { font: 0.92em ui-monospace, Consolas, monospace; }
 .card em { font-style: normal; color: var(--muted); font-size: 0.8em; margin-left: 0.35em; white-space: nowrap; }
 .card.ready { border-color: var(--good); }
 .card.used { opacity: 0.55; text-decoration: line-through; }
-.card.unaffordable em, .card.no-target em, .card.too-few-tags em { color: var(--warn); }
+.card.unaffordable em, .card.no-target em, .card.too-few-tags em, .card.map-dead em { color: var(--warn); }
 .slot { color: #bbb; padding: 0 0.4em; }
 .actions { display: flex; flex-wrap: wrap; gap: 0.3em; margin-top: 0.4em; padding-top: 0.35em; border-top: 1px dashed var(--line); }
 .actions .hex-pick { background: var(--accent); color: #fff; border-radius: 3px; padding: 0.1em 0.5em; }
@@ -415,7 +415,9 @@ pre.tab { font: 0.85em/1.3 ui-monospace, Consolas, monospace; white-space: pre-w
   .acard .atext { -webkit-line-clamp: 1; }
   #countries { padding: 0.2em 0.7em; }
   .country { padding: 0.1em 0.45em; }
-  .threat { line-height: 1.2; }
+  /* 238 (D98): one line a threat (name, source, payments first; hover for the rest): from round 6 at 1366x768
+     three clamped lines a threat left about one a country above a 40 px scroll. */
+  .threat { line-height: 1.2; -webkit-line-clamp: 1; }
   .projects-row { margin-top: 0; }
   #prompt.choice { font-size: 1em; padding: 0.15em 0.7em; }
   .projects-row .project { line-height: 1.2; height: calc(2.4em + 2px); }

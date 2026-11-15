@@ -58,7 +58,12 @@ pub(super) fn convert(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, zon
 
 /// The hexes a firewall may go on: land in reach, none there yet.
 pub fn firewall_hexes(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
-    (0..g.hexes.len()).filter(|&h| !is_ocean(w, h) && in_reach(w, g, seat, h) && !firewalled(g, h)).collect()
+    (0..g.hexes.len()).filter(|&h| in_reach(w, g, seat, h) && firewall_spot(w, g, h)).collect()
+}
+
+/// 238: a firewall may go on hex `h`: land with none there yet (the `no_firewall` target's test).
+pub fn firewall_spot(w: &World, g: &GameState, h: usize) -> bool {
+    !is_ocean(w, h) && !firewalled(g, h)
 }
 
 /// 158: a firewall on one hex in reach (it comes off at the end of the next adversary turn).

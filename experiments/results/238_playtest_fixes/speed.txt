@@ -1,0 +1,24 @@
+random: 9.8 ms/game, 1.03 x baseline
+greedy: 890.0 ms/game, 1.07 x baseline
+engine: 1175.0 ms/game, 1.15 x baseline
+planner: 22218.4 ms/game, 0.97 x baseline
+NO VERDICT: the baseline is r107 and out/238_playtest_fixes/bin/aic-sim-new.exe is r108, so these are other games. Read per_decision.py for the cost, then --update.
+
+OTHER RULES OR CONFIG: r107 on configs/baseline.json against r108 on configs/baseline.json. Each row says whether its games came out the same on both: one that did is like for like (a rename), one that did not is speed times game length. per_decision.py splits them.
+greedy c2: 12 on 1 thread, 96 on 8, roughly 80 s
+NOT LIKE FOR LIKE: greedy c2 played other games on the two binaries at another revision or config. Its ratio is speed times game length.
+greedy c2: 1 thread 42.3 to 44.2 (1.04 x), 8 threads 181.4 to 182.0 (1.00 x)
+greedy c3: 4 on 1 thread, 32 on 8, roughly 80 s
+NOT LIKE FOR LIKE: greedy c3 played other games on the two binaries at another revision or config. Its ratio is speed times game length.
+greedy c3: 1 thread 13.4 to 13.4 (1.00 x), 8 threads 52.2 to 51.3 (0.98 x)
+engine c2: 10 on 1 thread, 80 on 8, roughly 81 s
+NOT LIKE FOR LIKE: engine c2 played other games on the two binaries at another revision or config. Its ratio is speed times game length.
+engine c2: 1 thread 48.9 to 48.5 (0.99 x), 8 threads 178.4 to 177.8 (1.00 x)
+engine c3: 3 on 1 thread, 26 on 8, roughly 76 s
+NOT LIKE FOR LIKE: engine c3 played other games on the two binaries at another revision or config. Its ratio is speed times game length.
+engine c3: 1 thread 9.5 to 9.5 (0.99 x), 8 threads 37.6 to 37.2 (0.99 x)
+
+random: 9.1 ms/game, 1.00 x baseline
+greedy: 821.3 ms/game, 1.00 x baseline
+engine: 1028.4 ms/game, 1.00 x baseline
+planner: 20856.1 ms/game, 1.00 x baseline

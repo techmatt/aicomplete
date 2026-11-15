@@ -139,17 +139,16 @@ pub fn hex_flag(f: RoundFlag, h: usize) -> KeyBuf {
     KeyBuf::new(HEX_FLAGS).text(f.name()).text(".").num(h)
 }
 
-/// 234: a card's reach Shelter of seat `seat` on hex `h`: its own nodes and facilities there can't be destroyed this
-/// round. Under [`HEX_FLAGS`], so cleanup counts it down with them.
-pub fn reach_shelter(seat: usize, h: usize) -> KeyBuf {
-    KeyBuf::new(HEX_FLAGS).text("shelter_seat").num(seat).text(".").num(h)
+/// 234: a card's reach Shelter of seat `seat`: its own nodes and facilities in its reach can't be destroyed this
+/// round (238: the reach when struck). Under [`HEX_FLAGS`], so cleanup counts it down with them.
+pub fn reach_shelter(seat: usize) -> KeyBuf {
+    KeyBuf::new(HEX_FLAGS).text("shelter_seat").num(seat)
 }
 
-/// 237: whether seat `seat` has a reach Shelter up on any hex this round (one range read: the agents' forecast
-/// asks every position).
+/// 237: whether seat `seat` has a reach Shelter up this round. 238 (D96): one flag a seat, read against its reach
+/// when a piece would be destroyed ([`reach_sheltered`]): a table remembers no list of hexes.
 pub fn reach_sheltering(g: &GameState, seat: usize) -> bool {
-    let prefix = KeyBuf::new(HEX_FLAGS).text("shelter_seat").num(seat).text(".");
-    keys_under(g, prefix.as_str()).iter().any(|(_, v)| *v > 0)
+    g.var(&reach_shelter(seat)) > 0
 }
 
 /// Whether flag `f` is up on hex `h`: on the hex, or on its country.

@@ -158,6 +158,57 @@ fn a_move_takes_ambassadors_from_on_or_next_to_the_target() {
     );
 }
 
+/// 238 (D93): a target condition shares its op's test: no hex where the firewall, the Gather or the consolidate
+/// would move nothing.
+#[test]
+fn a_target_offers_no_hex_where_its_op_moves_nothing() {
+    use crate::modules::common::FIREWALL;
+    use crate::modules::effects::meets;
+    use crate::op::TargetSpec;
+    let (rules, mut g) = table_with(&[], &["signal_hijack"], &[]);
+    let w = rules.world();
+    let m = &rules.map;
+    let home = m.numbered(0, piece(0).node);
+    let land = |h: usize| kind(m, h) != HexKind::Ocean;
+    let next = m.hexes[home].neighbors.iter().copied().find(|&h| land(h)).unwrap();
+    for h in 0..g.hexes.len() {
+        for s in 0..g.seats.len() {
+            put(&mut g, h, ambassador(s), 0);
+        }
+    }
+    let at = |g: &GameState, on: TargetSpec, h: usize| meets(&w, g, 0, on, h);
+    assert!(at(&g, TargetSpec::NoFirewall, next));
+    put(&mut g, next, FIREWALL, 1);
+    assert!(!at(&g, TargetSpec::NoFirewall, next), "a firewall is there already");
+    assert!(!at(&g, TargetSpec::AmbassadorsNext, next), "no Ambassador next to it to gather");
+    assert!(!at(&g, TargetSpec::YourAmbassadorsNext, home), "none of yours next to the piece");
+    put(&mut g, next, ambassador(1), 1);
+    assert!(at(&g, TargetSpec::AmbassadorsNext, home), "anyone's Ambassador gathers");
+    assert!(!at(&g, TargetSpec::YourAmbassadorsNext, home), "only yours consolidate");
+    put(&mut g, next, ambassador(0), 1);
+    assert!(at(&g, TargetSpec::YourAmbassadorsNext, home));
+    assert!(face_text("firewall_array").starts_with("Target: a land hex with no Firewall."), "{}", face_text("firewall_array"));
+    assert!(face_text("summit_caucus").starts_with("Target: a piece next to your Ambassador."), "{}", face_text("summit_caucus"));
+}
+
+/// 238 (D96): a reach Shelter reads the reach when a piece is struck: a node placed after it (Aegis Grid
+/// Lockdown's own) is covered; a hex out of reach is not.
+#[test]
+fn a_reach_shelter_reads_reach_when_struck() {
+    let (rules, mut g) = table_with(&[], &["signal_hijack"], &[]);
+    let w = rules.world();
+    let m = &rules.map;
+    let home = m.numbered(0, piece(0).node);
+    let land = |h: usize| kind(m, h) != HexKind::Ocean;
+    let far = (0..m.hexes.len()).find(|&h| land(h) && m.distance(home, h) >= 4).unwrap();
+    g.vars.insert(board::reach_shelter(0).as_str().into(), 1);
+    assert!(board::reach_sheltered(&w, &g, 0, home));
+    assert!(!board::reach_sheltered(&w, &g, 0, far), "out of reach");
+    assert!(!board::reach_sheltered(&w, &g, 1, home), "seat 1 has no Shelter up");
+    put(&mut g, far, node(0), 1);
+    assert!(board::reach_sheltered(&w, &g, 0, far), "a node placed after the Shelter is in reach now");
+}
+
 fn face_text(id: &str) -> String {
     crate::face::card_face(content().cards.iter().find(|c| c.id == id).expect("a card")).full_text()
 }

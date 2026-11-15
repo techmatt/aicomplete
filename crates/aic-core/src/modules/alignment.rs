@@ -237,7 +237,7 @@ pub fn hold_off(g: &mut GameState, cx: &mut Cx, n: i64) -> i64 {
 }
 
 /// The Unity swayed this action or phase goes on the Unity track, or, as
-/// the players choose (seat 0 asks for the team), up to all of it moves
+/// the acting player chooses (238; seat 0 for the team in a phase), up to all of it moves
 /// Discord off the Discord track 1 for 1 (136, `hold_off`). r75 (Matt's ruling 7): any amount, no filter (145
 /// offered only amounts that stopped the tip). The Unity of one action is placed as it resolves: tips are
 /// checked after it, so this is the printed "at once".
@@ -256,15 +256,23 @@ fn place_unity(g: &mut GameState, cx: &mut Cx) -> Res {
             // 145: no "all 1" and no ", 0 onto Unity" on the buttons.
             .map(|&k| {
                 opt(match k {
-                    0 if n == 1 => "onto the Unity track".to_string(),
-                    0 => format!("all {n} onto the Unity track"),
-                    k if k == n => format!("{k} off the Discord track"),
-                    k => format!("{k} off the Discord track, {} onto Unity", n - k),
+                    0 if n == 1 => "put 1 Unity on the track".to_string(),
+                    0 => format!("put all {n} Unity on the track"),
+                    k if k == n => format!("take {k} Discord off"),
+                    k => format!("take {k} Discord off, put {} Unity on the track", n - k),
                 })
             })
             .collect();
-        let prompt = || format!("{n} Unity swayed: how much holds Discord off instead?");
-        ks[cx.choose(0, prompt, opts)?.unwrap_or(0)]
+        // 238 (D95): the player whose action swayed it chooses (seat 0 for a phase's sway, for the team).
+        let seat = cx.acting().unwrap_or(0);
+        let prompt = || {
+            if n == 1 {
+                format!("Seat {seat}: put 1 Unity on the track, or take 1 Discord off?")
+            } else {
+                format!("Seat {seat}: {n} Unity swayed: put it on the Unity track, or take Discord off (1 for 1)?")
+            }
+        };
+        ks[cx.choose(seat, prompt, opts)?.unwrap_or(0)]
     } else {
         0
     };

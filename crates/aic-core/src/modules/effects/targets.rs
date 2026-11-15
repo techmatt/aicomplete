@@ -25,6 +25,10 @@ pub fn meets(w: &World, g: &GameState, seat: usize, on: TargetSpec, h: usize) ->
         TargetSpec::AgentCity => is_city(w, h) && board::guarded(w, g, h),
         TargetSpec::Piece => has_piece(w, g, h),
         TargetSpec::Land => land,
+        // 238 (D93): each shares its op's own test, so no pick is a hex where the op moves nothing.
+        TargetSpec::AmbassadorsNext => super::moves::gathers_into(w, g, h, &[crate::op::Piece::Ambassadors]),
+        TargetSpec::NoFirewall => super::endgame::firewall_spot(w, g, h),
+        TargetSpec::YourAmbassadorsNext => super::ambassadors::consolidate_onto(w, g, seat, h),
     }
 }
 

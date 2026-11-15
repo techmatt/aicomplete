@@ -1,0 +1,37 @@
+{
+  "name": "f238",
+  "note": "238: fresh read 47376-47423, the playtest fixes (r108: target conditions, tie asked only when read, march ends at the loss, Fallout tie-break, acting seat places Unity, live reach Shelter) against main r107 (398ae1c) on the same seeds",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "greedy",
+    "strategist"
+  ],
+  "games": 48,
+  "records": 0
+}

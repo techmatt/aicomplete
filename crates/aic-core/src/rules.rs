@@ -672,6 +672,10 @@ impl Rules {
         mut events: Option<&mut Vec<Event>>,
     ) -> Res {
         let p = &self.round[g.phase];
+        ch.acting = match trigger {
+            Trigger::Action { action } => Some(action.seat() as usize),
+            Trigger::Phase => None,
+        };
         match trigger {
             Trigger::Phase => {
                 let part = p.parts[0];

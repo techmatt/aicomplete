@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 238 playtest fixes (235's picks): targets share their op's test, a tie asked only when read, the march ends at the loss, Fallout's tie-break by country, the acting seat places Unity, reach Shelter read live, viewer marks; fresh read 47376-47423 even with r107 | 108 | [238_playtest_fixes](results/238_playtest_fixes/README.md) |
 | 237 agents cleanup, no rules change: alignment `deal_threats {tier}` worth in every country, the converge forecast's tie rule, the reach-Shelter read (D97), `TokenKind::label`, `cards.unofferable`, resource_use and projects_read in `scripts/bench/`; dev-seed smoke even with r107 | 107 | [237_agents_cleanup](results/237_agents_cleanup/README.md) |
 | 236 target follow-ups: one target for 7 board powers and 9 standard actions (Remove agents on or next to its target), move cards' ambassadors from on or next to the target; prices kept; fresh read 47328-47375 even with r106 | 107 | [236_target_followups](results/236_target_followups/README.md) |
 | 235 bug hunt for Matt's playtest at r106: 25 stale rules and rulebook statements from r99-r106 (Discord deck 7, face-down Fallout, Garrisons), log lines ahead of their acts, prompts with keys and bad plurals, Lift Fallout's unseen price, an invisible reach Shelter, inverted warning chips, Space after a click; dead target picks and three play fixes deferred (D92-D99) | 106 | [235_bug_hunt](results/235_bug_hunt/README.md) |

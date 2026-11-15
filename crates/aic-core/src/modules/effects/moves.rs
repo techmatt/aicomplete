@@ -61,9 +61,16 @@ pub fn gather_hexes(w: &World, g: &GameState, seat: usize, pieces: &[Piece], str
             if strike {
                 return next_to(w, h, |x| tokens_of(g, x, pieces).iter().any(|(k, _)| adversary_piece(k)));
             }
-            w.map.hexes[h].neighbors.iter().any(|&x| tokens_of(g, x, pieces).iter().any(|(k, _)| may_arrive(w, g, k, h)))
+            gathers_into(w, g, h, pieces)
         })
         .collect()
+}
+
+/// 238: a Gather of `pieces` into hex `h` moves one: a piece next to it may arrive there (the Gather's test, and
+/// the `ambassadors_next` target's).
+pub fn gathers_into(w: &World, g: &GameState, h: usize, pieces: &[Piece]) -> bool {
+    !is_ocean(w, h)
+        && w.map.hexes[h].neighbors.iter().any(|&x| tokens_of(g, x, pieces).iter().any(|(k, _)| may_arrive(w, g, k, h)))
 }
 
 /// The hexes a Push may empty: land in reach, holding a piece with a land hex next door to go to.

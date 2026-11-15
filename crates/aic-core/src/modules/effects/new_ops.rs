@@ -228,14 +228,14 @@ fn token(w: &World, g: &GameState, ctx: &Ctx, loc: Option<Location>) -> Option<u
 }
 
 /// 227: the free open hex on or next to `h` a Fallout token lands on: `h` itself if free, else its
-/// lowest-numbered free neighbor.
+/// first free neighbor by the rulebook's §2 tie-break (238: the lower country, then the lower hex number).
 fn fallout_spot(w: &World, g: &GameState, h: usize, on_it: bool) -> Option<usize> {
     if on_it && adversary::fallout_free(w, g, h) {
         return Some(h);
     }
     let mut next: Vec<usize> =
         w.map.hexes[h].neighbors.iter().copied().filter(|&n| adversary::fallout_free(w, g, n)).collect();
-    next.sort_by_key(|&n| w.map.hexes[n].number);
+    next.sort_by_key(|&n| (w.map.hexes[n].country, w.map.hexes[n].number));
     next.first().copied()
 }
 

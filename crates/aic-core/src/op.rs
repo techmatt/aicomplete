@@ -349,6 +349,12 @@ pub enum TargetSpec {
     Piece,
     /// Any land hex.
     Land,
+    /// 238 (D93): a land hex with an Ambassador (anyone's) next to it: where a Gather of Ambassadors moves one.
+    AmbassadorsNext,
+    /// 238 (D93): a land hex with no Firewall on it: where a firewall can go.
+    NoFirewall,
+    /// 238 (D93): a piece with one of your Ambassadors next to it: where a consolidate brings one.
+    YourAmbassadorsNext,
 }
 
 impl TargetSpec {
@@ -372,6 +378,9 @@ impl TargetSpec {
             TargetSpec::AgentCity => "a city with Agents on or next to it",
             TargetSpec::Piece => "a piece",
             TargetSpec::Land => "a land hex",
+            TargetSpec::AmbassadorsNext => "a land hex next to an Ambassador",
+            TargetSpec::NoFirewall => "a land hex with no Firewall",
+            TargetSpec::YourAmbassadorsNext => "a piece next to your Ambassador",
         }
     }
 
@@ -392,6 +401,8 @@ impl TargetSpec {
             TargetSpec::AgentCity => "city",
             TargetSpec::Piece => "ambassador",
             TargetSpec::Land => "hex",
+            TargetSpec::AmbassadorsNext | TargetSpec::YourAmbassadorsNext => "ambassador",
+            TargetSpec::NoFirewall => "wall",
         }
     }
 }
@@ -1645,6 +1656,31 @@ impl Op {
             Op::LoseOr { options } => options,
             _ => &[],
         }
+    }
+
+    /// 238 (D92): whether this op, or one printed inside it, reads the seat an executing threat hits (its arm
+    /// reads `Ctx::seats`): a tie for nearest is asked only when one does. `Ctx::seats` asserts the list in debug.
+    pub fn reads_hit_seat(&self) -> bool {
+        matches!(
+            self,
+            Op::Gain { .. }
+                | Op::PlayersLose { .. }
+                | Op::Requisition { .. }
+                | Op::LoseAmbassador
+                | Op::LoseNodeOr { .. }
+                | Op::DiscardMostExpensive
+                | Op::LoseTokens { .. }
+                | Op::ComputePerMissing { .. }
+                | Op::DisableBuilding { .. }
+                | Op::Discard { .. }
+                | Op::LoseAmbassadorsOr { .. }
+                | Op::LoseIncome { .. }
+                | Op::LoseOr { .. }
+                | Op::Theft { .. }
+                | Op::EachDestroyNode { .. }
+                | Op::DestroyNode { .. }
+        // `one_player` resolves its ops under its own seat, never the hit one.
+        ) || (!matches!(self, Op::OnePlayer { .. }) && self.nested().iter().any(Op::reads_hit_seat))
     }
 
     /// 237: a `DealThreats` that deals `count` in every country (`effects::new_ops`): `each_country`, or any field

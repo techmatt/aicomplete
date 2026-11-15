@@ -589,8 +589,11 @@ impl Module for Adversary {
                 cost: Some(project_cost(w, g, id)),
             }
         };
+        // 238 (D100): a project the next compute step fills, as the board stands, says so.
+        let next = projects::completes_next_step(w, g);
         let fill = |id: &str| {
-            format!("{}/{} compute", g.var(&project_key(id)), project_cost(w, g, id))
+            let soon = if next.iter().any(|k| k.as_str() == id) { ", completes next compute step" } else { "" };
+            format!("{}/{} compute{soon}", g.var(&project_key(id)), project_cost(w, g, id))
         };
         let row = g.pile(PROJECTS);
         out.pile(

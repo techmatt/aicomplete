@@ -316,7 +316,7 @@ function renderSeats() {
 /** A board's powers, always shown: a button appears only when one can be used. */
 function powersHtml(cards: CardView[]): string {
   const rows = cards.filter((c) => c.id.includes('.power.')).map((c) =>
-    `<li class="${c.status === 'ready' ? 'ready' : ''}"><b>${escapeHtml(c.name)}:</b> ${escapeHtml(c.text ?? '')} <small>${escapeHtml(c.status)}</small></li>`);
+    `<li class="${c.status.startsWith('ready') ? 'ready' : ''}"><b>${escapeHtml(c.name)}:</b> ${escapeHtml(c.text ?? '')} <small>${escapeHtml(c.status)}</small></li>`);
   return rows.length ? `<ul class="powers">${rows.join('')}</ul>` : '';
 }
 

@@ -133,7 +133,14 @@ fn march_troops(g: &mut GameState, cx: &mut Cx, troops: Vec<usize>, steps: i64, 
     // 178 (Matt's ruling #18): the seats whose Vigil pays when a troop ends its march next to their node (it
     // paid when a Wall stopped a troop before r77).
     let vigil: Vec<usize> = (0..g.seats.len()).filter(|&s| cards::has_vigil(&w, g, s)).collect();
+    // 238 (D94): a seat with no node left loses at the step's end, so the march stops there: no troop moves
+    // nor questions after the last node falls.
+    let lost = |g: &GameState| w.hot(Hot::NodeLoss) > 0 && adversary::loss(g).is_some();
     for from in troops {
+        if lost(g) {
+            cx.tally(g, "board.march_cut_by_loss", 1);
+            return Ok(());
+        }
         if g.tokens(from, TROOP) - marched[from] <= 0 {
             continue;
         }
@@ -141,6 +148,10 @@ fn march_troops(g: &mut GameState, cx: &mut Cx, troops: Vec<usize>, steps: i64, 
         let mut alive = true;
         let mut stopped = false;
         for _ in 0..steps {
+            if lost(g) {
+                cx.tally(g, "board.march_cut_by_loss", 1);
+                return Ok(());
+            }
             // 075: the measure's: a facility a Wall kept this troop off. 099:
             // once a troop a march, not every step it spends beside the Wall.
             if !stopped && next_to(&w, at, |x| walled(&w, g, x) && under_wall(g, x)) {

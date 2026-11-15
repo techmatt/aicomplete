@@ -2043,7 +2043,7 @@
   "effects": [
    {
     "op": "target",
-    "on": "piece"
+    "on": "your_ambassadors_next"
    },
    {
     "op": "consolidate",
@@ -2429,7 +2429,7 @@
   "effects": [
    {
     "op": "target",
-    "on": "land"
+    "on": "ambassadors_next"
    },
    {
     "op": "gather",
@@ -5487,7 +5487,7 @@
    "effects": [
     {
      "op": "target",
-     "on": "land"
+     "on": "no_firewall"
     },
     {
      "op": "firewall"
@@ -5538,7 +5538,7 @@
    },
    {
     "op": "target",
-    "on": "land"
+    "on": "ambassadors_next"
    },
    {
     "op": "gather",

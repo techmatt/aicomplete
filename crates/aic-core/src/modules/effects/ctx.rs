@@ -33,6 +33,8 @@ pub struct Ctx {
     /// 146: the one seat an executing threat's harm hits (the nearest by
     /// node; `None` with no node on the board).
     pub hit: Option<usize>,
+    /// 238 (D92): a tie for nearest went unasked because no op reads the hit seat (`Op::reads_hit_seat`).
+    pub hit_unasked: bool,
     /// 212: the hex of the node an earlier `place_node` of this list placed last (a rider's "it").
     pub node: Option<usize>,
     /// 212: the rider resolving asked for a fresh spot (its ambassador goes onto one).
@@ -53,6 +55,7 @@ impl Ctx {
             why: None,
             threat: None,
             hit: None,
+            hit_unasked: false,
             node: None,
             fresh: false,
             target: None,
@@ -136,7 +139,10 @@ impl Ctx {
             EffectSource::Seat(s) => vec![s],
             // 146: an executing threat hits one player, the nearest.
             EffectSource::Threat => match &self.threat {
-                Some(_) => self.hit.into_iter().collect(),
+                Some(_) => {
+                    debug_assert!(!self.hit_unasked, "238: an op read an unasked hit seat: add it to `Op::reads_hit_seat`");
+                    self.hit.into_iter().collect()
+                }
                 None => seats_in_scope(w, g, self.scope),
             },
             EffectSource::Team => seats_in_scope(w, g, self.scope),

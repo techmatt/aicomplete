@@ -213,11 +213,9 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             ambassadors::place_ambassadors(g, cx, seat, *count, &zone)?
         }
         // 234 (Matt: "Shelter your nodes and facilities in reach this round"): a player card picks no country;
-        // the seat's own pieces on every hex in its reach, this round.
+        // the seat's own pieces on every hex in its reach, this round (238, D96: its reach when struck).
         Op::Shelter { reach: true } => {
-            for h in (0..g.hexes.len()).filter(|&h| in_reach(&w, g, seat, h)).collect::<Vec<_>>() {
-                cx.set_key(g, &board::reach_shelter(seat, h), 1);
-            }
+            cx.set_key(g, &board::reach_shelter(seat), 1);
             cx.tally(g, "effects.shelter_reach", 1);
         }
         // 234: with a target, the target's country (Hardpoint Lockdown).

@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 107. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 108. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -128,6 +128,8 @@ stand on a base. A one-player game has no fronts and no bases.
 | **Location token** | — | marks where a threat sits (§10) |
 | **Firewall** | — | no agent lands on its hex (§16) |
 | **No-Rally, no-Muster, no-Corrupt** | — | that adversary step skips its hex (§12) |
+| **Round-flag marker** | — | an effect that outlasts its card (Rolling Blackouts' and Sabotage Teams' flags run through next round) |
+| **Compute and agent income tracks** | the adversary | on the adversary board: the incomes event cards and projects raise |
 
 ### Reach
 
@@ -403,7 +405,7 @@ time (country by country, in hex-number order). Its step:
 So a troop takes time to arrive: one two hexes from your node or facility steps next to it this turn and strikes it
 (or another target in range, if the players pick that one) next turn, which leaves you a round to answer it. A troop
 mustered onto your factory, or next to your node, strikes in the same turn's march. (Forced March gives every troop
-an extra step that round.)
+an extra step that round.) The march stops the moment a player's last node falls: the game is lost (§14).
 
 > **Example: a march.** An adversary troop stands two hexes from the Builder's factory, and no other player piece
 > is nearer. This turn's march: no target on or next to it, so it moves one hex toward the factory. In the action
@@ -677,7 +679,8 @@ Node or Ambassador on or next to a token. Target: the player with a Node nearest
 - **Near (who can pay):** you are near a threat if one of your nodes **or ambassadors** is on or next to one of its
   tokens. Only players near a threat may pay toward it or use a card on it.
 - **Nearest (who gets hit):** if the threat takes effect, its harm to a player hits the player whose **node** is
-  closest to one of its tokens, at any distance, near or not (tie: the tied players choose which of them takes it).
+  closest to one of its tokens, at any distance, near or not (tie: the tied players choose which of them takes it;
+  a harm that hits no player, such as troops or Fallout landing, needs no choice).
 
 **Paying it off.** A threat prints one or two ways to pay it off. **Pay one way in full** and it is discarded.
 
@@ -753,8 +756,8 @@ Effects **sway** Unity or Discord ("add 2 Unity"): put that many on that side's 
   nothing.
 
 **Unity against Discord.** Whenever you gain Unity, you may put any of it against Discord instead: each Unity put
-there removes 1 Discord from the Discord track. You decide as the action or step that gained it resolves, before
-any track tips. The rest goes onto the Unity track. (**Envoy** also removes 1 Discord, for 1 ambassador.)
+there removes 1 Discord from the Discord track. The player whose action gained it decides (the first player, for a
+step of the round), as it resolves, before any track tips. The rest goes onto the Unity track. (**Envoy** also removes 1 Discord, for 1 ambassador.)
 
 > **Example.** 3 players, so the Discord track tips at 12. Discord is at 10. One step adds 3 Discord (13) and 2 Unity.
 > Putting both Unity against Discord leaves 11: Discord doesn't tip. Had the step added 4 Discord (14), the same 2
@@ -813,7 +816,8 @@ Corruption leaves its own (§6: the adversary's cube, or Fallout).
 
 When a node or facility would be destroyed:
 
-1. **Shelter** this round (a card shelters its player's nodes and facilities in their reach) stops it, automatically, spending
+1. **Shelter** this round (a card shelters its player's nodes and facilities in their reach, as it stands when the
+   piece would be destroyed: a node placed after the card is covered too) stops it, automatically, spending
    nothing. It lasts from the action phase to cleanup, so it covers production, threats and war, never the
    adversary's turn. It stops only what goes through this order: cubes still change hands, ambassadors are still
    removed, and a node you give up to pay something is still lost.
@@ -955,7 +959,8 @@ step, the **compute step** of the Income beat: the compute income (printed a cou
 each botnet and each corrupted research station (once its country's megaproject is complete, §9) without a player's
 ambassador on it, and every compute made since the last compute step (threats taking effect, cards and projects that
 print it), which waits beside the projects until then: that public pile is your warning. All of it goes onto the
-**leftmost** project. The moment a project holds its cost, it **resolves** at once, does what it prints in **every
+**leftmost** project. Add it up before you act: a project whose compute plus that sum reaches its cost **completes
+next compute step** unless you change a source (an ambassador onto a botnet, a hack, Audit). The moment a project holds its cost, it **resolves** at once, does what it prints in **every
 country**, and leaves the game. No project is ongoing; one that lasts does it through something already on the table
 (an income raised, pieces on the board, Fallout).
 

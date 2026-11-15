@@ -161,8 +161,8 @@ fn counterable(w: &World, g: &GameState, t: &str) -> bool {
 pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bool, armor: Armor, reach: Option<usize>) -> Saves {
     let absorbed = |h: usize| absorbed(w, g, h, armor);
     let keeps = |s: usize, h: usize| match reach {
-        None => !board::reach_sheltered(g, s, h),
-        Some(o) => s == o && board::reach_sheltered(g, o, h),
+        None => !board::reach_sheltered(w, g, s, h),
+        Some(o) => s == o && board::reach_sheltered(w, g, o, h),
     };
     let mut out = Saves::default();
     let seats = g.seats.len().min(4);
@@ -339,7 +339,7 @@ pub fn sheltered_saves(w: &World, g: &GameState, counter_first: bool, armor: Arm
     let mut out: Vec<Saves> =
         (0..countries).filter(|&c| flagged(c)).map(|c| shelter_saves(w, g, c, counter_first, armor, None)).collect();
     for s in (0..g.seats.len().min(4)).filter(|&s| board::reach_sheltering(g, s)) {
-        let covers = |c: usize| w.map.countries[c].hexes.iter().any(|&h| board::reach_sheltered(g, s, h));
+        let covers = |c: usize| w.map.countries[c].hexes.iter().any(|&h| board::reach_sheltered(w, g, s, h));
         for c in (0..countries).filter(|&c| !flagged(c) && covers(c)) {
             out.push(shelter_saves(w, g, c, counter_first, armor, Some(s)));
         }
@@ -414,8 +414,7 @@ mod tests {
         let (r, mut g) = lab(&["overload"], 1, 0);
         let w = r.world();
         assert!(sheltered_saves(&w, &g, false, Armor::ByOwner).is_empty(), "nothing sheltered yet");
-        let h = w.map.countries[0].hexes[0];
-        g.vars.insert(board::reach_shelter(0, h).as_str().into(), 1);
+        g.vars.insert(board::reach_shelter(0).as_str().into(), 1);
         let saves = sheltered_saves(&w, &g, false, Armor::ByOwner);
         assert_eq!(saves.len(), 1);
         assert_eq!(saves[0].nodes[0], 1.0);

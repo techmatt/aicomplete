@@ -180,7 +180,7 @@ eviction_worm,tags [card],card,cyber,1.0,1.0,1.0,0.91,0.91
 exascale_training_cluster,gain research_cubes [play],play,"resource=research_cubes, amount=6",6.0,18.0,3.0,20.0,3.33
 exascale_training_cluster,income insight [passive],passive,"resource=insight, amount=3",3.0,18.75,6.25,20.83,6.94
 exascale_training_cluster,tags [card],card,cyber power,2.0,1.5,0.75,1.67,0.83
-exodus_corridors,target [play],play,on=land,1.0,0.0,0.0,0.0,0.0
+exodus_corridors,target [play],play,on=ambassadors_next,1.0,0.0,0.0,0.0,0.0
 exodus_corridors,gather [play],play,"max=6, pieces=['ambassadors']",6.0,8.4,1.4,6.65,1.11
 exodus_corridors,gain_ambassadors [play],play,count=4,4.0,16.0,4.0,12.66,3.17
 exodus_corridors,tags [card],card,diplomacy security,2.0,1.5,0.75,1.19,0.59
@@ -209,7 +209,7 @@ field_sensor_grid,lift_fallout [play],play,"count=3, at=near",3.0,21.84,7.28,6.8
 field_sensor_grid,draw [play],play,count=3,3.0,12.0,4.0,3.74,1.25
 field_sensor_grid,tags [card],card,science diplomacy,2.0,1.5,0.75,0.47,0.23
 firewall_array,draw [play],play,count=2,2.0,8.0,4.0,5.19,2.59
-firewall_array,target [action],action,on=land,1.0,0.0,0.0,0.0,0.0
+firewall_array,target [action],action,on=no_firewall,1.0,0.0,0.0,0.0,0.0
 firewall_array,firewall [action],action,,1.0,17.5,17.5,11.34,11.34
 firewall_array,tags [card],card,cyber power,2.0,1.5,0.75,0.97,0.49
 force_protection_order,jam typed [play],play,"amount=6, source=security",6.0,4.2,0.7,2.7,0.45
@@ -444,7 +444,7 @@ quick_reaction_force,draw [play],play,count=2,2.0,8.0,4.0,4.17,2.09
 quick_reaction_force,reuse [action],action,,1.0,14.0,14.0,7.3,7.3
 quick_reaction_force,tags [card],card,security,1.0,1.0,1.0,0.52,0.52
 rally_the_allies,gain_ambassadors [play],play,count=5,5.0,20.0,4.0,7.45,1.49
-rally_the_allies,target [play],play,on=land,1.0,0.0,0.0,0.0,0.0
+rally_the_allies,target [play],play,on=ambassadors_next,1.0,0.0,0.0,0.0,0.0
 rally_the_allies,gather [play],play,"max=3, pieces=['ambassadors']",3.0,4.2,1.4,1.57,0.52
 rally_the_allies,sway unity [play],play,"side=unity, amount=2, narrative=cooperation",2.0,8.0,4.0,2.98,1.49
 ransomware_syndicate,production_per_tag credits [play],play,"resource=credits, tag=cyber, per=2",0.5,12.0,24.0,5.54,11.08
@@ -528,7 +528,7 @@ station_prefab_order,tags [card],card,industry diplomacy,2.0,1.5,0.75,1.09,0.55
 substation_hub,gain energy [play],play,"resource=energy, amount=2",2.0,9.0,4.5,5.84,2.92
 substation_hub,when team_play power True [passive],passive,"on={'event': 'team_play', 'tag': 'power', 'both': True}, then=[{'op': 'gain', 'resource': 'energy', 'amount': 1}]",1.0,14.17,14.17,9.19,9.19
 substation_hub,tags [card],card,power industry,2.0,1.5,0.75,0.97,0.49
-summit_caucus,target [play],play,on=piece,1.0,0.0,0.0,0.0,0.0
+summit_caucus,target [play],play,on=your_ambassadors_next,1.0,0.0,0.0,0.0,0.0
 summit_caucus,consolidate [play],play,max=6,6.0,9.0,1.5,5.73,0.95
 summit_caucus,gain_ambassadors [play],play,count=3,3.0,12.0,4.0,7.64,2.55
 summit_caucus,tags [card],card,diplomacy,1.0,1.0,1.0,0.64,0.64

@@ -4,7 +4,7 @@ What a bug hunt reads first: the findings still open, the reports ruled won't-fi
 faults past hunts kept finding. Fixed findings, never to re-report: F1–F100 (020, 044) in `git show
 1617d75:docs/qa-findings.md`; then each hunt's `fixed.md` and `deferred.md` under `experiments/results/`: 099 (r38,
 F101 on), 118 (r46, F132, D43, W19 on), 145 (r59, F165, D57 on), 169 (r72 → 73, F205, D72 on), 184 (r77 → 78, F225,
-D77, W28 on), 197 (r86, F272, D88, W29 on), 235 (r106, F289, D92, W31 on). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
+D77, W28 on), 197 (r86, F272, D88, W29 on), 235 (r106, F289, D92, W31 on; 238 fixed D92-D96, D98, D100, D103-D105, r108). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
 
 ## Checkers
 
@@ -89,19 +89,7 @@ Each hunt found most of its faults in the same places. Look there first:
 | D83 | art | 204's Annihilation Lance, Fusion Commons, Containment Reactor have no scene: `cards:check` fails. | An art batch or a pool scene. **Pick**. |
 | D84 | boards | Focus (Builder) is never used (199: 0.01-0.04 uses at 2 credits; credits bind first). Recovery was cut at r99 (227). | With the board redesign. **Matt's call**. |
 | D85 | viewer | Prompts: "which other player?" names no card; "Corrupt factories (at 2): ... onto which?" (agents parse it); "1 seat 1's ambassador" (a record key); a node's protection prompt names no threat (235). | Prompts and the agents' parser together. **Pick**. |
-| D92 | threats | A tie asks which nearest player takes a harm that reads no seat. | Ask only when it does; a bump. **Pick**. |
-| D93 | cards | Dead target picks: Firewall Array, Exodus Corridors, Rally the Allies, Summit Caucus. | Targets sharing each op's test; a bump. **Pick**. |
-| D94 | engine | After the last node falls the march still asks its troop moves. | End the march at a loss; a bump. **Pick**. |
-| D95 | prompts | "How much holds Discord off instead?" goes to seat 0 for seat 1's card. | Ask the card's player; a bump. **Pick**. |
-| D96 | rules | A reach Shelter covers the hexes in reach when played (table bookkeeping). | Read reach live. **Matt's call**. |
-| D97 | agents | The agents read only the country Shelter, which no card sets since r106. | Read the reach Shelter. **Pick**. |
-| D98 | viewer | At 1366×768 threats sit in a 40 px scroll (4 countries: from round 1). | One line a threat. **Pick**. |
-| D99 | rules | Teardown's Fallout lands under a node on its hex. | Keep. **Matt's call**. |
-| D100 | pacing | At 3 countries the first project resolves in round 2, before any answer. | Mark it; start empty. **Matt's call**. |
 | D102 | tests | `e2e:corps` is red on main too. | Re-derive its numbers. **Pick**. |
-| D103 | engine | Fallout's landing sorts by hex number across borders; §2 says country first. | Sort as printed; a bump. **Pick**. |
-| D104 | rules | No marker for a project's round flag; no track for the adversary's incomes. | Markers. **Matt's call**. |
-| D105 | viewer | A card's map half with no target reads "ready"; a building's two parts run together. | Mark them. **Pick**. |
 
 ## Won't fix
 
@@ -129,3 +117,4 @@ Each hunt found most of its faults in the same places. Look there first:
 | W20 | content | The place-token loop guard sees only a direct `add_tokens`. | No deck card prints such a trigger. |
 | W31 | cards | Peacekeeper Rotation's move onto a Troops target with no piece does nothing (235). | Not in the deck: fix with the card. |
 | W32 | words | "No one near it: no one can counter" beside "which of the nearest players takes its harm?" (235). | The rules' two tests: near pays, nearest is hit. |
+| W33 | rules | Teardown's Fallout lands under a node on the torn-down factory's hex (D99, 235). | Matt's ruling (238): Teardown is the player's own choice. |

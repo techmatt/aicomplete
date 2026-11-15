@@ -50,6 +50,13 @@ fn card_view(w: &World, g: &GameState, s: usize, id: &str, status: &str, cost: O
     }
 }
 
+/// 238 (D105): "ready", or with a map part whose target has no hex in reach, "ready · map part: no target" (the
+/// card plays for its other lines; the map half skips, as card-grammar says).
+fn ready_mark(w: &World, g: &GameState, s: usize, ops: &[Op]) -> &'static str {
+    let dead = ops.iter().any(|o| matches!(o, Op::Target { on } if effects::target_hexes(w, g, s, *on).is_empty()));
+    if dead { "ready · map part: no target" } else { "ready" }
+}
+
 pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut) {
     let card = |s: usize, id: &str, status: &str, cost: Option<i64>| card_view(w, g, s, id, status, cost);
     for s in 0..g.seats.len() {
@@ -57,7 +64,7 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
             .pile(&hand(s))
             .iter()
             .map(|id| {
-                let st = blocked(w, g, s, id).unwrap_or("ready");
+                let st = blocked(w, g, s, id).unwrap_or_else(|| ready_mark(w, g, s, &def(w, id).effects));
                 card(s, id, st, Some(play_cost(w, g, s, def(w, id))))
             })
             .collect();
@@ -66,8 +73,8 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
             .pile(&built(s))
             .iter()
             .map(|id| {
-                let st = if def(w, id).ability.is_some() {
-                    ability_blocked(w, g, s, id).unwrap_or("ready")
+                let st = if let Some(a) = &def(w, id).ability {
+                    ability_blocked(w, g, s, id).unwrap_or_else(|| ready_mark(w, g, s, &a.effects))
                 } else if !g.pile(&under(s, id)).is_empty() {
                     "stacked"
                 } else {

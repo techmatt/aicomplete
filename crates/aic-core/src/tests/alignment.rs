@@ -188,6 +188,19 @@ fn unity_swayed_may_hold_discord_off() {
     }
 }
 
+/// 238 (D95): the player whose action swayed the Unity is asked, not seat 0.
+#[test]
+fn the_acting_player_places_swayed_unity() {
+    let (rules, mut g) = action_only(&["alignment.hold_off=1"]);
+    g.vars.insert("alignment.discord".into(), 2);
+    g.vars.insert("alignment.unity_new".into(), 1);
+    set_res(&mut g, 1, Resource::ResearchCubes, 1);
+    rules.apply_mut(&mut g, &std_act(1, "insight"), None).unwrap();
+    let p = g.pending.as_ref().expect("asked where the Unity goes");
+    assert_eq!(p.ask.seat, 1, "{}", p.ask.prompt);
+    assert!(p.ask.prompt.contains("put 1 Unity on the track, or take 1 Discord off"), "{}", p.ask.prompt);
+}
+
 /// r75 (Matt's ruling 7): every hold-off amount from 0 to the least of the Unity
 /// swayed and the Discord on its track is offered, even one that leaves the
 /// track full (145 offered only amounts that stopped the tip; `carry` 2 keeps the

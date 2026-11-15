@@ -188,14 +188,14 @@ pub fn aegis_ready(w: &World, g: &GameState, s: usize) -> bool {
 /// 237: a piece of `owner`'s on hex `h` is sheltered this round, so no destruction takes it, spending nothing: its
 /// country's Shelter flag, or (234) its owner's reach Shelter on the hex ([`destroy_piece`]; the agents' forecast).
 pub fn sheltered(w: &World, g: &GameState, h: usize, owner: Option<usize>) -> bool {
-    flagged(g, RoundFlag::Shelter, w.map.hexes[h].country as usize) || owner.is_some_and(|s| reach_sheltered(g, s, h))
+    flagged(g, RoundFlag::Shelter, w.map.hexes[h].country as usize) || owner.is_some_and(|s| reach_sheltered(w, g, s, h))
 }
 
 /// 234: a card's Shelter shelters its player's own nodes and facilities on the hexes in their reach
-/// ([`reach_shelter`], set as the card resolves). 237: the one place that reads it (the engine and the agents'
-/// shelter forecast).
-pub fn reach_sheltered(g: &GameState, seat: usize, h: usize) -> bool {
-    g.var(&reach_shelter(seat, h)) > 0
+/// ([`reach_shelter`]). 238 (D96): their reach now, when the piece is struck, not as the card resolved (Aegis Grid
+/// Lockdown's own new nodes are covered). 237: the one place that reads it (the engine and the agents' forecast).
+pub fn reach_sheltered(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
+    reach_sheltering(g, seat) && in_reach(w, g, seat, h)
 }
 
 /// Whether a destruction of the `owner`'s piece on hex `h` would be stopped by something of the owner's: a

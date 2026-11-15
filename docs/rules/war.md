@@ -68,7 +68,8 @@ player-owned research stations and factories, **and nodes** (r89: `troop_node` 0
 In the adversary phase (`board.march`, after the corruption step) **every adversary troop
 takes `troop_steps` steps** (r89: 1, so a troop needs time to arrive; Forced March's twist: more), one troop at a time, country by country and by hex number within each, in an order
 fixed when the march starts. A troop a threat lands follows the troop's normal rules (146: no standing troops); troops a threat
-lands to "march at once" (Total War) take their steps as it executes. A step is one of:
+lands to "march at once" (Total War) take their steps as it executes. The march stops once a seat has no node (238:
+the loss; no troop moves or asks after it). A step is one of:
 
 - **destroy** a target on or next to its hex (players choose which), or
 - with none there, **move** one hex toward the nearest target. When several hexes are

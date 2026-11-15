@@ -50,7 +50,8 @@ player near it may pay toward it. A piece it places lands on its token unless th
 
 **The nearest player (146; Matt's standard).** An uncountered threat's harm hits **one player, the nearest**: the
 one whose node is closest to one of its tokens (hex distance, wherever that node is, near or not); on a tie the tied
-players pick one (the engine asks the lowest tied seat, a loss; agents pick the seat that loses least). A player with
+players pick one (the engine asks the lowest tied seat, a loss; agents pick the seat that loses least), asked only when
+an op of the harm reads the hit player (238: `Op::reads_hit_seat`; troops, Fallout or compute land unasked). A player with
 no node on the board is never hit; with no node anywhere, only its board consequences land. So every uncountered
 threat lands on exactly one player, a predictable amount. "Destroy a node" takes the hit player's node closest to
 it, their last too (175).

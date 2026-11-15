@@ -394,3 +394,34 @@ fn a_drone_at_a_base_never_absorbs_a_strike_next_to_it() {
     );
     assert!(!g.stats.counters.contains_key("board.base_absorbed"));
 }
+
+/// 238 (D94): once a seat's last node falls the march stops: the troops after it neither move nor ask.
+#[test]
+fn the_march_ends_at_the_loss() {
+    let (rules, mut g) = lab_with(&["board.march"], &["alignment.node_loss=1"]);
+    let m = &rules.map;
+    let land = |h: usize| kind(m, h) != HexKind::Ocean;
+    // Seat 0's last node, a troop next to it (it strikes first: lower hex index), and a later troop far off.
+    let p = (0..m.hexes.len())
+        .find(|&h| land(h) && m.hexes[h].neighbors.iter().any(|&n| n < h && land(n)))
+        .unwrap();
+    let t1 = m.hexes[p].neighbors.iter().copied().filter(|&n| n < p && land(n)).min().unwrap();
+    let t2 = (p + 1..m.hexes.len()).find(|&h| land(h) && m.distance(h, p) >= 5).unwrap();
+    for s in 0..g.seats.len() {
+        put(&mut g, if s == 0 { p } else { t2 }, node(s), 1);
+    }
+    if g.seats.len() > 1 {
+        // The other seat's node sits under the far troop: it would strike there were the march still going.
+        put(&mut g, t2, node(1), 0);
+        let q = m.hexes[t2].neighbors.iter().copied().find(|&n| land(n)).unwrap();
+        put(&mut g, q, node(1), 1);
+    }
+    put(&mut g, t1, TROOP, 1);
+    put(&mut g, t2, TROOP, 1);
+    run(&rules, &mut g);
+    answer_all(&rules, &mut g);
+    assert_eq!(g.tokens(p, node(0)), 0, "the last node fell");
+    assert_eq!(g.tokens(t2, TROOP), 1, "the later troop never marched");
+    assert_eq!(g.stats.counters["board.march_cut_by_loss"], 1);
+    assert!(g.is_over());
+}

@@ -256,17 +256,19 @@ pub const THREAT_FRAME: &str =
 
 /// 146: the seat an uncountered `t`'s harm hits: the nearest by node (see
 /// [`nearest_seats`]); on a tie the lowest tied seat picks among them, as a
-/// loss. `None` when no seat has a node.
-fn hit_seat(g: &mut GameState, cx: &mut Cx, t: &Key, name: &str) -> Res<Option<usize>> {
+/// loss. `None` when no seat has a node. 238 (D92): `asks` false (no op of the harm reads the seat): no question,
+/// the lowest tied seat stands in, read by nothing.
+fn hit_seat(g: &mut GameState, cx: &mut Cx, t: &Key, name: &str, asks: bool) -> Res<Option<usize>> {
     let w = cx.world;
     let tied = nearest_seats(&w, g, t);
     if tied.len() > 1 {
-        cx.tally(g, "threats.hit_ties", 1);
+        cx.tally(g, if asks { "threats.hit_ties" } else { "threats.hit_ties_unasked" }, 1);
     }
     let opts = tied.iter().map(|&s| seat_opt(s)).collect();
     let prompt = || format!("{name}: which of the nearest players takes its harm?");
     let picked = match tied.first() {
-        Some(&first) => cx.choose_loss(first, prompt, opts)?.map(|i| tied[i]),
+        Some(&first) if asks => cx.choose_loss(first, prompt, opts)?.map(|i| tied[i]),
+        Some(&first) => Some(first),
         None => None,
     };
     if let Some(s) = picked {
@@ -419,8 +421,10 @@ impl Module for Threats {
             // 146: its harm hits one player, the nearest: the seat whose node is
             // closest to one of its tokens, wherever that node is; on a tie the
             // players pick (the lowest tied seat answers, for the table).
-            let hit = hit_seat(g, cx, &t, &d.name)?;
+            let asks = d.effects.iter().any(Op::reads_hit_seat);
+            let hit = hit_seat(g, cx, &t, &d.name, asks)?;
             let mut ctx = effects::Ctx::threat(Some(scope)).named(label(d.tier)).why(&d.name).with_threat(t).hitting(hit);
+            ctx.hit_unasked = !asks;
             cx.tally(g, &format!("threats.uncountered.t{}", d.tier), 1);
             // 147: by stage too (see `tally_countered`).
             let stage = g.var(adversary::STAGE);

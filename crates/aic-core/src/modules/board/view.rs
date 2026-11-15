@@ -27,13 +27,13 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         let doc = "Dispatches: free Dispatches this round (an ambassador onto a piece or botnet in reach); what you don't use is lost";
         out.seat(s, "movement", "Dispatches", moves_left(w, g, s), Some(ai::movement(w, g, s)), doc);
         // 235: a card's reach Shelter (r106) lives in hex flags the view hides as bookkeeping: say it on the seat.
-        // It flags every hex in reach; the seat's own pieces on them are what it keeps.
+        // It covers the seat's own pieces in its reach as it stands now (238).
         let mine = |h: usize| {
             g.tokens(h, node(s)) > 0
                 || (g.tokens(h, cube(s)) > 0 && (g.tokens(h, STATION) > 0 || g.tokens(h, FACTORY) > 0))
         };
         let sheltered: Vec<String> = (0..g.hexes.len())
-            .filter(|&h| reach_sheltered(g, s, h) && mine(h))
+            .filter(|&h| reach_sheltered(w, g, s, h) && mine(h))
             .map(|h| hex_name(w, h))
             .collect();
         if !sheltered.is_empty() {

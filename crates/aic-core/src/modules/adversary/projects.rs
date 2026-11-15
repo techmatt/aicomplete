@@ -173,48 +173,24 @@ pub fn compute_step(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     let income = g.var(INCOME_COMPUTE).max(0);
     cx.tally(g, "adversary.compute_income", income);
+    let s = sources(&w, g);
+    // A hack's cut (021) lasts this one step, on a botnet that makes compute.
     let per = w.int("adversary.botnet_compute");
-    let (mut botnets, mut blocked) = (0, 0);
     for h in 0..g.hexes.len() {
-        let n = g.tokens(h, BOTNET) * per;
-        if n == 0 {
-            continue;
-        }
-        let cut = cut_key(h);
-        if g.var(&cut) > 0 {
-            // A hack cut it off (021): no compute this turn.
-            cx.set_key(g, &cut, 0);
-            blocked += n;
-        } else if player_ambassador(g, h).is_some() {
-            blocked += n;
-        } else {
-            botnets += n;
+        if g.tokens(h, BOTNET) * per != 0 && g.var(&cut_key(h)) > 0 {
+            cx.set_key(g, &cut_key(h), 0);
         }
     }
-    if blocked > 0 {
-        cx.tally(g, "adversary.compute_blocked", blocked);
-        cx.per_round(g, "adversary.compute_blocked", blocked);
+    if s.blocked > 0 {
+        cx.tally(g, "adversary.compute_blocked", s.blocked);
+        cx.per_round(g, "adversary.compute_blocked", s.blocked);
     }
-    cx.tally(g, "adversary.compute_botnets", botnets);
-    // 137: an adversary station makes compute; one player ambassador on it blocks it. 185: only once its
-    // country's megaproject is complete (before that it puts adversary cubes on it, in production).
-    let cubes = w.int("board.station_cubes");
-    let mut stations = 0;
-    for (h, hex) in w.map.hexes.iter().enumerate().take(g.hexes.len()) {
-        if g.tokens(h, STATION) == 0 || !corrupted(g, h) {
-            continue;
-        }
-        if g.var(&board::project_done(hex.country as usize)) == 0 {
-            continue;
-        }
-        if player_ambassador(g, h).is_some() {
-            cx.tally(g, "board.blocked.station_adversary", 1);
-        } else {
-            stations += cubes;
-        }
+    cx.tally(g, "adversary.compute_botnets", s.botnets);
+    if s.stations_blocked > 0 {
+        cx.tally(g, "board.blocked.station_adversary", s.stations_blocked);
     }
-    cx.tally(g, "board.station_compute", stations);
-    let fresh = income + botnets + stations;
+    cx.tally(g, "board.station_compute", s.stations);
+    let fresh = income + s.botnets + s.stations;
     cx.add_key(g, COMPUTE, fresh);
     cx.tally(g, "adversary.compute_made", fresh);
     cx.per_round(g, "adversary.compute", fresh);
@@ -252,6 +228,67 @@ pub fn pour_waiting(g: &mut GameState, cx: &mut Cx) -> Res {
         }
     }
     Ok(())
+}
+
+/// What the compute step's sources make as the board stands: botnets (`blocked`: cut off by a hack or under a
+/// player ambassador) and adversary stations (`stations_blocked`: how many an ambassador blocks).
+struct Sources {
+    botnets: i64,
+    blocked: i64,
+    stations: i64,
+    stations_blocked: i64,
+}
+
+/// [`compute_step`]'s sources, read without changing anything (238: shared with [`completes_next_step`]).
+fn sources(w: &World, g: &GameState) -> Sources {
+    let per = w.int("adversary.botnet_compute");
+    let mut s = Sources { botnets: 0, blocked: 0, stations: 0, stations_blocked: 0 };
+    for h in 0..g.hexes.len() {
+        let n = g.tokens(h, BOTNET) * per;
+        if n == 0 {
+            continue;
+        }
+        if g.var(&cut_key(h)) > 0 || player_ambassador(g, h).is_some() {
+            s.blocked += n;
+        } else {
+            s.botnets += n;
+        }
+    }
+    // 137: an adversary station makes compute; one player ambassador on it blocks it. 185: only once its
+    // country's megaproject is complete (before that it puts adversary cubes on it, in production).
+    let cubes = w.int("board.station_cubes");
+    for (h, hex) in w.map.hexes.iter().enumerate().take(g.hexes.len()) {
+        if g.tokens(h, STATION) == 0 || !corrupted(g, h) || g.var(&board::project_done(hex.country as usize)) == 0 {
+            continue;
+        }
+        if player_ambassador(g, h).is_some() {
+            s.stations_blocked += 1;
+        } else {
+            s.stations += cubes;
+        }
+    }
+    s
+}
+
+/// 238 (D100): the visible projects the next compute step fills as the board stands now (income, the botnets and
+/// stations making compute, and what waits), leftmost first: what the viewer marks "completes next step". Players
+/// can still change it (an ambassador on a botnet, a hack, Audit).
+pub fn completes_next_step(w: &World, g: &GameState) -> Vec<Key> {
+    let s = sources(w, g);
+    let mut left = g.var(INCOME_COMPUTE).max(0) + s.botnets + s.stations + g.var(WAITING);
+    let every = g.var(WAITING_EVERY);
+    let mut out = Vec::new();
+    for id in projects(g) {
+        let need = project_cost(w, g, &id) - g.var(&project_key(&id)) - every;
+        if need > left {
+            // It takes what is left; one further right can still fill from the compute on every project.
+            left = 0;
+            continue;
+        }
+        left -= need.max(0);
+        out.push(id);
+    }
+    out
 }
 
 /// The adversary gains `n` compute on every visible project (074): 175, it waits for the compute step.

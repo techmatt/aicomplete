@@ -1,0 +1,84 @@
+1152 games on both (1152 in A, 1152 in B); engines A ['native'], B ['native', 'wasm']
+games that differ (engine and timings aside): 1146
+  cell 0 seed 47328: actions, counters, decisions, options_total
+  cell 1 seed 47328: actions, counters, decisions, options_total
+  cell 2 seed 47328: actions, options_total
+  cell 3 seed 47328: actions, counters, decisions, options_total
+  cell 4 seed 47328: actions
+win % A: 74.1 ±1.3 (1152 games)
+win % B: 74.2 ±1.3 (1152 games)
+paired gap B - A: +0.1 ±0.2
+
+1152 paired games
+  same won: 1149 (99.7%)
+  same reason: 1149 (99.7%)
+  same rounds: 1134 (98.4%)
+  same decisions: 473 (41.1%)
+  outcome flips: 3 (base won, new lost: 1)
+
+watched counters, a game (base / new / diff):
+  threats.hit_ties                      1.030    0.605   -0.424
+  threats.hit_ties_unasked              0.000    0.419   +0.419
+  board.march_cut_by_loss               0.000    0.057   +0.057
+  effects.targets                      25.898   25.545   -0.352
+  effects.targets_missed                7.135    7.509   +0.373
+  effects.shelter_reach                 1.449    1.450   +0.001
+  alignment.unity_held_off              5.916    5.938   +0.022
+  fallout.placed                        1.141    1.142   +0.002
+  board.troop_destroyed.node            3.956    3.940   -0.016
+  cards.played                          0.000    0.000   +0.000
+
+largest other moves, a game:
+  economy.credits_income                         466.975   466.543   -0.431
+  cards.hand_size.r09                             35.357    35.669   +0.312
+  cards.triggers                                  63.522    63.758   +0.236
+  limit.play.short.credits                       256.343   256.543   +0.200
+  economy.insight_carried                         55.813    55.988   +0.174
+  cards.hand_size.r08                             38.441    38.609   +0.168
+  cards.hand_size.r13                              8.795     8.634   -0.161
+  board.troop_steps                               14.387    14.227   -0.161
+  adversary.compute_made                         209.562   209.718   +0.156
+  cards.insight_after_keep.r09                    13.880    14.016   +0.136
+  board.troop_moves                                7.997     7.865   -0.132
+  economy.insight_unspent.r08                     12.201    12.333   +0.132
+  cards.hand_size.r12                             13.684    13.555   -0.129
+  actions.blocked_energy.0.parts_exchange          3.957     4.077   +0.120
+  cards.drawn                                     96.233    96.350   +0.117
+
+1152 base games, 1152 new
+  actions.blocked.0.firewall_array                       0.230   0.230  +0.000
+  actions.blocked.1.firewall_array                       0.053   0.053  +0.000
+  actions.blocked_energy.0.firewall_array                3.591   3.591  +0.000
+  actions.blocked_energy.1.firewall_array                0.303   0.303  +0.000
+  actions.skipped.0.firewall_array                       0.049   0.050  +0.001
+  actions.skipped.1.firewall_array                       0.008   0.008  +0.000
+  actions.skipped_energy.0.firewall_array                0.789   0.801  +0.012
+  actions.skipped_energy.1.firewall_array                0.041   0.041  +0.000
+  cards.keep_at.0.exodus_corridors                       0.391   0.391  +0.000
+  cards.keep_at.0.firewall_array                         0.449   0.427  -0.022
+  cards.keep_at.0.rally_the_allies                       0.083   0.092  +0.009
+  cards.keep_at.0.summit_caucus                          0.148   0.148  +0.000
+  cards.keep_at.1.exodus_corridors                       0.382   0.379  -0.003
+  cards.keep_at.1.firewall_array                         1.041   1.030  -0.011
+  cards.keep_at.1.rally_the_allies                       0.123   0.115  -0.009
+  cards.keep_at.1.summit_caucus                          0.222   0.222  +0.000
+  cards.keep_ok.0.exodus_corridors                       0.043   0.043  +0.000
+  cards.keep_ok.0.firewall_array                         0.050   0.049  -0.002
+  cards.keep_ok.0.rally_the_allies                       0.010   0.011  +0.001
+  cards.keep_ok.0.summit_caucus                          0.021   0.021  +0.000
+  cards.keep_ok.1.exodus_corridors                       0.040   0.039  -0.001
+  cards.keep_ok.1.firewall_array                         0.072   0.072  +0.000
+  cards.keep_ok.1.rally_the_allies                       0.014   0.013  -0.001
+  cards.keep_ok.1.summit_caucus                          0.034   0.034  +0.000
+  cards.kept.exodus_corridors                            0.247   0.246  -0.001
+  cards.kept.firewall_array                              0.346   0.345  -0.002
+  cards.kept.rally_the_allies                            0.469   0.468  -0.001
+  cards.kept.summit_caucus                               0.231   0.231  +0.000
+  cards.late_play.exodus_corridors                       0.021   0.021  +0.000
+  cards.late_play.firewall_array                         0.010   0.010  +0.000
+  cards.late_play.summit_caucus                          0.010   0.010  +0.000
+  cards.played.exodus_corridors                          0.184   0.184  +0.000
+  cards.played.firewall_array                            0.167   0.168  +0.001
+  cards.played.rally_the_allies                          0.484   0.484  -0.001
+  cards.played.summit_caucus                             0.655   0.649  -0.005
+  cards.used.firewall_array                              0.357   0.357  +0.000
