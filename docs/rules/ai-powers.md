@@ -27,7 +27,7 @@ exception is Disrupt's country.
 | Builder | Overcharge | 1 Power | gain 2 energy |
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
 | Builder | Procure | 1 chip | draw 2 cards |
-| Builder | Fortify | 2 chips | Target: Troops. Remove 1 Troop on it; harden a facility on or next to it |
+| Builder | Fortify | 1 chip | Target: Troops. Remove 1 Troop on it; harden a facility on or next to it |
 | Builder | Teardown | 1 chip | destroy one of your factories anywhere; Fallout goes on its hex; gain 1 antimatter |
 | Protector | Bulwark | 1 energy | Target: a facility. Harden it |
 | Protector | Accord | 1 Diplomacy | place 1 Node; if the new node brings a city into your reach, also put a new ambassador on one such city |
@@ -80,7 +80,7 @@ outlet, turns 1 insight into a card.
 
 **Troop powers (early troops decide games).** Each board removes or stops troops its own way, no two alike: the
 Protector's **Interdict** (a Security card: up to 2 troops on its target) beside its Patrol (pushes them away); the
-Builder's **Fortify** (2 chips: 1 troop on its target and a facility on or next to it hardened); the Researcher's
+Builder's **Fortify** (1 chip: 1 troop on its target and a facility on or next to it hardened); the Researcher's
 **Disrupt** (a Cyber card and a research cube: up to 2 troops in one country, no reach needed). The standard action
 Remove a troop (`troop_credits` 10 credits, `troop_per_round` once a round) is the hedge.
 

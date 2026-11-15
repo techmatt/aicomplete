@@ -1,0 +1,37 @@
+{
+  "name": "f240",
+  "note": "240: fresh read 47424-47487, the balance pass (r109: Fortify 1 chip; the Researcher levers were screened in s240 and not shipped) against main r108 (74bd2f0) on the same seeds",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "greedy",
+    "strategist"
+  ],
+  "games": 64,
+  "records": 0
+}

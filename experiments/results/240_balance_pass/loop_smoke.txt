@@ -1,0 +1,41 @@
+C:\Code\aicomplete-worktrees\aicomplete\240_balance_pass\target\release\aic-sim.exe experiment experiments\use.json --games 16 --threads 6 --out C:\Code\aicomplete-worktrees\aicomplete\240_balance_pass\out\loop-smoke
+use: 6 cells x 16 seeds = 96 games on 6 threads; streaming to C:\Code\aicomplete-worktrees\aicomplete\240_balance_pass\out\loop-smoke/games.jsonl
+  9/96 games, 12 s, about 2 min left at this rate
+  41/96 games, 22 s, about 0 min left at this rate
+  58/96 games, 32 s, about 0 min left at this rate
+  78/96 games, 44 s, about 0 min left at this rate
+  96/96 games, 49 s, about 0 min left at this rate
+time: wall 48.9 s, games 286.8 s summed over workers: agents 97.0%, probes 0.0%, apply 0.7%, legal 1.5%, replay check 0.5%, setup 0.3%, other 0.0%; report 0.07 s
+96 games in 48.9 s; report C:\Code\aicomplete-worktrees\aicomplete\240_balance_pass\out\loop-smoke/report.md, 0 record(s) in C:\Code\aicomplete-worktrees\aicomplete\240_balance_pass\out\loop-smoke/records
+  bp d2 engine                   win  56.2%  rounds 11.62  agent   3085.0 ms/game
+  bp d2 engine:w.built=4,w.built_cost=0.5,w.clock=0,w.energy_cap=0,w.hand=3,w.hand_cost=0.4,w.horizon=0,w.insight_income=0,w.last_node=120,w.movement=0,w.packet_keep=1,w.production=0,w.purge=3.6,w.strat_contents=0,w.table=0,w.tag_hand=0 win  75.0%  rounds  9.75  agent   2762.8 ms/game
+  br d2 engine                   win  56.2%  rounds  8.94  agent   2237.4 ms/game
+  br d2 engine:w.built=4,w.built_cost=0.5,w.clock=0,w.energy_cap=0,w.hand=3,w.hand_cost=0.4,w.horizon=0,w.insight_income=0,w.last_node=120,w.movement=0,w.packet_keep=1,w.production=0,w.purge=3.6,w.strat_contents=0,w.table=0,w.tag_hand=0 win  56.2%  rounds  9.69  agent   3293.0 ms/game
+  pr d2 engine                   win  56.2%  rounds 11.38  agent   2573.5 ms/game
+  pr d2 engine:w.built=4,w.built_cost=0.5,w.clock=0,w.energy_cap=0,w.hand=3,w.hand_cost=0.4,w.horizon=0,w.insight_income=0,w.last_node=120,w.movement=0,w.packet_keep=1,w.production=0,w.purge=3.6,w.strat_contents=0,w.table=0,w.tag_hand=0 win  75.0%  rounds 10.75  agent   3435.0 ms/game
+move heuristics a game: push 0.03, cancel 0.00, liberate 0.00, strike 1.47, target 5.21
+
+## C:\Code\aicomplete-worktrees\aicomplete\240_balance_pass\out\loop-smoke (r109, 96 games)
+
+| cell | games | timeouts | ends |
+|---|---|---|---|
+| bp/engine | 16 | 0 | purge 9, deck_empty 5, node 2 |
+| bp/strategist | 16 | 0 | purge 12, node 3, deck_empty 1 |
+| br/engine | 16 | 0 | purge 9, node 5, discord_deck 1, deck_empty 1 |
+| br/strategist | 16 | 0 | purge 9, node 3, deck_empty 3, discord_deck 1 |
+| pr/engine | 16 | 0 | purge 9, deck_empty 4, node 3 |
+| pr/strategist | 16 | 0 | purge 12, deck_empty 3, node 1 |
+| all | 96 | 0 | purge 60, node 17, deck_empty 17, discord_deck 2 |
+
+Most plays of one card in a game (flag at 12):
+
+| plays | card | cell | seed |
+|---|---|---|---|
+| 6 | ceasefire_monitors | pr/strategist | 8 |
+| 5 | ceasefire_monitors | pr/strategist | 12 |
+| 4 | ceasefire_monitors | br/strategist | 7 |
+| 4 | joint_fabrication_pact | bp/strategist | 8 |
+| 4 | joint_fabrication_pact | pr/strategist | 7 |
+
+no timeouts, no card at the play flag
+EXIT 0

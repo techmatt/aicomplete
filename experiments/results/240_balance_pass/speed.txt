@@ -1,0 +1,17 @@
+OTHER RULES OR CONFIG: r108 on configs/baseline.json against r109 on configs/baseline.json. Each row says whether its games came out the same on both: one that did is like for like (a rename), one that did not is speed times game length. per_decision.py splits them.
+greedy c2: 12 on 1 thread, 96 on 8, roughly 79 s
+NOT LIKE FOR LIKE: greedy c2 played other games on the two binaries at another revision or config. Its ratio is speed times game length.
+greedy c2: 1 thread 36.6 to 38.4 (1.05 x), 8 threads 192.3 to 108.3 (0.56 x)
+greedy c3: 4 on 1 thread, 32 on 8, roughly 79 s
+NOT LIKE FOR LIKE: greedy c3 played other games on the two binaries at another revision or config. Its ratio is speed times game length.
+greedy c3: 1 thread 13.5 to 13.4 (0.99 x), 8 threads 41.8 to 31.3 (0.75 x)
+engine c2: 10 on 1 thread, 80 on 8, roughly 82 s
+NOT LIKE FOR LIKE: engine c2 played other games on the two binaries at another revision or config. Its ratio is speed times game length.
+engine c2: 1 thread 41.9 to 33.2 (0.79 x), 8 threads 180.7 to 158.8 (0.88 x)
+engine c3: 3 on 1 thread, 26 on 8, roughly 77 s
+out/240_balance_pass/r108/aic-sim.exe failed on configs/baseline.json: 
+random: 9.7 ms/game, 1.00 x baseline
+greedy: 820.5 ms/game, 1.00 x baseline
+engine: 1012.2 ms/game, 1.00 x baseline
+planner: 20506.0 ms/game, 1.00 x baseline
+EXIT 0

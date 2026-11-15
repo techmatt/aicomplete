@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 108. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 109. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -1024,7 +1024,7 @@ Each power can be used once a round, in the action phase. A tag in a cost means 
 
 | Board | Node power | Conversions | Draw | Sacrifice and other powers |
 |---|---|---|---|---|
-| Builder | **Buy In** (6 credits: a node; 1 chip if the new node brings a factory into your reach) | **Mint** (3 credits: 1 chip) | **Procure** (1 chip: draw 2) | **Fortify** (2 chips: target troops; remove 1 on it and harden a facility on or next to it), **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand), **Teardown** (1 chip: destroy one of your own factories anywhere, Fallout goes on its hex, under any node there, which stays; 1 antimatter) |
+| Builder | **Buy In** (6 credits: a node; 1 chip if the new node brings a factory into your reach) | **Mint** (3 credits: 1 chip) | **Procure** (1 chip: draw 2) | **Fortify** (1 chip: target troops; remove 1 on it and harden a facility on or next to it), **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand), **Teardown** (1 chip: destroy one of your own factories anywhere, Fallout goes on its hex, under any node there, which stays; 1 antimatter) |
 | Protector | **Accord** (1 Diplomacy: a node; if the new node brings a city into your reach, a new ambassador onto one such city) | **Interdict** (1 Security: target troops; remove up to 2 on it) | **Debrief** (1 Security: target agents; draw 1, and remove 1 agent on it) | **Bulwark** (1 energy: target a facility; harden it), **Patrol** (1 energy: target agents or troops; push up to 3 from it), **Reclaim** (1 Security, 6 credits, 2 energy: target a corrupted station or factory; turn it neutral; 1 antimatter) |
 | Researcher | **Peer Review** (1 research cube: a node; 1 insight if the new node brings a research station into your reach) | **Grant** (3 credits: 1 cube in your color on a megaproject that isn't complete) | **Synthesis** (1 insight: draw 1) | **Disrupt** (1 Cyber, 1 research cube: remove up to 2 adversary troops in one country), **Field Station** (1 Industry: target an open hex where Build a research station could go; a station there without the chips), **Audit** (1 Cyber: remove 3 compute from a project), **Meltdown** (2 research cubes: destroy one of your own research stations anywhere; 1 antimatter) |
 

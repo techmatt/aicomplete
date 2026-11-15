@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 240 balance pass: Fortify at 1 chip (its anchor price), Debrief and Patrol bands 0.25-3.5; Researcher levers (Grant 2 cubes, Peer Review's insight always) screened, not shipped (B+P under its pair mean at r108); fresh read 47424-47487 | 109 | [240_balance_pass](results/240_balance_pass/README.md) |
 | 238 playtest fixes (235's picks): targets share their op's test, a tie asked only when read, the march ends at the loss, Fallout's tie-break by country, the acting seat places Unity, reach Shelter read live, viewer marks; fresh read 47376-47423 even with r107 | 108 | [238_playtest_fixes](results/238_playtest_fixes/README.md) |
 | 237 agents cleanup, no rules change: alignment `deal_threats {tier}` worth in every country, the converge forecast's tie rule, the reach-Shelter read (D97), `TokenKind::label`, `cards.unofferable`, resource_use and projects_read in `scripts/bench/`; dev-seed smoke even with r107 | 107 | [237_agents_cleanup](results/237_agents_cleanup/README.md) |
 | 236 target follow-ups: one target for 7 board powers and 9 standard actions (Remove agents on or next to its target), move cards' ambassadors from on or next to the target; prices kept; fresh read 47328-47375 even with r106 | 107 | [236_target_followups](results/236_target_followups/README.md) |

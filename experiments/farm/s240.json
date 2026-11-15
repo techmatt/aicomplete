@@ -1,0 +1,24 @@
+{
+  "name": "s240",
+  "note": "240: balance screen on r108 spent seeds 47328-47391 (f236, f238), d1-d2. F = Fortify at 1 chip (asked); G = Grant adds 2 cubes (asked); P = Peer Review's insight always (asked). F touches only Builder pairs and G, P only Researcher pairs, so cells that would replay base are left out: bp base/F; br base/F/FG/FP/FGP; pr base/G/P/GP.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "bp-F", "set": ["ais.builder.powers.6.cost=[[\"chips\",1]]"]},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "br-F", "set": ["ai.boards=0,2", "ais.builder.powers.6.cost=[[\"chips\",1]]"]},
+    {"name": "br-FG", "set": ["ai.boards=0,2", "ais.builder.powers.6.cost=[[\"chips\",1]]", "ais.researcher.powers.1.effects=[{\"op\":\"project_cube\",\"count\":2}]"]},
+    {"name": "br-FP", "set": ["ai.boards=0,2", "ais.builder.powers.6.cost=[[\"chips\",1]]", "ais.researcher.powers.0.effects=[{\"op\":\"place_node\",\"count\":1},{\"op\":\"gain\",\"resource\":\"insight\",\"amount\":1}]"]},
+    {"name": "br-FGP", "set": ["ai.boards=0,2", "ais.builder.powers.6.cost=[[\"chips\",1]]", "ais.researcher.powers.1.effects=[{\"op\":\"project_cube\",\"count\":2}]", "ais.researcher.powers.0.effects=[{\"op\":\"place_node\",\"count\":1},{\"op\":\"gain\",\"resource\":\"insight\",\"amount\":1}]"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]},
+    {"name": "pr-G", "set": ["ai.boards=1,2", "ais.researcher.powers.1.effects=[{\"op\":\"project_cube\",\"count\":2}]"]},
+    {"name": "pr-P", "set": ["ai.boards=1,2", "ais.researcher.powers.0.effects=[{\"op\":\"place_node\",\"count\":1},{\"op\":\"gain\",\"resource\":\"insight\",\"amount\":1}]"]},
+    {"name": "pr-GP", "set": ["ai.boards=1,2", "ais.researcher.powers.1.effects=[{\"op\":\"project_cube\",\"count\":2}]", "ais.researcher.powers.0.effects=[{\"op\":\"place_node\",\"count\":1},{\"op\":\"gain\",\"resource\":\"insight\",\"amount\":1}]"]}
+  ],
+  "difficulties": [1, 2],
+  "agents": ["greedy", "strategist"],
+  "games": 64,
+  "records": 0
+}

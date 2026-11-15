@@ -112,7 +112,9 @@ of games. A record's `cell` is an index, variant-major (each variant's levels ×
 ## The ballpark read
 
 The ruling and its targets: [principles.md](principles.md), *Ballpark simulation*. A board pair's variant sets
-`ai.boards`, as `ai.slots` and `ai.start_credits` are by board.
+`ai.boards`, as `ai.slots` and `ai.start_credits` are by board. Board balance (each pair's gap to the pair mean,
+paired): `bench/ladder.py NEW OLD --pairs`; a farmed file without a header reads as `FILE=SPEC`. A power lever is a
+content overlay in `set`, by index in `content/ais.json`: `ais.builder.powers.6.cost=[["chips",1]]` (s240).
 
 **The judge is the strategist** (`STRATEGIST` in `agents/mod.rs`; [agents.md](agents.md), *The tiers*); `sweep` spot-checks a verdict that matters, `planner:strategy=1` is the
 ceiling, `sweep:plan_table=0,w.table=0,w.packet_keep=1` the judge off the value table.
@@ -151,7 +153,7 @@ on 3 threads (r73): launch it with the read.
 
 **Fresh seeds.** Specs start at seed 0: give a confirming read a `--seed` no screen of this revision used. An item
 that spends seeds updates the ledger after its last read (`bench/seeds.py next N [--take]`; all below *Next free*
-are used). Next free: 47424. **The dev seeds are 36800-36831**, for on/off
+are used). Next free: 47488. **The dev seeds are 36800-36831**, for on/off
 checks and crash-finding (SE ~5 a cell). A 2-8 point effect (a level's income step): screen it paired on this
 revision's spent fresh sets (~500+ games a cell, SE ~2), then confirm once on new seeds.
 
