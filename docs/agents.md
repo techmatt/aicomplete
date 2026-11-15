@@ -22,7 +22,7 @@ In prose the simulator's players are "sim players"; the code keeps "agents". The
 | `engine` | The heuristic in **horizon mode** (`w.horizon`: income × the rounds left, discounted by danger); holdings by the value table (`w.table=0`: flat terms); the **deck clock** (`w.clock`) charges each round the team's Unity rate would leave it short. Searched like greedy; `width` > 0: a beam, `candidates` > 0: rollouts. | `width` 0, `samples` 1, `choices` 2, `answers` 99 (prompts an answer looks on; 1 loses wins); weights: `Weights::engine` |
 | `strategist` | **The screens' judge**: greedy's flat weights with `w.last_node` and the **purge term** (`w.purge`: supply ambassadors toward the Liberate bills in reach), no search, no strategy (`strategist:strategy=1` plays one). | `STRATEGIST`, `agents/mod.rs` |
 | `planner` | The engine, rolling out a shortlist of action-phase alternatives `horizon` rounds with the engine as policy; the heuristic's best line is taken. A line runs on **full information** but the Alignment deal, valued over `deals` guesses of it (`planner.rs`). | `horizon` 2, `alts` 2, `budget` 8, `margin` 40, `deals` 4, `lead` 0. `sweep[:...]` is `planner:deals=1,lead=0`. |
-| `oracle` | **A measuring stick, opt in**: the planner's search on **full information**, the deal too, each line to the game's end; it follows a winning line, so its win rate is a floor on perfect play (`oracle.rs`). | the planner's four, `reseeds` 0, `threads` 1 |
+| `oracle` | **A measuring stick, opt in**: the planner's search on **full information**, the deal too, each line to the game's end; it follows a winning line, so its win rate is a floor on perfect play (`oracle.rs`). **`tries`**: restarts, whole games from the first decision, the first as specified (its game wherever it wins), the rest on other policy seeds, `truth` every other one; **`truth`**: lines score the true table, not a guess; **`prove`**: a card proof (only a line playing that card wins; its draft, keep and play come before the keep plan's). | the planner's four, `reseeds` 0, `threads` 1, `tries` 1, `truth` 0, `prove` 0 |
 
 **Keeping by plan (`agents/keep_plan.rs`, `plan_keep`).** Greedy, engine and planner keep drafts by a plan. At its
 first keep of a round a seat sketches `plan_rounds` rounds from what it holds and earns, fills each round's budget
@@ -135,7 +135,7 @@ with the reason.
 | A new player | `greedy` | none; the strategist's lead over it measures depth |
 | The judge | `strategist` | the per-level bands ([principles.md](principles.md)) |
 | A strategy player, information; spot checks | `strategist:strategy=1`; `planner:strategy=1` | none |
-| A skilled player with full information | `oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1` | d4 95 |
+| A skilled player with full information | `oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1,tries=3` | d4 95 |
 
 The ladder: bands in [principles.md](principles.md), the current read in
 [215](../experiments/results/215_length_calibration/README.md). After a change to how the game is won, smoke greedy

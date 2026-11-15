@@ -9,6 +9,8 @@ state (`all_losses`).
 
 - `oracle`: the full-information search (`agents/oracle.rs`): a win it finds proves the seed winnable, so its rate
   is a floor on a perfect player's. Its budget is 155's top: rollouts answer a prompt one prompt deep (`answers=1`), more lines for the time.
+  243: `tries=3` restarts a lost game twice on other policy seeds; the first try is the single oracle, so its wins
+  are a superset of that one's, at up to 3x the time on a seed it loses.
 
 The fair-information player was paged by Matt (155, amendment 6814): add its row here when it is built.
 """
@@ -18,7 +20,7 @@ import math
 import os
 
 ROWS = {
-    "oracle": "oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1",
+    "oracle": "oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1,tries=3",
 }
 
 

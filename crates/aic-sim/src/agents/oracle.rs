@@ -20,7 +20,13 @@
 //! decisions inside a line are scored on a guess, so another guess is another
 //! line). The budget dials (`alts`, `budget`, `reseeds`) are the anytime knob:
 //! more lines, more seeds found winnable. Decisions inside a line are still
-//! scored on a guess, as the planner's are (`docs/principles.md`).
+//! scored on a guess, as the planner's are (`docs/principles.md`), unless
+//! `truth` (243) scores them on the true table.
+//!
+//! 243: `tries` restarts the whole search from the first decision on other
+//! policy seeds when a game is lost ([`Tries`]): the cheapest way found to win
+//! more seeds, since one oracle's result on a seed swings with its lines' seeds.
+//! `prove` is a card proof: only a line that plays the card counts as a win.
 
 use aic_core::{Action, Agent, GameState, Rules};
 use rand_chacha::ChaCha8Rng;
@@ -54,6 +60,14 @@ pub struct OracleCfg {
     pub discards: usize,
     /// Lines played side by side (scoped threads); the choice is the same at any count.
     pub threads: usize,
+    /// 243: lines whose policy scores on the true table, not a guess (0: none, 1: all but the reseeds,
+    /// whose guesses are their variety; 2: all).
+    pub truth: usize,
+    /// 243, a card proof: a line counts as won only if this card is played in the game, and lines take
+    /// the card at every chance (drafted, kept, played) until it is played.
+    pub prove: Option<String>,
+    /// 243: moves every line's policy seed (a restart's try: [`Tries`]); 0: today's lines.
+    pub salt: u64,
 }
 
 /// A line of play to the end of the game.
@@ -88,16 +102,33 @@ pub struct Oracle {
     history: PhaseHistory,
     /// Lines played, for the cost read.
     pub lines: usize,
+    /// The card to prove has been played on the real table.
+    proved: bool,
 }
 
 impl Oracle {
     pub fn new(ev: Eval, forced: Forced, behaviors: Behaviors, rng: ChaCha8Rng, cfg: OracleCfg) -> Self {
-        Oracle { ev, forced, behaviors, rng, cfg, line: None, spent: (0, 0, false), history: PhaseHistory::default(), lines: 0 }
+        Oracle {
+            ev,
+            forced,
+            behaviors,
+            rng,
+            cfg,
+            line: None,
+            spent: (0, 0, false),
+            history: PhaseHistory::default(),
+            lines: 0,
+            proved: false,
+        }
+    }
+
+    fn kit(&self) -> Kit<'_> {
+        Kit { ev: &self.ev, forced: &self.forced, behaviors: &self.behaviors, cfg: &self.cfg, proved: self.proved }
     }
 
     fn line_from(&mut self, rules: &Rules, state: &GameState, first: Option<&Action>, salt: u64) -> Option<Line> {
         self.lines += 1;
-        Kit { ev: &self.ev, forced: &self.forced, behaviors: &self.behaviors, cfg: &self.cfg }.line(rules, state, first, salt)
+        self.kit().line(rules, state, first, salt)
     }
 
     /// Plays the lines of `tasks` (an opening move or the policy's, a policy
@@ -110,7 +141,7 @@ impl Oracle {
         tasks: &[(Option<Action>, u64)],
         mut take: impl FnMut(Option<Line>) -> bool,
     ) {
-        let kit = Kit { ev: &self.ev, forced: &self.forced, behaviors: &self.behaviors, cfg: &self.cfg };
+        let kit = Kit { ev: &self.ev, forced: &self.forced, behaviors: &self.behaviors, cfg: &self.cfg, proved: self.proved };
         let t = self.cfg.threads.max(1);
         for batch in tasks.chunks(t) {
             self.lines += batch.len();
@@ -141,6 +172,13 @@ struct Kit<'a> {
     forced: &'a Forced,
     behaviors: &'a Behaviors,
     cfg: &'a OracleCfg,
+    /// The card to prove has been played on the real table.
+    proved: bool,
+}
+
+/// 243: a move that takes the card to prove a step toward play: drafting, keeping or playing it.
+fn takes(prove: &str, a: &Action) -> bool {
+    matches!(a, Action::Draft { card, .. } | Action::Keep { card, .. } | Action::Play { card, .. } if card.as_str() == prove)
 }
 
 impl Kit<'_> {
@@ -148,8 +186,11 @@ impl Kit<'_> {
     /// actions count, moved by `salt` (0: the planner's own seed).
     fn policy(&self, g: &GameState, salt: u64) -> Box<dyn Agent + Send> {
         let c = self.cfg;
-        let seed = (g.seed ^ g.stats.actions as u64).wrapping_add(salt.wrapping_mul(0x9E37_79B9_7F4A_7C15));
-        rollout_policy(self.ev, self.forced, self.behaviors, seed, c.samples, c.choices, c.prune, c.powers, c.answers, c.discards)
+        let seed = (g.seed ^ g.stats.actions as u64)
+            .wrapping_add(salt.wrapping_mul(0x9E37_79B9_7F4A_7C15))
+            .wrapping_add(c.salt.wrapping_mul(0xD1B5_4A32_D192_ED03));
+        let truth = c.truth > 1 || (c.truth == 1 && salt == 0);
+        rollout_policy(self.ev, self.forced, self.behaviors, seed, c.samples, c.choices, c.prune, c.powers, c.answers, c.discards, truth)
     }
 
     /// The line from `state` opening with `first` (or the policy's own move),
@@ -164,6 +205,9 @@ impl Kit<'_> {
                 rules.apply_mut(&mut g, a, None).ok()?;
                 actions.push(a.clone());
             }
+            let prove = self.cfg.prove.as_deref();
+            let played = |a: &Action| prove.is_some_and(|p| matches!(a, Action::Play { card, .. } if card.as_str() == p));
+            let mut proved = self.proved || first.is_some_and(played);
             let mut agent = self.policy(&g, salt);
             let mut legal = Vec::new();
             let cap = state.stats.actions as usize + MAX_ACTIONS;
@@ -176,14 +220,21 @@ impl Kit<'_> {
                 if legal.is_empty() {
                     break;
                 }
-                let i = if legal.len() == 1 { 0 } else { agent.choose(rules, &g, &legal) };
+                // A proof's line takes the card at every step it is offered (until played once).
+                let rush = if proved { None } else { prove.and_then(|p| legal.iter().position(|a| takes(p, a))) };
+                let i = match rush {
+                    Some(i) => i,
+                    None if legal.len() == 1 => 0,
+                    None => agent.choose(rules, &g, &legal),
+                };
                 if prof::time(Part::ApplyMut, || rules.apply_mut(&mut g, &legal[i], None)).is_err() {
                     break;
                 }
+                proved |= played(&legal[i]);
                 actions.push(legal[i].clone());
             }
             marks.push((u32::MAX, self.ev.value(rules, &g)));
-            let won = g.outcome.as_ref().is_some_and(|o| o.won);
+            let won = g.outcome.as_ref().is_some_and(|o| o.won) && (prove.is_none() || proved);
             Some(Line { actions, next: 0, cursor: state.clone(), marks, won })
         })
     }
@@ -228,6 +279,7 @@ impl Agent for Oracle {
     fn choose(&mut self, rules: &Rules, state: &GameState, legal: &[Action]) -> usize {
         self.sync(rules, state);
         if legal.len() == 1 {
+            self.note_play(&legal[0]);
             return 0;
         }
         self.history.enter(state);
@@ -296,6 +348,94 @@ impl Agent for Oracle {
             pick(legal, &scores)
         });
         self.history.push(&legal[i]);
+        self.note_play(&legal[i]);
         i
+    }
+}
+
+/// 243, a card proof on the real table: the keep plan around the oracle keeps by its own sketch, so this
+/// takes the card's draft, keep and play first, as a proof's lines do, until the card is played once.
+pub struct Rush {
+    inner: Box<dyn Agent + Send>,
+    prove: String,
+    played: bool,
+}
+
+impl Rush {
+    pub fn new(inner: Box<dyn Agent + Send>, prove: String) -> Self {
+        Rush { inner, prove, played: false }
+    }
+}
+
+impl Agent for Rush {
+    fn choose(&mut self, rules: &Rules, state: &GameState, legal: &[Action]) -> usize {
+        let rush = if self.played { None } else { legal.iter().position(|a| takes(&self.prove, a)) };
+        let i = rush.unwrap_or_else(|| self.inner.choose(rules, state, legal));
+        self.played |= matches!(&legal[i], Action::Play { card, .. } if card.as_str() == self.prove);
+        i
+    }
+}
+
+/// 243, restarts (`tries`): at its first decision the oracle plays whole games on copies of the table,
+/// each a fresh oracle, and plays the first that wins (else the first). The first try is the oracle as
+/// specified, so the game it plays is the one a single oracle plays wherever that one wins; the rest
+/// move every line's policy seed (`salt`) and switch `truth`. Its wins are a superset of one try's.
+pub struct Tries {
+    tries: Vec<super::AgentSpec>,
+    seed: u64,
+    plan: Option<Vec<Action>>,
+    next: usize,
+}
+
+impl Tries {
+    pub fn new(tries: Vec<super::AgentSpec>, seed: u64) -> Self {
+        Tries { tries, seed, plan: None, next: 0 }
+    }
+
+    fn search(&self, rules: &Rules, state: &GameState) -> Vec<Action> {
+        let mut first = None;
+        let mut legal = Vec::new();
+        for spec in &self.tries {
+            let mut g = state.clone();
+            let mut agent = spec.build(rules, self.seed);
+            let mut actions = Vec::new();
+            // As the experiment's game loop: every decision goes to the agent.
+            while actions.len() < 100_000 {
+                rules.legal_actions_into(&g, &mut legal);
+                if legal.is_empty() {
+                    break;
+                }
+                let i = agent.choose(rules, &g, &legal);
+                if rules.apply_mut(&mut g, &legal[i], None).is_err() {
+                    break;
+                }
+                actions.push(legal[i].clone());
+            }
+            if g.outcome.as_ref().is_some_and(|o| o.won) {
+                return actions;
+            }
+            first.get_or_insert(actions);
+        }
+        first.unwrap_or_default()
+    }
+}
+
+impl Agent for Tries {
+    fn choose(&mut self, rules: &Rules, state: &GameState, legal: &[Action]) -> usize {
+        if self.plan.is_none() {
+            self.plan = Some(self.search(rules, state));
+        }
+        let a = self.plan.as_ref().and_then(|p| p.get(self.next));
+        self.next += 1;
+        a.and_then(|a| legal.iter().position(|b| b == a)).expect("a try replays on the real table")
+    }
+}
+
+impl Oracle {
+    /// A card proof's card played on the real table: every line from here counts it.
+    fn note_play(&mut self, a: &Action) {
+        if let (Some(p), Action::Play { card, .. }) = (&self.cfg.prove, a) {
+            self.proved |= card.as_str() == p;
+        }
     }
 }

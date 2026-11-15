@@ -1,0 +1,21 @@
+# Screens and gate (oracle dials; armsum.py: wins, agent s summed over games, lines played)
+
+## d3, dev seeds 36800-36807 (24 games an arm)
+s1-base                                  n  24 won  24 (paired 24 vs 24; +0 -0) agent     529 s ( 22.0/game) lines   1051
+s1-salts_1                               n  24 won  24 (paired 24 vs 24; +0 -0) agent     264 s ( 11.0/game) lines    786
+s1-truth_1                               n  24 won  24 (paired 24 vs 24; +0 -0) agent     350 s ( 14.6/game) lines   2342
+s1-choices_1                             n  24 won  23 (paired 23 vs 24; +0 -1) agent     687 s ( 28.6/game) lines   4734
+s1-horizon_99                            n  24 won  22 (paired 22 vs 24; +0 -2) agent     322 s ( 13.4/game) lines   2567
+
+## d4, dev seeds 36800-36807 (24 games an arm; base timed earlier on a quieter box)
+d4-base                                  n  24 won  22 (paired 22 vs 22; +0 -0) agent    2103 s ( 87.6/game) lines      0
+s2a-salts_1                              n  24 won  19 (paired 19 vs 22; +1 -4) agent    1935 s ( 80.6/game) lines   9287
+s2b-salts_1_truth_1                      n  24 won  24 (paired 24 vs 22; +2 -0) agent    1297 s ( 54.0/game) lines   3410
+
+## Gate: d4, dev seeds 36808-36823, 48 games an arm, side by side at 2 threads each
+today's oracle 42/48, 2630 s (66 games/thread-hour); truth=1 44/48, 3361 s (51); truth=1,salts=1 41/48, 3037 s (57)
+tries=3 (the 6 losing seeds' 15 games rerun; the rest are today's games): 46/48, 3102 s (56); every game today's oracle won replayed identically
+
+## Profile (prof1: d3, seed 36800, 3 games, --features profile)
+time: wall 39.1 s, games 81.7 s summed over workers: agents 99.7%, probes 0.0%, apply 0.1%, legal 0.1%, replay check 0.0%, setup 0.1%, other 0.0%; report 0.01 s
+search (of agents + probes): apply 29.3% (1097077 calls, 21.73 us each), apply_mut 2.1% (66123 calls, 25.96 us each), clone 3.2% (1097077 calls, 2.41 us each), legal 0.1% (157206 calls, 0.45 us each), eval 51.7% (948923 calls, 44.39 us each), determinize 1.6% (39243 calls, 33.90 us each), line 99.6% (321 calls, 252610.69 us each), sync 0.1% (1694 calls, 26.87 us each), policy 3.2% (24779 calls, 104.88 us each), top 0.1% (36 calls, 1325.88 us each), extend 0.0% (0 calls, 0.00 us each), score_power 18.7% (48037 calls, 317.59 us each), score_play 10.1% (33929 calls, 242.34 us each), score_standard 27.7% (49376 calls, 457.38 us each), score_choose 14.0% (67728 calls, 167.78 us each), score_other 16.8% (232843 calls, 58.70 us each)

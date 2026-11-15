@@ -306,6 +306,10 @@ pub const LADDER: &[(&str, &[Param])] = &[
             ("answers", 99.0, "prompts an answer looks on inside a rollout, at most choices"),
             ("discards", 0.0, DISCARDS),
             ("threads", 1.0, "lines played side by side in one decision (the same play at any count)"),
+            ("truth", 0.0, "243: lines whose policy scores the true table, not a guess (0: none, 1: all but the reseeds, 2: all)"),
+            ("tries", 1.0, "243: restarts: whole games played from the first decision until one wins, the first as this spec, the rest on other policy seeds with truth switched every other try"),
+            ("salt", 0.0, "243: moves every line's policy seed (a restart's try)"),
+            ("prove", 0.0, "243, a card proof: only a line that plays this card wins, and lines take it at every chance (1-based row of `aic-sim cards`; 0: off)"),
         ],
     ),
 ];
@@ -527,12 +531,46 @@ impl AgentSpec {
     /// A fresh agent for one game: the search agent, wrapped in its keep
     /// policy, forced behaviors and agent behaviors when it has any (022, 185).
     pub fn build(&self, rules: &Rules, game_seed: u64) -> Box<dyn Agent + Send> {
+        if self.kind == "oracle" && self.p("tries") > 1 {
+            return Box::new(oracle::Tries::new(self.tries(), game_seed));
+        }
         let inner = self.build_search(rules, game_seed);
         let (forced, behaviors) = (self.forced(), self.behaviors());
-        if !forced.is_active() && !behaviors.is_active() {
-            return inner as Box<dyn Agent + Send>;
+        let agent: Box<dyn Agent + Send> = if !forced.is_active() && !behaviors.is_active() {
+            inner as Box<dyn Agent + Send>
+        } else {
+            Box::new(policy::Policy::new(inner, forced, behaviors))
+        };
+        match self.prove_card() {
+            Some(card) if self.kind == "oracle" => Box::new(oracle::Rush::new(agent, card)),
+            _ => agent,
         }
-        Box::new(policy::Policy::new(inner, forced, behaviors))
+    }
+
+    /// 243: a card proof's card (`prove`, a 1-based row of `aic-sim cards`).
+    fn prove_card(&self) -> Option<String> {
+        match self.params.get("prove").map_or(0, |v| v.round() as usize) {
+            0 => None,
+            n => Some(aic_core::content::content().cards[n - 1].id.clone()),
+        }
+    }
+
+    /// 243: an oracle's restarts ([`oracle::Tries`]): itself as one try, then tries on other
+    /// policy seeds, `truth` switched on every other one.
+    fn tries(&self) -> Vec<AgentSpec> {
+        let truth = self.p("truth");
+        (0..self.p("tries"))
+            .map(|t| {
+                let mut s = self.clone();
+                s.params.insert("tries".into(), 1.0);
+                if t > 0 {
+                    s.params.insert("salt".into(), (self.p("salt") + t) as f64);
+                    let flip = if truth == 0 { 1 } else { 0 };
+                    s.params.insert("truth".into(), if t % 2 == 1 { flip } else { truth } as f64);
+                }
+                s
+            })
+            .collect()
     }
 
     fn build_search(&self, rules: &Rules, game_seed: u64) -> Box<dyn Strategic + Send> {
@@ -623,6 +661,9 @@ impl AgentSpec {
                     answers: self.p("answers"),
                     discards: self.p("discards"),
                     threads: self.p("threads"),
+                    truth: self.p("truth"),
+                    salt: self.p("salt") as u64,
+                    prove: self.prove_card(),
                 },
             )),
             k => unreachable!("agent kind {k} is checked in parse"),
@@ -871,6 +912,45 @@ mod tests {
     #[ignore = "slow lane: a whole search-agent game"]
     fn oracle_replays_and_repeats() {
         replay_and_repeat(ORACLE, 3000, true);
+    }
+
+    /// 243: a card proof's oracle takes its card's keep and play over what the keep plan would do, and only
+    /// until the card is played; `prove` names the card by its row of `aic-sim cards`.
+    #[test]
+    fn a_card_proof_takes_its_card() {
+        let r = rules(0);
+        let g = r.new_game(3);
+        let spec = AgentSpec::parse("oracle:prove=1").unwrap();
+        let card = aic_core::content().cards[0].id.clone();
+        assert_eq!(spec.prove_card().as_deref(), Some(card.as_str()));
+        let key = aic_core::Key::new(&card);
+        let mut a = oracle::Rush::new(Box::new(RandomAgent::new(3)), card);
+        let keep = vec![Action::Pass { seat: 0 }, Action::Keep { seat: 0, card: key }];
+        assert_eq!(a.choose(&r, &g, &keep), 1);
+        let play = vec![Action::Pass { seat: 0 }, Action::Play { seat: 0, card: key }];
+        assert_eq!(a.choose(&r, &g, &play), 1);
+        // Played once: the next copy is the agent's own call (a lone Pass here).
+        assert_eq!(a.choose(&r, &g, &play[..1]), 0);
+    }
+
+    /// 243: restarts play the single oracle's own game wherever it wins (their first try is that oracle),
+    /// and otherwise a won try or that same game; the game replays.
+    #[test]
+    #[ignore = "slow lane: whole oracle games"]
+    fn oracle_tries_keep_the_first_try() {
+        let r = rules(0);
+        let seed = 3;
+        let one = AgentSpec::parse(ORACLE).unwrap();
+        let tries = AgentSpec::parse(&format!("{ORACLE},tries=2")).unwrap();
+        let ((g1, rec1), (g2, rec2)) = std::thread::scope(|s| {
+            let t = s.spawn(|| play(&r, seed, &mut *tries.build(&r, seed), 3000));
+            (play(&r, seed, &mut *one.build(&r, seed), 3000), t.join().unwrap())
+        });
+        let won = |g: &GameState| g.outcome.as_ref().is_some_and(|o| o.won);
+        if won(&g1) || !won(&g2) {
+            assert_eq!(rec1.actions, rec2.actions);
+        }
+        assert_eq!(replay(&r, seed, &rec2.actions).unwrap(), g2);
     }
 
     /// An agent's decision is the same on two tables that differ only in

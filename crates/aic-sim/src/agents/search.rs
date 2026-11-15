@@ -612,6 +612,8 @@ pub struct Greedy {
     powers: usize,
     /// The actions dropped this phase, once it has been scored.
     dropped: Option<HashSet<Action>>,
+    /// 243 (the oracle's lines alone): score on the table as it is, the hidden cards included, not a guess.
+    truth: bool,
 }
 
 impl Greedy {
@@ -624,6 +626,7 @@ impl Greedy {
             prune: 0,
             powers: usize::MAX,
             dropped: None,
+            truth: false,
         }
     }
 
@@ -656,17 +659,31 @@ impl Greedy {
         self
     }
 
+    /// 243: scores on the true table (the oracle's lines, which see the deal): see `truth`.
+    pub fn truth(mut self, on: bool) -> Self {
+        self.truth = on;
+        self
+    }
+
+    fn scored(&mut self, rules: &Rules, state: &GameState, legal: &[Action]) -> Vec<f64> {
+        if self.truth {
+            score_guesses(rules, &self.ev, state, std::slice::from_ref(state), legal, self.how)
+        } else {
+            greedy_scores(rules, &self.ev, &mut self.rng, state, legal, self.how)
+        }
+    }
+
     /// Scores `legal`, skipping what this phase has dropped, and at the
     /// phase's first full scoring drops all but each seat's best `prune`.
     fn scores(&mut self, rules: &Rules, state: &GameState, legal: &[Action]) -> Vec<f64> {
         if self.prune == 0 || state.pending.is_some() {
-            return greedy_scores(rules, &self.ev, &mut self.rng, state, legal, self.how);
+            return self.scored(rules, state, legal);
         }
         let live: Vec<usize> = (0..legal.len())
             .filter(|&i| self.dropped.as_ref().is_none_or(|d| !d.contains(&legal[i])))
             .collect();
         let menu: Vec<Action> = live.iter().map(|&i| legal[i].clone()).collect();
-        let found = greedy_scores(rules, &self.ev, &mut self.rng, state, &menu, self.how);
+        let found = self.scored(rules, state, &menu);
         let mut out = vec![f64::NEG_INFINITY; legal.len()];
         for (k, &i) in live.iter().enumerate() {
             out[i] = found[k];

@@ -160,11 +160,12 @@ pub(super) fn rollout_policy(
     powers: usize,
     answers: usize,
     discards: usize,
+    truth: bool,
 ) -> Box<dyn Agent + Send> {
     let rng = ChaCha8Rng::seed_from_u64(seed);
     // `pruned` changes what the policy can play, not only how fast: see `Greedy::prune`.
     let greedy = Greedy::new(ev.clone(), rng, samples, 1, choices);
-    let inner = Box::new(greedy.pruned(prune).powers(powers).answers(answers).discards(discards).in_rollout());
+    let inner = Box::new(greedy.pruned(prune).powers(powers).answers(answers).discards(discards).in_rollout().truth(truth));
     Box::new(Policy::new(inner, forced.clone(), behaviors.clone()).with_strategies(ev.strategies()))
 }
 
@@ -187,7 +188,7 @@ impl Planner {
     fn policy(&self, g: &GameState) -> Box<dyn Agent + Send> {
         let c = &self.cfg;
         let seed = g.seed ^ g.stats.actions as u64;
-        rollout_policy(&self.ev, &self.forced, &self.behaviors, seed, c.samples, c.choices, c.prune, c.powers, c.answers, c.discards)
+        rollout_policy(&self.ev, &self.forced, &self.behaviors, seed, c.samples, c.choices, c.prune, c.powers, c.answers, c.discards, false)
     }
 
     /// Plays `g` on with the rollout policy to the first decision of round

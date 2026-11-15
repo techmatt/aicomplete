@@ -148,15 +148,18 @@ ceiling, `sweep:plan_table=0,w.table=0,w.packet_keep=1` the judge off the value 
 - **Copy the binary before a run** (README, *This machine*); **preflight** a long one (`SPEC --games 1 --out
   out/preflight`). Readers: [scripts.md](scripts.md).
 
-**Skilled rows.** `bench/skilled_rows.py READ.json` writes the oracle's companion spec (its docstring); about 20 min
-on 3 threads (r73): launch it with the read.
+**Skilled rows.** `bench/skilled_rows.py READ.json` writes the oracle's companion spec (its docstring): launch it
+with the read. At r109 an oracle game (`tries=3`, one thread, a loaded box) took about 1.4 / 2.5 / 4.6 / 15 / 150 s
+at d0-d4; restarts cost only where the first try loses (1.15x at d3, 1.8x at d4); the slowest game bounds the wall
+time. A card proof is the oracle with `prove=N` (N: the card's row of `aic-sim cards`), seconds a game where it
+proves the card and a whole search where it can't: 243's `proofs.py`.
 
 `experiments/band.json` and `sanity-line.json`: their `note`s. Read band's win mix (the purge by Unity step,
 `ends156.py`) before a rule touching the end state.
 
 **Fresh seeds.** Specs start at seed 0: give a confirming read a `--seed` no screen of this revision used. An item
 that spends seeds updates the ledger after its last read (`bench/seeds.py next N [--take]`; all below *Next free*
-are used). Next free: 47488. **The dev seeds are 36800-36831**, for on/off
+are used). Next free: 47704. **The dev seeds are 36800-36831**, for on/off
 checks and crash-finding (SE ~5 a cell). A 2-8 point effect (a level's income step): screen it paired on this
 revision's spent fresh sets (~500+ games a cell, SE ~2), then confirm once on new seeds.
 

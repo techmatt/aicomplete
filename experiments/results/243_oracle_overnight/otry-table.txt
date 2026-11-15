@@ -1,0 +1,21 @@
+bp d0     n  192 today  192 (100.0%) new  192 (100.0%) +0   s/game today    1.6 new    1.6  games/thread-hour today   2311 new   2311
+br d0     n  192 today  192 (100.0%) new  192 (100.0%) +0   s/game today    1.4 new    1.4  games/thread-hour today   2519 new   2519
+pr d0     n  192 today  192 (100.0%) new  192 (100.0%) +0   s/game today    1.4 new    1.4  games/thread-hour today   2655 new   2655
+all d0    n  576 today  576 (100.0%) new  576 (100.0%) +0   s/game today    1.4 new    1.4  games/thread-hour today   2487 new   2487
+bp d1     n  192 today  192 (100.0%) new  192 (100.0%) +0   s/game today    2.4 new    2.4  games/thread-hour today   1497 new   1497
+br d1     n  192 today  192 (100.0%) new  192 (100.0%) +0   s/game today    2.4 new    2.4  games/thread-hour today   1513 new   1513
+pr d1     n  192 today  192 (100.0%) new  192 (100.0%) +0   s/game today    2.7 new    2.7  games/thread-hour today   1333 new   1333
+all d1    n  576 today  576 (100.0%) new  576 (100.0%) +0   s/game today    2.5 new    2.5  games/thread-hour today   1443 new   1443
+bp d2     n  192 today  192 (100.0%) new  192 (100.0%) +0   s/game today    3.9 new    3.9  games/thread-hour today    918 new    918
+br d2     n  192 today  192 (100.0%) new  192 (100.0%) +0   s/game today    4.7 new    4.7  games/thread-hour today    760 new    760
+pr d2     n  192 today  192 (100.0%) new  192 (100.0%) +0   s/game today    5.1 new    5.1  games/thread-hour today    703 new    703
+all d2    n  576 today  576 (100.0%) new  576 (100.0%) +0   s/game today    4.6 new    4.6  games/thread-hour today    784 new    784
+bp d3     n  192 today  191 ( 99.5%) new  192 (100.0%) +1   s/game today   10.2 new   10.3  games/thread-hour today    353 new    351
+br d3     n  192 today  186 ( 96.9%) new  192 (100.0%) +6   s/game today   11.9 new   14.5  games/thread-hour today    301 new    248
+pr d3     n  192 today  188 ( 97.9%) new  192 (100.0%) +4   s/game today   17.2 new   20.5  games/thread-hour today    210 new    175
+all d3    n  576 today  565 ( 98.1%) new  576 (100.0%) +11  s/game today   13.1 new   15.1  games/thread-hour today    275 new    238
+bp d4     n   24 today   20 ( 83.3%) new   24 (100.0%) +4   s/game today   71.1 new   90.3  games/thread-hour today     51 new     40
+br d4     n   24 today   19 ( 79.2%) new   23 ( 95.8%) +4   s/game today   67.5 new   98.5  games/thread-hour today     53 new     37
+pr d4     n   24 today   19 ( 79.2%) new   22 ( 91.7%) +3   s/game today  111.7 new  252.1  games/thread-hour today     32 new     14
+all d4    n   72 today   58 ( 80.6%) new   69 ( 95.8%) +11  s/game today   83.4 new  147.0  games/thread-hour today     43 new     24
+all       n 2376 today 2351 ( 98.9%) new 2373 ( 99.9%) +22  s/game today    7.8 new   10.2  games/thread-hour today    463 new    354
