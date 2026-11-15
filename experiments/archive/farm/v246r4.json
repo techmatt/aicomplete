@@ -1,0 +1,55 @@
+{
+ "name": "v246r4",
+ "note": "246 card usefulness: each card blanked (cost 99) against the base deck, same seeds",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "base|bp",
+   "set": []
+  },
+  {
+   "name": "base|br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "base|pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  },
+  {
+   "name": "no-deep_state_ledger|bp",
+   "set": [
+    "cards.deep_state_ledger.cost=99"
+   ]
+  },
+  {
+   "name": "no-deep_state_ledger|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.deep_state_ledger.cost=99"
+   ]
+  },
+  {
+   "name": "no-deep_state_ledger|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.deep_state_ledger.cost=99"
+   ]
+  }
+ ],
+ "difficulties": [
+  2,
+  3
+ ],
+ "agents": [
+  "engine:strategy=1",
+  "strategist"
+ ],
+ "games": 96,
+ "records": 0
+}

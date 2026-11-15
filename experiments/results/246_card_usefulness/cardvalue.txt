@@ -1,0 +1,22 @@
+adds = ref win% - arm win% (paired, same seed, pair, level); rounds = arm - ref over games both won;
+played% = the card's play rate in the arm holding it (ref, or the arm when ref is a blank)
+
+engine:strategy=1: base 576 games, win 44.6%
+arm                                  ref                            n   adds   ±SE  rounds   ±SE  played%
+no-power_to_the_people               base                         576   -1.2   1.7   -0.12  0.08     32.6
+no-positron_storage_ring             base                         576   -3.1   1.6   -0.24  0.07     39.4
+no-forensic_audit                    base                         576   +1.4   1.5   +0.07  0.07     42.9
+no-antiproton_foundry                base                         576   -2.4   1.6   +0.04  0.07     49.5
+no-nuclear_option                    base                         576   +0.3   1.4   +0.01  0.06     30.2
+no-wafer_fab_line                    base                         576   -3.1   1.8   +0.02  0.08     46.5
+no-dyson_swarm_tranche               base                         576   -1.7   1.3   +0.03  0.05     20.5
+no-citywide_microgrid                base                         576   -0.9   1.8   +0.03  0.09     53.6
+no-catalyzed_fab_run                 base                         576   +1.7   1.3   +0.03  0.04     34.4
+no-treaty_isotope_bank               base                         576   -0.3   1.7   +0.09  0.06     37.3
+no-smart_grid_backbone               base                         576   -0.3   1.2   +0.06  0.06      2.1
+no-baseload_contract                 base                         576   +0.3   1.6   -0.04  0.08      4.2
+no-field_grant                       base                         576   +1.0   1.4   -0.01  0.07      1.9
+no-annihilation_lance                base                         576   +1.0   0.9   -0.00  0.03      6.4
+no-pumped_hydro_storage              base                         576   +0.3   1.6   -0.17  0.08      5.2
+no-deep_state_ledger                 base                         576   +0.5   1.2   -0.07  0.04      4.0
+no-multiyear_defense_budget          base                         576   +1.0   1.6   +0.07  0.08      5.4

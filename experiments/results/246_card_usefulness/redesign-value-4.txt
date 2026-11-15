@@ -1,0 +1,10 @@
+adds = ref win% - arm win% (paired, same seed, pair, level); rounds = arm - ref over games both won;
+played% = the card's play rate in the arm holding it (ref, or the arm when ref is a blank)
+
+engine:strategy=1: base 240 games, win 52.1%
+arm                                  ref                            n   adds   ±SE  rounds   ±SE  played%
+no-deep_state_ledger                 base                         240   +5.0   2.3   -0.03  0.10     18.3
+
+strategist: base 240 games, win 67.1%
+arm                                  ref                            n   adds   ±SE  rounds   ±SE  played%
+no-deep_state_ledger                 base                         240   -3.8   2.3   -0.06  0.08     12.5

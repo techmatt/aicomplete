@@ -1,0 +1,59 @@
+{
+ "name": "v246r3",
+ "note": "246 card usefulness: each card blanked (cost 99) against the base deck, same seeds",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "pumped_hydro_storage@246b|bp",
+   "set": [
+    "cards.pumped_hydro_storage.effects=[{\"op\":\"target\",\"on\":\"fallout\"},{\"op\":\"lift_fallout\",\"count\":2,\"at\":\"near\"},{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+   ]
+  },
+  {
+   "name": "pumped_hydro_storage@246b|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.pumped_hydro_storage.effects=[{\"op\":\"target\",\"on\":\"fallout\"},{\"op\":\"lift_fallout\",\"count\":2,\"at\":\"near\"},{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+   ]
+  },
+  {
+   "name": "pumped_hydro_storage@246b|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.pumped_hydro_storage.effects=[{\"op\":\"target\",\"on\":\"fallout\"},{\"op\":\"lift_fallout\",\"count\":2,\"at\":\"near\"},{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+   ]
+  },
+  {
+   "name": "multiyear_defense_budget@246b|bp",
+   "set": [
+    "cards.multiyear_defense_budget.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":8},{\"op\":\"production\",\"resource\":\"energy\",\"amount\":1}]"
+   ]
+  },
+  {
+   "name": "multiyear_defense_budget@246b|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.multiyear_defense_budget.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":8},{\"op\":\"production\",\"resource\":\"energy\",\"amount\":1}]"
+   ]
+  },
+  {
+   "name": "multiyear_defense_budget@246b|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.multiyear_defense_budget.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":8},{\"op\":\"production\",\"resource\":\"energy\",\"amount\":1}]"
+   ]
+  }
+ ],
+ "difficulties": [
+  2,
+  3
+ ],
+ "agents": [
+  "engine:strategy=1",
+  "strategist"
+ ],
+ "games": 96,
+ "records": 0
+}

@@ -115,10 +115,9 @@ megaproject is the corp's defining card.
   capstone or a Cryo Sample Vault (r88); no converter makes cubes, so none feeds another within a round.
   Research cubes and converters are a resource every player reaches eventually, like
   antimatter. The Researcher's board ([ai-boards.md](ai-boards.md)) and several Science cards (cards.md) name them too.
-- **Bought and carded cubes.** The Researcher's Grant power (3 credits), Field Grant (in
-  a country where you own a station) and Moonshot Grant (8 cubes on any megaproject that
-  isn't complete, no station needed: 8 complete one) put research cubes in your color onto an
-  **incomplete** megaproject. They pay at completion like any cube and are spent then, so
+- **Bought and carded cubes.** The Researcher's Grant power (3 credits) and Moonshot Grant
+  (8 cubes on any megaproject that isn't complete, no station needed: 8 complete one) put
+  research cubes in your color onto an **incomplete** megaproject. They pay at completion like any cube and are spent then, so
   credits never reach a converter this way: a bought cube earns its card's player payout
   and brings the completion a cube nearer.
 

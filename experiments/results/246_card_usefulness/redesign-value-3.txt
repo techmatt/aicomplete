@@ -1,0 +1,12 @@
+adds = ref win% - arm win% (paired, same seed, pair, level); rounds = arm - ref over games both won;
+played% = the card's play rate in the arm holding it (ref, or the arm when ref is a blank)
+
+engine:strategy=1: none 0 games, win 0.0%
+arm                                  ref                            n   adds   ±SE  rounds   ±SE  played%
+no-pumped_hydro_storage              pumped_hydro_storage@246b    240   -1.2   2.5   -0.05  0.10      5.4
+no-multiyear_defense_budget          multiyear_defense_budget@246b   240   -0.4   2.5   -0.07  0.11     15.4
+
+strategist: none 0 games, win 0.0%
+arm                                  ref                            n   adds   ±SE  rounds   ±SE  played%
+no-pumped_hydro_storage              pumped_hydro_storage@246b    240   +0.4   1.5   -0.13  0.07      3.8
+no-multiyear_defense_budget          multiyear_defense_budget@246b   240   +2.1   1.5   -0.03  0.09      5.0

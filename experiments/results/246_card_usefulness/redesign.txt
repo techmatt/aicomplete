@@ -1,0 +1,27 @@
+# 246: Branch B redesigns (candidates). apply_overlay.py entries; the card-value read takes the same lines as --set.
+# Field Grant: its 2 cubes landed on megaprojects that complete early, so it sat dead in hand (243). Research cubes
+# held are always usable (Turn a cube into insight, Lift Fallout, Make antimatter, converters, Forensic Audit).
+cards.field_grant.cost=9
+cards.field_grant.effects=[{"op":"gain","resource":"research_cubes","amount":3}]
+cards.field_grant.keywords=null
+# Smart Grid Backbone: its trigger paid energy, the resource seats hold spare (7-13 a seat after the action phase).
+# Now Power's credit engine (as Exploit Broker is Cyber's, Citation Engine Science's), paying up front in cards.
+cards.smart_grid_backbone.passives=[{"op":"when","on":{"event":"play","tag":"power"},"then":[{"op":"gain","resource":"credits","amount":10}]}]
+cards.smart_grid_backbone.effects=[{"op":"draw","count":3}]
+# Energy income sits spare too (above): the energy-income cards trade it, or half of it, for what seats spend.
+# Baseload Contract: +2 energy income kept, 2 ambassadors added (the Liberate route), 24 -> 26 credits.
+cards.baseload_contract.cost=26
+cards.baseload_contract.effects=[{"op":"production","resource":"energy","amount":2},{"op":"gain_ambassadors","count":2}]
+# Pumped Hydro Storage: lift 2 Fallout on or next to the target and +5 credit income (was +1 energy income, 4
+# energy, lift 1 Fallout on it). Power-only, it tripped design_check's tag-story (no Power op left); the Power-clean
+# try (gain 1 antimatter for the income) was played no more than the old card (engine 5.4%, judge 3.8%), so it takes
+# the Diplomacy tag instead, whose story is "green energy and cleanup": a storage reservoir that lifts Fallout.
+cards.pumped_hydro_storage.tags=["power","diplomacy"]
+cards.pumped_hydro_storage.effects=[{"op":"target","on":"fallout"},{"op":"lift_fallout","count":2,"at":"near"},{"op":"production","resource":"credits","amount":5}]
+# Multiyear Defense Budget: +8 credit income and +1 energy income (was +4 credit and +2 energy income). Measured first
+# with 2 ambassadors in place of the energy; tag-story refused it (ambassadors are Diplomacy's).
+cards.multiyear_defense_budget.effects=[{"op":"production","resource":"credits","amount":8},{"op":"production","resource":"energy","amount":1}]
+# Deep State Ledger: +3 insight income and remove up to 3 agents on its target (its 2 Operatives went nowhere without
+# an Operative building). Measured first with draw 3; the diff review found that Recursive Self-Improvement's effect.
+cards.deep_state_ledger.effects=[{"op":"target","on":"agents"},{"op":"remove_ambassadors_country","max":3,"at":"on"},{"op":"production","resource":"insight","amount":3}]
+cards.deep_state_ledger.keywords=null

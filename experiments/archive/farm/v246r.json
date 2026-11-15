@@ -1,0 +1,108 @@
+{
+ "name": "v246r",
+ "note": "246 card usefulness: each card blanked (cost 99) against the base deck, same seeds",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "no-field_grant|bp",
+   "set": [
+    "cards.field_grant.cost=99"
+   ]
+  },
+  {
+   "name": "no-field_grant|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.field_grant.cost=99"
+   ]
+  },
+  {
+   "name": "no-field_grant|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.field_grant.cost=99"
+   ]
+  },
+  {
+   "name": "no-smart_grid_backbone|bp",
+   "set": [
+    "cards.smart_grid_backbone.cost=99"
+   ]
+  },
+  {
+   "name": "no-smart_grid_backbone|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.smart_grid_backbone.cost=99"
+   ]
+  },
+  {
+   "name": "no-smart_grid_backbone|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.smart_grid_backbone.cost=99"
+   ]
+  },
+  {
+   "name": "fg246|bp",
+   "set": [
+    "cards.field_grant.cost=9",
+    "cards.field_grant.effects=[{\"op\":\"gain\",\"resource\":\"research_cubes\",\"amount\":3}]",
+    "cards.field_grant.keywords=[]"
+   ]
+  },
+  {
+   "name": "fg246|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.field_grant.cost=9",
+    "cards.field_grant.effects=[{\"op\":\"gain\",\"resource\":\"research_cubes\",\"amount\":3}]",
+    "cards.field_grant.keywords=[]"
+   ]
+  },
+  {
+   "name": "fg246|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.field_grant.cost=9",
+    "cards.field_grant.effects=[{\"op\":\"gain\",\"resource\":\"research_cubes\",\"amount\":3}]",
+    "cards.field_grant.keywords=[]"
+   ]
+  },
+  {
+   "name": "sgb246|bp",
+   "set": [
+    "cards.smart_grid_backbone.passives=[{\"op\":\"when\",\"on\":{\"event\":\"play\",\"tag\":\"power\"},\"then\":[{\"op\":\"gain\",\"resource\":\"credits\",\"amount\":10}]}]",
+    "cards.smart_grid_backbone.effects=[{\"op\":\"draw\",\"count\":3}]"
+   ]
+  },
+  {
+   "name": "sgb246|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.smart_grid_backbone.passives=[{\"op\":\"when\",\"on\":{\"event\":\"play\",\"tag\":\"power\"},\"then\":[{\"op\":\"gain\",\"resource\":\"credits\",\"amount\":10}]}]",
+    "cards.smart_grid_backbone.effects=[{\"op\":\"draw\",\"count\":3}]"
+   ]
+  },
+  {
+   "name": "sgb246|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.smart_grid_backbone.passives=[{\"op\":\"when\",\"on\":{\"event\":\"play\",\"tag\":\"power\"},\"then\":[{\"op\":\"gain\",\"resource\":\"credits\",\"amount\":10}]}]",
+    "cards.smart_grid_backbone.effects=[{\"op\":\"draw\",\"count\":3}]"
+   ]
+  }
+ ],
+ "difficulties": [
+  2,
+  3
+ ],
+ "agents": [
+  "engine:strategy=1",
+  "strategist"
+ ],
+ "games": 96,
+ "records": 0
+}

@@ -179,7 +179,8 @@ pub(super) fn blocked(w: &World, g: &GameState, seat: usize, id: &str) -> Option
 
 /// 237 (228's audit, 229's pick; stats only): the kept cards left in a hand at game end that no part of could
 /// resolve then (`effects::feasible` on the counted ops, as [`blocked`]'s "no target" / "too few tags"), one id per
-/// copy: what design_check's kept-not-played line can't say (Field Grant, a token card with no tokens). Read once,
+/// copy: what design_check's kept-not-played line can't say (a megaproject card with none open, a token card with no
+/// tokens). Read once,
 /// at game end, so it costs no decision anything.
 pub fn unofferable(w: &World, g: &GameState) -> Vec<Key> {
     let mut out = Vec::new();

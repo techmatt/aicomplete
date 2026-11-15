@@ -27,7 +27,7 @@ $S agree READ/games.jsonl --agent strategist --agents FILE --threads 6  # oracle
 **`agree` (245):** replays each won game a read's `--who` kind played (default `oracle`) and asks each `--agent`
 (repeatable; `--agents FILE`, a spec a line) to choose on every recorded table with more than one legal action; it
 prints a JSON line an agent, `by` group (`all`, `dN`) and recorded action kind (`play`, `power`, `use`, `standard`,
-`choose`, `threat`, `sell`, `pass`, `keep`, `draft`, `tier`, `convert`, and `any`): `[same, same or later this
+`choose`, `threat`, `sell`, `pass`, `keep`, `draft`, `tier`, `convert`, `any`, and `play:<card>` a card): `[same, same or later this
 round, decisions]`. The agents follow the recorded game, so all see the same tables; an agent on its own game agrees
 everywhere (a test). About 0.3 s an agent and oracle game on 6 threads (the strategist). `AIC_AGREE_SHOW=<kind>`
 prints that kind's disagreements. Readers: `experiments/results/245_tune_strategist/` (`agree_table.py`, `mkset.py`).

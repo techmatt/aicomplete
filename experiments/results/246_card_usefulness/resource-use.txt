@@ -1,0 +1,86 @@
+Per seat a game. Sides: new = out/246_card_usefulness/read-final, old = out/246_card_usefulness/read-old.
+
+| d | side | games | win % | chips gained / spent | energy gained / spent | research_cubes gained / spent | antimatter gained / spent | antimatter spent: games / won games |
+|---|---|---|---|---|---|---|---|---|
+| d0 | new | 576 | 93.8 | 10.82 / 5.83 | 46.75 / 33.77 | 25.79 / 15.03 | 4.75 / 1.56 | 92% / 92% |
+| d0 | old | 576 | 94.1 | 10.82 / 5.69 | 46.89 / 33.65 | 25.73 / 14.85 | 4.66 / 1.54 | 93% / 93% |
+| d1 | new | 576 | 87.2 | 11.44 / 5.87 | 45.44 / 33.53 | 23.89 / 14.31 | 4.45 / 1.59 | 92% / 92% |
+| d1 | old | 576 | 88.0 | 11.59 / 5.83 | 45.32 / 33.14 | 23.15 / 13.83 | 4.45 / 1.57 | 90% / 90% |
+| d2 | new | 576 | 81.8 | 11.13 / 5.89 | 42.67 / 32.51 | 22.62 / 14.11 | 4.30 / 1.56 | 90% / 90% |
+| d2 | old | 576 | 81.1 | 11.52 / 6.03 | 42.81 / 32.71 | 22.49 / 14.03 | 4.28 / 1.60 | 90% / 90% |
+| d3 | new | 576 | 56.4 | 9.68 / 5.86 | 35.38 / 28.39 | 18.69 / 12.31 | 3.30 / 1.21 | 81% / 86% |
+| d3 | old | 576 | 56.9 | 9.53 / 5.78 | 35.32 / 28.45 | 18.24 / 11.99 | 3.37 / 1.22 | 83% / 86% |
+
+## What each resource buys (uses), per seat a game, all levels
+
+| resource | src | new | old |
+|---|---|---|---|
+| chips | own:convert:1:chips | 2.07 | 2.04 |
+| chips | own:power:Procure | 1.87 | 1.88 |
+| chips | own:standard:station | 1.56 | 1.55 |
+| chips | own:power:Fortify | 0.20 | 0.20 |
+| chips | own:use:parts_exchange | 0.10 | 0.09 |
+| chips | own:play:orbital_mass_driver | 0.04 | 0.04 |
+| chips | own:power:Teardown | 0.02 | 0.01 |
+| chips | phase:threats.execute | 0.01 | 0.01 |
+| energy | own:standard:node | 5.27 | 5.31 |
+| energy | own:power:Accord | 2.17 | 2.16 |
+| energy | own:power:Peer Review | 2.05 | 2.06 |
+| energy | own:power:Bulwark | 1.67 | 1.65 |
+| energy | own:play:aegis_grid_lockdown | 1.44 | 1.46 |
+| energy | own:play:citywide_microgrid | 1.36 | 1.34 |
+| energy | own:convert:0 | 1.34 | 1.32 |
+| energy | own:use:cyclotron_lease | 1.17 | 1.13 |
+| research_cubes | own:convert:0 | 4.02 | 3.96 |
+| research_cubes | own:standard:insight | 3.65 | 3.50 |
+| research_cubes | own:convert:1 | 1.38 | 1.35 |
+| research_cubes | own:power:Peer Review | 1.01 | 1.01 |
+| research_cubes | own:standard:antimatter | 0.63 | 0.63 |
+| research_cubes | own:standard:lift | 0.57 | 0.59 |
+| research_cubes | own:pay:last_ultimatum | 0.51 | 0.51 |
+| research_cubes | own:play:forensic_audit | 0.41 | 0.41 |
+| antimatter | own:play:accelerator_diplomacy | 0.28 | 0.28 |
+| antimatter | own:use:containment_reactor | 0.14 | 0.15 |
+| antimatter | own:play:fusion_commons | 0.14 | 0.14 |
+| antimatter | own:play:antimatter_accord | 0.13 | 0.13 |
+| antimatter | own:play:catalyzed_fab_run | 0.12 | 0.12 |
+| antimatter | own:play:hostile_buyout | 0.08 | 0.09 |
+| antimatter | own:play:recursive_self_improvement | 0.08 | 0.08 |
+| antimatter | own:play:decapitation_strike | 0.07 | 0.07 |
+
+## Where it comes from (sources), per seat a game, all levels
+
+| resource | src | new | old |
+|---|---|---|---|
+| chips | phase:board.produce | 3.36 | 3.38 |
+| chips | phase:economy.upkeep | 1.41 | 1.49 |
+| chips | own:play:joint_fabrication_pact | 1.14 | 1.13 |
+| chips | own:power:Buy In | 1.04 | 1.05 |
+| chips | own:power:Mint | 0.95 | 0.95 |
+| chips | other:play:joint_fabrication_pact | 0.76 | 0.76 |
+| chips | own:play:catalyzed_fab_run | 0.74 | 0.74 |
+| chips | own:power:Scrap | 0.55 | 0.54 |
+| energy | phase:board.produce | 17.90 | 18.30 |
+| energy | phase:economy.upkeep | 14.96 | 14.35 |
+| energy | own:standard:buy_energy | 2.20 | 2.22 |
+| energy | other:play:shared_grid_accord | 0.90 | 0.93 |
+| energy | own:power:Overcharge | 0.91 | 0.85 |
+| energy | own:play:prefab_plant_kit | 0.78 | 0.73 |
+| energy | phase:threats.execute | 0.65 | 0.73 |
+| energy | own:use:containment_reactor | 0.58 | 0.59 |
+| research_cubes | phase:board.produce | 20.52 | 20.65 |
+| research_cubes | own:play:exascale_training_cluster | 0.59 | 0.62 |
+| research_cubes | own:play:collider_consortium | 0.55 | 0.53 |
+| research_cubes | own:play:field_grant | 0.46 | 0.00 |
+| research_cubes | phase:threats.execute | 0.21 | 0.19 |
+| research_cubes | other:play:collider_consortium | 0.21 | 0.20 |
+| research_cubes | phase:economy.upkeep | 0.13 | 0.14 |
+| research_cubes | own:use:particle_accelerator | 0.05 | 0.04 |
+| antimatter | own:convert:0 | 1.34 | 1.32 |
+| antimatter | phase:economy.upkeep | 1.15 | 1.17 |
+| antimatter | own:use:cyclotron_lease | 0.59 | 0.57 |
+| antimatter | own:use:positron_storage_ring | 0.17 | 0.19 |
+| antimatter | own:use:dark_fiber_collider | 0.16 | 0.16 |
+| antimatter | own:play:antiproton_foundry | 0.13 | 0.13 |
+| antimatter | own:use:penning_trap_array | 0.13 | 0.13 |
+| antimatter | own:standard:antimatter | 0.13 | 0.13 |

@@ -1,0 +1,185 @@
+{
+ "name": "v246r2",
+ "note": "246 card usefulness: each card blanked (cost 99) against the base deck, same seeds",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "no-baseload_contract|bp",
+   "set": [
+    "cards.baseload_contract.cost=99"
+   ]
+  },
+  {
+   "name": "no-baseload_contract|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.baseload_contract.cost=99"
+   ]
+  },
+  {
+   "name": "no-baseload_contract|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.baseload_contract.cost=99"
+   ]
+  },
+  {
+   "name": "no-pumped_hydro_storage|bp",
+   "set": [
+    "cards.pumped_hydro_storage.cost=99"
+   ]
+  },
+  {
+   "name": "no-pumped_hydro_storage|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.pumped_hydro_storage.cost=99"
+   ]
+  },
+  {
+   "name": "no-pumped_hydro_storage|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.pumped_hydro_storage.cost=99"
+   ]
+  },
+  {
+   "name": "no-multiyear_defense_budget|bp",
+   "set": [
+    "cards.multiyear_defense_budget.cost=99"
+   ]
+  },
+  {
+   "name": "no-multiyear_defense_budget|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.multiyear_defense_budget.cost=99"
+   ]
+  },
+  {
+   "name": "no-multiyear_defense_budget|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.multiyear_defense_budget.cost=99"
+   ]
+  },
+  {
+   "name": "no-deep_state_ledger|bp",
+   "set": [
+    "cards.deep_state_ledger.cost=99"
+   ]
+  },
+  {
+   "name": "no-deep_state_ledger|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.deep_state_ledger.cost=99"
+   ]
+  },
+  {
+   "name": "no-deep_state_ledger|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.deep_state_ledger.cost=99"
+   ]
+  },
+  {
+   "name": "baseload_contract@246|bp",
+   "set": [
+    "cards.baseload_contract.cost=26",
+    "cards.baseload_contract.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2},{\"op\":\"gain_ambassadors\",\"count\":2}]"
+   ]
+  },
+  {
+   "name": "baseload_contract@246|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.baseload_contract.cost=26",
+    "cards.baseload_contract.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2},{\"op\":\"gain_ambassadors\",\"count\":2}]"
+   ]
+  },
+  {
+   "name": "baseload_contract@246|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.baseload_contract.cost=26",
+    "cards.baseload_contract.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2},{\"op\":\"gain_ambassadors\",\"count\":2}]"
+   ]
+  },
+  {
+   "name": "pumped_hydro_storage@246|bp",
+   "set": [
+    "cards.pumped_hydro_storage.effects=[{\"op\":\"target\",\"on\":\"fallout\"},{\"op\":\"lift_fallout\",\"count\":2,\"at\":\"near\"},{\"op\":\"production\",\"resource\":\"credits\",\"amount\":5}]"
+   ]
+  },
+  {
+   "name": "pumped_hydro_storage@246|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.pumped_hydro_storage.effects=[{\"op\":\"target\",\"on\":\"fallout\"},{\"op\":\"lift_fallout\",\"count\":2,\"at\":\"near\"},{\"op\":\"production\",\"resource\":\"credits\",\"amount\":5}]"
+   ]
+  },
+  {
+   "name": "pumped_hydro_storage@246|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.pumped_hydro_storage.effects=[{\"op\":\"target\",\"on\":\"fallout\"},{\"op\":\"lift_fallout\",\"count\":2,\"at\":\"near\"},{\"op\":\"production\",\"resource\":\"credits\",\"amount\":5}]"
+   ]
+  },
+  {
+   "name": "multiyear_defense_budget@246|bp",
+   "set": [
+    "cards.multiyear_defense_budget.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":8},{\"op\":\"gain_ambassadors\",\"count\":2}]"
+   ]
+  },
+  {
+   "name": "multiyear_defense_budget@246|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.multiyear_defense_budget.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":8},{\"op\":\"gain_ambassadors\",\"count\":2}]"
+   ]
+  },
+  {
+   "name": "multiyear_defense_budget@246|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.multiyear_defense_budget.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":8},{\"op\":\"gain_ambassadors\",\"count\":2}]"
+   ]
+  },
+  {
+   "name": "deep_state_ledger@246|bp",
+   "set": [
+    "cards.deep_state_ledger.effects=[{\"op\":\"production\",\"resource\":\"insight\",\"amount\":3},{\"op\":\"draw\",\"count\":3}]",
+    "cards.deep_state_ledger.keywords=[]"
+   ]
+  },
+  {
+   "name": "deep_state_ledger@246|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.deep_state_ledger.effects=[{\"op\":\"production\",\"resource\":\"insight\",\"amount\":3},{\"op\":\"draw\",\"count\":3}]",
+    "cards.deep_state_ledger.keywords=[]"
+   ]
+  },
+  {
+   "name": "deep_state_ledger@246|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.deep_state_ledger.effects=[{\"op\":\"production\",\"resource\":\"insight\",\"amount\":3},{\"op\":\"draw\",\"count\":3}]",
+    "cards.deep_state_ledger.keywords=[]"
+   ]
+  }
+ ],
+ "difficulties": [
+  2,
+  3
+ ],
+ "agents": [
+  "engine:strategy=1",
+  "strategist"
+ ],
+ "games": 96,
+ "records": 0
+}

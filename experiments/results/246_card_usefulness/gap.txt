@@ -1,0 +1,43 @@
+cells both: 576 (oracle 576, judge 2304)
+median play-rate ratio oracle / judge (cards both play in 5%+): 1.11
+excess = oracle play% - median ratio x judge play%: the gap past the oracle's general extra play
+card                            j.play%  o.play%    gap  excess  j.kept  o.kept  offer
+power_to_the_people                14.1     50.5   36.5    34.9    0.25    0.56   0.81
+positron_storage_ring              18.8     52.1   33.3    31.3    0.30    0.59   0.77
+forensic_audit                     29.0     59.4   30.4    27.3    0.26    0.50   0.59
+antiproton_foundry                 31.9     62.0   30.0    26.6    0.45    0.64   0.72
+nuclear_option                     17.7     45.5   27.8    25.9    0.32    0.59   0.74
+wafer_fab_line                     29.5     58.3   28.8    25.6    0.28    0.30   0.31
+dyson_swarm_tranche                 4.2     30.0   25.9    25.4    0.20    0.45   0.72
+citywide_microgrid                 33.0     61.6   28.6    25.1    0.45    0.69   0.76
+catalyzed_fab_run                  27.8     55.6   27.8    24.8    0.36    0.62   0.78
+treaty_isotope_bank                25.7     53.1   27.4    24.7    0.33    0.53   0.70
+vertical_monopoly                  10.1     35.2   25.2    24.1    0.19    0.45   0.69
+orbital_mass_driver                 5.4     28.5   23.1    22.5    0.15    0.38   0.64
+air_gap                            32.6     58.2   25.5    22.0    0.43    0.65   0.76
+kettle_operation                   12.7     35.1   22.4    21.0    0.24    0.47   0.66
+penning_trap_array                 22.4     45.7   23.3    20.8    0.45    0.67   0.73
+directed_energy_array              35.8     60.4   24.7    20.8    0.18    0.22   0.26
+market_stabilization_board         10.8     32.3   21.5    20.4    0.24    0.40   0.67
+fusion_commons                     18.1     39.8   21.7    19.8    0.26    0.50   0.72
+double_agents                      34.4     57.6   23.3    19.6    0.42    0.64   0.74
+root_access                        13.9     34.5   20.7    19.2    0.29    0.53   0.79
+open_source_uprising               42.0     65.3   23.3    18.7    0.46    0.69   0.76
+surgical_strike                    46.2     69.6   23.4    18.5    0.52    0.66   0.70
+hostile_buyout                     17.5     37.8   20.3    18.4    0.25    0.50   0.74
+capacitor_discharge                12.0     30.0   18.1    16.8    0.03    0.08   0.29
+dark_fiber_collider                35.9     56.4   20.5    16.6    0.49    0.65   0.73
+
+named in the prompt:
+  continental_supergrid          j   5.0  o  18.8  kept j 0.05 o 0.24
+  tidal_barrage                  j   5.0  o  13.5  kept j 0.01 o 0.04
+  multiyear_defense_budget       j   3.1  o  12.2  kept j 0.12 o 0.12
+  agency_directorate             j   8.9  o  13.9  kept j 0.22 o 0.34
+
+played in under 10% by both:
+  smart_grid_backbone            j   1.2  o   1.0  kept j 0.01 o 0.05
+  baseload_contract              j   2.8  o   5.2  kept j 0.03 o 0.02
+  field_grant                    j   8.0  o   1.6  kept j 0.24 o 0.21
+  annihilation_lance             j   3.0  o   9.2  kept j 0.06 o 0.21
+  pumped_hydro_storage           j   4.3  o   8.7  kept j 0.09 o 0.11
+  deep_state_ledger              j   5.7  o   8.0  kept j 0.27 o 0.36

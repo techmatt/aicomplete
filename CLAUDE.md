@@ -66,7 +66,8 @@ machine's traps, are in the [README](README.md), which also lists the page for e
   `overrides` row), never the price.
 - **At a card's creation** also check: its net at the table is above 0 for the seat that would use
   it; its precondition exists in measured play (spare energy at round 6, say); a building beats the
-  median building it would cover in a slot. **After any later edit to a card** (card fit included),
+  median building it would cover in a slot; `design_check.py --quiet` (tag story) and no card already printing
+  the effect (guideline 11), before its first measure (246 re-measured three). **After any later edit to a card** (card fit included),
   re-read its plays per game.
 - **A new op, resource or token type** gets its value in the same change: an op, its arm in
   `crates/aic-sim/src/agents/value.rs` and its row in `configs/agents/values.json`; a resource or

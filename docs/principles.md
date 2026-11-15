@@ -57,7 +57,7 @@ rotating the three board pairs, no c3; an engine smoke read, then the judge (the
 one fresh set; the target is 45-85 a pair, near 60-75 without chasing it; no gate, no pooled second set
 ([experiments.md](experiments.md), *The ballpark read*).
 
-**Per-level bands (Matt, 2026-11-13: loosened and soft):** d0 85-100, d1 65-80, d2 50-65, d3 35-50 for the judge
+**Per-level bands (Matt, 2026-11-15: raised, soft):** d0 at least 90, d1 80-95, d2 75-90, d3 55-70 for the judge
 (`bench/ladder.py`'s default `--bands`). A miss of a few points is reported, never chased or dialed; a level that
 can't meet both keeps its 8-10 rounds over its band. d0 resisted every income dial: its band comes from the players'
 side (engines over dials).

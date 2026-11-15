@@ -110,6 +110,8 @@ A new phase goes in `configs/baseline.json`'s `round` list and in every lab test
 - A fresh worktree has no `web/node_modules`: `npm ci` in `web/` (~1 min) before `npm run cards:fit`.
 - 6 cores, 12 threads: 12 workers give about 6 × one, not 12 ×. Timing has no warning of other load: two
   separate runs don't compare; `speed.py pair` does.
+- `farm-seeds` can lose its broker mid-job (246: after 2 of 96 shards): a read that must finish today plans the
+  native run as its fallback (docs/experiments.md, *Farming a read*).
 - `samply` waits on a UAC prompt: profile with `bench/profile_win.py` (docs/speed.md, *Profiling*).
 - `wmic` and `tasklist` hang under load: use PowerShell `Get-Process`.
 - A Bash background call's `timeout` is its kill limit (default 10 minutes); a waiter killed at it can leave

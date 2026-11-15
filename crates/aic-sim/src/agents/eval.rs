@@ -409,7 +409,18 @@ const RENAMED: [(&str, &str); 7] = [
 
 /// 165: the zero-weight probes, retired: (name, why). A spec naming one is refused
 /// with the reason rather than as an unknown weight.
-pub(crate) const RETIRED: [(&str, &str); 7] = [
+pub(crate) const RETIRED: [(&str, &str); 9] = [
+    (
+        "prod_income",
+        "246: flat mode counting a card's production (`economy.production`) at the track's rate: oracle agreement on \
+         the plays of the judge's neglected cards moved 41 -> 41% (Multiyear Defense Budget 9 -> 20%, Wafer Fab Line \
+         and Dyson Swarm Tranche none), and the engine measure found those cards add no wins; never on",
+    ),
+    (
+        "built_action",
+        "246: flat mode adding points per building with an Action: oracle agreement on plays 41 -> 41% at 3-12 (Treaty \
+         Isotope Bank 50 -> 74% at 12, Wafer Fab Line 10 -> 14%); never on",
+    ),
     (
         "built_income",
         "245: flat mode counting a building's income at the track's rate (for the energy cards the strategist leaves \

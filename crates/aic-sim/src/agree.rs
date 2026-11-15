@@ -148,8 +148,13 @@ fn one(rules: &aic_core::Rules, difficulty: i64, g: &Line, agents: &[AgentSpec])
                         .zip(&rounds[k + 1..])
                         .take_while(|(_, r)| **r == rounds[k])
                         .any(|(a, _)| a == pick);
+                // 246: a recorded play also tallies under `play:<card>`, per card.
+                let card_key = match rec {
+                    Action::Play { card, .. } => Some(format!("play:{card}")),
+                    _ => None,
+                };
                 for grp in ["all", group.as_str()] {
-                    for key in [kd.as_str(), "any"] {
+                    for key in [kd.as_str(), "any"].into_iter().chain(card_key.as_deref()) {
                         let e = out[ai].entry(grp.to_string()).or_default().entry(key.to_string()).or_insert([0; 3]);
                         e[0] += same as u64;
                         e[1] += later as u64;

@@ -1,0 +1,4 @@
+# judge (strategist), fresh 47896-48087, d0-d3, share of games played in (kept a game); r109, then r110 final build
+agent                                                                   games     field_grant  smart_grid_bac  baseload_contr  pumped_hydro_s  multiyear_defe  deep_state_led
+strategist                                                               2304   10.1% (0.24)    1.3% (0.01)    3.9% (0.08)    5.6% (0.08)    4.9% (0.07)    9.2% (0.29)
+strategist                                                               2304   30.6% (0.24)    9.2% (0.21)   20.7% (0.10)   16.2% (0.25)   10.4% (0.17)   15.6% (0.32)

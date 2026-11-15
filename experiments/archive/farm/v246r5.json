@@ -1,0 +1,55 @@
+{
+ "name": "v246r5",
+ "note": "246 card usefulness: each card blanked (cost 99) against the base deck, same seeds",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "base|bp",
+   "set": []
+  },
+  {
+   "name": "base|br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "base|pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  },
+  {
+   "name": "no-pumped_hydro_storage|bp",
+   "set": [
+    "cards.pumped_hydro_storage.cost=99"
+   ]
+  },
+  {
+   "name": "no-pumped_hydro_storage|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.pumped_hydro_storage.cost=99"
+   ]
+  },
+  {
+   "name": "no-pumped_hydro_storage|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.pumped_hydro_storage.cost=99"
+   ]
+  }
+ ],
+ "difficulties": [
+  2,
+  3
+ ],
+ "agents": [
+  "engine:strategy=1",
+  "strategist"
+ ],
+ "games": 96,
+ "records": 0
+}
