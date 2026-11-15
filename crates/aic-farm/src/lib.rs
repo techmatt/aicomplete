@@ -3,8 +3,9 @@
 //! `aic-sim farm` runs. No rules and no sim code live here.
 //!
 //! JS sees (through `farm.mjs`, which `scripts/farm/build.mjs` writes beside
-//! the wasm): `init()`, `fingerprint() -> string` and
-//! `run(first, count, args) -> string`, a shard's game lines. Errors are thrown.
+//! the wasm): `init()`, `fingerprint() -> string`,
+//! `run(first, count, args) -> string`, a shard's game lines, and
+//! `engine() -> string`, the engine this build plays as. Errors are thrown.
 
 use aic_sim::farm::{self, Farm};
 use wasm_bindgen::prelude::*;

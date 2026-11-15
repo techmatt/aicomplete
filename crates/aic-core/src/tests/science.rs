@@ -20,7 +20,7 @@ fn a_shield_goes_with_a_token_lost_another_way() {
     let (rules, mut g) = at_step(&[], 1);
     let a = rules.map.numbered(0, piece(0).node);
     put(&mut g, a, HARDEN, 1);
-    g.vars.insert(STAGE.into(), 2);
+    set_var(&mut g, STAGE,2);
     with_cx(&rules, |cx| board::lose_node(&mut g, cx, a, 0, "test"));
     assert_eq!(g.tokens(a, HARDEN), 0);
 }

@@ -32,7 +32,7 @@ fn the_card_play_track_prints_insight_totals_and_the_rightmost_counts() {
     let b = ai::board(&w, 0);
     let mut shown = b.insight;
     for (i, space) in b.play_track.iter().enumerate() {
-        g.vars.insert(board::track2_key(0).into(), i as i64 + 1);
+        set_var(&mut g, board::track2_key(0), i as i64 + 1);
         shown = space.insight.unwrap_or(shown);
         assert_eq!(ai::track_insight(&w, &g, 0), shown, "space {}", i + 1);
         assert_eq!(economy::income(&w, &g, 0)[Resource::Insight], shown);

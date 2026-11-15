@@ -201,7 +201,7 @@ fn a_reach_shelter_reads_reach_when_struck() {
     let home = m.numbered(0, piece(0).node);
     let land = |h: usize| kind(m, h) != HexKind::Ocean;
     let far = (0..m.hexes.len()).find(|&h| land(h) && m.distance(home, h) >= 4).unwrap();
-    g.vars.insert(board::reach_shelter(0).as_str().into(), 1);
+    set_var(&mut g, board::reach_shelter(0), 1);
     assert!(board::reach_sheltered(&w, &g, 0, home));
     assert!(!board::reach_sheltered(&w, &g, 0, far), "out of reach");
     assert!(!board::reach_sheltered(&w, &g, 1, home), "seat 1 has no Shelter up");

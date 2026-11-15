@@ -1595,7 +1595,6 @@ fn two() -> i64 {
 }
 
 impl Op {
-    /// The ops printed inside this one (a `then`, a choice's `options`).
     /// 234: an op that acts at a place on the map a player picks: on a player card it needs the card's one
     /// target before it (`Content::check`), and acts on that target's area. Your own nodes (`shield_node`,
     /// `place_node`) and burns of your own pieces are not picked places. A reach Shelter takes no target.
@@ -1645,6 +1644,7 @@ impl Op {
         }
     }
 
+    /// The ops printed inside this one (a `then`, a choice's `options`).
     pub fn nested(&self) -> &[Op] {
         match self {
             Op::IfTags { then, .. }

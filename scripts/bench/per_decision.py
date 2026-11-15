@@ -43,7 +43,7 @@ def one(root, agent, games, first, countries, sets=()):
            '--json', '--set', f'countries={countries}', '--set', 'adversary.difficulty=2']
     for kv in sets:
         cmd += ['--set', kv]
-    run = subprocess.run(cmd, cwd=root, capture_output=True, text=True)
+    run = subprocess.run(cmd, cwd=root, capture_output=True, text=True, encoding='utf-8')
     if run.returncode != 0:
         sys.exit(f"{cmd[0]} failed in {root} (its own configs/baseline.json is what it plays): {run.stderr.strip()}")
     out = run.stdout

@@ -96,7 +96,7 @@ fn a_full_megaproject_completes_at_the_end_of_production_and_every_cube_pays() {
         (board::project_key(0, None), 2),
         (board::project_neutral(0), 2),
     ] {
-        g.vars.insert(k.into(), n);
+        set_var(&mut g, k, n);
     }
     let (e0, e1, discord) = (g.resource(0, Resource::Energy), g.resource(1, Resource::Energy), g.var("alignment.discord"));
     // 142: the owned station makes `owned_station_cubes` (2 at r59).
@@ -129,7 +129,7 @@ fn a_project_short_of_its_cubes_does_not_complete() {
     owned_station(&rules, &mut g, 0, 0);
     // Round 1 already put a corrupted and a neutral station's cubes on it (185: the corrupted one's an adversary
     // cube, so two a round besides the owned station's).
-    g.vars.insert(board::project_key(0, Some(0)).into(), 1);
+    set_var(&mut g, board::project_key(0, Some(0)), 1);
     run(&rules, &mut g);
     assert_eq!(g.var(&board::project_done(0)), 0);
     let owned = rules.world().int("board.owned_station_cubes");
@@ -183,8 +183,8 @@ fn an_adversary_station_puts_cubes_before_completion_and_compute_after() {
     run(&rules, &mut g);
     assert_eq!(on_projects(&g), vec![before[0], before[1] + cubes]);
     put(&mut g, h0, ambassador(0), 0);
-    g.vars.insert(board::project_done(0).into(), 1);
-    g.vars.insert(board::project_done(1).into(), 1);
+    set_var(&mut g, board::project_done(0), 1);
+    set_var(&mut g, board::project_done(1), 1);
     let (made, before) = (g.var(adversary::COMPUTE), on_projects(&g));
     run(&rules, &mut g);
     assert_eq!(g.var(adversary::COMPUTE) - made, 2 * cubes, "compute after completion");
@@ -198,8 +198,8 @@ fn an_adversary_station_puts_cubes_before_completion_and_compute_after() {
 fn a_completion_pays_its_adversary_cubes() {
     let (rules, mut g) = lab(&["board.produce"]);
     let size = rules.world().content.map.countries[0].megaproject.cubes;
-    g.vars.insert(board::project_key(0, None).into(), 3);
-    g.vars.insert(board::project_neutral(0).into(), size - 3);
+    set_var(&mut g, board::project_key(0, None), 3);
+    set_var(&mut g, board::project_neutral(0), size - 3);
     let paid = g.stats.counters.get("board.cubes_paid.adversary").copied().unwrap_or(0);
     let discord = g.var("alignment.discord");
     run(&rules, &mut g);
@@ -239,7 +239,7 @@ fn a_converter_needs_a_city_of_its_country_in_reach() {
     });
     // Not complete, then no nodes there (075: an aligned city was 074's gate).
     assert!(!offered(&g));
-    g.vars.insert(board::project_done(0).into(), 1);
+    set_var(&mut g, board::project_done(0), 1);
     assert_eq!(board::converter_blocked(&w, &g, 0, 0), Some(board::NO_CITY_NODE));
     assert!(rules.apply_mut(&mut g, &convert, None).is_err());
     // A node in the country with no city of it in reach is not enough.

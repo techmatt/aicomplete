@@ -1,8 +1,9 @@
-"""Each project's life in a read, by difficulty (195's reader, 233's form, promoted in 237). From a games file with
-its header (a farmed read, `shards.sh` output; r85 counters: `adversary.revealed.<id>`, `adversary.project.<id>`,
-`adversary.drained.<id>`, `adversary.project_moves.<id>`).
+"""Each project's life in a read, by difficulty (195's reader, 233's form, promoted in 237). From a run's folder, a
+games file with its header (a farmed read, `shards.sh` output) or FILE=SPEC (a headerless farmed JSONL and its spec;
+`screens.stream`). r85 counters: `adversary.revealed.<id>`, `adversary.project.<id>`, `adversary.drained.<id>`,
+`adversary.project_moves.<id>`.
 
-    python scripts/bench/projects_read.py GAMES.jsonl [--md OUT.md]
+    python scripts/bench/projects_read.py DIR|GAMES.jsonl|FILE=SPEC [--md OUT.md]
 
 Per game, all three pairs and both agents pooled. "Completes, share of reveals": completions over reveals (a card
 revealed twice counts twice). "Moves a completion": token moves on the map at its resolution. Small / big: one
@@ -15,7 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from screens import cells_of  # noqa: E402
+from screens import cells_of, stream  # noqa: E402
 
 PRE = ('adversary.revealed.', 'adversary.project.', 'adversary.drained.', 'adversary.project_moves.')
 
@@ -29,18 +30,17 @@ def main():
     names = {c['id']: c['name'] for c in deck}
     tot = defaultdict(lambda: defaultdict(float))
     games = defaultdict(int)
-    with open(path, encoding='utf-8') as f:
-        cells = cells_of(json.loads(f.readline())['spec'])
-        for line in f:
-            g = json.loads(line)
-            if 'counters' not in g:
-                continue
-            d = cells[g['cell']]['difficulty']
-            games[d] += 1
-            for k, v in g['counters'].items():
-                for pre in PRE:
-                    if k.startswith(pre) and '.r' not in k[len(pre):]:
-                        tot[(d, k[len(pre):])][pre] += v
+    lines = stream(path)
+    cells = cells_of(next(lines)['spec'])
+    for g in lines:
+        if 'counters' not in g:
+            continue
+        d = cells[g['cell']]['difficulty']
+        games[d] += 1
+        for k, v in g['counters'].items():
+            for pre in PRE:
+                if k.startswith(pre) and '.r' not in k[len(pre):]:
+                    tot[(d, k[len(pre):])][pre] += v
     out = []
     for d in sorted(games):
         n = games[d]

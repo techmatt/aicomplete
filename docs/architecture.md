@@ -130,16 +130,20 @@ where, and wording and tally for one shared by threats and team cards. Three kin
 `effects/new_ops.rs`; or the rule reading a standing op) and its price (`agents/value.rs`, `agents/strategy.rs`,
 `configs/agents/values.json`, the ledger's hand mirror `scripts/cards/effect_ledger.py`). A new op also touches
 `effects/feasible.rs` (what it acts on) and `docs/harms.rs`'s `op_harms` (an arm per op). The compiler finds the
-Rust sites (`face.rs` lists every non-player op) but not `Op::contexts` or the `values.json` row; the mirror test
-finds the ledger.
+Rust sites (`face.rs` lists every non-player op) but not the `values.json` row; the mirror test finds the ledger.
+**Removing an op**: the compiler finds its Rust arms; delete its `values.json` row and its `effect_ledger.py`
+branch too, and `git grep` its snake_case name in `scripts/design_check.json`, `drafts/adversary/check.py` and tests.
+Powers print ops like cards (their `target` op too) in `content/ais.json`; a standard action's ops and target are
+code: `std_ops` and `std_target` in `board/standard.rs`.
 
 ### Generated docs
 
 `aic-sim docs` rewrites the `<!-- generated: NAME -->` blocks (`BLOCKS`, each in one file) in
-[rules/](rules/README.md), [agents.md](agents.md) (`strategies`) and [rulebook.md](rulebook.md) §21 (`difficulty`);
-all of [ops.md](ops.md), [harms.md](harms.md) and [player-aid.md](player-aid.md); and `web/card/faces.json`. The
-rest of the rulebook, rules/ai-boards.md's "for new players" paragraphs and `drafts/adversary/` texts are
-hand-written. Scripts ([scripts.md](scripts.md)) write [cards.md](cards.md) from the faces (the fast lane checks
+[rules/](rules/README.md), [agents.md](agents.md) (`strategies`) and [rulebook.md](rulebook.md) §21
+(`rulebook_difficulty`); all of [ops.md](ops.md), [harms.md](harms.md) and [player-aid.md](player-aid.md); and
+`web/card/faces.json`. The rest of the rulebook, the rules files' prose outside a block and `drafts/adversary/`
+texts are hand-written. Most "for new players" paragraphs are prose; rules/README.md's and alignment.md's are
+blocks (`new_players_block`, `game_end_block`): edit those in `blocks.rs`. Scripts ([scripts.md](scripts.md)) write [cards.md](cards.md) from the faces (the fast lane checks
 it), and the adversary's `content/` and [adversary-cards.md](adversary-cards.md). A block is a pure function of
 `Rules` or `Content` in `crates/aic-sim/src/docs/blocks.rs`, named in `run.rs`, tested in `tests.rs`.
 

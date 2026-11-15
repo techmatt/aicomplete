@@ -7,11 +7,14 @@
 //! - **liberate**: gather a seat's own ambassadors that hold nothing onto an adversary site, when that seat, in
 //!   reach, can then pay its Liberate (r75: only the acting seat's ambassadors on the site pay);
 //! - **strike** (178): answer every strike batch prompt (`effects::STRIKE_PIECE`): the largest batch of troops,
-//!   then of agents, never a stop.
+//!   then of agents, never a stop;
+//! - **target** (234): answer the target prompt (`effects::TARGET_PROMPT`) with the hex where the card's map ops
+//!   find the most ([`target`]).
 //!
 //! Each answers only its own prompts; anything else (a strike's hex, a Gather that strikes) is left to the
-//! agent's search. Two agent behaviors (`policy::Behaviors`) switch them, for the on/off reads: `move_rules`
-//! the first three ([`pick`]), `strike_rule` the strike ([`strike`], 185: its own lever).
+//! agent's search. Three agent behaviors (`policy::Behaviors`) switch them, for the on/off reads: `move_rules`
+//! the first three ([`pick`]), `strike_rule` the strike ([`strike`], 185: its own lever), `target_rule` the
+//! target ([`target`]).
 
 use aic_core::content::{Op, Piece};
 use aic_core::op::CorruptSite;
@@ -29,15 +32,14 @@ const TARGET: usize = 4;
 /// How often each heuristic answered a prompt: one process-wide count, pooled across every cell and game the
 /// process played and including the answers given inside planner rollouts, not a per-game tally (a run prints
 /// it divided by its game count: fires a game).
-static FIRES: [AtomicU64; 5] =
-    [AtomicU64::new(0), AtomicU64::new(0), AtomicU64::new(0), AtomicU64::new(0), AtomicU64::new(0)];
+static FIRES: [AtomicU64; NAMES.len()] = [const { AtomicU64::new(0) }; NAMES.len()];
 
 /// Counts one answer by heuristic `which`.
 pub fn fired(which: usize) {
     FIRES[which].fetch_add(1, Ordering::Relaxed);
 }
 
-/// "push N, cancel N, liberate N, strike N": `FIRES` over `games` games (per game, rollouts' answers
+/// "push N, cancel N, liberate N, strike N, target N": `FIRES` over `games` games (per game, rollouts' answers
 /// included), or None if none fired.
 pub fn report(games: usize) -> Option<String> {
     let n: Vec<u64> = FIRES.iter().map(|f| f.load(Ordering::Relaxed)).collect();

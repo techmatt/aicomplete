@@ -113,7 +113,7 @@ fn feasible_aimed(
             Op::LiftFallout { .. } => !board::land_in_reach(w, g, seat).is_empty(),
             Op::DelayThreat { .. } => !undelayed_threats(w, g, seat).is_empty(),
             // 184: a Discord sway is the card's price (The Nuclear Option), never a part that acts.
-            Op::Sway { side, .. } => *side == Side::Unity && w.variant("alignment") != Some("off"),
+            Op::Sway { side, .. } => *side == Side::Unity && !w.hot.alignment_off,
             Op::Damage { ambassadors, troops } => !damage_hexes(w, g, seat, *ambassadors, *troops).is_empty(),
             Op::DamageCountry { ambassadors, troops } => any_hex(g, |h| adversary::can_damage(g, h, *ambassadors, *troops)),
             Op::DestroyAll => any_hex(g, |h| adversary::can_destroy_all(g, h)),

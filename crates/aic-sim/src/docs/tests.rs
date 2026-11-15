@@ -180,7 +180,7 @@ fn check_flags_a_bare_name_that_is_no_tunable() {
 #[test]
 fn the_rulebook_difficulty_table_is_in_players_words() {
     let book = include_str!("../../../../docs/rulebook.md");
-    let open = "<!-- generated: difficulty -->
+    let open = "<!-- generated: rulebook_difficulty -->
 ";
     assert_eq!(book.matches(open).count(), 1);
     let body = book.split_once(open).unwrap().1.split_once("<!-- /generated -->").expect("closed").0;

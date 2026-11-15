@@ -12,14 +12,9 @@ fn run_threat(rules: &Rules, g: &mut GameState, t: &str, c: usize, ops: &[conten
     with_cx(rules, |cx| effects::run(g, cx, ops, &mut ctx)).unwrap();
 }
 
-/// Sets var `k` to `v` on a crafted state.
-fn setv(g: &mut GameState, k: &str, v: i64) {
-    g.vars.insert(crate::key::Key::new(k), v);
-}
-
 /// Puts threat `t`'s first location token on hex `h`.
 fn token_on(g: &mut GameState, t: &str, h: usize) {
-    setv(g, &format!("threats.loc.{t}.0"), h as i64 + 1);
+    set_var(g, format!("threats.loc.{t}.0"), h as i64 + 1);
 }
 
 /// 184 (r78): "2 adversary Troops land on the base here" with no base token (one country has no base) lands
@@ -48,8 +43,8 @@ fn extra_corp_troops_go_past_the_cap_but_one_a_base_a_production_step() {
     put(&mut g, b0, UNIT, cap);
     put(&mut g, b1, UNIT, cap);
     // Two registrations on b0 (two Conscriptions): still 1 extra (ruling 4).
-    setv(&mut g, &board::corp_extra_key(b0, 3), 1);
-    setv(&mut g, &board::corp_extra_key(b0, 5), 1);
+    set_var(&mut g, board::corp_extra_key(b0, 3), 1);
+    set_var(&mut g, board::corp_extra_key(b0, 5), 1);
     run(&rules, &mut g);
     assert_eq!(g.tokens(b0, UNIT), cap + 1);
     assert_eq!(g.tokens(b1, UNIT), cap);
@@ -84,7 +79,7 @@ fn war_brought_forward_fights_a_front_twice() {
     let left = |g: &GameState| fs.iter().map(|&f| g.tokens(f, FACTORY)).sum::<i64>();
     let mut g = g0.clone();
     // The key holds the round of the second fight: this one.
-    setv(&mut g, &board::extra_war_key(0), 1);
+    set_var(&mut g, board::extra_war_key(0), 1);
     run(&rules, &mut g);
     assert_eq!(left(&g), fs.len() as i64 - 2.min(fs.len() as i64));
 }
@@ -121,7 +116,7 @@ fn a_hex_blackout_darkens_only_the_cities_near_it() {
         g.resource(0, Resource::Energy)
     };
     assert!(one > 0);
-    setv(&mut g, &board::hex_flag(content::RoundFlag::Blackout, a), 1);
+    set_var(&mut g, board::hex_flag(content::RoundFlag::Blackout, a), 1);
     run(&rules, &mut g);
     assert_eq!(g.resource(0, Resource::Energy), one);
 }
@@ -151,7 +146,7 @@ fn a_city_liberates_at_one_price_all_game() {
     let c = (0..g.hexes.len()).find(|&h| is_city(&w, h)).unwrap();
     put(&mut g, c, ADV_CUBE, 1);
     for stage in 1..=3 {
-        setv(&mut g, crate::modules::adversary::STAGE, stage);
+        set_var(&mut g, crate::modules::adversary::STAGE, stage);
         assert_eq!(board::liberate_cost(&w, &g, c), Some(w.int("board.liberate_at")));
     }
 }
@@ -165,7 +160,7 @@ fn a_standing_troop_never_marches_or_strikes() {
     put(&mut g, z, cube(0), 1);
     let next = w.map.hexes[z].neighbors.iter().copied().find(|&h| !is_ocean(&w, h)).unwrap();
     put(&mut g, next, TROOP, 1);
-    setv(&mut g, &board::stand_key(next), 1);
+    set_var(&mut g, board::stand_key(next), 1);
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
     assert_eq!((g.tokens(z, FACTORY), g.tokens(next, TROOP)), (1, 1));

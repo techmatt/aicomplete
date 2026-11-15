@@ -3,21 +3,20 @@
 
     python scripts/bench/resource_use.py NEW [OLD] [--top 8] [--limits]
 
-NEW and OLD are a run's folder (its games.jsonl) or a games file with its header (a farmed read, `shards.sh`
-output); a comma list pools several. From each game's `spent`, `gained`, `uses` and `sources` (in PEAKS order): for
+NEW and OLD are a run's folder (its games.jsonl), a games file with its header (a farmed read, `shards.sh`
+output) or FILE=SPEC (a headerless farmed JSONL and its spec; `screens.stream`); a comma list pools several. From each game's `spent`, `gained`, `uses` and `sources` (in PEAKS order): for
 chips, energy, research cubes and antimatter, gained and spent per seat a game at each level, the share of games in
 which some seat spent antimatter and the share of won games; then the top uses (what each buys) and sources, pooled
 over levels. `--limits` adds 189's limit table, per seat a game: `limit.keep_short.<r>` (a drafted card not kept
 while its keep cost more than the seat held), `limit.play.short.<r>` (a card left in hand at the end of the action
 phase lacking that resource; one card may count for two), `.needs_tags`, `.held` (playable, kept back).
 """
-import json
 import sys
 from collections import defaultdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from screens import PEAKS  # noqa: E402
+from screens import PEAKS, stream  # noqa: E402
 
 SHOW = ['chips', 'energy', 'research_cubes', 'antimatter']
 
@@ -25,12 +24,9 @@ SHOW = ['chips', 'energy', 'research_cubes', 'antimatter']
 def load(paths):
     rows = []
     for p in paths.split(','):
-        path = Path(p)
-        if path.is_dir():
-            path = path / 'games.jsonl'
-        with open(path, encoding='utf-8') as f:
-            next(f)  # the header
-            rows.extend(json.loads(line) for line in f if line.strip())
+        lines = stream(p)
+        next(lines)  # the header
+        rows.extend(lines)
     return rows
 
 

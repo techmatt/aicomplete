@@ -1750,7 +1750,7 @@ impl Eval {
             }
         }
         v += w.level * level.steps() as f64;
-        // A resolved (or ongoing) project counts in full, so letting one
+        // A resolved project counts in full, so letting one
         // fill never scores better than holding it back.
         for id in adversary::projects(g) {
             let cost = adversary::project_cost(&world, g, &id).max(1) as f64;

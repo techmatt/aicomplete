@@ -272,7 +272,7 @@ fn what_stops_a_tip_troop() {
         let mut g = g0.clone();
         put(&mut g, f, tok, 1);
         if tok == TROOP {
-            g.vars.insert(crate::key::Key::new(&board::occupied_key(f)), 1);
+            set_var(&mut g, board::occupied_key(f), 1);
         }
         tip(&mut g);
         assert_eq!(units(&g), 0, "{label}");

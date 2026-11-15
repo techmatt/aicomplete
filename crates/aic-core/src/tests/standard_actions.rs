@@ -312,9 +312,9 @@ fn card_claims_a_station_as_claim_does() {
 }
 
 /// 137: Liberate turns an adversary station or factory in reach neutral for
-/// `liberate_facility_at` ambassadors (plus 1 for each agent
-/// on it, which cancel) and sways `free_facility` Unity; a botnet on it stays
-/// and doesn't block it.
+/// `board.claim_station` / `board.claim_factory` ambassadors (206: not with an
+/// agent on it) and sways `free_facility` Unity; a botnet on it stays and
+/// doesn't block it. Out of reach, it isn't offered.
 #[test]
 fn liberating_a_station_or_factory_turns_it_neutral() {
     for (tok, what) in [(STATION, "station"), (FACTORY, "factory")] {

@@ -198,6 +198,11 @@ pub fn plan_now(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx) ->
     plan(w, g, s, &[], &one, pc, &pt).map(|(_, p)| p).unwrap_or_default()
 }
 
+/// 219: whether a power's `effects` burn the seat's own piece or reclaim one (`Burn`, `Cleanse`).
+pub(crate) fn burns_or_reclaims(effects: &[Op]) -> bool {
+    effects.iter().any(|e| matches!(e, Op::Burn { .. } | Op::Cleanse { .. }))
+}
+
 /// 211 (`plan_am`): the antimatter seat `s`'s board powers and built Actions gain, one use each (a round's worth).
 pub(crate) fn am_makes(w: &World, g: &GameState, s: usize) -> i64 {
     let gains = |ops: &[Op]| {
@@ -219,7 +224,7 @@ pub(crate) fn am_makes(w: &World, g: &GameState, s: usize) -> i64 {
         .iter()
         .filter(|p| p.tags.iter().all(|(t, n)| has(t, *n)))
         // 219: a burn (your own piece) or a Reclaim (a target in reach) is no round's income.
-        .filter(|p| !p.effects.iter().any(|e| matches!(e, Op::Burn { .. } | Op::Cleanse { .. })))
+        .filter(|p| !burns_or_reclaims(&p.effects))
         .map(|p| gains(&p.effects))
         .sum();
     let built: i64 = g

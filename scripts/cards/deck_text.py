@@ -10,10 +10,12 @@ Decks: `player` (every player card, by primary tag), a tag (`science`, `industry
 `power`, `diplomacy`, `security`), `unity`, `discord`, `board` (the Militarist's), `events`,
 `threats1`, `threats2`, `projects`, or `all`.
 """
-import json
 import os
 import re
 import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import cards_doc  # noqa: E402
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 TAGS = ['science', 'industry', 'cyber', 'power', 'diplomacy', 'security']
@@ -73,14 +75,15 @@ def sentences(s):
 
 
 def faces():
-    """Each player card's printed text as its face lines: (top line, effect line), keyed by the joined
-    text docs/cards.md prints (cards_doc.py's `face_text`)."""
-    with open(os.path.join(ROOT, 'web', 'card', 'faces.json'), encoding='utf-8') as f:
-        data = json.load(f)
+    """Each player card's printed text as its face lines (target box, top line, effect line, as `Face::full_text`
+    splits them), keyed by the effect cell docs/cards.md prints (cards_doc.py's `face_text`, `|` read as `/`)."""
     out = {}
-    for face in data.values():
-        lines = [t for t in (face.get('top_text'), face.get('text')) if t]
-        out[' '.join(lines).replace('|', '/')] = lines
+    for face in cards_doc.load_faces().values():
+        top, text = face.get('top_text'), face.get('text')
+        if top and text:
+            text = 'When played: ' + text
+        target = face['target']['text'] + '.' if face.get('target') else ''
+        out[cards_doc.face_text(face).replace('|', '/')] = [t for t in (target, top, text) if t]
     return out
 
 

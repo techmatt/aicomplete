@@ -1,6 +1,6 @@
 # Simulator
 
-The `aic-sim` command line: `run`, `compare`, `show`, `modules`, `replay`, `strategies`, `cards`, `farm` (below);
+The `aic-sim` command line: `run`, `compare`, `show`, `map`, `modules`, `replay`, `strategies`, `cards`, `farm` (below);
 `experiment` is in [experiments.md](experiments.md), `docs [--check]` in architecture.md *Generated docs*.
 
 Always run the sim in release.

@@ -25,6 +25,21 @@ def content(name):
         return json.load(f)
 
 
+def _prints_liberate(node):
+    """Whether any op under `node` is `liberate`."""
+    if isinstance(node, dict):
+        return node.get('op') == 'liberate' or any(_prints_liberate(v) for v in node.values())
+    if isinstance(node, list):
+        return any(_prints_liberate(v) for v in node)
+    return False
+
+
+def liberate_cards():
+    """The ids of the cards that print a `liberate` op, in content/cards.json's order (165: a hand-typed list had
+    missed citywide_microgrid). `configs/no_liberate.py` takes them out of the deck; the liberation reads list them."""
+    return [c['id'] for c in content('cards') if _prints_liberate(c)]
+
+
 def cells_for(d):
     """DIR's cells by id: results.json's, or for a farmed run (none: 182) the header spec's (`cells_of`, each with
     its `cell` id), as `bench/ladder.py` reads them."""
@@ -75,7 +90,11 @@ def stream(d):
             with open(spec, encoding='utf-8') as s:
                 yield {'spec': json.load(s)}
         else:
-            yield json.loads(f.readline())
+            head = json.loads(f.readline())
+            if 'format' not in head:
+                # 241: a bare farmed JSONL's first line is a game, which every reader would take for the header.
+                sys.exit(f'{path}: no header (a farm-seeds output): pass it as {path}=SPEC.json')
+            yield head
         for line in f:
             try:
                 yield json.loads(line)

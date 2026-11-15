@@ -1045,7 +1045,7 @@ Every player also has the standard action **Place a node** (6 credits, twice a r
 Each row is the whole level. Your own costs (claim, liberate, cards, actions) never change. The table is generated
 from the rules (`aic-sim docs`); the words below are not.
 
-<!-- generated: difficulty -->
+<!-- generated: rulebook_difficulty -->
 | Level | Corrupt numbers (city / station / factory / land / node) | Threat items | Adversary board's harder line | Event cards (I / II / III) | Rounds | Compute income a country | More agent income a country | Other |
 |---|---|---|---|---|---|---|---|---|
 | 0 | 4 / 3 / 3 / 3 / 2 | — | — | 5 / 5 / 3 | 13 | 0 | — | — |

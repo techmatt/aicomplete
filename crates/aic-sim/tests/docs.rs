@@ -65,5 +65,8 @@ fn the_card_list_names_every_card_and_this_revision() {
     );
     for c in &content().cards {
         assert!(doc.contains(&c.name), "docs/cards.md lacks {}", c.name);
+        // The card's words are the engine's (`Face::full_text`, through faces.json), '|' printed as '/' in the table.
+        let text = aic_core::face::card_face(c).full_text().replace('|', "/");
+        assert!(doc.contains(&text), "docs/cards.md's text for {} is not the engine's: {text}", c.name);
     }
 }

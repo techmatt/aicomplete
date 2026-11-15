@@ -20,7 +20,7 @@ use aic_core::state::AskKind;
 use aic_core::{fnv1a64, Action, Agent, GameState, Key, Rules};
 
 use super::credit_cost;
-use super::keep_plan::{plan_all, plan_keeps, plan_now, PlanCtx};
+use super::keep_plan::{burns_or_reclaims, plan_all, plan_keeps, plan_now, PlanCtx};
 use super::strategy::{self, Choice, Mults};
 use super::value::{self, CardValue, Ctx};
 use super::Strategic;
@@ -831,28 +831,23 @@ impl Agent for Policy {
                 }
             }
         }
-        if b.strike_rule && pending {
-            if let Some((i, which)) = super::moves::strike(g, legal) {
-                if !self.ruled_out(&world, g, &legal[i]) {
-                    super::moves::fired(which);
-                    return i;
-                }
-            }
-        }
-        if b.target_rule && pending {
-            if let Some((i, which)) = super::moves::target(&world, g, legal) {
-                if !self.ruled_out(&world, g, &legal[i]) {
-                    super::moves::fired(which);
-                    return i;
-                }
-            }
-        }
-        if b.move_rules && pending {
-            let last_node = self.eval().is_some_and(|e| e.w.last_node > 0.0);
-            if let Some((i, which)) = super::moves::pick(&world, g, legal, last_node) {
-                if !self.ruled_out(&world, g, &legal[i]) {
-                    super::moves::fired(which);
-                    return i;
+        // The move heuristics (`moves`), in this order: strike, target, then push / cancel / liberate.
+        type Heuristic<'a> = &'a dyn Fn() -> Option<(usize, usize)>;
+        let heuristics: [(bool, Heuristic<'_>); 3] = [
+            (b.strike_rule, &|| super::moves::strike(g, legal)),
+            (b.target_rule, &|| super::moves::target(&world, g, legal)),
+            (b.move_rules, &|| {
+                let last_node = self.eval().is_some_and(|e| e.w.last_node > 0.0);
+                super::moves::pick(&world, g, legal, last_node)
+            }),
+        ];
+        for (on, pick) in heuristics {
+            if on && pending {
+                if let Some((i, which)) = pick() {
+                    if !self.ruled_out(&world, g, &legal[i]) {
+                        super::moves::fired(which);
+                        return i;
+                    }
                 }
             }
         }
@@ -920,13 +915,18 @@ impl Agent for Policy {
 }
 
 impl Policy {
+    /// 230 (`burn_late` at `level` or above): the burns and Reclaim still wait, before the deck's last two cards.
+    fn burn_waits(&self, g: &GameState, level: usize) -> bool {
+        self.behaviors.burn_late >= level && super::eval::Eval::cards_left(g) > 2
+    }
+
     /// The wrapped agent's pick among the actions nothing forced rules out.
     fn search_pick(&mut self, rules: &Rules, g: &GameState, legal: &[Action]) -> usize {
         let world = rules.world();
         let reserve = self.am_reserve(&world, g, legal);
         // 230: `burn_late` 2 keeps the burns and Reclaim out of the search before the deck's last two cards;
         // `am_last` keeps Make antimatter out of it (make_short alone takes it).
-        let early_burn = self.behaviors.burn_late >= 2 && super::eval::Eval::cards_left(g) > 2;
+        let early_burn = self.burn_waits(g, 2);
         let am_last = self.behaviors.am_last;
         let held = |a: &Action| {
             (early_burn && burns(&world, a)) || (am_last && matches!(a, Action::Standard { act, .. } if act == "antimatter"))
@@ -959,7 +959,7 @@ impl Policy {
         // 219: a plant's Action (a resource paid) before a board power (a burn or Reclaim): the burns are the rare way.
         let mut sources: Vec<usize> = if self.behaviors.am_source {
             // 230 (`burn_late`): the burns and Reclaim wait for the deck's last two cards.
-            let early = self.behaviors.burn_late > 0 && super::eval::Eval::cards_left(g) > 2;
+            let early = self.burn_waits(g, 1);
             legal
                 .iter()
                 .enumerate()
@@ -1198,7 +1198,7 @@ pub fn print_choices(rules: &Rules, spec: &super::AgentSpec, first: u64, games: 
 fn makes_antimatter(w: &World, a: &Action) -> bool {
     let gains = |effects: &[Op]| effects.iter().any(|e| matches!(e, Op::Gain { resource: Resource::Antimatter, .. }));
     match a {
-        Action::Power { seat, power } => ai::board(w, *seat as usize).powers.get(*power as usize).is_some_and(|p| gains(&p.effects)),
+        Action::Power { .. } => power_effects(w, a).is_some_and(gains),
         // 221: every branch of an "A, OR B" Action, as the keep plan's `am_makes` reads it.
         Action::Use { card, .. } => cards::def(w, card).ability.as_ref().is_some_and(|ab| ab.branches().iter().any(|b| gains(&b.effects))),
         _ => false,
@@ -1207,12 +1207,14 @@ fn makes_antimatter(w: &World, a: &Action) -> bool {
 
 /// 230 (`burn_late`): whether `a` is a board power that burns the seat's own piece or reclaims one (`Burn`, `Cleanse`).
 fn burns(w: &World, a: &Action) -> bool {
+    power_effects(w, a).is_some_and(burns_or_reclaims)
+}
+
+/// The effects of the board power `a` uses (None: not an `Action::Power`, or no such power).
+fn power_effects<'w>(w: &World<'w>, a: &Action) -> Option<&'w [Op]> {
     match a {
-        Action::Power { seat, power } => ai::board(w, *seat as usize)
-            .powers
-            .get(*power as usize)
-            .is_some_and(|p| p.effects.iter().any(|e| matches!(e, Op::Burn { .. } | Op::Cleanse { .. }))),
-        _ => false,
+        Action::Power { seat, power } => ai::board(w, *seat as usize).powers.get(*power as usize).map(|p| p.effects.as_slice()),
+        _ => None,
     }
 }
 

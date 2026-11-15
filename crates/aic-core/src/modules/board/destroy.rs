@@ -132,7 +132,7 @@ pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause
     }
     cx.tally(g, "board.destroyed", 1);
     // 235: a war-destroyed factory's Discord is named in its line (the log showed a bare var change).
-    let sway = if cause == Cause::War && kind == FACTORY && w.variant("alignment") != Some("off") {
+    let sway = if cause == Cause::War && kind == FACTORY && !w.hot.alignment_off {
         w.int("board.destruction_discord")
     } else {
         0

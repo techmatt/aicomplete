@@ -6,20 +6,20 @@ Wall stops per game.
     python scripts/cards/liberation_read.py DIR [DIR...] [--cards]
 
 DIR is an `aic-sim experiment` output directory (games.jsonl and results.json; a farmed run's cells come from its
-header, `screens.cells_for`).
+header, `screens.cells_for`), a games file with a header, or FILE=SPEC (a headerless farmed JSONL and its spec;
+`screens.stream`).
 """
 import argparse
-import json
 import math
 import os
 import sys
 from collections import defaultdict
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-from screens import cells_for  # noqa: E402
+from screens import cells_for, liberate_cards, stream  # noqa: E402
 
-LIBERATE = ['nuclear_option', 'power_to_the_people', 'hostile_buyout', 'forensic_audit', 'root_access',
-            'peacekeeping_mission', 'popular_uprising', 'great_liberation']
+# Great Liberation prints `cleanse`, not `liberate`, but reads as a liberation card: listed by hand.
+LIBERATE = liberate_cards() + ['great_liberation']
 
 
 def load(dirs):
@@ -27,12 +27,11 @@ def load(dirs):
     for d in dirs:
         names = {i: (os.path.basename(c['config']).replace('.json', ''), c['variant'], c['agent'])
                  for i, c in cells_for(d).items()}
-        with open(os.path.join(d, 'games.jsonl'), encoding='utf-8') as f:
-            f.readline()
-            for line in f:
-                g = json.loads(line)
-                if 'cell' in g:
-                    cells[names[g['cell']]].append(g)
+        lines = stream(d)
+        next(lines)
+        for g in lines:
+            if 'cell' in g:
+                cells[names[g['cell']]].append(g)
     return cells
 
 

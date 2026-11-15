@@ -395,7 +395,7 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
             alignment::discord_from(g, cx, "city", energy * divert);
             cx.tally(g, "board.energy_diverted", energy);
             // 235: the log said only "var changed: alignment.discord +1": name the source.
-            if energy * divert > 0 && w.variant("alignment") != Some("off") {
+            if energy * divert > 0 && !w.hot.alignment_off {
                 cx.note(Some(h), || format!("{} (corrupted) diverts its energy: {} Discord", hex_name(&w, h), energy * divert));
             }
         } else if g.tokens(h, ADV_AMBASSADOR) > 0 && cube_owner(g, h).is_none() {
@@ -408,7 +408,7 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
             let n = energy * w.int("board.ambassador_discord");
             alignment::sway(g, cx, Side::Discord, n);
             cx.tally(g, "board.city_dark_aligned", 1);
-            if n > 0 && w.variant("alignment") != Some("off") {
+            if n > 0 && !w.hot.alignment_off {
                 cx.note(Some(h), || format!("{} is dark (an agent on it): {n} Discord", hex_name(&w, h)));
             }
         } else if let Some(s) = cube_owner(g, h) {

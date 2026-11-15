@@ -63,11 +63,11 @@ fn the_supply_is_a_cap_not_a_loss() {
     let (rules, mut g) = lab(&["adversary.build"]);
     let station = rules.map.numbered(0, piece(0).stations[0]);
     put(&mut g, station, STATION, 1);
-    g.vars.insert(SUPPLY.into(), 1);
+    set_var(&mut g, SUPPLY,1);
     for c in 0..rules.map.countries.len() {
-        g.vars.insert(crate::modules::adversary::pool_key(c).into(), 0);
+        set_var(&mut g, crate::modules::adversary::pool_key(c), 0);
     }
-    g.vars.insert(crate::modules::adversary::pool_key(0).into(), 2);
+    set_var(&mut g, crate::modules::adversary::pool_key(0), 2);
     set_pile(&mut g, NEXT, &["mil_s1_long_patrols"]);
     run_answered(&rules, &mut g);
     // 151: Long Patrols rallies board 0's pool of 2 to its one station; one lands.
@@ -146,7 +146,7 @@ fn stage_one_takes_a_last_node_too() {
     let (rules, mut g) = lab(&[]);
     let h = rules.map.numbered(0, piece(0).cities[0]);
     put(&mut g, h, node(0), 1);
-    g.vars.insert(STAGE.into(), 1);
+    set_var(&mut g, STAGE,1);
     with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h)).unwrap();
     assert_eq!(g.tokens(h, node(0)), 0, "stage I: it goes");
     assert_eq!(g.stats.counters["board.last_node_lost"], 1);
@@ -200,7 +200,7 @@ fn node_on_track(g: &mut GameState, s: usize, hexes: &[usize]) {
     for &h in hexes {
         put(g, h, node(s), 1);
     }
-    g.vars.insert(board::track_key(s).into(), hexes.len() as i64);
+    set_var(g, board::track_key(s), hexes.len() as i64);
 }
 
 #[test]
@@ -212,7 +212,7 @@ fn each_player_destroys_a_node_of_their_choice_last_included() {
     put(&mut g, a, node(0), 1);
     put(&mut g, b, node(0), 1);
     put(&mut g, last, node(1), 1);
-    g.vars.insert(STAGE.into(), 1);
+    set_var(&mut g, STAGE,1);
     let hit = |g: &mut GameState, cx: &mut module::Cx, s: usize, h: usize| {
         let hexes = [h, b];
         board::destroy_own_node(g, cx, s, &hexes, board::Cause::Effect("discord"), None).unwrap();
@@ -240,7 +240,7 @@ fn removing_a_botnet_clears_a_hack_on_its_hex() {
     let (rules, mut g) = lab(&[]);
     let h = rules.map.numbered(0, piece(0).cities[0]);
     put(&mut g, h, BOTNET, 1);
-    g.vars.insert(adversary::cut_key(h).into(), 1);
+    set_var(&mut g, adversary::cut_key(h), 1);
     with_cx(&rules, |cx| adversary::remove_botnet(&mut g, cx, h));
     assert_eq!(g.var(&adversary::cut_key(h)), 0);
 }
@@ -271,7 +271,7 @@ fn a_city_that_corrupts_destroys_node_on_it_and_takes_only_its_cube() {
     let far = rules.map.numbered(1, piece(1).cities[0]);
     put(&mut g, h, node(0), 1);
     put(&mut g, far, node(0), 1);
-    g.vars.insert(STAGE.into(), 2);
+    set_var(&mut g, STAGE,2);
     with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h)).unwrap();
     assert_eq!((g.tokens(h, node(0)), g.tokens(h, ADV_CUBE), g.tokens(h, FALLOUT)), (0, 1, 0));
 }

@@ -55,7 +55,7 @@ fn a_bought_cube_goes_on_an_incomplete_project_and_pays_at_completion_only() {
     let on: i64 = (0..w.map.countries.len()).map(|c| g.var(&board::project_key(c, Some(2)))).sum();
     assert_eq!(on, 1);
     for c in 0..w.map.countries.len() {
-        g.vars.insert(board::project_done(c).into(), 1);
+        set_var(&mut g, board::project_done(c), 1);
     }
     assert!(!rules.legal_actions(&g).contains(&researcher_power(&rules, "Grant")), "no project left to take it");
 }
@@ -118,7 +118,7 @@ fn no_researcher_power_sacrifices_science() {
 fn the_giving_capstone_draws_from_the_supply() {
     let (rules, mut g) = lab_with(&["economy.upkeep"], &["countries=3"]);
     let w = rules.world();
-    g.vars.insert(board::track2_key(2).into(), 7);
+    set_var(&mut g, board::track2_key(2), 7);
     set_res(&mut g, 2, Resource::Insight, 5);
     run(&rules, &mut g);
     answer_all(&rules, &mut g);

@@ -1,26 +1,18 @@
 """080: experiments/configs/no_liberate.json, the baseline with every card that prints `liberate` out of its
-deck (the liberation-off arm of the r34 read). The list is read from content/cards.json (165: it had missed
-citywide_microgrid). Derived: rerun after editing the baseline or the cards.
+deck (the liberation-off arm of the r34 read). The list is read from content/cards.json
+(`screens.liberate_cards`). Derived: rerun after editing the baseline or the cards.
 
     python scripts/configs/no_liberate.py
 """
 import json
 import os
+import sys
 
 root = os.path.join(os.path.dirname(__file__), '..', '..')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+from screens import liberate_cards  # noqa: E402
 
-
-def prints_liberate(node):
-    """Whether any op under `node` is `liberate`."""
-    if isinstance(node, dict):
-        return node.get('op') == 'liberate' or any(prints_liberate(v) for v in node.values())
-    if isinstance(node, list):
-        return any(prints_liberate(v) for v in node)
-    return False
-
-
-cards = json.load(open(os.path.join(root, 'content', 'cards.json'), encoding='utf-8'))
-LIBERATE = sorted(c['id'] for c in cards if prints_liberate(c))
+LIBERATE = sorted(liberate_cards())
 base = json.load(open(os.path.join(root, 'configs', 'baseline.json'), encoding='utf-8'))
 base['name'] = 'no_liberate'
 found = 0

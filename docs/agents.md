@@ -37,7 +37,7 @@ strikes, targets, buying energy, playing the plan, selling a dead card, saving a
 agent, and a dominance check's ban wins. Corrupt forecasts move agents as the engine does (`plan::converge_map`).
 
 **Decision order** (`Policy::choose`; first pick wins): strategies at the round-1 keep; a keep by plan or forced rule;
-the ambassador, free-build and cube rushes; convert for a play; sell; buy energy, strike, moves; the other forced
+the ambassador, free-build and cube rushes; convert for a play; sell; buy energy, strike, target, moves; the other forced
 rules and `kept_rule` 2; else the search over what no ban or antimatter reserve rules out, the plan's card replacing
 its pick under `kept_rule` 1, 3, 4.
 

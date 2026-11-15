@@ -147,7 +147,8 @@ def replays(sim, records):
     """The old binary's records on the new binary."""
     bad = 0
     for i in range(0, len(records), 40):
-        p = subprocess.run([os.path.abspath(sim), "replay", *records[i:i + 40]], capture_output=True, text=True)
+        p = subprocess.run([os.path.abspath(sim), "replay", *records[i:i + 40]], capture_output=True, text=True,
+                           encoding="utf-8")
         lines = (p.stdout + p.stderr).splitlines()
         for line in lines:
             if ("WARNING" in line and "content hash" not in line) or "panicked" in line or "FAIL" in line:

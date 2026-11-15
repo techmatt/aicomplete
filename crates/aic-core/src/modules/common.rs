@@ -26,9 +26,6 @@ pub const ADV_AMBASSADOR: &str = "ambassador:adversary";
 pub const TROOP: &str = "troop";
 /// Corp units waiting at a military base (the base's country's corp).
 pub const UNIT: &str = "unit";
-/// 178 (Matt, amendments 8118 and 8122): what a corp unit prints as, its own piece; the one name to swap in
-/// generated text (content's hand-written text: `experiments/results/178_rules_words/rename178.py`).
-pub const DRONE: &str = "Drone";
 /// A hardening token: absorbs one destruction of a facility or node on its hex.
 pub const HARDEN: &str = "harden";
 /// A botnet: persistent, makes adversary compute, an ambassador on its hex may take it down (r75's standard action).

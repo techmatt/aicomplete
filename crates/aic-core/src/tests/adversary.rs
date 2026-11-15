@@ -20,7 +20,7 @@ fn rally_lands_each_boards_pool_evenly_on_its_eligible_sites() {
     let (rules, mut g) = lab(&["adversary.build"]);
     let m = &rules.map;
     let w = rules.world();
-    g.vars.insert(SUPPLY.into(), 40);
+    set_var(&mut g, SUPPLY,40);
     let players: Vec<Key> = (0..g.seats.len()).map(|s| Key::new(ambassador(s))).collect();
     for h in Arc::make_mut(&mut g.hexes).iter_mut() {
         Arc::make_mut(h).tokens.retain(|k, _| !players.contains(k));
@@ -28,9 +28,9 @@ fn rally_lands_each_boards_pool_evenly_on_its_eligible_sites() {
     // War Drums rallies to cities; only board 0 has a pool.
     set_pile(&mut g, NEXT, &["mil_s1_war_drums"]);
     for c in 0..m.countries.len() {
-        g.vars.insert(adversary::pool_key(c).into(), 0);
+        set_var(&mut g, adversary::pool_key(c), 0);
     }
-    g.vars.insert(adversary::pool_key(0).into(), 5);
+    set_var(&mut g, adversary::pool_key(0), 5);
     let sites = plan::rally_sites(&w, &g, RallyAt::City, 0);
     let cities0 = numbered_where(m, 0, |h| kind(m, h) == HexKind::City);
     assert_eq!(sites, cities0, "every city, whoever owns it");
@@ -73,7 +73,7 @@ fn rally_deals_round_robin_in_hex_order_and_a_firewalled_share_stays_in_the_supp
     put(&mut g, cities0[1], FIREWALL, 1);
     let p = plan::rally_plan(&w, &g, RallyAt::City, 0, k + 1).unwrap();
     assert_eq!(p.shares, want, "a firewalled site keeps its turn in the deal");
-    g.vars.insert(SUPPLY.into(), 40);
+    set_var(&mut g, SUPPLY,40);
     with_cx(&rules, |cx| adversary::rally(&mut g, cx, RallyAt::City, k + 1, Some(0), "test")).unwrap();
     assert_eq!(g.tokens(cities0[1], ADV_AMBASSADOR), 0, "nothing lands on it");
     assert_eq!(g.tokens(cities0[2], ADV_AMBASSADOR), 1, "and no one else takes its share");
@@ -271,7 +271,7 @@ fn natural_corruption_takes_sites_holding_their_number_on_their_own_hex() {
 fn corruption_destroys_only_the_node_on_its_hex_and_an_ambassador_is_armor() {
     let (rules, mut g0) = lab(&[]);
     let m = &rules.map;
-    g0.vars.insert(STAGE.into(), 2);
+    set_var(&mut g0, STAGE, 2);
     let h = m.numbered(0, piece(0).cities[0]);
     let next = m.hexes[h].neighbors.iter().copied().find(|&x| kind(m, x) == HexKind::Open).unwrap();
     put(&mut g0, h, node(0), 1);
@@ -305,10 +305,10 @@ fn the_corruption_shield_keeps_a_node_on_a_corrupted_hex() {
     let (rules, mut g) = lab(&[]);
     let w = rules.world();
     let m = &rules.map;
-    g.vars.insert(STAGE.into(), 2);
+    set_var(&mut g, STAGE,2);
     let shielded = |g: &GameState| crate::modules::cards::has_passive(&w, g, 1, |p| matches!(p, Op::CorruptionShield));
     assert!(!shielded(&g));
-    g.vars.insert(board::track_key(1).into(), 7);
+    set_var(&mut g, board::track_key(1), 7);
     assert!(shielded(&g), "seat 1 plays the Protector");
     let h = m.numbered(0, piece(0).cities[0]);
     put(&mut g, h, node(1), 1);
@@ -323,7 +323,7 @@ fn the_corruption_shield_keeps_a_node_on_a_corrupted_hex() {
 fn the_node_rule_logs_what_happened_to_the_node() {
     let (rules, mut g) = lab(&[]);
     let m = &rules.map;
-    g.vars.insert(STAGE.into(), 2);
+    set_var(&mut g, STAGE,2);
     let h = m.numbered(1, piece(1).node);
     put(&mut g, h, node(1), 1);
     put(&mut g, m.numbered(0, piece(0).node), node(1), 1);
@@ -342,12 +342,12 @@ fn the_node_rule_logs_what_happened_to_the_node() {
             .collect::<Vec<_>>()
             .join(" | ")
     };
-    g.vars.insert(board::track_key(1).into(), 7);
+    set_var(&mut g, board::track_key(1), 7);
     put(&mut g, h, ADV_AMBASSADOR, 2);
     let said = notes(&rules, &mut g);
     assert_eq!((g.tokens(h, node(1)), g.tokens(h, ADV_AMBASSADOR)), (1, 0));
     assert!(said.contains("the node holds") && !said.contains("destroy"), "{said}");
-    g.vars.insert(board::track_key(1).into(), 0);
+    set_var(&mut g, board::track_key(1), 0);
     put(&mut g, h, ADV_AMBASSADOR, 2);
     let said = notes(&rules, &mut g);
     assert_eq!(g.tokens(h, node(1)), 0);
@@ -483,7 +483,7 @@ fn the_adversary_gains_its_income_at_the_end_of_its_turn() {
         // A row too dear to fill: the next reveal step puts the income on it, resolving nothing.
         row(&mut g, &["accelerated_timetable"]);
         set_pile(&mut g, adversary::PROJECTS_DONE, &[]);
-        g.vars.insert(adversary::project_key("accelerated_timetable").into(), 0);
+        set_var(&mut g, adversary::project_key("accelerated_timetable"), 0);
         let before = g.var(adversary::COMPUTE);
         // 175: the compute step adds the botnets' and corrupted stations' compute with the income.
         let botnets = total(&g, BOTNET) * rules.world().int("adversary.botnet_compute");
@@ -565,7 +565,7 @@ fn a_stage_iii_card_pulls_sway_out_of_the_unity_bucket() {
         _ => None,
     });
     let pull = pull.expect("a stage-III card prints the pull");
-    g.vars.insert(alignment::track(Side::Unity).into(), pull + 1);
+    set_var(&mut g, alignment::track(Side::Unity), pull + 1);
     g.piles.insert(NEXT.into(), vec![card.id.as_str().into()].into());
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
@@ -702,7 +702,7 @@ fn the_adversary_factory_fallback_skips_a_firewalled_factory() {
         put(&mut g, z, FACTORY, 1);
     }
     put(&mut g, a, FIREWALL, 1);
-    g.vars.insert(SUPPLY.into(), 40);
+    set_var(&mut g, SUPPLY,40);
     let op = Op::AdversaryFactory { count: 1, where_: None, fallback_ambassadors: 2 };
     with_cx(&rules, |cx| effects::run(&mut g, cx, &[op], &mut effects::Ctx::team().named("test"))).unwrap();
     assert_eq!((g.tokens(a, ADV_AMBASSADOR), g.tokens(b, ADV_AMBASSADOR)), (0, 2));

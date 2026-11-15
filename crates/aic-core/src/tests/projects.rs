@@ -53,7 +53,7 @@ fn compute_fills_the_leftmost_project_and_the_rest_slide_left() {
     );
     // At 2 players: Disinformation 10, Botnet Swarm 12, Backdoor Research 10.
     row(&mut g, &["disinformation", "botnet_swarm", "backdoor_research"]);
-    g.vars.insert(adversary::project_key("backdoor_research").into(), 2);
+    set_var(&mut g, adversary::project_key("backdoor_research"), 2);
     g.piles.insert(PROJECT_DECK.into(), ["station_coup", "crackdown"].map(Key::new).to_vec().into());
     set_pile(&mut g, adversary::PROJECT_DISCARD, &[]);
     with_cx(&rules, |cx| gain_and_pour(&mut g, cx, 9)).unwrap();
@@ -112,7 +112,7 @@ fn a_new_row_is_dealt_into_the_slots_when_all_have_resolved() {
     assert_eq!(g.var(&adversary::project_key("station_coup")), 1);
     // A project resolves once (231: none is ongoing): Lab Purge (18 at 2 countries).
     row(&mut g, &["lab_purge"]);
-    g.vars.insert(adversary::project_key("lab_purge").into(), 17);
+    set_var(&mut g, adversary::project_key("lab_purge"), 17);
     with_cx(&rules, |cx| gain_and_pour(&mut g, cx,1)).unwrap();
     assert_eq!(g.pile(PROJECTS_DONE).last().map(|k| k.as_str()), Some("lab_purge"));
     // The deck holds one card: it fills the first slot, the rest stay empty.
@@ -205,7 +205,7 @@ fn security_cards_drain_or_discard_a_project() {
     row(&mut g, &["false_flag", "disinformation"]);
     // 195: setup's deck may still hold the row's cards; the refill draws one that isn't.
     set_pile(&mut g, PROJECT_DECK, &["crackdown"]);
-    g.vars.insert(adversary::project_key("false_flag").into(), 8);
+    set_var(&mut g, adversary::project_key("false_flag"), 8);
     set_pile(&mut g, "cards.hand.0", &["zero_knowledge_exploit", "killswitch_directive"]);
     fund(&mut g, 0);
     act(
@@ -258,7 +258,7 @@ fn botnet_takedown_removes_a_botnet_in_reach() {
         Arc::make_mut(g.piles.entry(crate::modules::cards::played(0)).or_default()).push(c.into());
     }
     row(&mut g, &["false_flag"]);
-    g.vars.insert(adversary::project_key("false_flag").into(), 6);
+    set_var(&mut g, adversary::project_key("false_flag"), 6);
     let play = Action::Play {
         seat: 0,
         card: "singularity_exploit".into(),
@@ -334,8 +334,8 @@ fn the_board_verbs_take_the_targets_the_board_shows() {
     assert_eq!((g.tokens(a, ambassador(0)), g.tokens(a, ambassador(1))), (0, 0));
     assert!(g.resource(0, Resource::Ambassadors) >= s0 + 2 && g.resource(1, Resource::Ambassadors) > s1);
     // 231: an open megaproject loses player cubes, the most-held player's first.
-    g.vars.insert(crate::modules::board::project_key(1, Some(0)).into(), 3);
-    g.vars.insert(crate::modules::board::project_key(1, Some(1)).into(), 1);
+    set_var(&mut g, crate::modules::board::project_key(1, Some(0)), 3);
+    set_var(&mut g, crate::modules::board::project_key(1, Some(1)), 1);
     run_ops(&rules, &mut g, &[Op::StripCubes { count: 2 }]);
     { use crate::modules::board::project_key as pk; assert_eq!((g.var(&pk(1, Some(0))), g.var(&pk(1, Some(1)))), (1, 1)); }
     // A botnet becomes troops; a botnet spreads to a site next to one.
@@ -439,7 +439,7 @@ fn project_ops_reach_as_declared() {
         put(&mut rich, h, cube(c), 1);
         put(&mut rich, h, HARDEN, 1);
         put(&mut rich, h, ambassador(c), 2);
-        rich.vars.insert(crate::modules::board::project_key(c, Some(c)).into(), 3);
+        set_var(&mut rich, crate::modules::board::project_key(c, Some(c)), 3);
     }
     // An income rise is one number: compute is kept times the countries (`rally::increase_income`), agents a
     // country, each country's pool gaining it at the Rally (`rally::fill_pools`).

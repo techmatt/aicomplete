@@ -16,13 +16,13 @@ import re
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from screens import content, dealt, load, cnt  # noqa: E402
+from screens import content, dealt, liberate_cards, load, cnt  # noqa: E402
 from powers import power_key  # noqa: E402
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 
-LIBERATE = ['nuclear_option', 'power_to_the_people', 'hostile_buyout', 'forensic_audit',
-            'root_access', 'peacekeeping_mission', 'popular_uprising', 'great_liberation']
+# Great Liberation prints `cleanse`, not `liberate`, but reads as a liberation card: listed by hand.
+LIBERATE = liberate_cards() + ['great_liberation']
 
 
 def main():

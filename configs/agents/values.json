@@ -163,7 +163,7 @@
     "botnet_troops": {"credits": -5, "per": "195: troop a botnet becomes, in each country (troops at -7, less the botnet spent: remove_botnet's 8 without its Sway, 4, over the two troops a botnet makes on the printed card)"},
     "spread_botnets": {"credits": -16, "per": "195: botnet spread, in each country (place_botnet's anchor)"},
     "take_site": {"credits": -15, "per": "195: site taken in each country (corrupt_factory's and flip_station's anchor; a player's turned neutral is a claim lost, about the same)"},
-    "factory_troops": {"credits": -7, "per": "195: troop each adversary factory makes (troops' row), at about one adversary factory a country (rates.countries); an ongoing project's every round, the rounds left"},
+    "factory_troops": {"credits": -7, "per": "195: troop each adversary factory makes (troops' row), at about one adversary factory a country (rates.countries)"},
     "agents_on_nodes": {"credits": -4, "per": "231: Night Raid's agent on a node hex, in each country: an agent placed (pushback's 2) and a node at rates.node lost in about a quarter of landings (the players answer in their action phase)"},
     "recall_ambassadors": {"credits": -5, "per": "231: the most-held hex's player ambassadors back to supply, in each country: about 1.5 ambassadors, each a Dispatch and a turn's cover (half of rates.ambassadors, 4, plus the site left open)"},
     "strip_cubes": {"credits": -4, "per": "231: player cube off each open megaproject (project_cube's 6 less the cube's share of a completion still reachable)"},

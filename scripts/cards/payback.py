@@ -40,7 +40,8 @@ TROOP = 11  # one troop removed, at a committed seat (not values.json's 0.65 sha
 RATES = {'play': 1.0, 'play_tag': 3.0, 'play_cost': 1.5, 'team_play': 0.5, 'remove_troop': 1.0,
          'remove_compute': 0.6, 'remove_ambassadors': 0.8, 'place_tokens': 2.0}
 TAGS_HELD = 4  # a committed seat's tags of its own kind when the building is out
-TROOPS_REMOVED = {1: 1.0, 2: 1.48, 3: 1.75, 4: 2.37, 6: 3.6}
+# Troops a "remove up to N" removes in play, by N (values.json's table, as effect_ledger.py reads it).
+TROOPS_REMOVED = {int(k): v for k, v in VALUES['troops_removed'].items() if k != 'note'}
 HORIZON = 4  # rounds of production
 
 

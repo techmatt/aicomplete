@@ -30,8 +30,8 @@ pub struct Gate {
     pub every: u64,
 }
 
-/// `z` 2 over about 7 looks: see docs/experiments.md for what that
-/// costs in flipped verdicts.
+/// `z` 2 over about 7 looks: see experiments/results/gate-034-earlystop/gate.md
+/// for what that costs in flipped verdicts.
 impl Default for Gate {
     fn default() -> Self {
         Gate {

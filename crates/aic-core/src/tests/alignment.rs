@@ -27,7 +27,7 @@ fn a_full_unity_bucket_tips_a_card_and_lowers_the_bar() {
     for c in 0..2 {
         put(&mut g, m.numbered(c, piece(c).cities[1]), ADV_AMBASSADOR, 2);
     }
-    g.vars.insert(STAGE.into(), 1);
+    set_var(&mut g, STAGE,1);
     unity_drawn(&mut g, 1);
     fill_bucket(&rules, &mut g, Side::Unity);
     next_alignment_card(&mut g, Side::Unity, "civil_defense");
@@ -58,7 +58,7 @@ fn the_tip_count_picks_a_unity_cards_tier() {
         }
         let owned = crate::modules::plan::sites_where(&w, &g, crate::op::Where::Owned).len() as i64;
         assert!(owned >= 3);
-        g.vars.insert("alignment.unity_tips".into(), tips);
+        set_var(&mut g, "alignment.unity_tips",tips);
         assert_eq!(alignment::next_tier(&w, &g, Side::Unity), tier, "{tips} tips");
         fill_bucket(&rules, &mut g, Side::Unity);
         next_alignment_card(&mut g, Side::Unity, "grassroots_funding");
@@ -112,7 +112,7 @@ fn the_board_clear_win_and_the_bar_easing() {
     for &(tips, rule, stage, piece_left, wins) in cases {
         let (rules, mut g) = action_only(&[EASE, &format!("alignment.clear_win_stage={rule}")]);
         uncorrupt_cities(&rules, &mut g);
-        g.vars.insert(STAGE.into(), stage);
+        set_var(&mut g, STAGE,stage);
         unity_drawn(&mut g, tips as usize);
         if let Some(p) = piece_left {
             put(&mut g, cities(&rules.map)[0], p, 1);
@@ -149,8 +149,8 @@ fn the_board_clear_win_and_the_bar_easing() {
 #[test]
 fn the_antimatter_action_turns_cubes_into_antimatter_and_sways_nothing() {
     let (rules, mut g) = action_only(&[EASE, "board.antimatter_cubes=3"]);
-    g.vars.insert("alignment.unity".into(), 2);
-    g.vars.insert("alignment.discord".into(), 0);
+    set_var(&mut g, "alignment.unity",2);
+    set_var(&mut g, "alignment.discord",0);
     g.seats[0].resources.insert(Resource::ResearchCubes, 3);
     let am = g.resource(0, Resource::Antimatter);
     let a = Action::Standard { seat: 0, act: "antimatter".into() };
@@ -172,9 +172,9 @@ fn the_antimatter_action_turns_cubes_into_antimatter_and_sways_nothing() {
 fn unity_swayed_may_hold_discord_off() {
     for (hold, pick, want) in [(1, 0, (3, 2)), (1, 2, (1, 0)), (0, 0, (3, 2))] {
         let (rules, mut g) = action_only(&[&format!("alignment.hold_off={hold}")]);
-        g.vars.insert("alignment.discord".into(), 2);
+        set_var(&mut g, "alignment.discord",2);
         // Unity swayed and not yet placed: the next action's check places it.
-        g.vars.insert("alignment.unity_new".into(), 3);
+        set_var(&mut g, "alignment.unity_new",3);
         set_res(&mut g, 0, Resource::ResearchCubes, 1);
         rules.apply_mut(&mut g, &std_act(0, "insight"), None).unwrap();
         if hold > 0 {
@@ -192,8 +192,8 @@ fn unity_swayed_may_hold_discord_off() {
 #[test]
 fn the_acting_player_places_swayed_unity() {
     let (rules, mut g) = action_only(&["alignment.hold_off=1"]);
-    g.vars.insert("alignment.discord".into(), 2);
-    g.vars.insert("alignment.unity_new".into(), 1);
+    set_var(&mut g, "alignment.discord",2);
+    set_var(&mut g, "alignment.unity_new",1);
     set_res(&mut g, 1, Resource::ResearchCubes, 1);
     rules.apply_mut(&mut g, &std_act(1, "insight"), None).unwrap();
     let p = g.pending.as_ref().expect("asked where the Unity goes");
@@ -213,8 +213,8 @@ fn every_hold_off_amount_is_offered() {
     // Unity, over the cap or at it; 0 to 2 with 2 Unity, 3 over the cap.
     for (over, n, offered) in [(1, 3, 4), (0, 3, 4), (3, 2, 3)] {
         let mut g = g0.clone();
-        g.vars.insert("alignment.discord".into(), cap + over);
-        g.vars.insert("alignment.unity_new".into(), n);
+        set_var(&mut g, "alignment.discord",cap + over);
+        set_var(&mut g, "alignment.unity_new",n);
         set_res(&mut g, 0, Resource::ResearchCubes, 1);
         rules.apply_mut(&mut g, &std_act(0, "insight"), None).unwrap();
         let asked = g.pending.as_ref().map_or(0, |p| p.ask.options.len());
@@ -247,9 +247,9 @@ fn envoy_moves_one_discord_off() {
     let envoy = |g: &GameState| {
         rules.legal_actions(g).into_iter().find(|a| matches!(a, Action::Standard { seat: 0, act } if act == "envoy"))
     };
-    g.vars.insert("alignment.discord".into(), 0);
+    set_var(&mut g, "alignment.discord",0);
     assert!(envoy(&g).is_none());
-    g.vars.insert("alignment.discord".into(), 3);
+    set_var(&mut g, "alignment.discord",3);
     let a = envoy(&g).expect("Envoy offered");
     act(&rules, &mut g, a);
     assert_eq!(g.var("alignment.discord"), 2);
@@ -264,7 +264,7 @@ fn envoy_moves_one_discord_off() {
 #[test]
 fn discord_tips_do_not_escalate_and_momentum_shrinks_buckets() {
     let (rules, mut g) = action_only(&[EASE]);
-    g.vars.insert("alignment.discord_tips".into(), 1);
+    set_var(&mut g, "alignment.discord_tips",1);
     fill_bucket(&rules, &mut g, Side::Discord);
     any_action(&rules, &mut g);
     assert_eq!(g.var("alignment.discord_tips"), 2);
@@ -283,7 +283,7 @@ fn discord_tips_do_not_escalate_and_momentum_shrinks_buckets() {
     let w = rules.world();
     let mut g = rules.new_game(4);
     for (tips, cap) in [(0, 4), (1, 4), (2, 3), (4, 2), (9, 2)] {
-        g.vars.insert("alignment.unity_tips".into(), tips);
+        set_var(&mut g, "alignment.unity_tips",tips);
         assert_eq!(alignment::capacity(&w, &g, Side::Unity), cap, "{tips} tips");
         assert_eq!(alignment::capacity(&w, &g, Side::Discord), w.int("alignment.discord_tip_per_player") * 2);
     }
@@ -303,13 +303,13 @@ fn sway_past_a_tip_carries_over_to_the_next_tip() {
         let set = format!("alignment.carry={carry}");
         let (rules, mut g) = action_only(&[EASE, &set]);
         uncorrupt_cities(&rules, &mut g);
-        g.vars.insert(STAGE.into(), 1);
+        set_var(&mut g, STAGE,1);
         let cap = alignment::capacity(&rules.world(), &g, side);
         let key = format!("alignment.{}", side.name());
         let tips = alignment::tips_key(side);
         let what = format!("carry {carry}, {side:?}");
         // One tip and 3 over: one tip, and 3 left in the bucket if it carries.
-        g.vars.insert(key.as_str().into(), cap + 3);
+        set_var(&mut g, &key, cap + 3);
         any_action(&rules, &mut g);
         answer_all(&rules, &mut g);
         assert_eq!(g.var(tips), 1, "{what}");
@@ -318,8 +318,8 @@ fn sway_past_a_tip_carries_over_to_the_next_tip() {
         // Two tips' worth: two tips (and the bucket empty) only if it carries.
         let (rules, mut g) = action_only(&[EASE, &set]);
         uncorrupt_cities(&rules, &mut g);
-        g.vars.insert(STAGE.into(), 1);
-        g.vars.insert(key.as_str().into(), 2 * cap);
+        set_var(&mut g, STAGE,1);
+        set_var(&mut g, &key, 2 * cap);
         any_action(&rules, &mut g);
         answer_all(&rules, &mut g);
         if !g.is_over() {
@@ -358,7 +358,7 @@ fn discord_cards_step_up_with_the_discord_tip_count() {
         for &h in &seeded {
             put(&mut g, h, ADV_AMBASSADOR, 1);
         }
-        g.vars.insert("alignment.discord_tips".into(), tips);
+        set_var(&mut g, "alignment.discord_tips",tips);
         next_alignment_card(&mut g, Side::Discord, "blight");
         fill_bucket(&rules, &mut g, Side::Discord);
         let corrupt = |g: &GameState| (0..g.hexes.len()).filter(|&h| g.tokens(h, ADV_CUBE) > 0).count();

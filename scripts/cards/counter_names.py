@@ -3,8 +3,8 @@
     python scripts/cards/counter_names.py DIR... [--all]
 
 Scans scripts/**/*.py, web/scripts/*.mjs and crates/aic-sim/src (not its agents) for quoted counter keys (`board.`, `adversary.`, `threats.`, ...;
-a key ending in `.` is a prefix) and checks each against the counters of every game in the given experiment
-outputs (`games.jsonl`). Prints the keys no game wrote, by file: a name a rules change retired, or one the
+a key ending in `.` is a prefix) and checks each against the counters of every game in the given reads (each DIR an
+experiment output folder, a games file with a header, or FILE=SPEC: `screens.stream`). Prints the keys no game wrote, by file: a name a rules change retired, or one the
 engine writes under another name (145: the sweep's `adversary.sites_created`, written only with a site suffix).
 A key a run simply never reached (a rare event, a variant off) also lists: read the list, don't gate on it.
 `--all` prints the keys found too. Exits 0.
@@ -17,6 +17,8 @@ import re
 import sys
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+from screens import stream  # noqa: E402
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
 PREFIXES = ('adversary', 'alignment', 'board', 'cards', 'threats', 'economy', 'ai', 'effects', 'slots', 'actions',
@@ -27,13 +29,13 @@ KEY = re.compile(r"""['"`]((?:%s)\.[a-z0-9_.]+)['"`]""" % '|'.join(PREFIXES))
 def written(dirs):
     keys = set()
     for d in dirs:
-        with open(os.path.join(d, 'games.jsonl'), encoding='utf-8') as f:
-            for line in f:
-                g = json.loads(line)
-                c = g.get('counters') or {}
-                if isinstance(c, list):
-                    c = dict(c)
-                keys.update(k for k, v in c.items() if v)
+        lines = stream(d)
+        next(lines)
+        for g in lines:
+            c = g.get('counters') or {}
+            if isinstance(c, list):
+                c = dict(c)
+            keys.update(k for k, v in c.items() if v)
     return keys
 
 

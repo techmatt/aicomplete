@@ -179,7 +179,7 @@ fn discounts_by_tag_take_credits_or_insight_off_down_to_the_floor() {
 #[test]
 fn a_threshold_cashes_the_tokens_its_trigger_leaves() {
     let (rules, mut g) = table_with(&[TELEMETRY_PASSIVES], &["shared_compute_grant"], &["telemetry_archive"]);
-    g.vars.insert(cards::tokens_key(0, "telemetry_archive").as_str().into(), 2);
+    set_var(&mut g, cards::tokens_key(0, "telemetry_archive"), 2);
     let w = rules.world();
     let reward = cards::def(&w, "telemetry_archive").passives.iter().find_map(|p| match p {
         Op::Threshold { then, .. } => match then.first() {
@@ -305,7 +305,7 @@ fn a_threshold_pays_when_a_feeder_fills_it() {
         r#"cards.recruit_operatives.effects=[{"op":"draw","count":2},{"op":"add_tokens","kind":"agents","amount":1}]"#,
     ];
     let (rules, mut g) = table_with(&pins, &["recruit_operatives"], &["intrusion_lab"]);
-    g.vars.insert(cards::tokens_key(0, "intrusion_lab").as_str().into(), 1);
+    set_var(&mut g, cards::tokens_key(0, "intrusion_lab"), 1);
     let before = g.resource(0, Resource::Antimatter);
     play(&rules, &mut g, 0, "recruit_operatives");
     answer_all(&rules, &mut g);
@@ -427,7 +427,7 @@ fn a_copy_of_a_per_tag_income_pays_its_frozen_count() {
     set_pile(&mut g, &cards::played(0), &["dataset_scraper", "red_team_audit"]);
     assert_eq!(cards::tags(&w, &g, 0, Tag::Science), 3);
     // Frozen at 1 Science tag (the key holds the count plus 1).
-    g.vars.insert(cards::tag_frozen_key(0, "foundation_model_campus").as_str().into(), 2);
+    set_var(&mut g, cards::tag_frozen_key(0, "foundation_model_campus"), 2);
     let before = economy::income(&w, &g, 0)[Resource::Credits];
     play(&rules, &mut g, 0, "payroll_automation");
     assert_eq!(economy::income(&w, &g, 0)[Resource::Credits], before + 3, "the copy pays the frozen 1 tag, not 3");
@@ -474,7 +474,7 @@ fn every_converter_is_once_a_round() {
     let w = rules.world();
     let m = &rules.map;
     for (c, piece) in w.content.map.countries.iter().enumerate().take(w.map.countries.len()) {
-        g.vars.insert(board::project_done(c).as_str().into(), 1);
+        set_var(&mut g, board::project_done(c), 1);
         // A node of seat 0 in a city of the country: the city is in reach.
         let city = m.numbered(c, piece.cities[0]);
         put(&mut g, city, node(0), 1);
@@ -571,7 +571,7 @@ fn vigil_pays_at_most_its_cap_a_round() {
 #[test]
 fn adversary_cubes_go_on_each_open_megaproject() {
     let (rules, mut g) = lab(&[]);
-    g.vars.insert(board::project_done(1).into(), 1);
+    set_var(&mut g, board::project_done(1), 1);
     let (a0, a1) = (g.var(&board::project_key(0, None)), g.var(&board::project_key(1, None)));
     with_cx(&rules, |cx| effects::run(&mut g, cx, &[Op::AdversaryCubes { count: 2 }], &mut effects::Ctx::team())).unwrap();
     assert_eq!(g.var(&board::project_key(0, None)) - a0, 2);
@@ -591,7 +591,7 @@ fn botnet_cubes_turn_a_botnet_into_an_adversary_cube() {
     let (h0, h1) = (land(0), land(1));
     put(&mut g, h0, BOTNET, 1);
     put(&mut g, h1, BOTNET, 1);
-    g.vars.insert(board::project_done(1).into(), 1);
+    set_var(&mut g, board::project_done(1), 1);
     let (a0, unity) = (g.var(&board::project_key(0, None)), g.var("alignment.unity"));
     with_cx(&rules, |cx| effects::run(&mut g, cx, &[Op::BotnetCubes { count: 2 }], &mut effects::Ctx::team())).unwrap();
     assert_eq!((g.tokens(h0, BOTNET), g.tokens(h1, BOTNET)), (0, 1));

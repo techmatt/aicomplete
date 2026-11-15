@@ -35,9 +35,9 @@ def load_faces():
 
 
 def face_text(face):
-    """The card's words in print order, as `Face::full_text`: the target box (234) first."""
-    target = face['target']['text'] + '.' if face.get('target') else ''
-    return ' '.join(t for t in (target, face['top_text'], face['text']) if t)
+    """The card's words in print order: `Face::full_text`, which `aic-sim docs` writes into faces.json (the target
+    box first; "When played: " before the one-time part when a lasting part is above it)."""
+    return face['full_text']
 
 
 def cards_module():

@@ -24,9 +24,9 @@ fn printed_and_revealed_tags_count_like_card_tags() {
     assert!(cards::sources(&w, &g, 0).is_empty(), "a board tag is nothing to sacrifice");
     let cyber = crate::modules::ai::board(&w, 0).play_track.iter().position(|u| u.tags.contains(&Tag::Cyber)).unwrap() + 1;
     let count = |g: &GameState| cards::tag_counts(&w, g, 0)[Tag::Cyber as usize];
-    g.vars.insert(board::track2_key(0).into(), cyber as i64 - 1);
+    set_var(&mut g, board::track2_key(0), cyber as i64 - 1);
     let before = count(&g);
-    g.vars.insert(board::track2_key(0).into(), cyber as i64);
+    set_var(&mut g, board::track2_key(0), cyber as i64);
     assert_eq!(count(&g), before + 1, "revealed on its card-play track, counted as a card's");
     assert!(cards::sources(&w, &g, 0).is_empty(), "nor is a revealed one");
 }
@@ -40,9 +40,9 @@ fn movement_is_printed_plus_uncovered_spaces() {
     let b = crate::modules::ai::board(&w, 0);
     assert_eq!(crate::modules::ai::movement(&w, &g, 0), b.moves + b.economy_track[0].moves);
     let k = b.economy_track.iter().position(|u| u.moves > 0).expect("a Movement space");
-    g.vars.insert(board::track_key(0).into(), k as i64 + 1);
+    set_var(&mut g, board::track_key(0), k as i64 + 1);
     assert_eq!(crate::modules::ai::movement(&w, &g, 0), b.moves + b.economy_track[..=k].iter().map(|u| u.moves).sum::<i64>());
-    g.vars.insert(board::moved_key(0).into(), 1);
+    set_var(&mut g, board::moved_key(0), 1);
     assert_eq!(board::moves_left(&w, &g, 0), crate::modules::ai::movement(&w, &g, 0) - 1);
 }
 
@@ -52,7 +52,7 @@ fn a_capstone_counts_once_uncovered() {
     let w = rules.world();
     let discount = |g: &GameState| cards::passives(&w, g, 0).iter().any(|p| matches!(p, Op::BuildingDiscount { amount: 2 }));
     assert!(!discount(&g));
-    g.vars.insert(board::track2_key(0).into(), 7);
+    set_var(&mut g, board::track2_key(0), 7);
     assert!(discount(&g));
 }
 
@@ -148,7 +148,7 @@ fn a_cordon_stops_creation_for_the_next_build() {
     let line = plan::CreateLine { count: 1, at: CreateAt::City, if_: CreateIf::Any, sites: 1 };
     let lands = |g: &GameState| !plan::create_plan(&w, g, line, Some(c), &[], None).is_empty();
     assert!(lands(&g));
-    g.vars.insert(board::flag(RoundFlag::Cordon, c).into(), 2);
+    set_var(&mut g, board::flag(RoundFlag::Cordon, c), 2);
     assert!(!lands(&g));
 }
 

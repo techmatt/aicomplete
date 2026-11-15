@@ -388,7 +388,7 @@ fn the_aegis_doctrine_guards_only_its_holders_own_pieces() {
     let (rules, mut g0) = lab(&[]);
     let w = rules.world();
     let m = &rules.map;
-    g0.vars.insert(board::track2_key(1).into(), 7);
+    set_var(&mut g0, board::track2_key(1), 7);
     assert!(cards::has_passive(&w, &g0, 1, |p| matches!(p, crate::content::Op::CivicShelter)), "seat 1 plays the Protector");
     let [a, b, c] = [piece(0).node, piece(0).cities[0], piece(0).cities[1]].map(|n| m.numbered(0, n));
     put(&mut g0, a, node(0), 1);

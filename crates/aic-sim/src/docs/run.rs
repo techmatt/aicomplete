@@ -205,7 +205,11 @@ fn faces_json() -> String {
         .cards
         .iter()
         .map(|c| {
-            let face = serde_json::to_string(&card_face(c)).expect("a face is JSON");
+            let f = card_face(c);
+            let face = serde_json::to_string(&f).expect("a face is JSON");
+            // `full_text` last, so `scripts/cards/cards_doc.py` reads the card's words from the engine (one home).
+            let full = serde_json::to_string(&f.full_text()).expect("a text is JSON");
+            let face = format!("{},\"full_text\":{full}}}", face.strip_suffix('}').expect("a face is an object"));
             format!(" {}: {face}", serde_json::to_string(&c.id).expect("an id is JSON"))
         })
         .collect();
@@ -513,7 +517,7 @@ pub fn run(o: &Options) {
     files.push((AGENTS_MD.to_string(), fill(&agents_old, &strategies), agents_old));
     // 229 (Matt's ruling): the rulebook is hand-written but for §21's difficulty table.
     let book_old = on_disk(RULEBOOK_MD);
-    let book_blocks = |name: &str| (name == "difficulty").then(|| super::blocks::rulebook_difficulty_block(&r));
+    let book_blocks = |name: &str| (name == "rulebook_difficulty").then(|| super::blocks::rulebook_difficulty_block(&r));
     files.push((RULEBOOK_MD.to_string(), fill(&book_old, &book_blocks), book_old));
     let rules_md = rules_files();
     let mut rules_new: Vec<(String, String)> = Vec::new();

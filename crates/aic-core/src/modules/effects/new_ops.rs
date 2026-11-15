@@ -703,8 +703,8 @@ struct Corp {
 /// CorpTroops. `now`: the bases (the threat's base, or every base) make them
 /// at once (General Mobilization past the cap; `fill` to the cap, which War Footing printed until 231 cut it).
 /// `each_production` from a threat registers them on its base for `rounds`
-/// rounds from the next (or for good, `permanent`); an ongoing project's and
-/// the adversary board's are read by the production step, so here do nothing.
+/// rounds from the next (or for good, `permanent`); the adversary board's are
+/// read by the production step (231: no project is ongoing), so here do nothing.
 fn corp_troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, c: Corp, when: CorpWhen) {
     let w = cx.world;
     let mut bases: Vec<usize> = match c.at {

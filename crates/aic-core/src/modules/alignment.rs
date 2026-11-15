@@ -214,7 +214,7 @@ pub fn bar_level(w: &World, g: &GameState) -> adversary::PurgeLevel {
 /// choose how much of it holds Discord off instead ([`place_unity`]). A
 /// track that fills tips then.
 pub fn sway(g: &mut GameState, cx: &mut Cx, side: Side, n: i64) {
-    if n <= 0 || cx.world.variant("alignment") == Some("off") {
+    if n <= 0 || cx.world.hot.alignment_off {
         return;
     }
     let key = match side {
@@ -295,7 +295,7 @@ pub fn discord_from(g: &mut GameState, cx: &mut Cx, from: &str, n: i64) {
 
 /// [`sway`] toward Unity, tallied by where it came from (136).
 pub fn unity_from(g: &mut GameState, cx: &mut Cx, from: &str, n: i64) {
-    if n > 0 && cx.world.variant("alignment") != Some("off") {
+    if n > 0 && !cx.world.hot.alignment_off {
         cx.tally(g, &KeyBuf::new("alignment.unity_from.").text(from), n);
     }
     sway(g, cx, Side::Unity, n);
@@ -509,7 +509,7 @@ impl Module for Alignment {
         let blight = adversary::blight_drip(&cx.world, g);
         discord_from(g, cx, "blight", blight);
         // 235: say where the round's Discord came from (the log showed a bare var change).
-        if drip + blight > 0 && cx.world.variant("alignment") != Some("off") {
+        if drip + blight > 0 && !cx.world.hot.alignment_off {
             cx.note(None, || format!("The round's Discord drip: {drip} printed, {blight} from Fallout"));
         }
         // 210 (stats only): Fallout tokens on the board as the round's drip reads them.

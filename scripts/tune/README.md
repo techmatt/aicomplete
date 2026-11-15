@@ -1,7 +1,8 @@
 # scripts/tune
 
 - `agent_sweep.py` (116): the strategist's parameter sweep. Below.
-- `sweep.py`, `log_table.py`, `engine_sweep.py`: older tuning drivers ([docs/experiments.md](../../docs/experiments.md), *Past runs*).
+- `sweep.py`, `log_table.py`, `engine_sweep.py`: older tuning drivers (`sweep.py --common K=V`, repeatable: a
+  `--set` for every variant, as a spec's `common`) ([docs/experiments.md](../../docs/experiments.md), *Past runs*).
 
 ## The agent sweep
 
@@ -20,7 +21,8 @@ takes 100 seeds, the confirm 96 (`--sweep-games`, `--confirm-games`). Record bot
 ledger. With no seed flags it uses r45's blocks in `agent_sweep.json`, which a later revision must
 not reuse. Output goes to `out/agent-sweep/rNN/` (`--out`): `summary.md` holds the tables,
 `log.txt` the progress lines, `cache.jsonl` every game result. Rerunning resumes from the cache,
-keyed by agent spec, seeds and the binary's hash, so a new build plays everything again.
+keyed by agent spec, seeds and the binary's hash, so a new build plays everything again. `--sim EXE`
+plays another binary (default `$AIC_SIM`, else `target/release/aic-sim.exe`).
 
 **What it plays.** The three board pairs (B+P, B+R, P+R) at d2, two players, every setting on the
 same seeds. A setting names every swept parameter in the spec. Before the search it checks that the
@@ -39,7 +41,8 @@ a heuristic weight; a bare key is a keep-plan parameter.
    with the other parameters held. It moves to the best point when the paired gain passes
    `--accept` SE (1.5). Passes repeat until one moves nothing (`--max-passes` 3). `--budget MIN`
    caps the search's time.
-2. `profile`: every grid point of every parameter, with the others at the best. This gives each
+2. `profile`: every grid point within `--profile-reach` steps (1; 0: the whole grid) of the best, for every
+   parameter, with the others at the best. This gives each
    parameter's effect around the best. A parameter *matters* when some grid point plays worse than
    the best by more than 2 SE.
 3. `confirm`: the best setting, the hand-set strategist and greedy (the reference, unchanged), on

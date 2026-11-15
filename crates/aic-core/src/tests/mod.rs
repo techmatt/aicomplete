@@ -238,6 +238,11 @@ fn set_res(g: &mut GameState, seat: usize, r: Resource, n: i64) {
     g.seats[seat].resources.insert(r, n);
 }
 
+/// Sets var `k` to `v` on a crafted state.
+fn set_var(g: &mut GameState, k: impl Into<crate::key::Key>, v: i64) {
+    g.vars.insert(k.into(), v);
+}
+
 fn hexes_where(m: &Map, f: impl Fn(usize) -> bool) -> Vec<usize> {
     (0..m.hexes.len()).filter(|&h| f(h)).collect()
 }
@@ -407,8 +412,8 @@ fn at_step(sets: &[&str], taken: i64) -> (Rules, GameState) {
     let (rules, mut g) = lab_with(&[], sets);
     let a = rules.map.numbered(0, piece(0).node);
     put(&mut g, a, node(0), 1);
-    g.vars.insert(crate::modules::board::track_key(0).into(), taken);
-    g.vars.insert(crate::modules::board::track2_key(0).into(), taken);
+    set_var(&mut g, crate::modules::board::track_key(0), taken);
+    set_var(&mut g, crate::modules::board::track2_key(0), taken);
     (rules, g)
 }
 
@@ -455,7 +460,7 @@ fn deal(g: &mut GameState, threat: &str, c: usize) {
 fn deal_at(g: &mut GameState, threat: &str, c: usize, hexes: &[usize]) {
     deal(g, threat, c);
     for (i, &h) in hexes.iter().enumerate() {
-        g.vars.insert(format!("threats.loc.{threat}.{i}").into(), h as i64 + 1);
+        set_var(g, format!("threats.loc.{threat}.{i}"), h as i64 + 1);
     }
 }
 
@@ -463,7 +468,7 @@ fn row(g: &mut GameState, ids: &[&str]) {
     set_pile(g, PROJECTS, ids);
     // Each in its slot, left to right (r80: compute fills the leftmost, the rest slide left).
     for (i, id) in ids.iter().enumerate() {
-        g.vars.insert(crate::key::KeyBuf::new("adversary.slot.").text(id).as_str().into(), i as i64 + 1);
+        set_var(g, crate::key::KeyBuf::new("adversary.slot.").text(id).as_str(), i as i64 + 1);
     }
 }
 
@@ -487,7 +492,7 @@ fn next_alignment_card(g: &mut GameState, side: Side, card: &str) {
 /// Fills `side`'s track so the next action tips it.
 fn fill_bucket(rules: &Rules, g: &mut GameState, side: Side) {
     let cap = crate::modules::alignment::capacity(&rules.world(), g, side);
-    g.vars.insert(format!("alignment.{}", side.name()).into(), cap);
+    set_var(g, format!("alignment.{}", side.name()), cap);
 }
 
 /// 136: `n` Unity cards drawn (the purge's steps count them), with the tip
@@ -495,7 +500,7 @@ fn fill_bucket(rules: &Rules, g: &mut GameState, side: Side) {
 fn unity_drawn(g: &mut GameState, n: usize) {
     let ids: Vec<&str> = crate::content().alignment.iter().filter(|c| c.side == Side::Unity).map(|c| c.id.as_str()).cycle().take(n).collect();
     set_pile(g, "alignment.resolved.unity", &ids);
-    g.vars.insert("alignment.unity_tips".into(), n as i64);
+    set_var(g, "alignment.unity_tips", n as i64);
 }
 
 /// A Cx for calling module functions directly on a crafted state.

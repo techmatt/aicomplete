@@ -2,7 +2,8 @@
 
     python scripts/cards/play_read.py DIR [DIR ...] [--min 1.0] [--agents planner,engine]
 
-Each DIR holds an experiment's games.jsonl (and results.json, or a farmed run's header spec, naming each game's agent). Per agent, pooled over its cells and DIRs: for each player card,
+Each DIR is an experiment's output folder (games.jsonl, and results.json or a farmed run's header spec naming each
+game's agent), a games file with a header, or FILE=SPEC (a headerless farmed JSONL and its spec; `screens.stream`). Per agent, pooled over its cells and DIRs: for each player card,
 the share of games that kept it and its plays in all of them: listed when kept in more than `--min` percent of the
 games and played in none (the "kept, never played" read); then every draft card no game of that agent kept.
 A card counts once a game, whichever seat held it.
@@ -17,7 +18,7 @@ import sys
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from screens import cells_for, dealt  # noqa: E402
+from screens import cells_for, dealt, stream  # noqa: E402
 
 
 def main():
@@ -40,20 +41,19 @@ def main():
     for d in a.dirs:
         cells = cells_for(d)
         seen.update(c['agent'] for c in cells.values())
-        with open(os.path.join(d, 'games.jsonl'), encoding='utf-8') as f:
-            f.readline()
-            for line in f:
-                g = json.loads(line)
-                agent = cells[g['cell']]['agent']
-                if want and agent not in want:
+        lines = stream(d)
+        next(lines)
+        for g in lines:
+            agent = cells[g['cell']]['agent']
+            if want and agent not in want:
+                continue
+            games[agent] += 1
+            for cid, c in g['cards'].items():
+                if cid not in deck:
                     continue
-                games[agent] += 1
-                for cid, c in g['cards'].items():
-                    if cid not in deck:
-                        continue
-                    if c.get('kept', 0) > 0:
-                        kept[agent][cid] += 1
-                    idle[agent][cid] += c.get('played', 0)
+                if c.get('kept', 0) > 0:
+                    kept[agent][cid] += 1
+                idle[agent][cid] += c.get('played', 0)
     missing = want - set(games)
     if missing:
         # 184: an alias (strategist) matched nothing and its read was silently empty; results.json names the full label.

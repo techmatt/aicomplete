@@ -47,12 +47,12 @@ fn the_rally_forecast_matches_the_rally_step() {
         for h in Arc::make_mut(&mut g0.hexes).iter_mut() {
             Arc::make_mut(h).tokens.retain(|k, _| !players.contains(k));
         }
-        g0.vars.insert(SUPPLY.into(), 1000);
+        set_var(&mut g0, SUPPLY, 1000);
         g0.piles.remove(CURRENT);
         for (k, id) in cards.iter().enumerate() {
             let mut g = g0.clone();
             for b in 0..rules.map.countries.len() {
-                g.vars.insert(crate::modules::adversary::pool_key(b).into(), ((k + b) % 6) as i64);
+                set_var(&mut g, crate::modules::adversary::pool_key(b), ((k + b) % 6) as i64);
             }
             g.piles.insert(NEXT.into(), vec![id.into()].into());
             let want = plan::next_rally(&rules.world(), &g);

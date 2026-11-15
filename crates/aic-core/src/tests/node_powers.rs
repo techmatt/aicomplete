@@ -187,7 +187,7 @@ fn placing_node_takes_the_next_track_token_and_uncovers_its_income() {
         .all(|&h| rules.map.adjacent(h, start) && g.tokens(h, node(0)) == 0));
     // Place a node, which refreshes here: a test of the track, not of its limit.
     let place = |rules: &Rules, g: &mut GameState| {
-        g.vars.insert(board::std_once_key(board::StandardAction::Node, 0).into(), 0);
+        set_var(g, board::std_once_key(board::StandardAction::Node, 0), 0);
         set_res(g, 0, Resource::Credits, 50);
         act(rules, g, std_act(0, "node"));
     };
@@ -200,15 +200,13 @@ fn placing_node_takes_the_next_track_token_and_uncovers_its_income() {
     place(&rules, &mut g);
     // The keep upgrade is the card-play track's second space (068).
     assert_eq!((board::track_taken(&g, 0), ai::keep2(&w, &g, 0)), (3, false));
-    g.vars.insert(board::track2_key(0).into(), 2);
+    set_var(&mut g, board::track2_key(0), 2);
     assert!(ai::keep2(&w, &g, 0));
     assert_eq!(node_of(&g, 0).len(), 3);
     // The tracks run out after their last spaces (021: both of them).
-    g.vars
-        .insert(board::track_key(0).into(), ai::board(&w, 0).economy_track.len() as i64);
+    set_var(&mut g, board::track_key(0), ai::board(&w, 0).economy_track.len() as i64);
     assert!(ai::can_place(&w, &g, 0));
-    g.vars
-        .insert(board::track2_key(0).into(), ai::board(&w, 0).play_track.len() as i64);
+    set_var(&mut g, board::track2_key(0), ai::board(&w, 0).play_track.len() as i64);
     assert!(!ai::can_place(&w, &g, 0));
 }
 
@@ -255,8 +253,8 @@ fn a_track_s_last_steps_cost_more() {
     let a = rules.map.numbered(0, piece(0).node);
     put(&mut g, a, node(0), 1);
     // Both tracks down to their last steps.
-    g.vars.insert(board::track_key(0).into(), b.economy_track.len() as i64 - 1);
-    g.vars.insert(board::track2_key(0).into(), b.play_track.len() as i64 - 1);
+    set_var(&mut g, board::track_key(0), b.economy_track.len() as i64 - 1);
+    set_var(&mut g, board::track2_key(0), b.play_track.len() as i64 - 1);
     let extra = b.economy_track.last().unwrap().cost.min(b.play_track.last().unwrap().cost);
     assert!(extra > 0);
     let deploy = std_act(0, "node");

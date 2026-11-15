@@ -34,16 +34,17 @@ what it prints; the `cards/*_read.py` readers take seconds.
 - `cards/loop_smoke.py [DIR...] [--run] [--spec S] [--games 16] [--seed S] [--threads 6] [--max-plays 12]`: the loop
   smoke (no DIR: runs `use.json` to `out/loop-smoke`): timeouts, ends, most plays of one card a game; exits 1 on a
   timeout or `--max-plays`.
-- `cards/counter_names.py DIR... [--all]`: counter keys the read scripts, web scripts and `crates/aic-sim` (agents
+- `cards/counter_names.py DIR... [--all]` (DIR, games file or `FILE=SPEC`): counter keys the read scripts, web scripts and `crates/aic-sim` (agents
   aside) quote that no game in DIR wrote; rare events and test strings list too, so don't gate on it.
 - `cards/screen.py`: named columns over experiment outputs (`--columns a,b,c`, `--preset tiers|041|034|018|016`,
   `--sources`, `--list`; `tiers`, offered, kept and played by tier, is a card rework's first screen); `--gate DIR`
   (gates are suspended) each check against its own agent, then unspent.
-- `screens.py` reads a run from Python: `load(dir)` the games with their cells (`stream` also takes `FILE=SPEC`),
+- `screens.py` reads a run from Python: `load(dir)` the games with their cells (`stream` also takes `FILE=SPEC`, and stops on a
+  headerless file passed without its `=SPEC`),
   `cnt(game, key)` a counter (a power is `ai.power.<board>.<name>`: `scripts/powers.py`). `screens.py assemble SPEC
   FIRST COUNT OUT_DIR SHARD... [--exe EXE]` writes farmed shards (seed order) under the spec's header as
   `OUT_DIR/games.jsonl`.
-- `cards/play_read.py DIR... [--min PCT] [--agents A,B]`: per agent, pooled: draft cards kept in over `--min` percent
+- `cards/play_read.py DIR... [--min PCT] [--agents A,B]` (DIR, games file or `FILE=SPEC`): per agent, pooled: draft cards kept in over `--min` percent
   of games (default 1) and played in none, and those no game kept. Not why: a card is offered only when some part of
   it can act (`feasible` in `crates/aic-core/src/modules/effects/feasible.rs`).
 - `cards/use_read.py DIR... [--min PCT] [--agents A,B]`: per agent and pair, pooled: wins, uses of dear powers, Grant
@@ -56,13 +57,15 @@ what it prints; the `cards/*_read.py` readers take seconds.
 - Per cell, `DIR...`: `cards/threat_read.py [--cards]` threats dealt, countered, paid abroad, typed counters and
   capstones; `cards/slots_read.py [--rounds N]` build-overs and buildings standing; `cards/board_read.py [--powers]
   [--cards]` wins and the boards' measures (`--powers` each power a game, `--cards` research-cube cards);
-  `cards/liberation_read.py [--cards]` cities corrupted and liberated (`--cards` each liberate card);
+  `cards/liberation_read.py [--cards]` cities corrupted and liberated (`--cards` each liberate card; also a games
+  file or `FILE=SPEC`);
   `cards/economy_read.py [--rounds 10]` card throughput, income, unspent; `cards/energy_read.py` energy held and
   used; `cards/corp_read.py` completions, cubes, converters, stations, adversary compute.
 - `cards/effect_stats.py READ [--screen DIR] [--flag 5] [--out MD]`: each Unity and Discord card's resolutions and
   effects (`fx.<id>.*`), each prohibition's fire rate and blocks; `--screen` an on/off screen (`PAIR_<id>`) for the
   paired win effect, flagged past ±`--flag`.
-- `cards/price_read.py`: per-card rates and stratified win deltas (experiments.md, *Reading prices*).
+- `cards/price_read.py DIR [--agent planner] [--csv OUT] [--flags 20]`: per-card rates and stratified win deltas
+  for one agent (experiments.md, *Reading prices*); `--flags` the rows each flag table lists.
 - `cards/effect_ledger.py`: splits each card's printed cost over its effects pro rata to the reasoned values
   (`values.json`), fits a price multiplier per effect, writes CSVs, `ledger.html` and `outliers.md` (tier-2 cards
   over the ceiling) to `experiments/results/effect-ledger/`. `--stdout`: each card's fit and fair price
@@ -83,7 +86,8 @@ what it prints; the `cards/*_read.py` readers take seconds.
   another baseline), `table`, `compare`, `specs SIM A B`; `check SIM` (~2 min, one thread, quiet machine) fails at
   1.3 × `speed_baseline.json` (`--update` moves it; across a revision: NO VERDICT). [speed.md](speed.md).
 - `bench/per_decision.py OLD_ROOT NEW_ROOT`: rounds, decisions and ms a game and a decision on the same seeds
-  (`--games 16`+, speed.md; `--agent`, `--old-agent` the agents a change touched). A root is an `.exe` or a folder with `aic-sim.exe`
+  (`--games 16`+, speed.md; `--agent`, `--old-agent` the agents a change touched; `--first 1000` the first seed,
+  `--countries 2`, `--pairs 2` passes, the best kept). A root is an `.exe` or a folder with `aic-sim.exe`
   and its `configs/`. `--set K=V` goes to both sides: a content overlay runs the new binary on old content.
 - `bench/seeds.py next N [--take] [--doc FILE]`: the next N fresh seeds from experiments.md; `--take` moves `Next free`.
 - `bench/skilled_rows.py READ.json [--games 24] [--levels 3,4] [--rows ...] [--out ...]`: the oracle's companion spec
@@ -107,16 +111,18 @@ what it prints; the `cards/*_read.py` readers take seconds.
   same seeds, as `other:AGENT`. After editing ladder.py, paired.py or screens.py, run `bench/test_read_tools.py`.
 - Gates are suspended: `bench/gate_stop_rate.py`, how often early stops flip a verdict; `bench/gate_close.py plan
   GATE_DIR OUT_DIR [--z 2] [--cap 96] [--fill 48]`, specs carrying the rows within z paired SE on to the cap, reusing
-  their games, and `read`, merging the runs.
+  their games, and `read GATE_DIR [CLOSE_DIR...] [--min-seeds N]`, merging the runs (checks on fewer seeds left out).
 - `bench/shards.sh EXE DIR SPEC FIRST COUNT OUT`: a farm spec natively as `SHARDS` (default 6) one-thread `aic-sim
   farm` shards side by side in DIR, concatenated under the header into OUT: a paired read's base side.
 - `bench/first_divergence.py OLD NEW`: where two runs of one spec first differ, per game (`--cells DIR A B`: a run's
   two cells).
 - `bench/profile_win.py SIM OUT -- run ...`: a sampling profile, no admin (speed.md, *Profiling*). `--runs K` on the
-  next seeds each; `--attach S1,S2,...` reads 5 s windows of a long run.
-- `bench/resource_use.py NEW [OLD] [--top 8] [--limits]` (folder or games file): chips, energy, cubes and antimatter
+  next seeds each; `--attach S1,S2,...` reads 5 s windows of a long run; `--rate 1000` samples a second.
+- `bench/resource_use.py NEW [OLD] [--top 8] [--limits]` (folder, games file or `FILE=SPEC`): chips, energy, cubes and antimatter
   gained and spent per seat a game by level, what buys and sources them (`--limits`: the `limit.*` table).
-- `bench/projects_read.py GAMES.jsonl [--md OUT]`: each project's reveals, completions, compute drained and map
+- `bench/am_read.py READ[,READ...]` (same forms): antimatter by source, made and spent, burns by round, per lever
+  (`PAIR_LEVER` variants) and agent (230's reader; stops if a plant or burn it names left content).
+- `bench/projects_read.py READ [--md OUT]` (folder, games file or `FILE=SPEC`): each project's reveals, completions, compute drained and map
   moves a completion, by level.
 - `bench/card_ranks.py DIR A B [--variant V]...`: Spearman of the cards' keep and play rates, agent B against A.
 - `bench/item_time.py ITEM... [--top N]`: a done item's wall time: sims, builds, tests, the rest.

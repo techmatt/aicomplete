@@ -107,7 +107,8 @@ at most half the effect it must resolve.
 
 `cards.csv` splits by variant and names agents as resolved (the strategist as its `engine:` spec;
 `games.jsonl` as the spec writes them). `kept` and `drawn` include the opening deal, `offered` doesn't: use share
-of games. A record's `cell` is an index, variant-major (each variant's levels × agents).
+of games. A record's `cell` is an index, variant-major (each variant's levels × agents): `cells_of` in `scripts/screens.py` expands a spec,
+`cells_for` reads a run's.
 
 ## The ballpark read
 
@@ -124,7 +125,9 @@ ceiling, `sweep:plan_table=0,w.table=0,w.packet_keep=1` the judge off the value 
 - **Recipe:** the new side farmed (d0-d4) from a spec in `experiments/farm/`, the old side natively (or both:
   `bench/read_specs.py read`, `run_read.sh`); read by `bench/ladder.py NEW OLD --measures` (pooled, paired, by set).
 - **Standing measures, old against new every read** (`--measures`; the list: `ladder.py`'s docstring; projects
-  revealed is `adversary.projects_revealed`, every draw: a game's deck use). A measure the old binary never tallied
+  revealed is `adversary.projects_revealed`, every draw: a game's deck use; compute by source is
+  `adversary.compute_income`, `adversary.compute_botnets` and `board.station_compute`; the rest of
+  `adversary.compute_made` is threats and cards: `adversary/projects.rs`). A measure the old binary never tallied
   is patched into its tree before its first read.
 - **Costs (r73):** a 720-game strategist or greedy set (d0-d4) about 2 min on 6 threads; double on a busy box.
 - **A before/after read is paired**: the old binary and its configs (README, *This machine*), same seeds, own folder.

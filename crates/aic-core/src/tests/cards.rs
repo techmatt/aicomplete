@@ -51,7 +51,7 @@ fn off_variants_remove_threats_alignment_and_the_draft() {
         (g.var("alignment.unity"), g.var("alignment.discord")),
         (0, 0)
     );
-    g.vars.insert("alignment.unity".into(), 4);
+    set_var(&mut g, "alignment.unity", 4);
     any_action(&rules, &mut g);
     assert_eq!(g.var("alignment.unity_tips"), 0);
 
@@ -172,15 +172,15 @@ fn the_023_primitives_draw_drain_all_count_and_cash_out() {
     assert_eq!(g.pile("cards.deck.1").len(), deck - 2);
 
     row(&mut g, &["false_flag", "disinformation"]);
-    g.vars.insert(adversary::project_key("false_flag").into(), 6);
-    g.vars.insert(adversary::project_key("disinformation").into(), 3);
+    set_var(&mut g, adversary::project_key("false_flag"), 6);
+    set_var(&mut g, adversary::project_key("disinformation"), 3);
     run_ops(&rules, &mut g, &[Op::DrainAll { amount: 4 }]);
     assert_eq!(g.var(&adversary::project_key("false_flag")), 2);
     assert_eq!(g.var(&adversary::project_key("disinformation")), 0);
 
     // Retained Earnings holds Capital.
     set_pile(&mut g, "cards.built.0", &["retained_earnings"]);
-    g.vars.insert(cards::tokens_key(0, "retained_earnings").into(), 5);
+    set_var(&mut g, cards::tokens_key(0, "retained_earnings"), 5);
     let credits = g.resource(0, Resource::Credits);
     run_ops(&rules, &mut g, &[Op::GainPerTokens { resource: Resource::Credits, kind: TokenKind::Capital, per: 2, here: false }]);
     assert_eq!(g.resource(0, Resource::Credits), credits + 2, "5 Capital count as 2; they stay");
@@ -389,7 +389,7 @@ fn an_or_action_adds_here_then_offers_both_halves_and_counts_only_its_own_tokens
     let (rules, mut g) = lab_actions_with(&[FORGE_ABILITY]);
     let id = "synthetic_data_forge";
     set_pile(&mut g, "cards.built.0", &[id, "telemetry_archive"]);
-    g.vars.insert(cards::tokens_key(0, "telemetry_archive").into(), 5);
+    set_var(&mut g, cards::tokens_key(0, "telemetry_archive"), 5);
     act(&rules, &mut g, Action::Use { seat: 0, card: id.into() });
     assert_eq!(g.var(&cards::tokens_key(0, id)), 1, "the add, asked nothing");
     g.seats[0].exhausted.clear();
