@@ -17,9 +17,10 @@
         <button type="button" id="random-seed" title="New game with a random seed">Random seed</button>
       </form>
       <div class="tools">
+        <button type="button" id="view-toggle" title="Switch between the player view and the debug view (V)">Player view</button>
         <button type="button" id="undo" title="Drop the last action (Ctrl+Z)">Undo</button>
-        <button type="button" id="random-action" title="Take one random legal action (R)">Random action</button>
-        <button type="button" id="random-end" title="Random legal actions to the end of the game">Random to end</button>
+        <button type="button" id="random-action" class="debug-only" title="Take one random legal action (R)">Random action</button>
+        <button type="button" id="random-end" class="debug-only" title="Random legal actions to the end of the game">Random to end</button>
         <button type="button" id="open-record" title="Open a game record file (or drop one on the page)">Open record…</button>
         <button type="button" id="record" title="Copy this game as a record, or paste one">Record / bug report…</button>
         <input type="file" id="record-file" accept=".json,application/json" hidden />
@@ -53,6 +54,20 @@
         <pre id="tab-view" class="tab" hidden></pre>
         <pre id="tab-config" class="tab" hidden></pre>
       </section>
+    </main>
+
+    <!-- 242: the player view. Its map, phase bar, prompt, status, adversary row and countries are the debug
+         view's elements, moved in by main.ts's setMode. -->
+    <main id="player" hidden>
+      <section id="p-main"></section>
+      <section id="p-side">
+        <div id="p-seats"></div>
+        <div id="p-turn" hidden></div>
+        <div id="p-adv"></div>
+        <details id="p-more-box"><summary>Piles and other tracks</summary><div id="p-more"></div></details>
+      </section>
+      <section id="p-seat"></section>
+      <div id="p-bar"></div>
     </main>
 
     <footer id="timeline">

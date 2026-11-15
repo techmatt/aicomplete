@@ -30,7 +30,8 @@ what it prints; the `cards/*_read.py` readers take seconds.
 - `content/load_adversary.py [--check]`: `drafts/adversary/` (the source) into `content/` and
   `docs/adversary-cards.md`; writes nothing if `drafts/adversary/check.py` gives any ERROR; `--check` only compares.
 - `configs/no_liberate.py`, `configs/no_tier2.py` (run by `regen.py`): the baseline less every `liberate` card, and
-  with no tier-2 deck (opening tier-2 keeps from tier 1), in `experiments/configs/`.
+  with no tier-2 deck (opening tier-2 keeps from tier 1), in `experiments/configs/`. `configs/three_seat.py` (also
+  run by `regen.py`): `configs/three_seat.json`, the baseline at 3 countries and difficulty 0, the viewer's 3-seat game.
 - `cards/loop_smoke.py [DIR...] [--run] [--spec S] [--games 16] [--seed S] [--threads 6] [--max-plays 12]`: the loop
   smoke (no DIR: runs `use.json` to `out/loop-smoke`): timeouts, ends, most plays of one card a game; exits 1 on a
   timeout or `--max-plays`.

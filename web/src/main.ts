@@ -18,6 +18,8 @@ import {
   statusHtml, varsHtml,
 } from './panels';
 import { Timeline, keptSession, parseSeed, randomSeed, readRecord, revisionNote, storageGet, storageSet } from './session';
+import { printedCard } from './player/printed';
+import { focusSeat, pin, renderPlayer, turnHexes, turnStep } from './player/view';
 import './style.css';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -80,6 +82,48 @@ let activeTab = 'log';
 /** Whether the raw-vars section under the piles is unfolded. */
 let varsOpen = false;
 
+// ---------- the two views (242) ----------
+
+/** The player view (play through the objects) or the debug view (everything, the timeline and the raw data). */
+type Mode = 'player' | 'debug';
+const VIEW_KEY = 'aic.view';
+let mode: Mode = storageGet(VIEW_KEY) === 'player' ? 'player' : 'debug';
+
+const playerUi = {
+  root: $('player'),
+  main: $('p-main'),
+  adv: $('p-adv'),
+  seats: $('p-seats'),
+  seat: $('p-seat'),
+  bar: $('p-bar'),
+  turn: $('p-turn'),
+  more: $('p-more'),
+};
+
+/** Moves the shared panels (map, phase bar, prompt, status, adversary row, countries) into the chosen view. */
+function setMode(m: Mode) {
+  mode = m;
+  storageSet(VIEW_KEY, m);
+  document.body.classList.toggle('player-mode', m === 'player');
+  playerUi.root.hidden = m !== 'player';
+  $('app').hidden = m === 'player';
+  $('view-toggle').textContent = m === 'player' ? 'Debug view' : 'Player view';
+  const wrap = $('board-wrap');
+  if (m === 'player') {
+    // It plays the live game: no autoplay, no earlier step (it has no timeline to show either).
+    stopAutoplay();
+    if (tl && tl.cursor < tl.last) {
+      tl.seek(tl.last);
+      tl.save();
+    }
+    playerUi.main.append(ui.phaseBar, ui.prompt, wrap);
+    playerUi.adv.append(ui.status, ui.pipeline, ui.countries);
+  } else {
+    $('board-pane').append(ui.phaseBar, ui.prompt, ui.status, ui.pipeline, wrap, ui.countries);
+  }
+  if (tl) render();
+}
+
 // ---------- errors ----------
 
 function showError(msg: string | null) {
@@ -111,6 +155,7 @@ function confirmDropLater(): boolean {
 
 function setTimeline(t: Timeline) {
   stopAutoplay();
+  pin(null);
   tl = t;
   showError(t.replayError);
   // 099: a game that stopped replaying isn't saved (`Timeline.save`) until acted on.
@@ -143,6 +188,8 @@ function loadRecordText(text: string, file: string) {
 
 function act(a: Action) {
   if (!confirmDropLater()) return;
+  // 242: after an action the player view follows whoever must act again.
+  pin(null);
   // Acting from a focused action button (the keyboard): keep focus in that seat's
   // buttons across the re-render (020: it fell back to the page body every time).
   // (235: only when the keyboard put it there: after a click the refocused button took the next Space.)
@@ -193,17 +240,29 @@ function render() {
     for (const e of f.events) for (const h of hexesIn(e)) changed.add(hexKey(h));
     for (const h of hexesIn(f.action)) changed.add(hexKey(h));
   }
+  // 242: the player view steps through the adversary's turn: only the shown step's hexes are outlined.
+  const turn = mode === 'player' ? turnHexes(f, stepPhase()) : null;
+  if (turn) {
+    changed.clear();
+    for (const h of turn) changed.add(h);
+  }
   const sources = new Set(shown.threat_sources.flatMap((s) => s.hexes.map((i) => hexKey(shown.hexes[i].hex))));
   renderBoard(ui.board, shown, { targets, changed, sources });
   renderPrompt(targets.size);
   ui.status.innerHTML = statusHtml(shown, f.snap.state.config);
   ui.pipeline.innerHTML = pipelineHtml(shown);
   ui.countries.innerHTML = countriesHtml(shown);
-  renderSeats();
-  renderPiles();
-  renderLog();
+  if (mode === 'player') {
+    renderPlayer({ ...playerUi, countries: ui.countries, prompt: ui.prompt }, {
+      view: shown, legal, config: f.snap.state.config, cx: labels(), frame: f, before: stepPhase(),
+    });
+  } else {
+    renderSeats();
+    renderPiles();
+    renderLog();
+    renderTab();
+  }
   renderTimeline();
-  renderTab();
   // 118: the hover was redone only when the mouse moved, so autoplay, the keys or an
   // action left it showing the old step's values (or a removed button's) under a still mouse.
   if (mouse) hover(document.elementFromPoint(mouse.x, mouse.y), mouse.x, mouse.y);
@@ -232,17 +291,24 @@ function renderPrompt(targets: number) {
   }
   if (v.choice) {
     ui.prompt.className = 'choice';
-    const how = targets === 1 ? `click the highlighted hex` : targets ? `click one of the ${targets} highlighted hexes` : `answer in ${seatName(v.choice.seat)}'s panel`;
+    const how = targets === 1 ? `click the highlighted hex` : targets ? `click one of the ${targets} highlighted hexes` : mode === 'player' ? 'answer here' : `answer in ${seatName(v.choice.seat)}'s panel`;
     ui.prompt.innerHTML = `<b>${seatName(v.choice.seat)} decides:</b> ${escapeHtml(contentIds(v.choice.prompt.replace(/^Seat \d+:\s*/, '').replace(/^([^:]+): seat \d+:\s*/, '$1: ')))} <span class="how">— ${how}</span>`;
     return;
   }
   const acting = [...new Set(legal.map((a) => a.seat))];
   // 184: a draft phase named only its key ("tier: Seat 0 to act"); say what the panel's buttons are for.
   const short = v.phase ? shortPhase(v.phase.name) : '';
-  const what = v.phase ? PHASE_HINTS[v.phase.name] : undefined;
+  // 242: the player view's draft layout says it itself.
+  const what = v.phase && mode === 'debug' ? PHASE_HINTS[v.phase.name] : undefined;
   ui.prompt.innerHTML = v.phase && acting.length
     ? `<b>${escapeHtml(short)}:</b> ${acting.map(seatName).join(', ')} to act${what ? ` <span class="how">— ${what}</span>` : ''}`
     : '';
+}
+
+/** The phase the shown step's action was taken in (the log's first group). */
+function stepPhase(): string {
+  const ps = tl.frames[tl.cursor - 1]?.snap.state;
+  return ps ? shortPhase(ps.config.round[ps.phase] ?? 'setup') : 'setup';
 }
 
 function labels(): LabelContext {
@@ -382,6 +448,7 @@ const typeRank = (t: string) => (t === 'pass' ? 99 : TYPE_ORDER.indexOf(t) < 0 ?
 
 function passAll() {
   if (!confirmDropLater()) return;
+  pin(null);
   guard(() => {
     for (const s of shown.phase?.waiting ?? []) {
       const p = legalActions(tl.frame.snap).find((a) => a.seat === s && a.type === 'pass');
@@ -465,9 +532,30 @@ function highlight(hexes: string[]) {
 
 /** Where the mouse last was over the page, so `render` can redo the hover (118). */
 let mouse: { x: number; y: number } | null = null;
+/** The printed card (id and status) the tip shows, so a still card isn't redrawn on every mouse move (242). */
+let tipPrinted = '';
 
 function hover(el: Element | null, cx: number, cy: number) {
   const target = el?.closest?.('[data-token],[data-hex][data-index],[data-value],[data-card],[data-pile],[data-track],[data-board-seat],[data-action]') as HTMLElement | null;
+  // 242: a player card in the player view opens as it prints, its status under it.
+  const printed = mode === 'player' ? (el?.closest?.('[data-printed]') as HTMLElement | null) : null;
+  if (printed && target) {
+    const more = details(target, shown, legal, labels()) ?? '';
+    const key = `${printed.dataset.printed}|${more}`;
+    // Built once per card and status: the mouse moving over it only moves the tip.
+    const host = key === tipPrinted && !ui.tip.hidden ? null : printedCard(printed.dataset.printed!, 1.25);
+    if (host || key === tipPrinted) {
+      if (host) {
+        ui.tip.replaceChildren(host);
+        if (more) ui.tip.insertAdjacentHTML('beforeend', `<div class="tip-under">${more}</div>`);
+        tipPrinted = key;
+      }
+      ui.tip.hidden = false;
+      place(cx, cy);
+      return;
+    }
+  }
+  tipPrinted = '';
   const html = target ? details(target, shown, legal, labels()) : null;
   const hl = el?.closest?.('[data-hexes]') as HTMLElement | null;
   highlight(hl?.dataset.hexes ? hl.dataset.hexes.split(' ').filter(Boolean) : []);
@@ -477,6 +565,11 @@ function hover(el: Element | null, cx: number, cy: number) {
   }
   ui.tip.innerHTML = html;
   ui.tip.hidden = false;
+  place(cx, cy);
+}
+
+/** Puts the tip beside the mouse, inside the window. */
+function place(cx: number, cy: number) {
   const pad = 14;
   const w = ui.tip.offsetWidth;
   const h = ui.tip.offsetHeight;
@@ -509,6 +602,32 @@ ui.board.addEventListener('click', (e) => {
   const a = legal.find((x) => x.seat === armed!.seat && choiceKey(x) === armed!.key && isHex(x.target) && hexKey(x.target) === key);
   if (a) act(a);
 });
+
+// 242: the player view's controls: an action button, a seat to show, the adversary's turn's steps.
+playerUi.root.addEventListener('click', (e) => {
+  const el = e.target as Element;
+  const b = el.closest('button[data-action]') as HTMLElement | null;
+  if (b) {
+    const a = JSON.parse(b.dataset.action!) as Action;
+    if (legal.some((x) => JSON.stringify(x) === b.dataset.action)) act(a);
+    return;
+  }
+  if (el.closest('[data-pass-all]')) return passAll();
+  const seat = el.closest('[data-seat-focus]') as HTMLElement | null;
+  if (seat) {
+    pin(Number(seat.dataset.seatFocus));
+    return render();
+  }
+  const t = el.closest('[data-turn],[data-turn-step]') as HTMLElement | null;
+  if (t) {
+    if (t.dataset.turnStep !== undefined) turnStep(Number(t.dataset.turnStep) - Number(document.querySelector('#p-turn li.now')?.getAttribute('data-turn-step') ?? 0));
+    else if (t.dataset.turn === 'open') turnStep('open');
+    else turnStep(t.dataset.turn === 'close' ? 'close' : Number(t.dataset.turn));
+    render();
+  }
+});
+
+$('view-toggle').onclick = () => setMode(mode === 'player' ? 'debug' : 'player');
 
 ui.log.addEventListener('click', (e) => {
   // A phase heading folds or unfolds its group; it doesn't move the timeline.
@@ -545,11 +664,13 @@ $('undo').onclick = () => {
   // dropped one the player couldn't see, unasked (acting there asks, `confirmDropLater`).
   if (tl.cursor < tl.last && !confirm(`Undo drops the game's last action (step ${tl.last}), not the step shown (${tl.cursor}). Go on?`)) return;
   tl.undo();
+  pin(null);
   commit();
 };
 
 /** One uniformly random legal action at the last step; false once the game is over. */
 function randomAction(): boolean {
+  pin(null);
   tl.seek(tl.last);
   const moves = legalActions(tl.frame.snap);
   if (!moves.length) return false;
@@ -658,6 +779,8 @@ document.addEventListener('keydown', (e) => {
   // Space on a focused button presses that button (020: it started autoplay instead), when the focus came from the
   // keyboard (235: a mouse click leaves its button focused, unseen, and Space then took, undid or replaced a game).
   if (e.key === ' ' && target.closest('button') && !pointerFocus) return;
+  // 242: the player view has no timeline: its keys (and R) would move the game unseen.
+  if (mode === 'player' && ['ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown', ' ', 'r'].includes(e.key)) return;
   const keys: Record<string, () => void> = {
     ArrowLeft: () => seek(tl.cursor - 1),
     ArrowRight: () => seek(tl.cursor + 1),
@@ -667,6 +790,7 @@ document.addEventListener('keydown', (e) => {
     PageDown: () => jumpRound(1),
     ' ': () => ui.play.click(),
     r: () => $('random-action').click(),
+    v: () => $('view-toggle').click(),
   };
   if (e.key === 'z' && (e.ctrlKey || e.metaKey)) {
     e.preventDefault();
@@ -784,6 +908,7 @@ function sameJson(a: string, b: string): boolean {
 
 async function main() {
   await load();
+  setMode(mode);
   ui.version.textContent = `${version} · rules r${rulesRevision}`;
   $('legend').innerHTML = legendHtml();
   ui.config.innerHTML = Object.keys(CONFIGS).map((f) => `<option>${escapeHtml(f)}</option>`).join('');
@@ -839,6 +964,12 @@ Object.assign(window, {
     open: (text: string, file = 'script') => loadRecordText(text, file),
     act,
     seek,
+    /** 242: 'player' or 'debug'; `setView` switches (and remembers it, as the toggle does). */
+    get mode() { return mode; },
+    setView: (m: Mode) => setMode(m),
+    /** 242: the seat the player view shows; `showSeat(null)` follows whoever must act again. */
+    get focus() { return focusSeat(shown, legal); },
+    showSeat: (s: number | null) => { pin(s); render(); },
     keptSession,
     get error() { return ui.error.hidden ? null : ui.error.textContent; },
   },

@@ -8,6 +8,8 @@
 //   AIC_SIM       aic-sim binary (default ../target/release/aic-sim[.exe])
 //   AIC_SWEEP_OUT output folder (default web/sweep-out/, git-ignored)
 //   AIC_SWEEP_SEEDS games per case and mode (default 3; --quick 1)
+//   AIC_SWEEP_VIEW  the viewer's view to check: debug (default) or player (242: its no-control check
+//                 counts each seat to act's actions with that seat shown)
 // For each case, aic-sim plays games (greedy, or the case's agent) and saves them as records; the sweep then
 // watches each record step by step (realistic games: wins, purges, late rounds) and
 // plays as many fresh games of the same resolved config by picking legal actions at
@@ -31,6 +33,8 @@ const out = resolve(process.env.AIC_SWEEP_OUT ?? join(web, 'sweep-out'));
 const games = Number(process.env.AIC_SWEEP_SEEDS ?? (quick ? 1 : 3));
 /** First seed of each case's simulated games (099: a hunt names its seed range). */
 const firstSeed = Number(process.env.AIC_SWEEP_SEED ?? 100);
+const viewMode = process.env.AIC_SWEEP_VIEW ?? 'debug';
+if (!['debug', 'player'].includes(viewMode)) throw new Error(`AIC_SWEEP_VIEW is debug or player, not ${viewMode}`);
 const sim = process.env.AIC_SIM ?? join(repo, 'target', 'release', process.platform === 'win32' ? 'aic-sim.exe' : 'aic-sim');
 
 /** Cases: a config file and `--set` overrides. The quick run keeps the first four. */
@@ -229,7 +233,7 @@ const PAGE_LIB = String.raw`(() => {
       add('page-scroll', 'page scrolls: ' + de.scrollWidth + 'x' + de.scrollHeight + ' in ' + innerWidth + 'x' + innerHeight);
     if (aic.error) add('error-banner', aic.error.slice(0, 200));
     if (!aic.view.outcome && !aic.legal.length) add('stuck', 'no legal action and no outcome, round ' + aic.view.round + ' phase ' + (aic.view.phase && aic.view.phase.name));
-    const ui = document.querySelectorAll('#top, #source, #board-pane *, #seats *, #piles *, #timeline *');
+    const ui = document.querySelectorAll('#top, #source, #board-pane *, #seats *, #piles *, #timeline *, #player *');
     const view = { left: 0, top: 0, right: innerWidth, bottom: innerHeight };
     for (const el of ui) {
       if (!(el instanceof HTMLElement) || !vis(el)) continue;
@@ -340,14 +344,21 @@ const PAGE_LIB = String.raw`(() => {
     // 099: input is accepted: every legal action has a control on screen (a button with
     // its action, or a hex pick naming its hex), so no stretch of play has a move the
     // page can't take.
-    const controls = [...document.querySelectorAll('[data-action]')].filter(vis);
-    const exact = new Set(controls.map((el) => el.dataset.action));
-    const hexes = new Set(controls.flatMap((el) => (el.dataset.hexes ?? '').split(' ').filter(Boolean)));
+    // 242: the player view shows one seat's controls at a time: each seat to act is shown in turn, its actions counted.
     const isHex = (t) => Array.isArray(t) && t.length === 2 && t.every(Number.isInteger);
-    for (const a of aic.legal) {
-      if (exact.has(JSON.stringify(a)) || (isHex(a.target) && hexes.has(a.target.join(',')))) continue;
-      add('no-control', 'no control for ' + JSON.stringify(a).slice(0, 160));
+    const player = aic.mode === 'player';
+    for (const s of player ? [...new Set(aic.legal.map((a) => a.seat))] : [null]) {
+      if (player) aic.showSeat(s);
+      const controls = [...document.querySelectorAll('[data-action]')].filter(vis);
+      const exact = new Set(controls.map((el) => el.dataset.action));
+      const hexes = new Set(controls.flatMap((el) => (el.dataset.hexes ?? '').split(' ').filter(Boolean)));
+      for (const a of aic.legal) {
+        if (s !== null && a.seat !== s) continue;
+        if (exact.has(JSON.stringify(a)) || (isHex(a.target) && hexes.has(a.target.join(',')))) continue;
+        add('no-control', 'no control for ' + JSON.stringify(a).slice(0, 160));
+      }
     }
+    if (player) aic.showSeat(null);
     // Arrows (019) point between hexes that exist.
     for (const a of aic.view.arrows ?? []) if (!aic.view.hexes[a.from] || !aic.view.hexes[a.to]) add('arrow', JSON.stringify(a));
     return issues;
@@ -429,6 +440,7 @@ try {
   await page.send('Page.navigate', { url });
   await page.until('window.aic && window.aic.view && window.aic.play', 'the viewer to start', 30000);
   await page.js('localStorage.clear()');
+  await page.js(`window.aic.setView('${viewMode}')`);
   await page.js(PAGE_LIB);
   for (const c of cases) {
     let records;

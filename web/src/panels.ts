@@ -39,7 +39,7 @@ function valueChip(v: Value, scope: string, label = v.label, near = true): strin
   return `<span class="value${warn}" data-value="${esc(v.key)}" data-scope="${scope}"><span class="label">${esc(label)}</span> <b>${val}</b></span>`;
 }
 
-function cardChip(c: CardView, where: string, printed = false): string {
+export function cardChip(c: CardView, where: string, printed = false): string {
   // 044: costs beyond credits sit in the bracket the printed chip drops, so "unaffordable"
   // could have no visible reason. A card with no price showing (built, played) owes nothing.
   const extra = c.cost !== undefined ? extraCosts(c.text).map((x) => ` <small title="also costs">+${esc(x)}</small>`).join('') : '';

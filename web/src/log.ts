@@ -15,7 +15,7 @@ const evItem = (e: GameEvent) => {
  * `phase_started` event and each new round with `round_started`; the events before the
  * first mark belong to the phase the action was taken in (`before`, the step's phase).
  */
-function phaseGroups(events: GameEvent[], before: string): { label: string; round: boolean; events: GameEvent[] }[] {
+export function phaseGroups(events: GameEvent[], before: string): { label: string; round: boolean; events: GameEvent[] }[] {
   const groups = [{ label: before, round: false, events: [] as GameEvent[] }];
   for (const e of events) {
     if (e.type === 'phase_started') groups.push({ label: shortPhase(String(e.phase)), round: false, events: [] });

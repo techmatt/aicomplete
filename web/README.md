@@ -24,6 +24,27 @@ npm run build                  # wasm + typecheck + static site in web/dist/ (92
   wasm and reloads the page; a new or edited file in `configs/` reloads it. A failed rebuild keeps the last good
   engine, the error in the server's terminal.
 
+## Player view
+
+*Player view* / *Debug view* (V) switches, remembered (`aic.view` in `localStorage`; a fresh browser opens the debug
+view, as the scripts expect). The player view (`src/player/`), laid out for 2560×1440, hides the timeline, log, raw
+data and random play; Undo and records stay.
+
+- **Layout:** the question over the map; at the right a row per seat (resources, income, hand, buildings, nodes,
+  *to act* / *done*: click one to show it), the Alignment and losses, the adversary row, each country's threats;
+  across the foot the shown seat (the one deciding, else the first to act; a clicked one until the next action):
+  resources, AI board and powers, hand, buildings, then a bar of standard actions, converters and *Done (pass)*.
+- **Controls sit on the objects:** *Play* / *Sell* on a hand card, *Use* on a power or building, pay on a threat, a
+  hex click for a hex answer; other answers in the question bar. A hand card opens printed (`web/card/`, in a shadow
+  root: its `.card` style would clash) on hover. The draft shows the offered cards printed with their keep price.
+- **The adversary's turn** opens a panel stepping through it a phase at a time, one line each, outlining the hexes
+  the step changed (the map shows the board after the turn).
+- **New modules:** an action no component draws is a button under *Other*; card groups, piles and values fall to
+  the debug view's generic chips (`panels.ts`).
+- **Checks:** `AIC_SWEEP_VIEW=player` sweeps it (`no-control` shows each seat to act in turn); `node
+  scripts/player-play.mjs [--config three_seat.json] [--seed N] [--out DIR] [--size WxH]` plays a whole game by its
+  controls (random, passing least) and saves the record.
+
 ## Using it
 
 - **Play:** pick a config (any in `configs/`; `baseline.json` by default) and a seed, then *New game*. One person

@@ -170,7 +170,8 @@ export async function fitCards(root = document) {
 
   const host = document.createElement('div');
   host.style.cssText = 'position:fixed;left:-300mm;top:0;visibility:hidden;contain:layout style';
-  document.body.append(host);
+  // 242: cards in a shadow root (the viewer's player view, where card.css lives) measure inside it.
+  (typeof ShadowRoot !== 'undefined' && root instanceof ShadowRoot ? root : document.body).append(host);
   const rows = [];
   for (const card of root.querySelectorAll('.card')) {
     const content = card.querySelector(':scope > .content');
