@@ -79,7 +79,8 @@ machine's traps, are in the [README](README.md), which also lists the page for e
   `aic-sim docs --check`, with every touched card priced from the effect ledger
   (`scripts/cards/effect_ledger.py`) before the first screen: a card-fit edit after a freeze redoes
   every frozen read. Before the freeze, also read each new mechanic's use per game and its on/off
-  gap on the same seeds.
+  gap on the same seeds, and run `python scripts/design_check.py --quiet` and any diff review: a fix after
+  the freeze replays the frozen seeds and bumps the revision (234 bumped three times).
 - **A new decision type for the agents** (a new kind of card to keep, a new action to take): review
   the agent code that makes it (keep plan, eval term, fixed policies) before the first screen.
   **A new agent heuristic** gets a 16-seed engine smoke, on and off, on the dev seeds, and its eval
@@ -91,8 +92,8 @@ machine's traps, are in the [README](README.md), which also lists the page for e
   report can always say what the asked-for numbers did.
 - **Compare a lever with base on the same seeds, and confirm on fresh ones.** Pooling new seeds with
   the seeds that picked a winner is not confirmation: report the fresh seeds alone. A fresh read is
-  spent the moment you change the build because of it: confirm any later change on the next free
-  seeds. A lever added beside the asked one is screened on and off as a factorial. A change to a core
+  spent the moment you change the build because of it, or of anything computed from it (`design_check`,
+  `play_read`, its measures; Matt, message 10485): confirm any later change on the next free seeds. A lever added beside the asked one is screened on and off as a factorial. A change to a core
   rules file after a run was frozen replays that run's seeds on the final build before the report,
   compared with `bench/same_results.py` (an experiment output) or `farm/compare.py` (a farmed read's `games.jsonl`):
   keep the frozen run's output directory.

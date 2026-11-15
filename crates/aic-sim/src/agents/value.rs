@@ -543,8 +543,8 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             Worth::now(row("remove_troops") * t.troops_removed(*count) * area_share(t, *at))
         }
         Op::Target { .. } => Worth::now(row("target")),
-        Op::PlaceAmbassadors { count, at } => {
-            let _ = at;
+        // Every placed ambassador lands (on the target, or on or next to it): no area share.
+        Op::PlaceAmbassadors { count, .. } => {
             Worth::now(row("place_ambassadors") * r(Resource::Ambassadors) * *count as f64)
         }
         Op::BuildFactory => Worth::now(row("build_factory")),

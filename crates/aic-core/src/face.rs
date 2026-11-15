@@ -412,7 +412,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             };
             one(clause(icons, say))
         }
-        Op::Cleanse { amount: n, one_country, cities, only, at } => {
+        Op::Cleanse { amount: n, cities, only, at, .. } => {
             let more = n - 1;
             let what = match (*cities, only, more) {
                 (true, _, 1) => "corrupted city, station or factory",
@@ -441,7 +441,6 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
                 (true, _) => parts.push(w("city")),
                 _ => {}
             }
-            let _ = one_country;
             one(clause(adversary(area_icons(parts, *at)), say))
         }
         Op::Liberate { ambassadors, troops, botnet } => {
