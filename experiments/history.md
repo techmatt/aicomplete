@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 245 tune the strategist: `aic-sim agree` (oracle agreement); the judge's hand terms `w.hand` 1.5, `w.hand_cost` 0.1 (were 3, 0.4); fresh paired 47704-47895: +5.9 / +9.2 / +9.7 / +5.9 at d0-d3, pooled d2-d3 +7.8 ± 1.5; it ships, and d1-d3 now read over their bands | 109 | [245_tune_strategist](results/245_tune_strategist/README.md) |
 | 243 oracle overnight: restarts (`tries=3`, wins a superset of one oracle's), `truth`, card proofs (`prove`); fresh read 47488-47703: the oracle wins every d0-d3 seed, strategist gap +10 / +16 / +23 / +44 (d4 +68); the oracle's extra card use is the engine's valuation of energy cards, not search | 109 | [243_oracle_overnight](results/243_oracle_overnight/README.md) |
 | 242 player view: the viewer's play layout beside the debug view (map, seats, the shown seat's board and hand, controls on the objects, the draft printed, the adversary's turn step by step); `configs/three_seat.json`; a whole 3-seat d0 game played through it | 109 | [242_player_view](results/242_player_view/README.md) |
 | 240 balance pass: Fortify at 1 chip (its anchor price), Debrief and Patrol bands 0.25-3.5; Researcher levers (Grant 2 cubes, Peer Review's insight always) screened, not shipped (B+P under its pair mean at r108); fresh read 47424-47487 | 109 | [240_balance_pass](results/240_balance_pass/README.md) |

@@ -37,7 +37,7 @@ options:
   --set-b K=V       override for config B only (repeatable)
   --agent SPEC      the team agent: random (default), greedy, beam, rollout, engine,
                     planner, sweep (a planner profile), strategist (greedy's
-                    terms with the purge term, the screens' judge), oracle (full-information
+                    terms with the purge and hand terms, the screens' judge), oracle (full-information
                     search, opt in), with budget parameters as
                     kind:key=value,... (see docs/agents.md)
   --max-actions N   per-game action cap; a capped game is a timeout (default 100000)
@@ -92,7 +92,15 @@ farm (conductor's remote workers; docs/simulator.md, The farm):
   aic-sim farm <spec> --header --seed F --games N
                     the games.jsonl header line for those seeds
   aic-sim farm --fingerprint
-                    a short check a worker must reproduce";
+                    a short check a worker must reproduce
+
+agree (245):
+  aic-sim agree <games.jsonl>... --agent SPEC [--agent SPEC]... [--agents FILE] [--who KIND]
+                    [--games N] [--threads N]
+                    replay each won game the --who kind played (default oracle), asking
+                    each agent at every decision; one JSON line an agent: picks that
+                    match the recorded one, by group (all, dN) and action kind, as
+                    [same, same or later this round, decisions]. --games: the first N";
 
 const RUN_FLAGS: &[&str] = &[
     "--games", "--seed", "--set", "--set-a", "--agent", "--max-actions", "--threads", "--json",
@@ -124,6 +132,13 @@ const COMMANDS: &[(&str, usize, usize, &str, &[&str])] = &[
         &["--seed", "--games", "--out", "--header", "--fingerprint"],
     ),
     ("strategies", 1, 1, "strategies takes one config", &["--games", "--seed", "--set", "--agent"]),
+    (
+        "agree",
+        1,
+        usize::MAX,
+        "agree takes one or more games.jsonl files",
+        &["--agent", "--agents", "--who", "--games", "--threads"],
+    ),
     (
         "experiment",
         1,
@@ -185,6 +200,10 @@ pub struct Options {
     /// `farm`: print the header line, or the fingerprint, instead of playing.
     pub header: bool,
     pub fingerprint: bool,
+    /// `agree`: every `--agent` as given, a file of specs, and the recorded kind.
+    pub agents: Vec<String>,
+    pub agents_file: Option<String>,
+    pub who: Option<String>,
 }
 
 /// A bad command line: the message, then the usage.
@@ -239,6 +258,9 @@ pub fn parse_args() -> Options {
         report_every: 60,
         header: false,
         fingerprint: false,
+        agents: Vec::new(),
+        agents_file: None,
+        who: None,
     };
     while let Some(a) = args.next() {
         if a.starts_with("--") {
@@ -274,7 +296,13 @@ pub fn parse_args() -> Options {
             "--set-a" => o.set_a.push(value("--set-a")),
             "--set-b" => o.set_b.push(value("--set-b")),
             "--max-actions" => o.max_actions = num("--max-actions", value("--max-actions")),
-            "--agent" => o.agent = AgentSpec::parse(&value("--agent")).unwrap_or_else(|e| die(&e)),
+            "--agent" => {
+                let v = value("--agent");
+                o.agent = AgentSpec::parse(&v).unwrap_or_else(|e| die(&e));
+                o.agents.push(v);
+            }
+            "--agents" => o.agents_file = Some(value("--agents")),
+            "--who" => o.who = Some(value("--who")),
             "--threads" => o.threads = num::<usize>("--threads", value("--threads")).max(1),
             "--json" => o.json = true,
             "--trace" => o.trace = true,

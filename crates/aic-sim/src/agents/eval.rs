@@ -409,7 +409,12 @@ const RENAMED: [(&str, &str); 7] = [
 
 /// 165: the zero-weight probes, retired: (name, why). A spec naming one is refused
 /// with the reason rather than as an unknown weight.
-pub(crate) const RETIRED: [(&str, &str); 6] = [
+pub(crate) const RETIRED: [(&str, &str); 7] = [
+    (
+        "built_income",
+        "245: flat mode counting a building's income at the track's rate (for the energy cards the strategist leaves \
+         unplayed): -1.8 +-1.4 alone, -1.4 beside w.hand_cost=0.2 (243's seeds, d2-d3); never on",
+    ),
     ("hand_cap", "021: at 8 agents hoarded their best cards (d0 38%); always 0 since"),
     ("table_antimatter", "082: at 1 the strategist held its antimatter and lost 59 points; always 0 since"),
     ("table_energy", "093: greedy d0 -15.3 at 1, the strategist d2 -4.9 at 0.3; always 0 since"),

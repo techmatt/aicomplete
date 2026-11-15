@@ -4,6 +4,7 @@
 //! `farm` is all it uses.
 
 mod agents;
+mod agree;
 mod cli;
 mod clock;
 mod docs;
@@ -49,6 +50,7 @@ pub fn main() {
         "replay" => play::replay_all(&o),
         "experiment" => exit(experiment_run::run_experiment(&o.paths[0], &o)),
         "farm" => exit(farm::cli(&o)),
+        "agree" => exit(agree::run(&o)),
         "strategies" => {
             let path = &o.paths[0];
             let r = rules(path, &load(path, &o.set.iter().collect::<Vec<_>>()));

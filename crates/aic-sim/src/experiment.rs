@@ -88,7 +88,7 @@ impl Spec {
     }
 }
 
-mod seed_string {
+pub(crate) mod seed_string {
     use serde::{Deserialize, Deserializer, Serializer};
     pub fn serialize<S: Serializer>(v: &u64, s: S) -> Result<S::Ok, S::Error> {
         s.collect_str(v)

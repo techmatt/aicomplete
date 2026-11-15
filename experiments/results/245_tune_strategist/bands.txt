@@ -1,0 +1,10 @@
+| agent | d | r109 new win % | ±SE | r109 old win % | gap | ±SE (paired) | sets (r109 new) | band | verdict |
+|---|---|---|---|---|---|---|---|---|---|
+| strategist | d0 | **88.9** | 1.3 | 88.9 | +0.0 | 0.0 | 88.9 | 85-100 | met | (576 games)
+| strategist | d1 | **78.6** | 1.7 | 78.6 | +0.0 | 0.0 | 78.6 | 65-80 | met | (576 games)
+| strategist | d2 | **75.3** | 1.8 | 75.3 | +0.0 | 0.0 | 75.3 | 50-65 | **unmet** | (576 games)
+| strategist | d3 | **55.2** | 2.1 | 55.2 | +0.0 | 0.0 | 55.2 | 35-50 | **unmet** | (576 games)
+| strategist:w.hand_cost=0.1,w.hand=1.5 | d0 | **94.8** | 0.9 | 94.8 | +0.0 | 0.0 | 94.8 | 85-100 | met | (576 games)
+| strategist:w.hand_cost=0.1,w.hand=1.5 | d1 | **87.8** | 1.4 | 87.8 | +0.0 | 0.0 | 87.8 | 65-80 | **unmet** | (576 games)
+| strategist:w.hand_cost=0.1,w.hand=1.5 | d2 | **85.1** | 1.5 | 85.1 | +0.0 | 0.0 | 85.1 | 50-65 | **unmet** | (576 games)
+| strategist:w.hand_cost=0.1,w.hand=1.5 | d3 | **61.1** | 2.0 | 61.1 | +0.0 | 0.0 | 61.1 | 35-50 | **unmet** | (576 games)

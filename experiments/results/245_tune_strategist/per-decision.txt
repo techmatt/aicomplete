@@ -1,0 +1,8 @@
+strategist:w.hand_cost=0.1,w.hand=1.5, c2, d2, 32 games from seed 47704, one thread, best of 2
+old is strategist, new is strategist:w.hand_cost=0.1,w.hand=1.5
+| | rules | wins | rounds | decisions | options/decision | ms/game | ms/decision |
+|---|---|---|---|---|---|---|---|
+| old | r109 | 23 | 9.50 | 593 | 26.65 | 1333 | 2.2 |
+| new | r109 | 26 | 8.94 | 561 | 22.40 | 1004 | 1.8 |
+| new / old | | | 0.94 | 0.95 | 0.84 | 0.75 | 0.80 |
+SPEED-DONE

@@ -1,6 +1,6 @@
 # Simulator
 
-The `aic-sim` command line: `run`, `compare`, `show`, `map`, `modules`, `replay`, `strategies`, `cards`, `farm` (below);
+The `aic-sim` command line: `run`, `compare`, `show`, `map`, `modules`, `replay`, `strategies`, `cards`, `agree`, `farm` (below);
 `experiment` is in [experiments.md](experiments.md), `docs [--check]` in architecture.md *Generated docs*.
 
 Always run the sim in release.
@@ -21,7 +21,16 @@ $S run configs/baseline.json --games 2000 --save out/games              # first 
 $S replay out/games/*.json                         # check records natively (also browser bug reports)
 $S strategies configs/baseline.json --games 48 --seed 30700 --set adversary.difficulty=2  # CSV seed,seat,board,strategy: each seat's at its round-1 keep (--agent default strategist:strategy=1)
 $S cards                                           # CSV id,kind,tier,engine,liberate: the agents' tests (agents/cards.rs) for scripts
+$S agree READ/games.jsonl --agent strategist --agents FILE --threads 6  # oracle agreement (below)
 ```
+
+**`agree` (245):** replays each won game a read's `--who` kind played (default `oracle`) and asks each `--agent`
+(repeatable; `--agents FILE`, a spec a line) to choose on every recorded table with more than one legal action; it
+prints a JSON line an agent, `by` group (`all`, `dN`) and recorded action kind (`play`, `power`, `use`, `standard`,
+`choose`, `threat`, `sell`, `pass`, `keep`, `draft`, `tier`, `convert`, and `any`): `[same, same or later this
+round, decisions]`. The agents follow the recorded game, so all see the same tables; an agent on its own game agrees
+everywhere (a test). About 0.3 s an agent and oracle game on 6 threads (the strategist). `AIC_AGREE_SHOW=<kind>`
+prints that kind's disagreements. Readers: `experiments/results/245_tune_strategist/` (`agree_table.py`, `mkset.py`).
 
 | Option | Default | Meaning |
 |---|---|---|

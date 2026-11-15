@@ -36,8 +36,9 @@
 //!   rollouts across rounds (`candidates` > 0); in the 008 sweep the beam
 //!   and rollouts did worse. Built (008) to find out whether a building
 //!   engine can beat greedy's no-building play.
-//! - `strategist` (082): an alias, the engine with strategies (`strategy=1`),
-//!   one action at a time with no search, and the deck clock off (157).
+//! - `strategist` (082): an alias, the screens' judge: one action at a time with
+//!   no search, greedy's flat terms with the purge (162), last-node and hand
+//!   terms (245), and no strategy (222); see [`STRATEGIST`].
 //!
 //! - `planner` (028): the engine, trying a shortlist of alternatives in the
 //!   action phase by rolling each out `horizon` rounds with the engine as
@@ -333,8 +334,13 @@ const SWEEP: &str = "deals=1,lead=0";
 /// +1.0 ± 1.5 on 219's 96 seeds: kept. Greedy led the judge by 4.0 ± 1.6 there, and `strategy=0` gained
 /// +4.1 ± 1.6: the strategy commitment is the deficit. Matt (2026-11-13): the judge drops it (`strategy=0`;
 /// fresh 46752-46783 at or above greedy at d0-d3, +3.9 ± 2.9 pooled); `strategist:strategy=1` is the strategy
-/// player, an information cell. The strategist differs from greedy only in `w.purge`, `w.last_node` and its RNG stream.
-const STRATEGIST: &str = "strategy=0,w.built=4,w.built_cost=0.5,w.clock=0,w.energy_cap=0,w.hand=3,w.hand_cost=0.4,\
+/// player, an information cell.
+/// 245 (r109): a card in hand counts `w.hand` 1.5 + `w.hand_cost` 0.1 × its cost (greedy's 3 + 0.4): "a card is
+/// worth little until it's played". Fitted toward the oracle's picks (`aic-sim agree`), screened on 243's seeds
+/// 47488-47679 at d2-d3 (+5.6 ± 1.5; hand_cost 0 a cliff, −24); fresh 47704-47895, paired, d0-d3 +5.9 / +9.2 / +9.7
+/// / +5.9, pooled +7.7 ± 1.0 (`experiments/results/245_tune_strategist`). The strategist differs from greedy only in
+/// `w.purge`, `w.last_node`, the hand terms and its RNG stream.
+const STRATEGIST: &str = "strategy=0,w.built=4,w.built_cost=0.5,w.clock=0,w.energy_cap=0,w.hand=1.5,w.hand_cost=0.1,\
 w.horizon=0,w.insight_income=0,w.movement=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,\
 w.tag_hand=0,w.purge=3.6,w.last_node=120";
 
