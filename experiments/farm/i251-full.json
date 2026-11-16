@@ -1,0 +1,22 @@
+{
+ "name": "i251-full",
+ "note": "251 (amendment 11454): the identity check for the full oracle (the ladder's), the Builder-Protector pair, d2, on the dev seeds 36800-36831. Before and after a speed change, every game line must match.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp",
+   "set": []
+  }
+ ],
+ "difficulties": [
+  2
+ ],
+ "agents": [
+  "oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1,tries=3"
+ ],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

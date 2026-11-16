@@ -70,7 +70,17 @@ pub struct Spec {
     /// Panics in one game: how a test proves a failed game doesn't stop a run.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub inject_panic: Option<InjectPanic>,
+    /// 251: game-line keys written empty, to keep a big spec's output small: `actions` (a third of a
+    /// line) and `cards` (a sixth). Only the streamed lines lose them (`games.jsonl`, a farm's lines);
+    /// the run's own report, `results.json` and `cards.csv` read its games whole. Such a run can't be
+    /// resumed (a resume replays the saved actions), and nothing can replay its lines. Empty: every
+    /// key, as before.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub drop: Vec<String>,
 }
+
+/// The game-line keys a spec's `drop` may name.
+pub const DROPPABLE: [&str; 2] = ["actions", "cards"];
 
 /// Cell `cell` (grid order) on seed `seed`.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -85,6 +95,27 @@ impl Spec {
     /// Games the grid of `cells` has.
     pub fn total_games(&self, cells: &[Cell]) -> usize {
         cells.len() * self.games as usize
+    }
+
+    /// 251: a game's streamed line: `r` as JSON with the keys `drop` names written empty.
+    pub fn line_of(&self, r: &GameResult) -> String {
+        if self.drop.is_empty() {
+            return serde_json::to_string(r).expect("a game result serializes");
+        }
+        let mut r = r.clone();
+        self.strip(&mut r);
+        serde_json::to_string(&r).expect("a game result serializes")
+    }
+
+    /// Empties the keys `drop` names in `r`.
+    pub fn strip(&self, r: &mut GameResult) {
+        for k in &self.drop {
+            match k.as_str() {
+                "actions" => r.actions = Vec::new(),
+                "cards" => r.cards = BTreeMap::new(),
+                _ => {}
+            }
+        }
     }
 }
 
@@ -249,6 +280,9 @@ pub fn cells_with(spec: &Spec, read: &dyn Fn(&str) -> Result<String, String>) ->
     }
     if spec.games == 0 {
         return Err("games must be at least 1".into());
+    }
+    if let Some(k) = spec.drop.iter().find(|k| !DROPPABLE.contains(&k.as_str())) {
+        return Err(format!("drop: {k} is not a droppable key (one of {})", DROPPABLE.join(", ")));
     }
     if spec.first_seed.checked_add(spec.games - 1).is_none() {
         return Err("first_seed + games overflows u64".into());

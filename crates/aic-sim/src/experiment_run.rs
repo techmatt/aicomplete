@@ -30,6 +30,10 @@ pub fn run_experiment(path: &str, o: &Options) -> i32 {
     // one game per line), so a stopped or killed run keeps what it played;
     // --resume reads it back and plays only the rest.
     let stream_path = format!("{dir}/games.jsonl");
+    // 251: a resume replays each saved game from its actions and reports its cards: a lean stream holds neither.
+    if o.resume && !spec.drop.is_empty() {
+        fail("--resume: a spec with `drop` writes lines a resume can't read back (it replays actions, reports cards)");
+    }
     let prior = if o.resume && std::path::Path::new(&stream_path).exists() {
         experiment::read_stream(&stream_path, &spec, &cells)
             .unwrap_or_else(|e| fail(&format!("--resume: {e}")))
@@ -56,14 +60,22 @@ pub fn run_experiment(path: &str, o: &Options) -> i32 {
     );
     let start = Instant::now();
     let last = std::sync::Mutex::new(Instant::now());
+    // 251: the time spent turning games into lines and writing them, and the bytes, for the timing line.
+    let streamed = std::sync::Mutex::new((0.0f64, 0usize));
     let on_game = |g: &experiment::GameResult, done: usize, all: usize| {
-        let line = serde_json::to_string(g).expect("a game result serializes");
+        let t = Instant::now();
+        let line = spec.line_of(g);
         {
             use std::io::Write;
             let mut w = stream.lock().expect("stream lock");
             if let Err(e) = writeln!(w, "{line}").and_then(|_| w.flush()) {
                 fail(&format!("cannot write {stream_path}: {e}"))
             }
+        }
+        {
+            let mut s = streamed.lock().expect("stream timing lock");
+            s.0 += t.elapsed().as_secs_f64();
+            s.1 += line.len() + 1;
         }
         let mut l = last.lock().expect("progress lock");
         if done == all || l.elapsed().as_secs() >= 10 {
@@ -127,6 +139,13 @@ pub fn run_experiment(path: &str, o: &Options) -> i32 {
     let report_start = Instant::now();
     let (sums, records) = reports(&mut games, &failed).unwrap_or_else(|e| fail(&e));
     print_timing(&games, wall_s, report_start.elapsed().as_secs_f64());
+    let (stream_s, bytes) = *streamed.lock().expect("stream timing lock");
+    let played = games.len().saturating_sub(resumed).max(1);
+    eprintln!(
+        "stream: {stream_s:.2} s turning games into lines and writing them, {:.1} MB, {:.1} KB a game",
+        bytes as f64 / 1e6,
+        bytes as f64 / 1024.0 / played as f64
+    );
     println!(
         "{} games in {wall_s:.1} s; report {dir}/report.md, {} record(s) in {dir}/records",
         games.len(),

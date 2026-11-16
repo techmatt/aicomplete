@@ -1,0 +1,64 @@
+{
+ "name": "i251-p248j",
+ "note": "251: the identity check for a heavy spec: six of p248j's 57 variants (two of each pair, both kinds), d0-d3, on the dev seeds 36800-36831. Before and after a speed change, every game line must match.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "-node|bp",
+   "set": [
+    "board.std_off=13,"
+   ]
+  },
+  {
+   "name": "-dispatch|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=4,"
+   ]
+  },
+  {
+   "name": "-claim|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=6,"
+   ]
+  },
+  {
+   "name": "b+node|bp",
+   "set": [
+    "board.std_off=1,2,3,5,6,8,9,10,11,12,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+insight|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=1,2,3,5,6,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+claim|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=1,2,3,5,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3
+ ],
+ "agents": [
+  "strategist"
+ ],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

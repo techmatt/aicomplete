@@ -863,6 +863,13 @@ struct HexTokens {
     ambassador: [i64; 4],
 }
 
+/// 251: the table of hexes last read on this thread and what it read ([`TokenKeys::read_shared`]).
+type LastRead = Option<(std::sync::Arc<Vec<std::sync::Arc<aic_core::state::HexState>>>, std::rc::Rc<Vec<HexTokens>>)>;
+
+thread_local! {
+    static LAST_READ: std::cell::RefCell<LastRead> = const { std::cell::RefCell::new(None) };
+}
+
 /// The interned names of [`HexTokens`]' tokens, compared by pointer.
 #[derive(Clone)]
 struct TokenKeys {
@@ -895,6 +902,23 @@ impl TokenKeys {
             cube: std::array::from_fn(|s| k(common::cube(s))),
             ambassador: std::array::from_fn(|s| k(common::ambassador(s))),
         }
+    }
+
+    /// 251: [`TokenKeys::read`] through a one-entry store keyed by the hexes' shared `Arc`: a decision's options
+    /// that move no token share the table of hexes (copied only when written), so their reads are one. The store
+    /// holds that `Arc`, so its address can't come back for another table, and a held table is never written in
+    /// place. The keys are interned names, the same for every `Eval`.
+    fn read_shared(&self, g: &GameState) -> std::rc::Rc<Vec<HexTokens>> {
+        LAST_READ.with(|c| {
+            if let Some((hexes, t)) = &*c.borrow() {
+                if std::sync::Arc::ptr_eq(hexes, &g.hexes) {
+                    return t.clone();
+                }
+            }
+            let t = std::rc::Rc::new(self.read(g));
+            *c.borrow_mut() = Some((g.hexes.clone(), t.clone()));
+            t
+        })
     }
 
     fn read(&self, g: &GameState) -> Vec<HexTokens> {
@@ -1343,7 +1367,7 @@ impl Eval {
         let mut corrupted = 0i64;
         let mut stations = [0i64; 4];
         let mut reach = 0i64;
-        let tokens = self.keys.read(g);
+        let tokens = self.keys.read_shared(g);
         // Read only when a line ahead gathers: nothing else looks at it.
         let sites = if gather || station_gather || factory_gather || land_line || node_gather {
             Sites::read(&world, &tokens, self.seats.min(4))
@@ -1798,7 +1822,7 @@ impl Eval {
         if w.horizon > 0.0 {
             v += self.horizon_value(rules, g, &tokens, &unpaid, thin, discord_left);
         } else {
-            self.flat_value(rules, g, &mut v);
+            self.flat_value(rules, g, &tokens, &mut v);
         }
         for share in unpaid {
             v -= w.threat * share;
@@ -1954,9 +1978,11 @@ impl Eval {
     }
 
     /// Per-seat resources, income, hands and buildings, by flat weights.
-    fn flat_value(&self, rules: &Rules, g: &GameState, v: &mut f64) {
+    fn flat_value(&self, rules: &Rules, g: &GameState, tokens: &[HexTokens], v: &mut f64) {
         let w = &self.w;
         let world = rules.world();
+        // 251: whether a city is corrupted, read once a position by the first seat that asks.
+        let mut any_corrupted = None;
         for s in 0..self.seats {
             let res = |k: Resource| g.resource(s, k) as f64;
             *v += self.credit_value(res(Resource::Credits))
@@ -1964,16 +1990,17 @@ impl Eval {
                 + w.antimatter * res(Resource::Antimatter)
                 + self.insight_value(s, res(Resource::Insight))
                 + self.cube_unit(s) * res(Resource::ResearchCubes);
-            for (r, n) in ai::track_income(&world, g, s) {
+            // 251: `ai::track_income`'s pairs, in its order, without its vector.
+            ai::each_track_income(&world, g, s, |r, n| {
                 let unit = match r {
                     Resource::Antimatter => ANTIMATTER_INCOME_UNIT,
                     Resource::Insight => INSIGHT_INCOME_UNIT,
                     _ => 1.0,
                 };
                 *v += w.income * unit * n as f64;
-            }
+            });
             if w.card_income > 0.0 || w.card_action > 0.0 {
-                *v += self.card_terms(&world, g, s);
+                *v += self.card_terms(&world, g, s, tokens, &mut any_corrupted);
             }
             let mut cards: Vec<f64> = g
                 .pile(&cards::hand(s))
@@ -2002,8 +2029,22 @@ impl Eval {
 
     /// 249, flat mode: seat `s`'s cards in play by what they pay: their income as the track's (`card_income`), and
     /// each building's earnings a round beyond income for `card_action` rounds at the table's rates.
-    fn card_terms(&self, world: &aic_core::module::World, g: &GameState, s: usize) -> f64 {
+    /// 251: the seat's tags are read only when a term reads them (not through the seat-terms store: a miss there,
+    /// every option playing a card, prices the hand too); `any_corrupted` is the position's, read by the first
+    /// seat that needs it, and the node count comes off the position's board read.
+    fn card_terms(
+        &self,
+        world: &aic_core::module::World,
+        g: &GameState,
+        s: usize,
+        tokens: &[HexTokens],
+        any_corrupted: &mut Option<bool>,
+    ) -> f64 {
         let w = &self.w;
+        let built = g.pile(&cards::built(s));
+        if w.card_income <= 0.0 && built.is_empty() {
+            return 0.0;
+        }
         let tags = cards::tag_counts(world, g, s);
         let mut v = 0.0;
         if w.card_income > 0.0 {
@@ -2021,10 +2062,11 @@ impl Eval {
                 v += w.card_income * w.income * unit * n as f64;
             }
         }
-        let built = g.pile(&cards::built(s));
         if w.card_action > 0.0 && !built.is_empty() {
-            let corrupted = (0..g.hexes.len()).any(|h| common::corrupted_city(world, g, h));
-            let node = common::node_count(g, s);
+            let corrupted = *any_corrupted
+                .get_or_insert_with(|| (0..g.hexes.len()).any(|h| common::corrupted_city(world, g, h)));
+            // `common::node_count` off the position's board read (a node token on a hex, as it counts).
+            let node = tokens.iter().filter(|t| t.node[s] > 0).count() as i64;
             let ctx = Ctx::at(self.tbl, w.card_action, node as f64, tags, corrupted);
             for id in built {
                 if cards::disabled(g, s, id.as_str()) {
@@ -2219,13 +2261,7 @@ impl Eval {
         // has picked from counts for the seat it goes to (082).
         let seats: Vec<SeatData> = (0..self.seats)
             .map(|s| {
-                let terms = || {
-                    // 150: board tags count like card tags, requirements included.
-                    let tags = cards::tag_counts(&world, g, s);
-                    let income = economy::income_with(&world, g, s, &tags);
-                    (tags, cards::prices_with(&world, g, s, &tags), income, in_play(g, s))
-                };
-                let (tags, prices, income, n) = seat_terms_cached(self.id, g, s, terms);
+                let (tags, prices, income, n) = seat_terms_cached(self.id, g, s, || seat_terms(&world, g, s));
                 let node = tokens.iter().filter(|t| t.node[s] > 0).count() as f64;
                 let mut ctx = Ctx::at(tbl, left, node, tags, corrupted);
                 if table && self.mix {
@@ -2527,6 +2563,14 @@ fn tableau_parts(id: u64, g: &GameState, s: usize, out: &mut Vec<u64>) {
         out.push(4);
         out.extend(g.pile(&cards::built(s)).iter().map(|c| cards::disabled(g, s, c.as_str()) as u64));
     }
+}
+
+/// Seat `s`'s terms read fresh: what [`seat_terms_cached`] keeps.
+fn seat_terms(world: &aic_core::module::World, g: &GameState, s: usize) -> SeatTerms {
+    // 150: board tags count like card tags, requirements included.
+    let tags = cards::tag_counts(world, g, s);
+    let income = economy::income_with(world, g, s, &tags);
+    (tags, cards::prices_with(world, g, s, &tags), income, in_play(g, s))
 }
 
 fn seat_terms_cached(id: u64, g: &GameState, s: usize, terms: impl Fn() -> SeatTerms) -> SeatTerms {

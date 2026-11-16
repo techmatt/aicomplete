@@ -378,6 +378,7 @@ mod tests {
             selection_seeds: None,
             gate: Some(Gate::default()),
             inject_panic: None,
+            drop: Vec::new(),
         }
     }
 

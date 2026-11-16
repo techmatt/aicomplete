@@ -2,11 +2,14 @@
 
 What a run costs and where it goes. Current rates: [experiments.md](experiments.md); bench scripts: [scripts.md](scripts.md).
 
-**Where the time goes (profiled at r73).** The agents are 96-99% of a run. Every agent is one machine: the
+**Where the time goes (profiled at r112, 251).** The agents are 97% of a run (legal moves 1.6%, the game's own
+applies 0.7%, the replay check 0.5%, writing lines under 0.1%). Every agent is one machine: the
 strategist scores each legal action by applying it to a copy and resolving the action's own prompts best-first
-(`search::settled`, 67% of its time); the heuristic (`Eval::value`, 49%) outweighs the rules (`Rules::apply_to`,
-38%), and the binary search by name is 17.5% self. The planner's and oracle's lines run the same search (the oracle
-at d4: `Eval::value` 50%). A standard read (`read_specs.py read`: three sets from 36800, the three pairs, d0-d3, 1,728 games; 6
+(`search::settled`, 79% of its time); the heuristic (`Eval::value`, 50%, 28 µs a call) outweighs the rules
+(`Rules::apply_to`, 33%, 15 µs), and the binary search by name is 16% self. The real oracle (249's `worlds`) is
+the judge's games over again: its lines are 99.5% of its time (one line about a judge game), its own sampling and
+search under 0.2%, so what makes the judge cheaper makes it cheaper in proportion. A judge game allocates about 6 M
+times (2.6 GB); a real-oracle game 417 M (176 GB). Shares, hot spots and output: [251's write-up](../experiments/results/251_profiling/README.md). A standard read (`read_specs.py read`: three sets from 36800, the three pairs, d0-d3, 1,728 games; 6
 threads, a quiet box) takes 276 s at 2.00 ms a decision; greedy on set a (576 games) 99 s at 2.04.
 No prompt is over 4% of a game; legal-action generation is about 1%. **A read's wall time is its slowest games**
 (at most 4.9 s now): read `games.csv`'s `ms` column for the tail before
@@ -52,27 +55,32 @@ snapshot (at r73, 50-95% of a game; 5 s a decision in long games).
   `Seen::chains` values a chain's cards as a set before any replay; both only where no step under the stored value
   moved the `cards` stream, so the same scores. `discards` 0 skips resolving the next card (*Approximations*);
   `Cx::choose_key` replays a card answer without building the hand's labels.
+- **The board read:** `Eval::value` reads each hex's tokens once a position, and positions sharing the table of
+  hexes (options that move no token) share that read (`TokenKeys::read_shared`, 251); counts of a seat's nodes
+  come off it.
 - **Threats in the heuristic:** each active threat's need and share read every seat's standing counters once a
   position (`threats::standing_counters`, `need_and_share_with`; `CounterSteps` once an `Eval`). The troop march
   tests a hex for a target without building its target list (`troops::target_here`).
 
-**What is left, by payoff** (strategist shares at r73, `profile_win.py`, 4 games from seed 36800, d1; the oracle
-at d4 alike):
+**What is left, by payoff** (strategist shares at r112 after 251, `profile_win.py`, 5 games from seed 36802; the
+real oracle alike; gains are estimates):
 
-1. **The heuristic's per-position reads**, `Eval::value` 49%: per-call vectors (`from_iter` 10%: tokens, threats,
-   hands, picks), `guide::shelter_saves` 4.9%, threats' need and share 4.7% (paid vars by name),
-   `plan::next_rally` 4.3%, hex tokens 4.2%, `next_corrupt_n` 2.8%, `near_seats` 2.4%. Most read the board, out of
-   the tableau store's reach: a per-decision store keyed by the hexes' `Arc` (shared until written) would reach them.
-2. **Replaying a prompt's phase for each option**: `Rules::apply_to` 38% (card fights and plays 11%, the
-   troop march 13% of the oracle's d4). Resuming from the resolved part would redesign how prompts resolve.
-3. **The binary search by name**, 17.5% self: `var` (the heuristic's), `pile`, `troop_targets_on`, `near_mask`,
-   the node tracks. Keys carrying their first eight bytes gained nothing. Next: typed slots for the hottest vars
-   (tracks, stage, buckets, paid vars), a state-layout change: a shadow beside `vars` stays out of serde and
-   `PartialEq`.
-4. **Copies, allocations and drops**, about 15%: `memcpy` 6.7%, mimalloc 6%, drops 2.2%, clone 1.7%.
-5. **The oracle row's d4 games** (its wall time): lines × the engine policy's cost a decision, which items 1-3
-   reach. Its search dials (`alts`, `budget`, `reseeds`) are the row's spec, Matt's to set.
-6. **Counters** (`Cx::tally` 1.2%, redone on every replay) and **parameters by name** (`World::int` 1.7%).
+1. **The binary search by name**, 16% self: `var` 2%, the node tracks (`track_taken`, `track2_taken`, read by every
+   tag count) 3%, `pile` 1.5%, `has_disabled`/`disabled` 1.3%, `near_mask`. Keys carrying their first eight bytes
+   gained nothing. Next: typed slots for the hottest vars (tracks, stage, buckets, paid vars), a state-layout
+   change: a shadow beside `vars` stays out of serde and `PartialEq`. About 8-10%.
+2. **The heuristic's per-position reads**, `Eval::value` 50%: per-call vectors and folds 9% (hands, picks),
+   `tag_counts` 3.7% (each seat with a building, every position; a tags-only store by tableau would halve it),
+   threats' need and share 3%, `next_rally` 3%, `next_corrupt_n` 2.5% (five sites, one card), `near_seats` 2.2%.
+   251 shares the board read by the hexes' `Arc`; the masks and sites read off it (`reach_masks`, `Sites`) could
+   share the same key. About 10%.
+3. **Replaying a prompt's phase for each option**: `Rules::apply_to` 33%. Resuming from the resolved part would
+   redesign how prompts resolve. Large, unestimated.
+4. **Copies, allocations and drops**, about 15% (the profile build's throwaway copy beside each apply included):
+   memcpy 7%, mimalloc 6%, drops 5%.
+5. **The real oracle's wall time**: lines (a judge game each) × `worlds` × candidates, linear in `budget` (249: twice
+   the worlds and lines, about twice the time); its dials are its spec, Matt's to set.
+6. **Counters** (`Cx::tally` 1.8%, redone on every replay) and **parameters by name** (`World::int` 1.3%).
 
 **Approximations.** Adopted at r73: **`discards` 0** (greedy, engine, planner, oracle): a discard prompt's answer
 is valued by the table it leaves, not by the best next card. On fresh seeds every tier moved within about one SE;
@@ -82,8 +90,10 @@ by its tableau alone (lost more than 1 SE in two of six pairs). Rows and profile
 [174's](../experiments/results/174_speed/README.md) and [103's](../experiments/results/103_agent_profiling/speed.md)
 write-ups.
 
-**Profiling.** Every run prints the split (`time: ...` on stderr and in the report's *Timing*); a release build
-with `--features profile` adds, from `experiment`, the search's own split (apply, clone, legal, heuristic,
+**Profiling.** Every run prints the split (`time: ...` on stderr and in the report's *Timing*) and, from
+`experiment`, `stream:` (time turning games into lines and writing them, MB, KB a game); a release build
+with `--features profile` adds (its `clone` is a throwaway copy beside each apply, so its clones and drops
+read high), from `experiment`, the search's own split (apply, clone, legal, heuristic,
 determinization, planner lines) with call counts, allocations a game, and the costliest prompts (`prompt N% ...`:
 decisions, applies and evals by prompt text, digits as `#`). For where inside them, `scripts/bench/profile_win.py`
 samples by function with stacks through Visual Studio's collector (no admin, unlike `samply`). Build with symbols

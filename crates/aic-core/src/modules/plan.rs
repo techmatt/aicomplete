@@ -391,7 +391,8 @@ pub fn prohibition_on(g: &GameState, step: Step, h: usize) -> Option<Where> {
 /// lowest any Corrupt line on the card ahead prints, else natural
 /// corruption's (the agents' pressure threshold).
 pub fn next_corrupt_n(w: &World, g: &GameState, site: CorruptSite) -> (i64, bool) {
-    let lines: Vec<i64> = card_ahead(w, g)
+    // 251: the lowest line read straight off the card, no vector (the agents ask five sites a position).
+    let lowest = card_ahead(w, g)
         .into_iter()
         .flat_map(|c| c.twists.iter())
         .filter_map(|t| match t {
@@ -401,9 +402,9 @@ pub fn next_corrupt_n(w: &World, g: &GameState, site: CorruptSite) -> (i64, bool
             }
             _ => None,
         })
-        .collect();
-    match lines.iter().min() {
-        Some(&n) => (n, true),
+        .min();
+    match lowest {
+        Some(n) => (n, true),
         None => (adversary::corrupt_n(w, site, 0), false),
     }
 }

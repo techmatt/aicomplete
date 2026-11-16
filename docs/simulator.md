@@ -109,6 +109,8 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
   (a `.part` renamed), so a killed shard leaves none. `--seed` and `--games` are required. A shard is one thread (an
   agent's `threads` dial must be 1). A strategist game costs about 1 s natively on one core, a read seed (12 cells)
   about 12 s; wasm is ~1.5× native; the laptop tab is best at 2-3 cores. A job of few shards is bound by its slowest.
+  A line is ~82 KB (r112: counters 42%, `actions` 34%, `cards` 15%); a spec's `"drop": ["actions", "cards"]`
+  (251, opt in) writes those empty, half the bytes; no `--resume`, and no reader of `actions` (`design_check.py`).
 - **A farmed spec** is a file in `experiments/farm/` (`read`: the strategist, three pairs, d0-d3, a subset: an item's
   read writes its own d0-d4 spec; `cell-d2`: one cell); the argument is its name. A gated spec, win-probability
   probes and `inject_panic` are refused: their games depend on more than their seed. The bundle reads no files:

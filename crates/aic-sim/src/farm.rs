@@ -84,7 +84,15 @@ impl Farm {
         for seed in first..end {
             for ci in 0..self.cells.len() {
                 let r = experiment::play_one(&self.spec, &self.cells, ci, seed);
-                let l = line(&r, ENGINE);
+                let mut kept = None;
+                let r_line = if self.spec.drop.is_empty() {
+                    &r
+                } else {
+                    let mut s = r.clone();
+                    self.spec.strip(&mut s);
+                    kept.insert(s)
+                };
+                let l = line(r_line, ENGINE);
                 each(&r, &l);
             }
         }
@@ -262,6 +270,27 @@ mod tests {
         let g: serde_json::Value = serde_json::from_str(whole.lines().next().unwrap()).unwrap();
         assert_eq!(g["engine"], "native");
         assert_eq!(g["ms"], 0.0);
+    }
+
+    /// 251: a spec's `drop` writes those keys empty and leaves the rest of the line as it was; an unknown key
+    /// is refused.
+    #[test]
+    fn drop_empties_only_its_keys() {
+        let f = tiny();
+        let mut lean = tiny();
+        lean.spec.drop = vec!["actions".into(), "cards".into()];
+        let full: serde_json::Value = serde_json::from_str(shard(&f, 500, 1).lines().next().unwrap()).unwrap();
+        let mut thin: serde_json::Value =
+            serde_json::from_str(shard(&lean, 500, 1).lines().next().unwrap()).unwrap();
+        assert_eq!(thin["actions"], serde_json::json!([]));
+        assert_eq!(thin["cards"], serde_json::json!({}));
+        assert!(full["actions"].as_array().is_some_and(|a| !a.is_empty()));
+        thin["actions"] = full["actions"].clone();
+        thin["cards"] = full["cards"].clone();
+        assert_eq!(thin, full);
+        let mut bad = tiny().spec;
+        bad.drop = vec!["counters".into()];
+        assert!(Farm::from_spec(bad, &disk).is_err());
     }
 
     #[test]

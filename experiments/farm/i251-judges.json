@@ -1,0 +1,17 @@
+{
+ "name": "i251-judges",
+ "note": "251: the identity check for the agents without an oracle: greedy and the strategist (the judge), three pairs, d0-d3, on the dev seeds 36800-36831. Before and after a speed change, every game line must match.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {"name": "bp", "set": []},
+  {"name": "br", "set": ["ai.boards=0,2"]},
+  {"name": "pr", "set": ["ai.boards=1,2"]}
+ ],
+ "difficulties": [0, 1, 2, 3],
+ "agents": ["greedy", "strategist"],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}
