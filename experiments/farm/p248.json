@@ -1,0 +1,106 @@
+{
+ "name": "p248",
+ "note": "248's standard-actions probe on r112, the strategist, d0-d3, three pairs, paired across arms: a baseline; b every standard action off but Liberate and Dispatch (and Sell); bd b with Dispatch off; c every standard action off, Liberate included (Dispatch kept). Farm a seed range: farm-seeds F N OUT p248.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "a|bp",
+   "set": []
+  },
+  {
+   "name": "a|br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "a|pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  },
+  {
+   "name": "b|bp",
+   "set": [
+    "board.std_off=1,2,3,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=1,2,3,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=1,2,3,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "bd|bp",
+   "set": [
+    "board.std_off=1,2,3,4,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "bd|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=1,2,3,4,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "bd|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=1,2,3,4,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "c|bp",
+   "set": [
+    "board.std_off=1,2,3,5,6,7,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "c|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=1,2,3,5,6,7,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "c|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=1,2,3,5,6,7,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3
+ ],
+ "agents": [
+  "strategist"
+ ],
+ "games": 48,
+ "first_seed": 0,
+ "records": 0
+}

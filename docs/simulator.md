@@ -84,6 +84,8 @@ What the read scripts quote most (`screens.cnt(game, key)`; more in experiments.
 | `counters['fx.<card>.tN']` / `['fx.<card>.<measure>']` | an Alignment card resolved at tier N / the change it made to a `FX_MEASURES` total (`alignment.rs`): a signed delta, not a count (`fx.network_cleanup.land` −1: one Fallout token gone) |
 | `sources[seat]` / `uses[seat]` | each resource gained / spent by where, `{label: [...]}`: `own:` or `other:` an action, `phase:` an automatic phase. Labels: `play:<card>`, `use:<card>` (its Action), `power:<Name>`, `standard:<act>`, `convert:<country>` (a corp converter), `phase:economy.upkeep` (income and capstones) |
 | `start`, `gained`, `spent`, `peaks` | per seat, totals (`start + gained - spent` is the end) |
+| `seed`, `reason`, `margin['node_spread']` | the seed, a string; how it ended (`purge` the win, `node` a seat left with no nodes, `deck_empty`, `discord_deck`); each seat's nodes at the end, by country |
+| `actions[i]` | `{type, seat, ...}`: `standard` names its `act`; `power` gives an index, not a name (count powers by the counters) |
 
 Each row is in `PEAKS` order (credits, insight, energy, chips, antimatter, research cubes, card tokens, ambassadors).
 

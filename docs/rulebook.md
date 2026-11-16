@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 111. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 112. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -250,7 +250,7 @@ Nothing has a holding limit, and nothing caps your income.
 | **Energy** | yes | income, your cities, neutral cities (bought), cards | it powers things: placing nodes, powers (Buy In, Accord, Bulwark, Patrol), building Actions, cards, threats |
 | **Insight** | **no** | set each round (below) | keeping and playing cards, threats |
 | **Chips** | yes | your factories, cards, Builder powers | buildings, research stations, Procure, chip converters, threats |
-| **Antimatter** | yes | the antimatter plants, the steady source (Penning Trap Array, Antiproton Foundry, Positron Storage Ring, Dark Fiber Collider, Treaty Isotope Bank, Cyclotron Lease: a resource each use for 1, once a round), each board's rare burn (Teardown, Meltdown, Reclaim), Horizon's two converters, two capstones, cards; at worst 5 research cubes | Liberate (1 antimatter pays 2 of its ambassadors); the majors: tier-2 cards (liberations, Annihilation Lance, Fusion Commons, Antimatter Accord, Collider Consortium and more), Containment Reactor, Accelerator Diplomacy |
+| **Antimatter** | yes | the antimatter plants, the steady source (Penning Trap Array, Antiproton Foundry, Positron Storage Ring, Dark Fiber Collider, Treaty Isotope Bank, Cyclotron Lease: a resource each use for 1, once a round), each board's rare burn (Teardown, Meltdown, Reclaim), Horizon's two converters, two capstones, cards; at worst 5 research cubes | the majors: tier-2 cards (liberations, Annihilation Lance, Fusion Commons, Antimatter Accord, Collider Consortium and more), Containment Reactor, Accelerator Diplomacy |
 | **Research cubes** | yes | your stations, once their megaproject is complete (§9); Cryo Sample Vault; Open Archive | 1 insight each, converters, Penning Trap Array, Field Assay Team, Peer Review, threats |
 | **Ambassadors** | yes (your supply) | 1 at the start, cards, 20 credits | claiming, liberating, Remove agents, Envoy, threats |
 | **Dispatches** | **no** | your board and track spaces, each round | the Dispatch action, 1 each |
@@ -552,7 +552,7 @@ Standard actions are always there, a hedge against bad luck: cards and your boar
 | **Dispatch** | 1 Dispatch | target a site, base, node or botnet: put one of your ambassadors on it, from your supply or from anywhere on the map (not the hex it is on) |
 | **Place a node** | 6 credits, plus the space's energy | twice a round: a node next to yours, off either track (§5) |
 | **Claim** | ambassadors: city 5, station 3, factory 2 (below) | target a neutral site with no agent on it: it becomes yours |
-| **Liberate** | ambassadors, as Claim; 1 antimatter may pay 2 of them | target a corrupted site: it becomes yours |
+| **Liberate** | ambassadors, as Claim | target a corrupted site: it becomes yours |
 | **Remove agents** | 2 ambassadors from your supply, spent | target agents: remove up to 3 on or next to it; nothing is placed |
 | **Remove a troop** | 10 credits | once a round: target troops, remove 1 on it |
 | **Take down a botnet** | 16 credits | target a botnet where your ambassador stands: remove it (the ambassador stays) |
@@ -582,8 +582,6 @@ and an ambassador never share a hex.
 - **Price, in ambassadors:** city **5**, station **3**, factory **2**, the same for both.
 - **No agents:** a site with an agent on it can't be claimed or liberated: remove them first (Remove agents, a card, a power).
 - **Who pays:** your own ambassadors standing on the site pay first, then your supply. Another player's never pay.
-- **Antimatter** (Liberate only): you may pay 1 antimatter for 2 of the ambassadors, so a city takes 3 and an
-  antimatter, a station 1 and an antimatter, a factory the antimatter alone. Antimatter is the fuel of the big plays; this is its use open to every player.
 - **Result:** your cube goes on: the site is **yours**. Liberate first takes the adversary's cube off, and adds
   Unity: city **+5**, station or factory **+2**. A botnet on the site stays.
 

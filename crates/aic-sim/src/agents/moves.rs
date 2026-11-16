@@ -297,9 +297,10 @@ fn agents_next_to(w: &World, g: &GameState, h: usize) -> i64 {
 }
 
 /// r75: what seat `s`'s Liberate on `h` still needs beyond its own ambassadors standing there and its supply
-/// (`None`: not an adversary site, or not in its reach). Only the acting seat's own ambassadors on the site pay.
+/// (`None`: not an adversary site, or not in its reach, or 248: no Liberate offered). Only the acting seat's own
+/// ambassadors on the site pay.
 fn seat_short(w: &World, g: &GameState, h: usize, s: usize) -> Option<i64> {
-    if !common::in_reach(w, g, s, h) {
+    if !common::in_reach(w, g, s, h) || !board::std_offered(w, board::StandardAction::Liberate) {
         return None;
     }
     let held = g.tokens(h, common::ambassador(s)) + g.resource(s, aic_core::content::Resource::Ambassadors);

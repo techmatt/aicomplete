@@ -17,7 +17,6 @@ conventions: [README.md](README.md).*
 | `board.divert_discord` | 1 | 0..5 | Discord per unit of a corrupted city's energy diverted to the adversary |
 | `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy, each round, of an aligned city an agent darkens |
 | `board.liberate_at` | 5 | 1..10 | the Liberate action: ambassadors that liberate an adversary city |
-| `board.liberate_antimatter` | 2 | 0..5 | standard action Liberate with antimatter: ambassadors of Liberate's bill that 1 antimatter pays (0: no such action) |
 | `board.claim_city` | 5 | 1..10 | the Claim action: ambassadors that claim a neutral city (Liberate's table too, its city price `liberate_at`) |
 | `board.claim_station` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral research station |
 | `board.claim_factory` | 2 | 1..10 | the Claim action: ambassadors that claim a neutral factory |
@@ -47,6 +46,7 @@ conventions: [README.md](README.md).*
 | `board.cube_insight` | 1 | 0..5 | standard action, no limit a round: insight for 1 research cube (0: no such action) |
 | `board.antimatter_cubes` | 5 | 0..10 | standard action, the desperate source: research cubes for 1 antimatter, no limit a round (0: no such action) |
 | `board.botnet_credits` | 16 | 1..50 | standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays) |
+| `board.std_off` | 0 | 0..15 | a probe's switch: standard actions not offered, by place in the table from 1 (station, remove, lift, dispatch, ambassador, claim, liberate, insight, envoy, botnet, buy energy, antimatter, node, troop, factory; 0: none off) |
 | `adversary.difficulty` | 0 | 0..4 | difficulty level 0-4 (each level includes the ones below) |
 | `adversary.stage_cards` | 5, 5, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
 | `adversary.supply_per_country` | 24 | 0..40 | agents in the supply per country |

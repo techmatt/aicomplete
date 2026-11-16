@@ -100,7 +100,9 @@ nothing else (a sweep: `overlay-card-cost.json`). Each variant repeats its whole
 base's seed for seed: a card's worth to an agent, on against blank (246's `cardvalue.py`). The engine's `--set`
 refuses `null` on a list field (`keywords=[]`), where `apply_overlay.py` drops it. Diagnose a rewrite's gap by
 part before tuning: restore the old content a part at a time (a side, a tier, a card group) as overlays (a density
-or dial screen: 227's `density_specs.py`).
+or dial screen: 227's `density_specs.py`). A standard action off: `board.std_off=N,M,` (places in the economy.md
+table's code order, `STANDARD`; `board.sell_credits=0` takes Sell); 248's `mkspec.py` and `probe.py` write and read
+the arms (4,608 strategist games farmed in 508 s, 30 native and 18 wasm shards).
 
 ## Reading noise
 
@@ -162,7 +164,7 @@ proves the card and a whole search where it can't: 243's `proofs.py`.
 
 **Fresh seeds.** Specs start at seed 0: give a confirming read a `--seed` no screen of this revision used. An item
 that spends seeds updates the ledger after its last read (`bench/seeds.py next N [--take]`; all below *Next free*
-are used). Next free: 48376. **The dev seeds are 36800-36831**, for on/off
+are used). Next free: 48568. **The dev seeds are 36800-36831**, for on/off
 checks and crash-finding (SE ~5 a cell). A 2-8 point effect (a level's income step): screen it paired on this
 revision's spent fresh sets (~500+ games a cell, SE ~2), then confirm once on new seeds.
 

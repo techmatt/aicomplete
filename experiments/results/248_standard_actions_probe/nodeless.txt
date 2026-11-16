@@ -1,0 +1,7 @@
+- a: wins bp 91.1, br 85.7, pr 87.0; node-loss games 43, by board {'researcher': 32, 'builder': 11}, mean round 7.6
+- b: wins bp 86.7, br 45.3, pr 49.7; node-loss games 387, by board {'builder': 54, 'researcher': 332, 'protector': 1}, mean round 4.5
+- c: wins bp 28.6, br 15.9, pr 17.2; node-loss games 495, by board {'builder': 128, 'researcher': 367}, mean round 5.4
+- -node: wins bp 88.5, br 52.1, pr 43.8; node-loss games 182, by board {'researcher': 172, 'builder': 10}, mean round 4.0
+- -station: wins bp 82.3, br 76.0, pr 82.3; node-loss games 47, by board {'builder': 25, 'researcher': 22}, mean round 7.8
+- b+node: wins bp 87.5, br 79.2, pr 91.1; node-loss games 37, by board {'builder': 24, 'researcher': 13}, mean round 7.2
+- b+station: wins bp 94.3, br 54.2, pr 49.0; node-loss games 171, by board {'researcher': 164, 'builder': 7}, mean round 3.8

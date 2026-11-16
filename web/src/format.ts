@@ -77,7 +77,6 @@ const STANDARD_NAMES: Record<string, string> = {
   ambassador: 'Gain a player ambassador',
   claim: 'Claim a site',
   liberate: 'Liberate a site',
-  liberate_am: 'Liberate with antimatter',
   insight: 'Turn a cube into insight',
   envoy: 'Envoy',
   botnet: 'Take down a botnet',

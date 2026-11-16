@@ -78,7 +78,6 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("divert_discord", 0, 5, "Discord per unit of a corrupted city's energy diverted to the adversary"),
             ParamSpec::int("ambassador_discord", 0, 5, "Discord per unit of energy, each round, of an aligned city an agent darkens"),
             ParamSpec::int("liberate_at", 1, 10, "the Liberate action: ambassadors that liberate an adversary city"),
-            ParamSpec::int("liberate_antimatter", 0, 5, "standard action Liberate with antimatter: ambassadors of Liberate's bill that 1 antimatter pays (0: no such action)"),
             ParamSpec::int("claim_city", 1, 10, "the Claim action: ambassadors that claim a neutral city (Liberate's table too, its city price `liberate_at`)"),
             ParamSpec::int("claim_station", 1, 10, "the Claim action: ambassadors that claim a neutral research station"),
             ParamSpec::int("claim_factory", 1, 10, "the Claim action: ambassadors that claim a neutral factory"),
@@ -108,6 +107,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("cube_insight", 0, 5, "standard action, no limit a round: insight for 1 research cube (0: no such action)"),
             ParamSpec::int("antimatter_cubes", 0, 10, "standard action, the desperate source: research cubes for 1 antimatter, no limit a round (0: no such action)"),
             ParamSpec::int("botnet_credits", 1, 50, "standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays)"),
+            ParamSpec::list("std_off", 0, 15, "a probe's switch: standard actions not offered, by place in the table from 1 (station, remove, lift, dispatch, ambassador, claim, liberate, insight, envoy, botnet, buy energy, antimatter, node, troop, factory; 0: none off)"),
         ],
         phases: &[
             PhaseSpec::decision("act", "standard actions and projects: station, remove, lift Fallout, dispatch (from the round's Dispatches), ambassador, claim, liberate, sell, take down a botnet, buy a neutral city's energy, place a node, remove a troop; completed megaprojects' converters"),

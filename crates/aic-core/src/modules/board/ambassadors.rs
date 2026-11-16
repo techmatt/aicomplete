@@ -127,23 +127,15 @@ pub fn site_standing(g: &GameState, seat: usize, h: usize) -> i64 {
 /// What seat `seat`'s supply pays to claim neutral site `h` (`liberate`: false) or liberate adversary site
 /// `h` (true): the bill less its own ambassadors standing there, if there is such a site.
 pub fn site_supply_cost(w: &World, g: &GameState, seat: usize, h: usize, liberate: bool) -> Option<i64> {
-    site_supply_cost_less(w, g, seat, h, liberate, 0)
-}
-
-/// [`site_supply_cost`] with `less` of the bill paid another way first (247: Liberate with antimatter, an
-/// antimatter in place of `liberate_antimatter` ambassadors).
-pub fn site_supply_cost_less(w: &World, g: &GameState, seat: usize, h: usize, liberate: bool, less: i64) -> Option<i64> {
     let bill = if liberate { liberate_cost(w, g, h) } else { claim_cost(w, g, h) };
-    bill.map(|n| ((n - less).max(0) - site_standing(g, seat, h)).max(0))
+    bill.map(|n| (n - site_standing(g, seat, h)).max(0))
 }
 
 /// r75's one payment rule for Claim and Liberate: `seat` pays the bill of site `h` with its ambassadors on
-/// it first, then its supply (each agent there cancels one of them: the bill's "1 more for each agent"). `less`
-/// of the bill is paid another way first (247: antimatter).
-pub fn pay_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, liberate: bool, less: i64) {
+/// it first, then its supply (each agent there cancels one of them: the bill's "1 more for each agent").
+pub fn pay_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, liberate: bool) {
     let w = cx.world;
-    let bill = if liberate { liberate_cost(&w, g, h) } else { claim_cost(&w, g, h) }.unwrap_or(0);
-    let mut left = (bill - less).max(0);
+    let mut left = if liberate { liberate_cost(&w, g, h) } else { claim_cost(&w, g, h) }.unwrap_or(0);
     let k = ambassador(seat);
     let n = g.tokens(h, k).min(left);
     if n > 0 {

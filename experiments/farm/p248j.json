@@ -1,0 +1,419 @@
+{
+ "name": "p248j",
+ "note": "248's job screen on p248's spent seeds (48376-48423), paired with p248's a and b: each standard action off alone from a (-X), and six back alone into b (b+X). The strategist, d0-d3, three pairs.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "-node|bp",
+   "set": [
+    "board.std_off=13,"
+   ]
+  },
+  {
+   "name": "-node|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=13,"
+   ]
+  },
+  {
+   "name": "-node|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=13,"
+   ]
+  },
+  {
+   "name": "-station|bp",
+   "set": [
+    "board.std_off=1,"
+   ]
+  },
+  {
+   "name": "-station|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=1,"
+   ]
+  },
+  {
+   "name": "-station|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=1,"
+   ]
+  },
+  {
+   "name": "-remove|bp",
+   "set": [
+    "board.std_off=2,"
+   ]
+  },
+  {
+   "name": "-remove|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=2,"
+   ]
+  },
+  {
+   "name": "-remove|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=2,"
+   ]
+  },
+  {
+   "name": "-troop|bp",
+   "set": [
+    "board.std_off=14,"
+   ]
+  },
+  {
+   "name": "-troop|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=14,"
+   ]
+  },
+  {
+   "name": "-troop|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=14,"
+   ]
+  },
+  {
+   "name": "-lift|bp",
+   "set": [
+    "board.std_off=3,"
+   ]
+  },
+  {
+   "name": "-lift|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=3,"
+   ]
+  },
+  {
+   "name": "-lift|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=3,"
+   ]
+  },
+  {
+   "name": "-dispatch|bp",
+   "set": [
+    "board.std_off=4,"
+   ]
+  },
+  {
+   "name": "-dispatch|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=4,"
+   ]
+  },
+  {
+   "name": "-dispatch|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=4,"
+   ]
+  },
+  {
+   "name": "-ambassador|bp",
+   "set": [
+    "board.std_off=5,"
+   ]
+  },
+  {
+   "name": "-ambassador|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=5,"
+   ]
+  },
+  {
+   "name": "-ambassador|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=5,"
+   ]
+  },
+  {
+   "name": "-claim|bp",
+   "set": [
+    "board.std_off=6,"
+   ]
+  },
+  {
+   "name": "-claim|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=6,"
+   ]
+  },
+  {
+   "name": "-claim|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=6,"
+   ]
+  },
+  {
+   "name": "-insight|bp",
+   "set": [
+    "board.std_off=8,"
+   ]
+  },
+  {
+   "name": "-insight|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=8,"
+   ]
+  },
+  {
+   "name": "-insight|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=8,"
+   ]
+  },
+  {
+   "name": "-botnet|bp",
+   "set": [
+    "board.std_off=10,"
+   ]
+  },
+  {
+   "name": "-botnet|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=10,"
+   ]
+  },
+  {
+   "name": "-botnet|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=10,"
+   ]
+  },
+  {
+   "name": "-buy_energy|bp",
+   "set": [
+    "board.std_off=11,"
+   ]
+  },
+  {
+   "name": "-buy_energy|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=11,"
+   ]
+  },
+  {
+   "name": "-buy_energy|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=11,"
+   ]
+  },
+  {
+   "name": "-antimatter|bp",
+   "set": [
+    "board.std_off=12,"
+   ]
+  },
+  {
+   "name": "-antimatter|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=12,"
+   ]
+  },
+  {
+   "name": "-antimatter|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=12,"
+   ]
+  },
+  {
+   "name": "-sell|bp",
+   "set": [
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "-sell|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "-sell|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+node|bp",
+   "set": [
+    "board.std_off=1,2,3,5,6,8,9,10,11,12,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+node|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=1,2,3,5,6,8,9,10,11,12,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+node|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=1,2,3,5,6,8,9,10,11,12,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+station|bp",
+   "set": [
+    "board.std_off=2,3,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+station|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=2,3,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+station|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=2,3,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+insight|bp",
+   "set": [
+    "board.std_off=1,2,3,5,6,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+insight|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=1,2,3,5,6,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+insight|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=1,2,3,5,6,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+buy_energy|bp",
+   "set": [
+    "board.std_off=1,2,3,5,6,8,9,10,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+buy_energy|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=1,2,3,5,6,8,9,10,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+buy_energy|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=1,2,3,5,6,8,9,10,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+botnet|bp",
+   "set": [
+    "board.std_off=1,2,3,5,6,8,9,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+botnet|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=1,2,3,5,6,8,9,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+botnet|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=1,2,3,5,6,8,9,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+claim|bp",
+   "set": [
+    "board.std_off=1,2,3,5,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+claim|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=1,2,3,5,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b+claim|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=1,2,3,5,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3
+ ],
+ "agents": [
+  "strategist"
+ ],
+ "games": 48,
+ "first_seed": 0,
+ "records": 0
+}

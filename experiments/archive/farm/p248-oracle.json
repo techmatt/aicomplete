@@ -1,0 +1,84 @@
+{
+ "name": "p248-oracle",
+ "note": "248's oracle spot-check: the oracle (tries=3) beside the strategist on the probe's first 4 seeds a pair (12 a level), arms a, b, c, d0-d3.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "a|bp",
+   "set": []
+  },
+  {
+   "name": "a|br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "a|pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  },
+  {
+   "name": "b|bp",
+   "set": [
+    "board.std_off=1,2,3,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=1,2,3,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=1,2,3,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "c|bp",
+   "set": [
+    "board.std_off=1,2,3,5,6,7,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "c|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=1,2,3,5,6,7,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "c|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=1,2,3,5,6,7,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3
+ ],
+ "agents": [
+  "strategist",
+  "oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1,tries=3"
+ ],
+ "games": 4,
+ "first_seed": 0,
+ "records": 0
+}

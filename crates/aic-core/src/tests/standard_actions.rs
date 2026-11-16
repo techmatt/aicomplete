@@ -91,6 +91,31 @@ fn standard_actions_are_offered_only_when_affordable_and_targeted() {
     );
 }
 
+/// 248: `board.std_off` takes standard actions out by their place in `STANDARD` from 1 (a probe's switch; 0: none):
+/// not offered, not published, not playable.
+#[test]
+fn std_off_takes_standard_actions_out() {
+    let (rules, mut g) = actions_with_room();
+    rich(&mut g);
+    set_res(&mut g, 0, Resource::Ambassadors, 1);
+    let all = standard_offered(&rules, &g, 0);
+    for a in ["station", "move", "ambassador"] {
+        assert!(all.contains(a), "{a}: {all:?}");
+    }
+    assert!(rules.apply_mut(&mut g.clone(), &std_act(0, "station"), None).is_ok());
+    let place = |a: &str| (board::STANDARD.iter().position(|x| x.name() == a).unwrap() + 1).to_string();
+    // A 0 in the list is no action; the last place is the last action.
+    let off = format!("board.std_off=0,{},{},{}", place("station"), place("move"), board::STANDARD.len());
+    let (rules, _) = lab_actions_with(&[off.as_str()]);
+    let w = rules.world();
+    let left = standard_offered(&rules, &g, 0);
+    assert!(!left.contains("station") && !left.contains("move") && left.contains("ambassador"), "{left:?}");
+    assert!(!board::std_offered(&w, board::StandardAction::Station) && board::std_offered(&w, board::StandardAction::Claim));
+    assert!(!board::std_offered(&w, *board::STANDARD.last().unwrap()));
+    assert!(rules.apply_mut(&mut g.clone(), &std_act(0, "station"), None).is_err());
+    assert!(rules.view(&g).standard.iter().all(|x| x.act != "station" && x.act != "move"));
+}
+
 #[test]
 fn standard_actions_cost_what_the_config_says() {
     let (rules, mut g0) = actions_with_room();

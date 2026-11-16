@@ -1,0 +1,106 @@
+{
+ "name": "smoke248",
+ "note": "248: the probe's arms on the dev seeds (36800-36815), the strategist: crash-finding and the 16-seed smoke of the reverted purge term.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "a|bp",
+   "set": []
+  },
+  {
+   "name": "a|br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "a|pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  },
+  {
+   "name": "b|bp",
+   "set": [
+    "board.std_off=1,2,3,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=1,2,3,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=1,2,3,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "bd|bp",
+   "set": [
+    "board.std_off=1,2,3,4,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "bd|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=1,2,3,4,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "bd|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=1,2,3,4,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "c|bp",
+   "set": [
+    "board.std_off=1,2,3,5,6,7,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "c|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=1,2,3,5,6,7,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "c|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=1,2,3,5,6,7,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3
+ ],
+ "agents": [
+  "strategist"
+ ],
+ "games": 16,
+ "first_seed": 36800,
+ "records": 0
+}

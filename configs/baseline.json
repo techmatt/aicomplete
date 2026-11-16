@@ -15,7 +15,6 @@
         "divert_discord": 1,
         "ambassador_discord": 0,
         "liberate_at": 5,
-        "liberate_antimatter": 2,
         "claim_city": 5,
         "claim_station": 3,
         "claim_factory": 2,
@@ -48,7 +47,10 @@
         "city_energy_credits": 5,
         "cube_insight": 1,
         "antimatter_cubes": 5,
-        "botnet_credits": 16
+        "botnet_credits": 16,
+        "std_off": [
+          0
+        ]
       }
     },
     {

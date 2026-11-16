@@ -18,8 +18,6 @@ pub enum StandardAction {
     /// 137: liberate an adversary site with massed ambassadors (it replaced
     /// Free a station and the city fallback).
     Liberate,
-    /// 247: Liberate with 1 antimatter paying `liberate_antimatter` of its ambassadors (antimatter fuels the majors).
-    LiberateAm,
     /// 105: the general converter, a research cube for insight, no limit a round.
     Insight,
     /// 136: spend an ambassador to move 1 Discord off the Discord track.
@@ -39,7 +37,7 @@ pub enum StandardAction {
 }
 
 /// The standard actions, in the order they are offered and published.
-pub const STANDARD: [StandardAction; 16] = [
+pub const STANDARD: [StandardAction; 15] = [
     StandardAction::Station,
     StandardAction::Remove,
     StandardAction::Lift,
@@ -47,7 +45,6 @@ pub const STANDARD: [StandardAction; 16] = [
     StandardAction::Ambassador,
     StandardAction::Claim,
     StandardAction::Liberate,
-    StandardAction::LiberateAm,
     StandardAction::Insight,
     StandardAction::Envoy,
     StandardAction::Botnet,
@@ -69,7 +66,6 @@ impl StandardAction {
             StandardAction::Ambassador => "ambassador",
             StandardAction::Claim => "claim",
             StandardAction::Liberate => "liberate",
-            StandardAction::LiberateAm => "liberate_am",
             StandardAction::Insight => "insight",
             StandardAction::Envoy => "envoy",
             StandardAction::Botnet => "botnet",
@@ -98,18 +94,15 @@ pub struct Price {
     pub ambassadors: i64,
     /// 105: research cubes (the general converter).
     pub cubes: i64,
-    /// 247: antimatter (Liberate with antimatter).
-    pub antimatter: i64,
 }
 
 impl Price {
     /// What it charges, in print order.
-    fn parts(self) -> [(i64, Resource); 6] {
+    fn parts(self) -> [(i64, Resource); 5] {
         [
             (self.energy, Resource::Energy),
             (self.credits, Resource::Credits),
             (self.chips, Resource::Chips),
-            (self.antimatter, Resource::Antimatter),
             (self.ambassadors, Resource::Ambassadors),
             (self.cubes, Resource::ResearchCubes),
         ]
@@ -153,8 +146,6 @@ pub fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::Ambassador => credits(i("ambassador_credits")),
         // 137: the ambassadors depend on the site: [`target_price`].
         StandardAction::Claim | StandardAction::Liberate => Price::default(),
-        // 247: the antimatter here, the ambassadors left by the site ([`target_price`]).
-        StandardAction::LiberateAm => Price { antimatter: i64::from(i("liberate_antimatter") > 0), ..Price::default() },
         StandardAction::Insight => Price { cubes: 1, ..Price::default() },
         StandardAction::Envoy => ambassadors(i("envoy_ambassadors")),
         StandardAction::Botnet => credits(i("botnet_credits")),
@@ -176,9 +167,6 @@ pub fn target_price(w: &World, g: &GameState, seat: usize, act: StandardAction, 
     match act {
         StandardAction::Claim => site_supply_cost(w, g, seat, h, false).map(ambassadors),
         StandardAction::Liberate => site_supply_cost(w, g, seat, h, true).map(ambassadors),
-        StandardAction::LiberateAm => {
-            site_supply_cost_less(w, g, seat, h, true, w.int("board.liberate_antimatter")).map(ambassadors)
-        }
         _ => Some(Price::default()),
     }
 }
@@ -263,11 +251,13 @@ pub fn std_ops(act: StandardAction) -> &'static [Op] {
 /// 206: a standard action whose price param is 0 is off (Lift, Node, Troop, Factory). 210 (P2) deleted the cut Clear,
 /// Drain and Harden project.
 /// 221: the price params live in [`printed_price`] alone (their minimum is 0, so "free" is "off").
+/// 248: `board.std_off` switches any of them off, by its place in [`STANDARD`] from 1 (0: none), for a probe of
+/// how much play leans on them; the shipped game has none off.
 fn cut(w: &World, act: StandardAction) -> bool {
-    matches!(
-        act,
-        StandardAction::Lift | StandardAction::Node | StandardAction::Troop | StandardAction::Factory | StandardAction::LiberateAm
-    ) && printed_price(w, act) == Price::default()
+    let off = w.list("board.std_off");
+    (matches!(act, StandardAction::Lift | StandardAction::Node | StandardAction::Troop | StandardAction::Factory)
+        && printed_price(w, act) == Price::default())
+        || off.iter().any(|&i| i > 0 && STANDARD.get(i as usize - 1) == Some(&act))
 }
 
 /// Whether standard action `act` is in the rules (206: a cut one prints no row and is never offered).
@@ -284,7 +274,7 @@ pub fn std_target(act: StandardAction) -> Option<&'static str> {
         StandardAction::Lift => "Fallout",
         StandardAction::Move => "a piece or a Botnet",
         StandardAction::Claim => "a neutral site with no Agent on it",
-        StandardAction::Liberate | StandardAction::LiberateAm => "an adversary site with no Agent on it",
+        StandardAction::Liberate => "an adversary site with no Agent on it",
         StandardAction::Botnet => "a Botnet on a hex holding your ambassador",
         StandardAction::BuyEnergy => "a producing neutral city",
         StandardAction::Troop => "Troops",
@@ -331,10 +321,6 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
             liberate_ambassadors(w, SiteKind::City),
             liberate_ambassadors(w, SiteKind::Station),
             liberate_ambassadors(w, SiteKind::Factory)
-        ),
-        StandardAction::LiberateAm => format!(
-            "Liberate it as Liberate does, 1 antimatter paying {} of its ambassadors",
-            w.int("board.liberate_antimatter")
         ),
         StandardAction::Insight => format!("turn 1 research cube into {}", Resource::Insight.words(w.int("board.cube_insight"))),
         StandardAction::Envoy => "move 1 Discord off the Discord track".into(),
@@ -418,12 +404,6 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
                 t("alignment.free_city"),
                 t("alignment.free_facility")
             ),
-        ),
-        // 247: antimatter fuels the majors; Liberate is the win route.
-        StandardAction::LiberateAm => (
-            "Liberate with antimatter",
-            format!("1 antimatter, and Liberate's ambassadors less {}", t("board.liberate_antimatter")),
-            "as Liberate a site".into(),
         ),
         // 105: the general converter every player has.
         StandardAction::Insight => (
@@ -518,12 +498,6 @@ pub fn liberable(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
     target_price(w, g, seat, StandardAction::Liberate, h).is_some_and(|p| p.affordable(g, seat)) && in_reach(w, g, seat, h)
 }
 
-/// 247: whether seat `s` can liberate adversary site `h` with antimatter now ([`liberable`], the bill less
-/// `liberate_antimatter`); the antimatter is the printed price.
-pub fn liberable_am(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
-    target_price(w, g, seat, StandardAction::LiberateAm, h).is_some_and(|p| p.affordable(g, seat)) && in_reach(w, g, seat, h)
-}
-
 /// The Fallout tokens seat `seat` can lift: any in its reach (210's Lift, 212's card bonus).
 pub fn land_in_reach(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
     (0..g.hexes.len()).filter(|&h| in_reach(w, g, seat, h) && g.tokens(h, FALLOUT) > 0).collect()
@@ -557,7 +531,6 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
         }
         StandardAction::Claim => all.filter(|&h| claimable(w, g, seat, h)).collect(),
         StandardAction::Liberate => all.filter(|&h| liberable(w, g, seat, h)).collect(),
-        StandardAction::LiberateAm => all.filter(|&h| liberable_am(w, g, seat, h)).collect(),
         // Gaining an ambassador, credits or insight needs no target.
         StandardAction::Ambassador => vec![usize::MAX],
         StandardAction::Insight if w.int("board.cube_insight") > 0 => vec![usize::MAX],
@@ -696,19 +669,13 @@ pub(super) fn std_resolve(
         StandardAction::Claim => {
             if let Some(h) = on_hex(cx)? {
                 // r75: the seat's ambassadors on the site first, its supply the rest.
-                pay_site(g, cx, s, h, false, 0);
+                pay_site(g, cx, s, h, false);
                 claim_site(g, cx, s, h, "ambassadors");
             }
         }
         StandardAction::Liberate => {
             if let Some(h) = on_hex(cx)? {
-                pay_site(g, cx, s, h, true, 0);
-                liberate_site(g, cx, s, h);
-            }
-        }
-        StandardAction::LiberateAm => {
-            if let Some(h) = on_hex(cx)? {
-                pay_site(g, cx, s, h, true, w.int("board.liberate_antimatter"));
+                pay_site(g, cx, s, h, true);
                 liberate_site(g, cx, s, h);
             }
         }
