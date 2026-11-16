@@ -251,13 +251,125 @@ def check_standard(cfg, base, o, games):
         counter = 'board.std.' + c.split(':', 1)[-1]
         uses = sum(g['counters'].get(counter, 0) for g in games) / n if games else None
         used = f'; {uses:.2f} uses a game' if uses is not None else ''
+        if used and row.get('case'):
+            used += ' (every case of the action)'
         line = f'{row["name"]}: give {gtxt} = {give:g}, get {ttxt} = {get:g} at the anchors: {ratio:.2f}{used} (max {cap})'
-        if ratio > cap and row.get('exempt'):
-            o.i(f'{line}; exempt: {row["exempt"]}')
+        why = exemption(row, o)
+        if ratio > cap and why:
+            o.i(f'{line}; exempt ({row["case"]}): {why}')
         elif ratio > cap:
             o.w('standard-over-anchor', f'{row["name"]} {ratio:.2f}', line)
         else:
             o.i(line)
+        circular(row, sa, a, give, o)
+    check_jobs(cfg, base, a, o)
+
+
+def exemption(row, o=None):
+    """249: a row's exemption, per case: {case, why} naming the row's own `case`. A blanket one (a bare string, no
+    case, or another case) is flagged (when `o` is given) and exempts nothing."""
+    ex = row.get('exempt')
+    if not ex:
+        return None
+    if isinstance(ex, dict) and ex.get('case') and ex.get('case') == row.get('case') and ex.get('why'):
+        return ex['why']
+    if o is not None:
+        o.w('exempt-whole-action', row['name'], f'{row["name"]}: its exemption names no case of its own ({ex!r}): an '
+            'exemption is per case, with a written reason (249)')
+    return None
+
+
+def circular(row, sa, a, give, o):
+    """249: an anchor set from the price of the action it measures: the row then measures the action against
+    itself. Flagged when `anchor_sources.set_from` names it, or when the row's single priced get is an extra anchor
+    worth exactly its give with no `independent` derivation."""
+    src = sa.get('anchor_sources', {})
+    extra = sa['extra_anchors']
+    for unit in row['get']:
+        if unit in row.get('priced_in', ()) or unit not in extra:
+            continue
+        set_from = src.get('set_from', {}).get(unit)
+        if set_from and set_from.split(' (')[0] == row['name']:
+            o.w('circular-anchor', f'{unit} ({row["name"]})', f'{row["name"]}: the {unit} anchor ({a[unit]:g}) was set '
+                f'from this action\'s price ({set_from}): its ratio measures the action against itself')
+        elif not set_from and unit not in src.get('independent', {}) and len(row['get']) == 1:
+            q = row['get'][unit]
+            if isinstance(q, (int, float)) and abs(q * a[unit] - give) < 1e-9:
+                o.w('circular-anchor', f'{unit} ({row["name"]})', f'{row["name"]}: the {unit} anchor ({a[unit]:g}) '
+                    'equals the action\'s give, with no independent derivation in anchor_sources')
+
+
+def card_pay(c, keep):
+    """A card's pay at the anchors (248's price table): credits + 4 x (keep + play insight) + printed costs."""
+    p = c.get('cost', 0) + 4 * (keep[str(c['tier'])] + c.get('insight', 0))
+    return p + 4.5 * c.get('energy', 0) + 6 * c.get('chips', 0) + 18 * c.get('antimatter', 0) + 6 * c.get('research_cubes', 0)
+
+
+def check_jobs(cfg, base, a, o):
+    """249, job parity (Matt, 2026-11-16: cards are the engine, a standard action a rare fallback): each standard
+    row's price per unit of its job against the median card for the job (scripts/design_check_jobs.json, 248's
+    hand-read table), and its outcome against theirs."""
+    sa = cfg['standard_actions']
+    jp = sa.get('job_parity')
+    if not jp:
+        return
+    data = jload(jp['file'])
+    units = {k: (a[v] if isinstance(v, str) else v) for k, v in data['units'].items()}
+    names = dict(units, uses=data['uses'], tags=data['tags'])
+    deck = {c['name']: c for c in jload('content/cards.json')}
+
+    def num(e):
+        return e if isinstance(e, (int, float)) else eval(e, {'__builtins__': {}}, names)  # noqa: S307: our own table
+    rank = jp['outcome_rank']
+    for row in sa['rows']:
+        if row.get('off') and not base.get(row['off'], 0):
+            continue
+        give = 0.0
+        for unit, q in row['give'].items():
+            qty = base.get(q, 0) if isinstance(q, str) else q
+            give += (qty[0] if isinstance(qty, list) else qty) * a[unit]
+        unit, q = next(iter(row['get'].items()))
+        qty = base.get(q, 0) if isinstance(q, str) else q
+        std = give / qty if qty else float('inf')
+        job = data['jobs'].get(row['name'])
+        why = exemption(row)  # check_standard flags a blanket one
+
+        def flag(check, number, line):
+            if why:
+                o.i(f'{line}; exempt ({row["case"]}): {why}')
+            else:
+                o.w(check, number, line)
+        if not job or not [c for c in job['cards'] if not c.get('power')]:
+            flag('job-no-card', row['name'], f'{row["name"]}: no card does its job ({unit}); the action is the only '
+                 'route' + (f' beside {", ".join(c["name"] for c in job["cards"])}' if job else ''))
+            continue
+        prices = []
+        for c in job['cards']:
+            if c.get('power'):
+                continue
+            card = deck.get(c['name'])
+            if card is None:
+                o.w('job-table', c['name'], f'{row["name"]}: job card {c["name"]!r} is not in content: refresh '
+                    'scripts/design_check_jobs.json')
+                continue
+            uses = (c.get('uses', data['uses']) if num(c['use']) else 0)
+            prices.append(((card_pay(card, data['keep_insight']) + uses * num(c['use']) - num(c['other'])) / num(c['units']), c['name']))
+        if not prices:
+            continue
+        prices.sort()
+        med = prices[len(prices) // 2][0] if len(prices) % 2 else (prices[len(prices) // 2 - 1][0] + prices[len(prices) // 2][0]) / 2
+        line = (f'{row["name"]}: {std:.1f} a {unit} against the median card for its job {med:.1f} ({len(prices)} cards, '
+                f'best {prices[0][1]} {prices[0][0]:.1f}): {std / med if med > 0 else float("inf"):.2f} x (min {jp["min"]})')
+        if med > 0 and std < jp['min'] * med:
+            flag('job-parity', f'{row["name"]} {std / med:.2f}', line)
+        else:
+            o.i(line)
+        bad = [x for x in (row.get('outcome'), job.get('card_outcome')) if x and x not in rank]
+        if bad:
+            o.w('job-table', row['name'], f'{row["name"]}: outcome {bad[0]!r} is not in job_parity.outcome_rank')
+        elif row.get('outcome') and job.get('card_outcome') and rank.index(row['outcome']) > rank.index(job['card_outcome']):
+            flag('job-outcome', row['name'], f'{row["name"]}: the action leaves the site {row["outcome"]}; the cards '
+                 f'for its job only leave it {job["card_outcome"]}')
 
 
 def walk_sway(obj, where, tag, found, force_ops, ops_above=frozenset()):

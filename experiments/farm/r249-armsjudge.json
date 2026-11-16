@@ -1,0 +1,83 @@
+{
+ "name": "r249-armsjudge",
+ "note": "249's rank check: 248's arms a, b, c (board.std_off) on the shipped judge, d0-d3, three pairs, on 248's probe seeds (its kept read holds the old judge's games).",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "a|bp",
+   "set": []
+  },
+  {
+   "name": "a|br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "a|pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  },
+  {
+   "name": "b|bp",
+   "set": [
+    "board.std_off=1,2,3,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=1,2,3,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "b|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=1,2,3,5,6,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "c|bp",
+   "set": [
+    "board.std_off=1,2,3,5,6,7,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "c|br",
+   "set": [
+    "ai.boards=0,2",
+    "board.std_off=1,2,3,5,6,7,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  },
+  {
+   "name": "c|pr",
+   "set": [
+    "ai.boards=1,2",
+    "board.std_off=1,2,3,5,6,7,8,9,10,11,12,13,14",
+    "board.sell_credits=0"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3
+ ],
+ "agents": [
+  "strategist"
+ ],
+ "games": 96,
+ "first_seed": 0,
+ "records": 0
+}

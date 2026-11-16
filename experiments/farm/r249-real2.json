@@ -1,0 +1,25 @@
+{
+ "name": "r249-real2",
+ "note": "249: the real oracle at twice the worlds and lines (8, 64 a round) beside the old and the shipped judge, the Builder-Protector pair (a farm shard is one thread: one pair keeps 12 seeds in 6 shards), d3-d4, on fresh seeds.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp",
+   "set": []
+  }
+ ],
+ "difficulties": [
+  3,
+  4
+ ],
+ "agents": [
+  "engine:strategy=0,w.built=4,w.built_cost=0.5,w.clock=0,w.energy_cap=0,w.hand=1.5,w.hand_cost=0.1,w.horizon=0,w.insight_income=0,w.movement=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,w.tag_hand=0,w.purge=3.6,w.last_node=120",
+  "strategist",
+  "oracle:strategy=0,worlds=8,alts=3,budget=64,answers=1,truth=1,w.built=4,w.built_cost=0.5,w.clock=0,w.energy_cap=0,w.hand=1.5,w.hand_cost=0.1,w.horizon=0,w.insight_income=0,w.movement=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,w.tag_hand=0,w.purge=3.6,w.last_node=120"
+ ],
+ "games": 4,
+ "first_seed": 0,
+ "records": 0
+}

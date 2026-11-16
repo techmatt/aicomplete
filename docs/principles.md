@@ -101,8 +101,13 @@ checks*; thresholds, all candidates: `scripts/design_check.json`).
   the supply from standard actions or tier-1 cards; any one source over 40% of a resource's supply, or one spend
   over 50% of its use.
 - **Boards differ:** no power or effect repeated on every board. *Warns:* one power name or one effect on 2+ boards.
-- **Standard actions are deliberately poorly priced against cards.** *Warns:* a standard action whose get passes its
-  give at the unit anchors ([card-guidelines.md](card-guidelines.md)).
+- **Standard actions are deliberately poorly priced against cards** (Matt, 2026-11-16: cards are the engine; a
+  standard action is a rare fallback). *Warns:* a standard action (each target of Liberate and Claim its own row)
+  whose get passes its give at the unit anchors ([card-guidelines.md](card-guidelines.md)); **job parity**, its price
+  per unit of its job under 1.25 × the median card's for that job, or an outcome stronger than theirs (the site
+  yours where cards only free it), or no card for its job (`scripts/design_check_jobs.json`); a **circular anchor**,
+  one set from the price of the action it measures. An exemption is per case with a written reason (the city's
+  Liberate, the win route), never a whole action.
 - **Unity and Discord follow the story:** Unity is trust and cooperation; Discord is fear, force and collateral
   harm. *Warns:* a Sway source whose side disagrees with its story tag (an untagged one is listed, not warned).
 - **Fewer tokens, less processing and tracking**, all else equal. *Warns:* tokens placed or moved a round up 10%
@@ -141,7 +146,8 @@ dropped. The `planner` rolls out on the real state, each decision inside scored 
 decks the one-step heuristic drafts by printed cost and wins far less. **One exception (D20):** no agent, rollouts
 included, knows which Alignment cards a game dealt; the planner values a line on a mean of guesses (`deals`,
 [agents.md](agents.md)). Only the `oracle` reads the deal, to measure what perfect play could reach; it judges no
-balance.
+balance. **The design target (Matt, 2026-11-16) is a real oracle:** very strong play that can't see the future
+(`oracle:worlds=K`, 249: the oracle's search on sampled worlds); the full oracle's wins can rest on deck sight.
 
 ## Dominance checks (Matt, 2026-10-29)
 

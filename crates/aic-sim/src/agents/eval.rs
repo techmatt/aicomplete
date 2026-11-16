@@ -392,6 +392,13 @@ pub struct Weights {
     /// toward corruption: charged at `corrupt_exposure` times a node's worth (`node` + `shelter_node`), and,
     /// rounded, taken off the node count `node_danger` reads.
     pub troop_exposure: f64,
+    /// 249 (flat mode; 0: off, as before): a card's income (a program's or building's `Income`, per-tag income,
+    /// production) counts as the AI track's does, `income` a unit times this. Flat mode counted track income only,
+    /// so an income card read as nothing once played (246's misjudgment).
+    pub card_income: f64,
+    /// 249 (flat mode; 0: off, as before): a building counts what it earns a round beyond income (its standing
+    /// rules and a share of its Action, at the value table's rates) for this many rounds, at `credits` a credit.
+    pub card_action: f64,
 }
 
 /// Weights renamed since experiments named them: (former name, name).
@@ -668,6 +675,8 @@ impl Default for Weights {
             last_node: 0.0,
             am_make: 1.0,
             troop_exposure: 1.0,
+            card_income: 0.0,
+            card_action: 0.0,
         }
     }
 }
@@ -1963,6 +1972,9 @@ impl Eval {
                 };
                 *v += w.income * unit * n as f64;
             }
+            if w.card_income > 0.0 || w.card_action > 0.0 {
+                *v += self.card_terms(&world, g, s);
+            }
             let mut cards: Vec<f64> = g
                 .pile(&cards::hand(s))
                 .iter()
@@ -1986,6 +1998,44 @@ impl Eval {
             }
             self.in_play_value(rules, g, s, None, v);
         }
+    }
+
+    /// 249, flat mode: seat `s`'s cards in play by what they pay: their income as the track's (`card_income`), and
+    /// each building's earnings a round beyond income for `card_action` rounds at the table's rates.
+    fn card_terms(&self, world: &aic_core::module::World, g: &GameState, s: usize) -> f64 {
+        let w = &self.w;
+        let tags = cards::tag_counts(world, g, s);
+        let mut v = 0.0;
+        if w.card_income > 0.0 {
+            // The seat's income less what the board, its tracks and the Unity bonuses pay: the cards' share.
+            let mut card = economy::income_with(world, g, s, &tags);
+            card.add(Resource::Credits, -ai::board(world, s).credits - alignment::income_bonus(g));
+            card.add(Resource::Insight, -alignment::insight_bonus(g));
+            ai::each_track_income(world, g, s, |r, n| card.add(r, -n));
+            for (r, n) in card.iter() {
+                let unit = match r {
+                    Resource::Antimatter => ANTIMATTER_INCOME_UNIT,
+                    Resource::Insight => INSIGHT_INCOME_UNIT,
+                    _ => 1.0,
+                };
+                v += w.card_income * w.income * unit * n as f64;
+            }
+        }
+        let built = g.pile(&cards::built(s));
+        if w.card_action > 0.0 && !built.is_empty() {
+            let corrupted = (0..g.hexes.len()).any(|h| common::corrupted_city(world, g, h));
+            let node = common::node_count(g, s);
+            let ctx = Ctx::at(self.tbl, w.card_action, node as f64, tags, corrupted);
+            for id in built {
+                if cards::disabled(g, s, id.as_str()) {
+                    continue;
+                }
+                let (_, f) = self.fact(world, id);
+                let key = (self.id, f.index, tags, node, corrupted);
+                v += w.card_action * w.credits * built_round_cached(key, || f.value.built_round(self.tbl, &ctx)).max(0.0);
+            }
+        }
+        v
     }
 
     /// Adds to `cards` the value of each of seat `s`'s picks (value, tier) that
@@ -2403,12 +2453,37 @@ const SEAT_STORE_CAP: usize = 4096;
 struct SeatStore {
     terms: HashMap<u64, (Vec<u64>, SeatTerms), BuildHasherDefault<Fnv>>,
     parts: Vec<u64>,
+    /// 249 (`card_action`): a building's earnings a round by (eval, card, the seat's tags, nodes, a city
+    /// corrupted): a decision's options mostly share them, and the value table's walk was a fifth of the judge's time.
+    rounds: HashMap<BuiltKey, f64, BuildHasherDefault<Fnv>>,
 }
+
+type BuiltKey = (u64, usize, [i64; TAGS.len()], i64, bool);
 
 /// Empties the seat-terms store: called as each decision's scoring starts, so
 /// it holds one decision's tableaus.
 pub fn new_decision() {
-    SEAT_TERMS.with(|c| c.borrow_mut().terms.clear());
+    SEAT_TERMS.with(|c| {
+        let store = &mut *c.borrow_mut();
+        store.terms.clear();
+        store.rounds.clear();
+    });
+}
+
+/// 249: [`CardValue::built_round`] through the store.
+fn built_round_cached(key: BuiltKey, f: impl FnOnce() -> f64) -> f64 {
+    if let Some(v) = SEAT_TERMS.with(|c| c.borrow().rounds.get(&key).copied()) {
+        return v;
+    }
+    let v = f();
+    SEAT_TERMS.with(|c| {
+        let store = &mut *c.borrow_mut();
+        if store.rounds.len() >= SEAT_STORE_CAP {
+            store.rounds.clear();
+        }
+        store.rounds.insert(key, v);
+    });
+    v
 }
 
 /// Gives each [`Eval`] (and its clones, a game's) an id for the store's key.

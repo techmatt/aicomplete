@@ -1,0 +1,40 @@
+{
+ "name": "s249-judge",
+ "note": "249: the judge's card terms (w.card_income, w.card_action), screened d2-d3 on 248's spent seeds, three pairs.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp",
+   "set": []
+  },
+  {
+   "name": "br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  }
+ ],
+ "difficulties": [
+  2,
+  3
+ ],
+ "agents": [
+  "strategist",
+  "strategist:w.card_income=1",
+  "strategist:w.card_income=0.5",
+  "strategist:w.card_action=2",
+  "strategist:w.card_action=4",
+  "strategist:w.card_income=1,w.card_action=2"
+ ],
+ "games": 96,
+ "first_seed": 0,
+ "records": 0
+}

@@ -28,7 +28,7 @@
   },
   "standard_anchor_max": 1.0,
   "standard_actions": {
-    "note": "each standard action's give and get at the unit anchors (docs/card-guidelines.md, *Unit anchors*; values.json for units with none). A number is a count; a string is a baseline.json param (module.param). 'src' is its games.jsonl source key, for its uses a game. 'off' (208, P1): the tunable that turns the action off at 0; such a row is skipped. 'narrative' (204): the story tag of its Sway. 'priced_in' (226): get units another unit's anchor already holds, not counted twice. 'exempt' (226): why the row may sit over the cap, listed as information.",
+    "note": "each standard action's give and get at the unit anchors (docs/card-guidelines.md, *Unit anchors*; values.json for units with none). A number is a count; a string is a baseline.json param (module.param). 'src' is its games.jsonl source key, for its uses a game. 'off' (208, P1): the tunable that turns the action off at 0; such a row is skipped. 'narrative' (204): the story tag of its Sway. 'priced_in' (226): get units another unit's anchor already holds, not counted twice. 'case' (249): one target of an action priced per target (Liberate, Claim). 'exempt' (226; 249: per case): {case, why}, the one case that may sit over the cap or fail job parity, listed as information; an exemption naming no case or another row's is flagged (exempt-whole-action). 'outcome' (249): what the action leaves (owned, neutral), for job parity.",
     "rows": [
       {
         "name": "Make antimatter",
@@ -126,8 +126,70 @@
           "sway": "alignment.free_city"
         },
         "priced_in": ["sway"],
-        "exempt": "the win route (Matt, 2026-11-13): never a poorly priced hedge; its 5 Sway are in the city's 45 (priced_in)",
+        "case": "city",
+        "exempt": {"case": "city", "why": "the win route (Matt, 2026-11-13): never a poorly priced hedge; its 5 Sway are in the city's 45 (priced_in). 249: this case only; Item B redesigns Liberate"},
         "narrative": "trust"
+      },
+      {
+        "name": "Liberate a station",
+        "src": "standard:liberate",
+        "case": "station",
+        "give": {
+          "ambassadors": "board.claim_station"
+        },
+        "get": {
+          "station_owned": 1,
+          "sway": "alignment.free_facility"
+        },
+        "outcome": "owned",
+        "narrative": "trust"
+      },
+      {
+        "name": "Liberate a factory",
+        "src": "standard:liberate",
+        "case": "factory",
+        "give": {
+          "ambassadors": "board.claim_factory"
+        },
+        "get": {
+          "factory": 1,
+          "sway": "alignment.free_facility"
+        },
+        "outcome": "owned",
+        "narrative": "trust"
+      },
+      {
+        "name": "Claim a city",
+        "src": "standard:claim",
+        "case": "city",
+        "give": {
+          "ambassadors": "board.liberate_at"
+        },
+        "get": {
+          "city_claimed": 1
+        }
+      },
+      {
+        "name": "Claim a station",
+        "src": "standard:claim",
+        "case": "station",
+        "give": {
+          "ambassadors": "board.claim_station"
+        },
+        "get": {
+          "station_owned": 1
+        }
+      },
+      {
+        "name": "Claim a factory",
+        "src": "standard:claim",
+        "case": "factory",
+        "give": {
+          "ambassadors": "board.claim_factory"
+        },
+        "get": {
+          "factory": 1
+        }
       },
       {
         "name": "Envoy",
@@ -197,7 +259,35 @@
       "sway": 4,
       "node": 8,
       "factory": 19,
-      "land_token": 12
+      "land_token": 12,
+      "station_owned": 20,
+      "city_claimed": 14
+    },
+    "anchor_sources": {
+      "note": "249, the circular-anchor check: where each extra anchor's number came from. 'set_from': the standard action whose price set it (flagged: the check would only measure the action against itself). 'independent': a derivation that reads no action's price (an anchor that equals an action's give with neither listed is flagged too).",
+      "set_from": {
+        "botnet": "Take down a botnet (r75: the 16 credits it costs)",
+        "station": "Build a research station (its 1 chip; values.json's owned station is 20)"
+      },
+      "independent": {
+        "land_token": "210: 3 rounds of a face-up token's 1 Discord, a sway 4 each",
+        "node": "206: values.json's node, 8",
+        "factory": "206: +1 chip income, 19",
+        "station_owned": "values.json's claim_station, 20",
+        "city_claimed": "249: +1 energy income (tier 1), 14 (248's price table); the site for Unity cards unpriced",
+        "city_liberated": "card-guidelines.md's derived line, 45",
+        "agent": "card-guidelines.md, 5",
+        "sway": "card-guidelines.md, 4",
+        "card": "card-guidelines.md, 5",
+        "compute": "card-guidelines.md, 2",
+        "harden": "card-guidelines.md, 3"
+      }
+    },
+    "job_parity": {
+      "note": "249 (Matt, 2026-11-16: cards are the engine and beat standard actions): each standard row with a job in scripts/design_check_jobs.json must sit clearly under the median card for its job: its price per unit of the job at least `min` x the median card's (its rate at most 1/min of theirs); its outcome no stronger than the cards' (`outcome` on the row against the job's `card_outcome`, ranked by `outcome_rank`). A row with no card for its job is flagged (job-no-card). A row's per-case `exempt` lists its flags as information.",
+      "min": 1.25,
+      "outcome_rank": ["neutral", "owned"],
+      "file": "scripts/design_check_jobs.json"
     }
   },
   "tag_story": {

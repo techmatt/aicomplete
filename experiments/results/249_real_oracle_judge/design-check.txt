@@ -1,0 +1,50 @@
+warnings: design: circular-anchor station (Build a research station); design: circular-anchor botnet (Take down a botnet); design: standard-over-anchor Liberate a station 1.17; design: standard-over-anchor Liberate a factory 1.69; design: standard-over-anchor Claim a factory 1.19; design: job-no-card Build a research station; design: job-no-card Claim a city; design: job-no-card Sell a card; design: job-parity Take down a botnet 1.07; design: job-parity Claim a station 1.23; design: job-outcome Liberate a station; design: job-outcome Liberate a factory
+
+## Warnings (12)
+- [circular-anchor] Build a research station: the station anchor (6) was set from this action's price (Build a research station (its 1 chip; values.json's owned station is 20)): its ratio measures the action against itself
+- [circular-anchor] Take down a botnet: the botnet anchor (16) was set from this action's price (Take down a botnet (r75: the 16 credits it costs)): its ratio measures the action against itself
+- [standard-over-anchor] Liberate a station: give 3 ambassadors = 24, get 1 station_owned + 2 sway = 28 at the anchors: 1.17 (max 1.0)
+- [standard-over-anchor] Liberate a factory: give 2 ambassadors = 16, get 1 factory + 2 sway = 27 at the anchors: 1.69 (max 1.0)
+- [standard-over-anchor] Claim a factory: give 2 ambassadors = 16, get 1 factory = 19 at the anchors: 1.19 (max 1.0)
+- [job-no-card] Build a research station: no card does its job (station); the action is the only route
+- [job-parity] Take down a botnet: 16.0 a botnet against the median card for its job 15.0 (3 cards, best Singularity Exploit 14.0): 1.07 x (min 1.25)
+- [job-outcome] Liberate a station: the action leaves the site owned; the cards for its job only leave it neutral
+- [job-outcome] Liberate a factory: the action leaves the site owned; the cards for its job only leave it neutral
+- [job-no-card] Claim a city: no card does its job (city_claimed); the action is the only route
+- [job-parity] Claim a station: 24.0 a station_owned against the median card for its job 19.5 (2 cards, best Power Purchase Agreement 15.0): 1.23 x (min 1.25)
+- [job-no-card] Sell a card: no card does its job (credits); the action is the only route
+
+## Information (33)
+- Make antimatter: give 5 research_cubes = 30, get 1 antimatter = 18 at the anchors: 0.60 (max 1.0)
+- Buy a city's energy: give 5 credits = 5, get 1 energy = 4.5 at the anchors: 0.90 (max 1.0)
+- Turn a cube into insight: give 1 research_cubes = 6, get 1 insight = 4 at the anchors: 0.67 (max 1.0)
+- Build a research station: give 1 chips + 0 ambassadors = 6, get 1 station = 6 at the anchors: 1.00 (max 1.0)
+- Remove agents: give 2 ambassadors = 16, get 3 agent = 15 at the anchors: 0.94 (max 1.0)
+- Lift Fallout: give 2 research_cubes = 12, get 1 land_token = 12 at the anchors: 1.00 (max 1.0)
+- Gain a player ambassador: give 20 credits = 20, get 1 ambassadors = 8 at the anchors: 0.40 (max 1.0)
+- Take down a botnet: give 16 credits = 16, get 1 botnet + 0 sway = 16 at the anchors: 1.00 (max 1.0)
+- Liberate a city: give 5 ambassadors = 40, get 1 city_liberated + 5 sway (in the anchor) = 45 at the anchors: 1.12 (max 1.0); exempt (city): the win route (Matt, 2026-11-13): never a poorly priced hedge; its 5 Sway are in the city's 45 (priced_in). 249: this case only; Item B redesigns Liberate
+- Claim a city: give 5 ambassadors = 40, get 1 city_claimed = 14 at the anchors: 0.35 (max 1.0)
+- Claim a station: give 3 ambassadors = 24, get 1 station_owned = 20 at the anchors: 0.83 (max 1.0)
+- Envoy: give 1 ambassadors = 8, get 1 sway = 4 at the anchors: 0.50 (max 1.0)
+- Sell a card: give 1 card = 5, get 1 credits = 1 at the anchors: 0.20 (max 1.0)
+- Place a node: give 6 credits + 1 energy = 10.5, get 1 node = 8 at the anchors: 0.76 (max 1.0)
+- Remove a troop: give 10 credits = 10, get 1 troop = 5 at the anchors: 0.50 (max 1.0)
+- Build a factory: off (`board.factory_build_chips` 0)
+- Make antimatter: 30.0 a antimatter against the median card for its job 10.0 (8 cards, best Zero-Day Auction 2.0): 3.00 x (min 1.25)
+- Buy a city's energy: 5.0 a energy against the median card for its job 3.3 (13 cards, best National Grid Buildout 0.3): 1.52 x (min 1.25)
+- Turn a cube into insight: 6.0 a insight against the median card for its job 2.4 (10 cards, best Hyperscale Botnet 1.2): 2.47 x (min 1.25)
+- Remove agents: 5.3 a agent against the median card for its job 2.0 (23 cards, best Open Source Uprising -5.2): 2.67 x (min 1.25)
+- Lift Fallout: 12.0 a land_token against the median card for its job 2.0 (5 cards, best Shared Grid Accord -3.8): 6.00 x (min 1.25)
+- Gain a player ambassador: 20.0 a ambassadors against the median card for its job 2.0 (17 cards, best Embassy of Exiles 0.2): 10.00 x (min 1.25)
+- Liberate a city: 40.0 a city_liberated against the median card for its job 38.4 (9 cards, best Hostile Buyout 28.0): 1.04 x (min 1.25); exempt (city): the win route (Matt, 2026-11-13): never a poorly priced hedge; its 5 Sway are in the city's 45 (priced_in). 249: this case only; Item B redesigns Liberate
+- Liberate a station: 24.0 a station_owned against the median card for its job 16.0 (1 cards, best Reclamation Crew 16.0): 1.50 x (min 1.25)
+- Liberate a factory: 16.0 a factory against the median card for its job 3.5 (1 cards, best Back-Channel Talks 3.5): 4.57 x (min 1.25)
+- Claim a factory: 16.0 a factory against the median card for its job 3.5 (1 cards, best Prefab Plant Kit 3.5): 4.57 x (min 1.25)
+- Envoy: 8.0 a sway against the median card for its job 2.6 (8 cards, best Antimatter Accord -1.5): 3.10 x (min 1.25)
+- Place a node: 10.5 a node against the median card for its job 1.2 (4 cards, best National Grid Buildout -0.7): 9.00 x (min 1.25)
+- Remove a troop: 10.0 a troop against the median card for its job 4.0 (7 cards, best Double Agents -9.5): 2.50 x (min 1.25)
+- tag-story exception ais:protector:Reclaim: a Security card retakes a corrupted station or factory by force for an antimatter: Matt's ruling (230), Reclaim stays on Security, force is its story; the cleanse and the antimatter are what the force wins back
+- tag-story exception ais:researcher:Disrupt: a Cyber card hacks troops (drones) anywhere in a country, no reach: the Researcher's troop answer is remote by design (206), so it is paid in Cyber, not Security
+- dials: none moved 40% or more since 5ab1f9132
+- no read given: the play checks (supply shares, dead cards and powers, rounds, tokens) did not run

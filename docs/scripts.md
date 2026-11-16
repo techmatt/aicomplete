@@ -19,7 +19,9 @@ what it prints; the `cards/*_read.py` readers take seconds.
   `games.jsonl`; a farm out file as FILE=SPEC). `--old`: the previous revision's read on its seeds; `--base`: the
   dials' start (default: merge base with main); `--variant`: only those variants' (or a lever's) games, `base` the
   bare pairs; `--usage`: each action's role, band and use instead. First line: the report's `warnings:`. Thresholds
-  and bands: `design_check.json`. Never exits 1.
+  and bands: `design_check.json`; job parity's cards for each standard job, hand-read (units and other effects as
+  expressions over the anchors; costs from content): `design_check_jobs.json`, written by 249's `port_jobs.py`
+  from 248's table (a new card for a job is a row there). Never exits 1.
 - `cards/cards_doc.py`: regenerates `docs/cards.md`. `cards/deck_text.py DECK...`: a deck as plain text for review
   (`--list` the decks; README, *Card text for review*).
 - `cards/apply_overlay.py FILE... [--set ENTRY]... [--check]`: writes overlays into `content/*.json` in place:

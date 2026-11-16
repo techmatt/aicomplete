@@ -1,0 +1,970 @@
+{
+ "note": "249: the job-parity check's data (design_check.py check_jobs), ported from 248's hand-read price table (experiments/results/248_standard_actions_probe/price_cards.py). Per standard row (by name): the cards and board powers that do its job, each card's job units, its other effects and an Action's use cost as expressions over `units` (a number, or a design_check anchor's name), `uses` (rounds of an Action or trigger) and `tags` (a tag count at play). A card's pay is read from content (credits + 4 x (keep + play insight) + printed energy, chips, antimatter, cubes). Unit price = (pay + uses x use - other) / units. A power costs its use, once.",
+ "uses": 4,
+ "tags": 5,
+ "keep_insight": {
+  "1": 1,
+  "2": 3
+ },
+ "units": {
+  "energy": "energy",
+  "insight": "insight",
+  "card": "card",
+  "amb": "ambassadors",
+  "chip": "chips",
+  "agent": "agent",
+  "troop": "troop",
+  "am": "antimatter",
+  "cube": "research_cubes",
+  "sway": "sway",
+  "node": "node",
+  "city": "city_liberated",
+  "botnet": "botnet",
+  "credit": "credits",
+  "compute": "compute",
+  "harden": "harden",
+  "move": 2,
+  "project": 24,
+  "firewall": 5,
+  "jam": 0.7,
+  "shelter": 4,
+  "follower": 2.5,
+  "cr_inc": 4,
+  "ins_inc": 12,
+  "en_inc1": 14,
+  "en_inc2": 9,
+  "chip_inc": 19,
+  "station_owned": "station_owned",
+  "factory": "factory",
+  "station_freed": 15,
+  "factory_freed": 6
+ },
+ "jobs": {
+  "Place a node": {
+   "unit": "node",
+   "cards": [
+    {
+     "name": "Relay Mast Rollout",
+     "units": 2,
+     "other": "2 * card",
+     "use": 0,
+     "note": "place 2; draw 2"
+    },
+    {
+     "name": "Aegis Grid Lockdown",
+     "units": 3,
+     "other": "shelter",
+     "use": 0,
+     "note": "place 3; shelter (values 4)"
+    },
+    {
+     "name": "National Grid Buildout",
+     "units": 3,
+     "other": "2 * en_inc1",
+     "use": 0,
+     "note": "place 3; +2 energy income 28"
+    },
+    {
+     "name": "Beamed Power Constellation",
+     "units": 3,
+     "other": "6 * energy",
+     "use": 0,
+     "note": "place 3; 1 energy a node (~6 nodes) 27"
+    },
+    {
+     "name": "Buy In (Builder)",
+     "units": 1,
+     "other": "0.72 * chip",
+     "use": "2 * energy",
+     "note": "2 energy; chip by a fresh factory (72%)",
+     "power": true
+    },
+    {
+     "name": "Accord (Protector)",
+     "units": 1,
+     "other": "0.72 * amb",
+     "use": "2 * energy",
+     "note": "2 energy; ambassador by a fresh city (72%)",
+     "power": true
+    },
+    {
+     "name": "Peer Review (Researcher)",
+     "units": 1,
+     "other": "0.72 * insight",
+     "use": "cube",
+     "note": "1 cube; insight by a fresh station (72%)",
+     "power": true
+    }
+   ]
+  },
+  "Remove agents": {
+   "unit": "agent",
+   "cards": [
+    {
+     "name": "Eviction Worm",
+     "units": 3,
+     "other": "4 * compute",
+     "use": 0,
+     "note": "3 agents; 4 compute 8"
+    },
+    {
+     "name": "Diplomatic Expulsion",
+     "units": 4,
+     "other": "sway",
+     "use": 0,
+     "note": "4 agents; sway 1"
+    },
+    {
+     "name": "Counterinsurgency Campaign",
+     "units": 3,
+     "other": "2 * cr_inc",
+     "use": 0,
+     "note": "3 agents; +2 credit income 8"
+    },
+    {
+     "name": "Headquarters Raid",
+     "units": 5,
+     "other": "4 * card",
+     "use": 0,
+     "note": "5 agents; draw 4"
+    },
+    {
+     "name": "Amnesty Decree",
+     "units": 4,
+     "other": "2 * amb",
+     "use": 0,
+     "note": "clear 4 by a corrupted city; 2 ambassadors placed 16"
+    },
+    {
+     "name": "Ceasefire Monitors",
+     "units": 3,
+     "other": "2 * amb",
+     "use": 0,
+     "note": "3 agents (or 1 troop); 2 ambassadors 16"
+    },
+    {
+     "name": "Honeypot Relay",
+     "units": 2,
+     "other": "card + 2 * 3",
+     "use": 0,
+     "note": "up to 2 now; draw 1; 3 cr a removal event (~2 more) 6"
+    },
+    {
+     "name": "Agency Field Station",
+     "units": "uses",
+     "other": "2 * card",
+     "use": 0,
+     "note": "1 agent a Security play (4 in 4 rounds); draw 2"
+    },
+    {
+     "name": "Joint Task Force",
+     "units": "2 * uses",
+     "other": "2 * card",
+     "use": 0,
+     "note": "2 agents an other player's Security play (4 fires); draw 2"
+    },
+    {
+     "name": "Directed-Energy Array",
+     "units": "3 * uses",
+     "other": 0,
+     "use": "2 * energy",
+     "note": "Action 2 energy: 3 agents, x4"
+    },
+    {
+     "name": "Field Assay Team",
+     "units": "2 * uses",
+     "other": 0,
+     "use": "cube",
+     "note": "Action 1 cube: 2 agents, x4"
+    },
+    {
+     "name": "Air Gap",
+     "units": 3,
+     "other": "firewall",
+     "use": 0,
+     "note": "3 agents; firewall ~5"
+    },
+    {
+     "name": "Killswitch Directive",
+     "units": 4,
+     "other": "project",
+     "use": 0,
+     "note": "4 agents; discard a project 24"
+    },
+    {
+     "name": "Lure Network",
+     "units": "3 * uses",
+     "other": "2 * card",
+     "use": 0,
+     "note": "Action free: up to 3, x4; draw 2"
+    },
+    {
+     "name": "Liberation Accords",
+     "units": 6,
+     "other": "4 * amb",
+     "use": 0,
+     "note": "6 agents; 4 ambassadors 32"
+    },
+    {
+     "name": "Martial Cordon",
+     "units": 6,
+     "other": "-sway",
+     "use": 0,
+     "note": "6 agents; sway 1 Discord -4"
+    },
+    {
+     "name": "Kettle Operation",
+     "units": 6,
+     "other": "-sway",
+     "use": 0,
+     "note": "up to 6 agents or troops; Discord -4"
+    },
+    {
+     "name": "Surgical Strike",
+     "units": 4,
+     "other": "-sway",
+     "use": 0,
+     "note": "4 agents (or 3 troops); Discord -4"
+    },
+    {
+     "name": "Kinetic Interdiction",
+     "units": 6,
+     "other": "2 * troop - sway",
+     "use": 0,
+     "note": "6 agents; 2 troops 10; Discord -4"
+    },
+    {
+     "name": "Deep State Ledger",
+     "units": 3,
+     "other": "3 * ins_inc",
+     "use": 0,
+     "note": "3 agents; +3 insight income 36"
+    },
+    {
+     "name": "Mass Defection",
+     "units": 5,
+     "other": "5 * amb + 2 * sway",
+     "use": 0,
+     "note": "convert 5 (ambassadors where they stood 40); sway 2"
+    },
+    {
+     "name": "Double Agents",
+     "units": 3,
+     "other": "3 * amb + 2 * troop",
+     "use": 0,
+     "note": "convert 3 (24); 2 troops 10"
+    },
+    {
+     "name": "Open Source Uprising",
+     "units": 4,
+     "other": "4 * amb + 2 * card + sway",
+     "use": 0,
+     "note": "convert 4 (32); draw 2; sway 1"
+    }
+   ]
+  },
+  "Remove a troop": {
+   "unit": "troop",
+   "cards": [
+    {
+     "name": "Breach and Clear",
+     "units": 1,
+     "other": "2 * card",
+     "use": 0,
+     "note": "1 troop; draw 2"
+    },
+    {
+     "name": "Surgical Strike",
+     "units": 3,
+     "other": "-sway",
+     "use": 0,
+     "note": "3 troops (or 4 agents); Discord -4"
+    },
+    {
+     "name": "Double Agents",
+     "units": 2,
+     "other": "3 * (agent + amb)",
+     "use": 0,
+     "note": "2 troops; convert 3 (39)"
+    },
+    {
+     "name": "Decapitation Strike",
+     "units": 3,
+     "other": "botnet",
+     "use": 0,
+     "note": "3 troops; botnet 16"
+    },
+    {
+     "name": "Kinetic Interdiction",
+     "units": 2,
+     "other": "6 * agent - sway",
+     "use": 0,
+     "note": "2 troops; 6 agents 30; Discord -4"
+    },
+    {
+     "name": "Annihilation Lance",
+     "units": 3,
+     "other": "6 * agent - 2 * sway",
+     "use": 0,
+     "note": "~1 on it + 2 near; ~6 agents 30; Discord -8"
+    },
+    {
+     "name": "Kettle Operation",
+     "units": 2,
+     "other": "4 * agent - sway",
+     "use": 0,
+     "note": "~2 troops (p90 3 a country) + 4 agents 20; -4"
+    },
+    {
+     "name": "Fortify (Builder)",
+     "units": 1,
+     "other": "harden",
+     "use": "chip",
+     "note": "1 chip: 1 troop; harden 3",
+     "power": true
+    },
+    {
+     "name": "Disrupt (Researcher)",
+     "units": 2,
+     "other": 0,
+     "use": "cube",
+     "note": "1 Cyber sacrifice + 1 cube: up to 2 (sacrifice unpriced)",
+     "power": true
+    }
+   ]
+  },
+  "Lift Fallout": {
+   "unit": "Fallout lifted",
+   "cards": [
+    {
+     "name": "Field Sensor Grid",
+     "units": 3,
+     "other": "3 * card",
+     "use": 0,
+     "note": "lift 3 near; draw 3"
+    },
+    {
+     "name": "Fusion Startup Stake",
+     "units": 1,
+     "other": "en_inc1 + 3 * cr_inc",
+     "use": 0,
+     "note": "lift 1; +1 energy, +3 credit income 26"
+    },
+    {
+     "name": "Pumped Hydro Storage",
+     "units": 2,
+     "other": "5 * cr_inc",
+     "use": 0,
+     "note": "lift 2 near; +5 credit income 20"
+    },
+    {
+     "name": "Shared Grid Accord",
+     "units": 1,
+     "other": "0.75 * 2 * energy + 2 * sway",
+     "use": 0,
+     "note": "lift 1; gift 2 energy 6.75; sway 2"
+    },
+    {
+     "name": "Open-Weights Release",
+     "units": 4,
+     "other": "0.75 * 6 * insight",
+     "use": 0,
+     "note": "lift 4 near; gift 6 insight 18"
+    }
+   ]
+  },
+  "Gain a player ambassador": {
+   "unit": "ambassador",
+   "cards": [
+    {
+     "name": "Envoy Briefings",
+     "units": 2,
+     "other": "3 * card",
+     "use": 0,
+     "note": "2; draw 3"
+    },
+    {
+     "name": "Fact-Check Network",
+     "units": 2,
+     "other": "5 * jam",
+     "use": 0,
+     "note": "2; typed jam 5 (3.5)"
+    },
+    {
+     "name": "Baseload Contract",
+     "units": 2,
+     "other": "2 * en_inc1",
+     "use": 0,
+     "note": "2; +2 energy income 28"
+    },
+    {
+     "name": "Consular Pouch",
+     "units": "tags",
+     "other": 0,
+     "use": 0,
+     "note": "1 a Diplomacy tag (5)"
+    },
+    {
+     "name": "Mutual Aid Pact",
+     "units": 3,
+     "other": "0.75 * 3 * insight",
+     "use": 0,
+     "note": "3; gift 3 insight 9"
+    },
+    {
+     "name": "Liaison Corps",
+     "units": 3,
+     "other": "4 * move",
+     "use": 0,
+     "note": "3; move 4 (8)"
+    },
+    {
+     "name": "Summit Caucus",
+     "units": 3,
+     "other": "6 * move",
+     "use": 0,
+     "note": "3; consolidate 6 (12)"
+    },
+    {
+     "name": "Peace Conference",
+     "units": 3,
+     "other": "8 * sway",
+     "use": 0,
+     "note": "3; sway 8 (32)"
+    },
+    {
+     "name": "Trade Delegation",
+     "units": 2,
+     "other": "3 * cr_inc",
+     "use": 0,
+     "note": "2; +3 credit income 12"
+    },
+    {
+     "name": "Ceasefire Monitors",
+     "units": 2,
+     "other": "3 * agent",
+     "use": 0,
+     "note": "2; 3 agents 15"
+    },
+    {
+     "name": "Holographic Assembly Hall",
+     "units": "2 * uses",
+     "other": "2 * uses * sway",
+     "use": "2 * energy",
+     "note": "Action 2 energy: 2 + sway 2, x4"
+    },
+    {
+     "name": "Accelerator Diplomacy",
+     "units": 2,
+     "other": "5 * sway",
+     "use": 0,
+     "note": "2; sway 5 (20)"
+    },
+    {
+     "name": "Antimatter Accord",
+     "units": 6,
+     "other": "4 * sway",
+     "use": 0,
+     "note": "6; sway 4 (16)"
+    },
+    {
+     "name": "Exodus Corridors",
+     "units": 4,
+     "other": "6 * move",
+     "use": 0,
+     "note": "4; gather 6 (12)"
+    },
+    {
+     "name": "Rally the Allies",
+     "units": 5,
+     "other": "3 * move + 2 * sway",
+     "use": 0,
+     "note": "5; gather 3 (6); sway 2"
+    },
+    {
+     "name": "Liberation Accords",
+     "units": 4,
+     "other": "6 * agent",
+     "use": 0,
+     "note": "4; 6 agents 30"
+    },
+    {
+     "name": "Embassy of Exiles",
+     "units": "3 + 2 * uses",
+     "other": "2 * uses * agent",
+     "use": 0,
+     "note": "3; Action convert 2 (agents 10 + 2 placed), x4"
+    }
+   ]
+  },
+  "Take down a botnet": {
+   "unit": "botnet",
+   "cards": [
+    {
+     "name": "Botnet Takedown",
+     "units": 1,
+     "other": "6 * compute",
+     "use": 0,
+     "note": "botnet; 6 compute 12"
+    },
+    {
+     "name": "Singularity Exploit",
+     "units": 1,
+     "other": "project",
+     "use": 0,
+     "note": "botnet; discard a project 24"
+    },
+    {
+     "name": "Decapitation Strike",
+     "units": 1,
+     "other": "3 * troop",
+     "use": 0,
+     "note": "botnet; 3 troops 15"
+    }
+   ]
+  },
+  "Buy a city's energy": {
+   "unit": "energy",
+   "cards": [
+    {
+     "name": "Capacitor Discharge",
+     "units": "tags",
+     "other": 0,
+     "use": 0,
+     "note": "1 a Power tag (5)"
+    },
+    {
+     "name": "Dispatch Control Room",
+     "units": "2 + uses",
+     "other": 0,
+     "use": 0,
+     "note": "2 when built; 1 a Power play (4)"
+    },
+    {
+     "name": "Substation Hub",
+     "units": "2 + 2",
+     "other": 0,
+     "use": 0,
+     "note": "2 when built; 1 an other player's Power play (~2)"
+    },
+    {
+     "name": "Collateralized Grid",
+     "units": "2 + 2 * 2",
+     "other": 0,
+     "use": 0,
+     "note": "2; +2 income at tier 2 (9 = 2 energy each)"
+    },
+    {
+     "name": "Wartime Retooling",
+     "units": "2 * 14 / 4.5",
+     "other": "4 * card",
+     "use": 0,
+     "note": "+2 energy income (28 = 6.2 energy); draw 4"
+    },
+    {
+     "name": "National Grid Buildout",
+     "units": "2 * 14 / 4.5",
+     "other": "3 * node",
+     "use": 0,
+     "note": "+2 energy income (6.2); 3 nodes 24"
+    },
+    {
+     "name": "Baseload Contract",
+     "units": "2 * 14 / 4.5",
+     "other": "2 * amb",
+     "use": 0,
+     "note": "+2 energy income (6.2); 2 ambassadors 16"
+    },
+    {
+     "name": "Peaker Turbines",
+     "units": "14 / 4.5",
+     "other": "chip_inc",
+     "use": 0,
+     "note": "+1 energy income (3.1); +1 chip income 19"
+    },
+    {
+     "name": "Faraday Yard",
+     "units": "14 / 4.5",
+     "other": "3 * harden",
+     "use": 0,
+     "note": "+1 energy income (3.1); harden 3 (9)"
+    },
+    {
+     "name": "Tidal Barrage",
+     "units": "2 * 14 / 4.5",
+     "other": 0,
+     "use": 0,
+     "note": "+1 a 2 Power tags (+2 at 5: 6.2)"
+    },
+    {
+     "name": "Dyson Swarm Tranche",
+     "units": "10 + 2 * 2",
+     "other": 0,
+     "use": 0,
+     "note": "10; +2 income at tier 2 (4)"
+    },
+    {
+     "name": "Fusion Commons",
+     "units": 6,
+     "other": "3 * card + 3 * sway",
+     "use": 0,
+     "note": "6; draw 3; sway 3"
+    },
+    {
+     "name": "Containment Reactor",
+     "units": "4 * uses",
+     "other": "uses * sway",
+     "use": "am",
+     "note": "Action 1 antimatter: 4 + sway 1, x4"
+    }
+   ]
+  },
+  "Turn a cube into insight": {
+   "unit": "insight",
+   "cards": [
+    {
+     "name": "Credential Harvest",
+     "units": "tags",
+     "other": 0,
+     "use": 0,
+     "note": "1 a Cyber tag (5)"
+    },
+    {
+     "name": "Cryo-Compute Burn",
+     "units": "tags",
+     "other": 0,
+     "use": 0,
+     "note": "1 a Science tag (5)"
+    },
+    {
+     "name": "Endowed Research Chair",
+     "units": "2 * 3",
+     "other": 0,
+     "use": 0,
+     "note": "+2 insight income (24 = 6 insight)"
+    },
+    {
+     "name": "Neural Mirror",
+     "units": "2 * 3",
+     "other": 0,
+     "use": 0,
+     "note": "+1 a 2 Cyber tags (+2 at 5: 6)"
+    },
+    {
+     "name": "Frontier Lab Charter",
+     "units": "2 * 3",
+     "other": "2 * cr_inc",
+     "use": 0,
+     "note": "+2 insight income (6); +2 credit income 8"
+    },
+    {
+     "name": "Telemetry Archive",
+     "units": 6,
+     "other": 0,
+     "use": 0,
+     "note": "3 at 4 Datasets, 2 a Science play: ~2 fires in 4 rounds"
+    },
+    {
+     "name": "Hyperscale Botnet",
+     "units": "4 * uses",
+     "other": "3 * card",
+     "use": 0,
+     "note": "4 a round x4; draw 3"
+    },
+    {
+     "name": "Exascale Training Cluster",
+     "units": "3 * uses",
+     "other": "6 * cube",
+     "use": 0,
+     "note": "3 a round x4; 6 cubes 36"
+    },
+    {
+     "name": "Interdisciplinary Institute",
+     "units": "3 * uses",
+     "other": "3 * card",
+     "use": 0,
+     "note": "1 a tag played (~3 a round) x4; draw 3"
+    },
+    {
+     "name": "Recursive Self-Improvement",
+     "units": "3 * 3",
+     "other": "3 * card",
+     "use": 0,
+     "note": "+3 insight income (9); draw 3"
+    }
+   ]
+  },
+  "Envoy": {
+   "unit": "sway to Unity",
+   "cards": [
+    {
+     "name": "Manifesto Leak",
+     "units": 3,
+     "other": "follower",
+     "use": 0,
+     "note": "sway 3; a Follower 2.5"
+    },
+    {
+     "name": "Peace Conference",
+     "units": 8,
+     "other": "3 * amb",
+     "use": 0,
+     "note": "sway 8; 3 ambassadors 24"
+    },
+    {
+     "name": "Coalition Charter",
+     "units": 6,
+     "other": "0.75 * 4 * insight",
+     "use": 0,
+     "note": "sway 6; gift 4 insight 12"
+    },
+    {
+     "name": "Open Assembly",
+     "units": 6,
+     "other": 0,
+     "use": 0,
+     "note": "3 at 2 Followers, 1 a Diplomacy play: ~2 fires in 4 rounds"
+    },
+    {
+     "name": "Accelerator Diplomacy",
+     "units": 5,
+     "other": "2 * amb",
+     "use": 0,
+     "note": "sway 5; 2 ambassadors 16"
+    },
+    {
+     "name": "Holographic Assembly Hall",
+     "units": "2 * uses",
+     "other": "2 * uses * amb",
+     "use": "2 * energy",
+     "note": "Action 2 energy: sway 2 + 2 amb, x4"
+    },
+    {
+     "name": "Citywide Microgrid",
+     "units": "2 * uses",
+     "other": "city - 5 * sway",
+     "use": "energy",
+     "note": "Action 1 energy: sway 2, x4; liberates (city less its sway, 25)"
+    },
+    {
+     "name": "Antimatter Accord",
+     "units": 4,
+     "other": "6 * amb",
+     "use": 0,
+     "note": "sway 4; 6 ambassadors 48"
+    }
+   ]
+  },
+  "Make antimatter": {
+   "unit": "antimatter",
+   "cards": [
+    {
+     "name": "Penning Trap Array",
+     "units": "1 + uses",
+     "other": 0,
+     "use": "cube",
+     "note": "1 when built; Action 1 cube, x4"
+    },
+    {
+     "name": "Antiproton Foundry",
+     "units": "1 + uses",
+     "other": 0,
+     "use": "chip",
+     "note": "1 when built; Action 1 chip, x4"
+    },
+    {
+     "name": "Dark Fiber Collider",
+     "units": "uses",
+     "other": "2 * card",
+     "use": "2 * insight",
+     "note": "Action 2 insight, x4; draw 2"
+    },
+    {
+     "name": "Treaty Isotope Bank",
+     "units": "uses",
+     "other": "amb",
+     "use": 8,
+     "note": "Action 8 credits, x4; 1 ambassador"
+    },
+    {
+     "name": "Cyclotron Lease",
+     "units": "uses",
+     "other": 0,
+     "use": "2 * energy",
+     "note": "Action 2 energy, x4"
+    },
+    {
+     "name": "Positron Storage Ring",
+     "units": "uses",
+     "other": "2 * uses * energy + 2 * card",
+     "use": "2 * energy",
+     "note": "Action 2 energy x4; 2 energy a Power play (8); draw 2"
+    },
+    {
+     "name": "Zero-Day Auction",
+     "units": 2,
+     "other": "6 * card",
+     "use": 0,
+     "note": "2; draw 6"
+    },
+    {
+     "name": "Intrusion Lab",
+     "units": 2,
+     "other": 0,
+     "use": 0,
+     "note": "1 at 2 Operatives, 1 a compute removal: ~2 in 4 rounds"
+    },
+    {
+     "name": "Teardown (Builder)",
+     "units": 1,
+     "other": "-(10 + 12)",
+     "use": "chip",
+     "note": "1 chip; your factory gone (-10) and a Fallout (-12)",
+     "power": true
+    },
+    {
+     "name": "Meltdown (Researcher)",
+     "units": 1,
+     "other": -15,
+     "use": "2 * cube",
+     "note": "2 cubes; your station gone (-15)",
+     "power": true
+    }
+   ]
+  },
+  "Liberate a city": {
+   "unit": "city liberated",
+   "cards": [
+    {
+     "name": "Forensic Audit",
+     "units": 1,
+     "other": "2 * card",
+     "use": 0,
+     "note": "draw 2"
+    },
+    {
+     "name": "Root Access",
+     "units": 1,
+     "other": "0.6 * botnet",
+     "use": 0,
+     "note": "a botnet near (x0.6) ~10"
+    },
+    {
+     "name": "Citywide Microgrid",
+     "units": 1,
+     "other": "2 * uses * sway",
+     "use": "energy",
+     "note": "Action 1 energy: sway 2, x4"
+    },
+    {
+     "name": "Power to the People",
+     "units": 1,
+     "other": "uses * tags",
+     "use": 0,
+     "note": "1 cr a Power tag a round (5) x4"
+    },
+    {
+     "name": "The Nuclear Option",
+     "units": 1,
+     "other": "-2 * sway",
+     "use": 0,
+     "note": "Discord 2 (-8)"
+    },
+    {
+     "name": "Hostile Buyout",
+     "units": 1,
+     "other": "3 * amb",
+     "use": 0,
+     "note": "3 ambassadors 24"
+    },
+    {
+     "name": "Peacekeeping Mission",
+     "units": 1,
+     "other": "1.5 * troop",
+     "use": 0,
+     "note": "up to 3 troops in the country (~1.5)"
+    },
+    {
+     "name": "Great Liberation",
+     "units": 1,
+     "other": "2 * station_freed",
+     "use": 0,
+     "note": "+2 more corrupted sites (stations 30; cities: 23 a city)"
+    },
+    {
+     "name": "Popular Uprising",
+     "units": 1,
+     "other": 0,
+     "use": 0,
+     "note": "Action: a Follower, or 4 Followers: liberate (once in ~5 rounds)"
+    }
+   ]
+  },
+  "Claim a station": {
+   "unit": "owned station",
+   "cards": [
+    {
+     "name": "Power Purchase Agreement",
+     "units": 1,
+     "other": 0,
+     "use": 0,
+     "note": "2 energy instead of 3 ambassadors"
+    },
+    {
+     "name": "Microgrid Lab Compact",
+     "units": 2,
+     "other": 0,
+     "use": "2 * energy",
+     "note": "Action 2 energy: claim, ~2 neutral stations in reach (2 uses)",
+     "uses": 2
+    },
+    {
+     "name": "Field Station (Researcher)",
+     "units": 1,
+     "other": 0,
+     "use": 0,
+     "note": "1 Industry sacrifice: build a station (sacrifice unpriced)",
+     "power": true
+    }
+   ]
+  },
+  "Claim a factory": {
+   "unit": "owned factory",
+   "cards": [
+    {
+     "name": "Prefab Plant Kit",
+     "units": 1,
+     "other": "3 * energy",
+     "use": 0,
+     "note": "build a factory; 1 energy a Power tag (~3) 13.5"
+    }
+   ]
+  },
+  "Liberate a station": {
+   "unit": "station freed",
+   "card_outcome": "neutral",
+   "cards": [
+    {
+     "name": "Reclamation Crew",
+     "units": 1,
+     "other": 0,
+     "use": 0,
+     "note": "free a corrupted station"
+    }
+   ]
+  },
+  "Liberate a factory": {
+   "unit": "factory freed",
+   "card_outcome": "neutral",
+   "cards": [
+    {
+     "name": "Back-Channel Talks",
+     "units": 2,
+     "other": "2 * sway",
+     "use": 0,
+     "note": "free a corrupted factory and 1 next to it; sway 2"
+    }
+   ]
+  }
+ }
+}

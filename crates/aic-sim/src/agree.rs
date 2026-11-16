@@ -1,5 +1,5 @@
 //! `aic-sim agree` (245): how often an agent picks what a recorded agent picked. Each game of a `games.jsonl`
-//! played by the `--who` kind (default `oracle`; won games only) is replayed from its seed and actions; at every
+//! played by the `--who` kind (default `oracle`; a whole spec, that agent alone; won games only) is replayed from its seed and actions; at every
 //! decision with more than one legal action each `--agent` (or each line of `--agents FILE`) is asked to choose on
 //! the recorded table, and its pick is tallied against the recorded one by the recorded action's kind. The agents
 //! follow the recorded game (teacher forcing), so every agent sees the same tables. `later`: the pick is one of the
@@ -58,6 +58,9 @@ pub fn run(o: &Options) -> i32 {
     let agents: Vec<AgentSpec> =
         specs.iter().map(|s| AgentSpec::parse(s).unwrap_or_else(|e| fail(&e))).collect();
     let who = o.who.clone().unwrap_or_else(|| "oracle".to_string());
+    // 249: a whole spec (`oracle:worlds=3,...`) picks that agent's cells alone, beside another of its kind.
+    let label = who.contains(':').then(|| AgentSpec::parse(&who).unwrap_or_else(|e| fail(&e)).label());
+    let picked = |a: &AgentSpec| label.as_ref().map_or(a.kind == who, |l| a.label() == *l);
     let mut jobs = Vec::new();
     let mut cellsets = Vec::new();
     for (pi, path) in o.paths.iter().enumerate() {
@@ -73,7 +76,7 @@ pub fn run(o: &Options) -> i32 {
         let cs = cells(&head.spec).unwrap_or_else(|e| fail(&format!("{path}: {e}")));
         for l in lines.filter(|l| !l.trim().is_empty()) {
             let g: Line = serde_json::from_str(l).unwrap_or_else(|e| fail(&format!("{path}: {e}")));
-            if g.cell < cs.len() && cs[g.cell].agent.kind == who && g.won {
+            if g.cell < cs.len() && picked(&cs[g.cell].agent) && g.won {
                 jobs.push((pi, g));
             }
         }
@@ -135,10 +138,16 @@ fn one(rules: &aic_core::Rules, difficulty: i64, g: &Line, agents: &[AgentSpec])
         rules.legal_actions_into(&s, &mut legal);
         if legal.len() > 1 {
             let kd = kind(rec).to_string();
+            // 249: `miss`, the decisions where the first agent (the base) picked otherwise: where a recorded agent
+            // built on the base overrode it, so a change to the base reads there apart from where it already agreed.
+            let mut miss = false;
             for (ai, agent) in built.iter_mut().enumerate() {
                 let i = agent.choose(rules, &s, &legal);
                 let pick = &legal[i];
                 let same = pick == rec;
+                if ai == 0 {
+                    miss = !same;
+                }
                 if !same && show.as_deref() == Some(kd.as_str()) {
                     eprintln!("seed {} d{difficulty} action {k} r{}: recorded {rec:?}, picked {pick:?}", g.seed, rounds[k]);
                 }
@@ -153,7 +162,7 @@ fn one(rules: &aic_core::Rules, difficulty: i64, g: &Line, agents: &[AgentSpec])
                     Action::Play { card, .. } => Some(format!("play:{card}")),
                     _ => None,
                 };
-                for grp in ["all", group.as_str()] {
+                for grp in ["all", group.as_str(), if miss { "miss" } else { "" }].into_iter().filter(|g| !g.is_empty()) {
                     for key in [kd.as_str(), "any"].into_iter().chain(card_key.as_deref()) {
                         let e = out[ai].entry(grp.to_string()).or_default().entry(key.to_string()).or_insert([0; 3]);
                         e[0] += same as u64;

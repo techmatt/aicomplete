@@ -1,0 +1,38 @@
+{
+ "name": "s249-judge2",
+ "note": "249: the judge's card_action around the first screen's best, on its seeds (its base: s249-judge).",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp",
+   "set": []
+  },
+  {
+   "name": "br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  }
+ ],
+ "difficulties": [
+  2,
+  3
+ ],
+ "agents": [
+  "strategist",
+  "strategist:w.card_action=3",
+  "strategist:w.card_action=6",
+  "strategist:w.card_income=0.5,w.card_action=4"
+ ],
+ "games": 96,
+ "first_seed": 0,
+ "records": 0
+}

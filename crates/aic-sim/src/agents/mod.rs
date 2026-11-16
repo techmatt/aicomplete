@@ -311,6 +311,7 @@ pub const LADDER: &[(&str, &[Param])] = &[
             ("tries", 1.0, "243: restarts: whole games played from the first decision until one wins, the first as this spec, the rest on other policy seeds with truth switched every other try"),
             ("salt", 0.0, "243: moves every line's policy seed (a restart's try)"),
             ("prove", 0.0, "243, a card proof: only a line that plays this card wins, and lines take it at every chance (1-based row of `aic-sim cards`; 0: off)"),
+            ("worlds", 0.0, "249, the real oracle: worlds sampled from what players can see, every candidate played to the end on each; `budget` then counts lines (0: the full oracle, on the true table)"),
         ],
     ),
 ];
@@ -340,9 +341,14 @@ const SWEEP: &str = "deals=1,lead=0";
 /// 47488-47679 at d2-d3 (+5.6 ± 1.5; hand_cost 0 a cliff, −24); fresh 47704-47895, paired, d0-d3 +5.9 / +9.2 / +9.7
 /// / +5.9, pooled +7.7 ± 1.0 (`experiments/results/245_tune_strategist`). The strategist differs from greedy only in
 /// `w.purge`, `w.last_node`, the hand terms and its RNG stream.
+/// 249 (r112): a building counts what it earns a round beyond income (its standing rules and a share of its Action,
+/// at the value table's rates) for 3 rounds (`w.card_action` 3; 246's misjudgment: its Action read as nothing).
+/// Screened d2-d3 on 248's seeds 48376-48471 (576 games a cell): 2, 3, 4 read +3.3 / +3.6 / +3.3 ± 1.8, 6 +0.7; card
+/// income at the track's rate (`w.card_income`) +0.2 / +1.2, left off. Fresh 48576-48767, paired, d0-d3 -1.0 / +1.0
+/// / +0.7 / +5.0, pooled d2-d3 +2.9 ± 1.3 (`experiments/results/249_real_oracle_judge`).
 const STRATEGIST: &str = "strategy=0,w.built=4,w.built_cost=0.5,w.clock=0,w.energy_cap=0,w.hand=1.5,w.hand_cost=0.1,\
 w.horizon=0,w.insight_income=0,w.movement=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,\
-w.tag_hand=0,w.purge=3.6,w.last_node=120";
+w.tag_hand=0,w.purge=3.6,w.last_node=120,w.card_action=3";
 
 /// A kind's place on the [`LADDER`].
 fn rung(kind: &str) -> Option<usize> {
@@ -432,6 +438,10 @@ impl AgentSpec {
                     }
                 ));
             }
+        }
+        if kind == "oracle" && params["worlds"] > 0.0 && (params["tries"] > 1.0 || params["prove"] > 0.0 || params["reseeds"] > 0.0) {
+            // 249: a restart reads the true game's loss; a proof and reseeds are the full oracle's.
+            return Err(format!("agent {spec:?}: worlds (the real oracle) takes no tries, prove or reseeds"));
         }
         eval::check_names(weights.keys().map(String::as_str)).map_err(|e| format!("agent {spec:?}: {e}"))?;
         value::table_with(&table).map_err(|e| format!("agent {spec:?}: {e}"))?;
@@ -670,6 +680,7 @@ impl AgentSpec {
                     truth: self.p("truth"),
                     salt: self.p("salt") as u64,
                     prove: self.prove_card(),
+                    worlds: self.p("worlds"),
                 },
             )),
             k => unreachable!("agent kind {k} is checked in parse"),
@@ -820,6 +831,12 @@ mod tests {
     #[test]
     fn oracle_replays_and_repeats_opening() {
         replay_and_repeat(ORACLE, 20, false);
+    }
+
+    /// 249: the real oracle (sampled worlds) replays and repeats too.
+    #[test]
+    fn real_oracle_replays_and_repeats_opening() {
+        replay_and_repeat("oracle:worlds=2,alts=1,budget=4,answers=1", 20, false);
     }
 
     /// 022: the dominance checks parse, label and replay (into round 3,
@@ -988,6 +1005,36 @@ mod tests {
                 assert_eq!(ia, ib, "{} seed {seed}", spec.label());
             }
         }
+    }
+
+    /// 249: the real oracle's decision too, the Alignment deal and the adversary deck hidden as well: its lines
+    /// play only on worlds it sampled. One table in the action phase, so it searches.
+    #[test]
+    fn the_real_oracle_ignores_hidden_information() {
+        let r = rules(0);
+        let spec = AgentSpec::parse("oracle:worlds=2,alts=1,budget=4,answers=1").unwrap();
+        let mut legal = Vec::new();
+        let (mut a, _) = play(&r, 1, &mut RandomAgent::new(1), 12);
+        while !crate::agents::planner::searched_phase(&a) || {
+            r.legal_actions_into(&a, &mut legal);
+            legal.len() < 2
+        } {
+            r.legal_actions_into(&a, &mut legal);
+            r.apply_mut(&mut a, &legal[0], None).unwrap();
+        }
+        let mut b = a.clone();
+        for (k, p) in b.piles.iter_mut() {
+            if k.starts_with("cards.deck.") || k.starts_with("threats.deck.") || k.starts_with("alignment.deck.") || k.as_str() == aic_core::modules::adversary::PROJECT_DECK {
+                std::sync::Arc::make_mut(p).reverse();
+            }
+        }
+        for (purpose, s) in b.rng.iter_mut() {
+            *s = std::sync::Arc::new(aic_core::rng::Stream::new(77, purpose));
+        }
+        r.legal_actions_into(&a, &mut legal);
+        let ia = spec.build(&r, 9).choose(&r, &a, &legal);
+        let ib = spec.build(&r, 9).choose(&r, &b, &legal);
+        assert_eq!(ia, ib);
     }
 
     /// D20 with sampled deals (054): two tables that differ only in which

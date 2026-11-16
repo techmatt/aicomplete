@@ -27,6 +27,10 @@
 //! policy seeds when a game is lost ([`Tries`]): the cheapest way found to win
 //! more seeds, since one oracle's result on a seed swings with its lines' seeds.
 //! `prove` is a card proof: only a line that plays the card counts as a win.
+//!
+//! 249, **the real oracle** (`worlds` > 0): the same search on worlds sampled from what players can see
+//! ([`super::determinize`]), never the true table, so it makes very strong plays but can't see the future: the
+//! player the game is designed against. See [`Oracle::choose_real`].
 
 use aic_core::{Action, Agent, GameState, Rules};
 use rand_chacha::ChaCha8Rng;
@@ -68,6 +72,9 @@ pub struct OracleCfg {
     pub prove: Option<String>,
     /// 243: moves every line's policy seed (a restart's try: [`Tries`]); 0: today's lines.
     pub salt: u64,
+    /// 249, the real oracle: worlds sampled from what the players can see, each candidate played to the end on
+    /// every one ([`Oracle::choose_real`]); 0: the full oracle, on the true table.
+    pub worlds: usize,
 }
 
 /// A line of play to the end of the game.
@@ -104,6 +111,8 @@ pub struct Oracle {
     pub lines: usize,
     /// The card to prove has been played on the real table.
     proved: bool,
+    /// 249, the real oracle: the chosen candidate's line on each sampled world still agreeing with the table.
+    followed: Vec<Line>,
 }
 
 impl Oracle {
@@ -119,6 +128,7 @@ impl Oracle {
             history: PhaseHistory::default(),
             lines: 0,
             proved: false,
+            followed: Vec::new(),
         }
     }
 
@@ -277,6 +287,9 @@ impl super::Strategic for Oracle {
 
 impl Agent for Oracle {
     fn choose(&mut self, rules: &Rules, state: &GameState, legal: &[Action]) -> usize {
+        if self.cfg.worlds > 0 {
+            return self.choose_real(rules, state, legal);
+        }
         self.sync(rules, state);
         if legal.len() == 1 {
             self.note_play(&legal[0]);
@@ -431,7 +444,153 @@ impl Agent for Tries {
     }
 }
 
+/// 249: a candidate's standing over the worlds: worlds won, then the mean heuristic at round `at`.
+fn standing(lines: &[Line], at: u32) -> (usize, f64) {
+    let won = lines.iter().filter(|l| l.won).count();
+    let v = lines.iter().map(|l| l.key(at).1).sum::<f64>() / lines.len().max(1) as f64;
+    (won, v)
+}
+
 impl Oracle {
+    /// 249: moves each followed line on to `state` by its own moves, dropping one whose world no longer agrees
+    /// with the table (the table showed another card than its guess, or another move was taken).
+    fn sync_worlds(&mut self, rules: &Rules, state: &GameState) {
+        prof::time(Part::Sync, || {
+            self.followed.retain_mut(|l| {
+                while l.cursor.stats.actions < state.stats.actions {
+                    let Some(a) = l.actions.get(l.next) else { return false };
+                    if rules.apply_mut(&mut l.cursor, a, None).is_err() {
+                        return false;
+                    }
+                    l.next += 1;
+                }
+                l.cursor.stats.actions == state.stats.actions && super::determinize::agrees(&l.cursor, state)
+            });
+        })
+    }
+
+    /// 249: the followed lines' next move here, the one most of them play (the first such line's on a tie).
+    fn vote(&self, legal: &[Action]) -> Option<usize> {
+        let mut counts = vec![0usize; legal.len()];
+        let mut first = vec![usize::MAX; legal.len()];
+        for (k, l) in self.followed.iter().enumerate() {
+            if let Some(i) = l.actions.get(l.next).and_then(|a| legal.iter().position(|b| b == a)) {
+                counts[i] += 1;
+                first[i] = first[i].min(k);
+            }
+        }
+        (0..legal.len()).filter(|&i| counts[i] > 0).max_by(|&x, &y| counts[x].cmp(&counts[y]).then(first[y].cmp(&first[x])))
+    }
+
+    /// 249, the real oracle: the oracle's search on worlds sampled from what the players can see, never the
+    /// true table. At a decision of the action phase, while the round's `budget` (lines, a world each) lasts and
+    /// the followed lines do not win on every world, it samples `worlds` worlds ([`super::determinize`]), plays
+    /// each candidate (the followed lines' move, then the engine's shortlist: `alts` more within `margin`) to
+    /// the game's end on every world, and takes the one that wins on most, then the best mean heuristic
+    /// `horizon` rounds on; a candidate that wins on every world ends the search. Between searches it plays the
+    /// move most followed lines play next; a line is dropped once the table shows what its world guessed
+    /// otherwise. With none left, the engine's pick. No restarts: a restart reads the true game's loss.
+    /// On a pending choice its worlds follow `determinize`'s pending rule: a step that drew a pile out and
+    /// reshuffled keeps the table's streams in its snapshot (rare), within the agents' standing exception (151),
+    /// whose shortlist scores the true table there.
+    fn choose_real(&mut self, rules: &Rules, state: &GameState, legal: &[Action]) -> usize {
+        self.sync_worlds(rules, state);
+        if legal.len() == 1 {
+            return 0;
+        }
+        self.history.enter(state);
+        if self.spent.0 != state.round {
+            self.spent = (state.round, 0, false);
+        }
+        let k = self.cfg.worlds;
+        let how = Scoring::decision(self.cfg.samples, 1, self.cfg.choices).discards(self.cfg.discards);
+        let guesses = draw_guesses(rules, &mut self.rng, state, self.cfg.samples);
+        let at = state.round + self.cfg.horizon;
+        let vote = self.vote(legal);
+        let secure = vote.is_some() && self.followed.len() == k && self.followed.iter().all(|l| l.won);
+        let mut chosen = None;
+        if !secure && searched_phase(state) && self.spent.1 + k <= self.cfg.budget {
+            let worlds: Vec<GameState> = (0..k)
+                .map(|_| {
+                    let mut w = state.clone();
+                    super::determinize::determinize(rules, &mut w, &mut self.rng);
+                    w
+                })
+                .collect();
+            let mut scores = prof::time(Part::Top, || score_guesses(rules, &self.ev, state, &guesses, legal, how));
+            self.history.mask(legal, &mut scores);
+            let engine = pick(legal, &scores);
+            let mut order: Vec<usize> = (0..legal.len()).filter(|&i| scores[i].is_finite()).collect();
+            order.sort_by(|&x, &y| scores[y].total_cmp(&scores[x]));
+            let top = scores[engine];
+            let mut cands: Vec<usize> = vote.into_iter().collect();
+            let mut seen: Vec<Option<String>> = cands.iter().map(|&i| idea(&legal[i])).collect();
+            for i in order {
+                if cands.len() > self.cfg.alts || scores[i] < top - self.cfg.margin {
+                    break;
+                }
+                let key = idea(&legal[i]);
+                if key.is_none() || seen.contains(&key) {
+                    continue;
+                }
+                seen.push(key);
+                cands.push(i);
+            }
+            let mut best: Option<(usize, (usize, f64), Vec<Line>)> = None;
+            for i in cands {
+                if self.spent.1 + k > self.cfg.budget {
+                    break;
+                }
+                self.spent.1 += k;
+                let lines = self.lines_on(rules, &worlds, &legal[i]);
+                if lines.is_empty() {
+                    continue;
+                }
+                let s = standing(&lines, at);
+                if best.as_ref().is_none_or(|b| s.0 > b.1 .0 || (s.0 == b.1 .0 && s.1 > b.1 .1)) {
+                    best = Some((i, s, lines));
+                }
+                if s.0 == k {
+                    break;
+                }
+            }
+            if let Some((i, _, lines)) = best {
+                chosen = Some(i);
+                self.followed = lines;
+            } else {
+                chosen = Some(engine);
+            }
+        }
+        let i = chosen.or(vote).unwrap_or_else(|| {
+            let mut scores = score_guesses(rules, &self.ev, state, &guesses, legal, how);
+            self.history.mask(legal, &mut scores);
+            pick(legal, &scores)
+        });
+        self.history.push(&legal[i]);
+        i
+    }
+
+    /// 249: the lines opening with `first` on each world, `threads` at a time (the same lines at any count);
+    /// a world that refuses the move (none should: the move is the table's) gives none.
+    fn lines_on(&mut self, rules: &Rules, worlds: &[GameState], first: &Action) -> Vec<Line> {
+        let kit = Kit { ev: &self.ev, forced: &self.forced, behaviors: &self.behaviors, cfg: &self.cfg, proved: self.proved };
+        self.lines += worlds.len();
+        let t = self.cfg.threads.max(1);
+        let mut out = Vec::new();
+        for batch in worlds.chunks(t) {
+            let got: Vec<Option<Line>> = if batch.len() == 1 {
+                vec![kit.line(rules, &batch[0], Some(first), 0)]
+            } else {
+                std::thread::scope(|sc| {
+                    let hs: Vec<_> = batch.iter().map(|w| sc.spawn(move || kit.line(rules, w, Some(first), 0))).collect();
+                    hs.into_iter().map(|h| h.join().expect("a line panicked")).collect()
+                })
+            };
+            out.extend(got.into_iter().flatten());
+        }
+        out
+    }
+
     /// A card proof's card played on the real table: every line from here counts it.
     fn note_play(&mut self, a: &Action) {
         if let (Some(p), Action::Play { card, .. }) = (&self.cfg.prove, a) {

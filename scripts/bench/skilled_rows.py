@@ -12,7 +12,9 @@ state (`all_losses`).
   243: `tries=3` restarts a lost game twice on other policy seeds; the first try is the single oracle, so its wins
   are a superset of that one's, at up to 3x the time on a seed it loses.
 
-The fair-information player was paged by Matt (155, amendment 6814): add its row here when it is built.
+- `real` (249): the real oracle, the fair-information player (Matt, 155, amendment 6814): the oracle's search on
+  worlds sampled from what players can see (`worlds`), never the true table, and no restarts. The design target: very
+  strong play that can't see the future. About 100 x a strategist game (r112, d3).
 """
 import argparse
 import json
@@ -21,6 +23,7 @@ import os
 
 ROWS = {
     "oracle": "oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1,tries=3",
+    "real": "oracle:strategy=1,worlds=3,alts=2,budget=12,answers=1,truth=1",
 }
 
 

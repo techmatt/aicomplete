@@ -24,9 +24,10 @@ $S cards                                           # CSV id,kind,tier,engine,lib
 $S agree READ/games.jsonl --agent strategist --agents FILE --threads 6  # oracle agreement (below)
 ```
 
-**`agree` (245):** replays each won game a read's `--who` kind played (default `oracle`) and asks each `--agent`
-(repeatable; `--agents FILE`, a spec a line) to choose on every recorded table with more than one legal action; it
-prints a JSON line an agent, `by` group (`all`, `dN`) and recorded action kind (`play`, `power`, `use`, `standard`,
+**`agree` (245):** replays each won game a read's `--who` kind played (default `oracle`; a whole spec, that agent's
+cells alone) and asks each `--agent` (repeatable; `--agents FILE`, a spec a line) to choose on every recorded table
+with more than one legal action; it prints a JSON line an agent, `by` group (`all`, `dN`, and `miss`: where the first
+agent picked otherwise, 249: the read for a recorded agent built on that first agent) and recorded action kind (`play`, `power`, `use`, `standard`,
 `choose`, `threat`, `sell`, `pass`, `keep`, `draft`, `tier`, `convert`, `any`, and `play:<card>` a card): `[same, same or later this
 round, decisions]`. The agents follow the recorded game, so all see the same tables; an agent on its own game agrees
 everywhere (a test). About 0.3 s an agent and oracle game on 6 threads (the strategist). `AIC_AGREE_SHOW=<kind>`

@@ -1,0 +1,38 @@
+{
+ "name": "s249-judge3",
+ "note": "249: the judge's hand terms back toward greedy's (where the real oracle overrode the judge, greedy agreed 35%), alone and beside card_action, on the first screen's seeds.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp",
+   "set": []
+  },
+  {
+   "name": "br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  }
+ ],
+ "difficulties": [
+  2,
+  3
+ ],
+ "agents": [
+  "strategist",
+  "strategist:w.hand=3,w.hand_cost=0.4",
+  "strategist:w.hand=2.25,w.hand_cost=0.25",
+  "strategist:w.card_action=3,w.hand=2.25,w.hand_cost=0.25"
+ ],
+ "games": 96,
+ "first_seed": 0,
+ "records": 0
+}

@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 249 the real oracle, a better judge, design checks for standard-action prices | 112 | [249_real_oracle_judge](results/249_real_oracle_judge/README.md) |
 | 248 standard actions probe (Liberate with antimatter reverted) | 112 | [248_standard_actions_probe](results/248_standard_actions_probe/README.md) |
 | 247 resource economy | 111 | [247_resource_economy](results/247_resource_economy/README.md) |
 | 246 card usefulness | 110 | [246_card_usefulness](results/246_card_usefulness/README.md) |

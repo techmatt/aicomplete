@@ -119,6 +119,24 @@ pub fn hide_alignment_deal(rules: &Rules, g: &mut GameState, seed: u64, sample: 
     }
 }
 
+/// 249: whether `sample`, a guess of `real` played on, still agrees with everything `real` shows: the two
+/// differ at most in what [`determinize`] guesses (the hidden piles, the RNG streams, a pending step's snapshot).
+/// A guess that drew another card than the table did no longer does.
+pub fn agrees(sample: &GameState, real: &GameState) -> bool {
+    let mut r = real.clone();
+    for key in SHUFFLED.iter().copied().chain([adversary::DECK, adversary::PROJECT_DECK]) {
+        match sample.piles.get(key) {
+            Some(v) => r.piles.insert(key.into(), v.clone()),
+            None => r.piles.remove(key),
+        };
+    }
+    r.rng = sample.rng.clone();
+    if r.pending.is_some() && sample.pending.is_some() {
+        r.pending = sample.pending.clone();
+    }
+    r == *sample
+}
+
 /// Puts `g`'s RNG streams on `seeds`.
 fn reseed(g: &mut GameState, seeds: &[(Key, u64)]) {
     for (purpose, seed) in seeds {
