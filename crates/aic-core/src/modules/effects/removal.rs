@@ -61,65 +61,36 @@ pub(super) fn remove_botnet(g: &mut GameState, cx: &mut Cx, seat: usize, zone: &
     Ok(())
 }
 
-pub(super) fn remove_ambassadors_country(
-    g: &mut GameState,
-    cx: &mut Cx,
-    seat: usize,
-    unity_per: i64,
-    max: i64,
-    reach: bool,
-    zone: Option<&[usize]>,
-) -> Res {
+/// 234: up to `max` agents in a card's target area `zone` (0: every one there). 247 (241's pick): its country and
+/// reach forms and Unity rider are gone. `source` keys the area tallies (a card, a power, a standard action).
+pub(super) fn remove_ambassadors_country(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, zone: &[usize], source: &str) -> Res {
     let w = cx.world;
     // 234: what the same removal would have found anywhere in reach (r103's wording), for the pricing read.
-    if zone.is_some() {
-        let held: i64 = reach_hexes(&w, g, seat).iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).sum();
-        cx.tally(g, "cards.agents_in_reach", held.min(max));
-        cx.tally(g, &format!("cards.agents_in_reach.{max}"), held.min(max));
-    }
-    let removed = if let Some(area) = zone {
-        // 234: a card's target names the place; no country is picked.
-        up_to_in(g, cx, seat, area, max, ADV_AMBASSADOR)?
-    } else if reach {
-        // 111 (Matt's ruling 3): in reach, across countries; no country to name.
-        let area = reach_hexes(&w, g, seat);
-        up_to_in(g, cx, seat, &area, max, ADV_AMBASSADOR)?
-    } else {
-        let cs = countries_where(&w, |h| g.tokens(h, ADV_AMBASSADOR) > 0);
-        let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
-        let prompt = || format!("Seat {seat}: remove agents in which country?");
-        let Some(i) = cx.choose(seat, prompt, opts)? else {
-            return Ok(());
-        };
-        if max > 0 {
-            up_to_in(g, cx, seat, &w.map.countries[cs[i]].hexes, max, ADV_AMBASSADOR)?
-        } else {
-            adversary::remove_all_in_country(g, cx, cs[i])
-        }
-    };
-    if unity_per > 0 {
-        alignment::unity_from(g, cx, "pushback", removed / unity_per);
-    }
+    let held: i64 = reach_hexes(&w, g, seat).iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).sum();
+    cx.tally(g, "cards.agents_in_reach", held.min(max));
+    cx.tally(g, &format!("cards.agents_in_reach.{max}"), held.min(max));
+    let removed = up_to_in(g, cx, seat, zone, max, ADV_AMBASSADOR)?;
     // 234: what a targeted "remove N agents" finds, for values.json's area rates.
-    if let Some(area) = zone {
-        let at = if area.len() == 1 { "on" } else { "near" };
-        cx.tally(g, &format!("cards.remove_agents.{at}"), max);
-        cx.tally(g, &format!("cards.agents_removed.{at}"), removed);
-        cx.tally(g, &format!("cards.remove_agents.{at}.{max}"), 1);
-        cx.tally(g, &format!("cards.agents_removed.{at}.{max}"), removed);
-    }
+    let at = if zone.len() == 1 { "on" } else { "near" };
+    cx.tally(g, &format!("{source}.remove_agents.{at}"), max);
+    cx.tally(g, &format!("{source}.agents_removed.{at}"), removed);
+    cx.tally(g, &format!("{source}.remove_agents.{at}.{max}"), 1);
+    cx.tally(g, &format!("{source}.agents_removed.{at}.{max}"), removed);
     Ok(())
 }
 
 /// 076 (ruling 6): up to `count` adversary troops in one country, any country;
 /// with `reach` (111, ruling 3), in reach instead.
-pub(super) fn remove_troops(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64, reach: bool, zone: Option<&[usize]>) -> Res {
+pub(super) fn remove_troops(
+    g: &mut GameState,
+    cx: &mut Cx,
+    seat: usize,
+    count: i64,
+    reach: bool,
+    zone: Option<&[usize]>,
+    source: &str,
+) -> Res {
     let w = cx.world;
-    if zone.is_some() {
-        let held: i64 = reach_hexes(&w, g, seat).iter().map(|&h| g.tokens(h, TROOP)).sum();
-        cx.tally(g, "cards.troops_in_reach", held.min(count));
-        cx.tally(g, &format!("cards.troops_in_reach.{count}"), held.min(count));
-    }
     let removed = if let Some(area) = zone {
         up_to_in(g, cx, seat, area, count, TROOP)?
     } else if reach {
@@ -139,10 +110,11 @@ pub(super) fn remove_troops(g: &mut GameState, cx: &mut Cx, seat: usize, count: 
     cx.tally(g, &format!("cards.troops_removed.{count}"), removed);
     if let Some(area) = zone {
         let at = if area.len() == 1 { "on" } else { "near" };
-        cx.tally(g, &format!("cards.remove_troops_at.{at}"), count);
-        cx.tally(g, &format!("cards.troops_removed_at.{at}"), removed);
-        cx.tally(g, &format!("cards.remove_troops_at.{at}.{count}"), 1);
-        cx.tally(g, &format!("cards.troops_removed_at.{at}.{count}"), removed);
+        // 247 (241's pick): keyed by source (a card, a power, a standard action).
+        cx.tally(g, &format!("{source}.remove_troops_at.{at}"), count);
+        cx.tally(g, &format!("{source}.troops_removed_at.{at}"), removed);
+        cx.tally(g, &format!("{source}.remove_troops_at.{at}.{count}"), 1);
+        cx.tally(g, &format!("{source}.troops_removed_at.{at}.{count}"), removed);
     }
     Ok(())
 }

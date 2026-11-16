@@ -175,9 +175,9 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             let zone = ctx.area(&w, g, seat, Area::On);
             removal::remove_botnet(g, cx, seat, &zone)?
         }
-        Op::RemoveAmbassadorsCountry { unity_per, max, reach, at } => {
-            let zone = ctx.target.map(|_| ctx.area(&w, g, seat, *at));
-            removal::remove_ambassadors_country(g, cx, seat, *unity_per, *max, *reach, zone.as_deref())?
+        Op::RemoveAmbassadorsCountry { max, at } => {
+            let zone = ctx.area(&w, g, seat, *at);
+            removal::remove_ambassadors_country(g, cx, seat, *max, &zone, ctx.label)?
         }
         Op::BuildFactory => {
             let zone = ctx.area(&w, g, seat, Area::On);
@@ -214,7 +214,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         }
         // 234 (Matt: "Shelter your nodes and facilities in reach this round"): a player card picks no country;
         // the seat's own pieces on every hex in its reach, this round (238, D96: its reach when struck).
-        Op::Shelter { reach: true } => {
+        Op::Shelter => {
             cx.set_key(g, &board::reach_shelter(seat), 1);
             cx.tally(g, "effects.shelter_reach", 1);
         }
@@ -225,14 +225,6 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                 if g.var(&board::flag(RoundFlag::Cordon, c)) < 2 {
                     cx.set_key(g, &board::flag(RoundFlag::Cordon, c), 2);
                 }
-            }
-        }
-        Op::Shelter { reach: false } => {
-            let cs = unsheltered(&w, g);
-            let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
-            let prompt = || format!("Seat {seat}: shelter which country?");
-            if let Some(i) = cx.choose(seat, prompt, opts)? {
-                board::shelter(g, cx, cs[i]);
             }
         }
         Op::Cordon => {
@@ -317,7 +309,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         }
         Op::RemoveTroops { count, reach, at } => {
             let zone = ctx.target.map(|_| ctx.area(&w, g, seat, *at));
-            removal::remove_troops(g, cx, seat, *count, *reach, zone.as_deref())?
+            removal::remove_troops(g, cx, seat, *count, *reach, zone.as_deref(), ctx.label)?
         }
         Op::Sway { side: Side::Discord, amount, .. } => alignment::discord_from(g, cx, ctx.label, *amount),
         Op::Sway { side: _, amount, .. } => alignment::unity_from(g, cx, ctx.label, *amount),

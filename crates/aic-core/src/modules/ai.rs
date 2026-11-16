@@ -265,8 +265,7 @@ fn builds_after(w: &World, g: &mut GameState, seat: usize, s: &cards::SacrificeS
 }
 
 /// A dear power: one that sacrifices 2 or more tags (075), or a tag and an
-/// energy and places no node (r35's Rush Build, Shelter; Accord
-/// is a node power). 099: the 2-tag test alone matched no power after r35, and
+/// energy and places no node (r35's Rush Build, Shelter). 099: the 2-tag test alone matched no power after r35, and
 /// the measure went silent.
 pub fn power_is_dear(p: &Power) -> bool {
     let tags: i64 = p.tags.iter().map(|(_, n)| n).sum();
@@ -492,7 +491,7 @@ impl Module for Ai {
         cx.tally(g, "ai.powers_used", 1);
         cx.per_round(g, "ai.powers_used", 1);
         // 105: what a power removes fires the seat's fight triggers.
-        cards::fighting(g, cx, s, |g, cx| effects::run(g, cx, &p.effects, &mut effects::Ctx::seat(s)))
+        cards::fighting(g, cx, s, |g, cx| effects::run(g, cx, &p.effects, &mut effects::Ctx::seat(s).named("power")))
     }
 
     fn view(&self, g: &GameState, w: &World, out: &mut ViewOut) {

@@ -191,7 +191,7 @@ fn op_harms(op: &Op) -> Vec<usize> {
             RoundFlag::Embargo => vec![BLOCKED],
             RoundFlag::Blackout | RoundFlag::Sabotage => vec![BLACKED_OUT],
             // A player's flags (Shelter, Cordon) do no harm.
-            RoundFlag::Shelter | RoundFlag::Cordon => Vec::new(),
+            RoundFlag::Cordon => Vec::new(),
         },
         Op::LoseTokens { .. } => vec![TOKENS_STRIPPED],
         Op::AdversaryFactory { .. }
@@ -201,8 +201,8 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::CreateSite { .. }
         | Op::AdversaryBuild
         | Op::Rally { .. } => vec![PIECES_PLACED],
-        Op::CorpTroops { when, permanent, rounds, .. } => {
-            if *permanent || *rounds > 0 || *when == CorpWhen::EachProduction {
+        Op::CorpTroops { when, .. } => {
+            if *when == CorpWhen::EachProduction {
                 vec![PIECES_PLACED, INCOME_RAISED]
             } else {
                 vec![PIECES_PLACED]
@@ -289,7 +289,7 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::GainAmbassadors { .. }
         | Op::PlaceAmbassadors { .. }
         | Op::Target { .. }
-        | Op::Shelter { .. }
+        | Op::Shelter
         | Op::Cordon
         | Op::FreeBuilding
         | Op::BuildStation

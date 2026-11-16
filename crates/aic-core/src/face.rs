@@ -370,18 +370,13 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             "remove every agent and troop on it",
         )),
         Op::RemoveBotnet => one(clause(adversary(minus(1, "botnet")), "remove a botnet on it")),
-        Op::RemoveAmbassadorsCountry { unity_per, max, at, .. } => {
-            let (mut icons, what) = if *max > 0 {
+        Op::RemoveAmbassadorsCountry { max, at } => {
+            let (icons, what) = if *max > 0 {
                 (adversary(area_icons(minus(*max, "agent"), *at)), format!("remove {} {}", plural(*max, "agent"), at.words()))
             } else {
                 (adversary(area_icons(vec![w("ALL"), w("agent")], *at)), format!("remove every agent {}", at.words()))
             };
-            if *unity_per == 0 {
-                return one(clause(icons, what));
-            }
-            icons.extend([w("sway"), w("/")]);
-            icons.extend(adversary(vec![Part::Word(unity_per.to_string()), w("agent")]));
-            one(clause(icons, format!("{what}, and sway 1 toward Unity per {unity_per} removed")))
+            one(clause(icons, what))
         }
         Op::RemoveTroops { count, at, .. } => {
             let parts = area_icons(minus(*count, "troop"), *at);
@@ -504,13 +499,9 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             format!("place {} {}", plural(*count, "ambassador"), at.words()),
         )),
         // 234: a player card's Shelter takes no target: the hexes in your reach.
-        Op::Shelter { reach: true } => one(clause(
+        Op::Shelter => one(clause(
             vec![w("shelter"), w("node")],
             "shelter your nodes and facilities in reach this round",
-        )),
-        Op::Shelter { reach: false } => one(clause(
-            vec![w("shelter"), w("country")],
-            "shelter any country this round",
         )),
         // 178 (Matt's ruling #30): the cordon's span is the firewall's. 179 (friction #35): the wall mark (the
         // clock is a delay only). 234: the target's country.

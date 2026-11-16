@@ -1,0 +1,21 @@
+# 247: energy gets a job (powers and building Actions run on it), antimatter and chips get spent. apply_overlay.py
+# entries; the screens took the same lines as --set (s247a-d). The rule half (Liberate with antimatter,
+# `board.liberate_antimatter` 2) is configs/baseline.json.
+#
+# Board powers: the two energy-rich boards' node powers run on energy. Buy In was 6 credits; Accord sacrificed a
+# Diplomacy card. Each now 2 energy, beside the track step's energy every placement pays.
+ais.builder.powers.1.cost=[["energy",2]]
+ais.protector.powers.1.tags=[]
+ais.protector.powers.1.cost=[["energy",2]]
+# Horizon's chip converter made energy (2 chips for 3), the resource every seat held spare: never used (0.00 a
+# seat-game). Now 2 chips for 1 antimatter, the fuel Liberate with antimatter spends.
+corps.horizon.project.chip_converter.effects=[{"op":"gain","resource":"antimatter","amount":1}]
+# Building Actions run on energy: Orbital Observatory Array's 2 credits (under the guideline's 5-credit floor) become
+# 1 energy, and Citywide Microgrid's free Sway 2 (a microgrid, Power + Diplomacy) costs 1 energy. Eight Actions already
+# ran on energy. The other free Actions stay free: the four jam buildings, Firewall Array and Checkpoint Network sit at
+# 1.0-1.3 and an energy a use would put them under par; Lure Network and Embassy of Exiles read under their price at
+# values.json once they pay it (agent removal at 2.2 there, 5 at the anchors). Screen s247d tried nine free Actions
+# at 1 energy: energy spent +0.6 a seat-game, no win change. Patent Library and Bug Bounty Board keep credits:
+# licenses and bounties are paid in money.
+cards.orbital_observatory_array.ability.cost=[["energy",1]]
+cards.citywide_microgrid.ability.cost=[["energy",1]]

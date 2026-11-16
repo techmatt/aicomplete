@@ -12,13 +12,15 @@ upkeep). The board module owns nodes and counts the tokens taken (`board.track.<
 build direction), Dispatches 1 ambassador free each round (the Researcher 2; more from the fourth economy space), and
 counts its printed tag like one on its cards; its powers are in [ai-powers.md](ai-powers.md). The **Builder**'s special
 rule is Breadth: five building slots, a wider engine. It starts with 40 credits and earns 15 a round, each credit space
-of its economy track 2 or 3 more, so placing a node is how its income grows; it is short of energy. Its powers turn
-credits into chips and chips into cards or a troop removed, and late in the game finished cards into chips (Industry),
-energy (Power) or, with an energy, a building played free.
+of its economy track 2 or 3 more, so placing a node is how its income grows; its aligned cities make it the most
+energy of the three, which its node power, Buy In, spends. Its powers turn credits into chips and chips into cards or
+a troop removed, and late in the game finished cards into chips (Industry), energy (Power) or, with an energy, a
+building played free.
 
 The **Protector**'s special rule is Wall: no adversary troop is ever placed on a hex with its node, nor enters it or
 strikes into it, so no troop strikes its node or a facility under it (war, threats and corruption still can). The first two troops each round that end their march next to its node pay it 1 insight
-each (Vigil). It hardens facilities with energy (Bulwark), and its board prints 2 energy a round. It earns 13 credits
+each (Vigil). It places nodes (Accord) and hardens facilities (Bulwark) with energy, and its board prints 2 energy a
+round. It earns 13 credits
 a round, so starts with 46. Each credit space of its economy track adds 2 or 3 credits, the
 first one 1 energy too. Late in the game, a sacrificed Security card removes troops or an agent.
 

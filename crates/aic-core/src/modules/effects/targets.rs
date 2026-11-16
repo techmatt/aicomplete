@@ -150,13 +150,6 @@ pub(super) fn cuttable_botnets(w: &World, g: &GameState, seat: usize) -> Vec<usi
         .collect()
 }
 
-/// Countries with no Shelter up (044: a second one did nothing).
-pub(super) fn unsheltered(w: &World, g: &GameState) -> Vec<usize> {
-    (0..w.map.countries.len())
-        .filter(|&c| !board::flagged(g, RoundFlag::Shelter, c))
-        .collect()
-}
-
 /// Buildings in reach of seat `seat` a Harden's token can protect.
 pub(super) fn harden_hexes(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
     (0..g.hexes.len()).filter(|&h| board::hardenable(g, h) && in_reach(w, g, seat, h)).collect()

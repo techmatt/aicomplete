@@ -1085,7 +1085,7 @@ pub(crate) fn check_target_lists(lists: &[&[Op]], what: &str, power: bool) -> Re
                         specs.push(*on);
                     }
                 }
-                Op::DamageCountry { .. } | Op::Shelter { reach: false } => {
+                Op::DamageCountry { .. } => {
                     return Err(format!("{what}: {op:?} picks a country freely (234: say \"in the target's country\")"));
                 }
                 Op::MoveOne { .. } | Op::SpreadAmbassadors => {

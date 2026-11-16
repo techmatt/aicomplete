@@ -200,7 +200,7 @@ fn security_cards_drain_or_discard_a_project() {
         "cards.zero_knowledge_exploit.cost=6",
         r#"cards.zero_knowledge_exploit.effects=[{"op":"drain_project","amount":5},{"op":"draw","count":1}]"#,
         "cards.killswitch_directive.cost=14",
-        r#"cards.killswitch_directive.effects=[{"op":"discard_project"},{"op":"target","on":"agents"},{"op":"remove_ambassadors_country","unity_per":0,"max":4,"at":"near"}]"#,
+        r#"cards.killswitch_directive.effects=[{"op":"discard_project"},{"op":"target","on":"agents"},{"op":"remove_ambassadors_country","max":4,"at":"near"}]"#,
     ]);
     row(&mut g, &["false_flag", "disinformation"]);
     // 195: setup's deck may still hold the row's cards; the refill draws one that isn't.

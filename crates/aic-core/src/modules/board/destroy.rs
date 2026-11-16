@@ -57,8 +57,8 @@ pub fn guards(g: &GameState, h: usize, owner: Option<usize>) -> Vec<Guard> {
     out
 }
 
-/// A piece of `kind` on hex `h` would be destroyed (175: a last node too). A country Shelter flag, or (234) its
-/// owner's reach Shelter on the hex, keeps it, spending nothing. Otherwise r75 (Matt's ruling 5): its owner (seat 0 for a neutral piece)
+/// A piece of `kind` on hex `h` would be destroyed (175: a last node too). (234) Its owner's reach Shelter on the hex
+/// keeps it, spending nothing. Otherwise r75 (Matt's ruling 5): its owner (seat 0 for a neutral piece)
 /// chooses which protection to spend, or none: a hardening token, the owner's own ambassador on the hex (137: armor; only your own
 /// guards your piece), or the Aegis Doctrine capstone (the Protector's own pieces). Unprotected it goes, and
 /// a war destruction ([`Cause::War`]) sways toward Discord. Returns whether it was destroyed.
@@ -185,10 +185,10 @@ pub fn aegis_ready(w: &World, g: &GameState, s: usize) -> bool {
     g.var(&cards::civic_used(s)) == 0 && cards::has_passive(w, g, s, |p| matches!(p, Op::CivicShelter))
 }
 
-/// 237: a piece of `owner`'s on hex `h` is sheltered this round, so no destruction takes it, spending nothing: its
-/// country's Shelter flag, or (234) its owner's reach Shelter on the hex ([`destroy_piece`]; the agents' forecast).
+/// 237: a piece of `owner`'s on hex `h` is sheltered this round, so no destruction takes it, spending nothing: (234)
+/// its owner's reach Shelter on the hex ([`destroy_piece`]; the agents' forecast). 247: the country Shelter is gone.
 pub fn sheltered(w: &World, g: &GameState, h: usize, owner: Option<usize>) -> bool {
-    flagged(g, RoundFlag::Shelter, w.map.hexes[h].country as usize) || owner.is_some_and(|s| reach_sheltered(w, g, s, h))
+    owner.is_some_and(|s| reach_sheltered(w, g, s, h))
 }
 
 /// 234: a card's Shelter shelters its player's own nodes and facilities on the hexes in their reach

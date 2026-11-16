@@ -1,0 +1,9 @@
+adds = ref win% - arm win% (paired, same seed, pair, level); rounds = arm - ref over games both won;
+played% = the card's play rate in the arm holding it (ref, or the arm when ref is a blank)
+
+engine:strategy=1: base 576 games, win 71.0%
+arm                                  ref                            n   adds   ±SE  rounds   ±SE  played%
+no-positron_storage_ring             base                         576   +1.7   1.5   -0.01  0.05     40.3
+no-wafer_fab_line                    base                         576   -1.9   1.4   -0.09  0.06     48.1
+no-antiproton_foundry                base                         576   -0.7   1.6   +0.02  0.06     55.7
+no-dyson_swarm_tranche               base                         576   +0.2   1.2   -0.04  0.03     23.3

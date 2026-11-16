@@ -17,6 +17,7 @@ conventions: [README.md](README.md).*
 | `board.divert_discord` | 1 | 0..5 | Discord per unit of a corrupted city's energy diverted to the adversary |
 | `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy, each round, of an aligned city an agent darkens |
 | `board.liberate_at` | 5 | 1..10 | the Liberate action: ambassadors that liberate an adversary city |
+| `board.liberate_antimatter` | 2 | 0..5 | standard action Liberate with antimatter: ambassadors of Liberate's bill that 1 antimatter pays (0: no such action) |
 | `board.claim_city` | 5 | 1..10 | the Claim action: ambassadors that claim a neutral city (Liberate's table too, its city price `liberate_at`) |
 | `board.claim_station` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral research station |
 | `board.claim_factory` | 2 | 1..10 | the Claim action: ambassadors that claim a neutral factory |
@@ -28,7 +29,8 @@ conventions: [README.md](README.md).*
 | `board.vigil_cap` | 2 | 1..10 | troops a round whose march ending next to a seat's node pays its Vigil (later ones that round pay nothing) |
 | `board.station_chips` | 1 | 0..20 | standard action: chips to build a research station |
 | `board.station_ambassadors` | 0 | 0..5 | standard action: ambassadors a research station also uses up (candidate; 0: none) |
-| `board.node_credits` | 6 | 0..30 | standard action Place a node: credits, beside the track step's energy (0: no such action) |
+| `board.node_credits` | 6 | 0..30 | standard action Place a node: credits, beside the track step's energy (0 with `node_energy` 0: no such action) |
+| `board.node_energy` | 0 | 0..10 | standard action Place a node: energy, beside its credits and the track step's energy |
 | `board.troop_credits` | 10 | 0..50 | standard action Remove a troop: credits for 1 troop in reach (0: no such action) |
 | `board.node_per_round` | 2 | 1..5 | times a seat may take Place a node a round |
 | `board.troop_per_round` | 1 | 1..5 | times a seat may take Remove a troop a round |

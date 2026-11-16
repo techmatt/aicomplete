@@ -7,7 +7,7 @@
 //! uncountered threats and its war step. [`shelter_saves`] reads them from the
 //! open table; the eval credits a sheltered country with what it saves.
 
-use aic_core::content::{CounterItem, Op, RoundFlag};
+use aic_core::content::{CounterItem, Op};
 use aic_core::module::World;
 use aic_core::modules::common::{self, FACTORY, HARDEN, UNIT};
 use aic_core::modules::{board, threats};
@@ -157,7 +157,8 @@ fn counterable(w: &World, g: &GameState, t: &str) -> bool {
 /// the threats on it that destroy (each seat's nodes there, troops landing on
 /// its factories) and the war step's crossings into it.
 /// 237 (D97): `reach` reads seat `s`'s reach Shelter instead (`Some(s)`): only `s`'s pieces on the hexes it covers.
-/// The country's shelter (`None`) leaves out the pieces a reach Shelter keeps anyway.
+/// `None`: the whole country, leaving out the pieces a reach Shelter keeps anyway (a what-if: 247 cut the country
+/// Shelter).
 pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bool, armor: Armor, reach: Option<usize>) -> Saves {
     let absorbed = |h: usize| absorbed(w, g, h, armor);
     let keeps = |s: usize, h: usize| match reach {
@@ -331,16 +332,14 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
 /// actions.
 const WAR_SHARE: f64 = 0.7;
 
-/// The shelters up now, each with what it saves: each sheltered country, and (237, D97) each seat's reach Shelter
-/// in each country no country shelter covers.
+/// The shelters up now, each with what it saves: (237, D97) each seat's reach Shelter in each country it covers (247:
+/// the country Shelter is gone).
 pub fn sheltered_saves(w: &World, g: &GameState, counter_first: bool, armor: Armor) -> Vec<Saves> {
     let countries = w.map.countries.len();
-    let flagged = |c: usize| board::flagged(g, RoundFlag::Shelter, c);
-    let mut out: Vec<Saves> =
-        (0..countries).filter(|&c| flagged(c)).map(|c| shelter_saves(w, g, c, counter_first, armor, None)).collect();
+    let mut out: Vec<Saves> = Vec::new();
     for s in (0..g.seats.len().min(4)).filter(|&s| board::reach_sheltering(g, s)) {
         let covers = |c: usize| w.map.countries[c].hexes.iter().any(|&h| board::reach_sheltered(w, g, s, h));
-        for c in (0..countries).filter(|&c| !flagged(c) && covers(c)) {
+        for c in (0..countries).filter(|&c| covers(c)) {
             out.push(shelter_saves(w, g, c, counter_first, armor, Some(s)));
         }
     }

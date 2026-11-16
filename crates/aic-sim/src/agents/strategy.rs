@@ -165,7 +165,7 @@ fn op_categories(all: &[&Op], c: &mut [bool; CATEGORIES.len()]) {
     c[cat::DEFENSE] = any(&|o| {
         matches!(
             o,
-            Op::Shelter { .. }
+            Op::Shelter
                 | Op::Cordon
                 | Op::Firewall
                 | Op::Prohibit { .. }

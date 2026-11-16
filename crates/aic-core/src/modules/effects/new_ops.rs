@@ -63,8 +63,8 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
             let n = ctx.seats(&w, g).into_iter().filter(|&s| g.resource(s, *resource) <= 0).count() as i64;
             adversary::gain_compute(g, cx, n * amount)?;
         }
-        Op::CorpTroops { count, at, near, when, past_cap, permanent, fill, rounds } => {
-            let c = Corp { count: *count, at: *at, near: *near, past_cap: *past_cap, permanent: *permanent, fill: *fill, rounds: *rounds };
+        Op::CorpTroops { count, at, near, when, past_cap } => {
+            let c = Corp { count: *count, at: *at, near: *near, past_cap: *past_cap };
             corp_troops(g, cx, ctx, c, *when)
         }
         Op::DestroyFacility { at: DestroyAt::Factory } => destroy_factory(g, cx, ctx)?,
@@ -695,15 +695,11 @@ struct Corp {
     at: CorpAt,
     near: Option<CorpNear>,
     past_cap: bool,
-    permanent: bool,
-    fill: bool,
-    rounds: i64,
 }
 
 /// CorpTroops. `now`: the bases (the threat's base, or every base) make them
-/// at once (General Mobilization past the cap; `fill` to the cap, which War Footing printed until 231 cut it).
-/// `each_production` from a threat registers them on its base for `rounds`
-/// rounds from the next (or for good, `permanent`); the adversary board's are
+/// at once (General Mobilization past the cap). `each_production` from a threat registers them on its base for
+/// the next round (247: its `rounds`, `permanent` and `fill`, printed nowhere, are gone); the adversary board's are
 /// read by the production step (231: no project is ongoing), so here do nothing.
 fn corp_troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, c: Corp, when: CorpWhen) {
     let w = cx.world;
@@ -719,9 +715,7 @@ fn corp_troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, c: Corp, when: CorpWhe
             let cap = w.int("board.unit_cap");
             for b in bases {
                 let have = g.tokens(b, UNIT);
-                let n = if c.fill {
-                    (cap - have).max(0)
-                } else if c.past_cap {
+                let n = if c.past_cap {
                     c.count
                 } else {
                     c.count.min(cap - have).max(0)
@@ -737,7 +731,7 @@ fn corp_troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, c: Corp, when: CorpWhe
             if ctx.threat.is_none() {
                 return;
             }
-            let until = if c.permanent { 1_000_000 } else { g.round + c.rounds.max(1) as u32 };
+            let until = g.round + 1;
             for b in bases {
                 cx.add_key(g, &board::corp_extra_key(b, until), c.count);
             }

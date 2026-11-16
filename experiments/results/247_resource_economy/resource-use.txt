@@ -1,0 +1,46 @@
+seeds 192; games per arm 2304
+
+## Wins by level (paired vs base: gap ± SE)
+| arm | d0 | d1 | d2 | d3 | all | rounds |
+|---|---|---|---|---|---|---|
+| base | 94.1 | 87.5 | 79.3 | 54.2 | 78.8 (+0.0±0.0) | 9.15 |
+| r111 | 96.7 (+2.6±1.1) | 97.0 (+9.5±1.5) | 95.7 (+16.3±1.8) | 83.0 (+28.8±2.2) | 93.1 (+14.3±0.9) | 8.19 |
+
+## Wins by pair, all levels (paired gap)
+- base: bp 79.9 (+0.0), br 81.1 (+0.0), pr 75.3 (+0.0)
+- r111: bp 94.7 (+14.7), br 92.3 (+11.2), pr 92.3 (+17.1)
+
+## Resource use, per seat a game (all levels)
+| arm | energy gained / spent (share) | energy held after last actions | builder / protector / researcher held | antimatter gained / spent (share) | chips gained / spent (share) | Tidal chip conv / seat | all chip conv / seat | Dyson kept / played a game |
+|---|---|---|---|---|---|---|---|---|
+| base | 41.9 / 31.7 (76%) | 9.63 | 16.8 / 7.4 / 4.6 | 4.08 / 1.48 (36%) | 10.3 / 5.8 (56%) | 0.00 | 1.05 | 0.23 / 0.05 |
+| r111 | 40.1 / 34.4 (86%) | 4.78 | 7.1 / 3.0 / 4.3 | 3.82 / 2.77 (73%) | 10.3 / 5.9 (57%) | 0.14 | 1.15 | 0.20 / 0.05 |
+
+## Energy held after the last action phase, by level (per seat)
+- base: d0 12.41, d1 10.60, d2 8.81, d3 6.69
+- r111: d0 5.93, d1 5.28, d2 4.46, d3 3.46
+
+## Actions per seat a game
+| action | base | r111 |
+|---|---|---|
+| power.builder.0 | 0.90 | 0.86 |
+| power.builder.1 | 1.04 | 1.93 |
+| power.builder.2 | 0.48 | 0.50 |
+| power.builder.3 | 0.41 | 0.44 |
+| power.builder.4 | 0.51 | 0.44 |
+| power.builder.5 | 1.82 | 1.53 |
+| power.builder.6 | 0.21 | 0.17 |
+| power.builder.7 | 0.01 | 0.46 |
+| std.antimatter | 0.13 | 0.17 |
+| std.buy_energy | 2.18 | 2.24 |
+| std.liberate | 3.06 | 1.88 |
+| std.liberate_am | 0.00 | 1.58 |
+| std.node | 4.52 | 3.93 |
+| use.antiproton_foundry | 0.00 | 0.03 |
+| use.bug_bounty_board | 0.06 | 0.06 |
+| use.containment_reactor | 0.13 | 0.08 |
+| use.cyclotron_lease | 0.30 | 0.22 |
+| use.orbital_observatory_array | 0.16 | 0.17 |
+| use.patent_library | 0.12 | 0.11 |
+| use.positron_storage_ring | 0.13 | 0.10 |
+| use.wafer_fab_line | 0.23 | 0.16 |

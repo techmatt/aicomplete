@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 110. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 111. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -247,10 +247,10 @@ Nothing has a holding limit, and nothing caps your income.
 | Resource | Kept between rounds? | Mainly from | Mainly spent on |
 |---|---|---|---|
 | **Credits** | yes | income, cards, track spaces, megaprojects | card costs, standard actions, threats, a neutral city's energy |
-| **Energy** | yes | income, your cities, neutral cities (bought), cards | placing nodes, powers, cards, building Actions, threats |
+| **Energy** | yes | income, your cities, neutral cities (bought), cards | it powers things: placing nodes, powers (Buy In, Accord, Bulwark, Patrol), building Actions, cards, threats |
 | **Insight** | **no** | set each round (below) | keeping and playing cards, threats |
 | **Chips** | yes | your factories, cards, Builder powers | buildings, research stations, Procure, chip converters, threats |
-| **Antimatter** | yes | the antimatter plants, the steady source (Penning Trap Array, Antiproton Foundry, Positron Storage Ring, Dark Fiber Collider, Treaty Isotope Bank, Cyclotron Lease: a resource each use for 1, once a round), each board's rare burn (Teardown, Meltdown, Reclaim), Horizon's converter, two capstones, cards; at worst 5 research cubes | the majors: tier-2 cards (liberations, Annihilation Lance, Fusion Commons, Antimatter Accord, Collider Consortium and more), Containment Reactor, Accelerator Diplomacy |
+| **Antimatter** | yes | the antimatter plants, the steady source (Penning Trap Array, Antiproton Foundry, Positron Storage Ring, Dark Fiber Collider, Treaty Isotope Bank, Cyclotron Lease: a resource each use for 1, once a round), each board's rare burn (Teardown, Meltdown, Reclaim), Horizon's two converters, two capstones, cards; at worst 5 research cubes | Liberate (1 antimatter pays 2 of its ambassadors); the majors: tier-2 cards (liberations, Annihilation Lance, Fusion Commons, Antimatter Accord, Collider Consortium and more), Containment Reactor, Accelerator Diplomacy |
 | **Research cubes** | yes | your stations, once their megaproject is complete (§9); Cryo Sample Vault; Open Archive | 1 insight each, converters, Penning Trap Array, Field Assay Team, Peer Review, threats |
 | **Ambassadors** | yes (your supply) | 1 at the start, cards, 20 credits | claiming, liberating, Remove agents, Envoy, threats |
 | **Dispatches** | **no** | your board and track spaces, each round | the Dispatch action, 1 each |
@@ -552,7 +552,7 @@ Standard actions are always there, a hedge against bad luck: cards and your boar
 | **Dispatch** | 1 Dispatch | target a site, base, node or botnet: put one of your ambassadors on it, from your supply or from anywhere on the map (not the hex it is on) |
 | **Place a node** | 6 credits, plus the space's energy | twice a round: a node next to yours, off either track (§5) |
 | **Claim** | ambassadors: city 5, station 3, factory 2 (below) | target a neutral site with no agent on it: it becomes yours |
-| **Liberate** | ambassadors, as Claim | target a corrupted site: it becomes yours |
+| **Liberate** | ambassadors, as Claim; 1 antimatter may pay 2 of them | target a corrupted site: it becomes yours |
 | **Remove agents** | 2 ambassadors from your supply, spent | target agents: remove up to 3 on or next to it; nothing is placed |
 | **Remove a troop** | 10 credits | once a round: target troops, remove 1 on it |
 | **Take down a botnet** | 16 credits | target a botnet where your ambassador stands: remove it (the ambassador stays) |
@@ -582,6 +582,8 @@ and an ambassador never share a hex.
 - **Price, in ambassadors:** city **5**, station **3**, factory **2**, the same for both.
 - **No agents:** a site with an agent on it can't be claimed or liberated: remove them first (Remove agents, a card, a power).
 - **Who pays:** your own ambassadors standing on the site pay first, then your supply. Another player's never pay.
+- **Antimatter** (Liberate only): you may pay 1 antimatter for 2 of the ambassadors, so a city takes 3 and an
+  antimatter, a station 1 and an antimatter, a factory the antimatter alone. Antimatter is the fuel of the big plays; this is its use open to every player.
 - **Result:** your cube goes on: the site is **yours**. Liberate first takes the adversary's cube off, and adds
   Unity: city **+5**, station or factory **+2**. A botnet on the site stays.
 
@@ -605,7 +607,7 @@ that country in reach** (any city, corrupted ones too) may use the converter, **
 
 | Megacorp (megaproject) | Payout, each of your cubes | Converter | Chip converter |
 |---|---|---|---|
-| Horizon (Tidal Grid) | 3 energy, 3 credits | 3 research cubes + 1 energy → 1 antimatter | 2 chips → 3 energy |
+| Horizon (Tidal Grid) | 3 energy, 3 credits | 3 research cubes + 1 energy → 1 antimatter | 2 chips → 1 antimatter |
 | Cintamani (Polar Compute Array) | draw 1 card, 5 credits | 1 research cube → 2 insight | 2 chips → draw 3 |
 | Onyx (Mountain Fusion Works) | 2 chips, 3 credits | 1 research cube → 1 chip | none |
 | Biomia (Delta Seawall) | 1 Unity, draw 1 card | 1 research cube → 1 Unity | 2 chips → 2 Unity, draw 1 |
@@ -1024,8 +1026,8 @@ Each power can be used once a round, in the action phase. A tag in a cost means 
 
 | Board | Node power | Conversions | Draw | Sacrifice and other powers |
 |---|---|---|---|---|
-| Builder | **Buy In** (6 credits: a node; 1 chip if the new node brings a factory into your reach) | **Mint** (3 credits: 1 chip) | **Procure** (1 chip: draw 2) | **Fortify** (1 chip: target troops; remove 1 on it and harden a facility on or next to it), **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand), **Teardown** (1 chip: destroy one of your own factories anywhere, Fallout goes on its hex, under any node there, which stays; 1 antimatter) |
-| Protector | **Accord** (1 Diplomacy: a node; if the new node brings a city into your reach, a new ambassador onto one such city) | **Interdict** (1 Security: target troops; remove up to 2 on it) | **Debrief** (1 Security: target agents; draw 1, and remove 1 agent on it) | **Bulwark** (1 energy: target a facility; harden it), **Patrol** (1 energy: target agents or troops; push up to 3 from it), **Reclaim** (1 Security, 6 credits, 2 energy: target a corrupted station or factory; turn it neutral; 1 antimatter) |
+| Builder | **Buy In** (2 energy: a node; 1 chip if the new node brings a factory into your reach) | **Mint** (3 credits: 1 chip) | **Procure** (1 chip: draw 2) | **Fortify** (1 chip: target troops; remove 1 on it and harden a facility on or next to it), **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand), **Teardown** (1 chip: destroy one of your own factories anywhere, Fallout goes on its hex, under any node there, which stays; 1 antimatter) |
+| Protector | **Accord** (2 energy: a node; if the new node brings a city into your reach, a new ambassador onto one such city) | **Interdict** (1 Security: target troops; remove up to 2 on it) | **Debrief** (1 Security: target agents; draw 1, and remove 1 agent on it) | **Bulwark** (1 energy: target a facility; harden it), **Patrol** (1 energy: target agents or troops; push up to 3 from it), **Reclaim** (1 Security, 6 credits, 2 energy: target a corrupted station or factory; turn it neutral; 1 antimatter) |
 | Researcher | **Peer Review** (1 research cube: a node; 1 insight if the new node brings a research station into your reach) | **Grant** (3 credits: 1 cube in your color on a megaproject that isn't complete) | **Synthesis** (1 insight: draw 1) | **Disrupt** (1 Cyber, 1 research cube: remove up to 2 adversary troops in one country), **Field Station** (1 Industry: target an open hex where Build a research station could go; a station there without the chips), **Audit** (1 Cyber: remove 3 compute from a project), **Meltdown** (2 research cubes: destroy one of your own research stations anywhere; 1 antimatter) |
 
 Every player also has the standard action **Place a node** (6 credits, twice a round). Every placement also pays the track space's energy (§5).

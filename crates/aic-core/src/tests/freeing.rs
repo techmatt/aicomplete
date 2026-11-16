@@ -71,7 +71,7 @@ fn clearing_a_city_takes_the_ones_the_player_picks() {
         r#"cards.amnesty_decree.effects=[{"op":"target","on":"corrupted_city"},{"op":"clear_city","max":4},{"op":"gain_ambassadors","count":2}]"#,
         "cards.liberation_accords.cost=15",
         r#"cards.liberation_accords.needs=[["diplomacy",1]]"#,
-        r#"cards.liberation_accords.effects=[{"op":"target","on":"agents"},{"op":"remove_ambassadors_country","unity_per":0,"max":6,"at":"near"},{"op":"gain_ambassadors","count":4}]"#,
+        r#"cards.liberation_accords.effects=[{"op":"target","on":"agents"},{"op":"remove_ambassadors_country","max":6,"at":"near"},{"op":"gain_ambassadors","count":4}]"#,
     ]);
     let (h, n) = city(&rules, &mut g);
     put(&mut g, h, ADV_AMBASSADOR, 4);

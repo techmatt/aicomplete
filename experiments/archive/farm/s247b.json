@@ -1,0 +1,56 @@
+{
+ "name": "s247b",
+ "note": "247 agent screen on 47896-47959: s247a's LBCT with the purge term's antimatter off (w.purge_am=0) and the strategist's held chip at 3 points, not 4 (w.chips=3).",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp-LBCT",
+   "set": [
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+   ]
+  },
+  {
+   "name": "br-LBCT",
+   "set": [
+    "ai.boards=0,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+   ]
+  },
+  {
+   "name": "pr-LBCT",
+   "set": [
+    "ai.boards=1,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3
+ ],
+ "agents": [
+  "strategist:w.purge_am=0",
+  "strategist:w.chips=3"
+ ],
+ "games": 64,
+ "records": 0
+}

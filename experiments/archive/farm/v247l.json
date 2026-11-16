@@ -1,0 +1,114 @@
+{
+ "name": "v247l",
+ "note": "247: 246's good-card measure for its leads on r111's final build, fresh seeds: the engine (engine:strategy=1) with each card blanked (cost 99) against the base deck, d2-d3, three pairs: Positron Storage Ring, Wafer Fab Line, Antiproton Foundry (246: cost the engine 2-3 points), Dyson Swarm Tranche (kept, not played).",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "base|bp",
+   "set": []
+  },
+  {
+   "name": "base|br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "base|pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  },
+  {
+   "name": "no-positron_storage_ring|bp",
+   "set": [
+    "cards.positron_storage_ring.cost=99"
+   ]
+  },
+  {
+   "name": "no-positron_storage_ring|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.positron_storage_ring.cost=99"
+   ]
+  },
+  {
+   "name": "no-positron_storage_ring|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.positron_storage_ring.cost=99"
+   ]
+  },
+  {
+   "name": "no-wafer_fab_line|bp",
+   "set": [
+    "cards.wafer_fab_line.cost=99"
+   ]
+  },
+  {
+   "name": "no-wafer_fab_line|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.wafer_fab_line.cost=99"
+   ]
+  },
+  {
+   "name": "no-wafer_fab_line|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.wafer_fab_line.cost=99"
+   ]
+  },
+  {
+   "name": "no-antiproton_foundry|bp",
+   "set": [
+    "cards.antiproton_foundry.cost=99"
+   ]
+  },
+  {
+   "name": "no-antiproton_foundry|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.antiproton_foundry.cost=99"
+   ]
+  },
+  {
+   "name": "no-antiproton_foundry|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.antiproton_foundry.cost=99"
+   ]
+  },
+  {
+   "name": "no-dyson_swarm_tranche|bp",
+   "set": [
+    "cards.dyson_swarm_tranche.cost=99"
+   ]
+  },
+  {
+   "name": "no-dyson_swarm_tranche|br",
+   "set": [
+    "ai.boards=0,2",
+    "cards.dyson_swarm_tranche.cost=99"
+   ]
+  },
+  {
+   "name": "no-dyson_swarm_tranche|pr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.dyson_swarm_tranche.cost=99"
+   ]
+  }
+ ],
+ "difficulties": [
+  2,
+  3
+ ],
+ "agents": [
+  "engine:strategy=1"
+ ],
+ "games": 96,
+ "records": 0
+}

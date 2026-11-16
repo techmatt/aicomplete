@@ -22,7 +22,7 @@ exception is Disrupt's country.
 | Board | Power | Cost | Effect |
 |---|---|---|---|
 | Builder | Mint | 3 credits | gain 1 chip |
-| Builder | Buy In | 6 credits | place 1 Node; if the new node brings a factory into your reach, also gain 1 chip |
+| Builder | Buy In | 2 energy | place 1 Node; if the new node brings a factory into your reach, also gain 1 chip |
 | Builder | Scrap | 1 Industry | gain 1 chip |
 | Builder | Overcharge | 1 Power | gain 2 energy |
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
@@ -30,7 +30,7 @@ exception is Disrupt's country.
 | Builder | Fortify | 1 chip | Target: Troops. Remove 1 Troop on it; harden a facility on or next to it |
 | Builder | Teardown | 1 chip | destroy one of your factories anywhere; Fallout goes on its hex; gain 1 antimatter |
 | Protector | Bulwark | 1 energy | Target: a facility. Harden it |
-| Protector | Accord | 1 Diplomacy | place 1 Node; if the new node brings a city into your reach, also put a new ambassador on one such city |
+| Protector | Accord | 2 energy | place 1 Node; if the new node brings a city into your reach, also put a new ambassador on one such city |
 | Protector | Debrief | 1 Security | Target: Agents. Draw 1 card and remove 1 Agent on it |
 | Protector | Patrol | 1 energy | Target: Agents or Troops. Push up to 3 from it, each to a hex next to it |
 | Protector | Interdict | 1 Security | Target: Troops. Remove up to 2 on it |
@@ -49,9 +49,13 @@ each payoff priced to be worth the card: 1 chip, 2 energy, up to 2 troops remove
 an agent removed (Debrief); a tag and an energy buy a building.
 
 **Each power's tag is its story.** A tag-paid power is paid in the tag its effect fits
-(the tag table is below): the Protector's Accord in Diplomacy (trust), its Debrief and
+(the tag table is below): the Protector's Debrief and
 Interdict in Security (force, protection). The one exception is the Researcher's Disrupt, paid in Cyber: it
 hacks troops anywhere in a country, no reach.
+
+**Energy powers things (Matt, 2026-11-15).** The two boards that earn the most energy place nodes with it: Buy In
+and Accord cost 2 energy each (no credits, no sacrifice), beside the track step every placement pays; Bulwark and Patrol cost 1. At the anchors a node (8) and its rider (a chip 6, an ambassador 8, at the
+72% a fresh spot comes up) are worth 12-14 for 9. The Researcher, short of energy, places with a research cube.
 
 **Node powers' riders (candidate).** A node power places next to your nodes as any placement does, and its bonus comes
 only when the new node is **on or next to a fresh spot of its board's kind**, one none of your other nodes is on or

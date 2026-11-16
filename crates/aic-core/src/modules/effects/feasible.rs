@@ -82,7 +82,7 @@ fn feasible_aimed(
         }
         match e {
             Op::Target { .. } => false,
-            Op::Shelter { reach: true } => node_count(g, seat) > 0,
+            Op::Shelter => node_count(g, seat) > 0,
             Op::PlaceAmbassadors { .. } => false,
             Op::Harden { .. } => !harden_hexes(w, g, seat).is_empty(),
             Op::MoveOne { range } => !movable_one(w, g, seat, *range).is_empty(),
@@ -119,7 +119,6 @@ fn feasible_aimed(
             Op::DestroyAll => any_hex(g, |h| adversary::can_destroy_all(g, h)),
             Op::RemoveBotnet => any_hex(g, |h| botnet_in_reach(w, g, seat, h)),
             Op::CutBotnet => !cuttable_botnets(w, g, seat).is_empty(),
-            Op::Shelter { .. } => !unsheltered(w, g).is_empty(),
             Op::FreeBuilding => cards::free_building_exists(w, g, seat),
             Op::BuildStation => !board::station_sites(w, g, seat).is_empty(),
             Op::ClaimStation => !board::card_claim_stations(w, g, seat).is_empty(),
@@ -127,9 +126,7 @@ fn feasible_aimed(
             Op::RemoveTroops { reach, .. } => {
                 any_hex(g, |h| adversary::can_damage(g, h, 0, 1) && (!*reach || in_reach(w, g, seat, h)))
             }
-            Op::RemoveAmbassadorsCountry { reach, .. } => {
-                any_hex(g, |h| g.tokens(h, ADV_AMBASSADOR) > 0 && (!*reach || in_reach(w, g, seat, h)))
-            }
+            Op::RemoveAmbassadorsCountry { .. } => any_hex(g, |h| g.tokens(h, ADV_AMBASSADOR) > 0 && in_reach(w, g, seat, h)),
             Op::BuildFactory => !factory_sites(w, g, seat).is_empty(),
             Op::Burn { facility, .. } => !own_facilities(g, seat, *facility).is_empty(),
             Op::Cleanse { cities, only, .. } => {

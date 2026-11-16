@@ -108,8 +108,8 @@
     "tags": [],
     "cost": [
      [
-      "credits",
-      6
+      "energy",
+      2
      ]
     ],
     "text": "place 1 Node; if the new node brings a factory into your reach, also gain 1 chip",
@@ -446,13 +446,13 @@
    },
    {
     "name": "Accord",
-    "tags": [
+    "tags": [],
+    "cost": [
      [
-      "diplomacy",
-      1
+      "energy",
+      2
      ]
     ],
-    "cost": [],
     "text": "place 1 Node; if the new node brings a city into your reach, also put a new ambassador on one such city",
     "effects": [
      {

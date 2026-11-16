@@ -93,7 +93,7 @@ pub struct Override {
 #[cfg(test)]
 pub(crate) const PART_ROWS: &[&str] =
     &["remove_ambassador", "remove_troop", "typed_jam", "liberate_align", "liberate_troops", "liberate_botnet", "cleanse_station",
-      "if_node_next_fresh", "burn_station", "burn_blight", "shelter_reach"];
+      "if_node_next_fresh", "burn_station", "burn_blight"];
 
 const SOURCE: &str = include_str!("../../../../configs/agents/values.json");
 
@@ -534,10 +534,9 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::DestroyAll => Worth::now(row("destroy_all")),
         Op::RemoveBotnet => Worth::now(row("remove_botnet")),
         // 234: a targeted count finds `area_share` of its number: the target alone, or on or next to it.
-        Op::RemoveAmbassadorsCountry { unity_per, max, at, .. } => {
+        Op::RemoveAmbassadorsCountry { max, at } => {
             let n = if *max == 0 { t.rate("token_pile") } else { *max as f64 } * area_share(t, *at);
-            let sway = if *unity_per > 0 { (n / *unity_per as f64).floor() * t.rate("sway") } else { 0.0 };
-            Worth::now(row("remove_ambassadors_country") * n + sway)
+            Worth::now(row("remove_ambassadors_country") * n)
         }
         Op::RemoveTroops { count, at, .. } => {
             Worth::now(row("remove_troops") * t.troops_removed(*count) * area_share(t, *at))
@@ -587,9 +586,8 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         }
         Op::MoveAmbassadors { max, .. } => Worth::now(row("move_ambassadors") * *max as f64),
         Op::GainAmbassadors { count } => Worth::now(row("gain_ambassadors") * r(Resource::Ambassadors) * *count as f64),
-        Op::Shelter { reach: false } => Worth::unseen(row("shelter") * t.rate("target_share")),
         // 234: the hexes in reach, where the seat's own nodes and nearby facilities stand.
-        Op::Shelter { reach: true } => Worth::unseen(row("shelter_reach") * t.rate("target_share")),
+        Op::Shelter => Worth::unseen(row("shelter") * t.rate("target_share")),
         Op::Cordon => Worth::unseen(row("cordon")),
         Op::FreeBuilding => Worth::now(row("free_building")),
         Op::BuildStation => Worth::now(row("build_station")),
@@ -694,7 +692,6 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             row("lose_node_or") * (r(*resource) * *amount as f64).min(t.rate("node") * *count as f64),
         ),
         Op::Flag { name, .. } => Worth::unseen(match name {
-            RoundFlag::Shelter => row("shelter") * t.rate("target_share"),
             RoundFlag::Cordon => row("cordon"),
             _ => -row("flag"),
         }),

@@ -11,7 +11,8 @@
   "use_share_max": 0.5,
   "share_exempt": {
     "note": "226: a resource and source/spend that may exceed the share cap, listed as information with why",
-    "ambassadors standard:liberate": "Liberate is the win route (Matt, 2026-11-13): ambassadors exist to free cities, so most of them going there is the design, not one spend crowding the rest"
+    "ambassadors standard:liberate": "Liberate is the win route (Matt, 2026-11-13): ambassadors exist to free cities, so most of them going there is the design, not one spend crowding the rest",
+    "antimatter standard:liberate_am": "247 (Matt, 2026-11-15: antimatter spent on things of consequence): Liberate with antimatter is antimatter's one use open to every seat at any time, the majors' cards the rest; most of it going there is the design"
   },
   "share_min_per_seat": 0.5,
   "source_classes": {
@@ -127,6 +128,22 @@
         },
         "priced_in": ["sway"],
         "exempt": "the win route (Matt, 2026-11-13): never a poorly priced hedge; its 5 Sway are in the city's 45 (priced_in)",
+        "narrative": "trust"
+      },
+      {
+        "name": "Liberate a city with antimatter",
+        "src": "standard:liberate_am",
+        "off": "board.liberate_antimatter",
+        "give": {
+          "antimatter": 1,
+          "ambassadors": 3
+        },
+        "get": {
+          "city_liberated": 1,
+          "sway": "alignment.free_city"
+        },
+        "priced_in": ["sway"],
+        "exempt": "247: Liberate's win route, 1 antimatter (18) paying 2 of its 5 ambassadors (16): ambassadors 3 is liberate_at 5 less liberate_antimatter 2",
         "narrative": "trust"
       },
       {
@@ -302,6 +319,7 @@
       {"key": "standard:ambassador", "name": "Gain a player ambassador", "role": "hedge", "why": "20 credits: the ambassador hedge"},
       {"key": "sell", "name": "Sell a card", "role": "hedge", "why": "a dead hand's 1 credit"},
       {"key": "standard:liberate", "name": "Liberate a site", "role": "win-route"},
+      {"key": "standard:liberate_am", "name": "Liberate with antimatter", "role": "win-route"},
       {"key": "standard:claim", "name": "Claim a site", "role": "sway-tool"},
       {"key": "standard:envoy", "name": "Envoy", "role": "sway-tool", "band": [0.0, 2.0], "why": "228: a standard action is a poorly priced hedge, never the better route (Matt): an ambassador (8) for 1 Discord off (4), when the same ambassador is a fifth of a Liberate (the win route), so zero use is the design, not a fault"},
       {"key": "standard:botnet", "name": "Take down a botnet", "role": "sway-tool"},

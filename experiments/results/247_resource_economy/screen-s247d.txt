@@ -1,0 +1,54 @@
+seeds 64; games per arm 768
+
+## Wins by level (paired vs base: gap ± SE)
+| arm | d0 | d1 | d2 | d3 | all | rounds |
+|---|---|---|---|---|---|---|
+| base | 93.8 | 86.5 | 76.6 | 56.8 | 78.4 (+0.0±0.0) | 9.21 |
+| Q | 93.8 (+0.0±2.6) | 96.9 (+10.4±2.6) | 94.3 (+17.7±3.2) | 88.0 (+31.2±3.7) | 93.2 (+14.8±1.6) | 8.35 |
+| QF | 97.9 (+4.2±2.1) | 97.4 (+10.9±2.6) | 92.7 (+16.1±3.2) | 85.4 (+28.6±3.7) | 93.4 (+15.0±1.5) | 8.40 |
+| Q3F | 97.4 (+3.6±1.7) | 97.9 (+11.5±2.6) | 92.7 (+16.1±3.3) | 83.3 (+26.6±3.7) | 92.8 (+14.5±1.5) | 8.48 |
+
+## Wins by pair, all levels (paired gap)
+- base: bp 78.9 (+0.0), br 78.9 (+0.0), pr 77.3 (+0.0)
+- Q: bp 95.3 (+16.4), br 94.9 (+16.0), pr 89.5 (+12.1)
+- QF: bp 93.0 (+14.1), br 94.1 (+15.2), pr 93.0 (+15.6)
+- Q3F: bp 92.6 (+13.7), br 93.0 (+14.1), pr 93.0 (+15.6)
+
+## Resource use, per seat a game (all levels)
+| arm | energy gained / spent (share) | energy held after last actions | builder / protector / researcher held | antimatter gained / spent (share) | chips gained / spent (share) | Tidal chip conv / seat | all chip conv / seat | Dyson kept / played a game |
+|---|---|---|---|---|---|---|---|---|
+| base | 42.9 / 32.7 (76%) | 9.70 | 17.7 / 6.9 / 4.5 | 4.24 / 1.51 (36%) | 10.9 / 6.1 (56%) | 0.00 | 1.09 | 0.19 / 0.03 |
+| Q | 40.6 / 35.5 (87%) | 4.39 | 5.9 / 3.1 / 4.2 | 4.32 / 2.98 (69%) | 10.8 / 6.2 (57%) | 0.17 | 1.21 | 0.19 / 0.04 |
+| QF | 41.4 / 36.1 (87%) | 4.55 | 6.8 / 2.8 / 4.1 | 4.32 / 3.06 (71%) | 11.1 / 6.3 (57%) | 0.20 | 1.23 | 0.20 / 0.04 |
+| Q3F | 41.3 / 36.5 (89%) | 3.93 | 5.0 / 2.7 / 4.1 | 4.29 / 3.08 (72%) | 10.8 / 6.2 (58%) | 0.19 | 1.20 | 0.18 / 0.04 |
+
+## Energy held after the last action phase, by level (per seat)
+- base: d0 11.71, d1 10.68, d2 9.16, d3 7.25
+- Q: d0 6.39, d1 4.10, d2 4.34, d3 2.76
+- QF: d0 5.39, d1 5.22, d2 4.96, d3 2.66
+- Q3F: d0 4.77, d1 3.90, d2 4.34, d3 2.71
+
+## Actions per seat a game
+| action | base | Q | QF | Q3F |
+|---|---|---|---|---|
+| power.builder.0 | 1.02 | 0.93 | 0.94 | 0.95 |
+| power.builder.1 | 1.05 | 1.88 | 1.84 | 1.62 |
+| power.builder.2 | 0.53 | 0.54 | 0.57 | 0.57 |
+| power.builder.3 | 0.46 | 0.41 | 0.44 | 0.43 |
+| power.builder.4 | 0.58 | 0.46 | 0.42 | 0.40 |
+| power.builder.5 | 1.95 | 1.53 | 1.54 | 1.51 |
+| power.builder.6 | 0.19 | 0.12 | 0.12 | 0.14 |
+| power.builder.7 | 0.01 | 0.62 | 0.61 | 0.61 |
+| std.antimatter | 0.12 | 0.15 | 0.15 | 0.17 |
+| std.buy_energy | 2.30 | 2.40 | 2.29 | 2.32 |
+| std.liberate | 3.07 | 1.79 | 1.86 | 1.89 |
+| std.liberate_am | 0.00 | 1.67 | 1.73 | 1.73 |
+| std.node | 4.56 | 4.01 | 4.06 | 4.09 |
+| use.antiproton_foundry | 0.00 | 0.04 | 0.04 | 0.05 |
+| use.bug_bounty_board | 0.07 | 0.07 | 0.08 | 0.07 |
+| use.containment_reactor | 0.18 | 0.10 | 0.14 | 0.14 |
+| use.cyclotron_lease | 0.56 | 0.36 | 0.35 | 0.34 |
+| use.orbital_observatory_array | 0.16 | 0.14 | 0.15 | 0.16 |
+| use.patent_library | 0.12 | 0.11 | 0.13 | 0.12 |
+| use.positron_storage_ring | 0.12 | 0.10 | 0.10 | 0.11 |
+| use.wafer_fab_line | 0.23 | 0.16 | 0.18 | 0.16 |

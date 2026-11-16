@@ -484,8 +484,8 @@
   "ability": {
    "cost": [
     [
-     "credits",
-     2
+     "energy",
+     1
     ]
    ],
    "effects": [
@@ -1997,8 +1997,7 @@
   ],
   "effects": [
    {
-    "op": "shelter",
-    "reach": true
+    "op": "shelter"
    },
    {
     "op": "place_node",
@@ -2402,7 +2401,6 @@
    },
    {
     "op": "remove_ambassadors_country",
-    "unity_per": 0,
     "max": 6,
     "at": "near"
    },
@@ -2878,8 +2876,7 @@
   ],
   "effects": [
    {
-    "op": "shelter",
-    "reach": true
+    "op": "shelter"
    },
    {
     "op": "target",
@@ -3184,8 +3181,7 @@
     "at": "near"
    },
    {
-    "op": "shelter",
-    "reach": true
+    "op": "shelter"
    }
   ]
  },
@@ -5082,6 +5078,12 @@
      "amount": 2,
      "narrative": "cooperation"
     }
+   ],
+   "cost": [
+    [
+     "energy",
+     1
+    ]
    ]
   }
  },

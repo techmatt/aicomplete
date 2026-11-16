@@ -1,0 +1,179 @@
+{
+ "name": "s247d",
+ "note": "247 screen 3 on 47896-47959, paired with s247a-c and 246's kept r110 read. Q = Liberate with antimatter (2), Buy In 2 energy, Accord 2 energy (no Diplomacy), Tidal Grid chip converter 2 chips for 1 antimatter, Orbital Observatory Array's Action 1 energy (not 2 credits); F = nine free building Actions cost 1 energy (the four jam buildings, Firewall Array, Lure Network, Citywide Microgrid, Embassy of Exiles, Checkpoint Network); Q3F = Q with Buy In 3 energy, and F.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp-Q",
+   "set": [
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]",
+    "ais.protector.powers.1.tags=[]",
+    "ais.protector.powers.1.cost=[[\"energy\",2]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]"
+   ]
+  },
+  {
+   "name": "br-Q",
+   "set": [
+    "ai.boards=0,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]",
+    "ais.protector.powers.1.tags=[]",
+    "ais.protector.powers.1.cost=[[\"energy\",2]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]"
+   ]
+  },
+  {
+   "name": "pr-Q",
+   "set": [
+    "ai.boards=1,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]",
+    "ais.protector.powers.1.tags=[]",
+    "ais.protector.powers.1.cost=[[\"energy\",2]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]"
+   ]
+  },
+  {
+   "name": "bp-QF",
+   "set": [
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]",
+    "ais.protector.powers.1.tags=[]",
+    "ais.protector.powers.1.cost=[[\"energy\",2]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.market_watchdog.ability.cost=[[\"energy\",1]]",
+    "cards.sentinel_mesh.ability.cost=[[\"energy\",1]]",
+    "cards.civic_watch.ability.cost=[[\"energy\",1]]",
+    "cards.garrison_command.ability.cost=[[\"energy\",1]]",
+    "cards.firewall_array.ability.cost=[[\"energy\",1]]",
+    "cards.lure_network.ability.cost=[[\"energy\",1]]",
+    "cards.citywide_microgrid.ability.cost=[[\"energy\",1]]",
+    "cards.embassy_of_exiles.ability.cost=[[\"energy\",1]]",
+    "cards.interceptor_battery.ability.cost=[[\"energy\",1]]"
+   ]
+  },
+  {
+   "name": "br-QF",
+   "set": [
+    "ai.boards=0,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]",
+    "ais.protector.powers.1.tags=[]",
+    "ais.protector.powers.1.cost=[[\"energy\",2]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.market_watchdog.ability.cost=[[\"energy\",1]]",
+    "cards.sentinel_mesh.ability.cost=[[\"energy\",1]]",
+    "cards.civic_watch.ability.cost=[[\"energy\",1]]",
+    "cards.garrison_command.ability.cost=[[\"energy\",1]]",
+    "cards.firewall_array.ability.cost=[[\"energy\",1]]",
+    "cards.lure_network.ability.cost=[[\"energy\",1]]",
+    "cards.citywide_microgrid.ability.cost=[[\"energy\",1]]",
+    "cards.embassy_of_exiles.ability.cost=[[\"energy\",1]]",
+    "cards.interceptor_battery.ability.cost=[[\"energy\",1]]"
+   ]
+  },
+  {
+   "name": "pr-QF",
+   "set": [
+    "ai.boards=1,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]",
+    "ais.protector.powers.1.tags=[]",
+    "ais.protector.powers.1.cost=[[\"energy\",2]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.market_watchdog.ability.cost=[[\"energy\",1]]",
+    "cards.sentinel_mesh.ability.cost=[[\"energy\",1]]",
+    "cards.civic_watch.ability.cost=[[\"energy\",1]]",
+    "cards.garrison_command.ability.cost=[[\"energy\",1]]",
+    "cards.firewall_array.ability.cost=[[\"energy\",1]]",
+    "cards.lure_network.ability.cost=[[\"energy\",1]]",
+    "cards.citywide_microgrid.ability.cost=[[\"energy\",1]]",
+    "cards.embassy_of_exiles.ability.cost=[[\"energy\",1]]",
+    "cards.interceptor_battery.ability.cost=[[\"energy\",1]]"
+   ]
+  },
+  {
+   "name": "bp-Q3F",
+   "set": [
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",3]]",
+    "ais.protector.powers.1.tags=[]",
+    "ais.protector.powers.1.cost=[[\"energy\",2]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.market_watchdog.ability.cost=[[\"energy\",1]]",
+    "cards.sentinel_mesh.ability.cost=[[\"energy\",1]]",
+    "cards.civic_watch.ability.cost=[[\"energy\",1]]",
+    "cards.garrison_command.ability.cost=[[\"energy\",1]]",
+    "cards.firewall_array.ability.cost=[[\"energy\",1]]",
+    "cards.lure_network.ability.cost=[[\"energy\",1]]",
+    "cards.citywide_microgrid.ability.cost=[[\"energy\",1]]",
+    "cards.embassy_of_exiles.ability.cost=[[\"energy\",1]]",
+    "cards.interceptor_battery.ability.cost=[[\"energy\",1]]"
+   ]
+  },
+  {
+   "name": "br-Q3F",
+   "set": [
+    "ai.boards=0,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",3]]",
+    "ais.protector.powers.1.tags=[]",
+    "ais.protector.powers.1.cost=[[\"energy\",2]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.market_watchdog.ability.cost=[[\"energy\",1]]",
+    "cards.sentinel_mesh.ability.cost=[[\"energy\",1]]",
+    "cards.civic_watch.ability.cost=[[\"energy\",1]]",
+    "cards.garrison_command.ability.cost=[[\"energy\",1]]",
+    "cards.firewall_array.ability.cost=[[\"energy\",1]]",
+    "cards.lure_network.ability.cost=[[\"energy\",1]]",
+    "cards.citywide_microgrid.ability.cost=[[\"energy\",1]]",
+    "cards.embassy_of_exiles.ability.cost=[[\"energy\",1]]",
+    "cards.interceptor_battery.ability.cost=[[\"energy\",1]]"
+   ]
+  },
+  {
+   "name": "pr-Q3F",
+   "set": [
+    "ai.boards=1,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",3]]",
+    "ais.protector.powers.1.tags=[]",
+    "ais.protector.powers.1.cost=[[\"energy\",2]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.market_watchdog.ability.cost=[[\"energy\",1]]",
+    "cards.sentinel_mesh.ability.cost=[[\"energy\",1]]",
+    "cards.civic_watch.ability.cost=[[\"energy\",1]]",
+    "cards.garrison_command.ability.cost=[[\"energy\",1]]",
+    "cards.firewall_array.ability.cost=[[\"energy\",1]]",
+    "cards.lure_network.ability.cost=[[\"energy\",1]]",
+    "cards.citywide_microgrid.ability.cost=[[\"energy\",1]]",
+    "cards.embassy_of_exiles.ability.cost=[[\"energy\",1]]",
+    "cards.interceptor_battery.ability.cost=[[\"energy\",1]]"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3
+ ],
+ "agents": [
+  "strategist"
+ ],
+ "games": 64,
+ "records": 0
+}

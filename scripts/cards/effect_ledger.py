@@ -249,7 +249,7 @@ def op_worth(t, o):
     if op == 'gain_ambassadors':
         return Worth(now=row(op) * r('ambassadors') * n('count'))
     if op == 'shelter':
-        return Worth(now=row('shelter_reach' if o.get('reach') else 'shelter') * t.rate('target_share'))
+        return Worth(now=row('shelter') * t.rate('target_share'))
     if op == 'cordon':
         return Worth(now=row('cordon'))
     # 158: the end-game shapes.

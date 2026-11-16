@@ -28,8 +28,10 @@ machine's traps, are in the [README](README.md), which also lists the page for e
   resources, tags and token types are enums (`vocab.rs`): *The op schema* in docs/architecture.md.
 - **Removing a power, op, param or standard action:** `git grep` its name in `crates/*/src/tests`, `agents/`,
   `scripts/design_check.json` and `web/scripts` before the first build (206 found 19 tests by running them; 219 left
-  two browser checks on a removed power). **Changing a tunable's baseline value:** `git grep` its name and old value
-  in `crates/*/src` first: tests that pin a baseline number break (215 broke five).
+  two browser checks on a removed power). **Changing a tunable's baseline value or a power's cost:** `git grep` its
+  name and old value in `crates/*/src` first: tests that pin a baseline number break (215 broke five; 247 two node
+  powers). **A new standard action** also needs its row order in `docs/blocks.rs`, `STANDARD_NAMES` in
+  `web/src/format.ts` and `scripts/design_check.json`'s rows.
 - **Any change to how games play out:** bump `RULES_REVISION` and update the golden constants
   (README, *Rules changes*). Bump from the constant, not from the prompt's revision number (a bug
   hunt may have taken it), and say so in the rules-history row and the report. A content-only

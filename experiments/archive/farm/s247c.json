@@ -1,0 +1,175 @@
+{
+ "name": "s247c",
+ "note": "247 screen 2 on 47896-47959, paired with s247a and 246's kept r110 read. A3 = L, Buy In 3 energy, C, T (s247a's letters); P = Accord costs 2 energy, no Diplomacy; S = the Protector prints 1 energy a round, not 2; N = Place a node 3 credits + 1 energy.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp-A3",
+   "set": [
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",3]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+   ]
+  },
+  {
+   "name": "br-A3",
+   "set": [
+    "ai.boards=0,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",3]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+   ]
+  },
+  {
+   "name": "pr-A3",
+   "set": [
+    "ai.boards=1,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",3]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+   ]
+  },
+  {
+   "name": "bp-A3P",
+   "set": [
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",3]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+    "ais.protector.powers.1.tags=[]",
+    "ais.protector.powers.1.cost=[[\"energy\",2]]"
+   ]
+  },
+  {
+   "name": "br-A3P",
+   "set": [
+    "ai.boards=0,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",3]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+    "ais.protector.powers.1.tags=[]",
+    "ais.protector.powers.1.cost=[[\"energy\",2]]"
+   ]
+  },
+  {
+   "name": "pr-A3P",
+   "set": [
+    "ai.boards=1,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",3]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+    "ais.protector.powers.1.tags=[]",
+    "ais.protector.powers.1.cost=[[\"energy\",2]]"
+   ]
+  },
+  {
+   "name": "bp-A3S",
+   "set": [
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",3]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+    "ais.protector.income=[[\"energy\",1]]"
+   ]
+  },
+  {
+   "name": "br-A3S",
+   "set": [
+    "ai.boards=0,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",3]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+    "ais.protector.income=[[\"energy\",1]]"
+   ]
+  },
+  {
+   "name": "pr-A3S",
+   "set": [
+    "ai.boards=1,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",3]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+    "ais.protector.income=[[\"energy\",1]]"
+   ]
+  },
+  {
+   "name": "bp-A3N",
+   "set": [
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",3]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+    "board.node_credits=3",
+    "board.node_energy=1"
+   ]
+  },
+  {
+   "name": "br-A3N",
+   "set": [
+    "ai.boards=0,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",3]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+    "board.node_credits=3",
+    "board.node_energy=1"
+   ]
+  },
+  {
+   "name": "pr-A3N",
+   "set": [
+    "ai.boards=1,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",3]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+    "board.node_credits=3",
+    "board.node_energy=1"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3
+ ],
+ "agents": [
+  "strategist"
+ ],
+ "games": 64,
+ "records": 0
+}

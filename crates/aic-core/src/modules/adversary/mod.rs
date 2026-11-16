@@ -66,7 +66,9 @@ const PARAMS: &[ParamSpec] = &[
 ];
 
 /// r80 (ruling #41): the adversary turn's four beats, printed as a strip on the adversary board, with the round
-/// phases each runs (working names: a rename is this one edit). Threat resolution stays its own round step.
+/// phases each runs (working names: a rename is this one edit). Threat resolution stays its own round step. 247
+/// (241's pick): read only by a test that holds the round's phases to the strip, so built only for tests.
+#[cfg(test)]
 pub const BEATS: [(&str, &[&str]); 4] = [
     ("Card", &["adversary.event", "threats.deal", "adversary.build"]),
     ("Corrupt", &["adversary.corrupt", "adversary.natural"]),
@@ -75,6 +77,7 @@ pub const BEATS: [(&str, &[&str]); 4] = [
 ];
 
 /// The beat a round phase belongs to (none: not part of the adversary turn).
+#[cfg(test)]
 pub fn beat_of(phase: &str) -> Option<&'static str> {
     BEATS.iter().find(|(_, ps)| ps.contains(&phase)).map(|(b, _)| *b)
 }

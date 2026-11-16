@@ -1,0 +1,38 @@
+{
+ "name": "smoke247",
+ "note": "247: the 16-seed smoke of the purge term's antimatter (w.purge_am) on and off on the dev seeds 36800-36815, the strategist and the engine, the r111 build.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp",
+   "set": []
+  },
+  {
+   "name": "br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3
+ ],
+ "agents": [
+  "strategist",
+  "strategist:w.purge_am=0",
+  "engine"
+ ],
+ "games": 16,
+ "records": 0
+}

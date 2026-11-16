@@ -163,8 +163,6 @@ pub enum RoundFlag {
     Blackout,
     /// Players with a node in the country make no energy in upkeep (021: was compute).
     Sabotage,
-    /// Buildings and nodes in the country can't be destroyed.
-    Shelter,
     /// Sites in the country can't be claimed (027).
     Embargo,
     /// No Rally or creation line places agents in the country until the end of the next adversary turn (068, 178);
@@ -697,7 +695,6 @@ impl RoundFlag {
         match self {
             RoundFlag::Blackout => "blackout",
             RoundFlag::Sabotage => "sabotage",
-            RoundFlag::Shelter => "shelter",
             RoundFlag::Embargo => "embargo",
             RoundFlag::Cordon => "cordon",
         }
@@ -770,18 +767,12 @@ pub enum Op {
     DestroyAll,
     /// Remove one botnet within your reach (019: the tier-2 way to remove a botnet).
     RemoveBotnet,
-    /// Remove up to `max` agents in one country (0: every one);
-    /// sway 1 toward Unity per `unity_per` removed (0: none). 076: a number, not "every".
-    /// `reach` (111, Matt's ruling 3): in reach instead, any hexes within reach
-    /// of your nodes, across countries. 234: after a card's target, up to `max` in its `at` area (a player card's
-    /// only form).
+    /// 234: after a card's target, remove up to `max` agents in its `at` area (076: a number, not "every"; 0:
+    /// every one there). 247 (241's pick): its country and reach forms and its Unity rider, printed on no card, are
+    /// gone; the name stays (content keys on it).
     RemoveAmbassadorsCountry {
         #[serde(default)]
-        unity_per: i64,
-        #[serde(default)]
         max: i64,
-        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
-        reach: bool,
         /// 234: where it acts once a target is chosen (on it, on or next to it, in its country).
         #[serde(default, skip_serializing_if = "Area::is_reach")]
         at: Area,
@@ -877,12 +868,9 @@ pub enum Op {
     Target {
         on: TargetSpec,
     },
-    /// In one country, facilities and nodes can't be destroyed this round. With `reach` (234: a player card picks
-    /// no country), every hex in your reach instead: your nodes and the facilities there.
-    Shelter {
-        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
-        reach: bool,
-    },
+    /// 234: on every hex in your reach, your nodes and the facilities there can't be destroyed this round (238: the
+    /// reach when a piece is struck). 247 (241's pick): the country form, printed on no card, is gone.
+    Shelter,
     /// In one country, no Rally or creation line places agents until the end of the next adversary turn (118; 068:
     /// a Security card does an ambassador's job); its agent pool waits for the next Rally (178, Matt's ruling #30);
     /// troops still land. 234: after a card's target, the target's country.
@@ -1218,8 +1206,8 @@ pub enum Op {
         resource: Resource,
         amount: i64,
     },
-    /// Bases make `count` extra Drones, `now` or each production (`rounds`, `permanent`), `past_cap`
-    /// (`fill`: to the cap; `near`: by a troop).
+    /// Bases make `count` extra Drones, `now` or each production (a threat's: the next round), `past_cap`
+    /// (`near`: by a troop).
     CorpTroops {
         #[serde(default, skip_serializing_if = "is_zero")]
         count: i64,
@@ -1229,12 +1217,6 @@ pub enum Op {
         when: CorpWhen,
         #[serde(default, skip_serializing_if = "is_false")]
         past_cap: bool,
-        #[serde(default, skip_serializing_if = "is_false")]
-        permanent: bool,
-        #[serde(default, skip_serializing_if = "is_false")]
-        fill: bool,
-        #[serde(default, skip_serializing_if = "is_zero")]
-        rounds: i64,
     },
     /// The factory under the token is destroyed with the nodes on its hex (175: a last node too).
     DestroyFacility {
@@ -1614,7 +1596,6 @@ impl Op {
                 | Op::Harden { .. }
                 | Op::MoveAmbassadors { .. }
                 | Op::PlaceAmbassadors { .. }
-                | Op::Shelter { reach: false }
                 | Op::Cordon
                 | Op::BuildStation
                 | Op::ClaimStation
@@ -1846,7 +1827,7 @@ impl Op {
             | Op::GainAmbassadors { .. }
             | Op::PlaceAmbassadors { .. }
             | Op::Target { .. }
-            | Op::Shelter { .. }
+            | Op::Shelter
             | Op::Cordon
             | Op::FreeBuilding
             | Op::BuildStation

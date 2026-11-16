@@ -1,0 +1,168 @@
+{
+ "name": "s247a",
+ "note": "247 screen 1 on 246's spent fresh seeds (47896-47959; base: 246's kept r110 read, which this build replays exactly). L = Liberate with antimatter (1 antimatter pays 2 ambassadors); B = Buy In costs 2 energy, not 6 credits; C = Patent Library, Orbital Observatory Array, Bug Bounty Board Actions cost 1 energy, not credits; N = Place a node 3 credits + 1 energy; T = Tidal Grid chip converter 2 chips for 1 antimatter.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp-L",
+   "set": [
+    "board.liberate_antimatter=2"
+   ]
+  },
+  {
+   "name": "br-L",
+   "set": [
+    "ai.boards=0,2",
+    "board.liberate_antimatter=2"
+   ]
+  },
+  {
+   "name": "pr-L",
+   "set": [
+    "ai.boards=1,2",
+    "board.liberate_antimatter=2"
+   ]
+  },
+  {
+   "name": "bp-LB",
+   "set": [
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]"
+   ]
+  },
+  {
+   "name": "br-LB",
+   "set": [
+    "ai.boards=0,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]"
+   ]
+  },
+  {
+   "name": "pr-LB",
+   "set": [
+    "ai.boards=1,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]"
+   ]
+  },
+  {
+   "name": "bp-LBC",
+   "set": [
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]"
+   ]
+  },
+  {
+   "name": "br-LBC",
+   "set": [
+    "ai.boards=0,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]"
+   ]
+  },
+  {
+   "name": "pr-LBC",
+   "set": [
+    "ai.boards=1,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]"
+   ]
+  },
+  {
+   "name": "bp-LBCN",
+   "set": [
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "board.node_credits=3",
+    "board.node_energy=1"
+   ]
+  },
+  {
+   "name": "br-LBCN",
+   "set": [
+    "ai.boards=0,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "board.node_credits=3",
+    "board.node_energy=1"
+   ]
+  },
+  {
+   "name": "pr-LBCN",
+   "set": [
+    "ai.boards=1,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "board.node_credits=3",
+    "board.node_energy=1"
+   ]
+  },
+  {
+   "name": "bp-LBCT",
+   "set": [
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+   ]
+  },
+  {
+   "name": "br-LBCT",
+   "set": [
+    "ai.boards=0,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+   ]
+  },
+  {
+   "name": "pr-LBCT",
+   "set": [
+    "ai.boards=1,2",
+    "board.liberate_antimatter=2",
+    "ais.builder.powers.1.cost=[[\"energy\",2]]",
+    "cards.patent_library.ability.cost=[[\"energy\",1]]",
+    "cards.orbital_observatory_array.ability.cost=[[\"energy\",1]]",
+    "cards.bug_bounty_board.ability.cost=[[\"energy\",1]]",
+    "corps.horizon.project.chip_converter.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3
+ ],
+ "agents": [
+  "strategist"
+ ],
+ "games": 64,
+ "records": 0
+}

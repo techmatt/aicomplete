@@ -123,6 +123,41 @@ fn liberating_a_city_pays_from_your_own_ambassadors_and_makes_it_yours() {
     assert_eq!(g.stats.counters["board.liberated.city"], 1);
 }
 
+/// 247 (Matt, 2026-11-15: antimatter spent on things of consequence): Liberate with antimatter pays 1 antimatter for
+/// `liberate_antimatter` of the bill's ambassadors, the seat's own on the site first, and liberates as Liberate
+/// does; at 0 there is no such action.
+#[test]
+fn antimatter_pays_part_of_a_liberation() {
+    let (rules, mut g) = lab_with(&[], &HOLD);
+    let w = rules.world();
+    let am = w.int("board.liberate_antimatter");
+    assert!(am > 0, "on at the baseline");
+    let h = rules.map.numbered(0, piece(0).cities[0]);
+    let n = rules.map.hexes[h].neighbors[0];
+    put(&mut g, h, ADV_CUBE, 1);
+    put(&mut g, n, node(0), 1);
+    put(&mut g, h, ambassador(0), 1);
+    let bill = board::liberate_cost(&w, &g, h).unwrap();
+    let supply = bill - am - 1;
+    set_res(&mut g, 0, Resource::Ambassadors, supply);
+    assert!(!rules.legal_actions(&g).contains(&std_act(0, "liberate_am")), "no antimatter");
+    assert!(!rules.legal_actions(&g).contains(&std_act(0, "liberate")), "short of the whole bill");
+    set_res(&mut g, 0, Resource::Antimatter, 2);
+    let unity = g.var("alignment.unity") + alignment::unity_pending(&g);
+    act(&rules, &mut g, std_act(0, "liberate_am"));
+    assert_eq!((g.tokens(h, ADV_CUBE), g.tokens(h, cube(0))), (0, 1));
+    assert_eq!((g.resource(0, Resource::Antimatter), g.resource(0, Resource::Ambassadors), g.tokens(h, ambassador(0))), (1, 0, 0));
+    assert_eq!(g.var("alignment.unity") + alignment::unity_pending(&g) - unity, w.int("alignment.free_city"));
+
+    let (rules, mut g) = lab_with(&[], &[HOLD[0], "board.liberate_antimatter=0"]);
+    put(&mut g, h, ADV_CUBE, 1);
+    put(&mut g, n, node(0), 1);
+    set_res(&mut g, 0, Resource::Ambassadors, 10);
+    set_res(&mut g, 0, Resource::Antimatter, 2);
+    let legal = rules.legal_actions(&g);
+    assert!(legal.contains(&std_act(0, "liberate")) && !legal.contains(&std_act(0, "liberate_am")), "off at 0");
+}
+
 /// 137: Liberate needs the city in reach (a node on or next to it), and
 /// player ambassadors standing on it liberate nothing (the fallback is gone).
 #[test]

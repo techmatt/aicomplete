@@ -78,6 +78,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("divert_discord", 0, 5, "Discord per unit of a corrupted city's energy diverted to the adversary"),
             ParamSpec::int("ambassador_discord", 0, 5, "Discord per unit of energy, each round, of an aligned city an agent darkens"),
             ParamSpec::int("liberate_at", 1, 10, "the Liberate action: ambassadors that liberate an adversary city"),
+            ParamSpec::int("liberate_antimatter", 0, 5, "standard action Liberate with antimatter: ambassadors of Liberate's bill that 1 antimatter pays (0: no such action)"),
             ParamSpec::int("claim_city", 1, 10, "the Claim action: ambassadors that claim a neutral city (Liberate's table too, its city price `liberate_at`)"),
             ParamSpec::int("claim_station", 1, 10, "the Claim action: ambassadors that claim a neutral research station"),
             ParamSpec::int("claim_factory", 1, 10, "the Claim action: ambassadors that claim a neutral factory"),
@@ -89,7 +90,8 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("vigil_cap", 1, 10, "troops a round whose march ending next to a seat's node pays its Vigil (later ones that round pay nothing)"),
             ParamSpec::int("station_chips", 0, 20, "standard action: chips to build a research station"),
             ParamSpec::int("station_ambassadors", 0, 5, "standard action: ambassadors a research station also uses up (candidate; 0: none)"),
-            ParamSpec::int("node_credits", 0, 30, "standard action Place a node: credits, beside the track step's energy (0: no such action)"),
+            ParamSpec::int("node_credits", 0, 30, "standard action Place a node: credits, beside the track step's energy (0 with `node_energy` 0: no such action)"),
+            ParamSpec::int("node_energy", 0, 10, "standard action Place a node: energy, beside its credits and the track step's energy"),
             ParamSpec::int("troop_credits", 0, 50, "standard action Remove a troop: credits for 1 troop in reach (0: no such action)"),
             ParamSpec::int("node_per_round", 1, 5, "times a seat may take Place a node a round"),
             ParamSpec::int("troop_per_round", 1, 5, "times a seat may take Remove a troop a round"),
@@ -123,8 +125,7 @@ pub static DEF: ModuleDef = ModuleDef {
 
 /// Country flags: up while their var is above 0, counted down in cleanup (1 lasts to
 /// the end of the round; a threat sets 2, to the end of the next).
-pub const FLAGS: [RoundFlag; 5] =
-    [RoundFlag::Blackout, RoundFlag::Sabotage, RoundFlag::Shelter, RoundFlag::Embargo, RoundFlag::Cordon];
+pub const FLAGS: [RoundFlag; 4] = [RoundFlag::Blackout, RoundFlag::Sabotage, RoundFlag::Embargo, RoundFlag::Cordon];
 
 /// The var key of a country flag.
 pub fn flag(f: RoundFlag, country: usize) -> KeyBuf {
@@ -264,11 +265,6 @@ pub fn flag_level(g: &GameState, f: RoundFlag, country: usize) -> i64 {
 /// Whether a country flag is up.
 pub fn flagged(g: &GameState, f: RoundFlag, country: usize) -> bool {
     g.var(&flag(f, country)) > 0
-}
-
-/// Shelters `country`'s facilities and nodes for the rest of the round.
-pub fn shelter(g: &mut GameState, cx: &mut Cx, country: usize) {
-    cx.set_key(g, &flag(RoundFlag::Shelter, country), 1);
 }
 
 /// Cubes on country `c`'s megaproject: `None` for the adversary's.

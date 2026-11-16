@@ -105,7 +105,7 @@ Rules a player could say that a one-step search misses, each a switch (on), rule
 row; the spare-insight rule is every agent's.
 
 - *Shelter what a destruction showing would take, once you can't counter it* (`agents/guide.rs`, the `w.shelter_`
-  weights; armor from `board::guards`, D71; a country Shelter or a card's reach Shelter).
+  weights; armor from `board::guards`, D71; a card's reach Shelter).
 - *Guard your last node* (the strategist only): `w.last_node` (eval and push rules).
 - *Don't bury a building that still earns more than the new one adds* (`plan_bury`).
 - *Count your research cubes like credits* (`plan_cubes`).

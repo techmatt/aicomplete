@@ -73,6 +73,22 @@ fn place_a_node_costs_its_credits_and_the_space_a_limited_number_of_times_a_roun
     }
 }
 
+/// 247: `node_energy` adds energy to Place a node's price, paid first, so the step is paid from what is left.
+#[test]
+fn place_a_node_s_own_energy_comes_before_the_step() {
+    let (rules, mut g) = at_step(&["board.node_energy=2"], 5);
+    let w = rules.world();
+    let step = step_cost(&w, 5);
+    let deploy = std_act(0, "node");
+    set_res(&mut g, 0, Resource::Credits, w.int("board.node_credits"));
+    set_res(&mut g, 0, Resource::Energy, step + 1);
+    assert!(!rules.legal_actions(&g).contains(&deploy), "its 2 energy and the step's");
+    set_res(&mut g, 0, Resource::Energy, step + 2);
+    rules.apply_mut(&mut g, &deploy, None).unwrap();
+    answer_all(&rules, &mut g);
+    assert_eq!((g.resource(0, Resource::Energy), g.resource(0, Resource::Credits)), (0, 0));
+}
+
 /// 206: a placement pays the step's energy beside Place a node's credits.
 #[test]
 fn a_node_power_pays_its_energy_and_the_step() {
@@ -89,36 +105,45 @@ fn a_node_power_pays_its_energy_and_the_step() {
     assert_eq!(g.resource(0, Resource::Energy), 0);
 }
 
+/// The energy a board's power prints in its cost (247: the node powers run on energy).
+fn power_energy(rules: &Rules, seat: usize, name: &str) -> i64 {
+    let w = rules.world();
+    ai::board(&w, seat).powers[power_index(rules, seat, name)].cost.iter().find(|(r, _)| *r == Resource::Energy).unwrap().1
+}
+
+/// 247 (Matt, 2026-11-15: energy powers things): Buy In costs energy, not credits, beside the step's.
 #[test]
-fn the_builder_s_second_node_power_takes_its_credits() {
+fn the_builder_s_second_node_power_runs_on_energy() {
     let (rules, mut g) = at_step(&[], 1);
     let w = rules.world();
     let buy = power(&rules, 0, "Buy In");
-    let price = ai::board(&w, 0).powers[power_index(&rules, 0, "Buy In")].cost.iter().find(|(r, _)| *r == Resource::Credits).unwrap().1;
-    set_res(&mut g, 0, Resource::Energy, 1);
-    set_res(&mut g, 0, Resource::Credits, price - 1);
-    assert!(rules.apply_mut(&mut g.clone(), &buy, None).is_err());
-    set_res(&mut g, 0, Resource::Credits, price);
+    let need = power_energy(&rules, 0, "Buy In") + step_cost(&w, 1);
+    set_res(&mut g, 0, Resource::Credits, 0);
+    set_res(&mut g, 0, Resource::Energy, need - 1);
+    assert!(rules.apply_mut(&mut g.clone(), &buy, None).is_err(), "its energy and the step's");
+    set_res(&mut g, 0, Resource::Energy, need);
     rules.apply_mut(&mut g, &buy, None).unwrap();
     answer_all(&rules, &mut g);
-    assert_eq!((g.resource(0, Resource::Energy), g.resource(0, Resource::Credits)), (1, 0), "Buy In pays credits only");
+    assert_eq!((g.resource(0, Resource::Energy), g.resource(0, Resource::Credits)), (0, 0), "Buy In pays energy only");
 }
 
+/// 247: Accord costs energy and sacrifices nothing (it took a Diplomacy card).
 #[test]
-fn the_protector_s_second_node_power_sacrifices_diplomacy() {
+fn the_protector_s_second_node_power_runs_on_energy() {
     let (rules, mut g) = at_step(&[], 1);
     let w = rules.world();
     let start = rules.map.numbered(1, piece(1).node);
     put(&mut g, start, node(1), 1);
     let accord = power(&rules, 1, "Accord");
-    set_res(&mut g, 1, Resource::Energy, 1);
-    let program = program(&w, Tag::Diplomacy);
-    assert!(rules.apply_mut(&mut g.clone(), &accord, None).is_err(), "no tag");
-    g.piles.insert(cards::played(1).into(), Arc::new(vec![program]));
+    let price = power_energy(&rules, 1, "Accord");
+    g.piles.insert(cards::played(1).into(), Arc::new(vec![program(&w, Tag::Diplomacy)]));
+    set_res(&mut g, 1, Resource::Energy, price - 1);
+    assert!(rules.apply_mut(&mut g.clone(), &accord, None).is_err(), "its energy");
+    set_res(&mut g, 1, Resource::Energy, price);
     rules.apply_mut(&mut g, &accord, None).unwrap();
     answer_all(&rules, &mut g);
-    assert!(g.pile(&cards::played(1)).is_empty(), "sacrificed");
-    assert_eq!(g.resource(1, Resource::Energy), 1, "Accord pays its tag only");
+    assert_eq!(g.pile(&cards::played(1)).len(), 1, "no sacrifice");
+    assert_eq!(g.resource(1, Resource::Energy), 0, "Accord pays its energy");
 }
 
 /// 212: a troop power is force (a Security card for troops in reach); r98: Stand Down merged into Interdict.

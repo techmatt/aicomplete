@@ -457,7 +457,9 @@ fn playable(legal: &[Action], s: usize, c: &Key) -> bool {
 }
 
 /// 211 (`am_save`): whether `a` takes seat `s`'s antimatter below `r`; a card's play that spends antimatter never
-/// does (it is what the antimatter is kept for), nor an action that can't spend it.
+/// does (it is what the antimatter is kept for), nor an action that can't spend it. 247: nor Liberate with
+/// antimatter (a standard action): the reserve keeps antimatter from small spends, and a liberation is a major's
+/// worth on the win route.
 fn below_reserve(rules: &Rules, g: &GameState, a: &Action, s: usize, r: i64) -> bool {
     let may = match a {
         Action::Pay { resource, .. } => *resource == Resource::Antimatter,

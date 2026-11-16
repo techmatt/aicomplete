@@ -6,7 +6,6 @@ fn flag_doc(f: RoundFlag) -> &'static str {
     match f {
         RoundFlag::Blackout => "Blackout: while this is up, cities here make no energy in production (an uncountered threat's lasts to the end of the next round)",
         RoundFlag::Sabotage => "Sabotage: while this is up, players with a node here make no energy in upkeep (an uncountered threat's lasts to the end of the next round)",
-        RoundFlag::Shelter => "Sheltered: facilities and nodes here can't be destroyed this round",
         RoundFlag::Embargo => "Embargo: while this is up, no site here can be claimed (an uncountered threat's lasts to the end of the next round)",
         RoundFlag::Cordon => "Cordon: no Rally or creation line places agents here until the end of the next adversary turn (its pool waits; troops still land)",
     }
@@ -170,7 +169,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         }
         let price = printed_price(w, act);
         // 105: a cube cost (the general converter) reaches the client in its words.
-        let Price { energy: e, credits: cr, chips, ambassadors, cubes: _ } = price;
+        let Price { energy: e, credits: cr, chips, ambassadors, cubes: _, antimatter: _ } = price;
         let cost = price.label();
         let doc = format!(
             "{}; costs {}",

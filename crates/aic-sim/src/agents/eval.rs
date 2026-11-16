@@ -198,6 +198,9 @@ pub struct Weights {
     /// bill of the corrupted cities in its reach, and each city freed at `liberate_at`'s bill, so
     /// buying toward a Liberate pays and spending on one costs nothing.
     pub purge: f64,
+    /// 247: the purge term counts each antimatter held as the ambassadors it pays in Liberate with antimatter
+    /// (`board.liberate_antimatter`), times this (0: antimatter counts nothing toward a bill).
+    pub purge_am: f64,
     /// 080: a clean or aligned city one adversary ambassador from corrupting,
     /// on top of `pressure`.
     pub at_risk: f64,
@@ -600,6 +603,7 @@ impl Default for Weights {
             freeing: 2.0,
             liberated: 10.0,
             purge: 0.0,
+            purge_am: 1.0,
             at_risk: 4.0,
             liberate_progress: 20.0,
             income: 3.0,
@@ -759,6 +763,8 @@ pub struct Eval {
     /// 156: a card's mean worth at each tier, [Unity, Discord] × [I, II, III].
     tier_worth: [[f64; 3]; 2],
     city_energy: i64,
+    /// 247: `board.liberate_antimatter`, the ambassadors 1 antimatter pays in a Liberate (0: no such action).
+    liberate_am: i64,
     aligned_bonus: i64,
     tip_per_player: i64,
     /// The seat with Wall, if a seat has it.
@@ -969,6 +975,7 @@ impl Eval {
             target_tips,
             tier_worth,
             city_energy: world.list("board.corp_energy").first().copied().unwrap_or(1),
+            liberate_am: world.int("board.liberate_antimatter"),
             aligned_bonus: world.int("board.aligned_bonus"),
             tip_per_player: world.int("alignment.tip_per_player"),
             wall_seat: (0..seats).find(|&s| ai::board(&world, s).innate.passives.iter().any(|p| matches!(p, Op::Wall))),
@@ -1364,6 +1371,8 @@ impl Eval {
         let mut pieces = 0i64;
         // 162: each seat's Liberate bill, the corrupted cities in its reach (the purge term).
         let mut bill = [0i64; 4];
+        // 247: the corrupted cities in each seat's bill: one antimatter pays into each Liberate, no more.
+        let mut bill_cities = [0i64; 4];
         let level = alignment::bar_level(&world, g);
         // 147 (D67): each seat's nodes on sites filling toward corruption, as
         // shares lost (corruption destroys a node on its own hex), and land
@@ -1393,6 +1402,7 @@ impl Eval {
                             for (s, b) in bill.iter_mut().enumerate().take(seats) {
                                 if near[s] >> h & 1 != 0 {
                                     *b += (need - board::site_standing(g, s, h)).max(0);
+                                    bill_cities[s] += 1;
                                 }
                             }
                         }
@@ -1735,12 +1745,17 @@ impl Eval {
             // r84 and r85 (0, 0.5 and 1 played the same 384 games: nothing moves one inside the eval's one step).
             v += w.project_cube * (mine as f64 - 0.5 * theirs as f64);
         }
+        // 247: an antimatter pays `liberate_antimatter` ambassadors of a Liberate bill, one antimatter a Liberate (0:
+        // the rule is off).
+        let am_pays = w.purge_am * self.liberate_am as f64;
         for s in 0..self.seats {
             let held = g.resource(s, Resource::Ambassadors);
             v += self.ambassador_unit() * held as f64;
             v += w.chips * g.resource(s, Resource::Chips) as f64;
             if w.purge != 0.0 {
-                v += w.purge * held.min(bill.get(s).copied().unwrap_or(0)) as f64;
+                let am = g.resource(s, Resource::Antimatter).min(bill_cities.get(s).copied().unwrap_or(0));
+                let toward = held as f64 + am_pays * am as f64;
+                v += w.purge * toward.min(bill.get(s).copied().unwrap_or(0) as f64);
             }
         }
         // 162: a city freed keeps the purge its ambassadors were worth toward it.
@@ -2290,7 +2305,11 @@ impl Eval {
     /// (`pick`) also counts the seat's strategy multiplier. Not one in hand: what
     /// playing it brings is the board's terms, which no strategy multiplies, so a
     /// multiplied hand would make holding a strategy's cards beat playing them.
-    /// Else the flat `hand` + `hand_cost` × its cost.
+    /// Else (flat mode, `w.table` 0: greedy and the strategist) the flat fallback: `hand` + `hand_cost` × its
+    /// credit cost, times the same chance of paying. It reads none of the card's effects: every card weighs the same
+    /// base, a dearer one a little more (245 fitted the strategist's 1.5 and 0.1 toward the oracle's picks: a card
+    /// is worth little until it is played), so a strategist's keep and play choices come from the board terms its
+    /// play moves, not from what the card prints.
     fn hand_worth(&self, world: &aic_core::module::World, g: &GameState, sd: &SeatData, left: f64, id: &Key, pick: bool) -> f64 {
         let w = &self.w;
         let s = sd.s;

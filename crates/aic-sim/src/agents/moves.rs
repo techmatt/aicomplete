@@ -153,7 +153,7 @@ fn target_ops(w: &World, g: &GameState, prompt: &str) -> Option<Vec<Op>> {
         }
         aic_core::state::Trigger::Action { action: Action::Standard { act, .. } } if act == "remove" => {
             let max = w.int("board.remove_count");
-            return Some(vec![Op::RemoveAmbassadorsCountry { unity_per: 0, max, reach: true, at: aic_core::content::Area::Near }]);
+            return Some(vec![Op::RemoveAmbassadorsCountry { max, at: aic_core::content::Area::Near }]);
         }
         // Remove a troop and Build a factory run ops, as a card does.
         aic_core::state::Trigger::Action { action: Action::Standard { act, .. } } => {
