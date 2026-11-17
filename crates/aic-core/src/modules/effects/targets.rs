@@ -19,6 +19,7 @@ pub fn meets(w: &World, g: &GameState, seat: usize, on: TargetSpec, h: usize) ->
         TargetSpec::CorruptedFacility => cleansable(w, g, h, false, None),
         TargetSpec::StationSite => board::station_sites(w, g, seat).contains(&h),
         TargetSpec::NeutralStation => board::card_claim_stations(w, g, seat).contains(&h),
+        TargetSpec::EmptySite => empty_station_site(w, g, h),
         TargetSpec::FreeZone => free_zones(w, g).contains(&h),
         TargetSpec::Fallout => g.tokens(h, FALLOUT) > 0,
         TargetSpec::Facility => board::hardenable(g, h),

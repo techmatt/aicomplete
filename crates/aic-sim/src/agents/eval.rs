@@ -1462,6 +1462,8 @@ impl Eval {
                     } else {
                         Self::toward(rules, &tokens, &sites, &arriving,h, gather && !common::firewalled(g, h))
                     };
+                    // 253: a liberated neutral city needs the retake's agents more (the engine's `retake_extra`).
+                    let corrupt_at = corrupt_at + common::retake_extra(&world, g, h, CorruptSite::City);
                     let p = (toward / corrupt_at as f64).min(1.0);
                     v -= w.corrupted * w.pressure * p * p;
                     if toward + 1.0 >= corrupt_at as f64 {
@@ -1478,11 +1480,11 @@ impl Eval {
                 let site = if bad {
                     None
                 } else if city {
-                    Some((corrupt_at, gather, 1.0))
+                    Some((corrupt_at + common::retake_extra(&world, g, h, CorruptSite::City), gather, 1.0))
                 } else if t.station > 0 {
-                    Some((station_at, station_gather, 1.0))
+                    Some((station_at + common::retake_extra(&world, g, h, CorruptSite::Station), station_gather, 1.0))
                 } else if t.factory > 0 {
-                    Some((factory_at, factory_gather, 1.0))
+                    Some((factory_at + common::retake_extra(&world, g, h, CorruptSite::Factory), factory_gather, 1.0))
                 } else if t.land == 0 && plan::corrupt_target(&world, g, h, CorruptSite::Land) {
                     Some((land_at, land_line, if land_line { 1.0 } else { LAND_QUIET }))
                 } else {

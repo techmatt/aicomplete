@@ -4,7 +4,7 @@ use crate::content::Op;
 use crate::modules::common::{FIREWALL, FALLOUT};
 use crate::modules::{adversary, alignment, board, effects, plan};
 use crate::op::{CorruptSite, CreateAt, CreateIf, Facility, RallyAt};
-use crate::modules::common::STATION;
+use crate::modules::common::{LIBERATED, STATION};
 
 /// Country `c`'s hexes passing `f`, lowest-numbered first.
 fn numbered_where(m: &Map, c: u8, f: impl Fn(usize) -> bool) -> Vec<usize> {
@@ -115,6 +115,34 @@ fn a_creation_line_lands_on_the_lowest_numbered_sites_meeting_its_condition() {
     .unwrap();
     assert_eq!(g.tokens(cities0[1], ADV_AMBASSADOR), 3);
     assert_eq!(g.var(SUPPLY), supply - 2);
+}
+
+/// 253 (amendment 11525): a site a player liberates is left neutral with a Liberated marker, and the adversary needs
+/// `retake_agents` more than its corrupt number to take it back (forecast and rule alike); a node there takes none.
+#[test]
+fn a_liberated_site_takes_the_retake_agents_more() {
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    let w = rules.world();
+    let extra = w.int("adversary.retake_agents");
+    assert!(extra > 0, "the baseline's retake");
+    let n = adversary::corrupt_n(&w, CorruptSite::City, 0);
+    let t = numbered_where(m, 0, |h| kind(m, h) == HexKind::City)[0];
+    put(&mut g, t, ADV_CUBE, 1);
+    with_cx(&rules, |cx| board::liberate_site(&mut g, cx, 0, t, false));
+    assert_eq!((g.tokens(t, ADV_CUBE), g.tokens(t, cube(0)), g.tokens(t, LIBERATED)), (0, 0, 1), "neutral, marked");
+    assert_eq!(crate::modules::common::retake_extra(&w, &g, t, CorruptSite::Node), 0, "a node there takes none");
+    put(&mut g, t, ADV_AMBASSADOR, n + extra - 1);
+    assert!(!plan::natural_targets(&w, &g, CorruptSite::City, n).contains(&t));
+    assert!(plan::corrupt_plan(&w, &g, CorruptSite::City, n, None).is_empty());
+    let mut short = g.clone();
+    with_cx(&rules, |cx| adversary::corrupt_sites(&mut short, cx, CorruptSite::City, 0, None)).unwrap();
+    assert_eq!((short.tokens(t, ADV_CUBE), short.tokens(t, LIBERATED)), (0, 1), "one short of the retake: held");
+    put(&mut g, t, ADV_AMBASSADOR, n + extra);
+    assert!(plan::natural_targets(&w, &g, CorruptSite::City, n).contains(&t));
+    with_cx(&rules, |cx| adversary::corrupt_sites(&mut g, cx, CorruptSite::City, 0, None)).unwrap();
+    assert_eq!((g.tokens(t, ADV_CUBE), g.tokens(t, LIBERATED)), (1, 0), "retaken, the marker off");
+    assert_eq!(g.stats.counters["adversary.retakes"], 1);
 }
 
 /// 175: Corrupt X: every agent next to an X moves onto it (all of them, not just enough), then every X

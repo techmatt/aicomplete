@@ -194,6 +194,11 @@ pub fn claim_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, route: 
         cx.tally(g, "board.canceled", adv);
     }
     cx.add_tokens(g, h, cube(seat), 1);
+    let marker = g.tokens(h, LIBERATED);
+    if marker > 0 {
+        cx.add_tokens(g, h, LIBERATED, -marker);
+        cx.tally(g, "board.claimed_liberated", 1);
+    }
     cx.tally(g, &format!("board.claimed.{}", kind.name()), 1);
     cx.tally(g, &format!("board.claimed_by.{route}.{}", kind.name()), 1);
     // 190: neutral claims by round (stats only).
@@ -223,8 +228,13 @@ pub fn liberate_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, own:
     } else {
         alignment::unity_from(g, cx, kind.name(), w.int("alignment.free_facility"));
     }
-    if own {
+    // 253 (amendment 11525): `liberate_neutral` 0 is r112's rule (the site becomes the liberator's), a screen's
+    // off arm for ruling 4.
+    if own || w.int("board.liberate_neutral") == 0 {
         cx.add_tokens(g, h, cube(seat), 1);
+    } else if g.tokens(h, LIBERATED) == 0 {
+        // 253: a Liberated marker on the neutral site, for the retake (`adversary.retake_agents`).
+        cx.add_tokens(g, h, LIBERATED, 1);
     }
     cx.note(Some(h), || format!("Seat {seat} liberates the {} at {}", kind.name(), hex_name(&w, h)));
 }

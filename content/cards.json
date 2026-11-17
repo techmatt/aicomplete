@@ -5305,6 +5305,60 @@
   }
  },
  {
+  "id": "open_research_campus",
+  "name": "Open Research Campus",
+  "tier": 1,
+  "kind": "event",
+  "cost": 5,
+  "insight": 0,
+  "tags": [
+   "science",
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "target",
+    "on": "empty_site"
+   },
+   {
+    "op": "create_site",
+    "kind": "station"
+   },
+   {
+    "op": "place_ambassadors",
+    "count": 1,
+    "at": "on"
+   }
+  ]
+ },
+ {
+  "id": "industrial_commons",
+  "name": "Industrial Commons",
+  "tier": 1,
+  "kind": "event",
+  "cost": 4,
+  "insight": 0,
+  "tags": [
+   "industry",
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "target",
+    "on": "free_zone"
+   },
+   {
+    "op": "create_site",
+    "kind": "factory"
+   },
+   {
+    "op": "place_ambassadors",
+    "count": 1,
+    "at": "on"
+   }
+  ]
+ },
+ {
   "id": "mass_defection",
   "name": "Mass Defection",
   "tier": 2,

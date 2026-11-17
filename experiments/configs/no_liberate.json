@@ -46,7 +46,9 @@
         ],
         "city_energy_credits": 5,
         "cube_insight": 1,
-        "insight_cubes": 2,
+        "insight_cubes": 1,
+        "insight_per_round": 1,
+        "liberate_neutral": 1,
         "antimatter_cubes": 5,
         "botnet_credits": 20,
         "std_off": [
@@ -70,6 +72,7 @@
         "corrupt_factory_at": 3,
         "corrupt_land_at": 3,
         "corrupt_node_at": 2,
+        "retake_agents": 1,
         "corrupt_cut": [
           1,
           1,
@@ -349,6 +352,8 @@
         "wafer_fab_line",
         "power_purchase_agreement",
         "microgrid_lab_compact",
+        "open_research_campus",
+        "industrial_commons",
         "market_stabilization_board",
         "mass_defection",
         "embassy_of_exiles",

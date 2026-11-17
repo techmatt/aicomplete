@@ -174,6 +174,8 @@ pub fn place_node_within(g: &mut GameState, cx: &mut Cx, seat: usize, range: i64
     cx.add_tokens(g, hexes[j], node(seat), 1);
     cx.tally(g, "board.node_placed", 1);
     cx.per_round(g, "board.node_placed", 1);
+    // 253: by seat, for nodes placed by round per board (stats only).
+    cx.per_round(g, &format!("board.node_placed.s{seat}"), 1);
     tally_placement(&w, g, cx, seat, hexes[j]);
     if capstone {
         cx.tally(g, "board.capstones", 1);

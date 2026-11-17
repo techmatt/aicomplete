@@ -58,7 +58,7 @@ absurd") alone removes corruption; corrupted sites have none (cards, Reclaim and
 | Take down a botnet | `botnet_credits` 20 credits | Target: a Botnet on a hex holding your ambassador. The botnet comes off (your ambassador stays) |
 | Buy a city's energy | `city_energy_credits` 5 credits | Target: a producing neutral city. Producing (no blackout, no agent on it): gain its energy, once per city a round |
 | Sell a card | gain `sell_credits` 1 | from your hand |
-| Turn a cube into insight | `insight_cubes` 2 research cubes | gain `cube_insight` 1 insight, as often as you have cubes |
+| Turn a cube into insight | `insight_cubes` 1 research cubes | gain `cube_insight` 1 insight, at most `insight_per_round` 1 a round |
 | Envoy | `envoy_ambassadors` 1 of your ambassadors, from your supply, used up | move 1 Discord off the Discord track |
 | Make antimatter | `antimatter_cubes` 5 research cubes | gain 1 antimatter, as often as you have cubes (a desperate trade: the engines make it cheaper) |
 <!-- /generated -->

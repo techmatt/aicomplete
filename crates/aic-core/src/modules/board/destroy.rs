@@ -121,6 +121,9 @@ pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause
         if let Some(s) = cube_owner(g, h) {
             cx.add_tokens(g, h, cube(s), -1);
         }
+        // 253: the Liberated marker goes with the site.
+        let marker = g.tokens(h, LIBERATED);
+        cx.add_tokens(g, h, LIBERATED, -marker);
         // r75: a declined hardening token goes with the facility it guarded (as `lose_node` strips one).
         if !hardenable(g, h) && node_owner(g, h).is_none() {
             let n = g.tokens(h, HARDEN);

@@ -44,7 +44,7 @@ SACRIFICE = {"security", "diplomacy", "cyber", "industry", "power", "science"}
 RESOURCES = {"credits", "energy", "insight", "research_cubes", "chips", "ambassadors"}
 BRITISH = ["colour", "flavour", "neighbour", "behaviour", "armour", "favour", "harbour", "defence", "offence",
            "centre", "mobilis", "organis", "towards", "whilst", "amongst", "grey", "labour", "rumour"]
-PRINTED = {1: 5, 2: 6, 3: 4}  # Militarist events printed per stage
+PRINTED = {1: 5, 2: 7, 3: 4}  # Militarist events printed per stage (253: Shell Labs, a seventh stage-II card)
 # 146: the ladder of an event card's pulls by stage: stage I one tier-1 pull, stage II one tier-2 (or tier 1 and tier
 # 2), stage III two tier-2 pulls.
 LADDER = {1: [(1,)], 2: [(2,), (1, 2)], 3: [(2, 2)]}

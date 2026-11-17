@@ -11,8 +11,10 @@ layout for that country count. Population is implicit: people live in cities.
 Hex kinds: **city**, **open** land and **ocean** are printed; a **military base** goes
 on an open hex of each front (below). **Industrial zones** are a printed marking on open
 hexes next to cities: factories go only there. Research stations go on other open hexes,
-one facility per hex. **Empty station sites** are printed too (137, one a country, never a base): content may create
-a neutral station on one (none does yet). Nothing builds on ocean or on a Fallout token (no node, factory or
+one facility per hex. **Empty station sites** are printed too (137, one a country, never a base): a neutral station
+opens on one when a card says so (253, Matt's ruling 3: Open Research Campus on its target; the adversary's Shell Labs
+on each country's lowest-numbered), as a neutral factory opens on a free industrial zone (Industrial Commons, Factory
+Drive, Blight). A neutral site a card opens is anyone's to claim. Nothing builds on ocean or on a Fallout token (no node, factory or
 station) until it is cleared ([war.md](war.md)).
 
 <!-- generated: countries -->

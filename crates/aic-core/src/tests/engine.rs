@@ -452,19 +452,22 @@ fn a_play_tag_trigger_with_no_tag_fires_once_per_tag_of_any_kind() {
     assert!(!cards::def(&w, "joint_fabrication_pact").tags.iter().any(|t| cards::def(&w, "interdisciplinary_institute").tags.contains(t)), "none of the Institute's own tags");
 }
 
+/// 253 (amendment 11525): the cube converter at `insight_cubes` cubes a use, `insight_per_round` times a round;
+/// at 0 it has no limit.
 #[test]
-fn the_cube_converter_has_no_limit_a_round() {
-    let (rules, mut g) = table(&[], &[]);
-    let w = rules.world();
-    // 252: taxed, `insight_cubes` cubes a use.
-    set_res(&mut g, 0, Resource::ResearchCubes, 2 * w.int("board.insight_cubes"));
-    let each = w.int("board.cube_insight");
-    let before = g.resource(0, Resource::Insight);
-    act(&rules, &mut g, std_act(0, "insight"));
-    act(&rules, &mut g, std_act(0, "insight"));
-    assert_eq!(g.resource(0, Resource::Insight), before + 2 * each);
-    assert_eq!(g.resource(0, Resource::ResearchCubes), 0);
-    assert!(!rules.legal_actions(&g).contains(&std_act(0, "insight")), "no cube, no action");
+fn the_cube_converter_is_limited_a_round_by_its_dial() {
+    for (cap, uses) in [(1, 1), (0, 3)] {
+        let (rules, mut g) = table_with(&[&format!("board.insight_per_round={cap}")], &[], &[]);
+        let w = rules.world();
+        set_res(&mut g, 0, Resource::ResearchCubes, 3 * w.int("board.insight_cubes"));
+        let each = w.int("board.cube_insight");
+        let before = g.resource(0, Resource::Insight);
+        for _ in 0..uses {
+            act(&rules, &mut g, std_act(0, "insight"));
+        }
+        assert_eq!(g.resource(0, Resource::Insight), before + uses * each, "cap {cap}");
+        assert!(!rules.legal_actions(&g).contains(&std_act(0, "insight")), "cap {cap}: used up or no cube");
+    }
 }
 
 /// r75 (content): every megaproject converter is printed once a round (105 kept

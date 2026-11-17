@@ -93,7 +93,7 @@ pub struct Override {
 #[cfg(test)]
 pub(crate) const PART_ROWS: &[&str] =
     &["remove_ambassador", "remove_troop", "typed_jam", "liberate_align", "liberate_troops", "liberate_botnet", "cleanse_station",
-      "if_node_next_fresh", "burn_station", "burn_blight"];
+      "if_node_next_fresh", "burn_station", "burn_blight", "open_station", "open_factory"];
 
 const SOURCE: &str = include_str!("../../../../configs/agents/values.json");
 
@@ -946,9 +946,17 @@ fn damage(t: &Table, ambassadors: i64, troops: i64) -> f64 {
 
 /// The sum of a list's ops.
 pub fn list_worth(t: &Table, ops: &[Op]) -> Worth {
+    let targeted = ops.iter().any(|o| matches!(o, Op::Target { .. }));
     let mut w = Worth::default();
     for op in ops {
-        w += op_worth(t, op);
+        w += match op {
+            // 253: after a player card's target a site opens on the target alone, one site, not each country's.
+            Op::CreateSite { kind } if targeted => Worth::now(t.op(match kind {
+                Facility::Station => "open_station",
+                Facility::Factory => "open_factory",
+            })),
+            _ => op_worth(t, op),
+        };
     }
     w
 }

@@ -394,7 +394,7 @@
       {"key": "standard:node", "name": "Place a node", "role": "off", "why": "252 (Matt's ruling 1): cut (`node_credits` 0); the boards' node routes place nodes"},
       {"key": "standard:move", "name": "Dispatch", "role": "staple"},
       {"key": "standard:buy_energy", "name": "Buy a city's energy", "role": "staple"},
-      {"key": "standard:insight", "name": "Turn a cube into insight", "role": "hedge", "why": "252 (Matt's ruling 5): taxed to 2 cubes an insight, a fallback under the cards"},
+      {"key": "standard:insight", "name": "Turn a cube into insight", "role": "hedge", "why": "252 (Matt's ruling 5) taxed it; 253 (amendment 11525): 1 cube an insight, once a round (2.5 for 3 at the anchors), a fallback under the cards"},
       {"key": "standard:remove", "name": "Remove agents", "role": "hedge", "why": "228 (Matt, 2026-11-13: standard actions are poorly priced hedges, never the better route): 2 ambassadors for 3 agents (0.94) from r100; 1.4-1.6 a seat-game at 1 ambassador, 0.4 at 2"},
       {"key": "standard:station", "name": "Build a research station", "role": "hedge", "why": "252 (Matt's ruling 2): 2 chips, a station making 1 cube a round: a fallback under the cards"},
       {"key": "standard:antimatter", "name": "Make antimatter", "role": "hedge", "why": "the desperate antimatter source (204)"},

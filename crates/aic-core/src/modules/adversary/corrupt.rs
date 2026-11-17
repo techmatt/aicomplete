@@ -34,6 +34,12 @@ pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) 
     } else {
         take_for_adversary(g, cx, h);
     }
+    let marker = g.tokens(h, LIBERATED);
+    if marker > 0 {
+        // 253: a liberated site retaken.
+        cx.add_tokens(g, h, LIBERATED, -marker);
+        cx.tally(g, "adversary.retakes", 1);
+    }
     let n = g.tokens(h, ADV_AMBASSADOR);
     remove(g, cx, h, n);
     if let Some(s) = node_owner(g, h) {
@@ -154,7 +160,7 @@ pub fn corrupt_sites(g: &mut GameState, cx: &mut Cx, site: CorruptSite, cut: i64
     for t in cv.targets {
         // r80 (ruling #42): agents only; a marker no longer counts.
         let held = g.tokens(t, ADV_AMBASSADOR);
-        if held < n {
+        if held < n + retake_extra(&w, g, t, site) {
             continue;
         }
         // A Corrupt prohibition's token or (178, Matt's ruling #30) a firewall holds it (185's audit: one guard).

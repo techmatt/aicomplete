@@ -196,6 +196,8 @@ fn per_round(w: &World, act: StandardAction) -> Option<i64> {
     match act {
         StandardAction::Node => Some(w.int("board.node_per_round")),
         StandardAction::Troop => Some(w.int("board.troop_per_round")),
+        // 253 (amendment 11525): a screen's cap on the cube converter; 0, none.
+        StandardAction::Insight if w.int("board.insight_per_round") > 0 => Some(w.int("board.insight_per_round")),
         _ => None,
     }
 }
@@ -324,9 +326,10 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
             liberate_ambassadors(w, SiteKind::Factory)
         ),
         StandardAction::Insight => format!(
-            "turn {} into {}",
+            "turn {} into {}{}",
             Resource::ResearchCubes.words(w.int("board.insight_cubes")),
-            Resource::Insight.words(w.int("board.cube_insight"))
+            Resource::Insight.words(w.int("board.cube_insight")),
+            per_round(w, act).map(|n| format!(", {} a round", times(n))).unwrap_or_default()
         ),
         StandardAction::Envoy => "move 1 Discord off the Discord track".into(),
         StandardAction::Botnet => "Take it down (your ambassador stays)".into(),
@@ -414,7 +417,8 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
         StandardAction::Insight => (
             "Turn a cube into insight",
             format!("{} research cubes", t("board.insight_cubes")),
-            format!("gain {} insight, as often as you have cubes", t("board.cube_insight")),
+            // 253 (amendment 11525): `insight_per_round` times a round.
+            format!("gain {} insight, at most {} a round", t("board.cube_insight"), t("board.insight_per_round")),
         ),
         // 136: any seat, as often as it has ambassadors.
         StandardAction::Envoy => (
@@ -538,7 +542,12 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
         StandardAction::Liberate => all.filter(|&h| liberable(w, g, seat, h)).collect(),
         // Gaining an ambassador, credits or insight needs no target.
         StandardAction::Ambassador => vec![usize::MAX],
-        StandardAction::Insight if w.int("board.cube_insight") > 0 => vec![usize::MAX],
+        StandardAction::Insight
+            if w.int("board.cube_insight") > 0
+                && per_round(w, act).is_none_or(|n| g.var(&std_once_key(act, seat)) < n) =>
+        {
+            vec![usize::MAX]
+        }
         StandardAction::Insight => Vec::new(),
         // 136: with no Discord on the track it would do nothing.
         StandardAction::Envoy if w.int("board.envoy_ambassadors") > 0 && g.var(alignment::track(Side::Discord)) > 0 => {
@@ -603,6 +612,10 @@ pub(super) fn std_resolve(
     match act {
         StandardAction::Ambassador => cx.add_resource(g, s, Resource::Ambassadors, 1),
         StandardAction::Insight => {
+            // 253: counted against `insight_per_round` when it has a limit.
+            if per_round(&w, act).is_some() {
+                cx.add_key(g, &std_once_key(act, s), 1);
+            }
             cx.add_resource(g, s, Resource::Insight, w.int("board.cube_insight"));
             cx.tally(g, "board.cubes_converted", 1);
         }

@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 113. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 114. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -160,7 +160,8 @@ rules/README.md (Terms); content/map.json; crates/aic-core/src/map.rs, modules/c
    - its marked city gets an adversary cube: it starts **corrupted**;
    - its marked research station gets an adversary cube and a **botnet**;
    - its other printed research stations (one next to the printed **starting hex**) and its printed factories
-     start **neutral**: every city starts with a neutral factory and a neutral station next to it;
+     start **neutral**: every city starts with a neutral factory and a neutral station next to it. Its printed
+     **empty station sites** stay empty until a card opens a neutral station there (Open Research Campus, Shell Labs);
    - its megaproject card goes beside the map, empty.
    No agents or troops start on the map.
 3. **The adversary:**
@@ -251,7 +252,7 @@ Nothing has a holding limit, and nothing caps your income.
 | **Insight** | **no** | set each round (below) | keeping and playing cards, threats |
 | **Chips** | yes | your factories, cards, Builder powers | buildings, research stations, Procure, chip converters, threats |
 | **Antimatter** | yes | the antimatter plants, the steady source (Penning Trap Array, Antiproton Foundry, Positron Storage Ring, Dark Fiber Collider, Treaty Isotope Bank, Cyclotron Lease: a resource each use for 1, once a round), each board's rare burn (Teardown, Meltdown, Reclaim), Horizon's two converters, two capstones, cards; at worst 5 research cubes | the majors: tier-2 cards (liberations, Annihilation Lance, Fusion Commons, Antimatter Accord, Collider Consortium and more), Containment Reactor, Accelerator Diplomacy |
-| **Research cubes** | yes | your stations, once their megaproject is complete (§9); Cryo Sample Vault; Open Archive | 2 for 1 insight, converters, Penning Trap Array, Field Assay Team, threats |
+| **Research cubes** | yes | your stations, once their megaproject is complete (§9); Cryo Sample Vault; Open Archive | 1 for 1 insight once a round, converters, Penning Trap Array, Field Assay Team, threats |
 | **Ambassadors** | yes (your supply) | 1 at the start, cards, 20 credits | claiming, liberating, Remove agents, Envoy, threats |
 | **Dispatches** | **no** | your board and track spaces, each round | the Dispatch action, 1 each |
 
@@ -327,8 +328,8 @@ The adversary's board prints its turn as a strip of four beats, played in order.
   (§12) still takes its turn in the deal, but the agent dealt to it goes back to the supply instead.
 - **Muster N.** N adversary troops land in each country on its lowest-numbered factory (any owner's); with none, on
   its lowest-numbered city. Only the stage-III cards print one: troops are few, and they come late.
-- **Other lines**, at most two, each one of eight kinds with its own icon: an income raise, a new neutral factory in
-  each country, Discord, Unity taken back, a blackout, node loss by a front, a forced march, botnets spreading.
+- **Other lines**, at most two, each one of eight kinds with its own icon: an income raise, a new neutral factory or
+  research station in each country, Discord, Unity taken back, a blackout, node loss by a front, a forced march, botnets spreading.
   Every stage-II and stage-III card (and Long Patrols in stage I) raises the agent income by 1 a country for the rest
   of the game, so the agents grow as the game goes on. **Botnets spread** puts a botnet in each country onto its
   lowest-numbered site (city, station or factory) without one next to one of its botnets, or nowhere if it has no such
@@ -352,7 +353,8 @@ does nothing to them until it marches (below).
 ### Corruption
 
 A place's **corrupt number** is how many agents it takes: city **4**, station **3**, factory **3** (each 1 fewer from
-level 1, §21) and open land **3**. Only agents count.
+level 1, §21) and open land **3**. Only agents count. A neutral site with a **Liberated marker** (a player freed it)
+takes **1 more**.
 
 **2 agents on your node's hex destroy your node**, whatever else is there (a city with your node loses the node at 2,
 and corrupts only at its own 4). The agents go back to the supply, and the node leaves no mark: losing it is
@@ -560,7 +562,7 @@ Standard actions are always there, a hedge against bad luck: cards and your boar
 | **Build a research station** | 2 chips | target an open hex that isn't an industrial zone or Fallout: the station is yours |
 | **Envoy** | 1 ambassador from your supply | remove 1 Discord from the Discord track |
 | **Gain an ambassador** | 20 credits | into your supply |
-| **Research cubes** | 2 research cubes | gain 1 insight |
+| **Research cubes** | 1 research cube | gain 1 insight; once a round |
 | **Make antimatter** | 5 research cubes | gain 1 antimatter: the desperate way; your engines make it far cheaper |
 | **Sell** | a card from your hand | gain 1 credit |
 
@@ -583,7 +585,9 @@ and an ambassador never share a hex.
 - **Who pays:** your own ambassadors standing on the site pay first, then your supply. Another player's never pay.
 - **Result:** Claim puts your cube on: the site is **yours**. Liberate **frees** it: the adversary's cube comes off and
   the site is left **neutral**, and it adds Unity: city **+5**, station or factory **+2**. Claim it afterward if you
-  want it. A botnet on the site stays.
+  want it. A botnet on the site stays. A **Liberated marker** goes on it: the adversary needs **1 agent more** than its
+  corrupt number to take it back (§6). The marker comes off when anyone claims the site, the adversary retakes it or
+  it is destroyed. A node on that hex still falls to 2 agents.
 
 > **Example: block, then liberate.** A corrupted city in your reach makes 1 Discord a round. You Dispatch an
 > ambassador onto it (1 Dispatch): now it is blocked and makes nothing. A round later you Liberate it: the price is 5 (no agents

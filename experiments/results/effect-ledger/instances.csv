@@ -276,6 +276,9 @@ hostile_buyout,liberate ambassadors [play],play,"own=True, ambassadors=3",1.0,62
 hyperscale_botnet,draw [play],play,count=3,3.0,12.0,4.0,6.47,2.16
 hyperscale_botnet,income insight [passive],passive,"resource=insight, amount=4",4.0,25.0,6.25,13.49,3.37
 hyperscale_botnet,tags [card],card,cyber,1.0,1.0,1.0,0.54,0.54
+industrial_commons,target [play],play,on=free_zone,1.0,0.0,0.0,0.0,0.0
+industrial_commons,create_site factory [play],play,kind=factory,1.0,3.0,3.0,1.33,1.33
+industrial_commons,place_ambassadors [play],play,"count=1, at=on",1.0,6.0,6.0,2.67,2.67
 interceptor_battery,target [play],play,on=adversary,1.0,0.0,0.0,0.0,0.0
 interceptor_battery,push [play],play,"max=3, pieces=['agents', 'troops']",3.0,4.2,1.4,3.54,1.18
 interceptor_battery,target [action],action,on=adversary,1.0,0.0,0.0,0.0,0.0
@@ -365,6 +368,9 @@ open_assembly,add_tokens followers [play],play,"kind=followers, amount=1, here=T
 open_assembly,when play diplomacy [passive],passive,"on={'event': 'play', 'tag': 'diplomacy'}, then=[{'op': 'add_tokens', 'kind': 'followers', 'amount': 1, 'here': True}]",1.0,0.0,0.0,0.0,0.0
 open_assembly,threshold [passive],passive,"at=2, then=[{'op': 'sway', 'side': 'unity', 'amount': 3, 'narrative': 'trust'}]",1.0,10.8,10.8,12.84,12.84
 open_assembly,tags [card],card,diplomacy,1.0,1.0,1.0,1.19,1.19
+open_research_campus,target [play],play,on=empty_site,1.0,0.0,0.0,0.0,0.0
+open_research_campus,create_site station [play],play,kind=station,1.0,5.0,5.0,2.27,2.27
+open_research_campus,place_ambassadors [play],play,"count=1, at=on",1.0,6.0,6.0,2.73,2.73
 open_source_uprising,target [play],play,on=agent_city,1.0,0.0,0.0,0.0,0.0
 open_source_uprising,convert [play],play,max=4,4.0,14.0,3.5,5.85,1.46
 open_source_uprising,draw [play],play,count=2,2.0,8.0,4.0,3.35,1.67

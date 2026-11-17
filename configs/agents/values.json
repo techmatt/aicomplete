@@ -142,6 +142,8 @@
     "rally": {"credits": -2, "per": "adversary ambassador a Rally lands on each board (151; an event's: its pool)"},
     "increase_income": {"credits": -1.1, "per": "compute a country a round of an income rise (231: x rates.countries), each round left; an ambassador a board a round counts 2 compute a board (151)"},
     "create_site": {"credits": 3, "per": "neutral site opened in each country (a target both sides contest)"},
+    "open_station": {"credits": 5, "per": "253: neutral research station a player card opens on its target, in reach: a neutral cube a round on its megaproject (about a third of a cube to you, income_rounds) and a claim target next to you, less the adversary corrupting it"},
+    "open_factory": {"credits": 3, "per": "253: neutral factory a player card opens on its target, in reach: a free zone the adversary can't build on, chips for the cities next to it, a claim target; less its Discord-tip drones while no ambassador stands on it"},
     "corrupt": {"credits": -10, "per": "a Corrupt X line (about one site a game in reach of corrupting, a liberation the other way)"},
     "lose_node_or": {"credits": -1, "per": "the cheaper of a node and the payment"},
     "flag": {"credits": 3, "per": "a round flag: against for blackout, sabotage and embargo; cordon at its row"},

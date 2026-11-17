@@ -423,22 +423,28 @@ fn create_source(ctx: &Ctx) -> &'static str {
 fn create_site(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, kind: Facility) {
     let w = cx.world;
     let zones = free_zones(&w, g);
+    let fits = |g: &GameState, h: usize| match kind {
+        Facility::Station => empty_station_site(&w, g, h),
+        Facility::Factory => zones.contains(&h),
+    };
+    let token = kind.token();
+    let name = if kind == Facility::Station { "research station" } else { "factory" };
+    // 253 (Matt's ruling 3, 2026-11-16): a player card opens one on its target (the target box: an empty
+    // station site or a free industrial zone in reach), never in each country.
+    if let Some(target) = ctx.target {
+        if let Some(h) = target.filter(|&h| fits(g, h)) {
+            cx.add_tokens(g, h, token, 1);
+            cx.tally(g, &format!("board.sites_opened.{token}"), 1);
+            cx.note(Some(h), || format!("A neutral {name} opens at {}", hex_name(&w, h)));
+        }
+        return;
+    }
     for c in scope_countries(&w, ctx.scope) {
-        let mut spots: Vec<usize> = w.map.countries[c]
-            .hexes
-            .iter()
-            .copied()
-            .filter(|&h| match kind {
-                Facility::Station => w.map.hexes[h].station_site && !has_building(g, h) && node_owner(g, h).is_none(),
-                Facility::Factory => zones.contains(&h),
-            })
-            .collect();
+        let mut spots: Vec<usize> = w.map.countries[c].hexes.iter().copied().filter(|&h| fits(g, h)).collect();
         spots.sort_by_key(|&h| w.map.hexes[h].number);
         let Some(&h) = spots.first() else {
             continue;
         };
-        let token = kind.token();
-        let name = if kind == Facility::Station { "research station" } else { "factory" };
         cx.add_tokens(g, h, token, 1);
         cx.tally(g, &format!("adversary.sites_created.{token}"), 1);
         cx.note(Some(h), || format!("A neutral {name} opens at {}", hex_name(&w, h)));

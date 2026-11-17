@@ -1,0 +1,17 @@
+{
+ "name": "f253-read",
+ "note": "253: the full read on fresh seeds (48780-48827): greedy and the judge (the strategist), three pairs, d0-d4, 48 seeds a cell. The same spec runs on the r112 binary (its configs) for the paired base. The r4off arm (amendment 11525, d3's drop split) is f253-r4off.json.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {"name": "bp", "set": []},
+  {"name": "br", "set": ["ai.boards=0,2"]},
+  {"name": "pr", "set": ["ai.boards=1,2"]}
+ ],
+ "difficulties": [0, 1, 2, 3, 4],
+ "agents": ["greedy", "strategist"],
+ "games": 48,
+ "first_seed": 48780,
+ "records": 0
+}

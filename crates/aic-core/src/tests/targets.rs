@@ -213,6 +213,33 @@ fn face_text(id: &str) -> String {
     crate::face::card_face(content().cards.iter().find(|c| c.id == id).expect("a card")).full_text()
 }
 
+/// 253 (Matt's ruling 3): Open Research Campus opens a neutral research station on its target, an empty printed
+/// station site in reach, with the seat's ambassador on it and no cube; only there, and nowhere a station stands.
+#[test]
+fn a_neutral_site_card_opens_one_station_on_its_target() {
+    let (rules, mut g) = table_with(&[], &["open_research_campus"], &[]);
+    let w = rules.world();
+    let m = &rules.map;
+    let site = (0..m.hexes.len())
+        .find(|&h| crate::modules::common::empty_station_site(&w, &g, h))
+        .expect("an empty station site");
+    let next = m.hexes[site].neighbors.iter().copied().find(|&h| kind(m, h) != HexKind::Ocean).unwrap();
+    put(&mut g, next, node(0), 1);
+    let stations: i64 = (0..g.hexes.len()).map(|h| g.tokens(h, STATION)).sum();
+    rules.apply_mut(&mut g, &Action::Play { seat: 0, card: "open_research_campus".into() }, None).unwrap();
+    pick(&rules, &mut g, site);
+    answer_all(&rules, &mut g);
+    assert_eq!(g.tokens(site, STATION), 1);
+    assert_eq!(g.tokens(site, cube(0)) + g.tokens(site, ADV_CUBE), 0, "neutral");
+    assert_eq!(g.tokens(site, ambassador(0)), 1);
+    assert_eq!((0..g.hexes.len()).map(|h| g.tokens(h, STATION)).sum::<i64>(), stations + 1, "one station, not one a country");
+    assert!(!crate::modules::common::empty_station_site(&w, &g, site));
+    assert_eq!(
+        face_text("open_research_campus"),
+        "Target: an empty station site. A neutral research station opens on it. Place 1 Ambassador on it."
+    );
+}
+
 /// The six country cards: a country-sized effect is the target's country; Shelter takes no target.
 #[test]
 fn country_cards_use_the_target_s_country() {

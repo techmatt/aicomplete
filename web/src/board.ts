@@ -156,6 +156,14 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
         el('circle', { cx: 0, cy: 0, r: f(0.4 * s), fill: 'none', stroke: '#8d6e00', 'stroke-width': f(0.1 * s) }),
       );
       break;
+    case 'liberated':
+      // 253: the Liberated marker on a neutral site a player freed (the adversary needs 1 agent more to retake it):
+      // a green ring with a check.
+      g.append(
+        el('circle', { cx: 0, cy: 0, r: f(0.8 * s), fill: '#e8f5e9', stroke: '#2e7d32', 'stroke-width': f(0.18 * s), class: 'glyph' }),
+        el('path', { d: `M${f(-0.4 * s)},${f(0)} L${f(-0.1 * s)},${f(0.35 * s)} L${f(0.45 * s)},${f(-0.35 * s)}`, fill: 'none', stroke: '#2e7d32', 'stroke-width': f(0.2 * s) }),
+      );
+      break;
     case 'no_rally':
     case 'no_muster':
     case 'no_corrupt':
@@ -175,10 +183,10 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
 }
 
 /** Glyph scale per kind: owner cubes and facilities a little larger than pawns. */
-const SCALE: Record<string, number> = { cube: 1.05, station: 1.1, factory: 1, node: 1, ambassador: 0.9, troop: 0.95, unit: 0.95, harden: 0.85, botnet: 1, fallout: 0.95, firewall: 0.9, city_chip: 0.7, no_rally: 0.8, no_muster: 0.8, no_corrupt: 0.8 };
+const SCALE: Record<string, number> = { cube: 1.05, station: 1.1, factory: 1, node: 1, ambassador: 0.9, troop: 0.95, unit: 0.95, harden: 0.85, botnet: 1, fallout: 0.95, firewall: 0.9, city_chip: 0.7, liberated: 0.7, no_rally: 0.8, no_muster: 0.8, no_corrupt: 0.8 };
 /** The adversary's tokens: its owner cube, its ambassadors, its troops, its botnets, Fallout. */
 const isAdversary = (kind: string) => kind === 'troop' || kind === 'botnet' || kind === 'fallout' || kind.endsWith(':adversary');
-const ORDER = ['cube', 'station', 'factory', 'node', 'harden', 'firewall', 'no_rally', 'no_muster', 'no_corrupt', 'city_chip', 'unit', 'ambassador', 'fallout', 'botnet', 'troop'];
+const ORDER = ['cube', 'station', 'factory', 'node', 'harden', 'firewall', 'no_rally', 'no_muster', 'no_corrupt', 'city_chip', 'liberated', 'unit', 'ambassador', 'fallout', 'botnet', 'troop'];
 const rank = (k: string) => {
   const i = ORDER.indexOf(k.split(':')[0]);
   return i < 0 ? ORDER.length : i;

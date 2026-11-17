@@ -397,6 +397,52 @@
    "reuses": null
   },
   {
+   "id": "mil_s2_shell_labs",
+   "name": "Shell Labs",
+   "stage": 2,
+   "pulls": [
+    {
+     "tier": 2,
+     "tags": [
+      "cyber",
+      "industry"
+     ],
+     "per": "country"
+    }
+   ],
+   "standing": [
+    {
+     "op": "rally",
+     "site": "station"
+    },
+    {
+     "op": "create_site",
+     "kind": "station"
+    },
+    {
+     "op": "increase_income",
+     "ambassadors": 1
+    }
+   ],
+   "twists": [
+    {
+     "op": "corrupt",
+     "site": "station"
+    }
+   ],
+   "text": "Threat, each country: Cyber 2 or Industry 2. Rally: research stations. Each country: a neutral research station opens on its lowest-numbered empty station site. Income: +1 Agent a country a round. Corrupt: research stations.",
+   "harms": [
+    "adversary pieces placed",
+    "facilities destroyed or corrupted"
+   ],
+   "value": "harm 38 at values.json (Rally: research stations: 12; Each board: a neutral research station opens on its lowest-numbered empty station site: -6; Income: +1 agent a board a round: 22; Corrupt: research stations: 10); the players' cheapest answer, a removal a piece it lands (6 at 2 boards, 5 each): 30; 1.27x. Pulls priced on their own threat cards.",
+   "check": "A front lab a country: a neutral station opens on an empty printed site (a target both sides contest: a cube a round on its megaproject while neutral, compute once corrupted), the pool lands on the stations, Corrupt stations takes one 3 gather on.",
+   "flags": [
+    "253 (Matt, 2026-11-16, ruling 3: some adversary cards place neutral stations or factories): new; the station twin of Factory Drive"
+   ],
+   "reuses": null
+  },
+  {
    "id": "mil_s2_fifth_column",
    "name": "Fifth Column",
    "stage": 2,

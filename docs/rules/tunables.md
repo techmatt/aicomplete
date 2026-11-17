@@ -43,8 +43,10 @@ conventions: [README.md](README.md).*
 | `board.envoy_ambassadors` | 1 | 0..5 | standard action Envoy: your ambassadors from the supply, used up, to move 1 Discord off the Discord track (0: no such action) |
 | `board.ambassador_credits` | 20 | 1..50 | standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit) |
 | `board.sell_credits` | 1 | 0..20 | standard action: credits for selling a card from hand |
-| `board.cube_insight` | 1 | 0..5 | standard action, no limit a round: insight for `insight_cubes` research cubes (0: no such action) |
-| `board.insight_cubes` | 2 | 1..5 | standard action Turn a cube into insight: research cubes a use (252: taxed) |
+| `board.cube_insight` | 1 | 0..5 | standard action Turn a cube into insight: insight for `insight_cubes` research cubes, `insight_per_round` times a round (0: no such action) |
+| `board.insight_cubes` | 1 | 1..5 | standard action Turn a cube into insight: research cubes a use (252: taxed) |
+| `board.insight_per_round` | 1 | 0..5 | 253: times a seat may Turn a cube into insight a round (0: no limit) |
+| `board.liberate_neutral` | 1 | 0..1 | 252 (Matt's ruling 4): 1, Liberate leaves the site neutral; 0, it becomes the liberator's (r112, a screen's off arm) |
 | `board.antimatter_cubes` | 5 | 0..10 | standard action, the desperate source: research cubes for 1 antimatter, no limit a round (0: no such action) |
 | `board.botnet_credits` | 20 | 1..50 | standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays) |
 | `board.std_off` | 0 | 0..15 | a probe's switch: standard actions not offered, by place in the table from 1 (station, remove, lift, dispatch, ambassador, claim, liberate, insight, envoy, botnet, buy energy, antimatter, node, troop, factory; 0: none off) |
@@ -56,6 +58,7 @@ conventions: [README.md](README.md).*
 | `adversary.corrupt_factory_at` | 3 | 1..20 | a factory's corrupt number |
 | `adversary.corrupt_land_at` | 3 | 1..20 | open land's corrupt number (only a Corrupt open land line; it takes Fallout) |
 | `adversary.corrupt_node_at` | 2 | 1..20 | a node's corrupt number: a hex with a player's node and this many agents loses the node |
+| `adversary.retake_agents` | 1 | 0..5 | 253: agents beyond the corrupt number to retake a neutral site a player liberated (its Liberated marker; 0: none) |
 | `adversary.corrupt_cut` | 1, 1, 1, 0 | 0..5 | difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land) |
 | `adversary.corrupt_cut_at` | 1 | 0..5 | the difficulty level from which corrupt_cut applies |
 | `adversary.blight_discord` | 1 | 0..5 | Discord each Fallout token sways each round |

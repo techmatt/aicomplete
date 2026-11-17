@@ -396,6 +396,14 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             one(clause(icons, format!("{gain} 1 {} per {tags} on your cards", noun(*resource, 1))))
         }
         Op::BuildFactory => one(clause(vec![w("factory")], "build a factory on it")),
+        // 253 (Matt's ruling 3): a player card opens a neutral site on its target.
+        Op::CreateSite { kind } => {
+            let (glyph, name) = match kind {
+                Facility::Station => ("station", "research station"),
+                Facility::Factory => ("factory", "factory"),
+            };
+            one(clause(vec![w(glyph)], format!("a neutral {name} opens on it")))
+        }
         // 219: a board burn; its minus is a loss (179), the land token the adversary's mark.
         Op::Burn { facility, blight } => {
             let (piece, pieces) =
@@ -747,7 +755,6 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::PullUnity { .. }
         | Op::AdversaryBuild
         | Op::Create { .. }
-        | Op::CreateSite { .. }
         | Op::Corrupt { .. }
         | Op::Flag { .. }
         | Op::Requisition { .. }

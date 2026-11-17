@@ -335,6 +335,8 @@ pub enum TargetSpec {
     StationSite,
     /// A neutral research station a card can claim.
     NeutralStation,
+    /// 253: an empty printed station site, where a card opens a neutral research station.
+    EmptySite,
     /// A free industrial zone (a factory's site).
     FreeZone,
     /// A hex with a Fallout token.
@@ -370,6 +372,7 @@ impl TargetSpec {
             TargetSpec::CorruptedFacility => "a corrupted research station or factory",
             TargetSpec::StationSite => "an open hex",
             TargetSpec::NeutralStation => "a neutral research station",
+            TargetSpec::EmptySite => "an empty station site",
             TargetSpec::FreeZone => "a free industrial zone",
             TargetSpec::Fallout => "Fallout",
             TargetSpec::Facility => "a facility",
@@ -393,7 +396,10 @@ impl TargetSpec {
             TargetSpec::CorruptedStation => "station",
             TargetSpec::CorruptedFactory | TargetSpec::FreeZone => "factory",
             TargetSpec::CorruptedSite => "city",
-            TargetSpec::CorruptedFacility | TargetSpec::StationSite | TargetSpec::NeutralStation => "station",
+            TargetSpec::CorruptedFacility
+            | TargetSpec::StationSite
+            | TargetSpec::NeutralStation
+            | TargetSpec::EmptySite => "station",
             TargetSpec::Fallout => "fallout",
             TargetSpec::Facility => "shield",
             TargetSpec::AgentCity => "city",
@@ -1325,7 +1331,7 @@ pub enum Op {
     },
     /// 138, site creation: in each country in scope, a neutral `kind` on its
     /// lowest-numbered empty station site (a station) or free industrial zone
-    /// (a factory).
+    /// (a factory). 253: after a player card's target, on the target alone.
     CreateSite {
         kind: Facility,
     },
@@ -1605,6 +1611,8 @@ impl Op {
                 | Op::Cordon
                 | Op::BuildStation
                 | Op::ClaimStation
+                // 253: on a player card it opens its site on the target (a threat's or a team card's needs none).
+                | Op::CreateSite { .. }
                 | Op::CutBotnet
                 | Op::MoveOne { .. }
                 | Op::SpreadAmbassadors

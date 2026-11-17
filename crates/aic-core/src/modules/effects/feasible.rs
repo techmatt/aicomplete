@@ -82,7 +82,8 @@ fn feasible_aimed(
         }
         match e {
             Op::Target { .. } => false,
-            Op::Shelter => node_count(g, seat) > 0,
+            // 253: a second Shelter the same round adds nothing (paid_for_nothing found a replay of Aegis Grid Lockdown).
+            Op::Shelter => node_count(g, seat) > 0 && g.var(&board::reach_shelter(seat)) == 0,
             Op::PlaceAmbassadors { .. } => false,
             Op::Harden { .. } => !harden_hexes(w, g, seat).is_empty(),
             Op::MoveOne { range } => !movable_one(w, g, seat, *range).is_empty(),

@@ -217,6 +217,9 @@ def op_worth(t, o):
         return Worth(now=row(op))
     if op == 'place_ambassadors':
         return Worth(now=row(op) * r('ambassadors') * n('count'))
+    # 253: a player card's site opens on its target (value.rs list_worth): one site.
+    if op == 'create_site':
+        return Worth(now=row('open_station' if o['kind'] == 'station' else 'open_factory'))
     if op == 'remove_ambassadors_country':
         m = (t.rate('token_pile') if n('max') == 0 else n('max')) * area_share(t, o)
         sway = math.floor(m / n('unity_per')) * t.rate('sway') if n('unity_per') > 0 else 0.0

@@ -42,7 +42,9 @@ difficulty surcharge. No project musters.
 (`corrupt_land_at` 3; an empty land hex; it takes Fallout). Only an X not yet the adversary's counts. In each country:
 **every agent next to exactly one X moves onto it** (across borders too; one next to two or more stays); then **every
 X holding its number of agents corrupts**, and its agents go to the supply. A line may print "(1 fewer)"; difficulty
-lowers a city's, station's and factory's number (`corrupt_cut`; not land's or a node's). **One aftermath: whatever
+lowers a city's, station's and factory's number (`corrupt_cut`; not land's or a node's). A neutral site holding a
+**Liberated marker** (a player liberated it, [ambassadors.md](ambassadors.md)) needs `retake_agents` (1) agent more, in
+Corrupt lines and natural corruption alike (253); a node on that hex takes none. **One aftermath: whatever
 corrupts takes one adversary mark.**
 - **A corrupted site** takes the adversary's cube (replacing a player's). **It destroys only a node on its own hex**
   (protections apply, [war.md](war.md)); player ambassadors there are lost. Sanctuary (capstone): neither corruption
@@ -146,6 +148,7 @@ prints its lines in the Card and Corrupt beats' order (`drafts/adversary/check.p
 | Signal Jamming | 1 | tier 1 (security or power) | botnet hexes | 0 | cities |
 | Mobilization | 2 | tier 2 (security) | coastal cities | 0 | cities |
 | Station Raids | 2 | tier 2 (security or cyber) | research stations | 0 | research stations |
+| Shell Labs | 2 | tier 2 (cyber or industry) | research stations | 0 | research stations |
 | Fifth Column | 2 | tier 2 (diplomacy or cyber) | cities | 0 | cities (1 fewer) |
 | Border War | 2 | tier 2 (security) | factories | 0 | factories |
 | Supply Lines | 2 | tier 1 (security or industry); tier 2 (security or industry) | factories | 0 | factories |

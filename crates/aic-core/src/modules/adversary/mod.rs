@@ -37,6 +37,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("corrupt_factory_at", 1, 20, "a factory's corrupt number"),
     ParamSpec::int("corrupt_land_at", 1, 20, "open land's corrupt number (only a Corrupt open land line; it takes Fallout)"),
     ParamSpec::int("corrupt_node_at", 1, 20, "a node's corrupt number: a hex with a player's node and this many agents loses the node"),
+    ParamSpec::int("retake_agents", 0, 5, "253: agents beyond the corrupt number to retake a neutral site a player liberated (its Liberated marker; 0: none)"),
     ParamSpec::list("corrupt_cut", 0, 5, "difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land)"),
     ParamSpec::int("corrupt_cut_at", 0, 5, "the difficulty level from which corrupt_cut applies"),
     ParamSpec::int("blight_discord", 0, 5, "Discord each Fallout token sways each round"),

@@ -1,0 +1,29 @@
+{
+ "name": "s253-screen",
+ "note": "253 (amendment 11525): the judge on the dev seeds 36800-36831, three pairs x five arms, d0-d3; farmed at 1154a96. Every arm sets 252's dials explicitly (retake 0, converter 2 cubes an insight, no limit), so it reruns at any later baseline. Arms: base (r114's cards on 252's dials), r4off (ruling 4 off: Liberate makes the site the liberator's, as r112), retake1 (1 agent more to retake a liberated neutral site), conv11 (1 cube an insight; at 1154a96 its once-a-round limit was not yet enforced, so this arm read 1:1 with no limit), cardsoff (the two new player neutral-site cards blanked). Variant-major: pair, then arm.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {"name": "bp-base", "set": ["adversary.retake_agents=0", "board.insight_cubes=2", "board.insight_per_round=0"]},
+  {"name": "bp-r4off", "set": ["adversary.retake_agents=0", "board.insight_cubes=2", "board.insight_per_round=0", "board.liberate_neutral=0"]},
+  {"name": "bp-retake1", "set": ["adversary.retake_agents=1", "board.insight_cubes=2", "board.insight_per_round=0"]},
+  {"name": "bp-conv11", "set": ["adversary.retake_agents=0", "board.insight_cubes=1", "board.insight_per_round=1"]},
+  {"name": "bp-cardsoff", "set": ["adversary.retake_agents=0", "board.insight_cubes=2", "board.insight_per_round=0", "cards.open_research_campus.cost=99", "cards.industrial_commons.cost=99"]},
+  {"name": "br-base", "set": ["ai.boards=0,2", "adversary.retake_agents=0", "board.insight_cubes=2", "board.insight_per_round=0"]},
+  {"name": "br-r4off", "set": ["ai.boards=0,2", "adversary.retake_agents=0", "board.insight_cubes=2", "board.insight_per_round=0", "board.liberate_neutral=0"]},
+  {"name": "br-retake1", "set": ["ai.boards=0,2", "adversary.retake_agents=1", "board.insight_cubes=2", "board.insight_per_round=0"]},
+  {"name": "br-conv11", "set": ["ai.boards=0,2", "adversary.retake_agents=0", "board.insight_cubes=1", "board.insight_per_round=1"]},
+  {"name": "br-cardsoff", "set": ["ai.boards=0,2", "adversary.retake_agents=0", "board.insight_cubes=2", "board.insight_per_round=0", "cards.open_research_campus.cost=99", "cards.industrial_commons.cost=99"]},
+  {"name": "pr-base", "set": ["ai.boards=1,2", "adversary.retake_agents=0", "board.insight_cubes=2", "board.insight_per_round=0"]},
+  {"name": "pr-r4off", "set": ["ai.boards=1,2", "adversary.retake_agents=0", "board.insight_cubes=2", "board.insight_per_round=0", "board.liberate_neutral=0"]},
+  {"name": "pr-retake1", "set": ["ai.boards=1,2", "adversary.retake_agents=1", "board.insight_cubes=2", "board.insight_per_round=0"]},
+  {"name": "pr-conv11", "set": ["ai.boards=1,2", "adversary.retake_agents=0", "board.insight_cubes=1", "board.insight_per_round=1"]},
+  {"name": "pr-cardsoff", "set": ["ai.boards=1,2", "adversary.retake_agents=0", "board.insight_cubes=2", "board.insight_per_round=0", "cards.open_research_campus.cost=99", "cards.industrial_commons.cost=99"]}
+ ],
+ "difficulties": [0, 1, 2, 3],
+ "agents": ["strategist"],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

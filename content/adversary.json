@@ -320,6 +320,45 @@
    ]
   },
   {
+   "id": "mil_s2_shell_labs",
+   "name": "Shell Labs",
+   "stage": 2,
+   "pulls": [
+    {
+     "tier": 2,
+     "tags": [
+      "cyber",
+      "industry"
+     ]
+    }
+   ],
+   "standing": [
+    {
+     "op": "rally",
+     "site": "station"
+    },
+    {
+     "op": "create_site",
+     "kind": "station"
+    },
+    {
+     "op": "increase_income",
+     "ambassadors": 1
+    }
+   ],
+   "twists": [
+    {
+     "op": "corrupt",
+     "site": "station"
+    }
+   ],
+   "text": "Threat, each country: Cyber 2 or Industry 2. Rally: research stations. Each country: a neutral research station opens on its lowest-numbered empty station site. Income: +1 Agent a country a round. Corrupt: research stations.",
+   "harms": [
+    "adversary pieces placed",
+    "facilities destroyed or corrupted"
+   ]
+  },
+  {
    "id": "mil_s2_fifth_column",
    "name": "Fifth Column",
    "stage": 2,

@@ -11,6 +11,7 @@
 
 use crate::content::{Op, RoundFlag};
 use crate::module::World;
+use crate::modules::common::retake_extra;
 use crate::op::{CorruptSite, CreateAt, CreateIf, RallyAt, Step, Where};
 use crate::state::GameState;
 
@@ -222,7 +223,7 @@ pub fn corrupt_plan(w: &World, g: &GameState, site: CorruptSite, n: i64, scope: 
         .iter()
         .copied()
         .filter(|t| !cv.blocked.iter().any(|(b, _)| b == t))
-        .filter(|&t| held(w, g, t, &counts, site) >= n)
+        .filter(|&t| held(w, g, t, &counts, site) >= n + retake_extra(w, g, t, site))
         .map(|t| (t, counts[t]))
         .collect()
 }
@@ -244,7 +245,9 @@ pub fn natural_targets(w: &World, g: &GameState, site: CorruptSite, n: i64) -> V
         return Vec::new();
     }
     let counts: Vec<i64> = (0..g.hexes.len()).map(|h| g.tokens(h, ADV_AMBASSADOR)).collect();
-    (0..g.hexes.len()).filter(|&h| corrupt_target(w, g, h, site) && held(w, g, h, &counts, site) >= n).collect()
+    (0..g.hexes.len())
+        .filter(|&h| corrupt_target(w, g, h, site) && held(w, g, h, &counts, site) >= n + retake_extra(w, g, h, site))
+        .collect()
 }
 
 /// The card whose build and corrupt steps come next: the face-up one, or

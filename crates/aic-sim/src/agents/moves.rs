@@ -462,6 +462,8 @@ fn at_risk(w: &World, g: &GameState) -> Vec<(usize, i64, i64, bool)> {
             continue;
         }
         let Some(&(_, site, (n, gathers))) = lines.iter().find(|(k, _, _)| *k == kind) else { continue };
+        // 253: a liberated neutral site needs the retake's agents more (the engine's `retake_extra`).
+        let n = n + common::retake_extra(w, g, h, site);
         let count = agents(g, h) + if gathers { gathered(h, site) } else { 0 };
         if count > 0 && count + 2 >= n {
             out.push((h, count, n, gathers));

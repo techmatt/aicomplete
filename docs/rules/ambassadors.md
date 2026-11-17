@@ -47,9 +47,12 @@ Cities, research stations and factories follow one set of rules and differ only 
   `claim_station` 4 or `claim_factory` 3 and `free_facility` 2 Unity for a station or factory. **A site with an agent
   on it can't be claimed or liberated** (r91: no "+1 per agent"; clear them first, with Remove agents, a card or a
   power). The adversary's cube comes off. It needs the site **in reach** (your node on or next to it: getting close
-  is the risk); a botnet on it stays. No agents land on it. Its factories keep their owners. To retake it the
-  adversary must corrupt it again, piling its corrupt number of agents on it ([adversary.md](adversary.md)), as any
-  neutral site. Liberate stays the win route (the purge). A **liberate card** ([player-cards.md](player-cards.md),
+  is the risk); a botnet on it stays. No agents land on it. Its factories keep their owners. A **Liberated marker**
+  goes on it: **to retake it the adversary must pile `retake_agents` (1) agent more than its corrupt number** on it
+  ([adversary.md](adversary.md); 253, amendment 11525: the adversary commits more to take back what you freed, Matt's
+  ruling 4). The marker comes off when anyone claims the site, the adversary retakes it or it is
+  destroyed; a node on that hex takes no extra agent. Liberate stays the win
+  route (the purge). A **liberate card** ([player-cards.md](player-cards.md),
   *The liberate capstones*) liberates a city exactly so, for its own price instead of the bill: the agents come off,
   Unity sways and it is left neutral; going straight from adversary to yours is a rare card power (Hostile Buyout
   alone). The price is the same all game (r67; late strength comes from cards).
@@ -123,7 +126,8 @@ Diplomacy tag on each card you play (127; at 1 a tag of any kind it piled 52-84 
 and makes something for its owner. Spend your ambassadors to claim a neutral one or to take one back from the
 adversary: 5 for a city, 4 for a station, 3 for a factory either way, never with an agent sitting on
 it; your own ambassadors standing on it pay first. A claim makes it yours; taking one back (Liberate) leaves it
-neutral and sways Unity your way, and you claim it after, if you want it. A station you own makes 1 cube a round (a
+neutral and sways Unity your way, and you claim it after, if you want it; until then a Liberated marker makes the
+adversary bring one agent more to take it back. A station you own makes 1 cube a round (a
 factory 1 chip), so a claim is a slow fallback; a few cards claim a station for energy instead. Every meeting of an agent and an ambassador is one for one. Stand one ambassador on an adversary site
 to shut it off, and clear agents off yours, which they shut off the same way. An ambassador of yours on your own piece
 can take a hit for it.
