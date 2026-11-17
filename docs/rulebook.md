@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 115. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 117. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -161,7 +161,7 @@ rules/README.md (Terms); content/map.json; crates/aic-core/src/map.rs, modules/c
    - its marked research station gets an adversary cube and a **botnet**;
    - its other printed research stations (one next to the printed **starting hex**) and its printed factories
      start **neutral**: every city starts with a neutral factory and a neutral station next to it. Its printed
-     **empty station sites** stay empty until a card opens a neutral station there (Open Research Campus, Shell Labs);
+     **empty station sites** stay empty until a card opens a station there (Open Research Campus, yours; Shell Labs, neutral);
    - its megaproject card goes beside the map, empty.
    No agents or troops start on the map.
 3. **The adversary:**
@@ -251,8 +251,8 @@ Nothing has a holding limit, and nothing caps your income.
 | **Energy** | yes | income, the city your node hosts, neutral cities (bought), cards | it powers things: placing nodes, powers (Buy In, Accord, Bulwark, Patrol), building Actions, cards, threats |
 | **Insight** | **no** | set each round (below) | keeping and playing cards, threats |
 | **Chips** | yes | your factories, cards, Builder powers | buildings, research stations, Procure, chip converters, threats |
-| **Antimatter** | yes | the antimatter plants, the steady source (Penning Trap Array, Antiproton Foundry, Positron Storage Ring, Dark Fiber Collider, Treaty Isotope Bank, Cyclotron Lease: a resource each use for 1, once a round), each board's rare burn (Teardown, Meltdown, Reclaim), Horizon's two converters, two capstones, cards; at worst 5 research cubes | the majors: tier-2 cards (liberations, Annihilation Lance, Fusion Commons, Antimatter Accord, Collider Consortium and more), Containment Reactor, Accelerator Diplomacy |
-| **Research cubes** | yes | your stations, once their megaproject is complete (§9); Cryo Sample Vault; Open Archive | 1 for 1 insight once a round, converters, Penning Trap Array, Field Assay Team, threats |
+| **Antimatter** | yes | the antimatter plants, the steady source (Penning Trap Array, Antiproton Foundry, Positron Storage Ring, Dark Fiber Collider, Treaty Isotope Bank, Cyclotron Lease: a resource each use for 1, once a round), each board's rare burn (Teardown, Meltdown, Reclaim), Horizon's two converters, two capstones, cards; at worst 5 research cubes | the majors: tier-2 cards (liberations, Annihilation Lance, Fusion Commons, Antimatter Accord, Collider Consortium and more), Orbital Relay Launcher's Action, Containment Reactor, Accelerator Diplomacy |
+| **Research cubes** | yes | your stations, once their megaproject is complete (§9); Cryo Sample Vault; Open Archive | 1 for 1 insight once a round, converters, Penning Trap Array, Field Assay Team, Research Reactor, Survey Drone Fleet, threats |
 | **Ambassadors** | yes (your supply) | 1 at the start, cards, 20 credits | claiming, liberating, Remove agents, Envoy, threats |
 | **Dispatches** | **no** | your board and track spaces, each round | the Dispatch action, 1 each |
 
@@ -597,10 +597,12 @@ and an ambassador never share a hex.
 
 **Liberate cards** (Popular Uprising and some tier-2 cards) liberate their target, a corrupted city in reach, as Liberate does, for the card's own price
 instead of ambassadors. Hostile Buyout alone may target any corrupted site, and puts your cube on a station or factory
-it frees (a city it frees stays neutral).
+it frees (a city it frees stays neutral). The others then **claim a facility next to the city**: a neutral station or
+factory there with no agent and no embargo on it becomes yours, even out of your reach; with none, nothing more happens.
 
-A card that lets you **claim** a neutral research station claims it as Claim does, unpaid: a station with an agent on
-it can't be claimed (clear it first).
+A card that lets you **claim** a neutral research station or factory claims it as Claim does, unpaid: one with an
+agent on it can't be claimed (clear it first). Open Research Campus and Industrial Commons open a station or factory
+on their target and claim it: the cards' way to an owned research station.
 
 ### Megaprojects and converters
 

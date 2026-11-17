@@ -70,6 +70,7 @@ cargo build --workspace
 cargo check --tests                           # a missing import in ~1 min, before a full test build
 cargo test --workspace                        # fast lane, the default: ~6 s once built, ~20 s after an aic-sim edit
 cargo test-all                                # full run, slow lane included: ~1 min on 6 test threads once built
+                                              # (threads: --test-threads=N; -j N fails in a second, reading as a pass)
 cargo test-slow                               # the slow lane alone: ~50 s
 cargo build --release -p aic-sim              # ~30 s after an aic-sim edit, ~45 s after aic-core, ~1 min cold
 ./target/release/aic-sim docs                 # regenerate the generated docs (--check: report only)

@@ -346,7 +346,7 @@ fn claiming_costs_by_site_type() {
     assert_eq!(g.stats.counters["board.claimed.factory"], 1);
 }
 
-/// 148 (D70): a card's station claim (`claim_station`) claims as the Claim action does: 206 (amendment 9208), a
+/// 148 (D70): a card's station claim (`claim_site`) claims as the Claim action does: 206 (amendment 9208), a
 /// station holding agents is shut to it until they are gone.
 #[test]
 fn card_claims_a_station_as_claim_does() {
@@ -357,15 +357,15 @@ fn card_claims_a_station_as_claim_does() {
     put(&mut g, me, node(0), 1);
     let st = m.hexes[me].neighbors.iter().copied().find(|&h| kind(m, h) == HexKind::Open).unwrap();
     put(&mut g, st, STATION, 1);
-    assert_eq!(board::card_claim_stations(&w, &g, 0), vec![st]);
+    assert_eq!(board::card_claim_sites(&w, &g, 0), vec![st]);
     put(&mut g, st, ADV_AMBASSADOR, 2);
     assert_eq!(board::card_claim_extra(&w, &g, st), None);
     set_res(&mut g, 0, Resource::Ambassadors, 3);
-    assert!(board::card_claim_stations(&w, &g, 0).is_empty(), "agents on it");
+    assert!(board::card_claim_sites(&w, &g, 0).is_empty(), "agents on it");
     put(&mut g, st, ADV_AMBASSADOR, 0);
     assert_eq!(board::card_claim_extra(&w, &g, st), Some(0));
-    assert_eq!(board::card_claim_stations(&w, &g, 0), vec![st]);
-    run_ops(&rules, &mut g, &[crate::content::Op::ClaimStation]);
+    assert_eq!(board::card_claim_sites(&w, &g, 0), vec![st]);
+    run_ops(&rules, &mut g, &[crate::content::Op::ClaimSite { near: false }]);
     assert_eq!((g.tokens(st, ADV_AMBASSADOR), g.tokens(st, cube(0))), (0, 1));
     assert_eq!(g.resource(0, Resource::Ambassadors), 3);
 }

@@ -1,0 +1,26 @@
+{
+ "name": "f256-trio",
+ "note": "256, amendment 11725: 246's card-value measure confirmed on fresh seeds (49068-49163) on the card pass: the engine agent (246's measure), three pairs, d2-d3, each of Positron Storage Ring, Wafer Fab Line and Antiproton Foundry blanked (cost 99: never kept or played, the deck order kept) against the deck. Variant-major: pair, then arm.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {"name": "bp", "set": []},
+  {"name": "bp-no-positron", "set": ["cards.positron_storage_ring.cost=99"]},
+  {"name": "bp-no-wafer", "set": ["cards.wafer_fab_line.cost=99"]},
+  {"name": "bp-no-antiproton", "set": ["cards.antiproton_foundry.cost=99"]},
+  {"name": "br", "set": ["ai.boards=0,2"]},
+  {"name": "br-no-positron", "set": ["ai.boards=0,2", "cards.positron_storage_ring.cost=99"]},
+  {"name": "br-no-wafer", "set": ["ai.boards=0,2", "cards.wafer_fab_line.cost=99"]},
+  {"name": "br-no-antiproton", "set": ["ai.boards=0,2", "cards.antiproton_foundry.cost=99"]},
+  {"name": "pr", "set": ["ai.boards=1,2"]},
+  {"name": "pr-no-positron", "set": ["ai.boards=1,2", "cards.positron_storage_ring.cost=99"]},
+  {"name": "pr-no-wafer", "set": ["ai.boards=1,2", "cards.wafer_fab_line.cost=99"]},
+  {"name": "pr-no-antiproton", "set": ["ai.boards=1,2", "cards.antiproton_foundry.cost=99"]}
+ ],
+ "difficulties": [2, 3],
+ "agents": ["engine"],
+ "games": 96,
+ "first_seed": 49068,
+ "records": 0
+}

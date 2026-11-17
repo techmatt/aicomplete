@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 256 Item C: the card pass (claim_site, Campus and Commons owned, liberate riders, node and sink buildings) | 117 | [256_item_c_cards](results/256_item_c_cards/README.md) |
 | 253 Item B part 2: neutral-site cards, retake, the cube converter, the full read against r112 | 114 | [253_item_b_cards_read](results/253_item_b_cards_read/README.md) |
 | 252 Item B part 1: node routes, free then claim, standard actions under the cards | 113 | [252_item_b_rules](results/252_item_b_rules/README.md) |
 | 251 profiling the sim: judges, oracles, engine (same-play speed-ups, opt-in lean lines) | 112 | [251_profiling](results/251_profiling/README.md) |

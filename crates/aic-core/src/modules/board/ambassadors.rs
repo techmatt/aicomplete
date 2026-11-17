@@ -150,24 +150,34 @@ pub fn pay_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, liberate:
     cx.add_resource(g, seat, Resource::Ambassadors, -left);
 }
 
-/// The neutral research stations seat `seat` may claim with a card (142, `claim_station`): in its reach, a
-/// site claim on it (`can_claim`), and, as the Claim action asks (148, D70), one of the seat's ambassadors
-/// for each agent on it ([`card_claim_extra`]), paid as the action pays (178: [`pay_card_claim`]).
-pub fn card_claim_stations(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
+/// The neutral research stations and factories seat `seat` may claim with a card (142, `claim_site`; 256:
+/// factories too): in its reach, a site claim on it (`can_claim`), and, as the Claim action asks (148, D70),
+/// one of the seat's ambassadors for each agent on it ([`card_claim_extra`]), paid as the action pays (178:
+/// [`pay_card_claim`]). A city is never claimed (254).
+pub fn card_claim_sites(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
     let held = g.resource(seat, Resource::Ambassadors);
     (0..g.hexes.len())
         .filter(|&h| {
-            site_kind(w, g, h) == Some(SiteKind::Station)
+            matches!(site_kind(w, g, h), Some(SiteKind::Station | SiteKind::Factory))
                 && card_claim_extra(w, g, h).is_some_and(|n| n <= held + site_standing(g, seat, h))
                 && can_claim(w, g, seat, h)
         })
         .collect()
 }
 
-/// 148 (D70): what a card's claim of neutral station `h` costs beyond the card's own price: the Claim
+/// 256: a neutral station or factory a liberate card's rider may claim next to the city it frees: a claim on
+/// it and no embargo; the card's target, not the seat's reach, puts it in range.
+pub fn card_claimable_near(w: &World, g: &GameState, h: usize) -> bool {
+    matches!(site_kind(w, g, h), Some(SiteKind::Station | SiteKind::Factory))
+        && card_claim_extra(w, g, h) == Some(0)
+        && !hex_flagged(w, g, RoundFlag::Embargo, h)
+}
+
+/// 148 (D70): what a card's claim of neutral site `h` costs beyond the card's own price: the Claim
 /// action's "1 more for each agent on it", in the seat's ambassadors (they cancel).
 pub fn card_claim_extra(w: &World, g: &GameState, h: usize) -> Option<i64> {
-    claim_cost(w, g, h).map(|n| n - claim_ambassadors(w, SiteKind::Station))
+    let kind = site_kind(w, g, h)?;
+    claim_cost(w, g, h).map(|n| n - claim_ambassadors(w, kind))
 }
 
 /// 178 (amendment 8112): a card's claim of station `h` pays its extra ([`card_claim_extra`]) as [`pay_site`]

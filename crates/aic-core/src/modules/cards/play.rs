@@ -317,7 +317,10 @@ pub(super) fn branch_blocked(w: &World, g: &GameState, seat: usize, id: &str, ab
     if g.var(&tokens_key(seat, id)) < ab.tokens || ab.cost.iter().any(|(r, n)| g.resource(seat, *r) < *n) {
         return Some("unaffordable");
     }
-    if !effects::feasible_on(w, g, seat, &ab.effects, 0, Some(id)) {
+    // 256: the Action's energy is paid before its node's track step (Mesh Repeater Network: pay 1 energy, place a
+    // node), so the step must be affordable after it, or the Action pays for nothing.
+    let spent: i64 = ab.cost.iter().filter(|(r, _)| *r == Resource::Energy).map(|(_, n)| *n).sum();
+    if !effects::feasible_on(w, g, seat, &ab.effects, spent, Some(id)) {
         return Some("no target");
     }
     None

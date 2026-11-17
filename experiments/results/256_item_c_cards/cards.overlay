@@ -1,0 +1,31 @@
+# 256 (Item C, the card pass on r115): every card edit, as one overlay (scripts/cards/apply_overlay.py).
+# Give / get for each: README.md, *The cards*.
+
+# Claims: the two energy claim cards take a neutral station or factory (claim_site).
+cards.power_purchase_agreement.effects=[{"op":"target","on":"neutral_site"},{"op":"claim_site"}]
+cards.microgrid_lab_compact.ability.effects=[{"op":"target","on":"neutral_site"},{"op":"claim_site"}]
+
+# Campus and Commons: the site they open is yours (Campus clears job-no-card Build a research station). Stronger, dearer.
+cards.open_research_campus.cost=10
+cards.open_research_campus.effects=[{"op":"target","on":"empty_site"},{"op":"create_site","kind":"station"},{"op":"claim_site"},{"op":"place_ambassadors","count":1,"at":"on"}]
+cards.industrial_commons.cost=9
+cards.industrial_commons.effects=[{"op":"target","on":"free_zone"},{"op":"create_site","kind":"factory"},{"op":"claim_site"}]
+
+# The seven liberate cards: a claim rider next to the city they free (free, then claim).
+cards.nuclear_option.effects=[{"op":"target","on":"corrupted_city"},{"op":"liberate"},{"op":"claim_site","near":true},{"op":"sway","side":"discord","amount":2,"narrative":"collateral"}]
+cards.power_to_the_people.effects=[{"op":"target","on":"corrupted_city"},{"op":"liberate"},{"op":"claim_site","near":true}]
+cards.forensic_audit.effects=[{"op":"target","on":"corrupted_city"},{"op":"liberate"},{"op":"claim_site","near":true},{"op":"draw","count":2}]
+cards.root_access.effects=[{"op":"target","on":"corrupted_city"},{"op":"liberate","botnet":true},{"op":"claim_site","near":true}]
+cards.peacekeeping_mission.effects=[{"op":"target","on":"corrupted_city"},{"op":"liberate","troops":3},{"op":"claim_site","near":true}]
+cards.popular_uprising.ability.or.effects=[{"op":"target","on":"corrupted_city"},{"op":"liberate"},{"op":"claim_site","near":true}]
+cards.citywide_microgrid.effects=[{"op":"target","on":"corrupted_city"},{"op":"liberate"},{"op":"claim_site","near":true}]
+
+# Nodes: Relay Mast Rollout places 3 (was 2), dearer.
+cards.relay_mast_rollout.cost=9
+cards.relay_mast_rollout.effects=[{"op":"place_node","count":3},{"op":"draw","count":2}]
+
+# New cards: a node building, a cube sink, a cube-to-nodes major and an antimatter-to-nodes major.
+cards.mesh_repeater_network={"id":"mesh_repeater_network","name":"Mesh Repeater Network","tier":1,"kind":"building","cost":6,"insight":0,"tags":["cyber"],"ability":{"cost":[["energy",1]],"effects":[{"op":"place_node","count":1}]}}
+cards.research_reactor={"id":"research_reactor","name":"Research Reactor","tier":1,"kind":"building","cost":8,"insight":0,"tags":["science","power"],"ability":{"cost":[["research_cubes",1]],"effects":[{"op":"gain","resource":"energy","amount":2}]}}
+cards.survey_drone_fleet={"id":"survey_drone_fleet","name":"Survey Drone Fleet","tier":2,"kind":"building","cost":12,"insight":0,"needs":[["science",2]],"tags":["cyber","science"],"ability":{"cost":[["research_cubes",1]],"effects":[{"op":"place_node","count":2,"range":2}]}}
+cards.orbital_relay_launcher={"id":"orbital_relay_launcher","name":"Orbital Relay Launcher","tier":2,"kind":"building","cost":12,"insight":0,"tags":["power","cyber"],"ability":{"cost":[["antimatter",1]],"effects":[{"op":"place_node","count":2},{"op":"gain","resource":"energy","amount":3}]}}

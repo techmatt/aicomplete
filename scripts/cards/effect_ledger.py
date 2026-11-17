@@ -209,7 +209,13 @@ def op_worth(t, o):
         return Worth(now=row('damage') * damage(t, o))
     if op == 'damage_country':
         return Worth(now=row('damage_country') * damage(t, o))
-    if op in ('destroy_all', 'remove_botnet', 'build_factory', 'free_building', 'build_station', 'claim_station',
+    if op == 'claim_site':
+        # 256: a station or factory; the liberate cards' rider next to the city at `claim_near`'s share, only with
+        # a city to free (value.rs: the city bucket).
+        if o.get('near'):
+            return Worth(city=row(op) * t.rate('claim_near'))
+        return Worth(now=row(op))
+    if op in ('destroy_all', 'remove_botnet', 'build_factory', 'free_building', 'build_station',
               'counter_threat', 'discard_project', 'spread_ambassadors', 'move_one'):
         return Worth(now=row(op))
     # 234: a card's one target; a targeted count finds area_share of its number around it (value.rs area_share).
@@ -235,8 +241,9 @@ def op_worth(t, o):
         each = row('cleanse') if o.get('only') == 'factory' else row('cleanse_station')
         return Worth(now=each * share * n('amount'))
     if op == 'liberate':
-        # 252: a liberated city is left neutral; only `own` puts the seat's cube on.
-        return Worth(city=row('liberate') + (row('liberate_align') if o.get('own') else 0.0)
+        # 252: a liberated city is left neutral; 256: `own` values the station or factory it makes yours.
+        return Worth(now=row('liberate_own') if o.get('own') else 0.0,
+                     city=row('liberate')
                      + row('gain_ambassadors') * r('ambassadors') * n('ambassadors')
                      + row('liberate_troops') * n('troops')
                      + (row('liberate_botnet') if o.get('botnet') else 0.0))

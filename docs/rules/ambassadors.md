@@ -36,12 +36,14 @@ Cities, research stations and factories follow one set of rules and differ only 
   5: a fallback; the cards that claim do it cheaper. A factory claimed by round 3 of an 8-10 round game makes 6-8 chips, which the corps' chip
   converters ([board.md](board.md)) spend late. The risk is the adversary's: Asset Seizure turns it neutral.
   Claiming a neutral factory also stops it feeding the cities next to it ([war.md](war.md), city growth).
-- **Claiming a station with energy** (142): Power Purchase Agreement (an event: 2 credits and 2 energy) and Microgrid
-  Lab Compact (a building: Action, pay 2 energy) claim a neutral research station in reach as the Claim action does
-  (`claim_station`; 148, Matt): the energy replaces the `claim_station` ambassadors, each agent on it
-  still costs one of yours (they cancel), paid as the action pays (your ambassadors on the station first, then your
-  supply), and it needs the site in reach with no embargo. 2 energy (9)
-  is cheaper than 4 ambassadors (32).
+- **Claiming with a card** (142; 256: stations and factories, op `claim_site`): Power Purchase Agreement (an event:
+  2 credits and 2 energy) and Microgrid Lab Compact (a building: Action, pay 2 energy) claim a neutral research
+  station or factory in reach as the Claim action does (148, Matt): the card's price replaces the ambassadors, and
+  it needs the site in reach with no agent and no embargo. 2 energy (9) is cheaper than 3-4 ambassadors (24-32).
+  **Open Research Campus** and **Industrial Commons** open a station or factory on their target and claim it: the
+  card route to an owned station. **The liberate cards' rider** (256) claims a neutral station or factory next to
+  the city they free, free and without reach (the card's target puts it in range); an agent or an embargo on it still
+  stops it.
 - **Liberating an adversary site: free, then claim** (Matt's ruling 4, 2026-11-16, locked; reverses r75). The
   Liberate action takes massed ambassadors and **leaves the site neutral**: Claim or a card takes it from there. It
   pays Claim's price table (r91, Matt, 2026-11-12: one table): `liberate_at` 5 and `free_city` 5 Unity for a city,
@@ -130,6 +132,6 @@ neutral station (4) or factory (3), never with an agent sitting on it; your own 
 A claim makes it yours; taking one back leaves it neutral and sways Unity your way, and you may claim a station or
 factory after; a city stays free, and a node of yours on or next to it collects its energy each round. While a freed site is unclaimed, a Liberated marker makes the
 adversary bring one agent more to take it back. A station you own makes 1 cube a round (a
-factory 1 chip), so a claim is a slow fallback; a few cards claim a station for energy instead. Every meeting of an agent and an ambassador is one for one. Stand one ambassador on an adversary site
+factory 1 chip), so a claim is a slow fallback; cards claim cheaper (256: a station or factory for energy, Campus and Commons the site they open, the liberate cards one next to the city). Every meeting of an agent and an ambassador is one for one. Stand one ambassador on an adversary site
 to shut it off, and clear agents off yours, which they shut off the same way. An ambassador of yours on your own piece
 can take a hit for it.

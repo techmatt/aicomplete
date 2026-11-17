@@ -213,10 +213,10 @@ fn face_text(id: &str) -> String {
     crate::face::card_face(content().cards.iter().find(|c| c.id == id).expect("a card")).full_text()
 }
 
-/// 253 (Matt's ruling 3): Open Research Campus opens a neutral research station on its target, an empty printed
-/// station site in reach, with the seat's ambassador on it and no cube; only there, and nowhere a station stands.
+/// 253 (Matt's ruling 3): Open Research Campus opens a research station on its target, an empty printed station
+/// site in reach; only there, and nowhere a station stands. 256: the seat claims it (its cube, no ambassador).
 #[test]
-fn a_neutral_site_card_opens_one_station_on_its_target() {
+fn a_site_card_opens_one_station_on_its_target_and_claims_it() {
     let (rules, mut g) = table_with(&[], &["open_research_campus"], &[]);
     let w = rules.world();
     let m = &rules.map;
@@ -230,14 +230,56 @@ fn a_neutral_site_card_opens_one_station_on_its_target() {
     pick(&rules, &mut g, site);
     answer_all(&rules, &mut g);
     assert_eq!(g.tokens(site, STATION), 1);
-    assert_eq!(g.tokens(site, cube(0)) + g.tokens(site, ADV_CUBE), 0, "neutral");
+    assert_eq!((g.tokens(site, cube(0)), g.tokens(site, ADV_CUBE)), (1, 0), "yours");
     assert_eq!(g.tokens(site, ambassador(0)), 1);
     assert_eq!((0..g.hexes.len()).map(|h| g.tokens(h, STATION)).sum::<i64>(), stations + 1, "one station, not one a country");
     assert!(!crate::modules::common::empty_station_site(&w, &g, site));
     assert_eq!(
         face_text("open_research_campus"),
-        "Target: an empty station site. A neutral research station opens on it. Place 1 Ambassador on it."
+        "Target: an empty station site. A neutral research station opens on it. Claim it. Place 1 Ambassador on it."
     );
+}
+
+/// 256: a liberate card's claim rider claims a neutral factory next to the city it frees, though the factory is
+/// out of the seat's reach (the card's target puts it in range); the city stays neutral (254).
+#[test]
+fn a_liberate_cards_rider_claims_a_neutral_site_next_to_the_city() {
+    let (rules, mut g) = table_with(&[], &["nuclear_option"], &[]);
+    let w = rules.world();
+    let m = &rules.map;
+    set_res(&mut g, 0, Resource::Antimatter, 1);
+    let city = (0..m.hexes.len()).find(|&h| kind(m, h) == HexKind::City).expect("a city");
+    for h in 0..g.hexes.len() {
+        for k in [node(0), node(1), ADV_AMBASSADOR] {
+            put(&mut g, h, k, 0);
+        }
+    }
+    put(&mut g, city, ADV_CUBE, 1);
+    let ns = m.hexes[city].neighbors.clone();
+    let land: Vec<usize> = ns.iter().copied().filter(|&h| !matches!(kind(m, h), HexKind::Ocean | HexKind::City)).collect();
+    let mine = land[0];
+    let fac = land[1..].iter().copied().find(|&h| !m.hexes[mine].neighbors.contains(&h)).unwrap_or(land[1]);
+    for &h in &ns {
+        put(&mut g, h, FACTORY, 0);
+        put(&mut g, h, STATION, 0);
+    }
+    put(&mut g, mine, node(0), 1);
+    put(&mut g, fac, FACTORY, 1);
+    put(&mut g, fac, cube(0), 0);
+    put(&mut g, fac, cube(1), 0);
+    put(&mut g, fac, ADV_CUBE, 0);
+    assert!(board::card_claimable_near(&w, &g, fac));
+    rules.apply_mut(&mut g, &Action::Play { seat: 0, card: "nuclear_option".into() }, None).unwrap();
+    pick(&rules, &mut g, city);
+    // The freed city's Unity sway asks first; then the rider's site (one option: it may resolve unasked).
+    let at = m.hexes[fac].hex;
+    while let Some(p) = g.pending.as_ref() {
+        let i = p.ask.options.iter().position(|o| o.target == Some(at)).unwrap_or(0);
+        answer(&rules, &mut g, i);
+    }
+    assert_eq!((g.tokens(city, ADV_CUBE), (0..2).map(|s| g.tokens(city, cube(s))).sum::<i64>()), (0, 0), "freed, neutral");
+    assert_eq!(g.tokens(fac, cube(0)), 1, "the factory next to it is claimed");
+    assert!(face_text("nuclear_option").contains("Claim a facility next to it."));
 }
 
 /// The six country cards: a country-sized effect is the target's country; Shelter takes no target.

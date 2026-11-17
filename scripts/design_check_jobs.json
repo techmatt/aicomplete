@@ -44,11 +44,32 @@
    "unit": "node",
    "cards": [
     {
+     "name": "Orbital Relay Launcher",
+     "units": "2 * uses",
+     "other": "3 * uses * energy",
+     "use": "am",
+     "note": "256: Action 1 antimatter: 2 nodes and 3 energy, x4"
+    },
+    {
+     "name": "Survey Drone Fleet",
+     "units": "2 * uses",
+     "other": 0,
+     "use": "cube",
+     "note": "256: Action 1 cube: 2 nodes (range 2), x4"
+    },
+    {
+     "name": "Mesh Repeater Network",
+     "units": "uses",
+     "other": 0,
+     "use": "energy",
+     "note": "256: Action 1 energy: a node, x4"
+    },
+    {
      "name": "Relay Mast Rollout",
-     "units": 2,
+     "units": 3,
      "other": "2 * card",
      "use": 0,
-     "note": "place 2; draw 2"
+     "note": "256: place 3; draw 2"
     },
     {
      "name": "Aegis Grid Lockdown",
@@ -100,6 +121,13 @@
   "Build a research station": {
    "unit": "owned station",
    "cards": [
+    {
+     "name": "Open Research Campus",
+     "units": 1,
+     "other": "amb",
+     "use": 0,
+     "note": "256: a station opens on an empty printed site in reach, yours; 1 ambassador on it"
+    },
     {
      "name": "Field Station (Researcher)",
      "units": 1,
@@ -851,37 +879,37 @@
     {
      "name": "Forensic Audit",
      "units": 1,
-     "other": "2 * card",
+     "other": "2 * card + 0.5 * station_owned",
      "use": 0,
-     "note": "draw 2"
+     "note": "draw 2; 256: claims a neutral site next to it (~0.5)"
     },
     {
      "name": "Root Access",
      "units": 1,
-     "other": "0.6 * botnet",
+     "other": "0.6 * botnet + 0.5 * station_owned",
      "use": 0,
-     "note": "a botnet near (x0.6) ~10"
+     "note": "a botnet near (x0.6) ~10; 256: claims a neutral site next to it (~0.5)"
     },
     {
      "name": "Citywide Microgrid",
      "units": 1,
-     "other": "2 * uses * sway",
+     "other": "2 * uses * sway + 0.5 * station_owned",
      "use": "energy",
-     "note": "Action 1 energy: sway 2, x4"
+     "note": "Action 1 energy: sway 2, x4; 256: claims a neutral site next to it (~0.5)"
     },
     {
      "name": "Power to the People",
      "units": 1,
-     "other": "uses * tags",
+     "other": "uses * tags + 0.5 * station_owned",
      "use": 0,
-     "note": "1 cr a Power tag a round (5) x4"
+     "note": "1 cr a Power tag a round (5) x4; 256: claims a neutral site next to it (~0.5)"
     },
     {
      "name": "The Nuclear Option",
      "units": 1,
-     "other": "-2 * sway",
+     "other": "-2 * sway + 0.5 * station_owned",
      "use": 0,
-     "note": "Discord 2 (-8)"
+     "note": "Discord 2 (-8); 256: claims a neutral site next to it (~0.5)"
     },
     {
      "name": "Hostile Buyout",
@@ -893,9 +921,9 @@
     {
      "name": "Peacekeeping Mission",
      "units": 1,
-     "other": "1.5 * troop",
+     "other": "1.5 * troop + 0.5 * station_owned",
      "use": 0,
-     "note": "up to 3 troops in the country (~1.5)"
+     "note": "up to 3 troops in the country (~1.5); 256: claims a neutral site next to it (~0.5)"
     },
     {
      "name": "Great Liberation",
@@ -907,9 +935,9 @@
     {
      "name": "Popular Uprising",
      "units": 1,
-     "other": 0,
+     "other": "0.5 * station_owned",
      "use": 0,
-     "note": "Action: a Follower, or 4 Followers: liberate (once in ~5 rounds)"
+     "note": "Action: a Follower, or 4 Followers: liberate (once in ~5 rounds); 256: claims a neutral site next to it (~0.5)"
     }
    ]
   },
@@ -921,14 +949,14 @@
      "units": 1,
      "other": 0,
      "use": 0,
-     "note": "2 energy instead of 3 ambassadors"
+     "note": "2 energy instead of 4 ambassadors (256: a station or factory)"
     },
     {
      "name": "Microgrid Lab Compact",
      "units": 2,
      "other": 0,
      "use": "2 * energy",
-     "note": "Action 2 energy: claim, ~2 neutral stations in reach (2 uses)",
+     "note": "Action 2 energy: claim, ~2 neutral sites in reach (2 uses)",
      "uses": 2
     },
     {
@@ -945,6 +973,28 @@
    "unit": "owned factory",
    "cards": [
     {
+     "name": "Microgrid Lab Compact",
+     "units": 2,
+     "other": 0,
+     "use": "2 * energy",
+     "note": "256: Action 2 energy: claim a station or factory (2 uses)",
+     "uses": 2
+    },
+    {
+     "name": "Power Purchase Agreement",
+     "units": 1,
+     "other": 0,
+     "use": 0,
+     "note": "256: 2 energy instead of 3 ambassadors"
+    },
+    {
+     "name": "Industrial Commons",
+     "units": 1,
+     "other": 0,
+     "use": 0,
+     "note": "256: a factory opens on a free zone in reach, yours"
+    },
+    {
      "name": "Prefab Plant Kit",
      "units": 1,
      "other": "3 * energy",
@@ -958,6 +1008,13 @@
    "card_outcome": "neutral",
    "cards": [
     {
+     "name": "Hostile Buyout",
+     "units": 1,
+     "other": "3 * amb + station_owned",
+     "use": 0,
+     "note": "254: any corrupted site; a station becomes yours; 3 ambassadors"
+    },
+    {
      "name": "Reclamation Crew",
      "units": 1,
      "other": 0,
@@ -970,6 +1027,13 @@
    "unit": "factory freed",
    "card_outcome": "neutral",
    "cards": [
+    {
+     "name": "Hostile Buyout",
+     "units": 1,
+     "other": "3 * amb + factory",
+     "use": 0,
+     "note": "254: any corrupted site; a factory becomes yours; 3 ambassadors"
+    },
     {
      "name": "Back-Channel Talks",
      "units": 2,

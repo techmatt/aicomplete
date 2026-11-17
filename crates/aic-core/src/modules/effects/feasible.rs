@@ -122,7 +122,7 @@ fn feasible_aimed(
             Op::CutBotnet => !cuttable_botnets(w, g, seat).is_empty(),
             Op::FreeBuilding => cards::free_building_exists(w, g, seat),
             Op::BuildStation => !board::station_sites(w, g, seat).is_empty(),
-            Op::ClaimStation => !board::card_claim_stations(w, g, seat).is_empty(),
+            Op::ClaimSite { .. } => !board::card_claim_sites(w, g, seat).is_empty(),
             Op::ProjectCube { station, .. } => !cube_projects(w, g, seat, *station).is_empty(),
             Op::RemoveTroops { reach, .. } => {
                 any_hex(g, |h| adversary::can_damage(g, h, 0, 1) && (!*reach || in_reach(w, g, seat, h)))

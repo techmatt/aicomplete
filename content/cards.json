@@ -1512,7 +1512,7 @@
   "name": "Relay Mast Rollout",
   "tier": 1,
   "kind": "program",
-  "cost": 6,
+  "cost": 9,
   "insight": 1,
   "tags": [
    "cyber"
@@ -1520,7 +1520,7 @@
   "effects": [
    {
     "op": "place_node",
-    "count": 2
+    "count": 3
    },
    {
     "op": "draw",
@@ -3559,6 +3559,10 @@
     "op": "liberate"
    },
    {
+    "op": "claim_site",
+    "near": true
+   },
+   {
     "op": "sway",
     "side": "discord",
     "amount": 2,
@@ -3592,6 +3596,10 @@
    },
    {
     "op": "liberate"
+   },
+   {
+    "op": "claim_site",
+    "near": true
    }
   ],
   "passives": [
@@ -3646,6 +3654,10 @@
     "op": "liberate"
    },
    {
+    "op": "claim_site",
+    "near": true
+   },
+   {
     "op": "draw",
     "count": 2
    }
@@ -3675,6 +3687,10 @@
    {
     "op": "liberate",
     "botnet": true
+   },
+   {
+    "op": "claim_site",
+    "near": true
    }
   ],
   "antimatter": 1
@@ -3703,6 +3719,10 @@
    {
     "op": "liberate",
     "troops": 3
+   },
+   {
+    "op": "claim_site",
+    "near": true
    }
   ],
   "antimatter": 1
@@ -3742,6 +3762,10 @@
      },
      {
       "op": "liberate"
+     },
+     {
+      "op": "claim_site",
+      "near": true
      }
     ]
    }
@@ -5069,6 +5093,10 @@
    },
    {
     "op": "liberate"
+   },
+   {
+    "op": "claim_site",
+    "near": true
    }
   ],
   "ability": {
@@ -5268,10 +5296,10 @@
   "effects": [
    {
     "op": "target",
-    "on": "neutral_station"
+    "on": "neutral_site"
    },
    {
-    "op": "claim_station"
+    "op": "claim_site"
    }
   ]
  },
@@ -5296,10 +5324,10 @@
    "effects": [
     {
      "op": "target",
-     "on": "neutral_station"
+     "on": "neutral_site"
     },
     {
-     "op": "claim_station"
+     "op": "claim_site"
     }
    ]
   }
@@ -5309,7 +5337,7 @@
   "name": "Open Research Campus",
   "tier": 1,
   "kind": "event",
-  "cost": 5,
+  "cost": 10,
   "insight": 0,
   "tags": [
    "science",
@@ -5325,6 +5353,9 @@
     "kind": "station"
    },
    {
+    "op": "claim_site"
+   },
+   {
     "op": "place_ambassadors",
     "count": 1,
     "at": "on"
@@ -5336,7 +5367,7 @@
   "name": "Industrial Commons",
   "tier": 1,
   "kind": "event",
-  "cost": 4,
+  "cost": 9,
   "insight": 0,
   "tags": [
    "industry",
@@ -5352,9 +5383,7 @@
     "kind": "factory"
    },
    {
-    "op": "place_ambassadors",
-    "count": 1,
-    "at": "on"
+    "op": "claim_site"
    }
   ]
  },
@@ -6008,6 +6037,122 @@
      "op": "gain",
      "resource": "antimatter",
      "amount": 1
+    }
+   ]
+  }
+ },
+ {
+  "id": "mesh_repeater_network",
+  "name": "Mesh Repeater Network",
+  "tier": 1,
+  "kind": "building",
+  "cost": 6,
+  "insight": 0,
+  "tags": [
+   "cyber"
+  ],
+  "ability": {
+   "cost": [
+    [
+     "energy",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "place_node",
+     "count": 1
+    }
+   ]
+  }
+ },
+ {
+  "id": "research_reactor",
+  "name": "Research Reactor",
+  "tier": 1,
+  "kind": "building",
+  "cost": 8,
+  "insight": 0,
+  "tags": [
+   "science",
+   "power"
+  ],
+  "ability": {
+   "cost": [
+    [
+     "research_cubes",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "gain",
+     "resource": "energy",
+     "amount": 2
+    }
+   ]
+  }
+ },
+ {
+  "id": "survey_drone_fleet",
+  "name": "Survey Drone Fleet",
+  "tier": 2,
+  "kind": "building",
+  "cost": 12,
+  "insight": 0,
+  "needs": [
+   [
+    "science",
+    2
+   ]
+  ],
+  "tags": [
+   "cyber",
+   "science"
+  ],
+  "ability": {
+   "cost": [
+    [
+     "research_cubes",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "place_node",
+     "count": 2,
+     "range": 2
+    }
+   ]
+  }
+ },
+ {
+  "id": "orbital_relay_launcher",
+  "name": "Orbital Relay Launcher",
+  "tier": 2,
+  "kind": "building",
+  "cost": 12,
+  "insight": 0,
+  "tags": [
+   "power",
+   "cyber"
+  ],
+  "ability": {
+   "cost": [
+    [
+     "antimatter",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "place_node",
+     "count": 2
+    },
+    {
+     "op": "gain",
+     "resource": "energy",
+     "amount": 3
     }
    ]
   }

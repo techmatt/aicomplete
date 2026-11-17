@@ -1,0 +1,154 @@
+{
+ "name": "f256-groups",
+ "note": "256: the screen's group arms on fresh seeds (49164-49211), the judge, three pairs, d3-d4, on the frozen build: which groups moved d3 and d4 (the fresh read's d3 fell 16.7 points). Written by experiments/results/256_item_c_cards/arms.py. Variant-major: pair, then arm.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp-all",
+   "set": []
+  },
+  {
+   "name": "bp-no-sites",
+   "set": [
+    "cards.open_research_campus.cost=5",
+    "cards.open_research_campus.effects=[{\"op\":\"target\",\"on\":\"empty_site\"},{\"op\":\"create_site\",\"kind\":\"station\"},{\"op\":\"place_ambassadors\",\"count\":1,\"at\":\"on\"}]",
+    "cards.industrial_commons.cost=4",
+    "cards.industrial_commons.effects=[{\"op\":\"target\",\"on\":\"free_zone\"},{\"op\":\"create_site\",\"kind\":\"factory\"},{\"op\":\"place_ambassadors\",\"count\":1,\"at\":\"on\"}]"
+   ]
+  },
+  {
+   "name": "bp-no-rider",
+   "set": [
+    "cards.nuclear_option.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\"},{\"op\":\"sway\",\"side\":\"discord\",\"amount\":2,\"narrative\":\"collateral\"}]",
+    "cards.power_to_the_people.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\"}]",
+    "cards.forensic_audit.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\"},{\"op\":\"draw\",\"count\":2}]",
+    "cards.root_access.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\",\"botnet\":true}]",
+    "cards.peacekeeping_mission.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\",\"troops\":3}]",
+    "cards.popular_uprising.ability.or.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\"}]",
+    "cards.citywide_microgrid.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\"}]"
+   ]
+  },
+  {
+   "name": "bp-no-nodes",
+   "set": [
+    "cards.relay_mast_rollout.cost=6",
+    "cards.relay_mast_rollout.effects=[{\"op\":\"place_node\",\"count\":2},{\"op\":\"draw\",\"count\":2}]",
+    "cards.mesh_repeater_network.cost=99"
+   ]
+  },
+  {
+   "name": "bp-no-sinks",
+   "set": [
+    "cards.research_reactor.cost=99",
+    "cards.survey_drone_fleet.cost=99",
+    "cards.orbital_relay_launcher.cost=99"
+   ]
+  },
+  {
+   "name": "br-all",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "br-no-sites",
+   "set": [
+    "ai.boards=0,2",
+    "cards.open_research_campus.cost=5",
+    "cards.open_research_campus.effects=[{\"op\":\"target\",\"on\":\"empty_site\"},{\"op\":\"create_site\",\"kind\":\"station\"},{\"op\":\"place_ambassadors\",\"count\":1,\"at\":\"on\"}]",
+    "cards.industrial_commons.cost=4",
+    "cards.industrial_commons.effects=[{\"op\":\"target\",\"on\":\"free_zone\"},{\"op\":\"create_site\",\"kind\":\"factory\"},{\"op\":\"place_ambassadors\",\"count\":1,\"at\":\"on\"}]"
+   ]
+  },
+  {
+   "name": "br-no-rider",
+   "set": [
+    "ai.boards=0,2",
+    "cards.nuclear_option.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\"},{\"op\":\"sway\",\"side\":\"discord\",\"amount\":2,\"narrative\":\"collateral\"}]",
+    "cards.power_to_the_people.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\"}]",
+    "cards.forensic_audit.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\"},{\"op\":\"draw\",\"count\":2}]",
+    "cards.root_access.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\",\"botnet\":true}]",
+    "cards.peacekeeping_mission.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\",\"troops\":3}]",
+    "cards.popular_uprising.ability.or.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\"}]",
+    "cards.citywide_microgrid.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\"}]"
+   ]
+  },
+  {
+   "name": "br-no-nodes",
+   "set": [
+    "ai.boards=0,2",
+    "cards.relay_mast_rollout.cost=6",
+    "cards.relay_mast_rollout.effects=[{\"op\":\"place_node\",\"count\":2},{\"op\":\"draw\",\"count\":2}]",
+    "cards.mesh_repeater_network.cost=99"
+   ]
+  },
+  {
+   "name": "br-no-sinks",
+   "set": [
+    "ai.boards=0,2",
+    "cards.research_reactor.cost=99",
+    "cards.survey_drone_fleet.cost=99",
+    "cards.orbital_relay_launcher.cost=99"
+   ]
+  },
+  {
+   "name": "pr-all",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  },
+  {
+   "name": "pr-no-sites",
+   "set": [
+    "ai.boards=1,2",
+    "cards.open_research_campus.cost=5",
+    "cards.open_research_campus.effects=[{\"op\":\"target\",\"on\":\"empty_site\"},{\"op\":\"create_site\",\"kind\":\"station\"},{\"op\":\"place_ambassadors\",\"count\":1,\"at\":\"on\"}]",
+    "cards.industrial_commons.cost=4",
+    "cards.industrial_commons.effects=[{\"op\":\"target\",\"on\":\"free_zone\"},{\"op\":\"create_site\",\"kind\":\"factory\"},{\"op\":\"place_ambassadors\",\"count\":1,\"at\":\"on\"}]"
+   ]
+  },
+  {
+   "name": "pr-no-rider",
+   "set": [
+    "ai.boards=1,2",
+    "cards.nuclear_option.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\"},{\"op\":\"sway\",\"side\":\"discord\",\"amount\":2,\"narrative\":\"collateral\"}]",
+    "cards.power_to_the_people.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\"}]",
+    "cards.forensic_audit.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\"},{\"op\":\"draw\",\"count\":2}]",
+    "cards.root_access.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\",\"botnet\":true}]",
+    "cards.peacekeeping_mission.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\",\"troops\":3}]",
+    "cards.popular_uprising.ability.or.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\"}]",
+    "cards.citywide_microgrid.effects=[{\"op\":\"target\",\"on\":\"corrupted_city\"},{\"op\":\"liberate\"}]"
+   ]
+  },
+  {
+   "name": "pr-no-nodes",
+   "set": [
+    "ai.boards=1,2",
+    "cards.relay_mast_rollout.cost=6",
+    "cards.relay_mast_rollout.effects=[{\"op\":\"place_node\",\"count\":2},{\"op\":\"draw\",\"count\":2}]",
+    "cards.mesh_repeater_network.cost=99"
+   ]
+  },
+  {
+   "name": "pr-no-sinks",
+   "set": [
+    "ai.boards=1,2",
+    "cards.research_reactor.cost=99",
+    "cards.survey_drone_fleet.cost=99",
+    "cards.orbital_relay_launcher.cost=99"
+   ]
+  }
+ ],
+ "difficulties": [
+  3,
+  4
+ ],
+ "agents": [
+  "strategist"
+ ],
+ "games": 48,
+ "first_seed": 49164,
+ "records": 0
+}

@@ -248,6 +248,8 @@
         "faraday_yard",
         "capacitor_discharge",
         "cryo_sample_vault",
+        "mesh_repeater_network",
+        "research_reactor",
         "field_assay_team",
         "interconnector_treaty",
         "aegis_grid_lockdown",

@@ -92,7 +92,7 @@ pub struct Override {
 /// Rows of `ops` that are parts of another op's arm, not ops of their own.
 #[cfg(test)]
 pub(crate) const PART_ROWS: &[&str] =
-    &["remove_ambassador", "remove_troop", "typed_jam", "liberate_align", "liberate_troops", "liberate_botnet", "cleanse_station",
+    &["remove_ambassador", "remove_troop", "typed_jam", "liberate_own", "liberate_troops", "liberate_botnet", "cleanse_station",
       "if_node_next_fresh", "burn_station", "burn_blight", "open_station", "open_factory"];
 
 const SOURCE: &str = include_str!("../../../../configs/agents/values.json");
@@ -568,9 +568,12 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             }
         }
         // 252: a liberated city is left neutral; only `own` puts the seat's cube on.
+        // 256 (254's audit pick): no city is ever a player's (`cities_unowned` 1, the baseline), so `own` adds
+        // nothing to the city bucket; it values the station or factory it frees and makes yours (`liberate_own`:
+        // a flip, `cleanse_station`, and the claim it saves, `claim_site`), seen with or without a city.
         Op::Liberate { own, ambassadors, troops, botnet } => Worth {
+            now: if *own { row("liberate_own") } else { 0.0 },
             city: row("liberate")
-                + if *own { row("liberate_align") } else { 0.0 }
                 + row("gain_ambassadors") * r(Resource::Ambassadors) * *ambassadors as f64
                 + row("liberate_troops") * *troops as f64
                 + if *botnet { row("liberate_botnet") } else { 0.0 },
@@ -591,7 +594,10 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::Cordon => Worth::unseen(row("cordon")),
         Op::FreeBuilding => Worth::now(row("free_building")),
         Op::BuildStation => Worth::now(row("build_station")),
-        Op::ClaimStation => Worth::now(row("claim_station")),
+        // 256: a station or factory; the liberate cards' rider (`near`) at `claim_near`'s share, as a site next
+        // to the city is often claimed or taken already, and only with a city to free (the `city` bucket).
+        Op::ClaimSite { near: false } => Worth::now(row("claim_site")),
+        Op::ClaimSite { near: true } => Worth { city: row("claim_site") * t.rate("claim_near"), ..Worth::default() },
         Op::ProjectCube { count, .. } => Worth::now(row("project_cube") * *count as f64),
         Op::Peek { count } => Worth::unseen(row("peek") * *count as f64),
         Op::Jam { amount, source } => {
@@ -1316,12 +1322,13 @@ mod tests {
         let pu = CardValue::of(t, &one_shot);
         // r37: one Action, one-shot: a whole liberation, used once; the Followers
         // it arrives with are that use's fuel, not value of their own.
-        // 252: a liberation leaves the city neutral; only `own` adds the seat's cube (`liberate_align`).
+        // 252: a liberation leaves the city neutral; 256: its rider claims a site next to it (`claim_near`'s share).
         let liberation = t.op("liberate");
-        assert!(pu.once && (pu.use_.city - liberation).abs() < 1e-9, "{:?}", pu.use_);
+        let rider = t.op("claim_site") * t.rate("claim_near");
+        assert!(pu.once && (pu.use_.city - liberation - rider).abs() < 1e-9, "{:?}", pu.use_);
         assert_eq!(pu.play.now, 0.0, "{:?}", pu.play);
         c.corrupted = true;
         let whole = pu.total(t, &c);
-        assert!((whole - liberation - pu.tags).abs() < 1.0, "{whole}");
+        assert!((whole - liberation - rider - pu.tags).abs() < 1.0, "{whole}");
     }
 }

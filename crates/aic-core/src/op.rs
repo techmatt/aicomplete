@@ -330,8 +330,8 @@ pub enum TargetSpec {
     CorruptedFacility,
     /// 236: an open hex a research station can be built on (the Researcher's Field Station).
     StationSite,
-    /// A neutral research station a card can claim.
-    NeutralStation,
+    /// A neutral research station or factory a card can claim (256: factories too).
+    NeutralSite,
     /// 253: an empty printed station site, where a card opens a neutral research station.
     EmptySite,
     /// A free industrial zone (a factory's site).
@@ -368,7 +368,7 @@ impl TargetSpec {
             TargetSpec::CorruptedSite => "a corrupted site",
             TargetSpec::CorruptedFacility => "a corrupted research station or factory",
             TargetSpec::StationSite => "an open hex",
-            TargetSpec::NeutralStation => "a neutral research station",
+            TargetSpec::NeutralSite => "a neutral station or factory",
             TargetSpec::EmptySite => "an empty station site",
             TargetSpec::FreeZone => "a free industrial zone",
             TargetSpec::Fallout => "Fallout",
@@ -395,7 +395,7 @@ impl TargetSpec {
             TargetSpec::CorruptedSite => "city",
             TargetSpec::CorruptedFacility
             | TargetSpec::StationSite
-            | TargetSpec::NeutralStation
+            | TargetSpec::NeutralSite
             | TargetSpec::EmptySite => "station",
             TargetSpec::Fallout => "fallout",
             TargetSpec::Facility => "shield",
@@ -890,9 +890,13 @@ pub enum Op {
     FreeBuilding,
     /// Build a research station in your reach, paying no chips (075).
     BuildStation,
-    /// Claim a neutral research station in your reach with no agent on it, paying no
-    /// ambassadors (142: the card's energy is the price).
-    ClaimStation,
+    /// Claim a neutral research station or factory with no agent on it, on the target (with `near`, on or
+    /// next to it), paying no ambassadors (142: the card's price is the price; 256: factories too, and the
+    /// liberate cards' rider claims next to the city they free).
+    ClaimSite {
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        near: bool,
+    },
     /// `count` research cubes in your color onto one open megaproject
     /// (075): with `station`, in a country where you own a station. They pay at
     /// completion like any cube.
@@ -1609,7 +1613,7 @@ impl Op {
             | Op::PlaceAmbassadors { .. }
             | Op::Cordon
             | Op::BuildStation
-            | Op::ClaimStation
+            | Op::ClaimSite { .. }
             // 253: on a player card it opens its site on the target (a threat's or a team card's needs none).
             | Op::CreateSite { .. }
             | Op::CutBotnet
@@ -1813,7 +1817,7 @@ impl Op {
             | Op::Cordon
             | Op::FreeBuilding
             | Op::BuildStation
-            | Op::ClaimStation
+            | Op::ClaimSite { .. }
             | Op::ProjectCube { .. }
             | Op::Peek { .. }
             | Op::Jam { .. }
@@ -2081,7 +2085,7 @@ impl Op {
             | Op::Cordon
             | Op::FreeBuilding
             | Op::BuildStation
-            | Op::ClaimStation
+            | Op::ClaimSite { .. }
             | Op::ProjectCube { .. }
             | Op::Peek { .. }
             | Op::Jam { .. }

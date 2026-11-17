@@ -243,9 +243,9 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             let zone = ctx.area(&w, g, seat, Area::On);
             resources::build_station(g, cx, seat, &zone)?
         }
-        Op::ClaimStation => {
-            let zone = ctx.area(&w, g, seat, Area::On);
-            resources::claim_station(g, cx, seat, &zone)?
+        Op::ClaimSite { near } => {
+            let zone = ctx.area(&w, g, seat, if *near { Area::Near } else { Area::On });
+            resources::claim_site(g, cx, seat, &zone, *near)?
         }
         Op::ProjectCube { count, station } => resources::project_cube(g, cx, seat, *count, *station)?,
         Op::Peek { count } => adversary::peek(g, cx, *count),

@@ -288,7 +288,7 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::Cordon
         | Op::FreeBuilding
         | Op::BuildStation
-        | Op::ClaimStation
+        | Op::ClaimSite { .. }
         | Op::ProjectCube { .. }
         | Op::Peek { .. }
         | Op::Jam { .. }

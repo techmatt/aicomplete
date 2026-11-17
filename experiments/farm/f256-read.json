@@ -1,0 +1,17 @@
+{
+ "name": "f256-read",
+ "note": "256's fresh read (Item C, the card pass): greedy and the judge, three pairs, d0-d4, 48 seeds a cell, on the build as frozen. The r115 arm is the same spec run natively by r115's binary (main 4981702) on the same seeds, paired seed for seed. Variant-major: pair.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {"name": "bp", "set": []},
+  {"name": "br", "set": ["ai.boards=0,2"]},
+  {"name": "pr", "set": ["ai.boards=1,2"]}
+ ],
+ "difficulties": [0, 1, 2, 3, 4],
+ "agents": ["greedy", "strategist"],
+ "games": 48,
+ "first_seed": 49020,
+ "records": 0
+}

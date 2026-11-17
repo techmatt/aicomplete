@@ -716,9 +716,11 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             vec![w("station"), w("free")],
             "build a research station on it, paying no chips",
         )),
-        Op::ClaimStation => one(clause(
-            vec![w("station")],
-            "claim it",
+        // 256: a claim of the target, or with `near` a liberate card's rider next to the city it frees.
+        Op::ClaimSite { near: false } => one(clause(vec![w("station")], "claim it")),
+        Op::ClaimSite { near: true } => one(clause(
+            vec![w("station"), w("/"), w("factory")],
+            "claim a facility next to it",
         )),
         Op::ProjectCube { count, station } => {
             let mut icons = counted(*count, "research_cubes");

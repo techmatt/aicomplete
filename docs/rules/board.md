@@ -14,7 +14,7 @@ hexes next to cities: factories go only there. Research stations go on other ope
 one facility per hex. **Empty station sites** are printed too (137, one a country, never a base): a neutral station
 opens on one when a card says so (253, Matt's ruling 3: Open Research Campus on its target; the adversary's Shell Labs
 on each country's lowest-numbered), as a neutral factory opens on a free industrial zone (Industrial Commons, Factory
-Drive, Blight). A neutral site a card opens is anyone's to claim. Nothing builds on ocean or on a Fallout token (no node, factory or
+Drive, Blight). A neutral site a card opens is anyone's to claim, but Campus and Commons claim theirs (256). Nothing builds on ocean or on a Fallout token (no node, factory or
 station) until it is cleared ([war.md](war.md)).
 
 <!-- generated: countries -->
@@ -93,7 +93,7 @@ megaproject is the corp's defining card.
   instead (a player ambassador there cancels it). A neutral station flips as before. Cards
   that free a station are priced as a station flip, a cube a round both ways (Reclamation
   Crew); factories stay cheap to free (Back-Channel Talks). A card that liberates a site does it as the Liberate
-  action does, unpaid; a card that claims a neutral station does it unpaid, and like Claim never on a station with an agent on it
+  action does, unpaid; a card that claims a neutral station or factory does it unpaid, and like Claim never on a station with an agent on it
   (206).
 - **Until completion** a country's cubes go onto its megaproject. Cubes of any color fill it.
 - **Completion** is checked once, at the end of production (`board.produce`),
