@@ -1,0 +1,17 @@
+{
+ "name": "s257-d34",
+ "note": "257's screen on the second fresh read's seeds (49260-49355, spent by it): w.sink 0.5 and 1 on the judge, d3-d4, three pairs, paired with f257-d34's shipped judge on the same seeds. Variant-major: pair.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {"name": "bp", "set": []},
+  {"name": "br", "set": ["ai.boards=0,2"]},
+  {"name": "pr", "set": ["ai.boards=1,2"]}
+ ],
+ "difficulties": [3, 4],
+ "agents": ["strategist:w.sink=0", "strategist:w.sink=0.5", "strategist:w.sink=1"],
+ "games": 96,
+ "first_seed": 49260,
+ "records": 0
+}

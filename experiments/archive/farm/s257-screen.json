@@ -1,0 +1,18 @@
+{
+ "name": "s257-screen",
+ "note": "257's dev screen (the judge's Action buildings): the shipped judge against w.sink (held converter fuel at a share of what its use makes) and w.card_left (a building's Action counted over a share of the adversary cards left, not 3 rounds; removed after this screen, so the spec runs only at 257's commit 487ce17), as a factorial, three pairs, d2-d4, the dev seeds 36800-36831. Variant-major: pair.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {"name": "bp", "set": []},
+  {"name": "br", "set": ["ai.boards=0,2"]},
+  {"name": "pr", "set": ["ai.boards=1,2"]}
+ ],
+ "difficulties": [2, 3, 4],
+ "agents": ["strategist", "strategist:w.sink=0.5", "strategist:w.sink=1", "strategist:w.card_left=0.6",
+            "strategist:w.sink=0.5,w.card_left=0.6"],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

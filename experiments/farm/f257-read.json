@@ -1,0 +1,17 @@
+{
+ "name": "f257-read",
+ "note": "257's fresh paired read: the shipped judge (strategist:w.sink=0, r117's judge to the bit) against the new one (strategist, w.sink 2), three pairs, d0-d4, 48 seeds a cell. Greedy unchanged, so not run. Farmed at 228e919, where `strategist` carried w.sink 2; 257 then left it off, so that arm is now `strategist:w.sink=2`. Variant-major: pair.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {"name": "bp", "set": []},
+  {"name": "br", "set": ["ai.boards=0,2"]},
+  {"name": "pr", "set": ["ai.boards=1,2"]}
+ ],
+ "difficulties": [0, 1, 2, 3, 4],
+ "agents": ["strategist:w.sink=0", "strategist"],
+ "games": 48,
+ "first_seed": 49212,
+ "records": 0
+}

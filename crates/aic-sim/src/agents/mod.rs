@@ -346,6 +346,11 @@ const SWEEP: &str = "deals=1,lead=0";
 /// Screened d2-d3 on 248's seeds 48376-48471 (576 games a cell): 2, 3, 4 read +3.3 / +3.6 / +3.3 ± 1.8, 6 +0.7; card
 /// income at the track's rate (`w.card_income`) +0.2 / +1.2, left off. Fresh 48576-48767, paired, d0-d3 -1.0 / +1.0
 /// / +0.7 / +5.0, pooled d2-d3 +2.9 ± 1.3 (`experiments/results/249_real_oracle_judge`).
+/// 257 (r117): `w.sink` (a held antimatter, cube or chip a built converter burns counts `sink` times what a use makes
+/// at these weights per unit burned) runs the converters: at 2, Orbital Relay Launcher's uses 0.26 → 1.14 a game,
+/// Research Reactor's 0.23 → 0.48 (fresh 49212-49259, +0.6 ± 1.1 overall). But it costs wins at d3-d4, by dose
+/// (49260-49355, 576 games an arm): sink 0.5 -0.5 ± 0.9, 1 -2.3 ± 1.3, 2 -3.8 ± 1.5. Left off: the converters don't
+/// pay this player their fuel (`experiments/results/257_judge_action_buildings`).
 const STRATEGIST: &str = "strategy=0,w.built=4,w.built_cost=0.5,w.clock=0,w.energy_cap=0,w.hand=1.5,w.hand_cost=0.1,\
 w.horizon=0,w.insight_income=0,w.movement=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,\
 w.tag_hand=0,w.purge=3.6,w.last_node=120,w.card_action=3";

@@ -399,6 +399,11 @@ pub struct Weights {
     /// 249 (flat mode; 0: off, as before): a building counts what it earns a round beyond income (its standing
     /// rules and a share of its Action, at the value table's rates) for this many rounds, at `credits` a credit.
     pub card_action: f64,
+    /// 257 (flat mode; 0: off): a held antimatter, research cube or chip that a built Action of the seat's burns
+    /// counts, up to two uses' fuel for each such building, at this share of what a use makes at these weights over
+    /// the units it burns, where that beats its flat weight: fuel a converter waits on is worth what it will make (at
+    /// `antimatter` 2, below the chip or energy that makes one, a seat with Orbital Relay Launcher made none).
+    pub sink: f64,
 }
 
 /// Weights renamed since experiments named them: (former name, name).
@@ -677,6 +682,7 @@ impl Default for Weights {
             troop_exposure: 1.0,
             card_income: 0.0,
             card_action: 0.0,
+            sink: 0.0,
         }
     }
 }
@@ -824,6 +830,49 @@ struct Fact {
     /// The token kind of a pile of the seat's own it works on, when played (a
     /// feeder, a cash-out, a count).
     pile: Option<aic_core::content::TokenKind>,
+    /// 257 (`sink`): a converter's Action, read once.
+    fuel: Option<Fuel>,
+}
+
+/// 257 (`sink`): a building's Action (one branch, not one-shot) that burns only one resource the flat weights price
+/// low (antimatter, research cubes or chips): that resource, how many a use burns, and the resources and nodes a
+/// use makes.
+#[derive(Clone, Copy)]
+struct Fuel {
+    resource: Resource,
+    burns: i64,
+    nodes: i64,
+    /// Made, by resource: credits, energy, antimatter, research cubes, chips.
+    makes: [i64; 5],
+}
+
+/// 257: the resources a [`Fuel`]'s `makes` counts, in its order.
+const FUEL_MAKES: [Resource; 5] =
+    [Resource::Credits, Resource::Energy, Resource::Antimatter, Resource::ResearchCubes, Resource::Chips];
+
+/// 257 (`sink`): building `d`'s converter Action, if it has one (see [`Fuel`]).
+fn fuel_of(d: &CardDef) -> Option<Fuel> {
+    let a = d.ability.as_ref()?;
+    if !d.is_building() || a.once || a.or.is_some() {
+        return None;
+    }
+    let (resource, burns) = match a.cost.as_slice() {
+        [(r @ (Resource::Antimatter | Resource::ResearchCubes | Resource::Chips), n)] if *n > 0 => (*r, *n),
+        _ => return None,
+    };
+    let mut f = Fuel { resource, burns, nodes: 0, makes: [0; 5] };
+    for e in &a.effects {
+        match e {
+            Op::PlaceNode { count, .. } => f.nodes += count,
+            Op::Gain { resource: r, amount } => {
+                if let Some(i) = FUEL_MAKES.iter().position(|x| x == r) {
+                    f.makes[i] += amount;
+                }
+            }
+            _ => {}
+        }
+    }
+    Some(f)
 }
 
 /// The token kind of a pile of the seat's own card `d` works on when played.
@@ -1054,6 +1103,7 @@ impl Eval {
                             // 102 (D24): a token on a card that cashes its own pile out is worth that.
                             token: value::token_worth_cash(tbl, d),
                             pile: if d.is_building() { None } else { pile_kind(d) },
+                            fuel: fuel_of(d),
                     })
                     .collect(),
             ),
@@ -2012,7 +2062,7 @@ impl Eval {
                 };
                 *v += w.income * unit * n as f64;
             });
-            if w.card_income > 0.0 || w.card_action > 0.0 {
+            if w.card_income > 0.0 || w.card_action > 0.0 || w.sink > 0.0 {
                 *v += self.card_terms(&world, g, s, tokens, &mut any_corrupted);
             }
             let mut cards: Vec<f64> = g
@@ -2089,6 +2139,64 @@ impl Eval {
                 let key = (self.id, f.index, tags, node, corrupted);
                 v += w.card_action * w.credits * built_round_cached(key, || f.value.built_round(self.tbl, &ctx)).max(0.0);
             }
+        }
+        if w.sink > 0.0 && !built.is_empty() {
+            v += self.sink_terms(world, g, s);
+        }
+        v
+    }
+
+    /// 257 (`sink`): seat `s`'s held fuel for its built converters, beyond its flat weight (see `Weights::sink`).
+    /// A unit counts `sink` of what a use makes at this heuristic's own weights (a node at `node`) over the units it
+    /// burns: priced at the table's rates instead (above these), a converter's own fuel read worth more held than
+    /// burned and Research Reactor sat idle. A converter used this round counts the fuel it burned as still held,
+    /// so burning it is judged by what it makes alone (the credit lapses as the next round starts: per-round action
+    /// counts held, 257's write-up). Each converter takes two uses' fuel, the best first; one worth no more than
+    /// the flat weight takes none.
+    fn sink_terms(&self, world: &aic_core::module::World, g: &GameState, s: usize) -> f64 {
+        let w = &self.w;
+        let base = |r: Resource| match r {
+            Resource::Antimatter => w.antimatter,
+            Resource::ResearchCubes => self.cube_unit(s),
+            _ => w.chips,
+        };
+        // Each converter worth its fuel: (fuel, points a unit beyond the flat weight, units it takes, units burned).
+        let mut takes: Vec<(Resource, f64, i64, i64)> = Vec::new();
+        for id in g.pile(&cards::built(s)) {
+            let (_, f) = self.fact(world, id);
+            let Some(u) = f.fuel else { continue };
+            if cards::disabled(g, s, id.as_str()) {
+                continue;
+            }
+            let unit_of = |r: Resource| match r {
+                Resource::Credits => w.credits,
+                Resource::Energy => self.energy_unit(),
+                Resource::Antimatter => w.antimatter,
+                Resource::ResearchCubes => self.cube_unit(s),
+                _ => w.chips,
+            };
+            let makes: f64 = w.node * u.nodes as f64
+                + FUEL_MAKES.iter().zip(u.makes).map(|(r, n)| unit_of(*r) * n as f64).sum::<f64>();
+            let gain = w.sink * makes / u.burns as f64 - base(u.resource);
+            if gain <= 0.0 {
+                continue;
+            }
+            let burned = if g.seats[s].exhausted.iter().any(|c| c == id) { u.burns } else { 0 };
+            takes.push((u.resource, gain, 2 * u.burns, burned));
+        }
+        if takes.is_empty() {
+            return 0.0;
+        }
+        // Best first; a stable sort keeps the built order between equals.
+        takes.sort_by(|a, b| b.1.total_cmp(&a.1));
+        let mut v = 0.0;
+        let mut held = [Resource::Antimatter, Resource::ResearchCubes, Resource::Chips].map(|r| (r, g.resource(s, r)));
+        for (r, gain, room, burned) in takes {
+            // The burned units count at the gain alone (they are not held: no flat weight).
+            let Some(h) = held.iter_mut().find(|x| x.0 == r) else { continue };
+            let n = h.1.min(room - burned);
+            h.1 -= n;
+            v += (n + burned) as f64 * gain;
         }
         v
     }
@@ -2790,6 +2898,60 @@ mod tests {
         put(&mut g, mine[0], ADV_AMBASSADOR, 1);
         let gap = off.value(&r, &g) - lit.value(&r, &g);
         assert!(gap > 0.0 && gap <= 100.0, "an exposed last node charges up to the weight: {gap}");
+    }
+
+    /// 257 (`sink`): with Orbital Relay Launcher built, a held antimatter counts `sink` times what a use makes at
+    /// the flat weights (2 nodes, 3 energy), for two uses' fuel; one burned this round still counts (so burning it
+    /// is judged by what it makes); off by default, and nothing without a converter; a converter worth nothing at
+    /// these weights adds no room; two on one fuel fill best first.
+    #[test]
+    fn sink_prices_a_converters_fuel() {
+        let r = crate::agents::tests::rules(0);
+        let mut g = r.new_game(1);
+        g.seats[0].resources.insert(Resource::Antimatter, 0);
+        let off = Eval::new(&r, Weights::default());
+        assert_eq!(off.w.sink, 0.0);
+        let on = Eval::new(&r, Weights { sink: 2.0, ..Weights::default() });
+        let gap = |g: &GameState| on.value(&r, g) - off.value(&r, g);
+        assert_eq!(gap(&g), 0.0, "no converter, no term");
+        let key = cards::built(0);
+        let mut row = g.pile(&key).to_vec();
+        row.push("orbital_relay_launcher".into());
+        g.piles.insert(key.as_str().into(), Arc::new(row));
+        let unit = 2.0 * (2.0 * on.w.node + 3.0 * on.energy_unit()) - on.w.antimatter;
+        let held = |g: &GameState, n: i64| {
+            let mut h = g.clone();
+            h.seats[0].resources.insert(Resource::Antimatter, n);
+            gap(&h)
+        };
+        assert_eq!(held(&g, 0), 0.0);
+        assert!((held(&g, 1) - unit).abs() < 1e-9);
+        assert!((held(&g, 3) - 2.0 * unit).abs() < 1e-9, "two uses' fuel counts");
+        g.seats[0].exhausted.push("orbital_relay_launcher".into());
+        assert!((held(&g, 0) - unit).abs() < 1e-9, "the fuel burned this round still counts");
+        assert!((held(&g, 3) - 2.0 * unit).abs() < 1e-9);
+        // A converter whose use makes nothing at these weights (Field Assay Team's damage) adds no room for cubes
+        // beside Research Reactor's.
+        let mut row = g.pile(&key).to_vec();
+        row.push("field_assay_team".into());
+        row.push("research_reactor".into());
+        g.piles.insert(key.as_str().into(), Arc::new(row));
+        g.seats[0].exhausted.clear();
+        g.seats[0].resources.insert(Resource::Antimatter, 0);
+        let cube = 2.0 * 2.0 * on.energy_unit() - on.cube_unit(0);
+        let cubes = |n: i64| {
+            let mut h = g.clone();
+            h.seats[0].resources.insert(Resource::ResearchCubes, n);
+            gap(&h)
+        };
+        assert!((cubes(4) - 2.0 * cube).abs() < 1e-9, "{} against {}", cubes(4), 2.0 * cube);
+        // Two converters on one fuel fill best first: Orbital's two uses, then Containment Reactor's (4 energy).
+        let mut row = g.pile(&key).to_vec();
+        row.push("containment_reactor".into());
+        g.piles.insert(key.as_str().into(), Arc::new(row));
+        let worse = 2.0 * 4.0 * on.energy_unit() - on.w.antimatter;
+        assert!(worse > 0.0 && worse < unit);
+        assert!((held(&g, 3) - (2.0 * unit + worse)).abs() < 1e-9, "{} against {}", held(&g, 3), 2.0 * unit + worse);
     }
 
     #[test]

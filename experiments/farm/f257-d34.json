@@ -1,0 +1,17 @@
+{
+ "name": "f257-d34",
+ "note": "257's second fresh read, d3-d4 only: the shipped judge (strategist:w.sink=0) against the new one (strategist, w.sink 2), three pairs, 96 seeds a cell, to tighten the d3/d4 gaps the first fresh read left within 1 SE. Farmed at 7897df1, where `strategist` carried w.sink 2; 257 then left it off, so that arm is now `strategist:w.sink=2`. Variant-major: pair.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {"name": "bp", "set": []},
+  {"name": "br", "set": ["ai.boards=0,2"]},
+  {"name": "pr", "set": ["ai.boards=1,2"]}
+ ],
+ "difficulties": [3, 4],
+ "agents": ["strategist:w.sink=0", "strategist"],
+ "games": 96,
+ "first_seed": 49260,
+ "records": 0
+}

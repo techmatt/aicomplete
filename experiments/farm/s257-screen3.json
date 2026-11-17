@@ -1,0 +1,17 @@
+{
+ "name": "s257-screen3",
+ "note": "257's third dev screen: the judge with w.sink 2 and 3, three pairs, d0-d4, the dev seeds 36800-36831. Variant-major: pair.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {"name": "bp", "set": []},
+  {"name": "br", "set": ["ai.boards=0,2"]},
+  {"name": "pr", "set": ["ai.boards=1,2"]}
+ ],
+ "difficulties": [0, 1, 2, 3, 4],
+ "agents": ["strategist", "strategist:w.sink=2", "strategist:w.sink=3"],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}
