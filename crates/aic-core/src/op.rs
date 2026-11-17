@@ -865,6 +865,11 @@ pub enum Op {
     GainAmbassadors {
         count: i64,
     },
+    /// 258 (Matt: a per-player host cap raised by a card): from now on you may host `count` more neutral cities in
+    /// the income step (`board.host_city` a seat otherwise; `common::host_caps`).
+    HostMore {
+        count: i64,
+    },
     /// 234 (Matt: Gain means your supply, Place means onto the map): `count` new ambassadors of yours onto the
     /// target (or onto pieces on or next to it, `at`), each arriving as any ambassador does.
     PlaceAmbassadors {
@@ -1645,6 +1650,7 @@ impl Op {
             | Op::DrainProject { .. }
             | Op::DiscardProject
             | Op::Production { .. }
+            | Op::HostMore { .. }
             | Op::ProductionPerTag { .. }
             | Op::AddTokens { .. }
             | Op::IfTags { .. }
@@ -1825,6 +1831,7 @@ impl Op {
             | Op::DrainProject { .. }
             | Op::DiscardProject
             | Op::Production { .. }
+            | Op::HostMore { .. }
             | Op::ProductionPerTag { .. }
             | Op::AddTokens { .. }
             | Op::CutBotnet
@@ -2092,6 +2099,7 @@ impl Op {
             | Op::DrainProject { .. }
             | Op::DiscardProject
             | Op::Production { .. }
+            | Op::HostMore { .. }
             | Op::ProductionPerTag { .. }
             | Op::AddTokens { .. }
             | Op::CutBotnet

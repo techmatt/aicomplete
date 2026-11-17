@@ -208,6 +208,12 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             ambassadors::move_ambassadors(g, cx, seat, *max, &zone, sources.as_deref())?
         }
         Op::GainAmbassadors { count } => cx.add_resource(g, seat, Resource::Ambassadors, *count),
+        // 258: a lasting extra host slot for this seat.
+        Op::HostMore { count } => {
+            let key = host_more_key(seat);
+            let n = g.var(&key) + *count;
+            cx.set_key(g, &key, n);
+        }
         Op::PlaceAmbassadors { count, at } => {
             let zone = ctx.area(&w, g, seat, *at);
             ambassadors::place_ambassadors(g, cx, seat, *count, &zone)?

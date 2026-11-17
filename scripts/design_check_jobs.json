@@ -45,24 +45,24 @@
    "cards": [
     {
      "name": "Orbital Relay Launcher",
-     "units": "2 * uses",
+     "units": "3 * uses",
      "other": "3 * uses * energy",
      "use": "am",
-     "note": "256: Action 1 antimatter: 2 nodes and 3 energy, x4"
+     "note": "258: Action 1 antimatter: 3 nodes and 3 energy, x4"
     },
     {
      "name": "Survey Drone Fleet",
      "units": "2 * uses",
-     "other": 0,
+     "other": "2 * cube + 2 * uses * energy",
      "use": "cube",
-     "note": "256: Action 1 cube: 2 nodes (range 2), x4"
+     "note": "258: Action 1 cube: 2 nodes (range 2) and 2 energy, x4; 2 cubes when built"
     },
     {
      "name": "Mesh Repeater Network",
      "units": "uses",
      "other": 0,
-     "use": "energy",
-     "note": "256: Action 1 energy: a node, x4"
+     "use": 0,
+     "note": "258: Action (free): a node, x4"
     },
     {
      "name": "Relay Mast Rollout",
@@ -70,6 +70,13 @@
      "other": "2 * card",
      "use": 0,
      "note": "256: place 3; draw 2"
+    },
+    {
+     "name": "Twin City Compact",
+     "units": 2,
+     "other": "4 * 0.55 * energy",
+     "use": 0,
+     "note": "258: place 2; host 1 more city (0.55 energy a round, ~4 rounds)"
     },
     {
      "name": "Aegis Grid Lockdown",
@@ -213,10 +220,10 @@
     },
     {
      "name": "Field Assay Team",
-     "units": "2 * uses",
+     "units": "3 * uses",
      "other": 0,
      "use": "cube",
-     "note": "Action 1 cube: 2 agents, x4"
+     "note": "258: Action 1 cube: 3 agents, x4"
     },
     {
      "name": "Air Gap",
@@ -639,10 +646,10 @@
     },
     {
      "name": "Dyson Swarm Tranche",
-     "units": "10 + 2 * 2",
+     "units": "10 + 3 * 2",
      "other": 0,
      "use": 0,
-     "note": "10; +2 income at tier 2 (4)"
+     "note": "258: 10; +3 income at tier 2 (4)"
     },
     {
      "name": "Fusion Commons",
@@ -714,10 +721,10 @@
     },
     {
      "name": "Exascale Training Cluster",
-     "units": "3 * uses",
-     "other": "6 * cube",
+     "units": "4 * uses",
+     "other": "4 * card",
      "use": 0,
-     "note": "3 a round x4; 6 cubes 36"
+     "note": "258: 4 a round x4; 4 cards drawn"
     },
     {
      "name": "Interdisciplinary Institute",
@@ -782,10 +789,10 @@
     },
     {
      "name": "Citywide Microgrid",
-     "units": "2 * uses",
+     "units": "3 * uses",
      "other": "city - 5 * sway",
      "use": "energy",
-     "note": "Action 1 energy: sway 2, x4; liberates (city less its sway, 25)"
+     "note": "258: Action 1 energy: sway 3, x4; liberates (city less its sway, 25)"
     },
     {
      "name": "Antimatter Accord",
@@ -809,9 +816,9 @@
     {
      "name": "Antiproton Foundry",
      "units": "1 + uses",
-     "other": 0,
+     "other": "2 * uses * energy",
      "use": "chip",
-     "note": "1 when built; Action 1 chip, x4"
+     "note": "258: 1 when built; Action 1 chip: 1 antimatter and 2 energy, x4"
     },
     {
      "name": "Dark Fiber Collider",
@@ -823,9 +830,9 @@
     {
      "name": "Treaty Isotope Bank",
      "units": "uses",
-     "other": "amb",
+     "other": "amb + uses * amb",
      "use": 8,
-     "note": "Action 8 credits, x4; 1 ambassador"
+     "note": "258: Action 8 credits: 1 antimatter and 1 ambassador, x4; 1 ambassador"
     },
     {
      "name": "Cyclotron Lease",
@@ -837,9 +844,9 @@
     {
      "name": "Positron Storage Ring",
      "units": "uses",
-     "other": "2 * uses * energy + 2 * card",
+     "other": "2 * uses * energy + 2 * card + uses * card",
      "use": "2 * energy",
-     "note": "Action 2 energy x4; 2 energy a Power play (8); draw 2"
+     "note": "258: Action 2 energy: 1 antimatter and draw 1, x4; 2 energy a Power play (8); draw 2"
     },
     {
      "name": "Zero-Day Auction",
@@ -893,9 +900,9 @@
     {
      "name": "Citywide Microgrid",
      "units": 1,
-     "other": "2 * uses * sway + 0.5 * station_owned",
+     "other": "3 * uses * sway + 0.5 * station_owned",
      "use": "energy",
-     "note": "Action 1 energy: sway 2, x4; 256: claims a neutral site next to it (~0.5)"
+     "note": "258: Action 1 energy: sway 3, x4; 256: claims a neutral site next to it (~0.5)"
     },
     {
      "name": "Power to the People",
@@ -953,10 +960,10 @@
     },
     {
      "name": "Microgrid Lab Compact",
-     "units": 2,
+     "units": 3,
      "other": 0,
      "use": "2 * energy",
-     "note": "Action 2 energy: claim, ~2 neutral sites in reach (2 uses)",
+     "note": "258: claims when built, then Action 2 energy: claim, ~2 neutral sites in reach (2 uses)",
      "uses": 2
     },
     {
@@ -974,10 +981,10 @@
    "cards": [
     {
      "name": "Microgrid Lab Compact",
-     "units": 2,
+     "units": 3,
      "other": 0,
      "use": "2 * energy",
-     "note": "256: Action 2 energy: claim a station or factory (2 uses)",
+     "note": "258: claims a station or factory when built, then Action 2 energy: the same (2 uses)",
      "uses": 2
     },
     {

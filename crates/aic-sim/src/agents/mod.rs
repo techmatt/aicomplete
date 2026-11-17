@@ -351,9 +351,13 @@ const SWEEP: &str = "deals=1,lead=0";
 /// Research Reactor's 0.23 → 0.48 (fresh 49212-49259, +0.6 ± 1.1 overall). But it costs wins at d3-d4, by dose
 /// (49260-49355, 576 games an arm): sink 0.5 -0.5 ± 0.9, 1 -2.3 ± 1.3, 2 -3.8 ± 1.5. Left off: the converters don't
 /// pay this player their fuel (`experiments/results/257_judge_action_buildings`).
+/// 258 (r119, amendment 11877: ship it on the judge if a fresh d3-d4 read says no worse): on the stronger converters,
+/// sink 0.5 / 1 / 2 read -0.5 / -1.0 / -1.0 on the dev seeds at d3-d4; 0.5 fresh (49404-49451, paired against the
+/// judge without it, 720 games an arm): d3 +3.5 ± 3.2, d4 +3.5 ± 2.7, overall +0.3 ± 1.3 (d1 -4.2 ± 2.6). On at 0.5
+/// (`experiments/results/258_card_followups`); `strategist:w.sink=0` is r119's judge before it.
 const STRATEGIST: &str = "strategy=0,w.built=4,w.built_cost=0.5,w.clock=0,w.energy_cap=0,w.hand=1.5,w.hand_cost=0.1,\
 w.horizon=0,w.insight_income=0,w.movement=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,\
-w.tag_hand=0,w.purge=3.6,w.last_node=120,w.card_action=3";
+w.tag_hand=0,w.purge=3.6,w.last_node=120,w.card_action=3,w.sink=0.5";
 
 /// A kind's place on the [`LADDER`].
 fn rung(kind: &str) -> Option<usize> {

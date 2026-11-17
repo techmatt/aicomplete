@@ -109,6 +109,7 @@
     "drain_project": {"credits": 1.1, "per": "compute removed"},
     "discard_project": {"credits": 8, "per": "project discarded with its compute"},
     "production": {"credits": 1, "per": "the resource at its rate, each round left"},
+    "host_more": {"credits": 0.6, "per": "258: extra host slot, as energy income each round left: a second slot for every seat added 0.55 energy a seat-round (r117, greedy d2, 32 dev seeds: hosted energy 13.5 -> 23.6 a game); one seat's alone meets less competition"},
     "production_per_tag": {"credits": 1, "per": "the resource at its rate, each round left, per `per` tags at play (106; rates.tag_count when not known: 5, the strategist's median count before a per-tag card's play, 128; a card counts its own tags too)"},
     "add_tokens": {"credits": 1, "per": "token added, at its tokens.feed_<kind> rate"},
     "cut_botnet": {"credits": 1, "per": "botnet's compute skipped for a build"},

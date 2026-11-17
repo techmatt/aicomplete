@@ -20,9 +20,16 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
     keys.extend(KEYED);
     // 135: hex flags, standing troops, occupations and registrations.
     keys.extend(MARKS);
+    // 258: each seat's extra host slots (`host_more`), shown on the seat below.
+    keys.push("board.host_more.");
     out.bookkeeping(&keys);
     // 149: each seat's Dispatch left this round, of its Dispatch.
     for s in 0..g.seats.len() {
+        let more = g.var(&host_more_key(s));
+        if more > 0 {
+            let doc = "Cities you may host: one, plus one for each host card you played (Twin City Compact)";
+            out.seat(s, "host_cap", "cities you may host", host_caps(w, g)[s] as i64, None, doc);
+        }
         let doc = "Dispatches: free Dispatches this round (an ambassador onto a piece or botnet in reach); what you don't use is lost";
         out.seat(s, "movement", "Dispatches", moves_left(w, g, s), Some(ai::movement(w, g, s)), doc);
         // 235: a card's reach Shelter (r106) lives in hex flags the view hides as bookkeeping: say it on the seat.

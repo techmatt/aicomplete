@@ -1,0 +1,160 @@
+{
+ "name": "s258-groups",
+ "note": "258: group probe on the fresh read's seeds (spent: a diagnostic), the judge, d3-d4; each group of the card edits restored to r117 by overlay (arms.py). Variant-major: pair-arm.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp-all",
+   "set": []
+  },
+  {
+   "name": "bp-no-nodes",
+   "set": [
+    "cards.mesh_repeater_network.ability={\"cost\":[[\"energy\",1]],\"effects\":[{\"op\":\"place_node\",\"count\":1}]}",
+    "cards.mesh_repeater_network.cost=6",
+    "cards.orbital_relay_launcher.ability={\"cost\":[[\"antimatter\",1]],\"effects\":[{\"op\":\"place_node\",\"count\":2},{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":3}]}",
+    "cards.survey_drone_fleet.effects=[]",
+    "cards.survey_drone_fleet.needs=[[\"science\",2]]"
+   ]
+  },
+  {
+   "name": "bp-no-sinks",
+   "set": [
+    "cards.research_reactor.ability={\"cost\":[[\"research_cubes\",1]],\"effects\":[{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":2}]}",
+    "cards.field_assay_team.ability={\"cost\":[[\"research_cubes\",1]],\"effects\":[{\"op\":\"target\",\"on\":\"agents\"},{\"op\":\"damage\",\"ambassadors\":2}]}",
+    "cards.antiproton_foundry.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+   ]
+  },
+  {
+   "name": "bp-no-flags",
+   "set": [
+    "cards.dyson_swarm_tranche.effects=[{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":10},{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+    "cards.dyson_swarm_tranche.needs=[[\"power\",2]]",
+    "cards.exascale_training_cluster.cost=15",
+    "cards.exascale_training_cluster.effects=[{\"op\":\"gain\",\"resource\":\"research_cubes\",\"amount\":6}]",
+    "cards.exascale_training_cluster.energy=5",
+    "cards.exascale_training_cluster.passives=[{\"op\":\"income\",\"resource\":\"insight\",\"amount\":3}]",
+    "cards.citywide_microgrid.ability={\"effects\":[{\"op\":\"sway\",\"side\":\"unity\",\"amount\":2,\"narrative\":\"cooperation\"}],\"cost\":[[\"energy\",1]]}",
+    "cards.citywide_microgrid.cost=8",
+    "cards.citywide_microgrid.energy=8",
+    "cards.microgrid_lab_compact.effects=[]"
+   ]
+  },
+  {
+   "name": "bp-no-twin",
+   "set": [
+    "cards.twin_city_compact.cost=99"
+   ]
+  },
+  {
+   "name": "br-all",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "br-no-nodes",
+   "set": [
+    "ai.boards=0,2",
+    "cards.mesh_repeater_network.ability={\"cost\":[[\"energy\",1]],\"effects\":[{\"op\":\"place_node\",\"count\":1}]}",
+    "cards.mesh_repeater_network.cost=6",
+    "cards.orbital_relay_launcher.ability={\"cost\":[[\"antimatter\",1]],\"effects\":[{\"op\":\"place_node\",\"count\":2},{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":3}]}",
+    "cards.survey_drone_fleet.effects=[]",
+    "cards.survey_drone_fleet.needs=[[\"science\",2]]"
+   ]
+  },
+  {
+   "name": "br-no-sinks",
+   "set": [
+    "ai.boards=0,2",
+    "cards.research_reactor.ability={\"cost\":[[\"research_cubes\",1]],\"effects\":[{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":2}]}",
+    "cards.field_assay_team.ability={\"cost\":[[\"research_cubes\",1]],\"effects\":[{\"op\":\"target\",\"on\":\"agents\"},{\"op\":\"damage\",\"ambassadors\":2}]}",
+    "cards.antiproton_foundry.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+   ]
+  },
+  {
+   "name": "br-no-flags",
+   "set": [
+    "ai.boards=0,2",
+    "cards.dyson_swarm_tranche.effects=[{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":10},{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+    "cards.dyson_swarm_tranche.needs=[[\"power\",2]]",
+    "cards.exascale_training_cluster.cost=15",
+    "cards.exascale_training_cluster.effects=[{\"op\":\"gain\",\"resource\":\"research_cubes\",\"amount\":6}]",
+    "cards.exascale_training_cluster.energy=5",
+    "cards.exascale_training_cluster.passives=[{\"op\":\"income\",\"resource\":\"insight\",\"amount\":3}]",
+    "cards.citywide_microgrid.ability={\"effects\":[{\"op\":\"sway\",\"side\":\"unity\",\"amount\":2,\"narrative\":\"cooperation\"}],\"cost\":[[\"energy\",1]]}",
+    "cards.citywide_microgrid.cost=8",
+    "cards.citywide_microgrid.energy=8",
+    "cards.microgrid_lab_compact.effects=[]"
+   ]
+  },
+  {
+   "name": "br-no-twin",
+   "set": [
+    "ai.boards=0,2",
+    "cards.twin_city_compact.cost=99"
+   ]
+  },
+  {
+   "name": "pr-all",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  },
+  {
+   "name": "pr-no-nodes",
+   "set": [
+    "ai.boards=1,2",
+    "cards.mesh_repeater_network.ability={\"cost\":[[\"energy\",1]],\"effects\":[{\"op\":\"place_node\",\"count\":1}]}",
+    "cards.mesh_repeater_network.cost=6",
+    "cards.orbital_relay_launcher.ability={\"cost\":[[\"antimatter\",1]],\"effects\":[{\"op\":\"place_node\",\"count\":2},{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":3}]}",
+    "cards.survey_drone_fleet.effects=[]",
+    "cards.survey_drone_fleet.needs=[[\"science\",2]]"
+   ]
+  },
+  {
+   "name": "pr-no-sinks",
+   "set": [
+    "ai.boards=1,2",
+    "cards.research_reactor.ability={\"cost\":[[\"research_cubes\",1]],\"effects\":[{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":2}]}",
+    "cards.field_assay_team.ability={\"cost\":[[\"research_cubes\",1]],\"effects\":[{\"op\":\"target\",\"on\":\"agents\"},{\"op\":\"damage\",\"ambassadors\":2}]}",
+    "cards.antiproton_foundry.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+   ]
+  },
+  {
+   "name": "pr-no-flags",
+   "set": [
+    "ai.boards=1,2",
+    "cards.dyson_swarm_tranche.effects=[{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":10},{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+    "cards.dyson_swarm_tranche.needs=[[\"power\",2]]",
+    "cards.exascale_training_cluster.cost=15",
+    "cards.exascale_training_cluster.effects=[{\"op\":\"gain\",\"resource\":\"research_cubes\",\"amount\":6}]",
+    "cards.exascale_training_cluster.energy=5",
+    "cards.exascale_training_cluster.passives=[{\"op\":\"income\",\"resource\":\"insight\",\"amount\":3}]",
+    "cards.citywide_microgrid.ability={\"effects\":[{\"op\":\"sway\",\"side\":\"unity\",\"amount\":2,\"narrative\":\"cooperation\"}],\"cost\":[[\"energy\",1]]}",
+    "cards.citywide_microgrid.cost=8",
+    "cards.citywide_microgrid.energy=8",
+    "cards.microgrid_lab_compact.effects=[]"
+   ]
+  },
+  {
+   "name": "pr-no-twin",
+   "set": [
+    "ai.boards=1,2",
+    "cards.twin_city_compact.cost=99"
+   ]
+  }
+ ],
+ "difficulties": [
+  3,
+  4
+ ],
+ "agents": [
+  "strategist"
+ ],
+ "games": 48,
+ "first_seed": 49356,
+ "records": 0
+}

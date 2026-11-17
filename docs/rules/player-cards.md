@@ -27,7 +27,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   played. Prices: [cards.md](../cards.md); reasoning: [card-pricing.md](../card-pricing.md).
 
 <!-- generated: draft_set -->
-**The draft set in numbers.** 188 cards (122 tier 1, 66 tier 2). Insight to play: 101 / 57 / 30 cards at 0 / 1 / 2, 20 of the 66 tier-2 cards at 2. An energy cost: 14 cards, 8 of the 75 buildings.
+**The draft set in numbers.** 189 cards (122 tier 1, 67 tier 2). Insight to play: 102 / 57 / 30 cards at 0 / 1 / 2, 20 of the 67 tier-2 cards at 2. An energy cost: 14 cards, 8 of the 75 buildings.
 <!-- /generated -->
 
 - **Energy costs (candidate).** Energy is a second cost on a card whose title reads power-hungry (mostly buildings:
@@ -71,7 +71,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   |---|---|---|---|
   | The Nuclear Option | antimatter | event | sway 2 toward Discord (collateral harm) |
   | Power to the People | energy | building (over Power, needs 2) | income: 1 credit per Power tag on your cards |
-  | Citywide Microgrid | energy (8, a late sink) | building | Action: 2 Sway toward Unity |
+  | Citywide Microgrid | energy (4, a late sink) | building | Action: 3 Sway toward Unity |
   | Hostile Buyout | antimatter, Diplomacy | event | gain 3 ambassadors; any corrupted site, a station or factory becomes yours (254) |
   | Forensic Audit | research cubes | event | draw 2 cards |
   | Root Access | antimatter, Cyber (needs Cyber tags) | event | remove a botnet on or next to the city |
@@ -90,7 +90,8 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   a cost printed under the floor stays.
 - **Tags:** Science, Industry, Cyber, Power, Diplomacy, Security; 1-3 a card. Yours are those *on your cards*
   ([README.md](README.md#terms)); a board's can't be sacrificed.
-- **Programs** resolve and stay in your play area (their tags count; powers can sacrifice them). **Events** resolve
+- **Programs** resolve and stay in your play area (their tags count; powers can sacrifice them); a lasting raise they
+  print stays even when sacrificed (Twin City Compact's extra hosted city, 258, as production does). **Events** resolve
   and go to your played pile (their tags don't count). **Nothing to act on never blocks a card:** a part with nothing
   to act on (a map effect whose target condition no hex in reach meets, a move, a gain per tag with too few tags, a
   draw with no card left) does nothing, and the rest resolves. A program, event or ability is offered only when at

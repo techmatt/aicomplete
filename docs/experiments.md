@@ -136,9 +136,9 @@ ceiling, `sweep:plan_table=0,w.table=0,w.packet_keep=1` the judge off the value 
   `adversary.compute_income`, `adversary.compute_botnets` and `board.station_compute`; the rest of
   `adversary.compute_made` is threats and cards: `adversary/projects.rs`). A measure the old binary never tallied
   is patched into its tree before its first read.
-- **Costs (r73):** a 720-game strategist or greedy set (d0-d4) about 2 min on 6 threads; double on a busy box.
-  r115 (254): greedy + judge, two arms, three pairs, d0-d4, 48 seeds (2,880 games) farmed in 13-14 min with one
-  browser worker (4,320 games, 17 min); the full oracle at d2-d3 (253), 72 games in 212 s on 6 native shards.
+- **Costs:** greedy + judge, two arms, three pairs, d0-d4, 48 seeds (2,880 games) farmed in 13-14 min with one
+  browser worker (254); with none, 1,440 in 7.6 min on the main box (258). The full oracle at d2-d3, 72 games in
+  2-10 min on 6 native shards (253, 258).
 - **A before/after read is paired**: the old binary and its configs (README, *This machine*), same seeds, own folder.
   Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` (own `CARGO_TARGET_DIR`); new
   sim-only measures go in as `patch -p1` there (`git apply` in a worktree silently applies nothing). The old side
@@ -169,7 +169,7 @@ proves the card and a whole search where it can't: 243's `proofs.py`.
 
 **Fresh seeds.** Specs start at seed 0: give a confirming read a `--seed` no screen of this revision used. An item
 that spends seeds updates the ledger after its last read (`bench/seeds.py next N [--take]`; all below *Next free*
-are used). Next free: 49356. **The dev seeds are 36800-36831**, for on/off
+are used). Next free: 49452. **The dev seeds are 36800-36831**, for on/off
 checks and crash-finding (SE ~5 a cell). A 2-8 point effect (a level's income step): screen it paired on this
 revision's spent fresh sets (~500+ games a cell, SE ~2), then confirm once on new seeds.
 

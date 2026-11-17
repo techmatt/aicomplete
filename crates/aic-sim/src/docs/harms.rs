@@ -296,6 +296,7 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::DrainProject { .. }
         | Op::DiscardProject
         | Op::Production { .. }
+        | Op::HostMore { .. }
         | Op::ProductionPerTag { .. }
         | Op::AddTokens { .. }
         | Op::CutBotnet

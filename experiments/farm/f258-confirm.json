@@ -1,0 +1,17 @@
+{
+ "name": "f258-confirm",
+ "note": "258's confirming read (amendment 11877): the pass at r119 with the shipped judge, greedy, and the judge with w.sink 0.5 (the re-screen's least costly dose), three pairs, d0-d4, 48 seeds a cell. r117 (main 11f8539) natively on the same seeds (strategist, greedy). Variant-major: pair.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {"name": "bp", "set": []},
+  {"name": "br", "set": ["ai.boards=0,2"]},
+  {"name": "pr", "set": ["ai.boards=1,2"]}
+ ],
+ "difficulties": [0, 1, 2, 3, 4],
+ "agents": ["strategist", "greedy", "strategist:w.sink=0.5"],
+ "games": 48,
+ "first_seed": 49404,
+ "records": 0
+}

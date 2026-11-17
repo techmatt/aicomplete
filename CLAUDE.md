@@ -72,9 +72,12 @@ machine's traps, are in the [README](README.md), which also lists the page for e
   it; its precondition exists in measured play (spare energy at round 6, say); a building beats the
   median building it would cover in a slot; `design_check.py --quiet` (tag story) and no card already printing
   the effect (guideline 11), before its first measure (246 re-measured three). **After any later edit to a card** (card fit included),
-  re-read its plays per game.
+  re-read its plays per game, update its rows in `scripts/design_check_jobs.json` (nothing checks them against
+  content), and rerun `npm run cards:fit` before the freeze (258 found two faces shrunk after its read).
 - **A new op, resource or token type** gets its value in the same change: an op, its arm in
-  `crates/aic-sim/src/agents/value.rs` and its row in `configs/agents/values.json`; a resource or
+  `crates/aic-sim/src/agents/value.rs`, `scripts/cards/effect_ledger.py`'s `op_worth` and `agents/strategy.rs`'s
+  categories (a `_` arm: nothing forces it), and its row in `configs/agents/values.json`; an op writing a `vars` key
+  declares it in its module view's `bookkeeping` (the slow lane's invariant test refuses a raw key); a resource or
   token type, its held-value term in `agents/eval.rs`.
 - **Smokes before reads.** A new op, resource or token type gets a 2-minute engine smoke (16
   seeds) before any band read: `scripts/cards/play_read.py` for cards kept and never played,

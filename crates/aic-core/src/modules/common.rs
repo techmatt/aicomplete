@@ -141,8 +141,8 @@ pub fn hosted_cities(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
 /// The printed rule: the players choose (a team game; every city makes the same energy), so the engine hosts as many
 /// as can be ([`match_hosts`]).
 pub fn host_assignment(w: &World, g: &GameState) -> Vec<(usize, usize)> {
-    let cap = w.int("board.host_city").max(0) as usize;
-    if cap == 0 {
+    let caps = host_caps(w, g);
+    if caps.iter().all(|&c| c == 0) {
         return Vec::new();
     }
     let reach = w.int("board.host_reach") > 0;
@@ -158,16 +158,30 @@ pub fn host_assignment(w: &World, g: &GameState) -> Vec<(usize, usize)> {
     let hosts = |s: usize, h: usize| {
         g.tokens(h, node(s)) > 0 || (reach && w.map.hexes[h].neighbors.iter().any(|&x| g.tokens(x, node(s)) > 0))
     };
-    match_hosts(cap, g.seats.len(), &open, hosts)
+    match_hosts(&caps, &open, hosts)
+}
+
+/// 258: the var holding seat `seat`'s extra host slots (`host_more`, a card's lasting effect).
+pub fn host_more_key(seat: usize) -> String {
+    format!("board.host_more.{seat}")
+}
+
+/// 258: how many neutral cities each seat may host: `board.host_city`, plus the `host_more` its cards raised. With
+/// `board.host_city` 0 hosting is off and no card turns it on.
+pub fn host_caps(w: &World, g: &GameState) -> Vec<usize> {
+    let cap = w.int("board.host_city").max(0) as usize;
+    (0..g.seats.len()).map(|s| if cap == 0 { 0 } else { cap + g.var(&host_more_key(s)).max(0) as usize }).collect()
 }
 
 /// 254 (diff review: a greedy pick could host fewer than the players would): a largest matching of `cities` to
-/// `seats` seats, each seat `cap` at most, `can(seat, city)` the edges (augmenting paths; a few seats and cities).
-/// Deterministic: seats in order, each city list in hex order. The agents' eval calls it on its own token view.
-pub fn match_hosts(cap: usize, seats: usize, cities: &[usize], can: impl Fn(usize, usize) -> bool) -> Vec<(usize, usize)> {
-    // Seat slots: seat s's k-th slot is s * cap + k.
-    let slots = seats * cap;
-    let edges: Vec<Vec<usize>> = (0..slots).map(|slot| (0..cities.len()).filter(|&c| can(slot / cap, cities[c])).collect()).collect();
+/// the seats, seat s `caps[s]` at most (258: per seat), `can(seat, city)` the edges (augmenting paths; a few seats
+/// and cities). Deterministic: seats in order, each city list in hex order. The agents' eval calls it on its own
+/// token view.
+pub fn match_hosts(caps: &[usize], cities: &[usize], can: impl Fn(usize, usize) -> bool) -> Vec<(usize, usize)> {
+    // Seat slots, seat by seat: slot_seat[slot] is the slot's seat.
+    let slot_seat: Vec<usize> = caps.iter().enumerate().flat_map(|(s, &c)| std::iter::repeat_n(s, c)).collect();
+    let slots = slot_seat.len();
+    let edges: Vec<Vec<usize>> = (0..slots).map(|slot| (0..cities.len()).filter(|&c| can(slot_seat[slot], cities[c])).collect()).collect();
     let mut city_slot: Vec<Option<usize>> = vec![None; cities.len()];
     fn augment(slot: usize, edges: &[Vec<usize>], seen: &mut [bool], city_slot: &mut [Option<usize>]) -> bool {
         for &c in &edges[slot] {
@@ -186,7 +200,7 @@ pub fn match_hosts(cap: usize, seats: usize, cities: &[usize], can: impl Fn(usiz
         let mut seen = vec![false; cities.len()];
         augment(slot, &edges, &mut seen, &mut city_slot);
     }
-    city_slot.iter().enumerate().filter_map(|(c, s)| s.map(|s| (cities[c], s / cap))).collect()
+    city_slot.iter().enumerate().filter_map(|(c, s)| s.map(|s| (cities[c], slot_seat[s]))).collect()
 }
 
 /// The seat whose node is on hex `h`, if any.

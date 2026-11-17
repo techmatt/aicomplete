@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 117. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 119. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -94,7 +94,7 @@ by the cube on it:
 
 | State | Cube | A city | A research station | A factory |
 |---|---|---|---|---|
-| **Neutral** | none | 1 energy to a player whose node is on or next to it (its **host**: one city each, one host a city), unless it was bought (Buy energy, §8) | 1 neutral cube onto its megaproject | nothing |
+| **Neutral** | none | 1 energy to a player whose node is on or next to it (its **host**: one city each, two with Twin City Compact; one host a city), unless it was bought (Buy energy, §8) | 1 neutral cube onto its megaproject | nothing |
 | **A player's** | that player's | never: **no player owns a city** | 1 cube in its owner's color | 1 chip to its owner |
 | **Corrupted** (the adversary's) | adversary | 1 Discord | 1 adversary cube onto its megaproject; once that is complete, 1 compute for the adversary | 1 adversary troop on its hex |
 
@@ -248,10 +248,10 @@ Nothing has a holding limit, and nothing caps your income.
 | Resource | Kept between rounds? | Mainly from | Mainly spent on |
 |---|---|---|---|
 | **Credits** | yes | income, cards, track spaces, megaprojects | card costs, standard actions, threats, a neutral city's energy |
-| **Energy** | yes | income, the city your node hosts, neutral cities (bought), cards | it powers things: placing nodes, powers (Buy In, Accord, Bulwark, Patrol), building Actions, cards, threats |
+| **Energy** | yes | income, the city (or two) your nodes host, neutral cities (bought), cards | it powers things: placing nodes, powers (Buy In, Accord, Bulwark, Patrol), building Actions, cards, threats |
 | **Insight** | **no** | set each round (below) | keeping and playing cards, threats |
 | **Chips** | yes | your factories, cards, Builder powers | buildings, research stations, Procure, chip converters, threats |
-| **Antimatter** | yes | the antimatter plants, the steady source (Penning Trap Array, Antiproton Foundry, Positron Storage Ring, Dark Fiber Collider, Treaty Isotope Bank, Cyclotron Lease: a resource each use for 1, once a round), each board's rare burn (Teardown, Meltdown, Reclaim), Horizon's two converters, two capstones, cards; at worst 5 research cubes | the majors: tier-2 cards (liberations, Annihilation Lance, Fusion Commons, Antimatter Accord, Collider Consortium and more), Orbital Relay Launcher's Action, Containment Reactor, Accelerator Diplomacy |
+| **Antimatter** | yes | the antimatter plants, the steady source (Penning Trap Array, Antiproton Foundry, Positron Storage Ring, Dark Fiber Collider, Treaty Isotope Bank, Cyclotron Lease: a resource each use for 1, once a round, some with a second gain beside it), each board's rare burn (Teardown, Meltdown, Reclaim), Horizon's two converters, two capstones, cards; at worst 5 research cubes | the majors: tier-2 cards (liberations, Annihilation Lance, Fusion Commons, Antimatter Accord, Collider Consortium and more), Orbital Relay Launcher's Action, Containment Reactor, Accelerator Diplomacy |
 | **Research cubes** | yes | your stations, once their megaproject is complete (§9); Cryo Sample Vault; Open Archive | 1 for 1 insight once a round, converters, Penning Trap Array, Field Assay Team, Research Reactor, Survey Drone Fleet, threats |
 | **Ambassadors** | yes (your supply) | 1 at the start, cards, 20 credits | claiming, liberating, Remove agents, Envoy, threats |
 | **Dispatches** | **no** | your board and track spaces, each round | the Dispatch action, 1 each |
@@ -635,7 +635,8 @@ map before the next.
 1. **Factories.** A player's factory makes 1 chip for its owner. A corrupted factory makes 1 adversary troop on its
    own hex. A neutral factory, or a blocked one, makes nothing.
 2. **Cities.** Each unblocked city makes 1 energy: a neutral city with your node on or next to it for you (its
-   **host**: each player hosts one city, each city has one host, the players choosing), unless its energy was
+   **host**: each player hosts one city, two after playing Twin City Compact, each city has one host, the players
+   choosing), unless its energy was
    bought this round (Buy energy, §8); a corrupted city 1 Discord instead.
 3. **Stations.** A player's station makes 1 cube in its owner's color; a neutral one makes 1 neutral cube. They go
    onto their country's megaproject. Once it is complete, a player's cubes go onto their board as **research cubes**,

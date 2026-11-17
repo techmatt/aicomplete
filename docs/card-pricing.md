@@ -103,7 +103,8 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   energy ([cards.md](cards.md)).
 - **Energy as a second cost** (Matt): a card whose title reads power-hungry prints energy and costs 4.5 credits less
   an energy, so pay holds at the anchors; uncommon (14 of 182 deck cards). The late sinks price energy at its 4.5
-  anchor too: Citywide Microgrid's 8 energy is 36 of its 44, Exascale Training Cluster's 5 is 22.5 of its 37.5, and
+  anchor too: Citywide Microgrid's 4 energy is 18 of its 44, Exascale Training Cluster's 2 is 9 of its 35 (258 moved
+  the rest into credits: energy binds), and
   each 2-energy Action is a use's 9. The table prices energy at the full anchor while its insight, draw and chip
   rates sit at about 0.6 of theirs, so an energy-for-X Action reads as a loss at `values.json` for a seat short of
   energy and a gain only through the spare-energy rate; two of the three sinks whose output the table prices lowest

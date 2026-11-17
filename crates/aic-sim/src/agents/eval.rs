@@ -1455,7 +1455,7 @@ impl Eval {
         let seats = self.seats;
         let mut pieces = 0i64;
         // 254: the hosted cities, the engine's matching on this token view (`host_city` a seat).
-        let hosted_set = self.host_matching(&world, &tokens, Some(g));
+        let hosted_set = self.host_matching(&world, &tokens, g, true);
         // 162: each seat's Liberate bill, the corrupted cities in its reach (the purge term).
         let mut bill = [0i64; 4];
         let level = alignment::bar_level(&world, g);
@@ -2271,11 +2271,15 @@ impl Eval {
     /// neutral city with no agent on it, a seat's node on it (or next to it with `board.host_reach`), `host_city` a
     /// seat. With `now` (this round's income step, the eval's hosted term), a city bought from this round or blacked
     /// out hosts no one, as in the engine (final diff review: the agents bought their own hosted energy); without it
-    /// (a round's projected production) those one-round marks are not read.
-    fn host_matching(&self, world: &aic_core::module::World, tokens: &[HexTokens], now: Option<&GameState>) -> Vec<(usize, usize)> {
+    /// (a round's projected production) those one-round marks are not read. 258: each seat's cap is the engine's
+    /// (`common::host_caps`: `host_city` plus the `host_more` its cards raised), read from `g`.
+    fn host_matching(&self, world: &aic_core::module::World, tokens: &[HexTokens], g: &GameState, now: bool) -> Vec<(usize, usize)> {
         if self.host_city == 0 {
             return Vec::new();
         }
+        let mut caps = common::host_caps(world, g);
+        caps.resize(self.seats, self.host_city);
+        let now = if now { Some(g) } else { None };
         let seats = self.seats;
         let open: Vec<usize> = (0..tokens.len())
             .filter(|&h| {
@@ -2291,12 +2295,12 @@ impl Eval {
         let hosts = |s: usize, h: usize| {
             tokens[h].node[s] > 0 || (self.host_reach && world.map.hexes[h].neighbors.iter().any(|&x| tokens[x].node[s] > 0))
         };
-        common::match_hosts(self.host_city, seats, &open, hosts)
+        common::match_hosts(&caps, &open, hosts)
     }
 
     /// What the board makes each seat a round if production came now: the
     /// energy of its aligned cities, less what adversary ambassadors divert.
-    fn board_production(&self, rules: &Rules, tokens: &[HexTokens]) -> Vec<i64> {
+    fn board_production(&self, rules: &Rules, g: &GameState, tokens: &[HexTokens]) -> Vec<i64> {
         let world = rules.world();
         let mut out = vec![0; self.seats];
         for (h, t) in tokens.iter().enumerate() {
@@ -2310,7 +2314,7 @@ impl Eval {
             }
         }
         // 254: a hosted neutral city's energy goes to its host.
-        for (_, s) in self.host_matching(&world, tokens, None) {
+        for (_, s) in self.host_matching(&world, tokens, g, false) {
             out[s] += self.city_energy;
         }
         out
@@ -2382,7 +2386,7 @@ impl Eval {
         let world = rules.world();
         let left = self.rounds_left(rules, g, unpaid, thin, discord_left);
         let prod = if w.production != 0.0 {
-            self.board_production(rules, tokens)
+            self.board_production(rules, g, tokens)
         } else {
             vec![0; self.seats]
         };
@@ -2901,7 +2905,7 @@ mod tests {
     }
 
     /// 257 (`sink`): with Orbital Relay Launcher built, a held antimatter counts `sink` times what a use makes at
-    /// the flat weights (2 nodes, 3 energy), for two uses' fuel; one burned this round still counts (so burning it
+    /// the flat weights (3 nodes, 3 energy), for two uses' fuel; one burned this round still counts (so burning it
     /// is judged by what it makes); off by default, and nothing without a converter; a converter worth nothing at
     /// these weights adds no room; two on one fuel fill best first.
     #[test]
@@ -2918,7 +2922,8 @@ mod tests {
         let mut row = g.pile(&key).to_vec();
         row.push("orbital_relay_launcher".into());
         g.piles.insert(key.as_str().into(), Arc::new(row));
-        let unit = 2.0 * (2.0 * on.w.node + 3.0 * on.energy_unit()) - on.w.antimatter;
+        // 258: Orbital places 3 nodes (was 2).
+        let unit = 2.0 * (3.0 * on.w.node + 3.0 * on.energy_unit()) - on.w.antimatter;
         let held = |g: &GameState, n: i64| {
             let mut h = g.clone();
             h.seats[0].resources.insert(Resource::Antimatter, n);
@@ -2938,7 +2943,8 @@ mod tests {
         g.piles.insert(key.as_str().into(), Arc::new(row));
         g.seats[0].exhausted.clear();
         g.seats[0].resources.insert(Resource::Antimatter, 0);
-        let cube = 2.0 * 2.0 * on.energy_unit() - on.cube_unit(0);
+        // 258: Research Reactor makes 3 energy (was 2).
+        let cube = 2.0 * 3.0 * on.energy_unit() - on.cube_unit(0);
         let cubes = |n: i64| {
             let mut h = g.clone();
             h.seats[0].resources.insert(Resource::ResearchCubes, n);

@@ -79,6 +79,19 @@ fn a_hosted_city_powers_a_node_on_or_next_to_it() {
     run(&rules, &mut g);
     assert_eq!((res(&g, 0), res(&g, 1)), (made, made));
 
+    // 258 (`host_more`, Twin City Compact): seat 0 on two cities hosts one, and both once a card raised its cap; the
+    // raise is seat 0's alone.
+    let mut g = g0.clone();
+    put(&mut g, city, node(0), 1);
+    put(&mut g, other, node(0), 1);
+    assert_eq!(hosted_cities(&w, &g, 0).len(), 1);
+    run_ops(&rules, &mut g, &[content::Op::HostMore { count: 1 }]);
+    assert_eq!(g.var(&crate::modules::common::host_more_key(0)), 1);
+    assert_eq!(crate::modules::common::host_caps(&w, &g), vec![2, 1]);
+    assert_eq!(hosted_cities(&w, &g, 0).len(), 2);
+    run(&rules, &mut g);
+    assert_eq!(res(&g, 0), 2 * made);
+
     // `host_reach` 0: only a node on it hosts it.
     let (rules0, _) = lab_with(&["board.produce"], &["board.host_reach=0"]);
     let mut g = g0.clone();

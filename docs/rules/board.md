@@ -56,7 +56,7 @@ neighbors change with the country count).
 - **No player owns a city** (254, Matt's candidate, `cities_unowned` 1): a city is the adversary's (corrupted) or
   its country's (neutral), and no one starts with one. **Hosting** replaces r114's bound city: a neutral city with
   your node on or next to it (`host_reach` 1) makes its energy for you in the income step (`host_city` 1: one city a
-  seat, one host a city; [economy.md](economy.md)). Every country's start spot is next to a city, so a seat whose
+  seat, more with a `host_more` card, one host a city; [economy.md](economy.md)). Every country's start spot is next to a city, so a seat whose
   nearest city starts clean hosts it from round 1, as the bound city paid.
   With `cities_unowned` 0 (r114, a screen's off arm) each player starts with the clean city of their country
   nearest their first node (ties: the lower hex number) aligned to them, their cube on it.

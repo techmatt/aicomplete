@@ -142,7 +142,8 @@ pub fn categories(d: &CardDef, contents: bool) -> [bool; CATEGORIES.len()] {
 /// team), for a card or (092) a board power.
 fn op_categories(all: &[&Op], c: &mut [bool; CATEGORIES.len()]) {
     let any = |f: &dyn Fn(&Op) -> bool| all.iter().any(|o| f(o));
-    c[cat::INCOME] = any(&|o| matches!(o, Op::Income { .. } | Op::IncomePerTag { .. } | Op::Production { .. } | Op::ProductionPerTag { .. } | Op::BuildingDiscount { .. }));
+    // 258: an extra host slot is energy income (`host_more`).
+    c[cat::INCOME] = any(&|o| matches!(o, Op::Income { .. } | Op::IncomePerTag { .. } | Op::Production { .. } | Op::ProductionPerTag { .. } | Op::BuildingDiscount { .. } | Op::HostMore { .. }));
     c[cat::PURGE] = any(&|o| {
         matches!(
             o,
@@ -213,6 +214,7 @@ fn op_resources<'a>(ops: impl Iterator<Item = &'a Op>) -> Vec<Resource> {
             | Op::CashOut { resource, .. }
             | Op::GainPerTag { resource, .. } => Some(*resource),
             Op::GainAmbassadors { .. } => Some(Resource::Ambassadors),
+            Op::HostMore { .. } => Some(Resource::Energy),
             Op::ProjectCube { .. } | Op::BuildStation => Some(Resource::ResearchCubes),
             _ => None,
         })

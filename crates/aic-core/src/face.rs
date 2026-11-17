@@ -317,6 +317,11 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             say: format!("{gain} {}", amount(Resource::Ambassadors, *count)),
             share: Share::Mine,
         }),
+        // 258: a lasting extra host slot (economy.md, Cities' energy).
+        Op::HostMore { count } => one(clause(
+            { let mut p = vec![Part::Word(format!("+{count}"))]; p.push(w("city")); p },
+            format!("you may host {count} more {} from now on", if *count == 1 { "city" } else { "cities" }),
+        )),
         Op::GainPerNode { resource } => one(clause(
             vec![w(icon(*resource)), w("/"), w("node")],
             format!("{gain} 1 {} per node you have on the board", noun(*resource, 1)),

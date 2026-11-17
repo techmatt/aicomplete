@@ -607,6 +607,8 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::CounterThreat => Worth::now(row("counter_threat")),
         Op::DrainProject { amount } => Worth::now(row("drain_project") * *amount as f64),
         Op::DiscardProject => Worth::now(row("discard_project")),
+        // 258: a second hosted city's energy, at the share of rounds a seat has one to host (`host_more`'s row).
+        Op::HostMore { count } => Worth::income(row("host_more") * income_rate(t, Resource::Energy) * *count as f64),
         Op::Production { resource, amount } => Worth::income(row("production") * income_rate(t, *resource) * *amount as f64),
         // 106: an income per tag fixed at play (`effects::ProductionPerTag` counts once); 233: valued at the
         // seat's tags in play now, as `IncomePerTag` (229), not at the projected count.

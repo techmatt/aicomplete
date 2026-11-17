@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 258 card follow-ups: 257's weak cards and converters pay more a use, Dyson and Exascale played, Twin City Compact hosts a second city; the judge ships `w.sink` 0.5; r119 -1.7 ± 1.9 (judge), +0.3 ± 2.1 (greedy) against r117 | 118, 119 | [258_card_followups](results/258_card_followups/README.md) |
 | 257 the judge and Action buildings: `w.sink` (converter fuel priced by what a use makes) runs them but costs d3-d4 wins, left off | 117 | [257_judge_action_buildings](results/257_judge_action_buildings/README.md) |
 | 256 Item C: the card pass (claim_site, Campus and Commons owned, liberate riders, node and sink buildings) | 117 | [256_item_c_cards](results/256_item_c_cards/README.md) |
 | 253 Item B part 2: neutral-site cards, retake, the cube converter, the full read against r112 | 114 | [253_item_b_cards_read](results/253_item_b_cards_read/README.md) |

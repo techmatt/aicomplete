@@ -1,0 +1,59 @@
+# 258 (card follow-ups after 257): every card edit, as one overlay (scripts/cards/apply_overlay.py).
+# Matt's ruling: unplayed cards get stronger, not cheaper. Give / get for each: README.md, *The cards*.
+
+# 257's weak-for-anyone list.
+# Mesh Repeater Network: its Action no longer pays energy (energy binds); dearer for it.
+cards.mesh_repeater_network.cost=17
+cards.mesh_repeater_network.ability={"effects":[{"op":"place_node","count":1}]}
+# Research Reactor: a cube makes 3 energy (was 2).
+cards.research_reactor.ability.effects=[{"op":"gain","resource":"energy","amount":3}]
+# Survey Drone Fleet: needs 1 Science (was 2), and comes with its first 2 cubes.
+cards.survey_drone_fleet.needs=[["science",1]]
+cards.survey_drone_fleet.effects=[{"op":"gain","resource":"research_cubes","amount":2}]
+# Orbital Relay Launcher: an antimatter places 3 nodes (was 2), the antimatter sink.
+cards.orbital_relay_launcher.ability.effects=[{"op":"place_node","count":3},{"op":"gain","resource":"energy","amount":3}]
+# Antiproton Foundry: comes with 2 antimatter (was 1).
+cards.antiproton_foundry.effects=[{"op":"gain","resource":"antimatter","amount":2}]
+# Microgrid Lab Compact (kept rarely): it claims a site when built too.
+cards.microgrid_lab_compact.effects=[{"op":"target","on":"neutral_site"},{"op":"claim_site"}]
+
+# The open flags.
+# Dyson Swarm Tranche (kept, not played): needs 1 Power (was 2), +3 energy income (was 2).
+cards.dyson_swarm_tranche.needs=[["power",1]]
+cards.dyson_swarm_tranche.effects=[{"op":"gain","resource":"energy","amount":10},{"op":"production","resource":"energy","amount":3}]
+# Exascale Training Cluster (kept, not played): pays credits, not the binding energy (26 cr and 2 energy, was 15 and
+# 5: the same price at the anchors); +4 insight income (was 3) and 4 cards drawn (was 6 cubes, a resource that doesn't bind).
+cards.exascale_training_cluster.cost=26
+cards.exascale_training_cluster.energy=2
+cards.exascale_training_cluster.passives=[{"op":"income","resource":"insight","amount":4}]
+cards.exascale_training_cluster.effects=[{"op":"draw","count":4}]
+# Citywide Microgrid (halved plays): its Action sways 3 (was 2).
+cards.citywide_microgrid.ability.effects=[{"op":"sway","side":"unity","amount":3,"narrative":"cooperation"}]
+# After the dev screen (plays flat, 0.11 -> 0.12): half its energy cost moves to credits at the anchor (4 energy, 18
+# cr: 26 cr and 4 energy, was 8 and 8), as Exascale's did (0.13 -> 0.20 plays on the screen).
+cards.citywide_microgrid.cost=26
+cards.citywide_microgrid.energy=4
+# After the dev screen (cubes still 60% spent): Field Assay Team, the cube sink on 257's weak list, deals 3 (was 2).
+cards.field_assay_team.ability.effects=[{"op":"target","on":"agents"},{"op":"damage","ambassadors":3}]
+
+# Amendment 11877 (r119, after the r118 read): what a use pays. The converters first, then 257's weak list.
+# Antiproton Foundry: its Action pays 2 energy beside the antimatter (was nothing else); 1 antimatter when built
+# again (r118's 2 fed the antimatter surplus); 12 cr (was 10).
+cards.antiproton_foundry.cost=12
+cards.antiproton_foundry.effects=[{"op":"gain","resource":"antimatter","amount":1}]
+cards.antiproton_foundry.ability.effects=[{"op":"gain","resource":"antimatter","amount":1},{"op":"gain","resource":"energy","amount":2}]
+# Positron Storage Ring: its Action draws a card beside the antimatter.
+cards.positron_storage_ring.ability.effects=[{"op":"gain","resource":"antimatter","amount":1},{"op":"draw","count":1}]
+# Survey Drone Fleet: its Action pays 2 energy beside the 2 nodes (their track steps).
+cards.survey_drone_fleet.ability.effects=[{"op":"place_node","count":2,"range":2},{"op":"gain","resource":"energy","amount":2}]
+# Parts Exchange: a chip draws 3 (was 2).
+cards.parts_exchange.ability.effects=[{"op":"draw","count":3}]
+# Bug Bounty Board: 4 credits drain 4 compute (was 3) and draw 1.
+cards.bug_bounty_board.ability.effects=[{"op":"drain_project","amount":4},{"op":"draw","count":1}]
+# Treaty Isotope Bank: 8 credits make an antimatter and an ambassador (was the antimatter alone).
+cards.treaty_isotope_bank.ability.effects=[{"op":"gain","resource":"antimatter","amount":1},{"op":"gain_ambassadors","count":1}]
+# Synthetic Data Forge (kept 0.03 a game): needs 1 Science (was 2).
+cards.synthetic_data_forge.needs=[["science",1]]
+
+# The host-a-second-city card (new, tier-2 program).
+cards.twin_city_compact={"id":"twin_city_compact","name":"Twin City Compact","tier":2,"kind":"program","cost":6,"insight":0,"tags":["cyber","power"],"effects":[{"op":"place_node","count":2},{"op":"host_more","count":1}]}

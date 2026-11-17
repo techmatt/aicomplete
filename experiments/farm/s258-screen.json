@@ -1,0 +1,17 @@
+{
+ "name": "s258-screen",
+ "note": "258's dev screen: the card pass (r118) with the shipped judge, and the judge with 257's w.sink at 1 (left off by 257 for 258 to re-screen on stronger cards); greedy beside. r117 (main 11f8539) ran natively on the same spec. Three pairs, d0-d4, the dev seeds 36800-36831. Variant-major: pair.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {"name": "bp", "set": []},
+  {"name": "br", "set": ["ai.boards=0,2"]},
+  {"name": "pr", "set": ["ai.boards=1,2"]}
+ ],
+ "difficulties": [0, 1, 2, 3, 4],
+ "agents": ["strategist", "strategist:w.sink=1", "greedy"],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}
