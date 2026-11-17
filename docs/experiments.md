@@ -97,11 +97,12 @@ and `compare`) takes an overlay, `<table>.<id>.<path>=<JSON>`: tables `cards`, `
 can't be 0: rewrite its list without it). It is checked like `content/` and lands in the config, so `replay` needs
 nothing else (a sweep: `overlay-card-cost.json`). Each variant repeats its whole list. **A card blanked**,
 `cards.<id>.cost=99` (never affordable, so never kept or played), keeps the deck order, so its games pair with the
-base's seed for seed: a card's worth to an agent, on against blank (246's `cardvalue.py`). The engine's `--set`
-refuses `null` on a list field (`keywords=[]`), where `apply_overlay.py` drops it. Diagnose a rewrite's gap by
+base's seed for seed: a card's worth to an agent, on against blank (246's `cardvalue.py`). `null` drops the field in
+both the engine and `apply_overlay.py`. Diagnose a rewrite's gap by
 part before tuning: restore the old content a part at a time (a side, a tier, a card group) as overlays (a density
 or dial screen: 227's `density_specs.py`). A standard action off: `board.std_off=N,M,` (places in the economy.md
-table's code order, `STANDARD`; `board.sell_credits=0` takes Sell); 248's `mkspec.py` and `probe.py` write and read
+table's code order, `STANDARD`, as the param's doc lists them: a spec from before 255 means other actions;
+`board.sell_credits=0` takes Sell); 248's `mkspec.py` and `probe.py` write and read
 the arms (4,608 strategist games farmed in 508 s, 30 native and 18 wasm shards).
 
 ## Reading noise

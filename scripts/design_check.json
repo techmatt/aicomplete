@@ -206,18 +206,6 @@
         "exempt": {"case": "card", "why": "Matt, 2026-11-16: no card needs to sell; the hand's outlet, exempt from job-no-card (P1)"}
       },
       {
-        "name": "Place a node",
-        "src": "standard:node",
-        "off": "board.node_credits",
-        "give": {
-          "credits": "board.node_credits",
-          "energy": 1
-        },
-        "get": {
-          "node": 1
-        }
-      },
-      {
         "name": "Remove a troop",
         "src": "standard:troop",
         "off": "board.troop_credits",
@@ -377,7 +365,6 @@
       {"key": "power:protector:Patrol", "role": "troop-response", "band": [0.25, 3.5], "why": "228: Patrol pushes agents as well as troops; with Remove agents at 2 ambassadors (r100) it is the Protector's cheap agent answer: 2.42-2.74 a seat-game at r100. 240 (Matt): 3.37 at r108 (f238), so 0.25-3.5"},
       {"key": "power:protector:Interdict", "role": "troop-response"},
       {"key": "power:researcher:Disrupt", "role": "troop-response"},
-      {"key": "standard:node", "name": "Place a node", "role": "off", "why": "252 (Matt's ruling 1): cut (`node_credits` 0); the boards' node routes place nodes"},
       {"key": "standard:move", "name": "Dispatch", "role": "staple"},
       {"key": "standard:buy_energy", "name": "Buy a city's energy", "role": "staple"},
       {"key": "standard:insight", "name": "Turn a cube into insight", "role": "hedge", "why": "252 (Matt's ruling 5) taxed it; 253 (amendment 11525): 1 cube an insight, once a round (2.5 for 3 at the anchors), a fallback under the cards"},

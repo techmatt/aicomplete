@@ -47,14 +47,13 @@ fn a_placements_prompt_names_what_it_charges() {
     assert!(paid.contains(&format!("costs {step} energy")), "{paid}");
 }
 
-/// 252 (Matt's ruling 1): Place a node is cut (`node_credits` 0); every board's base route, Expand, costs only
-/// the track step's energy, once a round.
+/// 252 (Matt's ruling 1): every board's base route, Expand, costs only the track step's energy, once a round (255
+/// deleted the cut Place a node standard action).
 #[test]
 fn the_base_route_costs_only_the_step_once_a_round() {
     for seat in [0u8, 1] {
         let (rules, mut g) = at_step(&[], 1);
         let w = rules.world();
-        assert!(!rules.legal_actions(&g).iter().any(|a| matches!(a, Action::Standard { act, .. } if act.as_str() == "node")));
         let start = rules.map.numbered(seat as usize, piece(seat as usize).node);
         put(&mut g, start, node(seat as usize), 1);
         let deploy = power(&rules, seat as usize, "Expand");
@@ -78,22 +77,6 @@ fn the_builder_s_top_route_reaches_two_hexes() {
     let near = board::node_sites(&w, &g, 0);
     let far = board::node_sites_within(&w, &g, 0, 2);
     assert!(far.len() > near.len() && near.iter().all(|h| far.contains(h)));
-}
-
-/// 247: `node_energy` adds energy to Place a node's price, paid first, so the step is paid from what is left.
-#[test]
-fn place_a_node_s_own_energy_comes_before_the_step() {
-    let (rules, mut g) = at_step(&["board.node_energy=2"], 5);
-    let w = rules.world();
-    let step = step_cost(&w, 5);
-    let deploy = std_act(0, "node");
-    set_res(&mut g, 0, Resource::Credits, w.int("board.node_credits"));
-    set_res(&mut g, 0, Resource::Energy, step + 1);
-    assert!(!rules.legal_actions(&g).contains(&deploy), "its 2 energy and the step's");
-    set_res(&mut g, 0, Resource::Energy, step + 2);
-    rules.apply_mut(&mut g, &deploy, None).unwrap();
-    answer_all(&rules, &mut g);
-    assert_eq!((g.resource(0, Resource::Energy), g.resource(0, Resource::Credits)), (0, 0));
 }
 
 /// 206: a placement pays the step's energy (252: the base route, Expand, nothing more).

@@ -64,11 +64,6 @@ pub(super) fn remove_botnet(g: &mut GameState, cx: &mut Cx, seat: usize, zone: &
 /// 234: up to `max` agents in a card's target area `zone` (0: every one there). 247 (241's pick): its country and
 /// reach forms and Unity rider are gone. `source` keys the area tallies (a card, a power, a standard action).
 pub(super) fn remove_ambassadors_country(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, zone: &[usize], source: &str) -> Res {
-    let w = cx.world;
-    // 234: what the same removal would have found anywhere in reach (r103's wording), for the pricing read.
-    let held: i64 = reach_hexes(&w, g, seat).iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).sum();
-    cx.tally(g, "cards.agents_in_reach", held.min(max));
-    cx.tally(g, &format!("cards.agents_in_reach.{max}"), held.min(max));
     let removed = up_to_in(g, cx, seat, zone, max, ADV_AMBASSADOR)?;
     // 234: what a targeted "remove N agents" finds, for values.json's area rates.
     let at = if zone.len() == 1 { "on" } else { "near" };

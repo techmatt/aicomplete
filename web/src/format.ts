@@ -82,7 +82,6 @@ const STANDARD_NAMES: Record<string, string> = {
   botnet: 'Take down a botnet',
   buy_energy: "Buy a city's energy",
   antimatter: 'Make antimatter',
-  node: 'Place a node',
   troop: 'Remove a troop',
   factory: 'Build a factory',
 };

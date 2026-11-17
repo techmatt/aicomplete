@@ -80,6 +80,7 @@ What the read scripts quote most (`screens.cnt(game, key)`; more in experiments.
 
 | Key | What it holds, per game |
 |---|---|
+| `cell` | the cell's index in grid order: configs, then variants, then difficulties, then agents, agent fastest (`experiment::cells_with`; `screens.cells_of`) |
 | `counters['ai.power.<board>.<power>']` | a board power's uses (`modules/ai.rs`; the seats on that board summed), `.rNN` a round's; names: `scripts/powers.py` |
 | `counters['board.std.<name>']` | a standard action's uses; `board.std_actions` all of them |
 | `counters['fx.<card>.tN']` / `['fx.<card>.<measure>']` | an Alignment card resolved at tier N / the change it made to a `FX_MEASURES` total (`alignment.rs`): a signed delta, not a count (`fx.network_cleanup.land` −1: one Fallout token gone) |
@@ -88,7 +89,9 @@ What the read scripts quote most (`screens.cnt(game, key)`; more in experiments.
 | `seed`, `reason`, `margin['node_spread']` | the seed, a string; how it ended (`purge` the win, `node` a seat left with no nodes, `deck_empty`, `discord_deck`); each seat's nodes at the end, by country |
 | `actions[i]` | `{type, seat, ...}`: `standard` names its `act`; `power` gives an index, not a name (count powers by the counters) |
 
-Each row is in `PEAKS` order (credits, insight, energy, chips, antimatter, research cubes, card tokens, ambassadors).
+`gained`, `spent` and `peaks` rows are in `PEAKS` order (credits, insight, energy, chips, antimatter, research cubes,
+card tokens, ambassadors); `margin['unspent']` and `margin['held_after_actions']` in `UNSPENT` order (`board::LEFT`:
+credits, chips, energy, antimatter, ambassadors).
 
 ## The farm
 

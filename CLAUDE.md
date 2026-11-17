@@ -31,7 +31,9 @@ machine's traps, are in the [README](README.md), which also lists the page for e
   two browser checks on a removed power). **Changing a tunable's baseline value or a power's cost:** `git grep` its
   name and old value in `crates/*/src` first: tests that pin a baseline number break (215 broke five; 247 two node
   powers). **A new standard action** also needs its row order in `docs/blocks.rs`, `STANDARD_NAMES` in
-  `web/src/format.ts` and `scripts/design_check.json`'s rows.
+  `web/src/format.ts` and `scripts/design_check.json`'s rows (`every_standard_action_is_named_everywhere` checks the
+  last two). **Repricing one** touches `standard.rs`'s `printed_price`, `std_text` and `std_rule_text`, its ParamSpec,
+  `design_check.json`'s row and `design_check_jobs.json`'s job; fast-lane tests take `noop` as filler, not an action.
 - **Any change to how games play out:** bump `RULES_REVISION` and update the golden constants
   (README, *Rules changes*). Bump from the constant, not from the prompt's revision number (a bug
   hunt may have taken it), and say so in the rules-history row and the report. A content-only

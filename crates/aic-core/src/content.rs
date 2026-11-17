@@ -1814,6 +1814,12 @@ fn apply_entry(files: &mut [serde_json::Value], entry: &str) -> Result<(), Strin
                 *slot.ok_or_else(|| fail(format!("no list entry {last:?}")))? = value.clone();
             }
             _ if *last == "+" => return Err(fail("`+` appends to a list only".into())),
+            // 255 (246's note): `null` drops a field the row has, as `scripts/cards/apply_overlay.py` does (back to its
+            // default; it was refused on a list field). On a field the row lacks it goes in as `null`, so the parse
+            // still refuses a name the schema doesn't have (a misspelling).
+            Value::Object(o) if value.is_null() && o.contains_key(*last) => {
+                o.remove(*last);
+            }
             Value::Object(o) => {
                 o.insert(last.to_string(), value.clone());
             }

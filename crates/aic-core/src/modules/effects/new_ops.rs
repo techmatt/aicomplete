@@ -5,7 +5,7 @@
 
 use super::*;
 use crate::key::KeyBuf;
-use crate::op::{CorpAt, CorpNear, CorpWhen, DestroyAt, FactoryWhere, FalloutAt, Scope, TheftWho, TroopAt, TroopIf, Until};
+use crate::op::{CorpNear, DestroyAt, FactoryWhere, FalloutAt, Scope, TheftWho, TroopAt, TroopIf, Until};
 use crate::vocab::{Location, PullTag};
 
 /// Resolve one of the 135 ops (or an old op with a 135 field set).
@@ -63,10 +63,7 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
             let n = ctx.seats(&w, g).into_iter().filter(|&s| g.resource(s, *resource) <= 0).count() as i64;
             adversary::gain_compute(g, cx, n * amount)?;
         }
-        Op::CorpTroops { count, at, near, when, past_cap } => {
-            let c = Corp { count: *count, at: *at, near: *near, past_cap: *past_cap };
-            corp_troops(g, cx, ctx, c, *when)
-        }
+        Op::CorpTroops { count, near, .. } => corp_troops(g, cx, ctx, *count, *near),
         Op::DestroyFacility { at: DestroyAt::Factory } => destroy_factory(g, cx, ctx)?,
         Op::DisableBuilding { count, until: Until::EndOfNextRound } => {
             for s in ctx.seats(&w, g) {
@@ -695,53 +692,21 @@ fn factory_in(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, c: Option<usize>, fallb
     Ok(())
 }
 
-#[derive(Debug, Clone, Copy)]
-struct Corp {
-    count: i64,
-    at: CorpAt,
-    near: Option<CorpNear>,
-    past_cap: bool,
-}
-
-/// CorpTroops. `now`: the bases (the threat's base, or every base) make them
-/// at once (General Mobilization past the cap). `each_production` from a threat registers them on its base for
-/// the next round (247: its `rounds`, `permanent` and `fill`, printed nowhere, are gone); the adversary board's are
-/// read by the production step (231: no project is ongoing), so here do nothing.
-fn corp_troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, c: Corp, when: CorpWhen) {
+/// CorpTroops, each production (its only form since 255 deleted `now` and `location`): from a threat it registers
+/// them on every base for the next round (247: its `rounds`, `permanent` and `fill`, printed nowhere, are gone); the
+/// adversary board's are read by the production step (231: no project is ongoing), so here do nothing.
+fn corp_troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64, near: Option<CorpNear>) {
+    if ctx.threat.is_none() {
+        return;
+    }
     let w = cx.world;
-    let mut bases: Vec<usize> = match c.at {
-        CorpAt::Location => token(&w, g, ctx, Some(Location::Base)).filter(|&h| is_base(&w, h)).into_iter().collect(),
-        CorpAt::EveryBase => (0..g.hexes.len()).filter(|&h| is_base(&w, h)).collect(),
-    };
-    if c.near == Some(CorpNear::AdversaryTroop) {
+    let mut bases: Vec<usize> = (0..g.hexes.len()).filter(|&h| is_base(&w, h)).collect();
+    if near == Some(CorpNear::AdversaryTroop) {
         bases.retain(|&b| next_to(&w, b, |x| g.tokens(x, TROOP) > 0));
     }
-    match when {
-        CorpWhen::Now => {
-            let cap = w.int("board.unit_cap");
-            for b in bases {
-                let have = g.tokens(b, UNIT);
-                let n = if c.past_cap {
-                    c.count
-                } else {
-                    c.count.min(cap - have).max(0)
-                };
-                if n > 0 {
-                    // 137: a player ambassador on the base is used up instead of each troop.
-                    let made = board::corp_troops_at(g, cx, b, n, true);
-                    cx.tally(g, "board.units_extra_now", made);
-                }
-            }
-        }
-        CorpWhen::EachProduction => {
-            if ctx.threat.is_none() {
-                return;
-            }
-            let until = g.round + 1;
-            for b in bases {
-                cx.add_key(g, &board::corp_extra_key(b, until), c.count);
-            }
-        }
+    let until = g.round + 1;
+    for b in bases {
+        cx.add_key(g, &board::corp_extra_key(b, until), count);
     }
 }
 

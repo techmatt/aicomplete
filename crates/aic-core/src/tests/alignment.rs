@@ -191,8 +191,7 @@ fn unity_swayed_may_hold_discord_off() {
         set_var(&mut g, "alignment.discord",2);
         // Unity swayed and not yet placed: the next action's check places it.
         set_var(&mut g, "alignment.unity_new",3);
-        set_res(&mut g, 0, Resource::ResearchCubes, rules.world().int("board.insight_cubes"));
-        rules.apply_mut(&mut g, &std_act(0, "insight"), None).unwrap();
+        rules.apply_mut(&mut g, &noop(0), None).unwrap();
         if hold > 0 {
             let p = g.pending.as_ref().expect("asked how much holds Discord off");
             assert_eq!(p.ask.options.len(), 3, "0, 1 or 2 off the Discord track");
@@ -210,8 +209,7 @@ fn the_acting_player_places_swayed_unity() {
     let (rules, mut g) = action_only(&["alignment.hold_off=1"]);
     set_var(&mut g, "alignment.discord",2);
     set_var(&mut g, "alignment.unity_new",1);
-    set_res(&mut g, 1, Resource::ResearchCubes, rules.world().int("board.insight_cubes"));
-    rules.apply_mut(&mut g, &std_act(1, "insight"), None).unwrap();
+    rules.apply_mut(&mut g, &noop(1), None).unwrap();
     let p = g.pending.as_ref().expect("asked where the Unity goes");
     assert_eq!(p.ask.seat, 1, "{}", p.ask.prompt);
     assert!(p.ask.prompt.contains("put 1 Unity on the track, or take 1 Discord off"), "{}", p.ask.prompt);
@@ -231,8 +229,7 @@ fn every_hold_off_amount_is_offered() {
         let mut g = g0.clone();
         set_var(&mut g, "alignment.discord",cap + over);
         set_var(&mut g, "alignment.unity_new",n);
-        set_res(&mut g, 0, Resource::ResearchCubes, rules.world().int("board.insight_cubes"));
-        rules.apply_mut(&mut g, &std_act(0, "insight"), None).unwrap();
+        rules.apply_mut(&mut g, &noop(0), None).unwrap();
         let asked = g.pending.as_ref().map_or(0, |p| p.ask.options.len());
         assert_eq!(asked, offered, "Discord {} over, {n} Unity", over);
     }

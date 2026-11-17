@@ -28,8 +28,6 @@ pub enum StandardAction {
     BuyEnergy,
     /// 204 (Matt, 2026-11-12): the desperate source, research cubes for 1 antimatter.
     Antimatter,
-    /// 206 (Matt, 2026-11-12): the one node placement every board has, poorly priced (Expand left every board).
-    Node,
     /// 206 (amendment 9247): a very expensive hedge against troops: credits for 1 troop in reach.
     Troop,
     /// 206 (amendment 9212, candidate): a factory, yours, for chips (`factory_build_chips` 0: off).
@@ -37,7 +35,7 @@ pub enum StandardAction {
 }
 
 /// The standard actions, in the order they are offered and published.
-pub const STANDARD: [StandardAction; 15] = [
+pub const STANDARD: [StandardAction; 14] = [
     StandardAction::Station,
     StandardAction::Remove,
     StandardAction::Lift,
@@ -50,7 +48,6 @@ pub const STANDARD: [StandardAction; 15] = [
     StandardAction::Botnet,
     StandardAction::BuyEnergy,
     StandardAction::Antimatter,
-    StandardAction::Node,
     StandardAction::Troop,
     StandardAction::Factory,
 ];
@@ -71,7 +68,6 @@ impl StandardAction {
             StandardAction::Botnet => "botnet",
             StandardAction::BuyEnergy => "buy_energy",
             StandardAction::Antimatter => "antimatter",
-            StandardAction::Node => "node",
             StandardAction::Troop => "troop",
             StandardAction::Factory => "factory",
         }
@@ -152,7 +148,6 @@ pub fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::Botnet => credits(i("botnet_credits")),
         StandardAction::BuyEnergy => credits(i("city_energy_credits")),
         StandardAction::Antimatter => Price { cubes: i("antimatter_cubes"), ..Price::default() },
-        StandardAction::Node => Price { credits: i("node_credits"), energy: i("node_energy"), ..Price::default() },
         StandardAction::Troop => credits(i("troop_credits")),
         StandardAction::Factory => chips(i("factory_build_chips")),
     }
@@ -181,8 +176,8 @@ pub fn bought_key(h: usize) -> KeyBuf {
 /// Prefix of [`bought_key`].
 pub(super) const BOUGHT: &str = "board.energy_bought.";
 
-/// 206: how often seat `s` has taken limited standard action `act` (Place a node, Remove a troop) this round, a
-/// round mark.
+/// 206: how often seat `s` has taken limited standard action `act` (Remove a troop, Turn a cube into insight) this
+/// round, a round mark.
 pub fn std_once_key(act: StandardAction, seat: usize) -> KeyBuf {
     KeyBuf::new(STD_ONCE).text(act.name()).text(".").num(seat)
 }
@@ -190,11 +185,10 @@ pub fn std_once_key(act: StandardAction, seat: usize) -> KeyBuf {
 /// Prefix of [`std_once_key`].
 pub(super) const STD_ONCE: &str = "board.std_once.";
 
-/// 206: how often a seat may take standard action `act` a round (`node_per_round`, `troop_per_round`), or `None`
-/// with no limit.
+/// 206: how often a seat may take standard action `act` a round (`troop_per_round`), or `None` with no limit. 255:
+/// enforced once for every action, in [`std_targets`] (offer) and [`std_resolve`] (count).
 fn per_round(w: &World, act: StandardAction) -> Option<i64> {
     match act {
-        StandardAction::Node => Some(w.int("board.node_per_round")),
         StandardAction::Troop => Some(w.int("board.troop_per_round")),
         // 253 (amendment 11525): a screen's cap on the cube converter; 0, none.
         StandardAction::Insight if w.int("board.insight_per_round") > 0 => Some(w.int("board.insight_per_round")),
@@ -237,11 +231,10 @@ pub fn moves_left(w: &World, g: &GameState, seat: usize) -> i64 {
     ai::movement(w, g, seat) - g.var(&moved_key(seat))
 }
 
-/// 206: the ops an op-backed standard action runs (node placement, troop removal, factory building), so its
-/// targets and effect are the cards' own (`effects::feasible`, `effects::run`).
+/// 206: the ops an op-backed standard action runs (troop removal, factory building), so its targets and effect are
+/// the cards' own (`effects::feasible`, `effects::run`).
 pub fn std_ops(act: StandardAction) -> &'static [Op] {
     match act {
-        StandardAction::Node => &[Op::PlaceNode { count: 1, range: 1 }],
         // 236: each names its target first, as a card does.
         StandardAction::Troop => &[
             Op::Target { on: crate::op::TargetSpec::Troops },
@@ -252,14 +245,14 @@ pub fn std_ops(act: StandardAction) -> &'static [Op] {
     }
 }
 
-/// 206: a standard action whose price param is 0 is off (Lift, Node, Troop, Factory). 210 (P2) deleted the cut Clear,
+/// 206: a standard action whose price param is 0 is off (Lift, Troop, Factory). 210 (P2) deleted the cut Clear,
 /// Drain and Harden project.
 /// 221: the price params live in [`printed_price`] alone (their minimum is 0, so "free" is "off").
 /// 248: `board.std_off` switches any of them off, by its place in [`STANDARD`] from 1 (0: none), for a probe of
 /// how much play leans on them; the shipped game has none off.
 fn cut(w: &World, act: StandardAction) -> bool {
     let off = w.list("board.std_off");
-    (matches!(act, StandardAction::Lift | StandardAction::Node | StandardAction::Troop | StandardAction::Factory)
+    (matches!(act, StandardAction::Lift | StandardAction::Troop | StandardAction::Factory)
         && printed_price(w, act) == Price::default())
         || off.iter().any(|&i| i > 0 && STANDARD.get(i as usize - 1) == Some(&act))
 }
@@ -270,7 +263,7 @@ pub fn std_offered(w: &World, act: StandardAction) -> bool {
 }
 
 /// 236 (Matt, 2026-11-14: one target): the target a standard action that touches the map names, a hex in your
-/// reach, printed first ("Target: Fallout."). Place a node has none: a placement goes next to your nodes.
+/// reach, printed first ("Target: Fallout.").
 pub fn std_target(act: StandardAction) -> Option<&'static str> {
     Some(match act {
         StandardAction::Station => "an open hex",
@@ -286,8 +279,7 @@ pub fn std_target(act: StandardAction) -> Option<&'static str> {
         StandardAction::Ambassador
         | StandardAction::Insight
         | StandardAction::Envoy
-        | StandardAction::Antimatter
-        | StandardAction::Node => return None,
+        | StandardAction::Antimatter => return None,
     })
 }
 
@@ -344,9 +336,6 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         }
         StandardAction::Antimatter => {
             format!("turn {} into 1 antimatter", Resource::ResearchCubes.words(w.int("board.antimatter_cubes")))
-        }
-        StandardAction::Node => {
-            format!("place 1 node next to yours (paying its track step), {} a round", times(w.int("board.node_per_round")))
         }
         StandardAction::Troop => format!("Remove 1 on it, {} a round", times(w.int("board.troop_per_round"))),
         StandardAction::Factory => "Build a factory on it (yours)".into(),
@@ -465,19 +454,6 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
             format!("{} research cubes", t("board.antimatter_cubes")),
             "gain 1 antimatter, as often as you have cubes (a desperate trade: the engines make it cheaper)".into(),
         ),
-        // 206 (Matt, 2026-11-12): Expand, Buy In, Accord and Peer Review were one power under four names.
-        StandardAction::Node => (
-            "Place a node",
-            if w.int("board.node_energy") > 0 {
-                format!("{} credits and {} energy, and the track step's energy", t("board.node_credits"), t("board.node_energy"))
-            } else {
-                format!("{} credits, and the track step's energy", t("board.node_credits"))
-            },
-            format!(
-                "place 1 node next to yours, off either track, at most {} a round (the boards' own node powers are the better route)",
-                t("board.node_per_round")
-            ),
-        ),
         // 206 (amendment 9247): a hedge, never the better route.
         StandardAction::Troop => (
             "Remove a troop",
@@ -532,7 +508,8 @@ pub fn land_in_reach(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
 pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAction) -> Vec<usize> {
     let reach = |h: usize| in_reach(w, g, seat, h);
     let all = 0..g.hexes.len();
-    if cut(w, act) {
+    // 255: a limited action (`per_round`) is offered while its round's uses are under the limit.
+    if cut(w, act) || per_round(w, act).is_some_and(|n| g.var(&std_once_key(act, seat)) >= n) {
         return Vec::new();
     }
     match act {
@@ -558,12 +535,7 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
         StandardAction::Liberate => all.filter(|&h| liberable(w, g, seat, h)).collect(),
         // Gaining an ambassador, credits or insight needs no target.
         StandardAction::Ambassador => vec![usize::MAX],
-        StandardAction::Insight
-            if w.int("board.cube_insight") > 0
-                && per_round(w, act).is_none_or(|n| g.var(&std_once_key(act, seat)) < n) =>
-        {
-            vec![usize::MAX]
-        }
+        StandardAction::Insight if w.int("board.cube_insight") > 0 => vec![usize::MAX],
         StandardAction::Insight => Vec::new(),
         // 136: with no Discord on the track it would do nothing.
         StandardAction::Envoy if w.int("board.envoy_ambassadors") > 0 && g.var(alignment::track(Side::Discord)) > 0 => {
@@ -574,18 +546,8 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
         StandardAction::BuyEnergy => all.filter(|&h| energy_for_sale(w, g, seat, h)).collect(),
         StandardAction::Antimatter if w.int("board.antimatter_cubes") > 0 => vec![usize::MAX],
         StandardAction::Antimatter => Vec::new(),
-        StandardAction::Node | StandardAction::Troop | StandardAction::Factory => {
-            // 247: a node's own energy is paid first, so its track step is paid from what is left.
-            let step_paid = act != StandardAction::Node || node::can_pay_placement(w, g, seat, -printed_price(w, act).energy);
-            if step_paid
-                && per_round(w, act).is_none_or(|n| g.var(&std_once_key(act, seat)) < n)
-                && effects::feasible(w, g, seat, std_ops(act))
-            {
-                vec![usize::MAX]
-            } else {
-                Vec::new()
-            }
-        }
+        StandardAction::Troop | StandardAction::Factory if effects::feasible(w, g, seat, std_ops(act)) => vec![usize::MAX],
+        StandardAction::Troop | StandardAction::Factory => Vec::new(),
     }
 }
 
@@ -625,13 +587,13 @@ pub(super) fn std_resolve(
         };
         Ok(cx.choose(s, prompt, opts)?.map(|i| targets[i]))
     };
+    // 255: every limited action (`per_round`) counts its use, once, before its effect.
+    if per_round(&w, act).is_some() {
+        cx.add_key(g, &std_once_key(act, s), 1);
+    }
     match act {
         StandardAction::Ambassador => cx.add_resource(g, s, Resource::Ambassadors, 1),
         StandardAction::Insight => {
-            // 253: counted against `insight_per_round` when it has a limit.
-            if per_round(&w, act).is_some() {
-                cx.add_key(g, &std_once_key(act, s), 1);
-            }
             cx.add_resource(g, s, Resource::Insight, w.int("board.cube_insight"));
             cx.tally(g, "board.cubes_converted", 1);
         }
@@ -654,9 +616,6 @@ pub(super) fn std_resolve(
             // rest on or next to it (it took them from any hexes in reach).
             if let Some(h) = on_hex(cx)? {
                 adversary::remove_piece(g, cx, Some(s), h, ADV_AMBASSADOR);
-                // 236: what one use finds, beside what its reach held (the pricing read).
-                let held: i64 = (0..g.hexes.len()).filter(|&x| in_reach(&w, g, s, x)).map(|x| g.tokens(x, ADV_AMBASSADOR)).sum();
-                cx.tally(g, "board.remove_agents_in_reach", (held + 1).min(w.int("board.remove_count")));
                 let mut removed = 1;
                 for _ in 1..w.int("board.remove_count") {
                     let hexes = agent_hexes_near(&w, g, h);
@@ -713,10 +672,7 @@ pub(super) fn std_resolve(
                 liberate_site(g, cx, s, h, false);
             }
         }
-        StandardAction::Node | StandardAction::Troop | StandardAction::Factory => {
-            if per_round(&w, act).is_some() {
-                cx.add_key(g, &std_once_key(act, s), 1);
-            }
+        StandardAction::Troop | StandardAction::Factory => {
             effects::run(g, cx, std_ops(act), &mut effects::Ctx::seat(s).named("standard"))?;
         }
     }

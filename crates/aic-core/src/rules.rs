@@ -683,6 +683,8 @@ impl Rules {
                 inst.module
                     .run(part.phase, g, &mut self.cx(inst, events.as_deref_mut(), ch))?;
             }
+            // 255: the tests' no-op action does nothing but run the checks below.
+            Trigger::Action { action } if is_test_noop(action) => {}
             Trigger::Action { action } => {
                 let part = p
                     .parts
@@ -787,6 +789,15 @@ impl Rules {
             }
         }
     }
+}
+
+/// 255: the `act` of the fast-lane tests' no-op action, `Action::Standard { act: TEST_NOOP }`: an action that
+/// touches nothing, so every module's after-action checks run (the tests used the cube converter, and its price).
+pub(crate) const TEST_NOOP: &str = "test_noop";
+
+/// Whether `a` is the tests' no-op action; never outside aic-core's own test build.
+fn is_test_noop(a: &Action) -> bool {
+    cfg!(test) && matches!(a, Action::Standard { act, .. } if act == TEST_NOOP)
 }
 
 /// Stops a resolution at the question it asked, to go on from `snapshot`

@@ -62,6 +62,11 @@ hot ones `World::hot(Hot::...)`), declared in `ModuleDef::requires`.
 removed only by `adversary`'s functions, `board::liberate` and effects' `cleanse`; nodes placed by
 `board::place_node`; nodes and facilities destroyed by `board::destroy_piece`, which applies every protection and
 sways the Discord (`board::lose_node` for losses no protection absorbs).
+**A player owns a site** by its `cube(seat)` (`common::cube_owner`), put on by `board::claim_site`,
+`liberate_site` (`own`), setup's `bound_city`, effects' `build_station` / `build_factory` and the Station and Factory
+standard actions; read by city energy and `grow_cities` (`board/production.rs`), `energy_for_sale`, `corrupt.rs`,
+`plan.rs` (`Where::Owned`, `CreateIf::Player`), `effects/team.rs` `take_site`, content's `per_site` `owned` (Unity
+cards) and the agents' `eval.rs`: `git grep cube_owner` and `owned` for a rule about ownership.
 
 The hooks' trap (on `Module::act`): check legality before the first `choose`; a `Halt::Illegal` after an answer
 panics. Modules change the state only through `Cx` (event log and counters stay consistent); counter and var names
@@ -129,7 +134,8 @@ where, and wording and tally for one shared by threats and team cards. Three kin
 `effects/mod.rs` arm matching the field's default keeps the old behavior and sends the rest to
 `effects/new_ops.rs`; or the rule reading a standing op) and its price (`agents/value.rs`, `agents/strategy.rs`,
 `configs/agents/values.json`, the ledger's hand mirror `scripts/cards/effect_ledger.py`). A new op also touches
-`effects/feasible.rs` (what it acts on) and `docs/harms.rs`'s `op_harms` (an arm per op). The compiler finds the
+`effects/feasible.rs` (what it acts on) and `docs/harms.rs`'s `op_harms` (an arm per op). `op.rs`'s `contexts`,
+`is_map` (it takes a player's target) and `reads_hit_seat` are exhaustive matches: decide each. The compiler finds the
 Rust sites (`face.rs` lists every non-player op) but not the `values.json` row; the mirror test finds the ledger.
 **Removing an op**: the compiler finds its Rust arms; delete its `values.json` row and its `effect_ledger.py`
 branch too, and `git grep` its snake_case name in `scripts/design_check.json`, `drafts/adversary/check.py` and tests.

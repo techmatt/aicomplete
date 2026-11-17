@@ -399,14 +399,15 @@ fn pass_round(rules: &Rules, g: &mut GameState) {
     answer_all(rules, g);
 }
 
-/// Seat 0 turns research cubes into insight (the cube converter): an action
-/// that touches nothing else, so the end checks run (r48: it was a gift of
-/// insight, an action since removed).
+/// Seat 0 takes the tests' no-op action ([`noop`]), so the end checks run.
 fn any_action(rules: &Rules, g: &mut GameState) {
-    set_res(g, 0, Resource::ResearchCubes, rules.world().int("board.insight_cubes"));
-    // 253: the converter is once a round; a test taking it again in the same round starts a fresh count.
-    set_var(g, crate::modules::board::std_once_key(crate::modules::board::StandardAction::Insight, 0), 0);
-    act(rules, g, std_act(0, "insight"));
+    act(rules, g, noop(0));
+}
+
+/// 255: an action that touches nothing, so every module's after-action checks run (`rules::TEST_NOOP`, test
+/// builds only). The tests used the cube converter, and broke when it was repriced (252).
+fn noop(seat: u8) -> Action {
+    std_act(seat, crate::rules::TEST_NOOP)
 }
 
 /// A lab with seat 0's node on the board and both tracks at `taken` steps.
@@ -646,7 +647,7 @@ fn variant_matrix() -> Vec<Config> {
 // ---------- the golden game ----------
 
 const GOLDEN_REVISION: u32 = 115;
-const GOLDEN_FINGERPRINT: &str = "1b2e93fd044ebfc2";
+const GOLDEN_FINGERPRINT: &str = "d63547d9de752b37";
 const GOLDEN_CONTENT_HASH: &str = "4aedd7cc9cb09409";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action

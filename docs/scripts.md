@@ -18,12 +18,14 @@ what it prints; the `cards/*_read.py` readers take seconds.
   warnings ([principles.md](principles.md)): content checks, plus play checks on DIR (a read's folder or
   `games.jsonl`; a farm out file as FILE=SPEC). `--old`: the previous revision's read on its seeds; `--base`: the
   dials' start (default: merge base with main); `--variant`: only those variants' (or a lever's) games, `base` the
-  bare pairs; `--usage`: each action's role, band and use instead. First line: the report's `warnings:`. Thresholds
+  bare pairs; `--usage`: each action's role, band and use instead. A power action's index is named by matching it
+  to the read's `ai.power.*` counters, so a read of another revision reads right (an info line names a reordered
+  board; a current power its counters never name is no row). First line: the report's `warnings:`. Thresholds
   and bands: `design_check.json`; job parity's cards for each standard job, hand-read (units and other effects as
   expressions over the anchors; costs from content): `design_check_jobs.json`, written by 249's `port_jobs.py`
   from 248's table (a new card for a job is a row there). Never exits 1.
 - `cards/cards_doc.py`: regenerates `docs/cards.md`. `cards/deck_text.py DECK...`: a deck as plain text for review
-  (`--list` the decks; README, *Card text for review*).
+  (`--list` the decks; README, *Card text for review*); `--ids TEXT`: content ids by display name.
 - `cards/apply_overlay.py FILE... [--set ENTRY]... [--check]`: writes overlays into `content/*.json` in place:
   `cards.<id>.<path>=JSON` lines (the engine `--set`'s keys, paths as `apply_entry` in content.rs; `#` comments), a
   last step `+` appending to a list, `cards.<id>=<JSON object>` a whole row. Nothing deletes (how to drop a card: its
@@ -123,6 +125,10 @@ what it prints; the `cards/*_read.py` readers take seconds.
   next seeds each; `--attach S1,S2,...` reads 5 s windows of a long run; `--rate 1000` samples a second.
 - `bench/resource_use.py NEW [OLD] [--top 8] [--limits]` (folder, games file or `FILE=SPEC`): chips, energy, cubes and antimatter
   gained and spent per seat a game by level, what buys and sources them (`--limits`: the `limit.*` table).
+- `bench/read_lib.py READ... [--base ARM] [--counters PREFIX...] [--cards ID...] [--md OUT]` (same forms): a paired
+  read's tables by arm (`PAIR-ARM` variants) and agent, against the base arm on the same pair, level and seed: wins
+  and gap ± SE by level, losses, board powers (by counter), standard actions, counters, card plays, resource use. Its
+  `games`, `seat_boards`, `counter_sums`, `resources`, `paired_gap` are the library for an item's own reader.
 - `bench/am_read.py READ[,READ...]` (same forms): antimatter by source, made and spent, burns by round, per lever
   (`PAIR_LEVER` variants) and agent (230's reader; stops if a plant or burn it names left content).
 - `bench/projects_read.py READ [--md OUT]` (folder, games file or `FILE=SPEC`): each project's reveals, completions, compute drained and map

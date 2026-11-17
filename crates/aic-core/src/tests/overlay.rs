@@ -105,6 +105,15 @@ fn deep_paths_reach_ops_and_tracks() {
     assert!(c.ais.iter().all(|a| a.economy_track[0].income == [(Resource::Credits, 7)]));
 }
 
+/// 255 (246's note): `null` drops a field, as `apply_overlay.py` does, a list field too (it was refused there).
+#[test]
+fn null_drops_a_field() {
+    let (c, _) = overlaid(&[format!("cards.{CARD}.keywords=null")]).unwrap();
+    assert!(c.cards[c.card_index(CARD).unwrap()].keywords.is_empty());
+    assert!(!content().cards[content().card_index(CARD).unwrap()].keywords.is_empty());
+    assert!(overlaid(&[format!("cards.{CARD}.keywrods=null")]).is_err(), "a misspelled field is still refused");
+}
+
 /// The text follows the numbers: a face is generated from the overlaid ops.
 #[test]
 fn card_text_follows_the_overlay() {

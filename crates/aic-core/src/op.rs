@@ -97,12 +97,10 @@ pub enum FactoryWhere {
     EachCountry,
 }
 
-/// Which bases make extra corp troops (135).
+/// Which bases make extra corp troops (135). 255: `location` (the threat's base) went, printed nowhere since 231.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum CorpAt {
-    /// The threat's base token.
-    Location,
     /// Every military base.
     EveryBase,
 }
@@ -115,11 +113,10 @@ pub enum CorpNear {
     AdversaryTroop,
 }
 
-/// When extra corp troops come (135).
+/// When extra corp troops come (135). 255: `now` went, printed nowhere since 231.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum CorpWhen {
-    Now,
     EachProduction,
 }
 
@@ -1219,8 +1216,8 @@ pub enum Op {
         resource: Resource,
         amount: i64,
     },
-    /// Bases make `count` extra Drones, `now` or each production (a threat's: the next round), `past_cap`
-    /// (`near`: by a troop).
+    /// Bases make `count` extra Drones each production (a threat's: the next round), `past_cap` (`near`: by a
+    /// troop).
     CorpTroops {
         #[serde(default, skip_serializing_if = "is_zero")]
         count: i64,
@@ -1593,37 +1590,151 @@ impl Op {
     /// 234: an op that acts at a place on the map a player picks: on a player card it needs the card's one
     /// target before it (`Content::check`), and acts on that target's area. Your own nodes (`shield_node`,
     /// `place_node`) and burns of your own pieces are not picked places. A reach Shelter takes no target.
+    /// 255: an exhaustive match, as [`Op::reads_hit_seat`] and [`Op::contexts`], so a new op is decided here (an op
+    /// left out was offered with no target in reach: 253's `CreateSite`).
     pub fn is_map(&self) -> bool {
-        matches!(
-            self,
+        match self {
             Op::Damage { .. }
-                | Op::DamageCountry { .. }
-                | Op::DestroyAll
-                | Op::RemoveBotnet
-                | Op::RemoveAmbassadorsCountry { .. }
-                | Op::RemoveTroops { .. }
-                | Op::BuildFactory
-                | Op::Cleanse { .. }
-                | Op::Liberate { .. }
-                | Op::ClearCity { .. }
-                | Op::Harden { .. }
-                | Op::MoveAmbassadors { .. }
-                | Op::PlaceAmbassadors { .. }
-                | Op::Cordon
-                | Op::BuildStation
-                | Op::ClaimStation
-                // 253: on a player card it opens its site on the target (a threat's or a team card's needs none).
-                | Op::CreateSite { .. }
-                | Op::CutBotnet
-                | Op::MoveOne { .. }
-                | Op::SpreadAmbassadors
-                | Op::Consolidate { .. }
-                | Op::Convert { .. }
-                | Op::Gather { .. }
-                | Op::Push { .. }
-                | Op::Firewall
-                | Op::LiftFallout { .. }
-        )
+            | Op::DamageCountry { .. }
+            | Op::DestroyAll
+            | Op::RemoveBotnet
+            | Op::RemoveAmbassadorsCountry { .. }
+            | Op::RemoveTroops { .. }
+            | Op::BuildFactory
+            | Op::Cleanse { .. }
+            | Op::Liberate { .. }
+            | Op::ClearCity { .. }
+            | Op::Harden { .. }
+            | Op::MoveAmbassadors { .. }
+            | Op::PlaceAmbassadors { .. }
+            | Op::Cordon
+            | Op::BuildStation
+            | Op::ClaimStation
+            // 253: on a player card it opens its site on the target (a threat's or a team card's needs none).
+            | Op::CreateSite { .. }
+            | Op::CutBotnet
+            | Op::MoveOne { .. }
+            | Op::SpreadAmbassadors
+            | Op::Consolidate { .. }
+            | Op::Convert { .. }
+            | Op::Gather { .. }
+            | Op::Push { .. }
+            | Op::Firewall
+            | Op::LiftFallout { .. } => true,
+            Op::Gain { .. }
+            | Op::GainPerNode { .. }
+            | Op::ChoosePlayer
+            | Op::OtherGain { .. }
+            | Op::Transfer { .. }
+            | Op::PlaceNode { .. }
+            | Op::ShieldNode { .. }
+            | Op::DelayThreat { .. }
+            | Op::Burn { .. }
+            | Op::GainAmbassadors { .. }
+            | Op::Target { .. }
+            | Op::Shelter
+            | Op::FreeBuilding
+            | Op::ProjectCube { .. }
+            | Op::Peek { .. }
+            | Op::Jam { .. }
+            | Op::CounterThreat
+            | Op::DrainProject { .. }
+            | Op::DiscardProject
+            | Op::Production { .. }
+            | Op::ProductionPerTag { .. }
+            | Op::AddTokens { .. }
+            | Op::IfTags { .. }
+            | Op::IfNodeNext { .. }
+            | Op::AmbassadorToSpot
+            | Op::Draw { .. }
+            | Op::DrainAll { .. }
+            | Op::GainPerTokens { .. }
+            | Op::CashOut { .. }
+            | Op::GainPerTag { .. }
+            | Op::CopyIncome
+            | Op::Reuse
+            | Op::DiscardHand { .. }
+            | Op::Sway { .. }
+            | Op::Troops { .. }
+            | Op::ThreatAtNode { .. }
+            | Op::EachDestroyNode { .. }
+            | Op::DestroyNode { .. }
+            | Op::PullUnity { .. }
+            | Op::FlipStation { .. }
+            | Op::CorruptCity { .. }
+            | Op::PlayersLose { .. }
+            | Op::AdversaryBuild
+            | Op::LoseNodeOr { .. }
+            | Op::Flag { .. }
+            | Op::Requisition { .. }
+            | Op::LoseAmbassador
+            | Op::DiscardMostExpensive
+            | Op::Compute { .. }
+            | Op::ComputeEvery { .. }
+            | Op::LoseTokens { .. }
+            | Op::AdversaryFactory { .. }
+            | Op::ComputePerMissing { .. }
+            | Op::CorpTroops { .. }
+            | Op::DestroyFacility { .. }
+            | Op::DisableBuilding { .. }
+            | Op::Discard { .. }
+            | Op::ExtraWar
+            | Op::LoseAmbassadorsOr { .. }
+            | Op::LoseIncome { .. }
+            | Op::LoseOr { .. }
+            | Op::MarchNow { .. }
+            | Op::OccupyFactory { .. }
+            | Op::PlaceBotnet { .. }
+            | Op::CorruptFactory
+            | Op::Theft { .. }
+            | Op::TeamIncome { .. }
+            | Op::FreePurchases { .. }
+            | Op::CounterAll
+            | Op::Pushback { .. }
+            | Op::DealThreats { .. }
+            | Op::Create { .. }
+            | Op::Corrupt { .. }
+            | Op::Rally { .. }
+            | Op::IncreaseIncome { .. }
+            | Op::RemoveBotnets { .. }
+            | Op::AdversaryCubes { .. }
+            | Op::BotnetCubes { .. }
+            | Op::BotnetTroops { .. }
+            | Op::SpreadBotnets { .. }
+            | Op::TakeSite { .. }
+            | Op::FactoryTroops { .. }
+            | Op::AgentsOnNodes { .. }
+            | Op::RecallAmbassadors
+            | Op::StripCubes { .. }
+            | Op::StripHarden
+            | Op::Fallout { .. }
+            | Op::Clock { .. }
+            | Op::OnePlayer { .. }
+            | Op::PerSite { .. }
+            | Op::RemoveWhere { .. }
+            | Op::Prohibit { .. }
+            | Op::StandingTroopsBonus { .. }
+            | Op::ThreatCompute { .. }
+            | Op::Income { .. }
+            | Op::IncomePerTag { .. }
+            | Op::BuildingDiscount { .. }
+            | Op::CardDiscount { .. }
+            | Op::When { .. }
+            | Op::Threshold { .. }
+            | Op::Slots { .. }
+            | Op::Logistics { .. }
+            | Op::ProjectDrain { .. }
+            | Op::AutoCounter { .. }
+            | Op::UnityBonus { .. }
+            | Op::CorruptionShield
+            | Op::CivicShelter
+            | Op::Wall
+            | Op::Patience
+            | Op::SupplyInsight { .. }
+            | Op::TagsFromHand { .. }
+            | Op::ConvertUpkeep { .. }
+            | Op::TroopSteps { .. } => false,
+        }
     }
 
     /// 234: the `at` an op prints, where it has one.
@@ -1656,27 +1767,151 @@ impl Op {
 
     /// 238 (D92): whether this op, or one printed inside it, reads the seat an executing threat hits (its arm
     /// reads `Ctx::seats`): a tie for nearest is asked only when one does. `Ctx::seats` asserts the list in debug.
+    /// 255: an exhaustive match, so a new op is decided here.
     pub fn reads_hit_seat(&self) -> bool {
-        matches!(
-            self,
+        let own = match self {
             Op::Gain { .. }
-                | Op::PlayersLose { .. }
-                | Op::Requisition { .. }
-                | Op::LoseAmbassador
-                | Op::LoseNodeOr { .. }
-                | Op::DiscardMostExpensive
-                | Op::LoseTokens { .. }
-                | Op::ComputePerMissing { .. }
-                | Op::DisableBuilding { .. }
-                | Op::Discard { .. }
-                | Op::LoseAmbassadorsOr { .. }
-                | Op::LoseIncome { .. }
-                | Op::LoseOr { .. }
-                | Op::Theft { .. }
-                | Op::EachDestroyNode { .. }
-                | Op::DestroyNode { .. }
+            | Op::PlayersLose { .. }
+            | Op::Requisition { .. }
+            | Op::LoseAmbassador
+            | Op::LoseNodeOr { .. }
+            | Op::DiscardMostExpensive
+            | Op::LoseTokens { .. }
+            | Op::ComputePerMissing { .. }
+            | Op::DisableBuilding { .. }
+            | Op::Discard { .. }
+            | Op::LoseAmbassadorsOr { .. }
+            | Op::LoseIncome { .. }
+            | Op::LoseOr { .. }
+            | Op::Theft { .. }
+            | Op::EachDestroyNode { .. }
+            | Op::DestroyNode { .. } => true,
+            Op::GainPerNode { .. }
+            | Op::ChoosePlayer
+            | Op::OtherGain { .. }
+            | Op::Transfer { .. }
+            | Op::PlaceNode { .. }
+            | Op::ShieldNode { .. }
+            | Op::DelayThreat { .. }
+            | Op::Damage { .. }
+            | Op::DamageCountry { .. }
+            | Op::DestroyAll
+            | Op::RemoveBotnet
+            | Op::RemoveAmbassadorsCountry { .. }
+            | Op::RemoveTroops { .. }
+            | Op::BuildFactory
+            | Op::Burn { .. }
+            | Op::Cleanse { .. }
+            | Op::Liberate { .. }
+            | Op::ClearCity { .. }
+            | Op::Harden { .. }
+            | Op::MoveAmbassadors { .. }
+            | Op::GainAmbassadors { .. }
+            | Op::PlaceAmbassadors { .. }
+            | Op::Target { .. }
+            | Op::Shelter
+            | Op::Cordon
+            | Op::FreeBuilding
+            | Op::BuildStation
+            | Op::ClaimStation
+            | Op::ProjectCube { .. }
+            | Op::Peek { .. }
+            | Op::Jam { .. }
+            | Op::CounterThreat
+            | Op::DrainProject { .. }
+            | Op::DiscardProject
+            | Op::Production { .. }
+            | Op::ProductionPerTag { .. }
+            | Op::AddTokens { .. }
+            | Op::CutBotnet
+            | Op::MoveOne { .. }
+            | Op::SpreadAmbassadors
+            | Op::Consolidate { .. }
+            | Op::Convert { .. }
+            | Op::Gather { .. }
+            | Op::Push { .. }
+            | Op::Firewall
+            | Op::IfTags { .. }
+            | Op::IfNodeNext { .. }
+            | Op::AmbassadorToSpot
+            | Op::LiftFallout { .. }
+            | Op::Draw { .. }
+            | Op::DrainAll { .. }
+            | Op::GainPerTokens { .. }
+            | Op::CashOut { .. }
+            | Op::GainPerTag { .. }
+            | Op::CopyIncome
+            | Op::Reuse
+            | Op::DiscardHand { .. }
+            | Op::Sway { .. }
+            | Op::Troops { .. }
+            | Op::ThreatAtNode { .. }
+            | Op::PullUnity { .. }
+            | Op::FlipStation { .. }
+            | Op::CorruptCity { .. }
+            | Op::AdversaryBuild
+            | Op::Flag { .. }
+            | Op::Compute { .. }
+            | Op::ComputeEvery { .. }
+            | Op::AdversaryFactory { .. }
+            | Op::CorpTroops { .. }
+            | Op::DestroyFacility { .. }
+            | Op::ExtraWar
+            | Op::MarchNow { .. }
+            | Op::OccupyFactory { .. }
+            | Op::PlaceBotnet { .. }
+            | Op::CorruptFactory
+            | Op::TeamIncome { .. }
+            | Op::FreePurchases { .. }
+            | Op::CounterAll
+            | Op::Pushback { .. }
+            | Op::DealThreats { .. }
+            | Op::Create { .. }
+            | Op::CreateSite { .. }
+            | Op::Corrupt { .. }
+            | Op::Rally { .. }
+            | Op::IncreaseIncome { .. }
+            | Op::RemoveBotnets { .. }
+            | Op::AdversaryCubes { .. }
+            | Op::BotnetCubes { .. }
+            | Op::BotnetTroops { .. }
+            | Op::SpreadBotnets { .. }
+            | Op::TakeSite { .. }
+            | Op::FactoryTroops { .. }
+            | Op::AgentsOnNodes { .. }
+            | Op::RecallAmbassadors
+            | Op::StripCubes { .. }
+            | Op::StripHarden
+            | Op::Fallout { .. }
+            | Op::Clock { .. }
+            | Op::OnePlayer { .. }
+            | Op::PerSite { .. }
+            | Op::RemoveWhere { .. }
+            | Op::Prohibit { .. }
+            | Op::StandingTroopsBonus { .. }
+            | Op::ThreatCompute { .. }
+            | Op::Income { .. }
+            | Op::IncomePerTag { .. }
+            | Op::BuildingDiscount { .. }
+            | Op::CardDiscount { .. }
+            | Op::When { .. }
+            | Op::Threshold { .. }
+            | Op::Slots { .. }
+            | Op::Logistics { .. }
+            | Op::ProjectDrain { .. }
+            | Op::AutoCounter { .. }
+            | Op::UnityBonus { .. }
+            | Op::CorruptionShield
+            | Op::CivicShelter
+            | Op::Wall
+            | Op::Patience
+            | Op::SupplyInsight { .. }
+            | Op::TagsFromHand { .. }
+            | Op::ConvertUpkeep { .. }
+            | Op::TroopSteps { .. } => false,
+        };
         // `one_player` resolves its ops under its own seat, never the hit one.
-        ) || (!matches!(self, Op::OnePlayer { .. }) && self.nested().iter().any(Op::reads_hit_seat))
+        own || (!matches!(self, Op::OnePlayer { .. }) && self.nested().iter().any(Op::reads_hit_seat))
     }
 
     /// 237: a `DealThreats` that deals `count` in every country (`effects::new_ops`): `each_country`, or any field

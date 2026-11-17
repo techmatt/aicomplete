@@ -28,10 +28,7 @@ conventions: [README.md](README.md).*
 | `board.vigil_cap` | 2 | 1..10 | troops a round whose march ending next to a seat's node pays its Vigil (later ones that round pay nothing) |
 | `board.station_chips` | 2 | 0..20 | standard action: chips to build a research station |
 | `board.station_ambassadors` | 0 | 0..5 | standard action: ambassadors a research station also uses up (candidate; 0: none) |
-| `board.node_credits` | 0 | 0..30 | standard action Place a node: credits, beside the track step's energy (0 with `node_energy` 0: no such action) |
-| `board.node_energy` | 0 | 0..10 | standard action Place a node: energy, beside its credits and the track step's energy |
 | `board.troop_credits` | 10 | 0..50 | standard action Remove a troop: credits for 1 troop in reach (0: no such action) |
-| `board.node_per_round` | 2 | 1..5 | times a seat may take Place a node a round |
 | `board.troop_per_round` | 1 | 1..5 | times a seat may take Remove a troop a round |
 | `board.factory_build_chips` | 0 | 0..20 | standard action Build a factory: chips for a factory of yours (0: no such action) |
 | `board.factory_chips` | 1 | 0..5 | chips a player-owned factory makes its owner each round |
@@ -52,7 +49,7 @@ conventions: [README.md](README.md).*
 | `board.host_reach` | 1 | 0..1 | 254: 0, a seat hosts a neutral city with its node on it; 1, on or next to it (one host a city, the players choosing) |
 | `board.antimatter_cubes` | 5 | 0..10 | standard action, the desperate source: research cubes for 1 antimatter, no limit a round (0: no such action) |
 | `board.botnet_credits` | 20 | 1..50 | standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays) |
-| `board.std_off` | 0 | 0..15 | a probe's switch: standard actions not offered, by place in the table from 1 (station, remove, lift, dispatch, ambassador, claim, liberate, insight, envoy, botnet, buy energy, antimatter, node, troop, factory; 0: none off) |
+| `board.std_off` | 0 | 0..14 | a probe's switch: standard actions not offered, by place in the table from 1 (station, remove, lift, dispatch, ambassador, claim, liberate, insight, envoy, botnet, buy energy, antimatter, troop, factory; 0: none off) |
 | `adversary.difficulty` | 0 | 0..4 | difficulty level 0-4 (each level includes the ones below) |
 | `adversary.stage_cards` | 5, 5, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
 | `adversary.supply_per_country` | 24 | 0..40 | agents in the supply per country |

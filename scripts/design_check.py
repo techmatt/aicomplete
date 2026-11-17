@@ -29,6 +29,7 @@ sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from screens import PEAKS  # noqa: E402
+from powers import power_slug  # noqa: E402
 
 SHARE_RES = ['energy', 'chips', 'antimatter', 'research_cubes', 'ambassadors']
 
@@ -522,9 +523,43 @@ def check_dead(games, cfg, boards, o):
 USE_KINDS = {'standard', 'power', 'convert', 'sell', 'use', 'play', 'pay', 'counter_with', 'withdraw'}
 
 
-def action_key(a, seat_board, boards_by_id, countries):
-    """An action's usage key (`standard:node`, `power:builder:Mint`, `convert:Tidal Grid[:chips]`, `play`, ...), or
-    None for one that is not a player's use (pass, choose, the draft)."""
+def power_order(games, builds, boards):
+    """255: each board's powers in the read's own order, {board: {index: name}}, and the slugs its counters name.
+
+    An action gives a power's index in the board of the read's revision; its counters (`ai.power.<board>.<slug>`)
+    give its name. Across the games seating a board, index i's uses a game match exactly one slug's counter (powers
+    used identically in every game tally the same either way), so the order is solved from the read itself and a read
+    of an older revision is read right without its `content/ais.json`. An index no counter matches (a pre-198 read,
+    keyed by index) keeps the current name."""
+    cur = {b['id']: [p['name'] for p in b['powers']] for b in boards}
+    by_slug = {b: {power_slug(n): n for n in ns} for b, ns in cur.items()}
+    idx, cnt, seen = {}, {}, defaultdict(set)   # (board, index | slug) -> {game: uses}
+    for gi, (g, sb) in enumerate(zip(games, builds)):
+        for a in g['actions']:
+            if a.get('type') == 'power':
+                d = idx.setdefault((sb[a['seat']], a['power']), {})
+                d[gi] = d.get(gi, 0) + 1
+        for k, v in (g.get('counters') or {}).items():
+            p = k.split('.')
+            if len(p) >= 4 and p[0] == 'ai' and p[1] in ('power', 'dear'):
+                seen[p[2]].add(p[3])
+                if p[1] == 'power' and len(p) == 4 and v:
+                    cnt.setdefault((p[2], p[3]), {})[gi] = v
+    order = {b: dict(enumerate(ns)) for b, ns in cur.items()}
+    for b in {b for b, _ in idx}:
+        free = sorted((s for bb, s in cnt if bb == b and not s.isdigit()),
+                      key=lambda s: (list(by_slug.get(b, {})).index(s) if s in by_slug.get(b, {}) else 99, s))
+        for i in sorted(i for bb, i in idx if bb == b):
+            s = next((s for s in free if cnt[(b, s)] == idx[(b, i)]), None)
+            if s is not None:
+                free.remove(s)
+                order.setdefault(b, {})[i] = by_slug.get(b, {}).get(s) or s.replace('_', ' ').title()
+    return order, seen
+
+
+def action_key(a, seat_board, order, countries):
+    """An action's usage key (`standard:troop`, `power:builder:Mint`, `convert:Tidal Grid[:chips]`, `play`, ...), or
+    None for one that is not a player's use (pass, choose, the draft). ORDER: `power_order`'s names by index."""
     t = a.get('type')
     if t not in USE_KINDS:
         return None
@@ -532,8 +567,7 @@ def action_key(a, seat_board, boards_by_id, countries):
         return f'standard:{a["act"]}'
     if t == 'power':
         b = seat_board[a['seat']]
-        ps = boards_by_id[b]['powers']
-        return f'power:{b}:{ps[a["power"]]["name"] if a["power"] < len(ps) else a["power"]}'
+        return f'power:{b}:{order.get(b, {}).get(a["power"], a["power"])}'
     if t == 'convert':
         c = a['country']
         name = countries[c]['project']['name'] if c < len(countries) else str(c)
@@ -544,8 +578,8 @@ def action_key(a, seat_board, boards_by_id, countries):
 def usage_counts(games, boards, countries, listed=()):
     """key -> tallies over the seat-games that could take it (a power: its board's seats): uses, seat-games, seat-rounds,
     seat-games with a use, and uses and seat-games by board and by level. Resource spends (`spend:<resource>`): spent
-    and gained, by board and level, in `uses` and `seats`."""
-    boards_by_id = {b['id']: b for b in boards}
+    and gained, by board and level, in `uses` and `seats`. Also the boards whose power order in the read is not the
+    current one (`power_order`): their unused powers are listed only when the read's counters name them."""
 
     def cell():
         return {'uses': 0, 'seats': 0, 'rounds': 0, 'with': 0}
@@ -561,14 +595,24 @@ def usage_counts(games, boards, countries, listed=()):
     builds = [[p.split(':', 1)[0] for p in (g.get('build') or '').split('|') if p] for g in games]
     # every key seen anywhere, and every power of a seated board, is tallied over every seat-game that could take it
     seated = {b for sb in builds for b in sb}
+    order, seen = power_order(games, builds, boards)
+    # 255: a board whose order differs is from another revision: a current power its counters never name may not
+    # have existed then, so it is no row of zeros
+    moved = {b['id'] for b in boards if b['id'] in seated
+             and any(order[b['id']].get(i) != p['name'] for i, p in enumerate(b['powers']))}
+
+    def known(k):
+        b, name = k.split(':', 2)[1:]
+        return b not in moved or power_slug(name) in seen[b]
     keys = {f'power:{b["id"]}:{p["name"]}' for b in boards if b['id'] in seated for p in b['powers']}
     # a listed action never taken is a row of zeros (a power only when its board was seated)
     keys |= {k for k in listed if not k.startswith('spend:') and not (k.startswith('power:') and k.split(':')[1] not in seated)}
+    keys = {k for k in keys if not k.startswith('power:') or known(k)}
     per_game = []
     for g, sb in zip(games, builds):
         per = defaultdict(lambda: defaultdict(int))     # key -> seat -> uses
         for a in g['actions']:
-            k = action_key(a, sb, boards_by_id, countries)
+            k = action_key(a, sb, order, countries)
             if k:
                 per[k][a['seat']] += 1
                 keys.add(k)
@@ -586,7 +630,7 @@ def usage_counts(games, boards, countries, listed=()):
             for s, b in enumerate(sb):
                 # a resource: `uses` spent, `seats` gained
                 add(f'spend:{r}', b, lvl, g['spent'][s][i], g['gained'][s][i], 0, 0)
-    return T
+    return T, sorted(moved)
 
 
 def usage_value(row, measure):
@@ -604,8 +648,10 @@ def usage_rows(games, cfg, boards, countries, base):
     status) where status is `in`, `low`, `high`, `off` or `unbanded`."""
     u = cfg.get('usage') or {}
     roles = u.get('roles', {})
-    T = usage_counts(games, boards, countries, [r['key'] for r in u.get('rows', []) if r.get('role') != 'off'])
+    T, moved = usage_counts(games, boards, countries, [r['key'] for r in u.get('rows', []) if r.get('role') != 'off'])
     out, seen = [], set()
+    for b in moved:
+        out.append((f'order:{b}', b, '', 'seat_game', None, None, None, 'reordered'))
     for r in u.get('rows', []):
         k = r['key']
         seen.add(k)
@@ -620,7 +666,8 @@ def usage_rows(games, cfg, boards, countries, base):
             out.append((k, r.get('name', k), r.get('role', ''), measure, band, None, row, 'off'))
             continue
         if row is None or not row['seats']:
-            out.append((k, r.get('name', k), r.get('role', ''), measure, band, None, row, 'unseated'))
+            absent = row is None and k.startswith('power:') and k.split(':')[1] in moved
+            out.append((k, r.get('name', k), r.get('role', ''), measure, band, None, row, 'absent' if absent else 'unseated'))
             continue
         v = usage_value(row, 'seat_game' if measure == 'spent' else measure)
         status = 'unbanded' if not band else 'low' if v < band[0] else 'high' if v > band[1] else 'in'
@@ -649,6 +696,11 @@ def check_usage(games, cfg, boards, countries, base, o):
             o.i(f'usage: {name}: {fmt_use(v, measure)} {what}, no band (add a row to `usage`)')
         elif status == 'unseated':
             o.i(f'usage: {name}: no seat could take it in this read (a board not seated, or a stale `usage` row)')
+        elif status == 'absent':
+            o.i(f'usage: {name}: the read\'s counters never name it (not on its board in that revision, or never used)')
+        elif status == 'reordered':
+            o.i(f'usage: board {name}: the read orders its powers otherwise than content/ais.json (another revision): '
+                'powers read by their counters; one it never names is no row')
 
 
 def usage_table(games, cfg, boards, countries, base):
@@ -659,6 +711,9 @@ def usage_table(games, cfg, boards, countries, base):
     hd = ['action', 'key', 'role', 'measure', 'band', 'use', 'in?'] + bd + [f'd{x}' for x in lv]
     lines = ['| ' + ' | '.join(hd) + ' |', '|' + '---|' * len(hd)]
     for k, name, role, measure, band, v, row, status in rows:
+        if status == 'reordered':
+            continue
+
         def part(p):
             if not p or not p['seats']:
                 return '-'

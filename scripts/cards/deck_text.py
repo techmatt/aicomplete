@@ -5,6 +5,7 @@ web/card/faces.json, docs/adversary-cards.md), so run `aic-sim docs`, `cards_doc
 
     python scripts/cards/deck_text.py DECK [DECK ...]     # to stdout
     python scripts/cards/deck_text.py --list              # the deck names
+    python scripts/cards/deck_text.py --ids [TEXT]        # id, name, file of every content entry matching TEXT
 
 Decks: `player` (every player card, by primary tag), a tag (`science`, `industry`, `cyber`,
 `power`, `diplomacy`, `security`), `unity`, `discord`, `board` (the Militarist's), `events`,
@@ -134,12 +135,42 @@ def deck(name, player_secs, adv_secs, face_lines):
     return adversary(name, adv_secs)
 
 
+def content_ids():
+    """255 (247's note): every (id, display name, file) under content/, in file order: a display rename keeps the id
+    (Checkpoint Network is `interceptor_battery`)."""
+    import json
+    out = []
+
+    def walk(x, src):
+        if isinstance(x, dict):
+            if isinstance(x.get('id'), str) and isinstance(x.get('name'), str):
+                out.append((x['id'], x['name'], src))
+            for v in x.values():
+                walk(v, src)
+        elif isinstance(x, list):
+            for v in x:
+                walk(v, src)
+
+    folder = os.path.join(ROOT, 'content')
+    for f in sorted(os.listdir(folder)):
+        if f.endswith('.json'):
+            walk(json.loads(read(os.path.join('content', f))), f)
+    return out
+
+
 def main(argv):
     if not argv or argv[0] in ('-h', '--help'):
         print(__doc__)
         return 0
     if argv[0] == '--list':
         print(' '.join(DECKS + ['all']))
+        return 0
+    if argv[0] == '--ids':
+        sys.stdout.reconfigure(encoding='utf-8', newline='\n')
+        want = ' '.join(argv[1:]).lower()
+        for cid, name, src in content_ids():
+            if want in name.lower() or want in cid:
+                print(f'{cid}\t{name}\t{src}')
         return 0
     names = DECKS if argv == ['all'] else argv
     bad = [n for n in names if n not in DECKS]

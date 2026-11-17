@@ -4,7 +4,8 @@
 A pure, deterministic Rust core simulates the rules; a native simulator and a wasm build for a JS
 front end sit on top, holding no rules. Build and test are below; other areas have a page each:
 
-- [docs/simulator.md](docs/simulator.md): `aic-sim run`, `compare`, `show`, `replay`, every flag, game records, the farm.
+- [docs/simulator.md](docs/simulator.md): `aic-sim run`, `compare`, `show`, `replay`, every flag, game records, the farm;
+  writing a reader: its *Keys in a games.jsonl line*.
 - [docs/agents.md](docs/agents.md): the agent ladder, the specs, the heuristic, the dominance checks.
 - [docs/experiments.md](docs/experiments.md): experiment specs, outputs, measures, overlays, the
   band and the gate, budgeting a run, the seed ledger (*Fresh seeds for a gate*).

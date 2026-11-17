@@ -3,7 +3,7 @@
 use std::collections::BTreeMap;
 
 use aic_core::content::{content, Op, Resource, RoundFlag, Spot};
-use aic_core::op::{CorpWhen, CorruptSite};
+use aic_core::op::CorruptSite;
 
 use aic_core::Rules;
 
@@ -201,13 +201,8 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::CreateSite { .. }
         | Op::AdversaryBuild
         | Op::Rally { .. } => vec![PIECES_PLACED],
-        Op::CorpTroops { when, .. } => {
-            if *when == CorpWhen::EachProduction {
-                vec![PIECES_PLACED, INCOME_RAISED]
-            } else {
-                vec![PIECES_PLACED]
-            }
-        }
+        // 255: each production, its one form.
+        Op::CorpTroops { .. } => vec![PIECES_PLACED, INCOME_RAISED],
         Op::IncreaseIncome { compute, ambassadors } => {
             let mut v = vec![INCOME_RAISED];
             if *ambassadors > 0 {

@@ -656,9 +656,7 @@ impl Policy {
             }
             Action::Pay { .. } => f.no_counters || f.ignore_threats || f.free_only,
             Action::Standard { act, .. } => {
-                // 206: the standard node placement places as a node power does.
-                (f.stays_put() && act == "node")
-                    || (f.never_clear && act == "lift")
+                (f.never_clear && act == "lift")
                     || (f.turtle && !matches!(act.as_str(), "remove" | "lift" | "ambassador"))
                     || (f.free_only && !matches!(act.as_str(), "remove" | "lift" | "ambassador" | "move"))
             }
@@ -1018,7 +1016,7 @@ impl Policy {
     /// the keep plan play a card this round it can't now, or make a costly standard action legal that the search
     /// then picks.
     fn sell_pick(&mut self, rules: &Rules, g: &GameState, legal: &[Action]) -> Option<usize> {
-        const MAJOR: [&str; 5] = ["node", "troop", "botnet", "claim", "liberate"];
+        const MAJOR: [&str; 4] = ["troop", "botnet", "claim", "liberate"];
         let world = rules.world();
         let s = legal.iter().find(|a| matches!(a, Action::Sell { .. }))?.seat() as usize;
         if self.forced.hoarding(&world, g, s, false) {

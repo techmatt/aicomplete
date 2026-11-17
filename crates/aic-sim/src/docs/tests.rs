@@ -70,6 +70,34 @@ fn every_standard_action_has_a_row() {
     assert_eq!(rows, offered + 1, "{block}");
 }
 
+/// 255 (247's note): every standard action has its name in the viewer (`STANDARD_NAMES`, web/src/format.ts) and its
+/// pricing row and usage key in scripts/design_check.json, and nothing there names one that is gone.
+#[test]
+fn every_standard_action_is_named_everywhere() {
+    const FORMAT_TS: &str = include_str!("../../../../web/src/format.ts");
+    const DESIGN_CHECK: &str = include_str!("../../../../scripts/design_check.json");
+    let names_block = FORMAT_TS.split("const STANDARD_NAMES").nth(1).and_then(|s| s.split("};").next()).expect("STANDARD_NAMES");
+    let check: serde_json::Value = serde_json::from_str(DESIGN_CHECK).unwrap();
+    let srcs: Vec<&str> =
+        check["standard_actions"]["rows"].as_array().unwrap().iter().filter_map(|r| r["src"].as_str()).collect();
+    let usage: Vec<&str> = check["usage"]["rows"].as_array().unwrap().iter().filter_map(|r| r["key"].as_str()).collect();
+    let standard = aic_core::modules::board::STANDARD;
+    for act in standard {
+        let key = format!("standard:{}", act.name());
+        assert!(names_block.contains(&format!("\n  {}: ", act.name())), "{} has no STANDARD_NAMES entry", act.name());
+        // Dispatch spends no resource (the seat's Dispatches), so it has no give / get row.
+        let priced = act !=aic_core::modules::board::StandardAction::Move;
+        assert!(!priced || srcs.contains(&key.as_str()), "{key} has no design_check.json standard_actions row");
+        assert!(usage.contains(&key.as_str()), "{key} has no design_check.json usage row");
+    }
+    let known = |k: &str| k == "standard:sell" || standard.iter().any(|a| k == format!("standard:{}", a.name()));
+    for k in srcs.iter().chain(&usage).filter(|k| k.starts_with("standard:")) {
+        assert!(known(k), "design_check.json names {k}, no standard action");
+    }
+    let entries = names_block.lines().filter(|l| l.starts_with("  ") && l.contains(": ")).count();
+    assert_eq!(entries, standard.len(), "STANDARD_NAMES has an entry for a standard action that is gone");
+}
+
 /// Every block that reads a config moves with it.
 #[test]
 fn a_config_change_changes_its_block() {

@@ -7,6 +7,7 @@ of the same seeds gives:
   default), and the win % columns still equal under `--same-engine`, which leaves the mixed seeds out of the gap only.
 - `paired.py`: the gap is +0.0 on every seed by default, and on the same-engine seeds only under `--same-engine`.
 - `ladder.py --screen` over a native base and a farmed lever in another folder (FILE=SPEC): one agent, a real gap.
+- `read_lib.py`: a `PAIR-ARM` read's cells decoded from the spec, the arms' paired gap, counters, powers, resources.
 
 No build and no binary: the reads are written here. Python's standard library only.
 """
@@ -24,6 +25,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, '..'))
 import ladder  # noqa: E402
 import paired  # noqa: E402
+import read_lib  # noqa: E402
 import screens  # noqa: E402
 
 SPEC = {
@@ -230,6 +232,39 @@ class MixedScreens(unittest.TestCase):
         base = {(0, 'bp', 1): 'a0', (1, 'bp', 1): 'a1', (0, 'bp', 2): 'b0'}
         self.assertEqual(ladder.across({(1, 'bp', 1): 'x', (1, 'bp', 2): 'y', (1, 'bp', 3): 'z'}, base),
                          {(1, 'bp', 1): 'a1', (1, 'bp', 2): 'b0'})
+
+
+class ReadLib(unittest.TestCase):
+    """255: `read_lib` decodes a `PAIR-ARM` read's cells from the spec (variant, then level, then agent) and pairs each
+    arm against the base arm on the same pair, level and seed."""
+
+    def test_cells_and_gap(self):
+        spec = dict(SPEC, variants=[{'name': 'bp-off', 'set': []}, {'name': 'bp-on', 'set': []}],
+                    agents=['strategist', 'greedy'])
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, 'games.jsonl')
+            with open(path, 'w', encoding='utf-8', newline='\n') as f:
+                f.write(json.dumps({'format': 1, 'spec': spec}) + '\n')
+                for s in SEEDS:
+                    for c in range(8):
+                        f.write(json.dumps({
+                            'cell': c, 'seed': str(s), 'won': c >= 4 or s % 2 == 0, 'rounds': 8, 'reason': 'node',
+                            'build': 'builder:x|protector:y', 'counters': {'ai.power.builder.mint': 2, 'board.x': 1,
+                                                                          'board.x.r01': 1},
+                            'spent': [[1] * 8, [3] * 8], 'gained': [[2] * 8, [2] * 8],
+                            'actions': [{'type': 'standard', 'seat': 0, 'act': 'node'}]}) + '\n')
+            rows = list(read_lib.games(path))
+            # cell 5: variant 1 (bp-on), level 0 (index 0), agent greedy (index 1)
+            self.assertEqual({(r.arm, r.pair, r.level, r.agent) for r in rows if r.g['cell'] == 5},
+                             {('on', 'bp', 0, 'greedy')})
+            S = read_lib.summarize(rows, ['board.x'])
+            off, on = S[('off', 'strategist')], S[('on', 'strategist')]
+            self.assertEqual(read_lib.paired_gap(off['wins'], on['wins'])[:3], (50.0, 100.0, 50.0))
+            self.assertEqual(on['ctr'], {'board.x': len(SEEDS) * 2})   # the .r01 key left out
+            self.assertEqual(on['power'][('builder', 'mint')], 2 * len(SEEDS) * 2)
+            self.assertEqual(read_lib.resources(rows[0].g, 1)['energy'], (3, 2))
+            text = '\n'.join(read_lib.tables(S))
+            self.assertIn('| strategist | on | 100.0 | 100.0 | 100.0 | +50.0 ± 5.6 | 80 |', text)
 
 
 if __name__ == '__main__':
