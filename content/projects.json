@@ -25,17 +25,23 @@
   "tags": [
    "cyber"
   ],
-  "cost": 9,
-  "text": "4 adversary research cubes onto each open megaproject.",
+  "cost": 14,
+  "text": "4 adversary research cubes onto each open megaproject. Each country: 2 cubes onto the adversary's research track.",
   "effects": [
    {
     "op": "adversary_cubes",
     "count": 4
+   },
+   {
+    "op": "adversary_research",
+    "amount": 2,
+    "each_country": true
    }
   ],
   "harms": [
    "adversary cubes on megaprojects",
-   "Discord sway"
+   "Discord sway",
+   "adversary research advanced"
   ]
  },
  {
@@ -250,17 +256,23 @@
   "tags": [
    "cyber"
   ],
-  "cost": 8,
-  "text": "Corrupt: research stations.",
+  "cost": 13,
+  "text": "Corrupt: research stations. Each country: 2 cubes onto the adversary's research track.",
   "effects": [
    {
     "op": "corrupt",
     "site": "station"
+   },
+   {
+    "op": "adversary_research",
+    "amount": 2,
+    "each_country": true
    }
   ],
   "harms": [
    "adversary pieces placed",
-   "facilities destroyed or corrupted"
+   "facilities destroyed or corrupted",
+   "adversary research advanced"
   ]
  },
  {
@@ -445,8 +457,8 @@
   "tags": [
    "cyber"
   ],
-  "cost": 19,
-  "text": "Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station.",
+  "cost": 24,
+  "text": "Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track.",
   "effects": [
    {
     "op": "take_site",
@@ -455,11 +467,17 @@
    {
     "op": "fallout",
     "at": "corrupted_station"
+   },
+   {
+    "op": "adversary_research",
+    "amount": 2,
+    "each_country": true
    }
   ],
   "harms": [
    "facilities destroyed or corrupted",
-   "Fallout placed"
+   "Fallout placed",
+   "adversary research advanced"
   ]
  },
  {

@@ -76,7 +76,8 @@ machine's traps, are in the [README](README.md), which also lists the page for e
   content), and rerun `npm run cards:fit` before the freeze (258 found two faces shrunk after its read).
 - **A new op, resource or token type** gets its value in the same change: an op, its arm in
   `crates/aic-sim/src/agents/value.rs`, `scripts/cards/effect_ledger.py`'s `op_worth` and `agents/strategy.rs`'s
-  categories (a `_` arm: nothing forces it), and its row in `configs/agents/values.json`; an op writing a `vars` key
+  categories and `effects/feasible.rs` (both `_` arms: nothing forces them; 259 bumped after its freeze for a
+  no-op Action), and its row in `configs/agents/values.json`; a new harm, `drafts/adversary/check.py`'s `HARMS` too; an op writing a `vars` key
   declares it in its module view's `bookkeeping` (the slow lane's invariant test refuses a raw key); a resource or
   token type, its held-value term in `agents/eval.rs`.
 - **Smokes before reads.** A new op, resource or token type gets a 2-minute engine smoke (16

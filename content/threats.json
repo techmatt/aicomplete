@@ -516,7 +516,7 @@
   "locations": [
    "station"
   ],
-  "text": "The nearest player discards 3 cards.",
+  "text": "The nearest player discards 2 cards. The adversary gains 2 research cubes.",
   "counters": [
    [
     {
@@ -534,11 +534,16 @@
   "effects": [
    {
     "op": "discard",
-    "count": 3
+    "count": 2
+   },
+   {
+    "op": "adversary_research",
+    "amount": 2
    }
   ],
   "harms": [
-   "cards discarded"
+   "cards discarded",
+   "adversary research advanced"
   ]
  },
  {
@@ -1654,7 +1659,7 @@
    "station",
    "factory"
   ],
-  "text": "The nearest player pays 5 research cubes or discards 3 cards. The adversary gains 5 compute.",
+  "text": "The nearest player pays 5 research cubes or discards 3 cards. The adversary gains 2 research cubes.",
   "counters": [
    [
     {
@@ -1677,13 +1682,13 @@
     "cards": 3
    },
    {
-    "op": "compute",
-    "amount": 5
+    "op": "adversary_research",
+    "amount": 2
    }
   ],
   "harms": [
    "credits or income lost",
-   "projects advanced (compute)"
+   "adversary research advanced"
   ]
  },
  {
@@ -1696,7 +1701,7 @@
   "locations": [
    "station"
   ],
-  "text": "The adversary gains 10 compute. The nearest player turns 1 building face down until the end of next round.",
+  "text": "The adversary gains 4 research cubes. The nearest player turns 1 building face down until the end of next round.",
   "counters": [
    [
     {
@@ -1713,8 +1718,8 @@
   ],
   "effects": [
    {
-    "op": "compute",
-    "amount": 10
+    "op": "adversary_research",
+    "amount": 4
    },
    {
     "op": "disable_building",
@@ -1723,7 +1728,7 @@
    }
   ],
   "harms": [
-   "projects advanced (compute)",
+   "adversary research advanced",
    "actions or claims blocked"
   ]
  },

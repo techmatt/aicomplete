@@ -1,0 +1,17 @@
+{
+ "name": "f259-oracle",
+ "note": "259: the full oracle on r120 (the ceiling), three pairs, d2-d3, 12 seeds a level and pair: the fresh read's first seeds (49452-49463).",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {"name": "bp", "set": []},
+  {"name": "br", "set": ["ai.boards=0,2"]},
+  {"name": "pr", "set": ["ai.boards=1,2"]}
+ ],
+ "difficulties": [2, 3],
+ "agents": ["oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1,tries=3"],
+ "games": 12,
+ "first_seed": 49452,
+ "records": 0
+}

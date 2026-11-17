@@ -11,7 +11,8 @@ In prose the simulator's players are "sim players"; the code keeps "agents". The
 - **`choices` counts prompts** (a placement is two: track, hex; moves take a batch a prompt). A discard prompt
   resolves no further (`discards` 0).
 - **Heuristic** (`agents/eval.rs`, `Weights`, a rule on each field): the board, holdings, Alignment (`w.tier_read`),
-  projects, and unpaid threats by **the tempo trade** (`w.tempo`: harm over what paying now costs).
+  projects, the adversary's research track (`w.research` 30, 259: its share of the threshold, each fire in full, as a
+  project), and unpaid threats by **the tempo trade** (`w.tempo`: harm over what paying now costs).
 
 | Spec | What it does | Budget parameters (defaults) |
 |---|---|---|

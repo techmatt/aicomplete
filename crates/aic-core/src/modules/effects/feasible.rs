@@ -141,6 +141,8 @@ fn feasible_aimed(
             Op::CounterThreat => !threats::counterable(w, g, seat, None).is_empty(),
             Op::DrainProject { .. } | Op::DrainAll { .. } => !adversary::projects_with_compute(g).is_empty(),
             Op::DiscardProject => !adversary::projects(g).is_empty(),
+            // 259: an empty research track: nothing to remove.
+            Op::RemoveResearch { .. } => g.var(adversary::RESEARCH) > 0,
             // 024: too few to count, nothing to cash in: it would do nothing.
             // 076: one card's tokens, this building's with "here" (an Action's own
             // token cost comes off first), else the best of yours.

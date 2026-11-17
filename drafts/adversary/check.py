@@ -33,6 +33,8 @@ HARMS = [
     "Fallout placed",
     # 231: ledger gaps the project deck prints.
     "antimatter lost", "pieces pushed or reach cut", "a megaproject or converter denied",
+    # 259: cubes toward the adversary board's research rule.
+    "adversary research advanced",
 ]
 # 195: harms the drafts may print from one kind of source: the project deck's new rows (the engine's ledger,
 # docs/harms.md, counts the board rules beside them and lists any thin one under *Gaps*).

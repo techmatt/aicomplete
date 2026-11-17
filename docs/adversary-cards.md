@@ -9,6 +9,7 @@ Project slots: Open, Open, Open.
 - **Garrisons.** Income: +1 Agent a country a round.
 - **Warmongering.** Each round, a military base with an adversary Troop on or next to it makes 1 extra Drone, even past its cap; at most 1 extra a base in each production, whatever makes it.
 - **War Takes Ground.** When a Drone destroys a factory, it also destroys a Node on that hex.
+- **Weapons Program** (research). When the research track reaches its threshold, spend it: Muster 2: each country, 2 Troops on its lowest-numbered factory (else city). Stronger: Muster 3 instead.
 - **Difficulty.** Militarist, harder: every Muster lands 1 more Troop a country, and the adversary gains 4 compute for each threat that executes uncountered.
 
 ## Event deck
@@ -48,7 +49,7 @@ Project slots: Open, Open, Open.
 | Propaganda Blitz | Diplomacy | coastal city | Sway 3 toward Discord. The adversary gains 3 compute. | 3 Ambassadors; 12 credits |
 | Sabotage | Cyber | station | The nearest player loses 4 tokens from their cards. The adversary gains 6 compute. | 2 Cyber tags; 12 credits |
 | Insider Access | Cyber + Diplomacy | station | 2 Agents are created here. The nearest player pays 3 research cubes or discards 2 cards. | 3 Ambassadors; 12 credits |
-| Wiper Malware | Cyber | station | The nearest player discards 3 cards. | 3 research cubes; 12 credits |
+| Wiper Malware | Cyber | station | The nearest player discards 2 cards. The adversary gains 2 research cubes. | 3 research cubes; 12 credits |
 | Cryptojacking | Cyber | station, factory | The adversary gains 6 compute. The nearest player pays 2 research cubes or discards 1 card. | 2 Cyber tags; 12 credits |
 | Backdoor | Cyber | station | A Botnet lands on the station here. | 3 insight; 12 credits |
 | Requisition | Industry | factory, city | The nearest player pays 3 chips or discards 2 cards. The adversary gains 3 compute. | 2 Industry tags; 12 credits |
@@ -81,8 +82,8 @@ Project slots: Open, Open, Open.
 | Station Seizure | Cyber | station | 2 Agents are created here. Then the station here flips to the adversary (a player's holds unless 2 Agents and no player Ambassador are on it; one that holds takes another Agent). | 3 Cyber tags; 17 credits |
 | Sleeper Cells | Cyber | station | A Botnet lands on the station here. 2 Agents are created here. | 3 Cyber tags; 17 credits |
 | Purge Protocols | Cyber | station | The nearest player destroys 1 of their Nodes closest to it and discards 3 cards. | 5 research cubes; 17 credits |
-| Data Breach | Cyber + Industry | station, factory | The nearest player pays 5 research cubes or discards 3 cards. The adversary gains 5 compute. | 4 chips; 17 credits |
-| Zero Day | Cyber | station | The adversary gains 10 compute. The nearest player turns 1 building face down until the end of next round. | 5 research cubes; 17 credits |
+| Data Breach | Cyber + Industry | station, factory | The nearest player pays 5 research cubes or discards 3 cards. The adversary gains 2 research cubes. | 4 chips; 17 credits |
+| Zero Day | Cyber | station | The adversary gains 4 research cubes. The nearest player turns 1 building face down until the end of next round. | 5 research cubes; 17 credits |
 | Asset Freeze | Industry | factory | The nearest player turns 2 buildings face down until the end of next round and discards 2 cards. | 4 energy; 17 credits |
 | Mass Production | Industry | factory | An adversary factory is built on the free industrial zone nearest here. The adversary gains 5 compute. | 4 chips; 17 credits |
 | Factory Occupation | Industry + Security | factory | The adversary corrupts the factory here, even a player's. The adversary gains 5 compute. | 4 energy; 17 credits |
@@ -106,7 +107,7 @@ Each project resolves once, at once, in the compute step. Its compute in play is
 | Project | Tags | Compute a board (in play: 1 / 2 / 3 / 4 countries) | Text |
 |---|---|---|---|
 | Disinformation | Diplomacy | 11 (11 / 22 / 33 / 44) | Sway 8 toward Discord. |
-| Backdoor Research | Cyber | 9 (9 / 18 / 27 / 36) | 4 adversary research cubes onto each open megaproject. |
+| Backdoor Research | Cyber | 14 (14 / 28 / 42 / 56) | 4 adversary research cubes onto each open megaproject. Each country: 2 cubes onto the adversary's research track. |
 | Rolling Blackouts | Power | 8 (8 / 16 / 24 / 32) | Until the end of next round, cities make no energy. |
 | Botnet Swarm | Cyber | 14 (14 / 28 / 42 / 56) | Each country, twice: a botnet spreads to its lowest-numbered city, research station or factory without one next to one of its botnets (a country with no botnet: its lowest-numbered research station). |
 | False Flag | Universal | 9 (9 / 18 / 27 / 36) | Each country: an extra tier-2 threat, any tag. |
@@ -118,7 +119,7 @@ Each project resolves once, at once, in the compute step. Its compute in play is
 | Botnet Conscripts | Cyber | 11 (11 / 22 / 33 / 44) | Each country: its lowest-numbered botnet becomes 3 Troops on its hex. |
 | Purge Lists | Diplomacy | 7 (7 / 14 / 21 / 28) | Each player loses 1 Ambassador (from their supply, else one of theirs on the board). |
 | Dirty Bomb | Power | 12 (12 / 24 / 36 / 48) | Each country: 1 Fallout lands next to each of its two lowest-numbered corrupted cities. |
-| Lab Seizure | Cyber | 8 (8 / 16 / 24 / 32) | Corrupt: research stations. |
+| Lab Seizure | Cyber | 13 (13 / 26 / 39 / 52) | Corrupt: research stations. Each country: 2 cubes onto the adversary's research track. |
 | Slander Campaign | Diplomacy | 9 (9 / 18 / 27 / 36) | Remove 4 Unity from the Unity track. |
 | Coastal Raids | Security | 9 (9 / 18 / 27 / 36) | Rally 3, each country: coastal cities. |
 | Plant Seizure | Industry | 9 (9 / 18 / 27 / 36) | Corrupt: factories. |
@@ -127,7 +128,7 @@ Each project resolves once, at once, in the compute step. Its compute in play is
 | Mob Rule | Diplomacy | 14 (14 / 28 / 42 / 56) | Rally 3, each country: cities. Sway 5 toward Discord. |
 | Data Heist | Cyber | 12 (12 / 24 / 36 / 48) | Each player removes 4 tokens from their cards (their choice of cards). Each player pays 10 credits or discards 3 cards. |
 | Hostile Takeover | Industry | 15 (15 / 30 / 45 / 60) | Rally 3, each country: factories. Corrupt: factories (1 fewer). |
-| Station Coup | Cyber | 19 (19 / 38 / 57 / 76) | Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station. |
+| Station Coup | Cyber | 24 (24 / 48 / 72 / 96) | Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track. |
 | War Plants | Industry | 19 (19 / 38 / 57 / 76) | Each country: the adversary builds a factory on its free industrial zone next to an Agent, else its lowest-numbered (none free: 2 Agents on one of its factories). Every adversary factory makes 2 Troops on its hex (a player Ambassador on it stops them). |
 | Recruitment Drive | Diplomacy | 20 (20 / 40 / 60 / 80) | Income: +1 Agent a country a round. Rally 3, each country: cities. |
 | Propaganda Network | Universal | 18 (18 / 36 / 54 / 72) | Income: +1 compute a country a round. Sway 8 toward Discord. |

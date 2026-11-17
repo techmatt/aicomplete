@@ -118,7 +118,9 @@
         "war_node": 1,
         "station_flip_at": 2,
         "botnet_compute": 1,
-        "board_difficulty_at": 2
+        "board_difficulty_at": 2,
+        "research_at": [5, 5, 5, 4, 4],
+        "research_strong_at": 3
       }
     },
     {
@@ -271,6 +273,8 @@
         "survey_drone_fleet",
         "orbital_relay_launcher",
         "twin_city_compact",
+        "counterintel_sweep",
+        "arms_inspectors",
         "field_assay_team",
         "dyson_swarm_tranche",
         "continental_supergrid",

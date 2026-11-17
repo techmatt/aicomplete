@@ -73,7 +73,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::list("corp_energy", 0, 10, "energy cubes each city of country i makes a round (a megacorp parameter; the list repeats)"),
             ParamSpec::int("city_energy_credits", 0, 20, "standard action Buy energy: credits for a neutral city's energy, once per city a round, the city in reach and producing"),
             ParamSpec::int("aligned_bonus", 0, 10, "extra energy an aligned city gives its owner"),
-            ParamSpec::int("station_cubes", 0, 5, "research cubes a neutral station makes a round (an adversary one: compute)"),
+            ParamSpec::int("station_cubes", 0, 5, "research cubes a neutral station makes a round (an adversary one: adversary cubes, then research-track cubes; compute with adversary.research_at 0)"),
             ParamSpec::int("owned_station_cubes", 0, 5, "research cubes a player-owned station makes its owner a round"),
             ParamSpec::int("divert_discord", 0, 5, "Discord per unit of a corrupted city's energy diverted to the adversary"),
             ParamSpec::int("ambassador_discord", 0, 5, "Discord per unit of energy, each round, of an aligned city an agent darkens"),

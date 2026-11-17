@@ -1,0 +1,14 @@
+{
+  "name": "s259b",
+  "note": "259's second screen: research_at 5,4,4,3,3 (mid: d0 as asked, d1-d4 lower) beside s259's arms on the same dev seeds (the base arm is s259's `on`, deterministic).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "mid", "set": ["adversary.research_at=5,4,4,3,3"]}
+  ],
+  "difficulties": [0, 1, 2, 3, 4],
+  "agents": ["strategist", "greedy"],
+  "games": 32,
+  "records": 0
+}

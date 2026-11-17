@@ -558,6 +558,11 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             one(clause(adversary(parts), format!("remove {n} compute from each adversary project")))
         }
         Op::DiscardProject => one(clause(adversary(minus(1, "project")), "discard an adversary project")),
+        // 259: cubes off the adversary's research track.
+        Op::RemoveResearch { amount: n } => {
+            let parts = minus(*n, "research_cubes");
+            one(clause(adversary(parts), format!("remove {n} adversary research {}", if *n == 1 { "cube" } else { "cubes" })))
+        }
         // 106: a program's per-tag income raise, counted once.
         Op::ProductionPerTag { resource, tag: t, per } => {
             let mut icons = vec![w(icon(*resource)), w("/")];
@@ -780,6 +785,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::DealThreats { .. }
         | Op::RemoveBotnets { .. }
         | Op::AdversaryCubes { .. }
+        | Op::AdversaryResearch { .. }
         | Op::BotnetCubes { .. }
         | Op::BotnetTroops { .. }
         | Op::SpreadBotnets { .. }

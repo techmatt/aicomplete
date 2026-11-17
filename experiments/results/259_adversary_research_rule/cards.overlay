@@ -1,0 +1,3 @@
+# 259: the player cards that remove adversary research cubes (Matt, 2026-11-16). Priced in the write-up's give / get.
+cards.counterintel_sweep={"id": "counterintel_sweep", "name": "Counterintelligence Sweep", "tier": 1, "kind": "event", "cost": 5, "insight": 0, "tags": ["cyber"], "effects": [{"op": "remove_research", "amount": 4}, {"op": "draw", "count": 1}]}
+cards.arms_inspectors={"id": "arms_inspectors", "name": "Arms Inspectors", "tier": 1, "kind": "building", "cost": 8, "insight": 0, "tags": ["security"], "ability": {"effects": [{"op": "remove_research", "amount": 2}]}}

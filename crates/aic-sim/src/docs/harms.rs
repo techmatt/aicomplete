@@ -12,7 +12,7 @@ use super::table;
 
 /// The harms of the ledger, in its row order. 191 (Matt, 2026-11-11): every harm an adversary source can do has a
 /// row; none for insight (not an adversary harm, r82) and none yet for costs raised (paged as a harm, no card).
-pub const HARMS: [&str; 27] = [
+pub const HARMS: [&str; 28] = [
     "node destroyed",
     "city lost",
     "facilities destroyed",
@@ -41,11 +41,13 @@ pub const HARMS: [&str; 27] = [
     "actions or claims blocked",
     // 227 (Matt, 2026-11-13): the land scar, a common harm on all four adversity sources.
     "Fallout placed",
+    // 259 (Matt, 2026-11-16): cubes toward the adversary board's research rule.
+    "adversary research advanced",
 ];
 
 /// The sources of the ledger, in its column order. The first six read
 /// content; `RULE_HARMS` says what the rest do.
-pub const SOURCES: [&str; 13] = [
+pub const SOURCES: [&str; 14] = [
     "tier-1 threats",
     "tier-2 threats",
     "Discord cards",
@@ -59,6 +61,8 @@ pub const SOURCES: [&str; 13] = [
     "war",
     "march",
     "your burns",
+    // 259: the adversary board's research rule firing.
+    "adversary research",
 ];
 
 /// 219: the column of the boards' own antimatter burns, a harm a player chooses: shown, never counted toward the
@@ -67,7 +71,7 @@ const OWN_BURNS: usize = 12;
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 24] = [
+pub const RULE_HARMS: [(&str, &str, &str); 27] = [
     ("income and rally", "adversary pieces placed", "agent income fills each country's pool; every event's Rally X deals it one at a time onto the sites of its type (151; r80)"),
     ("income and rally", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
     ("income and rally", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
@@ -82,7 +86,11 @@ pub const RULE_HARMS: [(&str, &str, &str); 24] = [
     ("corruption", "Discord sway", "its energy sways Discord each round"),
     // 185 (Matt's ruling #2): the megaprojects column reads the printed payout; this is what feeds it.
     ("corruption", "adversary cubes on megaprojects", "an adversary station puts `station_cubes` adversary cubes a round on its country's open megaproject; each pays the card's adversary payout at completion, 1 Sway to Discord (r79)"),
-    ("corruption", "projects advanced (compute)", "an adversary station makes compute once its megaproject is complete; before, its cubes on Polar Compute Array pay 1 adversary compute each at completion (r79)"),
+    ("corruption", "projects advanced (compute)", "before its megaproject is complete, an adversary station's cubes on Polar Compute Array pay 1 adversary compute each at completion (r79)"),
+    // 259 (Matt: the adversary's stations after a project): once its megaproject is complete, a station feeds the track.
+    ("corruption", "adversary research advanced", "once its megaproject is complete, an adversary station puts `station_cubes` research cubes a round on the adversary's research track (259; it made compute before)"),
+    ("adversary research", "adversary pieces placed", "the Militarist's Weapons Program: at `research_at` cubes a country the track spends them and lands 2 troops in each country as a Muster, 3 from `research_strong_at` (259)"),
+    ("adversary research", "node destroyed", "the troops it lands march and strike nodes as any troop (259)"),
     // 146: no unprinted harm (the node loss near an uncountered threat and its floor sway are gone); the adversary
     // board may print compute per uncountered threat.
     ("uncountered threats", "projects advanced (compute)", "the adversary board's printed compute per threat that executes uncountered (the Militarist's difficulty line, from `board_difficulty_at`)"),
@@ -135,6 +143,7 @@ const UNITY_PULLED: usize = 22;
 const MEGAPROJECT_DENIED: usize = 23;
 const BLOCKED: usize = 25;
 const FALLOUT_PLACED: usize = 26;
+const RESEARCH_ADVANCED: usize = 27;
 
 /// The row a lost resource falls in. Insight is never a harm (r82: `Content::check` refuses one).
 fn lost(r: Resource) -> Vec<usize> {
@@ -245,6 +254,8 @@ fn op_harms(op: &Op) -> Vec<usize> {
         Op::PullUnity { .. } => vec![UNITY_PULLED],
         // 185: an adversary cube pays a megaproject's adversary payout (Discord, or compute on one card).
         Op::AdversaryCubes { .. } | Op::BotnetCubes { .. } => vec![ADVERSARY_CUBES, DISCORD_SWAY, PROJECTS_ADVANCED],
+        // 259: cubes toward the adversary board's research rule.
+        Op::AdversaryResearch { .. } => vec![RESEARCH_ADVANCED],
         // 195: the project deck's board verbs.
         Op::BotnetTroops { .. } | Op::FactoryTroops { .. } => vec![PIECES_PLACED],
         Op::SpreadBotnets { .. } => vec![PIECES_PLACED, PROJECTS_ADVANCED],
@@ -294,6 +305,7 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::Jam { .. }
         | Op::CounterThreat
         | Op::DrainProject { .. }
+        | Op::RemoveResearch { .. }
         | Op::DiscardProject
         | Op::Production { .. }
         | Op::HostMore { .. }

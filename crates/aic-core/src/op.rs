@@ -931,6 +931,11 @@ pub enum Op {
     },
     /// Discard one visible adversary project, with its compute (017).
     DiscardProject,
+    /// 259 (Matt: players get cards that remove adversary cubes): up to `amount` cubes come off the adversary's
+    /// research track (none below 0).
+    RemoveResearch {
+        amount: i64,
+    },
     /// A one-time permanent gain (021): your printed production of
     /// `resource` rises by `amount` for the rest of the game.
     Production {
@@ -1367,6 +1372,14 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "is_zero")]
         ambassadors: i64,
     },
+    /// 259 (Matt: every adversary gets a research rule): `amount` cubes onto the adversary's research track; a
+    /// project's (`each_country`) puts `amount` a country. The track fires the board's research rule in the compute
+    /// step ([`crate::content::AdversaryBoard::research`]).
+    AdversaryResearch {
+        amount: i64,
+        #[serde(default, skip_serializing_if = "is_false")]
+        each_country: bool,
+    },
     /// Remove `count` botnets anywhere on the board, one at a time (players choose).
     RemoveBotnets {
         count: i64,
@@ -1649,6 +1662,7 @@ impl Op {
             | Op::CounterThreat
             | Op::DrainProject { .. }
             | Op::DiscardProject
+            | Op::RemoveResearch { .. }
             | Op::Production { .. }
             | Op::HostMore { .. }
             | Op::ProductionPerTag { .. }
@@ -1706,6 +1720,7 @@ impl Op {
             | Op::Corrupt { .. }
             | Op::Rally { .. }
             | Op::IncreaseIncome { .. }
+            | Op::AdversaryResearch { .. }
             | Op::RemoveBotnets { .. }
             | Op::AdversaryCubes { .. }
             | Op::BotnetCubes { .. }
@@ -1830,6 +1845,7 @@ impl Op {
             | Op::CounterThreat
             | Op::DrainProject { .. }
             | Op::DiscardProject
+            | Op::RemoveResearch { .. }
             | Op::Production { .. }
             | Op::HostMore { .. }
             | Op::ProductionPerTag { .. }
@@ -1882,6 +1898,7 @@ impl Op {
             | Op::Corrupt { .. }
             | Op::Rally { .. }
             | Op::IncreaseIncome { .. }
+            | Op::AdversaryResearch { .. }
             | Op::RemoveBotnets { .. }
             | Op::AdversaryCubes { .. }
             | Op::BotnetCubes { .. }
@@ -1948,6 +1965,13 @@ impl Op {
             Op::Sway { .. } | Op::PullUnity { .. } | Op::Clock { .. } => Once,
             Op::DealThreats { .. } => {
                 if self.deals_each_country() {
+                    EachCountry
+                } else {
+                    Once
+                }
+            }
+            Op::AdversaryResearch { each_country, .. } => {
+                if *each_country {
                     EachCountry
                 } else {
                     Once
@@ -2029,6 +2053,8 @@ impl Op {
             | Op::Rally { .. }
             | Op::IncreaseIncome { .. } => &[Team],
             Op::AdversaryCubes { .. } | Op::BotnetCubes { .. } => &[Threat, Team],
+            // 259: an uncountered threat's, an event's or a project's research line.
+            Op::AdversaryResearch { .. } => &[Threat, Team],
             // 227: Fallout from all four adversity sources (threats, projects, Discord cards).
             Op::Fallout { .. } => &[Threat, Team, Twist],
             // 195: the project deck's board verbs.
@@ -2098,6 +2124,7 @@ impl Op {
             | Op::Jam { .. }
             | Op::DrainProject { .. }
             | Op::DiscardProject
+            | Op::RemoveResearch { .. }
             | Op::Production { .. }
             | Op::HostMore { .. }
             | Op::ProductionPerTag { .. }

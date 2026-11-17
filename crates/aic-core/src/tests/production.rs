@@ -259,10 +259,33 @@ fn an_adversary_station_puts_cubes_before_completion_and_compute_after() {
     set_var(&mut g, board::project_done(0), 1);
     set_var(&mut g, board::project_done(1), 1);
     let (made, before) = (g.var(adversary::COMPUTE), on_projects(&g));
+    let research = g.var(adversary::RESEARCH);
     run(&rules, &mut g);
-    assert_eq!(g.var(adversary::COMPUTE) - made, 2 * cubes, "compute after completion");
+    // 259: with the board's research rule, its research cubes onto the track, not compute.
+    assert_eq!(g.var(adversary::COMPUTE) - made, 0, "no compute after completion");
+    assert_eq!(g.var(adversary::RESEARCH) - research, 2 * cubes, "research after completion");
     assert_eq!(on_projects(&g), before);
-    assert_eq!(g.stats.counters["board.station_compute"] - tallied, 2 * cubes);
+    assert_eq!(g.stats.counters["board.station_compute"] - tallied, 0);
+}
+
+/// 259: the off arm (`research_at` all 0) keeps 185's compute after completion.
+#[test]
+fn with_the_research_rule_off_an_adversary_station_makes_compute_after_completion() {
+    let (rules, mut g) = lab_with(
+        &["board.produce", "adversary.reveal", "adversary.compute"],
+        &["adversary.compute_income=0,0,0,0,0", "adversary.research_at=0,0,0,0,0"],
+    );
+    let cubes = rules.world().int("board.station_cubes");
+    for c in 0..2 {
+        let h = rules.map.numbered(c, piece(c).stations[0]);
+        put(&mut g, h, STATION, 1);
+        put(&mut g, h, ADV_CUBE, 1);
+        set_var(&mut g, board::project_done(c), 1);
+    }
+    let made = g.var(adversary::COMPUTE);
+    run(&rules, &mut g);
+    assert_eq!(g.var(adversary::COMPUTE) - made, 2 * cubes);
+    assert_eq!(g.var(adversary::RESEARCH), 0);
 }
 
 /// 185 (Matt's ruling #2): a completion holding adversary cubes pays each one the card's adversary payout

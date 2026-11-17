@@ -82,10 +82,10 @@ Build a factory (`factory_build_chips`, 0: off) is a screened candidate; cities 
 | 5–6 | `adversary.corrupt`, `.natural` | The Corrupt beat: the card's Corrupt lines; natural corruption (sites, then node hexes) |
 | 7 | `board.march` | The March beat ([war.md](war.md)): `troop_steps` steps each, move or destroy (past ambassadors) |
 | 8 | `adversary.reveal` | The Income beat: next round's card face up; agents into each country's pool |
-| 9 | `adversary.compute` | The compute step: income, botnets, corrupted stations and the round's banked compute onto the leftmost project, which resolves as it fills (once; none is ongoing); then every firewall, cordon and prohibition token comes off, ending the adversary turn |
+| 9 | `adversary.compute` | The compute step: income, botnets and the round's banked compute onto the leftmost project, which resolves as it fills (once; none is ongoing); then the research check (a full track fires once, [adversary.md](adversary.md)); then every firewall, cordon and prohibition token comes off, ending the adversary turn |
 | 10–13 | `cards.deal`, `.tier`, `.draft`, `.keep` | Round 1's opening hand, then every round's draft and keeps ([player-cards.md](player-cards.md)) |
 | 14 | `cards.play+threats.counter+board.act+ai.power` | Actions, simultaneous: cards, abilities, AI-board powers (nodes come from them), standard actions, countering threats |
-| 15 | `board.produce` | The income step (one step with 16, in this order): factories make chips (a player's) or a troop (the adversary's); hosted cities' energy to their hosts (254), corrupted cities' Discord; stations' cubes (an adversary station's compute waits for the compute step); full megaprojects complete. One opposing ambassador or agent blocks a site |
+| 15 | `board.produce` | The income step (one step with 16, in this order): factories make chips (a player's) or a troop (the adversary's); hosted cities' energy to their hosts (254), corrupted cities' Discord; stations' cubes (an adversary station's research cube, once its megaproject is complete, waits for the compute step); full megaprojects complete. One opposing ambassador or agent blocks a site |
 | 16 | `economy.upkeep` | The income step, continued: board and card income; building upkeep |
 | 17 | `board.bases` | Growth: extra drones, then city growth ([war.md](war.md)) |
 | 18 | `threats.execute` | Partial payments refunded; uncountered threats execute |

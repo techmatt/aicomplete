@@ -94,6 +94,10 @@ pub struct Weights {
     /// Each visible adversary project's fill, as a share of its cost (a
     /// cost: it will resolve; 017).
     pub project: f64,
+    /// 259: the adversary's research track's fill, as a share of its threshold (a cost: it fires the board's
+    /// research rule; the troops it lands count as troops after). 0: off.
+    #[serde(default)]
+    pub research: f64,
     /// Each player node on the board (reach, site claims, a share of
     /// city energy; its track income is counted as income).
     /// Was `data_center` (still accepted, see [`RENAMED`]).
@@ -565,6 +569,8 @@ impl Default for Weights {
             level: 10.0,
             // 017: chosen by hand, not swept.
             project: 30.0,
+            // 259: a full track as a project resolving (its Muster lands 4-8 troops at 2 countries).
+            research: 30.0,
             node: 4.0,
             // 022 (020's D9): a botnet is permanent since 019; at 6 agents made
             // botnets answering the spread when an equal free option existed.
@@ -1879,6 +1885,16 @@ impl Eval {
         }
         let resolved = g.stats.counters.get("adversary.projects_resolved");
         v -= w.project * resolved.copied().unwrap_or(0) as f64;
+        // 259: the research track as a share of its threshold (capped at a full one: it fires once a round), and
+        // each fire counted in full, as a resolved project is, so letting it fire never scores as relief.
+        if w.research != 0.0 {
+            let at = adversary::research_threshold(&world);
+            if at > 0 {
+                v -= w.research * (g.var(adversary::RESEARCH) as f64 / at as f64).min(1.0);
+                let fired = g.stats.counters.get("adversary.research_fired");
+                v -= w.research * fired.copied().unwrap_or(0) as f64;
+            }
+        }
         // Added in place, term by term, so the flat agents' values (and so
         // their games) do not depend on horizon mode.
         let unpaid = self.unpaid_threats(rules, g);

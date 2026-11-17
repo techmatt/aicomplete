@@ -204,5 +204,7 @@
  "research_reactor": {"top":[["−1","research_cubes","→","3","energy"]],"top_text":"Action: pay 1 research cube, get 3 energy.","effect":[],"text":"","full_text":"Action: pay 1 research cube, get 3 energy."},
  "survey_drone_fleet": {"top":[["−1","research_cubes","→","2","node","2","energy"]],"top_text":"Action: pay 1 research cube, place 2 Nodes within 2 of one of yours, get 2 energy.","effect":[["2","research_cubes"]],"text":"Gain 2 research cubes.","full_text":"Action: pay 1 research cube, place 2 Nodes within 2 of one of yours, get 2 energy. When played: Gain 2 research cubes."},
  "orbital_relay_launcher": {"top":[["−1","antimatter","→","3","node","3","energy"]],"top_text":"Action: pay 1 antimatter, place 3 Nodes, get 3 energy.","effect":[],"text":"","full_text":"Action: pay 1 antimatter, place 3 Nodes, get 3 energy."},
- "twin_city_compact": {"top":[],"top_text":"","effect":[["2","node"],["+1","city"]],"text":"Place 2 Nodes. You may host 1 more city from now on.","full_text":"Place 2 Nodes. You may host 1 more city from now on."}
+ "twin_city_compact": {"top":[],"top_text":"","effect":[["2","node"],["+1","city"]],"text":"Place 2 Nodes. You may host 1 more city from now on.","full_text":"Place 2 Nodes. You may host 1 more city from now on."},
+ "counterintel_sweep": {"top":[],"top_text":"","effect":[[{"adversary":["−4","research_cubes"]}],["cards"]],"text":"Remove 4 adversary research cubes. Draw 1 card.","full_text":"Remove 4 adversary research cubes. Draw 1 card."},
+ "arms_inspectors": {"top":[["→",{"adversary":["−2","research_cubes"]}]],"top_text":"Action: remove 2 adversary research cubes.","effect":[],"text":"","full_text":"Action: remove 2 adversary research cubes."}
 }

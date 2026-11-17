@@ -68,7 +68,14 @@ def board(b):
     return {"id": b["id"], "name": b["name"], "project_slots": b["project_slots"],
             "rules": [{"name": r["name"], "text": r["text"], "effects": ops(r["effects"])} for r in b["rules"]],
             "difficulty": {"text": b["difficulty"]["text"], "effects": ops(b["difficulty"]["effects"])},
+            **({"research": research(b["research"])} if "research" in b else {}),
             "harms": b["harms"]}
+
+
+def research(r):
+    """259: the board's research rule: its effect at the threshold and, from research_strong_at, a stronger one."""
+    return {"name": r["name"], "text": r["text"], "effects": ops(r["effects"]),
+            "strong": {"text": r["strong"]["text"], "effects": ops(r["strong"]["effects"])}}
 
 
 SACRIFICE = {"security": "Security", "diplomacy": "Diplomacy", "cyber": "Cyber", "industry": "Industry",
@@ -104,6 +111,9 @@ def cards_page(threats, projects, adversary):
     out += [f"## {b['name']} (board)", "", f"Project slots: {slots}.", ""]
     for r in b["rules"]:
         out.append(f"- **{r['name']}.** {r['text']}")
+    if "research" in b:
+        r = b["research"]
+        out.append(f"- **{r['name']}** (research). {r['text']} Stronger: {r['strong']['text']}")
     out += [f"- **Difficulty.** {b['difficulty']['text']}", ""]
     out += ["## Event deck", "", "| Card | Stage | Text |", "|---|---|---|"]
     for e in adversary["events"]:

@@ -21,7 +21,9 @@ mod corrupt;
 mod pieces;
 mod projects;
 mod rally;
+mod research;
 
+pub use research::*;
 pub use bar::*;
 pub use corrupt::*;
 pub use pieces::*;
@@ -64,6 +66,8 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("station_flip_at", 0, 5, "agents on a player's research station before an effect can flip it (short of that, one lands there instead)"),
     ParamSpec::int("botnet_compute", 0, 5, "adversary compute each botnet makes a round (none with a player ambassador on it)"),
     ParamSpec::int("board_difficulty_at", 0, 5, "the difficulty level from which the adversary board's own difficulty line applies"),
+    ParamSpec::list("research_at", 0, 30, "259: research cubes a country that fire the adversary board's research rule, at difficulty 0-4 (times the countries; 0: never)"),
+    ParamSpec::int("research_strong_at", 0, 5, "259: the difficulty level from which the research rule fires its stronger effect"),
 ];
 
 /// r80 (ruling #41): the adversary turn's four beats, printed as a strip on the adversary board, with the round
@@ -443,6 +447,10 @@ impl Module for Adversary {
                 if !g.is_over() {
                     compute_step(g, cx)?;
                 }
+                // 259: then the research track, once a round.
+                if !g.is_over() {
+                    research_step(g, cx)?;
+                }
                 // 158: firewalls come off at the end of the adversary turn after they went on; r80 (#53) so do
                 // prohibition tokens.
                 for h in 0..g.hexes.len() {
@@ -553,6 +561,20 @@ impl Module for Adversary {
             None,
             "compute made since the adversary's last turn: it goes onto the projects in its next compute step",
         );
+        if let (Some(r), true) = (&w.content.adversary_board.research, research_on(w)) {
+            let at = research_threshold(w);
+            out.global(
+                "research",
+                "adv. research",
+                g.var(RESEARCH),
+                Some(at),
+                &format!(
+                    "the adversary's research track: at {at} it spends {at} and fires {} in its compute step ({})",
+                    r.name,
+                    if level(w, w.int("adversary.research_strong_at")) { &r.strong.text } else { &r.text }
+                ),
+            );
+        }
         out.global(
             "income_ambassadors",
             "agent income",

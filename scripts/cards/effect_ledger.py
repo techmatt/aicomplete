@@ -290,7 +290,7 @@ def op_worth(t, o):
     if op == 'jam':
         typed = row('typed_jam') if o.get('source') else 1.0
         return Worth(now=row('jam') * typed * n('amount'))
-    if op == 'drain_project' or op == 'drain_all':
+    if op == 'drain_project' or op == 'drain_all' or op == 'remove_research':  # 259: research cubes off the track
         return Worth(now=row(op) * n('amount'))
     if op == 'production':
         return Worth(income=row(op) * income_r(t, o['resource']) * n('amount'))

@@ -23,10 +23,12 @@ pub(super) fn troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64, each
     // 118: named for what lands it (a threat's, a Discord card's).
     let named = ctx.why.as_deref().map(|n| format!("{n}: an adversary troop lands on which hex?"));
     let prompt = named.as_deref().unwrap_or(base);
-    let tally = ctx.says("threats.troops", "adversary.project_troops");
+    // 259: the research rule's troops are tallied apart from the projects'.
+    let tally = if ctx.label == "research" { "adversary.research_troops" } else { ctx.says("threats.troops", "adversary.project_troops") };
     // 151: an event's or a project's troops land deterministically (the lowest-numbered).
     // 175: each of those is a Muster: a Muster prohibition stops it and the level surcharge adds to it.
-    let muster = ctx.threat.is_none() && matches!(ctx.label, "standing" | "project");
+    // 259: so is the research rule's (the Militarist's Weapons Program).
+    let muster = ctx.threat.is_none() && matches!(ctx.label, "standing" | "project" | "research");
     let count = if muster { count + adversary::muster_bonus(&w) } else { count };
     for hexes in regions(&w, g, ctx, each_country) {
         let kills = destroy.then_some(ctx.label);

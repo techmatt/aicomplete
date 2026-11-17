@@ -78,6 +78,8 @@ fn a_new_row_is_dealt_into_the_slots_when_all_have_resolved() {
             "projects.disinformation.cost=5",
             r#"projects.disinformation.effects=[{"op":"sway","side":"discord","amount":5}]"#,
             "projects.station_coup.cost=9",
+            // 259: its research line is a third consequence, refused below cost 18.
+            r#"projects.station_coup.effects=[{"op":"take_site","site":"station"},{"op":"fallout","at":"corrupted_station"}]"#,
             "projects.recruitment_drive.cost=11",
             "projects.war_plants.cost=10",
             "projects.lab_purge.cost=9",
@@ -450,11 +452,18 @@ fn project_ops_reach_as_declared() {
         assert_eq!(g.var(INCOME_COMPUTE) - rich.var(INCOME_COMPUTE), m.countries.len() as i64);
         assert_eq!(g.var(INCOME_AMBASSADORS) - rich.var(INCOME_AMBASSADORS), 1, "a country, read by each pool");
     }
+    // 259: the research track is one number too: a project's research line puts its amount a country on it.
+    {
+        use crate::modules::adversary::RESEARCH;
+        let mut g = rich.clone();
+        team(&rules, &mut g, &[Op::AdversaryResearch { amount: 2, each_country: true }]);
+        assert_eq!(g.var(RESEARCH) - rich.var(RESEARCH), 2 * m.countries.len() as i64);
+    }
     // Not staged here: a Unity pull needs a Unity tip on the track, a token loss cards in play holding tokens; Fallout
     // by a corrupted station, because board 1's lowest-numbered one (hex 3) has no free land beside it (the
     // Fallout arm's city sites are measured). Each reads its seats, the track or its countries as the rest do.
     let staged_elsewhere = |e: &Op| {
-        matches!(e, Op::PullUnity { .. } | Op::LoseTokens { .. } | Op::IncreaseIncome { .. })
+        matches!(e, Op::PullUnity { .. } | Op::LoseTokens { .. } | Op::IncreaseIncome { .. } | Op::AdversaryResearch { .. })
             || matches!(e, Op::Fallout { at: crate::op::FalloutAt::CorruptedStation, .. })
     };
     let mut seen = Vec::new();

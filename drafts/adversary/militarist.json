@@ -71,6 +71,29 @@
     "151: unchanged but for the words (Deploy, board)"
    ]
   },
+  "research": {
+   "name": "Weapons Program",
+   "text": "When the research track reaches its threshold, spend it: Muster 2: each country, 2 Troops on its lowest-numbered factory (else city).",
+   "effects": [
+    {
+     "op": "troops",
+     "count": 2,
+     "each_country": true,
+     "why": "259 (Matt, 2026-11-16): the Militarist's research becomes arms; troops fit its war axis (staging default 4)"
+    }
+   ],
+   "strong": {
+    "text": "Muster 3 instead.",
+    "effects": [
+     {
+      "op": "troops",
+      "count": 3,
+      "each_country": true
+     }
+    ]
+   },
+   "value": "259: 2 troops a country (troops -7, 4 at 2 countries, 28; 42 with the difficulty line's +1 from d2) a fire; 3 (+1) from research_strong_at: 56 at 2 countries. Over research_at 5 a country (10 at 2), a cube is 2.8-4.2, 7 at d3-d4 (4 a country)."
+  },
   "harms": [
    "adversary pieces placed",
    "troops made",

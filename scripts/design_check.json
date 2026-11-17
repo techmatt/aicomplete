@@ -273,7 +273,7 @@
     "note": "212: what each tag means in the story, as the ops it owns. An op key is `op`, or `op:resource` / `op:kind` / `op:side` where the op names one (opkeys.py in 212's results lists them). A card or tag-paid power whose effects hold an owned op, none of them owned by one of its tags, is a mismatch (`tag-story`). Ops in no tag's list (draws, credits, triggers, counters) are neutral: any tag may print them. `exceptions`: item -> why its story overrides the table, listed as information.",
     "tags": {
       "security": {"story": "force and protection: troops, agents, hardening, shelters, defending nodes",
-        "ops": ["remove_troops", "damage", "damage_country", "push", "shelter", "cordon", "harden", "shield_node", "remove_ambassadors_country", "destroy_all", "move_one", "add_tokens:agents", "remove_botnet", "gather"]},
+        "ops": ["remove_troops", "damage", "damage_country", "push", "shelter", "cordon", "harden", "shield_node", "remove_ambassadors_country", "destroy_all", "move_one", "add_tokens:agents", "remove_botnet", "gather", "remove_research"]},
       "diplomacy": {"story": "cooperation: ambassadors, trust, Unity, working with humans, green energy and cleanup",
         "ops": ["gain_ambassadors", "ambassador_to_spot", "gain_per_tag:ambassadors", "sway:unity", "move_ambassadors", "cleanse", "clear_city", "consolidate", "convert", "add_tokens:followers", "other_gain:chips", "other_gain:energy", "other_gain:insight", "lift_fallout"]},
       "science": {"story": "discovery: insight, research cubes, stations, megaprojects, forecasting, particle physics",
@@ -283,7 +283,7 @@
       "power": {"story": "energy and antimatter: generation, grids, fusion, the weapons antimatter feeds",
         "ops": ["gain:energy", "gain:antimatter", "income:antimatter", "production:energy", "gain_per_node:energy", "other_gain:energy", "cash_out:energy:capital", "destroy_all"]},
       "cyber": {"story": "the network: botnets, Exploits, nodes, compute, firewalls, corruption, information",
-        "ops": ["drain_project", "drain_all", "discard_project", "remove_botnet", "firewall", "place_node", "gain:insight", "income:insight", "production:insight", "other_gain:insight", "gather"]}
+        "ops": ["drain_project", "drain_all", "discard_project", "remove_botnet", "firewall", "place_node", "gain:insight", "income:insight", "production:insight", "other_gain:insight", "gather", "remove_research"]}
     },
     "neutral_why": "neutral by design (any tag prints them): draws, credits, triggers and thresholds; threat counters (jam, auto_counter), since every tag answers threats its own way; liberate, the capstone every tag route reaches (player-cards.md, *The liberate capstones*); a tag's own payoffs (gain_per_tag, production_per_tag, income_per_tag, card_discount), which pay for the tag they count; reuse and choose_player, which only point another effect",
     "exceptions": {

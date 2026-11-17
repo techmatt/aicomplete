@@ -10,7 +10,7 @@ Cities, research stations and factories follow one set of rules and differ only 
 |---|---|---|---|
 | Neutral | its energy, bought by the Buy energy action ([economy.md](economy.md)) | a neutral cube onto its megaproject ([board.md](board.md)) | nothing, except that **at a Discord tip it arms its country's bases** ([war.md](war.md)) |
 | Player | none: **no player owns a city** (254); a neutral city with your node on or next to it makes its energy for you (hosting, [economy.md](economy.md)) | `owned_station_cubes` research cubes in its owner's color | `factory_chips` chips to its owner |
-| Adversary | its energy diverted: `divert_discord` Discord a unit | `station_cubes` adversary compute (in the adversary's compute step) | 1 adversary troop on its hex |
+| Adversary | its energy diverted: `divert_discord` Discord a unit | `station_cubes` adversary cubes; after its megaproject, research cubes onto the adversary's track (259) | 1 adversary troop on its hex |
 
 - **One opposing piece blocks a site's output while it stands.** An agent on a neutral or player
   site, a player ambassador on an adversary site: that round the site makes nothing, and the piece stays

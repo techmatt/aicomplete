@@ -189,8 +189,15 @@ pub fn compute_step(g: &mut GameState, cx: &mut Cx) -> Res {
     if s.stations_blocked > 0 {
         cx.tally(g, "board.blocked.station_adversary", s.stations_blocked);
     }
-    cx.tally(g, "board.station_compute", s.stations);
-    let fresh = income + s.botnets + s.stations;
+    // 259: a board with a research rule takes its stations' output as research cubes, not compute.
+    let station_compute = if super::research_on(&w) {
+        super::gain_research(g, cx, s.stations, "stations");
+        0
+    } else {
+        s.stations
+    };
+    cx.tally(g, "board.station_compute", station_compute);
+    let fresh = income + s.botnets + station_compute;
     cx.add_key(g, COMPUTE, fresh);
     cx.tally(g, "adversary.compute_made", fresh);
     cx.per_round(g, "adversary.compute", fresh);
@@ -275,7 +282,9 @@ fn sources(w: &World, g: &GameState) -> Sources {
 /// can still change it (an ambassador on a botnet, a hack, Audit).
 pub fn completes_next_step(w: &World, g: &GameState) -> Vec<Key> {
     let s = sources(w, g);
-    let mut left = g.var(INCOME_COMPUTE).max(0) + s.botnets + s.stations + g.var(WAITING);
+    // 259: with a research rule the stations make research, not compute.
+    let stations = if super::research_on(w) { 0 } else { s.stations };
+    let mut left = g.var(INCOME_COMPUTE).max(0) + s.botnets + stations + g.var(WAITING);
     let every = g.var(WAITING_EVERY);
     let mut out = Vec::new();
     for id in projects(g) {

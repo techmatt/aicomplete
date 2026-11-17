@@ -282,6 +282,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             }
         }
         Op::DrainProject { amount } => adversary::choose_drain(g, cx, seat, *amount)?,
+        // 259: cubes off the adversary's research track.
+        Op::RemoveResearch { amount } => adversary::remove_research(g, cx, *amount),
         Op::DiscardProject => {
             let ids = adversary::projects(g);
             let opts = ids.iter().map(|p| opt(*p)).collect();
@@ -500,6 +502,12 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             adversary::rally(g, cx, *site, *count, ctx.scope, source)?
         }
         Op::IncreaseIncome { compute, ambassadors } => adversary::increase_income(g, cx, *compute, *ambassadors),
+        // 259: research cubes onto the adversary's track (a project's: a country each).
+        Op::AdversaryResearch { amount, each_country } => {
+            let n = if *each_country { *amount * w.map.countries.len() as i64 } else { *amount };
+            let source = ctx.says("threats", if ctx.label == "standing" { "event" } else { ctx.label });
+            adversary::gain_research(g, cx, n, source);
+        }
 
         // 135: the new adversary model's ops, and the old ops with a new field set.
         Op::Troops { .. }

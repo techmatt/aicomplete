@@ -607,6 +607,8 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::CounterThreat => Worth::now(row("counter_threat")),
         Op::DrainProject { amount } => Worth::now(row("drain_project") * *amount as f64),
         Op::DiscardProject => Worth::now(row("discard_project")),
+        // 259: cubes off the adversary's research track, at its effect's harm over its threshold.
+        Op::RemoveResearch { amount } => Worth::now(row("remove_research") * *amount as f64),
         // 258: a second hosted city's energy, at the share of rounds a seat has one to host (`host_more`'s row).
         Op::HostMore { count } => Worth::income(row("host_more") * income_rate(t, Resource::Energy) * *count as f64),
         Op::Production { resource, amount } => Worth::income(row("production") * income_rate(t, *resource) * *amount as f64),
@@ -723,6 +725,11 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::RemoveBotnets { count } => Worth::now(row("remove_botnets") * *count as f64),
         // 185: a cube on each open megaproject; a botnet turned into one.
         Op::AdversaryCubes { count } => Worth::now(row("adversary_cubes") * t.rate("countries") * *count as f64),
+        // 259: research cubes onto the adversary's track (a project's: a country each).
+        Op::AdversaryResearch { amount, each_country } => {
+            let per = if *each_country { t.rate("countries") } else { 1.0 };
+            Worth::now(row("adversary_research") * per * *amount as f64)
+        }
         Op::BotnetCubes { count } => Worth::now(row("botnet_cubes") * *count as f64),
         // 195: the project deck's board verbs, "in each country" at rates.countries.
         Op::BotnetTroops { count, troops } => {

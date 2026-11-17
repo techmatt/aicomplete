@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 259 every adversary gets a research rule: one track, the Militarist's Weapons Program (Muster 2, 3 from d3) at 5 / 4 cubes a country, fed by stations after their megaproject, three projects and three threats; Counterintelligence Sweep and Arms Inspectors remove; -5.0 ± 1.8 (judge), -2.4 ± 2.0 (greedy) against r119; fires 0.2-2.1 a game d0-d4 | 120, 121 | [259_adversary_research_rule](results/259_adversary_research_rule/README.md) |
 | 258 card follow-ups: 257's weak cards and converters pay more a use, Dyson and Exascale played, Twin City Compact hosts a second city; the judge ships `w.sink` 0.5; r119 -1.7 ± 1.9 (judge), +0.3 ± 2.1 (greedy) against r117 | 118, 119 | [258_card_followups](results/258_card_followups/README.md) |
 | 257 the judge and Action buildings: `w.sink` (converter fuel priced by what a use makes) runs them but costs d3-d4 wins, left off | 117 | [257_judge_action_buildings](results/257_judge_action_buildings/README.md) |
 | 256 Item C: the card pass (claim_site, Campus and Commons owned, liberate riders, node and sink buildings) | 117 | [256_item_c_cards](results/256_item_c_cards/README.md) |

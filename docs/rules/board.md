@@ -80,7 +80,8 @@ megaproject is the corp's defining card.
 - **Stations** follow the one site model ([ambassadors.md](ambassadors.md)). In production a **neutral** one makes
   `station_cubes` (1) research cube a round, a player's `owned_station_cubes` (1; 252, Matt: every building produces 1) in its owner's color; an adversary
   station (corrupted) has **one output** (Matt's ruling #55, as since 185): `station_cubes` (1) **adversary** cube a
-  round onto its country's megaproject while it is open, else `station_cubes` compute in the adversary's compute step.
+  round onto its country's megaproject while it is open, else `station_cubes` cubes onto the adversary's research
+  track in its compute step (259; compute before, and with the rule off, [adversary.md](adversary.md)).
   No player starts with a station: building one (`station_chips`, 2 chips since 252, Matt) or claiming a neutral one
   (`claim_station` ambassadors) is an investment. Cities build neutral stations too ([war.md](war.md), city growth).
   One opposing ambassador or agent on a station blocks its output while it stands; the Liberate action takes an
@@ -105,7 +106,7 @@ megaproject is the corp's defining card.
   and `botnet_cubes` ops (r79; printed on no card yet, [ops.md](../ops.md)). Countries complete in piece order.
 - **After completion** that country's stations put their cubes on their owners' boards: a
   player stores **research cubes**, kept between rounds. A neutral station's cube is lost; adversary stations
-  make compute (137).
+  feed the adversary's research track (259).
 - **Chip converters** (r87, Matt: chips hoarded early pay late): three cards also print one paid in chips, used as the
   converter is (a city of the country in reach, once a round); Onyx's, which makes chips, doesn't. Give / get at
   `values.json` (anchors): 2 chips, 8 (12), for 1 antimatter 18 (18), 3 cards 12 (15), or 2 Sway and a card 12
@@ -128,11 +129,11 @@ megaproject is the corp's defining card.
 
 The first neutral station stands next to the starting node, so a player's first
 ambassadors can claim it, on a hex that is a base in no layout (a test holds this). At setup a country's
-neutral stations make 1 cube a round each (the adversary's makes compute): one alone takes 8 rounds to fill an
+neutral stations make 1 cube a round each (the adversary's an adversary cube): one alone takes 8 rounds to fill an
 8-cube card, three about 3. Claiming one turns its 1 a round to its owner's color; each station a player builds there adds 1.
 
 **For new players.** A research station makes a cube a round, neutral or yours; the adversary's make
-compute instead. A country's cubes fill its corp's megaproject, and when the card fills, at
+adversary cubes, and after completion feed its research track. A country's cubes fill its corp's megaproject, and when the card fills, at
 the end of production, every cube on it pays, overflow included: yours pay you what the
 card says, neutral ones pay nothing. So claim the neutral station (4 ambassadors) or build one (2 chips) before the card
 fills. After that your stations there put cubes on your board, and if one of that country's cities (any city, not

@@ -160,6 +160,8 @@ fn op_categories(all: &[&Op], c: &mut [bool; CATEGORIES.len()]) {
                 | Op::Convert { .. }
                 | Op::Gather { .. }
                 | Op::Push { .. }
+                // 259: cubes off the adversary's research track (a fire's troops, before they land).
+                | Op::RemoveResearch { .. }
         )
     });
     c[cat::COUNTER] = any(&|o| matches!(o, Op::Jam { .. } | Op::CounterThreat | Op::AutoCounter { .. } | Op::DelayThreat { .. }));

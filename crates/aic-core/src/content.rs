@@ -515,12 +515,28 @@ pub struct AdversaryBoard {
     #[serde(default)]
     pub rules: Vec<BoardRule>,
     pub difficulty: BoardRule,
+    /// 259 (Matt: every adversary gets a research rule): its research cubes stockpile on one track and, at the
+    /// threshold (`adversary.research_at` a country, lower with difficulty), fire this adversary's effect once in
+    /// the compute step (`adversary::research_step`). None: the board has no research rule.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub research: Option<ResearchRule>,
     #[serde(default)]
     pub harms: Vec<String>,
     /// 136: Discord the board sways at the start of every round (the
     /// Militarist prints none).
     #[serde(default)]
     pub discord_drip: i64,
+}
+
+/// 259: an adversary board's research rule: `effects` fire at the threshold; from `adversary.research_strong_at`
+/// (d3) `strong` fires instead (Matt: d3-d4 get a stronger effect).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ResearchRule {
+    pub name: String,
+    pub text: String,
+    pub effects: Vec<Op>,
+    pub strong: BoardRule,
 }
 
 /// A project slot on the adversary board: a project must carry `tag` (or be
@@ -1452,6 +1468,13 @@ fn check_adversary_board(b: &AdversaryBoard) -> Result<(), String> {
         if says_each_board(&r.text) {
             return Err(format!("{what}: {:?} says \"each board\" (each country)", r.name));
         }
+    }
+    if let Some(r) = &b.research {
+        if r.effects.is_empty() || r.strong.effects.is_empty() {
+            return Err(format!("{what}: its research rule {:?} needs an effect and a stronger one", r.name));
+        }
+        check_ops(&r.effects, Slot::Team, &what)?;
+        check_ops(&r.strong.effects, Slot::Team, &what)?;
     }
     Ok(())
 }

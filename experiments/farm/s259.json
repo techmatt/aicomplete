@@ -1,0 +1,16 @@
+{
+  "name": "s259",
+  "note": "259's screen: the research rule as asked (research_at 5,5,5,4,4 a country, strong from d3) against the off arm (research_at 0: stations make compute, research lines idle) and a lower-threshold lever (4,4,4,3,3), judge and greedy on the bp pair, d0-d4. Farm with `aic-sim farm s259 --seed F --games N --out FILE`.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "on", "set": []},
+    {"name": "off", "set": ["adversary.research_at=0,0,0,0,0"]},
+    {"name": "lo", "set": ["adversary.research_at=4,4,4,3,3"]}
+  ],
+  "difficulties": [0, 1, 2, 3, 4],
+  "agents": ["strategist", "greedy"],
+  "games": 32,
+  "records": 0
+}

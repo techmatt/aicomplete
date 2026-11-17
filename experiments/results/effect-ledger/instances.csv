@@ -36,6 +36,8 @@ antitrust_action,tags [card],card,industry,1.0,1.0,1.0,0.67,0.67
 arcology_foundry,production credits [play],play,"resource=credits, amount=7",7.0,17.5,2.5,13.82,1.97
 arcology_foundry,production chips [play],play,"resource=chips, amount=1",1.0,10.0,10.0,7.89,7.89
 arcology_foundry,tags [card],card,industry,1.0,1.0,1.0,0.79,0.79
+arms_inspectors,remove_research [action],action,amount=2,2.0,16.8,8.4,7.55,3.78
+arms_inspectors,tags [card],card,security,1.0,1.0,1.0,0.45,0.45
 autonomous_defense_grid,auto_counter [passive],passive,"source=cyber, amount=6",6.0,15.0,2.5,12.19,2.03
 autonomous_defense_grid,tags [card],card,cyber,1.0,1.0,1.0,0.81,0.81
 back_channel_talks,target [play],play,on=corrupted_factory,1.0,0.0,0.0,0.0,0.0
@@ -118,6 +120,8 @@ counterinsurgency_campaign,target [play],play,on=agents,1.0,0.0,0.0,0.0,0.0
 counterinsurgency_campaign,remove_ambassadors_country [play],play,"max=3, at=on",3.0,4.5,1.5,4.0,1.33
 counterinsurgency_campaign,production credits [play],play,"resource=credits, amount=2",2.0,8.0,4.0,7.11,3.56
 counterinsurgency_campaign,tags [card],card,security,1.0,1.0,1.0,0.89,0.89
+counterintel_sweep,remove_research [play],play,amount=4,4.0,12.0,3.0,3.75,0.94
+counterintel_sweep,draw [play],play,count=1,1.0,4.0,4.0,1.25,1.25
 cryo_compute_burn,gain_per_tag insight [play],play,"resource=insight, tag=science, per=1",1.0,12.5,12.5,6.5,6.5
 cryo_sample_vault,income research_cubes [passive],passive,"resource=research_cubes, amount=1",1.0,12.0,12.0,8.77,8.77
 cryo_sample_vault,tags [card],card,science,1.0,1.0,1.0,0.73,0.73

@@ -57,6 +57,27 @@
     }
    ]
   },
+  "research": {
+   "name": "Weapons Program",
+   "text": "When the research track reaches its threshold, spend it: Muster 2: each country, 2 Troops on its lowest-numbered factory (else city).",
+   "effects": [
+    {
+     "op": "troops",
+     "count": 2,
+     "each_country": true
+    }
+   ],
+   "strong": {
+    "text": "Muster 3 instead.",
+    "effects": [
+     {
+      "op": "troops",
+      "count": 3,
+      "each_country": true
+     }
+    ]
+   }
+  },
   "harms": [
    "adversary pieces placed",
    "troops made",

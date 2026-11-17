@@ -6205,5 +6205,45 @@
     "count": 1
    }
   ]
+ },
+ {
+  "id": "counterintel_sweep",
+  "name": "Counterintelligence Sweep",
+  "tier": 1,
+  "kind": "event",
+  "cost": 5,
+  "insight": 0,
+  "tags": [
+   "cyber"
+  ],
+  "effects": [
+   {
+    "op": "remove_research",
+    "amount": 4
+   },
+   {
+    "op": "draw",
+    "count": 1
+   }
+  ]
+ },
+ {
+  "id": "arms_inspectors",
+  "name": "Arms Inspectors",
+  "tier": 1,
+  "kind": "building",
+  "cost": 8,
+  "insight": 0,
+  "tags": [
+   "security"
+  ],
+  "ability": {
+   "effects": [
+    {
+     "op": "remove_research",
+     "amount": 2
+    }
+   ]
+  }
  }
 ]

@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 119. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 121. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -96,10 +96,10 @@ by the cube on it:
 |---|---|---|---|---|
 | **Neutral** | none | 1 energy to a player whose node is on or next to it (its **host**: one city each, two with Twin City Compact; one host a city), unless it was bought (Buy energy, §8) | 1 neutral cube onto its megaproject | nothing |
 | **A player's** | that player's | never: **no player owns a city** | 1 cube in its owner's color | 1 chip to its owner |
-| **Corrupted** (the adversary's) | adversary | 1 Discord | 1 adversary cube onto its megaproject; once that is complete, 1 compute for the adversary | 1 adversary troop on its hex |
+| **Corrupted** (the adversary's) | adversary | 1 Discord | 1 adversary cube onto its megaproject; once that is complete, 1 cube onto the adversary's research track | 1 adversary troop on its hex |
 
-Sites make this in production (§9), except a neutral city's energy bought in the action phase (§8) and a corrupted station's compute
-once its megaproject is complete (the adversary's compute step, §6).
+Sites make this in production (§9), except a neutral city's energy bought in the action phase (§8) and a corrupted station's research cube
+once its megaproject is complete (the adversary's Income beat, §6).
 
 **Blocked.** A site with an **opposing piece** on it makes nothing. An agent blocks a neutral or player site. A
 player's ambassador blocks a corrupted site, so a corrupted city with your ambassador on it makes no Discord. Nodes
@@ -340,8 +340,8 @@ The adversary's board prints its turn as a strip of four beats, played in order.
 **3. March.** Adversary troops march (below).
 
 **4. Income.** Turn the next event card face up. Put one round of agent income into each country's pool. Then all the
-adversary's compute arrives: its income, each botnet and corrupted station (once its country's megaproject is complete, §9) without a player's ambassador on it, and
-what was made since the last turn, onto the projects (§17). Firewalls, cordons (§16) and
+adversary's compute arrives: its income, each botnet without a player's ambassador on it, and
+what was made since the last turn, onto the projects (§17). Then the **research track** is checked (below). Firewalls, cordons (§16) and
 no-Rally, no-Muster and no-Corrupt tokens (§12) come off.
 
 **Every Muster** is raised by the level surcharge (§21). A troop that
@@ -425,6 +425,23 @@ Botnets spread quickly (four event cards print **Botnets spread**, above) but ar
 until a card or the **Take down a botnet** action (§8, 20 credits) removes it. It makes 1 compute a round
 unless a player's ambassador stands on it, and counts against the purge until Unity has tipped 7 times (§14).
 Removing one sways neither side.
+
+### Research: the Weapons Program
+
+Every adversary board has a **research track** and a research rule of its own. Cubes go onto the track from:
+
+- each corrupted research station whose country's megaproject is complete: 1 a round, in the Income beat (none while
+  a player's ambassador stands on it);
+- the projects Backdoor Research, Lab Seizure and Station Coup: 2 a country;
+- the threats Wiper Malware, Data Breach and Zero Day, when they execute uncountered.
+
+In the Income beat, after the compute, if the track holds the **threshold** (5 cubes a country at levels 0-2, 4 at
+levels 3-4), spend that many (the rest stay) and the rule fires, once a round at most. The Militarist's is the
+**Weapons Program: Muster 2** (each country, 2 troops on its lowest-numbered factory, else city). At level 3 and up
+it is **Muster 3**. Like every Muster, the level surcharge adds to it.
+
+Take cubes off with **Counterintelligence Sweep** (remove 4, draw a card) and **Arms Inspectors** (an Action: remove
+2). The track is public: watch it as you watch the projects.
 
 *Sources: rules/adversary.md (Each round, Income, Rally X, Corrupt X, Botnets), rules/war.md (the march);
 content/adversary.json; crates/aic-core/src/modules/adversary/, modules/plan.rs, modules/board/troops.rs.*
@@ -641,7 +658,8 @@ map before the next.
 3. **Stations.** A player's station makes 1 cube in its owner's color; a neutral one makes 1 neutral cube. They go
    onto their country's megaproject. Once it is complete, a player's cubes go onto their board as **research cubes**,
    and a neutral station's are lost. A corrupted station makes 1 **adversary cube** onto its country's megaproject
-   until it is complete; after that it makes compute instead, in the adversary's compute step (§6). A player's
+   until it is complete; after that it puts 1 cube on the adversary's research track instead, in its Income beat
+   (§6). A player's
    ambassador on a corrupted station blocks either.
 4. **Megaprojects.** A megaproject holding 8 cubes or more **completes**, once: every cube on it pays, overflow
    included (§8), then its cubes come off. An adversary cube pays the card's adversary payout (1 Sway to Discord;
@@ -965,8 +983,8 @@ game; once the deck runs out, no more are dealt.
 
 A project prints **one cost a board**: in play it costs that times the number of countries. All compute arrives in one
 step, the **compute step** of the Income beat: the compute income (printed a country, so times the countries), 1 for
-each botnet and each corrupted research station (once its country's megaproject is complete, §9) without a player's
-ambassador on it, and every compute made since the last compute step (threats taking effect, cards and projects that
+each botnet without a player's ambassador on it (a corrupted research station feeds the research track instead, §6),
+and every compute made since the last compute step (threats taking effect, cards and projects that
 print it), which waits beside the projects until then: that public pile is your warning. All of it goes onto the
 **leftmost** project. Add it up before you act: a project whose compute plus that sum reaches its cost **completes
 next compute step** unless you change a source (an ambassador onto a botnet, a hack, Audit). The moment a project holds its cost, it **resolves** at once, does what it prints in **every

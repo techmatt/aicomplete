@@ -34,19 +34,26 @@
    "tags": [
     "cyber"
    ],
-   "cost": 9,
-   "text": "4 adversary research cubes onto each open megaproject.",
+   "cost": 14,
+   "text": "4 adversary research cubes onto each open megaproject. Each country: 2 cubes onto the adversary's research track.",
    "effects": [
     {
      "op": "adversary_cubes",
      "count": 4
+    },
+    {
+     "op": "adversary_research",
+     "amount": 2,
+     "each_country": true,
+     "why": "259 (Matt, 2026-11-16: some projects feed the research track; staging default 6: Backdoor Research keeps its line and adds this)"
     }
    ],
    "harms": [
     "adversary cubes on megaprojects",
-    "Discord sway"
+    "Discord sway",
+    "adversary research advanced"
    ],
-   "value": "give 9 compute a board (18 at 2 countries, 19.8 at values.json compute 1.1); get 24.0; 1.21 a compute.",
+   "value": "give 14 compute a board (28 at 2 countries, 30.8 at values.json compute 1.1); get 24.0 + 12 (4 track cubes at adversary_research 3) = 36; 1.17 a compute (259: cost 9 -> 14 for the track line).",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: while megaprojects are open (early to mid). Who plays it: automatic for the adversary (compute step); players answer: finish megaprojects first; drain.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): 2 to 4 cubes",
@@ -343,19 +350,26 @@
    "tags": [
     "cyber"
    ],
-   "cost": 8,
-   "text": "Corrupt: research stations.",
+   "cost": 13,
+   "text": "Corrupt: research stations. Each country: 2 cubes onto the adversary's research track.",
    "effects": [
     {
      "op": "corrupt",
      "site": "station"
+    },
+    {
+     "op": "adversary_research",
+     "amount": 2,
+     "each_country": true,
+     "why": "259 (Matt, 2026-11-16): some projects feed the research track; a lab seized is research taken"
     }
    ],
    "harms": [
     "adversary pieces placed",
-    "facilities destroyed or corrupted"
+    "facilities destroyed or corrupted",
+    "adversary research advanced"
    ],
-   "value": "give 8 compute a board (16 at 2 countries, 17.6 at values.json compute 1.1); get 20.0; 1.14 a compute.",
+   "value": "give 13 compute a board (26 at 2 countries, 28.6 at values.json compute 1.1); get 20.0 + 12 (4 track cubes at adversary_research 3) = 32; 1.12 a compute (259: cost 8 -> 13 for the track line).",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round with agents by stations. Who plays it: automatic for the adversary (compute step); players answer: clear agents next to stations.",
    "flags": [
     "231: new (small, a deck margin)",
@@ -599,8 +613,8 @@
    "tags": [
     "cyber"
    ],
-   "cost": 19,
-   "text": "Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station.",
+   "cost": 24,
+   "text": "Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track.",
    "effects": [
     {
      "op": "take_site",
@@ -609,13 +623,20 @@
     {
      "op": "fallout",
      "at": "corrupted_station"
+    },
+    {
+     "op": "adversary_research",
+     "amount": 2,
+     "each_country": true,
+     "why": "259 (Matt, 2026-11-16): some projects feed the research track; the third consequence its cost (18+) allows"
     }
    ],
    "harms": [
     "facilities destroyed or corrupted",
-    "Fallout placed"
+    "Fallout placed",
+    "adversary research advanced"
    ],
-   "value": "give 19 compute a board (38 at 2 countries, 41.8 at values.json compute 1.1); get 46.8; 1.12 a compute.",
+   "value": "give 24 compute a board (48 at 2 countries, 52.8 at values.json compute 1.1); get 46.8 + 12 (4 track cubes at adversary_research 3) = 58.8; 1.11 a compute (259: cost 19 -> 24 for the track line).",
    "check": "231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: claim stations; ambassadors on them.",
    "flags": [
     "231: kept, repriced per board"

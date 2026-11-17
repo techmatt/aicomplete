@@ -588,7 +588,7 @@
    "locations": [
     "station"
    ],
-   "text": "The nearest player discards 3 cards.",
+   "text": "The nearest player discards 2 cards. The adversary gains 2 research cubes.",
    "counters": [
     [
      {
@@ -606,13 +606,19 @@
    "effects": [
     {
      "op": "discard",
-     "count": 3
+     "count": 2
+    },
+    {
+     "op": "adversary_research",
+     "amount": 2,
+     "why": "259 (Matt, 2026-11-16): adversary cards feed the research track; a discard traded for 2 cubes at the same harm"
     }
    ],
    "harms": [
-    "cards discarded"
+    "cards discarded",
+    "adversary research advanced"
    ],
-   "value": "counter 3 research cubes (9) or 12 credits (12); uncountered 12 at values.json (a troop 9 with its strike), 1.33x the cheapest counter",
+   "value": "counter 3 research cubes (9) or 12 credits (12); uncountered 2 cards (8) and 2 research cubes (6, remove_research 3 each) 14 at values.json, 1.56x the cheapest counter (259: was 3 cards, 12)",
    "check": "bites a hand held for next round; the counter asks research cubes",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"

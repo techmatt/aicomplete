@@ -1,0 +1,14 @@
+{
+  "name": "s259w",
+  "note": "259's agent smoke: the judge with its new research-track eval term (w.research 30) against it off (w.research=0), and greedy (which reads the same eval term), on the dev seeds, bp, d0-d4.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []}
+  ],
+  "difficulties": [0, 1, 2, 3, 4],
+  "agents": ["strategist", "strategist:w.research=0", "greedy", "greedy:w.research=0"],
+  "games": 32,
+  "records": 0
+}

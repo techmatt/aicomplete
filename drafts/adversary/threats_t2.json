@@ -721,7 +721,7 @@
     "station",
     "factory"
    ],
-   "text": "The nearest player pays 5 research cubes or discards 3 cards. The adversary gains 5 compute.",
+   "text": "The nearest player pays 5 research cubes or discards 3 cards. The adversary gains 2 research cubes.",
    "counters": [
     [
      {
@@ -744,15 +744,16 @@
      "cards": 3
     },
     {
-     "op": "compute",
-     "amount": 5
+     "op": "adversary_research",
+     "amount": 2,
+     "why": "259 (Matt, 2026-11-16): adversary cards feed the research track; 5 compute (5.5) became 2 cubes (6)"
     }
    ],
    "harms": [
     "credits or income lost",
-    "projects advanced (compute)"
+    "adversary research advanced"
    ],
-   "value": "counter 4 chips (14) or 17 credits (17); uncountered 17.5 at values.json (a troop 9 with its strike), 1.25x the cheapest counter",
+   "value": "counter 4 chips (14) or 17 credits (17); uncountered 18 at values.json (2 research cubes at remove_research 3 in place of 5 compute, 259), 1.29x the cheapest counter",
    "check": "bites cube holders before a megaproject",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
@@ -769,7 +770,7 @@
    "locations": [
     "station"
    ],
-   "text": "The adversary gains 10 compute. The nearest player turns 1 building face down until the end of next round.",
+   "text": "The adversary gains 4 research cubes. The nearest player turns 1 building face down until the end of next round.",
    "counters": [
     [
      {
@@ -786,8 +787,9 @@
    ],
    "effects": [
     {
-     "op": "compute",
-     "amount": 10
+     "op": "adversary_research",
+     "amount": 4,
+     "why": "259 (Matt, 2026-11-16): adversary cards feed the research track; 10 compute (11) became 4 cubes (12)"
     },
     {
      "op": "disable_building",
@@ -796,10 +798,10 @@
     }
    ],
    "harms": [
-    "projects advanced (compute)",
+    "adversary research advanced",
     "actions or claims blocked"
    ],
-   "value": "counter 5 research cubes (15) or 17 credits (17); uncountered 17 at values.json (a troop 9 with its strike), 1.13x the cheapest counter",
+   "value": "counter 5 research cubes (15) or 17 credits (17); uncountered 18 at values.json (4 research cubes at remove_research 3 in place of 10 compute, 259), 1.2x the cheapest counter",
    "check": "feeds the projects hard",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"

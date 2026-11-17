@@ -16,8 +16,19 @@ deck**. Its turn, after the round's Sway step, is **four beats** (phases: [econo
    or factory already holding its number of agents corrupts, with no move; then 2 agents on a player's node hex
    destroy the node (below).
 3. **March** ([war.md](war.md)).
-4. **Income**: the top card goes face up as next round's, the agent income into the pools, the **compute step**;
-   firewalls, cordons and prohibition tokens come off.
+4. **Income**: the top card goes face up as next round's, the agent income into the pools, the **compute step**,
+   the **research check** (below); firewalls, cordons and prohibition tokens come off.
+
+**Research (259, Matt's ruling: every adversary).** Each adversary board prints a **research rule**: one public
+**research track**. Cubes come from its corrupted stations once their country's megaproject is complete (`station_cubes`
+a round, in place of compute; none under a player ambassador), from projects' "cubes onto the research track" lines
+(Backdoor Research, Lab Seizure, Station Coup: 2 a country) and from threats' uncountered lines (Wiper Malware,
+Data Breach, Zero Day). Once a round, after the compute step, a track holding **`research_at` a country** (5, 5, 5, 4,
+4 at d0-d4, times the countries) spends that many, keeps the rest, and fires the rule once; from
+`research_strong_at` (3) its stronger effect. The Militarist's is **Weapons Program**: Muster 2 (each country, 2
+troops on its lowest-numbered factory, else city; a Muster, so the difficulty line adds 1), stronger Muster 3.
+Players take cubes off with Counterintelligence Sweep (4) and Arms Inspectors (an Action, 2). `research_at` all 0 is
+the off arm: stations make compute again.
 
 **Income (locked).** Two, by difficulty: **compute income** (`compute_income`, **a
 country**: every compute source scales with the boards), added in the compute step, and **agent income**
@@ -74,8 +85,8 @@ play, times the countries), resolves **once**, at once (none is ongoing: a lasti
 tracked: an income, pieces, Fallout, a round flag), and acts **in each country**. Small (one effect) or big (two; a
 third from `THIRD_EFFECT_COST`, 18). The deck never reshuffles in a d3 game.
 
-- **The compute step.** Once a round, after the agent income: the compute income, each botnet and corrupted station
-  (`station_cubes`, its megaproject complete) with no player ambassador on it, and all made since the last step
+- **The compute step.** Once a round, after the agent income: the compute income, each botnet with no player
+  ambassador on it (a corrupted station's output goes to the research track, above), and all made since the last step
   (uncountered threats, cards, Cintamani), which **waits beside the projects** (public: the warning).
 - **Spending:** each point onto the **leftmost** project (`compute_every` on every one first); one holding its cost
   **resolves** at once. With no project left, compute is lost.
@@ -89,7 +100,7 @@ third from `THIRD_EFFECT_COST`, 18). The deck never reshuffles in a d3 game.
 | Project | Tags | Cost a board | Size (effects) |
 |---|---|---|---|
 | Disinformation | diplomacy | 11 | small (1) |
-| Backdoor Research | cyber | 9 | small (1) |
+| Backdoor Research | cyber | 14 | big (2) |
 | Rolling Blackouts | power | 8 | small (1) |
 | Botnet Swarm | cyber | 14 | small (1) |
 | False Flag | universal | 9 | small (1) |
@@ -101,7 +112,7 @@ third from `THIRD_EFFECT_COST`, 18). The deck never reshuffles in a d3 game.
 | Botnet Conscripts | cyber | 11 | small (1) |
 | Purge Lists | diplomacy | 7 | small (1) |
 | Dirty Bomb | power | 12 | small (1) |
-| Lab Seizure | cyber | 8 | small (1) |
+| Lab Seizure | cyber | 13 | big (2) |
 | Slander Campaign | diplomacy | 9 | small (1) |
 | Coastal Raids | security | 9 | small (1) |
 | Plant Seizure | industry | 9 | small (1) |
@@ -110,7 +121,7 @@ third from `THIRD_EFFECT_COST`, 18). The deck never reshuffles in a d3 game.
 | Mob Rule | diplomacy | 14 | big (2) |
 | Data Heist | cyber | 12 | big (2) |
 | Hostile Takeover | industry | 15 | big (2) |
-| Station Coup | cyber | 19 | big (2) |
+| Station Coup | cyber | 24 | big (3) |
 | War Plants | industry | 19 | big (2) |
 | Recruitment Drive | diplomacy | 20 | big (2) |
 | Propaganda Network | universal | 18 | big (2) |
