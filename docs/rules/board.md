@@ -74,10 +74,10 @@ megaproject is the corp's defining card.
 <!-- /generated -->
 
 - **Stations** follow the one site model ([ambassadors.md](ambassadors.md)). In production a **neutral** one makes
-  `station_cubes` (1) research cube a round, a player's `owned_station_cubes` (2) in its owner's color; an adversary
+  `station_cubes` (1) research cube a round, a player's `owned_station_cubes` (1; 252, Matt: every building produces 1) in its owner's color; an adversary
   station (corrupted) has **one output** (Matt's ruling #55, as since 185): `station_cubes` (1) **adversary** cube a
   round onto its country's megaproject while it is open, else `station_cubes` compute in the adversary's compute step.
-  No player starts with a station: building one (`station_chips`, 1 chip since r83) or claiming a neutral one
+  No player starts with a station: building one (`station_chips`, 2 chips since 252, Matt) or claiming a neutral one
   (`claim_station` ambassadors) is an investment. Cities build neutral stations too ([war.md](war.md), city growth).
   One opposing ambassador or agent on a station blocks its output while it stands; the Liberate action takes an
   adversary station for the liberator.
@@ -125,13 +125,13 @@ megaproject is the corp's defining card.
 The first neutral station stands next to the starting node, so a player's first
 ambassadors can claim it, on a hex that is a base in no layout (a test holds this). At setup a country's
 neutral stations make 1 cube a round each (the adversary's makes compute): one alone takes 8 rounds to fill an
-8-cube card, three about 3. Claiming one raises its 1 a round to 2; each station a player builds or liberates there adds 2.
+8-cube card, three about 3. Claiming one turns its 1 a round to its owner's color; each station a player builds there adds 1.
 
-**For new players.** A neutral research station makes a cube a round, yours make 2; the adversary's make
+**For new players.** A research station makes a cube a round, neutral or yours; the adversary's make
 compute instead. A country's cubes fill its corp's megaproject, and when the card fills, at
 the end of production, every cube on it pays, overflow included: yours pay you what the
-card says, neutral ones pay nothing. So claim the neutral station (3 ambassadors) or build one before the card
+card says, neutral ones pay nothing. So claim the neutral station (4 ambassadors) or build one (2 chips) before the card
 fills. After that your stations there put cubes on your board, and if one of that country's cities (any city, not
-only yours) is in your reach you can spend them on its converter once a round, or anywhere for 1 insight each. Take
-back an adversary station with 3 of your ambassadors; it becomes yours. The adversary can take yours only once 2 of
+only yours) is in your reach you can spend them on its converter once a round, or anywhere, 2 for 1 insight. Take
+back an adversary station with 4 of your ambassadors; it is left neutral, to claim after. The adversary can take yours only once 2 of
 its agents stand on it and none of yours.

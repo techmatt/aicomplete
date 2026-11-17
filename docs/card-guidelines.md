@@ -102,7 +102,7 @@ Derived: the keep, 4 a tier-1 card and 12 a tier-2 one (1 and 3 insight); +1 ene
 0.8); +1 chip income about 19 (4 rounds × 6 × 0.8). A research cube is 6 (9 when the play completes the
 megaproject), so Make antimatter (5 cubes, 30) loses against antimatter's 18: every engine making it (a plant's
 Action, Pair Forge) shows a clear gain, and every spend is a big one. Other units take `values.json` (a sway 4, a
-node 8) or [card-pricing.md](card-pricing.md) (a city liberated 45); past checks priced a botnet removed at 16. A
+node 8) or [card-pricing.md](card-pricing.md) (a city liberated 45); a botnet removed is 15 (252: the median card for the job; it was the action's 16). A
 card whose unit has no anchor sits inside 1.0-2.5× under both readings: a convert at its output's anchor and its
 input's, an engine's uses at the measured count and the conservative one.
 

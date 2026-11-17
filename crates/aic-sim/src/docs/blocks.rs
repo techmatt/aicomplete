@@ -47,7 +47,7 @@ pub const HOUSE_TERMS: [(&str, &str); 25] = [
     ("On your cards", "on tags: on your cards in play, covered buildings included, and your board's tags, printed or revealed by its tracks. Tokens count only on the card that holds them"),
     ("Action", "once a round, always; \"A, OR B\" is one use, either half"),
     ("Open megaproject", "one that isn't complete; research cubes in your color go only onto one"),
-    ("Liberate", "a corrupted site: the agents on it come off, the adversary's cube comes off and yours goes on (the action pays for it in ambassadors; a card's is unpaid)"),
+    ("Liberate", "a corrupted site: the agents on it come off and the adversary's cube comes off; it is left neutral, for a Claim or a card to take (the action pays for it in ambassadors; a card's is unpaid)"),
     ("Convert", "an agent on or next to the city leaves its stack and becomes your ambassador where it stood"),
     ("Gather up to N", "pieces (ambassadors, agents, troops; botnets never move) onto the target, each from a hex next to it; you may stop at any piece (a strike, \"remove up to N on or next to it\", moves nothing)"),
     ("Push up to N", "pieces from the target, each to a hex next to it that you choose; you may stop at any piece"),
@@ -863,9 +863,9 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          limit on what you hold or on how far cards raise your income; energy you don't spend stays \
          energy, so drafting cards that spend it is up to you.\n\n\
          **Nodes, for new players.** Nodes don't grow on their own. In the action phase you place \
-         nodes with your board's node power, once a round, which costs what your board prints (credits, a research cube or a tag) and does a \
-         little more besides, or with the standard action Place a node, which any player may take twice a round for \
-         credits; cards can add more. Every placement, by power, action or card, pays the energy printed on the track space you uncover. You \
+         them with your board's node routes, each once a round: Expand, on every board, costs nothing more; the board's \
+         other two cost more of its own currency (energy, chips or insight) and do a little more besides; cards can add \
+         more. Every placement, by route or card, pays the energy printed on the track space you uncover. You \
          start with {} energy and one city bound to you, which makes energy every round.\n\n\
          **Dispatches, tags and sales, for new players.** A Dispatch puts one of your ambassadors, \
          from your supply or anywhere on the map, onto a piece or botnet in your reach and costs nothing, but you \

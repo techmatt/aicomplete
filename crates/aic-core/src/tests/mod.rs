@@ -399,11 +399,11 @@ fn pass_round(rules: &Rules, g: &mut GameState) {
     answer_all(rules, g);
 }
 
-/// Seat 0 turns 1 research cube into insight (the cube converter): an action
+/// Seat 0 turns research cubes into insight (the cube converter): an action
 /// that touches nothing else, so the end checks run (r48: it was a gift of
 /// insight, an action since removed).
 fn any_action(rules: &Rules, g: &mut GameState) {
-    set_res(g, 0, Resource::ResearchCubes, 1);
+    set_res(g, 0, Resource::ResearchCubes, rules.world().int("board.insight_cubes"));
     act(rules, g, std_act(0, "insight"));
 }
 
@@ -643,9 +643,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 112;
-const GOLDEN_FINGERPRINT: &str = "61ce6d6cded75e6f";
-const GOLDEN_CONTENT_HASH: &str = "efc17e199add02cb";
+const GOLDEN_REVISION: u32 = 113;
+const GOLDEN_FINGERPRINT: &str = "df3c6b7c4e255d01";
+const GOLDEN_CONTENT_HASH: &str = "21823afa8d44cebe";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

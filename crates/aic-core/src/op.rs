@@ -734,9 +734,12 @@ pub enum Op {
         max: i64,
     },
     /// Place `count` nodes off your AI board's tracks, paying each step's
-    /// cost (041; r81, friction #16: every placement pays it).
+    /// cost (041; r81, friction #16: every placement pays it). `range` (252, Matt's ruling 1: "occasionally range
+    /// 2"): how far from one of your nodes it may go (1: next to one, the default).
     PlaceNode {
         count: i64,
+        #[serde(default = "one", skip_serializing_if = "is_one")]
+        range: i64,
     },
     /// A hardening token on up to `count` hexes of your nodes, in your
     /// reach (041): it absorbs a destruction there.
@@ -817,11 +820,14 @@ pub enum Op {
     },
     /// Liberate one corrupted city in your reach (080, r34: the liberate
     /// capstones): as the Liberate action does (178, Matt's ruling #29), the
-    /// agents on it come off, its adversary cube comes off and your cube goes
+    /// agents on it come off and its adversary cube comes off; it is left neutral
+    /// (252, Matt's ruling 4: free, then claim), or with `own` (the rare card power) your cube goes
     /// on. Each engine's twist (r35): `ambassadors`, you gain
     /// that many; `troops`, up to that many adversary troops in the city's
     /// country come off; `botnet`, a botnet on or next to the city comes off.
     Liberate {
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        own: bool,
         #[serde(default, skip_serializing_if = "is_zero")]
         ambassadors: i64,
         #[serde(default, skip_serializing_if = "is_zero")]

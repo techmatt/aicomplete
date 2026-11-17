@@ -455,8 +455,9 @@ fn a_play_tag_trigger_with_no_tag_fires_once_per_tag_of_any_kind() {
 #[test]
 fn the_cube_converter_has_no_limit_a_round() {
     let (rules, mut g) = table(&[], &[]);
-    set_res(&mut g, 0, Resource::ResearchCubes, 2);
     let w = rules.world();
+    // 252: taxed, `insight_cubes` cubes a use.
+    set_res(&mut g, 0, Resource::ResearchCubes, 2 * w.int("board.insight_cubes"));
     let each = w.int("board.cube_insight");
     let before = g.resource(0, Resource::Insight);
     act(&rules, &mut g, std_act(0, "insight"));

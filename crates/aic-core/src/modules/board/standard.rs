@@ -146,7 +146,8 @@ pub fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::Ambassador => credits(i("ambassador_credits")),
         // 137: the ambassadors depend on the site: [`target_price`].
         StandardAction::Claim | StandardAction::Liberate => Price::default(),
-        StandardAction::Insight => Price { cubes: 1, ..Price::default() },
+        // 252 (Matt's ruling 5): taxed, `insight_cubes` cubes a use.
+        StandardAction::Insight => Price { cubes: i("insight_cubes"), ..Price::default() },
         StandardAction::Envoy => ambassadors(i("envoy_ambassadors")),
         StandardAction::Botnet => credits(i("botnet_credits")),
         StandardAction::BuyEnergy => credits(i("city_energy_credits")),
@@ -237,7 +238,7 @@ pub fn moves_left(w: &World, g: &GameState, seat: usize) -> i64 {
 /// targets and effect are the cards' own (`effects::feasible`, `effects::run`).
 pub fn std_ops(act: StandardAction) -> &'static [Op] {
     match act {
-        StandardAction::Node => &[Op::PlaceNode { count: 1 }],
+        StandardAction::Node => &[Op::PlaceNode { count: 1, range: 1 }],
         // 236: each names its target first, as a card does.
         StandardAction::Troop => &[
             Op::Target { on: crate::op::TargetSpec::Troops },
@@ -317,12 +318,16 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         ),
         StandardAction::Liberate => format!(
             // 235: a factory's price is its own (claim_factory), not the station's.
-            "Liberate it: {} ambassadors for a city, {} for a station, {} for a factory; yours on it pay first; it becomes yours",
+            "Liberate it: {} ambassadors for a city, {} for a station, {} for a factory; yours on it pay first; it is left neutral",
             liberate_ambassadors(w, SiteKind::City),
             liberate_ambassadors(w, SiteKind::Station),
             liberate_ambassadors(w, SiteKind::Factory)
         ),
-        StandardAction::Insight => format!("turn 1 research cube into {}", Resource::Insight.words(w.int("board.cube_insight"))),
+        StandardAction::Insight => format!(
+            "turn {} into {}",
+            Resource::ResearchCubes.words(w.int("board.insight_cubes")),
+            Resource::Insight.words(w.int("board.cube_insight"))
+        ),
         StandardAction::Envoy => "move 1 Discord off the Discord track".into(),
         StandardAction::Botnet => "Take it down (your ambassador stays)".into(),
         StandardAction::BuyEnergy => {
@@ -389,8 +394,8 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
             ),
             "a neutral city, research station or factory, no embargo on it: your cube goes on it".into(),
         ),
-        // 137: it replaced Free a station and the city fallback. r75 (Matt's ruling 2): Claim's payment, and
-        // the site becomes yours.
+        // 137: it replaced Free a station and the city fallback. r75 (Matt's ruling 2): Claim's payment; 252
+        // (Matt's ruling 4, free then claim): the site is left neutral.
         StandardAction::Liberate => (
             "Liberate a site",
             format!(
@@ -400,7 +405,7 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
                 t("board.claim_factory")
             ),
             format!(
-                "an adversary city, station or factory: the adversary's cube comes off, yours goes on, and it sways Unity ({} for a city, {} for a station or factory)",
+                "an adversary city, station or factory: the adversary's cube comes off, it is left neutral (Claim or a card takes it from there), and it sways Unity ({} for a city, {} for a station or factory)",
                 t("alignment.free_city"),
                 t("alignment.free_facility")
             ),
@@ -408,7 +413,7 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
         // 105: the general converter every player has.
         StandardAction::Insight => (
             "Turn a cube into insight",
-            "1 research cube".into(),
+            format!("{} research cubes", t("board.insight_cubes")),
             format!("gain {} insight, as often as you have cubes", t("board.cube_insight")),
         ),
         // 136: any seat, as often as it has ambassadors.
@@ -676,7 +681,7 @@ pub(super) fn std_resolve(
         StandardAction::Liberate => {
             if let Some(h) = on_hex(cx)? {
                 pay_site(g, cx, s, h, true);
-                liberate_site(g, cx, s, h);
+                liberate_site(g, cx, s, h, false);
             }
         }
         StandardAction::Node | StandardAction::Troop | StandardAction::Factory => {

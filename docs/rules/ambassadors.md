@@ -26,13 +26,13 @@ Cities, research stations and factories follow one set of rules and differ only 
   each agent on it (they cancel); **your own ambassadors standing on the site pay first, then your supply**, never
   another player's. Both need the site in reach; a botnet on or next to it stops neither.
 - **Claiming** (the Claim action, [economy.md](economy.md)): a neutral site in reach with no embargo on it,
-  `claim_city` 5, `claim_station` 3, `claim_factory` 2 (r87, Matt: an early factory is worth claiming; 3 before, as
-  Liberate's). Your cube goes on.
+  `claim_city` 5, `claim_station` 4, `claim_factory` 3 (252: priced under the cards for the job, Matt's ruling 5;
+  3 and 2 before). Your cube goes on.
   Difficulty lowers only the adversary's numbers. The bound city at setup is free ([board.md](board.md)).
-  **A claim pays back in a few rounds** (142, Matt): a player's station makes `owned_station_cubes` 2 cubes and a
-  factory `factory_chips` 1 chip a round (r83; a neutral station `station_cubes` 1). Give / get at `values.json`: 2
-  ambassadors (8) for 1 chip a round (4; 6 at the anchors) pays back in 2 rounds, 3 ambassadors (12) for 2 cubes a
-  round (6) in 2; a factory claimed by round 3 of an 8-10 round game makes 6-8 chips, which the corps' chip
+  **A claim pays back slowly** (142; 252): a player's station makes `owned_station_cubes` 1 cube and a
+  factory `factory_chips` 1 chip a round (r83; a neutral station `station_cubes` 1). Give / get at the anchors: 3
+  ambassadors (24) for 1 chip a round (6) pays back in 4 rounds, 4 ambassadors (32) for 1 cube a round (6) in about
+  5: a fallback; the cards that claim do it cheaper. A factory claimed by round 3 of an 8-10 round game makes 6-8 chips, which the corps' chip
   converters ([board.md](board.md)) spend late. The risk is the adversary's: Asset Seizure turns it neutral.
   Claiming a neutral factory also stops it feeding the cities next to it ([war.md](war.md), city growth).
 - **Claiming a station with energy** (142): Power Purchase Agreement (an event: 2 credits and 2 energy) and Microgrid
@@ -40,16 +40,19 @@ Cities, research stations and factories follow one set of rules and differ only 
   (`claim_station`; 148, Matt): the energy replaces the `claim_station` ambassadors, each agent on it
   still costs one of yours (they cancel), paid as the action pays (your ambassadors on the station first, then your
   supply), and it needs the site in reach with no embargo. 2 energy (9)
-  is cheaper than 3 ambassadors (12).
-- **Liberating an adversary site** (the Liberate action) takes massed ambassadors and **makes it yours** (r75, Matt's
-  ruling 2; it turned neutral), at Claim's price table (r91, Matt, 2026-11-12: one table): `liberate_at` 5 and
-  `free_city` 5 Unity for a city, `claim_station` 3 or `claim_factory` 2 and `free_facility` 2 Unity for a station or
-  factory. **A site with an agent on it can't be claimed or liberated** (r91: no "+1 per agent"; clear them first,
-  with Remove agents, a card or a power). The adversary's cube comes off and yours goes on, as a claim's does. It needs the site **in reach** (your node on or next to it:
-  getting close is the risk); a botnet on it stays. No agents land on it. Its factories keep their owners. A
-  **liberate card** ([player-cards.md](player-cards.md), *The liberate capstones*) liberates a city exactly so, for
-  its own price instead of the bill: the agents come off, Unity sways and your cube goes on. The price is the same all
-  game (r67; late strength comes from cards).
+  is cheaper than 4 ambassadors (32).
+- **Liberating an adversary site: free, then claim** (Matt's ruling 4, 2026-11-16, locked; reverses r75). The
+  Liberate action takes massed ambassadors and **leaves the site neutral**: Claim or a card takes it from there. It
+  pays Claim's price table (r91, Matt, 2026-11-12: one table): `liberate_at` 5 and `free_city` 5 Unity for a city,
+  `claim_station` 4 or `claim_factory` 3 and `free_facility` 2 Unity for a station or factory. **A site with an agent
+  on it can't be claimed or liberated** (r91: no "+1 per agent"; clear them first, with Remove agents, a card or a
+  power). The adversary's cube comes off. It needs the site **in reach** (your node on or next to it: getting close
+  is the risk); a botnet on it stays. No agents land on it. Its factories keep their owners. To retake it the
+  adversary must corrupt it again, piling its corrupt number of agents on it ([adversary.md](adversary.md)), as any
+  neutral site. Liberate stays the win route (the purge). A **liberate card** ([player-cards.md](player-cards.md),
+  *The liberate capstones*) liberates a city exactly so, for its own price instead of the bill: the agents come off,
+  Unity sways and it is left neutral; going straight from adversary to yours is a rare card power (Hostile Buyout
+  alone). The price is the same all game (r67; late strength comes from cards).
 
 ## Moving pieces: Gather and Push (r70; Matt, 2026-11-09, *Moving pieces*; numbers candidates)
 
@@ -118,9 +121,9 @@ Diplomacy tag on each card you play (127; at 1 a tag of any kind it piled 52-84 
 
 **For new players.** Every city, research station and factory belongs to a player, to the adversary, or to nobody,
 and makes something for its owner. Spend your ambassadors to claim a neutral one or to take one back from the
-adversary: 5 for a city, 3 for a station or factory either way (2 to claim a factory), never with an agent sitting on
-it; your own ambassadors standing on it pay first. Either way it becomes yours, and taking one back also sways Unity your way. A
-station you own makes 2 a round (a factory 1 chip), so a claim pays back in about 3 rounds; a few cards claim a station for
-energy instead. Every meeting of an agent and an ambassador is one for one. Stand one ambassador on an adversary site
+adversary: 5 for a city, 4 for a station, 3 for a factory either way, never with an agent sitting on
+it; your own ambassadors standing on it pay first. A claim makes it yours; taking one back (Liberate) leaves it
+neutral and sways Unity your way, and you claim it after, if you want it. A station you own makes 1 cube a round (a
+factory 1 chip), so a claim is a slow fallback; a few cards claim a station for energy instead. Every meeting of an agent and an ambassador is one for one. Stand one ambassador on an adversary site
 to shut it off, and clear agents off yours, which they shut off the same way. An ambassador of yours on your own piece
 can take a hit for it.

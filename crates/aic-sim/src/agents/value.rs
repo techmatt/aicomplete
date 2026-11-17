@@ -526,7 +526,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::ChoosePlayer => Worth::now(row("choose_player")),
         Op::OtherGain { resource, amount } => Worth::now(row("other_gain") * r(*resource) * *amount as f64),
         Op::Transfer { resource, max } => Worth::now(row("transfer") * r(*resource) * *max as f64),
-        Op::PlaceNode { count } => Worth { node: *count as f64, ..Worth::default() },
+        Op::PlaceNode { count, .. } => Worth { node: *count as f64, ..Worth::default() },
         Op::ShieldNode { count } => Worth::now(row("shield_node") * t.rate("target_share") * *count as f64),
         Op::DelayThreat { count } => Worth::now(row("delay_threat") * *count as f64),
         Op::Damage { ambassadors, troops } => Worth::now(row("damage") * damage(t, *ambassadors, *troops)),
@@ -558,8 +558,8 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             let found = (1.0 + more * area_share(t, *at)) / (*amount).max(1) as f64;
             let share = if *one_country { 0.8 } else { 1.0 } * found;
             if *cities {
-                // 184: a freed city is liberated through the action's path (178), the seat's cube on too.
-                Worth { city: (row("liberate") + row("liberate_align")) * share * *amount as f64, ..Worth::default() }
+                // 184: a freed city is liberated through the action's path (178); 252: left neutral.
+                Worth { city: row("liberate") * share * *amount as f64, ..Worth::default() }
             } else {
                 // r35: a station is a flip, a factory stays cheap; either kind
                 // reads the station's row, the dearer one it may take.
@@ -567,10 +567,10 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
                 Worth::now(each * share * *amount as f64)
             }
         }
-        // 178 (#29): every liberate card puts the seat's cube on, as the action does.
-        Op::Liberate { ambassadors, troops, botnet } => Worth {
+        // 252: a liberated city is left neutral; only `own` puts the seat's cube on.
+        Op::Liberate { own, ambassadors, troops, botnet } => Worth {
             city: row("liberate")
-                + row("liberate_align")
+                + if *own { row("liberate_align") } else { 0.0 }
                 + row("gain_ambassadors") * r(Resource::Ambassadors) * *ambassadors as f64
                 + row("liberate_troops") * *troops as f64
                 + if *botnet { row("liberate_botnet") } else { 0.0 },
@@ -1308,8 +1308,8 @@ mod tests {
         let pu = CardValue::of(t, &one_shot);
         // r37: one Action, one-shot: a whole liberation, used once; the Followers
         // it arrives with are that use's fuel, not value of their own.
-        // 178 (#29): every liberation puts the seat's cube on (`liberate_align`).
-        let liberation = t.op("liberate") + t.op("liberate_align");
+        // 252: a liberation leaves the city neutral; only `own` adds the seat's cube (`liberate_align`).
+        let liberation = t.op("liberate");
         assert!(pu.once && (pu.use_.city - liberation).abs() < 1e-9, "{:?}", pu.use_);
         assert_eq!(pu.play.now, 0.0, "{:?}", pu.play);
         c.corrupted = true;

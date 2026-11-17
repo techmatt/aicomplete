@@ -338,9 +338,13 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             },
             format!("give another player up to {}", amount(*resource, *max)),
         )),
-        Op::PlaceNode { count } => one(clause(
+        Op::PlaceNode { count, range } => one(clause(
             counted(*count, "node"),
-            format!("place {}", plural(*count, "node")),
+            if *range > 1 {
+                format!("place {} within {range} of one of yours", plural(*count, "node"))
+            } else {
+                format!("place {}", plural(*count, "node"))
+            },
         )),
         Op::ShieldNode { count } => one(clause(
             { let mut p = counted(*count, "harden"); p.push(w("node")); p },
@@ -438,12 +442,12 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             }
             one(clause(adversary(area_icons(parts, *at)), say))
         }
-        Op::Liberate { ambassadors, troops, botnet } => {
+        Op::Liberate { own, ambassadors, troops, botnet } => {
             let mut parts = minus(1, "cube");
             parts.push(w("city"));
             // 178 (#29): every liberation is the Liberate action's, so the house term carries it (the Agents on
-            // it come off, your cube goes on); the align mark (D48) would say it on every card, so none prints it.
-            let say = "liberate it".to_string();
+            // it come off, it is left neutral, 252); `own`, the rare card power, says the cube it puts on.
+            let say = if *own { "liberate it; your cube goes on it".to_string() } else { "liberate it".to_string() };
             let mut out = vec![clause(adversary(parts), say)];
             if *ambassadors > 0 {
                 let n = *ambassadors;

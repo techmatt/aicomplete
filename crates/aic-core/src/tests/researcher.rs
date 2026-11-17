@@ -61,13 +61,15 @@ fn a_bought_cube_goes_on_an_incomplete_project_and_pays_at_completion_only() {
 }
 
 #[test]
-fn the_second_node_pays_cubes_and_no_energy_but_the_step() {
+fn the_second_node_pays_insight_and_no_energy_but_the_step() {
     let (rules, mut g) = c3();
     set_res(&mut g, 2, Resource::Energy, 0);
-    // 212: Peer Review costs 1 research cube (3 before).
-    set_res(&mut g, 2, Resource::ResearchCubes, 0);
+    // 252 (Matt's ruling 1): the Researcher's routes don't wait on research cubes: Peer Review costs 2 insight.
+    set_res(&mut g, 2, Resource::ResearchCubes, 5);
+    set_res(&mut g, 2, Resource::Insight, 1);
     assert!(!rules.legal_actions(&g).contains(&researcher_power(&rules, "Peer Review")));
-    set_res(&mut g, 2, Resource::ResearchCubes, 1);
+    set_res(&mut g, 2, Resource::ResearchCubes, 0);
+    set_res(&mut g, 2, Resource::Insight, 2);
     assert!(rules.legal_actions(&g).contains(&researcher_power(&rules, "Peer Review")));
 }
 

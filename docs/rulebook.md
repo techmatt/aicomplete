@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 112. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 113. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -95,7 +95,7 @@ by the cube on it:
 | State | Cube | A city | A research station | A factory |
 |---|---|---|---|---|
 | **Neutral** | none | its energy may be bought (Buy energy, §8) | 1 neutral cube onto its megaproject | nothing |
-| **A player's** | that player's | 1 energy to its owner | 2 cubes in its owner's color | 1 chip to its owner |
+| **A player's** | that player's | 1 energy to its owner | 1 cube in its owner's color | 1 chip to its owner |
 | **Corrupted** (the adversary's) | adversary | 1 Discord | 1 adversary cube onto its megaproject; once that is complete, 1 compute for the adversary | 1 adversary troop on its hex |
 
 Sites make this in production (§9), except a neutral city's energy (bought, §8) and a corrupted station's compute
@@ -251,7 +251,7 @@ Nothing has a holding limit, and nothing caps your income.
 | **Insight** | **no** | set each round (below) | keeping and playing cards, threats |
 | **Chips** | yes | your factories, cards, Builder powers | buildings, research stations, Procure, chip converters, threats |
 | **Antimatter** | yes | the antimatter plants, the steady source (Penning Trap Array, Antiproton Foundry, Positron Storage Ring, Dark Fiber Collider, Treaty Isotope Bank, Cyclotron Lease: a resource each use for 1, once a round), each board's rare burn (Teardown, Meltdown, Reclaim), Horizon's two converters, two capstones, cards; at worst 5 research cubes | the majors: tier-2 cards (liberations, Annihilation Lance, Fusion Commons, Antimatter Accord, Collider Consortium and more), Containment Reactor, Accelerator Diplomacy |
-| **Research cubes** | yes | your stations, once their megaproject is complete (§9); Cryo Sample Vault; Open Archive | 1 insight each, converters, Penning Trap Array, Field Assay Team, Peer Review, threats |
+| **Research cubes** | yes | your stations, once their megaproject is complete (§9); Cryo Sample Vault; Open Archive | 2 for 1 insight, converters, Penning Trap Array, Field Assay Team, threats |
 | **Ambassadors** | yes (your supply) | 1 at the start, cards, 20 credits | claiming, liberating, Remove agents, Envoy, threats |
 | **Dispatches** | **no** | your board and track spaces, each round | the Dispatch action, 1 each |
 
@@ -270,7 +270,7 @@ rest of the game: income, a new insight total (card-play track only), Dispatches
 **keep upgrade** (§7), and on the last space a **capstone**, a lasting rule (§20). The card-play track does not limit how many cards you play.
 
 **Every placement pays the energy printed on the space** you uncover, whatever places the node; a power or card
-that places one costs only its own tag or currency on top (Place a node: 6 credits):
+that places one costs only its own currency on top (Expand, every board's base route: nothing):
 
 | Space | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
 |---|---|---|---|---|---|---|---|
@@ -278,8 +278,8 @@ that places one costs only its own tag or currency on top (Place a node: 6 credi
 | Card-play track: energy to pay | free | free | pay 1 | pay 2 | pay 2 | pay 3 | pay 5 |
 
 > **Example.** The Builder has placed 3 economy nodes (the setup node included) and none from the card-play track.
-> Placing a node onto the economy track's fourth space with Place a node costs 6 credits and 1 energy (the
-> space's); onto the card-play track's first space, just the 6 credits.
+> Placing a node onto the economy track's fourth space with Expand costs 1 energy (the space's); onto the
+> card-play track's first space, nothing. With Buy In instead, add its 2 energy.
 
 **Where:** on a land hex in your reach with no node of any player and no Fallout. A hex
 with agents or a corrupted site is allowed (a node doesn't remove agents).
@@ -288,9 +288,9 @@ with agents or a corrupted site is allowed (a node doesn't remove agents).
 
 ### Powers
 
-Each power can be used once a round, in the action phase. Every board has one **node power**, which places a node
-and gives a little more (§20); every player also has the standard action **Place a node** (6 credits, twice a round,
-§8). So up to 2 nodes a round come from them; cards can place more. The others, printed on your board, are
+Each power can be used once a round, in the action phase. Every board has three **node routes**: **Expand**, which
+places a node for nothing but the space's energy, and two more in the board's own currency at rising cost, which give a
+little more (§20). There is no standard action for nodes. So up to 3 nodes a round come from them; cards can place more. The others, printed on your board, are
 conversions, draws, a **troop power** and **sacrifice powers**, paid by discarding a card with a tag
 (§7, *Tags*). §20 lists every board's.
 
@@ -420,7 +420,7 @@ The adversary spends **compute** on **projects** in the Income beat, always on t
 **resolves** with its printed effect, and the rest slide left (§17). Some cards and the Researcher's Audit take compute off a project.
 
 Botnets spread quickly (four event cards print **Botnets spread**, above) but are cheap to clear. A **botnet** stays
-until a card or the **Take down a botnet** action (§8, 16 credits) removes it. It makes 1 compute a round
+until a card or the **Take down a botnet** action (§8, 20 credits) removes it. It makes 1 compute a round
 unless a player's ambassador stands on it, and counts against the purge until Unity has tipped 7 times (§14).
 Removing one sways neither side.
 
@@ -540,7 +540,7 @@ action phase: you can't play, pay or take anything back. The phase ends when eve
 - **play cards** from your hand (§7);
 - **use** your buildings' Actions and your board's powers, each once a round (§5, §20);
 - **pay toward threats** you are near (§10);
-- take **standard actions**, as often as you can pay, Place a node twice a round and Remove a troop once (below);
+- take **standard actions**, as often as you can pay, Remove a troop once a round (below);
 - use a **megacorp converter** (below).
 
 ### Standard actions
@@ -550,18 +550,17 @@ Standard actions are always there, a hedge against bad luck: cards and your boar
 | Action | Cost | Effect |
 |---|---|---|
 | **Dispatch** | 1 Dispatch | target a site, base, node or botnet: put one of your ambassadors on it, from your supply or from anywhere on the map (not the hex it is on) |
-| **Place a node** | 6 credits, plus the space's energy | twice a round: a node next to yours, off either track (§5) |
-| **Claim** | ambassadors: city 5, station 3, factory 2 (below) | target a neutral site with no agent on it: it becomes yours |
-| **Liberate** | ambassadors, as Claim | target a corrupted site: it becomes yours |
+| **Claim** | ambassadors: city 5, station 4, factory 3 (below) | target a neutral site with no agent on it: it becomes yours |
+| **Liberate** | ambassadors, as Claim | target a corrupted site: it becomes neutral |
 | **Remove agents** | 2 ambassadors from your supply, spent | target agents: remove up to 3 on or next to it; nothing is placed |
 | **Remove a troop** | 10 credits | once a round: target troops, remove 1 on it |
-| **Take down a botnet** | 16 credits | target a botnet where your ambassador stands: remove it (the ambassador stays) |
+| **Take down a botnet** | 20 credits | target a botnet where your ambassador stands: remove it (the ambassador stays) |
 | **Buy energy** | 5 credits | target a neutral city that isn't blocked or blacked out: gain its energy (1); each city once a round, for all players together |
 | **Lift Fallout** | 2 research cubes | target Fallout: remove it; the one standard action that removes Fallout |
-| **Build a research station** | 1 chip | target an open hex that isn't an industrial zone or Fallout: the station is yours |
+| **Build a research station** | 2 chips | target an open hex that isn't an industrial zone or Fallout: the station is yours |
 | **Envoy** | 1 ambassador from your supply | remove 1 Discord from the Discord track |
 | **Gain an ambassador** | 20 credits | into your supply |
-| **Research cube** | 1 research cube | gain 1 insight |
+| **Research cubes** | 2 research cubes | gain 1 insight |
 | **Make antimatter** | 5 research cubes | gain 1 antimatter: the desperate way; your engines make it far cheaper |
 | **Sell** | a card from your hand | gain 1 credit |
 
@@ -579,19 +578,20 @@ and an ambassador never share a hex.
 **Claim** takes a **neutral** site; **Liberate** takes a **corrupted** one. Otherwise they work the same way:
 
 - **Where:** the site must be in your reach.
-- **Price, in ambassadors:** city **5**, station **3**, factory **2**, the same for both.
+- **Price, in ambassadors:** city **5**, station **4**, factory **3**, the same for both.
 - **No agents:** a site with an agent on it can't be claimed or liberated: remove them first (Remove agents, a card, a power).
 - **Who pays:** your own ambassadors standing on the site pay first, then your supply. Another player's never pay.
-- **Result:** your cube goes on: the site is **yours**. Liberate first takes the adversary's cube off, and adds
-  Unity: city **+5**, station or factory **+2**. A botnet on the site stays.
+- **Result:** Claim puts your cube on: the site is **yours**. Liberate **frees** it: the adversary's cube comes off and
+  the site is left **neutral**, and it adds Unity: city **+5**, station or factory **+2**. Claim it afterward if you
+  want it. A botnet on the site stays.
 
 > **Example: block, then liberate.** A corrupted city in your reach makes 1 Discord a round. You Dispatch an
 > ambassador onto it (1 Dispatch): now it is blocked and makes nothing. A round later you Liberate it: the price is 5 (no agents
-> on it), your standing ambassador pays 1 and your supply pays 4. The adversary's cube comes off, yours goes on, and
-> you add 5 Unity. The city is yours: from this round's production it makes you 1 energy a round.
+> on it), your standing ambassador pays 1 and your supply pays 4. The adversary's cube comes off and you add 5 Unity.
+> The city is neutral now: anyone may buy its energy, and a later Claim (5 more) makes it yours.
 
 **Liberate cards** (Popular Uprising and some tier-2 cards) liberate their target, a corrupted city in reach, as Liberate does, for the card's own price
-instead of ambassadors.
+instead of ambassadors. Hostile Buyout alone puts your cube on the city it frees.
 
 A card that lets you **claim** a neutral research station claims it as Claim does, unpaid: a station with an agent on
 it can't be claimed (clear it first).
@@ -628,7 +628,7 @@ map before the next.
    own hex. A neutral factory, or a blocked one, makes nothing.
 2. **Cities.** Each unblocked city makes 1 energy: a player's city for its owner; a corrupted city 1 Discord instead.
    A neutral city's energy is bought in the action phase (Buy energy, §8), not here.
-3. **Stations.** A player's station makes 2 cubes in its owner's color; a neutral one makes 1 neutral cube. They go
+3. **Stations.** A player's station makes 1 cube in its owner's color; a neutral one makes 1 neutral cube. They go
    onto their country's megaproject. Once it is complete, a player's cubes go onto their board as **research cubes**,
    and a neutral station's are lost. A corrupted station makes 1 **adversary cube** onto its country's megaproject
    until it is complete; after that it makes compute instead, in the adversary's compute step (§6). A player's
@@ -839,7 +839,7 @@ destroy the node of a player with **Sanctuary** (a Protector capstone), and spen
 
 Nothing protects a last node but the protection order above: anything that destroys a node can destroy your last
 one, at any stage. Any player with no nodes loses the game for everyone, so keep a second node on the board: the
-first spaces of both tracks cost no energy, so an early second node costs only your node power's price or Place a node's 6 credits. Watch the hexes next to a
+first spaces of both tracks cost no energy, so an early second node costs nothing with Expand. Watch the hexes next to a
 lone node: two agents on it destroy it, and Night Raid lands an agent on two node hexes in each country.
 
 *Sources: rules/war.md (Node loss), rules/ai-powers.md (Shelters and hardening), rules/ambassadors.md
@@ -1024,11 +1024,11 @@ Each power can be used once a round, in the action phase. A tag in a cost means 
 
 | Board | Node power | Conversions | Draw | Sacrifice and other powers |
 |---|---|---|---|---|
-| Builder | **Buy In** (2 energy: a node; 1 chip if the new node brings a factory into your reach) | **Mint** (3 credits: 1 chip) | **Procure** (1 chip: draw 2) | **Fortify** (1 chip: target troops; remove 1 on it and harden a facility on or next to it), **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand), **Teardown** (1 chip: destroy one of your own factories anywhere, Fallout goes on its hex, under any node there, which stays; 1 antimatter) |
-| Protector | **Accord** (2 energy: a node; if the new node brings a city into your reach, a new ambassador onto one such city) | **Interdict** (1 Security: target troops; remove up to 2 on it) | **Debrief** (1 Security: target agents; draw 1, and remove 1 agent on it) | **Bulwark** (1 energy: target a facility; harden it), **Patrol** (1 energy: target agents or troops; push up to 3 from it), **Reclaim** (1 Security, 6 credits, 2 energy: target a corrupted station or factory; turn it neutral; 1 antimatter) |
-| Researcher | **Peer Review** (1 research cube: a node; 1 insight if the new node brings a research station into your reach) | **Grant** (3 credits: 1 cube in your color on a megaproject that isn't complete) | **Synthesis** (1 insight: draw 1) | **Disrupt** (1 Cyber, 1 research cube: remove up to 2 adversary troops in one country), **Field Station** (1 Industry: target an open hex where Build a research station could go; a station there without the chips), **Audit** (1 Cyber: remove 3 compute from a project), **Meltdown** (2 research cubes: destroy one of your own research stations anywhere; 1 antimatter) |
+| Builder | **Buy In** (2 energy: a node; 1 chip if the new node brings a factory into your reach), **Annex** (1 chip: a node within 2 of one of yours) | **Mint** (3 credits: 1 chip) | **Procure** (1 chip: draw 2) | **Fortify** (1 chip: target troops; remove 1 on it and harden a facility on or next to it), **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand), **Teardown** (1 chip: destroy one of your own factories anywhere, Fallout goes on its hex, under any node there, which stays; 1 antimatter) |
+| Protector | **Accord** (2 energy: a node; if the new node brings a city into your reach, a new ambassador onto one such city), **Outpost** (3 energy: a node and 1 ambassador) | **Interdict** (1 Security: target troops; remove up to 2 on it) | **Debrief** (1 Security: target agents; draw 1, and remove 1 agent on it) | **Bulwark** (1 energy: target a facility; harden it), **Patrol** (1 energy: target agents or troops; push up to 3 from it), **Reclaim** (1 Security, 6 credits, 2 energy: target a corrupted station or factory; turn it neutral; 1 antimatter) |
+| Researcher | **Peer Review** (2 insight: a node; 1 insight if the new node brings a research station into your reach), **Field Survey** (3 insight: a node; draw 1) | **Grant** (3 credits: 1 cube in your color on a megaproject that isn't complete) | **Synthesis** (1 insight: draw 1) | **Disrupt** (1 Cyber, 1 research cube: remove up to 2 adversary troops in one country), **Field Station** (1 Industry: target an open hex where Build a research station could go; a station there without the chips), **Audit** (1 Cyber: remove 3 compute from a project), **Meltdown** (2 research cubes: destroy one of your own research stations anywhere; 1 antimatter) |
 
-Every player also has the standard action **Place a node** (6 credits, twice a round). Every placement also pays the track space's energy (§5).
+Every board also has **Expand** (a node for nothing more), its base node route. Every placement also pays the track space's energy (§5).
 
 | Board | Economy track capstone | Card-play track capstone |
 |---|---|---|

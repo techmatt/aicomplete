@@ -125,5 +125,5 @@ fn liberate_spends_your_own_ambassadors_on_the_site() {
     pick(&rules, &mut g, c);
     let left = (g.tokens(c, ADV_CUBE), g.tokens(c, ambassador(0)), g.tokens(c, ambassador(1)), g.resource(0, Resource::Ambassadors));
     assert_eq!(left, (0, 0, 1, 0));
-    assert_eq!(g.tokens(c, cube(0)), 1, "liberated: yours");
+    assert_eq!(g.tokens(c, cube(0)), 0, "liberated: neutral (252)");
 }

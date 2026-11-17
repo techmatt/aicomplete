@@ -1312,15 +1312,15 @@ mod tests {
             let k = ai::board(&w, 0).powers.iter().position(|p| p.name == name).unwrap();
             Action::Power { seat: 0, power: k as u8 }
         };
-        // 206: Expand left every board; Buy In is the Builder's one node power, and the standard action places too.
+        // 252 (Matt's ruling 1): Expand, the base route, is every board's first node power; Buy In comes second.
         let (buy, scrap) = (by_name("Buy In"), by_name("Scrap"));
-        let node = Action::Standard { seat: 0, act: "node".into() };
+        let node = by_name("Expand");
         let no_powers = forced("no_powers");
         assert!(no_powers.ruled_out(&w, &g, &scrap) && !no_powers.ruled_out(&w, &g, &buy));
         let no_node = forced("no_node");
         assert!(no_node.ruled_out(&w, &g, &buy) && no_node.ruled_out(&w, &g, &node));
         assert!(!no_node.ruled_out(&w, &g, &scrap));
         let never_second = forced("never_second_node");
-        assert!(!never_second.ruled_out(&w, &g, &buy));
+        assert!(!never_second.ruled_out(&w, &g, &node) && never_second.ruled_out(&w, &g, &buy));
     }
 }

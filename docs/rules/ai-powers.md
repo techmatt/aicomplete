@@ -22,7 +22,9 @@ exception is Disrupt's country.
 | Board | Power | Cost | Effect |
 |---|---|---|---|
 | Builder | Mint | 3 credits | gain 1 chip |
+| Builder | Expand | nothing | place 1 Node |
 | Builder | Buy In | 2 energy | place 1 Node; if the new node brings a factory into your reach, also gain 1 chip |
+| Builder | Annex | 1 chip | place 1 Node within 2 of one of yours |
 | Builder | Scrap | 1 Industry | gain 1 chip |
 | Builder | Overcharge | 1 Power | gain 2 energy |
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
@@ -30,12 +32,16 @@ exception is Disrupt's country.
 | Builder | Fortify | 1 chip | Target: Troops. Remove 1 Troop on it; harden a facility on or next to it |
 | Builder | Teardown | 1 chip | destroy one of your factories anywhere; Fallout goes on its hex; gain 1 antimatter |
 | Protector | Bulwark | 1 energy | Target: a facility. Harden it |
+| Protector | Expand | nothing | place 1 Node |
 | Protector | Accord | 2 energy | place 1 Node; if the new node brings a city into your reach, also put a new ambassador on one such city |
+| Protector | Outpost | 3 energy | place 1 Node; gain 1 ambassador |
 | Protector | Debrief | 1 Security | Target: Agents. Draw 1 card and remove 1 Agent on it |
 | Protector | Patrol | 1 energy | Target: Agents or Troops. Push up to 3 from it, each to a hex next to it |
 | Protector | Interdict | 1 Security | Target: Troops. Remove up to 2 on it |
 | Protector | Reclaim | 1 Security + 6 credits + 2 energy | Target: a corrupted research station or factory. Turn it neutral; gain 1 antimatter |
-| Researcher | Peer Review | 1 research cube | place 1 Node; if the new node brings a research station into your reach, also gain 1 insight |
+| Researcher | Expand | nothing | place 1 Node |
+| Researcher | Peer Review | 2 insight | place 1 Node; if the new node brings a research station into your reach, also gain 1 insight |
+| Researcher | Field Survey | 3 insight | place 1 Node; draw 1 card |
 | Researcher | Grant | 3 credits | add 1 research cube in your color to an open megaproject |
 | Researcher | Field Station | 1 Industry | Target: an open hex. Build a research station on it, paying no chips |
 | Researcher | Audit | 1 Cyber | remove 3 compute from one adversary project |
@@ -55,16 +61,21 @@ hacks troops anywhere in a country, no reach.
 
 **Energy powers things (Matt, 2026-11-15).** The two boards that earn the most energy place nodes with it: Buy In
 and Accord cost 2 energy each (no credits, no sacrifice), beside the track step every placement pays; Bulwark and Patrol cost 1. At the anchors a node (8) and its rider (a chip 6, an ambassador 8, at the
-72% a fresh spot comes up) are worth 12-14 for 9. The Researcher, short of energy, places with a research cube.
+72% a fresh spot comes up) are worth 12-14 for 9. The Researcher, short of energy, places with insight (Peer Review
+2, its rider 1 back: 8 for 8 + 2.9), never research cubes (Matt, 2026-11-16).
+
+**Node routes' give / get (252, at the unit anchors; a node 8, besides the track step every placement pays):**
+Expand, nothing for a node (the base route, once a round, Matt's ruling); Annex 1 chip (6) for a node within 2 (8,
+a reach no other route has): 1.33; Outpost 3 energy (13.5) for a node and an ambassador (16): 1.19; Field Survey 3
+insight (12) for a node and a card (13): 1.08. Each is once a round; the step's rising energy caps all three.
 
 **Node powers' riders (candidate).** A node power places next to your nodes as any placement does, and its bonus comes
 only when the new node is **on or next to a fresh spot of its board's kind**, one none of your other nodes is on or
 next to: Buy In's chip by a factory, Accord's ambassador by a city (a new ambassador onto that city, standing toward
 its claim), Peer Review's insight by a research station. With no such spot it still places, without the bonus. Why
 fresh: a city, a factory and a station are on or next to almost every hex, so "on or next to" alone was met on 99-100%
-of placements; a fresh spot, about 72%, pays for reaching a new one. Nothing places a node anywhere; "within range 2
-of one of your nodes" is kept for a stronger version (a track upgrade or a card), never a board's own power, and no
-content prints it yet.
+of placements; a fresh spot, about 72%, pays for reaching a new one. Nothing places a node anywhere: next to your
+nodes, occasionally within 2 (Annex, the Builder's top route; Matt, 2026-11-16), and cards may target.
 
 | Tag | Story | Its usual effects (the tag story table of scripts/design_check.json) |
 |---|---|---|
@@ -117,7 +128,7 @@ boards' own insight ways are few:
 
 **For new players.** Insight is what you spend to keep and play cards: each round, the number on the rightmost space you've uncovered on
 your card-play track that shows one (3 at the start). When you
-are short, turn a research cube into 1 insight at any time (Cintamani's converter gives 2), and use your board's own
+are short, turn 2 research cubes into 1 insight at any time (Cintamani's converter gives 2 for 1), and use your board's own
 way: the Protector gains 1 each of the first two times each round a troop ends its march next to its node (Vigil), the
 Researcher gains 1 with each node Peer Review places by a station new to its nodes and may spend 1 for a card (Synthesis). Insight you don't spend still goes at the round's end (the Researcher
 keeps all of it), but a few threat counters offer insight (3 at tier 1, 4 at tier 2: [threats.md](threats.md) *Counters*),

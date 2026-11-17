@@ -3620,6 +3620,7 @@
    },
    {
     "op": "liberate",
+    "own": true,
     "ambassadors": 3
    }
   ],

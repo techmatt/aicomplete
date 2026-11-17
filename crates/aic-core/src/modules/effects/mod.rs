@@ -120,9 +120,9 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             }
         }
         Op::Transfer { resource, max } => resources::transfer(g, cx, ctx, seat, *resource, *max)?,
-        Op::PlaceNode { count } => {
+        Op::PlaceNode { count, range } => {
             for _ in 0..*count {
-                let Some(h) = board::place_node(g, cx, seat)? else { break };
+                let Some(h) = board::place_node_within(g, cx, seat, *range)? else { break };
                 ctx.node = Some(h);
             }
         }
@@ -189,9 +189,9 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             let target = ctx.target.flatten();
             removal::cleanse(g, cx, seat, *amount, *one_country, *cities, *only, &zone, target)?
         }
-        Op::Liberate { ambassadors, troops, botnet } => {
+        Op::Liberate { own, ambassadors, troops, botnet } => {
             let zone = ctx.area(&w, g, seat, Area::On);
-            removal::liberate_city(g, cx, seat, *ambassadors, *troops, *botnet, &zone)?
+            removal::liberate_city(g, cx, seat, *own, *ambassadors, *troops, *botnet, &zone)?
         }
         Op::ClearCity { max } => {
             let zone = ctx.area(&w, g, seat, Area::On);

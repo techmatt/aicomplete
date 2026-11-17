@@ -202,9 +202,14 @@ def check_shares(games, cfg, o):
 
 def check_repeats(boards, cfg, o):
     need = cfg['repeat_powers']['boards_min']
+    exempt = cfg['repeat_powers'].get('exempt', {})
     by_name, by_fx = defaultdict(set), defaultdict(set)
+    for name, why in sorted(exempt.items()):
+        o.i(f'repeat-power exemption {name}: {why}')
     for b in boards:
         for p in b['powers']:
+            if p['name'] in exempt:
+                continue
             by_name[p['name']].add(b['id'])
             by_fx[json.dumps(p['effects'], sort_keys=True)].add((b['id'], p['name']))
     for n, bs in sorted(by_name.items()):

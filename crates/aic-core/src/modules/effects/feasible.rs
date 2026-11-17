@@ -152,9 +152,9 @@ fn feasible_aimed(
             Op::CopyIncome => !cards::income_buildings(w, g, seat).is_empty(),
             Op::Reuse => !cards::reusable(w, g, seat, card).is_empty(),
             Op::DiscardHand { .. } => !g.pile(&cards::hand(seat)).is_empty(),
-            Op::PlaceNode { .. } => {
+            Op::PlaceNode { range, .. } => {
                 board::can_pay_placement(w, g, seat, gained)
-                    && !board::node_sites(w, g, seat).is_empty()
+                    && !board::node_sites_within(w, g, seat, *range).is_empty()
             }
             Op::ShieldNode { .. } => any_hex(g, |h| shieldable(g, seat, h)),
             // Giving needs someone to give to (Vendor Financing and Development Loan still pay you).

@@ -38,6 +38,11 @@ pub fn track2_taken(g: &GameState, seat: usize) -> usize {
 /// Fallout, adjacent to one of its own (with none left, any such
 /// hex in its home country).
 pub fn node_sites(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
+    node_sites_within(w, g, seat, 1)
+}
+
+/// [`node_sites`] within `range` of one of the seat's nodes (252: a top node route's range 2).
+pub fn node_sites_within(w: &World, g: &GameState, seat: usize, range: i64) -> Vec<usize> {
     let mine = node(seat);
     // 138: no node goes on Fallout.
     let free = |h: usize| {
@@ -52,15 +57,12 @@ pub fn node_sites(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
             .filter(|&h| free(h))
             .collect();
     }
-    (0..g.hexes.len())
-        .filter(|&h| {
-            free(h)
-                && w.map.hexes[h]
-                    .neighbors
-                    .iter()
-                    .any(|&x| g.tokens(x, mine) > 0)
+    let near = |h: usize| {
+        w.map.hexes[h].neighbors.iter().any(|&x| {
+            g.tokens(x, mine) > 0 || (range > 1 && w.map.hexes[x].neighbors.iter().any(|&y| g.tokens(y, mine) > 0))
         })
-        .collect()
+    };
+    (0..g.hexes.len()).filter(|&h| free(h) && near(h)).collect()
 }
 
 /// The city a seat starts bound to (066): the clean city of country `c` nearest
@@ -114,11 +116,16 @@ pub fn can_pay_placement(w: &World, g: &GameState, seat: usize, gained: i64) -> 
 /// the space under it) onto a hex next to its node, paying its step; only
 /// tracks whose next step the seat can pay are offered. Returns the hex it went on (212: a rider's "it").
 pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res<Option<usize>> {
+    place_node_within(g, cx, seat, 1)
+}
+
+/// [`place_node`] within `range` of one of the seat's nodes (252).
+pub fn place_node_within(g: &mut GameState, cx: &mut Cx, seat: usize, range: i64) -> Res<Option<usize>> {
     let w = cx.world;
     if !ai::can_place(&w, g, seat) {
         return Ok(None);
     }
-    let hexes = node_sites(&w, g, seat);
+    let hexes = node_sites_within(&w, g, seat, range);
     // 021: with two tracks the player chooses which one's next token to take.
     let b = ai::board(&w, seat);
     let (t1, t2) = (track_taken(g, seat), track2_taken(g, seat));

@@ -549,7 +549,7 @@ fn taking_a_botnet_down_needs_your_ambassador_on_its_hex() {
     let w = rules.world();
     let m = &rules.map;
     let price = w.int("board.botnet_credits");
-    assert_eq!(price, 16);
+    assert_eq!(price, 20);
     let me = m.numbered(0, piece(0).node);
     put(&mut g, me, node(0), 1);
     let h = m.hexes[me].neighbors.iter().copied().find(|&x| kind(m, x) != HexKind::Ocean).unwrap();

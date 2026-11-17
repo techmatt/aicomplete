@@ -1,7 +1,8 @@
 // `npm run e2e:researcher` (075): the Researcher's board in a real browser. Plays the baseline at
 // 3 countries with `station_cubes` and `owned_station_cubes` (142: a claimed station's) 4, so Onyx's 8-cube card fills in round 2 (184: at 3 it filled in round 3 and round 4 held no cubes): seat 2, the Researcher, claims
 // Onyx's neutral station and passes its turns. Checks its tracks and powers on the page, Patience's
-// carried insight and the stored research cubes, and spends Peer Review's cubes (its price from content) on it.
+// carried insight and the stored research cubes, and spends Peer Review's insight (its price from content; 252: insight,
+// not cubes) on it, leaving the cubes stored.
 // Needs the viewer running.
 //   AIC_URL  viewer URL (default http://localhost:5173/)
 // Screenshot: web/e2e-out/researcher.png.
@@ -86,15 +87,18 @@ try {
   writeFileSync(join(out, 'researcher.png'), await page.shot());
 
   const k = await js(`window.aic.view.seats[${SEAT}].board.cards.filter((c) => c.id.includes('.power.')).findIndex((c) => c.name === 'Peer Review')`);
-  check(await js(`window.aic.legal.some((a) => a.type === 'power' && a.seat === ${SEAT} && a.power === ${k})`), 'the second node power is on the menu');
+  // 252: Peer Review's price from content, in insight (Patience carries it).
+  const peer = ais.find((b) => b.id === 'researcher').powers.find((p) => p.name === 'Peer Review');
+  const price = (peer.cost.find(([r]) => r === 'insight') ?? [, 0])[1];
+  const insight = await value('resource.insight');
+  check(insight >= price, `the Researcher holds ${insight} insight, Peer Review's ${price}`);
+  check(await js(`window.aic.legal.some((a) => a.type === 'power' && a.seat === ${SEAT} && a.power === ${k})`), 'the middle node route is on the menu');
   await js(`window.aic.act({ type: 'power', seat: ${SEAT}, power: ${k} })`);
   for (let i = 0; i < 4 && await js(`window.aic.legal.some((a) => a.type === 'choose')`); i++) {
     await js(`window.aic.act(window.aic.legal.filter((a) => a.type === 'choose')[0])`);
   }
-  // 221: Peer Review's price from content (3 cubes once, 1 at r97).
-  const peer = ais.find((b) => b.id === 'researcher').powers.find((p) => p.name === 'Peer Review');
-  const cubes = (peer.cost.find(([r]) => r === 'research_cubes') ?? [, 0])[1];
-  check(await value('resource.research_cubes') === stored - cubes, `it spends ${cubes} research cubes`);
+  // 252: it spends insight, never the stored cubes (Matt's ruling 1).
+  check(await value('resource.research_cubes') === stored, 'it spends no research cubes');
   check(consoleErrors.length === 0, `no page errors${consoleErrors.length ? `: ${consoleErrors.join(' | ')}` : ''}`);
 } catch (e) {
   console.error(e);

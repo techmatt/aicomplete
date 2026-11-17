@@ -477,7 +477,7 @@ mod tests {
     }
 
     /// 092: a board power reads as a card would: Shelter fits Civic shelter,
-    /// Grant and Peer Review (paid in cubes) fit Cubes and stations, and a
+    /// Grant (cubes onto a megaproject) fits Cubes and stations (252: Peer Review is paid in insight now), and a
     /// strategy weights nothing a power doesn't do.
     #[test]
     fn powers_fit_their_strategies() {
@@ -489,10 +489,8 @@ mod tests {
             b.powers.iter().find(|p| p.name == name).unwrap().clone()
         };
         let fit = |id: &str, p: &Power| list[by_id(id).unwrap() as usize].fit_power(p);
-        for name in ["Grant", "Peer Review"] {
-            let p = power("researcher", name);
-            assert!(fit("cubes_stations", &p) > 1.0, "{name}");
-            assert!(fit("cubes_stations", &p) > fit("science_chain", &p), "{name}");
-        }
+        let p = power("researcher", "Grant");
+        assert!(fit("cubes_stations", &p) > 1.0);
+        assert!(fit("cubes_stations", &p) > fit("science_chain", &p));
     }
 }

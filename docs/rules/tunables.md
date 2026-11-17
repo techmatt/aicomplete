@@ -13,22 +13,22 @@ conventions: [README.md](README.md).*
 | `board.city_energy_credits` | 5 | 0..20 | standard action Buy energy: credits for a neutral city's energy, once per city a round, the city in reach and producing |
 | `board.aligned_bonus` | 0 | 0..10 | extra energy an aligned city gives its owner |
 | `board.station_cubes` | 1 | 0..5 | research cubes a neutral station makes a round (an adversary one: compute) |
-| `board.owned_station_cubes` | 2 | 0..5 | research cubes a player-owned station makes its owner a round |
+| `board.owned_station_cubes` | 1 | 0..5 | research cubes a player-owned station makes its owner a round |
 | `board.divert_discord` | 1 | 0..5 | Discord per unit of a corrupted city's energy diverted to the adversary |
 | `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy, each round, of an aligned city an agent darkens |
 | `board.liberate_at` | 5 | 1..10 | the Liberate action: ambassadors that liberate an adversary city |
 | `board.claim_city` | 5 | 1..10 | the Claim action: ambassadors that claim a neutral city (Liberate's table too, its city price `liberate_at`) |
-| `board.claim_station` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral research station |
-| `board.claim_factory` | 2 | 1..10 | the Claim action: ambassadors that claim a neutral factory |
+| `board.claim_station` | 4 | 1..10 | the Claim action: ambassadors that claim a neutral research station |
+| `board.claim_factory` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral factory |
 | `board.start_nodes` | 1 | 1..3 | nodes each player starts with: its start hex, then the lowest-numbered free land hexes next to it (the extras off no track) |
 | `board.destruction_discord` | 1 | 0..5 | Discord each facility destroyed in war sways |
 | `board.troop_spent` | 1 | 0..1 | 1: an adversary troop that strikes a target is used up |
 | `board.troop_steps` | 1 | 0..5 | steps each adversary troop takes in the march: destroy a target on or next to it, else move 1 hex toward the nearest |
 | `board.troop_node` | 0 | 0..4 | adversary troops strike nodes from this stage of adversary card on (0: always, 4: never) |
 | `board.vigil_cap` | 2 | 1..10 | troops a round whose march ending next to a seat's node pays its Vigil (later ones that round pay nothing) |
-| `board.station_chips` | 1 | 0..20 | standard action: chips to build a research station |
+| `board.station_chips` | 2 | 0..20 | standard action: chips to build a research station |
 | `board.station_ambassadors` | 0 | 0..5 | standard action: ambassadors a research station also uses up (candidate; 0: none) |
-| `board.node_credits` | 6 | 0..30 | standard action Place a node: credits, beside the track step's energy (0 with `node_energy` 0: no such action) |
+| `board.node_credits` | 0 | 0..30 | standard action Place a node: credits, beside the track step's energy (0 with `node_energy` 0: no such action) |
 | `board.node_energy` | 0 | 0..10 | standard action Place a node: energy, beside its credits and the track step's energy |
 | `board.troop_credits` | 10 | 0..50 | standard action Remove a troop: credits for 1 troop in reach (0: no such action) |
 | `board.node_per_round` | 2 | 1..5 | times a seat may take Place a node a round |
@@ -43,9 +43,10 @@ conventions: [README.md](README.md).*
 | `board.envoy_ambassadors` | 1 | 0..5 | standard action Envoy: your ambassadors from the supply, used up, to move 1 Discord off the Discord track (0: no such action) |
 | `board.ambassador_credits` | 20 | 1..50 | standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit) |
 | `board.sell_credits` | 1 | 0..20 | standard action: credits for selling a card from hand |
-| `board.cube_insight` | 1 | 0..5 | standard action, no limit a round: insight for 1 research cube (0: no such action) |
+| `board.cube_insight` | 1 | 0..5 | standard action, no limit a round: insight for `insight_cubes` research cubes (0: no such action) |
+| `board.insight_cubes` | 2 | 1..5 | standard action Turn a cube into insight: research cubes a use (252: taxed) |
 | `board.antimatter_cubes` | 5 | 0..10 | standard action, the desperate source: research cubes for 1 antimatter, no limit a round (0: no such action) |
-| `board.botnet_credits` | 16 | 1..50 | standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays) |
+| `board.botnet_credits` | 20 | 1..50 | standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays) |
 | `board.std_off` | 0 | 0..15 | a probe's switch: standard actions not offered, by place in the table from 1 (station, remove, lift, dispatch, ambassador, claim, liberate, insight, envoy, botnet, buy energy, antimatter, node, troop, factory; 0: none off) |
 | `adversary.difficulty` | 0 | 0..4 | difficulty level 0-4 (each level includes the ones below) |
 | `adversary.stage_cards` | 5, 5, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |

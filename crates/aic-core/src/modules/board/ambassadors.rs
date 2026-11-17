@@ -202,12 +202,12 @@ pub fn claim_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, route: 
 }
 
 /// Adversary site `h` is liberated by seat `seat`'s massed ambassadors (the
-/// Liberate action, paid): the agents on it cancel, the adversary's cube comes
-/// off and r75 (Matt's ruling 2) puts the seat's on: it is the seat's, as a
-/// claim makes it (it turned neutral). A city sways `alignment.free_city`
+/// Liberate action, paid): the agents on it cancel and the adversary's cube comes
+/// off; 252 (Matt's ruling 4, free then claim; reverses r75) leaves it neutral, for a Claim or a card to
+/// take, unless `own` (a rare card power) puts the seat's cube on. A city sways `alignment.free_city`
 /// toward Unity, a station or factory `alignment.free_facility` (a botnet on it
 /// stays). No agents land on it. A liberate card liberates through here too, unpaid (178, Matt's ruling #29).
-pub fn liberate_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
+pub fn liberate_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, own: bool) {
     let w = cx.world;
     let Some(kind) = site_kind(&w, g, h) else { return };
     let adv = g.tokens(h, ADV_AMBASSADOR);
@@ -223,7 +223,9 @@ pub fn liberate_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
     } else {
         alignment::unity_from(g, cx, kind.name(), w.int("alignment.free_facility"));
     }
-    cx.add_tokens(g, h, cube(seat), 1);
+    if own {
+        cx.add_tokens(g, h, cube(seat), 1);
+    }
     cx.note(Some(h), || format!("Seat {seat} liberates the {} at {}", kind.name(), hex_name(&w, h)));
 }
 

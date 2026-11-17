@@ -1598,6 +1598,10 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
             Op::LiftFallout { count, .. } if *count < 1 => {
                 return Err(format!("{what}: lift_fallout needs count >= 1"));
             }
+            // 252 (Matt's ruling 1): next to your nodes, occasionally within 2; never further.
+            Op::PlaceNode { range, .. } if !(1..=2).contains(range) => {
+                return Err(format!("{what}: place_node's range is 1 or 2"));
+            }
             // 142 (P1): the no-location form (the most infiltrated city) is gone.
             Op::CorruptCity { at: None } => {
                 return Err(format!("{what}: corrupt_city needs `at` (the threat's city); Corrupt cities is `corrupt`"));

@@ -1,0 +1,88 @@
+warnings: design: job-no-card Build a research station; design: job-no-card Claim a city; design: dials-hide-design 4 dials beside 21 design files; design: kept-not-played exascale_training_cluster 0.08; design: kept-not-played citywide_microgrid 0.09; design: kept-not-played dyson_swarm_tranche 0.04; design: usage 7 (Protector Bulwark 0.16 outside 0.40-0.90, Builder Scrap 2.06 outside 0.25-2.00, Researcher Audit 2.12 outside 0.25-2.00, ...); design: tokens player token moves +11%
+
+768 games, old side 768
+## Warnings (14)
+- [job-no-card] Build a research station: no card does its job (station_owned); the action is the only route beside Field Station (Researcher)
+- [job-no-card] Claim a city: no card does its job (city_claimed); the action is the only route
+- [dials-hide-design] since 8b96eb057: 4 dial(s) moved 40%+ (board.claim_factory 2->3, board.node_credits 6->0, board.owned_station_cubes 2->1, board.station_chips 1->2) in the same change as 21 design file(s) (content/ais.json, content/cards.json, crates/aic-core/src/face.rs, crates/aic-core/src/lib.rs...)
+- [kept-not-played] exascale_training_cluster: kept 0.40 a game, played 0.08
+- [kept-not-played] citywide_microgrid: kept 0.37 a game, played 0.09
+- [kept-not-played] dyson_swarm_tranche: kept 0.19 a game, played 0.04
+- [usage] Protector Bulwark (board-engine): 0.16 a seat-round, outside its band 0.40-0.90 (unused)
+- [usage] Builder Scrap (sacrifice): 2.06 a seat-game, outside its band 0.25-2.00 (dominant)
+- [usage] Researcher Audit (sacrifice): 2.12 a seat-game, outside its band 0.25-2.00 (dominant)
+- [usage] Claim a site (sway-tool): 0.04 a seat-game, outside its band 0.10-2.00 (unused)
+- [usage] Tidal Grid converter (converter): 0.14 a seat-game, outside its band 0.30-3.00 (unused)
+- [usage] Tidal Grid chip converter (converter): 0.00 a seat-game, outside its band 0.30-3.00 (unused)
+- [usage] Antimatter spent (resource): 48% of what is gained, spent, outside its band 50%-110% (unused)
+- [tokens] tokens a round, player token moves: 8.2 against 7.3 (+11%; max +10%)
+
+## Information (68)
+- repeat-power exemption Expand: Matt's ruling 1 (2026-11-16): each board's base node route, the track step's energy only, once a round, the same on every board
+- Make antimatter: give 5 research_cubes = 30, get 1 antimatter = 18 at the anchors: 0.60; 0.11 uses a game (max 1.0)
+- Buy a city's energy: give 5 credits = 5, get 1 energy = 4.5 at the anchors: 0.90; 5.90 uses a game (max 1.0)
+- Turn a cube into insight: give 2 research_cubes = 12, get 1 insight = 4 at the anchors: 0.33; 0.24 uses a game (max 1.0)
+- Build a research station: give 2 chips + 0 ambassadors = 12, get 1 station_owned = 12 at the anchors: 1.00; 0.46 uses a game (max 1.0)
+- Remove agents: give 2 ambassadors = 16, get 3 agent = 15 at the anchors: 0.94; 0.82 uses a game (max 1.0)
+- Lift Fallout: give 2 research_cubes = 12, get 1 land_token = 12 at the anchors: 1.00; 0.15 uses a game (max 1.0)
+- Gain a player ambassador: give 20 credits = 20, get 1 ambassadors = 8 at the anchors: 0.40; 1.21 uses a game (max 1.0)
+- Take down a botnet: give 20 credits = 20, get 1 botnet + 0 sway = 15 at the anchors: 0.75; 1.93 uses a game (max 1.0)
+- Liberate a city: give 5 ambassadors = 40, get 1 city_liberated + 5 sway (in the anchor) = 45 at the anchors: 1.12; 4.75 uses a game (every case of the action) (max 1.0); exempt (city): the win route (Matt, 2026-11-13): never a poorly priced hedge; its 5 Sway are in the city's 45 (priced_in). 249: this case only; Item B redesigns Liberate
+- Liberate a station: give 4 ambassadors = 32, get 1 station_freed + 2 sway = 23 at the anchors: 0.72; 4.75 uses a game (every case of the action) (max 1.0)
+- Liberate a factory: give 3 ambassadors = 24, get 1 factory_freed + 2 sway = 14 at the anchors: 0.58; 4.75 uses a game (every case of the action) (max 1.0)
+- Claim a city: give 5 ambassadors = 40, get 1 city_claimed = 14 at the anchors: 0.35; 0.08 uses a game (every case of the action) (max 1.0)
+- Claim a station: give 4 ambassadors = 32, get 1 station_owned = 12 at the anchors: 0.38; 0.08 uses a game (every case of the action) (max 1.0)
+- Claim a factory: give 3 ambassadors = 24, get 1 factory = 19 at the anchors: 0.79; 0.08 uses a game (every case of the action) (max 1.0)
+- Envoy: give 1 ambassadors = 8, get 1 sway = 4 at the anchors: 0.50; 0.03 uses a game (max 1.0)
+- Sell a card: give 1 card = 5, get 1 credits = 1 at the anchors: 0.20; 0.93 uses a game (every case of the action) (max 1.0)
+- Place a node: off (`board.node_credits` 0)
+- Remove a troop: give 10 credits = 10, get 1 troop = 5 at the anchors: 0.50; 0.84 uses a game (max 1.0)
+- Build a factory: off (`board.factory_build_chips` 0)
+- Make antimatter: 30.0 a antimatter against the median card for its job 10.0 (8 cards, best Zero-Day Auction 2.0): 3.00 x (min 1.25)
+- Buy a city's energy: 5.0 a energy against the median card for its job 3.3 (13 cards, best National Grid Buildout 0.3): 1.52 x (min 1.25)
+- Turn a cube into insight: 12.0 a insight against the median card for its job 2.4 (10 cards, best Hyperscale Botnet 1.2): 4.93 x (min 1.25)
+- Remove agents: 5.3 a agent against the median card for its job 2.0 (23 cards, best Open Source Uprising -5.2): 2.67 x (min 1.25)
+- Lift Fallout: 12.0 a land_token against the median card for its job 2.0 (5 cards, best Shared Grid Accord -3.8): 6.00 x (min 1.25)
+- Gain a player ambassador: 20.0 a ambassadors against the median card for its job 2.0 (17 cards, best Embassy of Exiles 0.2): 10.00 x (min 1.25)
+- Take down a botnet: 20.0 a botnet against the median card for its job 15.0 (3 cards, best Singularity Exploit 14.0): 1.33 x (min 1.25)
+- Liberate a city: 40.0 a city_liberated against the median card for its job 39.0 (9 cards, best Hostile Buyout 28.0): 1.03 x (min 1.25); exempt (city): the win route (Matt, 2026-11-13): never a poorly priced hedge; its 5 Sway are in the city's 45 (priced_in). 249: this case only; Item B redesigns Liberate
+- Liberate a station: 32.0 a station_freed against the median card for its job 16.0 (1 cards, best Reclamation Crew 16.0): 2.00 x (min 1.25)
+- Liberate a factory: 24.0 a factory_freed against the median card for its job 3.5 (1 cards, best Back-Channel Talks 3.5): 6.86 x (min 1.25)
+- Claim a station: 32.0 a station_owned against the median card for its job 19.5 (2 cards, best Power Purchase Agreement 15.0): 1.64 x (min 1.25)
+- Claim a factory: 24.0 a factory against the median card for its job 3.5 (1 cards, best Prefab Plant Kit 3.5): 6.86 x (min 1.25)
+- Envoy: 8.0 a sway against the median card for its job 2.6 (8 cards, best Antimatter Accord -1.5): 3.10 x (min 1.25)
+- Sell a card: no card does its job (credits); the action is the only route; exempt (card): Matt, 2026-11-16: no card needs to sell; the hand's outlet, exempt from job-no-card (P1)
+- Remove a troop: 10.0 a troop against the median card for its job 4.0 (7 cards, best Double Agents -9.5): 2.50 x (min 1.25)
+- tag-story exception ais:protector:Reclaim: a Security card retakes a corrupted station or factory by force for an antimatter: Matt's ruling (230), Reclaim stays on Security, force is its story; the cleanse and the antimatter are what the force wins back
+- tag-story exception ais:researcher:Disrupt: a Cyber card hacks troops (drones) anywhere in a country, no reach: the Researcher's troop answer is remote by design (206), so it is paid in Cyber, not Security
+- antimatter: 14% of its supply (2.93 a seat-game) from standard actions or tier-1 cards (max 20%): use:cyclotron_lease 9%, standard:antimatter 2%, use:simulation_cluster 2%
+- energy sources, phases (each pools many engines): phase:economy.upkeep 43%, phase:board.produce 26%, phase:threats.execute 2%
+- energy: one source, standard:buy_energy, is 8% of its sources (2.95 of 35.29 a seat-game; max 40%)
+- chips sources, phases (each pools many engines): phase:economy.upkeep 14%, phase:board.produce 4%
+- chips: one source, play:joint_fabrication_pact, is 30% of its sources (2.42 of 8.13 a seat-game; max 40%)
+- antimatter sources, phases (each pools many engines): phase:economy.upkeep 25%
+- antimatter: one source, use:dark_fiber_collider, is 15% of its sources (0.45 of 2.93 a seat-game; max 40%)
+- research_cubes sources, phases (each pools many engines): phase:board.produce 64%, phase:threats.execute 4%, phase:economy.upkeep 4%
+- research_cubes: one source, play:collider_consortium, is 13% of its sources (0.91 of 6.84 a seat-game; max 40%)
+- ambassadors sources, phases (each pools many engines): phase:adversary.compute 0%
+- ambassadors: one source, play:consular_pouch, is 10% of its sources (2.35 of 24.61 a seat-game; max 40%)
+- energy uses, phases (each pools many engines): phase:threats.execute 1%
+- energy: one spend, power:Expand, is 23% of its uses (7.43 of 31.97 a seat-game; max 50%)
+- chips uses, phases (each pools many engines): phase:threats.execute 0%
+- chips: one spend, convert:1:chips, is 39% of its uses (1.97 of 5.11 a seat-game; max 50%)
+- antimatter uses, phases (each pools many engines): phase:adversary.compute 0%
+- antimatter: one spend, play:accelerator_diplomacy, is 22% of its uses (0.30 of 1.40 a seat-game; max 50%)
+- research_cubes uses, phases (each pools many engines): phase:threats.execute 1%
+- research_cubes: one spend, convert:1, is 34% of its uses (1.30 of 3.81 a seat-game; max 50%)
+- ambassadors uses, phases (each pools many engines): phase:adversary.compute 0%, phase:threats.execute 0%
+- ambassadors: one spend, standard:liberate, is 49% of its uses (9.47 of 19.21 a seat-game; max 50%)
+- usage: Place a node: no seat could take it in this read (a board not seated, or a stale `usage` row)
+- chips: spent in 93% of won games at d3,4 (104 won; min 75%)
+- energy: spent in 100% of won games at d3,4 (104 won; min 75%)
+- antimatter: spent in 79% of won games at d3,4 (104 won; min 75%)
+- research_cubes: spent in 86% of won games at d3,4 (104 won; min 75%)
+- d0: 9.3 rounds a game, won games 8.9 (192 games; target 8-10)
+- d1: 9.3 rounds a game, won games 8.7 (192 games; target 8-10)
+- d2: 8.7 rounds a game, won games 8.3 (192 games; target 8-10)
+- d3: 8.7 rounds a game, won games 7.9 (192 games; target 8-10)
+- tokens a round, adversary ops: 29.6 against 29.4 (+1%; max +10%)

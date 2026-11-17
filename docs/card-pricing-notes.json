@@ -87,7 +87,7 @@
   "holographic_assembly_hall": "r83 (191): insight to play spread, 9 cr, 1 ins to 13 cr, 0 ins; values.json: pay 13.0; get 21.1 (+8.1); anchors: pay 13.0 (+8.1).",
   "homeland_security_act": "r45 (112): back to r43's price (18 cr, 2 ins; 111 had cut it to 10 cr, 2 ins to reach a band); anchors: pay 34; get 48.1 = 1.41.",
   "honeypot_relay": "r70 (166): draw 1, then remove up to 2 agents on or next to a hex in reach (r77: no gather; its draw 2 was the weakest line); anchors: pay 20; get 30.7 = 1.54; values.json: pay 14.5; get 17.68 = 1.22.",
-  "hostile_buyout": "r94 (213): a major: 22 cr, 1 am: liberate, 3 ambassadors; anchors: pay 48; get 69 = 1.44; values.json: pay 40; get 62.",
+  "hostile_buyout": "r94 (213): a major: 22 cr, 1 am: liberate, 3 ambassadors; 252: the one liberate card that leaves the city yours (own, values.json's liberate_align 5); anchors: pay 48; get 69 = 1.44; values.json: pay 40; get 67.",
   "hyperscale_botnet": "r44 (111): anchors: pay 30; get 63 = 2.10.",
   "interceptor_battery": "r83 (191): insight to play spread, 7 cr, 1 ins to 11 cr, 0 ins; values.json: pay 11.0; get 13.0 (+2.0); anchors: pay 11.0 (+2.0).",
   "interconnector_treaty": "r83 (191): insight to play spread, 24 cr, 1 ins to 28 cr, 0 ins; values.json: pay 28.0; get 31.0 (+3.0); anchors: pay 28.0 (+3.0).",

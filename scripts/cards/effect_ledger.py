@@ -227,13 +227,13 @@ def op_worth(t, o):
         found = (1 + max(n('amount') - 1, 0) * area_share(t, o)) / max(n('amount'), 1)
         share = (0.8 if o.get('one_country') else 1.0) * found
         if o.get('cities'):
-            # 184: a freed city is liberated through the action's path (178), the seat's cube on too.
-            return Worth(city=(row('liberate') + row('liberate_align')) * share * n('amount'))
+            # 184: a freed city is liberated through the action's path (178); 252: left neutral.
+            return Worth(city=row('liberate') * share * n('amount'))
         each = row('cleanse') if o.get('only') == 'factory' else row('cleanse_station')
         return Worth(now=each * share * n('amount'))
     if op == 'liberate':
-        # 178 (#29): every liberate card puts the seat's cube on, as the Liberate action does.
-        return Worth(city=row('liberate') + row('liberate_align')
+        # 252: a liberated city is left neutral; only `own` puts the seat's cube on.
+        return Worth(city=row('liberate') + (row('liberate_align') if o.get('own') else 0.0)
                      + row('gain_ambassadors') * r('ambassadors') * n('ambassadors')
                      + row('liberate_troops') * n('troops')
                      + (row('liberate_botnet') if o.get('botnet') else 0.0))

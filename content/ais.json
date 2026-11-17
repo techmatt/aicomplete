@@ -104,6 +104,18 @@
     ]
    },
    {
+    "name": "Expand",
+    "tags": [],
+    "text": "place 1 Node",
+    "effects": [
+     {
+      "op": "place_node",
+      "count": 1
+     }
+    ],
+    "cost": []
+   },
+   {
     "name": "Buy In",
     "tags": [],
     "cost": [
@@ -132,6 +144,24 @@
       ],
       "fresh": true
      }
+    ]
+   },
+   {
+    "name": "Annex",
+    "tags": [],
+    "text": "place 1 Node within 2 of one of yours",
+    "effects": [
+     {
+      "op": "place_node",
+      "count": 1,
+      "range": 2
+     }
+    ],
+    "cost": [
+     [
+      "chips",
+      1
+     ]
     ]
    },
    {
@@ -445,6 +475,18 @@
     ]
    },
    {
+    "name": "Expand",
+    "tags": [],
+    "text": "place 1 Node",
+    "effects": [
+     {
+      "op": "place_node",
+      "count": 1
+     }
+    ],
+    "cost": []
+   },
+   {
     "name": "Accord",
     "tags": [],
     "cost": [
@@ -471,6 +513,28 @@
       ],
       "fresh": true
      }
+    ]
+   },
+   {
+    "name": "Outpost",
+    "tags": [],
+    "text": "place 1 Node; gain 1 ambassador",
+    "effects": [
+     {
+      "op": "place_node",
+      "count": 1
+     },
+     {
+      "op": "gain",
+      "resource": "ambassadors",
+      "amount": 1
+     }
+    ],
+    "cost": [
+     [
+      "energy",
+      3
+     ]
     ]
    },
    {
@@ -729,12 +793,24 @@
   ],
   "powers": [
    {
+    "name": "Expand",
+    "tags": [],
+    "text": "place 1 Node",
+    "effects": [
+     {
+      "op": "place_node",
+      "count": 1
+     }
+    ],
+    "cost": []
+   },
+   {
     "name": "Peer Review",
     "tags": [],
     "cost": [
      [
-      "research_cubes",
-      1
+      "insight",
+      2
      ]
     ],
     "text": "place 1 Node; if the new node brings a research station into your reach, also gain 1 insight",
@@ -757,6 +833,27 @@
       ],
       "fresh": true
      }
+    ]
+   },
+   {
+    "name": "Field Survey",
+    "tags": [],
+    "text": "place 1 Node; draw 1 card",
+    "effects": [
+     {
+      "op": "place_node",
+      "count": 1
+     },
+     {
+      "op": "draw",
+      "count": 1
+     }
+    ],
+    "cost": [
+     [
+      "insight",
+      3
+     ]
     ]
    },
    {

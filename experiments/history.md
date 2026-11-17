@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 252 Item B part 1: node routes, free then claim, standard actions under the cards | 113 | [252_item_b_rules](results/252_item_b_rules/README.md) |
 | 251 profiling the sim: judges, oracles, engine (same-play speed-ups, opt-in lean lines) | 112 | [251_profiling](results/251_profiling/README.md) |
 | 249 the real oracle, a better judge, design checks for standard-action prices | 112 | [249_real_oracle_judge](results/249_real_oracle_judge/README.md) |
 | 248 standard actions probe (Liberate with antimatter reverted) | 112 | [248_standard_actions_probe](results/248_standard_actions_probe/README.md) |

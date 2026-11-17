@@ -23,8 +23,9 @@
     ]
   },
   "repeat_powers": {
-    "note": "a power name, or a power's effects (cost aside), on this many boards or more",
-    "boards_min": 2
+    "note": "a power name, or a power's effects (cost aside), on this many boards or more. 'exempt' (252): power name -> why it is on every board by a ruling, listed as information",
+    "boards_min": 2,
+    "exempt": {"Expand": "Matt's ruling 1 (2026-11-16): each board's base node route, the track step's energy only, once a round, the same on every board"}
   },
   "standard_anchor_max": 1.0,
   "standard_actions": {
@@ -55,7 +56,7 @@
         "name": "Turn a cube into insight",
         "src": "standard:insight",
         "give": {
-          "research_cubes": 1
+          "research_cubes": "board.insight_cubes"
         },
         "get": {
           "insight": "board.cube_insight"
@@ -69,8 +70,9 @@
           "ambassadors": "board.station_ambassadors"
         },
         "get": {
-          "station": 1
-        }
+          "station_owned": 1
+        },
+        "outcome": "owned"
       },
       {
         "name": "Remove agents",
@@ -127,7 +129,7 @@
         },
         "priced_in": ["sway"],
         "case": "city",
-        "exempt": {"case": "city", "why": "the win route (Matt, 2026-11-13): never a poorly priced hedge; its 5 Sway are in the city's 45 (priced_in). 249: this case only; Item B redesigns Liberate"},
+        "exempt": {"case": "city", "why": "the win route (Matt, 2026-11-13): never a poorly priced hedge; its 5 Sway are in the city's 45 (priced_in). 249: this case only; 252 (Item B): Liberate leaves the site neutral, the city still the win route"},
         "narrative": "trust"
       },
       {
@@ -138,10 +140,10 @@
           "ambassadors": "board.claim_station"
         },
         "get": {
-          "station_owned": 1,
+          "station_freed": 1,
           "sway": "alignment.free_facility"
         },
-        "outcome": "owned",
+        "outcome": "neutral",
         "narrative": "trust"
       },
       {
@@ -152,10 +154,10 @@
           "ambassadors": "board.claim_factory"
         },
         "get": {
-          "factory": 1,
+          "factory_freed": 1,
           "sway": "alignment.free_facility"
         },
-        "outcome": "owned",
+        "outcome": "neutral",
         "narrative": "trust"
       },
       {
@@ -210,7 +212,9 @@
         },
         "get": {
           "credits": "board.sell_credits"
-        }
+        },
+        "case": "card",
+        "exempt": {"case": "card", "why": "Matt, 2026-11-16: no card needs to sell; the hand's outlet, exempt from job-no-card (P1)"}
       },
       {
         "name": "Place a node",
@@ -249,9 +253,10 @@
     ],
     "extra_anchors": {
       "note": "units the anchor table and values.json lack, from card-guidelines.md's derived lines and past checks (206: a node at values.json's 8; a factory at +1 chip income, 19; 210: a land token lifted at 3 rounds of a face-up token's 1 Discord, a sway 4 each, 12)",
-      "station": 6,
       "harden": 3,
-      "botnet": 16,
+      "botnet": 15,
+      "station_freed": 15,
+      "factory_freed": 6,
       "city_liberated": 45,
       "card": 5,
       "compute": 2,
@@ -260,20 +265,20 @@
       "node": 8,
       "factory": 19,
       "land_token": 12,
-      "station_owned": 20,
+      "station_owned": 12,
       "city_claimed": 14
     },
     "anchor_sources": {
       "note": "249, the circular-anchor check: where each extra anchor's number came from. 'set_from': the standard action whose price set it (flagged: the check would only measure the action against itself). 'independent': a derivation that reads no action's price (an anchor that equals an action's give with neither listed is flagged too).",
-      "set_from": {
-        "botnet": "Take down a botnet (r75: the 16 credits it costs)",
-        "station": "Build a research station (its 1 chip; values.json's owned station is 20)"
-      },
+      "set_from": {},
       "independent": {
+        "botnet": "252: the median card for the job's unit price (design_check_jobs.json's Take down a botnet cards: 14, 15, 16), no action's price",
+        "station_freed": "248's price table: a corrupted station freed, a cube a round both ways (values.json's cleanse_station, 15)",
+        "factory_freed": "248's price table: a corrupted factory freed (values.json's cleanse, 6)",
         "land_token": "210: 3 rounds of a face-up token's 1 Discord, a sway 4 each",
         "node": "206: values.json's node, 8",
         "factory": "206: +1 chip income, 19",
-        "station_owned": "values.json's claim_station, 20",
+        "station_owned": "values.json's claim_station, 12 (252: 1 cube a round at 3 for about 4 rounds)",
         "city_claimed": "249: +1 energy income (tier 1), 14 (248's price table); the site for Unity cards unpriced",
         "city_liberated": "card-guidelines.md's derived line, 45",
         "agent": "card-guidelines.md, 5",
@@ -359,9 +364,15 @@
       "off": {"why": "off at this revision's tunables or granted by no card: listed, no band"}
     },
     "rows": [
-      {"key": "power:builder:Buy In", "role": "node-power"},
-      {"key": "power:protector:Accord", "role": "node-power"},
-      {"key": "power:researcher:Peer Review", "role": "node-power"},
+      {"key": "power:builder:Buy In", "role": "node-power", "band": [0.1, 0.9], "why": "252 (Matt's ruling 1): the middle route, taken beside Expand when energy allows"},
+      {"key": "power:protector:Accord", "role": "node-power", "band": [0.1, 0.9], "why": "252: the middle route, beside Expand"},
+      {"key": "power:researcher:Peer Review", "role": "node-power", "band": [0.1, 0.9], "why": "252: the middle route, beside Expand"},
+      {"key": "power:builder:Annex", "role": "node-power", "band": [0.05, 0.9], "why": "252: the top route, in chips, range 2"},
+      {"key": "power:protector:Outpost", "role": "node-power", "band": [0.05, 0.9], "why": "252: the top route, 3 energy"},
+      {"key": "power:researcher:Field Survey", "role": "node-power", "band": [0.05, 0.9], "why": "252: the top route, 3 insight"},
+      {"key": "power:builder:Expand", "role": "node-power"},
+      {"key": "power:protector:Expand", "role": "node-power"},
+      {"key": "power:researcher:Expand", "role": "node-power"},
       {"key": "power:builder:Mint", "role": "board-engine", "band": [0.15, 0.9], "why": "Builder: credits into chips, its resource. 228: a credit converter, taken when credits are spare after cards: it pays 2.0x at the anchors, the agents' table at the chip anchor (6, not 4) left it at 0.28 a seat-round (+0.1 a game), so the band, not the price or the table, was the error"},
       {"key": "power:builder:Procure", "role": "board-engine", "why": "Builder: a chip into 2 cards, its draw"},
       {"key": "power:protector:Bulwark", "role": "board-engine", "why": "Protector: energy into hardening, its defense"},
@@ -380,12 +391,12 @@
       {"key": "power:protector:Patrol", "role": "troop-response", "band": [0.25, 3.5], "why": "228: Patrol pushes agents as well as troops; with Remove agents at 2 ambassadors (r100) it is the Protector's cheap agent answer: 2.42-2.74 a seat-game at r100. 240 (Matt): 3.37 at r108 (f238), so 0.25-3.5"},
       {"key": "power:protector:Interdict", "role": "troop-response"},
       {"key": "power:researcher:Disrupt", "role": "troop-response"},
-      {"key": "standard:node", "name": "Place a node", "role": "staple"},
+      {"key": "standard:node", "name": "Place a node", "role": "off", "why": "252 (Matt's ruling 1): cut (`node_credits` 0); the boards' node routes place nodes"},
       {"key": "standard:move", "name": "Dispatch", "role": "staple"},
       {"key": "standard:buy_energy", "name": "Buy a city's energy", "role": "staple"},
-      {"key": "standard:insight", "name": "Turn a cube into insight", "role": "staple"},
+      {"key": "standard:insight", "name": "Turn a cube into insight", "role": "hedge", "why": "252 (Matt's ruling 5): taxed to 2 cubes an insight, a fallback under the cards"},
       {"key": "standard:remove", "name": "Remove agents", "role": "hedge", "why": "228 (Matt, 2026-11-13: standard actions are poorly priced hedges, never the better route): 2 ambassadors for 3 agents (0.94) from r100; 1.4-1.6 a seat-game at 1 ambassador, 0.4 at 2"},
-      {"key": "standard:station", "name": "Build a research station", "role": "staple"},
+      {"key": "standard:station", "name": "Build a research station", "role": "hedge", "why": "252 (Matt's ruling 2): 2 chips, a station making 1 cube a round: a fallback under the cards"},
       {"key": "standard:antimatter", "name": "Make antimatter", "role": "hedge", "why": "the desperate antimatter source (204)"},
       {"key": "standard:troop", "name": "Remove a troop", "role": "hedge", "why": "the troop hedge (206)"},
       {"key": "standard:lift", "name": "Lift Fallout", "role": "hedge", "band": [0.01, 0.5], "why": "210 (Matt, candidate): the one standard action that removes corruption, costly but not absurd; a rare hedge. 228: the cap back to the hedge's 0.5 (was 0.2 while Fallout was under 1 token a game, message 9540): 227 made Fallout a common harm on purpose (0.5-1 lift a game targeted)"},

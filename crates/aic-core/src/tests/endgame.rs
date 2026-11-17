@@ -91,7 +91,7 @@ fn every_corrupted_city_is_no_loss() {
 /// first, its supply the rest, never another seat's; the city becomes the
 /// seat's (its cube goes on) and no agent lands on it.
 #[test]
-fn liberating_a_city_pays_from_your_own_ambassadors_and_makes_it_yours() {
+fn liberating_a_city_pays_from_your_own_ambassadors_and_leaves_it_neutral() {
     let (rules, mut g) = lab_with(&[], &HOLD);
     let w = rules.world();
     let h = rules.map.numbered(0, piece(0).cities[0]);
@@ -115,7 +115,8 @@ fn liberating_a_city_pays_from_your_own_ambassadors_and_makes_it_yours() {
     set_res(&mut g, 0, Resource::Ambassadors, 3);
     let unity = g.var("alignment.unity") + alignment::unity_pending(&g);
     act(&rules, &mut g, std_act(0, "liberate"));
-    assert_eq!((g.tokens(h, ADV_CUBE), g.tokens(h, cube(0)), g.resource(0, Resource::Ambassadors)), (0, 1, 0));
+    // 252 (Matt's ruling 4, free then claim): it is left neutral.
+    assert_eq!((g.tokens(h, ADV_CUBE), g.tokens(h, cube(0)), g.resource(0, Resource::Ambassadors)), (0, 0, 0));
     assert_eq!((g.tokens(h, ambassador(0)), g.tokens(h, ambassador(1))), (0, 2));
     // No agent lands on it; the ones next to it stay.
     assert_eq!((g.tokens(h, ADV_AMBASSADOR), g.tokens(n, ADV_AMBASSADOR)), (0, 2));

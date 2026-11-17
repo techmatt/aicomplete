@@ -196,9 +196,9 @@ pub(super) fn cleanse(
         };
         cx.tally(g, "effects.cleansed", 1);
         if is_city(&w, hexes[i]) {
-            // 178 (#29): a card's liberation is the Liberate action's: the agents off, the seat's cube on.
+            // 178 (#29): a card's liberation is the Liberate action's: the agents off, the city neutral (252).
             cx.tally(g, "board.liberated_card", 1);
-            board::liberate_site(g, cx, seat, hexes[i]);
+            board::liberate_site(g, cx, seat, hexes[i], false);
         } else {
             cx.add_tokens(g, hexes[i], ADV_CUBE, -1);
         }
@@ -210,10 +210,11 @@ pub(super) fn cleanse(
 }
 
 /// A liberate card (080): one corrupted city in reach is liberated as the Liberate action liberates (178, Matt's
-/// ruling #29): the agents on it come off, the adversary's cube comes off, Unity sways, and the seat's cube goes on;
-/// nothing is paid. Each engine's twist (r35): `ambassadors` gained, up to `troops` adversary troops off in the
-/// city's country, and with `botnet` one botnet on or next to the city off.
-pub(super) fn liberate_city(g: &mut GameState, cx: &mut Cx, seat: usize, ambassadors: i64, troops: i64, botnet: bool, zone: &[usize]) -> Res {
+/// ruling #29): the agents on it come off, the adversary's cube comes off and Unity sways; it is left neutral (252),
+/// unless `own` puts the seat's cube on; nothing is paid. Each engine's twist (r35): `ambassadors` gained, up to
+/// `troops` adversary troops off in the city's country, and with `botnet` one botnet on or next to the city off.
+#[allow(clippy::too_many_arguments)]
+pub(super) fn liberate_city(g: &mut GameState, cx: &mut Cx, seat: usize, own: bool, ambassadors: i64, troops: i64, botnet: bool, zone: &[usize]) -> Res {
     let w = cx.world;
     let mut cities = liberable_cities(&w, g, seat);
     cities.retain(|h| zone.contains(h));
@@ -222,7 +223,7 @@ pub(super) fn liberate_city(g: &mut GameState, cx: &mut Cx, seat: usize, ambassa
     if let Some(i) = cx.choose(seat, prompt, opts)? {
         let h = cities[i];
         cx.tally(g, "board.liberated_card", 1);
-        board::liberate_site(g, cx, seat, h);
+        board::liberate_site(g, cx, seat, h, own);
         if ambassadors > 0 {
             cx.add_resource(g, seat, Resource::Ambassadors, ambassadors);
             cx.tally(g, "board.liberated_ambassadors", ambassadors);

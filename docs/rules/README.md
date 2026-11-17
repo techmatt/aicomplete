@@ -17,7 +17,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve.
 - [tunables.md](tunables.md): every baseline config parameter (generated).
 
-What the code implements, at rules revision 112 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 113 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -38,7 +38,7 @@ Design intent: [principles.md](../principles.md); the engine: [architecture.md](
 <!-- generated: new_players -->
 **For new players.** You start with 2 tier-1 and 2 tier-2 cards in your hand, free: the tier-2 cards are something to plan toward, to play once you meet their needs. Then every round, the first included, you build a hand of 4 cards one at a time, choosing for each whether it comes from the cheaper tier-1 deck or the stronger tier-2 deck; you take one card and pass the rest to the next player in seat order until the hands are gone, then pay insight to keep what you drafted (1 for tier 1, 3 for tier 2; nothing else buys a keep). Insight is this round's attention: your card-play track shows it, the number on the rightmost space you've uncovered that shows one (3 before any), and what you don't spend is lost. Playing a card costs its credits and 0-2 insight, from the same insight as keeps. Buildings go into your AI board's 4-5 slots; once they are full, a new building goes on top of an old one, which stops working but keeps its tags. Programs stay in front of you and are where lasting income comes from ("raise your credit income by 1 per 2 Science tags on your cards"); buildings are your engine: Actions you use once a round and Effects that pay each time their trigger happens; events are used once and set aside, never to return. Every card in front of you shows tags (Science, Industry, Cyber, Power, Diplomacy, Security): they unlock some cards, and you can sacrifice cards with the right tags to use your AI board's powers. There is no limit on what you hold or on how far cards raise your income; energy you don't spend stays energy, so drafting cards that spend it is up to you.
 
-**Nodes, for new players.** Nodes don't grow on their own. In the action phase you place nodes with your board's node power, once a round, which costs what your board prints (credits, a research cube or a tag) and does a little more besides, or with the standard action Place a node, which any player may take twice a round for credits; cards can add more. Every placement, by power, action or card, pays the energy printed on the track space you uncover. You start with 3 energy and one city bound to you, which makes energy every round.
+**Nodes, for new players.** Nodes don't grow on their own. In the action phase you place them with your board's node routes, each once a round: Expand, on every board, costs nothing more; the board's other two cost more of its own currency (energy, chips or insight) and do a little more besides; cards can add more. Every placement, by route or card, pays the energy printed on the track space you uncover. You start with 3 energy and one city bound to you, which makes energy every round.
 
 **Dispatches, tags and sales, for new players.** A Dispatch puts one of your ambassadors, from your supply or anywhere on the map, onto a piece or botnet in your reach and costs nothing, but you have only your board's Dispatches each round (1-2 printed, more as Dispatch spaces are uncovered), and what you don't use is lost, like insight. **One tag rule:** the tag printed on your AI board, and any a late, costly track space reveals, count like the tags on your cards, for everything a tag does; the only difference is that a board tag can't be sacrificed. You may sell a card from your hand for 1 credit; chips can't be sold.
 
@@ -69,7 +69,7 @@ The house words, as [player-aid.md](../player-aid.md) prints them:
 - **On your cards**: on tags: on your cards in play, covered buildings included, and your board's tags, printed or revealed by its tracks. Tokens count only on the card that holds them.
 - **Action**: once a round, always; "A, OR B" is one use, either half.
 - **Open megaproject**: one that isn't complete; research cubes in your color go only onto one.
-- **Liberate**: a corrupted site: the agents on it come off, the adversary's cube comes off and yours goes on (the action pays for it in ambassadors; a card's is unpaid).
+- **Liberate**: a corrupted site: the agents on it come off and the adversary's cube comes off; it is left neutral, for a Claim or a card to take (the action pays for it in ambassadors; a card's is unpaid).
 - **Convert**: an agent on or next to the city leaves its stack and becomes your ambassador where it stood.
 - **Gather up to N**: pieces (ambassadors, agents, troops; botnets never move) onto the target, each from a hex next to it; you may stop at any piece (a strike, "remove up to N on or next to it", moves nothing).
 - **Push up to N**: pieces from the target, each to a hex next to it that you choose; you may stop at any piece.

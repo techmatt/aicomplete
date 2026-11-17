@@ -28,8 +28,8 @@ The **Researcher**'s special rule is Patience: insight it doesn't spend stays in
 insight another player gave it), to save up for a big round. It starts with 40 credits and earns 11 a round, 3
 more for each credit space of its economy track, and plays off the board, on its turn budget and research cubes: its
 powers turn insight into a card (Synthesis, its draw), credits into megaproject cubes, and Cyber cards into troops
-removed or compute stripped. Its node power, Peer Review, costs 1 research cube and, like any node, the uncovered
-space's energy, and gives 1 insight by a fresh station, so it builds stations early: once their country's card
+removed or compute stripped. Its node routes run on insight, never research cubes (Matt, 2026-11-16): Peer Review
+costs 2 and gives 1 back by a fresh station, Field Survey 3 and draws a card, so it builds stations early: once their country's card
 completes they put cubes on its board. Its printed Science tag makes 1 Science card count 2 for a discount. The hard
 part to explain: Open Science's insight is handed out in upkeep and lands at the start of the next round.
 
@@ -66,17 +66,20 @@ of 10 credits; credits never buy a keep, so insight limits round 1's keeps and c
 are a late-game choice.
 
 **One payment path (locked).** Every space prints a **cost** in energy, the last ones more. Every placement pays it,
-whatever places the node: a node power or Place a node costs only its printed tag or currency and a card only its
+whatever places the node: a node route costs only its printed currency (Expand nothing) and a card only its
 credits, so the energy is stated once, on the track; no card places a node free. Only tracks whose next step you can
 pay are offered; a placement you can't pay doesn't happen.
 
 **Hard to explain to a new player:** Faraday Yard hardens when played, beside Bulwark's and Fortify's hardening; "bound" is a new word for a city that is otherwise only aligned.
 
-**Node powers (candidate).** Each board has one **node power**, once a round, in its own currency or a tag, each
-doing more by a fresh spot ([ai-powers.md](ai-powers.md), *Node powers' riders*); the standard action **Place a node**
-(twice a round, [economy.md](economy.md)) is a poorer route, so 0-3 nodes a round come from them (cards that place
-nodes add to that: cards aren't capped). Three things keep the loops short: 3 placements a round and rising step costs cap energy → node →
-energy income; each is limited a round; and every tag sacrifice permanently loses cards.
+**Node routes (Matt, 2026-11-16, locked; costs candidate).** There is no standard action for nodes. Each board has
+three **node routes**, each once a round: the **base route, Expand** (every board: the track step's energy, nothing
+more), and two in its own currency at rising cost, the middle doing more by a fresh spot ([ai-powers.md](ai-powers.md),
+*Node powers' riders*): the Builder's Buy In (2 energy) and Annex (1 chip, within 2 of one of its nodes), the
+Protector's Accord (2 energy) and Outpost (3 energy, and an ambassador), the Researcher's Peer Review (2 insight) and
+Field Survey (3 insight, and a card). So 0-3 nodes a round come from them (cards that place nodes add to that: cards
+aren't capped). Three things keep the loops short: 3 placements a round and rising step costs cap energy → node →
+energy income; each is limited a round; and the top routes spend what the board's engine makes.
 
 <!-- generated: node_track -->
 | Space | Builder | Protector | Researcher |

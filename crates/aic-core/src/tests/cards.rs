@@ -245,7 +245,7 @@ fn energy_a_card_gains_first_can_pay_its_step_and_a_second_delay_is_not_offered(
     set_res(&mut g, 0, Resource::Energy, 0);
     let gains = [
         Op::Gain { resource: Resource::Energy, amount: step },
-        Op::PlaceNode { count: 1 },
+        Op::PlaceNode { count: 1, range: 1 },
     ];
     assert!(effects::feasible(&w, &g, 0, &gains));
     let delay = [Op::DelayThreat { count: 1 }];
@@ -566,7 +566,7 @@ fn a_part_with_nothing_to_act_on_never_blocks_the_rest() {
 fn a_discord_sway_is_a_price_not_a_part_that_acts() {
     let (rules, g) = lab_actions();
     let w = rules.world();
-    let liberate = Op::Liberate { ambassadors: 0, troops: 0, botnet: false };
+    let liberate = Op::Liberate { own: false, ambassadors: 0, troops: 0, botnet: false };
     assert!(!effects::feasible(&w, &g, 0, std::slice::from_ref(&liberate)), "the lab has no corrupted city in reach");
     let nuclear = [liberate.clone(), Op::Sway { side: Side::Discord, amount: 1, narrative: None }];
     assert!(!effects::feasible(&w, &g, 0, &nuclear), "the Discord sway alone doesn't make it playable");

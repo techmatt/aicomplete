@@ -18,7 +18,7 @@ fn a_card_pays_the_step() {
     let w = rules.world();
     let step = step_cost(&w, 5);
     assert!(step > 0);
-    let paying = [Op::PlaceNode { count: 1 }];
+    let paying = [Op::PlaceNode { count: 1, range: 1 }];
     set_res(&mut g, 0, Resource::Energy, step - 1);
     assert!(!effects::feasible(&w, &g, 0, &paying), "the step can't be paid");
     set_res(&mut g, 0, Resource::Energy, step);
@@ -43,34 +43,41 @@ fn a_placements_prompt_names_what_it_charges() {
         let ask = choices.asked.take().expect("two tracks to choose from");
         ask.options.iter().map(|o| o.option.clone()).collect::<Vec<_>>().join(" | ")
     };
-    let paid = prompt_for(&[Op::PlaceNode { count: 1 }]);
+    let paid = prompt_for(&[Op::PlaceNode { count: 1, range: 1 }]);
     assert!(paid.contains(&format!("costs {step} energy")), "{paid}");
 }
 
-/// 206 (Matt, 2026-11-12): Expand left every board; the standard Place a node costs `node_credits` and the
-/// space, `node_per_round` times a round.
+/// 252 (Matt's ruling 1): Place a node is cut (`node_credits` 0); every board's base route, Expand, costs only
+/// the track step's energy, once a round.
 #[test]
-fn place_a_node_costs_its_credits_and_the_space_a_limited_number_of_times_a_round() {
+fn the_base_route_costs_only_the_step_once_a_round() {
     for seat in [0u8, 1] {
         let (rules, mut g) = at_step(&[], 1);
         let w = rules.world();
-        assert!(ai::board(&w, seat as usize).powers.iter().all(|p| p.name != "Expand"));
+        assert!(!rules.legal_actions(&g).iter().any(|a| matches!(a, Action::Standard { act, .. } if act.as_str() == "node")));
         let start = rules.map.numbered(seat as usize, piece(seat as usize).node);
         put(&mut g, start, node(seat as usize), 1);
-        let deploy = std_act(seat, "node");
-        let price = w.int("board.node_credits");
-        set_res(&mut g, seat as usize, Resource::Credits, price - 1);
-        assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "its credits");
-        set_res(&mut g, seat as usize, Resource::Credits, 10 * price);
+        let deploy = power(&rules, seat as usize, "Expand");
+        set_res(&mut g, seat as usize, Resource::Credits, 0);
+        set_res(&mut g, seat as usize, Resource::Energy, step_cost(&w, 1));
+        let before = node_count(&g, seat as usize);
+        rules.apply_mut(&mut g, &deploy, None).unwrap();
+        answer_all(&rules, &mut g);
+        assert_eq!(node_count(&g, seat as usize), before + 1);
+        assert_eq!(g.resource(seat as usize, Resource::Energy), 0, "the step's energy alone");
         set_res(&mut g, seat as usize, Resource::Energy, 10);
-        for _ in 0..w.int("board.node_per_round") {
-            let before = node_count(&g, seat as usize);
-            rules.apply_mut(&mut g, &deploy, None).unwrap();
-            answer_all(&rules, &mut g);
-            assert_eq!(node_count(&g, seat as usize), before + 1);
-        }
-        assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "its limit a round");
+        assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "once a round");
     }
+}
+
+/// 252 (Matt's ruling 1: "occasionally range 2"): Annex, the Builder's top route, places within 2 of a node.
+#[test]
+fn the_builder_s_top_route_reaches_two_hexes() {
+    let (rules, g) = at_step(&[], 1);
+    let w = rules.world();
+    let near = board::node_sites(&w, &g, 0);
+    let far = board::node_sites_within(&w, &g, 0, 2);
+    assert!(far.len() > near.len() && near.iter().all(|h| far.contains(h)));
 }
 
 /// 247: `node_energy` adds energy to Place a node's price, paid first, so the step is paid from what is left.
@@ -89,14 +96,13 @@ fn place_a_node_s_own_energy_comes_before_the_step() {
     assert_eq!((g.resource(0, Resource::Energy), g.resource(0, Resource::Credits)), (0, 0));
 }
 
-/// 206: a placement pays the step's energy beside Place a node's credits.
+/// 206: a placement pays the step's energy (252: the base route, Expand, nothing more).
 #[test]
 fn a_node_power_pays_its_energy_and_the_step() {
     let (rules, mut g) = at_step(&[], 5);
     let w = rules.world();
     let step = step_cost(&w, 5);
-    let deploy = std_act(0, "node");
-    set_res(&mut g, 0, Resource::Credits, w.int("board.node_credits"));
+    let deploy = power(&rules, 0, "Expand");
     set_res(&mut g, 0, Resource::Energy, step - 1);
     assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the step's energy");
     set_res(&mut g, 0, Resource::Energy, step);
@@ -172,9 +178,8 @@ fn tokens_of_a_placement_still_uncover() {
     let (rules, mut g) = at_step(&[], 1);
     let w = rules.world();
     set_res(&mut g, 0, Resource::Energy, 1);
-    set_res(&mut g, 0, Resource::Credits, w.int("board.node_credits"));
     let income = ai::track_income(&w, &g, 0).len();
-    rules.apply_mut(&mut g, &std_act(0, "node"), None).unwrap();
+    rules.apply_mut(&mut g, &power(&rules, 0, "Expand"), None).unwrap();
     answer_all(&rules, &mut g);
     assert_eq!(board::track_taken(&g, 0) + board::track2_taken(&g, 0), 3);
     assert_eq!(ai::track_income(&w, &g, 0).len(), income + 1);
@@ -210,11 +215,11 @@ fn placing_node_takes_the_next_track_token_and_uncovers_its_income() {
     assert!(hexes
         .iter()
         .all(|&h| rules.map.adjacent(h, start) && g.tokens(h, node(0)) == 0));
-    // Place a node, which refreshes here: a test of the track, not of its limit.
+    // The base route, Expand, which refreshes here: a test of the track, not of its limit.
+    let expand = power_index(&rules, 0, "Expand");
     let place = |rules: &Rules, g: &mut GameState| {
-        set_var(g, board::std_once_key(board::StandardAction::Node, 0), 0);
-        set_res(g, 0, Resource::Credits, 50);
-        act(rules, g, std_act(0, "node"));
+        set_var(g, ai::power_used(0, expand), 0);
+        act(rules, g, power(rules, 0, "Expand"));
     };
     place(&rules, &mut g);
     // The 2nd space (the Builder's): +3 credits a round (078).
@@ -282,8 +287,7 @@ fn a_track_s_last_steps_cost_more() {
     set_var(&mut g, board::track2_key(0), b.play_track.len() as i64 - 1);
     let extra = b.economy_track.last().unwrap().cost.min(b.play_track.last().unwrap().cost);
     assert!(extra > 0);
-    let deploy = std_act(0, "node");
-    set_res(&mut g, 0, Resource::Credits, w.int("board.node_credits"));
+    let deploy = power(&rules, 0, "Expand");
     set_res(&mut g, 0, Resource::Energy, extra - 1);
     assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the step can't be paid");
     set_res(&mut g, 0, Resource::Energy, extra);
