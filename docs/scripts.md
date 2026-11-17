@@ -22,8 +22,8 @@ what it prints; the `cards/*_read.py` readers take seconds.
   to the read's `ai.power.*` counters, so a read of another revision reads right (an info line names a reordered
   board; a current power its counters never name is no row). First line: the report's `warnings:`. Thresholds
   and bands: `design_check.json`; job parity's cards for each standard job, hand-read (units and other effects as
-  expressions over the anchors; costs from content): `design_check_jobs.json`, written by 249's `port_jobs.py`
-  from 248's table (a new card for a job is a row there). Never exits 1.
+  expressions over the anchors; costs from content): `design_check_jobs.json`, first ported from 248's table,
+  now edited by hand (a new card for a job is a row there; 249's `port_jobs.py` would overwrite it). Never exits 1.
 - `cards/cards_doc.py`: regenerates `docs/cards.md`. `cards/deck_text.py DECK...`: a deck as plain text for review
   (`--list` the decks; README, *Card text for review*); `--ids TEXT`: content ids by display name.
 - `cards/apply_overlay.py FILE... [--set ENTRY]... [--check]`: writes overlays into `content/*.json` in place:

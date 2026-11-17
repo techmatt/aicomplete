@@ -3,6 +3,8 @@ scripts/design_check_jobs.json, the job-parity check's data. Each card's other e
 over the job units (`A["amb"]` -> `amb`), so an anchor change moves the check.
 
     python experiments/results/249_real_oracle_judge/port_jobs.py
+
+A record, not a generator: later items edit the json by hand (252 on), and a rerun would overwrite their rows.
 """
 import ast
 import json
