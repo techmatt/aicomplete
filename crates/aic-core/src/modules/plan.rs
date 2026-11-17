@@ -17,7 +17,7 @@ use crate::state::GameState;
 
 use super::{adversary, board};
 use super::common::{
-    corrupted, cube_owner, firewalled, has_building, is_city, is_ocean, next_to, node_owner, player_ambassador, ADV_AMBASSADOR,
+    cities_unowned, city_host, corrupted, cube_owner, firewalled, has_building, is_city, is_ocean, next_to, node_owner, player_ambassador, ADV_AMBASSADOR,
     FALLOUT, BOTNET, FACTORY, STATION, prohibit_token,
 };
 use crate::content::HexKind;
@@ -354,7 +354,11 @@ pub fn holds(w: &World, g: &GameState, h: usize, wh: Where) -> bool {
         Where::CorruptedCity => is_city(w, h) && corrupted(g, h),
         Where::ByCorruptedCity => next_to(w, h, |x| is_city(w, x) && corrupted(g, x)),
         Where::Corrupted => corrupted(g, h),
-        Where::Owned => cube_owner(g, h).is_some(),
+        // 254: with no city owned (`cities_unowned`), a hosted city counts as a player's for the Unity cards that pay
+        // per site a player owns (the bound cities were most of those sites).
+        Where::Owned => {
+            cube_owner(g, h).is_some() || (cities_unowned(w) && is_city(w, h) && city_host(w, g, h).is_some())
+        }
     }
 }
 

@@ -53,11 +53,13 @@ neighbors change with the country count).
   first token off their track), `start_ambassadors` player ambassador,
   `ai.start_credits` credits and `ai.start_energy` energy; their AI board's credit production is income, paid
   each upkeep ([ai-boards.md](ai-boards.md)).
-- **The bound city (candidate):** each player starts with one city aligned to them, their
-  cube on it: the clean city of their country nearest their first node (ties: the lower hex
-  number), found after the corrupted cities are placed. Its `corp_energy` cubes are the
-  player's one easy energy source at the start. It is an aligned city in every way: it can
-  be lost to corruption, and the factories it builds are its owner's.
+- **No player owns a city** (254, Matt's candidate, `cities_unowned` 1): a city is the adversary's (corrupted) or
+  its country's (neutral), and no one starts with one. **Hosting** replaces r114's bound city: a neutral city with
+  your node on or next to it (`host_reach` 1) makes its energy for you in the income step (`host_city` 1: one city a
+  seat, one host a city; [economy.md](economy.md)). Every country's start spot is next to a city, so a seat whose
+  nearest city starts clean hosts it from round 1, as the bound city paid.
+  With `cities_unowned` 0 (r114, a screen's off arm) each player starts with the clean city of their country
+  nearest their first node (ties: the lower hex number) aligned to them, their cube on it.
 - The adversary's supply: `adversary.supply_per_country` agents per country.
 - The adversary deck is dealt and its top card revealed face up as round 1's card.
 

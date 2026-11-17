@@ -1,0 +1,23 @@
+{
+ "name": "s254-reach",
+ "note": "254, after the first fresh read (judge d0-d3 -3.6 +- 1.7 with hosting on the city; node losses +0.7 a game): the judge on the dev seeds 36800-36831, three pairs x three arms, d0-d3. Arms: off (r114's ownership), on (players never own a city, a node on a neutral city hosts it: the first fresh read's arm), reach (on, and a node on or next to the city hosts it, one host a city). Every arm sets the switches explicitly. Variant-major: pair, then arm.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {"name": "bp-off", "set": ["board.cities_unowned=0", "board.host_city=0", "board.host_reach=0"]},
+  {"name": "bp-on", "set": ["board.cities_unowned=1", "board.host_city=1", "board.host_reach=0"]},
+  {"name": "bp-reach", "set": ["board.cities_unowned=1", "board.host_city=1", "board.host_reach=1"]},
+  {"name": "br-off", "set": ["ai.boards=0,2", "board.cities_unowned=0", "board.host_city=0", "board.host_reach=0"]},
+  {"name": "br-on", "set": ["ai.boards=0,2", "board.cities_unowned=1", "board.host_city=1", "board.host_reach=0"]},
+  {"name": "br-reach", "set": ["ai.boards=0,2", "board.cities_unowned=1", "board.host_city=1", "board.host_reach=1"]},
+  {"name": "pr-off", "set": ["ai.boards=1,2", "board.cities_unowned=0", "board.host_city=0", "board.host_reach=0"]},
+  {"name": "pr-on", "set": ["ai.boards=1,2", "board.cities_unowned=1", "board.host_city=1", "board.host_reach=0"]},
+  {"name": "pr-reach", "set": ["ai.boards=1,2", "board.cities_unowned=1", "board.host_city=1", "board.host_reach=1"]}
+ ],
+ "difficulties": [0, 1, 2, 3],
+ "agents": ["strategist"],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

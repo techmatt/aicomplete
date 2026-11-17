@@ -455,7 +455,9 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             parts.push(w("city"));
             // 178 (#29): every liberation is the Liberate action's, so the house term carries it (the Agents on
             // it come off, it is left neutral, 252); `own`, the rare card power, says the cube it puts on.
-            let say = if *own { "liberate it; your cube goes on it".to_string() } else { "liberate it".to_string() };
+            // 254 (Matt's candidate: players never own a city): `own` makes a station or factory yours, a city its
+            // country's (the face prints the shipped `board.cities_unowned` 1).
+            let say = if *own { "liberate it; a station or factory becomes yours".to_string() } else { "liberate it".to_string() };
             let mut out = vec![clause(adversary(parts), say)];
             if *ambassadors > 0 {
                 let n = *ambassadors;

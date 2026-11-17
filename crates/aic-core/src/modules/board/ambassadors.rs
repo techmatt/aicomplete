@@ -104,6 +104,10 @@ pub fn claim_cost(w: &World, g: &GameState, h: usize) -> Option<i64> {
     if corrupted(g, h) || cube_owner(g, h).is_some() || g.tokens(h, ADV_AMBASSADOR) > 0 {
         return None;
     }
+    // 254 (`cities_unowned`): no city is claimed.
+    if kind == SiteKind::City && cities_unowned(w) {
+        return None;
+    }
     Some(claim_ambassadors(w, kind))
 }
 
@@ -230,7 +234,9 @@ pub fn liberate_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, own:
     }
     // 253 (amendment 11525): `liberate_neutral` 0 is r112's rule (the site becomes the liberator's), a screen's
     // off arm for ruling 4.
-    if own || w.int("board.liberate_neutral") == 0 {
+    // 254 (`cities_unowned`): a liberated city is its country's whatever the route (Hostile Buyout's `own` included).
+    let city = kind == SiteKind::City;
+    if !(city && cities_unowned(&w)) && (own || w.int("board.liberate_neutral") == 0) {
         cx.add_tokens(g, h, cube(seat), 1);
     } else if g.tokens(h, LIBERATED) == 0 {
         // 253: a Liberated marker on the neutral site, for the retake (`adversary.retake_agents`).

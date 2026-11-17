@@ -12,7 +12,8 @@ fn city_energy(rules: &Rules, h: usize) -> i64 {
 /// (021 sold it to a player next to it); an aligned city's goes free to its owner.
 #[test]
 fn production_sells_no_neutral_energy_and_an_aligned_city_powers_its_owner() {
-    let (rules, g0) = lab(&["board.produce"]);
+    // 254: r114's ownership, no hosting (the hosting test is below).
+    let (rules, g0) = lab_with(&["board.produce"], &["board.host_city=0", "board.cities_unowned=0"]);
     let (city, n) = city_with_lonely_neighbors(&rules.map);
     let res = |g: &GameState, s: usize, r: Resource| g.resource(s, r) - g0.resource(s, r);
 
@@ -34,12 +35,71 @@ fn production_sells_no_neutral_energy_and_an_aligned_city_powers_its_owner() {
     assert_eq!((res(&g, 0, Resource::Energy), res(&g, 1, Resource::Energy)), (0, 1));
 }
 
+/// 254 (`host_city` 1, `host_reach` 1, the baseline): a producing neutral city with your node on or next to it makes
+/// its energy for one host in the income step; an agent on it darkens it; a seat hosts `host_city` cities at most; the
+/// players' choice hosts as many as can be (a matching); a city bought from this round hosts no one.
+#[test]
+fn a_hosted_city_powers_a_node_on_or_next_to_it() {
+    use crate::modules::common::{city_host, hosted_cities};
+    let (rules, g0) = lab(&["board.produce"]);
+    let w = rules.world();
+    assert_eq!((w.int("board.host_city"), w.int("board.host_reach")), (1, 1));
+    let (city, n) = city_with_lonely_neighbors(&rules.map);
+    let made = city_energy(&rules, city);
+    let res = |g: &GameState, s: usize| g.resource(s, Resource::Energy) - g0.resource(s, Resource::Energy);
+
+    // A node next to it hosts it; one host a city.
+    let mut g = g0.clone();
+    put(&mut g, n[0], node(0), 1);
+    put(&mut g, n[1], node(1), 1);
+    assert_eq!(city_host(&w, &g, city), Some(0));
+    assert!(board::energy_for_sale(&w, &g, 1, city), "a hosted city stays for sale");
+    run(&rules, &mut g);
+    assert_eq!((res(&g, 0), res(&g, 1)), (made, 0));
+
+    // Bought from this round: no host.
+    let mut g = g0.clone();
+    put(&mut g, n[0], node(0), 1);
+    set_var(&mut g, board::bought_key(city), 1);
+    assert_eq!(city_host(&w, &g, city), None);
+
+    // An agent on it: dark, it hosts no one (a city next to the node may still be hosted).
+    let mut g = g0.clone();
+    put(&mut g, city, node(0), 1);
+    put(&mut g, city, ADV_AMBASSADOR, 1);
+    assert_eq!(city_host(&w, &g, city), None);
+
+    // Seat 0 on two cities, seat 1 next to one of them: one each (the matching), not two for seat 0's cap of one.
+    let other = cities(&rules.map).into_iter().find(|&c| c != city && city_energy(&rules, c) == made).unwrap();
+    let mut g = g0.clone();
+    put(&mut g, city, node(0), 1);
+    put(&mut g, other, node(0), 1);
+    put(&mut g, n[0], node(1), 1);
+    assert_eq!((hosted_cities(&w, &g, 0).len(), hosted_cities(&w, &g, 1)), (1, vec![city]));
+    run(&rules, &mut g);
+    assert_eq!((res(&g, 0), res(&g, 1)), (made, made));
+
+    // `host_reach` 0: only a node on it hosts it.
+    let (rules0, _) = lab_with(&["board.produce"], &["board.host_reach=0"]);
+    let mut g = g0.clone();
+    put(&mut g, n[0], node(0), 1);
+    assert_eq!(city_host(&rules0.world(), &g, city), None);
+
+    // r114's rule (`host_city` 0): a node on a neutral city makes nothing.
+    let (rules, g0) = lab_with(&["board.produce"], &["board.host_city=0"]);
+    let mut g = g0.clone();
+    put(&mut g, city, node(0), 1);
+    run(&rules, &mut g);
+    assert_eq!(g.resource(0, Resource::Energy), g0.resource(0, Resource::Energy));
+}
+
 /// r75 (Matt's ruling 6): the Buy energy standard action, `city_energy_credits`
 /// (4) for a neutral city's energy: the city in reach and producing (no
 /// blackout, no agent on it), once per city a round.
 #[test]
 fn buy_energy_takes_a_neutral_producing_citys_energy_once_a_round() {
-    let (rules, g0) = lab(&["board.produce"]);
+    // 254: r114's ownership (the aligned case below); a hosted city stays for sale (the hosting test).
+    let (rules, g0) = lab_with(&["board.produce"], &["board.cities_unowned=0"]);
     let w = rules.world();
     let (city, n) = city_with_lonely_neighbors(&rules.map);
     let price = w.int("board.city_energy_credits");

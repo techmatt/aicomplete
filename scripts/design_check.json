@@ -161,17 +161,6 @@
         "narrative": "trust"
       },
       {
-        "name": "Claim a city",
-        "src": "standard:claim",
-        "case": "city",
-        "give": {
-          "ambassadors": "board.liberate_at"
-        },
-        "get": {
-          "city_claimed": 1
-        }
-      },
-      {
         "name": "Claim a station",
         "src": "standard:claim",
         "case": "station",
@@ -265,8 +254,7 @@
       "node": 8,
       "factory": 19,
       "land_token": 12,
-      "station_owned": 12,
-      "city_claimed": 14
+      "station_owned": 12
     },
     "anchor_sources": {
       "note": "249, the circular-anchor check: where each extra anchor's number came from. 'set_from': the standard action whose price set it (flagged: the check would only measure the action against itself). 'independent': a derivation that reads no action's price (an anchor that equals an action's give with neither listed is flagged too).",
@@ -278,9 +266,7 @@
         "land_token": "210: 3 rounds of a face-up token's 1 Discord, a sway 4 each",
         "node": "206: values.json's node, 8",
         "factory": "206: +1 chip income, 19",
-        "station_owned": "values.json's claim_station, 12 (252: 1 cube a round at 3 for about 4 rounds)",
-        "city_claimed": "249: +1 energy income (tier 1), 14 (248's price table); the site for Unity cards unpriced",
-        "city_liberated": "card-guidelines.md's derived line, 45",
+        "station_owned": "values.json's claim_station, 12 (252: 1 cube a round at 3 for about 4 rounds)",        "city_liberated": "card-guidelines.md's derived line, 45",
         "agent": "card-guidelines.md, 5",
         "sway": "card-guidelines.md, 4",
         "card": "card-guidelines.md, 5",

@@ -86,7 +86,7 @@
     "cleanse": {"credits": 6, "per": "factory cleansed; with cities, a city at liberate's row instead"},
     "cleanse_station": {"credits": 15, "per": "station cleansed, or a station or factory (r35: a flip, a cube a round both ways for the rounds left)"},
     "liberate": {"credits": 45, "per": "city liberated (5 Sway and a city, its ambassadors and Discord stopped: about 50 in play); no_city_share of it with no city corrupted"},
-    "liberate_align": {"credits": 5, "per": "your cube on the liberated city"},
+    "liberate_align": {"credits": 5, "per": "your cube on the liberated site (254: a station or factory only; a city stays its country's)"},
     "liberate_troops": {"credits": 3, "per": "troop the liberation may clear in its country (about 1.5 there, at remove_troops less its share; r38 x 0.7 with remove_troops)"},
     "liberate_botnet": {"credits": 7, "per": "a botnet on or next to the liberated city removed (remove_botnet x about 0.6 for one being there)"},
     "clear_city": {"credits": 2, "per": "adversary ambassador cleared around a corrupted city (max 0: token_pile)"},

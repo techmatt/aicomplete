@@ -97,10 +97,21 @@ fn setup_places_the_printed_pieces() {
 #[test]
 fn each_seat_starts_with_a_bound_clean_city_at_every_size_and_difficulty() {
     use crate::modules::common::{cube, cube_owner, corrupted, is_city};
+    // 254 (Matt's candidate, the baseline): players never own a city, so no seat starts with one.
+    for countries in 1..=4 {
+        let mut c = baseline();
+        c.apply_override(&format!("countries={countries}")).unwrap();
+        c.round = vec![ACTIONS.into()];
+        let rules = Rules::new(&c).unwrap();
+        let g = rules.new_game(1);
+        assert_eq!((0..g.seats.len()).map(|s| total(&g, cube(s))).sum::<i64>(), 0, "{countries} countries");
+    }
+    // r114's rule (`cities_unowned` 0): each seat's bound city.
     for countries in 1..=4 {
         for sets in [vec![], vec!["adversary.difficulty=4", "adversary.extra_corrupted=1"]] {
             let mut c = baseline();
             c.apply_override(&format!("countries={countries}")).unwrap();
+            c.apply_override("board.cities_unowned=0").unwrap();
             for s in &sets {
                 c.apply_override(s).unwrap();
             }

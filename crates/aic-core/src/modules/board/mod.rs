@@ -108,6 +108,9 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("insight_cubes", 1, 5, "standard action Turn a cube into insight: research cubes a use (252: taxed)"),
             ParamSpec::int("insight_per_round", 0, 5, "253: times a seat may Turn a cube into insight a round (0: no limit)"),
             ParamSpec::int("liberate_neutral", 0, 1, "252 (Matt's ruling 4): 1, Liberate leaves the site neutral; 0, it becomes the liberator's (r112, a screen's off arm)"),
+            ParamSpec::int("cities_unowned", 0, 1, "254 (Matt's candidate): 1, players never own a city (no bound city at setup, no city claims, a liberated city is its country's); 0, r114's rule"),
+            ParamSpec::int("host_city", 0, 4, "254: neutral cities with your node on them whose energy you collect in the income step, at most (not for sale; 0: none)"),
+            ParamSpec::int("host_reach", 0, 1, "254: 0, a seat hosts a neutral city with its node on it; 1, on or next to it (one host a city, the players choosing)"),
             ParamSpec::int("antimatter_cubes", 0, 10, "standard action, the desperate source: research cubes for 1 antimatter, no limit a round (0: no such action)"),
             ParamSpec::int("botnet_credits", 1, 50, "standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays)"),
             ParamSpec::list("std_off", 0, 15, "a probe's switch: standard actions not offered, by place in the table from 1 (station, remove, lift, dispatch, ambassador, claim, liberate, insight, envoy, botnet, buy energy, antimatter, node, troop, factory; 0: none off)"),
@@ -117,7 +120,7 @@ pub static DEF: ModuleDef = ModuleDef {
             PhaseSpec::auto("bases", "growth, after the income step: extra Drones, then each city grows a factory on a free zone next to it"),
             PhaseSpec::auto("war", "at the end of the round, the Drones on either side of each front fight"),
             PhaseSpec::auto("march", "each adversary troop takes its steps: remove an ambassador on its hex, else destroy a target next to it, else move toward the nearest"),
-            PhaseSpec::auto("produce", "the income step (economy's upkeep follows at once): factories make chips or adversary troops, aligned cities energy (an agent on one stays and darkens it), research stations cubes (an opposing piece blocks one; an adversary station's compute waits for the compute step); full megaprojects complete"),
+            PhaseSpec::auto("produce", "the income step (economy's upkeep follows at once): factories make chips or adversary troops, hosted (254) or aligned cities energy (an agent on one stays and darkens it), research stations cubes (an opposing piece blocks one; an adversary station's compute waits for the compute step); full megaprojects complete"),
             PhaseSpec::auto("cleanup", "count the country flags down"),
         ],
         rng: &[],
@@ -387,7 +390,8 @@ impl Module for Board {
                 cx.add_tokens(g, spares.remove(i), node(s), 1);
             }
             cx.add_resource(g, s, Resource::Ambassadors, w.int("board.start_ambassadors"));
-            if let Some(h) = bound_city(&w, g, c, start) {
+            // 254: with `cities_unowned` no player owns a city, the bound one included.
+            if let Some(h) = bound_city(&w, g, c, start).filter(|_| !cities_unowned(&w)) {
                 cx.add_tokens(g, h, cube(s), 1);
             }
         }

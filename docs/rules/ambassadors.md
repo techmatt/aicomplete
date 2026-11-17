@@ -9,14 +9,14 @@ Cities, research stations and factories follow one set of rules and differ only 
 | Owner | City | Research station | Factory |
 |---|---|---|---|
 | Neutral | its energy, bought by the Buy energy action ([economy.md](economy.md)) | a neutral cube onto its megaproject ([board.md](board.md)) | nothing, except that **at a Discord tip it arms its country's bases** ([war.md](war.md)) |
-| Player | its energy to its owner | `owned_station_cubes` research cubes in its owner's color | `factory_chips` chips to its owner |
+| Player | none: **no player owns a city** (254); a neutral city with your node on or next to it makes its energy for you (hosting, [economy.md](economy.md)) | `owned_station_cubes` research cubes in its owner's color | `factory_chips` chips to its owner |
 | Adversary | its energy diverted: `divert_discord` Discord a unit | `station_cubes` adversary compute (in the adversary's compute step) | 1 adversary troop on its hex |
 
 - **One opposing piece blocks a site's output while it stands.** An agent on a neutral or player
   site, a player ambassador on an adversary site: that round the site makes nothing, and the piece stays
   (137; 139 dropped the dial that used it up). On a
-  clean or aligned city this is the **dark** city (r37, r38): nothing to buy, no energy, and an aligned one sways
-  `ambassador_discord` (0) a unit.
+  neutral city this is the **dark** city (r37, r38): nothing to buy, nothing to host (with `cities_unowned` 0 an
+  aligned one gave its owner nothing and swayed `ambassador_discord` (0) a unit).
 - **Your own ambassador is armor:** when your node, or a site you own, would be destroyed, your ambassador on its hex
   may be used up instead, the owner choosing which protection to spend, or none ([war.md](war.md), *Destruction*).
   Only your own guards your piece (r75, Matt's ruling 5): another player's never does, and a neutral site has none.
@@ -25,10 +25,11 @@ Cities, research stations and factories follow one set of rules and differ only 
 - **Claim and Liberate share one payment rule** (r75, Matt's ruling 2): the bill is the site's price plus one for
   each agent on it (they cancel); **your own ambassadors standing on the site pay first, then your supply**, never
   another player's. Both need the site in reach; a botnet on or next to it stops neither.
-- **Claiming** (the Claim action, [economy.md](economy.md)): a neutral site in reach with no embargo on it,
-  `claim_city` 5, `claim_station` 4, `claim_factory` 3 (252: priced under the cards for the job, Matt's ruling 5;
-  3 and 2 before). Your cube goes on.
-  Difficulty lowers only the adversary's numbers. The bound city at setup is free ([board.md](board.md)).
+- **Claiming** (the Claim action, [economy.md](economy.md)): a neutral **research station or factory** in reach
+  with no embargo on it, `claim_station` 4, `claim_factory` 3 (252: priced under the cards for the job, Matt's
+  ruling 5; 3 and 2 before). Your cube goes on. **A city is never claimed** (254, Matt's candidate,
+  `cities_unowned` 1; r114 claimed one for `claim_city` 5 and bound one to each player at setup).
+  Difficulty lowers only the adversary's numbers.
   **A claim pays back slowly** (142; 252): a player's station makes `owned_station_cubes` 1 cube and a
   factory `factory_chips` 1 chip a round (r83; a neutral station `station_cubes` 1). Give / get at the anchors: 3
   ambassadors (24) for 1 chip a round (6) pays back in 4 rounds, 4 ambassadors (32) for 1 cube a round (6) in about
@@ -55,7 +56,7 @@ Cities, research stations and factories follow one set of rules and differ only 
   route (the purge). A **liberate card** ([player-cards.md](player-cards.md),
   *The liberate capstones*) liberates a city exactly so, for its own price instead of the bill: the agents come off,
   Unity sways and it is left neutral; going straight from adversary to yours is a rare card power (Hostile Buyout
-  alone). The price is the same all game (r67; late strength comes from cards).
+  alone, 254: on a corrupted station or factory; a city it frees is left neutral). The price is the same all game (r67; late strength comes from cards).
 
 ## Moving pieces: Gather and Push (r70; Matt, 2026-11-09, *Moving pieces*; numbers candidates)
 
@@ -122,11 +123,12 @@ Agents can stand with no piece under them (on an empty industrial zone; on a hex
 **Your supply has no limit** ([economy.md](economy.md), *No limits*). Orbital Embassy gives 1 ambassador a
 Diplomacy tag on each card you play (127; at 1 a tag of any kind it piled 52-84 in long games).
 
-**For new players.** Every city, research station and factory belongs to a player, to the adversary, or to nobody,
-and makes something for its owner. Spend your ambassadors to claim a neutral one or to take one back from the
-adversary: 5 for a city, 4 for a station, 3 for a factory either way, never with an agent sitting on
-it; your own ambassadors standing on it pay first. A claim makes it yours; taking one back (Liberate) leaves it
-neutral and sways Unity your way, and you claim it after, if you want it; until then a Liberated marker makes the
+**For new players.** Every research station and factory belongs to a player, to the adversary, or to nobody, and
+makes something for its owner; a city is the adversary's or its country's, never a player's. Spend your ambassadors
+to take a site back from the adversary (Liberate: 5 for a city, 4 for a station, 3 for a factory) or to claim a
+neutral station (4) or factory (3), never with an agent sitting on it; your own ambassadors standing on it pay first.
+A claim makes it yours; taking one back leaves it neutral and sways Unity your way, and you may claim a station or
+factory after; a city stays free, and a node of yours on or next to it collects its energy each round. While a freed site is unclaimed, a Liberated marker makes the
 adversary bring one agent more to take it back. A station you own makes 1 cube a round (a
 factory 1 chip), so a claim is a slow fallback; a few cards claim a station for energy instead. Every meeting of an agent and an ambassador is one for one. Stand one ambassador on an adversary site
 to shut it off, and clear agents off yours, which they shut off the same way. An ambassador of yours on your own piece

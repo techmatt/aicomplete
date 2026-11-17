@@ -47,7 +47,7 @@ pub const HOUSE_TERMS: [(&str, &str); 25] = [
     ("On your cards", "on tags: on your cards in play, covered buildings included, and your board's tags, printed or revealed by its tracks. Tokens count only on the card that holds them"),
     ("Action", "once a round, always; \"A, OR B\" is one use, either half"),
     ("Open megaproject", "one that isn't complete; research cubes in your color go only onto one"),
-    ("Liberate", "a corrupted site: the agents on it come off and the adversary's cube comes off; it is left neutral, for a Claim or a card to take (the action pays for it in ambassadors; a card's is unpaid)"),
+    ("Liberate", "a corrupted site: the agents on it come off and the adversary's cube comes off; it is left neutral, a city its country's for good, a station or factory for a Claim or a card to take (the action pays for it in ambassadors; a card's is unpaid)"),
     ("Convert", "an agent on or next to the city leaves its stack and becomes your ambassador where it stood"),
     ("Gather up to N", "pieces (ambassadors, agents, troops; botnets never move) onto the target, each from a hex next to it; you may stop at any piece (a strike, \"remove up to N on or next to it\", moves nothing)"),
     ("Push up to N", "pieces from the target, each to a hex next to it that you choose; you may stop at any piece"),
@@ -866,7 +866,8 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          them with your board's node routes, each once a round: Expand, on every board, costs nothing more; the board's \
          other two cost more of its own currency (energy, chips or insight) and do a little more besides; cards can add \
          more. Every placement, by route or card, pays the energy printed on the track space you uncover. You \
-         start with {} energy and one city bound to you, which makes energy every round.\n\n\
+         start with {} energy and next to a city; no city is ever yours, but a free (neutral) city with your node on \
+         or next to it makes its energy for you every round, one city each.\n\n\
          **Dispatches, tags and sales, for new players.** A Dispatch puts one of your ambassadors, \
          from your supply or anywhere on the map, onto a piece or botnet in your reach and costs nothing, but you \
          have only your board's Dispatches each round ({} printed, more as Dispatch spaces are \

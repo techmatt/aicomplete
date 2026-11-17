@@ -87,7 +87,7 @@
   "holographic_assembly_hall": "r83 (191): insight to play spread, 9 cr, 1 ins to 13 cr, 0 ins; values.json: pay 13.0; get 21.1 (+8.1); anchors: pay 13.0 (+8.1).",
   "homeland_security_act": "r45 (112): back to r43's price (18 cr, 2 ins; 111 had cut it to 10 cr, 2 ins to reach a band); anchors: pay 34; get 48.1 = 1.41.",
   "honeypot_relay": "r70 (166): draw 1, then remove up to 2 agents on or next to a hex in reach (r77: no gather; its draw 2 was the weakest line); anchors: pay 20; get 30.7 = 1.54; values.json: pay 14.5; get 17.68 = 1.22.",
-  "hostile_buyout": "r94 (213): a major: 22 cr, 1 am: liberate, 3 ambassadors; 252: the one liberate card that leaves the city yours (own, values.json's liberate_align 5); anchors: pay 48; get 69 = 1.44; values.json: pay 40; get 67.",
+  "hostile_buyout": "r94 (213): a major: 22 cr, 1 am: liberate, 3 ambassadors; 254 (players never own a city): targets any corrupted site, a city left neutral, a station or factory yours (own, values.json's liberate_align 5); anchors on a city: pay 48; get 64 = 1.33; values.json: pay 40; get 62 (the effect ledger).",
   "hyperscale_botnet": "r44 (111): anchors: pay 30; get 63 = 2.10.",
   "industrial_commons": "r114 (253, Matt's ruling 3): a neutral factory on a free industrial zone in reach, your ambassador on it (it keeps the factory from arming bases at a Discord tip, and pays first toward Claim's 3); values.json: pay 4 cr + keep 2.5 = 6.5; get open_factory 3 + an ambassador placed 6 = 9 (1.38; at the anchors, keep 4 and an ambassador 8: 11 for 8, 1.38); capped by the free zones.",
   "interceptor_battery": "r83 (191): insight to play spread, 7 cr, 1 ins to 11 cr, 0 ins; values.json: pay 11.0; get 13.0 (+2.0); anchors: pay 11.0 (+2.0).",

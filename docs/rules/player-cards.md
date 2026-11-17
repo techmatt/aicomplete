@@ -70,7 +70,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   | The Nuclear Option | antimatter | event | sway 2 toward Discord (collateral harm) |
   | Power to the People | energy | building (over Power, needs 2) | income: 1 credit per Power tag on your cards |
   | Citywide Microgrid | energy (8, a late sink) | building | Action: 2 Sway toward Unity |
-  | Hostile Buyout | antimatter, Diplomacy | event | gain 3 ambassadors |
+  | Hostile Buyout | antimatter, Diplomacy | event | gain 3 ambassadors; any corrupted site, a station or factory becomes yours (254) |
   | Forensic Audit | research cubes | event | draw 2 cards |
   | Root Access | antimatter, Cyber (needs Cyber tags) | event | remove a botnet on or next to the city |
   | Peacekeeping Mission | antimatter, Security (needs Security tags) | event | remove up to 3 adversary troops in the city's country |

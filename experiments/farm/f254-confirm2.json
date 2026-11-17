@@ -1,0 +1,20 @@
+{
+ "name": "f254-confirm2",
+ "note": "254's second confirm (48972-49019): the first confirm (48924-48971) was spent when the final diff review fixed the agents' eval (a bought or blacked-out city hosts no one in its hosted term, as in the engine). Greedy and the judge, three pairs x two arms, d0-d4, 48 seeds a cell. off: r114's ownership (cities_unowned 0, host_city 0, host_reach 0); on: the baseline as shipped. Variant-major: pair, then arm.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {"name": "bp-off", "set": ["board.cities_unowned=0", "board.host_city=0", "board.host_reach=0"]},
+  {"name": "bp-on", "set": []},
+  {"name": "br-off", "set": ["ai.boards=0,2", "board.cities_unowned=0", "board.host_city=0", "board.host_reach=0"]},
+  {"name": "br-on", "set": ["ai.boards=0,2"]},
+  {"name": "pr-off", "set": ["ai.boards=1,2", "board.cities_unowned=0", "board.host_city=0", "board.host_reach=0"]},
+  {"name": "pr-on", "set": ["ai.boards=1,2"]}
+ ],
+ "difficulties": [0, 1, 2, 3, 4],
+ "agents": ["greedy", "strategist"],
+ "games": 48,
+ "first_seed": 48972,
+ "records": 0
+}

@@ -505,7 +505,8 @@ impl Where {
             Where::CorruptedCity => "corrupted city",
             Where::ByCorruptedCity => "hex on or next to a corrupted city",
             Where::Corrupted => "corrupted city, research station or factory",
-            Where::Owned => "city, research station or factory a player owns",
+            // 254: no city is owned; a hosted one counts (`plan::holds`).
+            Where::Owned => "research station or factory a player owns, or city a player hosts",
         }
     }
     pub fn name(self) -> &'static str {

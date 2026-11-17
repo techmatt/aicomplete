@@ -472,7 +472,14 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             threats::deal_extra(g, cx, count * team::per_site_count(&w, g, *where_, *max));
         }
         Op::PerSite { where_, max, then } => {
-            for _ in 0..team::per_site_count(&w, g, *where_, *max) {
+            let n = team::per_site_count(&w, g, *where_, *max);
+            // 254: how often a per-site card pays, and how many of its owned sites are hosted cities (stats only).
+            cx.tally(g, &format!("effects.per_site.{}", where_.name()), n);
+            if *where_ == crate::op::Where::Owned {
+                let hosted = super::plan::sites_where(&w, g, *where_).into_iter().filter(|&h| is_city(&w, h) && cube_owner(g, h).is_none()).count();
+                cx.tally(g, "effects.per_site.owned_hosted", hosted as i64);
+            }
+            for _ in 0..n {
                 run(g, cx, then, ctx)?;
                 if g.is_over() {
                     break;

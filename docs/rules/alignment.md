@@ -55,7 +55,8 @@ goes face up on its side's resolved pile; there are no ongoing cards. **The Disc
 clock.** A Discord tip that finds it empty loses (**locked**). **The Unity deck reshuffles** its resolved pile when a
 tip finds it empty (rarely, at 23 cards); drawing it out wins nothing. **Fear-card shape (cards candidates):** each
 card is one verb scoped by a **board condition**, never reach or "one player"; its strengths widen the count or the
-condition. Shapes: "for each X (at most N)" (`per_site`, counted on the whole board); "remove up to N from each X / in
+condition. Shapes: "for each X (at most N)" (`per_site`, counted on the whole board; "a site a player owns" counts a city a
+player hosts, 254, since no city is owned); "remove up to N from each X / in
 each country piece from X / each player from one X" (`remove_where`); **prohibitions** (`prohibit`, the firewall
 generalized; *In the next adversary turn, no X*, [README.md](README.md#terms)): no Rally, Muster or Corrupt; at a
 token's hex a Muster troop (any Muster) stays in the supply, a site doesn't corrupt (by a line, naturally, or by any

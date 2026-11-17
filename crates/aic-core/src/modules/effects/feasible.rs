@@ -133,6 +133,8 @@ fn feasible_aimed(
             Op::Cleanse { cities, only, .. } => {
                 any_hex(g, |h| cleansable(w, g, h, *cities, *only) && in_reach(w, g, seat, h))
             }
+            // 254: an `own` liberate takes a corrupted station or factory too.
+            Op::Liberate { own: true, .. } => !liberable_sites(w, g, seat).is_empty(),
             Op::Liberate { .. } => !liberable_cities(w, g, seat).is_empty(),
             Op::ClearCity { .. } => !guarded_cities(w, g, seat).is_empty(),
             Op::Jam { source, .. } => !threats::counterable(w, g, seat, *source).is_empty(),

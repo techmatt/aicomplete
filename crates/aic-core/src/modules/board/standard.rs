@@ -208,6 +208,7 @@ pub fn energy_for_sale(w: &World, g: &GameState, seat: usize, h: usize) -> bool 
     is_city(w, h)
         && !corrupted(g, h)
         && cube_owner(g, h).is_none()
+        // 254 (diff review): a hosted city stays for sale; bought, it pays no host this round (`host_assignment`).
         && in_reach(w, g, seat, h)
         && !city_dark(w, g, h)
         && city_output(w, h) > 0
@@ -312,6 +313,11 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         // 178 (Matt's ruling #22): Dispatch, not Move (it plays the same: the ambassador comes from anywhere).
         StandardAction::Move => "Use 1 Dispatch: put a player ambassador on it, from your supply or the board".into(),
         StandardAction::Ambassador => "gain a player ambassador".into(),
+        StandardAction::Claim if cities_unowned(w) => format!(
+            "Claim it: {} ambassadors for a station, {} for a factory; yours on it pay first",
+            claim_ambassadors(w, SiteKind::Station),
+            claim_ambassadors(w, SiteKind::Factory)
+        ),
         StandardAction::Claim => format!(
             "Claim it: {} ambassadors for a city, {} for a station, {} for a factory; yours on it pay first",
             claim_ambassadors(w, SiteKind::City),
@@ -387,6 +393,16 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
             "into your supply; a standard project too".into(),
         ),
         // 137: one action for every site type (it was Align, cities only, for 1).
+        // 254 (`cities_unowned`): no city is claimed; the city's price is Liberate's alone.
+        StandardAction::Claim if cities_unowned(w) => (
+            "Claim a site",
+            format!(
+                "{} ambassadors for a station, {} for a factory (Liberate's table too); used up: yours on the site first, your supply the rest",
+                t("board.claim_station"),
+                t("board.claim_factory")
+            ),
+            "a neutral research station or factory, no embargo on it: your cube goes on it (never a city)".into(),
+        ),
         StandardAction::Claim => (
             "Claim a site",
             format!(

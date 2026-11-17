@@ -3,7 +3,7 @@
     python scripts/bench/split_read.py READ_DIR OUT_PREFIX          # a read folder (games.jsonl with its header)
     python scripts/bench/split_read.py FILE=SPEC.json OUT_PREFIX    # a farm's out file (no header) and its spec
 
-A screen's variants are named `PAIR` (the base) or `PAIR_LEVER` (bp, br, pr). Each lever's games go to
+A screen's variants are named `PAIR` (the base) or `PAIR_LEVER` / `PAIR-LEVER` (bp, br, pr). Each lever's games go to
 OUT_PREFIX-LEVER/games.jsonl (the base to OUT_PREFIX-base), under a header whose spec holds only that lever's
 variants renamed to the bare pairs, with cells renumbered to match, so each folder reads as a plain read.
 221 promoted it from 215's and 219's item copies (`experiments/results/{215,219}_*/split_read.py`).
@@ -39,7 +39,8 @@ def split(head, rows, prefix):
     per = len(spec['difficulties']) * len(spec['agents'])
     levers = {}
     for vi, v in enumerate(spec['variants']):
-        pair, _, lever = v['name'].partition('_')
+        # 254: `PAIR-LEVER` too, as design_check's --variant reads it (253's and 254's specs name arms so).
+        pair, _, lever = v['name'].replace('-', '_', 1).partition('_')
         levers.setdefault(lever or 'base', []).append((vi, pair, v))
     hashes = head.get('config_hashes') or []
     outs = []

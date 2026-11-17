@@ -119,6 +119,76 @@ pub fn clean_city(w: &World, g: &GameState, h: usize) -> bool {
     is_city(w, h) && !corrupted(g, h) && cube_owner(g, h).is_none()
 }
 
+/// 254 (Matt's candidate, `board.cities_unowned`): players never own a city.
+pub fn cities_unowned(w: &World) -> bool {
+    w.int("board.cities_unowned") != 0
+}
+
+/// 254 (`board.host_city`): the seat hosting neutral city `h` this round ([`host_assignment`]): its energy goes to
+/// that seat in the income step.
+pub fn city_host(w: &World, g: &GameState, h: usize) -> Option<usize> {
+    host_assignment(w, g).into_iter().find(|&(c, _)| c == h).map(|(_, s)| s)
+}
+
+/// 254: the neutral cities seat `seat` hosts this round ([`host_assignment`]).
+pub fn hosted_cities(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
+    host_assignment(w, g).into_iter().filter(|&(_, s)| s == seat).map(|(c, _)| c).collect()
+}
+
+/// 254: who hosts which neutral city in this round's income step, as (city, seat). A seat may host a neutral city
+/// producing now (no cube, no agent on it, no blackout, its energy not bought this round) with its node on it, or
+/// with `board.host_reach` 1 on or next to it; each seat hosts `board.host_city` at most and each city has one host.
+/// The printed rule: the players choose (a team game; every city makes the same energy), so the engine hosts as many
+/// as can be ([`match_hosts`]).
+pub fn host_assignment(w: &World, g: &GameState) -> Vec<(usize, usize)> {
+    let cap = w.int("board.host_city").max(0) as usize;
+    if cap == 0 {
+        return Vec::new();
+    }
+    let reach = w.int("board.host_reach") > 0;
+    let open: Vec<usize> = (0..g.hexes.len())
+        .filter(|&h| {
+            clean_city(w, g, h)
+                && g.tokens(h, ADV_AMBASSADOR) == 0
+                && !super::board::hex_flagged(w, g, crate::content::RoundFlag::Blackout, h)
+                // Diff review: a city whose energy was bought this round pays no host.
+                && g.var(&super::board::bought_key(h)) == 0
+        })
+        .collect();
+    let hosts = |s: usize, h: usize| {
+        g.tokens(h, node(s)) > 0 || (reach && w.map.hexes[h].neighbors.iter().any(|&x| g.tokens(x, node(s)) > 0))
+    };
+    match_hosts(cap, g.seats.len(), &open, hosts)
+}
+
+/// 254 (diff review: a greedy pick could host fewer than the players would): a largest matching of `cities` to
+/// `seats` seats, each seat `cap` at most, `can(seat, city)` the edges (augmenting paths; a few seats and cities).
+/// Deterministic: seats in order, each city list in hex order. The agents' eval calls it on its own token view.
+pub fn match_hosts(cap: usize, seats: usize, cities: &[usize], can: impl Fn(usize, usize) -> bool) -> Vec<(usize, usize)> {
+    // Seat slots: seat s's k-th slot is s * cap + k.
+    let slots = seats * cap;
+    let edges: Vec<Vec<usize>> = (0..slots).map(|slot| (0..cities.len()).filter(|&c| can(slot / cap, cities[c])).collect()).collect();
+    let mut city_slot: Vec<Option<usize>> = vec![None; cities.len()];
+    fn augment(slot: usize, edges: &[Vec<usize>], seen: &mut [bool], city_slot: &mut [Option<usize>]) -> bool {
+        for &c in &edges[slot] {
+            if seen[c] {
+                continue;
+            }
+            seen[c] = true;
+            if city_slot[c].is_none_or(|other| augment(other, edges, seen, city_slot)) {
+                city_slot[c] = Some(slot);
+                return true;
+            }
+        }
+        false
+    }
+    for slot in 0..slots {
+        let mut seen = vec![false; cities.len()];
+        augment(slot, &edges, &mut seen, &mut city_slot);
+    }
+    city_slot.iter().enumerate().filter_map(|(c, s)| s.map(|s| (cities[c], s / cap))).collect()
+}
+
 /// The seat whose node is on hex `h`, if any.
 pub fn node_owner(g: &GameState, h: usize) -> Option<usize> {
     (0..g.seats.len()).find(|&s| g.tokens(h, node(s)) > 0)

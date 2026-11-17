@@ -1,0 +1,23 @@
+{
+ "name": "f254-read2",
+ "note": "254's second fresh read (48876-48923; the first, f254-read on 48828-48875, was spent when hosting moved to on-or-next-to): greedy and the judge, three pairs x three arms, d0-d4, 48 seeds a cell. off: r114's ownership (cities_unowned 0, host_city 0); on: players never own a city, a node on a neutral city hosts it (host_reach 0, the first read's arm); reach: the same, a node on or next to the city hosts it (host_reach 1, the shipped candidate). Both on-arms carry 254's Hostile Buyout (any corrupted site), as off does. Variant-major: pair, then arm.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {"name": "bp-off", "set": ["board.cities_unowned=0", "board.host_city=0", "board.host_reach=0"]},
+  {"name": "bp-on", "set": ["board.cities_unowned=1", "board.host_city=1", "board.host_reach=0"]},
+  {"name": "bp-reach", "set": ["board.cities_unowned=1", "board.host_city=1", "board.host_reach=1"]},
+  {"name": "br-off", "set": ["ai.boards=0,2", "board.cities_unowned=0", "board.host_city=0", "board.host_reach=0"]},
+  {"name": "br-on", "set": ["ai.boards=0,2", "board.cities_unowned=1", "board.host_city=1", "board.host_reach=0"]},
+  {"name": "br-reach", "set": ["ai.boards=0,2", "board.cities_unowned=1", "board.host_city=1", "board.host_reach=1"]},
+  {"name": "pr-off", "set": ["ai.boards=1,2", "board.cities_unowned=0", "board.host_city=0", "board.host_reach=0"]},
+  {"name": "pr-on", "set": ["ai.boards=1,2", "board.cities_unowned=1", "board.host_city=1", "board.host_reach=0"]},
+  {"name": "pr-reach", "set": ["ai.boards=1,2", "board.cities_unowned=1", "board.host_city=1", "board.host_reach=1"]}
+ ],
+ "difficulties": [0, 1, 2, 3, 4],
+ "agents": ["greedy", "strategist"],
+ "games": 48,
+ "first_seed": 48876,
+ "records": 0
+}

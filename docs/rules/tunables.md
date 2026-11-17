@@ -47,6 +47,9 @@ conventions: [README.md](README.md).*
 | `board.insight_cubes` | 1 | 1..5 | standard action Turn a cube into insight: research cubes a use (252: taxed) |
 | `board.insight_per_round` | 1 | 0..5 | 253: times a seat may Turn a cube into insight a round (0: no limit) |
 | `board.liberate_neutral` | 1 | 0..1 | 252 (Matt's ruling 4): 1, Liberate leaves the site neutral; 0, it becomes the liberator's (r112, a screen's off arm) |
+| `board.cities_unowned` | 1 | 0..1 | 254 (Matt's candidate): 1, players never own a city (no bound city at setup, no city claims, a liberated city is its country's); 0, r114's rule |
+| `board.host_city` | 1 | 0..4 | 254: neutral cities with your node on them whose energy you collect in the income step, at most (not for sale; 0: none) |
+| `board.host_reach` | 1 | 0..1 | 254: 0, a seat hosts a neutral city with its node on it; 1, on or next to it (one host a city, the players choosing) |
 | `board.antimatter_cubes` | 5 | 0..10 | standard action, the desperate source: research cubes for 1 antimatter, no limit a round (0: no such action) |
 | `board.botnet_credits` | 20 | 1..50 | standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays) |
 | `board.std_off` | 0 | 0..15 | a probe's switch: standard actions not offered, by place in the table from 1 (station, remove, lift, dispatch, ambassador, claim, liberate, insight, envoy, botnet, buy energy, antimatter, node, troop, factory; 0: none off) |

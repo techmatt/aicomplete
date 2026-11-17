@@ -63,7 +63,7 @@ How each primitive resolves, beyond the card text (the card set: [player-cards.m
   stations or to factories; its cube icon then carries that facility's glyph. With `cities` (Great Liberation) a
   corrupted city counts too (its cube carries the city glyph), and it is liberated ([ambassadors.md](ambassadors.md)).
 - **Liberate:** liberate the target, a corrupted city, as the Liberate action does, unpaid
-  ([ambassadors.md](ambassadors.md)); the city is left neutral (252), and `own` (Hostile Buyout alone) puts your cube on. Each engine's twist: `ambassadors` (gain that many), `troops` (up to that many adversary troops in the city's country come
+  ([ambassadors.md](ambassadors.md)); the city is left neutral (252). `own` (Hostile Buyout alone) takes any corrupted site, and a station or factory it frees gets your cube (254: a city never does). Each engine's twist: `ambassadors` (gain that many), `troops` (up to that many adversary troops in the city's country come
   off), `botnet` (a botnet on or next to the city comes off; its icon carries the city glyph). Only the liberate capstones print it ([player-cards.md](player-cards.md)).
 - **Card text:** extra costs and lowered income included; a long card sets smaller. **Shelter** takes no target: none
   of your nodes or facilities in your reach (as it stands when one would be destroyed) can be destroyed this round.

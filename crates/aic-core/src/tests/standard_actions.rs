@@ -1,6 +1,10 @@
 use super::*;
 use crate::modules::board;
 
+/// 254: r114's ownership (`cities_unowned` 0: a city may be claimed), for the claim tests that read a city's
+/// price.
+const CITIES_OWNED: &str = "board.cities_unowned=0";
+
 fn standard_offered(rules: &Rules, g: &GameState, seat: u8) -> BTreeSet<String> {
     rules
         .legal_actions(g)
@@ -135,7 +139,7 @@ fn standard_actions_cost_what_the_config_says() {
         (spent(&g, 0), total(&g, STATION) - total(&g0, STATION)),
         ((0, 0, w.int("board.station_chips")), 1)
     );
-    assert_eq!(total(&g, cube(0)), 2, "the bound city's and the station's");
+    assert_eq!(total(&g, cube(0)), 1, "the station's (254: no bound city)");
 
     // 149: no chip sale.
     assert!(rules.apply_mut(&mut g0.clone(), &std_act(0, "chips"), None).is_err());
@@ -236,7 +240,7 @@ fn moving_an_ambassador_never_targets_the_hex_it_already_holds() {
 /// claim, for `claim_city` ambassadors from the supply (Align took 1).
 #[test]
 fn claiming_puts_a_cube_on_a_neutral_city_in_reach() {
-    let (rules, mut g) = lab(&[]);
+    let (rules, mut g) = lab_with(&[], &[CITIES_OWNED]);
     let m = &rules.map;
     let n = rules.world().int("board.claim_city");
     let (city, next) = city_with_lonely_neighbors(m);
@@ -258,7 +262,7 @@ fn claiming_puts_a_cube_on_a_neutral_city_in_reach() {
 /// each, 137-r90).
 #[test]
 fn claiming_a_dark_city_waits_for_its_agents_to_go() {
-    let (rules, mut g) = lab(&[]);
+    let (rules, mut g) = lab_with(&[], &[CITIES_OWNED]);
     let m = &rules.map;
     let w = rules.world();
     let n = w.int("board.claim_city");
@@ -276,11 +280,41 @@ fn claiming_a_dark_city_waits_for_its_agents_to_go() {
     assert_eq!(g.resource(0, Resource::Ambassadors), 2);
 }
 
+/// 254 (Matt's candidate, the baseline's `cities_unowned` 1): no city is claimed, and a liberated city is left
+/// neutral even by an `own` card (Hostile Buyout), whose `own` makes a corrupted station or factory the liberator's.
+#[test]
+fn players_never_own_a_city() {
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let m = &rules.map;
+    let (city, next) = city_with_lonely_neighbors(m);
+    put(&mut g, next[0], node(0), 1);
+    put(&mut g, next[1], node(0), 1);
+    set_res(&mut g, 0, Resource::Ambassadors, 10);
+    assert_eq!(board::claim_cost(&w, &g, city), None);
+    assert!(!standard_offered(&rules, &g, 0).contains("claim"), "no other site to claim");
+    let buyout = [content::Op::Liberate { own: true, ambassadors: 0, troops: 0, botnet: false }];
+    put(&mut g, city, ADV_CUBE, 1);
+    run_ops(&rules, &mut g, &buyout);
+    assert_eq!((g.tokens(city, ADV_CUBE), g.tokens(city, cube(0)), g.tokens(city, crate::modules::common::LIBERATED)), (0, 0, 1));
+    // A corrupted station: Hostile Buyout's `own` makes it yours.
+    put(&mut g, next[1], STATION, 1);
+    put(&mut g, next[1], ADV_CUBE, 1);
+    run_ops(&rules, &mut g, &buyout);
+    assert_eq!((g.tokens(next[1], ADV_CUBE), g.tokens(next[1], cube(0))), (0, 1));
+    // r114's rule (`cities_unowned` 0): `own` makes a city yours.
+    let (rules, mut g) = lab_with(&[], &[CITIES_OWNED]);
+    put(&mut g, next[0], node(0), 1);
+    put(&mut g, city, ADV_CUBE, 1);
+    run_ops(&rules, &mut g, &buyout);
+    assert_eq!((g.tokens(city, ADV_CUBE), g.tokens(city, cube(0))), (0, 1));
+}
+
 /// 137: Claim costs by site type: `claim_city`, `claim_station`,
 /// `claim_factory`; an adversary or owned site has no claim cost.
 #[test]
 fn claiming_costs_by_site_type() {
-    let (rules, mut g) = lab(&[]);
+    let (rules, mut g) = lab_with(&[], &[CITIES_OWNED]);
     let w = rules.world();
     let m = &rules.map;
     let me = m.numbered(0, piece(0).node);
@@ -445,7 +479,7 @@ fn card_targets_on_the_map_must_be_in_reach() {
 /// and no embargo; a botnet on or next to it no longer blocks it.
 #[test]
 fn claiming_a_site_needs_it_in_reach_and_a_botnet_does_not_block_it() {
-    let (rules, g0) = lab(&[]);
+    let (rules, g0) = lab_with(&[], &[CITIES_OWNED]);
     let m = &rules.map;
     let station = m.numbered(0, piece(0).stations[0]);
     let next = m.hexes[station]
@@ -522,7 +556,7 @@ fn claiming_a_site_needs_it_in_reach_and_a_botnet_does_not_block_it() {
 /// supply; another seat's ambassadors there pay nothing and stay. `claim_city` is 5.
 #[test]
 fn claiming_pays_from_your_own_ambassadors_on_the_site_first() {
-    let (rules, mut g) = lab(&[]);
+    let (rules, mut g) = lab_with(&[], &[CITIES_OWNED]);
     let w = rules.world();
     let m = &rules.map;
     let n = w.int("board.claim_city");

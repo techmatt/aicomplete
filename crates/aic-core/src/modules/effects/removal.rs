@@ -211,15 +211,17 @@ pub(super) fn cleanse(
 
 /// A liberate card (080): one corrupted city in reach is liberated as the Liberate action liberates (178, Matt's
 /// ruling #29): the agents on it come off, the adversary's cube comes off and Unity sways; it is left neutral (252),
-/// unless `own` puts the seat's cube on; nothing is paid. Each engine's twist (r35): `ambassadors` gained, up to
-/// `troops` adversary troops off in the city's country, and with `botnet` one botnet on or next to the city off.
+/// unless `own` puts the seat's cube on (254: `own` takes a corrupted station or factory too, and under
+/// `board.cities_unowned` puts the cube on a station or factory only); nothing is paid. Each engine's twist (r35):
+/// `ambassadors` gained, up to `troops` adversary troops off in the site's country, and with `botnet` one botnet on
+/// or next to the site off.
 #[allow(clippy::too_many_arguments)]
 pub(super) fn liberate_city(g: &mut GameState, cx: &mut Cx, seat: usize, own: bool, ambassadors: i64, troops: i64, botnet: bool, zone: &[usize]) -> Res {
     let w = cx.world;
-    let mut cities = liberable_cities(&w, g, seat);
+    let mut cities = if own { liberable_sites(&w, g, seat) } else { liberable_cities(&w, g, seat) };
     cities.retain(|h| zone.contains(h));
     let opts = cities.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = || format!("Seat {seat}: liberate which corrupted city?");
+    let prompt = || format!("Seat {seat}: liberate which corrupted {}?", if own { "site" } else { "city" });
     if let Some(i) = cx.choose(seat, prompt, opts)? {
         let h = cities[i];
         cx.tally(g, "board.liberated_card", 1);

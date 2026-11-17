@@ -12,8 +12,8 @@ upkeep). The board module owns nodes and counts the tokens taken (`board.track.<
 build direction), Dispatches 1 ambassador free each round (the Researcher 2; more from the fourth economy space), and
 counts its printed tag like one on its cards; its powers are in [ai-powers.md](ai-powers.md). The **Builder**'s special
 rule is Breadth: five building slots, a wider engine. It starts with 40 credits and earns 15 a round, each credit space
-of its economy track 2 or 3 more, so placing a node is how its income grows; its aligned cities make it the most
-energy of the three, which its node power, Buy In, spends. Its powers turn credits into chips and chips into cards or
+of its economy track 2 or 3 more, so placing a node is how its income grows; the energy of the city it hosts (254: a
+node on a neutral city) and the cities it buys from, its node power, Buy In, spends. Its powers turn credits into chips and chips into cards or
 a troop removed, and late in the game finished cards into chips (Industry), energy (Power) or, with an energy, a
 building played free.
 
@@ -70,7 +70,7 @@ whatever places the node: a node route costs only its printed currency (Expand n
 credits, so the energy is stated once, on the track; no card places a node free. Only tracks whose next step you can
 pay are offered; a placement you can't pay doesn't happen.
 
-**Hard to explain to a new player:** Faraday Yard hardens when played, beside Bulwark's and Fortify's hardening; "bound" is a new word for a city that is otherwise only aligned.
+**Hard to explain to a new player:** Faraday Yard hardens when played, beside Bulwark's and Fortify's hardening; a hosted city (your node on it) pays you but isn't yours.
 
 **Node routes (Matt, 2026-11-16, locked; costs candidate).** There is no standard action for nodes. Each board has
 three **node routes**, each once a round: the **base route, Expand** (every board: the track step's energy, nothing

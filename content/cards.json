@@ -3616,7 +3616,7 @@
   "effects": [
    {
     "op": "target",
-    "on": "corrupted_city"
+    "on": "corrupted_site"
    },
    {
     "op": "liberate",

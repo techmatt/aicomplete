@@ -25,14 +25,14 @@ cancel once, the surplus strikes twice).
   factory's output while it stands. Threats build adversary factories (Mass Production, War Economy), corrupt them
   (Factory Occupation, with its cleanup) and destroy them (Siege, leaving Fallout); projects build or take them (War Plants, Asset Seizure, Hostile Takeover, Grand Offensive).
 - **City growth** (candidate; each round, after the income step and the extra drones): every
-  city, aligned, neutral or corrupted, puts **1 chip on itself for each unclaimed neutral factory next to it** (none
+  city, neutral or corrupted (no player owns one, 254), puts **1 chip on itself for each unclaimed neutral factory next to it** (none
   of its own; a claimed or adversary factory feeds nothing; an agent on the city blocks nothing), holding at most
   `city_chip_cap` (3). Then each city holding `city_build_chips` (3) spends them and builds a **neutral** facility:
   whichever of factory and research station it has **fewer of next to it** (any owner's; ties: a factory), a factory
   on a free industrial zone, a station on free open land that is no zone and no base, next to the city; with none,
   within 2 hexes **in its own country**; with none there, nothing is built (it never switches kind) and its chips
-  wait. An aligned city's owner picks the hex; a corrupted city's is the lowest-numbered next to an agent, else the
-  lowest-numbered, as a neutral city's is. Cities gather first, then build in hex order. Claiming a factory stops it
+  wait. A corrupted city's hex is the lowest-numbered next to an agent, else the lowest-numbered, as a neutral
+  city's is (with `cities_unowned` 0, an aligned city's owner picked it). Cities gather first, then build in hex order. Claiming a factory stops it
   feeding: growth is a prize to take, and a city with no unclaimed factory beside it touches no token.
 
 ## Bases and war

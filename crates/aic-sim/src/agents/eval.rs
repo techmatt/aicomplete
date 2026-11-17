@@ -771,6 +771,10 @@ pub struct Eval {
     /// 248: whether the Liberate action is offered (`board.std_off`, a probe's switch): off, no bill to save toward.
     liberate_on: bool,
     aligned_bonus: i64,
+    /// 254 (`board.host_city`): a neutral city's energy goes to the seat whose node is on it, this many a seat.
+    host_city: usize,
+    /// 254 (`board.host_reach`): a node next to the city hosts it too.
+    host_reach: bool,
     tip_per_player: i64,
     /// The seat with Wall, if a seat has it.
     wall_seat: Option<usize>,
@@ -1006,6 +1010,8 @@ impl Eval {
             city_energy: world.list("board.corp_energy").first().copied().unwrap_or(1),
             liberate_on: board::std_offered(&world, board::StandardAction::Liberate),
             aligned_bonus: world.int("board.aligned_bonus"),
+            host_city: world.int("board.host_city").max(0) as usize,
+            host_reach: world.int("board.host_reach") > 0,
             tip_per_player: world.int("alignment.tip_per_player"),
             wall_seat: (0..seats).find(|&s| ai::board(&world, s).innate.passives.iter().any(|p| matches!(p, Op::Wall))),
             patient: std::array::from_fn(|s| s < seats && economy::patient(&world, s)),
@@ -1398,6 +1404,8 @@ impl Eval {
         let near = self.reach_masks(rules, &tokens);
         let seats = self.seats;
         let mut pieces = 0i64;
+        // 254: the hosted cities, the engine's matching on this token view (`host_city` a seat).
+        let hosted_set = self.host_matching(&world, &tokens, Some(g));
         // 162: each seat's Liberate bill, the corrupted cities in its reach (the purge term).
         let mut bill = [0i64; 4];
         let level = alignment::bar_level(&world, g);
@@ -1444,7 +1452,10 @@ impl Eval {
                         v += w.block;
                     }
                 } else {
-                    if owned {
+                    // 254: a hosted neutral city (a node on it, or next to it with `host_reach`) pays its host as an
+                    // aligned one did.
+                    let hosted = hosted_set.iter().any(|&(c, _)| c == h);
+                    if owned || hosted {
                         v += w.aligned;
                         if adv > 0 {
                             // r38: an adversary ambassador darkens an aligned city too.
@@ -2148,6 +2159,33 @@ impl Eval {
         }
     }
 
+    /// 254: the hosted cities as (city, seat), the engine's matching (`common::match_hosts`) on this token view: a
+    /// neutral city with no agent on it, a seat's node on it (or next to it with `board.host_reach`), `host_city` a
+    /// seat. With `now` (this round's income step, the eval's hosted term), a city bought from this round or blacked
+    /// out hosts no one, as in the engine (final diff review: the agents bought their own hosted energy); without it
+    /// (a round's projected production) those one-round marks are not read.
+    fn host_matching(&self, world: &aic_core::module::World, tokens: &[HexTokens], now: Option<&GameState>) -> Vec<(usize, usize)> {
+        if self.host_city == 0 {
+            return Vec::new();
+        }
+        let seats = self.seats;
+        let open: Vec<usize> = (0..tokens.len())
+            .filter(|&h| {
+                let t = &tokens[h];
+                common::is_city(world, h) && t.adv_cube == 0 && t.adv_ambassador == 0 && t.cube[..seats].iter().all(|&n| n == 0)
+            })
+            .filter(|&h| {
+                now.is_none_or(|g| {
+                    g.var(&board::bought_key(h)) == 0 && !board::hex_flagged(world, g, aic_core::content::RoundFlag::Blackout, h)
+                })
+            })
+            .collect();
+        let hosts = |s: usize, h: usize| {
+            tokens[h].node[s] > 0 || (self.host_reach && world.map.hexes[h].neighbors.iter().any(|&x| tokens[x].node[s] > 0))
+        };
+        common::match_hosts(self.host_city, seats, &open, hosts)
+    }
+
     /// What the board makes each seat a round if production came now: the
     /// energy of its aligned cities, less what adversary ambassadors divert.
     fn board_production(&self, rules: &Rules, tokens: &[HexTokens]) -> Vec<i64> {
@@ -2162,6 +2200,10 @@ impl Eval {
                     out[s] += self.city_energy + self.aligned_bonus;
                 }
             }
+        }
+        // 254: a hosted neutral city's energy goes to its host.
+        for (_, s) in self.host_matching(&world, tokens, None) {
+            out[s] += self.city_energy;
         }
         out
     }

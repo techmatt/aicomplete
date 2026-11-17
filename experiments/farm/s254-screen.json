@@ -1,0 +1,29 @@
+{
+ "name": "s254-screen",
+ "note": "254: the judge on the dev seeds 36800-36831, three pairs x five arms, d0-d3. Arms: base (r114: cities_unowned 0), on (Matt's candidate alone: players never own a city), host (on, and a neutral city with your node on it makes its energy for you), lib2 (on, and liberating a city pays its liberator 2 energy), hostlib2 (on, both). Every arm sets the three switches explicitly. Farmed at 3b8988f; liberate_energy was not adopted and left the code after it, so this spec reruns only at that commit. Variant-major: pair, then arm.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {"name": "bp-base", "set": ["board.cities_unowned=0", "board.host_city=0", "board.liberate_energy=0"]},
+  {"name": "bp-on", "set": ["board.cities_unowned=1", "board.host_city=0", "board.liberate_energy=0"]},
+  {"name": "bp-host", "set": ["board.cities_unowned=1", "board.host_city=1", "board.liberate_energy=0"]},
+  {"name": "bp-lib2", "set": ["board.cities_unowned=1", "board.host_city=0", "board.liberate_energy=2"]},
+  {"name": "bp-hostlib2", "set": ["board.cities_unowned=1", "board.host_city=1", "board.liberate_energy=2"]},
+  {"name": "br-base", "set": ["ai.boards=0,2", "board.cities_unowned=0", "board.host_city=0", "board.liberate_energy=0"]},
+  {"name": "br-on", "set": ["ai.boards=0,2", "board.cities_unowned=1", "board.host_city=0", "board.liberate_energy=0"]},
+  {"name": "br-host", "set": ["ai.boards=0,2", "board.cities_unowned=1", "board.host_city=1", "board.liberate_energy=0"]},
+  {"name": "br-lib2", "set": ["ai.boards=0,2", "board.cities_unowned=1", "board.host_city=0", "board.liberate_energy=2"]},
+  {"name": "br-hostlib2", "set": ["ai.boards=0,2", "board.cities_unowned=1", "board.host_city=1", "board.liberate_energy=2"]},
+  {"name": "pr-base", "set": ["ai.boards=1,2", "board.cities_unowned=0", "board.host_city=0", "board.liberate_energy=0"]},
+  {"name": "pr-on", "set": ["ai.boards=1,2", "board.cities_unowned=1", "board.host_city=0", "board.liberate_energy=0"]},
+  {"name": "pr-host", "set": ["ai.boards=1,2", "board.cities_unowned=1", "board.host_city=1", "board.liberate_energy=0"]},
+  {"name": "pr-lib2", "set": ["ai.boards=1,2", "board.cities_unowned=1", "board.host_city=0", "board.liberate_energy=2"]},
+  {"name": "pr-hostlib2", "set": ["ai.boards=1,2", "board.cities_unowned=1", "board.host_city=1", "board.liberate_energy=2"]}
+ ],
+ "difficulties": [0, 1, 2, 3],
+ "agents": ["strategist"],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

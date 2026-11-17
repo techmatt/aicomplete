@@ -67,6 +67,22 @@ fn the_tip_count_picks_a_unity_cards_tier() {
     }
 }
 
+/// 254 (`cities_unowned` 1): no city is owned, so a hosted city counts for the Unity cards that pay per site a
+/// player owns ("owned"); with r114's ownership (`cities_unowned` 0) a node beside a city adds nothing.
+#[test]
+fn a_hosted_city_counts_as_owned_for_the_unity_cards() {
+    use crate::modules::common::city_host;
+    for (sets, counted) in [(vec![], 1), (vec!["board.cities_unowned=0", "board.host_city=0"], 0)] {
+        let (rules, mut g) = lab_with(&[], &sets);
+        let w = rules.world();
+        let (city, n) = city_with_lonely_neighbors(&rules.map);
+        put(&mut g, n[0], node(0), 1);
+        assert_eq!(city_host(&w, &g, city).is_some(), counted == 1);
+        let owned = crate::modules::plan::sites_where(&w, &g, crate::op::Where::Owned);
+        assert_eq!(owned.iter().filter(|&&h| h == city).count(), counted, "{sets:?}");
+    }
+}
+
 #[test]
 fn bar_levels_follow_the_unity_cards_drawn() {
     use PurgeLevel::*;
