@@ -327,7 +327,7 @@
       {"key": "power:protector:Expand", "role": "node-power"},
       {"key": "power:researcher:Expand", "role": "node-power"},
       {"key": "power:builder:Mint", "role": "board-engine", "band": [0.15, 0.9], "why": "Builder: credits into chips, its resource. 228: a credit converter, taken when credits are spare after cards: it pays 2.0x at the anchors, the agents' table at the chip anchor (6, not 4) left it at 0.28 a seat-round (+0.1 a game), so the band, not the price or the table, was the error"},
-      {"key": "power:builder:Procure", "role": "board-engine", "why": "Builder: a chip into 2 cards, its draw"},
+      {"key": "power:builder:Procure", "role": "board-engine", "why": "Builder: 2 chips into a card and 5 credits, its draw (271: was 1 chip into 2, the credits -> chips -> cards loop)"},
       {"key": "power:protector:Bulwark", "role": "board-engine", "why": "Protector: energy into hardening, its defense"},
       {"key": "power:researcher:Synthesis", "role": "board-engine", "why": "Researcher: 2 insight into a card, its draw"},
       {"key": "power:researcher:Grant", "role": "board-engine", "band": [0.15, 0.9], "why": "Researcher: credits into a cube on a megaproject, its cubes. 228: a credit converter like Mint (2.0x at the anchors); +1 insight on it moved it only 1.73 -> 1.84 a game and no pair, so the band was the error"},

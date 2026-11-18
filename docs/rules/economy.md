@@ -39,7 +39,8 @@ energy or 3 cards.
 **No limits** (as in Terraforming Mars and Spirit Island). No resource has a holding limit and no
 global cap limits production: a runaway pile is fixed at card level, never with a ceiling. Unspent energy stays
 energy; drafting sinks for it is the player's job, providing them the designers'. Plays a round are bounded by
-insight, which credits can't buy: every card that draws costs at least 1 insight to play.
+cards in hand, never by a play limit: **draw is a precious resource** (*Card draw*, [player-cards.md](player-cards.md)),
+and by insight, which credits can't buy: every card that draws costs at least 1 insight to play.
 
 **Each resource is paid in its home domain (principle accepted):** energy for nodes and
 Power, credits for the market, chips for facilities, ambassadors for influence, insight for

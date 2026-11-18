@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 126. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 127. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -448,7 +448,7 @@ level 1: its marker, §21), spend that many (the rest stay) and the rule fires, 
 **Weapons Program: Muster 2** (each country, 2 troops on its lowest-numbered factory, else city). At level 3 and up
 it is **Muster 3** (level 3's rule, Arms Race).
 
-Take cubes off with **Counterintelligence Sweep** (remove 4, draw a card) and **Arms Inspectors** (remove 2 when built,
+Take cubes off with **Counterintelligence Sweep** (remove 4) and **Arms Inspectors** (remove 2 when built,
 and an Action: remove 2). The track is public: watch it as you watch the projects.
 
 *Sources: rules/adversary.md (Each round, Income, Rally X, Corrupt X, Botnets), rules/war.md (the march);
@@ -470,7 +470,10 @@ There are two player decks: **tier 1**, and the stronger **tier 2**. A card is o
 Every card has 1-3 **tags**: Science, Industry, Cyber, Power, Diplomacy, Security.
 
 **Draw** means take the top tier-1 card into your hand, free. When a deck runs out, shuffle its discards into a new
-deck. There is no hand limit.
+deck. There is no hand limit, and no limit on how many cards you play: **draw is precious**, so cards are what run
+short. On a card, drawing 1 is a good benefit, 2 very strong, 3 exceptional. Only three buildings draw again and
+again, each at the end of a tag chain: Preprint Server (Science), Command-and-Control Grid (Cyber) and Consulate Tower
+(Diplomacy). No card pays you for playing *any* card: a payout for a play names a tag.
 
 ### Round 1: the opening
 
@@ -641,9 +644,9 @@ that country in reach** (any city, corrupted ones too) may use the converter, **
 | Megacorp (megaproject) | Payout, each of your cubes | Converter | Chip converter |
 |---|---|---|---|
 | Horizon (Tidal Grid) | 3 energy, 3 credits | 3 research cubes → 5 energy | 2 chips → 3 energy |
-| Cintamani (Polar Compute Array) | draw 1 card, 5 credits | 1 research cube → 2 insight | 2 chips → draw 3 |
+| Cintamani (Polar Compute Array) | 9 credits | 1 research cube → 2 insight | 1 chip → draw 1, 2 credits |
 | Onyx (Mountain Fusion Works) | 2 chips, 3 credits | 1 research cube → 1 chip | none |
-| Biomia (Delta Seawall) | 1 Unity, draw 1 card | 1 research cube → 1 Unity | 2 chips → 2 Unity, draw 1 |
+| Biomia (Delta Seawall) | 1 Unity, 4 credits | 1 research cube → 1 Unity | 2 chips → 2 Unity, draw 1 |
 
 *Sources: rules/economy.md (standard actions, Cities' energy), rules/ambassadors.md (Claiming, Liberating, Every
 contact, Remove agents), rules/board.md (Converters);
@@ -1070,7 +1073,7 @@ Each power can be used once a round, in the action phase. A tag in a cost means 
 
 | Board | Node power | Conversions | Draw | Sacrifice and other powers |
 |---|---|---|---|---|
-| Builder | **Buy In** (2 energy: a node; 1 chip if the new node brings a factory into your reach), **Annex** (1 chip: a node within 2 of yours) | **Mint** (3 credits: 1 chip) | **Procure** (1 chip: draw 2) | **Fortify** (1 chip: target troops; remove 1 on it and harden a player's facility on or next to it), **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand), **Teardown** (1 chip: destroy one of your own factories anywhere, Fallout goes on its hex, under any node there, which stays; 1 antimatter) |
+| Builder | **Buy In** (2 energy: a node; 1 chip if the new node brings a factory into your reach), **Annex** (1 chip: a node within 2 of yours) | **Mint** (3 credits: 1 chip) | **Procure** (2 chips: draw 1, gain 5 credits) | **Fortify** (1 chip: target troops; remove 1 on it and harden a player's facility on or next to it), **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand), **Teardown** (1 chip: destroy one of your own factories anywhere, Fallout goes on its hex, under any node there, which stays; 1 antimatter) |
 | Protector | **Accord** (2 energy: a node; if the new node brings a city into your reach, a new ambassador onto one such city), **Outpost** (3 energy: a node and 1 ambassador) | — | **Debrief** (1 Security: target agents; draw 1, and remove 1 agent on it) | **Interdict** (1 Security: target troops; remove up to 2 on it), **Bulwark** (1 energy: target a player's uncorrupted facility; harden it), **Patrol** (1 energy: target agents or troops; push up to 3 from it), **Reclaim** (1 Security, 6 credits, 2 energy: target a corrupted station or factory; turn it neutral; 1 antimatter) |
 | Researcher | **Peer Review** (2 insight: a node; 1 insight if the new node brings a research station into your reach), **Field Survey** (3 insight: a node; draw 1) | **Grant** (3 credits: 1 cube in your color on a megaproject that isn't complete) | **Synthesis** (1 insight: draw 1) | **Disrupt** (1 Cyber, 1 research cube: remove up to 2 adversary troops in one country), **Field Station** (1 Industry: target an open hex where Build a research station could go; a station there without the chips), **Audit** (1 Cyber: remove 3 compute from a project), **Meltdown** (2 research cubes: destroy one of your own research stations anywhere; 1 antimatter) |
 

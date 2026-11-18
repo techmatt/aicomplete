@@ -106,8 +106,9 @@ fn a_teammate_trigger_pays_on_another_players_play() {
     let before = g.resource(1, r);
     play(&rules, &mut g, 0, "baseload_contract");
     assert_eq!(g.resource(1, r), before + n);
-    // Consulate Tower: both gain.
-    let (rules, mut g) = table(&["planetary_referendum"], &[]);
+    // `both`: both gain (Consulate Tower's r126 print pinned; 271 made it the Diplomacy draw engine, below).
+    let pin = r#"cards.consulate_tower.passives=[{"op":"when","on":{"event":"team_play","tag":"diplomacy","both":true},"then":[{"op":"gain","resource":"credits","amount":6}]}]"#;
+    let (rules, mut g) = table_with(&[pin], &["planetary_referendum"], &[]);
     out_of_decks(&mut g, "consulate_tower");
     set_pile(&mut g, "cards.built.1", &["consulate_tower"]);
     let (r, n) = trigger_gain(&rules, "consulate_tower");
@@ -119,6 +120,19 @@ fn a_teammate_trigger_pays_on_another_players_play() {
     play(&rules, &mut g, 0, "planetary_referendum");
     assert_eq!(g.resource(1, r), theirs + n);
     assert_eq!(g.resource(0, r), mine - cost + n);
+}
+
+/// 271: the Diplomacy chain's draw engine: Consulate Tower draws its owner 1 card when another player plays a
+/// Diplomacy card, and nothing on its owner's own play.
+#[test]
+fn consulate_tower_draws_on_another_players_diplomacy_play() {
+    let (rules, mut g) = table(&["planetary_referendum"], &[]);
+    out_of_decks(&mut g, "consulate_tower");
+    set_pile(&mut g, "cards.built.1", &["consulate_tower"]);
+    let (h0, h1) = (g.pile(&cards::hand(0)).len(), g.pile(&cards::hand(1)).len());
+    play(&rules, &mut g, 0, "planetary_referendum");
+    assert_eq!(g.pile(&cards::hand(1)).len(), h1 + 1, "the owner draws 1");
+    assert_eq!(g.pile(&cards::hand(0)).len(), h0 - 1, "the player only plays");
 }
 
 #[test]
@@ -433,11 +447,12 @@ fn a_copy_of_a_per_tag_income_pays_its_frozen_count() {
     assert_eq!(economy::income(&w, &g, 0)[Resource::Credits], before + 3, "the copy pays the frozen 1 tag, not 3");
 }
 
-/// 106: Interdisciplinary Institute's trigger names no tag: it fires once per
-/// tag of any kind on the card played.
+/// 106: a `play_tag` trigger naming no tag fires once per tag of any kind on the card played (Interdisciplinary
+/// Institute's r126 print pinned: 271 made it Science only, and no card prints the form).
 #[test]
 fn a_play_tag_trigger_with_no_tag_fires_once_per_tag_of_any_kind() {
-    let (rules, mut g) = table(&["joint_fabrication_pact", "shared_compute_grant"], &["interdisciplinary_institute"]);
+    let pin = r#"cards.interdisciplinary_institute.passives=[{"op":"when","on":{"event":"play_tag"},"then":[{"op":"gain","resource":"insight","amount":1}]}]"#;
+    let (rules, mut g) = table_with(&[pin], &["joint_fabrication_pact", "shared_compute_grant"], &["interdisciplinary_institute"]);
     let w = rules.world();
     let (r, n) = trigger_gain(&rules, "interdisciplinary_institute");
     assert_eq!(r, Resource::Insight);
@@ -502,7 +517,10 @@ fn every_converter_is_once_a_round() {
         let chips = g.resource(0, Resource::Chips);
         assert!(board::converter_blocked_of(&w, &g, 0, c, true).is_none(), "{}", piece.name);
         act(&rules, &mut g, Action::Convert { seat: 0, country: c as u8, chips: true });
-        assert_eq!(g.resource(0, Resource::Chips), chips - 2, "{}", piece.name);
+        // 271: paid at its printed chips (Polar Compute Array's is 1, the others' 2).
+        let paid: i64 = conv.cost.iter().filter(|(r, _)| *r == Resource::Chips).map(|(_, n)| n).sum();
+        assert!(paid > 0, "{}", piece.name);
+        assert_eq!(g.resource(0, Resource::Chips), chips - paid, "{}", piece.name);
         assert_eq!(board::converter_blocked_of(&w, &g, 0, c, true), Some("used this round"), "{}", piece.name);
     }
 }

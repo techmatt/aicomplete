@@ -34,7 +34,7 @@ Project slots: Open, Open, Open.
 | Total Mobilization | 3 | Threat, each country: Security 2, and Industry 2 or Power 2. Rally: factories. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Income: +1 Agent a country a round. Remove 2 Unity from the Unity track. Corrupt: factories. Corrupt: cities. |
 | Blitzkrieg | 3 | Threat, each country: any tier-2 threat, and Security 2 or Diplomacy 2. Rally: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Income: +1 Agent a country a round. Sway 1 toward Discord. Corrupt: cities. Corrupt: land. |
 | Occupation | 3 | Threat, each country: Security 2 or Cyber 2, and Diplomacy 2. Rally: research stations. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Income: +1 Agent a country a round. Corrupt: research stations. Corrupt: cities (1 fewer). |
-| Naval Blockade | 3 | Threat, each country: Industry 2 or Power 2, and Security 2 or Cyber 2. Rally: coastal cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Until the end of next round, cities make no energy. Income: +1 Agent a country a round. Corrupt: cities. Corrupt: land. |
+| Naval Blockade | 3 | Threat, each country: Industry 2 or Power 2, and Security 2 or Cyber 2. Rally: coastal cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Until the end of next round, cities make no energy and no Discord. Income: +1 Agent a country a round. Corrupt: cities. Corrupt: land. |
 
 ## Threats, tier 1
 

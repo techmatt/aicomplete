@@ -22,12 +22,19 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   such as Darknet Exchange's off any card with that tag), and any `insight`, `energy`, `chips`, `antimatter` and
   research cubes it prints, and lowers any income it prints under `lowers` ("lower your credit income 1": that
   production falls for the rest of the game; it can't be played if that income is lower). **Insight to play** is a
-  price of 0, 1 or 2 (counts below): most tier-1 cards 0; a card that draws at least 1; 2 for the strongest of each
-  tier; it comes from the same insight as keeps. Its `needs` (your tags, *Tags* below) are checked only when it is
+  price of 0, 1 or 2 (counts below): most tier-1 cards 0; a card that draws at least 1 (cards whose draw 271 cut kept
+  their insight, for the balance pass); 2 for the strongest of each tier; it comes from the same insight as keeps. Its `needs` (your tags, *Tags* below) are checked only when it is
   played. Prices: [cards.md](../cards.md); reasoning: [card-pricing.md](../card-pricing.md).
+- **Card draw (candidate; draw is precious).** A draw takes the tier-1 deck's top card, no keep. There is no limit on
+  plays: cards are scarce instead. On a card, draw 1 is a good benefit, 2 very strong, 3 exceptional (Recursive
+  Self-Improvement, Zero-Day Auction); Industry, Power and Security keep a few one-time draw 1s. **Repeatable draw ends
+  three tag chains:** Science, Preprint Server (needs 4 Science: when you play a Science card, draw 1); Cyber,
+  Command-and-Control Grid (needs 3 Cyber: Action, 1 energy: draw 2); Diplomacy, Consulate Tower (needs 3 Diplomacy:
+  when another player plays a Diplomacy card, draw 1). Board powers and converters draw at most 1 (Procure: 2 chips, Polar Compute Array's
+  converter: 1 chip, each with credits back); no megaproject pays a card at completion.
 
 <!-- generated: draft_set -->
-**The draft set in numbers.** 191 cards (124 tier 1, 67 tier 2). Insight to play: 102 / 59 / 30 cards at 0 / 1 / 2, 20 of the 67 tier-2 cards at 2. An energy cost: 14 cards, 8 of the 76 buildings.
+**The draft set in numbers.** 191 cards (124 tier 1, 67 tier 2). Insight to play: 102 / 58 / 31 cards at 0 / 1 / 2, 20 of the 67 tier-2 cards at 2. An energy cost: 14 cards, 8 of the 76 buildings.
 <!-- /generated -->
 
 - **Energy costs (candidate).** Energy is a second cost on a card whose title reads power-hungry (mostly buildings:
@@ -55,11 +62,12 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   income lives, flat ("raise your credit income by 8") or per tag ("by 1 per 2 Science tags on your cards", one such
   program per tag, needs 2 of it). Buildings are the blue cards: triggers, Actions and Effects; a building's income is
   per tag, 3 a tag at its tag count when played (as a program's), or flat (the tier-2 engines, Fabrication Megaplex,
-  Cryo Sample Vault). **An engine pays up front:** a building with a trigger, threshold, discount or income (but the
-  cheap Cryo Sample Vault) also gives a one-time gain when built, worth about
-  two of its fires: draw 2-4 cards, 2 energy on two Power ones, or its first tokens here (the At N cards, *Tokens* below), so its own play (or,
-  for Intrusion Lab, its first removal of compute or a feeder) fills the first threshold. A committed seat earns an engine back within 2 rounds. Each tag has a tier-1 play trigger, a tier-2 one
-  that counts every tag on the played card, and its engines' payoffs ([card-grammar.md](card-grammar.md), *The engine
+  Cryo Sample Vault). **Some engines pay up front:** a one-time gain when built (a drawn card, 2 energy on two Power
+  ones, or its first tokens here: the At N cards, *Tokens* below, so its own play, or for Intrusion Lab its first
+  removal of compute or a feeder, fills the first threshold); the engines that paid up front in draws (Capital Projects
+  Office, Vertical Monopoly, Orbital Mass Driver, Hyperscale Botnet and others) lost it to the draw cut and were
+  repriced down instead. A committed seat earns an engine back within 2 rounds. Each tag has a tier-1 play trigger, a tier-2 one
+  that counts that tag on the played card (no payout fires on any card), and its engines' payoffs ([card-grammar.md](card-grammar.md), *The engine
   wording*). Cyber and Industry each keep one standing automatic counter (a building: threats of its tag anywhere
   need 6 less of each resource); no other tag has one. No capstone prints a
   hardening token or a delay.
@@ -75,7 +83,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   | Power to the People | energy | building (over Power, needs 2) | income: 1 credit per Power tag on your cards |
   | Citywide Microgrid | energy (4, a late sink) | building | Action: 3 Sway toward Unity |
   | Hostile Buyout | antimatter, Diplomacy | event | gain 3 ambassadors; any corrupted site, a station or factory becomes yours (254) |
-  | Forensic Audit | research cubes | event | draw 2 cards |
+  | Forensic Audit | research cubes | event | rescue the city |
   | Root Access | antimatter, Cyber (needs Cyber tags) | event | remove a botnet on or next to the city |
   | Peacekeeping Mission | antimatter, Security (needs Security tags) | event | remove up to 3 adversary troops in the city's country |
   | Popular Uprising | Followers | tier-1 building | Action: add 1 Follower here, OR pay 4 Followers to liberate, again and again |

@@ -934,7 +934,7 @@
      "site": "land"
     }
    ],
-   "text": "Threat, each country: Industry 2 or Power 2, and Security 2 or Cyber 2. Rally: coastal cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Until the end of next round, cities make no energy. Income: +1 Agent a country a round. Corrupt: cities. Corrupt: land.",
+   "text": "Threat, each country: Industry 2 or Power 2, and Security 2 or Cyber 2. Rally: coastal cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Until the end of next round, cities make no energy and no Discord. Income: +1 Agent a country a round. Corrupt: cities. Corrupt: land.",
    "harms": [
     "adversary pieces placed",
     "troops made",

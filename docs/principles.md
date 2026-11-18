@@ -77,6 +77,11 @@ and not the countries still standing, so no loop forms and sizes land in one ban
 
 ## Scarcity (Matt, 2026-11-01)
 
+**Table time (Matt, 2026-11-18).** A 2-player d2 game targets about 2 hours at the table, scaling with level and
+player count. **Draw is a precious resource**, as in Terraforming Mars: plays a round fall to about TM's 4 because
+cards are scarce, **never through a play limit**. Draw 1 is a good benefit, 2 very strong, 3 exceptional; repeatable
+draw ends the Science, Cyber and Diplomacy chains, and per-play payouts name a tag.
+
 **Every resource stays scarce, credits most of all.** A seat ending with a pile unspent is a balance fault. Fix it
 with weaker credit engines, dearer cards or keeps, or lower starting credits; never by cheapening a standard project.
 

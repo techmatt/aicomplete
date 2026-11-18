@@ -225,14 +225,19 @@
     "cost": [
      [
       "chips",
-      1
+      2
      ]
     ],
-    "text": "draw 2 cards",
+    "text": "draw 1 card; gain 5 credits",
     "effects": [
      {
       "op": "draw",
-      "count": 2
+      "count": 1
+     },
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 5
      }
     ]
    },

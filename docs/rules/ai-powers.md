@@ -28,7 +28,7 @@ exception is Disrupt's country.
 | Builder | Scrap | 1 Industry | gain 1 chip |
 | Builder | Overcharge | 1 Power | gain 2 energy |
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
-| Builder | Procure | 1 chip | draw 2 cards |
+| Builder | Procure | 2 chips | draw 1 card; gain 5 credits |
 | Builder | Fortify | 1 chip | Target: Troops. Remove 1 Troop on it; harden a facility on or next to it |
 | Builder | Teardown | 1 chip | destroy one of your factories anywhere; Fallout goes on its hex; gain 1 antimatter |
 | Protector | Bulwark | 1 energy | Target: a player's uncorrupted facility. Harden it |
@@ -91,8 +91,9 @@ nodes, occasionally within 2 (Annex, the Builder's top route; Matt, 2026-11-16),
 player expects; a card whose effects fit none of its tags is a soft design warning (`design_check.py`'s tag-story),
 never refused. Draws, credits, triggers, threat counters, liberation and a tag's own payoffs fit any tag.
 
-**Card throughput:** the Builder's Procure turns a spare chip into 2 cards; the Researcher's Synthesis, its draw
-outlet, turns 1 insight into a card.
+**Card throughput:** draw is a precious resource (*Card draw*, [player-cards.md](player-cards.md)). The Builder's
+Procure turns 2 chips into a card and 5 credits (the credits → chips → cards loop reduced to 1 card a round: Mint's chip costs 3 credits, a card 2 chips); the
+Researcher's Synthesis, its draw outlet, turns 1 insight into a card.
 
 **Troop powers (early troops decide games).** Each board removes or stops troops its own way, no two alike: the
 Protector's **Interdict** (a Security card: up to 2 troops on its target) beside its Patrol (pushes them away); the

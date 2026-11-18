@@ -87,9 +87,9 @@
     {
      "name": "Headquarters Raid",
      "units": 5,
-     "other": "4 * card",
+     "other": "1 * card",
      "use": 0,
-     "note": "5 agents; draw 4"
+     "note": "5 agents; draw 4 (271: draws 1 on play, 0 an Action)"
     },
     {
      "name": "Amnesty Decree",
@@ -110,21 +110,21 @@
      "units": 2,
      "other": "card + 2 * 3",
      "use": 0,
-     "note": "up to 2 now; draw 1; 3 cr a removal event (~2 more) 6"
+     "note": "up to 2 now; draw 1; 3 cr a removal event (~2 more) 6 (271: draws 0 on play, 0 an Action)"
     },
     {
      "name": "Agency Field Station",
      "units": "uses",
-     "other": "2 * card",
+     "other": 0,
      "use": 0,
-     "note": "1 agent a Security play (4 in 4 rounds); draw 2"
+     "note": "1 agent a Security play (4 in 4 rounds); draw 2 (271: draws 0 on play, 0 an Action)"
     },
     {
      "name": "Joint Task Force",
      "units": "2 * uses",
-     "other": "2 * card",
+     "other": 0,
      "use": 0,
-     "note": "2 agents an other player's Security play (4 fires); draw 2"
+     "note": "2 agents an other player's Security play (4 fires); draw 2 (271: draws 0 on play, 0 an Action)"
     },
     {
      "name": "Directed-Energy Array",
@@ -157,9 +157,9 @@
     {
      "name": "Lure Network",
      "units": "3 * uses",
-     "other": "2 * card",
+     "other": 0,
      "use": 0,
-     "note": "Action free: up to 3, x4; draw 2"
+     "note": "Action free: up to 3, x4; draw 2 (271: draws 0 on play, 0 an Action)"
     },
     {
      "name": "Liberation Accords",
@@ -220,9 +220,9 @@
     {
      "name": "Open Source Uprising",
      "units": 4,
-     "other": "4 * amb + 2 * card + sway",
+     "other": "4 * amb + sway",
      "use": 0,
-     "note": "convert 4 (32); draw 2; sway 1"
+     "note": "convert 4 (32); draw 2; sway 1 (271: draws 0 on play, 0 an Action)"
     }
    ]
   },
@@ -232,9 +232,9 @@
     {
      "name": "Breach and Clear",
      "units": 1,
-     "other": "2 * card",
+     "other": 0,
      "use": 0,
-     "note": "1 troop; draw 2"
+     "note": "1 troop; draw 2 (271: draws 0 on play, 0 an Action)"
     },
     {
      "name": "Surgical Strike",
@@ -302,9 +302,9 @@
     {
      "name": "Field Sensor Grid",
      "units": 3,
-     "other": "3 * card",
+     "other": "1 * card",
      "use": 0,
-     "note": "lift 3 near; draw 3"
+     "note": "lift 3 near; draw 3 (271: draws 1 on play, 0 an Action)"
     },
     {
      "name": "Fusion Startup Stake",
@@ -342,9 +342,9 @@
     {
      "name": "Envoy Briefings",
      "units": 2,
-     "other": "3 * card",
+     "other": "2 * card",
      "use": 0,
-     "note": "2; draw 3"
+     "note": "2; draw 3 (271: draws 2 on play, 0 an Action)"
     },
     {
      "name": "Fact-Check Network",
@@ -520,9 +520,9 @@
     {
      "name": "Wartime Retooling",
      "units": "2 * 14 / 4.5",
-     "other": "4 * card",
+     "other": 0,
      "use": 0,
-     "note": "+2 energy income (28 = 6.2 energy); draw 4"
+     "note": "+2 energy income (28 = 6.2 energy); draw 4 (271: draws 0 on play, 0 an Action)"
     },
     {
      "name": "National Grid Buildout",
@@ -569,9 +569,9 @@
     {
      "name": "Fusion Commons",
      "units": 6,
-     "other": "3 * card + 3 * sway",
+     "other": "3 * sway + 1 * card",
      "use": 0,
-     "note": "6; draw 3; sway 3"
+     "note": "6; draw 3; sway 3 (271: draws 1 on play, 0 an Action)"
     },
     {
      "name": "Containment Reactor",
@@ -630,23 +630,23 @@
     {
      "name": "Hyperscale Botnet",
      "units": "4 * uses",
-     "other": "3 * card",
+     "other": 0,
      "use": 0,
-     "note": "4 a round x4; draw 3"
+     "note": "4 a round x4; draw 3 (271: draws 0 on play, 0 an Action)"
     },
     {
      "name": "Exascale Training Cluster",
      "units": "4 * uses",
-     "other": "4 * card",
+     "other": "1 * card",
      "use": 0,
-     "note": "258: 4 a round x4; 4 cards drawn"
+     "note": "258: 4 a round x4; 4 cards drawn (271: draws 1 on play, 0 an Action)"
     },
     {
      "name": "Interdisciplinary Institute",
-     "units": "3 * uses",
-     "other": "3 * card",
+     "units": "1 * uses",
+     "other": 0,
      "use": 0,
-     "note": "1 a tag played (~3 a round) x4; draw 3"
+     "note": "1 a Science tag played (~1 a round) x4; draw 3 (271: Science tags only; draws 0 on play, 0 an Action)"
     },
     {
      "name": "Recursive Self-Improvement",
@@ -738,9 +738,9 @@
     {
      "name": "Dark Fiber Collider",
      "units": "uses",
-     "other": "2 * card",
+     "other": 0,
      "use": "2 * insight",
-     "note": "Action 2 insight, x4; draw 2"
+     "note": "Action 2 insight, x4; draw 2 (271: draws 0 on play, 0 an Action)"
     },
     {
      "name": "Treaty Isotope Bank",
@@ -759,16 +759,16 @@
     {
      "name": "Positron Storage Ring",
      "units": "uses",
-     "other": "2 * card + uses * card",
+     "other": 0,
      "use": "2 * energy",
-     "note": "258: Action 2 energy: 1 antimatter and draw 1, x4; draw 2 (269: its 2 energy a Power play cut)"
+     "note": "258: Action 2 energy: 1 antimatter and draw 1, x4; draw 2 (269: its 2 energy a Power play cut) (271: draws 0 on play, 0 an Action)"
     },
     {
      "name": "Zero-Day Auction",
      "units": 2,
-     "other": "6 * card",
+     "other": "3 * card",
      "use": 0,
-     "note": "2; draw 6"
+     "note": "2; draw 6 (271: draws 3 on play, 0 an Action)"
     },
     {
      "name": "Intrusion Lab",
@@ -801,9 +801,9 @@
     {
      "name": "Forensic Audit",
      "units": 1,
-     "other": "2 * card + 0.5 * station_owned",
+     "other": "0.5 * station_owned",
      "use": 0,
-     "note": "draw 2; 256: claims a neutral site next to it (~0.5)"
+     "note": "draw 2; 256: claims a neutral site next to it (~0.5) (271: draws 0 on play, 0 an Action)"
     },
     {
      "name": "Root Access",

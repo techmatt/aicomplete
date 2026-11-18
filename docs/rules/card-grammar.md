@@ -82,7 +82,7 @@ How each primitive resolves, beyond the card text (the card set: [player-cards.m
 - **Botnets:** a tier-2 card removes the target botnet (the other routes: [adversary.md](adversary.md)); cutting one
   off (`cut_botnet`; no content prints it) makes it produce no compute in the next compute step.
 - **Draw:** every draw takes the top cards of the tier-1 deck into your hand, no keep paid. An empty tier-1 deck
-  reshuffles its discard; with both empty it does nothing, and a card or power that only draws (Procure) is
+  reshuffles its discard; with both empty it does nothing, and a card or power that only draws (Synthesis) is
   not offered.
 - **Count as power, cash out** (`gain_per_tokens`, `cash_out`): one card's tokens only, this building's ("here")
   or, on a program, one of yours you pick ([ops.md](../ops.md)).
@@ -106,15 +106,16 @@ no limit a round, and resolves after what caused it. A building counts itself: p
 building with a Science trigger fires it.
 
 - **Play triggers (`when`, `play`):** "When you play a Science card, gain 7 credits" (Citation Engine); with no tag, any
-  card. **Per tag** (`play_tag`): "when you play a card, gain 1 insight per tag on it" (Interdisciplinary Institute), the tier-2
-  form, once for each tag of any kind on the played card (the empty ring), or per tag of one kind, the
-  ringed tag after `/` on the right of the `:`.
+  card, printed by no card: **a per-play payout names a tag** (draw is precious; any-card payouts made a cheap card
+  pay twice). **Per tag** (`play_tag`): "when you play a card, gain 1 insight per Science tag on it" (Interdisciplinary
+  Institute), once for each tag of one kind on the played card, the ringed tag after `/` on the right of the `:`; the
+  form with no tag (each tag of any kind, the empty ring) is printed by no card.
 - **Teammate triggers (`team_play`):** "When another player plays a Security card, remove 2 Agents on it"
   (Joint Task Force): the owner picks the target, in the owner's reach, and the removal is the owner's, firing the
   owner's "when you remove agents" triggers (not the player's). With `both`, "you both gain", the dashed box holding the other's gain.
   Your own plays fire them only in a 1-player game (*Help cards*, above), and a shared gain lands once.
-- **Rebate (`play_cost`):** "when you play a card printed at 10 credits or more, gain 5 credits" (Lights-Out Assembly):
-  the printed cost, before discounts. `≥`N is at least N.
+- **Rebate (`play_cost`):** "when you play a card printed at N credits or more, gain ..." on the printed cost, before
+  discounts (`≥`N is at least N); printed by no card (an any-card payout).
 - **Fight triggers:** "when you remove a Troop", "when you remove compute" (only the adversary has any) and "when you remove Agents"
   fire once for the card, Action, power, converter or standard action that removed any, however many, canceling an
   arrival included.
