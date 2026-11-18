@@ -759,9 +759,9 @@
     {
      "name": "Positron Storage Ring",
      "units": "uses",
-     "other": "2 * uses * energy + 2 * card + uses * card",
+     "other": "2 * card + uses * card",
      "use": "2 * energy",
-     "note": "258: Action 2 energy: 1 antimatter and draw 1, x4; 2 energy a Power play (8); draw 2"
+     "note": "258: Action 2 energy: 1 antimatter and draw 1, x4; draw 2 (269: its 2 energy a Power play cut)"
     },
     {
      "name": "Zero-Day Auction",

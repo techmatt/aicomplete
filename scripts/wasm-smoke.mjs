@@ -43,7 +43,7 @@ console.log(`view ${viewOk ? 'ok' : 'BAD'}, record ${recordOk ? 'ok' : 'BAD'} ($
 // seed and policy), proving native and wasm builds play the same game.
 const GOLDEN = '2ec6c922623c2dcf';
 // Must equal GOLDEN_CONTENT_HASH there: this game may never pay for a repriced card.
-const GOLDEN_CONTENT = 'fc52caff02f86c44';
+const GOLDEN_CONTENT = '16c1587c82575f1f';
 // 148: the state's play less its measures (`stats`), computed in the wasm build.
 const fingerprint = m.fingerprint(state);
 const golden = process.argv[2] ? true : fingerprint === GOLDEN && parsed.content_hash === GOLDEN_CONTENT;

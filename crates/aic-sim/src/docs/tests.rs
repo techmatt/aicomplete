@@ -219,7 +219,7 @@ fn the_ladder_adds_a_rule_at_most_a_level() {
         assert!(v.new_rules <= 1, "{v:?}");
         active += v.new_rules;
         assert_eq!(v.active_rules, active, "{v:?}");
-        // A named rule stands for at least one mid-game change; one may merge two (Sleeper Cells).
+        // A named rule stands for at least one mid-game change; one may merge two (Sleeper Cells did until 269 printed the spread on its cards).
         assert!(v.new_changes >= v.new_rules, "{v:?}");
         assert!(v.level == 0 || !v.setup.is_empty() || !v.rule.is_empty(), "level {} adds nothing", v.level);
     }

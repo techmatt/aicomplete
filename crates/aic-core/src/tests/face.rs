@@ -246,4 +246,11 @@ fn icons_show_the_city() {
     let line = |id: &str| serde_json::to_string(&face_of(id).effect).unwrap();
     assert!(line("great_liberation").contains(r#""cube","city""#), "{}", line("great_liberation"));
     assert!(!line("hostile_buyout").contains(r#""→","cube""#), "{}", line("hostile_buyout"));
+    // 269 (Matt; amendment 12257): a Rescue is one glyph, Hostile Buyout's liberation the cube off a site; neither
+    // prints the other's, and Buyout's cube is never bare.
+    assert!(line("root_access").contains(r#"["rescue"]"#) && !line("root_access").contains("cube"), "{}", line("root_access"));
+    assert!(line("hostile_buyout").contains(r#"["−1","cube","site"]"#), "{}", line("hostile_buyout"));
+    assert!(!line("hostile_buyout").contains("rescue"), "{}", line("hostile_buyout"));
+    let uprising = serde_json::to_string(&face_of("popular_uprising").top).unwrap();
+    assert!(uprising.contains(r#""→","rescue"]"#), "{uprising}");
 }

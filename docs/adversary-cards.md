@@ -10,7 +10,7 @@ Project slots: Open, Open, Open.
 - **Warmongering.** Each round, a military base with an adversary Troop on or next to it makes 1 extra Drone, even past its cap; at most 1 extra a base in each production, whatever makes it.
 - **War Takes Ground.** When a Drone destroys a factory, it also destroys a Node on that hex.
 - **Weapons Program** (research). When the research track reaches its threshold, spend it: Muster 2: each country, 2 Troops on its lowest-numbered factory (else city). Stronger: Muster 3 instead.
-- **Level 1: Sleeper Cells.** *Cells wake in every city.* When a Corrupt step checks a city, it falls at 3 agents, not 5. A card's Botnets spread line now takes effect.
+- **Level 1: Sleeper Cells.** *Cells wake in every city.* When a Corrupt step checks a city, it falls at 3 agents, not 5.
 - **Level 2: War Footing.** *Every unanswered strike feeds the war machine.* When a threat executes uncountered, the adversary also gains 4 compute.
 - **Level 3: Arms Race.** *The labs build weapons, not cures.* When Weapons Program fires, it musters 3, not 2.
 - **Level 4: War Economy.** *The whole economy marches.* Setup only.
@@ -21,13 +21,13 @@ Project slots: Open, Open, Open.
 |---|---|---|
 | Probing Strikes | 1 | Threat, each country: Security 1. Rally: coastal cities. Corrupt: cities. |
 | Factory Drive | 1 | Threat, each country: Security 1 or Industry 1. Rally: factories. Each country: a neutral factory opens on its lowest-numbered free industrial zone. Corrupt: factories. |
-| Long Patrols | 1 | Threat, each country: Security 1 or Cyber 1. Rally: research stations. Income: +1 Agent a country a round. Botnets spread: each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Corrupt: research stations. |
+| Long Patrols | 1 | Threat, each country: Security 1 or Cyber 1. Rally: research stations. Income: +1 Agent a country a round. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Corrupt: research stations. |
 | War Drums | 1 | Threat, each country: Security 1 or Diplomacy 1. Rally: cities. Sway 1 toward Discord. Corrupt: cities. |
-| Signal Jamming | 1 | Threat, each country: Security 1 or Power 1. Rally: Botnet hexes. Income: +1 compute a country a round. Botnets spread: each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Corrupt: cities. |
+| Signal Jamming | 1 | Threat, each country: Security 1 or Power 1. Rally: Botnet hexes. Income: +1 compute a country a round. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Corrupt: cities. |
 | Mobilization | 2 | Threat, each country: Security 2. Rally: coastal cities. Income: +1 Agent a country a round. Corrupt: cities. |
-| Station Raids | 2 | Threat, each country: Security 2 or Cyber 2. Rally: research stations. Botnets spread: each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Income: +1 Agent a country a round. Corrupt: research stations. |
+| Station Raids | 2 | Threat, each country: Security 2 or Cyber 2. Rally: research stations. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Income: +1 Agent a country a round. Corrupt: research stations. |
 | Shell Labs | 2 | Threat, each country: Cyber 2 or Industry 2. Rally: research stations. Each country: a neutral research station opens on its lowest-numbered empty station site. Income: +1 Agent a country a round. Corrupt: research stations. |
-| Fifth Column | 2 | Threat, each country: Diplomacy 2 or Cyber 2. Rally: cities. Income: +1 Agent a country a round. Botnets spread: each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Corrupt: cities (1 fewer). |
+| Fifth Column | 2 | Threat, each country: Diplomacy 2 or Cyber 2. Rally: cities. Income: +1 Agent a country a round. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Corrupt: cities (1 fewer). |
 | Border War | 2 | Threat, each country: Security 2. Rally: factories. Each player with a Node on or next to a front's base destroys 1 of those Nodes. Income: +1 Agent a country a round. Corrupt: factories. |
 | Supply Lines | 2 | Threat, each country: Security 1 or Industry 1, and Security 2 or Industry 2. Rally: factories. Income: +1 compute and +1 Agent a country a round. Corrupt: factories. |
 | Forced March | 2 | Threat, each country: any tier-2 threat. Rally: cities. Income: +1 Agent a country a round. Every adversary Troop takes 1 more step this round. Corrupt: cities. |
@@ -112,7 +112,7 @@ Each project resolves once, at once, in the compute step. Its compute in play is
 | Disinformation | Diplomacy | 11 (11 / 22 / 33 / 44) | Sway 8 toward Discord. |
 | Backdoor Research | Cyber | 14 (14 / 28 / 42 / 56) | 4 adversary cubes onto each open megaproject. Each country: 2 cubes onto the adversary's research track. |
 | Rolling Blackouts | Power | 8 (8 / 16 / 24 / 32) | Until the end of next round, cities make no energy. |
-| Botnet Swarm | Cyber | 14 (14 / 28 / 42 / 56) | Each country, twice: a botnet spreads to its lowest-numbered city, research station or factory without one next to one of its botnets (a country with no botnet: its lowest-numbered research station). |
+| Botnet Swarm | Cyber | 14 (14 / 28 / 42 / 56) | Each country, twice (level 1+): a botnet spreads to its lowest-numbered city, research station or factory without one next to one of its botnets (a country with no botnet: its lowest-numbered research station). |
 | False Flag | Universal | 9 (9 / 18 / 27 / 36) | Each country: an extra tier-2 threat, any tag. |
 | Night Raid | Security | 10 (10 / 20 / 30 / 40) | Each country: 1 Agent onto each of two different hexes holding a player node (those holding the most Agents first; ties: lowest-numbered). 2 Agents on your node's hex destroy your node in the next Corrupt beat. |
 | Containment Breach | Power | 9 (9 / 18 / 27 / 36) | Each player pays 1 antimatter or discards 3 cards. |

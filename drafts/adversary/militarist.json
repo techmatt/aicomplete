@@ -73,7 +73,7 @@
     "level": 1,
     "name": "Sleeper Cells",
     "flavor": "Cells wake in every city.",
-    "rule": "When a Corrupt step checks a city, it falls at 3 agents, not 5. A card's Botnets spread line now takes effect."
+    "rule": "When a Corrupt step checks a city, it falls at 3 agents, not 5."
    },
    {
     "level": 2,
@@ -245,7 +245,7 @@
      "site": "station"
     }
    ],
-   "text": "Threat, each country: Security 1 or Cyber 1. Rally: research stations. Income: +1 Agent a country a round. Botnets spread: each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Corrupt: research stations.",
+   "text": "Threat, each country: Security 1 or Cyber 1. Rally: research stations. Income: +1 Agent a country a round. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Corrupt: research stations.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"
@@ -337,7 +337,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each country: Security 1 or Power 1. Rally: Botnet hexes. Income: +1 compute a country a round. Botnets spread: each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Corrupt: cities.",
+   "text": "Threat, each country: Security 1 or Power 1. Rally: Botnet hexes. Income: +1 compute a country a round. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
@@ -427,7 +427,7 @@
      "site": "station"
     }
    ],
-   "text": "Threat, each country: Security 2 or Cyber 2. Rally: research stations. Botnets spread: each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Income: +1 Agent a country a round. Corrupt: research stations.",
+   "text": "Threat, each country: Security 2 or Cyber 2. Rally: research stations. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Income: +1 Agent a country a round. Corrupt: research stations.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"
@@ -523,7 +523,7 @@
      "cut": 1
     }
    ],
-   "text": "Threat, each country: Diplomacy 2 or Cyber 2. Rally: cities. Income: +1 Agent a country a round. Botnets spread: each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Corrupt: cities (1 fewer).",
+   "text": "Threat, each country: Diplomacy 2 or Cyber 2. Rally: cities. Income: +1 Agent a country a round. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Corrupt: cities (1 fewer).",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"

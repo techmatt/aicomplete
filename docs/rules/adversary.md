@@ -70,8 +70,9 @@ corrupts takes one adversary mark.**
   next to its anchor, the others next to it (ties: lower country, then number); none free, it is lost. Lift Fallout
   (a standard action, [economy.md](economy.md)) and some cards take one in reach off.
 **Botnets spread quickly**. Each country starts with one ([board.md](board.md)); more come from printed lines,
-among them four event cards' **Botnets spread** (as printed; with no such site, none; below `botnet_spread_at`, 1,
-the line does nothing: at d0 the setup botnets are the only ones, 263). A botnet stays until removed:
+among them four event cards' **Botnets spread (level 1+)** and Botnet Swarm's (as printed; with no such site, none;
+below `botnet_spread_at`, 1, the line does nothing: at d0 the setup botnets are the only ones, 263; the cards print
+the level since 270, so it is no level's rule). A botnet stays until removed:
 it makes `botnet_compute` compute (none with a player ambassador on it) and counts against the purge until Unity
 eases it ([alignment.md](alignment.md)). Removed by tier-2 cards, Decommission and the Take down a botnet action
 ([economy.md](economy.md)); removing one sways `alignment.botnet` (0: neither).
@@ -180,7 +181,7 @@ ahead and the pools are face up.
 | Level | Name | Setup (incomes and threshold a country) | Mid-game rule (new) | Rules active | Tunable |
 |---|---|---|---|---|---|
 | 0 | **The Militarist** | Compute income 0; Agent income +0; Research threshold 5; Deck 5 / 5 / 3 (13 rounds); Sites print their corrupt numbers: city 5, station 2, factory 2, land 3 | — | 0 | `compute_income`, `ambassador_income`, `research_at`, `corrupt_at` |
-| 1 | **Sleeper Cells** | Compute income 3; Research threshold 4 | When a Corrupt step checks a city, it falls at 3 agents, not 5. A card's Botnets spread line now takes effect. | 1 | `botnet_spread_at`, `corrupt_cut`, `corrupt_cut_at` |
+| 1 | **Sleeper Cells** | Compute income 3; Research threshold 4 | When a Corrupt step checks a city, it falls at 3 agents, not 5. | 1 | `botnet_spread_at`, `corrupt_cut`, `corrupt_cut_at` |
 | 2 | **War Footing** | Compute income 5 | When a threat executes uncountered, the adversary also gains 4 compute. | 2 | `board_difficulty_at` |
 | 3 | **Arms Race** | Compute income 15; Deck 5 / 3 / 3 (11 rounds) | When Weapons Program fires, it musters 3, not 2. | 3 | `stage2_removed`, `stage1_added`, `research_strong_at` |
 | 4 | **War Economy** | Compute income 18; Agent income +1; Deck 3 / 4 / 4 (11 rounds) | — | 3 | `stage1_removed`, `stage2_added`, `stage3_added`, `stage_swap_at` |

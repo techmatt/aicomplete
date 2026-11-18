@@ -50,11 +50,11 @@
         "Compute income 3",
         "Research threshold 4"
       ],
-      "rule": "When a Corrupt step checks a city, it falls at 3 agents, not 5. A card's Botnets spread line now takes effect.",
+      "rule": "When a Corrupt step checks a city, it falls at 3 agents, not 5.",
       "new_rules": 1,
       "active_rules": 1,
-      "new_changes": 2,
-      "active_changes": 2
+      "new_changes": 1,
+      "active_changes": 1
     },
     {
       "level": 2,
@@ -67,7 +67,7 @@
       "new_rules": 1,
       "active_rules": 2,
       "new_changes": 1,
-      "active_changes": 3
+      "active_changes": 2
     },
     {
       "level": 3,
@@ -81,7 +81,7 @@
       "new_rules": 1,
       "active_rules": 3,
       "new_changes": 1,
-      "active_changes": 4
+      "active_changes": 3
     },
     {
       "level": 4,
@@ -96,7 +96,7 @@
       "new_rules": 0,
       "active_rules": 3,
       "new_changes": 0,
-      "active_changes": 4
+      "active_changes": 3
     }
   ]
 }

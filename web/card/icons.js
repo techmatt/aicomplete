@@ -73,6 +73,11 @@ const PIECES = {
   botnet: `<circle cx="12" cy="12" r="4.200" fill="currentColor"/>${line('M12 2.500v5M12 16.500v5M2.500 12h5M16.500 12h5M5.300 5.300l3.500 3.500M15.200 15.200l3.500 3.500M18.700 5.300l-3.500 3.500M8.800 15.200l-3.500 3.500', 1.900)}`,
   cube: fill('M12 2 21 7v10l-9 5-9-5V7zm0 2.300L6 7.600l6 3.300 6-3.300zM5 9.300v6.500l6 3.300v-6.500z'),
   city: fill('M3 22V11h5V6h3V2h3v8h7v12z'),
+  // 269 (Matt): Rescue, liberate a city and claim a facility next to it, as one glyph: the city under your
+  // flag. Hostile Buyout's chip (the cube off a site) never shows the flag, so the two read apart.
+  rescue: `${fill('M2 22V13h4V9h3V6h3v7h4v9z')}${line('M18 22V2.500', 1.900)}${fill('M18.800 2 23.300 5.200l-4.500 3.200z')}`,
+  // 269: any site, a city, station or factory (Hostile Buyout's chip): a hex holding a facility block.
+  site: `${line('M12 2 20.700 7v10L12 22 3.300 17V7z', 1.800)}${fill('M8.300 9.500h7.400v7.300H8.300z')}`,
   building: `<rect x="4" y="3" width="16" height="19" rx="1" fill="currentColor"/><path d="M8 7h3v3H8zM13 7h3v3h-3zM8 12h3v3H8zM13 12h3v3h-3z" fill="#efeadc"/>`,
   slot: `<rect x="4" y="3" width="16" height="19" rx="1.500" fill="none" stroke="currentColor" stroke-width="2.200" stroke-dasharray="3.500 2.500"/>`,
   // The Alignment track: a marker moving toward Unity.

@@ -94,7 +94,7 @@
     "cyber"
    ],
    "cost": 14,
-   "text": "Each country, twice: a botnet spreads to its lowest-numbered city, research station or factory without one next to one of its botnets (a country with no botnet: its lowest-numbered research station).",
+   "text": "Each country, twice (level 1+): a botnet spreads to its lowest-numbered city, research station or factory without one next to one of its botnets (a country with no botnet: its lowest-numbered research station).",
    "effects": [
     {
      "op": "spread_botnets",

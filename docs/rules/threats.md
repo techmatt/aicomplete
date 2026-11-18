@@ -119,7 +119,7 @@ node is nearest the threat. Tier 1 is small; tier 2 is about two tier-1s. Comput
 step, then fills the leftmost project on its board; a full project fires there, the rest slide left and the right
 slot refills. **Harder levels** make the adversary harsher, not threats more or dearer: each level is named,
 adds setup (the income and research markers, the event deck) and at most one rule that fires on an event you already
-resolve: level 1 lets a city corrupt at 3 and botnets spread, 2 gives 4 compute for each unpaid threat, 3 a shorter,
+resolve: level 1 lets a city corrupt at 3 (the cards' "Botnets spread (level 1+)" start too), 2 gives 4 compute for each unpaid threat, 3 a shorter,
 busier game whose research rule musters more, and 4 a harder deck; no level deals an extra threat
 ([adversary.md](adversary.md) *Difficulty*). The agent income is 1 a country (Garrisons), more at level 4, and grows as
 the event cards print income lines.

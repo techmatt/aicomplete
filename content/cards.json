@@ -1812,7 +1812,7 @@
   "name": "Positron Storage Ring",
   "tier": 2,
   "kind": "building",
-  "cost": 10,
+  "cost": 6,
   "insight": 2,
   "needs": [
    [
@@ -1822,22 +1822,6 @@
   ],
   "tags": [
    "power"
-  ],
-  "passives": [
-   {
-    "op": "when",
-    "on": {
-     "event": "play",
-     "tag": "power"
-    },
-    "then": [
-     {
-      "op": "gain",
-      "resource": "energy",
-      "amount": 2
-     }
-    ]
-   }
   ],
   "energy": 2,
   "effects": [
@@ -3624,7 +3608,7 @@
   "name": "Hostile Buyout",
   "tier": 2,
   "kind": "event",
-  "cost": 22,
+  "cost": 23,
   "insight": 0,
   "tags": [
    "diplomacy"

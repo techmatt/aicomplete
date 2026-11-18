@@ -279,7 +279,7 @@ honeypot_relay,gather [play],play,"max=2, pieces=['agents'], strike=True",2.0,3.
 honeypot_relay,when remove_ambassadors [passive],passive,"on={'event': 'remove_ambassadors'}, then=[{'op': 'gain', 'resource': 'credits', 'amount': 3}]",1.0,9.6,9.6,7.87,7.87
 honeypot_relay,tags [card],card,cyber,1.0,1.0,1.0,0.82,0.82
 hostile_buyout,target [play],play,on=corrupted_site,1.0,0.0,0.0,0.0,0.0
-hostile_buyout,liberate ambassadors [play],play,"own=True, ambassadors=3",1.0,70.0,70.0,40.0,40.0
+hostile_buyout,liberate ambassadors [play],play,"own=True, ambassadors=3",1.0,70.0,70.0,41.0,41.0
 hyperscale_botnet,draw [play],play,count=3,3.0,12.0,4.0,6.47,2.16
 hyperscale_botnet,income insight [passive],passive,"resource=insight, amount=4",4.0,25.0,6.25,13.49,3.37
 hyperscale_botnet,tags [card],card,cyber,1.0,1.0,1.0,0.54,0.54
@@ -439,11 +439,10 @@ popular_uprising,target [action],action,on=corrupted_city; spends 4 tokens,1.0,0
 popular_uprising,liberate [action],action,; spends 4 tokens,1.0,25.2,25.2,22.17,22.17
 popular_uprising,claim_site [action],action,near=True; spends 4 tokens,1.0,3.36,3.36,2.96,2.96
 popular_uprising,tags [card],card,diplomacy,1.0,1.0,1.0,0.88,0.88
-positron_storage_ring,draw [play],play,count=2,2.0,8.0,4.0,4.59,2.29
-positron_storage_ring,when play power [passive],passive,"on={'event': 'play', 'tag': 'power'}, then=[{'op': 'gain', 'resource': 'energy', 'amount': 2}]",1.0,10.12,10.12,5.8,5.8
-positron_storage_ring,gain antimatter [action],action,"resource=antimatter, amount=1; pays 2 energy",1.0,18.61,18.61,10.67,10.67
-positron_storage_ring,draw [action],action,count=1; pays 2 energy,1.0,4.14,4.14,2.37,2.37
-positron_storage_ring,tags [card],card,power,1.0,1.0,1.0,0.57,0.57
+positron_storage_ring,draw [play],play,count=2,2.0,8.0,4.0,5.04,2.52
+positron_storage_ring,gain antimatter [action],action,"resource=antimatter, amount=1; pays 2 energy",1.0,18.61,18.61,11.73,11.73
+positron_storage_ring,draw [action],action,count=1; pays 2 energy,1.0,4.14,4.14,2.61,2.61
+positron_storage_ring,tags [card],card,power,1.0,1.0,1.0,0.63,0.63
 power_purchase_agreement,target [play],play,on=neutral_site,1.0,0.0,0.0,0.0,0.0
 power_purchase_agreement,claim_site [play],play,,1.0,12.0,12.0,11.0,11.0
 power_to_the_people,target [play],play,on=corrupted_city,1.0,0.0,0.0,0.0,0.0

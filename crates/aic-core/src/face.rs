@@ -301,9 +301,9 @@ fn fit_to_target(op: &Op, target: Option<TargetSpec>, cls: &mut [Clause]) {
             let Some(Part::Adversary { adversary }) = cls.first_mut().and_then(|c| c.icons.first_mut()) else { return };
             let own = matches!(op, Op::Liberate { own: true, .. });
             if let Some(i) = adversary.iter().position(|p| *p == w("city")).filter(|_| on.glyph() != "city") {
-                // With the claim after it the cube alone: the target box names the three kinds, and three glyphs
-                // here then two more took Hostile Buyout's box to 5.4 pt.
-                adversary.splice(i..=i, if own { Vec::new() } else { site_glyphs(on) });
+                // With the claim after it one generic site glyph (269, Matt): three kinds here then two more took
+                // Hostile Buyout's box to 5.4 pt, and a bare cube elsewhere is a station's or factory's.
+                adversary.splice(i..=i, if own { vec![w("site")] } else { site_glyphs(on) });
             }
             if own {
                 cls[0].icons.extend([w("station"), w("/"), w("factory")]);
@@ -345,12 +345,12 @@ fn clauses(ops: &[Op], gain: &str) -> Vec<Clause> {
     }
     // 264: a liberation with the claim rider is one house term, Rescue (liberate it, then claim a facility
     // next to it), on every liberate card that claims: the Liberate action never claims, so it keeps its word.
-    // Its icons are the liberation's chip then the claim's station / factory, in one clause, so they don't read
-    // as Hostile Buyout's plain liberation.
+    // 269 (Matt): one glyph for both, the city under your flag, in place of the liberation's chip and the claim's
+    // station / factory, so it reads apart from Hostile Buyout's chip (the cube off a site).
     if let Some(lib) = out.iter().position(|c| c.say == "liberate it") {
         if let Some(claim) = out.iter().skip(lib + 1).position(|c| c.say == CLAIM_NEAR) {
-            let claimed = out.remove(lib + 1 + claim);
-            out[lib].icons.extend(claimed.icons);
+            out.remove(lib + 1 + claim);
+            out[lib].icons = vec![w("rescue")];
             out[lib].say = "rescue it".to_string();
         }
     }
@@ -1000,7 +1000,18 @@ fn standing(op: &Op, kind: Option<TokenKind>) -> Standing {
             parts.push(w(":"));
             let cls = clauses(then, "gain");
             parts.extend(cls.iter().flat_map(|c| c.icons.clone()));
-            let say = cls.into_iter().map(|c| c.say).collect::<Vec<_>>().join(", ");
+            // 269 (Matt): after "at N," an income step is the short form, "+3 credit income" (card-grammar.md):
+            // Retained Earnings' top box holds about 78 characters.
+            let short = |op: &Op| match op {
+                Op::Production { resource, amount: n } if *n > 0 => Some(format!("+{n} {} income", track(*resource))),
+                _ => None,
+            };
+            // Only a lone income step: a clause per op isn't guaranteed (merged gains, silent or split ops).
+            let says: Vec<String> = match (then.as_slice(), cls.len()) {
+                ([op], 1) if short(op).is_some() => vec![short(op).unwrap()],
+                _ => cls.into_iter().map(|c| c.say).collect(),
+            };
+            let say = says.join(", ");
             // "At N" is a house term (they come off, then the rest): it fits 7.5 pt.
             effect(parts, format!("at {at}, {say}"))
         }
@@ -1231,6 +1242,7 @@ fn above_art(c: &CardDef, f: &mut Face) {
         // 130: halves that all pay the same say it once, "pay 2 energy: A, OR B" (Particle
         // Accelerator's two halves overran its top box).
         let branches = a.branches();
+        let branches_n = branches.len();
         let costs: Vec<_> = branches.iter().map(|b| action_cost(b, c.tokens.as_ref().map(|t| t.kind)).1).collect();
         let shared = branches.len() > 1 && !costs[0].is_empty() && costs.iter().all(|p| *p == costs[0]);
         for (i, b) in branches.into_iter().enumerate() {
@@ -1263,15 +1275,32 @@ fn above_art(c: &CardDef, f: &mut Face) {
                 _ => f.top.push(left),
             }
             let mut said = format!("{open}{}", says.join(", "));
-            // 130: a later half that gets what the first half placed says "get them"
-            // (Particle Accelerator: "add 3 research cubes ... OR get them").
+            // 130: a later half that gets what the first half placed joins it (Particle Accelerator).
             let again = shared
                 && i > 0
                 && said
                     .strip_prefix("get ")
                     .is_some_and(|what| halves.first().is_some_and(|h| h.starts_with(&format!("add {what} "))));
+            let again = again && branches_n == 2 && halves.first().is_some_and(|h| h.contains(" in your color to "));
             if again {
-                said = "get them".to_string();
+                // 269: one clause, "3 research cubes, yours or on an open megaproject" (Particle Accelerator's
+                // 93 characters to 72; "get them, OR add them ..." at 79 still set at 6.9 pt): yours either way.
+                let first = halves.remove(0);
+                let rest = first.split_once(" in your color to ").map_or(first.as_str(), |(_, r)| r);
+                let what = said.trim_start_matches("get ");
+                said = format!("{what}, yours or on {rest}");
+                // The icons in the words' order: the get, OR the placing.
+                if let Some(line) = f.top.last_mut() {
+                    let arrow = line.iter().position(|p| *p == w("\u{2192}")).map_or(0, |a| a + 1);
+                    if let Some(or) = line.iter().rposition(|p| *p == w("OR")) {
+                        let get = line.split_off(or + 1);
+                        line.pop();
+                        let place = line.split_off(arrow);
+                        line.extend(get);
+                        line.push(w("OR"));
+                        line.extend(place);
+                    }
+                }
             }
             halves.push(said);
         }

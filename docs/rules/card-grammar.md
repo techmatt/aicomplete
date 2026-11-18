@@ -12,7 +12,7 @@ only, is what lasts while the building is active: income, *Effect:*, *Action:*. 
 Below the art is what happens once, when you play the card: extra costs first, then gains, placements and moves.
 
 **Boxes.** No box: gain it once, now. A brown box is income: above the art it pays each round ("Each round, ...");
-with a track arrow (below the art, or after an Effect's `:`) it moves your income track once ("Raise your X income by N" up, "Lower ..." down). A minus
+with a track arrow (below the art, or after an Effect's `:`) it moves your income track once ("Raise your X income by N" up, "Lower ..." down; after an "At N," the short form "+N X income", 269). A minus
 before an icon is pay or lose, only that: every paid cost prints it, an Action's too. A dark frame acts on the adversary's pieces, projects or threats. A dashed outline is
 another player. A thin solid outline is your cards: a token in it goes to, or comes from, one of your cards (nothing
 counts tokens across cards). No outline is you, or this card.
@@ -73,7 +73,8 @@ How each primitive resolves, beyond the card text (the card set: [player-cards.m
   ([ambassadors.md](ambassadors.md)); the city is left neutral (252). `own` (Hostile Buyout alone) takes any corrupted site, and a station or factory it frees gets your cube (254: a city never does). Each engine's twist: `ambassadors` (gain that many), `troops` (up to that many adversary troops in the city's country come
   off), `botnet` (a botnet on or next to the city comes off; its icon carries the city glyph). Only the liberate capstones print it ([player-cards.md](player-cards.md)).
   Followed by `claim_site` `near` (the claim rider), the face prints the house term **Rescue it** (264): liberate it,
-  then claim a facility next to it; its icons are the liberation's chip, then station / factory.
+  then claim a facility next to it; its icon is one glyph, the city under your flag (269). Hostile Buyout's
+  liberation prints its chip as the cube off a generic **site** glyph (a hex holding a block), then station / factory.
 - **Card text:** extra costs and lowered income included; a long card sets smaller. **Shelter** takes no target: none
   of your nodes or facilities in your reach (as it stands when one would be destroyed) can be destroyed this round.
 - **Projects:** a drain removes compute from one visible adversary project; **drain all** from every visible one; a

@@ -27,15 +27,15 @@ pub(super) struct Level {
     pub new_rules: usize,
     pub active_rules: usize,
     /// 267 (second review): the mid-game changes behind them, one a mid-game dial starting at this level (a named
-    /// rule may merge two: Sleeper Cells), and those active; `design_check.py`'s ladder budget reads these.
+    /// rule may merge two), and those active; `design_check.py`'s ladder budget reads these.
     pub new_changes: usize,
     pub active_changes: usize,
 }
 
 /// The engine dials that change play mid-game, and the level each starts at: each must sit at a level
-/// whose content names a rule, so no mid-game change goes unprinted.
-const MID_GAME_DIALS: [&str; 5] = [
-    "adversary.botnet_spread_at",
+/// whose content names a rule, so no mid-game change goes unprinted. 270 (Matt, amendment 12344):
+/// `botnet_spread_at` is not one: each "Botnets spread" card prints its "(level N+)" (checked below).
+const MID_GAME_DIALS: [&str; 4] = [
     "adversary.corrupt_cut_at",
     "adversary.city_cut_at",
     "adversary.board_difficulty_at",
@@ -105,11 +105,22 @@ pub(super) fn ladder(r: &Rules) -> Vec<Level> {
             fail(&format!("docs: level {cut_at} ({}): its rule and \"falls at {city} agents, not {printed}\" (corrupt_at less corrupt_cut) disagree", v.name));
         }
     }
-    // A level's "Botnets spread" words sit at `botnet_spread_at`, and only there.
+    // 270 (amendment 12344): a spread is card text, "(level N+)" at `botnet_spread_at` on every card that spreads
+    // (the events' lines and Botnet Swarm), and no level's rule names it.
     let spread_at = int(r, "adversary.botnet_spread_at");
     for v in &board.levels {
-        if v.rule.contains("Botnets spread") != (v.level == spread_at) {
-            fail(&format!("docs: level {} ({}): \"Botnets spread\" belongs to level {spread_at}'s rule (`botnet_spread_at`)", v.level, v.name));
+        if v.rule.contains("Botnets spread") {
+            fail(&format!("docs: level {} ({}): \"Botnets spread\" is the cards' \"(level {spread_at}+)\", not a level's rule", v.level, v.name));
+        }
+    }
+    let mark = format!("(level {spread_at}+)");
+    let spreads = |ops: &[Op]| ops.iter().any(|o| matches!(o, Op::SpreadBotnets { .. }));
+    let c = content();
+    let cards = c.adversary.iter().filter(|e| spreads(&e.standing)).map(|e| (&e.name, &e.text));
+    let projects = c.projects.iter().filter(|p| spreads(&p.effects)).map(|p| (&p.name, &p.text));
+    for (name, text) in cards.chain(projects) {
+        if (spread_at > 0) != text.contains(&mark) {
+            fail(&format!("docs: {name}: a Botnets spread prints \"{mark}\" exactly when `botnet_spread_at` is above 0"));
         }
     }
     // The other numbers a level's rule prints are content's: War Footing's compute and Arms Race's Muster.

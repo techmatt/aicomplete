@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 125. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 126. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -337,8 +337,8 @@ The adversary's board prints its turn as a strip of four beats, played in order.
   Every stage-II and stage-III card (and Long Patrols in stage I) raises the agent income by 1 a country for the rest
   of the game, so the agents grow as the game goes on. **Botnets spread** puts a botnet in each country onto its
   lowest-numbered site (city, station or factory) that is next to one of its botnets and has none of its own, or
-  nowhere if it has no such site; a country with no botnet gets one on its lowest-numbered research station. At level 0 botnets don't spread:
-  skip the line, and Botnet Swarm's (§21).
+  nowhere if it has no such site; a country with no botnet gets one on its lowest-numbered research station. The
+  line prints "(level 1+)", as Botnet Swarm's does: at level 0 skip it (§21).
 
 **2. Corrupt.** Each Corrupt line on the card, in order; then natural corruption (both below).
 
@@ -429,7 +429,7 @@ an extra step that round.) The march stops the moment a player's last node falls
 The adversary spends **compute** on **projects** in the Income beat, always on the **leftmost**; a project that fills
 **resolves** with its printed effect, and the rest slide left (§17). Some cards and the Researcher's Audit take compute off a project.
 
-Botnets spread quickly (four event cards print **Botnets spread**, above; not at level 0) but are cheap to clear. A **botnet** stays
+Botnets spread quickly (four event cards print **Botnets spread (level 1+)**, above) but are cheap to clear. A **botnet** stays
 until a card or the **Take down a botnet** action (§8, 20 credits) removes it. It makes 1 compute a round
 unless a player's ambassador stands on it, and counts against the purge until Unity has tipped 7 times (§14).
 Removing one sways neither side.
@@ -1097,7 +1097,7 @@ costs (claim, liberate, cards, actions) and the threats' costs never change. The
 | Level | Name | Setup (set once; incomes and threshold a country) | Mid-game rule it adds | Rules active |
 |---|---|---|---|---|
 | 0 | **The Militarist** | Compute income 0; Agent income +0; Research threshold 5; Deck 5 / 5 / 3 (13 rounds); Sites print their corrupt numbers: city 5, station 2, factory 2, land 3 | — | 0 |
-| 1 | **Sleeper Cells**: *Cells wake in every city.* | Compute income 3; Research threshold 4 | When a Corrupt step checks a city, it falls at 3 agents, not 5. A card's Botnets spread line now takes effect. | 1 |
+| 1 | **Sleeper Cells**: *Cells wake in every city.* | Compute income 3; Research threshold 4 | When a Corrupt step checks a city, it falls at 3 agents, not 5. | 1 |
 | 2 | **War Footing**: *Every unanswered strike feeds the war machine.* | Compute income 5 | When a threat executes uncountered, the adversary also gains 4 compute. | 2 |
 | 3 | **Arms Race**: *The labs build weapons, not cures.* | Compute income 15; Deck 5 / 3 / 3 (11 rounds) | When Weapons Program fires, it musters 3, not 2. | 3 |
 | 4 | **War Economy**: *The whole economy marches.* | Compute income 18; Agent income +1; Deck 3 / 4 / 4 (11 rounds) | — | 3 |
@@ -1110,7 +1110,8 @@ costs (claim, liberate, cards, actions) and the threats' costs never change. The
   Weapons Program firing (Arms Race). *Rules active* counts the ones in play.
 - **Agent income:** each country starts with 1 a round (Garrisons), plus the marker's; the event cards raise it as
   the game goes on (§6), at every level.
-- **Before level 1,** an event card's "Botnets spread" line does nothing: the botnets set up are the only ones.
+- **Before level 1,** a "Botnets spread (level 1+)" line does nothing, as it prints: the botnets set up are the only
+  ones.
 
 *Sources: rules/adversary.md (Difficulty, The event deck), rules/threats.md (Countering); configs/baseline.json
 `adversary` (`compute_income`, `ambassador_income`, `research_at`, the deck's dials); content/adversary.json (the
@@ -1158,7 +1159,7 @@ The shape says the kind of thing; the picture inside says which. (The art is not
 | Resources (square tiles) | credits (a coin), energy (a lightning bolt), insight (an eye), chips (a chip), antimatter (an atom), research cubes (stacked cubes), cards (two cards); the adversary's compute (a grid) |
 | Tokens on cards (discs) | Datasets (a database), Followers (two people), Capital (a bank), Operatives (a target) |
 | Pieces (bare silhouettes) | each piece has one symbol of its own, usable in a sentence: **ambassador** (a figure), **agent** (a figure in a brimmed hat, as on the map), **node** (a house shape), **botnet** (a starburst), **troop** (a winged arrowhead), **drone** (a megacorp's troop: two chevrons, as on the map); also the cube and the Fallout token |
-| Places | city (a skyline), research station (a dome with a mast), factory (a sawtooth roof), a hex outline, a country (a cluster of hexes), a megaproject (a card with a cube), an adversary project (a plain card), one of your buildings (a block with windows), a building slot (a dashed outline) |
+| Places | city (a skyline), research station (a dome with a mast), factory (a sawtooth roof), any site (a hex holding a block: city, station or factory), **Rescue** (a skyline under a flag: liberate it, then claim a station or factory next to it), a hex outline, a country (a cluster of hexes), a megaproject (a card with a cube), an adversary project (a plain card), one of your buildings (a block with windows), a building slot (a dashed outline) |
 | Tags (ringed circles) | Science, Industry, Cyber, Power, Diplomacy, Security, each its own symbol; an empty ring is any tag |
 
 ### Marks
@@ -1176,7 +1177,7 @@ The shape says the kind of thing; the picture inside says which. (The art is not
 | Brown box with a track arrow | raise your income of that resource for the rest of the game (arrow down would lower it; no card prints one yet); below the art, or after an Effect's `:` |
 | **Dark frame** | acts on the adversary: its pieces, projects or threats. Inside it a minus number means "remove up to N" (the adversary loses them) |
 | Target box | the header's plate: the target's condition and glyph; the card acts on that hex |
-| A place after a piece | where: after a cube, only that kind of site; after a botnet, agents or ambassadors, on or next to that place; the near mark, on or next to the target; after a country, in the target's country |
+| A place after a piece | where: after a cube, only that kind of site (the any-site glyph: any of the three); after a botnet, agents or ambassadors, on or next to that place; the near mark, on or next to the target; after a country, in the target's country |
 | Dashed outline | another player |
 | Thin solid outline | one of your cards: a disc in it goes to, or comes from, one of your cards |
 | A disc alone | a token on this card ("here") |
