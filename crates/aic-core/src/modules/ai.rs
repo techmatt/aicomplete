@@ -318,6 +318,11 @@ pub fn builds_station(u: &Uncover) -> bool {
     u.effects.iter().any(|e| matches!(e, Op::BuildStation))
 }
 
+/// 263: what uncovering a space gains once (the capstones' antimatter lump), for its printed words.
+pub fn once_gains(u: &Uncover) -> Vec<(Resource, i64)> {
+    u.effects.iter().filter_map(|e| if let Op::Gain { resource, amount } = e { Some((*resource, *amount)) } else { None }).collect()
+}
+
 /// What uncovering a space gives, in the words of its option (a record key:
 /// `+1 credits, T2 keep -1`); `gain`: the insight it adds ([`insight_gain`]; r82 prints the total).
 pub fn uncover_label(u: &Uncover, gain: i64) -> String {
@@ -336,6 +341,7 @@ pub fn uncover_label(u: &Uncover, gain: i64) -> String {
     if builds_station(u) {
         parts.push("free station".into());
     }
+    parts.extend(once_gains(u).into_iter().map(|(r, n)| format!("{} once", r.amount(n))));
     if let Some(c) = &u.capstone {
         parts.push(format!("capstone {}", c.name));
     }
@@ -360,6 +366,7 @@ pub fn uncover_words(u: &Uncover, gain: i64) -> String {
     if builds_station(u) {
         parts.push("free station".into());
     }
+    parts.extend(once_gains(u).into_iter().map(|(r, n)| format!("{} once", r.words(n))));
     if let Some(c) = &u.capstone {
         parts.push(format!("capstone: {}", c.name));
     }

@@ -212,6 +212,12 @@ pub(super) fn botnet_troops(g: &mut GameState, cx: &mut Cx, count: i64, troops: 
 /// lowest-numbered research station without one.
 pub(super) fn spread_botnets(g: &mut GameState, cx: &mut Cx, count: i64) {
     let w = cx.world;
+    // 263: a difficulty step: below `botnet_spread_at` a "Botnets spread" line does nothing.
+    if !adversary::level(&w, w.int("adversary.botnet_spread_at")) {
+        cx.tally(g, "adversary.botnets_spread_skipped", 1);
+        cx.note(None, || "Botnets don't spread at this difficulty".to_string());
+        return;
+    }
     for c in 0..w.map.countries.len() {
         let hexes = by_number(&w, c);
         for _ in 0..count {

@@ -1,0 +1,11 @@
+{"name": "s263-d0", "note": "263's d0 levers on the dev seeds (36800-36831), a factorial, d0 only (both touch d0 alone; base is s263-dev's d0): sp = botnet_spread_at 1 (no Botnets spread line at d0), c5 = a d0 city corrupt number of 5 (corrupt_at 5, corrupt_cut 2,1,1,0: d1+ unchanged), both. Three pairs, judge and greedy.", "configs": ["configs/baseline.json"], "variants": [
+ {"name": "bp-sp", "set": ["adversary.botnet_spread_at=1"]},
+ {"name": "br-sp", "set": ["ai.boards=0,2", "adversary.botnet_spread_at=1"]},
+ {"name": "pr-sp", "set": ["ai.boards=1,2", "adversary.botnet_spread_at=1"]},
+ {"name": "bp-c5", "set": ["adversary.corrupt_at=5", "adversary.corrupt_cut=2,1,1,0"]},
+ {"name": "br-c5", "set": ["ai.boards=0,2", "adversary.corrupt_at=5", "adversary.corrupt_cut=2,1,1,0"]},
+ {"name": "pr-c5", "set": ["ai.boards=1,2", "adversary.corrupt_at=5", "adversary.corrupt_cut=2,1,1,0"]},
+ {"name": "bp-both", "set": ["adversary.botnet_spread_at=1", "adversary.corrupt_at=5", "adversary.corrupt_cut=2,1,1,0"]},
+ {"name": "br-both", "set": ["ai.boards=0,2", "adversary.botnet_spread_at=1", "adversary.corrupt_at=5", "adversary.corrupt_cut=2,1,1,0"]},
+ {"name": "pr-both", "set": ["ai.boards=1,2", "adversary.botnet_spread_at=1", "adversary.corrupt_at=5", "adversary.corrupt_cut=2,1,1,0"]}
+], "difficulties": [0], "agents": ["strategist", "greedy"], "games": 32, "first_seed": 36800, "records": 0}

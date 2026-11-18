@@ -1237,7 +1237,8 @@ pub const PER_ROUND_EXPORT: &[&str] = &[
     "unspent.",
     // 135: threats countered and uncountered, round by round.
     "threats.",
-    // 190: facilities by owner, claims, city growth and its token moves, troops on the map, round by round.
+    // 190: facilities by owner, claims, city growth and its token moves, troops on the map, round by round. 263:
+    // cities corrupted and retaken (`map.cities_corrupted`, `map.cities_retaken`).
     "map.",
     // 210: Fallout tokens on the board, round by round.
     "adversary.land_tokens",

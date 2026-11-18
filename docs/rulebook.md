@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 123. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 124. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -336,7 +336,8 @@ The adversary's board prints its turn as a strip of four beats, played in order.
   Every stage-II and stage-III card (and Long Patrols in stage I) raises the agent income by 1 a country for the rest
   of the game, so the agents grow as the game goes on. **Botnets spread** puts a botnet in each country onto its
   lowest-numbered site (city, station or factory) without one next to one of its botnets, or nowhere if it has no such
-  site; a country with no botnet gets one on its lowest-numbered research station.
+  site; a country with no botnet gets one on its lowest-numbered research station. At level 0 botnets don't spread:
+  skip the line, and Botnet Swarm's (§21).
 
 **2. Corrupt.** Each Corrupt line on the card, in order; then natural corruption (both below).
 
@@ -355,8 +356,8 @@ does nothing to them until it marches (below).
 
 ### Corruption
 
-A place's **corrupt number** is how many agents it takes: city **4**, station **3**, factory **3** (each 1 fewer from
-level 1, §21) and open land **3**. Only agents count. A neutral site with a **Liberated marker** (a player liberated it with Liberate or
+A place's **corrupt number** is how many agents it takes: city **5** at level 0 and **3** from level 1, station **3**,
+factory **3** (each 1 fewer from level 1, §21) and open land **3**. Only agents count. A neutral site with a **Liberated marker** (a player liberated it with Liberate or
 a liberate card; a station or factory a card frees takes none) takes **1 more**.
 
 **2 agents on your node's hex destroy your node**, whatever else is there (a city with your node loses the node at 2,
@@ -424,7 +425,7 @@ an extra step that round.) The march stops the moment a player's last node falls
 The adversary spends **compute** on **projects** in the Income beat, always on the **leftmost**; a project that fills
 **resolves** with its printed effect, and the rest slide left (§17). Some cards and the Researcher's Audit take compute off a project.
 
-Botnets spread quickly (four event cards print **Botnets spread**, above) but are cheap to clear. A **botnet** stays
+Botnets spread quickly (four event cards print **Botnets spread**, above; not at level 0) but are cheap to clear. A **botnet** stays
 until a card or the **Take down a botnet** action (§8, 20 credits) removes it. It makes 1 compute a round
 unless a player's ambassador stands on it, and counts against the purge until Unity has tipped 7 times (§14).
 Removing one sways neither side.
@@ -577,7 +578,7 @@ Standard actions are always there, a hedge against bad luck: cards and your boar
 | **Remove agents** | 2 ambassadors from your supply, spent | target agents: remove up to 3 on or next to it; nothing is placed |
 | **Remove a troop** | 10 credits | once a round: target troops, remove 1 on it |
 | **Take down a botnet** | 20 credits | target a botnet where your ambassador stands: remove it (the ambassador stays) |
-| **Buy energy** | 5 credits | target a neutral city that isn't blocked, blacked out or hosted: gain its energy (1); each city once a round, for all players together |
+| **Buy energy** | 5 credits | target a neutral city that isn't blocked or blacked out and that no player hosts or could host (none with a host slot to spare has a node on or next to it): gain its energy (1); each city once a round, for all players together |
 | **Lift Fallout** | 2 research cubes | target Fallout: remove it; the one standard action that removes Fallout |
 | **Build a research station** | 2 chips | target an open hex that isn't an industrial zone or Fallout: the station is yours |
 | **Envoy** | 1 ambassador from your supply | remove 1 Discord from the Discord track |
@@ -655,7 +656,8 @@ map before the next.
    own hex. A neutral factory, or a blocked one, makes nothing.
 2. **Cities.** Each unblocked city makes 1 energy: a neutral city with your node on or next to it for you (its
    **host**: each player hosts one city, two after playing Twin City Compact, each city has one host, the players
-   choosing; a hosted city can't be bought, §8, but a city bought earlier this round may still be hosted); a
+   choosing; a city a player hosts or could host can't be bought, §8, but a city bought earlier this round may
+   still be hosted); a
    corrupted city 1 Discord instead.
 3. **Stations.** A player's station makes 1 cube in its owner's color; a neutral one makes 1 neutral cube. They go
    onto their country's megaproject. Once it is complete, a player's cubes go onto their board as **research cubes**,
@@ -1062,8 +1064,8 @@ Every board also has **Expand** (a node for nothing more), its base node route. 
 | Board | Economy track capstone | Card-play track capstone |
 |---|---|---|
 | Builder | **Full Capacity**: 1 chip each round per 4 Industry tags on your cards | **Master Plan**: your buildings cost 2 credits less |
-| Protector | **Sanctuary**: neither corruption nor agents destroy your nodes; 1 antimatter each round | **Aegis Doctrine**: Shelter on your own pieces once a round: the first time each round one of your nodes or facilities would be destroyed, it isn't (automatic, spending nothing) |
-| Researcher | **Open Archive**: 1 research cube and 1 antimatter each round | **Open Science**: each income step, split 2 insight from the supply among the other players as you like; it arrives with their insight next round |
+| Protector | **Sanctuary**: neither corruption nor agents destroy your nodes; 2 antimatter once, as you uncover it | **Aegis Doctrine**: Shelter on your own pieces once a round: the first time each round one of your nodes or facilities would be destroyed, it isn't (automatic, spending nothing) |
+| Researcher | **Open Archive**: 1 research cube each round; 2 antimatter once, as you uncover it | **Open Science**: each income step, split 2 insight from the supply among the other players as you like; it arrives with their insight next round |
 
 *Sources: rules/ai-powers.md, rules/ai-boards.md; content/ais.json; crates/aic-core/src/modules/ai.rs.*
 
@@ -1077,7 +1079,7 @@ from the rules (`aic-sim docs`); the words below are not.
 <!-- generated: rulebook_difficulty -->
 | Level | Corrupt numbers (city / station / factory / land / node) | Threat items | Adversary board's harder line | Event cards (I / II / III) | Rounds | Compute income a country | More agent income a country | Research cubes a country to fire its rule | Other |
 |---|---|---|---|---|---|---|---|---|---|
-| 0 | 4 / 3 / 3 / 3 / 2 | — | — | 5 / 5 / 3 | 13 | 0 | — | 5 | — |
+| 0 | 5 / 3 / 3 / 3 / 2 | — | — | 5 / 5 / 3 | 13 | 0 | — | 5 | botnets don't spread |
 | 1 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +1 | — | 5 / 5 / 3 | 13 | 3 | — | 5 | — |
 | 2 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | yes | 5 / 5 / 3 | 13 | 5 | — | 5 | — |
 | 3 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | yes | 5 / 3 / 3 | 11 | 13 | — | 4, stronger | — |

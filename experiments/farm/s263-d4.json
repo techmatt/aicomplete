@@ -1,0 +1,11 @@
+{"name": "s263-d4", "note": "263: d4's length (7.8 rounds, ending in node losses) on the dev seeds (36800-36831), d4 only: ss5 = no d4 stage swap (stage_swap_at 5: no stage-I card swapped for a stage-III Muster card); cc4ss5 = that and a city corrupting with 2 agents from d4 (city_cut_at 4): reach for troops. Base is s263-base4 (r124 at d4). Three pairs, judge and greedy.", "configs": ["configs/baseline.json"], "variants": [
+ {"name": "bp", "set": []},
+ {"name": "br", "set": ["ai.boards=0,2"]},
+ {"name": "pr", "set": ["ai.boards=1,2"]},
+ {"name": "bp-ss5", "set": ["adversary.stage_swap_at=5"]},
+ {"name": "br-ss5", "set": ["ai.boards=0,2", "adversary.stage_swap_at=5"]},
+ {"name": "pr-ss5", "set": ["ai.boards=1,2", "adversary.stage_swap_at=5"]},
+ {"name": "bp-cc4ss5", "set": ["adversary.stage_swap_at=5", "adversary.city_cut_at=4"]},
+ {"name": "br-cc4ss5", "set": ["ai.boards=0,2", "adversary.stage_swap_at=5", "adversary.city_cut_at=4"]},
+ {"name": "pr-cc4ss5", "set": ["ai.boards=1,2", "adversary.stage_swap_at=5", "adversary.city_cut_at=4"]}
+], "difficulties": [4], "agents": ["strategist", "greedy"], "games": 32, "first_seed": 36800, "records": 0}

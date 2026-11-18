@@ -127,7 +127,8 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
   36800-36801) with no engine named: the same line on native and wasm while they play alike. About 3 s.
 - **`farm-seeds`** (conductor's remote client) first runs a native `cargo build --release`, runs that
   `target/release/aic-sim.exe` on the main box, and builds the browsers' bundle from HEAD: commit the spec, code and
-  `content/` before farming, or the two engines play different cards. Farm lines carry no timings: a main-box game's ms is in the job's `main.log`. The shards write
+  `content/` before farming, or the two engines play different cards; native shards read the working tree's
+  `configs/`: leave it alone until the job ends. Farm lines carry no timings: a main-box game's ms is in the job's `main.log`. The shards write
   under conductor's job folder; the out file appears only at the end. **A job outlives its `farm-seeds`**: killing
   the client leaves the broker running its shards on the main box, which holds the CPU. While a job runs, or another
   `aic-sim` runs from that exe, it is locked (a build fails "Access is denied"): build into another

@@ -5735,13 +5735,7 @@
   "tags": [
    "science"
   ],
-  "effects": [
-   {
-    "op": "gain",
-    "resource": "antimatter",
-    "amount": 1
-   }
-  ],
+  "effects": [],
   "ability": {
    "cost": [
     [
@@ -5775,13 +5769,7 @@
    "industry",
    "power"
   ],
-  "effects": [
-   {
-    "op": "gain",
-    "resource": "antimatter",
-    "amount": 1
-   }
-  ],
+  "effects": [],
   "ability": {
    "cost": [
     [

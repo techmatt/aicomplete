@@ -500,7 +500,8 @@ pub(super) fn harms_md(r: &Rules) -> String {
          `Discord cards` covers both tiers; `march` is the adversary \
          troops' strikes, which take nodes from adversary stage {troop_node} on (0: always; 4: never). The `yes` cells \
          are true at the baseline's numbers ({amb_discord}: an agent \
-         darkening an aligned city sways only when that is above 0).\n\n{}\n\
+         darkening an aligned city sways only when that is above 0). A printed \"Botnets spread\" counts at every \
+         level, though below {spread_at} it does nothing.\n\n{}\n\
          **Check** (`aic-sim docs --check`, and a fast test): each threat tier at least 5 kinds of harm. Measured \
          shares are in the 034 screen (`experiments/results/screen-034-clocks/clocks.md`).\n\n\
          ## Gaps\n\nThe list for the adversary-card pass, not failures: a harm in under 2 kinds of source, and a kind \
@@ -511,6 +512,8 @@ pub(super) fn harms_md(r: &Rules) -> String {
         rev = aic_core::RULES_REVISION,
         troop_node = tick(r, "board.troop_node"),
         amb_discord = tick(r, "board.ambassador_discord"),
+        // 263: the d0 step that skips every "Botnets spread" line.
+        spread_at = tick(r, "adversary.botnet_spread_at"),
     )
 }
 

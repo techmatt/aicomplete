@@ -12,7 +12,8 @@ use crate::op::{CorruptSite, Per, RallyAt, Removable, Step, Where};
 /// covers nothing, one leaving uncovers nothing), and the tokens come off at the end of the next adversary turn.
 #[test]
 fn a_corrupt_prohibition_stops_a_covered_city() {
-    let (rules, mut g) = lab(&["adversary.compute"]);
+    // 263: the lab plays d0 (a city's 5 from r124); the 1 + 3 below are a city's 4.
+    let (rules, mut g) = lab_with(&["adversary.compute"], &["adversary.corrupt_at=4"]);
     let w = rules.world();
     let m = &rules.map;
     let (c, lonely) = city_with_lonely_neighbors(m);

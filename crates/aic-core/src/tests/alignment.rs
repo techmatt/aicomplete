@@ -365,7 +365,8 @@ fn a_discord_tip_no_longer_moves_troops() {
 fn discord_cards_step_up_with_the_discord_tip_count() {
     // 157: tier I on tips 1-2, tier III from the 6th (5 earlier tips).
     for (tips, each) in [(1, 1), (5, 3)] {
-        let (rules, mut g) = lab(&[]);
+        // 263: the lab plays d0, whose city number is 5 from r124: this test's 1 + 3 are r123's 4.
+        let (rules, mut g) = lab_with(&[], &["adversary.corrupt_at=4"]);
         // 138: Blight creates on each country's lowest-numbered city holding one.
         let seeded: Vec<usize> = (0..2).map(|c| rules.map.numbered(c, piece(c).cities[0])).collect();
         for &h in &seeded {

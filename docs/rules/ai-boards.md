@@ -91,7 +91,7 @@ energy income; each is limited a round; and the top routes spend what the board'
 | 4 | pay 1 energy: +3 credits, **Dispatch +1** | pay 1 energy: +3 credits, **Dispatch +1** | pay 1 energy: +3 credits, **Dispatch +1** |
 | 5 | pay 2 energy: +3 credits | pay 2 energy: +3 credits | pay 2 energy: +3 credits |
 | 6 | pay 3 energy: +3 credits, Power tag | pay 3 energy: +2 credits, Cyber tag | pay 3 energy: +3 credits, Power tag |
-| 7 | pay 5 energy: **Full Capacity** (capstone): 1 chip each round per 4 Industry tags on your cards. | pay 5 energy: **Sanctuary** (capstone): Neither corruption nor Agents destroy your Nodes. Each round, 1 antimatter. | pay 5 energy: **Open Archive** (capstone): Each round, 1 research cube and 1 antimatter onto your board. |
+| 7 | pay 5 energy: **Full Capacity** (capstone): 1 chip each round per 4 Industry tags on your cards. | pay 5 energy: 2 antimatter once, as it is uncovered, **Sanctuary** (capstone): Neither corruption nor Agents destroy your Nodes. | pay 5 energy: 2 antimatter once, as it is uncovered, **Open Archive** (capstone): Each round, 1 research cube onto your board. |
 <!-- /generated -->
 
 The **keep upgrade**: tier-2 keeps cost `keep_tier2_upgraded` instead of `keep_tier2` ([player-cards.md](player-cards.md)).

@@ -284,7 +284,8 @@ fn the_board_verbs_take_the_targets_the_board_shows() {
     use crate::content::Op;
     use crate::modules::common::corrupted;
     use crate::op::Facility;
-    let (rules, mut g) = lab(&[]);
+    // 263: botnets spread from `botnet_spread_at` (1) on; the lab plays d0.
+    let (rules, mut g) = lab_with(&[], &["adversary.botnet_spread_at=0"]);
     let m = &rules.map;
     let f0 = m.numbered(0, piece(0).industry[0]);
     // A zone not next to f0, so only f1 counts the agents on it.
@@ -419,7 +420,9 @@ fn project_ops_reach_as_declared() {
         with_answers(rules, g, |_| 0, |g, cx| effects::run(g, cx, ops, &mut effects::Ctx::team()));
     };
     // Boards 1 and 2: both print a research station (board 0 prints none, so a station op has nothing there).
-    let rules = rules_of(&baseline_with(&["ai.boards=1,2"]), "baseline_with", &["ai.boards=1,2"]);
+    // 263: botnets spread from `botnet_spread_at` (1) on; the baseline plays d0.
+    let sets = ["ai.boards=1,2", "adversary.botnet_spread_at=0"];
+    let rules = rules_of(&baseline_with(&sets), "baseline_with", &sets);
     let w = rules.world();
     let m = &w.map;
     assert_eq!(m.countries.len(), 2);

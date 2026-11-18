@@ -40,6 +40,12 @@ pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) 
         cx.add_tokens(g, h, LIBERATED, -marker);
         cx.tally(g, "adversary.retakes", 1);
     }
+    // 263: the adversary's spread by round: a city corrupted in play (setup's are placed, not corrupted), a
+    // liberated one retaken counted apart.
+    if matches!(site, CorruptSite::City | CorruptSite::CoastalCity) {
+        let key = if marker > 0 { "map.cities_retaken" } else { "map.cities_corrupted" };
+        cx.per_round(g, key, 1);
+    }
     let n = g.tokens(h, ADV_AMBASSADOR);
     remove(g, cx, h, n);
     if let Some(s) = node_owner(g, h) {
@@ -136,7 +142,10 @@ pub fn corrupt_n(w: &World, site: CorruptSite, cut: i64) -> i64 {
     } else {
         0
     };
-    (base - ladder - cut).max(1)
+    // 263: the adversary's reach at the top levels: from `city_cut_at` a city (coastal too) corrupts with one
+    // fewer agent again.
+    let reach = i64::from(site == CorruptSite::City && level(w, w.int("adversary.city_cut_at")));
+    (base - ladder - reach - cut).max(1)
 }
 
 /// 175, a Corrupt X line in country `scope` or everywhere: every agent next to an X ([`super::plan::converge`])

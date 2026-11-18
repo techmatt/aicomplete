@@ -63,8 +63,9 @@ what it prints; the `cards/*_read.py` readers take seconds.
 - Per cell, `DIR...`: `cards/threat_read.py [--cards]` threats dealt, countered, paid abroad, typed counters and
   capstones; `cards/slots_read.py [--rounds N]` build-overs and buildings standing; `cards/board_read.py [--powers]
   [--cards]` wins and the boards' measures (`--powers` each power a game, `--cards` research-cube cards);
-  `cards/liberation_read.py [--cards]` cities corrupted and liberated (`--cards` each liberate card; also a games
-  file or `FILE=SPEC`);
+  `cards/liberation_read.py [--cards]` cities corrupted and liberated (`--cards` each liberate card);
+  `cards/spread_read.py FILE=SPEC[@TAG]... [--rounds]` length and new cities by
+  level, arm and round (docstring);
   `cards/economy_read.py [--rounds 10]` card throughput, income, unspent; `cards/energy_read.py` energy held and
   used; `cards/corp_read.py` completions, cubes, converters, stations, adversary compute.
 - `cards/effect_stats.py READ [--screen DIR] [--flag 5] [--out MD]`: each Unity and Discord card's resolutions and

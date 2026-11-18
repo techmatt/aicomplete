@@ -41,7 +41,8 @@ fn an_agent_left_behind_meets_the_converted_one() {
 /// into it from next door.
 #[test]
 fn a_firewall_stops_arrivals_and_pulls() {
-    let (rules, mut g) = lab(&[]);
+    // 263: the lab plays d0 (a city's 5 from r124); the 1 + 3 below are a city's 4.
+    let (rules, mut g) = lab_with(&[], &["adversary.corrupt_at=4"]);
     let w = rules.world();
     let m = &rules.map;
     let (c, _, a, _) = by_a_city(&mut g, m);

@@ -1,0 +1,5 @@
+{"name": "s263-reach", "note": "263's reach lever on the dev seeds (36800-36831), d3-d4 only: city_cut_at 3 (a city, coastal too, corrupts with one agent fewer again from d3: 2 agents, not 3). Base is s263-dev's d3-d4. Three pairs, judge and greedy.", "configs": ["configs/baseline.json"], "variants": [
+ {"name": "bp-cc", "set": ["adversary.city_cut_at=3"]},
+ {"name": "br-cc", "set": ["ai.boards=0,2", "adversary.city_cut_at=3"]},
+ {"name": "pr-cc", "set": ["ai.boards=1,2", "adversary.city_cut_at=3"]}
+], "difficulties": [3, 4], "agents": ["strategist", "greedy"], "games": 32, "first_seed": 36800, "records": 0}

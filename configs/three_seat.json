@@ -67,19 +67,20 @@
           3
         ],
         "supply_per_country": 24,
-        "corrupt_at": 4,
+        "corrupt_at": 5,
         "corrupt_station_at": 3,
         "corrupt_factory_at": 3,
         "corrupt_land_at": 3,
         "corrupt_node_at": 2,
         "retake_agents": 1,
         "corrupt_cut": [
-          1,
+          2,
           1,
           1,
           0
         ],
         "corrupt_cut_at": 1,
+        "city_cut_at": 5,
         "blight_discord": 1,
         "counter_pct": [
           100,
@@ -118,6 +119,7 @@
         "war_node": 1,
         "station_flip_at": 2,
         "botnet_compute": 1,
+        "botnet_spread_at": 1,
         "board_difficulty_at": 2,
         "research_at": [
           5,

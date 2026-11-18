@@ -390,7 +390,7 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
         let k: Vec<String> = keys.iter().map(|k| tick(r, k)).collect();
         k.join(", ")
     };
-    // Each of `steps`' six dials (`research_strong_at` .. `stage_swap_at`) sits at whatever level its `_at` value names.
+    // Each of `steps`' dials (`research_strong_at` .. `stage_swap_at`) sits at whatever level its `_at` value names.
     let mut rows: Vec<(String, Vec<&str>)> = vec![
         // The incomes are a list with an entry a level, not a step: every level reads its own entry.
         (
@@ -417,11 +417,17 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
         "{} corrupt with fewer agents (from `corrupt_cut_at`)",
         if cut_sites.is_empty() { "no site".to_string() } else { cut_sites.join(", ") }
     );
-    let steps: [(&str, &str, &[&str]); 6] = [
+    let steps: [(&str, &str, &[&str]); 8] = [
         ("adversary.research_strong_at", "the research rule's stronger effect (from `research_strong_at`)",
             &["adversary.research_strong_at"]),
+        // 263: below it, a "Botnets spread" line does nothing.
+        ("adversary.botnet_spread_at", "botnets spread (an event or project's \"Botnets spread\" line; from `botnet_spread_at`)",
+            &["adversary.botnet_spread_at"]),
         ("adversary.corrupt_cut_at", &cut_text,
             &["adversary.corrupt_cut", "adversary.corrupt_cut_at"]),
+        // 263: the top levels' reach (5, never, at r124: screened, not shipped).
+        ("adversary.city_cut_at", "a city corrupts with one agent fewer again (from `city_cut_at`)",
+            &["adversary.city_cut_at"]),
         ("adversary.counter_bonus_at", "counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`)",
             &["adversary.counter_bonus_all", "adversary.counter_bonus_credits", "adversary.counter_bonus", "adversary.counter_bonus_at"]),
         ("adversary.counter_more_at", "counters cost more again (from `counter_more_at`)",
@@ -482,7 +488,9 @@ pub(super) fn rulebook_difficulty_block(r: &Rules) -> String {
                 .enumerate()
                 .map(|(i, n)| {
                     let c = if at("adversary.corrupt_cut_at", level) { cut.get(i).copied().unwrap_or(0) } else { 0 };
-                    (n - c).to_string()
+                    // 263: `city_cut_at`'s one fewer again, a city's alone (the first entry).
+                    let reach = i64::from(i == 0 && at("adversary.city_cut_at", level));
+                    (n - c - reach).max(1).to_string()
                 })
                 .collect();
             let (mut credits, mut other, mut first) = (0, 0, 0);
@@ -508,6 +516,10 @@ pub(super) fn rulebook_difficulty_block(r: &Rules) -> String {
             let n = dealt(r, level);
             // The level-4 dials ("difficulty 4+" in the engine, not a tunable step).
             let mut more: Vec<String> = Vec::new();
+            // 263: a level under `botnet_spread_at` skips every "Botnets spread" line.
+            if !at("adversary.botnet_spread_at", level) {
+                more.push("botnets don't spread".into());
+            }
             if level >= 4 {
                 let t2 = int(r, "adversary.tier2_early");
                 if t2 > 0 {
@@ -636,6 +648,10 @@ pub(super) fn space(u: &Uncover) -> String {
     }
     if aic_core::modules::ai::builds_station(u) {
         parts.push("builds a free research station in reach".to_string());
+    }
+    // 263: a one-time gain as the space is uncovered (Sanctuary's and Open Archive's antimatter).
+    for (r, n) in aic_core::modules::ai::once_gains(u) {
+        parts.push(format!("{} once, as it is uncovered", r.words(n)));
     }
     if let Some(c) = &u.capstone {
         parts.push(format!("**{}** (capstone): {}", c.name, c.text));
@@ -957,8 +973,24 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          income stays. {safe}The adversary deck is a round cap too, {} rounds at \
          most (fewer at the harder levels), and reaching it loses. So there are three different \
          pressures: the Discord deck (politics), your nodes (the board) and the cap.\n",
-        int(r, "adversary.corrupt_at"),
+        city_numbers(r),
         int(r, "adversary.corrupt_node_at"),
         dealt(r, 0).iter().sum::<usize>(),
     )
+}
+
+/// 263: a city's corrupt number in players' words: level 0's, and the one `corrupt_cut` gives from its level
+/// (5 at level 0, 3 from level 1, at r124).
+fn city_numbers(r: &Rules) -> String {
+    let base = int(r, "adversary.corrupt_at");
+    let at = int(r, "adversary.corrupt_cut_at");
+    let cut = list(r, "adversary.corrupt_cut").first().copied().unwrap_or(0);
+    if cut == 0 || at > 4 {
+        return base.to_string();
+    }
+    let from = (base - cut).max(1);
+    if at == 0 {
+        return from.to_string();
+    }
+    format!("{base} at level 0 ({from} from level {at})")
 }

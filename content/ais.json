@@ -437,18 +437,20 @@
     "cost": 5,
     "capstone": {
      "name": "Sanctuary",
-     "text": "Neither corruption nor Agents destroy your Nodes. Each round, 1 antimatter.",
+     "text": "Neither corruption nor Agents destroy your Nodes.",
      "passives": [
       {
        "op": "corruption_shield"
-      },
-      {
-       "op": "income",
-       "resource": "antimatter",
-       "amount": 1
       }
      ]
-    }
+    },
+    "effects": [
+     {
+      "op": "gain",
+      "resource": "antimatter",
+      "amount": 2
+     }
+    ]
    }
   ],
   "powers": [
@@ -775,20 +777,22 @@
     "cost": 5,
     "capstone": {
      "name": "Open Archive",
-     "text": "Each round, 1 research cube and 1 antimatter onto your board.",
+     "text": "Each round, 1 research cube onto your board.",
      "passives": [
       {
        "op": "income",
        "resource": "research_cubes",
        "amount": 1
-      },
-      {
-       "op": "income",
-       "resource": "antimatter",
-       "amount": 1
       }
      ]
-    }
+    },
+    "effects": [
+     {
+      "op": "gain",
+      "resource": "antimatter",
+      "amount": 2
+     }
+    ]
    }
   ],
   "powers": [

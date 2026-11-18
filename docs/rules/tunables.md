@@ -53,14 +53,15 @@ conventions: [README.md](README.md).*
 | `adversary.difficulty` | 0 | 0..4 | difficulty level 0-4 (each level includes the ones below) |
 | `adversary.stage_cards` | 5, 5, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
 | `adversary.supply_per_country` | 24 | 0..40 | agents in the supply per country |
-| `adversary.corrupt_at` | 4 | 1..20 | a city's corrupt number: the agents on it that corrupt it (coastal cities too) |
+| `adversary.corrupt_at` | 5 | 1..20 | a city's corrupt number: the agents on it that corrupt it (coastal cities too) |
 | `adversary.corrupt_station_at` | 3 | 1..20 | a research station's corrupt number |
 | `adversary.corrupt_factory_at` | 3 | 1..20 | a factory's corrupt number |
 | `adversary.corrupt_land_at` | 3 | 1..20 | open land's corrupt number (only a Corrupt open land line; it takes Fallout) |
 | `adversary.corrupt_node_at` | 2 | 1..20 | a node's corrupt number: a hex with a player's node and this many agents loses the node |
 | `adversary.retake_agents` | 1 | 0..5 | 253: agents beyond the corrupt number to retake a neutral site a player liberated (its Liberated marker; 0: none) |
-| `adversary.corrupt_cut` | 1, 1, 1, 0 | 0..5 | difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land) |
+| `adversary.corrupt_cut` | 2, 1, 1, 0 | 0..5 | difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land) |
 | `adversary.corrupt_cut_at` | 1 | 0..5 | the difficulty level from which corrupt_cut applies |
+| `adversary.city_cut_at` | 5 | 0..5 | 263: the difficulty level from which a city (coastal too) corrupts with one agent fewer again, after corrupt_cut (5: never) |
 | `adversary.blight_discord` | 1 | 0..5 | Discord each Fallout token sways each round |
 | `adversary.counter_pct` | 100, 100 | 50..300 | every resource counter item of a tier 1, 2 threat costs this percent of its printed amount (rounded up) |
 | `adversary.counter_credit_pct` | 100 | 50..300 | every credits counter item costs this percent of its amount after counter_pct (rounded up; 100 = unchanged) |
@@ -84,6 +85,7 @@ conventions: [README.md](README.md).*
 | `adversary.war_node` | 1 | 0..1 | build (r83, the Militarist's War Takes Ground): 1: a drone strike that destroys a factory destroys a node on its hex too |
 | `adversary.station_flip_at` | 2 | 0..5 | agents on a player's research station before an effect can flip it (short of that, one lands there instead) |
 | `adversary.botnet_compute` | 1 | 0..5 | adversary compute each botnet makes a round (none with a player ambassador on it) |
+| `adversary.botnet_spread_at` | 1 | 0..5 | 263: the difficulty level from which a 'Botnets spread' line (event cards, projects) spreads botnets; below it the line does nothing |
 | `adversary.board_difficulty_at` | 2 | 0..5 | the difficulty level from which the adversary board's own difficulty line applies |
 | `adversary.research_at` | 5, 5, 5, 4, 4 | 0..30 | 259: research cubes a country that fire the adversary board's research rule, at difficulty 0-4 (times the countries; 0: never) |
 | `adversary.research_strong_at` | 3 | 0..5 | 259: the difficulty level from which the research rule fires its stronger effect |
