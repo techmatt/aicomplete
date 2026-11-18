@@ -41,7 +41,7 @@ prints that kind's disagreements. Readers: `experiments/results/245_tune_strateg
 | `--max-actions N` | `100000` | Per-game action cap. A capped game ends as `timeout`. |
 | `--threads N` | all cores | Results don't depend on it: agents are seeded per game. |
 | `--json` | off | Print the summary as JSON: every field below, plus the diff, agent, `max_actions` and rules revision. |
-| `--trace` | off | Print the first game of each config: every action (with its option count) and event (`tokens_changed`, `var_changed`, `card_moved`, ...; a hex is `[q, r]`: map.json's anchor + row × axes[0] + col × axes[1]). Goes to stderr with `--json`. 268's `trace_rounds.py` splits it by round. |
+| `--trace` | off | Print the first game of each config: every action (with its option count) and event (`tokens_changed`, `var_changed`, `card_moved`, ...; a hex is `[q, r]`: map.json's anchor + row × axes[0] + col × axes[1]). Goes to stderr with `--json`. 268's `trace_rounds.py` splits it by round; 271's `trace_plays.py`, plays and draws a seat a round. |
 | `--save DIR` | off | `run`/`compare`: write the selected games as records into `DIR` (created if needed) as `<config name>-<run\|A\|B>-seed<S>.json`; the paths print after the table, or under `saved` in each `--json` result with the match counts. A write failure exits 2. |
 | `--save-when W` | `loss` | Which games to save: `all`, `win`, `loss`, `timeout`, or an end reason code (`deck_empty`, `discord_deck`, `node`, `purge`, ...). Repeatable; a game matching any is saved. With only `--save-seed` given, no default. A reason code no game ended with warns on stderr. |
 | `--save-seed S` | | Always save this seed, not counted against `--save-max`. Repeatable. A seed outside the range played warns. |
@@ -82,6 +82,7 @@ What the read scripts quote most (`screens.cnt(game, key)`; more in experiments.
 | `cell` | the cell's index in grid order: configs, then variants, then difficulties, then agents, agent fastest (`experiment::cells_with`; `screens.cells_of`) |
 | `counters['ai.power.<board>.<power>']` | a board power's uses (`modules/ai.rs`; the seats on that board summed), `.rNN` a round's; names: `scripts/powers.py` |
 | `counters['board.std.<name>']` | a standard action's uses; `board.std_actions` all of them |
+| `counters['cards.played.<card>']`, `['cards.drawn']` | plays of a card / cards drawn off the decks, all seats (keys are flat, dotted strings) |
 | `counters['fx.<card>.tN']` / `['fx.<card>.<measure>']` | an Alignment card resolved at tier N / the change it made to a `FX_MEASURES` total (`alignment.rs`): a signed delta, not a count |
 | `sources[seat]` / `uses[seat]` | each resource gained / spent by where, `{label: [...]}`: `own:` or `other:` an action, `phase:` an automatic phase. Labels: `play:<card>`, `use:<card>` (its Action), `power:<Name>`, `standard:<act>`, `convert:<country>` (a corp's cube converter; `:chips` after it, its chip converter), `phase:economy.upkeep` (income and capstones) |
 | `start`, `gained`, `spent`, `peaks` | per seat, totals (`start + gained - spent` is the end) |

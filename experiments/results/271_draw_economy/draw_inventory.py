@@ -2,8 +2,8 @@
 
 python experiments/results/271_draw_economy/draw_inventory.py [--md] [--content=DIR]
 
-Counts every card's draw (on play, in an Action, in a trigger), across all 208 content cards (the 191 in the draft
-plus the opening's and liberate capstones), by tag and source, and the boards', converters' and megaprojects' draw ops.
+Counts every card's draw (on play, in an Action, in a trigger), across every card in content/cards.json (208 at
+r127; the draft deck in configs/baseline.json holds 191 of them), by tag and source, and the boards', converters' and megaprojects' draw ops.
 """
 import json
 import sys

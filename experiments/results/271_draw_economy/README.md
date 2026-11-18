@@ -52,7 +52,7 @@ first two count Security / Industry plays). The engine forms stay (tests pin the
 
 [ledger.md](ledger.md): every changed card's cost and the effect ledger's reasoned value (values.json), before and
 after. Rule: a card's cost moves by its change in reasoned value, floor 3, so `cost - reasoned` holds where the floor
-doesn't bind; the three engines are priced by hand. 35 changed cards land at 3 credits (33 of them cut from more), most where
+doesn't bind; the three engines are priced by hand. 33 changed cards land at 3 credits, all cut from more, most where
 the floor binds on an old price far under its reasoned value (Forensic Audit, Fusion Commons, Field Sensor Grid). **Many tier-2 cards land
 at 3 credits** (Capital Projects Office, Conglomerate Headquarters, Agency Directorate, Zero-Day Auction): the
 ledger valued their any-card or big-draw text highly, so dropping it dropped their price. That is the balance pass's
