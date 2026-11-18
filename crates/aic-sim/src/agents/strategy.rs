@@ -393,7 +393,9 @@ pub fn choose(
 ) -> Option<u16> {
     let menu = menu(w, s);
     if fixed > 0 {
-        return menu.get(fixed - 1).copied().or(menu.first().copied());
+        // 266 (D117): past the menu it played the menu's first; `AgentSpec::check` refuses such a spec up front.
+        let past = || panic!("strat{s}={fixed} is past the {} strategies of seat {s}'s board", menu.len());
+        return Some(menu.get(fixed - 1).copied().unwrap_or_else(past));
     }
     let list = &strategies().strategies;
     let seen: Vec<&CardDef> = g

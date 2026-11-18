@@ -159,6 +159,11 @@ impl Table {
             hits.push("tokens");
         }
         if section == Some("troops_removed") {
+            // 266 (D117): the table reads `troops_removed.<N>` by a removal's N alone: any other name was taken and
+            // read by nothing.
+            if name.parse::<u32>().map_or(true, |n| n == 0 || n.to_string() != name) {
+                return Err(format!("t.{key}: troops_removed takes a count of troops, 1 or more (t.troops_removed.3)"));
+            }
             hits.push("troops_removed");
         }
         if section == Some("tags") && (name == "first" || name == "more") {

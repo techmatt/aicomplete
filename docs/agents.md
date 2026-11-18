@@ -74,7 +74,7 @@ counts):
 
 `configs/agents/strategies.json`, read by `agents/strategy.rs`. With `strategy=1`, at its round-1 keep a seat commits
 to its board's strategy whose multipliers add most to its opening hand and powers (a power at one use's worth);
-`strat0`-`strat2` fix one, 1-based. A card's multiplier is 1 plus the weights it matches (its triggers' ops too),
+`strat0`-`strat2` fix one, 1-based (on the board's menu; with `strategy=0`, every seat pinned). A card's multiplier is 1 plus the weights it matches (its triggers' ops too),
 times its categories' largest **phase schedule** multiplier (`w.strat_scale` stretches it).
 
 As a player says them (the config's `says`):
@@ -124,7 +124,8 @@ row; the spare-insight rule is every agent's.
 - *A cube Action with no megaproject open does nothing* (`w.cube_target`, `plan_cube_target`).
 
 Off (no gain read): `plan_team`. Retired probes (`eval::RETIRED`, `policy::RETIRED`): a spec naming one is refused
-with the reason.
+with the reason, as is a value the agent would read as another (on/off not 0 or 1, a fraction of a count, an
+enumerated setting past its last value; `policy::check_param`).
 
 ## The progress term and the draft
 

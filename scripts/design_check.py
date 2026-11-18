@@ -56,6 +56,8 @@ def load_games(dirs, variants=None):
         d, _, spec_path = d.partition('=')
         path = d if d.endswith('.jsonl') else os.path.join(d, 'games.jsonl')
         spec = cells = None
+        if not os.path.isfile(path):
+            sys.exit(f'{d}: no games file ({path})')
         if spec_path:
             with open(spec_path, encoding='utf-8') as f:
                 spec = json.load(f)
@@ -836,8 +838,12 @@ def main():
     def opt(name):
         if name in argv:
             i = argv.index(name)
+            if i + 1 >= len(argv) or argv[i + 1].startswith('--'):
+                sys.exit(f'{name} needs a value')
             v = argv[i + 1]
             del argv[i:i + 2]
+            if name in argv:
+                sys.exit(f'{name} given twice: one, a comma list for several')
             return v
         return None
     cfg_path = opt('--config') or os.path.join(ROOT, 'scripts', 'design_check.json')
@@ -848,6 +854,12 @@ def main():
     quiet = '--quiet' in argv
     table = '--usage' in argv
     argv = [a for a in argv if a not in ('--quiet', '--usage')]
+    # 266 (D117): an unknown flag or a second DIR was ignored, so the read ran on less than was asked.
+    flags = [a for a in argv if a.startswith('-')]
+    if flags:
+        sys.exit(f"unknown flag {flags[0]}: the flags are --old, --base, --config, --variant, --quiet, --usage")
+    if len(argv) > 1:
+        sys.exit(f"one DIR only (got {len(argv)}): pool reads as a comma list, {','.join(argv)}")
     with open(cfg_path, encoding='utf-8') as f:
         cfg = json.load(f)
     cards = jload('content/cards.json')

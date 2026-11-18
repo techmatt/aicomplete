@@ -16,14 +16,12 @@ what it prints; the `cards/*_read.py` readers take seconds.
   the checks and the revision line only.
 - `design_check.py [DIR] [--old DIR] [--base REV] [--config FILE] [--quiet] [--usage] [--variant V,...]`: the design
   warnings ([principles.md](principles.md)): content checks, plus play checks on DIR (a read's folder or
-  `games.jsonl`; a farm out file as FILE=SPEC). `--old`: the previous revision's read on its seeds; `--base`: the
+  `games.jsonl`; a farm out file as FILE=SPEC; one DIR, comma lists pool; an unknown flag stops it). `--old`: the previous revision's read on its seeds; `--base`: the
   dials' start (default: merge base with main); `--variant`: only those variants' (or a lever's) games, `base` the
-  bare pairs; `--usage`: each action's role, band and use instead. A power action's index is named by matching it
-  to the read's `ai.power.*` counters, so a read of another revision reads right (an info line names a reordered
-  board; a current power its counters never name is no row). First line: the report's `warnings:`. Thresholds
-  and bands: `design_check.json`; job parity's cards for each standard job, hand-read (units and other effects as
-  expressions over the anchors; costs from content): `design_check_jobs.json`, first ported from 248's table,
-  now edited by hand (a new card for a job is a row there; 249's `port_jobs.py` would overwrite it). Never exits 1.
+  bare pairs; `--usage`: each action's role, band and use instead. A power action is named by the read's `ai.power.*`
+  counters, so another revision's read reads right (an info line names a reordered board). First line: the report's `warnings:`. Thresholds
+  and bands: `design_check.json`; job parity's cards for each standard job, hand-read (effects as expressions over
+  the anchors): `design_check_jobs.json`, edited by hand (`port_jobs.py` would overwrite it). Never exits 1 on a warning.
 - `cards/cards_doc.py`: regenerates `docs/cards.md`. `cards/deck_text.py DECK...`: a deck as plain text for review
   (`--list` the decks; README, *Card text for review*); `--ids TEXT`: content ids by display name.
 - `cards/apply_overlay.py FILE... [--set ENTRY]... [--check]`: writes overlays into `content/*.json` in place:
@@ -45,12 +43,11 @@ what it prints; the `cards/*_read.py` readers take seconds.
 - `cards/screen.py`: named columns over experiment outputs (`--columns a,b,c`, `--preset tiers|041|034|018|016`,
   `--sources`, `--list`; `tiers`, offered, kept and played by tier, is a card rework's first screen); `--gate DIR`
   (gates are suspended) each check against its own agent, then unspent.
-- `screens.py` reads a run from Python: `load(dir)` the games with their cells (`stream` also takes `FILE=SPEC`, and stops on a
-  headerless file passed without its `=SPEC`),
-  `cnt(game, key)` a counter (a power is `ai.power.<board>.<name>`: `scripts/powers.py`). `screens.py assemble SPEC
+- `screens.py` reads a run from Python: `load(dir)` the games with their cells (`stream` also takes `FILE=SPEC`), `cnt(game, key)` a counter (a power is `ai.power.<board>.<name>`: `scripts/powers.py`). `screens.py assemble SPEC
   FIRST COUNT OUT_DIR SHARD... [--exe EXE]` writes farmed shards (seed order) under the spec's header as
   `OUT_DIR/games.jsonl`.
-- `cards/play_read.py DIR... [--min PCT] [--agents A,B]` (DIR, games file or `FILE=SPEC`): per agent, pooled: draft cards kept in over `--min` percent
+- `cards/play_read.py DIR... [--min PCT] [--agents A,B]` (DIR, games file or `FILE=SPEC`; agents by spec name, so native
+  and farmed reads pool; `--agents` takes it or the label): per agent: draft cards kept in over `--min` percent
   of games (default 1) and played in none, and those no game kept. Not why: a card is offered only when some part of
   it can act (`feasible` in `crates/aic-core/src/modules/effects/feasible.rs`).
 - `cards/use_read.py DIR... [--min PCT] [--agents A,B]`: per agent and pair, pooled: wins, uses of dear powers, Grant
@@ -100,9 +97,8 @@ what it prints; the `cards/*_read.py` readers take seconds.
 - `bench/skilled_rows.py READ.json [--games 24] [--levels 3,4] [--rows ...] [--out ...]`: the oracle's companion spec
   to a read (experiments.md, *Skilled rows*).
 - `bench/read_specs.py {offs|screen|read} ... --tag NNN [--cards a,b,c] [--out-dir DIR]`: a rules item's specs into
-  `out/`: `read TAG SEED [AGENT] [--probe] [--levels 0,1,2,3] [SET...]` three 48-seed sets, the three pairs, d0-d3;
-  `screen NAME AGENTS LEVELS SEEDS [--offs] [--first N] [LEVER...]` a dev screen (lever `tag:a=1;b=2`); `offs` a
-  config per `--cards` card switched off. `bench/run_read.sh NNN EXE ROOT TAG OUT THREADS` runs a read's three sets
+  `out/`: `read TAG SEED [AGENT] [--probe] [--levels 0,1,2,3] [SET...]` three 48-seed sets; `screen NAME AGENTS
+  LEVELS SEEDS [--offs] [--first N] [LEVER...]` a dev screen (lever `tag:a=1;b=2`); `offs` a config per card off. `bench/run_read.sh NNN EXE ROOT TAG OUT THREADS` runs a read's three sets
   on one binary (ROOT its configs; EXE, OUT absolute or from the repo root).
 - `bench/ladder.py NEW[,...] OLD[,...] [--measures] [--bands B] [--deck N]`: the paired ladder per level by revision;
   `--screen DIR[,...]`: a screen's levers (`PAIR_L`, `PAIR-L`) against base, paired across DIRs. `FILE=SPEC.json`,
@@ -115,7 +111,8 @@ what it prints; the `cards/*_read.py` readers take seconds.
   (`no_liberate/d2/bp/strategist`). `--against-base`: a price sweep's `cN-x` against `cN`, pooled over sizes. By
   difficulty, pair and all: `--against-agent A` each agent against A, `--lever-suffix L` each `PAIR-L` (or `PAIR_L`)
   cell against `PAIR`. `--pool`: the DIRs are one read's seed ranges; `--other DIR`: another build's read on the
-  same seeds, as `other:AGENT`. After editing ladder.py, paired.py or screens.py, run `bench/test_read_tools.py`.
+  same seeds, as `other:AGENT`. After editing ladder.py, paired.py, read_lib.py or screens.py, run
+  `bench/test_read_tools.py`; after apply_overlay.py or design_check.py's arguments, `test_input_checks.py`.
 - Gates are suspended: `bench/gate_stop_rate.py`, how often early stops flip a verdict; `bench/gate_close.py plan
   GATE_DIR OUT_DIR [--z 2] [--cap 96] [--fill 48]`, specs carrying the rows within z paired SE on to the cap, reusing
   their games, and `read GATE_DIR [CLOSE_DIR...] [--min-seeds N]`, merging the runs (checks on fewer seeds left out).
@@ -128,8 +125,8 @@ what it prints; the `cards/*_read.py` readers take seconds.
 - `bench/resource_use.py NEW [OLD] [--top 8] [--limits]` (folder, games file or `FILE=SPEC`): chips, energy, cubes and antimatter
   gained and spent per seat a game by level, what buys and sources them (`--limits`: the `limit.*` table).
 - `bench/read_lib.py READ... [--base ARM] [--counters PREFIX...] [--cards ID...] [--md OUT]` (same forms): a paired
-  read's tables by arm (`PAIR-ARM` variants) and agent, against the base arm on the same pair, level and seed: wins
-  and gap ± SE by level, losses, board powers (by counter), standard actions, counters, card plays, resource use. Its
+  read's tables by arm (`PAIR-ARM` variants) and agent, against the base arm (`--base` names one it has) on the same
+  pair, level and seed: wins and gap ± SE by level (one seed: the gap, no SE), losses, board powers (by counter), standard actions, counters, card plays, resource use. Its
   `games`, `seat_boards`, `counter_sums`, `resources`, `paired_gap` are the library for an item's own reader.
 - `bench/am_read.py READ[,READ...]` (same forms): antimatter by source, made and spent, burns by round, per lever
   (`PAIR-LEVER` or `PAIR_LEVER` variants; an unknown pair stops it) and agent (230's reader; stops if a plant or

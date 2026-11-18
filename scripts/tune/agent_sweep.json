@@ -24,8 +24,6 @@
      "says": "credits a seat holds beyond this are worth credit_idle (0.15) each"},
     {"key": "w.packet_keep", "hand": 1.0, "grid": [0.0, 0.25, 0.5, 0.75, 1.0],
      "says": "keep threshold: the share of a card's keep price charged against drafting it"},
-    {"key": "plan_credit", "hand": 3.0, "grid": [1.0, 2.0, 3.0, 4.0, 5.0],
-     "says": "keep threshold: what a credit paid for a keep costs the keep plan"},
     {"key": "w.strat_scale", "hand": 1.0, "grid": [0.0, 0.5, 1.0, 1.5, 2.0],
      "says": "the strategy weights: how far a strategy's multipliers reach from 1 (0: every multiplier 1); the strategist plays strategy=0 since 222, so check it still moves play before reading it)"}
   ]

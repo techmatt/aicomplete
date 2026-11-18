@@ -114,7 +114,7 @@ class Sweep:
         return f"{self.cfg['agent']}:{','.join(parts)}"
 
     def short(self, idx):
-        """Only what differs from hand-set: `w.energy=1.1,plan_credit=2` (or `hand-set`)."""
+        """Only what differs from hand-set: `w.energy=1.1,w.chips=3` (or `hand-set`)."""
         h = self.hand()
         parts = [f"{p['key']}={num(p['grid'][i])}" for p, i, j in zip(self.params, idx, h) if i != j]
         return ','.join(parts) or 'hand-set'

@@ -33,6 +33,14 @@ trait ForcedValue {
     fn from_param(x: f64) -> Self;
     /// Whether this value forces anything.
     fn is_on(&self) -> bool;
+    /// 266 (D117): whether `x` (finite, >= 0) reads as itself: a value [`ForcedValue::from_param`] would turn into
+    /// another plays as that one under its own label.
+    fn check(x: f64) -> Result<(), String>;
+}
+
+/// 266: a whole number, as a count reads it (`x as usize` truncates: 2.5 played as 2, labeled 2.5).
+pub(crate) fn whole(x: f64) -> Result<(), String> {
+    if x.fract() == 0.0 { Ok(()) } else { Err("must be a whole number".into()) }
 }
 
 impl ForcedValue for bool {
@@ -41,6 +49,9 @@ impl ForcedValue for bool {
     }
     fn is_on(&self) -> bool {
         *self
+    }
+    fn check(x: f64) -> Result<(), String> {
+        if x == 0.0 || x == 1.0 { Ok(()) } else { Err("is on or off: 0 or 1".into()) }
     }
 }
 
@@ -51,6 +62,9 @@ impl ForcedValue for usize {
     fn is_on(&self) -> bool {
         *self > 0
     }
+    fn check(x: f64) -> Result<(), String> {
+        whole(x)
+    }
 }
 
 impl ForcedValue for i64 {
@@ -59,6 +73,9 @@ impl ForcedValue for i64 {
     }
     fn is_on(&self) -> bool {
         *self > 0
+    }
+    fn check(x: f64) -> Result<(), String> {
+        whole(x)
     }
 }
 
@@ -69,6 +86,9 @@ impl ForcedValue for f64 {
     fn is_on(&self) -> bool {
         *self > 0.0
     }
+    fn check(_: f64) -> Result<(), String> {
+        Ok(())
+    }
 }
 
 impl ForcedValue for Option<Tag> {
@@ -78,11 +98,33 @@ impl ForcedValue for Option<Tag> {
     fn is_on(&self) -> bool {
         self.is_some()
     }
+    fn check(x: f64) -> Result<(), String> {
+        // 0 is off; anything else falling off the list would be played as the plain agent under a check's label.
+        if x.fract() == 0.0 && x <= super::TAGS.len() as f64 {
+            Ok(())
+        } else {
+            Err(format!("must be a whole number from 0 to {}", super::TAGS.len()))
+        }
+    }
+}
+
+/// 266 (D117): the enumerated settings' highest value, (name, most): past it a setting played as another one
+/// (`kept_rule=5` as 3, `no_spend=4` as off) under its own label.
+pub(crate) const MOST: [(&str, f64); 4] = [("kept_rule", 4.0), ("sell_rule", 3.0), ("burn_late", 2.0), ("no_spend", 3.0)];
+
+/// 266: whether `x` is a value of the [`forced_table`] or [`behavior_table`] row `name` (`None`: no such row).
+pub(crate) fn check_param(name: &str, x: f64) -> Option<Result<(), String>> {
+    let typed = Forced::check(name, x).or_else(|| Behaviors::check(name, x))?;
+    Some(typed.and_then(|()| match MOST.iter().find(|(n, _)| *n == name) {
+        Some((_, most)) if x > *most => Err(format!("must be at most {most}")),
+        _ => Ok(()),
+    }))
 }
 
 /// 229: the keep-plan numbers and forced probes retired, (name, why): a spec naming one is refused with the
 /// reason rather than as an unknown parameter (as `eval::RETIRED` does for weights).
-pub(crate) const RETIRED: [(&str, &str); 6] = [
+pub(crate) const RETIRED: [(&str, &str); 7] = [
+    ("plan_credit", "024's credit price of a keep in the keep plan; read by nothing since 189 (retired 266)"),
     ("plan_hand", "024's probe guard (keep nothing with this many cards in hand); always 0 since 082"),
     ("old_counters", "135's off arm of the new counter kinds' read; not read since"),
     ("always_liberate", "080's fixed policy (keep and play every liberate card); not read since"),
@@ -108,8 +150,6 @@ macro_rules! forced_table {
             /// Rounds the keep plan looks at: this round's action phase and the
             /// ones after it.
             (plan_rounds: usize, false, 4.0, "rounds the keep plan sketches, this one included")
-            /// What a credit paid for a keep costs the plan (024).
-            (plan_credit: f64, false, 3.0, "what a credit paid for a keep costs the keep plan")
             /// What the keep plan adds, in credits, for each marker a card would clear,
             /// threat it would delay and node it would shield on the table as it
             /// stands (046: priced at its printed cost, a 2-credit Science card lost
@@ -327,6 +367,14 @@ macro_rules! behavior_struct {
                 Behaviors { $($name: ForcedValue::from_param(num(stringify!($name))),)* }
             }
 
+            /// 266: whether `x` reads as itself for the row `name` (`None`: no such row).
+            fn check(name: &str, x: f64) -> Option<Result<(), String>> {
+                match name {
+                    $(stringify!($name) => Some(<$ty as ForcedValue>::check(x)),)*
+                    _ => None,
+                }
+            }
+
             /// Whether any behavior is on (the agent is then wrapped in a [`Policy`]).
             pub fn is_active(&self) -> bool {
                 $(self.$name.is_on())||*
@@ -350,6 +398,14 @@ macro_rules! forced_struct {
             /// Each field from its agent parameter.
             pub fn read(num: impl Fn(&str) -> f64) -> Forced {
                 Forced { $($name: ForcedValue::from_param(num(stringify!($name))),)* }
+            }
+
+            /// 266: whether `x` reads as itself for the row `name` (`None`: no such row).
+            fn check(name: &str, x: f64) -> Option<Result<(), String>> {
+                match name {
+                    $(stringify!($name) => Some(<$ty as ForcedValue>::check(x)),)*
+                    _ => None,
+                }
             }
 
             /// Whether anything is forced: keeping by plan or a dominance check.
@@ -838,7 +894,7 @@ impl Agent for Policy {
         type Heuristic<'a> = &'a dyn Fn() -> Option<(usize, usize)>;
         let heuristics: [(bool, Heuristic<'_>); 3] = [
             (b.strike_rule, &|| super::moves::strike(g, legal)),
-            (b.target_rule, &|| super::moves::target(&world, g, legal)),
+            (b.target_rule, &|| super::moves::target(&world, g, legal, self.eval().map_or_else(value::table, |e| e.tbl))),
             (b.move_rules, &|| {
                 let last_node = self.eval().is_some_and(|e| e.w.last_node > 0.0);
                 super::moves::pick(&world, g, legal, last_node)

@@ -23,6 +23,9 @@ pub fn run(o: &Options) {
         let overrides: Vec<&String> = o.set.iter().chain(own).collect();
         let config = load(path, &overrides);
         let r = rules(path, &config);
+        if let Err(e) = o.agent.check(&r) {
+            crate::cli::fail(&format!("{path}: agent {:?}: {e}", o.agent.label()));
+        }
         if o.trace {
             trace(&r, &o.agent, o.seed, o.max_actions, o.json);
         }

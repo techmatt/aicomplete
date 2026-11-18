@@ -13,7 +13,8 @@ then edit content/cards.json by hand and run
 `python tools/card-art/scenes_io.py release CARD`. The path walks object fields and list indexes, its last step may add a
 field, or be `+` to append the value to the list it reaches (`cards.<id>.passives.+={"op":"..."}`, as the engine's
 `--set`; `+` elsewhere, or on what isn't a list, is refused; a list already holding an equal value is left as it
-is, so a rerun appends nothing); the value is JSON (`null` drops an object's field), or a bare word taken as a string. An entry setting a value already
+is, so a rerun appends nothing); the value is JSON (`null` drops an object's field; one no row of the table has and content.rs declares nowhere is refused as a
+misspelling), or a bare word taken as a string. An entry setting a value already
 there changes nothing, so a card pass keeps its edits as one overlay file and reruns it.
 
 `--check` prints each entry that would change something and writes nothing (exit 1 if any
@@ -28,6 +29,7 @@ builds, regenerates the docs and validates the content as the engine parses it.
 import argparse
 import json
 import os
+import re
 import sys
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
@@ -110,6 +112,12 @@ def apply_entry(files, entry):
             at[i] = value
         elif isinstance(at, dict) and value is None:
             # 214: `null` on an object field drops the field (as the engine's overlay reads an absent field)
+            # 266 (D117): a misspelled field dropped nothing, silently (the engine's overlay refuses it). A field
+            # no row of the table holds and no content struct declares is a misspelling; a real one the row
+            # lacks (dropped by an earlier run) is nothing to change, so the overlay still reruns.
+            if last not in at and last not in field_names(rows) | schema_fields():
+                raise ValueError(f'{entry!r}: no field {last!r} to drop: no row of {table} has one, and '
+                                 'crates/aic-core/src/content.rs declares none')
             changed |= last in at
             at.pop(last, None)
         elif isinstance(at, dict):
@@ -120,6 +128,26 @@ def apply_entry(files, entry):
     if not hit:
         raise ValueError(f'{entry!r}: no id {ident!r} in {table}')
     return changed
+
+
+def schema_fields():
+    """The field names content.rs's structs declare (`pub name:`): what the engine's parse takes."""
+    path = os.path.join(ROOT, 'crates', 'aic-core', 'src', 'content.rs')
+    with open(path, encoding='utf-8') as f:
+        return set(re.findall(r'^\s*pub (?:r#)?([a-z_][a-z0-9_]*)\s*:', f.read(), re.M))
+
+
+def field_names(node, out=None):
+    """Every object key anywhere in NODE (a table's rows)."""
+    out = set() if out is None else out
+    if isinstance(node, dict):
+        out.update(node)
+        for v in node.values():
+            field_names(v, out)
+    elif isinstance(node, list):
+        for v in node:
+            field_names(v, out)
+    return out
 
 
 def put_row(files, table, ident, row, entry):

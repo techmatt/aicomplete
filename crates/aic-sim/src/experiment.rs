@@ -332,6 +332,8 @@ pub fn cells_with(spec: &Spec, read: &dyn Fn(&str) -> Result<String, String>) ->
                 for a in &agents {
                     let rules = Rules::new(&c)
                         .map_err(|e| format!("{path} ({}, difficulty {d}): {e}", v.name))?;
+                    a.check(&rules)
+                        .map_err(|e| format!("{path} ({}, difficulty {d}): agent {:?}: {e}", v.name, a.label()))?;
                     out.push(Cell {
                         config_path: path.clone(),
                         variant: v.name.clone(),
@@ -1516,6 +1518,13 @@ mod tests {
                     let mut c = base.clone();
                     for o in &v.set {
                         c.apply_override(o).unwrap_or_else(|e| panic!("{f:?}, variant {:?}: {o}: {e}", v.name));
+                    }
+                    // 266: and each agent's pinned strategies fit the variant's boards (`AgentSpec::check`).
+                    if spec.agents.iter().any(|a| ["strat0=", "strat1=", "strat2="].iter().any(|p| a.contains(p))) {
+                        let rules = Rules::new(&c).unwrap_or_else(|e| panic!("{f:?}, variant {:?}: {e}", v.name));
+                        for a in &spec.agents {
+                            AgentSpec::parse(a).unwrap().check(&rules).unwrap_or_else(|e| panic!("{f:?}, {a}: {e}"));
+                        }
                     }
                 }
             }

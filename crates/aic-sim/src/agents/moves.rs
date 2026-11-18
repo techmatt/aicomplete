@@ -96,7 +96,8 @@ pub fn pick(w: &World, g: &GameState, legal: &[Action], last_node: bool) -> Opti
 /// Gather's or Push's target is its move heuristic's hex; with nothing to tell the hexes apart, the search's.
 /// Answers only the target prompt (`effects::TARGET_PROMPT`), for the card the open resolution plays or uses, or
 /// the seat's building whose trigger it is.
-pub fn target(w: &World, g: &GameState, legal: &[Action]) -> Option<(usize, usize)> {
+/// `t` is the agent's own value table (266, D117: it read the global one, whatever the spec's `t.` numbers).
+pub fn target(w: &World, g: &GameState, legal: &[Action], t: &super::value::Table) -> Option<(usize, usize)> {
     let p = g.pending.as_ref()?;
     if !p.ask.prompt.contains(effects::TARGET_PROMPT) {
         return None;
@@ -110,7 +111,6 @@ pub fn target(w: &World, g: &GameState, legal: &[Action]) -> Option<(usize, usiz
             _ => {}
         }
     }
-    let t = super::value::table();
     let mut scores: Vec<(f64, usize)> = Vec::new();
     for (i, a) in legal.iter().enumerate() {
         let Some(h) = option_hex(w, a) else { continue };

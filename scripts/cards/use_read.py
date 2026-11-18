@@ -6,7 +6,8 @@ and those never kept.
 
     python scripts/cards/use_read.py DIR... [--min PCT] [--agents A,B]
 
-Reads `games.jsonl` and `results.json` (scripts/screens.py). Seconds.
+Reads `games.jsonl` and `results.json` (scripts/screens.py). Seconds. An agent is named as the spec writes it, so a
+native folder and a farmed read pool as one (266); `--agents` takes that name or results.json's resolved label.
 """
 import argparse
 import collections
@@ -16,7 +17,7 @@ import re
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from screens import content, dealt, liberate_cards, load, cnt  # noqa: E402
+from screens import content, dealt, liberate_cards, load, cnt, written_agents  # noqa: E402
 from powers import power_key  # noqa: E402
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
@@ -53,14 +54,15 @@ def main():
     # 118: only the runs' decks.
     in_runs = dealt(a.dirs)
     draft = {k: v for k, v in draft.items() if k in in_runs}
-    for d in a.dirs:
-        cells, games = load(d)
+    loaded = [load(d) for d in a.dirs]
+    named = written_agents(want, [c for cells, _ in loaded for c in cells.values()])
+    for cells, games in loaded:
         for cid, c in cells.items():
-            if want and c['agent'] not in want:
+            if want and c['agent'] not in named.values():
                 continue
             by[(c['agent'], c.get('variant', ''))].extend(games[cid])
             by_agent[c['agent']].extend(games[cid])
-    missing = want - set(by_agent)
+    missing = {x for x, name in named.items() if name not in by_agent}
     if missing:
         # 184: an alias (strategist) matched nothing and its rows were silently absent; results.json names the full label.
         sys.exit(f"--agents matched no cell for {', '.join(sorted(missing))}; the agents here: "

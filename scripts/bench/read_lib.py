@@ -79,14 +79,24 @@ def resources(g, seat):
 
 def paired_gap(base, new, keep=None):
     """BASE and NEW: {key: 0 or 1} (a key a pair, level and seed). On the keys both hold (and KEEP(key) passes):
-    (base %, new %, gap in points, its SE, n), or None with no key shared."""
+    (base %, new %, gap in points, its SE (None for one key), n), or None with no key shared."""
     keys = [k for k in base if k in new and (keep is None or keep(k))]
     if not keys:
         return None
     n = len(keys)
     b = 100 * sum(base[k] for k in keys) / n
-    m, se, _ = gap([new[k] - base[k] for k in keys])
+    diffs = [new[k] - base[k] for k in keys]
+    # 266 (D117): `screens.gap` gives 0 below two pairs, so one paired seed read new = base. The gap is the mean
+    # difference at any n; its SE is None below two.
+    m, se, _ = gap(diffs) if n > 1 else (100 * diffs[0], None, n)
     return b, b + m, m, se, n
+
+
+def gap_text(pr):
+    """A `paired_gap` result as `+gap ± SE` (`+gap, n 1` with no SE), or '' for None."""
+    if not pr:
+        return ''
+    return f'{pr[2]:+.1f} ± {pr[3]:.1f}' if pr[3] is not None else f'{pr[2]:+.1f}, n 1'
 
 
 def summarize(rows, prefixes=(), cards=()):
@@ -131,7 +141,14 @@ def tables(S, base_arm=None, cards=()):
     """The read's tables as Markdown lines."""
     arms = list(dict.fromkeys(a for a, _ in S))
     agents = list(dict.fromkeys(a for _, a in S))
-    base = base_arm if base_arm in arms else next((a for a in arms if a.split('/')[-1] in ('base', 'off')), arms[0])
+    if base_arm is None:
+        base = next((a for a in arms if a.split('/')[-1] in ('base', 'off')), arms[0])
+    else:
+        # an arm led by its read or config (`stem/base`) answers to its last part too, as the default reads it
+        base = next((a for a in arms if base_arm in (a, a.split('/')[-1])), None)
+        if base is None:
+            # 266 (D117): a --base naming no arm fell back to the default silently, pairing against another arm.
+            raise SystemExit(f"--base {base_arm}: no such arm; the arms: {', '.join(arms)}")
     levels = sorted({k[1] for s in S.values() for k in s['wins']})
     rows = [(ag, a, S[(a, ag)]) for ag in agents for a in arms if (a, ag) in S]
     L = []
@@ -146,7 +163,7 @@ def tables(S, base_arm=None, cards=()):
             cells.append(f'{100 * sum(ws) / len(ws):.1f}' if ws else '-')
         ws = list(s['wins'].values())
         pr = paired_gap(S[(base, ag)]['wins'], s['wins']) if (base, ag) in S and a != base else None
-        g = f'{pr[2]:+.1f} ± {pr[3]:.1f}' if pr else ''
+        g = gap_text(pr)
         p(f'| {ag} | {a} | ' + ' | '.join(cells) + f' | {100 * sum(ws) / len(ws):.1f} | {g} | {len(ws)} |')
     p('\n### Paired gaps by level\n')
     p('| agent | arm | ' + ' | '.join(f'd{d}' for d in levels) + ' |')
@@ -157,7 +174,7 @@ def tables(S, base_arm=None, cards=()):
         cells = []
         for d in levels:
             pr = paired_gap(S[(base, ag)]['wins'], s['wins'], lambda k: k[1] == d)
-            cells.append(f'{pr[2]:+.1f} ± {pr[3]:.1f}' if pr else '-')
+            cells.append(gap_text(pr) or '-')
         p(f'| {ag} | {a} | ' + ' | '.join(cells) + ' |')
     reasons = sorted({r for s in S.values() for r in s['reason']})
     p('\n## Losses by reason a game\n')

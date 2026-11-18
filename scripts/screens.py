@@ -42,12 +42,25 @@ def liberate_cards():
 
 def cells_for(d):
     """DIR's cells by id: results.json's, or for a farmed run (none: 182) the header spec's (`cells_of`, each with
-    its `cell` id), as `bench/ladder.py` reads them."""
+    its `cell` id), as `bench/ladder.py` reads them. 266 (D117): each agent as the header's spec writes it, its
+    resolved label kept as `label` (`named_agents`), so a native folder pooled with a farmed read is one agent."""
     path = os.path.join(d, 'results.json')
+    lines = stream(d)
+    head = next(lines)
+    lines.close()
     if os.path.exists(path):
         with open(path, encoding='utf-8') as f:
-            return {c['cell']: c for c in json.load(f)['cells']}
-    return {i: dict(c, cell=i) for i, c in enumerate(cells_of(next(stream(d))['spec']))}
+            cells = {c['cell']: c for c in json.load(f)['cells']}
+        return named_agents(cells, head['spec']) if 'spec' in head else cells
+    return {i: dict(c, cell=i) for i, c in enumerate(cells_of(head['spec']))}
+
+
+def written_agents(want, cells):
+    """`--agents` WANT (names) as {name: the agent as the spec writes it}: a resolved label (`engine:strategy=0,...`,
+    as results.json gives it) becomes its cell's written name (`named_agents`), so it takes a farmed read's games too.
+    CELLS: every read's cells (dicts)."""
+    labels = {c['label']: c['agent'] for c in cells if 'label' in c}
+    return {x: labels.get(x, x) for x in want}
 
 
 def dealt(dirs):
@@ -324,9 +337,11 @@ def gate(cells, games, rows=None):
         print('| variant | check | games | win % | gap to its agent | paired se | close |')
         print('|---|---|---|---|---|---|---|')
     by = collections.defaultdict(dict)
+    label = {}   # results.json's gate rows key the agent by its resolved label (`cells_for` keeps it as `label`)
     for cell, gs in games.items():
         c = cells[cell]
         by[(c['config'], c['variant'], c['difficulty'])][c['agent']] = gs
+        label[(c['config'], c['variant'], c['difficulty'], c['agent'])] = c.get('label', c['agent'])
     configs = {k[0] for k in by}
     for (conf, v, d), agents in sorted(by.items()):
         for a, gs in sorted(agents.items()):
@@ -344,7 +359,7 @@ def gate(cells, games, rows=None):
             flag = '' if p - q > 0 or ':' not in a else ' X'
             won = {g['seed']: g['won'] for g in gs}
             paired = gap([g['won'] - won[g['seed']] for g in base])[1]
-            n = '' if per is None else f' {per.get((conf, v, d, a), len(gs))} |'
+            n = '' if per is None else f' {per.get((conf, v, d, label[(conf, v, d, a)]), len(gs))} |'
             name = f'{conf} {v}' if len(configs) > 1 else v
             close = 'close' if ':' in a and abs(100 * (p - q)) < 2 * max(paired, 1e-9) else ''
             print(f'| {name} d{d} | {a} |{n} {100 * q:.0f} | {100 * (p - q):+.0f} ±{100 * se:.0f}{flag} | {paired:.0f} | {close} |')

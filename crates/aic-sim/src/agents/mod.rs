@@ -424,18 +424,21 @@ impl AgentSpec {
                 if v < 1.0 && at_least_one {
                     return Err(format!("agent {spec:?}: {k} must be >= 1"));
                 }
-                // 0 is off; anything else falling off the list would be played
-                // as the plain agent under a dominance check's label.
-                let tag = k == "only_tag" || k == "never_tag";
-                if tag && (v.fract() != 0.0 || v > TAGS.len() as f64) {
-                    return Err(format!(
-                        "agent {spec:?}: {k} must be a whole number from 0 to {}",
-                        TAGS.len()
-                    ));
-                }
+                // 266 (D117): a value the agent would read as another (a count's fraction, an on/off setting's 2,
+                // an enumerated setting past its last value, a tag off the list) plays as that one under its own
+                // label. The policy rows check by type; the tiers' own numbers are counts but `margin` and `lead`.
+                let checked = policy::check_param(k, v).unwrap_or_else(|| match k {
+                    "margin" | "lead" => Ok(()),
+                    "truth" if v > 2.0 => Err("must be at most 2".into()),
+                    "prove" if v > aic_core::content::content().cards.len() as f64 => {
+                        Err(format!("is past the {} rows of `aic-sim cards`", aic_core::content::content().cards.len()))
+                    }
+                    _ => policy::whole(v),
+                });
+                checked.map_err(|e| format!("agent {spec:?}: {k}={v}: {k} {e}"))?;
                 params.insert(k.to_string(), v);
             } else if let Some((_, why)) = policy::RETIRED.iter().find(|(name, _)| *name == k) {
-                return Err(format!("agent {spec:?}: parameter {k:?} is retired (229): {why}"));
+                return Err(format!("agent {spec:?}: parameter {k:?} is retired: {why}"));
             } else {
                 let names: Vec<&str> = known.iter().map(|(k, _, _)| *k).collect();
                 return Err(format!(
@@ -476,6 +479,38 @@ impl AgentSpec {
             weights,
             table,
         })
+    }
+
+    /// 266 (D117): what only a game's rules can check: a pinned strategy (`strat0`-`strat2`) must be on its seat's
+    /// board's menu (past it, the seat played the menu's first), and a pin with `strategy=0` must pin every seat
+    /// (one pin made every seat commit: the rest chose a strategy unasked).
+    pub fn check(&self, rules: &Rules) -> Result<(), String> {
+        let pins: Vec<usize> = ["strat0", "strat1", "strat2"].iter().map(|k| self.params.get(*k).map_or(0, |v| *v as usize)).collect();
+        if pins.iter().all(|&p| p == 0) {
+            return Ok(());
+        }
+        let w = rules.world();
+        let seats = rules.new_game(0).seats.len();
+        for (s, &pin) in pins.iter().enumerate().filter(|(_, p)| **p > 0) {
+            if s >= seats {
+                return Err(format!("strat{s} pins seat {s}, but the game has {seats} seats"));
+            }
+            let menu = strategy::menu(&w, s);
+            if pin > menu.len() {
+                let board = &aic_core::modules::ai::board(&w, s).id;
+                return Err(format!(
+                    "strat{s}={pin} is past board {board}'s {} strategies (configs/agents/strategies.json)",
+                    menu.len()
+                ));
+            }
+        }
+        let open = (0..seats).find(|&s| pins.get(s).is_none_or(|&p| p == 0));
+        if let (Some(s), true) = (open, self.params.get("strategy").is_some_and(|v| *v == 0.0)) {
+            return Err(format!(
+                "a pinned strategy makes every seat commit, and seat {s} is not pinned: set strategy=1 (the rest choose) or pin every seat"
+            ));
+        }
+        Ok(())
     }
 
     /// 131: the value table this agent reads: the table with its `t.` numbers set.
@@ -732,6 +767,105 @@ mod tests {
         assert!(spec("random:t.chips=2").is_err());
     }
 
+    /// 266 (D117): a spec value the agent would read as another, or nothing reads, is refused with its reason.
+    #[test]
+    fn specs_refuse_what_they_would_misread() {
+        let err = |s: &str| AgentSpec::parse(s).expect_err(s);
+        assert!(err("strategist:plan_credit=3").contains("retired"));
+        // on/off settings, counts, enumerated settings, tags
+        assert!(err("strategist:energy_rule=2").contains("0 or 1"));
+        assert!(err("strategist:keep_all=0.5").contains("0 or 1"));
+        assert!(err("strategist:kept_rule=2.5").contains("whole number"));
+        assert!(err("strategist:kept_rule=5").contains("at most 4"));
+        assert!(err("strategist:sell_rule=4").contains("at most 3"));
+        assert!(err("strategist:burn_late=3").contains("at most 2"));
+        assert!(err("strategist:no_spend=4").contains("at most 3"));
+        assert!(err("strategist:only_tag=7").contains("0 to 6"));
+        assert!(err("engine:width=2.5").contains("whole number"));
+        assert!(err("oracle:truth=3").contains("at most 2"));
+        assert!(err("oracle:prove=100000").contains("aic-sim cards"));
+        for ok in ["strategist:kept_rule=4", "strategist:sell_rule=3", "strategist:no_spend=3", "strategist:burn_late=0",
+                   "planner:margin=12.5,lead=0.5", "strategist:plan_niche=2.5", "oracle:truth=2", "strategist:only_tag=6"] {
+            AgentSpec::parse(ok).expect(ok);
+        }
+        // a value-table name the table reads by number
+        assert!(err("strategist:t.troops_removed.three=2").contains("count of troops"));
+        assert!(err("strategist:t.troops_removed.0=2").contains("count of troops"));
+        assert!(err("strategist:t.troops_removed.03=2").contains("count of troops"));
+        assert_eq!(AgentSpec::parse("strategist:t.troops_removed.5=3").unwrap().table().troops_removed(5), 3.0);
+    }
+
+    /// 266 (D117): the target rule prices hexes at the table it is handed (the agent's, with its `t.` numbers), not
+    /// the global one: with the map ops' rows at 0, a target prompt it answered at the global table goes to the search.
+    #[test]
+    #[ignore = "slow lane: strategist games to their target prompts"]
+    fn target_rule_reads_the_agents_table() {
+        let r = Rules::new(&crate::cli::load("../../configs/baseline.json", &[])).unwrap();
+        let rows = ["remove_ambassadors_country", "remove_troop", "remove_ambassador", "convert", "lift_fallout", "cleanse",
+                    "harden", "clear_city", "liberate_troops", "liberate_own", "claim_site"];
+        let zero: BTreeMap<String, f64> = rows.iter().map(|k| (format!("ops.{k}"), 0.0)).collect();
+        let t0 = value::table_with(&zero).unwrap();
+        let spec = AgentSpec::parse("strategist").unwrap();
+        // The same rows at 0 as a spec's `t.` numbers: the agent's table is `t0`, and its policy hands it to the rule.
+        let sets: Vec<String> = rows.iter().map(|k| format!("t.ops.{k}=0")).collect();
+        let zeroed = AgentSpec::parse(&format!("strategist:{}", sets.join(","))).unwrap();
+        assert!(std::ptr::eq(zeroed.table(), t0));
+        let (mut answered, mut moved, mut through_policy) = (0, 0, 0);
+        for seed in 0..8 {
+            let mut g = r.new_game(seed);
+            let mut agent = spec.build(&r, seed);
+            let mut legal = Vec::new();
+            while !g.is_over() {
+                r.legal_actions_into(&g, &mut legal);
+                if legal.is_empty() {
+                    break;
+                }
+                let w = r.world();
+                if let Some((i, _)) = moves::target(&w, &g, &legal, value::table()) {
+                    answered += 1;
+                    if moves::target(&w, &g, &legal, t0).is_none() {
+                        moved += 1;
+                        // The plain strategist takes the rule's hex; the zeroed one leaves it to its search, which
+                        // (a target rule still on the global table would have answered `i` first) may pick another.
+                        assert_eq!(spec.build(&r, seed).choose(&r, &g, &legal), i);
+                        through_policy += usize::from(zeroed.build(&r, seed).choose(&r, &g, &legal) != i);
+                    }
+                }
+                let i = if legal.len() == 1 { 0 } else { agent.choose(&r, &g, &legal) };
+                r.apply_mut(&mut g, &legal[i], None).unwrap();
+            }
+            if through_policy > 0 {
+                break;
+            }
+        }
+        assert!(answered > 0, "no target prompt the rule answered in 8 games");
+        assert!(moved > 0, "{answered} answers, none moved by the table");
+        assert!(through_policy > 0, "{moved} prompts the table moves, none moved through the agent's policy");
+    }
+
+    /// 266 (D117): a pinned strategy must be on its seat's board's menu, and with `strategy=0` every seat pinned.
+    #[test]
+    fn pinned_strategies_checked_against_the_game() {
+        let r = Rules::new(&crate::cli::load("../../configs/baseline.json", &[])).unwrap();
+        let seats = r.new_game(0).seats.len();
+        let w = r.world();
+        let check = |s: &str| AgentSpec::parse(s).unwrap().check(&r);
+        assert!(check("strategist").is_ok());
+        assert!(check("strategist:strategy=1,strat0=1").is_ok());
+        let all: Vec<String> = (0..seats.min(3)).map(|s| format!("strat{s}=1")).collect();
+        if seats <= 3 {
+            assert!(check(&format!("strategist:{}", all.join(","))).is_ok(), "every seat pinned");
+        }
+        let one = check("strategist:strat0=1").unwrap_err();
+        assert!(one.contains("strategy=1"), "{one}");
+        let past = strategy::menu(&w, 0).len() + 1;
+        let e = check(&format!("strategist:strategy=1,strat0={past}")).unwrap_err();
+        assert!(e.contains("past board"), "{e}");
+        if seats < 3 {
+            assert!(check("strategist:strategy=1,strat2=1").unwrap_err().contains("seats"));
+        }
+    }
+
     /// An agent that takes the first legal action.
     pub(crate) struct First;
 
@@ -907,7 +1041,7 @@ mod tests {
             "planner:budget=2,never_tag=2",
             // 082: strategies, chosen and fixed, and the pre-082 terms.
             "engine:strategy=1",
-            "engine:strat0=2,strat1=3",
+            "engine:strategy=1,strat0=2,strat1=3",
             "planner:budget=2,strategy=1",
             "engine:plan_table=0,w.table=0",
     ];

@@ -6,6 +6,8 @@ Each DIR is an experiment's output folder (games.jsonl, and results.json or a fa
 game's agent), a games file with a header, or FILE=SPEC (a headerless farmed JSONL and its spec; `screens.stream`). Per agent, pooled over its cells and DIRs: for each player card,
 the share of games that kept it and its plays in all of them: listed when kept in more than `--min` percent of the
 games and played in none (the "kept, never played" read); then every draft card no game of that agent kept.
+An agent is named as the spec writes it (`strategist`), so a native folder and a farmed read pool as one; `--agents`
+takes that name or the resolved label results.json gives (266).
 A card counts once a game, whichever seat held it.
 """
 import argparse
@@ -18,7 +20,7 @@ import sys
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from screens import cells_for, dealt, stream  # noqa: E402
+from screens import cells_for, dealt, stream, written_agents  # noqa: E402
 
 
 def main():
@@ -27,7 +29,8 @@ def main():
     ap.add_argument('--min', type=float, default=1.0, help='percent of games kept with 0 plays to list')
     ap.add_argument('--agents', default='', help='comma-separated agent specs to read (default: all)')
     a = ap.parse_args()
-    content = json.load(open(os.path.join(ROOT, 'content', 'cards.json'), encoding='utf-8'))
+    with open(os.path.join(ROOT, 'content', 'cards.json'), encoding='utf-8') as f:
+        content = json.load(f)
     deck = {c['id']: c for c in content}
     # 118: only the runs' decks.
     in_runs = dealt(a.dirs)
@@ -37,15 +40,17 @@ def main():
     games = collections.Counter()
     idle = collections.defaultdict(collections.Counter)
     kept = collections.defaultdict(collections.Counter)
+    by_dir = {d: cells_for(d) for d in a.dirs}
+    named = written_agents(want, [c for cells in by_dir.values() for c in cells.values()])
     seen = set()
     for d in a.dirs:
-        cells = cells_for(d)
+        cells = by_dir[d]
         seen.update(c['agent'] for c in cells.values())
         lines = stream(d)
         next(lines)
         for g in lines:
             agent = cells[g['cell']]['agent']
-            if want and agent not in want:
+            if want and agent not in named.values():
                 continue
             games[agent] += 1
             for cid, c in g['cards'].items():
@@ -54,7 +59,7 @@ def main():
                 if c.get('kept', 0) > 0:
                     kept[agent][cid] += 1
                 idle[agent][cid] += c.get('played', 0)
-    missing = want - set(games)
+    missing = {x for x, name in named.items() if name not in games}
     if missing:
         # 184: an alias (strategist) matched nothing and its read was silently empty; results.json names the full label.
         sys.exit(f"--agents matched no game for {', '.join(sorted(missing))}; the agents here: {' | '.join(sorted(seen))}")

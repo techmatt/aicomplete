@@ -108,7 +108,7 @@ def main():
     cells, games = s.load(a.dir)
     by_variant = {}
     for cid, c in cells.items():
-        if c['agent'] == a.agent:
+        if a.agent in (c['agent'], c.get('label')):   # the spec's name or results.json's resolved label (266)
             by_variant[c['variant']] = games[cid]
     if not by_variant:
         sys.exit(f"no cell for agent {a.agent}: {sorted({c['agent'] for c in cells.values()})}")

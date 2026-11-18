@@ -265,6 +265,71 @@ class ReadLib(unittest.TestCase):
             self.assertEqual(read_lib.resources(rows[0].g, 1)['energy'], (3, 2))
             text = '\n'.join(read_lib.tables(S))
             self.assertIn('| strategist | on | 100.0 | 100.0 | 100.0 | +50.0 ± 5.6 | 80 |', text)
+            # 266 (D117): a --base naming no arm is refused (it fell back to the default arm silently)
+            self.assertIn('| strategist | off |', '\n'.join(read_lib.tables(S, 'off')))
+            with self.assertRaisesRegex(SystemExit, 'no such arm; the arms: off, on'):
+                read_lib.tables(S, 'of')
+            led = {(f'stem/{a}', ag): s for (a, ag), s in S.items()}
+            self.assertIn('paired against stem/off', '\n'.join(read_lib.tables(led, 'off')))
+
+    def test_one_paired_seed(self):
+        # 266 (D117): one paired seed read new = base (`screens.gap` gives 0 below two pairs)
+        self.assertEqual(read_lib.paired_gap({('bp', 2, 1): 0}, {('bp', 2, 1): 1}), (0.0, 100.0, 100.0, None, 1))
+        self.assertEqual(read_lib.gap_text(read_lib.paired_gap({1: 1}, {1: 0})), '-100.0, n 1')
+        self.assertEqual(read_lib.gap_text(read_lib.paired_gap({1: 1, 2: 0}, {1: 1, 2: 1})), '+50.0 ± 50.0')
+
+
+class CardReadsPool(unittest.TestCase):
+    """266 (D117): `play_read.py` and `use_read.py` read a native folder (results.json names its agent by the resolved
+    spec) and a farmed read (the spec's name) as one agent, and `--agents` takes either name."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.spec = dict(SPEC, variants=[{'name': 'bp', 'set': []}], difficulties=[2])
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def games(self, f, seeds):
+        for s in seeds:
+            f.write(json.dumps({'cell': 0, 'seed': s, 'won': True, 'rounds': 8, 'reason': 'end', 'counters': {},
+                                'cards': {}, 'engine': 'native'}) + '\n')
+
+    def reads(self):
+        native = os.path.join(self.tmp.name, 'native')
+        os.makedirs(native)
+        with open(os.path.join(native, 'games.jsonl'), 'w', encoding='utf-8', newline='\n') as f:
+            f.write(json.dumps({'format': 1, 'spec': self.spec}) + '\n')
+            self.games(f, range(0, 4))
+        write_results(native, self.spec, lambda a: 'engine:strategy=0,w.built=4')
+        farm, spec = os.path.join(self.tmp.name, 'farm.jsonl'), os.path.join(self.tmp.name, 'spec.json')
+        with open(farm, 'w', encoding='utf-8', newline='\n') as f:
+            self.games(f, range(4, 10))
+        with open(spec, 'w', encoding='utf-8', newline='\n') as f:
+            json.dump(self.spec, f)
+        return [native, f'{farm}={spec}']
+
+    def main(self, script, args):
+        sys.path.insert(0, os.path.join(HERE, '..', 'cards'))
+        mod = __import__(script)
+        old = sys.argv
+        sys.argv = [script, *args]
+        try:
+            return run(mod.main)
+        finally:
+            sys.argv = old
+
+    def test_play_read_pools(self):
+        reads = self.reads()
+        text = self.main('play_read', reads)
+        self.assertEqual(re.findall(r'^## (.*)$', text, re.M), ['strategist (10 games)'])
+        text = self.main('play_read', [*reads, '--agents', 'engine:strategy=0,w.built=4'])
+        self.assertIn('## strategist (10 games)', text)
+
+    def test_use_read_pools(self):
+        text = self.main('use_read', self.reads())
+        self.assertRegex(text, r'\| strategist \| bp \| 10 \| 100\.0 \|')
+        self.assertNotIn('engine:', text)
 
 
 if __name__ == '__main__':
