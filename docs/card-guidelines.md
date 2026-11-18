@@ -100,7 +100,7 @@ price ([card-pricing.md](card-pricing.md), *The method*).
 
 Derived: the keep, 4 a tier-1 card and 12 a tier-2 one (1 and 3 insight); +1 energy income 14 (4 rounds × 4.5 ×
 0.8); +1 chip income about 19 (4 rounds × 6 × 0.8). A research cube is 6 (9 when the play completes the
-megaproject), so Make antimatter (5 cubes, 30) loses against antimatter's 18: every engine making it (a plant's Action:
+megaproject), so Make antimatter (5 cubes, 30) loses against its 1 antimatter and 2 energy (27; 262): every engine making it (a plant's Action:
 Positron Storage Ring, Cyclotron Lease and four more) shows a clear gain, and every spend is a big one. Other units take `values.json` (a sway 4, a
 node 8) or [card-pricing.md](card-pricing.md) (a city liberated 45); a botnet removed is 15 (252: the median card for the job; it was the action's 16). A
 card whose unit has no anchor sits inside 1.0-2.5× under both readings: a convert at its output's anchor and its

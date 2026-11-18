@@ -136,7 +136,8 @@ pub fn hosted_cities(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
 }
 
 /// 254: who hosts which neutral city in this round's income step, as (city, seat). A seat may host a neutral city
-/// producing now (no cube, no agent on it, no blackout, its energy not bought this round) with its node on it, or
+/// producing now (no cube, no agent on it, no blackout; 262: a purchase no longer unhosts it, as a hosted city
+/// can't be bought, Matt's D107) with its node on it, or
 /// with `board.host_reach` 1 on or next to it; each seat hosts `board.host_city` at most and each city has one host.
 /// The printed rule: the players choose (a team game; every city makes the same energy), so the engine hosts as many
 /// as can be ([`match_hosts`]).
@@ -151,8 +152,6 @@ pub fn host_assignment(w: &World, g: &GameState) -> Vec<(usize, usize)> {
             clean_city(w, g, h)
                 && g.tokens(h, ADV_AMBASSADOR) == 0
                 && !super::board::hex_flagged(w, g, crate::content::RoundFlag::Blackout, h)
-                // Diff review: a city whose energy was bought this round pays no host.
-                && g.var(&super::board::bought_key(h)) == 0
         })
         .collect();
     let hosts = |s: usize, h: usize| {

@@ -15,7 +15,6 @@
         "divert_discord": 1,
         "ambassador_discord": 0,
         "liberate_at": 5,
-        "claim_city": 5,
         "claim_station": 4,
         "claim_factory": 3,
         "start_nodes": 1,
@@ -50,6 +49,7 @@
         "host_city": 1,
         "host_reach": 1,
         "antimatter_cubes": 5,
+        "antimatter_energy": 2,
         "botnet_credits": 20,
         "std_off": [
           0

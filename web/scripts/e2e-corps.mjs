@@ -1,5 +1,5 @@
 // `npm run e2e:corps` (074): research cubes and the megacorps in a real browser. Plays the baseline
-// with `station_cubes` and `owned_station_cubes` (142: a claimed station's) 5 so a card overflows in round 2 (137: adversary stations make compute, not cubes): seat 0 claims Horizon's neutral station,
+// with `station_cubes` and `owned_station_cubes` (142: a claimed station's) 5 so a card overflows in round 2 (137: adversary stations make compute, not cubes): seat 0 claims Horizon's neutral station with a card,
 // Cintamani's stays neutral. Checks the cubes by color, the completion with its overflow paid, the
 // stored cubes and a usable converter beside an unusable one. Needs the viewer running.
 //   AIC_URL  viewer URL (default http://localhost:5173/)
@@ -15,7 +15,12 @@ const out = join(web, 'e2e-out');
 mkdirSync(out, { recursive: true });
 
 const config = JSON.parse(readFileSync(join(web, '..', 'configs', 'baseline.json'), 'utf8'));
-Object.assign(config.modules.find((m) => m.module === 'board').params, { station_cubes: 5, owned_station_cubes: 5, troop_steps: 0, claim_station: 1 });
+Object.assign(config.modules.find((m) => m.module === 'board').params, { station_cubes: 5, owned_station_cubes: 5, troop_steps: 0 });
+// 262 cut the Claim action (cards claim): the tier-1 deck is Power Purchase Agreement alone, so seat 0's opening
+// hand (dealt first) holds it, and it claims the station.
+const tiers = Object.fromEntries(JSON.parse(readFileSync(join(web, '..', 'content', 'cards.json'), 'utf8')).map((c) => [c.id, c.tier]));
+const cardsModule = config.modules.find((m) => m.module === 'cards');
+cardsModule.cards = cardsModule.cards.filter((id) => tiers[id] === 2 || id === 'power_purchase_agreement');
 // Nothing diverts a cube or takes the bound city while the script passes its turns.
 // No agents: a creation line would land one on the claimed station, blocking its cubes.
 Object.assign(config.modules.find((m) => m.module === 'adversary').params, { corrupt_at: 20, corrupt_station_at: 20, corrupt_factory_at: 20, corrupt_land_at: 20, supply_per_country: 0 });
@@ -32,23 +37,23 @@ try {
   await playConfig(page, config);
 
   check(await toRound(page, 1, 600), 'reached the first action phase');
-  // Seat 0's starting ambassador claims the neutral station next to its node (137's Claim;
-  // `claim_station` 1, so the one ambassador pays for it).
+  // Seat 0 claims the neutral station next to its node with Power Purchase Agreement (2 credits, 2 energy).
   const station = await js(`(() => {
     const v = window.aic.view;
     const h = v.hexes.find((x) => x.country === 0 && x.tokens.some((t) => t.kind === 'station') && !x.tokens.some((t) => t.kind === 'cube:adversary'));
     return h?.number;
   })()`);
   check(station === 10, `Horizon's neutral station stands on hex ${station}`);
-  await js(`window.aic.act({ type: 'standard', seat: 0, act: 'claim' })`);
+  check(await js(`window.aic.legal.some((a) => a.type === 'play' && a.seat === 0 && a.card === 'power_purchase_agreement')`), 'seat 0 may play Power Purchase Agreement');
+  await js(`window.aic.act({ type: 'play', seat: 0, card: 'power_purchase_agreement' })`);
   for (let i = 0; i < 4 && await js(`window.aic.legal.some((a) => a.type === 'choose')`); i++) {
     await js(`(() => {
       const l = window.aic.legal.filter((a) => a.type === 'choose');
-      window.aic.act(l.find((a) => a.option === 'Horizon #${station}' || a.option === 'from your supply') ?? l[0]);
+      window.aic.act(l.find((a) => a.option === 'Horizon #${station}') ?? l[0]);
     })()`);
   }
   const owned = await js(`window.aic.view.hexes.some((h) => h.country === 0 && h.number === ${station} && h.tokens.some((t) => t.kind === 'cube:0'))`);
-  check(owned, 'the ambassador claimed the station');
+  check(owned, 'the card claimed the station');
 
   check(await toRound(page, 2, 600), 'reached round 2');
   const colors = await js(`(() => {
@@ -94,10 +99,11 @@ try {
   check(conv.some(([c, t]) => c.includes('unusable') && /no city of this country in reach/.test(t)), `beside an unusable one: ${JSON.stringify(conv.find(([c]) => c.includes('unusable')))}`);
   writeFileSync(join(out, 'corps.png'), await page.shot());
 
-  const anti = await resource('antimatter');
+  const energy = await resource('energy');
   check(await js(`window.aic.legal.some((a) => a.type === 'convert' && a.seat === 0 && a.country === 0)`), 'the converter is on the menu');
   await js(`window.aic.act({ type: 'convert', seat: 0, country: 0 })`);
-  check(await resource('research_cubes') === stored - 1 && await resource('antimatter') === anti + 1, 'using it turns a cube and 2 energy into 1 antimatter');
+  // 262: Horizon's converter is 3 research cubes for 5 energy (Tidal Grid's content).
+  check(await resource('research_cubes') === stored - 3 && await resource('energy') === energy + 5, 'using it turns 3 cubes into 5 energy');
   // 184: r75 prints every converter once a round per player (105 had them as often as you can pay).
   check(!(await js(`window.aic.legal.some((a) => a.type === 'convert' && a.seat === 0 && a.country === 0)`)), 'not offered again this round (once a round, r75)');
   check(consoleErrors.length === 0, `no page errors${consoleErrors.length ? `: ${consoleErrors.join(' | ')}` : ''}`);

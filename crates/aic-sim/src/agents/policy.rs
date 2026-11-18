@@ -282,7 +282,7 @@ macro_rules! behavior_table {
             /// credits complete something this turn. Won't play: in the adversary deck's last round, a card the keep
             /// plan doesn't play this round; before it, one the plan doesn't play over its `plan_rounds`. Complete:
             /// with at most three such sales (cheapest first) the plan plays a card it can't now, or a costly standard
-            /// action (node, troop, botnet, claim, liberate) the search then picks becomes legal (`sell_pick`).
+            /// action (node, troop, botnet, liberate) the search then picks becomes legal (`sell_pick`).
             (sell_rule: usize, 1.0, "211: sell a card the seat won't play (the last round: not this round; before: not in the keep plan) when up to three sales let the plan play a card (1) or also the search take a costly standard action (2) it can't now; 3: a probe, the card opened need only be one the plan doesn't play this round")
             /// 211: keep the antimatter a hand card needs: while the seat holds a card that spends antimatter whose
             /// `needs` are met and whose credits it can reach in two rounds' income, nothing but such a card's play may
@@ -303,6 +303,11 @@ macro_rules! behavior_table {
             /// 230 (amendment 10186): Make antimatter is the desperate hedge: the search never takes it, only
             /// `make_short` (a card the keep plan plays this round needs it).
             (am_last: bool, 1.0, "230: Make antimatter only through make_short, never the search's pick")
+            /// 262: the eval holds a chip at 4 credits and an energy at 0.8 (energy is worth what it spends), so
+            /// Horizon's converters (2 chips or 3 cubes for energy) read as a loss and sat unused even where nothing
+            /// else wanted the fuel. Instead of a pass, a megaproject converter whose gains all print as resources and
+            /// beat its cost at `values.json` (`convert_pick`).
+            (convert_rule: bool, 1.0, "262: use a megaproject converter instead of a pass when what it gains beats what it costs at values.json")
         }
     };
 }
@@ -908,8 +913,46 @@ impl Agent for Policy {
                 return j;
             }
         }
+        // 262 (`convert_rule`): a converter that pays at the table, instead of a pass.
+        if self.behaviors.convert_rule && !pending {
+            if let Action::Pass { seat } = legal[i] {
+                if let Some(j) = convert_pick(&world, legal, seat) {
+                    if !self.ruled_out(&world, g, &legal[j]) && !self.spends_banned(rules, g, &legal[j]) {
+                        return j;
+                    }
+                }
+            }
+        }
         i
     }
+}
+
+/// 262 (`convert_rule`): seat `seat`'s first legal megaproject converter whose effects are all gains of resources
+/// kept between rounds, worth more than its cost at `values.json` (Horizon's 2 chips, 8, for 3 energy, 13.5; 3 cubes,
+/// 9, for 5 energy, 22.5; Onyx's cube, 3, for a chip, 4). Insight is lost at the round's end, so Cintamani's cube for
+/// 2 insight, taken instead of a pass, would mostly be lost (diff review); a converter printing a draw or a Sway is
+/// the search's alone too.
+fn convert_pick(w: &World, legal: &[Action], seat: u8) -> Option<usize> {
+    let t = value::table();
+    legal.iter().position(|a| match a {
+        Action::Convert { seat: s, country, chips } if *s == seat => {
+            let Some(conv) = w.content.map.countries[*country as usize].megaproject.converter_of(*chips) else {
+                return false;
+            };
+            let mut gets = 0.0;
+            for e in &conv.effects {
+                match e {
+                    Op::Gain { resource, amount } if *resource != Resource::Insight => {
+                        gets += t.res(*resource) * *amount as f64
+                    }
+                    _ => return false,
+                }
+            }
+            let pays: f64 = conv.cost.iter().map(|(r, n)| t.res(*r) * *n as f64).sum();
+            gets > pays
+        }
+        _ => false,
+    })
 }
 
 impl Policy {
@@ -1016,7 +1059,7 @@ impl Policy {
     /// the keep plan play a card this round it can't now, or make a costly standard action legal that the search
     /// then picks.
     fn sell_pick(&mut self, rules: &Rules, g: &GameState, legal: &[Action]) -> Option<usize> {
-        const MAJOR: [&str; 4] = ["troop", "botnet", "claim", "liberate"];
+        const MAJOR: [&str; 3] = ["troop", "botnet", "liberate"];
         let world = rules.world();
         let s = legal.iter().find(|a| matches!(a, Action::Sell { .. }))?.seat() as usize;
         if self.forced.hoarding(&world, g, s, false) {

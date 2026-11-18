@@ -125,8 +125,8 @@ round, a city's `corp_energy` a buy). **Energy counters** spend energy for good.
 the cube converters (Cintamani's 2 insight, once a round; the standard action's 1, once a round) is the intended engine,
 capped by how many stations make cubes (and Open Archive's and Cryo Sample Vault's 1 a round) and Cintamani's once a
 round.
-**Antimatter:** a plant's Action (a resource for 1) and Horizon's converter (3 cubes and 1 energy for 1) are once a
-round, beside each board's rare burn and the desperate standard action (5 cubes for 1); it pays for the majors that
+**Antimatter:** a plant's Action (a resource for 1) is once a round, beside each board's rare burn and the desperate
+standard action (5 cubes for 1 and 2 energy, 262; Horizon's converters pay energy since 262); it pays for the majors that
 print it ([economy.md](economy.md)). Patience banks all the Researcher's unspent
 insight, gifts too; Open Science's goes only to other players. Followers → ambassadors → alignment → city
 energy → node is capped by building count and the Followers each ambassador costs. Remove agents places nothing,

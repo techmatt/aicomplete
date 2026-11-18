@@ -36,8 +36,9 @@ antitrust_action,tags [card],card,industry,1.0,1.0,1.0,0.67,0.67
 arcology_foundry,production credits [play],play,"resource=credits, amount=7",7.0,17.5,2.5,13.82,1.97
 arcology_foundry,production chips [play],play,"resource=chips, amount=1",1.0,10.0,10.0,7.89,7.89
 arcology_foundry,tags [card],card,industry,1.0,1.0,1.0,0.79,0.79
-arms_inspectors,remove_research [action],action,amount=2,2.0,16.8,8.4,7.55,3.78
-arms_inspectors,tags [card],card,security,1.0,1.0,1.0,0.45,0.45
+arms_inspectors,remove_research [play],play,amount=2,2.0,6.0,3.0,2.02,1.01
+arms_inspectors,remove_research [action],action,amount=2,2.0,16.8,8.4,5.65,2.82
+arms_inspectors,tags [card],card,security,1.0,1.0,1.0,0.34,0.34
 autonomous_defense_grid,auto_counter [passive],passive,"source=cyber, amount=6",6.0,15.0,2.5,12.19,2.03
 autonomous_defense_grid,tags [card],card,cyber,1.0,1.0,1.0,0.81,0.81
 back_channel_talks,target [play],play,on=corrupted_factory,1.0,0.0,0.0,0.0,0.0
@@ -120,8 +121,8 @@ counterinsurgency_campaign,target [play],play,on=agents,1.0,0.0,0.0,0.0,0.0
 counterinsurgency_campaign,remove_ambassadors_country [play],play,"max=3, at=on",3.0,4.5,1.5,4.0,1.33
 counterinsurgency_campaign,production credits [play],play,"resource=credits, amount=2",2.0,8.0,4.0,7.11,3.56
 counterinsurgency_campaign,tags [card],card,security,1.0,1.0,1.0,0.89,0.89
-counterintel_sweep,remove_research [play],play,amount=4,4.0,12.0,3.0,3.75,0.94
-counterintel_sweep,draw [play],play,count=1,1.0,4.0,4.0,1.25,1.25
+counterintel_sweep,remove_research [play],play,amount=4,4.0,12.0,3.0,2.62,0.66
+counterintel_sweep,draw [play],play,count=1,1.0,4.0,4.0,0.88,0.88
 cryo_compute_burn,gain_per_tag insight [play],play,"resource=insight, tag=science, per=1",1.0,12.5,12.5,6.5,6.5
 cryo_sample_vault,income research_cubes [passive],passive,"resource=research_cubes, amount=1",1.0,12.0,12.0,8.77,8.77
 cryo_sample_vault,tags [card],card,science,1.0,1.0,1.0,0.73,0.73
@@ -235,9 +236,9 @@ foundation_model_campus,tags [card],card,science cyber,2.0,1.5,0.75,0.65,0.32
 frontier_lab_charter,production insight [play],play,"resource=insight, amount=2",2.0,20.0,10.0,19.31,9.66
 frontier_lab_charter,production credits [play],play,"resource=credits, amount=2",2.0,8.0,4.0,7.72,3.86
 frontier_lab_charter,tags [card],card,science,1.0,1.0,1.0,0.97,0.97
-fusion_commons,gain energy [play],play,"resource=energy, amount=6",6.0,27.0,4.5,21.18,3.53
-fusion_commons,draw [play],play,count=3,3.0,12.0,4.0,9.41,3.14
-fusion_commons,sway unity [play],play,"side=unity, amount=3, narrative=cooperation",3.0,12.0,4.0,9.41,3.14
+fusion_commons,gain energy [play],play,"resource=energy, amount=6",6.0,27.0,4.5,20.38,3.4
+fusion_commons,draw [play],play,count=3,3.0,12.0,4.0,9.06,3.02
+fusion_commons,sway unity [play],play,"side=unity, amount=3, narrative=cooperation",3.0,12.0,4.0,9.06,3.02
 fusion_research_campus,draw [play],play,count=3,3.0,12.0,4.0,11.2,3.73
 fusion_research_campus,when play power [passive],passive,"on={'event': 'play', 'tag': 'power'}, then=[{'op': 'draw', 'count': 2}]",1.0,9.0,9.0,8.4,8.4
 fusion_research_campus,tags [card],card,power science,2.0,1.5,0.75,1.4,0.7
@@ -578,10 +579,11 @@ survey_drone_fleet,gain research_cubes [play],play,"resource=research_cubes, amo
 survey_drone_fleet,gain energy [action],action,"resource=energy, amount=2; pays 1 research_cubes",2.0,13.86,6.93,3.62,1.81
 survey_drone_fleet,place_node [action],action,"count=2, range=2; pays 1 research_cubes",2.0,24.64,12.32,6.43,3.21
 survey_drone_fleet,tags [card],card,cyber science,2.0,1.5,0.75,0.39,0.2
-synthetic_data_forge,add_tokens datasets [play],play,"kind=datasets, amount=1, here=True",1.0,3.0,3.0,3.24,3.24
+synthetic_data_forge,add_tokens datasets [play],play,"kind=datasets, amount=1, here=True",1.0,3.0,3.0,2.49,2.49
 synthetic_data_forge,"add_tokens datasets [action, unused branch]","action, unused branch","kind=datasets, amount=1, here=True",1.0,0.0,0.0,0.0,0.0
-synthetic_data_forge,gain_per_tokens insight datasets [action],action,"resource=insight, kind=datasets, per=1, here=True",1.0,5.25,5.25,5.68,5.68
-synthetic_data_forge,tags [card],card,science,1.0,1.0,1.0,1.08,1.08
+synthetic_data_forge,gain_per_tokens insight datasets [action],action,"resource=insight, kind=datasets, per=1, here=True",1.0,5.25,5.25,4.36,4.36
+synthetic_data_forge,draw [action],action,count=1,1.0,2.8,2.8,2.32,2.32
+synthetic_data_forge,tags [card],card,science,1.0,1.0,1.0,0.83,0.83
 telemetry_archive,add_tokens datasets [play],play,"kind=datasets, amount=2, here=True",2.0,6.0,3.0,7.42,3.71
 telemetry_archive,when play science [passive],passive,"on={'event': 'play', 'tag': 'science'}, then=[{'op': 'add_tokens', 'kind': 'datasets', 'amount': 2, 'here': True}]",1.0,0.0,0.0,0.0,0.0
 telemetry_archive,threshold [passive],passive,"at=4, then=[{'op': 'gain', 'resource': 'insight', 'amount': 3}]",1.0,6.75,6.75,8.35,8.35

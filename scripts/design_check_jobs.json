@@ -863,68 +863,6 @@
     }
    ]
   },
-  "Claim a station": {
-   "unit": "owned station",
-   "cards": [
-    {
-     "name": "Power Purchase Agreement",
-     "units": 1,
-     "other": 0,
-     "use": 0,
-     "note": "2 energy instead of 4 ambassadors (256: a station or factory)"
-    },
-    {
-     "name": "Microgrid Lab Compact",
-     "units": 3,
-     "other": 0,
-     "use": "2 * energy",
-     "note": "258: claims when built, then Action 2 energy: claim, ~2 neutral sites in reach (2 uses)",
-     "uses": 2
-    },
-    {
-     "name": "Field Station (Researcher)",
-     "units": 1,
-     "other": 0,
-     "use": 0,
-     "note": "1 Industry sacrifice: build a station (sacrifice unpriced)",
-     "power": true
-    }
-   ]
-  },
-  "Claim a factory": {
-   "unit": "owned factory",
-   "cards": [
-    {
-     "name": "Microgrid Lab Compact",
-     "units": 3,
-     "other": 0,
-     "use": "2 * energy",
-     "note": "258: claims a station or factory when built, then Action 2 energy: the same (2 uses)",
-     "uses": 2
-    },
-    {
-     "name": "Power Purchase Agreement",
-     "units": 1,
-     "other": 0,
-     "use": 0,
-     "note": "256: 2 energy instead of 3 ambassadors"
-    },
-    {
-     "name": "Industrial Commons",
-     "units": 1,
-     "other": 0,
-     "use": 0,
-     "note": "256: a factory opens on a free zone in reach, yours"
-    },
-    {
-     "name": "Prefab Plant Kit",
-     "units": 1,
-     "other": "3 * energy",
-     "use": 0,
-     "note": "build a factory; 1 energy a Power tag (~3) 13.5"
-    }
-   ]
-  },
   "Liberate a station": {
    "unit": "station freed",
    "card_outcome": "neutral",

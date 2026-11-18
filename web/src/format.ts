@@ -75,7 +75,6 @@ const STANDARD_NAMES: Record<string, string> = {
   lift: 'Lift Fallout',
   move: 'Dispatch a player ambassador',
   ambassador: 'Gain a player ambassador',
-  claim: 'Claim a site',
   liberate: 'Liberate a site',
   insight: 'Turn a cube into insight',
   envoy: 'Envoy',

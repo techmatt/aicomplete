@@ -13,10 +13,8 @@ pub enum StandardAction {
     /// 149: a free move from the seat's Dispatch (the paid Move is gone).
     Move,
     Ambassador,
-    /// 137: claim a neutral city, station or factory (it was Align, cities only).
-    Claim,
     /// 137: liberate an adversary site with massed ambassadors (it replaced
-    /// Free a station and the city fallback).
+    /// Free a station and the city fallback). 262 (Matt, 2026-11-17) cut the Claim action beside it: cards claim.
     Liberate,
     /// 105: the general converter, a research cube for insight, no limit a round.
     Insight,
@@ -35,13 +33,12 @@ pub enum StandardAction {
 }
 
 /// The standard actions, in the order they are offered and published.
-pub const STANDARD: [StandardAction; 14] = [
+pub const STANDARD: [StandardAction; 13] = [
     StandardAction::Station,
     StandardAction::Remove,
     StandardAction::Lift,
     StandardAction::Move,
     StandardAction::Ambassador,
-    StandardAction::Claim,
     StandardAction::Liberate,
     StandardAction::Insight,
     StandardAction::Envoy,
@@ -61,7 +58,6 @@ impl StandardAction {
             StandardAction::Lift => "lift",
             StandardAction::Move => "move",
             StandardAction::Ambassador => "ambassador",
-            StandardAction::Claim => "claim",
             StandardAction::Liberate => "liberate",
             StandardAction::Insight => "insight",
             StandardAction::Envoy => "envoy",
@@ -141,7 +137,7 @@ pub fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::Move => Price::default(),
         StandardAction::Ambassador => credits(i("ambassador_credits")),
         // 137: the ambassadors depend on the site: [`target_price`].
-        StandardAction::Claim | StandardAction::Liberate => Price::default(),
+        StandardAction::Liberate => Price::default(),
         // 252 (Matt's ruling 5): taxed, `insight_cubes` cubes a use.
         StandardAction::Insight => Price { cubes: i("insight_cubes"), ..Price::default() },
         StandardAction::Envoy => ambassadors(i("envoy_ambassadors")),
@@ -154,15 +150,14 @@ pub fn printed_price(w: &World, act: StandardAction) -> Price {
 }
 
 /// The part of seat `seat`'s standard action's price that depends on its target hex `h`
-/// (137; 140's hook): Claim's and Liberate's ambassadors from the supply, the site's
-/// `claim_cost` or `liberate_cost` less the seat's own ambassadors standing on it (r75's one payment rule;
+/// (137; 140's hook): Liberate's ambassadors from the supply, the site's
+/// `liberate_cost` less the seat's own ambassadors standing on it (r75's one payment rule;
 /// `None`: no such site there). The rest are priced whole by [`printed_price`] and add nothing here. The
 /// targets list only hexes the seat can pay this for, and the action pays it on the hex chosen.
 pub fn target_price(w: &World, g: &GameState, seat: usize, act: StandardAction, h: usize) -> Option<Price> {
     let ambassadors = |ambassadors| Price { ambassadors, ..Price::default() };
     match act {
-        StandardAction::Claim => site_supply_cost(w, g, seat, h, false).map(ambassadors),
-        StandardAction::Liberate => site_supply_cost(w, g, seat, h, true).map(ambassadors),
+        StandardAction::Liberate => site_supply_cost(w, g, seat, h).map(ambassadors),
         _ => Some(Price::default()),
     }
 }
@@ -197,16 +192,23 @@ fn per_round(w: &World, act: StandardAction) -> Option<i64> {
 }
 
 /// Whether seat `seat` may buy neutral city `h`'s energy now (r75, Matt's ruling 6): a neutral city in reach,
-/// producing (no blackout, no agent on it), with energy to sell, not bought this round.
+/// producing (no blackout, no agent on it), with energy to sell, not bought this round, and hosted by no one.
 pub fn energy_for_sale(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
+    for_sale(w, g, seat, h, &host_assignment(w, g))
+}
+
+/// [`energy_for_sale`] with this round's hosts (`hosts`, [`host_assignment`]) read once.
+fn for_sale(w: &World, g: &GameState, seat: usize, h: usize, hosts: &[(usize, usize)]) -> bool {
     is_city(w, h)
         && !corrupted(g, h)
         && cube_owner(g, h).is_none()
-        // 254 (diff review): a hosted city stays for sale; bought, it pays no host this round (`host_assignment`).
         && in_reach(w, g, seat, h)
         && !city_dark(w, g, h)
         && city_output(w, h) > 0
         && g.var(&bought_key(h)) == 0
+        // 262 (Matt's D107, 2026-11-17): a hosted city can't be bought (254 sold it and let the purchase unhost it
+        // for the round, which a printed table can't track).
+        && !hosts.iter().any(|&(c, _)| c == h)
 }
 
 /// The hexes holding a botnet that seat `seat` may take down (r75, Matt's ruling 3): its own ambassador
@@ -270,7 +272,6 @@ pub fn std_target(act: StandardAction) -> Option<&'static str> {
         StandardAction::Remove => "Agents",
         StandardAction::Lift => "Fallout",
         StandardAction::Move => "a piece or a Botnet",
-        StandardAction::Claim => "a neutral site with no Agent on it",
         StandardAction::Liberate => "an adversary site with no Agent on it",
         StandardAction::Botnet => "a Botnet on a hex holding your ambassador",
         StandardAction::BuyEnergy => "a producing neutral city",
@@ -305,17 +306,6 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         // 178 (Matt's ruling #22): Dispatch, not Move (it plays the same: the ambassador comes from anywhere).
         StandardAction::Move => "Use 1 Dispatch: put a player ambassador on it, from your supply or the board".into(),
         StandardAction::Ambassador => "gain a player ambassador".into(),
-        StandardAction::Claim if cities_unowned(w) => format!(
-            "Claim it: {} ambassadors for a station, {} for a factory; yours on it pay first",
-            claim_ambassadors(w, SiteKind::Station),
-            claim_ambassadors(w, SiteKind::Factory)
-        ),
-        StandardAction::Claim => format!(
-            "Claim it: {} ambassadors for a city, {} for a station, {} for a factory; yours on it pay first",
-            claim_ambassadors(w, SiteKind::City),
-            claim_ambassadors(w, SiteKind::Station),
-            claim_ambassadors(w, SiteKind::Factory)
-        ),
         StandardAction::Liberate => format!(
             // 235: a factory's price is its own (claim_factory), not the station's.
             "Liberate it: {} ambassadors for a city, {} for a station, {} for a factory; yours on it pay first; it is left neutral",
@@ -332,10 +322,17 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         StandardAction::Envoy => "move 1 Discord off the Discord track".into(),
         StandardAction::Botnet => "Take it down (your ambassador stays)".into(),
         StandardAction::BuyEnergy => {
-            format!("Buy its energy (once per city a round): {} credits", w.int("board.city_energy_credits"))
+            format!("Buy its energy (once per city a round; not a hosted city): {} credits", w.int("board.city_energy_credits"))
         }
         StandardAction::Antimatter => {
-            format!("turn {} into 1 antimatter", Resource::ResearchCubes.words(w.int("board.antimatter_cubes")))
+            match w.int("board.antimatter_energy") {
+                0 => format!("turn {} into 1 antimatter", Resource::ResearchCubes.words(w.int("board.antimatter_cubes"))),
+                e => format!(
+                    "turn {} into 1 antimatter and {}",
+                    Resource::ResearchCubes.words(w.int("board.antimatter_cubes")),
+                    Resource::Energy.words(e)
+                ),
+            }
         }
         StandardAction::Troop => format!("Remove 1 on it, {} a round", times(w.int("board.troop_per_round"))),
         StandardAction::Factory => "Build a factory on it (yours)".into(),
@@ -381,39 +378,19 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
             format!("{} credits", t("board.ambassador_credits")),
             "into your supply; a standard project too".into(),
         ),
-        // 137: one action for every site type (it was Align, cities only, for 1).
-        // 254 (`cities_unowned`): no city is claimed; the city's price is Liberate's alone.
-        StandardAction::Claim if cities_unowned(w) => (
-            "Claim a site",
-            format!(
-                "{} ambassadors for a station, {} for a factory (Liberate's table too); used up: yours on the site first, your supply the rest",
-                t("board.claim_station"),
-                t("board.claim_factory")
-            ),
-            "a neutral research station or factory, no agent on it: your cube goes on it (never a city)".into(),
-        ),
-        StandardAction::Claim => (
-            "Claim a site",
-            format!(
-                "{} ambassadors for a city, {} for a station, {} for a factory (Liberate's table too); used up: yours on the site first, your supply the rest",
-                t("board.claim_city"),
-                t("board.claim_station"),
-                t("board.claim_factory")
-            ),
-            "a neutral city, research station or factory, no agent on it: your cube goes on it".into(),
-        ),
-        // 137: it replaced Free a station and the city fallback. r75 (Matt's ruling 2): Claim's payment; 252
-        // (Matt's ruling 4, free then claim): the site is left neutral.
+        // 137: it replaced Free a station and the city fallback. r75 (Matt's ruling 2): one payment rule; 252
+        // (Matt's ruling 4, free then claim): the site is left neutral. 262 cut the Claim action: the
+        // `claim_station` and `claim_factory` params are Liberate's prices now (Matt kept their names).
         StandardAction::Liberate => (
             "Liberate a site",
             format!(
-                "Claim's: {} ambassadors for a city, {} for a station, {} for a factory; used up: yours on the site first, your supply the rest",
+                "{} ambassadors for a city, {} for a station, {} for a factory; used up: yours on the site first, your supply the rest",
                 t("board.liberate_at"),
                 t("board.claim_station"),
                 t("board.claim_factory")
             ),
             format!(
-                "an adversary city, station or factory: the adversary's cube comes off, it is left neutral (Claim or a card takes it from there), and it sways Unity ({} for a city, {} for a station or factory)",
+                "an adversary city, station or factory: the adversary's cube comes off, it is left neutral (a card may claim it from there), and it sways Unity ({} for a city, {} for a station or factory)",
                 t("alignment.free_city"),
                 t("alignment.free_facility")
             ),
@@ -445,14 +422,22 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
         StandardAction::BuyEnergy => (
             "Buy a city's energy",
             format!("{} credits", t("board.city_energy_credits")),
-            "producing (no blackout, no agent on it): gain its energy, once per city a round".into(),
+            // 262 (Matt's D107): a hosted city can't be bought.
+            "producing (no blackout, no agent on it) and hosted by no one: gain its energy, once per city a round".into(),
         ),
         // 204 (Matt, 2026-11-12): the one standard source, a desperate one; the engines (the plants, r97) are the
         // real supply.
         StandardAction::Antimatter => (
             "Make antimatter",
             format!("{} research cubes", t("board.antimatter_cubes")),
-            "gain 1 antimatter, as often as you have cubes (a desperate trade: the engines make it cheaper)".into(),
+            if w.int("board.antimatter_energy") > 0 {
+                format!(
+                    "gain 1 antimatter and {} energy, as often as you have cubes (a desperate trade: the engines make it cheaper)",
+                    t("board.antimatter_energy")
+                )
+            } else {
+                "gain 1 antimatter, as often as you have cubes (a desperate trade: the engines make it cheaper)".into()
+            },
         ),
         // 206 (amendment 9247): a hedge, never the better route.
         StandardAction::Troop => (
@@ -484,12 +469,6 @@ pub fn station_sites(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
     (0..g.hexes.len())
         .filter(|&h| buildable(w, g, h) && !w.map.hexes[h].industrial && in_reach(w, g, seat, h))
         .collect()
-}
-
-/// Whether seat `s` can claim neutral site `h` now: a site claim on it and
-/// the ambassadors in its supply (137).
-pub fn claimable(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
-    target_price(w, g, seat, StandardAction::Claim, h).is_some_and(|p| p.affordable(g, seat)) && can_claim(w, g, seat, h)
 }
 
 /// Whether seat `s` can liberate adversary site `h` now: in its reach (a
@@ -531,7 +510,6 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
             })
             .collect()
         }
-        StandardAction::Claim => all.filter(|&h| claimable(w, g, seat, h)).collect(),
         StandardAction::Liberate => all.filter(|&h| liberable(w, g, seat, h)).collect(),
         // Gaining an ambassador, credits or insight needs no target.
         StandardAction::Ambassador => vec![usize::MAX],
@@ -543,7 +521,10 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
         }
         StandardAction::Envoy => Vec::new(),
         StandardAction::Botnet => botnet_targets(w, g, seat),
-        StandardAction::BuyEnergy => all.filter(|&h| energy_for_sale(w, g, seat, h)).collect(),
+        StandardAction::BuyEnergy => {
+            let hosts = host_assignment(w, g);
+            all.filter(|&h| for_sale(w, g, seat, h, &hosts)).collect()
+        }
         StandardAction::Antimatter if w.int("board.antimatter_cubes") > 0 => vec![usize::MAX],
         StandardAction::Antimatter => Vec::new(),
         StandardAction::Troop | StandardAction::Factory if effects::feasible(w, g, seat, std_ops(act)) => vec![usize::MAX],
@@ -602,6 +583,8 @@ pub(super) fn std_resolve(
         }
         StandardAction::Antimatter => {
             cx.add_resource(g, s, Resource::Antimatter, 1);
+            // 262 (Matt, 2026-11-17): it also pays energy, which binds; still a poor hedge at the anchors.
+            cx.add_resource(g, s, Resource::Energy, w.int("board.antimatter_energy"));
             cx.tally(g, "board.cubes_to_antimatter", 1);
         }
         StandardAction::Station => {
@@ -659,16 +642,10 @@ pub(super) fn std_resolve(
                 move_ambassador(g, cx, s, h)?;
             }
         }
-        StandardAction::Claim => {
-            if let Some(h) = on_hex(cx)? {
-                // r75: the seat's ambassadors on the site first, its supply the rest.
-                pay_site(g, cx, s, h, false);
-                claim_site(g, cx, s, h, "ambassadors");
-            }
-        }
         StandardAction::Liberate => {
             if let Some(h) = on_hex(cx)? {
-                pay_site(g, cx, s, h, true);
+                // r75: the seat's ambassadors on the site first, its supply the rest.
+                pay_site(g, cx, s, h);
                 liberate_site(g, cx, s, h, false);
             }
         }

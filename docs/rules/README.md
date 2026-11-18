@@ -17,7 +17,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve.
 - [tunables.md](tunables.md): every baseline config parameter (generated).
 
-What the code implements, at rules revision 122 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 123 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -69,7 +69,7 @@ The house words, as [player-aid.md](../player-aid.md) prints them:
 - **On your cards**: on tags: on your cards in play, covered buildings included, and your board's tags, printed or revealed by its tracks. Tokens count only on the card that holds them.
 - **Action**: once a round, always; "A, OR B" is one use, either half.
 - **Open megaproject**: one that isn't complete; research cubes in your color go only onto one.
-- **Liberate**: a corrupted site: the agents on it come off and the adversary's cube comes off; it is left neutral, a city its country's for good, a station or factory for a Claim or a card to take (the action pays for it in ambassadors; a card's is unpaid).
+- **Liberate**: a corrupted site: the agents on it come off and the adversary's cube comes off; it is left neutral, a city its country's for good, a station or factory for a card to claim (the action pays for it in ambassadors; a card's is unpaid).
 - **Convert**: an agent on or next to the city leaves its stack and becomes your ambassador where it stood.
 - **Gather up to N**: pieces (ambassadors, agents, troops; botnets never move) onto the target, each from a hex next to it; you may stop at any piece (a strike, "remove up to N on or next to it", moves nothing).
 - **Push up to N**: pieces from the target, each to a hex next to it that you choose; you may stop at any piece.

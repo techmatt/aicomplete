@@ -27,7 +27,7 @@ Data Breach, Zero Day). Once a round, after the compute step, a track holding **
 4 at d0-d4, times the countries) spends that many, keeps the rest, and fires the rule once; from
 `research_strong_at` (3) its stronger effect. The Militarist's is **Weapons Program**: Muster 2 (each country, 2
 troops on its lowest-numbered factory, else city; a Muster, so the difficulty line adds 1), stronger Muster 3.
-Players take cubes off with Counterintelligence Sweep (4) and Arms Inspectors (an Action, 2). `research_at` all 0 is
+Players take cubes off with Counterintelligence Sweep (4) and Arms Inspectors (2 when built, 262, and an Action, 2). `research_at` all 0 is
 the off arm: stations make compute again.
 
 **Income (locked).** Two, by difficulty: **compute income** (`compute_income`, **a

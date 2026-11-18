@@ -32,7 +32,7 @@ fn standard_actions_are_offered_only_when_affordable_and_targeted() {
         set_res(&mut g, s, Resource::Energy, 0);
         set_res(&mut g, s, Resource::Credits, 0);
         set_res(&mut g, s, Resource::Chips, 0);
-        // 137: ambassadors pay for Claim and Liberate (the lab's `liberate_at` is 1).
+        // 137: ambassadors pay for Liberate (the lab's `liberate_at` is 1).
         set_res(&mut g, s, Resource::Ambassadors, 0);
         assert!(standard_offered(&rules, &g, s as u8).is_empty(), "seat {s}");
     }
@@ -114,7 +114,7 @@ fn std_off_takes_standard_actions_out() {
     let w = rules.world();
     let left = standard_offered(&rules, &g, 0);
     assert!(!left.contains("station") && !left.contains("move") && left.contains("ambassador"), "{left:?}");
-    assert!(!board::std_offered(&w, board::StandardAction::Station) && board::std_offered(&w, board::StandardAction::Claim));
+    assert!(!board::std_offered(&w, board::StandardAction::Station) && board::std_offered(&w, board::StandardAction::Liberate));
     assert!(!board::std_offered(&w, *board::STANDARD.last().unwrap()));
     assert!(rules.apply_mut(&mut g.clone(), &std_act(0, "station"), None).is_err());
     assert!(rules.view(&g).standard.iter().all(|x| x.act != "station" && x.act != "move"));
@@ -236,48 +236,22 @@ fn moving_an_ambassador_never_targets_the_hex_it_already_holds() {
     }
 }
 
-/// 137: Claim puts the seat's cube on a neutral city in reach with a site
-/// claim, for `claim_city` ambassadors from the supply (Align took 1).
+/// 262 (Matt, 2026-11-17): the Claim standard action is cut (cards claim): it is neither offered nor playable,
+/// even with a neutral station in reach and ambassadors to spare.
 #[test]
-fn claiming_puts_a_cube_on_a_neutral_city_in_reach() {
-    let (rules, mut g) = lab_with(&[], &[CITIES_OWNED]);
-    let m = &rules.map;
-    let n = rules.world().int("board.claim_city");
-    let (city, next) = city_with_lonely_neighbors(m);
-    put(&mut g, next[0], node(0), 1);
-    set_res(&mut g, 0, Resource::Energy, 0);
-    set_res(&mut g, 0, Resource::Ambassadors, n - 1);
-    assert!(!standard_offered(&rules, &g, 0).contains("claim"), "{} of {n}", n - 1);
-    set_res(&mut g, 0, Resource::Ambassadors, n);
-    act(&rules, &mut g, std_act(0, "claim"));
-    assert_eq!(g.tokens(city, cube(0)), 1);
-    assert_eq!(g.resource(0, Resource::Ambassadors), 0);
-    assert_eq!(g.stats.counters["board.claimed.city"], 1);
-    // An owned city can't be claimed.
-    set_res(&mut g, 0, Resource::Ambassadors, n);
-    assert!(!standard_offered(&rules, &g, 0).contains("claim"));
-}
-
-/// 206 (amendment 9208): a dark city (agents on it) can't be claimed until they are gone (it cost 1 more for
-/// each, 137-r90).
-#[test]
-fn claiming_a_dark_city_waits_for_its_agents_to_go() {
-    let (rules, mut g) = lab_with(&[], &[CITIES_OWNED]);
+fn there_is_no_claim_action() {
+    let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let w = rules.world();
-    let n = w.int("board.claim_city");
-    let (city, next) = city_with_lonely_neighbors(m);
-    put(&mut g, next[0], node(0), 1);
-    put(&mut g, city, ADV_AMBASSADOR, 2);
-    assert_eq!(board::claim_cost(&w, &g, city), None);
-    set_res(&mut g, 0, Resource::Energy, 0);
-    set_res(&mut g, 0, Resource::Ambassadors, n + 2);
+    let me = m.numbered(0, piece(0).node);
+    put(&mut g, me, node(0), 1);
+    let st = m.hexes[me].neighbors.iter().copied().find(|&h| kind(m, h) == HexKind::Open).unwrap();
+    put(&mut g, st, STATION, 1);
+    set_res(&mut g, 0, Resource::Ambassadors, 10);
+    assert_eq!(board::card_claim_sites(&w, &g, 0), vec![st], "a card may claim it");
+    assert!(board::StandardAction::parse("claim").is_none());
     assert!(!standard_offered(&rules, &g, 0).contains("claim"));
-    put(&mut g, city, ADV_AMBASSADOR, 0);
-    assert_eq!(board::claim_cost(&w, &g, city), Some(n));
-    act(&rules, &mut g, std_act(0, "claim"));
-    assert_eq!((g.tokens(city, ADV_AMBASSADOR), g.tokens(city, cube(0))), (0, 1));
-    assert_eq!(g.resource(0, Resource::Ambassadors), 2);
+    assert!(rules.apply_mut(&mut g.clone(), &std_act(0, "claim"), None).is_err());
 }
 
 /// 254 (Matt's candidate, the baseline's `cities_unowned` 1): no city is claimed, and a liberated city is left
@@ -292,7 +266,6 @@ fn players_never_own_a_city() {
     put(&mut g, next[1], node(0), 1);
     set_res(&mut g, 0, Resource::Ambassadors, 10);
     assert_eq!(board::claim_cost(&w, &g, city), None);
-    assert!(!standard_offered(&rules, &g, 0).contains("claim"), "no other site to claim");
     let buyout = [content::Op::Liberate { own: true, ambassadors: 0, troops: 0, botnet: false }];
     put(&mut g, city, ADV_CUBE, 1);
     run_ops(&rules, &mut g, &buyout);
@@ -310,8 +283,8 @@ fn players_never_own_a_city() {
     assert_eq!((g.tokens(city, ADV_CUBE), g.tokens(city, cube(0))), (0, 1));
 }
 
-/// 137: Claim costs by site type: `claim_city`, `claim_station`,
-/// `claim_factory`; an adversary or owned site has no claim cost.
+/// 137: a site's price by type, `claim_station` and `claim_factory` (Liberate's since 262); a city (254, 262),
+/// an adversary or an owned site has no claim cost. A card claims the factory.
 #[test]
 fn claiming_costs_by_site_type() {
     let (rules, mut g) = lab_with(&[], &[CITIES_OWNED]);
@@ -329,7 +302,7 @@ fn claiming_costs_by_site_type() {
     let (st, fa) = (near[0], near[1]);
     put(&mut g, st, STATION, 1);
     put(&mut g, fa, FACTORY, 1);
-    assert_eq!(board::claim_cost(&w, &g, city), Some(w.int("board.claim_city")));
+    assert_eq!(board::claim_cost(&w, &g, city), None, "262: no city is claimed, even with cities owned");
     assert_eq!(board::claim_cost(&w, &g, st), Some(w.int("board.claim_station")));
     assert_eq!(board::claim_cost(&w, &g, fa), Some(w.int("board.claim_factory")));
     assert_eq!(board::claim_cost(&w, &g, me), None, "no site");
@@ -337,11 +310,10 @@ fn claiming_costs_by_site_type() {
     put(&mut t, st, ADV_CUBE, 1);
     put(&mut t, fa, cube(1), 1);
     assert_eq!((board::claim_cost(&w, &t, st), board::claim_cost(&w, &t, fa)), (None, None));
-    // Claiming the factory: the seat's cube on it, its ambassadors used up.
-    set_res(&mut g, 0, Resource::Ambassadors, w.int("board.claim_factory"));
-    rules.apply_mut(&mut g, &std_act(0, "claim"), None).unwrap();
-    pick(&rules, &mut g, fa);
-    answer_all(&rules, &mut g);
+    // A card claims the factory: the seat's cube on it, no ambassadors spent.
+    set_res(&mut g, 0, Resource::Ambassadors, 0);
+    put(&mut g, st, STATION, 0);
+    run_ops(&rules, &mut g, &[crate::content::Op::ClaimSite { near: false }]);
     assert_eq!((g.tokens(fa, cube(0)), g.resource(0, Resource::Ambassadors)), (1, 0));
     assert_eq!(g.stats.counters["board.claimed.factory"], 1);
 }
@@ -494,11 +466,11 @@ fn card_targets_on_the_map_must_be_in_reach() {
     assert_eq!(effects::damage_hexes(&w, &g, 0, 1, 0), vec![near]);
 }
 
-/// r75 (Matt's ruling 2): Claim needs the site in reach (a node on or next to it)
-/// and no embargo; a botnet on or next to it no longer blocks it.
+/// r75 (Matt's ruling 2): a claim needs the site in reach (a node on or next to it)
+/// and no embargo; a botnet on or next to it no longer blocks it (262: a card's claim, the action cut).
 #[test]
 fn claiming_a_site_needs_it_in_reach_and_a_botnet_does_not_block_it() {
-    let (rules, g0) = lab_with(&[], &[CITIES_OWNED]);
+    let (rules, g0) = lab(&[]);
     let m = &rules.map;
     let station = m.numbered(0, piece(0).stations[0]);
     let next = m.hexes[station]
@@ -511,9 +483,8 @@ fn claiming_a_site_needs_it_in_reach_and_a_botnet_does_not_block_it() {
     put(&mut g0, station, STATION, 1);
 
     let w = rules.world();
-    // 137: the Claim action reads the site claim (an arriving ambassador
-    // claims nothing now); the seat holds what a claim costs.
-    let claim = |g: &GameState| board::claimable(&w, g, 0, station);
+    // 137: a claim reads the site claim (an arriving ambassador claims nothing now).
+    let claim = |g: &GameState| board::card_claim_sites(&w, g, 0).contains(&station);
     set_res(&mut g0, 0, Resource::Ambassadors, 10);
 
     // Node two hexes away: no claim.
@@ -557,41 +528,6 @@ fn claiming_a_site_needs_it_in_reach_and_a_botnet_does_not_block_it() {
     put(&mut g, next, node(0), 1);
     put(&mut g, station, BOTNET, 1);
     assert!(board::can_claim(&w, &g, 0, station));
-
-    // Claiming a city: likewise.
-    let (city, lonely) = city_with_lonely_neighbors(m);
-    let mut g = g0.clone();
-    put(&mut g, station, STATION, 0);
-    put(&mut g, lonely[0], node(0), 1);
-    set_res(&mut g, 0, Resource::Ambassadors, w.int("board.claim_city"));
-    assert!(standard_offered(&rules, &g, 0).contains("claim"));
-    // A botnet next to the city: still offered.
-    put(&mut g, lonely[1], BOTNET, 1);
-    assert!(m.adjacent(lonely[1], city));
-    assert!(standard_offered(&rules, &g, 0).contains("claim"));
-}
-
-/// r75 (Matt's ruling 2): Claim's bill is paid by the seat's own ambassadors on the site first, then its
-/// supply; another seat's ambassadors there pay nothing and stay. `claim_city` is 5.
-#[test]
-fn claiming_pays_from_your_own_ambassadors_on_the_site_first() {
-    let (rules, mut g) = lab_with(&[], &[CITIES_OWNED]);
-    let w = rules.world();
-    let m = &rules.map;
-    let n = w.int("board.claim_city");
-    assert_eq!(n, 5);
-    let (city, next) = city_with_lonely_neighbors(m);
-    put(&mut g, next[0], node(0), 1);
-    put(&mut g, city, ambassador(1), 2);
-    assert_eq!(board::site_supply_cost(&w, &g, 0, city, false), Some(n));
-    put(&mut g, city, ambassador(0), 2);
-    assert_eq!(board::site_supply_cost(&w, &g, 0, city, false), Some(n - 2));
-    set_res(&mut g, 0, Resource::Ambassadors, n - 3);
-    assert!(!standard_offered(&rules, &g, 0).contains("claim"));
-    set_res(&mut g, 0, Resource::Ambassadors, n - 2);
-    act(&rules, &mut g, std_act(0, "claim"));
-    assert_eq!(g.tokens(city, cube(0)), 1);
-    assert_eq!((g.resource(0, Resource::Ambassadors), g.tokens(city, ambassador(0)), g.tokens(city, ambassador(1))), (0, 0, 2));
 }
 
 /// r75 (Matt's ruling 3): the Take down a botnet action, `botnet_credits` (3 since r89): the seat's ambassador on the

@@ -29,7 +29,7 @@
   },
   "standard_anchor_max": 1.0,
   "standard_actions": {
-    "note": "each standard action's give and get at the unit anchors (docs/card-guidelines.md, *Unit anchors*; values.json for units with none). A number is a count; a string is a baseline.json param (module.param). 'src' is its games.jsonl source key, for its uses a game. 'off' (208, P1): the tunable that turns the action off at 0; such a row is skipped. 'narrative' (204): the story tag of its Sway. 'priced_in' (226): get units another unit's anchor already holds, not counted twice. 'case' (249): one target of an action priced per target (Liberate, Claim). 'exempt' (226; 249: per case): {case, why}, the one case that may sit over the cap or fail job parity, listed as information; an exemption naming no case or another row's is flagged (exempt-whole-action). 'outcome' (249): what the action leaves (owned, neutral), for job parity.",
+    "note": "each standard action's give and get at the unit anchors (docs/card-guidelines.md, *Unit anchors*; values.json for units with none). A number is a count; a string is a baseline.json param (module.param). 'src' is its games.jsonl source key, for its uses a game. 'off' (208, P1): the tunable that turns the action off at 0; such a row is skipped. 'narrative' (204): the story tag of its Sway. 'priced_in' (226): get units another unit's anchor already holds, not counted twice. 'case' (249): one target of an action priced per target (Liberate). 'exempt' (226; 249: per case): {case, why}, the one case that may sit over the cap or fail job parity, listed as information; an exemption naming no case or another row's is flagged (exempt-whole-action). 'outcome' (249): what the action leaves (owned, neutral), for job parity.",
     "rows": [
       {
         "name": "Make antimatter",
@@ -39,7 +39,8 @@
           "research_cubes": "board.antimatter_cubes"
         },
         "get": {
-          "antimatter": 1
+          "antimatter": 1,
+          "energy": "board.antimatter_energy"
         }
       },
       {
@@ -159,28 +160,6 @@
         },
         "outcome": "neutral",
         "narrative": "trust"
-      },
-      {
-        "name": "Claim a station",
-        "src": "standard:claim",
-        "case": "station",
-        "give": {
-          "ambassadors": "board.claim_station"
-        },
-        "get": {
-          "station_owned": 1
-        }
-      },
-      {
-        "name": "Claim a factory",
-        "src": "standard:claim",
-        "case": "factory",
-        "give": {
-          "ambassadors": "board.claim_factory"
-        },
-        "get": {
-          "factory": 1
-        }
       },
       {
         "name": "Envoy",
@@ -376,7 +355,6 @@
       {"key": "standard:ambassador", "name": "Gain a player ambassador", "role": "hedge", "why": "20 credits: the ambassador hedge"},
       {"key": "sell", "name": "Sell a card", "role": "hedge", "why": "a dead hand's 1 credit"},
       {"key": "standard:liberate", "name": "Liberate a site", "role": "win-route"},
-      {"key": "standard:claim", "name": "Claim a site", "role": "sway-tool"},
       {"key": "standard:envoy", "name": "Envoy", "role": "sway-tool", "band": [0.0, 2.0], "why": "228: a standard action is a poorly priced hedge, never the better route (Matt): an ambassador (8) for 1 Discord off (4), when the same ambassador is a fifth of a Liberate (the win route), so zero use is the design, not a fault"},
       {"key": "standard:botnet", "name": "Take down a botnet", "role": "sway-tool"},
       {"key": "standard:factory", "name": "Build a factory", "role": "off", "off": "board.factory_build_chips"},

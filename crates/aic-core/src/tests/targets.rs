@@ -127,8 +127,9 @@ fn powers_and_standard_actions_name_one_target() {
             printed += 1;
         }
     }
-    // Station, Remove agents, Lift, Dispatch, Claim, Liberate, Botnet, Buy energy, Remove a troop (Factory is off).
-    assert_eq!(printed, 9);
+    // Station, Remove agents, Lift, Dispatch, Liberate, Botnet, Buy energy, Remove a troop (Factory is off; 262 cut
+    // Claim).
+    assert_eq!(printed, 8);
 }
 
 /// 236 (Matt, 2026-11-14; message 10585): a move card's board ambassadors come from on or next to its target, never

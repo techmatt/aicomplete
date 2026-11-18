@@ -47,7 +47,7 @@ pub const HOUSE_TERMS: [(&str, &str); 25] = [
     ("On your cards", "on tags: on your cards in play, covered buildings included, and your board's tags, printed or revealed by its tracks. Tokens count only on the card that holds them"),
     ("Action", "once a round, always; \"A, OR B\" is one use, either half"),
     ("Open megaproject", "one that isn't complete; research cubes in your color go only onto one"),
-    ("Liberate", "a corrupted site: the agents on it come off and the adversary's cube comes off; it is left neutral, a city its country's for good, a station or factory for a Claim or a card to take (the action pays for it in ambassadors; a card's is unpaid)"),
+    ("Liberate", "a corrupted site: the agents on it come off and the adversary's cube comes off; it is left neutral, a city its country's for good, a station or factory for a card to claim (the action pays for it in ambassadors; a card's is unpaid)"),
     ("Convert", "an agent on or next to the city leaves its stack and becomes your ambassador where it stood"),
     ("Gather up to N", "pieces (ambassadors, agents, troops; botnets never move) onto the target, each from a hex next to it; you may stop at any piece (a strike, \"remove up to N on or next to it\", moves nothing)"),
     ("Push up to N", "pieces from the target, each to a hex next to it that you choose; you may stop at any piece"),
@@ -709,7 +709,7 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
     // The rule book's order; selling a card is no standard action, but sits by the actions
     // (149: chips can't be sold).
     let order = [
-        A::Station, A::Factory, A::Remove, A::Troop, A::Lift, A::Move, A::Ambassador, A::Claim, A::Liberate, A::Botnet,
+        A::Station, A::Factory, A::Remove, A::Troop, A::Lift, A::Move, A::Ambassador, A::Liberate, A::Botnet,
         A::BuyEnergy,
     ];
     let mut rows: Vec<[String; 3]> = order.iter().filter(on).map(|&a| std_rule_text(a, &w, &t)).collect();

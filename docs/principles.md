@@ -103,7 +103,7 @@ checks*; thresholds, all candidates: `scripts/design_check.json`).
 - **Boards differ:** no power or effect repeated on every board. *Warns:* one power name or one effect on 2+ boards. Exempt by ruling: Expand, each board's
   base node route (252); exemptions are `repeat_powers.exempt`, listed as information.
 - **Standard actions are deliberately poorly priced against cards** (Matt, 2026-11-16: cards are the engine; a
-  standard action is a rare fallback). *Warns:* a standard action (each target of Liberate and Claim its own row)
+  standard action is a rare fallback). *Warns:* a standard action (each target of Liberate its own row)
   whose get passes its give at the unit anchors ([card-guidelines.md](card-guidelines.md)); **job parity**, its price
   per unit of its job under 1.25 × the median card's for that job, or an outcome stronger than theirs (the site
   yours where cards only free it), or no card for its job (`scripts/design_check_jobs.json`); a **circular anchor**,

@@ -1,0 +1,15 @@
+# 262: the economy pass (Matt, 2026-11-17; amendment 11997). Priced in the write-up's give / get.
+cards.arms_inspectors.effects=[{"op": "remove_research", "amount": 2}]
+# Amendment 11997: 2 datasets when built unless the cash-out-draws variant clears values.json with the smaller move.
+# effect_ledger: 9.25 printed 10; 2 datasets 12.25 (+3.00); the cash-out also draws 1, 12.05 (+2.80): that one.
+cards.synthetic_data_forge.effects.0.amount=1
+cards.synthetic_data_forge.ability.or.effects.+={"op": "draw", "count": 1}
+# Amendment 12073 (Matt's D113): a card that draws costs at least 1 insight to play; fewer credits keep the anchors.
+# Diff review: 1 cr holds the Sweep's anchor pay at 9 (1 + 4 x 2), as it was (5 + 4 x 1); 261's option (a) read 2 cr.
+cards.counterintel_sweep.cost=1
+cards.counterintel_sweep.insight=1
+cards.fusion_commons.cost=0
+cards.fusion_commons.insight=1
+corps.horizon.project.converter.cost=[["research_cubes", 3]]
+corps.horizon.project.converter.effects=[{"op": "gain", "resource": "energy", "amount": 5}]
+corps.horizon.project.chip_converter.effects=[{"op": "gain", "resource": "energy", "amount": 3}]

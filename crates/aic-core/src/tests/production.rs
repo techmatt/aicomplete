@@ -37,7 +37,8 @@ fn production_sells_no_neutral_energy_and_an_aligned_city_powers_its_owner() {
 
 /// 254 (`host_city` 1, `host_reach` 1, the baseline): a producing neutral city with your node on or next to it makes
 /// its energy for one host in the income step; an agent on it darkens it; a seat hosts `host_city` cities at most; the
-/// players' choice hosts as many as can be (a matching); a city bought from this round hosts no one.
+/// players' choice hosts as many as can be (a matching); 262 (D107): a hosted city can't be bought, and a purchase
+/// unhosts nothing.
 #[test]
 fn a_hosted_city_powers_a_node_on_or_next_to_it() {
     use crate::modules::common::{city_host, hosted_cities};
@@ -53,15 +54,16 @@ fn a_hosted_city_powers_a_node_on_or_next_to_it() {
     put(&mut g, n[0], node(0), 1);
     put(&mut g, n[1], node(1), 1);
     assert_eq!(city_host(&w, &g, city), Some(0));
-    assert!(board::energy_for_sale(&w, &g, 1, city), "a hosted city stays for sale");
+    // 262 (Matt's D107): a hosted city can't be bought, by its host or anyone.
+    assert!(!board::energy_for_sale(&w, &g, 0, city) && !board::energy_for_sale(&w, &g, 1, city), "hosted: not for sale");
     run(&rules, &mut g);
     assert_eq!((res(&g, 0), res(&g, 1)), (made, 0));
 
-    // Bought from this round: no host.
+    // 262: bought earlier this round, before anyone hosted it, it is hosted all the same (254 unhosted it).
     let mut g = g0.clone();
     put(&mut g, n[0], node(0), 1);
     set_var(&mut g, board::bought_key(city), 1);
-    assert_eq!(city_host(&w, &g, city), None);
+    assert_eq!(city_host(&w, &g, city), Some(0));
 
     // An agent on it: dark, it hosts no one (a city next to the node may still be hosted).
     let mut g = g0.clone();
@@ -111,8 +113,9 @@ fn a_hosted_city_powers_a_node_on_or_next_to_it() {
 /// blackout, no agent on it), once per city a round.
 #[test]
 fn buy_energy_takes_a_neutral_producing_citys_energy_once_a_round() {
-    // 254: r114's ownership (the aligned case below); a hosted city stays for sale (the hosting test).
-    let (rules, g0) = lab_with(&["board.produce"], &["board.cities_unowned=0"]);
+    // 254: r114's ownership (the aligned case below); no hosting here (262: a hosted city isn't for sale, the
+    // hosting test).
+    let (rules, g0) = lab_with(&["board.produce"], &["board.cities_unowned=0", "board.host_city=0"]);
     let w = rules.world();
     let (city, n) = city_with_lonely_neighbors(&rules.map);
     let price = w.int("board.city_energy_credits");
@@ -357,10 +360,11 @@ fn a_converter_needs_a_city_of_its_country_in_reach() {
     assert!(offered(&g));
     let (e, a) = (g.resource(0, Resource::Energy), g.resource(0, Resource::Antimatter));
     rules.apply_mut(&mut g, &convert, None).unwrap();
-    // Horizon (r101, 230): 3 cubes + 1 energy, 1 antimatter (r94: 2 cubes; r88: 1 cube for 2).
+    // Horizon (262): 3 cubes for 5 energy (r101-r122: 3 cubes + 1 energy for 1 antimatter; r94: 2 cubes; r88: 1 cube
+    // for 2).
     assert_eq!(
         (g.resource(0, Resource::ResearchCubes), g.resource(0, Resource::Energy), g.resource(0, Resource::Antimatter)),
-        (0, e - 1, a + 1)
+        (0, e + 5, a)
     );
     // r75 (content): Horizon's converter is once a round too (105 had no limit on it).
     assert_eq!(board::converter_blocked(&w, &g, 0, 0), Some("used this round"));

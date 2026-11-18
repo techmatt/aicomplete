@@ -71,7 +71,7 @@ megaproject is the corp's defining card.
 <!-- generated: corps -->
 | Corp | Megaproject | Cubes | At completion: player cube / adversary cube | Converter (as often as you can pay, unless marked) | Chip converter |
 |---|---|---|---|---|---|
-| Horizon (geothermal and tidal energy) | Tidal Grid | 8 | 3 energy, 3 credits / 1 Sway to Discord | 3 research cubes + 1 energy → 1 antimatter (once a round) | 2 chips → 1 antimatter (once a round) |
+| Horizon (geothermal and tidal energy) | Tidal Grid | 8 | 3 energy, 3 credits / 1 Sway to Discord | 3 research cubes → 5 energy (once a round) | 2 chips → 3 energy (once a round) |
 | Cintamani (AI and efficiency) | Polar Compute Array | 8 | 1 drawn card, 5 credits / 1 adversary compute | 1 research cube → 2 insight (once a round) | 2 chips → 3 drawn cards (once a round) |
 | Onyx (heavy industry, power plants and processors) | Mountain Fusion Works | 8 | 2 chips, 3 credits / 1 Sway to Discord | 1 research cube → 1 chip (once a round) | none |
 | Biomia (biopunk) | Delta Seawall | 8 | 1 Sway to Unity, 1 drawn card / 1 Sway to Discord | 1 research cube → 1 Sway to Unity (once a round) | 2 chips → 2 Sway to Unity, 1 drawn card (once a round) |
@@ -83,9 +83,9 @@ megaproject is the corp's defining card.
   round onto its country's megaproject while it is open, else `station_cubes` cubes onto the adversary's research
   track in its compute step (259; compute before, and with the rule off, [adversary.md](adversary.md)).
   No player starts with a station: building one (`station_chips`, 2 chips since 252, Matt) or claiming a neutral one
-  (`claim_station` ambassadors) is an investment. Cities build neutral stations too ([war.md](war.md), city growth).
+  with a card is an investment. Cities build neutral stations too ([war.md](war.md), city growth).
   One opposing ambassador or agent on a station blocks its output while it stands; the Liberate action frees an
-  adversary station (left neutral, with a Liberated marker) for a Claim or a card to take.
+  adversary station (left neutral, with a Liberated marker) for a card to claim.
 - **A station is a defended investment (candidate, Matt).** The adversary needs weight to take
   yours: an effect that flips a player's station (Station Seizure, after landing 2 agents; Station Coup instead turns a player's
   station neutral with no agent test, `take_site`) takes it
@@ -94,7 +94,7 @@ megaproject is the corp's defining card.
   instead (a player ambassador there cancels it). A neutral station flips as before. Cards
   that free a station are priced as a station flip, a cube a round both ways (Reclamation
   Crew); factories stay cheap to free (Back-Channel Talks). A card that liberates a site does it as the Liberate
-  action does, unpaid; a card that claims a neutral station or factory does it unpaid, and like Claim never on a station with an agent on it
+  action does, unpaid; a card that claims a neutral station or factory does it unpaid, never on a station with an agent on it
   (206).
 - **Until completion** a country's cubes go onto its megaproject. Cubes of any color fill it.
 - **Completion** is checked once, at the end of production (`board.produce`),
@@ -109,8 +109,11 @@ megaproject is the corp's defining card.
   feed the adversary's research track (259).
 - **Chip converters** (r87, Matt: chips hoarded early pay late): three cards also print one paid in chips, used as the
   converter is (a city of the country in reach, once a round); Onyx's, which makes chips, doesn't. Give / get at
-  `values.json` (anchors): 2 chips, 8 (12), for 1 antimatter 18 (18), 3 cards 12 (15), or 2 Sway and a card 12
+  `values.json` (anchors): 2 chips, 8 (12), for 3 energy 13.5 (13.5), 3 cards 12 (15), or 2 Sway and a card 12
   (13).
+- **Horizon pays energy** (262, Matt, 2026-11-17: Horizon is the energy corp, and energy binds; both its converters
+  sat unused making antimatter, 0.07 and 0.00 a seat-game): 3 cubes, 9 (18), for 5 energy 22.5 (22.5); 2 chips for
+  3 energy (above).
   Megaprojects complete by round 3 in about 97% of games (199), so they open mid-game.
 - **Converters.** Each completed card prints one converter, used in the action phase by any
   player with **a city of that country in reach** (r75, Matt's ruling 9: any city, owned or not; r37 asked for a

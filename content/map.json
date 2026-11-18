@@ -212,7 +212,7 @@
    "project": {
     "name": "Tidal Grid",
     "cubes": 8,
-    "text": "At completion each player cube pays 3 energy and 3 credits, each adversary cube 1 Sway to Discord. Afterward, once a round, with a city here in your reach: 3 research cubes and 1 energy for 1 antimatter; and, once a round, 2 chips for 1 antimatter. Afterward an adversary station here puts its cubes onto the adversary's research track.",
+    "text": "At completion each player cube pays 3 energy and 3 credits, each adversary cube 1 Sway to Discord. Afterward, once a round, with a city here in your reach: 3 research cubes for 5 energy; and, once a round, 2 chips for 3 energy. Afterward an adversary station here puts its cubes onto the adversary's research track.",
     "player": [
      {
       "op": "gain",
@@ -238,17 +238,13 @@
       [
        "research_cubes",
        3
-      ],
-      [
-       "energy",
-       1
       ]
      ],
      "effects": [
       {
        "op": "gain",
-       "resource": "antimatter",
-       "amount": 1
+       "resource": "energy",
+       "amount": 5
       }
      ],
      "once": true
@@ -263,8 +259,8 @@
      "effects": [
       {
        "op": "gain",
-       "resource": "antimatter",
-       "amount": 1
+       "resource": "energy",
+       "amount": 3
       }
      ],
      "once": true

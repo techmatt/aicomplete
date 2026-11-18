@@ -2285,9 +2285,9 @@ impl Eval {
 
     /// 254: the hosted cities as (city, seat), the engine's matching (`common::match_hosts`) on this token view: a
     /// neutral city with no agent on it, a seat's node on it (or next to it with `board.host_reach`), `host_city` a
-    /// seat. With `now` (this round's income step, the eval's hosted term), a city bought from this round or blacked
-    /// out hosts no one, as in the engine (final diff review: the agents bought their own hosted energy); without it
-    /// (a round's projected production) those one-round marks are not read. 258: each seat's cap is the engine's
+    /// seat. With `now` (this round's income step, the eval's hosted term), a city blacked out hosts no one, as in the
+    /// engine (262, D107: a purchase no longer unhosts one; a hosted city can't be bought); without it (a round's
+    /// projected production) that one-round mark is not read. 258: each seat's cap is the engine's
     /// (`common::host_caps`: `host_city` plus the `host_more` its cards raised), read from `g`.
     fn host_matching(&self, world: &aic_core::module::World, tokens: &[HexTokens], g: &GameState, now: bool) -> Vec<(usize, usize)> {
         if self.host_city == 0 {
@@ -2303,9 +2303,8 @@ impl Eval {
                 common::is_city(world, h) && t.adv_cube == 0 && t.adv_ambassador == 0 && t.cube[..seats].iter().all(|&n| n == 0)
             })
             .filter(|&h| {
-                now.is_none_or(|g| {
-                    g.var(&board::bought_key(h)) == 0 && !board::hex_flagged(world, g, aic_core::content::RoundFlag::Blackout, h)
-                })
+                // 262 (D107): a purchase no longer unhosts a city (`common::host_assignment`).
+                now.is_none_or(|g| !board::hex_flagged(world, g, aic_core::content::RoundFlag::Blackout, h))
             })
             .collect();
         let hosts = |s: usize, h: usize| {

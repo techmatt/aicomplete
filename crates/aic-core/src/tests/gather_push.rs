@@ -115,8 +115,8 @@ fn liberate_spends_your_own_ambassadors_on_the_site() {
     put(&mut g, c, ambassador(0), 2);
     put(&mut g, c, ambassador(1), 1);
     let n = board::liberate_cost(&w, &g, c).unwrap();
-    assert_eq!(board::site_supply_cost(&w, &g, 0, c, true), Some(n - 2));
-    assert_eq!(board::site_supply_cost(&w, &g, 1, c, true), Some(n - 1), "only your own pay");
+    assert_eq!(board::site_supply_cost(&w, &g, 0, c), Some(n - 2));
+    assert_eq!(board::site_supply_cost(&w, &g, 1, c), Some(n - 1), "only your own pay");
     set_res(&mut g, 0, Resource::Ambassadors, n - 3);
     assert!(!board::liberable(&w, &g, 0, c));
     set_res(&mut g, 0, Resource::Ambassadors, n - 2);

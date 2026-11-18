@@ -17,9 +17,8 @@ conventions: [README.md](README.md).*
 | `board.divert_discord` | 1 | 0..5 | Discord per unit of a corrupted city's energy diverted to the adversary |
 | `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy, each round, of an aligned city an agent darkens |
 | `board.liberate_at` | 5 | 1..10 | the Liberate action: ambassadors that liberate an adversary city |
-| `board.claim_city` | 5 | 1..10 | the Claim action: ambassadors that claim a neutral city (Liberate's table too, its city price `liberate_at`) |
-| `board.claim_station` | 4 | 1..10 | the Claim action: ambassadors that claim a neutral research station |
-| `board.claim_factory` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral factory |
+| `board.claim_station` | 4 | 1..10 | the Liberate action: ambassadors that liberate an adversary research station (262 cut the Claim action that also paid it; the name stays) |
+| `board.claim_factory` | 3 | 1..10 | the Liberate action: ambassadors that liberate an adversary factory (262 cut the Claim action that also paid it; the name stays) |
 | `board.start_nodes` | 1 | 1..3 | nodes each player starts with: its start hex, then the lowest-numbered free land hexes next to it (the extras off no track) |
 | `board.destruction_discord` | 1 | 0..5 | Discord each facility destroyed in war sways |
 | `board.troop_spent` | 1 | 0..1 | 1: an adversary troop that strikes a target is used up |
@@ -45,11 +44,12 @@ conventions: [README.md](README.md).*
 | `board.insight_per_round` | 1 | 0..5 | 253: times a seat may Turn a cube into insight a round (0: no limit) |
 | `board.liberate_neutral` | 1 | 0..1 | 252 (Matt's ruling 4): 1, Liberate leaves the site neutral; 0, it becomes the liberator's (r112, a screen's off arm) |
 | `board.cities_unowned` | 1 | 0..1 | 254 (Matt's candidate): 1, players never own a city (no bound city at setup, no city claims, a liberated city is its country's); 0, r114's rule |
-| `board.host_city` | 1 | 0..4 | 254: neutral cities a seat hosts (its node on or next to one, `host_reach`), collecting their energy in the income step unless it was bought that round; `host_more` cards raise it for their seat (0: none) |
+| `board.host_city` | 1 | 0..4 | 254: neutral cities a seat hosts (its node on or next to one, `host_reach`), collecting their energy in the income step (262: a hosted city can't be bought); `host_more` cards raise it for their seat (0: none) |
 | `board.host_reach` | 1 | 0..1 | 254: 0, a seat hosts a neutral city with its node on it; 1, on or next to it (one host a city, the players choosing) |
-| `board.antimatter_cubes` | 5 | 0..10 | standard action, the desperate source: research cubes for 1 antimatter, no limit a round (0: no such action) |
+| `board.antimatter_cubes` | 5 | 0..10 | standard action, the desperate source: research cubes for 1 antimatter and `antimatter_energy` energy, no limit a round (0: no such action) |
+| `board.antimatter_energy` | 2 | 0..5 | 262 (Matt, 2026-11-17): standard action Make antimatter: energy it pays beside its antimatter (a binding resource; still a poor hedge at the anchors) |
 | `board.botnet_credits` | 20 | 1..50 | standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays) |
-| `board.std_off` | 0 | 0..14 | a probe's switch: standard actions not offered, by place in the table from 1 (station, remove, lift, dispatch, ambassador, claim, liberate, insight, envoy, botnet, buy energy, antimatter, troop, factory; 0: none off) |
+| `board.std_off` | 0 | 0..13 | a probe's switch: standard actions not offered, by place in the table from 1 (station, remove, lift, dispatch, ambassador, liberate, insight, envoy, botnet, buy energy, antimatter, troop, factory; 0: none off) |
 | `adversary.difficulty` | 0 | 0..4 | difficulty level 0-4 (each level includes the ones below) |
 | `adversary.stage_cards` | 5, 5, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
 | `adversary.supply_per_country` | 24 | 0..40 | agents in the supply per country |

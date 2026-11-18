@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 122. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 123. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -94,7 +94,7 @@ by the cube on it:
 
 | State | Cube | A city | A research station | A factory |
 |---|---|---|---|---|
-| **Neutral** | none | 1 energy to a player whose node is on or next to it (its **host**: one city each, two with Twin City Compact; one host a city), unless it was bought (Buy energy, §8) | 1 neutral cube onto its megaproject | nothing |
+| **Neutral** | none | 1 energy to a player whose node is on or next to it (its **host**: one city each, two with Twin City Compact; one host a city); only a city no one hosts may be bought (Buy energy, §8) | 1 neutral cube onto its megaproject | nothing |
 | **A player's** | that player's | never: **no player owns a city** | 1 cube in its owner's color | 1 chip to its owner |
 | **Corrupted** (the adversary's) | adversary | 1 Discord | 1 adversary cube onto its megaproject; once that is complete, 1 cube onto the adversary's research track | 1 adversary troop on its hex |
 
@@ -250,12 +250,12 @@ Nothing has a holding limit, and nothing caps your income.
 | Resource | Kept between rounds? | Mainly from | Mainly spent on |
 |---|---|---|---|
 | **Credits** | yes | income, cards, track spaces, megaprojects | card costs, standard actions, threats, a neutral city's energy |
-| **Energy** | yes | income, the city (or two) your nodes host, neutral cities (bought), cards | it powers things: placing nodes, powers (Outpost, Buy In, Accord, Bulwark, Patrol), building Actions, cards, threats |
+| **Energy** | yes | income, the city (or two) your nodes host, neutral cities (bought), Horizon's two converters, cards | it powers things: placing nodes, powers (Outpost, Buy In, Accord, Bulwark, Patrol), building Actions, cards, threats |
 | **Insight** | **no** | set each round (below) | keeping and playing cards, the Researcher's Peer Review, Field Survey and Synthesis, threats |
 | **Chips** | yes | your factories, cards, Builder powers | buildings, research stations, Annex, Procure, chip converters, threats |
-| **Antimatter** | yes | the antimatter plants, the steady source (Penning Trap Array, Antiproton Foundry, Positron Storage Ring, Dark Fiber Collider, Treaty Isotope Bank, Cyclotron Lease: a resource each use for 1, once a round, some with a second gain beside it), each board's rare burn (Teardown, Meltdown, Reclaim), Horizon's two converters, two capstones, cards; at worst 5 research cubes | the majors: tier-2 cards (liberations, Annihilation Lance, Fusion Commons, Antimatter Accord, Collider Consortium and more), Orbital Relay Launcher's Action, Containment Reactor, Accelerator Diplomacy |
+| **Antimatter** | yes | the antimatter plants, the steady source (Penning Trap Array, Antiproton Foundry, Positron Storage Ring, Dark Fiber Collider, Treaty Isotope Bank, Cyclotron Lease: a resource each use for 1, once a round, some with a second gain beside it), each board's rare burn (Teardown, Meltdown, Reclaim), two capstones, cards; at worst 5 research cubes (with 2 energy) | the majors: tier-2 cards (liberations, Annihilation Lance, Fusion Commons, Antimatter Accord, Collider Consortium and more), Orbital Relay Launcher's Action, Containment Reactor, Accelerator Diplomacy |
 | **Research cubes** | yes | your stations, once their megaproject is complete (§9); Cryo Sample Vault; Open Archive; cards (Field Grant, Particle Accelerator, Collider Consortium, Survey Drone Fleet) | 1 for 1 insight once a round, converters, Penning Trap Array, Field Assay Team, Research Reactor, Survey Drone Fleet, threats |
-| **Ambassadors** | yes (your supply) | 1 at the start, cards, Outpost, 20 credits | claiming, liberating, Remove agents, Envoy, threats |
+| **Ambassadors** | yes (your supply) | 1 at the start, cards, Outpost, 20 credits | liberating, Remove agents, Envoy, threats |
 | **Dispatches** | **no** | your board and track spaces, each round | the Dispatch action, 1 each |
 
 **Insight is this round's attention.** Your card-play track prints it, as in Spirit Island: 3 at its start, and on
@@ -443,8 +443,8 @@ levels 3-4), spend that many (the rest stay) and the rule fires, once a round at
 **Weapons Program: Muster 2** (each country, 2 troops on its lowest-numbered factory, else city). At level 3 and up
 it is **Muster 3**. Like every Muster, the level surcharge adds to it.
 
-Take cubes off with **Counterintelligence Sweep** (remove 4, draw a card) and **Arms Inspectors** (an Action: remove
-2). The track is public: watch it as you watch the projects.
+Take cubes off with **Counterintelligence Sweep** (remove 4, draw a card) and **Arms Inspectors** (remove 2 when built,
+and an Action: remove 2). The track is public: watch it as you watch the projects.
 
 *Sources: rules/adversary.md (Each round, Income, Rally X, Corrupt X, Botnets), rules/war.md (the march);
 content/adversary.json; crates/aic-core/src/modules/adversary/, modules/plan.rs, modules/board/troops.rs.*
@@ -573,18 +573,17 @@ Standard actions are always there, a hedge against bad luck: cards and your boar
 | Action | Cost | Effect |
 |---|---|---|
 | **Dispatch** | 1 Dispatch | target a site, base, node or botnet: put one of your ambassadors on it, from your supply or from anywhere on the map (not the hex it is on) |
-| **Claim** | ambassadors: station 4, factory 3 (below) | target a neutral station or factory with no agent on it: it becomes yours (never a city) |
-| **Liberate** | ambassadors: city 5, station 4, factory 3 | target a corrupted site: it becomes neutral |
+| **Liberate** | ambassadors: city 5, station 4, factory 3 (below) | target a corrupted site: it becomes neutral |
 | **Remove agents** | 2 ambassadors from your supply, spent | target agents: remove up to 3 on or next to it; nothing is placed |
 | **Remove a troop** | 10 credits | once a round: target troops, remove 1 on it |
 | **Take down a botnet** | 20 credits | target a botnet where your ambassador stands: remove it (the ambassador stays) |
-| **Buy energy** | 5 credits | target a neutral city that isn't blocked or blacked out (bought, it hosts no one this round): gain its energy (1); each city once a round, for all players together |
+| **Buy energy** | 5 credits | target a neutral city that isn't blocked, blacked out or hosted: gain its energy (1); each city once a round, for all players together |
 | **Lift Fallout** | 2 research cubes | target Fallout: remove it; the one standard action that removes Fallout |
 | **Build a research station** | 2 chips | target an open hex that isn't an industrial zone or Fallout: the station is yours |
 | **Envoy** | 1 ambassador from your supply | remove 1 Discord from the Discord track |
 | **Gain an ambassador** | 20 credits | into your supply |
 | **Turn a cube into insight** | 1 research cube | gain 1 insight; once a round |
-| **Make antimatter** | 5 research cubes | gain 1 antimatter: the desperate way; your engines make it far cheaper |
+| **Make antimatter** | 5 research cubes | gain 1 antimatter and 2 energy: the desperate way; your engines make it far cheaper |
 | **Sell** | a card from your hand | gain 1 credit |
 
 ### Ambassadors meet agents
@@ -596,33 +595,32 @@ and an ambassador never share a hex.
 
 **Remove agents** removes its agents one at a time, your choice, and you may stop early.
 
-### Claim and Liberate
+### Liberate and claiming
 
-**Claim** takes a **neutral** research station or factory (**never a city**: no player owns one); **Liberate** takes a
-**corrupted** site, a city too. Otherwise they work the same way:
+**Liberate** takes a **corrupted** site, a city too:
 
 - **Where:** the site must be in your reach.
-- **Price, in ambassadors:** station **4**, factory **3**, the same for both; Liberate a city **5**.
-- **No agents:** a site with an agent on it can't be claimed or liberated: remove them first (Remove agents, a card, a power).
+- **Price, in ambassadors:** city **5**, station **4**, factory **3**.
+- **No agents:** a site with an agent on it can't be liberated or claimed: remove them first (Remove agents, a card, a power).
 - **Who pays:** your own ambassadors standing on the site pay first, then your supply. Another player's never pay.
-- **Result:** Claim puts your cube on: the site is **yours**. Liberate **frees** it: the adversary's cube comes off and
-  the site is left **neutral**, and it adds Unity: city **+5**, station or factory **+2**. Claim a station or factory
-  afterward if you want it; a city stays its country's. A botnet on the site stays. A **Liberated marker** goes on it: a Corrupt line or natural corruption needs **1 agent
+- **Result:** Liberate **frees** it: the adversary's cube comes off and
+  the site is left **neutral**, and it adds Unity: city **+5**, station or factory **+2**. A card may claim a station
+  or factory afterward; a city stays its country's (no player ever owns one). A botnet on the site stays. A **Liberated marker** goes on it: a Corrupt line or natural corruption needs **1 agent
   more** than its corrupt number to take it back (§6); a card that takes or flips a site outright needs none. The marker comes off when anyone claims the site, the adversary retakes it or
   it is destroyed. A node on that hex still falls to 2 agents.
 
 > **Example: block, then liberate.** A corrupted city in your reach makes 1 Discord a round. You Dispatch an
 > ambassador onto it (1 Dispatch): now it is blocked and makes nothing. A round later you Liberate it: the price is 5 (no agents
 > on it), your standing ambassador pays 1 and your supply pays 4. The adversary's cube comes off and you add 5 Unity.
-> The city is its country's again: anyone may buy its energy, and your node next to it hosts it.
+> The city is its country's again, and your node next to it can host it (a hosted city can't be bought).
 
 **Liberate cards** (Popular Uprising and some tier-2 cards) liberate their target, a corrupted city in reach, as Liberate does, for the card's own price
 instead of ambassadors. Hostile Buyout alone may target any corrupted site, and puts your cube on a station or factory
 it frees (a city it frees stays neutral). The others then **claim a facility next to the city**: a neutral station or
 factory there with no agent on it becomes yours, even out of your reach; with none, nothing more happens.
 
-A card that lets you **claim** a neutral research station or factory claims it as Claim does, unpaid: one with an
-agent on it can't be claimed (clear it first). Open Research Campus and Industrial Commons open a station or factory
+**Only cards claim.** A card that lets you **claim** a neutral research station or factory in your reach puts your cube
+on it: it is **yours**. One with an agent on it can't be claimed (clear it first). Open Research Campus and Industrial Commons open a station or factory
 on their target and claim it: the cards' way to an owned research station.
 
 ### Megaprojects and converters
@@ -634,7 +632,7 @@ that country in reach** (any city, corrupted ones too) may use the converter, **
 
 | Megacorp (megaproject) | Payout, each of your cubes | Converter | Chip converter |
 |---|---|---|---|
-| Horizon (Tidal Grid) | 3 energy, 3 credits | 3 research cubes + 1 energy → 1 antimatter | 2 chips → 1 antimatter |
+| Horizon (Tidal Grid) | 3 energy, 3 credits | 3 research cubes → 5 energy | 2 chips → 3 energy |
 | Cintamani (Polar Compute Array) | draw 1 card, 5 credits | 1 research cube → 2 insight | 2 chips → draw 3 |
 | Onyx (Mountain Fusion Works) | 2 chips, 3 credits | 1 research cube → 1 chip | none |
 | Biomia (Delta Seawall) | 1 Unity, draw 1 card | 1 research cube → 1 Unity | 2 chips → 2 Unity, draw 1 |
@@ -657,8 +655,8 @@ map before the next.
    own hex. A neutral factory, or a blocked one, makes nothing.
 2. **Cities.** Each unblocked city makes 1 energy: a neutral city with your node on or next to it for you (its
    **host**: each player hosts one city, two after playing Twin City Compact, each city has one host, the players
-   choosing), unless its energy was
-   bought this round (Buy energy, §8); a corrupted city 1 Discord instead.
+   choosing; a hosted city can't be bought, §8, but a city bought earlier this round may still be hosted); a
+   corrupted city 1 Discord instead.
 3. **Stations.** A player's station makes 1 cube in its owner's color; a neutral one makes 1 neutral cube. They go
    onto their country's megaproject. Once it is complete, a player's cubes go onto their board as **research cubes**,
    and a neutral station's are lost. A corrupted station makes 1 **adversary cube** onto its country's megaproject
@@ -678,7 +676,7 @@ map before the next.
    factory next to it** (a city makes none of its own; a player's or the adversary's factory feeds nothing; an agent on
    the city stops nothing). A city holds at most 3. A city with no unclaimed factory beside it does nothing.
 8. **Cities build.** Then, country by country in hex-number order, each city holding **3 chips** spends them and builds
-   a **neutral** facility (anyone may claim it, §8): whichever of factory and research station it has **fewer of next
+   a **neutral** facility (a card may claim it, §8): whichever of factory and research station it has **fewer of next
    to it**, counting anyone's (a tie: a factory). A factory goes on a **free** industrial zone (no factory, station or
    Fallout; a node doesn't count), a station on free open land that is no industrial zone and no base, **next
    to the city**; with none, on one within 2 hexes **in the city's own country**; with none there, nothing is built

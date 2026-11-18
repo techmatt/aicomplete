@@ -106,12 +106,12 @@ fn liberating_a_city_pays_from_your_own_ambassadors_and_leaves_it_neutral() {
     assert_eq!(board::liberate_cost(&w, &g, h), Some(5));
     // Another seat's ambassadors on the city pay nothing of seat 0's bill.
     put(&mut g, h, ambassador(1), 2);
-    assert_eq!(board::site_supply_cost(&w, &g, 0, h, true), Some(5));
+    assert_eq!(board::site_supply_cost(&w, &g, 0, h), Some(5));
     set_res(&mut g, 0, Resource::Ambassadors, 3);
     assert!(!rules.legal_actions(&g).contains(&std_act(0, "liberate")), "3 of 5");
     // Seat 0's own 2 on it pay first: 3 from the supply.
     put(&mut g, h, ambassador(0), 2);
-    assert_eq!(board::site_supply_cost(&w, &g, 0, h, true), Some(3));
+    assert_eq!(board::site_supply_cost(&w, &g, 0, h), Some(3));
     set_res(&mut g, 0, Resource::Ambassadors, 3);
     let unity = g.var("alignment.unity") + alignment::unity_pending(&g);
     act(&rules, &mut g, std_act(0, "liberate"));

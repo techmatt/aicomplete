@@ -337,10 +337,10 @@ fn liberator(w: &World, g: &GameState, h: usize) -> Option<(usize, i64)> {
         .min_by_key(|&(s, short)| (short, s))
 }
 
-/// An ambassador stands on `h` that holds nothing: no node or player's site there, no site whose Claim or Liberate
-/// it pays toward (r75: your ambassadors on a site pay its bill first).
+/// An ambassador stands on `h` that holds nothing: no node or player's site there, no site whose Liberate it pays
+/// toward (r75: your ambassadors on a site pay its bill first; 262 cut the Claim action, which they paid too).
 fn spare(w: &World, g: &GameState, h: usize) -> bool {
-    standing(g, h) > 0 && !holds(g, h) && board::liberate_cost(w, g, h).is_none() && board::claim_cost(w, g, h).is_none()
+    standing(g, h) > 0 && !holds(g, h) && board::liberate_cost(w, g, h).is_none()
 }
 
 /// A hex an agent may be pushed to without harm: land with no site, and no clean site next to it.

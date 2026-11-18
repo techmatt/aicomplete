@@ -81,31 +81,29 @@ pub fn site_kind(w: &World, g: &GameState, h: usize) -> Option<SiteKind> {
     }
 }
 
-/// 137: the ambassadors that claim a neutral site of `kind` (the adversary's
-/// Corrupt X for that type: `claim_city` is today's `corrupt_at`).
+/// 137: the site price of a neutral station or factory: `claim_station`, `claim_factory`. 262 cut the Claim
+/// action that paid it in ambassadors: it is Liberate's price for a station or factory now (Matt kept the
+/// names), and the base a card's claim adds its extra to ([`card_claim_extra`]). A city has none (254: no city
+/// is claimed; Liberate's city price is `liberate_at`).
 pub fn claim_ambassadors(w: &World, kind: SiteKind) -> i64 {
-    w.int(&format!("board.claim_{}", kind.name())).max(1)
+    match kind {
+        SiteKind::City => liberate_at(w),
+        _ => w.int(&format!("board.claim_{}", kind.name())).max(1),
+    }
 }
 
 /// 137: the ambassadors that liberate an adversary site of `kind`.
 pub fn liberate_ambassadors(w: &World, kind: SiteKind) -> i64 {
-    match kind {
-        // 206 (amendment 9208): Claim's table (its city price is `liberate_at`, the hot knob, 5 as `claim_city`).
-        SiteKind::City => liberate_at(w),
-        _ => claim_ambassadors(w, kind),
-    }
+    // 206 (amendment 9208): one table (its city price is `liberate_at`, the hot knob).
+    claim_ambassadors(w, kind)
 }
 
-/// What claiming neutral site `h` costs in ambassadors (one more for each
-/// agent on it, which cancel), if it is a neutral site.
+/// What claiming neutral station or factory `h` would cost in ambassadors, if a card may claim it: the site's
+/// price ([`claim_ambassadors`]); a site with an agent on it, or a city (254, 262), can't be claimed.
 pub fn claim_cost(w: &World, g: &GameState, h: usize) -> Option<i64> {
     let kind = site_kind(w, g, h)?;
     // 206 (amendment 9208): no "+1 per agent": a site with an agent on it can't be claimed (clear them first).
-    if corrupted(g, h) || cube_owner(g, h).is_some() || g.tokens(h, ADV_AMBASSADOR) > 0 {
-        return None;
-    }
-    // 254 (`cities_unowned`): no city is claimed.
-    if kind == SiteKind::City && cities_unowned(w) {
+    if corrupted(g, h) || cube_owner(g, h).is_some() || g.tokens(h, ADV_AMBASSADOR) > 0 || kind == SiteKind::City {
         return None;
     }
     Some(claim_ambassadors(w, kind))
@@ -115,31 +113,30 @@ pub fn claim_cost(w: &World, g: &GameState, h: usize) -> Option<i64> {
 /// agent on it), if it is an adversary site.
 pub fn liberate_cost(w: &World, g: &GameState, h: usize) -> Option<i64> {
     let kind = site_kind(w, g, h)?;
-    // 206 (amendment 9208): as Claim, no agent on it.
+    // 206 (amendment 9208): no agent on it.
     if !corrupted(g, h) || g.tokens(h, ADV_AMBASSADOR) > 0 {
         return None;
     }
     Some(liberate_ambassadors(w, kind))
 }
 
-/// r75 (Matt's ruling 2, 2026-11-10): the ambassadors standing on site `h` that a Claim or Liberate of
-/// `seat` there spends before its supply: the seat's own, never another player's (166 spent anyone's).
+/// r75 (Matt's ruling 2, 2026-11-10): the ambassadors standing on site `h` that a Liberate of `seat` there
+/// spends before its supply: the seat's own, never another player's (166 spent anyone's).
 pub fn site_standing(g: &GameState, seat: usize, h: usize) -> i64 {
     g.tokens(h, ambassador(seat))
 }
 
-/// What seat `seat`'s supply pays to claim neutral site `h` (`liberate`: false) or liberate adversary site
-/// `h` (true): the bill less its own ambassadors standing there, if there is such a site.
-pub fn site_supply_cost(w: &World, g: &GameState, seat: usize, h: usize, liberate: bool) -> Option<i64> {
-    let bill = if liberate { liberate_cost(w, g, h) } else { claim_cost(w, g, h) };
-    bill.map(|n| (n - site_standing(g, seat, h)).max(0))
+/// What seat `seat`'s supply pays to liberate adversary site `h`: the bill less its own ambassadors standing
+/// there, if there is such a site (262 cut the Claim action, which paid the same way).
+pub fn site_supply_cost(w: &World, g: &GameState, seat: usize, h: usize) -> Option<i64> {
+    liberate_cost(w, g, h).map(|n| (n - site_standing(g, seat, h)).max(0))
 }
 
-/// r75's one payment rule for Claim and Liberate: `seat` pays the bill of site `h` with its ambassadors on
-/// it first, then its supply (each agent there cancels one of them: the bill's "1 more for each agent").
-pub fn pay_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, liberate: bool) {
+/// r75's one payment rule, Liberate's: `seat` pays the bill of site `h` with its ambassadors on it first, then
+/// its supply.
+pub fn pay_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
     let w = cx.world;
-    let mut left = if liberate { liberate_cost(&w, g, h) } else { claim_cost(&w, g, h) }.unwrap_or(0);
+    let mut left = liberate_cost(&w, g, h).unwrap_or(0);
     let k = ambassador(seat);
     let n = g.tokens(h, k).min(left);
     if n > 0 {
@@ -151,9 +148,9 @@ pub fn pay_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, liberate:
 }
 
 /// The neutral research stations and factories seat `seat` may claim with a card (142, `claim_site`; 256:
-/// factories too): in its reach, a site claim on it (`can_claim`), and, as the Claim action asks (148, D70),
-/// one of the seat's ambassadors for each agent on it ([`card_claim_extra`]), paid as the action pays (178:
-/// [`pay_card_claim`]). A city is never claimed (254).
+/// factories too): in its reach, a site claim on it (`can_claim`), and any extra ([`card_claim_extra`], 0 since
+/// 206 refused a site with an agent on it), paid from the seat's ambassadors (178: [`pay_card_claim`]). A city is
+/// never claimed (254).
 pub fn card_claim_sites(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
     let held = g.resource(seat, Resource::Ambassadors);
     (0..g.hexes.len())
@@ -173,15 +170,15 @@ pub fn card_claimable_near(w: &World, g: &GameState, h: usize) -> bool {
         && !hex_flagged(w, g, RoundFlag::Embargo, h)
 }
 
-/// 148 (D70): what a card's claim of neutral site `h` costs beyond the card's own price: the Claim
-/// action's "1 more for each agent on it", in the seat's ambassadors (they cancel).
+/// 148 (D70): what a card's claim of neutral site `h` costs beyond the card's own price: the old Claim action's
+/// "1 more for each agent on it", in the seat's ambassadors (0 since 206: a site with an agent can't be claimed).
 pub fn card_claim_extra(w: &World, g: &GameState, h: usize) -> Option<i64> {
     let kind = site_kind(w, g, h)?;
     claim_cost(w, g, h).map(|n| n - claim_ambassadors(w, kind))
 }
 
 /// 178 (amendment 8112): a card's claim of station `h` pays its extra ([`card_claim_extra`]) as [`pay_site`]
-/// pays the Claim action's bill: the seat's own ambassadors on the station first, then its supply.
+/// pays Liberate's bill: the seat's own ambassadors on the station first, then its supply.
 pub fn pay_card_claim(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
     let w = cx.world;
     let mut left = card_claim_extra(&w, g, h).unwrap_or(0);
@@ -197,7 +194,7 @@ pub fn pay_card_claim(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
     }
 }
 
-/// Seat `seat` claims neutral site `h` (the Claim action, paid, or a card: `route`, 142's tally): the
+/// Seat `seat` claims neutral site `h` (a card, or a liberate card's rider: `route`, 142's tally): the
 /// agents on it cancel, and its cube goes on.
 pub fn claim_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, route: &str) {
     let w = cx.world;
@@ -222,8 +219,8 @@ pub fn claim_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, route: 
 
 /// Adversary site `h` is liberated by seat `seat`'s massed ambassadors (the
 /// Liberate action, paid): the agents on it cancel and the adversary's cube comes
-/// off; 252 (Matt's ruling 4, free then claim; reverses r75) leaves it neutral, for a Claim or a card to
-/// take, unless `own` (a rare card power) puts the seat's cube on. A city sways `alignment.free_city`
+/// off; 252 (Matt's ruling 4, free then claim; reverses r75) leaves it neutral, for a card to claim
+/// (262: only cards claim), unless `own` (a rare card power) puts the seat's cube on. A city sways `alignment.free_city`
 /// toward Unity, a station or factory `alignment.free_facility` (a botnet on it
 /// stays). No agents land on it. A liberate card liberates through here too, unpaid (178, Matt's ruling #29).
 pub fn liberate_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, own: bool) {

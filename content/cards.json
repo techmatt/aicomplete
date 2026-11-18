@@ -91,6 +91,10 @@
       "kind": "datasets",
       "per": 1,
       "here": true
+     },
+     {
+      "op": "draw",
+      "count": 1
      }
     ]
    }
@@ -3095,9 +3099,9 @@
   "name": "Fusion Commons",
   "tier": 2,
   "kind": "event",
-  "cost": 4,
+  "cost": 0,
   "antimatter": 2,
-  "insight": 0,
+  "insight": 1,
   "needs": [
    [
     "science",
@@ -6211,8 +6215,8 @@
   "name": "Counterintelligence Sweep",
   "tier": 1,
   "kind": "event",
-  "cost": 5,
-  "insight": 0,
+  "cost": 1,
+  "insight": 1,
   "tags": [
    "cyber"
   ],
@@ -6244,6 +6248,12 @@
      "amount": 2
     }
    ]
-  }
+  },
+  "effects": [
+   {
+    "op": "remove_research",
+    "amount": 2
+   }
+  ]
  }
 ]
