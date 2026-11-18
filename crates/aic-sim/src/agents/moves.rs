@@ -208,10 +208,20 @@ fn finds(w: &World, g: &GameState, t: &super::value::Table, o: &Op, h: usize, cl
         }
         Op::Harden { count: k, at } => count(*at, &|x| i64::from(board::hardenable(g, x))).min(*k) as f64 * t.op("harden"),
         Op::ClearCity { max } => count(Area::Near, &|x| agents(g, x)).min(if *max > 0 { *max } else { i64::MAX }) as f64 * t.op("clear_city"),
-        // Liberating: the agents on and next to the city come off with it, the twist's troops in its country.
-        Op::Liberate { troops: k, .. } => {
-            count(Area::Near, &|x| agents(g, x)) as f64 * t.op("remove_ambassador") * 0.5
+        // Liberating: the agents on the site come off with it (261: not those next to it, `liberate_site`), the
+        // twist's troops in its country; with `own` (Hostile Buyout) a station or factory becomes the seat's, at
+        // `liberate_own`'s row, which hedges for a city the card might take (as read on 48 dev seeds: a seen-site
+        // price is an agents item's).
+        Op::Liberate { troops: k, own, .. } => {
+            let owned = *own && matches!(board::site_kind(w, g, h), Some(board::SiteKind::Station | board::SiteKind::Factory));
+            agents(g, h) as f64 * t.op("remove_ambassador") * 0.5
                 + count(Area::Country, &troops).min(*k) as f64 * t.op("liberate_troops")
+                + if owned { t.op("liberate_own") } else { 0.0 }
+        }
+        // 261: a liberate card's rider claims a neutral station or factory next to the city it frees (256): seen
+        // here, so at its full row (`claim_near` discounts it only where the card is priced unseen).
+        Op::ClaimSite { near: true } => {
+            if near(Area::Near).into_iter().any(|x| board::card_claimable_near(w, g, x)) { t.op("claim_site") } else { 0.0 }
         }
         Op::RemoveBotnet => count(Area::Near, &troops) as f64 * 0.1,
         _ => 0.0,

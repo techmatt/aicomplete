@@ -370,6 +370,25 @@ fn card_claims_a_station_as_claim_does() {
     assert_eq!(g.resource(0, Resource::Ambassadors), 3);
 }
 
+/// 261: a card that opens a site and claims it (Industrial Commons, Open Research Campus) can't target a free zone
+/// with an agent on it, where its claim would do nothing; a card that only builds there (Prefab Plant Kit) still can.
+#[test]
+fn a_card_opening_a_site_to_claim_skips_a_zone_with_an_agent() {
+    use crate::content::{Op, TargetSpec};
+    use crate::modules::effects;
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let zone = (0..g.hexes.len()).find(|&h| w.map.hexes[h].industrial).expect("an industrial zone");
+    let me = w.map.hexes[zone].neighbors[0];
+    put(&mut g, me, node(0), 1);
+    let on = TargetSpec::FreeZone;
+    let claim = [Op::ClaimSite { near: false }];
+    assert!(effects::target_hexes_before(&w, &g, 0, on, &claim).contains(&zone));
+    put(&mut g, zone, ADV_AMBASSADOR, 1);
+    assert!(!effects::target_hexes_before(&w, &g, 0, on, &claim).contains(&zone), "its claim would do nothing");
+    assert!(effects::target_hexes_before(&w, &g, 0, on, &[]).contains(&zone), "a build alone still may");
+}
+
 /// 137: Liberate turns an adversary station or factory in reach neutral for
 /// `board.claim_station` / `board.claim_factory` ambassadors (206: not with an
 /// agent on it) and sways `free_facility` Unity; a botnet on it stays and

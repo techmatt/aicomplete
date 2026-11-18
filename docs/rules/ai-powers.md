@@ -71,8 +71,9 @@ insight (12) for a node and a card (13): 1.08. Each is once a round; the step's 
 
 **Node powers' riders (candidate).** A node power places next to your nodes as any placement does, and its bonus comes
 only when the new node is **on or next to a fresh spot of its board's kind**, one none of your other nodes is on or
-next to: Buy In's chip by a factory, Accord's ambassador by a city (a new ambassador onto that city, standing toward
-its claim), Peer Review's insight by a research station. With no such spot it still places, without the bonus. Why
+next to: Buy In's chip by a factory, Accord's ambassador by a city (a new ambassador onto that city, where it
+stands as any ambassador does), Peer Review's insight by a research station that stood there before the placement (not one its uncovered track
+space builds, r122). With no such spot it still places, without the bonus. Why
 fresh: a city, a factory and a station are on or next to almost every hex, so "on or next to" alone was met on 99-100%
 of placements; a fresh spot, about 72%, pays for reaching a new one. Nothing places a node anywhere: next to your
 nodes, occasionally within 2 (Annex, the Builder's top route; Matt, 2026-11-16), and cards may target.
@@ -112,8 +113,8 @@ tier-2 cards and a few dear tier-1 ones.
 
 Insight is this round's attention, readable off the board: it pays keeps and plays ([player-cards.md](player-cards.md)),
 and credits never buy a keep. The card-play track prints it as totals ([ai-boards.md](ai-boards.md), *The card-play
-track*); the economy track prints none. Every player has the cube converter, a standard action with no limit a round
-([economy.md](economy.md)). **Insight must bind** (the target: about 6 a round to drafting and 2-4 to plays), so the
+track*); the economy track prints none. Every player has the cube converter, a standard action: 1 research cube for 1 insight, once a
+round (`insight_cubes`, `cube_insight`, `insight_per_round`; [economy.md](economy.md)). **Insight must bind** (the target: about 6 a round to drafting and 2-4 to plays), so the
 boards' own insight ways are few:
 
 - **Protector, Vigil** (an Effect of Wall, not a power; some cap is locked, its size a candidate): the first two
@@ -128,16 +129,17 @@ boards' own insight ways are few:
 
 **For new players.** Insight is what you spend to keep and play cards: each round, the number on the rightmost space you've uncovered on
 your card-play track that shows one (3 at the start). When you
-are short, turn 2 research cubes into 1 insight at any time (Cintamani's converter gives 2 for 1), and use your board's own
+are short, turn 1 research cube into 1 insight once a round (Turn a cube into insight; Cintamani's converter gives 2 insight for 1 cube), and use your board's own
 way: the Protector gains 1 each of the first two times each round a troop ends its march next to its node (Vigil), the
 Researcher gains 1 with each node Peer Review places by a station new to its nodes and may spend 1 for a card (Synthesis). Insight you don't spend still goes at the round's end (the Researcher
 keeps all of it), but a few threat counters offer insight (3 at tier 1, 4 at tier 2: [threats.md](threats.md) *Counters*),
 so spare insight can stop one.
 
 **Insight loops.** Nothing turns insight back into what makes it: insight buys cards, and a card that pays insight
-(a trigger, an income) is capped by plays and slots. No card makes research cubes, so cubes → insight → cards → cubes
-has no card in it. Every megaproject converter is once a round, which caps Onyx's loop: 1 cube → 1 chip → a 1-chip station → 1 cube a round once the
-station's card is complete, which would otherwise double its cubes each round, capped only by open hexes in reach.
+(a trigger, an income) is capped by plays and slots. The cards that make research cubes are capped by a once-a-round Action (Particle Accelerator), an
+income of 1 a round (Cryo Sample Vault) and one-time plays (Field Grant, Collider Consortium, Survey Drone Fleet), and the cube converter is once a
+round, so cubes → insight → cards → cubes can't run away. Every megaproject converter is once a round, which caps Onyx's loop: 1 cube → 1 chip, 2 chips → a station → 1 cube a round once the
+station's card is complete, which would otherwise grow its cubes each round, capped only by open hexes in reach.
 
 ## Shelters and hardening
 

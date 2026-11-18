@@ -40,7 +40,8 @@ what it prints; the `cards/*_read.py` readers take seconds.
   smoke (no DIR: runs `use.json` to `out/loop-smoke`): timeouts, ends, most plays of one card a game; exits 1 on a
   timeout or `--max-plays`.
 - `cards/counter_names.py DIR... [--all]` (DIR, games file or `FILE=SPEC`): counter keys the read scripts, web scripts and `crates/aic-sim` (agents
-  aside) quote that no game in DIR wrote; rare events and test strings list too, so don't gate on it.
+  aside) quote that no game in DIR wrote, and each top-level alternative of the sweep's `COUNTER_EVENTS*` moments
+  no key matches; rare events and test strings list too, so don't gate on it.
 - `cards/screen.py`: named columns over experiment outputs (`--columns a,b,c`, `--preset tiers|041|034|018|016`,
   `--sources`, `--list`; `tiers`, offered, kept and played by tier, is a card rework's first screen); `--gate DIR`
   (gates are suspended) each check against its own agent, then unspent.
@@ -130,7 +131,8 @@ what it prints; the `cards/*_read.py` readers take seconds.
   and gap ± SE by level, losses, board powers (by counter), standard actions, counters, card plays, resource use. Its
   `games`, `seat_boards`, `counter_sums`, `resources`, `paired_gap` are the library for an item's own reader.
 - `bench/am_read.py READ[,READ...]` (same forms): antimatter by source, made and spent, burns by round, per lever
-  (`PAIR_LEVER` variants) and agent (230's reader; stops if a plant or burn it names left content).
+  (`PAIR-LEVER` or `PAIR_LEVER` variants; an unknown pair stops it) and agent (230's reader; stops if a plant or
+  burn it names left content).
 - `bench/projects_read.py READ [--md OUT]` (folder, games file or `FILE=SPEC`): each project's reveals, completions, compute drained and map
   moves a completion, by level.
 - `bench/card_ranks.py DIR A B [--variant V]...`: Spearman of the cards' keep and play rates, agent B against A.

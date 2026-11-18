@@ -38,6 +38,18 @@ pub fn target_hexes(w: &World, g: &GameState, seat: usize, on: TargetSpec) -> Ve
     (0..g.hexes.len()).filter(|&h| in_reach(w, g, seat, h) && meets(w, g, seat, on, h)).collect()
 }
 
+/// 261: the hexes a target `on` may take when `rest` follows it in the same list: a site a card opens and then
+/// claims (Industrial Commons, Open Research Campus) is no target with an agent on it, which no claim takes.
+pub fn target_hexes_before(w: &World, g: &GameState, seat: usize, on: TargetSpec, rest: &[Op]) -> Vec<usize> {
+    let mut hexes = target_hexes(w, g, seat, on);
+    if matches!(on, TargetSpec::EmptySite | TargetSpec::FreeZone)
+        && rest.iter().any(|o| matches!(o, Op::ClaimSite { near: false }))
+    {
+        hexes.retain(|&h| g.tokens(h, ADV_AMBASSADOR) == 0);
+    }
+    hexes
+}
+
 /// Hexes a removal effect of seat `s` may target: every card's map target
 /// is within the seat's reach (016).
 pub fn damage_hexes(w: &World, g: &GameState, seat: usize, ambassadors: i64, troops: i64) -> Vec<usize> {

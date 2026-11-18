@@ -14,8 +14,8 @@ quiet exception.
 3. **No arithmetic.** At most a simple "per X". No sums, series, formulas or running totals. **No "per hex of a
    country"** (ruling 6): every country has 16 hexes, so "1 per hex" is a hidden fixed number; print the number
    ("remove 6 troops in its country"). **Big numbers over "remove all X"** (*Martial Cordon*).
-4. **No trivial cards; every rider earns its text.** Drafting costs a keep (1 insight at tier 1, 2 at tier 2; never
-   credits) before the play cost, so a card must be worth that (ruling 1: *Surplus Auction*). A rider or
+4. **No trivial cards; every rider earns its text.** Drafting costs a keep (1 insight at tier 1, 3 at tier 2, 2 with the keep
+   upgrade; never credits) before the play cost, so a card must be worth that (ruling 1: *Surplus Auction*). A rider or
    conditional extra adding symbols and parsing but no decision ("gain 1 credit") is noise: fold its value into the
    base number, or cut it. **Fold a near-constant rider into the number** (ruling 3: *Blackout Script*: a botnet
    makes 1 compute, so "no compute next build" is one more compute removed).
@@ -48,7 +48,7 @@ quiet exception.
     jam of its type plus a rider of its tag, never a full counter (*Rapid Response*).
 15. **No recounting across cards** (ruling 12). A token effect counts only the tokens **on that card**, never "you
     have" across cards: recounting every round is tracking load. Token cards are progressive with a choice
-    ("Action: add 1 Operative here, OR get 1 credit per Operative here": *Agency Field Station*), and other cards add
+    ("Action: add 1 Dataset here, OR gain 1 insight per Dataset here": *Synthetic Data Forge*), and other cards add
     tokens to one card (*Recruit Operatives*). Nothing gains tokens by itself each round. A program cashing tokens in
     takes them from one card.
 16. **Tag chains** (ruling 10). Science, and other tags where it fits, has requirement chains: cards needing 3-4 of a
@@ -100,8 +100,8 @@ price ([card-pricing.md](card-pricing.md), *The method*).
 
 Derived: the keep, 4 a tier-1 card and 12 a tier-2 one (1 and 3 insight); +1 energy income 14 (4 rounds × 4.5 ×
 0.8); +1 chip income about 19 (4 rounds × 6 × 0.8). A research cube is 6 (9 when the play completes the
-megaproject), so Make antimatter (5 cubes, 30) loses against antimatter's 18: every engine making it (a plant's
-Action, Pair Forge) shows a clear gain, and every spend is a big one. Other units take `values.json` (a sway 4, a
+megaproject), so Make antimatter (5 cubes, 30) loses against antimatter's 18: every engine making it (a plant's Action:
+Positron Storage Ring, Cyclotron Lease and four more) shows a clear gain, and every spend is a big one. Other units take `values.json` (a sway 4, a
 node 8) or [card-pricing.md](card-pricing.md) (a city liberated 45); a botnet removed is 15 (252: the median card for the job; it was the action's 16). A
 card whose unit has no anchor sits inside 1.0-2.5× under both readings: a convert at its output's anchor and its
 input's, an engine's uses at the measured count and the conservative one.
@@ -119,7 +119,7 @@ a per-tag rate of 1 is a rate, not an amount.
 
 **Board state to size removals against:** agents median 6 a country (p90 10) and 6 in a seat's reach (p90 12: a
 power's or standard action's area; a card's is its target); troops 0-1 a country (p90 3); a project holds under its
-cost (7-22 compute a board).
+cost (7-24 compute a board).
 
 ## House wording
 

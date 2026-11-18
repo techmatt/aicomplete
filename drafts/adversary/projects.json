@@ -35,7 +35,7 @@
     "cyber"
    ],
    "cost": 14,
-   "text": "4 adversary research cubes onto each open megaproject. Each country: 2 cubes onto the adversary's research track.",
+   "text": "4 adversary cubes onto each open megaproject. Each country: 2 cubes onto the adversary's research track.",
    "effects": [
     {
      "op": "adversary_cubes",

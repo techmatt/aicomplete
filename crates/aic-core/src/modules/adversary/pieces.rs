@@ -110,6 +110,12 @@ pub fn land_troops(
     muster: bool,
 ) -> Res {
     let w = cx.world;
+    // 261 (D111): the landings a no-Muster token or a Wall stopped, by hex and guard, for one line each after.
+    let mut stopped: Vec<(usize, &str, i64)> = Vec::new();
+    let mut stop = |h: usize, by: &'static str| match stopped.iter_mut().find(|x| x.0 == h && x.1 == by) {
+        Some(x) => x.2 += 1,
+        None => stopped.push((h, by, 1)),
+    };
     for _ in 0..count {
         // 068: a landing enters its hex, so a Wall stops it too. 175: a deterministic landing (a Muster) aims at
         // the lowest-numbered factory whatever stands there, and a Wall there keeps it in the supply; a chosen
@@ -137,14 +143,17 @@ pub fn land_troops(
             i
         };
         // 167: a Muster prohibition keeps the troop in the supply where its condition holds.
+        let h = spots[i];
         if muster {
-            if let Some(wh) = super::plan::prohibition_on(g, Step::Muster, spots[i]) {
+            if let Some(wh) = super::plan::prohibition_on(g, Step::Muster, h) {
                 prohibit_tally(g, cx, Step::Muster, wh, 1);
+                stop(h, "A no-Muster token");
                 continue;
             }
         }
-        if board::walled(&w, g, spots[i]) {
+        if board::walled(&w, g, h) {
             cx.tally(g, "adversary.walled_landing", 1);
+            stop(h, "The Protector's Wall");
             continue;
         }
         let source = if muster {
@@ -164,6 +173,10 @@ pub fn land_troops(
                 }
             }
         }
+    }
+    for (h, by, n) in stopped {
+        let troops = if n == 1 { "a troop".to_string() } else { format!("{n} troops") };
+        cx.note(Some(h), || format!("{by} keeps {troops} off {}", hex_name(&w, h)));
     }
     Ok(())
 }

@@ -4,7 +4,8 @@
     python scripts/bench/am_read.py READ[,READ2...]
 
 READ is a run folder, a games file with a header, or FILE=SPEC (a farm-seeds out file and its spec): see
-`screens.stream`. A variant named `PAIR_LEVER` reads as lever LEVER of pair PAIR (`PAIR` alone: lever `base`). Per
+`screens.stream`. A variant named `PAIR-LEVER` or `PAIR_LEVER` reads as lever LEVER of pair PAIR (`PAIR` alone: lever
+`base`; `read_lib.split_variant`); a PAIR not in bp, br, pr stops the read. Per
 lever and agent: antimatter made and spent a seat-game; supply shares by source (plants' Actions, Horizon's converter,
 upkeep, burns, Make antimatter, the rest: cards' on-play gains and other Actions); the cheap share (Make antimatter
 plus tier-1 cards, as design_check counts it); each burn's uses a seat-game of its board, its share in rounds 1-4 and
@@ -17,6 +18,7 @@ from collections import defaultdict
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from screens import cells_of, content, stream  # noqa: E402
+from read_lib import split_variant  # noqa: E402
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 AM = 4  # games.jsonl's resource order: credits, insight, energy, chips, antimatter, cubes, card tokens, ambassadors
@@ -60,8 +62,11 @@ def load(reads):
             if 'cell' not in g:
                 continue
             c = cells[g['cell']]
-            pair, _, lv = c['variant'].partition('_')
-            g['pair'], g['lever'], g['agent'], g['d'] = pair, lv or 'base', c['agent'], c['difficulty']
+            pair, lv = split_variant(c['variant'])
+            if pair not in PAIRS:
+                sys.exit(f'am_read.py: variant {c["variant"]!r} names no pair it knows ({", ".join(PAIRS)}): '
+                         f'name variants PAIR-LEVER or PAIR_LEVER')
+            g['pair'], g['lever'], g['agent'], g['d'] = pair, lv, c['agent'], c['difficulty']
             rows.append(g)
     return rows
 

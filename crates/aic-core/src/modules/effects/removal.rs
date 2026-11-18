@@ -193,6 +193,7 @@ pub(super) fn cleanse(
         if is_city(&w, hexes[i]) {
             // 178 (#29): a card's liberation is the Liberate action's: the agents off, the city neutral (252).
             cx.tally(g, "board.liberated_card", 1);
+            cx.tally(g, "board.liberated_card.city", 1);
             board::liberate_site(g, cx, seat, hexes[i], false);
         } else {
             cx.add_tokens(g, hexes[i], ADV_CUBE, -1);
@@ -220,6 +221,11 @@ pub(super) fn liberate_city(g: &mut GameState, cx: &mut Cx, seat: usize, own: bo
     if let Some(i) = cx.choose(seat, prompt, opts)? {
         let h = cities[i];
         cx.tally(g, "board.liberated_card", 1);
+        // 261: by kind: since 254 Hostile Buyout's `own` frees a station or factory too, which the readers counted
+        // as a city (`liberation_read.py`, `energy_read.py`).
+        if let Some(k) = board::site_kind(&w, g, h) {
+            cx.tally(g, &format!("board.liberated_card.{}", k.name()), 1);
+        }
         board::liberate_site(g, cx, seat, h, own);
         if ambassadors > 0 {
             cx.add_resource(g, seat, Resource::Ambassadors, ambassadors);

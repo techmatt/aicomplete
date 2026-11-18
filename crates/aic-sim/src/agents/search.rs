@@ -773,6 +773,9 @@ pub struct Beam {
     rollout: Option<RolloutCfg>,
     /// The rest of the current plan, next action last.
     plan: Vec<Planned>,
+    /// 261: the team's moves this phase, across plans: a plan may not undo one (259 found seed 3 paying a
+    /// threat's counter a credit at a time over decisions and withdrawing it, round after round of plans).
+    history: PhaseHistory,
 }
 
 /// A sequence in the beam.
@@ -859,6 +862,7 @@ impl Beam {
             choices,
             rollout,
             plan: Vec::new(),
+            history: PhaseHistory::default(),
         }
     }
 
@@ -883,7 +887,7 @@ impl Beam {
                 legal_into(rules, &item.g, &mut legal);
                 let mut kids: Vec<(f64, Seq)> = Vec::new();
                 for a in &legal {
-                    if undoes(&item.seq, a) {
+                    if undoes(&item.seq, a) || undoes(&self.history.actions, a) {
                         continue;
                     }
                     let Some(c) = step(rules, &item.g, a) else {
@@ -1008,6 +1012,15 @@ impl Beam {
 
 impl Agent for Beam {
     fn choose(&mut self, rules: &Rules, state: &GameState, legal: &[Action]) -> usize {
+        self.history.enter(state);
+        let i = self.decide(rules, state, legal);
+        self.history.push(&legal[i]);
+        i
+    }
+}
+
+impl Beam {
+    fn decide(&mut self, rules: &Rules, state: &GameState, legal: &[Action]) -> usize {
         for attempt in 0..2 {
             if let Some(p) = self.plan.last() {
                 if same_table(&p.before, state) {
@@ -1027,7 +1040,8 @@ impl Agent for Beam {
         }
         // The fresh plan should start here; if it cannot, fall back to greedy.
         self.plan.clear();
-        let s = greedy_scores(rules, &self.ev, &mut self.rng, state, legal, Scoring::decision(1, 1, 1));
+        let mut s = greedy_scores(rules, &self.ev, &mut self.rng, state, legal, Scoring::decision(1, 1, 1));
+        self.history.mask(legal, &mut s);
         pick(legal, &s)
     }
 }

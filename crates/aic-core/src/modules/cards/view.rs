@@ -53,7 +53,10 @@ fn card_view(w: &World, g: &GameState, s: usize, id: &str, status: &str, cost: O
 /// 238 (D105): "ready", or with a map part whose target has no hex in reach, "ready · map part: no target" (the
 /// card plays for its other lines; the map half skips, as card-grammar says).
 fn ready_mark(w: &World, g: &GameState, s: usize, ops: &[Op]) -> &'static str {
-    let dead = ops.iter().any(|o| matches!(o, Op::Target { on } if effects::target_hexes(w, g, s, *on).is_empty()));
+    let dead = ops
+        .iter()
+        .enumerate()
+        .any(|(i, o)| matches!(o, Op::Target { on } if effects::target_hexes_before(w, g, s, *on, &ops[i + 1..]).is_empty()));
     if dead { "ready · map part: no target" } else { "ready" }
 }
 
@@ -109,7 +112,17 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
             .iter()
             // 118: a draft or keep tile names its price (keeps were picked blind to it).
             // 235: and its tier, which sets the keep price the pick commits to (a tier 2 looked like a tier 1).
-            .map(|id| card(s, id, &format!("draft, tier {}", def(w, id).tier), Some(play_cost(w, g, s, def(w, id)))))
+            // 261: and what keeping it would cost this seat (the keep upgrade and Science lower a tier 2's), which
+            // the player view showed from the config's base price.
+            .map(|id| {
+                let tier = def(w, id).tier;
+                // An Open Market free keep waives it, as on the drafted tile below.
+                let st = match if alignment::free_purchases(g) > 0 { 0 } else { keep_need(w, g, s, tier) } {
+                    0 => format!("draft, tier {tier}, keep free"),
+                    n => format!("draft, tier {tier}, keep {n} insight"),
+                };
+                card(s, id, &st, Some(play_cost(w, g, s, def(w, id))))
+            })
             .collect();
         if !pk.is_empty() {
             out.cards(s, "packet", "draft hand", pk);

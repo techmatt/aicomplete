@@ -90,8 +90,9 @@ try {
   // 252: Peer Review's price from content, in insight (Patience carries it).
   const peer = ais.find((b) => b.id === 'researcher').powers.find((p) => p.name === 'Peer Review');
   const price = (peer.cost.find(([r]) => r === 'insight') ?? [, 0])[1];
-  const insight = await value('resource.insight');
-  check(insight >= price, `the Researcher holds ${insight} insight, Peer Review's ${price}`);
+  // 261: `held`, not a second `insight` (a SyntaxError since 252: the lane never ran).
+  const held = await value('resource.insight');
+  check(held >= price, `the Researcher holds ${held} insight, Peer Review's ${price}`);
   check(await js(`window.aic.legal.some((a) => a.type === 'power' && a.seat === ${SEAT} && a.power === ${k})`), 'the middle node route is on the menu');
   await js(`window.aic.act({ type: 'power', seat: ${SEAT}, power: ${k} })`);
   for (let i = 0; i < 4 && await js(`window.aic.legal.some((a) => a.type === 'choose')`); i++) {

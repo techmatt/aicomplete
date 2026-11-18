@@ -28,8 +28,9 @@ size, the same overrides under c2-x and c3-x:
 the same config, difficulty and pair, and `--lever-suffix LEVER` (226; 223's r6read.py) every `PAIR-LEVER` (or
 `PAIR_LEVER`) cell against its `PAIR` cell; each prints a row per agent (or lever and agent) for each difficulty,
 each pair and all, both sides' win % and rounds on the paired seeds and the gap. `--pool` reads the DIRs as one read
-farmed in seed ranges (cells merge, no DIR in their names); `--other DIR` adds another read on the same seeds (a kept
-read, another build) whose agents join the first DIR's cells as `other:AGENT`, so `--against-agent` pairs them too.
+farmed in seed ranges (cells merge, no DIR in their names; a seed two DIRs share stops it); `--other DIR` adds
+another read on the same seeds (a kept read, another build) whose agents join the first DIR's cells as
+`other:AGENT`, so `--against-agent` pairs them too.
 A DIR is also a games file or FILE=SPEC (a farm's bare out file), named by its file stem.
 
 A spec with several configs or difficulties (an on/off config pair) leads each name with the
@@ -210,10 +211,23 @@ def main():
     global SAME_ENGINE
     SAME_ENGINE = a.same_engine
     cells = {}
+    origin = {}  # (cell, seed): the DIR that gave it, so --pool refuses a seed two DIRs share (as read_lib does)
+    if not a.pool:
+        names = [dir_name(d) for d in a.dirs]
+        twice = sorted({n for n in names if names.count(n) > 1})
+        if twice:
+            sys.exit(f'paired.py: two reads are both named {", ".join(twice)} (a cell takes its DIR\'s name): '
+                     'pass their folders, or rename one')
     for d in a.dirs:
         prefix = '' if a.pool else dir_name(d) + '/'
         for name, games in load(d).items():
-            cells.setdefault(prefix + name, {}).update(games)
+            cell = cells.setdefault(prefix + name, {})
+            for seed in games:
+                if seed in cell:
+                    sys.exit(f'paired.py: {prefix + name} seed {seed} is in both {origin[(prefix + name, seed)]} '
+                             f'and {d}: pooled reads overlap; read them apart')
+                origin[(prefix + name, seed)] = d
+            cell.update(games)
     first = '' if a.pool else dir_name(a.dirs[0]) + '/'
     for d in a.other:
         for name, games in load(d).items():

@@ -472,7 +472,8 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             if *troops > 0 {
                 let mut p = minus(*troops, "troop");
                 p.push(w("country"));
-                out.push(clause(adversary(p), format!("remove up to {troops} troops in its country")));
+                // 261: "remove N" is already "up to N" (house term): as every other troop removal prints it.
+                out.push(clause(adversary(p), format!("remove {troops} troops in its country")));
             }
             if *botnet {
                 // D37: on or next to the city, as Clear a city's city glyph says.
@@ -510,7 +511,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             } else {
                 ("from your supply or on or next to it", format!("onto pieces {}", at.words()))
             };
-            one(clause(area_icons(vec![Part::Word(max.to_string()), w("move")], *at), format!("move up to {max} ambassadors {from}{}{onto}", if from.is_empty() { "" } else { " " })))
+            one(clause(area_icons(vec![Part::Word(max.to_string()), w("move")], *at), format!("move up to {max} of your ambassadors {from}{}{onto}", if from.is_empty() { "" } else { " " })))
         }
         // 234 (Matt: Place means onto the map).
         Op::PlaceAmbassadors { count, at } => one(clause(
@@ -561,7 +562,9 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         // 259: cubes off the adversary's research track.
         Op::RemoveResearch { amount: n } => {
             let parts = minus(*n, "research_cubes");
-            one(clause(adversary(parts), format!("remove {n} adversary research {}", if *n == 1 { "cube" } else { "cubes" })))
+            // 261: "the research track", not "research cubes": Backdoor Research's cubes on megaprojects are those.
+            let what = if *n == 1 { "cube" } else { "cubes" };
+            one(clause(adversary(parts), format!("remove {n} {what} from the adversary's research track")))
         }
         // 106: a program's per-tag income raise, counted once.
         Op::ProductionPerTag { resource, tag: t, per } => {
@@ -607,7 +610,8 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         // 179 (friction #39): onto one piece, the destination mark (Liaison Corps' plain move is onto pieces).
         Op::Consolidate { max } => one(clause(
             vec![Part::Word(max.to_string()), w("move"), w("onto")],
-            format!("move up to {} on or next to it onto it", plural(*max, "ambassador")),
+            // 261: yours only (`consolidate` moves the seat's own), where a bare "Ambassadors" is any player's.
+            format!("move up to {max} of your ambassadors on or next to it onto it"),
         )),
         // 158: convert, gather and the firewall (Matt, 2026-11-09).
         Op::Convert { max } => {
@@ -727,7 +731,8 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             "build a research station on it, paying no chips",
         )),
         // 256: a claim of the target, or with `near` a liberate card's rider next to the city it frees.
-        Op::ClaimSite { near: false } => one(clause(vec![w("station")], "claim it")),
+        // 261: a station or a factory since 256 (Industrial Commons claims a factory): both icons, as the rider.
+        Op::ClaimSite { near: false } => one(clause(vec![w("station"), w("/"), w("factory")], "claim it")),
         Op::ClaimSite { near: true } => one(clause(
             vec![w("station"), w("/"), w("factory")],
             "claim a facility next to it",

@@ -1009,7 +1009,8 @@ pub enum Op {
     },
     /// 212: a node power's rider tied to position: "if it is on or next to a `spots`, also" `then`,
     /// resolved when the node an earlier `place_node` of the same list just placed stands on or next
-    /// to one of them; with no node placed, or none there, nothing.
+    /// to one of them; with no node placed, or none there, nothing. 261: a station or factory counts only if it stood
+    /// there before the placement (not one the placement's uncovered track space built).
     IfNodeNext {
         spots: Vec<NodeSpot>,
         then: Vec<Op>,
@@ -1018,7 +1019,8 @@ pub enum Op {
         fresh: bool,
     },
     /// 212: one new ambassador of yours onto a city on or next to the node just placed (the player
-    /// choosing among several); it stands there as any ambassador does, toward the city's claim.
+    /// choosing among several); it stands there as any ambassador does (no city is claimed since 254: it cancels
+    /// the next agent to arrive).
     AmbassadorToSpot,
     /// 212: lift up to `count` Fallout tokens in your reach (Lift Fallout's effect; cards). 227: the `unity` field
     /// went with the Protector's Recovery, its one user.
@@ -1612,7 +1614,7 @@ impl Op {
     /// 234: an op that acts at a place on the map a player picks: on a player card it needs the card's one
     /// target before it (`Content::check`), and acts on that target's area. Your own nodes (`shield_node`,
     /// `place_node`) and burns of your own pieces are not picked places. A reach Shelter takes no target.
-    /// 255: an exhaustive match, as [`Op::reads_hit_seat`] and [`Op::contexts`], so a new op is decided here (an op
+    /// 255: an exhaustive match, as [`Op::reads_hit_seat`] and [`Op::slots`], so a new op is decided here (an op
     /// left out was offered with no target in reach: 253's `CreateSite`).
     pub fn is_map(&self) -> bool {
         match self {

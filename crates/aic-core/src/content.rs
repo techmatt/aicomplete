@@ -256,8 +256,8 @@ pub struct CountryPiece {
 /// it with cubes; at the end of production, if it holds `cubes` or more, every
 /// player cube pays `player` to its owner and every adversary cube `adversary`.
 /// After that a seat with a city of the country in reach has the `converter`
-/// (r75; r37: a node in such a city; 075: any node there; 074: an aligned city). An adversary cube made after completion is lost, as a
-/// neutral one is (075).
+/// (r75; r37: a node in such a city; 075: any node there; 074: an aligned city). After completion an adversary station
+/// there feeds the adversary's research track (259; compute with the research rule off).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Megaproject {

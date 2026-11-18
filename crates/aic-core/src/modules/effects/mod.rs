@@ -55,7 +55,7 @@ pub fn run(g: &mut GameState, cx: &mut Cx, ops: &[Op], ctx: &mut Ctx) -> Res {
 fn aim(g: &mut GameState, cx: &mut Cx, on: TargetSpec, rest: &[Op], ctx: &mut Ctx) -> Res {
     let w = cx.world;
     let seat = ctx.chooser();
-    let mut hexes = target_hexes(&w, g, seat, on);
+    let mut hexes = target_hexes_before(&w, g, seat, on, rest);
     let map: Vec<&Op> = rest.iter().filter(|o| o.is_map()).collect();
     let moving = |o: &&Op| matches!(o, Op::Push { .. } | Op::Gather { .. } | Op::Firewall);
     if !map.is_empty() && map.iter().all(moving) {
@@ -122,13 +122,20 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::Transfer { resource, max } => resources::transfer(g, cx, ctx, seat, *resource, *max)?,
         Op::PlaceNode { count, range } => {
             for _ in 0..*count {
+                let built = |g: &GameState| -> Vec<usize> {
+                    (0..g.hexes.len()).filter(|&x| g.tokens(x, STATION) > 0 || g.tokens(x, FACTORY) > 0).collect()
+                };
+                let before = built(g);
                 let Some(h) = board::place_node_within(g, cx, seat, *range)? else { break };
                 ctx.node = Some(h);
+                ctx.node_spots_before = before;
             }
         }
-        // 212: the node power's rider: on or next to its spot, else nothing.
+        // 212: the node power's rider: on or next to its spot, else nothing. 261: a station or factory its own
+        // uncovered space built is none (it was not there to bring into reach).
         Op::IfNodeNext { spots, then, fresh } => {
-            if ctx.node.is_some_and(|h| !board::spots_near(&w, g, seat, h, spots, *fresh).is_empty()) {
+            let stood = |x: &usize| is_city(&w, *x) || ctx.node_spots_before.contains(x);
+            if ctx.node.is_some_and(|h| board::spots_near(&w, g, seat, h, spots, *fresh).iter().any(stood)) {
                 cx.tally(g, "effects.if_node_next_met", 1);
                 ctx.fresh = *fresh;
                 run(g, cx, then, ctx)?;

@@ -1,5 +1,25 @@
 use super::*;
 
+/// 261 (D116): an answer that isn't on offer (an old record's reworded option) names what is offered.
+#[test]
+fn a_wrong_answer_names_the_options_on_offer() {
+    let rules = Rules::new(&baseline()).unwrap();
+    let mut g = rules.new_game(7);
+    for k in 0..2000 {
+        if g.pending.is_some() || g.is_over() {
+            break;
+        }
+        let legal = rules.legal_actions(&g);
+        g = rules.apply(&g, &legal[(k * 7919) % legal.len()]).unwrap().0;
+    }
+    let p = g.pending.as_ref().expect("a question comes up");
+    let seat = p.ask.seat;
+    let first = p.ask.options[0].option.clone();
+    let wrong = Action::Choose { seat, option: "track 1: uncovers +1 credit".into(), target: None };
+    let err = rules.apply(&g, &wrong).unwrap_err();
+    assert!(err.contains("offered: ") && err.contains(&format!("{first:?}")), "{err}");
+}
+
 #[test]
 fn same_seed_same_game() {
     let rules = Rules::new(&baseline()).unwrap();

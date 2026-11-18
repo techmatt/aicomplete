@@ -5,7 +5,7 @@
 // rendering (a labeled button, a chip), so a new module shows with no new UI work. No rules live here.
 
 import { param, type Action, type CardView, type Config, type View } from '../engine';
-import { actionLabel, contentIds, countryName, escapeHtml as esc, eventText, hexKey, hexesIn, isHex, strong, tokenName, type LabelContext } from '../format';
+import { actionLabel, amount, contentIds, countryName, escapeHtml as esc, eventText, hexKey, hexesIn, isHex, strong, tokenName, type LabelContext } from '../format';
 import { phaseGroups } from '../log';
 import { cardChip, pilesHtml, seatValuesHtml, varsHtml } from '../panels';
 import type { Frame } from '../session';
@@ -71,6 +71,8 @@ const RES_ORDER = ['credits', 'energy', 'insight', 'chips', 'antimatter', 'resea
 function seatStatus(v: View, legal: Action[], s: number): { text: string; cls: string } {
   if (v.outcome) return { text: '', cls: '' };
   if (v.choice?.seat === s) return { text: 'deciding', cls: 'act' };
+  // 261: while another seat answers a prompt no one else has a legal action: that is not "done".
+  if (v.choice) return { text: '', cls: '' };
   if (legal.some((a) => a.seat === s)) return { text: 'to act', cls: 'act' };
   if (v.phase?.kind === 'decision') return { text: 'done', cls: 'done' };
   return { text: '', cls: '' };
@@ -104,7 +106,8 @@ function stripHtml(v: View, legal: Action[], focus: number): string {
 /** A compact hand tile; the full printed card is one hover away (`data-printed`). */
 function tile(s: number, c: CardView, where: string, acts: string): string {
   const { head, rules } = splitText(c.text);
-  const status = c.status && !['ready', 'draft', 'built', 'in play'].includes(c.status) ? c.status : '';
+  // 261: a draft tile's status ("draft, tier N, keep K insight") is the note under it already.
+  const status = c.status && !['ready', 'draft', 'built', 'in play'].includes(c.status) && !c.status.startsWith('draft, ') ? c.status : '';
   const ok = c.status.startsWith('ready');
   return `<div class="ptile${ok ? ' ok' : ''}" data-card="${esc(c.id)}" data-where="seat:${s}:${where}"${printable(c.id) ? ` data-printed="${esc(c.id)}"` : ''}>
     <div class="pt-head">${c.cost !== undefined ? `<span class="pt-cost" title="credits">${c.cost}</span>` : ''}<b class="pt-name">${esc(c.name)}</b></div>
@@ -138,8 +141,9 @@ function draftHtml(v: View, ctx: PlayerCtx, s: number, mine: Action[]): string {
   const parts: string[] = [];
   if (tiers.length) {
     parts.push(`<div class="ptiers"><span>Draw your next draft card from:</span>${tiers.map((a) => {
+      // 261: the base price, "from": the keep upgrade and Science lower a tier 2's (the drafted tile says the seat's).
       const k = keepCost(Number(a.tier));
-      return btn(a, `Tier ${a.tier} deck${typeof k === 'number' ? ` · keep ${k} insight` : ''}`, 'primary big');
+      return btn(a, `Tier ${a.tier} deck${typeof k === 'number' ? ` · keep ${Number(a.tier) === 2 ? 'up to ' : ''}${k} insight` : ''}`, 'primary big');
     }).join('')}</div>`);
   }
   const row = (cards: CardView[], key: string, act: (c: CardView) => string, note: (c: CardView) => string) =>
@@ -151,9 +155,9 @@ function draftHtml(v: View, ctx: PlayerCtx, s: number, mine: Action[]): string {
     parts.push(`<h4>${esc(packet.label)} <small>take one; the rest pass on</small></h4>` + row(packet.cards, 'cards.packet',
       (c) => drafts.filter((a) => a.card === c.id).map((a) => btn(a, 'Draft', 'primary')).join(''),
       (c) => {
-        const t = /tier (\d+)/.exec(c.status)?.[1];
-        const k = t ? keepCost(Number(t)) : undefined;
-        return `${c.cost ?? '?'} credits to play${typeof k === 'number' ? ` · keep ${k} insight` : ''}`;
+        // 261: the seat's own keep price, from the tile's status (the config's base ignored the keep upgrade).
+        const k = /keep (\d+ insight|free)/.exec(c.status)?.[1];
+        return `${c.cost ?? '?'} credits to play${k !== undefined ? ` · keep ${k}` : ''}`;
       }));
   }
   if (drafted?.cards.length) {
@@ -203,7 +207,8 @@ function threatControls(root: HTMLElement, ctx: PlayerCtx, mine: Action[]) {
     const el = root.querySelector(`.threat[data-card="${CSS.escape(id)}"]`);
     if (!el) continue;
     const label = (a: Action) => {
-      if (a.type === 'pay') return `+${a.amount} ${String(a.resource).replace(/_/g, ' ')}`;
+      // 261: "+1 credit", not "+1 credits".
+      if (a.type === 'pay') return `+${amount(Number(a.amount), String(a.resource))}`;
       if (a.type === 'withdraw') return `take back ${String(a.resource).replace(/_/g, ' ')}`;
       return actionLabel(a, false, true, ctx.cx).replace(/^counter [^:]*: ?/, 'counter: ');
     };
@@ -313,7 +318,10 @@ export function renderPlayer(ui: PlayerUi, ctx: PlayerCtx) {
   const mine = ctx.legal.filter((a) => a.seat === focus);
   ui.seats.innerHTML = stripHtml(v, ctx.legal, focus);
 
-  ui.prompt.insertAdjacentHTML('beforeend', promptControls(ctx, mine));
+  // 261: an open question's answers are its seat's, whichever seat is shown (pinning another seat emptied the bar
+  // that says "answer here").
+  const answering = v.choice ? ctx.legal.filter((a) => a.seat === v.choice!.seat) : mine;
+  ui.prompt.insertAdjacentHTML('beforeend', promptControls(ctx, answering));
   threatControls(ui.countries, ctx, mine);
 
   const s = v.seats[focus];

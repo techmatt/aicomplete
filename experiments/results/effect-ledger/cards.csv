@@ -7,7 +7,7 @@ forensic_audit,Forensic Audit,2,event,,6,1,20.5,59.0,-38.5,0.35,30.75,-10.25,tar
 vertical_monopoly,Vertical Monopoly,2,building,industry 3,20,2,25.0,62.0,-37.0,0.4,27.62,-2.62,draw [play] 16.0 + income_per_tag credits [passive] 45.0 + tags [card] 1.0
 foundation_model_campus,Foundation Model Campus,2,building,science 3,13,2,27.0,62.5,-35.5,0.43,28.12,-1.12,draw [play] 16.0 + income_per_tag credits [passive] 45.0 + tags [card] 1.5
 kettle_operation,Kettle Operation,2,event,security 2,2,2,7.0,42.2,-35.2,0.17,8.74,-1.74,target [play] 0.0 + gather [play] 46.2 + sway discord [play] -4.0
-survey_drone_fleet,Survey Drone Fleet,2,building,science 1,12,0,12.0,46.0,-34.0,0.26,17.85,-5.85,gain research_cubes [play] 6.0 + place_node [action] 24.6 + gain energy [action] 13.9 + tags [card] 1.5
+survey_drone_fleet,Survey Drone Fleet,2,building,science 1,12,0,12.0,46.0,-34.0,0.26,17.85,-5.85,gain research_cubes [play] 6.0 + gain energy [action] 13.9 + place_node [action] 24.6 + tags [card] 1.5
 penning_trap_array,Penning Trap Array,2,building,science 1,10,1,12.5,45.25,-32.75,0.28,12.18,0.32,gain antimatter [play] 18.0 + gain antimatter [action] 26.2 + tags [card] 1.0
 national_grid_buildout,National Grid Buildout,1,program,,22,0,22.0,53.8,-31.8,0.41,23.42,-1.42,production energy [play] 28.8 + place_node [play] 24.0 + tags [card] 1.0
 beamed_power_constellation,Beamed Power Constellation,2,program,power 3,14,1,16.5,47.5,-31.0,0.35,14.51,1.99,place_node [play] 24.0 + gain_per_node energy [play] 22.5 + tags [card] 1.0

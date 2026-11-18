@@ -38,11 +38,17 @@ def split_variant(name):
 def games(read, label=None):
     """READ's games as `Game(arm, pair, level, agent, seed, g)`, decoded from its spec. ARM leads with LABEL (a
     READ's name, when several READs don't pool) and with the config's file stem when the spec has several configs.
-    AGENT is the spec's name up to any `:` (its overrides dropped)."""
+    AGENT is the spec's name up to any `:` (its overrides dropped), or the whole spec where two agents share a name."""
     lines = stream(read)
     spec = next(lines)['spec']
     cells = cells_of(spec)
     many = len(spec['configs']) > 1
+    # 261: an agent-lever screen ('strategist', 'strategist:w.sink=0.5', ...) keeps each spec whole: cut at ':' only
+    # where the short names stay distinct (it read as "pooled reads overlap").
+    specs = sorted({c['agent'] for c in cells})
+    short = {a: a.split(':')[0] for a in specs}
+    if len(set(short.values())) < len(specs):
+        short = {a: a for a in specs}
     for g in lines:
         if 'cell' not in g or 'won' not in g:
             continue
@@ -52,7 +58,7 @@ def games(read, label=None):
             arm = f"{os.path.splitext(os.path.basename(c['config']))[0]}/{arm}"
         if label:
             arm = f'{label}/{arm}'
-        yield Game(arm, pair, c['difficulty'], c['agent'].split(':')[0], int(g['seed']), g)
+        yield Game(arm, pair, c['difficulty'], short[c['agent']], int(g['seed']), g)
 
 
 def seat_boards(g):

@@ -33,8 +33,8 @@ fn feasible_aimed(
     card: Option<&str>,
     aim: Option<&[usize]>,
 ) -> bool {
-    let own: Option<Vec<usize>> = effects.iter().find_map(|e| match e {
-        Op::Target { on } => Some(target_hexes(w, g, seat, *on)),
+    let own: Option<Vec<usize>> = effects.iter().enumerate().find_map(|(i, e)| match e {
+        Op::Target { on } => Some(target_hexes_before(w, g, seat, *on, &effects[i + 1..])),
         _ => None,
     });
     let aim: Option<&[usize]> = own.as_deref().or(aim);

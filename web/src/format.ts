@@ -17,7 +17,7 @@ const words = (s: string) => s.replace(/_/g, ' ');
 /** `n` of a resource: "2 chips", "1 chip" (as `Resource::amount` in the core). */
 const SINGULAR: Record<string, string> = { chips: 'chip', credits: 'credit', ambassadors: 'ambassador', research_cubes: 'research cube' };
 // 075: `research_cubes` reads as words.
-const amount = (n: number, what: string) => `${n} ${(n === 1 ? (SINGULAR[what] ?? what) : what).replace(/_/g, ' ')}`;
+export const amount = (n: number, what: string) => `${n} ${(n === 1 ? (SINGULAR[what] ?? what) : what).replace(/_/g, ' ')}`;
 
 function field(k: string, v: unknown): string {
   if (isHex(v)) return `@${hexKey(v)}`;
@@ -362,7 +362,7 @@ const TOKEN_NAMES: Record<string, string> = {
   harden: 'hardening token',
   firewall: 'firewall (no agent may arrive here)',
   city_chip: "city's growth chip (the city builds once it holds enough)",
-  liberated: 'Liberated marker (a player freed this site: the adversary needs retake_agents more agents to retake it)',
+  liberated: 'Liberated marker (a player liberated this site: a Corrupt line needs more agents than usual to retake it)',
   no_rally: 'no-Rally token (no Rally here)',
   no_muster: 'no-Muster token (no Muster here)',
   no_corrupt: 'no-Corrupt token (no Corrupt here)',

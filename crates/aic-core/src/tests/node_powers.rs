@@ -69,6 +69,32 @@ fn the_base_route_costs_only_the_step_once_a_round() {
     }
 }
 
+/// 261: a node route is used for its node: with no free hex next to the seat's nodes it isn't offered (Outpost, the
+/// Protector's, was paid in full for its ambassador alone), and a placement there asks no track question.
+#[test]
+fn a_node_route_with_no_free_hex_is_not_offered() {
+    let (rules, mut g) = at_step(&[], 1);
+    let w = rules.world();
+    let seat = 1usize;
+    let start = rules.map.numbered(seat, piece(seat).node);
+    put(&mut g, start, node(seat), 1);
+    set_res(&mut g, seat, Resource::Energy, 20);
+    let outpost = power(&rules, seat, "Outpost");
+    assert!(rules.apply_mut(&mut g.clone(), &outpost, None).is_ok(), "offered with a free hex");
+    // Every hex in reach taken by seat 0's nodes: no free hex for seat 1's.
+    for h in board::node_sites_within(&w, &g, seat, 1) {
+        put(&mut g, h, node(0), 1);
+    }
+    assert!(board::node_sites_within(&w, &g, seat, 1).is_empty());
+    assert!(rules.apply_mut(&mut g.clone(), &outpost, None).is_err(), "no free hex: not offered");
+    let mut gg = g.clone();
+    let mut choices = module::Choices::new(Vec::new());
+    let mut cx = test_cx(&rules, &mut choices);
+    let placed = board::place_node_within(&mut gg, &mut cx, seat, 1).unwrap();
+    assert_eq!(placed, None);
+    assert!(choices.asked.is_none(), "no track question for a node that can't go down");
+}
+
 /// 252 (Matt's ruling 1: "occasionally range 2"): Annex, the Builder's top route, places within 2 of a node.
 #[test]
 fn the_builder_s_top_route_reaches_two_hexes() {
@@ -246,6 +272,41 @@ fn a_rider_finds_its_spot_and_a_fresh_one_no_other_node_of_yours() {
     put(&mut g, other, node(0), 1);
     assert!(!board::spots_near(&w, &g, 0, h, &[NodeSpot::Factory], true).contains(&f), "another node of yours is next to it");
     assert!(board::spots_near(&w, &g, 0, h, &[NodeSpot::Factory], false).contains(&f));
+}
+
+/// 261: Peer Review's rider pays for a station the node brings into reach, not one the placement's own uncovered
+/// space built there (the Researcher's free station): it reads the stations standing before the placement. This
+/// checks the rider's filter on `Ctx::node_spots_before`; the PlaceNode arm fills it before `place_node_within`.
+#[test]
+fn a_rider_ignores_a_station_its_own_track_space_built() {
+    use crate::op::NodeSpot;
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let s = rules.map.numbered(0, piece(0).node);
+    let h = w.map.hexes[s].neighbors[0];
+    for x in 0..g.hexes.len() {
+        put(&mut g, x, node(0), 0);
+    }
+    put(&mut g, h, node(0), 1);
+    put(&mut g, s, crate::modules::common::STATION, 1);
+    let rider = [Op::IfNodeNext {
+        spots: vec![NodeSpot::Station],
+        then: vec![Op::Gain { resource: Resource::Insight, amount: 1 }],
+        fresh: true,
+    }];
+    let insight = |before: Vec<usize>| {
+        let mut gg = g.clone();
+        set_res(&mut gg, 0, Resource::Insight, 0);
+        let mut choices = module::Choices::new(Vec::new());
+        let mut cx = test_cx(&rules, &mut choices);
+        let mut ctx = effects::Ctx::seat(0);
+        ctx.node = Some(h);
+        ctx.node_spots_before = before;
+        effects::run(&mut gg, &mut cx, &rider, &mut ctx).unwrap();
+        gg.resource(0, Resource::Insight)
+    };
+    assert_eq!(insight(vec![s]), 1, "a station that stood there pays");
+    assert_eq!(insight(Vec::new()), 0, "one the placement built doesn't");
 }
 
 /// 212: a green card's side bonus lifts a Fallout token in reach.

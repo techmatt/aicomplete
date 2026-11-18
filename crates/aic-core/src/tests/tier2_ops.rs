@@ -117,6 +117,29 @@ fn a_firewall_guards_a_forced_flip() {
     assert!(corrupted(&g, open[0]), "the one choice left flips");
 }
 
+/// 261: a firewall guards Factory Occupation's factory as it guards Overrun's city (185 missed this path).
+#[test]
+fn a_firewall_guards_factory_occupation() {
+    let (rules, mut g) = threat_lab();
+    let m = &rules.map;
+    let zone = (0..g.hexes.len()).find(|&h| m.hexes[h].industrial && m.hexes[h].country == 0).unwrap();
+    put(&mut g, zone, FACTORY, 1);
+    deal_at(&mut g, "factory_occupation", 0, &[zone]);
+    put(&mut g, zone, FIREWALL, 1);
+    let ops = [Op::CorruptFactory];
+    let occupy = |g: &mut GameState| {
+        let mut ctx = effects::Ctx::threat(Some(0));
+        ctx.threat = Some(Key::new("factory_occupation"));
+        with_cx(&rules, |cx| effects::run(g, cx, &ops, &mut ctx)).unwrap();
+    };
+    occupy(&mut g);
+    assert!(!corrupted(&g, zone));
+    assert_eq!(g.stats.counters["adversary.guard_held.corrupt_factory"], 1);
+    put(&mut g, zone, FIREWALL, 0);
+    occupy(&mut g);
+    assert!(corrupted(&g, zone));
+}
+
 /// 185 (D77): a firewall guards Overrun's city ("the city here is corrupted").
 #[test]
 fn a_firewall_guards_overrun() {

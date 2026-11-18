@@ -575,8 +575,8 @@ surgical_strike,target [play],play,on=adversary,1.0,0.0,0.0,0.0,0.0
 surgical_strike,damage troops [play],play,"ambassadors=4, troops=3",4,33.0,8.25,2.28,0.57
 surgical_strike,sway discord [play],play,"side=discord, amount=1, narrative=force",1.0,-4.0,-4.0,-0.28,-0.28
 survey_drone_fleet,gain research_cubes [play],play,"resource=research_cubes, amount=2",2.0,6.0,3.0,1.57,0.78
-survey_drone_fleet,place_node [action],action,"count=2, range=2; pays 1 research_cubes",2.0,24.64,12.32,6.43,3.21
 survey_drone_fleet,gain energy [action],action,"resource=energy, amount=2; pays 1 research_cubes",2.0,13.86,6.93,3.62,1.81
+survey_drone_fleet,place_node [action],action,"count=2, range=2; pays 1 research_cubes",2.0,24.64,12.32,6.43,3.21
 survey_drone_fleet,tags [card],card,cyber science,2.0,1.5,0.75,0.39,0.2
 synthetic_data_forge,add_tokens datasets [play],play,"kind=datasets, amount=1, here=True",1.0,3.0,3.0,3.24,3.24
 synthetic_data_forge,"add_tokens datasets [action, unused branch]","action, unused branch","kind=datasets, amount=1, here=True",1.0,0.0,0.0,0.0,0.0

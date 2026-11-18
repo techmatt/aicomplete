@@ -65,7 +65,52 @@ def main():
             rel = os.path.relpath(path, ROOT).replace(os.sep, '/')
             print(f'{rel}: ' + ', '.join(missing) if missing else f'{rel}: all {len(names)} written')
             quiet += len(missing)
+    quiet += sweep_moments(keys, a.all)
     print(f'\n{quiet} names no game in {len(a.dirs)} output(s) wrote ({len(keys)} counter keys written)')
+
+
+def alternatives(pattern):
+    """261: the alternatives of a moment regex's first group, each as a whole pattern of its own (`^a\\.(x|y)$`
+    gives `^a\\.(x)$`, `^a\\.(y)$`); a pattern with no group is itself."""
+    start = pattern.find('(')
+    if start < 0:
+        return [pattern]
+    depth, cuts, end = 0, [], None
+    for i in range(start, len(pattern)):
+        ch = pattern[i]
+        if ch == '\\':
+            continue
+        if i > 0 and pattern[i - 1] == '\\':
+            continue
+        if ch == '(':
+            depth += 1
+        elif ch == ')':
+            depth -= 1
+            if depth == 0:
+                end = i
+                break
+        elif ch == '|' and depth == 1:
+            cuts.append(i)
+    if end is None:
+        return [pattern]
+    bounds = [start] + cuts + [end]
+    return [pattern[:start + 1] + pattern[bounds[j] + 1:bounds[j + 1]] + pattern[end:] for j in range(len(bounds) - 1)]
+
+
+def sweep_moments(keys, show_all):
+    """261: each alternative of the sweep's counter moments (`COUNTER_EVENTS*` regexes in web/scripts/sweep.mjs)
+    that no written key matches: a moment the sweep can't capture (it watched four retired names until 261)."""
+    path = os.path.join(ROOT, 'web', 'scripts', 'sweep.mjs')
+    with open(path, encoding='utf-8') as f:
+        text = f.read()
+    dead = []
+    for name, pattern in re.findall(r'const (COUNTER_EVENTS\w*) = /(.+)/;', text):
+        for alt in alternatives(pattern):
+            if not any(re.search(alt, k) for k in keys):
+                dead.append(f'{name}: {alt}')
+    if dead or show_all:
+        print('web/scripts/sweep.mjs moments no key matched: ' + ('; '.join(dead) if dead else 'none'))
+    return len(dead)
 
 
 def params():

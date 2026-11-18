@@ -24,6 +24,15 @@ from powers import power_key  # noqa: E402
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 
+
+def card_freed(g, kind):
+    """Sites of `kind` a card liberated: `board.liberated_card.<kind>` since 261 (Hostile Buyout frees a station or
+    factory too since 254); before it, `board.liberated_card` was cities only."""
+    if any(k.startswith('board.liberated_card.') for k in g.get('counters', {})):
+        return cnt(g, f'board.liberated_card.{kind}')
+    return cnt(g, 'board.liberated_card') if kind == 'city' else 0
+
+
 BOARDS = ['builder', 'protector', 'researcher']
 # The dear powers before r35, by board and index in content/ais.json.
 DEAR = {'Rush Build': 'builder', 'Shelter': 'protector', 'Reclaim': 'protector'}  # 219: Particle Run is gone; 227: Seize is Reclaim
@@ -69,7 +78,8 @@ def rows(games):
                  m(lambda g, c=c: cnt(g, f'cards.used.{c}'))) for c in gift]
     out += [
         # 145: `board.stations_freed` was retired at 137 (read 0): the Liberate action on a station.
-        ('stations liberated (the Liberate action)', m(lambda g: cnt(g, 'board.liberated.station'))),
+        ('stations liberated (the Liberate action)',
+         m(lambda g: cnt(g, 'board.liberated.station') - card_freed(g, 'station'))),
         ('player stations an effect could not flip', m(lambda g: cnt(g, 'adversary.station_flip_held'))),
         ('stations flipped', m(lambda g: cnt(g, 'adversary.stations_flipped'))),
         ('Reclamation Crew played (frees a station)', m(lambda g: cnt(g, 'cards.played.station_prefab_order'))),
@@ -84,10 +94,10 @@ def rows(games):
         # No counter splits that half from its token half, so this is the Action's uses, both halves.
         ('Popular Uprising played / Action uses (either half)', m(lambda g: cnt(g, 'cards.played.popular_uprising')),
          m(lambda g: cnt(g, 'cards.used.popular_uprising'))),
-        ('cities liberated by a card / the Liberate action', m(lambda g: cnt(g, 'board.liberated_card')),
+        ('cities liberated by a card / the Liberate action', m(lambda g: card_freed(g, 'city')),
          # 184: since 178 (r77) a card liberates through the action's own path, which tallies liberated.city too
          # (on an older run liberated.city alone is the action).
-         m(lambda g: cnt(g, 'board.liberated.city') - cnt(g, 'board.liberated_card'))),
+         m(lambda g: cnt(g, 'board.liberated.city') - card_freed(g, 'city'))),
     ]
     for name, key in powers.items():
         out.append((f'{name} used', m(lambda g, key=key: cnt(g, key))))

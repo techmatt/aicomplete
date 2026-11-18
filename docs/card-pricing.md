@@ -85,7 +85,7 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
 - **One shape for one job across the tags:** a per-tag income program ("raise your credit income by 1 per 2 X tags"),
   needs 2 of X, 6 credits and no play insight, one per tag (priced at 6 tags at play, 1.30 at the anchors); a
   building's per-tag income pays 3 a tag (Foundation Model Campus); a standing counter (`auto_counter`, Cyber's
-  alone) 9 credits and 1 insight, needs 2; a typed jam 5 and a rider of its tag; a free typed-jam Action building 7
+  and Industry's) 13 credits and no play insight, needs 2; a typed jam 5 and a rider of its tag; a free typed-jam Action building 7
   credits and no play insight, about 3 a round.
 - **Income has a horizon:** any income counts for the rounds left at a typical
   purchase less a tempo discount: 4 rounds on a tier-1 card, 2.5 on a tier-2 one (`rates.horizon_t1`, `horizon_t2`).
@@ -98,11 +98,11 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   at 1:2.
 - **Energy is rare:** about 4.5 credits an energy, 5 to buy from a neutral city. +1 energy of income or production is
   the horizon × 4.5 × 0.8 (`rates.energy_income_share`: it arrives a drop at a time, not when needed): about 14 on a
-  tier-1 card, 9 on a tier-2 one (Matt's ruling), and no card above +2 a card (one tag payoff, Tidal Barrage,
-  reaches +3 at 6 Power tags). Threat counters that offer energy (by tag), fourteen cards and six Actions take
+  tier-1 card, 9 on a tier-2 one (Matt's ruling), and no card above +2 a card but the major Dyson Swarm Tranche (+3) and one tag payoff (Tidal
+  Barrage, +3 at 6 Power tags). Threat counters that offer energy (by tag), fourteen cards and ten Actions take
   energy ([cards.md](cards.md)).
 - **Energy as a second cost** (Matt): a card whose title reads power-hungry prints energy and costs 4.5 credits less
-  an energy, so pay holds at the anchors; uncommon (14 of 182 deck cards). The late sinks price energy at its 4.5
+  an energy, so pay holds at the anchors; uncommon (14 of 191 deck cards). The late sinks price energy at its 4.5
   anchor too: Citywide Microgrid's 4 energy is 18 of its 44, Exascale Training Cluster's 2 is 9 of its 35 (258 moved
   the rest into credits: energy binds), and
   each 2-energy Action is a use's 9. The table prices energy at the full anchor while its insight, draw and chip
@@ -115,7 +115,7 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
 - **The liberate capstones**: priced at their own value, at least half in their engine's resource, out of reach
   before mid-game: a city liberated is 45 (5 Sway, the city and the ambassadors and Discord it stops; play reads about
   50), against the Liberate action's 5 ambassadors at about 100; each engine's twist at its own row (3 ambassadors;
-  up to 2 troops in the city's country; a botnet next to it; a draw 2). They read 1.0-1.5 at the anchors, inside the
+  up to 3 troops in the city's country; a botnet next to it; a draw 2). They read 1.0-1.5 at the anchors, inside the
   margin like any fair card: the deck's late credit sinks, pending Matt's liberation anchor.
 
 ## Rates known to be off at r36

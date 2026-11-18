@@ -390,7 +390,7 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
                 t("board.claim_station"),
                 t("board.claim_factory")
             ),
-            "a neutral research station or factory, no embargo on it: your cube goes on it (never a city)".into(),
+            "a neutral research station or factory, no agent on it: your cube goes on it (never a city)".into(),
         ),
         StandardAction::Claim => (
             "Claim a site",
@@ -400,7 +400,7 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
                 t("board.claim_station"),
                 t("board.claim_factory")
             ),
-            "a neutral city, research station or factory, no embargo on it: your cube goes on it".into(),
+            "a neutral city, research station or factory, no agent on it: your cube goes on it".into(),
         ),
         // 137: it replaced Free a station and the city fallback. r75 (Matt's ruling 2): Claim's payment; 252
         // (Matt's ruling 4, free then claim): the site is left neutral.

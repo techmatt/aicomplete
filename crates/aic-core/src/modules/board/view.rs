@@ -4,9 +4,11 @@ use super::*;
 
 fn flag_doc(f: RoundFlag) -> &'static str {
     match f {
-        RoundFlag::Blackout => "Blackout: while this is up, cities here make no energy in production (an uncountered threat's lasts to the end of the next round)",
-        RoundFlag::Sabotage => "Sabotage: while this is up, players with a node here make no energy in upkeep (an uncountered threat's lasts to the end of the next round)",
-        RoundFlag::Embargo => "Embargo: while this is up, no site here can be claimed (an uncountered threat's lasts to the end of the next round)",
+        // 261: an adversary card makes these (a project, an event, the Militarist's Naval Blockade; no threat does),
+        // and it says how long; nothing in the content makes an Embargo.
+        RoundFlag::Blackout => "Blackout: while this is up, cities here make no energy in production (until the end of the next round, as its card says)",
+        RoundFlag::Sabotage => "Sabotage: while this is up, players with a node here make no energy in upkeep (until the end of the next round, as its card says)",
+        RoundFlag::Embargo => "Embargo: while this is up, no site here can be claimed (until the end of the next round)",
         RoundFlag::Cordon => "Cordon: no Rally or creation line places agents here until the end of the next adversary turn (its pool waits; troops still land)",
     }
 }
@@ -74,7 +76,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
                 dark.len() as i64,
                 None,
                 &format!(
-                    "dark: an agent stands on {}: no energy for anyone there (sold or to its owner) while it stays",
+                    "dark: an agent stands on {}: no energy for anyone there (not sold, not hosted) while it stays",
                     dark.join(", ")
                 ),
             );

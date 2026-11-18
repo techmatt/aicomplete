@@ -497,7 +497,7 @@ fn removals(md: &Md, w: &mut String) {
 fn game_length(md: &Md, w: &mut String) {
     let sums = md.run.sums;
     let _ = writeln!(w, "## Game length, margin and end\n");
-    let _ = writeln!(w, "| cell | rounds (sd, min..max) | ended by | win margin: deck left / supply left | loss distance: pieces over bar / level | supply left | cities corrupted / aligned at end |");
+    let _ = writeln!(w, "| cell | rounds (sd, min..max) | ended by | win margin: deck left / supply left | loss distance: pieces over bar / level | supply left | cities corrupted / aligned or hosted at end |");
     let _ = writeln!(w, "|---|---|---|---|---|---|---|");
     for s in sums {
         let ended: Vec<String> = s.ended.iter().map(|(k, v)| format!("{k} {v}")).collect();

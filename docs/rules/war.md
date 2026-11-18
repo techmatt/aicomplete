@@ -22,8 +22,10 @@ cancel once, the surplus strikes twice).
   `factory_chips` (1) chip for its owner; an adversary factory makes 1 adversary troop on its hex (**locked**); a
   neutral factory makes nothing for anyone, but **feeds the cities next to it** (growth, below) and **at a Discord tip
   it arms its country's bases** (below). One opposing ambassador or agent blocks a
-  factory's output while it stands. Threats build adversary factories (Mass Production, War Economy), corrupt them
-  (Factory Occupation, with its cleanup) and destroy them (Siege, leaving Fallout); projects build or take them (War Plants, Asset Seizure, Hostile Takeover, Grand Offensive).
+  factory's output while it stands. Threats build adversary factories (Mass Production, War Economy; Factory
+  Occupation on an empty zone), corrupt them (Factory Occupation, unless a firewall or Corrupt prohibition guards it)
+  and destroy them (Siege, leaving Fallout); projects build or take them (War Plants, Asset Seizure, Plant Seizure,
+  Hostile Takeover, Grand Offensive).
 - **City growth** (candidate; each round, after the income step and the extra drones): every
   city, neutral or corrupted (no player owns one, 254), puts **1 chip on itself for each unclaimed neutral factory next to it** (none
   of its own; a claimed or adversary factory feeds nothing; an agent on the city blocks nothing), holding at most
@@ -31,8 +33,8 @@ cancel once, the surplus strikes twice).
   whichever of factory and research station it has **fewer of next to it** (any owner's; ties: a factory), a factory
   on a free industrial zone, a station on free open land that is no zone and no base, next to the city; with none,
   within 2 hexes **in its own country**; with none there, nothing is built (it never switches kind) and its chips
-  wait. A corrupted city's hex is the lowest-numbered next to an agent, else the lowest-numbered, as a neutral
-  city's is (with `cities_unowned` 0, an aligned city's owner picked it). Cities gather first, then build in hex order. Claiming a factory stops it
+  wait. A city's hex, neutral or corrupted alike, is the lowest-numbered next to an agent, else the lowest-numbered
+  (with `cities_unowned` 0, an aligned city's owner picked it). Cities gather first, then build in hex order. Claiming a factory stops it
   feeding: growth is a prize to take, and a city with no unclaimed factory beside it touches no token.
 
 ## Bases and war
@@ -59,8 +61,10 @@ wait at its bases.
 
 **Adversary troops (candidate): the march.** Troops are **few and deadly**: they come from
 adversary-owned factories (each round), the stage-III event cards' Muster 1 (each country's lowest-numbered factory,
-else city; no stage-I or stage-II card musters), threats (Orbital Strike, Total War)
-and projects, only from adversary factories or botnets (War Plants, Botnet Conscripts). **Targets:**
+else city; no stage-I or stage-II card musters), the research track's Weapons Program (Muster 2 in each country, 3
+from `research_strong_at` 3; [adversary.md](adversary.md)), threats (Orbital Strike, Total War, Call-Up and others:
+each prints it) and projects, only from adversary factories or botnets (War Plants, Botnet Conscripts). Every Muster
+lands 1 more troop a country from `board_difficulty_at` (2). **Targets:**
 player-owned research stations and factories, **and nodes** (`troop_node` 0, from the start), never cities
 (corruption is the adversary's way in) or neutral or adversary-owned facilities.
 
@@ -98,7 +102,7 @@ pieces. Removing a troop sways `alignment.troop` (0).
 **For new players:** [rulebook.md](../rulebook.md) §2 (sites, bases), §6 (the march), §9 (city growth) and §11
 (war). Discord feeds war and war feeds Discord: keep neutral factories quiet and the Discord track low.
 
-**This is the troops' own movement rule**; Push (Interceptor Battery, the Protector's Patrol) moves troops too
+**This is the troops' own movement rule**; Push (Checkpoint Network, the Protector's Patrol) moves troops too
 ([ambassadors.md](ambassadors.md)). **A Discord tip doesn't move troops**, and
 `board.troop_steps` 0 is the off-switch ([README.md](README.md#off-variants)): troops never march or strike (Push still moves them).
 
@@ -130,6 +134,5 @@ spending nothing, and so
 does the Aegis Doctrine capstone, a shelter on the Protector's own pieces once a round (the first time each round
 one of its nodes or facilities would be destroyed, automatically, asking nothing). Otherwise **the piece's owner
 chooses which protection to spend, or none** (seat 0 for a neutral piece): a hardening token on the hex, **the owner's own ambassador on the hex**
-(armor; another player's never guards it, and a neutral site has none). Scorched Earth's node loss goes
-through the same choice. A destroyed node leaves the game (above). A destroyed station
+(armor; another player's never guards it, and a neutral site has none). A destroyed node leaves the game (above). A destroyed station
 or factory takes its cube with it.

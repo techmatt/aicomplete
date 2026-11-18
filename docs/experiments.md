@@ -16,7 +16,7 @@ and every game is replay-checked. Spec paths resolve against the working directo
 |---|---|---|
 | `name`, `note` | | Report title and purpose. |
 | `configs` | | Config files. |
-| `variants` | `[{"name": "base", "set": []}]` | Named override sets in `--set` syntax (lists comma-separated, `alignment.purge_at=1,1,2`), each applied to every config. |
+| `variants` | `[{"name": "base", "set": []}]` | Named override sets in `--set` syntax (lists comma-separated), each applied to every config. |
 | `difficulties` | `[0]` | `adversary.difficulty` levels. |
 | `agents` | | Agent specs, weakest first. |
 | `games`, `first_seed` | `first_seed` 0 | Seeds per cell. `--games`/`--seed` override. |
@@ -28,6 +28,7 @@ and every game is replay-checked. Spec paths resolve against the working directo
 | `records` | `4` | Records saved per category. |
 | `gate` | none | Early stopping (suspended: *The ballpark read*). |
 | `inject_panic` | none | `{"cell", "seed"}`: that game panics, for a test. |
+| `drop` | none | `["actions", "cards"]`: written empty (half the bytes); no `--resume`; their readers read nothing. |
 
 `experiment` refuses a config naming a parameter the binary lacks: an old binary needs its revision's configs.
 Agent search settings go bare, heuristic weights take `w.` (`engine:samples=2`, `engine:w.packet_keep=0.5`); an
@@ -41,9 +42,8 @@ a game), `cards.csv` (per agent, variant, config, difficulty and card), `records
 **Paired reads.** *Agents paired, per variant* (`agent_pairs`) and *Fresh-seed confirmation* (`fresh_confirmation`,
 the seeds outside `selection_seeds`): `report.md` says how each pairs.
 
-**Results as they go** (`--report-every`, `--resume`: `aic-sim` help). `games.jsonl` lines carry the actions.
-`--resume` needs the same spec and `--out` and refuses any change; without it an earlier
-stream moves to `games.jsonl.bak`. `report.md` and `results.json` exist from the start: wait on `^time:` in stderr
+**Results as they go** (`--report-every`, `--resume`: `aic-sim` help). `games.jsonl` lines carry the actions (not under
+`drop`). `--resume` needs the same spec and `--out` and refuses any change; without it an earlier stream moves to `games.jsonl.bak`. `report.md` and `results.json` exist from the start: wait on `^time:` in stderr
 or on the process, not on the file.
 
 **A game that panics** fails alone, exit 1 (`report.md`'s *Failed games* says the rest); `run` and `compare` have no
@@ -65,7 +65,7 @@ such net.
 - **Runaway check**: a resource's peak per seat (`peaks`) far above a round's income (`gained / rounds`):
   `cards/runaway_read.py`. `sources` / `uses` / `keeps`: `source_read.py`.
 - **Margin**: a win's adversary cards left and ambassador supply; a loss's adversary pieces over the bar
-  (`margin.level`: the Unity level, not the difficulty); every game, `margin.cities_corrupted_end`, `_aligned_end`.
+  (`margin.level`: the Unity level, not the difficulty); every game, `margin.cities_corrupted_end`, `_aligned_end` (hosted too: 261).
   A `deck_empty` loss (the round cap) counts `rounds` one past the cap's printed count, so a level's mean rounds run
   over the rounds played by its round-cap share.
 
@@ -93,18 +93,17 @@ search is beam, rollout, `samples`/`depth` > 1 and `engine:width` > 0; the plann
 **Content levers run on one binary** (a rule or map what-if needs a build). A variant's `set` (or `--set` on `run`
 and `compare`) takes an overlay, `<table>.<id>.<path>=<JSON>`: tables `cards`, `threats`, `adversary`, `ais`,
 `alignment`, `projects`; `*` for every id; a path through fields and list indexes (`ais.*.economy_track.4.cost=2`;
-`corps.horizon.project.cubes=8`: country pieces by lowercase name; `null` clears an optional field; an op's `amount`
-can't be 0: rewrite its list without it). It is checked like `content/` and lands in the config, so `replay` needs
+`corps.horizon.project.cubes=8`: country pieces by lowercase name; `null` clears an optional field, in
+`apply_overlay.py` too; an op's `amount` can't be 0: rewrite its list without it). It is checked like `content/` and lands in the config, so `replay` needs
 nothing else (a sweep: `overlay-card-cost.json`). Each variant repeats its whole list. **A card blanked**,
 `cards.<id>.cost=99` (never affordable, so never kept or played), keeps the deck order, so its games pair with the
 base's seed for seed: a card's worth to an agent, on against blank (246's `cardvalue.py`). A deck change's
-old arm is the old binary on the same spec (256's `merge.py`). `null` drops the field in
-both the engine and `apply_overlay.py`. Diagnose a rewrite's gap by
+old arm is the old binary on the same spec (256's `merge.py`). Diagnose a rewrite's gap by
 part before tuning: restore the old content a part at a time (a side, a tier, a card group) as overlays (a density
 or dial screen: 227's `density_specs.py`). A standard action off: `board.std_off=N,M,` (places in the economy.md
 table's code order, `STANDARD`, as the param's doc lists them: a spec from before 255 means other actions;
 `board.sell_credits=0` takes Sell); 248's `mkspec.py` and `probe.py` write and read
-the arms (4,608 strategist games farmed in 508 s, 30 native and 18 wasm shards).
+the arms (4,608 strategist games farmed in 508 s).
 
 ## Reading noise
 
@@ -124,8 +123,8 @@ The ruling and its targets: [principles.md](principles.md), *Ballpark simulation
 paired): `bench/ladder.py NEW OLD --pairs`; a farmed file without a header reads as `FILE=SPEC`. A power lever is a
 content overlay in `set`, by index in `content/ais.json`: `ais.builder.powers.6.cost=[["chips",1]]` (s240).
 
-**The judge is the strategist** (`STRATEGIST` in `agents/mod.rs`; [agents.md](agents.md), *The tiers*); `sweep` spot-checks a verdict that matters, `planner:strategy=1` is the
-ceiling, `sweep:plan_table=0,w.table=0,w.packet_keep=1` the judge off the value table.
+**The judge is the strategist** (`STRATEGIST`; [agents.md](agents.md), *The tiers*); `sweep` spot-checks a verdict that
+matters, `planner:strategy=1` is the ceiling, `strategist:plan_table=0` the judge's keeps off the value table.
 
 - **Order:** the engine smoke read (`use.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read;
   greedy first after a change to how the game is won (agents.md, *The tiers*): a greedy lead stops calibration for a question.
@@ -133,9 +132,9 @@ ceiling, `sweep:plan_table=0,w.table=0,w.packet_keep=1` the judge off the value 
   `bench/read_specs.py read`, `run_read.sh`); read by `bench/ladder.py NEW OLD --measures` (pooled, paired, by set).
 - **Standing measures, old against new every read** (`--measures`; the list: `ladder.py`'s docstring; projects
   revealed is `adversary.projects_revealed`, every draw: a game's deck use; compute by source is
-  `adversary.compute_income`, `adversary.compute_botnets` and `board.station_compute`; the rest of
-  `adversary.compute_made` is threats and cards: `adversary/projects.rs`). A measure the old binary never tallied
-  is patched into its tree before its first read.
+  `adversary.compute_income` and `adversary.compute_botnets`, the rest threats and cards; since 259 a corrupted
+  station makes research cubes, `adversary.research_made.stations`). An untallied measure is patched into the old
+  tree before its first read.
 - **Costs:** greedy + judge, two arms, three pairs, d0-d4, 48 seeds (2,880 games) farmed in 13-14 min with one
   browser worker (254); with none, 1,440 in 7.6 min on the main box (258; 259's old side, `aic-sim farm` in 6 native processes, 6.7 min). The full oracle at d2-d3, 72 games in
   2-10 min on 6 native shards (253, 258).

@@ -22,11 +22,11 @@ Cities, research stations and factories follow one set of rules and differ only 
   Only your own guards your piece (r75, Matt's ruling 5): another player's never does, and a neutral site has none.
   One of your ambassadors on your site's hex can cover the site or your node there. Against troops it answers a
   strike from next door; a troop standing on the hex removes ambassadors first, one a step (175, [war.md](war.md)).
-- **Claim and Liberate share one payment rule** (r75, Matt's ruling 2): the bill is the site's price plus one for
-  each agent on it (they cancel); **your own ambassadors standing on the site pay first, then your supply**, never
+- **Claim and Liberate share one payment rule** (r75, Matt's ruling 2): the bill is the site's price (a site with
+  an agent on it is refused, below); **your own ambassadors standing on the site pay first, then your supply**, never
   another player's. Both need the site in reach; a botnet on or next to it stops neither.
 - **Claiming** (the Claim action, [economy.md](economy.md)): a neutral **research station or factory** in reach
-  with no embargo on it, `claim_station` 4, `claim_factory` 3 (252: priced under the cards for the job, Matt's
+  with no agent on it, `claim_station` 4, `claim_factory` 3 (252: priced under the cards for the job, Matt's
   ruling 5; 3 and 2 before). Your cube goes on. **A city is never claimed** (254, Matt's candidate,
   `cities_unowned` 1; r114 claimed one for `claim_city` 5 and bound one to each player at setup).
   Difficulty lowers only the adversary's numbers.
@@ -37,13 +37,12 @@ Cities, research stations and factories follow one set of rules and differ only 
   converters ([board.md](board.md)) spend late. The risk is the adversary's: Asset Seizure turns it neutral.
   Claiming a neutral factory also stops it feeding the cities next to it ([war.md](war.md), city growth).
 - **Claiming with a card** (142; 256: stations and factories, op `claim_site`): Power Purchase Agreement (an event:
-  2 credits and 2 energy) and Microgrid Lab Compact (a building: Action, pay 2 energy) claim a neutral research
+  2 credits and 2 energy) and Microgrid Lab Compact (a building: one claim when built, then an Action for 2 energy) claim a neutral research
   station or factory in reach as the Claim action does (148, Matt): the card's price replaces the ambassadors, and
-  it needs the site in reach with no agent and no embargo. 2 energy (9) is cheaper than 3-4 ambassadors (24-32).
+  it needs the site in reach with no agent on it. 2 energy (9) is cheaper than 3-4 ambassadors (24-32).
   **Open Research Campus** and **Industrial Commons** open a station or factory on their target and claim it: the
   card route to an owned station. **The liberate cards' rider** (256) claims a neutral station or factory next to
-  the city they free, free and without reach (the card's target puts it in range); an agent or an embargo on it still
-  stops it.
+  the city they free, free and without reach (the card's target puts it in range); an agent on it still stops it.
 - **Liberating an adversary site: free, then claim** (Matt's ruling 4, 2026-11-16, locked; reverses r75). The
   Liberate action takes massed ambassadors and **leaves the site neutral**: Claim or a card takes it from there. It
   pays Claim's price table (r91, Matt, 2026-11-12: one table): `liberate_at` 5 and `free_city` 5 Unity for a city,
@@ -51,8 +50,8 @@ Cities, research stations and factories follow one set of rules and differ only 
   on it can't be claimed or liberated** (r91: no "+1 per agent"; clear them first, with Remove agents, a card or a
   power). The adversary's cube comes off. It needs the site **in reach** (your node on or next to it: getting close
   is the risk); a botnet on it stays. No agents land on it. Its factories keep their owners. A **Liberated marker**
-  goes on it: **to retake it the adversary must pile `retake_agents` (1) agent more than its corrupt number** on it
-  ([adversary.md](adversary.md); 253, amendment 11525: the adversary commits more to take back what you freed, Matt's
+  goes on it: **to retake it by a Corrupt line or natural corruption the adversary must pile `retake_agents` (1)
+  agent more than its corrupt number** on it (a card that takes or flips a site outright ignores it; [adversary.md](adversary.md); 253, amendment 11525: the adversary commits more to take back what you freed, Matt's
   ruling 4). The marker comes off when anyone claims the site, the adversary retakes it or it is
   destroyed; a node on that hex takes no extra agent. Liberate stays the win
   route (the purge). A **liberate card** ([player-cards.md](player-cards.md),
@@ -130,8 +129,8 @@ makes something for its owner; a city is the adversary's or its country's, never
 to take a site back from the adversary (Liberate: 5 for a city, 4 for a station, 3 for a factory) or to claim a
 neutral station (4) or factory (3), never with an agent sitting on it; your own ambassadors standing on it pay first.
 A claim makes it yours; taking one back leaves it neutral and sways Unity your way, and you may claim a station or
-factory after; a city stays free, and a node of yours on or next to it collects its energy each round. While a freed site is unclaimed, a Liberated marker makes the
-adversary bring one agent more to take it back. A station you own makes 1 cube a round (a
+factory after; a city stays free, and a node of yours on or next to it collects its energy each round. While a site you liberated (with Liberate or a liberate card) is unclaimed, a Liberated marker makes the
+adversary bring one agent more to corrupt it again (a card that takes a site outright needs none); a station or factory a card frees takes no marker. A station you own makes 1 cube a round (a
 factory 1 chip), so a claim is a slow fallback; cards claim cheaper (256: a station or factory for energy, Campus and Commons the site they open, the liberate cards one next to the city). Every meeting of an agent and an ambassador is one for one. Stand one ambassador on an adversary site
 to shut it off, and clear agents off yours, which they shut off the same way. An ambassador of yours on your own piece
 can take a hit for it.

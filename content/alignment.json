@@ -4,11 +4,11 @@
   "name": "Grassroots Funding",
   "side": "unity",
   "tiers": [
-   {"text": "Every player's credit income rises by 1 for each city, research station or factory a player owns (at most 2), for the rest of the game.",
+   {"text": "Every player's credit income rises by 1 for each research station or factory a player owns, or city a player hosts (at most 2), for the rest of the game.",
     "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "team_income", "resource": "credits", "amount": 1}]}]},
-   {"text": "Every player's credit income rises by 1 for each city, research station or factory a player owns (at most 3), for the rest of the game.",
+   {"text": "Every player's credit income rises by 1 for each research station or factory a player owns, or city a player hosts (at most 3), for the rest of the game.",
     "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "team_income", "resource": "credits", "amount": 1}]}]},
-   {"text": "Every player's credit income rises by 1 for each city, research station or factory a player owns (at most 4), for the rest of the game.",
+   {"text": "Every player's credit income rises by 1 for each research station or factory a player owns, or city a player hosts (at most 4), for the rest of the game.",
     "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "team_income", "resource": "credits", "amount": 1}]}]}
   ]
  },
@@ -17,11 +17,11 @@
   "name": "Open Market",
   "side": "unity",
   "tiers": [
-   {"text": "For each city, research station or factory a player owns (at most 2), the next card any player keeps from the draft is free.",
+   {"text": "For each research station or factory a player owns, or city a player hosts (at most 2), the next card any player keeps from the draft is free.",
     "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "free_purchases", "count": 1}]}]},
-   {"text": "For each city, research station or factory a player owns (at most 3), the next card any player keeps from the draft is free.",
+   {"text": "For each research station or factory a player owns, or city a player hosts (at most 3), the next card any player keeps from the draft is free.",
     "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "free_purchases", "count": 1}]}]},
-   {"text": "For each city, research station or factory a player owns (at most 4), the next card any player keeps from the draft is free.",
+   {"text": "For each research station or factory a player owns, or city a player hosts (at most 4), the next card any player keeps from the draft is free.",
     "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "free_purchases", "count": 1}]}]}
   ]
  },
@@ -30,11 +30,11 @@
   "name": "Think Tank",
   "side": "unity",
   "tiers": [
-   {"text": "Every player's insight income rises by 1 for each city, research station or factory a player owns (at most 1), for the rest of the game.",
+   {"text": "Every player's insight income rises by 1 for each research station or factory a player owns, or city a player hosts (at most 1), for the rest of the game.",
     "effects": [{"op": "per_site", "where": "owned", "max": 1, "then": [{"op": "team_income", "resource": "insight", "amount": 1}]}]},
-   {"text": "Every player's insight income rises by 1 for each city, research station or factory a player owns (at most 1), for the rest of the game.",
+   {"text": "Every player's insight income rises by 1 for each research station or factory a player owns, or city a player hosts (at most 1), for the rest of the game.",
     "effects": [{"op": "per_site", "where": "owned", "max": 1, "then": [{"op": "team_income", "resource": "insight", "amount": 1}]}]},
-   {"text": "Every player's insight income rises by 1 for each city, research station or factory a player owns (at most 2), for the rest of the game.",
+   {"text": "Every player's insight income rises by 1 for each research station or factory a player owns, or city a player hosts (at most 2), for the rest of the game.",
     "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "team_income", "resource": "insight", "amount": 1}]}]}
   ]
  },
@@ -43,11 +43,11 @@
   "name": "Ceasefire",
   "side": "unity",
   "tiers": [
-   {"text": "Counter an active threat for each city, research station or factory a player owns (at most 1).",
+   {"text": "Counter an active threat for each research station or factory a player owns, or city a player hosts (at most 1).",
     "effects": [{"op": "per_site", "where": "owned", "max": 1, "then": [{"op": "counter_threat"}]}]},
-   {"text": "Counter an active threat for each city, research station or factory a player owns (at most 2).",
+   {"text": "Counter an active threat for each research station or factory a player owns, or city a player hosts (at most 2).",
     "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "counter_threat"}]}]},
-   {"text": "Counter an active threat for each city, research station or factory a player owns (at most 3).",
+   {"text": "Counter an active threat for each research station or factory a player owns, or city a player hosts (at most 3).",
     "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "counter_threat"}]}]}
   ]
  },
@@ -69,11 +69,11 @@
   "name": "Volunteer Corps",
   "side": "unity",
   "tiers": [
-   {"text": "Sway 1 toward Unity for each city, research station or factory a player owns (at most 2).",
+   {"text": "Sway 1 toward Unity for each research station or factory a player owns, or city a player hosts (at most 2).",
     "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "sway", "side": "unity", "amount": 1, "narrative": "cooperation"}]}]},
-   {"text": "Sway 1 toward Unity for each city, research station or factory a player owns (at most 3).",
+   {"text": "Sway 1 toward Unity for each research station or factory a player owns, or city a player hosts (at most 3).",
     "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "sway", "side": "unity", "amount": 1, "narrative": "cooperation"}]}]},
-   {"text": "Sway 1 toward Unity for each city, research station or factory a player owns (at most 4).",
+   {"text": "Sway 1 toward Unity for each research station or factory a player owns, or city a player hosts (at most 4).",
     "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "sway", "side": "unity", "amount": 1, "narrative": "cooperation"}]}]}
   ]
  },
@@ -95,11 +95,11 @@
   "name": "New Deal",
   "side": "unity",
   "tiers": [
-   {"text": "Every player gains 2 credits and 1 Ambassador for each city, research station or factory a player owns (at most 2).",
+   {"text": "Every player gains 2 credits and 1 Ambassador for each research station or factory a player owns, or city a player hosts (at most 2).",
     "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 1}]}]},
-   {"text": "Every player gains 2 credits and 2 Ambassadors for each city, research station or factory a player owns (at most 3).",
+   {"text": "Every player gains 2 credits and 2 Ambassadors for each research station or factory a player owns, or city a player hosts (at most 3).",
     "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 2}]}]},
-   {"text": "Every player gains 2 credits and 3 Ambassadors for each city, research station or factory a player owns (at most 4).",
+   {"text": "Every player gains 2 credits and 3 Ambassadors for each research station or factory a player owns, or city a player hosts (at most 4).",
     "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 3}]}]}
   ]
  },
@@ -178,11 +178,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Every player gains 1 energy and 1 Ambassador for each city, research station or factory a player owns (at most 1).",
+   {"text": "Every player gains 1 energy and 1 Ambassador for each research station or factory a player owns, or city a player hosts (at most 1).",
     "effects": [{"op": "per_site", "where": "owned", "max": 1, "then": [{"op": "gain", "resource": "energy", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 1}]}]},
-   {"text": "Every player gains 1 energy and 2 Ambassadors for each city, research station or factory a player owns (at most 2).",
+   {"text": "Every player gains 1 energy and 2 Ambassadors for each research station or factory a player owns, or city a player hosts (at most 2).",
     "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "gain", "resource": "energy", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 2}]}]},
-   {"text": "Every player gains 1 energy and 3 Ambassadors for each city, research station or factory a player owns (at most 3).",
+   {"text": "Every player gains 1 energy and 3 Ambassadors for each research station or factory a player owns, or city a player hosts (at most 3).",
     "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "gain", "resource": "energy", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 3}]}]}
   ]
  },
@@ -248,11 +248,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Every player gains 2 Ambassadors for each city, research station or factory a player owns (at most 2).",
+   {"text": "Every player gains 2 Ambassadors for each research station or factory a player owns, or city a player hosts (at most 2).",
     "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "gain", "resource": "ambassadors", "amount": 2}]}]},
-   {"text": "Every player gains 2 Ambassadors for each city, research station or factory a player owns (at most 3).",
+   {"text": "Every player gains 2 Ambassadors for each research station or factory a player owns, or city a player hosts (at most 3).",
     "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "gain", "resource": "ambassadors", "amount": 2}]}]},
-   {"text": "Every player gains 2 Ambassadors for each city, research station or factory a player owns (at most 4).",
+   {"text": "Every player gains 2 Ambassadors for each research station or factory a player owns, or city a player hosts (at most 4).",
     "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "gain", "resource": "ambassadors", "amount": 2}]}]}
   ]
  },

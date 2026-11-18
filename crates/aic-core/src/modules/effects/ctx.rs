@@ -37,6 +37,9 @@ pub struct Ctx {
     pub hit_unasked: bool,
     /// 212: the hex of the node an earlier `place_node` of this list placed last (a rider's "it").
     pub node: Option<usize>,
+    /// 261: the hexes where a station or factory stood before that placement: what its uncovered track space
+    /// builds (the Researcher's free station) is no spot the node "brings into your reach".
+    pub node_spots_before: Vec<usize>,
     /// 212: the rider resolving asked for a fresh spot (its ambassador goes onto one).
     pub fresh: bool,
     /// 234: a `target` op has resolved in this list: `Some(None)` when it found no hex (the map ops after it
@@ -57,6 +60,7 @@ impl Ctx {
             hit: None,
             hit_unasked: false,
             node: None,
+            node_spots_before: Vec::new(),
             fresh: false,
             target: None,
         }

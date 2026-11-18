@@ -1823,7 +1823,7 @@
   "locations": [
    "factory"
   ],
-  "text": "The adversary corrupts the factory here, even a player's. The adversary gains 5 compute.",
+  "text": "The adversary corrupts the factory here, even a player's (with none there, it builds one on the empty zone). The adversary gains 5 compute.",
   "counters": [
    [
     {

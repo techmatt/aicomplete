@@ -12,21 +12,21 @@ upkeep). The board module owns nodes and counts the tokens taken (`board.track.<
 build direction), Dispatches 1 ambassador free each round (the Researcher 2; more from the fourth economy space), and
 counts its printed tag like one on its cards; its powers are in [ai-powers.md](ai-powers.md). The **Builder**'s special
 rule is Breadth: five building slots, a wider engine. It starts with 40 credits and earns 15 a round, each credit space
-of its economy track 2 or 3 more, so placing a node is how its income grows; the energy of the city it hosts (254: a
-node on a neutral city) and the cities it buys from, its node power, Buy In, spends. Its powers turn credits into chips and chips into cards or
+of its economy track 2 or 3 more, so placing a node is how its income grows; the energy of the cities it hosts (254: a
+neutral city with its node on or next to it) and the cities it buys from, its node routes (Expand, Buy In, Annex) spend. Its powers turn credits into chips and chips into cards or
 a troop removed, and late in the game finished cards into chips (Industry), energy (Power) or, with an energy, a
 building played free.
 
 The **Protector**'s special rule is Wall: no adversary troop is ever placed on a hex with its node, nor enters it or
 strikes into it, so no troop strikes its node or a facility under it (war, threats and corruption still can). The first two troops each round that end their march next to its node pay it 1 insight
-each (Vigil). It places nodes (Accord) and hardens facilities (Bulwark) with energy, and its board prints 2 energy a
+each (Vigil). It places nodes (Accord, Outpost) and hardens facilities (Bulwark) with energy, and its board prints 2 energy a
 round. It earns 13 credits
 a round, so starts with 46. Each credit space of its economy track adds 2 or 3 credits, the
 first one 1 energy too. Late in the game, a sacrificed Security card removes troops or an agent.
 
 The **Researcher**'s special rule is Patience: insight it doesn't spend stays into the next round (all of it, even
 insight another player gave it), to save up for a big round. It starts with 40 credits and earns 11 a round, 3
-more for each credit space of its economy track, and plays off the board, on its turn budget and research cubes: its
+more for each credit space of its economy track, and plays off the board, on insight and research cubes: its
 powers turn insight into a card (Synthesis, its draw), credits into megaproject cubes, and Cyber cards into troops
 removed or compute stripped. Its node routes run on insight, never research cubes (Matt, 2026-11-16): Peer Review
 costs 2 and gives 1 back by a fresh station, Field Survey 3 and draws a card, so it builds stations early: once their country's card
@@ -68,13 +68,14 @@ are a late-game choice.
 **One payment path (locked).** Every space prints a **cost** in energy, the last ones more. Every placement pays it,
 whatever places the node: a node route costs only its printed currency (Expand nothing) and a card only its
 credits, so the energy is stated once, on the track; no card places a node free. Only tracks whose next step you can
-pay are offered; a placement you can't pay doesn't happen.
+pay are offered; a placement you can't pay doesn't happen. A node route is used for its node: with no token left, no
+step you can pay or no free hex in its range, it isn't offered (r122).
 
-**Hard to explain to a new player:** Faraday Yard hardens when played, beside Bulwark's and Fortify's hardening; a hosted city (your node on it) pays you but isn't yours.
+**Hard to explain to a new player:** Faraday Yard hardens when played, beside Bulwark's and Fortify's hardening; a hosted city (your node on or next to it) pays you but isn't yours.
 
 **Node routes (Matt, 2026-11-16, locked; costs candidate).** There is no standard action for nodes. Each board has
 three **node routes**, each once a round: the **base route, Expand** (every board: the track step's energy, nothing
-more), and two in its own currency at rising cost, the middle doing more by a fresh spot ([ai-powers.md](ai-powers.md),
+more), and two more, each paid in one currency, the middle doing more by a fresh spot ([ai-powers.md](ai-powers.md),
 *Node powers' riders*): the Builder's Buy In (2 energy) and Annex (1 chip, within 2 of one of its nodes), the
 Protector's Accord (2 energy) and Outpost (3 energy, and an ambassador), the Researcher's Peer Review (2 insight) and
 Field Survey (3 insight, and a card). So 0-3 nodes a round come from them (cards that place nodes add to that: cards
@@ -121,7 +122,7 @@ Credits → chips → buildings → income → credits runs once a round and in 
 it. **The energy gift** (Shared Grid Accord, Interconnector Treaty) is one-shot. Credits → energy (Buy
 energy, [economy.md](economy.md)) → a card's income is capped by the cards and the cities' energy (once per city a
 round, a city's `corp_energy` a buy). **Energy counters** spend energy for good. **The Researcher's:** Patience with
-the cube converters (Cintamani's 2 insight, once a round; the standard action's 1, no limit) is the intended engine,
+the cube converters (Cintamani's 2 insight, once a round; the standard action's 1, once a round) is the intended engine,
 capped by how many stations make cubes (and Open Archive's and Cryo Sample Vault's 1 a round) and Cintamani's once a
 round.
 **Antimatter:** a plant's Action (a resource for 1) and Horizon's converter (3 cubes and 1 energy for 1) are once a

@@ -157,6 +157,9 @@ function setTimeline(t: Timeline) {
   stopAutoplay();
   pin(null);
   tl = t;
+  // 261: the player view plays the live game, as `setMode` keeps it: a record opened, dropped or loaded there (or a
+  // session restored) showed its setup step, with no timeline to move on and every control dropping the record.
+  if (mode === 'player' && tl.cursor < tl.last) tl.seek(tl.last);
   showError(t.replayError);
   // 099: a game that stopped replaying isn't saved (`Timeline.save`) until acted on.
   commit();
@@ -780,7 +783,12 @@ document.addEventListener('keydown', (e) => {
   // keyboard (235: a mouse click leaves its button focused, unseen, and Space then took, undid or replaced a game).
   if (e.key === ' ' && target.closest('button') && !pointerFocus) return;
   // 242: the player view has no timeline: its keys (and R) would move the game unseen.
-  if (mode === 'player' && ['ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown', ' ', 'r'].includes(e.key)) return;
+  // 261: and Space there must not press the header button a click left focused (New game, Undo, the view toggle):
+  // a keyboard-focused button got its Space above.
+  if (mode === 'player' && ['ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown', ' ', 'r'].includes(e.key)) {
+    if (e.key === ' ' && target.closest('button')) e.preventDefault();
+    return;
+  }
   const keys: Record<string, () => void> = {
     ArrowLeft: () => seek(tl.cursor - 1),
     ArrowRight: () => seek(tl.cursor + 1),
@@ -928,13 +936,14 @@ async function main() {
     setTimeline(restored);
     // 099: a session saved under other rules says so, replayed or not.
     const other = restored.savedRules !== undefined && restored.savedRules !== rulesRevision
-      ? `saved session from rules revision ${restored.savedRules}, this engine plays ${rulesRevision}: `
+      // 261: worded to follow "saved session: " (it read "saved session: saved session from ...").
+      ? `from rules revision ${restored.savedRules} (this engine plays ${rulesRevision}): `
       : '';
     // 184: a session that stopped replaying is kept whole (`Timeline.restore`): say how to get it.
     if (restored.replayError) showError(`saved session: ${other}${restored.replayError}. Its full actions are kept in this browser: run copy(aic.keptSession()) in the console`);
     // 118: a watched record's warnings come back on a reload (184: with the revision note, as they were written then).
     else if (restored.warning) showError(`saved session: ${other}${restored.warning}`);
-    else if (other) showError(`${other}it replayed, but may not be the game it was`);
+    else if (other) showError(`saved session ${other}it replayed, but may not be the game it was`);
     // The session keeps the config it started with: say so when the file has changed
     // since (a retuned baseline), or the game shown is not what the file now plays.
     else if (restored.source.kind === 'play' && CONFIGS[file] !== undefined && !sameJson(CONFIGS[file], restored.configJson))

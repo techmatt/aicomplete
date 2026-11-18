@@ -3,7 +3,7 @@
 *Terms and conventions are in [README.md](README.md).*
 
 The cards config lists the cards in the decks (`configs/baseline.json`; content holds more, "not in deck" in
-[cards.md](../cards.md)); each tag is primary on 24 to 29 of them.
+[cards.md](../cards.md)); each tag is primary on 30 to 34 of them.
 
 - **Decks and zones:** a tier-1 and a tier-2 deck of the listed cards (one copy
   of each), shuffled at setup. The **discard** holds sacrificed cards, drafted cards not kept and cards discarded from a
@@ -33,16 +33,17 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
 - **Energy costs (candidate).** Energy is a second cost on a card whose title reads power-hungry (mostly buildings:
   heavy machinery, Industry and Power, AI compute), its credits cut to match ([card-pricing.md](../card-pricing.md),
   *Energy as a second cost*). They stay uncommon (counts above), so a seat that makes little energy still has plenty
-  to play; seven late sinks (five 2-energy Actions, two tier-2 buildings) serve a seat whose node tracks are full.
-- **Tier 2 is the majors (candidate).** Spirit Island's major powers: big payoffs, most paid in antimatter (15; two
-  dear tier-1 ones too), for your own or another player's board actions: liberations, troop
-  strikes, ambassadors and Unity, energy, chips, cubes. The draft price is their only acquisition cost; no tier-2 card
-  clears many Fallout tokens (green cards do).
+  to play; seven 2-energy Actions and the energy-hungry tier-2 buildings (Citywide Microgrid and Power to the People
+  at 4 energy, Orbital Mass Driver at 3) serve as late sinks for a seat whose node tracks are full.
+- **Tier 2 is the majors (candidate).** Spirit Island's major powers: big payoffs, 15 of them paid in antimatter (and
+  one tier-1 card, Accelerator Diplomacy), for your own or another player's board actions: liberations, troop
+  strikes, ambassadors and Unity, energy, chips, cubes. The draft price is their only acquisition cost. Cards clear
+  Fallout only as green cards (programs): a few at tier 1, and Open-Weights Release (4) at tier 2.
 - **The end-game cards (drafts).** Ten tier-2 cards for the last 3-4 rounds act where the agents stand, at the card's
   target: four **convert** them into your ambassadors where they stand, two **strike** them (one troops too) on or next
   to the target, two **firewall** a hex until the end of the next adversary turn, one masses your own, one removes
-  them, or troops, on one hex ([cards.md](../cards.md)). The six events and Open Source Uprising also sway 1-2 Unity;
-  three print a tag threshold ("with 3 Diplomacy tags, also …"). None frees a city, none is global, none makes a
+  them, or troops, on one hex ([cards.md](../cards.md)). Mass Defection, Rally the Allies (2) and Open Source
+  Uprising (1) also sway Unity; Kettle Operation and Surgical Strike sway 1 Discord. None frees a city, none is global, none makes a
   liberation cheaper the next time ([ambassadors.md](ambassadors.md)).
 - **Tags are story, not rules:** no tag owns an effect ([ai-powers.md](ai-powers.md), its tag table). Shields on a
   node hex lean Security, land lifts Diplomacy or Power, delays ([card-grammar.md](card-grammar.md), *Jam*)
@@ -53,9 +54,10 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
 - **Engines (candidate; the Terraforming Mars pattern).** Programs are the green cards: one-shot, and where permanent
   income lives, flat ("raise your credit income by 8") or per tag ("by 1 per 2 Science tags on your cards", one such
   program per tag, needs 2 of it). Buildings are the blue cards: triggers, Actions and Effects; a building's income is
-  per tag, 3 a tag at its tag count when played (as a program's), or flat on a strong tier-2 one. **An engine pays up
-  front:** a building with a trigger, threshold, discount or income also gives a one-time gain when built, worth about
-  two of its fires: draw 2-4 cards, 2 energy on three Power ones, or its first tokens here (the At N cards, *Tokens* below), so its own play (or,
+  per tag, 3 a tag at its tag count when played (as a program's), or flat (the tier-2 engines, Fabrication Megaplex,
+  Cryo Sample Vault). **An engine pays up front:** a building with a trigger, threshold, discount or income (but the
+  cheap Cryo Sample Vault) also gives a one-time gain when built, worth about
+  two of its fires: draw 2-4 cards, 2 energy on two Power ones, or its first tokens here (the At N cards, *Tokens* below), so its own play (or,
   for Intrusion Lab, its first removal of compute or a feeder) fills the first threshold. A committed seat earns an engine back within 2 rounds. Each tag has a tier-1 play trigger, a tier-2 one
   that counts every tag on the played card, and its engines' payoffs ([card-grammar.md](card-grammar.md), *The engine
   wording*). Cyber and Industry each keep one standing automatic counter (a building: threats of its tag anywhere
@@ -78,7 +80,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   | Peacekeeping Mission | antimatter, Security (needs Security tags) | event | remove up to 3 adversary troops in the city's country |
   | Popular Uprising | Followers | tier-1 building | Action: add 1 Follower here, OR pay 4 Followers to liberate, again and again |
 
-  They cost 4-42 credits (the three antimatter ones 18-22 and 1 antimatter), well under the Liberate action
+  They cost 6-26 credits (the four antimatter ones 6-22 and 1 antimatter), well under the Liberate action
   ([card-pricing.md](../card-pricing.md), *The liberate capstones*). Great Liberation (Diplomacy: its target and 2 more in the target's country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the
   seat that can use it. Loops: each card is one-shot and tier 2, and every route needs nodes next to the city, so
@@ -115,7 +117,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   here or spends or counts what is here (three, Popular Uprising among them), or an Effect that
   adds tokens when something happens, with an **At N** that takes N off and pays by itself (the other six in the
   deck). A covered one holds its tokens and its Action stops; Actions may cost tokens from their own card. Feeder cards
-  (six, [cards.md](../cards.md)) add tokens to one of your cards of a type, and its At N pays if they reach it;
+  (five, [cards.md](../cards.md)) add tokens to one of your cards of a type, and its At N pays if they reach it;
   Sabotage and Purge Protocols make each player lose tokens. Sacrificing or discarding a card loses its tokens.
 - **Actions** (`ability`, buildings only) are used (`Use`) once a round, paying their cost. **An OR Action (`or`)** has two halves: one use a round, the player picks a half it can pay and that has
   a target (a half that counts tokens here needs one there). **Ongoing abilities live only on buildings:** income,

@@ -16,7 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from screens import cells_of, stream  # noqa: E402
+from screens import ROUND, cells_of, stream  # noqa: E402
 
 PRE = ('adversary.revealed.', 'adversary.project.', 'adversary.drained.', 'adversary.project_moves.')
 
@@ -39,7 +39,7 @@ def main():
         games[d] += 1
         for k, v in g['counters'].items():
             for pre in PRE:
-                if k.startswith(pre) and '.r' not in k[len(pre):]:
+                if k.startswith(pre) and not ROUND.search(k):
                     tot[(d, k[len(pre):])][pre] += v
     out = []
     for d in sorted(games):

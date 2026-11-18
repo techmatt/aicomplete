@@ -1,4 +1,4 @@
-"""Fresh seeds from the seed ledger in docs/experiments.md (*Fresh seeds for a gate or a confirming read*).
+"""Fresh seeds from the seed ledger in docs/experiments.md (*Fresh seeds*).
 
     python scripts/bench/seeds.py next N [--take] [--doc FILE]
 

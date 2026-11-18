@@ -68,8 +68,8 @@ are required, so a hand-written record loads too. `aic-sim replay <record.json>.
 outcome and warnings (a different rules revision, content or config hash, or final fingerprint), and exits 1 if any
 record fails to load or replay or has a warning. Browser bug reports are checked the same way.
 
-Saving every game of a big run is slow (Windows file writes). A glob of more than a few hundred records is "Argument
-list too long": replay big sets in batches.
+Saving every game of a big run is slow (Windows file writes). Replay big sets in batches: a glob of a few hundred
+records is "Argument list too long".
 
 The random agent picks uniformly among all seats' legal actions, passes and choice answers included: a floor, not a
 model of a weak team.
@@ -83,10 +83,10 @@ What the read scripts quote most (`screens.cnt(game, key)`; more in experiments.
 | `cell` | the cell's index in grid order: configs, then variants, then difficulties, then agents, agent fastest (`experiment::cells_with`; `screens.cells_of`) |
 | `counters['ai.power.<board>.<power>']` | a board power's uses (`modules/ai.rs`; the seats on that board summed), `.rNN` a round's; names: `scripts/powers.py` |
 | `counters['board.std.<name>']` | a standard action's uses; `board.std_actions` all of them |
-| `counters['fx.<card>.tN']` / `['fx.<card>.<measure>']` | an Alignment card resolved at tier N / the change it made to a `FX_MEASURES` total (`alignment.rs`): a signed delta, not a count (`fx.network_cleanup.land` −1: one Fallout token gone) |
-| `sources[seat]` / `uses[seat]` | each resource gained / spent by where, `{label: [...]}`: `own:` or `other:` an action, `phase:` an automatic phase. Labels: `play:<card>`, `use:<card>` (its Action), `power:<Name>`, `standard:<act>`, `convert:<country>` (a corp converter), `phase:economy.upkeep` (income and capstones) |
+| `counters['fx.<card>.tN']` / `['fx.<card>.<measure>']` | an Alignment card resolved at tier N / the change it made to a `FX_MEASURES` total (`alignment.rs`): a signed delta, not a count |
+| `sources[seat]` / `uses[seat]` | each resource gained / spent by where, `{label: [...]}`: `own:` or `other:` an action, `phase:` an automatic phase. Labels: `play:<card>`, `use:<card>` (its Action), `power:<Name>`, `standard:<act>`, `convert:<country>` (a corp's cube converter; `:chips` after it, its chip converter), `phase:economy.upkeep` (income and capstones) |
 | `start`, `gained`, `spent`, `peaks` | per seat, totals (`start + gained - spent` is the end) |
-| `seed`, `reason`, `margin['node_spread']` | the seed, a string; how it ended (`purge` the win, `node` a seat left with no nodes, `deck_empty`, `discord_deck`); each seat's nodes at the end, by country |
+| `seed`, `reason`, `margin['node_spread']` | the seed, a string; how it ended (`purge` the win, `node` a seat left with no nodes, `deck_empty`, `discord_deck`); each seat's node spread at the end: [nodes, countries, connected groups, farthest two apart in hexes] |
 | `actions[i]` | `{type, seat, ...}`: `standard` names its `act`; `power` gives an index, not a name (count powers by the counters) |
 
 `gained`, `spent` and `peaks` rows are in `PEAKS` order (credits, insight, energy, chips, antimatter, research cubes,

@@ -24,7 +24,7 @@ The standards every module and every rules change is judged against.
 > wherever it works, for every resource.
 
 **Current check (`configs/baseline.json`, `content/`):** the average cost of what is played should sit near credit
-income ÷ insight income (about 25-35 credits ÷ 5-7 insight ≈ 5); tier-1 cards have a median of 10 credits, tier 2 15.
+income ÷ insight income (about 25-35 credits ÷ 5-7 insight ≈ 5); tier-1 cards have a median of 11 credits, tier 2 12.
 
 - **Credits are the outlier.** The Builder, Protector and Researcher start with 40 / 46 / 40 (`ai.start_credits`,
   the scaffold below) and print 15 / 13 / 11 a round, plus 2-3 a node on the economy track and Unity
@@ -35,9 +35,9 @@ income ÷ insight income (about 25-35 credits ÷ 5-7 insight ≈ 5); tier-1 card
   dearer from d1, threats.md); a research cube about 3 credits (payouts are per card); a player ambassador
   `ambassador_credits` (it pays for removals; dear because it stays); a card sells for `sell_credits` 1, chips not
   at all; Data Heist takes 10 credits (or 3 cards) from each player.
-- **Adversary compute:** project costs are 7–22 *a board*: 21–66 at 3 countries, 28–88 at 4, so a few a game pass
+- **Adversary compute:** project costs are 7–24 *a board*: 21–72 at 3 countries, 28–96 at 4, so a few a game pass
   50 (as Matt asked). A botnet makes 1.
-- Within the principle: energy (cities make 1, a node costs 1), chips (a factory makes `factory_chips` 1), insight,
+- Within the principle: energy (cities make 1, a node costs its track space's energy, 1-5 after the free spaces), chips (a factory makes `factory_chips` 1), insight,
   antimatter, Sway (tips at `tip_per_player` 3 a player, Discord's 4), the supply (24 a country, pieces rather than
   a currency).
 
@@ -81,8 +81,8 @@ with weaker credit engines, dearer cards or keeps, or lower starting credits; ne
 
 **The starting-economy scaffold (Matt, 2026-11-03).** Until engines carry the economy, every board starts and earns
 much more, the economy track the growing income; it comes down as engines take over, adding no track. Credits stay
-meaningful through the adversary (corrupted cities make 2 ambassadors a round) and the plain route's price (the
-ambassador project at 20 credits): bought ambassadors are a big investment; cards, buildings and powers the better
+meaningful through the adversary (its agents rally onto sites each round) and the plain route's price (Gain a
+player ambassador at `ambassador_credits` 20): bought ambassadors are a big investment; cards, buildings and powers the better
 route.
 
 **Unspent resources:** held as a seat's last action phase ends (the production and upkeep paid after can't be
@@ -100,7 +100,8 @@ checks*; thresholds, all candidates: `scripts/design_check.json`).
   source; the only standard source is a desperate one (5 research cubes → 1 antimatter, say). *Warns:* over 20% of
   the supply from standard actions or tier-1 cards; any one source over 40% of a resource's supply, or one spend
   over 50% of its use.
-- **Boards differ:** no power or effect repeated on every board. *Warns:* one power name or one effect on 2+ boards.
+- **Boards differ:** no power or effect repeated on every board. *Warns:* one power name or one effect on 2+ boards. Exempt by ruling: Expand, each board's
+  base node route (252); exemptions are `repeat_powers.exempt`, listed as information.
 - **Standard actions are deliberately poorly priced against cards** (Matt, 2026-11-16: cards are the engine; a
   standard action is a rare fallback). *Warns:* a standard action (each target of Liberate and Claim its own row)
   whose get passes its give at the unit anchors ([card-guidelines.md](card-guidelines.md)); **job parity**, its price

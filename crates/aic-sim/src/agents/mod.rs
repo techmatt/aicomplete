@@ -923,10 +923,10 @@ mod tests {
     #[test]
     #[ignore = "slow lane: a whole search-agent game"]
     fn beam_replays_and_repeats() {
-        // 259: seed 4, not 3: at r120's content seed 3's beam stalls in round 7, paying two threats' counters a
-        // credit at a time and withdrawing, across decisions (`search::undoes` guards one plan only), past 3000
-        // actions; the research rule off stalls the same. Seeds 4 and 5 end (round 11).
-        replay_and_repeat_on(BEAM_GAME, 3000, true, 4);
+        // 259 moved this to seed 4: seed 3's beam stalled in round 7, paying two threats' counters a credit at a
+        // time and withdrawing them across decisions. 261: the beam keeps the phase's moves (`PhaseHistory`), so
+        // a plan can't undo an earlier plan's payment, and seed 3 ends again.
+        replay_and_repeat(BEAM_GAME, 3000, true);
     }
 
     #[test]

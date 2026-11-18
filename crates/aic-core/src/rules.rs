@@ -590,7 +590,16 @@ impl Rules {
                     .iter()
                     .any(|o| &o.option == option && &o.target == target)
             {
-                return Err(format!("not an option of {:?}: {a:?}", pend.ask.prompt));
+                // 261 (D116): name what is on offer, so an old record whose option was reworded reads as a rename,
+                // not a rules change.
+                let offered: Vec<&str> = pend.ask.options.iter().take(6).map(|o| o.option.as_str()).collect();
+                let more = pend.ask.options.len().saturating_sub(offered.len());
+                let more = if more > 0 { format!(" and {more} more") } else { String::new() };
+                return Err(format!(
+                    "not an option of {:?}: {a:?} (offered: {}{more})",
+                    pend.ask.prompt,
+                    offered.iter().map(|o| format!("{o:?}")).collect::<Vec<_>>().join(", ")
+                ));
             }
             return Ok(Step::Answer(Pick {
                 option: option.clone(),

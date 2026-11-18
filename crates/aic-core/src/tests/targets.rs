@@ -154,7 +154,7 @@ fn a_move_takes_ambassadors_from_on_or_next_to_the_target() {
     assert_eq!((g.tokens(home, ambassador(0)), g.tokens(next, ambassador(0)), g.tokens(far, ambassador(0))), (1, 0, 1));
     assert_eq!(
         face_text("transmission_corridor"),
-        "Target: a piece. Place 2 Nodes. Move up to 2 Ambassadors from your supply or next to it onto it."
+        "Target: a piece. Place 2 Nodes. Move up to 2 of your Ambassadors from your supply or next to it onto it."
     );
 }
 

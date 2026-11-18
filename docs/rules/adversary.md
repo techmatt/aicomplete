@@ -178,10 +178,10 @@ ahead and the pools are face up, so players armor or clear sites a round ahead.
 <!-- generated: difficulty -->
 | Level | Adds | Tunable |
 |---|---|---|
-| 0 | Base rules; the incomes, an entry a level | `compute_income` 0, 3, 5, 13, 18, `ambassador_income` 0, 0, 0, 0, 1 |
+| 0 | Base rules; the incomes and the research threshold, an entry a level | `compute_income` 0, 3, 5, 13, 18, `ambassador_income` 0, 0, 0, 0, 1, `research_at` 5, 5, 5, 4, 4 |
 | 1 | City, station, factory corrupt with fewer agents (from `corrupt_cut_at`); counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`) | `corrupt_cut` 1, 1, 1, 0, `corrupt_cut_at` 1, `counter_bonus_all` 1, `counter_bonus_credits` 4, `counter_bonus` 0, `counter_bonus_at` 1 |
 | 2 | Counters cost more again (from `counter_more_at`); the adversary board's difficulty line (from `board_difficulty_at`) | `counter_more_all` 1, `counter_more_credits` 0, `counter_more_at` 2, `board_difficulty_at` 2 |
-| 3 | Stage-II cards removed, stage-I cards added back | `stage2_removed` 2, `stage1_added` 0 |
+| 3 | Stage-II cards removed, stage-I cards added back; the research rule's stronger effect (from `research_strong_at`) | `stage2_removed` 2, `stage1_added` 0, `research_strong_at` 3 |
 | 4 | Tier-2 threats sooner (the Discord deck as at level 3: `discord_removed` 0); a stage-I card swapped for a stage-III card (the table above; from `stage_swap_at`) | `discord_removed` 0, `tier2_early` 1, `extra_corrupted` 0, `stage1_removed` 1, `stage3_added` 1, `stage_swap_at` 4 |
 <!-- /generated -->
 

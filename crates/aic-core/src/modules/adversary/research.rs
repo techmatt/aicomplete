@@ -36,6 +36,19 @@ pub fn gain_research(g: &mut GameState, cx: &mut Cx, n: i64, source: &str) {
         return;
     }
     cx.add_key(g, RESEARCH, n);
+    // 261: say where the track's cubes came from (the playtest saw it fill with no word why).
+    let (w, held) = (cx.world, g.var(RESEARCH));
+    let from = match source {
+        "stations" => "its corrupted stations",
+        "threats" => "a threat",
+        "event" => "its card",
+        "project" => "a project",
+        other => other,
+    };
+    cx.note(None, || {
+        let cubes = if n == 1 { "cube" } else { "cubes" };
+        format!("{n} {cubes} onto the adversary's research track from {from} ({held} of {})", research_threshold(&w))
+    });
     cx.tally(g, "adversary.research_made", n);
     cx.tally(g, &format!("adversary.research_made.{source}"), n);
     cx.per_round(g, "adversary.research", n);

@@ -115,7 +115,8 @@ snapshot of the board. At the end of the round each threat nobody paid does what
 consequence, sometimes two, from a short list (troops or agents on its spot, compute, Sway toward
 Discord, Unity pulled back, a site corrupted, a botnet, Fallout next to its token (227: mild and lifted, so tier 1
 carries 1 and tier 2 up to 2), or the nearest player paying energy, chips, cubes or
-ambassadors or discarding cards, losing a building, or a node; never insight, spent the turn it comes, r82). A player harm always hits the one player whose
+ambassadors or discarding cards, losing a building, or a node, or cubes onto the adversary's research track; never
+insight, spent the turn it comes, r82; the full list: [harms.md](../harms.md)). A player harm always hits the one player whose
 node is nearest the threat. Tier 1 is small; tier 2 is about two tier-1s. Compute waits for the adversary's compute
 step, then fills the leftmost project on its board; a full project fires there, the rest slide left and the right
 slot refills. **Harder levels** make threats

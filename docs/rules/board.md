@@ -84,8 +84,8 @@ megaproject is the corp's defining card.
   track in its compute step (259; compute before, and with the rule off, [adversary.md](adversary.md)).
   No player starts with a station: building one (`station_chips`, 2 chips since 252, Matt) or claiming a neutral one
   (`claim_station` ambassadors) is an investment. Cities build neutral stations too ([war.md](war.md), city growth).
-  One opposing ambassador or agent on a station blocks its output while it stands; the Liberate action takes an
-  adversary station for the liberator.
+  One opposing ambassador or agent on a station blocks its output while it stands; the Liberate action frees an
+  adversary station (left neutral, with a Liberated marker) for a Claim or a card to take.
 - **A station is a defended investment (candidate, Matt).** The adversary needs weight to take
   yours: an effect that flips a player's station (Station Seizure, after landing 2 agents; Station Coup instead turns a player's
   station neutral with no agent test, `take_site`) takes it
@@ -115,10 +115,11 @@ megaproject is the corp's defining card.
 - **Converters.** Each completed card prints one converter, used in the action phase by any
   player with **a city of that country in reach** (r75, Matt's ruling 9: any city, owned or not; r37 asked for a
   node on the city), **once a round** per player each (r75: only Onyx's was). Every player also has the cube
-  converter, a standard action with no limit: 1 cube for `cube_insight` insight ([economy.md](economy.md)). A
-  converter is a reason to reach a city. Cubes
-  reach a board from stations after completion, or 1 a round from the Researcher's Open Archive
-  capstone or a Cryo Sample Vault (r88); no converter makes cubes, so none feeds another within a round.
+  converter, a standard action: `insight_cubes` (1) cube for `cube_insight` (1) insight, `insight_per_round` (1) a
+  round ([economy.md](economy.md)). A converter is a reason to reach a city. Cubes
+  reach a board from stations after completion, 1 a round from the Researcher's Open Archive
+  capstone or a Cryo Sample Vault (r88), or from cards (Field Grant, Particle Accelerator, Collider Consortium,
+  Survey Drone Fleet); no converter makes cubes, so none feeds another within a round.
   Research cubes and converters are a resource every player reaches eventually, like
   antimatter. The Researcher's board ([ai-boards.md](ai-boards.md)) and several Science cards (cards.md) name them too.
 - **Bought and carded cubes.** The Researcher's Grant power (3 credits) and Moonshot Grant
@@ -137,6 +138,6 @@ adversary cubes, and after completion feed its research track. A country's cubes
 the end of production, every cube on it pays, overflow included: yours pay you what the
 card says, neutral ones pay nothing. So claim the neutral station (4 ambassadors) or build one (2 chips) before the card
 fills. After that your stations there put cubes on your board, and if one of that country's cities (any city, not
-only yours) is in your reach you can spend them on its converter once a round, or anywhere, 2 for 1 insight. Take
+only yours) is in your reach you can spend them on its converter once a round, or anywhere, 1 for 1 insight once a round. Take
 back an adversary station with 4 of your ambassadors; it is left neutral, to claim after. The adversary can take yours only once 2 of
 its agents stand on it and none of yours.

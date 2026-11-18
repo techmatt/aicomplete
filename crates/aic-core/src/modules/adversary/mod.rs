@@ -571,7 +571,12 @@ impl Module for Adversary {
                 &format!(
                     "the adversary's research track: at {at} it spends {at} and fires {} in its compute step ({})",
                     r.name,
-                    if level(w, w.int("adversary.research_strong_at")) { &r.strong.text } else { &r.text }
+                    // 261: the stronger text is a change to the rule ("Muster 3 instead."): print it after the rule.
+                    if level(w, w.int("adversary.research_strong_at")) {
+                        format!("{} {}", r.text, r.strong.text)
+                    } else {
+                        r.text.clone()
+                    }
                 ),
             );
         }

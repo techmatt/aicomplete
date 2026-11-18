@@ -4,7 +4,7 @@ What a bug hunt reads first: the findings still open, the reports ruled won't-fi
 faults past hunts kept finding. Fixed findings, never to re-report: F1–F100 (020, 044) in `git show
 1617d75:docs/qa-findings.md`; then each hunt's `fixed.md` and `deferred.md` under `experiments/results/`: 099 (r38,
 F101 on), 118 (r46, F132, D43, W19 on), 145 (r59, F165, D57 on), 169 (r72 → 73, F205, D72 on), 184 (r77 → 78, F225,
-D77, W28 on), 197 (r86, F272, D88, W29 on), 235 (r106, F289, D92, W31 on; 238 fixed D92-D96, D98, D100, D103-D105, r108). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
+D77, W28 on), 197 (r86, F272, D88, W29 on), 235 (r106, F289, D92, W31 on; 238 fixed D92-D96, D98, D100, D103-D105, r108), 261 (r121 → r122, F322, D106, W34 on). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
 
 ## Checkers
 
@@ -17,8 +17,9 @@ the e2e lanes. What they already catch, so a hunt needn't hand-check it:
 - `invariants.rs` fails on a raw token key in any label, `no_action_is_paid_for_nothing` on an action that costs
   something and changes nothing, and a log line saying a node was destroyed while one stands there.
 - The adversary's twist loop names where each twist op is read; an unread one panics.
-- `runaway_read.py` (loops in counters), `counter_names.py` (keys no game writes); `docs --check` on a rules quote a
-  card no longer prints and on a stale house word in what players read, the rulebook too.
+- `runaway_read.py` (loops in counters), `counter_names.py` (keys no game writes, and the sweep's moments no key
+  matches); `docs --check` on a rules quote a card no longer prints and on a stale house word in what players read,
+  the rulebook too. The fast lane's `node_scripts_parse` runs `node --check` on every Node script and module.
 
 ## Where hunts found faults
 
@@ -50,6 +51,8 @@ Each hunt found most of its faults in the same places. Look there first:
 - **A rename by one phrase**: replacing "adversary ambassador" left the bare word in labels, faces and prose.
 - **A rules item's other surfaces**: one changed the code and the rules, and left icons, viewer labels, prompts,
   pricing notes, the card viewer's export, e2e lanes and read scripts on the old rule. List every surface.
+- **261's**: a rider read after the step it rides on (Peer Review's paid for its own free station); a lane that
+  never loaded (e2e:researcher, a SyntaxError for eight items); an agent fix that weakened the judge (read paired).
 
 ## Open, deferred to Matt
 
@@ -81,10 +84,22 @@ Each hunt found most of its faults in the same places. Look there first:
 | D87 | viewer | Five small faults from sweep 2's sheets (184's deferred.md). | One viewer item. **Pick**. |
 | D86 | rules | A forced threat pull (0.1 a game) has no end in the rulebook's draw (§18): it reshuffles forever. | One rulebook sentence: take the next card. **Matt's call**. |
 | D82 | cards | Five cards print under 7.5 pt with no recorded exception (Rally the Allies 5.4 pt). | Cut words or record. **Matt's call**. |
-| D83 | art | Annihilation Lance, Fusion Commons, Containment Reactor have no scene: `cards:check` fails. | An art batch or a pool scene. **Pick**. |
+| D83 | art | 12 deck cards name no scene (261: the 252-259 cards joined the first three) and 6 scenes aren't served: `cards:check` fails. | An art batch or a pool scene. **Pick**. |
 | D84 | boards | Focus (Builder) is never used (199: 0.01-0.04 uses at 2 credits; credits bind first). | With the board redesign. **Matt's call**. |
 | D85 | viewer | Prompts: "which other player?" names no card; "Corrupt factories (at 2): ... onto which?" (agents parse it); "1 seat 1's ambassador" (a record key); a node's protection prompt names no threat. | Prompts and the agents' parser together. **Pick**. |
 | D102 | tests | `e2e:corps` is red on main too. | Re-derive its numbers. **Pick**. |
+| D106 | agents | A research removal is valued at its printed cubes on an empty track. | Value the firing it delays. **Pick** leave. |
+| D107 | rules | Nothing marks a city bought this round. | A Bought marker. **Matt's call**. |
+| D108 | cards | Target glyphs show one site kind of two or three. | Two glyphs. **Pick**. |
+| D109 | viewer | The player bar labels standard actions with rule text. | Name and cost. **Pick**. |
+| D112 | viewer | Player view: legend, seat panel at 2560, converter rows. | One viewer item. **Pick**. |
+| D113 | cards | Counterintelligence Sweep, Fusion Commons draw at 0 insight. | 1 insight; no draw. **Matt's call**. |
+| D114 | cards | Five liberate cards' pricing notes use pre-r113 keeps. | Restate. **Pick**. |
+| D115 | viewer | The player view's turn panel lists raw engine events. | Notes only. **Pick**. |
+| D116 | viewer | A record that stops replaying isn't saved: a reload shows the game before it. | Keep its text. **Pick**. |
+| D117 | tools | Agent specs and read scripts take bad input silently. | Refuse each. **Pick**. |
+| D118 | rules | The Liberated marker binds Corrupt lines only, not cards that take a site. | Leave; guard. **Matt's call**. |
+| D119 | cards | Faces against house terms: node "Harden", Faraday Yard's box, two-way wordings. | One card-words item. **Pick**. |
 
 ## Won't fix
 
@@ -113,3 +128,5 @@ Each hunt found most of its faults in the same places. Look there first:
 | W31 | cards | Peacekeeper Rotation's move onto a Troops target with no piece does nothing. | Not in the deck: fix with the card. |
 | W32 | words | "No one near it: no one can counter" beside "which of the nearest players takes its harm?". | The rules' two tests: near pays, nearest is hit. |
 | W33 | rules | Teardown's Fallout lands under a node on the torn-down factory's hex (D99). | Matt's ruling (238): Teardown is the player's own choice. |
+| W34 | scripts | `screen.py`'s 041 preset reads the r98-retired marker counters. | A historical preset, kept as 041's record. |
+| W35 | rules | "The engine, not the players, picks who hosts a contested city." | economy.md says so; every maximum matching pays the team the same. |

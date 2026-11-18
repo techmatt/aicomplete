@@ -16,7 +16,7 @@ from collections import defaultdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from screens import PEAKS, stream  # noqa: E402
+from screens import PEAKS, ROUND, stream  # noqa: E402
 
 SHOW = ['chips', 'energy', 'research_cubes', 'antimatter']
 
@@ -39,7 +39,7 @@ def summarize(rows):
     seats_all = 0
     for g in rows:
         for k, v in (g.get('counters') or {}).items():
-            if k.startswith('limit.') and '.r' not in k[len('limit.'):]:
+            if k.startswith('limit.') and not ROUND.search(k):
                 limits[k] += v
         L = lv[int(g['difficulty'])]
         L['n'] += 1

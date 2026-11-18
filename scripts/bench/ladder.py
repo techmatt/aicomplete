@@ -18,7 +18,7 @@ lost to corruption, adversary ambassadors placed (created or rallied), corruptio
 and reshuffles; then (210) by board, levels pooled: slack seat-rounds (the seat kept every card it drafted, held no
 card it could have played and had insight left) beside bound ones (a keep or play held for want of insight alone),
 Fallout tokens on the board a round, where node placements land (on or next to a factory, city or station;
-`own`: one holding the seat's cube) and each seat's nodes at the end (count, countries, connected groups, farthest
+`own`: one holding the seat's cube, or since 261 a city the seat hosts) and each seat's nodes at the end (count, countries, connected groups, farthest
 apart). A side that predates a measure prints 0 for it. On a screen, `--measures` also prints rounds per lever: the
 mean, the paired gap to base and its SE, and the mean of the games won and of those lost (229, from 215's
 screen_read.py). A variant `PAIR-LEVER` (228's screens) reads as `PAIR_LEVER`.

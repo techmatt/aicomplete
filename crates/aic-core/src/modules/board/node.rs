@@ -126,6 +126,11 @@ pub fn place_node_within(g: &mut GameState, cx: &mut Cx, seat: usize, range: i64
         return Ok(None);
     }
     let hexes = node_sites_within(&w, g, seat, range);
+    // 261: no free hex, no question about which track's token would go there.
+    if hexes.is_empty() {
+        cx.note(None, || format!("Seat {seat}'s node has no free hex to go on: nothing placed"));
+        return Ok(None);
+    }
     // 021: with two tracks the player chooses which one's next token to take.
     let b = ai::board(&w, seat);
     let (t1, t2) = (track_taken(g, seat), track2_taken(g, seat));
@@ -138,16 +143,15 @@ pub fn place_node_within(g: &mut GameState, cx: &mut Cx, seat: usize, range: i64
         tracks.push((true, u));
     }
     let gain2 = ai::insight_gain(b, t2);
+    // 261: the tracks by the names the board prints, and a space that only costs says so (it read "uncovers ,"):
+    // the options in their record-key words, the hex prompt in people's.
+    let nothing = |l: String| if l.is_empty() { "nothing".to_string() } else { l };
+    let what = |two: bool, u: &Uncover| nothing(ai::uncover_label(u, if two { gain2 } else { 0 }));
+    let words = |two: bool, u: &Uncover| nothing(ai::uncover_words(u, if two { gain2 } else { 0 }));
+    let track_name = |two: bool| if two { "card-play track" } else { "economy track" };
     let opts = tracks
         .iter()
-        .map(|(two, u)| {
-            opt(format!(
-                "track {}: uncovers {}{}",
-                if *two { 2 } else { 1 },
-                ai::uncover_label(u, if *two { gain2 } else { 0 }),
-                price_words(u.cost)
-            ))
-        })
+        .map(|(two, u)| opt(format!("{}: uncovers {}{}", track_name(*two), what(*two, u), price_words(u.cost))))
         .collect();
     let prompt = || format!("Seat {seat}: take a node off which track?");
     let Some(k) = cx.choose(seat, prompt, opts)? else {
@@ -159,7 +163,7 @@ pub fn place_node_within(g: &mut GameState, cx: &mut Cx, seat: usize, range: i64
     let uncovers = tracks[k].1.effects.as_slice();
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || {
-        let what = format!("uncovers {}{}", ai::uncover_words(tracks[k].1), price_words(step));
+        let what = format!("uncovers {}{}", words(second, tracks[k].1), price_words(step));
         format!("Seat {seat}: {NODE_PROMPT} ({what}) on which hex?")
     };
     let Some(j) = cx.choose(seat, prompt, opts)? else {
@@ -206,18 +210,22 @@ pub fn spots_near(w: &World, g: &GameState, seat: usize, h: usize, spots: &[Node
 }
 
 /// 210 (stats only): where seat `seat`'s placement on hex `h` landed: `board.node_at.<seat>.<kind>` for each of a
-/// factory, a city and a research station on the hex or next to it (`own_<kind>`: one holding the seat's cube),
+/// factory, a city and a research station on the hex or next to it (`own_<kind>`: one holding the seat's cube; 261:
+/// a city the seat hosts, as no city holds one since 254),
 /// `none` for none of the three, and `n` for every
 /// placement (the placement-spread measure; the spread at the game's end is the farm's `margin.node_spread`).
 fn tally_placement(w: &World, g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
     let near = |f: &dyn Fn(usize) -> bool| f(h) || w.map.hexes[h].neighbors.iter().any(|&x| f(x));
     let own = |x: usize| g.tokens(x, cube(seat)) > 0;
+    // 261: no city is owned since 254 (`cities_unowned`): "own city" is one the seat hosts after the placement.
+    let hosted = hosted_cities(w, g, seat);
+    let own_city = |x: usize| own(x) || hosted.contains(&x);
     let kinds = [
         ("factory", near(&|x| g.tokens(x, FACTORY) > 0)),
         ("city", near(&|x| is_city(w, x))),
         ("station", near(&|x| g.tokens(x, STATION) > 0)),
         ("own_factory", near(&|x| g.tokens(x, FACTORY) > 0 && own(x))),
-        ("own_city", near(&|x| is_city(w, x) && own(x))),
+        ("own_city", near(&|x| is_city(w, x) && own_city(x))),
         ("own_station", near(&|x| g.tokens(x, STATION) > 0 && own(x))),
     ];
     let mut any = false;

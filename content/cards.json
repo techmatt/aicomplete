@@ -6134,14 +6134,14 @@
    ],
    "effects": [
     {
-     "op": "place_node",
-     "count": 2,
-     "range": 2
-    },
-    {
      "op": "gain",
      "resource": "energy",
      "amount": 2
+    },
+    {
+     "op": "place_node",
+     "count": 2,
+     "range": 2
     }
    ]
   },

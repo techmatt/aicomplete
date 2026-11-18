@@ -212,8 +212,15 @@ fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'st
     if power_places(w, seat, k) && !can_place(w, g, seat) {
         return Some("no node left");
     }
+    // 261: say which price: Expand prints none, so a bare "unaffordable" left a player looking for one.
     if power_places(w, seat, k) && !board::can_pay_placement(w, g, seat, -spent) {
-        return Some("unaffordable");
+        return Some("unaffordable: the next track space's energy, after the power's own");
+    }
+    // 261: a node route is used for its node (118), as with no token or no step: with no free hex in its range,
+    // Outpost and Field Survey were paid in full for their ambassador or card alone.
+    let range = p.effects.iter().find_map(|e| if let Op::PlaceNode { range, .. } = e { Some(*range) } else { None });
+    if range.is_some_and(|r| board::node_sites_within(w, g, seat, r).is_empty()) {
+        return Some("no target");
     }
     if !p.tags.is_empty() && !cards::TagNeed::new(&p.tags).payable(&cards::sources(w, g, seat)) {
         return Some("needs tags");
@@ -335,10 +342,13 @@ pub fn uncover_label(u: &Uncover, gain: i64) -> String {
     parts.join(", ")
 }
 
-/// The same for people to read (`+1 credit, T2 keep`; the track step's hover has the rest). r82: a space
-/// printing insight reads as its total (`insight 7`).
-pub fn uncover_words(u: &Uncover) -> String {
-    let mut parts: Vec<String> = u.insight.map(|n| format!("insight {n}")).into_iter().collect();
+/// The same for people to read, in a prompt (`+1 credit, T2 keep`; the track step's hover has the rest); `gain`
+/// as [`uncover_label`] (261: the insight a space adds, as the track question words it, not its new total).
+pub fn uncover_words(u: &Uncover, gain: i64) -> String {
+    let mut parts: Vec<String> = Vec::new();
+    if gain != 0 {
+        parts.push(format!("+{}", Resource::Insight.words(gain)));
+    }
     parts.extend(u.income.iter().map(|(r, n)| format!("+{}", r.words(*n))));
     if u.keep2 {
         parts.push("T2 keep".into());
@@ -567,7 +577,7 @@ impl Module for Ai {
                         marks.push(TrackMark {
                             key: "cost".into(),
                             label: format!("pay {}", Resource::Energy.words(u.cost)),
-                            doc: "placing this token costs this much energy on top, unless a card says free".into(),
+                            doc: "placing this token costs this much energy, on top of what the power or card placing it costs (every placement pays it)".into(),
                         });
                     }
                     TrackStep {

@@ -24,8 +24,10 @@ What it does:
    (`op_worth`, `ability_worth`, `CardValue::total` at `Ctx::typical_for` the card's tier:
    income and Actions over `horizon_t1` or `horizon_t2` rounds, r35). An action's
    value goes to the ops of its best branch, net of the branch's cost, pro rata; the
-   other branches (and a cycle card's add branch) carry 0. The mirror is checked
-   against nothing in Rust: if value.rs changes, change `op_worth` here too.
+   other branches (and a cycle card's add branch) carry 0. value.rs's
+   `effect_ledger_mirrors_the_table` test checks the committed cards.csv against
+   `CardValue::total`: after a value.rs or values.json change, mirror it in `op_worth`
+   and rerun the ledger.
 3. Joint fit: printed cost (credits + other resources at the table's rates, `lowers`
    over the tier's horizon) = sum over effects of beta_e x reasoned value + a per-tier
    constant + a credit rate per needed tag. beta_e is one multiplier per effect key, so

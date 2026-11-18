@@ -44,7 +44,8 @@ export function cardChip(c: CardView, where: string, printed = false): string {
   // could have no visible reason. A card with no price showing (built, played) owes nothing.
   const extra = c.cost !== undefined ? extraCosts(c.text).map((x) => ` <small title="also costs">+${esc(x)}</small>`).join('') : '';
   const cost = (c.cost !== undefined ? ` <small title="cost">${c.cost}</small>` : '') + extra;
-  // 235: a draft tile's status is "draft, tier N": the tier shows (it sets the keep price), "draft" doesn't.
+  // 235: a draft tile's status is "draft, tier N" (261: ", keep K insight" or ", keep free"): the tier and the
+  // seat's keep price show, "draft" doesn't.
   const shownStatus = (c.status ?? '').replace(/^draft, /, '');
   const status = shownStatus && !['draft', 'built', 'resolved', 'done'].includes(shownStatus) ? `<em>${esc(shownStatus)}</em>` : '';
   // 118: a draft or keep tile says what the card needs (keeps were picked blind to it).
@@ -56,7 +57,9 @@ export function cardChip(c: CardView, where: string, printed = false): string {
   const rules = (c.text ?? '').replace(/^\[[^\]]*\]\s*/, '');
   const text = printed && rules ? `<span class="ctext">${esc(rules)}</span>` : '';
   // 238 (D105): "ready · map part: no target" is ready, its map half marked (the warn color of `no-target`).
-  const cls = c.status.startsWith('ready · ') ? 'ready map-dead' : c.status.replace(/\s+/g, '-');
+  // 261: "unaffordable: the next track space's energy" keeps the warn color of `unaffordable`.
+  const cls = c.status.startsWith('ready · ') ? 'ready map-dead'
+    : c.status.startsWith('unaffordable') ? 'unaffordable' : c.status.replace(/\s+/g, '-');
   return `<span class="card${printed ? ' printed' : ''} ${esc(cls)}" data-card="${esc(c.id)}" data-where="${where}">${esc(c.name)}${cost}${needs}${status}${text}</span>`;
 }
 

@@ -701,7 +701,7 @@
  {
   "id": "researcher",
   "name": "Researcher",
-  "text": "The scientist: plays off the board, on its turn budget and on research cubes.",
+  "text": "The scientist: plays off the board, on insight and research cubes.",
   "innate": {
    "name": "Patience",
    "text": "All your unspent insight carries over to the next round, including insight other players gave you.",

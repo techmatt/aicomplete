@@ -419,6 +419,8 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
         } else if let Some(s) = city_host(&w, g, h) {
             // 254 (`host_city`): a neutral city's energy goes to the seat whose node is on it.
             cx.add_resource(g, s, Resource::Energy, energy);
+            // 261: say who hosts it: nothing else on the table shows which seat a city's energy went to.
+            cx.note(Some(h), || format!("{} makes {} for Seat {s} (hosted)", hex_name(&w, h), Resource::Energy.amount(energy)));
             cx.tally(g, "board.city_energy_hosted", energy);
             cx.per_round(g, "map.hosted", 1);
         }

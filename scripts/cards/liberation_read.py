@@ -39,6 +39,19 @@ def per(gs, key):
     return sum(g['counters'].get(key, 0) for g in gs) / len(gs)
 
 
+def card_cities(g):
+    """Cities a card liberated in game `g`: `board.liberated_card.city` since 261 (Hostile Buyout frees a station
+    or factory too since 254); before it, `board.liberated_card`."""
+    c = g['counters']
+    if any(k.startswith('board.liberated_card.') for k in c):
+        return c.get('board.liberated_card.city', 0)
+    return c.get('board.liberated_card', 0)
+
+
+def per_card_cities(gs):
+    return sum(card_cities(g) for g in gs) / len(gs)
+
+
 def main():
     sys.stdout.reconfigure(encoding='utf-8', newline='\n')
     ap = argparse.ArgumentParser()
@@ -59,8 +72,8 @@ def main():
         # 145: cities only (138's `adversary.corruptions` counts stations, factories and land too).
         corrupting = sum(1 for g in gs if g['counters'].get('adversary.corruptions.city', 0)) / n * 100
         print(f"| {cfg} | {var} | {agent} | {n} | {100 * p:.1f} | {se:.1f} | {sum(g['rounds'] for g in gs) / n:.2f} | "
-              f"{per(gs, 'adversary.corruptions.city'):.2f} ({corrupting:.0f}%) | {per(gs, 'board.cities_freed'):.2f} ({per(gs, 'board.liberated_card'):.2f} / "
-              f"{per(gs, 'board.liberated.city') - per(gs, 'board.liberated_card'):.2f}) | {per(won, 'board.cities_freed') if won else 0:.2f} | "
+              f"{per(gs, 'adversary.corruptions.city'):.2f} ({corrupting:.0f}%) | {per(gs, 'board.cities_freed'):.2f} ({per_card_cities(gs):.2f} / "
+              f"{per(gs, 'board.liberated.city') - per_card_cities(gs):.2f}) | {per(won, 'board.cities_freed') if won else 0:.2f} | "
               f"{sum(1 for x in freed if x) / n * 100:.0f}% | "
               f"{per(gs, 'ai.power.researcher.grant'):.2f} | {per(gs, 'board.wall_strikes'):.2f} |")
     if a.cards:

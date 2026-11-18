@@ -390,12 +390,13 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
         let k: Vec<String> = keys.iter().map(|k| tick(r, k)).collect();
         k.join(", ")
     };
-    // Each of `steps`' five dials (`corrupt_cut_at` .. `stage_swap_at`) sits at whatever level its `_at` value names.
+    // Each of `steps`' six dials (`research_strong_at` .. `stage_swap_at`) sits at whatever level its `_at` value names.
     let mut rows: Vec<(String, Vec<&str>)> = vec![
         // The incomes are a list with an entry a level, not a step: every level reads its own entry.
         (
-            "Base rules; the incomes, an entry a level".into(),
-            vec!["adversary.compute_income", "adversary.ambassador_income"],
+            // 261: the research track's threshold (259) is such a list too.
+            "Base rules; the incomes and the research threshold, an entry a level".into(),
+            vec!["adversary.compute_income", "adversary.ambassador_income", "adversary.research_at"],
         ),
         (String::new(), vec![]),
         (String::new(), vec![]),
@@ -416,7 +417,9 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
         "{} corrupt with fewer agents (from `corrupt_cut_at`)",
         if cut_sites.is_empty() { "no site".to_string() } else { cut_sites.join(", ") }
     );
-    let steps: [(&str, &str, &[&str]); 5] = [
+    let steps: [(&str, &str, &[&str]); 6] = [
+        ("adversary.research_strong_at", "the research rule's stronger effect (from `research_strong_at`)",
+            &["adversary.research_strong_at"]),
         ("adversary.corrupt_cut_at", &cut_text,
             &["adversary.corrupt_cut", "adversary.corrupt_cut_at"]),
         ("adversary.counter_bonus_at", "counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`)",
@@ -470,6 +473,7 @@ pub(super) fn rulebook_difficulty_block(r: &Rules) -> String {
     let cut = list(r, "adversary.corrupt_cut");
     let compute = list(r, "adversary.compute_income");
     let agents = list(r, "adversary.ambassador_income");
+    let research = list(r, "adversary.research_at");
     let entry = |l: &[i64], level: i64| l[(level as usize).min(l.len() - 1)];
     let rows = (d.min..=d.max)
         .map(|level| {
@@ -520,6 +524,15 @@ pub(super) fn rulebook_difficulty_block(r: &Rules) -> String {
             }
             let dash = |v: String| if v.is_empty() { "—".to_string() } else { v };
             let extra_agents = entry(&agents, level);
+            // 261: the research rule's threshold and its stronger effect (259) move with the level too.
+            let fires = entry(&research, level);
+            let research = if fires <= 0 {
+                "—".to_string()
+            } else if at("adversary.research_strong_at", level) {
+                format!("{fires}, stronger")
+            } else {
+                fires.to_string()
+            };
             vec![
                 level.to_string(),
                 corrupt.join(" / "),
@@ -529,6 +542,7 @@ pub(super) fn rulebook_difficulty_block(r: &Rules) -> String {
                 n.iter().sum::<usize>().to_string(),
                 entry(&compute, level).to_string(),
                 if extra_agents > 0 { format!("+{extra_agents}") } else { "—".into() },
+                research,
                 dash(more.join("; ")),
             ]
         })
@@ -543,6 +557,7 @@ pub(super) fn rulebook_difficulty_block(r: &Rules) -> String {
             "Rounds",
             "Compute income a country",
             "More agent income a country",
+            "Research cubes a country to fire its rule",
             "Other",
         ],
         rows,
@@ -864,7 +879,7 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          energy, so drafting cards that spend it is up to you.\n\n\
          **Nodes, for new players.** Nodes don't grow on their own. In the action phase you place \
          them with your board's node routes, each once a round: Expand, on every board, costs nothing more; the board's \
-         other two cost more of its own currency (energy, chips or insight) and do a little more besides; cards can add \
+         other two cost energy, chips or insight and do a little more besides; cards can add \
          more. Every placement, by route or card, pays the energy printed on the track space you uncover. You \
          start with {} energy and next to a city; no city is ever yours, but a free (neutral) city with your node on \
          or next to it makes its energy for you every round, one city each.\n\n\

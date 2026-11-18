@@ -14,8 +14,8 @@ instead compares two agent specs on that binary, from this directory's configs/.
 the same seeds on both, one thread, in turn so a busy machine hits both alike; the best
 of `--pairs` passes. Prints each side's rounds, decisions and ms per game and per decision,
 and the ratio. Same rules: the same games, so any ratio is the code. Other rules: other
-games on the same seeds, so read ms/decision, and for an agent that plays forward, ms per
-decision per round left.
+games on the same seeds, so read ms/decision; for an agent that plays forward, weigh it
+by the rounds left yourself (no column prints ms per decision per round left).
 """
 import argparse
 import json

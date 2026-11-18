@@ -198,6 +198,30 @@ try {
     await load();
   });
 
+  // 261: the player view: a record opened there plays from its last step (it showed setup, where every control
+  // dropped the record); Space after a mouse click on a header button does nothing (it pressed the button again);
+  // pinning another seat while one answers a question keeps that question's answers in the prompt bar.
+  await scenario('player-view-record-space-pin', async () => {
+    await page.js("(() => { for (let i = 0; i < 40 && !window.aic.view.outcome; i++) window.aic.act(window.aic.legal[(i * 7) % window.aic.legal.length]); })()");
+    const text = await record();
+    await page.js("(document.getElementById('record-close').click(), document.getElementById('view-toggle').click(), true)");
+    await page.js(`(window.aic.open(${JSON.stringify(text)}, 'odd'), true)`);
+    const s = await state();
+    if (s.cursor !== s.last) fails.push(`player-view-record-space-pin: a record opened in the player view shows step ${s.cursor} of ${s.last}`);
+    const kept = await page.js(`(() => { const b = document.getElementById('random-seed'); b.focus();
+      b.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); return ${key(' ')}; })()`);
+    if (kept) fails.push('player-view-record-space-pin: Space after clicking a header button was left to the button');
+    if (!(await toChoice())) return void fails.push('player-view-record-space-pin: no question came up to pin past');
+    const answers = () => page.js("document.querySelectorAll('#prompt [data-action]').length");
+    const before = await answers();
+    if (!before) return void fails.push('player-view-record-space-pin: the open question shows no answers');
+    const clicked = await page.js(`(() => { const v = window.aic.view; const other = v.seats.find((x) => x.index !== v.choice.seat);
+      const el = other && document.querySelector('[data-seat-focus="' + other.index + '"]'); if (el) el.click(); return !!el; })()`);
+    if (!clicked) return void fails.push('player-view-record-space-pin: no other seat to pin');
+    const after = await answers();
+    if (!after) fails.push(`player-view-record-space-pin: pinning another seat emptied the prompt's ${before} answers`);
+  });
+
   await scenario('bad-seed-field', async () => {
     for (const v of ['', 'abc', '-1', '1.5', '99999999999999999999999', '0x10']) {
       await page.js(`(document.getElementById('seed').value = ${JSON.stringify(v)}, document.getElementById('new-form').requestSubmit(), true)`);

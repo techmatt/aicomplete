@@ -8,7 +8,7 @@ front end sit on top, holding no rules. Build and test are below; other areas ha
   writing a reader: its *Keys in a games.jsonl line*.
 - [docs/agents.md](docs/agents.md): the agent ladder, the specs, the heuristic, the dominance checks.
 - [docs/experiments.md](docs/experiments.md): experiment specs, outputs, measures, overlays, the
-  band and the gate, budgeting a run, the seed ledger (*Fresh seeds for a gate*).
+  band and the gate, budgeting a run, the seed ledger (*Fresh seeds*).
 - [docs/speed.md](docs/speed.md): what a run costs and where it goes.
 - [docs/scripts.md](docs/scripts.md): every script under `scripts/`.
 - [web/README.md](web/README.md): the viewer, the sweep and the card viewer.

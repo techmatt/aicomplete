@@ -42,9 +42,12 @@ How each primitive resolves, beyond the card text (the card set: [player-cards.m
 - **Hardening:** a different facility for each token, each one a token can protect ([ai-powers.md](ai-powers.md)):
   the target, then facilities next to it.
 - **Factories:** "build a factory on it": the target is a free industrial zone; the factory is yours (your cube).
+  A card that opens a site and claims it (Industrial Commons, Open Research Campus) can't target one with an agent
+  on it, which no claim takes (r122).
 - **Moving ambassadors** (`move_ambassadors`, `consolidate`): onto the target (or onto pieces on or next to it),
-  each arriving as in [ambassadors.md](ambassadors.md); stop at any time. Yours come from your supply or from on or
-  next to the target. "Move up to N" is a "you may move": it never vetoes a card that does something else.
+  each arriving as in [ambassadors.md](ambassadors.md); stop at any time. A `move_ambassadors`' come from your supply
+  or from on or next to the target; a `consolidate` (Summit Caucus) moves only yours already on the board on or next
+  to the target, onto it, never from your supply. "Move up to N" is a "you may move": it never vetoes a card that does something else.
 - **Convert, firewall** (`convert`, `firewall`; house terms): the target is a city with agents on or next to it; a
   land hex with no firewall. How each resolves is in [ambassadors.md](ambassadors.md), *Convert and firewall*.
 - **Gather, push** (`gather`, `push`; house terms): onto the target, each from a hex next to it (gather), or
@@ -52,14 +55,16 @@ How each primitive resolves, beyond the card text (the card set: [player-cards.m
   next to the target, your choice. The target box names a hex where a piece can move ("a land hex next to an
   Ambassador"; a consolidate's "a piece next to your Ambassador"). How they resolve: [ambassadors.md](ambassadors.md), *Moving pieces*.
 - **"With N X tags, also …"** (`if_tags`): the rest resolves only if you hold N tags of X on your cards when
-  the card resolves (an event's own tags never count, as for a gain per tag); it never blocks the card.
+  the card resolves (an event's own tags never count, as for a gain per tag); it never blocks the card. No card prints
+  it now.
 - **Peek:** the top cards of the adversary deck, behind the face-up card, are shown; one fewer after each reveal.
 - **Jam:** the chosen threat needs less of each resource (not below 0) while in play; if that leaves it fully paid, it
   is countered at once. **Counter a threat:** partial payments on it are refunded. **Delay N threats:** each skips
   this round's execution, stays up, and can be countered next round; only threats you may counter, as countering and
   jamming; with none, the card still plays for its draw or hardening tokens.
 - **Cleanse:** take the adversary cube off the target, a corrupted research station or factory, then off the rest
-  the card counts next to it (or in its country), one hex at a time. A station becomes neutral. `only` limits it to
+  the card counts next to it (or in its country), one hex at a time. A station becomes neutral. A freed station or
+  factory takes no Liberated marker (only a liberated site does). `only` limits it to
   stations or to factories; its cube icon then carries that facility's glyph. With `cities` (Great Liberation) a
   corrupted city counts too (its cube carries the city glyph), and it is liberated ([ambassadors.md](ambassadors.md)).
 - **Liberate:** liberate the target, a corrupted city, as the Liberate action does, unpaid
@@ -80,7 +85,7 @@ How each primitive resolves, beyond the card text (the card set: [player-cards.m
   itself (it enters play before it resolves) and prints "(including this)" after the tag, an event doesn't.
 - **Troops or agents (`remove_troops`, `remove_ambassadors_country`):** up to N on the target, or on or next to it,
   your pick of hexes when there are more than N; never "per hex" (Matt's ruling 6).
-- **Help cards** (keyword `help`, ~10%): the player chooses another player; both gain, the helper paying. **In a
+- **Help cards** (keyword `help`, about 6% of the deck): the player chooses another player; both gain, the helper paying. **In a
   1-player game, "another player" means you**: the gift is yours.
 - **Cordon (`cordon`):** "cordon its country until the end of the next adversary turn" (the target's): until then no Rally or
   creation line places agents there, a project's included; its pool waits in the supply and lands at its next

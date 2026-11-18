@@ -482,7 +482,14 @@ impl<'a> Cx<'a> {
                 .iter()
                 .position(|o| o.option == p.option && o.target == p.target)
                 .ok_or_else(|| {
-                    Halt::Illegal(format!("{:?} is not an option of {:?}", p.option, prompt.text()))
+                    // 261 (D116): name what is on offer (an old record's reworded option reads as a rename).
+                    let offered: Vec<String> = options.iter().take(6).map(|o| format!("{:?}", o.option)).collect();
+                    Halt::Illegal(format!(
+                        "{:?} is not an option of {:?} (offered: {})",
+                        p.option,
+                        prompt.text(),
+                        offered.join(", ")
+                    ))
                 })?;
             ch.used += 1;
             return Ok(Some(i));

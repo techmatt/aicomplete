@@ -106,7 +106,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("insight_per_round", 0, 5, "253: times a seat may Turn a cube into insight a round (0: no limit)"),
             ParamSpec::int("liberate_neutral", 0, 1, "252 (Matt's ruling 4): 1, Liberate leaves the site neutral; 0, it becomes the liberator's (r112, a screen's off arm)"),
             ParamSpec::int("cities_unowned", 0, 1, "254 (Matt's candidate): 1, players never own a city (no bound city at setup, no city claims, a liberated city is its country's); 0, r114's rule"),
-            ParamSpec::int("host_city", 0, 4, "254: neutral cities with your node on them whose energy you collect in the income step, at most (not for sale; 0: none)"),
+            ParamSpec::int("host_city", 0, 4, "254: neutral cities a seat hosts (its node on or next to one, `host_reach`), collecting their energy in the income step unless it was bought that round; `host_more` cards raise it for their seat (0: none)"),
             ParamSpec::int("host_reach", 0, 1, "254: 0, a seat hosts a neutral city with its node on it; 1, on or next to it (one host a city, the players choosing)"),
             ParamSpec::int("antimatter_cubes", 0, 10, "standard action, the desperate source: research cubes for 1 antimatter, no limit a round (0: no such action)"),
             ParamSpec::int("botnet_credits", 1, 50, "standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays)"),

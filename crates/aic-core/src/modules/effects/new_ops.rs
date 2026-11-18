@@ -146,10 +146,12 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
                 }
             }
         }
+        // 261: a firewall or a Corrupt prohibition guards the factory, as on every path that corrupts one site (185,
+        // D77; Factory Occupation was missed). An empty zone has no site: its build stays as Mass Production's.
         Op::CorruptFactory => {
             if let Some(h) = token(&w, g, ctx, Some(Location::Factory)) {
                 if g.tokens(h, FACTORY) > 0 {
-                    if !corrupted(g, h) {
+                    if !corrupted(g, h) && !adversary::guard_holds(g, cx, h, "corrupt_factory") {
                         adversary::corrupt_factory(g, cx, h)?;
                     }
                 } else if free_zones(&w, g).contains(&h) {

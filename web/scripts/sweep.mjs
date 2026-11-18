@@ -145,11 +145,16 @@ const PAGE_LIB = String.raw`(() => {
   const COUNTER_EVENTS_R74 = /^(adversary\.(canceled|converged|ambassadors_removed|troops_removed|corruptions\.node|corruptions_natural)|board\.(std\.(remove|move|claim|liberate)|last_node_lost))$/;
   // r85 (195, 197): each project op acting: a project's act, botnet troops, botnets made and spread,
   // a site taken or neutralized, factory troops (and blocked), a node raid, hardening stripped, the clock.
-  const COUNTER_EVENTS_R85 = /^adversary\.(project_acts\.[a-z_]+|botnet_troops|botnets_(made|spread)|sites_(taken|neutralized)|factory_troops(_blocked)?|node_raids|hardening_stripped|clock_cards)$/;
+  // (261: project_acts and node_raids dropped: no engine writes them. No backticks here: this is a template.)
+  const COUNTER_EVENTS_R85 = /^adversary\.(botnet_troops|botnets_(made|spread)|sites_(taken|neutralized)|factory_troops(_blocked)?|hardening_stripped|clock_cards)$/;
   // 235: r99-r106: Fallout placed and lifted, Night Raid's agents on nodes, Crackdown's recall, Lab Purge's
-  // stripped cubes, cubes made antimatter, a board burn, a placed ambassador, a reach Shelter, a card's target in reach.
-  const COUNTER_EVENTS_R99 = /^(fallout\.(placed|lifted)|adversary\.(night_raid_agents|ambassadors_recalled|cubes_stripped)|board\.(cubes_to_antimatter|burned\.[a-z_]+)|effects\.(ambassadors_placed|shelter_reach)|cards\.(agents|troops)_in_reach)$/;
-  const COUNTER_ALL = [COUNTER_EVENTS, COUNTER_EVENTS_R41, COUNTER_EVENTS_R55, COUNTER_EVENTS_R70, COUNTER_EVENTS_R74, COUNTER_EVENTS_R85, COUNTER_EVENTS_R99];
+  // stripped cubes, cubes made antimatter, a board burn, a placed ambassador, a reach Shelter.
+  const COUNTER_EVENTS_R99 = /^(fallout\.(placed|lifted)|adversary\.(night_raid_agents|ambassadors_recalled|cubes_stripped)|board\.(cubes_to_antimatter|burned\.[a-z_]+)|effects\.(ambassadors_placed|shelter_reach))$/;
+  // 261: r107-r121: each board power's first use (the node routes: Expand, Buy In, Accord ...), a claim of a
+  // Liberated site, a card's or rider's claim, a hosted city's energy, a site opened, a converter's Action, the adversary research track
+  // (made, fired, removed), a retake, compute blocked, a march cut short.
+  const COUNTER_EVENTS_R107 = /^(ai\.power\.[a-z_]+\.[a-z0-9_]+|adversary\.(research_(made|fired|removed)|retakes|compute_blocked)|board\.(claimed_liberated|claimed_by\.(card|rider)\.[a-z]+|city_energy_hosted|sites_opened\.[a-z_]+|chips_converted|march_cut_by_loss|blocked\.station_adversary)|effects\.per_site\.owned_hosted)$/;
+  const COUNTER_ALL = [COUNTER_EVENTS, COUNTER_EVENTS_R41, COUNTER_EVENTS_R55, COUNTER_EVENTS_R70, COUNTER_EVENTS_R74, COUNTER_EVENTS_R85, COUNTER_EVENTS_R99, COUNTER_EVENTS_R107];
   const counters = () => { const c = aic.timeline.frame.snap.state.stats?.counters ?? {}; return Array.isArray(c) ? Object.fromEntries(c) : c; };
   function counterEvents(c0, c1) {
     return Object.keys(c1).filter((k) => COUNTER_ALL.some((re) => re.test(k)) && (c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);
@@ -453,7 +458,8 @@ try {
     for (const [i, text] of records.entries()) {
       const rec = JSON.parse(text);
       const watch = { name: `${c.name}/watch-${rec.seed}`, shots: 0, times: [] };
-      await page.js(`window.aic.open(${JSON.stringify(text)}, ${JSON.stringify(`${c.name}-${rec.seed}.json`)})`);
+      // 261: a record opened in the player view plays from its last step: the watch steps from the first.
+      await page.js(`(window.aic.open(${JSON.stringify(text)}, ${JSON.stringify(`${c.name}-${rec.seed}.json`)}), window.aic.seek(0))`);
       await drive(page, watch, 'watch');
       const seed = 1000 + i;
       const play = { name: `${c.name}/play-${seed}`, shots: 0, times: [] };

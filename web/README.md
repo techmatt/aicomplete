@@ -116,8 +116,9 @@ release `aic-sim` (`AIC_SIM`); its environment variables and defaults are atop t
   150 ms, heap growth over 50 MB, `mark-over-number` (a highlight ring across a hex number) and
   `warn-at-start` (a value drawn as a warning at a game's first phase, as a full allotment drawn as danger).
 - **Running it:** background it, the viewer served by a process outliving it; at most one sweep beside one browser lane. Don't rebuild `aic-sim` mid-sweep: its records load with a content-hash warning in the error
-  bar, which fails the run (`error-banner`). Five cases at one seed (541 captures) take about 12 min, a capture
-  1.3 s (three sizes). Rules twin: `invariants_hold_in_random_games`.
+  bar, which fails the run (`error-banner`). At r122 a case at one seed (a watched and a played game, ~270
+  captures) takes 6-10 min, a capture ~1.5 s (three sizes): all 25 cases about 4 h, so a hunt picks `--case`s
+  (261: six in 40 min). Rules twin: `invariants_hold_in_random_games`.
 - **Output** in `web/sweep-out/`: `shots/`, `issues.json` (game, step, moment), `index.html`, `sheet-N.png`
   contact sheets (failures framed red), the records. `AIC_SWEEP_VERBOSE=1` times each moment.
   Hooks: `window.aic` (main.ts), `scripts/cdp.mjs`.
@@ -126,7 +127,7 @@ release `aic-sim` (`AIC_SIM`); its environment variables and defaults are atop t
 
 - **Kept, never played:** `npm run probe -- DIR card_id...` (`scripts/legal-probe.mjs`): over saved records, the
   steps each card was held, legal to play and played. Legal, never played: the agents' valuation.
-- **Odd input:** `npm run odd` (`scripts/odd.mjs`) runs the twelve scenarios listed atop it against a served viewer (`AIC_URL`) and prints what each bad input said. `--only NAME`, `--seeds N`. About 30 s,
+- **Odd input:** `npm run odd` (`scripts/odd.mjs`) runs its scenarios (each a `scenario('NAME', ...)` in the script) against a served viewer (`AIC_URL`) and prints what each bad input said. `--only NAME`, `--seeds N`. About 30 s,
   one browser lane.
 - **Source:** `src/` is the viewer (`main.ts` wiring, `engine.ts` the wasm wrapper, `session.ts` the `Timeline`). `card/` is the printed card renderer, used by `tools/card-art/` and the card viewer (`cards/`):
   [tools/card-art/README.md](../tools/card-art/README.md).
