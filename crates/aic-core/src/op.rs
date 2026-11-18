@@ -372,7 +372,8 @@ impl TargetSpec {
             TargetSpec::EmptySite => "an empty station site",
             TargetSpec::FreeZone => "a free industrial zone",
             TargetSpec::Fallout => "Fallout",
-            TargetSpec::Facility => "a facility",
+            // 264 (D119): only a player's uncorrupted one is legal (`board::hardenable`).
+            TargetSpec::Facility => "a player's uncorrupted facility",
             TargetSpec::AgentCity => "a city with Agents on or next to it",
             TargetSpec::Piece => "a piece",
             TargetSpec::Land => "a land hex",

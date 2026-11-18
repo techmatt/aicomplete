@@ -45,15 +45,15 @@ Project slots: Open, Open, Open.
 | Provocation | Diplomacy + Security | base | A tier-1 threat is dealt into this country (it executes next round). Sway 2 toward Discord. | 3 Ambassadors; 12 credits |
 | Agitators | Diplomacy | city | 3 Agents are created here. Sway 2 toward Discord. | 2 Diplomacy tags; 12 credits |
 | Defection | Diplomacy | city | The nearest player pays 2 Ambassadors or discards 2 cards. Sway 1 toward Discord. | 2 Diplomacy tags; 12 credits |
-| Smear Campaign | Diplomacy | city, station | 2 Unity comes off the Unity track. The nearest player pays 2 energy or discards 2 cards. | 3 Ambassadors; 12 credits |
+| Smear Campaign | Diplomacy | city, station | Remove 2 Unity from the Unity track. The nearest player pays 2 energy or discards 2 cards. | 3 Ambassadors; 12 credits |
 | Propaganda Blitz | Diplomacy | coastal city | Sway 3 toward Discord. The adversary gains 3 compute. | 3 Ambassadors; 12 credits |
 | Sabotage | Cyber | station | The nearest player loses 4 tokens from their cards. The adversary gains 6 compute. | 2 Cyber tags; 12 credits |
 | Insider Access | Cyber + Diplomacy | station | 2 Agents are created here. The nearest player pays 3 research cubes or discards 2 cards. | 3 Ambassadors; 12 credits |
-| Wiper Malware | Cyber | station | The nearest player discards 2 cards. The adversary gains 2 research cubes. | 3 research cubes; 12 credits |
+| Wiper Malware | Cyber | station | The nearest player discards 2 cards. 2 cubes go onto the adversary's research track. | 3 research cubes; 12 credits |
 | Cryptojacking | Cyber | station, factory | The adversary gains 6 compute. The nearest player pays 2 research cubes or discards 1 card. | 2 Cyber tags; 12 credits |
-| Backdoor | Cyber | station | A Botnet lands on the station here. | 3 insight; 12 credits |
+| Backdoor | Cyber | station | A Botnet lands on the station here (if it holds one, on the nearest piece without one). | 3 insight; 12 credits |
 | Requisition | Industry | factory, city | The nearest player pays 3 chips or discards 2 cards. The adversary gains 3 compute. | 2 Industry tags; 12 credits |
-| Shakedown | Industry + Diplomacy | city | Theft: the nearest player pays 3 chips or discards 2 cards; the adversary gains 4 compute. | 3 Ambassadors; 12 credits |
+| Shakedown | Industry + Diplomacy | city | The nearest player pays 3 chips or discards 2 cards. The adversary gains 4 compute. | 3 Ambassadors; 12 credits |
 | Embargo | Industry | factory | 2 Agents are created here. The nearest player pays 2 energy or discards 2 cards. | 3 chips; 12 credits |
 | Credit Crunch | Industry | coastal city | The nearest player discards 2 cards. The adversary gains 4 compute. | 3 chips; 12 credits |
 | Chip Shortage | Industry | factory | The nearest player pays 3 energy or discards 3 cards. | 3 chips; 12 credits |
@@ -61,7 +61,7 @@ Project slots: Open, Open, Open.
 | Load Shedding | Power | city, station | The nearest player turns 1 building face down until the end of next round. The adversary gains 3 compute. | 3 research cubes; 12 credits |
 | Power Surcharge | Power | station | The nearest player pays 2 energy or discards 2 cards. The adversary gains 4 compute. | 3 research cubes; 12 credits |
 | Cooling Failure | Power | station | The nearest player pays 3 research cubes or discards 2 cards. The adversary gains 3 compute. | 2 Power tags; 12 credits |
-| Grid Tap | Power | city | Theft: the nearest player pays 2 energy or discards 2 cards; the adversary gains 4 compute. | 3 research cubes; 12 credits |
+| Grid Tap | Power | city | The nearest player pays 2 energy or discards 2 cards. The adversary gains 4 compute. | 3 research cubes; 12 credits |
 
 ## Threats, tier 2
 
@@ -73,17 +73,17 @@ Project slots: Open, Open, Open.
 | Conscription | Security + Industry | base | 1 adversary Troop lands here. The nearest player pays 2 chips or discards 2 cards. | 4 energy; 17 credits |
 | Casus Belli | Security | base | This base's front has a second war step next round. 2 Fallout land next to here. | 4 Ambassadors; 17 credits |
 | Overrun | Diplomacy | city | The city here is corrupted. | 4 insight; 17 credits |
-| Insurrection | Diplomacy | city | 4 Agents are created here. 3 Unity comes off the Unity track. | 3 Diplomacy tags; 17 credits |
-| Deepfake Wave | Diplomacy + Cyber | city, station | Sway 3 toward Discord. 2 Unity comes off the Unity track. | 4 Ambassadors; 17 credits |
+| Insurrection | Diplomacy | city | 4 Agents are created here. Remove 3 Unity from the Unity track. | 3 Diplomacy tags; 17 credits |
+| Deepfake Wave | Diplomacy + Cyber | city, station | Sway 3 toward Discord. Remove 2 Unity from the Unity track. | 4 Ambassadors; 17 credits |
 | Turncoats | Diplomacy | city | The nearest player pays 4 Ambassadors or discards 3 cards. The adversary gains 3 compute. | 3 Diplomacy tags; 17 credits |
 | Propaganda Ministry | Diplomacy | city, coastal city | Sway 4 toward Discord. The adversary gains 4 compute. | 3 Diplomacy tags; 17 credits |
-| Skimming Operation | Industry + Diplomacy | coastal city | Theft: the nearest player pays 4 chips or discards 3 cards; the adversary gains 6 compute. | 4 Ambassadors; 17 credits |
-| Dark Cities | Power + Diplomacy | city, coastal city | The nearest player destroys 1 of their Nodes closest to it. 3 Unity comes off the Unity track. | 3 Power tags; 17 credits |
+| Skimming Operation | Industry + Diplomacy | coastal city | The nearest player pays 4 chips or discards 3 cards. The adversary gains 6 compute. | 4 Ambassadors; 17 credits |
+| Dark Cities | Power + Diplomacy | city, coastal city | The nearest player destroys 1 of their Nodes closest to it. Remove 3 Unity from the Unity track. | 3 Power tags; 17 credits |
 | Station Seizure | Cyber | station | 2 Agents are created here. Then the station here flips to the adversary (a player's holds unless 2 Agents and no player Ambassador are on it; one that holds takes another Agent). | 3 Cyber tags; 17 credits |
-| Sleeper Cells | Cyber | station | A Botnet lands on the station here. 2 Agents are created here. | 3 Cyber tags; 17 credits |
+| Sleeper Cells | Cyber | station | A Botnet lands on the station here (if it holds one, on the nearest piece without one). 2 Agents are created here. | 3 Cyber tags; 17 credits |
 | Purge Protocols | Cyber | station | The nearest player destroys 1 of their Nodes closest to it and discards 3 cards. | 5 research cubes; 17 credits |
-| Data Breach | Cyber + Industry | station, factory | The nearest player pays 5 research cubes or discards 3 cards. The adversary gains 2 research cubes. | 4 chips; 17 credits |
-| Zero Day | Cyber | station | The adversary gains 4 research cubes. The nearest player turns 1 building face down until the end of next round. | 5 research cubes; 17 credits |
+| Data Breach | Cyber + Industry | station, factory | The nearest player pays 5 research cubes or discards 3 cards. 2 cubes go onto the adversary's research track. | 4 chips; 17 credits |
+| Zero Day | Cyber | station | 4 cubes go onto the adversary's research track. The nearest player turns 1 building face down until the end of next round. | 5 research cubes; 17 credits |
 | Asset Freeze | Industry | factory | The nearest player turns 2 buildings face down until the end of next round and discards 2 cards. | 4 energy; 17 credits |
 | Mass Production | Industry | factory | An adversary factory is built on the free industrial zone nearest here. The adversary gains 5 compute. | 4 chips; 17 credits |
 | Factory Occupation | Industry + Security | factory | The adversary corrupts the factory here, even a player's (with none there, it builds one on the empty zone). The adversary gains 5 compute. | 4 energy; 17 credits |
@@ -93,12 +93,12 @@ Project slots: Open, Open, Open.
 | Thermal Runaway | Power | station | The nearest player pays 6 research cubes or discards 3 cards. The adversary gains 4 compute. | 3 Power tags; 17 credits |
 | Overload | Power | factory, station | The nearest player destroys 2 of their Nodes closest to it. The adversary gains 6 compute. | 3 Power tags; 17 credits |
 | Garrison State | Universal | city, base | 3 Agents are created on the city here. 1 adversary Troop lands on the base here. | 4 insight; 17 credits |
-| Shock Doctrine | Universal | city, factory | The nearest player pays 2 Ambassadors or discards 2 cards. 3 Unity comes off the Unity track. | 4 energy; 17 credits |
-| Full Spectrum Assault | Universal | station | A Botnet lands on the station here. A tier-1 threat is dealt into this country (it executes next round). | 4 Ambassadors; 17 credits |
+| Shock Doctrine | Universal | city, factory | The nearest player pays 2 Ambassadors or discards 2 cards. Remove 3 Unity from the Unity track. | 4 energy; 17 credits |
+| Full Spectrum Assault | Universal | station | A Botnet lands on the station here (if it holds one, on the nearest piece without one). A tier-1 threat is dealt into this country (it executes next round). | 4 Ambassadors; 17 credits |
 | Last Ultimatum | Universal | city, base | A tier-2 threat is dealt into this country (it executes next round). The nearest player destroys 1 of their Nodes closest to it. | 5 research cubes; 17 credits |
-| Iron Curtain | Universal | factory, city | 1 adversary Troop lands on the factory here. 2 Unity comes off the Unity track. | 4 energy; 17 credits |
+| Iron Curtain | Universal | factory, city | 1 adversary Troop lands on the factory here. Remove 2 Unity from the Unity track. | 4 energy; 17 credits |
 | War Economy | Security + Industry | factory, base | An adversary factory is built on the free industrial zone nearest here. 1 adversary Troop lands on the factory here. | 4 energy; 17 credits |
-| Cascade Failure | Power + Cyber | station, city | A Botnet lands on the station here. The nearest player pays 3 energy or discards 3 cards. | 4 insight; 17 credits |
+| Cascade Failure | Power + Cyber | station, city | A Botnet lands on the station here (if it holds one, on the nearest piece without one). The nearest player pays 3 energy or discards 3 cards. | 4 insight; 17 credits |
 
 ## Projects
 

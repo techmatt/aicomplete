@@ -24,7 +24,8 @@ has an exception: every symbol means what it always means ([card-guidelines.md](
 
 **Shapes** (tiles, discs, silhouettes, rings, the less, clock, wall, pin, shield and roof marks) are in the legend,
 [card-guidelines.md](../card-guidelines.md), *Legend*; the near mark is on or next to the target. The text says what
-the icons say, in order, opening with the box's word.
+the icons say, in order, opening with the box's word, but for a triggered Effect: its "When you ..." marks it, so it
+prints no "Effect:" (Matt, 264); a standing Effect keeps the label ("Effect: your Science cards cost 5 credits less").
 
 How each primitive resolves, beyond the card text (the card set: [player-cards.md](player-cards.md); every card:
 [cards.md](../cards.md)):
@@ -39,7 +40,8 @@ How each primitive resolves, beyond the card text (the card set: [player-cards.m
   two targets, or a free country. A card names the pieces it removes: "3 Agents or 1 Troop" is one kind, your choice.
 - **Gain, Place:** Gain puts pieces in your supply; Place puts new ones onto the map, on the target, each arriving as
   any ambassador does.
-- **Hardening:** a different facility for each token, each one a token can protect ([ai-powers.md](ai-powers.md)):
+- **Hardening:** "harden N of your Nodes" puts the same token on N of your nodes' hexes (`shield_node`). Otherwise
+  a different facility for each token, each one a token can protect ([ai-powers.md](ai-powers.md)):
   the target, then facilities next to it.
 - **Factories:** "build a factory on it": the target is a free industrial zone; the factory is yours (your cube).
   A card that opens a site and claims it (Industrial Commons, Open Research Campus) can't target one with an agent
@@ -70,6 +72,8 @@ How each primitive resolves, beyond the card text (the card set: [player-cards.m
 - **Liberate:** liberate the target, a corrupted city, as the Liberate action does, unpaid
   ([ambassadors.md](ambassadors.md)); the city is left neutral (252). `own` (Hostile Buyout alone) takes any corrupted site, and a station or factory it frees gets your cube (254: a city never does). Each engine's twist: `ambassadors` (gain that many), `troops` (up to that many adversary troops in the city's country come
   off), `botnet` (a botnet on or next to the city comes off; its icon carries the city glyph). Only the liberate capstones print it ([player-cards.md](player-cards.md)).
+  Followed by `claim_site` `near` (the claim rider), the face prints the house term **Rescue it** (264): liberate it,
+  then claim a facility next to it; its icons are the liberation's chip, then station / factory.
 - **Card text:** extra costs and lowered income included; a long card sets smaller. **Shelter** takes no target: none
   of your nodes or facilities in your reach (as it stands when one would be destroyed) can be destroyed this round.
 - **Projects:** a drain removes compute from one visible adversary project; **drain all** from every visible one; a
@@ -110,7 +114,7 @@ building with a Science trigger fires it.
   Your own plays fire them only in a 1-player game (*Help cards*, above), and a shared gain lands once.
 - **Rebate (`play_cost`):** "when you play a card printed at 10 credits or more, gain 5 credits" (Lights-Out Assembly):
   the printed cost, before discounts. `≥`N is at least N.
-- **Fight triggers:** "when you remove a Troop", "when you remove adversary compute" and "when you remove Agents"
+- **Fight triggers:** "when you remove a Troop", "when you remove compute" (only the adversary has any) and "when you remove Agents"
   fire once for the card, Action, power, converter or standard action that removed any, however many, canceling an
   arrival included.
 - **Discounts (`card_discount`):** "your Cyber cards cost 5 credits less to play" (Darknet Exchange), or insight (no

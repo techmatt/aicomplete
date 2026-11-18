@@ -143,7 +143,10 @@ export async function fitCards(root = document) {
   const TARGET_PT = 7.5;
   const TARGET_FLOOR_PT = 6;
   const TARGET_MARGIN_MM = 2;
-  const LADDER = [[7.5, ''], [6.9, 'fit-1'], [6.3, 'fit-2'], [5.8, 'fit-3'], [5.4, 'dense']];
+  // 264 (Matt, message 12166): before the text steps down, the icons do: smaller icons and gaps
+  // (`icons-1`) can bring two icon rows to one and keep the text at 7.5 pt.
+  // The smaller icons stay on while the text steps down (dense sets its own).
+  const LADDER = [[7.5, ''], [7.5, 'icons-1'], [6.9, 'icons-1 fit-1'], [6.3, 'icons-1 fit-2'], [5.8, 'icons-1 fit-3'], [5.4, 'dense']];
   const FACES = ['600 15pt "Saira Condensed"', '700 15pt "Saira Condensed"', '400 7.5pt "Source Serif 4"'];
   const EPSILON_PX = 0.01;
   const OVERFLOW_PX = 0.5; // As render.mjs tolerates: under a pixel is rounding, not a break.
@@ -164,8 +167,8 @@ export async function fitCards(root = document) {
     return high + clear <= b.height + slack && Math.min(...parts.map((r) => r.left)) >= b.left - slack && Math.max(...parts.map((r) => r.right)) <= b.right + slack;
   };
   const step = (box, cls) => {
-    box.classList.remove(...LADDER.map(([, c]) => c).filter(Boolean));
-    if (cls) box.classList.add(cls);
+    box.classList.remove(...LADDER.flatMap(([, c]) => c.split(' ')).filter(Boolean));
+    if (cls) box.classList.add(...cls.split(' '));
   };
 
   const host = document.createElement('div');

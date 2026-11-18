@@ -373,7 +373,7 @@
     "effects": [{"op": "corrupt", "site": "city"}, {"op": "threat_at_node", "tier": 2}]},
    {"text": "Corrupt cities, then deal two tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
     "effects": [{"op": "corrupt", "site": "city"}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]},
-   {"text": "The adversary builds, then Corrupt cities and deal two tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
+   {"text": "Each country rallies its Agent income now, to this round's Rally; then Corrupt cities and deal two tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
     "effects": [{"op": "adversary_build"}, {"op": "corrupt", "site": "city"}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]}
   ]
  },

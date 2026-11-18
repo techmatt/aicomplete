@@ -30,9 +30,10 @@ quiet exception.
 8. **One clear idea per card.** Two effects at most, unless a third is the extra cost. A building holds income or
    tokens, and one Action or Effect; an Action may be "A, OR B" when it is a token card's choice (15).
 9. **Fits at the default size.** Rules text prints at 7.5 pt. A building's box above the art holds about 80
-   characters on two lines, the box below about the same, a program or event about 110 (guides nothing checks).
-   Cut words, split ideas or simplify the op rather than shrink the type; a card that still can't fit is a recorded
-   exception, its reason in the item's write-up. Measure with `npm run cards:fit` ([web/README.md](../web/README.md),
+   characters on two lines with one icon row, the box below about the same, a program or event about 110 with one
+   icon row and about 78 with two (264; guides: the fit decides). Cut words, split ideas or simplify the op rather
+   than shrink the type; a card that still can't fit is a play change for Matt, and `cards:fit` fails until it is
+   settled (264: no recorded exceptions). Measure with `npm run cards:fit` ([web/README.md](../web/README.md),
    *Text sizes*). A kind with no frame (threats, Alignment, adversary and project cards) has no budget until it gets
    one.
 10. **The name says what it does,** and the art matches the name.

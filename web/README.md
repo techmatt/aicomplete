@@ -177,5 +177,6 @@ elsewhere; a taken port says so and exits.
 - **Text sizes:** `npm run cards:fit` (about 2.5 s, no server) fits every player card headless with the real
   renderer into `out/card-fit.json` (the repo root's `out/`, as for every `out/` path here; fields atop
   `scripts/cards-fit.mjs`; the target box runs 7.5 down to 6 pt, taking no height from a building's top box). It
-  prints cards below 7.5 pt and exits 1 on any overflow. It reads the working tree: re-run after an edit. A box's
+  prints cards below 7.5 pt and exits 1 on any overflow or any box below 7.5 pt (264: no recorded exceptions). A
+  box first tries smaller icons (`icons-1`) with its text at 7.5 pt, then steps the text down. It reads the working tree: re-run after an edit. A box's
   size follows its text's length: joining two clauses' icons on one row saves nothing (258).

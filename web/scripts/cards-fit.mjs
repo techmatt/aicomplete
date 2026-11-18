@@ -6,7 +6,8 @@
 // (null: none), overflow says something
 // still breaks its box or plate, where says what, and tight lists boxes inside but short of
 // the clearance. Prints the cards below the goal, and what overflows by how much (px, and
-// roughly in characters). Exits 1 if anything overflows. No server.
+// roughly in characters). Exits 1 if anything overflows or any box prints below the goal (264: no
+// recorded exceptions). No server.
 //   AIC_BROWSER browser executable (see cdp.mjs)
 
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -137,4 +138,6 @@ const overrun = (i, where) => {
 };
 for (const [id, c] of broken) console.log(`OVERFLOW ${id}: ${c.where.map((w) => overrun(list.findIndex(([k]) => k === id), w)).join('; ')}`);
 console.log(`out/card-fit.json, ${((performance.now() - started) / 1000).toFixed(1)} s`);
-process.exit(broken.length ? 1 : 0);
+// 264: no recorded exceptions: a box below the goal fails as an overflow does.
+if (any.size) console.log(`BELOW ${GOAL_PT} pt: ${[...any].join(', ')}`);
+process.exit(broken.length || any.size ? 1 : 0);

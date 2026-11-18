@@ -280,7 +280,9 @@ fn a_liberate_cards_rider_claims_a_neutral_site_next_to_the_city() {
     }
     assert_eq!((g.tokens(city, ADV_CUBE), (0..2).map(|s| g.tokens(city, cube(s))).sum::<i64>()), (0, 0), "freed, neutral");
     assert_eq!(g.tokens(fac, cube(0)), 1, "the factory next to it is claimed");
-    assert!(face_text("nuclear_option").contains("Claim a facility next to it."));
+    // 264: the rider is folded into the house term Rescue; the Liberate action never claims.
+    assert!(face_text("nuclear_option").contains("Rescue it."));
+    assert!(!face_text("nuclear_option").contains("Liberate it."));
 }
 
 /// The six country cards: a country-sized effect is the target's country; Shelter takes no target.

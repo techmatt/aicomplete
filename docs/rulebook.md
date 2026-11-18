@@ -617,8 +617,9 @@ and an ambassador never share a hex.
 
 **Liberate cards** (Popular Uprising and some tier-2 cards) liberate their target, a corrupted city in reach, as Liberate does, for the card's own price
 instead of ambassadors. Hostile Buyout alone may target any corrupted site, and puts your cube on a station or factory
-it frees (a city it frees stays neutral). The others then **claim a facility next to the city**: a neutral station or
-factory there with no agent on it becomes yours, even out of your reach; with none, nothing more happens.
+it frees (a city it frees stays neutral). The others **rescue** it (the cards' word): liberate it, then **claim a
+facility next to the city**: a neutral station or factory there with no agent on it becomes yours, even out of your
+reach; with none, nothing more happens.
 
 **Only cards claim.** A card that lets you **claim** a neutral research station or factory in your reach puts your cube
 on it: it is **yours**. One with an agent on it can't be claimed (clear it first). Open Research Campus and Industrial Commons open a station or factory
@@ -864,7 +865,8 @@ A facility's owner is the player whose cube is on it. One hardening token on a h
 node can save either, once: you may keep it for the second (it stays on the hex while your node does). Neither corruption nor agents
 destroy the node of a player with **Sanctuary** (a Protector capstone), and spends nothing of theirs.
 
-**Hardening** goes on a player-owned station or factory (the Protector's Bulwark; some cards).
+**Hardening** goes on a player-owned station or factory (the Protector's Bulwark; some cards), or, where a card says
+"harden N of your Nodes" (Stress Test Suite, Early Warning Drill), on the hexes of N of your nodes: the same token.
 
 ### Your last node
 
@@ -1055,8 +1057,8 @@ Each power can be used once a round, in the action phase. A tag in a cost means 
 
 | Board | Node power | Conversions | Draw | Sacrifice and other powers |
 |---|---|---|---|---|
-| Builder | **Buy In** (2 energy: a node; 1 chip if the new node brings a factory into your reach), **Annex** (1 chip: a node within 2 of one of yours) | **Mint** (3 credits: 1 chip) | **Procure** (1 chip: draw 2) | **Fortify** (1 chip: target troops; remove 1 on it and harden a facility on or next to it), **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand), **Teardown** (1 chip: destroy one of your own factories anywhere, Fallout goes on its hex, under any node there, which stays; 1 antimatter) |
-| Protector | **Accord** (2 energy: a node; if the new node brings a city into your reach, a new ambassador onto one such city), **Outpost** (3 energy: a node and 1 ambassador) | — | **Debrief** (1 Security: target agents; draw 1, and remove 1 agent on it) | **Interdict** (1 Security: target troops; remove up to 2 on it), **Bulwark** (1 energy: target a facility; harden it), **Patrol** (1 energy: target agents or troops; push up to 3 from it), **Reclaim** (1 Security, 6 credits, 2 energy: target a corrupted station or factory; turn it neutral; 1 antimatter) |
+| Builder | **Buy In** (2 energy: a node; 1 chip if the new node brings a factory into your reach), **Annex** (1 chip: a node within 2 of yours) | **Mint** (3 credits: 1 chip) | **Procure** (1 chip: draw 2) | **Fortify** (1 chip: target troops; remove 1 on it and harden a facility on or next to it), **Scrap** (1 Industry: 1 chip), **Overcharge** (1 Power: 2 energy), **Rush Build** (1 Industry, 1 energy: play a building from your hand without paying its credits; its other costs and requirements stand), **Teardown** (1 chip: destroy one of your own factories anywhere, Fallout goes on its hex, under any node there, which stays; 1 antimatter) |
+| Protector | **Accord** (2 energy: a node; if the new node brings a city into your reach, a new ambassador onto one such city), **Outpost** (3 energy: a node and 1 ambassador) | — | **Debrief** (1 Security: target agents; draw 1, and remove 1 agent on it) | **Interdict** (1 Security: target troops; remove up to 2 on it), **Bulwark** (1 energy: target a player's uncorrupted facility; harden it), **Patrol** (1 energy: target agents or troops; push up to 3 from it), **Reclaim** (1 Security, 6 credits, 2 energy: target a corrupted station or factory; turn it neutral; 1 antimatter) |
 | Researcher | **Peer Review** (2 insight: a node; 1 insight if the new node brings a research station into your reach), **Field Survey** (3 insight: a node; draw 1) | **Grant** (3 credits: 1 cube in your color on a megaproject that isn't complete) | **Synthesis** (1 insight: draw 1) | **Disrupt** (1 Cyber, 1 research cube: remove up to 2 adversary troops in one country), **Field Station** (1 Industry: target an open hex where Build a research station could go; a station there without the chips), **Audit** (1 Cyber: remove 3 compute from a project), **Meltdown** (2 research cubes: destroy one of your own research stations anywhere; 1 antimatter) |
 
 Every board also has **Expand** (a node for nothing more), its base node route. Every placement also pays the track space's energy (§5).

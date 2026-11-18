@@ -27,8 +27,8 @@ pub fn strategies_block() -> String {
 }
 
 /// The words cards lean on, once: `docs/rules/README.md`'s *Terms* and the player aid print these.
-pub const HOUSE_TERMS: [(&str, &str); 25] = [
-    ("Facility", "a research station or factory on the board. A building is always a card. Harden goes on a facility and nothing else"),
+pub const HOUSE_TERMS: [(&str, &str); 26] = [
+    ("Facility", "a research station or factory on the board. A building is always a card. Harden goes on a facility, or on your nodes where a card says so: one hardening token either way"),
     ("Ambassador", "a player's piece, any player's: a card never says whose"),
     ("Agent", "the adversary's piece on the board (the Security token is an Operative)"),
     ("Troop", "an adversary troop; a megacorp's is a Drone, its own piece, waiting at its military bases"),
@@ -48,7 +48,8 @@ pub const HOUSE_TERMS: [(&str, &str); 25] = [
     ("Action", "once a round, always; \"A, OR B\" is one use, either half"),
     ("Open megaproject", "one that isn't complete; research cubes in your color go only onto one"),
     ("Liberate", "a corrupted site: the agents on it come off and the adversary's cube comes off; it is left neutral, a city its country's for good, a station or factory for a card to claim (the action pays for it in ambassadors; a card's is unpaid)"),
-    ("Convert", "an agent on or next to the city leaves its stack and becomes your ambassador where it stood"),
+    ("Rescue", "on a card, a corrupted city: liberate it, then a neutral station or factory next to it with no agent on it becomes yours, unpaid and out of reach too; with none, nothing more happens. The Liberate action never claims"),
+    ("Convert","an agent on or next to the city leaves its stack and becomes your ambassador where it stood"),
     ("Gather up to N", "pieces (ambassadors, agents, troops; botnets never move) onto the target, each from a hex next to it; you may stop at any piece (a strike, \"remove up to N on or next to it\", moves nothing)"),
     ("Push up to N", "pieces from the target, each to a hex next to it that you choose; you may stop at any piece"),
     ("Firewall", "a token on a hex: no agent lands or moves there (a Rally's share for it stays in the supply) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn"),

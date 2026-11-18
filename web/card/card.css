@@ -126,6 +126,22 @@
 .card .lasting .fx-at { min-width: 4mm; height: 4mm; padding: 0 0.3mm; border-width: 0.350mm; }
 .card .lasting .fx-at .fx-num { font-size: 9pt; }
 .card .lasting .fx-less svg.less { width: 3mm; height: 3mm; }
+/* 264: the ladder's first step shrinks the icons only, the text staying at 7.5 pt. */
+.card .effect.icons-1 .ico { width: 4.500mm; height: 4.500mm; }
+.card .effect.icons-1 .fx-num { font-size: 11pt; }
+.card .effect.icons-1 .fx-icons { column-gap: 1.800mm; }
+.card .effect.icons-1 .fx-line svg.arrow { width: 3.400mm; height: 3.400mm; }
+.card .effect.icons-1 .fx-at { min-width: 4mm; height: 4mm; padding: 0 0.3mm; border-width: 0.350mm; }
+.card .effect.icons-1 .fx-at .fx-num { font-size: 9pt; }
+.card .effect.lasting.icons-1 .ico { width: 3.900mm; height: 3.900mm; }
+.card .effect.lasting.icons-1 .fx-num { font-size: 10pt; }
+.card .effect.lasting.icons-1 .fx-icons { column-gap: 1.200mm; }
+.card .effect.lasting.icons-1 .fx-line + .fx-line { padding-left: 1.200mm; }
+.card .effect.lasting.icons-1 .fx-at .fx-num { font-size: 8.500pt; }
+/* The track arrow stays narrow: the square icon size above would widen it. */
+.card .effect.icons-1 .income .ico[aria-label='raise'], .card .effect.icons-1 .income .ico[aria-label='lower'] { width: 2.900mm; }
+.card .effect.lasting.icons-1 .income .ico[aria-label='raise'], .card .effect.lasting.icons-1 .income .ico[aria-label='lower'] { width: 2.600mm; }
+.card .effect.lasting.icons-1 .fx-line svg.arrow { width: 3mm; height: 3mm; }
 .card .effect.dense .fx-at { min-width: 3.300mm; height: 3.300mm; border-width: 0.300mm; }
 .card .effect.dense .fx-at .fx-num { font-size: 8pt; }
 .card .effect.dense .fx-less svg.less { width: 2.300mm; height: 2.300mm; }

@@ -275,6 +275,9 @@ fn removal_icons(ambassadors: i64, troops: i64) -> Vec<Part> {
 
 /// The clauses of an op list. `gain` is the verb of a plain gain: "gain" below
 /// the art, "get" in an Action (call 2, the arrow's right side).
+/// A liberate card's claim rider (256), folded into Rescue when it follows the liberation (264).
+const CLAIM_NEAR: &str = "claim a facility next to it";
+
 fn clauses(ops: &[Op], gain: &str) -> Vec<Clause> {
     let mut out: Vec<Clause> = Vec::new();
     for op in ops {
@@ -291,6 +294,17 @@ fn clauses(ops: &[Op], gain: &str) -> Vec<Clause> {
                 }
                 _ => out.push(c),
             }
+        }
+    }
+    // 264: a liberation with the claim rider is one house term, Rescue (liberate it, then claim a facility
+    // next to it), on every liberate card that claims: the Liberate action never claims, so it keeps its word.
+    // Its icons are the liberation's chip then the claim's station / factory, in one clause, so they don't read
+    // as Hostile Buyout's plain liberation.
+    if let Some(lib) = out.iter().position(|c| c.say == "liberate it") {
+        if let Some(claim) = out.iter().skip(lib + 1).position(|c| c.say == CLAIM_NEAR) {
+            let claimed = out.remove(lib + 1 + claim);
+            out[lib].icons.extend(claimed.icons);
+            out[lib].say = "rescue it".to_string();
         }
     }
     // A box of a merged run: the dashed outline holds all of the other's gain.
@@ -346,7 +360,8 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         Op::PlaceNode { count, range } => one(clause(
             counted(*count, "node"),
             if *range > 1 {
-                format!("place {} within {range} of one of yours", plural(*count, "node"))
+                // 264: "of yours" (your nodes), as short as it reads: Survey Drone Fleet's box fits.
+                format!("place {} within {range} of yours", plural(*count, "node"))
             } else {
                 format!("place {}", plural(*count, "node"))
             },
@@ -733,10 +748,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         // 256: a claim of the target, or with `near` a liberate card's rider next to the city it frees.
         // 261: a station or a factory since 256 (Industrial Commons claims a factory): both icons, as the rider.
         Op::ClaimSite { near: false } => one(clause(vec![w("station"), w("/"), w("factory")], "claim it")),
-        Op::ClaimSite { near: true } => one(clause(
-            vec![w("station"), w("/"), w("factory")],
-            "claim a facility next to it",
-        )),
+        Op::ClaimSite { near: true } => one(clause(vec![w("station"), w("/"), w("factory")], CLAIM_NEAR)),
         Op::ProjectCube { count, station } => {
             let mut icons = counted(*count, "research_cubes");
             icons.push(w("megaproject"));
@@ -880,8 +892,9 @@ fn event_face(on: &Event) -> (Vec<Part>, String) {
         Event::RemoveTroop => (adversary(vec![w("troop")]), "when you remove a troop".to_string()),
         Event::RemoveCompute => (
             adversary(vec![w("compute"), w("project")]),
-            // 106: compute is only ever on adversary projects; the long form didn't fit 7.5 pt.
-            "when you remove adversary compute".to_string(),
+            // 106: compute is only ever on adversary projects; the long form didn't fit 7.5 pt. 264: nor did
+            // "adversary compute" (Intrusion Lab): no player holds compute, so "compute" has one reading.
+            "when you remove compute".to_string(),
         ),
         Event::RemoveAmbassadors => (adversary(vec![w("agent")]), "when you remove agents".to_string()),
         Event::PlaceTokens { kind } => (
@@ -1157,7 +1170,10 @@ fn above_art(c: &CardDef, f: &mut Face) {
     }
     if !effects.is_empty() {
         let says: Vec<&str> = effects.iter().map(|(_, say)| say.as_str()).collect();
-        top_said.push(sentence(&format!("effect: {}", says.join("; "))));
+        // 264 (Matt, message 12166): a trigger's "When you ..." marks it already; a standing Effect keeps its label.
+        let trigger = |s: &&str| s.starts_with("when ") || s.starts_with("at ");
+        let label = if says[0].starts_with("when ") && says.iter().all(trigger) { "" } else { "effect: " };
+        top_said.push(sentence(&format!("{label}{}", says.join("; "))));
     }
     for (parts, _) in effects {
         f.top.push(parts);

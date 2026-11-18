@@ -348,7 +348,7 @@
    "city",
    "station"
   ],
-  "text": "2 Unity comes off the Unity track. The nearest player pays 2 energy or discards 2 cards.",
+  "text": "Remove 2 Unity from the Unity track. The nearest player pays 2 energy or discards 2 cards.",
   "counters": [
    [
     {
@@ -516,7 +516,7 @@
   "locations": [
    "station"
   ],
-  "text": "The nearest player discards 2 cards. The adversary gains 2 research cubes.",
+  "text": "The nearest player discards 2 cards. 2 cubes go onto the adversary's research track.",
   "counters": [
    [
     {
@@ -599,7 +599,7 @@
   "locations": [
    "station"
   ],
-  "text": "A Botnet lands on the station here.",
+  "text": "A Botnet lands on the station here (if it holds one, on the nearest piece without one).",
   "counters": [
    [
     {
@@ -678,7 +678,7 @@
   "locations": [
    "city"
   ],
-  "text": "Theft: the nearest player pays 3 chips or discards 2 cards; the adversary gains 4 compute.",
+  "text": "The nearest player pays 3 chips or discards 2 cards. The adversary gains 4 compute.",
   "counters": [
    [
     {
@@ -1002,7 +1002,7 @@
   "locations": [
    "city"
   ],
-  "text": "Theft: the nearest player pays 2 energy or discards 2 cards; the adversary gains 4 compute.",
+  "text": "The nearest player pays 2 energy or discards 2 cards. The adversary gains 4 compute.",
   "counters": [
    [
     {
@@ -1285,7 +1285,7 @@
   "locations": [
    "city"
   ],
-  "text": "4 Agents are created here. 3 Unity comes off the Unity track.",
+  "text": "4 Agents are created here. Remove 3 Unity from the Unity track.",
   "counters": [
    [
     {
@@ -1328,7 +1328,7 @@
    "city",
    "station"
   ],
-  "text": "Sway 3 toward Discord. 2 Unity comes off the Unity track.",
+  "text": "Sway 3 toward Discord. Remove 2 Unity from the Unity track.",
   "counters": [
    [
     {
@@ -1456,7 +1456,7 @@
   "locations": [
    "coastal_city"
   ],
-  "text": "Theft: the nearest player pays 4 chips or discards 3 cards; the adversary gains 6 compute.",
+  "text": "The nearest player pays 4 chips or discards 3 cards. The adversary gains 6 compute.",
   "counters": [
    [
     {
@@ -1498,7 +1498,7 @@
    "city",
    "coastal_city"
   ],
-  "text": "The nearest player destroys 1 of their Nodes closest to it. 3 Unity comes off the Unity track.",
+  "text": "The nearest player destroys 1 of their Nodes closest to it. Remove 3 Unity from the Unity track.",
   "counters": [
    [
     {
@@ -1577,7 +1577,7 @@
   "locations": [
    "station"
   ],
-  "text": "A Botnet lands on the station here. 2 Agents are created here.",
+  "text": "A Botnet lands on the station here (if it holds one, on the nearest piece without one). 2 Agents are created here.",
   "counters": [
    [
     {
@@ -1659,7 +1659,7 @@
    "station",
    "factory"
   ],
-  "text": "The nearest player pays 5 research cubes or discards 3 cards. The adversary gains 2 research cubes.",
+  "text": "The nearest player pays 5 research cubes or discards 3 cards. 2 cubes go onto the adversary's research track.",
   "counters": [
    [
     {
@@ -1701,7 +1701,7 @@
   "locations": [
    "station"
   ],
-  "text": "The adversary gains 4 research cubes. The nearest player turns 1 building face down until the end of next round.",
+  "text": "4 cubes go onto the adversary's research track. The nearest player turns 1 building face down until the end of next round.",
   "counters": [
    [
     {
@@ -2113,7 +2113,7 @@
    "city",
    "factory"
   ],
-  "text": "The nearest player pays 2 Ambassadors or discards 2 cards. 3 Unity comes off the Unity track.",
+  "text": "The nearest player pays 2 Ambassadors or discards 2 cards. Remove 3 Unity from the Unity track.",
   "counters": [
    [
     {
@@ -2155,7 +2155,7 @@
   "locations": [
    "station"
   ],
-  "text": "A Botnet lands on the station here. A tier-1 threat is dealt into this country (it executes next round).",
+  "text": "A Botnet lands on the station here (if it holds one, on the nearest piece without one). A tier-1 threat is dealt into this country (it executes next round).",
   "counters": [
    [
     {
@@ -2241,7 +2241,7 @@
    "factory",
    "city"
   ],
-  "text": "1 adversary Troop lands on the factory here. 2 Unity comes off the Unity track.",
+  "text": "1 adversary Troop lands on the factory here. Remove 2 Unity from the Unity track.",
   "counters": [
    [
     {
@@ -2328,7 +2328,7 @@
    "station",
    "city"
   ],
-  "text": "A Botnet lands on the station here. The nearest player pays 3 energy or discards 3 cards.",
+  "text": "A Botnet lands on the station here (if it holds one, on the nearest piece without one). The nearest player pays 3 energy or discards 3 cards.",
   "counters": [
    [
     {

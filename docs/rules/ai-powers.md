@@ -24,14 +24,14 @@ exception is Disrupt's country.
 | Builder | Mint | 3 credits | gain 1 chip |
 | Builder | Expand | nothing | place 1 Node |
 | Builder | Buy In | 2 energy | place 1 Node; if the new node brings a factory into your reach, also gain 1 chip |
-| Builder | Annex | 1 chip | place 1 Node within 2 of one of yours |
+| Builder | Annex | 1 chip | place 1 Node within 2 of yours |
 | Builder | Scrap | 1 Industry | gain 1 chip |
 | Builder | Overcharge | 1 Power | gain 2 energy |
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
 | Builder | Procure | 1 chip | draw 2 cards |
 | Builder | Fortify | 1 chip | Target: Troops. Remove 1 Troop on it; harden a facility on or next to it |
 | Builder | Teardown | 1 chip | destroy one of your factories anywhere; Fallout goes on its hex; gain 1 antimatter |
-| Protector | Bulwark | 1 energy | Target: a facility. Harden it |
+| Protector | Bulwark | 1 energy | Target: a player's uncorrupted facility. Harden it |
 | Protector | Expand | nothing | place 1 Node |
 | Protector | Accord | 2 energy | place 1 Node; if the new node brings a city into your reach, also put a new ambassador on one such city |
 | Protector | Outpost | 3 energy | place 1 Node; gain 1 ambassador |
@@ -152,7 +152,7 @@ on its own pieces (the first time each round one of its nodes or facilities woul
 *Destruction*).
 
 Hardening (the standard actions, cards) goes only on facilities a token can protect, player-owned stations and
-factories that are not corrupted, and "harden N" is N different facilities, fewer if fewer qualify. A card's (a
-shield, usually Security's) hardening token on a hex of your nodes absorbs a destruction there and goes with the node if it is
+factories that are not corrupted, and "harden N" is N different facilities, fewer if fewer qualify. "Harden N of
+your Nodes" (Stress Test Suite, Early Warning Drill) puts the token on a hex of your nodes instead: it absorbs a destruction there and goes with the node if it is
 lost another way. On your own facility it is the facility's hardening token: a table has one token, so it stays
 when the node goes, and protects the facility.

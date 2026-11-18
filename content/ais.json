@@ -149,7 +149,7 @@
    {
     "name": "Annex",
     "tags": [],
-    "text": "place 1 Node within 2 of one of yours",
+    "text": "place 1 Node within 2 of yours",
     "effects": [
      {
       "op": "place_node",
@@ -463,7 +463,7 @@
       1
      ]
     ],
-    "text": "Target: a facility. Harden it",
+    "text": "Target: a player's uncorrupted facility. Harden it",
     "effects": [
      {
       "op": "target",

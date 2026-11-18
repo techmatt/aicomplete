@@ -397,7 +397,7 @@
     "city",
     "station"
    ],
-   "text": "2 Unity comes off the Unity track. The nearest player pays 2 energy or discards 2 cards.",
+   "text": "Remove 2 Unity from the Unity track. The nearest player pays 2 energy or discards 2 cards.",
    "counters": [
     [
      {
@@ -588,7 +588,7 @@
    "locations": [
     "station"
    ],
-   "text": "The nearest player discards 2 cards. The adversary gains 2 research cubes.",
+   "text": "The nearest player discards 2 cards. 2 cubes go onto the adversary's research track.",
    "counters": [
     [
      {
@@ -684,7 +684,7 @@
    "locations": [
     "station"
    ],
-   "text": "A Botnet lands on the station here.",
+   "text": "A Botnet lands on the station here (if it holds one, on the nearest piece without one).",
    "counters": [
     [
      {
@@ -776,7 +776,7 @@
    "locations": [
     "city"
    ],
-   "text": "Theft: the nearest player pays 3 chips or discards 2 cards; the adversary gains 4 compute.",
+   "text": "The nearest player pays 3 chips or discards 2 cards. The adversary gains 4 compute.",
    "counters": [
     [
      {
@@ -1148,7 +1148,7 @@
    "locations": [
     "city"
    ],
-   "text": "Theft: the nearest player pays 2 energy or discards 2 cards; the adversary gains 4 compute.",
+   "text": "The nearest player pays 2 energy or discards 2 cards. The adversary gains 4 compute.",
    "counters": [
     [
      {
