@@ -76,11 +76,11 @@ full is countered at once (118). A threat costs what it prints at every level (2
 surcharge).
 
 **Counters (146; Matt's standard).** **One counter option, two at most**: a scarce currency or a tag sacrifice, or
-credits ("pay 3 energy or 12 credits"). Printed amounts are paid (`counter_pct` 100 by tier and `counter_credit_pct`
-100 are the screens' dials). Tier 1: 3 energy, 3 ambassadors, 3 insight, 3 research cubes, 3 chips, 2 tags or 12
-credits; tier 2: 4, 4, 4 insight, 5, 4 chips, 3 tags or 17 credits (r83: chips halved with the chip's doubled worth;
+credits ("pay 3 energy or 8 credits"). Printed amounts are paid (`counter_pct` 100 by tier and `counter_credit_pct`
+100 are the screens' dials). Tier 1: 3 energy, 3 ambassadors, 3 insight, 3 research cubes, 3 chips, 2 tags or 8
+credits; tier 2: 4, 4, 4 insight, 5, 4 chips, 3 tags or 11 credits (r128: credits ÷ 1.5, to the nearest; r83: chips halved with the chip's doubled worth;
 r89: insight 6 and 7 → 3 and 4, about half a round's insight at r87's income) (146: the screens' 85% folded in). Nothing is priced as a share of income. **A counter never shares
-a currency with its harm** ("pay 7 credits or lose 8" is a design error): no harm takes credits, and a harm taking
+a currency with its harm** ("pay 5 credits or lose 5" is a design error): no harm takes credits, and a harm taking
 energy, chips, cubes, insight, ambassadors or nodes drops that counter. The load check and `drafts/adversary/check.py`
 refuse a threat with more than two counter options, more than two consequences, a shared currency, a harm on each
 player (a flag on every hex near it, a line in each country, "each player destroys"), or a special piece (a troop

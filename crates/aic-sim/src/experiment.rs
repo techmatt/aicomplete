@@ -633,7 +633,7 @@ pub const UNSPENT: [Resource; 5] = board::LEFT;
 /// A seat's mean left at game end above this flags the resource as ending high
 /// (068, in [`UNSPENT`] order): about a round's income of each, so a seat
 /// ending there left a round's worth of play on the table. `docs/principles.md`.
-pub const UNSPENT_HIGH: [f64; 5] = [12.0, 4.0, 4.0, 2.0, 3.0];
+pub const UNSPENT_HIGH: [f64; 5] = [8.0, 4.0, 4.0, 2.0, 3.0];
 
 fn margin(rules: &Rules, g: &GameState) -> Margin {
     let w = rules.world();

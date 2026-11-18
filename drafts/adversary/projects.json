@@ -549,7 +549,7 @@
     "cyber"
    ],
    "cost": 12,
-   "text": "Each player removes 4 tokens from their cards (their choice of cards). Each player pays 10 credits or discards 3 cards.",
+   "text": "Each player removes 4 tokens from their cards (their choice of cards). Each player pays 7 credits or discards 3 cards.",
    "effects": [
     {
      "op": "lose_tokens",
@@ -558,7 +558,7 @@
     {
      "op": "requisition",
      "resource": "credits",
-     "amount": 10,
+     "amount": 7,
      "cards": 3
     }
    ],

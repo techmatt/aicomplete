@@ -8,7 +8,7 @@
    "text": "You have 5 building slots; the Protector and the Researcher have 4.",
    "passives": []
   },
-  "credits": 15,
+  "credits": 10,
   "income": [
    [
     "energy",
@@ -24,7 +24,15 @@
     "income": [
      [
       "credits",
-      3
+      2
+     ]
+    ]
+   },
+   {
+    "income": [
+     [
+      "credits",
+      1
      ]
     ]
    },
@@ -34,14 +42,6 @@
       "credits",
       2
      ]
-    ]
-   },
-   {
-    "income": [
-     [
-      "credits",
-      3
-     ]
     ],
     "cost": 1,
     "moves": 1
@@ -50,7 +50,7 @@
     "income": [
      [
       "credits",
-      3
+      2
      ]
     ],
     "cost": 2
@@ -59,7 +59,7 @@
     "income": [
      [
       "credits",
-      3
+      2
      ]
     ],
     "cost": 3,
@@ -91,7 +91,7 @@
     "cost": [
      [
       "credits",
-      3
+      2
      ]
     ],
     "text": "gain 1 chip",
@@ -228,7 +228,7 @@
       2
      ]
     ],
-    "text": "draw 1 card; gain 5 credits",
+    "text": "draw 1 card; gain 3 credits",
     "effects": [
      {
       "op": "draw",
@@ -237,7 +237,7 @@
      {
       "op": "gain",
       "resource": "credits",
-      "amount": 5
+      "amount": 3
      }
     ]
    },
@@ -310,7 +310,7 @@
     "income": [
      [
       "credits",
-      2
+      1
      ]
     ],
     "cost": 2
@@ -332,11 +332,11 @@
     "cost": 5,
     "capstone": {
      "name": "Master Plan",
-     "text": "Your buildings cost 2 credits less.",
+     "text": "Your buildings cost 1 credit less.",
      "passives": [
       {
        "op": "building_discount",
-       "amount": 2
+       "amount": 1
       }
      ]
     },
@@ -374,7 +374,7 @@
     }
    ]
   },
-  "credits": 13,
+  "credits": 9,
   "income": [
    [
     "energy",
@@ -394,6 +394,14 @@
      ],
      [
       "credits",
+      1
+     ]
+    ]
+   },
+   {
+    "income": [
+     [
+      "credits",
       2
      ]
     ]
@@ -402,15 +410,7 @@
     "income": [
      [
       "credits",
-      3
-     ]
-    ]
-   },
-   {
-    "income": [
-     [
-      "credits",
-      3
+      2
      ]
     ],
     "cost": 1,
@@ -420,7 +420,7 @@
     "income": [
      [
       "credits",
-      3
+      2
      ]
     ],
     "cost": 2
@@ -429,7 +429,7 @@
     "income": [
      [
       "credits",
-      2
+      1
      ]
     ],
     "cost": 3,
@@ -624,7 +624,7 @@
     "cost": [
      [
       "credits",
-      6
+      4
      ],
      [
       "energy",
@@ -669,7 +669,7 @@
     "income": [
      [
       "credits",
-      2
+      1
      ]
     ],
     "cost": 2
@@ -718,7 +718,7 @@
     }
    ]
   },
-  "credits": 11,
+  "credits": 7,
   "income": [
    [
     "energy",
@@ -734,7 +734,7 @@
     "income": [
      [
       "credits",
-      3
+      2
      ]
     ]
    },
@@ -750,7 +750,7 @@
     "income": [
      [
       "credits",
-      3
+      2
      ]
     ],
     "cost": 1,
@@ -760,7 +760,7 @@
     "income": [
      [
       "credits",
-      3
+      2
      ]
     ],
     "cost": 2
@@ -769,7 +769,7 @@
     "income": [
      [
       "credits",
-      3
+      2
      ]
     ],
     "cost": 3,
@@ -871,7 +871,7 @@
     "cost": [
      [
       "credits",
-      3
+      2
      ]
     ],
     "text": "add 1 research cube in your color to an open megaproject",
@@ -1006,7 +1006,7 @@
     "income": [
      [
       "credits",
-      2
+      1
      ]
     ],
     "cost": 3,

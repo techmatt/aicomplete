@@ -223,7 +223,7 @@ fn finds(w: &World, g: &GameState, t: &super::value::Table, o: &Op, h: usize, cl
         Op::ClaimSite { near: true } => {
             if near(Area::Near).into_iter().any(|x| board::card_claimable_near(w, g, x)) { t.op("claim_site") } else { 0.0 }
         }
-        Op::RemoveBotnet => count(Area::Near, &troops) as f64 * 0.1,
+        Op::RemoveBotnet => count(Area::Near, &troops) as f64 * 0.1 / 1.5,
         _ => 0.0,
     }
 }

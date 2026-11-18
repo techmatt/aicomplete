@@ -25,7 +25,7 @@
         "vigil_cap": 2,
         "station_chips": 2,
         "station_ambassadors": 0,
-        "troop_credits": 10,
+        "troop_credits": 7,
         "troop_per_round": 1,
         "factory_build_chips": 0,
         "factory_chips": 1,
@@ -35,12 +35,12 @@
         "remove_count": 3,
         "land_cubes": 2,
         "envoy_ambassadors": 1,
-        "ambassador_credits": 20,
+        "ambassador_credits": 13,
         "sell_credits": 1,
         "corp_energy": [
           1
         ],
-        "city_energy_credits": 5,
+        "city_energy_credits": 3,
         "cube_insight": 1,
         "insight_cubes": 1,
         "insight_per_round": 1,
@@ -50,7 +50,7 @@
         "host_reach": 1,
         "antimatter_cubes": 5,
         "antimatter_energy": 2,
-        "botnet_credits": 20,
+        "botnet_credits": 13,
         "std_off": [
           0
         ]
@@ -170,9 +170,9 @@
           2
         ],
         "start_credits": [
-          40,
-          46,
-          40
+          27,
+          31,
+          27
         ],
         "start_energy": 3,
         "slots": [
@@ -193,7 +193,7 @@
         "keep_tier2": 3,
         "keep_tier2_upgraded": 2,
         "science_every": 2,
-        "industry_every": 2,
+        "industry_every": 3,
         "discount_floor": 1
       },
       "cards": [

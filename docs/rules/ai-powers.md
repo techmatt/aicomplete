@@ -21,14 +21,14 @@ exception is Disrupt's country.
 <!-- generated: powers -->
 | Board | Power | Cost | Effect |
 |---|---|---|---|
-| Builder | Mint | 3 credits | gain 1 chip |
+| Builder | Mint | 2 credits | gain 1 chip |
 | Builder | Expand | nothing | place 1 Node |
 | Builder | Buy In | 2 energy | place 1 Node; if the new node brings a factory into your reach, also gain 1 chip |
 | Builder | Annex | 1 chip | place 1 Node within 2 of yours |
 | Builder | Scrap | 1 Industry | gain 1 chip |
 | Builder | Overcharge | 1 Power | gain 2 energy |
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
-| Builder | Procure | 2 chips | draw 1 card; gain 5 credits |
+| Builder | Procure | 2 chips | draw 1 card; gain 3 credits |
 | Builder | Fortify | 1 chip | Target: Troops. Remove 1 Troop on it; harden a facility on or next to it |
 | Builder | Teardown | 1 chip | destroy one of your factories anywhere; Fallout goes on its hex; gain 1 antimatter |
 | Protector | Bulwark | 1 energy | Target: a player's uncorrupted facility. Harden it |
@@ -38,11 +38,11 @@ exception is Disrupt's country.
 | Protector | Debrief | 1 Security | Target: Agents. Draw 1 card and remove 1 Agent on it |
 | Protector | Patrol | 1 energy | Target: Agents or Troops. Push up to 3 from it, each to a hex next to it |
 | Protector | Interdict | 1 Security | Target: Troops. Remove up to 2 on it |
-| Protector | Reclaim | 1 Security + 6 credits + 2 energy | Target: a corrupted research station or factory. Turn it neutral; gain 1 antimatter |
+| Protector | Reclaim | 1 Security + 4 credits + 2 energy | Target: a corrupted research station or factory. Turn it neutral; gain 1 antimatter |
 | Researcher | Expand | nothing | place 1 Node |
 | Researcher | Peer Review | 2 insight | place 1 Node; if the new node brings a research station into your reach, also gain 1 insight |
 | Researcher | Field Survey | 3 insight | place 1 Node; draw 1 card |
-| Researcher | Grant | 3 credits | add 1 research cube in your color to an open megaproject |
+| Researcher | Grant | 2 credits | add 1 research cube in your color to an open megaproject |
 | Researcher | Field Station | 1 Industry | Target: an open hex. Build a research station on it, paying no chips |
 | Researcher | Audit | 1 Cyber | remove 3 compute from one adversary project |
 | Researcher | Disrupt | 1 Cyber + 1 research cube | remove up to 2 Troops in one country |
@@ -60,14 +60,14 @@ Interdict in Security (force, protection). The one exception is the Researcher's
 hacks troops anywhere in a country, no reach.
 
 **Energy powers things (Matt, 2026-11-15).** The two boards that earn the most energy place nodes with it: Buy In
-and Accord cost 2 energy each (no credits, no sacrifice), beside the track step every placement pays; Bulwark and Patrol cost 1. At the anchors a node (8) and its rider (a chip 6, an ambassador 8, at the
-72% a fresh spot comes up) are worth 12-14 for 9. The Researcher, short of energy, places with insight (Peer Review
-2, its rider 1 back: 8 for 8 + 2.9), never research cubes (Matt, 2026-11-16).
+and Accord cost 2 energy each (no credits, no sacrifice), beside the track step every placement pays; Bulwark and Patrol cost 1. At the anchors a node (5.33) and its rider (a chip 4, an ambassador 5.33, at the
+72% a fresh spot comes up) are worth 8-9.3 for 6. The Researcher, short of energy, places with insight (Peer Review
+2, its rider 1 back: 5.33 for 5.33 + 1.9), never research cubes (Matt, 2026-11-16).
 
-**Node routes' give / get (252, at the unit anchors; a node 8, besides the track step every placement pays):**
-Expand, nothing for a node (the base route, once a round, Matt's ruling); Annex 1 chip (6) for a node within 2 (8,
-a reach no other route has): 1.33; Outpost 3 energy (13.5) for a node and an ambassador (16): 1.19; Field Survey 3
-insight (12) for a node and a card (13): 1.08. Each is once a round; the step's rising energy caps all three.
+**Node routes' give / get (252, at the unit anchors; a node 5.33, besides the track step every placement pays):**
+Expand, nothing for a node (the base route, once a round, Matt's ruling); Annex 1 chip (4) for a node within 2 (5.33,
+a reach no other route has): 1.33; Outpost 3 energy (9) for a node and an ambassador (10.67): 1.19; Field Survey 3
+insight (8) for a node and a card (8.67): 1.08. Each is once a round; the step's rising energy caps all three.
 
 **Node powers' riders (candidate).** A node power places next to your nodes as any placement does, and its bonus comes
 only when the new node is **on or next to a fresh spot of its board's kind**, one none of your other nodes is on or
@@ -92,21 +92,21 @@ player expects; a card whose effects fit none of its tags is a soft design warni
 never refused. Draws, credits, triggers, threat counters, liberation and a tag's own payoffs fit any tag.
 
 **Card throughput:** draw is a precious resource (*Card draw*, [player-cards.md](player-cards.md)). The Builder's
-Procure turns 2 chips into a card and 5 credits (the credits → chips → cards loop reduced to 1 card a round: Mint's chip costs 3 credits, a card 2 chips); the
+Procure turns 2 chips into a card and 3 credits (the credits → chips → cards loop reduced to 1 card a round: Mint's chip costs 2 credits, a card 2 chips); the
 Researcher's Synthesis, its draw outlet, turns 1 insight into a card.
 
 **Troop powers (early troops decide games).** Each board removes or stops troops its own way, no two alike: the
 Protector's **Interdict** (a Security card: up to 2 troops on its target) beside its Patrol (pushes them away); the
 Builder's **Fortify** (1 chip: 1 troop on its target and a facility on or next to it hardened); the Researcher's
 **Disrupt** (a Cyber card and a research cube: up to 2 troops in one country, no reach needed). The standard action
-Remove a troop (`troop_credits` 10 credits, `troop_per_round` once a round) is the hedge.
+Remove a troop (`troop_credits` 7 credits, `troop_per_round` once a round) is the hedge.
 
 **Antimatter: each board a rare burn of its own engine.** The steady source is the tier-2 converter plants
 ([economy.md](economy.md)); each board's own power is a different decision, once a round, for 1 antimatter: the
 Builder's **Teardown** (1 chip: destroy one of your own factories, and a Fallout token goes on its hex), the
 Researcher's **Meltdown** (2 research cubes: destroy one of your own research stations), the Protector's **Reclaim**
-(a Security card, 6 credits and 2 energy: turn its target, a corrupted station or factory, neutral, its adversary cube
-off, well above Remove a troop's 10). Teardown and Meltdown reach anywhere. A burned piece is gone, no protection asked (you chose it), unless rebuilt the
+(a Security card, 4 credits and 2 energy: turn its target, a corrupted station or factory, neutral, its adversary cube
+off, well above Remove a troop's 7). Teardown and Meltdown reach anywhere. A burned piece is gone, no protection asked (you chose it), unless rebuilt the
 normal way; with no piece or target the power can't be used. No power spends antimatter: the spends are the majors,
 tier-2 cards and a few dear tier-1 ones.
 

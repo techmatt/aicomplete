@@ -51,7 +51,7 @@ fn a_bought_cube_goes_on_an_incomplete_project_and_pays_at_completion_only() {
     let w = rules.world();
     set_res(&mut g, 2, Resource::Credits, 10);
     act(&rules, &mut g, researcher_power(&rules, "Grant"));
-    assert_eq!(g.resource(2, Resource::Credits), 7);
+    assert_eq!(g.resource(2, Resource::Credits), 8);
     let on: i64 = (0..w.map.countries.len()).map(|c| g.var(&board::project_key(c, Some(2)))).sum();
     assert_eq!(on, 1);
     for c in 0..w.map.countries.len() {

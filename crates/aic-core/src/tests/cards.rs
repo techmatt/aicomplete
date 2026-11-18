@@ -595,7 +595,7 @@ fn a_building_s_own_play_fires_its_fight_trigger() {
     let free = g.clone();
     act(&rules, &mut g, Action::Play { seat: 1, card: "honeypot_relay".into() });
     assert!(g.stats.counters["effects.struck"] >= 1);
-    assert_eq!(g.resource(1, Resource::Credits), credits + 3);
+    assert_eq!(g.resource(1, Resource::Credits), credits + 2);
     // Played free (Rush Build), the same.
     let mut g = free;
     let w = rules.world();
@@ -606,7 +606,7 @@ fn a_building_s_own_play_fires_its_fight_trigger() {
     picks.push(crate::state::Pick { option: format!("2 agents on {name}"), target: Some(m.hexes[next].hex) });
     with_cx_picks(&rules, picks, |cx| cards::play_free_building(&mut g, cx, 1)).unwrap();
     assert!(g.stats.counters["effects.struck"] >= 1);
-    assert_eq!(g.resource(1, Resource::Credits), credits + 3);
+    assert_eq!(g.resource(1, Resource::Credits), credits + 2);
 }
 
 /// 237: a kept card left in hand with no feasible part is unofferable (Root Access: no corrupted city on a fresh

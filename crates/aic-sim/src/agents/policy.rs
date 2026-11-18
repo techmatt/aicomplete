@@ -154,7 +154,7 @@ macro_rules! forced_table {
             /// threat it would delay and node it would shield on the table as it
             /// stands (046: priced at its printed cost, a 2-credit Science card lost
             /// every keep to a tier-2).
-            (plan_niche: f64, false, 3.0, "credits the keep plan adds per marker a card would clear now, threat it would delay and nodes it would shield")
+            (plan_niche: f64, false, 2.0, "credits the keep plan adds per marker a card would clear now, threat it would delay and nodes it would shield")
             /// Keep every drafted card it can afford.
             (keep_all: bool, true, 0.0, "dominance check: keep every drafted card")
             /// Keep only its `keep_k` cheapest drafted cards (0: off).
@@ -646,7 +646,7 @@ impl Policy {
             let mut d = drafted;
             d.sort_by(|a, b| {
                 credit_cost(cards::def(&world, a))
-                    .cmp(&credit_cost(cards::def(&world, b)))
+                    .total_cmp(&credit_cost(cards::def(&world, b)))
                     .then_with(|| a.cmp(b))
             });
             d.truncate(self.forced.keep_k);
@@ -1147,7 +1147,7 @@ impl Policy {
                     .filter(|c| legal.iter().any(|a| matches!(a, Action::Sell { seat, card } if *seat as usize == s && card == *c)))
                     .cloned()
                     .collect();
-                dead.sort_by(|a, b| credit_cost(cards::def(&world, a)).cmp(&credit_cost(cards::def(&world, b))).then_with(|| a.cmp(b)));
+                dead.sort_by(|a, b| credit_cost(cards::def(&world, a)).total_cmp(&credit_cost(cards::def(&world, b))).then_with(|| a.cmp(b)));
                 // 1: the card opened is one the plan wouldn't otherwise play (this round in the last, else over its
                 // rounds); 3 (loose): one it wouldn't play this round.
                 let now = if loose { plan_now(&world, g, s, forced, &pc) } else { plays.clone() };

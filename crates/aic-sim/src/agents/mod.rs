@@ -80,29 +80,32 @@ use rand_chacha::ChaCha8Rng;
 
 pub use search::{Beam, Greedy};
 
-/// What a card's other costs count in credits: each antimatter this many...
-const ANTIMATTER_COST: i64 = 3;
+/// What a card's other costs count in credits (273: r127's 3 / 2 / 3, and 2 a cube, 1 an energy or
+/// chip, ÷ 1.5 with the credits): each antimatter this many...
+const ANTIMATTER_COST: f64 = 2.0;
 /// ...each insight this many...
-pub(crate) const INSIGHT_COST: i64 = 2;
-/// ...and each point of income lowered this many (energy and chips, 1).
-const LOWERED_COST: i64 = 3;
+pub(crate) const INSIGHT_COST: f64 = 4.0 / 3.0;
+/// ...and each point of income lowered this many...
+const LOWERED_COST: f64 = 2.0;
+/// ...each research cube this many, and each energy and chip this many.
+const CUBE_COST: f64 = 4.0 / 3.0;
+const UNIT_COST: f64 = 2.0 / 3.0;
 
 /// A card's cost in credits, with `credits` as its credit price (printed,
 /// or after a seat's discount).
-pub(crate) fn credit_equivalent(d: &CardDef, credits: i64) -> i64 {
-    credits
-        + ANTIMATTER_COST * d.antimatter
-        + 2 * d.research_cubes
-        + d.energy
-        + d.chips
-        + INSIGHT_COST * d.insight
-        + LOWERED_COST * d.lowers.iter().map(|(_, n)| n).sum::<i64>()
+pub(crate) fn credit_equivalent(d: &CardDef, credits: i64) -> f64 {
+    credits as f64
+        + ANTIMATTER_COST * d.antimatter as f64
+        + CUBE_COST * d.research_cubes as f64
+        + UNIT_COST * (d.energy + d.chips) as f64
+        + INSIGHT_COST * d.insight as f64
+        + LOWERED_COST * d.lowers.iter().map(|(_, n)| n).sum::<i64>() as f64
 }
 
 /// A card's printed price in credits, its other costs and lowered income at the
 /// fixed rates above: the plan's measure of what it does. Not the core's
 /// `cards::list_cost`, the printed credit price alone.
-pub(crate) fn credit_cost(d: &CardDef) -> i64 {
+pub(crate) fn credit_cost(d: &CardDef) -> f64 {
     credit_equivalent(d, d.cost)
 }
 
@@ -355,7 +358,7 @@ const SWEEP: &str = "deals=1,lead=0";
 /// sink 0.5 / 1 / 2 read -0.5 / -1.0 / -1.0 on the dev seeds at d3-d4; 0.5 fresh (49404-49451, paired against the
 /// judge without it, 720 games an arm): d3 +3.5 ± 3.2, d4 +3.5 ± 2.7, overall +0.3 ± 1.3 (d1 -4.2 ± 2.6). On at 0.5
 /// (`experiments/results/258_card_followups`); `strategist:w.sink=0` is r119's judge before it.
-const STRATEGIST: &str = "strategy=0,w.built=4,w.built_cost=0.5,w.clock=0,w.energy_cap=0,w.hand=1.5,w.hand_cost=0.1,\
+const STRATEGIST: &str = "strategy=0,w.built=4,w.built_cost=0.75,w.clock=0,w.energy_cap=0,w.hand=1.5,w.hand_cost=0.15,\
 w.horizon=0,w.insight_income=0,w.movement=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,\
 w.tag_hand=0,w.purge=3.6,w.last_node=120,w.card_action=3,w.sink=0.5";
 
@@ -811,7 +814,8 @@ mod tests {
         let zeroed = AgentSpec::parse(&format!("strategist:{}", sets.join(","))).unwrap();
         assert!(std::ptr::eq(zeroed.table(), t0));
         let (mut answered, mut moved, mut through_policy) = (0, 0, 0);
-        for seed in 0..8 {
+        // 273: 16 games (r128's prices left the first 8 with 11 moved prompts, none answered otherwise by the search).
+        for seed in 0..16 {
             let mut g = r.new_game(seed);
             let mut agent = spec.build(&r, seed);
             let mut legal = Vec::new();
@@ -838,7 +842,7 @@ mod tests {
                 break;
             }
         }
-        assert!(answered > 0, "no target prompt the rule answered in 8 games");
+        assert!(answered > 0, "no target prompt the rule answered in 16 games");
         assert!(moved > 0, "{answered} answers, none moved by the table");
         assert!(through_policy > 0, "{moved} prompts the table moves, none moved through the agent's policy");
     }

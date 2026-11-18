@@ -78,8 +78,8 @@ A card that prices out on the value table but reads absurd to a Terraforming Mar
     1.0-1.5 is fair, its price never cut toward the ceiling. A dearer card has a stronger or different effect, not
     the same one with a multiplied number. A printed number above what is usually within reach is a disguised
     "remove all", or the piece is too common: size every removal against the board state below.
-23. **Tier is efficiency, not magnitude.** Tier 1 is not "cheap": a tier-1 card at 40 credits for more than +4
-    income is fine. Tier 2 is about efficiency and relative potency. Don't cap numbers or income by tier.
+23. **Tier is efficiency, not magnitude.** Tier 1 is not "cheap": a tier-1 card at 27 credits for more than +3
+    income is fine (r127's 40 and +4). Tier 2 is about efficiency and relative potency. Don't cap numbers or income by tier.
 24. **Exchanges are one use.** A major exchange on a card is a fixed Action, "Action: spend X, gain Y" (once a
     round), never "convert X to Y freely at a ratio". The megacorp converters are the exception (a board rule, not a
     card); a one-shot program emptying one card's tokens (*Collateralized Grid*) is one use, so it stays.
@@ -88,26 +88,27 @@ A card that prices out on the value table but reads absurd to a Terraforming Mar
     with the team as one pool: two cooperating players can pass a gift back and forth.
 
 **Unit anchors** (Matt, candidates). Price every card against them; the anchor beats `values.json` for the printed
-price ([card-pricing.md](card-pricing.md), *The method*).
+price ([card-pricing.md](card-pricing.md), *The method*). Since r128 (273, Matt: smaller numbers) every credit
+number is r127's ÷ 1.5, so a third reads .33 or .67; the ratios are r127's.
 
 | Unit | Credits | | Unit | Credits |
 |---|---|---|---|---|
-| Remove 1 agent | 5 | | 1 chip | 6 |
-| Remove 1 troop | 5 | | +1 credit income | 4 at mid-game |
-| 1 energy | 4.5 | | +1 insight income | 12 at mid-game |
-| 1 insight | 4 | | Remove 1 compute from a project | 2 (stopping projects is hard) |
-| Draw 1 card | 5 | | 1 antimatter | 18 (a big investment that pays off) |
-| 1 ambassador | 8 | | | |
+| Remove 1 agent | 3.33 | | 1 chip | 4 |
+| Remove 1 troop | 3.33 | | +1 credit income | 4 at mid-game |
+| 1 energy | 3 | | +1 insight income | 8 at mid-game |
+| 1 insight | 2.67 | | Remove 1 compute from a project | 1.33 (stopping projects is hard) |
+| Draw 1 card | 3.33 | | 1 antimatter | 12 (a big investment that pays off) |
+| 1 ambassador | 5.33 | | | |
 
-Derived: the keep, 4 a tier-1 card and 12 a tier-2 one (1 and 3 insight); +1 energy income 14 (4 rounds × 4.5 ×
-0.8); +1 chip income about 19 (4 rounds × 6 × 0.8). A research cube is 6 (9 when the play completes the
-megaproject), so Make antimatter (5 cubes, 30) loses against its 1 antimatter and 2 energy (27; 262): every engine making it (a plant's Action:
-Positron Storage Ring, Cyclotron Lease and four more) shows a clear gain, and every spend is a big one. Other units take `values.json` (a sway 4, a
-node 8) or [card-pricing.md](card-pricing.md) (a city liberated 45); a botnet removed is 15 (252: the median card for the job; it was the action's 16). A
+Derived: the keep, 2.67 a tier-1 card and 8 a tier-2 one (1 and 3 insight); +1 energy income 9.6 (4 rounds × 3 ×
+0.8); +1 chip income about 13 (4 rounds × 4 × 0.8). A research cube is 4 (6 when the play completes the
+megaproject), so Make antimatter (5 cubes, 20) loses against its 1 antimatter and 2 energy (18; 262): every engine making it (a plant's Action:
+Positron Storage Ring, Cyclotron Lease and four more) shows a clear gain, and every spend is a big one. Other units take `values.json` (a sway 2.67, a
+node 5.33) or [card-pricing.md](card-pricing.md) (a city liberated 30); a botnet removed is 10 (252: the median card for the job). A
 card whose unit has no anchor sits inside 1.0-2.5× under both readings: a convert at its output's anchor and its
 input's, an engine's uses at the measured count and the conservative one.
 
-**The anchor check**, one line per card in its item's write-up: pay = credits + 4 × (keep + play insight) + other
+**The anchor check**, one line per card in its item's write-up: pay = credits + 2.67 × (keep + play insight) + other
 costs at the anchors; get = the effects at the anchors (an engine at a committed seat's rate: about 1 card of its
 tag and 3 tags a round, for 3-4 rounds); get ÷ pay stays under ruling 22's ceiling; under 1.0 the card is too dear.
 
@@ -115,7 +116,7 @@ tag and 3 tags a round, for 3-4 rounds); get ÷ pay stays under ruling 22's ceil
 a bonus, never a veto.
 
 **Tracked amounts matter** (Matt, 2026-11-05): anything a player tracks or pays moves the game. No threat counter,
-card cost or rider prints 1 credit: fold it into the price or raise it. A counter is 5+ credits or energy (1 or 2);
+card cost or rider prints 1 credit: fold it into the price or raise it. A counter is 3+ credits or energy (1 or 2);
 a per-tag rate of 1 is a rate, not an amount.
 
 **Board state to size removals against:** agents median 6 a country (p90 10) and 6 in a seat's reach (p90 12: a

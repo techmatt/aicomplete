@@ -674,7 +674,7 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          from the same insight as keeps. Buildings go into your AI board's {} slots; once they are \
          full, a new building goes on top of an old one, which stops working but keeps its tags. \
          Programs stay in front of you and are where lasting income comes from (\"raise your credit \
-         income by 1 per 2 Science tags on your cards\"); buildings are your engine: Actions you use once a \
+         income by 1 per 3 Science tags on your cards\"); buildings are your engine: Actions you use once a \
          round and Effects that pay each time their trigger happens; events are used once and set aside, never to return. Every card in front of you \
          shows tags (Science, Industry, Cyber, Power, Diplomacy, Security): they unlock some cards, \
          and you can sacrifice cards with the right tags to use your AI board's powers. There is no \

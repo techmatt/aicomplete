@@ -2,7 +2,7 @@
 //! only what the table shows: pieces on the board, tracks, resources, open
 //! hands and buildings, active threats and what is paid on them, deck
 //! sizes and the face-up adversary card. Units are roughly "credits": a
-//! credit in hand is worth `credits` (0.6) because credits buy cards and
+//! credit in hand is worth `credits` (0.9; 0.6 before 273's credits ÷ 1.5) because credits buy cards and
 //! standard actions that do more.
 //!
 //! The board (014): cities are clean, aligned (a player cube) or corrupted
@@ -474,7 +474,7 @@ pub fn check_names<'a>(names: impl IntoIterator<Item = &'a str>) -> Result<(), S
 /// `INSIGHT_COST`), for valuing the draft packet (023).
 fn keep_insight(world: &aic_core::module::World, tier: u8) -> f64 {
     let key = if tier == 2 { "cards.keep_tier2" } else { "cards.keep_tier1" };
-    (INSIGHT_COST * world.int(key)) as f64
+    INSIGHT_COST * world.int(key) as f64
 }
 
 /// 102 (D28): the share of hex `h`'s country's megaproject still to fill, 0 once
@@ -540,9 +540,13 @@ const STATIONS_USEFUL: i64 = 2;
 /// How far off a troop makes a Wall's facility worth more: two marches.
 const WALL_NEAR: u32 = 4;
 /// Flat mode: a point of track income is worth this many of the resource's
-/// own points for antimatter and insight (1 for the rest), times `income`.
+/// own points for antimatter and insight, credits (273: 1.5, credits ÷ 1.5 left a point of credit income
+/// worth what r127's was) and 1 for the rest, times `income`.
 const ANTIMATTER_INCOME_UNIT: f64 = 3.0;
 const INSIGHT_INCOME_UNIT: f64 = 1.5;
+const CREDIT_INCOME_UNIT: f64 = 1.5;
+/// 273: credits ÷ 1.5. A weight in points a credit is r127's × this; an amount in credits, r127's ÷ this.
+const CREDIT_SCALE: f64 = 1.5;
 
 impl Default for Weights {
     fn default() -> Self {
@@ -559,7 +563,8 @@ impl Default for Weights {
             on_factory: 6.0,
             troop: 12.0,
             discord_danger: 40.0,
-            tier_read: 1.0,
+            // 273: 1.0 -> 1.5 (it reads table credits as points; credits ÷ 1.5).
+            tier_read: 1.5,
             unity_target: 0.0,
             blocker: 2.0,
             // 013: a Unity tip replaces about 4 opposition points (24) and
@@ -579,7 +584,8 @@ impl Default for Weights {
             threat_waits: 0.5,
             threat_stranded: 1.25,
             threat_harm: 1.0,
-            threat_harm_ref: 15.0,
+            // 273: 15 -> 10 (credits ÷ 1.5).
+            threat_harm_ref: 10.0,
             tempo: 0.5,
             tempo_ref: 4.0,
             // 199: 4 -> 10 (r87: a claim is 2 ambassadors, 10 on the supply's 5; a factory's 1 chip a round at
@@ -622,9 +628,10 @@ impl Default for Weights {
             liberate_progress: 20.0,
             income: 3.0,
             track_capstone: 16.0,
-            credits: 0.6,
-            credit_cap: 12.0,
-            credit_idle: 0.15,
+            // 273: credits ÷ 1.5, so a credit's points × 1.5 (r127: 0.6, 12, 0.15).
+            credits: 0.9,
+            credit_cap: 8.0,
+            credit_idle: 0.225,
             program: 1.0,
             token: 0.5,
             energy: 0.8,
@@ -636,12 +643,13 @@ impl Default for Weights {
             patience: 1.0,
             wall: 3.0,
             hand: 3.0,
-            hand_cost: 0.4,
+            // 273: × 1.5 with credits ÷ 1.5 (r127 0.4; built_cost 0.5).
+            hand_cost: 0.6,
             drafted: 0.3,
             packet_keep: 1.0,
             packet_budget: 1.0,
             built: 4.0,
-            built_cost: 0.5,
+            built_cost: 0.75,
             threat: 6.0,
             horizon: 0.0,
             unity_rate_start: 2.0,
@@ -710,7 +718,8 @@ impl Weights {
         Weights {
             horizon: 1.0,
             hand: 1.0,
-            hand_cost: 0.2,
+            // 273: × 1.5 with credits ÷ 1.5 (r127 0.2; table 0.6).
+            hand_cost: 0.3,
             built: 1.0,
             built_cost: 0.0,
             // 011: see `clock`; chosen on 009's cheap-tier-2 patch, where
@@ -722,7 +731,7 @@ impl Weights {
             // compute now come from the board.
             production: 1.0,
             // 082: cards by the value table, a table credit at a credit's weight.
-            table: 0.6,
+            table: 0.9,
             // 082: half the draft's keep price: at the full price the strategist with
             // none (w.packet_keep=0) led it by +4.9 ±4.0 (30700) and +12.5 ±5.9
             // (31000), and 0.5 by +13.9 ±5.3 (31000).
@@ -1199,7 +1208,7 @@ impl Eval {
     }
 
     fn cost(d: &CardDef) -> f64 {
-        credit_cost(d).max(0) as f64
+        credit_cost(d).max(0.0)
     }
 
     /// A card in hand, before any chance of paying for it. The packet's
@@ -2074,6 +2083,7 @@ impl Eval {
                 let unit = match r {
                     Resource::Antimatter => ANTIMATTER_INCOME_UNIT,
                     Resource::Insight => INSIGHT_INCOME_UNIT,
+                    Resource::Credits => CREDIT_INCOME_UNIT,
                     _ => 1.0,
                 };
                 *v += w.income * unit * n as f64;
@@ -2136,6 +2146,7 @@ impl Eval {
                 let unit = match r {
                     Resource::Antimatter => ANTIMATTER_INCOME_UNIT,
                     Resource::Insight => INSIGHT_INCOME_UNIT,
+                    Resource::Credits => CREDIT_INCOME_UNIT,
                     _ => 1.0,
                 };
                 v += w.card_income * w.income * unit * n as f64;
@@ -2381,7 +2392,8 @@ impl Eval {
         if spare <= 0.0 {
             return keep;
         }
-        let need = keep_insight(world, tier).max(1.0);
+        // 273: r127's keep price in credits (2 an insight), so the share covered stays r127's.
+        let need = (keep_insight(world, tier) * CREDIT_SCALE).max(1.0);
         let covered = (spare / need).min(1.0);
         let unit = self.insight_unit(s).max(1e-9);
         keep * (1.0 - covered * (1.0 - (self.w.insight_idle / unit).min(1.0)))
@@ -2411,8 +2423,8 @@ impl Eval {
         } else {
             1.0
         };
-        // 021: chips sell 1:1 for credits (what a seat holds counts in `chips`).
-        let unit = [w.credits, w.credits, self.energy_income_unit(), w.antimatter, w.insight, w.research_cube];
+        // 021: chips sell 1:1 for credits (what a seat holds counts in `chips`); 273: a chip at r127's credit weight.
+        let unit = [w.credits, w.credits / CREDIT_SCALE, self.energy_income_unit(), w.antimatter, w.insight, w.research_cube];
         let mut v = 0.0;
         // 074: an owned station makes a cube a round for the rest of the game.
         if w.production != 0.0 {
@@ -2520,8 +2532,8 @@ impl Eval {
                 // 070: a standing counter or drain saves credits every round.
                 for p in &d.passives {
                     let saved = match p {
-                        Op::AutoCounter { amount, .. } => 0.5 * *amount as f64,
-                        Op::ProjectDrain { amount } => 2.0 * *amount as f64,
+                        Op::AutoCounter { amount, .. } => 0.5 / CREDIT_SCALE * *amount as f64,
+                        Op::ProjectDrain { amount } => 2.0 / CREDIT_SCALE * *amount as f64,
                         _ => 0.0,
                     };
                     v += w.horizon * left * w.credits * saved;

@@ -59,9 +59,9 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   Security, Diplomacy and Cyber; Science's and Power's tools stay general), and count for more than they cost toward
   threats carrying it (or Universal) that the player is near.
 - **Engines (candidate; the Terraforming Mars pattern).** Programs are the green cards: one-shot, and where permanent
-  income lives, flat ("raise your credit income by 8") or per tag ("by 1 per 2 Science tags on your cards", one such
+  income lives, flat ("raise your credit income by 5") or per tag ("by 1 per 3 Science tags on your cards", one such
   program per tag, needs 2 of it). Buildings are the blue cards: triggers, Actions and Effects; a building's income is
-  per tag, 3 a tag at its tag count when played (as a program's), or flat (the tier-2 engines, Fabrication Megaplex,
+  per tag, 2 a tag at its tag count when played (as a program's), or flat (the tier-2 engines, Fabrication Megaplex,
   Cryo Sample Vault). **Some engines pay up front:** a one-time gain when built (a drawn card, 2 energy on two Power
   ones, or its first tokens here: the At N cards, *Tokens* below, so its own play, or for Intrusion Lab its first
   removal of compute or a feeder, fills the first threshold); the engines that paid up front in draws (Capital Projects
@@ -80,7 +80,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   | Card | Engine | Kind | Extra |
   |---|---|---|---|
   | The Nuclear Option | antimatter | event | sway 2 toward Discord (collateral harm) |
-  | Power to the People | energy | building (over Power, needs 2) | income: 1 credit per Power tag on your cards |
+  | Power to the People | energy | building (over Power, needs 2) | income: 1 credit per 2 Power tags on your cards |
   | Citywide Microgrid | energy (4, a late sink) | building | Action: 3 Sway toward Unity |
   | Hostile Buyout | antimatter, Diplomacy | event | gain 3 ambassadors; any corrupted site, a station or factory becomes yours (254) |
   | Forensic Audit | research cubes | event | rescue the city |
@@ -88,7 +88,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   | Peacekeeping Mission | antimatter, Security (needs Security tags) | event | remove up to 3 adversary troops in the city's country |
   | Popular Uprising | Followers | tier-1 building | Action: add 1 Follower here, OR pay 4 Followers to liberate, again and again |
 
-  They cost 6-26 credits (the four antimatter ones 6-22 and 1 antimatter), well under the Liberate action
+  They cost 2-17 credits (the four antimatter ones 4-15 and 1 antimatter), well under the Liberate action
   ([card-pricing.md](../card-pricing.md), *The liberate capstones*). Great Liberation (Diplomacy: its target and 2 more in the target's country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the
   seat that can use it. Loops: each card is one-shot and tier 2, and every route needs nodes next to the city, so

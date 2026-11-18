@@ -111,7 +111,7 @@ def anchors():
             m = re.match(r'([\d.]+)', cells[i + 1]) if key else None
             if m:
                 a[key] = float(m.group(1))
-    a['research_cubes'] = 6  # past checks (card-guidelines.md): 3 at values.json
+    a['research_cubes'] = 4  # past checks (card-guidelines.md): 2 at values.json (273: r127's 6 and 3, ÷ 1.5)
     return a
 
 
@@ -308,9 +308,10 @@ def circular(row, sa, a, give, o):
 
 
 def card_pay(c, keep):
-    """A card's pay at the anchors (248's price table): credits + 4 x (keep + play insight) + printed costs."""
-    p = c.get('cost', 0) + 4 * (keep[str(c['tier'])] + c.get('insight', 0))
-    return p + 4.5 * c.get('energy', 0) + 6 * c.get('chips', 0) + 18 * c.get('antimatter', 0) + 6 * c.get('research_cubes', 0)
+    """A card's pay at the anchors (248's price table): credits + 2.67 x (keep + play insight) + printed costs
+    (273: r127's 4, 4.5, 6, 18 and 6, ÷ 1.5 with the credits)."""
+    p = c.get('cost', 0) + 8 / 3 * (keep[str(c['tier'])] + c.get('insight', 0))
+    return p + 3 * c.get('energy', 0) + 4 * c.get('chips', 0) + 12 * c.get('antimatter', 0) + 4 * c.get('research_cubes', 0)
 
 
 def check_jobs(cfg, base, a, o):

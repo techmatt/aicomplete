@@ -24,17 +24,18 @@ The standards every module and every rules change is judged against.
 > wherever it works, for every resource.
 
 **Current check (`configs/baseline.json`, `content/`):** the average cost of what is played should sit near credit
-income ÷ insight income (about 25-35 credits ÷ 5-7 insight ≈ 5); tier-1 cards have a median of 11 credits, tier 2 12.
+income ÷ insight income (about 17-23 credits ÷ 5-7 insight ≈ 3.5); tier-1 cards have a median of 5 credits, tier 2
+6 (r128, 273: every credit number ÷ 1.5).
 
-- **Credits are the outlier.** The Builder, Protector and Researcher start with 40 / 46 / 40 (`ai.start_credits`,
-  the scaffold below) and print 15 / 13 / 11 a round, plus 2-3 a node on the economy track and Unity
-  income (Grassroots Funding, New Deal +2 each): about 200-250 credits a seat over a 9-round game before cards, so
-  totals reach the hundreds. Card costs run 0–42 (Moonshot Grant 42, Multiyear Defense Budget 34): within "about
-  50", but the income is not "produce 1".
-- **Credit sinks, priced off it:** threat counters 12 / 17 credits by tier (the last option on every menu;
-  the same at every level, threats.md); a research cube about 3 credits (payouts are per card); a player ambassador
+- **Credits are the outlier.** The Builder, Protector and Researcher start with 27 / 31 / 27 (`ai.start_credits`,
+  the scaffold below) and print 10 / 9 / 7 a round, plus 1-2 a node on the economy track and Unity
+  income (Grassroots Funding +1, New Deal +1): about 130-170 credits a seat over a 9-round game before cards, so
+  totals reach the hundreds less often. Card costs run 0–25 (Moonshot Grant 25, Multiyear Defense Budget 23): within
+  "about 50", but the income is not "produce 1".
+- **Credit sinks, priced off it:** threat counters 8 / 11 credits by tier (the last option on every menu;
+  the same at every level, threats.md); a research cube about 2 credits (payouts are per card); a player ambassador
   `ambassador_credits` (it pays for removals; dear because it stays); a card sells for `sell_credits` 1, chips not
-  at all; Data Heist takes 10 credits (or 3 cards) from each player.
+  at all; Data Heist takes 7 credits (or 3 cards) from each player.
 - **Adversary compute:** project costs are 7–24 *a board*: 21–72 at 3 countries, 28–96 at 4, so a few a game pass
   50 (as Matt asked). A botnet makes 1.
 - Within the principle: energy (cities make 1, a node costs its track space's energy, 1-5 after the free spaces), chips (a factory makes `factory_chips` 1), insight,
@@ -88,12 +89,12 @@ with weaker credit engines, dearer cards or keeps, or lower starting credits; ne
 **The starting-economy scaffold (Matt, 2026-11-03).** Until engines carry the economy, every board starts and earns
 much more, the economy track the growing income; it comes down as engines take over, adding no track. Credits stay
 meaningful through the adversary (its agents rally onto sites each round) and the plain route's price (Gain a
-player ambassador at `ambassador_credits` 20): bought ambassadors are a big investment; cards, buildings and powers the better
+player ambassador at `ambassador_credits` 13): bought ambassadors are a big investment; cards, buildings and powers the better
 route.
 
 **Unspent resources:** held as a seat's last action phase ends (the production and upkeep paid after can't be
 spent), per seat, resource and agent ([experiments.md](experiments.md)); not insight, which a round loses anyway.
-**A resource ends high** when a seat's mean passes about a round's income of it: credits 12, chips 4, energy 4,
+**A resource ends high** when a seat's mean passes about a round's income of it: credits 8, chips 4, energy 4,
 antimatter 2, ambassadors 3 (`UNSPENT_HIGH`, `crates/aic-sim/src/experiment.rs`). Games end at different rounds:
 read the flag on the planner (its games run longest toward a win) before a fixed policy's.
 

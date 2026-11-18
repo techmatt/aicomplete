@@ -95,12 +95,12 @@
   "name": "New Deal",
   "side": "unity",
   "tiers": [
-   {"text": "Every player gains 2 credits and 1 Ambassador for each research station or factory a player owns, or city a player hosts (at most 2).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 1}]}]},
-   {"text": "Every player gains 2 credits and 2 Ambassadors for each research station or factory a player owns, or city a player hosts (at most 3).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 2}]}]},
-   {"text": "Every player gains 2 credits and 3 Ambassadors for each research station or factory a player owns, or city a player hosts (at most 4).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 3}]}]}
+   {"text": "Every player gains 1 credit and 1 Ambassador for each research station or factory a player owns, or city a player hosts (at most 2).",
+    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "gain", "resource": "credits", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 1}]}]},
+   {"text": "Every player gains 1 credit and 2 Ambassadors for each research station or factory a player owns, or city a player hosts (at most 3).",
+    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "gain", "resource": "credits", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 2}]}]},
+   {"text": "Every player gains 1 credit and 3 Ambassadors for each research station or factory a player owns, or city a player hosts (at most 4).",
+    "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "gain", "resource": "credits", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 3}]}]}
   ]
  },
  {
@@ -234,12 +234,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Every player gains 2 credits and 1 Ambassador for each corrupted city (at most 2).",
-    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 2, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 1}]}]},
-   {"text": "Every player gains 2 credits and 2 Ambassadors for each corrupted city (at most 3).",
-    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 3, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 2}]}]},
-   {"text": "Every player gains 2 credits and 3 Ambassadors for each corrupted city (at most 4).",
-    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 4, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 3}]}]}
+   {"text": "Every player gains 1 credit and 1 Ambassador for each corrupted city (at most 2).",
+    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 2, "then": [{"op": "gain", "resource": "credits", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 1}]}]},
+   {"text": "Every player gains 1 credit and 2 Ambassadors for each corrupted city (at most 3).",
+    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 3, "then": [{"op": "gain", "resource": "credits", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 2}]}]},
+   {"text": "Every player gains 1 credit and 3 Ambassadors for each corrupted city (at most 4).",
+    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 4, "then": [{"op": "gain", "resource": "credits", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 3}]}]}
   ]
  },
  {
@@ -343,12 +343,12 @@
   "name": "Propaganda",
   "side": "discord",
   "tiers": [
-   {"text": "Every player loses 2 credits for each corrupted city (at most 2).",
-    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 2, "then": [{"op": "players_lose", "resource": "credits", "amount": 2}]}]},
-   {"text": "Every player loses 2 credits for each corrupted city (at most 3).",
-    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 3, "then": [{"op": "players_lose", "resource": "credits", "amount": 2}]}]},
-   {"text": "Every player loses 2 credits for each corrupted city (at most 4).",
-    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 4, "then": [{"op": "players_lose", "resource": "credits", "amount": 2}]}]}
+   {"text": "Every player loses 1 credit for each corrupted city (at most 2).",
+    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 2, "then": [{"op": "players_lose", "resource": "credits", "amount": 1}]}]},
+   {"text": "Every player loses 1 credit for each corrupted city (at most 3).",
+    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 3, "then": [{"op": "players_lose", "resource": "credits", "amount": 1}]}]},
+   {"text": "Every player loses 1 credit for each corrupted city (at most 4).",
+    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 4, "then": [{"op": "players_lose", "resource": "credits", "amount": 1}]}]}
   ]
  },
  {

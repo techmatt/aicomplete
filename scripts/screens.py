@@ -295,7 +295,7 @@ def gap(pairs):
 
 # 068: in the order of `board::LEFT`, which `UNSPENT` in crates/aic-sim/src/experiment.rs takes,
 # each with `UNSPENT_HIGH` there.
-UNSPENT = (('credits', 12), ('chips', 4), ('energy', 4), ('antimatter', 2), ('ambassadors', 3))
+UNSPENT = (('credits', 8), ('chips', 4), ('energy', 4), ('antimatter', 2), ('ambassadors', 3))
 
 # The order of games.jsonl's `peaks`, `gained`, `spent`, `start`, `sources` and `uses` rows: `PEAKS` in
 # crates/aic-sim/src/experiment.rs, which this must match.

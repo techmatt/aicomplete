@@ -84,7 +84,7 @@ fn a_removal_says_which_pieces() {
     assert_eq!(monitors.target.expect("a target box").text, "Target: Agents or Troops");
     assert_eq!(
         face_of("bounty_board").text,
-        "Remove 1 Troop on it. Gain 1 credit per Security tag on your cards (including this)."
+        "Remove 1 Troop on it. Gain 1 credit per 2 Security tags on your cards (including this)."
     );
     // 076 (ruling 6): a printed number, never "per hex"; 234: on the target, or on or next to it.
     assert_eq!(face_of("eviction_worm").text, "Remove 3 Agents on it. Remove 4 compute from an adversary project.");

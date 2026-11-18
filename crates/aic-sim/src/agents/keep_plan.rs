@@ -324,7 +324,8 @@ fn value(
 ) -> f64 {
     let jobs = f.plan_niche * niche_jobs(w, g, s, d) as f64;
     if !pc.table {
-        return 1.0 + credit_cost(d) as f64 + jobs + f.plan_niche * capstone_jobs(d) as f64;
+        // 273: r127's 1 credit, ÷ 1.5 with the credits.
+        return 2.0 / 3.0 + credit_cost(d) + jobs + f.plan_niche * capstone_jobs(d) as f64;
     }
     let t = pc.t;
     let ctx = Ctx {
@@ -416,14 +417,15 @@ fn spend(w: &World, g: &GameState, s: usize, d: &CardDef, pc: &PlanCtx, pt: &Pla
     if pc.table {
         pc.t.cost(d, cards::play_cost(w, g, s, d), cards::play_insight(w, g, s, d), pt.left)
     } else {
-        credit_equivalent(d, cards::play_cost(w, g, s, d)) as f64
+        credit_equivalent(d, cards::play_cost(w, g, s, d))
     }
 }
 
 #[allow(clippy::too_many_arguments)]
 fn ratio(w: &World, g: &GameState, s: usize, id: &str, f: &Forced, pc: &PlanCtx, pt: &PlanTable, tags: &[i64; TAGS.len()]) -> f64 {
     let d = cards::def(w, id);
-    value(w, g, s, d, f, pc, pt, 0, tags, &[]) / (1.0 + spend(w, g, s, d, pc, pt))
+    // 273: the floor is r127's 1 credit, ÷ 1.5 with the credits.
+    value(w, g, s, d, f, pc, pt, 0, tags, &[]) / (2.0 / 3.0 + spend(w, g, s, d, pc, pt))
 }
 
 /// `ids`, best value per cost first.

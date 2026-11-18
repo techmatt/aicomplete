@@ -36,7 +36,7 @@ RES = VALUES['resources']
 DRAW = VALUES['rates']['drawn_card']
 SWAY = VALUES['rates']['sway']
 FEED = {k[len('feed_'):]: v for k, v in VALUES['tokens'].items() if k.startswith('feed_')}
-TROOP = 11  # one troop removed, at a committed seat (not values.json's 0.65 share for being there)
+TROOP = VALUES['ops']['remove_troop']['credits']  # one troop removed, at a committed seat (not values.json's 0.65 share for being there)
 RATES = {'play': 1.0, 'play_tag': 3.0, 'play_cost': 1.5, 'team_play': 0.5, 'remove_troop': 1.0,
          'remove_compute': 0.6, 'remove_ambassadors': 0.8, 'place_tokens': 2.0}
 TAGS_HELD = 4  # a committed seat's tags of its own kind when the building is out

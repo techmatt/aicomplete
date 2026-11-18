@@ -83,7 +83,7 @@ Each adversary troop in turn (country by country, hex order), 1 step:
 - **Protecting** your node or facility on its hex (§13): one, instead of the piece.
 - **Threats** that print ambassadors as a cost: from your supply.
 - **Blocking** spends none: an ambassador on a corrupted site stops its output while it stands. A **Dispatch** moves one; a troop never touches one.
-- **Gain one:** 20 credits, Outpost, cards.
+- **Gain one:** 13 credits, Outpost, cards.
 
 ## City growth (§9, steps 7-8)
 

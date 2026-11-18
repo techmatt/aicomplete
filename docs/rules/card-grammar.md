@@ -25,7 +25,7 @@ has an exception: every symbol means what it always means ([card-guidelines.md](
 **Shapes** (tiles, discs, silhouettes, rings, the less, clock, wall, pin, shield and roof marks) are in the legend,
 [card-guidelines.md](../card-guidelines.md), *Legend*; the near mark is on or next to the target. The text says what
 the icons say, in order, opening with the box's word, but for a triggered Effect: its "When you ..." marks it, so it
-prints no "Effect:" (Matt, 264); a standing Effect keeps the label ("Effect: your Science cards cost 5 credits less").
+prints no "Effect:" (Matt, 264); a standing Effect keeps the label ("Effect: your Science cards cost 3 credits less").
 
 How each primitive resolves, beyond the card text (the card set: [player-cards.md](player-cards.md); every card:
 [cards.md](../cards.md)):
@@ -105,7 +105,7 @@ action that sets it off (a card play, a building's Action, an AI power, a standa
 no limit a round, and resolves after what caused it. A building counts itself: playing a Science
 building with a Science trigger fires it.
 
-- **Play triggers (`when`, `play`):** "When you play a Science card, gain 7 credits" (Citation Engine); with no tag, any
+- **Play triggers (`when`, `play`):** "When you play a Science card, gain 5 credits" (Citation Engine); with no tag, any
   card, printed by no card: **a per-play payout names a tag** (draw is precious; any-card payouts made a cheap card
   pay twice). **Per tag** (`play_tag`): "when you play a card, gain 1 insight per Science tag on it" (Interdisciplinary
   Institute), once for each tag of one kind on the played card, the ringed tag after `/` on the right of the `:`; the
@@ -119,7 +119,7 @@ building with a Science trigger fires it.
 - **Fight triggers:** "when you remove a Troop", "when you remove compute" (only the adversary has any) and "when you remove Agents"
   fire once for the card, Action, power, converter or standard action that removed any, however many, canceling an
   arrival included.
-- **Discounts (`card_discount`):** "your Cyber cards cost 5 credits less to play" (Darknet Exchange), or insight (no
+- **Discounts (`card_discount`):** "your Cyber cards cost 3 credits less to play" (Darknet Exchange), or insight (no
   deck card prints it). A card with the tag twice is discounted once. The floor holds ([player-cards.md](player-cards.md),
   *Tag discounts*).
 - **Threshold counter (`threshold`):** a trigger adds a token here; **At N** (a house term): whenever the tokens
@@ -127,8 +127,8 @@ building with a Science trigger fires it.
 - **When built:** an engine building's one-time gain prints below the art and resolves when it is built, before its
   own play fires its trigger (Telemetry Archive: its 2 Datasets, then the 2 its Science play adds, so At 4 pays at
   once).
-- **Per-tag income:** a program's "raise your credit income by 1 per 2 Science tags on your cards (including
-  this)" (`production_per_tag`, Research Royalties) counts once, when it resolves; later tags don't raise it. A building's "each round, 3 credits per Science tag on your cards (including this)" (`income_per_tag` with an
+- **Per-tag income:** a program's "raise your credit income by 1 per 3 Science tags on your cards (including
+  this)" (`production_per_tag`, Research Royalties) counts once, when it resolves; later tags don't raise it. A building's "each round, 2 credits per Science tag on your cards (including this)" (`income_per_tag` with an
   `amount`, Foundation Model Campus) pays every round while it is active, at the tag count frozen when it was played.
 - **For new players:** a building with a colon pays you every time the thing on its left happens: you play a card of
   that tag, a teammate does, you remove a troop. The less mark after the colon makes those cards cheaper. A ringed

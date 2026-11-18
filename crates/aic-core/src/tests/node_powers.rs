@@ -231,10 +231,10 @@ fn placing_node_takes_the_next_track_token_and_uncovers_its_income() {
         act(rules, g, power(rules, 0, "Expand"));
     };
     place(&rules, &mut g);
-    // The 2nd space (the Builder's): +3 credits a round (078).
+    // The 2nd space (the Builder's): +2 credits a round (078; 273: 3 ÷ 1.5).
     assert_eq!(
         (board::track_taken(&g, 0), credit_income(&g), ai::keep2(&w, &g, 0)),
-        (2, 3, false)
+        (2, 2, false)
     );
     place(&rules, &mut g);
     // The keep upgrade is the card-play track's second space (068).

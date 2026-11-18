@@ -11,8 +11,8 @@ upkeep). The board module owns nodes and counts the tokens taken (`board.track.<
 **The boards, for new players.** Each starts with 2 tier-1 and 2 tier-2 cards, as every seat does (the tier-2s point a
 build direction), Dispatches 1 ambassador free each round (the Researcher 2; more from the fourth economy space), and
 counts its printed tag like one on its cards; its powers are in [ai-powers.md](ai-powers.md). The **Builder**'s special
-rule is Breadth: five building slots, a wider engine. It starts with 40 credits and earns 15 a round, each credit space
-of its economy track 2 or 3 more, so placing a node is how its income grows; the energy of the cities it hosts (254: a
+rule is Breadth: five building slots, a wider engine. It starts with 27 credits and earns 10 a round, each credit space
+of its economy track 1 or 2 more, so placing a node is how its income grows; the energy of the cities it hosts (254: a
 neutral city with its node on or next to it) and the cities it buys from, its node routes (Expand, Buy In, Annex) spend. Its powers turn credits into chips and chips into cards or
 a troop removed, and late in the game finished cards into chips (Industry), energy (Power) or, with an energy, a
 building played free.
@@ -20,12 +20,12 @@ building played free.
 The **Protector**'s special rule is Wall: no adversary troop is ever placed on a hex with its node, nor enters it or
 strikes into it, so no troop strikes its node or a facility under it (war, threats and corruption still can). The first two troops each round that end their march next to its node pay it 1 insight
 each (Vigil). It places nodes (Accord, Outpost) and hardens facilities (Bulwark) with energy, and its board prints 2 energy a
-round. It earns 13 credits
-a round, so starts with 46. Each credit space of its economy track adds 2 or 3 credits, the
+round. It earns 9 credits
+a round, so starts with 31. Each credit space of its economy track adds 1 or 2 credits, the
 first one 1 energy too. Late in the game, a sacrificed Security card removes troops or an agent.
 
 The **Researcher**'s special rule is Patience: insight it doesn't spend stays into the next round (all of it, even
-insight another player gave it), to save up for a big round. It starts with 40 credits and earns 11 a round, 3
+insight another player gave it), to save up for a big round. It starts with 27 credits and earns 7 a round, 2
 more for each credit space of its economy track, and plays off the board, on insight and research cubes: its
 powers turn insight into a card (Synthesis, its draw), credits into megaproject cubes, and Cyber cards into troops
 removed or compute stripped. Its node routes run on insight, never research cubes (Matt, 2026-11-16): Peer Review
@@ -53,16 +53,16 @@ play: what a seat pushes for, reached about round 8 at 1-2 placements a round.
 <!-- generated: boards -->
 | Board | Printed income | Starting credits | Slots | Printed tags | Dispatches | Economy track | Card-play track | Tokens in all |
 |---|---|---|---|---|---|---|---|---|
-| Builder | 15 credits, 1 energy | 40 | 5 | Industry | 1 (up to 2) | 7 | 7 | 14 |
-| Protector | 13 credits, 2 energy | 46 | 4 | Security | 1 (up to 2) | 7 | 7 | 14 |
-| Researcher | 11 credits, 1 energy | 40 | 4 | Science | 2 (up to 4) | 7 | 7 | 14 |
+| Builder | 10 credits, 1 energy | 27 | 5 | Industry | 1 (up to 2) | 7 | 7 | 14 |
+| Protector | 9 credits, 2 energy | 31 | 4 | Security | 1 (up to 2) | 7 | 7 | 14 |
+| Researcher | 7 credits, 1 energy | 27 | 4 | Science | 2 (up to 4) | 7 | 7 | 14 |
 <!-- /generated -->
 
 **The starting-economy scaffold (candidate).** Until engines carry the economy, the boards start and earn much more,
 and the economy track grows a seat's income; it comes down as engines take over (3 energy to start,
-`ai.start_energy`). **Why:** a board at 40 with 4 cards in hand and round 1's keeps has 3-4 plays at a tier-1 median
-of 10 credits; credits never buy a keep, so insight limits round 1's keeps and credits its plays. A credit space pays
-2-3 a round for its step (0-3): the early ones pay back in a round or two, the cost-3 one in about three, so the last
+`ai.start_energy`). **Why:** a board at 27 with 4 cards in hand and round 1's keeps has 3-4 plays at a tier-1 median
+of 5 credits; credits never buy a keep, so insight limits round 1's keeps and credits its plays. A credit space pays
+1-2 a round for its step (0-3): the early ones pay back in a round or two, the cost-3 one in about three, so the last
 are a late-game choice.
 
 **One payment path (locked).** Every space prints a **cost** in energy, the last ones more. Every placement pays it,
@@ -86,11 +86,11 @@ energy income; each is limited a round; and the top routes spend what the board'
 | Space | Builder | Protector | Researcher |
 |---|---|---|---|
 | 1 (on the board at setup) | toward the capstone | toward the capstone | toward the capstone |
-| 2 | +3 credits | +1 energy, +2 credits | +3 credits |
-| 3 | +2 credits | +3 credits | builds a free research station in reach |
-| 4 | pay 1 energy: +3 credits, **Dispatch +1** | pay 1 energy: +3 credits, **Dispatch +1** | pay 1 energy: +3 credits, **Dispatch +1** |
-| 5 | pay 2 energy: +3 credits | pay 2 energy: +3 credits | pay 2 energy: +3 credits |
-| 6 | pay 3 energy: +3 credits, Power tag | pay 3 energy: +2 credits, Cyber tag | pay 3 energy: +3 credits, Power tag |
+| 2 | +2 credits | +1 energy, +1 credit | +2 credits |
+| 3 | +1 credit | +2 credits | builds a free research station in reach |
+| 4 | pay 1 energy: +2 credits, **Dispatch +1** | pay 1 energy: +2 credits, **Dispatch +1** | pay 1 energy: +2 credits, **Dispatch +1** |
+| 5 | pay 2 energy: +2 credits | pay 2 energy: +2 credits | pay 2 energy: +2 credits |
+| 6 | pay 3 energy: +2 credits, Power tag | pay 3 energy: +1 credit, Cyber tag | pay 3 energy: +2 credits, Power tag |
 | 7 | pay 5 energy: **Full Capacity** (capstone): 1 chip each round per 4 Industry tags on your cards. | pay 5 energy: 2 antimatter once, as it is uncovered, **Sanctuary** (capstone): Neither corruption nor Agents destroy your Nodes. | pay 5 energy: 2 antimatter once, as it is uncovered, **Open Archive** (capstone): Each round, 1 research cube onto your board. |
 <!-- /generated -->
 
@@ -110,14 +110,14 @@ tier-2 keep (3 insight) fits from round 2.
 | 1 | **insight 7** | **insight 7** | **insight 7** |
 | 2 | **keep upgrade** | **keep upgrade** | **Dispatch +1** |
 | 3 | pay 1 energy: **insight 8** | pay 1 energy: **insight 8** | pay 1 energy: **keep upgrade** |
-| 4 | pay 2 energy: +2 credits | pay 2 energy: +2 credits | pay 2 energy: **insight 8** |
+| 4 | pay 2 energy: +1 credit | pay 2 energy: +1 credit | pay 2 energy: **insight 8** |
 | 5 | pay 2 energy: toward the capstone | pay 2 energy: toward the capstone | pay 2 energy: toward the capstone |
-| 6 | pay 3 energy: **insight 9**, Cyber tag | pay 3 energy: Diplomacy tag | pay 3 energy: +2 credits, Industry tag |
-| 7 | pay 5 energy: **insight 10**, **Master Plan** (capstone): Your buildings cost 2 credits less. | pay 5 energy: **insight 9**, **Aegis Doctrine** (capstone): Once a round, the first time one of your Nodes or facilities would be destroyed, it is sheltered. | pay 5 energy: **insight 9**, **Open Science** (capstone): Each round, 2 insight from the supply, split among other players. |
+| 6 | pay 3 energy: **insight 9**, Cyber tag | pay 3 energy: Diplomacy tag | pay 3 energy: +1 credit, Industry tag |
+| 7 | pay 5 energy: **insight 10**, **Master Plan** (capstone): Your buildings cost 1 credit less. | pay 5 energy: **insight 9**, **Aegis Doctrine** (capstone): Once a round, the first time one of your Nodes or facilities would be destroyed, it is sheltered. | pay 5 energy: **insight 9**, **Open Science** (capstone): Each round, 2 insight from the supply, split among other players. |
 <!-- /generated -->
 
 **Loops and caps.** No limits ([economy.md](economy.md), *No limits*): a runaway is fixed at the cards that feed it.
-Program credit income stacked by draw chains is bounded by insight (as there) and the per-tag programs' 1 a 2 tags.
+Program credit income stacked by draw chains is bounded by insight (as there) and the per-tag programs' 1 a 3 tags.
 Credits → chips → buildings → income → credits runs once a round and in the slots at most; chips can't be sold back. Rush Build (once a round) spends an energy and a card for good, so energy and the hand cap
 it. **The energy gift** (Shared Grid Accord, Interconnector Treaty) is one-shot. Credits → energy (Buy
 energy, [economy.md](economy.md)) → a card's income is capped by the cards and the cities' energy (once per city a

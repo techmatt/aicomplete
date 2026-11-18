@@ -50,7 +50,7 @@ fn movement_is_printed_plus_uncovered_spaces() {
 fn a_capstone_counts_once_uncovered() {
     let (rules, mut g) = lab_actions();
     let w = rules.world();
-    let discount = |g: &GameState| cards::passives(&w, g, 0).iter().any(|p| matches!(p, Op::BuildingDiscount { amount: 2 }));
+    let discount = |g: &GameState| cards::passives(&w, g, 0).iter().any(|p| matches!(p, Op::BuildingDiscount { amount: 1 }));
     assert!(!discount(&g));
     set_var(&mut g, board::track2_key(0), 7);
     assert!(discount(&g));

@@ -212,7 +212,7 @@
    "project": {
     "name": "Tidal Grid",
     "cubes": 8,
-    "text": "At completion each player cube pays 3 energy and 3 credits, each adversary cube 1 Sway to Discord. Afterward, once a round, with a city here in your reach: 3 research cubes for 5 energy; and, once a round, 2 chips for 3 energy. Afterward an adversary station here puts its cubes onto the adversary's research track.",
+    "text": "At completion each player cube pays 3 energy and 2 credits, each adversary cube 1 Sway to Discord. Afterward, once a round, with a city here in your reach: 3 research cubes for 5 energy; and, once a round, 2 chips for 3 energy. Afterward an adversary station here puts its cubes onto the adversary's research track.",
     "player": [
      {
       "op": "gain",
@@ -222,7 +222,7 @@
      {
       "op": "gain",
       "resource": "credits",
-      "amount": 3
+      "amount": 2
      }
     ],
     "adversary": [
@@ -304,12 +304,12 @@
    "project": {
     "name": "Polar Compute Array",
     "cubes": 8,
-    "text": "At completion each player cube pays 9 credits, each adversary cube 1 adversary compute. Afterward, once a round, with a city here in your reach: 1 research cube for 2 insight; and, once a round, 1 chip for 1 drawn card and 2 credits. Afterward an adversary station here puts its cubes onto the adversary's research track.",
+    "text": "At completion each player cube pays 6 credits, each adversary cube 1 adversary compute. Afterward, once a round, with a city here in your reach: 1 research cube for 2 insight; and, once a round, 1 chip for 1 drawn card and 1 credit. Afterward an adversary station here puts its cubes onto the adversary's research track.",
     "player": [
      {
       "op": "gain",
       "resource": "credits",
-      "amount": 9
+      "amount": 6
      }
     ],
     "adversary": [
@@ -349,7 +349,7 @@
       {
        "op": "gain",
        "resource": "credits",
-       "amount": 2
+       "amount": 1
       }
      ],
      "once": true
@@ -397,7 +397,7 @@
    "project": {
     "name": "Mountain Fusion Works",
     "cubes": 8,
-    "text": "At completion each player cube pays 2 chips and 3 credits, each adversary cube 1 Sway to Discord. Afterward, once a round, with a city here in your reach: 1 research cube for 1 chip. Afterward an adversary station here puts its cubes onto the adversary's research track.",
+    "text": "At completion each player cube pays 2 chips and 2 credits, each adversary cube 1 Sway to Discord. Afterward, once a round, with a city here in your reach: 1 research cube for 1 chip. Afterward an adversary station here puts its cubes onto the adversary's research track.",
     "player": [
      {
       "op": "gain",
@@ -407,7 +407,7 @@
      {
       "op": "gain",
       "resource": "credits",
-      "amount": 3
+      "amount": 2
      }
     ],
     "adversary": [
@@ -477,7 +477,7 @@
    "project": {
     "name": "Delta Seawall",
     "cubes": 8,
-    "text": "At completion each player cube pays 1 Sway to Unity and 4 credits, each adversary cube 1 Sway to Discord. Afterward, once a round, with a city here in your reach: 1 research cube for 1 Sway to Unity; and, once a round, 2 chips for 2 Sway to Unity and 1 drawn card. Afterward an adversary station here puts its cubes onto the adversary's research track.",
+    "text": "At completion each player cube pays 1 Sway to Unity and 3 credits, each adversary cube 1 Sway to Discord. Afterward, once a round, with a city here in your reach: 1 research cube for 1 Sway to Unity; and, once a round, 2 chips for 2 Sway to Unity and 1 drawn card. Afterward an adversary station here puts its cubes onto the adversary's research track.",
     "player": [
      {
       "op": "sway",
@@ -488,7 +488,7 @@
      {
       "op": "gain",
       "resource": "credits",
-      "amount": 4
+      "amount": 3
      }
     ],
     "adversary": [

@@ -119,7 +119,7 @@ fn buy_energy_takes_a_neutral_producing_citys_energy_once_a_round() {
     let w = rules.world();
     let (city, n) = city_with_lonely_neighbors(&rules.map);
     let price = w.int("board.city_energy_credits");
-    assert_eq!(price, 5);
+    assert_eq!(price, 3);
     let made = city_energy(&rules, city);
     assert!(made > 0);
     let buy = std_act(0, "buy_energy");

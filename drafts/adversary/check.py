@@ -3,7 +3,7 @@
     python drafts/adversary/check.py            # checks, then the pull simulation
     python drafts/adversary/check.py --content  # the same checks on what content/ loaded (135's loader)
 
-Checks: ids unique, deck sizes and tags, the tier rules, counters (no credits under 5), Matt's threat card standard
+Checks: ids unique, deck sizes and tags, the tier rules, counters (no credits under 3), Matt's threat card standard
 (146: two consequences at most, two counter options at most, no shared currency, no each-player harm, no special
 pieces, no tier 3), harms named from the ledger's list, the harms ledger's rule (every harm from 2+ kinds of source, each threat tier 5+ kinds), ops the engine lacks.
 The pull simulation plays the draw rule over random Militarist decks at 1-4 countries and every difficulty's stage
@@ -251,8 +251,8 @@ def check_threats(t, ops, new_ops):
                     if "resource" in item:
                         if item["resource"] not in RESOURCES:
                             errors.append(f"{cid}: counter resource {item['resource']}")
-                        if item["resource"] == "credits" and item["amount"] < 5:
-                            errors.append(f"{cid}: a credits counter under 5")
+                        if item["resource"] == "credits" and item["amount"] < 3:
+                            errors.append(f"{cid}: a credits counter under 3")
                     elif "sacrifice" in item:
                         if item["sacrifice"] not in SACRIFICE:
                             errors.append(f"{cid}: sacrifice {item['sacrifice']}")

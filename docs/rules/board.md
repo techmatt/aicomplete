@@ -71,10 +71,10 @@ megaproject is the corp's defining card.
 <!-- generated: corps -->
 | Corp | Megaproject | Cubes | At completion: player cube / adversary cube | Converter (as often as you can pay, unless marked) | Chip converter |
 |---|---|---|---|---|---|
-| Horizon (geothermal and tidal energy) | Tidal Grid | 8 | 3 energy, 3 credits / 1 Sway to Discord | 3 research cubes → 5 energy (once a round) | 2 chips → 3 energy (once a round) |
-| Cintamani (AI and efficiency) | Polar Compute Array | 8 | 9 credits / 1 adversary compute | 1 research cube → 2 insight (once a round) | 1 chip → 1 drawn card, 2 credits (once a round) |
-| Onyx (heavy industry, power plants and processors) | Mountain Fusion Works | 8 | 2 chips, 3 credits / 1 Sway to Discord | 1 research cube → 1 chip (once a round) | none |
-| Biomia (biopunk) | Delta Seawall | 8 | 1 Sway to Unity, 4 credits / 1 Sway to Discord | 1 research cube → 1 Sway to Unity (once a round) | 2 chips → 2 Sway to Unity, 1 drawn card (once a round) |
+| Horizon (geothermal and tidal energy) | Tidal Grid | 8 | 3 energy, 2 credits / 1 Sway to Discord | 3 research cubes → 5 energy (once a round) | 2 chips → 3 energy (once a round) |
+| Cintamani (AI and efficiency) | Polar Compute Array | 8 | 6 credits / 1 adversary compute | 1 research cube → 2 insight (once a round) | 1 chip → 1 drawn card, 1 credit (once a round) |
+| Onyx (heavy industry, power plants and processors) | Mountain Fusion Works | 8 | 2 chips, 2 credits / 1 Sway to Discord | 1 research cube → 1 chip (once a round) | none |
+| Biomia (biopunk) | Delta Seawall | 8 | 1 Sway to Unity, 3 credits / 1 Sway to Discord | 1 research cube → 1 Sway to Unity (once a round) | 2 chips → 2 Sway to Unity, 1 drawn card (once a round) |
 <!-- /generated -->
 
 - **Stations** follow the one site model ([ambassadors.md](ambassadors.md)). In production a **neutral** one makes
@@ -125,7 +125,7 @@ megaproject is the corp's defining card.
   Survey Drone Fleet); no converter makes cubes, so none feeds another within a round.
   Research cubes and converters are a resource every player reaches eventually, like
   antimatter. The Researcher's board ([ai-boards.md](ai-boards.md)) and several Science cards (cards.md) name them too.
-- **Bought and carded cubes.** The Researcher's Grant power (3 credits) and Moonshot Grant
+- **Bought and carded cubes.** The Researcher's Grant power (2 credits) and Moonshot Grant
   (8 cubes on any megaproject that isn't complete, no station needed: 8 complete one) put
   research cubes in your color onto an **incomplete** megaproject. They pay at completion like any cube and are spent then, so
   credits never reach a converter this way: a bought cube earns its card's player payout

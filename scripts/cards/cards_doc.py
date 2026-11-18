@@ -92,8 +92,8 @@ def shape(cards):
     prim = ', '.join(f"{sum(c['tags'][0] == t for c in deck)} ({sum(t in c['tags'] for c in deck)})"
                      for t in TAGS)
     out.append(f"| primary (any) per tag: {', '.join(TAGS)} | {prim} | ~25 each |")
-    big = sum(c.get('cost', 0) >= 25 for c in deck)
-    out.append(f'| credits 25+ | {big} | a handful, none over ~50 |')
+    big = sum(c.get('cost', 0) >= 17 for c in deck)
+    out.append(f'| credits 17+ | {big} | a handful, none over ~33 |')
     am = sum(bool(c.get('antimatter')) for c in deck)
     out.append(f'| antimatter cost | {am} | tier-2 ultimates only |')
     return '\n'.join(out)
