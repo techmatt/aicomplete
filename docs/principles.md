@@ -59,8 +59,9 @@ one fresh set; the target is 45-85 a pair, near 60-75 without chasing it; no gat
 
 **Per-level bands (Matt, 2026-11-15: raised, soft):** d0 at least 90, d1 80-95, d2 75-90, d3 55-70 for the judge
 (`bench/ladder.py`'s default `--bands`). A miss of a few points is reported, never chased or dialed; a level that
-can't meet both keeps its 8-10 rounds over its band. d0 resisted every income dial: its band comes from the players'
-side (engines over dials).
+can't meet both keeps its 8-10 rounds over its band. d0 resisted every income dial; its band comes from the
+adversary's levers (263): Botnets don't spread at d0 (`adversary.botnet_spread_at`), and a city corrupts at 5 agents
+there (3 from d1).
 
 **Cities corrupted and liberated (Matt, 2026-11-03),** a measured target per difficulty: at easy levels a win may
 need no liberation (the adversary corrupts no new city); at d2 it corrupts at least one new city in most

@@ -8,7 +8,7 @@ import {
   type Action, type CardView, type View,
 } from './engine';
 import {
-  actionLabel, choiceKey, contentIds, countryName, escapeHtml, hexKey, hexesIn, isHex, shortPhase, strong,
+  actionLabel, actionRule, choiceKey, contentIds, countryName, escapeHtml, hexKey, hexesIn, isHex, shortPhase, strong,
   type LabelContext,
 } from './format';
 import { details } from './hover';
@@ -161,7 +161,7 @@ function setTimeline(t: Timeline) {
   // session restored) showed its setup step, with no timeline to move on and every control dropping the record.
   if (mode === 'player' && tl.cursor < tl.last) tl.seek(tl.last);
   showError(t.replayError);
-  // 099: a game that stopped replaying isn't saved (`Timeline.save`) until acted on.
+  // 265: a game that stopped replaying saves whole, its unreplayed actions too (`Timeline.save`).
   commit();
 }
 
@@ -436,6 +436,8 @@ function actionButtons(mine: Action[]): HTMLElement {
       const b = document.createElement('button');
       b.type = 'button';
       b.textContent = actionLabel(a, false, true, cx);
+      // 265 (D109): a standard action's rule text, which its label leaves out.
+      if (a.type === 'standard') b.title = actionRule(a, cx);
       b.className = `a-${a.type}${a.type === 'pass' ? ' pass' : ''}`;
       b.dataset.action = JSON.stringify(a);
       b.onclick = () => act(a);
@@ -502,8 +504,10 @@ function renderTimeline() {
   ui.scrub.max = String(tl.last);
   ui.scrub.value = String(tl.cursor);
   const a = tl.frame.action;
-  ui.step.textContent = `step ${tl.cursor} / ${tl.last}${a ? ` · ${actionLabel(a, true, true, { config: tl.frame.snap.state.config, countries: countryNames() })}` : ' · setup'}`;
-  ui.step.title = ui.step.textContent;
+  // 265 (D112): a power by its name and cost (a node route's rule was cut off mid-sentence); the hover has it whole.
+  const scx = { config: tl.frame.snap.state.config, countries: countryNames() };
+  ui.step.textContent = `step ${tl.cursor} / ${tl.last}${a ? ` · ${actionLabel(a, true, true, { ...scx, brief: true })}` : ' · setup'}`;
+  ui.step.title = `step ${tl.cursor} / ${tl.last}${a ? ` · ${actionLabel(a, true, true, scx)}` : ' · setup'}`;
   ui.play.textContent = autoplay !== null ? '⏸ pause' : '▶ play';
 }
 
@@ -940,7 +944,8 @@ async function main() {
       ? `from rules revision ${restored.savedRules} (this engine plays ${rulesRevision}): `
       : '';
     // 184: a session that stopped replaying is kept whole (`Timeline.restore`): say how to get it.
-    if (restored.replayError) showError(`saved session: ${other}${restored.replayError}. Its full actions are kept in this browser: run copy(aic.keptSession()) in the console`);
+    if (restored.replayError && restored.savedStopped) showError(`saved session: ${other}${restored.replayError} (it stopped here when loaded; an action or Undo makes the replayed part this game)`);
+    else if (restored.replayError) showError(`saved session: ${other}${restored.replayError}. Its full actions are kept in this browser: run copy(aic.keptSession()) in the console`);
     // 118: a watched record's warnings come back on a reload (184: with the revision note, as they were written then).
     else if (restored.warning) showError(`saved session: ${other}${restored.warning}`);
     else if (other) showError(`saved session ${other}it replayed, but may not be the game it was`);

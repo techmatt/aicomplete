@@ -352,10 +352,12 @@ pub fn uncover_label(u: &Uncover, gain: i64) -> String {
 /// as [`uncover_label`] (261: the insight a space adds, as the track question words it, not its new total).
 pub fn uncover_words(u: &Uncover, gain: i64) -> String {
     let mut parts: Vec<String> = Vec::new();
+    // 265 (D115): a track space raises a level paid every round ("+4 insight" read as a one-off beside the
+    // track's "insight 7"); a one-off gain says "once" below.
     if gain != 0 {
-        parts.push(format!("+{}", Resource::Insight.words(gain)));
+        parts.push(format!("+{} a round", Resource::Insight.words(gain)));
     }
-    parts.extend(u.income.iter().map(|(r, n)| format!("+{}", r.words(*n))));
+    parts.extend(u.income.iter().map(|(r, n)| format!("+{} a round", r.words(*n))));
     if u.keep2 {
         parts.push("T2 keep".into());
     }

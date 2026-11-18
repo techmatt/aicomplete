@@ -222,6 +222,96 @@ try {
     if (!after) fails.push(`player-view-record-space-pin: pinning another seat emptied the prompt's ${before} answers`);
   });
 
+  // 265 (D116): a record that stops replaying is saved whole, so a reload shows the same stop, not the game before.
+  await scenario('stopped-record-reload', async () => {
+    await page.js("(() => { for (let i = 0; i < 12 && !window.aic.view.outcome; i++) window.aic.act(window.aic.legal[0]); })()");
+    const text = await record();
+    await page.js("document.querySelector('dialog[open]')?.close()");
+    const r = JSON.parse(text);
+    const stopAt = Math.min(5, r.actions.length);
+    r.actions = [...r.actions.slice(0, stopAt), { type: 'pass', seat: 9 }, ...r.actions.slice(stopAt)];
+    await page.js(`(window.aic.open(${JSON.stringify(JSON.stringify(r))}, 'stopped.json'), true)`);
+    const a = await state();
+    if (!a.bar.includes('rejected')) return void fails.push(`stopped-record-reload: the stop said nothing: ${a.bar.slice(0, 120)}`);
+    await load();
+    await sleep(100);
+    const b = await state();
+    console.log(`     after reload: ${(b.bar || b.source).slice(0, 140)}`);
+    if (!b.bar.includes(`action ${stopAt} `)) fails.push(`stopped-record-reload: a reload lost the stop (bar: ${b.bar.slice(0, 120)})`);
+    if (!b.source.includes('stopped.json')) fails.push(`stopped-record-reload: a reload shows another game (${b.source.slice(0, 80)})`);
+    if (b.last !== a.last) fails.push(`stopped-record-reload: ${a.last} steps replayed, ${b.last} after a reload`);
+  });
+
+  // 265 (D109, D112, D115): the player view's bar names standard actions (name and cost, the rule in the hover), the
+  // legend names a threat's dotted outline, the turn panel shows the rules' notes only under "Since your last move";
+  // the debug step bar names a power and its cost, its rule in the hover.
+  await scenario('player-labels-legend-turn', async () => {
+    await page.js("(document.getElementById('view-toggle').click(), true)");
+    const RAW = /resource changed|card moved|cards moved|tokens changed|var changed| · seat \d| · delta |seat \d [+-]\d/;
+    let bar = false, turn = false, power = false, conv = false;
+    const cubedSeen = new Set();
+    for (let i = 0; i < 1500 && !(bar && turn && power && conv && cubedSeen.size); i++) {
+      const r = await page.js(`(() => {
+        const out = {};
+        const std = [...document.querySelectorAll('#p-bar .a-standard')];
+        if (std.length) out.std = std.map((b) => [b.textContent, b.title]);
+        // The cube-priced ones (Lift Fallout, Turn a cube into insight, Make antimatter) name their cubes.
+        const cubed = std.filter((b) => ['lift', 'insight', 'antimatter'].includes(JSON.parse(b.dataset.action).act));
+        if (cubed.length) out.cubed = cubed.map((b) => b.textContent);
+        const t = document.getElementById('p-turn');
+        if (!t.hidden && t.querySelector('.pturn-head')) out.turn = [t.querySelector('.pturn-head b').textContent, t.querySelector('.pturn-ev').textContent + ' ' + t.querySelector('ol').textContent];
+        else if (!t.hidden && t.querySelector('[data-turn=open]')) t.querySelector('[data-turn=open]').click();
+        const conv = [...document.querySelectorAll('#p-seat .converter.unusable')].map((c) => c.textContent);
+        if (conv.length) out.conv = conv;
+        const f = window.aic.timeline.frame.action;
+        if (f && f.type === 'power') out.power = [document.getElementById('step').textContent, document.getElementById('step').title];
+        const v = window.aic.view;
+        if (v.outcome) return { over: true, ...out };
+        const l = window.aic.legal; const np = l.filter((a) => a.type !== 'pass' || Math.random() < 0.2);
+        const p = np.length ? np : l;
+        window.aic.act(p[Math.floor(Math.random() * p.length)]);
+        return out;
+      })()`);
+      if (r.std && !bar) {
+        bar = true;
+        for (const [text, title] of r.std) {
+          if (/Target:|;/.test(text)) fails.push(`player-labels-legend-turn: a standard button reads its rule: ${text}`);
+          if (!title || title.length <= text.length) fails.push(`player-labels-legend-turn: "${text}" has no rule in its hover`);
+        }
+        console.log(`     bar: ${r.std.map(([t]) => t).join(' | ').slice(0, 200)}`);
+      }
+      if (r.turn && !turn) {
+        turn = true;
+        if (r.turn[0] !== 'Since your last move') fails.push(`player-labels-legend-turn: the turn panel is headed "${r.turn[0]}"`);
+        if (RAW.test(r.turn[1])) fails.push(`player-labels-legend-turn: the turn panel lists a raw event: ${r.turn[1].slice(0, 160)}`);
+      }
+      if (r.power && !power) {
+        power = true;
+        // Read as the power's step was shown (the step bar renders in either view), before the next action.
+        const step = r.power;
+        console.log(`     step bar: ${step[0].slice(0, 120)}`);
+        if (/\): .|: place|: gain/.test(step[0].replace(/^step [^·]*· seat \d+: power: /, ''))) fails.push(`player-labels-legend-turn: the step bar prints the power's rule: ${step[0].slice(0, 160)}`);
+        if (step[1].length <= step[0].length) fails.push('player-labels-legend-turn: the step bar\'s hover has no rule');
+      }
+      for (const c of r.cubed ?? []) {
+        cubedSeen.add(c);
+        if (!/research cube/.test(c)) fails.push(`player-labels-legend-turn: a cube-priced standard action shows no price: ${c}`);
+      }
+      if (r.conv && !conv) {
+        conv = true;
+        for (const c of r.conv) if (!c.includes('→')) fails.push(`player-labels-legend-turn: an unusable converter doesn't say what it trades: ${c}`);
+      }
+      if (r.over) break;
+    }
+    if (!conv) console.log('     (no unusable converter came up: unchecked)');
+    console.log(`     cube-priced: ${[...cubedSeen].join(' | ') || '(none came up)'}`);
+    if (!bar) fails.push('player-labels-legend-turn: no standard action came up');
+    if (!turn) fails.push('player-labels-legend-turn: no turn panel came up');
+    if (!power) console.log('     (no power used in this game: step bar unchecked)');
+    const legend = await page.js("document.getElementById('legend').textContent");
+    if (!/threat's source/.test(legend)) fails.push('player-labels-legend-turn: the legend has no threat source outline');
+  });
+
   await scenario('bad-seed-field', async () => {
     for (const v of ['', 'abc', '-1', '1.5', '99999999999999999999999', '0x10']) {
       await page.js(`(document.getElementById('seed').value = ${JSON.stringify(v)}, document.getElementById('new-form').requestSubmit(), true)`);

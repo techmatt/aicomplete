@@ -35,6 +35,11 @@ body > #player { flex: 1 1 0; }
 #p-adv .projects-row { flex-wrap: wrap; }
 #p-adv .projects-row .project { flex: 1 1 100%; display: block; -webkit-line-clamp: unset; height: auto; }
 
+/* 265 (D112): a country's megaproject shows whole in the side column (its name and status were cut to "◆ Ti…"):
+   the name and cubes on a line, the status wrapping under them. */
+.player-mode .country .project { flex-wrap: wrap; }
+.player-mode .country .project > b, .player-mode .country .project small { white-space: normal; overflow: visible; }
+
 /* Threats show whole here, their controls under them. */
 .player-mode .threat { display: block; -webkit-line-clamp: unset; overflow: visible; }
 .tacts { display: flex; flex-wrap: wrap; gap: 0.2em; margin: 0.15em 0 0.25em; }
@@ -70,7 +75,11 @@ body > #player { flex: 1 1 0; }
 #p-seat { grid-column: 1 / -1; border-left: 6px solid var(--tint) !important; max-height: 38vh; overflow: auto; padding: 0.3em 0.5em; }
 .p-head { display: flex; align-items: center; gap: 0.5em; font-size: 1.08em; margin-bottom: 0.25em; }
 .p-head small { color: var(--muted); }
-.p-body { display: grid; grid-template-columns: minmax(18em, 1fr) minmax(0, 2.4fr) minmax(14em, 1fr); gap: calc(var(--gap) * 1.5); align-items: start; }
+.p-body { display: grid; grid-template-columns: minmax(18em, 1fr) minmax(0, 2.4fr) minmax(14em, 1fr); grid-template-areas: "info hand built" "powers hand built"; gap: 0 calc(var(--gap) * 1.5); align-items: start; }
+.p-info { grid-area: info; }
+.p-powers { grid-area: powers; }
+.p-hand { grid-area: hand; }
+.p-built { grid-area: built; }
 .p-info .innate { color: #555; font-size: 0.88em; margin: 0.2em 0; }
 ul.ppowers { margin: 0.2em 0; padding: 0; list-style: none; font-size: 0.9em; }
 ul.ppowers li { border: 1px solid var(--line); border-radius: 4px; padding: 0.15em 0.35em; margin-bottom: 0.2em; color: #777; background: #fbfaf7; }
@@ -121,6 +130,18 @@ ul.ppowers .ptext { font-size: 0.92em; }
 
 #tip .tip-under { max-width: 26em; margin-top: 0.3em; font-size: 0.9em; }
 #tip:has(.printed-host) { max-width: none; }
+
+/* 265 (D112): a long programs row (generic chips) wraps in its column rather than scrolling the seat panel sideways;
+   at 2560x1440 the powers take their own column beside the seat's values, so the last ones (Outpost ... Field
+   Survey) show without a scroll under the tracks and converters. */
+.p-body > * { min-width: 0; }
+.p-built .psec > div { display: flex; flex-wrap: wrap; gap: 0.2em; }
+.p-built .chip { white-space: normal; }
+@media (min-width: 2200px) {
+  .p-body { grid-template-columns: minmax(18em, 1.55fr) minmax(24em, 2fr) minmax(0, 1.25fr) minmax(14em, 1fr); grid-template-areas: "info powers hand built"; }
+  .p-powers ul.ppowers { columns: 2; column-gap: 0.4em; }
+  .p-powers ul.ppowers li { break-inside: avoid; }
+}
 
 @media (max-height: 820px) {
   #p-seat { max-height: 40vh; }

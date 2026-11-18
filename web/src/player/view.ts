@@ -5,7 +5,7 @@
 // rendering (a labeled button, a chip), so a new module shows with no new UI work. No rules live here.
 
 import { param, type Action, type CardView, type Config, type View } from '../engine';
-import { actionLabel, amount, contentIds, countryName, escapeHtml as esc, eventText, hexKey, hexesIn, isHex, strong, tokenName, type LabelContext } from '../format';
+import { actionLabel, actionRule, amount, contentIds, countryName, escapeHtml as esc, hexKey, hexesIn, isHex, strong, tokenName, type LabelContext } from '../format';
 import { phaseGroups } from '../log';
 import { cardChip, pilesHtml, seatValuesHtml, varsHtml } from '../panels';
 import type { Frame } from '../session';
@@ -279,33 +279,37 @@ function summary(events: Frame['events']): string {
   for (const e of events) if (e.type === 'tokens_changed') tok.set(String(e.token), (tok.get(String(e.token)) ?? 0) + Number(e.delta));
   const pieces = [...tok].filter(([, d]) => d).map(([k, d]) => `${d > 0 ? '+' : ''}${d} ${tokenName(k)}`);
   const parts = [...notes, ...(pieces.length ? [`map: ${pieces.join(', ')}`] : [])];
+  // 265 (D115): no raw engine events ("seat 0 +1 energy", "cards moved: ..."): W5 accepts those in the debug
+  // view's log only.
   if (parts.length) return parts.join('; ');
-  const res = events.filter((e) => e.type === 'resource_changed').map((e) => `seat ${e.seat} ${Number(e.delta) > 0 ? '+' : ''}${e.delta} ${String(e.resource).replace(/_/g, ' ')}`);
-  const cards = events.filter((e) => e.type === 'card_moved').map((e) => contentIds(String(e.card)));
-  const other = [...res, ...(cards.length ? [`cards moved: ${cards.join(', ')}`] : [])];
-  return other.length ? other.join('; ') : 'bookkeeping only (tracks)';
+  // An income step has no note: say what kind of change it was, its lines in the debug view's log.
+  const what = [
+    events.some((e) => e.type === 'resource_changed') ? 'resources' : '',
+    events.some((e) => e.type === 'card_moved') ? 'cards' : '',
+  ].filter(Boolean).join(' and ');
+  return what ? `${what} changed (the seat rows show them)` : 'bookkeeping only (tracks)';
 }
 
 function turnHtml(): string {
   if (!turn) return '';
-  // Whether the adversary's phases ran (its turn), or only phases between two of the seats' decisions.
-  const adv = turn.steps.some((s) => ADV_PHASE.test(s.label));
-  const what = adv ? "the adversary's turn" : 'what ran since the last move';
-  if (!turn.open) return `<button type="button" class="pturn-open" data-turn="open">Replay ${what} (${turn.steps.length} step${turn.steps.length === 1 ? '' : 's'})</button>`;
+  // 265 (D115): one heading, "Since your last move": the steps run from the players' own phases (D Actions,
+  // E income) through the adversary's, so "The adversary's turn" misnamed most of them.
+  if (!turn.open) return `<button type="button" class="pturn-open" data-turn="open">Replay what ran since your last move (${turn.steps.length} step${turn.steps.length === 1 ? '' : 's'})</button>`;
   const t = turn;
   const rows = t.steps.map((s, i) => {
     const line = `${s.label}: ${summary(s.events)}`;
     return `<li class="${i === t.at ? 'now' : ''}" data-turn-step="${i}" title="${esc(line)}">${esc(line)}</li>`;
   }).join('');
   const cur = t.steps[t.at];
-  // Track changes are bookkeeping under engine keys: counted here, listed in the debug view's log.
-  const shownEvents = cur.events.filter((e) => e.type !== 'var_changed');
-  const tracks = cur.events.length - shownEvents.length;
-  return `<div class="pturn-head"><b>${adv ? "The adversary's turn" : 'Since the last move'}</b> <span>step ${t.at + 1} of ${t.steps.length}</span>
+  // 265 (D115): the rules' own notes only; every other event ("resource changed · seat 0 · ...") is counted here
+  // and listed in the debug view's log (W5 accepts raw events there, not here).
+  const shownEvents = cur.events.filter((e) => e.type === 'note');
+  const rest = cur.events.length - shownEvents.length;
+  return `<div class="pturn-head"><b>Since your last move</b> <span>step ${t.at + 1} of ${t.steps.length}</span>
       <button type="button" data-turn="-1" ${t.at === 0 ? 'disabled' : ''}>◀</button><button type="button" data-turn="1" ${t.at === t.steps.length - 1 ? 'disabled' : ''}>▶</button>
       <button type="button" data-turn="close">Done</button></div>
     <ol>${rows}</ol>
-    <div class="pturn-ev"><small>The map shows the board after the turn; outlined: the hexes this step changed.</small><ul>${shownEvents.map((e) => `<li data-hexes="${hexesIn(e).map(hexKey).join(' ')}">${esc(eventText(e))}</li>`).join('')}${tracks ? `<li><small>${tracks} track change${tracks === 1 ? '' : 's'}: the debug view's log has them</small></li>` : ''}</ul></div>`;
+    <div class="pturn-ev"><small>The map shows the board after the turn; outlined: the hexes this step changed.</small><ul>${shownEvents.map((e) => `<li data-hexes="${hexesIn(e).map(hexKey).join(' ')}">${esc(contentIds(String(e.text)))}</li>`).join('')}${rest ? `<li><small>${rest} other change${rest === 1 ? '' : 's'} (resources, cards, tracks): the debug view's log lists them</small></li>` : ''}</ul></div>`;
 }
 
 // ---------- render ----------
@@ -332,7 +336,8 @@ export function renderPlayer(ui: PlayerUi, ctx: PlayerCtx) {
   ui.seat.innerHTML = `
     <div class="p-head"><span class="swatch"></span><b>${esc(seatName(v, focus))}</b> <small>${esc(countryName(v, s.country))}</small>${st.text ? `<span class="pst ${st.cls}">${st.text}</span>` : ''}</div>
     <div class="p-body">
-      <div class="p-info">${seatValuesHtml(v, focus)}${powersHtml(v, ctx, focus, mine)}</div>
+      <div class="p-info">${seatValuesHtml(v, focus)}</div>
+      <div class="p-powers">${powersHtml(v, ctx, focus, mine)}</div>
       <div class="p-hand">${draft}${handHtml(v, ctx, focus, mine)}</div>
       <div class="p-built">${builtHtml(v, ctx, focus, mine)}</div>
     </div>`;
@@ -343,7 +348,8 @@ export function renderPlayer(ui: PlayerUi, ctx: PlayerCtx) {
   }
 
   // The bar: standard actions, converters, pass, and every action of the seat no component drew.
-  const std = mine.filter((a) => a.type === 'standard').map((a) => btn(a, actionLabel(a, false, true, ctx.cx)));
+  // 265 (D109): a standard action by its name and cost, its rule in the hover.
+  const std = mine.filter((a) => a.type === 'standard').map((a) => btn(a, actionLabel(a, false, true, ctx.cx), '', actionRule(a, ctx.cx)));
   const conv = mine.filter((a) => a.type === 'convert').map((a) => btn(a, actionLabel(a, false, true, ctx.cx)));
   const pass = mine.filter((a) => a.type === 'pass').map((a) => btn(a, v.phase?.name === 'cards.keep' ? 'Done keeping (pass)' : 'Done (pass)', 'pass'));
   const rest = mine.filter((a) => !claimed.has(JSON.stringify(a))).map((a) => btn(a, actionLabel(a, false, true, ctx.cx), 'other'));

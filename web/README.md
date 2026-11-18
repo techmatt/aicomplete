@@ -37,8 +37,9 @@ data and random play; Undo and records stay.
 - **Controls sit on the objects:** *Play* / *Sell* on a hand card, *Use* on a power or building, pay on a threat, a
   hex click for a hex answer; other answers in the question bar. A hand card opens printed (`web/card/`, in a shadow
   root: its `.card` style would clash) on hover. The draft shows the offered cards printed with their keep price.
-- **The adversary's turn** opens a panel stepping through it a phase at a time, one line each, outlining the hexes
-  the step changed (the map shows the board after the turn).
+- ***Since your last move*** (the adversary's turn among them) steps through the phases run, one at a time: the
+  rules' notes and map changes, outlining the hexes each changed. Standard actions show name and cost, the rule
+  in the hover.
 - **New modules:** an action no component draws is a button under *Other*; card groups, piles and values fall to
   the debug view's generic chips (`panels.ts`).
 - **Checks:** `AIC_SWEEP_VIEW=player` sweeps it (`no-control` shows each seat to act in turn); `node
@@ -64,7 +65,7 @@ data and random play; Undo and records stay.
   asking. The log folds by phase; hovering a phase outlines its hexes.
 - **The header** shows the engine version and rules revision. The error bar flags a saved session (`localStorage`,
   replayed on load) whose config changed or no longer loads, or a record from another revision; one that no longer
-  loads or replays is kept (`copy(aic.keptSession())`).
+  loads or replays is kept (`copy(aic.keptSession())`). A record that stops replaying saves whole: a reload stops there.
 
 ## Game records
 
@@ -144,7 +145,7 @@ elsewhere; a taken port says so and exits.
 
 - **Every card in content** (country pieces are map, not cards), player cards through `web/card/card.js` with the
   `art-originals/` scene `tools/card-art/scenes.json` names, if any; a kind with no frame gets a plain face. Scenes
-  are 3.6 MB PNGs loaded on scroll: a fast scroll shows gray for a second or two.
+  load on scroll (gray for a second).
 - **The export** (`web/scripts/cards-export.mjs`, to `out/cards-export.json`) reads `content/`,
   `web/card/faces.json`, `configs/baseline.json` and the stats and pricing files below, never running `aic-sim
   docs`: a card edited without it shows its old text. **Rebuild** on the page re-exports in ~0.1 s.

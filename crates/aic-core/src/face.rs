@@ -16,7 +16,7 @@
 
 use serde::Serialize;
 
-use crate::content::{Ability, CardDef, Event, Facility, Op, Resource, Tag, TokenKind};
+use crate::content::{Ability, CardDef, Event, Facility, Op, Resource, Tag, TargetSpec, TokenKind};
 
 /// One part of an icon line: an icon or a connector (`→ / : OR ALL ACT`), a
 /// tag (`#science`), a number, or a box of parts.
@@ -278,10 +278,57 @@ fn removal_icons(ambassadors: i64, troops: i64) -> Vec<Part> {
 /// A liberate card's claim rider (256), folded into Rescue when it follows the liberation (264).
 const CLAIM_NEAR: &str = "claim a facility next to it";
 
+/// 265 (D108): a target's site glyphs as an icon run, "/" between kinds (`city / station / factory`).
+fn site_glyphs(on: TargetSpec) -> Vec<Part> {
+    let mut out = Vec::new();
+    for (i, g) in on.glyph().split(' ').enumerate() {
+        if i > 0 {
+            out.push(w("/"));
+        }
+        out.push(w(g));
+    }
+    out
+}
+
+/// 265 (D108): a liberation or claim draws the card's target kinds, not one fixed kind: Hostile Buyout (any corrupted
+/// site) printed "−1 cube city", and nothing for its "a station or factory becomes yours"; Open Research Campus
+/// claims only the station it opens. `own` adds the claim's station / factory after the liberation's chip.
+fn fit_to_target(op: &Op, target: Option<TargetSpec>, cls: &mut [Clause]) {
+    let Some(on) = target else { return };
+    match op {
+        // Cleanse's city form (Great Liberation) prints its site the same way.
+        Op::Liberate { .. } | Op::Cleanse { cities: true, .. } => {
+            let Some(Part::Adversary { adversary }) = cls.first_mut().and_then(|c| c.icons.first_mut()) else { return };
+            let own = matches!(op, Op::Liberate { own: true, .. });
+            if let Some(i) = adversary.iter().position(|p| *p == w("city")).filter(|_| on.glyph() != "city") {
+                // With the claim after it the cube alone: the target box names the three kinds, and three glyphs
+                // here then two more took Hostile Buyout's box to 5.4 pt.
+                adversary.splice(i..=i, if own { Vec::new() } else { site_glyphs(on) });
+            }
+            if own {
+                cls[0].icons.extend([w("station"), w("/"), w("factory")]);
+            }
+        }
+        // A claim of the one site a card opens: Open Research Campus's station, Industrial Commons's factory.
+        Op::ClaimSite { near: false } if matches!(on, TargetSpec::EmptySite | TargetSpec::StationSite | TargetSpec::FreeZone) => {
+            if let Some(c) = cls.first_mut() {
+                c.icons = vec![w(on.glyph())];
+            }
+        }
+        _ => {}
+    }
+}
+
 fn clauses(ops: &[Op], gain: &str) -> Vec<Clause> {
     let mut out: Vec<Clause> = Vec::new();
+    let mut target: Option<TargetSpec> = None;
     for op in ops {
-        for c in once(op, gain) {
+        if let Op::Target { on } = op {
+            target = Some(*on);
+        }
+        let mut cls = once(op, gain);
+        fit_to_target(op, target, &mut cls);
+        for c in cls {
             // Gains in a row are one sentence, as they are one row of icons.
             match out.last_mut() {
                 Some(last) if last.share == c.share && c.share != Share::No => {

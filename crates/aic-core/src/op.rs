@@ -383,7 +383,7 @@ impl TargetSpec {
         }
     }
 
-    /// The target box's glyph: an icon `web/card/card.js` draws.
+    /// The target box's glyphs, space-separated: icons `web/card/card.js` draws.
     pub fn glyph(self) -> &'static str {
         match self {
             TargetSpec::Agents => "agent",
@@ -393,11 +393,11 @@ impl TargetSpec {
             TargetSpec::CorruptedCity => "city",
             TargetSpec::CorruptedStation => "station",
             TargetSpec::CorruptedFactory | TargetSpec::FreeZone => "factory",
-            TargetSpec::CorruptedSite => "city",
-            TargetSpec::CorruptedFacility
-            | TargetSpec::StationSite
-            | TargetSpec::NeutralSite
-            | TargetSpec::EmptySite => "station",
+            // 265 (D108): a target of two or three site kinds draws each (`web/card/icons.js` `targetIcon` puts a
+            // "/" between them): Hostile Buyout drew only a city, the Power Purchase Agreement only a station.
+            TargetSpec::CorruptedSite => "city station factory",
+            TargetSpec::CorruptedFacility | TargetSpec::NeutralSite => "station factory",
+            TargetSpec::StationSite | TargetSpec::EmptySite => "station",
             TargetSpec::Fallout => "fallout",
             TargetSpec::Facility => "shield",
             TargetSpec::AgentCity => "city",

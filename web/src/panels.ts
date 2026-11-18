@@ -292,7 +292,9 @@ function megaprojectHtml(v: View, c: View['countries'][number]): string {
   while (cells.length < max) cells.push(`<span class="pc${done ? ' done' : ''}"></span>`);
   const paid = findValue(c.values, 'board.project.paid');
   const by = done ? `<b class="pdone">completed</b>${paid ? ` · <span class="ppaid" data-value="${esc(paid.key)}" data-scope="country:${c.index}">${paid.value} cubes paid (${esc(paid.label)})</span>` : ''}` : owners.filter((o) => o.n).map((o) => `<span data-value="${esc(o.key)}" data-scope="country:${c.index}">${esc(o.label)} ${o.n}</span>`).join(' · ');
-  return `<div class="project${done ? ' done' : ''}" data-value="${esc(total.key)}" data-scope="country:${c.index}"><b title="megaproject">◆ ${esc(name)}</b><span class="cubes">${cells.join('')}</span><small>${total.value}/${max}${by ? ` · ${by}` : ''}</small></div>`;
+  // 265 (D112): the name and status in words for the hover (the strip cuts them to an ellipsis).
+  const byText = done ? `completed${paid ? ` · ${paid.value} cubes paid (${paid.label})` : ''}` : owners.filter((o) => o.n).map((o) => `${o.label} ${o.n}`).join(' · ');
+  return `<div class="project${done ? ' done' : ''}" data-value="${esc(total.key)}" data-scope="country:${c.index}"><b title="${esc(`megaproject: ${name} (${total.value}/${max}${byText ? ` · ${byText}` : ''})`)}">◆ ${esc(name)}</b><span class="cubes">${cells.join('')}</span><small>${total.value}/${max}${by ? ` · ${by}` : ''}</small></div>`;
 }
 
 export function countriesHtml(v: View): string {
@@ -337,7 +339,9 @@ export function legendHtml(): string {
   const flag = `<svg viewBox="-0.05 -0.2 0.3 0.4" width="0.9em" height="1.2em" style="vertical-align:middle"><g class="base-mark">
     <path d="M0,0.17 V-0.17" class="pole"/><path d="M0,-0.17 L0.2,-0.1 L0,-0.03 Z" class="flag" fill="#888"/></g></svg>`;
   const front = `<svg viewBox="0 -0.1 0.6 0.2" width="1.8em" height="0.8em" style="vertical-align:middle"><g class="fronts war"><line x1="0" y1="0" x2="0.6" y2="0" class="front-link"/></g></svg>`;
-  return `${t}<span class="lg">${flag} base: flag in the color of the country it faces</span><span class="lg">${front} front between two bases</span><span class="lg"><span class="sw" style="background:${ADVERSARY_COLOR}"></span> adversary · seat color = its country's</span>`;
+  // 265 (D112): the dotted red outline of a face-up threat's source read as corruption.
+  const source = `<svg viewBox="-0.8 -0.8 1.6 1.6" width="1em" height="1em" style="vertical-align:middle"><polygon class="mark source" points="0.72,0 0.36,0.62 -0.36,0.62 -0.72,0 -0.36,-0.62 0.36,-0.62"/></svg>`;
+  return `${t}<span class="lg">${source} a face-up threat's source</span><span class="lg">${flag} base: flag in the color of the country it faces</span><span class="lg">${front} front between two bases</span><span class="lg"><span class="sw" style="background:${ADVERSARY_COLOR}"></span> adversary · seat color = its country's</span>`;
 }
 
 // ---------- seat panels ----------
@@ -381,9 +385,11 @@ export function seatValuesHtml(v: View, seatIndex: number): string {
   }
   // 235: Dispatches left of the round's allotment: full is the start of a round, not a warning.
   const other = s.values.filter((x) => !SEAT_DRAWN(x.key)).map((x) => valueChip(x, scope, x.label, !x.key.endsWith('.movement'))).join('');
-  // 074: every completed card's converter; one this seat can't use says why.
+  // 074: every completed card's converter; one this seat can't use says why. 265 (D112): and what it trades, as the
+  // usable one's button does (it said "can't pay it" with no price).
+  const trade = (x: Value) => (x.doc ?? '').split(', with a city')[0];
   const converters = s.values.filter((x) => x.key.startsWith('board.converter.') || x.key.startsWith('board.chip_converter.')).map((x) =>
-    `<span class="converter ${x.value ? 'usable' : 'unusable'}" data-value="${esc(x.key)}" data-scope="${scope}">${esc(x.label)}</span>`).join('');
+    `<span class="converter ${x.value ? 'usable' : 'unusable'}" data-value="${esc(x.key)}" data-scope="${scope}">${esc(x.label)}${!x.value && trade(x) ? ` <small>(${esc(trade(x))})</small>` : ''}</span>`).join('');
   return `<div class="resources">${resHtml}</div>${converters ? `<div class="converters">${converters}</div>` : ''}${boardHtml(v, seatIndex)}<div class="values ai">${ai.join('')}${other}</div>`;
 }
 

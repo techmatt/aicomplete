@@ -34,6 +34,8 @@ export interface LabelContext {
   view?: View;
   /** Country names by index, for labels made with no view (the log, the step line; 102, D30). */
   countries?: string[];
+  /** 265 (D112): a power by its name and cost only, its rule left to the hover (`actionRule`): the step bar. */
+  brief?: boolean;
 }
 
 /** A card in a seat's hand as the view shows it, if any. */
@@ -110,7 +112,12 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       const named = contentName(opName);
       if (named !== opName) return `choose ${named}${t}`;
       // 235: a sacrifice option names its source by the engine's word ("sacrifice stack Intrusion Lab").
-      const plain = contentIds(named).replace('T2 keep -1', 'T2 keep')
+      // 265 (D115): a track space's gains are levels paid every round ("+4 insight" read as a one-off beside the
+      // track's "insight 7"); the option is a record key, so its words are fixed up here, as `uncover_words` prints them.
+      const leveled = /track: uncovers /.test(named)
+        ? named.replace(/\+(\d+) ([a-z_][a-z_ ]*?)(?=,|$| \()/g, (_, n, r) => `+${n} ${r} a round`)
+        : named;
+      const plain = contentIds(leveled).replace('T2 keep -1', 'T2 keep')
         .replace(/^sacrifice stack (.*)$/, 'sacrifice $1 (with any buildings under it)')
         .replace(/^sacrifice (program|hand) /, 'sacrifice ');
       return `${plain}${t}`;
@@ -141,7 +148,7 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       const lone = /Sacrifices: ([^.]*)\./.exec(shown?.text ?? '')?.[1];
       const takes = lone ? ` (sacrifices ${lone})` : '';
       // 118: Synthesis has no price: no empty "()".
-      return `power: ${p.name}${cost ? ` (${cost})` : ''}${takes}: ${p.text ?? ''}`;
+      return `power: ${p.name}${cost ? ` (${cost})` : ''}${takes}${cx.brief ? '' : `: ${p.text ?? ''}`}`;
     }
     case 'pay': {
       // 235: a part payment read like a full one ("pay 8 credits" toward 12): say what it still needs.
@@ -171,7 +178,12 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       const costs = ([[s.energy, 'energy'], [s.credits, 'credits'], [s.chips, 'chips'], [s.ambassadors, 'ambassadors']] as const)
         .filter(([v]) => v > 0)
         .map(([v, what]) => amount(v, what));
-      return `${s.doc.split(';')[0]}${costs.length ? ` (${costs.join(', ')})` : ''}`;
+      // 265 (D109): its printed name and cost; the rule text (`actionRule`) is the button's hover (the first clause
+      // of the rule read "Target: a piece or a Botnet. Use 1 Dispatch: ...", or printed the cost twice). Research
+      // cubes come from the doc's "; costs ..." (board/view.rs): the view's fields drop them.
+      const cubes = /; costs .*?(\d+) research cubes?/.exec(s.doc);
+      if (cubes) costs.push(amount(Number(cubes[1]), 'research_cubes'));
+      return `${STANDARD_NAMES[s.act] ?? s.doc.split(/[;:]/)[0]}${costs.length ? ` (${costs.join(', ')})` : ''}`;
     }
     case 'convert': {
       // 199: `chips` names the corp's chip converter (r87), absent for the cube one.
@@ -194,6 +206,15 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
  * target with `withTarget` false (a choice's label, before its hex is picked).
  * Unknown action types are labeled from their fields.
  */
+/** 265: the rule a short label leaves to its hover: a standard action's words, a power's rule; else the full label. */
+export function actionRule(a: Action, cx: LabelContext): string {
+  if (a.type === 'standard') {
+    const s = cx.view?.standard.find((x) => x.act === String(a.act));
+    if (s) return `${actionLabel(a, false, true, cx)}: ${s.doc}`;
+  }
+  return actionLabel(a, false, true, { ...cx, brief: false });
+}
+
 export function actionLabel(a: Action, withSeat: boolean, withTarget: boolean, cx: LabelContext): string {
   let body = known(a, withTarget, cx);
   if (body === null) {

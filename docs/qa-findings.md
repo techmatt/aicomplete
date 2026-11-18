@@ -4,7 +4,7 @@ What a bug hunt reads first: the findings still open, the reports ruled won't-fi
 faults past hunts kept finding. Fixed findings, never to re-report: F1–F100 (020, 044) in `git show
 1617d75:docs/qa-findings.md`; then each hunt's `fixed.md` and `deferred.md` under `experiments/results/`: 099 (r38,
 F101 on), 118 (r46, F132, D43, W19 on), 145 (r59, F165, D57 on), 169 (r72 → 73, F205, D72 on), 184 (r77 → 78, F225,
-D77, W28 on), 197 (r86, F272, D88, W29 on), 235 (r106, F289, D92, W31 on; 238 fixed D92-D96, D98, D100, D103-D105, r108), 261 (r121 → r122, F322, D106, W34 on). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
+D77, W28 on), 197 (r86, F272, D88, W29 on), 235 (r106, F289, D92, W31 on; 238 fixed D92-D96, D98, D100, D103-D105, r108), 261 (r121 → r122, F322, D106, W34 on; 265 fixed D108, D109, D112, D115, D116). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
 
 ## Checkers
 
@@ -90,13 +90,8 @@ Each hunt found most of its faults in the same places. Look there first:
 | D102 | tests | `e2e:corps` is red on main too. | Re-derive its numbers. **Pick**. |
 | D106 | agents | A research removal is valued at its printed cubes on an empty track. | Value the firing it delays. **Pick** leave. |
 | D107 | rules | Nothing marks a city bought this round. | A Bought marker. **Matt's call**. |
-| D108 | cards | Target glyphs show one site kind of two or three. | Two glyphs. **Pick**. |
-| D109 | viewer | The player bar labels standard actions with rule text. | Name and cost. **Pick**. |
-| D112 | viewer | Player view: legend, seat panel at 2560, converter rows. | One viewer item. **Pick**. |
 | D113 | cards | Counterintelligence Sweep, Fusion Commons draw at 0 insight. | 1 insight; no draw. **Matt's call**. |
 | D114 | cards | Five liberate cards' pricing notes use pre-r113 keeps. | Restate. **Pick**. |
-| D115 | viewer | The player view's turn panel lists raw engine events. | Notes only. **Pick**. |
-| D116 | viewer | A record that stops replaying isn't saved: a reload shows the game before it. | Keep its text. **Pick**. |
 | D117 | tools | Agent specs and read scripts take bad input silently. | Refuse each. **Pick**. |
 | D118 | rules | The Liberated marker binds Corrupt lines only, not cards that take a site. | Leave; guard. **Matt's call**. |
 | D119 | cards | Faces against house terms: node "Harden", Faraday Yard's box, two-way wordings. | One card-words item. **Pick**. |

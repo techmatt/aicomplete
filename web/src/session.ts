@@ -43,6 +43,10 @@ export class Timeline {
   cursor = 0;
   /** Set when a loaded record stops replaying: the frames hold what did replay. */
   replayError: string | null = null;
+  /** 265: the rejected action and those after it, kept so a save holds the whole record and a reload stops there again. */
+  unreplayed: Action[] = [];
+  /** 265: restored from a save made after it had stopped (so the session itself holds the whole record). */
+  savedStopped = false;
 
   private constructor(
     readonly configJson: string,
@@ -66,6 +70,7 @@ export class Timeline {
         t.push(a);
       } catch (e) {
         t.replayError = `action ${i} ${JSON.stringify(a)} rejected: ${e}`;
+        t.unreplayed = actions.slice(i);
         break;
       }
     }
@@ -119,6 +124,7 @@ export class Timeline {
     this.changed(this.cursor - 1);
     // 099: acting on a game that stopped replaying makes it this game: it may save now.
     this.replayError = null;
+    this.unreplayed = [];
   }
 
   /** Drops the last action. */
@@ -128,6 +134,7 @@ export class Timeline {
     this.cursor = Math.min(this.cursor, this.last);
     this.changed(this.last);
     this.replayError = null;
+    this.unreplayed = [];
   }
 
   /** A loaded record that has been changed is no longer that record. */
@@ -144,16 +151,16 @@ export class Timeline {
   }
 
   save() {
-    // 099: a game that stopped replaying isn't saved over the session (seeking or
-    // autoplay wrote its replayed prefix, and the next load showed it as whole);
-    // the first action or undo on it clears `replayError` and saves.
-    if (this.replayError) return;
+    // 099: a game that stopped replaying saved only its replayed prefix, so the next load showed it as whole.
+    // 265 (D116): so it wasn't saved at all, and a reload silently brought back the game before it: it saves
+    // whole now, the replayed actions and the rest (`unreplayed`), so a reload replays to the same stop and says so.
+    // The first action or undo on it drops the rest and makes it this game.
     // 099: with the rules revision, so a session from other rules can say so. 118: the
     // revision the game came from, not this engine's: the first save stamped an older
     // record or session as this revision, so after a reload it showed as clean.
     storageSet(SAVE_KEY, JSON.stringify({
-      config: this.configJson, seed: this.seed, actions: this.actions, cursor: this.cursor, source: this.source,
-      rules: this.savedRules ?? rulesRevision, warning: this.warning,
+      config: this.configJson, seed: this.seed, actions: [...this.actions, ...this.unreplayed], cursor: this.cursor, source: this.source,
+      rules: this.savedRules ?? rulesRevision, warning: this.warning, ...(this.replayError ? { stopped: true } : {}),
     }));
   }
 
@@ -167,7 +174,7 @@ export class Timeline {
 
   /** The saved session, replayed; null if there is none. Throws if its config no longer loads. */
   static restore(): Timeline | null {
-    let saved: { config: string; seed: string; actions: Action[]; cursor: number; source: Source & { note?: string }; rules?: number; warning?: string | null };
+    let saved: { config: string; seed: string; actions: Action[]; cursor: number; source: Source & { note?: string }; rules?: number; warning?: string | null; stopped?: boolean };
     const raw = storageGet(SAVE_KEY);
     if (!raw) return null;
     try {
@@ -189,7 +196,10 @@ export class Timeline {
     }
     // 184: one that stops replaying (a rules change rejected an action) is kept too: the next New game's save
     // overwrote its unreplayed actions.
-    if (t.replayError) storageSet(KEPT_KEY, raw);
+    // 265: one saved already stopped (D116: it saves whole) holds its own actions: keeping it again would overwrite
+    // an unloadable session kept before it.
+    if (t.replayError && !saved.stopped) storageSet(KEPT_KEY, raw);
+    t.savedStopped = !!saved.stopped;
     t.seek(saved.cursor ?? t.last);
     t.savedRules = saved.rules;
     t.warning = saved.warning ?? null;

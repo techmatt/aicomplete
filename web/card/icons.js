@@ -108,9 +108,12 @@ export const ICON_NAMES = [...Object.keys(RESOURCES), ...Object.keys(TOKENS), ..
 
 /**
  * 234: the target box's glyph names (face.rs `TargetBox::glyph`) as icons: the same word but for
- * shield, which is the harden glyph.
+ * shield, which is the harden glyph. 265 (D108): a target of two or three site kinds names each,
+ * space-separated, drawn with a "/" between them as the claim clause draws station / factory.
  */
-export const targetIcon = (glyph) => icon(glyph === 'shield' ? 'harden' : glyph);
+export const targetIcon = (glyph) => glyph.split(' ')
+  .map((g) => icon(g === 'shield' ? 'harden' : g))
+  .join('<span class="target-or">/</span>');
 
 /** Is this word in a card's icon line an icon, rather than a number or connector? */
 export const isIcon = (name) => Object.hasOwn(RESOURCES, name) || Object.hasOwn(TOKENS, name) || Object.hasOwn(PIECES, name);

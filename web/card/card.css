@@ -59,6 +59,8 @@
   box-shadow: 0 0 0 0.2mm #e9edf0, 0 0.3mm 0.6mm 0.2mm rgb(0 0 0 / 45%), inset 0 0.25mm 0.3mm rgb(255 255 255 / 70%);
 }
 .card .target-plate .ico { width: 2.400mm; height: 2.400mm; }
+/* 265 (D108): between two or three site glyphs (any corrupted site: city / station / factory). */
+.card .target-plate .target-or { margin: 0 -0.2mm; }
 
 .card .name { font-family: 'Saira Condensed', sans-serif; font-weight: 600; font-size: 15pt; letter-spacing: 0.02em; line-height: 1; white-space: nowrap; padding-bottom: 0.7mm; box-sizing: border-box; }
 
