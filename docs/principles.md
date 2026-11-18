@@ -32,7 +32,7 @@ income ÷ insight income (about 25-35 credits ÷ 5-7 insight ≈ 5); tier-1 card
   totals reach the hundreds. Card costs run 0–42 (Moonshot Grant 42, Multiyear Defense Budget 34): within "about
   50", but the income is not "produce 1".
 - **Credit sinks, priced off it:** threat counters 12 / 17 credits by tier (the last option on every menu;
-  dearer from d1, threats.md); a research cube about 3 credits (payouts are per card); a player ambassador
+  the same at every level, threats.md); a research cube about 3 credits (payouts are per card); a player ambassador
   `ambassador_credits` (it pays for removals; dear because it stays); a card sells for `sell_credits` 1, chips not
   at all; Data Heist takes 10 credits (or 3 cards) from each player.
 - **Adversary compute:** project costs are 7–24 *a board*: 21–72 at 3 countries, 28–96 at 4, so a few a game pass
@@ -121,6 +121,9 @@ checks*; thresholds, all candidates: `scripts/design_check.json`).
   most rounds, a win route most games). *Warns:* `usage`, any power, standard action, converter or resource spend
   outside its band, unused or dominant.
 - **Games run 8-10 rounds.** *Warns:* any level's mean outside 8-10.
+- **A difficulty ladder players can track** (Matt, 2026-11-17: Spirit Island's adversary card): each level
+  adds setup and about one mid-game rule, triggered on an event players resolve. *Warns:* a level adding over
+  about one mid-game change, or over about three active at the top (`ladder`; one a mid-game dial).
 
 ## Design lenses for every module
 

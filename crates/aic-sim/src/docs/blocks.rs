@@ -206,14 +206,14 @@ fn tunable(r: &Rules, key: &str) -> Tunable {
         .unwrap_or_else(|| fail(&format!("docs: no tunable {key}")))
 }
 
-fn int(r: &Rules, key: &str) -> i64 {
+pub(super) fn int(r: &Rules, key: &str) -> i64 {
     match tunable(r, key).value {
         ParamValue::Int(n) => n,
         ParamValue::List(_) => fail(&format!("docs: {key} is a list")),
     }
 }
 
-fn list(r: &Rules, key: &str) -> Vec<i64> {
+pub(super) fn list(r: &Rules, key: &str) -> Vec<i64> {
     match tunable(r, key).value {
         ParamValue::Int(n) => vec![n],
         ParamValue::List(l) => l,
@@ -321,7 +321,7 @@ pub(super) fn corps_block(c: &Content) -> String {
 /// Cards of each stage a game dealt at `difficulty` holds: the engine's own
 /// deal, read back, so this can't drift from the rule (the rounds a game can
 /// last are the cards dealt).
-fn dealt(r: &Rules, difficulty: i64) -> [usize; 3] {
+pub(super) fn dealt(r: &Rules, difficulty: i64) -> [usize; 3] {
     let mut config = (*r.config).clone();
     config
         .apply_override(&format!("adversary.difficulty={difficulty}"))
@@ -361,221 +361,7 @@ pub(super) fn round_cap_block(r: &Rules) -> String {
     )
 }
 
-/// Level 4's row: a clause for each of its three dials that does something (177, 182: a dial at 0 prints none).
-fn level4_text(r: &Rules) -> String {
-    let mut clauses: Vec<String> = Vec::new();
-    if int(r, "adversary.discord_removed") > 0 {
-        clauses.push("A still shorter Discord deck: the removed cards count as tips already made, so the Discord strengths come a tip sooner".into());
-    }
-    if int(r, "adversary.tier2_early") > 0 {
-        clauses.push("tier-2 threats sooner".into());
-    }
-    let extra = int(r, "adversary.extra_corrupted");
-    if extra > 0 {
-        clauses.push(format!("{extra} more corrupted {} per country at setup", if extra == 1 { "city" } else { "cities" }));
-    }
-    let mut text = clauses.join("; ");
-    if let Some(c) = text.get(0..1) {
-        text = c.to_uppercase() + &text[1..];
-    }
-    if int(r, "adversary.discord_removed") == 0 {
-        let note = "the Discord deck as at level 3: `discord_removed` 0";
-        text = if text.is_empty() { format!("Nothing more: {note}") } else { format!("{text} ({note})") };
-    }
-    text
-}
-
-/// What each difficulty level adds.
-pub(super) fn difficulty_block(r: &Rules) -> String {
-    let t = |keys: &[&str]| {
-        let k: Vec<String> = keys.iter().map(|k| tick(r, k)).collect();
-        k.join(", ")
-    };
-    // Each of `steps`' dials (`research_strong_at` .. `stage_swap_at`) sits at whatever level its `_at` value names.
-    let mut rows: Vec<(String, Vec<&str>)> = vec![
-        // The incomes are a list with an entry a level, not a step: every level reads its own entry.
-        (
-            // 261: the research track's threshold (259) is such a list too.
-            "Base rules; the incomes and the research threshold, an entry a level".into(),
-            vec!["adversary.compute_income", "adversary.ambassador_income", "adversary.research_at"],
-        ),
-        (String::new(), vec![]),
-        (String::new(), vec![]),
-        (
-            "Stage-II cards removed, stage-I cards added back".into(),
-            vec!["adversary.stage2_removed", "adversary.stage1_added"],
-        ),
-        (level4_text(r), vec!["adversary.discord_removed", "adversary.tier2_early", "adversary.extra_corrupted"]),
-    ];
-    // 182: the sites `corrupt_cut` lowers, read from the list (city, station, factory, land), not printed whole.
-    let cut_sites: Vec<&str> = ["city", "station", "factory", "land"]
-        .into_iter()
-        .zip(list(r, "adversary.corrupt_cut"))
-        .filter(|&(_, cut)| cut > 0)
-        .map(|(site, _)| site)
-        .collect();
-    let cut_text = format!(
-        "{} corrupt with fewer agents (from `corrupt_cut_at`)",
-        if cut_sites.is_empty() { "no site".to_string() } else { cut_sites.join(", ") }
-    );
-    let steps: [(&str, &str, &[&str]); 8] = [
-        ("adversary.research_strong_at", "the research rule's stronger effect (from `research_strong_at`)",
-            &["adversary.research_strong_at"]),
-        // 263: below it, a "Botnets spread" line does nothing.
-        ("adversary.botnet_spread_at", "botnets spread (an event or project's \"Botnets spread\" line; from `botnet_spread_at`)",
-            &["adversary.botnet_spread_at"]),
-        ("adversary.corrupt_cut_at", &cut_text,
-            &["adversary.corrupt_cut", "adversary.corrupt_cut_at"]),
-        // 263: the top levels' reach (5, never, at r124: screened, not shipped).
-        ("adversary.city_cut_at", "a city corrupts with one agent fewer again (from `city_cut_at`)",
-            &["adversary.city_cut_at"]),
-        ("adversary.counter_bonus_at", "counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`)",
-            &["adversary.counter_bonus_all", "adversary.counter_bonus_credits", "adversary.counter_bonus", "adversary.counter_bonus_at"]),
-        ("adversary.counter_more_at", "counters cost more again (from `counter_more_at`)",
-            &["adversary.counter_more_all", "adversary.counter_more_credits", "adversary.counter_more_at"]),
-        ("adversary.board_difficulty_at", "the adversary board's difficulty line (from `board_difficulty_at`)",
-            &["adversary.board_difficulty_at"]),
-        ("adversary.stage_swap_at", "a stage-I card swapped for a stage-III card (the table above; from `stage_swap_at`)",
-            &["adversary.stage1_removed", "adversary.stage3_added", "adversary.stage_swap_at"]),
-    ];
-    for (dial, text, keys) in steps {
-        // A dial past the top level (5) never applies: it is no level's step.
-        let at = int(r, dial).max(0) as usize;
-        if at >= rows.len() {
-            continue;
-        }
-        rows[at].0 = if rows[at].0.is_empty() {
-            let mut c = text.chars();
-            c.next().map(|f| f.to_uppercase().chain(c).collect()).unwrap_or_default()
-        } else {
-            format!("{}; {text}", rows[at].0)
-        };
-        rows[at].1.extend(keys.iter().copied());
-    }
-    // A level nothing moved onto says so.
-    for row in rows.iter_mut().filter(|r| r.0.is_empty()) {
-        row.0 = "Nothing more".into();
-    }
-    let rows: Vec<(String, String)> = rows.into_iter().map(|(text, keys)| (text, t(&keys))).collect();
-    let rows = rows
-        .into_iter()
-        .enumerate()
-        .map(|(i, (adds, keys))| vec![i.to_string(), adds.to_string(), keys])
-        .collect();
-    table(&["Level", "Adds", "Tunable"], rows)
-}
-
-/// 229 (Matt's ruling): the rulebook's §21 table, each level whole, in players' words, read from the same
-/// tunables and deal as [`difficulty_block`] and [`round_cap_block`], so it can't go stale.
-pub(super) fn rulebook_difficulty_block(r: &Rules) -> String {
-    let d = tunable(r, "adversary.difficulty");
-    let at = |key: &str, level: i64| level >= int(r, key);
-    let base = [
-        int(r, "adversary.corrupt_at"),
-        int(r, "adversary.corrupt_station_at"),
-        int(r, "adversary.corrupt_factory_at"),
-        int(r, "adversary.corrupt_land_at"),
-        int(r, "adversary.corrupt_node_at"),
-    ];
-    let cut = list(r, "adversary.corrupt_cut");
-    let compute = list(r, "adversary.compute_income");
-    let agents = list(r, "adversary.ambassador_income");
-    let research = list(r, "adversary.research_at");
-    let entry = |l: &[i64], level: i64| l[(level as usize).min(l.len() - 1)];
-    let rows = (d.min..=d.max)
-        .map(|level| {
-            let corrupt: Vec<String> = base
-                .iter()
-                .enumerate()
-                .map(|(i, n)| {
-                    let c = if at("adversary.corrupt_cut_at", level) { cut.get(i).copied().unwrap_or(0) } else { 0 };
-                    // 263: `city_cut_at`'s one fewer again, a city's alone (the first entry).
-                    let reach = i64::from(i == 0 && at("adversary.city_cut_at", level));
-                    (n - c - reach).max(1).to_string()
-                })
-                .collect();
-            let (mut credits, mut other, mut first) = (0, 0, 0);
-            if at("adversary.counter_bonus_at", level) {
-                credits += int(r, "adversary.counter_bonus_credits");
-                other += int(r, "adversary.counter_bonus_all");
-                first += int(r, "adversary.counter_bonus");
-            }
-            if at("adversary.counter_more_at", level) {
-                credits += int(r, "adversary.counter_more_credits");
-                other += int(r, "adversary.counter_more_all");
-            }
-            let mut items: Vec<String> = Vec::new();
-            if credits > 0 {
-                items.push(format!("credits +{credits}"));
-            }
-            if other > 0 {
-                items.push(format!("other resources +{other}"));
-            }
-            if first > 0 {
-                items.push(format!("the first option's +{first} more"));
-            }
-            let n = dealt(r, level);
-            // The level-4 dials ("difficulty 4+" in the engine, not a tunable step).
-            let mut more: Vec<String> = Vec::new();
-            // 263: a level under `botnet_spread_at` skips every "Botnets spread" line.
-            if !at("adversary.botnet_spread_at", level) {
-                more.push("botnets don't spread".into());
-            }
-            if level >= 4 {
-                let t2 = int(r, "adversary.tier2_early");
-                if t2 > 0 {
-                    more.push(format!("tier-2 threats {t2} round{} sooner", if t2 == 1 { "" } else { "s" }));
-                }
-                let disc = int(r, "adversary.discord_removed");
-                if disc > 0 {
-                    more.push(format!("{disc} Discord card{} removed", if disc == 1 { "" } else { "s" }));
-                }
-                let extra = int(r, "adversary.extra_corrupted");
-                if extra > 0 {
-                    more.push(format!("{extra} more corrupted cit{} a country", if extra == 1 { "y" } else { "ies" }));
-                }
-            }
-            let dash = |v: String| if v.is_empty() { "—".to_string() } else { v };
-            let extra_agents = entry(&agents, level);
-            // 261: the research rule's threshold and its stronger effect (259) move with the level too.
-            let fires = entry(&research, level);
-            let research = if fires <= 0 {
-                "—".to_string()
-            } else if at("adversary.research_strong_at", level) {
-                format!("{fires}, stronger")
-            } else {
-                fires.to_string()
-            };
-            vec![
-                level.to_string(),
-                corrupt.join(" / "),
-                dash(items.join(", ")),
-                if at("adversary.board_difficulty_at", level) { "yes".into() } else { "—".into() },
-                format!("{} / {} / {}", n[0], n[1], n[2]),
-                n.iter().sum::<usize>().to_string(),
-                entry(&compute, level).to_string(),
-                if extra_agents > 0 { format!("+{extra_agents}") } else { "—".into() },
-                research,
-                dash(more.join("; ")),
-            ]
-        })
-        .collect();
-    table(
-        &[
-            "Level",
-            "Corrupt numbers (city / station / factory / land / node)",
-            "Threat items",
-            "Adversary board's harder line",
-            "Event cards (I / II / III)",
-            "Rounds",
-            "Compute income a country",
-            "More agent income a country",
-            "Research cubes a country to fire its rule",
-            "Other",
-        ],
-        rows,
-    )
-}
+// 267: the difficulty tables are `ladder.rs`'s.
 
 /// What `key`, a list by board (093; one value sets every board), gives `board`.
 fn per_board(r: &Rules, key: &str, board: usize) -> String {

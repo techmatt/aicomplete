@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 124. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 125. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -348,7 +348,7 @@ adversary's compute arrives: its income, each botnet without a player's ambassad
 what was made since the last turn, onto the projects (§17). Then the **research track** is checked (below). Firewalls, cordons (§16) and
 no-Rally, no-Muster and no-Corrupt tokens (§12) come off.
 
-**Every Muster** is raised by the level surcharge (§21). A troop that
+**A Muster** lands what it prints at every level (§21). A troop that
 would land on a hex with the Protector's node (Wall, §5) or a no-Muster token stays in the supply.
 
 Whenever an agent lands where players' ambassadors stand, it cancels one of them, one for one (§8). A troop landing
@@ -356,12 +356,12 @@ does nothing to them until it marches (below).
 
 ### Corruption
 
-A place's **corrupt number** is how many agents it takes: city **5** at level 0 and **3** from level 1, station **3**,
-factory **3** (each 1 fewer from level 1, §21) and open land **3**. Only agents count. A neutral site with a **Liberated marker** (a player liberated it with Liberate or
+A place's **corrupt number** is how many agents it takes: city **5** (**3** from level 1: Sleeper Cells, §21), station **2**,
+factory **2** and open land **3**, printed on the map's sites. Only agents count. A neutral site with a **Liberated marker** (a player liberated it with Liberate or
 a liberate card; a station or factory a card frees takes none) takes **1 more**.
 
 **2 agents on your node's hex destroy your node**, whatever else is there (a city with your node loses the node at 2,
-and corrupts only at its own 4). The agents go back to the supply, and the node leaves no mark: losing it is
+and corrupts only at its own number). The agents go back to the supply, and the node leaves no mark: losing it is
 punishment enough. Protections apply (§13).
 
 Both happen in the Corrupt beat, two ways:
@@ -439,10 +439,10 @@ Every adversary board has a **research track** and a research rule of its own. C
 - the projects Backdoor Research, Lab Seizure and Station Coup: 2 a country;
 - the threats Wiper Malware, Data Breach and Zero Day, when they execute uncountered.
 
-In the Income beat, after the compute, if the track holds the **threshold** (5 cubes a country at levels 0-2, 4 at
-levels 3-4), spend that many (the rest stay) and the rule fires, once a round at most. The Militarist's is the
+In the Income beat, after the compute, if the track holds the **threshold** (5 cubes a country at level 0, 4 from
+level 1: its marker, §21), spend that many (the rest stay) and the rule fires, once a round at most. The Militarist's is the
 **Weapons Program: Muster 2** (each country, 2 troops on its lowest-numbered factory, else city). At level 3 and up
-it is **Muster 3**. Like every Muster, the level surcharge adds to it.
+it is **Muster 3** (level 3's rule, Arms Race).
 
 Take cubes off with **Counterintelligence Sweep** (remove 4, draw a card) and **Arms Inspectors** (remove 2 when built,
 and an Action: remove 2). The track is public: watch it as you watch the projects.
@@ -937,7 +937,7 @@ firewalled hex or one with a no-Corrupt token corrupts, a node included.
 
 > **Example: a tie stays.** A neutral city on hex 6 holds 2 agents. Hex 2, next to it and to no other city, holds
 > 1; hex 7 holds 2 and is next to hex 6 and to the city on hex 11, which holds 1. Hex 2's agent moves onto hex 6;
-> hex 7's two agents stay where they are. Hex 6 holds 3 and hex 11 holds 1, short of 4, so neither corrupts.
+> hex 7's two agents stay where they are. Hex 6 holds 3 and hex 11 holds 1: at level 0 (a city's 5) neither corrupts; from level 1 (3) hex 6 does.
 
 **What corruption destroys:** the node on the hex (§13), then every ambassador on it. Nothing else. A node lost to 2
 agents leaves no mark.
@@ -1031,7 +1031,7 @@ reshuffled deck has no card that fits, take the next card anyway.
 most agents on its own hex; tie: the lowest hex number. The same test holds for every type (a base is never the
 adversary's). A threat's two tokens never share a hex; a token with no place left gets none.
 
-**Difficulty.** From level 1, resource items on threats cost more (§21); tag items never change.
+**Difficulty.** A threat costs what it prints at every level (§21).
 
 *Sources: rules/threats.md; crates/aic-core/src/modules/threats/mod.rs, threats/counter.rs.*
 
@@ -1075,32 +1075,33 @@ Every board also has **Expand** (a node for nothing more), its base node route. 
 
 ## 21. Difficulty
 
-Each row is the whole level. Your own costs (claim, liberate, cards, actions) never change. The table is generated
-from the rules (`aic-sim docs`); the words below are not.
+The adversary's reference card prints this ladder. Levels are cumulative: each keeps every level below it, adds
+its setup (set once, before round 1) and at most one named rule. Each row shows what its level changes. Your own
+costs (claim, liberate, cards, actions) and the threats' costs never change. The table is generated from the rules
+(`aic-sim docs`); the words below are not.
 
 <!-- generated: rulebook_difficulty -->
-| Level | Corrupt numbers (city / station / factory / land / node) | Threat items | Adversary board's harder line | Event cards (I / II / III) | Rounds | Compute income a country | More agent income a country | Research cubes a country to fire its rule | Other |
-|---|---|---|---|---|---|---|---|---|---|
-| 0 | 5 / 3 / 3 / 3 / 2 | — | — | 5 / 5 / 3 | 13 | 0 | — | 5 | botnets don't spread |
-| 1 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +1 | — | 5 / 5 / 3 | 13 | 3 | — | 5 | — |
-| 2 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | yes | 5 / 5 / 3 | 13 | 5 | — | 5 | — |
-| 3 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | yes | 5 / 3 / 3 | 11 | 13 | — | 4, stronger | — |
-| 4 | 3 / 2 / 2 / 3 / 2 | credits +4, other resources +2 | yes | 4 / 3 / 4 | 11 | 18 | +1 | 4, stronger | tier-2 threats 1 round sooner |
+| Level | Name | Setup (set once; incomes and threshold a country) | Mid-game rule it adds | Rules active |
+|---|---|---|---|---|
+| 0 | **The Militarist** | Compute income 0; Agent income +0; Research threshold 5; Deck 5 / 5 / 3 (13 rounds); Sites print their corrupt numbers: city 5, station 2, factory 2, land 3 | — | 0 |
+| 1 | **Sleeper Cells**: *Cells wake in every city.* | Compute income 3; Research threshold 4 | When a Corrupt step checks a city, it falls at 3 agents, not 5. A card's Botnets spread line now takes effect. | 1 |
+| 2 | **War Footing**: *Every unanswered strike feeds the war machine.* | Compute income 5 | When a threat executes uncountered, the adversary also gains 4 compute. | 2 |
+| 3 | **Arms Race**: *The labs build weapons, not cures.* | Compute income 15; Deck 5 / 3 / 3 (11 rounds) | When Weapons Program fires, it musters 3, not 2. | 3 |
+| 4 | **War Economy**: *The whole economy marches.* | Compute income 18; Agent income +1; Deck 3 / 4 / 4 (11 rounds) | — | 3 |
 <!-- /generated -->
 
-- **Threat items:** each resource item on a threat costs that much more; a tag item ("2 Security") never changes.
-- **The adversary board's harder line:** every Muster (a stage-III event card's) lands 1 more troop in each country it
-  lands in, and a threat that takes effect unpaid also gives the adversary 4 compute, at its next compute step (§17).
-  A threat that only waits gives none.
-- **Agent income:** each country starts with 1 a round (Garrisons), plus the column's; the event cards raise it as
+- **Setup:** put the compute and agent income markers and the research marker on the adversary board's tracks at
+  the numbers shown, each a country (times the countries in play), and build the event deck with that many stage I / II / III cards (§6). Nothing else to remember.
+- **Mid-game rules** fire only on something you already resolve: a Corrupt step (Sleeper Cells), a threat taking
+  effect unpaid (War Footing: its 4 compute comes at the next compute step, §17; a threat that only waits gives none),
+  Weapons Program firing (Arms Race). *Rules active* counts the ones in play.
+- **Agent income:** each country starts with 1 a round (Garrisons), plus the marker's; the event cards raise it as
   the game goes on (§6), at every level.
-- **Tier-2 threats sooner:** the last stage-I card deals tier-2 threats.
-
-Both incomes climb with the level (never down). Level 0 deals the same event deck as level 1.
+- **Before level 1,** an event card's "Botnets spread" line does nothing: the botnets set up are the only ones.
 
 *Sources: rules/adversary.md (Difficulty, The event deck), rules/threats.md (Countering); configs/baseline.json
-`adversary` (`compute_income`, `ambassador_income`, `counter_bonus_*`, `counter_more_*`); content/adversary.json
-(Garrisons); crates/aic-core/src/modules/adversary/, modules/threats/counter.rs.*
+`adversary` (`compute_income`, `ambassador_income`, `research_at`, the deck's dials); content/adversary.json (the
+board's `levels`, Garrisons); crates/aic-sim/src/docs/ladder.rs (the table, from both).*
 
 ---
 

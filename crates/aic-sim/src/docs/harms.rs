@@ -71,7 +71,7 @@ const OWN_BURNS: usize = 12;
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 27] = [
+pub const RULE_HARMS: [(&str, &str, &str); 28] = [
     ("income and rally", "adversary pieces placed", "agent income fills each country's pool; every event's Rally X deals it one at a time onto the sites of its type (151; r80)"),
     ("income and rally", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
     ("income and rally", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
@@ -80,6 +80,8 @@ pub const RULE_HARMS: [(&str, &str, &str); 27] = [
     ("corruption", "node destroyed", "`corrupt_node_at` agents on a hex with a player's node destroy the node and leave no mark (175, r98; protections apply)"),
     ("corruption", "node destroyed", "a node on the corrupted hex itself is destroyed (its owner may spend a protection: r75)"),
     ("corruption", "city lost", "a city holding its corrupt number of agents becomes the adversary's until a player liberates it"),
+    // 267: the ladder's level-1 rule, Sleeper Cells: a city falls sooner (the one corrupt number a level lowers).
+    ("corruption", "city lost", "Sleeper Cells (level 1, from `corrupt_cut_at`): a Corrupt step checks a city at its printed number less `corrupt_cut`'s first entry"),
     ("corruption", "facilities corrupted", "a research station or factory that corrupts becomes the adversary's; a firewall or a Corrupt prohibition's token guards every path, flips and threats included (r79, D77; r80)"),
     ("corruption", "ambassadors lost", "player ambassadors on it are lost"),
     ("corruption", "production blacked out", "its energy goes to the adversary"),
@@ -89,11 +91,11 @@ pub const RULE_HARMS: [(&str, &str, &str); 27] = [
     ("corruption", "projects advanced (compute)", "before its megaproject is complete, an adversary station's cubes on Polar Compute Array pay 1 adversary compute each at completion (r79)"),
     // 259 (Matt: the adversary's stations after a project): once its megaproject is complete, a station feeds the track.
     ("corruption", "adversary research advanced", "once its megaproject is complete, an adversary station puts `station_cubes` research cubes a round on the adversary's research track (259; it made compute before)"),
-    ("adversary research", "adversary pieces placed", "the Militarist's Weapons Program: at `research_at` cubes a country the track spends them and lands 2 troops in each country as a Muster, 3 from `research_strong_at` (259)"),
+    ("adversary research", "adversary pieces placed", "the Militarist's Weapons Program: at `research_at` cubes a country the track spends them and lands 2 troops in each country as a Muster, 3 from `research_strong_at` (259; 267: level 3's rule, Arms Race)"),
     ("adversary research", "node destroyed", "the troops it lands march and strike nodes as any troop (259)"),
     // 146: no unprinted harm (the node loss near an uncountered threat and its floor sway are gone); the adversary
     // board may print compute per uncountered threat.
-    ("uncountered threats", "projects advanced (compute)", "the adversary board's printed compute per threat that executes uncountered (the Militarist's difficulty line, from `board_difficulty_at`)"),
+    ("uncountered threats", "projects advanced (compute)", "the adversary board's printed compute per threat that executes uncountered (the Militarist's level-2 rule, War Footing, from `board_difficulty_at`)"),
     ("war", "facilities destroyed", "surplus troops destroy factories"),
     ("war", "node destroyed", "the Militarist's War Takes Ground: a drone that destroys a factory destroys a node on its hex too (r83; protections apply)"),
     ("war", "Discord sway", "each factory destroyed in war sways `destruction_discord` toward Discord"),

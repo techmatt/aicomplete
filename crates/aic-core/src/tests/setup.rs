@@ -1,13 +1,15 @@
 use super::*;
 
 /// 229: the adversary deal's tunables, pinned so the deck sizes below don't move with a dial item:
-/// 5, 5, 3 cards; difficulty 3 removes two stage-II cards; difficulty 4 swaps a stage-I card for a stage-III.
-pub(super) const DEAL: [&str; 6] = [
+/// 5, 5, 3 cards; difficulty 3 removes two stage-II cards; difficulty 4 swaps two stage-I cards for a stage-II
+/// (267: tier-2 sooner, built into the stack) and a stage-III.
+pub(super) const DEAL: [&str; 7] = [
     "adversary.stage_cards=5,5,3",
     "adversary.stage1_added=0",
     "adversary.stage2_removed=2",
     "adversary.stage_swap_at=4",
-    "adversary.stage1_removed=1",
+    "adversary.stage1_removed=2",
+    "adversary.stage2_added=1",
     "adversary.stage3_added=1",
 ];
 

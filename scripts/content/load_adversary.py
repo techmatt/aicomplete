@@ -69,6 +69,10 @@ def board(b):
             "rules": [{"name": r["name"], "text": r["text"], "effects": ops(r["effects"])} for r in b["rules"]],
             "difficulty": {"text": b["difficulty"]["text"], "effects": ops(b["difficulty"]["effects"])},
             **({"research": research(b["research"])} if "research" in b else {}),
+            # 267: the ladder's named levels (each adds a setup change and at most one triggered rule); their
+            # numbers are the config's (`adversary.*`), set at setup.
+            "levels": [{"level": v["level"], "name": v["name"], "flavor": v["flavor"], "rule": v["rule"]}
+                       for v in b.get("levels", [])],
             "harms": b["harms"]}
 
 
@@ -114,7 +118,10 @@ def cards_page(threats, projects, adversary):
     if "research" in b:
         r = b["research"]
         out.append(f"- **{r['name']}** (research). {r['text']} Stronger: {r['strong']['text']}")
-    out += [f"- **Difficulty.** {b['difficulty']['text']}", ""]
+    for v in b.get("levels", []):
+        rule = f" {v['rule']}" if v["rule"] else " Setup only."
+        out.append(f"- **Level {v['level']}: {v['name']}.** *{v['flavor']}*{rule}")
+    out.append("")
     out += ["## Event deck", "", "| Card | Stage | Text |", "|---|---|---|"]
     for e in adversary["events"]:
         out.append(f"| {cell(e['name'])} | {e['stage']} | {cell(e['text'])} |")

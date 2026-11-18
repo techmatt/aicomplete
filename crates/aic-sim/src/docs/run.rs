@@ -10,6 +10,7 @@ use aic_core::Rules;
 
 use super::blocks::*;
 use super::harms::{harm_failures, harms_md};
+use super::ladder::{adversary_json, difficulty_block, rulebook_difficulty_block};
 use super::table;
 use crate::cli::{fail, load, rules, Options};
 
@@ -30,6 +31,8 @@ const OPS_MD: &str = "docs/ops.md";
 const OP_SOURCE: &str = "crates/aic-core/src/op.rs";
 const HARMS_MD: &str = "docs/harms.md";
 const FACES_JSON: &str = "web/card/faces.json";
+/// 267: the adversary reference card's words (`ladder::adversary_json`), for the face pipeline.
+const ADVERSARY_JSON: &str = "web/card/adversary.json";
 const PLAYER_AID_MD: &str = "docs/player-aid.md";
 const AGENTS_MD: &str = "docs/agents.md";
 /// Hand-written but for §21's difficulty table (229: `rulebook_difficulty_block`, read from the rules).
@@ -508,6 +511,7 @@ pub fn run(o: &Options) {
     // Path, what it should hold, what it holds.
     let mut files: Vec<(String, String, String)> = vec![
         (FACES_JSON.to_string(), faces_json(), on_disk(FACES_JSON)),
+        (ADVERSARY_JSON.to_string(), adversary_json(&r), on_disk(ADVERSARY_JSON)),
         (OPS_MD.to_string(), ops_md(&src), on_disk(OPS_MD)),
         (HARMS_MD.to_string(), harms_md(&r), on_disk(HARMS_MD)),
         (PLAYER_AID_MD.to_string(), player_aid_md(), on_disk(PLAYER_AID_MD)),
@@ -517,7 +521,7 @@ pub fn run(o: &Options) {
     files.push((AGENTS_MD.to_string(), fill(&agents_old, &strategies), agents_old));
     // 229 (Matt's ruling): the rulebook is hand-written but for §21's difficulty table.
     let book_old = on_disk(RULEBOOK_MD);
-    let book_blocks = |name: &str| (name == "rulebook_difficulty").then(|| super::blocks::rulebook_difficulty_block(&r));
+    let book_blocks = |name: &str| (name == "rulebook_difficulty").then(|| rulebook_difficulty_block(&r));
     files.push((RULEBOOK_MD.to_string(), fill(&book_old, &book_blocks), book_old));
     let rules_md = rules_files();
     let mut rules_new: Vec<(String, String)> = Vec::new();

@@ -68,15 +68,15 @@
         ],
         "supply_per_country": 24,
         "corrupt_at": 5,
-        "corrupt_station_at": 3,
-        "corrupt_factory_at": 3,
+        "corrupt_station_at": 2,
+        "corrupt_factory_at": 2,
         "corrupt_land_at": 3,
         "corrupt_node_at": 2,
         "retake_agents": 1,
         "corrupt_cut": [
           2,
-          1,
-          1,
+          0,
+          0,
           0
         ],
         "corrupt_cut_at": 1,
@@ -87,14 +87,8 @@
           100
         ],
         "counter_credit_pct": 100,
-        "counter_bonus": 0,
-        "counter_bonus_all": 1,
-        "counter_bonus_credits": 4,
-        "counter_bonus_at": 1,
-        "counter_more_all": 1,
-        "counter_more_credits": 0,
-        "counter_more_at": 2,
-        "stage1_removed": 1,
+        "stage1_removed": 2,
+        "stage2_added": 1,
         "stage3_added": 1,
         "stage_swap_at": 4,
         "stage2_removed": 2,
@@ -104,7 +98,7 @@
           0,
           3,
           5,
-          13,
+          15,
           18
         ],
         "ambassador_income": [
@@ -114,14 +108,13 @@
           0,
           1
         ],
-        "tier2_early": 1,
         "discord_removed": 0,
         "war_node": 1,
         "station_flip_at": 2,
         "botnet_compute": 1,
         "botnet_spread_at": 1,
         "board_difficulty_at": 2,
-        "research_at": [5, 5, 5, 4, 4],
+        "research_at": [5, 4, 4, 4, 4],
         "research_strong_at": 3
       }
     },

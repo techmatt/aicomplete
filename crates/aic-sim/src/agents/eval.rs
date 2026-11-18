@@ -1137,7 +1137,7 @@ impl Eval {
             picked: std::array::from_fn(aic_core::modules::cards::picked_key),
             counter_steps: world
                 .params
-                .get("adversary.counter_bonus_at")
+                .get("adversary.counter_credit_pct")
                 .is_some()
                 .then(|| threats::CounterSteps::read(&world)),
         }

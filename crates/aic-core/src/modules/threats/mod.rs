@@ -280,15 +280,10 @@ fn hit_seat(g: &mut GameState, cx: &mut Cx, t: &Key, name: &str, asks: bool) -> 
 /// The current adversary event card's first pull: (tier, tags).
 fn first_pull(w: &World, g: &GameState) -> Option<(u8, Vec<PullTag>)> {
     // 145: this round's card, the face-up one before the flip (a Discord tip in
-    // the Sway phase read last round's card), and d4's "tier-2 sooner" as the deal reads it.
-    let pile = adversary::round_pile(g);
-    let id = g.pile(pile).first().copied()?;
-    let c = w.content.adversary_card(&id);
-    let p = c.pulls.first()?;
-    // Before the flip this round's card heads the face-up pile: look past it, as the deal does.
-    let skip = usize::from(pile == adversary::NEXT);
-    let early = c.stage < 2 && adversary::level(w, 4) && adversary::tier2_soon(w, g, skip);
-    Some((if early && p.tier == 1 { 2 } else { p.tier }, p.tags.clone()))
+    // the Sway phase read last round's card).
+    let id = g.pile(adversary::round_pile(g)).first().copied()?;
+    let p = w.content.adversary_card(&id).pulls.first()?;
+    Some((p.tier, p.tags.clone()))
 }
 
 /// Deals `n` extra threats now (old-form `DealThreats`, Discord cards): pulls
@@ -299,7 +294,7 @@ pub fn deal_extra(g: &mut GameState, cx: &mut Cx, n: i64) {
     if !in_play(&w) {
         return;
     }
-    let tier = first_pull(&w, g).map_or_else(|| adversary::threat_tier(&w, g), |(t, _)| t);
+    let tier = first_pull(&w, g).map_or_else(|| adversary::threat_tier(g), |(t, _)| t);
     let countries = w.map.countries.len().max(1);
     for k in 0..n.max(0) {
         pull(g, cx, tier, &[PullTag::Any], k as usize % countries, None);
@@ -365,13 +360,9 @@ fn deal_round(g: &mut GameState, cx: &mut Cx) {
     };
     let card = w.content.adversary_card(&id);
     let n = w.map.countries.len();
-    // Difficulty 4: a stage-I card's tier-1 pulls deal tier 2 once a
-    // stage-II card is `tier2_early` cards ahead (`adversary::threat_tier`).
-    let early = card.stage < 2 && adversary::threat_tier(&w, g) >= 2;
-    let tier = |t: u8| if early && t == 1 { 2 } else { t };
     for p in &card.pulls {
         for c in 0..n {
-            pull(g, cx, tier(p.tier), &p.tags, c, None);
+            pull(g, cx, p.tier, &p.tags, c, None);
         }
     }
 }
@@ -581,7 +572,7 @@ impl Module for Threats {
             "tier",
             "threat tier",
             // 145: as `deal_extra` picks it (it said the card's stage).
-            first_pull(w, g).map_or_else(|| adversary::threat_tier(w, g), |(t, _)| t) as i64,
+            first_pull(w, g).map_or_else(|| adversary::threat_tier(g), |(t, _)| t) as i64,
             // 184: two tiers since 146 ("threat tier 2/3" pointed at a third).
             Some(2),
             "the tier a Discord card's extra threat comes from: this round's adversary card's first pull",

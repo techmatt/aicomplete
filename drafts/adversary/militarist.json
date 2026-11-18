@@ -56,21 +56,44 @@
    "botnet_compute": 1
   },
   "difficulty": {
-   "text": "Militarist, harder: every Muster lands 1 more Troop a country, and the adversary gains 4 compute for each threat that executes uncountered.",
+   "text": "When a threat executes uncountered, the adversary also gains 4 compute.",
    "effects": [
-    {
-     "op": "standing_troops_bonus",
-     "amount": 1
-    },
     {
      "op": "threat_compute",
      "amount": 4
     }
    ],
    "flags": [
-    "151: unchanged but for the words (Deploy, board)"
+    "151: unchanged but for the words (Deploy, board)",
+    "267: level 2's named rule, War Footing; its Muster +1 is cut (no mid-game arithmetic)"
    ]
   },
+  "levels": [
+   {
+    "level": 1,
+    "name": "Sleeper Cells",
+    "flavor": "Cells wake in every city.",
+    "rule": "When a Corrupt step checks a city, it falls at 3 agents, not 5. A card's Botnets spread line now takes effect."
+   },
+   {
+    "level": 2,
+    "name": "War Footing",
+    "flavor": "Every unanswered strike feeds the war machine.",
+    "rule": "When a threat executes uncountered, the adversary also gains 4 compute."
+   },
+   {
+    "level": 3,
+    "name": "Arms Race",
+    "flavor": "The labs build weapons, not cures.",
+    "rule": "When Weapons Program fires, it musters 3, not 2."
+   },
+   {
+    "level": 4,
+    "name": "War Economy",
+    "flavor": "The whole economy marches.",
+    "rule": ""
+   }
+  ],
   "research": {
    "name": "Weapons Program",
    "text": "When the research track reaches its threshold, spend it: Muster 2: each country, 2 Troops on its lowest-numbered factory (else city).",
@@ -92,7 +115,7 @@
      }
     ]
    },
-   "value": "259: 2 troops a country (troops -7, 4 at 2 countries, 28; 42 with the difficulty line's +1 from d2) a fire; 3 (+1) from research_strong_at: 56 at 2 countries. Over research_at 5 a country (10 at 2), a cube is 2.8-4.2, 7 at d3-d4 (4 a country)."
+   "value": "259: 2 troops a country (troops -7, 4 at 2 countries, 28) a fire; 3 from research_strong_at (Arms Race, d3): 42 at 2 countries. Over research_at 5 a country at d0 (10 at 2), a cube is 2.8; 4 a country from d1 (267): 3.5, 5.3 at d3-d4."
   },
   "harms": [
    "adversary pieces placed",

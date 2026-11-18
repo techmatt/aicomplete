@@ -46,28 +46,21 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("blight_discord", 0, 5, "Discord each Fallout token sways each round"),
     ParamSpec::list("counter_pct", 50, 300, "every resource counter item of a tier 1, 2 threat costs this percent of its printed amount (rounded up)"),
     ParamSpec::int("counter_credit_pct", 50, 300, "every credits counter item costs this percent of its amount after counter_pct (rounded up; 100 = unchanged)"),
-    ParamSpec::int("counter_bonus", 0, 10, "difficulty counter_bonus_at+: added to every resource item of each threat's first counter option"),
-    ParamSpec::int("counter_bonus_all", 0, 10, "difficulty counter_bonus_at+: added to every resource counter item of every threat"),
-    ParamSpec::int("counter_bonus_credits", 0, 20, "difficulty counter_bonus_at+: added to every credits counter item, in place of counter_bonus_all"),
-    ParamSpec::int("counter_more_all", 0, 10, "difficulty counter_more_at+: added again to every resource counter item but credits"),
-    ParamSpec::int("counter_more_credits", 0, 20, "difficulty counter_more_at+: added again to every credits counter item"),
-    ParamSpec::int("counter_more_at", 0, 5, "the difficulty level from which counter_more_all and counter_more_credits apply"),
-    ParamSpec::int("counter_bonus_at", 0, 5, "the difficulty level from which counter_bonus and counter_bonus_all apply"),
     ParamSpec::int("stage1_removed", 0, 3, "difficulty stage_swap_at+: stage-I cards removed"),
     ParamSpec::int("stage3_added", 0, 3, "difficulty stage_swap_at+: stage-III cards added (the cap holds, its end gets harder)"),
-    ParamSpec::int("stage_swap_at", 0, 5, "the difficulty level from which stage1_removed and stage3_added apply"),
+    ParamSpec::int("stage2_added", 0, 3, "267: difficulty stage_swap_at+: stage-II cards added back (tier-2 threats sooner, built into the stack)"),
+    ParamSpec::int("stage_swap_at", 0, 5, "the difficulty level from which stage1_removed, stage2_added and stage3_added apply"),
     ParamSpec::int("stage2_removed", 0, 3, "difficulty 3+: stage-II cards removed (a shorter round cap)"),
     ParamSpec::int("stage1_added", 0, 3, "difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step)"),
     ParamSpec::int("extra_corrupted", 0, 3, "difficulty 4: more cities per country start corrupted"),
     ParamSpec::list("compute_income", 0, 30, "the adversary's base compute income a country a round, at difficulty 0-4 (times the countries: per board)"),
     ParamSpec::list("ambassador_income", 0, 10, "the agent income a country a round (into each country's pool), at difficulty 0-4"),
-    ParamSpec::int("tier2_early", 0, 3, "difficulty 4+: tier-2 threats start this many rounds sooner"),
     ParamSpec::int("discord_removed", 0, 3, "difficulty 4+: Discord cards removed at setup (from tier 1)"),
     ParamSpec::int("war_node", 0, 1, "build (r83, the Militarist's War Takes Ground): 1: a drone strike that destroys a factory destroys a node on its hex too"),
     ParamSpec::int("station_flip_at", 0, 5, "agents on a player's research station before an effect can flip it (short of that, one lands there instead)"),
     ParamSpec::int("botnet_compute", 0, 5, "adversary compute each botnet makes a round (none with a player ambassador on it)"),
     ParamSpec::int("botnet_spread_at", 0, 5, "263: the difficulty level from which a 'Botnets spread' line (event cards, projects) spreads botnets; below it the line does nothing"),
-    ParamSpec::int("board_difficulty_at", 0, 5, "the difficulty level from which the adversary board's own difficulty line applies"),
+    ParamSpec::int("board_difficulty_at", 0, 5, "the difficulty level from which the adversary board's `difficulty` line applies (267: the Militarist's War Footing, level 2's named rule)"),
     ParamSpec::list("research_at", 0, 30, "259: research cubes a country that fire the adversary board's research rule, at difficulty 0-4 (times the countries; 0: never)"),
     ParamSpec::int("research_strong_at", 0, 5, "259: the difficulty level from which the research rule fires its stronger effect"),
 ];
@@ -174,25 +167,11 @@ pub fn start_supply(w: &World) -> i64 {
 }
 
 /// The tier an extra threat comes from (an old-form `DealThreats`): this
-/// round's card's stage, at most 3 (at difficulty 4, tier 2 `tier2_early`
-/// cards sooner). Event cards' pulls name their own tiers (135).
-pub fn threat_tier(w: &World, g: &GameState) -> u8 {
+/// round's card's stage (267: no look-ahead at any level; the ladder builds
+/// the deck instead). Event cards' pulls name their own tiers (135).
+pub fn threat_tier(g: &GameState) -> u8 {
     // 146: no tier 3; stages II and III deal tier 2.
-    if g.var(STAGE) >= 2 {
-        return 2;
-    }
-    if level(w, 4) && tier2_soon(w, g, 0) {
-        return 2;
-    }
-    1
-}
-
-/// Difficulty 4's look-ahead: a stage-II card within `tier2_early` cards of
-/// the face-up pile and the deck, past its first `skip` (145: in the Sway
-/// phase this round's card is still face up, so the deal's window starts one later).
-pub fn tier2_soon(w: &World, g: &GameState, skip: usize) -> bool {
-    let early = w.int("adversary.tier2_early") as usize;
-    g.pile(NEXT).iter().chain(g.pile(DECK)).skip(skip).take(early).any(|id| card(w, id).stage >= 2)
+    if g.var(STAGE) >= 2 { 2 } else { 1 }
 }
 
 pub(super) fn card<'w>(w: &World<'w>, id: &str) -> &'w AdversaryCard {
@@ -253,7 +232,9 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
     // 200 (r88): 196's `stage_extra` (two more event cards at d0) is gone: d0's band comes from the players' side.
     let dealt = [
         (stage_cards[0] + if difficulty >= 3 { b.int("stage1_added")? } else { 0 } - if swap { b.int("stage1_removed")? } else { 0 }).max(0),
-        (stage_cards[1] - if difficulty >= 3 { b.int("stage2_removed")? } else { 0 }).max(0),
+        // 267: d4's "tier-2 threats sooner" is the stack's build: a stage-II card in a stage-I card's place.
+        (stage_cards[1] - if difficulty >= 3 { b.int("stage2_removed")? } else { 0 } + if swap { b.int("stage2_added")? } else { 0 })
+            .max(0),
         stage_cards[2] + if swap { b.int("stage3_added")? } else { 0 },
     ];
     // An empty deck loses before round 1's first decision (020: it was accepted).

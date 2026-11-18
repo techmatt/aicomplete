@@ -201,7 +201,7 @@
     "reuse": {"credits": 5, "per": "105: another building's Action used again (about a typical Action's use)"},
     "discard_hand": {"credits": 1, "per": "105: a card discarded (rates.hand_discards a use): the resource at its rate less rates.dead_card (a card you would sell)"},
     "troop_steps": {"credits": 0, "per": "a twist"},
-    "standing_troops_bonus": {"credits": 0, "per": "the adversary board's difficulty line, never a player's"},
+    "standing_troops_bonus": {"credits": 0, "per": "a board line no content prints since 267 (it was the d2 Muster surcharge), never a player's"},
     "threat_compute": {"credits": 0, "per": "the adversary board's compute per uncountered threat (146), never a player's"},
     "adversary_factory": {"credits": -15, "per": "adversary factory built (134's anchor)"},
     "compute_per_missing": {"credits": -1.1, "per": "compute a player without the resource gives"},

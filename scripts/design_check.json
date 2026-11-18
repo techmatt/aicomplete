@@ -394,7 +394,7 @@
     "max": 10
   },
   "tokens": {
-    "note": "table work a round: the adversary's ops (games.jsonl adversary_ops) and these player-side counters, per round, against --old",
+    "note": "table work a round: the adversary's ops (games.jsonl adversary_ops; 267: every compute point onto a project counts as one, so compute income moves it point for point) and these player-side counters, per round, against --old",
     "player_counters": [
       "board.node_placed",
       "board.troop_moves",
@@ -407,6 +407,11 @@
       "board.amb_moves."
     ],
     "rise_max": 0.1
+  },
+  "ladder": {
+    "note": "267 (Matt's ruling, soft): the difficulty ladder's named mid-game rules (web/card/adversary.json, from aic-sim docs): about one new a level, about three active at the top",
+    "max_new": 1,
+    "max_active": 3
   },
   "dials": {
     "note": "a baseline.json number moved by this share or more in a change that also edits content/ or a module's rules",

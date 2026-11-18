@@ -54,40 +54,33 @@ conventions: [README.md](README.md).*
 | `adversary.stage_cards` | 5, 5, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
 | `adversary.supply_per_country` | 24 | 0..40 | agents in the supply per country |
 | `adversary.corrupt_at` | 5 | 1..20 | a city's corrupt number: the agents on it that corrupt it (coastal cities too) |
-| `adversary.corrupt_station_at` | 3 | 1..20 | a research station's corrupt number |
-| `adversary.corrupt_factory_at` | 3 | 1..20 | a factory's corrupt number |
+| `adversary.corrupt_station_at` | 2 | 1..20 | a research station's corrupt number |
+| `adversary.corrupt_factory_at` | 2 | 1..20 | a factory's corrupt number |
 | `adversary.corrupt_land_at` | 3 | 1..20 | open land's corrupt number (only a Corrupt open land line; it takes Fallout) |
 | `adversary.corrupt_node_at` | 2 | 1..20 | a node's corrupt number: a hex with a player's node and this many agents loses the node |
 | `adversary.retake_agents` | 1 | 0..5 | 253: agents beyond the corrupt number to retake a neutral site a player liberated (its Liberated marker; 0: none) |
-| `adversary.corrupt_cut` | 2, 1, 1, 0 | 0..5 | difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land) |
+| `adversary.corrupt_cut` | 2, 0, 0, 0 | 0..5 | difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land) |
 | `adversary.corrupt_cut_at` | 1 | 0..5 | the difficulty level from which corrupt_cut applies |
 | `adversary.city_cut_at` | 5 | 0..5 | 263: the difficulty level from which a city (coastal too) corrupts with one agent fewer again, after corrupt_cut (5: never) |
 | `adversary.blight_discord` | 1 | 0..5 | Discord each Fallout token sways each round |
 | `adversary.counter_pct` | 100, 100 | 50..300 | every resource counter item of a tier 1, 2 threat costs this percent of its printed amount (rounded up) |
 | `adversary.counter_credit_pct` | 100 | 50..300 | every credits counter item costs this percent of its amount after counter_pct (rounded up; 100 = unchanged) |
-| `adversary.counter_bonus` | 0 | 0..10 | difficulty counter_bonus_at+: added to every resource item of each threat's first counter option |
-| `adversary.counter_bonus_all` | 1 | 0..10 | difficulty counter_bonus_at+: added to every resource counter item of every threat |
-| `adversary.counter_bonus_credits` | 4 | 0..20 | difficulty counter_bonus_at+: added to every credits counter item, in place of counter_bonus_all |
-| `adversary.counter_more_all` | 1 | 0..10 | difficulty counter_more_at+: added again to every resource counter item but credits |
-| `adversary.counter_more_credits` | 0 | 0..20 | difficulty counter_more_at+: added again to every credits counter item |
-| `adversary.counter_more_at` | 2 | 0..5 | the difficulty level from which counter_more_all and counter_more_credits apply |
-| `adversary.counter_bonus_at` | 1 | 0..5 | the difficulty level from which counter_bonus and counter_bonus_all apply |
-| `adversary.stage1_removed` | 1 | 0..3 | difficulty stage_swap_at+: stage-I cards removed |
+| `adversary.stage1_removed` | 2 | 0..3 | difficulty stage_swap_at+: stage-I cards removed |
 | `adversary.stage3_added` | 1 | 0..3 | difficulty stage_swap_at+: stage-III cards added (the cap holds, its end gets harder) |
-| `adversary.stage_swap_at` | 4 | 0..5 | the difficulty level from which stage1_removed and stage3_added apply |
+| `adversary.stage2_added` | 1 | 0..3 | 267: difficulty stage_swap_at+: stage-II cards added back (tier-2 threats sooner, built into the stack) |
+| `adversary.stage_swap_at` | 4 | 0..5 | the difficulty level from which stage1_removed, stage2_added and stage3_added apply |
 | `adversary.stage2_removed` | 2 | 0..3 | difficulty 3+: stage-II cards removed (a shorter round cap) |
 | `adversary.stage1_added` | 0 | 0..3 | difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step) |
 | `adversary.extra_corrupted` | 0 | 0..3 | difficulty 4: more cities per country start corrupted |
-| `adversary.compute_income` | 0, 3, 5, 13, 18 | 0..30 | the adversary's base compute income a country a round, at difficulty 0-4 (times the countries: per board) |
+| `adversary.compute_income` | 0, 3, 5, 15, 18 | 0..30 | the adversary's base compute income a country a round, at difficulty 0-4 (times the countries: per board) |
 | `adversary.ambassador_income` | 0, 0, 0, 0, 1 | 0..10 | the agent income a country a round (into each country's pool), at difficulty 0-4 |
-| `adversary.tier2_early` | 1 | 0..3 | difficulty 4+: tier-2 threats start this many rounds sooner |
 | `adversary.discord_removed` | 0 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
 | `adversary.war_node` | 1 | 0..1 | build (r83, the Militarist's War Takes Ground): 1: a drone strike that destroys a factory destroys a node on its hex too |
 | `adversary.station_flip_at` | 2 | 0..5 | agents on a player's research station before an effect can flip it (short of that, one lands there instead) |
 | `adversary.botnet_compute` | 1 | 0..5 | adversary compute each botnet makes a round (none with a player ambassador on it) |
 | `adversary.botnet_spread_at` | 1 | 0..5 | 263: the difficulty level from which a 'Botnets spread' line (event cards, projects) spreads botnets; below it the line does nothing |
-| `adversary.board_difficulty_at` | 2 | 0..5 | the difficulty level from which the adversary board's own difficulty line applies |
-| `adversary.research_at` | 5, 5, 5, 4, 4 | 0..30 | 259: research cubes a country that fire the adversary board's research rule, at difficulty 0-4 (times the countries; 0: never) |
+| `adversary.board_difficulty_at` | 2 | 0..5 | the difficulty level from which the adversary board's `difficulty` line applies (267: the Militarist's War Footing, level 2's named rule) |
+| `adversary.research_at` | 5, 4, 4, 4, 4 | 0..30 | 259: research cubes a country that fire the adversary board's research rule, at difficulty 0-4 (times the countries; 0: never) |
 | `adversary.research_strong_at` | 3 | 0..5 | 259: the difficulty level from which the research rule fires its stronger effect |
 | `alignment.tip_per_player` | 3 | 1..50 | the Unity track tips when it holds this many Sway per player |
 | `alignment.discord_tip_per_player` | 4 | 1..50 | the Discord track tips when it holds this many Sway per player |

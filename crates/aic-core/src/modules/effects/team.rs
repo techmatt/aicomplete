@@ -26,7 +26,7 @@ pub(super) fn troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64, each
     // 259: the research rule's troops are tallied apart from the projects'.
     let tally = if ctx.label == "research" { "adversary.research_troops" } else { ctx.says("threats.troops", "adversary.project_troops") };
     // 151: an event's or a project's troops land deterministically (the lowest-numbered).
-    // 175: each of those is a Muster: a Muster prohibition stops it and the level surcharge adds to it.
+    // 175: each of those is a Muster: a Muster prohibition stops it (267: no level surcharge adds to it).
     // 259: so is the research rule's (the Militarist's Weapons Program).
     let muster = ctx.threat.is_none() && matches!(ctx.label, "standing" | "project" | "research");
     let count = if muster { count + adversary::muster_bonus(&w) } else { count };
@@ -295,7 +295,7 @@ pub(super) fn factory_troops(g: &mut GameState, cx: &mut Cx, count: i64) {
         let placed = (0..count).filter(|_| adversary::place_troop(g, cx, h, "project")).count();
         cx.tally(g, "adversary.factory_troops", placed as i64);
         cx.tally(g, "adversary.project_troops", placed as i64);
-        // 197: "makes", not "musters": no Muster rule (surcharge, no-Muster token) applies here; Wall (r98) does.
+        // 197: "makes", not "musters": no Muster rule (a no-Muster token) applies here; Wall (r98) does.
         cx.note(Some(h), || format!("The adversary factory at {} makes {}", hex_name(&w, h), troop_words(placed, count)));
     }
 }

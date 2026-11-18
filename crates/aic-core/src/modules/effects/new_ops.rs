@@ -41,7 +41,7 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
         }
         Op::LoseNodeOr { resource, amount, count } => lose_node_or(g, cx, ctx, *resource, *amount, *count)?,
         Op::DealThreats { count, tier, .. } => {
-            let tier = tier.unwrap_or_else(|| adversary::threat_tier(&w, g));
+            let tier = tier.unwrap_or_else(|| adversary::threat_tier(g));
             // 237: one home for the reach (the worth reads it too); the no-field form is `threats::deal_extra`.
             let countries = if e.deals_each_country() {
                 (0..w.map.countries.len()).collect()

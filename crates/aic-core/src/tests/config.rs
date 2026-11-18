@@ -184,7 +184,7 @@ fn stage_cards_are_checked_at_what_the_difficulty_deals() {
     assert!(Rules::new(&below).is_ok(), "below stage_swap_at adds none");
     let over = baseline_with(&[&format!("adversary.stage_cards=4,5,{have}"), &format!("adversary.difficulty={at}")]);
     assert!(Rules::new(&over).is_err(), "stage_swap_at adds one");
-    let empty = baseline_with(&["adversary.stage_cards=1,1,0", "adversary.stage1_removed=1", "adversary.stage2_removed=1", "adversary.stage3_added=0", &format!("adversary.difficulty={at}")]);
+    let empty = baseline_with(&["adversary.stage_cards=1,1,0", "adversary.stage1_removed=1", "adversary.stage2_removed=1", "adversary.stage2_added=0", "adversary.stage3_added=0", &format!("adversary.difficulty={at}")]);
     assert!(Rules::new(&empty).is_err(), "nothing left to deal");
 }
 

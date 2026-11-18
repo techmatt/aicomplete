@@ -10,7 +10,10 @@ Project slots: Open, Open, Open.
 - **Warmongering.** Each round, a military base with an adversary Troop on or next to it makes 1 extra Drone, even past its cap; at most 1 extra a base in each production, whatever makes it.
 - **War Takes Ground.** When a Drone destroys a factory, it also destroys a Node on that hex.
 - **Weapons Program** (research). When the research track reaches its threshold, spend it: Muster 2: each country, 2 Troops on its lowest-numbered factory (else city). Stronger: Muster 3 instead.
-- **Difficulty.** Militarist, harder: every Muster lands 1 more Troop a country, and the adversary gains 4 compute for each threat that executes uncountered.
+- **Level 1: Sleeper Cells.** *Cells wake in every city.* When a Corrupt step checks a city, it falls at 3 agents, not 5. A card's Botnets spread line now takes effect.
+- **Level 2: War Footing.** *Every unanswered strike feeds the war machine.* When a threat executes uncountered, the adversary also gains 4 compute.
+- **Level 3: Arms Race.** *The labs build weapons, not cures.* When Weapons Program fires, it musters 3, not 2.
+- **Level 4: War Economy.** *The whole economy marches.* Setup only.
 
 ## Event deck
 

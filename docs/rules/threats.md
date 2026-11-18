@@ -72,10 +72,8 @@ A player's card that jams or counters a threat reaches only threats they are nea
 tag or Universal); a jam takes its amount off every resource item of every option. A Unity reward reaches any threat.
 **Standing counters:** a tier-2 capstone with an automatic counter takes its amount off each threat of its type on
 the table, wherever it is and whenever it was dealt (148: no longer only those its holder is near); one it pays in
-full is countered at once (118). From difficulty
-`counter_bonus_at` (1) every resource item costs `counter_bonus_all` (1) more, a credits item `counter_bonus_credits` (4) more
-instead, and the first option's items `counter_bonus` (0) more still; from `counter_more_at` (2) every item
-`counter_more_all` (1) more again, credits `counter_more_credits` (0).
+full is countered at once (118). A threat costs what it prints at every level (267: the ladder adds no
+surcharge).
 
 **Counters (146; Matt's standard).** **One counter option, two at most**: a scarce currency or a tag sacrifice, or
 credits ("pay 3 energy or 12 credits"). Printed amounts are paid (`counter_pct` 100 by tier and `counter_credit_pct`
@@ -92,7 +90,7 @@ that stands or occupies, drones past their cap). No counter prints 1 credit (Mat
 an uncountered threat is refunded, then each threat (country 0, 1, ...) does what it prints, its player harm on the
 nearest player, and is discarded with its tokens. **No harm is unprinted** (146: the node loss for every player near
 an uncountered threat and the floor sway toward Discord are gone). The adversary board may print compute for each
-uncountered threat (the Militarist's difficulty line: 4, from `board_difficulty_at` (2); [adversary.md](adversary.md)).
+uncountered threat (the Militarist's level-2 rule, War Footing: 4, from `board_difficulty_at` (2); [adversary.md](adversary.md)).
 Only threats on the board during this round's counter phase execute: one dealt later gets a printed **waits** token
 and executes next round,
 after a counter phase in which it can be paid (Matt). **A resource harm reads "pays N or discards M cards"** (the
@@ -119,12 +117,12 @@ ambassadors or discarding cards, losing a building, or a node, or cubes onto the
 insight, spent the turn it comes, r82; the full list: [harms.md](../harms.md)). A player harm always hits the one player whose
 node is nearest the threat. Tier 1 is small; tier 2 is about two tier-1s. Compute waits for the adversary's compute
 step, then fills the leftmost project on its board; a full project fires there, the rest slide left and the right
-slot refills. **Harder levels** make threats
-harsher, not more: difficulty 1 lets cities, stations and factories corrupt with one fewer agent and makes every counter cost 1 more of
-each thing (4 more credits), 2 adds 1 more again (credits unchanged) and the Militarist's line (4 compute for each
-unpaid threat, 1 more troop on every Muster), 3 gives a shorter, busier game, and 4 deals tier-2 threats sooner; no
-level deals an extra threat. Levels 1 to 4 also raise the adversary's compute income (most at 3); its agent income
-is 1 a country (Garrisons), 1 more at level 4, and grows as the event cards print income lines ([adversary.md](adversary.md)).
+slot refills. **Harder levels** make the adversary harsher, not threats more or dearer: each level is named,
+adds setup (the income and research markers, the event deck) and at most one rule that fires on an event you already
+resolve: level 1 lets a city corrupt at 3 and botnets spread, 2 gives 4 compute for each unpaid threat, 3 a shorter,
+busier game whose research rule musters more, and 4 a harder deck; no level deals an extra threat
+([adversary.md](adversary.md) *Difficulty*). The agent income is 1 a country (Garrisons), more at level 4, and grows as
+the event cards print income lines.
 **What resisted a summary:** that only resource options pool.
 
 **Compute.** Many threats also give the adversary compute, onto its projects ([adversary.md](adversary.md)), when they

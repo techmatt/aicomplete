@@ -21,6 +21,7 @@
 mod blocks;
 mod current_docs;
 mod harms;
+mod ladder;
 mod run;
 mod spelling;
 #[cfg(test)]

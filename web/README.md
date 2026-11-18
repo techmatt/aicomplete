@@ -147,7 +147,7 @@ elsewhere; a taken port says so and exits.
   `art-originals/` scene `tools/card-art/scenes.json` names, if any; a kind with no frame gets a plain face. Scenes
   load on scroll (gray for a second).
 - **The export** (`web/scripts/cards-export.mjs`, to `out/cards-export.json`) reads `content/`,
-  `web/card/faces.json`, `configs/baseline.json` and the stats and pricing files below, never running `aic-sim
+  `web/card/faces.json`, `web/card/adversary.json`, `configs/baseline.json` and the stats and pricing files below, never running `aic-sim
   docs`: a card edited without it shows its old text. **Rebuild** on the page re-exports in ~0.1 s.
 - **Stats:** the newest `results.json` of 100+ games with a per-card `cards` table, in `experiments/results/` or
   the checkout's `out/experiments/` (highest revision, then most plain agents, then most games); labels carry the revision; a

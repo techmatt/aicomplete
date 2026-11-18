@@ -5,7 +5,7 @@
 
 ## Each round
 
-The adversary is a **board** (the Militarist's slots, rules and difficulty line:
+The adversary is a **board** (the Militarist's slots, rules and named levels:
 [adversary-cards.md](../adversary-cards.md); **War Takes Ground**: [war.md](war.md)), an **income** and an **event
 deck**. Its turn, after the round's Sway step, is **four beats** (phases: [economy.md](economy.md)); threats execute after production ([threats.md](threats.md)).
 
@@ -23,10 +23,10 @@ deck**. Its turn, after the round's Sway step, is **four beats** (phases: [econo
 **research track**. Cubes come from its corrupted stations once their country's megaproject is complete (`station_cubes`
 a round, in place of compute; none under a player ambassador), from projects' "cubes onto the research track" lines
 (Backdoor Research, Lab Seizure, Station Coup: 2 a country) and from threats' uncountered lines (Wiper Malware,
-Data Breach, Zero Day). Once a round, after the compute step, a track holding **`research_at` a country** (5, 5, 5, 4,
+Data Breach, Zero Day). Once a round, after the compute step, a track holding **`research_at` a country** (5, 4, 4, 4,
 4 at d0-d4, times the countries) spends that many, keeps the rest, and fires the rule once; from
 `research_strong_at` (3) its stronger effect. The Militarist's is **Weapons Program**: Muster 2 (each country, 2
-troops on its lowest-numbered factory, else city; a Muster, so the difficulty line adds 1), stronger Muster 3.
+troops on its lowest-numbered factory, else city), stronger Muster 3 (level 3's rule, Arms Race).
 Players take cubes off with Counterintelligence Sweep (4) and Arms Inspectors (2 when built, 262, and an Action, 2). `research_at` all 0 is
 the off arm: stations make compute again.
 
@@ -45,15 +45,15 @@ choose whose).
 **A blocked landing stays in the supply:** a **firewall** or a Unity **prohibition** token (no-Rally, no-Muster,
 no-Corrupt) blocks its step on its hex ([README.md](README.md#terms)); so does Wall for a Muster ([war.md](war.md)).
 
-**Muster N.** N troops on each country's lowest-numbered factory, anyone's, else its lowest-numbered city, +1 from the
-difficulty surcharge. No project musters.
+**Muster N.** N troops on each country's lowest-numbered factory, anyone's, else its lowest-numbered city. No
+project musters.
 
-**Corrupt X.** X is a type: **cities** (`corrupt_at` 5: d0's; `corrupt_cut` makes it 3 from d1, 263), **coastal cities** (a city's number),
-**research stations** (`corrupt_station_at` 3), **factories** (`corrupt_factory_at` 3), **open land**
+**Corrupt X.** X is a type: **cities** (`corrupt_at` 5, printed on the map; from d1 Sleeper Cells makes it 3: `corrupt_cut`), **coastal cities** (a city's number),
+**research stations** (`corrupt_station_at` 2, printed), **factories** (`corrupt_factory_at` 2, printed), **open land**
 (`corrupt_land_at` 3; an empty land hex; it takes Fallout). Only an X not yet the adversary's counts. In each country:
 **every agent next to exactly one X moves onto it** (across borders too; one next to two or more stays); then **every
-X holding its number of agents corrupts**, and its agents go to the supply. A line may print "(1 fewer)"; difficulty
-lowers a city's, station's and factory's number (`corrupt_cut`; not land's or a node's). A neutral site holding a
+X holding its number of agents corrupts**, and its agents go to the supply. A line may print "(1 fewer)"; of the
+ladder only Sleeper Cells lowers one, a city's. A neutral site holding a
 **Liberated marker** (a player liberated it, [ambassadors.md](ambassadors.md)) needs `retake_agents` (1) agent more, in
 Corrupt lines and natural corruption alike (253); a node on that hex takes none. **One aftermath: whatever
 corrupts takes one adversary mark.**
@@ -147,7 +147,7 @@ prints its lines in the Card and Corrupt beats' order (`drafts/adversary/check.p
 | 1 | 5 | 5 | 3 | 6 | 13 |
 | 2 | 5 | 5 | 3 | 6 | 13 |
 | 3 | 5 | 3 | 3 | 6 | 11 |
-| 4 | 4 | 3 | 4 | 5 | 11 |
+| 4 | 3 | 4 | 4 | 4 | 11 |
 <!-- /generated -->
 
 <!-- generated: adversary -->
@@ -172,20 +172,24 @@ prints its lines in the Card and Corrupt beats' order (`drafts/adversary/check.p
 <!-- /generated -->
 
 **For new players:** [rulebook.md](../rulebook.md) §6. About one project a round lands; the compute pile, the card
-ahead and the pools are face up, so players armor or clear sites a round ahead.
+ahead and the pools are face up.
 
 ## Difficulty (`difficulty`, 0–4; each level keeps the steps below it)
 
 <!-- generated: difficulty -->
-| Level | Adds | Tunable |
-|---|---|---|
-| 0 | Base rules; the incomes and the research threshold, an entry a level | `compute_income` 0, 3, 5, 13, 18, `ambassador_income` 0, 0, 0, 0, 1, `research_at` 5, 5, 5, 4, 4 |
-| 1 | Botnets spread (an event or project's "Botnets spread" line; from `botnet_spread_at`); city, station, factory corrupt with fewer agents (from `corrupt_cut_at`); counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`) | `botnet_spread_at` 1, `corrupt_cut` 2, 1, 1, 0, `corrupt_cut_at` 1, `counter_bonus_all` 1, `counter_bonus_credits` 4, `counter_bonus` 0, `counter_bonus_at` 1 |
-| 2 | Counters cost more again (from `counter_more_at`); the adversary board's difficulty line (from `board_difficulty_at`) | `counter_more_all` 1, `counter_more_credits` 0, `counter_more_at` 2, `board_difficulty_at` 2 |
-| 3 | Stage-II cards removed, stage-I cards added back; the research rule's stronger effect (from `research_strong_at`) | `stage2_removed` 2, `stage1_added` 0, `research_strong_at` 3 |
-| 4 | Tier-2 threats sooner (the Discord deck as at level 3: `discord_removed` 0); a stage-I card swapped for a stage-III card (the table above; from `stage_swap_at`) | `discord_removed` 0, `tier2_early` 1, `extra_corrupted` 0, `stage1_removed` 1, `stage3_added` 1, `stage_swap_at` 4 |
+| Level | Name | Setup (incomes and threshold a country) | Mid-game rule (new) | Rules active | Tunable |
+|---|---|---|---|---|---|
+| 0 | **The Militarist** | Compute income 0; Agent income +0; Research threshold 5; Deck 5 / 5 / 3 (13 rounds); Sites print their corrupt numbers: city 5, station 2, factory 2, land 3 | — | 0 | `compute_income`, `ambassador_income`, `research_at`, `corrupt_at` |
+| 1 | **Sleeper Cells** | Compute income 3; Research threshold 4 | When a Corrupt step checks a city, it falls at 3 agents, not 5. A card's Botnets spread line now takes effect. | 1 | `botnet_spread_at`, `corrupt_cut`, `corrupt_cut_at` |
+| 2 | **War Footing** | Compute income 5 | When a threat executes uncountered, the adversary also gains 4 compute. | 2 | `board_difficulty_at` |
+| 3 | **Arms Race** | Compute income 15; Deck 5 / 3 / 3 (11 rounds) | When Weapons Program fires, it musters 3, not 2. | 3 | `stage2_removed`, `stage1_added`, `research_strong_at` |
+| 4 | **War Economy** | Compute income 18; Agent income +1; Deck 3 / 4 / 4 (11 rounds) | — | 3 | `stage1_removed`, `stage2_added`, `stage3_added`, `stage_swap_at` |
 <!-- /generated -->
 
-**The ladder raises intensity, not count** ([threats.md](threats.md)). d4's "tier-2 threats sooner" deals
-a stage-I card's pulls from tier 2 once a stage-II card is `tier2_early` cards ahead. Discord tips don't raise the
-level. Claim and liberate cost the same at every level.
+**The ladder (267, Matt's ruling: Spirit Island's adversary card).** Levels are named and cumulative. Each adds
+**setup**, set once (income and research markers, the deck's build; sites print their corrupt numbers), and **at
+most one mid-game rule**, fired by an event players already resolve (Sleeper Cells and Arms Race each replace one
+number as they fire, printed whole). `design_check.py` flags over about one new at a level or three active at d4.
+The table, §21 and the reference card (`web/card/adversary.json`) are generated. **No arithmetic
+modifier is left:** no counter or Muster surcharge, no tier-2 look-ahead (d4 builds the deck 3 / 4 / 4).
+Discord tips don't raise the level. Claim and liberate cost the same at every level.

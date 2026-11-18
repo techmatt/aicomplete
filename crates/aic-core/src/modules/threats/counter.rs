@@ -40,37 +40,23 @@ pub(super) fn menu_resources(w: &World, threat: &str) -> Vec<Resource> {
 }
 
 /// What countering `threat` asks now: its menu scaled by `counter_pct` (and
-/// credits by `counter_credit_pct`), plus the difficulty steps from
-/// `counter_bonus_at` and `counter_more_at`, less Jam Signals and standing
-/// Auto Counters on every resource item.
+/// credits by `counter_credit_pct`), less Jam Signals and standing Auto
+/// Counters on every resource item. 267: no difficulty step: a threat costs
+/// what it prints at every level.
 pub fn requirement(w: &World, g: &GameState, threat: &str) -> Vec<Vec<CounterItem>> {
     requirement_less(w, threat, g.var(&jam_key(threat)) + standing(w, g, threat))
 }
 
-/// The config's counter steps [`requirement_less`] reads, read once (174: the
-/// heuristic asks them of every threat of every position it values).
+/// The config's counter scaling [`requirement_less`] reads, read once (174: the
+/// heuristic asks it of every threat of every position it values).
 #[derive(Debug, Clone, Copy)]
 pub struct CounterSteps {
-    bonus: i64,
-    all: i64,
-    credits: i64,
     credit_pct: i64,
 }
 
 impl CounterSteps {
     pub fn read(w: &World) -> CounterSteps {
-        // 142: the counter step from `counter_bonus_at` (d2), and a second one from `counter_more_at` (d3).
-        let (mut bonus, mut all, mut credits) = (0, 0, 0);
-        if adversary::level(w, w.int("adversary.counter_bonus_at")) {
-            bonus = w.int("adversary.counter_bonus");
-            all = w.int("adversary.counter_bonus_all");
-            credits = w.int("adversary.counter_bonus_credits");
-        }
-        if adversary::level(w, w.int("adversary.counter_more_at")) {
-            all += w.int("adversary.counter_more_all");
-            credits += w.int("adversary.counter_more_credits");
-        }
-        CounterSteps { bonus, all, credits, credit_pct: w.int("adversary.counter_credit_pct") }
+        CounterSteps { credit_pct: w.int("adversary.counter_credit_pct") }
     }
 }
 
@@ -81,28 +67,23 @@ pub(super) fn requirement_less(w: &World, threat: &str, cut: i64) -> Vec<Vec<Cou
 
 /// [`requirement_less`] with the config's steps already read.
 fn requirement_with(w: &World, threat: &str, cut: i64, steps: &CounterSteps) -> Vec<Vec<CounterItem>> {
-    let CounterSteps { bonus, all, credits, credit_pct } = *steps;
+    let CounterSteps { credit_pct } = *steps;
     // 138: every resource counter item of a tier-N threat costs `counter_pct[N-1]` percent of its printed amount
     // (rounded up), at every difficulty.
     let d = def(w, threat);
     let pct = w.list("adversary.counter_pct").get(d.tier as usize - 1).copied().unwrap_or(100);
     d.counters
         .iter()
-        .enumerate()
-        .map(|(k, option)| {
+        .map(|option| {
             option
                 .iter()
                 .map(|item| match *item {
                     CounterItem::Pay { resource, amount } => {
-                        // 142: the first option's every resource item (was its credits only).
-                        let first = if k == 0 { bonus } else { 0 };
                         let mut scaled = (amount * pct + 99) / 100;
                         if resource == Resource::Credits {
                             scaled = (scaled * credit_pct + 99) / 100;
                         }
-                        // 142: a credits item takes `counter_bonus_credits` in place of `counter_bonus_all`.
-                        let step = if resource == Resource::Credits { credits } else { all };
-                        CounterItem::Pay { resource, amount: (scaled + first + step - cut).max(0) }
+                        CounterItem::Pay { resource, amount: (scaled - cut).max(0) }
                     }
                     other => other,
                 })

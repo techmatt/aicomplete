@@ -1,0 +1,102 @@
+{
+  "id": "militarist",
+  "name": "The Militarist",
+  "rules": [
+    [
+      "Garrisons",
+      "Income: +1 Agent a country a round."
+    ],
+    [
+      "Warmongering",
+      "Each round, a military base with an adversary Troop on or next to it makes 1 extra Drone, even past its cap; at most 1 extra a base in each production, whatever makes it."
+    ],
+    [
+      "War Takes Ground",
+      "When a Drone destroys a factory, it also destroys a Node on that hex."
+    ]
+  ],
+  "research": [
+    "Weapons Program",
+    "When the research track reaches its threshold, spend it: Muster 2: each country, 2 Troops on its lowest-numbered factory (else city)."
+  ],
+  "escalation": [
+    "Stage I: 1 threat a country, tier 1",
+    "Stage II: 1-2 threats a country, tiers 1 and 2",
+    "Stage III: 2 threats a country, tier 2; Muster"
+  ],
+  "levels": [
+    {
+      "level": 0,
+      "name": "The Militarist",
+      "flavor": "",
+      "setup": [
+        "Compute income 0",
+        "Agent income +0",
+        "Research threshold 5",
+        "Deck 5 / 5 / 3 (13 rounds)",
+        "Sites print their corrupt numbers: city 5, station 2, factory 2, land 3"
+      ],
+      "rule": "",
+      "new_rules": 0,
+      "active_rules": 0,
+      "new_changes": 0,
+      "active_changes": 0
+    },
+    {
+      "level": 1,
+      "name": "Sleeper Cells",
+      "flavor": "Cells wake in every city.",
+      "setup": [
+        "Compute income 3",
+        "Research threshold 4"
+      ],
+      "rule": "When a Corrupt step checks a city, it falls at 3 agents, not 5. A card's Botnets spread line now takes effect.",
+      "new_rules": 1,
+      "active_rules": 1,
+      "new_changes": 2,
+      "active_changes": 2
+    },
+    {
+      "level": 2,
+      "name": "War Footing",
+      "flavor": "Every unanswered strike feeds the war machine.",
+      "setup": [
+        "Compute income 5"
+      ],
+      "rule": "When a threat executes uncountered, the adversary also gains 4 compute.",
+      "new_rules": 1,
+      "active_rules": 2,
+      "new_changes": 1,
+      "active_changes": 3
+    },
+    {
+      "level": 3,
+      "name": "Arms Race",
+      "flavor": "The labs build weapons, not cures.",
+      "setup": [
+        "Compute income 15",
+        "Deck 5 / 3 / 3 (11 rounds)"
+      ],
+      "rule": "When Weapons Program fires, it musters 3, not 2.",
+      "new_rules": 1,
+      "active_rules": 3,
+      "new_changes": 1,
+      "active_changes": 4
+    },
+    {
+      "level": 4,
+      "name": "War Economy",
+      "flavor": "The whole economy marches.",
+      "setup": [
+        "Compute income 18",
+        "Agent income +1",
+        "Deck 3 / 4 / 4 (11 rounds)"
+      ],
+      "rule": "",
+      "new_rules": 0,
+      "active_rules": 3,
+      "new_changes": 0,
+      "active_changes": 4
+    }
+  ]
+}

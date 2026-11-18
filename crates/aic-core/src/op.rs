@@ -1488,13 +1488,13 @@ pub enum Op {
         #[serde(rename = "where")]
         where_: Where,
     },
-    /// The board's difficulty line: every Muster (175: an event's, a project's, the Protector landing) lands
-    /// `amount` more troops a country.
+    /// A board line: every Muster (175: an event's, a project's, the Protector landing) lands `amount` more
+    /// troops a country (267: no board prints one; it was the Militarist's d2 surcharge).
     StandingTroopsBonus {
         amount: i64,
     },
     /// 146: an adversary board's line: the adversary gains `amount` compute for each threat that executes
-    /// uncountered (read by `threats.execute`; on the difficulty line, from `board_difficulty_at`).
+    /// uncountered (read by `threats.execute`; on the board's level line, from `board_difficulty_at`).
     ThreatCompute {
         amount: i64,
     },

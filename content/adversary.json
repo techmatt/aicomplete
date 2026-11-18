@@ -45,12 +45,8 @@
    }
   ],
   "difficulty": {
-   "text": "Militarist, harder: every Muster lands 1 more Troop a country, and the adversary gains 4 compute for each threat that executes uncountered.",
+   "text": "When a threat executes uncountered, the adversary also gains 4 compute.",
    "effects": [
-    {
-     "op": "standing_troops_bonus",
-     "amount": 1
-    },
     {
      "op": "threat_compute",
      "amount": 4
@@ -78,6 +74,32 @@
     ]
    }
   },
+  "levels": [
+   {
+    "level": 1,
+    "name": "Sleeper Cells",
+    "flavor": "Cells wake in every city.",
+    "rule": "When a Corrupt step checks a city, it falls at 3 agents, not 5. A card's Botnets spread line now takes effect."
+   },
+   {
+    "level": 2,
+    "name": "War Footing",
+    "flavor": "Every unanswered strike feeds the war machine.",
+    "rule": "When a threat executes uncountered, the adversary also gains 4 compute."
+   },
+   {
+    "level": 3,
+    "name": "Arms Race",
+    "flavor": "The labs build weapons, not cures.",
+    "rule": "When Weapons Program fires, it musters 3, not 2."
+   },
+   {
+    "level": 4,
+    "name": "War Economy",
+    "flavor": "The whole economy marches.",
+    "rule": ""
+   }
+  ],
   "harms": [
    "adversary pieces placed",
    "troops made",

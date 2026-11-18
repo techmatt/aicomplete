@@ -63,7 +63,7 @@ fn the_stronger_effect_from_research_strong_at() {
     }
     set_var(&mut g, RESEARCH, at);
     with_cx(&rules, |cx| adversary::research_step(&mut g, cx)).unwrap();
-    // Muster 3, and the board's difficulty line (from board_difficulty_at 2) adds its troop: a Muster.
+    // Muster 3 (Arms Race), plus any board Muster bonus (none since 267: a Muster lands what it prints).
     let per = 3 + adversary::muster_bonus(&w);
     assert_eq!((g.var(RESEARCH), troops(&g)), (0, per * w.map.countries.len() as i64));
 }

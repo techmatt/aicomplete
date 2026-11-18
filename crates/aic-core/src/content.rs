@@ -504,8 +504,8 @@ pub struct AdversaryFile {
     pub events: Vec<AdversaryCard>,
 }
 
-/// An adversary board (135): its project slots, its persistent rules and its
-/// difficulty line. Its build numbers live in the config (`adversary.*`).
+/// An adversary board (135): its project slots, its persistent rules, its
+/// level-2 line (`difficulty`, War Footing) and its named levels (267). Its build numbers live in the config (`adversary.*`).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct AdversaryBoard {
@@ -520,12 +520,28 @@ pub struct AdversaryBoard {
     /// the compute step (`adversary::research_step`). None: the board has no research rule.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub research: Option<ResearchRule>,
+    /// 267: the difficulty ladder's named levels, 1 up (level 0 is the board as printed). Each adds setup
+    /// (its numbers are the config's `adversary.*`) and at most one triggered `rule` ("" for setup only).
+    #[serde(default)]
+    pub levels: Vec<AdversaryLevel>,
     #[serde(default)]
     pub harms: Vec<String>,
     /// 136: Discord the board sways at the start of every round (the
     /// Militarist prints none).
     #[serde(default)]
     pub discord_drip: i64,
+}
+
+/// 267: one named level of an adversary's difficulty ladder (Spirit Island's adversary card): its name,
+/// a flavor line and its one triggered mid-game rule, if any. Levels are cumulative.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct AdversaryLevel {
+    pub level: i64,
+    pub name: String,
+    pub flavor: String,
+    #[serde(default)]
+    pub rule: String,
 }
 
 /// 259: an adversary board's research rule: `effects` fire at the threshold; from `adversary.research_strong_at`
@@ -1475,6 +1491,11 @@ fn check_adversary_board(b: &AdversaryBoard) -> Result<(), String> {
         }
         check_ops(&r.effects, Slot::Team, &what)?;
         check_ops(&r.strong.effects, Slot::Team, &what)?;
+    }
+    for (k, v) in b.levels.iter().enumerate() {
+        if v.level != k as i64 + 1 {
+            return Err(format!("{what}: level {:?} is number {}, not {}", v.name, v.level, k + 1));
+        }
     }
     Ok(())
 }

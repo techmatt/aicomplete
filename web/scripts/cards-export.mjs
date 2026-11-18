@@ -433,6 +433,24 @@ function aiBoard(b, cardName) {
   });
 }
 
+// 267: the adversary's reference card (Spirit Island's adversary card): its rules, research rule, escalation and
+// difficulty ladder, every word from web/card/adversary.json (`aic-sim docs`, the engine's ladder). Its own face
+// (`web/cards/reference.js`), at print size.
+function adversaryReference(a) {
+  return frameless('adversary_board', a, {
+    tier: null,
+    tierLabel: 'Adversary reference',
+    text: '',
+    sections: [
+      ...a.rules.map(([name, text]) => ({ head: name, text })),
+      ...(a.research ? [{ head: `Research: ${a.research[0]}`, text: a.research[1] }] : []),
+      { head: 'Escalation', text: a.escalation.join('. ') },
+      ...a.levels.map((l) => ({ head: `Level ${l.level}: ${l.name}`, text: [...l.setup, l.rule].filter(Boolean).join('. ') })),
+    ],
+    reference: a,
+  });
+}
+
 /** A scene's `card` is a suggestion, but it is the only link from a card to its art. */
 function sceneMap(root, warnings) {
   const f = join(root, 'tools', 'card-art', 'scenes.json');
@@ -464,6 +482,7 @@ export function exportCards(root = REPO) {
     ...content('projects').map(project),
     ...map.countries.map(megaproject),
     ...content('ais').map((b) => aiBoard(b, cardName)),
+    adversaryReference(readJson(join(root, 'web', 'card', 'adversary.json'))),
   ];
 
   for (const c of players) if (!faces[c.id]) warnings.push(`${c.id} has no face in web/card/faces.json: run aic-sim docs`);

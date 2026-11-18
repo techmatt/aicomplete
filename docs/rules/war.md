@@ -63,8 +63,8 @@ wait at its bases.
 adversary-owned factories (each round), the stage-III event cards' Muster 1 (each country's lowest-numbered factory,
 else city; no stage-I or stage-II card musters), the research track's Weapons Program (Muster 2 in each country, 3
 from `research_strong_at` 3; [adversary.md](adversary.md)), threats (Orbital Strike, Total War, Call-Up and others:
-each prints it) and projects, only from adversary factories or botnets (War Plants, Botnet Conscripts). Every Muster
-lands 1 more troop a country from `board_difficulty_at` (2). **Targets:**
+each prints it) and projects, only from adversary factories or botnets (War Plants, Botnet Conscripts). A Muster
+lands what it prints at every level (267). **Targets:**
 player-owned research stations and factories, **and nodes** (`troop_node` 0, from the start), never cities
 (corruption is the adversary's way in) or neutral or adversary-owned facilities.
 

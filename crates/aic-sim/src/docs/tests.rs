@@ -2,6 +2,7 @@ use aic_core::content::{content, Resource, Uncover};
 use aic_core::{Config, Rules};
 
 use super::blocks::*;
+use super::ladder::{difficulty_block, ladder};
 use super::run::{
     block, budget_warnings, card_note_failures, card_quote_failures, op_docs, revision_line_failures, rulebook_revision_failure, rules_file_failures, unknown_params, BLOCKS,
     DOC_BUDGET, DOC_WARN, PALETTE_OPS,
@@ -32,12 +33,14 @@ fn the_round_cap_comes_from_the_engines_deal() {
     // (`a_config_change_changes_its_block` checks the block moves with them). With them: 5, 5, 3 cards;
     // difficulty 3 removes two stage-II cards; difficulty 4 swaps a stage-I card for a stage-III.
     // 200: difficulty 0 deals as 1 (196's `stage_extra` is gone).
-    const DEAL: [&str; 6] = [
+    // 267: `stage2_added` pinned off here; the baseline's 3 / 4 / 4 at d4 is the core's setup test's.
+    const DEAL: [&str; 7] = [
         "adversary.stage_cards=5,5,3",
         "adversary.stage1_added=0",
         "adversary.stage2_removed=2",
         "adversary.stage_swap_at=4",
         "adversary.stage1_removed=1",
+        "adversary.stage2_added=0",
         "adversary.stage3_added=1",
     ];
     let cap = |more: &[&str]| {
@@ -204,6 +207,24 @@ fn check_flags_a_bare_name_that_is_no_tunable() {
     assert_eq!(unknown_params("`hold_bass`", &r, &[]), ["hold_bass"]);
 }
 
+/// 267: the ladder is every level, each adding at most one named rule, the count cumulative; level 0 prints
+/// the whole setup and no rule (the base adversary).
+#[test]
+fn the_ladder_adds_a_rule_at_most_a_level() {
+    let l = ladder(&baseline(&[]));
+    assert_eq!(l.iter().map(|v| v.level).collect::<Vec<_>>(), vec![0, 1, 2, 3, 4]);
+    assert!(l[0].rule.is_empty() && l[0].setup.len() >= 4, "{:?}", l[0]);
+    let mut active = 0;
+    for v in &l {
+        assert!(v.new_rules <= 1, "{v:?}");
+        active += v.new_rules;
+        assert_eq!(v.active_rules, active, "{v:?}");
+        // A named rule stands for at least one mid-game change; one may merge two (Sleeper Cells).
+        assert!(v.new_changes >= v.new_rules, "{v:?}");
+        assert!(v.level == 0 || !v.setup.is_empty() || !v.rule.is_empty(), "level {} adds nothing", v.level);
+    }
+}
+
 /// 229 (Matt's ruling): rulebook §21's difficulty table is generated, in players' words (no tunable names).
 #[test]
 fn the_rulebook_difficulty_table_is_in_players_words() {
@@ -212,7 +233,7 @@ fn the_rulebook_difficulty_table_is_in_players_words() {
 ";
     assert_eq!(book.matches(open).count(), 1);
     let body = book.split_once(open).unwrap().1.split_once("<!-- /generated -->").expect("closed").0;
-    assert!(body.starts_with("| Level | Corrupt numbers"), "{body}");
+    assert!(body.starts_with("| Level | Name | Setup (set once"), "{body}");
     assert!(!body.contains('`'), "a tunable name in the rulebook: {body}");
 }
 

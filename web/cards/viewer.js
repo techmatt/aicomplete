@@ -3,10 +3,11 @@
 // same export. No card words live here: only labels of the page itself.
 import { esc, fitCards, frameOf, inset, renderBack, renderCard } from '../card/card.js';
 import { plainFace } from './plain.js';
+import { referenceFace } from './reference.js';
 
 const $ = (id) => document.getElementById(id);
-const KINDS = ['program', 'building', 'event', 'threat', 'unity', 'discord', 'adversary', 'project', 'megaproject', 'ai'];
-const LABEL = { ai: 'AI board' };
+const KINDS = ['program', 'building', 'event', 'threat', 'unity', 'discord', 'adversary', 'project', 'megaproject', 'ai', 'adversary_board'];
+const LABEL = { ai: 'AI board', adversary_board: 'adversary board' };
 const label = (k) => LABEL[k] ?? k;
 
 // The grid's sizes in CSS px, for fitting two rows: a printed card's 88 mm at zoom 1, the
@@ -108,6 +109,7 @@ function printed(c) {
 const plain = (c) => plainFace(c, label(c.kind), c.scene ? `/scene/${c.scene}.png` : undefined);
 
 function face(c) {
+  if (c.reference) return referenceFace(c); // 267: the adversary reference card
   if (!c.render) return plain(c);
   try {
     return printed(c);

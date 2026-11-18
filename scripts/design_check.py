@@ -830,6 +830,26 @@ def check_dials(cfg, base_rev, o):
         o.i(line + ', no design files changed')
 
 
+def check_ladder(cfg, o):
+    """267: the difficulty ladder's budget (soft): over about one new mid-game rule at a level, or about three active at
+    the top level. Reads web/card/adversary.json, the ladder `aic-sim docs` writes from content and the config. A rule
+    counts by its mid-game changes (one a mid-game dial, `new_changes`), so a named rule merging two counts two."""
+    lc = cfg['ladder']
+    levels = jload('web/card/adversary.json')['levels']
+    for v in levels:
+        if v['new_changes'] > lc['max_new']:
+            o.w('ladder-new', f'level {v["level"]} {v["new_changes"]}',
+                f'level {v["level"]} ({v["name"]}) adds {v["new_changes"]} mid-game changes in {v["new_rules"]} named '
+                f'rule(s) (budget about {lc["max_new"]})')
+    top = levels[-1]
+    if top['active_changes'] > lc['max_active']:
+        o.w('ladder-active', f'level {top["level"]} {top["active_changes"]}',
+            f'level {top["level"]} has {top["active_changes"]} mid-game changes active in {top["active_rules"]} named '
+            f'rules (budget about {lc["max_active"]})')
+    o.i('ladder: named rules / mid-game changes active by level ' +
+        ', '.join(f'{v["level"]}: {v["active_rules"]} / {v["active_changes"]}' for v in levels))
+
+
 # ---- main -------------------------------------------------------------------------------------------------------
 
 def main():
@@ -881,6 +901,7 @@ def main():
     check_sway(cfg, base, o)
     check_tag_story(cfg, cards, boards, o)
     check_dials(cfg, base_rev, o)
+    check_ladder(cfg, o)
     if games:
         check_scarce(games, cfg, cards, o)
         check_shares(games, cfg, o)

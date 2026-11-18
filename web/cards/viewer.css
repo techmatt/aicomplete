@@ -69,6 +69,23 @@ main.grid { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; 
 .tone-ai .body { overflow-y: auto; }
 .tone-ai .body p { margin-bottom: .6mm; }
 .plain .foot { padding: 1mm 2.4mm; font: 600 7.5pt 'Saira Condensed', sans-serif; background: #0001; }
+/* 267: the adversary reference card (reference.js), 100 x 140 mm at print size. */
+.reference { width: 100mm; height: 140mm; border-radius: 3mm; background: #eee9dc; color: #1b1c1f; overflow: hidden; display: flex; flex-direction: column; font-family: 'Source Serif 4', Georgia, serif; box-shadow: 0 1px 6px #0008; border: 1.2mm solid var(--tone); }
+.reference .strip { background: var(--tone); color: #fff; padding: 1.2mm 2.4mm; display: flex; justify-content: space-between; font: 600 7.5pt 'Saira Condensed', sans-serif; text-transform: uppercase; letter-spacing: .03em; }
+.reference h3 { margin: 0; padding: 1.6mm 2.4mm .6mm; font: 700 15pt/1.1 'Saira Condensed', sans-serif; }
+.reference .body { padding: .6mm 2.4mm 1.2mm; font-size: 7pt; line-height: 1.18; overflow: hidden; flex: 1; }
+.reference .body p { margin: 0 0 1mm; }
+.reference .body b, .reference .nm, .reference th { font-family: 'Saira Condensed', sans-serif; }
+.reference table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 7pt; margin: 1mm 0; color: #1b1c1f; }
+.reference col.c-lv { width: 6mm; } .reference col.c-nm { width: 21mm; } .reference col.c-su { width: 22mm; } .reference col.c-ac { width: 8mm; }
+.reference th { cursor: default; color: #fff; background: var(--tone); font-weight: 600; padding: .6mm 1mm; border: 0; white-space: normal; }
+.reference td { padding: .8mm 1mm; border: 0; border-bottom: .2mm solid #0003; vertical-align: top; }
+.reference td.lv { font: 700 11pt 'Saira Condensed', sans-serif; text-align: center; }
+.reference td.ac { text-align: center; font-weight: 700; }
+.reference .nm { font-weight: 700; font-size: 8.5pt; }
+.reference .fl { font-style: italic; font-size: 6.8pt; color: #444; }
+.reference .none { color: #666; font-style: italic; }
+.reference .foot { font-style: italic; font-size: 6.8pt; color: #444; }
 .tone-threat { --tone: #8a2a22; } .tone-adversary { --tone: #33363d; } .tone-discord { --tone: #6c2a7c; } .tone-unity { --tone: #1f7e88; }
 .tone-project { --tone: #5a4632; } .tone-megaproject { --tone: #2f5e8f; } .tone-ai { --tone: #24586a; }
 
