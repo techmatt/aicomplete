@@ -27,10 +27,9 @@ $S agree READ/games.jsonl --agent strategist --agents FILE --threads 6  # oracle
 **`agree` (245):** replays each won game a read's `--who` kind played (default `oracle`; a whole spec, that agent's
 cells alone) and asks each `--agent` (repeatable; `--agents FILE`, a spec a line) to choose on every recorded table
 with more than one legal action; it prints a JSON line an agent, `by` group (`all`, `dN`, and `miss`: where the first
-agent picked otherwise, 249: the read for a recorded agent built on that first agent) and recorded action kind (`play`, `power`, `use`, `standard`,
-`choose`, `threat`, `sell`, `pass`, `keep`, `draft`, `tier`, `convert`, `any`, and `play:<card>` a card): `[same, same or later this
-round, decisions]`. The agents follow the recorded game, so all see the same tables; an agent on its own game agrees
-everywhere (a test). About 0.3 s an agent and oracle game on 6 threads (the strategist). `AIC_AGREE_SHOW=<kind>`
+agent picked otherwise, 249: the read for a recorded agent built on that first agent) and recorded action kind (the
+action's `type`, `any`, and `play:<card>` a card): `[same, same or later this round, decisions]`. The agents follow
+the recorded game, so all see the same tables. About 0.3 s an agent and game on 6 threads. `AIC_AGREE_SHOW=<kind>`
 prints that kind's disagreements. Readers: `experiments/results/245_tune_strategist/` (`agree_table.py`, `mkset.py`).
 
 | Option | Default | Meaning |
@@ -42,7 +41,7 @@ prints that kind's disagreements. Readers: `experiments/results/245_tune_strateg
 | `--max-actions N` | `100000` | Per-game action cap. A capped game ends as `timeout`. |
 | `--threads N` | all cores | Results don't depend on it: agents are seeded per game. |
 | `--json` | off | Print the summary as JSON: every field below, plus the diff, agent, `max_actions` and rules revision. |
-| `--trace` | off | Print the first game of each config: every action (with its option count) and event. Goes to stderr with `--json`. |
+| `--trace` | off | Print the first game of each config: every action (with its option count) and event (`tokens_changed`, `var_changed`, `card_moved`, ...; a hex is `[q, r]`: map.json's anchor + row × axes[0] + col × axes[1]). Goes to stderr with `--json`. 268's `trace_rounds.py` splits it by round. |
 | `--save DIR` | off | `run`/`compare`: write the selected games as records into `DIR` (created if needed) as `<config name>-<run\|A\|B>-seed<S>.json`; the paths print after the table, or under `saved` in each `--json` result with the match counts. A write failure exits 2. |
 | `--save-when W` | `loss` | Which games to save: `all`, `win`, `loss`, `timeout`, or an end reason code (`deck_empty`, `discord_deck`, `node`, `purge`, ...). Repeatable; a game matching any is saved. With only `--save-seed` given, no default. A reason code no game ended with warns on stderr. |
 | `--save-seed S` | | Always save this seed, not counted against `--save-max`. Repeatable. A seed outside the range played warns. |

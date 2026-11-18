@@ -18,8 +18,9 @@ what it prints; the `cards/*_read.py` readers take seconds.
   warnings ([principles.md](principles.md)): content checks, plus play checks on DIR (a read's folder or
   `games.jsonl`; a farm out file as FILE=SPEC; one DIR, comma lists pool; an unknown flag stops it). `--old`: the previous revision's read on its seeds; `--base`: the
   dials' start (default: merge base with main); `--variant`: only those variants' (or a lever's) games, `base` the
-  bare pairs; `--usage`: each action's role, band and use instead. A power action is named by the read's `ai.power.*`
-  counters, so another revision's read reads right (an info line names a reordered board). First line: the report's `warnings:`. Thresholds
+  bare pairs; `--usage`: each action's role, band and use instead. Powers are named by the read's `ai.power.*`
+  counters. Table cost (268): `table_cost`'s budgets by level, and `friction-stale` off
+  `docs/rulebook-friction.md`'s title. First line: the report's `warnings:`. Thresholds
   and bands: `design_check.json`; job parity's cards for each standard job, hand-read (effects as expressions over
   the anchors): `design_check_jobs.json`, edited by hand (`port_jobs.py` would overwrite it). Never exits 1 on a warning.
 - `cards/cards_doc.py`: regenerates `docs/cards.md`. `cards/deck_text.py DECK...`: a deck as plain text for review

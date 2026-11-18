@@ -4,8 +4,8 @@
 //! The files of `docs/rules/` hold blocks between `<!-- generated: NAME -->` and
 //! `<!-- /generated -->`, each block in exactly one file (`run::BLOCKS`); `docs/ops.md`
 //! and `docs/harms.md` are generated whole (the ledger's checks fail the run), and so
-//! are `docs/player-aid.md` (the house terms, printed in `docs/rules/README.md`'s
-//! *Terms* too) and `web/card/faces.json`, every card's face from its ops
+//! are `docs/player-aid.md` (268: the table's reference sheet, `aid`, then the house
+//! terms, printed in `docs/rules/README.md`'s *Terms* too) and `web/card/faces.json`, every card's face from its ops
 //! (`aic_core::face`); `docs/agents.md` holds the `strategies` block and
 //! `docs/rulebook.md` the `rulebook_difficulty` block (§21's table). The run fails
 //! on a harm-ledger check, a block missing or doubled, a rules file or page over
@@ -18,6 +18,7 @@
 //! test lane runs the check. A block is a pure function of `Rules` or
 //! `Content`, so a test can show it moves with its source.
 
+mod aid;
 mod blocks;
 mod current_docs;
 mod harms;

@@ -113,7 +113,10 @@ checks*; thresholds, all candidates: `scripts/design_check.json`).
 - **Unity and Discord follow the story:** Unity is trust and cooperation; Discord is fear, force and collateral
   harm. *Warns:* a Sway source whose side disagrees with its story tag (an untagged one is listed, not warned).
 - **Fewer tokens, less processing and tracking**, all else equal. *Warns:* tokens placed or moved a round up 10%
-  on the previous revision's read.
+  on the previous revision's read; `table-*` (268), components moved, per-site checks or once-a-round uses a round
+  over its level's budget or up 10%; `friction-stale`, the friction review 5+ revisions old.
+- **A dial is a rule:** every new dial passes the same can-it-be-said-simply test, and counts against the level's
+  mid-game budget.
 - **Engines over dials.** A skipped resource means its engines need buffing; at high difficulty victory needs chips,
   energy, antimatter and cubes. *Warns:* a card kept but played under 0.1 a game, one of the four spent in under
   75% of won games at d3-d4; a dial moved 40%+ in the item that changed the design.

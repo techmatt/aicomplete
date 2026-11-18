@@ -408,6 +408,22 @@
     ],
     "rise_max": 0.1
   },
+  "table_cost": {
+    "note": "268 (soft): table cost a round, by level d0-d4 (a level past the list takes the last): components moved (adversary ops + the tokens check's player moves but ops_already, a troop's move being an op + production_counters, a troop's strike among them), per-site checks (site_passes x sites on the map + city_passes x cities + troops marching + check_counters) and once-a-round uses a seat (memory). Budgets: 267's final read (f267-read2) + about 10%, cross-checked against 268's hand-play (experiments/results/268_table_cost_audit/). The friction review reruns every refresh_every rules revisions.",
+    "ops_already": ["board.troop_moves", "board.troop_steps"],
+    "production_counters": ["board.troop_strikes", "board.city_chips", "board.adversary_cubes", "board.cubes_paid.player", "board.cubes_paid.neutral", "board.cubes_paid.adversary", "board.chips_made"],
+    "site_passes": 2,
+    "city_passes": 2,
+    "check_counters": ["adversary.rallied", "threats.dealt"],
+    "memory_counters": ["ai.powers_used", "board.std.buy_energy", "board.std.troop", "board.std.insight"],
+    "memory_prefixes": ["cards.used.", "board.converter.", "board.chip_converter."],
+    "budget": {
+      "components": [24, 36, 49, 75, 88],
+      "checks": [49, 51, 51, 53, 59],
+      "memory": [4.5, 4.5, 4.5, 4.5, 4.5]
+    },
+    "refresh_every": 5
+  },
   "ladder": {
     "note": "267 (Matt's ruling, soft): the difficulty ladder's named mid-game rules (web/card/adversary.json, from aic-sim docs): about one new a level, about three active at the top",
     "max_new": 1,

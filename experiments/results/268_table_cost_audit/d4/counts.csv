@@ -1,0 +1,5 @@
+round,lookups,modifiers,memory_peak,memory_total,bookkeeping,components,decisions,errors,minutes
+0,6,8,0,0,14,100,3,0,12
+1,14,17,10,11,101,205,49,0,45
+5,22,34,12,14,200,420,64,1,80
+10,24,44,11,13,250,560,87,3,103

@@ -793,6 +793,81 @@ def check_tokens(games, old, cfg, o):
             o.i(line)
 
 
+def counter_sum(c, keys, prefixes=()):
+    return sum(c.get(k, 0) for k in keys) + sum(v for k, v in c.items() if any(k.startswith(p) for p in prefixes))
+
+
+def table_cost(gs, cfg, countries):
+    """268: what a round costs a human at the table, three proxies from a read's counters (each a sum over the games,
+    over their rounds): components moved a round (the adversary's ops, the tokens check's player moves and the
+    production pieces); per-site checks a round (each site on the map times the passes that check every site, the
+    cities times growth's passes, each troop's march step, each agent Rally deals and each threat's location test); and
+    once-a-round uses a seat a round, each something a player remembers with no marker on the table."""
+    t, tc = cfg['tokens'], cfg['table_cost']
+    comp = check = mem = rounds = seat_rounds = 0
+    for g in gs:
+        c, r = g['counters'], max(g['rounds'], 1)
+        seats = len(g.get('start') or [0, 0])
+        rounds += r
+        seat_rounds += r * seats
+        comp += sum(g.get('adversary_ops') or [])
+        # A troop's step is already an adversary op: the tokens check's troop counters would count it again.
+        comp += counter_sum(c, [k for k in t['player_counters'] if k not in tc['ops_already']], t['player_prefixes'])
+        comp += counter_sum(c, tc['production_counters'])
+        cities = sum(len(x['cities']) for x in countries[:seats])
+        for i in range(1, r + 1):
+            sites = counter_sum(c, [f'map.{k}.{own}.r{i:02d}' for k in ('factories', 'stations')
+                                    for own in ('adversary', 'neutral', 'player')])
+            check += tc['site_passes'] * sites + tc['city_passes'] * cities + c.get(f'map.troops.r{i:02d}', 0)
+        check += counter_sum(c, tc['check_counters'])
+        mem += counter_sum(c, tc['memory_counters'], tc['memory_prefixes'])
+    return {'components': comp / max(rounds, 1), 'checks': check / max(rounds, 1), 'memory': mem / max(seat_rounds, 1)}
+
+
+def check_table_cost(games, old, cfg, countries, o):
+    """268: each table-cost proxy against its soft budget by level (design_check.json `table_cost`, set from 268's
+    hand-play pass and 267's final read), and against --old's same level (the tokens check's rise_max)."""
+    tc = cfg['table_cost']
+    names = {'components': 'components moved a round', 'checks': 'per-site checks a round',
+             'memory': 'once-a-round uses a seat a round'}
+    olv = by_level(old) if old else {}
+    cap = cfg['tokens']['rise_max']
+    for d, gs in by_level(games).items():
+        now = table_cost(gs, cfg, countries)
+        was = table_cost(olv[d], cfg, countries) if d in olv else None
+        for k, v in now.items():
+            budget = tc['budget'][k][d] if d < len(tc['budget'][k]) else tc['budget'][k][-1]
+            line = f'd{d}: {names[k]} {v:.1f} (budget {budget})'
+            if was and was[k]:
+                rise = v / was[k] - 1
+                line += f', {rise:+.0%} on --old ({was[k]:.1f})'
+                if rise > cap:
+                    o.w(f'table-{k}-rise', f'd{d} {rise:+.0%}', line + f' (max +{cap:.0%})')
+            if v > budget:
+                o.w(f'table-{k}', f'd{d} {v:.1f}', line)
+            else:
+                o.i(line)
+
+
+def check_friction_fresh(cfg, o):
+    """268: the friction review's refresh trigger. docs/rulebook-friction.md's title names the rules revision it was
+    last run at; warn once RULES_REVISION has moved `refresh_every` past it."""
+    every = cfg['table_cost']['refresh_every']
+    with open(os.path.join(ROOT, 'docs', 'rulebook-friction.md'), encoding='utf-8') as f:
+        m = re.search(r'as of rules revision (\d+)', f.readline())
+    with open(os.path.join(ROOT, 'crates', 'aic-core', 'src', 'lib.rs'), encoding='utf-8') as f:
+        rev = int(re.search(r'pub const RULES_REVISION: u32 = (\d+);', f.read()).group(1))
+    if not m:
+        o.w('friction-stale', 'no revision', 'docs/rulebook-friction.md: no "as of rules revision N" in its title')
+        return
+    was = int(m.group(1))
+    line = f'friction review: run at r{was}, rules now r{rev} (rerun every {every})'
+    if rev - was >= every:
+        o.w('friction-stale', f'r{was} at r{rev}', line + ': rerun it (docs/rulebook-friction.md, *Refreshing*)')
+    else:
+        o.i(line)
+
+
 def git(*args):
     return subprocess.run(['git', *args], cwd=ROOT, capture_output=True, text=True, encoding='utf-8').stdout
 
@@ -902,6 +977,7 @@ def main():
     check_tag_story(cfg, cards, boards, o)
     check_dials(cfg, base_rev, o)
     check_ladder(cfg, o)
+    check_friction_fresh(cfg, o)
     if games:
         check_scarce(games, cfg, cards, o)
         check_shares(games, cfg, o)
@@ -910,8 +986,10 @@ def main():
         check_victory_needs(games, cfg, o)
         check_rounds(games, cfg, o)
         check_tokens(games, old, cfg, o)
+        check_table_cost(games, old, cfg, countries, o)
     else:
-        o.i('no read given: the play checks (supply shares, dead cards and powers, rounds, tokens) did not run')
+        o.i('no read given: the play checks (supply shares, dead cards and powers, rounds, tokens, table cost) did not '
+            'run')
     # the header: each check's warnings, a check with many as its count and its first three
     by = defaultdict(list)
     for c, n, _ in o.warn:
