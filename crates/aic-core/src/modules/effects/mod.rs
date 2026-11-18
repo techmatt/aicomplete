@@ -503,12 +503,18 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         }
         Op::RemoveWhere { pieces, count, per, where_ } => team::remove_where(g, cx, *pieces, *count, *per, *where_)?,
         Op::Prohibit { step, where_ } => adversary::prohibit(g, cx, *step, *where_),
-        // 151: the adversary's rally and income.
-        Op::Rally { site, count } => {
+        // 275: the adversary's Infiltrate and Surge lines (Rally's place), and its compute income.
+        Op::Infiltrate { site } => {
             let source = if ctx.label == "standing" { "event" } else { ctx.label };
-            adversary::rally(g, cx, *site, *count, ctx.scope, source)?
+            adversary::infiltrate(g, cx, *site, ctx.scope, source)?
         }
-        Op::IncreaseIncome { compute, ambassadors } => adversary::increase_income(g, cx, *compute, *ambassadors),
+        Op::Surge { site, count } => {
+            let source = if ctx.label == "standing" { "event" } else { ctx.label };
+            adversary::surge(g, cx, *site, *count, ctx.scope, source)?
+        }
+        Op::Spill { site, to } => adversary::spill(g, cx, *site, *to, ctx.scope)?,
+        Op::Grow { site } => adversary::grow(g, cx, *site, ctx.scope)?,
+        Op::IncreaseIncome { compute } => adversary::increase_income(g, cx, *compute),
         // 259: research cubes onto the adversary's track (a project's: a country each).
         Op::AdversaryResearch { amount, each_country } => {
             let n = if *each_country { *amount * w.map.countries.len() as i64 } else { *amount };
@@ -523,7 +529,6 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         | Op::PlayersLose { .. }
         | Op::Create { .. }
         | Op::CreateSite { .. }
-        | Op::Corrupt { .. }
         | Op::Flag { .. }
         | Op::Requisition { .. }
         | Op::LoseNodeOr { .. }

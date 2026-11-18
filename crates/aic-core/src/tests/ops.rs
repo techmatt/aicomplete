@@ -151,6 +151,10 @@ fn hand_written_text_prints_no_number_its_ops_lack() {
                     if lose > 0 {
                         have.extend([1, lose]);
                     }
+                    // 275: a Spill line prints its fixed rule ("each X holding 2 or more Agents moves 1"), no op field.
+                    if v.to_string().contains("\"op\":\"spill\"") {
+                        have.extend([1, 2]);
+                    }
                     let text = text.replace(tunable, "");
                     let missing: Vec<i64> = text_numbers(&text).into_iter().filter(|n| !have.contains(n)).collect();
                     if !missing.is_empty() {

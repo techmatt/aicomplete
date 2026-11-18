@@ -1,74 +1,49 @@
 use super::*;
-use crate::modules::plan;
+use crate::modules::{adversary, plan};
 
-/// 237: the agents' converge map moves each hex's agents exactly as a Corrupt line in every country does
-/// (`plan::converge`): to the one open target next door, staying put on a tie (r98) or a target. An agent on every
-/// hex, each site kind, a few set-up boards.
+/// 275: `plan::next_infiltrate` must foresee exactly what the card's Infiltrate lines place, hex by hex: for every
+/// event card face up, on set-up boards with a firewall and an Infiltrate prohibition's token on a city each.
+/// Agents and player ambassadors are taken off first (1 agent then corrupts nothing at d0, and none is canceled),
+/// and the supply is made roomy (the plan doesn't check it).
 #[test]
-fn the_converge_map_matches_the_line() {
-    use crate::op::CorruptSite;
-    let rules = Rules::new(&lab_config(&[ACTIONS])).unwrap();
+fn the_infiltrate_forecast_matches_the_infiltrate_lines() {
+    use crate::modules::common::{prohibit_token, FIREWALL};
+    use crate::op::Step;
+    let rules = Rules::new(&lab_config(&["adversary.build", ACTIONS])).unwrap();
     let w = rules.world();
-    let mut ties = 0;
-    for seed in 0..3 {
-        let mut g = rules.new_game(seed);
-        answer_all(&rules, &mut g);
-        for h in Arc::make_mut(&mut g.hexes).iter_mut() {
-            Arc::make_mut(h).tokens.insert(ADV_AMBASSADOR.into(), 1);
-        }
-        for site in [CorruptSite::City, CorruptSite::Station, CorruptSite::Factory, CorruptSite::Land, CorruptSite::Node] {
-            let line = plan::converge(&w, &g, site, None);
-            let map = plan::converge_map(&w, &g, site);
-            ties += line.ties.len();
-            for (h, to) in map.iter().enumerate() {
-                let want = line.sources.iter().find(|&&(x, _)| x == h).map(|&(_, t)| t);
-                assert_eq!(*to, want, "seed {seed}, {site:?}, hex {h}");
-            }
-        }
-    }
-    assert!(ties > 0, "no tie staged");
-}
-
-/// 151: `plan::next_rally` must foresee what the build's Rally places, hex by hex (a share where players
-/// break a tie): for every event card face up, on set-up boards, with each board's pool at 0-5. Player
-/// ambassadors are taken off first (an arriving agent cancels one rather than landing), and
-/// the supply is made roomy (the plan doesn't check it).
-#[test]
-fn the_rally_forecast_matches_the_rally_step() {
-    let cards: Vec<String> = content().adversary.iter().map(|c| c.id.clone()).collect();
-    let mut c = lab_config(&["adversary.build", ACTIONS]);
-    // No compute: a project resolving in the build would place ambassadors too (024).
-    c.apply_override("adversary.botnet_compute=0").unwrap();
-    let rules = Rules::new(&c).unwrap();
     for seed in 0..3 {
         let mut g0 = rules.new_game(seed);
         answer_all(&rules, &mut g0);
-        let players: Vec<Key> = (0..g0.seats.len()).map(|s| Key::new(ambassador(s))).collect();
+        let gone: Vec<Key> = (0..g0.seats.len()).map(|s| Key::new(ambassador(s))).chain([Key::new(ADV_AMBASSADOR)]).collect();
         for h in Arc::make_mut(&mut g0.hexes).iter_mut() {
-            Arc::make_mut(h).tokens.retain(|k, _| !players.contains(k));
+            Arc::make_mut(h).tokens.retain(|k, _| !gone.contains(k));
         }
+        let open: Vec<usize> = cities(&rules.map).into_iter().filter(|&h| g0.tokens(h, ADV_CUBE) == 0).collect();
+        put(&mut g0, open[0], FIREWALL, 1);
+        put(&mut g0, open[1], prohibit_token(Step::Infiltrate), 1);
         set_var(&mut g0, SUPPLY, 1000);
         g0.piles.remove(CURRENT);
-        for (k, id) in cards.iter().enumerate() {
+        for card in &content().adversary {
             let mut g = g0.clone();
-            for b in 0..rules.map.countries.len() {
-                set_var(&mut g, crate::modules::adversary::pool_key(b), ((k + b) % 6) as i64);
+            g.piles.insert(NEXT.into(), vec![card.id.as_str().into()].into());
+            let mut want: Vec<(usize, i64)> = Vec::new();
+            for (h, n) in plan::next_infiltrate(&w, &g) {
+                assert_eq!(n.fract(), 0.0, "an exact forecast");
+                match want.iter_mut().find(|x| x.0 == h) {
+                    Some(x) => x.1 += n as i64,
+                    None => want.push((h, n as i64)),
+                }
             }
-            g.piles.insert(NEXT.into(), vec![id.into()].into());
-            let want = plan::next_rally(&rules.world(), &g);
-            run(&rules, &mut g);
-            answer_all(&rules, &mut g);
+            want.sort_unstable();
+            assert!(!want.iter().any(|&(h, _)| h == open[0] || h == open[1]), "{}: a guarded site", card.id);
+            for site in adversary::infiltrate_sites(card) {
+                with_cx(&rules, |cx| adversary::infiltrate(&mut g, cx, site, None, "test")).unwrap();
+            }
             let got: Vec<(usize, i64)> = (0..g.hexes.len())
-                .map(|h| (h, g.tokens(h, ADV_AMBASSADOR) - g0.tokens(h, ADV_AMBASSADOR)))
+                .map(|h| (h, g.tokens(h, ADV_AMBASSADOR)))
                 .filter(|&(_, n)| n != 0)
                 .collect();
-            let fore: f64 = want.iter().map(|&(_, n)| n).sum();
-            assert_eq!(got.iter().map(|&(_, n)| n).sum::<i64>() as f64, fore.round(), "card {id}, seed {seed}");
-            for (h, n) in got {
-                let share = want.iter().find(|&&(x, _)| x == h).map(|&(_, s)| s);
-                let share = share.unwrap_or_else(|| panic!("card {id}, seed {seed}: {h} not foreseen"));
-                assert!(n as f64 >= share.floor() && n as f64 <= share.ceil(), "card {id}, seed {seed}, hex {h}");
-            }
+            assert_eq!(got, want, "card {}, seed {seed}", card.id);
         }
     }
 }

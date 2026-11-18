@@ -269,7 +269,7 @@ fn players_never_own_a_city() {
     let buyout = [content::Op::Liberate { own: true, ambassadors: 0, troops: 0, botnet: false }];
     put(&mut g, city, ADV_CUBE, 1);
     run_ops(&rules, &mut g, &buyout);
-    assert_eq!((g.tokens(city, ADV_CUBE), g.tokens(city, cube(0)), g.tokens(city, crate::modules::common::LIBERATED)), (0, 0, 1));
+    assert_eq!((g.tokens(city, ADV_CUBE), g.tokens(city, cube(0))), (0, 0));
     // A corrupted station: Hostile Buyout's `own` makes it yours.
     put(&mut g, next[1], STATION, 1);
     put(&mut g, next[1], ADV_CUBE, 1);

@@ -83,9 +83,9 @@ megaproject is the corp's defining card.
   round onto its country's megaproject while it is open, else `station_cubes` cubes onto the adversary's research
   track in its compute step (259; compute before, and with the rule off, [adversary.md](adversary.md)).
   No player starts with a station: building one (`station_chips`, 2 chips since 252, Matt) or claiming a neutral one
-  with a card is an investment. Cities build neutral stations too ([war.md](war.md), city growth).
+  with a card is an investment. The event cards' Grow lines build neutral stations too ([adversary.md](adversary.md)).
   One opposing ambassador or agent on a station blocks its output while it stands; the Liberate action frees an
-  adversary station (left neutral, with a Liberated marker) for a card to claim.
+  adversary station (left neutral) for a card to claim.
 - **A station is a defended investment (candidate, Matt).** The adversary needs weight to take
   yours: an effect that flips a player's station (Station Seizure, after landing 2 agents; Station Coup instead turns a player's
   station neutral with no agent test, `take_site`) takes it

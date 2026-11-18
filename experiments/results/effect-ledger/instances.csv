@@ -247,9 +247,9 @@ grid_census,tags [card],card,power,1.0,0.67,0.67,0.51,0.51
 hardened_bunker_complex,production energy [play],play,"resource=energy, amount=1",1.0,9.6,9.6,7.89,7.89
 hardened_bunker_complex,production credits [play],play,"resource=credits, amount=1",1.0,4.0,4.0,3.29,3.29
 hardened_bunker_complex,tags [card],card,security power,2.0,1.0,0.5,0.82,0.41
-hardpoint_lockdown,shelter [play],play,,1.0,1.87,1.87,1.45,1.45
+hardpoint_lockdown,shelter [play],play,,1.0,1.87,1.87,0.95,0.95
 hardpoint_lockdown,target [play],play,on=land,1.0,0.0,0.0,0.0,0.0
-hardpoint_lockdown,cordon [play],play,,1.0,2.0,2.0,1.55,1.55
+hardpoint_lockdown,cordon [play],play,,1.0,4.0,4.0,2.05,2.05
 headquarters_raid,target [play],play,on=agents,1.0,0.0,0.0,0.0,0.0
 headquarters_raid,remove_ambassadors_country [play],play,"max=5, at=near",5.0,5.33,1.07,5.78,1.16
 headquarters_raid,draw [play],play,count=1,1.0,2.67,2.67,2.89,2.89

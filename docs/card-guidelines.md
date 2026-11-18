@@ -164,7 +164,9 @@ requirement plates are in [rules/card-grammar.md](rules/card-grammar.md) (*Where
 ## Event lines
 
 An event card prints only the line kinds in `content::EVENT_LINE_KINDS`, each with its icon there (`Content::check`
-holds to it). Event faces have no icon row yet. A new kind is Matt's call.
+holds to it): Infiltrate, Muster, Income, New factory, Discord, Unity back, Blackout, Node loss, Forced March,
+Botnet spread, Fallout, Spill and Grow. Lines print in a fixed order: the threat, Infiltrate (two at stage III),
+Muster, at most two other lines, Spill, Grow. Event faces have no icon row yet. A new kind is Matt's call.
 
 A price rise on paper needs a screen: small raises add up. Reason every price in [card-pricing.md](card-pricing.md),
 record the change in [rules-history.md](rules-history.md). Center a rate sheet on the printed prices before reading

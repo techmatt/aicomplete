@@ -154,7 +154,10 @@ const PAGE_LIB = String.raw`(() => {
   // Liberated site, a card's or rider's claim, a hosted city's energy, a site opened, a converter's Action, the adversary research track
   // (made, fired, removed), a retake, compute blocked, a march cut short.
   const COUNTER_EVENTS_R107 = /^(ai\.power\.[a-z_]+\.[a-z0-9_]+|adversary\.(research_(made|fired|removed)|retakes|compute_blocked)|board\.(claimed_liberated|claimed_by\.(card|rider)\.[a-z]+|city_energy_hosted|sites_opened\.[a-z_]+|chips_converted|march_cut_by_loss|blocked\.station_adversary)|effects\.per_site\.owned_hosted)$/;
-  const COUNTER_ALL = [COUNTER_EVENTS, COUNTER_EVENTS_R41, COUNTER_EVENTS_R55, COUNTER_EVENTS_R70, COUNTER_EVENTS_R74, COUNTER_EVENTS_R85, COUNTER_EVENTS_R99, COUNTER_EVENTS_R107];
+  // 275: r130's card-driven adversary: an arrival corruption, a Grow (and its agent), a Spill, a botnet's seed, a
+  // Surge, an uncountered threat's agent at its anchor.
+  const COUNTER_EVENTS_R130 = /^adversary\.(corruptions_arrival|grew\.(factory|station)|grew_infested|spilled|seeded|surged|threat_anchor)$/;
+  const COUNTER_ALL = [COUNTER_EVENTS, COUNTER_EVENTS_R41, COUNTER_EVENTS_R55, COUNTER_EVENTS_R70, COUNTER_EVENTS_R74, COUNTER_EVENTS_R85, COUNTER_EVENTS_R99, COUNTER_EVENTS_R107, COUNTER_EVENTS_R130];
   const counters = () => { const c = aic.timeline.frame.snap.state.stats?.counters ?? {}; return Array.isArray(c) ? Object.fromEntries(c) : c; };
   function counterEvents(c0, c1) {
     return Object.keys(c1).filter((k) => COUNTER_ALL.some((re) => re.test(k)) && (c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);

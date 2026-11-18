@@ -3,7 +3,7 @@
 use std::collections::BTreeMap;
 
 use aic_core::content::{content, Op, Resource, RoundFlag, Spot};
-use aic_core::op::CorruptSite;
+use aic_core::op::RallyAt;
 
 use aic_core::Rules;
 
@@ -54,7 +54,7 @@ pub const SOURCES: [&str; 14] = [
     "adversary events",
     "adversary projects",
     "megaprojects",
-    "income and rally",
+    "income and Infiltrate",
     "botnets",
     "corruption",
     "uncountered threats",
@@ -71,17 +71,19 @@ const OWN_BURNS: usize = 12;
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 28] = [
-    ("income and rally", "adversary pieces placed", "agent income fills each country's pool; every event's Rally X deals it one at a time onto the sites of its type (151; r80)"),
-    ("income and rally", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
-    ("income and rally", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
-    ("income and rally", "production blacked out", "an agent on a city or station blocks its output while it stands (137)"),
+pub const RULE_HARMS: [(&str, &str, &str); 30] = [
+    ("income and Infiltrate", "adversary pieces placed", "every event's Infiltrate X lands `infiltrate_agents` (1; 2 at level 4) on each site of its type not yet the adversary's (275: it replaced Rally and the agent pools)"),
+    ("income and Infiltrate", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
+    ("income and Infiltrate", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
+    ("income and Infiltrate", "production blacked out", "an agent on a city or station blocks its output while it stands (137)"),
     ("botnets", "projects advanced (compute)", "each botnet makes compute"),
+    ("botnets", "adversary pieces placed", "each botnet with no player ambassador on it seeds `botnet_seed` agent onto the city, station or factory next to it holding the most agents, in the Income beat (275)"),
+    ("uncountered threats", "adversary pieces placed", "a threat that executes uncountered lands `threat_agents` agent on its anchor, its first location token (275)"),
     ("corruption", "node destroyed", "`corrupt_node_at` agents on a hex with a player's node destroy the node and leave no mark (175, r98; protections apply)"),
     ("corruption", "node destroyed", "a node on the corrupted hex itself is destroyed (its owner may spend a protection: r75)"),
-    ("corruption", "city lost", "a city holding its corrupt number of agents becomes the adversary's until a player liberates it"),
+    ("corruption", "city lost", "a city its corrupt number of agents lands on (an arrival, 275: only that hex is checked) becomes the adversary's until a player liberates it"),
     // 267: the ladder's level-1 rule, Sleeper Cells: a city falls sooner (the one corrupt number a level lowers).
-    ("corruption", "city lost", "Sleeper Cells (level 1, from `corrupt_cut_at`): a Corrupt step checks a city at its printed number less `corrupt_cut`'s first entry"),
+    ("corruption", "city lost", "Sleeper Cells (level 1, from `corrupt_cut_at`): an agent landing on a city checks it at its printed number less `corrupt_cut`'s first entry"),
     ("corruption", "facilities corrupted", "a research station or factory that corrupts becomes the adversary's; a firewall or a Corrupt prohibition's token guards every path, flips and threats included (r79, D77; r80)"),
     ("corruption", "ambassadors lost", "player ambassadors on it are lost"),
     ("corruption", "production blacked out", "its energy goes to the adversary"),
@@ -211,14 +213,16 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::Create { .. }
         | Op::CreateSite { .. }
         | Op::AdversaryBuild
-        | Op::Rally { .. } => vec![PIECES_PLACED],
+        | Op::Infiltrate { .. } => vec![PIECES_PLACED],
+        // 275: a Surge's arrival corrupts the site it lands on at its number (Surge 2 takes a station or factory).
+        Op::Surge { site, .. } => match site {
+            RallyAt::City | RallyAt::CoastalCity => vec![PIECES_PLACED, CITY_LOST, AMBASSADORS_LOST],
+            _ => vec![PIECES_PLACED, FACILITIES_CORRUPTED, AMBASSADORS_LOST],
+        },
         // 255: each production, its one form.
         Op::CorpTroops { .. } => vec![PIECES_PLACED, INCOME_RAISED],
-        Op::IncreaseIncome { compute, ambassadors } => {
+        Op::IncreaseIncome { compute } => {
             let mut v = vec![INCOME_RAISED];
-            if *ambassadors > 0 {
-                v.push(PIECES_PLACED);
-            }
             if *compute > 0 {
                 v.push(PROJECTS_ADVANCED);
             }
@@ -234,14 +238,13 @@ fn op_harms(op: &Op) -> Vec<usize> {
                 vec![PIECES_PLACED, CITY_LOST, AMBASSADORS_LOST]
             }
         }
-        // 191 (amendment 8617): a Corrupt line takes a node only where agents already stand, so it isn't node
-        // destruction here; it takes the site it corrupts and the ambassadors on it.
-        Op::Corrupt { site, .. } => match site {
-            CorruptSite::City | CorruptSite::CoastalCity => vec![PIECES_PLACED, CITY_LOST, AMBASSADORS_LOST],
-            CorruptSite::Station | CorruptSite::Factory => vec![PIECES_PLACED, FACILITIES_CORRUPTED, AMBASSADORS_LOST],
-            CorruptSite::Land => vec![PIECES_PLACED, AMBASSADORS_LOST, FALLOUT_PLACED],
-            CorruptSite::Node => vec![PIECES_PLACED, AMBASSADORS_LOST],
+        // 275: a Spill moves agents onto a site (an arrival: it may corrupt the site it lands on); a Grow builds a
+        // neutral facility, an agent on it where the site that grows holds agents.
+        Op::Spill { to, .. } => match to {
+            RallyAt::City | RallyAt::CoastalCity => vec![PIECES_PLACED, CITY_LOST, AMBASSADORS_LOST],
+            _ => vec![PIECES_PLACED, FACILITIES_CORRUPTED, AMBASSADORS_LOST],
         },
+        Op::Grow { .. } => vec![PIECES_PLACED],
         Op::Fallout { .. } => vec![FALLOUT_PLACED],
         Op::Troops { destroy, .. } => {
             if *destroy {
@@ -507,15 +510,55 @@ pub(super) fn harms_md(r: &Rules) -> String {
          **Check** (`aic-sim docs --check`, and a fast test): each threat tier at least 5 kinds of harm. Measured \
          shares are in the 034 screen (`experiments/results/screen-034-clocks/clocks.md`).\n\n\
          ## Gaps\n\nThe list for the adversary-card pass, not failures: a harm in under 2 kinds of source, and a kind \
-         of source over about half of the printed node destruction (with one mark of slack; a Corrupt line doesn't \
-         count: it takes a node only where agents already stand).\n\n\
-         {gaps}\n## The board's rules\n\n{notes}",
+         of source over about half of the printed node destruction (with one mark of slack).\n\n\
+         {gaps}\n## The board's rules\n\n{notes}\n## Agents in and out, by level\n\n{flow}",
         table(&head, rows),
         rev = aic_core::RULES_REVISION,
         troop_node = tick(r, "board.troop_node"),
         amb_discord = tick(r, "board.ambassador_discord"),
         // 263: the d0 step that skips every "Botnets spread" line.
         spread_at = tick(r, "adversary.botnet_spread_at"),
+        flow = agent_flow(),
+    )
+}
+
+/// One row of [`AGENT_FLOW`].
+pub type FlowRow = (u8, f64, f64, f64, f64, f64, f64, f64);
+
+/// 275: agents put on the board and taken off, a game-round, by level, the judge on the read named in
+/// [`AGENT_FLOW_READ`]: (level, arrivals made, of them by Infiltrate, canceled on arrival, removed by players,
+/// returned by corruptions, cities corrupted by round 4, by the game's end). Measured, not computed: refresh it from
+/// a read after a change to the adversary (`experiments/results/275_adversary_redesign/flow.py`).
+pub const AGENT_FLOW: [FlowRow; 5] = [
+    (0, 7.1, 4.4, 0.5, 2.2, 2.1, 0.2, 0.5),
+    (1, 8.6, 3.4, 0.6, 1.5, 4.5, 1.7, 3.7),
+    (2, 9.0, 2.9, 0.5, 1.4, 5.3, 2.2, 4.9),
+    (3, 10.1, 2.6, 0.4, 1.1, 6.5, 3.0, 5.2),
+    (4, 10.9, 4.2, 0.4, 1.0, 7.4, 3.1, 4.2),
+];
+/// The read [`AGENT_FLOW`] comes from.
+pub const AGENT_FLOW_READ: &str = "f275-read, r130, seeds 49884-49931, 144 games a level";
+
+fn agent_flow() -> String {
+    let rows = AGENT_FLOW
+        .iter()
+        .map(|&(d, made, inf, cancel, removed, corrupt, r4, end)| {
+            [d.to_string()]
+                .into_iter()
+                .chain([made, inf, cancel, removed, corrupt, r4, end].map(|x| format!("{x:.1}")))
+                .collect()
+        })
+        .collect();
+    format!(
+        "The sources and sinks of agents a game-round (the judge, {AGENT_FLOW_READ}). Arrivals are every agent the \
+         adversary puts on the board (Infiltrate, Surge, Grow, botnet seeds, threats' anchors and creation lines, \
+         Spill's moves not counted); a canceled one meets a player ambassador and both come off; removed is the \
+         players' removals; corruption returns a corrupted site's agents to the supply.\n\n{}",
+        table(
+            &["Level", "Arrivals", "Of them Infiltrate", "Canceled", "Removed by players", "Back by corruption",
+              "Cities corrupted by round 4 (a game)", "By the end (a game)"],
+            rows
+        )
     )
 }
 

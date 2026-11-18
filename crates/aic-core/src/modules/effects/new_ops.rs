@@ -34,7 +34,6 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
             adversary::create(g, cx, line, ctx.scope, &near, location, create_source(ctx))?;
         }
         Op::CreateSite { kind } => create_site(g, cx, ctx, *kind),
-        Op::Corrupt { site, cut } => adversary::corrupt_sites(g, cx, *site, *cut, ctx.scope)?,
         Op::Flag { name, scope, rounds, everywhere } => flag(g, cx, ctx, *name, *scope, *rounds, *everywhere),
         Op::Requisition { resource, amount, cards: n, next_round } => {
             requisition(g, cx, ctx, *resource, *amount, *n, *next_round)?
@@ -184,7 +183,6 @@ fn op_name(e: &Op) -> &'static str {
         Op::PlayersLose { .. } => "players_lose",
         Op::Create { .. } => "create",
         Op::CreateSite { .. } => "create_site",
-        Op::Corrupt { .. } => "corrupt",
         Op::Flag { .. } => "flag",
         Op::Requisition { .. } => "requisition",
         Op::LoseNodeOr { .. } => "lose_node_or",

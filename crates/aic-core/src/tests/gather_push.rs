@@ -81,6 +81,24 @@ fn a_push_moves_pieces_next_door_but_not_agents_onto_a_firewall() {
     assert_eq!(g.tokens(a, ADV_AMBASSADOR), 0);
 }
 
+/// 275: a player's push is no arrival: an agent pushed onto a research station to its number (2) doesn't corrupt it.
+#[test]
+fn a_push_onto_a_site_corrupts_nothing() {
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let m = &rules.map;
+    let (c, _, _, b) = by_a_city(&mut g, m);
+    put(&mut g, b, STATION, 1);
+    put(&mut g, b, ADV_AMBASSADOR, 1);
+    put(&mut g, c, ADV_AMBASSADOR, 1);
+    assert_eq!(crate::modules::adversary::corrupt_n(&w, crate::op::CorruptSite::Station, 0), 2);
+    let pieces = vec![Piece::Agents];
+    let mut picks = hex_pick(&w, &effects::push_hexes(&w, &g, 0, &pieces), c);
+    picks.extend([piece_pick(&w, "1 agent to", b), stop()]);
+    run_ops_with(&rules, &mut g, picks, &[Op::Push { max: 1, pieces }]);
+    assert_eq!((g.tokens(b, ADV_AMBASSADOR), g.tokens(b, ADV_CUBE), g.tokens(c, ADV_AMBASSADOR)), (2, 0, 0));
+}
+
 /// 169: Wall holds against a push: no troop arrives on the Protector's node (seat 1 in the lab), however it moves.
 #[test]
 fn a_push_moves_no_troop_onto_a_protector_node() {

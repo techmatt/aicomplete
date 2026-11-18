@@ -37,10 +37,8 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("corrupt_at", 1, 20, "a city's corrupt number: the agents on it that corrupt it (coastal cities too)"),
     ParamSpec::int("corrupt_station_at", 1, 20, "a research station's corrupt number"),
     ParamSpec::int("corrupt_factory_at", 1, 20, "a factory's corrupt number"),
-    ParamSpec::int("corrupt_land_at", 1, 20, "open land's corrupt number (only a Corrupt open land line; it takes Fallout)"),
     ParamSpec::int("corrupt_node_at", 1, 20, "a node's corrupt number: a hex with a player's node and this many agents loses the node"),
-    ParamSpec::int("retake_agents", 0, 5, "253: agents beyond the corrupt number to retake a neutral site a player liberated (its Liberated marker; 0: none)"),
-    ParamSpec::list("corrupt_cut", 0, 5, "difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land)"),
+    ParamSpec::list("corrupt_cut", 0, 5, "difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory)"),
     ParamSpec::int("corrupt_cut_at", 0, 5, "the difficulty level from which corrupt_cut applies"),
     ParamSpec::int("city_cut_at", 0, 5, "263: the difficulty level from which a city (coastal too) corrupts with one agent fewer again, after corrupt_cut (5: never)"),
     ParamSpec::int("blight_discord", 0, 5, "Discord each Fallout token sways each round"),
@@ -55,7 +53,12 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("stage1_added", 0, 3, "difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step)"),
     ParamSpec::int("extra_corrupted", 0, 3, "difficulty 4: more cities per country start corrupted"),
     ParamSpec::list("compute_income", 0, 30, "the adversary's base compute income a country a round, at difficulty 0-4 (times the countries: per board)"),
-    ParamSpec::list("ambassador_income", 0, 10, "the agent income a country a round (into each country's pool), at difficulty 0-4"),
+    ParamSpec::list("infiltrate_agents", 0, 5, "275: agents an Infiltrate line lands on each site it names, at difficulty 0-4"),
+    ParamSpec::int("spill_at", 0, 5, "275: the difficulty level from which an event card's Spill line moves agents; below it the line does nothing"),
+    ParamSpec::int("botnet_seed", 0, 5, "275: agents each botnet (no player ambassador on it) seeds onto the site next to it holding the most agents, in the Income beat"),
+    ParamSpec::int("grow_infest_at", 1, 5, "275: agents a Grow site holds for its new facility to come with 1 agent on it (an adversary site's always does)"),
+    ParamSpec::int("grow_cap", 0, 6, "275: a Grow site with this many facilities next to it (any owner) doesn't grow (0: no cap)"),
+    ParamSpec::int("threat_agents", 0, 5, "275: agents an uncountered threat lands on its anchor (its first location token) as it executes"),
     ParamSpec::int("discord_removed", 0, 3, "difficulty 4+: Discord cards removed at setup (from tier 1)"),
     ParamSpec::int("war_node", 0, 1, "build (r83, the Militarist's War Takes Ground): 1: a drone strike that destroys a factory destroys a node on its hex too"),
     ParamSpec::int("station_flip_at", 0, 5, "agents on a player's research station before an effect can flip it (short of that, one lands there instead)"),
@@ -70,9 +73,8 @@ const PARAMS: &[ParamSpec] = &[
 /// phases each runs (working names: a rename is this one edit). Threat resolution stays its own round step. 247
 /// (241's pick): read only by a test that holds the round's phases to the strip, so built only for tests.
 #[cfg(test)]
-pub const BEATS: [(&str, &[&str]); 4] = [
+pub const BEATS: [(&str, &[&str]); 3] = [
     ("Card", &["adversary.event", "threats.deal", "adversary.build"]),
-    ("Corrupt", &["adversary.corrupt", "adversary.natural"]),
     ("March", &["board.march"]),
     ("Income", &["adversary.reveal", "adversary.compute"]),
 ];
@@ -84,23 +86,19 @@ pub fn beat_of(phase: &str) -> Option<&'static str> {
 }
 
 const PHASES: &[PhaseSpec] = &[
-    PhaseSpec::auto("build", "the Card beat after the threats: Rally X (each country's pool lands), Muster (its troops), the card's other lines, the Protector's Muster"),
-    PhaseSpec::auto("corrupt", "the event card's Corrupt X lines: every agent next to an X moves onto it, then every X holding its number corrupts"),
-    PhaseSpec::auto("natural", "natural corruption: every city, research station or factory holding its number corrupts, then every node hex holding a node's"),
-    PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead; then agent income into each country's pool"),
+    PhaseSpec::auto("build", "the Card beat after the threats: Infiltrate X (agents on each named site), Muster (its troops), the card's other lines, Spill and Grow; each arrival checks the site it lands on"),
+    PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead (its Infiltrate and Grow sites shown)"),
     PhaseSpec::auto("event", "the face-up event card becomes this round's (none left: the adversary wins)"),
     // 178 (amendment 8112): its own phase, so a project's prompt doesn't follow the reveal's hidden draw in one
     // phase (a determinized replay of it could resolve another project first). No play change.
-    PhaseSpec::auto("compute", "the Income beat's compute (income, botnets, corrupted stations and the compute banked since the last turn onto the leftmost project, which resolves as it fills); then every firewall, cordon and prohibition token comes off: the adversary turn ends"),
+    PhaseSpec::auto("compute", "the Income beat: each botnet seeds an agent next to it; the compute (income, botnets and the compute banked since the last turn onto the leftmost project, which resolves as it fills); then every firewall, cordon and prohibition token comes off: the adversary turn ends"),
 ];
 
 // `run`'s phase indices: each is its phase's position in `PHASES`.
 const BUILD: usize = 0;
-const CORRUPT: usize = 1;
-const NATURAL: usize = 2;
-const REVEAL: usize = 3;
-const EVENT: usize = 4;
-const COMPUTE_STEP: usize = 5;
+const REVEAL: usize = 1;
+const EVENT: usize = 2;
+const COMPUTE_STEP: usize = 3;
 
 pub static DEF: ModuleDef = ModuleDef {
     id: "adversary",
@@ -142,11 +140,12 @@ pub const PROJECTS: &str = "adversary.projects";
 pub const PROJECTS_DONE: &str = "adversary.projects_done";
 /// 151: the adversary's compute income a round (base, raised by "increase income" lines).
 pub const INCOME_COMPUTE: &str = "adversary.income_compute";
-/// 151: its ambassador income a board a round.
-pub const INCOME_AMBASSADORS: &str = "adversary.income_ambassadors";
 
 /// The per-round counter of adversary operations (table time).
 pub const OPS: &str = "adversary.ops";
+/// 275: the per-round counter of per-site checks the adversary turn makes (each site a line names, each
+/// arrival, each botnet): table time, exported by round (`map.`).
+pub const CHECKS: &str = "map.adversary_checks";
 /// The round the first project resolved (sim observation).
 const FIRST_PROJECT: &str = "adversary.first_project";
 /// The round of the first corruption after setup (sim observation).
@@ -340,19 +339,15 @@ impl Module for Adversary {
         }
         cx.set_pile(g, DECK, deck);
         reveal(g, cx);
-        // 151: the income, from the config's level and the board's own lines; round 1's pools.
-        let (mut compute, mut ambassadors) =
-            (income_at(&w, "adversary.compute_income"), income_at(&w, "adversary.ambassador_income"));
+        // 151: the compute income, from the config's level and the board's own lines (275: no agent income).
+        let mut compute = income_at(&w, "adversary.compute_income");
         for e in w.content.adversary_board.rules.iter().flat_map(|r| r.effects.iter()) {
-            if let Op::IncreaseIncome { compute: c, ambassadors: a } = e {
+            if let Op::IncreaseIncome { compute: c } = e {
                 compute += c;
-                ambassadors += a;
             }
         }
         // 231 (Matt): compute is per board: the income and every printed compute line, times the countries.
         cx.set_key(g, INCOME_COMPUTE, compute * w.map.countries.len() as i64);
-        cx.set_key(g, INCOME_AMBASSADORS, ambassadors);
-        fill_pools(g, cx);
         // The project deck (135): one shuffled deck, dealt into the board's slots.
         let mut ids: Vec<Key> = w.content.projects.iter().map(|c| Key::new(&c.id)).collect();
         shuffle(&mut ids, cx.rng(g, "adversary"));
@@ -383,30 +378,22 @@ impl Module for Adversary {
                 for t in &c.twists {
                     match t {
                         // These resolve as they do anywhere (034, 044).
-                        Op::Sway { .. } | Op::EachDestroyNode { .. } | Op::PullUnity { .. } => {
+                        Op::Sway { .. } | Op::EachDestroyNode { .. } | Op::PullUnity { .. } | Op::Fallout { .. } => {
                             effects::run(g, cx, std::slice::from_ref(t), &mut effects::Ctx::team().named("twist").why(&c.name))?
                         }
-                        // Read where they act: the corrupt step (138) and the march.
-                        Op::Corrupt { .. } | Op::TroopSteps { .. } => {}
+                        // 275: the card's last lines, in card order: Spill, then Grow.
+                        Op::Spill { site, to } => spill(g, cx, *site, *to, None)?,
+                        Op::Grow { site } => grow(g, cx, *site, None)?,
+                        // Read where it acts: the march.
+                        Op::TroopSteps { .. } => {}
                         // The load check lets no other op in: one added to `Slot::Twist`
                         // needs a reader (044: `_ => {}` swallowed the Unity pull).
                         other => unreachable!("twist with no reader: {other:?}"),
                     }
-                }
-            }
-            CORRUPT => {
-                // 138: the card's Corrupt X lines, in card order (they replace the spread).
-                for t in twists(&w, g) {
-                    if let Op::Corrupt { site, cut } = t {
-                        corrupt_sites(g, cx, *site, *cut, None)?;
-                        if g.is_over() {
-                            return Ok(());
-                        }
+                    if g.is_over() {
+                        return Ok(());
                     }
                 }
-            }
-            NATURAL => {
-                natural_corruption(g, cx)?;
                 // Botnets at their peak, per board (country).
                 for (c, country) in w.map.countries.iter().enumerate() {
                     let n = botnet_count(g, Some(&country.hexes));
@@ -421,13 +408,12 @@ impl Module for Adversary {
                     on_board,
                 );
             }
-            REVEAL => {
-                reveal(g, cx);
-                if !g.is_over() {
-                    fill_pools(g, cx);
-                }
-            }
+            REVEAL => reveal(g, cx),
             COMPUTE_STEP => {
+                // 275: botnets seed first (a botnet's compute comes in the step below).
+                if !g.is_over() {
+                    botnets_seed(g, cx)?;
+                }
                 if !g.is_over() {
                     compute_step(g, cx)?;
                 }
@@ -438,7 +424,7 @@ impl Module for Adversary {
                 // 158: firewalls come off at the end of the adversary turn after they went on; r80 (#53) so do
                 // prohibition tokens.
                 for h in 0..g.hexes.len() {
-                    for kind in [FIREWALL, prohibit_token(Step::Rally), prohibit_token(Step::Muster), prohibit_token(Step::Corrupt)] {
+                    for kind in [FIREWALL, prohibit_token(Step::Infiltrate), prohibit_token(Step::Muster), prohibit_token(Step::Corrupt)] {
                         let n = g.tokens(h, kind);
                         if n > 0 {
                             cx.add_tokens(g, h, kind, -n);
@@ -565,21 +551,6 @@ impl Module for Adversary {
             );
         }
         out.global(
-            "income_ambassadors",
-            "agent income",
-            g.var(INCOME_AMBASSADORS),
-            None,
-            "agents a country a round, into each country's pool; the next Rally lands the pool",
-        );
-        let pool: i64 = (0..w.map.countries.len()).map(|c| g.var(&pool_key(c))).sum();
-        out.global(
-            "pool",
-            "agent pool",
-            pool,
-            None,
-            "agents waiting to land at the next Rally, all boards",
-        );
-        out.global(
             "difficulty",
             "difficulty",
             w.int("adversary.difficulty"),
@@ -661,7 +632,7 @@ impl Module for Adversary {
             let wheres: Vec<&str> =
                 Where::ALL.iter().enumerate().filter(|(i, _)| mask & (1 << i) != 0).map(|(_, wh)| wh.words()).collect();
             let name = match step {
-                Step::Rally => "Rally",
+                Step::Infiltrate => "Infiltrate",
                 Step::Muster => "Muster",
                 Step::Corrupt => "Corrupt",
             };
@@ -680,7 +651,6 @@ impl Module for Adversary {
             FIRST_PROJECT,
             "adversary.project.",
             "adversary.cut.",
-            "adversary.pool.",
             "adversary.slot.",
         ]);
     }
@@ -741,8 +711,6 @@ mod phase_tests {
     fn phase_indices_match_phases() {
         let named = [
             (BUILD, "build"),
-            (CORRUPT, "corrupt"),
-            (NATURAL, "natural"),
             (REVEAL, "reveal"),
             (EVENT, "event"),
             (COMPUTE_STEP, "compute"),

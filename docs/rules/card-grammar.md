@@ -65,8 +65,7 @@ How each primitive resolves, beyond the card text (the card set: [player-cards.m
   this round's execution, stays up, and can be countered next round; only threats you may counter, as countering and
   jamming; with none, the card still plays for its draw or hardening tokens.
 - **Cleanse:** take the adversary cube off the target, a corrupted research station or factory, then off the rest
-  the card counts next to it (or in its country), one hex at a time. A station becomes neutral. A freed station or
-  factory takes no Liberated marker (only a liberated site does). `only` limits it to
+  the card counts next to it (or in its country), one hex at a time. A station becomes neutral. `only` limits it to
   stations or to factories; its cube icon then carries that facility's glyph. With `cities` (Great Liberation) a
   corrupted city counts too (its cube carries the city glyph), and it is liberated ([ambassadors.md](ambassadors.md)).
 - **Liberate:** liberate the target, a corrupted city, as the Liberate action does, unpaid
@@ -92,9 +91,9 @@ How each primitive resolves, beyond the card text (the card set: [player-cards.m
   your pick of hexes when there are more than N; never "per hex" (Matt's ruling 6).
 - **Help cards** (keyword `help`, about 6% of the deck): the player chooses another player; both gain, the helper paying. **In a
   1-player game, "another player" means you**: the gift is yours.
-- **Cordon (`cordon`):** "cordon its country until the end of the next adversary turn" (the target's): until then no Rally or
-  creation line places agents there, a project's included; its pool waits in the supply and lands at its next
-  Rally; the rest of a build goes on. Like a firewall it comes off at that turn's compute step.
+- **Cordon (`cordon`):** "cordon its country until the end of the next adversary turn" (the target's): until then no Infiltrate,
+  Surge, Spill, Grow, botnet's seed or creation line acts there, a project's included; the rest of the turn goes on.
+  Like a firewall it comes off at that turn's Income beat.
 - **Play a building, paying no credits (`free_building`):** the Builder's Rush Build (1 Industry and 1 energy). Its tags are sacrificed first,
   so a building needing those tags or the sacrificed stack can't then be played; its other costs and requirements
   stand, paid from what is left after the power's energy. The power isn't offered unless some building in hand would

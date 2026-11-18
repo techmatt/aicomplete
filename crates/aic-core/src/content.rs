@@ -1380,22 +1380,24 @@ pub fn says_each_board(text: &str) -> bool {
     text.to_lowercase().contains("each board")
 }
 
-/// 151: where an event line sits in the fixed step order (threat, rally, muster, other lines, corrupt).
+/// 151, 275: where an event line sits in the fixed step order (threat, Infiltrate, Muster, other lines, Spill,
+/// Grow).
 fn event_step(e: &Op) -> u8 {
     match e {
-        Op::Rally { count: 0, .. } => 0,
+        Op::Infiltrate { .. } => 0,
         Op::Troops { each_country: true, at: None, stand: false, location: None, if_: None, .. } => 1,
-        Op::Corrupt { .. } => 3,
+        Op::Spill { .. } => 3,
+        Op::Grow { .. } => 4,
         _ => 2,
     }
 }
 
 /// r80 (ruling #31): the fixed list of an event card's line kinds, each printed with one icon
 /// (docs/card-guidelines.md, *Event lines*): `(kind, icon)`. An event line outside it is off the standard.
-pub const EVENT_LINE_KINDS: [(&str, &str); 11] = [
-    ("Rally", "agent, then the site glyph"),
+pub const EVENT_LINE_KINDS: [(&str, &str); 13] = [
+    ("Infiltrate", "agent, then the site glyph"),
     ("Muster", "troop, then the factory glyph"),
-    ("Income", "brown box: agent or compute"),
+    ("Income", "brown box: compute"),
     ("New factory", "factory glyph with a plus"),
     ("Discord", "Discord track, arrow up"),
     ("Unity back", "Unity track, arrow down"),
@@ -1403,13 +1405,15 @@ pub const EVENT_LINE_KINDS: [(&str, &str); 11] = [
     ("Node loss", "minus node, by a base"),
     ("Forced March", "troop with a plus step"),
     ("Botnet spread", "botnet glyph with an arrow"),
-    ("Corrupt", "dark-framed site glyph"),
+    ("Fallout", "Fallout glyph by a dark-framed city"),
+    ("Spill", "agent arrow from one site glyph to another"),
+    ("Grow", "site glyph, a plus facility beside it"),
 ];
 
 /// r80 (ruling #31): the kind (an [`EVENT_LINE_KINDS`] name) of event line `e`, none if it is no kind on the list.
 pub fn event_line_kind(e: &Op) -> Option<&'static str> {
     Some(match e {
-        Op::Rally { count: 0, .. } => "Rally",
+        Op::Infiltrate { .. } => "Infiltrate",
         Op::Troops { each_country: true, at: None, stand: false, location: None, if_: None, .. } => "Muster",
         Op::IncreaseIncome { .. } => "Income",
         Op::CreateSite { .. } => "New factory",
@@ -1420,14 +1424,18 @@ pub fn event_line_kind(e: &Op) -> Option<&'static str> {
         Op::TroopSteps { .. } => "Forced March",
         // 201: botnets spread from the event deck (Matt, amendment 9026: an event line).
         Op::SpreadBotnets { .. } => "Botnet spread",
-        Op::Corrupt { .. } => "Corrupt",
+        // 275: Corrupt open land's Fallout, printed.
+        Op::Fallout { .. } => "Fallout",
+        Op::Spill { .. } => "Spill",
+        Op::Grow { .. } => "Grow",
         _ => return None,
     })
 }
 
-/// 151, the event standard (the threat card standard's, for events): one Rally X, its lines in the fixed order
-/// (rally, muster, other lines, corrupt), at most two other lines (consequences), no per-event compute or
-/// creation line, and "each country", never "each board". The reason it breaks, if it does.
+/// 151, the event standard (the threat card standard's, for events), 275's lines: one Infiltrate X (two at stage
+/// III), its lines in the fixed order (Infiltrate, Muster, other lines, Spill, Grow), at most two other lines
+/// (consequences), at most one Spill and one Grow, no per-event compute or creation line, and "each
+/// country", never "each board". The reason it breaks, if it does.
 pub fn event_rule_break(a: &AdversaryCard) -> Option<String> {
     if says_each_board(&a.text) {
         return Some("it says \"each board\" (each country)".into());
@@ -1436,23 +1444,24 @@ pub fn event_rule_break(a: &AdversaryCard) -> Option<String> {
         return Some(format!("a line of no kind on the fixed list (r80, ruling #31): {e:?}"));
     }
     let steps: Vec<u8> = a.standing.iter().chain(&a.twists).map(event_step).collect();
-    if steps.iter().filter(|&&s| s == 0).count() != 1 {
-        return Some("one Rally X line".into());
+    let infiltrates = steps.iter().filter(|&&s| s == 0).count();
+    if infiltrates == 0 || infiltrates > if a.stage >= 3 { 2 } else { 1 } {
+        return Some("one Infiltrate X line (two at stage III)".into());
     }
     if steps.windows(2).any(|p| p[0] > p[1]) || a.twists.iter().any(|e| event_step(e) < 2) {
-        return Some("a step out of the fixed order (threat, rally, muster, other lines, corrupt)".into());
+        return Some("a step out of the fixed order (threat, Infiltrate, Muster, other lines, Spill, Grow)".into());
     }
     if steps.iter().filter(|&&s| s == 2).count() > 2 {
         return Some("more than two other lines (consequences)".into());
     }
-    if a.standing.iter().any(|e| matches!(e, Op::Corrupt { .. })) {
-        return Some("a Corrupt line before the corrupt step (it goes last, among the twists)".into());
+    if steps.iter().filter(|&&s| s == 3).count() > 1 || steps.iter().filter(|&&s| s == 4).count() > 1 {
+        return Some("at most one Spill line and one Grow line".into());
     }
-    if a.standing.iter().chain(&a.twists).any(|e| matches!(e, Op::Rally { count, .. } if *count != 0)) {
-        return Some("an event's Rally lands its pool (no count)".into());
+    if a.standing.iter().any(|e| matches!(e, Op::Spill { .. } | Op::Grow { .. })) {
+        return Some("a Spill or Grow line before the other lines (they go last, among the twists)".into());
     }
     if a.standing.iter().any(|e| matches!(e, Op::Compute { .. } | Op::Create { .. })) {
-        return Some("a per-event compute or creation line (income and Rally replace them)".into());
+        return Some("a per-event compute or creation line (income and Infiltrate replace them)".into());
     }
     None
 }

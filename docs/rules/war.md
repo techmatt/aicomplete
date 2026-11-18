@@ -6,36 +6,27 @@
 
 **Production runs every round** after the action
 phase: first **one income step** in a printed order: factories' chips and adversary troops,
-cities' energy, stations' cubes, full megaprojects, then upkeep ([economy.md](economy.md)); then **growth**: extra
-drones, then city growth (below). **War is fought at the end of every round** on every front, after
+cities' energy, stations' cubes, full megaprojects, then upkeep ([economy.md](economy.md)); then extra
+drones. **War is fought at the end of every round** on every front, after
 threats execute, so what war destroys is gone for next round's production. **War brought forward** (Casus Belli;
 candidate): the front the threat's base belongs to fights twice in next round's war (their drones
 cancel once, the surplus strikes twice).
 
 ## Factories
 
-- **Ownership:** an owner cube, as stations and cities have. A facility a city builds is always **neutral**.
+- **Ownership:** an owner cube, as stations and cities have. A facility an event card's Grow line builds is always
+  **neutral** ([adversary.md](adversary.md)).
   A neutral factory is claimed, and an adversary one liberated, as any site is
   ([ambassadors.md](ambassadors.md)). Cards that build a factory (Prefab Plant Kit) build the
   player's own, on the card's target, a free zone in reach.
 - **Output** (each round; the site table in [ambassadors.md](ambassadors.md)): a player's factory makes
   `factory_chips` (1) chip for its owner; an adversary factory makes 1 adversary troop on its hex (**locked**); a
-  neutral factory makes nothing for anyone, but **feeds the cities next to it** (growth, below) and **at a Discord tip
-  it arms its country's bases** (below). One opposing ambassador or agent blocks a
+  neutral factory makes nothing for anyone, but **at a Discord tip it arms its country's bases** (below). One opposing ambassador or agent blocks a
   factory's output while it stands. Threats build adversary factories (Mass Production, War Economy; Factory
   Occupation on an empty zone), corrupt them (Factory Occupation, unless a firewall or Corrupt prohibition guards it)
   and destroy them (Siege, leaving Fallout); projects build or take them (War Plants, Asset Seizure, Plant Seizure,
-  Hostile Takeover, Grand Offensive).
-- **City growth** (candidate; each round, after the income step and the extra drones): every
-  city, neutral or corrupted (no player owns one, 254), puts **1 chip on itself for each unclaimed neutral factory next to it** (none
-  of its own; a claimed or adversary factory feeds nothing; an agent on the city blocks nothing), holding at most
-  `city_chip_cap` (3). Then each city holding `city_build_chips` (3) spends them and builds a **neutral** facility:
-  whichever of factory and research station it has **fewer of next to it** (any owner's; ties: a factory), a factory
-  on a free industrial zone, a station on free open land that is no zone and no base, next to the city; with none,
-  within 2 hexes **in its own country**; with none there, nothing is built (it never switches kind) and its chips
-  wait. A city's hex, neutral or corrupted alike, is the lowest-numbered next to an agent, else the lowest-numbered
-  (with `cities_unowned` 0, an aligned city's owner picked it). Cities gather first, then build in hex order. Claiming a factory stops it
-  feeding: growth is a prize to take, and a city with no unclaimed factory beside it touches no token.
+  Hostile Takeover, Grand Offensive). New neutral factories and stations come from the event cards' **Grow** lines
+  (one a country, beside the named site holding the most agents: [adversary.md](adversary.md)); cities hold no chips.
 
 ## Bases and war
 
@@ -68,7 +59,7 @@ lands what it prints at every level (267). **Targets:**
 player-owned research stations and factories, **and nodes** (`troop_node` 0, from the start), never cities
 (corruption is the adversary's way in) or neutral or adversary-owned facilities.
 
-In the adversary phase (`board.march`, after the corruption step) **every adversary troop
+In the adversary phase (`board.march`, the March beat, after the Card beat) **every adversary troop
 takes `troop_steps` steps** (1, so a troop needs time to arrive; Forced March's twist: more). **The troops on one hex march as one stack** (274): one stack at a time, country by country and by hex number within each, in an order
 fixed when the march starts; troops already on a hex a stack enters march later on their own. A troop a threat lands follows the troop's normal rules (no standing troops); troops a threat
 lands to "march at once" (Total War) take their steps as it executes. The march stops once a seat has no node (the
@@ -101,7 +92,7 @@ troop's next target (the nearest; the arrow is solid when the hit lands in the n
 naming how many; a strike card's "on or next to it" (its target) counts the target itself, and the player picks which
 pieces. Removing a troop sways `alignment.troop` (0).
 
-**For new players:** [rulebook.md](../rulebook.md) §2 (sites, bases), §6 (the march), §9 (city growth) and §11
+**For new players:** [rulebook.md](../rulebook.md) §2 (sites, bases), §6 (the march) and §11
 (war). Discord feeds war and war feeds Discord: keep neutral factories quiet and the Discord track low.
 
 **This is the troops' own movement rule**; Push (Checkpoint Network, the Protector's Patrol) moves troops too
@@ -111,7 +102,7 @@ pieces. Removing a troop sways `alignment.troop` (0).
 **Node destruction.** A player with no nodes on the board loses the game for everyone ([alignment.md](alignment.md)).
 **It is local:** a seat loses nodes only where the board is overrun: an uncountered threat that prints it (the nearest
 player destroys their node closest to it; Siege takes the node on its factory's hex), a site that corrupts (only a
-node on its own hex), a node hex holding `corrupt_node_at` (2) agents ([adversary.md](adversary.md)) and Border War
+node on its own hex), an arrival leaving `corrupt_node_at` (2) agents on a node hex ([adversary.md](adversary.md)) and Border War
 (each player with a node on or next to a front's base destroys 1 of those). War takes a node on the hex of a factory
 it destroys (War Takes Ground). No project destroys a node itself (Night Raid lands agents on node hexes, for the
 2-agent rule); an adversary troop's strike (the march above). **Nothing else destroys a node:** Discord cards, the

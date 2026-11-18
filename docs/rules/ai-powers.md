@@ -122,8 +122,8 @@ boards' own insight ways are few:
   troops each round that end their march next to your node pay 1 insight each (`board.vigil_cap` troops a round);
   later ones that round pay nothing, so a troop parked by your node doesn't pay every march. Any march counts (a
   threat's immediate march too); a troop used up striking has no end to its march. An Effect because it happens in a
-  march, outside the action phase where powers are used: the march's (phase 7) pays this round's keeps and plays, an
-  immediate march's (phase 18) comes after them.
+  march, outside the action phase where powers are used: the march's (phase 5) pays this round's keeps and plays, an
+  immediate march's (phase 16) comes after them.
 - **Researcher, Synthesis reversed** (a power, once a round): 1 insight → draw a card, the Researcher's draw outlet
   and a use for Patience's bank. No other insight → card action exists. Give / get 4 for 5 at
   the anchors (a card kept at 1 insight is 4 more): a draw, not a gain. Peer Review, its node power, pays 1 insight by a fresh station.
@@ -145,9 +145,9 @@ station's card is complete, which would otherwise grow its cubes each round, cap
 ## Shelters and hardening
 
 A **shelter** (a card's "Shelter your Nodes and facilities in reach", no target: yours in your reach when a piece would
-be destroyed, so nodes placed after it count) lasts until cleanup (phase 20) of the round it is used in. Used in the actions, it covers the rest of the actions and what comes after them: the income step,
-growth, the threats that execute and war (phases 15-19). The march (phase 7) has already happened, but a threat's
-immediate march (Total War's, phase 18) meets it. It stops a destruction automatically, spending nothing, and so does the Protector's Aegis Doctrine capstone, a shelter
+be destroyed, so nodes placed after it count) lasts until cleanup (phase 18) of the round it is used in. Used in the actions, it covers the rest of the actions and what comes after them: the income step,
+the extra drones, the threats that execute and war (phases 13-17). The march (phase 5) has already happened, but a threat's
+immediate march (Total War's, phase 16) meets it. It stops a destruction automatically, spending nothing, and so does the Protector's Aegis Doctrine capstone, a shelter
 on its own pieces (the first time each round one of its nodes or facilities would be destroyed); the other protections
 (a hardening token below, your own ambassador) are the piece owner's choice; drones never protect ([war.md](war.md),
 *Destruction*).

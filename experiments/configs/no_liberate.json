@@ -29,8 +29,6 @@
         "troop_per_round": 1,
         "factory_build_chips": 0,
         "factory_chips": 1,
-        "city_build_chips": 3,
-        "city_chip_cap": 3,
         "remove_ambassadors": 2,
         "remove_count": 3,
         "land_cubes": 2,
@@ -70,12 +68,9 @@
         "corrupt_at": 5,
         "corrupt_station_at": 2,
         "corrupt_factory_at": 2,
-        "corrupt_land_at": 3,
         "corrupt_node_at": 2,
-        "retake_agents": 1,
         "corrupt_cut": [
           2,
-          0,
           0,
           0
         ],
@@ -102,13 +97,18 @@
           15,
           18
         ],
-        "ambassador_income": [
-          0,
-          0,
-          0,
-          0,
-          1
+        "infiltrate_agents": [
+          1,
+          1,
+          1,
+          1,
+          2
         ],
+        "spill_at": 2,
+        "botnet_seed": 1,
+        "grow_infest_at": 1,
+        "threat_agents": 1,
+        "grow_cap": 2,
         "discord_removed": 0,
         "war_node": 1,
         "station_flip_at": 2,
@@ -389,8 +389,6 @@
     "adversary.event",
     "threats.deal",
     "adversary.build",
-    "adversary.corrupt",
-    "adversary.natural",
     "board.march",
     "adversary.reveal",
     "adversary.compute",

@@ -92,8 +92,6 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("troop_per_round", 1, 5, "times a seat may take Remove a troop a round"),
             ParamSpec::int("factory_build_chips", 0, 20, "standard action Build a factory: chips for a factory of yours (0: no such action)"),
             ParamSpec::int("factory_chips", 0, 5, "chips a player-owned factory makes its owner each round"),
-            ParamSpec::int("city_build_chips", 1, 10, "chips a city spends to build a neutral factory or research station"),
-            ParamSpec::int("city_chip_cap", 1, 10, "chips a city holds at most while they wait (one each round from each unclaimed neutral factory next to it)"),
             ParamSpec::int("remove_ambassadors", 1, 5, "standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing)"),
             ParamSpec::int("remove_count", 1, 3, "standard action Remove agents: agents it removes, at most, on or next to its target (the player's choice)"),
             ParamSpec::int("land_cubes", 0, 10, "standard action Lift Fallout: research cubes to lift 1 Fallout token in reach (0: no such action)"),

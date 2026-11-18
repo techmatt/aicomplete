@@ -10,14 +10,21 @@ pub fn place(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) -> Res {
         cx.tally(g, "adversary.firewalled", n.max(0));
         return Ok(());
     }
+    let mut landed = false;
     for k in 0..n {
         if g.var(SUPPLY) <= 0 {
             cx.tally(g, "adversary.supply_short", n - k);
-            return Ok(());
+            break;
         }
         cx.add_key(g, SUPPLY, -1);
         cx.per_round(g, OPS, 1);
-        arrive(g, cx, h)?;
+        cx.tally(g, "adversary.arrivals", 1);
+        landed |= arrive(g, cx, h)?;
+    }
+    // 275: arrival corruption: the hex an agent landed on is checked, and nothing else (all canceled or none sent:
+    // nothing arrived, nothing is checked).
+    if landed {
+        arrive_check(g, cx, h)?;
     }
     Ok(())
 }
@@ -25,15 +32,15 @@ pub fn place(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) -> Res {
 /// One agent arrives on hex `h` from the supply: it cancels a
 /// player ambassador there (both are removed, no Unity; r75: the players choose
 /// whose, [`board::agent_cancels`]). 138: with the spread gone, no botnet forms
-/// by arriving (botnets come only from printed lines).
-fn arrive(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
+/// by arriving (botnets come only from printed lines). Whether it landed (275: a canceled one didn't).
+fn arrive(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
     if board::agent_cancels(g, cx, h)?.is_some() {
         cx.add_key(g, SUPPLY, 1);
         cx.tally(g, "adversary.canceled", 1);
-        return Ok(());
+        return Ok(false);
     }
     cx.add_tokens(g, h, ADV_AMBASSADOR, 1);
-    Ok(())
+    Ok(true)
 }
 
 /// Removes the botnet on hex `h` (a card's effect, or r75's Take down a botnet standard action).

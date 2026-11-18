@@ -4,7 +4,7 @@ use crate::content::Op;
 use crate::modules::common::{FIREWALL, FALLOUT};
 use crate::modules::{adversary, alignment, board, effects, plan};
 use crate::op::{CorruptSite, CreateAt, CreateIf, Facility, RallyAt};
-use crate::modules::common::{LIBERATED, STATION};
+use crate::modules::common::STATION;
 
 /// Country `c`'s hexes passing `f`, lowest-numbered first.
 fn numbered_where(m: &Map, c: u8, f: impl Fn(usize) -> bool) -> Vec<usize> {
@@ -13,72 +13,55 @@ fn numbered_where(m: &Map, c: u8, f: impl Fn(usize) -> bool) -> Vec<usize> {
     v
 }
 
-/// 175: the build's Rally lands each board's pool on the sites of the card's type (r80: round-robin, so each
-/// gets the even share or one more); the agents' forecast reads the same plan, and the pool empties.
-#[test]
-fn rally_lands_each_boards_pool_evenly_on_its_eligible_sites() {
-    let (rules, mut g) = lab(&["adversary.build"]);
-    let m = &rules.map;
-    let w = rules.world();
-    set_var(&mut g, SUPPLY,40);
-    let players: Vec<Key> = (0..g.seats.len()).map(|s| Key::new(ambassador(s))).collect();
+/// Every agent and player ambassador off the board.
+fn clear_agents(g: &mut GameState) {
+    let gone: Vec<Key> = (0..g.seats.len()).map(|s| Key::new(ambassador(s))).chain([Key::new(ADV_AMBASSADOR)]).collect();
     for h in Arc::make_mut(&mut g.hexes).iter_mut() {
-        Arc::make_mut(h).tokens.retain(|k, _| !players.contains(k));
+        Arc::make_mut(h).tokens.retain(|k, _| !gone.contains(k));
     }
-    // War Drums rallies to cities; only board 0 has a pool.
-    set_pile(&mut g, NEXT, &["mil_s1_war_drums"]);
-    for c in 0..m.countries.len() {
-        set_var(&mut g, adversary::pool_key(c), 0);
-    }
-    set_var(&mut g, adversary::pool_key(0), 5);
-    let sites = plan::rally_sites(&w, &g, RallyAt::City, 0);
-    let cities0 = numbered_where(m, 0, |h| kind(m, h) == HexKind::City);
-    assert_eq!(sites, cities0, "every city, whoever owns it");
-    let before: Vec<i64> = (0..g.hexes.len()).map(|h| g.tokens(h, ADV_AMBASSADOR)).collect();
-    let fore = plan::next_rally(&w, &g);
-    assert!((fore.iter().map(|&(_, n)| n).sum::<f64>() - 5.0).abs() < 1e-9);
-    run_answered(&rules, &mut g);
-    let gained: Vec<(usize, i64)> = (0..g.hexes.len())
-        .map(|h| (h, g.tokens(h, ADV_AMBASSADOR) - before[h]))
-        .filter(|&(_, n)| n != 0)
-        .collect();
-    assert_eq!(gained.iter().map(|&(_, n)| n).sum::<i64>(), 5);
-    let each = 5 / sites.len() as i64;
-    assert!(gained.iter().all(|&(h, n)| sites.contains(&h) && (n == each || n == each + 1)), "{gained:?}");
-    for (h, n) in fore {
-        assert_eq!(gained.iter().find(|&&(x, _)| x == h).map_or(0, |&(_, k)| k) as f64, n, "the forecast is the landing");
-    }
-    assert_eq!(g.var(&adversary::pool_key(0)), 0);
-    assert_eq!(g.var(SUPPLY), 35);
 }
 
-/// r80 (ruling #43): Rally deals the pool round-robin, one agent onto each site of the type in hex order (the
-/// adversary's included, no remainder rule), until the pool is empty. r82 (Matt, 2026-11-11, as at r79): a
-/// firewalled site keeps its turn in the deal and its share stays in the supply.
+/// 275 (Matt, 2026-11-18): Infiltrate X lands `infiltrate_agents` (1 at d0) on each site of its type not yet the
+/// adversary's, whoever owns it; a corrupted one takes none, and nothing else on the board gains an agent.
 #[test]
-fn rally_deals_round_robin_in_hex_order_and_a_firewalled_share_stays_in_the_supply() {
+fn an_infiltrate_lands_one_agent_on_each_site_of_its_type_and_skips_a_corrupted_one() {
     let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let w = rules.world();
+    assert_eq!(adversary::infiltrate_agents(&w), 1);
+    set_var(&mut g, SUPPLY, 40);
+    clear_agents(&mut g);
     let cities0 = numbered_where(m, 0, |h| kind(m, h) == HexKind::City);
     assert!(cities0.len() >= 3);
-    for &h in &cities0 {
-        Arc::make_mut(&mut Arc::make_mut(&mut g.hexes)[h]).tokens.clear();
-    }
     put(&mut g, cities0[0], ADV_CUBE, 1);
-    let k = cities0.len() as i64;
-    let p = plan::rally_plan(&w, &g, RallyAt::City, 0, k + 1).unwrap();
-    let want: Vec<(usize, i64)> = cities0.iter().enumerate().map(|(i, &h)| (h, if i == 0 { 2 } else { 1 })).collect();
-    assert_eq!(p.shares, want, "the adversary's city first in hex order takes the extra agent");
+    put(&mut g, cities0[1], cube(0), 1);
+    let sites = plan::infiltrate_sites(&w, &g, RallyAt::City, 0);
+    assert_eq!(sites, cities0[1..].to_vec(), "every city not yet the adversary's, a player's included");
+    with_cx(&rules, |cx| adversary::infiltrate(&mut g, cx, RallyAt::City, Some(0), "test")).unwrap();
+    let gained: Vec<(usize, i64)> = (0..g.hexes.len()).map(|h| (h, g.tokens(h, ADV_AMBASSADOR))).filter(|&(_, n)| n != 0).collect();
+    assert_eq!(gained, sites.iter().map(|&h| (h, 1)).collect::<Vec<_>>());
+    assert_eq!(g.var(SUPPLY), 40 - sites.len() as i64);
+    assert_eq!(g.stats.counters["adversary.infiltrated"], sites.len() as i64);
+}
+
+/// 275: a firewalled site is still named by an Infiltrate, but nothing lands on it: its agent stays in the supply
+/// (and out of the forecast), and no other site takes it.
+#[test]
+fn an_infiltrate_leaves_a_firewalled_sites_agent_in_the_supply() {
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    let w = rules.world();
+    set_var(&mut g, SUPPLY, 40);
+    clear_agents(&mut g);
+    let cities0 = numbered_where(m, 0, |h| kind(m, h) == HexKind::City);
     put(&mut g, cities0[1], FIREWALL, 1);
-    let p = plan::rally_plan(&w, &g, RallyAt::City, 0, k + 1).unwrap();
-    assert_eq!(p.shares, want, "a firewalled site keeps its turn in the deal");
-    set_var(&mut g, SUPPLY,40);
-    with_cx(&rules, |cx| adversary::rally(&mut g, cx, RallyAt::City, k + 1, Some(0), "test")).unwrap();
+    let k = cities0.len() as i64;
+    assert!(plan::infiltrate_sites(&w, &g, RallyAt::City, 0).contains(&cities0[1]));
+    with_cx(&rules, |cx| adversary::infiltrate(&mut g, cx, RallyAt::City, Some(0), "test")).unwrap();
     assert_eq!(g.tokens(cities0[1], ADV_AMBASSADOR), 0, "nothing lands on it");
-    assert_eq!(g.tokens(cities0[2], ADV_AMBASSADOR), 1, "and no one else takes its share");
-    assert_eq!(g.var(SUPPLY), 40 - k, "its 1 stays in the supply");
-    assert_eq!(g.stats.counters["adversary.rally_blocked"], 1);
+    assert_eq!(g.tokens(cities0[0], ADV_AMBASSADOR), 1, "and no one else takes its agent");
+    assert_eq!(g.var(SUPPLY), 40 - (k - 1), "its 1 stays in the supply");
+    assert_eq!(g.stats.counters["adversary.firewalled"], 1);
 }
 
 /// 138: a creation line's condition picks among the sites, and `sites` how
@@ -117,124 +100,157 @@ fn a_creation_line_lands_on_the_lowest_numbered_sites_meeting_its_condition() {
     assert_eq!(g.var(SUPPLY), supply - 2);
 }
 
-/// 253 (amendment 11525): a site a player liberates is left neutral with a Liberated marker, and the adversary needs
-/// `retake_agents` more than its corrupt number to take it back (forecast and rule alike); a node there takes none.
+/// 275 (Matt, 2026-11-18): arrival corruption: an arrival that brings a research station to its number (2)
+/// corrupts it and its agents go to the supply; one that brings a city to 4 doesn't (d0: a city's 5), and the next
+/// one does.
 #[test]
-fn a_liberated_site_takes_the_retake_agents_more() {
+fn an_arrival_at_a_sites_number_corrupts_it_and_one_short_does_not() {
     let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let w = rules.world();
-    let extra = w.int("adversary.retake_agents");
-    assert!(extra > 0, "the baseline's retake");
-    let n = adversary::corrupt_n(&w, CorruptSite::City, 0);
-    let t = numbered_where(m, 0, |h| kind(m, h) == HexKind::City)[0];
-    put(&mut g, t, ADV_CUBE, 1);
-    with_cx(&rules, |cx| board::liberate_site(&mut g, cx, 0, t, false));
-    assert_eq!((g.tokens(t, ADV_CUBE), g.tokens(t, cube(0)), g.tokens(t, LIBERATED)), (0, 0, 1), "neutral, marked");
-    assert_eq!(crate::modules::common::retake_extra(&w, &g, t, CorruptSite::Node), 0, "a node there takes none");
-    put(&mut g, t, ADV_AMBASSADOR, n + extra - 1);
-    assert!(!plan::natural_targets(&w, &g, CorruptSite::City, n).contains(&t));
-    assert!(plan::corrupt_plan(&w, &g, CorruptSite::City, n, None).is_empty());
-    let mut short = g.clone();
-    with_cx(&rules, |cx| adversary::corrupt_sites(&mut short, cx, CorruptSite::City, 0, None)).unwrap();
-    assert_eq!((short.tokens(t, ADV_CUBE), short.tokens(t, LIBERATED)), (0, 1), "one short of the retake: held");
-    put(&mut g, t, ADV_AMBASSADOR, n + extra);
-    assert!(plan::natural_targets(&w, &g, CorruptSite::City, n).contains(&t));
-    with_cx(&rules, |cx| adversary::corrupt_sites(&mut g, cx, CorruptSite::City, 0, None)).unwrap();
-    assert_eq!((g.tokens(t, ADV_CUBE), g.tokens(t, LIBERATED)), (1, 0), "retaken, the marker off");
-    assert_eq!(g.stats.counters["adversary.retakes"], 1);
+    assert_eq!(adversary::corrupt_n(&w, CorruptSite::Station, 0), 2);
+    assert_eq!(adversary::corrupt_n(&w, CorruptSite::City, 0), 5, "d0");
+    set_var(&mut g, SUPPLY, 40);
+    let s = numbered_where(m, 0, |h| kind(m, h) == HexKind::Open)[0];
+    put(&mut g, s, STATION, 1);
+    put(&mut g, s, ADV_AMBASSADOR, 1);
+    with_cx(&rules, |cx| adversary::place(&mut g, cx, s, 1)).unwrap();
+    assert_eq!((g.tokens(s, ADV_CUBE), g.tokens(s, ADV_AMBASSADOR)), (1, 0), "the station corrupts");
+    assert_eq!(g.var(SUPPLY), 40 - 1 + 2, "its agents go to the supply");
+    assert_eq!(g.stats.counters["adversary.corruptions_arrival"], 1);
+    let c = numbered_where(m, 0, |h| kind(m, h) == HexKind::City)[0];
+    put(&mut g, c, ADV_AMBASSADOR, 3);
+    with_cx(&rules, |cx| adversary::place(&mut g, cx, c, 1)).unwrap();
+    assert_eq!((g.tokens(c, ADV_CUBE), g.tokens(c, ADV_AMBASSADOR)), (0, 4), "a city at 4 holds at d0");
+    with_cx(&rules, |cx| adversary::place(&mut g, cx, c, 1)).unwrap();
+    assert_eq!((g.tokens(c, ADV_CUBE), g.tokens(c, ADV_AMBASSADOR)), (1, 0), "at 5 it corrupts");
 }
 
-/// 175: Corrupt X: every agent next to an X moves onto it (all of them, not just enough), then every X
-/// holding its number corrupts and its agents go to the supply. Short of the number the agents still move.
+/// 275: nothing is checked where nothing arrived: a city or station already holding its number stays neutral
+/// while agents land next to it, and corrupts when one lands on it.
 #[test]
-fn corrupt_x_moves_every_agent_next_door_onto_the_site() {
-    let (rules, g0) = lab(&[]);
+fn a_site_holding_its_number_waits_for_an_arrival_on_it() {
+    let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let w = rules.world();
+    set_var(&mut g, SUPPLY, 40);
     let n = adversary::corrupt_n(&w, CorruptSite::City, 0);
-    assert!(n >= 3);
-    let t = numbered_where(m, 0, |h| kind(m, h) == HexKind::City)[0];
-    // Neighbors of `t` next to no other city, so their agents have one place to go.
-    let mut around: Vec<usize> = m.hexes[t]
-        .neighbors
-        .iter()
-        .copied()
-        .filter(|&x| {
-            kind(m, x) != HexKind::Ocean
-                && kind(m, x) != HexKind::City
-                && m.hexes[x].neighbors.iter().all(|&y| y == t || kind(m, y) != HexKind::City)
-        })
-        .collect();
-    around.sort_by_key(|&x| m.hexes[x].number);
-    assert!(around.len() >= 2, "a city with two lone neighbors");
-    let (a, b) = (around[0], around[1]);
-
-    let mut g = g0.clone();
-    put(&mut g, t, ADV_AMBASSADOR, 1);
-    put(&mut g, a, ADV_AMBASSADOR, n - 2);
-    put(&mut g, b, ADV_AMBASSADOR, 2);
-    let supply = g.var(SUPPLY);
-    assert_eq!(plan::corrupt_plan(&w, &g, CorruptSite::City, n, None), vec![(t, n + 1)]);
-    with_cx(&rules, |cx| adversary::corrupt_sites(&mut g, cx, CorruptSite::City, 0, None)).unwrap();
-    assert_eq!((g.tokens(t, ADV_CUBE), g.tokens(t, ADV_AMBASSADOR)), (1, 0));
-    assert_eq!((g.tokens(a, ADV_AMBASSADOR), g.tokens(b, ADV_AMBASSADOR)), (0, 0), "every agent next door moved");
-    assert_eq!(g.var(SUPPLY), supply + n + 1);
-    assert_eq!(g.stats.counters["adversary.corruptions.city"], 1);
-
-    // One short: the agents still move onto it, nothing corrupts.
-    let mut g = g0.clone();
-    put(&mut g, t, ADV_AMBASSADOR, 1);
-    put(&mut g, a, ADV_AMBASSADOR, n - 2);
-    assert!(plan::corrupt_plan(&w, &g, CorruptSite::City, n, None).is_empty());
-    with_cx(&rules, |cx| adversary::corrupt_sites(&mut g, cx, CorruptSite::City, 0, None)).unwrap();
-    assert_eq!((g.tokens(t, ADV_CUBE), g.tokens(t, ADV_AMBASSADOR), g.tokens(a, ADV_AMBASSADOR)), (0, n - 1, 0));
-
-    // A line's cut lowers the number.
-    with_cx(&rules, |cx| adversary::corrupt_sites(&mut g, cx, CorruptSite::City, 1, None)).unwrap();
-    assert_eq!(g.tokens(t, ADV_CUBE), 1);
+    let c = numbered_where(m, 0, |h| kind(m, h) == HexKind::City)[0];
+    let next = m.hexes[c].neighbors.iter().copied().find(|&x| kind(m, x) == HexKind::Open).unwrap();
+    put(&mut g, c, ADV_AMBASSADOR, n);
+    with_cx(&rules, |cx| adversary::place(&mut g, cx, next, 1)).unwrap();
+    assert_eq!((g.tokens(c, ADV_CUBE), g.tokens(c, ADV_AMBASSADOR)), (0, n), "an arrival next door checks nothing here");
+    assert!(!g.stats.counters.contains_key("adversary.corruptions"));
+    with_cx(&rules, |cx| adversary::place(&mut g, cx, c, 1)).unwrap();
+    assert_eq!((g.tokens(c, ADV_CUBE), g.tokens(c, ADV_AMBASSADOR)), (1, 0));
 }
 
-/// 175: a node hex holding a node's corrupt number (2) loses the node at natural corruption, last node
-/// included; its agents go to the supply and the hex's site is untouched.
+/// 275: a firewall stops the arrival itself (the site holds, its agent stays in the supply), and a Corrupt
+/// prohibition's token lets the agent land but holds the corruption.
+#[test]
+fn a_firewall_or_a_corrupt_prohibition_holds_an_arrival_corruption() {
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    set_var(&mut g, SUPPLY, 40);
+    let open0 = numbered_where(m, 0, |h| kind(m, h) == HexKind::Open);
+    let (a, b) = (open0[0], open0[1]);
+    for s in [a, b] {
+        put(&mut g, s, STATION, 1);
+        put(&mut g, s, ADV_AMBASSADOR, 1);
+    }
+    put(&mut g, a, FIREWALL, 1);
+    put(&mut g, b, crate::modules::common::prohibit_token(crate::op::Step::Corrupt), 1);
+    with_cx(&rules, |cx| adversary::place(&mut g, cx, a, 1)).unwrap();
+    assert_eq!((g.tokens(a, ADV_CUBE), g.tokens(a, ADV_AMBASSADOR), g.var(SUPPLY)), (0, 1, 40), "nothing arrives");
+    with_cx(&rules, |cx| adversary::place(&mut g, cx, b, 1)).unwrap();
+    assert_eq!((g.tokens(b, ADV_CUBE), g.tokens(b, ADV_AMBASSADOR)), (0, 2), "it lands; the token holds the site");
+    assert_eq!(g.stats.counters["adversary.guard_held.arrival"], 1);
+}
+
+/// 175, 275: an arrival that brings a player's node hex to a node's number (2) loses the node, last node included;
+/// its agents go to the supply and the hex's site (a city below its own number) is untouched.
 #[test]
 fn a_node_with_two_agents_is_lost_last_node_included() {
-    let (rules, mut g) = lab(&["adversary.natural"]);
+    let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let w = rules.world();
     assert_eq!(adversary::corrupt_n(&w, CorruptSite::Node, 0), 2);
-    // A city below its own number: the node still goes.
     let h = numbered_where(m, 0, |h| kind(m, h) == HexKind::City)[0];
     put(&mut g, h, node(0), 1);
-    put(&mut g, h, ADV_AMBASSADOR, 1);
-    assert!(plan::natural_targets(&w, &g, CorruptSite::Node, 2).is_empty());
-    put(&mut g, h, ADV_AMBASSADOR, 2);
-    assert_eq!(plan::natural_targets(&w, &g, CorruptSite::Node, 2), vec![h]);
-    run_answered(&rules, &mut g);
+    with_cx(&rules, |cx| adversary::place(&mut g, cx, h, 1)).unwrap();
+    assert_eq!((g.tokens(h, node(0)), g.tokens(h, ADV_AMBASSADOR)), (1, 1), "one is short");
+    with_answers(&rules, &mut g, |_| 0, |g, cx| adversary::place(g, cx, h, 1));
     assert_eq!(g.tokens(h, node(0)), 0, "the last node goes");
     assert_eq!(g.tokens(h, ADV_AMBASSADOR), 0);
     assert_eq!(g.tokens(h, ADV_CUBE), 0, "the city doesn't corrupt");
 }
 
-/// 138: the corrupt step runs only the round's card's Corrupt lines (Long
-/// Patrols: Corrupt stations); a city already holding its number waits for
-/// natural corruption.
+/// 275: Surge N: X puts its N on the X not yet the adversary's holding the most agents (ties: the
+/// lowest-numbered), and on no other.
 #[test]
-fn the_corrupt_step_runs_the_cards_corrupt_lines() {
-    let (rules, mut g) = lab(&["adversary.corrupt"]);
+fn a_surge_lands_on_the_most_infested_site() {
+    let (rules, mut g) = lab(&[]);
     let m = &rules.map;
-    let w = rules.world();
-    set_pile(&mut g, CURRENT, &["mil_s1_long_patrols"]);
-    let open0 = numbered_where(m, 0, |h| kind(m, h) == HexKind::Open);
-    let s = open0[0];
-    let next = m.hexes[s].neighbors.iter().copied().find(|&x| m.hexes[x].country == 0 && kind(m, x) == HexKind::Open).unwrap();
-    put(&mut g, s, STATION, 1);
-    put(&mut g, next, ADV_AMBASSADOR, adversary::corrupt_n(&w, CorruptSite::Station, 0));
-    let city = numbered_where(m, 1, |h| kind(m, h) == HexKind::City)[0];
-    put(&mut g, city, ADV_AMBASSADOR, adversary::corrupt_n(&w, CorruptSite::City, 0));
-    run(&rules, &mut g);
-    assert_eq!((g.tokens(s, ADV_CUBE), g.tokens(next, ADV_AMBASSADOR)), (1, 0));
-    assert_eq!(g.tokens(city, ADV_CUBE), 0);
+    set_var(&mut g, SUPPLY, 40);
+    clear_agents(&mut g);
+    let cities0 = numbered_where(m, 0, |h| kind(m, h) == HexKind::City);
+    put(&mut g, cities0[0], ADV_AMBASSADOR, 1);
+    put(&mut g, cities0[1], ADV_AMBASSADOR, 2);
+    // The adversary's city holds more, but it is no longer a site.
+    put(&mut g, cities0[2], ADV_CUBE, 1);
+    put(&mut g, cities0[2], ADV_AMBASSADOR, 3);
+    with_cx(&rules, |cx| adversary::surge(&mut g, cx, RallyAt::City, 2, Some(0), "test")).unwrap();
+    let held: Vec<i64> = cities0[..3].iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).collect();
+    assert_eq!(held, vec![1, 4, 3]);
+    // A tie: the lowest-numbered.
+    put(&mut g, cities0[0], ADV_AMBASSADOR, 4);
+    with_cx(&rules, |cx| adversary::surge(&mut g, cx, RallyAt::City, 1, Some(0), "test")).unwrap();
+    let after = |h: usize| (g.tokens(h, ADV_CUBE), g.tokens(h, ADV_AMBASSADOR));
+    assert_eq!((after(cities0[0]), after(cities0[1])), ((1, 0), (0, 4)), "its 5th agent corrupts it (d0: a city's 5)");
+}
+
+/// 275: Spill: X into Y does nothing below `spill_at` (2); from it, each X holding 2 or more moves 1 onto the Y
+/// next to it, an arrival there.
+#[test]
+fn a_spill_waits_for_its_level_then_moves_one_agent() {
+    for (d, moved) in [(0, false), (2, true)] {
+        let level = format!("adversary.difficulty={d}");
+        let (rules, mut g) = lab_with(&[], &[&level]);
+        let m = &rules.map;
+        assert_eq!(rules.world().int("adversary.spill_at"), 2);
+        set_var(&mut g, SUPPLY, 40);
+        clear_agents(&mut g);
+        let (c, lonely) = city_with_lonely_neighbors(m);
+        let f = lonely[0];
+        put(&mut g, f, FACTORY, 1);
+        put(&mut g, c, ADV_AMBASSADOR, 2);
+        with_cx(&rules, |cx| adversary::spill(&mut g, cx, RallyAt::City, RallyAt::Factory, None)).unwrap();
+        let want = if moved { (1, 1) } else { (2, 0) };
+        assert_eq!((g.tokens(c, ADV_AMBASSADOR), g.tokens(f, ADV_AMBASSADOR)), want, "d{d}");
+        assert_eq!(total(&g, ADV_AMBASSADOR), 2, "d{d}: a move, no new agent");
+    }
+}
+
+/// 275 (Matt, 2026-11-18): each botnet with no player ambassador on it seeds 1 agent onto the site next to it
+/// holding the most agents, in the compute step; a player ambassador on the botnet stops it.
+#[test]
+fn a_botnet_seeds_an_agent_on_the_busiest_site_next_to_it() {
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    set_var(&mut g, SUPPLY, 40);
+    clear_agents(&mut g);
+    for h in 0..g.hexes.len() {
+        put(&mut g, h, BOTNET, 0);
+    }
+    let (c, lonely) = city_with_lonely_neighbors(m);
+    let b = lonely[0];
+    put(&mut g, b, BOTNET, 1);
+    put(&mut g, c, ADV_AMBASSADOR, 1);
+    with_cx(&rules, |cx| adversary::botnets_seed(&mut g, cx)).unwrap();
+    assert_eq!((g.tokens(c, ADV_AMBASSADOR), total(&g, ADV_AMBASSADOR)), (2, 2));
+    put(&mut g, b, ambassador(0), 1);
+    with_cx(&rules, |cx| adversary::botnets_seed(&mut g, cx)).unwrap();
+    assert_eq!(total(&g, ADV_AMBASSADOR), 2, "a player ambassador on it stops it");
 }
 
 /// D39: a station flip's face prints `station_flip_at`, so the two stay in step.
@@ -260,37 +276,32 @@ fn a_station_flip_face_prints_station_flip_at() {
     }
 }
 
-/// 138: natural corruption: a city, station or factory already holding its
-/// number on its own hex corrupts with no move; ambassadors next to it don't
-/// count.
+/// 275: an arrival that corrupts a player's city or factory takes its cube off for the adversary's; a factory one
+/// short holds.
 #[test]
-fn natural_corruption_takes_sites_holding_their_number_on_their_own_hex() {
-    let (rules, mut g) = lab(&["adversary.natural"]);
+fn an_arrival_corruption_takes_a_players_cube() {
+    let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let w = rules.world();
+    set_var(&mut g, SUPPLY, 40);
     let n = adversary::corrupt_n(&w, CorruptSite::City, 0);
-    let [a, b, aligned] = [0, 1, 2].map(|i| m.numbered(0, piece(0).cities[i]));
-    put(&mut g, a, ADV_AMBASSADOR, n);
-    put(&mut g, b, ADV_AMBASSADOR, n - 1);
-    let by_b = m.hexes[b].neighbors.iter().copied().find(|&x| kind(m, x) == HexKind::Open).unwrap();
-    put(&mut g, by_b, ADV_AMBASSADOR, 1);
-    put(&mut g, aligned, ADV_AMBASSADOR, n);
+    let aligned = m.numbered(0, piece(0).cities[0]);
+    put(&mut g, aligned, ADV_AMBASSADOR, n - 1);
     put(&mut g, aligned, cube(0), 1);
     let open1 = numbered_where(m, 1, |h| kind(m, h) == HexKind::Open);
-    let (station, factory) = (open1[0], open1[1]);
-    put(&mut g, station, STATION, 1);
-    put(&mut g, station, ADV_AMBASSADOR, adversary::corrupt_n(&w, CorruptSite::Station, 0));
-    put(&mut g, factory, FACTORY, 1);
+    let (factory, held) = (open1[0], open1[1]);
+    for f in [factory, held] {
+        put(&mut g, f, FACTORY, 1);
+        put(&mut g, f, cube(1), 1);
+    }
     put(&mut g, factory, ADV_AMBASSADOR, adversary::corrupt_n(&w, CorruptSite::Factory, 0) - 1);
-    run(&rules, &mut g);
-    // Their ambassadors go back to the supply; an aligned city loses its cube.
-    assert_eq!((g.tokens(a, ADV_CUBE), g.tokens(a, ADV_AMBASSADOR)), (1, 0));
-    assert_eq!((g.tokens(b, ADV_CUBE), g.tokens(b, ADV_AMBASSADOR), g.tokens(by_b, ADV_AMBASSADOR)), (0, n - 1, 1));
-    assert_eq!((g.tokens(aligned, ADV_CUBE), g.tokens(aligned, cube(0))), (1, 0));
-    assert_eq!((g.tokens(station, ADV_CUBE), g.tokens(station, ADV_AMBASSADOR)), (1, 0));
-    assert_eq!(g.tokens(factory, ADV_CUBE), 0);
-    assert_eq!(g.stats.counters["adversary.corruptions"], 3);
-    assert_eq!(g.stats.counters["adversary.corruptions_natural"], 3);
+    for h in [aligned, factory, held] {
+        with_cx(&rules, |cx| adversary::place(&mut g, cx, h, 1)).unwrap();
+    }
+    assert_eq!((g.tokens(aligned, ADV_CUBE), g.tokens(aligned, cube(0)), g.tokens(aligned, ADV_AMBASSADOR)), (1, 0, 0));
+    assert_eq!((g.tokens(factory, ADV_CUBE), g.tokens(factory, cube(1))), (1, 0));
+    assert_eq!((g.tokens(held, ADV_CUBE), g.tokens(held, cube(1)), g.tokens(held, ADV_AMBASSADOR)), (0, 1, 1));
+    assert_eq!(g.stats.counters["adversary.corruptions_arrival"], 2);
 }
 
 /// 138: corruption destroys only a node on the corrupted hex (its owner's
@@ -382,8 +393,8 @@ fn the_node_rule_logs_what_happened_to_the_node() {
     assert!(said.contains("Agents destroy the node"), "{said}");
 }
 
-/// 138: Corrupt land puts Fallout on an empty land hex that gathers
-/// its number, and no node goes there after.
+/// 138: Fallout on an empty land hex keeps a node off it; 275: agents arriving on open land corrupt nothing
+/// (Corrupt land is gone; Fallout comes only from printed lines).
 #[test]
 fn fallout_blocks_a_node() {
     let (rules, mut g) = lab(&[]);
@@ -393,11 +404,11 @@ fn fallout_blocks_a_node() {
     let mine = m.hexes[x].neighbors.iter().copied().find(|&y| kind(m, y) == HexKind::Open).unwrap();
     put(&mut g, mine, node(0), 1);
     assert!(board::node_sites(&w, &g, 0).contains(&x));
-    put(&mut g, x, ADV_AMBASSADOR, adversary::corrupt_n(&w, CorruptSite::Land, 0));
-    with_cx(&rules, |cx| adversary::corrupt_sites(&mut g, cx, CorruptSite::Land, 0, Some(0))).unwrap();
-    assert_eq!((g.tokens(x, FALLOUT), g.tokens(x, ADV_AMBASSADOR), g.tokens(x, ADV_CUBE)), (1, 0, 0));
+    set_var(&mut g, SUPPLY, 40);
+    with_cx(&rules, |cx| adversary::place(&mut g, cx, x, 6)).unwrap();
+    assert_eq!((g.tokens(x, FALLOUT), g.tokens(x, ADV_AMBASSADOR), g.tokens(x, ADV_CUBE)), (0, 6, 0));
+    with_cx(&rules, |cx| adversary::place_fallout(&mut g, cx, x, "test"));
     assert!(!board::node_sites(&w, &g, 0).contains(&x));
-    assert!(!plan::corrupt_target(&w, &g, x, CorruptSite::Land), "it corrupts once");
 }
 
 /// 138: site creation puts a neutral station on each country's lowest-numbered
@@ -448,8 +459,8 @@ fn cube_free(g: &GameState, h: usize) -> bool {
 fn an_arriving_ambassador_cancels_a_player_ambassador_and_forms_no_botnet() {
     let (rules, mut g) = lab(&[]);
     let m = &rules.map;
+    // Open land: no site to corrupt at 3 agents (275).
     let s = numbered_where(m, 0, |h| kind(m, h) == HexKind::Open)[0];
-    put(&mut g, s, STATION, 1);
     put(&mut g, s, ADV_AMBASSADOR, 1);
     with_cx(&rules, |cx| adversary::place(&mut g, cx, s, 2)).unwrap();
     assert_eq!((g.tokens(s, ADV_AMBASSADOR), g.tokens(s, BOTNET)), (3, 0));
@@ -486,15 +497,14 @@ fn botnets_start_on_the_stations_and_make_adversary_compute() {
     assert_eq!(g.var(adversary::COMPUTE), before + 6 + stations + 3 + stations);
 }
 
-/// 151: setup sets the income from the difficulty's list entry plus the board's Garrisons (+1 ambassador) and
-/// fills each board's pool once; each reveal step then adds the compute income onto the projects and the
-/// ambassador income to every pool.
+/// 151: setup sets the compute income from the difficulty's list entry (275: no agent income); each compute step
+/// then adds it onto the projects.
 #[test]
 fn the_adversary_gains_its_income_at_the_end_of_its_turn() {
-    for (d, compute, ambassadors) in [(0, 5, 1), (3, 7, 2)] {
+    for (d, compute) in [(0, 5), (3, 7)] {
         let mut c = lab_config(&["adversary.reveal", "adversary.compute", ACTIONS]);
         let level = format!("adversary.difficulty={d}");
-        apply_sets(&mut c, &[&level, "adversary.compute_income=5,5,5,7,7", "adversary.ambassador_income=1,1,1,2,2"]);
+        apply_sets(&mut c, &[&level, "adversary.compute_income=5,5,5,7,7"]);
         let rules = Rules::new(&c).unwrap();
         let mut g = rules.new_game(1);
         answer_all(&rules, &mut g);
@@ -502,11 +512,6 @@ fn the_adversary_gains_its_income_at_the_end_of_its_turn() {
         // 231: the compute income is a country's.
         let compute = compute * boards as i64;
         assert_eq!(g.var(adversary::INCOME_COMPUTE), compute, "d{d}");
-        assert_eq!(g.var(adversary::INCOME_AMBASSADORS), ambassadors + 1, "d{d}: Garrisons");
-        // Setup's pools, then round 1's reveal step (no build here to land them).
-        for b in 0..boards {
-            assert_eq!(g.var(&adversary::pool_key(b)), 2 * (ambassadors + 1), "d{d} board {b}");
-        }
         assert_eq!(g.stats.counters["adversary.compute_income"], compute, "d{d}");
         // A row too dear to fill: the next reveal step puts the income on it, resolving nothing.
         row(&mut g, &["accelerated_timetable"]);
@@ -527,9 +532,6 @@ fn the_adversary_gains_its_income_at_the_end_of_its_turn() {
         assert_eq!(g.var(adversary::COMPUTE), before + all, "d{d}");
         assert_eq!(g.var(&adversary::project_key("accelerated_timetable")), all, "d{d}");
         assert!(g.pile(adversary::PROJECTS_DONE).is_empty());
-        for b in 0..boards {
-            assert_eq!(g.var(&adversary::pool_key(b)), 3 * (ambassadors + 1), "d{d} board {b}");
-        }
     }
 }
 
@@ -570,12 +572,13 @@ fn the_players_lose_when_the_next_round_has_no_adversary_card() {
 fn twists_before_the_build_step_are_the_face_up_cards() {
     let (rules, mut g) = lab(&["alignment.sway", "adversary.build"]);
     let w = rules.world();
+    // Probing Strikes grows cities, Signal Jamming stations.
     set_pile(&mut g, CURRENT, &["mil_s1_probing_strikes"]);
-    set_pile(&mut g, NEXT, &["mil_s1_long_patrols"]);
+    set_pile(&mut g, NEXT, &["mil_s1_signal_jamming"]);
     let stations = |g: &GameState| {
         adversary::twists(&w, g)
             .iter()
-            .any(|t| matches!(t, Op::Corrupt { site: CorruptSite::Station, .. }))
+            .any(|t| matches!(t, Op::Grow { site: RallyAt::Station }))
     };
     g.phase = 0;
     assert!(stations(&g), "the Sway phase reads the face-up card");
@@ -601,59 +604,51 @@ fn a_stage_iii_card_pulls_sway_out_of_the_unity_bucket() {
     assert!(g.var(alignment::track(Side::Unity)) <= 1, "the bucket loses the pull");
 }
 
-/// 151: every event card opens on one Rally X (its pool lands), keeps to the event standard (no per-event
-/// compute or creation line), and prints a Corrupt line; each stage corrupts cities, stations and factories.
+/// 275: every event card opens on its Infiltrate X (two at stage III: Matt's look-ahead names next round's sites a
+/// round ahead), keeps to the event standard (no per-event compute or creation line), and the deck's Infiltrates
+/// name every site type.
 #[test]
-fn every_event_card_rallies_and_corrupts() {
-    for stage in 1..=3u8 {
-        let mut seen: Vec<CorruptSite> = Vec::new();
-        for a in content().adversary.iter().filter(|a| a.stage == stage) {
-            assert!(matches!(a.standing.first(), Some(Op::Rally { count: 0, .. })), "{} rallies first", a.id);
-            assert!(adversary::rally_site(a).is_some(), "{} rallies", a.id);
-            assert_eq!(crate::content::event_rule_break(a), None, "{} keeps the event standard", a.id);
-            assert!(
-                !a.standing.iter().any(|e| matches!(e, Op::Compute { .. } | Op::Create { .. })),
-                "{} prints no per-event compute or creation line",
-                a.id
-            );
-            let sites: Vec<CorruptSite> = a
-                .twists
-                .iter()
-                .filter_map(|t| match t {
-                    Op::Corrupt { site, .. } => Some(*site),
-                    _ => None,
-                })
-                .collect();
-            assert!(!sites.is_empty(), "{} corrupts", a.id);
-            seen.extend(sites);
-        }
-        for site in [CorruptSite::City, CorruptSite::Station, CorruptSite::Factory] {
-            assert!(seen.contains(&site), "stage {stage} corrupts {}", site.name());
-        }
+fn every_event_card_infiltrates_first() {
+    let mut seen: Vec<RallyAt> = Vec::new();
+    for a in &content().adversary {
+        assert!(matches!(a.standing.first(), Some(Op::Infiltrate { .. })), "{} infiltrates first", a.id);
+        let sites = adversary::infiltrate_sites(a);
+        assert_eq!(sites.len(), if a.stage == 3 { 2 } else { 1 }, "{}", a.id);
+        assert_eq!(crate::content::event_rule_break(a), None, "{} keeps the event standard", a.id);
+        assert!(
+            !a.standing.iter().any(|e| matches!(e, Op::Compute { .. } | Op::Create { .. })),
+            "{} prints no per-event compute or creation line",
+            a.id
+        );
+        seen.extend(sites);
+    }
+    for site in [RallyAt::City, RallyAt::CoastalCity, RallyAt::Station, RallyAt::Factory, RallyAt::Botnet] {
+        assert!(seen.contains(&site), "no card infiltrates {site:?}");
     }
 }
 
-/// 151: the load check refuses an event off the event standard (one Rally X, the fixed step order, at most two
-/// other lines, "each board") and a project with more than two consequences.
+/// 151, 275: the load check refuses an event off the event standard (one Infiltrate X, the fixed step order, at
+/// most two other lines, "each board") and a project with more than two consequences.
 #[test]
 fn the_load_check_refuses_an_event_or_a_project_off_the_standard() {
     use crate::content::{event_rule_break, project_rule_break};
     let c = content();
-    // War Drums: Rally, Muster | Sway, Corrupt.
+    // War Drums: Infiltrate | Sway, Grow.
     let base = c.adversary.iter().find(|a| a.id == "mil_s1_war_drums").unwrap();
     assert_eq!(event_rule_break(base), None);
-    let rally = base.standing[0].clone();
+    let infiltrate = base.standing[0].clone();
     let sway = base.twists[0].clone();
-    let corrupt = base.twists.last().unwrap().clone();
-    assert!(matches!(rally, Op::Rally { .. }) && matches!(corrupt, Op::Corrupt { .. }));
+    let grow = base.twists.last().unwrap().clone();
+    assert!(matches!(infiltrate, Op::Infiltrate { .. }) && matches!(grow, Op::Grow { .. }));
     let refused = |edit: &dyn Fn(&mut crate::content::AdversaryCard), why: &str| {
         let mut a = base.clone();
         edit(&mut a);
         let got = event_rule_break(&a);
         assert!(got.as_deref().is_some_and(|r| r.contains(why)), "{why}: {got:?}");
     };
-    refused(&|a| a.standing.insert(0, rally.clone()), "one Rally X");
-    refused(&|a| a.standing.insert(0, corrupt.clone()), "out of the fixed order");
+    refused(&|a| a.standing.insert(0, infiltrate.clone()), "one Infiltrate X");
+    refused(&|a| a.standing.insert(0, grow.clone()), "out of the fixed order");
+    refused(&|a| a.twists.push(grow.clone()), "one Spill line and one Grow line");
     refused(
         &|a| {
             a.twists.insert(0, sway.clone());
@@ -662,9 +657,9 @@ fn the_load_check_refuses_an_event_or_a_project_off_the_standard() {
         "more than two other lines",
     );
     refused(&|a| a.text = "Muster 1 on each board.".into(), "each board");
-    // Hostile Takeover (15 a board) prints two consequences; a third is refused below `THIRD_EFFECT_COST` (227,
+    // Martial Law (15 a board) prints two consequences; a third is refused below `THIRD_EFFECT_COST` (227,
     // ruling 4; 231: 18 on the per-board scale) and allowed from it.
-    let p = c.projects.iter().find(|p| p.id == "hostile_takeover").unwrap();
+    let p = c.projects.iter().find(|p| p.id == "martial_law").unwrap();
     assert_eq!(p.effects.len(), 2);
     assert!(p.cost < crate::content::THIRD_EFFECT_COST);
     assert_eq!(project_rule_break(p), None);
@@ -679,15 +674,15 @@ fn the_load_check_refuses_an_event_or_a_project_off_the_standard() {
 }
 
 /// r98 (Matt, 2026-11-13, 224 #2): 2 agents on a node hex destroy the node and leave no mark; the agents go to the
-/// supply.
+/// supply. 275: on the arrival of the second.
 #[test]
 fn two_agents_destroy_a_node_and_leave_no_mark() {
-    let (rules, mut g) = lab(&["adversary.natural"]);
+    let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let h = numbered_where(m, 0, |h| kind(m, h) == HexKind::Open)[0];
     put(&mut g, h, node(0), 1);
-    put(&mut g, h, ADV_AMBASSADOR, 2);
-    run_answered(&rules, &mut g);
+    put(&mut g, h, ADV_AMBASSADOR, 1);
+    with_answers(&rules, &mut g, |_| 0, |g, cx| adversary::place(g, cx, h, 1));
     assert_eq!((g.tokens(h, node(0)), g.tokens(h, ADV_AMBASSADOR)), (0, 0));
     assert_eq!(g.tokens(h, FALLOUT), 0);
 }
@@ -695,15 +690,14 @@ fn two_agents_destroy_a_node_and_leave_no_mark() {
 /// r98: a node a protection saves leaves no mark either (r83-r97 laid Fallout saved or not).
 #[test]
 fn a_saved_node_hex_takes_no_mark() {
-    let (rules, mut g) = lab(&["adversary.natural"]);
+    let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let h = numbered_where(m, 0, |h| kind(m, h) == HexKind::Open)[0];
     put(&mut g, h, node(0), 1);
     put(&mut g, h, HARDEN, 1);
-    put(&mut g, h, ADV_AMBASSADOR, 2);
-    run(&rules, &mut g);
-    answer_with(&rules, &mut g, "spend the hardening token");
-    answer_all(&rules, &mut g);
+    put(&mut g, h, ADV_AMBASSADOR, 1);
+    let spend = |a: &crate::state::Ask| a.options.iter().position(|o| o.option == "spend the hardening token").expect("the hardening offered");
+    with_answers(&rules, &mut g, spend, |g, cx| adversary::place(g, cx, h, 1));
     assert_eq!((g.tokens(h, node(0)), g.tokens(h, HARDEN)), (1, 0), "saved");
     assert_eq!(g.tokens(h, FALLOUT), 0);
 }
@@ -715,10 +709,11 @@ fn every_project_slot_is_open() {
 }
 
 /// r80 (184's D79 a): an adversary-factory line with no free zone lands its fallback agents on a factory, never a
-/// firewalled one (as a creation line skips it).
+/// firewalled one (as a creation line skips it). A factory's number is raised past the 2 here, so the arrival
+/// doesn't corrupt it (275).
 #[test]
 fn the_adversary_factory_fallback_skips_a_firewalled_factory() {
-    let (rules, mut g) = lab(&[]);
+    let (rules, mut g) = lab_with(&[], &["adversary.corrupt_factory_at=3"]);
     let m = &rules.map;
     let zones = hexes_where(m, |h| m.hexes[h].industrial);
     for &z in &zones {

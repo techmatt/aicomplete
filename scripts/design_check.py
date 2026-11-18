@@ -820,7 +820,7 @@ def table_cost(gs, cfg, countries):
             sites = counter_sum(c, [f'map.{k}.{own}.r{i:02d}' for k in ('factories', 'stations')
                                     for own in ('adversary', 'neutral', 'player')])
             check += tc['site_passes'] * sites + tc['city_passes'] * cities + c.get(f'map.troops.r{i:02d}', 0)
-        check += counter_sum(c, tc['check_counters'])
+        check += counter_sum(c, tc['check_counters'], tc.get('check_prefixes', ()))
         mem += counter_sum(c, tc['memory_counters'], tc['memory_prefixes'])
     return {'components': comp / max(rounds, 1), 'checks': check / max(rounds, 1), 'memory': mem / max(seat_rounds, 1)}
 

@@ -5,8 +5,8 @@ The rules are split by area. Read this page, then only the files your task touch
 - This page: scope, conventions, the new-player summary, [Terms](#terms) and the [off-variants](#off-variants).
 - [board.md](board.md): country pieces, fronts and bases, setup, stations, megaprojects, converters.
 - [ambassadors.md](ambassadors.md): the one site model, claiming, liberating, blocking, armor, removing agents.
-- [adversary.md](adversary.md): the adversary's board, income, event deck (the round cap), Rally, Corrupt, botnets,
-  projects, difficulty.
+- [adversary.md](adversary.md): the adversary's board, event deck (the round cap), Infiltrate, Spill, Grow,
+  arrival corruption, botnets, projects, difficulty.
 - [war.md](war.md): production, factories, bases, war, the adversary march, Wall, node loss.
 - [alignment.md](alignment.md): Sway, tipping, the Unity and Discord decks, the purge, winning and losing.
 - [economy.md](economy.md): each resource's sources and uses, city energy, standard actions, the round's phases.
@@ -17,7 +17,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve.
 - [tunables.md](tunables.md): every baseline config parameter (generated).
 
-What the code implements, at rules revision 129 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 130 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -74,8 +74,8 @@ The house words, as [player-aid.md](../player-aid.md) prints them:
 - **Convert**: an agent on or next to the city leaves its stack and becomes your ambassador where it stood.
 - **Gather up to N**: pieces (ambassadors, agents, troops; botnets never move) onto the target, each from a hex next to it; you may stop at any piece (a strike, "remove up to N on or next to it", moves nothing).
 - **Push up to N**: pieces from the target, each to a hex next to it that you choose; you may stop at any piece.
-- **Firewall**: a token on a hex: no agent lands or moves there (a Rally's share for it stays in the supply) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn.
-- **In the next adversary turn, no X**: a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (a Rally's share for it stays in the supply), and the tokens come off with the firewalls.
+- **Firewall**: a token on a hex: no agent lands or moves there (an Infiltrate's agent for it stays in the supply) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn.
+- **In the next adversary turn, no X**: a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (an Infiltrate's agent for it stays in the supply), and the tokens come off with the firewalls.
 <!-- /generated -->
 
 The rest:
@@ -85,7 +85,7 @@ The rest:
   ([ai-boards.md](ai-boards.md)); not a facility, it sits on any land hex, with or beside other pieces.
 - **Botnet**: the adversary's persistent token ([adversary.md](adversary.md)), placed only by printed lines. Nodes are always the players', botnets always the adversary's.
 - **Reach** (**locked**): a card, board power or standard action that touches the map names **one target** in the
-  acting player's reach, printing the condition first ("Target: Troops."; [card-grammar.md](card-grammar.md), *Target*); Shelter takes no target (your reach), Disrupt one country. Reach is 1 for every player rule: no effect goes past 1 from its target unless it prints "in its country" (where ambassadors move from: [ambassadors.md](ambassadors.md)). The adversary's distances (a Corrupt line moving agents from next door, a troop's
+  acting player's reach, printing the condition first ("Target: Troops."; [card-grammar.md](card-grammar.md), *Target*); Shelter takes no target (your reach), Disrupt one country. Reach is 1 for every player rule: no effect goes past 1 from its target unless it prints "in its country" (where ambassadors move from: [ambassadors.md](ambassadors.md)). The adversary's distances (a Spill or a botnet's seed onto a site next door, a troop's
   strike) are its own, not a player's reach. A converter needs a city of its country in your
   reach ([board.md](board.md)).
 - **Site**: a city, research station or factory (one site model, [ambassadors.md](ambassadors.md)). A military

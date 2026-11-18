@@ -237,22 +237,12 @@ fn last_node_at(w: &World, g: &GameState, h: usize) -> bool {
         && !cards::has_passive(w, g, s, |p| matches!(p, Op::CorruptionShield))
 }
 
-/// 177: pushing `n` agents from `from` onto `d` lets a node line gather a last node's hex next to `d` up
-/// to its number (`adversary.corrupt_node_at`): its agents and those next door that converge onto it
-/// (`plan::converge_map`: not those on another node hex, nor, r98, those next to two open node hexes), after the move.
+/// 177, 275: pushing `n` agents from `from` onto `d` puts a last node's hex `d` one arrival from its number
+/// (`adversary.corrupt_node_at`): a push is no arrival (nothing is checked), but the next agent to land there is.
 fn tips_last_node(w: &World, g: &GameState, from: usize, d: usize, n: i64) -> bool {
     let at = aic_core::modules::adversary::corrupt_n(w, CorruptSite::Node, 0);
-    // The push moves no node, so where each hex's agents converge is the same after it; only the counts move.
-    let after = |y: usize| agents(g, y) - if y == from { n } else { 0 } + if y == d { n } else { 0 };
-    let mut to: Option<Vec<Option<usize>>> = None;
-    w.map.hexes[d].neighbors.iter().any(|&x| {
-        if !last_node_at(w, g, x) || common::firewalled(g, x) {
-            return false;
-        }
-        let to = to.get_or_insert_with(|| plan::converge_map(w, g, CorruptSite::Node));
-        let near: i64 = w.map.hexes[x].neighbors.iter().filter(|&&y| to[y] == Some(x)).map(|&y| after(y)).sum();
-        after(x) + near >= at
-    })
+    let after = agents(g, d) - if d == from { n } else { 0 } + n;
+    last_node_at(w, g, d) && !common::firewalled(g, d) && after + 1 >= at
 }
 
 /// The Gather the open resolution plays: its pieces and strike, read from the card played or used.
@@ -435,48 +425,35 @@ fn gather_piece(w: &World, g: &GameState, legal: &[Action], to: usize) -> Option
     None
 }
 
-/// How close each uncorrupted site is to the next Corrupt line of its type: (site, agents it counts, its number).
+/// How close each uncorrupted site is to its corrupt number (275: an arrival there checks it): (site, agents it
+/// counts, its number, whether a line gathers onto it: never now).
 fn at_risk(w: &World, g: &GameState) -> Vec<(usize, i64, i64, bool)> {
+    // 275: arrival corruption gathers nothing from next door: a site counts its own agents only (the `bool`, "a line
+    // gathers", stays false for the readers below).
     let lines = [
         (board::SiteKind::City, CorruptSite::City),
         (board::SiteKind::Station, CorruptSite::Station),
         (board::SiteKind::Factory, CorruptSite::Factory),
     ]
-    .map(|(k, site)| (k, site, plan::next_corrupt_n(w, g, site)));
-    let (node_n, node_gathers) = plan::next_corrupt_n(w, g, CorruptSite::Node);
-    // 237 (229's pick): the agents next door that a gathering line moves onto `h`, as the engine moves them
-    // (`plan::converge_map`: not those on a target of their own, nor, r98, those next to two open targets).
-    // One map a gathering line, read once.
-    let maps: Vec<(CorruptSite, Vec<Option<usize>>)> = lines
-        .iter()
-        .filter(|(_, _, (_, gathers))| *gathers)
-        .map(|&(_, site, _)| site)
-        .chain(node_gathers.then_some(CorruptSite::Node))
-        .map(|site| (site, plan::converge_map(w, g, site)))
-        .collect();
-    let gathered = |h: usize, site: CorruptSite| -> i64 {
-        let Some((_, to)) = maps.iter().find(|(s, _)| *s == site) else { return 0 };
-        w.map.hexes[h].neighbors.iter().filter(|&&x| to[x] == Some(h)).map(|&x| agents(g, x)).sum()
-    };
+    .map(|(k, site)| (k, plan::next_corrupt_n(w, g, site).0));
+    let node_n = plan::next_corrupt_n(w, g, CorruptSite::Node).0;
     let mut out = Vec::new();
     for h in 0..g.hexes.len() {
         // 175: a player's node hex corrupts at its own number (2), whatever site it holds.
         if common::node_owner(g, h).is_some() && !common::firewalled(g, h) {
-            let count = agents(g, h) + if node_gathers { gathered(h, CorruptSite::Node) } else { 0 };
+            let count = agents(g, h);
             if count > 0 && count + 1 >= node_n {
-                out.push((h, count, node_n, node_gathers));
+                out.push((h, count, node_n, false));
             }
         }
         let Some(kind) = board::site_kind(w, g, h) else { continue };
         if common::corrupted(g, h) || common::firewalled(g, h) {
             continue;
         }
-        let Some(&(_, site, (n, gathers))) = lines.iter().find(|(k, _, _)| *k == kind) else { continue };
-        // 253: a liberated neutral site needs the retake's agents more (the engine's `retake_extra`).
-        let n = n + common::retake_extra(w, g, h, site);
-        let count = agents(g, h) + if gathers { gathered(h, site) } else { 0 };
+        let Some(&(_, n)) = lines.iter().find(|(k, _)| *k == kind) else { continue };
+        let count = agents(g, h);
         if count > 0 && count + 2 >= n {
-            out.push((h, count, n, gathers));
+            out.push((h, count, n, false));
         }
     }
     out

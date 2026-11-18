@@ -109,7 +109,7 @@
    "security"
   ],
   "cost": 10,
-  "text": "Each country: 1 Agent onto each of two different hexes holding a player node (those holding the most Agents first; ties: lowest-numbered). 2 Agents on your node's hex destroy your node in the next Corrupt beat.",
+  "text": "Each country: 1 Agent onto each of two different hexes holding a player node (those holding the most Agents first; ties: lowest-numbered). An Agent landing on your node's hex that brings it to 2 destroys your node.",
   "effects": [
    {
     "op": "agents_on_nodes",
@@ -257,11 +257,12 @@
    "cyber"
   ],
   "cost": 13,
-  "text": "Corrupt: research stations. Each country: 2 cubes onto the adversary's research track.",
+  "text": "Surge 2: each country, 2 Agents onto its research station holding the most Agents. Each country: 2 cubes onto the adversary's research track.",
   "effects": [
    {
-    "op": "corrupt",
-    "site": "station"
+    "op": "surge",
+    "site": "station",
+    "count": 2
    },
    {
     "op": "adversary_research",
@@ -300,10 +301,10 @@
    "security"
   ],
   "cost": 9,
-  "text": "Rally 3, each country: coastal cities.",
+  "text": "Surge 3: each country, 3 Agents onto its coastal city holding the most Agents.",
   "effects": [
    {
-    "op": "rally",
+    "op": "surge",
     "site": "coastal_city",
     "count": 3
    }
@@ -319,11 +320,12 @@
    "industry"
   ],
   "cost": 9,
-  "text": "Corrupt: factories.",
+  "text": "Surge 2: each country, 2 Agents onto its factory holding the most Agents.",
   "effects": [
    {
-    "op": "corrupt",
-    "site": "factory"
+    "op": "surge",
+    "site": "factory",
+    "count": 2
    }
   ],
   "harms": [
@@ -381,10 +383,10 @@
    "diplomacy"
   ],
   "cost": 14,
-  "text": "Rally 3, each country: cities. Sway 5 toward Discord.",
+  "text": "Surge 3: each country, 3 Agents onto its city holding the most Agents. Sway 5 toward Discord.",
   "effects": [
    {
-    "op": "rally",
+    "op": "surge",
     "site": "city",
     "count": 3
    },
@@ -433,17 +435,12 @@
    "industry"
   ],
   "cost": 15,
-  "text": "Rally 3, each country: factories. Corrupt: factories (1 fewer).",
+  "text": "Surge 3: each country, 3 Agents onto its factory holding the most Agents.",
   "effects": [
    {
-    "op": "rally",
+    "op": "surge",
     "site": "factory",
     "count": 3
-   },
-   {
-    "op": "corrupt",
-    "site": "factory",
-    "cut": 1
    }
   ],
   "harms": [
@@ -512,16 +509,17 @@
    "diplomacy"
   ],
   "cost": 20,
-  "text": "Income: +1 Agent a country a round. Rally 3, each country: cities.",
+  "text": "Surge 4: each country, 4 Agents onto its city holding the most Agents. Surge 2: each country, 2 Agents onto its research station holding the most Agents.",
   "effects": [
    {
-    "op": "increase_income",
-    "ambassadors": 1
+    "op": "surge",
+    "site": "city",
+    "count": 4
    },
    {
-    "op": "rally",
-    "site": "city",
-    "count": 3
+    "op": "surge",
+    "site": "station",
+    "count": 2
    }
   ],
   "harms": [
@@ -560,17 +558,12 @@
    "diplomacy"
   ],
   "cost": 22,
-  "text": "Rally 3, each country: cities. Corrupt: cities (1 fewer). Then each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
+  "text": "Surge 4: each country, 4 Agents onto its city holding the most Agents. Then each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
   "effects": [
    {
-    "op": "rally",
+    "op": "surge",
     "site": "city",
-    "count": 3
-   },
-   {
-    "op": "corrupt",
-    "site": "city",
-    "cut": 1
+    "count": 4
    },
    {
     "op": "fallout",
@@ -615,20 +608,20 @@
    "universal"
   ],
   "cost": 22,
-  "text": "Each country rallies its Agent income now, to this round's Rally. Corrupt: cities (1 fewer). Corrupt: factories (1 fewer).",
+  "text": "Each country: this round's Infiltrate lines land again. Surge 3: each country, 3 Agents onto its city holding the most Agents. Surge 2: each country, 2 Agents onto its factory holding the most Agents.",
   "effects": [
    {
     "op": "adversary_build"
    },
    {
-    "op": "corrupt",
+    "op": "surge",
     "site": "city",
-    "cut": 1
+    "count": 3
    },
    {
-    "op": "corrupt",
+    "op": "surge",
     "site": "factory",
-    "cut": 1
+    "count": 2
    }
   ],
   "harms": [
@@ -643,16 +636,17 @@
    "security"
   ],
   "cost": 15,
-  "text": "Rally 3, each country: research stations. Corrupt: research stations.",
+  "text": "Surge 2: each country, 2 Agents onto its research station holding the most Agents. Surge 2: each country, 2 Agents onto its factory holding the most Agents.",
   "effects": [
    {
-    "op": "rally",
+    "op": "surge",
     "site": "station",
-    "count": 3
+    "count": 2
    },
    {
-    "op": "corrupt",
-    "site": "station"
+    "op": "surge",
+    "site": "factory",
+    "count": 2
    }
   ],
   "harms": [

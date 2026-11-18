@@ -93,7 +93,9 @@ that stands or occupies, drones past their cap). No counter prints 1 credit (Mat
 **Executing.** Threats execute in `threats.execute`, after production and upkeep, before war, at the round's end: anything still on
 an uncountered threat is refunded, then each threat (country 0, 1, ...) does what it prints, its player harm on the
 nearest player, and is discarded with its tokens. **No harm is unprinted** (146: the node loss for every player near
-an uncountered threat and the floor sway toward Discord are gone). The adversary board may print compute for each
+an uncountered threat and the floor sway toward Discord are gone). **Every uncountered threat also lands
+`adversary.threat_agents` (1) agent on its anchor** (its first location token's hex) after its harm, an arrival that may corrupt
+the site or take a node there ([adversary.md](adversary.md)). The adversary board may print compute for each
 uncountered threat (the Militarist's level-2 rule, War Footing: 4, from `board_difficulty_at` (2); [adversary.md](adversary.md)).
 Only threats on the board during this round's counter phase execute: one dealt later gets a printed **waits** token
 and executes next round,
@@ -110,11 +112,12 @@ has every tag) and the country has a site of one of its location types not the a
 or next to a token, you are *near* that threat and may help pay it off. Each threat prints one way to pay, or two: a
 scarce thing (energy, ambassadors, insight, research cubes, chips, or cards given up for their tags) or credits;
 resources can be pooled between players, giving up cards is done by one player alone. What a threat takes if unpaid is
-never what it asks for. Next the card rallies (each country's pool of agents is dealt one at a time onto the sites of
-the type it names, in hex order) and musters its troops, then its other lines, its Corrupt lines (every agent next to a site of
-the type moves onto it, and each site holding its number corrupts) and the march. You draft and act; production then runs from one
-snapshot of the board. At the end of the round each threat nobody paid does what it prints, and nothing else: one
-consequence, sometimes two, from a short list (troops or agents on its spot, compute, Sway toward
+never what it asks for. Next the card infiltrates (1 agent on every site of the type it names not yet the
+adversary's) and musters its troops, then its other lines, Spill (level 2+: a crowded site passes 1 agent to
+its busiest neighbor) and Grow (a new neutral facility beside each country's busiest site of the named type), then the march.
+A site corrupts the moment an arrival brings it to its number. You draft and act; production then runs from one
+snapshot of the board. At the end of the round each threat nobody paid does what it prints, then lands 1 agent on
+its spot, and nothing else: one consequence, sometimes two, from a short list (troops or agents on its spot, compute, Sway toward
 Discord, Unity pulled back, a site corrupted, a botnet, Fallout next to its token (227: mild and lifted, so tier 1
 carries 1 and tier 2 up to 2), or the nearest player paying energy, chips, cubes or
 ambassadors or discarding cards, losing a building, or a node, or cubes onto the adversary's research track; never
@@ -123,10 +126,10 @@ node is nearest the threat. Tier 1 is small; tier 2 is about two tier-1s. Comput
 step, then fills the leftmost project on its board; a full project fires there, the rest slide left and the right
 slot refills. **Harder levels** make the adversary harsher, not threats more or dearer: each level is named,
 adds setup (the income and research markers, the event deck) and at most one rule that fires on an event you already
-resolve: level 1 lets a city corrupt at 3 (the cards' "Botnets spread (level 1+)" start too), 2 gives 4 compute for each unpaid threat, 3 a shorter,
+resolve: level 1 lets a city corrupt at 3 (the cards' "Botnets spread (level 1+)" start too), 2 gives 4 compute for each unpaid threat (the cards' Spill lines start too), 3 a shorter,
 busier game whose research rule musters more, and 4 a harder deck; no level deals an extra threat
-([adversary.md](adversary.md) *Difficulty*). The agent income is 1 a country (Garrisons), more at level 4, and grows as
-the event cards print income lines.
+([adversary.md](adversary.md) *Difficulty*). The agents come from the cards' Infiltrate lines (stage III names two
+site types; 2 agents a site at level 4) and from botnets, each seeding 1 next to it a round (Botnet Recruiters).
 **What resisted a summary:** that only resource options pool.
 
 **Compute.** Many threats also give the adversary compute, onto its projects ([adversary.md](adversary.md)), when they

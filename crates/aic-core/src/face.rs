@@ -833,7 +833,8 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::PullUnity { .. }
         | Op::AdversaryBuild
         | Op::Create { .. }
-        | Op::Corrupt { .. }
+        | Op::Spill { .. }
+            | Op::Grow { .. }
         | Op::Flag { .. }
         | Op::Requisition { .. }
         | Op::LoseAmbassador
@@ -865,7 +866,8 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::PerSite { .. }
         | Op::RemoveWhere { .. }
         | Op::Prohibit { .. }
-        | Op::Rally { .. }
+        | Op::Infiltrate { .. }
+            | Op::Surge { .. }
         | Op::IncreaseIncome { .. }
         | Op::Income { .. }
         | Op::IncomePerTag { .. }

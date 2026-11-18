@@ -27,27 +27,15 @@ pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) 
     if site == CorruptSite::Node {
         return corrupt_node(g, cx, h);
     }
-    if site == CorruptSite::Land {
-        cx.add_tokens(g, h, FALLOUT, 1);
-        cx.tally(g, "fallout.placed", 1);
-        cx.tally(g, "fallout.placed.event", 1);
-    } else {
-        take_for_adversary(g, cx, h);
-    }
-    let marker = g.tokens(h, LIBERATED);
-    if marker > 0 {
-        // 253: a liberated site retaken.
-        cx.add_tokens(g, h, LIBERATED, -marker);
-        cx.tally(g, "adversary.retakes", 1);
-    }
-    // 263: the adversary's spread by round: a city corrupted in play (setup's are placed, not corrupted), a
-    // liberated one retaken counted apart.
+    take_for_adversary(g, cx, h);
+    // 263: the adversary's spread by round: a city corrupted in play (setup's are placed, not corrupted). 275: the
+    // Liberated marker is gone, so a retaken city counts here too.
     if matches!(site, CorruptSite::City | CorruptSite::CoastalCity) {
-        let key = if marker > 0 { "map.cities_retaken" } else { "map.cities_corrupted" };
-        cx.per_round(g, key, 1);
+        cx.per_round(g, "map.cities_corrupted", 1);
     }
     let n = g.tokens(h, ADV_AMBASSADOR);
     remove(g, cx, h, n);
+    cx.tally(g, "adversary.returned_by_corruption", n);
     if let Some(s) = node_owner(g, h) {
         if !cards::has_passive(&w, g, s, |p| matches!(p, Op::CorruptionShield)) {
             board::destroy_piece(g, cx, h, node(s), board::Cause::Effect("corruption"))?;
@@ -64,10 +52,7 @@ pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) 
         cx.set_key(g, FIRST_CORRUPTION, g.round as i64);
         cx.tally(g, "adversary.first_corruption_round", g.round as i64);
     }
-    cx.note(Some(h), || match site {
-        CorruptSite::Land => format!("{} takes Fallout", hex_name(&w, h)),
-        _ => format!("{} is corrupted", hex_name(&w, h)),
-    });
+    cx.note(Some(h), || format!("{} is corrupted", hex_name(&w, h)));
     Ok(())
 }
 
@@ -78,6 +63,7 @@ fn corrupt_node(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
     let w = cx.world;
     let n = g.tokens(h, ADV_AMBASSADOR);
     remove(g, cx, h, n);
+    cx.tally(g, "adversary.returned_by_corruption", n);
     let mut destroyed = false;
     if let Some(s) = node_owner(g, h) {
         if !cards::has_passive(&w, g, s, |p| matches!(p, Op::CorruptionShield)) {
@@ -133,7 +119,6 @@ pub fn corrupt_n(w: &World, site: CorruptSite, cut: i64) -> i64 {
         CorruptSite::City | CorruptSite::CoastalCity => w.int("adversary.corrupt_at"),
         CorruptSite::Station => w.int("adversary.corrupt_station_at"),
         CorruptSite::Factory => w.int("adversary.corrupt_factory_at"),
-        CorruptSite::Land => w.int("adversary.corrupt_land_at"),
         CorruptSite::Node => w.int("adversary.corrupt_node_at"),
     };
     let ladder = if level(w, w.int("adversary.corrupt_cut_at")) {
@@ -148,78 +133,28 @@ pub fn corrupt_n(w: &World, site: CorruptSite, cut: i64) -> i64 {
     (base - ladder - reach - cut).max(1)
 }
 
-/// 175, a Corrupt X line in country `scope` or everywhere: every agent next to an X ([`super::plan::converge`])
-/// moves onto it (r98: one next to several stays where it is); then every X holding its number corrupts. A
-/// moving agent arriving on a player ambassador cancels it, as any arrival does.
-pub fn corrupt_sites(g: &mut GameState, cx: &mut Cx, site: CorruptSite, cut: i64, scope: Option<usize>) -> Res {
+/// 275, arrival corruption (it replaced Corrupt X lines, their adjacency move and natural corruption): after the
+/// adversary puts agents on hex `h` (a placement from the supply or a Spill's move; a player's Push or Gather is
+/// no arrival), that hex alone is checked: a city, research station or factory not yet the adversary's holding its
+/// corrupt number corrupts; else a player's node there with `corrupt_node_at` agents is destroyed (a node rule,
+/// no mark). A firewall or a no-Corrupt token holds it. Nothing else on the board is looked at.
+pub fn arrive_check(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
     let w = cx.world;
-    let n = corrupt_n(&w, site, cut);
-    let cv = super::plan::converge(&w, g, site, scope);
-    // r98 (Matt, 2026-11-13, 224 #6): an agent next to two or more targets stays where it is.
-    for &(h, t) in &cv.sources {
-        for _ in 0..g.tokens(h, ADV_AMBASSADOR) {
-            converge_one(g, cx, h, t)?;
-        }
+    let held = g.tokens(h, ADV_AMBASSADOR);
+    if held <= 0 {
+        return Ok(());
     }
-    for &h in &cv.ties {
-        let k = g.tokens(h, ADV_AMBASSADOR);
-        cx.tally(g, "adversary.converge_ties", k);
-        cx.tally(g, "adversary.converge_tie_hexes", 1);
-    }
-    for t in cv.targets {
-        // r80 (ruling #42): agents only; a marker no longer counts.
-        let held = g.tokens(t, ADV_AMBASSADOR);
-        if held < n + retake_extra(&w, g, t, site) {
+    cx.per_round(g, CHECKS, 1);
+    for site in [CorruptSite::City, CorruptSite::Station, CorruptSite::Factory, CorruptSite::Node] {
+        if !super::plan::corrupt_target(&w, g, h, site) || held < corrupt_n(&w, site, 0) {
             continue;
         }
-        // A Corrupt prohibition's token or (178, Matt's ruling #30) a firewall holds it (185's audit: one guard).
-        if guard_holds(g, cx, t, "line") {
-            continue;
-        }
-        // An earlier corruption may have taken this target's node (a node line) or flipped it already.
-        if !super::plan::corrupt_target(&w, g, t, site) {
-            continue;
-        }
-        corrupt_hex(g, cx, t, site)?;
-        if g.is_over() {
+        if guard_holds(g, cx, h, "arrival") {
             return Ok(());
         }
-    }
-    Ok(())
-}
-
-/// 175: one agent moves from `from` onto `to` (Corrupt X's convergence): on a player ambassador the two cancel.
-fn converge_one(g: &mut GameState, cx: &mut Cx, from: usize, to: usize) -> Res {
-    cx.add_tokens(g, from, ADV_AMBASSADOR, -1);
-    cx.tally(g, "adversary.converged", 1);
-    // r75: the players choose whose ambassador it cancels.
-    if board::agent_cancels(g, cx, to)?.is_some() {
-        cx.add_key(g, SUPPLY, 1);
-        cx.tally(g, "adversary.canceled", 1);
-    } else {
-        cx.add_tokens(g, to, ADV_AMBASSADOR, 1);
-    }
-    Ok(())
-}
-
-/// 138, natural corruption at the end of the event card: every city,
-/// research station or factory already holding its corrupt number (r80: agents only, no markers) corrupts, with no move, in hex order; 175: then every
-/// hex with a player's node holding a node's number loses the node.
-pub(super) fn natural_corruption(g: &mut GameState, cx: &mut Cx) -> Res {
-    let w = cx.world;
-    for site in [CorruptSite::City, CorruptSite::Station, CorruptSite::Factory, CorruptSite::Node] {
-        let n = corrupt_n(&w, site, 0);
-        for h in super::plan::natural_targets(&w, g, site, n) {
-            // 167: a Corrupt prohibition covers natural corruption too; 178 (Matt's ruling #30): so does a firewall.
-            if guard_holds(g, cx, h, "natural") {
-                continue;
-            }
-            corrupt_hex(g, cx, h, site)?;
-            cx.tally(g, "adversary.corruptions_natural", 1);
-            if g.is_over() {
-                return Ok(());
-            }
-        }
+        corrupt_hex(g, cx, h, site)?;
+        cx.tally(g, "adversary.corruptions_arrival", 1);
+        return Ok(());
     }
     Ok(())
 }
@@ -258,6 +193,12 @@ pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
             // arriving, and an empty supply sends none (both read "lands on it").
             let (adv, supply) = (g.tokens(h, ADV_AMBASSADOR), g.var(SUPPLY));
             place(g, cx, h, 1)?;
+            // 275: the agent sent is an arrival: one that brings the station to its corrupt number corrupts it.
+            if corrupted(g, h) {
+                cx.tally(g, "adversary.stations_flipped", 1);
+                cx.note(Some(h), || format!("The station at {} falls to the agent sent", hex_name(&w, h)));
+                return Ok(true);
+            }
             cx.tally(g, "adversary.station_flip_held", 1);
             let what = if supply <= 0 {
                 "no agent is left to send"

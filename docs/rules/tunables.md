@@ -31,8 +31,6 @@ conventions: [README.md](README.md).*
 | `board.troop_per_round` | 1 | 1..5 | times a seat may take Remove a troop a round |
 | `board.factory_build_chips` | 0 | 0..20 | standard action Build a factory: chips for a factory of yours (0: no such action) |
 | `board.factory_chips` | 1 | 0..5 | chips a player-owned factory makes its owner each round |
-| `board.city_build_chips` | 3 | 1..10 | chips a city spends to build a neutral factory or research station |
-| `board.city_chip_cap` | 3 | 1..10 | chips a city holds at most while they wait (one each round from each unclaimed neutral factory next to it) |
 | `board.remove_ambassadors` | 2 | 1..5 | standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing) |
 | `board.remove_count` | 3 | 1..3 | standard action Remove agents: agents it removes, at most, on or next to its target (the player's choice) |
 | `board.land_cubes` | 2 | 0..10 | standard action Lift Fallout: research cubes to lift 1 Fallout token in reach (0: no such action) |
@@ -56,10 +54,8 @@ conventions: [README.md](README.md).*
 | `adversary.corrupt_at` | 5 | 1..20 | a city's corrupt number: the agents on it that corrupt it (coastal cities too) |
 | `adversary.corrupt_station_at` | 2 | 1..20 | a research station's corrupt number |
 | `adversary.corrupt_factory_at` | 2 | 1..20 | a factory's corrupt number |
-| `adversary.corrupt_land_at` | 3 | 1..20 | open land's corrupt number (only a Corrupt open land line; it takes Fallout) |
 | `adversary.corrupt_node_at` | 2 | 1..20 | a node's corrupt number: a hex with a player's node and this many agents loses the node |
-| `adversary.retake_agents` | 1 | 0..5 | 253: agents beyond the corrupt number to retake a neutral site a player liberated (its Liberated marker; 0: none) |
-| `adversary.corrupt_cut` | 2, 0, 0, 0 | 0..5 | difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land) |
+| `adversary.corrupt_cut` | 2, 0, 0 | 0..5 | difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory) |
 | `adversary.corrupt_cut_at` | 1 | 0..5 | the difficulty level from which corrupt_cut applies |
 | `adversary.city_cut_at` | 5 | 0..5 | 263: the difficulty level from which a city (coastal too) corrupts with one agent fewer again, after corrupt_cut (5: never) |
 | `adversary.blight_discord` | 1 | 0..5 | Discord each Fallout token sways each round |
@@ -74,7 +70,12 @@ conventions: [README.md](README.md).*
 | `adversary.stage1_added` | 0 | 0..3 | difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step) |
 | `adversary.extra_corrupted` | 0 | 0..3 | difficulty 4: more cities per country start corrupted |
 | `adversary.compute_income` | 0, 3, 5, 15, 18 | 0..30 | the adversary's base compute income a country a round, at difficulty 0-4 (times the countries: per board) |
-| `adversary.ambassador_income` | 0, 0, 0, 0, 1 | 0..10 | the agent income a country a round (into each country's pool), at difficulty 0-4 |
+| `adversary.infiltrate_agents` | 1, 1, 1, 1, 2 | 0..5 | 275: agents an Infiltrate line lands on each site it names, at difficulty 0-4 |
+| `adversary.spill_at` | 2 | 0..5 | 275: the difficulty level from which an event card's Spill line moves agents; below it the line does nothing |
+| `adversary.botnet_seed` | 1 | 0..5 | 275: agents each botnet (no player ambassador on it) seeds onto the site next to it holding the most agents, in the Income beat |
+| `adversary.grow_infest_at` | 1 | 1..5 | 275: agents a Grow site holds for its new facility to come with 1 agent on it (an adversary site's always does) |
+| `adversary.grow_cap` | 2 | 0..6 | 275: a Grow site with this many facilities next to it (any owner) doesn't grow (0: no cap) |
+| `adversary.threat_agents` | 1 | 0..5 | 275: agents an uncountered threat lands on its anchor (its first location token) as it executes |
 | `adversary.discord_removed` | 0 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
 | `adversary.war_node` | 1 | 0..1 | build (r83, the Militarist's War Takes Ground): 1: a drone strike that destroys a factory destroys a node on its hex too |
 | `adversary.station_flip_at` | 2 | 0..5 | agents on a player's research station before an effect can flip it (short of that, one lands there instead) |

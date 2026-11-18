@@ -309,7 +309,7 @@ fn troop_words(placed: usize, asked: i64) -> String {
 
 /// 231 (`AgentsOnNodes`, Night Raid): in each country, 1 agent onto each of `count` different hexes holding a
 /// player's node, those holding the most agents first (ties: the lowest-numbered); a firewalled hex is passed over.
-/// The node is lost only to the Corrupt beat's 2-agent rule, after the players' action phase.
+/// 275: each agent is an arrival: a node hex it brings to 2 agents loses its node at once.
 pub(super) fn agents_on_nodes(g: &mut GameState, cx: &mut Cx, count: i64) -> Res {
     let w = cx.world;
     for c in 0..w.map.countries.len() {

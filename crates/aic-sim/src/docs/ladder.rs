@@ -51,16 +51,15 @@ fn setup_items(r: &Rules, level: i64) -> Vec<(&'static str, String)> {
     let n = dealt(r, level);
     let mut out = vec![
         ("compute", format!("Compute income {}", entry(&list(r, "adversary.compute_income"), level))),
-        ("agents", format!("Agent income +{}", entry(&list(r, "adversary.ambassador_income"), level))),
+        ("agents", format!("Infiltrate {} a site", entry(&list(r, "adversary.infiltrate_agents"), level))),
         ("research", format!("Research threshold {}", entry(&list(r, "adversary.research_at"), level))),
         ("deck", format!("Deck {} / {} / {} ({} rounds)", n[0], n[1], n[2], n.iter().sum::<usize>())),
         // Printed on the map's sites: the same at every level (a level's rule may say a city falls sooner).
         ("sites", format!(
-            "Sites print their corrupt numbers: city {}, station {}, factory {}, land {}",
+            "Sites print their corrupt numbers: city {}, station {}, factory {}",
             int(r, "adversary.corrupt_at"),
             int(r, "adversary.corrupt_station_at"),
-            int(r, "adversary.corrupt_factory_at"),
-            int(r, "adversary.corrupt_land_at")
+            int(r, "adversary.corrupt_factory_at")
         )),
     ];
     if level >= 4 {
@@ -189,9 +188,9 @@ fn or_dash(s: String) -> String {
 /// rules/adversary.md's *Difficulty* table: each level's setup and named rule, the rules active, and the dials.
 pub(super) fn difficulty_block(r: &Rules) -> String {
     let keys: [&[&str]; 5] = [
-        &["adversary.compute_income", "adversary.ambassador_income", "adversary.research_at", "adversary.corrupt_at"],
+        &["adversary.compute_income", "adversary.infiltrate_agents", "adversary.research_at", "adversary.corrupt_at"],
         &["adversary.botnet_spread_at", "adversary.corrupt_cut", "adversary.corrupt_cut_at"],
-        &["adversary.board_difficulty_at"],
+        &["adversary.board_difficulty_at", "adversary.spill_at"],
         &["adversary.stage2_removed", "adversary.stage1_added", "adversary.research_strong_at"],
         &["adversary.stage1_removed", "adversary.stage2_added", "adversary.stage3_added", "adversary.stage_swap_at"],
     ];

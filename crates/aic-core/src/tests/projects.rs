@@ -317,18 +317,18 @@ fn the_board_verbs_take_the_targets_the_board_shows() {
     let troops = total(&g, TROOP);
     run_ops(&rules, &mut g, &[Op::FactoryTroops { count: 1 }]);
     assert_eq!((g.tokens(f1, TROOP), total(&g, TROOP)), (1, troops + 1));
-    // 231, Night Raid: an agent onto each of `count` node hexes, the one holding the most agents first; nothing is
-    // destroyed now (the Corrupt beat's 2-agent rule does that).
+    // 231, Night Raid: an agent onto each of `count` node hexes, the one holding the most agents first. 275: an
+    // arrival that brings a node hex to 2 destroys the node (its agents go to the supply).
     let (a, b) = (m.numbered(1, piece(1).node), m.numbered(1, piece(1).industry[0]));
     put(&mut g, a, node(1), 1);
     put(&mut g, b, node(1), 1);
     put(&mut g, b, ADV_AMBASSADOR, 1);
-    let (on_a, on_b) = (g.tokens(a, ADV_AMBASSADOR), g.tokens(b, ADV_AMBASSADOR));
+    let on_a = g.tokens(a, ADV_AMBASSADOR);
+    assert_eq!(on_a, 0);
     run_ops(&rules, &mut g, &[Op::AgentsOnNodes { count: 1 }]);
-    assert_eq!((g.tokens(a, ADV_AMBASSADOR), g.tokens(b, ADV_AMBASSADOR)), (on_a, on_b + 1), "most agents first");
+    assert_eq!((g.tokens(a, ADV_AMBASSADOR), g.tokens(b, ADV_AMBASSADOR), g.tokens(b, node(1))), (0, 0, 0), "most agents first: the 2nd takes the node");
     run_ops(&rules, &mut g, &[Op::AgentsOnNodes { count: 2 }]);
-    assert_eq!((g.tokens(a, ADV_AMBASSADOR), g.tokens(b, ADV_AMBASSADOR)), (on_a + 1, on_b + 2), "two different hexes");
-    assert_eq!((g.tokens(a, node(1)), g.tokens(b, node(1))), (1, 1), "no node lost yet");
+    assert_eq!((g.tokens(a, ADV_AMBASSADOR), g.tokens(a, node(1))), (1, 1), "the one node hex left in country 1");
     // 231: the hex holding the most player ambassadors in each country sends them back to their supplies.
     put(&mut g, a, ambassador(0), 2);
     put(&mut g, a, ambassador(1), 1);
@@ -414,7 +414,8 @@ fn footprint(w: &module::World, before: &GameState, after: &GameState) -> (Vec<i
 /// twin is aic-sim's `team_ops_price_per_country` (231's IncreaseIncome miss).
 #[test]
 fn project_ops_reach_as_declared() {
-    use crate::op::{CorruptSite, FactoryWhere, Op, RallyAt, TeamReach};
+    use crate::modules::common::corrupted;
+    use crate::op::{FactoryWhere, Op, RallyAt, TeamReach};
     use crate::modules::effects;
     let team = |rules: &Rules, g: &mut GameState, ops: &[Op]| {
         with_answers(rules, g, |_| 0, |g, cx| effects::run(g, cx, ops, &mut effects::Ctx::team()));
@@ -431,11 +432,17 @@ fn project_ops_reach_as_declared() {
     // A target for every op in each country: agent stacks by every site, a corrupted city, an adversary factory,
     // then fresh stacks (something left to corrupt), and a seat's hardened factory with its ambassadors on it and
     // its cubes on the country's megaproject.
-    let rally = [RallyAt::City, RallyAt::Station, RallyAt::Factory].map(|site| Op::Rally { site, count: 4 });
-    team(&rules, &mut rich, &rally);
-    team(&rules, &mut rich, &[Op::Corrupt { site: CorruptSite::City, cut: 0 }]);
+    // 275: an Infiltrate's 1 a site corrupts nothing at d0. Each country's highest-numbered neutral city corrupts
+    // (an inland one first), so a city, coastal if the country has one, stays neutral for the Surge lines.
+    let infiltrate = [RallyAt::City, RallyAt::Station, RallyAt::Factory].map(|site| Op::Infiltrate { site });
+    team(&rules, &mut rich, &infiltrate);
+    for c in 0..m.countries.len() {
+        let neutral = cities(m).into_iter().filter(|&h| m.hexes[h].country as usize == c && !corrupted(&rich, h));
+        let h = neutral.max_by_key(|&h| (!m.hexes[h].coastal, m.hexes[h].number)).expect("a neutral city");
+        with_cx(&rules, |cx| crate::modules::adversary::corrupt_city(&mut rich, cx, h)).unwrap();
+    }
     team(&rules, &mut rich, &[Op::AdversaryFactory { count: 1, where_: Some(FactoryWhere::EachCountry), fallback_ambassadors: 0 }]);
-    team(&rules, &mut rich, &rally);
+    team(&rules, &mut rich, &infiltrate[..1]);
     for c in 0..m.countries.len() {
         let empty = |h: usize| rich.hexes[h].tokens.is_empty();
         let open = hexes_where(m, |h| m.hexes[h].country as usize == c && kind(m, h) == HexKind::Open && empty(h));
@@ -446,14 +453,26 @@ fn project_ops_reach_as_declared() {
         put(&mut rich, h, ambassador(c), 2);
         set_var(&mut rich, crate::modules::board::project_key(c, Some(c)), 3);
     }
-    // An income rise is one number: compute is kept times the countries (`rally::increase_income`), agents a
-    // country, each country's pool gaining it at the Rally (`rally::fill_pools`).
+    // A Fallout line lands beside each country's lowest-numbered corrupted cities: clear a hex beside the first one
+    // where buildings ring it, so the line has land to take.
+    for c in 0..m.countries.len() {
+        let mut bad: Vec<usize> = cities(m).into_iter().filter(|&h| m.hexes[h].country as usize == c && corrupted(&rich, h)).collect();
+        bad.sort_by_key(|&h| m.hexes[h].number);
+        let first = bad[0];
+        let free = |g: &GameState, x: usize| crate::modules::adversary::fallout_free(&w, g, x);
+        if !m.hexes[first].neighbors.iter().any(|&x| free(&rich, x)) {
+            let no_node = |x: usize| crate::modules::common::node_owner(&rich, x).is_none();
+            let x = m.hexes[first].neighbors.iter().copied().find(|&x| kind(m, x) == HexKind::Open && no_node(x)).expect("open land beside it");
+            Arc::make_mut(&mut Arc::make_mut(&mut rich.hexes)[x]).tokens.clear();
+            assert!(free(&rich, x));
+        }
+    }
+    // An income rise is one number: compute is kept times the countries (`rally::increase_income`).
     {
-        use crate::modules::adversary::{INCOME_AMBASSADORS, INCOME_COMPUTE};
+        use crate::modules::adversary::INCOME_COMPUTE;
         let mut g = rich.clone();
-        team(&rules, &mut g, &[Op::IncreaseIncome { compute: 1, ambassadors: 1 }]);
+        team(&rules, &mut g, &[Op::IncreaseIncome { compute: 1 }]);
         assert_eq!(g.var(INCOME_COMPUTE) - rich.var(INCOME_COMPUTE), m.countries.len() as i64);
-        assert_eq!(g.var(INCOME_AMBASSADORS) - rich.var(INCOME_AMBASSADORS), 1, "a country, read by each pool");
     }
     // 259: the research track is one number too: a project's research line puts its amount a country on it.
     {

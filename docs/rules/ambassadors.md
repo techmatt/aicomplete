@@ -32,7 +32,6 @@ Cities, research stations and factories follow one set of rules and differ only 
   **A claim pays back slowly** (142; 252): a player's station makes `owned_station_cubes` 1 cube and a
   factory `factory_chips` 1 chip a round (r83; a neutral station `station_cubes` 1). A factory claimed by round 3 of an 8-10 round game makes 6-8 chips, which the corps' chip
   converters ([board.md](board.md)) spend late. The risk is the adversary's: Asset Seizure turns it neutral.
-  Claiming a neutral factory also stops it feeding the cities next to it ([war.md](war.md), city growth).
 - **Claiming with a card** (142; 256: stations and factories, op `claim_site`): Power Purchase Agreement (an event:
   2 credits and 2 energy) and Microgrid Lab Compact (a building: one claim when built, then an Action for 2 energy) claim a neutral research
   station or factory in reach (148, Matt): the card's price is the price, and it needs the site in reach with no
@@ -47,12 +46,9 @@ Cities, research stations and factories follow one set of rules and differ only 
   Unity for a station or factory. **A site with an agent
   on it can't be claimed or liberated** (r91: no "+1 per agent"; clear them first, with Remove agents, a card or a
   power). The adversary's cube comes off. It needs the site **in reach** (your node on or next to it: getting close
-  is the risk); a botnet on it stays. No agents land on it. Its factories keep their owners. A **Liberated marker**
-  goes on it: **to retake it by a Corrupt line or natural corruption the adversary must pile `retake_agents` (1)
-  agent more than its corrupt number** on it (a card that takes or flips a site outright ignores it; [adversary.md](adversary.md); 253, amendment 11525: the adversary commits more to take back what you freed, Matt's
-  ruling 4). The marker comes off when anyone claims the site, the adversary retakes it or it is
-  destroyed; a node on that hex takes no extra agent. Liberate stays the win
-  route (the purge). A **liberate card** ([player-cards.md](player-cards.md),
+  is the risk); a botnet on it stays. No agents land on it. Its factories keep their owners. It takes no marker:
+  cleared of agents, it corrupts again only when arrivals bring it back to its corrupt number
+  ([adversary.md](adversary.md)). Liberate stays the win route (the purge). A **liberate card** ([player-cards.md](player-cards.md),
   *The liberate capstones*) liberates a city exactly so, for its own price instead of the bill: the agents come off,
   Unity sways and it is left neutral; going straight from adversary to yours is a rare card power (Hostile Buyout
   alone, 254: on a corrupted station or factory; a city it frees is left neutral). The price is the same all game (r67; late strength comes from cards).
@@ -85,22 +81,22 @@ for the last rounds, and never free a city: the players still reach it and Liber
   does. A converted ambassador is on the board, not in your supply: it is armor or a blocker, and moves like
   any other; standing on the city, it pays toward a Liberate there.
 - **Firewall** (Firewall Array's Action, Air Gap): a token on one land hex in your reach. While it stands no
-  agent arrives there: Rally's share for its site stays in the supply (r82), a creation line takes the next site, and so does an adversary-factory
+  agent arrives there: an Infiltrate's agent for its site stays in the supply, a creation line takes the next site, and so does an adversary-factory
   line's fallback onto a factory (r80, 184's D79), a threat's or Discord card's placement there doesn't happen, and a
-  Corrupt line moves no agent onto it. Nothing on it corrupts: a Corrupt line, natural corruption, a station flip
+  Spill moves no agent onto it. Nothing on it corrupts: an arrival's check (a node's loss too), a station flip
   (Station Coup, Station Seizure, Lab Takeover: a forced flip too) and a threat corrupting its city (Overrun, Regime
   Change) all skip it (r79, Matt's ruling on D77; agents already on it stay). Troops are not stopped. It comes off at the end of the next adversary turn (its Income beat), so it
   lasts one round; the building places a fresh one each round.
 
 A **base** is no site: it is a front's troop pile ([war.md](war.md)). A player ambassador standing on a base is used
 up instead of the next drone made there; an agent on one does nothing.
-**2 agents on a player's node hex destroy the node** (`corrupt_node_at`), whatever else stands there (175,
-[adversary.md](adversary.md)): the node is lost unless something absorbs it, the agents go to the supply, and the hex
+**2 agents on a player's node hex destroy the node** (`corrupt_node_at`), whatever else stands there, checked when
+the adversary puts agents there (an arrival, [adversary.md](adversary.md)): the node is lost unless something absorbs it, the agents go to the supply, and the hex
 takes no mark (r98).
 One agent on it costs nothing.
 
-- **Every contact is 1 for 1** (r75, Matt's ruling 1). An agent arriving (a Rally, a creation line, a Corrupt line's
-  move, a Gather or Push, a fallback landing) on a hex holding player ambassadors cancels one of them; with several
+- **Every contact is 1 for 1** (r75, Matt's ruling 1). An agent arriving (an Infiltrate, a Surge, a Spill's move, a
+  botnet's seed, a creation line, a Gather or Push, a fallback landing) on a hex holding player ambassadors cancels one of them; with several
   players' there, the players choose whose (seat 0 asks for the team). An ambassador arriving on agents cancels one.
   Both go (the agent to the adversary's supply), with no Unity, so a position is held only until the next arrival.
   A claim and Liberate refuse a site with an agent on it (206): clear it first.
@@ -126,8 +122,8 @@ Diplomacy tag on each card you play (127; at 1 a tag of any kind it piled 52-84 
 makes something for its owner; a city is the adversary's or its country's, never a player's. Spend your ambassadors
 to take a site back from the adversary (Liberate: 5 for a city, 4 for a station, 3 for a factory), never with an
 agent sitting on it; your own ambassadors standing on it pay first. Taking one back leaves it neutral and sways
-Unity your way; only cards claim a neutral station or factory, making it yours; a city stays free, and a node of yours on or next to it collects its energy each round. While a site you liberated (with Liberate or a liberate card) is unclaimed, a Liberated marker makes the
-adversary bring one agent more to corrupt it again (a card that takes a site outright needs none); a station or factory a card frees takes no marker. A station you own makes 1 cube a round (a
+Unity your way; only cards claim a neutral station or factory, making it yours; a city stays free, and a node of yours on or next to it collects its energy each round. A site you free starts clean: the adversary must land its full corrupt number of
+agents on it again to take it back. A station you own makes 1 cube a round (a
 factory 1 chip), a slow payback (a card claims a station or factory for energy, Campus and Commons the site they open, the liberate cards one next to the city). Every meeting of an agent and an ambassador is one for one. Stand one ambassador on an adversary site
 to shut it off, and clear agents off yours, which they shut off the same way. An ambassador of yours on your own piece
 can take a hit for it.

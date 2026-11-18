@@ -359,10 +359,13 @@ pub struct Weights {
     /// or a hardening token a quarter; none under Sanctuary): its `node` and
     /// `shelter_node`, and the seat's `node_danger` reads its nodes less the exposed ones.
     pub corrupt_exposure: f64,
-    /// 151, above 0: the coming Rally (`plan::next_rally`: the card ahead's site type and each board's pool,
-    /// dealt round-robin) counts this share of its expected ambassadors on each site toward corrupting, a round
-    /// ahead: the pressure, at-risk and exposure terms read them as if landed.
+    /// 151, above 0: the coming Infiltrate (275: `plan::next_infiltrate`: an agent on each site of the card
+    /// ahead's types) counts this share of its agents on each site toward corrupting, a round ahead: the pressure,
+    /// at-risk and exposure terms read them as if landed.
     pub rally_read: f64,
+    /// 275, above 0: the botnets' coming seeds (`plan::next_seeds`) count this share beside the Infiltrate, read
+    /// as `rally_read` reads it (both land before the players act again).
+    pub seed_read: f64,
     /// 147 (D67), above 0: each Fallout token, and open land filling
     /// toward one, costs its Discord drip over the rounds left (up to 3) at its
     /// share of a Discord tip.
@@ -502,9 +505,6 @@ fn danger_share(count: i64) -> f64 {
     }
 }
 
-/// 147 (D67): open land filling toward corruption with no Corrupt land line on
-/// the card ahead counts this share (land corrupts only by a line, a few cards a game).
-const LAND_QUIET: f64 = 0.25;
 /// 147 (D67): an armored node's exposure, as a share (the armor goes, not the node).
 const ARMORED_SHARE: f64 = 0.25;
 /// 147 (D67): rounds of a land token's Discord drip the eval counts (at most).
@@ -686,6 +686,7 @@ impl Default for Weights {
             // +1.3 ±1.4), keeping most of the drop in nodes lost to corruption (2.3-3.1 a game, 1: 2.2-2.9, off 2.9-4.1).
             corrupt_exposure: 0.25,
             rally_read: 1.0,
+            seed_read: 1.0,
             blight: 1.0,
             site_pressure: 1.0,
             block: 4.0,
@@ -1421,14 +1422,13 @@ impl Eval {
         // 138: a player's research station or factory corrupts too, by its own number.
         let (station_at, station_gather) = plan::next_corrupt_n(&world, g, CorruptSite::Station);
         let (factory_at, factory_gather) = plan::next_corrupt_n(&world, g, CorruptSite::Factory);
-        // 147 (D67): land corrupts only by a Corrupt land line (no natural corruption).
-        let (land_at, land_line) = plan::next_corrupt_n(&world, g, CorruptSite::Land);
         // 175: a node hex's own number, and whether a node line (Night Raid's) ahead gathers onto it.
         let (node_at, node_gather) = plan::next_corrupt_n(&world, g, CorruptSite::Node);
         // 167: a Corrupt prohibition ahead (public): a hex its condition covers now carries no corruption
-        // pressure, so meeting the condition before the adversary turn scores (the Rally forecast skips its sites).
+        // pressure, so meeting the condition before the adversary turn scores (the Infiltrate forecast skips its
+        // sites). 275: arrivals run until the turn's last phase (the botnets seed in the compute step).
         let corrupt_round = g.round as i64
-            + if g.phase_index("adversary.corrupt").is_some_and(|i| g.phase <= i) { 0 } else { 1 };
+            + if g.phase_index("adversary.compute").is_some_and(|i| g.phase <= i) { 0 } else { 1 };
         let corrupt_ban = g.var(plan::prohibit_keys(Step::Corrupt).0) == corrupt_round;
         // 178 (Matt's ruling #30): a firewalled site doesn't corrupt in the turn ahead, as a prohibition holds it.
         let banned = |h: usize| {
@@ -1440,7 +1440,7 @@ impl Eval {
         let mut reach = 0i64;
         let tokens = self.keys.read_shared(g);
         // Read only when a line ahead gathers: nothing else looks at it.
-        let sites = if gather || station_gather || factory_gather || land_line || node_gather {
+        let sites = if gather || station_gather || factory_gather || node_gather {
             Sites::read(&world, &tokens, self.seats.min(4))
         } else {
             Sites::default()
@@ -1450,7 +1450,19 @@ impl Eval {
         // 177 (`last_node`): the player ambassadors a Rally's arrivals there leave standing, by hex (empty: all).
         let mut rally_used: Vec<f64> = Vec::new();
         if w.rally_read > 0.0 {
-            let fore = plan::next_rally(&world, g);
+            let mut fore = plan::next_infiltrate(&world, g);
+            if w.seed_read > 0.0 {
+                fore.extend(plan::next_seeds(&world, g).into_iter().map(|(h, n)| (h, n * w.seed_read / w.rally_read)));
+            }
+            // 275: one hex's arrivals (an Infiltrate and a seed) summed first: an ambassador cancels one of them.
+            let mut due: Vec<(usize, f64)> = Vec::new();
+            for (h, n) in fore {
+                match due.iter_mut().find(|(x, _)| *x == h) {
+                    Some(e) => e.1 += n,
+                    None => due.push((h, n)),
+                }
+            }
+            let fore = due;
             if !fore.is_empty() {
                 arriving = vec![0.0; g.hexes.len()];
                 if w.last_node > 0.0 {
@@ -1538,8 +1550,6 @@ impl Eval {
                     } else {
                         Self::toward(rules, &tokens, &sites, &arriving,h, gather && !common::firewalled(g, h))
                     };
-                    // 253: a liberated neutral city needs the retake's agents more (the engine's `retake_extra`).
-                    let corrupt_at = corrupt_at + common::retake_extra(&world, g, h, CorruptSite::City);
                     let p = (toward / corrupt_at as f64).min(1.0);
                     v -= w.corrupted * w.pressure * p * p;
                     if toward + 1.0 >= corrupt_at as f64 {
@@ -1548,7 +1558,7 @@ impl Eval {
                 }
             }
             let held = t.node[..seats].iter().any(|&n| n > 0);
-            if (w.corrupt_exposure > 0.0 || w.blight > 0.0) && (held || (adv > 0 && land_line)) {
+            if (w.corrupt_exposure > 0.0 || w.blight > 0.0) && held {
                 // 147 (D67): the Corrupt number this hex's site kind is read
                 // against, and whether the line ahead gathers from next door. A
                 // clean city, a station or factory not the adversary's, or open
@@ -1556,13 +1566,11 @@ impl Eval {
                 let site = if bad {
                     None
                 } else if city {
-                    Some((corrupt_at + common::retake_extra(&world, g, h, CorruptSite::City), gather, 1.0))
+                    Some((corrupt_at, gather, 1.0))
                 } else if t.station > 0 {
-                    Some((station_at + common::retake_extra(&world, g, h, CorruptSite::Station), station_gather, 1.0))
+                    Some((station_at, station_gather, 1.0))
                 } else if t.factory > 0 {
-                    Some((factory_at + common::retake_extra(&world, g, h, CorruptSite::Factory), factory_gather, 1.0))
-                } else if t.land == 0 && plan::corrupt_target(&world, g, h, CorruptSite::Land) {
-                    Some((land_at, land_line, if land_line { 1.0 } else { LAND_QUIET }))
+                    Some((factory_at, factory_gather, 1.0))
                 } else {
                     None
                 };

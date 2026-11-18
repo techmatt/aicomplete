@@ -3,8 +3,8 @@
   "name": "The Militarist",
   "rules": [
     [
-      "Garrisons",
-      "Income: +1 Agent a country a round."
+      "Botnet Recruiters",
+      "In the Income beat, each Botnet with no player Ambassador on it puts 1 Agent on the city, research station or factory next to it holding the most Agents (else on its own site)."
     ],
     [
       "Warmongering",
@@ -31,10 +31,10 @@
       "flavor": "",
       "setup": [
         "Compute income 0",
-        "Agent income +0",
+        "Infiltrate 1 a site",
         "Research threshold 5",
         "Deck 5 / 5 / 3 (13 rounds)",
-        "Sites print their corrupt numbers: city 5, station 2, factory 2, land 3"
+        "Sites print their corrupt numbers: city 5, station 2, factory 2"
       ],
       "rule": "",
       "new_rules": 0,
@@ -50,7 +50,7 @@
         "Compute income 3",
         "Research threshold 4"
       ],
-      "rule": "When a Corrupt step checks a city, it falls at 3 agents, not 5.",
+      "rule": "When an Agent lands on a city, it falls at 3 agents, not 5.",
       "new_rules": 1,
       "active_rules": 1,
       "new_changes": 1,
@@ -89,7 +89,7 @@
       "flavor": "The whole economy marches.",
       "setup": [
         "Compute income 18",
-        "Agent income +1",
+        "Infiltrate 2 a site",
         "Deck 3 / 4 / 4 (11 rounds)"
       ],
       "rule": "",

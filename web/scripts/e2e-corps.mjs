@@ -23,7 +23,7 @@ const cardsModule = config.modules.find((m) => m.module === 'cards');
 cardsModule.cards = cardsModule.cards.filter((id) => tiers[id] === 2 || id === 'power_purchase_agreement');
 // Nothing diverts a cube or takes the bound city while the script passes its turns.
 // No agents: a creation line would land one on the claimed station, blocking its cubes.
-Object.assign(config.modules.find((m) => m.module === 'adversary').params, { corrupt_at: 20, corrupt_station_at: 20, corrupt_factory_at: 20, corrupt_land_at: 20, supply_per_country: 0 });
+Object.assign(config.modules.find((m) => m.module === 'adversary').params, { corrupt_at: 20, corrupt_station_at: 20, corrupt_factory_at: 20, supply_per_country: 0 });
 
 const page = await openPage();
 const { send, js, until, size, consoleErrors } = page;

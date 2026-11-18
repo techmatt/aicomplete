@@ -52,8 +52,8 @@ pub const HOUSE_TERMS: [(&str, &str); 26] = [
     ("Convert","an agent on or next to the city leaves its stack and becomes your ambassador where it stood"),
     ("Gather up to N", "pieces (ambassadors, agents, troops; botnets never move) onto the target, each from a hex next to it; you may stop at any piece (a strike, \"remove up to N on or next to it\", moves nothing)"),
     ("Push up to N", "pieces from the target, each to a hex next to it that you choose; you may stop at any piece"),
-    ("Firewall", "a token on a hex: no agent lands or moves there (a Rally's share for it stays in the supply) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn"),
-    ("In the next adversary turn, no X", "a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (a Rally's share for it stays in the supply), and the tokens come off with the firewalls"),
+    ("Firewall", "a token on a hex: no agent lands or moves there (an Infiltrate's agent for it stays in the supply) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn"),
+    ("In the next adversary turn, no X", "a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (an Infiltrate's agent for it stays in the supply), and the tokens come off with the firewalls"),
 ];
 
 /// `3 credits, 1 energy`.
@@ -95,15 +95,12 @@ fn pull_words(p: &aic_core::content::Pull) -> String {
     format!("tier {} ({})", p.tier, tags.join(" or "))
 }
 
-/// 138: an event card's Corrupt X lines ("cities, land (1 fewer)").
-fn corrupt_words(a: &aic_core::content::AdversaryCard) -> String {
+/// 275: an event card's Spill line ("cities into factories"), level 2+.
+fn spill_words(a: &aic_core::content::AdversaryCard) -> String {
     a.twists
         .iter()
         .filter_map(|t| match t {
-            aic_core::content::Op::Corrupt { site, cut } => {
-                let name = site.plural();
-                Some(if *cut > 0 { format!("{name} ({cut} fewer)") } else { name.to_string() })
-            }
+            aic_core::content::Op::Spill { site, to } => Some(format!("{} into {}", site.plural(), to.plural())),
             _ => None,
         })
         .collect::<Vec<_>>()
@@ -116,7 +113,8 @@ pub(super) fn adversary_block() -> String {
         .iter()
         .map(|a| {
             let pulls: Vec<String> = a.pulls.iter().map(pull_words).collect();
-            let rally = aic_core::modules::adversary::rally_site(a).map(|r| r.plural()).unwrap_or("");
+            let rally = aic_core::modules::adversary::infiltrate_sites(a).iter().map(|r| r.plural()).collect::<Vec<_>>().join(", ");
+            let grow = aic_core::modules::adversary::grow_site(a).map(|r| r.plural()).unwrap_or("—");
             let deploy: i64 = a
                 .standing
                 .iter()
@@ -129,13 +127,14 @@ pub(super) fn adversary_block() -> String {
                 a.name.clone(),
                 a.stage.to_string(),
                 pulls.join("; "),
-                rally.to_string(),
+                rally,
                 deploy.to_string(),
-                corrupt_words(a),
+                spill_words(a),
+                grow.to_string(),
             ]
         })
         .collect();
-    table(&["Card", "Stage", "Threat (each country)", "Rally", "Muster", "Corrupt"], rows)
+    table(&["Card", "Stage", "Threat (each country)", "Infiltrate", "Muster", "Spill (level 2+)", "Grow"], rows)
 }
 
 pub(super) fn alignment_block() -> String {
@@ -733,21 +732,21 @@ pub(super) fn game_end_block(r: &Rules) -> String {
     format!(
         "**How the game ends, for new players.** The only way to win is the purge, and Unity eases it, \
          step by step, like terror levels. {easing} Pressure comes every round: the face-up adversary event card deals threats \
-         by your sites and says where its new agents land (dealt one at a time onto every site of a kind), \
-         so you always know where the next wave lands. Agents pile up, a card's Corrupt line \
-         moves every agent next to a city onto it, a city holding {} corrupts, a hex with your node and {} \
+         by your sites and names where its new agents land (one on every site of a kind) and which site grows a \
+         facility, so you always know where the next wave lands. Agents pile up only where something lands them: \
+         a city they land on holding {} corrupts, a hex with your node they land on holding {} \
          loses the node, and corrupted \
          cities and uncountered threats fill the Discord track. Each time it \
          fills, it tips: a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, \
          you lose. Discord cards never destroy your nodes directly, only through the threats and corruptions \
          they bring: they deal more or stronger threats (Offensive \
-         aims one at the node hex most crowded with adversary pieces), create agents, run Corrupt \
-         lines, take credits and land Fallout (Scorched Earth), more of each the more sites are corrupted. Unity has its own track, which nothing on the \
+         aims one at the node hex most crowded with adversary pieces), create agents, surge them \
+         onto a city, take credits and land Fallout (Scorched Earth), more of each the more sites are corrupted. Unity has its own track, which nothing on the \
          Discord side empties: free a corrupted \
          city and you sway Unity (removing a botnet sways none), and each Unity \
          tip brings a good card. \
          Like fear cards, each acts by what is on the board, never by your reach; some forbid the adversary's next \
-         Rally, Muster or Corrupt where your pieces stand. \
+         Infiltrate, Muster or Corrupt where your pieces stand. \
          Every Unity and Discord card prints three strengths, and the tip's own count on its side picks which \
          one resolves (strength I on tips below {t2}, II from tip {t2}, III from tip {t3}): a later strength counts more \
          or reaches wider, and Discord's late cards hit harder. The {unity} Unity cards reshuffle when the deck runs out. \

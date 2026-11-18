@@ -61,18 +61,19 @@ fn a_player_with_no_node_loses_the_game_for_everyone() {
 #[test]
 fn the_supply_is_a_cap_not_a_loss() {
     let (rules, mut g) = lab(&["adversary.build"]);
-    let station = rules.map.numbered(0, piece(0).stations[0]);
-    put(&mut g, station, STATION, 1);
-    set_var(&mut g, SUPPLY,1);
-    for c in 0..rules.map.countries.len() {
-        set_var(&mut g, crate::modules::adversary::pool_key(c), 0);
+    let m = &rules.map;
+    let mut open = hexes_where(m, |h| m.hexes[h].country == 0 && kind(m, h) == HexKind::Open);
+    open.sort_by_key(|&h| m.hexes[h].number);
+    let (a, b) = (open[0], open[1]);
+    for s in [a, b] {
+        put(&mut g, s, STATION, 1);
     }
-    set_var(&mut g, crate::modules::adversary::pool_key(0), 2);
+    set_var(&mut g, SUPPLY, 1);
     set_pile(&mut g, NEXT, &["mil_s1_long_patrols"]);
     run_answered(&rules, &mut g);
-    // 151: Long Patrols rallies board 0's pool of 2 to its one station; one lands.
+    // 275: Long Patrols infiltrates research stations, 1 on each; the supply holds one, for the lower-numbered.
     assert_eq!(total(&g, ADV_AMBASSADOR), 1);
-    assert_eq!(g.tokens(station, ADV_AMBASSADOR), 1);
+    assert_eq!((g.tokens(a, ADV_AMBASSADOR), g.tokens(b, ADV_AMBASSADOR)), (1, 0));
     assert_eq!(g.var(SUPPLY), 0);
     assert!(!g.is_over());
 }

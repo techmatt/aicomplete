@@ -9,7 +9,7 @@ fn flag_doc(f: RoundFlag) -> &'static str {
         RoundFlag::Blackout => "Blackout: while this is up, cities here make no energy in production (until the end of the next round, as its card says)",
         RoundFlag::Sabotage => "Sabotage: while this is up, players with a node here make no energy in upkeep (until the end of the next round, as its card says)",
         RoundFlag::Embargo => "Embargo: while this is up, no site here can be claimed (until the end of the next round)",
-        RoundFlag::Cordon => "Cordon: no Rally or creation line places agents here until the end of the next adversary turn (its pool waits; troops still land)",
+        RoundFlag::Cordon => "Cordon: no Infiltrate, Surge, Spill, Grow, botnet seed, threat anchor or creation line acts there until the end of the next adversary turn (troops still land)",
     }
 }
 

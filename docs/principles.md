@@ -88,7 +88,7 @@ with weaker credit engines, dearer cards or keeps, or lower starting credits; ne
 
 **The starting-economy scaffold (Matt, 2026-11-03).** Until engines carry the economy, every board starts and earns
 much more, the economy track the growing income; it comes down as engines take over, adding no track. Credits stay
-meaningful through the adversary (its agents rally onto sites each round) and the plain route's price (Gain a
+meaningful through the adversary (its agents infiltrate sites each round) and the plain route's price (Gain a
 player ambassador at `ambassador_credits` 13): bought ambassadors are a big investment; cards, buildings and powers the better
 route.
 

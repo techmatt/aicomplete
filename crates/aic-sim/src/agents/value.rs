@@ -696,13 +696,15 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::AdversaryBuild => Worth::now(row("adversary_build")),
         Op::Create { count, sites, .. } => Worth::now(row("create") * t.rate("countries") * (*count * *sites) as f64),
         Op::CreateSite { .. } => Worth::now(row("create_site") * t.rate("countries")),
-        // 151: a rally lands its count (an event's: the pool, about three a board) on each board.
-        Op::Rally { count, .. } => Worth::now(row("rally") * t.rate("countries") * if *count > 0 { *count } else { 3 } as f64),
-        // 151: an income rise, an ambassador a board a round (about two compute); 231: a compute point a country.
-        Op::IncreaseIncome { compute, ambassadors } => Worth::income(
-            row("increase_income") * t.rate("countries") * (*compute as f64 + 2.0 * *ambassadors as f64),
-        ),
-        Op::Corrupt { .. } => Worth::now(row("corrupt")),
+        // 275: an Infiltrate lands an agent on each named site of a country (its row: the sites a country, priced
+        // per line); a Surge its count on one site a country.
+        Op::Infiltrate { .. } => Worth::now(row("infiltrate") * t.rate("countries")),
+        Op::Surge { count, .. } => Worth::now(row("surge") * t.rate("countries") * *count as f64),
+        // 275: a Spill (from its level) and a Grow, a country each.
+        Op::Spill { .. } => Worth::now(row("spill") * t.rate("countries")),
+        Op::Grow { .. } => Worth::now(row("grow") * t.rate("countries")),
+        // 231: an income rise, a compute point a country a round.
+        Op::IncreaseIncome { compute } => Worth::income(row("increase_income") * t.rate("countries") * *compute as f64),
         Op::LoseNodeOr { resource, amount, count } => Worth::now(
             row("lose_node_or") * (r(*resource) * *amount as f64).min(t.rate("node") * *count as f64),
         ),
@@ -1208,7 +1210,7 @@ mod tests {
                 assert!(w1 != 0.0, "{id} {e:?}: priced 0");
                 let one_country = matches!(
                     e,
-                    Op::Corrupt { .. } | Op::Requisition { .. } | Op::LoseTokens { .. } | Op::LoseAmbassador | Op::AdversaryBuild
+                    Op::Requisition { .. } | Op::LoseTokens { .. } | Op::LoseAmbassador | Op::AdversaryBuild
                 );
                 let want = if reach == TeamReach::EachCountry && !one_country { 2.0 } else { 1.0 };
                 if ((w2 / w1) - want).abs() > 1e-9 {

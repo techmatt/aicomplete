@@ -276,12 +276,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "In the next adversary turn, no Rally lands on a site holding an Ambassador: its share stays in the supply.",
-    "effects": [{"op": "prohibit", "step": "rally", "where": "ambassador"}]},
-   {"text": "In the next adversary turn, no Rally lands on a site on or next to an Ambassador: its share stays in the supply.",
-    "effects": [{"op": "prohibit", "step": "rally", "where": "by_ambassador"}]},
-   {"text": "In the next adversary turn, no Rally lands on a site on or next to an Ambassador or a Node: its share stays in the supply.",
-    "effects": [{"op": "prohibit", "step": "rally", "where": "by_player"}]}
+   {"text": "In the next adversary turn, no Infiltrate lands on a site holding an Ambassador: its share stays in the supply.",
+    "effects": [{"op": "prohibit", "step": "infiltrate", "where": "ambassador"}]},
+   {"text": "In the next adversary turn, no Infiltrate lands on a site on or next to an Ambassador: its share stays in the supply.",
+    "effects": [{"op": "prohibit", "step": "infiltrate", "where": "by_ambassador"}]},
+   {"text": "In the next adversary turn, no Infiltrate lands on a site on or next to an Ambassador or a Node: its share stays in the supply.",
+    "effects": [{"op": "prohibit", "step": "infiltrate", "where": "by_player"}]}
   ]
  },
  {
@@ -290,11 +290,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "In the next adversary turn, nothing corrupts or flips a site on or next to an Ambassador, and no Agent moves onto it.",
+   {"text": "In the next adversary turn, nothing corrupts or flips a site on or next to an Ambassador.",
     "effects": [{"op": "prohibit", "step": "corrupt", "where": "by_ambassador"}]},
-   {"text": "In the next adversary turn, nothing corrupts or flips a site on or next to an Ambassador or a Node, and no Agent moves onto it.",
+   {"text": "In the next adversary turn, nothing corrupts or flips a site on or next to an Ambassador or a Node.",
     "effects": [{"op": "prohibit", "step": "corrupt", "where": "by_player"}]},
-   {"text": "In the next adversary turn, nothing corrupts or flips a site within 2 of an Ambassador or a Node, and no Agent moves onto it.",
+   {"text": "In the next adversary turn, nothing corrupts or flips a site within 2 of an Ambassador or a Node.",
     "effects": [{"op": "prohibit", "step": "corrupt", "where": "near_player"}]}
   ]
  },
@@ -332,10 +332,10 @@
   "tiers": [
    {"text": "Each country: create 1 Agent on the lowest-numbered city holding Agents, and a neutral factory opens on its lowest-numbered free industrial zone.",
     "effects": [{"op": "create", "count": 1, "at": "city", "if": "ambassadors"}, {"op": "create_site", "kind": "factory"}]},
-   {"text": "Each country: create 2 Agents on the lowest-numbered city holding Agents, and a neutral factory opens on its lowest-numbered free industrial zone; then Corrupt cities.",
-    "effects": [{"op": "create", "count": 2, "at": "city", "if": "ambassadors"}, {"op": "create_site", "kind": "factory"}, {"op": "corrupt", "site": "city"}]},
-   {"text": "Each country: create 3 Agents on the lowest-numbered city holding Agents, and a neutral factory opens on its lowest-numbered free industrial zone; then Corrupt cities.",
-    "effects": [{"op": "create", "count": 3, "at": "city", "if": "ambassadors"}, {"op": "create_site", "kind": "factory"}, {"op": "corrupt", "site": "city"}]}
+   {"text": "Each country: create 3 Agents on the lowest-numbered city holding Agents, and a neutral factory opens on its lowest-numbered free industrial zone.",
+    "effects": [{"op": "create", "count": 3, "at": "city", "if": "ambassadors"}, {"op": "create_site", "kind": "factory"}]},
+   {"text": "Each country: create 4 Agents on the lowest-numbered city holding Agents, and a neutral factory opens on its lowest-numbered free industrial zone.",
+    "effects": [{"op": "create", "count": 4, "at": "city", "if": "ambassadors"}, {"op": "create_site", "kind": "factory"}]}
   ]
  },
  {
@@ -369,12 +369,12 @@
   "name": "Offensive",
   "side": "discord",
   "tiers": [
-   {"text": "Corrupt cities, then deal a tier-2 threat with its token on the Node hex with the most Agents and Troops.",
-    "effects": [{"op": "corrupt", "site": "city"}, {"op": "threat_at_node", "tier": 2}]},
-   {"text": "Corrupt cities, then deal two tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
-    "effects": [{"op": "corrupt", "site": "city"}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]},
-   {"text": "Each country rallies its Agent income now, to this round's Rally; then Corrupt cities and deal two tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
-    "effects": [{"op": "adversary_build"}, {"op": "corrupt", "site": "city"}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]}
+   {"text": "Surge 2: each country, 2 Agents onto its city holding the most Agents; then deal a tier-2 threat with its token on the Node hex with the most Agents and Troops.",
+    "effects": [{"op": "surge", "site": "city", "count": 2}, {"op": "threat_at_node", "tier": 2}]},
+   {"text": "Surge 2: each country, 2 Agents onto its city holding the most Agents; then deal two tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
+    "effects": [{"op": "surge", "site": "city", "count": 2}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]},
+   {"text": "Each country: this round's Infiltrate lines land again; then Surge 2: each country, 2 Agents onto its city holding the most Agents; then deal two tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
+    "effects": [{"op": "adversary_build"}, {"op": "surge", "site": "city", "count": 2}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]}
   ]
  },
  {
@@ -397,10 +397,10 @@
   "tiers": [
    {"text": "Each country: create 2 Agents on the lowest-numbered city holding Agents.",
     "effects": [{"op": "create", "count": 2, "at": "city", "if": "ambassadors"}]},
-   {"text": "Each country: create 2 Agents on the lowest-numbered city holding Agents, then Corrupt cities.",
-    "effects": [{"op": "create", "count": 2, "at": "city", "if": "ambassadors"}, {"op": "corrupt", "site": "city"}]},
-   {"text": "Each country: create 3 Agents on the lowest-numbered city holding Agents, then Corrupt cities (1 fewer).",
-    "effects": [{"op": "create", "count": 3, "at": "city", "if": "ambassadors"}, {"op": "corrupt", "site": "city", "cut": 1}]}
+   {"text": "Each country: create 3 Agents on the lowest-numbered city holding Agents.",
+    "effects": [{"op": "create", "count": 3, "at": "city", "if": "ambassadors"}]},
+   {"text": "Each country: create 4 Agents on the lowest-numbered city holding Agents.",
+    "effects": [{"op": "create", "count": 4, "at": "city", "if": "ambassadors"}]}
   ]
  }
 ]

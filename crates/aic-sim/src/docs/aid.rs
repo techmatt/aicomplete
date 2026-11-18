@@ -13,11 +13,11 @@ const ROUND: &str = "\
 |---|---|---|
 | | Round start | Set your insight. Clear your used markers (below). |
 | A | Sway | Each Fallout: 1 Discord. |
-| B | Adversary | **Card** (threats, Rally, Muster, other lines), **Corrupt** (its lines, then natural corruption, then 2 agents on a node), **March** (each stack 1 step), **Income** (next card up; pools; compute onto the leftmost project; research track; firewalls, cordons and no-X tokens off). |
+| B | Adversary | **Card** (threats, Infiltrate, Muster, other lines, Spill, Grow; each arrival checks only its own hex), **March** (each stack 1 step), **Income** (next card up; each botnet seeds an agent; compute onto the leftmost project; research track; firewalls, cordons and no-X tokens off). |
 | C | Cards | Build a hand of 4, draft, keep (1 insight a tier-1, 3 a tier-2, 2 with the keep upgrade). |
 | D | Actions | All at once, until everyone passes. |
-| E | Production | Factories, cities, stations, megaprojects, income; then extra drones, cities grow, cities build. |
-| F | Threats | Each threat not paid off takes effect, one that waited from last round included. |
+| E | Production | Factories, cities, stations, megaprojects, income; then extra drones. |
+| F | Threats | Each threat not paid off takes effect (and lands 1 agent on its first token), one that waited from last round included. |
 | G | War | Each front fights. |
 | H | Cleanup | This round's effects end (Shelter, round flags). |
 
@@ -47,7 +47,7 @@ fn once_a_round(r: &Rules) -> String {
          - **Vigil** (Protector): only the first {} troops a round pay.\n\
          - **Aegis Doctrine** (Protector capstone): the first save a round.\n\
          - **The adversary's research rule** fires at most once a round.\n\n\
-         **Lasting effects, with their token:** a firewall, a cordon and a no-Rally, no-Muster or no-Corrupt token \
+         **Lasting effects, with their token:** a firewall, a cordon and a no-Infiltrate, no-Muster or no-Corrupt token \
          come off in the next adversary turn's Income beat; Shelter ends at cleanup; a round-flag marker runs through \
          the next round. Insight resets at \
          round start (Patience keeps it); Dispatches refresh.\n",
@@ -120,7 +120,6 @@ fn corrupt_numbers(r: &Rules) -> String {
         int(r, "adversary.corrupt_at"),
         int(r, "adversary.corrupt_station_at"),
         int(r, "adversary.corrupt_factory_at"),
-        int(r, "adversary.corrupt_land_at"),
     ];
     let (cut, cut_at, city_at) =
         (list(r, "adversary.corrupt_cut"), int(r, "adversary.corrupt_cut_at"), int(r, "adversary.city_cut_at"));
@@ -145,19 +144,13 @@ fn corrupt_numbers(r: &Rules) -> String {
             _ => rows.push((level, level, v)),
         }
     }
-    // Natural corruption and the node check read cities, stations, factories and nodes (never land) at their numbers.
-    let fewest = rows.iter().flat_map(|(_, _, v)| [v[0], v[1], v[2], v[4]]).min().unwrap_or(1);
-    let mut out = "| Level | City | Station | Factory | Open land | Your node |\n|---|---|---|---|---|---|\n".to_string();
+    let mut out = "| Level | City | Station | Factory | Your node |\n|---|---|---|---|---|\n".to_string();
     for (lo, hi, v) in rows {
         let name = if lo == hi { lo.to_string() } else { format!("{lo}-{hi}") };
         out += &format!("| {name} | {} |\n", v.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(" | "));
     }
-    out + &format!(
-        "\nA site with a Liberated marker takes {} more (a node never does); a Corrupt line printing \"(1 fewer)\" \
-         takes 1 fewer for that line. Natural corruption and the node check: only hexes holding {fewest} or more \
-         agents.\n",
-        int(r, "adversary.retake_agents")
-    )
+    out + "\nChecked only when the adversary puts agents on a hex (an arrival), and only that hex: a site holding its \
+           number corrupts; else a hex with your node and that many loses the node. A Push or Gather is no arrival.\n"
 }
 
 const MARCH: &str = "\
@@ -179,7 +172,7 @@ raises an income; in production, collect what the markers show.
 - **Your tag dials** (your board): one a tag. Turn it when a card with that tag comes into play or is sacrificed.
 - **Used markers:** on each power, building slot and converter's used space; a bought chip on a city (above).
 - **Unity and Discord tip tracks:** one space a tip; each space prints its card strength, and Unity's the purge's.
-- **The adversary board:** compute and agent income tracks, the research track, and a compute track beside each \
+- **The adversary board:** the compute income track, the research track, and a compute track beside each \
 project slot (a marker, not cubes).
 - **Waits token:** on a threat dealt after the counter phase or delayed; it takes effect next round.
 ";
@@ -205,19 +198,18 @@ fn ambassadors(r: &Rules) -> String {
     )
 }
 
+/// 275: the event card's Grow line (it replaced city growth and its chips).
 fn growth(r: &Rules) -> String {
+    let cap = int(r, "adversary.grow_cap");
+    let infest = int(r, "adversary.grow_infest_at").max(1);
     format!(
-        "After the income step, each step for every city (neutral or corrupted) before the next:\n\n\
-         1. **Grow:** each city puts 1 chip on itself for each unclaimed neutral factory next to it (most {cap}).\n\
-         2. **Build:** then, country by country in hex order, each city holding {build} chips spends them and builds \
-         a neutral facility: the kind it has **fewer of next to it** (tie: a factory).\n\
-         3. **Where:** a free hex (no factory, station or Fallout) next to it of the right land (a factory on an \
-         industrial zone, a station on other open land, not a base); else within 2 in its country; else nothing, and \
-         its chips wait. Among several: one on or next to an agent first, then the lowest number.\n\
-         4. **Waiting chips:** turn them over. Skip that city's build until a facility next to it is built or \
-         destroyed, or a hex within 2 of it frees (a facility destroyed, Fallout lifted).\n",
-        cap = int(r, "board.city_chip_cap"),
-        build = int(r, "board.city_build_chips"),
+        "**Grow: X** (the event card's last line), in each country:\n\n\
+         1. **Which:** the X holding the most agents (tie: the lowest number) with a free hex next to it{}.\n\
+         2. **What:** a neutral facility of the kind it has **fewer of next to it** (tie: a factory), else the other \
+         kind: a factory on a free industrial zone, a station on other open land (no facility, Fallout or base).\n\
+         3. **Agent:** if that X holds {} or is the adversary's, put 1 agent on the new facility (an arrival).\n",
+        if cap > 0 { format!(" and fewer than {cap} facilities next to it") } else { String::new() },
+        if infest == 1 { "an agent".to_string() } else { format!("{infest} agents") },
     )
 }
 
@@ -229,7 +221,7 @@ pub(super) fn player_aid_md(r: &Rules) -> String {
          ## The round (rulebook §4)\n\n{ROUND}\n## Once a round (§5, §8, §20)\n\n{}\n\
          ## Tip strips (§12, §14)\n\n{}\n## Corrupt numbers (§6, §21)\n\n{}\n## The march (§6)\n\n{MARCH}\n\
          ## Tracks and markers (§2)\n\n{TRACKS}\n## What spends an ambassador (§8)\n\n{}\n\
-         ## City growth (§9, steps 7-8)\n\n{}\n## Words on cards\n\n{}",
+         ## Grow (§6)\n\n{}\n## Words on cards\n\n{}",
         once_a_round(r),
         tip_strips(r),
         corrupt_numbers(r),

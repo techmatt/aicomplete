@@ -162,8 +162,7 @@ pub enum RoundFlag {
     Sabotage,
     /// Sites in the country can't be claimed (027).
     Embargo,
-    /// No Rally or creation line places agents in the country until the end of the next adversary turn (068, 178);
-    /// troops still land.
+    /// 275: no Infiltrate, Surge, Spill, Grow, botnet seed, threat anchor or creation line acts there until the end of the next adversary turn (068, 178); troops still land.
     Cordon,
 }
 
@@ -239,15 +238,13 @@ impl RallyAt {
     }
 }
 
-/// 138: what a Corrupt X line corrupts.
+/// 138: what corrupts (275: on arrival; open land no longer does).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum CorruptSite {
     City,
     Station,
     Factory,
-    /// Open land: an empty land hex (no piece, not ocean): it takes the Fallout token.
-    Land,
     /// 175: a coastal city (a city's corrupt number).
     CoastalCity,
     /// 175: a hex with a player's node: it loses the node (protections apply).
@@ -255,13 +252,12 @@ pub enum CorruptSite {
 }
 
 impl CorruptSite {
-    /// In `corrupt_cut`'s order (city, station, factory, land); the two after it read no cut of their own
+    /// In `corrupt_cut`'s order (city, station, factory); the two after it read no cut of their own
     /// (a coastal city takes a city's).
-    pub const ALL: [CorruptSite; 6] = [
+    pub const ALL: [CorruptSite; 5] = [
         CorruptSite::City,
         CorruptSite::Station,
         CorruptSite::Factory,
-        CorruptSite::Land,
         CorruptSite::CoastalCity,
         CorruptSite::Node,
     ];
@@ -270,7 +266,6 @@ impl CorruptSite {
             CorruptSite::City => "city",
             CorruptSite::Station => "station",
             CorruptSite::Factory => "factory",
-            CorruptSite::Land => "land",
             CorruptSite::CoastalCity => "coastal_city",
             CorruptSite::Node => "node",
         }
@@ -281,7 +276,6 @@ impl CorruptSite {
             CorruptSite::City => "cities",
             CorruptSite::Station => "research stations",
             CorruptSite::Factory => "factories",
-            CorruptSite::Land => "open land",
             CorruptSite::CoastalCity => "coastal cities",
             CorruptSite::Node => "nodes",
         }
@@ -529,17 +523,18 @@ impl Where {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Step {
-    Rally,
+    /// 275: was Rally.
+    Infiltrate,
     /// The adversary's troop line (178, Matt's ruling #17: was Deploy, the node power's word too).
     Muster,
     Corrupt,
 }
 
 impl Step {
-    pub const ALL: [Step; 3] = [Step::Rally, Step::Muster, Step::Corrupt];
+    pub const ALL: [Step; 3] = [Step::Infiltrate, Step::Muster, Step::Corrupt];
     pub fn name(self) -> &'static str {
         match self {
-            Step::Rally => "rally",
+            Step::Infiltrate => "infiltrate",
             Step::Muster => "muster",
             Step::Corrupt => "corrupt",
         }
@@ -887,9 +882,8 @@ pub enum Op {
     /// 234: on every hex in your reach, your nodes and the facilities there can't be destroyed this round (238: the
     /// reach when a piece is struck). 247 (241's pick): the country form, printed on no card, is gone.
     Shelter,
-    /// In one country, no Rally or creation line places agents until the end of the next adversary turn (118; 068:
-    /// a Security card does an ambassador's job); its agent pool waits for the next Rally (178, Matt's ruling #30);
-    /// troops still land. 234: after a card's target, the target's country.
+    /// In one country, until the end of the next adversary turn, 275: no Infiltrate, Surge, Spill, Grow, botnet seed, threat anchor or creation line acts there (118; 068:
+    /// a Security card does an ambassador's job); troops still land. 234: after a card's target, the target's country.
     Cordon,
     /// Play a building from your hand paying no credits; its other costs and
     /// its requirements stand (068: the Builder's expensive power).
@@ -998,7 +992,7 @@ pub enum Op {
         pieces: Vec<Piece>,
     },
     /// 158: a firewall token on one hex in your reach: no agent
-    /// arrives there (Rally, Corrupt pulls, threat and Discord placements)
+    /// arrives there (275: Infiltrate, Surge, Spill, Grow's agent, a botnet's seed, threat and Discord placements)
     /// until it comes off at the end of the next adversary turn.
     Firewall,
     /// 158: "with `count` `tag` tags on your cards, also" `then`: resolved when
@@ -1350,30 +1344,38 @@ pub enum Op {
     CreateSite {
         kind: Facility,
     },
-    /// 175, Corrupt X: in each country in scope, every agent next to a `site` (one not yet the adversary's)
-    /// moves onto it (players choose if it is next to several); then every such site holding its corrupt
-    /// number (`adversary.corrupt_*`, less `cut`) corrupts and its agents go to the supply.
-    Corrupt {
-        site: CorruptSite,
-        #[serde(default, skip_serializing_if = "is_zero")]
-        cut: i64,
-    },
-    /// 151, Rally X: each country's agent pool lands on the `site` sites, whoever owns it (175: no tiers), r80
-    /// dealt one at a time in hex order, skipping a firewalled or no-Rally site (none left: back to the
-    /// supply). `count`: that many a country instead of the pool (a project's rally). A cordoned country's
-    /// pool waits for its next Rally (178).
-    Rally {
+    /// 275, Infiltrate X (it replaced Rally and the agent pools): `adversary.infiltrate_agents` agents (1; 2 from
+    /// its level) on each `site` in every country in scope that is not yet the adversary's, whoever owns it, in
+    /// hex order. A firewalled or no-Infiltrate site's agents stay in the supply; a cordoned country takes none.
+    /// Each arrival is checked where it lands (arrival corruption, [`crate::modules::adversary::arrive_check`]).
+    Infiltrate {
         site: RallyAt,
-        #[serde(default, skip_serializing_if = "is_zero")]
+    },
+    /// 275, Surge N: X (a project's or Discord card's line): in each country in scope, `count` agents onto the
+    /// `site` not yet the adversary's holding the most agents (ties: the lowest-numbered).
+    Surge {
+        site: RallyAt,
         count: i64,
     },
-    /// 151: the adversary's income rises for the rest of the game: `compute` more a round, `ambassadors` more
-    /// a country a round (into each country's pool).
+    /// 275, Spill: X into Y (event cards, from `adversary.spill_at`): in each country, every `site` not yet the
+    /// adversary's holding 2 or more agents moves 1 onto the `to` next to it holding the most agents (ties: the
+    /// lowest-numbered; none: it stays). The move is an arrival: a player ambassador cancels it, and the site is
+    /// checked.
+    Spill {
+        site: RallyAt,
+        to: RallyAt,
+    },
+    /// 275, Grow: X (the adversary's growth; it replaced city growth and its chips): in each country, the `site`
+    /// holding the most agents (ties: the lowest-numbered) with a free hex next to it builds a neutral facility
+    /// there, the type it has fewer of next to it; a site holding agents, or the adversary's, builds it with 1
+    /// agent on it.
+    Grow {
+        site: RallyAt,
+    },
+    /// 151: the adversary's compute income rises for the rest of the game: `compute` more a round (a country).
     IncreaseIncome {
         #[serde(default, skip_serializing_if = "is_zero")]
         compute: i64,
-        #[serde(default, skip_serializing_if = "is_zero")]
-        ambassadors: i64,
     },
     /// 259 (Matt: every adversary gets a research rule): `amount` cubes onto the adversary's research track; a
     /// project's (`each_country`) puts `amount` a country. The track fires the board's research rule in the compute
@@ -1425,8 +1427,8 @@ pub enum Op {
     },
     /// 231 (Night Raid): in each country, 1 agent from the supply onto each of `count` different hexes holding a
     /// player's node: those holding the most agents first (ties: the lowest-numbered). An arrival is a landing (a
-    /// firewall skips its hex; it cancels a player ambassador there); the agents destroy a node only by the Corrupt
-    /// beat's 2-agent rule, so the players get their action phase to answer.
+    /// firewall skips its hex; it cancels a player ambassador there). 275: the arrival checks its hex, so a node hex
+    /// already holding 1 agent loses its node at once (2 agents on a node).
     AgentsOnNodes {
         count: i64,
     },
@@ -1481,8 +1483,8 @@ pub enum Op {
         where_: Where,
     },
     /// 167, a prohibition (158's firewall generalized): in the next adversary turn, `step` doesn't act on a
-    /// hex where `where` holds when the step runs. A blocked Rally share or Muster troop stays in the supply;
-    /// a blocked site doesn't corrupt (Corrupt lines and natural corruption), no agent moves onto it.
+    /// hex where `where` holds when the step runs. A blocked Infiltrate agent or Muster troop stays in the supply;
+    /// 275: under a Corrupt prohibition a site doesn't corrupt or flip on an arrival (a Spill still moves onto it).
     Prohibit {
         step: Step,
         #[serde(rename = "where")]
@@ -1720,8 +1722,10 @@ impl Op {
             | Op::Pushback { .. }
             | Op::DealThreats { .. }
             | Op::Create { .. }
-            | Op::Corrupt { .. }
-            | Op::Rally { .. }
+            | Op::Spill { .. }
+            | Op::Grow { .. }
+            | Op::Infiltrate { .. }
+            | Op::Surge { .. }
             | Op::IncreaseIncome { .. }
             | Op::AdversaryResearch { .. }
             | Op::RemoveBotnets { .. }
@@ -1898,8 +1902,10 @@ impl Op {
             | Op::DealThreats { .. }
             | Op::Create { .. }
             | Op::CreateSite { .. }
-            | Op::Corrupt { .. }
-            | Op::Rally { .. }
+            | Op::Spill { .. }
+            | Op::Grow { .. }
+            | Op::Infiltrate { .. }
+            | Op::Surge { .. }
             | Op::IncreaseIncome { .. }
             | Op::AdversaryResearch { .. }
             | Op::RemoveBotnets { .. }
@@ -1980,7 +1986,8 @@ impl Op {
                     Once
                 }
             }
-            Op::Rally { .. }
+            Op::Infiltrate { .. }
+            | Op::Surge { .. }
             | Op::IncreaseIncome { .. }
             | Op::AdversaryCubes { .. }
             | Op::SpreadBotnets { .. }
@@ -1993,7 +2000,8 @@ impl Op {
             | Op::Fallout { .. }
             | Op::AdversaryFactory { .. }
             | Op::FactoryTroops { .. }
-            | Op::Corrupt { .. }
+            | Op::Spill { .. }
+            | Op::Grow { .. }
             | Op::AdversaryBuild
             | Op::Requisition { .. }
             | Op::LoseTokens { .. }
@@ -2053,7 +2061,8 @@ impl Op {
             | Op::Prohibit { .. }
             | Op::StandingTroopsBonus { .. }
             | Op::ThreatCompute { .. }
-            | Op::Rally { .. }
+            | Op::Infiltrate { .. }
+            | Op::Surge { .. }
             | Op::IncreaseIncome { .. } => &[Team],
             Op::AdversaryCubes { .. } | Op::BotnetCubes { .. } => &[Threat, Team],
             // 259: an uncountered threat's, an event's or a project's research line.
@@ -2072,7 +2081,8 @@ impl Op {
             | Op::Clock { .. } => &[Team],
             Op::ComputeEvery { .. } => &[Threat, Team],
             Op::Create { .. } => &[Threat, Team],
-            Op::Corrupt { .. } => &[Threat, Team, Twist],
+            // 275: an event card's last lines (with its other twists), a project's or Discord card's.
+            Op::Spill { .. } | Op::Grow { .. } => &[Team, Twist],
             Op::CreateSite { .. } => &[Player, Threat, Team],
             Op::Income { .. }
             | Op::IncomePerTag { .. }

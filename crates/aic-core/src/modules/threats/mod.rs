@@ -437,6 +437,14 @@ impl Module for Threats {
             // 146: which threat, so a read can see each harm type land.
             cx.tally(g, &format!("threats.uncountered.id.{}", d.id), 1);
             effects::run(g, cx, &d.effects, &mut ctx)?;
+            // 275: an uncountered threat also lands `threat_agents` agents on its anchor (its first location token),
+            // an arrival like any other (checked there); a cordoned country takes none.
+            let n = w.int("adversary.threat_agents");
+            let cordoned = board::flagged(g, crate::content::RoundFlag::Cordon, scope);
+            if let (Some(&h), true, false, false) = (near::tokens(g, &t).first(), n > 0, g.is_over(), cordoned) {
+                adversary::place(g, cx, h, n)?;
+                cx.tally(g, "adversary.threat_anchor", n);
+            }
             // 146: the adversary board's printed compute per uncountered threat (its
             // difficulty line's from `board_difficulty_at`).
             let k = adversary::threat_compute(&w);

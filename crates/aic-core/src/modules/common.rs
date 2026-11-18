@@ -16,8 +16,6 @@ pub use crate::vocab::{Resource, ThreatSource};
 
 pub const FACTORY: &str = "factory";
 pub const STATION: &str = "station";
-/// 190: a chip waiting on a city, gathered from the unclaimed neutral factories next to it until the city builds.
-pub const CITY_CHIP: &str = "city_chip";
 /// The adversary's owner cube (on a city, research station or factory): corrupted.
 pub const ADV_CUBE: &str = "cube:adversary";
 pub const ADV_AMBASSADOR: &str = "ambassador:adversary";
@@ -36,26 +34,11 @@ pub const FALLOUT: &str = "fallout";
 /// A firewall (158): no agent arrives on its hex; it comes off at
 /// the end of the next adversary turn.
 pub const FIREWALL: &str = "firewall";
-/// 253: a Liberated marker on a neutral site a player liberated (252's free then claim); off when it is claimed
-/// or retaken. With `adversary.retake_agents` above 0 the adversary needs that many agents more to corrupt it.
-pub const LIBERATED: &str = "liberated";
-
-/// 253: the agents beyond its corrupt number the adversary needs to retake site `h` (its Liberated marker), as a
-/// `site` of a corruption: a city, research station or factory only (a node or open land on that hex takes none).
-pub fn retake_extra(w: &World, g: &GameState, h: usize, site: crate::op::CorruptSite) -> i64 {
-    use crate::op::CorruptSite::{City, CoastalCity, Factory, Station};
-    if g.tokens(h, LIBERATED) > 0 && matches!(site, City | CoastalCity | Station | Factory) {
-        w.int("adversary.retake_agents")
-    } else {
-        0
-    }
-}
-
 /// r80 (ruling #53): a prohibition's token, one per step, on each hex its condition held on when the card
 /// resolved; it lasts like a firewall (off at the end of the next adversary turn).
 pub fn prohibit_token(step: crate::op::Step) -> &'static str {
     match step {
-        crate::op::Step::Rally => "no_rally",
+        crate::op::Step::Infiltrate => "no_infiltrate",
         crate::op::Step::Muster => "no_muster",
         crate::op::Step::Corrupt => "no_corrupt",
     }
