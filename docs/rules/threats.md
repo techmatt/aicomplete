@@ -24,7 +24,9 @@ types** (city, coastal city, research station, factory, military base).
 **Dealing: the event card's pulls.** The adversary's event card ([adversary.md](adversary.md)) prints its pulls on
 its top line ("each country: a Security 2 threat", "Security 1 or Cyber 1", "any tier-2 threat"). **The ladder:**
 stage I pulls one tier-1 threat a country, stage II one tier-2 (or a tier 1 and a tier 2: Supply Lines), stage III
-two tier-2s (`check.py` refuses another shape). In `threats.deal`, for each pull and each country in order, **the draw rule**: turn up the top card of
+two tier-2s (`check.py` refuses another shape). In `threats.deal`, for each pull and each country in order (274: a country with no site not the adversary's of any
+type the tier's deck prints is skipped, no card turned: `threats.skipped_no_place`; a military base is never the
+adversary's, so with 2-4 countries no country is ever skipped), **the draw rule**: turn up the top card of
 that tier's deck; it stays if it carries a listed tag (Universal fits any; "any" takes every card) and the country has
 a site of one of its location types not the adversary's (*Location tokens*); otherwise it goes to that tier's discard and the next is turned up. An empty deck
 reshuffles its discard; **if a reshuffled deck has no card that fits, take the next card anyway** (counted as
@@ -69,7 +71,9 @@ it, their last too (175).
   nodes near a token; no menu prints one.)
 
 A player's card that jams or counters a threat reaches only threats they are near (a typed one, threats carrying its
-tag or Universal); a jam takes its amount off every resource item of every option. A Unity reward reaches any threat.
+tag or Universal); a jam takes its amount off every resource item of every option (floor 0). 274's jam floor
+(`adversary.jam_floor` 1: a jam never takes an item below 1, so never counters alone) is off: on the 12 jam cards'
+give / get it left Force Protection Order under break-even (a hard-cut candidate, with Matt). A Unity reward reaches any threat.
 **Standing counters:** a tier-2 capstone with an automatic counter takes its amount off each threat of its type on
 the table, wherever it is and whenever it was dealt (148: no longer only those its holder is near); one it pays in
 full is countered at once (118). A threat costs what it prints at every level (267: the ladder adds no

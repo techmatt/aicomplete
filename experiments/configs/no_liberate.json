@@ -87,6 +87,7 @@
           100
         ],
         "counter_credit_pct": 100,
+        "jam_floor": 0,
         "stage1_removed": 2,
         "stage2_added": 1,
         "stage3_added": 1,

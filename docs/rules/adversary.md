@@ -92,8 +92,8 @@ third from `THIRD_EFFECT_COST`, 18). The deck never reshuffles in a d3 game.
   (uncountered threats, cards, Cintamani), which **waits beside the projects** (public: the warning).
 - **Spending:** each point onto the **leftmost** project (`compute_every` on every one first); one holding its cost
   **resolves** at once. With no project left, compute is lost.
-- **Targets are read off the board as it resolves**, in each country: "the X with the most agents on or next to
-  it", "the hex holding the most player ambassadors", "its lowest-numbered botnet"; ties: the lowest-numbered. "Turns
+- **Targets are read off the board as it resolves**, in each country: "the X with the most agents on its hex"
+  (the hex only, as Night Raid), "the hex holding the most player ambassadors", "its lowest-numbered botnet"; ties: the lowest-numbered. "Turns
   neutral": the owner's cube comes off. **Factory troops**: an adversary factory's own output ([war.md](war.md)).
   **The clock**: the top event card is discarded.
 - **Counterplay:** an ambassador on a source; Cyber's hacks; Audit, off a project.

@@ -46,6 +46,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("blight_discord", 0, 5, "Discord each Fallout token sways each round"),
     ParamSpec::list("counter_pct", 50, 300, "every resource counter item of a tier 1, 2 threat costs this percent of its printed amount (rounded up)"),
     ParamSpec::int("counter_credit_pct", 50, 300, "every credits counter item costs this percent of its amount after counter_pct (rounded up; 100 = unchanged)"),
+    ParamSpec::int("jam_floor", 0, 1, "274: 1, a jam never takes a threat's resource item below 1 (a jam alone never counters); 0, below to 0"),
     ParamSpec::int("stage1_removed", 0, 3, "difficulty stage_swap_at+: stage-I cards removed"),
     ParamSpec::int("stage3_added", 0, 3, "difficulty stage_swap_at+: stage-III cards added (the cap holds, its end gets harder)"),
     ParamSpec::int("stage2_added", 0, 3, "267: difficulty stage_swap_at+: stage-II cards added back (tier-2 threats sooner, built into the stack)"),

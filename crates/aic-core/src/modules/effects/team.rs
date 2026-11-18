@@ -176,16 +176,13 @@ fn by_number(w: &World, c: usize) -> Vec<usize> {
     hexes
 }
 
-/// 195: agents on hex `h` and the hexes next to it (a project's "most agents on or next to it").
-fn agents_around(w: &World, g: &GameState, h: usize) -> i64 {
-    within(w, h, 1).into_iter().map(|x| g.tokens(x, ADV_AMBASSADOR)).sum()
-}
-
-/// 195: the hex of `hexes` with the most agents on or next to it; ties: the first (lowest-numbered, as
-/// [`by_number`] orders them).
-fn most_agents_around(w: &World, g: &GameState, hexes: &[usize]) -> Option<usize> {
-    let best = hexes.iter().map(|&h| agents_around(w, g, h)).max()?;
-    hexes.iter().copied().find(|&h| agents_around(w, g, h) == best)
+/// 195: the hex of `hexes` with the most agents; ties: the first (lowest-numbered, as [`by_number`] orders them).
+/// 274 (table time): a project counts the hex only, as Night Raid does (it counted the hex and the six around it:
+/// seven reads a candidate). `adversary.project_hexes_read` counts the candidates read.
+fn most_agents_on(g: &mut GameState, cx: &mut Cx, hexes: &[usize]) -> Option<usize> {
+    cx.tally(g, "adversary.project_hexes_read", hexes.len() as i64);
+    let best = hexes.iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).max()?;
+    hexes.iter().copied().find(|&h| g.tokens(h, ADV_AMBASSADOR) == best)
 }
 
 /// 195 (`BotnetTroops`): in each country, up to `count` botnets, lowest-numbered first, become `troops` troops each.
@@ -244,7 +241,7 @@ pub(super) fn spread_botnets(g: &mut GameState, cx: &mut Cx, count: i64) {
     }
 }
 
-/// 195 (`TakeSite`): in each country, the neutral `site` with the most agents on or next to it corrupts; with none
+/// 195 (`TakeSite`): in each country, the neutral `site` with the most agents on its hex (274) corrupts; with none
 /// neutral, the player-owned one picked the same way turns neutral. A guarded site (firewall, no-Corrupt token) is skipped,
 /// and a guarded neutral one still counts as neutral (D88).
 pub(super) fn take_site(g: &mut GameState, cx: &mut Cx, site: Facility) -> Res {
@@ -258,7 +255,7 @@ pub(super) fn take_site(g: &mut GameState, cx: &mut Cx, site: Facility) -> Res {
         let any_neutral = hexes.iter().any(|&h| cube_owner(g, h).is_none());
         let open: Vec<usize> = hexes.into_iter().filter(|h| !guarded.contains(h)).collect();
         let neutral: Vec<usize> = open.iter().copied().filter(|&h| cube_owner(g, h).is_none()).collect();
-        if let Some(h) = most_agents_around(&w, g, &neutral) {
+        if let Some(h) = most_agents_on(g, cx, &neutral) {
             adversary::corrupt_hex(g, cx, h, if site == Facility::Station { CorruptSite::Station } else { CorruptSite::Factory })?;
             cx.tally(g, "adversary.sites_taken", 1);
             cx.note(Some(h), || format!("The neutral {} at {} goes to the adversary", piece_name(kind), hex_name(&w, h)));
@@ -269,7 +266,7 @@ pub(super) fn take_site(g: &mut GameState, cx: &mut Cx, site: Facility) -> Res {
             continue;
         }
         let owned: Vec<usize> = open.into_iter().filter(|&h| cube_owner(g, h).is_some()).collect();
-        if let Some(h) = most_agents_around(&w, g, &owned) {
+        if let Some(h) = most_agents_on(g, cx, &owned) {
             if let Some(s) = cube_owner(g, h) {
                 cx.add_tokens(g, h, cube(s), -1);
             }
@@ -387,7 +384,7 @@ pub(super) fn strip_cubes(g: &mut GameState, cx: &mut Cx, count: i64) {
     }
 }
 
-/// 195 (`StripHarden`): in each country, the hardened facility with the most agents on or next to it loses its
+/// 195 (`StripHarden`): in each country, the hardened facility with the most agents on its hex (274) loses its
 /// hardening tokens.
 pub(super) fn strip_harden(g: &mut GameState, cx: &mut Cx) {
     let w = cx.world;
@@ -395,7 +392,7 @@ pub(super) fn strip_harden(g: &mut GameState, cx: &mut Cx) {
         // A facility's hardening: a Science card's node shield on a hex with no facility is no target (195 review).
         let hexes: Vec<usize> =
             by_number(&w, c).into_iter().filter(|&h| g.tokens(h, HARDEN) > 0 && board::hardenable(g, h)).collect();
-        if let Some(h) = most_agents_around(&w, g, &hexes) {
+        if let Some(h) = most_agents_on(g, cx, &hexes) {
             let n = g.tokens(h, HARDEN);
             cx.add_tokens(g, h, HARDEN, -n);
             cx.tally(g, "adversary.hardening_stripped", n);

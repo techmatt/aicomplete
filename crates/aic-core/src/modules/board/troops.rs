@@ -88,12 +88,11 @@ pub fn war_steps(w: &World, g: &GameState) -> Vec<i64> {
     (0..w.map.fronts.len()).map(|i| 1 + (g.var(&extra_war_key(i)) == g.round as i64) as i64).collect()
 }
 
-/// The adversary phase's march (019): every adversary troop, one at a time
-/// (in hex-number order, fixed when the march starts), takes `troop_steps`
-/// steps. A step destroys a target on or next to its hex (players choose)
-/// or, with none there, moves one hex toward the nearest target (players
-/// choose among equally good steps; with no target on the board it stays).
-/// A troop that strikes is used up (`troop_spent`).
+/// The adversary phase's march (019): every adversary troop takes `troop_steps` steps; 274: the troops on one hex
+/// march as one stack, stack by stack in hex-number order (fixed when the march starts). A stack's step: while a
+/// target is on or next to its hex, one troop destroys one (players choose); the rest move together one hex toward
+/// the nearest target (players choose among equally good steps, once for the stack; with no target on the board
+/// they stay). A troop that strikes is used up (`troop_spent`).
 /// 135: standing troops never march (they count as marched), and a Forced
 /// March twist adds its steps to every troop's.
 pub(super) fn march(g: &mut GameState, cx: &mut Cx) -> Res {
@@ -136,59 +135,101 @@ fn march_troops(g: &mut GameState, cx: &mut Cx, troops: Vec<usize>, steps: i64, 
     // 238 (D94): a seat with no node left loses at the step's end, so the march stops there: no troop moves
     // nor questions after the last node falls.
     let lost = |g: &GameState| w.hot(Hot::NodeLoss) > 0 && adversary::loss(g).is_some();
+    // 274 (table time): the troops that start the march on one hex march as one stack, one step choice for the
+    // stack. Each step, every troop of the stack with a target on or next to it strikes, one target each (a strike
+    // stays one troop's); the rest step together. Troops already on a hex the stack enters march later on their own.
+    // A stack is (hex, troops, steps left, Wall-stop counted); one that splits (a striker that survives,
+    // `troop_spent` 0) queues its parts.
+    let mut stacks: Vec<(usize, i64)> = Vec::new();
     for from in troops {
+        match stacks.last_mut() {
+            Some((h, n)) if *h == from => *n += 1,
+            _ => stacks.push((from, 1)),
+        }
+    }
+    let mut queue: std::collections::VecDeque<(usize, i64, i64, bool)> = std::collections::VecDeque::new();
+    for (from, n) in stacks {
         if lost(g) {
             cx.tally(g, "board.march_cut_by_loss", 1);
             return Ok(());
         }
-        if g.tokens(from, TROOP) - marched[from] <= 0 {
+        let n = n.min(g.tokens(from, TROOP) - marched[from]);
+        if n <= 0 {
             continue;
         }
-        let mut at = from;
-        let mut alive = true;
-        let mut stopped = false;
-        for _ in 0..steps {
-            if lost(g) {
-                cx.tally(g, "board.march_cut_by_loss", 1);
-                return Ok(());
-            }
-            // 075: the measure's: a facility a Wall kept this troop off. 099:
-            // once a troop a march, not every step it spends beside the Wall.
-            if !stopped && next_to(&w, at, |x| walled(&w, g, x) && under_wall(g, x)) {
-                stopped = true;
-                cx.tally(g, "board.wall_strikes", 1);
-            }
-            // r83 (Matt, 2026-11-11, #44): troops ignore ambassadors: a march neither stops for nor removes one
-            // (175's removal is gone). Troops hit facilities; agents meet ambassadors. An owner's ambassador still
-            // guards a facility from the strike (`destroy_piece`'s protections).
-            if has_troop_target(&w, g, at) {
-                cx.tally(g, "board.troop_steps", 1);
-                if !strike_from(g, cx, at)? {
+        marched[from] += n; // held while the stack walks, so nothing marches it twice; released below
+        cx.tally(g, "board.stacks_marched", 1);
+        queue.push_back((from, n, steps, false));
+        let mut ended: Vec<usize> = Vec::new();
+        while let Some((mut at, mut size, mut left, mut stopped)) = queue.pop_front() {
+            marched[at] -= size;
+            while left > 0 && size > 0 {
+                left -= 1;
+                if lost(g) {
+                    cx.tally(g, "board.march_cut_by_loss", 1);
+                    return Ok(());
+                }
+                // 075: the measure's: a facility a Wall kept this troop off. 099:
+                // once a troop a march, not every step it spends beside the Wall.
+                if !stopped && next_to(&w, at, |x| walled(&w, g, x) && under_wall(g, x)) {
+                    stopped = true;
+                    cx.tally(g, "board.wall_strikes", size);
+                }
+                // r83 (Matt, 2026-11-11, #44): troops ignore ambassadors: a march neither stops for nor removes one
+                // (175's removal is gone). Troops hit facilities; agents meet ambassadors. An owner's ambassador
+                // still guards a facility from the strike (`destroy_piece`'s protections).
+                let mut stay = 0;
+                while size > 0 && has_troop_target(&w, g, at) {
+                    // 238 (D94): a strike that took a seat's last node ends the march before the next troop asks.
+                    if lost(g) {
+                        cx.tally(g, "board.march_cut_by_loss", 1);
+                        return Ok(());
+                    }
+                    size -= 1;
+                    cx.tally(g, "board.troop_steps", 1);
+                    if !strike_from(g, cx, at)? {
+                        ended.push(at);
+                        continue;
+                    }
+                    if w.int("board.troop_spent") == 0 {
+                        stay += 1;
+                    }
+                    if g.is_over() {
+                        return Ok(());
+                    }
+                }
+                if stay > 0 {
+                    marched[at] += stay;
+                    queue.push_back((at, stay, left, stopped));
+                }
+                if size == 0 {
                     break;
                 }
-                if w.int("board.troop_spent") > 0 {
-                    alive = false;
-                    break;
+                if lost(g) {
+                    cx.tally(g, "board.march_cut_by_loss", 1);
+                    return Ok(());
                 }
-            } else {
                 let Some(to) = step_toward(g, cx, at)? else {
                     break;
                 };
                 if w.map.hexes[at].neighbors.iter().any(|&n| walled(&w, g, n)) {
-                    cx.tally(g, "board.wall_steps", 1);
+                    cx.tally(g, "board.wall_steps", size);
                 }
-                cx.add_tokens(g, at, TROOP, -1);
-                cx.add_tokens(g, to, TROOP, 1);
-                cx.per_round(g, adversary::OPS, 1);
-                cx.tally(g, "board.troop_steps", 1);
-                cx.tally(g, "board.troop_moves", 1);
+                cx.add_tokens(g, at, TROOP, -size);
+                cx.add_tokens(g, to, TROOP, size);
+                cx.per_round(g, adversary::OPS, size);
+                cx.tally(g, "board.troop_steps", size);
+                cx.tally(g, "board.troop_moves", size);
+                cx.tally(g, "board.stack_steps", 1);
                 at = to;
+                if g.is_over() {
+                    return Ok(());
+                }
             }
-            if g.is_over() {
-                return Ok(());
-            }
+            ended.extend(std::iter::repeat_n(at, size.max(0) as usize));
         }
-        if alive {
+        // Each troop of the stack that ended its march, as the march ends for the stack.
+        for at in ended {
             marched[at] += 1;
             // Vigil: a troop that ends its march (any march, a threat's immediate one too) next to the seat's
             // node pays it once; one used up striking has no end to its march.
@@ -347,7 +388,7 @@ fn step_toward(g: &mut GameState, cx: &mut Cx, at: usize) -> Res<Option<usize>> 
     let steps = troop_steps_from(&w, g, at);
     let opts = steps.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || format!(
-        "The adversary troop at {} moves to which hex?",
+        "The adversary troops at {} move to which hex?",
         hex_name(&w, at)
     );
     Ok(cx.choose(0, prompt, opts)?.map(|i| steps[i]))

@@ -69,15 +69,17 @@ player-owned research stations and factories, **and nodes** (`troop_node` 0, fro
 (corruption is the adversary's way in) or neutral or adversary-owned facilities.
 
 In the adversary phase (`board.march`, after the corruption step) **every adversary troop
-takes `troop_steps` steps** (1, so a troop needs time to arrive; Forced March's twist: more), one troop at a time, country by country and by hex number within each, in an order
-fixed when the march starts. A troop a threat lands follows the troop's normal rules (no standing troops); troops a threat
+takes `troop_steps` steps** (1, so a troop needs time to arrive; Forced March's twist: more). **The troops on one hex march as one stack** (274): one stack at a time, country by country and by hex number within each, in an order
+fixed when the march starts; troops already on a hex a stack enters march later on their own. A troop a threat lands follows the troop's normal rules (no standing troops); troops a threat
 lands to "march at once" (Total War) take their steps as it executes. The march stops once a seat has no node (the
-loss; no troop moves or asks after it). A step is one of:
+loss; no troop moves or asks after it). A stack's step:
 
-- **destroy** a target on or next to its hex (players choose which), or
-- with none there, **move** one hex toward the nearest target. When several hexes are
+- while a target is on or next to its hex, one troop of the stack **destroys** one (players choose which; a strike
+  stays one troop's, and uses it up), then
+- the troops left **move** together one hex toward the nearest target. When several hexes are
   equally good steps (several targets equally near, or several ways toward one), the
-  players choose: a choice among bad options, as with Spirit Island's blight.
+  players choose, once for the stack: a choice among bad options, as with Spirit Island's blight. With more than one
+  step (Forced March), the stack takes each step together, so a troop left after a strike walks on from there.
 
 **Troops ignore ambassadors:** a march neither stops for nor removes them. Troops hit
 facilities; agents meet ambassadors. The owner's own ambassador on a facility is still armor against a strike

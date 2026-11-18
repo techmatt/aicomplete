@@ -184,7 +184,7 @@
    "industry"
   ],
   "cost": 13,
-  "text": "Each country: its neutral factory with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned factory picked the same way turns neutral.",
+  "text": "Each country: its neutral factory with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned factory picked the same way turns neutral.",
   "effects": [
    {
     "op": "take_site",
@@ -358,7 +358,7 @@
    "power"
   ],
   "cost": 10,
-  "text": "Each country: the hardened facility with the most Agents on or next to it (ties: lowest-numbered) loses its hardening. Until the end of next round, players' boards and cards make no energy income.",
+  "text": "Each country: the hardened facility with the most Agents on its hex (ties: lowest-numbered) loses its hardening. Until the end of next round, players' boards and cards make no energy income.",
   "effects": [
    {
     "op": "strip_harden"
@@ -458,7 +458,7 @@
    "cyber"
   ],
   "cost": 24,
-  "text": "Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track.",
+  "text": "Each country: its neutral research station with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track.",
   "effects": [
    {
     "op": "take_site",

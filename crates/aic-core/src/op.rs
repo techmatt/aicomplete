@@ -1411,8 +1411,8 @@ pub enum Op {
     SpreadBotnets {
         count: i64,
     },
-    /// 195 (a project's): in each country, its neutral `site` with the most agents on or next to it (ties: the
-    /// lowest-numbered) corrupts; with none neutral, its player-owned `site` with the most agents on or next to it
+    /// 195 (a project's): in each country, its neutral `site` with the most agents on its hex (274: the hex only; ties: the
+    /// lowest-numbered) corrupts; with none neutral, its player-owned `site` with the most agents on its hex
     /// turns neutral (the owner's cube comes off). A firewall or a no-Corrupt token guards a site (skipped); a guarded neutral one still counts as neutral, so nothing happens there (199, D88).
     TakeSite {
         site: Facility,
@@ -1438,7 +1438,7 @@ pub enum Op {
     StripCubes {
         count: i64,
     },
-    /// 195 (a project's): in each country, the hardened facility with the most agents on or next to it (ties: the
+    /// 195 (a project's): in each country, the hardened facility with the most agents on its hex (274; ties: the
     /// lowest-numbered) loses its hardening tokens (a node shield on a hex with no facility is no target).
     StripHarden,
     /// 227: Fallout lands, each token on a free open hex (open land with no building, node or Fallout): with `at`

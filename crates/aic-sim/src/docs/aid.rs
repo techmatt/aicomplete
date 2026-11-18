@@ -1,5 +1,5 @@
 //! 268: `docs/player-aid.md`, the table's reference sheet: the round, what is once a round, the tip strips,
-//! what spends an ambassador and city growth, then the house terms. Every number comes from the rules or content,
+//! the march, the tracks and markers (274), what spends an ambassador and city growth, then the house terms. Every number comes from the rules or content,
 //! so the sheet moves with them; the words are the rulebook's, shortened (it stays the rules' one full statement).
 
 use aic_core::content::content;
@@ -13,7 +13,7 @@ const ROUND: &str = "\
 |---|---|---|
 | | Round start | Set your insight. Clear your used markers (below). |
 | A | Sway | Each Fallout: 1 Discord. |
-| B | Adversary | **Card** (threats, Rally, Muster, other lines), **Corrupt** (its lines, then natural corruption, then 2 agents on a node), **March** (each troop 1 step), **Income** (next card up; pools; compute onto the leftmost project; research track; firewalls, cordons and no-X tokens off). |
+| B | Adversary | **Card** (threats, Rally, Muster, other lines), **Corrupt** (its lines, then natural corruption, then 2 agents on a node), **March** (each stack 1 step), **Income** (next card up; pools; compute onto the leftmost project; research track; firewalls, cordons and no-X tokens off). |
 | C | Cards | Build a hand of 4, draft, keep (1 insight a tier-1, 3 a tier-2, 2 with the keep upgrade). |
 | D | Actions | All at once, until everyone passes. |
 | E | Production | Factories, cities, stations, megaprojects, income; then extra drones, cities grow, cities build. |
@@ -36,8 +36,9 @@ fn once_a_round(r: &Rules) -> String {
         n => format!("{n} times"),
     };
     format!(
-        "Each of these is used at most once a round, and nothing in the rules marks it. **Put a spare cube on it when \
-         you use it** (on the power, the building, the converter, the city), and clear them all at round start.\n\n\
+        "Each of these is used at most once a round. **Put a used marker on its used space when you use it** (each \
+         power, building slot and converter prints one; a city takes a bought chip), and clear them all at round \
+         start.\n\n\
          - **Your board's powers:** each once. {}.\n\
          - **Each building's Action** (`→`): once; \"A, OR B\" is one use.\n\
          - **Standard actions:** Remove a troop {} a round, Turn a cube into insight {} a round, each player; **Buy \
@@ -160,13 +161,27 @@ fn corrupt_numbers(r: &Rules) -> String {
 }
 
 const MARCH: &str = "\
-Each adversary troop in turn (country by country, hex order), 1 step:
+The troops on each hex march as one stack, stack by stack (country by country, hex order), 1 step; troops on a hex \
+a stack enters march later, on their own:
 
-1. **A target on or next to it?** (players' nodes and players' stations and factories; never anything on the \
-Protector's node hex.) It strikes one (the players choose): destroyed unless protected (§13). The troop leaves the map either way.
-2. **Else** it moves 1 hex toward the nearest target by land, never onto the Protector's node hex; ties: the players \
-choose. No way to any target: it stays.
-3. It ignores ambassadors. Vigil: it ended its march (moved or not) next to the Protector's node.
+1. **Targets on or next to it?** (players' nodes and players' stations and factories; never anything on the \
+Protector's node hex.) One troop strikes each, while troops last (the players choose): destroyed unless protected \
+(§13). A troop that strikes leaves the map either way.
+2. **The rest** move together 1 hex toward the nearest target by land, never onto the Protector's node hex; ties: \
+the players choose, once for the stack. No way to any target: they stay.
+3. Troops ignore ambassadors. Vigil: a troop ended its march (moved or not) next to the Protector's node.
+";
+
+/// 274 (table time): every running number the table keeps sits on a track or a marker, read, never re-added.
+const TRACKS: &str = "\
+- **Your income tracks** (your board): one marker a resource. Move it when a track space, program or building \
+raises an income; in production, collect what the markers show.
+- **Your tag dials** (your board): one a tag. Turn it when a card with that tag comes into play or is sacrificed.
+- **Used markers:** on each power, building slot and converter's used space; a bought chip on a city (above).
+- **Unity and Discord tip tracks:** one space a tip; each space prints its card strength, and Unity's the purge's.
+- **The adversary board:** compute and agent income tracks, the research track, and a compute track beside each \
+project slot (a marker, not cubes).
+- **Waits token:** on a threat dealt after the counter phase or delayed; it takes effect next round.
 ";
 
 fn ambassadors(r: &Rules) -> String {
@@ -213,7 +228,7 @@ pub(super) fn player_aid_md(r: &Rules) -> String {
          sheet; the full rules are [rulebook.md](rulebook.md), the marks [card-guidelines.md](card-guidelines.md).\n\n\
          ## The round (rulebook §4)\n\n{ROUND}\n## Once a round (§5, §8, §20)\n\n{}\n\
          ## Tip strips (§12, §14)\n\n{}\n## Corrupt numbers (§6, §21)\n\n{}\n## The march (§6)\n\n{MARCH}\n\
-         ## What spends an ambassador (§8)\n\n{}\n\
+         ## Tracks and markers (§2)\n\n{TRACKS}\n## What spends an ambassador (§8)\n\n{}\n\
          ## City growth (§9, steps 7-8)\n\n{}\n## Words on cards\n\n{}",
         once_a_round(r),
         tip_strips(r),

@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 128. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 129. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -131,6 +131,12 @@ stand on a base. A one-player game has no fronts and no bases.
 | **Liberated marker** | — | on a neutral site a player liberated: a Corrupt line or natural corruption needs 1 agent more to retake it; off when claimed, retaken or destroyed (§6, §8) |
 | **Round-flag marker** | — | an effect that outlasts its card (Rolling Blackouts' and Sabotage Teams' flags run through next round) |
 | **Compute and agent income tracks** | the adversary | on the adversary board: the incomes event cards and projects raise |
+| **Project compute tracks** | the adversary | beside each project slot: its compute so far, a marker (§17) |
+| **Income tracks** | a player | on your board, one marker a resource: your income, moved when something raises it (§9) |
+| **Tag dials** | a player | on your board, one a tag: the tags you have in play (§7) |
+| **Used markers** | a player | on a power's, building slot's or converter's used space, or a bought chip on a city: used this round (§5) |
+| **Tip tracks** | — | Unity's and Discord's tip counts, each space printing its card strength (and Unity's the purge's) (§12) |
+| **Waits token** | — | on a threat that takes effect a round late (§10) |
 | **Research track** | the adversary | on the adversary board: a marker counts its research cubes up to the threshold, when its research rule fires (§6) |
 
 ### Reach
@@ -402,15 +408,17 @@ agents on it go back to the supply:
 ### The march
 
 Troops are few, slow and deadly. An adversary troop's **targets** are players' **nodes** and player-owned research
-stations and factories, never anything else. In the March beat, each adversary troop takes **1 step**, one troop at a
-time (country by country, in hex-number order). Its step:
+stations and factories, never anything else. In the March beat, the troops on each hex march together as one **stack**, one
+stack at a time (country by country, in hex-number order), **1 step** each; troops already on a hex a stack enters
+march later, on their own. A stack's step:
 
 - troops **ignore ambassadors**: they neither stop for them nor remove them (agents deal with ambassadors; troops hit
   your pieces). Your own ambassador on the hex still protects your node or facility from a strike (§13);
-- if a target is **on or next to** the troop's hex, the troop **strikes** it (the players choose which, if several):
-  the target is destroyed unless something protects it (§13). Either way the troop is used up and leaves the map;
-- otherwise the troop **moves** one hex toward the nearest target, by land and around Wall hexes, crossing borders if
-  it must (the players choose among equally good hexes). With no way to any target, it stays.
+- while a target is **on or next to** the stack's hex, one of its troops **strikes** one (the players choose which, if
+  several): the target is destroyed unless something protects it (§13). Either way that troop is used up and leaves
+  the map;
+- the troops left **move** together one hex toward the nearest target, by land and around Wall hexes, crossing borders
+  if they must (the players choose among equally good hexes, once for the stack). With no way to any target, they stay.
 
 So a troop takes time to arrive: one two hexes from your node or facility steps next to it this turn and strikes it
 (or another target in range, if the players pick that one) next turn, which leaves you a round to answer it. A troop
@@ -521,7 +529,8 @@ not a part that acts.
 
 The tags **on your cards** are those on your programs, your buildings (covered ones too), your AI board and your
 uncovered track spaces. Tags unlock requirements, set discounts and per-tag payouts, and pay for sacrifice powers and
-some threats.
+some threats. Keep the count on your **tag dials** (§2): turn a dial when a card with that tag comes into play or is
+sacrificed.
 
 **Sacrifice.** A cost that names a tag ("1 Industry") is paid by discarding one of your cards in play that carries
 that tag: a program, or a building together with every building stacked under it (a tag on a covered building
@@ -679,7 +688,8 @@ map before the next.
    included (§8), then its cubes come off. An adversary cube pays the card's adversary payout (1 Sway to Discord;
    Polar Compute Array, 1 adversary compute). Neutral cubes pay nothing. From then on its stations' cubes go to their
    owners' boards (step 3).
-5. **Income.** Each player collects their income (insight aside, §5): board, track spaces, programs and buildings.
+5. **Income.** Each player collects their income (insight aside, §5): board, track spaces, programs and buildings,
+   as their income tracks show.
 
 **Growth:**
 
@@ -1023,8 +1033,7 @@ drops Fallout, spreads or converts a botnet, makes troops on the adversary's fac
 (Night Raid: 2 agents there destroy your node in the next Corrupt beat, after your action phase), sends the
 ambassadors on a country's busiest hex home, takes research cubes off megaprojects, strips hardening, or runs the
 clock. **Its target is read off the board when it resolves**, in each country: "the factory with the most agents on
-or next to it" counts the agents on that hex and the six around it; "the node hexes holding the most agents" count
-only the hex itself; ties go to the lowest hex number. Nothing is marked in advance: look at the leftmost project and the board to see what it
+its hex" and "the node hexes holding the most agents" count only the hex itself; ties go to the lowest hex number. Nothing is marked in advance: look at the leftmost project and the board to see what it
 will hit, and move agents off, claim the site or firewall it first. A firewalled neutral site still counts as neutral,
 so a seizure finds nothing to take in that country and your own site is safe. "Turns neutral" takes the owner's cube off a site;
 "discard the top card of the event deck" brings the round cap a round nearer. Only Data Heist and Containment Breach
@@ -1038,7 +1047,8 @@ make you pay or discard. A botnet's troops are made on its own hex, as a factory
 
 **Dealing.** Stage I event cards deal one tier-1 threat in each country, stage II one tier-2 (Supply Lines: one tier-1
 and one tier-2), and stage III two tier-2. Each deal names one or two threat tags, or "any". For each deal, for each
-country in turn, turn up the top card of that tier's threat deck. It stays if it carries a named tag (a **Universal**
+country in turn, turn up the top card of that tier's threat deck (a country where every city, research station,
+factory and military base is the adversary's gets none; a base never is, so this only matters alone). It stays if it carries a named tag (a **Universal**
 card has every tag) **and** the country has a place of one of its location types that isn't the adversary's.
 Otherwise discard it and turn up the next. When a threat deck runs out, shuffle its discards into a new deck; if a
 reshuffled deck has no card that fits, take the next card anyway.

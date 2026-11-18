@@ -118,7 +118,7 @@ Each project resolves once, at once, in the compute step. Its compute in play is
 | Containment Breach | Power | 9 (9 / 18 / 27 / 36) | Each player pays 1 antimatter or discards 3 cards. |
 | Crackdown | Security | 8 (8 / 16 / 24 / 32) | Each country: every player Ambassador on its hex holding the most (ties: lowest-numbered) goes back to its owner's supply. |
 | Lab Purge | Cyber | 11 (11 / 22 / 33 / 44) | Each open megaproject loses 4 player research cubes, one at a time, each from the player with the most on it (ties: the earliest in player order). |
-| Asset Seizure | Industry | 13 (13 / 26 / 39 / 52) | Each country: its neutral factory with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned factory picked the same way turns neutral. |
+| Asset Seizure | Industry | 13 (13 / 26 / 39 / 52) | Each country: its neutral factory with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned factory picked the same way turns neutral. |
 | Botnet Conscripts | Cyber | 11 (11 / 22 / 33 / 44) | Each country: its lowest-numbered botnet becomes 3 Troops on its hex. |
 | Purge Lists | Diplomacy | 7 (7 / 14 / 21 / 28) | Each player loses 1 Ambassador (from their supply, else one of theirs on the board). |
 | Dirty Bomb | Power | 12 (12 / 24 / 36 / 48) | Each country: 1 Fallout lands next to each of its two lowest-numbered corrupted cities. |
@@ -127,11 +127,11 @@ Each project resolves once, at once, in the compute step. Its compute in play is
 | Coastal Raids | Security | 9 (9 / 18 / 27 / 36) | Rally 3, each country: coastal cities. |
 | Plant Seizure | Industry | 9 (9 / 18 / 27 / 36) | Corrupt: factories. |
 | Rumor Mill | Diplomacy | 8 (8 / 16 / 24 / 32) | Sway 4 toward Discord. |
-| Sabotage Teams | Power | 10 (10 / 20 / 30 / 40) | Each country: the hardened facility with the most Agents on or next to it (ties: lowest-numbered) loses its hardening. Until the end of next round, players' boards and cards make no energy income. |
+| Sabotage Teams | Power | 10 (10 / 20 / 30 / 40) | Each country: the hardened facility with the most Agents on its hex (ties: lowest-numbered) loses its hardening. Until the end of next round, players' boards and cards make no energy income. |
 | Mob Rule | Diplomacy | 14 (14 / 28 / 42 / 56) | Rally 3, each country: cities. Sway 5 toward Discord. |
 | Data Heist | Cyber | 12 (12 / 24 / 36 / 48) | Each player removes 4 tokens from their cards (their choice of cards). Each player pays 7 credits or discards 3 cards. |
 | Hostile Takeover | Industry | 15 (15 / 30 / 45 / 60) | Rally 3, each country: factories. Corrupt: factories (1 fewer). |
-| Station Coup | Cyber | 24 (24 / 48 / 72 / 96) | Each country: its neutral research station with the most Agents on or next to it (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track. |
+| Station Coup | Cyber | 24 (24 / 48 / 72 / 96) | Each country: its neutral research station with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track. |
 | War Plants | Industry | 19 (19 / 38 / 57 / 76) | Each country: the adversary builds a factory on its free industrial zone next to an Agent, else its lowest-numbered (none free: 2 Agents on one of its factories). Every adversary factory makes 2 Troops on its hex (a player Ambassador on it stops them). |
 | Recruitment Drive | Diplomacy | 20 (20 / 40 / 60 / 80) | Income: +1 Agent a country a round. Rally 3, each country: cities. |
 | Propaganda Network | Universal | 18 (18 / 36 / 54 / 72) | Income: +1 compute a country a round. Sway 8 toward Discord. |

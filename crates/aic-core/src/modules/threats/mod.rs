@@ -194,6 +194,19 @@ fn refill(g: &mut GameState, cx: &mut Cx, tier: u8) -> bool {
 /// on the board (`at`, 139: its first token on that hex instead); one dealt after the counter phase waits a round.
 fn pull(g: &mut GameState, cx: &mut Cx, tier: u8, tags: &[PullTag], c: usize, at: Option<usize>) {
     let w = cx.world;
+    // 274 (table time): a country with no place for any of the tier's threats (no uncorrupted site of a type the
+    // tier's deck prints) is skipped: no card is turned for it. A threat dealt onto a node hex (Offensive) is not.
+    if at.is_none() {
+        let of_tier = || w.content.threats.iter().filter(|t| t.tier == tier);
+        if !of_tier().any(|t| lands_in(&w, g, t, c)) {
+            cx.tally(g, "threats.skipped_no_place", 1);
+            return;
+        }
+        // The candidate the prompt asked counted, not built: the skip limited by the pull's tags.
+        if !of_tier().any(|t| ThreatTag::fits(&t.tags, tags) && lands_in(&w, g, t, c)) {
+            cx.tally(g, "threats.skip_tagged_would", 1);
+        }
+    }
     let mut reshuffles = 0;
     let id = loop {
         if g.pile(&deck(tier)).is_empty() {
@@ -212,6 +225,7 @@ fn pull(g: &mut GameState, cx: &mut Cx, tier: u8, tags: &[PullTag], c: usize, at
         if ThreatTag::fits(&t.tags, tags) && lands_in(&w, g, t, c) {
             break top;
         }
+        cx.tally(g, "threats.turned_rejected", 1);
         cx.move_card(g, &top, &deck(tier), &discard(tier), true).unwrap();
     };
     cx.move_card(g, &id, &deck(tier), &on(c), false).unwrap();

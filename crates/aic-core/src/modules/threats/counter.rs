@@ -44,7 +44,7 @@ pub(super) fn menu_resources(w: &World, threat: &str) -> Vec<Resource> {
 /// Counters on every resource item. 267: no difficulty step: a threat costs
 /// what it prints at every level.
 pub fn requirement(w: &World, g: &GameState, threat: &str) -> Vec<Vec<CounterItem>> {
-    requirement_less(w, threat, g.var(&jam_key(threat)) + standing(w, g, threat))
+    requirement_with(w, threat, g.var(&jam_key(threat)), standing(w, g, threat), &CounterSteps::read(w))
 }
 
 /// The config's counter scaling [`requirement_less`] reads, read once (174: the
@@ -52,22 +52,25 @@ pub fn requirement(w: &World, g: &GameState, threat: &str) -> Vec<Vec<CounterIte
 #[derive(Debug, Clone, Copy)]
 pub struct CounterSteps {
     credit_pct: i64,
+    jam_floor: i64,
 }
 
 impl CounterSteps {
     pub fn read(w: &World) -> CounterSteps {
-        CounterSteps { credit_pct: w.int("adversary.counter_credit_pct") }
+        CounterSteps { credit_pct: w.int("adversary.counter_credit_pct"), jam_floor: w.int("adversary.jam_floor") }
     }
 }
 
-/// [`requirement`] less `cut` of each resource item (floor 0).
-pub(super) fn requirement_less(w: &World, threat: &str, cut: i64) -> Vec<Vec<CounterItem>> {
-    requirement_with(w, threat, cut, &CounterSteps::read(w))
+/// [`requirement`] less a jam of `jam` on each resource item, with no standing counter.
+pub(super) fn requirement_less(w: &World, threat: &str, jam: i64) -> Vec<Vec<CounterItem>> {
+    requirement_with(w, threat, jam, 0, &CounterSteps::read(w))
 }
 
-/// [`requirement_less`] with the config's steps already read.
-fn requirement_with(w: &World, threat: &str, cut: i64, steps: &CounterSteps) -> Vec<Vec<CounterItem>> {
-    let CounterSteps { credit_pct } = *steps;
+/// What countering `threat` asks with `jam` jammed and `standing` cut by standing counters, the config's steps
+/// already read. Standing counters cut first (floor 0); 274 (table time): with `adversary.jam_floor` 1 a jam then never
+/// takes an item below 1 (an item already at 0 stays 0), so a jam alone never counters a threat.
+fn requirement_with(w: &World, threat: &str, jam: i64, standing: i64, steps: &CounterSteps) -> Vec<Vec<CounterItem>> {
+    let CounterSteps { credit_pct, jam_floor } = *steps;
     // 138: every resource counter item of a tier-N threat costs `counter_pct[N-1]` percent of its printed amount
     // (rounded up), at every difficulty.
     let d = def(w, threat);
@@ -83,7 +86,8 @@ fn requirement_with(w: &World, threat: &str, cut: i64, steps: &CounterSteps) -> 
                         if resource == Resource::Credits {
                             scaled = (scaled * credit_pct + 99) / 100;
                         }
-                        CounterItem::Pay { resource, amount: (scaled - cut).max(0) }
+                        let left = (scaled - standing).max(0);
+                        CounterItem::Pay { resource, amount: (left - jam).max(left.min(jam_floor)) }
                     }
                     other => other,
                 })
@@ -151,7 +155,7 @@ pub fn need_and_share_with(
     } else {
         standing.iter().filter(|(source, _)| of_type(w, threat, *source)).map(|(_, n)| n).sum()
     };
-    let req = requirement_with(w, threat, g.var(&jam_key(threat)) + cut, steps);
+    let req = requirement_with(w, threat, g.var(&jam_key(threat)), cut, steps);
     need_and_share_of(g, threat, &req)
 }
 

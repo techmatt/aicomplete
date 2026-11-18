@@ -124,7 +124,7 @@ fn equally_near_targets_are_the_players_choice() {
     put(&mut g, b, node(1), 1);
     run(&rules, &mut g);
     let p = g.pending.as_ref().expect("a step choice");
-    assert!(p.ask.prompt.contains("moves to which hex"), "{}", p.ask.prompt);
+    assert!(p.ask.prompt.contains("move to which hex"), "{}", p.ask.prompt);
     assert_eq!(p.ask.options.len(), 2);
 }
 

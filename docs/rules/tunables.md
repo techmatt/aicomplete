@@ -65,6 +65,7 @@ conventions: [README.md](README.md).*
 | `adversary.blight_discord` | 1 | 0..5 | Discord each Fallout token sways each round |
 | `adversary.counter_pct` | 100, 100 | 50..300 | every resource counter item of a tier 1, 2 threat costs this percent of its printed amount (rounded up) |
 | `adversary.counter_credit_pct` | 100 | 50..300 | every credits counter item costs this percent of its amount after counter_pct (rounded up; 100 = unchanged) |
+| `adversary.jam_floor` | 0 | 0..1 | 274: 1, a jam never takes a threat's resource item below 1 (a jam alone never counters); 0, below to 0 |
 | `adversary.stage1_removed` | 2 | 0..3 | difficulty stage_swap_at+: stage-I cards removed |
 | `adversary.stage3_added` | 1 | 0..3 | difficulty stage_swap_at+: stage-III cards added (the cap holds, its end gets harder) |
 | `adversary.stage2_added` | 1 | 0..3 | 267: difficulty stage_swap_at+: stage-II cards added back (tier-2 threats sooner, built into the stack) |
