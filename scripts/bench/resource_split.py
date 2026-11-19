@@ -5,7 +5,8 @@ promoted in 283 onto `read_lib.games`, so a farmed read, a lever screen and an a
                                            [--agent-arms] [--top 8] [--by-board] [--rounds]
 
 READ as `read_lib.py`'s (a run folder, a games file with its header, or FILE=SPEC); `--agent-arms` as there
-(`strategist:w.sink=1` is arm `sink1` of the strategist). Per arm and agent (every level pooled, or `--levels`), for
+(`strategist:w.sink=1` is arm `sink1` of the strategist). `--resources` names any of `screens.PEAKS`: credits, insight,
+energy, chips, antimatter, research_cubes, card_tokens, ambassadors (another name is refused). Per arm and agent (every level pooled, or `--levels`), for
 each resource: gained and spent a seat-game and spent of gained; the share of games and of won games in which some
 seat spent it (design_check's victory-skip reads the won share at d3-d4); held after the last action phase a seat;
 `--by-board`: the same per board; `--rounds`: held after actions by round (the `unspent.<seat>.<r>.rNN` counters);
@@ -39,6 +40,9 @@ def take(argv, flag, default=None):
 def main(argv):
     sys.stdout.reconfigure(encoding='utf-8', newline='\n')
     want = take(argv, '--resources', 'energy,antimatter,chips').split(',')
+    bad = [r for r in want if r not in PEAKS]
+    if bad:  # 285: an unknown name crashed with a bare ValueError at PEAKS.index
+        sys.exit(f'resource_split: unknown resource {bad[0]!r} in --resources; accepted: {", ".join(PEAKS)}')
     levels = take(argv, '--levels')
     levels = {int(x) for x in levels.split(',')} if levels else None
     top = int(take(argv, '--top', '8'))

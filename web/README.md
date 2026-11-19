@@ -114,12 +114,13 @@ release `aic-sim` (`AIC_SIM`); its environment variables and defaults are atop t
   `hidden-target`, `clipped` (no ellipsis), `token-unknown`, `stale-word` (an old name for a house word on screen,
   `STALE` in the script), `case` (`aic-sim` could not play it). **Reported for a look:** `no-control` (a legal action with no
   control on screen), `raw-id`, `truncated-no-hover`, `truncated`, overlaps, undrawn view tokens, steps over
-  150 ms, heap growth over 50 MB, `mark-over-number` (a highlight ring across a hex number) and
+  150 ms, heap kept over 50 MB (the first fresh game, at the start and again at the end), `mark-over-number` (a highlight ring across a hex number) and
   `warn-at-start` (a value drawn as a warning at a game's first phase, as a full allotment drawn as danger).
 - **Running it:** background it, the viewer served by a process outliving it; at most one sweep beside one browser lane. Don't rebuild `aic-sim` mid-sweep: its records load with a content-hash warning in the error
   bar, which fails the run (`error-banner`). At r122 a case at one seed (a watched and a played game, ~270
-  captures) takes 6-10 min, a capture ~1.5 s (three sizes): all 25 cases about 4 h, so a hunt picks `--case`s
-  (261: six in 40 min). Rules twin: `invariants_hold_in_random_games`.
+  captures) takes 6-10 min, a capture ~1.5 s (three sizes): all 27 cases about 4.5 h, so a hunt picks `--case`s
+  (261: six in 40 min; 285, r135: six in 28 min, 1,312 captures, a `-strategist` case's records ~4 min of it).
+  Rules twin: `invariants_hold_in_random_games`.
 - **Output** in `web/sweep-out/`: `shots/`, `issues.json` (game, step, moment), `index.html`, `sheet-N.png`
   contact sheets (failures framed red), the records. `AIC_SWEEP_VERBOSE=1` times each moment.
   Hooks: `window.aic` (main.ts), `scripts/cdp.mjs`.

@@ -203,8 +203,13 @@ pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
         if g.tokens(h, ADV_AMBASSADOR) < need || player_ambassador(g, h).is_some() {
             // 099: say what happened: a player's ambassador there cancels the one
             // arriving, and an empty supply sends none (both read "lands on it").
-            let (adv, supply) = (g.tokens(h, ADV_AMBASSADOR), g.var(SUPPLY));
+            // 285: read from what the placement did: an arrival that brings the hex to the node rule's 2 sends every
+            // agent there to the supply, which read as a cancel.
+            let count = |g: &GameState, k: &str| g.stats.counters.get(k).copied().unwrap_or(0);
+            let (arrived, canceled) = (count(g, "adversary.arrivals"), count(g, "adversary.canceled"));
             place(g, cx, h, 1)?;
+            let sent = count(g, "adversary.arrivals") > arrived;
+            let landed = sent && count(g, "adversary.canceled") == canceled;
             // 275: the agent sent is an arrival: one that brings the station to its corrupt number corrupts it.
             if corrupted(g, h) {
                 cx.tally(g, "adversary.stations_flipped", 1);
@@ -212,9 +217,11 @@ pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
                 return Ok(true);
             }
             cx.tally(g, "adversary.station_flip_held", 1);
-            let what = if supply <= 0 {
+            let what = if !sent && super::plan::cordoned(&w, g, h) {
+                "its country is cordoned"
+            } else if !sent {
                 "no agent is left to send"
-            } else if g.tokens(h, ADV_AMBASSADOR) > adv {
+            } else if landed {
                 "an agent lands on it"
             } else {
                 "the agent sent and a player ambassador there cancel each other"

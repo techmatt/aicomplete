@@ -6,10 +6,12 @@ fn flag_doc(f: RoundFlag) -> &'static str {
     match f {
         // 261: an adversary card makes these (a project, an event, the Militarist's Naval Blockade; no threat does),
         // and it says how long; nothing in the content makes an Embargo.
-        RoundFlag::Blackout => "Blackout: while this is up, cities here make no energy in production (until the end of the next round, as its card says)",
+        // 285: a blacked-out corrupted city diverts no Discord either (production.rs `city_energy`).
+        RoundFlag::Blackout => "Blackout: while this is up, cities here make no energy and no Discord in production (until the end of the next round, as its card says)",
         RoundFlag::Sabotage => "Sabotage: while this is up, players with a node here make no energy in upkeep (until the end of the next round, as its card says)",
         RoundFlag::Embargo => "Embargo: while this is up, no site here can be claimed (until the end of the next round)",
-        RoundFlag::Cordon => "Cordon: no Infiltrate, Surge, Spill, Grow, botnet seed, threat anchor or creation line acts there until the end of the next adversary turn (troops still land)",
+        // 285: every agent arrival, a neighbor's Spill or seed across the border included.
+        RoundFlag::Cordon => "Cordon: until the end of the next adversary turn no agent lands there (any line, a neighbor's Spill or botnet seed included), no Grow builds there, and its own sites' Spill, Grow and botnet seeds don't act, into a neighbor either (troops still land)",
     }
 }
 
@@ -180,11 +182,12 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         // 105: a cube cost (the general converter) reaches the client in its words.
         let Price { energy: e, credits: cr, chips, ambassadors, cubes: _ } = price;
         let cost = price.label();
-        let doc = format!(
-            "{}; costs {}",
-            std_text(w, act),
-            if cost.is_empty() { "nothing".into() } else { cost.join(" + ") }
-        );
+        // 285: Liberate's price depends on its target (`target_price`): its text gives it; "costs nothing" contradicted it.
+        let doc = if matches!(act, StandardAction::Liberate) {
+            std_text(w, act).to_string()
+        } else {
+            format!("{}; costs {}", std_text(w, act), if cost.is_empty() { "nothing".into() } else { cost.join(" + ") })
+        };
         out.standard(act.name(), e, cr, chips, ambassadors, &doc);
     }
     for s in 0..g.seats.len() {

@@ -238,7 +238,7 @@ fn factory_output(g: &mut GameState, cx: &mut Cx) {
                 cx.tally(g, "board.blocked.factory_adversary", 1);
                 continue;
             }
-            if !adversary::place_troop(g, cx, h, "factory") {
+            if !adversary::place_troop_quiet(g, cx, h, "factory") {
                 continue;
             }
             cx.tally(g, "board.troops_built", 1);

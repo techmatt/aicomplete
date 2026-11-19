@@ -7,12 +7,14 @@ round (new cities a game corrupted in round N, and the share of games with one b
 
 FILE is a farmed games JSONL (a read folder too; a header line or a half-written last line is skipped) and SPEC its spec (`experiments/farm/<name>.json` or a path); TAG names
 its rows (two revisions of one spec, say). The arm is
-the variant's name after its pair prefix (`bp-sp` -> `sp`; a bare pair name is `base`), so a base spec and a lever
+the variant's name after its pair prefix (`bp-sp` or `bp_sp` -> `sp`; a bare pair name is `base`), so a base spec and a lever
 spec read side by side. `map.cities_corrupted` / `map.cities_retaken` are by-round from r124 (263); an older
 file falls back to `adversary.corruptions.city` less `adversary.retakes` (every site kind's: a floor on new cities)
-and prints no by-round table.
+and prints no by-round table. From r130 no game tallies retakes (a retaken city counts in `map.cities_corrupted`):
+the retakes column prints `-`.
 """
 import argparse
+import re
 import json
 import math
 import os
@@ -39,9 +41,16 @@ def label(spec, cell):
     v = (cell % per_config) // (nd * na)
     a = cell % na
     name = spec['variants'][v]['name']
-    arm = name.split('-', 1)[1] if '-' in name else 'base'
+    # 285: `PAIR_LEVER` too (s275-grow's `bp_cap`), which read as base, pooled with it.
+    parts = re.split(r'[_-]', name, maxsplit=1)
+    arm = parts[1] if len(parts) > 1 else 'base'
     agent = spec['agents'][a].split(':')[0]
     return arm, agent
+
+
+def retakes_tallied(gs):
+    """285: whether any game in the group tallies retakes (none does from r130: the column was a silent 0)."""
+    return any(k.startswith('map.cities_retaken') or k == 'adversary.retakes' for g in gs for k in g['counters'])
 
 
 def by_round(c, key):
@@ -119,7 +128,8 @@ def main():
                 first[got] += 1
         tables[key] = (per, first, n, have_rounds)
         print(f'| {key[0]} | {key[1]} | d{key[2]} | {n} | {win * 100:.1f} | {se:.1f} | {rounds:.2f} | {won_r:.2f} | '
-              f'{len(de)} ({len(de) / n * 100:.0f}%) | {bot:.1f} | {new / n:.2f} | {any_new / n * 100:.0f}% | {ret / n:.2f} | '
+              f'{len(de)} ({len(de) / n * 100:.0f}%) | {bot:.1f} | {new / n:.2f} | {any_new / n * 100:.0f}% | '
+              f"{f'{ret / n:.2f}' if retakes_tallied(gs) else '-'} | "
               f"{sum(g['counters'].get('board.cities_freed', 0) for g in gs) / n:.2f} |")
     if a.rounds:
         print()

@@ -81,6 +81,10 @@ const CASES = [
   // 197: r85-r86's project ops (botnets, sites taken, factory troops, raids, stripped hardening,
   // the clock) as the strategist meets them at d4, with the card-play track at 3.
   { name: 'c3-d4-strategist', config: 'baseline.json', set: ['countries=3', 'adversary.difficulty=4'], agent: 'strategist' },
+  // 285: r130-r135's card-driven adversary (Infiltrate, Spill, Grow, Surge) and the Growth boards as the judge
+  // plays them at 3 countries (all three boards), and at 4 countries for the Spill's crowded sites.
+  { name: 'c3-d3-strategist', config: 'baseline.json', set: ['countries=3', 'adversary.difficulty=3'], agent: 'strategist' },
+  { name: 'c4-d1-strategist', config: 'baseline.json', set: ['countries=4', 'adversary.difficulty=1'], agent: 'strategist' },
 ];
 const unknown = only.filter((n) => !CASES.some((c) => c.name === n));
 if (unknown.length) throw new Error(`no case ${unknown.join(', ')}; cases: ${CASES.map((c) => c.name).join(', ')}`);
@@ -158,7 +162,12 @@ const PAGE_LIB = String.raw`(() => {
   // 275: r130's card-driven adversary: an arrival corruption, a Grow (and its agent), a Spill, a botnet's seed, a
   // Surge, an uncountered threat's agent at its anchor.
   const COUNTER_EVENTS_R130 = /^adversary\.(corruptions_arrival|grew\.(factory|station)|grew_infested|spilled|seeded|surged|threat_anchor)$/;
-  const COUNTER_ALL = [COUNTER_EVENTS, COUNTER_EVENTS_R41, COUNTER_EVENTS_R55, COUNTER_EVENTS_R70, COUNTER_EVENTS_R74, COUNTER_EVENTS_R85, COUNTER_EVENTS_R99, COUNTER_EVENTS_R107, COUNTER_EVENTS_R130];
+  // 285: r130-r135's guards and draws: an Infiltrate a guard stopped, a build's Infiltrate, a guard holding (arrival,
+  // flip, take), a Wall stopping a landing, a firewall holding, the purge held off by botnets, research troops, a
+  // botnet spread skipped, a node capstone, cubes bought, chips made, a card drawn (scarce since r127), a cordon keeping
+  // an agent out (r136).
+  const COUNTER_EVENTS_R131 = /^(adversary\.(infiltrate_blocked|infiltrated\.build|guard_held\.[a-z_]+|walled_landing|firewall_held|sites_guarded|research_troops|botnets_spread_skipped|cordoned)|alignment\.purge_blocked_by_botnets|board\.(capstones|cubes_bought|chips_made)|cards\.drawn)$/;
+  const COUNTER_ALL = [COUNTER_EVENTS, COUNTER_EVENTS_R41, COUNTER_EVENTS_R55, COUNTER_EVENTS_R70, COUNTER_EVENTS_R74, COUNTER_EVENTS_R85, COUNTER_EVENTS_R99, COUNTER_EVENTS_R107, COUNTER_EVENTS_R130, COUNTER_EVENTS_R131];
   const counters = () => { const c = aic.timeline.frame.snap.state.stats?.counters ?? {}; return Array.isArray(c) ? Object.fromEntries(c) : c; };
   function counterEvents(c0, c1) {
     return Object.keys(c1).filter((k) => COUNTER_ALL.some((re) => re.test(k)) && (c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);
@@ -382,6 +391,8 @@ const issues = [];
 const captures = [];
 const spikes = [];
 const heap = [];
+/** 285: the first fresh game's config, seed and heap (MB) before it is played, and (`end`) the same game at the end. */
+let fresh = null;
 let shotNo = 0;
 
 function simRecords(c) {
@@ -468,6 +479,11 @@ try {
       const seed = 1000 + i;
       const play = { name: `${c.name}/play-${seed}`, shots: 0, times: [] };
       await page.js(`(window.__aicRnd = null, window.aic.play(${JSON.stringify(JSON.stringify(rec.config))}, '${seed}', '${c.name}'))`);
+      // 285: the sweep's first fresh game, measured before it is played and again at the end (`leak` below).
+      if (!fresh) {
+        await page.send('HeapProfiler.collectGarbage');
+        fresh = { config: rec.config, seed, name: c.name, mb: +((await page.send('Runtime.getHeapUsage')).usedSize / 1e6).toFixed(1) };
+      }
       await drive(page, play, 'play', seed);
       for (const g of [watch, play]) {
         const sorted = [...g.times].sort((a, b) => a - b);
@@ -481,6 +497,14 @@ try {
       heap.push({ after: play.name, mb: +(h.usedSize / 1e6).toFixed(1) });
     }
   }
+  // 285: growth is what the page keeps once its games are gone: the first fresh game again, measured as before. The
+  // heap after each case (printed) follows its size (D52: a 4-country game keeps more a step), not a leak: comparing
+  // the last case with the second flagged a 4-country case run last.
+  if (fresh && heap.length > 1) {
+    await page.js(`(window.__aicRnd = null, window.aic.play(${JSON.stringify(JSON.stringify(fresh.config))}, '${fresh.seed}', '${fresh.name}'))`);
+    await page.send('HeapProfiler.collectGarbage');
+    fresh.end = +((await page.send('Runtime.getHeapUsage')).usedSize / 1e6).toFixed(1);
+  }
 } finally {
   await page.close();
 }
@@ -488,11 +512,11 @@ try {
 // ---------- report ----------
 
 // Memory first, so it reaches the summary (020: it was added after the summary).
-const growth = heap.length > 2 ? heap[heap.length - 1].mb - heap[1].mb : 0;
-if (growth > 50) issues.push({ kind: 'memory', what: `heap grew ${growth.toFixed(0)} MB across ${heap.length} game pairs` });
+const growth = fresh?.end !== undefined ? fresh.end - fresh.mb : 0;
+if (growth > 50) issues.push({ kind: 'memory', what: `the page kept ${growth.toFixed(0)} MB over ${heap.length} game pairs (a fresh ${fresh.name} game: ${fresh.mb} MB at the start, ${fresh.end} MB at the end)` });
 const byKind = {};
 for (const i of issues) (byKind[i.kind] ??= []).push(i);
-writeFileSync(join(out, 'issues.json'), JSON.stringify({ issues, spikes, heap }, null, 1));
+writeFileSync(join(out, 'issues.json'), JSON.stringify({ issues, spikes, heap, fresh: fresh && { name: fresh.name, seed: fresh.seed, mb: fresh.mb, end: fresh.end } }, null, 1));
 
 const cards = captures.filter((c) => c.file).map((c) => `<figure class="${c.issues.some((i) => HARD.has(i.kind)) ? 'bad' : ''}"><img src="${c.file}"><figcaption><b>${esc(c.game)}</b> #${c.step} ${esc(c.what)}${c.issues.length ? `<br><i>${esc([...new Set(c.issues.map((i) => i.kind))].join(', '))}</i>` : ''}</figcaption></figure>`);
 const css = 'body{margin:0;font:12px sans-serif;background:#fff}main{display:grid;grid-template-columns:repeat(4,400px);gap:6px;padding:6px}figure{margin:0;border:2px solid #ddd}figure.bad{border-color:#d33}img{width:100%;display:block}figcaption{padding:2px 4px;height:3.2em;overflow:hidden}';
@@ -515,7 +539,7 @@ try {
   await sheetPage.close();
 }
 
-console.log(`\n${captures.length} captures, ${issues.length} issues, ${spikes.length} spikes over ${SPIKE_MS} ms, ${((Date.now() - t0) / 1000).toFixed(0)} s; heap ${heap.map((h) => h.mb).join(' ')} MB`);
+console.log(`\n${captures.length} captures, ${issues.length} issues, ${spikes.length} spikes over ${SPIKE_MS} ms, ${((Date.now() - t0) / 1000).toFixed(0)} s; heap ${heap.map((h) => h.mb).join(' ')} MB${fresh?.end !== undefined ? `; a fresh ${fresh.name} game ${fresh.mb} → ${fresh.end} MB` : ''}`);
 for (const [k, v] of Object.entries(byKind).sort()) {
   console.log(`${HARD.has(k) ? 'FAIL' : 'look'} ${k} x${v.length}`);
   for (const i of [...new Map(v.map((x) => [x.what, x])).values()].slice(0, 6)) console.log(`       ${i.game ?? ''} #${i.step ?? ''} ${i.what}`);

@@ -51,7 +51,7 @@
    "power"
   ],
   "cost": 8,
-  "text": "Until the end of next round, cities make no energy.",
+  "text": "Until the end of next round, cities make no energy and no Discord.",
   "effects": [
    {
     "op": "flag",
@@ -257,7 +257,7 @@
    "cyber"
   ],
   "cost": 21,
-  "text": "Surge 2: each country, 2 Agents onto its research station holding the most Agents. Each country: 2 cubes onto the adversary's research track.",
+  "text": "Surge 2: each country, 2 Agents onto its research station not yet the adversary's holding the most Agents. Each country: 2 cubes onto the adversary's research track.",
   "effects": [
    {
     "op": "surge",
@@ -301,7 +301,7 @@
    "security"
   ],
   "cost": 14,
-  "text": "Surge 3: each country, 3 Agents onto its coastal city holding the most Agents.",
+  "text": "Surge 3: each country, 3 Agents onto its coastal city not yet the adversary's holding the most Agents.",
   "effects": [
    {
     "op": "surge",
@@ -320,7 +320,7 @@
    "industry"
   ],
   "cost": 13,
-  "text": "Surge 2: each country, 2 Agents onto its factory holding the most Agents.",
+  "text": "Surge 2: each country, 2 Agents onto its factory not yet the adversary's holding the most Agents.",
   "effects": [
    {
     "op": "surge",
@@ -383,7 +383,7 @@
    "diplomacy"
   ],
   "cost": 21,
-  "text": "Surge 3: each country, 3 Agents onto its city holding the most Agents. Sway 5 toward Discord.",
+  "text": "Surge 3: each country, 3 Agents onto its city not yet the adversary's holding the most Agents. Sway 5 toward Discord.",
   "effects": [
    {
     "op": "surge",
@@ -435,7 +435,7 @@
    "industry"
   ],
   "cost": 15,
-  "text": "Surge 3: each country, 3 Agents onto its factory holding the most Agents.",
+  "text": "Surge 3: each country, 3 Agents onto its factory not yet the adversary's holding the most Agents.",
   "effects": [
    {
     "op": "surge",
@@ -509,7 +509,7 @@
    "diplomacy"
   ],
   "cost": 24,
-  "text": "Surge 5: each country, 5 Agents onto its city holding the most Agents.",
+  "text": "Surge 5: each country, 5 Agents onto its city not yet the adversary's holding the most Agents.",
   "effects": [
    {
     "op": "surge",
@@ -554,7 +554,7 @@
    "diplomacy"
   ],
   "cost": 22,
-  "text": "Surge 4: each country, 4 Agents onto its city holding the most Agents. Then each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
+  "text": "Surge 4: each country, 4 Agents onto its city not yet the adversary's holding the most Agents. Then each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
   "effects": [
    {
     "op": "surge",
@@ -604,7 +604,7 @@
    "universal"
   ],
   "cost": 24,
-  "text": "Each country: this round's Infiltrate lines land again. Surge 2: each country, 2 Agents onto its factory holding the most Agents.",
+  "text": "Each country: this round's Infiltrate lines land again. Surge 2: each country, 2 Agents onto its factory not yet the adversary's holding the most Agents.",
   "effects": [
    {
     "op": "adversary_build"
@@ -627,7 +627,7 @@
    "security"
   ],
   "cost": 24,
-  "text": "Surge 3: each country, 3 Agents onto its research station holding the most Agents.",
+  "text": "Surge 3: each country, 3 Agents onto its research station not yet the adversary's holding the most Agents.",
   "effects": [
    {
     "op": "surge",

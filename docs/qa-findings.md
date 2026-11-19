@@ -4,7 +4,8 @@ What a bug hunt reads first: the findings still open, the reports ruled won't-fi
 faults past hunts kept finding. Fixed findings, never to re-report: F1–F100 (020, 044) in `git show
 1617d75:docs/qa-findings.md`; then each hunt's `fixed.md` and `deferred.md` under `experiments/results/`: 099 (r38,
 F101 on), 118 (r46, F132, D43, W19 on), 145 (r59, F165, D57 on), 169 (r72 → 73, F205, D72 on), 184 (r77 → 78, F225,
-D77, W28 on), 197 (r86, F272, D88, W29 on), 235 (r106, F289, D92, W31 on; 238 fixed D92-D96, D98, D100, D103-D105, r108), 261 (r121 → r122, F322, D106, W34 on; 265 fixed D108, D109, D112, D115, D116; 266 D117). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
+D77, W28 on), 197 (r86, F272, D88, W29 on), 235 (r106, F289, D92, W31 on; 238 fixed D92-D96, D98, D100, D103-D105, r108), 261 (r121 → r122, F322, D106, W34 on; 265 fixed D108, D109, D112, D115, D116; 266 D117), 285 (r135 → r136, F379,
+D120 on; fixed D102). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
 
 ## Checkers
 
@@ -53,6 +54,8 @@ Each hunt found most of its faults in the same places. Look there first:
   pricing notes, the card viewer's export, e2e lanes and read scripts on the old rule. List every surface.
 - **261's**: a rider read after the step it rides on (Peer Review's paid for its own free station); a lane that
   never loaded (e2e:researcher, a SyntaxError for eight items); an agent fix that weakened the judge (read paired).
+- **285's**: a country guard checked where a line starts, not where it lands (hex neighbors cross borders); a note
+  read after an arrival check emptied the hex; a check's fixture copy missing a file a later item reads.
 
 ## Open, deferred to Matt
 
@@ -84,16 +87,22 @@ Each hunt found most of its faults in the same places. Look there first:
 | D87 | viewer | Five small faults from sweep 2's sheets (184's deferred.md). | One viewer item. **Pick**. |
 | D86 | rules | A forced threat pull (0.1 a game) has no end in the rulebook's draw (§18): it reshuffles forever. | One rulebook sentence: take the next card. **Matt's call**. |
 | D82 | cards | Five cards print under 7.5 pt with no recorded exception (Rally the Allies 5.4 pt). | Cut words or record. **Matt's call**. |
-| D83 | art | 12 deck cards name no scene (261: the 252-259 cards joined the first three) and 6 scenes aren't served: `cards:check` fails. | An art batch or a pool scene. **Pick**. |
+| D83 | art | 12 deck cards name no scene and 6 scenes aren't served: `cards:check` fails. | An art batch or a pool scene. **Pick**. |
 | D84 | boards | Focus (Builder) is never used (199: 0.01-0.04 uses at 2 credits; credits bind first). | With the board redesign. **Matt's call**. |
 | D85 | viewer | Prompts: "which other player?" names no card; "Corrupt factories (at 2): ... onto which?" (agents parse it); "1 seat 1's ambassador" (a record key); a node's protection prompt names no threat. | Prompts and the agents' parser together. **Pick**. |
-| D102 | tests | `e2e:corps` is red on main too. | Re-derive its numbers. **Pick**. |
 | D106 | agents | A research removal is valued at its printed cubes on an empty track. | Value the firing it delays. **Pick** leave. |
 | D107 | rules | Nothing marks a city bought this round. | A Bought marker. **Matt's call**. |
 | D113 | cards | Counterintelligence Sweep, Fusion Commons draw at 0 insight. | 1 insight; no draw. **Matt's call**. |
 | D114 | cards | Five liberate cards' pricing notes use pre-r113 keeps. | Restate. **Pick**. |
 | D118 | rules | The Liberated marker binds Corrupt lines only, not cards that take a site. | Leave; guard. **Matt's call**. |
 | D119 | cards | Faces against house terms: node "Harden", Faraday Yard's box, two-way wordings. | One card-words item. **Pick**. |
+| D120 | agents | `am_makes` and `power_progress` count board tags toward a sacrifice; the engine's test cost 2 of 64 dev games. D122: `burn_late` matches no power. | A paired read; retire `burn_late`. **Pick**. |
+| D121 | rules | Paid for one part: a two-node Growth option with one free hex; Patrol II with no facility to harden (D128). | Refuse them, a bump. **Pick**. |
+| D123 | viewer | Draft / Keep below the fold at 1366 (D127), the strip's income without production (D124), a node loss logged twice (D125), session notes (D129): 285's deferred.md. | One viewer item. **Pick**. |
+| D126 | pricing | "Every engine pays back within 2 rounds" (card-pricing, player-cards); `payback.py` reads 20+ over 2. | Reprice or restate. **Matt's call**. |
+| D130 | threats | Uncountered tier-1 Embargo, Insider Access, Agitators (and tier-2 Insurrection, Trade Blockade, Garrison State) take their site: their agents (plus the anchor agent) reach its number. | Smaller creations at tier 1; count it at tier 2. **Matt's call**. |
+| D134 | agents | The arrival forecast leaves out the card's Spill and Grow's agent. | `plan::next_spill` in `fore`. **Pick**. |
+| D131 | words | "Sleeper Cells" and "War Economy" each name a difficulty level and a tier-2 threat. | Rename the threats. **Matt's call**. |
 
 ## Won't fix
 

@@ -22,7 +22,8 @@ Cities, research stations and factories follow one set of rules and differ only 
   may be used up instead, the owner choosing which protection to spend, or none ([war.md](war.md), *Destruction*).
   Only your own guards your piece (r75, Matt's ruling 5): another player's never does, and a neutral site has none.
   One of your ambassadors on your site's hex can cover the site or your node there. Against troops it answers a
-  strike from next door; a troop standing on the hex removes ambassadors first, one a step (175, [war.md](war.md)).
+  strike on or next to the troop's hex; troops otherwise ignore ambassadors (r83: a march neither stops for nor
+  removes one, [war.md](war.md)).
 - **Liberate's payment rule** (r75, Matt's ruling 2): the bill is the site's price (a site with an agent on it is
   refused, below); **your own ambassadors standing on the site pay first, then your supply**, never another
   player's. It needs the site in reach; a botnet on or next to it doesn't stop it.
@@ -85,8 +86,7 @@ for the last rounds, and never free a city: the players still reach it and Liber
   agent arrives there: an Infiltrate's agent for its site stays in the supply, a creation line takes the next site, and so does an adversary-factory
   line's fallback onto a factory (r80, 184's D79), a threat's or Discord card's placement there doesn't happen, and a
   Spill moves no agent onto it. Nothing on it corrupts: an arrival's check (a node's loss too), a station flip
-  (Station Coup, Station Seizure, Lab Takeover: a forced flip too) and a threat corrupting its city (Overrun, Regime
-  Change) all skip it (r79, Matt's ruling on D77; agents already on it stay). Troops are not stopped. It comes off at the end of the next adversary turn (its Income beat), so it
+  (Station Coup, Station Seizure: a forced flip too) and a threat corrupting its city (Overrun) all skip it (r79, Matt's ruling on D77; agents already on it stay). Troops are not stopped. It comes off at the end of the next adversary turn (its Income beat), so it
   lasts one round; the building places a fresh one each round.
 
 A **base** is no site: it is a front's troop pile ([war.md](war.md)). A player ambassador standing on a base is used

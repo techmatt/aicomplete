@@ -132,28 +132,43 @@ pub fn infiltrate_sites(w: &World, g: &GameState, at: SiteType, c: usize) -> Vec
     all
 }
 
-/// 275: of `sites`, the one holding the most agents (ties: the lowest-numbered); none: empty. A firewalled one is
+/// 275: of `sites`, the one holding the most agents (ties: the lowest-numbered; 285: the lower country first, as the
+/// rulebook's §2 breaks every tie: a Spill's or seed's neighbors cross borders); none: empty. A firewalled one is
 /// passed over (no arrival lands there).
 pub fn most_agents(w: &World, g: &GameState, sites: &[usize]) -> Option<usize> {
     sites
         .iter()
         .copied()
         .filter(|&h| !firewalled(g, h))
-        .min_by_key(|&h| (std::cmp::Reverse(g.tokens(h, ADV_AMBASSADOR)), w.map.hexes[h].number))
+        .min_by_key(|&h| (std::cmp::Reverse(g.tokens(h, ADV_AMBASSADOR)), tie(w, h)))
 }
 
-/// 275: whether a botnet's seed may land on hex `h`: a city, research station or factory not yet the adversary's.
+/// 285: the rulebook's §2 tie order between hexes: the lower country, then the lower hex number.
+pub fn tie(w: &World, h: usize) -> (u8, u8) {
+    (w.map.hexes[h].country, w.map.hexes[h].number)
+}
+
+/// 285: whether hex `h` lies in a cordoned country (178: no agent lands there from a line, a Spill or a seed, and
+/// no Grow builds there). A hex's neighbors cross borders, so a line acting in an open country checks each hex.
+pub fn cordoned(w: &World, g: &GameState, h: usize) -> bool {
+    board::flagged(g, RoundFlag::Cordon, w.map.hexes[h].country as usize)
+}
+
+/// 275: whether a botnet's seed may land on hex `h`: a city, research station or factory not yet the adversary's
+/// (285: not in a cordoned country, a botnet's neighbor across a border included).
 pub fn seed_fits(w: &World, g: &GameState, h: usize) -> bool {
-    (is_city(w, h) || g.tokens(h, STATION) > 0 || g.tokens(h, FACTORY) > 0) && !corrupted(g, h) && !firewalled(g, h)
+    (is_city(w, h) || g.tokens(h, STATION) > 0 || g.tokens(h, FACTORY) > 0) && !corrupted(g, h) && !firewalled(g, h) && !cordoned(w, g, h)
 }
 
 /// 275: the free hexes next to `at` where a Grow builds a factory (`true`: a free industrial zone) or a research
-/// station (open land that is no industrial zone, no base), in hex order.
+/// station (open land that is no industrial zone, no base), the lower country, then number (285); none in a cordoned
+/// country.
 fn grow_hexes(w: &World, g: &GameState, at: usize, factory: bool) -> Vec<usize> {
     let mut v: Vec<usize> = w.map.hexes[at]
         .neighbors
         .iter()
         .copied()
+        .filter(|&h| !cordoned(w, g, h))
         .filter(|&h| {
             if factory {
                 w.map.hexes[h].industrial && !has_building(g, h) && g.tokens(h, FALLOUT) == 0
@@ -162,7 +177,8 @@ fn grow_hexes(w: &World, g: &GameState, at: usize, factory: bool) -> Vec<usize> 
             }
         })
         .collect();
-    v.sort_by_key(|&h| w.map.hexes[h].number);
+    // 285: a Grow's free hexes cross borders: the lower country first (§2).
+    v.sort_by_key(|&h| tie(w, h));
     v
 }
 

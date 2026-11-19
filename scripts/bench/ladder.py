@@ -13,7 +13,8 @@ difficulty from d0 up, `lo-hi` ','-separated (default `90-100,80-95,75-90,55-70`
 band prints `-`. A read of two or more agents prints a row per agent and difficulty. `--screen` reads a screen's
 cells: a variant `PAIR_LEVER` is lever LEVER (no suffix: `base`), a config after the spec's first is a lever named by
 its file (`x_off`, `x_off LEVER`), each with its gap to base paired on the same pair and seed. `--measures` adds, per difficulty and side, a game's means: rounds, nodes
-lost to corruption, adversary ambassadors placed (created or rallied), corruptions, compute made, and the project deck
+lost to corruption, adversary agents placed (285: every arrival less the canceled, from r130; before, created or
+rallied), corruptions, compute made, and the project deck
 (amendment 6618): projects revealed and resolved as a share of the deck (`--deck`; default the number of projects in `content/projects.json`), distinct projects revealed,
 and reshuffles; then (210) by board, levels pooled: slack seat-rounds (the seat kept every card it drafted, held no
 card it could have played and had insight left) beside bound ones (a keep or play held for want of insight alone),
@@ -103,13 +104,19 @@ def rev(d):
 
 def measures(g):
     c = g["counters"]
-    placed = c.get("adversary.created", 0) + c.get("adversary.rallied", 0)
+    # 285: r130 placed agents by Infiltrate, Surge, seeds and Spill, none of them `created` (and `rallied` went): every
+    # arrival less the canceled, where a game tallies arrivals; an older side keeps the old sum.
+    if "adversary.arrivals" in c:
+        # A Spill's cancel is no arrival's (its agent comes from the board): r136 tallies it apart.
+        placed = c.get("adversary.arrivals", 0) - c.get("adversary.canceled", 0) + c.get("adversary.spill_canceled", 0)
+    else:
+        placed = c.get("adversary.created", 0) + c.get("adversary.rallied", 0)
     revealed = c.get("adversary.projects_revealed", 0)
     distinct = sum(1 for k in c if k.startswith("adversary.revealed."))
     return {
         "corruption nodes lost": c.get("board.node_lost.corruption", 0),
         "ambassadors placed": placed,
-        "  of them rallied": c.get("adversary.rallied", 0),
+        "  of them by Infiltrate": c.get("adversary.infiltrated", 0) or c.get("adversary.rallied", 0),
         "corruptions": c.get("adversary.corruptions", 0),
         "compute made": c.get("adversary.compute_made", 0),
         "projects revealed": revealed,

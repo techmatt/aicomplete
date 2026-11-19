@@ -85,10 +85,12 @@ moves when any other card changes: to reprice an edited card, move its price by 
   **Engines pay up front:** the when-built gain is about two fires, in cards (since 271's scarce draw, at most
   2: Foundation Model Campus) where the fire pays credits, since a credit gain on a credit cost would be a circular
   payment (guideline 5). How the agents read a trigger in play: agents.md, *The value table*.
-- **Card throughput:** credits pile up, so the fix is dearer, bigger cards and more of them: engines draw when built,
-  Action buildings turn spare credits, chips, energy or Operatives into cards (Patent Library, Parts Exchange), three
-  engines draw on their tag's plays, and board powers draw 1 a use (the Researcher's Field Survey and Lab, the
-  Protector's Interdict II). Late, dear cards (Moonshot Grant, Headquarters Raid) take spare credits. A flat credit sink stays the
+- **Card throughput** (271's scarce draw): credits pile up, so the fix is dearer, bigger cards and more of them, but
+  repeatable draw is thin: two engines draw 1 on a tag's plays (Preprint Server on each Science card you play,
+  Consulate Tower on each Diplomacy card another player plays), one Action draws 1 a round (Command-and-Control
+  Grid), board powers draw 1 a use (the Researcher's Field Survey and Lab, the Protector's Interdict II), and two
+  chip converters draw 1 (Polar Compute Array's, Delta Seawall's). The rest is once: 1-2 when a building is built,
+  1-3 when a program or event is played. Late, dear cards (Moonshot Grant, Headquarters Raid) take spare credits. A flat credit sink stays the
   last resort.
 - **Insight off every card** counts `rates.insight_discount_share` (0.25) of the plays: the floor below.
 - **Insight discounts reach 0:** `discount_floor` 0 holds insight too, so `science_every` (a seat with 2 Science
@@ -105,13 +107,13 @@ moves when any other card changes: to reprice an edited card, move its price by 
 - **Repeatable and progressive cards** are priced on their uses: an Action (value less its cost) × the horizon × 0.7;
   a progressive token card (uses × payoff) × 0.7, counting adds as uses (ruling 12). A conversion Action passes both
   the anchor ceiling and a gain at `values.json` only when its output is priced alike in both (Sway, a liberation, a
-  megaproject cube: `project_cube` 4, not the `research_cubes` resource at 2). At tier 1, energy into insight reads
+  megaproject cube: `project_cube` and the `research_cubes` resource both 4). At tier 1, energy into insight reads
   over 1.5 at the anchors or a loss at the table (a gain needs over 1.8 insight an energy, the ceiling under 1.69);
   into cards only 1.13-1.35 cards an energy passes both (3 energy for 4 cards). Tier 2's 2.5 ceiling passes either
   at 1:2.
 - **Energy is rare:** about 3 credits an energy, 4 to buy from a neutral city. +1 energy of income or production is
   the horizon × 3 × 0.8 (`rates.energy_income_share`: it arrives a drop at a time, not when needed): about 9.6 on a
-  tier-1 card, 6 on a tier-2 one (Matt's ruling), and no card above +2 a card but the major Dyson Swarm Tranche (+3) and one tag payoff (Tidal
+  tier-1 card, 8.4 on a tier-2 one (Matt's ruling), and no card above +2 a card but the major Dyson Swarm Tranche (+3) and one tag payoff (Tidal
   Barrage, +3 at 6 Power tags). Threat counters that offer energy (by tag), fourteen cards and ten Actions take
   energy ([cards.md](cards.md)).
 - **Energy as a second cost** (Matt): a card whose title reads power-hungry prints energy and costs 3 credits less
@@ -127,8 +129,8 @@ moves when any other card changes: to reprice an edited card, move its price by 
 - **A gift to another seat** is 0.75 × face; **a tag left in play** 0.67, then 0.33 each (events leave none).
 - **The liberate capstones**: priced at their own value, at least half in their engine's resource, out of reach
   before mid-game: a city liberated is 30 (5 Sway, the city and the ambassadors and Discord it stops; play reads about
-  33), against the Liberate action's 5 ambassadors at about 67; each engine's twist at its own row (3 ambassadors;
-  up to 3 troops in the city's country; a botnet next to it; a draw 2). They read 1.0-1.5 at the anchors, inside the
+  33), against the Liberate action's 5 ambassadors at about 27; each engine's twist at its own row (3 ambassadors;
+  up to 3 troops in the city's country; a botnet next to it). They read 1.0-1.5 at the anchors, inside the
   margin like any fair card: the deck's late credit sinks, pending Matt's liberation anchor.
 
 ## Rates known to be off at r36

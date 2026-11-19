@@ -101,8 +101,11 @@ function saveNote({ id, flag = '', comment = '' }) {
   if (flag && !FLAGS.includes(flag)) throw Object.assign(new Error(`no flag ${flag}`), { status: 400 });
   if (typeof comment !== 'string') throw Object.assign(new Error('comment is text'), { status: 400 });
   const notes = readLedger(NOTES);
+  // 285: a card whose words sit in sections (the adversary reference, an AI board) saved an empty or partial text,
+  // so "Changed since your note" showed nothing of what it said.
+  const text = [card.text, ...(card.sections ?? []).map((s) => `${s.head}: ${s.text}`)].filter(Boolean).join(' ');
   if (!flag && !comment.trim()) delete notes[id];
-  else notes[id] = { name: card.name, kind: card.kind, hash: card.hash, flag, comment: comment.trim(), text: card.text, at: new Date().toISOString() };
+  else notes[id] = { name: card.name, kind: card.kind, hash: card.hash, flag, comment: comment.trim(), text, at: new Date().toISOString() };
   writeLedger(NOTES, notes);
   try {
     markSeen([id]);

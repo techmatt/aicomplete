@@ -5,22 +5,53 @@ use super::*;
 /// Places `n` agents from the supply on hex `h`. The supply
 /// is a cap (027): a placement it can't make doesn't happen.
 pub fn place(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) -> Res {
-    place_as(g, cx, h, n, false)
+    place_as(g, cx, h, n, false, None)
+}
+
+/// 285: [`place`] with [`place_line`]'s note (a botnet's seed).
+pub fn place_noted(g: &mut GameState, cx: &mut Cx, h: usize, n: i64, what: &dyn Fn() -> String) -> Res {
+    place_as(g, cx, h, n, false, Some(what))
 }
 
 /// r133 (280): [`place`] onto a site an Infiltrate, Surge or Grow line names: its arrival check is made as the
 /// agents go on, in the same read of the site (the rule is the same; only the table's count of checks differs).
 pub fn place_named(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) -> Res {
-    place_as(g, cx, h, n, true)
+    place_as(g, cx, h, n, true, None)
 }
 
-fn place_as(g: &mut GameState, cx: &mut Cx, h: usize, n: i64, named: bool) -> Res {
+/// 285: [`place_named`] with a note naming the line (`what()`, "Infiltrate (cities)", built only for a reader of
+/// events) and what landed, written after
+/// the arrivals and before the arrival check's own note, so the turn's log says where each line's agents went.
+pub fn place_line(g: &mut GameState, cx: &mut Cx, h: usize, n: i64, what: &dyn Fn() -> String) -> Res {
+    place_as(g, cx, h, n, true, Some(what))
+}
+
+/// "1 agent" / "2 agents".
+fn agents(n: i64) -> String {
+    format!("{n} agent{}", if n == 1 { "" } else { "s" })
+}
+
+fn place_as(g: &mut GameState, cx: &mut Cx, h: usize, n: i64, named: bool, what: Option<&dyn Fn() -> String>) -> Res {
+    let w = cx.world;
     // 158: a firewall stops every arrival on its hex; they stay in the supply.
     if firewalled(g, h) {
         cx.tally(g, "adversary.firewalled", n.max(0));
+        if let Some(what) = what.filter(|_| n > 0) {
+            cx.note(Some(h), || format!("{}: a firewall keeps {} off {}", what(), agents(n), hex_name(&w, h)));
+        }
+        return Ok(());
+    }
+    // 285: a cordon (178) stops every agent landing in its country, whatever line sends it (a neighbor's seed, Night
+    // Raid, a fallback); they stay in the supply. The lines that read a whole country skip it before this.
+    if super::plan::cordoned(&w, g, h) {
+        cx.tally(g, "adversary.cordoned", n.max(0));
+        if let Some(what) = what.filter(|_| n > 0) {
+            cx.note(Some(h), || format!("{}: the cordon keeps {} off {}", what(), agents(n), hex_name(&w, h)));
+        }
         return Ok(());
     }
     let mut landed = false;
+    let (mut down, mut canceled) = (0, 0);
     for k in 0..n {
         if g.var(SUPPLY) <= 0 {
             cx.tally(g, "adversary.supply_short", n - k);
@@ -29,7 +60,30 @@ fn place_as(g: &mut GameState, cx: &mut Cx, h: usize, n: i64, named: bool) -> Re
         cx.add_key(g, SUPPLY, -1);
         cx.per_round(g, OPS, 1);
         cx.tally(g, "adversary.arrivals", 1);
-        landed |= arrive(g, cx, h)?;
+        let one = arrive(g, cx, h)?;
+        landed |= one;
+        if one {
+            down += 1;
+        } else {
+            canceled += 1;
+        }
+    }
+    if let Some(what) = what.filter(|_| n > 0) {
+        cx.note(Some(h), || {
+            let at = hex_name(&w, h);
+            let short = n - down - canceled;
+            let mut parts = Vec::new();
+            if down > 0 {
+                parts.push(format!("{} {} on {at}", agents(down), if down == 1 { "lands" } else { "land" }));
+            }
+            if canceled > 0 {
+                parts.push(format!("{} sent to {at} canceled by as many player ambassadors", agents(canceled)));
+            }
+            if short > 0 {
+                parts.push(format!("the supply is short {} for {at}", agents(short)));
+            }
+            format!("{}: {}", what(), parts.join("; "))
+        });
     }
     // 275: arrival corruption: the hex an agent landed on is checked, and nothing else (all canceled or none sent:
     // nothing arrived, nothing is checked).
@@ -89,6 +143,16 @@ pub fn remove(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) -> i64 {
 /// 224 #10): Wall: no troop is ever placed on the Protector's hex (a Muster, a factory's, a botnet's, a threat's
 /// or a project's): it stays in the supply. Returns whether it was placed.
 pub fn place_troop(g: &mut GameState, cx: &mut Cx, h: usize, source: &str) -> bool {
+    place_troop_as(g, cx, h, source, true)
+}
+
+/// 285: [`place_troop`] with no note, for a caller that writes its own (a factory's troop, a project's botnet or
+/// factory troops).
+pub fn place_troop_quiet(g: &mut GameState, cx: &mut Cx, h: usize, source: &str) -> bool {
+    place_troop_as(g, cx, h, source, false)
+}
+
+fn place_troop_as(g: &mut GameState, cx: &mut Cx, h: usize, source: &str, noted: bool) -> bool {
     if board::walled(&cx.world, g, h) {
         cx.tally(g, "adversary.troops_walled", 1);
         cx.tally(g, &format!("adversary.troops_walled.{source}"), 1);
@@ -96,6 +160,20 @@ pub fn place_troop(g: &mut GameState, cx: &mut Cx, h: usize, source: &str) -> bo
     }
     cx.add_tokens(g, h, TROOP, 1);
     cx.per_round(g, &format!("map.troops_placed.{source}"), 1);
+    // 285: the turn panel showed "+1 adversary troop" with no hex or cause (a threat's, Weapons Program's).
+    let w = cx.world;
+    if !noted {
+        return true;
+    }
+    cx.note(Some(h), || {
+        let by = match source {
+            "muster" => "a Muster",
+            "threat" => "a threat",
+            "project" => "a project",
+            other => other,
+        };
+        format!("An adversary troop lands on {} ({by})", hex_name(&w, h))
+    });
     true
 }
 

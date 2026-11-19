@@ -53,7 +53,7 @@ pub const HOUSE_TERMS: [(&str, &str); 26] = [
     ("Gather up to N", "pieces (ambassadors, agents, troops; botnets never move) onto the target, each from a hex next to it; you may stop at any piece (a strike, \"remove up to N on or next to it\", moves nothing)"),
     ("Push up to N", "pieces from the target, each to a hex next to it that you choose; you may stop at any piece"),
     ("Firewall", "a token on a hex: no agent lands or moves there (an Infiltrate's agent for it stays in the supply) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn"),
-    ("In the next adversary turn, no X", "a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (an Infiltrate's agent for it stays in the supply), and the tokens come off with the firewalls"),
+    ("In the next adversary turn, no X", "a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (an Infiltrate's agent for it stays in the supply; no Corrupt: agents may land, but nothing there corrupts, flips or loses a node), and the tokens come off with the firewalls"),
 ];
 
 /// `3 credits, 1 energy`.
@@ -755,7 +755,7 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          city and you sway Unity (removing a botnet sways none), and each Unity \
          tip brings a good card. \
          Like fear cards, each acts by what is on the board, never by your reach; some forbid the adversary's next \
-         Infiltrate, Muster or Corrupt where your pieces stand. \
+         Infiltrate, Muster or corruption where your pieces stand. \
          Every Unity and Discord card prints three strengths, and the tip's own count on its side picks which \
          one resolves (strength I on tips below {t2}, II from tip {t2}, III from tip {t3}): a later strength counts more \
          or reaches wider, and Discord's late cards hit harder. The {unity} Unity cards reshuffle when the deck runs out. \
@@ -763,8 +763,8 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          ambassadors for the same, so you choose between racing toward Unity and holding off the next \
          Discord card. You also lose if any player has no nodes left on the board. \
          Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of \
-         their own hex (or two agents on it: Night Raid lands them), war taking a factory on their hex, \
-         and Border War (nodes by a front's base). A lost token leaves the game and nothing marks its hex; its \
+         their own hex (or two agents on it: Night Raid lands them), an adversary troop's strike on their hex, \
+         war taking a factory on their hex, and Border War (nodes by a front's base). A lost token leaves the game and nothing marks its hex; its \
          income stays. {safe}The adversary deck is a round cap too, {} rounds at \
          most (fewer at the harder levels), and reaching it loses. So there are three different \
          pressures: the Discord deck (politics), your nodes (the board) and the cap.\n",

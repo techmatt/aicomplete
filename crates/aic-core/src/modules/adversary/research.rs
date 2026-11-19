@@ -47,7 +47,12 @@ pub fn gain_research(g: &mut GameState, cx: &mut Cx, n: i64, source: &str) {
     };
     cx.note(None, || {
         let cubes = if n == 1 { "cube" } else { "cubes" };
-        format!("{n} {cubes} onto the adversary's research track from {from} ({held} of {})", research_threshold(&w))
+        // 285: "(16 of 15)" read as an overflow: past the threshold, say it fires.
+        {
+            let at = research_threshold(&w);
+            let fire = if held >= at { ": it fires at the research check" } else { "" };
+            format!("{n} {cubes} onto the adversary's research track from {from} ({held} of {at}{fire})")
+        }
     });
     cx.tally(g, "adversary.research_made", n);
     cx.tally(g, &format!("adversary.research_made.{source}"), n);

@@ -67,12 +67,12 @@ pub const SOURCES: [&str; 13] = [
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
 pub const RULE_HARMS: [(&str, &str, &str); 27] = [
-    ("income and Infiltrate", "adversary pieces placed", "every event's Infiltrate X lands `infiltrate_agents` (1; 2 at level 4) on each city of its type, at most `infiltrate_facility_cap` (1) on a station, factory or botnet hex, not yet the adversary's (275: it replaced Rally and the agent pools; 282: the cap)"),
+    ("income and Infiltrate", "adversary pieces placed", "every event's Infiltrate X lands `infiltrate_agents` (1; 2 at level 4) on each site of its type, at most `infiltrate_facility_cap` (1) a site from a station, factory or botnet line, not yet the adversary's (275: it replaced Rally and the agent pools; 282: the cap)"),
     ("income and Infiltrate", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
     ("income and Infiltrate", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
     ("income and Infiltrate", "production blacked out", "an agent on a city or station blocks its output while it stands (137)"),
     ("botnets", "projects advanced (compute)", "each botnet makes compute"),
-    ("botnets", "adversary pieces placed", "each botnet with no player ambassador on it seeds `botnet_seed` agent onto the city, station or factory next to it holding the most agents, in the compute step, with its compute in the same move (275; r133)"),
+    ("botnets", "adversary pieces placed", "each botnet with no player ambassador on it seeds `botnet_seed` agent onto the city, station or factory next to it holding the most agents, in the compute step, as it adds its compute (which comes even when a cordon stops the seed or it has nowhere to land; 275; r133)"),
     ("uncountered threats", "adversary pieces placed", "a threat that executes uncountered lands `threat_agents` agent on its anchor, its first location token (275)"),
     ("corruption", "node destroyed", "`corrupt_node_at` agents on a hex with a player's node destroy the node and leave no mark (175, r98; protections apply)"),
     ("corruption", "node destroyed", "a node on the corrupted hex itself is destroyed (its owner may spend a protection: r75)"),

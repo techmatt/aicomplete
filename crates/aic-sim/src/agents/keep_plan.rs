@@ -213,7 +213,8 @@ pub(crate) fn am_makes(w: &World, g: &GameState, s: usize) -> i64 {
             })
             .sum::<i64>()
     };
-    // A power that sacrifices a tag counts once the seat has cards of it in play.
+    // A power that sacrifices a tag counts once the seat has cards of it in play. (285, deferred: board tags count
+    // here, which the sacrifice never uses; the engine's test, `TagNeed::payable`, cost the judge 2 of 64 games.)
     let tags = cards::tag_counts(w, g, s);
     let has = |t: &aic_core::vocab::TagOrAny, n: i64| match t {
         aic_core::vocab::TagOrAny::Any => tags.iter().sum::<i64>() >= n,

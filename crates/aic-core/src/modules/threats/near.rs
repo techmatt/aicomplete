@@ -17,6 +17,11 @@ pub fn tokens(g: &GameState, t: &str) -> Vec<usize> {
     token_hexes(g, t).collect()
 }
 
+/// 285: threat `t`'s first location token's hex (its anchor), with no allocation (a deal's note reads it).
+pub fn first_token(g: &GameState, t: &str) -> Option<usize> {
+    token_hexes(g, t).next()
+}
+
 /// [`tokens`] with no allocation.
 fn token_hexes<'a>(g: &'a GameState, t: &'a str) -> impl Iterator<Item = usize> + 'a {
     (0..MAX_TOKENS).filter_map(move |i| {

@@ -31,7 +31,8 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   three tag chains:** Science, Preprint Server (needs 4 Science: when you play a Science card, draw 1); Cyber,
   Command-and-Control Grid (needs 3 Cyber: Action: draw 1; 2 a round with Simulation Cluster's Reuse); Diplomacy, Consulate Tower (needs 3 Diplomacy:
   when another player plays a Diplomacy card, draw 1). Board powers and converters draw at most 1 (the Researcher's Lab and Field Survey, the Protector's
-  Interdict II; Polar Compute Array's converter: 1 chip, with credits back); no megaproject pays a card at completion.
+  Interdict II; Polar Compute Array's converter: 1 chip, with credits back; Delta Seawall's: 2 chips, with 2 Sway to
+  Unity); no megaproject pays a card at completion.
 
 <!-- generated: draft_set -->
 **The draft set in numbers.** 191 cards (124 tier 1, 67 tier 2). Insight to play: 102 / 60 / 29 cards at 0 / 1 / 2, 19 of the 67 tier-2 cards at 2. An energy cost: 14 cards, 8 of the 76 buildings.
@@ -61,7 +62,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
 - **Engines (candidate; the Terraforming Mars pattern).** Programs are the green cards: one-shot, and where permanent
   income lives, flat ("raise your credit income by 5") or per tag ("by 1 per 3 Science tags on your cards", one such
   program per tag, needs 2 of it). Buildings are the blue cards: triggers, Actions and Effects; a building's income is
-  per tag, 2 a tag at its tag count when played (as a program's), or flat (the tier-2 engines, Fabrication Megaplex,
+  per tag at its tag count when played (2 a tag on the engines; Power to the People 1 per 2 Power tags), or flat (the tier-2 engines, Fabrication Megaplex,
   Cryo Sample Vault). **Some engines pay up front:** a one-time gain when built (a drawn card, 2 energy on two Power
   ones, or its first tokens here: the At N cards, *Tokens* below, so its own play, or for Intrusion Lab its first
   removal of compute or a feeder, fills the first threshold); the engines that paid up front in draws (Capital Projects

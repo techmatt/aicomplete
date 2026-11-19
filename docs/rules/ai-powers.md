@@ -64,7 +64,8 @@ pick one Growth option, and every placement, by Growth or card, pays the energy 
 uncovers (locked). **Each board prints one easy option and two costly ones** (277). The easy one is free, the floor
 you can always take: a node and a small rider. The costly two are the real choice and pull different ways: more
 nodes (Sprawl, Outpost, Peer Review) against a rider or reach (Annex, Accord, Field Station). With no token left, no
-step it can pay or no free hex, an option isn't offered; a two-node option needs both nodes' steps (276). Cards that
+step it can pay or no free hex, an option isn't offered; a two-node option needs both nodes' steps (276), and Field
+Station an open hex in reach for its station (285). Cards that
 place nodes add to Growth (cards aren't capped).
 
 **Growth's give / get** (277, at Matt's unit anchors, [card-guidelines.md](../card-guidelines.md); a node 5.33 and a
@@ -127,7 +128,7 @@ boards' own insight ways are few:
   immediate march's (phase 16) comes after them.
 - **Researcher, Lab** (a threshold power, once a round): with 2 Science on your cards, 1 insight → draw a card; with
   4, also 2 credits → a research cube on an open megaproject. The Researcher's draw outlet and a use for Patience's
-  bank. Give / get 1.67 for 2.67 (tier II 3.67 for 6.67): a draw, not a gain. Peer Review and Field Station, its
+  bank. Give / get at `values.json` 2.67 for 3.33 (tier II 4.67 for 7.33, the cube at 4): a small gain. Peer Review and Field Station, its
   Growth, spend insight too.
 
 **For new players.** Insight is what you spend to keep and play cards: each round, the number on the rightmost space you've uncovered on

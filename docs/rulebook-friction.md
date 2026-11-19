@@ -40,10 +40,10 @@ At d4 the load held in mind is no higher than at d2; the volume is (compute 2-4�
 | 9 | Corrupt numbers ([§6](rulebook.md#corruption), [§21](rulebook.md#21-difficulty)) | every round | up to three modifiers on one printed number (city 5 → 3 from level 1 → 2 on a "(1 fewer)" line → 3 with a Liberated marker) | 3 | **A** done | 268: the aid's *Corrupt numbers* at each level |
 | 10 | Hosting ([§9](rulebook.md#9-production) step 2, Buy energy [§8](rulebook.md#standard-actions)) | every round | who hosts which city is a matching problem decided in production, but Buy energy in the action phase depends on it ("hosts or could host") | 2-3 host slots | **P** | Hosts chosen at the start of the action phase, a host token on each, standing all round |
 | 11 | Unity's two tables ([§12](rulebook.md#tipping), [§14](rulebook.md#14-winning-and-losing)) | most games, late | strength steps at 3 and 6, purge steps at 3 and 7: two tables, two band edges, read at each tip | 2 | **A** done, **C** done | 268: the aid's *Tip strips*; 274: a tip track per side, each space printing its strength and the purge (§2) |
-| 12 | The Income beat at d4 ([§6](rulebook.md#the-turn-four-beats), [§17](rulebook.md#17-projects)) | most rounds at d3-d4 | round 5: three projects resolved, a Discord tip, four extra threats and a muster before anyone acts; the order spans §6, §12, §17 | 3-4 pending effects | **A** | An Income-beat flow card: six numbered steps, tips checked after each project |
+| 12 | The Income beat at d4 ([§6](rulebook.md#the-turn-three-beats), [§17](rulebook.md#17-projects)) | most rounds at d3-d4 | round 5: three projects resolved, a Discord tip, four extra threats and a muster before anyone acts; the order spans §6, §12, §17 | 3-4 pending effects | **A** | An Income-beat flow card: six numbered steps, tips checked after each project |
 | 13 | Projects ([§17](rulebook.md#17-projects)) | most rounds | "the X with the most agents on or next to it" counts seven hexes a candidate (Asset Seizure: 21 reads) | 0 | **P** done | 274: a project counts the hex only, as Night Raid |
 | 14 | Card faces | every round | four faces below the 7.5 pt floor (Popular Uprising 5.4, Positron Storage Ring 5.8, Retained Earnings 6.3, Particle Accelerator 6.3); long tier-2 texts (Liaison Corps, Power to the People, Open Source Uprising) | 0 | **W** | Shorter op wording for those four (a content pass with `npm run cards:fit`); split Liaison Corps' line |
-| 15 | Event lines ([§6](rulebook.md#the-turn-four-beats)) | every round | event faces print no icon row; each line read in words | 0 | **C** | Draw the two missing glyphs (Blackout, Forced March) and give event faces an icon row |
+| 15 | Event lines ([§6](rulebook.md#the-turn-three-beats)) | every round | event faces print no icon row; each line read in words | 0 | **C** | Draw the two missing glyphs (Blackout, Forced March) and give event faces an icon row |
 | 16 | Rulebook length | every round | 13,700 words; 13-24 lookups a round, most in §6, §9, §10, §15, §17 | 0 | **A** done | 268: the aid now carries the round, once-a-round list, tip strips, corrupt numbers, the march, ambassador spends and growth |
 
 **Errors the hand-players made**, each a rule hard enough to get wrong (fixed in words by 268 unless marked): a
@@ -54,8 +54,8 @@ project corrupted (§6); a threat's Fallout hex (§6); Vigil for a troop that do
 ambassador goes (§8); the Botnets spread line read two ways (§6; the event cards' own text is open, **W**); Naval
 Blockade's "cities make no energy" read as leaving a corrupted city's Discord on (its card text, open, **W**).
 
-**Closed since r98:** #5 (what spends an ambassador: the aid's box), #2 by the aid (its track component stays open as
-row 11). #1, #3 and #4 are rows 3, 13 and 15.
+**Closed since r98:** #5 (what spends an ambassador: the aid's box), #2 by the aid and 274's tip tracks
+(row 11). #1, #3 and #4 are rows 3, 13 and 15.
 
 ## What a per-rule review misses
 

@@ -4,7 +4,7 @@ use crate::content::Op;
 use crate::modules::common::{FIREWALL, FALLOUT};
 use crate::modules::{adversary, alignment, board, effects, plan};
 use crate::op::{CorruptSite, CreateAt, CreateIf, Facility, SiteType};
-use crate::modules::common::STATION;
+use crate::modules::common::{has_building, STATION};
 
 /// Country `c`'s hexes passing `f`, lowest-numbered first.
 fn numbered_where(m: &Map, c: u8, f: impl Fn(usize) -> bool) -> Vec<usize> {
@@ -257,6 +257,51 @@ fn a_spill_waits_for_its_level_then_moves_one_agent() {
         assert_eq!((g.tokens(c, ADV_AMBASSADOR), g.tokens(f, ADV_AMBASSADOR)), want, "d{d}");
         assert_eq!(total(&g, ADV_AMBASSADOR), 2, "d{d}: a move, no new agent");
     }
+}
+
+/// 285: a cordon (178) keeps out every agent a line would land, a neighbor across a border included: a Spill from an
+/// open country's city, a botnet's seed, and a Grow's new facility all pass over a cordoned country's hexes.
+#[test]
+fn a_cordon_keeps_spills_seeds_and_grows_out_across_a_border() {
+    let (rules, mut g) = lab_with(&[], &["adversary.difficulty=2"]);
+    let m = &rules.map;
+    set_var(&mut g, SUPPLY, 40);
+    clear_agents(&mut g);
+    for h in 0..g.hexes.len() {
+        put(&mut g, h, BOTNET, 0);
+    }
+    // A city of country 0 with a free land neighbor in country 1.
+    let (c, x) = numbered_where(m, 0, |h| kind(m, h) == HexKind::City && g.tokens(h, ADV_CUBE) == 0)
+        .into_iter()
+        .find_map(|c| {
+            m.hexes[c].neighbors.iter().copied().find(|&x| m.hexes[x].country == 1 && !has_building(&g, x) && kind(m, x) != HexKind::City).map(|x| (c, x))
+        })
+        .expect("a city on the border");
+    for &n in &m.hexes[c].neighbors {
+        put(&mut g, n, FACTORY, 0);
+        put(&mut g, n, STATION, 0);
+    }
+    put(&mut g, x, FACTORY, 1);
+    put(&mut g, x, ADV_CUBE, 0);
+    let cordon = |g: &mut GameState, on: bool| set_var(g, board::flag(crate::content::RoundFlag::Cordon, 1), if on { 2 } else { 0 });
+    cordon(&mut g, true);
+    put(&mut g, c, ADV_AMBASSADOR, 2);
+    with_cx(&rules, |cx| adversary::spill(&mut g, cx, SiteType::City, SiteType::Factory, None)).unwrap();
+    assert_eq!((g.tokens(c, ADV_AMBASSADOR), g.tokens(x, ADV_AMBASSADOR)), (2, 0), "no Spill into a cordoned country");
+    // A botnet on the city seeds its own hex, not the cordoned factory next to it.
+    put(&mut g, c, ADV_AMBASSADOR, 0);
+    put(&mut g, c, BOTNET, 1);
+    with_cx(&rules, |cx| adversary::botnets_seed(&mut g, cx)).unwrap();
+    assert_eq!((g.tokens(c, ADV_AMBASSADOR), g.tokens(x, ADV_AMBASSADOR)), (1, 0), "no seed across the border");
+    assert!(plan::next_seeds(&rules.world(), &g).iter().all(|&(h, _)| h != x), "the forecast agrees");
+    // No Grow builds in the cordoned country; open, the same map has one that would.
+    let w = rules.world();
+    let crosses = |g: &GameState| (0..g.hexes.len()).filter(|&h| m.hexes[h].country == 0).filter_map(|h| plan::grow_at(&w, g, h)).any(|(z, _)| m.hexes[z].country == 1);
+    assert!(!crosses(&g), "a Grow passes over the cordoned country");
+    cordon(&mut g, false);
+    assert!(crosses(&g), "the test bites: open, a Grow from country 0 can build across the border");
+    with_cx(&rules, |cx| adversary::spill(&mut g, cx, SiteType::City, SiteType::Factory, None)).unwrap();
+    assert_eq!(g.tokens(x, ADV_AMBASSADOR), 0, "the city's 1 agent spills nothing (the test's control)");
 }
 
 /// 275 (Matt, 2026-11-18): each botnet with no player ambassador on it seeds 1 agent onto the site next to it

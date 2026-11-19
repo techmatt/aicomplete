@@ -192,7 +192,7 @@ try {
       for (const name of ['Breadth', 'Wall', 'industry tag', 'security tag']) check(boards.innate.includes(name), `the seat panels show ${name}`);
       check(boards.tracks.includes('economy track') && boards.tracks.includes('card-play track'), `both tracks are labeled (${boards.tracks})`);
       for (const name of ['Full Capacity', 'Master Plan', 'Sanctuary', 'Aegis Doctrine']) check(boards.capstones.includes(name), `the tracks end in ${name}`);
-      // r27's node growth phase (`*.growth`); 235: the bar names production's growth step ("E growth") now.
+      // r27's node growth phase (`*.growth`); 285: the bar names production's Drone step "E drones" (city growth went at r130).
       check(!(await js(`[...document.querySelectorAll('#phase-bar .phase')].some((p) => /\\.growth\\b/.test(p.title))`)), 'no node growth phase in the round bar');
     }
     if (st.phase === 'cards.draft' && !shots.has('draft')) { shots.add('draft'); await shot('play-draft-1366'); }

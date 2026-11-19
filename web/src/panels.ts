@@ -465,7 +465,8 @@ export function pilesHtml(v: View): string {
   const rest = v.piles.filter((p) => !DRAWN_PILES.has(p.key) && !(p.key === 'adversary.project_discard' && !p.count));
   if (!rest.length) return '';
   return `<h3>Piles</h3><div class="pile-list">${rest.map((p) => {
-    const shown = p.visible.slice(-3).map((c) => cardChip(c, `pile:${p.key}`)).join('');
+    // 285: `visible` is top first (view.rs `PileView`): the newest discards, not the oldest.
+    const shown = p.visible.slice(0, 3).map((c) => cardChip(c, `pile:${p.key}`)).join('');
     const more = p.visible.length > 3 ? `<small>+${p.visible.length - 3}</small>` : '';
     return `<div class="row pile" data-pile="${esc(p.key)}"><span class="what" title="${esc(p.key)}">${esc(p.label)}${p.owner !== null ? ` (seat ${p.owner})` : ''}: <b>${p.count}</b></span>${more}${shown}</div>`;
   }).join('')}</div>`;

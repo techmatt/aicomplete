@@ -1347,7 +1347,7 @@ pub enum Op {
     },
     /// 275, Infiltrate X (it replaced Rally and the agent pools): `adversary.infiltrate_agents` agents (1; 2 from
     /// its level) on each `site` in every country in scope that is not yet the adversary's, whoever owns it, in
-    /// hex order; at most `adversary.infiltrate_facility_cap` (1) on a station, factory or botnet hex (282). A firewalled or no-Infiltrate site's agents stay in the supply; a cordoned country takes none.
+    /// hex order; at most `adversary.infiltrate_facility_cap` (1) a site when `site` is stations, factories or botnet hexes (282). A firewalled or no-Infiltrate site's agents stay in the supply; a cordoned country takes none.
     /// Each arrival is checked where it lands (arrival corruption, [`crate::modules::adversary::arrive_check`]).
     Infiltrate {
         site: SiteType,
@@ -1359,16 +1359,18 @@ pub enum Op {
         count: i64,
     },
     /// 275, Spill: X into Y (event cards, from `adversary.spill_at`): in each country, every `site` not yet the
-    /// adversary's holding 2 or more agents moves 1 onto the `to` next to it holding the most agents (ties: the
-    /// lowest-numbered; none: it stays). The move is an arrival: a player ambassador cancels it, and the site is
+    /// adversary's holding 2 or more agents moves 1 onto the `to` next to it not yet the adversary's, not firewalled
+    /// and not in a cordoned country, holding the most agents (ties: the lower country, then number; none: it stays). The move is an arrival: a player ambassador cancels it, and the site is
     /// checked.
     Spill {
         site: SiteType,
         to: SiteType,
     },
     /// 275, Grow: X (the adversary's growth; it replaced city growth and its chips): in each country, the `site`
-    /// holding the most agents (ties: the lowest-numbered) with a free hex next to it builds a neutral facility
-    /// there, the type it has fewer of next to it; a site holding agents, or the adversary's, builds it with 1
+    /// holding the most agents (ties: the lowest-numbered) with a free hex next to it, not in a cordoned country, and
+    /// fewer than `adversary.grow_cap` facilities next to it, builds a neutral facility there: the type it has fewer
+    /// of next to it (ties: a factory; no free hex for it: the other type), on the first free hex for it (the lower
+    /// country, then number); a site holding agents, or the adversary's, builds it with 1
     /// agent on it.
     Grow {
         site: SiteType,

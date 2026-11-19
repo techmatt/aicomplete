@@ -1,6 +1,6 @@
 {
  "deck": "threats_t1",
- "note": "Tier-1 threat deck, 146 (Matt's threat card standard, 2026-11-07): each card has one consequence, rarely two, on the nearest player (the one whose node is closest to its token) or the board; one counter option or two, never in a currency its harm takes. Counters: 3 energy, 3 ambassadors, 3 insight (r89; 6 before), 3 research cubes, 3 chips, 2 tags or 12 credits. Value lines price at configs/agents/values.json (a troop 9: placed 5 plus its strike). Source: experiments/results/146_threat_standard/threat_cards.py.",
+ "note": "Tier-1 threat deck, 146 (Matt's threat card standard, 2026-11-07): each card has one consequence, rarely two, on the nearest player (the one whose node is closest to its token) or the board; one counter option or two, never in a currency its harm takes. Counters: 3 energy, 3 ambassadors, 3 insight (r89; 6 before), 3 research cubes, 3 chips, 2 tags or 8 credits. Value lines are 146's pricing, not recomputed: they price the retired 12-credit counter and that day's configs/agents/values.json (a troop 9: placed 5 plus its strike), so their numbers and ratios are stale. Source: experiments/results/146_threat_standard/threat_cards.py.",
  "cards": [
   {
    "id": "orbital_strike",
@@ -331,7 +331,7 @@
     "Discord sway"
    ],
    "value": "counter 2 Diplomacy tags (10) or 12 credits (12); uncountered 14 at values.json (a troop 9 with its strike), 1.40x the cheapest counter",
-   "check": "bites where a city is near corrupting (Corrupt city at 4)",
+   "check": "bites where a city is near corrupting (an arrival corrupts a city at 5 agents, 3 from level 1)",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
@@ -855,7 +855,7 @@
     "energy lost"
    ],
    "value": "counter 3 chips (12) or 12 credits (12); uncountered 12 at values.json (a troop 9 with its strike), 1.00x the cheapest counter",
-   "check": "bites near factories (Corrupt factory at 3)",
+   "check": "bites near factories (an arrival corrupts a factory at 3 agents)",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],

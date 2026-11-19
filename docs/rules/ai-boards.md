@@ -44,8 +44,8 @@ uncovered. Cards that move ambassadors (Liaison Corps, Summit Caucus) add to it.
 round 2-3. **The Researcher is the Dispatch-heavy board:** its own ambassador on one of its spread-out stations armors
 it and keeps agents off, which would block its cubes.
 
-**Give / get** (`values.json`): a Dispatch is 1.4 a round; space 6 (cost 3, about 18) is even on the way to the
-capstone. A printed tag is free.
+**Give / get** (`values.json`): a Dispatch is about 0.93 a round (`movement`); space 6 (3 energy, 9) pays back in
+about ten rounds, so it is taken on the way to the capstone. A printed tag is free.
 
 **Capstones (candidate).** Each track ends in a capstone, a standing rule once uncovered, as a card's Effect is in
 play: what a seat pushes for, reached about round 8 at 1-2 placements a round.
@@ -119,14 +119,14 @@ tier-2 keep (3 insight) fits from round 2.
 
 **Loops and caps.** No limits ([economy.md](economy.md), *No limits*): a runaway is fixed at the cards that feed it.
 Program credit income stacked by draw chains is bounded by insight (as there) and the per-tag programs' 1 a 3 tags.
-No power turns credits into chips (Mint is cut, Matt 2026-11-18): chips come from Scrap I, Full Capacity and cards, each capped a round, and can't be sold back; Fortify and Annex spend them. Scrap II (once a round) spends two Industry cards for good, so the cards cap
+No power turns credits into chips (Mint is cut, Matt 2026-11-18): chips come from owned factories (`factory_chips` a round), Scrap I and II, Full Capacity and cards, each capped a round, and can't be sold back; stations, Fortify, Annex and the chip converters spend them. Scrap II (once a round) spends two Industry cards for good, so the cards cap
 it. **The energy gift** (Shared Grid Accord, Interconnector Treaty) is one-shot. Credits → energy (Buy
 energy, [economy.md](economy.md)) → a card's income is capped by the cards and the cities' energy (once per city a
 round, a city's `corp_energy` a buy). **Energy counters** spend energy for good. **The Researcher's:** Patience with
 the cube converters (Cintamani's 2 insight, once a round; the standard action's 1, once a round) is the intended engine,
 capped by how many stations make cubes (and Open Archive's and Cryo Sample Vault's 1 a round) and Cintamani's once a
 round.
-**Antimatter:** a plant's Action (a resource for 1) is once a round, beside each board's rare burn and the desperate
+**Antimatter:** a plant's Action (a resource for 1) is once a round, beside the Builder's Overcharge II, two economy capstones' 2 (once) and the desperate
 standard action (5 cubes for 1 and 2 energy, 262; Horizon's converters pay energy since 262); it pays for the majors that
 print it ([economy.md](economy.md)). Patience banks all the Researcher's unspent
 insight, gifts too; Open Science's goes only to other players. Followers → ambassadors → alignment → city

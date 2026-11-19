@@ -217,6 +217,10 @@ fn march_troops(g: &mut GameState, cx: &mut Cx, troops: Vec<usize>, steps: i64, 
                 }
                 cx.add_tokens(g, at, TROOP, -size);
                 cx.add_tokens(g, to, TROOP, size);
+                // 285: the turn panel netted a move to nothing ("bookkeeping only"): the step says where.
+                cx.note(Some(to), || {
+                    format!("{} adversary troop{} march{} from {} to {}", size, if size == 1 { "" } else { "s" }, if size == 1 { "es" } else { "" }, hex_name(&w, at), hex_name(&w, to))
+                });
                 cx.per_round(g, adversary::OPS, size);
                 cx.tally(g, "board.troop_steps", size);
                 cx.tally(g, "board.troop_moves", size);

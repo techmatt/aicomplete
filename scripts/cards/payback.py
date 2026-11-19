@@ -90,12 +90,16 @@ def engine_rows(c):
         if p['op'] == 'when':
             ev = p['on']['event']
             rate = RATES.get(ev, 0.5)
+            # 285: a per-tag trigger naming its tag counts that tag alone (cards/triggers.rs), so it fires as often as
+            # a tagged play; only the tagless form counts every tag of a play.
+            if ev == 'play_tag' and p['on'].get('tag') is not None:
+                rate = RATES['play']
             w = sum(op_worth(t, th) for t in p['then'])
             per_round += rate * w
             if ev == 'play' and (p['on'].get('tag') is None or p['on']['tag'] in c['tags']):
                 own += w
             if ev == 'play_tag':
-                own += w * len(c['tags'])
+                own += w * sum(1 for t in c['tags'] if p['on'].get('tag') in (None, t))
             if ev == 'play_cost' and c['cost'] >= p['on']['at']:
                 own += w
         elif p['op'] == 'income':

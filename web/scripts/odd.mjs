@@ -312,6 +312,93 @@ try {
     if (!/threat's source/.test(legend)) fails.push('player-labels-legend-turn: the legend has no threat source outline');
   });
 
+  // 285: keys did nothing behind the open record dialog only while the focus was inside it: a click on its text
+  // left the focus on the body, and R, Space, the arrows, V and Ctrl+Z moved the game unseen behind it.
+  await scenario('keys-behind-record-dialog', async () => {
+    await page.js("(() => { for (let i = 0; i < 12 && !window.aic.view.outcome; i++) window.aic.act(window.aic.legal[0]); })()");
+    await page.js('(window.confirm = () => true, window.aic.seek(6), true)');
+    const look = () => page.js(`({ cursor: window.aic.timeline.cursor, last: window.aic.timeline.last,
+      mode: document.getElementById('view-toggle').textContent, play: document.getElementById('play').textContent })`);
+    await page.js("(document.getElementById('record').click(), true)");
+    const a = await look();
+    await page.js("(document.querySelector('#record-dialog h2, #record-dialog h3, #record-dialog p')?.click(), document.activeElement?.blur(), true)");
+    const focus = await page.js("document.activeElement === document.body && document.getElementById('record-dialog').open");
+    if (!focus) return void fails.push('keys-behind-record-dialog: could not put the focus on the body under the open dialog');
+    for (const [k, extra] of [['r', ''], [' ', ''], ['ArrowRight', ''], ['v', ''], ['z', ', ctrlKey: true']]) {
+      await page.js(`(${key(k, extra)}, true)`);
+      const b = await look();
+      if (JSON.stringify(a) !== JSON.stringify(b)) fails.push(`keys-behind-record-dialog: "${k}" behind the dialog moved ${JSON.stringify(a)} to ${JSON.stringify(b)}`);
+    }
+    await page.js("(/pause/i.test(document.getElementById('play').textContent) && document.getElementById('play').click(), document.querySelector('dialog[open]')?.close(), true)");
+  });
+
+  // 285: a record's load warning stayed in the error bar after Undo made it a played game (acting cleared it).
+  await scenario('undo-clears-record-warning', async () => {
+    await page.js("(() => { for (let i = 0; i < 12 && !window.aic.view.outcome; i++) window.aic.act(window.aic.legal[0]); })()");
+    const r = JSON.parse(await record());
+    await page.js("document.querySelector('dialog[open]')?.close()");
+    // Another revision's stamp: the record replays (same build) but loads with a warning.
+    r.rules_revision -= 1;
+    await page.js(`(window.aic.open(${JSON.stringify(JSON.stringify(r))}, 'odd-old.json'), true)`);
+    const a = await state();
+    if (!a.bar) return void fails.push('undo-clears-record-warning: an older revision\'s record loaded with no warning');
+    await page.js("(window.confirm = () => true, document.getElementById('undo').click(), true)");
+    const b = await state();
+    if (b.last >= a.last) return void fails.push(`undo-clears-record-warning: undo dropped nothing (${a.last} → ${b.last})`);
+    if (b.bar) fails.push(`undo-clears-record-warning: the warning stayed after undo: ${b.bar.slice(0, 120)}`);
+  });
+
+  // 285: the player view's "Since your last move" names the adversary's lines (no Infiltrate note before), and a
+  // step that moved pieces (a -1 here, +1 there nets to 0) read "bookkeeping only (tracks)".
+  await scenario('player-view-turn-panel-names-lines', async () => {
+    await page.js("(localStorage.setItem('aic.view', 'player'), true)");
+    await load();
+    let infiltrate = '', panels = 0, netZero = 0;
+    for (let i = 0; i < 1500; i++) {
+      const r = await page.js(`(() => {
+        const out = {};
+        const t = document.getElementById('p-turn');
+        if (!t.hidden && t.querySelector('.pturn-head')) {
+          // turnOf's steps: the frame's events split at each phase mark, rounds and empty phases dropped.
+          const gs = [{ round: false, ev: [] }];
+          for (const e of window.aic.timeline.frame.events) {
+            if (e.type === 'phase_started') gs.push({ round: false, ev: [] });
+            else if (e.type === 'round_started') gs.push({ round: true, ev: [] });
+            else gs[gs.length - 1].ev.push(e);
+          }
+          const steps = gs.filter((g) => !g.round && g.ev.length).map((g) => g.ev);
+          const rows = [...t.querySelectorAll('li[data-turn-step]')].map((li) => li.textContent);
+          out.panel = { rows, steps: steps.map((ev) => {
+            const net = new Map();
+            for (const e of ev) if (e.type === 'tokens_changed') net.set(e.token, (net.get(e.token) ?? 0) + Number(e.delta));
+            return { tokens: ev.some((e) => e.type === 'tokens_changed'), notes: ev.some((e) => e.type === 'note'), zero: net.size > 0 && [...net.values()].every((d) => !d) };
+          }) };
+        }
+        const v = window.aic.view;
+        if (v.outcome || v.round > 2) return { done: true, ...out };
+        const l = window.aic.legal; const np = l.filter((a) => a.type !== 'pass' || Math.random() < 0.2);
+        const p = np.length ? np : l;
+        window.aic.act(p[Math.floor(Math.random() * p.length)]);
+        return out;
+      })()`);
+      if (r.panel) {
+        panels++;
+        const { rows, steps } = r.panel;
+        if (rows.length !== steps.length) fails.push(`player-view-turn-panel-names-lines: ${rows.length} rows for ${steps.length} steps`);
+        rows.forEach((row, j) => {
+          if (!infiltrate && row.includes('Infiltrate (')) infiltrate = row;
+          const s = steps[j];
+          if (s?.tokens && !s.notes && s.zero) netZero++;
+          if (s?.tokens && /bookkeeping only/.test(row)) fails.push(`player-view-turn-panel-names-lines: a step that moved pieces reads ${row.slice(0, 120)}`);
+        });
+      }
+      if (r.done) break;
+    }
+    console.log(`     ${panels} panels; ${netZero} note-less net-zero piece steps; ${infiltrate.slice(0, 120) || '(no Infiltrate line)'}`);
+    if (!panels) fails.push('player-view-turn-panel-names-lines: no turn panel came up by round 2');
+    else if (!infiltrate) fails.push('player-view-turn-panel-names-lines: no step names an "Infiltrate (" line');
+  });
+
   await scenario('bad-seed-field', async () => {
     for (const v of ['', 'abc', '-1', '1.5', '99999999999999999999999', '0x10']) {
       await page.js(`(document.getElementById('seed').value = ${JSON.stringify(v)}, document.getElementById('new-form').requestSubmit(), true)`);

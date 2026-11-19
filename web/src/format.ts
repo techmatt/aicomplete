@@ -115,7 +115,8 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       // 265 (D115): a track space's gains are levels paid every round ("+4 insight" read as a one-off beside the
       // track's "insight 7"); the option is a record key, so its words are fixed up here, as `uncover_words` prints them.
       const leveled = /track: uncovers /.test(named)
-        ? named.replace(/\+(\d+) ([a-z_][a-z_ ]*?)(?=,|$| \()/g, (_, n, r) => `+${n} ${r} a round`)
+        // 285: "+1 credits" is the record key's (`Resource::amount`); people read "+1 credit" (`Resource::words`).
+        ? named.replace(/\+(\d+) ([a-z_][a-z_ ]*?)(?=,|$| \()/g, (_, n, r) => `+${n} ${n === '1' && r === 'credits' ? 'credit' : r} a round`)
         : named;
       const plain = contentIds(leveled).replace('T2 keep -1', 'T2 keep')
         .replace(/^sacrifice stack (.*)$/, 'sacrifice $1 (with any buildings under it)')
@@ -275,7 +276,8 @@ const RULEBOOK_PHASE: Record<string, string> = {
   'cards.play+threats.counter+board.act+ai.power': 'D Actions',
   'board.produce': 'E income',
   'economy.upkeep': 'E boards',
-  'board.bases': 'E growth',
+  // 285: the step makes extra Drones (city growth went at r130; Grow is the adversary's card line).
+  'board.bases': 'E drones',
   'threats.execute': 'F Threats',
   'board.war': 'G War',
   'board.cleanup': 'H Cleanup',
@@ -379,7 +381,8 @@ const TOKEN_NAMES: Record<string, string> = {
   firewall: 'firewall (no agent may arrive here)',
   no_infiltrate: 'no-Infiltrate token (no Infiltrate agent lands here)',
   no_muster: 'no-Muster token (no Muster here)',
-  no_corrupt: 'no-Corrupt token (no Corrupt here)',
+  // 285: the Corrupt step went at r130: agents still land; nothing here corrupts or flips.
+  no_corrupt: 'no-Corrupt token (agents may land; nothing here corrupts or flips, and no node here is lost to agents)',
 };
 
 /** "node:1" → "node (seat 1)", "cube:adversary" → "owner cube (adversary)". */

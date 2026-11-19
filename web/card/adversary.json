@@ -4,7 +4,7 @@
   "rules": [
     [
       "Botnet Recruiters",
-      "In the compute step, each Botnet with no player Ambassador on it puts 1 Agent on the city, research station or factory next to it holding the most Agents (else on its own site), and its compute with it."
+      "In the compute step, each Botnet with no player Ambassador on it puts 1 Agent on the city, research station or factory next to it not yet the adversary's holding the most Agents (else on its own site, if not yet the adversary's), and adds its compute (even when a cordon stops its Agent or it has nowhere to land)."
     ],
     [
       "Warmongering",
@@ -30,9 +30,9 @@
       "name": "The Militarist",
       "flavor": "",
       "setup": [
-        "Compute income 0",
+        "Compute income 0 a country",
         "Infiltrate 1 a site",
-        "Research threshold 5",
+        "Research threshold 5 a country",
         "Deck 5 / 5 / 3 (13 rounds)",
         "Sites print their corrupt numbers: city 5, station 3, factory 3"
       ],
@@ -47,7 +47,7 @@
       "name": "Sleeper Cells",
       "flavor": "Cells wake in every city.",
       "setup": [
-        "Compute income 3"
+        "Compute income 3 a country"
       ],
       "rule": "When an Agent lands on a city, it falls at 3 agents, not 5.",
       "new_rules": 1,
@@ -60,7 +60,7 @@
       "name": "War Footing",
       "flavor": "Every unanswered strike feeds the war machine.",
       "setup": [
-        "Compute income 5"
+        "Compute income 5 a country"
       ],
       "rule": "When a threat executes uncountered, the adversary also gains 4 compute.",
       "new_rules": 1,
@@ -73,8 +73,8 @@
       "name": "Arms Race",
       "flavor": "The labs build weapons, not cures.",
       "setup": [
-        "Compute income 10",
-        "Research threshold 4",
+        "Compute income 10 a country",
+        "Research threshold 4 a country",
         "Deck 5 / 3 / 3 (11 rounds)"
       ],
       "rule": "When Weapons Program fires, it musters 3, not 2.",
@@ -88,8 +88,8 @@
       "name": "War Economy",
       "flavor": "The whole economy marches.",
       "setup": [
-        "Compute income 15",
-        "Infiltrate 2 a city (1 on a station, factory or botnet hex)",
+        "Compute income 15 a country",
+        "Infiltrate 2 a city (1 a site from a station, factory or botnet line)",
         "Deck 3 / 4 / 4 (11 rounds)"
       ],
       "rule": "",

@@ -112,10 +112,10 @@ pub static DEF: ModuleDef = ModuleDef {
         ],
         phases: &[
             PhaseSpec::decision("act", "standard actions and projects: station, remove, lift Fallout, dispatch (from the round's Dispatches), ambassador, liberate, sell, take down a botnet, buy a neutral city's energy, remove a troop; completed megaprojects' converters"),
-            PhaseSpec::auto("bases", "growth, after the income step: extra Drones, then each city grows a factory on a free zone next to it"),
+            PhaseSpec::auto("bases", "after the income step: extra Drones"),
             PhaseSpec::auto("war", "at the end of the round, the Drones on either side of each front fight"),
-            PhaseSpec::auto("march", "each adversary troop takes its steps: remove an ambassador on its hex, else destroy a target next to it, else move toward the nearest"),
-            PhaseSpec::auto("produce", "the income step (economy's upkeep follows at once): factories make chips or adversary troops, hosted (254) or aligned cities energy (an agent on one stays and darkens it), research stations cubes (an opposing piece blocks one; an adversary station's compute waits for the compute step); full megaprojects complete"),
+            PhaseSpec::auto("march", "each adversary stack takes its steps: while a target is on or next to its hex, one troop strikes it (used up); else the stack moves one hex toward the nearest (troops ignore ambassadors)"),
+            PhaseSpec::auto("produce", "the income step (economy's upkeep follows at once): factories make chips or adversary troops, hosted (254) or aligned cities energy (an agent on one stays and darkens it), research stations cubes (an opposing piece blocks one; an adversary station's output waits for the compute step); full megaprojects complete"),
             PhaseSpec::auto("cleanup", "count the country flags down"),
         ],
         rng: &[],

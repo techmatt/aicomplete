@@ -8,13 +8,15 @@
 phase: first **one income step** in a printed order: factories' chips and adversary troops,
 cities' energy, stations' cubes, full megaprojects, then upkeep ([economy.md](economy.md)); then extra
 drones. **Production is read from the tracks** (r133, a table procedure: what each site makes is unchanged). Each
-player's income tracks show their factories' chips and stations' cubes; the adversary's board its corrupted cities'
-Discord and stations' cubes; each megaproject its neutral stations. A marker moves only when a site changes hands
-(claimed, liberated, corrupted, built, destroyed) or a megaproject completes (its stations' cubes then go to their
-owners' boards, a neutral one's nowhere, an adversary one's to the compute step: research, or compute with `research_at` 0). **A "blocked" chip** goes on a producing site when an opposing
+player's income tracks show their factories' chips; the adversary's board its corrupted cities' Discord. Until a
+country's megaproject completes, every station there (a player's, neutral or corrupted) puts its cube onto that
+megaproject, read off the map; once it completes, a player's stations move to their income tracks (research cubes on
+their board), a neutral one's cube goes nowhere, and a corrupted one's goes to the adversary's board (the compute
+step: research, or compute with `research_at` 0). A marker moves only when a site changes hands (claimed, liberated,
+corrupted, built, destroyed) or a megaproject completes. **A "blocked" chip** goes on a producing site when an opposing
 piece arrives (an agent on a player's or neutral station or player's factory, a player ambassador on an adversary
-site; a blackout's cities, an occupied factory) and comes off when the last one leaves: in production each track
-pays what it shows less what its chipped sites make, and each adversary factory without a chip makes its troop. A neutral city is read
+site; a blackout's cities) and comes off when the last one leaves: in production each track
+pays what it shows less what its chipped sites make, once, at its own step (chips with factories, cubes with stations, not again at upkeep), and each adversary factory without a chip makes its troop. A neutral city is read
 when it is hosted ([economy.md](economy.md)), as before. **War is fought at the end of every round** on every front, after
 threats execute, so what war destroys is gone for next round's production. **War brought forward** (Casus Belli;
 candidate): the front the threat's base belongs to fights twice in next round's war (their drones

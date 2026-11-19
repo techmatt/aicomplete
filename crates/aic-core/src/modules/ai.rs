@@ -165,7 +165,8 @@ pub fn power_buys_cube(w: &World, seat: usize, k: usize) -> bool {
 /// (075, a power menu's conversions): it sacrifices nothing and places nothing.
 pub fn power_converts(w: &World, seat: usize, k: usize) -> bool {
     board(w, seat).powers.get(k).is_some_and(|p| {
-        p.tags.is_empty() && !p.cost.is_empty() && !p.effects.iter().any(|e| matches!(e, Op::PlaceNode { .. } | Op::Harden { .. }))
+        // 285: only gains (r131's Fortify I, Patrol I and Lab read as conversions: they target, push or draw).
+        p.tags.is_empty() && !p.cost.is_empty() && p.effects.iter().all(|e| matches!(e, Op::Gain { .. }))
     })
 }
 
@@ -222,6 +223,12 @@ fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'st
     }
     // 276 (diff review): a two-node Growth option needs both its nodes' steps, or it was paid in full for one.
     let nodes: i64 = p.effects.iter().map(|e| if let Op::PlaceNode { count, .. } = e { *count } else { 0 }).sum();
+    // 285: with fewer node tokens left than it places, it read "unaffordable" whatever the seat's energy.
+    let left = (board(w, seat).economy_track.len() - board::track_taken(g, seat).min(board(w, seat).economy_track.len()))
+        + (board(w, seat).play_track.len() - board::track2_taken(g, seat).min(board(w, seat).play_track.len()));
+    if nodes > left as i64 {
+        return Some("no node left for every node");
+    }
     if nodes > 1 && !board::can_pay_placements(w, g, seat, nodes, -spent) {
         return Some("unaffordable: the next track spaces' energy for every node, after the power's own");
     }
@@ -246,6 +253,14 @@ fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'st
     }
     if p.effects.iter().any(|e| matches!(e, Op::FreeBuilding)) && !free_building_after(w, g, seat, p) {
         return Some("no target");
+    }
+    // 285: Field Station's insight buys its station (its node is Field Survey's, free): with no open station site in
+    // reach it isn't offered, though its node could land (the any-part rule above passed it).
+    if p.effects.iter().any(|e| matches!(e, Op::BuildStation)) {
+        let station: Vec<Op> = p.effects.iter().filter(|e| !matches!(e, Op::PlaceNode { .. })).cloned().collect();
+        if !effects::feasible_after(w, g, seat, &station, spent) {
+            return Some("no target");
+        }
     }
     None
 }
@@ -324,7 +339,7 @@ pub fn tally_dear_powers(g: &mut GameState, cx: &mut Cx, seat: usize) {
             None => "idle",
             Some("used") => continue,
             Some("needs tags") => "no_tags",
-            Some("no target") | Some("no node left") => "no_target",
+            Some("no target") | Some("no node left") | Some("no node left for every node") => "no_target",
             Some(_) => "unpaid",
         };
         let slug = power_slug(&p.name);
@@ -699,7 +714,14 @@ impl Module for Ai {
                     id: format!("{}.power.{k}", b.id),
                     name: p.name.clone(),
                     text: format!("{}{}", power_text(p), lone_sacrifice(w, g, s, p)),
-                    status: power_blocked(w, g, s, k).unwrap_or("ready").into(),
+                    // 285: as the hand's and buildings' (nothing is used while a question is open).
+                    // A lasting state (used this round) still shows.
+                    status: match power_blocked(w, g, s, k) {
+                        Some("used") => "used",
+                        _ if g.pending.is_some() => "waiting on the question",
+                        why => why.unwrap_or("ready"),
+                    }
+                    .into(),
                     cost: None,
                 })
                 .collect();

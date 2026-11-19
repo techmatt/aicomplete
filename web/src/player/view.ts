@@ -84,8 +84,15 @@ function stripHtml(v: View, legal: Action[], focus: number): string {
     const st = seatStatus(v, legal, s.index);
     const val = (k: string) => s.values.find((x) => x.key === k);
     const res = RES_ORDER.filter((r) => val(`resource.${r}`) || val(`economy.income.${r}`)?.value).map((r) => {
-      const inc = val(`economy.income.${r}`)?.value;
-      return `<span class="sres" data-value="resource.${r}" data-scope="seat:${s.index}">${esc(r.replace(/_/g, ' '))} <b>${val(`resource.${r}`)?.value ?? 0}</b>${inc ? `<small>${r === 'insight' ? '→' : '+'}${inc}</small>` : ''}</span>`;
+      // 285: insight as the seat panel shows it (panels.ts): the income plus any gift, added under Patience ("+"),
+      // else set ("→").
+      const gift = r === 'insight' ? val('economy.insight_gift')?.value ?? 0 : 0;
+      const raw = val(`economy.income.${r}`)?.value;
+      const inc = raw ? raw + gift : raw;
+      const sign = r === 'insight' && !val('economy.insight_carried') ? '→' : '+';
+      // 285: the +N is upkeep's (factories' chips and stations' cubes come in production): its hover says so.
+      const why = inc ? ` title="${esc(String(val(`economy.income.${r}`)?.doc ?? ''))}"` : '';
+      return `<span class="sres" data-value="resource.${r}" data-scope="seat:${s.index}"${why}>${esc(r.replace(/_/g, ' '))} <b>${val(`resource.${r}`)?.value ?? 0}</b>${inc ? `<small>${sign}${inc}</small>` : ''}</span>`;
     }).join('');
     const hand = group(v, s.index, 'cards.hand')?.cards.length ?? 0;
     const built = group(v, s.index, 'cards.built');
@@ -275,9 +282,31 @@ export function turnStep(d: number | 'close' | 'open') {
 /** A step in words: the rules' own notes, then the pieces it added or took off the map, then what else moved. */
 function summary(events: Frame['events']): string {
   const notes = [...new Set(events.filter((e) => e.type === 'note').map((e) => contentIds(String(e.text))))];
-  const tok = new Map<string, number>();
-  for (const e of events) if (e.type === 'tokens_changed') tok.set(String(e.token), (tok.get(String(e.token)) ?? 0) + Number(e.delta));
-  const pieces = [...tok].filter(([, d]) => d).map(([k, d]) => `${d > 0 ? '+' : ''}${d} ${tokenName(k)}`);
+  // 285: netted per hex, then added and taken off apart, so a move (-1 here, +1 there) reads as both, not as nothing.
+  const perHex = new Map<string, number>();
+  for (const e of events) {
+    if (e.type !== 'tokens_changed') continue;
+    const k = `${String(e.token)}@${JSON.stringify(e.hex ?? null)}`;
+    perHex.set(k, (perHex.get(k) ?? 0) + Number(e.delta));
+  }
+  const tok = new Map<string, [number, number]>();
+  for (const [k, d] of perHex) {
+    const t = k.slice(0, k.lastIndexOf('@'));
+    const [up, down] = tok.get(t) ?? [0, 0];
+    tok.set(t, d > 0 ? [up + d, down] : [up, down + d]);
+  }
+  // 285: the short name, plural past one ("+5 agent", "+1 Fallout (nothing may be built here: ...)" read as jargon).
+  const short = (k: string, n: number) => {
+    if (k === 'cube:adversary') return Math.abs(n) === 1 ? 'corruption cube' : 'corruption cubes';
+    const full = tokenName(k);
+    const at = full.indexOf(' (');
+    const head = at < 0 ? full : full.slice(0, at);
+    // An owner ("node (seat 1)", "(adversary)") stays; a description ("(nothing may be built here ...)") goes.
+    const tail = at >= 0 && /^ \((seat \d+|adversary)\)$/.test(full.slice(at)) ? full.slice(at) : '';
+    const plural = Math.abs(n) === 1 || /s$/.test(head) ? head : /[^aeiou]y$/.test(head) ? `${head.slice(0, -1)}ies` : `${head}s`;
+    return `${plural}${tail}`;
+  };
+  const pieces = [...tok].flatMap(([k, [up, down]]) => [up ? `+${up} ${short(k, up)}` : '', down ? `${down} ${short(k, down)}` : ''].filter(Boolean));
   const parts = [...notes, ...(pieces.length ? [`map: ${pieces.join(', ')}`] : [])];
   // 265 (D115): no raw engine events ("seat 0 +1 energy", "cards moved: ..."): W5 accepts those in the debug
   // view's log only.
@@ -304,12 +333,18 @@ function turnHtml(): string {
   // 265 (D115): the rules' own notes only; every other event ("resource changed · seat 0 · ...") is counted here
   // and listed in the debug view's log (W5 accepts raw events there, not here).
   const shownEvents = cur.events.filter((e) => e.type === 'note');
-  const rest = cur.events.length - shownEvents.length;
+  // 285: pieces on the map are counted apart from resources, cards and tracks (it called them all "resources, ...").
+  const onMap = cur.events.filter((e) => e.type === 'tokens_changed').length;
+  const rest = cur.events.length - shownEvents.length - onMap;
+  const others = [
+    onMap ? `${onMap} piece change${onMap === 1 ? '' : 's'} on the map (outlined)` : '',
+    rest ? `${rest} other change${rest === 1 ? '' : 's'} (resources, cards, tracks)` : '',
+  ].filter(Boolean);
   return `<div class="pturn-head"><b>Since your last move</b> <span>step ${t.at + 1} of ${t.steps.length}</span>
       <button type="button" data-turn="-1" ${t.at === 0 ? 'disabled' : ''}>◀</button><button type="button" data-turn="1" ${t.at === t.steps.length - 1 ? 'disabled' : ''}>▶</button>
       <button type="button" data-turn="close">Done</button></div>
     <ol>${rows}</ol>
-    <div class="pturn-ev"><small>The map shows the board after the turn; outlined: the hexes this step changed.</small><ul>${shownEvents.map((e) => `<li data-hexes="${hexesIn(e).map(hexKey).join(' ')}">${esc(contentIds(String(e.text)))}</li>`).join('')}${rest ? `<li><small>${rest} other change${rest === 1 ? '' : 's'} (resources, cards, tracks): the debug view's log lists them</small></li>` : ''}</ul></div>`;
+    <div class="pturn-ev"><small>The map shows the board after the turn; outlined: the hexes this step changed.</small><ul>${shownEvents.map((e) => `<li data-hexes="${hexesIn(e).map(hexKey).join(' ')}">${esc(contentIds(String(e.text)))}</li>`).join('')}${others.length ? `<li><small>${others.join('; ')}: the debug view's log lists them</small></li>` : ''}</ul></div>`;
 }
 
 // ---------- render ----------

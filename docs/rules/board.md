@@ -11,9 +11,9 @@ layout for that country count. Population is implicit: people live in cities.
 Hex kinds: **city**, **open** land and **ocean** are printed; a **military base** goes
 on an open hex of each front (below). **Industrial zones** are a printed marking on open
 hexes next to cities: factories go only there. Research stations go on other open hexes,
-one facility per hex. **Empty station sites** are printed too (137, one a country, never a base): a neutral station
+one facility per hex. **Empty station sites** are printed too (137, at most one a country, never a base; Cintamani and Biomia print none): a neutral station
 opens on one when a card says so (253, Matt's ruling 3: Open Research Campus on its target; the adversary's Shell Labs
-on each country's lowest-numbered), as a neutral factory opens on a free industrial zone (Industrial Commons, Factory
+on each country's lowest-numbered, where it has one), as a neutral factory opens on a free industrial zone (Industrial Commons, Factory
 Drive, Blight). A neutral site a card opens is anyone's to claim, but Campus and Commons claim theirs (256). Nothing builds on ocean or on a Fallout token (no node, factory or
 station) until it is cleared ([war.md](war.md)).
 
@@ -109,11 +109,10 @@ megaproject is the corp's defining card.
   feed the adversary's research track (259).
 - **Chip converters** (r87, Matt: chips hoarded early pay late): three cards also print one paid in chips, used as the
   converter is (a city of the country in reach, once a round); Onyx's, which makes chips, doesn't. Give / get at
-  `values.json` (anchors): 1 chip, 4 (6), for 2 energy 9 (9) or a card and 2 credits 4.67 (5.33); 2 chips, 8 (12), for 2
-  Sway and a card 12 (13).
+  `values.json` and the anchors: 1 chip, 4, for 2 energy 6 or a card and 2 credits 5.33; 2 chips, 8, for 2 Sway and a
+  card 8.67.
 - **Horizon pays energy** (262, Matt, 2026-11-17: Horizon is the energy corp, and energy binds; both its converters
-  sat unused making antimatter, 0.07 and 0.00 a seat-game): 2 cubes, 6 (12), for 4 energy 18 (18); 1 chip, 4 (6),
-  for 2 energy 9 (9). Polar Compute Array's chip converter: 1 chip for a drawn card and 2 credits.
+  sat unused making antimatter, 0.07 and 0.00 a seat-game): 2 cubes, 8, for 4 energy 12; 1 chip, 4, for 2 energy 6. Polar Compute Array's chip converter: 1 chip for a drawn card and 2 credits.
   Megaprojects complete by round 3 in about 97% of games (199), so they open mid-game.
 - **Converters.** Each completed card prints one converter, used in the action phase by any
   player with **a city of that country in reach** (r75, Matt's ruling 9: any city, owned or not; r37 asked for a
@@ -131,16 +130,16 @@ megaproject is the corp's defining card.
   credits never reach a converter this way: a bought cube earns its card's player payout
   and brings the completion a cube nearer.
 
-The first neutral station stands next to the starting node, so a player's first
-ambassadors can claim it, on a hex that is a base in no layout (a test holds this). At setup a country's
+The first neutral station stands next to the starting node, within a first card's reach (since 262 only cards
+claim), on a hex that is a base in no layout (a test holds this). At setup a country's
 neutral stations make 1 cube a round each (the adversary's an adversary cube): one alone takes 8 rounds to fill an
 8-cube card, three about 3. Claiming one turns its 1 a round to its owner's color; each station a player builds there adds 1.
 
 **For new players.** A research station makes a cube a round, neutral or yours; the adversary's make
 adversary cubes, and after completion feed its research track. A country's cubes fill its corp's megaproject, and when the card fills, at
 the end of production, every cube on it pays, overflow included: yours pay you what the
-card says, neutral ones pay nothing. So claim the neutral station (4 ambassadors) or build one (2 chips) before the card
-fills. After that your stations there put cubes on your board, and if one of that country's cities (any city, not
+card says, neutral ones pay nothing. So claim the neutral station with a card (Power Purchase Agreement, Microgrid Lab Compact) or build one (2 chips)
+before the card fills. After that your stations there put cubes on your board, and if one of that country's cities (any city, not
 only yours) is in your reach you can spend them on its converter once a round, or anywhere, 1 for 1 insight once a round. Take
 back an adversary station with 4 of your ambassadors; it is left neutral, to claim after. The adversary can take yours only once 2 of
 its agents stand on it and none of yours.

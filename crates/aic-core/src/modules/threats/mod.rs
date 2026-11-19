@@ -236,6 +236,11 @@ fn pull(g: &mut GameState, cx: &mut Cx, tier: u8, tags: &[PullTag], c: usize, at
     }
     cx.tally(g, "threats.dealt", 1);
     cx.tally(g, &format!("threats.dealt.t{}", def(&w, &id).tier), 1);
+    // 285: the turn panel read a deal as "cards changed": name the threat and where it faces.
+    let anchor = near::first_token(g, &id);
+    cx.note(anchor, || {
+        format!("Threat {} is dealt to {}{}", def(&w, &id).name, country_name(&w, c), anchor.map(|h| format!(", at {}", hex_name(&w, h))).unwrap_or_default())
+    });
     if after_counter(g) {
         cx.set_key(g, &late_key(&id), g.round as i64);
     }
@@ -442,7 +447,9 @@ impl Module for Threats {
             let n = w.int("adversary.threat_agents");
             let cordoned = board::flagged(g, crate::content::RoundFlag::Cordon, scope);
             if let (Some(&h), true, false, false) = (near::tokens(g, &t).first(), n > 0, g.is_over(), cordoned) {
-                adversary::place(g, cx, h, n)?;
+                // 285: named in the log (the turn panel showed "+1 agent" with no hex).
+                let name = &d.name;
+                adversary::place_noted(g, cx, h, n, &|| format!("{name}, uncountered, at its anchor"))?;
                 cx.tally(g, "adversary.threat_anchor", n);
             }
             // 146: the adversary board's printed compute per uncountered threat (its

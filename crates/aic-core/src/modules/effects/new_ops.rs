@@ -270,12 +270,14 @@ fn fallout(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64, at: FalloutAt)
     }
 }
 
-/// The threat's city token (a city or a coastal city).
+/// The threat's city token (a city or a coastal city). 285: a city only: a threat dealt onto a node hex (Offensive's
+/// `deal_at`) puts its first token there whatever stands on it, and Overrun corrupted that open hex "as a city".
 fn city_token(w: &World, g: &GameState, ctx: &Ctx) -> Option<usize> {
     let t = ctx.threat.as_ref()?;
     [Location::City, Location::CoastalCity]
         .into_iter()
         .find_map(|l| threats::token_of(w, g, t, l))
+        .filter(|&h| is_city(w, h))
         .or_else(|| threats::tokens(g, t).into_iter().find(|&h| is_city(w, h)))
 }
 
@@ -682,7 +684,8 @@ fn factory_in(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, c: Option<usize>, fallb
         // r80 (184's D79 a): a firewalled factory isn't offered, as a creation line skips it.
         let in_scope = |h: usize| c.is_none_or(|c| country(h) == c);
         let factories: Vec<usize> =
-            (0..g.hexes.len()).filter(|&h| g.tokens(h, FACTORY) > 0 && !firewalled(g, h) && in_scope(h)).collect();
+            // 285: nor one in a cordoned country (no agent lands there).
+            (0..g.hexes.len()).filter(|&h| g.tokens(h, FACTORY) > 0 && !firewalled(g, h) && in_scope(h) && !crate::modules::plan::cordoned(&w, g, h)).collect();
         let opts = factories.iter().map(|&h| hex_opt(&w, h)).collect();
         let prompt = || format!("{}: agents land on which factory?", ctx.why.as_deref().unwrap_or("The adversary"));
         if let Some(i) = cx.choose_loss(0, prompt, opts)? {

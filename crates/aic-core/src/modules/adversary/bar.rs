@@ -44,15 +44,15 @@ impl PurgeLevel {
         self < PurgeLevel::CitiesOnly
     }
 
-    /// The win line for this level.
+    /// The win line for this level (285: "win by purge", the condition, not a fact about the board).
     pub fn win_text(self) -> &'static str {
         match self {
-            PurgeLevel::All => "purge: no corrupted city, botnet, adversary troop or agent on the board",
+            PurgeLevel::All => "win by purge: no corrupted city, botnet, adversary troop or agent on the board",
             PurgeLevel::NoAmbassadors => {
-                "purge: no corrupted city, botnet or adversary troop (agents no longer count)"
+                "win by purge: no corrupted city, botnet or adversary troop (agents no longer count)"
             }
-            PurgeLevel::NoTroops => "purge: no corrupted city or botnet (agents and troops no longer count)",
-            PurgeLevel::CitiesOnly => "purge: no corrupted city (agents, troops and botnets no longer count)",
+            PurgeLevel::NoTroops => "win by purge: no corrupted city or botnet (agents and troops no longer count)",
+            PurgeLevel::CitiesOnly => "win by purge: no corrupted city (agents, troops and botnets no longer count)",
         }
     }
 }

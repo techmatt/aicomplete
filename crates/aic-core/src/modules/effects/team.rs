@@ -194,7 +194,7 @@ pub(super) fn botnet_troops(g: &mut GameState, cx: &mut Cx, count: i64, troops: 
         for &h in botnets.iter().take(count.max(0) as usize) {
             cx.add_tokens(g, h, BOTNET, -1);
             cx.set_key(g, &adversary::cut_key(h), 0);
-            let placed = (0..troops).filter(|_| adversary::place_troop(g, cx, h, "project")).count();
+            let placed = (0..troops).filter(|_| adversary::place_troop_quiet(g, cx, h, "project")).count();
             // 235: what landed (Wall's are tallied as `troops_walled`).
             cx.tally(g, "adversary.botnet_troops", placed as i64);
             cx.tally(g, "adversary.project_troops", placed as i64);
@@ -289,7 +289,7 @@ pub(super) fn factory_troops(g: &mut GameState, cx: &mut Cx, count: i64) {
             cx.tally(g, "adversary.factory_troops_blocked", 1);
             continue;
         }
-        let placed = (0..count).filter(|_| adversary::place_troop(g, cx, h, "project")).count();
+        let placed = (0..count).filter(|_| adversary::place_troop_quiet(g, cx, h, "project")).count();
         cx.tally(g, "adversary.factory_troops", placed as i64);
         cx.tally(g, "adversary.project_troops", placed as i64);
         // 197: "makes", not "musters": no Muster rule (a no-Muster token) applies here; Wall (r98) does.
@@ -313,6 +313,10 @@ fn troop_words(placed: usize, asked: i64) -> String {
 pub(super) fn agents_on_nodes(g: &mut GameState, cx: &mut Cx, count: i64) -> Res {
     let w = cx.world;
     for c in 0..w.map.countries.len() {
+        // 285: a cordoned country takes no agent (178).
+        if board::flagged(g, crate::content::RoundFlag::Cordon, c) {
+            continue;
+        }
         let mut hexes: Vec<usize> =
             by_number(&w, c).into_iter().filter(|&h| node_owner(g, h).is_some() && !firewalled(g, h)).collect();
         // A stable sort keeps hex-number order among equals.
@@ -320,19 +324,9 @@ pub(super) fn agents_on_nodes(g: &mut GameState, cx: &mut Cx, count: i64) -> Res
         for &h in hexes.iter().take(count.max(0) as usize) {
             cx.tally(g, "adversary.night_raid_agents", 1);
             // 235: the note follows the placement: an empty supply lands nothing, an ambassador there cancels it.
-            let (before, supply) = (g.tokens(h, ADV_AMBASSADOR), g.var(adversary::SUPPLY));
-            adversary::place(g, cx, h, 1)?;
-            let landed = g.tokens(h, ADV_AMBASSADOR) > before;
-            cx.note(Some(h), || {
-                let at = hex_name(&w, h);
-                if landed {
-                    format!("Night Raid: an agent lands on the node at {at}")
-                } else if supply <= 0 {
-                    format!("Night Raid: no agent left in the supply for the node at {at}")
-                } else {
-                    format!("Night Raid: the agent sent to the node at {at} cancels an ambassador there")
-                }
-            });
+            // 285: written by the placement from what it did (landed, canceled, short), before the arrival's own note
+            // (it read the agents left after an arrival that destroyed the node, and called that a cancel).
+            adversary::place_noted(g, cx, h, 1, &|| "Night Raid".to_string())?;
         }
     }
     Ok(())
@@ -353,6 +347,7 @@ pub(super) fn recall_ambassadors(g: &mut GameState, cx: &mut Cx) {
         let Some(h) = hexes.iter().copied().find(|&h| on(g, h) == best) else {
             continue;
         };
+        let owners = (0..seats).filter(|&s| g.tokens(h, ambassador(s)) > 0).count();
         for s in 0..seats {
             let n = g.tokens(h, ambassador(s));
             if n > 0 {
@@ -361,7 +356,12 @@ pub(super) fn recall_ambassadors(g: &mut GameState, cx: &mut Cx) {
                 cx.tally(g, "adversary.ambassadors_recalled", n);
             }
         }
-        cx.note(Some(h), || format!("The player ambassadors at {} go back to their supplies", hex_name(&w, h)));
+        // 285: one ambassador read "ambassadors ... their supplies".
+        cx.note(Some(h), || {
+            let (one, at) = (best == 1, hex_name(&w, h));
+            let to = if owners > 1 { "their owners' supplies" } else if one { "its owner's supply" } else { "their owner's supply" };
+            format!("The player ambassador{} at {at} go{} back to {to}", if one { "" } else { "s" }, if one { "es" } else { "" })
+        });
     }
 }
 

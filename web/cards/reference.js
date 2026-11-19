@@ -29,10 +29,10 @@ export function referenceFace(c) {
     <h3>${esc(a.name)}</h3>
     <div class="body">
       ${rules}${research}${escalation}
-      <p><b>Setup (level 0).</b> ${base.setup.map(esc).join('; ')} (incomes and threshold a country; deck: stages I / II / III).</p>
+      <p><b>Setup (level 0).</b> ${base.setup.map(esc).join('; ')} (deck: stages I / II / III).</p>
       <table>
         <colgroup><col class="c-lv"><col class="c-nm"><col class="c-su"><col><col class="c-ac"></colgroup>
-        <thead><tr><th>Lv</th><th>Name</th><th>Setup (a country)</th><th>Mid-game rule it adds</th><th>Rules</th></tr></thead>
+        <thead><tr><th>Lv</th><th>Name</th><th>Setup</th><th>Mid-game rule it adds</th><th>Rules</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
       <p class="foot">Each level keeps every level below it. A mid-game rule fires on an event you already resolve.</p>

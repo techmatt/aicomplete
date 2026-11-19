@@ -67,7 +67,13 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
             .pile(&hand(s))
             .iter()
             .map(|id| {
-                let st = blocked(w, g, s, id).unwrap_or_else(|| ready_mark(w, g, s, &def(w, id).effects));
+                // 285 (D123): while a question is open nothing plays from the hand: the play check's "unaffordable"
+                // stood beside Scrap II's prompt building that very card free.
+                let st = if g.pending.is_some() {
+                    "waiting on the question"
+                } else {
+                    blocked(w, g, s, id).unwrap_or_else(|| ready_mark(w, g, s, &def(w, id).effects))
+                };
                 card(s, id, st, Some(play_cost(w, g, s, def(w, id))))
             })
             .collect();
@@ -77,7 +83,14 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
             .iter()
             .map(|id| {
                 let st = if let Some(a) = &def(w, id).ability {
-                    ability_blocked(w, g, s, id).unwrap_or_else(|| ready_mark(w, g, s, &a.effects))
+                    // 285: as the hand's (nothing is used while a question is open); a lasting state (used, face
+                    // down) still shows.
+                    match ability_blocked(w, g, s, id) {
+                        Some(why @ ("used" | "face down")) => why,
+                        _ if g.pending.is_some() => "waiting on the question",
+                        Some(why) => why,
+                        None => ready_mark(w, g, s, &a.effects),
+                    }
                 } else if !g.pile(&under(s, id)).is_empty() {
                     "stacked"
                 } else {

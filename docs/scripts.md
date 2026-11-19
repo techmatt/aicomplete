@@ -63,7 +63,7 @@ what it prints; the `cards/*_read.py` readers take seconds.
   [--cards]` wins and the boards' measures (`--powers` each power a game, `--cards` research-cube cards);
   `cards/liberation_read.py [--cards]` cities corrupted and liberated (`--cards` each liberate card);
   `cards/spread_read.py FILE=SPEC[@TAG]... [--rounds]` length and new cities by
-  level, arm (the variant's name after its pair prefix: `bp-sp` is `sp`) and round;
+  level, arm (the variant's name after its pair prefix: `bp-sp` or `bp_sp` is `sp`) and round;
   `cards/economy_read.py [--rounds 10]` card throughput, income, unspent; `cards/energy_read.py` energy held and
   used; `cards/corp_read.py` completions, cubes, converters, stations, adversary compute.
 - `cards/effect_stats.py READ [--screen DIR]`: each Unity and Discord card's resolutions and effects (`fx.<id>.*`),
@@ -125,8 +125,8 @@ what it prints; the `cards/*_read.py` readers take seconds.
   (`--base` names one it has) on the same pair, level and seed (`@LABEL`: that read's arms are `LABEL/arm`, so an old
   native run pairs against a new farmed one; `--agent-arms`: `strategist:w.sink=1` is arm `sink1` of `strategist`): wins and gap ± SE by level (one seed: the gap, no SE), losses, board powers (by counter), standard actions, counters, card plays, resource use. Its
   `games`, `seat_boards`, `counter_sums`, `resources`, `paired_gap` are the library for an item's own reader.
-- `bench/am_read.py READ[,READ...]` (same forms): antimatter by source, made and spent, burns by round, per lever
-  and agent.
+- `bench/am_read.py READ[,READ...]` (same forms): antimatter by source, made and spent, per lever and
+  agent.
 - `bench/projects_read.py READ [--md OUT]` (folder, games file or `FILE=SPEC`): each project's reveals, completions, compute drained and map
   moves a completion, by level.
 - `bench/card_ranks.py DIR A B [--variant V]...`: Spearman of the cards' keep and play rates, agent B against A.

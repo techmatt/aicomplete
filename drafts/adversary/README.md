@@ -18,8 +18,9 @@ a generator would revert them. Edit the JSON here.
 
 `python drafts/adversary/check.py` checks them: ids, deck sizes and tags, the tier rules, counters, the threat card
 standard (two consequences and two counter options at most, no shared currency, no each-player harm, no special
-pieces), the event standard (151: one Rally X, the fixed order threat, rally, deploy, other lines, corrupt, at most
-two other lines, "each board" never "each country"), a project's two consequences at most, the event pull ladder, the harms
+pieces), the event standard (151, 275: one Infiltrate X, two at stage III; the fixed order threat, Infiltrate, Muster,
+other lines, Spill, Grow; at most two other lines and at most one Spill and one Grow; no per-event compute or creation
+line; "each country", never "each board"), a project's two consequences at most, the event pull ladder, the harms
 ledger's rule, and the draw rule (a random-deal simulation at 1-4 countries and every difficulty's stage counts,
 plus Hall's condition at 4 countries: no Militarist pull may need a second reshuffle). `--content` runs the same
 checks on the loaded `content/` (no value or check lines there, so those are skipped).

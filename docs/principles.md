@@ -25,7 +25,7 @@ The standards every module and every rules change is judged against.
 
 **Current check (`configs/baseline.json`, `content/`):** the average cost of what is played should sit near credit
 income ÷ insight income (about 17-23 credits ÷ 5-7 insight ≈ 3.5); tier-1 cards have a median of 5 credits, tier 2
-6 (r128, 273: every credit number ÷ 1.5).
+7 (r128, 273: every credit number ÷ 1.5).
 
 - **Credits are the outlier.** The Builder, Protector and Researcher start with 27 / 31 / 27 (`ai.start_credits`,
   the scaffold below) and print 10 / 9 / 7 a round, plus 1-2 a node on the economy track and Unity
@@ -33,11 +33,11 @@ income ÷ insight income (about 17-23 credits ÷ 5-7 insight ≈ 3.5); tier-1 ca
   totals reach the hundreds less often. Card costs run 0–25 (Moonshot Grant 25, Multiyear Defense Budget 23): within
   "about 50", but the income is not "produce 1".
 - **Credit sinks, priced off it:** threat counters 8 / 11 credits by tier (the last option on every menu;
-  the same at every level, threats.md); a research cube about 2 credits (payouts are per card); a player ambassador
+  the same at every level, threats.md); a research cube about 4 credits (`values.json`; payouts are per card); a player ambassador
   `ambassador_credits` (it pays for removals; dear because it stays); a card sells for `sell_credits` 1, chips not
   at all; Data Heist takes 7 credits (or 3 cards) from each player.
-- **Adversary compute:** project costs are 7–32 *a board*: 21–96 at 3 countries, 28–128 at 4, so a few a game pass
-  50 (as Matt asked). A botnet makes 1.
+- **Adversary compute:** project costs are 7–24 *a board*: 14–48 at 2 countries, 21–72 at 3, 28–96 at 4, so at 3
+  or 4 countries a few a game pass 50 (as Matt asked); at 2 none does. A botnet makes 1.
 - Within the principle: energy (cities make 1, a node costs its track space's energy, 1-5 after the free spaces), chips (a factory makes `factory_chips` 1), insight,
   antimatter, Sway (tips at `tip_per_player` 3 a player, Discord's 4), the supply (24 a country, pieces rather than
   a currency).

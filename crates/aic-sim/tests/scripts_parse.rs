@@ -22,6 +22,49 @@ fn scripts(root: &Path) -> Vec<PathBuf> {
     out
 }
 
+/// The leading string literals of each `join(root, 'a', 'b', ...)` in `src`, as `a/b` (a template or a variable ends
+/// one: `join(root, 'content', `${name}.json`)` reads under `content`).
+fn joined_paths(src: &str) -> Vec<String> {
+    let mut out = Vec::new();
+    for (i, _) in src.match_indices("join(root,") {
+        let mut rest = &src[i + "join(root,".len()..];
+        let mut parts = Vec::new();
+        loop {
+            rest = rest.trim_start_matches([' ', '\n', '\r', ',']);
+            let Some(r) = rest.strip_prefix('\'') else { break };
+            let Some(end) = r.find('\'') else { break };
+            parts.push(&r[..end]);
+            rest = &r[end + 1..];
+        }
+        if !parts.is_empty() {
+            out.push(parts.join("/"));
+        }
+    }
+    out
+}
+
+/// 285: `cards:check` copies what the card export reads into a fixture root; 267 made the export read
+/// `web/card/adversary.json`, the copy list never gained it, and the check crashed at its export for 18 items. Every path
+/// the export joins onto its root (the `out/` it writes aside) is copied, or lies under or above a copied one.
+#[test]
+fn cards_check_copies_what_the_card_export_reads() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    let read = |f: &str| std::fs::read_to_string(root.join(f)).unwrap();
+    let export = read("web/scripts/cards-export.mjs");
+    let check = read("web/scripts/cards-check.mjs");
+    let list_at = check.find("for (const p of [").expect("cards-check.mjs's copy list");
+    let list = &check[list_at..list_at + check[list_at..].find(']').unwrap()];
+    let copied: Vec<&str> = list.split('\'').skip(1).step_by(2).collect();
+    assert!(copied.len() > 5, "copy list: {copied:?}");
+    let needed: Vec<String> = joined_paths(&export).into_iter().filter(|p| !p.starts_with("out")).collect();
+    assert!(needed.iter().any(|p| p == "web/card/faces.json"), "parsed reads: {needed:?}");
+    let missing: Vec<&String> = needed
+        .iter()
+        .filter(|p| !copied.iter().any(|c| p.as_str() == *c || p.starts_with(&format!("{c}/")) || c.starts_with(&format!("{p}/"))))
+        .collect();
+    assert!(missing.is_empty(), "cards-export.mjs reads {missing:?}, which cards-check.mjs doesn't copy ({copied:?})");
+}
+
 #[test]
 fn node_scripts_parse() {
     if Command::new("node").arg("--version").output().is_err() {

@@ -21,7 +21,8 @@ const OUT = join(REPO, 'out', 'cards-check');
 const ROOT = join(OUT, 'root');
 
 rmSync(ROOT, { recursive: true, force: true });
-for (const p of ['content', 'configs', 'web/card/faces.json', 'web/card/layout.json', 'art/frames/r3/fit.json', 'docs/card-pricing-notes.json', 'tools/card-art/scenes.json', 'crates/aic-core/src/lib.rs', 'experiments/results/screen-027-endgame']) {
+// 285: every file cards-export.mjs reads (267 added web/card/adversary.json; the check crashed at its export since).
+for (const p of ['content', 'configs', 'web/card/faces.json', 'web/card/adversary.json', 'web/card/layout.json','art/frames/r3/fit.json', 'docs/card-pricing-notes.json', 'tools/card-art/scenes.json', 'crates/aic-core/src/lib.rs', 'experiments/results/screen-027-endgame']) {
   mkdirSync(dirname(join(ROOT, p)), { recursive: true });
   cpSync(join(REPO, p), join(ROOT, p), { recursive: true });
 }

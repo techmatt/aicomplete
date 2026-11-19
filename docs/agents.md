@@ -84,8 +84,8 @@ As a player says them (the config's `says`):
 <!-- generated: strategies -->
 **The Builder**
 
-- *Industry income.* Play Industry income early (Gigafactory Charter, Robotic Foundry, Economies of Scale), draw on them with Supplier Network, and stack Industry tags toward Arcology Foundry and Vertical Monopoly; spend two spent Industry cards on Scrap II.
-- *Power grid.* Take Power cards and energy income (Baseload Contract, Fusion Startup Stake), climb the Power tags to Fusion Research Campus and Dyson Swarm, and cash spent Power cards with Overcharge; Power to the People frees a city at the end.
+- *Industry income.* Play Industry income early (Gigafactory Charter, Robotic Foundry, Economies of Scale), take a credit on each Industry play with Supplier Network, and stack Industry tags toward Arcology Foundry and Vertical Monopoly; spend two spent Industry cards on Scrap II.
+- *Power grid.* Take Power cards and energy income (Baseload Contract, Fusion Startup Stake), climb the Power tags to Fusion Research Campus and Dyson Swarm Tranche, and cash spent Power cards with Overcharge; Power to the People frees a city at the end.
 - *Capital finance.* Build Capital piles (Retained Earnings, Conglomerate Headquarters, Capital Injection), let them pay out, and save the credits for Hostile Buyout.
 - *Wide build.* Fill five slots with Action buildings, use one a round, and push the card-play track to Master Plan.
 
@@ -94,13 +94,13 @@ As a player says them (the config's `says`):
 - *Troop wall.* Stand your nodes in the troops' way, take the troop removals (Breach and Clear, Security Contractor HQ, Agency Field Station) and finish with Kinetic Interdiction.
 - *Counter desk.* Answer threats with the typed jams and counters, build Garrison Command and Joint Task Force, and send Peacekeeping Mission to a corrupted city.
 - *Diplomacy and liberation.* Take Diplomacy and Followers (Liaison Corps, Envoy Briefings, Open Assembly, Accord's ambassador), and free cities with Great Liberation and Popular Uprising.
-- *Civic shelter.* Keep what you have standing: Patrol II, Faraday Yard, Hardpoint Lockdown, Aegis Grid Lockdown and the Shelter power, toward Aegis Doctrine.
+- *Civic shelter.* Keep what you have standing: Patrol II, Faraday Yard, Hardpoint Lockdown, Aegis Grid Lockdown, toward Aegis Doctrine.
 
 **The Researcher**
 
 - *Cubes and stations.* Build stations early (Field Station), put Lab II's cubes onto megaprojects (Moonshot Grant late), Peer Review your nodes, and spend the cubes on Forensic Audit.
 - *Science chain.* Stack Science tags: Research Royalties, Citation Engine and Preprint Server first, then Interdisciplinary Institute and Foundation Model Campus.
-- *Patience burst.* Save your insight under Patience and spend it in a big round on draws (Fieldwork, Simulation Cluster, Orbital Observatory Array).
+- *Patience burst.* Save your insight under Patience and spend it in a big round on Lab I and Lab II's draws and on Science plays into Preprint Server.
 - *Datasets.* Grow Dataset piles (Telemetry Archive, Synthetic Data Forge, Dataset Scraper) and cash them through Synthetic Data Forge.
 - *Team support.* Feed your partner: gifts, Open Science's insight, Coalition Charter's Sway, Hack II against projects, and Root Access for a corrupted city.
 <!-- /generated -->

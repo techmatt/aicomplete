@@ -1,5 +1,5 @@
-"""Antimatter supply by source, spent / made and the burns by round, per lever and agent (230's reader, promoted in
-241; 219's am_read.py and 222's am_use.py under experiments/results name powers that no longer exist).
+"""Antimatter supply by source and spent / made, per lever and agent (230's reader, promoted in 241; 219's am_read.py
+and 222's am_use.py under experiments/results name powers that no longer exist).
 
     python scripts/bench/am_read.py READ[,READ2...]
 
@@ -7,9 +7,10 @@ READ is a run folder, a games file with a header, or FILE=SPEC (a farm-seeds out
 `screens.stream`. A variant named `PAIR-LEVER` or `PAIR_LEVER` reads as lever LEVER of pair PAIR (`PAIR` alone: lever
 `base`; `read_lib.split_variant`); a PAIR not in bp, br, pr stops the read. Per
 lever and agent: antimatter made and spent a seat-game; supply shares by source (plants' Actions, Horizon's converter,
-upkeep, burns, Make antimatter, the rest: cards' on-play gains and other Actions); the cheap share (Make antimatter
-plus tier-1 cards, as design_check counts it); each burn's uses a seat-game of its board, its share in rounds 1-4 and
-in the game's last two rounds; win rate and rounds. The `sources` labels are listed in docs/simulator.md.
+upkeep, Make antimatter, the rest: cards' on-play gains, other Actions and powers such as Overcharge II); the cheap
+share (Make antimatter plus tier-1 cards, as design_check counts it); win rate and rounds. The board burns
+(Teardown, Meltdown, Reclaim) were cut in 276, so no class counts them. The `sources` labels are listed in
+docs/simulator.md.
 """
 import os
 import re
@@ -23,17 +24,15 @@ from read_lib import split_variant  # noqa: E402
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 AM = PEAKS.index('antimatter')
 PAIRS = {'bp': ('builder', 'protector'), 'br': ('builder', 'researcher'), 'pr': ('protector', 'researcher')}
-BURNS = {'teardown': 'builder', 'meltdown': 'researcher', 'reclaim': 'protector'}
 PLANTS = {'penning_trap_array', 'antiproton_foundry', 'positron_storage_ring', 'dark_fiber_collider',
           'treaty_isotope_bank', 'cyclotron_lease'}
-CLASSES = ['plants', 'converter', 'upkeep', 'burns', 'make', 'other']
+CLASSES = ['plants', 'converter', 'upkeep', 'make', 'other']
 
 
 def check_names():
-    """Stop on a plant or burn this reader names that content no longer has (219's and 222's readers went stale)."""
+    """Stop on a plant this reader names that content no longer has (219's and 222's readers went stale)."""
     cards = {c['id'] for c in content('cards')}
-    powers = {p['name'].lower() for b in content('ais') for p in b.get('powers', [])}
-    gone = sorted(PLANTS - cards) + sorted(set(BURNS) - powers)
+    gone = sorted(PLANTS - cards)
     if gone:
         sys.exit(f'am_read.py names what content no longer has: {", ".join(gone)}')
 
@@ -46,8 +45,6 @@ def klass(k):
         return 'converter'
     if k == 'phase:economy.upkeep':
         return 'upkeep'
-    if re.match(r'power:(Teardown|Meltdown|Reclaim)$', k):
-        return 'burns'
     if k == 'standard:antimatter':
         return 'make'
     return 'other'
@@ -76,11 +73,7 @@ def read(label, games, t1):
     made = spent = 0.0
     cls = defaultdict(float)
     cheap = 0.0
-    board_seats = defaultdict(int)
-    uses, early, late = defaultdict(int), defaultdict(int), defaultdict(int)
     for g in games:
-        for b in PAIRS.get(g['pair'], ()):
-            board_seats[b] += 1
         for per in g['sources']:
             seats += 1
             for k, row in per.items():
@@ -95,13 +88,6 @@ def read(label, games, t1):
                     cheap += v
         for per in g.get('uses') or []:
             spent += sum(row[AM] for row in per.values())
-        for k, n in g['counters'].items():
-            m = re.match(r'ai\.power\.\w+\.(teardown|meltdown|reclaim)\.r(\d+)$', k)
-            if m:
-                r = int(m.group(2))
-                uses[m.group(1)] += n
-                early[m.group(1)] += n * (r <= 4)
-                late[m.group(1)] += n * (r >= g['rounds'] - 1)
     s, tot = seats or 1, made or 1
     n = len(games)
     won = sum(bool(g.get('won')) for g in games) / max(n, 1)
@@ -111,14 +97,6 @@ def read(label, games, t1):
           f'spent {spent / s:.2f} ({spent / tot:.0%}); cheap {cheap / tot:.0%}')
     print(f'  shares: {shares}')
     print('  a seat-game: ' + ' '.join(f'{c} {cls[c] / s:.2f}' for c in CLASSES))
-    tb = sum(uses.values())
-    te = sum(early.values())
-    parts = []
-    for p, b in BURNS.items():
-        u = uses[p]
-        parts.append(f'{p} {u / max(board_seats[b], 1):.3f} ({early[p] / u:.0%} r1-4, {late[p] / u:.0%} last 2)'
-                     if u else f'{p} never')
-    print(f'  burns: all {tb / max(n, 1):.3f} a game, {te / max(tb, 1):.0%} in rounds 1-4; ' + '; '.join(parts))
 
 
 def main():

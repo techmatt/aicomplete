@@ -13,8 +13,8 @@ const ROUND: &str = "\
 |---|---|---|
 | | Round start | Set your insight. Clear your used markers (below). |
 | A | Sway | Each Fallout: 1 Discord. |
-| B | Adversary | **Card** (threats, Infiltrate, Muster, other lines, Spill, Grow; each arrival checks only its own hex, a line's as you place it), **March** (each stack 1 step), **Income** (next card up; compute step: each botnet seeds an agent and adds its compute in one move, then all compute onto the leftmost project at once; research track; firewalls, cordons and no-X tokens off). |
-| C | Cards | Build a hand of 4, draft, keep (1 insight a tier-1, 3 a tier-2, 2 with the keep upgrade). |
+| B | Adversary | **Card** (threats, Infiltrate, Muster, other lines, Spill, Grow; each arrival checks only its own hex: a placement once all its agents there are on, a Spill's move as it lands), **March** (each stack 1 step), **Income** (next card up; compute step: each botnet seeds an agent next to it and adds its compute, the compute even when a cordon stops the seed or it has nowhere to land; then all compute onto the leftmost project at once; research track; firewalls, cordons and no-X tokens off). |
+| C | Cards | Build a hand of 4, draft, keep (1 insight a tier-1; 3 a tier-2, 2 with the keep upgrade, less 1 per 2 Science tags you have). |
 | D | Actions | All at once, until everyone passes. |
 | E | Production | Read from the tracks, less each blocked chip's site: factories, cities (hosts), stations, megaprojects, income; then extra drones. |
 | F | Threats | Each threat not paid off takes effect (and lands 1 agent on its first token), one that waited from last round included. |
@@ -160,8 +160,9 @@ fn corrupt_numbers(r: &Rules) -> String {
         out += &format!("| {name} | {} |\n", v.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(" | "));
     }
     out + "\nChecked only when the adversary puts agents on a hex (an arrival), and only that hex: a site holding its \
-           number corrupts; else a hex with your node and that many loses the node. An Infiltrate, Surge or Grow line \
-           checks each site as it places its agents. A Push or Gather is no arrival.\n"
+           number corrupts; else a hex with your node and that many loses the node. Each placement (a line, \
+           a seed, a threat's or card's agents) puts all its agents for a hex on, then checks that hex once; a Spill \
+           moves one agent at a time, each move checked as it lands. A Push or Gather is no arrival.\n"
 }
 
 const MARCH: &str = "\
@@ -181,9 +182,9 @@ const TRACKS: &str = "\
 - **Your income tracks** (your board): one marker a resource. Move it when a track space, program or building \
 raises an income, or (your sites' output) when you gain or lose a station or factory or its megaproject \
 completes; in production, collect what \
-the markers show, less each blocked site's output.
+the markers show, less each blocked site's output (until its megaproject completes, a station's cube goes onto it).
 - **Blocked chips:** on a producing site while an opposing piece stands there (an agent on yours or a neutral \
-station, your ambassador on the adversary's), on a city a blackout darkens and on a factory a troop occupies; lift \
+station, your ambassador on the adversary's) and on a city a blackout darkens; lift \
 it when the last one leaves.
 - **Your tag dials** (your board): one a tag. Turn it when a card with that tag comes into play or is sacrificed.
 - **Used markers:** on each power, building slot and converter's used space; a bought chip on a city (above).

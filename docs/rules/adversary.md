@@ -28,13 +28,13 @@ Counterintelligence Sweep and Arms Inspectors take cubes off. `research_at` all 
 scales with the boards), added in the compute step; events raise it for good. The cards place agents.
 
 **Infiltrate X (locked).** Every event prints one Infiltrate X (two at stage III): **`infiltrate_agents` agents (1;
-2 at d4) onto each site of type X** (city, coastal city, research station, factory or botnet hex) not yet the
-adversary's, in every country, but at most `infiltrate_facility_cap` (1) on a station, factory or botnet hex; with
-no site of the type, nothing lands. A cordoned country takes none. An arrival on player ambassadors cancels one.
+2 at d4) onto each site of type X** not yet the adversary's, in every country; a line naming research stations,
+factories or botnet hexes lands at most `infiltrate_facility_cap` (1) on each, a city line the full number (a botnet
+on it or not). A cordoned country takes none; an arrival on player ambassadors cancels one.
 
 **A blocked landing stays in the supply:** a **firewall** or a Unity **prohibition** token (no-Infiltrate,
 no-Muster) blocks its step on its hex ([README.md](README.md#terms)); so does Wall for a Muster ([war.md](war.md)).
-On a no-Corrupt token's hex agents land, but nothing corrupts or flips.
+On a no-Corrupt token's hex agents land, but nothing corrupts or flips and no node is lost to agents.
 
 **Muster N.** N troops on each country's lowest-numbered factory, anyone's, else its lowest-numbered city. No
 project musters.
@@ -43,8 +43,8 @@ project musters.
 supply: Infiltrate, Surge, Grow's agent, a botnet's seed, a threat's or Discord card's creation, an uncountered
 threat's `threat_agents` (1) on its anchor; or a Spill's move), **that hex alone is checked**: a city, research
 station or factory not yet the adversary's holding its number corrupts, and its agents go to the supply; else 2
-agents on a player's node destroy the node. **An Infiltrate, Surge or Grow line checks each site it names as its
-agents go on**. The numbers are printed on the map: **city**
+agents on a player's node destroy the node. **Each placement puts all its agents for a hex on, then checks it once**
+(a Spill moves one at a time). The numbers are printed on the map: **city**
 `corrupt_at` 5 (from d1 `corrupt_cut` makes it 3), **station** `corrupt_station_at` 3, **factory**
 `corrupt_factory_at` 3. A player's Push or Gather is no arrival; nothing else is looked at, so a liberated site
 needs its full number of arrivals again. **One aftermath: whatever corrupts takes
@@ -55,7 +55,7 @@ one adversary mark.**
 - **2 agents on a player's node hex destroy the node** (`corrupt_node_at`; a node rule, not corruption: protections
   apply; checked only when the site doesn't corrupt); its agents go to the supply and **it leaves no mark**.
 - **Fallout** is the one scar: a token on free open land (no facility, node or Fallout); nothing is built there, and
-  each drips `blight_discord` (1) Discord a round. All four adversity sources (threats, Discord cards, adversary events, projects) print it ([harms.md](../harms.md)): a
+  each drips `blight_discord` (1) Discord a round. All four adversity sources print it ([harms.md](../harms.md)): a
   Fallout line's next to the lowest-numbered corrupted city, a threat's on or next to its anchor, the others next to
   their site (ties: lower country, then number); none free, it is lost. Lift Fallout ([economy.md](economy.md)) and
   some cards take one in reach off.
@@ -64,15 +64,16 @@ one adversary mark.**
 (**Botnets spread (level 1+)**, Botnet Swarm; below `botnet_spread_at`, 1, the line does nothing). A botnet stays
 until removed. **One move a botnet**: in the compute step, in hex order, each with no player ambassador on it
 **seeds** `botnet_seed` (1) agent onto the city, station or factory next to it, not yet the adversary's, holding the
-most agents (ties: the lowest-numbered; none: onto its own site), an arrival (the Militarist's **Botnet
-Recruiters**), and adds its `botnet_compute` compute (none while hacked; a cordon stops only the seed); one whose
+most agents (none: onto its own site if not the adversary's), an arrival (**Botnet Recruiters**), and adds its
+`botnet_compute` compute. A cordon stops seeds from and into its country, never the compute. A botnet whose
 ambassador a later seed cancels adds its compute then. It counts
 against the purge until Unity eases it ([alignment.md](alignment.md)). Removed by tier-2 cards, Decommission and
 Take down a botnet ([economy.md](economy.md)); removing one sways `alignment.botnet` (0: neither).
 
-**Spill, Surge, Grow.** Ties go to the lowest-numbered.
+**Spill, Surge, Grow, seeds.** Ties: lower country, then number (a target may lie across a border). None acts from,
+lands in or builds in a cordoned country.
 - **Spill (level 2+): X into Y**: in each country, every X not yet the adversary's holding 2 or more agents moves 1
-  onto the Y (not the adversary's) next to it holding the most agents (none: it stays), an arrival. Below `spill_at`
+  onto the Y not yet the adversary's next to it holding the most agents (none: it stays), an arrival. Below `spill_at`
   (2) the line does nothing.
 - **Surge N: X** (projects): in each country, N agents onto the X not yet the adversary's holding the most agents.
 - **Grow: X**: in each country, the X holding the most agents with a free hex next to it and fewer than `grow_cap`
@@ -181,11 +182,11 @@ ahead (its Infiltrate and Grow sites) are face up.
 <!-- generated: difficulty -->
 | Level | Name | Setup (incomes and threshold a country) | Mid-game rule (new) | Rules active | Tunable |
 |---|---|---|---|---|---|
-| 0 | **The Militarist** | Compute income 0; Infiltrate 1 a site; Research threshold 5; Deck 5 / 5 / 3 (13 rounds); Sites print their corrupt numbers: city 5, station 3, factory 3 | — | 0 | `compute_income`, `infiltrate_agents`, `research_at`, `corrupt_at` |
-| 1 | **Sleeper Cells** | Compute income 3 | When an Agent lands on a city, it falls at 3 agents, not 5. | 1 | `botnet_spread_at`, `corrupt_cut`, `corrupt_cut_at` |
-| 2 | **War Footing** | Compute income 5 | When a threat executes uncountered, the adversary also gains 4 compute. | 2 | `board_difficulty_at`, `spill_at` |
-| 3 | **Arms Race** | Compute income 10; Research threshold 4; Deck 5 / 3 / 3 (11 rounds) | When Weapons Program fires, it musters 3, not 2. | 3 | `stage2_removed`, `stage1_added`, `research_strong_at` |
-| 4 | **War Economy** | Compute income 15; Infiltrate 2 a city (1 on a station, factory or botnet hex); Deck 3 / 4 / 4 (11 rounds) | — | 3 | `stage1_removed`, `stage2_added`, `stage3_added`, `stage_swap_at` |
+| 0 | **The Militarist** | Compute income 0 a country; Infiltrate 1 a site; Research threshold 5 a country; Deck 5 / 5 / 3 (13 rounds); Sites print their corrupt numbers: city 5, station 3, factory 3 | — | 0 | `compute_income`, `infiltrate_agents`, `research_at`, `corrupt_at` |
+| 1 | **Sleeper Cells** | Compute income 3 a country | When an Agent lands on a city, it falls at 3 agents, not 5. | 1 | `botnet_spread_at`, `corrupt_cut`, `corrupt_cut_at` |
+| 2 | **War Footing** | Compute income 5 a country | When a threat executes uncountered, the adversary also gains 4 compute. | 2 | `board_difficulty_at`, `spill_at` |
+| 3 | **Arms Race** | Compute income 10 a country; Research threshold 4 a country; Deck 5 / 3 / 3 (11 rounds) | When Weapons Program fires, it musters 3, not 2. | 3 | `stage2_removed`, `stage1_added`, `research_strong_at` |
+| 4 | **War Economy** | Compute income 15 a country; Infiltrate 2 a city (1 a site from a station, factory or botnet line); Deck 3 / 4 / 4 (11 rounds) | — | 3 | `stage1_removed`, `stage2_added`, `stage3_added`, `stage_swap_at` |
 <!-- /generated -->
 
 **The ladder (Spirit Island's adversary card).** Levels are named and cumulative. Each adds

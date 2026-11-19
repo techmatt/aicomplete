@@ -92,7 +92,7 @@ const PHASES: &[PhaseSpec] = &[
     PhaseSpec::auto("event", "the face-up event card becomes this round's (none left: the adversary wins)"),
     // 178 (amendment 8112): its own phase, so a project's prompt doesn't follow the reveal's hidden draw in one
     // phase (a determinized replay of it could resolve another project first). No play change.
-    PhaseSpec::auto("compute", "the Income beat: the compute step (each botnet, in one move, seeds an agent next to it and adds its compute; then income and the compute banked since the last turn, all onto the leftmost project, which resolves as it fills); then every firewall, cordon and prohibition token comes off: the adversary turn ends"),
+    PhaseSpec::auto("compute", "the Income beat: the compute step (each botnet seeds an agent next to it and adds its compute, the compute even when a cordon stops the seed or it has nowhere to land; then income and the compute banked since the last turn, all onto the leftmost project, which resolves as it fills); then the research check; then every firewall, cordon and prohibition token comes off: the adversary turn ends"),
 ];
 
 // `run`'s phase indices: each is its phase's position in `PHASES`.
@@ -426,6 +426,12 @@ impl Module for Adversary {
                         let n = g.tokens(h, kind);
                         if n > 0 {
                             cx.add_tokens(g, h, kind, -n);
+                            // 285: said (the turn panel showed only "-1 firewall").
+                            let w = cx.world;
+                            cx.note(Some(h), || {
+                                let what = if kind == FIREWALL { "The firewall" } else { "The prohibition token" };
+                                format!("{what} at {} comes off", hex_name(&w, h))
+                            });
                         }
                     }
                 }
@@ -634,12 +640,19 @@ impl Module for Adversary {
                 Step::Muster => "Muster",
                 Step::Corrupt => "Corrupt",
             };
+            // 285: no Corrupt step since r130: a no-Corrupt marker lets agents land and stops the site corrupting.
+            let what = match step {
+                Step::Corrupt => {
+                    format!("agents may land, but nothing corrupts or flips and no node is lost to agents on each {}", wheres.join("; each "))
+                }
+                _ => format!("{name} skips each {}", wheres.join("; each ")),
+            };
             out.global(
                 &format!("prohibit_{}", step.name()),
                 &format!("no {name} (round)"),
                 round,
                 None,
-                &format!("a Unity prohibition: in round {round}'s adversary turn, {name} skips each {}", wheres.join("; each ")),
+                &format!("a Unity prohibition: in round {round}'s adversary turn, {what}"),
             );
         }
         out.bookkeeping(&[
@@ -666,6 +679,9 @@ fn reveal(g: &mut GameState, cx: &mut Cx) {
     if let Some(id) = g.pile(DECK).first().cloned() {
         cx.move_card(g, &id, DECK, NEXT, true)
             .expect("top of the deck");
+        // 285: the turn panel read this step as "cards changed": name the card turned up.
+        let w = cx.world;
+        cx.note(None, || format!("Next round's adversary card is turned up: {}", card(&w, &id).name));
         let peek = g.var(PEEK);
         if peek > 0 {
             cx.set_key(g, PEEK, peek - 1);

@@ -150,7 +150,11 @@ function commit() {
 /** Asked before acting at an earlier step; false if the player backs out. */
 function confirmDropLater(): boolean {
   const later = tl.last - tl.cursor;
-  return later <= 0 || confirm(`Acting here drops the ${later} later action(s). Go on?`);
+  // 285: a game that stopped replaying also drops the actions that didn't replay (it asked about the replayed only).
+  const lost = tl.unreplayed.length;
+  if (later <= 0 && lost === 0) return true;
+  const parts = [later > 0 ? `the ${later} later action(s)` : '', lost > 0 ? `the ${lost} action(s) that didn't replay` : ''].filter(Boolean);
+  return confirm(`Acting here drops ${parts.join(' and ')}. Go on?`);
 }
 
 function setTimeline(t: Timeline) {
@@ -670,7 +674,11 @@ $('undo').onclick = () => {
   // 118: undo drops the game's last action, not the shown step's: at an earlier step it
   // dropped one the player couldn't see, unasked (acting there asks, `confirmDropLater`).
   if (tl.cursor < tl.last && !confirm(`Undo drops the game's last action (step ${tl.last}), not the step shown (${tl.cursor}). Go on?`)) return;
+  const [before, stopped] = [tl.last, !!tl.replayError];
   tl.undo();
+  // 285: a dropped action (or a stopped game's unreplayed tail) makes the record a played game, as acting does: its
+  // old warning no longer applies.
+  if (tl.last < before || (stopped && !tl.replayError)) showError(null);
   pin(null);
   commit();
 };
@@ -778,6 +786,8 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Tab' || e.key.startsWith('Arrow')) pointerFocus = false;
   // Keys and the toolbar do nothing until the engine has loaded (020: they threw).
   if (!tl) return;
+  // 285: nor behind the open record dialog (a click on its text leaves the focus on the body, outside it).
+  if (ui.recordDialog.open) return;
   const target = e.target as Element;
   // The slider keeps focus after a drag: it moves itself with the arrows, Home and End,
   // and the other keys still work (020: Space, R and Ctrl+Z stopped after using it).

@@ -627,7 +627,8 @@ impl Module for Alignment {
             "corrupted cities",
             bad,
             Some(cities),
-            "corrupted cities always count against the purge; each one builds agents",
+            // 285: no agent income since r130: a corrupted city's harm each round is its energy as Discord.
+            "corrupted cities always count against the purge; each turns its energy into Discord in production unless a player ambassador stands on it",
         );
         // 135: a negative team income (Capital Flight, a project until r85) takes it below 0.
         if g.var(INCOME_BONUS) != 0 {

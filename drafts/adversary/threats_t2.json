@@ -1,6 +1,6 @@
 {
  "deck": "threats_t2",
- "note": "Tier-2 threat deck, 146 (Matt's threat card standard, 2026-11-07): bigger consequences, about two tier-1s; four cards re-cut from the old tier 3 (Last Ultimatum, Iron Curtain, War Economy, Cascade Failure). Counters: 4 energy, 4 ambassadors, 4 insight (r89; 7 before), 5 research cubes, 4 chips, 3 tags or 17 credits. Value lines price at configs/agents/values.json. Source: experiments/results/146_threat_standard/threat_cards.py.",
+ "note": "Tier-2 threat deck, 146 (Matt's threat card standard, 2026-11-07): bigger consequences, about two tier-1s; four cards re-cut from the old tier 3 (Last Ultimatum, Iron Curtain, War Economy, Cascade Failure). Counters: 4 energy, 4 ambassadors, 4 insight (r89; 7 before), 5 research cubes, 4 chips, 3 tags or 11 credits. Value lines are 146's pricing, not recomputed: they price the retired 17-credit counter and that day's configs/agents/values.json, so their numbers and ratios are stale. Source: experiments/results/146_threat_standard/threat_cards.py.",
  "cards": [
   {
    "id": "total_war",
@@ -277,7 +277,7 @@
     "facilities destroyed or corrupted"
    ],
    "value": "counter 4 insight (17.5) or 17 credits (17); uncountered 25 at values.json (a troop 9 with its strike), 1.47x the cheapest counter",
-   "check": "a lasting harm: the city corrupts as by the Corrupt line (a node on it is destroyed, an ambassador there is armor)",
+   "check": "a lasting harm: the city corrupts as by an arrival at its corrupt number (a node on it is destroyed, an ambassador there is armor)",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
     "201 (r89, Matt 2026-11-12): insight counter 7 -> 4 (the new insight income)"
@@ -325,7 +325,7 @@
     "Unity pulled back"
    ],
    "value": "counter 3 Diplomacy tags (15) or 17 credits (17); uncountered 20 at values.json (a troop 9 with its strike), 1.33x the cheapest counter",
-   "check": "bites the Unity race and the city's next Corrupt line",
+   "check": "bites the Unity race and takes its city uncountered: 4 + the anchor agent reach 5 at level 0, the 4 alone reach 3 from level 1 (D130)",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
@@ -990,7 +990,7 @@
     "credits or income lost"
    ],
    "value": "counter 4 energy (18) or 17 credits (17); uncountered 20 at values.json (a troop 9 with its strike), 1.18x the cheapest counter",
-   "check": "bites chip holders and the site's next Corrupt line",
+   "check": "bites chip holders and takes its coastal city uncountered: 4 + the anchor agent reach 5 at level 0, the 4 alone reach 3 from level 1 (D130)",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],

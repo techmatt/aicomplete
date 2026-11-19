@@ -129,7 +129,16 @@ export class Timeline {
 
   /** Drops the last action. */
   undo() {
-    if (this.last === 0) return;
+    // 285: a game that stopped at its first action has nothing to drop but its unreplayed tail (the bar promised
+    // that Undo makes the replayed part the game).
+    if (this.last === 0) {
+      if (this.replayError) {
+        this.changed(0);
+        this.replayError = null;
+        this.unreplayed = [];
+      }
+      return;
+    }
     this.frames.pop();
     this.cursor = Math.min(this.cursor, this.last);
     this.changed(this.last);
