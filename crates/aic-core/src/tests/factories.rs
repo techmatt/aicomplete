@@ -3,7 +3,7 @@
 use super::*;
 use crate::modules::board;
 use crate::modules::adversary;
-use crate::op::RallyAt;
+use crate::op::SiteType;
 
 /// 275 (Matt, 2026-11-18): city growth and its chips are gone: a production round builds nothing on its own.
 #[test]
@@ -34,14 +34,14 @@ fn grow_builds_one_facility_by_the_site_with_most_agents() {
     set_var(&mut g, SUPPLY, 40);
     put(&mut g, at(14), ADV_AMBASSADOR, 2);
     put(&mut g, at(7), ADV_AMBASSADOR, 1);
-    with_cx(&rules, |cx| adversary::grow(&mut g, cx, RallyAt::City, Some(0))).unwrap();
+    with_cx(&rules, |cx| adversary::grow(&mut g, cx, SiteType::City, Some(0))).unwrap();
     assert_eq!(built(&g), 1, "one facility in the country");
     assert_eq!((g.tokens(at(11), FACTORY), g.tokens(at(11), ADV_AMBASSADOR), cube_on(&g, at(11))), (1, 1, None));
     assert_eq!(g.stats.counters["adversary.grew_infested"], 1);
 
     // No agents anywhere: the lowest-numbered city (6) grows, with no agent.
     let mut g = g0.clone();
-    with_cx(&rules, |cx| adversary::grow(&mut g, cx, RallyAt::City, Some(0))).unwrap();
+    with_cx(&rules, |cx| adversary::grow(&mut g, cx, SiteType::City, Some(0))).unwrap();
     assert_eq!(built(&g), 1);
     assert_eq!((g.tokens(at(2), FACTORY), g.tokens(at(2), ADV_AMBASSADOR)), (1, 0));
 }
@@ -63,7 +63,7 @@ fn grow_builds_the_type_its_site_has_fewer_of() {
     let (z, factory) = crate::modules::plan::grow_at(&w, &g, at(6)).expect("6 can grow");
     assert!(!factory && m.hexes[at(6)].neighbors.contains(&z));
     put(&mut g, at(6), ADV_AMBASSADOR, 1);
-    with_cx(&rules, |cx| adversary::grow(&mut g, cx, RallyAt::City, Some(0))).unwrap();
+    with_cx(&rules, |cx| adversary::grow(&mut g, cx, SiteType::City, Some(0))).unwrap();
     assert_eq!((near(&g, 6, STATION), near(&g, 6, FACTORY)), (s0 + 1, f0));
     assert_eq!(cube_on(&g, z), None, "neutral");
     // A station on 6's only zone (2): it wants a factory, has no free zone for one, and builds a station.

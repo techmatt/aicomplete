@@ -63,10 +63,10 @@ def main():
         wins = sum(1 for g in gs if g.get('won'))
         purge = sum(1 for g in gs if g.get('won') and g.get('reason') == 'purge')
         p = wins / n if n else 0
-        second = per(peer)
+        peer_uses = per(peer)
         print(f"| {variant} {agent[:40]} | {n} | {100 * p:.1f} ±{se(p, n):.1f} | {purge} "
               f"| {sum(g.get('rounds', 0) for g in gs) / n:.1f} | {per('economy.insight_carried'):.1f} "
-              f"| {per('board.cubes_bought'):.2f} | {per('board.stations_built_free'):.2f} | {second:.2f} "
+              f"| {per('board.cubes_bought'):.2f} | {per('board.stations_built_free'):.2f} | {peer_uses:.2f} "
               f"| {per('board.wall_strikes'):.2f} | {per('board.troop_destroyed'):.2f} | {per('board.node_lost'):.1f} "
               f"| {spent(gs, 'credits'):.1f} / {spent(gs, 'energy'):.1f} |")
     if a.powers:

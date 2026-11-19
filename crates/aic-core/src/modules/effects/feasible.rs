@@ -39,14 +39,9 @@ fn feasible_aimed(
     });
     let aim: Option<&[usize]> = own.as_deref().or(aim);
     let aimed_acts = |e: &Op, at: &[usize]| -> bool {
-        let any = |hexes: Vec<usize>| hexes.iter().any(|h| at.contains(h));
-        match e {
-            Op::Push { pieces, .. } => any(push_hexes(w, g, seat, pieces)),
-            Op::Gather { pieces, strike, .. } => any(gather_hexes(w, g, seat, pieces, *strike)),
-            Op::Firewall => any(firewall_hexes(w, g, seat)),
-            // 276 (diff review): a hardening acts on a target with a facility it can protect in its area.
-            Op::Harden { at: area, .. } => !hardens_at(w, g, at, *area).is_empty(),
-            _ => !at.is_empty(),
+        match narrowed(w, g, seat, e, at) {
+            Some(hexes) => hexes.iter().any(|h| at.contains(h)),
+            None => !at.is_empty(),
         }
     };
     let here_held = || card.map_or(0, |c| g.var(&cards::tokens_key(seat, c)));
@@ -166,7 +161,32 @@ fn feasible_aimed(
             Op::ShieldNode { .. } => any_hex(g, |h| shieldable(g, seat, h)),
             // Giving needs someone to give to (Vendor Financing and Development Loan still pay you).
             Op::Transfer { .. } => g.seats.len() > 1,
-            _ => true,
+            // The rest always act: a gain, a standing passive, or a team or adversary op no player list prints.
+            // Listed, not `_`, so a new op must decide here (259: a `_` let an op that can do nothing through).
+            Op::Gain { .. } | Op::GainPerNode { .. } | Op::GainAmbassadors { .. } | Op::HostMore { .. } | Op::Cordon
+            | Op::Peek { .. } | Op::Production { .. } | Op::ProductionPerTag { .. } | Op::SpreadAmbassadors
+            | Op::Troops { .. } | Op::ThreatAtNode { .. } | Op::EachDestroyNode { .. } | Op::DestroyNode { .. }
+            | Op::PullUnity { .. } | Op::FlipStation { .. } | Op::CorruptCity { .. } | Op::PlayersLose { .. }
+            | Op::AdversaryBuild | Op::LoseNodeOr { .. } | Op::Flag { .. } | Op::Requisition { .. }
+            | Op::LoseAmbassador | Op::DiscardMostExpensive | Op::Compute { .. } | Op::ComputeEvery { .. }
+            | Op::LoseTokens { .. } | Op::AdversaryFactory { .. } | Op::ComputePerMissing { .. }
+            | Op::CorpTroops { .. } | Op::DestroyFacility { .. } | Op::DisableBuilding { .. } | Op::Discard { .. }
+            | Op::ExtraWar | Op::LoseAmbassadorsOr { .. } | Op::LoseIncome { .. } | Op::LoseOr { .. }
+            | Op::MarchNow { .. } | Op::OccupyFactory { .. } | Op::PlaceBotnet { .. } | Op::CorruptFactory
+            | Op::Theft { .. } | Op::TeamIncome { .. } | Op::FreePurchases { .. } | Op::CounterAll
+            | Op::Pushback { .. } | Op::DealThreats { .. } | Op::Create { .. } | Op::CreateSite { .. }
+            | Op::Infiltrate { .. } | Op::Surge { .. } | Op::Spill { .. } | Op::Grow { .. }
+            | Op::IncreaseIncome { .. } | Op::AdversaryResearch { .. } | Op::RemoveBotnets { .. }
+            | Op::AdversaryCubes { .. } | Op::BotnetCubes { .. } | Op::BotnetTroops { .. }
+            | Op::SpreadBotnets { .. } | Op::TakeSite { .. } | Op::FactoryTroops { .. } | Op::AgentsOnNodes { .. }
+            | Op::RecallAmbassadors | Op::StripCubes { .. } | Op::StripHarden | Op::Fallout { .. }
+            | Op::Clock { .. } | Op::OnePlayer { .. } | Op::PerSite { .. } | Op::RemoveWhere { .. }
+            | Op::Prohibit { .. } | Op::StandingTroopsBonus { .. } | Op::ThreatCompute { .. } | Op::Income { .. }
+            | Op::IncomePerTag { .. } | Op::BuildingDiscount { .. } | Op::CardDiscount { .. } | Op::When { .. }
+            | Op::Threshold { .. } | Op::Slots { .. } | Op::Logistics { .. } | Op::ProjectDrain { .. }
+            | Op::AutoCounter { .. } | Op::UnityBonus { .. } | Op::CorruptionShield | Op::CivicShelter | Op::Wall
+            | Op::Patience | Op::SupplyInsight { .. } | Op::TagsFromHand { .. } | Op::ConvertUpkeep { .. }
+            | Op::TroopSteps { .. } => true,
         }
     };
     effects.is_empty() || effects.iter().enumerate().any(|(at, e)| acts(at, e))

@@ -212,6 +212,7 @@ pub fn place_node_within(g: &mut GameState, cx: &mut Cx, seat: usize, range: i64
     tally_placement(&w, g, cx, seat, hexes[j]);
     if capstone {
         cx.tally(g, "board.capstones", 1);
+        // Capstones reached this round (`.rNN` in games.jsonl), not capstones held.
         cx.per_round(g, "board.node_capstones", 1);
     }
     effects::run(g, cx, uncovers, &mut effects::Ctx::seat(seat))?;

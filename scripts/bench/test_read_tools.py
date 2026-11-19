@@ -7,7 +7,9 @@ of the same seeds gives:
   default), and the win % columns still equal under `--same-engine`, which leaves the mixed seeds out of the gap only.
 - `paired.py`: the gap is +0.0 on every seed by default, and on the same-engine seeds only under `--same-engine`.
 - `ladder.py --screen` over a native base and a farmed lever in another folder (FILE=SPEC): one agent, a real gap.
-- `read_lib.py`: a `PAIR-ARM` read's cells decoded from the spec, the arms' paired gap, counters, powers, resources.
+- `read_lib.py`: a `PAIR-ARM` read's cells decoded from the spec, the arms' paired gap, counters, powers, resources;
+  `--agent-arms`, `READ@LABEL` and `--levels` (281).
+- `cards/play_read.py --variant` (281) keeps a lever screen's arm.
 
 No build and no binary: the reads are written here. Python's standard library only.
 """
@@ -272,6 +274,44 @@ class ReadLib(unittest.TestCase):
             led = {(f'stem/{a}', ag): s for (a, ag), s in S.items()}
             self.assertIn('paired against stem/off', '\n'.join(read_lib.tables(led, 'off')))
 
+    def write(self, path, spec, won, seeds=SEEDS):
+        with open(path, 'w', encoding='utf-8', newline='\n') as f:
+            f.write(json.dumps({'format': 1, 'spec': spec}) + '\n')
+            n = len(spec['variants']) * len(spec['difficulties']) * len(spec['agents'])
+            for s in seeds:
+                for c in range(n):
+                    f.write(json.dumps({'cell': c, 'seed': s, 'won': won(c, s), 'rounds': 8, 'reason': 'node',
+                                        'build': 'builder:x', 'counters': {}, 'spent': [[0] * 8],
+                                        'gained': [[0] * 8]}) + '\n')
+
+    def test_agent_arms_labels_levels(self):
+        # 281: replaces 258's agent_arms.py and merge.py and 256's levels.py
+        old = dict(SPEC, variants=[{'name': 'bp', 'set': []}])                        # d0, d2; strategist
+        new = dict(old, agents=['strategist', 'strategist:w.sink=0.5'])
+        with tempfile.TemporaryDirectory() as tmp:
+            a, b = os.path.join(tmp, 'old.jsonl'), os.path.join(tmp, 'new.jsonl')
+            self.write(a, old, lambda c, s: False)
+            self.write(b, new, lambda c, s: c % 2 == 1)  # agents run fastest: the sink agent wins, the bare one not
+            # one read: the option agent is arm sink05 of the bare agent, paired on the same seeds
+            rows = list(read_lib.games(b, None, {'strategist'}))
+            self.assertEqual({(r.arm, r.agent) for r in rows}, {('base', 'strategist'), ('sink05', 'strategist')})
+            text = run(read_lib.main, [b, '--agent-arms'])
+            self.assertIn(f'| strategist | sink05 | 100.0 | 100.0 | 100.0 | +100.0 ± 0.0 | {2 * len(SEEDS)} |', text)
+            # without the flag the two agents stay apart, as before
+            self.assertEqual({r.agent for r in read_lib.games(b)}, {'strategist', 'strategist:w.sink=0.5'})
+            # arm sets match, so they would pool (and overlap); @LABEL keeps the new read apart, its option agent an
+            # arm when the bare agent is in either read
+            with self.assertRaisesRegex(SystemExit, 'pooled reads overlap'):
+                run(read_lib.main, [a, b])
+            text = run(read_lib.main, [a, f'{b}@r118', '--agent-arms', '--levels', '2'])
+            self.assertIn('paired against base', text)
+            self.assertIn(f'| strategist | base | 0.0 | 0.0 |  | {len(SEEDS)} |', text)
+            self.assertIn(f'| strategist | r118/base | 0.0 | 0.0 | +0.0 ± 0.0 | {len(SEEDS)} |', text)
+            self.assertIn(f'| strategist | r118/sink05 | 100.0 | 100.0 | +100.0 ± 0.0 | {len(SEEDS)} |', text)
+            self.assertNotIn('d0', text)
+            with self.assertRaisesRegex(SystemExit, 'no game at those levels'):
+                run(read_lib.main, [a, '--levels', '4'])
+
     def test_one_paired_seed(self):
         # 266 (D117): one paired seed read new = base (`screens.gap` gives 0 below two pairs)
         self.assertEqual(read_lib.paired_gap({('bp', 2, 1): 0}, {('bp', 2, 1): 1}), (0.0, 100.0, 100.0, None, 1))
@@ -325,6 +365,25 @@ class CardReadsPool(unittest.TestCase):
         self.assertEqual(re.findall(r'^## (.*)$', text, re.M), ['strategist (10 games)'])
         text = self.main('play_read', [*reads, '--agents', 'engine:strategy=0,w.built=4'])
         self.assertIn('## strategist (10 games)', text)
+
+    def test_play_read_variant(self):
+        # 281: --variant keeps a lever screen's arm (`base`: the bare pairs), as design_check.py does
+        self.spec = dict(self.spec, variants=[{'name': 'bp', 'set': []}, {'name': 'bp-on', 'set': []}])
+        farm, spec = os.path.join(self.tmp.name, 'farm.jsonl'), os.path.join(self.tmp.name, 'spec.json')
+        with open(farm, 'w', encoding='utf-8', newline='\n') as f:
+            self.games(f, range(0, 3))
+            for s in range(3, 10):
+                f.write(json.dumps({'cell': 1, 'seed': s, 'won': True, 'rounds': 8, 'reason': 'end', 'counters': {},
+                                    'cards': {}, 'engine': 'native'}) + '\n')
+        with open(spec, 'w', encoding='utf-8', newline='\n') as f:
+            json.dump(self.spec, f)
+        read = f'{farm}={spec}'
+        self.assertIn('## strategist (10 games)', self.main('play_read', [read]))
+        self.assertIn('## strategist (3 games)', self.main('play_read', [read, '--variant', 'base']))
+        self.assertIn('## strategist (7 games)', self.main('play_read', [read, '--variant', 'on']))
+        self.assertIn('## strategist (7 games)', self.main('play_read', [read, '--variant', 'bp-on']))
+        with self.assertRaisesRegex(SystemExit, 'matched no game'):
+            self.main('play_read', [read, '--variant', 'off'])
 
     def test_use_read_pools(self):
         text = self.main('use_read', self.reads())

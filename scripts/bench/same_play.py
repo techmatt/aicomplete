@@ -4,6 +4,11 @@
         # play the matrix on binary SIM into DIR, reading configs/ under ROOT (default: here)
     python scripts/bench/same_play.py compare SIM BASE NEW [--map OLD=NEW]...
         # SIM: the new binary
+    python scripts/bench/same_play.py tracediff A B [--ignore KEY]...
+        # two `run --trace` outputs: the first differing JSON line, after its round and phase lines
+
+`tracediff` (281) drops each line whose event names KEY (a var key, card id or token equal to it; a KEY ending in
+`.` as a prefix) and the field KEY from every line (`--ignore config_hash` for two configs). Exits 1 on a difference.
 
 The matrix covers the baseline (229 dropped shared_row.json: a BASE played before then holds its
 `shared_row-*` files, which `compare` names and leaves out, as any cell NEW didn't play), 1-4 countries, three
@@ -174,6 +179,20 @@ def trace_lines(text, maps):
     return events + sorted(table)
 
 
+def tracediff(a, b, ignore):
+    """The first differing JSON line of traces `a` and `b`, with A's last round_started and phase_started."""
+    from trace_lib import first_diff
+    found = first_diff(a, b, ignore)
+    if found is None:
+        print("traces match")
+        return 0
+    (na, la), (nb, lb), ctx = found
+    for line in ctx or ["(setup, before round 1's first phase)"]:
+        print("  ", line[:SHOWN])
+    print(f"A {na}: {la[:300]}\nB {nb}: {lb[:300]}")
+    return 1
+
+
 def compare(sim, base, new, maps=()):
     bad = 0
     ignored = IGNORED + RENAME_IGNORED if maps else IGNORED
@@ -203,6 +222,11 @@ def compare(sim, base, new, maps=()):
 
 if __name__ == "__main__":
     argv = sys.argv[1:]
+    if argv[:1] == ["tracediff"]:
+        sys.stdout.reconfigure(encoding="utf-8", newline="\n")
+        ignore = [argv[i + 1] for i, x in enumerate(argv) if x == "--ignore" and i + 1 < len(argv)]
+        rest = [x for i, x in enumerate(argv[1:], 1) if x != "--ignore" and argv[i - 1] != "--ignore"]
+        sys.exit(tracediff(*rest, ignore) if len(rest) == 2 else __doc__)
     pairs = take_maps(argv)
     if "--threads" in argv:
         i = argv.index("--threads")

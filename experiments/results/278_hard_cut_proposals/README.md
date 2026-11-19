@@ -8,7 +8,11 @@ Growth pass).
 - `board.turn_cap` (cut 3).
 
 Two more are reverted and kept as patches: [pull_any_tag.patch](pull_any_tag.patch) (cut 6) and
-[host_fixed.patch](host_fixed.patch) (cut 8). A stats-only counter, `map.arrival_checks`, measures cut 4.
+`host_fixed.patch` (cut 8). A stats-only counter, `map.arrival_checks`, measures cut 4.
+
+**Later (Matt, 2026-11-18; removed in 281):** no turn budget ("too many non-card turns means things are too cheap"),
+so `board.turn_cap` left the code and `host_fixed.patch` was dropped (in git history before 281). `cards.no_pass`
+stays as an ablation switch only: passing is locked.
 
 With every flag off, the 28 traced games replay identically. Only the config hash moves, and with it
 `GOLDEN_FINGERPRINT`, because the state hashes its config.

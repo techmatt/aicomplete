@@ -8,6 +8,9 @@ pricing formula.
     python scripts/cards/effect_ledger.py --stdout --overlay PASS.txt
                                                    # the same, with a card pass's overlay (apply_overlay.py's
                                                    # `cards.` entries) applied in memory first
+    python scripts/cards/effect_ledger.py --stdout --reasoned-delta BASE [--cards ...] [--overlay ...]
+                                                   # each card whose reasoned value moved since BASE (a
+                                                   # revision or a cards.json), its BASE cost moved by the delta
 
 Re-run it at each card revision; it reads only content/cards.json,
 configs/agents/values.json and RULES_REVISION, and writes the same files for the same
@@ -674,7 +677,53 @@ def overlaid(cards, paths):
     return files['cards.json']
 
 
-def main(stdout=False, cards_path=None, values_path=None, hold_ratio=None, overlays=()):
+def base_cards(base):
+    """--reasoned-delta's BASE: a cards.json path, else a git revision's content/cards.json."""
+    if os.path.isfile(base):
+        return load_path(base)
+    import subprocess
+    p = subprocess.run(['git', 'show', f'{base}:content/cards.json'], cwd=ROOT, capture_output=True,
+                       text=True, encoding='utf-8')
+    if p.returncode != 0:
+        sys.exit(f'--reasoned-delta {base}: neither a file nor a revision with content/cards.json '
+                 f'({p.stderr.strip()})')
+    return json.loads(p.stdout)
+
+
+def reasoned_of(t, cards):
+    """card id -> its summed reasoned value (the same sum `main` writes to cards.csv)."""
+    return {c['id']: sum(r_['reasoned'] for r_ in decompose(t, c)) for c in cards}
+
+
+# --reasoned-delta's floor on a moved cost: neither this script nor docs/card-pricing.md names a card-cost
+# floor, so only a negative cost is refused (271's out-of-tree make_overlay.py used 3). As there, the floor
+# never raises a card that lost value: a card already under it stays where it is.
+COST_FLOOR = 0
+
+
+def print_reasoned_delta(t, before_cards, after_cards):
+    """Each card in both sets whose reasoned value moved: its credit cost in BASE moved by the delta
+    (rounded half up), the repricing 271 did by hand that keeps `cost - reasoned` where it was."""
+    before, after = reasoned_of(t, before_cards), reasoned_of(t, after_cards)
+    old = {c['id']: c for c in before_cards}
+    w = csv.writer(sys.stdout, lineterminator='\n')
+    w.writerow(['card', 'name', 'cost_base', 'cost_now', 'reasoned_before', 'reasoned_after', 'delta', 'moved_cost'])
+    for c in after_cards:
+        cid = c['id']
+        if cid not in before or abs(after[cid] - before[cid]) < 0.005:
+            continue
+        delta = after[cid] - before[cid]
+        base_cost = old[cid].get('cost', 0)
+        moved = max(min(COST_FLOOR, base_cost), math.floor(base_cost + delta + 0.5))
+        w.writerow([cid, c['name'], base_cost, c.get('cost', 0), r2(before[cid]), r2(after[cid]), r2(delta), moved])
+    added = sorted(set(after) - set(before))
+    gone = sorted(set(before) - set(after))
+    if added or gone:
+        print(f"note: only in the new cards: {' '.join(added) or '-'}; only in BASE: {' '.join(gone) or '-'}",
+              file=sys.stderr)
+
+
+def main(stdout=False, cards_path=None, values_path=None, hold_ratio=None, overlays=(), reasoned_delta=None):
     raw = load_path(values_path) if values_path else load_json('configs', 'agents', 'values.json')
     t = Table(raw)
     TROOPS_REMOVED.clear()
@@ -683,6 +732,9 @@ def main(stdout=False, cards_path=None, values_path=None, hold_ratio=None, overl
     if overlays:
         cards = overlaid(cards, overlays)
     cards = sorted(cards, key=lambda c: c['id'])
+    if reasoned_delta:
+        print_reasoned_delta(t, base_cards(reasoned_delta), cards)
+        return
     if not stdout:
         os.makedirs(OUT, exist_ok=True)
     out = (lambda *_: None) if stdout else write_csv
@@ -979,7 +1031,7 @@ def write_html(meta, eff_rows, eff_cols, card_rows, card_cols, inst_rows, inst_c
         fh.write(head + HTML_JS)
 
 
-def args():
+def args(argv=None):
     p = argparse.ArgumentParser(description=__doc__.split('\n\n')[0],
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('--stdout', action='store_true',
@@ -992,7 +1044,14 @@ def args():
     p.add_argument('--overlay', action='append', default=[], metavar='FILE',
                    help='with --stdout: an overlay file (apply_overlay.py format, `cards.` entries) applied to the '
                         'cards before pricing (other lines are skipped with a note); repeatable')
-    a = p.parse_args()
+    p.add_argument('--reasoned-delta', metavar='BASE',
+                   help='with --stdout: instead of the table, each card whose reasoned value differs from BASE\'s '
+                        '(a git revision or a cards.json path): BASE\'s cost moved by the delta')
+    a = p.parse_args(argv)
+    if a.reasoned_delta and not a.stdout:
+        p.error('--reasoned-delta prints: pass --stdout')
+    if a.reasoned_delta and a.hold_ratio:
+        p.error('--reasoned-delta and --hold-ratio are two different tables: pass one')
     if a.hold_ratio and not a.stdout:
         p.error('--hold-ratio prints: pass --stdout')
     if a.overlay and not a.stdout:
@@ -1002,4 +1061,5 @@ def args():
 
 if __name__ == '__main__':
     a = args()
-    main(stdout=a.stdout, cards_path=a.cards, values_path=a.values, hold_ratio=a.hold_ratio, overlays=a.overlay)
+    main(stdout=a.stdout, cards_path=a.cards, values_path=a.values, hold_ratio=a.hold_ratio, overlays=a.overlay,
+         reasoned_delta=a.reasoned_delta)

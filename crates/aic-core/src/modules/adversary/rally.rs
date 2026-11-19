@@ -3,7 +3,7 @@
 //! Every step acts only on the sites its line names; each arrival is checked where it lands ([`arrive_check`]).
 
 use super::*;
-use crate::op::RallyAt;
+use crate::op::SiteType;
 
 /// 151: the income-list entry for this difficulty (the last entry past the list's end).
 pub(super) fn income_at(w: &World, param: &str) -> i64 {
@@ -20,12 +20,12 @@ pub fn increase_income(g: &mut GameState, cx: &mut Cx, compute: i64) {
 }
 
 /// 275: the site types a card's Infiltrate lines name, in card order (stage III cards print two).
-pub fn infiltrate_sites(c: &AdversaryCard) -> Vec<RallyAt> {
+pub fn infiltrate_sites(c: &AdversaryCard) -> Vec<SiteType> {
     c.standing.iter().filter_map(|e| if let Op::Infiltrate { site } = e { Some(*site) } else { None }).collect()
 }
 
 /// 275: the site type a card's Grow line names.
-pub fn grow_site(c: &AdversaryCard) -> Option<RallyAt> {
+pub fn grow_site(c: &AdversaryCard) -> Option<SiteType> {
     c.standing.iter().chain(&c.twists).find_map(|e| if let Op::Grow { site } = e { Some(*site) } else { None })
 }
 
@@ -53,7 +53,7 @@ fn countries_in(w: &World, g: &GameState, scope: Option<usize>) -> Vec<usize> {
 /// the adversary's (`plan::infiltrate_plan`), in hex order. A firewalled or no-Infiltrate site's agents stay in
 /// the supply; a cordoned country takes none. Tallied `adversary.infiltrated` and by source; each site named is
 /// one check (`map.adversary_checks`).
-pub fn infiltrate(g: &mut GameState, cx: &mut Cx, site: RallyAt, scope: Option<usize>, source: &str) -> Res {
+pub fn infiltrate(g: &mut GameState, cx: &mut Cx, site: SiteType, scope: Option<usize>, source: &str) -> Res {
     let w = cx.world;
     let n = infiltrate_agents(&w);
     for c in countries_in(&w, g, scope) {
@@ -93,7 +93,7 @@ pub fn build_all(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
 
 /// 275, Surge N: X: in each country in scope, `n` agents onto the X not yet the adversary's holding the most
 /// agents (ties: the lowest-numbered); none of the type: nothing.
-pub fn surge(g: &mut GameState, cx: &mut Cx, site: RallyAt, n: i64, scope: Option<usize>, source: &str) -> Res {
+pub fn surge(g: &mut GameState, cx: &mut Cx, site: SiteType, n: i64, scope: Option<usize>, source: &str) -> Res {
     let w = cx.world;
     for c in countries_in(&w, g, scope) {
         let sites = super::plan::infiltrate_sites(&w, g, site, c);
@@ -116,7 +116,7 @@ pub fn surge(g: &mut GameState, cx: &mut Cx, site: RallyAt, n: i64, scope: Optio
 /// 275, Spill: X into Y (event cards' lines, from `spill_at`; below it the line does nothing): in each country,
 /// every X not yet the adversary's holding 2 or more agents moves 1 onto the Y next to it (not yet the
 /// adversary's) holding the most agents (ties: the lowest-numbered); none: it stays. The move is an arrival.
-pub fn spill(g: &mut GameState, cx: &mut Cx, site: RallyAt, to: RallyAt, scope: Option<usize>) -> Res {
+pub fn spill(g: &mut GameState, cx: &mut Cx, site: SiteType, to: SiteType, scope: Option<usize>) -> Res {
     let w = cx.world;
     if !level(&w, w.int("adversary.spill_at")) {
         return Ok(());
@@ -172,7 +172,7 @@ fn move_one(g: &mut GameState, cx: &mut Cx, from: usize, to: usize) -> Res<bool>
 /// neutral facility there (`plan::grow_plan`): the type it has fewer of next to it (ties: a factory), on the
 /// lowest-numbered free hex of that type. A site holding `grow_infest_at` agents (1), or the adversary's, builds it
 /// with 1 agent on it.
-pub fn grow(g: &mut GameState, cx: &mut Cx, site: RallyAt, scope: Option<usize>) -> Res {
+pub fn grow(g: &mut GameState, cx: &mut Cx, site: SiteType, scope: Option<usize>) -> Res {
     let w = cx.world;
     for c in countries_in(&w, g, scope) {
         let sites = super::plan::grow_sites(&w, g, site, c);

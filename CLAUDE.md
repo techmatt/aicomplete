@@ -78,7 +78,7 @@ machine's traps, are in the [README](README.md), which also lists the page for e
   and rerun `npm run cards:fit` before the freeze.
 - **A new op, resource or token type** gets its value in the same change. An op: its arm in
   `crates/aic-sim/src/agents/value.rs`, `scripts/cards/effect_ledger.py`'s `op_worth`, the `_` arms of
-  `agents/strategy.rs`'s categories and `effects/feasible.rs` (nothing forces either), and its row in
+  `agents/strategy.rs`'s categories (nothing forces it), its `effects/feasible.rs` arm, and its row in
   `configs/agents/values.json`; a new harm, `drafts/adversary/check.py`'s `HARMS` too. An op writing a
   `vars` key declares it in its module view's `bookkeeping` (the fast-lane
   `the_view_follows_every_variant_and_keeps_bookkeeping_out_of_globals` refuses a raw key). A resource

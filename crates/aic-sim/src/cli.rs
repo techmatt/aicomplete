@@ -43,7 +43,7 @@ options:
   --max-actions N   per-game action cap; a capped game is a timeout (default 100000)
   --threads N       worker threads (default: all cores); results do not depend on it
   --json            print the summary as JSON instead of a table
-  --trace           print the first game of each config as JSON lines (actions, events)
+  --trace           print the first game of each config as JSON lines (actions, events; no counters), then the summary
 
 saving game records (run, compare):
   --save DIR        write the selected games as game records into DIR (created if needed),

@@ -23,9 +23,9 @@
     ]
   },
   "repeat_powers": {
-    "note": "a power name, or a power's effects (cost aside), on this many boards or more. 'exempt' (252): power name -> why it is on every board by a ruling, listed as information",
+    "note": "a power name, or a power's effects (cost aside), on this many boards or more. 'exempt' (252): power name, or several comma-joined (281: \"Sprawl, Outpost\", one reason for the group) -> why it is on every board by a ruling, listed as information",
     "boards_min": 2,
-    "exempt": {"Sprawl": "276 (Matt, 2026-11-18): the Builder's and the Protector's Growth each print a two-node option for 1 energy (Sprawl, Outpost): the same effect by design", "Outpost": "276 (Matt, 2026-11-18): the Builder's and the Protector's Growth each print a two-node option for 1 energy (Sprawl, Outpost): the same effect by design", "Buy In": "277 (Matt, 2026-11-18): the easy Growth option, the floor (Buy In and Levy: a node and a credit): the same effect by design", "Levy": "277 (Matt, 2026-11-18): the easy Growth option, the floor (Buy In and Levy: a node and a credit): the same effect by design"}
+    "exempt": {"Sprawl, Outpost": "276 (Matt, 2026-11-18): the Builder's and the Protector's Growth each print a two-node option for 1 energy: the same effect by design", "Buy In, Levy": "277 (Matt, 2026-11-18): the easy Growth option, the floor (a node and a credit): the same effect by design"}
   },
   "standard_anchor_max": 1.0,
   "standard_actions": {

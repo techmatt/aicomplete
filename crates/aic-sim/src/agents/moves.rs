@@ -1,7 +1,6 @@
 //! 166: the sim players' move heuristics for Gather and Push (`effects::moves`), one sentence each:
 //!
-//! - **push**: push agents away from the next Corrupt site (off it, or off its neighbors when the line ahead
-//!   gathers from next door), onto empty land with no clean site next to it;
+//! - **push**: push agents off a site near its corrupt number, onto empty land with no clean site next to it;
 //! - **cancel**: gather (or, with no empty land to push to, push) agents onto a hex where a spare ambassador
 //!   stands (no armor, no Liberate it pays toward), so they cancel, as `effects::moves::arrive` resolves it;
 //! - **liberate**: gather a seat's own ambassadors that hold nothing onto an adversary site, when that seat, in
@@ -426,24 +425,22 @@ fn gather_piece(w: &World, g: &GameState, legal: &[Action], to: usize) -> Option
 }
 
 /// How close each uncorrupted site is to its corrupt number (275: an arrival there checks it): (site, agents it
-/// counts, its number, whether a line gathers onto it: never now).
-fn at_risk(w: &World, g: &GameState) -> Vec<(usize, i64, i64, bool)> {
-    // 275: arrival corruption gathers nothing from next door: a site counts its own agents only (the `bool`, "a line
-    // gathers", stays false for the readers below).
+/// counts, its number). Arrival corruption gathers nothing from next door: a site counts its own agents only.
+fn at_risk(w: &World, g: &GameState) -> Vec<(usize, i64, i64)> {
     let lines = [
         (board::SiteKind::City, CorruptSite::City),
         (board::SiteKind::Station, CorruptSite::Station),
         (board::SiteKind::Factory, CorruptSite::Factory),
     ]
-    .map(|(k, site)| (k, plan::next_corrupt_n(w, g, site).0));
-    let node_n = plan::next_corrupt_n(w, g, CorruptSite::Node).0;
+    .map(|(k, site)| (k, plan::next_corrupt_n(w, g, site)));
+    let node_n = plan::next_corrupt_n(w, g, CorruptSite::Node);
     let mut out = Vec::new();
     for h in 0..g.hexes.len() {
         // 175: a player's node hex corrupts at its own number (2), whatever site it holds.
         if common::node_owner(g, h).is_some() && !common::firewalled(g, h) {
             let count = agents(g, h);
             if count > 0 && count + 1 >= node_n {
-                out.push((h, count, node_n, false));
+                out.push((h, count, node_n));
             }
         }
         let Some(kind) = board::site_kind(w, g, h) else { continue };
@@ -453,19 +450,16 @@ fn at_risk(w: &World, g: &GameState) -> Vec<(usize, i64, i64, bool)> {
         let Some(&(_, n)) = lines.iter().find(|(k, _)| *k == kind) else { continue };
         let count = agents(g, h);
         if count > 0 && count + 2 >= n {
-            out.push((h, count, n, false));
+            out.push((h, count, n));
         }
     }
     out
 }
 
-/// The pressure a hex's agents put on the sites at risk: each site counts its own agents (and its
-/// neighbors' when the line gathers), weighted by how near its number it is.
-fn pressure(w: &World, risk: &[(usize, i64, i64, bool)], h: usize) -> f64 {
-    risk.iter()
-        .filter(|&&(s, _, _, gathers)| s == h || (gathers && w.map.hexes[s].neighbors.contains(&h)))
-        .map(|&(_, count, n, _)| count as f64 / n.max(1) as f64)
-        .sum()
+/// The pressure a hex's agents put on the sites at risk: each site counts its own agents, weighted by how near
+/// its number it is.
+fn pressure(risk: &[(usize, i64, i64)], h: usize) -> f64 {
+    risk.iter().filter(|&&(s, _, _)| s == h).map(|&(_, count, n)| count as f64 / n.max(1) as f64).sum()
 }
 
 /// The push's hex: the one in options whose agents press hardest on a site at risk.
@@ -477,7 +471,7 @@ fn push_from(w: &World, g: &GameState, legal: &[Action]) -> Option<(usize, usize
         if agents(g, h) == 0 {
             continue;
         }
-        let p = pressure(w, &risk, h);
+        let p = pressure(&risk, h);
         if p > 0.0 && best.is_none_or(|b| p > b.0) {
             best = Some((p, i));
         }
@@ -489,7 +483,7 @@ fn push_from(w: &World, g: &GameState, legal: &[Action]) -> Option<(usize, usize
 /// (troops, ambassadors, a move that helps no site) is the search's.
 fn push_piece(w: &World, g: &GameState, legal: &[Action], from: usize, last_node: bool) -> Option<(usize, usize)> {
     let risk = at_risk(w, g);
-    let here = pressure(w, &risk, from);
+    let here = pressure(&risk, from);
     let mut best: Option<(f64, usize)> = None;
     for (i, a) in legal.iter().enumerate() {
         if !is_agents(a) {
@@ -501,7 +495,7 @@ fn push_piece(w: &World, g: &GameState, legal: &[Action], from: usize, last_node
         // ambassador a Liberate or armor needs (166's dev screens: the games the push heuristic lost each had one).
         // 177: nor next to a last node they would bring to its number.
         let gain = if safe(w, g, d)
-            && pressure(w, &risk, d) == 0.0
+            && pressure(&risk, d) == 0.0
             && standing(g, d) == 0
             && !(last_node && tips_last_node(w, g, from, d, n as i64))
         {

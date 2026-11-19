@@ -65,7 +65,7 @@ such net.
 - **Runaway check**: a resource's peak per seat (`peaks`) far above a round's income (`gained / rounds`):
   `cards/runaway_read.py`. `sources` / `uses` / `keeps`: `source_read.py`.
 - **Margin**: a win's adversary cards left and ambassador supply; a loss's adversary pieces over the bar
-  (`margin.level`: the Unity level, not the difficulty); every game, `margin.cities_corrupted_end`, `_aligned_end` (hosted too: 261).
+  (`margin.blockers`, 0 on a win; `margin.level`: the purge bar's level, not the difficulty: [reads.md](reads.md)); every game, `margin.cities_corrupted_end`, `_aligned_end` (hosted too: 261).
   A `deck_empty` loss (the round cap) counts `rounds` one past the cap's printed count, so a level's mean rounds run
   over the rounds played by its round-cap share.
 
@@ -132,16 +132,17 @@ matters, `planner:strategy=1` is the ceiling, `strategist:plan_table=0` the judg
   `bench/read_specs.py read`, `run_read.sh`); read by `bench/ladder.py NEW OLD --measures` (pooled, paired, by set).
 - **Standing measures, old against new every read** (`--measures`; the list: `ladder.py`'s docstring; projects
   revealed is `adversary.projects_revealed`, every draw: a game's deck use; compute by source is
-  `adversary.compute_income` and `adversary.compute_botnets`, the rest threats and cards; since 259 a corrupted
-  station makes research cubes, `adversary.research_made.stations`). An untallied measure is patched into the old
+  `adversary.compute_income` and `adversary.compute_botnets`, the rest threats and cards; a corrupted station's
+  research cubes, `adversary.research_made.stations`). An untallied measure is patched into the old
   tree before its first read.
 - **Costs:** greedy + judge, two arms, three pairs, d0-d4, 48 seeds (2,880 games) farmed in 13-14 min with one
-  browser worker (254); with none, 1,440 in 7.6 min on the main box (258; 259's old side, `aic-sim farm` in 6 native processes, 6.7 min). The full oracle at d2-d3, 72 games in
-  2-10 min on 6 native shards (253, 258).
+  browser worker; with none, 1,440 in 7.6 min on the main box. The full oracle at d2-d3, 72 games in 2-10 min on 6
+  native shards.
 - **A before/after read is paired**: the old binary and its configs, same seeds. Simplest (273, 274): commit the
   spec alone on the old code (or reuse the last item's), then `farm-seeds --at THAT_COMMIT F N OUT SPEC_NAME` (its own tree and configs; 1,440 games in 4.5 min).
   Natively: `git archive REV | tar -x -C out/rREV` (own `CARGO_TARGET_DIR`; new sim-only measures as `patch -p1`
-  there: `git apply` in a worktree applies nothing), then `aic-sim experiment SPEC --seed F` or `bench/shards.sh`.
+  there: `git apply` in a worktree applies nothing), then `aic-sim experiment SPEC --seed F` or `bench/shards.sh`; the same tree gives a
+  `run --trace` before/after (`bench/same_play.py`'s trace diff finds the first event that differs).
 - **Farming a read:** `experiments/farm/read.json` is the read as one spec; what `farm-seeds` builds, what to commit
   first and reading its output: [simulator.md](simulator.md), *The farm*. Until it returns edit neither `content/`
   nor `configs/` (compiled in, and read from the tree at run time), nor run the release binary while it builds. The

@@ -415,7 +415,7 @@ fn footprint(w: &module::World, before: &GameState, after: &GameState) -> (Vec<i
 #[test]
 fn project_ops_reach_as_declared() {
     use crate::modules::common::corrupted;
-    use crate::op::{FactoryWhere, Op, RallyAt, TeamReach};
+    use crate::op::{FactoryWhere, Op, SiteType, TeamReach};
     use crate::modules::effects;
     let team = |rules: &Rules, g: &mut GameState, ops: &[Op]| {
         with_answers(rules, g, |_| 0, |g, cx| effects::run(g, cx, ops, &mut effects::Ctx::team()));
@@ -434,7 +434,7 @@ fn project_ops_reach_as_declared() {
     // its cubes on the country's megaproject.
     // 275: an Infiltrate's 1 a site corrupts nothing at d0. Each country's highest-numbered neutral city corrupts
     // (an inland one first), so a city, coastal if the country has one, stays neutral for the Surge lines.
-    let infiltrate = [RallyAt::City, RallyAt::Station, RallyAt::Factory].map(|site| Op::Infiltrate { site });
+    let infiltrate = [SiteType::City, SiteType::Station, SiteType::Factory].map(|site| Op::Infiltrate { site });
     team(&rules, &mut rich, &infiltrate);
     for c in 0..m.countries.len() {
         let neutral = cities(m).into_iter().filter(|&h| m.hexes[h].country as usize == c && !corrupted(&rich, h));

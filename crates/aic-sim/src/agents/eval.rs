@@ -354,7 +354,7 @@ pub struct Weights {
     /// 147 (D67; 136's city-only `node_exposure`, then off), above 0: a node on a
     /// site filling toward corruption (a clean city, a station or factory not the
     /// adversary's, open land) counts as this much times its share lost, by ((what the site
-    /// would gather + 1) / its Corrupt number)², capped at 1 (land with no Corrupt
+    /// holds + 1) / its Corrupt number)², capped at 1 (land with no Corrupt
     /// land line ahead a quarter of that; a node armored by its owner's ambassador
     /// or a hardening token a quarter; none under Sanctuary): its `node` and
     /// `shelter_node`, and the seat's `node_danger` reads its nodes less the exposed ones.
@@ -371,8 +371,7 @@ pub struct Weights {
     /// share of a Discord tip.
     pub blight: f64,
     /// 138: a player's research station or factory filling toward its
-    /// Corrupt number (what it holds, plus next door when a gathering line is
-    /// ahead) costs this share of `pressure` (0: off; cities always count).
+    /// Corrupt number (what it holds) costs this share of `pressure` (0: off; cities always count).
     pub site_pressure: f64,
     /// 137: each adversary city, station or factory a player ambassador stands
     /// on, blocking its output (a city's diversion, a station's compute, a
@@ -1312,70 +1311,6 @@ impl Eval {
         let cap = if w.credit_cap > 0.0 { w.credit_cap } else { f64::MAX };
         w.credits * n.min(cap) + w.credit_idle * (n - cap).max(0.0)
     }
-
-    /// What site `h` would count toward corrupting: its own adversary
-    /// ambassadors, plus, with a Corrupt line ahead,
-    /// those next to it (175: every agent next door moves onto it, across borders, but one standing on a clean
-    /// site of the same kind stays there, as does, r98, one next to a second clean site of the kind).
-    /// 151: `arriving` adds the coming Rally's expected ambassadors (empty: none).
-    fn toward(rules: &Rules, t: &[HexTokens], sites: &Sites, arriving: &[f64], h: usize, gather: bool) -> f64 {
-        let world = rules.world();
-        let at = |x: usize| t[x].adv_ambassador as f64 + arriving.get(x).copied().unwrap_or(0.0);
-        let mut n = at(h);
-        if gather {
-            let own = sites.kind[h];
-            // 237 (229's pick, r98): an agent next to two or more clean sites of the kind stays (`plan::converge`'s
-            // tie; firewalls and prohibitions on the others not read here).
-            let moves = |x: usize| own == 0 || (sites.kind[x] != own && sites.near[x][own as usize] == 1);
-            n += world.map.hexes[h].neighbors.iter().filter(|&&x| moves(x)).map(|&x| at(x)).sum::<f64>();
-        }
-        n
-    }
-}
-
-/// 237: each hex's clean site kind for the eval's corruption forecasts (0 none, 1 city, 2 station, 3 factory) and,
-/// per hex, how many of its neighbors hold each kind ([1..=3]) or a node ([NODE_NEAR]): read once a position, so the
-/// convergence tie (r98) costs the eval two lookups a neighbor.
-#[derive(Default)]
-struct Sites {
-    kind: Vec<u8>,
-    near: Vec<[u8; 5]>,
-}
-
-/// `Sites::near`'s count of neighboring node hexes.
-const NODE_NEAR: usize = 4;
-
-impl Sites {
-    fn read(world: &aic_core::module::World, t: &[HexTokens], seats: usize) -> Sites {
-        let kind: Vec<u8> = (0..t.len())
-            .map(|x| {
-                if t[x].adv_cube > 0 {
-                    0
-                } else if common::is_city(world, x) {
-                    1
-                } else if t[x].station > 0 {
-                    2
-                } else if t[x].factory > 0 {
-                    3
-                } else {
-                    0
-                }
-            })
-            .collect();
-        let near = (0..t.len())
-            .map(|x| {
-                let mut n = [0u8; 5];
-                for &y in &world.map.hexes[x].neighbors {
-                    n[kind[y] as usize] += 1;
-                    if t[y].node[..seats].iter().any(|&k| k > 0) {
-                        n[NODE_NEAR] += 1;
-                    }
-                }
-                n
-            })
-            .collect();
-        Sites { kind, near }
-    }
 }
 
 impl Eval {
@@ -1416,14 +1351,13 @@ impl Eval {
         if world.hot(Hot::NodeLoss) > 0 && adversary::loss(g).is_some() {
             return -w.win;
         }
-        // The next corrupt step's number for each site, read off the card ahead
-        // (public), and whether a Corrupt line there gathers from next door (138).
-        let (corrupt_at, gather) = plan::next_corrupt_n(&world, g, CorruptSite::City);
+        // The corrupt number an arrival meets on each site kind (275: arrival corruption, no gathering).
+        let corrupt_at = plan::next_corrupt_n(&world, g, CorruptSite::City);
         // 138: a player's research station or factory corrupts too, by its own number.
-        let (station_at, station_gather) = plan::next_corrupt_n(&world, g, CorruptSite::Station);
-        let (factory_at, factory_gather) = plan::next_corrupt_n(&world, g, CorruptSite::Factory);
-        // 175: a node hex's own number, and whether a node line (Night Raid's) ahead gathers onto it.
-        let (node_at, node_gather) = plan::next_corrupt_n(&world, g, CorruptSite::Node);
+        let station_at = plan::next_corrupt_n(&world, g, CorruptSite::Station);
+        let factory_at = plan::next_corrupt_n(&world, g, CorruptSite::Factory);
+        // 175: a node hex's own number.
+        let node_at = plan::next_corrupt_n(&world, g, CorruptSite::Node);
         // 167: a Corrupt prohibition ahead (public): a hex its condition covers now carries no corruption
         // pressure, so meeting the condition before the adversary turn scores (the Infiltrate forecast skips its
         // sites). 275: arrivals run until the turn's last phase (the botnets seed in the compute step).
@@ -1439,16 +1373,8 @@ impl Eval {
         let mut stations = [0i64; 4];
         let mut reach = 0i64;
         let tokens = self.keys.read_shared(g);
-        // Read only when a line ahead gathers: nothing else looks at it.
-        let sites = if gather || station_gather || factory_gather || node_gather {
-            Sites::read(&world, &tokens, self.seats.min(4))
-        } else {
-            Sites::default()
-        };
         // 151: the coming Rally, a round ahead, as expected ambassadors a hex (`rally_read` of them).
         let mut arriving: Vec<f64> = Vec::new();
-        // 177 (`last_node`): the player ambassadors a Rally's arrivals there leave standing, by hex (empty: all).
-        let mut rally_used: Vec<f64> = Vec::new();
         if w.rally_read > 0.0 {
             let mut fore = plan::next_infiltrate(&world, g);
             if w.seed_read > 0.0 {
@@ -1465,19 +1391,16 @@ impl Eval {
             let fore = due;
             if !fore.is_empty() {
                 arriving = vec![0.0; g.hexes.len()];
-                if w.last_node > 0.0 {
-                    rally_used = vec![0.0; g.hexes.len()];
-                }
                 for (h, n) in fore {
                     // An arrival on a player ambassador cancels it rather than landing.
                     let held: i64 = tokens[h].ambassador[..self.seats].iter().sum();
                     arriving[h] += (n - held as f64).max(0.0) * w.rally_read;
-                    if let Some(u) = rally_used.get_mut(h) {
-                        *u += n.min(held as f64) * w.rally_read;
-                    }
                 }
             }
         }
+        // What site `h` counts toward corrupting: its own adversary ambassadors, plus the coming Rally's expected
+        // arrivals (151).
+        let at = |x: usize| tokens[x].adv_ambassador as f64 + arriving.get(x).copied().unwrap_or(0.0);
         let near = self.reach_masks(rules, &tokens);
         let seats = self.seats;
         let mut pieces = 0i64;
@@ -1543,13 +1466,7 @@ impl Eval {
                         // to the seats that could buy its energy, until it is cleared.
                         v -= w.city_dark;
                     }
-                    // 138: the ambassadors next door count toward corrupting when a gathering Corrupt line is ahead.
-                    // 158: a firewall stops the pull from next door (the Rally forecast already skips it).
-                    let toward = if banned(h) {
-                        0.0
-                    } else {
-                        Self::toward(rules, &tokens, &sites, &arriving,h, gather && !common::firewalled(g, h))
-                    };
+                    let toward = if banned(h) { 0.0 } else { at(h) };
                     let p = (toward / corrupt_at as f64).min(1.0);
                     v -= w.corrupted * w.pressure * p * p;
                     if toward + 1.0 >= corrupt_at as f64 {
@@ -1560,54 +1477,23 @@ impl Eval {
             let held = t.node[..seats].iter().any(|&n| n > 0);
             if (w.corrupt_exposure > 0.0 || w.blight > 0.0) && held {
                 // 147 (D67): the Corrupt number this hex's site kind is read
-                // against, and whether the line ahead gathers from next door. A
-                // clean city, a station or factory not the adversary's, or open
-                // land with no building (only a Corrupt land line takes land).
+                // against. A clean city, a station or factory not the adversary's,
+                // or open land with no building (only a Corrupt land line takes land).
                 let site = if bad {
                     None
                 } else if city {
-                    Some((corrupt_at, gather, 1.0))
+                    Some((corrupt_at, 1.0))
                 } else if t.station > 0 {
-                    Some((station_at, station_gather, 1.0))
+                    Some((station_at, 1.0))
                 } else if t.factory > 0 {
-                    Some((factory_at, factory_gather, 1.0))
+                    Some((factory_at, 1.0))
                 } else {
                     None
                 };
-                let at = |x: usize| tokens[x].adv_ambassador as f64 + arriving.get(x).copied().unwrap_or(0.0);
-                // 177 (`last_node`): r75, each agent moving onto a hex first cancels a player ambassador standing
-                // there (`board::agent_cancels`, from `adversary::converge_one`): those the Rally's arrivals leave
-                // cancel the gathered agents, `total` less the hex's own `base`, before any count there.
-                let cancels = if w.last_node > 0.0 && held {
-                    let standing: i64 = t.ambassador[..seats].iter().sum();
-                    (standing as f64 - rally_used.get(h).copied().unwrap_or(0.0)).max(0.0)
-                } else {
-                    0.0
-                };
-                let net = |total: f64, base: f64| base + (total - base - cancels).max(0.0);
                 // 175: a node hex corrupts on its own number (2) of agents, whatever site it holds: a
                 // second read, the larger of the two counting.
                 let node_r = if held && !banned(h) {
-                    let open = !common::firewalled(g, h);
-                    let mut k = at(h);
-                    if node_gather && open {
-                        // A node line: agents next door move on, but not those on another node hex, nor (237, r98)
-                        // those next to a second node hex (`plan::converge`'s tie).
-                        let moves = |x: usize| {
-                            tokens[x].node[..seats].iter().all(|&n| n == 0) && sites.near[x][NODE_NEAR] == 1
-                        };
-                        k += world.map.hexes[h].neighbors.iter().filter(|&&x| moves(x)).map(|&x| at(x)).sum::<f64>();
-                        if cancels > 0.0 {
-                            k = net(k, at(h));
-                        }
-                    } else if open && site.is_some_and(|(_, gathers, _)| gathers) {
-                        // The site's own Corrupt line moves agents onto this hex: short of the site's number they
-                        // stay, and the node goes at natural corruption.
-                        k = Self::toward(rules, &tokens, &sites, &arriving, h, true);
-                        if cancels > 0.0 {
-                            k = net(k, at(h));
-                        }
-                    }
+                    let k = at(h);
                     if k > 0.0 {
                         let p = ((k + 0.5) / node_at.max(1) as f64).min(1.0);
                         p * p
@@ -1617,14 +1503,9 @@ impl Eval {
                 } else {
                     0.0
                 };
-                let site = site.or(if node_r > 0.0 { Some((node_at, node_gather, 0.0)) } else { None });
-                if let Some((n, gathers, share)) = site {
-                    let pulls = gathers && !common::firewalled(g, h);
-                    let mut toward = if banned(h) { 0.0 } else { Self::toward(rules, &tokens, &sites, &arriving,h, pulls) };
-                    if cancels > 0.0 && pulls && toward > 0.0 {
-                        // 177: the site's own line gathers too: its arrivals cancel the ambassadors first.
-                        toward = net(toward, at(h));
-                    }
+                let site = site.or(if node_r > 0.0 { Some((node_at, 0.0)) } else { None });
+                if let Some((n, share)) = site {
+                    let toward = if banned(h) { 0.0 } else { at(h) };
                     if toward > 0.0 || node_r > 0.0 {
                         let p = ((toward + 1.0) / n.max(1) as f64).min(1.0);
                         let r = (p * p * share).max(node_r);
@@ -1704,7 +1585,7 @@ impl Eval {
                     v += if stations[s] <= STATIONS_USEFUL { w.station } else { w.station_spare };
                     // 138: a player's station filling toward its Corrupt number.
                     // 184: a firewalled or prohibited station doesn't corrupt in the turn ahead (r77 #30), as a city.
-                    let toward = if banned(h) { 0.0 } else { Self::toward(rules, &tokens, &sites, &arriving,h, station_gather) };
+                    let toward = if banned(h) { 0.0 } else { at(h) };
                     let p = (toward / station_at.max(1) as f64).min(1.0);
                     v -= w.site_pressure * (w.station + w.station_flip) * w.pressure * p * p;
                 }
@@ -1721,7 +1602,7 @@ impl Eval {
                     v += w.owned_factory;
                     // 138: a player's factory filling toward its Corrupt number.
                     // 184: as a station, a firewalled or prohibited factory doesn't corrupt in the turn ahead.
-                    let toward = if banned(h) { 0.0 } else { Self::toward(rules, &tokens, &sites, &arriving,h, factory_gather) };
+                    let toward = if banned(h) { 0.0 } else { at(h) };
                     let p = (toward / factory_at.max(1) as f64).min(1.0);
                     v -= w.site_pressure * 2.0 * w.owned_factory * w.pressure * p * p;
                 }

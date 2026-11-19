@@ -1,6 +1,6 @@
 """Write content overlays into content/*.json in place (123).
 
-    python scripts/cards/apply_overlay.py FILE... [--set ENTRY]... [--check]
+    python scripts/cards/apply_overlay.py FILE... [--set ENTRY]... [--check] [--from REV]
 
 Each FILE holds overlay entries, one a line: `cards.<id>.<path>=<JSON>`, the keys `--set`
 takes (a line starting `#` is a comment; blank lines are skipped). The paths follow `apply_entry` in
@@ -17,6 +17,11 @@ is, so a rerun appends nothing); the value is JSON (`null` drops an object's fie
 misspelling), or a bare word taken as a string. An entry setting a value already
 there changes nothing, so a card pass keeps its edits as one overlay file and reruns it.
 
+The overlay only sets: a changed overlay rerun over content it already edited leaves the values it no longer
+sets. `--from REV` applies it over each touched file as `git show REV:content/<file>` holds it and writes the
+result wherever it differs from the working tree; before that it warns of each `<table>.<id>.<field>` where the
+working tree differs from REV and no entry sets that field (a by-hand edit the write drops).
+
 `--check` prints each entry that would change something and writes nothing (exit 1 if any
 would). A file whose text isn't what `json.dumps(indent=1)` writes (today only alignment.json, its
 tiers laid out by hand; 157 wrote experiments/results/157_strategist_purge_r68/apply_tiers.py for
@@ -30,6 +35,7 @@ import argparse
 import json
 import os
 import re
+import subprocess
 import sys
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
@@ -165,6 +171,58 @@ def put_row(files, table, ident, row, entry):
     return True
 
 
+def git_text(rev, name):
+    """content/NAME's text at revision REV (--from)."""
+    p = subprocess.run(['git', 'show', f'{rev}:content/{name}'], cwd=ROOT, capture_output=True)
+    if p.returncode != 0:
+        raise ValueError(f'--from {rev}: no content/{name} there ({p.stderr.decode("utf-8", "replace").strip()})')
+    return p.stdout.decode('utf-8').replace('\r\n', '\n')
+
+
+def row_fields(table, data):
+    """(row id, top-level field) -> value for each row of a table's file, plus (None, key) for the
+    file's other top-level keys (map.json's own fields beside its countries)."""
+    out = {}
+    if table == 'corps':
+        rows = data.get('countries', []) if isinstance(data, dict) else []
+        out.update({(None, k): v for k, v in data.items() if k != 'countries'} if isinstance(data, dict) else {})
+    else:
+        rows = data if isinstance(data, list) else []
+    for row in rows:
+        ident = (row.get('name') or '').lower() if table == 'corps' else row.get('id')
+        out[(ident, '<row>')] = True
+        out.update({(ident, k): v for k, v in row.items()})
+    return out
+
+
+def unset_drift(table, work, base, entries):
+    """--from: the `<table>.<id>.<field>` paths where the working tree differs from the base and no entry
+    sets that field, so writing the overlaid base would drop a by-hand edit."""
+    covered = set()
+    for e in entries:
+        parts = e.partition('=')[0].strip().split('.')
+        if parts[0] != table or len(parts) < 2:
+            continue
+        covered.add((parts[1], parts[2] if len(parts) > 2 else '*'))
+    w, b = row_fields(table, work), row_fields(table, base)
+    out = []
+    for key in sorted(set(w) | set(b), key=lambda k: (str(k[0]), k[1])):
+        ident, field = key
+        if (key in w) != (key in b) and (ident, '<row>') in w and (ident, '<row>') in b:
+            pass  # a field one side lacks: reported below like a changed value
+        elif ident is not None and ((ident, '<row>') in w) != ((ident, '<row>') in b):
+            # a row on one side only: one line for the row, none for its fields
+            if field == '<row>' and (ident, '*') not in covered:
+                out.append(f'{table}.{ident} (a row only in the {"working tree" if key in w else "base"})')
+            continue
+        elif w.get(key) == b.get(key) and type(w.get(key)) is type(b.get(key)):
+            continue
+        if ident is not None and ({(ident, field), ('*', field), (ident, '*')} & covered):
+            continue
+        out.append(f'{table}.{ident}.{field}' if ident is not None else f'{table} top-level {field!r}')
+    return out
+
+
 def read_entries(paths, sets):
     out = []
     for p in paths:
@@ -176,21 +234,68 @@ def read_entries(paths, sets):
     return out + list(sets)
 
 
-def main():
+def apply_from(args, entries, files, texts, work):
+    """--from REV: the entries over REV's files; a file is written where the result differs from the
+    working tree (an entry REV already holds still restores a working tree that lost it)."""
+    failed = False
+    for e in entries:
+        try:
+            if apply_entry(files, e) and args.check:
+                print(f'would change (from {args.rev}):', e)
+        except (ValueError, KeyError) as err:
+            print('error:', err, file=sys.stderr)
+            failed = True
+    if failed:
+        sys.exit(2)
+    for name in sorted(files):
+        if dump(json.loads(texts[name])) != texts[name]:
+            print(f'error: content/{name} at {args.rev} is not in json.dumps(indent=1) form: edit it by hand',
+                  file=sys.stderr)
+            sys.exit(2)
+    touched = sorted(n for n in files if dump(files[n]) != work[n])
+    for name in touched:
+        table = next(t for t, n in TABLES.items() if n == name and any(e.startswith(t + '.') for e in entries))
+        drift = unset_drift(table, json.loads(work[name]), json.loads(texts[name]), entries)
+        if drift:
+            print(f'warning: content/{name} differs from {args.rev} where the overlay sets nothing; '
+                  f'{"writing would drop" if args.check else "dropped"}: ' + ', '.join(drift), file=sys.stderr)
+    if args.check:
+        print(f'{len(entries)} entries from {args.rev}, '
+              f'{"would change " + ", ".join(touched) if touched else "nothing to change"}')
+        sys.exit(1 if touched else 0)
+    for name in touched:
+        with open(os.path.join(ROOT, 'content', name), 'w', encoding='utf-8', newline='\n') as f:
+            f.write(dump(files[name]))
+    print(f'{len(entries)} entries from {args.rev}; wrote {", ".join(touched) or "nothing"}')
+
+
+def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     ap.add_argument('files', nargs='*', help='overlay files, one entry a line')
     ap.add_argument('--set', action='append', default=[], help='one more entry')
     ap.add_argument('--check', action='store_true', help='print what would change, write nothing')
-    args = ap.parse_args()
+    ap.add_argument('--from', dest='rev', metavar='REV',
+                    help="apply over each touched file as it is at git revision REV, not the working tree's "
+                         '(a changed overlay drops what it no longer sets); warns of working-tree edits it would '
+                         'drop in fields the overlay does not set')
+    args = ap.parse_args(argv)
     entries = read_entries(args.files, args.set)
     if not entries:
         ap.error('no entries')
-    files, texts = {}, {}
+    files, texts, work = {}, {}, {}
     for name in sorted({TABLES[e.split('.', 1)[0]] for e in entries if e.split('.', 1)[0] in TABLES}):
         path = os.path.join(ROOT, 'content', name)
         with open(path, encoding='utf-8', newline='') as f:
-            texts[name] = f.read()
+            texts[name] = work[name] = f.read()
+        if args.rev:
+            try:
+                texts[name] = git_text(args.rev, name)
+            except ValueError as err:
+                print('error:', err, file=sys.stderr)
+                sys.exit(2)
         files[name] = json.loads(texts[name])
+    if args.rev:
+        return apply_from(args, entries, files, texts, work)
     touched, failed = set(), False
     for e in entries:
         table = e.split('.', 1)[0]

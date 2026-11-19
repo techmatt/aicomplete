@@ -105,7 +105,8 @@ core break its no-clock rule). Tally scorings by prompt text before optimizing a
 For a long screen, `cargo build --profile fast -p aic-sim` (`target/fast/`) is 8% faster than release and takes
 minutes to build.
 
-**Comparing.** Two binaries: `speed.py pair` or `per_decision.py OLD NEW`, never two `table` runs (load can halve a
+**Comparing.** Two binaries: `speed.py pair OLD NEW --only engine --only greedy` (with no `--only` the planner
+rows add 20+ minutes, 280) or `per_decision.py OLD NEW`, never two `table` runs (load can halve a
 table). A `pair` of two rows (`--only engine --only greedy`, 1- and 8-thread columns) took 15+ minutes (240). `bench/same_results.py` (timing aside) checks that a
 speed-up or late fix changed no game, on `experiments/same.json` (strategist, engine, planner and
 `planner:strategy=1` on the three pairs, 192 games; cost: *The agent tiers*); `same_play.py` is wider.

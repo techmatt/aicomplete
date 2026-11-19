@@ -46,7 +46,6 @@
         "cities_unowned": 1,
         "host_city": 1,
         "host_reach": 1,
-        "turn_cap": 0,
         "antimatter_cubes": 5,
         "antimatter_energy": 2,
         "botnet_credits": 13,

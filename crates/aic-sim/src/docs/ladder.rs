@@ -99,6 +99,7 @@ pub(super) fn ladder(r: &Rules) -> Vec<Level> {
     let printed = int(r, "adversary.corrupt_at");
     let city = (printed - list(r, "adversary.corrupt_cut").first().copied().unwrap_or(0)).max(1);
     if let Some(v) = board.levels.iter().find(|v| v.level == cut_at) {
+        // The rule prints this exact phrase (case-sensitive), so its text and the numbers move together.
         let says = v.rule.contains(&format!("falls at {city} agents, not {printed}"));
         if (city != printed) != says {
             fail(&format!("docs: level {cut_at} ({}): its rule and \"falls at {city} agents, not {printed}\" (corrupt_at less corrupt_cut) disagree", v.name));

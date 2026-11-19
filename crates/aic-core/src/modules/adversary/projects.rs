@@ -259,7 +259,9 @@ struct Sources {
     stations_blocked: i64,
 }
 
-/// [`compute_step`]'s sources, read without changing anything (238: shared with [`completes_next_step`]).
+/// What makes compute as the board stands, read without changing anything: [`completes_next_step`]'s estimate
+/// (botnets and stations) and [`compute_step`]'s stations. 280: `compute_step` takes the botnets' compute from
+/// `botnets_seed`'s pass instead, which can unblock a botnet a seed frees; the estimate doesn't foresee that.
 fn sources(w: &World, g: &GameState) -> Sources {
     let per = w.int("adversary.botnet_compute");
     let mut s = Sources { botnets: 0, blocked: 0, stations: 0, stations_blocked: 0 };

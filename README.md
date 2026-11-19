@@ -4,8 +4,9 @@
 A pure, deterministic Rust core simulates the rules; a native simulator and a wasm build for a JS
 front end sit on top, holding no rules. Build and test are below; other areas have a page each:
 
-- [docs/simulator.md](docs/simulator.md): `aic-sim run`, `compare`, `show`, `replay`, every flag, game records, the farm;
-  writing a reader: its *Keys in a games.jsonl line*.
+- [docs/simulator.md](docs/simulator.md): `aic-sim run`, `compare`, `show`, `replay`, every flag, game records, the farm.
+- [docs/reads.md](docs/reads.md): writing a reader: a `games.jsonl` line's keys, the counter families, `margin`,
+  and a trace's events, piles and hexes.
 - [docs/agents.md](docs/agents.md): the agent ladder, the specs, the heuristic, the dominance checks.
 - [docs/experiments.md](docs/experiments.md): experiment specs, outputs, measures, overlays, the
   band and the gate, budgeting a run, the seed ledger (*Fresh seeds*).
@@ -95,12 +96,13 @@ crate stops the run: `cargo test --workspace --no-fail-fast [-- --include-ignore
 `u64::MAX`, action *k* = legal action `(k × 7919) mod count`). For an intended rules change, bump `RULES_REVISION`
 in `crates/aic-core/src/lib.rs` (and `docs/rulebook.md`'s line 3 by hand: `aic-sim docs` refuses it stale), then
 `GOLDEN_REVISION` and `GOLDEN_FINGERPRINT` in `crates/aic-core/src/tests/mod.rs` and `GOLDEN` in
-`scripts/wasm-smoke.mjs` (`wasm_smoke_expects_the_golden_fingerprint` fails until it and `GOLDEN_CONTENT` match). The
-fingerprint covers the config and the final state less its measures (`stats`): a rename that plays the same moves it
-with no bump; a new counter doesn't. `GOLDEN_CONTENT_HASH` (wasm-smoke `GOLDEN_CONTENT`) pins the content hash over
-raw bytes: a content-only edit moves it, with no bump unless play changes. Set it first, from `regen.py`'s "content
-hash" line; then a `golden_game` run (revision and fingerprint are checked as a pair before the hash) gives the
-fingerprint: the failing assertion's left side. Copy both, never type them.
+`scripts/wasm-smoke.mjs` (`wasm_smoke_expects_the_golden_fingerprint` fails until it and `GOLDEN_CONTENT` match):
+`python scripts/regen.py --golden` sets all five from the source, `aic-sim show` and a `golden_game` run. The
+fingerprint covers the config and the final state less its measures (`stats`): a rename, or a param added or removed, that
+plays the same moves it with no bump; a new counter doesn't. `GOLDEN_CONTENT_HASH` (wasm-smoke `GOLDEN_CONTENT`) pins the content hash over
+raw bytes: a content-only edit moves it, with no bump unless play changes. By hand: set it first, from `regen.py`'s
+"content hash" line; then a `golden_game` run (revision and fingerprint are checked as a pair before the hash) gives
+the fingerprint: the failing assertion's left side. Copy both, never type them.
 A new phase goes in `configs/baseline.json`'s `round` list and in every lab test config that lists its neighbor
 (`adversary.compute` beside `adversary.reveal`), or it silently never runs there.
 

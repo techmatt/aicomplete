@@ -10,7 +10,7 @@
 
 use crate::content::{Op, RoundFlag};
 use crate::module::World;
-use crate::op::{CorruptSite, CreateAt, CreateIf, RallyAt, Step, Where};
+use crate::op::{CorruptSite, CreateAt, CreateIf, SiteType, Step, Where};
 use crate::state::GameState;
 
 use super::{adversary, board};
@@ -108,25 +108,25 @@ pub fn corrupt_target(w: &World, g: &GameState, h: usize, site: CorruptSite) -> 
 }
 
 /// 275: whether hex `h` is a site of type `at` (an Infiltrate, Surge, Spill or Grow line's type).
-pub fn site_fits(w: &World, g: &GameState, h: usize, at: RallyAt) -> bool {
+pub fn site_fits(w: &World, g: &GameState, h: usize, at: SiteType) -> bool {
     match at {
-        RallyAt::City => is_city(w, h),
-        RallyAt::CoastalCity => is_city(w, h) && w.map.hexes[h].coastal,
-        RallyAt::Station => g.tokens(h, STATION) > 0,
-        RallyAt::Factory => g.tokens(h, FACTORY) > 0,
-        RallyAt::Botnet => g.tokens(h, BOTNET) > 0,
+        SiteType::City => is_city(w, h),
+        SiteType::CoastalCity => is_city(w, h) && w.map.hexes[h].coastal,
+        SiteType::Station => g.tokens(h, STATION) > 0,
+        SiteType::Factory => g.tokens(h, FACTORY) > 0,
+        SiteType::Botnet => g.tokens(h, BOTNET) > 0,
     }
 }
 
 /// 275: whether an Infiltrate, Surge or Spill of type `at` lands on hex `h`: a site of the type not yet the
 /// adversary's (a corrupted one takes no agent).
-pub fn infiltrate_fits(w: &World, g: &GameState, h: usize, at: RallyAt) -> bool {
+pub fn infiltrate_fits(w: &World, g: &GameState, h: usize, at: SiteType) -> bool {
     site_fits(w, g, h, at) && !corrupted(g, h)
 }
 
 /// 275, the sites an Infiltrate, Surge or Spill of type `at` names in country `c`: every one not yet the
 /// adversary's, firewalled ones included (their agents stay in the supply), in hex order.
-pub fn infiltrate_sites(w: &World, g: &GameState, at: RallyAt, c: usize) -> Vec<usize> {
+pub fn infiltrate_sites(w: &World, g: &GameState, at: SiteType, c: usize) -> Vec<usize> {
     let mut all: Vec<usize> = w.map.countries[c].hexes.iter().copied().filter(|&h| infiltrate_fits(w, g, h, at)).collect();
     all.sort_by_key(|&h| w.map.hexes[h].number);
     all
@@ -178,7 +178,7 @@ pub fn grow_at(w: &World, g: &GameState, at: usize) -> Option<(usize, bool)> {
 
 /// 275, Grow X's candidates in country `c`: every site of the type (the adversary's too) with a free hex next to
 /// it and fewer than `adversary.grow_cap` facilities next to it (any owner; 0: no cap), in hex order.
-pub fn grow_sites(w: &World, g: &GameState, at: RallyAt, c: usize) -> Vec<usize> {
+pub fn grow_sites(w: &World, g: &GameState, at: SiteType, c: usize) -> Vec<usize> {
     let cap = w.int("adversary.grow_cap");
     let room = |h: usize| {
         cap <= 0 || (w.map.hexes[h].neighbors.iter().filter(|&&x| g.tokens(x, FACTORY) + g.tokens(x, STATION) > 0).count() as i64) < cap
@@ -195,7 +195,7 @@ pub fn grow_sites(w: &World, g: &GameState, at: RallyAt, c: usize) -> Vec<usize>
 
 /// 275, what Grow X builds in country `c`: `(the site that grows, the hex it builds on, factory)`: the candidate
 /// holding the most agents (ties: the lowest-numbered). None: no site of the type can grow.
-pub fn grow_plan(w: &World, g: &GameState, at: RallyAt, c: usize) -> Option<(usize, usize, bool)> {
+pub fn grow_plan(w: &World, g: &GameState, at: SiteType, c: usize) -> Option<(usize, usize, bool)> {
     let sites = grow_sites(w, g, at, c);
     let site = sites.iter().copied().min_by_key(|&h| (std::cmp::Reverse(g.tokens(h, ADV_AMBASSADOR)), w.map.hexes[h].number))?;
     let (z, factory) = grow_at(w, g, site)?;
@@ -314,7 +314,6 @@ pub fn prohibition_on(g: &GameState, step: Step, h: usize) -> Option<Where> {
 }
 
 /// 275: the corrupt number an arrival on a `site` meets (arrival corruption: no Corrupt line, no gathering).
-/// The `bool` (r251's "a line gathers agents onto it") is always false now: kept for the agents' readers.
-pub fn next_corrupt_n(w: &World, _g: &GameState, site: CorruptSite) -> (i64, bool) {
-    (adversary::corrupt_n(w, site, 0), false)
+pub fn next_corrupt_n(w: &World, _g: &GameState, site: CorruptSite) -> i64 {
+    adversary::corrupt_n(w, site, 0)
 }

@@ -742,6 +742,8 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::BotnetTroops { count, troops } => {
             Worth::now(row("botnet_troops") * t.rate("countries") * (*count * *troops) as f64)
         }
+        // Context-free: priced at every difficulty, though below `adversary.botnet_spread_at` it does nothing (no
+        // threat prints it today; only threats' harm reads this).
         Op::SpreadBotnets { count } => Worth::now(row("spread_botnets") * t.rate("countries") * *count as f64),
         Op::TakeSite { .. } => Worth::now(row("take_site") * t.rate("countries")),
         Op::FactoryTroops { count } => Worth::now(row("factory_troops") * t.rate("countries") * *count as f64),

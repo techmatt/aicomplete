@@ -208,6 +208,7 @@ def write(path, n, counts):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8", newline="\n")
     if "--" in sys.argv:
         i = sys.argv.index("--")
         own, run_args = sys.argv[1:i], sys.argv[i + 1:]

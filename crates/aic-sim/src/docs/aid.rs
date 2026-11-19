@@ -31,7 +31,7 @@ fn once_a_round(r: &Rules) -> String {
     let uses = |b: &aic_core::content::AiBoard| {
         let mut names: Vec<&str> = Vec::new();
         for p in &b.powers {
-            let n = p.group.as_deref().unwrap_or(&p.name);
+            let n = p.use_key();
             if !names.contains(&n) {
                 names.push(n);
             }

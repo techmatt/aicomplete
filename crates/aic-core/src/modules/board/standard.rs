@@ -1,6 +1,5 @@
 //! The standard actions and projects: what each costs, targets and does.
 
-use crate::module::Hot;
 use super::*;
 
 /// A standard action. `Action::Standard` carries its [`name`](Self::name).
@@ -180,28 +179,6 @@ pub fn std_once_key(act: StandardAction, seat: usize) -> KeyBuf {
 
 /// Prefix of [`std_once_key`].
 pub(super) const STD_ONCE: &str = "board.std_once.";
-
-/// 278 (table-time prototype, `board.turn_cap`; 0 off): the non-card turns seat `s` took this round (Growth and
-/// powers, standard actions, building Actions, converters; never a card play, Matt's ruling), a round mark.
-pub fn turns_key(seat: usize) -> KeyBuf {
-    KeyBuf::new(TURNS).num(seat)
-}
-
-/// Prefix of [`turns_key`].
-pub(super) const TURNS: &str = "board.turns.";
-
-/// 278: whether seat `s` has used its `board.turn_cap` non-card turns this round.
-pub fn turn_capped(w: &World, g: &GameState, s: usize) -> bool {
-    let cap = w.hot(Hot::TurnCap);
-    cap > 0 && g.var(&turns_key(s)) >= cap
-}
-
-/// 278: counts one non-card turn for seat `s` (only with `board.turn_cap` on).
-pub fn count_turn(g: &mut GameState, cx: &mut Cx, s: usize) {
-    if cx.world.hot(Hot::TurnCap) > 0 {
-        cx.add_key(g, &turns_key(s), 1);
-    }
-}
 
 /// 206: how often a seat may take standard action `act` a round (`troop_per_round`), or `None` with no limit. 255:
 /// enforced once for every action, in [`std_targets`] (offer) and [`std_resolve`] (count).

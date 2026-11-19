@@ -3,7 +3,7 @@ use super::*;
 use crate::content::Op;
 use crate::modules::common::{FIREWALL, FALLOUT};
 use crate::modules::{adversary, alignment, board, effects, plan};
-use crate::op::{CorruptSite, CreateAt, CreateIf, Facility, RallyAt};
+use crate::op::{CorruptSite, CreateAt, CreateIf, Facility, SiteType};
 use crate::modules::common::STATION;
 
 /// Country `c`'s hexes passing `f`, lowest-numbered first.
@@ -35,9 +35,9 @@ fn an_infiltrate_lands_one_agent_on_each_site_of_its_type_and_skips_a_corrupted_
     assert!(cities0.len() >= 3);
     put(&mut g, cities0[0], ADV_CUBE, 1);
     put(&mut g, cities0[1], cube(0), 1);
-    let sites = plan::infiltrate_sites(&w, &g, RallyAt::City, 0);
+    let sites = plan::infiltrate_sites(&w, &g, SiteType::City, 0);
     assert_eq!(sites, cities0[1..].to_vec(), "every city not yet the adversary's, a player's included");
-    with_cx(&rules, |cx| adversary::infiltrate(&mut g, cx, RallyAt::City, Some(0), "test")).unwrap();
+    with_cx(&rules, |cx| adversary::infiltrate(&mut g, cx, SiteType::City, Some(0), "test")).unwrap();
     let gained: Vec<(usize, i64)> = (0..g.hexes.len()).map(|h| (h, g.tokens(h, ADV_AMBASSADOR))).filter(|&(_, n)| n != 0).collect();
     assert_eq!(gained, sites.iter().map(|&h| (h, 1)).collect::<Vec<_>>());
     assert_eq!(g.var(SUPPLY), 40 - sites.len() as i64);
@@ -56,8 +56,8 @@ fn an_infiltrate_leaves_a_firewalled_sites_agent_in_the_supply() {
     let cities0 = numbered_where(m, 0, |h| kind(m, h) == HexKind::City);
     put(&mut g, cities0[1], FIREWALL, 1);
     let k = cities0.len() as i64;
-    assert!(plan::infiltrate_sites(&w, &g, RallyAt::City, 0).contains(&cities0[1]));
-    with_cx(&rules, |cx| adversary::infiltrate(&mut g, cx, RallyAt::City, Some(0), "test")).unwrap();
+    assert!(plan::infiltrate_sites(&w, &g, SiteType::City, 0).contains(&cities0[1]));
+    with_cx(&rules, |cx| adversary::infiltrate(&mut g, cx, SiteType::City, Some(0), "test")).unwrap();
     assert_eq!(g.tokens(cities0[1], ADV_AMBASSADOR), 0, "nothing lands on it");
     assert_eq!(g.tokens(cities0[0], ADV_AMBASSADOR), 1, "and no one else takes its agent");
     assert_eq!(g.var(SUPPLY), 40 - (k - 1), "its 1 stays in the supply");
@@ -199,12 +199,12 @@ fn a_surge_lands_on_the_most_infested_site() {
     // The adversary's city holds more, but it is no longer a site.
     put(&mut g, cities0[2], ADV_CUBE, 1);
     put(&mut g, cities0[2], ADV_AMBASSADOR, 3);
-    with_cx(&rules, |cx| adversary::surge(&mut g, cx, RallyAt::City, 2, Some(0), "test")).unwrap();
+    with_cx(&rules, |cx| adversary::surge(&mut g, cx, SiteType::City, 2, Some(0), "test")).unwrap();
     let held: Vec<i64> = cities0[..3].iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).collect();
     assert_eq!(held, vec![1, 4, 3]);
     // A tie: the lowest-numbered.
     put(&mut g, cities0[0], ADV_AMBASSADOR, 4);
-    with_cx(&rules, |cx| adversary::surge(&mut g, cx, RallyAt::City, 1, Some(0), "test")).unwrap();
+    with_cx(&rules, |cx| adversary::surge(&mut g, cx, SiteType::City, 1, Some(0), "test")).unwrap();
     let after = |h: usize| (g.tokens(h, ADV_CUBE), g.tokens(h, ADV_AMBASSADOR));
     assert_eq!((after(cities0[0]), after(cities0[1])), ((1, 0), (0, 4)), "its 5th agent corrupts it (d0: a city's 5)");
 }
@@ -224,7 +224,7 @@ fn a_spill_waits_for_its_level_then_moves_one_agent() {
         let f = lonely[0];
         put(&mut g, f, FACTORY, 1);
         put(&mut g, c, ADV_AMBASSADOR, 2);
-        with_cx(&rules, |cx| adversary::spill(&mut g, cx, RallyAt::City, RallyAt::Factory, None)).unwrap();
+        with_cx(&rules, |cx| adversary::spill(&mut g, cx, SiteType::City, SiteType::Factory, None)).unwrap();
         let want = if moved { (1, 1) } else { (2, 0) };
         assert_eq!((g.tokens(c, ADV_AMBASSADOR), g.tokens(f, ADV_AMBASSADOR)), want, "d{d}");
         assert_eq!(total(&g, ADV_AMBASSADOR), 2, "d{d}: a move, no new agent");
@@ -603,7 +603,7 @@ fn twists_before_the_build_step_are_the_face_up_cards() {
     let stations = |g: &GameState| {
         adversary::twists(&w, g)
             .iter()
-            .any(|t| matches!(t, Op::Grow { site: RallyAt::Station }))
+            .any(|t| matches!(t, Op::Grow { site: SiteType::Station }))
     };
     g.phase = 0;
     assert!(stations(&g), "the Sway phase reads the face-up card");
@@ -634,7 +634,7 @@ fn a_stage_iii_card_pulls_sway_out_of_the_unity_bucket() {
 /// name every site type.
 #[test]
 fn every_event_card_infiltrates_first() {
-    let mut seen: Vec<RallyAt> = Vec::new();
+    let mut seen: Vec<SiteType> = Vec::new();
     for a in &content().adversary {
         assert!(matches!(a.standing.first(), Some(Op::Infiltrate { .. })), "{} infiltrates first", a.id);
         let sites = adversary::infiltrate_sites(a);
@@ -647,7 +647,7 @@ fn every_event_card_infiltrates_first() {
         );
         seen.extend(sites);
     }
-    for site in [RallyAt::City, RallyAt::CoastalCity, RallyAt::Station, RallyAt::Factory, RallyAt::Botnet] {
+    for site in [SiteType::City, SiteType::CoastalCity, SiteType::Station, SiteType::Factory, SiteType::Botnet] {
         assert!(seen.contains(&site), "no card infiltrates {site:?}");
     }
 }

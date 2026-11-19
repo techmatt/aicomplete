@@ -19,7 +19,7 @@ use crate::state::GameState;
 use crate::view::{CardView, ViewOut};
 
 use super::common::*;
-use super::{adversary, ai, alignment, board, economy, effects, threats};
+use super::{adversary, ai, alignment, economy, effects, threats};
 
 mod deck;
 mod play;
@@ -433,9 +433,7 @@ impl Module for Cards {
                         });
                     }
                 }
-                // 278 (`board.turn_cap`): building Actions are non-card turns; card plays are never capped.
-                let capped = board::turn_capped(w, g, s);
-                for id in g.pile(&built(s)).iter().filter(|_| !capped) {
+                for id in g.pile(&built(s)) {
                     if def(w, id).ability.is_some() && ability_blocked(w, g, s, id).is_none() {
                         out.push(Action::Use {
                             seat,
@@ -470,13 +468,7 @@ impl Module for Cards {
             Action::Keep { card, .. } => self.keep_card(g, cx, s, card)?,
             // 105: what a play or an Action removes fires the seat's fight triggers.
             Action::Play { card, .. } => fighting_play(g, cx, s, card, |g, cx| play_card(g, cx, s, card))?,
-            Action::Use { card, .. } => {
-                if !cx.replaying() && board::turn_capped(&cx.world, g, s) {
-                    return Err(Halt::Illegal("no non-card turns left this round".into()));
-                }
-                board::count_turn(g, cx, s);
-                fighting(g, cx, s, |g, cx| use_ability(g, cx, s, card))?
-            }
+            Action::Use { card, .. } => fighting(g, cx, s, |g, cx| use_ability(g, cx, s, card))?,
             _ => return Err(Halt::Illegal(format!("not a card action: {a:?}"))),
         }
         Ok(())

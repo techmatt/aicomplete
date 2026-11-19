@@ -51,7 +51,7 @@ fn a_firewall_stops_arrivals() {
     put(&mut g, c, FIREWALL, 1);
     let country = m.hexes[c].country as usize;
     // 175: a firewalled site is still an Infiltrate site; its agent stays in the supply.
-    assert!(plan::infiltrate_sites(&w, &g, crate::op::RallyAt::City, country).contains(&c));
+    assert!(plan::infiltrate_sites(&w, &g, crate::op::SiteType::City, country).contains(&c));
     assert!(!plan::next_infiltrate(&w, &g).iter().any(|&(h, _)| h == c));
     with_cx(&rules, |cx| adversary::place(&mut g, cx, c, 2)).unwrap();
     assert_eq!((g.tokens(c, ADV_AMBASSADOR), g.tokens(c, ADV_CUBE)), (3, 0), "no arrival on a firewalled hex");

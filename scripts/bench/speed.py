@@ -290,6 +290,7 @@ def take(argv, name):
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8", newline="\n")
     argv = sys.argv[1:]
     out = (take(argv, "--out") or [None])[-1]
     only = take(argv, "--only")

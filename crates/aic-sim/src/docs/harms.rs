@@ -3,7 +3,7 @@
 use std::collections::BTreeMap;
 
 use aic_core::content::{content, Op, Resource, RoundFlag, Spot};
-use aic_core::op::RallyAt;
+use aic_core::op::SiteType;
 
 use aic_core::Rules;
 
@@ -207,7 +207,7 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::Infiltrate { .. } => vec![PIECES_PLACED],
         // 275: a Surge's arrival corrupts the site it lands on at its number (Surge 2 takes a station or factory).
         Op::Surge { site, .. } => match site {
-            RallyAt::City | RallyAt::CoastalCity => vec![PIECES_PLACED, CITY_LOST, AMBASSADORS_LOST],
+            SiteType::City | SiteType::CoastalCity => vec![PIECES_PLACED, CITY_LOST, AMBASSADORS_LOST],
             _ => vec![PIECES_PLACED, FACILITIES_CORRUPTED, AMBASSADORS_LOST],
         },
         // 255: each production, its one form.
@@ -232,7 +232,7 @@ fn op_harms(op: &Op) -> Vec<usize> {
         // 275: a Spill moves agents onto a site (an arrival: it may corrupt the site it lands on); a Grow builds a
         // neutral facility, an agent on it where the site that grows holds agents.
         Op::Spill { to, .. } => match to {
-            RallyAt::City | RallyAt::CoastalCity => vec![PIECES_PLACED, CITY_LOST, AMBASSADORS_LOST],
+            SiteType::City | SiteType::CoastalCity => vec![PIECES_PLACED, CITY_LOST, AMBASSADORS_LOST],
             _ => vec![PIECES_PLACED, FACILITIES_CORRUPTED, AMBASSADORS_LOST],
         },
         Op::Grow { .. } => vec![PIECES_PLACED],

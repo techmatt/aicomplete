@@ -1,21 +1,27 @@
 """A paired read's games, decoded, and the tables 252-254's item readers each rebuilt (255; 252's `read_lib.py` note).
 
-    python scripts/bench/read_lib.py READ [READ ...] [--base ARM] [--counters PREFIX ...] [--cards ID ...] [--md OUT]
+    python scripts/bench/read_lib.py READ[@LABEL] [READ ...] [--base ARM] [--levels D[,D]] [--agent-arms]
+                                     [--counters PREFIX ...] [--cards ID ...] [--md OUT]
 
 A READ is a run's folder, a games file with its header, or FILE=SPEC (a bare farmed JSONL and its spec;
 `screens.stream`); several READs pool when their arms share names, else each row leads with its READ's name (the
-file stem, or the folder of a `games.jsonl`). Give the READs first: `--counters` and `--cards` take every word after.
-Cells come from the spec (`screens.cells_of`: configs, then variants, then difficulties, then agents); a variant named
-`PAIR-ARM` (or `PAIR_ARM`) is arm ARM of pair PAIR, a bare `PAIR` arm `base`, and a spec with several configs leads
-each arm with the config's file stem. Every arm is paired against the base arm (`--base`, default `base`, `off`, else
-the first) on the same pair, level, agent and seed.
+file stem, or the folder of a `games.jsonl`). `READ@LABEL` (281) leads that READ's arms with LABEL (`LABEL/base`)
+even when the arm sets match, so an old native run pairs against a new farmed run on the same seeds; READs sharing a
+LABEL pool, and with any LABEL given the unlabeled READs pool unled. Give the READs first: `--counters` and `--cards`
+take every word after. Cells come from the spec (`screens.cells_of`: configs, then variants, then difficulties, then
+agents); a variant named `PAIR-ARM` (or `PAIR_ARM`) is arm ARM of pair PAIR, a bare `PAIR` arm `base`, and a spec
+with several configs leads each arm with the config's file stem. Every arm is paired against the base arm (`--base`,
+default `base`, `off`, else the first) on the same pair, level, agent and seed. `--levels 3,4` (281) reads those
+levels only. `--agent-arms` (281): an agent with options (`strategist:w.sink=1`) whose bare name (`strategist`) is an
+agent of any READ is an arm of the bare agent, named by its options (`sink1`; `on-sink1` on arm `on`), so it pairs
+against the bare agent's games on the same pair, level and seed.
 
 Tables: wins by level with the paired gap ± one SE; the gap by level; losses by reason a game; board powers a seat-game
 of their board (by their counters, `ai.power.<board>.<slug>`, so any revision reads right); standard actions a
 seat-game; `--counters`: each counter whose key starts with a PREFIX, a game (per-round `.rNN` keys left out);
 `--cards`: each card's plays a game; resource use a seat-game (spent, and spent / gained), in PEAKS order.
 
-As a library: `games(read)` yields `Game`s; `seat_boards`, `counter_sums`, `resources` and `paired_gap` are what the
+As a library: `games(read, label, agent_arms)` yields `Game`s; `seat_boards`, `counter_sums`, `resources` and `paired_gap` are what the
 tables are made of. Python's standard library only.
 """
 import os
@@ -35,25 +41,37 @@ def split_variant(name):
     return parts[0], parts[1] if len(parts) > 1 else 'base'
 
 
-def games(read, label=None):
+def option_tag(agent):
+    """An agent's options as an arm name: `strategist:w.sink=0.5` -> `sink05` (258's agent_arms.py)."""
+    return agent.split(':', 1)[1].replace('w.', '').replace('=', '').replace('.', '')
+
+
+def games(read, label=None, agent_arms=()):
     """READ's games as `Game(arm, pair, level, agent, seed, g)`, decoded from its spec. ARM leads with LABEL (a
     READ's name, when several READs don't pool) and with the config's file stem when the spec has several configs.
-    AGENT is the spec's name up to any `:` (its overrides dropped), or the whole spec where two agents share a name."""
+    AGENT is the spec's name up to any `:` (its overrides dropped), or the whole spec where two agents share a name.
+    AGENT_ARMS (`--agent-arms`): bare agent names; an agent with options whose bare name is one of them is that bare
+    agent, its options an arm (`option_tag`) of the variant's arm."""
     lines = stream(read)
     spec = next(lines)['spec']
     cells = cells_of(spec)
     many = len(spec['configs']) > 1
+    as_arm = {a: a.split(':')[0] for a in spec['agents'] if ':' in a and a.split(':')[0] in agent_arms}
     # 261: an agent-lever screen ('strategist', 'strategist:w.sink=0.5', ...) keeps each spec whole: cut at ':' only
     # where the short names stay distinct (it read as "pooled reads overlap").
-    specs = sorted({c['agent'] for c in cells})
+    specs = sorted({c['agent'] for c in cells} - set(as_arm))
     short = {a: a.split(':')[0] for a in specs}
     if len(set(short.values())) < len(specs):
         short = {a: a for a in specs}
+    short.update(as_arm)
     for g in lines:
         if 'cell' not in g or 'won' not in g:
             continue
         c = cells[g['cell']]
         pair, arm = split_variant(c['variant'])
+        if c['agent'] in as_arm:
+            tag = option_tag(c['agent'])
+            arm = tag if arm == 'base' else f'{arm}-{tag}'
         if many:
             arm = f"{os.path.splitext(os.path.basename(c['config']))[0]}/{arm}"
         if label:
@@ -111,7 +129,8 @@ def summarize(rows, prefixes=(), cards=()):
         if key in s['wins']:
             # 255 (review): pooled reads on overlapping seeds would leave the wins table one read short of the rest
             raise SystemExit(f'read_lib: {r.arm} {r.agent} pair {r.pair} level {r.level} seed {r.seed} twice: '
-                             'pooled reads overlap; read them apart')
+                             'pooled reads overlap; read them apart (READ@LABEL), or an agent\'s options as arms '
+                             '(--agent-arms)')
         s['wins'][key] = 1 if g['won'] else 0
         s['games'] += 1
         s['rounds'] += g['rounds']
@@ -220,31 +239,50 @@ def tables(S, base_arm=None, cards=()):
 
 
 def main(argv):
-    sys.stdout.reconfigure(encoding='utf-8', newline='\n')
-    opts = {'--base': None, '--md': None}
+    opts = {'--base': None, '--md': None, '--levels': None}
     lists = {'--counters': [], '--cards': []}
-    reads, cur = [], None
+    reads, cur, agent_arms = [], None, False
     for x in argv:
-        if x in opts or x in lists:
+        if x == '--agent-arms':
+            agent_arms, cur = True, None
+        elif x in opts or x in lists:
             cur = x
         elif cur in opts:
             opts[cur], cur = x, None
         elif cur in lists:
             lists[cur].append(x)
+        elif x.startswith('--'):
+            sys.exit(f'read_lib: unknown flag {x}')
         else:
             reads.append(x)
     if not reads:
         sys.exit(__doc__)
+    # 281: READ@LABEL leads that read's arms with LABEL whatever its arms
+    given = [r.rsplit('@', 1) if re.search(r'@[\w.+-]+$', r) else [r, None] for r in reads]
+    reads = [r for r, _ in given]
     paths = [source(r)[0] for r in reads]
     labels = [os.path.basename(os.path.dirname(os.path.abspath(p))) if os.path.basename(p) == 'games.jsonl'
               else os.path.splitext(os.path.basename(p))[0] for p in paths]
-    if len(reads) > 1 and len(set(labels)) == len(labels):
+    if any(lab for _, lab in given):
+        labels = [lab for _, lab in given]
+    elif len(reads) > 1 and len(set(labels)) == len(labels):
         # pool reads whose arms share names (a read farmed in seed ranges); label each otherwise
         arms = [{split_variant(c['variant'])[1] for c in cells_of(next(stream(r))['spec'])} for r in reads]
-        pool = all(a == arms[0] for a in arms)
+        if all(a == arms[0] for a in arms):
+            labels = [None] * len(reads)
     else:
-        pool = True
-    rows = [x for r, lab in zip(reads, labels) for x in games(r, None if pool else lab)]
+        labels = [None] * len(reads)
+    bare = set()
+    if agent_arms:
+        bare = {a for r in reads for a in next(stream(r))['spec']['agents'] if ':' not in a}
+        if not bare:
+            sys.exit('--agent-arms: no READ has a bare agent (one with no options) to pair the option agents against')
+    rows = [x for r, lab in zip(reads, labels) for x in games(r, lab, bare)]
+    if opts['--levels']:
+        keep = {int(d) for d in opts['--levels'].split(',')}
+        rows = [r for r in rows if r.level in keep]
+        if not rows:
+            sys.exit(f"--levels {opts['--levels']}: no game at those levels")
     text = '\n'.join(tables(summarize(rows, lists['--counters'], lists['--cards']), opts['--base'], lists['--cards'])) + '\n'
     print(text)
     if opts['--md']:
@@ -253,4 +291,5 @@ def main(argv):
 
 
 if __name__ == '__main__':
+    sys.stdout.reconfigure(encoding='utf-8', newline='\n')
     main(sys.argv[1:])

@@ -541,6 +541,8 @@ pub struct Margin {
     /// (corrupted cities, and ambassadors or troops the bar still counts;
     /// 0 on a win): how far a loss was from winning.
     pub blockers: i64,
+    /// The purge bar's level as the game ended (`alignment::bar_level`, 0-3, raised by Unity cards drawn; 3 counts
+    /// cities only): which pieces `blockers` counts. Not the difficulty (`difficulty`).
     pub level: i64,
     /// Unity tips.
     pub unity_tips: i64,
@@ -1240,7 +1242,7 @@ pub const PER_ROUND_EXPORT: &[&str] = &[
     // 135: threats countered and uncountered, round by round.
     "threats.",
     // 190: facilities by owner, claims, city growth and its token moves, troops on the map, round by round. 263:
-    // cities corrupted and retaken (`map.cities_corrupted`, `map.cities_retaken`).
+    // cities corrupted in play, retakes included (`map.cities_corrupted`).
     "map.",
     // 210: Fallout tokens on the board, round by round.
     "adversary.land_tokens",

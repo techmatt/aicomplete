@@ -2,7 +2,7 @@
 prints every design warning it trips, each with its number. Warnings never stop work: no exit code but 0.
 
     python scripts/design_check.py [DIR[,DIR...]] [--old DIR[,DIR...]] [--base REV] [--config FILE] [--quiet] [--usage]
-                                   [--variant V[,V...]]
+                                   [--variant V[,V...]] [--agent A[,A...]]
 
 207: `usage` warns on every player action (standard actions, board powers, converters, card plays, building Actions,
 threat counters, resource spends) whose use falls outside its expected band, both ways; `--usage` prints the inventory
@@ -11,7 +11,8 @@ table (role, band, use pooled, by board and by level) instead of the warnings. B
 DIR is a read's folder (its games.jsonl: a farmed read assembled with its header, or an experiment's output); comma
 lists pool; a farm's bare out file goes as FILE=SPEC. With no DIR only the content checks run. `--variant` (229)
 keeps only the games of those variants on DIR's side (`--old` reads whole): a name, or a lever screen's lever
-(`PAIR_LEVER` or `PAIR-LEVER` variants; `base` the bare pairs), so a screen's frozen cell reads without `bench/split_read.py`. `--old` is the previous revision's read on the same seeds (the
+(`PAIR_LEVER` or `PAIR-LEVER` variants; `base` the bare pairs), so a screen's frozen cell reads without `bench/split_read.py`; `--agent` (281) likewise keeps only
+those agents' games, each named as the spec writes it (`strategist:w.sink=1`). `--old` is the previous revision's read on the same seeds (the
 tokens-a-round check reads against it). `--base` is the revision the item started from (default: the merge base with
 main); the dials check diffs configs/baseline.json against it. Thresholds and source classes are in
 scripts/design_check.json, all candidates. The principles are docs/principles.md, *Design warnings*.
@@ -28,7 +29,7 @@ from collections import defaultdict
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from screens import PEAKS  # noqa: E402
+from screens import PEAKS, cells_of, keeps_variant  # noqa: E402
 from powers import power_slug  # noqa: E402
 
 SHARE_RES = ['energy', 'chips', 'antimatter', 'research_cubes', 'ambassadors']
@@ -41,16 +42,17 @@ def jload(rel):
 
 # ---- inputs -----------------------------------------------------------------------------------------------------
 
-def keeps_variant(name, want):
-    """229: whether variant NAME is in `--variant`'s list WANT: the name itself, or a lever screen's
-    `PAIR_LEVER` or `PAIR-LEVER` whose LEVER is named (`base`: the bare pairs)."""
-    parts = re.split(r'[_-]', name, maxsplit=1)
-    return name in want or (parts[1] if len(parts) > 1 else 'base') in want
+def agent_list(text):
+    """`--agent`'s comma list, split between agents only: an agent's options hold commas too
+    (`strategist:w.a=1,w.b=2`), as play_read's `--agents` reads them."""
+    return {x for x in re.split(r',(?![a-z_]+\.[a-z_]+=)', text) if x}
 
 
-def load_games(dirs, variants=None):
+def load_games(dirs, variants=None, agents=None):
     """The games of DIRS (comma list: a read folder, a games file, or FILE=SPEC for a farm's bare out file).
-    VARIANTS (`--variant`): only the games of those variants, read by cell from the header's spec."""
+    VARIANTS (`--variant`): only the games of those variants (`screens.keeps_variant`); AGENTS (`--agent`, 281): only
+    those agents', each as the spec writes it (`strategist:w.sink=1`); both read by cell from the header's spec."""
+    flag = '--variant' if variants else '--agent'
     games = []
     for d in dirs.split(','):
         d, _, spec_path = d.partition('=')
@@ -67,17 +69,20 @@ def load_games(dirs, variants=None):
                 if 'format' in g:
                     spec = spec or g.get('spec')
                     continue
-                if variants:
+                if variants or agents:
                     if spec is None:
-                        sys.exit(f'--variant: {d} has no header; give it as FILE=SPEC')
-                    if cells is None:  # the cell order of crates/aic-sim/src/experiment.rs, as screens.cells_of
-                        cells = [v['name'] for _ in spec['configs'] for v in spec['variants']
-                                 for _ in spec['difficulties'] for _ in spec['agents']]
-                    if not keeps_variant(cells[g['cell']], variants):
+                        sys.exit(f'{flag}: {d} has no header; give it as FILE=SPEC')
+                    if cells is None:  # the cell order of crates/aic-sim/src/experiment.rs
+                        cells = cells_of(spec)
+                    c = cells[g['cell']]
+                    if variants and not keeps_variant(c['variant'], variants):
+                        continue
+                    if agents and c['agent'] not in agents:
                         continue
                 games.append(g)
-    if variants and not games:
-        sys.exit(f'--variant {",".join(variants)}: no game in {dirs}')
+    if (variants or agents) and not games:
+        asked = ' '.join(f'{f} {",".join(sorted(w))}' for f, w in (('--variant', variants), ('--agent', agents)) if w)
+        sys.exit(f'{asked}: no game in {dirs}')
     return games
 
 
@@ -205,10 +210,12 @@ def check_shares(games, cfg, o):
 
 def check_repeats(boards, cfg, o):
     need = cfg['repeat_powers']['boards_min']
-    exempt = cfg['repeat_powers'].get('exempt', {})
+    # 281: a key names one power or a group, comma-joined ("Sprawl, Outpost"), that one reason covers
+    groups = cfg['repeat_powers'].get('exempt', {})
+    exempt = {n.strip() for names in groups for n in names.split(',')}
     by_name, by_fx = defaultdict(set), defaultdict(set)
-    for name, why in sorted(exempt.items()):
-        o.i(f'repeat-power exemption {name}: {why}')
+    for names, why in sorted(groups.items()):
+        o.i(f'repeat-power exemption {names}: {why}')
     for b in boards:
         for p in b['powers']:
             if p['name'] in exempt:
@@ -947,13 +954,16 @@ def main():
     base_rev = opt('--base')
     variants = opt('--variant')
     variants = set(variants.split(',')) if variants else None
+    agents = opt('--agent')
+    agents = agent_list(agents) if agents else None
     quiet = '--quiet' in argv
     table = '--usage' in argv
     argv = [a for a in argv if a not in ('--quiet', '--usage')]
     # 266 (D117): an unknown flag or a second DIR was ignored, so the read ran on less than was asked.
     flags = [a for a in argv if a.startswith('-')]
     if flags:
-        sys.exit(f"unknown flag {flags[0]}: the flags are --old, --base, --config, --variant, --quiet, --usage")
+        sys.exit(f"unknown flag {flags[0]}: the flags are --old, --base, --config, --variant, --agent, --quiet, "
+                 "--usage")
     if len(argv) > 1:
         sys.exit(f"one DIR only (got {len(argv)}): pool reads as a comma list, {','.join(argv)}")
     with open(cfg_path, encoding='utf-8') as f:
@@ -961,9 +971,9 @@ def main():
     cards = jload('content/cards.json')
     boards = jload('content/ais.json')
     base = flat_baseline(jload('configs/baseline.json'))
-    games = load_games(argv[0], variants) if argv else []
-    if variants and not argv:
-        sys.exit('--variant needs a read')
+    games = load_games(argv[0], variants, agents) if argv else []
+    if (variants or agents) and not argv:
+        sys.exit(f"{'--variant' if variants else '--agent'} needs a read")
     old = load_games(old_dirs) if old_dirs else []
     countries = jload('content/map.json')['countries']
     if table:

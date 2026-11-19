@@ -782,6 +782,11 @@ impl Power {
     pub fn shares_use(&self, other: &Power) -> bool {
         std::ptr::eq(self, other) || (self.group.is_some() && self.group == other.group)
     }
+
+    /// 276: the name its once-a-round use goes by: its group's, or its own.
+    pub fn use_key(&self) -> &str {
+        self.group.as_deref().unwrap_or(&self.name)
+    }
 }
 
 impl CardDef {
@@ -981,6 +986,11 @@ impl Content {
                 innate_only(&c.passives, &what)?;
             }
             check_ops(&u.effects, Slot::Player, &what)?;
+            // 263: a space's words come from `ai::once_gains` and `ai::builds_station` (`ai::uncover_words`,
+            // docs/blocks.rs's track table): any other op would run unprinted.
+            if let Some(e) = u.effects.iter().find(|e| !matches!(e, Op::Gain { .. } | Op::BuildStation)) {
+                return Err(format!("{what}: a track space prints only gain or build_station, not {e:?}"));
+            }
         }
         Ok(())
     }

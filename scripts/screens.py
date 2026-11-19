@@ -147,6 +147,14 @@ def cells_of(spec):
             for c in spec['configs'] for v in spec['variants'] for d in spec['difficulties'] for a in spec['agents']]
 
 
+def keeps_variant(name, want):
+    """229: whether variant NAME is in a `--variant` list WANT: the name itself, or a lever screen's
+    `PAIR_LEVER` or `PAIR-LEVER` whose LEVER is named (`base`: the bare pairs). `design_check.py` and
+    `cards/play_read.py` (281) read their `--variant` by it."""
+    parts = re.split(r'[_-]', name, maxsplit=1)
+    return name in want or (parts[1] if len(parts) > 1 else 'base') in want
+
+
 def named_agents(cells, spec):
     """CELLS (by id) with each agent as SPEC writes it (`strategist`), its resolved label kept as `label`.
     results.json names a native run's agent by its resolved spec (`engine:strategy=1,...`), a farmed run's cells
@@ -368,6 +376,7 @@ def gate(cells, games, rows=None):
 def main(argv):
     """182: `assemble` from the command line (168, 177 and 178 each wrapped it in a script)."""
     import argparse
+    sys.stdout.reconfigure(encoding='utf-8', newline='\n')
     ap = argparse.ArgumentParser(prog='screens.py', description='Shared read helpers; `assemble` farmed shards.')
     sub = ap.add_subparsers(dest='cmd', required=True)
     a = sub.add_parser('assemble', help='farmed shards (seed order) into OUT_DIR/games.jsonl, header first')

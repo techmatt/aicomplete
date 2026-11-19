@@ -211,10 +211,10 @@ impl CreateIf {
     }
 }
 
-/// 151: the site type a Rally X line lands on.
+/// The site type an Infiltrate, Surge, Spill or Grow line names (151's Rally X; renamed `SiteType` in 281).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum RallyAt {
+pub enum SiteType {
     City,
     /// Cities marked coastal on the map.
     CoastalCity,
@@ -224,16 +224,16 @@ pub enum RallyAt {
     Botnet,
 }
 
-impl RallyAt {
-    pub const ALL: [RallyAt; 5] = [RallyAt::City, RallyAt::CoastalCity, RallyAt::Station, RallyAt::Factory, RallyAt::Botnet];
-    /// The plural a card prints: "Rally: cities".
+impl SiteType {
+    pub const ALL: [SiteType; 5] = [SiteType::City, SiteType::CoastalCity, SiteType::Station, SiteType::Factory, SiteType::Botnet];
+    /// The plural a card prints for the site type ("cities").
     pub fn plural(self) -> &'static str {
         match self {
-            RallyAt::City => "cities",
-            RallyAt::CoastalCity => "coastal cities",
-            RallyAt::Station => "research stations",
-            RallyAt::Factory => "factories",
-            RallyAt::Botnet => "botnet hexes",
+            SiteType::City => "cities",
+            SiteType::CoastalCity => "coastal cities",
+            SiteType::Station => "research stations",
+            SiteType::Factory => "factories",
+            SiteType::Botnet => "botnet hexes",
         }
     }
 }
@@ -932,7 +932,8 @@ pub enum Op {
         amount: i64,
     },
     /// A one-time permanent gain (021): your printed production of
-    /// `resource` rises by `amount` for the rest of the game.
+    /// `resource` rises by `amount` for the rest of the game, even after the
+    /// card goes (unlike `income`, paid only while its card is in play).
     Production {
         resource: Resource,
         amount: i64,
@@ -1349,12 +1350,12 @@ pub enum Op {
     /// hex order. A firewalled or no-Infiltrate site's agents stay in the supply; a cordoned country takes none.
     /// Each arrival is checked where it lands (arrival corruption, [`crate::modules::adversary::arrive_check`]).
     Infiltrate {
-        site: RallyAt,
+        site: SiteType,
     },
     /// 275, Surge N: X (a project's or Discord card's line): in each country in scope, `count` agents onto the
     /// `site` not yet the adversary's holding the most agents (ties: the lowest-numbered).
     Surge {
-        site: RallyAt,
+        site: SiteType,
         count: i64,
     },
     /// 275, Spill: X into Y (event cards, from `adversary.spill_at`): in each country, every `site` not yet the
@@ -1362,15 +1363,15 @@ pub enum Op {
     /// lowest-numbered; none: it stays). The move is an arrival: a player ambassador cancels it, and the site is
     /// checked.
     Spill {
-        site: RallyAt,
-        to: RallyAt,
+        site: SiteType,
+        to: SiteType,
     },
     /// 275, Grow: X (the adversary's growth; it replaced city growth and its chips): in each country, the `site`
     /// holding the most agents (ties: the lowest-numbered) with a free hex next to it builds a neutral facility
     /// there, the type it has fewer of next to it; a site holding agents, or the adversary's, builds it with 1
     /// agent on it.
     Grow {
-        site: RallyAt,
+        site: SiteType,
     },
     /// 151: the adversary's compute income rises for the rest of the game: `compute` more a round (a country).
     IncreaseIncome {
@@ -1502,7 +1503,8 @@ pub enum Op {
     },
 
     // ---------- standing: read while in force ----------
-    /// `amount` of `resource` a round.
+    /// `amount` of `resource` a round while the card is in play (a standing
+    /// passive; a raise that outlasts the card is `production`).
     Income {
         resource: Resource,
         amount: i64,

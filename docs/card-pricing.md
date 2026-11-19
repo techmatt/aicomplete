@@ -40,7 +40,8 @@ their reasoned value, + its tier's constant, + the rate per needed tag × its
 `needs`) and `fair_credits`: the fit less what the card costs in other resources (insight, energy, chips, antimatter,
 cubes, `lowers`) at the table's rates. That is the credit price that would put the card on the fitted curve. It writes
 nothing, so a staging session can price proposed cards: copy `content/cards.json` to `out/`, edit, pass it with
-`--cards`. The fit's constants move with the set; read them from the printout, never from an old write-up.
+`--cards`. The fit's constants move with the set; read them from the printout, never from an old write-up. So `fair_credits`
+moves when any other card changes: to reprice an edited card, move its price by its change in the reasoned value (`--reasoned-delta BASE`).
 
 ## The method (Matt's rulings)
 

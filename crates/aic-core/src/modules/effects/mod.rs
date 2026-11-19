@@ -54,27 +54,31 @@ pub(super) fn hardens_at(w: &World, g: &GameState, targets: &[usize], at: Area) 
     targets.iter().copied().filter(|&t| area_of(w, t, at).iter().any(|&h| board::hardenable(g, h))).collect()
 }
 
+/// 236: the hexes, among a target's candidates `among`, where a map op that narrows its target can act: a push, a
+/// gather, a firewall, or (276, Patrol II) a hardening with a facility it can protect in its area; `None` for any
+/// other op, which acts wherever the target lands. One home for [`aim`] (what a target offers) and `feasible`
+/// (whether an aimed list acts).
+pub(super) fn narrowed(w: &World, g: &GameState, seat: usize, op: &Op, among: &[usize]) -> Option<Vec<usize>> {
+    match op {
+        Op::Push { pieces, .. } => Some(push_hexes(w, g, seat, pieces)),
+        Op::Gather { pieces, strike, .. } => Some(gather_hexes(w, g, seat, pieces, *strike)),
+        Op::Firewall => Some(firewall_hexes(w, g, seat)),
+        Op::Harden { at, .. } => Some(hardens_at(w, g, among, *at)),
+        _ => None,
+    }
+}
+
 /// 234: the seat picks its one target among the hexes in reach meeting `on`; `rest` is the list after it. 236: when
-/// every map op in `rest` moves pieces (a push, a gather, a firewall), only hexes where one of them can act are
-/// offered, as `feasible` reads them: a target where nothing could move paid for nothing (Patrol, 236's slow lane).
+/// every map op in `rest` narrows its target ([`narrowed`]), only hexes where one of them can act are offered, as
+/// `feasible` reads them: a target where nothing could move paid for nothing (Patrol, 236's slow lane).
 fn aim(g: &mut GameState, cx: &mut Cx, on: TargetSpec, rest: &[Op], ctx: &mut Ctx) -> Res {
     let w = cx.world;
     let seat = ctx.chooser();
     let mut hexes = target_hexes_before(&w, g, seat, on, rest);
     let map: Vec<&Op> = rest.iter().filter(|o| o.is_map()).collect();
-    // 276 (diff review): a hardening after the target (Patrol II) counts where a facility it can protect stands in
-    // its area; before, it turned the filter off and a target where nothing could act was offered.
-    let moving = |o: &&Op| matches!(o, Op::Push { .. } | Op::Gather { .. } | Op::Firewall | Op::Harden { .. });
-    if !map.is_empty() && map.iter().all(moving) {
-        let mut ok: Vec<usize> = Vec::new();
-        for o in &map {
-            ok.extend(match o {
-                Op::Push { pieces, .. } => push_hexes(&w, g, seat, pieces),
-                Op::Gather { pieces, strike, .. } => gather_hexes(&w, g, seat, pieces, *strike),
-                Op::Harden { at, .. } => hardens_at(&w, g, &hexes, *at),
-                _ => firewall_hexes(&w, g, seat),
-            });
-        }
+    let sets: Option<Vec<Vec<usize>>> = map.iter().map(|o| narrowed(&w, g, seat, o, &hexes)).collect();
+    if let Some(sets) = sets.filter(|_| !map.is_empty()) {
+        let ok: Vec<usize> = sets.concat();
         hexes.retain(|h| ok.contains(h));
     }
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();

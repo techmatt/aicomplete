@@ -1182,6 +1182,25 @@ mod tests {
                 std::sync::Arc::make_mut(p).reverse();
             }
         }
+        // The adversary deck: its stage order and the cards in the public peek are public (as
+        // `determinize::resample_adversary_deck` keeps them), so each same-stage run below the peek reverses.
+        {
+            use aic_core::modules::adversary;
+            let w = r.world();
+            let content = w.content;
+            let stage = |id: &str| content.adversary[content.adversary_index(id).expect("adversary card")].stage;
+            let peek = (b.var(adversary::PEEK).max(0) as usize).min(b.pile(adversary::DECK).len());
+            let mut deck = b.pile(adversary::DECK).to_vec();
+            let mut i = peek;
+            while i < deck.len() {
+                let s = stage(&deck[i]);
+                let end = (i..deck.len()).find(|&j| stage(&deck[j]) != s).unwrap_or(deck.len());
+                deck[i..end].reverse();
+                i = end;
+            }
+            assert_ne!(deck, b.pile(adversary::DECK).to_vec(), "the test's adversary deck should change");
+            b.piles.insert(adversary::DECK.into(), std::sync::Arc::new(deck));
+        }
         for (purpose, s) in b.rng.iter_mut() {
             *s = std::sync::Arc::new(aic_core::rng::Stream::new(77, purpose));
         }

@@ -41,7 +41,7 @@ prints that kind's disagreements. Readers: `experiments/results/245_tune_strateg
 | `--max-actions N` | `100000` | Per-game action cap. A capped game ends as `timeout`. |
 | `--threads N` | all cores | Results don't depend on it: agents are seeded per game. |
 | `--json` | off | Print the summary as JSON: every field below, plus the diff, agent, `max_actions` and rules revision. |
-| `--trace` | off | Print the first game of each config: every action (with its option count) and event (`tokens_changed`, `var_changed`, `card_moved`, ...; a hex is `[q, r]`: map.json's anchor + row × axes[0] + col × axes[1]). Goes to stderr with `--json`. 268's `trace_rounds.py` splits it by round; 271's `trace_plays.py`, plays and draws a seat a round. |
+| `--trace` | off | Print the first game of each config: every action (with its option count) and event (`tokens_changed`, `var_changed`, `card_moved`, ...; a hex is `[q, r]`: map.json's anchor + row × axes[0] + col × axes[1]). Goes to stderr with `--json`; the summary prints after it. Events, piles, tokens: [reads.md](reads.md); a reader: `scripts/bench/trace_lib.py`. |
 | `--save DIR` | off | `run`/`compare`: write the selected games as records into `DIR` (created if needed) as `<config name>-<run\|A\|B>-seed<S>.json`; the paths print after the table, or under `saved` in each `--json` result with the match counts. A write failure exits 2. |
 | `--save-when W` | `loss` | Which games to save: `all`, `win`, `loss`, `timeout`, or an end reason code (`deck_empty`, `discord_deck`, `node`, `purge`, ...). Repeatable; a game matching any is saved. With only `--save-seed` given, no default. A reason code no game ended with warns on stderr. |
 | `--save-seed S` | | Always save this seed, not counted against `--save-max`. Repeatable. A seed outside the range played warns. |
@@ -73,25 +73,10 @@ records is "Argument list too long".
 The random agent picks uniformly among all seats' legal actions, passes and choice answers included: a floor, not a
 model of a weak team.
 
-## Keys in a games.jsonl line
+## Reading the output
 
-What the read scripts quote most (`screens.cnt(game, key)`; more in experiments.md, *Counters*):
-
-| Key | What it holds, per game |
-|---|---|
-| `cell` | the cell's index in grid order: configs, then variants, then difficulties, then agents, agent fastest (`experiment::cells_with`; `screens.cells_of`) |
-| `counters['ai.power.<board>.<power>']` | a board power's uses (`modules/ai.rs`; the seats on that board summed), `.rNN` a round's; names: `scripts/powers.py`; `ai.offered.<board>`: uses offered as the action phase begins, a group once |
-| `counters['board.std.<name>']` | a standard action's uses; `board.std_actions` all of them |
-| `counters['cards.played.<card>']`, `['cards.drawn']` | plays of a card / cards drawn off the decks, all seats (keys are flat, dotted strings) |
-| `counters['fx.<card>.tN']` / `['fx.<card>.<measure>']` | an Alignment card resolved at tier N / the change it made to a `FX_MEASURES` total (`alignment.rs`): a signed delta, not a count |
-| `sources[seat]` / `uses[seat]` | each resource gained / spent by where, `{label: [...]}`: `own:` or `other:` an action, `phase:` an automatic phase. Labels: `play:<card>`, `use:<card>` (its Action), `power:<Name>`, `standard:<act>`, `convert:<country>` (a corp's cube converter; `:chips` after it, its chip converter), `phase:economy.upkeep` (income and capstones) |
-| `start`, `gained`, `spent`, `peaks` | per seat, totals (`start + gained - spent` is the end) |
-| `seed`, `reason`, `margin['node_spread']` | the seed, a string; how it ended (`purge` the win, `node` a seat left with no nodes, `deck_empty`, `discord_deck`); each seat's node spread at the end: [nodes, countries, connected groups, farthest two apart in hexes] |
-| `actions[i]` | `{type, seat, ...}`: `standard` names its `act`; `power` gives an index, not a name (count powers by the counters) |
-
-`gained`, `spent` and `peaks` rows are in `PEAKS` order (credits, insight, energy, chips, antimatter, research cubes,
-card tokens, ambassadors); `margin['unspent']` and `margin['held_after_actions']` in `UNSPENT` order (`board::LEFT`:
-credits, chips, energy, antimatter, ambassadors).
+A read's `games.jsonl` keys, the counter families, `margin`, the resource arrays and the trace's events
+and piles: [reads.md](reads.md).
 
 ## The farm
 
@@ -111,7 +96,7 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
   byte for byte one run over the whole range. Each game's time goes to stderr. The file is written whole at the end
   (a `.part` renamed), so a killed shard leaves none. `--seed` and `--games` are required. A shard is one thread (an
   agent's `threads` dial must be 1). A strategist game costs about 1 s natively on one core, a read seed (12 cells)
-  about 12 s; wasm is ~1.5× native; the laptop tab is best at 2-3 cores. A job of few shards is bound by its slowest.
+  about 12 s; wasm is ~1.5× native; the laptop tab is best at 2-3 cores. A job of few shards is bound by its slowest: `farm-seeds` cuts 2 seeds a shard, so a few-seed read of a slow agent (an oracle) gains nothing over native threads. `farm` takes no `--threads`: a quick native screen is `aic-sim experiment SPEC --out DIR --threads N`.
   A line is ~82 KB (r112: counters 42%, `actions` 34%, `cards` 15%); a spec's `"drop": ["actions", "cards"]`
   (251, opt in) writes those empty, half the bytes; no `--resume`, and no reader of `actions` (`design_check.py`).
 - **A farmed spec** is a file in `experiments/farm/` (`read`: the strategist, three pairs, d0-d3, a subset: an item's

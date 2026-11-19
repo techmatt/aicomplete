@@ -139,10 +139,9 @@ const PAGE_LIB = String.raw`(() => {
   // gather-then-strike, a claim or liberation spending your standing ambassadors (r75), a prohibition made or fired,
   // a remove_where sweep and a cleanse.
   const COUNTER_EVENTS_R70 = /^(effects\.(gathered|pushed|moved_canceled|struck|cleansed|firewalls|remove_where\..+)|board\.(site_standing_spent|std\.(botnet|buy_energy)|aegis_used|protection_declined)|prohibit\.[a-z]+\.[a-z_]+\.(made|fired))$/;
-  // 184: r74-r77's contact and corruption: a meeting that cancels an agent and an ambassador, agents
-  // converging on a site, a node corrupted at 2, natural corruption, Remove agents, Dispatch, a claim
-  // or liberation, the last node lost.
-  const COUNTER_EVENTS_R74 = /^(adversary\.(canceled|converged|ambassadors_removed|troops_removed|corruptions\.node|corruptions_natural)|board\.(std\.(remove|move|claim|liberate)|last_node_lost))$/;
+  // 184: r74-r77's contact and corruption: a meeting that cancels an agent and an ambassador, a node
+  // corrupted at 2, Remove agents, Dispatch, a claim or liberation, the last node lost.
+  const COUNTER_EVENTS_R74 = /^(adversary\.(canceled|ambassadors_removed|troops_removed|corruptions\.node)|board\.(std\.(remove|move|claim|liberate)|last_node_lost))$/;
   // r85 (195, 197): each project op acting: a project's act, botnet troops, botnets made and spread,
   // a site taken or neutralized, factory troops (and blocked), a node raid, hardening stripped, the clock.
   // (261: project_acts and node_raids dropped: no engine writes them. No backticks here: this is a template.)
@@ -150,10 +149,10 @@ const PAGE_LIB = String.raw`(() => {
   // 235: r99-r106: Fallout placed and lifted, Night Raid's agents on nodes, Crackdown's recall, Lab Purge's
   // stripped cubes, cubes made antimatter, a board burn, a placed ambassador, a reach Shelter.
   const COUNTER_EVENTS_R99 = /^(fallout\.(placed|lifted)|adversary\.(night_raid_agents|ambassadors_recalled|cubes_stripped)|board\.(cubes_to_antimatter|burned\.[a-z_]+)|effects\.(ambassadors_placed|shelter_reach))$/;
-  // 261: r107-r121: each board power's first use (the node routes: Expand, Buy In, Accord ...), a claim of a
-  // Liberated site, a card's or rider's claim, a hosted city's energy, a site opened, a converter's Action, the adversary research track
-  // (made, fired, removed), a retake, compute blocked, a march cut short.
-  const COUNTER_EVENTS_R107 = /^(ai\.power\.[a-z_]+\.[a-z0-9_]+|adversary\.(research_(made|fired|removed)|retakes|compute_blocked)|board\.(claimed_liberated|claimed_by\.(card|rider)\.[a-z]+|city_energy_hosted|sites_opened\.[a-z_]+|chips_converted|march_cut_by_loss|blocked\.station_adversary)|effects\.per_site\.owned_hosted)$/;
+  // 261: r107-r121: each board power's first use (the node routes: Expand, Buy In, Accord ...), a card's or
+  // rider's claim, a hosted city's energy, a site opened, a converter's Action, the adversary research track
+  // (made, fired, removed), compute blocked, a march cut short.
+  const COUNTER_EVENTS_R107 = /^(ai\.power\.[a-z_]+\.[a-z0-9_]+|adversary\.(research_(made|fired|removed)|compute_blocked)|board\.(claimed_by\.(card|rider)\.[a-z]+|city_energy_hosted|sites_opened\.[a-z_]+|chips_converted|march_cut_by_loss|blocked\.station_adversary)|effects\.per_site\.owned_hosted)$/;
   // 275: r130's card-driven adversary: an arrival corruption, a Grow (and its agent), a Spill, a botnet's seed, a
   // Surge, an uncountered threat's agent at its anchor.
   const COUNTER_EVENTS_R130 = /^adversary\.(corruptions_arrival|grew\.(factory|station)|grew_infested|spilled|seeded|surged|threat_anchor)$/;

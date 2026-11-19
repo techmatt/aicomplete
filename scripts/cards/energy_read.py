@@ -5,8 +5,8 @@ round from 090) at rounds 3 and 6 and at its last round, and the use per game of
 sink and r35 mechanic: energy paid to threat counters, the energy-cost cards played, the
 energy gift Actions (only while a card has one: none since 106), stations freed (and player
 stations an effect could not flip), the three capstones and their twists, Popular Uprising's
-plays and Action uses (either half: no counter splits off its liberations) and the three
-formerly dear powers.
+plays and Action uses (either half: no counter splits off its liberations) and each power
+content/ais.json prices in energy.
 
     python scripts/cards/energy_read.py DIR [DIR ...] [--md]
 
@@ -34,16 +34,20 @@ def card_freed(g, kind):
 
 
 BOARDS = ['builder', 'protector', 'researcher']
-# The dear powers before r35, by board and index in content/ais.json.
-DEAR = {'Rush Build': 'builder', 'Shelter': 'protector', 'Reclaim': 'protector'}  # 219: Particle Run is gone; 227: Seize is Reclaim
 
 
-def power_index():
+def power_index(names=None):
+    """Power name -> its use counter: every power content/ais.json prices in energy (281: the r35 dear-power list
+    named powers gone since 276), or only `names`, warning of each one content no longer has."""
     out = {}
     for b in content('ais'):
         for p in b['powers']:
-            if p['name'] in DEAR:
+            costs_energy = any(r == 'energy' and n > 0 for r, n in p.get('cost', []))
+            if (p['name'] in names) if names is not None else costs_energy:
                 out[p['name']] = power_key(b['id'], p['name'])
+    for name in names or []:
+        if name not in out:
+            print(f'warning: no power named {name!r} in content/ais.json', file=sys.stderr)
     return out
 
 

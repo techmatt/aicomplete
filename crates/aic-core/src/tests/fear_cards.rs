@@ -5,7 +5,7 @@ use super::*;
 use crate::content::Op;
 use crate::modules::{adversary, plan};
 use crate::modules::common::prohibit_token;
-use crate::op::{CorruptSite, Per, RallyAt, Removable, Step, Where};
+use crate::op::{CorruptSite, Per, SiteType, Removable, Step, Where};
 
 /// r80 (ruling #53): a Corrupt prohibition puts its token on each hex its condition holds on when the card
 /// resolves; the token, not the condition, keeps a covered city from corrupting (an ambassador arriving later
@@ -49,7 +49,7 @@ fn an_infiltrate_prohibition_keeps_the_agent_in_the_supply() {
     let (rules, mut g) = lab(&[]);
     let w = rules.world();
     let country = 0;
-    let sites = plan::infiltrate_sites(&w, &g, RallyAt::City, country);
+    let sites = plan::infiltrate_sites(&w, &g, SiteType::City, country);
     assert!(sites.len() >= 2);
     let k = sites.len() as i64;
     put(&mut g, sites[0], ambassador(0), 1);
@@ -57,7 +57,7 @@ fn an_infiltrate_prohibition_keeps_the_agent_in_the_supply() {
     assert_eq!(g.tokens(sites[0], prohibit_token(Step::Infiltrate)), 1);
     let before: Vec<i64> = sites.iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).collect();
     let supply = g.var(SUPPLY);
-    with_cx(&rules, |cx| adversary::infiltrate(&mut g, cx, RallyAt::City, Some(country), "test")).unwrap();
+    with_cx(&rules, |cx| adversary::infiltrate(&mut g, cx, SiteType::City, Some(country), "test")).unwrap();
     assert_eq!(g.tokens(sites[0], ADV_AMBASSADOR), before[0], "nothing lands on the covered site");
     assert_eq!(g.tokens(sites[0], ambassador(0)), 1, "and its ambassador stands");
     for (i, &h) in sites.iter().enumerate().skip(1) {
