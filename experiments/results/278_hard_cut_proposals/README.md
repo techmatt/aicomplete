@@ -160,7 +160,10 @@ The eleven cuts in detail:
 - [traces.sh](traces.sh): the 28 traces, and the same games as an experiment for its per-round counters.
 - [s278-trace.json](s278-trace.json): the base traces' spec.
 - [s278-screen.json](s278-screen.json), [s278-screen2.json](s278-screen2.json) and [screen.py](screen.py): the screens.
-  The first screen's `anytag`, `hostfix` and `top3` variants need the patches, each with its param (`"host_fixed": 0`
-  in the board params, `"pull_any_tag": 0` in the adversary's) in `configs/baseline.json` and `three_seat.json`, then `regen.py`.
+  The first screen's `anytag` variant needs [pull_any_tag.patch](pull_any_tag.patch); `hostfix` and `top3` also need
+  `host_fixed.patch` (`git show 68868a2:experiments/results/278_hard_cut_proposals/host_fixed.patch`, written against
+  r132 with `board.turn_cap`, which 281 removed: re-base it). Each patch's param also goes in `configs/baseline.json`
+  and `three_seat.json` (`"pull_any_tag": 0` in the adversary's params, `"host_fixed": 0` in the board's), then `regen.py`.
+  `s278-screen2.json` names `board.turn_cap`, which no longer exists.
 - [prototypes.md](prototypes.md): every `--compare`.
 - The traces are kept at conductor's kept folder for 278 (`278/trace-r132-base-and-flags.tgz`, plus the screen's games).

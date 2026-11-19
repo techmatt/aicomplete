@@ -8,6 +8,7 @@ S=target/release/aic-sim.exe
 sets=""
 list=""
 for kv in "$@"; do
+  [ -n "$kv" ] || continue  # an empty argument would pass a bare --set
   sets="$sets --set $kv"
   list="$list${list:+, }\"$kv\""
 done

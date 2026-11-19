@@ -91,8 +91,9 @@ past it, so any rules item's warning check shows it. A refresh:
 **Minutes by step without a hand pass** (278): `sh experiments/results/278_hard_cut_proposals/traces.sh OUT [k=v ...]`
 traces 268's seeds at d2 and d4 (28 judge games, about 15 s), and `python
 experiments/results/278_hard_cut_proposals/breakdown.py OUT --level 2` prints every step's decisions, components,
-checks, lookups and modifiers at 268's rates (the last two modeled from 268's log); `breakdown.py BASE FLAG
---compare` reads a flag's minutes against base, paired by seed.
+checks, lookups and modifiers at 268's rates (the last two are 268's r125 hand-log constants, so a `--compare`
+moves only the traced kinds and card faces); `breakdown.py BASE FLAG --compare` reads a flag's minutes against base,
+paired by seed.
 
 Between refreshes, `design_check`'s `table-components`, `table-checks` and `table-memory` warn when a level's read
 passes its budget or rises 10% on `--old`.
