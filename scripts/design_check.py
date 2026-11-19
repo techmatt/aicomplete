@@ -105,8 +105,16 @@ def anchors():
              '1 antimatter': 'antimatter', '1 ambassador': 'ambassadors'}
     with open(os.path.join(ROOT, 'docs/card-guidelines.md'), encoding='utf-8') as f:
         text = f.read()
-    sec = text.split('**Unit anchors**', 1)[1].split('\n\n', 2)[1]
+    # 287: the table's own lines (from its `| Unit |` header to the first non-table line), not the second paragraph:
+    # a lost blank line before the table read the prose as the table (KeyError: 'troop').
+    sec = text.split('**Unit anchors**', 1)[1]
+    sec = sec[sec.index('| Unit |'):]
+    rows = []
     for row in sec.splitlines():
+        if not row.startswith('|'):
+            break
+        rows.append(row)
+    for row in rows:
         cells = [c.strip() for c in row.strip('|').split('|')]
         for i in range(0, len(cells) - 1, 3):
             key = names.get(cells[i].lower())
@@ -346,9 +354,11 @@ def check_jobs(cfg, base, a, o):
         std = give / qty if qty else float('inf')
         job = data['jobs'].get(row['name'])
         why = exemption(row)  # check_standard flags a blanket one
+        only = (row.get('exempt') or {}).get('checks') if isinstance(row.get('exempt'), dict) else None
 
         def flag(check, number, line):
-            if why:
+            # 287: an exemption naming its `checks` exempts only those (Make antimatter: standard-over-anchor alone)
+            if why and (only is None or check in only):
                 o.i(f'{line}; exempt ({row["case"]}): {why}')
             else:
                 o.w(check, number, line)
@@ -366,7 +376,7 @@ def check_jobs(cfg, base, a, o):
                     'scripts/design_check_jobs.json')
                 continue
             uses = (c.get('uses', data['uses']) if num(c['use']) else 0)
-            prices.append(((card_pay(card, data['keep_insight']) + uses * num(c['use']) - num(c['other'])) / num(c['units']), c['name']))
+            prices.append(((card_pay(card, data['keep_insight']) + uses * num(c['use']) - num(c.get('other', 0))) / num(c['units']), c['name']))
         if not prices:
             continue
         prices.sort()

@@ -146,8 +146,8 @@ Measured or found against play; each is still the table's number until a pass mo
   a card it holds that needs it (`am_save`) and makes it, from a power or a built Action first, when that plays such
   a card this round (`am_source`).
 - **Troop removal 7.33** (4.67 each in one country): the heuristic counts a troop at 12 points, about 13 credits. A count
-  prints "up to": the ledger and the agents count what one removes in play (`values.json` `troops_removed`; Kinetic
-  Interdiction's 6 about 3.6).
+  prints "up to": the ledger and the agents count what one removes in play (`values.json` `troops_removed`; Decapitation
+  Strike's 3 about 1.75).
 - **The recipe nets every card about its keep + 0.67** over its costs at the table, so the table alone can't rank cards for
   a draft: tier 2 reads as worth no more than its keep unless the draft leaves the play cost out, as the agents' does.
 - **Energy 3:** what seats hold: `energy_read.py` (the last read: `screen-090/balance.md`).

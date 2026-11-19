@@ -35,17 +35,19 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   Unity); no megaproject pays a card at completion.
 
 <!-- generated: draft_set -->
-**The draft set in numbers.** 191 cards (124 tier 1, 67 tier 2). Insight to play: 102 / 60 / 29 cards at 0 / 1 / 2, 19 of the 67 tier-2 cards at 2. An energy cost: 14 cards, 8 of the 76 buildings.
+**The draft set in numbers.** 191 cards (124 tier 1, 67 tier 2). Insight to play: 103 / 60 / 28 cards at 0 / 1 / 2, 18 of the 67 tier-2 cards at 2. An energy cost: 13 cards, 7 of the 77 buildings.
 <!-- /generated -->
 
 - **Energy costs (candidate).** Energy is a second cost on a card whose title reads power-hungry (mostly buildings:
   heavy machinery, Industry and Power, AI compute), its credits cut to match ([card-pricing.md](../card-pricing.md),
   *Energy as a second cost*). They stay uncommon (counts above), so a seat that makes little energy still has plenty
   to play; seven 2-energy Actions and the energy-hungry tier-2 buildings (Citywide Microgrid and Power to the People
-  at 4 energy, Orbital Mass Driver at 3) serve as late sinks for a seat whose node tracks are full.
+  at 4 energy) serve as late sinks for a seat whose node tracks are full.
 - **Tier 2 is the majors (candidate).** Spirit Island's major powers: big payoffs, 15 of them paid in antimatter (and
   one tier-1 card, Accelerator Diplomacy), for your own or another player's board actions: liberations, troop
-  strikes, ambassadors and Unity, energy, chips, cubes. The draft price is their only acquisition cost. Cards clear
+  strikes, ambassadors and Unity, energy, chips, cubes. **Antimatter sinks pay big (locked, Matt 287):** saving for one
+  is clearly right, a strong route but not the only one (Kinetic Interdiction's country sweep, an Action, Orbital Mass
+  Driver's income, Fusion Commons' Unity, Singularity Exploit's project). The draft price is their only acquisition cost. Cards clear
   Fallout only as green cards (programs): a few at tier 1, and Open-Weights Release (4) at tier 2.
 - **The end-game cards (drafts).** Ten tier-2 cards for the last 3-4 rounds act where the agents stand, at the card's
   target: four **convert** them into your ambassadors where they stand, two **strike** them (one troops too) on or next

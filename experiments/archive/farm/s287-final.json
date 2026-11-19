@@ -1,0 +1,39 @@
+{
+ "name": "s287-final",
+ "note": "287 screen: the final build (Kinetic Interdiction a building, agents alone), the judge and greedy, against s287-arms' old arm, dev seeds.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp-fin",
+   "set": []
+  },
+  {
+   "name": "br-fin",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "pr-fin",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "agents": [
+  "strategist",
+  "greedy"
+ ],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

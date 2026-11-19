@@ -385,6 +385,12 @@ impl AgentSpec {
                 if kind == "random" {
                     return Err(format!("agent {spec:?}: random reads no value table"));
                 }
+                // 287: `t.overrides.<card>` names a card: a typo would leave the arm playing as the base.
+                if let Some(card) = t.strip_prefix("overrides.") {
+                    if aic_core::content::content().card_index(card).is_none() {
+                        return Err(format!("agent {spec:?}: t.overrides.{card}: no such card"));
+                    }
+                }
                 table.insert(t.to_string(), v);
             } else if params.contains_key(k) {
                 if v < 0.0 || !v.is_finite() {

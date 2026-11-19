@@ -1,0 +1,39 @@
+{
+ "name": "s287-ov",
+ "note": "287 screen: the shipped sinks, the agents' Singularity Exploit overrides row on (t.overrides); dev seeds. experiments/results/287_antimatter_sinks/make_specs.py.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp",
+   "set": []
+  },
+  {
+   "name": "br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "agents": [
+  "strategist:t.overrides.singularity_exploit=20",
+  "greedy:t.overrides.singularity_exploit=20"
+ ],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

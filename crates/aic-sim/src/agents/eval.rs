@@ -2904,11 +2904,11 @@ mod tests {
             gap(&h)
         };
         assert!((cubes(4) - 2.0 * cube).abs() < 1e-9, "{} against {}", cubes(4), 2.0 * cube);
-        // Two converters on one fuel fill best first: Orbital's two uses, then Containment Reactor's (4 energy).
+        // Two converters on one fuel fill best first: Orbital's two uses, then Containment Reactor's (287: 6 energy).
         let mut row = g.pile(&key).to_vec();
         row.push("containment_reactor".into());
         g.piles.insert(key.as_str().into(), Arc::new(row));
-        let worse = 2.0 * 4.0 * on.energy_unit() - on.w.antimatter;
+        let worse = 2.0 * 6.0 * on.energy_unit() - on.w.antimatter;
         assert!(worse > 0.0 && worse < unit);
         assert!((held(&g, 3) - (2.0 * unit + worse)).abs() < 1e-9, "{} against {}", held(&g, 3), 2.0 * unit + worse);
     }

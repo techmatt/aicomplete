@@ -29,7 +29,7 @@ quiet exception.
 8. **One clear idea per card.** Two effects at most, unless a third is the extra cost. A building holds income or
    tokens, and one Action or Effect; an Action may be "A, OR B" when it is a token card's choice (15).
 9. **Fits at the default size** (7.5 pt), measured by `npm run cards:fit` ([web/README.md](../web/README.md), *Text
-   sizes*), which fails until it fits (264: no recorded exceptions). Cut words, split ideas or simplify the op rather
+   sizes*), which fails until it fits. Cut words, split ideas or simplify the op rather
    than shrink the type; a card that still can't fit is a play change for Matt. A kind with no frame (threats,
    Alignment, adversary and project cards) has no budget until it gets one.
 10. **The name says what it does,** and the art matches the name.
@@ -83,7 +83,7 @@ A card that prices out on the value table but reads absurd to a Terraforming Mar
     with the team as one pool: two cooperating players can pass a gift back and forth.
 
 **Unit anchors** (Matt, candidates). Price every card against them; the anchor beats `values.json` for the printed
-price ([card-pricing.md](card-pricing.md), *The method*). r128 divided every credit number by 1.5 (a third reads .33).
+price ([card-pricing.md](card-pricing.md), *The method*).
 
 | Unit | Credits | | Unit | Credits |
 |---|---|---|---|---|
@@ -96,8 +96,9 @@ price ([card-pricing.md](card-pricing.md), *The method*). r128 divided every cre
 
 Derived: the keep, 2.67 a tier-1 card and 8 a tier-2 one (1 and 3 insight, 2 with the keep upgrade); +1 energy
 income 9.6 (4 rounds × 3 × 0.8); +1 chip income about 13 (4 × 4 × 0.8). A research cube is 4 (6 when the play
-completes the megaproject). Make antimatter (5 cubes, 20, for 24) stays an unused hedge (Matt, 283); every engine
-making antimatter shows a clear gain, every spend is a big one. Other units take `values.json` (a sway 2.67, a node
+completes the megaproject). Make antimatter (5 cubes, 20, for 24) stays an unused hedge (Matt, 283; design_check
+exempts it, 287); every engine making antimatter shows a clear gain, and every sink pays big, 2.0-2.5× (Matt, 287:
+saving for one is clearly right; a strong route, never the only one). Other units take `values.json` (a sway 2.67, a node
 5.33) or [card-pricing.md](card-pricing.md) (a city liberated 30); a botnet removed is 10 (252). A card whose unit has no anchor sits inside 1.0-2.5× under both readings: a convert at its output's anchor and its
 input's, an engine's uses at the measured count and the conservative one.
 
@@ -145,8 +146,8 @@ rulebook carry the rest, in American English (`docs --check` refuses a British s
 
 ## Legend
 
-The sheet is `icons.png` from `node tools/card-art/render.mjs`. Boxes, outlines, `→`, OR at a line's start, `/` and
-requirement plates are in [rules/card-grammar.md](rules/card-grammar.md) (*Where it sits*, *Boxes*, *Connectors*).
+The sheet is `icons.png` from `node tools/card-art/render.mjs`. Boxes, outlines, the minus, the dark frame, `→`, `:`, OR,
+`/`, plates, rebates and At N: [rules/card-grammar.md](rules/card-grammar.md).
 
 | Mark | Means |
 |---|---|
@@ -156,14 +157,10 @@ requirement plates are in [rules/card-grammar.md](rules/card-grammar.md) (*Where
 | Place after a piece (dark frame) | where: a site glyph, only that kind (a cube) or on or next to it (a botnet, agents, ambassadors); a country, in the target's country |
 | Ringed circle | a tag; an empty ring, a tag of any kind |
 | Number before an icon | how many; no number means 1 |
-| Minus before an icon | pay or lose it, 1 included, and nothing else: every paid cost, an Action's included |
 | Less (number over a double chevron down) | that much less: a discount, a jam |
 | `≤`N | up to N, your choice: a give, paid and received at the number you pick |
-| Dark frame | acts on the adversary's pieces, projects or threats; its numbers are Remove N (the jam sits outside it) |
-| `:` | an Effect: when the left happens, the right. The less mark after it (`building :`, a tag, `play`): those cards cost that much less |
-| Play (a card with an arrow onto it) | a card you play, with its tag if any; in the dashed outline, another player's |
-| `≥`N | at least N: a rebate's printed credit cost |
-| Ringed number, discs, `:` (At N) | when the tokens here reach N, they come off and the right happens |
+| Less after `:` (`building :`, a tag, `play`) | those cards cost that much less |
+| Play (a card with an arrow onto it) | a card you play, with its tag if any |
 | Move, then a pin | move onto one piece (a bare move: onto pieces) |
 | OR, ALL, ACT | written out; ACT is an Action granted |
 | Shield | one stop on one piece: alone, a hardening token on a facility; with a node, a shield |
@@ -174,5 +171,5 @@ requirement plates are in [rules/card-grammar.md](rules/card-grammar.md) (*Where
 | Clock | delay only: a threat waits a round |
 | Wall (bricks) | no agent may arrive: with an agent and a hex, a firewall; with a country, a cordon |
 
-Event cards' lines: [rules/card-grammar.md](rules/card-grammar.md), *Event lines*. A price rise on paper needs a screen: small raises add up. Reason every price in [card-pricing.md](card-pricing.md).
+A price rise on paper needs a screen: small raises add up. Reason every price in [card-pricing.md](card-pricing.md).
 Center a rate sheet on the printed prices before reading outliers: off center, most of the set reads wrong.

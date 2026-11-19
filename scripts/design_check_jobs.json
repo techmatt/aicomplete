@@ -191,10 +191,10 @@
     },
     {
      "name": "Kinetic Interdiction",
-     "units": 6,
-     "other": "2 * troop - sway",
-     "use": 0,
-     "note": "6 agents; 2 troops 10; Discord -4"
+     "units": "10 * uses",
+     "other": "0",
+     "use": "am",
+     "note": "287: Action 1 antimatter: 10 agents in its country, x4"
     },
     {
      "name": "Deep State Ledger",
@@ -256,13 +256,6 @@
      "other": "botnet",
      "use": 0,
      "note": "3 troops; botnet 16"
-    },
-    {
-     "name": "Kinetic Interdiction",
-     "units": 2,
-     "other": "6 * agent - sway",
-     "use": 0,
-     "note": "2 troops; 6 agents 30; Discord -4"
     },
     {
      "name": "Annihilation Lance",
@@ -483,7 +476,7 @@
      "units": 1,
      "other": "project",
      "use": 0,
-     "note": "botnet; discard a project 24"
+     "note": "botnet; discard a project (the project unit, 16)"
     },
     {
      "name": "Decapitation Strike",
@@ -576,17 +569,17 @@
     },
     {
      "name": "Fusion Commons",
-     "units": 6,
-     "other": "3 * sway + 1 * card",
+     "units": 12,
+     "other": "12 * sway",
      "use": 0,
-     "note": "6; draw 3; sway 3 (271: draws 1 on play, 0 an Action)"
+     "note": "287: 12 energy; Unity 12"
     },
     {
      "name": "Containment Reactor",
-     "units": "4 * uses",
+     "units": "6 * uses",
      "other": "uses * sway",
      "use": "am",
-     "note": "Action 1 antimatter: 4 + sway 1, x4"
+     "note": "Action 1 antimatter: 6 + sway 1, x4 (287)"
     }
    ]
   },

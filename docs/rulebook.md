@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 137. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 138. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -826,7 +826,7 @@ Effects **sway** Unity or Discord ("add 2 Unity"): put that many on that side's 
   and cards that build or bring people together.
 - **Discord** is fear, force and collateral harm: corrupted cities (1 each a round), Fallout (1 each a
   round), factories destroyed in war (1 each), threats and projects, and your own strikes (Surgical Strike, Kettle
-  Operation, Martial Cordon, Kinetic Interdiction, Annihilation Lance, The Nuclear Option). Taking a botnet down sways
+  Operation, Martial Cordon, Annihilation Lance, The Nuclear Option). Taking a botnet down sways
   nothing.
 
 **Unity against Discord.** Whenever you gain Unity, you may put any of it against Discord instead: each Unity put

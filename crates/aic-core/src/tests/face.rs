@@ -89,8 +89,8 @@ fn a_removal_says_which_pieces() {
     // 076 (ruling 6): a printed number, never "per hex"; 234: on the target, or on or next to it.
     assert_eq!(face_of("eviction_worm").text, "Remove 3 Agents on it. Remove 4 compute from an adversary project.");
     assert_eq!(
-        face_of("kinetic_interdiction").text,
-        "Pay 1 antimatter. Remove 2 Troops on or next to it. Remove 6 Agents on or next to it. Sway 1 toward Discord."
+        face_of("kinetic_interdiction").top_text,
+        "Action: pay 1 antimatter, remove 10 Agents in its country."
     );
     for c in &content().cards {
         assert!(!c.text.contains("per hex"), "{}: {}", c.id, c.text);

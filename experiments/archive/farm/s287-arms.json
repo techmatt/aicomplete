@@ -1,0 +1,142 @@
+{
+ "name": "s287-arms",
+ "note": "287 screen: r137's five cards (old), Matt's Containment Reactor alone (cr), the shipped sinks (base arm); dev seeds. experiments/results/287_antimatter_sinks/make_specs.py.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp-old",
+   "set": [
+    "cards.containment_reactor.ability.effects.0.amount=4",
+    "cards.kinetic_interdiction.effects=[{\"op\":\"target\",\"on\":\"adversary\"},{\"op\":\"remove_troops\",\"count\":2,\"at\":\"near\"},{\"op\":\"remove_ambassadors_country\",\"max\":6,\"at\":\"near\"},{\"op\":\"sway\",\"side\":\"discord\",\"amount\":1,\"narrative\":\"force\"}]",
+    "cards.orbital_mass_driver.cost=15",
+    "cards.orbital_mass_driver.chips=1",
+    "cards.orbital_mass_driver.energy=3",
+    "cards.orbital_mass_driver.insight=2",
+    "cards.orbital_mass_driver.antimatter=0",
+    "cards.orbital_mass_driver.passives.0.amount=9",
+    "cards.fusion_commons.antimatter=2",
+    "cards.fusion_commons.effects=[{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":6},{\"op\":\"sway\",\"side\":\"unity\",\"amount\":3,\"narrative\":\"cooperation\"},{\"op\":\"draw\",\"count\":1}]",
+    "cards.singularity_exploit.cost=3",
+    "cards.singularity_exploit.insight=1"
+   ]
+  },
+  {
+   "name": "bp-cr",
+   "set": [
+    "cards.kinetic_interdiction.effects=[{\"op\":\"target\",\"on\":\"adversary\"},{\"op\":\"remove_troops\",\"count\":2,\"at\":\"near\"},{\"op\":\"remove_ambassadors_country\",\"max\":6,\"at\":\"near\"},{\"op\":\"sway\",\"side\":\"discord\",\"amount\":1,\"narrative\":\"force\"}]",
+    "cards.orbital_mass_driver.cost=15",
+    "cards.orbital_mass_driver.chips=1",
+    "cards.orbital_mass_driver.energy=3",
+    "cards.orbital_mass_driver.insight=2",
+    "cards.orbital_mass_driver.antimatter=0",
+    "cards.orbital_mass_driver.passives.0.amount=9",
+    "cards.fusion_commons.antimatter=2",
+    "cards.fusion_commons.effects=[{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":6},{\"op\":\"sway\",\"side\":\"unity\",\"amount\":3,\"narrative\":\"cooperation\"},{\"op\":\"draw\",\"count\":1}]",
+    "cards.singularity_exploit.cost=3",
+    "cards.singularity_exploit.insight=1"
+   ]
+  },
+  {
+   "name": "bp",
+   "set": []
+  },
+  {
+   "name": "br-old",
+   "set": [
+    "ai.boards=0,2",
+    "cards.containment_reactor.ability.effects.0.amount=4",
+    "cards.kinetic_interdiction.effects=[{\"op\":\"target\",\"on\":\"adversary\"},{\"op\":\"remove_troops\",\"count\":2,\"at\":\"near\"},{\"op\":\"remove_ambassadors_country\",\"max\":6,\"at\":\"near\"},{\"op\":\"sway\",\"side\":\"discord\",\"amount\":1,\"narrative\":\"force\"}]",
+    "cards.orbital_mass_driver.cost=15",
+    "cards.orbital_mass_driver.chips=1",
+    "cards.orbital_mass_driver.energy=3",
+    "cards.orbital_mass_driver.insight=2",
+    "cards.orbital_mass_driver.antimatter=0",
+    "cards.orbital_mass_driver.passives.0.amount=9",
+    "cards.fusion_commons.antimatter=2",
+    "cards.fusion_commons.effects=[{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":6},{\"op\":\"sway\",\"side\":\"unity\",\"amount\":3,\"narrative\":\"cooperation\"},{\"op\":\"draw\",\"count\":1}]",
+    "cards.singularity_exploit.cost=3",
+    "cards.singularity_exploit.insight=1"
+   ]
+  },
+  {
+   "name": "br-cr",
+   "set": [
+    "ai.boards=0,2",
+    "cards.kinetic_interdiction.effects=[{\"op\":\"target\",\"on\":\"adversary\"},{\"op\":\"remove_troops\",\"count\":2,\"at\":\"near\"},{\"op\":\"remove_ambassadors_country\",\"max\":6,\"at\":\"near\"},{\"op\":\"sway\",\"side\":\"discord\",\"amount\":1,\"narrative\":\"force\"}]",
+    "cards.orbital_mass_driver.cost=15",
+    "cards.orbital_mass_driver.chips=1",
+    "cards.orbital_mass_driver.energy=3",
+    "cards.orbital_mass_driver.insight=2",
+    "cards.orbital_mass_driver.antimatter=0",
+    "cards.orbital_mass_driver.passives.0.amount=9",
+    "cards.fusion_commons.antimatter=2",
+    "cards.fusion_commons.effects=[{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":6},{\"op\":\"sway\",\"side\":\"unity\",\"amount\":3,\"narrative\":\"cooperation\"},{\"op\":\"draw\",\"count\":1}]",
+    "cards.singularity_exploit.cost=3",
+    "cards.singularity_exploit.insight=1"
+   ]
+  },
+  {
+   "name": "br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "pr-old",
+   "set": [
+    "ai.boards=1,2",
+    "cards.containment_reactor.ability.effects.0.amount=4",
+    "cards.kinetic_interdiction.effects=[{\"op\":\"target\",\"on\":\"adversary\"},{\"op\":\"remove_troops\",\"count\":2,\"at\":\"near\"},{\"op\":\"remove_ambassadors_country\",\"max\":6,\"at\":\"near\"},{\"op\":\"sway\",\"side\":\"discord\",\"amount\":1,\"narrative\":\"force\"}]",
+    "cards.orbital_mass_driver.cost=15",
+    "cards.orbital_mass_driver.chips=1",
+    "cards.orbital_mass_driver.energy=3",
+    "cards.orbital_mass_driver.insight=2",
+    "cards.orbital_mass_driver.antimatter=0",
+    "cards.orbital_mass_driver.passives.0.amount=9",
+    "cards.fusion_commons.antimatter=2",
+    "cards.fusion_commons.effects=[{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":6},{\"op\":\"sway\",\"side\":\"unity\",\"amount\":3,\"narrative\":\"cooperation\"},{\"op\":\"draw\",\"count\":1}]",
+    "cards.singularity_exploit.cost=3",
+    "cards.singularity_exploit.insight=1"
+   ]
+  },
+  {
+   "name": "pr-cr",
+   "set": [
+    "ai.boards=1,2",
+    "cards.kinetic_interdiction.effects=[{\"op\":\"target\",\"on\":\"adversary\"},{\"op\":\"remove_troops\",\"count\":2,\"at\":\"near\"},{\"op\":\"remove_ambassadors_country\",\"max\":6,\"at\":\"near\"},{\"op\":\"sway\",\"side\":\"discord\",\"amount\":1,\"narrative\":\"force\"}]",
+    "cards.orbital_mass_driver.cost=15",
+    "cards.orbital_mass_driver.chips=1",
+    "cards.orbital_mass_driver.energy=3",
+    "cards.orbital_mass_driver.insight=2",
+    "cards.orbital_mass_driver.antimatter=0",
+    "cards.orbital_mass_driver.passives.0.amount=9",
+    "cards.fusion_commons.antimatter=2",
+    "cards.fusion_commons.effects=[{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":6},{\"op\":\"sway\",\"side\":\"unity\",\"amount\":3,\"narrative\":\"cooperation\"},{\"op\":\"draw\",\"count\":1}]",
+    "cards.singularity_exploit.cost=3",
+    "cards.singularity_exploit.insight=1"
+   ]
+  },
+  {
+   "name": "pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "agents": [
+  "strategist",
+  "greedy"
+ ],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

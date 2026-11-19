@@ -934,9 +934,8 @@
   "name": "Orbital Mass Driver",
   "tier": 2,
   "kind": "building",
-  "cost": 15,
-  "chips": 1,
-  "insight": 2,
+  "cost": 4,
+  "insight": 1,
   "needs": [
    [
     "industry",
@@ -951,7 +950,7 @@
    {
     "op": "income",
     "resource": "credits",
-    "amount": 9
+    "amount": 13
    },
    {
     "op": "income",
@@ -960,7 +959,7 @@
    }
   ],
   "effects": [],
-  "energy": 3
+  "antimatter": 1
  },
  {
   "id": "eviction_worm",
@@ -1397,9 +1396,9 @@
   "name": "Singularity Exploit",
   "tier": 2,
   "kind": "program",
-  "cost": 3,
+  "cost": 0,
   "antimatter": 1,
-  "insight": 1,
+  "insight": 0,
   "needs": [
    [
     "cyber",
@@ -2940,9 +2939,8 @@
   "id": "kinetic_interdiction",
   "name": "Kinetic Interdiction",
   "tier": 2,
-  "kind": "event",
-  "cost": 0,
-  "antimatter": 1,
+  "kind": "building",
+  "cost": 4,
   "insight": 0,
   "needs": [
    [
@@ -2953,28 +2951,26 @@
   "tags": [
    "security"
   ],
-  "effects": [
-   {
-    "op": "target",
-    "on": "adversary"
-   },
-   {
-    "op": "remove_troops",
-    "count": 2,
-    "at": "near"
-   },
-   {
-    "op": "remove_ambassadors_country",
-    "max": 6,
-    "at": "near"
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 1,
-    "narrative": "force"
-   }
-  ]
+  "effects": [],
+  "ability": {
+   "cost": [
+    [
+     "antimatter",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "target",
+     "on": "agents"
+    },
+    {
+     "op": "remove_ambassadors_country",
+     "max": 10,
+     "at": "country"
+    }
+   ]
+  }
  },
  {
   "id": "annihilation_lance",
@@ -3014,7 +3010,7 @@
   "tier": 2,
   "kind": "event",
   "cost": 0,
-  "antimatter": 2,
+  "antimatter": 1,
   "insight": 1,
   "needs": [
    [
@@ -3030,17 +3026,13 @@
    {
     "op": "gain",
     "resource": "energy",
-    "amount": 6
+    "amount": 12
    },
    {
     "op": "sway",
     "side": "unity",
-    "amount": 3,
+    "amount": 12,
     "narrative": "cooperation"
-   },
-   {
-    "op": "draw",
-    "count": 1
    }
   ]
  },
@@ -3065,7 +3057,7 @@
     {
      "op": "gain",
      "resource": "energy",
-     "amount": 4
+     "amount": 6
     },
     {
      "op": "sway",

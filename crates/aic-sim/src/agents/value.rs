@@ -133,7 +133,7 @@ pub fn table_with(sets: &BTreeMap<String, f64>) -> Result<&'static Table, String
 impl Table {
     /// 131: sets one number of the table by name: a resource (`chips`), a rate
     /// (`tag_count`), an op row's credits (`auto_counter`), a token (`feed_agents`),
-    /// `troops_removed.<n>` or `tags.first` / `tags.more`. A name in two sections
+    /// `troops_removed.<n>`, `tags.first` / `tags.more` or `overrides.<card>` (287). A name in two sections
     /// takes its section (`resources.chips`); an unknown one is an error.
     /// Call [`Table::refresh`] after.
     pub fn set(&mut self, key: &str, v: f64) -> Result<(), String> {
@@ -168,6 +168,19 @@ impl Table {
         }
         if section == Some("tags") && (name == "first" || name == "more") {
             hits.push("tags");
+        }
+        if section == Some("overrides") {
+            // 287: a card's `overrides` row, screened on and off as an agent option (`t.overrides.<card>=N` replaces
+            // the card's rows with one of N credits; 0 drops them). The table holds no content, so the card id is
+            // checked where the spec is parsed (`AgentSpec::parse`), not here.
+            if name.is_empty() {
+                return Err(format!("t.{key}: overrides takes a card id (t.overrides.singularity_exploit)"));
+            }
+            self.overrides.retain(|o| o.card != name);
+            if v != 0.0 {
+                self.overrides.push(Override { card: name.to_string(), credits: v, why: format!("t.{key}") });
+            }
+            return Ok(());
         }
         match hits.as_slice() {
             ["resources"] => _ = self.resources.insert(name.to_string(), v),

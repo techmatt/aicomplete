@@ -29,7 +29,7 @@
   },
   "standard_anchor_max": 1.0,
   "standard_actions": {
-    "note": "each standard action's give and get at the unit anchors (docs/card-guidelines.md, *Unit anchors*; values.json for units with none). A number is a count; a string is a baseline.json param (module.param). 'src' is its games.jsonl source key, for its uses a game. 'off' (208, P1): the tunable that turns the action off at 0; such a row is skipped. 'narrative' (204): the story tag of its Sway. 'priced_in' (226): get units another unit's anchor already holds, not counted twice. 'case' (249): one target of an action priced per target (Liberate). 'exempt' (226; 249: per case): {case, why}, the one case that may sit over the cap or fail job parity, listed as information; an exemption naming no case or another row's is flagged (exempt-whole-action). 'outcome' (249): what the action leaves (owned, neutral), for job parity.",
+    "note": "each standard action's give and get at the unit anchors (docs/card-guidelines.md, *Unit anchors*; values.json for units with none). A number is a count; a string is a baseline.json param (module.param). 'src' is its games.jsonl source key, for its uses a game. 'off' (208, P1): the tunable that turns the action off at 0; such a row is skipped. 'narrative' (204): the story tag of its Sway. 'priced_in' (226): get units another unit's anchor already holds, not counted twice. 'case' (249): one target of an action priced per target (Liberate). 'exempt' (226; 249: per case): {case, why}, the one case that may sit over the cap or fail job parity, listed as information; an exemption naming no case or another row's is flagged (exempt-whole-action); with 'checks' (287) it exempts only those checks. 'outcome' (249): what the action leaves (owned, neutral), for job parity.",
     "rows": [
       {
         "name": "Make antimatter",
@@ -41,7 +41,9 @@
         "get": {
           "antimatter": 1,
           "energy": "board.antimatter_energy"
-        }
+        },
+        "case": "antimatter",
+        "exempt": {"case": "antimatter", "checks": ["standard-over-anchor"], "why": "Matt, 287: Make antimatter (5 cubes) stays an unused hedge, over the anchor by design; antimatter is epic (anchor 18) and its sinks are powerful, so making it is never the plain route"}
       },
       {
         "name": "Buy a city's energy",

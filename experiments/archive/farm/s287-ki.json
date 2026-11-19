@@ -1,0 +1,55 @@
+{
+ "name": "s287-ki",
+ "note": "287 screen (message 13138): Kinetic Interdiction as a building whose Action sweeps the country for 1 antimatter; against s287-arms' base arm, dev seeds.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp-ki",
+   "set": [
+    "cards.kinetic_interdiction.kind=building",
+    "cards.kinetic_interdiction.cost=4",
+    "cards.kinetic_interdiction.antimatter=0",
+    "cards.kinetic_interdiction.effects=[]",
+    "cards.kinetic_interdiction.ability={\"cost\":[[\"antimatter\",1]],\"effects\":[{\"op\":\"target\",\"on\":\"adversary\"},{\"op\":\"remove_troops\",\"count\":3,\"at\":\"country\"},{\"op\":\"remove_ambassadors_country\",\"max\":10,\"at\":\"country\"}]}"
+   ]
+  },
+  {
+   "name": "br-ki",
+   "set": [
+    "ai.boards=0,2",
+    "cards.kinetic_interdiction.kind=building",
+    "cards.kinetic_interdiction.cost=4",
+    "cards.kinetic_interdiction.antimatter=0",
+    "cards.kinetic_interdiction.effects=[]",
+    "cards.kinetic_interdiction.ability={\"cost\":[[\"antimatter\",1]],\"effects\":[{\"op\":\"target\",\"on\":\"adversary\"},{\"op\":\"remove_troops\",\"count\":3,\"at\":\"country\"},{\"op\":\"remove_ambassadors_country\",\"max\":10,\"at\":\"country\"}]}"
+   ]
+  },
+  {
+   "name": "pr-ki",
+   "set": [
+    "ai.boards=1,2",
+    "cards.kinetic_interdiction.kind=building",
+    "cards.kinetic_interdiction.cost=4",
+    "cards.kinetic_interdiction.antimatter=0",
+    "cards.kinetic_interdiction.effects=[]",
+    "cards.kinetic_interdiction.ability={\"cost\":[[\"antimatter\",1]],\"effects\":[{\"op\":\"target\",\"on\":\"adversary\"},{\"op\":\"remove_troops\",\"count\":3,\"at\":\"country\"},{\"op\":\"remove_ambassadors_country\",\"max\":10,\"at\":\"country\"}]}"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "agents": [
+  "strategist",
+  "greedy"
+ ],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

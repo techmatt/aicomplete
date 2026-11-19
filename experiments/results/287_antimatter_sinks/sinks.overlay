@@ -1,0 +1,34 @@
+# 287: powerful antimatter sinks (Matt: "antimatter sinks should be powerful, to justify the investment", locked;
+# amendment 13116: aim each at 2.0-2.5x at the anchors, two near 2.5, err high).
+# Rerun: python scripts/cards/apply_overlay.py experiments/results/287_antimatter_sinks/sinks.overlay, then python scripts/regen.py.
+# Give / get at the anchors (antimatter 18, tier-2 keep 8, insight 2.67): experiments/results/287_antimatter_sinks/README.md.
+
+# Matt's ruling: Containment Reactor becomes 1 antimatter -> 6 energy + 1 Sway (was 4 energy).
+cards.containment_reactor.ability.effects.0.amount=6
+
+# Board-wide removal (Security): a building, 4 credits; Action: pay 1 antimatter, remove 10 agents in the target's
+# country (the p90 board). Was an event: 1 antimatter, 2 troops and 6 agents on or next to it, Discord 1.
+# Message 13138: as an event it read 1.67 at best (a cordon rider did not fit the face); the Action with 3 troops too
+# read 2.41 a use but set at 6.3 pt; agents alone, 1.85 a use.
+cards.kinetic_interdiction.kind=building
+cards.kinetic_interdiction.cost=4
+cards.kinetic_interdiction.antimatter=null
+cards.kinetic_interdiction.effects=[]
+cards.kinetic_interdiction.ability={"cost":[["antimatter",1]],"effects":[{"op":"target","on":"agents"},{"op":"remove_ambassadors_country","max":10,"at":"country"}]}
+
+# A big engine step (Industry): 4 credits, 1 insight and 1 antimatter for 13 credit and 2 chip income (was 15
+# credits, 1 chip, 3 energy and 2 insight for 9 credit and 2 chip income, kept and almost never played).
+cards.orbital_mass_driver.cost=4
+cards.orbital_mass_driver.chips=null
+cards.orbital_mass_driver.energy=null
+cards.orbital_mass_driver.insight=1
+cards.orbital_mass_driver.antimatter=1
+cards.orbital_mass_driver.passives.0.amount=13
+
+# A Unity push (Diplomacy): 1 antimatter (was 2) for 12 Unity and 12 energy (was 3 Unity, 6 energy, draw 1).
+cards.fusion_commons.antimatter=1
+cards.fusion_commons.effects=[{"op":"gain","resource":"energy","amount":12},{"op":"sway","side":"unity","amount":12,"narrative":"cooperation"}]
+
+# A compute swing (Cyber): the botnet and the project for 1 antimatter alone (was 3 credits and 1 insight more).
+cards.singularity_exploit.cost=0
+cards.singularity_exploit.insight=0

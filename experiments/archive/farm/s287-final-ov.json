@@ -1,0 +1,39 @@
+{
+ "name": "s287-final-ov",
+ "note": "287 screen: the final build with the agents' Kinetic Interdiction overrides row on (the table reads its Action under its antimatter), against s287-final, dev seeds.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp-fin",
+   "set": []
+  },
+  {
+   "name": "br-fin",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "pr-fin",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "agents": [
+  "strategist:t.overrides.kinetic_interdiction=20",
+  "greedy:t.overrides.kinetic_interdiction=20"
+ ],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}
