@@ -83,7 +83,8 @@ function readCsv(file) {
   return rows.map((row) => Object.fromEntries((head ?? []).map((h, i) => [h, row[i]])));
 }
 
-const LADDER = ['planner', 'rollout', 'beam', 'engine', 'greedy', 'random'];
+/** `agents::LADDER` (crates/aic-sim/src/agents/mod.rs), highest first. */
+const LADDER = ['oracle', 'planner', 'engine', 'rollout', 'beam', 'greedy', 'random'];
 const plain = (a) => !a.includes(':');
 /** The ladder's highest agent, a profile (`planner:deals=1`) counting as its base; the shortest name first. */
 const defaultAgent = (agents) => {

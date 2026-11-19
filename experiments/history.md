@@ -26,10 +26,12 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 | 264 card face pass, words only: 11 of 15 sub-7.5 pt faces fit (house term Rescue, no "Effect:" before a trigger, an icons-first fit step); `cards:fit` fails below 7.5 pt; D119 house terms, D114 pricing notes; Popular Uprising, Retained Earnings, Particle Accelerator, Positron Storage Ring left for Matt | 124 | [264_face_pass](results/264_face_pass/README.md) |
 | 263 balance pass 2, game length and the difficulty curve: botnets don't spread at d0, a d0 city corrupts at 5; the antimatter trim (capstones a lump of 2, plants none when built); D107's printed form; d0 judge 95.1 (+6.9 ± 3.1 against r123), 8.5 rounds (r121 10.1), deck-empty 6% (r121 11%); games with a new city 11 / 57 / 77 / 86 / 92% at d0-d4; antimatter 49% → 56% spent | 124 | [263_balance_difficulty](results/263_balance_difficulty/README.md) |
 | 262 balance pass 1, the economy: Claim cut; Horizon's converters and Make antimatter pay energy; Arms Inspectors removes 2 when built; the Forge's cash-out draws; a hosted city can't be bought (D107); Sweep and Fusion Commons cost 1 insight (D113); the agents' `convert_rule`; +2.4 ± 1.7 (judge), +3.6 ± 1.9 (greedy) against r122; Tidal Grid's converters 0.42 and 0.66 a seat-game; cubes 73% spent, antimatter 51% | 123 | [262_balance_economy](results/262_balance_economy/README.md) |
+| 261 bug hunt on the rules since 235 (252-259) | 122 | [261_bug_hunt](results/261_bug_hunt/README.md) |
 | 259 every adversary gets a research rule: one track, the Militarist's Weapons Program (Muster 2, 3 from d3) at 5 / 4 cubes a country, fed by stations after their megaproject, three projects and three threats; Counterintelligence Sweep and Arms Inspectors remove; -5.0 ± 1.8 (judge), -2.4 ± 2.0 (greedy) against r119; fires 0.2-2.1 a game d0-d4 | 120, 121 | [259_adversary_research_rule](results/259_adversary_research_rule/README.md) |
 | 258 card follow-ups: 257's weak cards and converters pay more a use, Dyson and Exascale played, Twin City Compact hosts a second city; the judge ships `w.sink` 0.5; r119 -1.7 ± 1.9 (judge), +0.3 ± 2.1 (greedy) against r117 | 118, 119 | [258_card_followups](results/258_card_followups/README.md) |
 | 257 the judge and Action buildings: `w.sink` (converter fuel priced by what a use makes) runs them but costs d3-d4 wins, left off | 117 | [257_judge_action_buildings](results/257_judge_action_buildings/README.md) |
 | 256 Item C: the card pass (claim_site, Campus and Commons owned, liberate riders, node and sink buildings) | 117 | [256_item_c_cards](results/256_item_c_cards/README.md) |
+| 254 cities are never player-owned (shipped on) | 115 | [254_cities_never_owned](results/254_cities_never_owned/README.md) |
 | 253 Item B part 2: neutral-site cards, retake, the cube converter, the full read against r112 | 114 | [253_item_b_cards_read](results/253_item_b_cards_read/README.md) |
 | 252 Item B part 1: node routes, free then claim, standard actions under the cards | 113 | [252_item_b_rules](results/252_item_b_rules/README.md) |
 | 251 profiling the sim: judges, oracles, engine (same-play speed-ups, opt-in lean lines) | 112 | [251_profiling](results/251_profiling/README.md) |
@@ -41,6 +43,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 | 243 oracle overnight | 109 | [243_oracle_overnight](results/243_oracle_overnight/README.md) |
 | 242 player view | 109 | [242_player_view](results/242_player_view/README.md) |
 | 240 balance pass | 109 | [240_balance_pass](results/240_balance_pass/README.md) |
+| 239 docs trim, no rules change | 108 | [239_docs_trim](results/239_docs_trim/README.md) |
 | 238 playtest fixes (235's picks) | 108 | [238_playtest_fixes](results/238_playtest_fixes/README.md) |
 | 237 agents cleanup, no rules change | 107 | [237_agents_cleanup](results/237_agents_cleanup/README.md) |
 | 236 target follow-ups | 107 | [236_target_followups](results/236_target_followups/README.md) |
@@ -53,6 +56,8 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 | 229 cleanup | r100 | [229_cleanup](results/229_cleanup/README.md) |
 | 228 balance pass | r100 | [228_balance_pass](results/228_balance_pass/README.md) |
 | 227 Fallout | r99 | [227_fallout](results/227_fallout/README.md) |
+| 225 post-audit of 215: speed since 215's baseline, no rules change | 98 | [225_post_audit_215](results/225_post_audit_215/README.md) |
+| 223 (prompt 226) rules friction: Matt's rulings on 224's list | 98 | [223_rules_friction](results/223_rules_friction/README.md) |
 | 222 sim players | 97 | [222_sim_players](results/222_sim_players/README.md) |
 | 219 antimatter sources by board | 97 | [219_antimatter_sources](results/219_antimatter_sources/README.md) |
 | 215 game length | 96 | [215_length_calibration](results/215_length_calibration/README.md) |

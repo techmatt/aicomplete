@@ -3,7 +3,8 @@
 //! `run(first, count, args)` in the wasm bundle (`crates/aic-farm`), play the
 //! same games with this code and write the same lines.
 //!
-//! A shard's output is its games' lines (`games.jsonl`'s, with no header), seed
+//! A shard's output is its games' lines (`games.jsonl`'s; the shard starting at
+//! the spec's `first_seed` leads with the header over its range, `Farm::lead`), seed
 //! by seed and each seed's cells in grid order, so shards concatenated in seed
 //! order are one run over their whole range, byte for byte. That is why a line's
 //! timings are 0 (the native command prints them on stderr) and why a line says
@@ -28,6 +29,10 @@ pub type Read<'a> = &'a dyn Fn(&str) -> Result<String, String>;
 /// The folder of farmed specs, from the repo root.
 pub const SPECS: &str = "experiments/farm";
 
+/// 284: where a finished item's farm specs go (not built into the bundle); a bare name missing from
+/// [`SPECS`] is read from here, so a kept read's `FILE=NAME` still finds its header natively.
+pub const ARCHIVED: &str = "experiments/archive/farm";
+
 /// A spec argument's path: a bare name is `experiments/farm/NAME.json`.
 pub fn spec_path(arg: &str) -> String {
     if arg.contains('/') || arg.contains('\\') || arg.ends_with(".json") {
@@ -46,8 +51,15 @@ pub struct Farm {
 impl Farm {
     /// The spec `arg` names (see [`spec_path`]), its files from `read`.
     pub fn load(arg: &str, read: Read) -> Result<Farm, String> {
-        let path = spec_path(arg);
-        let text = read(&path).map_err(|e| format!("{path}: {e}"))?;
+        let mut path = spec_path(arg);
+        let mut text = read(&path);
+        if text.is_err() && path == format!("{SPECS}/{arg}.json") {
+            let archived = format!("{ARCHIVED}/{arg}.json");
+            if let Ok(t) = read(&archived) {
+                (path, text) = (archived, Ok(t));
+            }
+        }
+        let text = text.map_err(|e| format!("{path}: {e}"))?;
         let spec: Spec = serde_json::from_str(&text).map_err(|e| format!("{path}: {e}"))?;
         Farm::from_spec(spec, read).map_err(|e| format!("{path}: {e}"))
     }
@@ -84,15 +96,13 @@ impl Farm {
         for seed in first..end {
             for ci in 0..self.cells.len() {
                 let r = experiment::play_one(&self.spec, &self.cells, ci, seed);
-                let mut kept = None;
-                let r_line = if self.spec.drop.is_empty() {
-                    &r
+                let l = if self.spec.drop.is_empty() {
+                    line(&r, ENGINE)
                 } else {
                     let mut s = r.clone();
                     self.spec.strip(&mut s);
-                    kept.insert(s)
+                    line_of(s, ENGINE)
                 };
-                let l = line(r_line, ENGINE);
                 each(&r, &l);
             }
         }
@@ -118,7 +128,11 @@ impl Farm {
 /// A game's farm line: `games.jsonl`'s, its timings 0 and its engine named
 /// (none when `engine` is empty).
 pub fn line(r: &GameResult, engine: &str) -> String {
-    let mut r = r.clone();
+    line_of(r.clone(), engine)
+}
+
+/// [`line`] on a result the caller owns (284: a stripped copy is not cloned again).
+fn line_of(mut r: GameResult, engine: &str) -> String {
     r.ms = 0.0;
     r.agent_ms = 0.0;
     r.probe_ms = 0.0;
@@ -333,5 +347,16 @@ mod tests {
     fn spec_names_resolve_in_the_farm_folder() {
         assert_eq!(spec_path("read"), "experiments/farm/read.json");
         assert_eq!(spec_path("out/x.json"), "out/x.json");
+    }
+
+    /// 284: a finished item's spec, archived, still loads by its bare name (a kept read's `FILE=NAME`).
+    #[test]
+    fn a_bare_name_falls_back_to_the_archive() {
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+        let read = |p: &str| std::fs::read_to_string(root.join(p)).map_err(|e| e.to_string());
+        assert!(Farm::load("read", &read).is_ok());
+        assert!(Farm::load("f283-read", &read).is_ok(), "an archived spec by name");
+        let e = Farm::load("no-such-spec", &read).err().expect("no such spec");
+        assert!(e.starts_with("experiments/farm/no-such-spec.json"), "{e}");
     }
 }

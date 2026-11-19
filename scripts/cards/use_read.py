@@ -32,7 +32,7 @@ def main():
     ap.add_argument('--min', type=float, default=1.0)
     ap.add_argument('--agents', default='')
     a = ap.parse_args()
-    # 184: a resolved label holds commas before its weights ("engine:strategy=1,w.built=4,..."): split between agents only.
+    # 184: a resolved label holds commas before its weights ("engine:w.built=4,..."): split between agents only.
     want = set(x for x in re.split(r',(?![a-z_]+\.[a-z_]+=)', a.agents) if x)
     cards = content('cards')
     boards = content('ais')

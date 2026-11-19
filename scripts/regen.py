@@ -12,8 +12,8 @@ from `RULES_REVISION` in the source, then runs
 params), prints the content hash and rules revision from `aic-sim show configs/baseline.json` (warning if the binary's
 revision isn't the source's), and then `git status --short`. Stops at the first failing step, naming it. `--no-build`
 uses the binary already built (warning if the loader just rewrote the content it embeds).
-`--check` writes nothing: it runs the drafts check, the loader's, `aic-sim docs`'s and `cards_doc.py`'s `--check`
-and the revision lines, and exits 1 if any is stale. Each step prints its wall time.
+`--check` writes nothing: it runs the drafts check, the loader's, `aic-sim docs`'s, `cards_doc.py`'s and the derived
+configs' `--check` and the revision lines, and exits 1 if any is stale. Each step prints its wall time.
 `--golden` (281) also sets the golden constants, after the steps above: `GOLDEN_REVISION`, `GOLDEN_FINGERPRINT` and
 `GOLDEN_CONTENT_HASH` in crates/aic-core/src/tests/mod.rs and `GOLDEN` / `GOLDEN_CONTENT` in scripts/wasm-smoke.mjs.
 The revision is the source's `RULES_REVISION`, the content hash `aic-sim show`'s, and the fingerprint the left side
@@ -192,8 +192,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     ap.add_argument('--no-build', action='store_true', help='skip cargo build; use the binary already built')
     ap.add_argument('--check', action='store_true',
-                    help='only check: load_adversary.py --check, aic-sim docs --check, cards_doc.py --check '
-                         'and the rules README revision line; exit 1 if stale')
+                    help='only check: load_adversary.py --check, aic-sim docs --check, cards_doc.py --check, the derived configs '
+                         'and the revision lines (docs/rules/README.md, docs/rulebook.md); exit 1 if stale')
     ap.add_argument('--golden', action='store_true',
                     help='also set the golden constants (tests/mod.rs, wasm-smoke.mjs) and confirm golden_game')
     a = ap.parse_args()
@@ -220,6 +220,8 @@ def main():
     if a.check:
         step('aic-sim docs --check', [SIM, 'docs', '--check'])
         step('cards_doc.py --check', [PY, os.path.join('scripts', 'cards', 'cards_doc.py'), '--check'])
+        for derived in ('no_liberate.py', 'no_tier2.py', 'three_seat.py'):  # 284: the derived configs
+            step(f'{derived} --check', [PY, os.path.join('scripts', 'configs', derived), '--check'])
         if not readme_revision(source_revision(), check=True):
             sys.exit(1)
         print(f'docs current ({time.monotonic() - start:.1f} s)')

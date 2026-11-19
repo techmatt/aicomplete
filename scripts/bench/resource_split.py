@@ -45,6 +45,9 @@ def main(argv):
     agent_arms = '--agent-arms' in argv
     by_board = '--by-board' in argv
     rounds = '--rounds' in argv
+    unknown = [a for a in argv if a.startswith('--') and a not in ('--agent-arms', '--by-board', '--rounds')]
+    if unknown:  # 284: a typo (`--by-boards`) was dropped silently
+        sys.exit(f'resource_split: unknown flag {unknown[0]}')
     reads = [a for a in argv if not a.startswith('--')]
     if not reads:
         sys.exit(__doc__)

@@ -92,7 +92,7 @@ f280-read against r132 (277's `f277-read` spec, farmed at 6b02d53), fresh seeds 
   - Without `--tracks-only` it gives cuts 4 and 9; with it, all three.
 - [same_play.py](same_play.py): the paired read's same-games check. [firstdiff.py](firstdiff.py): the first differing
   event between two traces (waiting-pile moves set aside); it found cut 9's edge.
-- `experiments/farm/f280-read.json` is the new side's spec. The farmed games are kept at conductor's kept folder for 280.
+- `experiments/archive/farm/f280-read.json` is the new side's spec. The farmed games are kept at conductor's kept folder for 280.
 
 ## For new players
 

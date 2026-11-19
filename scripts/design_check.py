@@ -29,7 +29,7 @@ from collections import defaultdict
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from screens import PEAKS, cells_of, keeps_variant  # noqa: E402
+from screens import PEAKS, cells_of, games_in, header, keeps_variant, source  # noqa: E402
 from powers import power_slug  # noqa: E402
 
 SHARE_RES = ['energy', 'chips', 'antimatter', 'research_cubes', 'ambassadors']
@@ -55,31 +55,27 @@ def load_games(dirs, variants=None, agents=None):
     flag = '--variant' if variants else '--agent'
     games = []
     for d in dirs.split(','):
-        d, _, spec_path = d.partition('=')
-        path = d if d.endswith('.jsonl') else os.path.join(d, 'games.jsonl')
-        spec = cells = None
+        path, spec_path = source(d)
         if not os.path.isfile(path):
-            sys.exit(f'{d}: no games file ({path})')
+            sys.exit(f"{d.partition('=')[0]}: no games file ({path})")
+        cells = None
         if spec_path:
             with open(spec_path, encoding='utf-8') as f:
                 spec = json.load(f)
-        with open(path, encoding='utf-8') as f:
-            for line in f:
-                g = json.loads(line)
-                if 'format' in g:
-                    spec = spec or g.get('spec')
+        else:  # a bare farm out file with no SPEC reads whole: only the filters need a spec
+            spec = (header(path) or {}).get('spec')
+        for g in games_in(path):
+            if variants or agents:
+                if spec is None:
+                    sys.exit(f"{flag}: {d.partition('=')[0]} has no header; give it as FILE=SPEC")
+                if cells is None:  # the cell order of crates/aic-sim/src/experiment.rs
+                    cells = cells_of(spec)
+                c = cells[g['cell']]
+                if variants and not keeps_variant(c['variant'], variants):
                     continue
-                if variants or agents:
-                    if spec is None:
-                        sys.exit(f'{flag}: {d} has no header; give it as FILE=SPEC')
-                    if cells is None:  # the cell order of crates/aic-sim/src/experiment.rs
-                        cells = cells_of(spec)
-                    c = cells[g['cell']]
-                    if variants and not keeps_variant(c['variant'], variants):
-                        continue
-                    if agents and c['agent'] not in agents:
-                        continue
-                games.append(g)
+                if agents and c['agent'] not in agents:
+                    continue
+            games.append(g)
     if (variants or agents) and not games:
         asked = ' '.join(f'{f} {",".join(sorted(w))}' for f, w in (('--variant', variants), ('--agent', agents)) if w)
         sys.exit(f'{asked}: no game in {dirs}')

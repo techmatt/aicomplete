@@ -109,15 +109,36 @@ def stream(d):
                 # 241: a bare farmed JSONL's first line is a game, which every reader would take for the header.
                 sys.exit(f'{path}: no header (a farm-seeds output): pass it as {path}=SPEC.json')
             yield head
-        for line in f:
-            try:
-                g = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            # 283: a farm out file leads with its header (`Farm::lead`); read as FILE=SPEC it is no game.
-            if 'format' in g:
-                continue
+        yield from _games(f)
+
+
+def _games(f):
+    """The games of open games file F from where it stands: a half-written line is dropped, and a header line too
+    (283: a farm out file leads with its header, `Farm::lead`; read as FILE=SPEC it is no game)."""
+    for line in f:
+        try:
+            g = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if 'format' not in g:
             yield g
+
+
+def games_in(path):
+    """Every game of games file PATH (a `source` path), header or none, as `stream` reads them past its header: for a
+    reader that takes a bare farmed JSONL with no spec (`farm/compare.py`), or makes its own header."""
+    with open(path, encoding='utf-8') as f:
+        yield from _games(f)
+
+
+def header(path):
+    """Games file PATH's own header (its first line when that is one: a run's, or a farm out file's lead), else None."""
+    with open(path, encoding='utf-8') as f:
+        try:
+            head = json.loads(f.readline())
+        except json.JSONDecodeError:
+            return None
+    return head if isinstance(head, dict) and 'format' in head else None
 
 
 def cell_names(spec):

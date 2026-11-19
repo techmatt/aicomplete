@@ -71,7 +71,7 @@ real oracle alike; gains are estimates):
    change: a shadow beside `vars` stays out of serde and `PartialEq`. About 8-10%.
 2. **The heuristic's per-position reads**, `Eval::value` 50%: per-call vectors and folds 9% (hands, picks),
    `tag_counts` 3.7% (each seat with a building, every position; a tags-only store by tableau would halve it),
-   threats' need and share 3%, `next_rally` 3%, `next_corrupt_n` 2.5% (five sites, one card), `near_seats` 2.2%.
+   threats' need and share 3%, `next_corrupt_n` 2.5% (five sites, one card), `near_seats` 2.2%.
    251 shares the board read by the hexes' `Arc`; the masks and sites read off it (`reach_masks`, `Sites`) could
    share the same key. About 10%.
 3. **Replaying a prompt's phase for each option**: `Rules::apply_to` 33%. Resuming from the resolved part would

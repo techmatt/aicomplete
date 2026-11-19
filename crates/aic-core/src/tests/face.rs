@@ -254,3 +254,17 @@ fn icons_show_the_city() {
     let uprising = serde_json::to_string(&face_of("popular_uprising").top).unwrap();
     assert!(uprising.contains(r#""→","rescue"]"#), "{uprising}");
 }
+
+/// 284: the megaprojects' payouts and converters print in words (`Megaproject::words`), never as an op's Rust
+/// form (a struct op's `{`): a new op there needs its words.
+#[test]
+fn megaproject_words_name_every_op_they_print() {
+    for c in &content().map.countries {
+        let m = &c.megaproject;
+        let mut lines = vec![crate::content::Megaproject::words(&m.player), crate::content::Megaproject::words(&m.adversary)];
+        lines.extend(m.converter_of(false).into_iter().chain(m.converter_of(true)).map(|v| v.words()));
+        for l in lines {
+            assert!(!l.contains('{') && !l.contains('}'), "{}: {l}", m.name);
+        }
+    }
+}

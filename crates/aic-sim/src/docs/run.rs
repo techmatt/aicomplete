@@ -156,7 +156,7 @@ fn op_uses() -> BTreeMap<String, usize> {
 
 /// 229 (Matt's ruling): the ops kept as a palette for future cards, printed or not. Every other op content
 /// doesn't print stays until the card set freezes.
-pub(super) const PALETTE_OPS: [&str; 6] = ["counter_all", "pushback", "remove_botnets", "one_player", "botnet_cubes", "adversary_cubes"];
+pub(super) const PALETTE_OPS: [&str; 5] = ["counter_all", "pushback", "remove_botnets", "one_player", "botnet_cubes"];
 
 fn ops_md(src: &str) -> String {
     let uses = op_uses();

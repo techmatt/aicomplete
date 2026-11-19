@@ -3,11 +3,7 @@
 Proposals and prototypes only. **No rules change, no `RULES_REVISION` bump** (r132: main at 0873d56, after 277's
 Growth pass).
 
-**Flags.** Two prototype flags stay in code at baseline 0, one behind each of two top proposals:
-- `cards.no_pass` (cut 1);
-- `board.turn_cap` (cut 3).
-
-Two more are reverted and kept as patches: [pull_any_tag.patch](pull_any_tag.patch) (cut 6) and
+**Flags.** Two prototype flags stayed in code at baseline 0: `cards.no_pass` (cut 1) and `board.turn_cap` (cut 3). Two more are reverted and kept as patches: [pull_any_tag.patch](pull_any_tag.patch) (cut 6) and
 `host_fixed.patch` (cut 8). A stats-only counter, `map.arrival_checks`, measures cut 4.
 
 **Later (Matt, 2026-11-18; removed in 281):** no turn budget ("too many non-card turns means things are too cheap"),
@@ -17,13 +13,8 @@ stays as an ablation switch only: passing is locked.
 With every flag off, the 28 traced games replay identically. Only the config hash moves, and with it
 `GOLDEN_FINGERPRINT`, because the state hashes its config.
 
-**Rates (268, Matt's yardstick):**
-- 15 s a decision, counting every engine decision with more than one option, as 274-276 did (amendment 1);
-- 3 s a component;
-- 10 s a check;
-- 20 s a lookup;
-- 5 s a modifier;
-- 268's 20 s for a new card face read, counted as a lookup.
+**Rates (268, Matt's yardstick):** 15 s a decision (every engine decision with more than one option, as 274-276
+did: amendment 1), 3 s a component, 10 s a check, 20 s a lookup (a new card face read included), 5 s a modifier.
 
 **Traces:** 268's seeds 268000-268013, the judge, Builder and Protector, d2 and d4 ([traces.sh](traces.sh)), 28 games
 a side.
@@ -65,20 +56,14 @@ Below the tables are the counts this page quotes.
 
 **Seats against everything else (d2).** The seats' own rows (their draft and action phase, with their modeled
 arithmetic) come to Builder 11.2 and Protector 9.9 minutes. 276's `trace.md` had 9.7 and 9.1 without lookups or
-markers. Everything outside the seats is **21.3 minutes, not ~34**:
-- the adversary's turn, 9.5;
-- production, 4.2;
-- the shared draft (dealing, faces, modeled), about 4;
-- threats executed, 1.9;
-- the rest, about 2.
+markers. Everything outside the seats is **21.3 minutes, not ~34**: the adversary's turn 9.5, production 4.2, the
+shared draft (dealing, faces, modeled) about 4, threats executed 1.9, the rest about 2.
 
-**Reconciling with 52.6.** The 52.6 is 268's r125 hand count (60.0 a round), less 274's, 275's and 276's deltas.
-- **268's 60.0:** lookups 4.8, modifiers 3.3, checks 23.7, components 11.9, decisions 8.6 and faces about 7.7. Its 58 decisions were folded to 0.6 × 15 s.
-- **The deltas** came from three different engine proxies, so the chain mixes bases.
-- **Against this model's 42.4:**
-  - decisions at the full 15 s add 5.6. Folded, as 268 did, the round is **36.8**;
-  - the hand count's 142 checks a round include reads the trace can't see (tags counted, targets in reach, the hosting plan); the model counts 55;
-  - new faces fall from about 24 to 12 a round (a 4-card draft, against 268's 8-card build).
+**Reconciling with 52.6** (268's r125 hand count, 60.0 a round: lookups 4.8, modifiers 3.3, checks 23.7, components
+11.9, decisions 8.6 with its 58 folded to 0.6 × 15 s, faces about 7.7; less 274-276's deltas, from three different
+engine proxies). Against this model's 42.4: decisions at the full 15 s add 5.6 (folded as 268 did, the round is
+**36.8**); the hand count's 142 checks a round include reads the trace can't see (tags, targets in reach, the hosting
+plan) where the model counts 55; new faces fall from about 24 to 12 a round (a 4-card draft against 268's 8).
 
 Read 42.4 as a **floor**, of the same kind as 274-276's numbers.
 
@@ -175,7 +160,7 @@ The eleven cuts in detail:
 - [traces.sh](traces.sh): the 28 traces, and the same games as an experiment for its per-round counters.
 - [s278-trace.json](s278-trace.json): the base traces' spec.
 - [s278-screen.json](s278-screen.json), [s278-screen2.json](s278-screen2.json) and [screen.py](screen.py): the screens.
-  - The first screen's `anytag`, `hostfix` and `top3` variants need the patches.
-  - Each patch also needs its param in the four configs `regen.py` keeps: `"host_fixed": 0` in the board params, `"pull_any_tag": 0` in the adversary's. Add them to `configs/baseline.json` and `three_seat.json`, then run `regen.py`.
+  The first screen's `anytag`, `hostfix` and `top3` variants need the patches, each with its param (`"host_fixed": 0`
+  in the board params, `"pull_any_tag": 0` in the adversary's) in `configs/baseline.json` and `three_seat.json`, then `regen.py`.
 - [prototypes.md](prototypes.md): every `--compare`.
 - The traces are kept at conductor's kept folder for 278 (`278/trace-r132-base-and-flags.tgz`, plus the screen's games).

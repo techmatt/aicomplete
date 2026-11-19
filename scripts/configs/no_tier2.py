@@ -6,6 +6,7 @@ is not open, `cards::deck::tier_open`). Derived: rerun after editing the baselin
 """
 import json
 import os
+import sys
 
 root = os.path.join(os.path.dirname(__file__), '..', '..')
 cards = json.load(open(os.path.join(root, 'content', 'cards.json'), encoding='utf-8'))
@@ -24,6 +25,9 @@ for m in base['modules']:
         m['params']['opening_deal_tier2'] = 0
 assert out_n > 0
 out = os.path.join(root, 'experiments', 'configs', 'no_tier2.json')
+text = json.dumps(base, indent=2) + '\n'
+if '--check' in sys.argv[1:]:  # 284: regen.py --check; writes nothing
+    sys.exit(0 if os.path.exists(out) and open(out, encoding='utf-8').read() == text else f'{out} is stale: run regen.py')
 with open(out, 'w', encoding='utf-8', newline='\n') as f:
-    f.write(json.dumps(base, indent=2) + '\n')
+    f.write(text)
 print('wrote', out, f'({out_n} tier-2 cards out)')

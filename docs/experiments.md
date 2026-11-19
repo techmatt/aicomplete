@@ -123,8 +123,9 @@ The ruling and its targets: [principles.md](principles.md), *Ballpark simulation
 paired): `bench/ladder.py NEW OLD --pairs`; a farmed file without a header reads as `FILE=SPEC`. A power lever is a
 content overlay in `set`, by index in `content/ais.json`: `ais.builder.powers.6.cost=[["chips",1]]` (s240).
 
-**The judge is the strategist** (`STRATEGIST`; [agents.md](agents.md), *The tiers*); `sweep` spot-checks a verdict that
-matters, `planner:strategy=1` is the ceiling, `strategist:plan_table=0` the judge's keeps off the value table.
+**The judge is the strategist** (`STRATEGIST`; [agents.md](agents.md), *The tiers*); the strategy players
+(`strategist:strategy=1`, `planner:strategy=1`) spot-check a verdict that matters, `strategist:plan_table=0` reads the
+judge's keeps off the value table; `sweep` is a cheap profile for price screens, never a verdict.
 
 - **Order:** the engine smoke read (`use.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read;
   greedy first after a change to how the game is won (agents.md, *The tiers*): a greedy lead stops calibration for a question.

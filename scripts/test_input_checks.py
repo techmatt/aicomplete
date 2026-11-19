@@ -162,6 +162,7 @@ class DesignCheckArgs(unittest.TestCase):
                 f.write(json.dumps({'format': 1, 'spec': spec}) + '\n')
                 for c in range(4):
                     f.write(json.dumps({'cell': c}) + '\n')
+                f.write('{"cell": 4, "se')  # 284: a live run's half-written last line is dropped
             cells = lambda gs: [g['cell'] for g in gs]  # noqa: E731
             self.assertEqual(cells(design_check.load_games(path)), [0, 1, 2, 3])
             self.assertEqual(cells(design_check.load_games(path, agents={'strategist'})), [0, 2])

@@ -35,7 +35,7 @@ prints that kind's disagreements. Readers: `experiments/results/245_tune_strateg
 | Option | Default | Meaning |
 |---|---|---|
 | `--games N` / `--seed S` | `200` / `0` | Seeds `S` to `S+N-1`, one game per seed per config (any `u64`, up to `u64::MAX`). |
-| `--set K=V` | | Override for every config. Repeatable. `countries=N`; `<module>.<param>=V` with `V` as `3` or `1,2,3`, or empty to unset; `<module>.variant=NAME` (keeps the parameters the new variant shares, drops the rest); `<module>=off` removes the module and its phases (`threats`, `cards` or `economy`, which off plays with no upkeep income at all); `board`, `adversary`, `alignment` and `ai` are required by another module, so that is rejected: use `<module>.variant=off`. |
+| `--set K=V` | | Override for every config. Repeatable. `countries=N`; `<module>.<param>=V` with `V` as `3` or `1,2,3`, or empty to unset; `<module>.variant=NAME` (keeps the parameters the new variant shares, drops the rest); `<module>=off` removes the module and its phases (`threats`, `cards` or `economy`, which off plays with no upkeep income at all); `board`, `adversary`, `alignment` and `ai` are required by another module, so that is rejected: use `<module>.variant=off`. Or a content overlay, `<table>.<id>.<path>=JSON` (`cards.<id>.cost=4`; the table is the content file's stem): [experiments.md](experiments.md). |
 | `--set-a K=V` / `--set-b K=V` | | Override for config A or config B only. |
 | `--agent SPEC` | `random` | The team agent ([agents.md](agents.md)), e.g. `greedy`, `beam:width=4`; shown in the table header and `--json`. |
 | `--max-actions N` | `100000` | Per-game action cap. A capped game ends as `timeout`. |
@@ -104,7 +104,7 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
   probes and `inject_panic` are refused: their games depend on more than their seed. The bundle reads no files:
   `configs/`, `experiments/configs/` and `experiments/farm/` are built in (`crates/aic-farm/build.rs`), so commit a
   spec before farming it: one missing from the workers' bundle fails there and the main box reruns its shards late,
-  one at a time (~60 min for a 3,000-game screen). A finished item's specs move to `experiments/archive/farm/` (not built in). An arm with cards out of the deck is a derived config in `experiments/configs/` (`no_tier2.py`, `no_liberate.py`, run by
+  one at a time (~60 min for a 3,000-game screen). A finished item's specs move to `experiments/archive/farm/` (not built in; a bare name still finds them natively, so a kept read's `FILE=NAME` works). An arm with cards out of the deck is a derived config in `experiments/configs/` (`no_tier2.py`, `no_liberate.py`, run by
   `regen.py`): no `--set` removes a card from a deck.
 - **The bundle's API** (`farm.mjs`): the default export `init()` (in Node it reads the wasm beside it),
   `fingerprint()`, `run(first, count, args)` returning the shard's text (`args`: one spec name), `engine()`.

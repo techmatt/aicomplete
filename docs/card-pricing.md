@@ -59,7 +59,9 @@ moves when any other card changes: to reprice an edited card, move its price by 
 - **The recipe:** value the effect at the rates; then credits = value − the keep (`rates.keep_tier1`, `keep_tier2`) −
   `resources.insight` × the insight to play − about 0.67, so the card beats the plain route it replaces (ruling 7). **Insight to play is
   a price** (Matt): spread over 0, 1 and 2, most tier-1 cards at 0; moving a card 1 insight moves its credits the
-  anchor's 2.67, less what would leave it under a 1-credit gain at the table.
+  anchor's 2.67, less what would leave it under a 1-credit gain at the table. A card's **table net** (the
+  agents' reading, CLAUDE.md's give / get) is `effect_ledger.py --stdout`'s reasoned − printed − `rates.keep_tierN`
+  (283's `experiments/results/283_agents_antimatter/table_nets.py` prints every card's).
 - **A `needs` chain is the price** (ruling 10): needs 2-3 of a tag on an engine, needs 3-4 sits 2-4 under the recipe,
   needs 5-6 about half and much bigger (Zero-Day Auction, needs 5 Cyber: 2 antimatter and draw 3).
 - **The cost curve** (Terraforming Mars scale; Matt: fewer cheap cards, more dear and high-impact ones): most cards in

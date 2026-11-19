@@ -223,6 +223,9 @@ pub struct Weights {
     /// A token on one of a seat's cards (021).
     pub token: f64,
     pub energy: f64,
+    /// Points for a held antimatter. The keep plan prices antimatter at this ÷ the credit weight (`plan_rates`),
+    /// shadowing `values.json`'s 18; table-mode hand worth reads the table's 18; a card's antimatter cost is
+    /// `agents::ANTIMATTER_COST` and antimatter income `ANTIMATTER_INCOME_UNIT` (284: the agents' four rates).
     pub antimatter: f64,
     pub insight: f64,
     /// An insight held by a seat with Patience (075): it carries over, so it
@@ -481,7 +484,7 @@ pub fn check_names<'a>(names: impl IntoIterator<Item = &'a str>) -> Result<(), S
 
 /// A drafted card's keep price in credits (its tier's insight at
 /// `INSIGHT_COST`), for valuing the draft packet (023).
-fn keep_insight(world: &aic_core::module::World, tier: u8) -> f64 {
+fn keep_credits(world: &aic_core::module::World, tier: u8) -> f64 {
     let key = if tier == 2 { "cards.keep_tier2" } else { "cards.keep_tier1" };
     INSIGHT_COST * world.int(key) as f64
 }
@@ -551,6 +554,16 @@ const WALL_NEAR: u32 = 4;
 const ANTIMATTER_INCOME_UNIT: f64 = 3.0;
 const INSIGHT_INCOME_UNIT: f64 = 1.5;
 const CREDIT_INCOME_UNIT: f64 = 1.5;
+
+/// A resource's income unit (track income and card income alike).
+fn income_unit(r: Resource) -> f64 {
+    match r {
+        Resource::Antimatter => ANTIMATTER_INCOME_UNIT,
+        Resource::Insight => INSIGHT_INCOME_UNIT,
+        Resource::Credits => CREDIT_INCOME_UNIT,
+        _ => 1.0,
+    }
+}
 /// 273: credits ÷ 1.5. A weight in points a credit is r127's × this; an amount in credits, r127's ÷ this.
 const CREDIT_SCALE: f64 = 1.5;
 
@@ -1980,12 +1993,7 @@ impl Eval {
                 + self.cube_unit(s) * res(Resource::ResearchCubes);
             // 251: `ai::track_income`'s pairs, in its order, without its vector.
             ai::each_track_income(&world, g, s, |r, n| {
-                let unit = match r {
-                    Resource::Antimatter => ANTIMATTER_INCOME_UNIT,
-                    Resource::Insight => INSIGHT_INCOME_UNIT,
-                    Resource::Credits => CREDIT_INCOME_UNIT,
-                    _ => 1.0,
-                };
+                let unit = income_unit(r);
                 *v += w.income * unit * n as f64;
             });
             if w.card_income > 0.0 || w.card_action > 0.0 || w.sink > 0.0 {
@@ -2002,7 +2010,7 @@ impl Eval {
             });
             let packet = g.pile(&cards::packet(s)).iter().map(|id| {
                 let d = cards::def(&world, id);
-                let keep = self.keep_price(&world, g, s, d.tier, keep_insight(&world, d.tier));
+                let keep = self.keep_price(&world, g, s, d.tier, keep_credits(&world, d.tier));
                 let v = w.hand + w.hand_cost * (Self::cost(d) - w.packet_keep * keep);
                 (w.drafted * v.max(0.0), d.tier)
             });
@@ -2043,12 +2051,7 @@ impl Eval {
             card.add(Resource::Insight, -alignment::insight_bonus(g));
             ai::each_track_income(world, g, s, |r, n| card.add(r, -n));
             for (r, n) in card.iter() {
-                let unit = match r {
-                    Resource::Antimatter => ANTIMATTER_INCOME_UNIT,
-                    Resource::Insight => INSIGHT_INCOME_UNIT,
-                    Resource::Credits => CREDIT_INCOME_UNIT,
-                    _ => 1.0,
-                };
+                let unit = income_unit(r);
                 v += w.card_income * w.income * unit * n as f64;
             }
         }
@@ -2295,9 +2298,9 @@ impl Eval {
         // 273: r127's keep price in credits (2 an insight), so the share covered stays r127's; 283 (`keep_units`):
         // the keep's insight, the unit spare insight is counted in.
         let need = if self.w.keep_units > 0.0 {
-            (keep_insight(world, tier) / super::INSIGHT_COST).max(1.0)
+            (keep_credits(world, tier) / super::INSIGHT_COST).max(1.0)
         } else {
-            (keep_insight(world, tier) * CREDIT_SCALE).max(1.0)
+            (keep_credits(world, tier) * CREDIT_SCALE).max(1.0)
         };
         let covered = (spare / need).min(1.0);
         let unit = self.insight_unit(s).max(1e-9);
@@ -2378,7 +2381,7 @@ impl Eval {
             let to = if table && g.var(&self.picked[s]) > 0 { cards::pass_to(s, self.seats) } else { s };
             for id in g.pile(&cards::packet(s)) {
                 let tier = cards::def(&world, id).tier;
-                let keep = if table { w.table * tbl.keep(tier) } else { w.hand_cost * keep_insight(&world, tier) };
+                let keep = if table { w.table * tbl.keep(tier) } else { w.hand_cost * keep_credits(&world, tier) };
                 let keep = self.keep_price(&world, g, to, tier, keep);
                 let worth = self.hand_worth(&world, g, &seats[to], left, id, true);
                 packets[to].push((w.drafted * (worth - w.packet_keep * keep).max(0.0), tier));

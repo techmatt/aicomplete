@@ -1,22 +1,19 @@
 # 142: threat intensity and the credit economy (r59)
 
-Rules revision 59, bumped from the constant (58 to 59; the prompt also said r59). Rules: Matt's design doc *Adversary
+Rules revision 59, bumped from the constant. Rules: Matt's design doc *Adversary
 system* (*Claiming sites*, *Difficulty and threat intensity*, *Credits*, 2026-11-07), his message 5982 (the ladder:
 d2's stage swap to d4) and 5992 (no node counters). Tables: [confirm_r59.md](confirm_r59.md) (the final build on the confirming
 seeds, with the paired gap to r58), [confirm_r58.md](confirm_r58.md), [confirm_pre_credit_lever.md](confirm_pre_credit_lever.md)
 (the build before W3 + G6 on the same seeds), [read_r59.md](read_r59.md) and [read_r58.md](read_r58.md) (the first
-fresh seeds), [death_audit.md](death_audit.md). Scripts: [specs.py](specs.py) (screens and reads), [gen_levers.py](gen_levers.py)
-and [levers.json](levers.json) (the levers as run: 23 generated from r59's pre-freeze content, the other 16 added by hand; a rerun writes
-`levers.gen.json`),
-[read142.py](read142.py), [freeze_142.py](freeze_142.py) with [overlay_142.txt](overlay_142.txt) (the frozen income
-levers), [add_claim_cards.py](add_claim_cards.py), [death_runs.py](death_runs.py).
+fresh seeds), [death_audit.md](death_audit.md). Scripts: [specs.py](specs.py), [gen_levers.py](gen_levers.py) and
+[levers.json](levers.json) (as run: 23 generated, 16 by hand), [read142.py](read142.py), [freeze_142.py](freeze_142.py)
+with [overlay_142.txt](overlay_142.txt), [add_claim_cards.py](add_claim_cards.py), [death_runs.py](death_runs.py).
 
 ## Where things stood
 
-The code was r58 (main 3888848). On this item's fresh seeds r58 reads **84.0 / 66.7 / 52.1 / 42.4** (d0-d3; 139's own
-read 77.8 / 61.8 / 51.4 on its seeds), median 9 / 9 / 9 / 8; credit peaks a seat 81 / 76 / 71 / 65 (d2 by board:
-Builder 71, Protector 62, Researcher 78, as 139 said); 22 of 25 tier-1 threats offered credits, as the prompt said;
-credits paid 59% of all counters at d2 (standing counters and cards included), nodes 2%. 30 of 64 threats shared a
+The code was r58 (main 3888848). On this item's fresh seeds r58 reads **84.0 / 66.7 / 52.1 / 42.4** (d0-d3), median
+9 / 9 / 9 / 8; credit peaks a seat 81 / 76 / 71 / 65 (d2 by board: Builder 71, Protector 62, Researcher 78); 22 of 25
+tier-1 threats offered credits; credits paid 59% of all counters at d2 (standing counters and cards included), nodes 2%. 30 of 64 threats shared a
 currency between a counter and their harm (21 by nodes: every uncountered threat destroys `threat_nodes`).
 
 ## The rules
@@ -156,14 +153,10 @@ unpaid threat takes 2 more nodes and counters cost 3 more an item.
 
 Microgrid Lab Compact kept in 89% of games, played in 71% (0.72 plays a game); Power Purchase Agreement kept in 28%,
 played in 30% (0.30). Stations claimed by card 0.54-0.90 a game against 0.01-0.10 by ambassadors: the energy route is
-now how stations are claimed. MLC's keep share reads strong for a tier-2 building at 8 credits (flagged, not
-repriced: the ledger reads it fair at 8.6). `loop_smoke.py --run`: no timeouts, no card at the play flag.
+now how stations are claimed. MLC's keep share reads strong at 8 credits (flagged: the ledger reads it fair at 8.6). `loop_smoke.py --run`: clean.
 
-## Speed
-
-`per_decision.py` (r58 against r59, strategist, d2, 6 games from 1000, one thread, nothing else running): 2.3 ms a
-decision against 3.4 (1.48x), 1087 ms a game against 1861; options a decision 16.6 to 24.0 (1.44x): the menus' three
-currencies each add pay and withdraw options. Not fixed here; `speed.py` gives no verdict across a revision.
+**Speed** (`per_decision.py`, r58 against r59, strategist, d2, quiet box): 2.3 ms a decision against 3.4 (1.48x);
+options a decision 16.6 to 24.0 (1.44x): each of the menus' three currencies adds options. Not fixed here.
 
 ## Done when, against the independent reads
 

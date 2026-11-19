@@ -215,6 +215,28 @@ class MixedScreens(unittest.TestCase):
         self.assertEqual(lines[0]['spec'], self.spec)
         self.assertEqual(len(lines), 1 + len(SEEDS))
 
+    def test_half_written_last_line(self):
+        # 284: every games reader drops a live or killed run's half line; a farm out file's lead header is no game
+        import split_read
+        sys.path.insert(0, os.path.join(HERE, '..', 'farm'))
+        import compare
+        f, s = self.path('farm.jsonl'), self.path('spec.json')
+        write_bare(f, self.spec, lambda c, s: True)
+        with open(f, encoding='utf-8') as src:
+            body = src.read()
+        lead = {'format': 'aic-games/2', 'spec': self.spec, 'config_hashes': ['h']}
+        with open(f, 'w', encoding='utf-8', newline='\n') as out:
+            out.write(json.dumps(lead) + '\n' + body + '{"cell": 0, "se')
+        with open(s, 'w', encoding='utf-8', newline='\n') as out:
+            json.dump(self.spec, out)
+        n = len(SEEDS)
+        self.assertEqual(len(list(screens.stream(f'{f}={s}'))), 1 + n)
+        self.assertEqual(len(list(screens.games_in(f))), n)
+        self.assertEqual(screens.header(f), lead)
+        head, rows = split_read.read(f'{f}={s}')
+        self.assertEqual((head, len(rows)), (lead, n))  # the file's own header wins over its spec
+        self.assertEqual(len(compare.games(f)), n)
+
     def test_screen_native_base_farmed_lever(self):
         # base: a native run (results.json names its agent by the resolved spec), its games all won
         native = self.path('native')

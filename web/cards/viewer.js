@@ -86,7 +86,7 @@ function stat(c, key) {
 }
 /**
  * 234: a stats agent's short label, its base player and the read ("engine, r94 (s213b)"), never
- * its spec line (`engine:strategy=1,w.built=4,…`); two profiles of one base are numbered.
+ * its spec line (`engine:w.built=4,…`); two profiles of one base are numbered.
  */
 function agentLabel(agent) {
   const src = data.stats.source;

@@ -1,18 +1,21 @@
 """The loop smoke (121): a 16-seed run read for loops before any full read.
 
     python scripts/cards/loop_smoke.py [DIR ...] [--run] [--spec experiments/use.json]
-        [--games 16] [--seed S] [--max-plays 12] [--threads 6]
+        [--games 16] [--seed S] [--max-plays 12] [--threads 6] [--out out/loop-smoke] [--exe EXE]
 
 With `--run`, or with no DIR, it first runs `aic-sim experiment SPEC --games N [--seed S]
---threads T --out out/loop-smoke` (the release binary) and reads that. For each DIR's
+--threads T --out OUT` and reads that. EXE defaults to `AIC_SIM`, else the release binary under
+`CARGO_TARGET_DIR` (or `target/`); it runs as a copy beside OUT (removed at exit), so a rebuild isn't blocked. For each DIR's
 `games.jsonl`, per cell and overall: games, timeouts, the end-reason histogram and the five
 games with the most plays of one card (plays, card, cell, seed; a card's plays summed over the
 seats). Exits 1 if any game timed out or one card's plays in a game reach `--max-plays`: a
 loop shows as a card played dozens of times, or a game that never ends. Seconds once run.
 """
 import argparse
+import atexit
 import collections
 import os
+import shutil
 import subprocess
 import sys
 
@@ -21,8 +24,27 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'
 from screens import cell_labels, stream  # noqa: E402
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
-SIM = os.path.join(ROOT, 'target', 'release', 'aic-sim' + ('.exe' if os.name == 'nt' else ''))
+# The build's binary: under CARGO_TARGET_DIR when the environment sets one (as regen.py reads it).
+SIM = os.path.join(ROOT, os.environ.get('CARGO_TARGET_DIR') or 'target', 'release',
+                   'aic-sim' + ('.exe' if os.name == 'nt' else ''))
 OUT = os.path.join(ROOT, 'out', 'loop-smoke')
+
+
+def private_copy(sim, out):
+    """A copy of `sim` beside `out` (removed at exit): Windows locks a running exe, so running the build's own
+    binary would block a rebuild for the whole smoke."""
+    stem, ext = os.path.splitext(os.path.basename(sim))
+    dst = os.path.join(os.path.dirname(os.path.abspath(out)), f'{os.path.basename(out)}-{stem}-{os.getpid()}{ext}')
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    shutil.copy2(sim, dst)
+
+    def remove():
+        try:
+            os.remove(dst)
+        except OSError:
+            pass
+    atexit.register(remove)
+    return dst
 
 
 def most_played(g):
@@ -79,20 +101,24 @@ def main():
     ap.add_argument('--seed', type=int)
     ap.add_argument('--max-plays', type=int, default=12, help='fail when one card is played this often in a game')
     ap.add_argument('--threads', type=int, default=6)
+    ap.add_argument('--out', default=OUT, help='where the run writes (default out/loop-smoke)')
+    ap.add_argument('--exe', default=os.environ.get('AIC_SIM') or SIM,
+                    help='the aic-sim to run (default: AIC_SIM, else the release build under CARGO_TARGET_DIR or target/)')
     a = ap.parse_args()
     dirs = list(a.dirs)
     if a.run or not dirs:
-        if not os.path.exists(SIM):
-            sys.exit(f'no binary at {SIM}: build release first')
-        cmd = [SIM, 'experiment', a.spec, '--games', str(a.games)]
+        if not os.path.isfile(a.exe):
+            sys.exit(f'no binary at {a.exe}: build release first')
+        out = os.path.abspath(a.out)
+        cmd = [private_copy(a.exe, out), 'experiment', a.spec, '--games', str(a.games)]
         if a.seed is not None:
             cmd += ['--seed', str(a.seed)]
-        cmd += ['--threads', str(a.threads), '--out', OUT]
+        cmd += ['--threads', str(a.threads), '--out', out]
         print(' '.join(cmd), flush=True)
         r = subprocess.run(cmd, cwd=ROOT)
         if r.returncode != 0:
             sys.exit(f'aic-sim experiment failed (exit {r.returncode})')
-        dirs.append(OUT)
+        dirs.append(out)
     bad = []
     for d in dirs:
         timeouts, most = read(d, a)

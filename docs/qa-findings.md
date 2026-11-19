@@ -116,7 +116,7 @@ Each hunt found most of its faults in the same places. Look there first:
 | W21 | viewer | A card's hover shows its id and pile key. | A developer aid, as W9. |
 | W22 | sim, viewer | A run keeps every game's final state; the kept unloadable session is one slot. | Bounded. |
 | W23 | config | `stage_cards` over what the content holds is refused. | The refusal says so. |
-| W24 | measures | Unspent read before threat refunds; `insight_lost` tallies the debt. | Fix with the read that needs it. |
+| W24 | measures | Unspent read before threat refunds. | Fix with the read that needs it. |
 | W25 | report | "adversary ops/round" counts a game's last, partial round. | Small (1 game in 48). |
 | W20 | content | The place-token loop guard sees only a direct `add_tokens`. | No deck card prints such a trigger. |
 | W31 | cards | Peacekeeper Rotation's move onto a Troops target with no piece does nothing. | Not in the deck: fix with the card. |

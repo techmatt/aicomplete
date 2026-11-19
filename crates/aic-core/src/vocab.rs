@@ -319,13 +319,6 @@ pub enum Side {
 }
 
 impl Side {
-    pub fn other(self) -> Side {
-        match self {
-            Side::Unity => Side::Discord,
-            Side::Discord => Side::Unity,
-        }
-    }
-
     pub fn name(self) -> &'static str {
         match self {
             Side::Unity => "unity",

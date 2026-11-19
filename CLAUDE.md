@@ -62,20 +62,9 @@ machine's traps, are in the [README](README.md), which also lists the page for e
   rewrites the configs derived from it (`experiments/configs/no_liberate.json`, `no_tier2.json`).
 - A pass editing many cards keeps its edits as one overlay file, written with
   `scripts/cards/apply_overlay.py`, so it reruns from any revision.
-- **Give / get before any sim.** An item that adds or reprices a card, a building Action or a
-  conversion writes a give / get line for each in its write-up, priced at the unit anchors
-  (card-guidelines.md, *Unit anchors* and *The anchor check*): the anchors set the printed price.
-  Each shows a gain a player can see: no break-even conversions. Loops are capped by limits (once
-  a round, slots, supply), never by making the trade worthless. `configs/agents/values.json` is the
-  agents' own reading: there the net is above 0 for the seat that would use it, and where it isn't,
-  the table is fixed (a rate, or the card's `overrides` row), never the price. Fix or flag any that
-  fails before the first read.
-- **At a card's creation** also check: its precondition exists in measured play (spare energy at
-  round 6, say); a building beats the median building it would cover in a slot; the tag story
-  (`design_check.py --quiet`); and that no card already prints the effect (guideline 11); all before
-  its first measure. **After any later edit to a card** (card fit included), re-read its plays per
-  game, update its rows in `scripts/design_check_jobs.json` (nothing checks them against content),
-  and rerun `npm run cards:fit` before the freeze.
+- **The card checklists** (give / get before any sim, at a card's creation, after a later edit, smokes
+  before reads, a rules item's first freeze) are in card-guidelines.md, *The anchor check* and
+  *An item's card checklist*: read them before any card, conversion or new-op work.
 - **A new op, resource or token type** gets its value in the same change. An op: its arm in
   `crates/aic-sim/src/agents/value.rs`, `scripts/cards/effect_ledger.py`'s `op_worth`, the `_` arms of
   `agents/strategy.rs`'s categories (nothing forces it), its `effects/feasible.rs` arm, and its row in
@@ -83,16 +72,6 @@ machine's traps, are in the [README](README.md), which also lists the page for e
   `vars` key declares it in its module view's `bookkeeping` (the fast-lane
   `the_view_follows_every_variant_and_keeps_bookkeeping_out_of_globals` refuses a raw key). A resource
   or token type: its held-value term in `agents/eval.rs`.
-- **Smokes before reads.** A new op, resource or token type gets a 2-minute engine smoke (16
-  seeds) before any band read: `scripts/cards/play_read.py` for cards kept and never played,
-  `scripts/cards/board_read.py --powers` for powers never used. Before a full read, `python
-  scripts/cards/loop_smoke.py --run` (16 seeds: timeouts, most plays of one card a game) catches a loop.
-- **A rules item's first freeze** comes after `npm run cards:fit`, `cargo test --workspace` and
-  `aic-sim docs --check`, with every touched card priced from the effect ledger
-  (`scripts/cards/effect_ledger.py`) before the first screen: a card-fit edit after a freeze redoes
-  every frozen read. Before the freeze, also read each new mechanic's use per game and its on/off
-  gap on the same seeds, and run `python scripts/design_check.py --quiet` and any diff review: a fix
-  after the freeze replays the frozen seeds and bumps the revision.
 - **A new decision type for the agents** (a new kind of card to keep, a new action to take): review
   the agent code that makes it (keep plan, eval term, fixed policies) before the first screen.
   **A new agent heuristic** gets a 16-seed engine smoke, on and off, on the dev seeds, and its eval
@@ -170,10 +149,6 @@ Write the report to the path conductor's preamble gives, starting with the heade
 
 ## Warning checks
 
-A rules item runs `python scripts/design_check.py READ --old OLD_READ` on its first screen and on
-its fresh read (READ a read's folder or `games.jsonl`; OLD_READ the previous revision's read on its
-seeds; with no READ only the content and dials checks run). Its first line is the report header's
-`warnings:` line: copy it in. Warnings never stop work: an item whose own change trips one
-finishes, calibrates, and reports the warning first. The principles are in
-[docs/principles.md](docs/principles.md), *Design warnings*; thresholds, all candidates, in
-`scripts/design_check.json`.
+A rules item runs `scripts/design_check.py` on its first screen and its fresh read and copies its first
+line into the report header's `warnings:` line: when and how, [docs/principles.md](docs/principles.md),
+*Design warnings*.

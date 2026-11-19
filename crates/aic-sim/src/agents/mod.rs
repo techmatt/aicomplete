@@ -81,7 +81,8 @@ use rand_chacha::ChaCha8Rng;
 pub use search::{Beam, Greedy};
 
 /// What a card's other costs count in credits (273: r127's 3 / 2 / 3, and 2 a cube, 1 an energy or
-/// chip, ÷ 1.5 with the credits): each antimatter this many...
+/// chip, ÷ 1.5 with the credits): each antimatter this many (not `Weights::antimatter`, whose doc names the
+/// agents' other antimatter rates)...
 const ANTIMATTER_COST: f64 = 2.0;
 /// ...each insight this many...
 pub(crate) const INSIGHT_COST: f64 = 4.0 / 3.0;
@@ -323,41 +324,14 @@ pub const LADDER: &[(&str, &[Param])] = &[
 /// 1.5 x faster, and card rankings hold (`experiments/results/screen-069-speed`).
 const SWEEP: &str = "deals=1,lead=0";
 
-/// `strategist` (082): the engine with strategies, one action at a time and no
-/// search: the greedy-with-strategy tier. 157 (r68): the deck clock off
-/// (`w.clock` 0; the engine and planner keep it): it charged each round the team's
-/// Unity rate left it short of the purge's last step, which bought Unity tips over
-/// liberations. Dev seeds 36800-36831, 96 games a level: d1-d3 70.8 / 62.5 / 42.7
-/// on, 74.0 / 69.8 / 49.0 off.
-/// 162 (r69): greedy's flat weights with strategy, and the purge term (`w.purge` 3.6):
-/// horizon mode valued an ambassador at 2.4 against 3.6 for the credits that buy one,
-/// so the old judge bought 0.7-0.9 a game and freed 2.6-3.0 cities to greedy's 4.3-5.1.
-/// Dev seeds 36800-36831 (screen in `experiments/results/162_judge_purge`); the old
-/// judge is `engine:strategy=1,w.clock=0`.
-/// 222 (r97): the purge term off (`w.purge=0`) read +7.8 ± 2.7 on the dev seeds but −1.0 ± 2.6 fresh and
-/// +1.0 ± 1.5 on 219's 96 seeds: kept. Greedy led the judge by 4.0 ± 1.6 there, and `strategy=0` gained
-/// +4.1 ± 1.6: the strategy commitment is the deficit. Matt (2026-11-13): the judge drops it (`strategy=0`;
-/// fresh 46752-46783 at or above greedy at d0-d3, +3.9 ± 2.9 pooled); `strategist:strategy=1` is the strategy
-/// player, an information cell.
-/// 245 (r109): a card in hand counts `w.hand` 1.5 + `w.hand_cost` 0.1 × its cost (greedy's 3 + 0.4): "a card is
-/// worth little until it's played". Fitted toward the oracle's picks (`aic-sim agree`), screened on 243's seeds
-/// 47488-47679 at d2-d3 (+5.6 ± 1.5; hand_cost 0 a cliff, −24); fresh 47704-47895, paired, d0-d3 +5.9 / +9.2 / +9.7
-/// / +5.9, pooled +7.7 ± 1.0 (`experiments/results/245_tune_strategist`). The strategist differs from greedy only in
-/// `w.purge`, `w.last_node`, the hand terms and its RNG stream.
-/// 249 (r112): a building counts what it earns a round beyond income (its standing rules and a share of its Action,
-/// at the value table's rates) for 3 rounds (`w.card_action` 3; 246's misjudgment: its Action read as nothing).
-/// Screened d2-d3 on 248's seeds 48376-48471 (576 games a cell): 2, 3, 4 read +3.3 / +3.6 / +3.3 ± 1.8, 6 +0.7; card
-/// income at the track's rate (`w.card_income`) +0.2 / +1.2, left off. Fresh 48576-48767, paired, d0-d3 -1.0 / +1.0
-/// / +0.7 / +5.0, pooled d2-d3 +2.9 ± 1.3 (`experiments/results/249_real_oracle_judge`).
-/// 257 (r117): `w.sink` (a held antimatter, cube or chip a built converter burns counts `sink` times what a use makes
-/// at these weights per unit burned) runs the converters: at 2, Orbital Relay Launcher's uses 0.26 → 1.14 a game,
-/// Research Reactor's 0.23 → 0.48 (fresh 49212-49259, +0.6 ± 1.1 overall). But it costs wins at d3-d4, by dose
-/// (49260-49355, 576 games an arm): sink 0.5 -0.5 ± 0.9, 1 -2.3 ± 1.3, 2 -3.8 ± 1.5. Left off: the converters don't
-/// pay this player their fuel (`experiments/results/257_judge_action_buildings`).
-/// 258 (r119, amendment 11877: ship it on the judge if a fresh d3-d4 read says no worse): on the stronger converters,
-/// sink 0.5 / 1 / 2 read -0.5 / -1.0 / -1.0 on the dev seeds at d3-d4; 0.5 fresh (49404-49451, paired against the
-/// judge without it, 720 games an arm): d3 +3.5 ± 3.2, d4 +3.5 ± 2.7, overall +0.3 ± 1.3 (d1 -4.2 ± 2.6). On at 0.5
-/// (`experiments/results/258_card_followups`); `strategist:w.sink=0` is r119's judge before it.
+/// `strategist`, the screens' judge: the engine in flat mode (`w.horizon=0`, `w.table=0`), one action at a time
+/// and no search, with greedy's flat weights and no strategy (`strategy=0`; `strategist:strategy=1` is the strategy
+/// player). It differs from greedy in the purge term (`w.purge`), `w.last_node`, the cheap hand terms (`w.hand`,
+/// `w.hand_cost`: a card is worth little until it's played), a building's earnings (`w.card_action`), `w.sink`, the
+/// deck clock off (`w.clock=0`) and its RNG stream; docs/agents.md, *The tiers*, says what each does. Each step's
+/// screen and fresh read are in its write-up under `experiments/results/`: 157 and 162_judge_purge (the purge term,
+/// clock off), 222_sim_players (`strategy=0`), 245_tune_strategist (hand terms), 249_real_oracle_judge
+/// (`w.card_action`), 257_judge_action_buildings and 258_card_followups (`w.sink` 0.5).
 const STRATEGIST: &str = "strategy=0,w.built=4,w.built_cost=0.75,w.clock=0,w.energy_cap=0,w.hand=1.5,w.hand_cost=0.15,\
 w.horizon=0,w.insight_income=0,w.movement=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,\
 w.tag_hand=0,w.purge=3.6,w.last_node=120,w.card_action=3,w.sink=0.5";

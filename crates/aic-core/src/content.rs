@@ -1430,7 +1430,7 @@ fn event_step(e: &Op) -> u8 {
 }
 
 /// r80 (ruling #31): the fixed list of an event card's line kinds, each printed with one icon
-/// (docs/card-guidelines.md, *Event lines*): `(kind, icon)`. An event line outside it is off the standard.
+/// (docs/rules/card-grammar.md, *Event lines*): `(kind, icon)`. An event line outside it is off the standard.
 pub const EVENT_LINE_KINDS: [(&str, &str); 13] = [
     ("Infiltrate", "agent, then the site glyph"),
     ("Muster", "troop, then the factory glyph"),

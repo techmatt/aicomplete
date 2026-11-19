@@ -1498,8 +1498,10 @@ mod tests {
     #[test]
     fn every_live_spec_loads_and_its_agents_parse() {
         let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../experiments");
-        let top = json_in(&root);
+        let mut top = json_in(&root);
         assert!(top.len() >= 5, "{root:?}: {} specs", top.len());
+        // 284: and the farm's specs, built into its bundle: a stale one fails on a worker otherwise.
+        top.extend(json_in(&root.join("farm")));
         for f in &top {
             let text = std::fs::read_to_string(f).unwrap();
             let spec: Spec = serde_json::from_str(&text).unwrap_or_else(|e| panic!("{f:?}: {e}"));

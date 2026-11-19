@@ -1,6 +1,6 @@
 """Splits a lever screen into one plain three-pair read per lever, for ladder.py and design_check.py.
 
-    python scripts/bench/split_read.py READ_DIR OUT_PREFIX          # a read folder (games.jsonl with its header)
+    python scripts/bench/split_read.py READ_DIR OUT_PREFIX          # a read folder or games file (with its header)
     python scripts/bench/split_read.py FILE=SPEC.json OUT_PREFIX    # a farm's out file and its spec (a header it holds wins)
 
 A screen's variants are named `PAIR` (the base) or `PAIR_LEVER` / `PAIR-LEVER` (bp, br, pr). Each lever's games go to
@@ -12,27 +12,20 @@ import json
 import os
 import sys
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+from screens import games_in, header, source  # noqa: E402
 
 def read(arg):
-    """(header, game rows) from a read folder or `FILE=SPEC`; a farm file's header is made from its spec."""
-    if '=' in arg:
-        path, spec_path = arg.split('=', 1)
+    """(header, game rows) from a read folder, a games file or `FILE=SPEC` (`screens.source`); a farm file's header
+    is made from its spec unless it holds its own (283: `Farm::lead`), which wins."""
+    path, spec_path = source(arg)
+    head = header(path)
+    if head is None:
+        if not spec_path:
+            sys.exit(f'{path}: no header (a farm-seeds output): pass it as {path}=SPEC.json')
         with open(spec_path, encoding='utf-8') as f:
             head = {'format': 'aic-games/2', 'spec': json.load(f)}
-    else:
-        path, head = os.path.join(arg, 'games.jsonl'), None
-    rows = []
-    with open(path, encoding='utf-8') as f:
-        for line in f:
-            if not line.strip():
-                continue
-            g = json.loads(line)
-            if head is None or 'format' in g:
-                # 283: a farm out file leads with its header (`Farm::lead`): the file's own wins over a made one.
-                head = g if 'format' in g else head or g
-                continue
-            rows.append(g)
-    return head, rows
+    return head, list(games_in(path))
 
 
 def split(head, rows, prefix):

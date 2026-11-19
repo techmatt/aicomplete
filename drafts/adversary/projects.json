@@ -20,7 +20,7 @@
    "harms": [
     "Discord sway"
    ],
-   "value": "give 11 compute a board (22 at 2 countries, 24.2 at values.json compute 1.1); get 32.0; 1.32 a compute.",
+   "value": "give 11 compute a board (22 at 2 countries); get 1.32 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: drain or Audit it.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): Sway 5 to 8",
@@ -53,7 +53,7 @@
     "Discord sway",
     "adversary research advanced"
    ],
-   "value": "give 14 compute a board (28 at 2 countries, 30.8 at values.json compute 1.1); get 24.0 + 12 (4 track cubes at adversary_research 3) = 36; 1.17 a compute (259: cost 9 -> 14 for the track line).",
+   "value": "give 14 compute a board (28 at 2 countries); get 1.17 a compute (a ratio: 273 moved no ratio) (259: cost 9 -> 14 for the track line).",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: while megaprojects are open (early to mid). Who plays it: automatic for the adversary (compute step); players answer: finish megaprojects first; drain.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): 2 to 4 cubes",
@@ -79,7 +79,7 @@
    "harms": [
     "production blacked out"
    ],
-   "value": "give 8 compute a board (16 at 2 countries, 17.6 at values.json compute 1.1); get 12.0; 0.68 a compute.",
+   "value": "give 8 compute a board (16 at 2 countries); get 0.68 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round; worst when energy is short. Who plays it: automatic for the adversary (compute step); players answer: bank energy a round ahead (the compute beside it is public).",
    "flags": [
     "231: kept, repriced per board",
@@ -105,7 +105,7 @@
     "adversary pieces placed",
     "projects advanced (compute)"
    ],
-   "value": "give 14 compute a board (28 at 2 countries, 30.8 at values.json compute 1.1); get 64.0; 2.08 a compute.",
+   "value": "give 14 compute a board (28 at 2 countries); get 2.08 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: take botnets down; stand ambassadors on them.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): 2 botnets a country",
@@ -132,7 +132,7 @@
    "harms": [
     "extra threats"
    ],
-   "value": "give 9 compute a board (18 at 2 countries, 19.8 at values.json compute 1.1); get 14.0; 0.71 a compute.",
+   "value": "give 9 compute a board (18 at 2 countries); get 0.71 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: keep counter resources; drain.",
    "flags": [
     "231: kept, repriced per board",
@@ -158,7 +158,7 @@
     "adversary pieces placed",
     "node destroyed"
    ],
-   "value": "give 10 compute a board (20 at 2 countries, 22.0 at values.json compute 1.1); get 16.0; 0.73 a compute.",
+   "value": "give 10 compute a board (20 at 2 countries); get 0.73 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late, once agents stand by nodes. Who plays it: automatic for the adversary (compute step); players answer: remove agents from node hexes in the action phase; firewall.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): agents land, the 2-agent rule destroys (players answer first)",
@@ -186,7 +186,7 @@
     "antimatter lost",
     "cards discarded"
    ],
-   "value": "give 9 compute a board (18 at 2 countries, 19.8 at values.json compute 1.1); get 24.0; 1.21 a compute.",
+   "value": "give 9 compute a board (18 at 2 countries); get 1.21 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late, once antimatter is made. Who plays it: automatic for the adversary (compute step); players answer: spend antimatter before it lands, or keep spare cards.",
    "flags": [
     "231: new (a ledger gap)",
@@ -210,7 +210,7 @@
    "harms": [
     "pieces pushed or reach cut"
    ],
-   "value": "give 8 compute a board (16 at 2 countries, 17.6 at values.json compute 1.1); get 10.0; 0.57 a compute.",
+   "value": "give 8 compute a board (16 at 2 countries); get 0.57 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late, when ambassadors guard stacks. Who plays it: automatic for the adversary (compute step); players answer: spread ambassadors; Dispatch them back.",
    "flags": [
     "231: new (a ledger gap)",
@@ -235,7 +235,7 @@
    "harms": [
     "a megaproject or converter denied"
    ],
-   "value": "give 11 compute a board (22 at 2 countries, 24.2 at values.json compute 1.1); get 32.0; 1.32 a compute.",
+   "value": "give 11 compute a board (22 at 2 countries); get 1.32 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: while megaprojects are open. Who plays it: automatic for the adversary (compute step); players answer: finish a megaproject before it fills.",
    "flags": [
     "231: new (a ledger gap)",
@@ -260,7 +260,7 @@
    "harms": [
     "facilities destroyed or corrupted"
    ],
-   "value": "give 13 compute a board (26 at 2 countries, 28.6 at values.json compute 1.1); get 30.0; 1.05 a compute.",
+   "value": "give 13 compute a board (26 at 2 countries); get 1.05 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: claim factories; stand ambassadors on them.",
    "flags": [
     "231: kept, repriced per board",
@@ -286,7 +286,7 @@
    "harms": [
     "troops made"
    ],
-   "value": "give 11 compute a board (22 at 2 countries, 24.2 at values.json compute 1.1); get 30.0; 1.24 a compute.",
+   "value": "give 11 compute a board (22 at 2 countries); get 1.24 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round with botnets. Who plays it: automatic for the adversary (compute step); players answer: take botnets down.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): 2 to 3 troops",
@@ -310,7 +310,7 @@
    "harms": [
     "ambassadors lost"
    ],
-   "value": "give 7 compute a board (14 at 2 countries, 15.4 at values.json compute 1.1); get 8.0; 0.52 a compute.",
+   "value": "give 7 compute a board (14 at 2 countries); get 0.52 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: keep a spare ambassador in supply.",
    "flags": [
     "231: new (small, a deck margin)",
@@ -336,7 +336,7 @@
    "harms": [
     "Fallout placed"
    ],
-   "value": "give 12 compute a board (24 at 2 countries, 26.4 at values.json compute 1.1); get 33.6; 1.27 a compute.",
+   "value": "give 12 compute a board (24 at 2 countries); get 1.27 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late, once cities are corrupted. Who plays it: automatic for the adversary (compute step); players answer: liberate cities; Lift Fallout.",
    "flags": [
     "231: new (small, a deck margin)",
@@ -396,7 +396,7 @@
    "harms": [
     "Unity pulled back"
    ],
-   "value": "give 9 compute a board (18 at 2 countries, 19.8 at values.json compute 1.1); get 16.0; 0.81 a compute.",
+   "value": "give 9 compute a board (18 at 2 countries); get 0.81 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late, once Unity leads. Who plays it: automatic for the adversary (compute step); players answer: drain it.",
    "flags": [
     "231: new (small, a deck margin)",
@@ -482,7 +482,7 @@
     "233: new (231's draft; the deck to 30)"
    ],
    "reuses": null,
-   "value": "give 8 compute a board (16 at 2 countries, 17.6 at values.json compute 1.1); get 16.0; 0.91 a compute.",
+   "value": "give 8 compute a board (16 at 2 countries); get 0.91 a compute (a ratio: 273 moved no ratio).",
    "check": "233: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: drain or Audit it."
   },
   {
@@ -507,7 +507,7 @@
     "protections stripped",
     "energy lost"
    ],
-   "value": "give 10 compute a board (20 at 2 countries, 22.0 at values.json compute 1.1); get 15.0; 0.68 a compute.",
+   "value": "give 10 compute a board (20 at 2 countries); get 0.68 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late. Who plays it: automatic for the adversary (compute step); players answer: bank energy; harden again.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): the node raid out, a sabotage round in"
@@ -573,7 +573,7 @@
     "cards discarded",
     "credits or income lost"
    ],
-   "value": "give 12 compute a board (24 at 2 countries, 26.4 at values.json compute 1.1); get 28.0; 1.06 a compute.",
+   "value": "give 12 compute a board (24 at 2 countries); get 1.06 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late. Who plays it: automatic for the adversary (compute step); players answer: spend tokens and credits ahead.",
    "flags": [
     "231: kept, repriced per board",
@@ -638,7 +638,7 @@
     "Fallout placed",
     "adversary research advanced"
    ],
-   "value": "give 24 compute a board (48 at 2 countries, 52.8 at values.json compute 1.1); get 46.8 + 12 (4 track cubes at adversary_research 3) = 58.8; 1.11 a compute (259: cost 19 -> 24 for the track line).",
+   "value": "give 24 compute a board (48 at 2 countries); get 1.11 a compute (a ratio: 273 moved no ratio) (259: cost 19 -> 24 for the track line).",
    "check": "231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: claim stations; ambassadors on them.",
    "flags": [
     "231: kept, repriced per board"
@@ -669,7 +669,7 @@
     "facilities destroyed or corrupted",
     "troops made"
    ],
-   "value": "give 19 compute a board (38 at 2 countries, 41.8 at values.json compute 1.1); get 58.0; 1.39 a compute.",
+   "value": "give 19 compute a board (38 at 2 countries); get 1.39 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: ambassadors on adversary factories; liberate them.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): every country, not the one with most free zones (Shadow Factories folded in)"
@@ -729,7 +729,7 @@
     "projects advanced (compute)",
     "Discord sway"
    ],
-   "value": "give 18 compute a board (36 at 2 countries, 39.6 at values.json compute 1.1); get 40.8; 1.03 a compute.",
+   "value": "give 18 compute a board (36 at 2 countries); get 1.03 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: early is worst. Who plays it: automatic for the adversary (compute step); players answer: drain it.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): one-shot (was ongoing Sway 2 a round)",
@@ -793,7 +793,7 @@
     "the clock sped up",
     "extra threats"
    ],
-   "value": "give 20 compute a board (40 at 2 countries, 44.0 at values.json compute 1.1); get 34.0; 0.77 a compute.",
+   "value": "give 20 compute a board (40 at 2 countries); get 0.77 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: drain it.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): a threat a country added"

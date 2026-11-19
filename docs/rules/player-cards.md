@@ -53,7 +53,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   Uprising (1) also sway Unity; Kettle Operation and Surgical Strike sway 1 Discord. None frees a city, none is global, none makes a
   liberation cheaper the next time ([ambassadors.md](ambassadors.md)).
 - **Tags are story, not rules:** no tag owns an effect ([ai-powers.md](ai-powers.md), its tag table). Shields on a
-  node hex lean Security, land lifts Diplomacy or Power, delays ([card-grammar.md](card-grammar.md), *Jam*)
+  node hex lean Security, land lifts Diplomacy (three Power cards print one too), delays ([card-grammar.md](card-grammar.md), *Jam*)
   Science; no board power prints any of the three, and no card `needs` a tag for one.
 - **Typed counters (candidate).** Nine tier-1 cards fight one threat tag, the card's own (three Industry, two each
   Security, Diplomacy and Cyber; Science's and Power's tools stay general), and count for more than they cost toward

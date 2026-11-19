@@ -245,7 +245,8 @@ macro_rules! forced_table {
             /// cube cards are not planned on the same cubes.
             (plan_cubes: bool, false, 1.0, "092: keep plan: research cubes are a budget, spent by each card planned and earned by income")
             /// 211 (with `am_save`): the antimatter the seat's board powers and built Actions make once a round
-            /// (the plants; 219: never a burn or a Reclaim) counts as income in the plan's later rounds, so a card that spends it is
+            /// (the plants and Overcharge II, a tag-paid power once its tags are on the seat's cards, one option a
+            /// group; never a burn or a Reclaim, none since r131) counts as income in the plan's later rounds, so a card that spends it is
             /// kept toward it.
             (plan_am: bool, false, 1.0, "211: keep plan: antimatter the seat's powers and built Actions make each round counts from the next round, and a shortfall is made from cubes at Make antimatter's price")
             /// 092: the opening's strategy choice reads the board's powers too.
@@ -339,7 +340,7 @@ macro_rules! behavior_table {
             /// insight and antimatter, so it never converted, 207).
             (make_short: bool, 1.0, "211: convert cubes to insight or antimatter when, after up to three conversions, the keep plan plays a card this round it can't now")
             /// 213 (with `make_short`): an antimatter source the seat can use this round (a board power or a built
-            /// Action that gains antimatter: the plants, then 219's burns Teardown and Meltdown and Reclaim) counts as a way to make
+            /// Action that gains antimatter: the plants and Overcharge II; 219's board burns were cut in r131) counts as a way to make
             /// the antimatter a hand card lacks, tried before Make antimatter's cubes (r94 left the new powers unused).
             (am_source: bool, 1.0, "213: with make_short, an antimatter power or built Action is used (before Make antimatter) when it lets the keep plan play a card this round it can't now")
             /// 230 (with `am_source`): a board burn (Teardown, Meltdown) or Reclaim is no source before the adversary

@@ -204,8 +204,9 @@ pub fn compute_step(g: &mut GameState, cx: &mut Cx) -> Res {
     pour(g, cx, fresh)
 }
 
-/// 175: the waiting compute goes onto the projects (the compute step's second half), as [`pour`] with nothing
-/// fresh.
+/// The tests' pour of the waiting compute alone (the compute step pours it with its fresh compute since r133):
+/// [`pour`] with nothing fresh.
+#[cfg(test)]
 pub fn pour_waiting(g: &mut GameState, cx: &mut Cx) -> Res {
     pour(g, cx, 0)
 }

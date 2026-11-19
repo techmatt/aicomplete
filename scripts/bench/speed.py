@@ -11,7 +11,7 @@
         # planner): games a minute on one thread and on --threads, and B's cost in A's games;
         # four planner runs at c3 on one thread are long
     python scripts/bench/speed.py compare BEFORE.json AFTER.json   # two `table` files
-    python scripts/bench/speed.py check SIM                        # about 2 min, see below
+    python scripts/bench/speed.py check SIM                        # its cost: docs/scripts.md; see below
     python scripts/bench/speed.py check SIM --update               # after a change meant to cost time
 
 Each SIM runs as a copy under `out/speed-bin/` (removed at exit), so a rebuild of the binary isn't blocked.

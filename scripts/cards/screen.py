@@ -1,12 +1,12 @@
 """The one screen summary: a table of named columns over `aic-sim experiment` outputs.
 
     python scripts/cards/screen.py DIR [DIR ...] --columns variant,d,agent,n,win [--sources]
-    python scripts/cards/screen.py DIR [DIR ...] --preset 041    # or tiers, 034, 018, 016
+    python scripts/cards/screen.py DIR [DIR ...] --preset tiers    # or 041 (W34's record), 034, 018, 016
     python scripts/cards/screen.py --gate DIR [DIR ...]
     python scripts/cards/screen.py --list
 
 Each DIR holds results.json and games.jsonl. Without --columns or --preset it prints preset
-041. --sources adds the node lost by source. --gate prints each check's gap to its own
+tiers. --sources adds the node lost by source. --gate prints each check's gap to its own
 agent (`x:...` against `x`), with games per check if results.json has a "gate" key, then the
 unspent readout (what each seat held after its last action phase). --list prints the columns and presets. Columns on a counter no game has warn on stderr: that 0 is
 not a measurement.
@@ -174,6 +174,7 @@ COLUMNS = {
     'node_rounds': ('node-loss rounds', lambda c, gs: hist(g['rounds'] for g in gs if g['reason'] == 'node')),
     'tokens_left': ('tokens left a seat', tokens_left),
     'power_uses': ('uses a game of each power (content order)', power_uses),
+    # qa-findings W34: r98 retired these counters; kept for preset 041's record.
     'markers': ('markers placed / removed', per_game('board.markers', 'board.markers_removed')),
     'markers_city': ('markers removed from cities', per_game('board.markers_removed_city')),
     'placed_by_round': ('tokens placed a seat by r6 / r10', placed_by_round),
@@ -194,8 +195,7 @@ COLUMNS = {
     'compute': ('compute made / blocked', per_game('adversary.compute_made', 'adversary.compute_blocked')),
     'left': ('left: corrupted / botnets / troops', lambda c, gs: ' / '.join(
         f"{mean(gs, lambda g: g['margin'].get(k, 0)):.1f}" for k in ('cities_corrupted_end', 'botnets_end', 'troops_end'))),
-    # 221: a neutral factory is a city's growth (190), tallied `board.factory_built_by_city` (production.rs).
-    'factories': ('factories P / A / N', per_game('board.factories_built.player', 'board.factories_built.adversary', 'board.factory_built_by_city')),
+    'factories': ('factories P / A', per_game('board.factories_built.player', 'board.factories_built.adversary')),
     'factories_end': ('owned at end', per_game('board.factories_end.player')),
     'chips': ('chips made / spent', per_game('board.chips_made', 'board.chips_spent')),
     'troop_strikes': ('steps / moves / strikes', per_game('board.troop_steps', 'board.troop_moves', 'board.troop_strikes')),
@@ -266,7 +266,7 @@ def main():
     dirs = a.dirs + (a.gate or [])
     if not dirs:
         ap.error('no DIR')
-    spec, src = (a.columns, False) if a.columns else PRESETS[a.preset or '041']
+    spec, src = (a.columns, False) if a.columns else PRESETS[a.preset or 'tiers']
     columns = [k.strip() for k in spec.split(',') if k.strip()]
     unknown = [k for k in columns if k not in COLUMNS]
     if unknown:

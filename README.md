@@ -42,16 +42,17 @@ front end sit on top, holding no rules. Build and test are below; other areas ha
 | `crates/aic-core/src/modules/` | A file or directory per rules area; shared code (`common`, `effects/`); `plan`, read-only forecasts of rules steps shared by the rule and the agents; the registry in `mod.rs`. |
 | `crates/aic-sim` | Native CLI ([docs/simulator.md](docs/simulator.md)): agent ladder (`agents/`), experiment harness (`experiment*.rs`, `gate.rs`, `report/`), `farm.rs` (a read's games for remote workers), `play.rs` (`run`, `compare`, `replay`, traces), `docs/` (generates and checks docs), `prof.rs` (`profile` feature). |
 | `experiments/` | Specs ([docs/experiments.md](docs/experiments.md)), and `results/<name>/`: committed cycle reports (old-revision records there, r6 to r14, don't load). Top level: the standing specs (`band`, `gate`, `gate-exploit`, `gate-c3`, `smoke`, `use`, `same`, `same-noplanner`, `ladder-v0`, `overlay-card-cost`, `sanity-line`). `farm/`: farmed specs (`read`, `cell-d2`, the latest item's). `archive/`: specs not tied to the current revision or refused by the binary today. |
+| `crates/aic-lanes` | The test lanes: `cargo test-all` / `cargo test-slow` (`.cargo/config.toml`) run the workspace's tests with the slow lane included / alone. |
 | `crates/aic-wasm` | wasm-bindgen bindings, JSON strings in and out. |
 | `crates/aic-farm` | The farm's wasm bundle: `aic-sim`'s farm in a browser tab, configs and `experiments/farm/` specs built in (docs/simulator.md, *The farm*). |
 | `content/` | Data embedded at compile time, built from code primitives: `map.json` (pieces, layouts for 1–4 countries, setup), `alignment.json` (Unity and Discord decks), `projects.json` (the adversary's project deck), `cards`, `threats`, `adversary`, `ais`. |
-| `drafts/adversary/` | The source of `threats.json`, `projects.json` and `adversary.json` (threat tiers, projects, the Militarist): edit these, not `content/` (`content/load_adversary.py` in [docs/scripts.md](docs/scripts.md)). |
+| `drafts/adversary/` | The source of `threats.json`, `projects.json` and `adversary.json` (threat tiers, projects, the Militarist): edit these, not `content/` (`scripts/content/load_adversary.py`, [docs/scripts.md](docs/scripts.md)). |
 | `configs/` | Game configs: modules, variants, every parameter. `baseline.json` is the baseline at `RULES_REVISION`: the deck, 2 countries (3 seat the Researcher), difficulty 0, every number still a candidate (`regen.py` derives `experiments/configs/` from it, and `three_seat.json`, the viewer's 3-seat game). Other country counts, difficulties, off-variants and optional modules are `--set` lines ([docs/simulator.md](docs/simulator.md)). `configs/agents/`: agent numbers, no rule (`values.json`, the value table; `strategies.json`; docs/agents.md). |
 | `scripts/`, `docs/` | The pages listed above. |
 | `tools/card-art/` | Card frames, icons, scenes and print. |
 | `art/` | Committed frame masters and guides; scenes are in `art-originals/`, a git-ignored junction. |
 | `picks/` | Matt's picks: the pickers' round manifests. |
-| `web/` | Browser viewer (Vite + TS on `aic-wasm`): `cd web && npm install && npm run dev` builds the wasm (~9 s warm) and serves http://localhost:5173/. The card viewer (`npm run cards`, conductor's button), records, browser checks: [web/README.md](web/README.md). |
+| `web/` | Browser viewer (Vite + TS on `aic-wasm`): `cd web && npm ci && npm run dev` builds the wasm (~9 s warm) and serves http://localhost:5173/. The card viewer (`npm run cards`, conductor's button), records, browser checks: [web/README.md](web/README.md). |
 
 ## Card text for review
 
@@ -73,6 +74,8 @@ cargo test --workspace                        # fast lane, the default: ~6 s onc
 cargo test-all                                # full run, slow lane included: ~1 min on 6 test threads once built
                                               # (cargo flags such as -j N go to cargo, --test-threads=N to the tests)
 cargo test-slow                               # the slow lane alone: ~50 s
+python -m unittest scripts/bench/test_read_tools.py scripts/test_input_checks.py scripts/bench/test_trace_lib.py
+                                              # the read scripts' tests: in no cargo lane (when: docs/scripts.md)
 cargo build --release -p aic-sim              # ~30 s after an aic-sim edit, ~45 s after aic-core, ~1 min cold
 ./target/release/aic-sim docs                 # regenerate the generated docs (--check: report only)
 wasm-pack build crates/aic-wasm --target web  # ~20 s cold, ~9 s warm -> crates/aic-wasm/pkg (git-ignored)
@@ -94,7 +97,7 @@ crate stops the run: `cargo test-all --no-fail-fast`.
 
 **Rules changes:** the fast-lane `golden_game` test pins the final state of one fixed game (baseline, seed
 `u64::MAX`, action *k* = legal action `(k × 7919) mod count`). For an intended rules change, bump `RULES_REVISION`
-in `crates/aic-core/src/lib.rs` (and `docs/rulebook.md`'s line 3 by hand: `aic-sim docs` refuses it stale), then
+in `crates/aic-core/src/lib.rs` (`python scripts/regen.py` copies it into `docs/rules/README.md`'s and `docs/rulebook.md`'s revision lines, which `aic-sim docs` refuses stale), then
 `GOLDEN_REVISION` and `GOLDEN_FINGERPRINT` in `crates/aic-core/src/tests/mod.rs` and `GOLDEN` in
 `scripts/wasm-smoke.mjs` (`wasm_smoke_expects_the_golden_fingerprint` fails until it and `GOLDEN_CONTENT` match):
 `python scripts/regen.py --golden` sets all five from the source, `aic-sim show` and a `golden_game` run. The

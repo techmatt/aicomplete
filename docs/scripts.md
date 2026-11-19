@@ -9,12 +9,10 @@ what it prints; the `cards/*_read.py` readers take seconds.
   [--fingerprint]`: a shard on it in Node or headless Edge (`web/scripts/cdp.mjs`), each seed timed.
   `farm/compare.py A B [--ms A_ERR B_ERR]`: two engines' outputs of one range: games that differ, win %, paired
   gap, ms a game.
-- `regen.py [--no-build] [--check | --golden]`: runs `drafts/adversary/check.py`, writes `content/` from
-  `drafts/adversary/` (`load_adversary.py`), builds release (content is compiled in), writes `RULES_REVISION` into `docs/rules/README.md` and `docs/rulebook.md`, runs `aic-sim
-  docs`, `cards_doc.py`, `effect_ledger.py`, `no_liberate.py`, `no_tier2.py`; warns of a content file
-  `apply_overlay.py` would refuse (not `json.dumps(indent=1)`); prints the content hash and `git status`. `--check`:
-  the checks (the loader's `--check`) and the revision line only. `--golden`: also sets the golden constants
-  (README, *Rules changes*) from the source revision, the content hash and a `golden` test run, then reruns it.
+- `regen.py [--no-build] [--check | --golden]`: every generator in order (its docstring), the derived
+  configs (`no_liberate.py`, `no_tier2.py`, `three_seat.py`) last. `--check` writes nothing: drafts and loader
+  checks, a build (unless `--no-build`), `aic-sim docs --check`, `cards_doc.py --check`, the derived configs' `--check`, the revision lines in
+  `rules/README.md` and `rulebook.md`. `--golden`: also sets the golden constants (README, *Rules changes*).
 - `design_check.py [DIR] [--old DIR] [--base REV] [--config FILE] [--quiet] [--usage] [--variant V,...] [--agent A,...]`: the design
   warnings ([principles.md](principles.md)): content checks, plus play checks on DIR (a read's folder or
   `games.jsonl`; a farm out file as FILE=SPEC; one DIR, comma lists pool; an unknown flag stops it). `--old`: the previous revision's read on its seeds; `--base`: the
@@ -24,7 +22,7 @@ what it prints; the `cards/*_read.py` readers take seconds.
   `docs/rulebook-friction.md`'s title. First line: the report's `warnings:`. Thresholds
   and bands: `design_check.json`; job parity's cards for each standard job, hand-read (effects as expressions over
   the anchors): `design_check_jobs.json` (`jobs`: per standard row, `{unit, cards: [{name, units, other, use, note}]}`),
-  edited by hand (`port_jobs.py` would overwrite it). A `repeat_powers.exempt` key may join names (`"Sprawl, Outpost"`).
+  edited by hand (`experiments/results/249_real_oracle_judge/port_jobs.py` would overwrite it). A `repeat_powers.exempt` key may join names (`"Sprawl, Outpost"`).
   Never exits 1 on a warning.
 - `cards/cards_doc.py`: regenerates `docs/cards.md`. `cards/deck_text.py DECK...`: a deck as plain text for review
   (`--list` the decks; README, *Card text for review*); `--ids TEXT`: content ids by display name.
@@ -36,12 +34,11 @@ what it prints; the `cards/*_read.py` readers take seconds.
   projects: edit `drafts/adversary/`.
 - `content/load_adversary.py [--check]`: `drafts/adversary/` (the source) into `content/` and
   `docs/adversary-cards.md`; writes nothing if `drafts/adversary/check.py` gives any ERROR; `--check` only compares.
-- `configs/no_liberate.py`, `configs/no_tier2.py` (run by `regen.py`): the baseline less every `liberate` card, and
-  with no tier-2 deck (opening tier-2 keeps from tier 1), in `experiments/configs/`. `configs/three_seat.py` (also
-  run by `regen.py`): `configs/three_seat.json`, the baseline at 3 countries and difficulty 0, the viewer's 3-seat game.
-- `cards/loop_smoke.py [DIR...] [--run]` (flags: docstring): the loop
-  smoke (no DIR: runs `use.json` to `out/loop-smoke`): timeouts, ends, most plays of one card a game; exits 1 on a
-  timeout or `--max-plays`.
+- `configs/no_liberate.py`, `no_tier2.py`: the baseline less every `liberate` card, and with no tier-2 deck (opening
+  tier-2 keeps from tier 1), in `experiments/configs/`; `three_seat.py`: `configs/three_seat.json`, the baseline at
+  3 countries and difficulty 0 (the viewer's 3-seat game).
+- `cards/loop_smoke.py [DIR...] [--run] [--out DIR] [--exe EXE]` (flags: docstring): the loop smoke (no DIR: runs
+  `use.json` to `out/loop-smoke` on a copy of `AIC_SIM` or the release build): timeouts, ends, most plays of one card a game; exits 1 on a timeout or `--max-plays`.
 - `cards/counter_names.py DIR... [--all]` (DIR, games file or `FILE=SPEC`): counter keys the read scripts, web scripts and `crates/aic-sim` (agents
   aside) quote that no game in DIR wrote, and each sweep `COUNTER_EVENTS*` alternative no key matches; rare events
   list too, so don't gate on it.
@@ -77,7 +74,7 @@ what it prints; the `cards/*_read.py` readers take seconds.
   (`values.json`), fits a price multiplier per effect, writes CSVs, `ledger.html` and `outliers.md` (tier-2 cards
   over the ceiling) to `experiments/results/effect-ledger/`. `--stdout`: each card's fit and fair price
   (card-pricing.md, *A fair price*), writing nothing; `--reasoned-delta BASE` (a revision or cards.json): each card's reasoned change and its
-  cost moved by it; `--cards`, `--values`, `--overlay`, `--hold-ratio`: docstring.
+  cost moved by it; other flags: docstring.
 - `cards/payback.py [--cards CARDS.json] [--old CARDS.json [--old-keep-tier2 N]]`: rounds each engine building takes
   to pay back at a committed seat's fire rates (card-pricing.md *Engines*); `--old` adds an older deck.
 - `run_sim.ps1 NAME [-NoBuild] ARGS...`: any long run: builds, copies the exe to `out/NAME.exe`, starts it below

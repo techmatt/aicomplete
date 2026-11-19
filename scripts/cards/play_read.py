@@ -38,7 +38,7 @@ def main():
     # 118: only the runs' decks.
     in_runs = dealt(a.dirs)
     deck = {k: v for k, v in deck.items() if k in in_runs}
-    # 184: a resolved label holds commas before its weights ("engine:strategy=1,w.built=4,..."): split between agents only.
+    # 184: a resolved label holds commas before its weights ("engine:w.built=4,..."): split between agents only.
     want = set(x for x in re.split(r',(?![a-z_]+\.[a-z_]+=)', a.agents) if x)
     games = collections.Counter()
     idle = collections.defaultdict(collections.Counter)

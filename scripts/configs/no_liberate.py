@@ -23,7 +23,10 @@ for m in base['modules']:
         found += before - len(m['cards'])
 assert found == len(LIBERATE), (found, LIBERATE)
 out = os.path.join(root, 'experiments', 'configs', 'no_liberate.json')
+text = json.dumps(base, indent=2) + '\n'
+if '--check' in sys.argv[1:]:  # 284: regen.py --check; writes nothing
+    sys.exit(0 if os.path.exists(out) and open(out, encoding='utf-8').read() == text else f'{out} is stale: run regen.py')
 os.makedirs(os.path.dirname(out), exist_ok=True)
 with open(out, 'w', encoding='utf-8', newline='\n') as f:
-    f.write(json.dumps(base, indent=2) + '\n')
+    f.write(text)
 print('wrote', out, f'({len(LIBERATE)} cards out: {", ".join(LIBERATE)})')

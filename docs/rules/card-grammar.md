@@ -27,6 +27,10 @@ has an exception: every symbol means what it always means ([card-guidelines.md](
 the icons say, in order, opening with the box's word, but for a triggered Effect: its "When you ..." marks it, so it
 prints no "Effect:" (Matt, 264); a standing Effect keeps the label ("Effect: your Science cards cost 3 credits less").
 
+**Event lines.** An event card prints only the line kinds in `content::EVENT_LINE_KINDS`, each with its icon there
+(`Content::check` holds to it), in a fixed order: the threat, Infiltrate (two at stage III), Muster, at most two other
+lines, Spill, Grow. Event faces have no icon row yet. A new kind is Matt's call.
+
 How each primitive resolves, beyond the card text (the card set: [player-cards.md](player-cards.md); every card:
 [cards.md](../cards.md)):
 

@@ -135,5 +135,5 @@ the node endings); d0 runs 7.8 (warning: easy games end early).
 - [keys.py](keys.py) counter means by level; [turns.py](turns.py) non-card turns; [screen.py](screen.py) lever screens;
   [make_spec.py](make_spec.py) lever × pair specs; [read.py](read.py) the fresh read; [add_overrides.py](add_overrides.py)
   the reverted overrides.
-- Specs: `experiments/farm/s282-diff.json`, `s282-diff2.json`, `s282-p.json`, `s282-pre.json`, `f282-read.json`.
+- Specs: `experiments/archive/farm/s282-diff.json`, `s282-diff2.json`, `s282-p.json`, `s282-pre.json`, `f282-read.json`.
   Outputs: `out/keep/282/` (kept by conductor).

@@ -100,8 +100,11 @@ read the flag on the planner (its games run longest toward a win) before a fixed
 
 ## Design warnings (Matt, 2026-11-12)
 
-Calibration measures use, not soundness, so `scripts/design_check.py` checks these (when: CLAUDE.md, *Warning
-checks*; thresholds, all candidates: `scripts/design_check.json`).
+Calibration measures use, not soundness, so `scripts/design_check.py` checks these (thresholds, all candidates:
+`scripts/design_check.json`). **When:** a rules item runs `python scripts/design_check.py READ --old OLD_READ` on its
+first screen and on its fresh read (READ a read's folder or `games.jsonl`; OLD_READ the previous revision's read on
+its seeds; with no READ only the content and dials checks run). Its first line is the report header's `warnings:`
+line. Warnings never stop work: an item whose own change trips one finishes, calibrates, and reports it first.
 
 - **Capstone and tier-2 resources (antimatter, and any later) are scarce and earned.** No cheap standard-action
   source; the only standard source is a desperate one (5 research cubes → 1 antimatter, say). *Warns:* over 20% of
@@ -179,9 +182,9 @@ Matt names a milestone.
   close one runs to the cap.
 - **The list grows:** a new mechanic adds the obvious fixed policy for it.
 
-**The gate**, `experiments/gate.json` (its `note`: checks, seeds, stopping), runs the planner, so play that can plan
-judges the rules, at d2 (d4 is not winnable), 2 and 3 countries; `screen.py --gate` reads it. `gate-exploit.json`,
-under the engine, is a fast first direction, not a verdict; `gate-c3.json` holds the Researcher's checks, at c3.
+**The gate**, `experiments/gate.json` (its `note`: checks, seeds, stopping), runs the planner at d2, 2 and 3
+countries; `screen.py --gate` reads it. `gate-exploit.json` (the engine) is a fast first direction, not a verdict;
+`gate-c3.json` holds the Researcher's checks.
 
 ## Sanity checks
 
@@ -194,7 +197,5 @@ Weigh each measure's cost against the decision it informs: screen cheaply, run e
 finalists. Calibrate by reasoning first: think through when each decision, card and number can matter in an 8–10
 round game, and set its starting value so it does; simulation then adjusts and evaluates.
 
-Until the rules are close to final, scoping runs use shallow, fast agents (greedy, engine, and the planner; Matt's
-standing ruling: rollouts before deeper search) and short runs (`aic-sim experiment --quick`); deep-search agents
-stay in the code, unrun until the rules settle. Agents and measures: [agents.md](agents.md),
-[experiments.md](experiments.md).
+Until the rules are close to final, scoping runs use shallow, fast agents and short runs (Matt: rollouts before
+deeper search); deep-search agents stay in the code, unrun ([agents.md](agents.md), [experiments.md](experiments.md)).

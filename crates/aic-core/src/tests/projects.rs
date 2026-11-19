@@ -121,10 +121,10 @@ fn a_new_row_is_dealt_into_the_slots_when_all_have_resolved() {
     assert_eq!(g.pile(PROJECTS), ["crackdown"]);
 }
 
-/// r80 (ruling #41): the four beats name every adversary phase of the baseline round, in round order, in one
+/// r80 (ruling #41): the three beats name every adversary phase of the baseline round, in round order, in one
 /// constant (a rename is one edit).
 #[test]
-fn the_four_beats_cover_the_adversary_turn_in_order() {
+fn the_beats_cover_the_adversary_turn_in_order() {
     let cfg = baseline();
     let mut seen: Vec<&str> = Vec::new();
     for p in &cfg.round {

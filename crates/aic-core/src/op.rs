@@ -2069,7 +2069,7 @@ impl Op {
             Op::AdversaryCubes { .. } | Op::BotnetCubes { .. } => &[Threat, Team],
             // 259: an uncountered threat's, an event's or a project's research line.
             Op::AdversaryResearch { .. } => &[Threat, Team],
-            // 227: Fallout from all four adversity sources (threats, projects, Discord cards).
+            // 227: Fallout from all four adversity sources (threats, Discord cards, adversary events, projects).
             Op::Fallout { .. } => &[Threat, Team, Twist],
             // 195: the project deck's board verbs.
             Op::BotnetTroops { .. }

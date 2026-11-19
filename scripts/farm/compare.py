@@ -2,35 +2,28 @@
 
     python scripts/farm/compare.py A B [--ms A_ERR B_ERR]
 
-A and B: farm shard outputs (game lines, no header), or games.jsonl files (a header line is
-skipped). Games are matched by (cell, seed). Prints how many games differ once the engine field and
+A and B: farm shard outputs (game lines, no header), games.jsonl files or read folders (a header
+line, and a half-written last line, is skipped; `screens.source`). Games are matched by (cell, seed). Prints how many games differ once the engine field and
 every timing are set aside, the first few that do, and each side's win % with its SE and the
 paired gap (B minus A) with its SE. --ms reads each side's per-game times from the stderr logs
 the farm commands wrote (`aic-sim farm`'s `farm: cell C seed S X ms` lines, or scripts/farm/run.mjs's
 `farm: seed S N games X ms` lines) and prints the mean ms a game and the ratio B / A.
 """
 import argparse
-import json
 import math
+import os
 import re
 import sys
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+from screens import games_in, source  # noqa: E402
 
 TIMING = ('ms', 'agent_ms', 'probe_ms', 'setup_ms', 'legal_ms', 'apply_ms', 'replay_ms')
 
 
-def games(path):
-    out = {}
-    with open(path, encoding='utf-8') as f:
-        for line in f:
-            if not line.strip():
-                continue
-            g = json.loads(line)
-            if 'spec' in g and 'format' in g:
-                continue
-            out[(g['cell'], str(g['seed']))] = g
-    return out
+def games(arg):
+    return {(g['cell'], str(g['seed'])): g for g in games_in(source(arg)[0])}
 
 
 def bare(g):

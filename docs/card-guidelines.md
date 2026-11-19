@@ -9,13 +9,12 @@ quiet exception.
    Matt.
 2. **Plain words, one reading only.** A player reads a card once and knows what to do. Name the pieces and the
    number: "remove 2 agents or 1 troop", never "2 worth". A "per" or an OR binds to exactly one thing; "you have" is
-   spelled out ("on your cards"); every icon keeps its locked meaning (ruling 5). Fix a phrase in `face.rs` and every
-   card using it improves.
+   spelled out ("on your cards"); every icon keeps its locked meaning (ruling 5). Fix a phrase once, in `face.rs`.
 3. **No arithmetic.** At most a simple "per X". No sums, series, formulas or running totals. **No "per hex of a
    country"** (ruling 6): every country has 16 hexes, so "1 per hex" is a hidden fixed number; print the number
    ("remove 6 troops in its country"). **Big numbers over "remove all X"** (*Martial Cordon*).
-4. **No trivial cards; every rider earns its text.** Drafting costs a keep (1 insight at tier 1, 3 at tier 2, 2 with the keep
-   upgrade; never credits) before the play cost, so a card must be worth that (ruling 1: *Surplus Auction*). A rider or
+4. **No trivial cards; every rider earns its text.** Drafting costs a keep (insight, never credits: *Derived*,
+   below) before the play cost, so a card must be worth that (ruling 1: *Surplus Auction*). A rider or
    conditional extra adding symbols and parsing but no decision ("gain 1 credit") is noise: fold its value into the
    base number, or cut it. **Fold a near-constant rider into the number** (ruling 3: *Blackout Script*: a botnet
    makes 1 compute, so "no compute next build" is one more compute removed).
@@ -29,20 +28,16 @@ quiet exception.
    when its insight does (Science discounts can take a play to 0).
 8. **One clear idea per card.** Two effects at most, unless a third is the extra cost. A building holds income or
    tokens, and one Action or Effect; an Action may be "A, OR B" when it is a token card's choice (15).
-9. **Fits at the default size.** Rules text prints at 7.5 pt. A building's box above the art holds about 80
-   characters on two lines with one icon row, the box below about the same, a program or event about 110 with one
-   icon row and about 78 with two (264; guides: the fit decides). Cut words, split ideas or simplify the op rather
-   than shrink the type; a card that still can't fit is a play change for Matt, and `cards:fit` fails until it is
-   settled (264: no recorded exceptions). Measure with `npm run cards:fit` ([web/README.md](../web/README.md),
-   *Text sizes*). A kind with no frame (threats, Alignment, adversary and project cards) has no budget until it gets
-   one.
+9. **Fits at the default size** (7.5 pt), measured by `npm run cards:fit` ([web/README.md](../web/README.md), *Text
+   sizes*), which fails until it fits (264: no recorded exceptions). Cut words, split ideas or simplify the op rather
+   than shrink the type; a card that still can't fit is a play change for Matt. A kind with no frame (threats,
+   Alignment, adversary and project cards) has no budget until it gets one.
 10. **The name says what it does,** and the art matches the name.
 11. **No near-duplicates without a reason.** Same effect at another price or kind only when the kind matters (an
     event leaves no tag; a program stays). A card repeating an AI board's power needs a real price, or goes
     (*Shelter Order*).
 12. **Tier is power; costs and effects are big** (ruling 4). Some complexity is fine but not required. Tier-2 income
-    is far stronger, few cards cost 0 credits, and tier is not a proxy for cost (23). The curve in use:
-    [card-pricing.md](card-pricing.md), *The method*.
+    is far stronger, few cards cost 0 credits, and tier is not a proxy for cost (23).
 13. **A card beats the plain route it replaces** (direct payment, standard action, board power), counting its keep
     and insight (ruling 7: *Threat Hunt* lost to paying 5 credits).
 14. **Outright threat counters stay rare** (ruling 8): a special case, not the common fix. A typed counter is a big
@@ -88,8 +83,7 @@ A card that prices out on the value table but reads absurd to a Terraforming Mar
     with the team as one pool: two cooperating players can pass a gift back and forth.
 
 **Unit anchors** (Matt, candidates). Price every card against them; the anchor beats `values.json` for the printed
-price ([card-pricing.md](card-pricing.md), *The method*). Since r128 (273, Matt: smaller numbers) every credit
-number is r127's ÷ 1.5, so a third reads .33 or .67; the ratios are r127's.
+price ([card-pricing.md](card-pricing.md), *The method*). r128 divided every credit number by 1.5 (a third reads .33).
 
 | Unit | Credits | | Unit | Credits |
 |---|---|---|---|---|
@@ -97,21 +91,24 @@ number is r127's ÷ 1.5, so a third reads .33 or .67; the ratios are r127's.
 | Remove 1 troop | 3.33 | | +1 credit income | 4 at mid-game |
 | 1 energy | 3 | | +1 insight income | 8 at mid-game |
 | 1 insight | 2.67 | | Remove 1 compute from a project | 1.33 (stopping projects is hard) |
-| Draw 1 card | 3.33 | | 1 antimatter | 18 (epic: Matt, 283; was 12) |
+| Draw 1 card | 3.33 | | 1 antimatter | 18 (epic: Matt, 283) |
 | 1 ambassador | 5.33 | | | |
 
-Derived: the keep, 2.67 a tier-1 card and 8 a tier-2 one (1 and 3 insight); +1 energy income 9.6 (4 rounds × 3 ×
-0.8); +1 chip income about 13 (4 rounds × 4 × 0.8). A research cube is 4 (6 when the play completes the
-megaproject). Make antimatter (5 cubes, 20) reads 24 at antimatter 18 (1 antimatter and 2 energy), yet stays an unused
-hedge (Matt, 283); every engine making it (a plant's Action: Positron Storage Ring, Cyclotron Lease and four more)
-shows a clear gain, and every spend is a big one. Other units take `values.json` (a sway 2.67, a
-node 5.33) or [card-pricing.md](card-pricing.md) (a city liberated 30); a botnet removed is 10 (252: the median card for the job). A
-card whose unit has no anchor sits inside 1.0-2.5× under both readings: a convert at its output's anchor and its
+Derived: the keep, 2.67 a tier-1 card and 8 a tier-2 one (1 and 3 insight, 2 with the keep upgrade); +1 energy
+income 9.6 (4 rounds × 3 × 0.8); +1 chip income about 13 (4 × 4 × 0.8). A research cube is 4 (6 when the play
+completes the megaproject). Make antimatter (5 cubes, 20, for 24) stays an unused hedge (Matt, 283); every engine
+making antimatter shows a clear gain, every spend is a big one. Other units take `values.json` (a sway 2.67, a node
+5.33) or [card-pricing.md](card-pricing.md) (a city liberated 30); a botnet removed is 10 (252). A card whose unit has no anchor sits inside 1.0-2.5× under both readings: a convert at its output's anchor and its
 input's, an engine's uses at the measured count and the conservative one.
 
-**The anchor check**, one line per card in its item's write-up: pay = credits + 2.67 × (keep + play insight) + other
-costs at the anchors; get = the effects at the anchors (an engine at a committed seat's rate: about 1 card of its
-tag and 3 tags a round, for 3-4 rounds); get ÷ pay stays under ruling 22's ceiling; under 1.0 the card is too dear.
+**The anchor check (give / get)**, one line in its item's write-up, before any sim, for each card, building Action
+or conversion the item adds or reprices: pay = credits + 2.67 × (keep + play insight) + other costs at the anchors;
+get = the effects at the anchors (an engine at a committed seat's rate: about 1 card of its tag and 3 tags a round,
+for 3-4 rounds); get ÷ pay stays under ruling 22's ceiling; under 1.0 the card is too dear. Each shows a gain a player
+can see (no break-even conversion); a loop is capped by a limit (once a round, slots, supply), never by making the
+trade worthless. In `configs/agents/values.json`, the agents' own reading, the net is above 0 for the seat that
+would use it; where it isn't, fix the table (a rate, or the card's `overrides` row), never the price. Fix or flag a
+failure before the first read.
 
 **Nothing to act on never blocks a card** (Matt; [rules/player-cards.md](rules/player-cards.md)): a removal rider is
 a bonus, never a veto.
@@ -124,12 +121,27 @@ a per-tag rate of 1 is a rate, not an amount.
 power's or standard action's area; a card's is its target); troops 0-1 a country (p90 3); a project holds under its
 cost (7-32 compute a board).
 
+## An item's card checklist
+
+- **At a card's creation,** before its first measure: its precondition exists in measured play (spare energy at
+  round 6, say); a building beats the median building it would cover in a slot; the tag story (`design_check.py
+  --quiet`); no card already prints the effect (11).
+- **After any later edit** (card fit included): re-read its plays per game, update its rows in
+  `scripts/design_check_jobs.json` (nothing checks them against content), rerun `npm run cards:fit` before the freeze.
+- **Smokes before reads.** A new op, resource or token type gets a 2-minute engine smoke (16 seeds) before any band
+  read: `scripts/cards/play_read.py` for cards kept and never played, `scripts/cards/board_read.py --powers` for
+  powers never used. Before a full read, `python scripts/cards/loop_smoke.py --run` (16 seeds: timeouts, most plays
+  of one card a game) catches a loop.
+- **A rules item's first freeze** follows `npm run cards:fit`, `cargo test --workspace`, `aic-sim docs --check`, each
+  touched card priced from `scripts/cards/effect_ledger.py` before the first screen, each new mechanic's use per game
+  and on/off gap on the same seeds, `design_check.py --quiet` and any diff review. A card-fit edit after a freeze
+  redoes every frozen read; a fix after it replays the frozen seeds and bumps the revision.
+
 ## House wording
 
 Use the house terms (`HOUSE_TERMS` in `crates/aic-sim/src/docs/blocks.rs`, printed in
 [player-aid.md](player-aid.md); *Facility*: "building" is always a card, Harden goes on a facility) and let the
-rulebook carry the rest. **American English** everywhere (Mobilization, Armored, Modeling): `docs --check` refuses a
-British spelling.
+rulebook carry the rest, in American English (`docs --check` refuses a British spelling).
 
 ## Legend
 
@@ -140,8 +152,8 @@ requirement plates are in [rules/card-grammar.md](rules/card-grammar.md) (*Where
 |---|---|
 | Square tile | a resource (cards included) |
 | Disc | a token on a card: alone, on this card ("here") |
-| Bare silhouette | a piece on the board, or moving one. Each piece has one symbol, the map's where the map draws one: ambassador, agent (a figure in a brimmed hat), node, botnet, troop, drone (chevrons) |
-| Place after a piece (dark frame) | where: a city, station or factory glyph, only that kind (a cube) or on or next to it (a botnet, agents, ambassadors); a country, in the target's country |
+| Bare silhouette | a piece on the board, or moving one; one symbol a piece, the map's where it draws one (agent: a figure in a brimmed hat; drone: chevrons) |
+| Place after a piece (dark frame) | where: a site glyph, only that kind (a cube) or on or next to it (a botnet, agents, ambassadors); a country, in the target's country |
 | Ringed circle | a tag; an empty ring, a tag of any kind |
 | Number before an icon | how many; no number means 1 |
 | Minus before an icon | pay or lose it, 1 included, and nothing else: every paid cost, an Action's included |
@@ -162,13 +174,5 @@ requirement plates are in [rules/card-grammar.md](rules/card-grammar.md) (*Where
 | Clock | delay only: a threat waits a round |
 | Wall (bricks) | no agent may arrive: with an agent and a hex, a firewall; with a country, a cordon |
 
-## Event lines
-
-An event card prints only the line kinds in `content::EVENT_LINE_KINDS`, each with its icon there (`Content::check`
-holds to it): Infiltrate, Muster, Income, New factory, Discord, Unity back, Blackout, Node loss, Forced March,
-Botnet spread, Fallout, Spill and Grow. Lines print in a fixed order: the threat, Infiltrate (two at stage III),
-Muster, at most two other lines, Spill, Grow. Event faces have no icon row yet. A new kind is Matt's call.
-
-A price rise on paper needs a screen: small raises add up. Reason every price in [card-pricing.md](card-pricing.md),
-record the change in [rules-history.md](rules-history.md). Center a rate sheet on the printed prices before reading
-outliers: off center, most of the set reads wrong.
+Event cards' lines: [rules/card-grammar.md](rules/card-grammar.md), *Event lines*. A price rise on paper needs a screen: small raises add up. Reason every price in [card-pricing.md](card-pricing.md).
+Center a rate sheet on the printed prices before reading outliers: off center, most of the set reads wrong.

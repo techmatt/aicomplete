@@ -6,7 +6,7 @@
 //! and `docs/harms.md` are generated whole (the ledger's checks fail the run), and so
 //! are `docs/player-aid.md` (268: the table's reference sheet, `aid`, then the house
 //! terms, printed in `docs/rules/README.md`'s *Terms* too) and `web/card/faces.json`, every card's face from its ops
-//! (`aic_core::face`); `docs/agents.md` holds the `strategies` block and
+//! (`aic_core::face`), and `web/card/adversary.json` (267: the adversary reference card's words); `docs/agents.md` holds the `strategies` block and
 //! `docs/rulebook.md` the `rulebook_difficulty` block (§21's table). The run fails
 //! on a harm-ledger check, a block missing or doubled, a rules file or page over
 //! 15 KB (`run::DOC_BUDGET`), a stale rules-revision line, a rules file quoting words

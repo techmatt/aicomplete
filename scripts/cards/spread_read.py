@@ -5,7 +5,7 @@ round (new cities a game corrupted in round N, and the share of games with one b
 
     python scripts/cards/spread_read.py FILE=SPEC[@TAG] [FILE=SPEC[@TAG] ...] [--rounds] [--pool-agents] [--legacy]
 
-FILE is a farmed games JSONL (headerless) and SPEC its spec (`experiments/farm/<name>.json` or a path); TAG names
+FILE is a farmed games JSONL (a read folder too; a header line or a half-written last line is skipped) and SPEC its spec (`experiments/farm/<name>.json` or a path); TAG names
 its rows (two revisions of one spec, say). The arm is
 the variant's name after its pair prefix (`bp-sp` -> `sp`; a bare pair name is `base`), so a base spec and a lever
 spec read side by side. `map.cities_corrupted` / `map.cities_retaken` are by-round from r124 (263); an older
@@ -20,10 +20,15 @@ import sys
 from collections import defaultdict
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
+sys.path.insert(0, os.path.join(ROOT, 'scripts'))
+from screens import games_in, source  # noqa: E402
 
 
 def spec_of(s):
-    p = s if os.path.exists(s) else os.path.join(ROOT, 'experiments', 'farm', s + ('' if s.endswith('.json') else '.json'))
+    name = s + ('' if s.endswith('.json') else '.json')
+    p = s if os.path.exists(s) else os.path.join(ROOT, 'experiments', 'farm', name)
+    if not os.path.exists(p):  # 284: a finished item's spec is archived
+        p = os.path.join(ROOT, 'experiments', 'archive', 'farm', name)
     with open(p, encoding='utf-8') as f:
         return json.load(f)
 
@@ -63,17 +68,15 @@ def main():
         path, sp = fs.split('=', 1)
         sp, _, tag = sp.partition('@')
         spec = spec_of(sp)
-        with open(path, encoding='utf-8') as f:
-            for line in f:
-                g = json.loads(line)
-                if 'cell' not in g:
-                    continue
-                arm, agent = label(spec, g['cell'])
-                if tag:
-                    arm = f'{tag} {arm}' if arm != 'base' else tag
-                if a.pool_agents:
-                    agent = 'both'
-                groups[(arm, agent, g['difficulty'])].append(g)
+        for g in games_in(source(path)[0]):
+            if 'cell' not in g:
+                continue
+            arm, agent = label(spec, g['cell'])
+            if tag:
+                arm = f'{tag} {arm}' if arm != 'base' else tag
+            if a.pool_agents:
+                agent = 'both'
+            groups[(arm, agent, g['difficulty'])].append(g)
     print('| arm | agent | d | games | win % | ±SE | rounds | won in | deck-empty | botnets at cap | new cities a game | games with one | retakes | freed |')
     print('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|')
     tables = {}

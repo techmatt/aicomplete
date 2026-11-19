@@ -70,7 +70,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("research_strong_at", 0, 5, "259: the difficulty level from which the research rule fires its stronger effect"),
 ];
 
-/// r80 (ruling #41): the adversary turn's four beats, printed as a strip on the adversary board, with the round
+/// r80 (ruling #41): the adversary turn's three beats (275; r80 had four), printed as a strip on the adversary board, with the round
 /// phases each runs (working names: a rename is this one edit). Threat resolution stays its own round step. 247
 /// (241's pick): read only by a test that holds the round's phases to the strip, so built only for tests.
 #[cfg(test)]

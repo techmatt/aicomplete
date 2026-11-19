@@ -55,7 +55,7 @@ one adversary mark.**
 - **2 agents on a player's node hex destroy the node** (`corrupt_node_at`; a node rule, not corruption: protections
   apply; checked only when the site doesn't corrupt); its agents go to the supply and **it leaves no mark**.
 - **Fallout** is the one scar: a token on free open land (no facility, node or Fallout); nothing is built there, and
-  each drips `blight_discord` (1) Discord a round. All four adversity sources print it ([harms.md](../harms.md)): a
+  each drips `blight_discord` (1) Discord a round. All four adversity sources (threats, Discord cards, adversary events, projects) print it ([harms.md](../harms.md)): a
   Fallout line's next to the lowest-numbered corrupted city, a threat's on or next to its anchor, the others next to
   their site (ties: lower country, then number); none free, it is lost. Lift Fallout ([economy.md](economy.md)) and
   some cards take one in reach off.

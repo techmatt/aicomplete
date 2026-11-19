@@ -10,7 +10,7 @@ Needs the root README's *Toolchain*.
 
 ```sh
 cd web
-npm install                    # once per worktree
+npm ci                         # once per worktree
 npm run dev [-- --port N]      # builds the wasm, then serves http://localhost:5173/ (or port N)
 npm run wasm                   # only rebuild web/src/wasm/ from crates/aic-wasm
 npm run check                  # typecheck (needs web/src/wasm/: npm run wasm first)
@@ -111,8 +111,8 @@ release `aic-sim` (`AIC_SIM`); its environment variables and defaults are atop t
   14 a game, plus the end and any failure).
 - **Fail the run** (exit 1): console errors and blocking dialogs, `stuck` (no legal action without an outcome),
   the error bar, page scroll, placeholder text (`undefined`, `NaN`), elements off screen with no scroll to them,
-  `hidden-target`, `clipped` (no ellipsis), `token-unknown`, `stale-word` (an old house word on screen: agents,
-  Operatives), `case` (`aic-sim` could not play it). **Reported for a look:** `no-control` (a legal action with no
+  `hidden-target`, `clipped` (no ellipsis), `token-unknown`, `stale-word` (an old name for a house word on screen,
+  `STALE` in the script), `case` (`aic-sim` could not play it). **Reported for a look:** `no-control` (a legal action with no
   control on screen), `raw-id`, `truncated-no-hover`, `truncated`, overlaps, undrawn view tokens, steps over
   150 ms, heap growth over 50 MB, `mark-over-number` (a highlight ring across a hex number) and
   `warn-at-start` (a value drawn as a warning at a game's first phase, as a full allotment drawn as danger).

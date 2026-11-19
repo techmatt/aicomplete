@@ -8,7 +8,7 @@ pub enum StandardAction {
     Station,
     Remove,
     /// 210 (Matt, candidate): research cubes lift 1 Fallout token in reach, the one standard action that
-    /// removes corruption (r91 cut Clear, which took markers for credits).
+    /// removes Fallout (r91 cut Clear, which took markers for credits).
     Lift,
     /// 149: a free move from the seat's Dispatch (the paid Move is gone).
     Move,
@@ -16,7 +16,7 @@ pub enum StandardAction {
     /// 137: liberate an adversary site with massed ambassadors (it replaced
     /// Free a station and the city fallback). 262 (Matt, 2026-11-17) cut the Claim action beside it: cards claim.
     Liberate,
-    /// 105: the general converter, a research cube for insight, no limit a round.
+    /// 105: the general converter, a research cube for insight, `insight_per_round` times a round (253).
     Insight,
     /// 136: spend an ambassador to move 1 Discord off the Discord track.
     Envoy,

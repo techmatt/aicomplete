@@ -11,7 +11,7 @@ game. The rules: [rules/](rules/README.md).
 - **No global RNG**: no `thread_rng`, `rand::random` or `getrandom`; only `GameState::rng`'s per-purpose streams
   (`rng.rs`), so adding or reordering modules never shifts another's numbers. Each variant declares its purposes
   (`VariantDef::rng`), none shared between modules; a rule reached from another module's step draws through
-  `Cx::deck_rng` or `Cx::threat_rng`. **Fixed-width draws**: only `Stream::below(n)`, on `u32`; never a `usize`
+  `Cx::deck_rng`, `Cx::threat_rng` or `Cx::adversary_rng`. **Fixed-width draws**: only `Stream::below(n)`, on `u32`; never a `usize`
   through rand (native and wasm32 differ).
 - **No hash-order leaks**: maps are ordered (`BTreeMap`; `FlatMap` in the state); iteration follows seat, piece or
   `Dir::ALL` order; no `HashMap`/`HashSet` reaching the state or results. The `Key` interner is the one global,
@@ -65,8 +65,8 @@ claims, liberations, cancels, converts, removal ops); nodes placed by
 sways the Discord (`board::lose_node` for losses no protection absorbs).
 **A player owns a station or factory** by its `cube(seat)` (`common::cube_owner`), put on by `board::claim_site`,
 `liberate_site` (`own`), effects' `build_station` / `build_factory` and the Station and Factory standard actions;
-read by `energy_for_sale`, `corrupt.rs`, `plan.rs` (`CreateIf::Player`), `effects/team.rs` `take_site` and the
-agents' `eval.rs`. Under `board.cities_unowned` (baseline 1) no city takes a cube: setup's `bound_city` and a
+read wherever ownership matters (production, destruction, corruption, `plan.rs`'s `CreateIf::Player`,
+`take_site`). Under `board.cities_unowned` (baseline 1) no city takes a cube: setup's `bound_city` and a
 liberation leave it neutral, and a city's energy goes to its host (`common::host_assignment`, `city_host`);
 `Where::Owned` (content's `per_site` `owned`) counts hosted cities too. `git grep cube_owner`, `city_host` and
 `owned` for a rule about ownership or hosting.
@@ -167,7 +167,7 @@ icon (`tests/face.rs`) and an effect ledger off `value.rs` ([card-pricing.md](ca
 
 Clients need no code per module: `Rules::view(&state)` (wasm `view(state)`) turns any state into `view.rs`'s fixed
 shapes. Map geometry is not in the state: `Map::build` derives it (and a military base each side of each printed
-front) from `content/map.json`; UIs get it from wasm's `board(config)`.
+front) from `content/map.json`; UIs get it from the view (`View::hexes`); wasm's `board(config)` returns the whole `Map`, read only by `scripts/wasm-smoke.mjs`.
 
 The engine fills token stacks, seats' resources, exhausted cards no module shows (`engine.exhausted`) and every
 `vars` track as a global; `Module::view` adds through `ViewOut` only what it can't derive, and its `bookkeeping`

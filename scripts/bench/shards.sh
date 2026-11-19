@@ -10,7 +10,8 @@
 # shard is one thread, so SHARDS is the cores this takes; each runs below normal (`nice`). Shard outputs go to
 # OUT.parts/N.jsonl (each game's time to OUT.parts/N.err); OUT is `aic-sim farm SPEC --header` for the whole range,
 # then the shards in seed order: a games file with its header, which the read scripts take as it is (no =SPEC).
-# Prints SHARDS-DONE OUT at the end; a failed shard stops it before OUT is written.
+# Prints SHARDS-DONE OUT at the end. It waits for every shard; if any failed, it prints `SHARD k FAILED: <its .err>`
+# and that file's last 5 lines to stderr for each, and exits 1 without writing OUT.
 set -e
 [ $# -eq 6 ] || { echo "usage: shards.sh EXE DIR SPEC FIRST COUNT OUT" >&2; exit 2; }
 EXE=$1; DIR=$2; SPEC=$3; FIRST=$4; COUNT=$5; OUT=$6
@@ -29,7 +30,20 @@ while [ $i -lt $N ]; do
   pids="$pids $!"
   i=$(( i + 1 ))
 done
-for p in $pids; do wait $p; done
+# Every shard is waited for (a bare `wait` under set -e left the rest running at the first failure).
+failed=""
+k=0
+for p in $pids; do
+  if ! wait $p; then failed="$failed $k"; fi
+  k=$(( k + 1 ))
+done
+if [ -n "$failed" ]; then
+  for k in $failed; do
+    echo "SHARD $k FAILED: $OUT.parts/$k.err" >&2
+    tail -n 5 "$OUT.parts/$k.err" >&2
+  done
+  exit 1
+fi
 (cd "$DIR" && "$EXE" farm "$SPEC" --header --seed $FIRST --games $COUNT) > "$OUT"
 j=0
 # 283: a shard starting at the spec's first seed leads with its own header (`Farm::lead`): the one above stands.

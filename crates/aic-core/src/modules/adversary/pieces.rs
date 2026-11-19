@@ -83,18 +83,6 @@ pub fn remove(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) -> i64 {
     k
 }
 
-/// Removes every agent in country `c` to the supply (one
-/// tally for them all); returns how many.
-pub fn remove_all_in_country(g: &mut GameState, cx: &mut Cx, c: usize) -> i64 {
-    let w = cx.world;
-    let mut removed = 0;
-    for &h in &w.map.countries[c].hexes {
-        let n = g.tokens(h, ADV_AMBASSADOR);
-        removed += remove(g, cx, h, n);
-    }
-    cx.tally(g, "adversary.ambassadors_removed", removed);
-    removed
-}
 
 /// An adversary troop lands on hex `h` (the caller counts it). `source` names what made it for 201's by-round
 /// measure (`map.troops_placed.<source>`: factory, muster, threat, project), a stat only. r98 (Matt, 2026-11-13,

@@ -9,7 +9,7 @@ client. Fonts are fixed: Saira Condensed titles and figures, Source Serif 4 body
 `picks/card_fonts_r1.json`). **Sizes are measured, not guessed:** `renderCard` leaves 7.5 pt text
 and a 15 pt title, and `await fitCards(root)` sizes the cards in `root` once they are in the
 page. Each box (a building's top box, the effect box below the art) walks the ladder alone,
-largest first, 7.5 / 6.9 / 6.3 / 5.8 pt then `dense` 5.4 (which shrinks its icons too), until
+largest first: 7.5 pt, 7.5 pt with smaller icons (`icons-1`, kept below), 6.9 / 6.3 / 5.8 pt, then `dense` 5.4, until
 its icon rows and text leave 1.6 mm of its height. A title stays on one line and shrinks in
 0.25 pt steps until it clears its plate by 1 mm a side, floor 10.5 pt. A caller that forgets gets
 the default sizes, so a long card overflows and a long title runs wide. The viewer calls it

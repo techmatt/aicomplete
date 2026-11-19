@@ -8,6 +8,8 @@
 //   AIC_SIM       aic-sim binary (default ../target/release/aic-sim[.exe])
 //   AIC_SWEEP_OUT output folder (default web/sweep-out/, git-ignored)
 //   AIC_SWEEP_SEEDS games per case and mode (default 3; --quick 1)
+//   AIC_SWEEP_SEED  first seed of each case's games (default 100)
+//   AIC_SWEEP_VERBOSE=1 times each moment
 //   AIC_SWEEP_VIEW  the viewer's view to check: debug (default) or player (242: its no-control check
 //                 counts each seat to act's actions with that seat shown)
 // For each case, aic-sim plays games (greedy, or the case's agent) and saves them as records; the sweep then

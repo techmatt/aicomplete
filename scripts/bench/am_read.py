@@ -17,11 +17,11 @@ import sys
 from collections import defaultdict
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-from screens import cells_of, content, stream  # noqa: E402
+from screens import PEAKS, cells_of, content, stream  # noqa: E402
 from read_lib import split_variant  # noqa: E402
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
-AM = 4  # games.jsonl's resource order: credits, insight, energy, chips, antimatter, cubes, card tokens, ambassadors
+AM = PEAKS.index('antimatter')
 PAIRS = {'bp': ('builder', 'protector'), 'br': ('builder', 'researcher'), 'pr': ('protector', 'researcher')}
 BURNS = {'teardown': 'builder', 'meltdown': 'researcher', 'reclaim': 'protector'}
 PLANTS = {'penning_trap_array', 'antiproton_foundry', 'positron_storage_ring', 'dark_fiber_collider',

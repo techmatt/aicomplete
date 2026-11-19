@@ -326,3 +326,21 @@ fn the_art_samples_name_cards_in_content() {
     let gone: Vec<&&str> = named.iter().filter(|n| !ids.contains(n)).collect();
     assert!(gone.is_empty(), "samples.json names cards not in content: {gone:?}");
 }
+
+/// 284: `experiments/history.md` indexes every item's write-up (five went unindexed, three of them rules bumps):
+/// a results folder with a `README.md` is named in a row (`results/<folder>/`).
+#[test]
+fn every_write_up_has_a_history_row() {
+    let exp = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../experiments");
+    let history = std::fs::read_to_string(exp.join("history.md")).unwrap();
+    let mut missing = Vec::new();
+    for e in std::fs::read_dir(exp.join("results")).unwrap() {
+        let p = e.unwrap().path();
+        let name = p.file_name().unwrap().to_string_lossy().to_string();
+        if p.join("README.md").is_file() && !history.contains(&format!("results/{name}/")) {
+            missing.push(name);
+        }
+    }
+    missing.sort();
+    assert!(missing.is_empty(), "experiments/history.md has no row for {missing:?}: add `| NNN summary | Rev | [folder](results/folder/README.md) |`");
+}
