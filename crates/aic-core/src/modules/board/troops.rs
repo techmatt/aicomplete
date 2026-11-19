@@ -24,7 +24,9 @@ pub(super) fn battle(g: &mut GameState, cx: &mut Cx) -> Res {
     if passes.iter().all(|&p| p == 0) {
         return Ok(());
     }
-    cx.note(None, || "War: the fronts fight".into());
+    // 289 (D129): each front with Drones says its result below; with none anywhere, say so.
+    let armed = w.map.fronts.iter().zip(&passes).any(|(f, &p)| p > 0 && f.bases.iter().any(|&b| g.tokens(b, UNIT) > 0));
+    cx.note(None, || if armed { "War: the fronts fight".into() } else { "War: no Drones at any front".into() });
     let mut destroyed = 0;
     for (i, f) in w.map.fronts.iter().enumerate() {
         let steps = passes[i];
@@ -47,6 +49,22 @@ pub(super) fn battle(g: &mut GameState, cx: &mut Cx) -> Res {
         } else {
             (bb, f.countries[0], ub - ua)
         };
+        // 289 (D129): the war's result in words (the turn panel showed "War: the fronts fight", then "-8 Drone").
+        if ua + ub > 0 {
+            let [ca, cb] = f.countries.map(|c| country_name(&w, c as usize));
+            let drones = |k: i64| format!("{k} Drone{}", if k == 1 { "" } else { "s" });
+            let strikes = if steps > 1 { format!(" {steps} times") } else { String::new() };
+            cx.note(Some(from), || {
+                let result = if n == 0 {
+                    "they cancel out".to_string()
+                } else {
+                    let winner = if ua > ub { &ca } else { &cb };
+                    let loser = country_name(&w, rival as usize);
+                    format!("{winner}'s {} cross{} to strike {loser}'s nearest factor{}{strikes}", drones(n), if n == 1 { "es" } else { "" }, if n == 1 { "y" } else { "ies" })
+                };
+                format!("War on the {ca}-{cb} front: {} against {}: {result}; all are used up", drones(ua), drones(ub))
+            });
+        }
         // 135: a front fighting its war step twice strikes twice with its surplus
         // (the units cancel once: a second step after the first has none left).
         for _ in 0..n * steps {
@@ -60,6 +78,7 @@ pub(super) fn battle(g: &mut GameState, cx: &mut Cx) -> Res {
                     .filter(|&h| g.tokens(h, FACTORY) > 0 && !corrupted(g, h)),
             );
             let Some(h) = target else {
+                cx.note(None, || format!("{} has no factory left to strike", country_name(&w, rival as usize)));
                 break;
             };
             // r80 (ruling #52) took the node off war; r83 (Matt, 2026-11-11, amendment 8616) puts it back as the
@@ -421,6 +440,14 @@ fn strike_from(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
         return Ok(false);
     };
     let (x, k) = targets[i].clone();
+    // 289 (D133): the strike named neither the troop nor that it is spent; written before any protection choice, so
+    // a strike answered in the owner's own frame says what struck.
+    let spent = w.int("board.troop_spent") > 0;
+    cx.note(Some(x), || {
+        let piece = piece_words(&k);
+        let the = if piece.starts_with("Seat ") { "" } else { "the " };
+        format!("The adversary troop at {} strikes {the}{piece} at {}{}", hex_name(&w, h), hex_name(&w, x), if spent { " and is used up" } else { "" })
+    });
     cx.tally(g, "board.troop_strikes", 1);
     cx.per_round(g, "map.troop_strikes", 1);
     if destroy_piece(g, cx, x, &k, Cause::Troop)? {

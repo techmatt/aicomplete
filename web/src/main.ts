@@ -248,11 +248,13 @@ function render() {
     for (const h of hexesIn(f.action)) changed.add(hexKey(h));
   }
   // 242: the player view steps through the adversary's turn: only the shown step's hexes are outlined.
-  const turn = mode === 'player' ? turnHexes(f, stepPhase()) : null;
+  const turn = mode === 'player' ? turnHexes(f, stepPhase(), !!shown.outcome) : null;
   if (turn) {
     changed.clear();
     for (const h of turn) changed.add(h);
   }
+  // 289 (D129): during a hex answer only the hexes to pick are marked (about 23 changed-hex outlines hid the 2).
+  if (mode === 'player' && targets.size) changed.clear();
   const sources = new Set(shown.threat_sources.flatMap((s) => s.hexes.map((i) => hexKey(shown.hexes[i].hex))));
   renderBoard(ui.board, shown, { targets, changed, sources });
   renderPrompt(targets.size);
@@ -781,6 +783,14 @@ ui.play.onclick = () => {
 // Chromium, so it can't tell); Tab or an arrow key moves focus on purpose.
 let pointerFocus = false;
 document.addEventListener('pointerdown', () => { pointerFocus = true; }, true);
+
+// 289 (D127): the player view sizes the draft's printed cards to the window: a resize redraws it.
+let resizeQueued = false;
+window.addEventListener('resize', () => {
+  if (mode !== 'player' || resizeQueued || !tl) return;
+  resizeQueued = true;
+  requestAnimationFrame(() => { resizeQueued = false; render(); });
+});
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Tab' || e.key.startsWith('Arrow')) pointerFocus = false;

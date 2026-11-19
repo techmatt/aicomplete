@@ -12,6 +12,7 @@
 //   AIC_SWEEP_VERBOSE=1 times each moment
 //   AIC_SWEEP_VIEW  the viewer's view to check: debug (default) or player (242: its no-control check
 //                 counts each seat to act's actions with that seat shown)
+//   AIC_SWEEP_SHOT_SIZE  the size shot and checked in full (default 1366x768; 1920x1080 or 2560x1440)
 // For each case, aic-sim plays games (greedy, or the case's agent) and saves them as records; the sweep then
 // watches each record step by step (realistic games: wins, purges, late rounds) and
 // plays as many fresh games of the same resolved config by picking legal actions at
@@ -92,8 +93,15 @@ const cases = CASES.filter((c, i) => (only.length ? only.includes(c.name) : !qui
 
 /** Viewport sizes: the first is used for play, the others are checked at every capture. */
 const SIZES = [[1366, 768], [1920, 1080], [2560, 1440]];
+// 289: AIC_SWEEP_SHOT_SIZE (e.g. 1920x1080) shoots and fully checks at that size, the others checked for layout.
+if (process.env.AIC_SWEEP_SHOT_SIZE) {
+  const m = /^(\d+)x(\d+)$/.exec(process.env.AIC_SWEEP_SHOT_SIZE);
+  const i = m ? SIZES.findIndex(([w, h]) => w === Number(m[1]) && h === Number(m[2])) : -1;
+  if (i < 0) throw new Error(`AIC_SWEEP_SHOT_SIZE is one of ${SIZES.map((s) => s.join('x')).join(', ')}, not ${process.env.AIC_SWEEP_SHOT_SIZE}`);
+  SIZES.unshift(...SIZES.splice(i, 1));
+}
 /** Checks that fail the run; the rest are reported for a look. */
-const HARD = new Set(['console', 'stuck', 'error-banner', 'page-scroll', 'placeholder', 'offscreen', 'hidden-target', 'case', 'clipped', 'token-unknown', 'stale-word']);
+const HARD = new Set(['console', 'stuck', 'error-banner', 'page-scroll', 'placeholder', 'offscreen', 'hidden-target', 'case', 'clipped', 'token-unknown', 'stale-word', 'below-fold']);
 /** One act or seek slower than this (ms, render included) is a frame-time spike. */
 const SPIKE_MS = 150;
 /** Captures per game, so a long game can't flood the sheets. */
@@ -279,6 +287,18 @@ const PAGE_LIB = String.raw`(() => {
         if (!el.closest('code, pre, #data') && STALE.test(t)) add('stale-word', label(el) + ' (' + t.match(STALE)[0] + ')');
       }
     }
+    // 289 (D127, D133): the player view's draft and keep buttons and the open turn panel show without scrolling: each
+    // inside its scroll pane's visible area and the window, as drawn (a player could pass not seeing Keep).
+    if (aic.mode === 'player') {
+      const fold = [...document.querySelectorAll('#p-seat .pdcard .pact, #p-turn')].filter((el) => !el.hidden && vis(el));
+      for (const el of fold) {
+        const r = el.getBoundingClientRect();
+        const sp = scrollParent(el);
+        const pr = sp && sp.getBoundingClientRect();
+        const box = sp ? { left: pr.left + sp.clientLeft, top: pr.top + sp.clientTop, right: Math.min(innerWidth, pr.left + sp.clientLeft + sp.clientWidth), bottom: Math.min(innerHeight, pr.top + sp.clientTop + sp.clientHeight) } : view;
+        if (!inside(r, box)) add('below-fold', label(el) + ' ends at ' + Math.round(r.bottom) + ', its pane shows to ' + Math.round(box.bottom));
+      }
+    }
     // Buttons: each one on screen must be the element under its own center (not covered).
     const buttons = [...document.querySelectorAll('button')].filter((b) => vis(b) && !b.closest('dialog'));
     for (const b of buttons) {
@@ -412,7 +432,7 @@ async function capture(page, game, what) {
   // The other layouts: checked, not shot.
   for (const [w, h] of SIZES.slice(1)) {
     await page.size(w, h);
-    for (const i of await page.js('window.__aicSweep.checks()')) if (/page-scroll|offscreen|hidden-target|overlap/.test(i.kind)) found.push({ ...i, what: `${w}x${h}: ${i.what}` });
+    for (const i of await page.js('window.__aicSweep.checks()')) if (/page-scroll|offscreen|hidden-target|overlap|below-fold/.test(i.kind)) found.push({ ...i, what: `${w}x${h}: ${i.what}` });
   }
   await page.size(...SIZES[0]);
   const errs = page.consoleErrors.splice(0);

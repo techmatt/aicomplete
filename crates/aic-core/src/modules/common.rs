@@ -355,6 +355,15 @@ pub fn piece_name(kind: &str) -> String {
     }
 }
 
+/// 289 (D133): [`piece_name`] for a note, a node "Seat 2's node" as "Seat 2" beside it. Options keep
+/// [`piece_name`]'s words: a record's answer is matched by its option's label, so a changed label strands it.
+pub fn piece_words(kind: &str) -> String {
+    match kind.split_once(':') {
+        Some(("node", s)) => format!("Seat {s}'s node"),
+        _ => piece_name(kind),
+    }
+}
+
 /// "Cintamani #5": the printed piece's name and hex number (020: "C1 #5",
 /// a country index the board never shows).
 pub fn hex_name(w: &World, h: usize) -> String {

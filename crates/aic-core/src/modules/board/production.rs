@@ -27,6 +27,12 @@ pub fn corp_troops_at(g: &mut GameState, cx: &mut Cx, base: usize, n: i64, past_
         cx.add_tokens(g, base, UNIT, 1);
         made += 1;
     }
+    // 289 (D129): the turn panel showed "+1 Drone" with no word of where.
+    if made > 0 {
+        cx.note(Some(base), || {
+            format!("{made} Drone{} arrive{} at the base at {}", if made == 1 { "" } else { "s" }, if made == 1 { "s" } else { "" }, hex_name(&w, base))
+        });
+    }
     made
 }
 

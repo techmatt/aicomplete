@@ -367,7 +367,7 @@
       {"key": "spend:credits", "name": "Credits spent", "role": "resource"},
       {"key": "spend:energy", "name": "Energy spent", "role": "resource"},
       {"key": "spend:chips", "name": "Chips spent", "role": "resource"},
-      {"key": "spend:antimatter", "name": "Antimatter spent", "role": "resource"},
+      {"key": "spend:antimatter", "name": "Antimatter spent (d3-d4)", "role": "resource", "levels": [3, 4], "why": "289 (Matt, 2026-11-19): read at d3-d4 seats only; a d0-d1 seat may win without antimatter"},
       {"key": "spend:research_cubes", "name": "Research cubes spent", "role": "resource"},
       {"key": "spend:ambassadors", "name": "Ambassadors spent", "role": "resource"}
     ]

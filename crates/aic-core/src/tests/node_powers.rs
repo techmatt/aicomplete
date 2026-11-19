@@ -76,6 +76,26 @@ fn the_base_route_costs_only_the_step_once_a_round() {
     }
 }
 
+/// 289 (D129): an unaffordable Growth option's status names its numbers (it read "unaffordable: the next track
+/// space's energy, after the power's own" with none), and no power reads "ready" once the game is over.
+#[test]
+fn an_unaffordable_power_says_what_is_short() {
+    let (rules, mut g) = at_step(&[], 5);
+    let w = rules.world();
+    let step = step_cost(&w, 5);
+    assert!(step > 0);
+    set_res(&mut g, 0, Resource::Energy, step - 1);
+    set_res(&mut g, 0, Resource::Credits, 50);
+    let status = |g: &GameState, name: &str| {
+        let b = rules.view(g).seats[0].board.clone().expect("a board");
+        b.cards.into_iter().find(|c| c.name == name).expect("the power").status
+    };
+    let st = status(&g, free_growth(0));
+    assert_eq!(st, format!("unaffordable: needs {} (for the next track space); you have {}", Resource::Energy.amount(step), step - 1));
+    g.outcome = Some(crate::state::Outcome { won: false, round: g.round, reason: "test".into(), detail: String::new() });
+    assert_eq!(status(&g, free_growth(0)), "game over");
+}
+
 /// 261: a node route is used for its node: with no free hex next to the seat's nodes it isn't offered (Outpost, the
 /// Protector's, was paid in full for its ambassador alone), and a placement there asks no track question.
 #[test]

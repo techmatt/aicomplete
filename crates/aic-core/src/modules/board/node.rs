@@ -134,6 +134,12 @@ pub fn can_pay_placement(w: &World, g: &GameState, seat: usize, gained: i64) -> 
 /// step is cheaper), with `gained` more energy than it holds: a two-node Growth option is offered only when both
 /// its nodes can go down (it was paid in full for one).
 pub fn can_pay_placements(w: &World, g: &GameState, seat: usize, n: i64, gained: i64) -> bool {
+    placements_energy(w, g, seat, n).is_some_and(|cost| g.resource(seat, Resource::Energy) + gained >= cost)
+}
+
+/// 289 (D129): the energy the `n` cheapest next steps of seat `s` cost (as [`can_pay_placements`] takes them), or
+/// `None` with fewer than `n` steps left: the figure an "unaffordable" status names.
+pub fn placements_energy(w: &World, g: &GameState, seat: usize, n: i64) -> Option<i64> {
     let b = ai::board(w, seat);
     let (mut t1, mut t2) = (track_taken(g, seat), track2_taken(g, seat));
     let mut cost = 0;
@@ -153,10 +159,10 @@ pub fn can_pay_placements(w: &World, g: &GameState, seat: usize, n: i64, gained:
                 cost += c;
                 t2 += 1;
             }
-            (None, None) => return false,
+            (None, None) => return None,
         }
     }
-    g.resource(seat, Resource::Energy) + gained >= cost
+    Some(cost)
 }
 
 /// Places one node for `seat`: the next token off its track (uncovering

@@ -9,7 +9,7 @@ import { actionLabel, actionRule, amount, contentIds, countryName, escapeHtml as
 import { phaseGroups } from '../log';
 import { cardChip, pilesHtml, seatValuesHtml, varsHtml } from '../panels';
 import type { Frame } from '../session';
-import { printable, printedCard } from './printed';
+import { CARD_PX, printable, printedCard } from './printed';
 import './player.css';
 
 export interface PlayerCtx {
@@ -131,7 +131,9 @@ function handHtml(v: View, ctx: PlayerCtx, s: number, mine: Action[]): string {
     const acts = mine.filter((a) => (a.type === 'play' || a.type === 'sell') && a.card === c.id)
       .map((a) => btn(a, a.type === 'play' ? 'Play' : actionLabel(a, false, false, ctx.cx).replace(/^sell [^(]*/, 'Sell '), a.type === 'play' ? 'primary' : 'minor', actionLabel(a, false, true, ctx.cx)))
       .join('');
-    return tile(s, c, 'cards.hand', acts);
+    // 289 (D123): while a question is open the hand shows no play marks (a free build's prompt stood beside its
+    // card's "unaffordable"); the printed cost stays.
+    return tile(s, v.choice ? { ...c, status: '' } : c, 'cards.hand', acts);
   });
   return `<div class="psec"><h4>${esc(hand.label)} <small>${hand.cards.length}</small></h4><div class="ptiles">${tiles.join('') || '<span class="empty">no cards in hand</span>'}</div></div>`;
 }
@@ -159,7 +161,8 @@ function draftHtml(v: View, ctx: PlayerCtx, s: number, mine: Action[]): string {
       ${printable(c.id) ? '' : tile(s, c, key, '')}
       <div class="pd-note">${esc(note(c))}</div><div class="pd-acts">${act(c)}</div></div>`).join('')}</div>`;
   if (packet?.cards.length) {
-    parts.push(`<h4>${esc(packet.label)} <small>take one; the rest pass on</small></h4>` + row(packet.cards, 'cards.packet',
+    // 289 (D129): "take one" only once there is a Draft button (it showed before the tier build was chosen).
+    parts.push(`<h4>${esc(packet.label)}${drafts.length ? ' <small>take one; the rest pass on</small>' : ''}</h4>` + row(packet.cards, 'cards.packet',
       (c) => drafts.filter((a) => a.card === c.id).map((a) => btn(a, 'Draft', 'primary')).join(''),
       (c) => {
         // 261: the seat's own keep price, from the tile's status (the config's base ignored the keep upgrade).
@@ -173,6 +176,42 @@ function draftHtml(v: View, ctx: PlayerCtx, s: number, mine: Action[]): string {
       (c) => `${c.cost ?? '?'} credits to play · ${c.status}`));
   }
   return `<div class="psec draft">${parts.join('')}</div>`;
+}
+
+/** The draft's printed cards at their largest (2560x1440 and 1920x1080 hold them; 1366x768 doesn't). */
+const DRAFT_SCALE = 0.8;
+/** The frame the draft was last drawn for. */
+let draftFrame: Frame | null = null;
+
+/**
+ * 289 (D127): puts the draft's printed cards in their slots at `scale`, then shrinks them (to 0.4 at least) until the
+ * lowest offered card, its Draft / Keep button included, ends inside the seat panel's visible height: at 1366x768
+ * the cards at 0.8 pushed the buttons below the fold while "Done keeping (pass)" showed.
+ */
+function printDraft(seat: HTMLElement, scale: number) {
+  const place = (sc: number) => {
+    for (const el of seat.querySelectorAll<HTMLElement>('.pslot[data-print], .printed-host[data-print]')) {
+      const id = el.dataset.print!;
+      const host = printedCard(id, sc);
+      if (host) {
+        host.dataset.print = id;
+        el.replaceWith(host);
+      } else el.remove();
+    }
+  };
+  place(scale);
+  const cards = [...seat.querySelectorAll<HTMLElement>('.pdcard')];
+  if (!cards.length || !seat.querySelector('.printed-host') || !seat.clientHeight) return;
+  for (let i = 0; i < 4 && scale > 0.4; i++) {
+    const limit = Math.min(seat.getBoundingClientRect().top + seat.clientHeight, window.innerHeight) - 4;
+    const bottom = Math.max(...cards.map((c) => c.getBoundingClientRect().bottom));
+    if (bottom <= limit) return;
+    // Each row of cards gives up its share of the overflow.
+    const rows = new Set(cards.map((c) => Math.round(c.getBoundingClientRect().top))).size;
+    const h = CARD_PX.h * scale;
+    scale = Math.max(0.4, (scale * (h - (bottom - limit) / rows)) / h);
+    place(scale);
+  }
 }
 
 function powersHtml(v: View, ctx: PlayerCtx, s: number, mine: Action[]): string {
@@ -255,18 +294,26 @@ const ADV_PHASE = /^[BFG] /;
 function turnOf(f: Frame, before: string): Turn['steps'] {
   if (!f.action) return [];
   const groups = phaseGroups(f.events, before).filter((g) => !g.round);
-  if (groups.length < 2) return [];
+  // 289 (D133): an answer given inside the adversary's phases (a node's protection against a troop's strike) runs the
+  // rest of that phase in its own frame: it is a step of the turn too, or the strike went missing from the panel.
+  // Only one that struck or destroyed something: a troop's step answer is no turn of its own.
+  const answered = f.action.type === 'choose' && groups.length === 1 && ADV_PHASE.test(groups[0].label)
+    && groups[0].events.some((e) => e.type === 'note' && / strikes | destroyed| holds: /.test(String(e.text)));
+  if (groups.length < 2 && !answered) return [];
   // A phase that changed nothing is no step.
   return groups.filter((g) => g.events.length).map((g) => ({ label: g.label, events: g.events }));
 }
 
 /** The hexes the shown step of the adversary's turn changed, or null when no turn is open for `f`. */
-export function turnHexes(f: Frame, before: string): Set<string> | null {
+export function turnHexes(f: Frame, before: string, over = false): Set<string> | null {
   if (turn?.frame !== f) {
     const steps = turnOf(f, before);
     // It opens by itself only when the adversary's phases ran (its turn); phases between two of the seats'
-    // decisions wait folded under their Replay button.
-    turn = steps.length ? { frame: f, steps, at: 0, open: steps.some((s) => ADV_PHASE.test(s.label)) } : null;
+    // decisions wait folded under their Replay button. 289 (D129): a frame that ended the game opens at its last
+    // step, the one that ended it (it opened at step 1).
+    turn = steps.length
+      ? { frame: f, steps, at: over ? steps.length - 1 : 0, open: over || steps.some((s) => ADV_PHASE.test(s.label)) }
+      : null;
   }
   if (!turn?.open) return null;
   return new Set(turn.steps[turn.at].events.flatMap(hexesIn).map(hexKey));
@@ -340,11 +387,20 @@ function turnHtml(): string {
     onMap ? `${onMap} piece change${onMap === 1 ? '' : 's'} on the map (outlined)` : '',
     rest ? `${rest} other change${rest === 1 ? '' : 's'} (resources, cards, tracks)` : '',
   ].filter(Boolean);
-  return `<div class="pturn-head"><b>Since your last move</b> <span>step ${t.at + 1} of ${t.steps.length}</span>
+  // 289 (D133): the step's notes come before the step list, which scrolls by itself (at 1366x768 the notes sat
+  // under the list, below the side column's fold).
+  return `<div class="pturn-head"><b>Since your last move</b> <span>step ${t.at + 1} of ${t.steps.length}: ${esc(cur.label)}</span>
       <button type="button" data-turn="-1" ${t.at === 0 ? 'disabled' : ''}>◀</button><button type="button" data-turn="1" ${t.at === t.steps.length - 1 ? 'disabled' : ''}>▶</button>
       <button type="button" data-turn="close">Done</button></div>
-    <ol>${rows}</ol>
-    <div class="pturn-ev"><small>The map shows the board after the turn; outlined: the hexes this step changed.</small><ul>${shownEvents.map((e) => `<li data-hexes="${hexesIn(e).map(hexKey).join(' ')}">${esc(contentIds(String(e.text)))}</li>`).join('')}${others.length ? `<li><small>${others.join('; ')}: the debug view's log lists them</small></li>` : ''}</ul></div>`;
+    <div class="pturn-ev"><ul>${shownEvents.map((e) => `<li data-hexes="${hexesIn(e).map(hexKey).join(' ')}">${esc(contentIds(String(e.text)))}</li>`).join('')}${others.length ? `<li><small>${others.join('; ')}: the debug view's log lists them</small></li>` : ''}</ul><small>The map shows the board after the turn; outlined: the hexes this step changed.</small></div>
+    <ol>${rows}</ol>`;
+}
+
+/** 289 (D133): the step list scrolls by itself; keep the shown step in it. */
+function showTurnStep(el: HTMLElement) {
+  const ol = el.querySelector<HTMLElement>('ol');
+  const now = ol?.querySelector<HTMLElement>('li.now');
+  if (ol && now) ol.scrollTop = Math.max(0, now.offsetTop - ol.offsetTop - ol.clientHeight / 2);
 }
 
 // ---------- render ----------
@@ -368,19 +424,20 @@ export function renderPlayer(ui: PlayerUi, ctx: PlayerCtx) {
   const st = seatStatus(v, ctx.legal, focus);
   const draft = draftHtml(v, ctx, focus, mine);
   ui.seat.style.setProperty('--tint', strong(c?.color ?? '#cccccc'));
+  // 289 (D127): during the draft and keep the packet takes the buildings column's width too (the buildings go under
+  // the powers), and its printed cards are sized so their Draft / Keep buttons show without scrolling.
   ui.seat.innerHTML = `
     <div class="p-head"><span class="swatch"></span><b>${esc(seatName(v, focus))}</b> <small>${esc(countryName(v, s.country))}</small>${st.text ? `<span class="pst ${st.cls}">${st.text}</span>` : ''}</div>
-    <div class="p-body">
+    <div class="p-body${draft ? ' drafting' : ''}">
       <div class="p-info">${seatValuesHtml(v, focus)}</div>
       <div class="p-powers">${powersHtml(v, ctx, focus, mine)}</div>
       <div class="p-hand">${draft}${handHtml(v, ctx, focus, mine)}</div>
       <div class="p-built">${builtHtml(v, ctx, focus, mine)}</div>
     </div>`;
-  for (const slot of ui.seat.querySelectorAll<HTMLElement>('.pslot[data-print]')) {
-    const host = printedCard(slot.dataset.print!, 0.8);
-    if (host) slot.replaceWith(host);
-    else slot.remove();
-  }
+  // The draft opens at the panel's top, once a frame (a later render, a resize, keeps the player's scroll).
+  if (draft && draftFrame !== ctx.frame) ui.seat.scrollTop = 0;
+  draftFrame = draft ? ctx.frame : null;
+  printDraft(ui.seat, DRAFT_SCALE);
 
   // The bar: standard actions, converters, pass, and every action of the seat no component drew.
   // 265 (D109): a standard action by its name and cost, its rule in the hover.
@@ -401,5 +458,6 @@ export function renderPlayer(ui: PlayerUi, ctx: PlayerCtx) {
 
   ui.turn.innerHTML = turnHtml();
   ui.turn.hidden = !turn;
+  showTurnStep(ui.turn);
   ui.more.innerHTML = pilesHtml(v) + varsHtml(v, true);
 }

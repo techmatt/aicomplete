@@ -678,6 +678,12 @@ def usage_rows(games, cfg, boards, countries, base):
         measure = r.get('measure') or role.get('measure', 'seat_game')
         band = r.get('band') or role.get('band')
         row = T.get(k)
+        # 289 (Matt, 2026-11-19): a row naming `levels` reads those difficulties' seats only, not the pooled read
+        # (antimatter spent: a d0-d1 seat winning without antimatter doesn't count against it).
+        if row is not None and r.get('levels'):
+            cells = [row['level'][x] for x in r['levels'] if x in row['level']]
+            row = dict(row, **{f: sum(c[f] for c in cells) for f in ('uses', 'seats', 'rounds', 'with')},
+                       level={x: c for x, c in row['level'].items() if x in r['levels']}, board={})
         off = r.get('off')
         if off is True or (isinstance(off, str) and not base.get(off, 0)):
             out.append((k, r.get('name', k), r.get('role', ''), measure, band, None, row, 'off'))

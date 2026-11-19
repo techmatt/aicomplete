@@ -10,6 +10,7 @@ the findings are in the write-up.
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 289 Player-view layout pass: draft and keep above the fold, narrated war and strikes, short figures | 138 | [289_viewer_pass](results/289_viewer_pass/README.md) |
 | 288 Sim-player follow-ups: antimatter's rates tied, sacrifices count cards only, burn op gone | 138 | [288_agents_followups](results/288_agents_followups/README.md) |
 | 287 Powerful antimatter sinks: four cards raised, Kinetic Interdiction a building | 138 | [287_antimatter_sinks](results/287_antimatter_sinks/README.md) |
 | 286 285's deferred rules fixes: threats keep off their own site at tier 1, located lines | 137 | [286_rules_fixes](results/286_rules_fixes/README.md) |

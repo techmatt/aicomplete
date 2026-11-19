@@ -196,6 +196,34 @@ pub(crate) fn power_used(seat: usize, k: usize) -> KeyBuf {
     KeyBuf::new("ai.power_used.").num(seat).text(".").num(k)
 }
 
+/// 289 (D129): an "unaffordable" power's status with its numbers, for the view: what it needs, the parts, what the
+/// seat holds ("unaffordable: needs 4 energy (1 + 3 for the next track space); you have 2").
+fn short_words(w: &World, g: &GameState, seat: usize, k: usize) -> Option<String> {
+    let p = board(w, seat).powers.get(k)?;
+    let nodes: i64 = p.effects.iter().map(|e| if let Op::PlaceNode { count, .. } = e { *count } else { 0 }).sum();
+    // A placing power's energy is its own and its track steps' together (an own cost short alone understated it);
+    // every other resource short is named.
+    let mut short: Vec<String> = p
+        .cost
+        .iter()
+        .filter(|(r, n)| g.resource(seat, *r) < *n && !(nodes > 0 && *r == Resource::Energy))
+        .map(|(r, n)| format!("{} (you have {})", r.amount(*n), g.resource(seat, *r)))
+        .collect();
+    let own: i64 = p.cost.iter().filter(|(r, _)| *r == Resource::Energy).map(|(_, n)| *n).sum();
+    let have = g.resource(seat, Resource::Energy);
+    let placing = if nodes > 0 { board::placements_energy(w, g, seat, nodes) } else { None };
+    if let Some(steps) = placing.filter(|&steps| have < own + steps) {
+        let what = if nodes == 1 { "the next track space".to_string() } else { format!("the next {nodes} track spaces") };
+        let parts = if own > 0 { format!("{own} + {steps} for {what}") } else { format!("for {what}") };
+        // The lone shortfall keeps the plain form ("needs 4 energy (1 + 3 for ...); you have 2").
+        if short.is_empty() {
+            return Some(format!("unaffordable: needs {} ({parts}); you have {have}", Resource::Energy.amount(own + steps)));
+        }
+        short.push(format!("{} ({parts}; you have {have})", Resource::Energy.amount(own + steps)));
+    }
+    (!short.is_empty()).then(|| format!("unaffordable: needs {}", short.join(", ")))
+}
+
 /// Why seat `s` can't use its board's power `k` now, or `None` if it can.
 fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'static str> {
     let Some(p) = board(w, seat).powers.get(k) else {
@@ -735,11 +763,13 @@ impl Module for Ai {
                     // 285: as the hand's and buildings' (nothing is used while a question is open).
                     // A lasting state (used this round) still shows.
                     status: match power_blocked(w, g, s, k) {
-                        Some("used") => "used",
-                        _ if g.pending.is_some() => "waiting on the question",
-                        why => why.unwrap_or("ready"),
-                    }
-                    .into(),
+                        // 289 (D129): nothing is ready once the game is over (the end screen read "ready").
+                        _ if g.is_over() => "game over".into(),
+                        Some("used") => "used".into(),
+                        _ if g.pending.is_some() => "waiting on the question".into(),
+                        Some(why) if why.starts_with("unaffordable") => short_words(w, g, s, k).unwrap_or_else(|| why.into()),
+                        why => why.unwrap_or("ready").into(),
+                    },
                     cost: None,
                 })
                 .collect();

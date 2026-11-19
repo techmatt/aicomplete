@@ -30,19 +30,19 @@ npm run build                  # wasm + typecheck + static site in web/dist/ (92
 view, as the scripts expect). The player view (`src/player/`), laid out for 2560×1440, hides the timeline, log, raw
 data and random play; Undo and records stay.
 
-- **Layout:** the question over the map; at the right a row per seat (resources, income, hand, buildings, nodes,
-  *to act* / *done*: click one to show it), the Alignment and losses, the adversary row, each country's threats;
-  across the foot the shown seat (the one deciding, else the first to act; a clicked one until the next action):
-  resources, AI board and powers, hand, buildings, then a bar of standard actions, converters and *Done (pass)*.
+- **Layout:** the question over the map; at the right a row per seat (click one to show it), the Alignment, the
+  adversary, each country's threats; across the foot the shown seat (the one deciding, else the first to act), then
+  a bar of standard actions, converters and *Done (pass)*.
 - **Controls sit on the objects:** *Play* / *Sell* on a hand card, *Use* on a power or building, pay on a threat, a
   hex click for a hex answer; other answers in the question bar. A hand card opens printed (`web/card/`, in a shadow
-  root: its `.card` style would clash) on hover. The draft shows the offered cards printed with their keep price.
-- ***Since your last move*** (the adversary's turn among them) steps through the phases run, one at a time: the
-  rules' notes and map changes, outlining the hexes each changed. Standard actions show name and cost, the rule
-  in the hover.
+  root: its `.card` style would clash) on hover. The draft shows the offered cards printed with their keep price,
+  over the buildings column too, shrunk until the Draft / Keep buttons show unscrolled.
+- ***Since your last move*** (the adversary's turn among them) steps through the phases run, one at a time, atop
+  the side column: the rules' notes and map changes, then the step list, outlining the hexes each changed.
+  Standard actions show name and cost, the rule in the hover.
 - **New modules:** an action no component draws is a button under *Other*; card groups, piles and values fall to
   the debug view's generic chips (`panels.ts`).
-- **Checks:** `AIC_SWEEP_VIEW=player` sweeps it (`no-control` shows each seat to act in turn); `node
+- **Checks:** `AIC_SWEEP_VIEW=player` sweeps it; `node
   scripts/player-play.mjs [--config three_seat.json] [--seed N] [--out DIR] [--size WxH]` plays a whole game by its
   controls (random, passing least) and saves the record.
 
@@ -51,7 +51,7 @@ data and random play; Undo and records stay.
 - **Play:** pick a config (any in `configs/`; `baseline.json` by default) and a seed, then *New game*. One person
   plays every seat, in any order in a simultaneous phase; draft phases offer no pass. *Pass every seat*, *Random
   action* (R) and *Random to end* speed debugging.
-- **Choices:** the question shows in the amber bar. A hex answer highlights its hexes: click one.
+- **Choices:** the question shows in the amber bar. A hex answer highlights its hexes (purple): click one.
   Two answers on one hex (a sacrifice: the ambassador or the node there) also get a button each (the hex takes the
   first). Other answers are buttons in the seat's panel. Hexes are named by country (`Cintamani #13`).
 - **The board:** player pieces on a hex's upper row, the adversary's on the lower. Hover anything for details;
@@ -82,7 +82,7 @@ headless Edge or Chrome over the DevTools protocol against a served viewer (the 
 site*). It checks the panels and board, a baseline game (seed 1) to the end, the interactions above, no page
 scroll at 1366×768, 1920×1080 and 2560×1440, words not ids, under 100 ms a step, a 4-country game (may scroll at
 1366×768) and the given record; each `check(...)` names itself. About 15 s; shots in `web/e2e-out/`
-(git-ignored). The face-up adversary card and threat checks run at round 2 (a fresh game has neither). `board
+(git-ignored). `board
 fills its pane` measures a fixed game (baseline seed 11, first legal action) a rules change can move: before
 reading a layout change into a failure, diff two revisions' `npm run panes` (its pane heights at the three sizes).
 
@@ -112,17 +112,19 @@ release `aic-sim` (`AIC_SIM`); its environment variables and defaults are atop t
 - **Fail the run** (exit 1): console errors and blocking dialogs, `stuck` (no legal action without an outcome),
   the error bar, page scroll, placeholder text (`undefined`, `NaN`), elements off screen with no scroll to them,
   `hidden-target`, `clipped` (no ellipsis), `token-unknown`, `stale-word` (an old name for a house word on screen,
-  `STALE` in the script), `case` (`aic-sim` could not play it). **Reported for a look:** `no-control` (a legal action with no
+  `STALE` in the script), `case` (`aic-sim` could not play it), `below-fold` (the player view's Draft / Keep
+  buttons or turn panel scrolled out of view). **Reported for a look:** `no-control` (a legal action with no
   control on screen), `raw-id`, `truncated-no-hover`, `truncated`, overlaps, undrawn view tokens, steps over
   150 ms, heap kept over 50 MB (the first fresh game, at the start and again at the end), `mark-over-number` (a highlight ring across a hex number) and
   `warn-at-start` (a value drawn as a warning at a game's first phase, as a full allotment drawn as danger).
 - **Running it:** background it, the viewer served by a process outliving it; at most one sweep beside one browser lane. Don't rebuild `aic-sim` mid-sweep: its records load with a content-hash warning in the error
   bar, which fails the run (`error-banner`). At r122 a case at one seed (a watched and a played game, ~270
   captures) takes 6-10 min, a capture ~1.5 s (three sizes): all 27 cases about 4.5 h, so a hunt picks `--case`s
-  (261: six in 40 min; 285, r135: six in 28 min, 1,312 captures, a `-strategist` case's records ~4 min of it).
+  (289, r138, player view: six at one seed in 26 min).
   Rules twin: `invariants_hold_in_random_games`.
 - **Output** in `web/sweep-out/`: `shots/`, `issues.json` (game, step, moment), `index.html`, `sheet-N.png`
-  contact sheets (failures framed red), the records. `AIC_SWEEP_VERBOSE=1` times each moment.
+  contact sheets (failures framed red), the records. `AIC_SWEEP_VERBOSE=1` times each moment;
+  `AIC_SWEEP_SHOT_SIZE=1920x1080` shoots (and checks in full) at that size.
   Hooks: `window.aic` (main.ts), `scripts/cdp.mjs`.
 
 ## Other checks and the source

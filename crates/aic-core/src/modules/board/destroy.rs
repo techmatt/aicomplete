@@ -95,15 +95,21 @@ pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause
             format!("Seat {who}: {the}{piece} at {} would be destroyed: spend which protection?", hex_name(&w, h))
         };
         let pick = cx.choose_loss(who, prompt, opts)?.and_then(|i| options.get(i).copied());
+        // 289 (D133): a protection spent says so (the turn panel showed a strike, then nothing).
+        let held = |cx: &mut Cx, what: &str| {
+            cx.note(Some(h), || format!("{} at {} holds: {what} is spent", piece_words(kind), hex_name(&w, h)));
+        };
         match pick {
             Some(Guard::Harden) => {
                 cx.add_tokens(g, h, HARDEN, -1);
                 cx.tally(g, "board.hardening_used", 1);
+                held(cx, "the hardening token");
                 return Ok(false);
             }
             Some(Guard::Ambassador(s)) => {
                 cx.add_tokens(g, h, ambassador(s), -1);
                 cx.tally(g, "board.ambassador_shield", 1);
+                held(cx, "the ambassador there");
                 return Ok(false);
             }
             None => cx.tally(g, "board.protection_declined", 1),
@@ -139,7 +145,7 @@ pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause
     };
     cx.note(Some(h), || {
         let more = if sway > 0 { format!(": {sway} Discord") } else { String::new() };
-        format!("{} at {} destroyed{more}", piece_name(kind), hex_name(&w, h))
+        format!("{} at {} destroyed{more}", piece_words(kind), hex_name(&w, h))
     });
     // r83: only the factory sways (War Takes Ground's node on its hex sways nothing more).
     if cause == Cause::War && kind == FACTORY {

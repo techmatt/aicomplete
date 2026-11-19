@@ -59,14 +59,17 @@ body > #player { flex: 1 1 0; }
 .sres small { color: var(--good); margin-left: 0.15em; font-weight: 600; }
 
 /* The adversary's turn, a step at a time. */
-#p-turn { border: 2px solid #e0a100; background: #fff8e6; border-radius: 4px; padding: 0.3em 0.5em; }
+/* 289 (D133): atop the side column while open, so all of it shows without scrolling at 1366x768. */
+#p-turn { order: -1; border: 2px solid #e0a100; background: #fff8e6; border-radius: 4px; padding: 0.3em 0.5em; }
 .pturn-head { display: flex; align-items: center; gap: 0.4em; flex-wrap: wrap; }
 .pturn-head span { color: var(--muted); }
 .pturn-head button:last-child { margin-left: auto; }
-#p-turn ol { margin: 0.25em 0; padding-left: 1.8em; font-size: 0.9em; }
+/* 289 (D133): the shown step's notes first, then the step list, which scrolls by itself (the notes sat under it,
+   below the side column's fold at 1366x768). */
+#p-turn ol { margin: 0.25em 0 0; padding-left: 1.8em; font-size: 0.9em; max-height: 9em; overflow-y: auto; border-top: 1px solid #e8d49a; }
 #p-turn ol li { cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #555; }
 #p-turn ol li.now { color: var(--ink); font-weight: 600; background: #ffe9a8; }
-.pturn-ev { font-size: 0.85em; max-height: 12em; overflow-y: auto; border-top: 1px solid #e8d49a; }
+.pturn-ev { font-size: 0.85em; max-height: 12em; overflow-y: auto; }
 .pturn-ev ul { margin: 0.2em 0; padding-left: 1.4em; }
 .pturn-ev small { color: var(--muted); }
 .pturn-open { align-self: flex-start; }
@@ -76,6 +79,8 @@ body > #player { flex: 1 1 0; }
 .p-head { display: flex; align-items: center; gap: 0.5em; font-size: 1.08em; margin-bottom: 0.25em; }
 .p-head small { color: var(--muted); }
 .p-body { display: grid; grid-template-columns: minmax(18em, 1fr) minmax(0, 2.4fr) minmax(14em, 1fr); grid-template-areas: "info hand built" "powers hand built"; gap: 0 calc(var(--gap) * 1.5); align-items: start; }
+/* 289 (D127): the draft and keep take the buildings column too; the buildings go under the powers. */
+.p-body.drafting { grid-template-areas: "info hand hand" "powers hand hand" "built hand hand"; }
 .p-info { grid-area: info; }
 .p-powers { grid-area: powers; }
 .p-hand { grid-area: hand; }
@@ -139,11 +144,14 @@ ul.ppowers .ptext { font-size: 0.92em; }
 .p-built .chip { white-space: normal; }
 @media (min-width: 2200px) {
   .p-body { grid-template-columns: minmax(18em, 1.55fr) minmax(24em, 2fr) minmax(0, 1.25fr) minmax(14em, 1fr); grid-template-areas: "info powers hand built"; }
+  .p-body.drafting { grid-template-areas: "info powers hand hand" "built powers hand hand"; }
   .p-powers ul.ppowers { columns: 2; column-gap: 0.4em; }
   .p-powers ul.ppowers li { break-inside: avoid; }
 }
 
 @media (max-height: 820px) {
   #p-seat { max-height: 40vh; }
+  .pturn-ev { max-height: 8em; }
+  #p-turn ol { max-height: 5.5em; }
   .ptile { width: 11.5em; }
 }
