@@ -112,6 +112,35 @@ pub fn can_pay_placement(w: &World, g: &GameState, seat: usize, gained: i64) -> 
     })
 }
 
+/// 276: whether seat `s` has `n` tokens and can pay the `n` cheapest next steps (each from whichever track's next
+/// step is cheaper), with `gained` more energy than it holds: a two-node Growth option is offered only when both
+/// its nodes can go down (it was paid in full for one).
+pub fn can_pay_placements(w: &World, g: &GameState, seat: usize, n: i64, gained: i64) -> bool {
+    let b = ai::board(w, seat);
+    let (mut t1, mut t2) = (track_taken(g, seat), track2_taken(g, seat));
+    let mut cost = 0;
+    for _ in 0..n {
+        let first = b.economy_track.get(t1).map(|u| u.cost);
+        let second = b.play_track.get(t2).map(|u| u.cost);
+        match (first, second) {
+            (Some(a), Some(c)) if c < a => {
+                cost += c;
+                t2 += 1;
+            }
+            (Some(a), _) => {
+                cost += a;
+                t1 += 1;
+            }
+            (None, Some(c)) => {
+                cost += c;
+                t2 += 1;
+            }
+            (None, None) => return false,
+        }
+    }
+    g.resource(seat, Resource::Energy) + gained >= cost
+}
+
 /// Places one node for `seat`: the next token off its track (uncovering
 /// the space under it) onto a hex next to its node, paying its step; only
 /// tracks whose next step the seat can pay are offered. Returns the hex it went on (212: a rider's "it").

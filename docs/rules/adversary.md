@@ -55,8 +55,7 @@ one adversary mark.**
   apply; checked only when the site doesn't corrupt: an arrival that brings a city to its number corrupts it, the
   node with it); its agents go to the supply and **it leaves no mark**.
 - **Fallout** is the one scar: a hex token on free open land; nothing is built there, and each drips `blight_discord`
-  (1) Discord a round. All four adversity sources print it ([harms.md](../harms.md)); Teardown's lands on its own
-  hex (under a node there), a Fallout line's next to the lowest-numbered corrupted city, the rest on a free open hex
+  (1) Discord a round. All four adversity sources print it ([harms.md](../harms.md)); a Fallout line's next to the lowest-numbered corrupted city, the rest on a free open hex
   (no facility, node or Fallout), a threat's on or next to its anchor, the others next to it (ties: lower country, then number); none free, it is lost. Lift Fallout
   (a standard action, [economy.md](economy.md)) and some cards take one in reach off.
 
@@ -97,7 +96,7 @@ third from `THIRD_EFFECT_COST`, 18). The deck never reshuffles in a d3 game.
   "the hex holding the most player ambassadors", "its lowest-numbered botnet"; ties: the lowest-numbered. "Turns
   neutral": the owner's cube comes off. **Factory troops**: an adversary factory's own output ([war.md](war.md)).
   **The clock**: the top event card is discarded.
-- **Counterplay:** an ambassador on a source; Cyber's hacks; Audit, off a project.
+- **Counterplay:** an ambassador on a source; Cyber's hacks; the Researcher's Hack II, off a project.
 
 <!-- generated: projects -->
 | Project | Tags | Cost a board | Size (effects) |

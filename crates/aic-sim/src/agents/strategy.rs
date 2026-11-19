@@ -13,7 +13,7 @@
 use std::collections::BTreeMap;
 use std::sync::OnceLock;
 
-use aic_core::content::{CardDef, CardKind, Op, Power, Resource, TagOrAny, TokenKind};
+use aic_core::content::{CardDef, CardKind, Op, Power, Resource, Tag, TagOrAny, TokenKind};
 use aic_core::module::World;
 use aic_core::modules::{ai, cards};
 use aic_core::GameState;
@@ -409,19 +409,35 @@ pub fn choose(
         let spec = &list[k as usize];
         let mut score: f64 = seen.iter().map(|d| value(d).max(0.0) * (spec.fit(d, contents) * schedule(d, phase(g.round), contents) - 1.0)).sum();
         if let Some(power) = power {
-            for p in &ai::board(w, s).powers {
+            let b = ai::board(w, s);
+            // 276: a group (Growth's options, a power's tiers) is one use a round: it counts its best option for
+            // this strategy; a threshold power counts only when the seen cards and the board meet its tags.
+            let mut groups: std::collections::BTreeMap<&str, f64> = std::collections::BTreeMap::new();
+            for p in &b.powers {
                 let (worth, rounds) = power(p);
                 let named: Vec<_> = p.tags.iter().filter_map(|(t, _)| match t {
                     TagOrAny::Is(t) => Some(*t),
                     TagOrAny::Any => None,
                 }).collect();
-                let uses = if named.is_empty() {
+                let mut uses = if named.is_empty() {
                     rounds
                 } else {
                     rounds.min(seen.iter().filter(|d| d.tags.iter().any(|t| named.contains(t))).count() as f64)
                 };
-                score += worth.max(0.0) * uses * (spec.fit_power(p) - 1.0);
+                let held = |t: Tag| seen.iter().flat_map(|d| &d.tags).filter(|x| **x == t).count() + b.tags.iter().filter(|x| **x == t).count();
+                if p.needs.iter().any(|(t, n)| (held(*t) as i64) < *n) {
+                    uses = 0.0;
+                }
+                let v = worth.max(0.0) * uses * (spec.fit_power(p) - 1.0);
+                match p.group.as_deref() {
+                    Some(gname) => {
+                        let best = groups.entry(gname).or_insert(f64::NEG_INFINITY);
+                        *best = best.max(v);
+                    }
+                    None => score += v,
+                }
             }
+            score += groups.values().sum::<f64>();
         }
         if best.is_none_or(|(b, _)| score > b + 1e-9) {
             best = Some((score, k));
@@ -495,7 +511,8 @@ mod tests {
             b.powers.iter().find(|p| p.name == name).unwrap().clone()
         };
         let fit = |id: &str, p: &Power| list[by_id(id).unwrap() as usize].fit_power(p);
-        let p = power("researcher", "Grant");
+        // 276: Grant's cube is Lab II's.
+        let p = power("researcher", "Lab II");
         assert!(fit("cubes_stations", &p) > 1.0);
         assert!(fit("cubes_stations", &p) > fit("science_chain", &p));
     }

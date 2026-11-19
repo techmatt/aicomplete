@@ -13,24 +13,24 @@ build direction), Dispatches 1 ambassador free each round (the Researcher 2; mor
 counts its printed tag like one on its cards; its powers are in [ai-powers.md](ai-powers.md). The **Builder**'s special
 rule is Breadth: five building slots, a wider engine. It starts with 27 credits and earns 10 a round, each credit space
 of its economy track 1 or 2 more, so placing a node is how its income grows; the energy of the cities it hosts (254: a
-neutral city with its node on or next to it) and the cities it buys from, its node routes (Expand, Buy In, Annex) spend. Its powers turn credits into chips and chips into cards or
-a troop removed, and late in the game finished cards into chips (Industry), energy (Power) or, with an energy, a
-building played free.
+neutral city with its node on or next to it) and the cities it buys from, its Growth (Sprawl, Buy In, Annex) spends. Its powers turn
+finished cards into chips or a building played free (Scrap: Industry), energy or antimatter (Overcharge: Power), and
+chips into troops removed (Fortify).
 
 The **Protector**'s special rule is Wall: no adversary troop is ever placed on a hex with its node, nor enters it or
 strikes into it, so no troop strikes its node or a facility under it (war, threats and corruption still can). The first two troops each round that end their march next to its node pay it 1 insight
-each (Vigil). It places nodes (Accord, Outpost) and hardens facilities (Bulwark) with energy, and its board prints 2 energy a
-round. It earns 9 credits
+each (Vigil). Its Growth places 2 nodes for energy (Outpost), or 1 with an ambassador for 1 energy (Accord) or 3 credits (Levy);
+it pushes troops and agents and hardens with energy (Patrol), and its board prints 2 energy a round. It earns 9 credits
 a round, so starts with 31. Each credit space of its economy track adds 1 or 2 credits, the
-first one 1 energy too. Late in the game, a sacrificed Security card removes troops or an agent.
+first one 1 energy too. Late in the game, a sacrificed Security card removes troops, two of them agents too (Interdict).
 
 The **Researcher**'s special rule is Patience: insight it doesn't spend stays into the next round (all of it, even
 insight another player gave it), to save up for a big round. It starts with 27 credits and earns 7 a round, 2
-more for each credit space of its economy track, and plays off the board, on insight and research cubes: its
-powers turn insight into a card (Synthesis, its draw), credits into megaproject cubes, and Cyber cards into troops
-removed or compute stripped. Its node routes run on insight, never research cubes (Matt, 2026-11-16): Peer Review
-costs 2 and gives 1 back by a fresh station, Field Survey 3 and draws a card, so it builds stations early: once their country's card
-completes they put cubes on its board. Its printed Science tag makes 1 Science card count 2 for a discount. The hard
+more for each credit space of its economy track, and plays off the board, on insight and research cubes: with Science
+on its cards, Lab turns insight into a card (its draw) and credits into megaproject cubes, and Cyber cards become troops
+removed or compute stripped (Hack). Its Growth runs on insight, never research cubes (Matt, 2026-11-16): Peer Review
+places 2 nodes for 2, Field Station a station and a node for 1, Field Survey a node and a card for nothing, so it
+builds stations early: once their country's card completes they put cubes on its board. Its printed Science tag makes 1 Science card count 2 for a discount. The hard
 part to explain: Open Science's insight is handed out in upkeep and lands at the start of the next round.
 
 **Board tags: one tag rule (candidate).** A board's printed tag and a tag a track space reveals count like any tag on
@@ -66,21 +66,21 @@ of 5 credits; credits never buy a keep, so insight limits round 1's keeps and cr
 are a late-game choice.
 
 **One payment path (locked).** Every space prints a **cost** in energy, the last ones more. Every placement pays it,
-whatever places the node: a node route costs only its printed currency (Expand nothing) and a card only its
+whatever places the node: a Growth option costs only its printed price (Buy In nothing) and a card only its
 credits, so the energy is stated once, on the track; no card places a node free. Only tracks whose next step you can
-pay are offered; a placement you can't pay doesn't happen. A node route is used for its node: with no token left, no
-step you can pay or no free hex in its range, it isn't offered (r122).
+pay are offered; a placement you can't pay doesn't happen. A Growth option is used for its node: with no token left,
+no step you can pay or no free hex in its range, it isn't offered (r122).
 
-**Hard to explain to a new player:** Faraday Yard hardens when played, beside Bulwark's and Fortify's hardening; a hosted city (your node on or next to it) pays you but isn't yours.
+**Hard to explain to a new player:** Faraday Yard hardens when played, beside Fortify II's and Patrol II's hardening; a hosted city (your node on or next to it) pays you but isn't yours.
 
-**Node routes (Matt, 2026-11-16, locked; costs candidate).** There is no standard action for nodes. Each board has
-three **node routes**, each once a round: the **base route, Expand** (every board: the track step's energy, nothing
-more), and two more, each paid in one currency, the middle doing more by a fresh spot ([ai-powers.md](ai-powers.md),
-*Node powers' riders*): the Builder's Buy In (2 energy) and Annex (1 chip, within 2 of one of its nodes), the
-Protector's Accord (2 energy) and Outpost (3 energy, and an ambassador), the Researcher's Peer Review (2 insight) and
-Field Survey (3 insight, and a card). So 0-3 nodes a round come from them (cards that place nodes add to that: cards
-aren't capped). Three things keep the loops short: 3 placements a round and rising step costs cap energy → node →
-energy income; each is limited a round; and the top routes spend what the board's engine makes.
+**Growth (Matt, 2026-11-18; options candidate).** There is no standard action or other route for nodes. Each round a
+board picks **one** of its three printed Growth options ([ai-powers.md](ai-powers.md)), Spirit Island's "pick one": a
+cheap one with a rider (the Builder's Buy In, a chip; the Protector's Accord, 1 energy for an ambassador; the Researcher's Field
+Survey, a card), a two-node one paid in the board's own currency (Sprawl 1 energy, Outpost 2 energy, Peer Review 2
+insight) and a third with a job of its board's (Annex within 2 and 3 credits; Muster 2 energy; Field Station a
+station for 1 insight). So 0-2 nodes a round come from Growth (cards that place nodes add to that: cards aren't
+capped). Two things keep the loops short: one option a round and rising step costs cap energy → node → energy
+income, and the two-node options spend what the board's engine makes.
 
 <!-- generated: node_track -->
 | Space | Builder | Protector | Researcher |
@@ -118,7 +118,8 @@ tier-2 keep (3 insight) fits from round 2.
 
 **Loops and caps.** No limits ([economy.md](economy.md), *No limits*): a runaway is fixed at the cards that feed it.
 Program credit income stacked by draw chains is bounded by insight (as there) and the per-tag programs' 1 a 3 tags.
-Credits → chips → buildings → income → credits runs once a round and in the slots at most; chips can't be sold back. Rush Build (once a round) spends an energy and a card for good, so energy and the hand cap
+No power turns credits into chips (Mint is cut, Matt 2026-11-18): chips come from Buy In, Scrap I, Full Capacity and
+cards, each capped a round, and can't be sold back. Scrap II (once a round) spends two Industry cards for good, so the cards cap
 it. **The energy gift** (Shared Grid Accord, Interconnector Treaty) is one-shot. Credits → energy (Buy
 energy, [economy.md](economy.md)) → a card's income is capped by the cards and the cities' energy (once per city a
 round, a city's `corp_energy` a buy). **Energy counters** spend energy for good. **The Researcher's:** Patience with

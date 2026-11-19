@@ -133,7 +133,7 @@ fn a_content_change_changes_its_block() {
     let mut c = base.clone();
     c.ais[0].economy_track[1].income[0].1 += 1;
     c.ais[1].play_track[2].cost += 1;
-    c.ais[1].powers.iter_mut().find(|p| p.name == "Interdict").unwrap().tags[0].1 += 1;
+    c.ais[1].powers.iter_mut().find(|p| p.name == "Interdict I").unwrap().tags[0].1 += 1;
     c.ais[0].innate.name = "Something else".to_string();
     c.map.countries[0].megaproject.cubes += 1;
     assert_ne!(node_track_block(base), node_track_block(&c));

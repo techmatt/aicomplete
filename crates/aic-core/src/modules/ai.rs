@@ -203,6 +203,10 @@ fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'st
     if g.var(&power_used(seat, k)) > 0 {
         return Some("used");
     }
+    // 276: a threshold power counts the tags on your cards (board tags too), sacrificing none.
+    if p.needs.iter().any(|(t, n)| cards::tags(w, g, seat, *t) < *n) {
+        return Some("needs tags");
+    }
     if p.cost.iter().any(|(r, n)| g.resource(seat, *r) < *n) {
         return Some("unaffordable");
     }
@@ -216,6 +220,11 @@ fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'st
     if power_places(w, seat, k) && !board::can_pay_placement(w, g, seat, -spent) {
         return Some("unaffordable: the next track space's energy, after the power's own");
     }
+    // 276 (diff review): a two-node Growth option needs both its nodes' steps, or it was paid in full for one.
+    let nodes: i64 = p.effects.iter().map(|e| if let Op::PlaceNode { count, .. } = e { *count } else { 0 }).sum();
+    if nodes > 1 && !board::can_pay_placements(w, g, seat, nodes, -spent) {
+        return Some("unaffordable: the next track spaces' energy for every node, after the power's own");
+    }
     // 261: a node route is used for its node (118), as with no token or no step: with no free hex in its range,
     // Outpost and Field Survey were paid in full for their ambassador or card alone.
     let range = p.effects.iter().find_map(|e| if let Op::PlaceNode { range, .. } = e { Some(*range) } else { None });
@@ -228,6 +237,13 @@ fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'st
     if !effects::feasible_after(w, g, seat, &p.effects, spent) {
         return Some("no target");
     }
+    // 276: Lab II's cube is what its 2 credits buy (Grant's job): with no open megaproject it isn't offered, though
+    // its draw could act.
+    if let Some(cube) = p.effects.iter().find(|e| matches!(e, Op::ProjectCube { .. })) {
+        if !effects::feasible_after(w, g, seat, std::slice::from_ref(cube), spent) {
+            return Some("no target");
+        }
+    }
     if p.effects.iter().any(|e| matches!(e, Op::FreeBuilding)) && !free_building_after(w, g, seat, p) {
         return Some("no target");
     }
@@ -235,28 +251,35 @@ fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'st
 }
 
 /// 099: whether a building is still free to play once a free-building power
-/// (Rush Build) is paid: its resources spent and some sacrifice made, since a
+/// (Scrap II; Rush Build before 276) is paid: its resources spent and its sacrifice made, since a
 /// building may have needed the tags it sacrifices, or its energy, or the stack
 /// it covers (docs/rules/card-grammar.md). Without this the power took its energy and card
-/// and played nothing. A sacrifice of more than one source isn't tried (no
-/// such power prints one): the resources alone are checked then.
+/// and played nothing. 276: a sacrifice of two or more sources is tried whole (Scrap II sacrifices 2 Industry).
 fn free_building_after(w: &World, g: &GameState, seat: usize, p: &Power) -> bool {
     let mut paid = g.clone();
     for (r, n) in &p.cost {
         *paid.seats[seat].resources.entry(*r).or_insert(0) -= n;
     }
     let need = cards::TagNeed::new(&p.tags);
-    if need.met() || p.tags.iter().map(|(_, n)| n).sum::<i64>() > 1 {
+    if need.met() {
         return cards::free_building_exists(w, &paid, seat);
     }
     let sources = cards::sources(w, &paid, seat);
-    sources.iter().filter(|s| need.helps(&s.tags)).any(|s| builds_after(w, &mut paid, seat, s))
+    sources.iter().filter(|s| need.helps(&s.tags)).any(|s| builds_after(w, &mut paid, seat, &need, s, &sources))
 }
 
-/// Whether a building is still free to play once source `s` is sacrificed:
-/// tried on `g` itself, its piles put back after (141: a copy of the state for
-/// each source was a sixth of a long game's time). `g` leaves as it came.
-fn builds_after(w: &World, g: &mut GameState, seat: usize, s: &cards::SacrificeSource) -> bool {
+/// Whether a building is still free to play once source `s` is sacrificed toward `need` and, when that leaves
+/// some of `need` unpaid, another source of `pool` pays the rest the same way (276): tried on `g` itself, its
+/// piles put back after (141: a copy of the state for each source was a sixth of a long game's time). `g` leaves
+/// as it came.
+fn builds_after(
+    w: &World,
+    g: &mut GameState,
+    seat: usize,
+    need: &cards::TagNeed,
+    s: &cards::SacrificeSource,
+    pool: &[cards::SacrificeSource],
+) -> bool {
     let mut saved = Vec::with_capacity(s.cards.len());
     for (pile, card) in &s.cards {
         if let Some(cards_in) = g.piles.get_mut(pile.as_str()) {
@@ -264,7 +287,14 @@ fn builds_after(w: &World, g: &mut GameState, seat: usize, s: &cards::SacrificeS
             std::sync::Arc::make_mut(cards_in).retain(|c| c != card);
         }
     }
-    let free = cards::free_building_exists(w, g, seat);
+    let mut left = need.clone();
+    left.pay(&s.tags);
+    let free = if left.met() {
+        cards::free_building_exists(w, g, seat)
+    } else {
+        let rest: Vec<cards::SacrificeSource> = pool.iter().filter(|x| x.label != s.label).cloned().collect();
+        rest.iter().filter(|x| left.helps(&x.tags)).any(|x| builds_after(w, g, seat, &left, x, &rest))
+    };
     for (pile, old) in saved.into_iter().rev() {
         *g.piles.get_mut(pile.as_str()).expect("a pile just written") = old;
     }
@@ -305,6 +335,23 @@ pub fn tally_dear_powers(g: &mut GameState, cx: &mut Cx, seat: usize) {
             cx.tally(g, &format!("ai.dear.{}.{slug}.no_tags", b.id), 1);
         }
     }
+}
+
+/// 276 (stats only): the board uses seat `s` can make as its action phase begins, a group (Growth's options, a
+/// power's tiers) counted once: the yes/no items a player weighs that round (`ai.offered.<board>`).
+pub fn tally_offered(g: &mut GameState, cx: &mut Cx, seat: usize) {
+    let w = cx.world;
+    let b = board(&w, seat);
+    let mut seen: Vec<&str> = Vec::new();
+    for (k, p) in b.powers.iter().enumerate() {
+        let key = p.group.as_deref().unwrap_or(&p.name);
+        if !seen.contains(&key) && power_blocked(&w, g, seat, k).is_none() {
+            seen.push(key);
+        }
+    }
+    let key = format!("ai.offered.{}", b.id);
+    cx.tally(g, &key, seen.len() as i64);
+    cx.per_round(g, &key, seen.len() as i64);
 }
 
 /// Whether seat `s` has a node left on its track.
@@ -418,11 +465,40 @@ fn power_text(p: &Power) -> String {
         first.next().map_or(String::new(), |c| c.to_uppercase().chain(first).collect::<String>())
     };
     let cost = power_cost(p);
+    // 276: a group is one use a round between its options or tiers.
+    let once = match p.group.as_deref() {
+        Some(GROWTH) => "(Growth: one option a round)".to_string(),
+        Some(g) => format!("(once a round, one tier of {g})"),
+        None => "(once a round)".to_string(),
+    };
+    let needs = power_needs(p);
+    let lead = if needs.is_empty() { String::new() } else { format!("{needs}, ") };
     // 118: a power with no price (Synthesis) printed ": discard a card...".
     if cost.is_empty() {
-        return format!("{} (once a round)", cap(&p.text));
+        return format!("{lead}{} {once}", if lead.is_empty() { cap(&p.text) } else { p.text.clone() });
     }
-    format!("{}: {} (once a round)", cap(&cost), p.text)
+    format!("{lead}{}: {} {once}", if lead.is_empty() { cap(&cost) } else { cost }, p.text)
+}
+
+/// 276: the group name of a board's Growth, its node placements (Spirit Island's "pick one").
+pub const GROWTH: &str = "Growth";
+
+/// 276: a threshold power's condition in words: `With 2 Science on your cards`; empty for any other power.
+pub fn power_needs(p: &Power) -> String {
+    if p.needs.is_empty() {
+        return String::new();
+    }
+    let tags: Vec<String> = p
+        .needs
+        .iter()
+        .map(|(t, n)| {
+            let t = t.to_string();
+            let mut c = t.chars();
+            let t: String = c.next().map(|f| f.to_uppercase().chain(c).collect()).unwrap_or_default();
+            format!("{n} {t}")
+        })
+        .collect();
+    format!("With {} on your cards", tags.join(" and "))
 }
 
 fn build(b: &Build) -> Result<Box<dyn Module>, String> {
@@ -497,10 +573,19 @@ impl Module for Ai {
         for (r, n) in &p.cost {
             cx.add_resource(g, s, *r, -n);
         }
-        cx.set_key(g, &power_used(s, k), 1);
+        // 276: a Growth option or a tier uses its whole group for the round.
+        let b = board(&w, s);
+        for (j, q) in b.powers.iter().enumerate() {
+            if p.shares_use(q) {
+                cx.set_key(g, &power_used(s, j), 1);
+            }
+        }
         if p.effects.iter().any(|e| matches!(e, Op::FreeBuilding)) {
             // 099: only a sacrifice that leaves a building to play (its energy is paid).
-            cards::sacrifice_keeping(g, cx, s, &p.tags, &|st: &mut GameState, src| builds_after(&w, st, s, src))?;
+            cards::sacrifice_keeping(g, cx, s, &p.tags, &|st: &mut GameState, need, src| {
+                let pool = cards::sources(&w, st, s);
+                builds_after(&w, st, s, need, src, &pool)
+            })?;
         } else {
             cards::sacrifice_for(g, cx, s, &p.tags)?;
         }

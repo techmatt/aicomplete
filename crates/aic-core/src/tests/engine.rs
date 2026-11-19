@@ -536,11 +536,19 @@ fn the_boards_insight_powers() {
         out_of_decks(&mut g, card);
     }
     set_pile(&mut g, "cards.hand.0", &["signal_hijack", "baseload_contract"]);
-    // 206 (Matt, 2026-11-12): Synthesis reversed, insight for a card; 228 (r100): 1 insight, was 2.
-    set_res(&mut g, 0, Resource::Insight, 0);
-    assert!(rules.apply_mut(&mut g.clone(), &power(&rules, 0, "Synthesis"), None).is_err(), "1 insight");
+    // 206 (Matt, 2026-11-12): Synthesis reversed, insight for a card; 228 (r100): 1 insight, was 2; 276: Lab I, a
+    // threshold power: 2 Science on your cards (the board's printed one counts), none sacrificed.
+    let w = rules.world();
+    let science = programs(&w, Tag::Science).find(|c| c.tier == 1 && c.tags.iter().filter(|t| **t == Tag::Science).count() == 1);
+    let science = science.expect("a Science program").id.clone();
+    set_pile(&mut g, "cards.played.0", &[]);
     set_res(&mut g, 0, Resource::Insight, 3);
-    rules.apply_mut(&mut g, &power(&rules, 0, "Synthesis"), None).unwrap();
+    assert!(rules.apply_mut(&mut g.clone(), &power(&rules, 0, "Lab I"), None).is_err(), "1 Science of the 2");
+    set_pile(&mut g, "cards.played.0", &[science.as_str()]);
+    set_res(&mut g, 0, Resource::Insight, 0);
+    assert!(rules.apply_mut(&mut g.clone(), &power(&rules, 0, "Lab I"), None).is_err(), "1 insight");
+    set_res(&mut g, 0, Resource::Insight, 3);
+    rules.apply_mut(&mut g, &power(&rules, 0, "Lab I"), None).unwrap();
     answer_all(&rules, &mut g);
     assert_eq!(g.pile("cards.hand.0").len(), 3, "a card drawn");
     assert_eq!(g.resource(0, Resource::Insight), 2);

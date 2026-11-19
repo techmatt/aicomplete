@@ -85,7 +85,7 @@ fn place_goes_on_the_target_and_gain_to_the_supply() {
 }
 
 /// 236 (Matt, 2026-11-14): every board power that touches the map names one target, its text opening with it,
-/// but Disrupt's one country (206); every standard action that touches the map prints one, and the op-backed ones
+/// but Hack's one country (206's Disrupt); every standard action that touches the map prints one, and the op-backed ones
 /// pass the cards' check. The content check refuses a power with a map op and no target.
 #[test]
 fn powers_and_standard_actions_name_one_target() {
@@ -95,16 +95,16 @@ fn powers_and_standard_actions_name_one_target() {
             crate::content::check_power_targets(p, &b.id).unwrap();
             let map = p.effects.iter().any(|o| o.is_map());
             let target = p.effects.iter().any(|o| matches!(o, Op::Target { .. }));
-            assert_eq!(map && p.name != "Disrupt", target, "{} {}: {}", b.id, p.name, p.text);
+            assert_eq!(map && !p.name.starts_with("Hack"), target, "{} {}: {}", b.id, p.name, p.text);
             assert!(!p.text.contains("in reach"), "{} {}: {}", b.id, p.name, p.text);
             if target {
                 aimed.push(p.name.clone());
             }
         }
     }
-    let names = ["Fortify", "Bulwark", "Debrief", "Patrol", "Interdict", "Reclaim", "Field Station"];
+    let names = ["Fortify I", "Fortify II", "Patrol I", "Patrol II", "Interdict I", "Interdict II", "Field Station"];
     assert_eq!(aimed, names, "the powers that print a target");
-    let fortify = content().ais.iter().flat_map(|b| &b.powers).find(|p| p.name == "Fortify").unwrap();
+    let fortify = content().ais.iter().flat_map(|b| &b.powers).find(|p| p.name == "Fortify I").unwrap();
     let mut bare = fortify.clone();
     bare.effects.retain(|o| !matches!(o, Op::Target { .. }));
     let err = crate::content::check_power_targets(&bare, "builder").unwrap_err();

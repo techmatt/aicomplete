@@ -23,7 +23,7 @@ then check the losses, then the purge.
 
 Each of these is used at most once a round. **Put a used marker on its used space when you use it** (each power, building slot and converter prints one; a city takes a bought chip), and clear them all at round start.
 
-- **Your board's powers:** each once. Builder (Mint, Expand, Buy In, Annex, Scrap, Overcharge, Rush Build, Procure, Fortify, Teardown); Protector (Bulwark, Expand, Accord, Outpost, Debrief, Patrol, Interdict, Reclaim); Researcher (Expand, Peer Review, Field Survey, Grant, Field Station, Audit, Disrupt, Meltdown, Synthesis).
+- **Your board's Growth and powers:** each once: one Growth option, one tier of each power. Builder (Growth, Scrap, Overcharge, Fortify); Protector (Growth, Patrol, Interdict); Researcher (Growth, Lab, Hack).
 - **Each building's Action** (`→`): once; "A, OR B" is one use.
 - **Standard actions:** Remove a troop once a round, Turn a cube into insight once a round, each player; **Buy energy** once a round a city, for all players together.
 - **Each megacorp's converter and chip converter:** once a round each, each player.
@@ -92,7 +92,7 @@ The troops on each hex march as one stack, stack by stack (country by country, h
 - **Protecting** your node or facility on its hex (§13): one, instead of the piece.
 - **Threats** that print ambassadors as a cost: from your supply.
 - **Blocking** spends none: an ambassador on a corrupted site stops its output while it stands. A **Dispatch** moves one; a troop never touches one.
-- **Gain one:** 13 credits, Outpost, cards.
+- **Gain one:** 13 credits, Accord, cards.
 
 ## Grow (§6)
 

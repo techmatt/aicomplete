@@ -49,15 +49,22 @@ fn patience_carries_insight_with_no_cap() {
 fn a_bought_cube_goes_on_an_incomplete_project_and_pays_at_completion_only() {
     let (rules, mut g) = c3();
     let w = rules.world();
+    // 276: Grant's job is Lab II's, a threshold power at 4 Science on your cards (the printed one counts).
+    let science: Vec<&str> = programs(&w, Tag::Science).filter(|c| c.tier == 1).take(3).map(|c| c.id.as_str()).collect();
+    set_pile(&mut g, &cards::played(2), &science);
+    assert!(cards::tags(&w, &g, 2, Tag::Science) >= 4);
     set_res(&mut g, 2, Resource::Credits, 10);
-    act(&rules, &mut g, researcher_power(&rules, "Grant"));
+    set_res(&mut g, 2, Resource::Insight, 3);
+    act(&rules, &mut g, researcher_power(&rules, "Lab II"));
     assert_eq!(g.resource(2, Resource::Credits), 8);
+    assert_eq!(g.pile(&cards::played(2)).len(), 3, "a threshold sacrifices nothing");
     let on: i64 = (0..w.map.countries.len()).map(|c| g.var(&board::project_key(c, Some(2)))).sum();
     assert_eq!(on, 1);
     for c in 0..w.map.countries.len() {
         set_var(&mut g, board::project_done(c), 1);
     }
-    assert!(!rules.legal_actions(&g).contains(&researcher_power(&rules, "Grant")), "no project left to take it");
+    set_var(&mut g, ai::power_used(2, power_index(&rules, 2, "Lab II")), 0);
+    assert!(!rules.legal_actions(&g).contains(&researcher_power(&rules, "Lab II")), "no project left to take it");
 }
 
 #[test]
@@ -73,17 +80,23 @@ fn the_second_node_pays_insight_and_no_energy_but_the_step() {
     assert!(rules.legal_actions(&g).contains(&researcher_power(&rules, "Peer Review")));
 }
 
+/// 276: Field Station is a Growth option: 1 insight, a station for no chips and a node; nothing sacrificed.
 #[test]
 fn the_industry_power_builds_a_station_for_no_chips() {
     let (rules, mut g) = c3();
     set_pile(&mut g, &cards::played(2), &["payroll_automation"]);
     set_res(&mut g, 2, Resource::Chips, 0);
+    set_res(&mut g, 2, Resource::Insight, 2);
+    set_res(&mut g, 2, Resource::Energy, 10);
     let w = rules.world();
     let sites = board::station_sites(&w, &g, 2);
     assert!(!sites.is_empty());
     let before = sites[0];
+    let nodes = crate::modules::common::node_count(&g, 2);
     act(&rules, &mut g, researcher_power(&rules, "Field Station"));
-    assert!(g.pile(&cards::played(2)).is_empty(), "the Industry card went");
+    assert_eq!(g.pile(&cards::played(2)).len(), 1, "no sacrifice");
+    assert_eq!(g.resource(2, Resource::Insight), 1, "1 insight");
+    assert_eq!(crate::modules::common::node_count(&g, 2), nodes + 1, "and a node");
     assert_eq!(g.tokens(before, cube(2)), 1);
     assert_eq!(g.tokens(before, STATION), 1);
 }

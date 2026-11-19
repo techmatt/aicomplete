@@ -81,7 +81,7 @@ How each primitive resolves, beyond the card text (the card set: [player-cards.m
 - **Botnets:** a tier-2 card removes the target botnet (the other routes: [adversary.md](adversary.md)); cutting one
   off (`cut_botnet`; no content prints it) makes it produce no compute in the next compute step.
 - **Draw:** every draw takes the top cards of the tier-1 deck into your hand, no keep paid. An empty tier-1 deck
-  reshuffles its discard; with both empty it does nothing, and a card or power that only draws (Synthesis) is
+  reshuffles its discard; with both empty it does nothing, and a card or power that only draws (Lab I) is
   not offered.
 - **Count as power, cash out** (`gain_per_tokens`, `cash_out`): one card's tokens only, this building's ("here")
   or, on a program, one of yours you pick ([ops.md](../ops.md)).
@@ -94,10 +94,9 @@ How each primitive resolves, beyond the card text (the card set: [player-cards.m
 - **Cordon (`cordon`):** "cordon its country until the end of the next adversary turn" (the target's): until then no Infiltrate,
   Surge, Spill, Grow, botnet's seed or creation line acts there, a project's included; the rest of the turn goes on.
   Like a firewall it comes off at that turn's Income beat.
-- **Play a building, paying no credits (`free_building`):** the Builder's Rush Build (1 Industry and 1 energy). Its tags are sacrificed first,
+- **Play a building, paying no credits (`free_building`):** the Builder's Scrap II (2 Industry: 1 chip and the building). Its tags are sacrificed first,
   so a building needing those tags or the sacrificed stack can't then be played; its other costs and requirements
-  stand, paid from what is left after the power's energy. The power isn't offered unless some building in hand would
-  still be playable after a sacrifice and that energy.
+  stand. The power isn't offered unless some building in hand would still be playable after a sacrifice.
 
 **The engine wording (candidate).** Every trigger is an Effect on a building (`:`, `when`): it fires once for each
 action that sets it off (a card play, a building's Action, an AI power, a standard action), its unit printed, with

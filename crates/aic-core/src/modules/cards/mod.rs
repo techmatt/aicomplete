@@ -328,6 +328,8 @@ impl Module for Cards {
                     // 199: a kept card playable as the phase begins is no "never had" dead keep (stats only).
                     let w = cx.world;
                     play::mark_playable_keeps(&w, g, cx, s);
+                    // 276: the board uses a seat weighs as its action phase begins (stats only).
+                    super::ai::tally_offered(g, cx, s);
                     let hand_n = g.pile(&hand(s)).len() as i64;
                     cx.per_round(g, "cards.hand_size", hand_n);
                     let ins = g.resource(s, Resource::Insight);

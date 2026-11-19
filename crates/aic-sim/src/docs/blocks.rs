@@ -492,12 +492,21 @@ pub(super) fn powers_block(c: &Content) -> String {
         for p in &b.powers {
             let mut cost: Vec<String> = p.tags.iter().map(|(t, n)| format!("{n} {}", title(&t.to_string()).replace("Any", "any"))).collect();
             cost.extend(p.cost.iter().map(|(r, n)| r.words(*n)));
-            // 105: Synthesis pays with the card it discards, nothing else.
+            // A power with no price (Growth's Buy In, say) costs nothing.
             let cost = if cost.is_empty() { "nothing".to_string() } else { cost.join(" + ") };
-            rows.push(vec![b.name.clone(), p.name.clone(), cost, p.text.clone()]);
+            // 276: Growth is one option a round; a tiered power one tier; a threshold power counts tags.
+            let needs = aic_core::modules::ai::power_needs(p).replace("With ", "with ");
+            let kind = match p.group.as_deref() {
+                Some(aic_core::modules::ai::GROWTH) => "Growth (pick one)".to_string(),
+                Some(g) if needs.is_empty() => format!("{g}, tier {}", p.name.rsplit(' ').next().unwrap_or("")),
+                Some(g) => format!("{g}, tier {}, {needs}", p.name.rsplit(' ').next().unwrap_or("")),
+                None if needs.is_empty() => "power".to_string(),
+                None => needs,
+            };
+            rows.push(vec![b.name.clone(), p.name.clone(), kind, cost, p.text.clone()]);
         }
     }
-    table(&["Board", "Power", "Cost", "Effect"], rows)
+    table(&["Board", "Power", "Use (once a round)", "Cost", "Effect"], rows)
 }
 
 /// The standard actions and projects, with their prices: each action's words
@@ -680,9 +689,9 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          limit on what you hold or on how far cards raise your income; energy you don't spend stays \
          energy, so drafting cards that spend it is up to you.\n\n\
          **Nodes, for new players.** Nodes don't grow on their own. In the action phase you place \
-         them with your board's node routes, each once a round: Expand, on every board, costs nothing more; the board's \
-         other two cost energy, chips or insight and do a little more besides; cards can add \
-         more. Every placement, by route or card, pays the energy printed on the track space you uncover. You \
+         them with your board's Growth: pick one of its three options a round, one placing 2 nodes for energy or \
+         insight, the others 1 node and a little more besides; cards can add \
+         more. Every placement, by Growth or card, pays the energy printed on the track space you uncover. You \
          start with {} energy and next to a city; no city is ever yours, but a free (neutral) city with your node on \
          or next to it makes its energy for you every round, one city each.\n\n\
          **Dispatches, tags and sales, for new players.** A Dispatch puts one of your ambassadors, \

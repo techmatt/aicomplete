@@ -94,7 +94,7 @@ try {
   // 261: `held`, not a second `insight` (a SyntaxError since 252: the lane never ran).
   const held = await value('resource.insight');
   check(held >= price, `the Researcher holds ${held} insight, Peer Review's ${price}`);
-  check(await js(`window.aic.legal.some((a) => a.type === 'power' && a.seat === ${SEAT} && a.power === ${k})`), 'the middle node route is on the menu');
+  check(await js(`window.aic.legal.some((a) => a.type === 'power' && a.seat === ${SEAT} && a.power === ${k})`), 'Peer Review, a Growth option, is on the menu');
   await js(`window.aic.act({ type: 'power', seat: ${SEAT}, power: ${k} })`);
   for (let i = 0; i < 4 && await js(`window.aic.legal.some((a) => a.type === 'choose')`); i++) {
     await js(`window.aic.act(window.aic.legal.filter((a) => a.type === 'choose')[0])`);

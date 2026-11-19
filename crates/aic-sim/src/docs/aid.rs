@@ -27,8 +27,18 @@ then check the losses, then the purge.
 
 /// The once-a-round list: what a player must otherwise remember with nothing on the table to show it.
 fn once_a_round(r: &Rules) -> String {
-    let boards: Vec<String> =
-        content().ais.iter().map(|b| format!("{} ({})", b.name, b.powers.iter().map(|p| p.name.as_str()).collect::<Vec<_>>().join(", "))).collect();
+    // 276: a group (Growth's options, a power's tiers) is one use and one marker: named once.
+    let uses = |b: &aic_core::content::AiBoard| {
+        let mut names: Vec<&str> = Vec::new();
+        for p in &b.powers {
+            let n = p.group.as_deref().unwrap_or(&p.name);
+            if !names.contains(&n) {
+                names.push(n);
+            }
+        }
+        names.join(", ")
+    };
+    let boards: Vec<String> = content().ais.iter().map(|b| format!("{} ({})", b.name, uses(b))).collect();
     // 0 is "no limit" for these two (standard.rs).
     let times = |n: i64| match n {
         0 => "any number of times".to_string(),
@@ -39,7 +49,7 @@ fn once_a_round(r: &Rules) -> String {
         "Each of these is used at most once a round. **Put a used marker on its used space when you use it** (each \
          power, building slot and converter prints one; a city takes a bought chip), and clear them all at round \
          start.\n\n\
-         - **Your board's powers:** each once. {}.\n\
+         - **Your board's Growth and powers:** each once: one Growth option, one tier of each power. {}.\n\
          - **Each building's Action** (`→`): once; \"A, OR B\" is one use.\n\
          - **Standard actions:** Remove a troop {} a round, Turn a cube into insight {} a round, each player; **Buy \
          energy** once a round a city, for all players together.\n\
@@ -188,7 +198,7 @@ fn ambassadors(r: &Rules) -> String {
          - **Threats** that print ambassadors as a cost: from your supply.\n\
          - **Blocking** spends none: an ambassador on a corrupted site stops its output while it stands. A \
          **Dispatch** moves one; a troop never touches one.\n\
-         - **Gain one:** {} credits, Outpost, cards.\n",
+         - **Gain one:** {} credits, Accord, cards.\n",
         int(r, "board.liberate_at"),
         int(r, "board.claim_station"),
         int(r, "board.claim_factory"),

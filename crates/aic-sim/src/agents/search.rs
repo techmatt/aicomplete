@@ -7,6 +7,7 @@ use std::collections::{HashMap, HashSet};
 use std::hash::{BuildHasherDefault, Hash, Hasher};
 use std::sync::Arc;
 
+use aic_core::content::Op;
 use aic_core::key::Fnv;
 use aic_core::module::World;
 use aic_core::modules::{adversary, ai, cards};
@@ -519,7 +520,11 @@ fn score_all(
                 Action::Pass { .. } => stay,
                 _ => match step(rules, base, a) {
                     Some(c) if sacrifices_many(&world, a) => lookahead(rules, ev, &c, depth - 1, sacrificing_choices, &mut seen),
-                    Some(c) if places(&world, a) => lookahead(rules, ev, &c, depth - 1, placing_choices, &mut seen),
+                    // 276 (diff review): a two-node Growth option asks a track and a hex per node: short of the
+                    // second pair it read as 1 node for its price.
+                    Some(c) if places(&world, a) => {
+                        lookahead(rules, ev, &c, depth - 1, placing_choices + 2 * extra_nodes(&world, a), &mut seen)
+                    }
                     Some(c) if matches!(a, Action::Choose { .. }) => lookahead(rules, ev, &c, depth - 1, answer_choices, &mut seen),
                     Some(c) => lookahead(rules, ev, &c, depth - 1, choices, &mut seen),
                     None => f64::NEG_INFINITY,
@@ -537,6 +542,17 @@ const PLACING_PROMPTS: usize = 3;
 /// Whether `a` is a power that places nodes.
 fn places(world: &World, a: &Action) -> bool {
     matches!(a, Action::Power { seat, power } if ai::power_places(world, *seat as usize, *power as usize))
+}
+
+/// 276: the nodes a power places beyond its first (a two-node Growth option: 1).
+fn extra_nodes(world: &World, a: &Action) -> usize {
+    match a {
+        Action::Power { seat, power } => ai::board(world, *seat as usize).powers.get(*power as usize).map_or(0, |p| {
+            let n: i64 = p.effects.iter().map(|e| if let Op::PlaceNode { count, .. } = e { *count } else { 0 }).sum();
+            (n - 1).max(0) as usize
+        }),
+        _ => 0,
+    }
 }
 
 /// The prompts an expensive power adds to a placement's (068): up to two more

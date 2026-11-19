@@ -13,10 +13,10 @@ fn a_power_names_its_lone_sacrifice() {
     };
     let pile = crate::modules::cards::played(0);
     set_pile(&mut g, pile.as_str(), &["payroll_automation"]);
-    let one = power(&rules, &g, "Scrap");
+    let one = power(&rules, &g, "Scrap I");
     assert!(one.contains("Sacrifices: Payroll Automation."), "{one}");
     set_pile(&mut g, pile.as_str(), &["payroll_automation", "vendor_financing"]);
-    let two = power(&rules, &g, "Scrap");
+    let two = power(&rules, &g, "Scrap I");
     assert!(!two.contains("Sacrifices:"), "{two}");
 }
 

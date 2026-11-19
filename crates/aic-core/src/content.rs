@@ -767,6 +767,21 @@ pub struct Power {
     #[serde(default)]
     pub cost: Vec<Cost>,
     pub effects: Vec<Op>,
+    /// 276: powers sharing a group are one use a round between them: a board's Growth (pick one option) and a
+    /// tiered power's tiers (sacrifice more of the tag for a stronger effect). `None`: a power alone.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub group: Option<String>,
+    /// 276: a threshold power: usable only with at least N of the tag on your cards (board tags count, as for any
+    /// requirement); nothing is sacrificed.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub needs: Vec<(Tag, i64)>,
+}
+
+impl Power {
+    /// 276: whether `other` is this power or shares its once-a-round use (its group).
+    pub fn shares_use(&self, other: &Power) -> bool {
+        std::ptr::eq(self, other) || (self.group.is_some() && self.group == other.group)
+    }
 }
 
 impl CardDef {
@@ -939,6 +954,18 @@ impl Content {
             if p.tags.len() > 1 {
                 return Err(format!("{what}: a power's cost names one tag or `any`, never a mix"));
             }
+            // 276: a threshold power counts tags; it sacrifices none (Matt, 2026-11-18).
+            if !p.needs.is_empty() && !p.tags.is_empty() {
+                return Err(format!("{what}: power {:?} counts tags or sacrifices them, not both", p.name));
+            }
+            if p.needs.iter().any(|(_, n)| *n < 1) {
+                return Err(format!("{what}: power {:?}'s threshold is 1 tag or more", p.name));
+            }
+        }
+        // 276: names key the counters, so they are unique on a board.
+        let mut names = BTreeSet::new();
+        if let Some(p) = b.powers.iter().find(|p| !names.insert(p.name.as_str())) {
+            return Err(format!("{what}: two powers named {:?}", p.name));
         }
         check_ops(&b.innate.passives, Slot::Standing, &what)?;
         // 118: a capstone is read only on a track's last space; elsewhere it was shown as

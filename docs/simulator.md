@@ -80,7 +80,7 @@ What the read scripts quote most (`screens.cnt(game, key)`; more in experiments.
 | Key | What it holds, per game |
 |---|---|
 | `cell` | the cell's index in grid order: configs, then variants, then difficulties, then agents, agent fastest (`experiment::cells_with`; `screens.cells_of`) |
-| `counters['ai.power.<board>.<power>']` | a board power's uses (`modules/ai.rs`; the seats on that board summed), `.rNN` a round's; names: `scripts/powers.py` |
+| `counters['ai.power.<board>.<power>']` | a board power's uses (`modules/ai.rs`; the seats on that board summed), `.rNN` a round's; names: `scripts/powers.py`; `ai.offered.<board>`: uses offered as the action phase begins, a group once |
 | `counters['board.std.<name>']` | a standard action's uses; `board.std_actions` all of them |
 | `counters['cards.played.<card>']`, `['cards.drawn']` | plays of a card / cards drawn off the decks, all seats (keys are flat, dotted strings) |
 | `counters['fx.<card>.tN']` / `['fx.<card>.<measure>']` | an Alignment card resolved at tier N / the change it made to a `FX_MEASURES` total (`alignment.rs`): a signed delta, not a count |

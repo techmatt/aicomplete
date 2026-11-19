@@ -102,7 +102,7 @@ pub fn stale_failures() -> Vec<String> {
             for b in stale(line) {
                 let now = match b {
                     "corp troop" => "Drones (r77)",
-                    "deploy" => "Muster (troops) or Expand (r77; 252: Place a node cut, Expand back as every board's base node route)",
+                    "deploy" => "Muster (troops) or Growth (nodes; r77; 276: Expand and the node routes became each board's Growth)",
                     _ => "agents, Operatives: docs/rules/README.md, Terms",
                 };
                 out.push(format!("{}:{}: stale house word {b:?} ({now})", path.display(), i + 1));

@@ -35,7 +35,7 @@ snapshot (at r73, 50-95% of a game; 5 s a decision in long games).
   (`KeyBuf`), and interned only when new (`entry_str`, `insert_str`). `ai.boards` and the int parameters read after
   every action (`alignment`'s tip sizes and loss rules, `board`'s stage gates) are read once with the rules
   (`World::ai_boards`, `World::hot`). The heuristic's per-card facts are a `Vec` by card index, read by reference.
-- **A rule's legality test inside a prompt:** Rush Build offers only the sacrifices that leave a free building,
+- **A rule's legality test inside a prompt:** Scrap II offers only the sacrifices that leave a free building,
   tested for every source on every replay, so it reads the seat's tags and prices once a hand (`FreeTest` in
   `cards/play.rs`), stops at the first building, tests each source once, and removes the source's cards from the
   state and puts them back, no copy (`ai::builds_after`); naive, it took 70% of a long game. A check like it in a

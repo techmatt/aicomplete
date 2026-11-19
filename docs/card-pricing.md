@@ -83,8 +83,8 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   payment (guideline 5). How the agents read a trigger in play: agents.md, *The value table*.
 - **Card throughput:** credits pile up, so the fix is dearer, bigger cards and more of them: engines draw when built,
   Action buildings turn spare credits, chips, energy or Operatives into cards (Patent Library, Parts Exchange), three
-  engines draw on their tag's plays, and two board powers do the same (the Builder's Procure, the Protector's
-  Debrief). Late, dear cards (Moonshot Grant, Headquarters Raid) take spare credits. A flat credit sink stays the
+  engines draw on their tag's plays, and board powers draw 1 a use (the Researcher's Field Survey and Lab, the
+  Protector's Interdict II). Late, dear cards (Moonshot Grant, Headquarters Raid) take spare credits. A flat credit sink stays the
   last resort.
 - **Insight off every card** counts `rates.insight_discount_share` (0.25) of the plays: the floor below.
 - **Insight discounts mostly sit at the floor:** `discount_floor` 1 holds insight too, and `science_every` already

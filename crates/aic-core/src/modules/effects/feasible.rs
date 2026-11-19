@@ -44,6 +44,8 @@ fn feasible_aimed(
             Op::Push { pieces, .. } => any(push_hexes(w, g, seat, pieces)),
             Op::Gather { pieces, strike, .. } => any(gather_hexes(w, g, seat, pieces, *strike)),
             Op::Firewall => any(firewall_hexes(w, g, seat)),
+            // 276 (diff review): a hardening acts on a target with a facility it can protect in its area.
+            Op::Harden { at: area, .. } => !hardens_at(w, g, at, *area).is_empty(),
             _ => !at.is_empty(),
         }
     };

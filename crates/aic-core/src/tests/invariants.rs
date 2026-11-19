@@ -344,9 +344,10 @@ fn rush_build_always_builds() {
 }
 
 #[test]
-#[ignore = "slow lane: Rush Build over more games and sizes"]
+#[ignore = "slow lane: Scrap II (Rush Build's job since 276) over more games and sizes"]
 fn rush_build_always_builds_more_seeds() {
-    let (tried, found) = rush_build_strandings(&[baseline(), baseline_with(&["countries=3"])], 2..48);
+    // 276: Scrap II sacrifices 2 Industry, rarer in random hands than Rush Build's 1: 2..48 offered it in none.
+    let (tried, found) = rush_build_strandings(&[baseline(), baseline_with(&["countries=3"])], 2..160);
     assert!(found.is_empty(), "{} of {tried} tries built nothing:\n{}", found.len(), found.join("\n"));
     assert!(tried > 0, "no game offered Rush Build");
 }

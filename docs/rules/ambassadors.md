@@ -67,8 +67,8 @@ Pieces on the board move: **ambassadors** (any seat's), **agents** and **troops*
   Troops) on or next to it, your choice" (the card's target): the target counts, and the player picks the pieces,
   batch by batch, and may stop. A card's gather or push acts on its target too ([card-grammar.md](card-grammar.md)).
 - **Where:** Kettle Operation, Lure Network, Honeypot Relay (strikes), Checkpoint Network (push; Action: push),
-  Exodus Corridors and Rally the Allies (gather ambassadors), and the Protector's Patrol power (1 energy: push up to 3 agents or
-  troops from its target). What a card moves is set by its price, not its tier: about 1.3 credits a piece (`values.json` `gather`, `push`).
+  Exodus Corridors and Rally the Allies (gather ambassadors), and the Protector's Patrol power (I, 1 energy: push up to 3 agents or
+  troops from its target; II, 2 energy, also hardens a facility on or next to it). What a card moves is set by its price, not its tier: about 1.3 credits a piece (`values.json` `gather`, `push`).
 
 ## Convert and firewall (r69; Matt, 2026-11-09; candidate)
 

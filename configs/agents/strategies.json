@@ -9,7 +9,7 @@
   },
   "strategies": [
     {"id": "industry_income", "board": "builder", "name": "Industry income",
-     "says": "Play Industry income early (Gigafactory Charter, Robotic Foundry, Economies of Scale), draw on them with Supplier Network, and stack Industry tags toward Arcology Foundry and Vertical Monopoly; spend two spent Industry cards on Rush Build.",
+     "says": "Play Industry income early (Gigafactory Charter, Robotic Foundry, Economies of Scale), draw on them with Supplier Network, and stack Industry tags toward Arcology Foundry and Vertical Monopoly; spend two spent Industry cards on Scrap II.",
      "tags": {"industry": 0.6}, "resources": {"credits": 0.2, "chips": 0.2}, "categories": {"income": 0.4}},
     {"id": "power_grid", "board": "builder", "name": "Power grid",
      "says": "Take Power cards and energy income (Baseload Contract, Fusion Startup Stake), climb the Power tags to Fusion Research Campus and Dyson Swarm, and cash spent Power cards with Overcharge; Power to the People frees a city at the end.",
@@ -27,13 +27,13 @@
      "says": "Answer threats with the typed jams and counters, build Garrison Command and Joint Task Force, and send Peacekeeping Mission to a corrupted city.",
      "tags": {"security": 0.4}, "categories": {"counter": 0.6, "liberate": 0.2}},
     {"id": "diplomacy_liberation", "board": "protector", "name": "Diplomacy and liberation",
-     "says": "Take Diplomacy and Followers (Liaison Corps, Envoy Briefings, Open Assembly, Accord's node), and free cities with Great Liberation and Popular Uprising.",
+     "says": "Take Diplomacy and Followers (Liaison Corps, Envoy Briefings, Open Assembly, Accord's ambassador), and free cities with Great Liberation and Popular Uprising.",
      "tags": {"diplomacy": 0.6}, "tokens": {"followers": 0.4}, "resources": {"ambassadors": 0.3}, "categories": {"liberate": 0.5}},
     {"id": "civic_shelter", "board": "protector", "name": "Civic shelter",
-     "says": "Keep what you have standing: Bulwark, Faraday Yard, Hardpoint Lockdown, Aegis Grid Lockdown and the Shelter power, toward Aegis Doctrine.",
+     "says": "Keep what you have standing: Patrol II, Faraday Yard, Hardpoint Lockdown, Aegis Grid Lockdown and the Shelter power, toward Aegis Doctrine.",
      "tags": {"security": 0.3}, "categories": {"defense": 0.7}},
     {"id": "cubes_stations", "board": "researcher", "name": "Cubes and stations",
-     "says": "Build stations early (Field Station), Grant cubes onto megaprojects (Moonshot Grant late), Peer Review your nodes, and spend the cubes on Forensic Audit.",
+     "says": "Build stations early (Field Station), put Lab II's cubes onto megaprojects (Moonshot Grant late), Peer Review your nodes, and spend the cubes on Forensic Audit.",
      "resources": {"research_cubes": 0.6}, "tags": {"science": 0.2}, "categories": {"liberate": 0.2}},
     {"id": "science_chain", "board": "researcher", "name": "Science chain",
      "says": "Stack Science tags: Research Royalties, Citation Engine and Preprint Server first, then Interdisciplinary Institute and Foundation Model Campus.",
@@ -45,7 +45,7 @@
      "says": "Grow Dataset piles (Telemetry Archive, Synthetic Data Forge, Dataset Scraper) and cash them through Synthetic Data Forge.",
      "tags": {"science": 0.3}, "tokens": {"datasets": 0.6}},
     {"id": "team_support", "board": "researcher", "name": "Team support",
-     "says": "Feed your partner: gifts, Open Science's insight, Coalition Charter's Sway, Audit against projects, and Root Access for a corrupted city.",
+     "says": "Feed your partner: gifts, Open Science's insight, Coalition Charter's Sway, Hack II against projects, and Root Access for a corrupted city.",
      "tags": {"cyber": 0.3, "diplomacy": 0.2}, "categories": {"team": 0.6, "liberate": 0.2}}
   ]
 }

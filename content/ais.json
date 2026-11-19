@@ -86,92 +86,69 @@
   ],
   "powers": [
    {
-    "name": "Mint",
-    "tags": [],
-    "cost": [
-     [
-      "credits",
-      2
-     ]
-    ],
-    "text": "gain 1 chip",
-    "effects": [
-     {
-      "op": "gain",
-      "resource": "chips",
-      "amount": 1
-     }
-    ]
-   },
-   {
-    "name": "Expand",
-    "tags": [],
-    "text": "place 1 Node",
-    "effects": [
-     {
-      "op": "place_node",
-      "count": 1
-     }
-    ],
-    "cost": []
-   },
-   {
-    "name": "Buy In",
+    "name": "Sprawl",
     "tags": [],
     "cost": [
      [
       "energy",
-      2
+      1
      ]
     ],
-    "text": "place 1 Node; if the new node brings a factory into your reach, also gain 1 chip",
+    "text": "place 2 Nodes",
+    "effects": [
+     {
+      "op": "place_node",
+      "count": 2
+     }
+    ],
+    "group": "Growth"
+   },
+   {
+    "name": "Buy In",
+    "tags": [],
+    "cost": [],
+    "text": "place 1 Node; gain 1 chip",
     "effects": [
      {
       "op": "place_node",
       "count": 1
      },
      {
-      "op": "if_node_next",
-      "spots": [
-       "factory"
-      ],
-      "then": [
-       {
-        "op": "gain",
-        "resource": "chips",
-        "amount": 1
-       }
-      ],
-      "fresh": true
+      "op": "gain",
+      "resource": "chips",
+      "amount": 1
      }
-    ]
+    ],
+    "group": "Growth"
    },
    {
     "name": "Annex",
     "tags": [],
-    "text": "place 1 Node within 2 of yours",
+    "cost": [],
+    "text": "place 1 Node within 2 of yours; gain 3 credits",
     "effects": [
      {
       "op": "place_node",
       "count": 1,
       "range": 2
+     },
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 3
      }
     ],
-    "cost": [
-     [
-      "chips",
-      1
-     ]
-    ]
+    "group": "Growth"
    },
    {
-    "name": "Scrap",
+    "name": "Scrap I",
     "tags": [
      [
       "industry",
       1
      ]
     ],
+    "cost": [],
     "text": "gain 1 chip",
     "effects": [
      {
@@ -179,16 +156,40 @@
       "resource": "chips",
       "amount": 1
      }
-    ]
+    ],
+    "group": "Scrap"
    },
    {
-    "name": "Overcharge",
+    "name": "Scrap II",
+    "tags": [
+     [
+      "industry",
+      2
+     ]
+    ],
+    "cost": [],
+    "text": "gain 1 chip; play a building from your hand, paying no credits",
+    "effects": [
+     {
+      "op": "gain",
+      "resource": "chips",
+      "amount": 1
+     },
+     {
+      "op": "free_building"
+     }
+    ],
+    "group": "Scrap"
+   },
+   {
+    "name": "Overcharge I",
     "tags": [
      [
       "power",
       1
      ]
     ],
+    "cost": [],
     "text": "gain 2 energy",
     "effects": [
      {
@@ -196,53 +197,35 @@
       "resource": "energy",
       "amount": 2
      }
-    ]
+    ],
+    "group": "Overcharge"
    },
    {
-    "name": "Rush Build",
+    "name": "Overcharge II",
     "tags": [
      [
-      "industry",
-      1
-     ]
-    ],
-    "text": "play a building from your hand, paying no credits",
-    "effects": [
-     {
-      "op": "free_building"
-     }
-    ],
-    "cost": [
-     [
-      "energy",
-      1
-     ]
-    ]
-   },
-   {
-    "name": "Procure",
-    "tags": [],
-    "cost": [
-     [
-      "chips",
+      "power",
       2
      ]
     ],
-    "text": "draw 1 card; gain 3 credits",
+    "cost": [],
+    "text": "gain 2 energy and 1 antimatter",
     "effects": [
      {
-      "op": "draw",
-      "count": 1
+      "op": "gain",
+      "resource": "energy",
+      "amount": 2
      },
      {
       "op": "gain",
-      "resource": "credits",
-      "amount": 3
+      "resource": "antimatter",
+      "amount": 1
      }
-    ]
+    ],
+    "group": "Overcharge"
    },
    {
-    "name": "Fortify",
+    "name": "Fortify I",
     "tags": [],
     "cost": [
      [
@@ -250,7 +233,7 @@
       1
      ]
     ],
-    "text": "Target: Troops. Remove 1 Troop on it; harden a facility on or next to it",
+    "text": "Target: Troops. Remove 1 Troop on it",
     "effects": [
      {
       "op": "target",
@@ -260,36 +243,37 @@
       "op": "remove_troops",
       "count": 1,
       "at": "on"
+     }
+    ],
+    "group": "Fortify"
+   },
+   {
+    "name": "Fortify II",
+    "tags": [],
+    "cost": [
+     [
+      "chips",
+      2
+     ]
+    ],
+    "text": "Target: Troops. Remove up to 2 Troops on it; harden a facility on or next to it",
+    "effects": [
+     {
+      "op": "target",
+      "on": "troops"
+     },
+     {
+      "op": "remove_troops",
+      "count": 2,
+      "at": "on"
      },
      {
       "op": "harden",
       "count": 1,
       "at": "near"
      }
-    ]
-   },
-   {
-    "name": "Teardown",
-    "tags": [],
-    "cost": [
-     [
-      "chips",
-      1
-     ]
     ],
-    "text": "destroy one of your factories anywhere; Fallout goes on its hex; gain 1 antimatter",
-    "effects": [
-     {
-      "op": "burn",
-      "facility": "factory",
-      "blight": true
-     },
-     {
-      "op": "gain",
-      "resource": "antimatter",
-      "amount": 1
-     }
-    ]
+    "group": "Fortify"
    }
   ],
   "play_track": [
@@ -460,41 +444,7 @@
   ],
   "powers": [
    {
-    "name": "Bulwark",
-    "tags": [],
-    "cost": [
-     [
-      "energy",
-      1
-     ]
-    ],
-    "text": "Target: a player's uncorrupted facility. Harden it",
-    "effects": [
-     {
-      "op": "target",
-      "on": "facility"
-     },
-     {
-      "op": "harden",
-      "count": 1,
-      "at": "on"
-     }
-    ]
-   },
-   {
-    "name": "Expand",
-    "tags": [],
-    "text": "place 1 Node",
-    "effects": [
-     {
-      "op": "place_node",
-      "count": 1
-     }
-    ],
-    "cost": []
-   },
-   {
-    "name": "Accord",
+    "name": "Outpost",
     "tags": [],
     "cost": [
      [
@@ -502,29 +452,24 @@
       2
      ]
     ],
-    "text": "place 1 Node; if the new node brings a city into your reach, also put a new ambassador on one such city",
+    "text": "place 2 Nodes",
     "effects": [
      {
       "op": "place_node",
-      "count": 1
-     },
-     {
-      "op": "if_node_next",
-      "spots": [
-       "city"
-      ],
-      "then": [
-       {
-        "op": "ambassador_to_spot"
-       }
-      ],
-      "fresh": true
+      "count": 2
      }
-    ]
+    ],
+    "group": "Growth"
    },
    {
-    "name": "Outpost",
+    "name": "Accord",
     "tags": [],
+    "cost": [
+     [
+      "energy",
+      1
+     ]
+    ],
     "text": "place 1 Node; gain 1 ambassador",
     "effects": [
      {
@@ -537,39 +482,28 @@
       "amount": 1
      }
     ],
-    "cost": [
-     [
-      "energy",
-      3
-     ]
-    ]
+    "group": "Growth"
    },
    {
-    "name": "Debrief",
-    "tags": [
-     [
-      "security",
-      1
-     ]
-    ],
-    "text": "Target: Agents. Draw 1 card and remove 1 Agent on it",
+    "name": "Levy",
+    "tags": [],
+    "cost": [],
+    "text": "place 1 Node; gain 3 credits",
     "effects": [
      {
-      "op": "draw",
+      "op": "place_node",
       "count": 1
      },
      {
-      "op": "target",
-      "on": "agents"
-     },
-     {
-      "op": "damage",
-      "ambassadors": 1
+      "op": "gain",
+      "resource": "credits",
+      "amount": 3
      }
-    ]
+    ],
+    "group": "Growth"
    },
    {
-    "name": "Patrol",
+    "name": "Patrol I",
     "tags": [],
     "cost": [
      [
@@ -591,16 +525,49 @@
        "troops"
       ]
      }
-    ]
+    ],
+    "group": "Patrol"
    },
    {
-    "name": "Interdict",
+    "name": "Patrol II",
+    "tags": [],
+    "cost": [
+     [
+      "energy",
+      2
+     ]
+    ],
+    "text": "Target: Agents or Troops. Push up to 3 from it, each to a hex next to it; harden a facility on or next to it",
+    "effects": [
+     {
+      "op": "target",
+      "on": "adversary"
+     },
+     {
+      "op": "push",
+      "max": 3,
+      "pieces": [
+       "agents",
+       "troops"
+      ]
+     },
+     {
+      "op": "harden",
+      "count": 1,
+      "at": "near"
+     }
+    ],
+    "group": "Patrol"
+   },
+   {
+    "name": "Interdict I",
     "tags": [
      [
       "security",
       1
      ]
     ],
+    "cost": [],
     "text": "Target: Troops. Remove up to 2 on it",
     "effects": [
      {
@@ -611,44 +578,38 @@
       "op": "damage",
       "troops": 2
      }
-    ]
+    ],
+    "group": "Interdict"
    },
    {
-    "name": "Reclaim",
+    "name": "Interdict II",
     "tags": [
      [
       "security",
-      1
-     ]
-    ],
-    "cost": [
-     [
-      "credits",
-      4
-     ],
-     [
-      "energy",
       2
      ]
     ],
-    "text": "Target: a corrupted research station or factory. Turn it neutral; gain 1 antimatter",
+    "cost": [],
+    "text": "Target: Agents or Troops. Remove up to 2 Troops and up to 2 Agents on it; draw 1 card",
     "effects": [
      {
       "op": "target",
-      "on": "corrupted_facility"
+      "on": "adversary"
      },
      {
-      "op": "cleanse",
-      "amount": 1,
-      "one_country": false,
-      "at": "on"
+      "op": "damage",
+      "troops": 2
      },
      {
-      "op": "gain",
-      "resource": "antimatter",
-      "amount": 1
+      "op": "damage",
+      "ambassadors": 2
+     },
+     {
+      "op": "draw",
+      "count": 1
      }
-    ]
+    ],
+    "group": "Interdict"
    }
   ],
   "play_track": [
@@ -802,18 +763,6 @@
   ],
   "powers": [
    {
-    "name": "Expand",
-    "tags": [],
-    "text": "place 1 Node",
-    "effects": [
-     {
-      "op": "place_node",
-      "count": 1
-     }
-    ],
-    "cost": []
-   },
-   {
     "name": "Peer Review",
     "tags": [],
     "cost": [
@@ -822,31 +771,19 @@
       2
      ]
     ],
-    "text": "place 1 Node; if the new node brings a research station into your reach, also gain 1 insight",
+    "text": "place 2 Nodes",
     "effects": [
      {
       "op": "place_node",
-      "count": 1
-     },
-     {
-      "op": "if_node_next",
-      "spots": [
-       "station"
-      ],
-      "then": [
-       {
-        "op": "gain",
-        "resource": "insight",
-        "amount": 1
-       }
-      ],
-      "fresh": true
+      "count": 2
      }
-    ]
+    ],
+    "group": "Growth"
    },
    {
     "name": "Field Survey",
     "tags": [],
+    "cost": [],
     "text": "place 1 Node; draw 1 card",
     "effects": [
      {
@@ -858,39 +795,18 @@
       "count": 1
      }
     ],
-    "cost": [
-     [
-      "insight",
-      3
-     ]
-    ]
-   },
-   {
-    "name": "Grant",
-    "tags": [],
-    "cost": [
-     [
-      "credits",
-      2
-     ]
-    ],
-    "text": "add 1 research cube in your color to an open megaproject",
-    "effects": [
-     {
-      "op": "project_cube",
-      "count": 1
-     }
-    ]
+    "group": "Growth"
    },
    {
     "name": "Field Station",
-    "tags": [
+    "tags": [],
+    "cost": [
      [
-      "industry",
+      "insight",
       1
      ]
     ],
-    "text": "Target: an open hex. Build a research station on it, paying no chips",
+    "text": "Target: an open hex. Build a research station on it, paying no chips; place 1 Node",
     "effects": [
      {
       "op": "target",
@@ -898,72 +814,23 @@
      },
      {
       "op": "build_station"
-     }
-    ]
-   },
-   {
-    "name": "Audit",
-    "tags": [
-     [
-      "cyber",
-      1
-     ]
-    ],
-    "text": "remove 3 compute from one adversary project",
-    "effects": [
-     {
-      "op": "drain_project",
-      "amount": 3
-     }
-    ]
-   },
-   {
-    "name": "Disrupt",
-    "tags": [
-     [
-      "cyber",
-      1
-     ]
-    ],
-    "cost": [
-     [
-      "research_cubes",
-      1
-     ]
-    ],
-    "text": "remove up to 2 Troops in one country",
-    "effects": [
-     {
-      "op": "remove_troops",
-      "count": 2
-     }
-    ]
-   },
-   {
-    "name": "Meltdown",
-    "tags": [],
-    "text": "destroy one of your research stations anywhere; gain 1 antimatter",
-    "effects": [
-     {
-      "op": "burn",
-      "facility": "station"
      },
      {
-      "op": "gain",
-      "resource": "antimatter",
-      "amount": 1
+      "op": "place_node",
+      "count": 1
      }
     ],
-    "cost": [
-     [
-      "research_cubes",
-      2
-     ]
-    ]
+    "group": "Growth"
    },
    {
-    "name": "Synthesis",
+    "name": "Lab I",
     "tags": [],
+    "cost": [
+     [
+      "insight",
+      1
+     ]
+    ],
     "text": "draw 1 card",
     "effects": [
      {
@@ -971,12 +838,85 @@
       "count": 1
      }
     ],
+    "group": "Lab",
+    "needs": [
+     [
+      "science",
+      2
+     ]
+    ]
+   },
+   {
+    "name": "Lab II",
+    "tags": [],
     "cost": [
      [
       "insight",
       1
+     ],
+     [
+      "credits",
+      2
+     ]
+    ],
+    "text": "draw 1 card; add 1 research cube in your color to an open megaproject",
+    "effects": [
+     {
+      "op": "draw",
+      "count": 1
+     },
+     {
+      "op": "project_cube",
+      "count": 1
+     }
+    ],
+    "group": "Lab",
+    "needs": [
+     [
+      "science",
+      4
      ]
     ]
+   },
+   {
+    "name": "Hack I",
+    "tags": [
+     [
+      "cyber",
+      1
+     ]
+    ],
+    "cost": [],
+    "text": "remove up to 2 Troops in one country",
+    "effects": [
+     {
+      "op": "remove_troops",
+      "count": 2
+     }
+    ],
+    "group": "Hack"
+   },
+   {
+    "name": "Hack II",
+    "tags": [
+     [
+      "cyber",
+      2
+     ]
+    ],
+    "cost": [],
+    "text": "remove up to 2 Troops in one country; remove 3 compute from one adversary project",
+    "effects": [
+     {
+      "op": "remove_troops",
+      "count": 2
+     },
+     {
+      "op": "drain_project",
+      "amount": 3
+     }
+    ],
+    "group": "Hack"
    }
   ],
   "play_track": [

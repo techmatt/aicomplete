@@ -47,7 +47,8 @@ def main():
             places = any(e['op'] == 'place_node' for e in p['effects'])
             if need >= 2 or (need >= 1 and not places and any(r == 'energy' and n > 0 for r, n in p.get('cost') or [])):
                 dear[power_key(b['id'], p['name'])] = f"{b['name']} {p['name']}"
-            if p['name'] == 'Grant':
+            # 276: Grant's cube is Lab II's.
+            if p['name'] in ('Grant', 'Lab II'):
                 grant = power_key(b['id'], p['name'])
     by = collections.defaultdict(list)
     by_agent = collections.defaultdict(list)

@@ -219,14 +219,27 @@ pub(crate) fn am_makes(w: &World, g: &GameState, s: usize) -> i64 {
         aic_core::vocab::TagOrAny::Any => tags.iter().sum::<i64>() >= n,
         aic_core::vocab::TagOrAny::Is(t) => tags[*t as usize] >= n,
     };
-    let powers: i64 = aic_core::modules::ai::board(w, s)
+    // 276: a threshold power counts once its tags are on the seat's cards; a group (Growth, a power's tiers) is one
+    // use a round, so it counts its best option only.
+    let mut groups: std::collections::BTreeMap<&str, i64> = std::collections::BTreeMap::new();
+    let mut powers: i64 = 0;
+    for p in aic_core::modules::ai::board(w, s)
         .powers
         .iter()
         .filter(|p| p.tags.iter().all(|(t, n)| has(t, *n)))
+        .filter(|p| p.needs.iter().all(|(t, n)| tags[*t as usize] >= *n))
         // 219: a burn (your own piece) or a Reclaim (a target in reach) is no round's income.
         .filter(|p| !burns_or_reclaims(&p.effects))
-        .map(|p| gains(&p.effects))
-        .sum();
+    {
+        match p.group.as_deref() {
+            Some(gname) => {
+                let best = groups.entry(gname).or_insert(0);
+                *best = (*best).max(gains(&p.effects));
+            }
+            None => powers += gains(&p.effects),
+        }
+    }
+    let powers = powers + groups.values().sum::<i64>();
     let built: i64 = g
         .pile(&cards::built(s))
         .iter()

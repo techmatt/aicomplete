@@ -51,8 +51,8 @@ what it prints; the `cards/*_read.py` readers take seconds.
   and farmed reads pool; `--agents` takes it or the label): per agent: draft cards kept in over `--min` percent
   of games (default 1) and played in none, and those no game kept. Not why: a card is offered only when some part of
   it can act (`feasible` in `crates/aic-core/src/modules/effects/feasible.rs`).
-- `cards/use_read.py DIR... [--min PCT] [--agents A,B]`: per agent and pair, pooled: wins, uses of dear powers, Grant
-  and Action buildings, tokens, liberate cards; then `play_read.py`'s lists.
+- `cards/use_read.py DIR... [--min PCT] [--agents A,B]`: per agent and pair, pooled: wins, uses of dear powers, Lab II
+  (Grant before 276) and Action buildings, tokens, liberate cards; then `play_read.py`'s lists.
 - `cards/runaway_read.py DIR... [--times 5] [--floor 20] [--held 150] [--peak-times 3] [--peak-floor 10] [--top 15]`:
   loops (a counter whose per-game max is over `--times` its mean where used), insight growing three rounds running
   past `--held`, peaks held over `--peak-times` income a round.

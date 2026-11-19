@@ -134,17 +134,18 @@ impl TagNeed {
 /// Seat `s` pays a power's tag cost by sacrificing sources one at a time
 /// (its choice among those that still help), until it is paid.
 pub fn sacrifice_for(g: &mut GameState, cx: &mut Cx, seat: usize, cost: &[(TagOrAny, i64)]) -> Res {
-    sacrifice_keeping(g, cx, seat, cost, &|_, _| true)
+    sacrifice_keeping(g, cx, seat, cost, &|_, _, _| true)
 }
 
 /// [`sacrifice_for`], offering only the sources `keep` allows when some do
-/// (099: Rush Build offers no sacrifice that leaves it nothing to build).
+/// (099: Rush Build, now Scrap II, offers no sacrifice that leaves it nothing to build; 276: `keep` reads the
+/// tags still unpaid, so a 2-tag payment is tried whole).
 pub fn sacrifice_keeping(
     g: &mut GameState,
     cx: &mut Cx,
     seat: usize,
     cost: &[(TagOrAny, i64)],
-    keep: &dyn Fn(&mut GameState, &SacrificeSource) -> bool,
+    keep: &dyn Fn(&mut GameState, &TagNeed, &SacrificeSource) -> bool,
 ) -> Res {
     let w = cx.world;
     let mut need = TagNeed::new(cost);
@@ -160,7 +161,7 @@ pub fn sacrifice_keeping(
             .collect();
         // Each source tested once (141: twice, once to see and once to keep),
         // on the state itself: `keep` leaves it as it found it.
-        let kept: Vec<bool> = helping.iter().map(|s| keep(g, s)).collect();
+        let kept: Vec<bool> = helping.iter().map(|s| keep(g, &need, s)).collect();
         if kept.contains(&true) {
             let mut k = kept.iter();
             helping.retain(|_| *k.next().expect("one test a source"));

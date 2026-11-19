@@ -30,8 +30,8 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   Self-Improvement, Zero-Day Auction); Industry, Power and Security keep a few one-time draw 1s. **Repeatable draw ends
   three tag chains:** Science, Preprint Server (needs 4 Science: when you play a Science card, draw 1); Cyber,
   Command-and-Control Grid (needs 3 Cyber: Action, 1 energy: draw 2); Diplomacy, Consulate Tower (needs 3 Diplomacy:
-  when another player plays a Diplomacy card, draw 1). Board powers and converters draw at most 1 (Procure: 2 chips, Polar Compute Array's
-  converter: 1 chip, each with credits back); no megaproject pays a card at completion.
+  when another player plays a Diplomacy card, draw 1). Board powers and converters draw at most 1 (the Researcher's Lab and Field Survey, the Protector's
+  Interdict II; Polar Compute Array's converter: 1 chip, with credits back); no megaproject pays a card at completion.
 
 <!-- generated: draft_set -->
 **The draft set in numbers.** 191 cards (124 tier 1, 67 tier 2). Insight to play: 102 / 58 / 31 cards at 0 / 1 / 2, 20 of the 67 tier-2 cards at 2. An energy cost: 14 cards, 8 of the 76 buildings.

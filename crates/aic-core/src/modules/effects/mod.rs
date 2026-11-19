@@ -49,6 +49,11 @@ pub fn run(g: &mut GameState, cx: &mut Cx, ops: &[Op], ctx: &mut Ctx) -> Res {
     Ok(())
 }
 
+/// 276: the targets among `targets` whose area `at` holds a facility a hardening token can protect.
+pub(super) fn hardens_at(w: &World, g: &GameState, targets: &[usize], at: Area) -> Vec<usize> {
+    targets.iter().copied().filter(|&t| area_of(w, t, at).iter().any(|&h| board::hardenable(g, h))).collect()
+}
+
 /// 234: the seat picks its one target among the hexes in reach meeting `on`; `rest` is the list after it. 236: when
 /// every map op in `rest` moves pieces (a push, a gather, a firewall), only hexes where one of them can act are
 /// offered, as `feasible` reads them: a target where nothing could move paid for nothing (Patrol, 236's slow lane).
@@ -57,13 +62,16 @@ fn aim(g: &mut GameState, cx: &mut Cx, on: TargetSpec, rest: &[Op], ctx: &mut Ct
     let seat = ctx.chooser();
     let mut hexes = target_hexes_before(&w, g, seat, on, rest);
     let map: Vec<&Op> = rest.iter().filter(|o| o.is_map()).collect();
-    let moving = |o: &&Op| matches!(o, Op::Push { .. } | Op::Gather { .. } | Op::Firewall);
+    // 276 (diff review): a hardening after the target (Patrol II) counts where a facility it can protect stands in
+    // its area; before, it turned the filter off and a target where nothing could act was offered.
+    let moving = |o: &&Op| matches!(o, Op::Push { .. } | Op::Gather { .. } | Op::Firewall | Op::Harden { .. });
     if !map.is_empty() && map.iter().all(moving) {
         let mut ok: Vec<usize> = Vec::new();
         for o in &map {
             ok.extend(match o {
                 Op::Push { pieces, .. } => push_hexes(&w, g, seat, pieces),
                 Op::Gather { pieces, strike, .. } => gather_hexes(&w, g, seat, pieces, *strike),
+                Op::Harden { at, .. } => hardens_at(&w, g, &hexes, *at),
                 _ => firewall_hexes(&w, g, seat),
             });
         }

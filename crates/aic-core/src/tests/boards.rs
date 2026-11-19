@@ -56,6 +56,7 @@ fn a_capstone_counts_once_uncovered() {
     assert!(discount(&g));
 }
 
+/// 276: Scrap II (Rush Build's job) sacrifices 2 Industry for a chip and a building played paying no credits.
 #[test]
 fn rush_build_pays_tags_and_no_credits() {
     // 119: Open Assembly pinned to r46's no energy, 1 insight and no needs.
@@ -64,17 +65,18 @@ fn rush_build_pays_tags_and_no_credits() {
     set_pile(&mut g, &cards::hand(0), &["open_assembly"]);
     set_res(&mut g, 0, Resource::Credits, 0);
     set_res(&mut g, 0, Resource::Insight, 3);
-    set_res(&mut g, 0, Resource::Energy, 1);
-    act(&rules, &mut g, power(&rules, 0, "Rush Build"));
+    set_res(&mut g, 0, Resource::Energy, 0);
+    set_res(&mut g, 0, Resource::Chips, 0);
+    act(&rules, &mut g, power(&rules, 0, "Scrap II"));
     assert!(g.pile(&cards::built(0)).contains(&Key::new("open_assembly")));
     assert_eq!(g.resource(0, Resource::Credits), 0);
-    assert_eq!(g.resource(0, Resource::Energy), 0, "r35: an Industry tag and an energy");
+    assert_eq!(g.resource(0, Resource::Chips), 1, "and a chip");
     assert!(g.resource(0, Resource::Insight) < 3, "its insight is still paid");
-    assert_eq!(g.pile(&cards::played(0)).len(), 2, "one tag went (r35), two cards stay");
+    assert_eq!(g.pile(&cards::played(0)).len(), 1, "two Industry tags went, one card stays");
 }
 
-/// 099: Rush Build isn't offered when its own sacrifice or energy leaves no
-/// building to play (it took both and built nothing).
+/// 099: Scrap II (Rush Build before 276) isn't offered when its own sacrifice or energy leaves no
+/// building to play (it took both and built nothing); 276: its 2-tag sacrifice is tried whole.
 #[test]
 fn rush_build_needs_a_building_left_once_paid() {
     // Open Assembly pinned to 4 energy: no building prints energy and no needs since r42.
@@ -86,23 +88,23 @@ fn rush_build_needs_a_building_left_once_paid() {
         r#"cards.market_stabilization_board.needs=[["industry",2]]"#,
         "cards.market_stabilization_board.energy=0",
     ]);
-    let rush = power(&rules, 0, "Rush Build");
+    let rush = power(&rules, 0, "Scrap II");
     let offered = |g: &GameState| rules.legal_actions(g).contains(&rush);
     builder_with_tags(&mut g);
     set_res(&mut g, 0, Resource::Credits, 0);
     set_res(&mut g, 0, Resource::Insight, 3);
-    set_res(&mut g, 0, Resource::Energy, 1);
-    // Printed Industry + 3 programs = 4: Vertical Monopoly needs all 4, so the
-    // sacrifice of any one program leaves it short.
-    set_pile(&mut g, &cards::hand(0), &["vertical_monopoly"]);
-    assert!(!offered(&g), "every sacrifice leaves Industry 3 of the 4 it needs");
-    set_pile(&mut g, &cards::hand(0), &["market_stabilization_board"]);
-    assert!(offered(&g), "Industry 3 is left after the sacrifice, of the 2 it needs");
-    // Open Assembly's 4 energy, after Rush Build's 1.
-    set_pile(&mut g, &cards::hand(0), &["open_assembly"]);
     set_res(&mut g, 0, Resource::Energy, 4);
-    assert!(!offered(&g), "4 energy pays Rush Build or the card, not both");
-    set_res(&mut g, 0, Resource::Energy, 5);
+    // Printed Industry + 3 programs = 4: Vertical Monopoly needs all 4, so the
+    // sacrifice of any two programs leaves it short.
+    set_pile(&mut g, &cards::hand(0), &["vertical_monopoly"]);
+    assert!(!offered(&g), "every sacrifice leaves Industry 2 of the 4 it needs");
+    set_pile(&mut g, &cards::hand(0), &["market_stabilization_board"]);
+    assert!(offered(&g), "Industry 2 is left after the sacrifice, of the 2 it needs");
+    // Open Assembly's 4 energy: Scrap II costs none.
+    set_pile(&mut g, &cards::hand(0), &["open_assembly"]);
+    set_res(&mut g, 0, Resource::Energy, 3);
+    assert!(!offered(&g), "3 energy doesn't pay the card");
+    set_res(&mut g, 0, Resource::Energy, 4);
     assert!(offered(&g));
 }
 
@@ -118,16 +120,17 @@ fn rush_build_offers_no_sacrifice_that_strands_it() {
         "cards.capital_projects_office.energy=0",
         "cards.capital_projects_office.needs=[]",
     ]);
-    set_pile(&mut g, &cards::played(0), &["payroll_automation"]);
+    // 276: Scrap II sacrifices 2 Industry: two programs and the stack, of which only the programs pay it safely.
+    set_pile(&mut g, &cards::played(0), &["payroll_automation", "supply_chain_audit"]);
     set_pile(&mut g, &cards::built(0), &["retained_earnings"]);
     set_pile(&mut g, &cards::hand(0), &["capital_projects_office"]);
     set_res(&mut g, 0, Resource::Credits, 0);
     set_res(&mut g, 0, Resource::Insight, 3);
     set_res(&mut g, 0, Resource::Chips, 2);
     set_res(&mut g, 0, Resource::Energy, 1);
-    // Not `act`: it answers every prompt itself. With the stack filtered out one
-    // source is left, so the sacrifice asks nothing.
-    rules.apply_mut(&mut g, &power(&rules, 0, "Rush Build"), None).unwrap();
+    // Not `act`: it answers every prompt itself. With the stack filtered out the
+    // programs are left.
+    rules.apply_mut(&mut g, &power(&rules, 0, "Scrap II"), None).unwrap();
     for _ in 0..4 {
         let Some(p) = g.pending.as_ref() else { break };
         assert!(

@@ -75,7 +75,8 @@ def main():
               f"{per(gs, 'adversary.corruptions.city'):.2f} ({corrupting:.0f}%) | {per(gs, 'board.cities_freed'):.2f} ({per_card_cities(gs):.2f} / "
               f"{per(gs, 'board.liberated.city') - per_card_cities(gs):.2f}) | {per(won, 'board.cities_freed') if won else 0:.2f} | "
               f"{sum(1 for x in freed if x) / n * 100:.0f}% | "
-              f"{per(gs, 'ai.power.researcher.grant'):.2f} | {per(gs, 'board.wall_strikes'):.2f} |")
+              # 276: Grant's cube is Lab II's (a read before 276 counts Grant).
+              f"{per(gs, 'ai.power.researcher.grant') + per(gs, 'ai.power.researcher.lab_ii'):.2f} | {per(gs, 'board.wall_strikes'):.2f} |")
     if a.cards:
         print()
         print('| config | pair | agent | ' + ' | '.join(LIBERATE) + ' |')

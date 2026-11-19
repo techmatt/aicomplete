@@ -47,8 +47,13 @@ fn a_placements_prompt_names_what_it_charges() {
     assert!(paid.contains(&format!("costs {step} energy")), "{paid}");
 }
 
-/// 252 (Matt's ruling 1): every board's base route, Expand, costs only the track step's energy, once a round (255
-/// deleted the cut Place a node standard action).
+/// The board's free Growth option (276: Buy In on the Builder, Levy on the Protector), the old base route.
+fn free_growth(seat: usize) -> &'static str {
+    ["Buy In", "Levy"][seat]
+}
+
+/// 252 (Matt's ruling 1): every board has a free node placement paying only the track step's energy; 276: it is a
+/// Growth option, one Growth option a round (Spirit Island's "pick one").
 #[test]
 fn the_base_route_costs_only_the_step_once_a_round() {
     for seat in [0u8, 1] {
@@ -56,7 +61,8 @@ fn the_base_route_costs_only_the_step_once_a_round() {
         let w = rules.world();
         let start = rules.map.numbered(seat as usize, piece(seat as usize).node);
         put(&mut g, start, node(seat as usize), 1);
-        let deploy = power(&rules, seat as usize, "Expand");
+        let deploy = power(&rules, seat as usize, free_growth(seat as usize));
+        let other = power(&rules, seat as usize, ["Annex", "Accord"][seat as usize]);
         set_res(&mut g, seat as usize, Resource::Credits, 0);
         set_res(&mut g, seat as usize, Resource::Energy, step_cost(&w, 1));
         let before = node_count(&g, seat as usize);
@@ -66,6 +72,7 @@ fn the_base_route_costs_only_the_step_once_a_round() {
         assert_eq!(g.resource(seat as usize, Resource::Energy), 0, "the step's energy alone");
         set_res(&mut g, seat as usize, Resource::Energy, 10);
         assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "once a round");
+        assert!(rules.apply_mut(&mut g.clone(), &other, None).is_err(), "one Growth option a round");
     }
 }
 
@@ -105,13 +112,13 @@ fn the_builder_s_top_route_reaches_two_hexes() {
     assert!(far.len() > near.len() && near.iter().all(|h| far.contains(h)));
 }
 
-/// 206: a placement pays the step's energy (252: the base route, Expand, nothing more).
+/// 206: a placement pays the step's energy (252: the free route, nothing more; 276: Buy In).
 #[test]
 fn a_node_power_pays_its_energy_and_the_step() {
     let (rules, mut g) = at_step(&[], 5);
     let w = rules.world();
     let step = step_cost(&w, 5);
-    let deploy = power(&rules, 0, "Expand");
+    let deploy = power(&rules, 0, "Buy In");
     set_res(&mut g, 0, Resource::Energy, step - 1);
     assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the step's energy");
     set_res(&mut g, 0, Resource::Energy, step);
@@ -126,39 +133,31 @@ fn power_energy(rules: &Rules, seat: usize, name: &str) -> i64 {
     ai::board(&w, seat).powers[power_index(rules, seat, name)].cost.iter().find(|(r, _)| *r == Resource::Energy).unwrap().1
 }
 
-/// 247 (Matt, 2026-11-15: energy powers things): Buy In costs energy, not credits, beside the step's.
+/// 247 (Matt, 2026-11-15: energy powers things); 276: the energy-rich boards' two-node Growth options (the
+/// Builder's Sprawl, the Protector's Outpost) cost energy, not credits or a sacrifice, beside each step's.
 #[test]
-fn the_builder_s_second_node_power_runs_on_energy() {
-    let (rules, mut g) = at_step(&[], 1);
-    let w = rules.world();
-    let buy = power(&rules, 0, "Buy In");
-    let need = power_energy(&rules, 0, "Buy In") + step_cost(&w, 1);
-    set_res(&mut g, 0, Resource::Credits, 0);
-    set_res(&mut g, 0, Resource::Energy, need - 1);
-    assert!(rules.apply_mut(&mut g.clone(), &buy, None).is_err(), "its energy and the step's");
-    set_res(&mut g, 0, Resource::Energy, need);
-    rules.apply_mut(&mut g, &buy, None).unwrap();
-    answer_all(&rules, &mut g);
-    assert_eq!((g.resource(0, Resource::Energy), g.resource(0, Resource::Credits)), (0, 0), "Buy In pays energy only");
-}
-
-/// 247: Accord costs energy and sacrifices nothing (it took a Diplomacy card).
-#[test]
-fn the_protector_s_second_node_power_runs_on_energy() {
-    let (rules, mut g) = at_step(&[], 1);
-    let w = rules.world();
-    let start = rules.map.numbered(1, piece(1).node);
-    put(&mut g, start, node(1), 1);
-    let accord = power(&rules, 1, "Accord");
-    let price = power_energy(&rules, 1, "Accord");
-    g.piles.insert(cards::played(1).into(), Arc::new(vec![program(&w, Tag::Diplomacy)]));
-    set_res(&mut g, 1, Resource::Energy, price - 1);
-    assert!(rules.apply_mut(&mut g.clone(), &accord, None).is_err(), "its energy");
-    set_res(&mut g, 1, Resource::Energy, price);
-    rules.apply_mut(&mut g, &accord, None).unwrap();
-    answer_all(&rules, &mut g);
-    assert_eq!(g.pile(&cards::played(1)).len(), 1, "no sacrifice");
-    assert_eq!(g.resource(1, Resource::Energy), 0, "Accord pays its energy");
+fn the_two_node_growth_runs_on_energy() {
+    for (seat, name) in [(0usize, "Sprawl"), (1, "Outpost")] {
+        let (rules, mut g) = at_step(&[], 1);
+        let w = rules.world();
+        let start = rules.map.numbered(seat, piece(seat).node);
+        put(&mut g, start, node(seat), 1);
+        let grow = power(&rules, seat, name);
+        let price = power_energy(&rules, seat, name);
+        assert!(price > 0);
+        g.piles.insert(cards::played(seat).into(), Arc::new(vec![program(&w, Tag::Diplomacy)]));
+        set_res(&mut g, seat, Resource::Credits, 0);
+        set_res(&mut g, seat, Resource::Energy, price - 1);
+        assert!(rules.apply_mut(&mut g.clone(), &grow, None).is_err(), "{name}: its energy");
+        set_res(&mut g, seat, Resource::Energy, price + 20);
+        let before = node_count(&g, seat);
+        rules.apply_mut(&mut g, &grow, None).unwrap();
+        answer_all(&rules, &mut g);
+        assert_eq!(node_count(&g, seat), before + 2, "{name} places 2 nodes");
+        assert_eq!(g.pile(&cards::played(seat)).len(), 1, "no sacrifice");
+        assert_eq!(g.resource(seat, Resource::Credits), 0, "no credits");
+        assert!(g.resource(seat, Resource::Energy) <= 20, "{name} pays its energy");
+    }
 }
 
 /// 212: a troop power is force (a Security card for troops in reach); r98: Stand Down merged into Interdict.
@@ -169,13 +168,15 @@ fn the_cheap_powers_sacrifice_one_tag_for_a_chip_or_a_troop() {
     g.piles.insert(cards::played(0).into(), Arc::new(vec![program(&w, Tag::Industry)]));
     g.piles.insert(cards::played(1).into(), Arc::new(vec![program(&w, Tag::Security)]));
     set_res(&mut g, 0, Resource::Chips, 0);
-    assert!(!rules.legal_actions(&g).contains(&power(&rules, 1, "Interdict")), "no troop in reach");
+    assert!(!rules.legal_actions(&g).contains(&power(&rules, 1, "Interdict I")), "no troop in reach");
     let h = rules.map.numbered(0, piece(0).node);
     put(&mut g, h, node(1), 1);
     put(&mut g, h, TROOP, 1);
-    rules.apply_mut(&mut g, &power(&rules, 0, "Scrap"), None).unwrap();
+    // 276: one card can't pay a tier II's 2 tags.
+    assert!(!rules.legal_actions(&g).contains(&power(&rules, 0, "Scrap II")), "2 Industry");
+    rules.apply_mut(&mut g, &power(&rules, 0, "Scrap I"), None).unwrap();
     answer_all(&rules, &mut g);
-    rules.apply_mut(&mut g, &power(&rules, 1, "Interdict"), None).unwrap();
+    rules.apply_mut(&mut g, &power(&rules, 1, "Interdict I"), None).unwrap();
     answer_all(&rules, &mut g);
     // 190: Scrap pays 1 chip (a chip is worth 4 since r83).
     assert_eq!((g.resource(0, Resource::Chips), g.tokens(h, TROOP)), (1, 0));
@@ -188,7 +189,7 @@ fn tokens_of_a_placement_still_uncover() {
     let w = rules.world();
     set_res(&mut g, 0, Resource::Energy, 1);
     let income = ai::track_income(&w, &g, 0).len();
-    rules.apply_mut(&mut g, &power(&rules, 0, "Expand"), None).unwrap();
+    rules.apply_mut(&mut g, &power(&rules, 0, "Buy In"), None).unwrap();
     answer_all(&rules, &mut g);
     assert_eq!(board::track_taken(&g, 0) + board::track2_taken(&g, 0), 3);
     assert_eq!(ai::track_income(&w, &g, 0).len(), income + 1);
@@ -224,11 +225,11 @@ fn placing_node_takes_the_next_track_token_and_uncovers_its_income() {
     assert!(hexes
         .iter()
         .all(|&h| rules.map.adjacent(h, start) && g.tokens(h, node(0)) == 0));
-    // The base route, Expand, which refreshes here: a test of the track, not of its limit.
-    let expand = power_index(&rules, 0, "Expand");
+    // The free Growth option, Buy In, which refreshes here: a test of the track, not of its limit.
+    let expand = power_index(&rules, 0, "Buy In");
     let place = |rules: &Rules, g: &mut GameState| {
         set_var(g, ai::power_used(0, expand), 0);
-        act(rules, g, power(rules, 0, "Expand"));
+        act(rules, g, power(rules, 0, "Buy In"));
     };
     place(&rules, &mut g);
     // The 2nd space (the Builder's): +2 credits a round (078; 273: 3 ÷ 1.5).
@@ -331,10 +332,58 @@ fn a_track_s_last_steps_cost_more() {
     set_var(&mut g, board::track2_key(0), b.play_track.len() as i64 - 1);
     let extra = b.economy_track.last().unwrap().cost.min(b.play_track.last().unwrap().cost);
     assert!(extra > 0);
-    let deploy = power(&rules, 0, "Expand");
+    let deploy = power(&rules, 0, "Buy In");
     set_res(&mut g, 0, Resource::Energy, extra - 1);
     assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the step can't be paid");
     set_res(&mut g, 0, Resource::Energy, extra);
     act(&rules, &mut g, deploy);
     assert_eq!(g.resource(0, Resource::Energy), 0);
+}
+
+/// 276 (diff review): a two-node Growth option is offered only when both its nodes' steps can be paid; it was
+/// paid in full for one.
+#[test]
+fn a_two_node_growth_needs_both_steps() {
+    let (rules, mut g) = at_step(&[], 4);
+    let w = rules.world();
+    let sprawl = power(&rules, 0, "Sprawl");
+    let price = power_energy(&rules, 0, "Sprawl");
+    let one = step_cost(&w, 4);
+    assert!(one > 0);
+    set_res(&mut g, 0, Resource::Energy, price + one);
+    assert!(!rules.legal_actions(&g).contains(&sprawl), "one step's energy, not two");
+    set_res(&mut g, 0, Resource::Energy, 30);
+    assert!(rules.legal_actions(&g).contains(&sprawl));
+}
+
+/// 276 (diff review): Interdict II removes both kinds on its target, troops and agents (one damage op asked which).
+#[test]
+fn interdict_ii_removes_troops_and_agents() {
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let sec: Vec<Key> = programs(&w, Tag::Security).filter(|c| c.tier == 1).take(2).map(|c| Key::new(&c.id)).collect();
+    assert_eq!(sec.len(), 2);
+    g.piles.insert(cards::played(1).into(), Arc::new(sec));
+    let h = rules.map.numbered(0, piece(0).node);
+    put(&mut g, h, node(1), 1);
+    put(&mut g, h, TROOP, 2);
+    put(&mut g, h, crate::modules::common::ADV_AMBASSADOR, 2);
+    rules.apply_mut(&mut g, &power(&rules, 1, "Interdict II"), None).unwrap();
+    answer_all(&rules, &mut g);
+    assert_eq!((g.tokens(h, TROOP), g.tokens(h, crate::modules::common::ADV_AMBASSADOR)), (0, 0));
+}
+
+/// 276 (diff review): a hardening after a target counts only where a facility it can protect stands in its area
+/// (Patrol II was offered, and paid for, on a hex where neither its push nor its hardening could act).
+#[test]
+fn a_targeted_hardening_needs_a_facility_to_protect() {
+    let (rules, mut g) = at_step(&[], 1);
+    let w = rules.world();
+    let ops: Vec<Op> = serde_json::from_str(r#"[{"op": "target", "on": "adversary"}, {"op": "harden", "count": 1, "at": "near"}]"#).unwrap();
+    let a = rules.map.numbered(0, piece(0).node);
+    put(&mut g, a, crate::modules::common::ADV_AMBASSADOR, 1);
+    assert!(!effects::feasible(&w, &g, 0, &ops), "no facility on or next to it");
+    put(&mut g, a, crate::modules::common::FACTORY, 1);
+    put(&mut g, a, crate::modules::common::cube(0), 1);
+    assert!(effects::feasible(&w, &g, 0, &ops));
 }

@@ -147,7 +147,7 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       const shown = cx.view?.seats[a.seat]?.board?.cards.find((c) => c.id.endsWith(`.power.${a.power}`));
       const lone = /Sacrifices: ([^.]*)\./.exec(shown?.text ?? '')?.[1];
       const takes = lone ? ` (sacrifices ${lone})` : '';
-      // 118: Synthesis has no price: no empty "()".
+      // 118: a power with no price (Buy In, Accord, Field Survey) prints no empty "()".
       return `power: ${p.name}${cost ? ` (${cost})` : ''}${takes}${cx.brief ? '' : `: ${p.text ?? ''}`}`;
     }
     case 'pay': {

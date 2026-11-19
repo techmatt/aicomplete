@@ -53,9 +53,9 @@
     {
      "name": "Field Station (Researcher)",
      "units": 1,
-     "other": 0,
-     "use": 0,
-     "note": "1 Industry sacrifice: build a station (sacrifice unpriced)",
+     "other": "node",
+     "use": "insight",
+     "note": "276: a Growth option: 1 insight: build a station and place a node",
      "power": true
     }
    ]
@@ -279,19 +279,27 @@
      "note": "~2 troops (p90 3 a country) + 4 agents 20; -4"
     },
     {
-     "name": "Fortify (Builder)",
+     "name": "Fortify I (Builder)",
      "units": 1,
-     "other": "harden",
+     "other": 0,
      "use": "chip",
-     "note": "1 chip: 1 troop; harden 3",
+     "note": "276: 1 chip: 1 troop on the target",
      "power": true
     },
     {
-     "name": "Disrupt (Researcher)",
+     "name": "Fortify II (Builder)",
+     "units": 1.48,
+     "other": "harden",
+     "use": "2 * chip",
+     "note": "276: 2 chips: up to 2 troops on the target (1.48 in play); harden 1",
+     "power": true
+    },
+    {
+     "name": "Hack I (Researcher)",
      "units": 2,
      "other": 0,
-     "use": "cube",
-     "note": "1 Cyber sacrifice + 1 cube: up to 2 (sacrifice unpriced)",
+     "use": 0,
+     "note": "276: 1 Cyber sacrifice: up to 2 in one country (sacrifice unpriced; no cube since 276)",
      "power": true
     }
    ]
@@ -778,19 +786,11 @@
      "note": "1 at 2 Operatives, 1 a compute removal: ~2 in 4 rounds"
     },
     {
-     "name": "Teardown (Builder)",
+     "name": "Overcharge II (Builder)",
      "units": 1,
-     "other": "-(6.67 + 8)",
-     "use": "chip",
-     "note": "1 chip; your factory gone (-6.67) and a Fallout (-8)",
-     "power": true
-    },
-    {
-     "name": "Meltdown (Researcher)",
-     "units": 1,
-     "other": -10,
-     "use": "2 * cube",
-     "note": "2 cubes; your station gone (-15)",
+     "other": "2 * energy",
+     "use": 0,
+     "note": "276: 2 Power sacrifice: 2 energy and 1 antimatter (Teardown's job; sacrifice unpriced)",
      "power": true
     }
    ]
