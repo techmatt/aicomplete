@@ -139,7 +139,7 @@ matters, `planner:strategy=1` is the ceiling, `strategist:plan_table=0` the judg
   browser worker (254); with none, 1,440 in 7.6 min on the main box (258; 259's old side, `aic-sim farm` in 6 native processes, 6.7 min). The full oracle at d2-d3, 72 games in
   2-10 min on 6 native shards (253, 258).
 - **A before/after read is paired**: the old binary and its configs, same seeds. Simplest (273, 274): commit the
-  spec alone on the old code, then `farm-seeds --at THAT_COMMIT` (its own tree and configs; 1,440 games in 4.5 min).
+  spec alone on the old code (or reuse the last item's), then `farm-seeds --at THAT_COMMIT F N OUT SPEC_NAME` (its own tree and configs; 1,440 games in 4.5 min).
   Natively: `git archive REV | tar -x -C out/rREV` (own `CARGO_TARGET_DIR`; new sim-only measures as `patch -p1`
   there: `git apply` in a worktree applies nothing), then `aic-sim experiment SPEC --seed F` or `bench/shards.sh`.
 - **Farming a read:** `experiments/farm/read.json` is the read as one spec; what `farm-seeds` builds, what to commit
@@ -167,7 +167,7 @@ proves the card and a whole search where it can't: 243's `proofs.py`.
 
 **Fresh seeds.** Specs start at seed 0: give a confirming read a `--seed` no screen of this revision used. An item
 that spends seeds updates the ledger after its last read (`bench/seeds.py next N [--take]`; all below *Next free*
-are used). Next free: 50028. **The dev seeds are 36800-36831**, for on/off
+are used). Next free: 50076. **The dev seeds are 36800-36831**, for on/off
 checks and crash-finding (SE ~5 a cell). A 2-8 point effect (a level's income step): screen it paired on this
 revision's spent fresh sets (~500+ games a cell, SE ~2), then confirm once on new seeds.
 

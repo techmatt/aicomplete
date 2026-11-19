@@ -73,7 +73,7 @@ conventions: [README.md](README.md).*
 | `adversary.compute_income` | 0, 3, 5, 15, 18 | 0..30 | the adversary's base compute income a country a round, at difficulty 0-4 (times the countries: per board) |
 | `adversary.infiltrate_agents` | 1, 1, 1, 1, 2 | 0..5 | 275: agents an Infiltrate line lands on each site it names, at difficulty 0-4 |
 | `adversary.spill_at` | 2 | 0..5 | 275: the difficulty level from which an event card's Spill line moves agents; below it the line does nothing |
-| `adversary.botnet_seed` | 1 | 0..5 | 275: agents each botnet (no player ambassador on it) seeds onto the site next to it holding the most agents, in the Income beat |
+| `adversary.botnet_seed` | 1 | 0..5 | 275: agents each botnet (no player ambassador on it) seeds onto the site next to it holding the most agents, in the compute step with its compute (r133) |
 | `adversary.grow_infest_at` | 1 | 1..5 | 275: agents a Grow site holds for its new facility to come with 1 agent on it (an adversary site's always does) |
 | `adversary.grow_cap` | 2 | 0..6 | 275: a Grow site with this many facilities next to it (any owner) doesn't grow (0: no cap) |
 | `adversary.threat_agents` | 1 | 0..5 | 275: agents an uncountered threat lands on its anchor (its first location token) as it executes |

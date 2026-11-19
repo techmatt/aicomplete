@@ -6,7 +6,7 @@
 
 Project slots: Open, Open, Open.
 
-- **Botnet Recruiters.** In the Income beat, each Botnet with no player Ambassador on it puts 1 Agent on the city, research station or factory next to it holding the most Agents (else on its own site).
+- **Botnet Recruiters.** In the compute step, each Botnet with no player Ambassador on it puts 1 Agent on the city, research station or factory next to it holding the most Agents (else on its own site), and its compute with it.
 - **Warmongering.** Each round, a military base with an adversary Troop on or next to it makes 1 extra Drone, even past its cap; at most 1 extra a base in each production, whatever makes it.
 - **War Takes Ground.** When a Drone destroys a factory, it also destroys a Node on that hex.
 - **Weapons Program** (research). When the research track reaches its threshold, spend it: Muster 2: each country, 2 Troops on its lowest-numbered factory (else city). Stronger: Muster 3 instead.

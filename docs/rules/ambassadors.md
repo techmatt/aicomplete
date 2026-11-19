@@ -14,7 +14,8 @@ Cities, research stations and factories follow one set of rules and differ only 
 
 - **One opposing piece blocks a site's output while it stands.** An agent on a neutral or player
   site, a player ambassador on an adversary site: that round the site makes nothing, and the piece stays
-  (137; 139 dropped the dial that used it up). On a
+  (137; 139 dropped the dial that used it up). The table marks it with a **"blocked" chip** as the piece arrives
+  and reads production from the tracks (r133, [war.md](war.md)). On a
   neutral city this is the **dark** city (r37, r38): nothing to buy, nothing to host (with `cities_unowned` 0 an
   aligned one gave its owner nothing and swayed `ambassador_discord` (0) a unit).
 - **Your own ambassador is armor:** when your node, or a site you own, would be destroyed, your ambassador on its hex

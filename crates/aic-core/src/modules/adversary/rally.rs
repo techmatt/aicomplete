@@ -66,7 +66,7 @@ pub fn infiltrate(g: &mut GameState, cx: &mut Cx, site: RallyAt, scope: Option<u
                 prohibit_tally(g, cx, Step::Infiltrate, wh, n);
                 continue;
             }
-            place(g, cx, h, n)?;
+            place_named(g, cx, h, n)?;
             if g.is_over() {
                 return Ok(());
             }
@@ -102,7 +102,7 @@ pub fn surge(g: &mut GameState, cx: &mut Cx, site: RallyAt, n: i64, scope: Optio
             continue;
         };
         let before = arrived(g);
-        place(g, cx, h, n)?;
+        place_named(g, cx, h, n)?;
         let made = arrived(g) - before;
         cx.tally(g, "adversary.surged", made);
         cx.tally(g, &format!("adversary.surged.{source}"), made);
@@ -192,7 +192,7 @@ pub fn grow(g: &mut GameState, cx: &mut Cx, site: RallyAt, scope: Option<usize>)
         });
         if infested {
             cx.tally(g, "adversary.grew_infested", 1);
-            place(g, cx, z, 1)?;
+            place_named(g, cx, z, 1)?;
             if g.is_over() {
                 return Ok(());
             }
@@ -201,18 +201,47 @@ pub fn grow(g: &mut GameState, cx: &mut Cx, site: RallyAt, scope: Option<usize>)
     Ok(())
 }
 
+/// What one pass over the botnets made: compute, and compute a player ambassador or a hack stopped.
+pub struct BotnetPass {
+    pub compute: i64,
+    pub blocked: i64,
+}
+
 /// 275: botnets seed, in the Income beat: each botnet with no player ambassador on it places
 /// `adversary.botnet_seed` agents on the site next to it not yet the adversary's holding the most agents (ties:
-/// the lowest-numbered); none: on its own hex, if that site is not yet the adversary's.
-pub fn botnets_seed(g: &mut GameState, cx: &mut Cx) -> Res {
+/// the lowest-numbered); none: on its own hex, if that site is not yet the adversary's. r133 (280, one move a
+/// botnet): the same read adds its `botnet_compute` (none while hacked; a cordon stops the seed, not the compute),
+/// so the compute step reads no botnet again. In hex order, each botnet read as its turn comes; a botnet passed as
+/// blocked whose ambassador a later seed cancels (or whose site that seed corrupts) adds its compute then, as r132's
+/// second read did: play is unchanged.
+pub fn botnets_seed(g: &mut GameState, cx: &mut Cx) -> Res<BotnetPass> {
     let w = cx.world;
     let n = w.int("adversary.botnet_seed");
-    if n <= 0 {
-        return Ok(());
-    }
+    let per = w.int("adversary.botnet_compute");
+    let mut pass = BotnetPass { compute: 0, blocked: 0 };
+    // Botnets passed under a player ambassador: (hex, compute, hacked).
+    let mut stood: Vec<(usize, i64, bool)> = Vec::new();
     let botnets: Vec<usize> = (0..g.hexes.len()).filter(|&h| g.tokens(h, BOTNET) > 0).collect();
     for b in botnets {
-        if player_ambassador(g, b).is_some() || g.tokens(b, BOTNET) == 0 {
+        let made = g.tokens(b, BOTNET) * per;
+        if g.tokens(b, BOTNET) == 0 || made == 0 && n <= 0 {
+            continue;
+        }
+        let stood_on = player_ambassador(g, b).is_some();
+        // A hack's cut (021) lasts this one step, on a botnet that makes compute.
+        let hacked = made != 0 && g.var(&super::cut_key(b)) > 0;
+        if hacked {
+            cx.set_key(g, &super::cut_key(b), 0);
+        }
+        if stood_on || hacked {
+            pass.blocked += made;
+        } else {
+            pass.compute += made;
+        }
+        if stood_on {
+            stood.push((b, made, hacked));
+        }
+        if stood_on || n <= 0 {
             continue;
         }
         cx.per_round(g, CHECKS, 1);
@@ -230,10 +259,20 @@ pub fn botnets_seed(g: &mut GameState, cx: &mut Cx) -> Res {
         place(g, cx, t, n)?;
         cx.tally(g, "adversary.seeded", arrived(g) - before);
         if g.is_over() {
-            return Ok(());
+            return Ok(pass);
+        }
+        // The seed canceled the last ambassador on a botnet already passed as blocked: it adds its compute now.
+        if let Some(i) = stood.iter().position(|&(h, _, _)| h == t) {
+            if player_ambassador(g, t).is_none() {
+                let (_, made, hacked) = stood.remove(i);
+                if !hacked {
+                    pass.blocked -= made;
+                    pass.compute += made;
+                }
+            }
         }
     }
-    Ok(())
+    Ok(pass)
 }
 
 /// 138, a creation line: `count` agents on each of the

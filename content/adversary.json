@@ -16,7 +16,7 @@
   "rules": [
    {
     "name": "Botnet Recruiters",
-    "text": "In the Income beat, each Botnet with no player Ambassador on it puts 1 Agent on the city, research station or factory next to it holding the most Agents (else on its own site).",
+    "text": "In the compute step, each Botnet with no player Ambassador on it puts 1 Agent on the city, research station or factory next to it holding the most Agents (else on its own site), and its compute with it.",
     "effects": []
    },
    {

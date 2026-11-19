@@ -253,6 +253,31 @@ fn a_botnet_seeds_an_agent_on_the_busiest_site_next_to_it() {
     assert_eq!(total(&g, ADV_AMBASSADOR), 2, "a player ambassador on it stops it");
 }
 
+/// r133 (280, one move a botnet): a botnet passed as blocked whose ambassador a later botnet's seed cancels adds
+/// its compute in the same pass, as r132's second read of the botnets did (seen on the traced seeds: Cintamani's two
+/// starting botnets sit side by side).
+#[test]
+fn a_seed_that_cancels_a_blocking_ambassador_frees_that_botnets_compute() {
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    let per = rules.world().int("adversary.botnet_compute");
+    set_var(&mut g, SUPPLY, 40);
+    clear_agents(&mut g);
+    for h in 0..g.hexes.len() {
+        put(&mut g, h, BOTNET, 0);
+    }
+    let (c, lonely) = city_with_lonely_neighbors(m);
+    let b = *lonely.iter().find(|&&x| x > c).expect("a lonely neighbor after the city in hex order");
+    put(&mut g, c, ADV_CUBE, 0);
+    put(&mut g, c, BOTNET, 1);
+    put(&mut g, c, ambassador(1), 1);
+    put(&mut g, c, ADV_AMBASSADOR, 1);
+    put(&mut g, b, BOTNET, 1);
+    let pass = with_cx(&rules, |cx| adversary::botnets_seed(&mut g, cx)).unwrap();
+    assert_eq!(g.tokens(c, ambassador(1)), 0, "the seed canceled the ambassador");
+    assert_eq!((pass.compute, pass.blocked), (2 * per, 0));
+}
+
 /// D39: a station flip's face prints `station_flip_at`, so the two stay in step.
 #[test]
 fn a_station_flip_face_prints_station_flip_at() {

@@ -14,8 +14,8 @@ deck**. Its turn, after the round's Sway step, is **three beats** (phases: [econ
    **Muster N**, at most two other lines (a compute increase, a Discord sway, a site opening, Botnets spread,
    Blackout, Fallout), **Spill**, **Grow** (below).
 2. **March** ([war.md](war.md)).
-3. **Income**: the top card goes face up as next round's; **botnets seed** (below), the **compute step**, the **research check** (below); firewalls, cordons and
-   prohibition tokens come off.
+3. **Income**: the top card goes face up as next round's; the **compute step** (each botnet seeds and adds its
+   compute, below), the **research check**; firewalls, cordons and prohibition tokens come off.
 
 **Research (every adversary).** Each adversary board prints a **research rule**: one public **research track**.
 Cubes come from its corrupted stations once their country's megaproject is complete (`station_cubes` a round, in
@@ -43,29 +43,32 @@ project musters.
 supply: Infiltrate, Surge, Grow's agent, a botnet's seed, a threat's or Discord card's creation, an uncountered
 threat's `threat_agents` (1) on its anchor; or a Spill's move), **that hex alone is checked**: a city, research
 station or factory not yet the adversary's holding its number corrupts, and its agents go to the supply; else 2
-agents on a player's node destroy the node. The numbers are printed on the map: **city** `corrupt_at` 5 (from d1
-Sleeper Cells makes it 3: `corrupt_cut`), **research station** `corrupt_station_at` 2, **factory**
-`corrupt_factory_at` 2. A player's Push or Gather is no arrival; nothing else on the board is looked at, so a
-liberated site, its agents cleared, needs its full number of arrivals again. **One aftermath: whatever corrupts takes
+agents on a player's node destroy the node. **An Infiltrate, Surge or Grow line checks each site it names as its
+agents go on** (r133). The numbers are printed on the map: **city**
+`corrupt_at` 5 (from d1 `corrupt_cut` makes it 3), **station** `corrupt_station_at` 2, **factory**
+`corrupt_factory_at` 2. A player's Push or Gather is no arrival; nothing else is looked at, so a liberated site
+needs its full number of arrivals again. **One aftermath: whatever corrupts takes
 one adversary mark.**
 - **A corrupted site** takes the adversary's cube (replacing a player's). **It destroys only a node on its own hex**
   (protections apply, [war.md](war.md)); player ambassadors there are lost. Sanctuary (capstone): neither corruption
   nor agents destroy your nodes.
 - **2 agents on a player's node hex destroy the node** (`corrupt_node_at`; a node rule, not corruption: protections
-  apply; checked only when the site doesn't corrupt: an arrival that brings a city to its number corrupts it, the
-  node with it); its agents go to the supply and **it leaves no mark**.
-- **Fallout** is the one scar: a hex token on free open land; nothing is built there, and each drips `blight_discord`
-  (1) Discord a round. All four adversity sources print it ([harms.md](../harms.md)); a Fallout line's next to the lowest-numbered corrupted city, the rest on a free open hex
-  (no facility, node or Fallout), a threat's on or next to its anchor, the others next to it (ties: lower country, then number); none free, it is lost. Lift Fallout
-  (a standard action, [economy.md](economy.md)) and some cards take one in reach off.
+  apply; checked only when the site doesn't corrupt); its agents go to the supply and **it leaves no mark**.
+- **Fallout** is the one scar: a token on free open land (no facility, node or Fallout); nothing is built there, and
+  each drips `blight_discord` (1) Discord a round. All four adversity sources print it ([harms.md](../harms.md)): a
+  Fallout line's next to the lowest-numbered corrupted city, a threat's on or next to its anchor, the others next to
+  their site (ties: lower country, then number); none free, it is lost. Lift Fallout ([economy.md](economy.md)) and
+  some cards take one in reach off.
 
 **Botnets spread quickly**. Each country starts with one ([board.md](board.md)); more come from printed lines
-(**Botnets spread (level 1+)**, Botnet Swarm; below `botnet_spread_at`, 1, the line does nothing). A botnet stays until removed. With no player ambassador on it, in
-the Income beat it **seeds** `botnet_seed` (1) agent onto the city, station or factory next to it, not yet the
-adversary's, holding the most agents (ties: the lowest-numbered; none: onto its own site), an arrival (the
-Militarist's **Botnet Recruiters**), and makes `botnet_compute` compute. It counts against the purge until Unity
-eases it ([alignment.md](alignment.md)). Removed by tier-2 cards, Decommission and the Take down a botnet action
-([economy.md](economy.md)); removing one sways `alignment.botnet` (0: neither).
+(**Botnets spread (level 1+)**, Botnet Swarm; below `botnet_spread_at`, 1, the line does nothing). A botnet stays
+until removed. **One move a botnet** (r133): in the compute step, in hex order, each with no player ambassador on it
+**seeds** `botnet_seed` (1) agent onto the city, station or factory next to it, not yet the adversary's, holding the
+most agents (ties: the lowest-numbered; none: onto its own site), an arrival (the Militarist's **Botnet
+Recruiters**), and adds its `botnet_compute` compute (none while hacked; a cordon stops only the seed); one whose
+ambassador a later seed cancels adds its compute then. It counts
+against the purge until Unity eases it ([alignment.md](alignment.md)). Removed by tier-2 cards, Decommission and
+Take down a botnet ([economy.md](economy.md)); removing one sways `alignment.botnet` (0: neither).
 
 **Spill, Surge, Grow.** Ties go to the lowest-numbered.
 - **Spill (level 2+): X into Y**: in each country, every X not yet the adversary's holding 2 or more agents moves 1
@@ -73,10 +76,9 @@ eases it ([alignment.md](alignment.md)). Removed by tier-2 cards, Decommission a
   (2) the line does nothing.
 - **Surge N: X** (projects): in each country, N agents onto the X not yet the adversary's holding the most agents.
 - **Grow: X**: in each country, the X holding the most agents with a free hex next to it and fewer than `grow_cap`
-  (2) facilities next to it (anyone's) builds one **neutral**
-  facility there: the type it has fewer of next to it (ties: a factory; a factory only on a free industrial zone, a
-  station on other open land, never a base), else the other type, on the lowest-numbered free hex. If that X holds
-  agents or is the adversary's, the facility comes with 1 agent on it (an arrival).
+  (2) facilities next to it builds one **neutral** facility there: the type it has fewer of next to it (ties: a
+  factory; a factory only on a free industrial zone, a station on other open land, never a base), else the other
+  type, on the lowest-numbered free hex. If that X holds agents or is the adversary's, it comes with 1 agent on it (an arrival).
 
 ## The project deck (candidate)
 
@@ -87,11 +89,10 @@ rightmost slot refills. **Fewer, bigger, one-shot, every board (locked):** a pro
 play, times the countries), resolves **once**, at once (none is ongoing), and acts **in each country**. Small (one effect) or big (two; a
 third from `THIRD_EFFECT_COST`, 18). The deck never reshuffles in a d3 game.
 
-- **The compute step.** Once a round, after the botnets seed: the compute income, each botnet with no player
-  ambassador on it, and all made since the last step
-  (uncountered threats, cards, Cintamani), which **waits beside the projects** (public: the warning).
-- **Spending:** each point onto the **leftmost** project (`compute_every` on every one first); one holding its cost
-  **resolves** at once. With no project left, compute is lost.
+- **The compute step.** Once a round: the botnets' compute (above), the compute income, and what was made since the
+  last step (uncountered threats, cards, Cintamani), which **waits beside the projects** (public: the warning).
+- **Spending:** all of it at once onto the **leftmost** project (`compute_every` on every one first), one marker
+  move a project; one holding its cost **resolves** at once. With no project left, compute is lost.
 - **Targets are read off the board as it resolves**, in each country: "the X with the most agents on its hex",
   "the hex holding the most player ambassadors", "its lowest-numbered botnet"; ties: the lowest-numbered. "Turns
   neutral": the owner's cube comes off. **Factory troops**: an adversary factory's own output ([war.md](war.md)).
@@ -189,7 +190,5 @@ ahead (its Infiltrate and Grow sites) are face up.
 
 **The ladder (Spirit Island's adversary card).** Levels are named and cumulative. Each adds
 **setup**, set once (income and research markers, the deck's build; sites print their corrupt numbers), and **at
-most one mid-game rule**, fired by an event players already resolve (Sleeper Cells when an Agent lands on a city,
-Arms Race when Weapons Program fires; each replaces one number, printed whole). War Economy's setup lands 2 agents a
-site on each Infiltrate (`infiltrate_agents`). The table, §21 and the reference card (`web/card/adversary.json`)
-are generated. Discord tips don't raise the level. Claim and liberate cost the same at every level.
+most one mid-game rule**, fired by an event players already resolve (each replaces one number, printed whole). The
+table, §21 and the reference card (`web/card/adversary.json`) are generated. Discord tips don't raise the level. Claim and liberate cost the same at every level.

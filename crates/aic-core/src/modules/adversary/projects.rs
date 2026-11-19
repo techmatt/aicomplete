@@ -171,21 +171,19 @@ pub fn gain_compute(g: &mut GameState, cx: &mut Cx, n: i64) -> Res {
 /// resolving at once, the rest sliding left and the right slot refilling.
 pub fn compute_step(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
+    // r133 (280): one move a botnet: each seeds and adds its compute in the same read (`botnets_seed`).
+    let pass = super::botnets_seed(g, cx)?;
+    if g.is_over() {
+        return Ok(());
+    }
     let income = g.var(INCOME_COMPUTE).max(0);
     cx.tally(g, "adversary.compute_income", income);
     let s = sources(&w, g);
-    // A hack's cut (021) lasts this one step, on a botnet that makes compute.
-    let per = w.int("adversary.botnet_compute");
-    for h in 0..g.hexes.len() {
-        if g.tokens(h, BOTNET) * per != 0 && g.var(&cut_key(h)) > 0 {
-            cx.set_key(g, &cut_key(h), 0);
-        }
+    if pass.blocked > 0 {
+        cx.tally(g, "adversary.compute_blocked", pass.blocked);
+        cx.per_round(g, "adversary.compute_blocked", pass.blocked);
     }
-    if s.blocked > 0 {
-        cx.tally(g, "adversary.compute_blocked", s.blocked);
-        cx.per_round(g, "adversary.compute_blocked", s.blocked);
-    }
-    cx.tally(g, "adversary.compute_botnets", s.botnets);
+    cx.tally(g, "adversary.compute_botnets", pass.compute);
     if s.stations_blocked > 0 {
         cx.tally(g, "board.blocked.station_adversary", s.stations_blocked);
     }
@@ -197,29 +195,44 @@ pub fn compute_step(g: &mut GameState, cx: &mut Cx) -> Res {
         s.stations
     };
     cx.tally(g, "board.station_compute", station_compute);
-    let fresh = income + s.botnets + station_compute;
+    let fresh = income + pass.compute + station_compute;
     cx.add_key(g, COMPUTE, fresh);
     cx.tally(g, "adversary.compute_made", fresh);
     cx.per_round(g, "adversary.compute", fresh);
-    cx.add_key(g, WAITING, fresh);
-    pour_waiting(g, cx)
+    // r133 (280): the step's own compute goes straight onto the projects with what waits; the waiting pile holds
+    // only compute made outside the step.
+    pour(g, cx, fresh)
 }
 
-/// 175: the waiting compute goes onto the projects (the compute step's second half): `compute_every` on every
-/// visible project first, then each point onto the leftmost one (r80, ruling #49; it was the cheapest), a full
-/// one resolving at once, the rest sliding left and the right slot refilling. With no project left, compute is lost.
+/// 175: the waiting compute goes onto the projects (the compute step's second half), as [`pour`] with nothing
+/// fresh.
 pub fn pour_waiting(g: &mut GameState, cx: &mut Cx) -> Res {
+    pour(g, cx, 0)
+}
+
+/// The waiting compute and `fresh` go onto the projects: `compute_every` on every visible project first, then each
+/// point onto the leftmost one (r80, ruling #49; it was the cheapest), a full one resolving at once, the rest
+/// sliding left and the right slot refilling. With no project left, compute is lost.
+fn pour(g: &mut GameState, cx: &mut Cx, mut fresh: i64) -> Res {
     let w = cx.world;
     let every = g.var(WAITING_EVERY);
     cx.set_key(g, WAITING_EVERY, 0);
     if every > 0 {
+        // A project `spend_every` resolves may ask a player, and the agents read the waiting pile: with compute on
+        // every project to spend, the fresh compute waits as it did in r132 (no content prints `ComputeEvery`).
+        if fresh != 0 {
+            cx.add_key(g, WAITING, fresh);
+            fresh = 0;
+        }
         spend_every(g, cx, every)?;
         if g.is_over() {
             return Ok(());
         }
     }
-    let n = g.var(WAITING);
-    cx.set_key(g, WAITING, 0);
+    let n = g.var(WAITING) + fresh;
+    if g.var(WAITING) != 0 {
+        cx.set_key(g, WAITING, 0);
+    }
     for _ in 0..n {
         let Some(id) = compute_target(g) else {
             cx.tally(g, "adversary.compute_lost", 1);

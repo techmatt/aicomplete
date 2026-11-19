@@ -81,13 +81,13 @@ Build a factory (`factory_build_chips`, 0: off) is a screened candidate; the eve
 | 1 | `alignment.sway` | Discord: the adversary board's printed drip (the Militarist's is 0), and `blight_discord` 1 per Fallout token |
 | 2 | `adversary.event` | The adversary's Card beat ([adversary.md](adversary.md)): the face-up event card becomes this round's |
 | 3 | `threats.deal` | Its pulls: a threat a pull in each country, its tokens on the board ([threats.md](threats.md)) |
-| 4 | `adversary.build` | The card's Infiltrate X, Muster, other lines, Spill and Grow; each arrival checks the hex it lands on |
+| 4 | `adversary.build` | The card's Infiltrate X, Muster, other lines, Spill and Grow; each arrival checks the hex it lands on (a line's site as its agents go on) |
 | 5 | `board.march` | The March beat ([war.md](war.md)): `troop_steps` steps each, move or destroy (past ambassadors) |
 | 6 | `adversary.reveal` | The Income beat: next round's card face up (its Infiltrate and Grow sites shown) |
-| 7 | `adversary.compute` | Each botnet seeds `botnet_seed` 1 agent next to it; the compute step: income, botnets and the round's banked compute onto the leftmost project, which resolves as it fills (once; none is ongoing); then the research check (a full track fires once, [adversary.md](adversary.md)); then every firewall, cordon and prohibition token comes off, ending the adversary turn |
+| 7 | `adversary.compute` | The compute step: each botnet, in one move, seeds `botnet_seed` 1 agent next to it and adds its compute; then income and the round's banked compute, all at once onto the leftmost project, which resolves as it fills (once; none is ongoing); then the research check (a full track fires once, [adversary.md](adversary.md)); then every firewall, cordon and prohibition token comes off, ending the adversary turn |
 | 8–11 | `cards.deal`, `.tier`, `.draft`, `.keep` | Round 1's opening hand, then every round's draft and keeps ([player-cards.md](player-cards.md)) |
 | 12 | `cards.play+threats.counter+board.act+ai.power` | Actions, simultaneous: cards, abilities, AI-board powers (nodes come from them), standard actions, countering threats |
-| 13 | `board.produce` | The income step (one step with 14, in this order): factories make chips (a player's) or a troop (the adversary's); hosted cities' energy to their hosts (254), corrupted cities' Discord; stations' cubes (an adversary station's research cube, once its megaproject is complete, waits for the compute step); full megaprojects complete. One opposing ambassador or agent blocks a site |
+| 13 | `board.produce` | The income step (one step with 14, in this order): factories make chips (a player's) or a troop (the adversary's); hosted cities' energy to their hosts (254), corrupted cities' Discord; stations' cubes (an adversary station's research cube, once its megaproject is complete, waits for the compute step); full megaprojects complete. One opposing ambassador or agent blocks a site. The table reads it from the tracks and blocked chips ([war.md](war.md)) |
 | 14 | `economy.upkeep` | The income step, continued: board and card income; building upkeep |
 | 15 | `board.bases` | Extra drones ([war.md](war.md)) |
 | 16 | `threats.execute` | Partial payments refunded; uncountered threats execute (each also lands 1 agent on its anchor, [threats.md](threats.md)) |

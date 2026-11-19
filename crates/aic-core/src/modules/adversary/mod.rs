@@ -55,7 +55,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::list("compute_income", 0, 30, "the adversary's base compute income a country a round, at difficulty 0-4 (times the countries: per board)"),
     ParamSpec::list("infiltrate_agents", 0, 5, "275: agents an Infiltrate line lands on each site it names, at difficulty 0-4"),
     ParamSpec::int("spill_at", 0, 5, "275: the difficulty level from which an event card's Spill line moves agents; below it the line does nothing"),
-    ParamSpec::int("botnet_seed", 0, 5, "275: agents each botnet (no player ambassador on it) seeds onto the site next to it holding the most agents, in the Income beat"),
+    ParamSpec::int("botnet_seed", 0, 5, "275: agents each botnet (no player ambassador on it) seeds onto the site next to it holding the most agents, in the compute step with its compute (r133)"),
     ParamSpec::int("grow_infest_at", 1, 5, "275: agents a Grow site holds for its new facility to come with 1 agent on it (an adversary site's always does)"),
     ParamSpec::int("grow_cap", 0, 6, "275: a Grow site with this many facilities next to it (any owner) doesn't grow (0: no cap)"),
     ParamSpec::int("threat_agents", 0, 5, "275: agents an uncountered threat lands on its anchor (its first location token) as it executes"),
@@ -91,7 +91,7 @@ const PHASES: &[PhaseSpec] = &[
     PhaseSpec::auto("event", "the face-up event card becomes this round's (none left: the adversary wins)"),
     // 178 (amendment 8112): its own phase, so a project's prompt doesn't follow the reveal's hidden draw in one
     // phase (a determinized replay of it could resolve another project first). No play change.
-    PhaseSpec::auto("compute", "the Income beat: each botnet seeds an agent next to it; the compute (income, botnets and the compute banked since the last turn onto the leftmost project, which resolves as it fills); then every firewall, cordon and prohibition token comes off: the adversary turn ends"),
+    PhaseSpec::auto("compute", "the Income beat: the compute step (each botnet, in one move, seeds an agent next to it and adds its compute; then income and the compute banked since the last turn, all onto the leftmost project, which resolves as it fills); then every firewall, cordon and prohibition token comes off: the adversary turn ends"),
 ];
 
 // `run`'s phase indices: each is its phase's position in `PHASES`.
@@ -410,10 +410,7 @@ impl Module for Adversary {
             }
             REVEAL => reveal(g, cx),
             COMPUTE_STEP => {
-                // 275: botnets seed first (a botnet's compute comes in the step below).
-                if !g.is_over() {
-                    botnets_seed(g, cx)?;
-                }
+                // r133 (280): the compute step opens with the botnets, each seeding and adding its compute.
                 if !g.is_over() {
                     compute_step(g, cx)?;
                 }

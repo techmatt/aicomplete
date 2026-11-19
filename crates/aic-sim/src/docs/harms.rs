@@ -72,7 +72,7 @@ pub const RULE_HARMS: [(&str, &str, &str); 27] = [
     ("income and Infiltrate", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
     ("income and Infiltrate", "production blacked out", "an agent on a city or station blocks its output while it stands (137)"),
     ("botnets", "projects advanced (compute)", "each botnet makes compute"),
-    ("botnets", "adversary pieces placed", "each botnet with no player ambassador on it seeds `botnet_seed` agent onto the city, station or factory next to it holding the most agents, in the Income beat (275)"),
+    ("botnets", "adversary pieces placed", "each botnet with no player ambassador on it seeds `botnet_seed` agent onto the city, station or factory next to it holding the most agents, in the compute step, with its compute in the same move (275; r133)"),
     ("uncountered threats", "adversary pieces placed", "a threat that executes uncountered lands `threat_agents` agent on its anchor, its first location token (275)"),
     ("corruption", "node destroyed", "`corrupt_node_at` agents on a hex with a player's node destroy the node and leave no mark (175, r98; protections apply)"),
     ("corruption", "node destroyed", "a node on the corrupted hex itself is destroyed (its owner may spend a protection: r75)"),

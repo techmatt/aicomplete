@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 132. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 133. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -360,10 +360,12 @@ fewer sites.
 **2. March.** Adversary troops march (below).
 
 **3. Income.** Turn the next event card face up: its Infiltrate and Grow lines tell you where next round's agents
-and facilities go. Then each botnet with no player's ambassador on it **seeds** 1 agent onto the city, station or
-factory next to it, not yet the adversary's, holding the most agents (a tie: the lowest-numbered; with none, onto its
-own site if that isn't the adversary's). Then all the adversary's compute arrives: its income, each botnet without a
-player's ambassador on it, and what was made since the last turn, onto the projects (§17). Then the **research
+and facilities go. Then the **compute step**, one move a botnet: take the botnets in hex order; each with no
+player's ambassador on it **seeds** 1 agent onto the city, station or factory next to it, not yet the adversary's,
+holding the most agents (a tie: the lowest-numbered; with none, onto its own site if that isn't the adversary's),
+and adds its 1 compute as you place it (none while hacked). A seed that cancels the ambassador on a botnet you
+passed frees that botnet: add its compute then. Then add the adversary's income and what waits beside
+the projects (made since the last turn), and move all of it onto the projects at once (§17). Then the **research
 track** is checked (below). Firewalls, cordons (§16) and no-Infiltrate, no-Muster and no-Corrupt tokens (§12) come
 off.
 
@@ -386,6 +388,9 @@ Grow's agent, a botnet's seed, a Surge, a threat's or card's agents), check **th
 - otherwise, **2 agents on your node's hex destroy your node**, whatever else is there (a city with your node loses
   the node at 2, and corrupts only at its own number). The agents go back to the supply, and the node leaves no mark:
   losing it is punishment enough. Protections apply (§13).
+
+**Check as you place.** An Infiltrate, Surge or Grow line names its sites: count each one's agents as you put the new
+ones on, and corrupt it then if it has reached its number. There is no second pass over the sites.
 
 Nothing else on the board is checked: a site only reaches its number when agents land on it. Agents a player moves
 (Gather, Push, §16) are no arrival and check nothing. Nothing on a firewalled hex (§16) or one with a no-Corrupt token
@@ -444,8 +449,9 @@ The adversary spends **compute** on **projects** in the Income beat, always on t
 **resolves** with its printed effect, and the rest slide left (§17). Some cards and the Researcher's Hack II take compute off a project.
 
 Botnets spread quickly (four event cards print **Botnets spread (level 1+)**, above) but are cheap to clear. A **botnet** stays
-until a card or the **Take down a botnet** action (§8, 13 credits) removes it. It makes 1 compute a round
-unless a player's ambassador stands on it, and counts against the purge until Unity has tipped 7 times (§14).
+until a card or the **Take down a botnet** action (§8, 13 credits) removes it. It seeds an agent and makes 1 compute
+a round, in one move, unless a player's ambassador stands on it, and counts against the purge until Unity has
+tipped 7 times (§14).
 Removing one sways neither side.
 
 ### Research: the Weapons Program
@@ -673,6 +679,16 @@ crates/aic-core/src/modules/board/standard.rs, modules/board/ambassadors.rs, mod
 
 Production has two parts: the **income step**, where everything pays, then **extra drones**. Do each step for the
 whole map before the next.
+
+**Read it from the tracks, not the map.** What your factories and stations make sits on your income tracks; what
+the adversary's corrupted cities and stations make, on its board; each megaproject counts its neutral stations. Move
+a marker only when a site changes hands (claimed, liberated, corrupted, built or destroyed) or a megaproject
+completes (step 3: its stations' cubes go elsewhere from then on). When an opposing piece lands on a producing site
+(an agent on yours or a neutral station, your ambassador on the adversary's), put a **blocked** chip on it, and lift
+the chip when the last such piece leaves; a blackout chips the cities it darkens, and an occupied factory (Factory
+Occupation) takes one while its troop stands.
+In the income step each track pays what it shows less what its chipped sites make, and each adversary factory
+without a chip makes its troop. Neutral cities are still read for their hosts (step 2).
 
 **The income step**, in this order:
 

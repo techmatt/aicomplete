@@ -5,6 +5,16 @@ use super::*;
 /// Places `n` agents from the supply on hex `h`. The supply
 /// is a cap (027): a placement it can't make doesn't happen.
 pub fn place(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) -> Res {
+    place_as(g, cx, h, n, false)
+}
+
+/// r133 (280): [`place`] onto a site an Infiltrate, Surge or Grow line names: its arrival check is made as the
+/// agents go on, in the same read of the site (the rule is the same; only the table's count of checks differs).
+pub fn place_named(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) -> Res {
+    place_as(g, cx, h, n, true)
+}
+
+fn place_as(g: &mut GameState, cx: &mut Cx, h: usize, n: i64, named: bool) -> Res {
     // 158: a firewall stops every arrival on its hex; they stay in the supply.
     if firewalled(g, h) {
         cx.tally(g, "adversary.firewalled", n.max(0));
@@ -24,7 +34,7 @@ pub fn place(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) -> Res {
     // 275: arrival corruption: the hex an agent landed on is checked, and nothing else (all canceled or none sent:
     // nothing arrived, nothing is checked).
     if landed {
-        arrive_check(g, cx, h)?;
+        arrive_check_as(g, cx, h, named)?;
     }
     Ok(())
 }

@@ -139,14 +139,24 @@ pub fn corrupt_n(w: &World, site: CorruptSite, cut: i64) -> i64 {
 /// corrupt number corrupts; else a player's node there with `corrupt_node_at` agents is destroyed (a node rule,
 /// no mark). A firewall or a no-Corrupt token holds it. Nothing else on the board is looked at.
 pub fn arrive_check(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
+    arrive_check_as(g, cx, h, false)
+}
+
+/// [`arrive_check`]; `named`: r133 (280), the site an Infiltrate, Surge or Grow line names, its check made in the
+/// line's read of it, so it is no check of its own (stats only: `map.arrival_folded`, not `CHECKS`).
+pub fn arrive_check_as(g: &mut GameState, cx: &mut Cx, h: usize, named: bool) -> Res {
     let w = cx.world;
     let held = g.tokens(h, ADV_AMBASSADOR);
     if held <= 0 {
         return Ok(());
     }
-    cx.per_round(g, CHECKS, 1);
-    // 278 (stats only): the arrival checks within `CHECKS`, for the table-time breakdown.
-    cx.per_round(g, "map.arrival_checks", 1);
+    if named {
+        cx.per_round(g, "map.arrival_folded", 1);
+    } else {
+        cx.per_round(g, CHECKS, 1);
+        // 278 (stats only): the arrival checks within `CHECKS`, for the table-time breakdown.
+        cx.per_round(g, "map.arrival_checks", 1);
+    }
     for site in [CorruptSite::City, CorruptSite::Station, CorruptSite::Factory, CorruptSite::Node] {
         if !super::plan::corrupt_target(&w, g, h, site) || held < corrupt_n(&w, site, 0) {
             continue;
