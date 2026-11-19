@@ -17,7 +17,7 @@ what it prints; the `cards/*_read.py` readers take seconds.
   warnings ([principles.md](principles.md)): content checks, plus play checks on DIR (a read's folder or
   `games.jsonl`; a farm out file as FILE=SPEC; one DIR, comma lists pool; an unknown flag stops it). `--old`: the previous revision's read on its seeds; `--base`: the
   dials' start (default: merge base with main); `--variant`: only those variants' (or a lever's) games, `base` the
-  bare pairs; `--agent`: only those agents' (as the spec writes them); `--usage`: each action's role, band and use instead. Powers are named by the read's `ai.power.*`
+  bare pairs; `--agent`: only those agents' (as the spec writes them), on `--old` too; `--usage`: each action's role, band and use instead. Powers are named by the read's `ai.power.*`
   counters. Table cost (268): `table_cost`'s budgets by level, and `friction-stale` off
   `docs/rulebook-friction.md`'s title. First line: the report's `warnings:`. Thresholds
   and bands: `design_check.json`; job parity's cards for each standard job, hand-read (effects as expressions over
@@ -30,8 +30,8 @@ what it prints; the `cards/*_read.py` readers take seconds.
   `cards.<id>.<path>=JSON` lines (the engine `--set`'s keys, paths as `apply_entry` in content.rs; `#` comments), a
   last step `+` appending to a list, `cards.<id>=<JSON object>` a whole row. Nothing deletes (how to drop a card: its
   docstring). `--check`: dry run; `--from REV`: over REV's content, not the tree's (a changed overlay drops what it no longer
-  sets; warns of tree edits it would drop). Then `regen.py`. It refuses hand-laid `alignment.json`; threats, adversary and
-  projects: edit `drafts/adversary/`.
+  sets; warns of tree edits it would drop). Then `regen.py`. It writes `alignment.json` in its hand layout (`dump_alignment`); threats,
+  adversary and projects: edit `drafts/adversary/`.
 - `content/load_adversary.py [--check]`: `drafts/adversary/` (the source) into `content/` and
   `docs/adversary-cards.md`; writes nothing if `drafts/adversary/check.py` gives any ERROR; `--check` only compares.
 - `configs/no_liberate.py`, `no_tier2.py`: the baseline less every `liberate` card, and with no tier-2 deck (opening
@@ -111,7 +111,7 @@ what it prints; the `cards/*_read.py` readers take seconds.
 - `bench/paired.py DIR... [--pair A B]...`: cells' win %, SE, rounds and ends, and paired gaps pooled over `--pair`s
   on the seeds both played; `--against-base`, `--against-agent A`, `--lever-suffix L`, `--pool`, `--other DIR`,
   `--same-engine` and the cell names: its docstring. After editing ladder.py, paired.py, read_lib.py or screens.py, run
-  `bench/test_read_tools.py`; after apply_overlay.py or design_check.py's arguments, `test_input_checks.py`.
+  `bench/test_read_tools.py`; after apply_overlay.py or design_check.py's arguments, `test_input_checks.py` (the slow lane runs both).
 - Gates are suspended: `bench/gate_stop_rate.py` and `bench/gate_close.py` (docstrings).
 - `bench/shards.sh EXE DIR SPEC FIRST COUNT OUT`: a farm spec natively in `SHARDS` (6) one-thread shards, under the header into OUT.
 - `bench/first_divergence.py OLD NEW`: where two runs of one spec first differ, per game (`--cells DIR A B`: a run's
@@ -120,11 +120,13 @@ what it prints; the `cards/*_read.py` readers take seconds.
 - `bench/resource_use.py NEW [OLD] [--top 8] [--limits]` (folder, games file or `FILE=SPEC`): chips, energy, cubes and antimatter
   gained and spent per seat a game by level, what buys and sources them (`--limits`: the `limit.*` table).
   `bench/resource_split.py READ...` (flags: docstring): the same per arm, board and round, and spent in won games.
-- `bench/read_lib.py READ[@LABEL]... [--base ARM] [--levels D,...] [--agent-arms] [--counters PREFIX...] [--cards ID...]
-  [--md OUT]` (same forms): a paired read's tables by arm (`PAIR-ARM` variants) and agent, against the base arm
-  (`--base` names one it has) on the same pair, level and seed (`@LABEL`: that read's arms are `LABEL/arm`, so an old
-  native run pairs against a new farmed one; `--agent-arms`: `strategist:w.sink=1` is arm `sink1` of `strategist`): wins and gap ± SE by level (one seed: the gap, no SE), losses, board powers (by counter), standard actions, counters, card plays, resource use. Its
-  `games`, `seat_boards`, `counter_sums`, `resources`, `paired_gap` are the library for an item's own reader.
+- `bench/read_lib.py READ[@LABEL]... [--base ARM] [--levels D,...] [--agent-arms] [--arm NAME=SPEC]... [--counters PREFIX...]
+  [--cards ID...] [--md OUT]` (same forms): a paired read's tables (its docstring) by arm (`PAIR-ARM` variants) and
+  agent, against the base arm on the same pair, level and seed (`@LABEL`: that read's arms are `LABEL/arm`;
+  `--agent-arms`: `strategist:w.sink=1` is arm `sink1` of `strategist`; `--arm NAME=SPEC` names it, needed where two
+  collide). Its `games`, `paired_gap` and helpers are the library for an item's own reader.
+- `bench/fresh_read.py NEW OLD [--md OUT] [--growth SLUG,...]` (same forms): a fresh read against the old revision's,
+  old → new per agent and level (columns: docstring).
 - `bench/am_read.py READ[,READ...]` (same forms): antimatter by source, made and spent, per lever and
   agent.
 - `bench/projects_read.py READ [--md OUT]` (folder, games file or `FILE=SPEC`): each project's reveals, completions, compute drained and map

@@ -57,6 +57,7 @@ mod targets;
 mod threat_sources;
 mod threats;
 mod tier2_ops;
+mod unprinted_ops;
 mod view;
 mod war;
 
@@ -647,9 +648,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 136;
-const GOLDEN_FINGERPRINT: &str = "cf9351c5612cd32e";
-const GOLDEN_CONTENT_HASH: &str = "3c2e1029710cdfe0";
+const GOLDEN_REVISION: u32 = 137;
+const GOLDEN_FINGERPRINT: &str = "ed6cd90bc3cf6134";
+const GOLDEN_CONTENT_HASH: &str = "0bd6dd283dccf510";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

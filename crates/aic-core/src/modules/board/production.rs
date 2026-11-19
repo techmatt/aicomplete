@@ -341,6 +341,26 @@ enum Color {
 /// country's megaproject until it completes, then onto their owner's board (a
 /// neutral one's is lost). 137: an adversary station makes compute instead,
 /// and one opposing ambassador blocks a station while it stands.
+/// 286 (D124): what the next production pays seat `s`, (chips, research cubes), as its income tracks print it
+/// (r133): its factories' chips (none from an occupied factory or one an agent blocks) and, once their country's
+/// megaproject is complete, its stations' cubes (none from a blocked one). [`factory_output`] and [`station_cubes`]
+/// pay it; the seat strip adds it to upkeep's income. Cities' energy is read at hosting, not on the tracks.
+pub fn production_income(w: &World, g: &GameState, s: usize) -> (i64, i64) {
+    let (mut chips, mut cubes) = (0, 0);
+    for h in 0..g.hexes.len() {
+        if cube_owner(g, h) != Some(s) || g.tokens(h, ADV_AMBASSADOR) > 0 {
+            continue;
+        }
+        if g.tokens(h, FACTORY) > 0 && !occupied(g, h) {
+            chips += w.int("board.factory_chips");
+        }
+        if g.tokens(h, STATION) > 0 && !corrupted(g, h) && g.var(&project_done(w.map.hexes[h].country as usize)) != 0 {
+            cubes += w.int("board.owned_station_cubes");
+        }
+    }
+    (chips, cubes)
+}
+
 pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     let cubes = w.int("board.station_cubes");

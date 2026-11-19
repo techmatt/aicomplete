@@ -322,7 +322,8 @@
    ],
    "harms": [
     "adversary pieces placed",
-    "Unity pulled back"
+    "Unity pulled back",
+    "facilities destroyed or corrupted"
    ],
    "value": "counter 3 Diplomacy tags (15) or 17 credits (17); uncountered 20 at values.json (a troop 9 with its strike), 1.33x the cheapest counter",
    "check": "bites the Unity race and takes its city uncountered: 4 + the anchor agent reach 5 at level 0, the 4 alone reach 3 from level 1 (D130)",
@@ -619,7 +620,7 @@
   },
   {
    "id": "sleeper_cells",
-   "name": "Sleeper Cells",
+   "name": "Rootkit",
    "tier": 2,
    "tags": [
     "cyber"
@@ -654,7 +655,8 @@
     }
    ],
    "harms": [
-    "adversary pieces placed"
+    "adversary pieces placed",
+    "facilities destroyed or corrupted"
    ],
    "value": "counter 3 Cyber tags (15) or 17 credits (17); uncountered 20 at values.json (a troop 9 with its strike), 1.33x the cheapest counter",
    "check": "bites the station: compute each round, nearer corrupting",
@@ -987,7 +989,8 @@
    ],
    "harms": [
     "adversary pieces placed",
-    "credits or income lost"
+    "credits or income lost",
+    "facilities destroyed or corrupted"
    ],
    "value": "counter 4 energy (18) or 17 credits (17); uncountered 20 at values.json (a troop 9 with its strike), 1.18x the cheapest counter",
    "check": "bites chip holders and takes its coastal city uncountered: 4 + the anchor agent reach 5 at level 0, the 4 alone reach 3 from level 1 (D130)",
@@ -1223,7 +1226,8 @@
     }
    ],
    "harms": [
-    "adversary pieces placed"
+    "adversary pieces placed",
+    "facilities destroyed or corrupted"
    ],
    "value": "counter 4 insight (17.5) or 17 credits (17); uncountered 24 at values.json (a troop 9 with its strike), 1.41x the cheapest counter",
    "check": "bites both sites",
@@ -1432,7 +1436,7 @@
   },
   {
    "id": "war_economy",
-   "name": "War Economy",
+   "name": "Arsenal",
    "tier": 2,
    "tags": [
     "security",

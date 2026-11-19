@@ -5,37 +5,40 @@ numbers are as measured on the rules revision it names, and its specs and record
 run or replay today. What each revision changed is one line in
 [docs/rules-history.md](../docs/rules-history.md); everything else is in git.
 The current recipes and costs are in [docs/experiments.md](../docs/experiments.md).
+A row's summary is a title clause of at most 100 characters (the fast lane refuses a longer one):
+the findings are in the write-up.
 
 | Item | Rev | Write-up |
 |---|---|---|
-| 285 bug hunt on the rules since 261 (271-284): a cordon keeps out every agent and Grow (Spill, seeds, Night Raid, War Plants across a border), cross-border ties by country, log lines after their acts, the adversary's turn narrated, stale rules prose and faces, `cards:check` crash | 136 | [285_bug_hunt](results/285_bug_hunt/README.md) |
-| 283 agents' table rates and three projects at 24: values.json resources, drawn card, keep and tier-2 horizon at the unit anchors (+1.9 judge on dev seeds), keep_units and D106 on; Martial Law Surge 3 station, Recruitment Drive Surge 5 city, Grand Offensive Infiltrate again + Surge 2 factory, all 24; the antimatter weight raise not shipped (spent share fell); judge d0-d4 94/83/80/54/26 → 93/90/76/49/26 on fresh seeds | 135 | [283_agents_antimatter](results/283_agents_antimatter/README.md) |
-| 282 global balance pass: stations and factories fall at 3, stage I Infiltrates on cities, d4's Infiltrate 2 on cities only, research 5/5/5/4/4, d3/d4 compute 10/15, prices and effects at the anchors, discount floor 0; judge d0-d4 88/62/47/20/4 → 96/84/79/52/26 (fresh read) | 134 | [282_balance_pass](results/282_balance_pass/README.md) |
-| 280 bookkeeping cuts: production read from the tracks with blocked chips, arrivals checked as a line places them, one move a botnet; play unchanged (1,440 fresh games a side identical); a d2 round 42.4 → 40.3 minutes (cuts −1.47 / −0.60 / −0.01), d4 42.9 → 41.2 | 133 | [280_bookkeeping_cuts](results/280_bookkeeping_cuts/README.md) |
-| 278 hard-cut proposals (no rules change): a d2 round is 42.4 minutes by a traced breakdown at 268's rates (8 rounds, 339 a game; draft 9.4, action phase 15.9, adversary turn 9.5, production 4.2); eleven cuts ranked; `cards.no_pass` + `board.turn_cap=3` −4.2 a round measured, the top four about −10; 120 minutes also needs a game of about 4 rounds | 132 | [278_hard_cut_proposals](results/278_hard_cut_proposals/README.md) |
-| 277 the Growth pass: each board's Growth is one easy option (free: a node and a credit or a card) and two costly ones pulling different ways (Annex costs a chip, Outpost and Peer Review cheaper, Accord and Peer Review 2 credits); judge d0-d4 88/56/38/8/3 → 89/61/52/19/3 (fresh read), greedy flat | 132 | [277_growth_pass](results/277_growth_pass/README.md) |
-| 276 the board rework: Growth (one of three options a round, each board's only node route), tiered powers (one tier a round, tier II 2 tags), the Researcher's Lab threshold power; Mint and twelve other powers cut or folded; 10 / 8 / 9 powers weighed a round → 4 / 3 / 3; judge d0-d4 94/63/46/13/7 → 84/69/51/14/5 (fresh read) | 131 | [276_board_rework](results/276_board_rework/README.md) |
-| 275 the card-driven adversary: Infiltrate (an agent on each named site) for Rally and the pools, arrival corruption for Corrupt lines and natural corruption, Spill (level 2+), Surge, Grow (the adversary's growth, `grow_cap` 2) for city growth, botnet seeding, an agent at an uncountered threat's anchor; d2 adversary-turn checks 47.7 → 20.4 a round (−4.6 minutes); paired read (49884-49931) judge d0-d4 91/68/65/24/14 → 85/54/30/10/0, cities corrupted by round 4 rising with level | 130 | [275_adversary_redesign](results/275_adversary_redesign/README.md) |
-| 274 table-time free cuts: troop stacks march as one, projects count the hex only, the literal threat skip (never fires at 2-4 countries), tracks and used markers as components; the jam floor in as a switch, off (Force Protection Order's give / get); about 2.7 minutes a d2 round cut (4.6 at d4), mostly the compute and income tracks; paired read (49836-49883) judge −0.4 ± 0.7, greedy +0.0 ± 0.8 | 129 | [274_table_time_cuts](results/274_table_time_cuts/README.md) |
-| 273 smaller numbers: every credit number ÷ 1.5 to the nearest (Matt's message 12506 over 271's rounded-up prices), card costs floor 2, values.json and the agents' credit weights with it; paired read (49788-49835) judge −1.4 ± 1.7, greedy −4.2 ± 1.7 against r127 (rounded up: −4.2, −6.9) | 128 | [273_smaller_numbers](results/273_smaller_numbers/README.md) |
-| 271 the draw economy: card draw 177 → 38 across content, three chain-end draw engines, no any-card payouts, the Builder's chips → cards loop cut; plays a game-round down ~30%, drawn ~4×; judge d0-d4 92 / 79 / 65 / 18 / 10 (r126 on the same seeds 97 / 90 / 84 / 44 / 30), balance pass to follow | 127 | [271_draw_economy](results/271_draw_economy/README.md) |
-| 269 (270_face_followups) face follow-ups: every face at 7.5 pt (Rescue glyph, generic site chip, "+3 credit income", Particle Accelerator in one clause); Positron Storage Ring without its Effect at 6 credits, Hostile Buyout at 23 (1.47); "(level 1+)" on every Botnets spread line; judge d0-d4 98.6 / 91.7 / 84.0 / 66.0 / 29.9, mean gap to r125 about −1 | 126 | [270_face_followups](results/270_face_followups/README.md) |
-| 268 table-cost audit: a d2 game hand-played from the rulebook and aid (d4 spot check), 6-8 h a game at d2 and 12+ at d4, peak load 22 items; friction page rebuilt with a concurrent-load column, its blind spots and a refresh trigger; player aid as the table's reference sheet; `design_check` table-cost budgets and `friction-stale` | 125 | [268_table_cost_audit](results/268_table_cost_audit/README.md) |
-| 267 difficulty ladder players can track: named cumulative levels (Sleeper Cells, War Footing, Arms Race, War Economy), setup markers and one triggered rule a level (0 / 1 / 2 / 3 / 3 active); counter and Muster surcharges and the tier-2 look-ahead cut (d4 deck 3 / 4 / 4); the adversary reference card; judge 97.2 / 91.0 / 87.5 / 65.3 / 33.3 at d0-d4, every judge gap to r124 at most 1 SE; d4 8.0 rounds; adversary ops +1.4% | 125 | [267_difficulty_ladder](results/267_difficulty_ladder/README.md) |
-| 266 input checks from 261's D117: agent specs refuse a retired `plan_credit`, values read as another setting, pins off a board's menu or with seats unpinned, a non-count `t.troops_removed`; the target rule reads the spec's table; read scripts refuse a misspelled overlay drop, an unknown flag or second DIR, an unknown `--base` arm, pool native with farmed agents, give one seed's real gap | 124 | [266_input_validation](results/266_input_validation/README.md) |
-| 265 viewer fixes from 261: a stopped record saves whole (D116), standard actions by name and cost (D109), the player view's legend, seat panel, converters and step bar (D112), the turn panel's notes only and "a round" (D115), two- and three-glyph target boxes (D108) | 124 | [265_viewer_fixes](results/265_viewer_fixes/README.md) |
-| 264 card face pass, words only: 11 of 15 sub-7.5 pt faces fit (house term Rescue, no "Effect:" before a trigger, an icons-first fit step); `cards:fit` fails below 7.5 pt; D119 house terms, D114 pricing notes; Popular Uprising, Retained Earnings, Particle Accelerator, Positron Storage Ring left for Matt | 124 | [264_face_pass](results/264_face_pass/README.md) |
-| 263 balance pass 2, game length and the difficulty curve: botnets don't spread at d0, a d0 city corrupts at 5; the antimatter trim (capstones a lump of 2, plants none when built); D107's printed form; d0 judge 95.1 (+6.9 ± 3.1 against r123), 8.5 rounds (r121 10.1), deck-empty 6% (r121 11%); games with a new city 11 / 57 / 77 / 86 / 92% at d0-d4; antimatter 49% → 56% spent | 124 | [263_balance_difficulty](results/263_balance_difficulty/README.md) |
-| 262 balance pass 1, the economy: Claim cut; Horizon's converters and Make antimatter pay energy; Arms Inspectors removes 2 when built; the Forge's cash-out draws; a hosted city can't be bought (D107); Sweep and Fusion Commons cost 1 insight (D113); the agents' `convert_rule`; +2.4 ± 1.7 (judge), +3.6 ± 1.9 (greedy) against r122; Tidal Grid's converters 0.42 and 0.66 a seat-game; cubes 73% spent, antimatter 51% | 123 | [262_balance_economy](results/262_balance_economy/README.md) |
+| 286 285's deferred rules fixes: threats keep off their own site at tier 1, located lines | 137 | [286_rules_fixes](results/286_rules_fixes/README.md) |
+| 285 bug hunt on the rules since 261 (271-284) | 136 | [285_bug_hunt](results/285_bug_hunt/README.md) |
+| 283 agents' table rates and three projects at 24 | 135 | [283_agents_antimatter](results/283_agents_antimatter/README.md) |
+| 282 global balance pass | 134 | [282_balance_pass](results/282_balance_pass/README.md) |
+| 280 bookkeeping cuts | 133 | [280_bookkeeping_cuts](results/280_bookkeeping_cuts/README.md) |
+| 278 hard-cut proposals (no rules change) | 132 | [278_hard_cut_proposals](results/278_hard_cut_proposals/README.md) |
+| 277 the Growth pass | 132 | [277_growth_pass](results/277_growth_pass/README.md) |
+| 276 the board rework | 131 | [276_board_rework](results/276_board_rework/README.md) |
+| 275 the card-driven adversary | 130 | [275_adversary_redesign](results/275_adversary_redesign/README.md) |
+| 274 table-time free cuts | 129 | [274_table_time_cuts](results/274_table_time_cuts/README.md) |
+| 273 smaller numbers | 128 | [273_smaller_numbers](results/273_smaller_numbers/README.md) |
+| 271 the draw economy | 127 | [271_draw_economy](results/271_draw_economy/README.md) |
+| 269 (270_face_followups) face follow-ups | 126 | [270_face_followups](results/270_face_followups/README.md) |
+| 268 table-cost audit | 125 | [268_table_cost_audit](results/268_table_cost_audit/README.md) |
+| 267 difficulty ladder players can track | 125 | [267_difficulty_ladder](results/267_difficulty_ladder/README.md) |
+| 266 input checks from 261's D117 | 124 | [266_input_validation](results/266_input_validation/README.md) |
+| 265 viewer fixes from 261 | 124 | [265_viewer_fixes](results/265_viewer_fixes/README.md) |
+| 264 card face pass, words only | 124 | [264_face_pass](results/264_face_pass/README.md) |
+| 263 balance pass 2, game length and the difficulty curve | 124 | [263_balance_difficulty](results/263_balance_difficulty/README.md) |
+| 262 balance pass 1, the economy | 123 | [262_balance_economy](results/262_balance_economy/README.md) |
 | 261 bug hunt on the rules since 235 (252-259) | 122 | [261_bug_hunt](results/261_bug_hunt/README.md) |
-| 259 every adversary gets a research rule: one track, the Militarist's Weapons Program (Muster 2, 3 from d3) at 5 / 4 cubes a country, fed by stations after their megaproject, three projects and three threats; Counterintelligence Sweep and Arms Inspectors remove; -5.0 ± 1.8 (judge), -2.4 ± 2.0 (greedy) against r119; fires 0.2-2.1 a game d0-d4 | 120, 121 | [259_adversary_research_rule](results/259_adversary_research_rule/README.md) |
-| 258 card follow-ups: 257's weak cards and converters pay more a use, Dyson and Exascale played, Twin City Compact hosts a second city; the judge ships `w.sink` 0.5; r119 -1.7 ± 1.9 (judge), +0.3 ± 2.1 (greedy) against r117 | 118, 119 | [258_card_followups](results/258_card_followups/README.md) |
-| 257 the judge and Action buildings: `w.sink` (converter fuel priced by what a use makes) runs them but costs d3-d4 wins, left off | 117 | [257_judge_action_buildings](results/257_judge_action_buildings/README.md) |
-| 256 Item C: the card pass (claim_site, Campus and Commons owned, liberate riders, node and sink buildings) | 117 | [256_item_c_cards](results/256_item_c_cards/README.md) |
+| 259 every adversary gets a research rule | 120, 121 | [259_adversary_research_rule](results/259_adversary_research_rule/README.md) |
+| 258 card follow-ups | 118, 119 | [258_card_followups](results/258_card_followups/README.md) |
+| 257 the judge and Action buildings | 117 | [257_judge_action_buildings](results/257_judge_action_buildings/README.md) |
+| 256 Item C, the card pass | 117 | [256_item_c_cards](results/256_item_c_cards/README.md) |
 | 254 cities are never player-owned (shipped on) | 115 | [254_cities_never_owned](results/254_cities_never_owned/README.md) |
-| 253 Item B part 2: neutral-site cards, retake, the cube converter, the full read against r112 | 114 | [253_item_b_cards_read](results/253_item_b_cards_read/README.md) |
-| 252 Item B part 1: node routes, free then claim, standard actions under the cards | 113 | [252_item_b_rules](results/252_item_b_rules/README.md) |
-| 251 profiling the sim: judges, oracles, engine (same-play speed-ups, opt-in lean lines) | 112 | [251_profiling](results/251_profiling/README.md) |
+| 253 Item B part 2 | 114 | [253_item_b_cards_read](results/253_item_b_cards_read/README.md) |
+| 252 Item B part 1 | 113 | [252_item_b_rules](results/252_item_b_rules/README.md) |
+| 251 profiling the sim | 112 | [251_profiling](results/251_profiling/README.md) |
 | 249 the real oracle, a better judge, design checks for standard-action prices | 112 | [249_real_oracle_judge](results/249_real_oracle_judge/README.md) |
 | 248 standard actions probe (Liberate with antimatter reverted) | 112 | [248_standard_actions_probe](results/248_standard_actions_probe/README.md) |
 | 247 resource economy | 111 | [247_resource_economy](results/247_resource_economy/README.md) |
@@ -57,19 +60,19 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 | 229 cleanup | r100 | [229_cleanup](results/229_cleanup/README.md) |
 | 228 balance pass | r100 | [228_balance_pass](results/228_balance_pass/README.md) |
 | 227 Fallout | r99 | [227_fallout](results/227_fallout/README.md) |
-| 225 post-audit of 215: speed since 215's baseline, no rules change | 98 | [225_post_audit_215](results/225_post_audit_215/README.md) |
-| 223 (prompt 226) rules friction: Matt's rulings on 224's list | 98 | [223_rules_friction](results/223_rules_friction/README.md) |
+| 225 post-audit of 215 | 98 | [225_post_audit_215](results/225_post_audit_215/README.md) |
+| 223 (prompt 226) rules friction | 98 | [223_rules_friction](results/223_rules_friction/README.md) |
 | 222 sim players | 97 | [222_sim_players](results/222_sim_players/README.md) |
 | 219 antimatter sources by board | 97 | [219_antimatter_sources](results/219_antimatter_sources/README.md) |
 | 215 game length | 96 | [215_length_calibration](results/215_length_calibration/README.md) |
 | 214 tier-2 pricing and insight | 95 | [214_tier2_pricing_insight](results/214_tier2_pricing_insight/README.md) |
 | 213 tier 2 as the majors | 94 | [213_tier2_design](results/213_tier2_design/README.md) |
-| 212 tags follow the story (a tag table, the soft `tag-story` check, 13 retags, no tag... | 93 | [212_tags_node_powers](results/212_tags_node_powers/README.md) |
+| 212 tags follow the story | 93 | [212_tags_node_powers](results/212_tags_node_powers/README.md) |
 | 211 sim players | 92 | [211_agents_endgame_antimatter](results/211_agents_endgame_antimatter/README.md) |
 | 210 settle r91 | 92 | [210_settle_r91](results/210_settle_r91/README.md) |
 | 207 expected use | 91 | [207_expected_use](results/207_expected_use/README.md) |
-| 206 standard actions as hedges (Clear, drain and harden projects cut; botnet 16,... | 91 | [206_pricing_powers_insight](results/206_pricing_powers_insight/README.md) |
-| 204 antimatter earned (the Sway action gone; Make antimatter 4 cubes; Pair Forge;... | 90 | [204_antimatter_and_sway](results/204_antimatter_and_sway/README.md) |
+| 206 standard actions as hedges | 91 | [206_pricing_powers_insight](results/206_pricing_powers_insight/README.md) |
+| 204 antimatter earned | 90 | [204_antimatter_and_sway](results/204_antimatter_and_sway/README.md) |
 | 203 the strategist plays what it kept | 89 | [203_strategist_keeps_actions](results/203_strategist_keeps_actions/README.md) |
 | 205 design warnings | 88 | [205_design_warnings](results/205_design_warnings/README.md) |
 | 201 threat and troop pass | 89 | [201_threat_troop_pass](results/201_threat_troop_pass/README.md) |
@@ -96,38 +99,38 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 | 175 rules r74, the adversary side of the friction rulings | 74 | [175_rules_adversary/](results/175_rules_adversary/README.md) |
 | 174 speed at r73 | 73 | [174_speed](results/174_speed/README.md) |
 | 173 rulebook review and second draft (no rules change) | 73 | [173_rulebook_review](results/173_rulebook_review/README.md) |
-| 172 rulebook first draft (docs/rulebook.md, about 8,000 core words, no rules change)... | 73 | [172_rulebook](results/172_rulebook/README.md) |
+| 172 rulebook first draft | 73 | [172_rulebook](results/172_rulebook/README.md) |
 | 169 bug hunt | 73 | [169_bug_hunt](results/169_bug_hunt/README.md) |
 | 168 recalibration to the strategist | r72 | [168_recalibration](results/168_recalibration/README.md) |
-| 167 Unity and Discord in fear-card shape (board conditions, never reach or one player;... | r71 | [167_unity_discord_r71/README.md](results/167_unity_discord_r71/README.md) |
+| 167 Unity and Discord in fear-card shape | r71 | [167_unity_discord_r71/README.md](results/167_unity_discord_r71/README.md) |
 | 166 moving pieces | r70 | [166_moving_pieces_r70/README.md](results/166_moving_pieces_r70/README.md) |
 | 165 cleanup, same games (144/144) | 69 | [165_cleanup](results/165_cleanup/README.md) |
 | 163 farmed reads | r69 | [163_remote_reread/README.md](results/163_remote_reread/README.md) |
 | 162 the judge | r69 | [162_judge_purge/README.md](results/162_judge_purge/README.md) |
 | 160 the sim in wasm for remote workers | r69 | [160_wasm_sim/README.md](results/160_wasm_sim/README.md) |
 | 158 stronger tier-2 player cards for the end game | r69 | [158_tier2_cards_r69/README.md](results/158_tier2_cards_r69/README.md) |
-| 157 current-tip tiers (both sides; Discord's tier III now resolves), no Unity tier III... | r68 | [157_strategist_purge_r68/README.md](results/157_strategist_purge_r68/README.md) |
+| 157 current-tip tiers | r68 | [157_strategist_purge_r68/README.md](results/157_strategist_purge_r68/README.md) |
 | 156 the win redesign | r67 | [156_win_redesign_r67/README.md](results/156_win_redesign_r67/README.md) |
 | 155 the full-information search agent (`oracle`, opt in) | r66 | [155_skilled_agents/README.md](results/155_skilled_agents/README.md) |
-| 154 round-cap losses classified (90 design mistakes, 11 agent mistakes at r65; short... | r66 | [154_endgame_r66/README.md](results/154_endgame_r66/README.md) |
+| 154 round-cap losses classified | r66 | [154_endgame_r66/README.md](results/154_endgame_r66/README.md) |
 | 152 art round | r65 | [152_art_ppa_microgrid/art.md](results/152_art_ppa_microgrid/art.md) |
 | 151 the adversary's income and rally | r65 | [151_adversary_income_r65/README.md](results/151_adversary_income_r65/README.md) |
-| 150 board tags count fully; Exascale's keep; Market Stabilization Board read in and... | r64 | [150_tags_exascale_r64/README.md](results/150_tags_exascale_r64/README.md) |
+| 150 board tags count fully | r64 | [150_tags_exascale_r64/README.md](results/150_tags_exascale_r64/README.md) |
 | 149 board movement | r63 | [149_board_movement_r63/README.md](results/149_board_movement_r63/README.md) |
 | 148 card and economy rulings | r62 | [148_card_pass_r62/README.md](results/148_card_pass_r62/README.md) |
 | 147 the agents at r61 | r61 | [147_agents_tempo/README.md](results/147_agents_tempo/README.md) |
 | 146 the threat card standard | r61 | [146_threat_standard/README.md](results/146_threat_standard/README.md) |
 | 145 bug hunt | r60 | [145_bug_hunt/README.md](results/145_bug_hunt/README.md) |
-| 142 threat intensity and the credit economy (claiming sites, the difficulty ladder, no... | r59 | [142_threat_intensity/README.md](results/142_threat_intensity/README.md) |
+| 142 threat intensity and the credit economy | r59 | [142_threat_intensity/README.md](results/142_threat_intensity/README.md) |
 | 141 speed at r58 | r58 | [141_speed_r58/README.md](results/141_speed_r58/README.md) |
 | 140 cleanup | r58 | [140_cleanup_tests_web/README.md](results/140_cleanup_tests_web/README.md) |
 | 139 Discord cards and the band | r58 | [139_discord_and_band/README.md](results/139_discord_and_band/README.md) |
 | 138 corruption and arrivals | r57 | [138_corruption_and_arrivals/README.md](results/138_corruption_and_arrivals/README.md) |
 | 137 sites and war | r56 | [137_sites_and_war/README.md](results/137_sites_and_war/README.md) |
 | 136 alignment and the win | r55 | [136_alignment_and_win/README.md](results/136_alignment_and_win/README.md) |
-| 135 the new adversary model built and played with every 134 draft (threat decks by... | r54 | [135_adversary_model/README.md](results/135_adversary_model/README.md) |
+| 135 the new adversary model built and played with every 134 draft | r54 | [135_adversary_model/README.md](results/135_adversary_model/README.md) |
 | 134 adversary decks drafted for the new model (content for review, not loaded) | r53 | [134_militarist_drafts/README.md](results/134_militarist_drafts/README.md) |
-| 131 agents' value table per agent (`t.<key>=v` cells, no rebuild); chips 1.5 → 2... | r53 | [131_agents_table/r53.md](results/131_agents_table/r53.md) |
+| 131 agents' value table per agent (`t.<key>=v` cells, no rebuild) | r53 | [131_agents_table/r53.md](results/131_agents_table/r53.md) |
 | 130 late energy sinks | r53 | [130_late_energy_sinks/r53.md](results/130_late_energy_sinks/r53.md) |
 | 129 cleanup | r52 | [129_cleanup/notes-check.md](results/129_cleanup/notes-check.md) |
 | 128 draft and price | r52 | [128_draft_and_price/r52.md](results/128_draft_and_price/r52.md) |
@@ -138,24 +141,24 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 | 122 runaway engines | r49 | [122_runaway_engines/r49.md](results/122_runaway_engines/r49.md) |
 | 121 the loose threads | r48 | [121_loose_threads/r48.md](results/121_loose_threads/r48.md), [read.md](results/121_loose_threads/read.md), [carry.md](results/121_loose_threads/carry.md), [art.md](results/121_loose_threads/art.md), [pricing-notes.md](results/121_loose_threads/pricing-notes.md) |
 | 119 cleanup | r47 | [119_cleanup/pinned-tests.md](results/119_cleanup/pinned-tests.md) |
-| 118 bug hunt (fixed findings; the open ones are in docs/qa-findings.md) | r46 → r47 | [118_bug_hunt_r46/fixed.md](results/118_bug_hunt_r46/fixed.md), [deferred.md](results/118_bug_hunt_r46/deferred.md), [reads.md](results/118_bug_hunt_r46/reads.md) |
-| 117 lower income (18 / 16 / 14), big early and late cards, the strongest tier-2 cards... | r46 | [117_big_cards_and_income/r46.md](results/117_big_cards_and_income/r46.md), [cards.md](results/117_big_cards_and_income/cards.md) |
-| 116 agent sweep (the strategist's ten parameters, coordinate search on fixed seeds,... | r45 | [116_agent_sweep/sweep.md](results/116_agent_sweep/sweep.md), [summary-r45.md](results/116_agent_sweep/summary-r45.md) |
-| 114 art for borrowed scenes (11 cards off a cut card's or old name's scene | r44 | [114_art_borrowed_scenes/art.md](results/114_art_borrowed_scenes/art.md) |
-| 112 price correction (111's cuts to reach a band undone | r45 | [112_price_correction/r45.md](results/112_price_correction/r45.md) |
+| 118 bug hunt | r46 → r47 | [118_bug_hunt_r46/fixed.md](results/118_bug_hunt_r46/fixed.md), [deferred.md](results/118_bug_hunt_r46/deferred.md), [reads.md](results/118_bug_hunt_r46/reads.md) |
+| 117 lower income | r46 | [117_big_cards_and_income/r46.md](results/117_big_cards_and_income/r46.md), [cards.md](results/117_big_cards_and_income/cards.md) |
+| 116 agent sweep | r45 | [116_agent_sweep/sweep.md](results/116_agent_sweep/sweep.md), [summary-r45.md](results/116_agent_sweep/summary-r45.md) |
+| 114 art for borrowed scenes | r44 | [114_art_borrowed_scenes/art.md](results/114_art_borrowed_scenes/art.md) |
+| 112 price correction | r45 | [112_price_correction/r45.md](results/112_price_correction/r45.md) |
 | 111 card pass (Matt's rulings and unit anchors, removal in reach, the draw loop) | r44 | [111_card_pass/r44.md](results/111_card_pass/r44.md) |
-| 110 missing card art (a scene for each of 31 deck cards | r43 | [110_missing_card_art/art.md](results/110_missing_card_art/art.md) |
-| 108 engines worth playing (engines pay up front and back within 2 rounds, needs 2-3,... | r43 | [108_engines_worth_playing/r43.md](results/108_engines_worth_playing/r43.md), [cards.md](results/108_engines_worth_playing/cards.md), [probe.md](results/108_engines_worth_playing/probe.md) |
-| 107 agents play the engines (why each engine went unplayed; keep-plan and value-code... | r42 | [107_agents_play_engines/engines.md](results/107_agents_play_engines/engines.md), [play-counts.md](results/107_agents_play_engines/play-counts.md) |
-| 106 card overhaul (TM-style engines | r42 | [106_card_overhaul/r42.md](results/106_card_overhaul/r42.md), [cards.md](results/106_card_overhaul/cards.md), [play-counts.md](results/106_card_overhaul/play-counts.md) |
+| 110 missing card art | r43 | [110_missing_card_art/art.md](results/110_missing_card_art/art.md) |
+| 108 engines worth playing | r43 | [108_engines_worth_playing/r43.md](results/108_engines_worth_playing/r43.md), [cards.md](results/108_engines_worth_playing/cards.md), [probe.md](results/108_engines_worth_playing/probe.md) |
+| 107 agents play the engines | r42 | [107_agents_play_engines/engines.md](results/107_agents_play_engines/engines.md), [play-counts.md](results/107_agents_play_engines/play-counts.md) |
+| 106 card overhaul | r42 | [106_card_overhaul/r42.md](results/106_card_overhaul/r42.md), [cards.md](results/106_card_overhaul/cards.md), [play-counts.md](results/106_card_overhaul/play-counts.md) |
 | 105 the engine wording and the insight economy | r41 | [105_engine_rules/r41.md](results/105_engine_rules/r41.md), [play-counts.md](results/105_engine_rules/play-counts.md) |
 | 104 agent speed, round 2 (`plan_gross=1` the default) | r40 | [104_agent_speed_2/speed.md](results/104_agent_speed_2/speed.md) |
-| 103 agent profiling (where the agents' time goes; exact speed-ups; two approximations... | r40 | [103_agent_profiling/speed.md](results/103_agent_profiling/speed.md), [profile.md](results/103_agent_profiling/profile.md), [time-split.md](results/103_agent_profiling/time-split.md) |
-| 102 agents and r40 (the keep plan nets prices, D23-D35 agent fixes; D25 reprices,... | r40 | [102_agents_and_r40/r40.md](results/102_agents_and_r40/r40.md) |
-| 101 rules split into `docs/rules/` (where each old default went; play unchanged) | r39 | [101_rules_split/defaults.md](results/101_rules_split/defaults.md) |
-| 099 bug hunt (Rush Build's offer, measures gone quiet, the keep plan's gross value | r39 | [099_bug_hunt_r38/fixed.md](results/099_bug_hunt_r38/fixed.md) |
-| 098 rules r38 (troop Sway off, dark aligned cities, troop-removal cards repriced) | r38 | [098_rules_r38_troops_dark/r38.md](results/098_rules_r38_troops_dark/r38.md) |
-| 096 rules r37 (converter city node, Popular Uprising one Action, Supergrid, dark cities) | r37 | [096_rules_r37_followups/r37.md](results/096_rules_r37_followups/r37.md) |
+| 103 agent profiling | r40 | [103_agent_profiling/speed.md](results/103_agent_profiling/speed.md), [profile.md](results/103_agent_profiling/profile.md), [time-split.md](results/103_agent_profiling/time-split.md) |
+| 102 agents and r40 | r40 | [102_agents_and_r40/r40.md](results/102_agents_and_r40/r40.md) |
+| 101 rules split into `docs/rules/` | r39 | [101_rules_split/defaults.md](results/101_rules_split/defaults.md) |
+| 099 bug hunt | r39 | [099_bug_hunt_r38/fixed.md](results/099_bug_hunt_r38/fixed.md) |
+| 098 rules r38 | r38 | [098_rules_r38_troops_dark/r38.md](results/098_rules_r38_troops_dark/r38.md) |
+| 096 rules r37 | r37 | [096_rules_r37_followups/r37.md](results/096_rules_r37_followups/r37.md) |
 | 093 rules r36 (slots, Uprising's gate, energy, reach audit) | r36 | [093_rules_r36/r36.md](results/093_rules_r36/r36.md), [reach.md](results/093_rules_r36/reach.md) |
 | 092 test-agent heuristics | r35 | [screen-092/agents.md](results/screen-092/agents.md) (`scripts/cards/slots_read.py`) |
 | 090 balance pass | r35 | [screen-090/balance.md](results/screen-090/balance.md) (`scripts/cards/energy_read.py`) |

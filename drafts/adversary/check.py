@@ -181,6 +181,21 @@ def harm_currencies(c, tier):
     return out
 
 
+def takes_own_site(c):
+    """286 (D130): whether threat `c`'s creation on its anchor, with the uncountered anchor agent (`threat_agents`),
+    reaches the anchor site's lowest corrupt number (any level; an empty site)."""
+    p = adversary_params()
+    cut = p.get("corrupt_cut", [0, 0, 0]) if p.get("corrupt_cut_at", 0) <= 4 else [0, 0, 0]
+    reach = 1 if p.get("city_cut_at", 5) <= 4 else 0
+    numbers = {"city": p["corrupt_at"] - cut[0] - reach, "coastal_city": p["corrupt_at"] - cut[0] - reach,
+               "station": p["corrupt_station_at"] - cut[1], "factory": p["corrupt_factory_at"] - cut[2]}
+    locs = c.get("locations", [])
+    if not locs or locs[0] not in numbers:
+        return False
+    made = sum(e.get("count", 1) for e in c.get("effects", []) if e.get("op") == "create" and e.get("at") == "location")
+    return made > 0 and made + p.get("threat_agents", 0) >= max(numbers[locs[0]], 1)
+
+
 def standard_breaks(c):
     """146: what in a threat breaks the mechanical rules of Matt's threat card standard (the Rust twin is
     `content::check_threat` with `threat_rule_break`)."""
@@ -264,6 +279,13 @@ def check_threats(t, ops, new_ops):
                 errors.append(f"{cid}: a counter and its uncountered harm share {sorted(shared)}")
             if tier == 1 and PERMANENT & set(c.get("harms", [])):
                 errors.append(f"{cid}: a permanent harm at tier 1")
+            # 286 (D130): a creation that takes its own site with the uncountered anchor agent is a capture: refused
+            # at tier 1, named as its harm at tier 2 (the Rust twin: docs/harms.rs `captures`).
+            if takes_own_site(c):
+                if tier == 1:
+                    errors.append(f"{cid}: its creation and the anchor agent take its site (a permanent harm at tier 1)")
+                elif "facilities destroyed or corrupted" not in c.get("harms", []):
+                    errors.append(f"{cid}: its creation takes its site: name the harm 'facilities destroyed or corrupted'")
         kinds = {h for c in cards for h in c.get("harms", [])}
         if len(kinds) < 5:
             errors.append(f"tier {tier}: only {len(kinds)} kinds of harm")

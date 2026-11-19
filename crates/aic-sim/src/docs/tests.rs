@@ -4,7 +4,7 @@ use aic_core::{Config, Rules};
 use super::blocks::*;
 use super::ladder::{difficulty_block, ladder};
 use super::run::{
-    block, budget_warnings, card_note_failures, card_quote_failures, op_docs, revision_line_failures, rulebook_revision_failure, rules_file_failures, unknown_params, BLOCKS,
+    block, budget_warnings, card_note_failures, card_quote_failures, op_docs, op_uses, revision_line_failures, rulebook_revision_failure, rules_file_failures, unknown_params, BLOCKS,
     DOC_BUDGET, DOC_WARN, PALETTE_OPS,
 };
 
@@ -16,6 +16,23 @@ fn baseline(overrides: &[&str]) -> Rules {
         c.apply_override(o).unwrap();
     }
     Rules::new(&c).unwrap()
+}
+
+/// 286 (D130): no tier-1 threat takes its own site (its creation and the anchor agent stay under the number at every
+/// level); the tier-2 ones that do are counted, and a creation one larger at tier 1 is refused.
+#[test]
+fn only_tier_two_threats_take_their_own_site() {
+    use super::harms::{captures, harm_failures};
+    let r = baseline(&[]);
+    let taken = captures(&r);
+    assert!(taken.iter().all(|c| c.tier == 2), "{:?}", taken.iter().map(|c| &c.name).collect::<Vec<_>>());
+    for name in ["Insurrection", "Trade Blockade", "Garrison State", "Rootkit"] {
+        assert!(taken.iter().any(|c| c.name == name), "{name}");
+    }
+    assert!(harm_failures(&r).is_empty(), "{:?}", harm_failures(&r));
+    // The anchor agent at 2 would make Agitators' 1 reach a city's 3 (from level 1).
+    let two = baseline(&["adversary.threat_agents=2"]);
+    assert!(harm_failures(&two).iter().any(|f| f.contains("Agitators")), "{:?}", harm_failures(&two));
 }
 
 /// A row of `block` whose first cell is `first`, as its cells.
@@ -246,6 +263,20 @@ fn the_palette_ops_are_ops() {
     }
 }
 
+/// 286: every op no content prints is run once by aic-core's `tests/unprinted_ops.rs` (a sample naming it,
+/// `"op":"<name>"`), so a new unprinted op gets its lab run, and one that loses its last card too.
+#[test]
+fn every_unprinted_op_has_a_lab_run() {
+    let lab = include_str!("../../../aic-core/src/tests/unprinted_ops.rs");
+    let uses = op_uses();
+    let missing: Vec<String> = op_docs(include_str!("../../../aic-core/src/op.rs"))
+        .into_iter()
+        .map(|o| o.name)
+        .filter(|n| !uses.contains_key(n) && !lab.contains(&format!("\"op\":\"{n}\"")))
+        .collect();
+    assert!(missing.is_empty(), "ops no content prints with no run in aic-core's tests/unprinted_ops.rs: {missing:?}");
+}
+
 #[test]
 fn check_takes_an_op_name() {
     let r = baseline(&[]);
@@ -343,4 +374,11 @@ fn every_write_up_has_a_history_row() {
     }
     missing.sort();
     assert!(missing.is_empty(), "experiments/history.md has no row for {missing:?}: add `| NNN summary | Rev | [folder](results/folder/README.md) |`");
+    // 286: a row's summary is a title clause (rows had grown to 450 characters; the findings are in the write-up).
+    let long: Vec<&str> = history
+        .lines()
+        .filter_map(|l| l.strip_prefix("| ").and_then(|r| r.split(" | ").next()))
+        .filter(|s| s.chars().count() > 100)
+        .collect();
+    assert!(long.is_empty(), "experiments/history.md summaries over 100 characters (cut to a title clause): {long:?}");
 }

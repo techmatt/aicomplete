@@ -20,7 +20,7 @@ use aic_core::state::AskKind;
 use aic_core::{fnv1a64, Action, Agent, GameState, Key, Rules};
 
 use super::credit_cost;
-use super::keep_plan::{burns_or_reclaims, plan_all, plan_keeps, plan_now, PlanCtx};
+use super::keep_plan::{plan_all, plan_keeps, plan_now, PlanCtx};
 use super::strategy::{self, Choice, Mults};
 use super::value::{self, CardValue, Ctx};
 use super::Strategic;
@@ -110,7 +110,7 @@ impl ForcedValue for Option<Tag> {
 
 /// 266 (D117): the enumerated settings' highest value, (name, most): past it a setting played as another one
 /// (`kept_rule=5` as 3, `no_spend=4` as off) under its own label.
-pub(crate) const MOST: [(&str, f64); 4] = [("kept_rule", 4.0), ("sell_rule", 3.0), ("burn_late", 2.0), ("no_spend", 3.0)];
+pub(crate) const MOST: [(&str, f64); 3] = [("kept_rule", 4.0), ("sell_rule", 3.0), ("no_spend", 3.0)];
 
 /// 266: whether `x` is a value of the [`forced_table`] or [`behavior_table`] row `name` (`None`: no such row).
 pub(crate) fn check_param(name: &str, x: f64) -> Option<Result<(), String>> {
@@ -123,7 +123,7 @@ pub(crate) fn check_param(name: &str, x: f64) -> Option<Result<(), String>> {
 
 /// 229: the keep-plan numbers and forced probes retired, (name, why): a spec naming one is refused with the
 /// reason rather than as an unknown parameter (as `eval::RETIRED` does for weights).
-pub(crate) const RETIRED: [(&str, &str); 7] = [
+pub(crate) const RETIRED: [(&str, &str); 8] = [
     ("plan_credit", "024's credit price of a keep in the keep plan; read by nothing since 189 (retired 266)"),
     ("plan_hand", "024's probe guard (keep nothing with this many cards in hand); always 0 since 082"),
     ("old_counters", "135's off arm of the new counter kinds' read; not read since"),
@@ -131,6 +131,7 @@ pub(crate) const RETIRED: [(&str, &str); 7] = [
     ("strat_power_uses", "092: always 1 (one use of each board power in the strategy choice)"),
     ("plan_chain", "107: off (-2.8 +-2.2 for the strategist on 96 dev seeds: chain cards kept, never played)"),
     ("engine_rush", "107's probe (keep and play every engine card at once); not read since"),
+    ("burn_late", "230's wait for the board burns and Reclaim; no board power burns or reclaims since r131 (retired 286, D122)"),
 ];
 
 /// The one list of keep-plan numbers and forced behaviors: a new check is a row
@@ -343,10 +344,6 @@ macro_rules! behavior_table {
             /// Action that gains antimatter: the plants and Overcharge II; 219's board burns were cut in r131) counts as a way to make
             /// the antimatter a hand card lacks, tried before Make antimatter's cubes (r94 left the new powers unused).
             (am_source: bool, 1.0, "213: with make_short, an antimatter power or built Action is used (before Make antimatter) when it lets the keep plan play a card this round it can't now")
-            /// 230 (with `am_source`): a board burn (Teardown, Meltdown) or Reclaim is no source before the adversary
-            /// deck's last two cards: a burn loses at `values.json` until the last rounds (Matt's ruling 5), and
-            /// 222 found Teardown and Reclaim firing here 63-68% in rounds 1-4.
-            (burn_late: usize, 1.0, "230: no board burn or Reclaim before the adversary deck's last two cards: 1 as make_short's antimatter source, 2 also in the search")
             /// 230 (amendment 10186): Make antimatter is the desperate hedge: the search never takes it, only
             /// `make_short` (a card the keep plan plays this round needs it).
             (am_last: bool, 1.0, "230: Make antimatter only through make_short, never the search's pick")
@@ -1021,22 +1018,13 @@ fn convert_pick(w: &World, legal: &[Action], seat: u8) -> Option<usize> {
 }
 
 impl Policy {
-    /// 230 (`burn_late` at `level` or above): the burns and Reclaim still wait, before the deck's last two cards.
-    fn burn_waits(&self, g: &GameState, level: usize) -> bool {
-        self.behaviors.burn_late >= level && super::eval::Eval::cards_left(g) > 2
-    }
-
     /// The wrapped agent's pick among the actions nothing forced rules out.
     fn search_pick(&mut self, rules: &Rules, g: &GameState, legal: &[Action]) -> usize {
         let world = rules.world();
         let reserve = self.am_reserve(&world, g, legal);
-        // 230: `burn_late` 2 keeps the burns and Reclaim out of the search before the deck's last two cards;
-        // `am_last` keeps Make antimatter out of it (make_short alone takes it).
-        let early_burn = self.burn_waits(g, 2);
+        // 230: `am_last` keeps Make antimatter out of the search (make_short alone takes it).
         let am_last = self.behaviors.am_last;
-        let held = |a: &Action| {
-            (early_burn && burns(&world, a)) || (am_last && matches!(a, Action::Standard { act, .. } if act == "antimatter"))
-        };
+        let held = |a: &Action| am_last && matches!(a, Action::Standard { act, .. } if act == "antimatter");
         if !self.forcing && reserve.is_none() && !legal.iter().any(held) {
             return self.inner.choose(rules, g, legal);
         }
@@ -1064,13 +1052,10 @@ impl Policy {
         // 213 (`am_source`): the seat's antimatter powers and built Actions, each once a round, before the cubes.
         // 219: a plant's Action (a resource paid) before a board power (a burn or Reclaim): the burns are the rare way.
         let mut sources: Vec<usize> = if self.behaviors.am_source {
-            // 230 (`burn_late`): the burns and Reclaim wait for the deck's last two cards.
-            let early = self.burn_waits(g, 1);
             legal
                 .iter()
                 .enumerate()
                 .filter(|(_, a)| a.seat() as usize == s && makes_antimatter(&world, a))
-                .filter(|(_, a)| !(early && burns(&world, a)))
                 .map(|(i, _)| i)
                 .collect()
         } else {
@@ -1309,11 +1294,6 @@ fn makes_antimatter(w: &World, a: &Action) -> bool {
         Action::Use { card, .. } => cards::def(w, card).ability.as_ref().is_some_and(|ab| ab.branches().iter().any(|b| gains(&b.effects))),
         _ => false,
     }
-}
-
-/// 230 (`burn_late`): whether `a` is a board power that burns the seat's own piece or reclaims one (`Burn`, `Cleanse`).
-fn burns(w: &World, a: &Action) -> bool {
-    power_effects(w, a).is_some_and(burns_or_reclaims)
 }
 
 /// The effects of the board power `a` uses (None: not an `Action::Power`, or no such power).

@@ -86,8 +86,11 @@ rest of the game".
   overrun ([war.md](war.md)). "A tier-2 threat in each country piece" pulls from the tier-2 deck, any tag.
 - Offensive acts at once: Surge 2 on cities (strength III first lands this round's Infiltrate lines again, the
   face-up card's before the build step), then deals its tier-2 threats, any tag, into the country of the node hex
-  with the most agents and troops (ties: country, then lower hex), first token on that hex (a threat that corrupts
-  its city, Overrun, corrupts nothing there unless that hex is a city). Discord cards corrupt
+  with the most agents and troops (ties: country, then lower hex), first token on that hex. A located line acts
+  only on its own kind of hex (r137, D132): unless that hex is the kind its first location names, the lines placing
+  on it ("here", "the base here", "the factory here": Overrun's corruption, Garrison State's agents, Iron Curtain's
+  and Manhunt's troop, any such troop, destruction or war) do nothing; a line measured from it (a factory nearest here,
+  Fallout next to it, a botnet's nearest other piece) still measures from it, and it marks who is near and the anchor. Discord cards corrupt
   nothing outright: their creations and Surges are arrivals, so a city they bring to its number corrupts.
 - **Unity strength III never frees a city:** it widens its card's condition or count, never to a whole step or the
   whole map (a prohibition's: on or next to, or within 2 of, an ambassador or a node); the removals by corrupted

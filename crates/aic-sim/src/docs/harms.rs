@@ -2,12 +2,13 @@
 
 use std::collections::BTreeMap;
 
-use aic_core::content::{content, Op, Resource, RoundFlag, Spot};
+use aic_core::content::{content, Location, Op, Resource, RoundFlag, Spot};
+use aic_core::op::CreateAt;
 use aic_core::op::SiteType;
 
 use aic_core::Rules;
 
-use super::blocks::tick;
+use super::blocks::{int, list, tick};
 use super::table;
 
 /// The harms of the ledger, in its row order. 191 (Matt, 2026-11-11): every harm an adversary source can do has a
@@ -381,18 +382,76 @@ impl Mark {
     }
 }
 
-/// `(harm, source)` marks.
-fn harm_marks() -> BTreeMap<(usize, usize), Mark> {
+/// 286 (D130): a threat whose own creation, with the uncountered anchor agent (`threat_agents`), reaches its anchor
+/// site's corrupt number at some level (an empty site): the capture is its effect, counted as the corruption's
+/// harms. (name, tier, agents created, the site's lowest number, the site.)
+pub struct Capture {
+    pub name: String,
+    pub tier: u8,
+    pub made: i64,
+    pub number: i64,
+    pub site: &'static str,
+}
+
+/// The [`Capture`]s at `r`'s numbers (the lowest corrupt number over levels 0-4).
+pub fn captures(r: &Rules) -> Vec<Capture> {
+    let anchor = int(r, "adversary.threat_agents");
+    // The levels' cut applies from `corrupt_cut_at` (5: never; the levels are 0-4).
+    let cut = if int(r, "adversary.corrupt_cut_at") <= 4 { list(r, "adversary.corrupt_cut") } else { Vec::new() };
+    // 263: from `city_cut_at` (5: never; the levels are 0-4) a city corrupts with one agent fewer again.
+    let reach = i64::from(int(r, "adversary.city_cut_at") <= 4);
+    let n = |key: &str, i: usize| int(r, key) - cut.get(i).copied().unwrap_or(0);
+    content()
+        .threats
+        .iter()
+        .filter_map(|t| {
+            let (number, site) = match t.locations.first()? {
+                Location::City | Location::CoastalCity => (n("adversary.corrupt_at", 0) - reach, "city"),
+                Location::Station => (n("adversary.corrupt_station_at", 1), "research station"),
+                Location::Factory => (n("adversary.corrupt_factory_at", 2), "factory"),
+                Location::Base => return None,
+            };
+            let made: i64 = t
+                .effects
+                .iter()
+                .filter_map(|e| match e {
+                    Op::Create { count, at: CreateAt::Location, .. } => Some(*count),
+                    _ => None,
+                })
+                .sum();
+            let number = number.max(1);
+            (made > 0 && made + anchor >= number).then(|| Capture { name: t.name.clone(), tier: t.tier, made, number, site })
+        })
+        .collect()
+}
+
+/// The harms a [`Capture`] adds: the corruption's (a node on the hex and the ambassadors there go with it).
+fn capture_harms(c: &Capture) -> [usize; 3] {
+    let lost = if c.site == "city" { CITY_LOST } else { FACILITIES_CORRUPTED };
+    [lost, NODE_DESTROYED, AMBASSADORS_LOST]
+}
+
+/// `(harm, source)` marks; with `r`, a threat's capture ([`captures`]) counts too.
+fn harm_marks(r: Option<&Rules>) -> BTreeMap<(usize, usize), Mark> {
     let c = content();
     let mut counts: BTreeMap<(usize, usize), usize> = BTreeMap::new();
+    let taken: Vec<Capture> = r.map(captures).unwrap_or_default();
+    for t in &c.threats {
+        let mut hs = all_harms(&t.effects);
+        if let Some(cap) = taken.iter().find(|x| x.name == t.name) {
+            hs.extend(capture_harms(cap));
+        }
+        hs.sort_unstable();
+        hs.dedup();
+        for h in hs {
+            *counts.entry((h, t.tier as usize - 1)).or_default() += 1;
+        }
+    }
     let mut add = |src: usize, ops: &[Op]| {
         for h in all_harms(ops) {
             *counts.entry((h, src)).or_default() += 1;
         }
     };
-    for t in &c.threats {
-        add(t.tier as usize - 1, &t.effects);
-    }
     for a in c.alignment.iter().filter(|a| a.side.name() == "discord") {
         let all: Vec<_> = a.all_effects().cloned().collect();
         add(DISCORD_CARDS, &all);
@@ -426,16 +485,16 @@ fn kinds(marks: &BTreeMap<(usize, usize), Mark>, h: usize) -> usize {
 
 /// 191: the harms in under 2 kinds of source, with their count: gaps, the list for the adversary-card pass, not
 /// failures.
-pub fn harm_gaps() -> Vec<(&'static str, usize)> {
-    let marks = harm_marks();
+pub fn harm_gaps(r: &Rules) -> Vec<(&'static str, usize)> {
+    let marks = harm_marks(Some(r));
     HARMS.iter().enumerate().map(|(h, name)| (*name, kinds(&marks, h))).filter(|&(_, n)| n < 2).collect()
 }
 
 /// The kinds of source over about half of the printed node destruction: "about half" with its original one-mark
 /// slack (191, amendment 8617: a Corrupt line no longer counts, as it takes a node only where agents already stand).
 /// 191 (default of question 1, Matt's to confirm): reported as a gap, the adversary-card pass's to fix.
-pub fn node_share_gaps() -> Vec<String> {
-    let marks = harm_marks();
+pub fn node_share_gaps(r: &Rules) -> Vec<String> {
+    let marks = harm_marks(Some(r));
     let all: usize = (0..SOURCES.len())
         .filter_map(|s| marks.get(&(NODE_DESTROYED, s)))
         .map(|m| m.weight())
@@ -449,10 +508,15 @@ pub fn node_share_gaps() -> Vec<String> {
         .collect()
 }
 
-/// What fails the ledger's distribution checks.
-pub fn harm_failures() -> Vec<String> {
-    let marks = harm_marks();
-    let mut bad = Vec::new();
+/// What fails the ledger's distribution checks; 286 (D130): a tier-1 threat that takes its own site (the tier
+/// standard: a tier-1 harm is never permanent).
+pub fn harm_failures(r: &Rules) -> Vec<String> {
+    let marks = harm_marks(Some(r));
+    let mut bad: Vec<String> = captures(r)
+        .iter()
+        .filter(|c| c.tier == 1)
+        .map(|c| format!("tier-1 {}: creates {} on its {}, which falls at {} with the anchor agent", c.name, c.made, c.site, c.number))
+        .collect();
     for (s, source) in SOURCES.iter().enumerate().take(THREAT_TIERS) {
         let n = (0..HARMS.len()).filter(|&h| marks.contains_key(&(h, s))).count();
         if n < 5 {
@@ -464,7 +528,7 @@ pub fn harm_failures() -> Vec<String> {
 
 /// `docs/harms.md`: the ledger, from content and `RULE_HARMS`.
 pub(super) fn harms_md(r: &Rules) -> String {
-    let marks = harm_marks();
+    let marks = harm_marks(Some(r));
     let mut head = vec!["Harm"];
     head.extend(SOURCES);
     let rows = HARMS
@@ -480,11 +544,11 @@ pub(super) fn harms_md(r: &Rules) -> String {
         .iter()
         .map(|(s, h, why)| format!("- **{s}, {h}:** {why}.\n"))
         .collect();
-    let mut gaps: String = harm_gaps()
+    let mut gaps: String = harm_gaps(r)
         .iter()
         .map(|(h, n)| format!("- {h}: {n} kind{} of source.\n", if *n == 1 { "" } else { "s" }))
         .collect();
-    gaps.extend(node_share_gaps().iter().map(|g| format!("- node destroyed, {g}.\n")));
+    gaps.extend(node_share_gaps(r).iter().map(|g| format!("- node destroyed, {g}.\n")));
     format!(
         "# The harms ledger\n\nGenerated by `aic-sim docs` from `content/` and `RULE_HARMS` in \
          `crates/aic-sim/src/docs/harms.rs`: edit those, not this file. Rules revision {rev}. Keep it \
@@ -502,7 +566,8 @@ pub(super) fn harms_md(r: &Rules) -> String {
          shares are in the 034 screen (`experiments/results/screen-034-clocks/clocks.md`).\n\n\
          ## Gaps\n\nThe list for the adversary-card pass, not failures: a harm in under 2 kinds of source, and a kind \
          of source over about half of the printed node destruction (with one mark of slack).\n\n\
-         {gaps}\n## The board's rules\n\n{notes}\n## Agents in and out, by level\n\n{flow}",
+         {gaps}\n## Threats that take their own site\n\n{taken}\n## The board's rules\n\n{notes}\n\
+         ## Agents in and out, by level\n\n{flow}",
         table(&head, rows),
         rev = aic_core::RULES_REVISION,
         troop_node = tick(r, "board.troop_node"),
@@ -510,6 +575,27 @@ pub(super) fn harms_md(r: &Rules) -> String {
         // 263: the d0 step that skips every "Botnets spread" line.
         spread_at = tick(r, "adversary.botnet_spread_at"),
         flow = agent_flow(),
+        taken = taken_md(r),
+    )
+}
+
+/// 286 (D130): one row per threat whose own creation and anchor agent reach its site's number ([`captures`]).
+fn taken_md(r: &Rules) -> String {
+    let rows: String = captures(r)
+        .iter()
+        .map(|c| {
+            format!(
+                "- **{}** (tier {}): creates {} on its {}; with the anchor agent ({}) it reaches the {}'s number ({}), so it takes \
+                 the site uncountered: counted above as the corruption's harms.\n",
+                c.name, c.tier, c.made, c.site, tick(r, "adversary.threat_agents"), c.site, c.number
+            )
+        })
+        .collect();
+    format!(
+        "An uncountered threat's creation and its anchor agent land on one site: where they reach its corrupt number \
+         (its lowest, at any level, on an empty site), the capture is the threat's effect. Tier 1 may not (the threat \
+         card standard: never permanent; `aic-sim docs --check` refuses one); tier 2 may (286, D130).\n\n{}",
+        if rows.is_empty() { "None.\n".to_string() } else { rows }
     )
 }
 

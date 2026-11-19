@@ -356,6 +356,50 @@ fn a_two_node_growth_needs_both_steps() {
     assert!(rules.legal_actions(&g).contains(&sprawl));
 }
 
+/// 286 (D121): a two-node option needs a hex for its second node once the first is placed: with one free hex in
+/// range, the hexes next to it decide.
+#[test]
+fn a_two_node_growth_needs_a_hex_for_its_second_node() {
+    use crate::modules::common::FALLOUT;
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let m = &rules.map;
+    let a = m.numbered(0, piece(0).node);
+    put(&mut g, a, node(0), 1);
+    let h = *m.hexes[a].neighbors.iter().find(|&&x| board::node_sites_within(&w, &g, 0, 1).contains(&x)).unwrap();
+    // Fallout on every free hex within 2 of `a` but `h`: `h` is the one site in range 1, and nothing is next to it.
+    let near2: Vec<usize> = (0..g.hexes.len())
+        .filter(|&x| x != h && x != a && (m.hexes[a].neighbors.contains(&x) || m.hexes[h].neighbors.contains(&x)))
+        .collect();
+    for &x in &near2 {
+        put(&mut g, x, FALLOUT, 1);
+    }
+    assert_eq!(board::node_sites_within(&w, &g, 0, 1), vec![h]);
+    assert!(!board::second_node_site(&w, &g, 0, 1), "one free hex: the second node has none");
+    let x = *near2.iter().find(|&&x| m.hexes[h].neighbors.contains(&x) && !m.hexes[a].neighbors.contains(&x)).unwrap();
+    put(&mut g, x, FALLOUT, 0);
+    assert!(board::second_node_site(&w, &g, 0, 1), "the first node's reach finds the second a hex");
+}
+
+/// 286 (D128): Patrol II's extra energy buys its hardening alone: with no facility to harden on or next to a target
+/// it isn't offered (Patrol I is); with one, it is.
+#[test]
+fn patrol_ii_needs_a_facility_to_harden() {
+    let (rules, mut g) = at_step(&[], 1);
+    let a = rules.map.numbered(0, piece(0).node);
+    put(&mut g, a, node(1), 1);
+    put(&mut g, a, crate::modules::common::ADV_AMBASSADOR, 1);
+    set_res(&mut g, 1, Resource::Energy, 10);
+    let (one, two) = (power(&rules, 1, "Patrol I"), power(&rules, 1, "Patrol II"));
+    let tried = |g: &GameState, a: &Action| rules.apply_mut(&mut g.clone(), a, None).map(|_| ()).map_err(|e| format!("{e:?}"));
+    assert!(tried(&g, &one).is_ok(), "Patrol I pushes");
+    let refused = tried(&g, &two).expect_err("nothing to harden");
+    assert!(refused.contains("no facility to harden"), "{refused}");
+    put(&mut g, a, crate::modules::common::FACTORY, 1);
+    put(&mut g, a, crate::modules::common::cube(1), 1);
+    assert!(tried(&g, &two).is_ok(), "a factory of its own to harden");
+}
+
 /// 276 (diff review): Interdict II removes both kinds on its target, troops and agents (one damage op asked which).
 #[test]
 fn interdict_ii_removes_troops_and_agents() {

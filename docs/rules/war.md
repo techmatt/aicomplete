@@ -32,7 +32,7 @@ cancel once, the surplus strikes twice).
 - **Output** (each round; the site table in [ambassadors.md](ambassadors.md)): a player's factory makes
   `factory_chips` (1) chip for its owner; an adversary factory makes 1 adversary troop on its hex (**locked**); a
   neutral factory makes nothing for anyone, but **at a Discord tip it arms its country's bases** (below). One opposing ambassador or agent blocks a
-  factory's output while it stands. Threats build adversary factories (Mass Production, War Economy; Factory
+  factory's output while it stands. Threats build adversary factories (Mass Production, Arsenal; Factory
   Occupation on an empty zone), corrupt them (Factory Occupation, unless a firewall or Corrupt prohibition guards it)
   and destroy them (Siege, leaving Fallout); projects build or take them (War Plants, Asset Seizure, Plant Seizure,
   Hostile Takeover, Grand Offensive). New neutral factories and stations come from the event cards' **Grow** lines

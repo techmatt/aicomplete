@@ -65,6 +65,24 @@ pub fn node_sites_within(w: &World, g: &GameState, seat: usize, range: i64) -> V
     (0..g.hexes.len()).filter(|&h| free(h) && near(h)).collect()
 }
 
+/// 286 (D121): whether a power placing two nodes within `range` finds a hex for the second once the first is placed:
+/// with two free sites in range now, the second takes the other; with one, the second needs a free hex within
+/// `range` of that one (the reach the first node adds). A one-site option was paid in full for one node.
+pub fn second_node_site(w: &World, g: &GameState, seat: usize, range: i64) -> bool {
+    let sites = node_sites_within(w, g, seat, range);
+    match sites.as_slice() {
+        [] => false,
+        [h] => {
+            let h = *h;
+            let free = |x: usize| x != h && !is_ocean(w, x) && node_owner(g, x).is_none() && g.tokens(x, FALLOUT) == 0;
+            w.map.hexes[h].neighbors.iter().any(|&x| {
+                free(x) || (range > 1 && w.map.hexes[x].neighbors.iter().any(|&y| free(y)))
+            })
+        }
+        _ => true,
+    }
+}
+
 /// The city a seat starts bound to (066): the clean city of country `c` nearest
 /// hex `start`, ties to the lower number. Its energy is the seat's first source.
 pub(super) fn bound_city(w: &World, g: &GameState, c: usize, start: usize) -> Option<usize> {

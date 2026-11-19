@@ -21,6 +21,7 @@ import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, 'cards'))
+sys.path.insert(0, HERE)  # design_check, when this file runs alone
 import apply_overlay  # noqa: E402
 
 
@@ -47,6 +48,27 @@ class ApplyOverlay(unittest.TestCase):
         self.assertFalse(apply_overlay.apply_entry(files, 'cards.*.amount=null'))
         # a field content.rs declares that no row holds now (an earlier run dropped it): the rerun changes nothing
         self.assertFalse(apply_overlay.apply_entry(files, 'cards.a.replaces=null'))
+
+    def test_alignment_layout_round_trips(self):
+        # 286: alignment.json is hand-laid; loading it and dumping it gives it back byte for byte, so an
+        # `alignment.` entry applies and changes only its own lines
+        import json
+        path = os.path.join(HERE, '..', 'content', 'alignment.json')
+        with open(path, encoding='utf-8', newline='') as f:
+            text = f.read()
+        data = json.loads(text)
+        self.assertEqual(apply_overlay.dump(data, 'alignment.json'), text)
+        row = data[0]
+        files = {'alignment.json': data}
+        self.assertTrue(apply_overlay.apply_entry(files, f"alignment.{row['id']}.tiers.1.text=New text"))
+        new = apply_overlay.dump(data, 'alignment.json').split('\n')
+        changed = [(a, b) for a, b in zip(text.split('\n'), new) if a != b]
+        self.assertEqual(len(new), len(text.split('\n')))
+        self.assertEqual(len(changed), 1)
+        self.assertTrue(changed[0][1].startswith('   {"text": "New text",'), changed)
+        code, out, err = run_script('apply_overlay.py', '--set', f"alignment.{row['id']}.name={row['name']}", '--check')
+        self.assertEqual((code, err), (0, ''))
+        self.assertIn('nothing to change', out)
 
 
 def run_script(name, *args):
@@ -172,6 +194,14 @@ class DesignCheckArgs(unittest.TestCase):
             self.assertEqual(cells(design_check.load_games(path, {'on'}, opts)), [3])
             with self.assertRaisesRegex(SystemExit, '--agent greedy: no game'):
                 design_check.load_games(path, agents={'greedy'})
+            # 286: --agent filters --old too: an old read without that agent stops it
+            old = os.path.join(tmp, 'old.jsonl')
+            with open(old, 'w', encoding='utf-8', newline='\n') as f:
+                f.write(json.dumps({'format': 1, 'spec': dict(spec, agents=['greedy'])}) + '\n')
+                f.write(json.dumps({'cell': 0}) + '\n')
+            code, out = self.run_it(path, '--old', old, '--agent', 'strategist')
+            self.assertNotEqual(code, 0)
+            self.assertIn(f'--agent strategist: no game in {old}', out)
         code, out = self.run_it('--agent', 'strategist')
         self.assertNotEqual(code, 0)
         self.assertIn('--agent needs a read', out)

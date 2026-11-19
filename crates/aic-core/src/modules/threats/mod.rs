@@ -26,7 +26,7 @@ pub use counter::{
     CounterSteps, UNPAYABLE,
 };
 use counter::*;
-pub use near::{counterable, near, near_hexes, near_seats, nearest_nodes, nearest_seats, node_distance, token_of, tokens};
+pub use near::{counterable, first_token, here, near, near_hexes, near_seats, nearest_nodes, nearest_seats, node_distance, token_of, tokens};
 use near::*;
 #[cfg(test)]
 pub use near::mask_matches_reach;
@@ -236,6 +236,8 @@ fn pull(g: &mut GameState, cx: &mut Cx, tier: u8, tags: &[PullTag], c: usize, at
     }
     cx.tally(g, "threats.dealt", 1);
     cx.tally(g, &format!("threats.dealt.t{}", def(&w, &id).tier), 1);
+    // 286: which threat, so a read can see how often each is dealt beside how often it corrupts.
+    cx.tally(g, &format!("threats.dealt.id.{}", def(&w, &id).id), 1);
     // 285: the turn panel read a deal as "cards changed": name the threat and where it faces.
     let anchor = near::first_token(g, &id);
     cx.note(anchor, || {
@@ -441,6 +443,13 @@ impl Module for Threats {
             cx.tally(g, &format!("threats.uncountered.s{stage}.t{}", d.tier), 1);
             // 146: which threat, so a read can see each harm type land.
             cx.tally(g, &format!("threats.uncountered.id.{}", d.id), 1);
+            // 286 (D130): sites the threat's own execution corrupts (its lines and its anchor agent; a node loss to
+            // agents is no site).
+            let sites = |g: &GameState| {
+                let c = |k: &str| g.stats.counters.get(k).copied().unwrap_or(0);
+                c("adversary.corruptions") - c("adversary.corruptions.node")
+            };
+            let before = sites(g);
             effects::run(g, cx, &d.effects, &mut ctx)?;
             // 275: an uncountered threat also lands `threat_agents` agents on its anchor (its first location token),
             // an arrival like any other (checked there); a cordoned country takes none.
@@ -451,6 +460,10 @@ impl Module for Threats {
                 let name = &d.name;
                 adversary::place_noted(g, cx, h, n, &|| format!("{name}, uncountered, at its anchor"))?;
                 cx.tally(g, "adversary.threat_anchor", n);
+            }
+            let took = sites(g) - before;
+            if took > 0 {
+                cx.tally(g, &format!("threats.corrupted.id.{}", d.id), took);
             }
             // 146: the adversary board's printed compute per uncountered threat (its
             // difficulty line's from `board_difficulty_at`).

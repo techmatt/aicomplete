@@ -104,7 +104,7 @@ agree (245):
                     [same, same or later this round, decisions]. --games: the first N";
 
 const RUN_FLAGS: &[&str] = &[
-    "--games", "--seed", "--set", "--set-a", "--agent", "--max-actions", "--threads", "--json",
+    "--games", "--seed", "--set", "--agent", "--max-actions", "--threads", "--json",
     "--trace", "--save", "--save-when", "--save-seed", "--save-max",
 ];
 const COMPARE_FLAGS: &[&str] = &[
@@ -159,7 +159,7 @@ fn hint(command: &str, flag: &str) -> &'static str {
         ("experiment", "--agent") => " (use the spec's agents)",
         ("experiment", "--json") => " (results.json is always written)",
         ("experiment", "--save") => " (records are always saved)",
-        ("show", "--set-a" | "--set-b") | ("run", "--set-b") => " (one config: use --set)",
+        ("show" | "run", "--set-a" | "--set-b") => " (one config: use --set)",
         ("replay", "--set" | "--set-a" | "--set-b") => " (a record carries its own config)",
         ("farm", "--threads") => " (a shard is one thread: run more shards side by side)",
         _ => "",

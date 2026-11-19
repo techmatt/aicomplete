@@ -44,7 +44,8 @@ machine's traps, are in the [README](README.md), which also lists the page for e
 - **After changing threats, cards, adversary rules, content, tunables or `values.json`:** run
   `python scripts/regen.py`, which builds and runs every generator in order (its steps:
   [docs/scripts.md](docs/scripts.md)). What it generates, and what a fast-lane test refuses, is
-  in *Generated docs* in docs/architecture.md: change the source, not the output. What
+  in *Generated docs* in docs/architecture.md: change the source, not the output (threats, adversary events and
+  projects: `drafts/adversary/`, which regen loads into `content/`). What
   [docs/harms.md](docs/harms.md) can't read from content comes from `RULE_HARMS` in
   `crates/aic-sim/src/docs/harms.rs`.
 - **Before the report**, `git grep` each renamed name and each changed number, and reread the

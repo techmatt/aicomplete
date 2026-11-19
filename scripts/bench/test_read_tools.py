@@ -8,8 +8,9 @@ of the same seeds gives:
 - `paired.py`: the gap is +0.0 on every seed by default, and on the same-engine seeds only under `--same-engine`.
 - `ladder.py --screen` over a native base and a farmed lever in another folder (FILE=SPEC): one agent, a real gap.
 - `read_lib.py`: a `PAIR-ARM` read's cells decoded from the spec, the arms' paired gap, counters, powers, resources;
-  `--agent-arms`, `READ@LABEL` and `--levels` (281).
+  `--agent-arms`, `READ@LABEL` and `--levels` (281); `--arm NAME=SPEC` and a tag collision (286).
 - `cards/play_read.py --variant` (281) keeps a lever screen's arm.
+- `fresh_read.py` (286): old → new by agent and level, Growth and per-round power keys out of non-card turns.
 
 No build and no binary: the reads are written here. Python's standard library only.
 """
@@ -334,6 +335,27 @@ class ReadLib(unittest.TestCase):
             with self.assertRaisesRegex(SystemExit, 'no game at those levels'):
                 run(read_lib.main, [a, '--levels', '4'])
 
+    def test_named_arms(self):
+        # 286: --arm NAME=SPEC names an option agent's arm; two specs squashing to one tag stop --agent-arms
+        spec = dict(SPEC, variants=[{'name': 'bp', 'set': []}],
+                    agents=['strategist', 'strategist:w.sink=1.0', 'strategist:w.sink=10'])
+        with tempfile.TemporaryDirectory() as tmp:
+            b = os.path.join(tmp, 'new.jsonl')
+            self.write(b, spec, lambda c, s: c % 3 == 2)
+            with self.assertRaisesRegex(SystemExit, 'both arm sink10: name them apart with --arm'):
+                run(read_lib.main, [b, '--agent-arms'])
+            text = run(read_lib.main, [b, '--arm', 'one=strategist:w.sink=1.0', '--arm', 'ten=strategist:w.sink=10'])
+            n = 2 * len(SEEDS)
+            self.assertIn(f'| strategist | one | 0.0 | 0.0 | 0.0 | +0.0 ± 0.0 | {n} |', text)
+            self.assertIn(f'| strategist | ten | 100.0 | 100.0 | 100.0 | +100.0 ± 0.0 | {n} |', text)
+            # one named, the other keeps its tag
+            text = run(read_lib.main, [b, '--agent-arms', '--arm', 'one=strategist:w.sink=1.0'])
+            self.assertIn('| strategist | sink10 |', text)
+            with self.assertRaisesRegex(SystemExit, 'no READ has strategist:w.sink=2'):
+                run(read_lib.main, [b, '--arm', 'two=strategist:w.sink=2'])
+            with self.assertRaisesRegex(SystemExit, 'give NAME=SPEC'):
+                run(read_lib.main, [b, '--arm', 'strategist'])
+
     def test_one_paired_seed(self):
         # 266 (D117): one paired seed read new = base (`screens.gap` gives 0 below two pairs)
         self.assertEqual(read_lib.paired_gap({('bp', 2, 1): 0}, {('bp', 2, 1): 1}), (0.0, 100.0, 100.0, None, 1))
@@ -411,6 +433,40 @@ class CardReadsPool(unittest.TestCase):
         text = self.main('use_read', self.reads())
         self.assertRegex(text, r'\| strategist \| bp \| 10 \| 100\.0 \|')
         self.assertNotIn('engine:', text)
+
+
+class FreshRead(unittest.TestCase):
+    """286: `fresh_read.py NEW OLD` (283's read.py promoted): per agent and level, old → new; a row one side lacks."""
+
+    def test_old_to_new(self):
+        import fresh_read
+        spec = {'configs': ['c'], 'variants': [{'name': 'bp'}], 'difficulties': [2], 'agents': ['greedy', 'strategist']}
+
+        def game(cell, won):
+            return {'cell': cell, 'seed': 1, 'won': won, 'rounds': 5, 'reason': 'win' if won else 'node',
+                    'spent': [[0] * 8, [0] * 8], 'margin': {'cities_corrupted_end': 2},
+                    'counters': {'map.cities_corrupted.r02': 1, 'cards.played.x': 4, 'board.std.build': 2,
+                                 'ai.power.builder.scrap_i': 1, 'ai.power.builder.buy_in': 3,
+                                 'ai.power.builder.r01': 9, 'cards.used.y': 1, 'board.node_lost.march': 2}}
+        with tempfile.TemporaryDirectory() as tmp:
+            new, old = os.path.join(tmp, 'new.jsonl'), os.path.join(tmp, 'old.jsonl')
+            with open(new, 'w', encoding='utf-8', newline='\n') as f:
+                f.write(json.dumps({'format': 1, 'spec': spec}) + '\n')
+                f.write(json.dumps(game(0, True)) + '\n' + json.dumps(game(1, True)) + '\n')
+            with open(old, 'w', encoding='utf-8', newline='\n') as f:
+                f.write(json.dumps({'format': 1, 'spec': dict(spec, agents=['strategist'])}) + '\n')
+                f.write(json.dumps(game(0, False)) + '\n')
+            md = os.path.join(tmp, 'read.md')
+            text = run(fresh_read.main, [new, old, '--md', md, '--growth', 'buy_in'])
+            # 10 seat-rounds: 4 plays; 2 standard + 1 power (Growth and the .r01 key left out) + 1 use
+            self.assertIn('| strategist | d2 | 0.0 → **100.0** | 5.00 → 5.00 | 1.00 → 1.00 | 2.00 → 2.00 | 1 → 0 | '
+                          '0.0 → 0.0 | 2.0 → 2.0 | 0.40 / 0.40 → 0.40 / 0.40 |', text)
+            self.assertIn('| greedy | d2 | - → **100.0** |', text)
+            with open(md, encoding='utf-8') as f:
+                self.assertEqual(f.read(), text)
+            with self.assertRaisesRegex(SystemExit, 'unknown flag --agent'):
+                fresh_read.main([new, old, '--agent', 'x'])
+            self.assertIn('buy_in', fresh_read.growth_slugs())
 
 
 if __name__ == '__main__':

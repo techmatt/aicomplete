@@ -10,9 +10,10 @@ table (role, band, use pooled, by board and by level) instead of the warnings. B
 
 DIR is a read's folder (its games.jsonl: a farmed read assembled with its header, or an experiment's output); comma
 lists pool; a farm's bare out file goes as FILE=SPEC. With no DIR only the content checks run. `--variant` (229)
-keeps only the games of those variants on DIR's side (`--old` reads whole): a name, or a lever screen's lever
+keeps only the games of those variants on DIR's side (`--old` keeps every variant): a name, or a lever screen's lever
 (`PAIR_LEVER` or `PAIR-LEVER` variants; `base` the bare pairs), so a screen's frozen cell reads without `bench/split_read.py`; `--agent` (281) likewise keeps only
-those agents' games, each named as the spec writes it (`strategist:w.sink=1`). `--old` is the previous revision's read on the same seeds (the
+those agents' games, each named as the spec writes it (`strategist:w.sink=1`), on both sides (286: `--old` too, so the
+token and table-cost rise checks compare one agent mix). `--old` is the previous revision's read on the same seeds (the
 tokens-a-round check reads against it). `--base` is the revision the item started from (default: the merge base with
 main); the dials check diffs configs/baseline.json against it. Thresholds and source classes are in
 scripts/design_check.json, all candidates. The principles are docs/principles.md, *Design warnings*.
@@ -970,7 +971,7 @@ def main():
     games = load_games(argv[0], variants, agents) if argv else []
     if (variants or agents) and not argv:
         sys.exit(f"{'--variant' if variants else '--agent'} needs a read")
-    old = load_games(old_dirs) if old_dirs else []
+    old = load_games(old_dirs, agents=agents) if old_dirs else []  # 286: --agent filters both sides
     countries = jload('content/map.json')['countries']
     if table:
         if not games:

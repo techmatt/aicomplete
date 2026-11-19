@@ -238,6 +238,10 @@ fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'st
     if range.is_some_and(|r| board::node_sites_within(w, g, seat, r).is_empty()) {
         return Some("no target");
     }
+    // 286 (D121): a two-node option needs a hex for its second node once the first is placed.
+    if nodes > 1 && range.is_some_and(|r| !board::second_node_site(w, g, seat, r)) {
+        return Some("no target for the second node");
+    }
     if !p.tags.is_empty() && !cards::TagNeed::new(&p.tags).payable(&cards::sources(w, g, seat)) {
         return Some("needs tags");
     }
@@ -253,6 +257,20 @@ fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'st
     }
     if p.effects.iter().any(|e| matches!(e, Op::FreeBuilding)) && !free_building_after(w, g, seat, p) {
         return Some("no target");
+    }
+    // 286 (D128): Patrol II's extra energy buys its hardening (the push is Patrol I's): with no facility to harden
+    // on or next to any target it isn't offered, though its push could act (the any-part rule above passed it). Only
+    // where the hardening is its whole difference from a tier in its group (Fortify II also removes a second troop).
+    let unhardened: Vec<&Op> = p.effects.iter().filter(|e| !matches!(e, Op::Harden { .. })).collect();
+    let hardening_only = unhardened.len() < p.effects.len()
+        && p.group.is_some()
+        && board(w, seat).powers.iter().any(|q| q.group == p.group && q.effects.iter().eq(unhardened.iter().copied()));
+    if hardening_only {
+        let harden: Vec<Op> =
+            p.effects.iter().filter(|e| matches!(e, Op::Target { .. } | Op::Harden { .. })).cloned().collect();
+        if !effects::feasible_after(w, g, seat, &harden, spent) {
+            return Some("no facility to harden");
+        }
     }
     // 285: Field Station's insight buys its station (its node is Field Survey's, free): with no open station site in
     // reach it isn't offered, though its node could land (the any-part rule above passed it).

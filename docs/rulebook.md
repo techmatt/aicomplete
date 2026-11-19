@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 136. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 137. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -302,7 +302,8 @@ Powers are used in the action phase. Every board's **Growth** places your nodes:
 round, one placing 2 nodes for a price in the board's currency (the Builder's energy, the Protector's energy, the
 Researcher's insight), the others 1 node with a little more (§20). There is no standard action for nodes. A Growth
 option needs a node to place: a token, a space whose energy you can pay and a free hex in its range; with none you
-can't use it, not even for its extra; a two-node option needs both nodes' spaces paid. So up to 2 nodes a round come from Growth; cards can place more. Each board's
+can't use it, not even for its extra; a two-node option needs both nodes' spaces paid and a free hex for its
+second node once the first is placed. So up to 2 nodes a round come from Growth; cards can place more. Each board's
 other powers are **tiered**: pick one tier of each a round, a higher tier costing more for more. Most are paid by
 **sacrificing** cards with a tag (§7, *Tags*); a **threshold** power only needs the tags on your cards. §20 lists
 every board's.
@@ -909,7 +910,8 @@ A facility's owner is the player whose cube is on it. One hardening token on a h
 node can save either, once: you may keep it for the second (it stays on the hex while your node does). Neither corruption nor agents
 destroy the node of a player with **Sanctuary** (a Protector capstone), and spends nothing of theirs.
 
-**Hardening** goes on a player-owned station or factory (the Builder's Fortify II, the Protector's Patrol II; some cards), or, where a card says
+**Hardening** goes on a player-owned station or factory (the Builder's Fortify II, the Protector's Patrol II, which you
+can't use with no such facility on or next to a target; some cards), or, where a card says
 "harden N of your Nodes" (Stress Test Suite, Early Warning Drill), on the hexes of N of your nodes: the same token.
 
 ### Your last node

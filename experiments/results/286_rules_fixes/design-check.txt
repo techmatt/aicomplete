@@ -1,0 +1,97 @@
+warnings: design: standard-over-anchor Make antimatter 1.20; design: friction-stale r125 at r137; design: kept-not-played 5 (open_research_campus 0.09, multiyear_defense_budget 0.03, forensic_audit 0.03, ...); design: usage 5 (Protector Patrol I 3.84 outside 0.25-3.50, Make antimatter 0.02 outside 0.05-0.75, Remove a troop 0.83 outside 0.05-0.75, ...)
+
+1440 games, old side 1440
+## Warnings (12)
+- [standard-over-anchor] Make antimatter: give 5 research_cubes = 20, get 1 antimatter + 2 energy = 24 at the anchors: 1.20; 0.03 uses a game (max 1.0)
+- [friction-stale] friction review: run at r125, rules now r137 (rerun every 5): rerun it (docs/rulebook-friction.md, *Refreshing*)
+- [kept-not-played] open_research_campus: kept 0.43 a game, played 0.09; left unofferable (no target) 0.15 a game
+- [kept-not-played] multiyear_defense_budget: kept 0.19 a game, played 0.03
+- [kept-not-played] forensic_audit: kept 0.16 a game, played 0.03; left unofferable (no target) 0.09 a game
+- [kept-not-played] moonshot_grant: kept 0.15 a game, played 0.04
+- [kept-not-played] orbital_mass_driver: kept 0.13 a game, played 0.02
+- [usage] Protector Patrol I (troop-response): 3.84 a seat-game, outside its band 0.25-3.50 (dominant)
+- [usage] Make antimatter (hedge): 0.02 a seat-game, outside its band 0.05-0.75 (unused)
+- [usage] Remove a troop (hedge): 0.83 a seat-game, outside its band 0.05-0.75 (dominant)
+- [usage] Pay a threat's counter (threat): 5.50 a seat-game, outside its band 0.50-5.00 (dominant)
+- [usage] Antimatter spent (resource): 48% of what is gained, spent, outside its band 50%-110% (unused)
+
+## Information (79)
+- repeat-power exemption Buy In, Levy: 277 (Matt, 2026-11-18): the easy Growth option, the floor (a node and a credit): the same effect by design
+- repeat-power exemption Sprawl, Outpost: 276 (Matt, 2026-11-18): the Builder's and the Protector's Growth each print a two-node option for 1 energy: the same effect by design
+- Buy a city's energy: give 4 credits = 4, get 1 energy = 3 at the anchors: 0.75; 3.30 uses a game (max 1.0)
+- Turn a cube into insight: give 1 research_cubes = 4, get 1 insight = 2.67 at the anchors: 0.67; 0.51 uses a game (max 1.0)
+- Build a research station: give 2 chips + 0 ambassadors = 8, get 1 station_owned = 8 at the anchors: 1.00; 0.37 uses a game (max 1.0)
+- Remove agents: give 2 ambassadors = 10.66, get 3 agent = 9.99 at the anchors: 0.94; 1.32 uses a game (max 1.0)
+- Lift Fallout: give 2 research_cubes = 8, get 1 land_token = 8 at the anchors: 1.00; 0.40 uses a game (max 1.0)
+- Gain a player ambassador: give 16 credits = 16, get 1 ambassadors = 5.33 at the anchors: 0.33; 1.35 uses a game (max 1.0)
+- Take down a botnet: give 13 credits = 13, get 1 botnet + 0 sway = 10 at the anchors: 0.77; 2.43 uses a game (max 1.0)
+- Liberate a city: give 5 ambassadors = 26.65, get 1 city_liberated + 5 sway (in the anchor) = 30 at the anchors: 1.13; 4.92 uses a game (every case of the action) (max 1.0); exempt (city): the win route (Matt, 2026-11-13): never a poorly priced hedge; its 5 Sway are in the city's 30 (priced_in; 45 before 273's credits ÷ 1.5). 249: this case only; 252 (Item B): Liberate leaves the site neutral, the city still the win route
+- Liberate a station: give 4 ambassadors = 21.32, get 1 station_freed + 2 sway = 15.34 at the anchors: 0.72; 4.92 uses a game (every case of the action) (max 1.0)
+- Liberate a factory: give 3 ambassadors = 15.99, get 1 factory_freed + 2 sway = 9.34 at the anchors: 0.58; 4.92 uses a game (every case of the action) (max 1.0)
+- Envoy: give 1 ambassadors = 5.33, get 1 sway = 2.67 at the anchors: 0.50; 0.09 uses a game (max 1.0)
+- Sell a card: give 1 card = 3.33, get 1 credits = 1 at the anchors: 0.30; 0.26 uses a game (every case of the action) (max 1.0)
+- Remove a troop: give 7 credits = 7, get 1 troop = 3.33 at the anchors: 0.48; 1.66 uses a game (max 1.0)
+- Build a factory: off (`board.factory_build_chips` 0)
+- Make antimatter: 20.0 a antimatter against the median card for its job 5.8 (8 cards, best Treaty Isotope Bank 2.0): 3.46 x (min 1.25)
+- Buy a city's energy: 4.0 a energy against the median card for its job 2.4 (13 cards, best National Grid Buildout 0.3): 1.66 x (min 1.25)
+- Turn a cube into insight: 4.0 a insight against the median card for its job 1.8 (10 cards, best Hyperscale Botnet 0.9): 2.17 x (min 1.25)
+- Build a research station: 8.0 a station_owned against the median card for its job 4.3 (1 cards, best Open Research Campus 4.3): 1.84 x (min 1.25)
+- Remove agents: 3.6 a agent against the median card for its job 1.5 (23 cards, best Double Agents -3.2): 2.30 x (min 1.25)
+- Lift Fallout: 8.0 a land_token against the median card for its job 2.4 (5 cards, best Shared Grid Accord -2.2): 3.32 x (min 1.25)
+- Gain a player ambassador: 16.0 a ambassadors against the median card for its job 1.3 (17 cards, best Liberation Accords 0.1): 11.99 x (min 1.25)
+- Take down a botnet: 13.0 a botnet against the median card for its job 9.7 (3 cards, best Singularity Exploit 9.7): 1.34 x (min 1.25)
+- Liberate a city: 26.6 a city_liberated against the median card for its job 22.0 (9 cards, best Citywide Microgrid 15.6): 1.21 x (min 1.25); exempt (city): the win route (Matt, 2026-11-13): never a poorly priced hedge; its 5 Sway are in the city's 30 (priced_in; 45 before 273's credits ÷ 1.5). 249: this case only; 252 (Item B): Liberate leaves the site neutral, the city still the win route
+- Liberate a station: 21.3 a station_freed against the median card for its job 10.8 (2 cards, best Reclamation Crew 10.7): 1.97 x (min 1.25)
+- Liberate a factory: 16.0 a factory_freed against the median card for its job 4.3 (2 cards, best Back-Channel Talks 2.2): 3.76 x (min 1.25)
+- Envoy: 5.3 a sway against the median card for its job 1.7 (8 cards, best Antimatter Accord -1.1): 3.14 x (min 1.25)
+- Sell a card: no card does its job (credits); the action is the only route; exempt (card): Matt, 2026-11-16: no card needs to sell; the hand's outlet, exempt from job-no-card (P1)
+- Remove a troop: 7.0 a troop against the median card for its job 3.3 (7 cards, best Double Agents -6.5): 2.10 x (min 1.25)
+- tag-story exception ais:researcher:Hack I: 276: Disrupt's job, renamed (Hack II adds compute, which is Cyber): a Cyber card hacks troops (drones) anywhere in a country, no reach: the Researcher's troop answer is remote by design (206), so it is paid in Cyber, not Security
+- dials: none moved 40% or more since 8c131c0a2
+- ladder: named rules / mid-game changes active by level 0: 0 / 0, 1: 1 / 1, 2: 2 / 2, 3: 3 / 3, 4: 3 / 3
+- antimatter: 14% of its supply (2.63 a seat-game) from standard actions or tier-1 cards (max 20%): use:cyclotron_lease 9%, use:simulation_cluster 1%
+- energy sources, phases (each pools many engines): phase:economy.upkeep 44%, phase:board.produce 21%, phase:threats.execute 1%
+- energy: one source, convert:0, is 8% of its sources (3.04 of 38.73 a seat-game; max 40%)
+- chips sources, phases (each pools many engines): phase:board.produce 42%, phase:economy.upkeep 10%
+- chips: one source, play:joint_fabrication_pact, is 14% of its sources (0.93 of 6.56 a seat-game; max 40%)
+- antimatter: one source, use:dark_fiber_collider, is 20% of its sources (0.52 of 2.63 a seat-game; max 40%)
+- research_cubes sources, phases (each pools many engines): phase:board.produce 61%, phase:economy.upkeep 9%, phase:threats.execute 4%
+- research_cubes: one source, play:collider_consortium, is 12% of its sources (0.71 of 5.95 a seat-game; max 40%)
+- ambassadors sources, phases (each pools many engines): phase:adversary.compute 0%
+- ambassadors: one source, standard:liberate, is 14% of its sources (2.62 of 19.25 a seat-game; max 40%)
+- energy uses, phases (each pools many engines): phase:threats.execute 1%
+- energy: one spend, power:Accord, is 14% of its uses (4.62 of 33.48 a seat-game; max 50%)
+- chips uses, phases (each pools many engines): phase:threats.execute 2%
+- chips: one spend, convert:1:chips, is 48% of its uses (2.21 of 4.63 a seat-game; max 50%)
+- antimatter uses, phases (each pools many engines): phase:adversary.compute 2%
+- antimatter: one spend, use:orbital_relay_launcher, is 12% of its uses (0.16 of 1.26 a seat-game; max 50%)
+- research_cubes uses, phases (each pools many engines): phase:threats.execute 1%
+- research_cubes: one spend, convert:0, is 35% of its uses (1.52 of 4.32 a seat-game; max 50%)
+- ambassadors uses, phases (each pools many engines): phase:threats.execute 1%, phase:adversary.compute 0%
+- ambassadors: one spend, standard:liberate, is 61% of its uses (10.18 of 16.58 a seat-game; max 50%); exempt: Liberate is the win route (Matt, 2026-11-13): ambassadors exist to free cities, so most of them going there is the design, not one spend crowding the rest
+- chips: spent in 88% of won games at d3,4 (194 won; min 75%)
+- energy: spent in 100% of won games at d3,4 (194 won; min 75%)
+- antimatter: spent in 78% of won games at d3,4 (194 won; min 75%)
+- research_cubes: spent in 88% of won games at d3,4 (194 won; min 75%)
+- d0: 8.2 rounds a game, won games 7.9 (288 games; target 8-10)
+- d1: 9.7 rounds a game, won games 9.0 (288 games; target 8-10)
+- d2: 9.6 rounds a game, won games 8.7 (288 games; target 8-10)
+- d3: 9.2 rounds a game, won games 8.0 (288 games; target 8-10)
+- d4: 8.8 rounds a game, won games 7.6 (288 games; target 8-10)
+- tokens a round, adversary ops: 34.7 against 34.5 (+0%; max +10%)
+- tokens a round, player token moves: 9.0 against 9.0 (+0%; max +10%)
+- d0: components moved a round 20.1 (budget 24), +0% on --old (20.1)
+- d0: per-site checks a round 10.1 (budget 49), +0% on --old (10.1)
+- d0: once-a-round uses a seat a round 3.4 (budget 4.5), +1% on --old (3.3)
+- d1: components moved a round 32.3 (budget 36), +0% on --old (32.3)
+- d1: per-site checks a round 14.8 (budget 51), +1% on --old (14.7)
+- d1: once-a-round uses a seat a round 3.5 (budget 4.5), +0% on --old (3.5)
+- d2: components moved a round 43.4 (budget 49), +0% on --old (43.2)
+- d2: per-site checks a round 15.9 (budget 51), +1% on --old (15.8)
+- d2: once-a-round uses a seat a round 3.3 (budget 4.5), -1% on --old (3.3)
+- d3: components moved a round 56.1 (budget 75), -0% on --old (56.3)
+- d3: per-site checks a round 17.7 (budget 53), -1% on --old (17.8)
+- d3: once-a-round uses a seat a round 3.1 (budget 4.5), -0% on --old (3.1)
+- d4: components moved a round 69.6 (budget 88), +0% on --old (69.4)
+- d4: per-site checks a round 19.8 (budget 59), +1% on --old (19.6)
+- d4: once-a-round uses a seat a round 2.8 (budget 4.5), +1% on --old (2.8)

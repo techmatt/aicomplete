@@ -97,19 +97,22 @@ def source_revision():
 
 
 def content_form():
-    """221: warns of each content/*.json (alignment.json aside, hand-laid by design) not in the form
-    `scripts/cards/apply_overlay.py` writes, which refuses such a file: 212 (cards.json) and 213 (map.json) each lost
-    an overlay to a hand-joined line."""
+    """221: warns of each content/*.json not in the form `scripts/cards/apply_overlay.py` writes, which refuses such
+    a file: 212 (cards.json) and 213 (map.json) each lost an overlay to a hand-joined line. alignment.json's form is
+    its hand layout (286: `apply_overlay.dump_alignment`)."""
     import json
+    sys.path.insert(0, os.path.join(ROOT, 'scripts', 'cards'))
+    from apply_overlay import dump
     d = os.path.join(ROOT, 'content')
     for name in sorted(os.listdir(d)):
-        if not name.endswith('.json') or name == 'alignment.json':
+        if not name.endswith('.json'):
             continue
-        with open(os.path.join(d, name), encoding='utf-8') as f:
+        with open(os.path.join(d, name), encoding='utf-8', newline='') as f:
             text = f.read()
-        if text != json.dumps(json.loads(text), indent=1, ensure_ascii=True) + '\n':
-            print(f'warning: content/{name} is not in json.dumps(indent=1) form, so apply_overlay.py refuses it: '
-                  f'rewrite it once (data unchanged; the content hash moves)')
+        if text != dump(json.loads(text), name):
+            print(f'warning: content/{name} is not in the form apply_overlay.py writes (json.dumps(indent=1); '
+                  f'alignment.json its hand layout), so apply_overlay.py refuses it: rewrite it once (data '
+                  f'unchanged; the content hash moves)')
 
 
 # The golden constants (281): name -> [(file, pattern)], each pattern's group 2 the value.

@@ -228,6 +228,9 @@ impl Module for Economy {
             // What upkeep will pay, Sabotage included (020: the view showed the
             // energy a sabotaged seat would not get).
             let inc = upkeep_income(w, g, s);
+            // 286 (D124): the round's whole income, as the board's income tracks print it (r133): production's
+            // factory chips and stations' cubes beside upkeep's (the strip showed upkeep's alone).
+            let (made_chips, made_cubes) = board::production_income(w, g, s);
             let parts = [
                 (
                     "credits",
@@ -236,8 +239,8 @@ impl Module for Economy {
                 ),
                 (
                     "chips",
-                    inc[Resource::Chips],
-                    "chips in upkeep: Industry cards (player-owned factories make them in production)",
+                    inc[Resource::Chips] + made_chips,
+                    "chips a round: your factories' in production (a blocked one makes none), then Industry cards' in upkeep",
                 ),
                 (
                     "energy",
@@ -260,8 +263,9 @@ impl Module for Economy {
                 ),
                 (
                     "research_cubes",
-                    inc[Resource::ResearchCubes],
-                    "research cubes in upkeep: a capstone, buildings (stations make theirs in production)",
+                    inc[Resource::ResearchCubes] + made_cubes,
+                    "research cubes a round: your stations' in production once their megaproject is complete (before it, \
+                     onto it), then a capstone's and buildings' in upkeep",
                 ),
             ];
             for (r, n, doc) in parts {

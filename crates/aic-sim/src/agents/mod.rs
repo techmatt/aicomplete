@@ -755,13 +755,13 @@ mod tests {
         assert!(err("strategist:kept_rule=2.5").contains("whole number"));
         assert!(err("strategist:kept_rule=5").contains("at most 4"));
         assert!(err("strategist:sell_rule=4").contains("at most 3"));
-        assert!(err("strategist:burn_late=3").contains("at most 2"));
+        assert!(err("strategist:burn_late=0").contains("retired"));
         assert!(err("strategist:no_spend=4").contains("at most 3"));
         assert!(err("strategist:only_tag=7").contains("0 to 6"));
         assert!(err("engine:width=2.5").contains("whole number"));
         assert!(err("oracle:truth=3").contains("at most 2"));
         assert!(err("oracle:prove=100000").contains("aic-sim cards"));
-        for ok in ["strategist:kept_rule=4", "strategist:sell_rule=3", "strategist:no_spend=3", "strategist:burn_late=0",
+        for ok in ["strategist:kept_rule=4", "strategist:sell_rule=3", "strategist:no_spend=3",
                    "planner:margin=12.5,lead=0.5", "strategist:plan_niche=2.5", "oracle:truth=2", "strategist:only_tag=6"] {
             AgentSpec::parse(ok).expect(ok);
         }

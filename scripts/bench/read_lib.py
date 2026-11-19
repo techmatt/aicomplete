@@ -1,7 +1,7 @@
 """A paired read's games, decoded, and the tables 252-254's item readers each rebuilt (255; 252's `read_lib.py` note).
 
     python scripts/bench/read_lib.py READ[@LABEL] [READ ...] [--base ARM] [--levels D[,D]] [--agent-arms]
-                                     [--counters PREFIX ...] [--cards ID ...] [--md OUT]
+                                     [--arm NAME=SPEC ...] [--counters PREFIX ...] [--cards ID ...] [--md OUT]
 
 A READ is a run's folder, a games file with its header, or FILE=SPEC (a bare farmed JSONL and its spec;
 `screens.stream`); several READs pool when their arms share names, else each row leads with its READ's name (the
@@ -14,7 +14,8 @@ with several configs leads each arm with the config's file stem. Every arm is pa
 default `base`, `off`, else the first) on the same pair, level, agent and seed. `--levels 3,4` (281) reads those
 levels only. `--agent-arms` (281): an agent with options (`strategist:w.sink=1`) whose bare name (`strategist`) is an
 agent of any READ is an arm of the bare agent, named by its options (`sink1`; `on-sink1` on arm `on`), so it pairs
-against the bare agent's games on the same pair, level and seed.
+against the bare agent's games on the same pair, level and seed. `--arm NAME=SPEC` (286, once per agent, implies
+`--agent-arms`) names SPEC's arm NAME (`--arm sink-high=strategist:w.sink=10`); two specs squashing to one name stop it.
 
 Tables: wins by level with the paired gap ± one SE; the gap by level; losses by reason a game; board powers a seat-game
 of their board (by their counters, `ai.power.<board>.<slug>`, so any revision reads right); standard actions a
@@ -46,17 +47,25 @@ def option_tag(agent):
     return agent.split(':', 1)[1].replace('w.', '').replace('=', '').replace('.', '')
 
 
-def games(read, label=None, agent_arms=()):
+def games(read, label=None, agent_arms=(), names=None):
     """READ's games as `Game(arm, pair, level, agent, seed, g)`, decoded from its spec. ARM leads with LABEL (a
     READ's name, when several READs don't pool) and with the config's file stem when the spec has several configs.
     AGENT is the spec's name up to any `:` (its overrides dropped), or the whole spec where two agents share a name.
     AGENT_ARMS (`--agent-arms`): bare agent names; an agent with options whose bare name is one of them is that bare
-    agent, its options an arm (`option_tag`) of the variant's arm."""
+    agent, its options an arm of the variant's arm: NAMES[spec] (`--arm NAME=SPEC`, 286), else `option_tag`. Two
+    specs with one arm name stop it."""
+    names = names or {}
     lines = stream(read)
     spec = next(lines)['spec']
     cells = cells_of(spec)
     many = len(spec['configs']) > 1
     as_arm = {a: a.split(':')[0] for a in spec['agents'] if ':' in a and a.split(':')[0] in agent_arms}
+    tags = {a: names.get(a) or option_tag(a) for a in as_arm}
+    # 286: `w.sink=1.0` and `w.sink=10` both squash to `sink10`; their games would pool as one arm
+    for t in set(tags.values()):
+        same = sorted(a for a in tags if tags[a] == t)
+        if len(same) > 1:
+            sys.exit(f"--agent-arms: {' and '.join(same)} are both arm {t}: name them apart with --arm NAME=SPEC")
     # 261: an agent-lever screen ('strategist', 'strategist:w.sink=0.5', ...) keeps each spec whole: cut at ':' only
     # where the short names stay distinct (it read as "pooled reads overlap").
     specs = sorted({c['agent'] for c in cells} - set(as_arm))
@@ -70,7 +79,7 @@ def games(read, label=None, agent_arms=()):
         c = cells[g['cell']]
         pair, arm = split_variant(c['variant'])
         if c['agent'] in as_arm:
-            tag = option_tag(c['agent'])
+            tag = tags[c['agent']]
             arm = tag if arm == 'base' else f'{arm}-{tag}'
         if many:
             arm = f"{os.path.splitext(os.path.basename(c['config']))[0]}/{arm}"
@@ -241,10 +250,19 @@ def tables(S, base_arm=None, cards=()):
 def main(argv):
     opts = {'--base': None, '--md': None, '--levels': None}
     lists = {'--counters': [], '--cards': []}
-    reads, cur, agent_arms = [], None, False
+    reads, cur, agent_arms, names = [], None, False, {}
     for x in argv:
         if x == '--agent-arms':
             agent_arms, cur = True, None
+        elif cur == '--arm':
+            name, eq, spec = x.partition('=')
+            if not eq or not name or ':' not in spec:
+                sys.exit(f'--arm {x}: give NAME=SPEC, SPEC an agent with options (sink1=strategist:w.sink=1)')
+            if spec in names:
+                sys.exit(f'--arm: {spec} named twice')
+            names[spec], cur = name, None
+        elif x == '--arm':
+            cur = x
         elif x in opts or x in lists:
             cur = x
         elif cur in opts:
@@ -255,8 +273,11 @@ def main(argv):
             sys.exit(f'read_lib: unknown flag {x}')
         else:
             reads.append(x)
+    if cur == '--arm':
+        sys.exit('--arm needs NAME=SPEC')
     if not reads:
         sys.exit(__doc__)
+    agent_arms = agent_arms or bool(names)  # --arm implies --agent-arms
     # 281: READ@LABEL leads that read's arms with LABEL whatever its arms
     given = [r.rsplit('@', 1) if re.search(r'@[\w.+-]+$', r) else [r, None] for r in reads]
     reads = [r for r, _ in given]
@@ -277,7 +298,11 @@ def main(argv):
         bare = {a for r in reads for a in next(stream(r))['spec']['agents'] if ':' not in a}
         if not bare:
             sys.exit('--agent-arms: no READ has a bare agent (one with no options) to pair the option agents against')
-    rows = [x for r, lab in zip(reads, labels) for x in games(r, lab, bare)]
+        specs = {a for r in reads for a in next(stream(r))['spec']['agents']}
+        stray = sorted(s for s in names if s not in specs or s.split(':')[0] not in bare)
+        if stray:
+            sys.exit(f"--arm: no READ has {', '.join(stray)} beside its bare agent")
+    rows = [x for r, lab in zip(reads, labels) for x in games(r, lab, bare, names)]
     if opts['--levels']:
         keep = {int(d) for d in opts['--levels'].split(',')}
         rows = [r for r in rows if r.level in keep]

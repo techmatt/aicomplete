@@ -11,6 +11,37 @@ pub(super) fn loc_key(threat: &str, i: usize) -> KeyBuf {
     KeyBuf::new("threats.loc.").text(threat).text(".").num(i)
 }
 
+/// 286 (D132): set when a threat's first token was dealt onto a hex not of its first location's kind (Offensive's
+/// node hex): a located line ("here", "the base here") acts only on its own kind of hex, so that token's lines do
+/// nothing. The token still marks who is near and the anchor.
+fn off_kind_key(threat: &str) -> KeyBuf {
+    KeyBuf::new("threats.loc.").text(threat).text(".off")
+}
+
+/// Whether hex `h` is a site (or base) of location type `loc`, whoever holds it.
+fn is_kind(w: &World, g: &GameState, h: usize, loc: Location) -> bool {
+    match loc {
+        Location::City => is_city(w, h),
+        Location::CoastalCity => is_city(w, h) && w.map.hexes[h].coastal,
+        Location::Station => g.tokens(h, STATION) > 0,
+        Location::Factory => g.tokens(h, FACTORY) > 0,
+        Location::Base => is_base(w, h),
+    }
+}
+
+/// 286 (D132): the hex a located line of `t` acts on for its `i`th location: its token's, unless that token was
+/// dealt off its kind.
+fn located(g: &GameState, t: &str, i: usize) -> Option<usize> {
+    let v = g.var(&loc_key(t, i));
+    (v > 0 && !(i == 0 && g.var(&off_kind_key(t)) != 0)).then(|| v as usize - 1)
+}
+
+/// 286 (D132): "here" with no location named: the first token's hex, nothing when that token is off its kind.
+pub fn here(g: &GameState, t: &str) -> Option<usize> {
+    let i = (0..MAX_TOKENS).find(|&i| g.var(&loc_key(t, i)) > 0)?;
+    located(g, t, i)
+}
+
 /// The hexes of `t`'s location tokens, in its locations' order (a location
 /// with no site in its country has none).
 pub fn tokens(g: &GameState, t: &str) -> Vec<usize> {
@@ -38,23 +69,13 @@ fn scope_hexes<'a>(w: &'a World, g: &GameState, t: &str) -> &'a [usize] {
 
 /// The hex of `t`'s token of location type `loc`, if it has one.
 pub fn token_of(w: &World, g: &GameState, t: &Key, loc: Location) -> Option<usize> {
-    def(w, t).locations.iter().enumerate().filter(|(_, l)| **l == loc).find_map(|(i, _)| {
-        let v = g.var(&loc_key(t, i));
-        (v > 0).then(|| v as usize - 1)
-    })
+    def(w, t).locations.iter().enumerate().filter(|(_, l)| **l == loc).find_map(|(i, _)| located(g, t, i))
 }
 
 /// The sites in country `c` for a token of type `loc`. 178 (Matt's ruling #8): one condition for every type, a
 /// site of the type that is not the adversary's (a base never is); the factory type's free-zone fallback is gone.
 fn sites(w: &World, g: &GameState, c: usize, loc: Location) -> Vec<usize> {
-    let of_type = |h: usize| match loc {
-        Location::City => is_city(w, h),
-        Location::CoastalCity => is_city(w, h) && w.map.hexes[h].coastal,
-        Location::Station => g.tokens(h, STATION) > 0,
-        Location::Factory => g.tokens(h, FACTORY) > 0,
-        Location::Base => is_base(w, h),
-    };
-    w.map.countries[c].hexes.iter().copied().filter(|&h| of_type(h) && !corrupted(g, h)).collect()
+    w.map.countries[c].hexes.iter().copied().filter(|&h| is_kind(w, g, h, loc) && !corrupted(g, h)).collect()
 }
 
 /// Whether country `c` has a site for at least one of `t`'s location types.
@@ -91,6 +112,10 @@ pub(super) fn place_first_at(g: &mut GameState, cx: &mut Cx, threat: &Key, h: us
         }
     }
     cx.set_key(g, &loc_key(threat, 0), h as i64 + 1);
+    let w = cx.world;
+    if def(&w, threat).locations.first().is_some_and(|&l| !is_kind(&w, g, h, l)) {
+        cx.set_key(g, &off_kind_key(threat), 1);
+    }
 }
 
 /// Takes `threat`'s tokens off the board.
@@ -100,6 +125,9 @@ pub(super) fn clear_tokens(g: &mut GameState, cx: &mut Cx, threat: &Key) {
         if g.var(&k) != 0 {
             cx.set_key(g, &k, 0);
         }
+    }
+    if g.var(&off_kind_key(threat)) != 0 {
+        cx.set_key(g, &off_kind_key(threat), 0);
     }
 }
 

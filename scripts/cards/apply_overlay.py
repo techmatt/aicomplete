@@ -23,9 +23,8 @@ result wherever it differs from the working tree; before that it warns of each `
 working tree differs from REV and no entry sets that field (a by-hand edit the write drops).
 
 `--check` prints each entry that would change something and writes nothing (exit 1 if any
-would). A file whose text isn't what `json.dumps(indent=1)` writes (today only alignment.json, its
-tiers laid out by hand; 157 wrote experiments/results/157_strategist_purge_r68/apply_tiers.py for
-it) is refused: edit it by hand. A `threats.`, `adversary.` or `projects.` entry is refused too:
+would). Files are written as `json.dumps(indent=1)` does, but alignment.json in its hand layout (286:
+`dump_alignment`, each tier's fields a line); a file whose text isn't what that writes is refused: edit it by hand. A `threats.`, `adversary.` or `projects.` entry is refused too:
 those files are written from drafts/adversary/ by scripts/content/load_adversary.py, so an overlay
 there is lost on the next load and fails regen.py's `load_adversary.py --check`; edit the drafts
 instead (the engine's `--set` still takes them for a one-off run). Afterwards run `python scripts/regen.py`, which
@@ -55,8 +54,43 @@ TABLES = {
 DRAFTED = ('threats', 'adversary', 'projects')
 
 
-def dump(data):
+def dump(data, name=None):
+    """DATA as content/NAME's text: `json.dumps(indent=1)`, or for alignment.json its hand layout
+    (`dump_alignment`)."""
+    if name == 'alignment.json':
+        return dump_alignment(data)
     return json.dumps(data, indent=1, ensure_ascii=True) + '\n'
+
+
+def dump_alignment(data):
+    """286: content/alignment.json's hand layout, so overlay entries for `alignment.` apply: `json.dumps(indent=1)`
+    but each tier one object of `"key": compact JSON` fields, a field a line, the first beside the `{`
+    (`   {"text": "...",` then `    "effects": [...]}`). Loading the file and dumping it gives it back byte for byte
+    (test_input_checks.py checks)."""
+    def j(v):
+        return json.dumps(v, ensure_ascii=True)
+
+    def nested(v, pad):  # a field other than tiers, as indent=1 writes it at this depth
+        return json.dumps(v, indent=1, ensure_ascii=True).replace('\n', '\n' + pad)
+
+    out = ['[']
+    for i, row in enumerate(data):
+        out.append(' {')
+        keys = list(row)
+        for k_i, k in enumerate(keys):
+            comma = ',' if k_i < len(keys) - 1 else ''
+            v = row[k]
+            if k == 'tiers' and isinstance(v, list) and v and all(isinstance(t, dict) and t for t in v):
+                out.append(f'  {j(k)}: [')
+                for t_i, t in enumerate(v):
+                    fields = ',\n    '.join(f'{j(tk)}: {j(tv)}' for tk, tv in t.items())
+                    out.append('   {' + fields + '}' + (',' if t_i < len(v) - 1 else ''))
+                out.append('  ]' + comma)
+            else:
+                out.append(f'  {j(k)}: {nested(v, "  ")}{comma}')
+        out.append(' }' + (',' if i < len(data) - 1 else ''))
+    out.append(']')
+    return '\n'.join(out) + '\n'
 
 
 def parse_value(text):
@@ -248,11 +282,11 @@ def apply_from(args, entries, files, texts, work):
     if failed:
         sys.exit(2)
     for name in sorted(files):
-        if dump(json.loads(texts[name])) != texts[name]:
-            print(f'error: content/{name} at {args.rev} is not in json.dumps(indent=1) form: edit it by hand',
+        if dump(json.loads(texts[name]), name) != texts[name]:
+            print(f'error: content/{name} at {args.rev} is not in the form apply_overlay.py writes: edit it by hand',
                   file=sys.stderr)
             sys.exit(2)
-    touched = sorted(n for n in files if dump(files[n]) != work[n])
+    touched = sorted(n for n in files if dump(files[n], n) != work[n])
     for name in touched:
         table = next(t for t, n in TABLES.items() if n == name and any(e.startswith(t + '.') for e in entries))
         drift = unset_drift(table, json.loads(work[name]), json.loads(texts[name]), entries)
@@ -265,7 +299,7 @@ def apply_from(args, entries, files, texts, work):
         sys.exit(1 if touched else 0)
     for name in touched:
         with open(os.path.join(ROOT, 'content', name), 'w', encoding='utf-8', newline='\n') as f:
-            f.write(dump(files[name]))
+            f.write(dump(files[name], name))
     print(f'{len(entries)} entries from {args.rev}; wrote {", ".join(touched) or "nothing"}')
 
 
@@ -310,8 +344,8 @@ def main(argv=None):
     if failed:
         sys.exit(2)
     for name in sorted(touched):
-        if dump(json.loads(texts[name])) != texts[name]:
-            print(f'error: content/{name} is not in json.dumps(indent=1) form: edit it by hand',
+        if dump(json.loads(texts[name]), name) != texts[name]:
+            print(f'error: content/{name} is not in the form apply_overlay.py writes: edit it by hand',
                   file=sys.stderr)
             sys.exit(2)
     if args.check:
@@ -319,7 +353,7 @@ def main(argv=None):
         sys.exit(1 if touched else 0)
     for name in sorted(touched):
         with open(os.path.join(ROOT, 'content', name), 'w', encoding='utf-8', newline='\n') as f:
-            f.write(dump(files[name]))
+            f.write(dump(files[name], name))
     print(f'{len(entries)} entries; wrote {", ".join(sorted(touched)) or "nothing"}')
 
 

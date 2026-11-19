@@ -260,7 +260,7 @@
   "locations": [
    "city"
   ],
-  "text": "3 Agents are created here. Sway 2 toward Discord.",
+  "text": "1 Agent is created here. Sway 2 toward Discord.",
   "counters": [
    [
     {
@@ -278,7 +278,7 @@
   "effects": [
    {
     "op": "create",
-    "count": 3,
+    "count": 1,
     "at": "location"
    },
    {
@@ -473,7 +473,7 @@
   "locations": [
    "station"
   ],
-  "text": "2 Agents are created here. The nearest player pays 3 research cubes or discards 2 cards.",
+  "text": "1 Agent is created here. The nearest player pays 3 research cubes or discards 2 cards.",
   "counters": [
    [
     {
@@ -491,7 +491,7 @@
   "effects": [
    {
     "op": "create",
-    "count": 2,
+    "count": 1,
     "at": "location"
    },
    {
@@ -718,7 +718,7 @@
   "locations": [
    "factory"
   ],
-  "text": "2 Agents are created here. The nearest player pays 2 energy or discards 2 cards.",
+  "text": "1 Agent is created here. The nearest player pays 2 energy or discards 2 cards.",
   "counters": [
    [
     {
@@ -736,7 +736,7 @@
   "effects": [
    {
     "op": "create",
-    "count": 2,
+    "count": 1,
     "at": "location"
    },
    {
@@ -1313,7 +1313,8 @@
   ],
   "harms": [
    "adversary pieces placed",
-   "Unity pulled back"
+   "Unity pulled back",
+   "facilities destroyed or corrupted"
   ]
  },
  {
@@ -1569,7 +1570,7 @@
  },
  {
   "id": "sleeper_cells",
-  "name": "Sleeper Cells",
+  "name": "Rootkit",
   "tier": 2,
   "tags": [
    "cyber"
@@ -1604,7 +1605,8 @@
    }
   ],
   "harms": [
-   "adversary pieces placed"
+   "adversary pieces placed",
+   "facilities destroyed or corrupted"
   ]
  },
  {
@@ -1893,7 +1895,8 @@
   ],
   "harms": [
    "adversary pieces placed",
-   "credits or income lost"
+   "credits or income lost",
+   "facilities destroyed or corrupted"
   ]
  },
  {
@@ -2099,7 +2102,8 @@
    }
   ],
   "harms": [
-   "adversary pieces placed"
+   "adversary pieces placed",
+   "facilities destroyed or corrupted"
   ]
  },
  {
@@ -2275,7 +2279,7 @@
  },
  {
   "id": "war_economy",
-  "name": "War Economy",
+  "name": "Arsenal",
   "tier": 2,
   "tags": [
    "security",

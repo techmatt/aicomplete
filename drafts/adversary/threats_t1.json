@@ -299,7 +299,7 @@
    "locations": [
     "city"
    ],
-   "text": "3 Agents are created here. Sway 2 toward Discord.",
+   "text": "1 Agent is created here. Sway 2 toward Discord.",
    "counters": [
     [
      {
@@ -317,7 +317,7 @@
    "effects": [
     {
      "op": "create",
-     "count": 3,
+     "count": 1,
      "at": "location"
     },
     {
@@ -539,7 +539,7 @@
    "locations": [
     "station"
    ],
-   "text": "2 Agents are created here. The nearest player pays 3 research cubes or discards 2 cards.",
+   "text": "1 Agent is created here. The nearest player pays 3 research cubes or discards 2 cards.",
    "counters": [
     [
      {
@@ -557,7 +557,7 @@
    "effects": [
     {
      "op": "create",
-     "count": 2,
+     "count": 1,
      "at": "location"
     },
     {
@@ -822,7 +822,7 @@
    "locations": [
     "factory"
    ],
-   "text": "2 Agents are created here. The nearest player pays 2 energy or discards 2 cards.",
+   "text": "1 Agent is created here. The nearest player pays 2 energy or discards 2 cards.",
    "counters": [
     [
      {
@@ -840,7 +840,7 @@
    "effects": [
     {
      "op": "create",
-     "count": 2,
+     "count": 1,
      "at": "location"
     },
     {

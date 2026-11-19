@@ -219,9 +219,17 @@ fn head(ctx: &Ctx, s: usize) -> String {
 fn token(w: &World, g: &GameState, ctx: &Ctx, loc: Option<Location>) -> Option<usize> {
     let t = ctx.threat.as_ref()?;
     match loc {
-        Some(l) => threats::token_of(w, g, t, l).or_else(|| threats::tokens(g, t).first().copied()),
-        None => threats::tokens(g, t).first().copied(),
+        // 286 (D132): a token dealt off its kind (Offensive's node hex) is no "here".
+        Some(l) => threats::token_of(w, g, t, l).or_else(|| threats::here(g, t)),
+        None => threats::here(g, t),
     }
+}
+
+/// 286 (D132, diff review): where a line that measures from "here" measures ("nearest here", Fallout next to it, a
+/// botnet's nearest piece): [`token`], else the threat's first token even when dealt off its kind. Only a line placing
+/// on the hex itself is bound to its kind.
+fn measured_from(w: &World, g: &GameState, ctx: &Ctx, loc: Option<Location>) -> Option<usize> {
+    token(w, g, ctx, loc).or_else(|| ctx.threat.as_ref().and_then(|t| threats::first_token(g, t)))
 }
 
 /// 227: the free open hex on or next to `h` a Fallout token lands on: `h` itself if free, else its
@@ -242,7 +250,7 @@ fn fallout(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64, at: FalloutAt)
     let w = cx.world;
     let source = ctx.label;
     if at == FalloutAt::Location {
-        let Some(h) = token(&w, g, ctx, None) else { return };
+        let Some(h) = measured_from(&w, g, ctx, None) else { return };
         for _ in 0..count {
             match fallout_spot(&w, g, h, true) {
                 Some(x) => adversary::place_fallout(g, cx, x, source),
@@ -669,7 +677,7 @@ fn factory_in(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, c: Option<usize>, fallb
             .filter(|&z| country(z) == c)
             .min_by_key(|&z| (!next_to(&w, z, |x| g.tokens(x, ADV_AMBASSADOR) > 0), number(z))),
         None => {
-            let from = token(&w, g, ctx, Some(Location::Factory));
+            let from = measured_from(&w, g, ctx, Some(Location::Factory));
             zones.iter().copied().min_by_key(|&z| (from.map_or(0, |f| w.map.distance(f, z)), country(z), number(z)))
         }
     };
@@ -742,19 +750,22 @@ fn destroy_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx) -> Res {
     Ok(())
 }
 
-/// Sleeper Cells: a botnet on the threat's station, else on the nearest piece
+/// Rootkit (the threat; 286 renamed it from Sleeper Cells, a level's name): a botnet on the threat's station, else on the nearest piece
 /// without one (players choose among equals). Returns whether one landed.
 fn place_botnet(g: &mut GameState, cx: &mut Cx, ctx: &Ctx) -> Res<bool> {
     let w = cx.world;
-    let Some(from) = token(&w, g, ctx, Some(Location::Station)) else {
+    let here = token(&w, g, ctx, Some(Location::Station));
+    let Some(from) = measured_from(&w, g, ctx, Some(Location::Station)) else {
         return Ok(false);
     };
     let free = |h: usize| has_piece(&w, g, h) && g.tokens(h, BOTNET) == 0;
-    let spots: Vec<usize> = if free(from) {
+    // 286 (D132): a token dealt off its kind is no station here: the botnet takes the nearest other piece.
+    let free_from = |h: usize| free(h) && (here.is_some() || h != from);
+    let spots: Vec<usize> = if here.is_some() && free(from) {
         vec![from]
     } else {
-        let d = (0..g.hexes.len()).filter(|&h| free(h)).map(|h| w.map.distance(from, h)).min();
-        (0..g.hexes.len()).filter(|&h| free(h) && Some(w.map.distance(from, h)) == d).collect()
+        let d = (0..g.hexes.len()).filter(|&h| free_from(h)).map(|h| w.map.distance(from, h)).min();
+        (0..g.hexes.len()).filter(|&h| free_from(h) && Some(w.map.distance(from, h)) == d).collect()
     };
     let opts = spots.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || format!("{}: a botnet lands on which piece?", ctx.why.as_deref().unwrap_or("Threat"));

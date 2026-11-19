@@ -94,7 +94,7 @@ pub(super) fn op_docs(src: &str) -> Vec<OpDoc> {
 }
 
 /// How many times each op is printed in content.
-fn op_uses() -> BTreeMap<String, usize> {
+pub(super) fn op_uses() -> BTreeMap<String, usize> {
     fn walk(v: &serde_json::Value, out: &mut BTreeMap<String, usize>) {
         match v {
             serde_json::Value::Object(o) => {
@@ -122,9 +122,13 @@ fn op_uses() -> BTreeMap<String, usize> {
     for t in &c.threats {
         add(&t.effects, &mut out);
     }
+    // 286: the event cards' standing lines (every Infiltrate) and the adversary board (Warmongering's corp_troops,
+    // the difficulty line's threat_compute) went uncounted, so the doc called printed ops unprinted.
     for a in &c.adversary {
+        add(&a.standing, &mut out);
         add(&a.twists, &mut out);
     }
+    walk(&serde_json::to_value(&c.adversary_board).expect("the board serializes"), &mut out);
     for a in &c.alignment {
         for t in &a.tiers {
             add(&t.effects, &mut out);
@@ -523,7 +527,7 @@ pub fn run(o: &Options) {
         files.push((path.clone(), new, old.clone()));
     }
     let stale: Vec<&(String, String, String)> = files.iter().filter(|(_, new, old)| new != old).collect();
-    let mut failures: Vec<String> = harm_failures().into_iter().map(|f| format!("{HARMS_MD}: {f}")).collect();
+    let mut failures: Vec<String> = harm_failures(&r).into_iter().map(|f| format!("{HARMS_MD}: {f}")).collect();
     failures.extend(rules_file_failures(&rules_new));
     failures.extend(revision_line_failures(&rules_new, aic_core::RULES_REVISION));
     if let Ok(book) = fs::read_to_string(RULEBOOK_MD) {

@@ -177,6 +177,53 @@ fn a_discord_card_deals_a_threat_onto_the_most_threatened_node_hex() {
     assert_eq!(threats::tokens(&g, &t).first(), Some(&b));
     assert_eq!(rules.world().content.threat(&t).tier, 2);
     assert_eq!(g.stats.counters["threats.dealt_at_node"], 1);
+    // 286 (D132): on a node hex not of its first location's kind, its located lines have no "here".
+    let first = rules.world().content.threat(&t).locations[0];
+    let kind_holds = match first {
+        crate::content::Location::City | crate::content::Location::CoastalCity => crate::modules::common::is_city(&rules.world(), b),
+        crate::content::Location::Station => g.tokens(b, STATION) > 0,
+        crate::content::Location::Factory => g.tokens(b, FACTORY) > 0,
+        crate::content::Location::Base => crate::modules::common::is_base(&rules.world(), b),
+    };
+    assert_eq!(threats::here(&g, &t).is_some(), kind_holds, "{t} at {b}");
+}
+
+/// 286 (D132): a located line acts only on its own kind of hex: Garrison State and Iron Curtain dealt by Offensive
+/// onto an open node hex place no agents and no troop there (F416 fixed Overrun alone).
+#[test]
+fn a_threat_dealt_onto_a_node_hex_of_another_kind_places_nothing_there() {
+    use crate::modules::{effects, threats};
+    let (rules, mut g) = lab(&[]);
+    let b = rules.map.numbered(1, piece(1).node);
+    assert!(!crate::modules::common::is_city(&rules.world(), b) && g.tokens(b, FACTORY) == 0);
+    put(&mut g, b, node(1), 1);
+    put(&mut g, b, ADV_AMBASSADOR, 1);
+    for id in ["garrison_state", "iron_curtain"] {
+        deal_at(&mut g, id, 1, &[b]);
+        set_var(&mut g, format!("threats.loc.{id}.off"), 1);
+        assert_eq!(threats::here(&g, id), None);
+        let d = rules.world().content.threat(id).clone();
+        let mut ctx = effects::Ctx::threat(Some(1));
+        ctx.threat = Some(Key::new(id));
+        with_cx(&rules, |cx| effects::run(&mut g, cx, &d.effects, &mut ctx)).unwrap();
+        assert_eq!((g.tokens(b, ADV_AMBASSADOR), g.tokens(b, TROOP)), (1, 0), "{id} placed on the node hex");
+        assert_eq!(g.tokens(b, node(1)), 1);
+        set_var(&mut g, format!("threats.loc.{id}.off"), 0);
+        set_var(&mut g, format!("threats.loc.{id}.0"), 0);
+    }
+    // A line measured from the token still measures from it: Rootkit's botnet takes the nearest other piece.
+    let id = "sleeper_cells";
+    deal_at(&mut g, id, 1, &[b]);
+    set_var(&mut g, format!("threats.loc.{id}.off"), 1);
+    let before = adversary::botnet_count(&g, None);
+    let d = rules.world().content.threat(id).clone();
+    with_answers(&rules, &mut g, |_| 0, |g, cx| {
+        let mut ctx = effects::Ctx::threat(Some(1));
+        ctx.threat = Some(Key::new(id));
+        effects::run(g, cx, &d.effects[..1], &mut ctx)
+    });
+    assert_eq!(g.tokens(b, crate::modules::common::BOTNET), 0, "not on the node hex");
+    assert_eq!(adversary::botnet_count(&g, None), before + 1, "on the nearest other piece");
 }
 
 /// 175: a choice threat may take a last node: unable to pay, the player loses it.

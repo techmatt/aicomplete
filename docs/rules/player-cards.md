@@ -67,7 +67,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   ones, or its first tokens here: the At N cards, *Tokens* below, so its own play, or for Intrusion Lab its first
   removal of compute or a feeder, fills the first threshold); the engines that paid up front in draws (Capital Projects
   Office, Vertical Monopoly, Orbital Mass Driver, Hyperscale Botnet and others) lost it to the draw cut and were
-  repriced down instead. A committed seat earns an engine back within 2 rounds. Each tag has a tier-1 play trigger, a tier-2 one
+  repriced down instead. A committed seat earns most engines back within 3 rounds (2 is the aim, not yet met: [card-pricing.md](../card-pricing.md), *Engines*). Each tag has a tier-1 play trigger, a tier-2 one
   that counts that tag on the played card (no payout fires on any card), and its engines' payoffs ([card-grammar.md](card-grammar.md), *The engine
   wording*). Cyber and Industry each keep one standing automatic counter (a building: threats of its tag anywhere
   need 6 less of each resource); no other tag has one. No capstone prints a

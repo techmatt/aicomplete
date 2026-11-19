@@ -43,7 +43,9 @@ each onto the site of its type with **the most agents on its own hex** (troops, 
 ties, the lowest hex number. A token with no such site left stays off the board. A location type with no
 such site in the country gets no token; the pull never deals a threat with none there (so a threat whose only type has
 no such site skips that country, and a base-only threat never lands at 1 country). A line for "the base here" or "the
-factory here" with no such token does nothing (184: Garrison State and Manhunt landed their troops on the city).
+factory here" with no such token does nothing (184: Garrison State and Manhunt landed their troops on the city), and
+a located line acts only on its own kind of hex: a first token dealt onto a node hex of another kind (Offensive) places
+nothing there (r137, D132).
 
 **Near.** Every threat card prints, above its text, "Payers: any player with a Node or Ambassador on or next to a
 token. Target: the player with a Node nearest a token." A player is **near** a threat with one of their nodes or ambassadors on or next to any of its tokens. Only a
@@ -95,7 +97,10 @@ an uncountered threat is refunded, then each threat (country 0, 1, ...) does wha
 nearest player, and is discarded with its tokens. **No harm is unprinted** (146: the node loss for every player near
 an uncountered threat and the floor sway toward Discord are gone). **Every uncountered threat also lands
 `adversary.threat_agents` (1) agent on its anchor** (its first location token's hex) after its harm, an arrival that may corrupt
-the site or take a node there ([adversary.md](adversary.md)). The adversary board may print compute for each
+the site or take a node there ([adversary.md](adversary.md)). **A tier-1 threat never takes its own site** (r137,
+D130): its creation and that agent stay under the site's number on an empty site at every level (Agitators, Embargo
+and Insider Access create 1); a tier-2 threat whose creation reaches it takes the site uncountered, as its effect
+([harms.md](../harms.md), *Threats that take their own site*). The adversary board may print compute for each
 uncountered threat (the Militarist's level-2 rule, War Footing: 4, from `board_difficulty_at` (2); [adversary.md](adversary.md)).
 Only threats on the board during this round's counter phase execute: one dealt later gets a printed **waits** token
 and executes next round,

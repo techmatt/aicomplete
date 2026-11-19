@@ -73,9 +73,11 @@ fn corrupt_node(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
     cx.tally(g, "adversary.corruptions", 1);
     cx.tally(g, "adversary.corruptions.node", 1);
     // 235: the log said "destroy" when Sanctuary, a Shelter, Aegis or a hardening kept the node.
+    // 286 (D125): `destroy_piece` already logged the node's loss ("seat 1's node at X destroyed"); this line only says
+    // where the agents went (it logged the loss twice).
     cx.note(Some(h), || {
         if destroyed {
-            format!("Agents destroy the node at {}", hex_name(&w, h))
+            format!("The agents at {} go to the supply", hex_name(&w, h))
         } else {
             format!("The agents at {} go to the supply; the node holds", hex_name(&w, h))
         }

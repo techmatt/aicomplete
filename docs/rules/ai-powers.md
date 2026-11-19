@@ -64,8 +64,9 @@ pick one Growth option, and every placement, by Growth or card, pays the energy 
 uncovers (locked). **Each board prints one easy option and two costly ones** (277). The easy one is free, the floor
 you can always take: a node and a small rider. The costly two are the real choice and pull different ways: more
 nodes (Sprawl, Outpost, Peer Review) against a rider or reach (Annex, Accord, Field Station). With no token left, no
-step it can pay or no free hex, an option isn't offered; a two-node option needs both nodes' steps (276), and Field
-Station an open hex in reach for its station (285). Cards that
+step it can pay or no free hex, an option isn't offered; a two-node option needs both nodes' steps (276) and a free hex
+for its second node once the first is placed (r137, D121), and Field Station an open hex in reach for its station
+(285). Cards that
 place nodes add to Growth (cards aren't capped).
 
 **Growth's give / get** (277, at Matt's unit anchors, [card-guidelines.md](../card-guidelines.md); a node 5.33 and a
@@ -156,7 +157,8 @@ on its own pieces (the first time each round one of its nodes or facilities woul
 *Destruction*).
 
 Hardening (Fortify II, Patrol II, cards) goes only on facilities a token can protect, player-owned stations and
-factories that are not corrupted, and "harden N" is N different facilities, fewer if fewer qualify. "Harden N of
+factories that are not corrupted, and "harden N" is N different facilities, fewer if fewer qualify. Patrol II, whose
+extra energy buys only its hardening, isn't offered with no such facility on or next to any target (r137, D128). "Harden N of
 your Nodes" (Stress Test Suite, Early Warning Drill) puts the token on a hex of your nodes instead: it absorbs a destruction there and goes with the node if it is
 lost another way. On your own facility it is the facility's hardening token: a table has one token, so it stays
 when the node goes, and protects the facility.

@@ -8,6 +8,29 @@ fn city_energy(rules: &Rules, h: usize) -> i64 {
     l[rules.map.hexes[h].country as usize % l.len()]
 }
 
+/// 286 (D124): the seat strip's income adds production's: a seat's factory's chips (none while an agent blocks it)
+/// and, once its country's megaproject is complete, its station's cubes.
+#[test]
+fn production_income_reads_the_seats_factories_and_stations() {
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let m = &rules.map;
+    let f = m.numbered(0, piece(0).node);
+    put(&mut g, f, FACTORY, 1);
+    put(&mut g, f, cube(0), 1);
+    let chips = w.int("board.factory_chips");
+    assert_eq!(board::production_income(&w, &g, 0), (chips, 0));
+    assert_eq!(board::production_income(&w, &g, 1), (0, 0));
+    put(&mut g, f, ADV_AMBASSADOR, 1);
+    assert_eq!(board::production_income(&w, &g, 0), (0, 0), "an agent blocks it");
+    let s = m.numbered(1, piece(1).node);
+    put(&mut g, s, STATION, 1);
+    put(&mut g, s, cube(0), 1);
+    assert_eq!(board::production_income(&w, &g, 0), (0, 0), "before its megaproject completes, onto it");
+    set_var(&mut g, board::project_done(m.hexes[s].country as usize), 1);
+    assert_eq!(board::production_income(&w, &g, 0), (0, w.int("board.owned_station_cubes")));
+}
+
 /// r75 (Matt's ruling 6): production sells a neutral city's energy to nobody
 /// (021 sold it to a player next to it); an aligned city's goes free to its owner.
 #[test]

@@ -79,9 +79,13 @@ moves when any other card changes: to reprice an edited card, move its price by 
 - **Engines are priced at their seat's fire rate** (Matt: err toward strong engines that look broken when played
   well): a trigger at the rate a seat built around its tag sees (about 1 card of the tag a round, 3 tags of any kind),
   not the table's generic `fires_play` × `tag_share`, so the effect ledger reads most engine cards under their
-  printed price. That gap is the point; a card that nets below 0 for its own seat is still a bug. **Payback within 2
-  rounds:** give (credits, insight to play and keep, other costs) less the when-built gain and the card's own first
-  fire, over a round's yield at that rate, is 2 or less for every engine building (`scripts/cards/payback.py`).
+  printed price. That gap is the point; a card that nets below 0 for its own seat is still a bug. **Payback, as
+  measured** (the aim is 2 rounds, a bar no item enforces until a repricing pass; Matt, D126): give (credits,
+  insight to play and keep, other costs) less the when-built gain and the card's own first fire, over a round's
+  yield at that rate (`scripts/cards/payback.py`). At r137, 15 of 38 engine buildings pay back within 2 rounds and 28
+  within 3 (median 2.3); eight take 5 or more (Power to the People 17.5, Consulate Tower 10.2, Honeypot Relay 6.5,
+  Reconciliation Office 6.3, Supplier Network 6, Security Ops Floor 5.2, Substation Hub 5.1, Preprint Server 5), and
+  two (Agency Field Station, Joint Task Force) yield nothing the script reads.
   **Engines pay up front:** the when-built gain is about two fires, in cards (since 271's scarce draw, at most
   2: Foundation Model Campus) where the fire pays credits, since a credit gain on a credit cost would be a circular
   payment (guideline 5). How the agents read a trigger in play: agents.md, *The value table*.

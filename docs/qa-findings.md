@@ -5,7 +5,7 @@ faults past hunts kept finding. Fixed findings, never to re-report: F1–F100 (0
 1617d75:docs/qa-findings.md`; then each hunt's `fixed.md` and `deferred.md` under `experiments/results/`: 099 (r38,
 F101 on), 118 (r46, F132, D43, W19 on), 145 (r59, F165, D57 on), 169 (r72 → 73, F205, D72 on), 184 (r77 → 78, F225,
 D77, W28 on), 197 (r86, F272, D88, W29 on), 235 (r106, F289, D92, W31 on; 238 fixed D92-D96, D98, D100, D103-D105, r108), 261 (r121 → r122, F322, D106, W34 on; 265 fixed D108, D109, D112, D115, D116; 266 D117), 285 (r135 → r136, F379,
-D120 on; fixed D102). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
+D120 on; fixed D102; 286 closed D121, D122, D124, D125, D126 (restated), D128, D130, D131, D132 at r137). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
 
 ## Checkers
 
@@ -96,13 +96,9 @@ Each hunt found most of its faults in the same places. Look there first:
 | D114 | cards | Five liberate cards' pricing notes use pre-r113 keeps. | Restate. **Pick**. |
 | D118 | rules | The Liberated marker binds Corrupt lines only, not cards that take a site. | Leave; guard. **Matt's call**. |
 | D119 | cards | Faces against house terms: node "Harden", Faraday Yard's box, two-way wordings. | One card-words item. **Pick**. |
-| D120 | agents | `am_makes` and `power_progress` count board tags toward a sacrifice; the engine's test cost 2 of 64 dev games. D122: `burn_late` matches no power. | A paired read; retire `burn_late`. **Pick**. |
-| D121 | rules | Paid for one part: a two-node Growth option with one free hex; Patrol II with no facility to harden (D128). | Refuse them, a bump. **Pick**. |
-| D123 | viewer | Draft / Keep below the fold at 1366 (D127), the strip's income without production (D124), a node loss logged twice (D125), session notes (D129): 285's deferred.md. | One viewer item. **Pick**. |
-| D126 | pricing | "Every engine pays back within 2 rounds" (card-pricing, player-cards); `payback.py` reads 20+ over 2. | Reprice or restate. **Matt's call**. |
-| D130 | threats | Uncountered tier-1 Embargo, Insider Access, Agitators (and tier-2 Insurrection, Trade Blockade, Garrison State) take their site: their agents (plus the anchor agent) reach its number. | Smaller creations at tier 1; count it at tier 2. **Matt's call**. |
+| D120 | agents | `am_makes` and `power_progress` count board tags toward a sacrifice; the engine's test cost 2 of 64 dev games. | A paired read. **Pick**. |
+| D123 | viewer | Draft / Keep below the fold at 1366 (D127), session notes (D129, D133): 285's deferred.md. | One viewer item. **Pick**. |
 | D134 | agents | The arrival forecast leaves out the card's Spill and Grow's agent. | `plan::next_spill` in `fore`. **Pick**. |
-| D131 | words | "Sleeper Cells" and "War Economy" each name a difficulty level and a tier-2 threat. | Rename the threats. **Matt's call**. |
 
 ## Won't fix
 

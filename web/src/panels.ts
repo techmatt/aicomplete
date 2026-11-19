@@ -372,7 +372,7 @@ export function seatValuesHtml(v: View, seatIndex: number): string {
     const gift = r === 'insight' ? findValue(s.values, 'economy.insight_gift')?.value ?? 0 : 0;
     const next = inc ? (r === 'insight' ? inc.value + gift : inc.value) : 0;
     const sign = r === 'insight' && !patient ? '→' : next >= 0 ? '+' : '';
-    const incHtml = inc ? `<span class="inc" data-value="${inc.key}" data-scope="${scope}" title="${r === 'insight' ? (patient ? 'next round: this is added to what you hold (Patience): the income, plus any insight next round' : 'next round: insight is set to this: the income, plus any insight next round') : 'income in upkeep'}">${sign}${next}</span>` : '';
+    const incHtml = inc ? `<span class="inc" data-value="${inc.key}" data-scope="${scope}" title="${r === 'insight' ? (patient ? 'next round: this is added to what you hold (Patience): the income, plus any insight next round' : 'next round: insight is set to this: the income, plus any insight next round') : 'income a round: production (factories, stations) and upkeep, as your income tracks show'}">${sign}${next}</span>` : '';
     return `<span class="res r-${esc(r)}" data-value="resource.${esc(r)}" data-scope="${scope}"><span class="label">${esc(have?.label ?? r.replace(/_/g, ' '))}</span> <b>${have?.value ?? 0}</b>${incHtml}</span>`;
   }).join('');
 

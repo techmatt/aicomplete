@@ -28,7 +28,7 @@ mod view;
 pub use ambassadors::*;
 pub use destroy::*;
 pub use node::*;
-pub use production::{corp_bases, corp_troops_at, tip_corp_troops, LEFT};
+pub use production::{corp_bases, corp_troops_at, production_income, tip_corp_troops, LEFT};
 use production::*;
 pub use standard::*;
 pub use troops::*;

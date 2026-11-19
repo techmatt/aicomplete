@@ -488,7 +488,9 @@ fn the_node_rule_logs_what_happened_to_the_node() {
     put(&mut g, h, ADV_AMBASSADOR, 2);
     let said = notes(&rules, &mut g);
     assert_eq!(g.tokens(h, node(1)), 0);
-    assert!(said.contains("Agents destroy the node"), "{said}");
+    // 286 (D125): the loss is logged once, by `destroy_piece`; the node rule's line says where the agents went.
+    assert_eq!(said.matches("destroy").count(), 1, "{said}");
+    assert!(said.contains("node at") && said.contains("destroyed") && said.contains("go to the supply"), "{said}");
 }
 
 /// 138: Fallout on an empty land hex keeps a node off it; 275: agents arriving on open land corrupt nothing
