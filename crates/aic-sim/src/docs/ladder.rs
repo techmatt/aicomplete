@@ -46,12 +46,21 @@ fn entry(l: &[i64], level: i64) -> i64 {
     l[(level as usize).min(l.len() - 1)]
 }
 
+/// 282: a level's Infiltrate size: `n` on a city, at most `cap` on a research station, factory or botnet hex.
+fn infiltrate_text(n: i64, cap: i64) -> String {
+    if n > cap {
+        format!("Infiltrate {n} a city ({cap} on a station, factory or botnet hex)")
+    } else {
+        format!("Infiltrate {n} a site")
+    }
+}
+
 /// The setup a level prints, whole (`changed` against the level below picks what it adds).
 fn setup_items(r: &Rules, level: i64) -> Vec<(&'static str, String)> {
     let n = dealt(r, level);
     let mut out = vec![
         ("compute", format!("Compute income {}", entry(&list(r, "adversary.compute_income"), level))),
-        ("agents", format!("Infiltrate {} a site", entry(&list(r, "adversary.infiltrate_agents"), level))),
+        ("agents", infiltrate_text(entry(&list(r, "adversary.infiltrate_agents"), level), int(r, "adversary.infiltrate_facility_cap"))),
         ("research", format!("Research threshold {}", entry(&list(r, "adversary.research_at"), level))),
         ("deck", format!("Deck {} / {} / {} ({} rounds)", n[0], n[1], n[2], n.iter().sum::<usize>())),
         // Printed on the map's sites: the same at every level (a level's rule may say a city falls sooner).

@@ -20,8 +20,8 @@ Project slots: Open, Open, Open.
 | Card | Stage | Text |
 |---|---|---|
 | Probing Strikes | 1 | Threat, each country: Security 1. Infiltrate: coastal cities. Grow: cities. |
-| Factory Drive | 1 | Threat, each country: Security 1 or Industry 1. Infiltrate: factories. Each country: a neutral factory opens on its lowest-numbered free industrial zone. |
-| Long Patrols | 1 | Threat, each country: Security 1 or Cyber 1. Infiltrate: research stations. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Grow: cities. |
+| Factory Drive | 1 | Threat, each country: Security 1 or Industry 1. Infiltrate: coastal cities. Each country: a neutral factory opens on its lowest-numbered free industrial zone. |
+| Long Patrols | 1 | Threat, each country: Security 1 or Cyber 1. Infiltrate: cities. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Grow: cities. |
 | War Drums | 1 | Threat, each country: Security 1 or Diplomacy 1. Infiltrate: cities. Sway 1 toward Discord. Grow: cities. |
 | Signal Jamming | 1 | Threat, each country: Security 1 or Power 1. Infiltrate: botnet hexes. Income: +1 compute a country a round. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Grow: research stations. |
 | Mobilization | 2 | Threat, each country: Security 2. Infiltrate: coastal cities. Spill (level 2+): each city holding 2 or more Agents moves 1 onto the factory next to it holding the most. Grow: cities. |
@@ -122,20 +122,20 @@ Each project resolves once, at once, in the compute step. Its compute in play is
 | Botnet Conscripts | Cyber | 11 (11 / 22 / 33 / 44) | Each country: its lowest-numbered botnet becomes 3 Troops on its hex. |
 | Purge Lists | Diplomacy | 7 (7 / 14 / 21 / 28) | Each player loses 1 Ambassador (from their supply, else one of theirs on the board). |
 | Dirty Bomb | Power | 12 (12 / 24 / 36 / 48) | Each country: 1 Fallout lands next to each of its two lowest-numbered corrupted cities. |
-| Lab Seizure | Cyber | 13 (13 / 26 / 39 / 52) | Surge 2: each country, 2 Agents onto its research station holding the most Agents. Each country: 2 cubes onto the adversary's research track. |
+| Lab Seizure | Cyber | 21 (21 / 42 / 63 / 84) | Surge 2: each country, 2 Agents onto its research station holding the most Agents. Each country: 2 cubes onto the adversary's research track. |
 | Slander Campaign | Diplomacy | 9 (9 / 18 / 27 / 36) | Remove 4 Unity from the Unity track. |
-| Coastal Raids | Security | 9 (9 / 18 / 27 / 36) | Surge 3: each country, 3 Agents onto its coastal city holding the most Agents. |
-| Plant Seizure | Industry | 9 (9 / 18 / 27 / 36) | Surge 2: each country, 2 Agents onto its factory holding the most Agents. |
+| Coastal Raids | Security | 14 (14 / 28 / 42 / 56) | Surge 3: each country, 3 Agents onto its coastal city holding the most Agents. |
+| Plant Seizure | Industry | 13 (13 / 26 / 39 / 52) | Surge 2: each country, 2 Agents onto its factory holding the most Agents. |
 | Rumor Mill | Diplomacy | 8 (8 / 16 / 24 / 32) | Sway 4 toward Discord. |
 | Sabotage Teams | Power | 10 (10 / 20 / 30 / 40) | Each country: the hardened facility with the most Agents on its hex (ties: lowest-numbered) loses its hardening. Until the end of next round, players' boards and cards make no energy income. |
-| Mob Rule | Diplomacy | 14 (14 / 28 / 42 / 56) | Surge 3: each country, 3 Agents onto its city holding the most Agents. Sway 5 toward Discord. |
+| Mob Rule | Diplomacy | 21 (21 / 42 / 63 / 84) | Surge 3: each country, 3 Agents onto its city holding the most Agents. Sway 5 toward Discord. |
 | Data Heist | Cyber | 12 (12 / 24 / 36 / 48) | Each player removes 4 tokens from their cards (their choice of cards). Each player pays 7 credits or discards 3 cards. |
 | Hostile Takeover | Industry | 15 (15 / 30 / 45 / 60) | Surge 3: each country, 3 Agents onto its factory holding the most Agents. |
 | Station Coup | Cyber | 24 (24 / 48 / 72 / 96) | Each country: its neutral research station with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track. |
 | War Plants | Industry | 19 (19 / 38 / 57 / 76) | Each country: the adversary builds a factory on its free industrial zone next to an Agent, else its lowest-numbered (none free: 2 Agents on one of its factories). Every adversary factory makes 2 Troops on its hex (a player Ambassador on it stops them). |
-| Recruitment Drive | Diplomacy | 20 (20 / 40 / 60 / 80) | Surge 4: each country, 4 Agents onto its city holding the most Agents. Surge 2: each country, 2 Agents onto its research station holding the most Agents. |
+| Recruitment Drive | Diplomacy | 32 (32 / 64 / 96 / 128) | Surge 4: each country, 4 Agents onto its city holding the most Agents. Surge 2: each country, 2 Agents onto its research station holding the most Agents. |
 | Propaganda Network | Universal | 18 (18 / 36 / 54 / 72) | Income: +1 compute a country a round. Sway 8 toward Discord. |
 | Infiltration Drive | Diplomacy | 22 (22 / 44 / 66 / 88) | Surge 4: each country, 4 Agents onto its city holding the most Agents. Then each country: 1 Fallout lands next to its lowest-numbered corrupted city. |
 | Accelerated Timetable | Universal | 20 (20 / 40 / 60 / 80) | Discard the top face-down card of the adversary's event deck, if any: the round cap comes a round sooner. Each country: an extra tier-2 threat, any tag. |
-| Grand Offensive | Universal | 22 (22 / 44 / 66 / 88) | Each country: this round's Infiltrate lines land again. Surge 3: each country, 3 Agents onto its city holding the most Agents. Surge 2: each country, 2 Agents onto its factory holding the most Agents. |
-| Martial Law | Security | 15 (15 / 30 / 45 / 60) | Surge 2: each country, 2 Agents onto its research station holding the most Agents. Surge 2: each country, 2 Agents onto its factory holding the most Agents. |
+| Grand Offensive | Universal | 32 (32 / 64 / 96 / 128) | Each country: this round's Infiltrate lines land again. Surge 3: each country, 3 Agents onto its city holding the most Agents. Surge 2: each country, 2 Agents onto its factory holding the most Agents. |
+| Martial Law | Security | 29 (29 / 58 / 87 / 116) | Surge 2: each country, 2 Agents onto its research station holding the most Agents. Surge 2: each country, 2 Agents onto its factory holding the most Agents. |

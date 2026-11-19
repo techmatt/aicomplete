@@ -60,8 +60,8 @@ A track tips when it holds this much:
 
 | Level | City | Station | Factory | Your node |
 |---|---|---|---|---|
-| 0 | 5 | 2 | 2 | 2 |
-| 1-4 | 3 | 2 | 2 | 2 |
+| 0 | 5 | 3 | 3 | 2 |
+| 1-4 | 3 | 3 | 3 | 2 |
 
 Checked only when the adversary puts agents on a hex (an arrival), and only that hex: a site holding its number corrupts; else a hex with your node and that many loses the node. An Infiltrate, Surge or Grow line checks each site as it places its agents. A Push or Gather is no arrival.
 
@@ -93,7 +93,7 @@ The troops on each hex march as one stack, stack by stack (country by country, h
 - **Protecting** your node or facility on its hex (§13): one, instead of the piece.
 - **Threats** that print ambassadors as a cost: from your supply.
 - **Blocking** spends none: an ambassador on a corrupted site stops its output while it stands. A **Dispatch** moves one; a troop never touches one.
-- **Gain one:** 13 credits, Accord, cards.
+- **Gain one:** 16 credits, Accord, cards.
 
 ## Grow (§6)
 

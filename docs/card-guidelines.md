@@ -25,8 +25,8 @@ quiet exception.
    one-off; don't print a rate where a fixed trade will do (24).
 7. **No caps by default.** Price the uncapped effect. A card that breaks uncapped gets a lower rate or a new effect,
    not a cap. Nor does the game cap it ([rules/economy.md](rules/economy.md), *No limits*): a runaway pile is fixed
-   at the cards feeding it. A card that draws costs at least 1 insight to play, so a round's chain of plays stops
-   when its insight does.
+   at the cards feeding it. A card that draws prints at least 1 insight to play, so a round's chain of plays stops
+   when its insight does (Science discounts can take a play to 0).
 8. **One clear idea per card.** Two effects at most, unless a third is the extra cost. A building holds income or
    tokens, and one Action or Effect; an Action may be "A, OR B" when it is a token card's choice (15).
 9. **Fits at the default size.** Rules text prints at 7.5 pt. A building's box above the art holds about 80
@@ -121,7 +121,7 @@ a per-tag rate of 1 is a rate, not an amount.
 
 **Board state to size removals against:** agents median 6 a country (p90 10) and 6 in a seat's reach (p90 12: a
 power's or standard action's area; a card's is its target); troops 0-1 a country (p90 3); a project holds under its
-cost (7-24 compute a board).
+cost (7-32 compute a board).
 
 ## House wording
 

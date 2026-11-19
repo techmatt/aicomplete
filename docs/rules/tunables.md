@@ -10,7 +10,7 @@ conventions: [README.md](README.md).*
 | `board.start_ambassadors` | 1 | 0..10 | player ambassadors each player starts with |
 | `board.unit_cap` | 2 | 0..20 | Drones a base holds at most |
 | `board.corp_energy` | 1 | 0..10 | energy cubes each city of country i makes a round (a megacorp parameter; the list repeats) |
-| `board.city_energy_credits` | 3 | 0..20 | standard action Buy energy: credits for a neutral city's energy, once per city a round, the city in reach and producing |
+| `board.city_energy_credits` | 4 | 0..20 | standard action Buy energy: credits for a neutral city's energy, once per city a round, the city in reach and producing |
 | `board.aligned_bonus` | 0 | 0..10 | extra energy an aligned city gives its owner |
 | `board.station_cubes` | 1 | 0..5 | research cubes a neutral station makes a round (an adversary one: adversary cubes, then research-track cubes; compute with adversary.research_at 0) |
 | `board.owned_station_cubes` | 1 | 0..5 | research cubes a player-owned station makes its owner a round |
@@ -35,7 +35,7 @@ conventions: [README.md](README.md).*
 | `board.remove_count` | 3 | 1..3 | standard action Remove agents: agents it removes, at most, on or next to its target (the player's choice) |
 | `board.land_cubes` | 2 | 0..10 | standard action Lift Fallout: research cubes to lift 1 Fallout token in reach (0: no such action) |
 | `board.envoy_ambassadors` | 1 | 0..5 | standard action Envoy: your ambassadors from the supply, used up, to move 1 Discord off the Discord track (0: no such action) |
-| `board.ambassador_credits` | 13 | 1..50 | standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit) |
+| `board.ambassador_credits` | 16 | 1..50 | standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit) |
 | `board.sell_credits` | 1 | 0..20 | standard action: credits for selling a card from hand |
 | `board.cube_insight` | 1 | 0..5 | standard action Turn a cube into insight: insight for `insight_cubes` research cubes, `insight_per_round` times a round (0: no such action) |
 | `board.insight_cubes` | 1 | 1..5 | standard action Turn a cube into insight: research cubes a use (252: taxed) |
@@ -52,8 +52,8 @@ conventions: [README.md](README.md).*
 | `adversary.stage_cards` | 5, 5, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
 | `adversary.supply_per_country` | 24 | 0..40 | agents in the supply per country |
 | `adversary.corrupt_at` | 5 | 1..20 | a city's corrupt number: the agents on it that corrupt it (coastal cities too) |
-| `adversary.corrupt_station_at` | 2 | 1..20 | a research station's corrupt number |
-| `adversary.corrupt_factory_at` | 2 | 1..20 | a factory's corrupt number |
+| `adversary.corrupt_station_at` | 3 | 1..20 | a research station's corrupt number |
+| `adversary.corrupt_factory_at` | 3 | 1..20 | a factory's corrupt number |
 | `adversary.corrupt_node_at` | 2 | 1..20 | a node's corrupt number: a hex with a player's node and this many agents loses the node |
 | `adversary.corrupt_cut` | 2, 0, 0 | 0..5 | difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory) |
 | `adversary.corrupt_cut_at` | 1 | 0..5 | the difficulty level from which corrupt_cut applies |
@@ -69,8 +69,9 @@ conventions: [README.md](README.md).*
 | `adversary.stage2_removed` | 2 | 0..3 | difficulty 3+: stage-II cards removed (a shorter round cap) |
 | `adversary.stage1_added` | 0 | 0..3 | difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step) |
 | `adversary.extra_corrupted` | 0 | 0..3 | difficulty 4: more cities per country start corrupted |
-| `adversary.compute_income` | 0, 3, 5, 15, 18 | 0..30 | the adversary's base compute income a country a round, at difficulty 0-4 (times the countries: per board) |
-| `adversary.infiltrate_agents` | 1, 1, 1, 1, 2 | 0..5 | 275: agents an Infiltrate line lands on each site it names, at difficulty 0-4 |
+| `adversary.compute_income` | 0, 3, 5, 10, 15 | 0..30 | the adversary's base compute income a country a round, at difficulty 0-4 (times the countries: per board) |
+| `adversary.infiltrate_agents` | 1, 1, 1, 1, 2 | 0..5 | 275: agents an Infiltrate line lands on each city it names, at difficulty 0-4 |
+| `adversary.infiltrate_facility_cap` | 1 | 0..5 | 282: at most this many of an Infiltrate line's agents land on each research station, factory or botnet hex it names (cities take every one) |
 | `adversary.spill_at` | 2 | 0..5 | 275: the difficulty level from which an event card's Spill line moves agents; below it the line does nothing |
 | `adversary.botnet_seed` | 1 | 0..5 | 275: agents each botnet (no player ambassador on it) seeds onto the site next to it holding the most agents, in the compute step with its compute (r133) |
 | `adversary.grow_infest_at` | 1 | 1..5 | 275: agents a Grow site holds for its new facility to come with 1 agent on it (an adversary site's always does) |
@@ -82,7 +83,7 @@ conventions: [README.md](README.md).*
 | `adversary.botnet_compute` | 1 | 0..5 | adversary compute each botnet makes a round (none with a player ambassador on it) |
 | `adversary.botnet_spread_at` | 1 | 0..5 | 263: the difficulty level from which a 'Botnets spread' line (event cards, projects) spreads botnets; below it the line does nothing |
 | `adversary.board_difficulty_at` | 2 | 0..5 | the difficulty level from which the adversary board's `difficulty` line applies (267: the Militarist's War Footing, level 2's named rule) |
-| `adversary.research_at` | 5, 4, 4, 4, 4 | 0..30 | 259: research cubes a country that fire the adversary board's research rule, at difficulty 0-4 (times the countries; 0: never) |
+| `adversary.research_at` | 5, 5, 5, 4, 4 | 0..30 | 259: research cubes a country that fire the adversary board's research rule, at difficulty 0-4 (times the countries; 0: never) |
 | `adversary.research_strong_at` | 3 | 0..5 | 259: the difficulty level from which the research rule fires its stronger effect |
 | `alignment.tip_per_player` | 3 | 1..50 | the Unity track tips when it holds this many Sway per player |
 | `alignment.discord_tip_per_player` | 4 | 1..50 | the Discord track tips when it holds this many Sway per player |
@@ -109,6 +110,6 @@ conventions: [README.md](README.md).*
 | `cards.keep_tier2_upgraded` | 2 | 0..10 | insight to keep a tier-2 card once the AI board's keep upgrade is uncovered |
 | `cards.science_every` | 2 | 0..10 | 1 insight off tier-2 keeps and card plays per this many Science tags (0: off) |
 | `cards.industry_every` | 3 | 0..10 | 1 credit off buildings per this many Industry tags (0: off) |
-| `cards.discount_floor` | 1 | 0..5 | tag and building discounts stop at this cost; a cost printed under it stays |
+| `cards.discount_floor` | 0 | 0..5 | tag and building discounts stop at this cost; a cost printed under it stays |
 | `cards.no_pass` | 0 | 0..1 | 278 (table-time prototype): 1, each player keeps from the hand they built; no picks or passing |
 <!-- /generated -->

@@ -119,7 +119,7 @@ fn buy_energy_takes_a_neutral_producing_citys_energy_once_a_round() {
     let w = rules.world();
     let (city, n) = city_with_lonely_neighbors(&rules.map);
     let price = w.int("board.city_energy_credits");
-    assert_eq!(price, 3);
+    assert_eq!(price, 4);
     let made = city_energy(&rules, city);
     assert!(made > 0);
     let buy = std_act(0, "buy_energy");
@@ -360,11 +360,11 @@ fn a_converter_needs_a_city_of_its_country_in_reach() {
     assert!(offered(&g));
     let (e, a) = (g.resource(0, Resource::Energy), g.resource(0, Resource::Antimatter));
     rules.apply_mut(&mut g, &convert, None).unwrap();
-    // Horizon (262): 3 cubes for 5 energy (r101-r122: 3 cubes + 1 energy for 1 antimatter; r94: 2 cubes; r88: 1 cube
-    // for 2).
+    // Horizon (282): 2 cubes for 4 energy (262: 3 for 5; r101-r122: 3 cubes + 1 energy for 1 antimatter; r94: 2
+    // cubes; r88: 1 cube for 2).
     assert_eq!(
         (g.resource(0, Resource::ResearchCubes), g.resource(0, Resource::Energy), g.resource(0, Resource::Antimatter)),
-        (0, e + 5, a)
+        (1, e + 4, a)
     );
     // r75 (content): Horizon's converter is once a round too (105 had no limit on it).
     assert_eq!(board::converter_blocked(&w, &g, 0, 0), Some("used this round"));

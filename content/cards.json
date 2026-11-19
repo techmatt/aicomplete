@@ -109,7 +109,7 @@
   "name": "Simulation Cluster",
   "tier": 1,
   "kind": "building",
-  "cost": 2,
+  "cost": 4,
   "insight": 2,
   "tags": [
    "science",
@@ -349,7 +349,7 @@
   "name": "Field Sensor Grid",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 7,
   "insight": 2,
   "tags": [
    "science",
@@ -422,7 +422,7 @@
   "name": "Foundation Model Campus",
   "tier": 2,
   "kind": "building",
-  "cost": 3,
+  "cost": 11,
   "insight": 2,
   "needs": [
    [
@@ -479,7 +479,7 @@
     {
      "op": "gain",
      "resource": "insight",
-     "amount": 2
+     "amount": 3
     }
    ]
   }
@@ -808,7 +808,7 @@
   "tier": 1,
   "kind": "building",
   "cost": 2,
-  "insight": 2,
+  "insight": 1,
   "tags": [
    "industry",
    "power"
@@ -824,7 +824,7 @@
      {
       "op": "gain",
       "resource": "credits",
-      "amount": 1
+      "amount": 3
      }
     ]
    }
@@ -934,7 +934,7 @@
   "name": "Orbital Mass Driver",
   "tier": 2,
   "kind": "building",
-  "cost": 2,
+  "cost": 15,
   "chips": 1,
   "insight": 2,
   "needs": [
@@ -2436,7 +2436,7 @@
   "name": "Orbital Embassy",
   "tier": 2,
   "kind": "building",
-  "cost": 2,
+  "cost": 5,
   "insight": 2,
   "needs": [
    [
@@ -2849,7 +2849,7 @@
      {
       "op": "add_tokens",
       "kind": "agents",
-      "amount": 1,
+      "amount": 2,
       "here": true
      }
     ]
@@ -2861,7 +2861,7 @@
      {
       "op": "gain",
       "resource": "insight",
-      "amount": 2
+      "amount": 4
      }
     ]
    }
@@ -3332,7 +3332,7 @@
   "name": "Vertical Monopoly",
   "tier": 2,
   "kind": "building",
-  "cost": 3,
+  "cost": 11,
   "insight": 2,
   "needs": [
    [
@@ -3753,7 +3753,7 @@
      {
       "op": "gain",
       "resource": "insight",
-      "amount": 1
+      "amount": 2
      }
     ]
    }
@@ -3864,7 +3864,7 @@
      {
       "op": "gain",
       "resource": "credits",
-      "amount": 2
+      "amount": 4
      }
     ]
    }
@@ -4024,7 +4024,7 @@
   "name": "Zero-Day Auction",
   "tier": 2,
   "kind": "program",
-  "cost": 2,
+  "cost": 4,
   "insight": 2,
   "needs": [
    [
@@ -4053,7 +4053,7 @@
   "name": "Command-and-Control Grid",
   "tier": 2,
   "kind": "building",
-  "cost": 13,
+  "cost": 4,
   "insight": 2,
   "needs": [
    [
@@ -4066,16 +4066,10 @@
   ],
   "effects": [],
   "ability": {
-   "cost": [
-    [
-     "energy",
-     1
-    ]
-   ],
    "effects": [
     {
      "op": "draw",
-     "count": 2
+     "count": 1
     }
    ]
   }
@@ -4323,7 +4317,7 @@
   "name": "Joint Task Force",
   "tier": 1,
   "kind": "building",
-  "cost": 2,
+  "cost": 7,
   "insight": 1,
   "needs": [
    [
@@ -4493,7 +4487,7 @@
   "name": "Patent Library",
   "tier": 1,
   "kind": "building",
-  "cost": 2,
+  "cost": 4,
   "insight": 1,
   "tags": [
    "science"
@@ -4535,7 +4529,7 @@
     {
      "op": "gain",
      "resource": "credits",
-     "amount": 3
+     "amount": 5
     }
    ]
   }
@@ -4660,7 +4654,7 @@
   "name": "Bug Bounty Board",
   "tier": 1,
   "kind": "building",
-  "cost": 2,
+  "cost": 5,
   "insight": 1,
   "tags": [
    "cyber"
@@ -4711,7 +4705,7 @@
      {
       "op": "gain",
       "resource": "energy",
-      "amount": 1
+      "amount": 2
      }
     ]
    }
@@ -5331,7 +5325,7 @@
   "tier": 2,
   "kind": "event",
   "cost": 2,
-  "insight": 2,
+  "insight": 1,
   "needs": [
    [
     "security",
@@ -5369,7 +5363,7 @@
   "name": "Lure Network",
   "tier": 2,
   "kind": "building",
-  "cost": 3,
+  "cost": 12,
   "insight": 1,
   "tags": [
    "cyber"
@@ -5518,7 +5512,7 @@
   "name": "Open Source Uprising",
   "tier": 2,
   "kind": "program",
-  "cost": 2,
+  "cost": 10,
   "insight": 1,
   "tags": [
    "science",
@@ -5801,7 +5795,7 @@
   "name": "Dark Fiber Collider",
   "tier": 2,
   "kind": "building",
-  "cost": 2,
+  "cost": 7,
   "insight": 1,
   "needs": [
    [

@@ -350,7 +350,7 @@
    "tags": [
     "cyber"
    ],
-   "cost": 13,
+   "cost": 21,
    "text": "Surge 2: each country, 2 Agents onto its research station holding the most Agents. Each country: 2 cubes onto the adversary's research track.",
    "effects": [
     {
@@ -370,7 +370,7 @@
     "facilities destroyed or corrupted",
     "adversary research advanced"
    ],
-   "value": "275: give 13 compute a board (26 at 2 countries); its Surge lines land 2 agents a country, 6.7 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 onto a station or factory corrupts it on arrival unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
+   "value": "282: give 21 compute a board (42 at 2 countries), priced as its captures (experiments/results/282_balance_pass/givget.md; 275: 13); its Surge lines land 2 agents a country, 6.7 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 onto a station or factory corrupts it on arrival unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
    "check": "275: 231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round with agents by stations. Who plays it: automatic for the adversary (compute step); players answer: clear agents next to stations.",
    "flags": [
     "231: new (small, a deck margin)",
@@ -410,7 +410,7 @@
    "tags": [
     "security"
    ],
-   "cost": 9,
+   "cost": 14,
    "text": "Surge 3: each country, 3 Agents onto its coastal city holding the most Agents.",
    "effects": [
     {
@@ -422,7 +422,7 @@
    "harms": [
     "adversary pieces placed"
    ],
-   "value": "275: give 9 compute a board (18 at 2 countries); its Surge lines land 3 agents a country, 10.0 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 onto a station or factory corrupts it on arrival unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
+   "value": "282: give 14 compute a board (28 at 2 countries), priced as its captures (experiments/results/282_balance_pass/givget.md; 275: 9); its Surge lines land 3 agents a country, 10.0 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 onto a station or factory corrupts it on arrival unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
    "check": "275: 231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: clear coastal stacks; ambassadors on coastal cities.",
    "flags": [
     "231: new (small, a deck margin)",
@@ -437,7 +437,7 @@
    "tags": [
     "industry"
    ],
-   "cost": 9,
+   "cost": 13,
    "text": "Surge 2: each country, 2 Agents onto its factory holding the most Agents.",
    "effects": [
     {
@@ -450,7 +450,7 @@
     "adversary pieces placed",
     "facilities destroyed or corrupted"
    ],
-   "value": "275: give 9 compute a board (18 at 2 countries); its Surge lines land 2 agents a country, 6.7 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 onto a station or factory corrupts it on arrival unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
+   "value": "282: give 13 compute a board (26 at 2 countries), priced as its captures (experiments/results/282_balance_pass/givget.md; 275: 9); its Surge lines land 2 agents a country, 6.7 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 onto a station or factory corrupts it on arrival unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
    "check": "275: 231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round with agents by factories. Who plays it: automatic for the adversary (compute step); players answer: clear agents next to factories.",
    "flags": [
     "231: new (small, a deck margin)",
@@ -520,7 +520,7 @@
    "tags": [
     "diplomacy"
    ],
-   "cost": 14,
+   "cost": 21,
    "text": "Surge 3: each country, 3 Agents onto its city holding the most Agents. Sway 5 toward Discord.",
    "effects": [
     {
@@ -539,7 +539,7 @@
     "adversary pieces placed",
     "Discord sway"
    ],
-   "value": "275: give 14 compute a board (28 at 2 countries); its Surge lines land 3 agents a country, 10.0 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 onto a station or factory corrupts it on arrival unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
+   "value": "282: give 21 compute a board (42 at 2 countries), priced as its captures (experiments/results/282_balance_pass/givget.md; 275: 14); its Surge lines land 3 agents a country, 10.0 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 onto a station or factory corrupts it on arrival unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
    "check": "275: 231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: clear city stacks; drain.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): the node raid out, Discord in",
@@ -682,7 +682,7 @@
    "tags": [
     "diplomacy"
    ],
-   "cost": 20,
+   "cost": 32,
    "text": "Surge 4: each country, 4 Agents onto its city holding the most Agents. Surge 2: each country, 2 Agents onto its research station holding the most Agents.",
    "effects": [
     {
@@ -699,7 +699,7 @@
    "harms": [
     "adversary pieces placed"
    ],
-   "value": "275: give 20 compute a board (40 at 2 countries); its Surge lines land 6 agents a country, 20.0 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 onto a station or factory corrupts it on arrival unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
+   "value": "282: give 32 compute a board (64 at 2 countries), priced as its captures (experiments/results/282_balance_pass/givget.md; 275: 20); its Surge lines land 6 agents a country, 20.0 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 onto a station or factory corrupts it on arrival unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
    "check": "275: 231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: early is worst. Who plays it: automatic for the adversary (compute step); players answer: drain it; clear city stacks.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): a rally now beside the income",
@@ -809,7 +809,7 @@
    "tags": [
     "universal"
    ],
-   "cost": 22,
+   "cost": 32,
    "text": "Each country: this round's Infiltrate lines land again. Surge 3: each country, 3 Agents onto its city holding the most Agents. Surge 2: each country, 2 Agents onto its factory holding the most Agents.",
    "effects": [
     {
@@ -830,7 +830,7 @@
     "adversary pieces placed",
     "facilities destroyed or corrupted"
    ],
-   "value": "275: give 22 compute a board (44 at 2 countries); its Surge lines land 5 agents a country, 16.7 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 onto a station or factory corrupts it on arrival unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
+   "value": "282: give 32 compute a board (64 at 2 countries), priced as its captures (experiments/results/282_balance_pass/givget.md; 275: 22); its Surge lines land 5 agents a country, 16.7 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 onto a station or factory corrupts it on arrival unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
    "check": "275: 231: 3 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late. Who plays it: automatic for the adversary (compute step); players answer: clear stacks by cities and factories.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): Corrupt factories added",
@@ -845,7 +845,7 @@
    "tags": [
     "security"
    ],
-   "cost": 15,
+   "cost": 29,
    "text": "Surge 2: each country, 2 Agents onto its research station holding the most Agents. Surge 2: each country, 2 Agents onto its factory holding the most Agents.",
    "effects": [
     {
@@ -868,7 +868,7 @@
     "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)"
    ],
    "reuses": null,
-   "value": "275: give 15 compute a board (30 at 2 countries); its Surge lines land 4 agents a country, 13.3 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 onto a station or factory corrupts it on arrival unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
+   "value": "282: give 29 compute a board (58 at 2 countries), priced as its captures (experiments/results/282_balance_pass/givget.md; 275: 15); its Surge lines land 4 agents a country, 13.3 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 onto a station or factory corrupts it on arrival unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
    "check": "275: 233: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: clear station stacks; ambassadors on stations."
   }
  ]

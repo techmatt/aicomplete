@@ -1347,7 +1347,7 @@ pub enum Op {
     },
     /// 275, Infiltrate X (it replaced Rally and the agent pools): `adversary.infiltrate_agents` agents (1; 2 from
     /// its level) on each `site` in every country in scope that is not yet the adversary's, whoever owns it, in
-    /// hex order. A firewalled or no-Infiltrate site's agents stay in the supply; a cordoned country takes none.
+    /// hex order; at most `adversary.infiltrate_facility_cap` (1) on a station, factory or botnet hex (282). A firewalled or no-Infiltrate site's agents stay in the supply; a cordoned country takes none.
     /// Each arrival is checked where it lands (arrival corruption, [`crate::modules::adversary::arrive_check`]).
     Infiltrate {
         site: SiteType,

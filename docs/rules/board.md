@@ -71,8 +71,8 @@ megaproject is the corp's defining card.
 <!-- generated: corps -->
 | Corp | Megaproject | Cubes | At completion: player cube / adversary cube | Converter (as often as you can pay, unless marked) | Chip converter |
 |---|---|---|---|---|---|
-| Horizon (geothermal and tidal energy) | Tidal Grid | 8 | 3 energy, 2 credits / 1 Sway to Discord | 3 research cubes → 5 energy (once a round) | 2 chips → 3 energy (once a round) |
-| Cintamani (AI and efficiency) | Polar Compute Array | 8 | 6 credits / 1 adversary compute | 1 research cube → 2 insight (once a round) | 1 chip → 1 drawn card, 1 credit (once a round) |
+| Horizon (geothermal and tidal energy) | Tidal Grid | 8 | 3 energy, 2 credits / 1 Sway to Discord | 2 research cubes → 4 energy (once a round) | 1 chip → 2 energy (once a round) |
+| Cintamani (AI and efficiency) | Polar Compute Array | 8 | 6 credits / 1 adversary compute | 1 research cube → 2 insight (once a round) | 1 chip → 1 drawn card, 2 credits (once a round) |
 | Onyx (heavy industry, power plants and processors) | Mountain Fusion Works | 8 | 2 chips, 2 credits / 1 Sway to Discord | 1 research cube → 1 chip (once a round) | none |
 | Biomia (biopunk) | Delta Seawall | 8 | 1 Sway to Unity, 3 credits / 1 Sway to Discord | 1 research cube → 1 Sway to Unity (once a round) | 2 chips → 2 Sway to Unity, 1 drawn card (once a round) |
 <!-- /generated -->
@@ -109,11 +109,11 @@ megaproject is the corp's defining card.
   feed the adversary's research track (259).
 - **Chip converters** (r87, Matt: chips hoarded early pay late): three cards also print one paid in chips, used as the
   converter is (a city of the country in reach, once a round); Onyx's, which makes chips, doesn't. Give / get at
-  `values.json` (anchors): 2 chips, 8 (12), for 3 energy 13.5 (13.5), 3 cards 12 (15), or 2 Sway and a card 12
-  (13).
+  `values.json` (anchors): 1 chip, 4 (6), for 2 energy 9 (9) or a card and 2 credits 4.67 (5.33); 2 chips, 8 (12), for 2
+  Sway and a card 12 (13).
 - **Horizon pays energy** (262, Matt, 2026-11-17: Horizon is the energy corp, and energy binds; both its converters
-  sat unused making antimatter, 0.07 and 0.00 a seat-game): 3 cubes, 9 (18), for 5 energy 22.5 (22.5); 2 chips for
-  3 energy (above).
+  sat unused making antimatter, 0.07 and 0.00 a seat-game): 2 cubes, 6 (12), for 4 energy 18 (18); 1 chip, 4 (6),
+  for 2 energy 9 (9). Polar Compute Array's chip converter: 1 chip for a drawn card and 2 credits.
   Megaprojects complete by round 3 in about 97% of games (199), so they open mid-game.
 - **Converters.** Each completed card prints one converter, used in the action phase by any
   player with **a city of that country in reach** (r75, Matt's ruling 9: any city, owned or not; r37 asked for a

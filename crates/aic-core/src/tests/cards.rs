@@ -332,7 +332,8 @@ fn only_a_building_keeps_an_action() {
 
 #[test]
 fn science_tags_discount_insight_to_a_floor_of_one() {
-    let (rules, mut g) = lab_with(&[], &["cards.science_every=2"]);
+    // The floor's mechanism at 1 (282's baseline `discount_floor` is 0).
+    let (rules, mut g) = lab_with(&[], &["cards.science_every=2", "cards.discount_floor=1"]);
     let w = rules.world();
     let two = w.content.cards.iter().find(|c| c.insight == 2).unwrap();
     let one = w.content.cards.iter().find(|c| c.insight == 1).unwrap();
@@ -345,7 +346,8 @@ fn science_tags_discount_insight_to_a_floor_of_one() {
 
 #[test]
 fn industry_tags_discount_buildings_to_a_floor_of_one() {
-    let (rules, mut g) = lab_with(&[], &["cards.industry_every=2"]);
+    // The floor's mechanism at 1 (282's baseline `discount_floor` is 0).
+    let (rules, mut g) = lab_with(&[], &["cards.industry_every=2", "cards.discount_floor=1"]);
     let w = rules.world();
     // The cheapest, so the deck's Industry programs reach the floor.
     let d = w.content.cards.iter().filter(|c| c.is_building() && c.cost >= 3 && c.tier == 1).min_by_key(|c| c.cost).unwrap();

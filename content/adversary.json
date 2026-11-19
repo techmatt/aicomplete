@@ -148,7 +148,7 @@
    "standing": [
     {
      "op": "infiltrate",
-     "site": "factory"
+     "site": "coastal_city"
     },
     {
      "op": "create_site",
@@ -156,7 +156,7 @@
     }
    ],
    "twists": [],
-   "text": "Threat, each country: Security 1 or Industry 1. Infiltrate: factories. Each country: a neutral factory opens on its lowest-numbered free industrial zone.",
+   "text": "Threat, each country: Security 1 or Industry 1. Infiltrate: coastal cities. Each country: a neutral factory opens on its lowest-numbered free industrial zone.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"
@@ -178,7 +178,7 @@
    "standing": [
     {
      "op": "infiltrate",
-     "site": "station"
+     "site": "city"
     },
     {
      "op": "spread_botnets",
@@ -191,7 +191,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each country: Security 1 or Cyber 1. Infiltrate: research stations. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Grow: cities.",
+   "text": "Threat, each country: Security 1 or Cyber 1. Infiltrate: cities. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Grow: cities.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"

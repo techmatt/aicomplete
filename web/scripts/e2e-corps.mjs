@@ -102,8 +102,8 @@ try {
   const energy = await resource('energy');
   check(await js(`window.aic.legal.some((a) => a.type === 'convert' && a.seat === 0 && a.country === 0)`), 'the converter is on the menu');
   await js(`window.aic.act({ type: 'convert', seat: 0, country: 0 })`);
-  // 262: Horizon's converter is 3 research cubes for 5 energy (Tidal Grid's content).
-  check(await resource('research_cubes') === stored - 3 && await resource('energy') === energy + 5, 'using it turns 3 cubes into 5 energy');
+  // 282: Horizon's converter is 2 research cubes for 4 energy (Tidal Grid's content; 262: 3 for 5).
+  check(await resource('research_cubes') === stored - 2 && await resource('energy') === energy + 4, 'using it turns 2 cubes into 4 energy');
   // 184: r75 prints every converter once a round per player (105 had them as often as you can pay).
   check(!(await js(`window.aic.legal.some((a) => a.type === 'convert' && a.seat === 0 && a.country === 0)`)), 'not offered again this round (once a round, r75)');
   check(consoleErrors.length === 0, `no page errors${consoleErrors.length ? `: ${consoleErrors.join(' | ')}` : ''}`);

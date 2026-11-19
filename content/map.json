@@ -212,7 +212,7 @@
    "project": {
     "name": "Tidal Grid",
     "cubes": 8,
-    "text": "At completion each player cube pays 3 energy and 2 credits, each adversary cube 1 Sway to Discord. Afterward, once a round, with a city here in your reach: 3 research cubes for 5 energy; and, once a round, 2 chips for 3 energy. Afterward an adversary station here puts its cubes onto the adversary's research track.",
+    "text": "At completion each player cube pays 3 energy and 2 credits, each adversary cube 1 Sway to Discord. Afterward, once a round, with a city here in your reach: 2 research cubes for 4 energy; and, once a round, 1 chip for 2 energy. Afterward an adversary station here puts its cubes onto the adversary's research track.",
     "player": [
      {
       "op": "gain",
@@ -237,14 +237,14 @@
      "cost": [
       [
        "research_cubes",
-       3
+       2
       ]
      ],
      "effects": [
       {
        "op": "gain",
        "resource": "energy",
-       "amount": 5
+       "amount": 4
       }
      ],
      "once": true
@@ -253,14 +253,14 @@
      "cost": [
       [
        "chips",
-       2
+       1
       ]
      ],
      "effects": [
       {
        "op": "gain",
        "resource": "energy",
-       "amount": 3
+       "amount": 2
       }
      ],
      "once": true
@@ -304,7 +304,7 @@
    "project": {
     "name": "Polar Compute Array",
     "cubes": 8,
-    "text": "At completion each player cube pays 6 credits, each adversary cube 1 adversary compute. Afterward, once a round, with a city here in your reach: 1 research cube for 2 insight; and, once a round, 1 chip for 1 drawn card and 1 credit. Afterward an adversary station here puts its cubes onto the adversary's research track.",
+    "text": "At completion each player cube pays 6 credits, each adversary cube 1 adversary compute. Afterward, once a round, with a city here in your reach: 1 research cube for 2 insight; and, once a round, 1 chip for 1 drawn card and 2 credits. Afterward an adversary station here puts its cubes onto the adversary's research track.",
     "player": [
      {
       "op": "gain",
@@ -349,7 +349,7 @@
       {
        "op": "gain",
        "resource": "credits",
-       "amount": 1
+       "amount": 2
       }
      ],
      "once": true

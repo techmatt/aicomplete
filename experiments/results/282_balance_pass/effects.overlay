@@ -1,0 +1,21 @@
+# 282: effect changes for cards too weak at the anchors even at the 2-credit floor ("unplayed cards get
+# stronger, not cheaper"). Each needs Matt's call; apply after prices.overlay. Arithmetic: givget.md.
+#
+# Command-and-Control Grid: drop the Action's 1 energy (draw 1 for 1 energy is break-even at the anchors, a loss at values.json)
+cards.command_and_control_grid.ability.cost=null
+# Agency Directorate (0.35-0.52): a Security play adds 2 Operatives (was 1); at 4, gain 4 insight (was 2)
+cards.agency_directorate.passives.0.then.0.amount=2
+cards.agency_directorate.passives.1.then.0.amount=4
+# Interdisciplinary Institute (0.52-0.70): 2 insight per Science tag (was 1)
+cards.interdisciplinary_institute.passives.0.then.0.amount=2
+# Capital Projects Office (0.47-0.63): 4 credits an Industry play (was 2)
+cards.capital_projects_office.passives.0.then.0.amount=4
+# Fusion Research Campus (0.59-0.78): 2 energy a Power play (was 1)
+cards.fusion_research_campus.passives.0.then.0.amount=2
+# Orbital Observatory Array (0.53): 1 energy -> 3 insight (was 2)
+cards.orbital_observatory_array.ability.effects.0.amount=3
+# Lights-Out Assembly (0.27, prints a 1-credit gain): 3 credits an Industry play, play insight 2 -> 1
+cards.lights_out_assembly.passives.0.then.0.amount=3
+cards.lights_out_assembly.insight=1
+# Parts Exchange (1 chip -> 3 credits is a loss at the anchors, chip 4): 1 chip -> 5 credits
+cards.parts_exchange.ability.effects.0.amount=5

@@ -105,7 +105,7 @@ building with a Science trigger fires it.
 
 - **Play triggers (`when`, `play`):** "When you play a Science card, gain 5 credits" (Citation Engine); with no tag, any
   card, printed by no card: **a per-play payout names a tag** (draw is precious; any-card payouts made a cheap card
-  pay twice). **Per tag** (`play_tag`): "when you play a card, gain 1 insight per Science tag on it" (Interdisciplinary
+  pay twice). **Per tag** (`play_tag`): "when you play a card, gain 2 insight per Science tag on it" (Interdisciplinary
   Institute), once for each tag of one kind on the played card, the ringed tag after `/` on the right of the `:`; the
   form with no tag (each tag of any kind, the empty ring) is printed by no card.
 - **Teammate triggers (`team_play`):** "When another player plays a Security card, remove 2 Agents on it"

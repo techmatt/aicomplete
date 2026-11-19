@@ -44,6 +44,32 @@ fn an_infiltrate_lands_one_agent_on_each_site_of_its_type_and_skips_a_corrupted_
     assert_eq!(g.stats.counters["adversary.infiltrated"], sites.len() as i64);
 }
 
+/// 282: at 2 agents a site (d4's `infiltrate_agents`), a city takes both, but a research station (or factory or
+/// botnet hex) at most `infiltrate_facility_cap` (1).
+#[test]
+fn an_infiltrate_lands_its_full_count_on_a_city_and_the_cap_on_a_facility() {
+    let (rules, mut g) = lab_with(&[], &["adversary.infiltrate_agents=2,2,2,2,2"]);
+    let m = &rules.map;
+    let w = rules.world();
+    assert_eq!(w.int("adversary.infiltrate_facility_cap"), 1);
+    assert_eq!(adversary::infiltrate_agents_on(&w, SiteType::City), 2);
+    assert_eq!(adversary::infiltrate_agents_on(&w, SiteType::CoastalCity), 2);
+    for s in [SiteType::Station, SiteType::Factory, SiteType::Botnet] {
+        assert_eq!(adversary::infiltrate_agents_on(&w, s), 1, "{s:?}");
+    }
+    set_var(&mut g, SUPPLY, 40);
+    clear_agents(&mut g);
+    let open0 = numbered_where(m, 0, |h| kind(m, h) == HexKind::Open);
+    put(&mut g, open0[0], STATION, 1);
+    let stations = plan::infiltrate_sites(&w, &g, SiteType::Station, 0);
+    assert!(stations.contains(&open0[0]));
+    with_cx(&rules, |cx| adversary::infiltrate(&mut g, cx, SiteType::Station, Some(0), "test")).unwrap();
+    assert!(stations.iter().all(|&h| g.tokens(h, ADV_AMBASSADOR) == 1), "1 a station");
+    let cities = plan::infiltrate_sites(&w, &g, SiteType::City, 0);
+    with_cx(&rules, |cx| adversary::infiltrate(&mut g, cx, SiteType::City, Some(0), "test")).unwrap();
+    assert!(cities.iter().all(|&h| g.tokens(h, ADV_AMBASSADOR) == 2), "2 a city");
+}
+
 /// 275: a firewalled site is still named by an Infiltrate, but nothing lands on it: its agent stays in the supply
 /// (and out of the forecast), and no other site takes it.
 #[test]
@@ -105,7 +131,8 @@ fn a_creation_line_lands_on_the_lowest_numbered_sites_meeting_its_condition() {
 /// one does.
 #[test]
 fn an_arrival_at_a_sites_number_corrupts_it_and_one_short_does_not() {
-    let (rules, mut g) = lab(&[]);
+    // The mechanism at a station's number 2 (282's baseline prints 3).
+    let (rules, mut g) = lab_with(&[], &["adversary.corrupt_station_at=2"]);
     let m = &rules.map;
     let w = rules.world();
     assert_eq!(adversary::corrupt_n(&w, CorruptSite::Station, 0), 2);
@@ -149,7 +176,8 @@ fn a_site_holding_its_number_waits_for_an_arrival_on_it() {
 /// prohibition's token lets the agent land but holds the corruption.
 #[test]
 fn a_firewall_or_a_corrupt_prohibition_holds_an_arrival_corruption() {
-    let (rules, mut g) = lab(&[]);
+    // The mechanism at a station's number 2 (282's baseline prints 3).
+    let (rules, mut g) = lab_with(&[], &["adversary.corrupt_station_at=2"]);
     let m = &rules.map;
     set_var(&mut g, SUPPLY, 40);
     let open0 = numbered_where(m, 0, |h| kind(m, h) == HexKind::Open);
@@ -682,10 +710,13 @@ fn the_load_check_refuses_an_event_or_a_project_off_the_standard() {
         "more than two other lines",
     );
     refused(&|a| a.text = "Muster 1 on each board.".into(), "each board");
-    // Martial Law (15 a board) prints two consequences; a third is refused below `THIRD_EFFECT_COST` (227,
-    // ruling 4; 231: 18 on the per-board scale) and allowed from it.
-    let p = c.projects.iter().find(|p| p.id == "martial_law").unwrap();
-    assert_eq!(p.effects.len(), 2);
+    // A project under `THIRD_EFFECT_COST` printing two consequences (Martial Law until 282 priced it at 29); a
+    // third is refused below the cost (227, ruling 4; 231: 18 on the per-board scale) and allowed from it.
+    let p = c
+        .projects
+        .iter()
+        .find(|p| p.effects.len() == 2 && p.cost < crate::content::THIRD_EFFECT_COST)
+        .expect("a two-consequence project under THIRD_EFFECT_COST");
     assert!(p.cost < crate::content::THIRD_EFFECT_COST);
     assert_eq!(project_rule_break(p), None);
     let mut three = p.clone();
@@ -734,8 +765,8 @@ fn every_project_slot_is_open() {
 }
 
 /// r80 (184's D79 a): an adversary-factory line with no free zone lands its fallback agents on a factory, never a
-/// firewalled one (as a creation line skips it). A factory's number is raised past the 2 here, so the arrival
-/// doesn't corrupt it (275).
+/// firewalled one (as a creation line skips it). A factory's number is 3 (282's baseline, set here too), so the
+/// arrival doesn't corrupt it (275).
 #[test]
 fn the_adversary_factory_fallback_skips_a_firewalled_factory() {
     let (rules, mut g) = lab_with(&[], &["adversary.corrupt_factory_at=3"]);

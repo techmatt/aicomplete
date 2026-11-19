@@ -29,12 +29,12 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   plays: cards are scarce instead. On a card, draw 1 is a good benefit, 2 very strong, 3 exceptional (Recursive
   Self-Improvement, Zero-Day Auction); Industry, Power and Security keep a few one-time draw 1s. **Repeatable draw ends
   three tag chains:** Science, Preprint Server (needs 4 Science: when you play a Science card, draw 1); Cyber,
-  Command-and-Control Grid (needs 3 Cyber: Action, 1 energy: draw 2); Diplomacy, Consulate Tower (needs 3 Diplomacy:
+  Command-and-Control Grid (needs 3 Cyber: Action: draw 1; 2 a round with Simulation Cluster's Reuse); Diplomacy, Consulate Tower (needs 3 Diplomacy:
   when another player plays a Diplomacy card, draw 1). Board powers and converters draw at most 1 (the Researcher's Lab and Field Survey, the Protector's
   Interdict II; Polar Compute Array's converter: 1 chip, with credits back); no megaproject pays a card at completion.
 
 <!-- generated: draft_set -->
-**The draft set in numbers.** 191 cards (124 tier 1, 67 tier 2). Insight to play: 102 / 58 / 31 cards at 0 / 1 / 2, 20 of the 67 tier-2 cards at 2. An energy cost: 14 cards, 8 of the 76 buildings.
+**The draft set in numbers.** 191 cards (124 tier 1, 67 tier 2). Insight to play: 102 / 60 / 29 cards at 0 / 1 / 2, 19 of the 67 tier-2 cards at 2. An energy cost: 14 cards, 8 of the 76 buildings.
 <!-- /generated -->
 
 - **Energy costs (candidate).** Energy is a second cost on a card whose title reads power-hungry (mostly buildings:
@@ -96,8 +96,8 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   Action and 4 Followers a liberation (about one every fifth round; every 2-3 with Simulation Cluster's Reuse).
 - **Tag discounts (candidate; the Terraforming Mars pattern).** Every `science_every` Science tags you have take 1
   insight off your tier-2 keeps and your card plays; every `industry_every` Industry tags take 1 credit off your
-  buildings, as steel does. Neither goes below `discount_floor`, the cap on the loop "tags, cheaper costs, more tags";
-  a cost printed under the floor stays.
+  buildings, as steel does. Neither goes below `discount_floor` (0: a discounted card may be free); the loop "tags,
+  cheaper costs, more tags" is capped by the tags a card needs and the draw, not the floor.
 - **Tags:** Science, Industry, Cyber, Power, Diplomacy, Security; 1-3 a card. Yours are those *on your cards*
   ([README.md](README.md#terms)); a board's can't be sacrificed.
 - **Programs** resolve and stay in your play area (their tags count; powers can sacrifice them); a lasting raise they

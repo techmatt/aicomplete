@@ -1,0 +1,101 @@
+{
+ "name": "s282-p",
+ "note": "282 screen: levers x pairs (variant-major), see experiments/results/282_balance_pass/README.md",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "P/bp",
+   "set": []
+  },
+  {
+   "name": "P/br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "P/pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  },
+  {
+   "name": "Pc1/bp",
+   "set": [
+    "adversary.infiltrate_facility_cap=1"
+   ]
+  },
+  {
+   "name": "Pc1/br",
+   "set": [
+    "ai.boards=0,2",
+    "adversary.infiltrate_facility_cap=1"
+   ]
+  },
+  {
+   "name": "Pc1/pr",
+   "set": [
+    "ai.boards=1,2",
+    "adversary.infiltrate_facility_cap=1"
+   ]
+  },
+  {
+   "name": "Pci/bp",
+   "set": [
+    "adversary.compute_income=0,3,5,10,15"
+   ]
+  },
+  {
+   "name": "Pci/br",
+   "set": [
+    "ai.boards=0,2",
+    "adversary.compute_income=0,3,5,10,15"
+   ]
+  },
+  {
+   "name": "Pci/pr",
+   "set": [
+    "ai.boards=1,2",
+    "adversary.compute_income=0,3,5,10,15"
+   ]
+  },
+  {
+   "name": "Pc1ci/bp",
+   "set": [
+    "adversary.infiltrate_facility_cap=1",
+    "adversary.compute_income=0,3,5,10,15"
+   ]
+  },
+  {
+   "name": "Pc1ci/br",
+   "set": [
+    "ai.boards=0,2",
+    "adversary.infiltrate_facility_cap=1",
+    "adversary.compute_income=0,3,5,10,15"
+   ]
+  },
+  {
+   "name": "Pc1ci/pr",
+   "set": [
+    "ai.boards=1,2",
+    "adversary.infiltrate_facility_cap=1",
+    "adversary.compute_income=0,3,5,10,15"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "agents": [
+  "strategist"
+ ],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

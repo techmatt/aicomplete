@@ -29,9 +29,20 @@ pub fn grow_site(c: &AdversaryCard) -> Option<SiteType> {
     c.standing.iter().chain(&c.twists).find_map(|e| if let Op::Grow { site } = e { Some(*site) } else { None })
 }
 
-/// 275: agents an Infiltrate lands on each site at this level (`infiltrate_agents`, by difficulty).
+/// 275: agents an Infiltrate lands on each city at this level (`infiltrate_agents`, by difficulty); a station,
+/// factory or botnet hex takes at most `infiltrate_facility_cap` of them ([`infiltrate_agents_on`], 282).
 pub fn infiltrate_agents(w: &World) -> i64 {
     income_at(w, "adversary.infiltrate_agents").max(0)
+}
+
+/// 282: agents an Infiltrate lands on each site of type `site`: [`infiltrate_agents`] on a city, at most
+/// `infiltrate_facility_cap` on a research station, factory or botnet hex.
+pub fn infiltrate_agents_on(w: &World, site: SiteType) -> i64 {
+    let n = infiltrate_agents(w);
+    match site {
+        SiteType::City | SiteType::CoastalCity => n,
+        SiteType::Station | SiteType::Factory | SiteType::Botnet => n.min(w.int("adversary.infiltrate_facility_cap").max(0)),
+    }
 }
 
 /// 275: agents the adversary has put on the board so far this game (each arrival, a canceled one included): a
@@ -49,13 +60,13 @@ fn countries_in(w: &World, g: &GameState, scope: Option<usize>) -> Vec<usize> {
     all.into_iter().filter(|&c| !board::flagged(g, crate::content::RoundFlag::Cordon, c)).collect()
 }
 
-/// 275, Infiltrate X in country `scope` or every country: [`infiltrate_agents`] on each site of the type not yet
+/// 275, Infiltrate X in country `scope` or every country: [`infiltrate_agents_on`] on each site of the type not yet
 /// the adversary's (`plan::infiltrate_plan`), in hex order. A firewalled or no-Infiltrate site's agents stay in
 /// the supply; a cordoned country takes none. Tallied `adversary.infiltrated` and by source; each site named is
 /// one check (`map.adversary_checks`).
 pub fn infiltrate(g: &mut GameState, cx: &mut Cx, site: SiteType, scope: Option<usize>, source: &str) -> Res {
     let w = cx.world;
-    let n = infiltrate_agents(&w);
+    let n = infiltrate_agents_on(&w, site);
     for c in countries_in(&w, g, scope) {
         let sites = super::plan::infiltrate_sites(&w, g, site, c);
         cx.per_round(g, CHECKS, sites.len() as i64);

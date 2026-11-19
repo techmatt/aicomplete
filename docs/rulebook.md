@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 133. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 134. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -259,7 +259,7 @@ Nothing has a holding limit, and nothing caps your income.
 | **Chips** | yes | your factories, cards, the Builder's Scrap and Full Capacity | buildings, research stations, Fortify, Annex, chip converters, threats |
 | **Antimatter** | yes | the antimatter plants, the steady source (Penning Trap Array, Antiproton Foundry, Positron Storage Ring, Dark Fiber Collider, Treaty Isotope Bank, Cyclotron Lease: a resource each use for 1, once a round, some with a second gain beside it), the Builder's Overcharge II, two capstones, cards; at worst 5 research cubes (with 2 energy) | the majors: tier-2 cards (liberations, Annihilation Lance, Fusion Commons, Antimatter Accord, Collider Consortium and more), Orbital Relay Launcher's Action, Containment Reactor, Accelerator Diplomacy |
 | **Research cubes** | yes | your stations, once their megaproject is complete (§9); Cryo Sample Vault; Open Archive; cards (Field Grant, Particle Accelerator, Collider Consortium, Survey Drone Fleet) | 1 for 1 insight once a round, converters, Penning Trap Array, Field Assay Team, Research Reactor, Survey Drone Fleet, threats |
-| **Ambassadors** | yes (your supply) | 1 at the start, cards, Accord, 13 credits | liberating, Remove agents, Envoy, threats |
+| **Ambassadors** | yes (your supply) | 1 at the start, cards, Accord, 16 credits | liberating, Remove agents, Envoy, threats |
 | **Dispatches** | **no** | your board and track spaces, each round | the Dispatch action, 1 each |
 
 **Insight is this round's attention.** Your card-play track prints it, as in Spirit Island: 3 at its start, and on
@@ -333,7 +333,8 @@ The adversary's board prints its turn as a strip of three beats, played in order
 - **Threats.** Its first line deals threats (§10).
 - **Infiltrate X.** Every event card has one; stage-III cards have two. **1 agent** (2 at level 4) lands **on each
   site of type X** (cities, coastal cities, research stations, factories or hexes with a botnet) in every country,
-  whoever owns it, except the adversary's own. A firewalled site (§16) or one with a no-Infiltrate token (§12) takes
+  whoever owns it, except the adversary's own; a research station, factory or botnet hex takes at most 1 even at
+  level 4. Stage-I cards name only cities, coastal cities and botnet hexes. A firewalled site (§16) or one with a no-Infiltrate token (§12) takes
   none: its agent stays in the supply.
 - **Muster N.** N adversary troops land in each country on its lowest-numbered factory (any owner's); with none, on
   its lowest-numbered city. Only the stage-III cards print one: troops are few, and they come late.
@@ -378,7 +379,7 @@ does nothing to them until it marches (below).
 ### Corruption
 
 A site's **corrupt number** is how many agents it takes: city **5** (**3** from level 1: Sleeper Cells, §21), station
-**2** and factory **2**, printed on the map's sites. Only agents count.
+**3** and factory **3**, printed on the map's sites. Only agents count.
 
 **Corruption happens on arrival.** Whenever the adversary puts agents on a hex (an Infiltrate, a Spill's move, a
 Grow's agent, a botnet's seed, a Surge, a threat's or card's agents), check **that hex alone**:
@@ -396,9 +397,9 @@ Nothing else on the board is checked: a site only reaches its number when agents
 (Gather, Push, §16) are no arrival and check nothing. Nothing on a firewalled hex (§16) or one with a no-Corrupt token
 (§12) corrupts or loses a node.
 
-> **Example: a Spill.** A neutral city on hex 6 holds 2 agents; the factory on hex 7, next to it, holds 1. At level
+> **Example: a Spill.** A neutral city on hex 6 holds 2 agents; the factory on hex 7, next to it, holds 2. At level
 > 2 a card prints "Spill: cities into factories": the city holds 2 or more, so 1 agent moves onto hex 7, the factory
-> next to it holding the most. Hex 7 now holds 2, its corrupt number: it corrupts, and its 2 agents go back to the
+> next to it holding the most. Hex 7 now holds 3, its corrupt number: it corrupts, and its 3 agents go back to the
 > supply. The city keeps 1. Had your ambassador stood on hex 7, the moving agent would have canceled it instead.
 
 Projects print **Surge N: X**: in each country, N agents onto the X not yet the adversary's holding the most agents
@@ -463,8 +464,8 @@ Every adversary board has a **research track** and a research rule of its own. C
 - the projects Backdoor Research, Lab Seizure and Station Coup: 2 a country;
 - the threats Wiper Malware, Data Breach and Zero Day, when they execute uncountered.
 
-In the Income beat, after the compute, if the track holds the **threshold** (5 cubes a country at level 0, 4 from
-level 1: its marker, §21), spend that many (the rest stay) and the rule fires, once a round at most. The Militarist's is the
+In the Income beat, after the compute, if the track holds the **threshold** (5 cubes a country at levels 0-2, 4 from
+level 3: its marker, §21), spend that many (the rest stay) and the rule fires, once a round at most. The Militarist's is the
 **Weapons Program: Muster 2** (each country, 2 troops on its lowest-numbered factory, else city). At level 3 and up
 it is **Muster 3** (level 3's rule, Arms Race).
 
@@ -526,10 +527,9 @@ A **requirement plate** must be met. A **yellow plate** means "at least N of thi
 never count toward its own requirement. They do count for its own per-tag gains, which print "(including this)",
 except on an event. A per-tag income, on a program or a building, counts the tags once, when the card is played.
 
-**Discounts** (a discount never takes a cost below 1; a cost printed 0 stays 0):
+**Discounts** (a discount can bring a cost down to 0, never below):
 
-- every 2 Science tags on your cards take 1 insight off each card you play, and off each tier-2 card you keep; with
-  the floor of 1, that reaches only cards costing 2 insight or more and tier-2 keeps;
+- every 2 Science tags on your cards take 1 insight off each card you play, and off each tier-2 card you keep;
 - every 3 Industry tags take 1 credit off each building;
 - some cards make all your cards of one tag cheaper.
 
@@ -607,11 +607,11 @@ Standard actions are always there, a hedge against bad luck: cards and your boar
 | **Remove agents** | 2 ambassadors from your supply, spent | target agents: remove up to 3 on or next to it; nothing is placed |
 | **Remove a troop** | 7 credits | once a round: target troops, remove 1 on it |
 | **Take down a botnet** | 13 credits | target a botnet where your ambassador stands: remove it (the ambassador stays) |
-| **Buy energy** | 3 credits | target a neutral city that isn't blocked or blacked out and that no player hosts or could host (none with a host slot to spare has a node on or next to it): gain its energy (1); each city once a round, for all players together |
+| **Buy energy** | 4 credits | target a neutral city that isn't blocked or blacked out and that no player hosts or could host (none with a host slot to spare has a node on or next to it): gain its energy (1); each city once a round, for all players together |
 | **Lift Fallout** | 2 research cubes | target Fallout: remove it; the one standard action that removes Fallout |
 | **Build a research station** | 2 chips | target an open hex that isn't an industrial zone or Fallout: the station is yours |
 | **Envoy** | 1 ambassador from your supply | remove 1 Discord from the Discord track |
-| **Gain an ambassador** | 13 credits | into your supply |
+| **Gain an ambassador** | 16 credits | into your supply |
 | **Turn a cube into insight** | 1 research cube | gain 1 insight; once a round |
 | **Make antimatter** | 5 research cubes | gain 1 antimatter and 2 energy: the desperate way; your engines make it far cheaper |
 | **Sell** | a card from your hand | gain 1 credit |
@@ -663,8 +663,8 @@ that country in reach** (any city, corrupted ones too) may use the converter, **
 
 | Megacorp (megaproject) | Payout, each of your cubes | Converter | Chip converter |
 |---|---|---|---|
-| Horizon (Tidal Grid) | 3 energy, 2 credits | 3 research cubes → 5 energy | 2 chips → 3 energy |
-| Cintamani (Polar Compute Array) | 6 credits | 1 research cube → 2 insight | 1 chip → draw 1, 1 credit |
+| Horizon (Tidal Grid) | 3 energy, 2 credits | 2 research cubes → 4 energy | 1 chip → 2 energy |
+| Cintamani (Polar Compute Array) | 6 credits | 1 research cube → 2 insight | 1 chip → draw 1, 2 credits |
 | Onyx (Mountain Fusion Works) | 2 chips, 2 credits | 1 research cube → 1 chip | none |
 | Biomia (Delta Seawall) | 1 Unity, 3 credits | 1 research cube → 1 Unity | 2 chips → 2 Unity, draw 1 |
 
@@ -971,8 +971,8 @@ firewall still keeps an agent off its own hex).
 > **Example: a Grow.** "Grow: cities" in a country with two neutral cities: hex 6 holds 2 agents, hex 11 holds none.
 > Hex 6 grows, if it has a free hex next to it. Next to it stand one factory and no station (fewer than 2 facilities), so it builds a neutral
 > research station on its lowest-numbered free open hex that is no industrial zone and no base. Hex 6 holds agents, so
-> the station comes with 1 agent: an arrival. A station's number is 2, so it doesn't corrupt yet, but the next agent
-> to land there corrupts it.
+> the station comes with 1 agent: an arrival. A station's number is 3, so it doesn't corrupt yet; two more arrivals
+> there corrupt it.
 
 **What corruption destroys:** the node on the hex (§13), then every ambassador on it. Nothing else. A node lost to 2
 agents leaves no mark.
@@ -1122,11 +1122,11 @@ costs (claim, liberate, cards, actions) and the threats' costs never change. The
 <!-- generated: rulebook_difficulty -->
 | Level | Name | Setup (set once; incomes and threshold a country) | Mid-game rule it adds | Rules active |
 |---|---|---|---|---|
-| 0 | **The Militarist** | Compute income 0; Infiltrate 1 a site; Research threshold 5; Deck 5 / 5 / 3 (13 rounds); Sites print their corrupt numbers: city 5, station 2, factory 2 | — | 0 |
-| 1 | **Sleeper Cells**: *Cells wake in every city.* | Compute income 3; Research threshold 4 | When an Agent lands on a city, it falls at 3 agents, not 5. | 1 |
+| 0 | **The Militarist** | Compute income 0; Infiltrate 1 a site; Research threshold 5; Deck 5 / 5 / 3 (13 rounds); Sites print their corrupt numbers: city 5, station 3, factory 3 | — | 0 |
+| 1 | **Sleeper Cells**: *Cells wake in every city.* | Compute income 3 | When an Agent lands on a city, it falls at 3 agents, not 5. | 1 |
 | 2 | **War Footing**: *Every unanswered strike feeds the war machine.* | Compute income 5 | When a threat executes uncountered, the adversary also gains 4 compute. | 2 |
-| 3 | **Arms Race**: *The labs build weapons, not cures.* | Compute income 15; Deck 5 / 3 / 3 (11 rounds) | When Weapons Program fires, it musters 3, not 2. | 3 |
-| 4 | **War Economy**: *The whole economy marches.* | Compute income 18; Infiltrate 2 a site; Deck 3 / 4 / 4 (11 rounds) | — | 3 |
+| 3 | **Arms Race**: *The labs build weapons, not cures.* | Compute income 10; Research threshold 4; Deck 5 / 3 / 3 (11 rounds) | When Weapons Program fires, it musters 3, not 2. | 3 |
+| 4 | **War Economy**: *The whole economy marches.* | Compute income 15; Infiltrate 2 a city (1 on a station, factory or botnet hex); Deck 3 / 4 / 4 (11 rounds) | — | 3 |
 <!-- /generated -->
 
 - **Setup:** put the compute income marker and the research marker on the adversary board's tracks at
@@ -1134,7 +1134,8 @@ costs (claim, liberate, cards, actions) and the threats' costs never change. The
 - **Mid-game rules** fire only on something you already resolve: agents landing on a city (Sleeper Cells), a threat taking
   effect unpaid (War Footing: its 4 compute comes at the next compute step, §17; a threat that only waits gives none),
   Weapons Program firing (Arms Race). *Rules active* counts the ones in play.
-- **Infiltrate** lands 1 agent a site at levels 0-3 and 2 at level 4 (§6).
+- **Infiltrate** lands 1 agent a site at levels 0-3; at level 4, 2 on each city and still 1 on a research station,
+  factory or botnet hex (§6).
 - **Before level 1,** a "Botnets spread (level 1+)" line does nothing, as it prints: the botnets set up are the only
   ones. **Before level 2,** a "Spill (level 2+)" line does nothing.
 

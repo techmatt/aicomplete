@@ -84,7 +84,8 @@ fn a_push_moves_pieces_next_door_but_not_agents_onto_a_firewall() {
 /// 275: a player's push is no arrival: an agent pushed onto a research station to its number (2) doesn't corrupt it.
 #[test]
 fn a_push_onto_a_site_corrupts_nothing() {
-    let (rules, mut g) = lab(&[]);
+    // The mechanism at a station's number 2 (282's baseline prints 3).
+    let (rules, mut g) = lab_with(&[], &["adversary.corrupt_station_at=2"]);
     let w = rules.world();
     let m = &rules.map;
     let (c, _, _, b) = by_a_city(&mut g, m);

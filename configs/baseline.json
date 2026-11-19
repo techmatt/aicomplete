@@ -33,12 +33,12 @@
         "remove_count": 3,
         "land_cubes": 2,
         "envoy_ambassadors": 1,
-        "ambassador_credits": 13,
+        "ambassador_credits": 16,
         "sell_credits": 1,
         "corp_energy": [
           1
         ],
-        "city_energy_credits": 3,
+        "city_energy_credits": 4,
         "cube_insight": 1,
         "insight_cubes": 1,
         "insight_per_round": 1,
@@ -66,8 +66,8 @@
         ],
         "supply_per_country": 24,
         "corrupt_at": 5,
-        "corrupt_station_at": 2,
-        "corrupt_factory_at": 2,
+        "corrupt_station_at": 3,
+        "corrupt_factory_at": 3,
         "corrupt_node_at": 2,
         "corrupt_cut": [
           2,
@@ -94,8 +94,8 @@
           0,
           3,
           5,
-          15,
-          18
+          10,
+          15
         ],
         "infiltrate_agents": [
           1,
@@ -104,6 +104,7 @@
           1,
           2
         ],
+        "infiltrate_facility_cap": 1,
         "spill_at": 2,
         "botnet_seed": 1,
         "grow_infest_at": 1,
@@ -115,7 +116,7 @@
         "botnet_compute": 1,
         "botnet_spread_at": 1,
         "board_difficulty_at": 2,
-        "research_at": [5, 4, 4, 4, 4],
+        "research_at": [5, 5, 5, 4, 4],
         "research_strong_at": 3
       }
     },
@@ -189,7 +190,7 @@
         "keep_tier2_upgraded": 2,
         "science_every": 2,
         "industry_every": 3,
-        "discount_floor": 1,
+        "discount_floor": 0,
         "no_pass": 0
       },
       "cards": [

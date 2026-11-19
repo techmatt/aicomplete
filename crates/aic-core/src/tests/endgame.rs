@@ -69,9 +69,9 @@ fn the_supply_is_a_cap_not_a_loss() {
         put(&mut g, s, STATION, 1);
     }
     set_var(&mut g, SUPPLY, 1);
-    set_pile(&mut g, NEXT, &["mil_s1_long_patrols"]);
+    set_pile(&mut g, NEXT, &["mil_s2_station_raids"]);
     run_answered(&rules, &mut g);
-    // 275: Long Patrols infiltrates research stations, 1 on each; the supply holds one, for the lower-numbered.
+    // 275: Station Raids infiltrates research stations, 1 on each; the supply holds one, for the lower-numbered.
     assert_eq!(total(&g, ADV_AMBASSADOR), 1);
     assert_eq!((g.tokens(a, ADV_AMBASSADOR), g.tokens(b, ADV_AMBASSADOR)), (1, 0));
     assert_eq!(g.var(SUPPLY), 0);

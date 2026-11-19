@@ -115,7 +115,7 @@
      }
     ]
    },
-   "value": "259: 2 troops a country (troops -7, 4 at 2 countries, 28) a fire; 3 from research_strong_at (Arms Race, d3): 42 at 2 countries. Over research_at 5 a country at d0 (10 at 2), a cube is 2.8; 4 a country from d1 (267): 3.5, 5.3 at d3-d4."
+   "value": "259: 2 troops a country (troops -7, 4 at 2 countries, 28) a fire; 3 from research_strong_at (Arms Race, d3): 42 at 2 countries. Over research_at 5 a country at d0 (10 at 2), a cube is 2.8 (5 to d2, 282); 4 a country at d3-d4: 5.3."
   },
   "harms": [
    "adversary pieces placed",
@@ -187,7 +187,7 @@
    "standing": [
     {
      "op": "infiltrate",
-     "site": "factory"
+     "site": "coastal_city"
     },
     {
      "op": "create_site",
@@ -195,7 +195,7 @@
     }
    ],
    "twists": [],
-   "text": "Threat, each country: Security 1 or Industry 1. Infiltrate: factories. Each country: a neutral factory opens on its lowest-numbered free industrial zone.",
+   "text": "Threat, each country: Security 1 or Industry 1. Infiltrate: coastal cities. Each country: a neutral factory opens on its lowest-numbered free industrial zone.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"
@@ -226,7 +226,7 @@
    "standing": [
     {
      "op": "infiltrate",
-     "site": "station"
+     "site": "city"
     },
     {
      "op": "spread_botnets",
@@ -239,7 +239,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each country: Security 1 or Cyber 1. Infiltrate: research stations. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Grow: cities.",
+   "text": "Threat, each country: Security 1 or Cyber 1. Infiltrate: cities. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Grow: cities.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"

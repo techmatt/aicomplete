@@ -651,10 +651,10 @@
     },
     {
      "name": "Interdisciplinary Institute",
-     "units": "1 * uses",
+     "units": "2 * uses",
      "other": 0,
      "use": 0,
-     "note": "1 a Science tag played (~1 a round) x4; draw 3 (271: Science tags only; draws 0 on play, 0 an Action)"
+     "note": "2 a Science tag played (~1 a round) x4 (282: was 1); draw 3 (271: Science tags only; draws 0 on play, 0 an Action)"
     },
     {
      "name": "Recursive Self-Improvement",

@@ -32,7 +32,8 @@ options:
   --set K=V         override for every config: countries=N, <module>.<param>=V,
                     <module>.variant=NAME, <module>=off (drops it), <module>.<param>=
                     (empty: unsets it); V is 3 or 1,2,3; or a content overlay,
-                    <table>.<id>.<path>=JSON, as cards.<id>.cost=4 (repeatable)
+                    <table>.<id>.<path>=JSON, as cards.<id>.cost=4 (repeatable; the
+                    table is the content file's stem: adversary.<id>.standing.0.site)
   --set-a K=V       override for config A only (repeatable)
   --set-b K=V       override for config B only (repeatable)
   --agent SPEC      the team agent: random (default), greedy, beam, rollout, engine,

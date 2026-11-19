@@ -231,16 +231,16 @@ fn card_ahead<'w>(w: &World<'w>, g: &GameState) -> Option<&'w crate::content::Ad
 }
 
 /// 275, the agents' forecast of the coming Infiltrate lines (public: the card ahead): the agents landing on each
-/// hex, exact (`infiltrate_agents` on every site of each named type not yet the adversary's, less a prohibited,
+/// hex, exact (`infiltrate_agents_on` every site of each named type not yet the adversary's, less a prohibited,
 /// firewalled or cordoned one). Empty when no card is ahead.
 pub fn next_infiltrate(w: &World, g: &GameState) -> Vec<(usize, f64)> {
     let build_ahead = g.config.round.iter().position(|p| p == "adversary.build").is_some_and(|i| g.phase <= i);
     let Some(card) = card_ahead(w, g) else {
         return Vec::new();
     };
-    let n = adversary::infiltrate_agents(w) as f64;
     let mut out = Vec::new();
     for site in adversary::infiltrate_sites(card) {
+        let n = adversary::infiltrate_agents_on(w, site) as f64;
         for c in 0..w.map.countries.len() {
             // A cordon counts down at cleanup and comes off at the end of the adversary turn (178): before this
             // round's build it blocks this round's lines; after it, only one played this round (still at 2) lasts.

@@ -1,0 +1,141 @@
+{
+ "name": "s282-diff",
+ "note": "282 screen: levers x pairs (variant-major), see experiments/results/282_balance_pass/README.md",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "base/bp",
+   "set": []
+  },
+  {
+   "name": "base/br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "base/pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  },
+  {
+   "name": "s3/bp",
+   "set": [
+    "adversary.corrupt_station_at=3"
+   ]
+  },
+  {
+   "name": "s3/br",
+   "set": [
+    "ai.boards=0,2",
+    "adversary.corrupt_station_at=3"
+   ]
+  },
+  {
+   "name": "s3/pr",
+   "set": [
+    "ai.boards=1,2",
+    "adversary.corrupt_station_at=3"
+   ]
+  },
+  {
+   "name": "ar/bp",
+   "set": [
+    "adversary.research_strong_at=5"
+   ]
+  },
+  {
+   "name": "ar/br",
+   "set": [
+    "ai.boards=0,2",
+    "adversary.research_strong_at=5"
+   ]
+  },
+  {
+   "name": "ar/pr",
+   "set": [
+    "ai.boards=1,2",
+    "adversary.research_strong_at=5"
+   ]
+  },
+  {
+   "name": "ta0/bp",
+   "set": [
+    "adversary.threat_agents=0"
+   ]
+  },
+  {
+   "name": "ta0/br",
+   "set": [
+    "ai.boards=0,2",
+    "adversary.threat_agents=0"
+   ]
+  },
+  {
+   "name": "ta0/pr",
+   "set": [
+    "ai.boards=1,2",
+    "adversary.threat_agents=0"
+   ]
+  },
+  {
+   "name": "rs/bp",
+   "set": [
+    "adversary.research_at=5,5,5,4,4"
+   ]
+  },
+  {
+   "name": "rs/br",
+   "set": [
+    "ai.boards=0,2",
+    "adversary.research_at=5,5,5,4,4"
+   ]
+  },
+  {
+   "name": "rs/pr",
+   "set": [
+    "ai.boards=1,2",
+    "adversary.research_at=5,5,5,4,4"
+   ]
+  },
+  {
+   "name": "st1/bp",
+   "set": [
+    "adversary.mil_s1_long_patrols.standing.0.site=\"city\"",
+    "adversary.mil_s1_factory_drive.standing.0.site=\"coastal_city\""
+   ]
+  },
+  {
+   "name": "st1/br",
+   "set": [
+    "ai.boards=0,2",
+    "adversary.mil_s1_long_patrols.standing.0.site=\"city\"",
+    "adversary.mil_s1_factory_drive.standing.0.site=\"coastal_city\""
+   ]
+  },
+  {
+   "name": "st1/pr",
+   "set": [
+    "ai.boards=1,2",
+    "adversary.mil_s1_long_patrols.standing.0.site=\"city\"",
+    "adversary.mil_s1_factory_drive.standing.0.site=\"coastal_city\""
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "agents": [
+  "strategist"
+ ],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

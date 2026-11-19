@@ -1,0 +1,35 @@
+# 282: card and converter repricing at the unit anchors (givget.md has each line's arithmetic).
+# Prices only, plus Matt's two rulings (Command-and-Control Grid draws 1; Tidal Grid's converters strengthened)
+# and the Polar chip converter's 1-credit rider folded to 2. Effect changes needing Matt's call: effects.overlay.
+# Projects are drafted (drafts/adversary/projects.json): apply_overlay refuses them; see givget.md.
+#
+# Tier 2, repriced up
+cards.foundation_model_campus.cost=11
+cards.vertical_monopoly.cost=11
+cards.orbital_mass_driver.cost=15
+cards.orbital_embassy.cost=5
+cards.zero_day_auction.cost=4
+cards.dark_fiber_collider.cost=7
+cards.lure_network.cost=12
+cards.open_source_uprising.cost=10
+# Tier 2, too dear at the anchors (0.91 mid): play insight 2 -> 1
+cards.kettle_operation.insight=1
+# Command-and-Control Grid: Matt's override, draw 2 -> 1; priced with the energy dropped (effects.overlay);
+# with the 1-energy cost kept the Action is break-even at the anchors and the card stays at the floor, 2.
+cards.command_and_control_grid.ability.effects.0.count=1
+cards.command_and_control_grid.cost=4
+# Tier 1 from 271's list, over 1.5 at the anchors
+cards.simulation_cluster.cost=4
+cards.patent_library.cost=4
+cards.bug_bounty_board.cost=5
+cards.field_sensor_grid.cost=7
+cards.joint_task_force.cost=7
+# Tidal Grid (Horizon's megaproject): 3 cubes -> 5 energy becomes 2 cubes -> 4 energy; 2 chips -> 3 energy becomes 1 chip -> 2 energy
+corps.horizon.project.converter.cost.0.1=2
+corps.horizon.project.converter.effects.0.amount=4
+corps.horizon.project.chip_converter.cost.0.1=1
+corps.horizon.project.chip_converter.effects.0.amount=2
+corps.horizon.project.text="At completion each player cube pays 3 energy and 2 credits, each adversary cube 1 Sway to Discord. Afterward, once a round, with a city here in your reach: 2 research cubes for 4 energy; and, once a round, 1 chip for 2 energy. Afterward an adversary station here puts its cubes onto the adversary's research track."
+# Polar Compute Array's chip converter: the 1-credit rider folded up to 2
+corps.cintamani.project.chip_converter.effects.1.amount=2
+corps.cintamani.project.text="At completion each player cube pays 6 credits, each adversary cube 1 adversary compute. Afterward, once a round, with a city here in your reach: 1 research cube for 2 insight; and, once a round, 1 chip for 1 drawn card and 2 credits. Afterward an adversary station here puts its cubes onto the adversary's research track."

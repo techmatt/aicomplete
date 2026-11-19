@@ -67,7 +67,7 @@ pub const SOURCES: [&str; 13] = [
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
 pub const RULE_HARMS: [(&str, &str, &str); 27] = [
-    ("income and Infiltrate", "adversary pieces placed", "every event's Infiltrate X lands `infiltrate_agents` (1; 2 at level 4) on each site of its type not yet the adversary's (275: it replaced Rally and the agent pools)"),
+    ("income and Infiltrate", "adversary pieces placed", "every event's Infiltrate X lands `infiltrate_agents` (1; 2 at level 4) on each city of its type, at most `infiltrate_facility_cap` (1) on a station, factory or botnet hex, not yet the adversary's (275: it replaced Rally and the agent pools; 282: the cap)"),
     ("income and Infiltrate", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
     ("income and Infiltrate", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
     ("income and Infiltrate", "production blacked out", "an agent on a city or station blocks its output while it stands (137)"),

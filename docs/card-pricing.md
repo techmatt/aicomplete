@@ -60,7 +60,7 @@ moves when any other card changes: to reprice an edited card, move its price by 
   a price** (Matt): spread over 0, 1 and 2, most tier-1 cards at 0; moving a card 1 insight moves its credits the
   anchor's 2.67, less what would leave it under a 1-credit gain at the table.
 - **A `needs` chain is the price** (ruling 10): needs 2-3 of a tag on an engine, needs 3-4 sits 2-4 under the recipe,
-  needs 5-6 about half and much bigger (Zero-Day Auction, needs 5 Cyber: 2 antimatter and draw 6).
+  needs 5-6 about half and much bigger (Zero-Day Auction, needs 5 Cyber: 2 antimatter and draw 3).
 - **The cost curve** (Terraforming Mars scale; Matt: fewer cheap cards, more dear and high-impact ones): most cards in
   the middle, the big income and late cards dearest, a few cheap ones (each card's cost: `docs/cards.md`). Six
   credits is about two thirds of a round's printed credits on the boards (10 / 9 / 7).
@@ -79,8 +79,8 @@ moves when any other card changes: to reprice an edited card, move its price by 
   printed price. That gap is the point; a card that nets below 0 for its own seat is still a bug. **Payback within 2
   rounds:** give (credits, insight to play and keep, other costs) less the when-built gain and the card's own first
   fire, over a round's yield at that rate, is 2 or less for every engine building (`scripts/cards/payback.py`).
-  **Engines pay up front:** the when-built gain is about two fires, in cards (draw 3, 4 on Foundation Model Campus
-  and Vertical Monopoly) where the fire pays credits, since a credit gain on a credit cost would be a circular
+  **Engines pay up front:** the when-built gain is about two fires, in cards (since 271's scarce draw, at most
+  2: Foundation Model Campus) where the fire pays credits, since a credit gain on a credit cost would be a circular
   payment (guideline 5). How the agents read a trigger in play: agents.md, *The value table*.
 - **Card throughput:** credits pile up, so the fix is dearer, bigger cards and more of them: engines draw when built,
   Action buildings turn spare credits, chips, energy or Operatives into cards (Patent Library, Parts Exchange), three
@@ -88,9 +88,9 @@ moves when any other card changes: to reprice an edited card, move its price by 
   Protector's Interdict II). Late, dear cards (Moonshot Grant, Headquarters Raid) take spare credits. A flat credit sink stays the
   last resort.
 - **Insight off every card** counts `rates.insight_discount_share` (0.25) of the plays: the floor below.
-- **Insight discounts mostly sit at the floor:** `discount_floor` 1 holds insight too, and `science_every` already
-  takes a seat with 2 Science tags to it, so a 1-insight discount bites only on 2-insight cards; no deck card prints
-  one. Science's discount prints credits (Grad Student Pool).
+- **Insight discounts reach 0:** `discount_floor` 0 holds insight too, so `science_every` (a seat with 2 Science
+  tags) makes a 1-insight card free to play; no deck card prints an insight discount. Science's discount prints
+  credits (Grad Student Pool).
 - **One shape for one job across the tags:** a per-tag income program ("raise your credit income by 1 per 3 X tags"),
   needs 2 of X, 4 credits and no play insight, one per tag (priced at 6 tags at play, 1.30 at the anchors); a
   building's per-tag income pays 2 a tag (Foundation Model Campus); a standing counter (`auto_counter`, Cyber's
@@ -105,7 +105,7 @@ moves when any other card changes: to reprice an edited card, move its price by 
   over 1.5 at the anchors or a loss at the table (a gain needs over 1.8 insight an energy, the ceiling under 1.69);
   into cards only 1.13-1.35 cards an energy passes both (3 energy for 4 cards). Tier 2's 2.5 ceiling passes either
   at 1:2.
-- **Energy is rare:** about 3 credits an energy, 3 to buy from a neutral city. +1 energy of income or production is
+- **Energy is rare:** about 3 credits an energy, 4 to buy from a neutral city. +1 energy of income or production is
   the horizon × 3 × 0.8 (`rates.energy_income_share`: it arrives a drop at a time, not when needed): about 9.6 on a
   tier-1 card, 6 on a tier-2 one (Matt's ruling), and no card above +2 a card but the major Dyson Swarm Tranche (+3) and one tag payoff (Tidal
   Barrage, +3 at 6 Power tags). Threat counters that offer energy (by tag), fourteen cards and ten Actions take

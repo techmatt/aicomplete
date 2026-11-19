@@ -129,7 +129,7 @@ adds setup (the income and research markers, the event deck) and at most one rul
 resolve: level 1 lets a city corrupt at 3 (the cards' "Botnets spread (level 1+)" start too), 2 gives 4 compute for each unpaid threat (the cards' Spill lines start too), 3 a shorter,
 busier game whose research rule musters more, and 4 a harder deck; no level deals an extra threat
 ([adversary.md](adversary.md) *Difficulty*). The agents come from the cards' Infiltrate lines (stage III names two
-site types; 2 agents a site at level 4) and from botnets, each seeding 1 next to it a round (Botnet Recruiters).
+site types; 2 agents a city at level 4, 1 on a facility) and from botnets, each seeding 1 next to it a round (Botnet Recruiters).
 **What resisted a summary:** that only resource options pool.
 
 **Compute.** Many threats also give the adversary compute, onto its projects ([adversary.md](adversary.md)), when they
