@@ -1,0 +1,34 @@
+diff --git a/crates/aic-core/src/modules/adversary/mod.rs b/crates/aic-core/src/modules/adversary/mod.rs
+index f6d39d2..af38afb 100644
+--- a/crates/aic-core/src/modules/adversary/mod.rs
++++ b/crates/aic-core/src/modules/adversary/mod.rs
+@@ -45,6 +45,7 @@ const PARAMS: &[ParamSpec] = &[
+     ParamSpec::list("counter_pct", 50, 300, "every resource counter item of a tier 1, 2 threat costs this percent of its printed amount (rounded up)"),
+     ParamSpec::int("counter_credit_pct", 50, 300, "every credits counter item costs this percent of its amount after counter_pct (rounded up; 100 = unchanged)"),
+     ParamSpec::int("jam_floor", 0, 1, "274: 1, a jam never takes a threat's resource item below 1 (a jam alone never counters); 0, below to 0"),
++    ParamSpec::int("pull_any_tag", 0, 1, "278 (table-time prototype): 1, a pull takes the top threat with a site, any tag"),
+     ParamSpec::int("stage1_removed", 0, 3, "difficulty stage_swap_at+: stage-I cards removed"),
+     ParamSpec::int("stage3_added", 0, 3, "difficulty stage_swap_at+: stage-III cards added (the cap holds, its end gets harder)"),
+     ParamSpec::int("stage2_added", 0, 3, "267: difficulty stage_swap_at+: stage-II cards added back (tier-2 threats sooner, built into the stack)"),
+diff --git a/crates/aic-core/src/modules/threats/mod.rs b/crates/aic-core/src/modules/threats/mod.rs
+index fcdfbe6..1148b74 100644
+--- a/crates/aic-core/src/modules/threats/mod.rs
++++ b/crates/aic-core/src/modules/threats/mod.rs
+@@ -207,6 +207,7 @@ fn pull(g: &mut GameState, cx: &mut Cx, tier: u8, tags: &[PullTag], c: usize, at
+             cx.tally(g, "threats.skip_tagged_would", 1);
+         }
+     }
++    let any_tag = w.int("adversary.pull_any_tag") > 0;
+     let mut reshuffles = 0;
+     let id = loop {
+         if g.pile(&deck(tier)).is_empty() {
+@@ -222,7 +223,8 @@ fn pull(g: &mut GameState, cx: &mut Cx, tier: u8, tags: &[PullTag], c: usize, at
+             cx.tally(g, "threats.pull_forced", 1);
+             break top;
+         }
+-        if ThreatTag::fits(&t.tags, tags) && lands_in(&w, g, t, c) {
++        // 278 (table-time prototype, `adversary.pull_any_tag` 1): the pull ignores its tags.
++        if (any_tag || ThreatTag::fits(&t.tags, tags)) && lands_in(&w, g, t, c) {
+             break top;
+         }
+         cx.tally(g, "threats.turned_rejected", 1);

@@ -108,6 +108,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("antimatter_cubes", 0, 10, "standard action, the desperate source: research cubes for 1 antimatter and `antimatter_energy` energy, no limit a round (0: no such action)"),
             ParamSpec::int("antimatter_energy", 0, 5, "262 (Matt, 2026-11-17): standard action Make antimatter: energy it pays beside its antimatter (a binding resource; still a poor hedge at the anchors)"),
             ParamSpec::int("botnet_credits", 1, 50, "standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays)"),
+            ParamSpec::int("turn_cap", 0, 10, "278 (table-time prototype): non-card turns a seat a round, card plays never capped (0: no cap)"),
             ParamSpec::list("std_off", 0, 13, "a probe's switch: standard actions not offered, by place in the table from 1 (station, remove, lift, dispatch, ambassador, liberate, insight, envoy, botnet, buy energy, antimatter, troop, factory; 0: none off)"),
         ],
         phases: &[
@@ -173,13 +174,13 @@ const LANDED_AT: &str = "board.landed_at.";
 const LANDED_N: &str = "board.landed_n.";
 
 /// The marks a round's end clears outright ([`expire_marks`]); each is in [`MARKS`] too (221: a test checks).
-const ROUND_MARKS: [&str; 7] = [NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED, BOUGHT, STD_ONCE];
+const ROUND_MARKS: [&str; 8] = [NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED, BOUGHT, STD_ONCE, TURNS];
 
 /// 135: every per-round mark [`expire_marks`] counts down, trues or clears
 /// (the view lists them as bookkeeping).
-pub(super) const MARKS: [&str; 12] = [
+pub(super) const MARKS: [&str; 13] = [
     HEX_FLAGS, STAND, OCCUPIED, CORP_EXTRA, EXTRA_WAR, NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED, BOUGHT,
-    STD_ONCE,
+    STD_ONCE, TURNS,
 ];
 
 /// How many of hex `h`'s adversary troops stand.
@@ -394,7 +395,9 @@ impl Module for Board {
 
     fn legal(&self, _phase: usize, g: &GameState, w: &World, seat: u8, out: &mut Vec<Action>) {
         let s = seat as usize;
-        for act in STANDARD {
+        // 278 (`board.turn_cap`): a seat out of non-card turns takes no standard action or converter (it may sell).
+        let capped = turn_capped(w, g, s);
+        for act in STANDARD.into_iter().filter(|_| !capped) {
             if !printed_price(w, act).affordable(g, s) {
                 continue;
             }
@@ -413,7 +416,7 @@ impl Module for Board {
                 card: *id,
             });
         }
-        for c in 0..w.map.countries.len() {
+        for c in (0..w.map.countries.len()).filter(|_| !capped) {
             for chips in [false, true] {
                 if converter_blocked_of(w, g, s, c, chips).is_none() {
                     out.push(Action::Convert { seat, country: c as u8, chips });
@@ -451,9 +454,10 @@ impl Module for Board {
                 };
                 let targets = std_targets(&w, g, s, act);
                 let price = printed_price(&w, act);
-                if !price.affordable(g, s) || targets.is_empty() {
+                if !price.affordable(g, s) || targets.is_empty() || turn_capped(&w, g, s) {
                     return Err("can't take that standard action now".into());
                 }
+                count_turn(g, cx, s);
                 price.pay(g, cx, s);
                 cx.tally(g, &KeyBuf::new("board.std.").text(act.name()), 1);
                 cx.tally(g, "board.std_actions", 1);
@@ -470,7 +474,11 @@ impl Module for Board {
                     if let Some(why) = converter_blocked_of(&w, g, s, c, *chips) {
                         return Err(Halt::Illegal(format!("can't use that converter: {why}")));
                     }
+                    if turn_capped(&w, g, s) {
+                        return Err(Halt::Illegal("no non-card turns left this round".into()));
+                    }
                 }
+                count_turn(g, cx, s);
                 convert(g, cx, s, c, *chips)
             }
             _ => Err(Halt::Illegal("not a standard action".into())),

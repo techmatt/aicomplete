@@ -19,7 +19,7 @@ use crate::state::GameState;
 use crate::view::{CardView, ViewOut};
 
 use super::common::*;
-use super::{adversary, ai, alignment, economy, effects, threats};
+use super::{adversary, ai, alignment, board, economy, effects, threats};
 
 mod deck;
 mod play;
@@ -47,6 +47,7 @@ const DRAFT_PARAMS: &[ParamSpec] = &[
     ParamSpec::int("science_every", 0, 10, "1 insight off tier-2 keeps and card plays per this many Science tags (0: off)"),
     ParamSpec::int("industry_every", 0, 10, "1 credit off buildings per this many Industry tags (0: off)"),
     ParamSpec::int("discount_floor", 0, 5, "tag and building discounts stop at this cost; a cost printed under it stays"),
+    ParamSpec::int("no_pass", 0, 1, "278 (table-time prototype): 1, each player keeps from the hand they built; no picks or passing"),
 ];
 
 pub static DEF: ModuleDef = ModuleDef {
@@ -247,6 +248,8 @@ struct Cards {
     cards: Vec<usize>,
     /// Variant `off`: no draft.
     off: bool,
+    /// 278 (table-time prototype, `cards.no_pass`): each seat's built hand is its draft, nothing passed.
+    no_pass: bool,
 }
 
 fn build(b: &Build) -> Result<Box<dyn Module>, String> {
@@ -256,6 +259,7 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
         opening_deal_tier2: b.int("opening_deal_tier2")?,
         cards: b.cards.clone(),
         off: false,
+        no_pass: b.int("no_pass")? > 0,
     }))
 }
 
@@ -266,6 +270,7 @@ fn build_off(b: &Build) -> Result<Box<dyn Module>, String> {
         opening_deal_tier2: 0,
         cards: b.cards.clone(),
         off: true,
+        no_pass: false,
     }))
 }
 
@@ -312,6 +317,14 @@ impl Module for Cards {
                 }
             }
             DRAFT => {
+                // 278 (table-time prototype, `cards.no_pass` 1): each seat's built hand is its draft.
+                if self.no_pass {
+                    for s in 0..g.seats.len() {
+                        for id in g.pile(&packet(s)).to_vec() {
+                            cx.move_card(g, &id, &packet(s), &drafted(s), false).unwrap();
+                        }
+                    }
+                }
                 if (0..g.seats.len()).all(|s| g.pile(&packet(s)).is_empty()) {
                     pass_all(g);
                 }
@@ -420,7 +433,9 @@ impl Module for Cards {
                         });
                     }
                 }
-                for id in g.pile(&built(s)) {
+                // 278 (`board.turn_cap`): building Actions are non-card turns; card plays are never capped.
+                let capped = board::turn_capped(w, g, s);
+                for id in g.pile(&built(s)).iter().filter(|_| !capped) {
                     if def(w, id).ability.is_some() && ability_blocked(w, g, s, id).is_none() {
                         out.push(Action::Use {
                             seat,
@@ -455,7 +470,13 @@ impl Module for Cards {
             Action::Keep { card, .. } => self.keep_card(g, cx, s, card)?,
             // 105: what a play or an Action removes fires the seat's fight triggers.
             Action::Play { card, .. } => fighting_play(g, cx, s, card, |g, cx| play_card(g, cx, s, card))?,
-            Action::Use { card, .. } => fighting(g, cx, s, |g, cx| use_ability(g, cx, s, card))?,
+            Action::Use { card, .. } => {
+                if !cx.replaying() && board::turn_capped(&cx.world, g, s) {
+                    return Err(Halt::Illegal("no non-card turns left this round".into()));
+                }
+                board::count_turn(g, cx, s);
+                fighting(g, cx, s, |g, cx| use_ability(g, cx, s, card))?
+            }
             _ => return Err(Halt::Illegal(format!("not a card action: {a:?}"))),
         }
         Ok(())

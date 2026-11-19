@@ -46,6 +46,7 @@
         "cities_unowned": 1,
         "host_city": 1,
         "host_reach": 1,
+        "turn_cap": 0,
         "antimatter_cubes": 5,
         "antimatter_energy": 2,
         "botnet_credits": 13,
@@ -195,7 +196,8 @@
         "keep_tier2_upgraded": 2,
         "science_every": 2,
         "industry_every": 3,
-        "discount_floor": 1
+        "discount_floor": 1,
+        "no_pass": 0
       },
       "cards": [
         "field_grant",

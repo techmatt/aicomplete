@@ -88,6 +88,12 @@ past it, so any rules item's warning check shows it. A refresh:
 3. Rank as above, rewrite this page and its title's revision, and reset the `table_cost` budgets if a rules change
    moved them on purpose.
 
+**Minutes by step without a hand pass** (278): `sh experiments/results/278_hard_cut_proposals/traces.sh OUT [k=v ...]`
+traces 268's seeds at d2 and d4 (28 judge games, about 15 s), and `python
+experiments/results/278_hard_cut_proposals/breakdown.py OUT --level 2` prints every step's decisions, components,
+checks, lookups and modifiers at 268's rates (the last two modeled from 268's log); `breakdown.py BASE FLAG
+--compare` reads a flag's minutes against base, paired by seed.
+
 Between refreshes, `design_check`'s `table-components`, `table-checks` and `table-memory` warn when a level's read
 passes its budget or rises 10% on `--old`.
 

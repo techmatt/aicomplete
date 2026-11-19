@@ -1,0 +1,97 @@
+diff --git a/crates/aic-core/src/modules/board/mod.rs b/crates/aic-core/src/modules/board/mod.rs
+index 0a198d6..2e17223 100644
+--- a/crates/aic-core/src/modules/board/mod.rs
++++ b/crates/aic-core/src/modules/board/mod.rs
+@@ -109,6 +109,7 @@ pub static DEF: ModuleDef = ModuleDef {
+             ParamSpec::int("antimatter_energy", 0, 5, "262 (Matt, 2026-11-17): standard action Make antimatter: energy it pays beside its antimatter (a binding resource; still a poor hedge at the anchors)"),
+             ParamSpec::int("botnet_credits", 1, 50, "standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays)"),
+             ParamSpec::int("turn_cap", 0, 10, "278 (table-time prototype): non-card turns a seat a round, card plays never capped (0: no cap)"),
++            ParamSpec::int("host_fixed", 0, 1, "278 (table-time prototype): 1, hosts matched as the action phase begins stand all round"),
+             ParamSpec::list("std_off", 0, 13, "a probe's switch: standard actions not offered, by place in the table from 1 (station, remove, lift, dispatch, ambassador, liberate, insight, envoy, botnet, buy energy, antimatter, troop, factory; 0: none off)"),
+         ],
+         phases: &[
+@@ -477,6 +478,21 @@ impl Module for Board {
+         }
+     }
+ 
++    fn begin(&self, phase: usize, g: &mut GameState, cx: &mut Cx) {
++        // 278 (table-time prototype, `board.host_fixed`): fix this round's hosts as the action phase begins.
++        let w = cx.world;
++        if phase == 0 && w.int("board.host_fixed") > 0 {
++            let hosts = live_host_assignment(&w, g);
++            for h in 0..g.hexes.len() {
++                let s = hosts.iter().find(|&&(c, _)| c == h).map_or(0, |&(_, s)| s as i64 + 1);
++                if s > 0 || g.var(&host_fixed_key(h)) != 0 {
++                    cx.set_key(g, &host_fixed_key(h), s);
++                }
++            }
++            cx.set_key(g, HOST_FIXED_ROUND, g.round as i64);
++        }
++    }
++
+     fn run(&self, phase: usize, g: &mut GameState, cx: &mut Cx) -> Res {
+         match phase {
+             BASES => produce_units(g, cx)?,
+diff --git a/crates/aic-core/src/modules/board/view.rs b/crates/aic-core/src/modules/board/view.rs
+index f51cd78..469ac43 100644
+--- a/crates/aic-core/src/modules/board/view.rs
++++ b/crates/aic-core/src/modules/board/view.rs
+@@ -24,6 +24,8 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
+     keys.extend(MARKS);
+     // 258: each seat's extra host slots (`host_more`), shown on the seat below.
+     keys.push("board.host_more.");
++    // 278: the hosts fixed for the round (`board.host_fixed`, a table-time prototype).
++    keys.push("board.host_fix.");
+     out.bookkeeping(&keys);
+     // 149: each seat's Dispatch left this round, of its Dispatch.
+     for s in 0..g.seats.len() {
+diff --git a/crates/aic-core/src/modules/common.rs b/crates/aic-core/src/modules/common.rs
+index de32377..02ac495 100644
+--- a/crates/aic-core/src/modules/common.rs
++++ b/crates/aic-core/src/modules/common.rs
+@@ -125,18 +125,38 @@ pub fn hosted_cities(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
+ /// The printed rule: the players choose (a team game; every city makes the same energy), so the engine hosts as many
+ /// as can be ([`match_hosts`]).
+ pub fn host_assignment(w: &World, g: &GameState) -> Vec<(usize, usize)> {
++    // 278 (table-time prototype, `board.host_fixed` 1, baseline 0): the hosts matched as the action phase began
++    // stand all round; a fixed city that stops producing (corrupted, an agent, a blackout) makes nothing.
++    if w.int("board.host_fixed") > 0 && g.var(HOST_FIXED_ROUND) == g.round as i64 {
++        return (0..g.hexes.len())
++            .filter(|&h| g.var(&host_fixed_key(h)) > 0 && host_open(w, g, h))
++            .map(|h| (h, (g.var(&host_fixed_key(h)) - 1) as usize))
++            .collect();
++    }
++    live_host_assignment(w, g)
++}
++
++/// 278: the round the hosts were fixed in (`board.host_fixed`), and each city's fixed host (seat + 1; 0 none).
++pub const HOST_FIXED_ROUND: &str = "board.host_fix.round";
++pub fn host_fixed_key(h: usize) -> String {
++    format!("board.host_fix.{h}")
++}
++
++/// A neutral city producing now: no cube, no agent on it, no blackout.
++fn host_open(w: &World, g: &GameState, h: usize) -> bool {
++    clean_city(w, g, h)
++        && g.tokens(h, ADV_AMBASSADOR) == 0
++        && !super::board::hex_flagged(w, g, crate::content::RoundFlag::Blackout, h)
++}
++
++/// [`host_assignment`] read from the board now (the matching), whatever `board.host_fixed` holds.
++pub fn live_host_assignment(w: &World, g: &GameState) -> Vec<(usize, usize)> {
+     let caps = host_caps(w, g);
+     if caps.iter().all(|&c| c == 0) {
+         return Vec::new();
+     }
+     let reach = w.int("board.host_reach") > 0;
+-    let open: Vec<usize> = (0..g.hexes.len())
+-        .filter(|&h| {
+-            clean_city(w, g, h)
+-                && g.tokens(h, ADV_AMBASSADOR) == 0
+-                && !super::board::hex_flagged(w, g, crate::content::RoundFlag::Blackout, h)
+-        })
+-        .collect();
++    let open: Vec<usize> = (0..g.hexes.len()).filter(|&h| host_open(w, g, h)).collect();
+     let hosts = |s: usize, h: usize| {
+         g.tokens(h, node(s)) > 0 || (reach && w.map.hexes[h].neighbors.iter().any(|&x| g.tokens(x, node(s)) > 0))
+     };

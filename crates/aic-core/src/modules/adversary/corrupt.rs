@@ -145,6 +145,8 @@ pub fn arrive_check(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
         return Ok(());
     }
     cx.per_round(g, CHECKS, 1);
+    // 278 (stats only): the arrival checks within `CHECKS`, for the table-time breakdown.
+    cx.per_round(g, "map.arrival_checks", 1);
     for site in [CorruptSite::City, CorruptSite::Station, CorruptSite::Factory, CorruptSite::Node] {
         if !super::plan::corrupt_target(&w, g, h, site) || held < corrupt_n(&w, site, 0) {
             continue;

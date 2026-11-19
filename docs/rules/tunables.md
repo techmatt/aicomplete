@@ -47,6 +47,7 @@ conventions: [README.md](README.md).*
 | `board.antimatter_cubes` | 5 | 0..10 | standard action, the desperate source: research cubes for 1 antimatter and `antimatter_energy` energy, no limit a round (0: no such action) |
 | `board.antimatter_energy` | 2 | 0..5 | 262 (Matt, 2026-11-17): standard action Make antimatter: energy it pays beside its antimatter (a binding resource; still a poor hedge at the anchors) |
 | `board.botnet_credits` | 13 | 1..50 | standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays) |
+| `board.turn_cap` | 0 | 0..10 | 278 (table-time prototype): non-card turns a seat a round, card plays never capped (0: no cap) |
 | `board.std_off` | 0 | 0..13 | a probe's switch: standard actions not offered, by place in the table from 1 (station, remove, lift, dispatch, ambassador, liberate, insight, envoy, botnet, buy energy, antimatter, troop, factory; 0: none off) |
 | `adversary.difficulty` | 0 | 0..4 | difficulty level 0-4 (each level includes the ones below) |
 | `adversary.stage_cards` | 5, 5, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
@@ -110,4 +111,5 @@ conventions: [README.md](README.md).*
 | `cards.science_every` | 2 | 0..10 | 1 insight off tier-2 keeps and card plays per this many Science tags (0: off) |
 | `cards.industry_every` | 3 | 0..10 | 1 credit off buildings per this many Industry tags (0: off) |
 | `cards.discount_floor` | 1 | 0..5 | tag and building discounts stop at this cost; a cost printed under it stays |
+| `cards.no_pass` | 0 | 0..1 | 278 (table-time prototype): 1, each player keeps from the hand they built; no picks or passing |
 <!-- /generated -->

@@ -542,6 +542,10 @@ impl Module for Ai {
     }
 
     fn legal(&self, _phase: usize, g: &GameState, w: &World, seat: u8, out: &mut Vec<Action>) {
+        // 278 (`board.turn_cap`): a seat out of non-card turns uses no power (Growth included).
+        if board::turn_capped(w, g, seat as usize) {
+            return;
+        }
         for k in 0..board(w, seat as usize).powers.len() {
             if power_blocked(w, g, seat as usize, k).is_none() {
                 out.push(Action::Power { seat, power: k as u8 });
@@ -568,7 +572,11 @@ impl Module for Ai {
             if let Some(why) = power_blocked(&w, g, s, k) {
                 return Err(Halt::Illegal(format!("can't use power {k}: {why}")));
             }
+            if board::turn_capped(&w, g, s) {
+                return Err(Halt::Illegal("no non-card turns left this round".into()));
+            }
         }
+        board::count_turn(g, cx, s);
         let p = &board(&w, s).powers[k];
         for (r, n) in &p.cost {
             cx.add_resource(g, s, *r, -n);

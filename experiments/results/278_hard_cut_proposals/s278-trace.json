@@ -1,0 +1,1 @@
+{"name": "s278-trace", "note": "278's traced games: 268's seeds (268000-268013), d2 and d4, the judge, Builder and Protector; per-round counters for the breakdown (adversary checks, sites).", "configs": ["configs/baseline.json"], "variants": [{"name": "bp", "set": []}], "difficulties": [2, 4], "agents": ["strategist"], "games": 14, "first_seed": 268000, "records": 0}

@@ -246,10 +246,12 @@ pub enum Hot {
     MomentumEvery,
     TroopNode,
     LiberateAt,
+    /// 278: `board.turn_cap`, read in the action phase's legal lists.
+    TurnCap,
 }
 
 impl Hot {
-    const ALL: [Hot; 7] = [
+    const ALL: [Hot; 8] = [
         Hot::NodeLoss,
         Hot::ClearWinStage,
         Hot::TipPerPlayer,
@@ -257,6 +259,7 @@ impl Hot {
         Hot::MomentumEvery,
         Hot::TroopNode,
         Hot::LiberateAt,
+        Hot::TurnCap,
     ];
 
     /// The parameter's name.
@@ -269,6 +272,7 @@ impl Hot {
             Hot::MomentumEvery => "alignment.momentum_every",
             Hot::TroopNode => "board.troop_node",
             Hot::LiberateAt => "board.liberate_at",
+            Hot::TurnCap => "board.turn_cap",
         }
     }
 }
