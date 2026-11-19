@@ -55,12 +55,11 @@ one. Read a band over 96 seeds: at 48 it is ±7, a paired gap ±8-10.
 
 **Ballpark simulation (Matt, 2026-11-03; supersedes the band above until he names a milestone):** two players only,
 rotating the three board pairs, no c3; an engine smoke read, then the judge (the strategist) at 48 seeds a pair on
-one fresh set; the target is 45-85 a pair, near 60-75 without chasing it; no gate, no pooled second set
-([experiments.md](experiments.md), *The ballpark read*).
+fresh seeds; the target is 45-85 a pair, near 60-75 without chasing it; no gate ([experiments.md](experiments.md),
+*The ballpark read*; the scale and when sets pool: [rulings.md](rulings.md), *Simulation and sim players*).
 
-**Per-level bands (Matt, 2026-11-15: raised, soft):** d0 at least 90, d1 80-95, d2 75-90, d3 55-70 for the judge
-(`bench/ladder.py`'s default `--bands`). A miss of a few points is reported, never chased or dialed; a level that
-can't meet both keeps its 8-10 rounds over its band. d0 resisted every income dial; its band comes from the
+**Per-level bands** for the judge (Matt, 2026-11-15: raised, soft): [rulings.md](rulings.md), *Difficulty* (`bench/ladder.py`'s default
+`--bands`). A level that can't meet both keeps its 8-10 rounds over its band. d0 resisted every income dial; its band comes from the
 adversary's levers (263): Botnets don't spread at d0 (`adversary.botnet_spread_at`), and a city corrupts at 5 agents
 there (3 from d1).
 
@@ -78,10 +77,9 @@ and not the countries still standing, so no loop forms and sizes land in one ban
 
 ## Scarcity (Matt, 2026-11-01)
 
-**Table time (Matt, 2026-11-18).** A 2-player d2 game targets about 2 hours at the table, scaling with level and
-player count. **Draw is a precious resource**, as in Terraforming Mars: plays a round fall to about TM's 4 because
-cards are scarce, **never through a play limit**. Draw 1 is a good benefit, 2 very strong, 3 exceptional; repeatable
-draw ends the Science, Cyber and Diplomacy chains, and per-play payouts name a tag.
+**Table time and draw** (the round target, no play limit, what a draw is worth): [rulings.md](rulings.md), *Table
+time and the card economy*. **Draw is a precious resource**, as in Terraforming Mars: plays a round fall to about
+TM's 4 because cards are scarce, and per-play payouts name a tag.
 
 **Every resource stays scarce, credits most of all.** A seat ending with a pile unspent is a balance fault. Fix it
 with weaker credit engines, dearer cards or keeps, or lower starting credits; never by cheapening a standard project.
@@ -105,6 +103,7 @@ Calibration measures use, not soundness, so `scripts/design_check.py` checks the
 first screen and on its fresh read (READ a read's folder or `games.jsonl`; OLD_READ the previous revision's read on
 its seeds; with no READ only the content and dials checks run). Its first line is the report header's `warnings:`
 line. Warnings never stop work: an item whose own change trips one finishes, calibrates, and reports it first.
+The rulings behind each: [rulings.md](rulings.md), *Design principles*.
 
 - **Capstone and tier-2 resources (antimatter, and any later) are scarce and earned.** No cheap standard-action
   source; the only standard source is a desperate one (5 research cubes → 1 antimatter, say). *Warns:* over 20% of

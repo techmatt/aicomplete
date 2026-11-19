@@ -15,6 +15,8 @@ front end sit on top, holding no rules. Build and test are below; other areas ha
 - [web/README.md](web/README.md): the viewer, the sweep and the card viewer.
 - [tools/card-art/README.md](tools/card-art/README.md): the card renderer, frames, icons, scenes, originals.
 - [experiments/history.md](experiments/history.md): an index of past items' write-ups.
+- [docs/rulings.md](docs/rulings.md): Matt's standing rulings, by area.
+- [docs/tuning-items.md](docs/tuning-items.md): how a rules, tuning or pricing item reads, screens and reports.
 - [docs/principles.md](docs/principles.md): design pillars, difficulty targets, lenses, measures.
 - [docs/cards.md](docs/cards.md): every player card (`scripts/cards/cards_doc.py`); pricing method in
   [docs/card-pricing.md](docs/card-pricing.md), rates in `configs/agents/values.json`.

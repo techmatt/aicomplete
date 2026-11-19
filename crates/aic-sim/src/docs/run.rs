@@ -25,9 +25,16 @@ pub(super) const DOC_BUDGET: usize = 15 * 1024;
 pub(super) const DOC_WARN: usize = 14 * 1024;
 /// The `docs/` pages outside the budget: the generated card listings (cards_doc.py,
 /// load_adversary.py), the op listing (`aic-sim docs`, from op.rs: P1 of 136) and,
-/// from 172, the player-facing rulebook and its friction table.
-pub(super) const BUDGET_EXEMPT: [&str; 5] =
-    ["docs/cards.md", "docs/adversary-cards.md", "docs/ops.md", "docs/rulebook.md", "docs/rulebook-friction.md"];
+/// from 172, the player-facing rulebook and its friction table; from 291, Matt's standing
+/// rulings (every one kept whole: a ruling is never trimmed to fit).
+pub(super) const BUDGET_EXEMPT: [&str; 6] = [
+    "docs/cards.md",
+    "docs/adversary-cards.md",
+    "docs/ops.md",
+    "docs/rulebook.md",
+    "docs/rulebook-friction.md",
+    "docs/rulings.md",
+];
 const OPS_MD: &str = "docs/ops.md";
 const OP_SOURCE: &str = "crates/aic-core/src/op.rs";
 const HARMS_MD: &str = "docs/harms.md";

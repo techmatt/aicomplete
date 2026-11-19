@@ -2,6 +2,8 @@
 
 The standing contract for every executor working in this repo. How to build and test, and this
 machine's traps, are in the [README](README.md), which also lists the page for each area.
+**Matt's standing rulings are [docs/rulings.md](docs/rulings.md):** read your area's section before
+any design, rules, card or pricing work.
 
 ## What this repo is
 
@@ -79,6 +81,9 @@ machine's traps, are in the [README](README.md), which also lists the page for e
   diff reviewed against the engine rule it mirrors, both before its first fresh read.
 
 ## Reads
+
+A rules, tuning or pricing item also follows [docs/tuning-items.md](docs/tuning-items.md): seeds, lever
+screens, how bars are scored, what its report carries.
 
 - **The prompt's stated numbers run as a cell of every screen**, beside any lever you try, so the
   report can always say what the asked-for numbers did.
