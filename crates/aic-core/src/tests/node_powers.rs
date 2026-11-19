@@ -47,7 +47,7 @@ fn a_placements_prompt_names_what_it_charges() {
     assert!(paid.contains(&format!("costs {step} energy")), "{paid}");
 }
 
-/// The board's free Growth option (276: Buy In on the Builder, Levy on the Protector), the old base route.
+/// The board's free Growth option (277: the easy one; Buy In on the Builder, Levy on the Protector), the old base route.
 fn free_growth(seat: usize) -> &'static str {
     ["Buy In", "Levy"][seat]
 }
@@ -386,4 +386,20 @@ fn a_targeted_hardening_needs_a_facility_to_protect() {
     put(&mut g, a, crate::modules::common::FACTORY, 1);
     put(&mut g, a, crate::modules::common::cube(0), 1);
     assert!(effects::feasible(&w, &g, 0, &ops));
+}
+
+/// 277 (Matt, 2026-11-18): each board's Growth is one easy option (free, one node) and two costly ones (a price).
+#[test]
+fn each_growth_is_one_easy_option_and_two_costly_ones() {
+    let (rules, _) = at_step(&[], 1);
+    let w = rules.world();
+    for b in &w.content.ais {
+        let growth: Vec<_> = b.powers.iter().filter(|p| p.group.as_deref() == Some("Growth")).collect();
+        let easy: Vec<_> = growth.iter().filter(|p| p.cost.is_empty() && p.tags.is_empty()).collect();
+        assert_eq!((growth.len(), easy.len()), (3, 1), "{}: three options, one free", b.id);
+        let nodes = |p: &crate::content::Power| -> i64 {
+            p.effects.iter().map(|e| if let Op::PlaceNode { count, .. } = e { *count } else { 0 }).sum()
+        };
+        assert_eq!(nodes(easy[0]), 1, "{}: the easy option places one node", b.id);
+    }
 }

@@ -25,7 +25,7 @@
   "repeat_powers": {
     "note": "a power name, or a power's effects (cost aside), on this many boards or more. 'exempt' (252): power name -> why it is on every board by a ruling, listed as information",
     "boards_min": 2,
-    "exempt": {"Sprawl": "276 (Matt, 2026-11-18): each board's Growth prints a two-node option paid in its own currency (Sprawl energy, Outpost energy, Peer Review insight): the same effect by design", "Outpost": "276 (Matt, 2026-11-18): each board's Growth prints a two-node option paid in its own currency (Sprawl energy, Outpost energy, Peer Review insight): the same effect by design", "Peer Review": "276 (Matt, 2026-11-18): each board's Growth prints a two-node option paid in its own currency (Sprawl energy, Outpost energy, Peer Review insight): the same effect by design"}
+    "exempt": {"Sprawl": "276 (Matt, 2026-11-18): the Builder's and the Protector's Growth each print a two-node option for 1 energy (Sprawl, Outpost): the same effect by design", "Outpost": "276 (Matt, 2026-11-18): the Builder's and the Protector's Growth each print a two-node option for 1 energy (Sprawl, Outpost): the same effect by design", "Buy In": "277 (Matt, 2026-11-18): the easy Growth option, the floor (Buy In and Levy: a node and a credit): the same effect by design", "Levy": "277 (Matt, 2026-11-18): the easy Growth option, the floor (Buy In and Levy: a node and a credit): the same effect by design"}
   },
   "standard_anchor_max": 1.0,
   "standard_actions": {
@@ -317,15 +317,15 @@
       "off": {"why": "off at this revision's tunables or granted by no card: listed, no band"}
     },
     "rows": [
-      {"key": "power:builder:Buy In", "role": "node-power", "band": [0.1, 0.9], "why": "276 (Matt, 2026-11-18): a Growth option, one a round of three: the free one (a node and a chip)"},
-      {"key": "power:builder:Sprawl", "role": "node-power", "band": [0.05, 0.9], "why": "276 (Matt, 2026-11-18): a Growth option, one a round of three: two nodes for energy"},
-      {"key": "power:builder:Annex", "role": "node-power", "band": [0.05, 0.9], "why": "276 (Matt, 2026-11-18): a Growth option, one a round of three: the top route, range 2"},
-      {"key": "power:protector:Accord", "role": "node-power", "band": [0.1, 0.9], "why": "276 (Matt, 2026-11-18): a Growth option, one a round of three: the cheap one (1 energy: a node and an ambassador)"},
-      {"key": "power:protector:Outpost", "role": "node-power", "band": [0.05, 0.9], "why": "276 (Matt, 2026-11-18): a Growth option, one a round of three: two nodes for energy"},
-      {"key": "power:protector:Levy", "role": "node-power", "band": [0.05, 0.9], "why": "276 (Matt, 2026-11-18): a Growth option, one a round of three: a node and credits"},
-      {"key": "power:researcher:Field Survey", "role": "node-power", "band": [0.1, 0.9], "why": "276 (Matt, 2026-11-18): a Growth option, one a round of three: the free one (a node and a card)"},
-      {"key": "power:researcher:Peer Review", "role": "node-power", "band": [0.05, 0.9], "why": "276 (Matt, 2026-11-18): a Growth option, one a round of three: two nodes for insight"},
-      {"key": "power:researcher:Field Station", "role": "node-power", "band": [0.05, 0.9], "why": "276 (Matt, 2026-11-18): a Growth option, one a round of three: a station and a node for insight"},
+      {"key": "power:builder:Buy In", "role": "node-power", "band": [0.03, 0.45], "why": "277 (Matt, 2026-11-18): one easy Growth option and two costly ones, one a round: the floor, taken when the costly ones can't be paid; the easy one (a node and a credit), taken sometimes, never dominant"},
+      {"key": "power:builder:Sprawl", "role": "node-power", "band": [0.05, 0.9], "why": "277 (Matt, 2026-11-18): one easy Growth option and two costly ones, one a round: costly, more nodes (1 energy: two nodes)"},
+      {"key": "power:builder:Annex", "role": "node-power", "band": [0.05, 0.9], "why": "277 (Matt, 2026-11-18): one easy Growth option and two costly ones, one a round: costly, reach and a rider (1 chip: a node within 2 and 6 credits; 4 read 0.03 on the dev screen)"},
+      {"key": "power:protector:Accord", "role": "node-power", "band": [0.05, 0.9], "why": "277 (Matt, 2026-11-18): one easy Growth option and two costly ones, one a round: costly, a rider (1 energy: a node, an ambassador and 2 credits)"},
+      {"key": "power:protector:Outpost", "role": "node-power", "band": [0.05, 0.9], "why": "277 (Matt, 2026-11-18): one easy Growth option and two costly ones, one a round: costly, more nodes (1 energy: two nodes)"},
+      {"key": "power:protector:Levy", "role": "node-power", "band": [0.03, 0.45], "why": "277 (Matt, 2026-11-18): one easy Growth option and two costly ones, one a round: the floor, taken when the costly ones can't be paid (Levy 0.04 at 1 credit, 0.05 at 3: the rider barely moves it); the easy one (a node and a credit), taken sometimes, never dominant"},
+      {"key": "power:researcher:Field Survey", "role": "node-power", "band": [0.03, 0.45], "why": "277 (Matt, 2026-11-18): one easy Growth option and two costly ones, one a round: the floor, taken when the costly ones can't be paid; the easy one (a node and a card), taken sometimes, never dominant"},
+      {"key": "power:researcher:Peer Review", "role": "node-power", "band": [0.05, 0.9], "why": "277 (Matt, 2026-11-18): one easy Growth option and two costly ones, one a round: costly, more nodes (1 insight: two nodes and 2 credits; at the anchors 2 nodes alone, +8.0, fell under Field Survey's +8.67)"},
+      {"key": "power:researcher:Field Station", "role": "node-power", "band": [0.05, 0.9], "why": "277 (Matt, 2026-11-18): one easy Growth option and two costly ones, one a round: costly, a station and a node for 1 insight"},
       {"key": "power:researcher:Lab I", "role": "board-engine", "why": "276: the Researcher's threshold power (2 Science), insight into a card, its draw (Synthesis's job)"},
       {"key": "power:researcher:Lab II", "role": "sacrifice", "band": [0.05, 2.0], "why": "276: Lab's upper tier (4 Science): a card and a megaproject cube (Grant's job); late, as a tier II"},
       {"key": "power:builder:Scrap I", "role": "sacrifice"},

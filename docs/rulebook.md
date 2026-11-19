@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (third draft)
 
-*Rules revision 131. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 132. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -253,10 +253,10 @@ Nothing has a holding limit, and nothing caps your income.
 
 | Resource | Kept between rounds? | Mainly from | Mainly spent on |
 |---|---|---|---|
-| **Credits** | yes | income, cards, track spaces, megaprojects, Growth (Annex, Levy) | card costs, standard actions, Lab II, threats, a neutral city's energy |
-| **Energy** | yes | income, the city (or two) your nodes host, neutral cities (bought), Horizon's two converters, cards | it powers things: placing nodes, powers (Sprawl, Outpost, Patrol), building Actions, cards, threats |
+| **Credits** | yes | income, cards, track spaces, megaprojects, Growth (Buy In, Annex, Accord, Levy, Peer Review) | card costs, standard actions, Lab II, threats, a neutral city's energy |
+| **Energy** | yes | income, the city (or two) your nodes host, neutral cities (bought), Horizon's two converters, cards | it powers things: placing nodes, powers (Sprawl, Outpost, Accord, Patrol), building Actions, cards, threats |
 | **Insight** | **no** | set each round (below) | keeping and playing cards, the Researcher's Peer Review, Field Station and Lab, threats |
-| **Chips** | yes | your factories, cards, Builder powers (Buy In, Scrap) | buildings, research stations, Fortify, chip converters, threats |
+| **Chips** | yes | your factories, cards, the Builder's Scrap and Full Capacity | buildings, research stations, Fortify, Annex, chip converters, threats |
 | **Antimatter** | yes | the antimatter plants, the steady source (Penning Trap Array, Antiproton Foundry, Positron Storage Ring, Dark Fiber Collider, Treaty Isotope Bank, Cyclotron Lease: a resource each use for 1, once a round, some with a second gain beside it), the Builder's Overcharge II, two capstones, cards; at worst 5 research cubes (with 2 energy) | the majors: tier-2 cards (liberations, Annihilation Lance, Fusion Commons, Antimatter Accord, Collider Consortium and more), Orbital Relay Launcher's Action, Containment Reactor, Accelerator Diplomacy |
 | **Research cubes** | yes | your stations, once their megaproject is complete (§9); Cryo Sample Vault; Open Archive; cards (Field Grant, Particle Accelerator, Collider Consortium, Survey Drone Fleet) | 1 for 1 insight once a round, converters, Penning Trap Array, Field Assay Team, Research Reactor, Survey Drone Fleet, threats |
 | **Ambassadors** | yes (your supply) | 1 at the start, cards, Accord, 13 credits | liberating, Remove agents, Envoy, threats |
@@ -1074,16 +1074,17 @@ adversary's). A threat's two tokens never share a hex; a token with no place lef
 
 ## 20. Powers and capstones
 
-Each board has a **Growth** (pick one option a round) and two tiered powers (pick one tier of each a round), used in
+Each board has a **Growth** (pick one option a round: one easy option, free, and two costly ones that pull
+different ways) and two tiered powers (pick one tier of each a round), used in
 the action phase. A tag in a cost means sacrifice cards carrying that many of it (§7, *Tags*); a threshold power ("with 2
 Science on your cards") counts the tags on your cards and sacrifices none. Every placement also pays the track
 space's energy (§5).
 
 | Board | Growth (one option) | Tiered powers (one tier each) |
 |---|---|---|
-| Builder | **Sprawl** (1 energy: 2 nodes), **Buy In** (a node and 1 chip), **Annex** (a node within 2 of yours and 3 credits) | **Scrap** I (1 Industry: 1 chip) / II (2 Industry: 1 chip and play a building from your hand without paying its credits; its other costs and requirements stand); **Overcharge** I (1 Power: 2 energy) / II (2 Power: 2 energy and 1 antimatter); **Fortify** I (1 chip: target troops; remove 1 on it) / II (2 chips: remove up to 2 on it and harden a facility on or next to it) |
-| Protector | **Outpost** (2 energy: 2 nodes), **Accord** (1 energy: a node and 1 ambassador), **Levy** (a node and 3 credits) | **Patrol** I (1 energy: target agents or troops; push up to 3 from it) / II (2 energy: the same, and harden a facility on or next to it); **Interdict** I (1 Security: target troops; remove up to 2 on it) / II (2 Security: target agents or troops; remove up to 2 troops and up to 2 agents on it; draw 1) |
-| Researcher | **Peer Review** (2 insight: 2 nodes), **Field Survey** (a node and draw 1), **Field Station** (1 insight: target an open hex; build a research station on it without the chips, and place a node) | **Lab** I (with 2 Science on your cards, 1 insight: draw 1) / II (with 4 Science, 1 insight and 2 credits: draw 1 and add 1 cube in your color to a megaproject that isn't complete); **Hack** I (1 Cyber: remove up to 2 adversary troops in one country) / II (2 Cyber: the same, and remove 3 compute from one adversary project) |
+| Builder | Easy: **Buy In** (a node and 1 credit). Costly: **Sprawl** (1 energy: 2 nodes), **Annex** (1 chip: a node within 2 of yours and 6 credits) | **Scrap** I (1 Industry: 1 chip) / II (2 Industry: 1 chip and play a building from your hand without paying its credits; its other costs and requirements stand); **Overcharge** I (1 Power: 2 energy) / II (2 Power: 2 energy and 1 antimatter); **Fortify** I (1 chip: target troops; remove 1 on it) / II (2 chips: remove up to 2 on it and harden a facility on or next to it) |
+| Protector | Easy: **Levy** (a node and 1 credit). Costly: **Outpost** (1 energy: 2 nodes), **Accord** (1 energy: a node, 1 ambassador and 2 credits) | **Patrol** I (1 energy: target agents or troops; push up to 3 from it) / II (2 energy: the same, and harden a facility on or next to it); **Interdict** I (1 Security: target troops; remove up to 2 on it) / II (2 Security: target agents or troops; remove up to 2 troops and up to 2 agents on it; draw 1) |
+| Researcher | Easy: **Field Survey** (a node and draw 1). Costly: **Peer Review** (1 insight: 2 nodes and 2 credits), **Field Station** (1 insight: target an open hex; build a research station on it without the chips, and place a node) | **Lab** I (with 2 Science on your cards, 1 insight: draw 1) / II (with 4 Science, 1 insight and 2 credits: draw 1 and add 1 cube in your color to a megaproject that isn't complete); **Hack** I (1 Cyber: remove up to 2 adversary troops in one country) / II (2 Cyber: the same, and remove 3 compute from one adversary project) |
 
 | Board | Economy track capstone | Card-play track capstone |
 |---|---|---|

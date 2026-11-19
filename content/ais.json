@@ -107,7 +107,7 @@
     "name": "Buy In",
     "tags": [],
     "cost": [],
-    "text": "place 1 Node; gain 1 chip",
+    "text": "place 1 Node; gain 1 credit",
     "effects": [
      {
       "op": "place_node",
@@ -115,7 +115,7 @@
      },
      {
       "op": "gain",
-      "resource": "chips",
+      "resource": "credits",
       "amount": 1
      }
     ],
@@ -124,8 +124,13 @@
    {
     "name": "Annex",
     "tags": [],
-    "cost": [],
-    "text": "place 1 Node within 2 of yours; gain 3 credits",
+    "cost": [
+     [
+      "chips",
+      1
+     ]
+    ],
+    "text": "place 1 Node within 2 of yours; gain 6 credits",
     "effects": [
      {
       "op": "place_node",
@@ -135,7 +140,7 @@
      {
       "op": "gain",
       "resource": "credits",
-      "amount": 3
+      "amount": 6
      }
     ],
     "group": "Growth"
@@ -449,7 +454,7 @@
     "cost": [
      [
       "energy",
-      2
+      1
      ]
     ],
     "text": "place 2 Nodes",
@@ -470,7 +475,7 @@
       1
      ]
     ],
-    "text": "place 1 Node; gain 1 ambassador",
+    "text": "place 1 Node; gain 1 ambassador and 2 credits",
     "effects": [
      {
       "op": "place_node",
@@ -480,6 +485,11 @@
       "op": "gain",
       "resource": "ambassadors",
       "amount": 1
+     },
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 2
      }
     ],
     "group": "Growth"
@@ -488,7 +498,7 @@
     "name": "Levy",
     "tags": [],
     "cost": [],
-    "text": "place 1 Node; gain 3 credits",
+    "text": "place 1 Node; gain 1 credit",
     "effects": [
      {
       "op": "place_node",
@@ -497,7 +507,7 @@
      {
       "op": "gain",
       "resource": "credits",
-      "amount": 3
+      "amount": 1
      }
     ],
     "group": "Growth"
@@ -768,14 +778,19 @@
     "cost": [
      [
       "insight",
-      2
+      1
      ]
     ],
-    "text": "place 2 Nodes",
+    "text": "place 2 Nodes; gain 2 credits",
     "effects": [
      {
       "op": "place_node",
       "count": 2
+     },
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 2
      }
     ],
     "group": "Growth"

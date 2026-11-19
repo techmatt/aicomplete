@@ -35,22 +35,22 @@ next to it where printed. `Content::check` holds powers to the cards' check and 
 | Board | Power | Use (once a round) | Cost | Effect |
 |---|---|---|---|---|
 | Builder | Sprawl | Growth (pick one) | 1 energy | place 2 Nodes |
-| Builder | Buy In | Growth (pick one) | nothing | place 1 Node; gain 1 chip |
-| Builder | Annex | Growth (pick one) | nothing | place 1 Node within 2 of yours; gain 3 credits |
+| Builder | Buy In | Growth (pick one) | nothing | place 1 Node; gain 1 credit |
+| Builder | Annex | Growth (pick one) | 1 chip | place 1 Node within 2 of yours; gain 6 credits |
 | Builder | Scrap I | Scrap, tier I | 1 Industry | gain 1 chip |
 | Builder | Scrap II | Scrap, tier II | 2 Industry | gain 1 chip; play a building from your hand, paying no credits |
 | Builder | Overcharge I | Overcharge, tier I | 1 Power | gain 2 energy |
 | Builder | Overcharge II | Overcharge, tier II | 2 Power | gain 2 energy and 1 antimatter |
 | Builder | Fortify I | Fortify, tier I | 1 chip | Target: Troops. Remove 1 Troop on it |
 | Builder | Fortify II | Fortify, tier II | 2 chips | Target: Troops. Remove up to 2 Troops on it; harden a facility on or next to it |
-| Protector | Outpost | Growth (pick one) | 2 energy | place 2 Nodes |
-| Protector | Accord | Growth (pick one) | 1 energy | place 1 Node; gain 1 ambassador |
-| Protector | Levy | Growth (pick one) | nothing | place 1 Node; gain 3 credits |
+| Protector | Outpost | Growth (pick one) | 1 energy | place 2 Nodes |
+| Protector | Accord | Growth (pick one) | 1 energy | place 1 Node; gain 1 ambassador and 2 credits |
+| Protector | Levy | Growth (pick one) | nothing | place 1 Node; gain 1 credit |
 | Protector | Patrol I | Patrol, tier I | 1 energy | Target: Agents or Troops. Push up to 3 from it, each to a hex next to it |
 | Protector | Patrol II | Patrol, tier II | 2 energy | Target: Agents or Troops. Push up to 3 from it, each to a hex next to it; harden a facility on or next to it |
 | Protector | Interdict I | Interdict, tier I | 1 Security | Target: Troops. Remove up to 2 on it |
 | Protector | Interdict II | Interdict, tier II | 2 Security | Target: Agents or Troops. Remove up to 2 Troops and up to 2 Agents on it; draw 1 card |
-| Researcher | Peer Review | Growth (pick one) | 2 insight | place 2 Nodes |
+| Researcher | Peer Review | Growth (pick one) | 1 insight | place 2 Nodes; gain 2 credits |
 | Researcher | Field Survey | Growth (pick one) | nothing | place 1 Node; draw 1 card |
 | Researcher | Field Station | Growth (pick one) | 1 insight | Target: an open hex. Build a research station on it, paying no chips; place 1 Node |
 | Researcher | Lab I | Lab, tier I, with 2 Science on your cards | 1 insight | draw 1 card |
@@ -61,19 +61,19 @@ next to it where printed. `Content::check` holds powers to the cards' check and 
 
 **Growth is the board's node placement** (Matt, 2026-11-18). There is no other node route: each round a board may
 pick one Growth option, and every placement, by Growth or card, pays the energy printed on the track space it
-uncovers (locked). Each board's three options keep the old routes' intents: a cheap option (Buy In, Accord, Field
-Survey: 1 node and a small rider), the energy-rich boards' two-node option paid in energy (Sprawl, Outpost), the
-Researcher's paid in insight (Peer Review), the Builder's within-2 reach (Annex), the Researcher's station (Field
-Station). With no token left, no step it can pay or no free hex, an option isn't offered; a two-node option needs
-both nodes' steps (276). Cards that place nodes add
-to Growth (cards aren't capped).
+uncovers (locked). **Each board prints one easy option and two costly ones** (277). The easy one is free, the floor
+you can always take: a node and a small rider. The costly two are the real choice and pull different ways: more
+nodes (Sprawl, Outpost, Peer Review) against a rider or reach (Annex, Accord, Field Station). With no token left, no
+step it can pay or no free hex, an option isn't offered; a two-node option needs both nodes' steps (276). Cards that
+place nodes add to Growth (cards aren't capped).
 
-**Growth's give / get** (276, at the unit anchors; a node 5.33, besides each placement's track step): Sprawl 1
-energy (3) for 2 nodes (10.67); Buy In nothing for a node and a chip (8); Annex nothing for a node within 2 and 3
-credits (8.33 and the reach); Outpost 2 energy (6) for 2 nodes; Accord 1 energy (3) for a node and an ambassador (8);
-Levy nothing for a node and 3 credits (8.33); Peer Review 2 insight (3.33) for 2 nodes; Field Survey nothing for a
-node and a card (8); Field Station 1 insight (1.67) for a station and a node (12). One option a round and the
-steps' rising energy cap them all.
+**Growth's give / get** (277, at Matt's unit anchors, [card-guidelines.md](../card-guidelines.md); a node 5.33 and a
+station 6.67 from `values.json`; before each step). Easy: Buy In and Levy +6.33, Field Survey +8.67. Costly: Sprawl
+and Outpost 1 energy for 2 nodes +7.67; Annex 1 chip (4) for a node within 2 and 6 credits +7.33 and the reach;
+Accord +9.67; Peer Review 1 insight (2.67) for 2 nodes and 2 credits +10.0; Field Station +9.33. Each costly option
+beats its board's easy one when affordable; a two-node option pays a second step, so where steps cost energy its edge
+narrows (Sprawl and Outpost +4.67 after a 1-energy second step). One option a round and the steps' rising energy cap
+them all.
 
 **Sacrifice is late-game liquidation.** Once the cards needing a tag are played, its tags turn into engine rewards,
 each payoff priced to be worth the card: 1 chip (Scrap I), 2 energy (Overcharge I), up to 2 troops removed on a
