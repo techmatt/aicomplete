@@ -1,9 +1,10 @@
-//! Not a test: a guard on how the tests were asked for (045). The aliases in
-//! `.cargo/config.toml` end in `-- --include-ignored`, so `cargo test-all --
-//! --test-threads=2` hands the test binaries a second `--`, past which libtest
-//! reads the flag as a test-name filter: every binary then runs nothing and
-//! the whole command passes. This binary has no harness, so it sees the same
-//! arguments and can refuse them.
+//! Not a test: a guard on how the tests were asked for (045). A hand-typed
+//! `cargo test --workspace -- --include-ignored -- --test-threads=2` hands the
+//! test binaries a second `--`, past which libtest reads the flag as a
+//! test-name filter: every binary then runs nothing and the whole command
+//! passes. This binary has no harness, so it sees the same arguments and can
+//! refuse them. (Since 283 the `test-all` / `test-slow` aliases run
+//! `crates/aic-lanes`, which never passes a second `--`.)
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();

@@ -41,6 +41,11 @@ pub fn shard(first: f64, count: f64, args: &str) -> Result<String, String> {
     };
     let f = Farm::load(spec, &read)?;
     let mut out = String::new();
+    // 283: the shard at the spec's first seed leads with the header, as natively (`Farm::lead`).
+    if let Some(head) = f.lead(first) {
+        out.push_str(&head);
+        out.push('\n');
+    }
     f.play(first, count, &mut |_, l| {
         out.push_str(l);
         out.push('\n');

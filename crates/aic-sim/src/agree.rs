@@ -74,7 +74,8 @@ pub fn run(o: &Options) -> i32 {
             fail(&format!("{path}: rules revision r{}, the binary's r{}", head.rules_revision, aic_core::RULES_REVISION));
         }
         let cs = cells(&head.spec).unwrap_or_else(|e| fail(&format!("{path}: {e}")));
-        for l in lines.filter(|l| !l.trim().is_empty()) {
+        // 283: a second header (a farm out file after a hand-written `farm --header`) is no game.
+        for l in lines.filter(|l| !l.trim().is_empty() && !l.starts_with("{\"format\"")) {
             let g: Line = serde_json::from_str(l).unwrap_or_else(|e| fail(&format!("{path}: {e}")));
             if g.cell < cs.len() && picked(&cs[g.cell].agent) && g.won {
                 jobs.push((pi, g));

@@ -99,6 +99,13 @@ impl Farm {
         Ok(())
     }
 
+    /// 283: the line a shard leads with: the header over the spec's own range when the shard starts at the spec's
+    /// first seed, so shards concatenated in seed order (`farm-seeds`' out file) read as a `games.jsonl` with no
+    /// header written by hand; none for any other shard, so the header stays the one line it is.
+    pub fn lead(&self, first: u64) -> Option<String> {
+        (first == self.spec.first_seed).then(|| self.header(self.spec.first_seed, self.spec.games))
+    }
+
     /// The `games.jsonl` header for this spec over `first .. first + count`.
     pub fn header(&self, first: u64, count: u64) -> String {
         let mut spec = self.spec.clone();
@@ -209,6 +216,10 @@ pub fn cli(o: &Options) -> i32 {
     let Some(out) = &o.out else { fail("farm needs --out FILE (or --header)") };
     let start = crate::clock::Instant::now();
     let mut text = String::new();
+    if let Some(head) = farm.lead(o.seed) {
+        text.push_str(&head);
+        text.push('\n');
+    }
     let mut games = 0usize;
     let mut game_ms = 0.0;
     farm.play(o.seed, o.games, &mut |r, l| {
@@ -270,6 +281,19 @@ mod tests {
         let g: serde_json::Value = serde_json::from_str(whole.lines().next().unwrap()).unwrap();
         assert_eq!(g["engine"], "native");
         assert_eq!(g["ms"], 0.0);
+    }
+
+    /// 283: only the shard at the spec's first seed leads with a header, and it is the spec's whole range.
+    #[test]
+    fn only_the_first_shard_leads_with_the_header() {
+        let mut f = tiny();
+        f.spec.first_seed = 500;
+        f.spec.games = 4;
+        let head: serde_json::Value = serde_json::from_str(&f.lead(500).unwrap()).unwrap();
+        assert_eq!(head["spec"]["first_seed"], "500"); // a seed is written as a string (u64 past 2^53)
+        assert_eq!(head["spec"]["games"], 4);
+        assert!(head["format"].is_string());
+        assert!(f.lead(501).is_none());
     }
 
     /// 251: a spec's `drop` writes those keys empty and leaves the rest of the line as it was; an unknown key

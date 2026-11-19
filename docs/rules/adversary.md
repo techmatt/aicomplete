@@ -126,12 +126,12 @@ third from `THIRD_EFFECT_COST`, 18). The deck never reshuffles in a d3 game.
 | Hostile Takeover | industry | 15 | small (1) |
 | Station Coup | cyber | 24 | big (3) |
 | War Plants | industry | 19 | big (2) |
-| Recruitment Drive | diplomacy | 32 | big (2) |
+| Recruitment Drive | diplomacy | 24 | small (1) |
 | Propaganda Network | universal | 18 | big (2) |
 | Infiltration Drive | diplomacy | 22 | big (2) |
 | Accelerated Timetable | universal | 20 | big (2) |
-| Grand Offensive | universal | 32 | big (3) |
-| Martial Law | security | 29 | big (2) |
+| Grand Offensive | universal | 24 | big (2) |
+| Martial Law | security | 24 | small (1) |
 <!-- /generated -->
 
 Texts: [adversary-cards.md](../adversary-cards.md).

@@ -387,7 +387,16 @@ fn value(
             .sum();
         ctx.horizon * per_round as f64 * t.op("income") * (t.res(Resource::Insight) - idle).max(0.0)
     });
-    m * (CardValue::of(t, d).total(t, &ctx) - spare) - covered + jobs + situational(d, pc, pt)
+    // 283 (237's pick, `plan_target`): with nothing to act on now, a share of its value (its target may come).
+    let absent = if f.plan_target
+        && !d.is_building()
+        && !aic_core::modules::effects::feasible(w, g, s, &aic_core::modules::effects::own_counted(d))
+    {
+        t.rate("target_absent")
+    } else {
+        1.0
+    };
+    m * (CardValue::of(t, d).total(t, &ctx) - spare) * absent - covered + jobs + situational(d, pc, pt)
 }
 
 /// 092: what building `d`, buried now, would still have earned: its standing

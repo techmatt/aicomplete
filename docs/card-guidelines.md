@@ -97,13 +97,14 @@ number is r127's ÷ 1.5, so a third reads .33 or .67; the ratios are r127's.
 | Remove 1 troop | 3.33 | | +1 credit income | 4 at mid-game |
 | 1 energy | 3 | | +1 insight income | 8 at mid-game |
 | 1 insight | 2.67 | | Remove 1 compute from a project | 1.33 (stopping projects is hard) |
-| Draw 1 card | 3.33 | | 1 antimatter | 12 (a big investment that pays off) |
+| Draw 1 card | 3.33 | | 1 antimatter | 18 (epic: Matt, 283; was 12) |
 | 1 ambassador | 5.33 | | | |
 
 Derived: the keep, 2.67 a tier-1 card and 8 a tier-2 one (1 and 3 insight); +1 energy income 9.6 (4 rounds × 3 ×
 0.8); +1 chip income about 13 (4 rounds × 4 × 0.8). A research cube is 4 (6 when the play completes the
-megaproject), so Make antimatter (5 cubes, 20) loses against its 1 antimatter and 2 energy (18; 262): every engine making it (a plant's Action:
-Positron Storage Ring, Cyclotron Lease and four more) shows a clear gain, and every spend is a big one. Other units take `values.json` (a sway 2.67, a
+megaproject). Make antimatter (5 cubes, 20) reads 24 at antimatter 18 (1 antimatter and 2 energy), yet stays an unused
+hedge (Matt, 283); every engine making it (a plant's Action: Positron Storage Ring, Cyclotron Lease and four more)
+shows a clear gain, and every spend is a big one. Other units take `values.json` (a sway 2.67, a
 node 5.33) or [card-pricing.md](card-pricing.md) (a city liberated 30); a botnet removed is 10 (252: the median card for the job). A
 card whose unit has no anchor sits inside 1.0-2.5× under both readings: a convert at its output's anchor and its
 input's, an engine's uses at the measured count and the conservative one.

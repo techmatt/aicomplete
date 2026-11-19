@@ -1,0 +1,10 @@
+[package]
+name = "aic-lanes"
+description = "The test lanes' front (`cargo test-all`, `cargo test-slow`): cargo's flags to cargo, the rest to the tests"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "aic-lanes"
+doctest = false

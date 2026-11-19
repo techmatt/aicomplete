@@ -14,6 +14,7 @@
     python scripts/bench/speed.py check SIM                        # about 2 min, see below
     python scripts/bench/speed.py check SIM --update               # after a change meant to cost time
 
+Each SIM runs as a copy under `out/speed-bin/` (removed at exit), so a rebuild of the binary isn't blocked.
 `--threads N` caps `table` and `pair`'s many-thread column: the default leaves 4 hardware
 threads free. `check` always runs on one. `--games N` sets the games of the --threads column in
 `table`, `pair` and `specs`; the one-thread column keeps its games. `table` and `specs` take
@@ -38,10 +39,12 @@ like; `same_results.py --map` is the whole-games check. An OLD that refuses toda
 takes the one it was built with through `--old-config`. `same_play.py` is the check that play held.
 """
 
+import atexit
 import hashlib
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -69,6 +72,29 @@ PAIR_SECS = 10
 PLAY_FIELDS = ("wins", "rounds_mean", "decisions_mean", "options_per_decision", "forced_share",
                "max_options", "ended", "end_round")
 BASELINE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "speed_baseline.json")
+
+
+def private_copy(sim):
+    """283: a copy of `sim` to run, under `out/speed-bin/` (removed at exit): Windows locks a running exe, so timing
+    `target/release/aic-sim.exe` itself blocked a rebuild for the whole run. The copy is byte for byte the same
+    binary; a missing `sim` is reported as it was."""
+    src = os.path.abspath(sim)
+    if not os.path.isfile(src):
+        sys.exit(f"{sim}: no such binary")
+    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    folder = os.path.join(root, "out", "speed-bin")
+    os.makedirs(folder, exist_ok=True)
+    stem, ext = os.path.splitext(os.path.basename(src))
+    dst = os.path.join(folder, f"{stem}-{os.getpid()}-{len(os.listdir(folder))}{ext}")
+    shutil.copy2(src, dst)
+
+    def remove():
+        try:
+            os.remove(dst)
+        except OSError:
+            pass
+    atexit.register(remove)
+    return dst
 
 
 def default_threads():
@@ -305,14 +331,14 @@ if __name__ == "__main__":
     if games and argv[:1] in (["check"], ["compare"]):
         sys.exit(f"--games does not apply to {argv[0]}")
     if argv[:1] == ["table"] and len(argv) == 2:
-        table(argv[1], out, only, threads, games)
+        table(private_copy(argv[1]), out, only, threads, games)
     elif argv[:1] == ["pair"] and len(argv) == 3:
-        pair(argv[1], argv[2], out, only, threads, old_config, games)
+        pair(private_copy(argv[1]), private_copy(argv[2]), out, only, threads, old_config, games)
     elif argv[:1] == ["specs"] and len(argv) == 4:
-        specs(argv[1], argv[2], argv[3], out, threads, countries, games)
+        specs(private_copy(argv[1]), argv[2], argv[3], out, threads, countries, games)
     elif argv[:1] == ["compare"] and len(argv) == 3:
         compare(argv[1], argv[2])
     elif argv[:1] == ["check"] and len(argv) == 2:
-        sys.exit(check(argv[1], update))
+        sys.exit(check(private_copy(argv[1]), update))
     else:
         sys.exit(__doc__)

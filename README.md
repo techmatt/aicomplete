@@ -71,7 +71,7 @@ cargo build --workspace
 cargo check --tests                           # a missing import in ~1 min, before a full test build
 cargo test --workspace                        # fast lane, the default: ~6 s once built, ~20 s after an aic-sim edit
 cargo test-all                                # full run, slow lane included: ~1 min on 6 test threads once built
-                                              # (threads: --test-threads=N; -j N fails in a second, reading as a pass)
+                                              # (cargo flags such as -j N go to cargo, --test-threads=N to the tests)
 cargo test-slow                               # the slow lane alone: ~50 s
 cargo build --release -p aic-sim              # ~30 s after an aic-sim edit, ~45 s after aic-core, ~1 min cold
 ./target/release/aic-sim docs                 # regenerate the generated docs (--check: report only)
@@ -82,15 +82,15 @@ node scripts/wasm-parity.mjs [games]          # native = wasm, variant matrix: ~
 ```
 
 **Test lanes.** The slow lane is the tests marked `#[ignore = "slow lane: ..."]`: whole search-agent games, the
-greedy experiment grid, more seeds of fast-lane replay checks. `test-all` and `test-slow` alias
-(`.cargo/config.toml`) `cargo test --workspace -- --include-ignored` and `-- --ignored`; one slow test:
-`cargo test-slow <name>` (a `-p aic-sim` build differs from the workspace's: ~1 min rebuild each way). Anything after
-an alias goes to the test binary, no second `--` (`crates/aic-sim/tests/args_guard.rs`): `--test-threads=3` caps test
-threads; `CARGO_BUILD_JOBS=3` caps build jobs (a `-j` stops in a second, like a fast pass: check the exit code).
+greedy experiment grid, more seeds of fast-lane replay checks. `test-all` and `test-slow` (`.cargo/config.toml`) run
+`crates/aic-lanes`, which runs `cargo test --workspace [cargo flags] -- --include-ignored` (or `--ignored`) [the rest]:
+cargo's own flags (`-j 3`, `--no-fail-fast`, `-p X`) go to cargo, anything else (`--test-threads=3`, a name filter)
+and all after a `--` to the tests; one slow test: `cargo test-slow <name>` (a `-p aic-sim` build differs from the
+workspace's: ~1 min rebuild each way).
 Times are this machine's, idle; a cold test build is ~2.5 min. Test binaries run in turn, so a lane takes about
 the sum of their slowest tests: split a loop over agents, variants or independent plays into tests or scoped threads. Search agents are slow in the test build (the seat-terms cache's `debug_assert` recomputes each hit;
 `opt-level` 3 bought little): a whole-game test takes cheap agent params. No doctests (`doctest = false`). A red
-crate stops the run: `cargo test --workspace --no-fail-fast [-- --include-ignored]`.
+crate stops the run: `cargo test-all --no-fail-fast`.
 
 **Rules changes:** the fast-lane `golden_game` test pins the final state of one fixed game (baseline, seed
 `u64::MAX`, action *k* = legal action `(k × 7919) mod count`). For an intended rules change, bump `RULES_REVISION`

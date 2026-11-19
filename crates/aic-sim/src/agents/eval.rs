@@ -410,6 +410,13 @@ pub struct Weights {
     /// the units it burns, where that beats its flat weight: fuel a converter waits on is worth what it will make (at
     /// `antimatter` 2, below the chip or energy that makes one, a seat with Orbital Relay Launcher made none).
     pub sink: f64,
+    /// 283 (on; 0: the mix before it): the keep price's spare insight covers a keep counted in insight, not in
+    /// r127's credits (`keep_price` divided insight held by credits: a tier-2 keep of 3 read 6).
+    pub keep_units: f64,
+    /// 283 (D106's pick (a); on; 0: off): a held research-track removal counts the firing it delays: its table row
+    /// times the share of a firing the track still reaches this game (`research_share`), not its printed cubes
+    /// whatever the game has left. It changed no game on 960 dev-seed games.
+    pub research_delay: f64,
 }
 
 /// Weights renamed since experiments named them: (former name, name).
@@ -697,6 +704,10 @@ impl Default for Weights {
             card_income: 0.0,
             card_action: 0.0,
             sink: 0.0,
+            // 283 (dev seeds, 480 games a cell, with the table at the anchors): keep_units +0.0 on it (+1.9 ± 1.9
+            // judge against base, as the table alone); research_delay changed no game (D106's pick (a)).
+            keep_units: 1.0,
+            research_delay: 1.0,
         }
     }
 }
@@ -2281,8 +2292,13 @@ impl Eval {
         if spare <= 0.0 {
             return keep;
         }
-        // 273: r127's keep price in credits (2 an insight), so the share covered stays r127's.
-        let need = (keep_insight(world, tier) * CREDIT_SCALE).max(1.0);
+        // 273: r127's keep price in credits (2 an insight), so the share covered stays r127's; 283 (`keep_units`):
+        // the keep's insight, the unit spare insight is counted in.
+        let need = if self.w.keep_units > 0.0 {
+            (keep_insight(world, tier) / super::INSIGHT_COST).max(1.0)
+        } else {
+            (keep_insight(world, tier) * CREDIT_SCALE).max(1.0)
+        };
         let covered = (spare / need).min(1.0);
         let unit = self.insight_unit(s).max(1e-9);
         keep * (1.0 - covered * (1.0 - (self.w.insight_idle / unit).min(1.0)))
@@ -2349,6 +2365,9 @@ impl Eval {
                 ctx.energy_rate = self.energy_rate(g, s);
                 ctx.cubes_open =
                     w.cube_target <= 0.0 || !aic_core::modules::effects::cube_projects(&world, g, s, false).is_empty();
+                if w.research_delay > 0.0 {
+                    ctx.research = research_share(tbl, &world, g, left);
+                }
                 // 230 (`am_make`): the antimatter the seat makes each round, beside its income.
                 let am_make = if w.am_make > 0.0 { super::keep_plan::am_makes(&world, g, s) } else { 0 };
                 SeatData { s, tags, prices, income, ctx, am_make }
@@ -2674,6 +2693,21 @@ fn same_terms(a: &SeatTerms, b: &SeatTerms) -> bool {
 #[cfg(not(debug_assertions))]
 fn same_terms(_: &SeatTerms, _: &SeatTerms) -> bool {
     true
+}
+
+/// 283 (D106, `research_delay`): the share of a research-track firing the track still reaches this game: its cubes
+/// plus `rates.research_round` a country a round for the `left` rounds (the heuristic's risk-weighted count), over
+/// the threshold, at most 1 (0 with no research rule). A held removal card delays a firing as much played early as
+/// late, so long as a firing is still coming; what a play takes now (at most the cubes on the track) is the board
+/// term's (`research`). The keep plan reads 1 (`Ctx::at`).
+pub(crate) fn research_share(t: &value::Table, w: &aic_core::module::World, g: &GameState, left: f64) -> f64 {
+    let at = adversary::research_threshold(w);
+    if at <= 0 {
+        return 0.0;
+    }
+    let track = g.var(adversary::RESEARCH) as f64;
+    let made = t.rate("research_round") * w.map.countries.len() as f64 * left.max(0.0);
+    ((track + made) / at as f64).clamp(0.0, 1.0)
 }
 
 /// 107: `ctx` with each tag's share read from seat `s`'s cards, in play (its

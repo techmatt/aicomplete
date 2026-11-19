@@ -32,5 +32,6 @@ done
 for p in $pids; do wait $p; done
 (cd "$DIR" && "$EXE" farm "$SPEC" --header --seed $FIRST --games $COUNT) > "$OUT"
 j=0
-while [ $j -lt $i ]; do cat "$OUT.parts/$j.jsonl" >> "$OUT"; j=$(( j + 1 )); done
+# 283: a shard starting at the spec's first seed leads with its own header (`Farm::lead`): the one above stands.
+while [ $j -lt $i ]; do grep -v '^{"format"' "$OUT.parts/$j.jsonl" >> "$OUT"; j=$(( j + 1 )); done
 echo SHARDS-DONE "$OUT"

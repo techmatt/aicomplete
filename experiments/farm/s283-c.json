@@ -1,0 +1,45 @@
+{
+ "name": "s283-c",
+ "note": "283 agent screen: arms base, C, CK, CP x the judge and greedy (see experiments/results/283_agents_antimatter/make_screen.py), three pairs, d0-d4, dev seeds.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp",
+   "set": []
+  },
+  {
+   "name": "br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "agents": [
+  "strategist",
+  "greedy",
+  "strategist:t.resources.insight=2.667,t.resources.chips=4,t.resources.research_cubes=4,t.resources.ambassadors=5.333,t.resources.antimatter=18,t.rates.drawn_card=3.333,t.rates.keep_tier1=2.667,t.rates.keep_tier2=8,t.rates.horizon_t2=3.5,w.antimatter=3,w.research_delay=1",
+  "greedy:t.resources.insight=2.667,t.resources.chips=4,t.resources.research_cubes=4,t.resources.ambassadors=5.333,t.resources.antimatter=18,t.rates.drawn_card=3.333,t.rates.keep_tier1=2.667,t.rates.keep_tier2=8,t.rates.horizon_t2=3.5,w.antimatter=3,w.research_delay=1",
+  "strategist:t.resources.insight=2.667,t.resources.chips=4,t.resources.research_cubes=4,t.resources.ambassadors=5.333,t.resources.antimatter=18,t.rates.drawn_card=3.333,t.rates.keep_tier1=2.667,t.rates.keep_tier2=8,t.rates.horizon_t2=3.5,w.antimatter=3,w.research_delay=1,w.keep_units=1",
+  "greedy:t.resources.insight=2.667,t.resources.chips=4,t.resources.research_cubes=4,t.resources.ambassadors=5.333,t.resources.antimatter=18,t.rates.drawn_card=3.333,t.rates.keep_tier1=2.667,t.rates.keep_tier2=8,t.rates.horizon_t2=3.5,w.antimatter=3,w.research_delay=1,w.keep_units=1",
+  "strategist:t.resources.insight=2.667,t.resources.chips=4,t.resources.research_cubes=4,t.resources.ambassadors=5.333,t.resources.antimatter=18,t.rates.drawn_card=3.333,t.rates.keep_tier1=2.667,t.rates.keep_tier2=8,t.rates.horizon_t2=3.5,w.antimatter=3,w.research_delay=1,plan_target=1",
+  "greedy:t.resources.insight=2.667,t.resources.chips=4,t.resources.research_cubes=4,t.resources.ambassadors=5.333,t.resources.antimatter=18,t.rates.drawn_card=3.333,t.rates.keep_tier1=2.667,t.rates.keep_tier2=8,t.rates.horizon_t2=3.5,w.antimatter=3,w.research_delay=1,plan_target=1"
+ ],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

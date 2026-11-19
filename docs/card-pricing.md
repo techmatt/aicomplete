@@ -50,13 +50,14 @@ moves when any other card changes: to reprice an edited card, move its price by 
   aims at the middle, about 1.2-1.3, at its played tag count (Matt, *Economy* rev 23).
   **The anchors set the price; the table is fixed to see a card's real worth, never the price cut to make it show a
   gain. A card the strategist leaves unplayed gets more power, not a lower price.** Every removal number fits the board (3-6 ambassadors, 1-2 troops, 3-6 compute). Where the table
-  disagrees, the anchor wins for the price and the table stays the agents': `values.json` has chips 2.67 (anchor 4),
-  insight 1.67 (2.67), a drawn card 2.67 (3.33), an ambassador removed about 1.47 and a troop 7.33 (3.33 each), a
-  project discard 5.33 (about 16 at 1.33 a compute). Every credit number is r127's ÷ 1.5 since r128 (273). The recipe and fit below are the agents' view and the effect ledger's.
+  disagrees, the anchor wins for the price and the table stays the agents': since 283 `values.json` reads the
+  resources, a drawn card and a tier-2 horizon at the anchors (the keep moved with insight: 2.67 and 6.93, its
+  expected 2.6 insight at tier 2, not the anchor's 8), but an ambassador removed about 1.47 and a
+  troop 7.33 (3.33 each) and a project discard 5.33 (about 16 at 1.33 a compute): at the anchors those lost play. Every credit number is r127's ÷ 1.5 since r128 (273). The recipe and fit below are the agents' view and the effect ledger's.
 - **Tier is power** (ruling 4): costs and effects go up a lot with tier, few cards cost 0, and tier is not a proxy for
   cost.
 - **The recipe:** value the effect at the rates; then credits = value − the keep (`rates.keep_tier1`, `keep_tier2`) −
-  1.67 × the insight to play − about 0.67, so the card beats the plain route it replaces (ruling 7). **Insight to play is
+  `resources.insight` × the insight to play − about 0.67, so the card beats the plain route it replaces (ruling 7). **Insight to play is
   a price** (Matt): spread over 0, 1 and 2, most tier-1 cards at 0; moving a card 1 insight moves its credits the
   anchor's 2.67, less what would leave it under a 1-credit gain at the table.
 - **A `needs` chain is the price** (ruling 10): needs 2-3 of a tag on an engine, needs 3-4 sits 2-4 under the recipe,
@@ -69,7 +70,7 @@ moves when any other card changes: to reprice an edited card, move its price by 
   and Multiyear Defense Budget). The anchors price income at mid-game; bought in round 1-3 it runs about 5 rounds
   (about 1.25× the anchor), so a jump-start reads 1.0-1.3 at the anchors and stays under 1.5 early. Late objectives
   reach a goal in one play: Moonshot Grant's 8 cubes fill a megaproject (cubes at 6 when they complete it), the
-  liberate capstones. **The majors:** tier-2 cards paying 1 antimatter (12) for a big payoff, priced at the anchors
+  liberate capstones. **The majors:** tier-2 cards paying 1 antimatter (18 since 283) for a big payoff, priced at the anchors
   at 1.0-2.5 (each card's line in `docs/card-pricing-notes.json`).
 - **Sway past a tip carries over** ([rules/alignment.md](rules/alignment.md)), so a big Sway can tip twice (8 at two players, where the whole pool is 8; Peace Conference). Sway is priced at the
   anchor per point, up to what the pool can hold.
@@ -97,7 +98,8 @@ moves when any other card changes: to reprice an edited card, move its price by 
   and Industry's) 9 credits and no play insight, needs 2; a typed jam 5 and a rider of its tag; a free typed-jam Action building 5
   credits and no play insight, about 2 a round.
 - **Income has a horizon:** any income counts for the rounds left at a typical
-  purchase less a tempo discount: 4 rounds on a tier-1 card, 2.5 on a tier-2 one (`rates.horizon_t1`, `horizon_t2`).
+  purchase less a tempo discount: 4 rounds on a tier-1 card, 3.5 on a tier-2 one (`rates.horizon_t1`, `horizon_t2`;
+  283: the anchor check's 3-4 rounds).
 - **Repeatable and progressive cards** are priced on their uses: an Action (value less its cost) × the horizon × 0.7;
   a progressive token card (uses × payoff) × 0.7, counting adds as uses (ruling 12). A conversion Action passes both
   the anchor ceiling and a gain at `values.json` only when its output is priced alike in both (Sway, a liberation, a
@@ -131,7 +133,8 @@ moves when any other card changes: to reprice an edited card, move its price by 
 
 Measured or found against play; each is still the table's number until a pass moves it.
 
-- **Antimatter 12** (the anchor): the heuristic holds antimatter at 2 points, about 2 credits, so a seat keeps it for
+- **Antimatter 18** (the anchor, Matt 283; was 12): the heuristic holds antimatter at 2 points, about 2 credits (283:
+  at 3 or 4 Antiproton Foundry ran 3x but Orbital Relay Launcher's burns fell 4x, so less was spent), so a seat keeps it for
   a card it holds that needs it (`am_save`) and makes it, from a power or a built Action first, when that plays such
   a card this round (`am_source`).
 - **Troop removal 7.33** (4.67 each in one country): the heuristic counts a troop at 12 points, about 13 credits. A count
@@ -140,5 +143,5 @@ Measured or found against play; each is still the table's number until a pass mo
 - **The recipe nets every card about its keep + 0.67** over its costs at the table, so the table alone can't rank cards for
   a draft: tier 2 reads as worth no more than its keep unless the draft leaves the play cost out, as the agents' does.
 - **Energy 3:** what seats hold: `energy_read.py` (the last read: `screen-090/balance.md`).
-- **Insight 1.67:** a fit (it centers tier 1 on its printed prices), not a measure; `economy.insight_unspent` would settle it.
+- **Insight 2.67:** the anchor since 283 (was 1.67, a fit that centered tier 1 on its printed prices).
 - **A player cube at completion, about 6:** measured cheaper in play, as energy and chips buy less than their rates.

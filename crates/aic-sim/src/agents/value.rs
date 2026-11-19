@@ -324,6 +324,9 @@ pub struct Ctx {
     /// 128: whether a megaproject is still open to the seat's project cubes (an
     /// Action that places them has no target once none is: Particle Accelerator).
     pub cubes_open: bool,
+    /// 283 (D106, `w.research_delay`): the share of a research-track removal's row that counts: the share of a
+    /// firing the track still reaches this game (1 by default).
+    pub research: f64,
 }
 
 impl Ctx {
@@ -340,6 +343,7 @@ impl Ctx {
             team: None,
             energy_rate: 1.0,
             cubes_open: true,
+            research: 1.0,
         }
     }
 
@@ -379,6 +383,7 @@ impl Ctx {
             team: None,
             energy_rate: 1.0,
             cubes_open: true,
+            research: 1.0,
         }
     }
 }
@@ -399,6 +404,8 @@ pub struct Worth {
     pub per_tag: [f64; TAGS.len()],
     /// Now, only with a corrupted city (else `no_city_share` of it).
     pub city: f64,
+    /// 283 (D106): now, a research-track removal, times [`Ctx::research`].
+    pub research: f64,
     /// A round, standing, that the heuristic's income already counts (income,
     /// income per tag, production).
     pub income: f64,
@@ -422,6 +429,7 @@ impl std::ops::AddAssign for Worth {
         self.node += o.node;
         self.per_node += o.per_node;
         self.city += o.city;
+        self.research += o.research;
         self.income += o.income;
         self.standing += o.standing;
         for t in 0..TAGS.len() {
@@ -457,6 +465,7 @@ impl Worth {
         self.node *= k;
         self.per_node *= k;
         self.city *= k;
+        self.research *= k;
         self.income *= k;
         self.standing *= k;
         for t in 0..TAGS.len() {
@@ -481,7 +490,7 @@ impl Worth {
         let node = if c.left <= t.fast.late_rounds { t.fast.node_late } else { t.fast.node };
         let city = if c.corrupted { 1.0 } else { t.fast.no_city_share };
         let tags: f64 = (0..TAGS.len()).map(|i| self.per_tag[i] * c.tags[i] as f64).sum();
-        self.now + self.node * node + self.per_node * c.node + self.city * city + tags
+        self.now + self.node * node + self.per_node * c.node + self.city * city + self.research * c.research + tags
     }
 
     /// What it pays a round, in this context: income and standing.
@@ -613,7 +622,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::DrainProject { amount } => Worth::now(row("drain_project") * *amount as f64),
         Op::DiscardProject => Worth::now(row("discard_project")),
         // 259: cubes off the adversary's research track, at its effect's harm over its threshold.
-        Op::RemoveResearch { amount } => Worth::now(row("remove_research") * *amount as f64),
+        Op::RemoveResearch { amount } => Worth { research: row("remove_research") * *amount as f64, ..Worth::default() },
         // 258: a second hosted city's energy, at the share of rounds a seat has one to host (`host_more`'s row).
         Op::HostMore { count } => Worth::income(row("host_more") * income_rate(t, Resource::Energy) * *count as f64),
         Op::Production { resource, amount } => Worth::income(row("production") * income_rate(t, *resource) * *amount as f64),
@@ -919,7 +928,7 @@ fn triggered(t: &Table, then: &[Op]) -> f64 {
     }
     // 107: an income a firing raises counts `raised_rounds` rounds (Retained
     // Earnings' raise read 0, so its Capital feeders had no pile to feed).
-    w.now + w.node * t.fast.node + w.income * t.rate("raised_rounds")
+    w.now + w.research + w.node * t.fast.node + w.income * t.rate("raised_rounds")
 }
 
 /// 107: a card's standing effects. A threshold whose tokens the card's own
@@ -1020,7 +1029,7 @@ pub fn ability_worth(t: &Table, a: &Ability) -> Worth {
         }
         let better = match &best {
             None => true,
-            Some(o) => w.now + w.city + w.node * 3.0 > o.now + o.city + o.node * 3.0,
+            Some(o) => w.now + w.research + w.city + w.node * 3.0 > o.now + o.research + o.city + o.node * 3.0,
         };
         if better {
             best = Some(w);

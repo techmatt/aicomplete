@@ -28,7 +28,7 @@ agent and side, each unordered pair's win % (`bp` and `pb` pooled) and its gap t
 over its pairs, and the new-minus-old gap paired on seat order and seed; then the win % by seat order.
 
 A farmed read (160: shards assembled by `screens.assemble`, no results.json) reads its cells from the header; a
-bare farmed JSONL (`farm-seeds ... OUT`, no header) reads as FILE=SPEC wherever a DIR goes, SPEC its farm spec's JSON
+farmed JSONL (`farm-seeds ... OUT`; with a header only from the spec's first seed, 283) reads as FILE=SPEC wherever a DIR goes, SPEC its farm spec's JSON
 (its rules revision prints `r?`). An agent is named as the spec writes it (`strategist`), native or farmed, so a
 screen half farmed pools; `--screen` pairs a lever's game with base's on the same pair, difficulty and seed, in its
 own DIR or another. A

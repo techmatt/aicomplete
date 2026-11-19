@@ -1,0 +1,41 @@
+{
+ "name": "s283-e",
+ "note": "283 agent screen: arms base, am12 x the judge and greedy (see experiments/results/283_agents_antimatter/make_screen.py), three pairs, d0-d4, dev seeds.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp",
+   "set": []
+  },
+  {
+   "name": "br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "agents": [
+  "strategist",
+  "greedy",
+  "strategist:t.resources.antimatter=12",
+  "greedy:t.resources.antimatter=12"
+ ],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

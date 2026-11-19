@@ -116,7 +116,7 @@ def anchors():
             m = re.match(r'([\d.]+)', cells[i + 1]) if key else None
             if m:
                 a[key] = float(m.group(1))
-    a['research_cubes'] = 4  # past checks (card-guidelines.md): 2 at values.json (273: r127's 6 and 3, ÷ 1.5)
+    a['research_cubes'] = 4  # card-guidelines.md's derived line (values.json at the anchors too since 283)
     return a
 
 

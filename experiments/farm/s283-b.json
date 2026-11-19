@@ -1,0 +1,51 @@
+{
+ "name": "s283-b",
+ "note": "283 agent screen: arms base, Tr, Trm, Th, Tf, A3, A3s x the judge and greedy (see experiments/results/283_agents_antimatter/make_screen.py), three pairs, d0-d4, dev seeds.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp",
+   "set": []
+  },
+  {
+   "name": "br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "agents": [
+  "strategist",
+  "greedy",
+  "strategist:t.resources.insight=2.667,t.resources.chips=4,t.resources.research_cubes=4,t.resources.ambassadors=5.333,t.resources.antimatter=18,t.rates.drawn_card=3.333",
+  "greedy:t.resources.insight=2.667,t.resources.chips=4,t.resources.research_cubes=4,t.resources.ambassadors=5.333,t.resources.antimatter=18,t.rates.drawn_card=3.333",
+  "strategist:t.ops.remove_ambassador=3.333,t.ops.pushback=3.333,t.ops.clear_city=3.333,t.ops.remove_ambassadors_country=3.333,t.ops.drain_project=1.333,t.ops.drain_all=2,t.ops.project_drain=2,t.ops.discard_project=10",
+  "greedy:t.ops.remove_ambassador=3.333,t.ops.pushback=3.333,t.ops.clear_city=3.333,t.ops.remove_ambassadors_country=3.333,t.ops.drain_project=1.333,t.ops.drain_all=2,t.ops.project_drain=2,t.ops.discard_project=10",
+  "strategist:t.rates.horizon_t2=3.5",
+  "greedy:t.rates.horizon_t2=3.5",
+  "strategist:t.rates.tag_share=0.5",
+  "greedy:t.rates.tag_share=0.5",
+  "strategist:w.antimatter=3",
+  "greedy:w.antimatter=3",
+  "strategist:w.antimatter=3,w.sink=1",
+  "greedy:w.antimatter=3,w.sink=1"
+ ],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

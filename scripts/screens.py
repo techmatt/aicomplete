@@ -88,7 +88,8 @@ def dealt(dirs):
 
 def source(d):
     """(games file, spec file or None) of a read's input: DIR (DIR/games.jsonl, its header first), a games file with
-    a header, or FILE=SPEC, a bare farmed JSONL (`farm-seeds ... OUT`, no header) and its farm spec's JSON."""
+    a header, or FILE=SPEC, a farmed JSONL (`farm-seeds ... OUT`; 283: a header only from the spec's first seed)
+    and its farm spec's JSON."""
     path, _, spec = d.partition('=')
     return (path if os.path.isfile(path) else os.path.join(path, 'games.jsonl')), spec or None
 
@@ -110,9 +111,13 @@ def stream(d):
             yield head
         for line in f:
             try:
-                yield json.loads(line)
+                g = json.loads(line)
             except json.JSONDecodeError:
                 continue
+            # 283: a farm out file leads with its header (`Farm::lead`); read as FILE=SPEC it is no game.
+            if 'format' in g:
+                continue
+            yield g
 
 
 def cell_names(spec):
@@ -212,6 +217,9 @@ def assemble(spec, first, count, shards, out_dir, exe=None):
         for s in shards:
             with open(s, encoding='utf-8') as f:
                 text = f.read()
+            # 283: a shard starting at the spec's first seed leads with its own header (`Farm::lead`).
+            if text.startswith('{"format"'):
+                text = text.split('\n', 1)[1] if '\n' in text else ''
             out.write(text if not text or text.endswith('\n') else text + '\n')
 
 

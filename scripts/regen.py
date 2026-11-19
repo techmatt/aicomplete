@@ -5,14 +5,15 @@
 Checks the drafts (`drafts/adversary/check.py`, 182: 178 left it red unseen) and writes `content/` from
 `drafts/adversary/` (`scripts/content/load_adversary.py`, which refuses on a check ERROR), both before the build
 because content is compiled into the binary; then builds `aic-sim` (release; `CARGO_BUILD_JOBS` from the environment,
-default 3), sets docs/rules/README.md's "at rules revision N" line from `RULES_REVISION` in the source, then runs
+default 3), sets docs/rules/README.md's "at rules revision N" line and docs/rulebook.md's "Rules revision N" (283)
+from `RULES_REVISION` in the source, then runs
 `aic-sim docs`, `scripts/cards/cards_doc.py`, `scripts/cards/effect_ledger.py` and `scripts/configs/no_liberate.py`,
 `no_tier2.py` and `three_seat.py` (the derived configs: 122 left no_liberate.json stale when the baseline gained
 params), prints the content hash and rules revision from `aic-sim show configs/baseline.json` (warning if the binary's
 revision isn't the source's), and then `git status --short`. Stops at the first failing step, naming it. `--no-build`
 uses the binary already built (warning if the loader just rewrote the content it embeds).
 `--check` writes nothing: it runs the drafts check, the loader's, `aic-sim docs`'s and `cards_doc.py`'s `--check`
-and the README revision line, and exits 1 if any is stale. Each step prints its wall time.
+and the revision lines, and exits 1 if any is stale. Each step prints its wall time.
 `--golden` (281) also sets the golden constants, after the steps above: `GOLDEN_REVISION`, `GOLDEN_FINGERPRINT` and
 `GOLDEN_CONTENT_HASH` in crates/aic-core/src/tests/mod.rs and `GOLDEN` / `GOLDEN_CONTENT` in scripts/wasm-smoke.mjs.
 The revision is the source's `RULES_REVISION`, the content hash `aic-sim show`'s, and the fingerprint the left side
@@ -51,28 +52,37 @@ def step(name, cmd, env=None, capture=False):
     return r.stdout
 
 
-README_LINE = re.compile(r'(What the code implements, at rules revision )(\d+)')
+# The docs' revision lines `aic-sim docs` checks against RULES_REVISION (283: the rulebook's too, which a bump
+# otherwise failed on until edited by hand).
+REVISION_LINES = [
+    ('docs/rules/README.md', re.compile(r'(What the code implements, at rules revision )(\d+)')),
+    ('docs/rulebook.md', re.compile(r'(\*Rules revision )(\d+)')),
+]
 
 
 def readme_revision(revision, check):
-    """Sets the rules README's "at rules revision N" line to `revision`; with `check`, only
-    reports whether it is stale. Returns True when it matched already."""
-    path = os.path.join(ROOT, 'docs', 'rules', 'README.md')
-    with open(path, encoding='utf-8') as f:
-        text = f.read()
-    m = README_LINE.search(text)
-    if not m:
-        print(f'FAILED: no "at rules revision N" line in {path}')
-        sys.exit(1)
-    if m.group(2) == revision:
-        return True
-    if check:
-        print(f'docs/rules/README.md says rules revision {m.group(2)}, the code {revision}')
-        return False
-    with open(path, 'w', encoding='utf-8', newline='\n') as f:
-        f.write(README_LINE.sub(lambda x: x.group(1) + revision, text, count=1))
-    print(f'docs/rules/README.md: rules revision {m.group(2)} -> {revision}')
-    return True
+    """Sets each doc's revision line (REVISION_LINES: the rules README's "at rules revision N", the rulebook's
+    "Rules revision N") to `revision`; with `check`, only reports whether one is stale. Returns True when every
+    one matched already or was set."""
+    ok = True
+    for rel, line in REVISION_LINES:
+        path = os.path.join(ROOT, *rel.split('/'))
+        with open(path, encoding='utf-8') as f:
+            text = f.read()
+        m = line.search(text)
+        if not m:
+            print(f'FAILED: no revision line in {path}')
+            sys.exit(1)
+        if m.group(2) == revision:
+            continue
+        if check:
+            print(f'{rel} says rules revision {m.group(2)}, the code {revision}')
+            ok = False
+            continue
+        with open(path, 'w', encoding='utf-8', newline='\n') as f:
+            f.write(line.sub(lambda x: x.group(1) + revision, text, count=1))
+        print(f'{rel}: rules revision {m.group(2)} -> {revision}')
+    return ok
 
 
 def source_revision():

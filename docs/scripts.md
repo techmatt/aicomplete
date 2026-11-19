@@ -10,7 +10,7 @@ what it prints; the `cards/*_read.py` readers take seconds.
   `farm/compare.py A B [--ms A_ERR B_ERR]`: two engines' outputs of one range: games that differ, win %, paired
   gap, ms a game.
 - `regen.py [--no-build] [--check | --golden]`: runs `drafts/adversary/check.py`, writes `content/` from
-  `drafts/adversary/` (`load_adversary.py`), builds release (content is compiled in), writes `RULES_REVISION` into `docs/rules/README.md`, runs `aic-sim
+  `drafts/adversary/` (`load_adversary.py`), builds release (content is compiled in), writes `RULES_REVISION` into `docs/rules/README.md` and `docs/rulebook.md`, runs `aic-sim
   docs`, `cards_doc.py`, `effect_ledger.py`, `no_liberate.py`, `no_tier2.py`; warns of a content file
   `apply_overlay.py` would refuse (not `json.dumps(indent=1)`); prints the content hash and `git status`. `--check`:
   the checks (the loader's `--check`) and the revision line only. `--golden`: also sets the golden constants
@@ -97,7 +97,7 @@ what it prints; the `cards/*_read.py` readers take seconds.
   `sed -i` and heredoc edits: use this, not a one-off script.
 - `bench/speed.py`: games a minute per agent: `pair OLD NEW` (each row on both in turn; `--old-config` for an OLD on
   another baseline), `table`, `compare`, `specs SIM A B`; `check SIM` (~4 min, mostly planner, one thread, quiet machine) fails at
-  1.3 × `speed_baseline.json` (`--update` moves it; across a revision: NO VERDICT). [speed.md](speed.md).
+  1.3 × `speed_baseline.json` (`--update` moves it; across a revision: NO VERDICT). Runs a copy of each SIM. [speed.md](speed.md).
 - `bench/per_decision.py OLD_ROOT NEW_ROOT`: rounds, decisions and ms a game and a decision on the same seeds
   (`--games 16`+, speed.md; `--agent`, `--old-agent` the agents a change touched; `--first 1000` the first seed,
   `--countries 2`, `--pairs 2` passes, the best kept). A root is an `.exe` or a folder with `aic-sim.exe`
@@ -116,13 +116,13 @@ what it prints; the `cards/*_read.py` readers take seconds.
   `--same-engine` and the cell names: its docstring. After editing ladder.py, paired.py, read_lib.py or screens.py, run
   `bench/test_read_tools.py`; after apply_overlay.py or design_check.py's arguments, `test_input_checks.py`.
 - Gates are suspended: `bench/gate_stop_rate.py` and `bench/gate_close.py` (docstrings).
-- `bench/shards.sh EXE DIR SPEC FIRST COUNT OUT`: a farm spec natively as `SHARDS` (default 6) one-thread `aic-sim
-  farm` shards side by side in DIR, concatenated under the header into OUT: a paired read's base side.
+- `bench/shards.sh EXE DIR SPEC FIRST COUNT OUT`: a farm spec natively in `SHARDS` (6) one-thread shards, under the header into OUT.
 - `bench/first_divergence.py OLD NEW`: where two runs of one spec first differ, per game (`--cells DIR A B`: a run's
   two cells).
 - `bench/profile_win.py SIM OUT -- run ...`: a sampling profile, no admin (speed.md, *Profiling*; flags: docstring).
 - `bench/resource_use.py NEW [OLD] [--top 8] [--limits]` (folder, games file or `FILE=SPEC`): chips, energy, cubes and antimatter
   gained and spent per seat a game by level, what buys and sources them (`--limits`: the `limit.*` table).
+  `bench/resource_split.py READ...` (flags: docstring): the same per arm, board and round, and spent in won games.
 - `bench/read_lib.py READ[@LABEL]... [--base ARM] [--levels D,...] [--agent-arms] [--counters PREFIX...] [--cards ID...]
   [--md OUT]` (same forms): a paired read's tables by arm (`PAIR-ARM` variants) and agent, against the base arm
   (`--base` names one it has) on the same pair, level and seed (`@LABEL`: that read's arms are `LABEL/arm`, so an old

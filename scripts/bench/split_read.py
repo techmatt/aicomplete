@@ -1,7 +1,7 @@
 """Splits a lever screen into one plain three-pair read per lever, for ladder.py and design_check.py.
 
     python scripts/bench/split_read.py READ_DIR OUT_PREFIX          # a read folder (games.jsonl with its header)
-    python scripts/bench/split_read.py FILE=SPEC.json OUT_PREFIX    # a farm's out file (no header) and its spec
+    python scripts/bench/split_read.py FILE=SPEC.json OUT_PREFIX    # a farm's out file and its spec (a header it holds wins)
 
 A screen's variants are named `PAIR` (the base) or `PAIR_LEVER` / `PAIR-LEVER` (bp, br, pr). Each lever's games go to
 OUT_PREFIX-LEVER/games.jsonl (the base to OUT_PREFIX-base), under a header whose spec holds only that lever's
@@ -26,10 +26,12 @@ def read(arg):
         for line in f:
             if not line.strip():
                 continue
-            if head is None:
-                head = json.loads(line)
+            g = json.loads(line)
+            if head is None or 'format' in g:
+                # 283: a farm out file leads with its header (`Farm::lead`): the file's own wins over a made one.
+                head = g if 'format' in g else head or g
                 continue
-            rows.append(json.loads(line))
+            rows.append(g)
     return head, rows
 
 

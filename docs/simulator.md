@@ -124,8 +124,10 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
   read it with no `results.json` and pair a seed across engines, counting mixed-engine seeds (`--same-engine` leaves
   them out); `farm/compare.py A B` counts games that differ between two engines' outputs.
   Make the out file's folder first: a missing one fails the merge after every game is farmed (`screens.py assemble`
-  recovers the job's shards). `farm-seeds`' out file has no header line: for a reader that needs one
-  (`design_check.py`, `play_read.py`), write `aic-sim farm SPEC --header --seed F --games N` first, then the out file.
+  recovers the job's shards). The shard starting at the spec's `first_seed` leads with the header over the spec's
+  range (283, `Farm::lead`), so a `farm-seeds` out file from that seed reads as a games file (`OUT=SPEC` still
+  reads, its header skipped); one starting elsewhere (an old binary's, or another range) has none: read it as
+  `OUT=SPEC`, or write `aic-sim farm SPEC --header --seed F --games N` before it.
   A farmed run writes no `results.json` or `cards.csv`: the card viewer's stats need a native `aic-sim experiment` run.
 - **A ladder against the old revision:** `farm-seeds` runs only the worktree's build, so the old side runs natively
   (`aic-sim experiment` on the farm spec with `first_seed`/`games` set): experiments.md, *A before/after read*.

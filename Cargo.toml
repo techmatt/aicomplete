@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/aic-core", "crates/aic-sim", "crates/aic-wasm", "crates/aic-farm"]
+members = ["crates/aic-core", "crates/aic-sim", "crates/aic-wasm", "crates/aic-farm", "crates/aic-lanes"]
 
 [workspace.package]
 version = "0.1.0"

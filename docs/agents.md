@@ -56,7 +56,9 @@ rates*; `Weights` are points). A card is worth its effects now, its standing eff
 for, a use of its Action × `uses_share` of them (a token card's spend over its cycle of adds), and its tags, over the
 rounds left (`horizon_t1`, `horizon_t2`). An `overrides` row adds flat credits to one card, with its reason, where the
 table under-prices it against the anchors; built, the card keeps it, spread over the rounds left. `t.<key>=v` in a
-spec sets one number for that agent (`t.<section>.<key>` where a name is in two).
+spec sets one number for that agent (`t.<section>.<key>` where a name is in two). Since 283 its resources, a drawn
+card and the tier-2 horizon sit at the unit anchors; its agent-removal and drain rows stay under them (at the
+anchors they lost play). A held antimatter is still 2 points in `Weights` (at 3-4 the judge burned less).
 
 The heuristic reads it in table mode (`w.table`, on for `engine`, off for `greedy`; the field says what each holding
 counts):

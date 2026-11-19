@@ -508,22 +508,18 @@
   "tags": [
    "diplomacy"
   ],
-  "cost": 32,
-  "text": "Surge 4: each country, 4 Agents onto its city holding the most Agents. Surge 2: each country, 2 Agents onto its research station holding the most Agents.",
+  "cost": 24,
+  "text": "Surge 5: each country, 5 Agents onto its city holding the most Agents.",
   "effects": [
    {
     "op": "surge",
     "site": "city",
-    "count": 4
-   },
-   {
-    "op": "surge",
-    "site": "station",
-    "count": 2
+    "count": 5
    }
   ],
   "harms": [
-   "adversary pieces placed"
+   "adversary pieces placed",
+   "facilities destroyed or corrupted"
   ]
  },
  {
@@ -607,16 +603,11 @@
   "tags": [
    "universal"
   ],
-  "cost": 32,
-  "text": "Each country: this round's Infiltrate lines land again. Surge 3: each country, 3 Agents onto its city holding the most Agents. Surge 2: each country, 2 Agents onto its factory holding the most Agents.",
+  "cost": 24,
+  "text": "Each country: this round's Infiltrate lines land again. Surge 2: each country, 2 Agents onto its factory holding the most Agents.",
   "effects": [
    {
     "op": "adversary_build"
-   },
-   {
-    "op": "surge",
-    "site": "city",
-    "count": 3
    },
    {
     "op": "surge",
@@ -635,18 +626,13 @@
   "tags": [
    "security"
   ],
-  "cost": 29,
-  "text": "Surge 2: each country, 2 Agents onto its research station holding the most Agents. Surge 2: each country, 2 Agents onto its factory holding the most Agents.",
+  "cost": 24,
+  "text": "Surge 3: each country, 3 Agents onto its research station holding the most Agents.",
   "effects": [
    {
     "op": "surge",
     "site": "station",
-    "count": 2
-   },
-   {
-    "op": "surge",
-    "site": "factory",
-    "count": 2
+    "count": 3
    }
   ],
   "harms": [

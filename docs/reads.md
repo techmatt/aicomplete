@@ -7,7 +7,8 @@ game's actions and events.
 
 An experiment's `games.jsonl` starts with a header line (`StreamHeader`: `format` `aic-games/2`, `spec`,
 `engine_version`, `rules_revision`, `content_hash`, `config_hashes`), no game keys. A farm shard (`aic-sim farm`,
-`crates/aic-sim/src/farm.rs`) writes games only, no header; `farm --header` prints one. Read with
+`crates/aic-sim/src/farm.rs`) writes games only, except the shard at the spec's `first_seed`, which leads with the
+header over the spec's range (283); `farm --header` prints one for any range. Read with
 `scripts/screens.py`'s `stream` / `load` (skip the header; a bare farmed file needs `FILE=SPEC.json`) or
 `scripts/design_check.py`'s `load_games` (drops any line with `format`). A farmed line's timings are 0 and its
 `engine` is `native` or `wasm`.

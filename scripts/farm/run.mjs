@@ -102,7 +102,8 @@ try {
   for (let seed = first; seed < first + count; seed++) {
     const g = await play(seed);
     text += g.text;
-    const n = g.text.split('\n').filter(Boolean).length;
+    // 283: the spec's first seed leads with the header line (`Farm::lead`), no game.
+    const n = g.text.split('\n').filter((l) => l && !l.startsWith('{"format"')).length;
     games += n;
     total += g.ms;
     console.error(`farm: seed ${seed} ${n} games ${g.ms.toFixed(1)} ms (${engine})`);

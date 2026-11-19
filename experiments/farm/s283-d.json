@@ -1,0 +1,45 @@
+{
+ "name": "s283-d",
+ "note": "283 agent screen: arms base, R, RK, RKA x the judge and greedy (see experiments/results/283_agents_antimatter/make_screen.py), three pairs, d0-d4, dev seeds.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp",
+   "set": []
+  },
+  {
+   "name": "br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "agents": [
+  "strategist",
+  "greedy",
+  "strategist:t.resources.insight=2.667,t.resources.chips=4,t.resources.research_cubes=4,t.resources.ambassadors=5.333,t.resources.antimatter=18,t.rates.drawn_card=3.333,t.rates.keep_tier1=2.667,t.rates.keep_tier2=6.933,t.rates.horizon_t2=3.5",
+  "greedy:t.resources.insight=2.667,t.resources.chips=4,t.resources.research_cubes=4,t.resources.ambassadors=5.333,t.resources.antimatter=18,t.rates.drawn_card=3.333,t.rates.keep_tier1=2.667,t.rates.keep_tier2=6.933,t.rates.horizon_t2=3.5",
+  "strategist:t.resources.insight=2.667,t.resources.chips=4,t.resources.research_cubes=4,t.resources.ambassadors=5.333,t.resources.antimatter=18,t.rates.drawn_card=3.333,t.rates.keep_tier1=2.667,t.rates.keep_tier2=6.933,t.rates.horizon_t2=3.5,w.keep_units=1",
+  "greedy:t.resources.insight=2.667,t.resources.chips=4,t.resources.research_cubes=4,t.resources.ambassadors=5.333,t.resources.antimatter=18,t.rates.drawn_card=3.333,t.rates.keep_tier1=2.667,t.rates.keep_tier2=6.933,t.rates.horizon_t2=3.5,w.keep_units=1",
+  "strategist:t.resources.insight=2.667,t.resources.chips=4,t.resources.research_cubes=4,t.resources.ambassadors=5.333,t.resources.antimatter=18,t.rates.drawn_card=3.333,t.rates.keep_tier1=2.667,t.rates.keep_tier2=6.933,t.rates.horizon_t2=3.5,w.keep_units=1,w.antimatter=3",
+  "greedy:t.resources.insight=2.667,t.resources.chips=4,t.resources.research_cubes=4,t.resources.ambassadors=5.333,t.resources.antimatter=18,t.rates.drawn_card=3.333,t.rates.keep_tier1=2.667,t.rates.keep_tier2=6.933,t.rates.horizon_t2=3.5,w.keep_units=1,w.antimatter=3"
+ ],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}
