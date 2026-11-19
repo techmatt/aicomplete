@@ -71,7 +71,6 @@ Each hunt found most of its faults in the same places. Look there first:
 | D46 | loops | Drain with Security Ops Floor and Intrusion Lab: ~12 for 10 credits. | Leave: compute caps it. **Pick**. |
 | D49 | scripts | `card_ranks.py`'s keep rate counts opening keeps (over 100%). | A draft-keep counter. **Pick**. |
 | D52 | viewer | The timeline keeps a state a step (~200 MB a 4-country game). | Every Nth snapshot. **Pick** if needed. |
-| D55 | rules | At 1 country no military base: base arrivals, Escalation, Total War's base ambassadors place nothing. | **Matt's call**. |
 | D56 | content | `Content::check` lets through ops that never run (a `here` op on an AI board, `gain_per_tokens` in a trigger). | Widen the checks. **Pick**. |
 | D50 | viewer | A new player's notes from two real-speed sessions: [viewer-notes.md](../experiments/results/118_bug_hunt_r46/viewer-notes.md). | Picks there. |
 | D57 | cards | Exascale Training Cluster kept in 59-72% of games, played in 1-3% (r62). | One pricing for keep and play (an agents item). **Matt's call**. |
@@ -85,7 +84,6 @@ Each hunt found most of its faults in the same places. Look there first:
 | D79 | rules | The adversary-factory fallback lets players send agents to a firewalled factory: nothing lands. | Skip firewalled factories. **Matt's call** (the printed rule allows it). |
 | D80 | words | Great Liberation "frees" cities it liberates; the rulebook never defines "free". | "Liberate or free", or a rulebook line. **Matt's call**. |
 | D87 | viewer | Five small faults from sweep 2's sheets (184's deferred.md). | One viewer item. **Pick**. |
-| D86 | rules | A forced threat pull (0.1 a game) has no end in the rulebook's draw (§18): it reshuffles forever. | One rulebook sentence: take the next card. **Matt's call**. |
 | D82 | cards | Five cards print under 7.5 pt with no recorded exception (Rally the Allies 5.4 pt). | Cut words or record. **Matt's call**. |
 | D83 | art | 12 deck cards name no scene and 6 scenes aren't served: `cards:check` fails. | An art batch or a pool scene. **Pick**. |
 | D84 | boards | Focus (Builder) is never used (199: 0.01-0.04 uses at 2 credits; credits bind first). | With the board redesign. **Matt's call**. |
@@ -122,7 +120,5 @@ Each hunt found most of its faults in the same places. Look there first:
 | W25 | report | "adversary ops/round" counts a game's last, partial round. | Small (1 game in 48). |
 | W20 | content | The place-token loop guard sees only a direct `add_tokens`. | No deck card prints such a trigger. |
 | W31 | cards | Peacekeeper Rotation's move onto a Troops target with no piece does nothing. | Not in the deck: fix with the card. |
-| W32 | words | "No one near it: no one can counter" beside "which of the nearest players takes its harm?". | The rules' two tests: near pays, nearest is hit. |
 | W33 | rules | Teardown's Fallout lands under a node on the torn-down factory's hex (D99). | Matt's ruling (238): Teardown is the player's own choice. |
 | W34 | scripts | `screen.py`'s 041 preset reads the r98-retired marker counters. | A historical preset, kept as 041's record. |
-| W35 | rules | "The engine, not the players, picks who hosts a contested city." | economy.md says so; every maximum matching pays the team the same. |

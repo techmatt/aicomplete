@@ -75,34 +75,22 @@ fn an_arriving_player_ambassador_claims_nothing_and_stands() {
 }
 
 #[test]
-fn one_opposing_ambassador_blocks_a_factory_and_bases_make_no_troops() {
-    // 137: production makes no corp troop (they come at Discord tips); one
-    // opposing ambassador blocks a factory's output while it stands. r75: a
-    // factory's output is in the income step (`board.produce`), growth
-    // (`board.bases`) after it.
-    let (rules, mut g0) = lab(&["board.produce", "board.bases"]);
+fn one_opposing_ambassador_blocks_a_factory() {
+    // 137: one opposing ambassador blocks a factory's output while it stands. r75: a
+    // factory's output is in the income step (`board.produce`).
+    let (rules, mut g0) = lab(&["board.produce"]);
     let w = rules.world();
     let m = &rules.map;
-    let [base, other] = m.fronts[0].bases;
-    assert_eq!(m.fronts[0].countries, [0, 1]);
     let factory = m.numbered(0, piece(0).factories[0]);
     put(&mut g0, factory, FACTORY, 1);
     let chips = w.int("board.factory_chips");
     assert!(chips > 0);
     let sway = |g: &GameState| (g.var("alignment.unity") - g0.var("alignment.unity"), g.var("alignment.discord") - g0.var("alignment.discord"));
-    let units = |g: &GameState| (g.tokens(base, UNIT), g.tokens(other, UNIT));
 
-    // A neutral factory and the bases make nothing in production.
+    // A neutral factory makes nothing in production.
     let mut g = g0.clone();
     run(&rules, &mut g);
-    assert_eq!((units(&g), g.tokens(factory, TROOP)), ((0, 0), 0));
-
-    // Ambassadors on a base stand there and make nothing happen.
-    let mut g = g0.clone();
-    put(&mut g, base, ADV_AMBASSADOR, 1);
-    put(&mut g, other, ambassador(0), 1);
-    run(&rules, &mut g);
-    assert_eq!((units(&g), g.tokens(base, ADV_AMBASSADOR), g.tokens(other, ambassador(0))), ((0, 0), 1, 1));
+    assert_eq!(g.tokens(factory, TROOP), 0);
     assert_eq!(sway(&g), (0, 0));
 
     // A player's factory makes its owner chips; an agent on it
@@ -116,17 +104,17 @@ fn one_opposing_ambassador_blocks_a_factory_and_bases_make_no_troops() {
     let before = g.resource(0, Resource::Chips);
     run(&rules, &mut g);
     assert_eq!(
-        (g.resource(0, Resource::Chips) - before, g.tokens(factory, ADV_AMBASSADOR), g.tokens(factory, TROOP), units(&g)),
-        (0, 1, 0, (0, 0))
+        (g.resource(0, Resource::Chips) - before, g.tokens(factory, ADV_AMBASSADOR), g.tokens(factory, TROOP)),
+        (0, 1, 0)
     );
     assert_eq!(g.stats.counters["board.blocked.factory_player"], 1);
 
-    // The adversary's factory makes 1 adversary troop on its hex, no corp troop;
+    // The adversary's factory makes 1 adversary troop on its hex;
     // a player ambassador on it blocks it and stays.
     let mut g = g0.clone();
     put(&mut g, factory, ADV_CUBE, 1);
     run(&rules, &mut g);
-    assert_eq!((g.tokens(factory, TROOP), units(&g)), (1, (0, 0)));
+    assert_eq!(g.tokens(factory, TROOP), 1);
     put(&mut g, factory, TROOP, 0);
     put(&mut g, factory, ambassador(1), 1);
     run(&rules, &mut g);
@@ -475,7 +463,7 @@ fn remove_agents_spreads_on_or_next_to_its_target() {
 fn an_ambassador_on_a_factory_stays_and_one_on_a_corrupted_station_blocks_it() {
     // 137: a player ambassador on an adversary station blocks its output (it
     // took the cube for its seat) and stays.
-    let (rules, mut g) = lab(&["board.bases", "board.produce"]);
+    let (rules, mut g) = lab(&["board.produce"]);
     let w = rules.world();
     let z = (0..g.hexes.len()).find(|&h| w.map.hexes[h].industrial).unwrap();
     put(&mut g, z, FACTORY, 1);

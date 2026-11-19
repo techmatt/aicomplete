@@ -21,9 +21,8 @@ function hexDetails(hex: string, index: number, shown: View, legal: Action[], cx
   };
   const toks = h.tokens.map((x) => `<span class="dot" style="background:${dot(x.kind)}"></span>${escapeHtml(tokenName(x.kind))} × ${x.count}`).join('<br>') || 'no tokens';
   const here = legal.filter((a) => isHex(a.target) && hexKey(a.target) === hex).map((a) => escapeHtml(actionLabel(a, true, true, cx)));
-  const facing = h.facing !== undefined ? ` · <b>front</b> facing ${escapeHtml(countryName(shown, h.facing))}` : '';
   const arrows = shown.arrows.filter((a) => a.from === h.index || a.to === h.index).map((a) => escapeHtml(contentIds(a.doc)));
-  return `<b>${escapeHtml(countryName(shown, h.country))} #${h.number}</b> · ${escapeHtml(kindName(h.kind))}${facing}<br>hex ${hex} · index ${h.index} · piece position ${h.piece_pos.join(',')} · ${h.neighbors.length} neighbors<hr>${toks}${arrows.length ? `<hr>${arrows.join('<br>')}` : ''}${here.length ? `<hr>legal here:<br>${here.join('<br>')}` : ''}`;
+  return `<b>${escapeHtml(countryName(shown, h.country))} #${h.number}</b> · ${escapeHtml(kindName(h.kind))}<br>hex ${hex} · index ${h.index} · piece position ${h.piece_pos.join(',')} · ${h.neighbors.length} neighbors<hr>${toks}${arrows.length ? `<hr>${arrows.join('<br>')}` : ''}${here.length ? `<hr>legal here:<br>${here.join('<br>')}` : ''}`;
 }
 
 function pileDetails(key: string, shown: View): string | null {

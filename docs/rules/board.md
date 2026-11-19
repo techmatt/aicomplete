@@ -1,6 +1,6 @@
 # The board (module `board`, variant `corps`)
 
-*The map: country pieces, fronts and bases, setup, research stations, the corps and their megaprojects. Terms and conventions are in [README.md](README.md).*
+*The map: country pieces, setup, research stations, the corps and their megaprojects. Terms and conventions are in [README.md](README.md).*
 
 ## Country pieces
 
@@ -8,14 +8,14 @@ A game has 1–4 countries, one player each. Country *i* is printed piece *i*
 ([`content/map.json`](../../content/map.json)), a 4×4 piece of 16 hexes placed by the
 layout for that country count. Population is implicit: people live in cities.
 
-Hex kinds: **city**, **open** land and **ocean** are printed; a **military base** goes
-on an open hex of each front (below). **Industrial zones** are a printed marking on open
+Hex kinds: **city**, **open** land and **ocean** are printed (no military bases since r139: a former base hex is
+ordinary open land). **Industrial zones** are a printed marking on open
 hexes next to cities: factories go only there. Research stations go on other open hexes,
-one facility per hex. **Empty station sites** are printed too (137, at most one a country, never a base; Cintamani and Biomia print none): a neutral station
+one facility per hex. **Empty station sites** are printed too (137, at most one a country; Cintamani and Biomia print none): a neutral station
 opens on one when a card says so (253, Matt's ruling 3: Open Research Campus on its target; the adversary's Shell Labs
 on each country's lowest-numbered, where it has one), as a neutral factory opens on a free industrial zone (Industrial Commons, Factory
 Drive, Blight). A neutral site a card opens is anyone's to claim, but Campus and Commons claim theirs (256). Nothing builds on ocean or on a Fallout token (no node, factory or
-station) until it is cleared ([war.md](war.md)).
+station) until it is cleared ([troops.md](troops.md)).
 
 <!-- generated: countries -->
 | # | Name | Cities (corrupted first) | Ocean | Station (botnet) | Neutral stations | Empty station sites | Industrial zones (setup factories) | Starting node |
@@ -29,18 +29,9 @@ station) until it is cleared ([war.md](war.md)).
 Ocean hexes are on the board's outer edge in every layout the piece appears in; the
 starting node touches a city.
 
-**Fronts are printed** (Matt): a front is a long edge shared by two country pieces, marked
-on the tiles; pieces that only touch at the middle of the map are not neighbors. Each
-layout lists its fronts (`fronts` in `content/map.json`): 2 countries, one front; 3
-countries (top, right, bottom-left), all three pairs; 4 countries (top, left, right,
-bottom), a ring: top–left, left–bottom, bottom–right, right–top (top–bottom and left–right
-touch only at the center). So at 3 and 4 countries every country has exactly two fronts (a
-test checks this). Each country gets one military base per front (137: its corp's drone pile on that front, no
-site and no owner: [war.md](war.md)), on an open hex that
-touches the other country's land and holds no setup piece or industrial zone; a country's
-fronts with the fewest candidate hexes pick first, each taking its lowest-numbered free
-candidate (bases are placed by the layout, not printed, because a piece's
-neighbors change with the country count).
+**The layouts:** 2 countries side by side; 3 countries (top, right, bottom-left), each touching both others; 4
+countries (top, left, right, bottom) in a ring (top–bottom and left–right touch only at the center). A border is
+only an edge: hexes are adjacent across it, and nothing is placed on it or fights over it (r139: fronts are gone).
 
 ## Setup
 
@@ -54,10 +45,9 @@ neighbors change with the country count).
   `ai.start_credits` credits and `ai.start_energy` energy; their AI board's credit production is income, paid
   each upkeep ([ai-boards.md](ai-boards.md)).
 - **No player owns a city** (254, Matt's candidate, `cities_unowned` 1): a city is the adversary's (corrupted) or
-  its country's (neutral), and no one starts with one. **Hosting** replaces r114's bound city: a neutral city with
-  your node on or next to it (`host_reach` 1) makes its energy for you in the income step (`host_city` 1: one city a
-  seat, more with a `host_more` card, one host a city; [economy.md](economy.md)). Every country's start spot is next to a city, so a seat whose
-  nearest city starts clean hosts it from round 1, as the bound city paid.
+  its country's (neutral), and no one starts with one. A city that is neither corrupted nor blocked pays its energy
+  in the income step to every player with a node on or next to it ([economy.md](economy.md)). Every country's start
+  spot is next to a city, so a seat whose nearest city starts clean is paid from round 1.
   With `cities_unowned` 0 (r114, a screen's off arm) each player starts with the clean city of their country
   nearest their first node (ties: the lower hex number) aligned to them, their cube on it.
 - The adversary's supply: `adversary.supply_per_country` agents per country.
@@ -131,7 +121,7 @@ megaproject is the corp's defining card.
   and brings the completion a cube nearer.
 
 The first neutral station stands next to the starting node, within a first card's reach (since 262 only cards
-claim), on a hex that is a base in no layout (a test holds this). At setup a country's
+claim). At setup a country's
 neutral stations make 1 cube a round each (the adversary's an adversary cube): one alone takes 8 rounds to fill an
 8-cube card, three about 3. Claiming one turns its 1 a round to its owner's color; each station a player builds there adds 1.
 

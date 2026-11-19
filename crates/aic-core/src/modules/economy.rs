@@ -244,8 +244,10 @@ impl Module for Economy {
                 ),
                 (
                     "energy",
-                    inc[Resource::Energy],
-                    "energy in upkeep: the AI board, buildings (cities make energy in production)",
+                    // 292: the energy income track shows the cities' energy too (1 from each city neither corrupted
+                    // nor blocked with your node on or next to it), beside upkeep's.
+                    inc[Resource::Energy] + board::city_income(w, g, s),
+                    "energy a round: each free, unblocked city with your node on or next to it in production, then the AI board and buildings in upkeep",
                 ),
                 (
                     "antimatter",

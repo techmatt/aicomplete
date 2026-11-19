@@ -279,7 +279,8 @@ pub(super) fn adversary_json(r: &Rules) -> String {
     let card = Card {
         id: &b.id,
         name: &b.name,
-        rules: b.rules.iter().map(|x| (x.name.as_str(), x.text.as_str())).collect(),
+        // 292: the threat decks' setup line (the board's lean) leads the board's rules.
+        rules: b.threat_deck.iter().map(|d| (d.name.as_str(), d.text.as_str())).chain(b.rules.iter().map(|x| (x.name.as_str(), x.text.as_str()))).collect(),
         // The stronger effect is a level's named rule (Arms Race), so the card prints it there.
         research: b.research.as_ref().map(|x| (x.name.as_str(), x.text.as_str())),
         escalation: escalation(),

@@ -365,36 +365,6 @@ fn a_troop_that_strikes_is_used_up_and_one_with_no_target_stays() {
     assert_eq!((g.tokens(target, FACTORY), g.tokens(at, TROOP)), (0, 1));
 }
 
-/// r81 (friction #51): drones never protect. A drone at a base next to a struck factory stays, and the factory goes.
-#[test]
-fn a_drone_at_a_base_never_absorbs_a_strike_next_to_it() {
-    let (rules, mut g) = lab(&["board.march"]);
-    let m = &rules.map;
-    let [b0, _] = m.fronts[0].bases;
-    let next = m.hexes[b0]
-        .neighbors
-        .iter()
-        .copied()
-        .find(|&h| kind(m, h) == HexKind::Open)
-        .unwrap();
-    put(&mut g, next, FACTORY, 1);
-    put(&mut g, next, cube(0), 1);
-    put(&mut g, next, TROOP, 1);
-    put(&mut g, b0, UNIT, 1);
-    let discord = g.var("alignment.discord");
-    run(&rules, &mut g);
-    answer_all(&rules, &mut g);
-    assert_eq!(
-        (
-            g.tokens(next, FACTORY),
-            g.tokens(b0, UNIT),
-            g.var("alignment.discord")
-        ),
-        (0, 1, discord)
-    );
-    assert!(!g.stats.counters.contains_key("board.base_absorbed"));
-}
-
 /// 238 (D94): once a seat's last node falls the march stops: the troops after it neither move nor ask.
 #[test]
 fn the_march_ends_at_the_loss() {

@@ -15,8 +15,8 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
 
 ## Names and terms
 
-- **Names (Matt, 2026-11-09/10):** players' pieces are **ambassadors**, the adversary's **agents** and **troops**, a
-  megacorp's **drones**; a player's token is a **Node**, the adversary's a **Botnet**; the Security token prints
+- **Names (Matt, 2026-11-09/10):** players' pieces are **ambassadors**, the adversary's **agents** and **troops**;
+  a player's token is a **Node**, the adversary's a **Botnet**; the Security token prints
   **Operatives**; simulator players are **sim players**. Piece names on cards print capitalized or as the piece's
   symbol; rulebook prose uses plain lowercase.
 - **Terms (locked):** "corrupt" is the adversary's one verb for taking sites; the land scar is **Fallout**; the
@@ -68,7 +68,9 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
 ## Resources and engines
 
 - **Board facts (candidates):** slots 5 / 4 / 3; boards print 15 / 13 / 11 credits and +1 energy (Protector 2);
-  reach 1; converters need a node in a city of their country; neutral-city energy at least 5 credits.
+  reach 1; converters need a node in a city of their country.
+- **City energy (Matt, 2026-11-19):** each city that is neither corrupted nor blocked pays 1 energy to every player
+  with a node on or next to it, on the energy income track; no hosts and no buying. **Resources are not merged.**
 - **Insight:** this round's attention, spent this turn; the card-play track prints absolute values (starts at 3,
   then 199's early-heavy t4 steps); keeps cost 1 insight tier-1, **3 tier-2** (2 upgraded); Patience keeps unspent
   insight (caps banned); no adversary card takes insight; the opening deals 2 tier-1 + 2 tier-2 free; tier-1 play
@@ -137,8 +139,15 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
 
 ## Adversary and harms
 
-- **Adversary (locked):** the threat card standard (146: one consequence, icons over text, harm to the nearest
-  player's node only, one or two counters, no hidden harm, no tier 3); the round cap stays a plain loss.
+- **Adversary (locked):** the threat card standard (146: one consequence, icons over text, one or two counters, no
+  hidden harm, no tier 3); the round cap stays a plain loss.
+- **Threats (Matt, 2026-11-19, locked):** a threat that takes effect harms the player of the country it was dealt
+  in; any player with a node or ambassador on or next to one of its tokens may pay. **No other rule may depend on a
+  player's home country.** Threat decks are built once at setup, with the mix the adversary's board names (its lean:
+  the Militarist's stays Security-heavy), and dealing never rejects a card in a round: the dealt card is the next
+  one, and one with no legal site takes one plain fallback.
+- **War is cut (Matt, 2026-11-19):** no fronts, military bases or megacorp armies and no War step; megacorp conflict
+  lives only as content on Discord and event cards, each doing one clear thing.
 - **Card-driven (Matt, 2026-11-18):** the adversary is card-driven with look-ahead and checks on arrival, never a
   board sweep.
 - **Matt, 2026-11-17:** the research threshold stays 5, 5, 5, 4, 4.
@@ -161,15 +170,15 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
 - **Unity and Discord cards (Matt, 2026-11-09; direction locked):** Spirit Island fear-card shape: board conditions,
   "each player", one verb per card, tiers widening it; Unity prohibitions switch an adversary step off where a
   condition holds. Unity cards help, they don't clear: at most one tier-III card clears cities (2026-11-12).
+- **Unity never cancels Discord (Matt, 2026-11-19):** Unity gained always goes onto the Unity track.
 
 ## Rulebook and audits
 
-- **Rulebook rulings (Matt, 2026-11-10/13):** the turn's beats (as r130 prints them); troops ignore ambassadors; a
-  used drone-stopping ambassador is spent; the Militarist's "war takes the node too". No last-node safety rule ever
+- **Rulebook rulings (Matt, 2026-11-10/13):** the turn's beats (as r130 prints them); troops ignore ambassadors. No last-node safety rule ever
   (tools instead). What's left of 224's list: [rulebook-friction.md](rulebook-friction.md). **Rejected:** a single
   keep price; used-markers (powers are implicitly once a round); purge back to 6. **Print pass components:** one tip
   track per side, agent-count glyphs on project faces, event icon rows, an ambassador box on the aid, the harm box's
-  "hit: the closest node" line, the Discord track's tip procedure.
+  "Target: this country's player" line, the Discord track's tip procedure.
 - **Rules audits (Matt and planner, 2026-11-17):** read [rulebook-friction.md](rulebook-friction.md) (*What a
   per-rule review misses*: combined load, generated tables read as data, stale reviews, one-more-dial balance fixes,
   sim players resolving everything free) before any rules or friction audit; "a dial is a rule"; `design_check`'s

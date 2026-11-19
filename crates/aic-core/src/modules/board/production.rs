@@ -1,96 +1,10 @@
-//! Production: units, factories, chips, city energy, research cubes and megaprojects.
+//! Production: factories, chips, city energy, research cubes and megaprojects.
 
 use super::*;
-use crate::op::{CorpAt, CorpNear, CorpWhen};
 
 /// The resources a seat is measured on at the end of each action phase (068).
 pub const LEFT: [Resource; 5] =
     [Resource::Credits, Resource::Chips, Resource::Energy, Resource::Antimatter, Resource::Ambassadors];
-
-/// 137: `n` corp troops are made at base `base` (held to `unit_cap` unless
-/// `past_cap`). A player ambassador standing on the base is used up instead of
-/// each troop, while one stands (the troop rule: no decision at tip time).
-/// Returns the troops made.
-pub fn corp_troops_at(g: &mut GameState, cx: &mut Cx, base: usize, n: i64, past_cap: bool) -> i64 {
-    let w = cx.world;
-    let mut made = 0;
-    for _ in 0..n {
-        // 145: a full base makes no troop, so no ambassador is used up in its place.
-        if !past_cap && g.tokens(base, UNIT) >= w.int("board.unit_cap") {
-            break;
-        }
-        if let Some(s) = player_ambassador(g, base) {
-            cx.add_tokens(g, base, ambassador(s), -1);
-            cx.tally(g, "board.base_ambassador_used", 1);
-            continue;
-        }
-        cx.add_tokens(g, base, UNIT, 1);
-        made += 1;
-    }
-    // 289 (D129): the turn panel showed "+1 Drone" with no word of where.
-    if made > 0 {
-        cx.note(Some(base), || {
-            format!("{made} Drone{} arrive{} at the base at {}", if made == 1 { "" } else { "s" }, if made == 1 { "s" } else { "" }, hex_name(&w, base))
-        });
-    }
-    made
-}
-
-fn add_unit(g: &mut GameState, cx: &mut Cx, base: usize) {
-    let made = corp_troops_at(g, cx, base, 1, false);
-    cx.tally(g, "board.units_built", made);
-}
-
-/// The bases of country `c`'s corp (137: one on each of its active fronts;
-/// every printed front is active).
-pub fn corp_bases(w: &World, c: u8) -> Vec<usize> {
-    (0..w.map.hexes.len()).filter(|&b| is_base(w, b) && w.map.hexes[b].country == c).collect()
-}
-
-/// A neutral factory that isn't blocked: no cube, not corrupted or occupied, and no agent or player ambassador
-/// on it (one opposing piece blocks a site's output).
-fn open_neutral_factory(g: &GameState, h: usize) -> bool {
-    g.tokens(h, FACTORY) > 0
-        && !corrupted(g, h)
-        && cube_owner(g, h).is_none()
-        && !occupied(g, h)
-        && g.tokens(h, ADV_AMBASSADOR) == 0
-        && player_ambassador(g, h).is_none()
-}
-
-/// A Discord tip, r80 (ruling #50): each base of a country with an unblocked neutral factory gains 1 drone; a
-/// player ambassador on the base stops it (used up, the base rule of [`corp_troops_at`]), and a full base takes
-/// none. (137-r79: 1 drone per neutral factory per base, an ambassador on the factory stopping one, players
-/// choosing which base.)
-pub fn tip_corp_troops(g: &mut GameState, cx: &mut Cx) -> Res {
-    let w = cx.world;
-    for c in 0..w.map.countries.len() {
-        let hexes = &w.map.countries[c].hexes;
-        let blocked = hexes
-            .iter()
-            .filter(|&&h| g.tokens(h, FACTORY) > 0 && !corrupted(g, h) && cube_owner(g, h).is_none() && !occupied(g, h))
-            .filter(|&&h| !open_neutral_factory(g, h))
-            .count() as i64;
-        cx.tally(g, "board.blocked.factory_neutral", blocked);
-        if !hexes.iter().any(|&h| open_neutral_factory(g, h)) {
-            continue;
-        }
-        cx.tally(g, "board.tip_factory_troops", 1);
-        for b in corp_bases(&w, c as u8) {
-            add_unit(g, cx, b);
-        }
-    }
-    Ok(())
-}
-
-/// Growth, after the income step (r75: it was production's first part): bases
-/// make their extra corp troops (corp troops otherwise come from Discord tips at
-/// neutral factories, [`tip_corp_troops`]). 275: cities no longer grow (190's city growth and its chips went to
-/// the adversary's Grow lines, `adversary::grow`).
-pub(super) fn produce_units(g: &mut GameState, cx: &mut Cx) -> Res {
-    extra_units(g, cx);
-    Ok(())
-}
 
 /// The measure's tallies taken as production starts, not a rule: what each
 /// seat left unspent, its dear powers, its top tag, its idle converters.
@@ -165,59 +79,8 @@ fn measure_round(g: &mut GameState, cx: &mut Cx) {
     }
 }
 
-/// The extra corp troops a base asks for this production step (135): (past
-/// its cap, held to it), from the threats registered on it (Conscription),
-/// and the adversary board's rules (Warmongering; 231: no project is ongoing).
-fn extra_asked(w: &World, g: &GameState, base: usize, registered: &[(usize, u32, i64)]) -> (i64, i64) {
-    let (mut past, mut capped) = (0, 0);
-    for &(b, until, n) in registered {
-        if b == base && until >= g.round {
-            past += n;
-        }
-    }
-    // 231: the adversary board's rules only (no project is ongoing).
-    let rules = w.content.adversary_board.rules.iter().flat_map(|r| r.effects.iter());
-    for op in rules {
-        if let Op::CorpTroops { count, at: CorpAt::EveryBase, near, when: CorpWhen::EachProduction, past_cap, .. } = op {
-            if matches!(near, Some(CorpNear::AdversaryTroop)) && !next_to(w, base, |x| g.tokens(x, TROOP) > 0) {
-                continue;
-            }
-            if *past_cap {
-                past += count;
-            } else {
-                capped += count;
-            }
-        }
-    }
-    (past, capped)
-}
-
-/// 135: bases make their extra corp troops. Matt's ruling 4: at most 1 extra a
-/// base each production step, whatever makes it; past the cap when any source
-/// goes past it.
-fn extra_units(g: &mut GameState, cx: &mut Cx) {
-    let w = cx.world;
-    let registered = corp_extras(g);
-    for h in 0..g.hexes.len() {
-        if !is_base(&w, h) {
-            continue;
-        }
-        let (past, capped) = extra_asked(&w, g, h, &registered);
-        if past > 0 {
-            let made = corp_troops_at(g, cx, h, 1, true);
-            cx.tally(g, "board.units_extra", made);
-            if past > 1 {
-                cx.tally(g, "board.units_extra_capped", past - 1);
-            }
-        } else if capped > 0 {
-            add_unit(g, cx, h);
-        }
-    }
-}
-
 /// 137: factories make their owner's output: a player's chips, the adversary's
-/// 1 troop on its hex, a neutral one nothing (its troop comes at a Discord
-/// tip). One opposing ambassador blocks it while it stands: an adversary
+/// 1 troop on its hex, a neutral one nothing. One opposing ambassador blocks it while it stands: an adversary
 /// ambassador on a player's factory, a player ambassador on the adversary's.
 fn factory_output(g: &mut GameState, cx: &mut Cx) {
     let w = cx.world;
@@ -258,8 +121,7 @@ fn factory_output(g: &mut GameState, cx: &mut Cx) {
 /// once): factories make chips or an adversary troop, cities energy, stations
 /// research cubes, then full megaprojects complete. One opposing piece blocks a
 /// site; an agent on a city stays and the city is dark (r37 neutral, r38
-/// aligned too). A neutral city's energy is no longer sold here: the Buy energy
-/// standard action buys it in the action phase.
+/// aligned too).
 pub(super) fn produce(g: &mut GameState, cx: &mut Cx) -> Res {
     measure_round(g, cx);
     factory_output(g, cx);
@@ -275,15 +137,8 @@ pub fn city_output(w: &World, h: usize) -> i64 {
     l[c % l.len()]
 }
 
-/// Whether city `h` is blocked from producing: a blackout on it (its country, or
-/// near a threat, 135) or an agent standing on it.
-pub fn city_dark(w: &World, g: &GameState, h: usize) -> bool {
-    hex_flagged(w, g, RoundFlag::Blackout, h) || g.tokens(h, ADV_AMBASSADOR) > 0
-}
-
 /// Cities make energy: diverted by the adversary's, free to an aligned city's
-/// owner; a neutral city's makes nothing here (r75: it is bought by the Buy
-/// energy action).
+/// owner; a neutral city's to every player with a node on or next to it (292).
 pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     let divert = w.int("board.divert_discord");
@@ -324,13 +179,20 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
             let n = energy + w.int("board.aligned_bonus");
             cx.add_resource(g, s, Resource::Energy, n);
             cx.tally(g, "board.city_energy_aligned", n);
-        } else if let Some(s) = city_host(&w, g, h) {
-            // 254 (`host_city`): a neutral city's energy goes to the seat whose node is on it.
-            cx.add_resource(g, s, Resource::Energy, energy);
-            // 261: say who hosts it: nothing else on the table shows which seat a city's energy went to.
-            cx.note(Some(h), || format!("{} makes {} for Seat {s} (hosted)", hex_name(&w, h), Resource::Energy.amount(energy)));
-            cx.tally(g, "board.city_energy_hosted", energy);
-            cx.per_round(g, "map.hosted", 1);
+        } else {
+            // 292: a city neither corrupted nor blocked pays every player with a node on or next to it.
+            let mut paid = false;
+            for s in 0..g.seats.len() {
+                if node_by(&w, g, s, h) {
+                    cx.add_resource(g, s, Resource::Energy, energy);
+                    cx.tally(g, "board.city_energy", energy);
+                    cx.tally(g, &format!("board.city_energy.s{s}"), energy);
+                    paid = true;
+                }
+            }
+            if paid {
+                cx.per_round(g, "map.cities_paying", 1);
+            }
         }
     }
     Ok(())
@@ -350,7 +212,7 @@ enum Color {
 /// 286 (D124): what the next production pays seat `s`, (chips, research cubes), as its income tracks print it
 /// (r133): its factories' chips (none from an occupied factory or one an agent blocks) and, once their country's
 /// megaproject is complete, its stations' cubes (none from a blocked one). [`factory_output`] and [`station_cubes`]
-/// pay it; the seat strip adds it to upkeep's income. Cities' energy is read at hosting, not on the tracks.
+/// pay it; the seat strip adds it to upkeep's income. Cities' energy: [`city_income`].
 pub fn production_income(w: &World, g: &GameState, s: usize) -> (i64, i64) {
     let (mut chips, mut cubes) = (0, 0);
     for h in 0..g.hexes.len() {
@@ -365,6 +227,25 @@ pub fn production_income(w: &World, g: &GameState, s: usize) -> (i64, i64) {
         }
     }
     (chips, cubes)
+}
+
+/// 292: the energy the next production pays seat `s` from cities, as its energy income track shows it: each city
+/// neither corrupted nor blocked with its node on or next to it ([`city_energy`] pays it). The marker moves only
+/// when a node is placed or lost or a city changes state.
+pub fn city_income(w: &World, g: &GameState, s: usize) -> i64 {
+    (0..g.hexes.len())
+        .filter(|&h| is_city(w, h))
+        .map(|h| match cube_owner(g, h) {
+            // r114's ownership (`cities_unowned` 0): an aligned city pays its owner alone, with its bonus, unless
+            // an agent or a blackout darkens it, as [`city_energy`] pays it.
+            Some(o) if o == s && !corrupted(g, h) && g.tokens(h, ADV_AMBASSADOR) == 0 && !hex_flagged(w, g, RoundFlag::Blackout, h) => {
+                city_output(w, h) + w.int("board.aligned_bonus")
+            }
+            Some(_) => 0,
+            None if city_pays(w, g, h) && node_by(w, g, s, h) => city_output(w, h),
+            None => 0,
+        })
+        .sum()
 }
 
 pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {

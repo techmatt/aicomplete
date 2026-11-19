@@ -67,22 +67,6 @@ fn the_tip_count_picks_a_unity_cards_tier() {
     }
 }
 
-/// 254 (`cities_unowned` 1): no city is owned, so a hosted city counts for the Unity cards that pay per site a
-/// player owns ("owned"); with r114's ownership (`cities_unowned` 0) a node beside a city adds nothing.
-#[test]
-fn a_hosted_city_counts_as_owned_for_the_unity_cards() {
-    use crate::modules::common::city_host;
-    for (sets, counted) in [(vec![], 1), (vec!["board.cities_unowned=0", "board.host_city=0"], 0)] {
-        let (rules, mut g) = lab_with(&[], &sets);
-        let w = rules.world();
-        let (city, n) = city_with_lonely_neighbors(&rules.map);
-        put(&mut g, n[0], node(0), 1);
-        assert_eq!(city_host(&w, &g, city).is_some(), counted == 1);
-        let owned = crate::modules::plan::sites_where(&w, &g, crate::op::Where::Owned);
-        assert_eq!(owned.iter().filter(|&&h| h == city).count(), counted, "{sets:?}");
-    }
-}
-
 #[test]
 fn bar_levels_follow_the_unity_cards_drawn() {
     use PurgeLevel::*;
@@ -181,60 +165,6 @@ fn the_antimatter_action_turns_cubes_into_antimatter_and_sways_nothing() {
     assert!(!rules.legal_actions(&g).contains(&Action::Standard { seat: 0, act: "antimatter".into() }));
 }
 
-/// 136: Unity swayed may hold Discord off instead, 1 for 1, as the players
-/// choose once the action resolves; with `hold_off` 0 it all goes on the
-/// Unity track and nothing is asked.
-#[test]
-fn unity_swayed_may_hold_discord_off() {
-    for (hold, pick, want) in [(1, 0, (3, 2)), (1, 2, (1, 0)), (0, 0, (3, 2))] {
-        let (rules, mut g) = action_only(&[&format!("alignment.hold_off={hold}")]);
-        set_var(&mut g, "alignment.discord",2);
-        // Unity swayed and not yet placed: the next action's check places it.
-        set_var(&mut g, "alignment.unity_new",3);
-        rules.apply_mut(&mut g, &noop(0), None).unwrap();
-        if hold > 0 {
-            let p = g.pending.as_ref().expect("asked how much holds Discord off");
-            assert_eq!(p.ask.options.len(), 3, "0, 1 or 2 off the Discord track");
-            answer(&rules, &mut g, pick);
-        }
-        answer_all(&rules, &mut g);
-        assert_eq!(alignment::unity_pending(&g), 0);
-        assert_eq!((g.var("alignment.unity"), g.var("alignment.discord")), want, "hold_off {hold}, pick {pick}");
-    }
-}
-
-/// 238 (D95): the player whose action swayed the Unity is asked, not seat 0.
-#[test]
-fn the_acting_player_places_swayed_unity() {
-    let (rules, mut g) = action_only(&["alignment.hold_off=1"]);
-    set_var(&mut g, "alignment.discord",2);
-    set_var(&mut g, "alignment.unity_new",1);
-    rules.apply_mut(&mut g, &noop(1), None).unwrap();
-    let p = g.pending.as_ref().expect("asked where the Unity goes");
-    assert_eq!(p.ask.seat, 1, "{}", p.ask.prompt);
-    assert!(p.ask.prompt.contains("put 1 Unity on the track, or take 1 Discord off"), "{}", p.ask.prompt);
-}
-
-/// r75 (Matt's ruling 7): every hold-off amount from 0 to the least of the Unity
-/// swayed and the Discord on its track is offered, even one that leaves the
-/// track full (145 offered only amounts that stopped the tip; `carry` 2 keeps the
-/// overflow now).
-#[test]
-fn every_hold_off_amount_is_offered() {
-    let (rules, g0) = action_only(&["alignment.hold_off=1"]);
-    let cap = alignment::capacity(&rules.world(), &g0, crate::content::Side::Discord);
-    // (Discord over the cap, Unity swayed, options offered): 0 to 3 off with 3
-    // Unity, over the cap or at it; 0 to 2 with 2 Unity, 3 over the cap.
-    for (over, n, offered) in [(1, 3, 4), (0, 3, 4), (3, 2, 3)] {
-        let mut g = g0.clone();
-        set_var(&mut g, "alignment.discord",cap + over);
-        set_var(&mut g, "alignment.unity_new",n);
-        rules.apply_mut(&mut g, &noop(0), None).unwrap();
-        let asked = g.pending.as_ref().map_or(0, |p| p.ask.options.len());
-        assert_eq!(asked, offered, "Discord {} over, {n} Unity", over);
-    }
-}
-
 /// 145: a player with no node loses before a full Unity track tips, with no
 /// Discord tip first (028's check ran only after a tip).
 #[test]
@@ -249,26 +179,6 @@ fn a_player_with_no_node_loses_before_a_unity_tip() {
     assert_eq!(g.var("alignment.unity_tips"), tips, "no Unity card drawn");
     let o = g.outcome.as_ref().expect("a loss");
     assert!(!o.won && o.reason == "node", "{o:?}");
-}
-
-/// 136: Envoy spends an ambassador from the supply to move 1 Discord off the
-/// Discord track; with none on the track it isn't offered.
-#[test]
-fn envoy_moves_one_discord_off() {
-    let (rules, mut g) = action_only(&[]);
-    g.seats[0].resources.insert(Resource::Ambassadors, 2);
-    let envoy = |g: &GameState| {
-        rules.legal_actions(g).into_iter().find(|a| matches!(a, Action::Standard { seat: 0, act } if act == "envoy"))
-    };
-    set_var(&mut g, "alignment.discord",0);
-    assert!(envoy(&g).is_none());
-    set_var(&mut g, "alignment.discord",3);
-    let a = envoy(&g).expect("Envoy offered");
-    act(&rules, &mut g, a);
-    assert_eq!(g.var("alignment.discord"), 2);
-    assert_eq!(g.resource(0, Resource::Ambassadors), 1);
-    let (rules, g) = action_only(&["board.envoy_ambassadors=0"]);
-    assert!(!rules.legal_actions(&g).iter().any(|a| matches!(a, Action::Standard { act, .. } if act == "envoy")));
 }
 
 /// A Discord tip no longer escalates the difficulty (017): it resolves one
@@ -404,3 +314,45 @@ fn alignment_cards_are_one_shot() {
     assert!(serde_json::from_str::<Vec<content::AlignmentCard>>(bad).is_err());
 }
 
+/// 254 (`cities_unowned` 1): no city is owned, so a free city with a player's node on or next to it (292) counts,
+/// an agent or a blackout on it or not, and a corrupted one doesn't, for the Unity cards that pay per site a player owns ("owned"); with r114's ownership (`cities_unowned` 0)
+/// a node beside a city adds nothing.
+#[test]
+fn a_free_city_by_a_player_counts_as_owned_for_the_unity_cards() {
+    for (sets, counted) in [(vec![], 1), (vec!["board.cities_unowned=0"], 0)] {
+        let (rules, mut g) = lab_with(&[], &sets);
+        let w = rules.world();
+        let (city, n) = city_with_lonely_neighbors(&rules.map);
+        put(&mut g, n[0], node(0), 1);
+        let count = |g: &GameState| {
+            crate::modules::plan::sites_where(&w, g, crate::op::Where::Owned).iter().filter(|&&h| h == city).count()
+        };
+        assert!(crate::modules::common::free_city_by_a_player(&w, &g, city));
+        assert_eq!(count(&g), counted, "{sets:?}");
+        // Blocked (an agent on it, a blackout): it pays no one and counts all the same, as the cards print.
+        put(&mut g, city, ADV_AMBASSADOR, 1);
+        set_var(&mut g, crate::modules::board::hex_flag(content::RoundFlag::Blackout, city), 1);
+        assert!(!crate::modules::common::city_pays(&w, &g, city));
+        assert_eq!(count(&g), counted, "{sets:?}, blocked");
+        // Corrupted: no longer a free city.
+        put(&mut g, city, ADV_CUBE, 1);
+        assert_eq!(count(&g), 0, "{sets:?}, corrupted");
+    }
+}
+
+/// 292: Unity never cancels Discord. Unity swayed always goes onto the Unity track once the action resolves, the
+/// Discord track is untouched and nobody is asked (136-r138: it could move Discord off instead, 1 for 1); no
+/// standard action moves Discord off either (Envoy is gone).
+#[test]
+fn unity_swayed_always_goes_onto_the_unity_track() {
+    let (rules, mut g) = action_only(&[]);
+    g.seats[0].resources.insert(Resource::Ambassadors, 2);
+    set_var(&mut g, "alignment.discord", 2);
+    // Unity swayed and not yet placed: the next action's check places it.
+    set_var(&mut g, "alignment.unity_new", 3);
+    assert!(!rules.legal_actions(&g).iter().any(|a| matches!(a, Action::Standard { act, .. } if act == "envoy")));
+    rules.apply_mut(&mut g, &noop(1), None).unwrap();
+    assert!(g.pending.is_none(), "nothing to choose");
+    assert_eq!(alignment::unity_pending(&g), 0);
+    assert_eq!((g.var("alignment.unity"), g.var("alignment.discord")), (3, 2));
+}

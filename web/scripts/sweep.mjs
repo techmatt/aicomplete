@@ -50,7 +50,7 @@ const CASES = [
   { name: 'c2-d4', config: 'baseline.json', set: ['adversary.difficulty=4'] },
   { name: 'threats-off', config: 'baseline.json', set: ['threats.variant=off'] },
   { name: 'alignment-off', config: 'baseline.json', set: ['alignment.variant=off'] },
-  { name: 'alignment-no-hold-off', config: 'baseline.json', set: ['alignment.hold_off=0', 'alignment.momentum_every=2'] },
+  { name: 'alignment-momentum', config: 'baseline.json', set: ['alignment.momentum_every=2'] },
   { name: 'cards-off', config: 'baseline.json', set: ['cards.variant=off'] },
   // 044: the round cap at each difficulty's deck, the engine's fuller games (markers,
   // shields, Clear, the rich action, delays), a record that overlays content.
@@ -70,8 +70,8 @@ const CASES = [
   // the 1-player game's "another player means you" with the engine agent.
   { name: 'c2-d2-strategist', config: 'baseline.json', set: ['adversary.difficulty=2'], agent: 'strategist' },
   { name: 'c1-d2-engine', config: 'baseline.json', set: ['countries=1', 'adversary.difficulty=2'], agent: 'engine' },
-  // 145: r55-r59's pieces: claims, liberations and Envoy, Corrupt X on land at 4 countries,
-  // war every round, d3's dearer menus and harsher harms, as the strategist and engine play them.
+  // 145: r55-r59's pieces: claims and liberations, Corrupt X on land at 4 countries,
+  // d3's dearer menus and harsher harms, as the strategist and engine play them.
   { name: 'c2-d3-strategist', config: 'baseline.json', set: ['adversary.difficulty=3'], agent: 'strategist' },
   { name: 'c4-d3-engine', config: 'baseline.json', set: ['countries=4', 'adversary.difficulty=3'], agent: 'engine' },
   // 169: r70-r72's moving pieces (gather, push, Patrol, standing liberations) and fear cards
@@ -145,14 +145,14 @@ const PAGE_LIB = String.raw`(() => {
   // 118: r41-r46's engine wording and insight economy: a trigger, an At N cash-in, a reuse, a
   // discard from hand, a discount, insight paid for a counter.
   const COUNTER_EVENTS_R41 = /^(cards\.(triggers|thresholds|reused|hand_discarded|discount_credits)|threats\.counter_paid\.insight)$/;
-  // 145: r55-r59's sites, war, Corrupt X and menus: a claim or liberation by site, Envoy, a
-  // hold-off, a node lost by cause, war's destroys, a corruption by site, a created site, a
+  // 145: r55-r59's sites, Corrupt X and menus: a claim or liberation by site, a
+  // node lost by cause, a corruption by site, a created site, a
   // top-tier counter by currency (tier 3 until 146, tier 2 since). (144's blackout and sabotage flags and the "is freed" note are gone.)
-  const COUNTER_EVENTS_R55 = /^(board\.(claimed|liberated)\.(city|station|factory)|board\.(std\.envoy|cities_freed|war_destroyed)|board\.node_lost\.[a-z0-9]+|adversary\.(corruptions\.(city|station|factory|land)|sites_created\.(station|factory)|factories_corrupted|stations_flipped)|alignment\.(unity|discord)_held_off|alignment\.unity_pulled|threats\.(countered_by\.t2\.[a-z_]+|dealt_at_node))$/;
+  const COUNTER_EVENTS_R55 = /^(board\.(claimed|liberated)\.(city|station|factory)|board\.cities_freed|board\.node_lost\.[a-z0-9]+|adversary\.(corruptions\.(city|station|factory|land)|sites_created\.(station|factory)|factories_corrupted|stations_flipped)|alignment\.unity_pulled|threats\.(countered_by\.t2\.[a-z_]+|dealt_at_node))$/;
   // 169: r70-r71's moving pieces and fear cards: a gather, a push, an arrival that cancels, a
   // gather-then-strike, a claim or liberation spending your standing ambassadors (r75), a prohibition made or fired,
   // a remove_where sweep and a cleanse.
-  const COUNTER_EVENTS_R70 = /^(effects\.(gathered|pushed|moved_canceled|struck|cleansed|firewalls|remove_where\..+)|board\.(site_standing_spent|std\.(botnet|buy_energy)|aegis_used|protection_declined)|prohibit\.[a-z]+\.[a-z_]+\.(made|fired))$/;
+  const COUNTER_EVENTS_R70 = /^(effects\.(gathered|pushed|moved_canceled|struck|cleansed|firewalls|remove_where\..+)|board\.(site_standing_spent|std\.botnet|aegis_used|protection_declined)|prohibit\.[a-z]+\.[a-z_]+\.(made|fired))$/;
   // 184: r74-r77's contact and corruption: a meeting that cancels an agent and an ambassador, a node
   // corrupted at 2, Remove agents, Dispatch, a claim or liberation, the last node lost.
   const COUNTER_EVENTS_R74 = /^(adversary\.(canceled|ambassadors_removed|troops_removed|corruptions\.node)|board\.(std\.(remove|move|claim|liberate)|last_node_lost))$/;
@@ -164,9 +164,9 @@ const PAGE_LIB = String.raw`(() => {
   // stripped cubes, cubes made antimatter, a board burn, a placed ambassador, a reach Shelter.
   const COUNTER_EVENTS_R99 = /^(fallout\.(placed|lifted)|adversary\.(night_raid_agents|ambassadors_recalled|cubes_stripped)|board\.(cubes_to_antimatter|burned\.[a-z_]+)|effects\.(ambassadors_placed|shelter_reach))$/;
   // 261: r107-r121: each board power's first use (the node routes: Expand, Buy In, Accord ...), a card's or
-  // rider's claim, a hosted city's energy, a site opened, a converter's Action, the adversary research track
+  // rider's claim, a site opened, a converter's Action, the adversary research track
   // (made, fired, removed), compute blocked, a march cut short.
-  const COUNTER_EVENTS_R107 = /^(ai\.power\.[a-z_]+\.[a-z0-9_]+|adversary\.(research_(made|fired|removed)|compute_blocked)|board\.(claimed_by\.(card|rider)\.[a-z]+|city_energy_hosted|sites_opened\.[a-z_]+|chips_converted|march_cut_by_loss|blocked\.station_adversary)|effects\.per_site\.owned_hosted)$/;
+  const COUNTER_EVENTS_R107 = /^(ai\.power\.[a-z_]+\.[a-z0-9_]+|adversary\.(research_(made|fired|removed)|compute_blocked)|board\.(claimed_by\.(card|rider)\.[a-z]+|sites_opened\.[a-z_]+|chips_converted|march_cut_by_loss|blocked\.station_adversary))$/;
   // 275: r130's card-driven adversary: an arrival corruption, a Grow (and its agent), a Spill, a botnet's seed, a
   // Surge, an uncountered threat's agent at its anchor.
   const COUNTER_EVENTS_R130 = /^adversary\.(corruptions_arrival|grew\.(factory|station)|grew_infested|spilled|seeded|surged|threat_anchor)$/;

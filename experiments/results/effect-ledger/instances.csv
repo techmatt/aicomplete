@@ -574,9 +574,9 @@ treaty_isotope_bank,tags [card],card,diplomacy,1.0,0.67,0.67,0.09,0.09
 truth_commission,jam typed [play],play,"amount=5, source=diplomacy",5.0,2.33,0.47,1.12,0.22
 truth_commission,sway unity [play],play,"side=unity, amount=2, narrative=trust",2.0,5.33,2.67,2.56,1.28
 truth_commission,tags [card],card,diplomacy,1.0,0.67,0.67,0.32,0.32
-twin_city_compact,place_node [play],play,count=2,2.0,10.67,5.33,2.55,1.28
-twin_city_compact,host_more [play],play,count=1,1.0,5.04,5.04,1.21,1.21
-twin_city_compact,tags [card],card,cyber power,2.0,1.0,0.5,0.24,0.12
+twin_city_compact,place_node [play],play,count=2,2.0,10.67,5.33,2.06,1.03
+twin_city_compact,gain energy [play],play,"resource=energy, amount=3",3.0,9.0,3.0,1.74,0.58
+twin_city_compact,tags [card],card,cyber power,2.0,1.0,0.5,0.19,0.1
 university_spinout,production credits [play],play,"resource=credits, amount=4",4.0,16.0,4.0,16.0,4.0
 university_spinout,tags [card],card,science industry,2.0,1.0,0.5,1.0,0.5
 vendor_financing,other_gain chips [play],play,"resource=chips, amount=1; to a chosen player",1.0,3.0,3.0,2.31,2.31

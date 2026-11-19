@@ -5,33 +5,29 @@
 | Resource | Comes from | Spent on |
 |---|---|---|
 | Credits | Credit production on the AI board ([ai-boards.md](ai-boards.md)), the node track, cards and Unity cards, in upkeep; megaproject payouts; Growth (Buy In and Levy 1, Accord and Peer Review 2, Annex 6); selling a card (`sell_credits` 1) | Card costs (never keeps); standard actions (table below); the Researcher's Lab II (2); threat counters |
-| Energy (keeps between rounds; candidate: about 1-3 held mid-game, near 0 at the end) | Hosted cities' energy in the income step (a neutral city with your node on or next to it, *Cities' energy* below); other neutral cities' bought with Buy energy; Horizon's completion payout and its two converters (2 cubes for 4, 1 chip for 2); Make antimatter's 2; the node tracks; Power programs (+2 at most on any other card), the Power engines' when-built 2 and Power triggers ([cards.md](../cards.md)); the Builder's Overcharge; each board's printed energy; `ai.start_energy` at the start | **Energy powers things** (Matt, 2026-11-15): every track step, whatever places the node ([ai-boards.md](ai-boards.md)); the board powers: Outpost, Sprawl and Accord (1 each), Patrol I / II (1 / 2) ([ai-powers.md](ai-powers.md)); building Actions, most at 1-2 ([cards.md](../cards.md)); cards' `energy` cost (power-hungry cards, counted in [player-cards.md](player-cards.md)); threat counters that offer energy (by tag, [threats.md](threats.md) *Counters*) |
+| Energy (keeps between rounds; candidate: about 1-3 held mid-game, near 0 at the end) | Cities' energy in the income step (1 from each unblocked, uncorrupted city with your node on or next to it, *Cities' energy* below); Horizon's completion payout and its two converters (2 cubes for 4, 1 chip for 2); Make antimatter's 2; the node tracks; Power programs (+2 at most on any other card), the Power engines' when-built 2 and Power triggers ([cards.md](../cards.md)); the Builder's Overcharge; each board's printed energy; `ai.start_energy` at the start | **Energy powers things** (Matt, 2026-11-15): every track step, whatever places the node ([ai-boards.md](ai-boards.md)); the board powers: Outpost, Sprawl and Accord (1 each), Patrol I / II (1 / 2) ([ai-powers.md](ai-powers.md)); building Actions, most at 1-2 ([cards.md](../cards.md)); cards' `energy` cost (power-hungry cards, counted in [player-cards.md](player-cards.md)); threat counters that offer energy (by tag, [threats.md](threats.md) *Counters*) |
 | Chips (4 credits at the anchors and `values.json`) | Player-owned factories each round (`factory_chips` each); Onyx's converter; the Builder's Scrap I (1) and Full Capacity capstone; cards (chip income on four, a one-time gain on three, Wafer Fab Line's Action 2 a use: [cards.md](../cards.md)). | The Builder's Fortify I / II (1 / 2) and Annex (1); Parts Exchange's Action; research stations (`station_chips`); the corps' chip converters, 1 a use (Biomia's 2; [board.md](board.md)); Antiproton Foundry's Action. Every chip price is 1 but a station's, Fortify II's and Biomia's converter's, 2. Chips can't be sold |
 | Antimatter (18 at the anchors; the majors' fuel) | The plants, the steady source: a building's Action, once a round, 1 for a cube, a chip, 2 energy, 2 insight or 5 credits (each its own plant; tier 1: 2 energy; two give a second
 thing beside it: Antiproton Foundry 2 energy, Treaty Isotope Bank an ambassador). The Builder's Overcharge II ([ai-powers.md](ai-powers.md)). Sanctuary's and Open Archive's 2 once, as the capstone is uncovered (263: was 1 a round); Zero-Day Auction, Intrusion Lab. The desperate Make antimatter (below) | The majors: 15 tier-2 cards at 1 (liberations, troop strikes and more; the big sinks pay 2.0-2.5× at the anchors, Matt 287); Orbital Relay Launcher's Action (1 for 3 nodes and 3 energy, once a round) and Kinetic Interdiction's (1 for 10 agents in a country); two tier-1 cards ([cards.md](../cards.md)) |
 | Research cubes (keep between rounds) | Your stations, once their country's megaproject is complete; Cryo Sample Vault's 1 a round (tier 1); the Researcher's Open Archive capstone; cards: Field Grant (3), Particle Accelerator's Action (3, its OR half), Collider Consortium (8, another player 3), Survey Drone Fleet when played (2) | The standard actions Turn a cube into insight, Make antimatter and Lift Fallout (below); the corps' converters ([board.md](board.md): Horizon's 2 for 4 energy, Biomia's 1 Unity a cube); Penning Trap Array's, Field Assay Team's, Research Reactor's (3 energy) and Survey Drone Fleet's (2 nodes and 2 energy) Actions; Forensic Audit |
 | Insight | Each round, set to the card-play track's total (3 at its start; each board's top: [ai-boards.md](ai-boards.md)) plus buildings' and programs' insight production and Think Tank's 1; no adversary card takes it. Mid-round: the cube converter (standard action) and Cintamani's (1 cube for 2, once a round, a Cintamani city in reach); Vigil ([ai-powers.md](ai-powers.md)); card triggers; the Researcher's Open Science (others 2 a round) | Keeping drafted cards; playing cards; threat counters that offer it ([threats.md](threats.md) *Counters*); Dark Fiber Collider's Action; the Researcher's Growth (Peer Review 1, Field Station 1) and Lab (1). Only cards that print it pass it between players. It expires at the round's end, but the Researcher's carries over (Patience, [ai-boards.md](ai-boards.md)) |
-| Ambassadors | `start_ambassadors` at the start; Diplomacy cards, Followers through a card's Action, Orbital Embassy's 1 a Diplomacy tag on each card you play; the Protector's Accord (1 a use); the standard project | Dispatching onto pieces (they stay, [ambassadors.md](ambassadors.md)); Remove agents, liberating sites, Envoy (consumed) |
+| Ambassadors | `start_ambassadors` at the start; Diplomacy cards, Followers through a card's Action, Orbital Embassy's 1 a Diplomacy tag on each card you play; the Protector's Accord (1 a use); the standard project | Dispatching onto pieces (they stay, [ambassadors.md](ambassadors.md)); Remove agents, liberating sites (consumed) |
 | Dispatches (not held) | Each round, your board's printed Dispatches plus its uncovered Dispatch spaces ([ai-boards.md](ai-boards.md), *Dispatches*) | The Dispatch action, 1 each; what you don't use this round is lost, as insight is |
 
 **Cities' energy.** Each city makes `corp_energy` energy a round (1 for every corp; the list can
-set one a corp). **No player owns a city** (254, Matt's candidate, `cities_unowned` 1). **Hosting** (254,
-`host_city` 1, `host_reach` 1): in the income step a neutral city with your node on or next to it makes its energy
-for you, free. Each player hosts `host_city` city at most (258: one more for
-each `host_more` card they played, Twin City Compact) and each city has one host; the players choose who hosts what (the engine hosts as many as can be: a matching). **A neutral city no one
-hosts may have its energy bought in the action phase** with the Buy energy standard action, by anyone with it in
-reach; **a city a player hosts or could host can't be bought** (Matt's D107, printed form 263): not while a player
-with a host slot to spare has a node on or next to it, nor one a player hosts. The engine reads that as this round's matching when you buy (a largest
-matching hosts every city such a player reaches); a node placed after a purchase can still host the city that round
-(no marker: D107; Matt's reading, message 12119). **An agent on a city stays, and the city is dark**: every round it stands there,
-a neutral city has nothing to buy or to host. One agent makes a city dark; `corrupt_at` of them corrupt it, so a
-host clears agents early.
+set one a corp). **No player owns a city** (254, Matt's candidate, `cities_unowned` 1). **Every city pays everyone beside it** (r139,
+Matt 2026-11-19): in the income step each city that is neither corrupted nor blocked pays its energy to **every**
+player with a node on or next to it, free, however many players that is and however many cities a player stands
+beside. There is no host, no limit and nothing to buy. It sits on each player's energy income track, which moves
+only when a node is placed or lost or a city changes state (corrupted, liberated, an agent arrives or the last one
+leaves, a blackout). **An agent on a city stays, and the city is blocked**: every round it stands there the city
+pays no one. One agent blocks a city; `corrupt_at` of them corrupt it, so its neighbors clear agents early.
 A corrupted city's go to the adversary (Discord), unless a player ambassador stands on it and blocks them. (With
 `cities_unowned` 0, r114: an aligned city, claimed or bound at setup, gave its owner its energy + `aligned_bonus`.)
 
-**Cities' energy, for new players.** No city is ever yours, but a free city with your node on or next to it gives
-you its energy every round (one city each, two with Twin City Compact; one player a city). A free city in your reach that no player hosts or
-could host sells its energy in the action phase instead, 4 credits, once a round. An agent
+**Cities' energy, for new players.** No city is ever yours, but every free city with your node on or next to it
+gives you 1 energy every round, and gives the same to every other player beside it: sharing a city costs no one
+anything. An agent
 standing on any city shuts it off until someone removes it, and more of them corrupt the city. Clear agents early. A blackout (Naval Blockade's event
 line, the Rolling Blackouts project) stops every city's energy while it lasts; the Blackout threat instead takes 3
 energy or 3 cards.
@@ -64,10 +60,8 @@ absurd") is the one standard action that removes Fallout; a corrupted site's is 
 | Gain a player ambassador | `ambassador_credits` 16 credits | into your supply; a standard project too |
 | Liberate a site | `liberate_at` 5 ambassadors for a city, `claim_station` 4 for a station, `claim_factory` 3 for a factory; used up: yours on the site first, your supply the rest | Target: an adversary site with no Agent on it. An adversary city, station or factory: the adversary's cube comes off, it is left neutral (a card may claim it from there), and it sways Unity (`alignment.free_city` 5 for a city, `free_facility` 2 for a station or factory) |
 | Take down a botnet | `botnet_credits` 13 credits | Target: a Botnet on a hex holding your ambassador. The botnet comes off (your ambassador stays) |
-| Buy a city's energy | `city_energy_credits` 4 credits | Target: a producing neutral city. Producing (no blackout, no agent on it) and hosted by no one: gain its energy, once per city a round |
 | Sell a card | gain `sell_credits` 1 | from your hand |
 | Turn a cube into insight | `insight_cubes` 1 research cubes | gain `cube_insight` 1 insight, at most `insight_per_round` 1 a round |
-| Envoy | `envoy_ambassadors` 1 of your ambassadors, from your supply, used up | move 1 Discord off the Discord track |
 | Make antimatter | `antimatter_cubes` 5 research cubes | gain 1 antimatter and `antimatter_energy` 2 energy, as often as you have cubes (a desperate trade: the engines make it cheaper) |
 <!-- /generated -->
 
@@ -80,16 +74,14 @@ Build a factory (`factory_build_chips`, 0: off) is a screened candidate; the eve
 | | *(round start)* | Insight is set; abilities and powers refresh |
 | 1 | `alignment.sway` | Discord: the adversary board's printed drip (the Militarist's is 0), and `blight_discord` 1 per Fallout token |
 | 2 | `adversary.event` | The adversary's Card beat ([adversary.md](adversary.md)): the face-up event card becomes this round's |
-| 3 | `threats.deal` | Its pulls: a threat a pull in each country, its tokens on the board ([threats.md](threats.md)) |
+| 3 | `threats.deal` | Its threats: the next card of the tier's deck for each country, its tokens on the board ([threats.md](threats.md)) |
 | 4 | `adversary.build` | The card's Infiltrate X, Muster, other lines, Spill and Grow; each arrival checks the hex it lands on (each placement puts all its agents for a hex on, then checks it once; a Spill moves one agent at a time, each move checked as it lands) |
-| 5 | `board.march` | The March beat ([war.md](war.md)): `troop_steps` steps each, move or destroy (past ambassadors) |
+| 5 | `board.march` | The March beat ([troops.md](troops.md)): `troop_steps` steps each, move or destroy (past ambassadors) |
 | 6 | `adversary.reveal` | The Income beat: next round's card face up (its Infiltrate and Grow sites shown) |
 | 7 | `adversary.compute` | The compute step: each botnet seeds `botnet_seed` 1 agent next to it and adds its compute (the compute even when a cordon stops the seed or it has nowhere to land); then income and the round's banked compute, all at once onto the leftmost project, which resolves as it fills (once; none is ongoing); then the research check (a full track fires once, [adversary.md](adversary.md)); then every firewall, cordon and prohibition token comes off, ending the adversary turn |
 | 8–11 | `cards.deal`, `.tier`, `.draft`, `.keep` | Round 1's opening hand, then every round's draft and keeps ([player-cards.md](player-cards.md)) |
 | 12 | `cards.play+threats.counter+board.act+ai.power` | Actions, simultaneous: cards, abilities, AI-board powers (nodes come from them), standard actions, countering threats |
-| 13 | `board.produce` | The income step (one step with 14, in this order): factories make chips (a player's) or a troop (the adversary's); hosted cities' energy to their hosts (254), corrupted cities' Discord; stations' cubes (an adversary station's research cube, once its megaproject is complete, waits for the compute step); full megaprojects complete. One opposing ambassador or agent blocks a site. The table reads it from the tracks and blocked chips ([war.md](war.md)) |
+| 13 | `board.produce` | The income step (one step with 14, in this order): factories make chips (a player's) or a troop (the adversary's); each free, unblocked city's energy to every player with a node on or next to it, corrupted cities' Discord; stations' cubes (an adversary station's research cube, once its megaproject is complete, waits for the compute step); full megaprojects complete. One opposing ambassador or agent blocks a site. The table reads it from the tracks and blocked chips ([troops.md](troops.md)) |
 | 14 | `economy.upkeep` | The income step, continued: board and card income; building upkeep |
-| 15 | `board.bases` | Extra drones ([war.md](war.md)) |
-| 16 | `threats.execute` | Partial payments refunded; uncountered threats execute (each also lands 1 agent on its anchor, [threats.md](threats.md)) |
-| 17 | `board.war` | War, at the end of every round: front battles; what it destroys is gone for next round's production |
-| 18 | `board.cleanup` | Round flags removed; tips and the end checks run after every phase |
+| 15 | `threats.execute` | Partial payments refunded; uncountered threats execute (each also lands 1 agent on its anchor, [threats.md](threats.md)) |
+| 16 | `board.cleanup` | Round flags removed; tips and the end checks run after every phase |

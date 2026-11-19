@@ -153,7 +153,7 @@ The sheet is `icons.png` from `node tools/card-art/render.mjs`. Boxes, outlines,
 |---|---|
 | Square tile | a resource (cards included) |
 | Disc | a token on a card: alone, on this card ("here") |
-| Bare silhouette | a piece on the board, or moving one; one symbol a piece, the map's where it draws one (agent: a figure in a brimmed hat; drone: chevrons) |
+| Bare silhouette | a piece on the board, or moving one; one symbol a piece, the map's where it draws one (agent: a figure in a brimmed hat) |
 | Place after a piece (dark frame) | where: a site glyph, only that kind (a cube) or on or next to it (a botnet, agents, ambassadors); a country, in the target's country |
 | Ringed circle | a tag; an empty ring, a tag of any kind |
 | Number before an icon | how many; no number means 1 |

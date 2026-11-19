@@ -315,11 +315,6 @@ macro_rules! behavior_table {
             /// 166: the move heuristics answer Gather and Push prompts (`agents::moves`: push agents off the
             /// next Corrupt site, gather agents onto ambassadors, gather ambassadors toward a Liberate).
             (move_rules: bool, 1.0, "166: move heuristics for Gather and Push (push agents off the next Corrupt site, gather agents onto ambassadors, gather ambassadors to a Liberate)")
-            /// 176: Buy energy (r75's action-phase purchase) when the credits it costs would sit idle: the seat's
-            /// credits and this round's credit income, less the price, still reach the eval's credit cap. A pass is
-            /// scored on the table it leaves, before income, so the search alone never saw idle credits here
-            /// (r74's production prompt looked past the income).
-            (energy_rule: bool, 1.0, "176: buy a neutral city's energy when its credits would sit idle (credits plus this round's income, less the price, at or over the eval's credit cap)")
             /// 178: a strike's batches (`agents::moves::strike`): the largest of troops, then of agents, never a
             /// stop; its hex stays the search's. Its own lever since 185 (it sat under `move_rules`).
             (strike_rule: bool, 1.0, "178: a strike's batches go largest troops first, then agents, never a stop (its hex is the search's)")
@@ -452,31 +447,6 @@ impl Forced {
             && (!self.ignore_threats || !counters_threats(d))
             && (!self.never_clear || !d.effects.iter().any(|e| matches!(e, Op::LiftFallout { .. })))
     }
-}
-
-/// The credits a seat holds before more sit idle: the heuristic's `credit_cap` (its default with no heuristic),
-/// beyond which a credit is worth `credit_idle`; 0 or less is no cap, as the eval reads it.
-fn idle_credits(ev: Option<&super::eval::Eval>) -> f64 {
-    let cap = ev.map_or_else(|| super::eval::Weights::default().credit_cap, |e| e.w.credit_cap);
-    if cap > 0.0 { cap } else { f64::MAX }
-}
-
-/// 176 (`energy_rule`): a Buy energy action whose credits would sit idle: the seat has no card left it can play
-/// this phase, and its credits plus this round's credit income, less the price, still reach `idle`
-/// ([`idle_credits`]).
-fn buy_energy(w: &World, g: &GameState, legal: &[Action], idle: f64) -> Option<usize> {
-    legal.iter().position(|a| match a {
-        Action::Standard { seat, act } if act == board::StandardAction::BuyEnergy.name() => {
-            let s = *seat as usize;
-            if legal.iter().any(|b| matches!(b, Action::Play { seat, .. } if *seat as usize == s)) {
-                return false;
-            }
-            let price = board::printed_price(w, board::StandardAction::BuyEnergy).credits;
-            let after = g.resource(s, Resource::Credits) + economy::income(w, g, s)[Resource::Credits] - price;
-            after as f64 >= idle
-        }
-        _ => false,
-    })
 }
 
 /// What seat `s`'s keep plan values cards by, at the heuristic's own rates (its multipliers and repriced table
@@ -893,13 +863,6 @@ impl Agent for Policy {
         }
         // The agent behaviors (185): each pick stands only where no forced behavior rules it out (182's F32).
         let b = &self.behaviors;
-        if b.energy_rule && !pending {
-            if let Some(i) = buy_energy(&world, g, legal, idle_credits(self.eval())) {
-                if !self.ruled_out(&world, g, &legal[i]) {
-                    return i;
-                }
-            }
-        }
         // The move heuristics (`moves`), in this order: strike, target, then push / cancel / liberate.
         type Heuristic<'a> = &'a dyn Fn() -> Option<(usize, usize)>;
         let heuristics: [(bool, Heuristic<'_>); 3] = [
@@ -1356,7 +1319,7 @@ mod tests {
         let spec = crate::agents::AgentSpec::parse("greedy:plan_keep=0").unwrap();
         assert!(!spec.forced().is_active());
         let b = spec.behaviors();
-        assert!(b.is_active() && b.move_rules && b.energy_rule && b.strike_rule);
+        assert!(b.is_active() && b.move_rules && b.strike_rule);
         let off = crate::agents::AgentSpec::parse("greedy:move_rules=0").unwrap();
         assert!(!off.behaviors().move_rules && off.behaviors().strike_rule);
         assert_eq!(off.label(), "greedy:move_rules=0");

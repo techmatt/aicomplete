@@ -20,7 +20,7 @@ use crate::content::{HexKind, Resource, Side, TokenKind};
 use crate::modules::adversary::{CURRENT, DECK, NEXT, PROJECTS, STAGE, SUPPLY};
 use crate::modules::common::{
     ambassador, cube, node, node_of, ADV_AMBASSADOR, ADV_CUBE, FACTORY,
-    HARDEN, BOTNET, STATION, TROOP, UNIT,
+    HARDEN, BOTNET, STATION, TROOP,
 };
 
 mod adversary;
@@ -59,7 +59,6 @@ mod threats;
 mod tier2_ops;
 mod unprinted_ops;
 mod view;
-mod war;
 
 const BASELINE: &str = include_str!("../../../../configs/baseline.json");
 
@@ -127,8 +126,6 @@ fn lab_config(round: &[&str]) -> Config {
         "adversary.botnet_compute=3",
         "board.ambassador_discord=1",
         "board.troop_node=0",
-        "board.unit_cap=3",
-        "board.destruction_discord=1",
         "board.liberate_at=1",
         "board.troop_steps=2",
         "board.troop_spent=1",
@@ -648,9 +645,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 138;
-const GOLDEN_FINGERPRINT: &str = "ed6cd90bc3cf6134";
-const GOLDEN_CONTENT_HASH: &str = "ef9966e806dc3eca";
+const GOLDEN_REVISION: u32 = 139;
+const GOLDEN_FINGERPRINT: &str = "4df17274144edbe0";
+const GOLDEN_CONTENT_HASH: &str = "24dc3a338f0e6bd7";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

@@ -766,7 +766,7 @@ mod tests {
         let err = |s: &str| AgentSpec::parse(s).expect_err(s);
         assert!(err("strategist:plan_credit=3").contains("retired"));
         // on/off settings, counts, enumerated settings, tags
-        assert!(err("strategist:energy_rule=2").contains("0 or 1"));
+        assert!(err("strategist:strike_rule=2").contains("0 or 1"));
         assert!(err("strategist:keep_all=0.5").contains("0 or 1"));
         assert!(err("strategist:kept_rule=2.5").contains("whole number"));
         assert!(err("strategist:kept_rule=5").contains("at most 4"));

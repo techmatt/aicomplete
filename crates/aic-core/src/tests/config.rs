@@ -75,7 +75,7 @@ fn bad_configs_are_rejected_with_a_reason() {
     c.round.push("adversary.nope".into());
     assert!(Rules::new(&c).err().unwrap().contains("no phase"));
     let mut c = baseline();
-    c.round.push("board.bases+board.war".into());
+    c.round.push("board.march+board.cleanup".into());
     assert!(Rules::new(&c).err().unwrap().contains("appears twice"));
     let mut c = baseline();
     c.modules.push(c.modules[0].clone());
@@ -110,7 +110,7 @@ fn config_hash_is_stable_and_ignores_the_name() {
     let r = Rules::new(&implicit).unwrap();
     assert_eq!(
         &r.config.round[..3],
-        ["board.act", "board.bases", "board.war"]
+        ["board.act", "board.march", "board.produce"]
     );
     let tuned = baseline_with(&["adversary.difficulty=3"]);
     assert_ne!(Rules::new(&tuned).unwrap().config_hash, rules.config_hash);
@@ -165,9 +165,9 @@ fn off_switches_and_degenerate_values() {
     let mut c = baseline();
     c.apply_override("adversary.stage_cards=0,0,0").unwrap();
     assert!(Rules::new(&c).err().is_some_and(|e| e.contains("stage_cards")));
-    let e = baseline().apply_override("board.unit_cap=x").unwrap_err();
-    assert!(e.contains("board.unit_cap"), "{e}");
-    let e = baseline().apply_override("boardd.unit_cap=3").unwrap_err();
+    let e = baseline().apply_override("board.troop_steps=x").unwrap_err();
+    assert!(e.contains("board.troop_steps"), "{e}");
+    let e = baseline().apply_override("boardd.troop_steps=3").unwrap_err();
     assert!(e.contains("it has: board"), "{e}");
 }
 
@@ -193,17 +193,17 @@ fn stage_cards_are_checked_at_what_the_difficulty_deals() {
 /// reported with its key and the value, not serde's untagged-enum message.
 #[test]
 fn a_bad_parameter_value_names_its_key() {
-    let json = BASELINE.replacen("\"unit_cap\": 2", "\"unit_cap\": \"3\"", 1);
+    let json = BASELINE.replacen("\"troop_steps\": 1", "\"troop_steps\": \"3\"", 1);
     assert_ne!(json, BASELINE);
     let err = Config::from_json(&json).unwrap_err();
     assert!(
-        err.contains(r#"board.unit_cap: expected an integer or a list of integers, got "3""#),
+        err.contains(r#"board.troop_steps: expected an integer or a list of integers, got "3""#),
         "{err}"
     );
     for (bad, shown) in [("2.5", "2.5"), ("null", "null"), ("[1, \"x\"]", "[1,\"x\"]")] {
-        let json = BASELINE.replacen("\"unit_cap\": 2", &format!("\"unit_cap\": {bad}"), 1);
+        let json = BASELINE.replacen("\"troop_steps\": 1", &format!("\"troop_steps\": {bad}"), 1);
         let err = Config::from_json(&json).unwrap_err();
-        let want = format!("board.unit_cap: expected an integer or a list of integers, got {shown}");
+        let want = format!("board.troop_steps: expected an integer or a list of integers, got {shown}");
         assert!(err.contains(&want), "{err}");
     }
     assert!(Config::from_json(BASELINE).is_ok());

@@ -18,12 +18,8 @@ pub enum StandardAction {
     Liberate,
     /// 105: the general converter, a research cube for insight, `insight_per_round` times a round (253).
     Insight,
-    /// 136: spend an ambassador to move 1 Discord off the Discord track.
-    Envoy,
     /// r75 (Matt's ruling 3): credits, your ambassador on a botnet's hex (it stays): the botnet comes off.
     Botnet,
-    /// r75 (Matt's ruling 6): credits for a neutral city's energy in the action phase (it was sold in production).
-    BuyEnergy,
     /// 204 (Matt, 2026-11-12): the desperate source, research cubes for 1 antimatter.
     Antimatter,
     /// 206 (amendment 9247): a very expensive hedge against troops: credits for 1 troop in reach.
@@ -33,7 +29,7 @@ pub enum StandardAction {
 }
 
 /// The standard actions, in the order they are offered and published.
-pub const STANDARD: [StandardAction; 13] = [
+pub const STANDARD: [StandardAction; 11] = [
     StandardAction::Station,
     StandardAction::Remove,
     StandardAction::Lift,
@@ -41,9 +37,7 @@ pub const STANDARD: [StandardAction; 13] = [
     StandardAction::Ambassador,
     StandardAction::Liberate,
     StandardAction::Insight,
-    StandardAction::Envoy,
     StandardAction::Botnet,
-    StandardAction::BuyEnergy,
     StandardAction::Antimatter,
     StandardAction::Troop,
     StandardAction::Factory,
@@ -60,9 +54,7 @@ impl StandardAction {
             StandardAction::Ambassador => "ambassador",
             StandardAction::Liberate => "liberate",
             StandardAction::Insight => "insight",
-            StandardAction::Envoy => "envoy",
             StandardAction::Botnet => "botnet",
-            StandardAction::BuyEnergy => "buy_energy",
             StandardAction::Antimatter => "antimatter",
             StandardAction::Troop => "troop",
             StandardAction::Factory => "factory",
@@ -140,9 +132,7 @@ pub fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::Liberate => Price::default(),
         // 252 (Matt's ruling 5): taxed, `insight_cubes` cubes a use.
         StandardAction::Insight => Price { cubes: i("insight_cubes"), ..Price::default() },
-        StandardAction::Envoy => ambassadors(i("envoy_ambassadors")),
         StandardAction::Botnet => credits(i("botnet_credits")),
-        StandardAction::BuyEnergy => credits(i("city_energy_credits")),
         StandardAction::Antimatter => Price { cubes: i("antimatter_cubes"), ..Price::default() },
         StandardAction::Troop => credits(i("troop_credits")),
         StandardAction::Factory => chips(i("factory_build_chips")),
@@ -162,15 +152,6 @@ pub fn target_price(w: &World, g: &GameState, seat: usize, act: StandardAction, 
     }
 }
 
-/// Set while neutral city `h`'s energy has been bought this round (r75's Buy energy: once per city a round), a
-/// round mark cleared at the round's end.
-pub fn bought_key(h: usize) -> KeyBuf {
-    KeyBuf::new(BOUGHT).num(h)
-}
-
-/// Prefix of [`bought_key`].
-pub(super) const BOUGHT: &str = "board.energy_bought.";
-
 /// 206: how often seat `s` has taken limited standard action `act` (Remove a troop, Turn a cube into insight) this
 /// round, a round mark.
 pub fn std_once_key(act: StandardAction, seat: usize) -> KeyBuf {
@@ -189,26 +170,6 @@ fn per_round(w: &World, act: StandardAction) -> Option<i64> {
         StandardAction::Insight if w.int("board.insight_per_round") > 0 => Some(w.int("board.insight_per_round")),
         _ => None,
     }
-}
-
-/// Whether seat `seat` may buy neutral city `h`'s energy now (r75, Matt's ruling 6): a neutral city in reach,
-/// producing (no blackout, no agent on it), with energy to sell, not bought this round, and hosted by no one.
-pub fn energy_for_sale(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
-    for_sale(w, g, seat, h, &host_assignment(w, g))
-}
-
-/// [`energy_for_sale`] with this round's hosts (`hosts`, [`host_assignment`]) read once.
-fn for_sale(w: &World, g: &GameState, seat: usize, h: usize, hosts: &[(usize, usize)]) -> bool {
-    is_city(w, h)
-        && !corrupted(g, h)
-        && cube_owner(g, h).is_none()
-        && in_reach(w, g, seat, h)
-        && !city_dark(w, g, h)
-        && city_output(w, h) > 0
-        && g.var(&bought_key(h)) == 0
-        // 262 (Matt's D107, 2026-11-17): a hosted city can't be bought (254 sold it and let the purchase unhost it
-        // for the round, which a printed table can't track).
-        && !hosts.iter().any(|&(c, _)| c == h)
 }
 
 /// The hexes holding a botnet that seat `seat` may take down (r75, Matt's ruling 3): its own ambassador
@@ -274,12 +235,10 @@ pub fn std_target(act: StandardAction) -> Option<&'static str> {
         StandardAction::Move => "a piece or a Botnet",
         StandardAction::Liberate => "an adversary site with no Agent on it",
         StandardAction::Botnet => "a Botnet on a hex holding your ambassador",
-        StandardAction::BuyEnergy => "a producing neutral city",
         StandardAction::Troop => "Troops",
         StandardAction::Factory => "a free industrial zone",
         StandardAction::Ambassador
         | StandardAction::Insight
-        | StandardAction::Envoy
         | StandardAction::Antimatter => return None,
     })
 }
@@ -319,11 +278,7 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
             Resource::Insight.words(w.int("board.cube_insight")),
             per_round(w, act).map(|n| format!(", {} a round", times(n))).unwrap_or_default()
         ),
-        StandardAction::Envoy => "move 1 Discord off the Discord track".into(),
         StandardAction::Botnet => "Take it down (your ambassador stays)".into(),
-        StandardAction::BuyEnergy => {
-            format!("Buy its energy (once per city a round; not a hosted city): {} credits", w.int("board.city_energy_credits"))
-        }
         StandardAction::Antimatter => {
             match w.int("board.antimatter_energy") {
                 0 => format!("turn {} into 1 antimatter", Resource::ResearchCubes.words(w.int("board.antimatter_cubes"))),
@@ -402,12 +357,6 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
             // 253 (amendment 11525): `insight_per_round` times a round.
             format!("gain {} insight, at most {} a round", t("board.cube_insight"), t("board.insight_per_round")),
         ),
-        // 136: any seat, as often as it has ambassadors.
-        StandardAction::Envoy => (
-            "Envoy",
-            format!("{} of your ambassadors, from your supply, used up", t("board.envoy_ambassadors")),
-            "move 1 Discord off the Discord track".into(),
-        ),
         // r75 (Matt's ruling 3): the first standard way to take a botnet down.
         StandardAction::Botnet => (
             "Take down a botnet",
@@ -417,13 +366,6 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
             } else {
                 "the botnet comes off (your ambassador stays)".into()
             },
-        ),
-        // r75 (Matt's ruling 6): it was a sale in production.
-        StandardAction::BuyEnergy => (
-            "Buy a city's energy",
-            format!("{} credits", t("board.city_energy_credits")),
-            // 262 (Matt's D107): a hosted city can't be bought.
-            "producing (no blackout, no agent on it) and hosted by no one: gain its energy, once per city a round".into(),
         ),
         // 204 (Matt, 2026-11-12): the one standard source, a desperate one; the engines (the plants, r97) are the
         // real supply.
@@ -515,16 +457,7 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
         StandardAction::Ambassador => vec![usize::MAX],
         StandardAction::Insight if w.int("board.cube_insight") > 0 => vec![usize::MAX],
         StandardAction::Insight => Vec::new(),
-        // 136: with no Discord on the track it would do nothing.
-        StandardAction::Envoy if w.int("board.envoy_ambassadors") > 0 && g.var(alignment::track(Side::Discord)) > 0 => {
-            vec![usize::MAX]
-        }
-        StandardAction::Envoy => Vec::new(),
         StandardAction::Botnet => botnet_targets(w, g, seat),
-        StandardAction::BuyEnergy => {
-            let hosts = host_assignment(w, g);
-            all.filter(|&h| for_sale(w, g, seat, h, &hosts)).collect()
-        }
         StandardAction::Antimatter if w.int("board.antimatter_cubes") > 0 => vec![usize::MAX],
         StandardAction::Antimatter => Vec::new(),
         StandardAction::Troop | StandardAction::Factory if effects::feasible(w, g, seat, std_ops(act)) => vec![usize::MAX],
@@ -559,7 +492,6 @@ pub(super) fn std_resolve(
         let prompt = || match act {
             StandardAction::Move => format!("Seat {s}: dispatch an ambassador to which hex?"),
             StandardAction::Botnet => format!("Seat {s}: take down a botnet on which hex?"),
-            StandardAction::BuyEnergy => format!("Seat {s}: buy energy from which city?"),
             StandardAction::Station => format!("Seat {s}: build a research station on which hex?"),
             // 236: Remove agents names its target, the cards' prompt (the agents' target rule answers it).
             StandardAction::Remove => format!("Seat {s}: {} (Agents) [Remove agents]", effects::TARGET_PROMPT),
@@ -577,9 +509,6 @@ pub(super) fn std_resolve(
         StandardAction::Insight => {
             cx.add_resource(g, s, Resource::Insight, w.int("board.cube_insight"));
             cx.tally(g, "board.cubes_converted", 1);
-        }
-        StandardAction::Envoy => {
-            alignment::hold_off(g, cx, 1);
         }
         StandardAction::Antimatter => {
             cx.add_resource(g, s, Resource::Antimatter, 1);
@@ -620,14 +549,6 @@ pub(super) fn std_resolve(
                 // r75 (Matt's ruling 3): the ambassador stays; the botnet's Unity is `alignment.botnet`.
                 adversary::remove_botnet(g, cx, h);
                 cx.tally(g, "board.botnets_taken_down", 1);
-            }
-        }
-        StandardAction::BuyEnergy => {
-            if let Some(h) = on_hex(cx)? {
-                let n = city_output(&w, h);
-                cx.set_key(g, &bought_key(h), 1);
-                cx.add_resource(g, s, Resource::Energy, n);
-                cx.tally(g, "board.city_energy_bought", n);
             }
         }
         StandardAction::Lift => {

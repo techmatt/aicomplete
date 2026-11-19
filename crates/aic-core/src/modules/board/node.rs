@@ -265,15 +265,14 @@ pub fn spots_near(w: &World, g: &GameState, seat: usize, h: usize, spots: &[Node
 
 /// 210 (stats only): where seat `seat`'s placement on hex `h` landed: `board.node_at.<seat>.<kind>` for each of a
 /// factory, a city and a research station on the hex or next to it (`own_<kind>`: one holding the seat's cube; 261:
-/// a city the seat hosts, as no city holds one since 254),
+/// a city paying the seat its energy, as no city holds one since 254),
 /// `none` for none of the three, and `n` for every
 /// placement (the placement-spread measure; the spread at the game's end is the farm's `margin.node_spread`).
 fn tally_placement(w: &World, g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
     let near = |f: &dyn Fn(usize) -> bool| f(h) || w.map.hexes[h].neighbors.iter().any(|&x| f(x));
     let own = |x: usize| g.tokens(x, cube(seat)) > 0;
-    // 261: no city is owned since 254 (`cities_unowned`): "own city" is one the seat hosts after the placement.
-    let hosted = hosted_cities(w, g, seat);
-    let own_city = |x: usize| own(x) || hosted.contains(&x);
+    // 261: no city is owned since 254 (`cities_unowned`): "own city" is one paying the seat after the placement.
+    let own_city = |x: usize| own(x) || (city_pays(w, g, x) && node_by(w, g, seat, x));
     let kinds = [
         ("factory", near(&|x| g.tokens(x, FACTORY) > 0)),
         ("city", near(&|x| is_city(w, x))),

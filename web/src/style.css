@@ -238,15 +238,8 @@ code { font: 0.92em ui-monospace, Consolas, monospace; }
 /* 235: over the highlight rings, with a pale halo so a ring's dash under it doesn't strike it through. */
 .nums .num { font-size: 0.22px; fill: #00000088; font-weight: 600; text-anchor: middle; dominant-baseline: middle; pointer-events: none;
   paint-order: stroke; stroke: #ffffffaa; stroke-width: 0.035px; }
-.borders, .marks, .labels, .fronts { pointer-events: none; }
+.borders, .marks, .labels { pointer-events: none; }
 .border { stroke-width: 0.13; stroke-linecap: round; }
-/* Fronts fight every round (139), so the board and the key always draw `.fronts.war`: the link is solid and pulses
-   with the edges. */
-.fronts.war .front-edge { stroke: #e53935; stroke-width: 0.12; animation: warline 1.6s ease-in-out infinite; }
-.fronts.war .front-link { stroke: #e53935; opacity: 0.8; stroke-width: 0.07; animation: warline 1.6s ease-in-out infinite; }
-@keyframes warline { 50% { opacity: 0.45; } }
-.base-mark .pole { stroke: #333; stroke-width: 0.025; }
-.base-mark .flag { stroke: #fff; stroke-width: 0.015; }
 .mark { fill: none; }
 .mark.source { stroke: #8e1b1b; stroke-width: 0.07; stroke-dasharray: 0.08 0.08; }
 .mark.changed { stroke: #e0a100; stroke-width: 0.08; stroke-dasharray: 0.15 0.08; }

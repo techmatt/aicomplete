@@ -1,12 +1,12 @@
 //! Threats (135): dealt by the current adversary event card's pulls, one a
 //! pull a country, each with location tokens on the board; countered by the
 //! players near it (one option of its counter menu), executed in
-//! `threats.execute`, before war, if still uncountered.
+//! `threats.execute` if still uncountered.
 //! Variants: `countries` (each threat sits on a country) and `off` (no threats).
 
 use crate::action::Action;
 use crate::content::{
-    CounterItem, Location, Op, PullTag, Resource, TagOrAny, ThreatDef, ThreatSource, ThreatTag,
+    CounterItem, Location, Op, Resource, TagOrAny, ThreatDef, ThreatSource, ThreatTag,
 };
 use crate::key::{Key, KeyBuf};
 use crate::module::{Build, Cx, Halt, Module, ModuleDef, PhaseSpec, Res, VariantDef, World};
@@ -26,7 +26,7 @@ pub use counter::{
     CounterSteps, UNPAYABLE,
 };
 use counter::*;
-pub use near::{counterable, first_token, here, near, near_hexes, near_seats, nearest_nodes, nearest_seats, node_distance, token_of, tokens};
+pub use near::{counterable, first_token, here, hit_seat_of, near, near_hexes, near_seats, nearest_nodes, node_distance, token_of, tokens};
 use near::*;
 #[cfg(test)]
 pub use near::mask_matches_reach;
@@ -186,50 +186,25 @@ fn refill(g: &mut GameState, cx: &mut Cx, tier: u8) -> bool {
     true
 }
 
-/// One pull into country `c` by the draw rule: reveal `tier` threats until one
-/// carries a tag of `tags` (Universal fits any, `any` all) and has a location
-/// type with a site in `c`, discarding the rest; an empty deck reshuffles its
-/// discard. Still unsatisfied after one reshuffle, the pull takes the next card
-/// anyway (`threats.pull_forced`: a content bug). The dealt threat's tokens go
-/// on the board (`at`, 139: its first token on that hex instead); one dealt after the counter phase waits a round.
-fn pull(g: &mut GameState, cx: &mut Cx, tier: u8, tags: &[PullTag], c: usize, at: Option<usize>) {
+/// One pull into country `c` (292: no card is ever rejected): the top card of `tier`'s deck is dealt, an empty deck
+/// reshuffling its discard first. Its tokens go on the board (`at`, 139: its first token on that hex instead); with
+/// no site of its types left in `c`, its one token goes on the country's fallback city (`near::place_fallback`). One
+/// dealt after the counter phase waits a round.
+fn pull(g: &mut GameState, cx: &mut Cx, tier: u8, c: usize, at: Option<usize>) {
     let w = cx.world;
-    // 274 (table time): a country with no place for any of the tier's threats (no uncorrupted site of a type the
-    // tier's deck prints) is skipped: no card is turned for it. A threat dealt onto a node hex (Offensive) is not.
-    if at.is_none() {
-        let of_tier = || w.content.threats.iter().filter(|t| t.tier == tier);
-        if !of_tier().any(|t| lands_in(&w, g, t, c)) {
-            cx.tally(g, "threats.skipped_no_place", 1);
-            return;
-        }
-        // The candidate the prompt asked counted, not built: the skip limited by the pull's tags.
-        if !of_tier().any(|t| ThreatTag::fits(&t.tags, tags) && lands_in(&w, g, t, c)) {
-            cx.tally(g, "threats.skip_tagged_would", 1);
-        }
+    if !refill(g, cx, tier) {
+        cx.tally(g, "threats.short", 1);
+        return;
     }
-    let mut reshuffles = 0;
-    let id = loop {
-        if g.pile(&deck(tier)).is_empty() {
-            if !refill(g, cx, tier) {
-                cx.tally(g, "threats.short", 1);
-                return;
-            }
-            reshuffles += 1;
-        }
-        let top = g.pile(&deck(tier))[0];
-        let t = def(&w, &top);
-        if reshuffles >= 2 {
-            cx.tally(g, "threats.pull_forced", 1);
-            break top;
-        }
-        if ThreatTag::fits(&t.tags, tags) && lands_in(&w, g, t, c) {
-            break top;
-        }
-        cx.tally(g, "threats.turned_rejected", 1);
-        cx.move_card(g, &top, &deck(tier), &discard(tier), true).unwrap();
-    };
+    let id = g.pile(&deck(tier))[0];
+    // Every card turned up is dealt: a read's rejected cards are `threats.turned` less `threats.dealt`.
+    cx.tally(g, "threats.turned", 1);
     cx.move_card(g, &id, &deck(tier), &on(c), false).unwrap();
     place_tokens(g, cx, &id, c);
+    if at.is_none() && near::first_token(g, &id).is_none() {
+        near::place_fallback(g, cx, &id, c);
+        cx.tally(g, "threats.dealt_fallback", 1);
+    }
     if let Some(h) = at {
         near::place_first_at(g, cx, &id, h);
         cx.tally(g, "threats.dealt_at_node", 1);
@@ -250,75 +225,50 @@ fn pull(g: &mut GameState, cx: &mut Cx, tier: u8, tags: &[PullTag], c: usize, at
     try_complete(g, cx, &id);
 }
 
-/// One pull of `tier` threats fitting `tags` into `country` now, by the draw
-/// rule (a threat dealing a threat; it waits a round if the counter phase has
-/// passed). Variant `off`: nothing.
-pub fn deal_tier(g: &mut GameState, cx: &mut Cx, tier: u8, tags: &[PullTag], country: usize) -> Res {
+/// One pull of `tier` threats into `country` now (a threat dealing a threat; it waits a round if the counter phase
+/// has passed). Variant `off`: nothing.
+pub fn deal_tier(g: &mut GameState, cx: &mut Cx, tier: u8, country: usize) -> Res {
     if in_play(&cx.world) && TIERS.contains(&tier) {
-        pull(g, cx, tier, tags, country, None);
+        pull(g, cx, tier, country, None);
     }
     Ok(())
 }
 
-/// 139 (Offensive): one pull of `tier` threats, any tag, into hex `h`'s country now, its first location token on
+/// 139 (Offensive): one pull of `tier` threats into hex `h`'s country now, its first location token on
 /// `h` (a node hex, whatever its site). Variant `off`: nothing.
 pub fn deal_at(g: &mut GameState, cx: &mut Cx, tier: u8, h: usize) -> Res {
     let w = cx.world;
     if in_play(&w) && TIERS.contains(&tier) {
-        pull(g, cx, tier, &[PullTag::Any], w.map.hexes[h].country as usize, Some(h));
+        pull(g, cx, tier, w.map.hexes[h].country as usize, Some(h));
     }
     Ok(())
 }
 
-/// 178 (Matt's ruling #8): what every threat card prints above its text, the two distance tests named apart: who
-/// may pay toward its counter, and who its harm hits ("the nearest player" in its text).
+/// 178 (Matt's ruling #8): what every threat card prints above its text: who may pay toward its counter, and who
+/// its harm hits (292: the player of the country it was dealt in).
 pub const THREAT_FRAME: &str =
-    "Payers: any player with a Node or Ambassador on or next to a token. Target: the player with a Node nearest a token.";
+    "Payers: any player with a Node or Ambassador on or next to a token. Target: this country's player.";
 
-/// 146: the seat an uncountered `t`'s harm hits: the nearest by node (see
-/// [`nearest_seats`]); on a tie the lowest tied seat picks among them, as a
-/// loss. `None` when no seat has a node. 238 (D92): `asks` false (no op of the harm reads the seat): no question,
-/// the lowest tied seat stands in, read by nothing.
-fn hit_seat(g: &mut GameState, cx: &mut Cx, t: &Key, name: &str, asks: bool) -> Res<Option<usize>> {
-    let w = cx.world;
-    let tied = nearest_seats(&w, g, t);
-    if tied.len() > 1 {
-        cx.tally(g, if asks { "threats.hit_ties" } else { "threats.hit_ties_unasked" }, 1);
-    }
-    let opts = tied.iter().map(|&s| seat_opt(s)).collect();
-    let prompt = || format!("{name}: which of the nearest players takes its harm?");
-    let picked = match tied.first() {
-        Some(&first) if asks => cx.choose_loss(first, prompt, opts)?.map(|i| tied[i]),
-        Some(&first) => Some(first),
-        None => None,
-    };
-    if let Some(s) = picked {
-        cx.tally(g, &format!("threats.hit.s{s}"), 1);
-    }
-    Ok(picked)
-}
-
-/// The current adversary event card's first pull: (tier, tags).
-fn first_pull(w: &World, g: &GameState) -> Option<(u8, Vec<PullTag>)> {
+/// The current adversary event card's first pull's tier.
+fn first_pull(w: &World, g: &GameState) -> Option<u8> {
     // 145: this round's card, the face-up one before the flip (a Discord tip in
     // the Sway phase read last round's card).
     let id = g.pile(adversary::round_pile(g)).first().copied()?;
-    let p = w.content.adversary_card(&id).pulls.first()?;
-    Some((p.tier, p.tags.clone()))
+    Some(w.content.adversary_card(&id).pulls.first()?.tier)
 }
 
 /// Deals `n` extra threats now (old-form `DealThreats`, Discord cards): pulls
-/// of the current event card's first pull's tier, any tag, one per country in
+/// of the current event card's first pull's tier, one per country in
 /// turn from country 0. Variant `off`: nothing.
 pub fn deal_extra(g: &mut GameState, cx: &mut Cx, n: i64) {
     let w = cx.world;
     if !in_play(&w) {
         return;
     }
-    let tier = first_pull(&w, g).map_or_else(|| adversary::threat_tier(g), |(t, _)| t);
+    let tier = first_pull(&w, g).unwrap_or_else(|| adversary::threat_tier(g));
     let countries = w.map.countries.len().max(1);
     for k in 0..n.max(0) {
-        pull(g, cx, tier, &[PullTag::Any], k as usize % countries, None);
+        pull(g, cx, tier, k as usize % countries, None);
     }
 }
 
@@ -383,7 +333,7 @@ fn deal_round(g: &mut GameState, cx: &mut Cx) {
     let n = w.map.countries.len();
     for p in &card.pulls {
         for c in 0..n {
-            pull(g, cx, p.tier, &p.tags, c, None);
+            pull(g, cx, p.tier, c, None);
         }
     }
 }
@@ -391,9 +341,20 @@ fn deal_round(g: &mut GameState, cx: &mut Cx) {
 impl Module for Threats {
     fn setup(&self, g: &mut GameState, cx: &mut Cx) {
         let w = cx.world;
+        // 292 (Matt, 2026-11-19): the decks are built once, here, so a round's dealt card is simply the next one. The
+        // adversary board's lean (`threat_deck`): every threat of the tier carrying its tag (Universal counts) and
+        // its printed `others` of the rest for each of those, taken at random; what is left stays in the box (in no
+        // pile).
+        let board = w.content.adversary_board.threat_deck.as_ref();
+        let lean = board.map(|d| d.tag);
         for tier in TIERS {
-            let mut ids: Vec<Key> =
-                w.content.threats.iter().filter(|t| t.tier == tier).map(|t| Key::new(&t.id)).collect();
+            let of_tier = || w.content.threats.iter().filter(|t| t.tier == tier);
+            let leans = |t: &&ThreatDef| lean.is_none_or(|tag| t.tags.iter().any(|&x| x == tag || x == ThreatTag::Universal));
+            let mut ids: Vec<Key> = of_tier().filter(leans).map(|t| Key::new(&t.id)).collect();
+            let mut others: Vec<Key> = of_tier().filter(|t| !leans(t)).map(|t| Key::new(&t.id)).collect();
+            shuffle(&mut others, cx.rng(g, "threats"));
+            others.truncate(ids.len() * board.map_or(0, |d| d.others));
+            ids.extend(others);
             shuffle(&mut ids, cx.rng(g, "threats"));
             cx.set_pile(g, &deck(tier), ids);
         }
@@ -430,13 +391,13 @@ impl Module for Threats {
             cx.count(g, "executed", 1);
             cx.tally(g, "threats.uncountered", 1);
             cx.per_round(g, "threats.uncountered", 1);
-            // 146: its harm hits one player, the nearest: the seat whose node is
-            // closest to one of its tokens, wherever that node is; on a tie the
-            // players pick (the lowest tied seat answers, for the table).
-            let asks = d.effects.iter().any(Op::reads_hit_seat);
-            let hit = hit_seat(g, cx, &t, &d.name, asks)?;
+            // 292: its harm hits one player, the one whose home is the country it was dealt in (146-r138: the seat
+            // whose node was nearest a token, at any distance, the players picking on a tie).
+            let hit = hit_seat_of(&w, g, scope);
+            if let Some(s) = hit {
+                cx.tally(g, &format!("threats.hit.s{s}"), 1);
+            }
             let mut ctx = effects::Ctx::threat(Some(scope)).named(label(d.tier)).why(&d.name).with_threat(t).hitting(hit);
-            ctx.hit_unasked = !asks;
             cx.tally(g, &format!("threats.uncountered.t{}", d.tier), 1);
             // 147: by stage too (see `tally_countered`).
             let stage = g.var(adversary::STAGE);
@@ -614,7 +575,7 @@ impl Module for Threats {
             "tier",
             "threat tier",
             // 145: as `deal_extra` picks it (it said the card's stage).
-            first_pull(w, g).map_or_else(|| adversary::threat_tier(g), |(t, _)| t) as i64,
+            first_pull(w, g).unwrap_or_else(|| adversary::threat_tier(g)) as i64,
             // 184: two tiers since 146 ("threat tier 2/3" pointed at a third).
             Some(2),
             "the tier a Discord card's extra threat comes from: this round's adversary card's first pull",

@@ -5,9 +5,9 @@ use crate::modules::common::{is_city, is_ocean};
 use crate::modules::{board, effects};
 use crate::op::TheftWho;
 
-/// Runs `ops` as threat `t` executing in country `c`, hitting the nearest seat (146; a tie, the first).
+/// Runs `ops` as threat `t` executing in country `c`, hitting its player (292).
 fn run_threat(rules: &Rules, g: &mut GameState, t: &str, c: usize, ops: &[content::Op]) {
-    let hit = crate::modules::threats::nearest_seats(&rules.world(), g, t).first().copied();
+    let hit = crate::modules::threats::hit_seat_of(&rules.world(), g, c);
     let mut ctx = effects::Ctx::threat(Some(c)).with_threat(crate::key::Key::new(t)).why(t).hitting(hit);
     with_cx(rules, |cx| effects::run(g, cx, ops, &mut ctx)).unwrap();
 }
@@ -17,14 +17,14 @@ fn token_on(g: &mut GameState, t: &str, h: usize) {
     set_var(g, format!("threats.loc.{t}.0"), h as i64 + 1);
 }
 
-/// 184 (r78): "2 adversary Troops land on the base here" with no base token (one country has no base) lands
-/// nothing; it fell back to the threat's other token and put the troops on the city.
+/// 184 (r78): "1 adversary Troop lands on the factory here" with no factory token lands nothing; it fell back to
+/// the threat's other token and put the troops on the city.
 #[test]
 fn a_troop_line_for_a_missing_token_type_lands_nothing() {
     let (rules, mut g) = lab(&[]);
     let w = rules.world();
     let def = w.content.threats.iter().find(|t| t.id == "garrison_state").expect("Garrison State");
-    assert_eq!(def.locations, [content::Location::City, content::Location::Base], "its printed types, city first");
+    assert_eq!(def.locations, [content::Location::City, content::Location::Factory], "its printed types, city first");
     let troops: Vec<content::Op> = def.effects.iter().filter(|o| matches!(o, content::Op::Troops { .. })).cloned().collect();
     assert!(!troops.is_empty());
     let city = (0..g.hexes.len()).find(|&h| is_city(&w, h) && w.map.hexes[h].country == 0).expect("a city");
@@ -35,58 +35,8 @@ fn a_troop_line_for_a_missing_token_type_lands_nothing() {
 }
 
 #[test]
-fn extra_corp_troops_go_past_the_cap_but_one_a_base_a_production_step() {
-    let (rules, mut g) = lab(&["board.bases"]);
-    let w = rules.world();
-    let cap = w.int("board.unit_cap");
-    let [b0, b1] = rules.map.fronts[0].bases;
-    put(&mut g, b0, UNIT, cap);
-    put(&mut g, b1, UNIT, cap);
-    // Two registrations on b0 (two Conscriptions): still 1 extra (ruling 4).
-    set_var(&mut g, board::corp_extra_key(b0, 3), 1);
-    set_var(&mut g, board::corp_extra_key(b0, 5), 1);
-    run(&rules, &mut g);
-    assert_eq!(g.tokens(b0, UNIT), cap + 1);
-    assert_eq!(g.tokens(b1, UNIT), cap);
-}
-
-#[test]
-fn warmongering_needs_an_adversary_troop_by_the_base() {
-    let (rules, mut g) = lab(&["board.bases"]);
-    let w = rules.world();
-    let cap = w.int("board.unit_cap");
-    let [b0, b1] = rules.map.fronts[0].bases;
-    put(&mut g, b0, UNIT, cap);
-    put(&mut g, b1, UNIT, cap);
-    put(&mut g, b0, TROOP, 1);
-    run(&rules, &mut g);
-    assert_eq!((g.tokens(b0, UNIT), g.tokens(b1, UNIT)), (cap + 1, cap));
-}
-
-#[test]
-fn war_brought_forward_fights_a_front_twice() {
-    // 139: war every round, so it fights twice: the surplus strikes twice.
-    let (rules, mut g0) = lab(&["board.war"]);
-    let m = &rules.map;
-    let [b0, b1] = m.fronts[0].bases;
-    g0.piles.remove(CURRENT);
-    for n in &piece(1).factories {
-        put(&mut g0, m.numbered(1, *n), FACTORY, 1);
-    }
-    put(&mut g0, b0, UNIT, 2);
-    put(&mut g0, b1, UNIT, 1);
-    let fs = piece(1).factories.iter().map(|&n| m.numbered(1, n)).collect::<Vec<_>>();
-    let left = |g: &GameState| fs.iter().map(|&f| g.tokens(f, FACTORY)).sum::<i64>();
-    let mut g = g0.clone();
-    // The key holds the round of the second fight: this one.
-    set_var(&mut g, board::extra_war_key(0), 1);
-    run(&rules, &mut g);
-    assert_eq!(left(&g), fs.len() as i64 - 2.min(fs.len() as i64));
-}
-
-#[test]
-fn theft_hits_the_nearest_player_not_the_richest() {
-    // 146: theft hits the nearest player like every harm, however rich another is.
+fn theft_hits_the_countrys_player_not_the_richest() {
+    // 146: theft hits one player like every harm (292: its country's), however rich another is.
     let (rules, mut g) = lab(&["board.produce"]);
     let w = rules.world();
     let city = rules.map.countries[0].hexes.iter().copied().find(|&h| is_city(&w, h)).unwrap();
@@ -124,7 +74,7 @@ fn a_hex_blackout_darkens_only_the_cities_near_it() {
 #[test]
 fn an_adversary_factory_liberates_as_an_adversary_station_does() {
     // 137: Liberate takes an adversary station or factory at one price.
-    let (rules, mut g) = lab(&["board.bases"]);
+    let (rules, mut g) = lab(&[]);
     let w = rules.world();
     let z = (0..g.hexes.len()).find(|&h| w.map.hexes[h].industrial).unwrap();
     put(&mut g, z, FACTORY, 1);
@@ -141,7 +91,7 @@ fn an_adversary_factory_liberates_as_an_adversary_station_does() {
 fn a_city_liberates_at_one_price_all_game() {
     // 156: the late liberation (154) is gone: a city costs `liberate_at` at every stage, plus one an
     // agent on it. The lab prices Liberate at 1, so the baseline's number goes back on.
-    let (rules, mut g) = lab_with(&["board.bases"], &["board.liberate_at=5"]);
+    let (rules, mut g) = lab_with(&[], &["board.liberate_at=5"]);
     let w = rules.world();
     let c = (0..g.hexes.len()).find(|&h| is_city(&w, h)).unwrap();
     put(&mut g, c, ADV_CUBE, 1);

@@ -244,7 +244,6 @@ pub enum Location {
     CoastalCity,
     Station,
     Factory,
-    Base,
 }
 
 impl Location {
@@ -254,7 +253,6 @@ impl Location {
             Location::CoastalCity => "coastal city",
             Location::Station => "research station",
             Location::Factory => "factory",
-            Location::Base => "military base",
         }
     }
 }

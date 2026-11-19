@@ -10,7 +10,7 @@ S=target/release/aic-sim
 $S run configs/baseline.json --games 2000                          # 2 countries, difficulty 0
 for n in 1 2 3 4; do $S run configs/baseline.json --games 500 --set countries=$n; done
 $S compare configs/baseline.json configs/baseline.json --set-b threats.variant=off  # off-variants
-$S run configs/baseline.json --set alignment.hold_off=0 --set alignment.momentum_every=2
+$S run configs/baseline.json --set alignment.momentum_every=2
 $S compare configs/baseline.json configs/baseline.json --set-b adversary.difficulty=4
 $S run configs/baseline.json --games 1 --trace     # first game as JSON lines
 $S run configs/baseline.json --json                # machine-readable summary

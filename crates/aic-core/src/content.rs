@@ -167,10 +167,6 @@ pub struct PieceDef {
 pub struct LayoutDef {
     pub countries: u8,
     pub pieces: Vec<PiecePlacement>,
-    /// The fronts, printed on the tiles: pairs of countries sharing a long
-    /// edge. Pieces touching only at the middle of the map are not fronts.
-    #[serde(default)]
-    pub fronts: Vec<[u8; 2]>,
 }
 
 /// A placed piece covers `anchor + i*axes[0] + j*axes[1]` for `i, j` in
@@ -185,13 +181,11 @@ pub struct PiecePlacement {
     pub color: String,
 }
 
-/// What a hex is. Cities, open land and ocean are printed on the piece; a
-/// military base goes on an open hex of each land border (see [`crate::Map`]).
+/// What a hex is. Cities, open land and ocean are printed on the piece.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum HexKind {
     City,
-    Base,
     Open,
     Ocean,
 }
@@ -200,7 +194,6 @@ impl HexKind {
     pub fn name(self) -> &'static str {
         match self {
             HexKind::City => "city",
-            HexKind::Base => "base",
             HexKind::Open => "open",
             HexKind::Ocean => "ocean",
         }
@@ -231,7 +224,7 @@ pub struct CountryPiece {
     /// Research stations at setup (they start corrupted).
     pub stations: Vec<u8>,
     /// The country's neutral research station at setup (074): open land, no
-    /// industrial zone, no base.
+    /// industrial zone.
     pub neutral_station: u8,
     /// 190 (Matt, 2026-11-11): more neutral research stations at setup, so each city starts with one next to it
     /// where the map allows. Same rules as `neutral_station`.
@@ -240,7 +233,7 @@ pub struct CountryPiece {
     /// Printed industrial zones: open hexes next to a city where factories go.
     pub industry: Vec<u8>,
     /// 137: printed empty station sites, 1-2 a country (open land, no setup
-    /// piece, industrial zone or base), where content may create a neutral station.
+    /// piece or industrial zone), where content may create a neutral station.
     #[serde(default)]
     pub station_sites: Vec<u8>,
     /// Industrial zones holding a factory at setup (neutral).
@@ -324,7 +317,7 @@ impl Megaproject {
 }
 
 impl CountryPiece {
-    /// The printed kind of hex number `n` (bases are placed, not printed).
+    /// The printed kind of hex number `n`.
     pub fn kind_at(&self, n: u8) -> HexKind {
         if self.cities.contains(&n) {
             HexKind::City
@@ -512,6 +505,10 @@ pub struct AdversaryBoard {
     pub id: String,
     pub name: String,
     pub project_slots: Vec<ProjectSlot>,
+    /// 292 (Matt, 2026-11-19): the lean of this adversary's threat decks, built once at setup, so no card is
+    /// filtered during a round. None: every threat is in its tier's deck.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub threat_deck: Option<ThreatDeck>,
     #[serde(default)]
     pub rules: Vec<BoardRule>,
     pub difficulty: BoardRule,
@@ -530,6 +527,18 @@ pub struct AdversaryBoard {
     /// Militarist prints none).
     #[serde(default)]
     pub discord_drip: i64,
+}
+
+/// 292: an adversary board's threat-deck setup line: each tier's deck is every threat carrying `tag` (Universal
+/// counts) and `others` of the tier's other threats for each of those, taken at random; the rest are out of the game.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ThreatDeck {
+    pub name: String,
+    pub tag: ThreatTag,
+    /// Other threats in the deck for each one carrying the tag (the Militarist: 1, "as many").
+    pub others: usize,
+    pub text: String,
 }
 
 /// 267: one named level of an adversary's difficulty ladder (Spirit Island's adversary card): its name,
@@ -576,13 +585,11 @@ pub struct BoardRule {
     pub effects: Vec<Op>,
 }
 
-/// One threat pull of an event card (135): in each country, a threat of
-/// `tier` carrying one of `tags` (`any`: every card fits).
+/// One threat pull of an event card (135): in each country, the next threat of `tier`'s deck (292: no tag line).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Pull {
     pub tier: u8,
-    pub tags: Vec<PullTag>,
 }
 
 /// An adversary event card (135): the clock and the stager. 151: its steps always in one order, threat, rally,
@@ -1340,18 +1347,17 @@ fn check_threat(t: &ThreatDef) -> Result<(), String> {
 }
 
 /// 146: what in a threat's effect breaks Matt's threat card standard: a special piece (a troop that stands or
-/// occupies, corp troops past their cap) or a harm on more than the one nearest player (a flag on every hex near
+/// occupies) or a harm on more than the one player it hits (a flag on every hex near
 /// it, a country or the board; an each-country line).
 pub fn threat_rule_break(op: &Op) -> Option<String> {
     match op {
         Op::Troops { stand: true, .. } => Some("a troop that stands (no special pieces)".into()),
         Op::OccupyFactory { .. } => Some("a troop that occupies (no special pieces)".into()),
-        Op::CorpTroops { past_cap: true, .. } => Some("Drones past their cap (no special pieces)".into()),
-        Op::Flag { name, .. } => Some(format!("flag {name:?} hits every player near it, not the nearest")),
+        Op::Flag { name, .. } => Some(format!("flag {name:?} hits every player near it, not the one it hits")),
         Op::Troops { each_country: true, .. }
         | Op::FlipStation { each_country: true, .. }
         | Op::DealThreats { each_country: true, .. } => Some("an each-country line".into()),
-        Op::EachDestroyNode { .. } => Some("each player destroys a node (the nearest player's: destroy_node)".into()),
+        Op::EachDestroyNode { .. } => Some("each player destroys a node (the hit player's: destroy_node)".into()),
         _ => None,
     }
 }
@@ -1400,8 +1406,8 @@ fn check_adversary_card(a: &AdversaryCard) -> Result<(), String> {
     if !(1..=3).contains(&a.stage) {
         return Err(format!("adversary card {:?}: stage 1-3", a.id));
     }
-    if a.pulls.iter().any(|p| !THREAT_TIERS.contains(&p.tier) || p.tags.is_empty()) {
-        return Err(format!("adversary card {:?}: each pull a tier 1-2 and a tag", a.id));
+    if a.pulls.iter().any(|p| !THREAT_TIERS.contains(&p.tier)) {
+        return Err(format!("adversary card {:?}: each pull a tier 1-2", a.id));
     }
     check_ops(&a.twists, Slot::Twist, &format!("adversary card {:?}", a.id))?;
     check_ops(&a.standing, Slot::Team, &format!("adversary card {:?} standing", a.id))?;
@@ -1439,7 +1445,7 @@ pub const EVENT_LINE_KINDS: [(&str, &str); 13] = [
     ("Discord", "Discord track, arrow up"),
     ("Unity back", "Unity track, arrow down"),
     ("Blackout", "city glyph with energy struck through"),
-    ("Node loss", "minus node, by a base"),
+    ("Node loss", "minus node, by a factory"),
     ("Forced March", "troop with a plus step"),
     ("Botnet spread", "botnet glyph with an arrow"),
     ("Fallout", "Fallout glyph by a dark-framed city"),

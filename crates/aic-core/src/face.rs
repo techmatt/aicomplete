@@ -378,11 +378,6 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             say: format!("{gain} {}", amount(Resource::Ambassadors, *count)),
             share: Share::Mine,
         }),
-        // 258: a lasting extra host slot (economy.md, Cities' energy).
-        Op::HostMore { count } => one(clause(
-            { let mut p = vec![Part::Word(format!("+{count}"))]; p.push(w("city")); p },
-            format!("you may host {count} more {} from now on", if *count == 1 { "city" } else { "cities" }),
-        )),
         Op::GainPerNode { resource } => one(clause(
             vec![w(icon(*resource)), w("/"), w("node")],
             format!("{gain} 1 {} per node you have on the board", noun(*resource, 1)),
@@ -881,11 +876,9 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::ConvertUpkeep { .. }
         | Op::AdversaryFactory { .. }
         | Op::ComputePerMissing { .. }
-        | Op::CorpTroops { .. }
         | Op::DestroyFacility { .. }
         | Op::DisableBuilding { .. }
         | Op::Discard { .. }
-        | Op::ExtraWar
         | Op::LoseAmbassadorsOr { .. }
         | Op::LoseIncome { .. }
         | Op::LoseOr { .. }
@@ -1128,7 +1121,7 @@ pub fn card_face(c: &CardDef) -> Face {
 }
 
 /// 178 (amendment 8044, Matt: as Spirit Island prints its Invaders): on cards, the pieces' names print
-/// capitalized (Ambassador, Agent, Node, Botnet, Troop; the Drone is a proper name already); the rulebook's prose
+/// capitalized (Ambassador, Agent, Node, Botnet, Troop); the rulebook's prose
 /// keeps them lowercase.
 pub fn pieces_capitalized(text: &str) -> String {
     const PIECES: [&str; 5] = ["ambassador", "agent", "node", "botnet", "troop"];

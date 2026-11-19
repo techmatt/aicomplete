@@ -335,7 +335,7 @@ fn the_rules_readme_names_the_rules_revision() {
 #[test]
 fn the_rulebook_names_the_rules_revision() {
     let book = include_str!("../../../../docs/rulebook.md");
-    assert_eq!(rulebook_revision_failure(book, aic_core::RULES_REVISION), None);
+    assert_eq!(rulebook_revision_failure(book, super::run::RULEBOOK_REVISION), None);
     assert!(rulebook_revision_failure("*Rules revision 43. x", 45).is_some());
     assert!(rulebook_revision_failure("no line", 45).is_some());
 }

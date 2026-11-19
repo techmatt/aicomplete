@@ -57,17 +57,11 @@ try {
              labels: document.querySelectorAll('#board .country-label').length, countries: v.countries.length,
              borders: document.querySelectorAll('#board .border').length,
              kinds: new Set(v.hexes.map((h) => h.kind)).size,
-             fills: new Set([...document.querySelectorAll('#board .hex .cell')].map((p) => p.getAttribute('fill'))).size,
-             bases: v.hexes.filter((h) => h.kind === 'base' && h.facing !== undefined).length,
-             pennants: document.querySelectorAll('#board .hex.k-base .base-mark').length,
-             fronts: v.globals.find((g) => g.key === 'board.fronts')?.value ?? -1,
-             links: document.querySelectorAll('#board .front-link').length, edges: document.querySelectorAll('#board .front-edge').length };
+             fills: new Set([...document.querySelectorAll('#board .hex .cell')].map((p) => p.getAttribute('fill'))).size };
   })()`);
   check(board.n > 0 && JSON.stringify(board.keys) === JSON.stringify(board.want), `board has ${board.n} hexes with data-hex="q,r"`);
   check(board.labels === board.countries && board.borders > 0, `${board.countries} countries labeled, ${board.borders} border edges`);
-  check(board.kinds === 4 && board.fills === board.kinds, `hexes filled by kind (${board.fills} fills for ${board.kinds} kinds: city, base, open, ocean)`);
-  check(board.bases > 0 && board.pennants === board.bases, `${board.pennants} military bases marked with the country they face`);
-  check(board.fronts > 0 && board.links === board.fronts && board.edges > 0, `${board.links} fronts linked base to base, ${board.edges} front edges`);
+  check(board.kinds === 3 && board.fills === board.kinds, `hexes filled by kind (${board.fills} fills for ${board.kinds} kinds: city, open, ocean)`);
   // Tokens: one glyph per stack, owner cubes and node in their owner's color.
   const toks = await js(`(() => {
     const v = window.aic.view;
@@ -134,7 +128,6 @@ try {
   check((await hover('.value')).length > 0, 'hovering a value shows its details');
   if (panels.nextShown) check((await hover('#pipeline .slot-box.next .acard')).length > 0, 'hovering the next adversary card shows its text');
   else check((await hover('#pipeline .slot-box.deck')).length > 0, 'hovering the adversary deck shows its details (no next card yet)');
-  check((await hover('#board .hex.k-base polygon')).includes('military base'), 'hovering a military base shows it as one');
   check((await hover('.seat .board .step')).includes('step'), 'hovering a track step shows its details');
   check((await hover('.seat .board-name')).length > 0, 'hovering a board name shows the board');
   await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 1, y: 1 });
@@ -147,15 +140,13 @@ try {
   let hexChoices = 0;
   let armedAtOnce = 0;
   const shots = new Set();
-  const seen = { standard: new Set(), sell: 0, fronts: 0, frontsAtWar: 0 };
+  const seen = { standard: new Set(), sell: 0 };
   while (clicks < 3000 && !(await js(`!!document.querySelector('#phase-bar .outcome')`))) {
     const st = await js(`(() => {
       const v = window.aic.view;
       const hexPick = !!v.choice && window.aic.legal.some((a) => a.type === 'choose' && a.target);
       return { hexPick, targets: document.querySelectorAll('#board .hex.target').length, prompt: document.querySelector('#prompt.choice') ? 1 : 0,
                phase: v.phase?.name ?? '', round: v.round,
-               fronts: v.hexes.some((h) => h.kind === 'base' && h.facing !== undefined),
-               frontsAtWar: !!document.querySelector('#board .fronts.war'),
                standard: [...document.querySelectorAll('#seats .actions button.a-standard')].map((b) => JSON.parse(b.dataset.action).act),
                sell: document.querySelectorAll('#seats .actions button.a-sell').length };
     })()`);
@@ -166,7 +157,6 @@ try {
     }
     for (const a of st.standard) seen.standard.add(a);
     seen.sell += st.sell ? 1 : 0;
-    if (st.fronts) { seen.fronts++; seen.frontsAtWar += st.frontsAtWar ? 1 : 0; }
     if (st.round >= 2 && st.phase.includes('cards.play') && !shots.has('mid')) {
       shots.add('mid');
       await shot('play-mid-1366', 'viewer-mid');
@@ -192,7 +182,7 @@ try {
       for (const name of ['Breadth', 'Wall', 'industry tag', 'security tag']) check(boards.innate.includes(name), `the seat panels show ${name}`);
       check(boards.tracks.includes('economy track') && boards.tracks.includes('card-play track'), `both tracks are labeled (${boards.tracks})`);
       for (const name of ['Full Capacity', 'Master Plan', 'Sanctuary', 'Aegis Doctrine']) check(boards.capstones.includes(name), `the tracks end in ${name}`);
-      // r27's node growth phase (`*.growth`); 285: the bar names production's Drone step "E drones" (city growth went at r130).
+      // r27's node growth phase (`*.growth`) went, and city growth at r130.
       check(!(await js(`[...document.querySelectorAll('#phase-bar .phase')].some((p) => /\\.growth\\b/.test(p.title))`)), 'no node growth phase in the round bar');
     }
     if (st.phase === 'cards.draft' && !shots.has('draft')) { shots.add('draft'); await shot('play-draft-1366'); }
@@ -243,8 +233,6 @@ try {
   check(evictions.every((x) => x === true), `Remove agents takes an agent and places no ambassador (${evictions.filter((x) => x === true).length}/${evictions.length}) ${evictions.find((x) => x !== true) ?? ''}`);
   check(armedAtOnce === hexChoices, `hex choices highlight their hexes at once (${armedAtOnce}/${hexChoices})`);
   check(seen.standard.size > 0 && seen.sell > 0, `standard actions offered as buttons (${[...seen.standard].join(', ')}) and selling a card`);
-  // 139: no clock, war every round: the fronts are always drawn at war.
-  check(seen.fronts > 0 && seen.frontsAtWar === seen.fronts, `fronts drawn at war (${seen.frontsAtWar}/${seen.fronts} steps)`);
   await shot('play-end-1366', 'viewer-end');
 
   // Layout: no page scroll at both ends of the supported range.

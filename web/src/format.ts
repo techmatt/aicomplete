@@ -79,9 +79,7 @@ const STANDARD_NAMES: Record<string, string> = {
   ambassador: 'Gain a player ambassador',
   liberate: 'Liberate a site',
   insight: 'Turn a cube into insight',
-  envoy: 'Envoy',
   botnet: 'Take down a botnet',
-  buy_energy: "Buy a city's energy",
   antimatter: 'Make antimatter',
   troop: 'Remove a troop',
   factory: 'Build a factory',
@@ -276,11 +274,8 @@ const RULEBOOK_PHASE: Record<string, string> = {
   'cards.play+threats.counter+board.act+ai.power': 'D Actions',
   'board.produce': 'E income',
   'economy.upkeep': 'E boards',
-  // 285: the step makes extra Drones (city growth went at r130; Grow is the adversary's card line).
-  'board.bases': 'E drones',
   'threats.execute': 'F Threats',
-  'board.war': 'G War',
-  'board.cleanup': 'H Cleanup',
+  'board.cleanup': 'G Cleanup',
 };
 
 /** A one-line event: its type, then its fields. */
@@ -312,7 +307,6 @@ export function choiceKey(a: Action): string {
 /** Hex fills by what the hex is (`HexView.kind`): distinct, light enough for tokens on top. */
 export const KINDS: Record<string, { fill: string; label: string }> = {
   city: { fill: '#c3c8d4', label: 'city' },
-  base: { fill: '#d6c49a', label: 'military base' },
   open: { fill: '#dbe8c6', label: 'open land' },
   ocean: { fill: '#a9cfea', label: 'ocean' },
 };
@@ -352,7 +346,6 @@ const KNOWN: Record<string, string> = {
   troop: '#2a0d3d',
   factory: '#7a5230',
   station: '#00796b',
-  unit: '#455a64',
   harden: '#607d8b',
   firewall: '#ff8a65',
   no_infiltrate: '#ffffff',
@@ -376,7 +369,6 @@ const TOKEN_NAMES: Record<string, string> = {
   ambassador: 'ambassador',
   station: 'research station',
   troop: 'adversary troop',
-  unit: 'Drone',
   harden: 'hardening token',
   firewall: 'firewall (no agent may arrive here)',
   no_infiltrate: 'no-Infiltrate token (no Infiltrate agent lands here)',

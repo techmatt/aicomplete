@@ -287,8 +287,8 @@ function promptControls(ctx: PlayerCtx, mine: Action[]): string {
 
 interface Turn { frame: Frame; steps: { label: string; events: Frame['events'] }[]; at: number; open: boolean }
 let turn: Turn | null = null;
-/** The adversary's phases by their rulebook step (`shortPhase`): B its card and lines, F threats, G war. */
-const ADV_PHASE = /^[BFG] /;
+/** The adversary's phases by their rulebook step (`shortPhase`): B its card and lines, F threats. */
+const ADV_PHASE = /^[BF] /;
 
 /** The steps of a frame that ran through several phases (the adversary's turn after the last pass), else none. */
 function turnOf(f: Frame, before: string): Turn['steps'] {

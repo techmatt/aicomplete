@@ -31,151 +31,6 @@ fn production_income_reads_the_seats_factories_and_stations() {
     assert_eq!(board::production_income(&w, &g, 0), (0, w.int("board.owned_station_cubes")));
 }
 
-/// r75 (Matt's ruling 6): production sells a neutral city's energy to nobody
-/// (021 sold it to a player next to it); an aligned city's goes free to its owner.
-#[test]
-fn production_sells_no_neutral_energy_and_an_aligned_city_powers_its_owner() {
-    // 254: r114's ownership, no hosting (the hosting test is below).
-    let (rules, g0) = lab_with(&["board.produce"], &["board.host_city=0", "board.cities_unowned=0"]);
-    let (city, n) = city_with_lonely_neighbors(&rules.map);
-    let res = |g: &GameState, s: usize, r: Resource| g.resource(s, r) - g0.resource(s, r);
-
-    let mut g = g0.clone();
-    put(&mut g, n[0], node(0), 1);
-    put(&mut g, n[1], node(1), 1);
-    set_res(&mut g, 0, Resource::Credits, 5);
-    set_res(&mut g, 1, Resource::Credits, 8);
-    run(&rules, &mut g);
-    assert!(g.pending.is_none(), "no sale is offered");
-    assert_eq!((res(&g, 0, Resource::Energy), res(&g, 1, Resource::Energy)), (0, 0));
-    assert_eq!((g.resource(0, Resource::Credits), g.resource(1, Resource::Credits)), (5, 8));
-
-    // An aligned city's cube goes free to its owner.
-    let mut g = g0.clone();
-    put(&mut g, city, cube(1), 1);
-    put(&mut g, n[0], node(0), 1);
-    run(&rules, &mut g);
-    assert_eq!((res(&g, 0, Resource::Energy), res(&g, 1, Resource::Energy)), (0, 1));
-}
-
-/// 254 (`host_city` 1, `host_reach` 1, the baseline): a producing neutral city with your node on or next to it makes
-/// its energy for one host in the income step; an agent on it darkens it; a seat hosts `host_city` cities at most; the
-/// players' choice hosts as many as can be (a matching); 262 (D107): a hosted city can't be bought, and a purchase
-/// unhosts nothing.
-#[test]
-fn a_hosted_city_powers_a_node_on_or_next_to_it() {
-    use crate::modules::common::{city_host, hosted_cities};
-    let (rules, g0) = lab(&["board.produce"]);
-    let w = rules.world();
-    assert_eq!((w.int("board.host_city"), w.int("board.host_reach")), (1, 1));
-    let (city, n) = city_with_lonely_neighbors(&rules.map);
-    let made = city_energy(&rules, city);
-    let res = |g: &GameState, s: usize| g.resource(s, Resource::Energy) - g0.resource(s, Resource::Energy);
-
-    // A node next to it hosts it; one host a city.
-    let mut g = g0.clone();
-    put(&mut g, n[0], node(0), 1);
-    put(&mut g, n[1], node(1), 1);
-    assert_eq!(city_host(&w, &g, city), Some(0));
-    // 262 (Matt's D107): a hosted city can't be bought, by its host or anyone.
-    assert!(!board::energy_for_sale(&w, &g, 0, city) && !board::energy_for_sale(&w, &g, 1, city), "hosted: not for sale");
-    run(&rules, &mut g);
-    assert_eq!((res(&g, 0), res(&g, 1)), (made, 0));
-
-    // 262: bought earlier this round, before anyone hosted it, it is hosted all the same (254 unhosted it).
-    let mut g = g0.clone();
-    put(&mut g, n[0], node(0), 1);
-    set_var(&mut g, board::bought_key(city), 1);
-    assert_eq!(city_host(&w, &g, city), Some(0));
-
-    // An agent on it: dark, it hosts no one (a city next to the node may still be hosted).
-    let mut g = g0.clone();
-    put(&mut g, city, node(0), 1);
-    put(&mut g, city, ADV_AMBASSADOR, 1);
-    assert_eq!(city_host(&w, &g, city), None);
-
-    // Seat 0 on two cities, seat 1 next to one of them: one each (the matching), not two for seat 0's cap of one.
-    let other = cities(&rules.map).into_iter().find(|&c| c != city && city_energy(&rules, c) == made).unwrap();
-    let mut g = g0.clone();
-    put(&mut g, city, node(0), 1);
-    put(&mut g, other, node(0), 1);
-    put(&mut g, n[0], node(1), 1);
-    assert_eq!((hosted_cities(&w, &g, 0).len(), hosted_cities(&w, &g, 1)), (1, vec![city]));
-    run(&rules, &mut g);
-    assert_eq!((res(&g, 0), res(&g, 1)), (made, made));
-
-    // 258 (`host_more`, Twin City Compact): seat 0 on two cities hosts one, and both once a card raised its cap; the
-    // raise is seat 0's alone.
-    let mut g = g0.clone();
-    put(&mut g, city, node(0), 1);
-    put(&mut g, other, node(0), 1);
-    assert_eq!(hosted_cities(&w, &g, 0).len(), 1);
-    run_ops(&rules, &mut g, &[content::Op::HostMore { count: 1 }]);
-    assert_eq!(g.var(&crate::modules::common::host_more_key(0)), 1);
-    assert_eq!(crate::modules::common::host_caps(&w, &g), vec![2, 1]);
-    assert_eq!(hosted_cities(&w, &g, 0).len(), 2);
-    run(&rules, &mut g);
-    assert_eq!(res(&g, 0), 2 * made);
-
-    // `host_reach` 0: only a node on it hosts it.
-    let (rules0, _) = lab_with(&["board.produce"], &["board.host_reach=0"]);
-    let mut g = g0.clone();
-    put(&mut g, n[0], node(0), 1);
-    assert_eq!(city_host(&rules0.world(), &g, city), None);
-
-    // r114's rule (`host_city` 0): a node on a neutral city makes nothing.
-    let (rules, g0) = lab_with(&["board.produce"], &["board.host_city=0"]);
-    let mut g = g0.clone();
-    put(&mut g, city, node(0), 1);
-    run(&rules, &mut g);
-    assert_eq!(g.resource(0, Resource::Energy), g0.resource(0, Resource::Energy));
-}
-
-/// r75 (Matt's ruling 6): the Buy energy standard action, `city_energy_credits`
-/// (4) for a neutral city's energy: the city in reach and producing (no
-/// blackout, no agent on it), once per city a round.
-#[test]
-fn buy_energy_takes_a_neutral_producing_citys_energy_once_a_round() {
-    // 254: r114's ownership (the aligned case below); no hosting here (262: a hosted city isn't for sale, the
-    // hosting test).
-    let (rules, g0) = lab_with(&["board.produce"], &["board.cities_unowned=0", "board.host_city=0"]);
-    let w = rules.world();
-    let (city, n) = city_with_lonely_neighbors(&rules.map);
-    let price = w.int("board.city_energy_credits");
-    assert_eq!(price, 4);
-    let made = city_energy(&rules, city);
-    assert!(made > 0);
-    let buy = std_act(0, "buy_energy");
-    let offered = |g: &GameState| rules.legal_actions(g).contains(&buy);
-
-    let mut g = g0.clone();
-    set_res(&mut g, 0, Resource::Credits, price);
-    assert!(!offered(&g), "no city in reach");
-    put(&mut g, n[0], node(0), 1);
-    assert!(board::energy_for_sale(&w, &g, 0, city));
-    assert!(offered(&g));
-    // A dark city (an agent on it) is not for sale; nor is an aligned one.
-    let mut dark = g.clone();
-    put(&mut dark, city, ADV_AMBASSADOR, 1);
-    assert!(!offered(&dark));
-    let mut aligned = g.clone();
-    put(&mut aligned, city, cube(1), 1);
-    assert!(!board::energy_for_sale(&w, &aligned, 0, city));
-    // Short of the price: not offered.
-    let mut poor = g.clone();
-    set_res(&mut poor, 0, Resource::Credits, price - 1);
-    assert!(!offered(&poor));
-
-    let energy = g.resource(0, Resource::Energy);
-    act(&rules, &mut g, buy);
-    assert_eq!((g.resource(0, Resource::Energy) - energy, g.resource(0, Resource::Credits)), (made, 0));
-    // Not twice in a round, for anyone.
-    set_res(&mut g, 0, Resource::Credits, price);
-    put(&mut g, n[1], node(1), 1);
-    assert!(!board::energy_for_sale(&w, &g, 0, city));
-    assert!(!board::energy_for_sale(&w, &g, 1, city));
-}
-
 /// A station at country `c`'s printed site, owned by `seat`.
 fn owned_station(rules: &Rules, g: &mut GameState, c: usize, seat: usize) -> usize {
     let h = rules.map.numbered(c, piece(c).stations[0]);
@@ -392,4 +247,68 @@ fn a_converter_needs_a_city_of_its_country_in_reach() {
     // r75 (content): Horizon's converter is once a round too (105 had no limit on it).
     assert_eq!(board::converter_blocked(&w, &g, 0, 0), Some("used this round"));
     assert!(!offered(&g));
+}
+
+/// 292: each city that is neither corrupted nor blocked pays its energy to every player with a node on or next to
+/// it, with no limit a player; an agent on it or a blackout blocks it, and a corrupted city pays no player. The
+/// energy income track (`city_income`) shows it before the income step.
+#[test]
+fn a_city_pays_every_player_with_a_node_on_or_next_to_it() {
+    let (rules, g0) = lab(&["board.produce"]);
+    let w = rules.world();
+    let (city, n) = city_with_lonely_neighbors(&rules.map);
+    let made = city_energy(&rules, city);
+    assert!(made > 0);
+    let base = [board::city_income(&w, &g0, 0), board::city_income(&w, &g0, 1)];
+    let res = |g: &GameState, s: usize| g.resource(s, Resource::Energy) - g0.resource(s, Resource::Energy) - base[s];
+
+    // Two players beside one city: it pays both.
+    let mut g = g0.clone();
+    put(&mut g, n[0], node(0), 1);
+    put(&mut g, n[1], node(1), 1);
+    assert_eq!((board::city_income(&w, &g, 0) - base[0], board::city_income(&w, &g, 1) - base[1]), (made, made));
+    run(&rules, &mut g);
+    assert_eq!((res(&g, 0), res(&g, 1)), (made, made));
+
+    // An agent on it blocks it for everyone.
+    let mut g = g0.clone();
+    put(&mut g, n[0], node(0), 1);
+    put(&mut g, n[1], node(1), 1);
+    put(&mut g, city, ADV_AMBASSADOR, 1);
+    assert_eq!(board::city_income(&w, &g, 0), base[0]);
+    run(&rules, &mut g);
+    assert_eq!((res(&g, 0), res(&g, 1)), (0, 0));
+
+    // A blackout blocks it too.
+    let mut g = g0.clone();
+    put(&mut g, n[0], node(0), 1);
+    set_var(&mut g, board::hex_flag(content::RoundFlag::Blackout, city), 1);
+    assert_eq!(board::city_income(&w, &g, 0), base[0]);
+    run(&rules, &mut g);
+    assert_eq!(res(&g, 0), 0);
+
+    // A corrupted city pays no player.
+    let mut g = g0.clone();
+    put(&mut g, n[0], node(0), 1);
+    put(&mut g, city, ADV_CUBE, 1);
+    assert_eq!(board::city_income(&w, &g, 0), base[0]);
+    run(&rules, &mut g);
+    assert_eq!(res(&g, 0), 0);
+
+    // r114's ownership (`cities_unowned` 0): an owned city pays its owner alone, and the track agrees with the
+    // payout there too, an agent on it darkening it.
+    let (rules, g0) = lab_with(&["board.produce"], &["board.cities_unowned=0"]);
+    let w = rules.world();
+    for agent in [0, 1] {
+        let mut g = g0.clone();
+        put(&mut g, city, cube(1), 1);
+        put(&mut g, n[0], node(0), 1);
+        put(&mut g, city, ADV_AMBASSADOR, agent);
+        let track = [board::city_income(&w, &g, 0), board::city_income(&w, &g, 1)];
+        let before = [g.resource(0, Resource::Energy), g.resource(1, Resource::Energy)];
+        run(&rules, &mut g);
+        let paid = [g.resource(0, Resource::Energy) - before[0], g.resource(1, Resource::Energy) - before[1]];
+        assert_eq!(paid, track, "agent {agent}");
+        assert_eq!(paid[1] > 0, agent == 0, "the owner, unless an agent darkens it");
+    }
 }

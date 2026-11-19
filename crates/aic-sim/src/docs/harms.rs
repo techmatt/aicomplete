@@ -48,7 +48,7 @@ pub const HARMS: [&str; 28] = [
 
 /// The sources of the ledger, in its column order. The first six read
 /// content; `RULE_HARMS` says what the rest do.
-pub const SOURCES: [&str; 13] = [
+pub const SOURCES: [&str; 12] = [
     "tier-1 threats",
     "tier-2 threats",
     "Discord cards",
@@ -59,7 +59,6 @@ pub const SOURCES: [&str; 13] = [
     "botnets",
     "corruption",
     "uncountered threats",
-    "war",
     "march",
     // 259: the adversary board's research rule firing.
     "adversary research",
@@ -67,7 +66,7 @@ pub const SOURCES: [&str; 13] = [
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 27] = [
+pub const RULE_HARMS: [(&str, &str, &str); 24] = [
     ("income and Infiltrate", "adversary pieces placed", "every event's Infiltrate X lands `infiltrate_agents` (1; 2 at level 4) on each site of its type, at most `infiltrate_facility_cap` (1) a site from a station, factory or botnet line, not yet the adversary's (275: it replaced Rally and the agent pools; 282: the cap)"),
     ("income and Infiltrate", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
     ("income and Infiltrate", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
@@ -94,9 +93,6 @@ pub const RULE_HARMS: [(&str, &str, &str); 27] = [
     // 146: no unprinted harm (the node loss near an uncountered threat and its floor sway are gone); the adversary
     // board may print compute per uncountered threat.
     ("uncountered threats", "projects advanced (compute)", "the adversary board's printed compute per threat that executes uncountered (the Militarist's level-2 rule, War Footing, from `board_difficulty_at`)"),
-    ("war", "facilities destroyed", "surplus troops destroy factories"),
-    ("war", "node destroyed", "the Militarist's War Takes Ground: a drone that destroys a factory destroys a node on its hex too (r83; protections apply)"),
-    ("war", "Discord sway", "each factory destroyed in war sways `destruction_discord` toward Discord"),
     // 195: a strike a protection absorbs spends it (the troop is used up either way, `troop_spent`).
     ("march", "protections stripped", "a strike absorbed by a hardening token or the owner's ambassador spends it (r75; the troop is used up either way)"),
     ("march", "facilities destroyed", "a troop strikes player-owned facilities, walking past ambassadors (r83, #44); it can't enter or strike a hex with the Protector's node"),
@@ -186,7 +182,6 @@ fn op_harms(op: &Op) -> Vec<usize> {
         Op::LoseAmbassadorsOr { resource, .. } => [vec![AMBASSADORS_LOST], lost(*resource)].concat(),
         Op::LoseAmbassador => vec![AMBASSADORS_LOST],
         Op::DestroyFacility { .. } => vec![FACILITIES_DESTROYED, NODE_DESTROYED],
-        Op::ExtraWar => vec![FACILITIES_DESTROYED],
         // A corrupted factory or flipped station takes its hex: the node and ambassadors on it go too (197).
         Op::CorruptFactory | Op::FlipStation { .. } => vec![FACILITIES_CORRUPTED, NODE_DESTROYED, AMBASSADORS_LOST],
         // A troop on the factory: it makes nothing while the troop stands.
@@ -212,7 +207,6 @@ fn op_harms(op: &Op) -> Vec<usize> {
             _ => vec![PIECES_PLACED, FACILITIES_CORRUPTED, AMBASSADORS_LOST],
         },
         // 255: each production, its one form.
-        Op::CorpTroops { .. } => vec![PIECES_PLACED, INCOME_RAISED],
         Op::IncreaseIncome { compute } => {
             let mut v = vec![INCOME_RAISED];
             if *compute > 0 {
@@ -304,7 +298,6 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::RemoveResearch { .. }
         | Op::DiscardProject
         | Op::Production { .. }
-        | Op::HostMore { .. }
         | Op::ProductionPerTag { .. }
         | Op::AddTokens { .. }
         | Op::CutBotnet
@@ -408,7 +401,6 @@ pub fn captures(r: &Rules) -> Vec<Capture> {
                 Location::City | Location::CoastalCity => (n("adversary.corrupt_at", 0) - reach, "city"),
                 Location::Station => (n("adversary.corrupt_station_at", 1), "research station"),
                 Location::Factory => (n("adversary.corrupt_factory_at", 2), "factory"),
-                Location::Base => return None,
             };
             let made: i64 = t
                 .effects

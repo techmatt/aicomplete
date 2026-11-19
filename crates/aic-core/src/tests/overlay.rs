@@ -178,7 +178,7 @@ fn a_threat_off_the_card_standard_is_refused_by_name() {
             "names which token",
         ),
         (
-            r#"threats.supply_raid.effects=[{"op":"troops","count":1,"at":"location","location":"base"}]"#,
+            r#"threats.supply_raid.effects=[{"op":"troops","count":1,"at":"location","location":"city"}]"#,
             "supply_raid",
             "doesn't print",
         ),

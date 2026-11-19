@@ -5997,8 +5997,9 @@
     "count": 2
    },
    {
-    "op": "host_more",
-    "count": 1
+    "op": "gain",
+    "resource": "energy",
+    "amount": 3
    }
   ]
  },

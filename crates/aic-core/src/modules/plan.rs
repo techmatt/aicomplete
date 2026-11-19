@@ -15,7 +15,7 @@ use crate::state::GameState;
 
 use super::{adversary, board};
 use super::common::{
-    buildable, is_base, cities_unowned, city_host, corrupted, cube_owner, firewalled, has_building, is_city, is_ocean, next_to, node_owner, player_ambassador, ADV_AMBASSADOR,
+    buildable, cities_unowned, free_city_by_a_player, corrupted, cube_owner, firewalled, has_building, is_city, is_ocean, next_to, node_owner, player_ambassador, ADV_AMBASSADOR,
     FALLOUT, BOTNET, FACTORY, STATION, prohibit_token,
 };
 
@@ -96,7 +96,7 @@ pub fn create_plan(
 }
 
 /// Whether hex `h` is a target of Corrupt `site` (not yet the adversary's;
-/// land: an empty land hex, no city, base, building or Fallout; 175: a node: a hex with a player's node).
+/// land: an empty land hex, no city, building or Fallout; 175: a node: a hex with a player's node).
 pub fn corrupt_target(w: &World, g: &GameState, h: usize, site: CorruptSite) -> bool {
     match site {
         CorruptSite::City => is_city(w, h) && !corrupted(g, h),
@@ -161,7 +161,7 @@ pub fn seed_fits(w: &World, g: &GameState, h: usize) -> bool {
 }
 
 /// 275: the free hexes next to `at` where a Grow builds a factory (`true`: a free industrial zone) or a research
-/// station (open land that is no industrial zone, no base), the lower country, then number (285); none in a cordoned
+/// station (open land that is no industrial zone), the lower country, then number (285); none in a cordoned
 /// country.
 fn grow_hexes(w: &World, g: &GameState, at: usize, factory: bool) -> Vec<usize> {
     let mut v: Vec<usize> = w.map.hexes[at]
@@ -173,7 +173,7 @@ fn grow_hexes(w: &World, g: &GameState, at: usize, factory: bool) -> Vec<usize> 
             if factory {
                 w.map.hexes[h].industrial && !has_building(g, h) && g.tokens(h, FALLOUT) == 0
             } else {
-                buildable(w, g, h) && !w.map.hexes[h].industrial && !is_base(w, h)
+                buildable(w, g, h) && !w.map.hexes[h].industrial
             }
         })
         .collect();
@@ -349,10 +349,10 @@ pub fn holds(w: &World, g: &GameState, h: usize, wh: Where) -> bool {
         Where::CorruptedCity => is_city(w, h) && corrupted(g, h),
         Where::ByCorruptedCity => next_to(w, h, |x| is_city(w, x) && corrupted(g, x)),
         Where::Corrupted => corrupted(g, h),
-        // 254: with no city owned (`cities_unowned`), a hosted city counts as a player's for the Unity cards that pay
-        // per site a player owns (the bound cities were most of those sites).
+        // 254: with no city owned (`cities_unowned`), a free city with a player's node on or next to it (292)
+        // counts as a player's for the Unity cards that pay per site a player owns.
         Where::Owned => {
-            cube_owner(g, h).is_some() || (cities_unowned(w) && is_city(w, h) && city_host(w, g, h).is_some())
+            cube_owner(g, h).is_some() || (cities_unowned(w) && is_city(w, h) && free_city_by_a_player(w, g, h))
         }
     }
 }

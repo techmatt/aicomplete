@@ -61,15 +61,17 @@ hot ones `World::hot(Hot::...)`), declared in `ModuleDef::requires`.
 **One path per piece change**, so supply and cancellation hold everywhere: adversary ambassadors are placed and
 removed only by `adversary`'s functions (`adversary::remove`, which every path that takes an agent off calls:
 claims, liberations, cancels, converts, removal ops); nodes placed by
-`board::place_node`; nodes and facilities destroyed by `board::destroy_piece`, which applies every protection and
-sways the Discord (`board::lose_node` for losses no protection absorbs).
+`board::place_node`; nodes and facilities destroyed by `board::destroy_piece`, which applies every protection
+(`board::lose_node` for losses no protection absorbs).
 **A player owns a station or factory** by its `cube(seat)` (`common::cube_owner`), put on by `board::claim_site`,
 `liberate_site` (`own`), effects' `build_station` / `build_factory` and the Station and Factory standard actions;
 read wherever ownership matters (production, destruction, corruption, `plan.rs`'s `CreateIf::Player`,
 `take_site`). Under `board.cities_unowned` (baseline 1) no city takes a cube: setup's `bound_city` and a
-liberation leave it neutral, and a city's energy goes to its host (`common::host_assignment`, `city_host`);
-`Where::Owned` (content's `per_site` `owned`) counts hosted cities too. `git grep cube_owner`, `city_host` and
-`owned` for a rule about ownership or hosting.
+liberation leave it neutral, and a city that pays (`common::city_pays`: not corrupted, not blocked) gives its energy to every
+seat with a node on or next to it (`common::node_by`, `board::city_income`);
+`Where::Owned` (content's `per_site` `owned`) counts a free city beside a player's node too, blocked or not
+(`common::free_city_by_a_player`). `git grep cube_owner`, `city_pays` and `owned` for a rule about ownership or
+city energy.
 
 The hooks' trap (on `Module::act`): check legality before the first `choose`; a `Halt::Illegal` after an answer
 panics. Modules change the state only through `Cx` (event log and counters stay consistent); counter and var names
@@ -138,7 +140,7 @@ where, and wording and tally for one shared by threats and team cards. Three kin
 `effects/new_ops.rs`; or the rule reading a standing op) and its price (`agents/value.rs`, `agents/strategy.rs`,
 `configs/agents/values.json`, the ledger's hand mirror `scripts/cards/effect_ledger.py`). A new op also touches
 `effects/feasible.rs` (what it acts on) and `docs/harms.rs`'s `op_harms` (an arm per op). `op.rs`'s `slots`,
-`is_map` (it takes a player's target) and `reads_hit_seat` are exhaustive matches: decide each. The compiler finds the
+`is_map` (it takes a player's target) are exhaustive matches: decide each. The compiler finds the
 Rust sites (`face.rs` lists every non-player op) but not the `values.json` row; the mirror test finds the ledger.
 **Removing an op**: the compiler finds its Rust arms; delete its `values.json` row and its `effect_ledger.py`
 branch too, and `git grep` its snake_case name in `scripts/design_check.json`, `drafts/adversary/check.py` and tests.
@@ -166,8 +168,7 @@ icon (`tests/face.rs`) and an effect ledger off `value.rs` ([card-pricing.md](ca
 ## The generic view
 
 Clients need no code per module: `Rules::view(&state)` (wasm `view(state)`) turns any state into `view.rs`'s fixed
-shapes. Map geometry is not in the state: `Map::build` derives it (and a military base each side of each printed
-front) from `content/map.json`; UIs get it from the view (`View::hexes`); wasm's `board(config)` returns the whole `Map`, read only by `scripts/wasm-smoke.mjs`.
+shapes. Map geometry is not in the state: `Map::build` derives it from `content/map.json`; UIs get it from the view (`View::hexes`); wasm's `board(config)` returns the whole `Map`, read only by `scripts/wasm-smoke.mjs`.
 
 The engine fills token stacks, seats' resources, exhausted cards no module shows (`engine.exhausted`) and every
 `vars` track as a global; `Module::view` adds through `ViewOut` only what it can't derive, and its `bookkeeping`

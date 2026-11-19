@@ -37,11 +37,11 @@ never its board's), `no_spend` and each **dominance check** (principles.md) are 
 `agents/policy.rs`, each with its default and rule.
 
 **Agent behaviors** (`behavior_table!` in `agents/policy.rs`, each row stating its rule): moves (`agents/moves.rs`),
-strikes, targets, buying energy, playing the plan, selling a dead card, saving and making antimatter; on for every
+strikes, targets, playing the plan, selling a dead card, saving and making antimatter; on for every
 agent, and a dominance check's ban wins. Forecasts read the engine's own targeting (`modules/plan.rs`).
 
 **Decision order** (`Policy::choose`; first pick wins): strategies at the round-1 keep; a keep by plan or forced rule;
-the ambassador, free-build and cube rushes; convert for a play (`convert_rule`: at flat energy 0.8 a converter into energy reads as a loss); sell; buy energy, strike, target, moves; the other forced
+the ambassador, free-build and cube rushes; convert for a play (`convert_rule`: at flat energy 0.8 a converter into energy reads as a loss); sell; strike, target, moves; the other forced
 rules and `kept_rule` 2; else the search over what no ban or antimatter reserve rules out, the plan's card replacing
 its pick under `kept_rule` 1, 3, 4.
 

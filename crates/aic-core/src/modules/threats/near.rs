@@ -12,20 +12,19 @@ pub(super) fn loc_key(threat: &str, i: usize) -> KeyBuf {
 }
 
 /// 286 (D132): set when a threat's first token was dealt onto a hex not of its first location's kind (Offensive's
-/// node hex): a located line ("here", "the base here") acts only on its own kind of hex, so that token's lines do
+/// node hex): a located line ("here", "the factory here") acts only on its own kind of hex, so that token's lines do
 /// nothing. The token still marks who is near and the anchor.
 fn off_kind_key(threat: &str) -> KeyBuf {
     KeyBuf::new("threats.loc.").text(threat).text(".off")
 }
 
-/// Whether hex `h` is a site (or base) of location type `loc`, whoever holds it.
+/// Whether hex `h` is a site of location type `loc`, whoever holds it.
 fn is_kind(w: &World, g: &GameState, h: usize, loc: Location) -> bool {
     match loc {
         Location::City => is_city(w, h),
         Location::CoastalCity => is_city(w, h) && w.map.hexes[h].coastal,
         Location::Station => g.tokens(h, STATION) > 0,
         Location::Factory => g.tokens(h, FACTORY) > 0,
-        Location::Base => is_base(w, h),
     }
 }
 
@@ -61,8 +60,7 @@ fn token_hexes<'a>(g: &'a GameState, t: &'a str) -> impl Iterator<Item = usize> 
     })
 }
 
-/// The hexes of `t`'s country: where a threat with no token (a forced pull, a
-/// content bug) is measured from and reaches.
+/// The hexes of `t`'s country: where a threat with no token (a country with no city) is measured from and reaches.
 fn scope_hexes<'a>(w: &'a World, g: &GameState, t: &str) -> &'a [usize] {
     scope_of(g, t).map(|c| w.map.countries[c].hexes.as_slice()).unwrap_or(&[])
 }
@@ -73,14 +71,9 @@ pub fn token_of(w: &World, g: &GameState, t: &Key, loc: Location) -> Option<usiz
 }
 
 /// The sites in country `c` for a token of type `loc`. 178 (Matt's ruling #8): one condition for every type, a
-/// site of the type that is not the adversary's (a base never is); the factory type's free-zone fallback is gone.
+/// site of the type that is not the adversary's; the factory type's free-zone fallback is gone.
 fn sites(w: &World, g: &GameState, c: usize, loc: Location) -> Vec<usize> {
     w.map.countries[c].hexes.iter().copied().filter(|&h| is_kind(w, g, h, loc) && !corrupted(g, h)).collect()
-}
-
-/// Whether country `c` has a site for at least one of `t`'s location types.
-pub(super) fn lands_in(w: &World, g: &GameState, t: &ThreatDef, c: usize) -> bool {
-    t.locations.iter().any(|&l| !sites(w, g, c, l).is_empty())
 }
 
 /// Puts `threat`'s tokens in country `c`, in printed order: r80 (ruling #46) each on the site of its type (not the
@@ -101,6 +94,30 @@ pub(super) fn place_tokens(g: &mut GameState, cx: &mut Cx, threat: &Key, c: usiz
             cx.set_key(g, &loc_key(threat, i), h as i64 + 1);
         }
     }
+}
+
+/// 292: the fallback for a dealt threat with no site of its types left in country `c`: its first token goes on the
+/// country's lowest-numbered city, one not the adversary's first. The token is off its kind there, whatever its
+/// first type (a city threat falls back only when every city is the adversary's), so its located lines do nothing
+/// (r137); it still marks who is near and the anchor.
+pub(super) fn place_fallback(g: &mut GameState, cx: &mut Cx, threat: &Key, c: usize) {
+    let w = cx.world;
+    let city = w.map.countries[c]
+        .hexes
+        .iter()
+        .copied()
+        .filter(|&h| is_city(&w, h))
+        .min_by_key(|&h| (corrupted(g, h), w.map.hexes[h].number));
+    if let Some(h) = city {
+        place_first_at(g, cx, threat, h);
+        cx.set_key(g, &off_kind_key(threat), 1);
+    }
+}
+
+/// 292: the seat an uncountered threat dealt in country `c` harms: the player whose home it is (the lowest such
+/// seat where seats wrap onto countries; none with no home player, when only its board consequences land).
+pub fn hit_seat_of(w: &World, g: &GameState, c: usize) -> Option<usize> {
+    (0..g.seats.len()).find(|&s| home_country(w, s) == c)
 }
 
 /// 139: moves `threat`'s first location token to hex `h`; a second token already there moves off the board.
@@ -215,17 +232,6 @@ pub fn node_distance(w: &World, g: &GameState, s: usize, t: &str) -> Option<i32>
         .filter(|&h| g.tokens(h, n) > 0)
         .filter_map(|h| from.iter().map(|&o| w.map.distance(o, h)).min())
         .min()
-}
-
-/// 146: the seats an uncountered `t`'s harm may hit: the ones whose node is
-/// closest to one of its tokens (hex distance), in seat order. Several on a
-/// tie (the players pick one); none if no seat has a node.
-pub fn nearest_seats(w: &World, g: &GameState, t: &str) -> Vec<usize> {
-    let d: Vec<Option<i32>> = (0..g.seats.len()).map(|s| node_distance(w, g, s, t)).collect();
-    let Some(best) = d.iter().flatten().min().copied() else {
-        return Vec::new();
-    };
-    (0..g.seats.len()).filter(|&s| d[s] == Some(best)).collect()
 }
 
 /// 146: seat `s`'s node hexes closest to `t`'s tokens: where "destroy a node"

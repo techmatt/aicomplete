@@ -8,22 +8,22 @@ Cities, research stations and factories follow one set of rules and differ only 
 
 | Owner | City | Research station | Factory |
 |---|---|---|---|
-| Neutral | its energy, bought by the Buy energy action ([economy.md](economy.md)) | a neutral cube onto its megaproject ([board.md](board.md)) | nothing, except that **at a Discord tip it arms its country's bases** ([war.md](war.md)) |
-| Player | none: **no player owns a city** (254); a neutral city with your node on or next to it makes its energy for you (hosting, [economy.md](economy.md)) | `owned_station_cubes` research cubes in its owner's color | `factory_chips` chips to its owner |
+| Neutral | `corp_energy` energy to every player with a node on or next to it ([economy.md](economy.md)) | a neutral cube onto its megaproject ([board.md](board.md)) | nothing |
+| Player | none: **no player owns a city** (254) | `owned_station_cubes` research cubes in its owner's color | `factory_chips` chips to its owner |
 | Adversary | its energy diverted: `divert_discord` Discord a unit | `station_cubes` adversary cubes; after its megaproject, research cubes onto the adversary's track (259) | 1 adversary troop on its hex |
 
 - **One opposing piece blocks a site's output while it stands.** An agent on a neutral or player
   site, a player ambassador on an adversary site: that round the site makes nothing, and the piece stays
   (137; 139 dropped the dial that used it up). The table marks it with a **"blocked" chip** as the piece arrives
-  and reads production from the tracks (r133, [war.md](war.md)). On a
-  neutral city this is the **dark** city (r37, r38): nothing to buy, nothing to host (with `cities_unowned` 0 an
+  and reads production from the tracks (r133, [troops.md](troops.md)). On a
+  neutral city this is the **blocked** city (r37, r38): it pays no one (with `cities_unowned` 0 an
   aligned one gave its owner nothing and swayed `ambassador_discord` (0) a unit).
 - **Your own ambassador is armor:** when your node, or a site you own, would be destroyed, your ambassador on its hex
-  may be used up instead, the owner choosing which protection to spend, or none ([war.md](war.md), *Destruction*).
+  may be used up instead, the owner choosing which protection to spend, or none ([troops.md](troops.md), *Destruction*).
   Only your own guards your piece (r75, Matt's ruling 5): another player's never does, and a neutral site has none.
   One of your ambassadors on your site's hex can cover the site or your node there. Against troops it answers a
   strike on or next to the troop's hex; troops otherwise ignore ambassadors (r83: a march neither stops for nor
-  removes one, [war.md](war.md)).
+  removes one, [troops.md](troops.md)).
 - **Liberate's payment rule** (r75, Matt's ruling 2): the bill is the site's price (a site with an agent on it is
   refused, below); **your own ambassadors standing on the site pay first, then your supply**, never another
   player's. It needs the site in reach; a botnet on or next to it doesn't stop it.
@@ -89,8 +89,6 @@ for the last rounds, and never free a city: the players still reach it and Liber
   (Station Coup, Station Seizure: a forced flip too) and a threat corrupting its city (Overrun) all skip it (r79, Matt's ruling on D77; agents already on it stay). Troops are not stopped. It comes off at the end of the next adversary turn (its Income beat), so it
   lasts one round; the building places a fresh one each round.
 
-A **base** is no site: it is a front's troop pile ([war.md](war.md)). A player ambassador standing on a base is used
-up instead of the next drone made there; an agent on one does nothing.
 **2 agents on a player's node hex destroy the node** (`corrupt_node_at`), whatever else stands there, checked when
 the adversary puts agents there (an arrival, [adversary.md](adversary.md)): the node is lost unless something absorbs it, the agents go to the supply, and the hex
 takes no mark (r98).
@@ -105,7 +103,7 @@ One agent on it costs nothing.
   your supply, used up; target Agents and remove up to `remove_count` (3), the first on it, the rest one at a time
   on or next to it (r107; any hexes in reach before), your choice, stopping when you like. It places nothing (r75; it stood on one hex and removed 3 there). The supply
   caps it: each use needs two new ambassadors (r100: 2 for 3 agents, 0.94 at the anchors, was 1 at 1.88).
-- **Consumed or standing:** liberating, Remove agents, Envoy, armor and the troop rule use a player
+- **Consumed or standing:** liberating, Remove agents and armor use a player
   ambassador up; blocking and moving leave it standing. A consumed ambassador is gone: new ones come from cards,
   Followers and the standard project. Player ambassadors move through cards (any player's Gather of
   ambassadors moves yours too) and Dispatch. A Dispatch puts one onto a piece in your reach, taken from your supply
@@ -123,7 +121,7 @@ Diplomacy tag on each card you play (127; at 1 a tag of any kind it piled 52-84 
 makes something for its owner; a city is the adversary's or its country's, never a player's. Spend your ambassadors
 to take a site back from the adversary (Liberate: 5 for a city, 4 for a station, 3 for a factory), never with an
 agent sitting on it; your own ambassadors standing on it pay first. Taking one back leaves it neutral and sways
-Unity your way; only cards claim a neutral station or factory, making it yours; a city stays free, and a node of yours on or next to it collects its energy each round. A site you free starts clean: the adversary must land its full corrupt number of
+Unity your way; only cards claim a neutral station or factory, making it yours; a city stays free, and pays 1 energy each round to every player with a node on or next to it. A site you free starts clean: the adversary must land its full corrupt number of
 agents on it again to take it back. A station you own makes 1 cube a round (a
 factory 1 chip), a slow payback (a card claims a station or factory for energy, Campus and Commons the site they open, the liberate cards one next to the city). Every meeting of an agent and an ambassador is one for one. Stand one ambassador on an adversary site
 to shut it off, and clear agents off yours, which they shut off the same way. An ambassador of yours on your own piece

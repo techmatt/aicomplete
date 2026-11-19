@@ -104,7 +104,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
 - **Tags:** Science, Industry, Cyber, Power, Diplomacy, Security; 1-3 a card. Yours are those *on your cards*
   ([README.md](README.md#terms)); a board's can't be sacrificed.
 - **Programs** resolve and stay in your play area (their tags count; powers can sacrifice them); a lasting raise they
-  print stays even when sacrificed (Twin City Compact's extra hosted city, 258, as production does). **Events** resolve
+  print stays even when sacrificed (a program's production, say). **Events** resolve
   and go to your played pile (their tags don't count). **Nothing to act on never blocks a card:** a part with nothing
   to act on (a map effect whose target condition no hex in reach meets, a move, a gain per tag with too few tags, a
   draw with no card left) does nothing, and the rest resolves. A program, event or ability is offered only when at

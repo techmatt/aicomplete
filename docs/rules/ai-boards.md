@@ -12,13 +12,13 @@ upkeep). The board module owns nodes and counts the tokens taken (`board.track.<
 build direction), Dispatches 1 ambassador free each round (the Researcher 2; more from the fourth economy space), and
 counts its printed tag like one on its cards; its powers are in [ai-powers.md](ai-powers.md). The **Builder**'s special
 rule is Breadth: five building slots, a wider engine. It starts with 27 credits and earns 10 a round, each credit space
-of its economy track 1 or 2 more, so placing a node is how its income grows; the energy of the cities it hosts (254: a
-neutral city with its node on or next to it) and the cities it buys from, its Growth's steps and Sprawl spend. Its powers turn
+of its economy track 1 or 2 more, so placing a node is how its income grows; the energy of the cities beside its nodes (1 from each free,
+unblocked city with its node on or next to it), its Growth's steps and Sprawl spend. Its powers turn
 finished cards into chips or a building played free (Scrap: Industry), energy or antimatter (Overcharge: Power), and
 chips into troops removed (Fortify).
 
 The **Protector**'s special rule is Wall: no adversary troop is ever placed on a hex with its node, nor enters it or
-strikes into it, so no troop strikes its node or a facility under it (war, threats and corruption still can). The first two troops each round that end their march next to its node pay it 1 insight
+strikes into it, so no troop strikes its node or a facility under it (threats and corruption still can). The first two troops each round that end their march next to its node pay it 1 insight
 each (Vigil). Its Growth places 2 nodes for 1 energy (Outpost), 1 with an ambassador and 2 credits for 1 energy (Accord), or 1 and a credit free (Levy);
 it pushes troops and agents and hardens with energy (Patrol), and its board prints 2 energy a round. It earns 9 credits
 a round, so starts with 31. Each credit space of its economy track adds 1 or 2 credits, the
@@ -39,7 +39,7 @@ sacrifice discards a card. Revealed tags are rare, late and costly: two a board,
 
 **Dispatches (candidate).** There is no paid Dispatch. Each round you have your board's **Dispatches**: its printed
 number plus 1 for each uncovered Dispatch space, each a free Dispatch (one of your ambassadors from your supply or
-anywhere on the map onto a piece, base, node or botnet's hex in reach). Unused ones are lost; a space counts once
+anywhere on the map onto a piece or botnet's hex in reach). Unused ones are lost; a space counts once
 uncovered. Cards that move ambassadors (Liaison Corps, Summit Caucus) add to it. Economy space 4 is reached about
 round 2-3. **The Researcher is the Dispatch-heavy board:** its own ambassador on one of its spread-out stations armors
 it and keeps agents off, which would block its cubes.
@@ -71,7 +71,7 @@ credits, so the energy is stated once, on the track; no card places a node free.
 pay are offered; a placement you can't pay doesn't happen. A Growth option is used for its node: with no token left,
 no step you can pay or no free hex in its range, it isn't offered (r122).
 
-**Hard to explain to a new player:** Faraday Yard hardens when played, beside Fortify II's and Patrol II's hardening; a hosted city (your node on or next to it) pays you but isn't yours.
+**Hard to explain to a new player:** Faraday Yard hardens when played, beside Fortify II's and Patrol II's hardening; a city beside your node pays you but isn't yours.
 
 **Growth (Matt, 2026-11-18; options candidate).** There is no standard action or other route for nodes. Each round a
 board picks **one** of its three printed Growth options ([ai-powers.md](ai-powers.md)), Spirit Island's "pick one":
@@ -120,9 +120,8 @@ tier-2 keep (3 insight) fits from round 2.
 **Loops and caps.** No limits ([economy.md](economy.md), *No limits*): a runaway is fixed at the cards that feed it.
 Program credit income stacked by draw chains is bounded by insight (as there) and the per-tag programs' 1 a 3 tags.
 No power turns credits into chips (Mint is cut, Matt 2026-11-18): chips come from owned factories (`factory_chips` a round), Scrap I and II, Full Capacity and cards, each capped a round, and can't be sold back; stations, Fortify, Annex and the chip converters spend them. Scrap II (once a round) spends two Industry cards for good, so the cards cap
-it. **The energy gift** (Shared Grid Accord, Interconnector Treaty) is one-shot. Credits → energy (Buy
-energy, [economy.md](economy.md)) → a card's income is capped by the cards and the cities' energy (once per city a
-round, a city's `corp_energy` a buy). **Energy counters** spend energy for good. **The Researcher's:** Patience with
+it. **The energy gift** (Shared Grid Accord, Interconnector Treaty) is one-shot. No action turns credits into energy; cities' energy
+([economy.md](economy.md)) is capped by the cities beside your nodes, `corp_energy` each a round. **Energy counters** spend energy for good. **The Researcher's:** Patience with
 the cube converters (Cintamani's 2 insight, once a round; the standard action's 1, once a round) is the intended engine,
 capped by how many stations make cubes (and Open Archive's and Cryo Sample Vault's 1 a round) and Cintamani's once a
 round.

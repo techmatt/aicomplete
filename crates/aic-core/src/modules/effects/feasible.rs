@@ -162,15 +162,15 @@ fn feasible_aimed(
             Op::Transfer { .. } => g.seats.len() > 1,
             // The rest always act: a gain, a standing passive, or a team or adversary op no player list prints.
             // Listed, not `_`, so a new op must decide here (259: a `_` let an op that can do nothing through).
-            Op::Gain { .. } | Op::GainPerNode { .. } | Op::GainAmbassadors { .. } | Op::HostMore { .. } | Op::Cordon
+            Op::Gain { .. } | Op::GainPerNode { .. } | Op::GainAmbassadors { .. } | Op::Cordon
             | Op::Peek { .. } | Op::Production { .. } | Op::ProductionPerTag { .. } | Op::SpreadAmbassadors
             | Op::Troops { .. } | Op::ThreatAtNode { .. } | Op::EachDestroyNode { .. } | Op::DestroyNode { .. }
             | Op::PullUnity { .. } | Op::FlipStation { .. } | Op::CorruptCity { .. } | Op::PlayersLose { .. }
             | Op::AdversaryBuild | Op::LoseNodeOr { .. } | Op::Flag { .. } | Op::Requisition { .. }
             | Op::LoseAmbassador | Op::DiscardMostExpensive | Op::Compute { .. } | Op::ComputeEvery { .. }
             | Op::LoseTokens { .. } | Op::AdversaryFactory { .. } | Op::ComputePerMissing { .. }
-            | Op::CorpTroops { .. } | Op::DestroyFacility { .. } | Op::DisableBuilding { .. } | Op::Discard { .. }
-            | Op::ExtraWar | Op::LoseAmbassadorsOr { .. } | Op::LoseIncome { .. } | Op::LoseOr { .. }
+            | Op::DestroyFacility { .. } | Op::DisableBuilding { .. } | Op::Discard { .. }
+            | Op::LoseAmbassadorsOr { .. } | Op::LoseIncome { .. } | Op::LoseOr { .. }
             | Op::MarchNow { .. } | Op::OccupyFactory { .. } | Op::PlaceBotnet { .. } | Op::CorruptFactory
             | Op::Theft { .. } | Op::TeamIncome { .. } | Op::FreePurchases { .. } | Op::CounterAll
             | Op::Pushback { .. } | Op::DealThreats { .. } | Op::Create { .. } | Op::CreateSite { .. }

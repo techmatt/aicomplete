@@ -65,7 +65,7 @@ pub struct CellSummary {
     pub loss_blockers: Option<f64>,
     pub loss_level: Option<f64>,
     pub supply_left_mean: f64,
-    /// Corrupted and aligned (261: or hosted) cities at the end, per game.
+    /// Corrupted and aligned (261, 292: or free beside a player's node) cities at the end, per game.
     pub cities_corrupted_mean: f64,
     pub cities_aligned_mean: f64,
     /// Mean left at game end, per seat, in [`crate::experiment::UNSPENT`] order (068).

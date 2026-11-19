@@ -31,7 +31,7 @@ pub const HOUSE_TERMS: [(&str, &str); 26] = [
     ("Facility", "a research station or factory on the board. A building is always a card. Harden goes on a facility, or on your nodes where a card says so: one hardening token either way"),
     ("Ambassador", "a player's piece, any player's: a card never says whose"),
     ("Agent", "the adversary's piece on the board (the Security token is an Operative)"),
-    ("Troop", "an adversary troop; a megacorp's is a Drone, its own piece, waiting at its military bases"),
+    ("Troop", "an adversary troop"),
     ("In reach", "on a hex within 1 of your nodes"),
     ("Target", "a card, board power or standard action that touches the map names one target, a hex in your reach meeting its target box (\"Target: a corrupted city\"): it acts on it, or on or next to it, or in its country, as printed"),
     ("Gain", "into your supply"),
@@ -91,8 +91,7 @@ pub(super) fn threats_block() -> String {
 }
 
 fn pull_words(p: &aic_core::content::Pull) -> String {
-    let tags: Vec<String> = p.tags.iter().map(|t| String::from(*t)).collect();
-    format!("tier {} ({})", p.tier, tags.join(" or "))
+    format!("tier {}", p.tier)
 }
 
 /// 275: an event card's Spill line ("cities into factories"), level 2+.
@@ -521,12 +520,11 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
     // (149: chips can't be sold).
     let order = [
         A::Station, A::Factory, A::Remove, A::Troop, A::Lift, A::Move, A::Ambassador, A::Liberate, A::Botnet,
-        A::BuyEnergy,
     ];
     let mut rows: Vec<[String; 3]> = order.iter().filter(on).map(|&a| std_rule_text(a, &w, &t)).collect();
     rows.push(["Sell a card".to_string(), format!("gain {}", t("board.sell_credits")), "from your hand".to_string()]);
     rows.extend(
-        [A::Insight, A::Envoy, A::Antimatter].iter().filter(on).map(|&a| std_rule_text(a, &w, &t)),
+        [A::Insight, A::Antimatter].iter().filter(on).map(|&a| std_rule_text(a, &w, &t)),
     );
     table(&["Action", "Cost", "What"], rows.into_iter().map(|r| r.to_vec()).collect())
 }
@@ -570,11 +568,6 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
                 t("board.divert_discord"),
                 t("board.ambassador_discord")
             ),
-        ],
-        [
-            "Discord".to_string(),
-            "a factory destroyed in war (not by an adversary troop)".to_string(),
-            t("board.destruction_discord"),
         ],
         [
             "Discord".to_string(),
@@ -692,8 +685,8 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          them with your board's Growth: pick one of its three options a round, one placing 2 nodes for energy or \
          insight, the others 1 node and a little more besides; cards can add \
          more. Every placement, by Growth or card, pays the energy printed on the track space you uncover. You \
-         start with {} energy and next to a city; no city is ever yours, but a free (neutral) city with your node on \
-         or next to it makes its energy for you every round, one city each.\n\n\
+         start with {} energy and next to a city; no city is ever yours, but every free (neutral) city with your node on \
+         or next to it pays you its energy every round, and pays every other player beside it too.\n\n\
          **Dispatches, tags and sales, for new players.** A Dispatch puts one of your ambassadors, \
          from your supply or anywhere on the map, onto a piece or botnet in your reach and costs nothing, but you \
          have only your board's Dispatches each round ({} printed, more as Dispatch spaces are \
@@ -759,12 +752,11 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          Every Unity and Discord card prints three strengths, and the tip's own count on its side picks which \
          one resolves (strength I on tips below {t2}, II from tip {t2}, III from tip {t3}): a later strength counts more \
          or reaches wider, and Discord's late cards hit harder. The {unity} Unity cards reshuffle when the deck runs out. \
-         Each Unity you sway may instead take 1 Discord off its track, and Envoy trades one of your \
-         ambassadors for the same, so you choose between racing toward Unity and holding off the next \
-         Discord card. You also lose if any player has no nodes left on the board. \
+         Unity you sway always goes onto the Unity track: nothing takes Discord off its track but a card that \
+         says so. You also lose if any player has no nodes left on the board. \
          Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of \
          their own hex (or two agents on it: Night Raid lands them), an adversary troop's strike on their hex, \
-         war taking a factory on their hex, and Border War (nodes by a front's base). A lost token leaves the game and nothing marks its hex; its \
+         and Border War (nodes by a factory). A lost token leaves the game and nothing marks its hex; its \
          income stays. {safe}The adversary deck is a round cap too, {} rounds at \
          most (fewer at the harder levels), and reaching it loses. So there are three different \
          pressures: the Discord deck (politics), your nodes (the board) and the cap.\n",

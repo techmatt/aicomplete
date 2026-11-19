@@ -26,7 +26,7 @@ HARMS = [
     "node destroyed", "credits or income lost", "cards discarded", "ambassadors lost",
     "tokens stripped from cards", "facilities destroyed or corrupted", "production blacked out",
     "adversary pieces placed", "projects advanced (compute)", "extra threats", "Discord sway", "Unity pulled back",
-    "actions or claims blocked", "energy lost", "war brought forward", "troops made",
+    "actions or claims blocked", "energy lost", "march brought forward", "troops made",
     # 195: the project deck's new harms (the ledger's rows).
     "protections stripped", "the clock sped up", "adversary cubes on megaprojects",
     # 227: the land scar on all four adversity sources.
@@ -41,7 +41,7 @@ HARMS = [
 ONE_SOURCE = {"protections stripped", "the clock sped up", "adversary cubes on megaprojects", "antimatter lost",
               "pieces pushed or reach cut", "a megaproject or converter denied"}
 PERMANENT = {"node destroyed", "facilities destroyed or corrupted"}
-LOCATIONS = {"city", "coastal_city", "station", "factory", "base"}
+LOCATIONS = {"city", "coastal_city", "station", "factory"}
 SACRIFICE = {"security", "diplomacy", "cyber", "industry", "power", "science"}
 RESOURCES = {"credits", "energy", "insight", "research_cubes", "chips", "ambassadors"}
 BRITISH = ["colour", "flavour", "neighbour", "behaviour", "armour", "favour", "harbour", "defence", "offence",
@@ -211,18 +211,18 @@ def standard_breaks(c):
         op = e.get("op")
         if op == "troops" and e.get("stand"):
             out.append("a troop that stands (no special pieces)")
-        if op == "occupy_factory" or (op == "corp_troops" and e.get("past_cap")):
+        if op == "occupy_factory":
             out.append(f"{op}: a special piece")
         if op == "each_destroy_node":
-            out.append("each player destroys a node (the nearest player's: destroy_node)")
+            out.append("each player destroys a node (the hit player's: destroy_node)")
         if op == "flag":
-            out.append(f"flag {e.get('name')} hits every player near it, not the nearest")
+            out.append(f"flag {e.get('name')} hits every player near it, not the one it hits")
         if e.get("each_country"):
             out.append(f"{op}: an each-country line")
         if op == "corrupt_city" and e.get("at") == "location":
             out.append("corrupt_city at location destroys every player's nodes near it")
         if op == "theft" and e.get("who") != "nearest":
-            out.append("theft hits the nearest player")
+            out.append("theft hits the one player (who: nearest)")
     return out
 
 
@@ -322,7 +322,7 @@ class Deck:
 
     def pull(self, pull_tags, countries):
         """Draw until a card fits; return (card, reshuffles) or (None, n) when a second reshuffle would be needed.
-        A card fits when it carries a pulled tag and has a location type in the country (no bases at 1 country)."""
+        292: every card fits (the pulls carry no tags, and a threat with no site of its types falls back to a city)."""
         reshuffles = 0
         while True:
             if not self.draw:
@@ -361,8 +361,8 @@ def simulate(t, mil, games=4000, seed=134):
                 # `extra` more pulls of the card's first pull, countries in turn (0 since 229)
                 for _ in range(countries * p.get("count", 1) + (extra if i == 0 else 0)):
                     pulls += 1
-                    card, rs = decks[p["tier"]].pull(p["tags"], countries)
-                    worst[(p["tier"], tuple(p["tags"]))] = max(worst[(p["tier"], tuple(p["tags"]))], rs)
+                    card, rs = decks[p["tier"]].pull(["any"], countries)
+                    worst[(p["tier"], "any")] = max(worst[(p["tier"], "any")], rs)
                     if card is None:
                         fails[(ev["id"], countries)] += 1
                     else:
@@ -373,8 +373,8 @@ def simulate(t, mil, games=4000, seed=134):
 
 
 def lands(card, countries):
-    """A threat lands in a country that has one of its location types: 1 country has no military bases."""
-    return countries > 1 or any(loc != "base" for loc in card["locations"])
+    """292: every dealt threat lands (a country with no site of its types takes its token on a city)."""
+    return True
 
 
 def worst_case(t, mil):
@@ -386,7 +386,7 @@ def worst_case(t, mil):
         for ev in mil["events"]:
             by_tier = defaultdict(list)
             for i, p in enumerate(ev["pulls"]):
-                by_tier[p["tier"]] += [p["tags"]] * (countries * p.get("count", 1) + (extra if i == 0 else 0))
+                by_tier[p["tier"]] += [["any"]] * (countries * p.get("count", 1) + (extra if i == 0 else 0))
             for tier, slots in by_tier.items():
                 kinds = [list(k) for k in {tuple(s) for s in slots}]
                 for r in range(1, len(kinds) + 1):
@@ -485,11 +485,7 @@ def check_militarist(mil, projects, ops, new_ops):
         n = sum(1 for p in projects if fits(p["tags"], [tag]))
         if n < len(b["project_slots"]):
             errors.append(f"projects: only {n} fit a {tag} slot")
-    pulled = Counter(g for e in mil["events"] for p in e["pulls"] for g in p["tags"])
-    for g in TAGS:
-        if not pulled[g] and not pulled["any"]:
-            errors.append(f"Militarist: no pull names {g}")
-    print(f"Militarist: stages {dict(stages)}, pull tags {dict(pulled)}")
+    print(f"Militarist: stages {dict(stages)}")
 
 
 def check_projects(projects, ops, new_ops):

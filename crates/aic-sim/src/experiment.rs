@@ -534,7 +534,7 @@ pub struct Margin {
     /// Adversary ambassadors left in the supply, and at the start.
     pub supply_left: i64,
     pub supply_start: i64,
-    /// Corrupted cities at the end, and cities with a player cube or (261) hosted by a player.
+    /// Corrupted cities at the end, and cities with a player cube or (261, 292) free with a player's node on or next to them.
     pub cities_corrupted_end: i64,
     pub cities_aligned_end: i64,
     /// Adversary pieces keeping the current level's bar from being met
@@ -653,12 +653,13 @@ fn margin(rules: &Rules, g: &GameState) -> Margin {
         supply_left: g.var(adversary::SUPPLY),
         supply_start: adversary::start_supply(&w),
         cities_corrupted_end: cities.iter().filter(|&&h| common::corrupted(g, h)).count() as i64,
-        // 261 (D110): no city takes a player cube since 254 (`cities_unowned`), so this read 0: a hosted city
-        // counts, as the Unity cards count it (the field keeps its name for the readers of games.csv).
-        cities_aligned_end: {
-            let hosted: Vec<usize> = common::host_assignment(&w, g).into_iter().map(|(c, _)| c).collect();
-            cities.iter().filter(|&&h| common::cube_owner(g, h).is_some() || hosted.contains(&h)).count() as i64
-        },
+        // 261 (D110): no city takes a player cube since 254 (`cities_unowned`), so this read 0: a free city beside
+        // a player's node counts (292), as the Unity cards count it (the field keeps its name for the readers of
+        // games.csv).
+        cities_aligned_end: cities
+            .iter()
+            .filter(|&&h| common::cube_owner(g, h).is_some() || common::free_city_by_a_player(&w, g, h))
+            .count() as i64,
         blockers,
         level: level.steps(),
         unity_tips: g.var(alignment::tips_key(Side::Unity)),

@@ -10,6 +10,7 @@ the findings are in the write-up.
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 292 overhaul 1, the cuts: war, hosting, Envoy and threat rejection out | r139 | [292_overhaul_1_cuts/README.md](results/292_overhaul_1_cuts/README.md) |
 | 289 Player-view layout pass: draft and keep above the fold, narrated war and strikes, short figures | 138 | [289_viewer_pass](results/289_viewer_pass/README.md) |
 | 288 Sim-player follow-ups: antimatter's rates tied, sacrifices count cards only, burn op gone | 138 | [288_agents_followups](results/288_agents_followups/README.md) |
 | 287 Powerful antimatter sinks: four cards raised, Kinetic Interdiction a building | 138 | [287_antimatter_sinks](results/287_antimatter_sinks/README.md) |

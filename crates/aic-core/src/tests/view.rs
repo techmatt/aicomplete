@@ -35,15 +35,13 @@ fn the_view_shows_the_board_the_fronts_the_projects_and_the_next_card() {
     assert_eq!(v.hexes.len(), g.hexes.len());
     let count = |k: &str| v.hexes.iter().filter(|h| h.kind == k).count();
     assert_eq!(count("city"), 6);
-    assert_eq!(count("base"), 2 * m.fronts.len());
     assert_eq!(count("ocean"), piece(0).ocean.len() + piece(1).ocean.len());
     assert_eq!(
-        count("city") + count("base") + count("open") + count("ocean"),
+        count("city") + count("open") + count("ocean"),
         32
     );
     for h in &v.hexes {
         assert!((1..=16).contains(&h.number));
-        assert_eq!(h.facing.is_some(), h.kind == "base");
         // Tokens as in the state, non-zero and sorted.
         let want: Vec<(String, i64)> = g.hexes[h.index]
             .tokens
@@ -64,7 +62,6 @@ fn the_view_shows_the_board_the_fronts_the_projects_and_the_next_card() {
             .find(|x| x.key == k)
             .unwrap_or_else(|| panic!("{k} missing"))
     };
-    assert_eq!(global("board.fronts").value, m.fronts.len() as i64);
     assert!(global("adversary.compute").value > 0);
     let supply = global("adversary.supply");
     assert_eq!((supply.value, supply.max), (g.var(SUPPLY), Some(48)));
@@ -175,7 +172,6 @@ fn the_view_follows_every_variant_and_keeps_bookkeeping_out_of_globals() {
                 "adversary.supply",
                 "adversary.deck",
                 "adversary.compute",
-                "board.fronts",
             ] {
                 assert!(v.globals.iter().any(|x| x.key == k), "{k}");
             }

@@ -82,6 +82,7 @@ what it prints; the `cards/*_read.py` readers take seconds.
 - `bench/same_results.py A B`: compares two `aic-sim experiment` outputs (a farmed read: `farm/compare.py`).
   `--map OLD=NEW` renames in the old output first; `--ignore-content-hash` for a content refactor,
   `--ignore-config-hash` for a dead param removed (`same_play.py` can't: its fingerprints hash the config).
+- `bench/cuts_read.py BEFORE AFTER`: two farm out files, by pair: wins, rounds, energy, Discord tips (292).
 - `bench/same_play.py`: a refactor left play unchanged over countries, difficulties, variants and every agent but
   the beam, old binary against new (~20 min, 6 threads). `--map` as above; an old binary refusing today's configs:
   `run ... --root out/old`. `tracediff A B [--ignore KEY]...`: two `run --trace` outputs' first differing line, after

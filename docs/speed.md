@@ -46,7 +46,7 @@ snapshot (at r73, 50-95% of a game; 5 s a decision in long games).
 - **Labels and prompts:** an option's label stays a `String` (a replayed prompt matches answers by label), but a
   hex's is joined by hand, without the formatter. A prompt's text is built only when really asked (`Cx::choose`
   takes a closure, `PromptText`): a replay never reads it.
-- **Loss prompts** ("destroy which of your nodes", in `board.produce`, `board.bases`, `adversary.build`): a chain
+- **Loss prompts** ("destroy which of your nodes", in `board.produce`, `adversary.build`): a chain
   replays the phase for each option over every order of one set of picks. `search.rs`'s `Seen` values each position
   once per scoring, among Loss answers only, confirmed field by field, the same answers as a set (a loop's progress
   lives only in them): under 1%; on every prompt it would cost more than it saves.

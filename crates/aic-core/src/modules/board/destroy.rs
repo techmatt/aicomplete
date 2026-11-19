@@ -2,14 +2,11 @@
 
 use super::*;
 
-/// What destroys a piece: it decides the corp units' help, the Sway and the
-/// tally.
+/// What destroys a piece: it names the tally.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Cause {
     /// An adversary troop's strike.
     Troop,
-    /// Corp troops crossing a front.
-    War,
     /// A threat, Discord card or project, named for the tally.
     Effect(&'static str),
 }
@@ -18,14 +15,13 @@ impl Cause {
     pub(super) fn name(self) -> &'static str {
         match self {
             Cause::Troop => "march",
-            Cause::War => "war",
             Cause::Effect(n) => n,
         }
     }
 }
 
 /// One protection a destruction may spend (r75, Matt's ruling 5: the owner chooses which, or none). r81
-/// (friction #51): drones never protect; a protection is Shelter (no choice), a hardening token or your
+/// (friction #51): a protection is Shelter (no choice), a hardening token or your
 /// own ambassador. r82: the Aegis Doctrine capstone is a Shelter (automatic), not a choice here.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Guard {
@@ -137,20 +133,7 @@ pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause
         cx.tally(g, "board.factories_destroyed", 1);
     }
     cx.tally(g, "board.destroyed", 1);
-    // 235: a war-destroyed factory's Discord is named in its line (the log showed a bare var change).
-    let sway = if cause == Cause::War && kind == FACTORY && !w.hot.alignment_off {
-        w.int("board.destruction_discord")
-    } else {
-        0
-    };
-    cx.note(Some(h), || {
-        let more = if sway > 0 { format!(": {sway} Discord") } else { String::new() };
-        format!("{} at {} destroyed{more}", piece_words(kind), hex_name(&w, h))
-    });
-    // r83: only the factory sways (War Takes Ground's node on its hex sways nothing more).
-    if cause == Cause::War && kind == FACTORY {
-        alignment::discord_from(g, cx, "war", w.int("board.destruction_discord"));
-    }
+    cx.note(Some(h), || format!("{} at {} destroyed", piece_words(kind), hex_name(&w, h)));
     Ok(true)
 }
 

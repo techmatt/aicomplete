@@ -631,8 +631,6 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::DiscardProject => Worth::now(row("discard_project")),
         // 259: cubes off the adversary's research track, at its effect's harm over its threshold.
         Op::RemoveResearch { amount } => Worth { research: row("remove_research") * *amount as f64, ..Worth::default() },
-        // 258: a second hosted city's energy, at the share of rounds a seat has one to host (`host_more`'s row).
-        Op::HostMore { count } => Worth::income(row("host_more") * income_rate(t, Resource::Energy) * *count as f64),
         Op::Production { resource, amount } => Worth::income(row("production") * income_rate(t, *resource) * *amount as f64),
         // 106: an income per tag fixed at play (`effects::ProductionPerTag` counts once); 233: valued at the
         // seat's tags in play now, as `IncomePerTag` (229), not at the projected count.
@@ -878,11 +876,9 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             row("adversary_factory") * *count as f64 * if where_.is_some() { t.rate("countries") } else { 1.0 },
         ),
         Op::ComputePerMissing { amount, .. } => Worth::now(row("compute_per_missing") * *amount as f64),
-        Op::CorpTroops { count, .. } => Worth::now(row("corp_troops") * (*count).max(1) as f64),
         Op::DestroyFacility { .. } => Worth::now(row("destroy_facility")),
         Op::DisableBuilding { count, .. } => Worth::now(row("disable_building") * *count as f64),
         Op::Discard { count } => Worth::now(row("discard") * t.rate("drawn_card") * *count as f64),
-        Op::ExtraWar => Worth::now(row("extra_war")),
         Op::LoseAmbassadorsOr { count, resource, amount } => Worth::now(
             row("lose_ambassadors_or") * (r(*resource) * *amount as f64).min(r(Resource::Ambassadors) * *count as f64),
         ),

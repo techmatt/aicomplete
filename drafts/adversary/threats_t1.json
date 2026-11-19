@@ -1,6 +1,6 @@
 {
  "deck": "threats_t1",
- "note": "Tier-1 threat deck, 146 (Matt's threat card standard, 2026-11-07): each card has one consequence, rarely two, on the nearest player (the one whose node is closest to its token) or the board; one counter option or two, never in a currency its harm takes. Counters: 3 energy, 3 ambassadors, 3 insight (r89; 6 before), 3 research cubes, 3 chips, 2 tags or 8 credits. Value lines are 146's pricing, not recomputed: they price the retired 12-credit counter and that day's configs/agents/values.json (a troop 9: placed 5 plus its strike), so their numbers and ratios are stale. Source: experiments/results/146_threat_standard/threat_cards.py.",
+ "note": "Tier-1 threat deck, 146 (Matt's threat card standard, 2026-11-07): each card has one consequence, rarely two, on this country's player (292: the one who starts there) or the board; one counter option or two, never in a currency its harm takes. Counters: 3 energy, 3 ambassadors, 3 insight (r89; 6 before), 3 research cubes, 3 chips, 2 tags or 8 credits. Value lines are 146's pricing, not recomputed: they price the retired 12-credit counter and that day's configs/agents/values.json (a troop 9: placed 5 plus its strike), so their numbers and ratios are stale. Source: experiments/results/146_threat_standard/threat_cards.py.",
  "cards": [
   {
    "id": "orbital_strike",
@@ -10,7 +10,7 @@
     "security"
    ],
    "locations": [
-    "base"
+    "factory"
    ],
    "text": "1 adversary Troop lands here.",
    "counters": [
@@ -38,10 +38,11 @@
     "adversary pieces placed"
    ],
    "value": "counter 3 energy (13.5) or 12 credits (12); uncountered 18 at values.json (a troop 9 with its strike), 1.50x the cheapest counter",
-   "check": "bites from round 2 where a base touches a player's factory or station: the troops strike there next war",
+   "check": "bites from round 2 where the factory stands by a player's factory, station or node: the troop strikes there on the next march",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
-    "201 (r89, Matt 2026-11-12): troops 2 -> 1 (fewer troops, each deadlier: they strike nodes)"
+    "201 (r89, Matt 2026-11-12): troops 2 -> 1 (fewer troops, each deadlier: they strike nodes)",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "orbital_strike"
   },
@@ -53,10 +54,9 @@
     "security"
    ],
    "locations": [
-    "base",
     "factory"
    ],
-   "text": "The nearest player pays 3 energy or discards 3 cards. The adversary gains 2 compute.",
+   "text": "This country's player pays 3 energy or discards 3 cards. The adversary gains 2 compute.",
    "counters": [
     [
      {
@@ -90,7 +90,8 @@
    "value": "counter 3 ambassadors (12) or 12 credits (12); uncountered 14.2 at values.json (a troop 9 with its strike), 1.18x the cheapest counter",
    "check": "bites any seat holding energy; the counter asks ambassadors, never energy",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "commandeer"
   },
@@ -105,7 +106,7 @@
    "locations": [
     "factory"
    ],
-   "text": "1 adversary Troop lands here. The nearest player pays 2 chips or discards 1 card.",
+   "text": "1 adversary Troop lands here. This country's player pays 2 chips or discards 1 card.",
    "counters": [
     [
      {
@@ -140,7 +141,8 @@
    "value": "counter 2 Industry tags (10) or 12 credits (12); uncountered 13 at values.json (a troop 9 with its strike), 1.30x the cheapest counter",
    "check": "bites chip holders near factories; Industry tags or credits pay it",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "supply_raid"
   },
@@ -154,7 +156,7 @@
    "locations": [
     "city"
    ],
-   "text": "The nearest player pays 2 Ambassadors or discards 2 cards. The adversary gains 4 compute.",
+   "text": "This country's player pays 2 Ambassadors or discards 2 cards. The adversary gains 4 compute.",
    "counters": [
     [
      {
@@ -188,7 +190,8 @@
    "value": "counter 2 Security tags (10) or 12 credits (12); uncountered 12.4 at values.json (a troop 9 with its strike), 1.24x the cheapest counter",
    "check": "bites a seat saving ambassadors for a claim; the counter asks Security tags, never ambassadors",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "eviction"
   },
@@ -200,7 +203,7 @@
     "security"
    ],
    "locations": [
-    "base"
+    "coastal_city"
    ],
    "text": "1 adversary Troop lands here. 1 Fallout lands next to here.",
    "counters": [
@@ -235,7 +238,8 @@
    "value": "counter 3 ambassadors (12) or 12 credits (12); uncountered 21 at values.json (a troop 9 with its strike, a Fallout 12), 1.75x the cheapest counter",
    "check": "bites all game; Discord rides with Security here",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "call_up"
   },
@@ -248,7 +252,7 @@
     "security"
    ],
    "locations": [
-    "base"
+    "city"
    ],
    "text": "A tier-1 threat is dealt into this country (it executes next round). Sway 2 toward Discord.",
    "counters": [
@@ -275,7 +279,8 @@
     {
      "op": "sway",
      "side": "discord",
-     "amount": 2, "narrative": "fear"
+     "amount": 2,
+     "narrative": "fear"
     }
    ],
    "harms": [
@@ -285,7 +290,8 @@
    "value": "counter 3 ambassadors (12) or 12 credits (12); uncountered 15 at values.json (a troop 9 with its strike), 1.25x the cheapest counter",
    "check": "bites by tempo: the next threat comes a round early; no loop (the dealt threat is any tag, never a chain past one)",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "provocation"
   },
@@ -323,7 +329,8 @@
     {
      "op": "sway",
      "side": "discord",
-     "amount": 2, "narrative": "fear"
+     "amount": 2,
+     "narrative": "fear"
     }
    ],
    "harms": [
@@ -347,7 +354,7 @@
    "locations": [
     "city"
    ],
-   "text": "The nearest player pays 2 Ambassadors or discards 2 cards. Sway 1 toward Discord.",
+   "text": "This country's player pays 2 Ambassadors or discards 2 cards. Sway 1 toward Discord.",
    "counters": [
     [
      {
@@ -372,7 +379,8 @@
     {
      "op": "sway",
      "side": "discord",
-     "amount": 1, "narrative": "fear"
+     "amount": 1,
+     "narrative": "fear"
     }
    ],
    "harms": [
@@ -382,7 +390,8 @@
    "value": "counter 2 Diplomacy tags (10) or 12 credits (12); uncountered 12 at values.json (a troop 9 with its strike), 1.20x the cheapest counter",
    "check": "bites diplomats; the counter asks Diplomacy tags, never ambassadors",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "defection"
   },
@@ -397,7 +406,7 @@
     "city",
     "station"
    ],
-   "text": "Remove 2 Unity from the Unity track. The nearest player pays 2 energy or discards 2 cards.",
+   "text": "Remove 2 Unity from the Unity track. This country's player pays 2 energy or discards 2 cards.",
    "counters": [
     [
      {
@@ -431,7 +440,8 @@
    "value": "counter 3 ambassadors (12) or 12 credits (12); uncountered 18 at values.json (a troop 9 with its strike), 1.50x the cheapest counter",
    "check": "bites the Unity race and this round's energy (189: insight is no adversary harm)",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "smear_campaign"
   },
@@ -464,7 +474,8 @@
     {
      "op": "sway",
      "side": "discord",
-     "amount": 3, "narrative": "fear"
+     "amount": 3,
+     "narrative": "fear"
     },
     {
      "op": "compute",
@@ -492,7 +503,7 @@
    "locations": [
     "station"
    ],
-   "text": "The nearest player loses 4 tokens from their cards. The adversary gains 6 compute.",
+   "text": "This country's player loses 4 tokens from their cards. The adversary gains 6 compute.",
    "counters": [
     [
      {
@@ -524,7 +535,8 @@
    "value": "counter 2 Cyber tags (10) or 12 credits (12); uncountered 10.6 at values.json (a troop 9 with its strike), 1.06x the cheapest counter",
    "check": "bites seats building toward an At N Effect",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "sabotage"
   },
@@ -539,7 +551,7 @@
    "locations": [
     "station"
    ],
-   "text": "1 Agent is created here. The nearest player pays 3 research cubes or discards 2 cards.",
+   "text": "1 Agent is created here. This country's player pays 3 research cubes or discards 2 cards.",
    "counters": [
     [
      {
@@ -574,7 +586,8 @@
    "value": "counter 3 ambassadors (12) or 12 credits (12); uncountered 12 at values.json (a troop 9 with its strike), 1.00x the cheapest counter",
    "check": "bites station holders: cubes lost, the station nearer corrupting (at 3)",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "insider_access"
   },
@@ -588,7 +601,7 @@
    "locations": [
     "station"
    ],
-   "text": "The nearest player discards 2 cards. 2 cubes go onto the adversary's research track.",
+   "text": "This country's player discards 2 cards. 2 cubes go onto the adversary's research track.",
    "counters": [
     [
      {
@@ -621,7 +634,8 @@
    "value": "counter 3 research cubes (9) or 12 credits (12); uncountered 2 cards (8) and 2 research cubes (6, remove_research 3 each) 14 at values.json, 1.56x the cheapest counter (259: was 3 cards, 12)",
    "check": "bites a hand held for next round; the counter asks research cubes",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "wiper_malware"
   },
@@ -636,7 +650,7 @@
     "station",
     "factory"
    ],
-   "text": "The adversary gains 6 compute. The nearest player pays 2 research cubes or discards 1 card.",
+   "text": "The adversary gains 6 compute. This country's player pays 2 research cubes or discards 1 card.",
    "counters": [
     [
      {
@@ -670,7 +684,8 @@
    "value": "counter 2 Cyber tags (10) or 12 credits (12); uncountered 10.6 at values.json (a troop 9 with its strike), 1.06x the cheapest counter",
    "check": "feeds the projects; bites cube holders",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "cryptojacking"
   },
@@ -727,7 +742,7 @@
     "factory",
     "city"
    ],
-   "text": "The nearest player pays 3 chips or discards 2 cards. The adversary gains 3 compute.",
+   "text": "This country's player pays 3 chips or discards 2 cards. The adversary gains 3 compute.",
    "counters": [
     [
      {
@@ -761,7 +776,8 @@
    "value": "counter 2 Industry tags (10) or 12 credits (12); uncountered 11.3 at values.json (a troop 9 with its strike), 1.13x the cheapest counter",
    "check": "bites chip holders; Industry tags or credits pay it",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "requisition"
   },
@@ -776,7 +792,7 @@
    "locations": [
     "city"
    ],
-   "text": "The nearest player pays 3 chips or discards 2 cards. The adversary gains 4 compute.",
+   "text": "This country's player pays 3 chips or discards 2 cards. The adversary gains 4 compute.",
    "counters": [
     [
      {
@@ -806,9 +822,10 @@
     "credits or income lost"
    ],
    "value": "counter 3 ambassadors (12) or 12 credits (12); uncountered 12.4 at values.json (a troop 9 with its strike), 1.03x the cheapest counter",
-   "check": "bites chip holders; theft hits the nearest player like every harm",
+   "check": "bites chip holders; theft hits this country's player like every harm",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "shakedown"
   },
@@ -822,7 +839,7 @@
    "locations": [
     "factory"
    ],
-   "text": "1 Agent is created here. The nearest player pays 2 energy or discards 2 cards.",
+   "text": "1 Agent is created here. This country's player pays 2 energy or discards 2 cards.",
    "counters": [
     [
      {
@@ -857,7 +874,8 @@
    "value": "counter 3 chips (12) or 12 credits (12); uncountered 12 at values.json (a troop 9 with its strike), 1.00x the cheapest counter",
    "check": "bites near factories (an arrival corrupts a factory at 3 agents)",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "embargo"
   },
@@ -871,7 +889,7 @@
    "locations": [
     "coastal_city"
    ],
-   "text": "The nearest player discards 2 cards. The adversary gains 4 compute.",
+   "text": "This country's player discards 2 cards. The adversary gains 4 compute.",
    "counters": [
     [
      {
@@ -903,7 +921,8 @@
    "value": "counter 3 chips (12) or 12 credits (12); uncountered 12.4 at values.json (a troop 9 with its strike), 1.03x the cheapest counter",
    "check": "bites a hand held for next round",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "credit_crunch"
   },
@@ -917,7 +936,7 @@
    "locations": [
     "factory"
    ],
-   "text": "The nearest player pays 3 energy or discards 3 cards.",
+   "text": "This country's player pays 3 energy or discards 3 cards.",
    "counters": [
     [
      {
@@ -946,7 +965,8 @@
    "value": "counter 3 chips (12) or 12 credits (12); uncountered 12 at values.json (a troop 9 with its strike), 1.00x the cheapest counter",
    "check": "bites energy holders; chips pay it",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "chip_shortage"
   },
@@ -961,7 +981,7 @@
    "locations": [
     "city"
    ],
-   "text": "The nearest player pays 3 energy or discards 3 cards.",
+   "text": "This country's player pays 3 energy or discards 3 cards.",
    "counters": [
     [
      {
@@ -990,7 +1010,8 @@
    "value": "counter 2 Power tags (10) or 12 credits (12); uncountered 12 at values.json (a troop 9 with its strike), 1.20x the cheapest counter",
    "check": "bites energy holders; Power tags or credits pay it",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "blackout"
   },
@@ -1005,7 +1026,7 @@
     "city",
     "station"
    ],
-   "text": "The nearest player turns 1 building face down until the end of next round. The adversary gains 3 compute.",
+   "text": "This country's player turns 1 building face down until the end of next round. The adversary gains 3 compute.",
    "counters": [
     [
      {
@@ -1038,7 +1059,8 @@
    "value": "counter 3 research cubes (9) or 12 credits (12); uncountered 9.3 at values.json (a troop 9 with its strike), 1.03x the cheapest counter",
    "check": "bites engine seats from round 3",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "load_shedding"
   },
@@ -1052,7 +1074,7 @@
    "locations": [
     "station"
    ],
-   "text": "The nearest player pays 2 energy or discards 2 cards. The adversary gains 4 compute.",
+   "text": "This country's player pays 2 energy or discards 2 cards. The adversary gains 4 compute.",
    "counters": [
     [
      {
@@ -1086,7 +1108,8 @@
    "value": "counter 3 research cubes (9) or 12 credits (12); uncountered 12.4 at values.json (a troop 9 with its strike), 1.38x the cheapest counter",
    "check": "bites energy holders; research cubes pay it",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "power_surcharge"
   },
@@ -1100,7 +1123,7 @@
    "locations": [
     "station"
    ],
-   "text": "The nearest player pays 3 research cubes or discards 2 cards. The adversary gains 3 compute.",
+   "text": "This country's player pays 3 research cubes or discards 2 cards. The adversary gains 3 compute.",
    "counters": [
     [
      {
@@ -1134,7 +1157,8 @@
    "value": "counter 2 Power tags (10) or 12 credits (12); uncountered 11.3 at values.json (a troop 9 with its strike), 1.13x the cheapest counter",
    "check": "bites cube holders",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "cooling_failure"
   },
@@ -1148,7 +1172,7 @@
    "locations": [
     "city"
    ],
-   "text": "The nearest player pays 2 energy or discards 2 cards. The adversary gains 4 compute.",
+   "text": "This country's player pays 2 energy or discards 2 cards. The adversary gains 4 compute.",
    "counters": [
     [
      {
@@ -1178,9 +1202,10 @@
     "energy lost"
    ],
    "value": "counter 3 research cubes (9) or 12 credits (12); uncountered 12.4 at values.json (a troop 9 with its strike), 1.38x the cheapest counter",
-   "check": "bites energy holders; theft hits the nearest player",
+   "check": "bites energy holders; theft hits this country's player",
    "flags": [
-    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
    ],
    "reuses": "grid_tap"
   }

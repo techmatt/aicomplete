@@ -1,5 +1,7 @@
 # AI Complete: Rulebook (third draft)
 
+**This book describes rules revision 138 and is being rewritten for the overhaul: the current rules are in [rules/](rules/README.md).**
+
 *Rules revision 138. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each

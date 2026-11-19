@@ -5,8 +5,8 @@
 
 use super::*;
 use crate::key::KeyBuf;
-use crate::op::{CorpNear, DestroyAt, FactoryWhere, FalloutAt, Scope, TheftWho, TroopAt, TroopIf, Until};
-use crate::vocab::{Location, PullTag};
+use crate::op::{DestroyAt, FactoryWhere, FalloutAt, Scope, TheftWho, TroopAt, TroopIf, Until};
+use crate::vocab::Location;
 
 /// Resolve one of the 135 ops (or an old op with a 135 field set).
 pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
@@ -49,7 +49,7 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
             };
             for c in countries {
                 for _ in 0..*count {
-                    threats::deal_tier(g, cx, tier, &[PullTag::Any], c)?;
+                    threats::deal_tier(g, cx, tier, c)?;
                 }
             }
         }
@@ -62,7 +62,6 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
             let n = ctx.seats(&w, g).into_iter().filter(|&s| g.resource(s, *resource) <= 0).count() as i64;
             adversary::gain_compute(g, cx, n * amount)?;
         }
-        Op::CorpTroops { count, near, .. } => corp_troops(g, cx, ctx, *count, *near),
         Op::DestroyFacility { at: DestroyAt::Factory } => destroy_factory(g, cx, ctx)?,
         Op::DisableBuilding { count, until: Until::EndOfNextRound } => {
             for s in ctx.seats(&w, g) {
@@ -80,16 +79,6 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
         Op::Discard { count } => {
             for s in ctx.seats(&w, g) {
                 discard(g, cx, ctx, s, *count)?;
-            }
-        }
-        Op::ExtraWar => {
-            // Threats execute after the war step: "next round" is the next war step.
-            if let Some(base) = token(&w, g, ctx, Some(Location::Base)) {
-                for (i, f) in w.map.fronts.iter().enumerate() {
-                    if f.bases.contains(&base) {
-                        cx.set_key(g, &board::extra_war_key(i), g.round as i64 + 1);
-                    }
-                }
             }
         }
         Op::LoseAmbassadorsOr { count, resource, amount } => {
@@ -160,7 +149,7 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
         }
         Op::Fallout { count, at } => fallout(g, cx, ctx, *count, *at),
         Op::Theft { who: TheftWho::Nearest, resource, amount, compute, cards } => {
-            // 146: the nearest player, as every threat harm hits (was the richest near it); D62: pay or discard,
+            // 146: the one player every threat harm hits (292: its country's; was the richest near it); D62: pay or discard,
             // as `Requisition`, so holding none dodges nothing.
             let before: i64 = ctx.seats(&w, g).iter().map(|&s| g.resource(s, *resource)).sum();
             requisition(g, cx, ctx, *resource, *amount, *cards, false)?;
@@ -189,11 +178,9 @@ fn op_name(e: &Op) -> &'static str {
         Op::DealThreats { .. } => "deal_threats",
         Op::AdversaryFactory { .. } => "adversary_factory",
         Op::ComputePerMissing { .. } => "compute_per_missing",
-        Op::CorpTroops { .. } => "corp_troops",
         Op::DestroyFacility { .. } => "destroy_facility",
         Op::DisableBuilding { .. } => "disable_building",
         Op::Discard { .. } => "discard",
-        Op::ExtraWar => "extra_war",
         Op::LoseAmbassadorsOr { .. } => "lose_ambassadors_or",
         Op::LoseIncome { .. } => "lose_income",
         Op::LoseOr { .. } => "lose_or",
@@ -701,24 +688,6 @@ fn factory_in(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, c: Option<usize>, fallb
         }
     }
     Ok(())
-}
-
-/// CorpTroops, each production (its only form since 255 deleted `now` and `location`): from a threat it registers
-/// them on every base for the next round (247: its `rounds`, `permanent` and `fill`, printed nowhere, are gone); the
-/// adversary board's are read by the production step (231: no project is ongoing), so here do nothing.
-fn corp_troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64, near: Option<CorpNear>) {
-    if ctx.threat.is_none() {
-        return;
-    }
-    let w = cx.world;
-    let mut bases: Vec<usize> = (0..g.hexes.len()).filter(|&h| is_base(&w, h)).collect();
-    if near == Some(CorpNear::AdversaryTroop) {
-        bases.retain(|&b| next_to(&w, b, |x| g.tokens(x, TROOP) > 0));
-    }
-    let until = g.round + 1;
-    for b in bases {
-        cx.add_key(g, &board::corp_extra_key(b, until), count);
-    }
 }
 
 /// Siege: the factory under the threat's token is destroyed (as any

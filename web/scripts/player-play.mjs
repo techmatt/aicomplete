@@ -10,9 +10,33 @@
 // focused in turn, it counts legal actions with no visible control (`no-control`; the sweep's check), then
 // steps through the adversary's turn whenever one is open. At the end it copies the record through the Record
 // dialog into OUT/record.json and writes OUT/summary.json and a few screenshots.
-import { mkdirSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+//
+// 292: every step, and at the end, it also looks for the pieces 292 cut (`removed` in the summary; any fails the
+// run): a base hex, pennant, front or Drone drawn on the map, an Envoy or Buy energy button, a fronts or host value,
+// a War or drones phase in the round bar, and their words in the page's visible text and hovers (`CUT_WORDS`), a
+// card's own name aside ("War Rooms", "Survey Drone Fleet": read from content/).
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { openPage, viewerUrl } from './cdp.mjs';
+
+/** The cut pieces' words. "in front of you" is no front; a capital War is the step and its log lines. */
+const CUT_WORDS = String.raw`\b[Dd]rones?\b|\b[Mm]ilitary bases?\b|\bEnvoy\b|Buy a city's energy|\b[Hh]ost(?:s|ed|ing)?\b|\b[Ff]ronts?\b(?! of)|\bWar\b|\bwar (?:step|phase)\b|Warmongering|Twin City Compact|nearest players`;
+/** Content names that hold one of those words: taken out of the text before it is read. */
+function cutWordNames() {
+  const dir = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'content');
+  const re = new RegExp(CUT_WORDS);
+  const names = new Set();
+  const walk = (v) => {
+    if (Array.isArray(v)) v.forEach(walk);
+    else if (v && typeof v === 'object') {
+      if (typeof v.name === 'string' && re.test(v.name)) names.add(v.name);
+      Object.values(v).forEach(walk);
+    }
+  };
+  for (const f of readdirSync(dir).filter((x) => x.endsWith('.json'))) walk(JSON.parse(readFileSync(join(dir, f), 'utf8')));
+  return [...names].sort((a, b) => b.length - a.length);
+}
 
 const arg = (k, d) => {
   const i = process.argv.indexOf(`--${k}`);
@@ -43,7 +67,34 @@ await page.js(`(() => {
     return { exact: new Set(cs.map((e) => e.dataset.action)), hexes: new Set(cs.flatMap((e) => (e.dataset.hexes ?? '').split(' ').filter(Boolean))) };
   };
   const isHex = (t) => Array.isArray(t) && t.length === 2;
+  const CUT = new RegExp(${JSON.stringify(CUT_WORDS)});
+  const NAMES = ${JSON.stringify(cutWordNames())};
+  const CUT_DOM = '#board .k-base, #board .base-mark, #board .fronts, #board .front-link, #board .front-edge, #board .token[data-token^="unit"], '
+    + '[data-value="board.fronts"], [data-value*="host_cap"], [data-value*="host_more"]';
   window.__pp = {
+    /** 292: the cut pieces on screen now: drawn elements, buttons, round-bar phases, then words in visible text and hovers. */
+    removed() {
+      const found = [];
+      for (const e of document.querySelectorAll(CUT_DOM)) if (vis(e)) found.push('element ' + (e.getAttribute('class') || e.dataset.value || e.tagName) + (e.dataset.token ? ' ' + e.dataset.token : ''));
+      for (const h of aic.view.hexes) {
+        if (h.kind === 'base' || h.facing !== undefined) found.push('view hex ' + h.kind + ' ' + h.hex.join(','));
+        for (const t of h.tokens) if (t.kind.split(':')[0] === 'unit') found.push('view token ' + t.kind);
+      }
+      for (const a of aic.legal) if (a.type === 'standard' && /^(envoy|buy_energy)$/.test(String(a.act))) found.push('legal action ' + a.act);
+      for (const p of aic.view.round_order) if (/^board\\.(war|bases)$/.test(p.name)) found.push('phase ' + p.name);
+      const strip = (t) => NAMES.reduce((s, n) => s.split(n).join(' '), t);
+      const read = (where, raw) => {
+        for (const line of strip(raw ?? '').split('\\n')) {
+          const m = CUT.exec(line);
+          if (m) found.push(where + ' "' + m[0] + '": ' + line.trim().slice(0, 120));
+        }
+      };
+      read('text', document.body.innerText);
+      for (const e of document.querySelectorAll('[title]')) if (vis(e)) read('hover', e.getAttribute('title'));
+      const tip = document.getElementById('tip');
+      if (tip && !tip.hidden) read('tip', tip.innerText);
+      return [...new Set(found)];
+    },
     noControl() {
       const missing = [];
       const seats = [...new Set(aic.legal.map((a) => a.seat))];
@@ -93,12 +144,18 @@ let noControl = 0;
 const noControlSamples = [];
 const clicks = {};
 let turnSteps = 0;
+// 292: each cut piece seen, with the round it first showed in.
+const removed = new Map();
+const lookForRemoved = async (round) => {
+  for (const r of await page.js('window.__pp.removed()')) if (!removed.has(r)) removed.set(r, round);
+};
 for (let i = 0; i < maxSteps; i++) {
   const st = await page.js(`({ over: !!aic.view.outcome, phase: aic.view.phase && aic.view.phase.name, round: aic.view.round, turn: !!document.querySelector('#p-turn ol') })`);
   if (st.over) break;
   const missing = await page.js('window.__pp.noControl()');
   noControl += missing.length;
   if (missing.length && noControlSamples.length < 10) noControlSamples.push(...missing.slice(0, 3));
+  await lookForRemoved(st.round);
   // A screenshot at the first draft, keep, action phase and adversary's turn.
   const moment = st.turn ? 'adversary-turn' : st.phase ? st.phase.split('.').pop().split('+')[0] : null;
   if (moment && !seen.has(moment) && st.round >= 2) {
@@ -112,16 +169,18 @@ for (let i = 0; i < maxSteps; i++) {
   clicks[kind] = (clicks[kind] ?? 0) + 1;
 }
 await shot('end');
+await lookForRemoved('end');
 // The record, through the Record dialog.
 await page.js(`document.getElementById('record').click()`);
 const record = await page.js(`document.getElementById('record-text').value`);
 await page.js(`document.getElementById('record-close').click()`);
 writeFileSync(join(out, 'record.json'), record.endsWith('\n') ? record : `${record}\n`);
 const end = await page.js(`({ outcome: aic.view.outcome, actions: aic.timeline.last, seats: aic.view.seats.length, mode: aic.mode })`);
-const summary = { config, seed, size: `${width}x${height}`, ...end, noControl, noControlSamples, turnSteps, clicks, consoleErrors: page.consoleErrors, shots };
+const removedSeen = [...removed].map(([what, round]) => `round ${round}: ${what}`);
+const summary = { config, seed, size: `${width}x${height}`, ...end, noControl, noControlSamples, removed: removedSeen.length, removedSamples: removedSeen.slice(0, 40), turnSteps, clicks, consoleErrors: page.consoleErrors, shots };
 writeFileSync(join(out, 'summary.json'), `${JSON.stringify(summary, null, 1)}\n`);
 console.log(JSON.stringify(summary, null, 1));
-ok = !!end.outcome && noControl === 0 && !page.consoleErrors.length;
+ok = !!end.outcome && noControl === 0 && removedSeen.length === 0 && !page.consoleErrors.length;
 } finally {
   await page.close();
 }

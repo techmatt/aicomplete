@@ -299,9 +299,6 @@ def op_worth(t, o):
         return Worth(now=row(op) * n('amount'))
     if op == 'production':
         return Worth(income=row(op) * income_r(t, o['resource']) * n('amount'))
-    if op == 'host_more':
-        # 258: an extra host slot, as energy income at the row's share.
-        return Worth(income=row(op) * income_r(t, 'energy') * n('count'))
     if op == 'production_per_tag':
         return Worth(income_per_tag={o['tag']: row(op) * income_r(t, o['resource']) / max(n('per'), 1)})
     if op == 'add_tokens':

@@ -769,10 +769,10 @@ mod tests {
     #[test]
     fn counters_that_average_over_reached_games() {
         assert!(is_round_counter("adversary.first_corruption_round"));
-        assert!(!is_round_counter("board.war_rounds"));
+        assert!(!is_round_counter("board.std_actions"));
         assert_eq!(per_round_counter("adversary.ambassadors_r06"), Some((6, RoundTally::Level)));
         assert_eq!(per_round_counter("alignment.tip_unity.r11"), Some((11, RoundTally::Event)));
-        assert_eq!(per_round_counter("board.war_rounds"), None);
+        assert_eq!(per_round_counter("board.std_actions"), None);
         assert_eq!(per_round_counter("adversary.botnets_peak.c0"), None);
     }
 }

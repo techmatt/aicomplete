@@ -115,7 +115,7 @@ moves when any other card changes: to reprice an edited card, move its price by 
   over 1.5 at the anchors or a loss at the table (a gain needs over 1.8 insight an energy, the ceiling under 1.69);
   into cards only 1.13-1.35 cards an energy passes both (3 energy for 4 cards). Tier 2's 2.5 ceiling passes either
   at 1:2.
-- **Energy is rare:** about 3 credits an energy, 4 to buy from a neutral city. +1 energy of income or production is
+- **Energy is rare:** about 3 credits an energy (no action buys it). +1 energy of income or production is
   the horizon × 3 × 0.8 (`rates.energy_income_share`: it arrives a drop at a time, not when needed): about 9.6 on a
   tier-1 card, 8.4 on a tier-2 one (Matt's ruling), and no card above +2 a card but the major Dyson Swarm Tranche (+3) and one tag payoff (Tidal
   Barrage, +3 at 6 Power tags). Threat counters that offer energy (by tag), fourteen cards and ten Actions take

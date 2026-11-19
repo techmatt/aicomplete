@@ -61,7 +61,6 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("grow_cap", 0, 6, "275: a Grow site with this many facilities next to it (any owner) doesn't grow (0: no cap)"),
     ParamSpec::int("threat_agents", 0, 5, "275: agents an uncountered threat lands on its anchor (its first location token) as it executes"),
     ParamSpec::int("discord_removed", 0, 3, "difficulty 4+: Discord cards removed at setup (from tier 1)"),
-    ParamSpec::int("war_node", 0, 1, "build (r83, the Militarist's War Takes Ground): 1: a drone strike that destroys a factory destroys a node on its hex too"),
     ParamSpec::int("station_flip_at", 0, 5, "agents on a player's research station before an effect can flip it (short of that, one lands there instead)"),
     ParamSpec::int("botnet_compute", 0, 5, "adversary compute each botnet makes a round (none with a player ambassador on it)"),
     ParamSpec::int("botnet_spread_at", 0, 5, "263: the difficulty level from which a 'Botnets spread' line (event cards, projects) spreads botnets; below it the line does nothing"),

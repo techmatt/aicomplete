@@ -80,7 +80,7 @@ From `margin()` in `experiment.rs`, on the final table.
 | `blockers` | pieces the bar at `level` still counts (corrupted cities, then botnets, troops, ambassadors as the level counts them); 0 on a win |
 | `deck_left` | adversary cards still to come, face-up one included |
 | `supply_left`, `supply_start` | adversary ambassadors in the supply at the end and at the start |
-| `cities_corrupted_end`, `cities_aligned_end` | corrupted cities; cities with a player cube or hosted by a player |
+| `cities_corrupted_end`, `cities_aligned_end` | corrupted cities; cities with a player cube, or free with a player's node on or next to them |
 | `unity_tips`, `botnets_end`, `troops_end` | Unity tips; botnets and adversary troops on the board |
 | `unspent`, `held_after_actions` | per seat, in `UNSPENT` order (`board::LEFT`: credits, chips, energy, antimatter, ambassadors): held as its last action phase ended (`unspent` reads now if the game ended mid-phase) |
 | `node_spread` | per seat: [nodes, countries, connected groups, farthest two apart in hexes] |

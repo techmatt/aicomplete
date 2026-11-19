@@ -58,7 +58,7 @@ def event(c):
         raise SystemExit(f"{c['id']}: arrivals and escalation are retired (138): print creation lines")
     twists = ops(c["twists"])
     out = {"id": c["id"], "name": c["name"], "stage": c["stage"],
-           "pulls": [{"tier": p["tier"], "tags": p["tags"]} for p in c["pulls"]],
+           "pulls": [{"tier": p["tier"]} for p in c["pulls"]],
            "standing": ops(c["standing"]), "twists": twists, "text": c["text"]}
     out["harms"] = c["harms"]
     return out
@@ -66,6 +66,8 @@ def event(c):
 
 def board(b):
     return {"id": b["id"], "name": b["name"], "project_slots": b["project_slots"],
+            # 292: the lean of the threat decks, built once at setup.
+            **({"threat_deck": b["threat_deck"]} if "threat_deck" in b else {}),
             "rules": [{"name": r["name"], "text": r["text"], "effects": ops(r["effects"])} for r in b["rules"]],
             "difficulty": {"text": b["difficulty"]["text"], "effects": ops(b["difficulty"]["effects"])},
             **({"research": research(b["research"])} if "research" in b else {}),
@@ -113,6 +115,8 @@ def cards_page(threats, projects, adversary):
     b = adversary["board"]
     slots = ", ".join((s["tag"] or "open").capitalize() for s in b["project_slots"])
     out += [f"## {b['name']} (board)", "", f"Project slots: {slots}.", ""]
+    if "threat_deck" in b:
+        out.append(f"- **{b['threat_deck']['name']}** (threat decks). {b['threat_deck']['text']}")
     for r in b["rules"]:
         out.append(f"- **{r['name']}.** {r['text']}")
     if "research" in b:

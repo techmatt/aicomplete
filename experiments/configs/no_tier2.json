@@ -8,7 +8,6 @@
       "params": {
         "start_corrupted": 1,
         "start_ambassadors": 1,
-        "unit_cap": 2,
         "aligned_bonus": 0,
         "station_cubes": 1,
         "owned_station_cubes": 1,
@@ -18,7 +17,6 @@
         "claim_station": 4,
         "claim_factory": 3,
         "start_nodes": 1,
-        "destruction_discord": 1,
         "troop_spent": 1,
         "troop_steps": 1,
         "troop_node": 0,
@@ -32,20 +30,16 @@
         "remove_ambassadors": 2,
         "remove_count": 3,
         "land_cubes": 2,
-        "envoy_ambassadors": 1,
         "ambassador_credits": 16,
         "sell_credits": 1,
         "corp_energy": [
           1
         ],
-        "city_energy_credits": 4,
         "cube_insight": 1,
         "insight_cubes": 1,
         "insight_per_round": 1,
         "liberate_neutral": 1,
         "cities_unowned": 1,
-        "host_city": 1,
-        "host_reach": 1,
         "antimatter_cubes": 5,
         "antimatter_energy": 2,
         "botnet_credits": 13,
@@ -111,7 +105,6 @@
         "threat_agents": 1,
         "grow_cap": 2,
         "discord_removed": 0,
-        "war_node": 1,
         "station_flip_at": 2,
         "botnet_compute": 1,
         "botnet_spread_at": 1,
@@ -138,7 +131,6 @@
         "tip_per_player": 3,
         "discord_tip_per_player": 4,
         "carry": 2,
-        "hold_off": 1,
         "momentum_every": 0,
         "troop": 0,
         "free_city": 5,
@@ -342,9 +334,7 @@
     "cards.play+threats.counter+board.act+ai.power",
     "board.produce",
     "economy.upkeep",
-    "board.bases",
     "threats.execute",
-    "board.war",
     "board.cleanup"
   ]
 }

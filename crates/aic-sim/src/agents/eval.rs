@@ -155,7 +155,7 @@ pub struct Weights {
     /// the Researcher's second node takes 3): in place of `research_cube`.
     pub research_cube_power: f64,
     /// 092, a strategy-guide heuristic (0: off): a country sheltered while a
-    /// threat or the war step showing would destroy a node or factory there is
+    /// threat showing would destroy a node or factory there is
     /// worth what the shelter saves (`agents/guide.rs`).
     pub shelter_read: f64,
     /// 092: a node a shelter saves, beyond `node` and the seat's `node_danger`
@@ -842,10 +842,6 @@ pub struct Eval {
     /// 248: whether the Liberate action is offered (`board.std_off`, a probe's switch): off, no bill to save toward.
     liberate_on: bool,
     aligned_bonus: i64,
-    /// 254 (`board.host_city`): a neutral city's energy goes to the seat whose node is on it, this many a seat.
-    host_city: usize,
-    /// 254 (`board.host_reach`): a node next to the city hosts it too.
-    host_reach: bool,
     tip_per_player: i64,
     /// The seat with Wall, if a seat has it.
     wall_seat: Option<usize>,
@@ -1143,8 +1139,6 @@ impl Eval {
             city_energy: world.list("board.corp_energy").first().copied().unwrap_or(1),
             liberate_on: board::std_offered(&world, board::StandardAction::Liberate),
             aligned_bonus: world.int("board.aligned_bonus"),
-            host_city: world.int("board.host_city").max(0) as usize,
-            host_reach: world.int("board.host_reach") > 0,
             tip_per_player: world.int("alignment.tip_per_player"),
             wall_seat: (0..seats).find(|&s| ai::board(&world, s).innate.passives.iter().any(|p| matches!(p, Op::Wall))),
             patient: std::array::from_fn(|s| s < seats && economy::patient(&world, s)),
@@ -1495,8 +1489,6 @@ impl Eval {
         let near = self.reach_masks(rules, &tokens);
         let seats = self.seats;
         let mut pieces = 0i64;
-        // 254: the hosted cities, the engine's matching on this token view (`host_city` a seat).
-        let hosted_set = self.host_matching(&world, &tokens, g, true);
         // 162: each seat's Liberate bill, the corrupted cities in its reach (the purge term).
         let mut bill = [0i64; 4];
         let level = alignment::bar_level(&world, g);
@@ -1511,7 +1503,6 @@ impl Eval {
         for h in 0..g.hexes.len() {
             let t = &tokens[h];
             let city = common::is_city(&world, h);
-            let base = common::is_base(&world, h);
             let adv = t.adv_ambassador;
             let bad = t.adv_cube > 0;
             let owned = t.cube[..seats].iter().any(|&n| n > 0);
@@ -1543,10 +1534,12 @@ impl Eval {
                         v += w.block;
                     }
                 } else {
-                    // 254: a hosted neutral city (a node on it, or next to it with `host_reach`) pays its host as an
-                    // aligned one did.
-                    let hosted = hosted_set.iter().any(|&(c, _)| c == h);
-                    if owned || hosted {
+                    // 292: a city neither corrupted nor blocked pays every seat with a node on or next to it, each as
+                    // an aligned one paid its owner (254-r138: one host a city).
+                    let paid = self.city_payees(&world, &tokens, Some(g), h).count();
+                    if paid > 0 && !owned {
+                        v += w.aligned * paid as f64;
+                    } else if owned {
                         v += w.aligned;
                         if adv > 0 {
                             // r38: an adversary ambassador darkens an aligned city too.
@@ -1637,7 +1630,7 @@ impl Eval {
             }
             v -= w.adv_ambassador * adv as f64;
             if adv > 0 {
-                let piece = held || owned || base || t.factory > 0 || t.station > 0;
+                let piece = held || owned || t.factory > 0 || t.station > 0;
                 if piece {
                     v -= w.on_piece * adv as f64;
                 }
@@ -1721,7 +1714,7 @@ impl Eval {
             for &n in t.ambassador.iter().take(self.seats) {
                 v += w.ambassador_board * n as f64;
             }
-            let counts = city || base || t.station > 0;
+            let counts = city || t.station > 0;
             if counts && (0..self.seats).any(|s| near[s] >> h & 1 != 0) {
                 reach += 1;
             }
@@ -2264,34 +2257,27 @@ impl Eval {
         }
     }
 
-    /// 254: the hosted cities as (city, seat), the engine's matching (`common::match_hosts`) on this token view: a
-    /// neutral city with no agent on it, a seat's node on it (or next to it with `board.host_reach`), `host_city` a
-    /// seat. With `now` (this round's income step, the eval's hosted term), a city blacked out hosts no one, as in the
-    /// engine (262, D107: a purchase no longer unhosts one; a hosted city can't be bought); without it (a round's
-    /// projected production) that one-round mark is not read. 258: each seat's cap is the engine's
-    /// (`common::host_caps`: `host_city` plus the `host_more` its cards raised), read from `g`.
-    fn host_matching(&self, world: &aic_core::module::World, tokens: &[HexTokens], g: &GameState, now: bool) -> Vec<(usize, usize)> {
-        if self.host_city == 0 {
-            return Vec::new();
-        }
-        let mut caps = common::host_caps(world, g);
-        caps.resize(self.seats, self.host_city);
-        let now = if now { Some(g) } else { None };
+    /// 292: the seats city `h` pays its energy on this token view (`board::production::city_energy`): a neutral city
+    /// with no agent on it, each seat with a node on or next to it. With `now` (this round's income step), a city
+    /// blacked out pays no one; without it (a round's projected production) that one-round mark is not read.
+    fn city_payees<'a>(
+        &'a self,
+        world: &'a aic_core::module::World,
+        tokens: &'a [HexTokens],
+        now: Option<&'a GameState>,
+        h: usize,
+    ) -> impl Iterator<Item = usize> + 'a {
         let seats = self.seats;
-        let open: Vec<usize> = (0..tokens.len())
-            .filter(|&h| {
-                let t = &tokens[h];
-                common::is_city(world, h) && t.adv_cube == 0 && t.adv_ambassador == 0 && t.cube[..seats].iter().all(|&n| n == 0)
-            })
-            .filter(|&h| {
-                // 262 (D107): a purchase no longer unhosts a city (`common::host_assignment`).
-                now.is_none_or(|g| !board::hex_flagged(world, g, aic_core::content::RoundFlag::Blackout, h))
-            })
-            .collect();
-        let hosts = |s: usize, h: usize| {
-            tokens[h].node[s] > 0 || (self.host_reach && world.map.hexes[h].neighbors.iter().any(|&x| tokens[x].node[s] > 0))
-        };
-        common::match_hosts(&caps, &open, hosts)
+        let t = &tokens[h];
+        let by = move |s: usize| tokens[h].node[s] > 0 || world.map.hexes[h].neighbors.iter().any(|&x| tokens[x].node[s] > 0);
+        // The blackout read (two var lookups) comes last: most cities have no node beside them.
+        let open = common::is_city(world, h)
+            && t.adv_cube == 0
+            && t.adv_ambassador == 0
+            && t.cube[..seats].iter().all(|&n| n == 0)
+            && (0..seats).any(by)
+            && now.is_none_or(|g| !board::hex_flagged(world, g, aic_core::content::RoundFlag::Blackout, h));
+        (0..seats).filter(move |&s| open && by(s))
     }
 
     /// What the board makes each seat a round if production came now: the
@@ -2309,9 +2295,12 @@ impl Eval {
                 }
             }
         }
-        // 254: a hosted neutral city's energy goes to its host.
-        for (_, s) in self.host_matching(&world, tokens, g, false) {
-            out[s] += self.city_energy;
+        // 292: a city neither corrupted nor blocked pays every seat with a node on or next to it.
+        let _ = g;
+        for h in 0..tokens.len() {
+            for s in self.city_payees(&world, tokens, None, h) {
+                out[s] += self.city_energy;
+            }
         }
         out
     }

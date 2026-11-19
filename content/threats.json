@@ -7,7 +7,7 @@
    "security"
   ],
   "locations": [
-   "base"
+   "factory"
   ],
   "text": "1 adversary Troop lands here.",
   "counters": [
@@ -43,10 +43,9 @@
    "security"
   ],
   "locations": [
-   "base",
    "factory"
   ],
-  "text": "The nearest player pays 3 energy or discards 3 cards. The adversary gains 2 compute.",
+  "text": "This country's player pays 3 energy or discards 3 cards. The adversary gains 2 compute.",
   "counters": [
    [
     {
@@ -89,7 +88,7 @@
   "locations": [
    "factory"
   ],
-  "text": "1 adversary Troop lands here. The nearest player pays 2 chips or discards 1 card.",
+  "text": "1 adversary Troop lands here. This country's player pays 2 chips or discards 1 card.",
   "counters": [
    [
     {
@@ -132,7 +131,7 @@
   "locations": [
    "city"
   ],
-  "text": "The nearest player pays 2 Ambassadors or discards 2 cards. The adversary gains 4 compute.",
+  "text": "This country's player pays 2 Ambassadors or discards 2 cards. The adversary gains 4 compute.",
   "counters": [
    [
     {
@@ -172,7 +171,7 @@
    "security"
   ],
   "locations": [
-   "base"
+   "coastal_city"
   ],
   "text": "1 adversary Troop lands here. 1 Fallout lands next to here.",
   "counters": [
@@ -214,7 +213,7 @@
    "security"
   ],
   "locations": [
-   "base"
+   "city"
   ],
   "text": "A tier-1 threat is dealt into this country (it executes next round). Sway 2 toward Discord.",
   "counters": [
@@ -303,7 +302,7 @@
   "locations": [
    "city"
   ],
-  "text": "The nearest player pays 2 Ambassadors or discards 2 cards. Sway 1 toward Discord.",
+  "text": "This country's player pays 2 Ambassadors or discards 2 cards. Sway 1 toward Discord.",
   "counters": [
    [
     {
@@ -348,7 +347,7 @@
    "city",
    "station"
   ],
-  "text": "Remove 2 Unity from the Unity track. The nearest player pays 2 energy or discards 2 cards.",
+  "text": "Remove 2 Unity from the Unity track. This country's player pays 2 energy or discards 2 cards.",
   "counters": [
    [
     {
@@ -432,7 +431,7 @@
   "locations": [
    "station"
   ],
-  "text": "The nearest player loses 4 tokens from their cards. The adversary gains 6 compute.",
+  "text": "This country's player loses 4 tokens from their cards. The adversary gains 6 compute.",
   "counters": [
    [
     {
@@ -473,7 +472,7 @@
   "locations": [
    "station"
   ],
-  "text": "1 Agent is created here. The nearest player pays 3 research cubes or discards 2 cards.",
+  "text": "1 Agent is created here. This country's player pays 3 research cubes or discards 2 cards.",
   "counters": [
    [
     {
@@ -516,7 +515,7 @@
   "locations": [
    "station"
   ],
-  "text": "The nearest player discards 2 cards. 2 cubes go onto the adversary's research track.",
+  "text": "This country's player discards 2 cards. 2 cubes go onto the adversary's research track.",
   "counters": [
    [
     {
@@ -557,7 +556,7 @@
    "station",
    "factory"
   ],
-  "text": "The adversary gains 6 compute. The nearest player pays 2 research cubes or discards 1 card.",
+  "text": "The adversary gains 6 compute. This country's player pays 2 research cubes or discards 1 card.",
   "counters": [
    [
     {
@@ -635,7 +634,7 @@
    "factory",
    "city"
   ],
-  "text": "The nearest player pays 3 chips or discards 2 cards. The adversary gains 3 compute.",
+  "text": "This country's player pays 3 chips or discards 2 cards. The adversary gains 3 compute.",
   "counters": [
    [
     {
@@ -678,7 +677,7 @@
   "locations": [
    "city"
   ],
-  "text": "The nearest player pays 3 chips or discards 2 cards. The adversary gains 4 compute.",
+  "text": "This country's player pays 3 chips or discards 2 cards. The adversary gains 4 compute.",
   "counters": [
    [
     {
@@ -718,7 +717,7 @@
   "locations": [
    "factory"
   ],
-  "text": "1 Agent is created here. The nearest player pays 2 energy or discards 2 cards.",
+  "text": "1 Agent is created here. This country's player pays 2 energy or discards 2 cards.",
   "counters": [
    [
     {
@@ -761,7 +760,7 @@
   "locations": [
    "coastal_city"
   ],
-  "text": "The nearest player discards 2 cards. The adversary gains 4 compute.",
+  "text": "This country's player discards 2 cards. The adversary gains 4 compute.",
   "counters": [
    [
     {
@@ -801,7 +800,7 @@
   "locations": [
    "factory"
   ],
-  "text": "The nearest player pays 3 energy or discards 3 cards.",
+  "text": "This country's player pays 3 energy or discards 3 cards.",
   "counters": [
    [
     {
@@ -839,7 +838,7 @@
   "locations": [
    "city"
   ],
-  "text": "The nearest player pays 3 energy or discards 3 cards.",
+  "text": "This country's player pays 3 energy or discards 3 cards.",
   "counters": [
    [
     {
@@ -877,7 +876,7 @@
    "city",
    "station"
   ],
-  "text": "The nearest player turns 1 building face down until the end of next round. The adversary gains 3 compute.",
+  "text": "This country's player turns 1 building face down until the end of next round. The adversary gains 3 compute.",
   "counters": [
    [
     {
@@ -918,7 +917,7 @@
   "locations": [
    "station"
   ],
-  "text": "The nearest player pays 2 energy or discards 2 cards. The adversary gains 4 compute.",
+  "text": "This country's player pays 2 energy or discards 2 cards. The adversary gains 4 compute.",
   "counters": [
    [
     {
@@ -960,7 +959,7 @@
   "locations": [
    "station"
   ],
-  "text": "The nearest player pays 3 research cubes or discards 2 cards. The adversary gains 3 compute.",
+  "text": "This country's player pays 3 research cubes or discards 2 cards. The adversary gains 3 compute.",
   "counters": [
    [
     {
@@ -1002,7 +1001,7 @@
   "locations": [
    "city"
   ],
-  "text": "The nearest player pays 2 energy or discards 2 cards. The adversary gains 4 compute.",
+  "text": "This country's player pays 2 energy or discards 2 cards. The adversary gains 4 compute.",
   "counters": [
    [
     {
@@ -1040,7 +1039,7 @@
    "security"
   ],
   "locations": [
-   "base"
+   "factory"
   ],
   "text": "2 adversary Troops land here and march at once.",
   "counters": [
@@ -1069,7 +1068,7 @@
   ],
   "harms": [
    "adversary pieces placed",
-   "war brought forward"
+   "march brought forward"
   ]
  },
  {
@@ -1120,10 +1119,9 @@
    "security"
   ],
   "locations": [
-   "base",
    "city"
   ],
-  "text": "The nearest player pays 3 Ambassadors or discards 3 cards. 1 adversary Troop lands on the base here.",
+  "text": "This country's player pays 3 Ambassadors or discards 3 cards. 1 adversary Troop lands here.",
   "counters": [
    [
     {
@@ -1148,8 +1146,7 @@
    {
     "op": "troops",
     "count": 1,
-    "at": "location",
-    "location": "base"
+    "at": "location"
    }
   ],
   "harms": [
@@ -1166,9 +1163,9 @@
    "industry"
   ],
   "locations": [
-   "base"
+   "factory"
   ],
-  "text": "1 adversary Troop lands here. The nearest player pays 2 chips or discards 2 cards.",
+  "text": "1 adversary Troop lands here. This country's player pays 2 chips or discards 2 cards.",
   "counters": [
    [
     {
@@ -1209,9 +1206,9 @@
    "security"
   ],
   "locations": [
-   "base"
+   "city"
   ],
-  "text": "This base's front has a second war step next round. 2 Fallout land next to here.",
+  "text": "Sway 3 toward Discord. 2 Fallout land next to here.",
   "counters": [
    [
     {
@@ -1228,7 +1225,10 @@
   ],
   "effects": [
    {
-    "op": "extra_war"
+    "op": "sway",
+    "side": "discord",
+    "amount": 3,
+    "narrative": "fear"
    },
    {
     "op": "fallout",
@@ -1236,7 +1236,7 @@
    }
   ],
   "harms": [
-   "war brought forward",
+   "Discord sway",
    "Fallout placed"
   ]
  },
@@ -1371,7 +1371,7 @@
   "locations": [
    "city"
   ],
-  "text": "The nearest player pays 4 Ambassadors or discards 3 cards. The adversary gains 3 compute.",
+  "text": "This country's player pays 4 Ambassadors or discards 3 cards. The adversary gains 3 compute.",
   "counters": [
    [
     {
@@ -1457,7 +1457,7 @@
   "locations": [
    "coastal_city"
   ],
-  "text": "The nearest player pays 4 chips or discards 3 cards. The adversary gains 6 compute.",
+  "text": "This country's player pays 4 chips or discards 3 cards. The adversary gains 6 compute.",
   "counters": [
    [
     {
@@ -1499,7 +1499,7 @@
    "city",
    "coastal_city"
   ],
-  "text": "The nearest player destroys 1 of their Nodes closest to it. Remove 3 Unity from the Unity track.",
+  "text": "This country's player destroys 1 of their Nodes closest to it. Remove 3 Unity from the Unity track.",
   "counters": [
    [
     {
@@ -1619,7 +1619,7 @@
   "locations": [
    "station"
   ],
-  "text": "The nearest player destroys 1 of their Nodes closest to it and discards 3 cards.",
+  "text": "This country's player destroys 1 of their Nodes closest to it and discards 3 cards.",
   "counters": [
    [
     {
@@ -1661,7 +1661,7 @@
    "station",
    "factory"
   ],
-  "text": "The nearest player pays 5 research cubes or discards 3 cards. 2 cubes go onto the adversary's research track.",
+  "text": "This country's player pays 5 research cubes or discards 3 cards. 2 cubes go onto the adversary's research track.",
   "counters": [
    [
     {
@@ -1703,7 +1703,7 @@
   "locations": [
    "station"
   ],
-  "text": "4 cubes go onto the adversary's research track. The nearest player turns 1 building face down until the end of next round.",
+  "text": "4 cubes go onto the adversary's research track. This country's player turns 1 building face down until the end of next round.",
   "counters": [
    [
     {
@@ -1744,7 +1744,7 @@
   "locations": [
    "factory"
   ],
-  "text": "The nearest player turns 2 buildings face down until the end of next round and discards 2 cards.",
+  "text": "This country's player turns 2 buildings face down until the end of next round and discards 2 cards.",
   "counters": [
    [
     {
@@ -1865,7 +1865,7 @@
    "coastal_city",
    "factory"
   ],
-  "text": "4 Agents are created here. The nearest player pays 3 chips or discards 3 cards.",
+  "text": "4 Agents are created here. This country's player pays 3 chips or discards 3 cards.",
   "counters": [
    [
     {
@@ -1910,7 +1910,7 @@
    "city",
    "coastal_city"
   ],
-  "text": "The nearest player destroys 1 of their Nodes closest to it and pays 4 energy or discards 3 cards.",
+  "text": "This country's player destroys 1 of their Nodes closest to it and pays 4 energy or discards 3 cards.",
   "counters": [
    [
     {
@@ -1952,7 +1952,7 @@
   "locations": [
    "city"
   ],
-  "text": "The nearest player pays 4 energy or discards 3 cards.",
+  "text": "This country's player pays 4 energy or discards 3 cards.",
   "counters": [
    [
     {
@@ -1989,7 +1989,7 @@
   "locations": [
    "station"
   ],
-  "text": "The nearest player pays 6 research cubes or discards 3 cards. The adversary gains 4 compute.",
+  "text": "This country's player pays 6 research cubes or discards 3 cards. The adversary gains 4 compute.",
   "counters": [
    [
     {
@@ -2032,7 +2032,7 @@
    "factory",
    "station"
   ],
-  "text": "The nearest player destroys 2 of their Nodes closest to it. The adversary gains 6 compute.",
+  "text": "This country's player destroys 2 of their Nodes closest to it. The adversary gains 6 compute.",
   "counters": [
    [
     {
@@ -2071,9 +2071,9 @@
   ],
   "locations": [
    "city",
-   "base"
+   "factory"
   ],
-  "text": "3 Agents are created on the city here. 1 adversary Troop lands on the base here.",
+  "text": "3 Agents are created on the city here. 1 adversary Troop lands on the factory here.",
   "counters": [
    [
     {
@@ -2098,7 +2098,7 @@
     "op": "troops",
     "count": 1,
     "at": "location",
-    "location": "base"
+    "location": "factory"
    }
   ],
   "harms": [
@@ -2117,7 +2117,7 @@
    "city",
    "factory"
   ],
-  "text": "The nearest player pays 2 Ambassadors or discards 2 cards. Remove 3 Unity from the Unity track.",
+  "text": "This country's player pays 2 Ambassadors or discards 2 cards. Remove 3 Unity from the Unity track.",
   "counters": [
    [
     {
@@ -2199,10 +2199,9 @@
    "universal"
   ],
   "locations": [
-   "city",
-   "base"
+   "city"
   ],
-  "text": "A tier-2 threat is dealt into this country (it executes next round). The nearest player destroys 1 of their Nodes closest to it.",
+  "text": "A tier-2 threat is dealt into this country (it executes next round). This country's player destroys 1 of their Nodes closest to it.",
   "counters": [
    [
     {
@@ -2286,8 +2285,7 @@
    "industry"
   ],
   "locations": [
-   "factory",
-   "base"
+   "factory"
   ],
   "text": "An adversary factory is built on the free industrial zone nearest here. 1 adversary Troop lands on the factory here.",
   "counters": [
@@ -2332,7 +2330,7 @@
    "station",
    "city"
   ],
-  "text": "A Botnet lands on the station here (if it holds one, on the nearest piece without one). The nearest player pays 3 energy or discards 3 cards.",
+  "text": "A Botnet lands on the station here (if it holds one, on the nearest piece without one). This country's player pays 3 energy or discards 3 cards.",
   "counters": [
    [
     {

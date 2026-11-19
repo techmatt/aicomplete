@@ -44,7 +44,7 @@ data and random play; Undo and records stay.
   the debug view's generic chips (`panels.ts`).
 - **Checks:** `AIC_SWEEP_VIEW=player` sweeps it; `node
   scripts/player-play.mjs [--config three_seat.json] [--seed N] [--out DIR] [--size WxH]` plays a whole game by its
-  controls (random, passing least) and saves the record.
+  controls (random, passing least), saves the record, and fails on a cut piece on screen (`removed`).
 
 ## Using it
 

@@ -22,8 +22,6 @@ pub const ADV_AMBASSADOR: &str = "ambassador:adversary";
 /// An adversary troop: marches in the adversary phase (019). A strike uses it
 /// up by `troop_spent`.
 pub const TROOP: &str = "troop";
-/// Corp units waiting at a military base (the base's country's corp).
-pub const UNIT: &str = "unit";
 /// A hardening token: absorbs one destruction of a facility or node on its hex.
 pub const HARDEN: &str = "harden";
 /// A botnet: persistent, makes adversary compute, an ambassador on its hex may take it down (r75's standard action).
@@ -79,10 +77,6 @@ pub fn is_ocean(w: &World, h: usize) -> bool {
     w.map.hexes[h].kind == HexKind::Ocean
 }
 
-pub fn is_base(w: &World, h: usize) -> bool {
-    w.map.hexes[h].kind == HexKind::Base
-}
-
 pub fn corrupted(g: &GameState, h: usize) -> bool {
     g.tokens(h, ADV_CUBE) > 0
 }
@@ -107,82 +101,23 @@ pub fn cities_unowned(w: &World) -> bool {
     w.int("board.cities_unowned") != 0
 }
 
-/// 254 (`board.host_city`): the seat hosting neutral city `h` this round ([`host_assignment`]): its energy goes to
-/// that seat in the income step.
-pub fn city_host(w: &World, g: &GameState, h: usize) -> Option<usize> {
-    host_assignment(w, g).into_iter().find(|&(c, _)| c == h).map(|(_, s)| s)
+/// 292: whether city `h` pays its energy this round: neither corrupted nor blocked (an agent on it, a blackout).
+pub fn city_pays(w: &World, g: &GameState, h: usize) -> bool {
+    clean_city(w, g, h)
+        && g.tokens(h, ADV_AMBASSADOR) == 0
+        && !super::board::hex_flagged(w, g, crate::content::RoundFlag::Blackout, h)
 }
 
-/// 254: the neutral cities seat `seat` hosts this round ([`host_assignment`]).
-pub fn hosted_cities(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
-    host_assignment(w, g).into_iter().filter(|&(_, s)| s == seat).map(|(c, _)| c).collect()
+/// 292: whether seat `s` has a node on or next to hex `h` (a city pays every such seat).
+pub fn node_by(w: &World, g: &GameState, s: usize, h: usize) -> bool {
+    g.tokens(h, node(s)) > 0 || w.map.hexes[h].neighbors.iter().any(|&x| g.tokens(x, node(s)) > 0)
 }
 
-/// 254: who hosts which neutral city in this round's income step, as (city, seat). A seat may host a neutral city
-/// producing now (no cube, no agent on it, no blackout; 262: a purchase no longer unhosts it, as a hosted city
-/// can't be bought, Matt's D107) with its node on it, or
-/// with `board.host_reach` 1 on or next to it; each seat hosts `board.host_city` at most and each city has one host.
-/// The printed rule: the players choose (a team game; every city makes the same energy), so the engine hosts as many
-/// as can be ([`match_hosts`]).
-pub fn host_assignment(w: &World, g: &GameState) -> Vec<(usize, usize)> {
-    let caps = host_caps(w, g);
-    if caps.iter().all(|&c| c == 0) {
-        return Vec::new();
-    }
-    let reach = w.int("board.host_reach") > 0;
-    let open: Vec<usize> = (0..g.hexes.len())
-        .filter(|&h| {
-            clean_city(w, g, h)
-                && g.tokens(h, ADV_AMBASSADOR) == 0
-                && !super::board::hex_flagged(w, g, crate::content::RoundFlag::Blackout, h)
-        })
-        .collect();
-    let hosts = |s: usize, h: usize| {
-        g.tokens(h, node(s)) > 0 || (reach && w.map.hexes[h].neighbors.iter().any(|&x| g.tokens(x, node(s)) > 0))
-    };
-    match_hosts(&caps, &open, hosts)
-}
-
-/// 258: the var holding seat `seat`'s extra host slots (`host_more`, a card's lasting effect).
-pub fn host_more_key(seat: usize) -> String {
-    format!("board.host_more.{seat}")
-}
-
-/// 258: how many neutral cities each seat may host: `board.host_city`, plus the `host_more` its cards raised. With
-/// `board.host_city` 0 hosting is off and no card turns it on.
-pub fn host_caps(w: &World, g: &GameState) -> Vec<usize> {
-    let cap = w.int("board.host_city").max(0) as usize;
-    (0..g.seats.len()).map(|s| if cap == 0 { 0 } else { cap + g.var(&host_more_key(s)).max(0) as usize }).collect()
-}
-
-/// 254 (diff review: a greedy pick could host fewer than the players would): a largest matching of `cities` to
-/// the seats, seat s `caps[s]` at most (258: per seat), `can(seat, city)` the edges (augmenting paths; a few seats
-/// and cities). Deterministic: seats in order, each city list in hex order. The agents' eval calls it on its own
-/// token view.
-pub fn match_hosts(caps: &[usize], cities: &[usize], can: impl Fn(usize, usize) -> bool) -> Vec<(usize, usize)> {
-    // Seat slots, seat by seat: slot_seat[slot] is the slot's seat.
-    let slot_seat: Vec<usize> = caps.iter().enumerate().flat_map(|(s, &c)| std::iter::repeat_n(s, c)).collect();
-    let slots = slot_seat.len();
-    let edges: Vec<Vec<usize>> = (0..slots).map(|slot| (0..cities.len()).filter(|&c| can(slot_seat[slot], cities[c])).collect()).collect();
-    let mut city_slot: Vec<Option<usize>> = vec![None; cities.len()];
-    fn augment(slot: usize, edges: &[Vec<usize>], seen: &mut [bool], city_slot: &mut [Option<usize>]) -> bool {
-        for &c in &edges[slot] {
-            if seen[c] {
-                continue;
-            }
-            seen[c] = true;
-            if city_slot[c].is_none_or(|other| augment(other, edges, seen, city_slot)) {
-                city_slot[c] = Some(slot);
-                return true;
-            }
-        }
-        false
-    }
-    for slot in 0..slots {
-        let mut seen = vec![false; cities.len()];
-        augment(slot, &edges, &mut seen, &mut city_slot);
-    }
-    city_slot.iter().enumerate().filter_map(|(c, s)| s.map(|s| (cities[c], slot_seat[s]))).collect()
+/// 292: whether `h` is a free city (not corrupted, no cube) with a player's node on or next to it: what the Unity
+/// cards count beside the stations and factories a player owns, as they print it. An agent or a blackout on it
+/// stops its energy ([`city_pays`]), not this.
+pub fn free_city_by_a_player(w: &World, g: &GameState, h: usize) -> bool {
+    clean_city(w, g, h) && (0..g.seats.len()).any(|s| node_by(w, g, s, h))
 }
 
 /// The seat whose node is on hex `h`, if any.
@@ -203,7 +138,7 @@ pub fn buildable(w: &World, g: &GameState, h: usize) -> bool {
 
 /// Whether hex `h` holds a piece an ambassador can sit on (node included).
 pub fn has_piece(w: &World, g: &GameState, h: usize) -> bool {
-    is_city(w, h) || is_base(w, h) || has_building(g, h) || node_owner(g, h).is_some()
+    is_city(w, h) || has_building(g, h) || node_owner(g, h).is_some()
 }
 
 /// A player ambassador's seat on hex `h`, if any (seat order).

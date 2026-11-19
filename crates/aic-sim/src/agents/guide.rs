@@ -4,12 +4,12 @@
 //!
 //! **Shelter when a destruction is showing.** A shelter's whole worth is the
 //! destruction it prevents, which resolves after the action phase: this round's
-//! uncountered threats and its war step. [`shelter_saves`] reads them from the
+//! uncountered threats. [`shelter_saves`] reads them from the
 //! open table; the eval credits a sheltered country with what it saves.
 
 use aic_core::content::{CounterItem, Op};
 use aic_core::module::World;
-use aic_core::modules::common::{self, FACTORY, HARDEN, UNIT};
+use aic_core::modules::common::{self, FACTORY, HARDEN};
 use aic_core::modules::{board, threats};
 use aic_core::GameState;
 
@@ -53,15 +53,6 @@ fn absorbed(w: &World, g: &GameState, h: usize, armor: Armor) -> bool {
     }
 }
 
-/// Whether war's strike on the factory on `h` would be absorbed: by owner, any
-/// protection the engine offers the factory's owner (the piece is no node).
-fn factory_absorbed(w: &World, g: &GameState, h: usize, armor: Armor) -> bool {
-    match armor {
-        Armor::AnyAmbassador => absorbed(w, g, h, armor),
-        Armor::ByOwner => board::protected(w, g, h, common::cube_owner(g, h)),
-    }
-}
-
 /// Reads the country's armor pool and clears its fallen-node counts, once a
 /// call (148).
 fn fill(g: &GameState, hexes: &[usize], pool: &mut Armory, taken: &mut Vec<i64>) {
@@ -91,7 +82,6 @@ impl HexArmor {
 
 /// 148: a country's armor for a whole forecast, so a unit one threat spends is gone
 /// for the next: each hex's ([`HexArmor`]), each seat's Aegis Doctrine (once a round)
-/// (r81: drones never protect).
 #[derive(Default)]
 struct Armory {
     hexes: Vec<HexArmor>,
@@ -155,7 +145,7 @@ fn counterable(w: &World, g: &GameState, t: &str) -> bool {
 
 /// What sheltering `country` would save this round, were it not sheltered:
 /// the threats on it that destroy (each seat's nodes there, troops landing on
-/// its factories) and the war step's crossings into it.
+/// its factories).
 /// 237 (D97): `reach` reads seat `s`'s reach Shelter instead (`Some(s)`): only `s`'s pieces on the hexes it covers.
 /// `None`: the whole country, leaving out the pieces a reach Shelter keeps anyway (a what-if: 247 cut the country
 /// Shelter).
@@ -188,10 +178,9 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
             continue;
         }
         // 145: each seat's nodes this threat takes, capped once at its open
-        // nodes here. 146: a threat hits one seat, the nearest by node (a tie
-        // read as the first tied seat); no unprinted node harm.
+        // nodes here. 292: a threat hits one seat, its country's player; no unprinted node harm.
         let mut lost = [0i64; 4];
-        let hit = threats::nearest_seats(w, g, &t).first().copied();
+        let hit = threats::hit_seat_of(w, g, scope);
         for op in &w.content.threat(&t).effects {
             match op {
                 Op::DestroyNode { count } if armor == Armor::AnyAmbassador => {
@@ -296,41 +285,8 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
             out.nodes[s] += share * n.min(open) as f64;
         }
     }
-    {
-        // 145: bases make no troop of their own (137); the war forecast reads the
-        // troops standing (it added one a base every round).
-        let units = |b: usize| -> i64 { g.tokens(b, UNIT) };
-        for f in &w.map.fronts {
-            let [ba, bb] = f.bases;
-            let (ua, ub) = (units(ba), units(bb));
-            let (from, rival, n) = if ua > ub { (ba, f.countries[1], ua - ub) } else { (bb, f.countries[0], ub - ua) };
-            if rival as usize != country || n <= 0 {
-                continue;
-            }
-            let mut targets: Vec<usize> = hexes
-                .iter()
-                .copied()
-                .filter(|&h| g.tokens(h, FACTORY) > 0 && !common::corrupted(g, h))
-                .collect();
-            targets.sort_by_key(|&h| (w.map.distance(from, h), w.map.hexes[h].country, w.map.hexes[h].number));
-            // The unit forecast is a guess (factories add units too): count it
-            // at a share.
-            for &h in targets.iter().take(n as usize) {
-                if factory_absorbed(w, g, h, armor) {
-                    continue;
-                }
-                if common::cube_owner(g, h).is_some_and(|o| keeps(o, h)) {
-                    out.factories += WAR_SHARE;
-                }
-            }
-        }
-    }
     out
 }
-
-/// How sure a war forecast is: this round's production adds units after the
-/// actions.
-const WAR_SHARE: f64 = 0.7;
 
 /// The shelters up now, each with what it saves: (237, D97) each seat's reach Shelter in each country it covers (247:
 /// the country Shelter is gone).
@@ -364,7 +320,7 @@ mod tests {
         for hex in Arc::make_mut(&mut g.hexes).iter_mut() {
             Arc::make_mut(hex).tokens.retain(|k, _| {
                 let k = k.as_str();
-                k != UNIT && k != HARDEN && (0..seats).all(|s| k != common::node(s) && k != common::ambassador(s))
+                k != HARDEN && (0..seats).all(|s| k != common::node(s) && k != common::ambassador(s))
             });
         }
         g.piles.retain(|k, _| !k.as_str().starts_with("threats.on."));

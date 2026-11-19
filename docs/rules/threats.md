@@ -8,10 +8,15 @@
   ([README.md](README.md#off-variants)).
 
 **The decks (candidate; Matt's threat card standard, 2026-11-07, locked).** One threat deck per tier, each card
-printed once and shuffled at setup: tier 1 and tier 2; **there is no tier 3**. A tier-2 card is about two tier-1s
-(bigger consequences: a node, a site corrupted, a botnet, more Fallout, troops, Unity pulled back), so no pull asks for
-two tier-1s. Each card carries 1 or 2 **tags**, the player cards' own (Security, Diplomacy, Cyber, Industry, Power, with their icons; r81, friction #47; **Universal** counts as every tag) and 1 or 2 **location
-types** (city, coastal city, research station, factory, military base).
+printed once: tier 1 and tier 2; **there is no tier 3**. A tier-2 card is about two tier-1s
+(bigger consequences: a node, a site corrupted, a botnet, more Fallout, troops, Unity pulled back), so no event card
+deals two tier-1s. Each card carries 1 or 2 **tags**, the player cards' own (Security, Diplomacy, Cyber, Industry, Power, with their icons; r81, friction #47; **Universal** counts as every tag) and 1 or 2 **location
+types** (city, coastal city, research station, factory).
+
+**Built once, at setup (r139, Matt 2026-11-19).** The adversary's board prints how its decks are built, and that mix
+is its lean. The Militarist's **War Rooms**: "Setup: build each threat deck from every Security and Universal threat
+of its tier and as many of its other threats, taken at random; shuffle it. The rest stay in the box." Nothing is
+filtered during a round: the table below counts the cards printed, not a game's decks.
 
 <!-- generated: threats -->
 | Tier | Cards | Security | Diplomacy | Cyber | Industry | Power | Universal |
@@ -21,44 +26,37 @@ types** (city, coastal city, research station, factory, military base).
 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 <!-- /generated -->
 
-**Dealing: the event card's pulls.** The adversary's event card ([adversary.md](adversary.md)) prints its pulls on
-its top line ("each country: a Security 2 threat", "Security 1 or Cyber 1", "any tier-2 threat"). **The ladder:**
-stage I pulls one tier-1 threat a country, stage II one tier-2 (or a tier 1 and a tier 2: Supply Lines), stage III
-two tier-2s (`check.py` refuses another shape). In `threats.deal`, for each pull and each country in order (274: a country with no site not the adversary's of any
-type the tier's deck prints is skipped, no card turned: `threats.skipped_no_place`; a military base is never the
-adversary's, so with 2-4 countries no country is ever skipped), **the draw rule**: turn up the top card of
-that tier's deck; it stays if it carries a listed tag (Universal fits any; "any" takes every card) and the country has
-a site of one of its location types not the adversary's (*Location tokens*); otherwise it goes to that tier's discard and the next is turned up. An empty deck
-reshuffles its discard; **if a reshuffled deck has no card that fits, take the next card anyway** (counted as
-`threats.pull_forced`, a content bug: `drafts/adversary/check.py`'s simulated pulls never need one, but threats a
-threat deals and the ones waiting a round are out of the deck there too). The ladder raises intensity,
+**Dealing: the next card, always (r139).** The adversary's event card ([adversary.md](adversary.md)) prints its
+threats on its top line, with no tag: "Threat, each country: a tier-1 threat". **The ladder:**
+stage I deals one tier-1 threat a country, stage II one tier-2 (or a tier 1 and a tier 2: Supply Lines), stage III
+two tier-2s (`check.py` refuses another shape). In `threats.deal`, for each threat printed and each country in order,
+the **top card** of that tier's deck is dealt there. No card is turned and discarded, and no country is skipped. An
+empty deck reshuffles its discard. The ladder raises intensity,
 never the count of threats dealt (142, Matt). A threat that deals a threat
-(Provocation, Full Spectrum Assault, Last Ultimatum) deals it now, into its own country, at its printed tier, any tag
-(the draw rule's location check still holds); it executes next round.
+(Provocation, Full Spectrum Assault, Last Ultimatum) and a Discord card's extra threat deal the next card the same
+way, at the printed tier, a threat's into its own country; one dealt after the counter phase executes next round.
 
 **Location tokens.** A dealt threat puts a token on a site of each of its location types in its country (two tokens
-never share a hex), one condition for every type: a site of the type that is **not the adversary's** (a city, coastal
-city, research station or factory; a military base never is). Tokens go in printed order (r80, Matt's ruling #46),
+never share a hex), one condition for every type: a site of the type that is **not the adversary's**. Tokens go in
+printed order (r80, Matt's ruling #46),
 each onto the site of its type with **the most agents on its own hex** (troops, botnets and neighbors don't count);
-ties, the lowest hex number. A token with no such site left stays off the board. A location type with no
-such site in the country gets no token; the pull never deals a threat with none there (so a threat whose only type has
-no such site skips that country, and a base-only threat never lands at 1 country). A line for "the base here" or "the
-factory here" with no such token does nothing (184: Garrison State and Manhunt landed their troops on the city), and
-a located line acts only on its own kind of hex: a first token dealt onto a node hex of another kind (Offensive) places
-nothing there (r137, D132).
+ties, the lowest hex number. A location type with no such site left in the country gets no token. **The fallback
+(r139):** a dealt threat with no such site of any of its types puts its one token on the country's lowest-numbered
+city, one not the adversary's first; there none of its located lines acts, whatever its types. The token still marks who is near and where its agent lands. A located line
+("the factory here") acts only on its own kind of hex (r137, D132): with no token of that kind, as on the fallback
+city or a first token dealt onto a node hex of another kind (Offensive), it does nothing (184).
 
 **Near.** Every threat card prints, above its text, "Payers: any player with a Node or Ambassador on or next to a
-token. Target: the player with a Node nearest a token." A player is **near** a threat with one of their nodes or ambassadors on or next to any of its tokens. Only a
+token. Target: this country's player." A player is **near** a threat with one of their nodes or ambassadors on or next to any of its tokens. Only a
 player near it may pay toward it. A piece it places lands on its token unless the text says otherwise (with two tokens,
 "here" is the token of its first printed location). A threat nobody is near still executes.
 
-**The nearest player (146; Matt's standard).** An uncountered threat's harm hits **one player, the nearest**: the
-one whose node is closest to one of its tokens (hex distance, wherever that node is, near or not); on a tie the tied
-players pick one (the engine asks the lowest tied seat, a loss; agents pick the seat that loses least), asked only when
-an op of the harm reads the hit player (238: `Op::reads_hit_seat`; troops, Fallout or compute land unasked). A player with
-no node on the board is never hit; with no node anywhere, only its board consequences land. So every uncountered
-threat lands on exactly one player, a predictable amount. "Destroy a node" takes the hit player's node closest to
-it, their last too (175).
+**This country's player (r139, Matt 2026-11-19; locked).** An uncountered threat's harm hits **one player: the
+player of the country it was dealt in**, the one whose home country it is (the country they start in), wherever
+their nodes are now and whoever was near it. Card texts say "This country's player pays ...". There is no distance
+to measure and no tie. Where seats wrap onto countries, it is the lowest such seat; in a country that is no player's
+home, only the threat's board consequences land. This is the one rule that reads a player's home country. "Destroy
+a node" takes that player's node closest to the threat's tokens (ties: their pick), their last too (175).
 
 **Countering: a menu.** A threat prints a few ways to pay; the table pays **one option in full**:
 
@@ -90,11 +88,11 @@ a currency with its harm** ("pay 5 credits or lose 5" is a design error): no har
 energy, chips, cubes, insight, ambassadors or nodes drops that counter. The load check and `drafts/adversary/check.py`
 refuse a threat with more than two counter options, more than two consequences, a shared currency, a harm on each
 player (a flag on every hex near it, a line in each country, "each player destroys"), or a special piece (a troop
-that stands or occupies, drones past their cap). No counter prints 1 credit (Matt, r48).
+that stands or occupies). No counter prints 1 credit (Matt, r48).
 
-**Executing.** Threats execute in `threats.execute`, after production and upkeep, before war, at the round's end: anything still on
-an uncountered threat is refunded, then each threat (country 0, 1, ...) does what it prints, its player harm on the
-nearest player, and is discarded with its tokens. **No harm is unprinted** (146: the node loss for every player near
+**Executing.** Threats execute in `threats.execute`, after production and upkeep, at the round's end: anything still on
+an uncountered threat is refunded, then each threat (country 0, 1, ...) does what it prints, its player harm on its
+country's player, and is discarded with its tokens. **No harm is unprinted** (146: the node loss for every player near
 an uncountered threat and the floor sway toward Discord are gone). **Every uncountered threat also lands
 `adversary.threat_agents` (1) agent on its anchor** (its first location token's hex) after its harm, an arrival that may corrupt
 the site or take a node there ([adversary.md](adversary.md)). **A tier-1 threat never takes its own site** (r137,
@@ -108,12 +106,13 @@ after a counter phase in which it can be paid (Matt). **A resource harm reads "p
 player's choice; with neither possible, the player pays what they have and discards their hand), so holding none
 dodges nothing; theft is the same payment, and the adversary gains its compute either way. A corruption or seizure a
 threat prints is corruption, with its cleanup (the node on the site or its armor, the ambassadors there), and takes
-only the site it names. A threat takes a player's last node like any other (175: no last-node safety, [war.md](war.md)).
+only the site it names. A threat takes a player's last node like any other (175: no last-node safety, [troops.md](troops.md)).
 Its compute waits for the adversary's compute step ([adversary.md](adversary.md)).
 
 **For new players (the adversary model).** Each round the adversary's event card comes first. Its top line deals
-threats: in each country, turn up cards from the named tier's threat deck until one has a listed tag (a Universal card
-has every tag) and the country has a site of one of its location types not the adversary's, discard the misses, and put each location token on the site of its type holding the most agents. If you have a node or an ambassador on
+threats: in each country, deal the top card of the named tier's threat deck (the decks were built at setup, by the
+line on the adversary's board) and put each location token on the site of its type holding the most agents; if the
+country has no such site left, its token goes on the country's lowest-numbered city instead. If you have a node or an ambassador on
 or next to a token, you are *near* that threat and may help pay it off. Each threat prints one way to pay, or two: a
 scarce thing (energy, ambassadors, insight, research cubes, chips, or cards given up for their tags) or credits;
 resources can be pooled between players, giving up cards is done by one player alone. What a threat takes if unpaid is
@@ -124,10 +123,10 @@ A site corrupts the moment an arrival brings it to its number. You draft and act
 snapshot of the board. At the end of the round each threat nobody paid does what it prints, then lands 1 agent on
 its spot, and nothing else: one consequence, sometimes two, from a short list (troops or agents on its spot, compute, Sway toward
 Discord, Unity pulled back, a site corrupted, a botnet, Fallout next to its token (227: mild and lifted, so tier 1
-carries 1 and tier 2 up to 2), or the nearest player paying energy, chips, cubes or
+carries 1 and tier 2 up to 2), or the country's player paying energy, chips, cubes or
 ambassadors or discarding cards, losing a building, or a node, or cubes onto the adversary's research track; never
-insight, spent the turn it comes, r82; the full list: [harms.md](../harms.md)). A player harm always hits the one player whose
-node is nearest the threat. Tier 1 is small; tier 2 is about two tier-1s. Compute waits for the adversary's compute
+insight, spent the turn it comes, r82; the full list: [harms.md](../harms.md)). A player harm always hits the one player who
+started in the threat's country. Tier 1 is small; tier 2 is about two tier-1s. Compute waits for the adversary's compute
 step, then fills the leftmost project on its board; a full project fires there, the rest slide left and the right
 slot refills. **Harder levels** make the adversary harsher, not threats more or dearer: each level is named,
 adds setup (the income and research markers, the event deck) and at most one rule that fires on an event you already

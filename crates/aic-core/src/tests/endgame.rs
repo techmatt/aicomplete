@@ -183,7 +183,6 @@ fn a_discord_card_deals_a_threat_onto_the_most_threatened_node_hex() {
         crate::content::Location::City | crate::content::Location::CoastalCity => crate::modules::common::is_city(&rules.world(), b),
         crate::content::Location::Station => g.tokens(b, STATION) > 0,
         crate::content::Location::Factory => g.tokens(b, FACTORY) > 0,
-        crate::content::Location::Base => crate::modules::common::is_base(&rules.world(), b),
     };
     assert_eq!(threats::here(&g, &t).is_some(), kind_holds, "{t} at {b}");
 }

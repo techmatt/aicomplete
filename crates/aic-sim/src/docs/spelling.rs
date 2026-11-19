@@ -101,7 +101,7 @@ pub fn stale_failures() -> Vec<String> {
         for (i, line) in text.lines().enumerate() {
             for b in stale(line) {
                 let now = match b {
-                    "corp troop" => "Drones (r77)",
+                    "corp troop" => "gone with war at r139 (they were Drones from r77)",
                     "deploy" => "Muster (troops) or Growth (nodes; r77; 276: Expand and the node routes became each board's Growth)",
                     _ => "agents, Operatives: docs/rules/README.md, Terms",
                 };

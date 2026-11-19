@@ -13,29 +13,16 @@
     "tag": null
    }
   ],
+  "threat_deck": {
+   "name": "War Rooms",
+   "tag": "security",
+   "others": 1,
+   "text": "Setup: build each threat deck from every Security and Universal threat of its tier and as many of its other threats, taken at random; shuffle it. The rest stay in the box."
+  },
   "rules": [
    {
     "name": "Botnet Recruiters",
     "text": "In the compute step, each Botnet with no player Ambassador on it puts 1 Agent on the city, research station or factory next to it not yet the adversary's holding the most Agents (else on its own site, if not yet the adversary's), and adds its compute (even when a cordon stops its Agent or it has nowhere to land).",
-    "effects": []
-   },
-   {
-    "name": "Warmongering",
-    "text": "Each round, a military base with an adversary Troop on or next to it makes 1 extra Drone, even past its cap; at most 1 extra a base in each production, whatever makes it.",
-    "effects": [
-     {
-      "op": "corp_troops",
-      "count": 1,
-      "at": "every_base",
-      "near": "adversary_troop",
-      "when": "each_production",
-      "past_cap": true
-     }
-    ]
-   },
-   {
-    "name": "War Takes Ground",
-    "text": "When a Drone destroys a factory, it also destroys a Node on that hex.",
     "effects": []
    }
   ],
@@ -108,10 +95,7 @@
    "stage": 1,
    "pulls": [
     {
-     "tier": 1,
-     "tags": [
-      "security"
-     ]
+     "tier": 1
     }
    ],
    "standing": [
@@ -126,7 +110,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each country: Security 1. Infiltrate: coastal cities. Grow: cities.",
+   "text": "Threat, each country: a tier-1 threat. Infiltrate: coastal cities. Grow: cities.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"
@@ -138,11 +122,7 @@
    "stage": 1,
    "pulls": [
     {
-     "tier": 1,
-     "tags": [
-      "security",
-      "industry"
-     ]
+     "tier": 1
     }
    ],
    "standing": [
@@ -156,7 +136,7 @@
     }
    ],
    "twists": [],
-   "text": "Threat, each country: Security 1 or Industry 1. Infiltrate: coastal cities. Each country: a neutral factory opens on its lowest-numbered free industrial zone.",
+   "text": "Threat, each country: a tier-1 threat. Infiltrate: coastal cities. Each country: a neutral factory opens on its lowest-numbered free industrial zone.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"
@@ -168,11 +148,7 @@
    "stage": 1,
    "pulls": [
     {
-     "tier": 1,
-     "tags": [
-      "security",
-      "cyber"
-     ]
+     "tier": 1
     }
    ],
    "standing": [
@@ -191,7 +167,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each country: Security 1 or Cyber 1. Infiltrate: cities. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Grow: cities.",
+   "text": "Threat, each country: a tier-1 threat. Infiltrate: cities. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Grow: cities.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"
@@ -203,11 +179,7 @@
    "stage": 1,
    "pulls": [
     {
-     "tier": 1,
-     "tags": [
-      "security",
-      "diplomacy"
-     ]
+     "tier": 1
     }
    ],
    "standing": [
@@ -228,7 +200,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each country: Security 1 or Diplomacy 1. Infiltrate: cities. Sway 1 toward Discord. Grow: cities.",
+   "text": "Threat, each country: a tier-1 threat. Infiltrate: cities. Sway 1 toward Discord. Grow: cities.",
    "harms": [
     "adversary pieces placed",
     "Discord sway",
@@ -241,11 +213,7 @@
    "stage": 1,
    "pulls": [
     {
-     "tier": 1,
-     "tags": [
-      "security",
-      "power"
-     ]
+     "tier": 1
     }
    ],
    "standing": [
@@ -268,7 +236,7 @@
      "site": "station"
     }
    ],
-   "text": "Threat, each country: Security 1 or Power 1. Infiltrate: botnet hexes. Income: +1 compute a country a round. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Grow: research stations.",
+   "text": "Threat, each country: a tier-1 threat. Infiltrate: botnet hexes. Income: +1 compute a country a round. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Grow: research stations.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
@@ -281,10 +249,7 @@
    "stage": 2,
    "pulls": [
     {
-     "tier": 2,
-     "tags": [
-      "security"
-     ]
+     "tier": 2
     }
    ],
    "standing": [
@@ -304,7 +269,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each country: Security 2. Infiltrate: coastal cities. Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: cities.",
+   "text": "Threat, each country: a tier-2 threat. Infiltrate: coastal cities. Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: cities.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"
@@ -316,11 +281,7 @@
    "stage": 2,
    "pulls": [
     {
-     "tier": 2,
-     "tags": [
-      "security",
-      "cyber"
-     ]
+     "tier": 2
     }
    ],
    "standing": [
@@ -344,7 +305,7 @@
      "site": "station"
     }
    ],
-   "text": "Threat, each country: Security 2 or Cyber 2. Infiltrate: research stations. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the research station next to it not yet the adversary's holding the most. Grow: research stations.",
+   "text": "Threat, each country: a tier-2 threat. Infiltrate: research stations. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the research station next to it not yet the adversary's holding the most. Grow: research stations.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"
@@ -356,11 +317,7 @@
    "stage": 2,
    "pulls": [
     {
-     "tier": 2,
-     "tags": [
-      "cyber",
-      "industry"
-     ]
+     "tier": 2
     }
    ],
    "standing": [
@@ -374,7 +331,7 @@
     }
    ],
    "twists": [],
-   "text": "Threat, each country: Cyber 2 or Industry 2. Infiltrate: research stations. Each country: a neutral research station opens on its lowest-numbered empty station site.",
+   "text": "Threat, each country: a tier-2 threat. Infiltrate: research stations. Each country: a neutral research station opens on its lowest-numbered empty station site.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"
@@ -386,11 +343,7 @@
    "stage": 2,
    "pulls": [
     {
-     "tier": 2,
-     "tags": [
-      "diplomacy",
-      "cyber"
-     ]
+     "tier": 2
     }
    ],
    "standing": [
@@ -414,7 +367,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each country: Diplomacy 2 or Cyber 2. Infiltrate: cities. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Spill (level 2+): each factory not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most. Grow: cities.",
+   "text": "Threat, each country: a tier-2 threat. Infiltrate: cities. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Spill (level 2+): each factory not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most. Grow: cities.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"
@@ -426,10 +379,7 @@
    "stage": 2,
    "pulls": [
     {
-     "tier": 2,
-     "tags": [
-      "security"
-     ]
+     "tier": 2
     }
    ],
    "standing": [
@@ -442,7 +392,7 @@
     {
      "op": "each_destroy_node",
      "count": 1,
-     "bases": true
+     "factories": true
     },
     {
      "op": "spill",
@@ -454,7 +404,7 @@
      "site": "factory"
     }
    ],
-   "text": "Threat, each country: Security 2. Infiltrate: factories. Each player with a Node on or next to a front's base destroys 1 of those Nodes. Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: factories.",
+   "text": "Threat, each country: a tier-2 threat. Infiltrate: factories. Each player with a Node on or next to a factory destroys 1 of those Nodes. Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: factories.",
    "harms": [
     "adversary pieces placed",
     "node destroyed",
@@ -467,18 +417,10 @@
    "stage": 2,
    "pulls": [
     {
-     "tier": 1,
-     "tags": [
-      "security",
-      "industry"
-     ]
+     "tier": 1
     },
     {
-     "tier": 2,
-     "tags": [
-      "security",
-      "industry"
-     ]
+     "tier": 2
     }
    ],
    "standing": [
@@ -502,7 +444,7 @@
      "site": "factory"
     }
    ],
-   "text": "Threat, each country: Security 1 or Industry 1, and Security 2 or Industry 2. Infiltrate: factories. Income: +1 compute a country a round. Spill (level 2+): each research station not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: factories.",
+   "text": "Threat, each country: a tier-1 and a tier-2 threat. Infiltrate: factories. Income: +1 compute a country a round. Spill (level 2+): each research station not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: factories.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
@@ -515,10 +457,7 @@
    "stage": 2,
    "pulls": [
     {
-     "tier": 2,
-     "tags": [
-      "any"
-     ]
+     "tier": 2
     }
    ],
    "standing": [
@@ -542,10 +481,10 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each country: any tier-2 threat. Infiltrate: cities. Every adversary Troop takes 1 more step this round. Spill (level 2+): each research station not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most. Grow: cities.",
+   "text": "Threat, each country: a tier-2 threat. Infiltrate: cities. Every adversary Troop takes 1 more step this round. Spill (level 2+): each research station not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most. Grow: cities.",
    "harms": [
     "adversary pieces placed",
-    "war brought forward",
+    "march brought forward",
     "facilities destroyed or corrupted"
    ]
   },
@@ -555,17 +494,10 @@
    "stage": 3,
    "pulls": [
     {
-     "tier": 2,
-     "tags": [
-      "security"
-     ]
+     "tier": 2
     },
     {
-     "tier": 2,
-     "tags": [
-      "industry",
-      "power"
-     ]
+     "tier": 2
     }
    ],
    "standing": [
@@ -598,7 +530,7 @@
      "site": "factory"
     }
    ],
-   "text": "Threat, each country: Security 2, and Industry 2 or Power 2. Infiltrate: factories. Infiltrate: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Remove 2 Unity from the Unity track. Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: factories.",
+   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: factories. Infiltrate: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Remove 2 Unity from the Unity track. Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: factories.",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -612,17 +544,10 @@
    "stage": 3,
    "pulls": [
     {
-     "tier": 2,
-     "tags": [
-      "any"
-     ]
+     "tier": 2
     },
     {
-     "tier": 2,
-     "tags": [
-      "security",
-      "diplomacy"
-     ]
+     "tier": 2
     }
    ],
    "standing": [
@@ -657,7 +582,7 @@
      "to": "city"
     }
    ],
-   "text": "Threat, each country: any tier-2 threat, and Security 2 or Diplomacy 2. Infiltrate: cities. Infiltrate: research stations. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Sway 1 toward Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city. Spill (level 2+): each research station not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most.",
+   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: cities. Infiltrate: research stations. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Sway 1 toward Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city. Spill (level 2+): each research station not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most.",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -672,17 +597,10 @@
    "stage": 3,
    "pulls": [
     {
-     "tier": 2,
-     "tags": [
-      "security",
-      "cyber"
-     ]
+     "tier": 2
     },
     {
-     "tier": 2,
-     "tags": [
-      "diplomacy"
-     ]
+     "tier": 2
     }
    ],
    "standing": [
@@ -711,7 +629,7 @@
      "site": "station"
     }
    ],
-   "text": "Threat, each country: Security 2 or Cyber 2, and Diplomacy 2. Infiltrate: research stations. Infiltrate: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the research station next to it not yet the adversary's holding the most. Grow: research stations.",
+   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: research stations. Infiltrate: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the research station next to it not yet the adversary's holding the most. Grow: research stations.",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -724,18 +642,10 @@
    "stage": 3,
    "pulls": [
     {
-     "tier": 2,
-     "tags": [
-      "industry",
-      "power"
-     ]
+     "tier": 2
     },
     {
-     "tier": 2,
-     "tags": [
-      "security",
-      "cyber"
-     ]
+     "tier": 2
     }
    ],
    "standing": [
@@ -769,7 +679,7 @@
      "to": "city"
     }
    ],
-   "text": "Threat, each country: Industry 2 or Power 2, and Security 2 or Cyber 2. Infiltrate: coastal cities. Infiltrate: factories. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Until the end of next round, cities make no energy and no Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city. Spill (level 2+): each factory not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most.",
+   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: coastal cities. Infiltrate: factories. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Until the end of next round, cities make no energy and no Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city. Spill (level 2+): each factory not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most.",
    "harms": [
     "adversary pieces placed",
     "troops made",

@@ -83,7 +83,7 @@ fn setup_places_the_printed_pieces() {
             assert_eq!(g.resource(s, Resource::Credits), crate::modules::ai::start_credits(&rules.world(), s));
         }
         assert_eq!(
-            total(&g, ADV_AMBASSADOR) + total(&g, TROOP) + total(&g, UNIT),
+            total(&g, ADV_AMBASSADOR) + total(&g, TROOP),
             0
         );
         assert_eq!(g.var(SUPPLY), 48, "d{d}");

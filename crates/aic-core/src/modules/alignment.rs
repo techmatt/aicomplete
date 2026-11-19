@@ -6,7 +6,7 @@
 //! Replaces human opposition (rules revision 5). Since 017 every card is
 //! one-shot; 017–018's Discord-tip troop advance became 019's march
 //! (module `board`). r55 (136): the Undecided pool and the tug of war are
-//! gone; Unity swayed may instead hold Discord off, 1 for 1 (`hold_off`).
+//! gone; Unity swayed always goes onto the Unity track (r139; it could hold Discord off).
 //! r67 (156): the purge is the only win (no Unity-deck win); every card
 //! prints three tiers, picked by its side's tips (`tier_at`); an empty Unity
 //! deck reshuffles, the Discord deck never does.
@@ -22,13 +22,12 @@ use crate::state::GameState;
 use crate::view::{CardView, ViewOut};
 
 use super::common::*;
-use super::{adversary, board, cards, effects};
+use super::{adversary, cards, effects};
 
 const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("tip_per_player", 1, 50, "the Unity track tips when it holds this many Sway per player"),
     ParamSpec::int("discord_tip_per_player", 1, 50, "the Discord track tips when it holds this many Sway per player"),
     ParamSpec::int("carry", 0, 2, "Sway past a tip stays toward the next tip: 2 both sides (r75, Matt's ruling 7), 1 Unity's only (r48), 0 neither (a tip empties its track)"),
-    ParamSpec::int("hold_off", 0, 1, "1: each Unity swayed may instead move 1 Discord off the Discord track, the players' choice"),
     ParamSpec::int("momentum_every", 0, 10, "Momentum: a side's track holds 1 fewer Sway per this many of its tips, down to 1 per player (0: off)"),
     ParamSpec::int("troop", 0, 10, "Sway toward Unity for removing an adversary troop"),
     ParamSpec::int("free_city", 0, 10, "Sway toward Unity for freeing a corrupted city"),
@@ -210,9 +209,8 @@ pub fn bar_level(w: &World, g: &GameState) -> adversary::PurgeLevel {
 }
 
 /// Sways `n` toward `side`. Discord goes straight onto the Discord track;
-/// Unity waits until the action or phase has resolved, when the players
-/// choose how much of it holds Discord off instead ([`place_unity`]). A
-/// track that fills tips then.
+/// Unity waits until the action or phase has resolved, then goes onto the
+/// Unity track ([`place_unity`]). A track that fills tips then.
 pub fn sway(g: &mut GameState, cx: &mut Cx, side: Side, n: i64) {
     if n <= 0 || cx.world.hot.alignment_off {
         return;
@@ -225,63 +223,14 @@ pub fn sway(g: &mut GameState, cx: &mut Cx, side: Side, n: i64) {
     cx.tally(g, &KeyBuf::new("alignment.sway_").text(side.name()), n);
 }
 
-/// Moves up to `n` Discord off the Discord track (Envoy, or Unity held
-/// back); returns how many moved.
-pub fn hold_off(g: &mut GameState, cx: &mut Cx, n: i64) -> i64 {
-    let k = n.min(g.var(track(Side::Discord))).max(0);
-    if k > 0 {
-        cx.add_key(g, track(Side::Discord), -k);
-        cx.tally(g, "alignment.discord_held_off", k);
-    }
-    k
-}
-
-/// The Unity swayed this action or phase goes on the Unity track, or, as
-/// the acting player chooses (238; seat 0 for the team in a phase), up to all of it moves
-/// Discord off the Discord track 1 for 1 (136, `hold_off`). r75 (Matt's ruling 7): any amount, no filter (145
-/// offered only amounts that stopped the tip). The Unity of one action is placed as it resolves: tips are
-/// checked after it, so this is the printed "at once".
+/// The Unity swayed this action or phase goes onto the Unity track (292: all of it, always; it could move Discord
+/// off instead, 1 for 1). The Unity of one action is placed as it resolves: tips are checked after it.
 fn place_unity(g: &mut GameState, cx: &mut Cx) -> Res {
     let n = g.var(UNITY_NEW);
-    if n <= 0 {
-        return Ok(());
+    if n > 0 {
+        cx.set_key(g, UNITY_NEW, 0);
+        cx.add_key(g, track(Side::Unity), n);
     }
-    let w = cx.world;
-    let discord = g.var(track(Side::Discord));
-    let most = if w.int("alignment.hold_off") > 0 { n.min(discord) } else { 0 };
-    let ks: Vec<i64> = (0..=most).collect();
-    let k = if ks.len() > 1 {
-        let opts = ks
-            .iter()
-            // 145: no "all 1" and no ", 0 onto Unity" on the buttons.
-            .map(|&k| {
-                opt(match k {
-                    0 if n == 1 => "put 1 Unity on the track".to_string(),
-                    0 => format!("put all {n} Unity on the track"),
-                    k if k == n => format!("take {k} Discord off"),
-                    k => format!("take {k} Discord off, put {} Unity on the track", n - k),
-                })
-            })
-            .collect();
-        // 238 (D95): the player whose action swayed it chooses (seat 0 for a phase's sway, for the team).
-        let seat = cx.acting().unwrap_or(0);
-        let prompt = || {
-            if n == 1 {
-                format!("Seat {seat}: put 1 Unity on the track, or take 1 Discord off?")
-            } else {
-                format!("Seat {seat}: {n} Unity swayed: put it on the Unity track, or take Discord off (1 for 1)?")
-            }
-        };
-        ks[cx.choose(seat, prompt, opts)?.unwrap_or(0)]
-    } else {
-        0
-    };
-    cx.set_key(g, UNITY_NEW, 0);
-    if k > 0 {
-        hold_off(g, cx, k);
-        cx.tally(g, "alignment.unity_held_off", k);
-    }
-    cx.add_key(g, track(Side::Unity), n - k);
     Ok(())
 }
 
@@ -398,10 +347,6 @@ fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
     cx.set_key(g, tips_key(side), before + 1);
     cx.tally(g, &KeyBuf::new("alignment.tips_").text(side.name()), 1);
     cx.tally(g, &format!("alignment.tip_{}.r{round:02}", side.name()), 1);
-    // 137: on a Discord tip each neutral factory makes 1 corp troop.
-    if side == Side::Discord {
-        board::tip_corp_troops(g, cx)?;
-    }
     let Some(id) = draw(g, cx, side) else {
         // Discord tips with no card left: the players lose (locked, 027).
         if side == Side::Discord {
@@ -586,7 +531,7 @@ impl Module for Alignment {
             "Discord track",
             g.var(track(Side::Discord)),
             Some(capacity(w, g, Side::Discord)),
-            "Sway toward the evil AI; tips into a Discord card when full (Unity swayed may move it off instead, as Envoy does)",
+            "Sway toward the evil AI; tips into a Discord card when full",
         );
         let next = |list: &[i64], n: i64| list.iter().copied().find(|&t| t > n);
         let ut = g.var(tips_key(Side::Unity));

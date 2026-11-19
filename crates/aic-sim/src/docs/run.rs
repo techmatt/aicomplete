@@ -129,8 +129,8 @@ pub(super) fn op_uses() -> BTreeMap<String, usize> {
     for t in &c.threats {
         add(&t.effects, &mut out);
     }
-    // 286: the event cards' standing lines (every Infiltrate) and the adversary board (Warmongering's corp_troops,
-    // the difficulty line's threat_compute) went uncounted, so the doc called printed ops unprinted.
+    // 286: the event cards' standing lines (every Infiltrate) and the adversary board (the difficulty line's
+    // threat_compute) went uncounted, so the doc called printed ops unprinted.
     for a in &c.adversary {
         add(&a.standing, &mut out);
         add(&a.twists, &mut out);
@@ -308,13 +308,18 @@ pub(super) fn rules_file_failures(files: &[(String, String)]) -> Vec<String> {
     out
 }
 
+/// 292 (Matt, 2026-11-19): the rulebook is frozen for the overhaul (seven items rebuild the adversary and the map
+/// side): it describes this revision and says so in its first line, and its "Rules revision N" line is checked
+/// against it, not `RULES_REVISION`. The item that rewrites the rulebook deletes this and checks the source's again.
+pub(super) const RULEBOOK_REVISION: u32 = 138;
+
 /// 184: the rulebook's opening "Rules revision N." names `rev` too (it said 77 at 78).
 pub(super) fn rulebook_revision_failure(text: &str, rev: u32) -> Option<String> {
     const LEAD: &str = "Rules revision ";
     let Some(i) = text.find(LEAD) else { return Some(format!("docs/rulebook.md: no \"{LEAD}N\" line")) };
     let rest = &text[i + LEAD.len()..];
     let n = &rest[..rest.find(|c: char| !c.is_ascii_digit()).unwrap_or(rest.len())];
-    (n != rev.to_string()).then(|| format!("docs/rulebook.md: says \"{LEAD}{n}\", but RULES_REVISION is {rev}"))
+    (n != rev.to_string()).then(|| format!("docs/rulebook.md: says \"{LEAD}{n}\", but it describes revision {rev}"))
 }
 
 /// 117: the rules README's "at rules revision N" line, hand-kept, must name `rev`
@@ -538,7 +543,7 @@ pub fn run(o: &Options) {
     failures.extend(rules_file_failures(&rules_new));
     failures.extend(revision_line_failures(&rules_new, aic_core::RULES_REVISION));
     if let Ok(book) = fs::read_to_string(RULEBOOK_MD) {
-        failures.extend(rulebook_revision_failure(&book, aic_core::RULES_REVISION));
+        failures.extend(rulebook_revision_failure(&book, RULEBOOK_REVISION));
     }
     let faces: Vec<(String, String)> = content().cards.iter().map(|c| (c.name.clone(), card_face(c).full_text())).collect();
     failures.extend(card_quote_failures(&rules_new, &faces));

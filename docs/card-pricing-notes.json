@@ -196,7 +196,7 @@
   "transmission_corridor": "r83 (191): insight to play spread, 6 cr, 1 ins to 10 cr, 0 ins; values.json: pay 10.0; get 21.5 (+11.5); anchors: pay 10.0 (+11.5).",
   "treaty_isotope_bank": "r119 (258): stronger (r119): Action 8 cr: 1 antimatter and 1 ambassador (was the antimatter alone); 1 ambassador when built; 6 cr, 1 ins; anchors: pay 54; get 112 = 2.07; values.json: printed 8.5; reasoned 29.5.",
   "truth_commission": "r42 (106): anchors: pay 8.5; get 12.5 = 1.47.",
-  "twin_city_compact": "r118 (258): new (the host-a-second-city card): place 2 nodes; you may host 1 more city (a second slot measured at 0.55 energy a seat-round: about 11 over 4.5 rounds); 6 cr; anchors: pay 18; get 27 = 1.50; values.json: printed 6; reasoned 22.9.",
+  "twin_city_compact": "r139 (292): hosting is gone (every city pays every player beside it), so its second host slot (11 at the anchors: 0.55 energy a seat-round) became 3 energy once (13.5): place 2 nodes; gain 3 energy; 4 cr; on r118's basis pay 16, get 29.5 = 1.84 (1.69 with the slot).",
   "university_spinout": "r83 (191): insight to play spread, 24 cr, 1 ins to 26 cr, 0 ins; values.json: pay 26.0; get 25.5 (-0.5); anchors: pay 26.0 (-0.5).",
   "vendor_financing": "r83 (191): insight to play spread, 10 cr, 1 ins to 14 cr, 0 ins; values.json: pay 14.0; get 16.0 (+2.0); anchors: pay 14.0 (+2.0).",
   "vertical_monopoly": "r134 (282): 3 to 11 cr: income 2 a tag at 4-5 tags, 3-4 rounds 24-40 against pay 24.33: 0.99-1.64, mid 1.29.",

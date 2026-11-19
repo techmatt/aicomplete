@@ -149,12 +149,11 @@ station's card is complete, which would otherwise grow its cubes each round, cap
 ## Shelters and hardening
 
 A **shelter** (a card's "Shelter your Nodes and facilities in reach", no target: yours in your reach when a piece would
-be destroyed, so nodes placed after it count) lasts until cleanup (phase 18) of the round it is used in. Used in the actions, it covers the rest of the actions and what comes after them: the income step,
-the extra drones, the threats that execute and war (phases 13-17). The march (phase 5) has already happened, but a threat's
-immediate march (Total War's, phase 16) meets it. It stops a destruction automatically, spending nothing, and so does the Protector's Aegis Doctrine capstone, a shelter
+be destroyed, so nodes placed after it count) lasts until cleanup (phase 16) of the round it is used in. Used in the actions, it covers the rest of the actions and what comes after them: the income step
+and the threats that execute (phases 13-15). The march (phase 5) has already happened, but a threat's
+immediate march (Total War's, phase 15) meets it. It stops a destruction automatically, spending nothing, and so does the Protector's Aegis Doctrine capstone, a shelter
 on its own pieces (the first time each round one of its nodes or facilities would be destroyed); the other protections
-(a hardening token below, your own ambassador) are the piece owner's choice; drones never protect ([war.md](war.md),
-*Destruction*).
+(a hardening token below, your own ambassador) are the piece owner's choice ([troops.md](troops.md), *Destruction*).
 
 Hardening (Fortify II, Patrol II, cards) goes only on facilities a token can protect, player-owned stations and
 factories that are not corrupted, and "harden N" is N different facilities, fewer if fewer qualify. Patrol II, whose

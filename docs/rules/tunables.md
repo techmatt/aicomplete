@@ -8,9 +8,7 @@ conventions: [README.md](README.md).*
 |---|---|---|---|
 | `board.start_corrupted` | 1 | 0..3 | cities per country that start corrupted |
 | `board.start_ambassadors` | 1 | 0..10 | player ambassadors each player starts with |
-| `board.unit_cap` | 2 | 0..20 | Drones a base holds at most |
 | `board.corp_energy` | 1 | 0..10 | energy cubes each city of country i makes a round (a megacorp parameter; the list repeats) |
-| `board.city_energy_credits` | 4 | 0..20 | standard action Buy energy: credits for a neutral city's energy, once per city a round, the city in reach and producing |
 | `board.aligned_bonus` | 0 | 0..10 | extra energy an aligned city gives its owner |
 | `board.station_cubes` | 1 | 0..5 | research cubes a neutral station makes a round (an adversary one: adversary cubes, then research-track cubes; compute with adversary.research_at 0) |
 | `board.owned_station_cubes` | 1 | 0..5 | research cubes a player-owned station makes its owner a round |
@@ -20,7 +18,6 @@ conventions: [README.md](README.md).*
 | `board.claim_station` | 4 | 1..10 | the Liberate action: ambassadors that liberate an adversary research station (262 cut the Claim action that also paid it; the name stays) |
 | `board.claim_factory` | 3 | 1..10 | the Liberate action: ambassadors that liberate an adversary factory (262 cut the Claim action that also paid it; the name stays) |
 | `board.start_nodes` | 1 | 1..3 | nodes each player starts with: its start hex, then the lowest-numbered free land hexes next to it (the extras off no track) |
-| `board.destruction_discord` | 1 | 0..5 | Discord each facility destroyed in war sways |
 | `board.troop_spent` | 1 | 0..1 | 1: an adversary troop that strikes a target is used up |
 | `board.troop_steps` | 1 | 0..5 | steps each adversary troop takes in the march: destroy a target on or next to it, else move 1 hex toward the nearest |
 | `board.troop_node` | 0 | 0..4 | adversary troops strike nodes from this stage of adversary card on (0: always, 4: never) |
@@ -34,7 +31,6 @@ conventions: [README.md](README.md).*
 | `board.remove_ambassadors` | 2 | 1..5 | standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing) |
 | `board.remove_count` | 3 | 1..3 | standard action Remove agents: agents it removes, at most, on or next to its target (the player's choice) |
 | `board.land_cubes` | 2 | 0..10 | standard action Lift Fallout: research cubes to lift 1 Fallout token in reach (0: no such action) |
-| `board.envoy_ambassadors` | 1 | 0..5 | standard action Envoy: your ambassadors from the supply, used up, to move 1 Discord off the Discord track (0: no such action) |
 | `board.ambassador_credits` | 16 | 1..50 | standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit) |
 | `board.sell_credits` | 1 | 0..20 | standard action: credits for selling a card from hand |
 | `board.cube_insight` | 1 | 0..5 | standard action Turn a cube into insight: insight for `insight_cubes` research cubes, `insight_per_round` times a round (0: no such action) |
@@ -42,12 +38,10 @@ conventions: [README.md](README.md).*
 | `board.insight_per_round` | 1 | 0..5 | 253: times a seat may Turn a cube into insight a round (0: no limit) |
 | `board.liberate_neutral` | 1 | 0..1 | 252 (Matt's ruling 4): 1, Liberate leaves the site neutral; 0, it becomes the liberator's (r112, a screen's off arm) |
 | `board.cities_unowned` | 1 | 0..1 | 254 (Matt's candidate): 1, players never own a city (no bound city at setup, no city claims, a liberated city is its country's); 0, r114's rule |
-| `board.host_city` | 1 | 0..4 | 254: neutral cities a seat hosts (its node on or next to one, `host_reach`), collecting their energy in the income step (262: a hosted city can't be bought); `host_more` cards raise it for their seat (0: none) |
-| `board.host_reach` | 1 | 0..1 | 254: 0, a seat hosts a neutral city with its node on it; 1, on or next to it (one host a city, the players choosing) |
 | `board.antimatter_cubes` | 5 | 0..10 | standard action, the desperate source: research cubes for 1 antimatter and `antimatter_energy` energy, no limit a round (0: no such action) |
 | `board.antimatter_energy` | 2 | 0..5 | 262 (Matt, 2026-11-17): standard action Make antimatter: energy it pays beside its antimatter (a binding resource; still a poor hedge at the anchors) |
 | `board.botnet_credits` | 13 | 1..50 | standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays) |
-| `board.std_off` | 0 | 0..13 | a probe's switch: standard actions not offered, by place in the table from 1 (station, remove, lift, dispatch, ambassador, liberate, insight, envoy, botnet, buy energy, antimatter, troop, factory; 0: none off) |
+| `board.std_off` | 0 | 0..11 | a probe's switch: standard actions not offered, by place in the table from 1 (station, remove, lift, dispatch, ambassador, liberate, insight, botnet, antimatter, troop, factory; 0: none off) |
 | `adversary.difficulty` | 0 | 0..4 | difficulty level 0-4 (each level includes the ones below) |
 | `adversary.stage_cards` | 5, 5, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
 | `adversary.supply_per_country` | 24 | 0..40 | agents in the supply per country |
@@ -78,7 +72,6 @@ conventions: [README.md](README.md).*
 | `adversary.grow_cap` | 2 | 0..6 | 275: a Grow site with this many facilities next to it (any owner) doesn't grow (0: no cap) |
 | `adversary.threat_agents` | 1 | 0..5 | 275: agents an uncountered threat lands on its anchor (its first location token) as it executes |
 | `adversary.discord_removed` | 0 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
-| `adversary.war_node` | 1 | 0..1 | build (r83, the Militarist's War Takes Ground): 1: a drone strike that destroys a factory destroys a node on its hex too |
 | `adversary.station_flip_at` | 2 | 0..5 | agents on a player's research station before an effect can flip it (short of that, one lands there instead) |
 | `adversary.botnet_compute` | 1 | 0..5 | adversary compute each botnet makes a round (none with a player ambassador on it) |
 | `adversary.botnet_spread_at` | 1 | 0..5 | 263: the difficulty level from which a 'Botnets spread' line (event cards, projects) spreads botnets; below it the line does nothing |
@@ -88,7 +81,6 @@ conventions: [README.md](README.md).*
 | `alignment.tip_per_player` | 3 | 1..50 | the Unity track tips when it holds this many Sway per player |
 | `alignment.discord_tip_per_player` | 4 | 1..50 | the Discord track tips when it holds this many Sway per player |
 | `alignment.carry` | 2 | 0..2 | Sway past a tip stays toward the next tip: 2 both sides (r75, Matt's ruling 7), 1 Unity's only (r48), 0 neither (a tip empties its track) |
-| `alignment.hold_off` | 1 | 0..1 | 1: each Unity swayed may instead move 1 Discord off the Discord track, the players' choice |
 | `alignment.momentum_every` | 0 | 0..10 | Momentum: a side's track holds 1 fewer Sway per this many of its tips, down to 1 per player (0: off) |
 | `alignment.troop` | 0 | 0..10 | Sway toward Unity for removing an adversary troop |
 | `alignment.free_city` | 5 | 0..10 | Sway toward Unity for freeing a corrupted city |

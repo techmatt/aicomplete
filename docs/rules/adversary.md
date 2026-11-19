@@ -6,14 +6,13 @@
 ## Each round
 
 The adversary is a **board** (the Militarist's slots, rules and named levels:
-[adversary-cards.md](../adversary-cards.md); **War Takes Ground**: [war.md](war.md)), an **income** and an **event
-deck**. Its turn, after the round's Sway step, is **three beats** (phases: [economy.md](economy.md)); threats execute after production ([threats.md](threats.md)).
+[adversary-cards.md](../adversary-cards.md); **War Rooms**: [threats.md](threats.md)), an **income** and an **event deck**. Its turn, after the round's Sway step, is **three beats** (phases: [economy.md](economy.md)); threats execute after production ([threats.md](threats.md)).
 
 1. **Card**: next round's face-up event card becomes this round's (none left: a loss,
-   [alignment.md](alignment.md)) and deals its threat pulls; then, in this order (locked): **Infiltrate X**,
+   [alignment.md](alignment.md)) and deals its threats; then, in this order (locked): **Infiltrate X**,
    **Muster N**, at most two other lines (a compute increase, a Discord sway, a site opening, Botnets spread,
    Blackout, Fallout), **Spill**, **Grow** (below).
-2. **March** ([war.md](war.md)).
+2. **March** ([troops.md](troops.md)).
 3. **Income**: the top card goes face up as next round's; the **compute step** (each botnet seeds and adds its
    compute, below), the **research check**; firewalls, cordons and prohibition tokens come off.
 
@@ -33,7 +32,7 @@ factories or botnet hexes lands at most `infiltrate_facility_cap` (1) on each, a
 on it or not). A cordoned country takes none; an arrival on player ambassadors cancels one.
 
 **A blocked landing stays in the supply:** a **firewall** or a Unity **prohibition** token (no-Infiltrate,
-no-Muster) blocks its step on its hex ([README.md](README.md#terms)); so does Wall for a Muster ([war.md](war.md)).
+no-Muster) blocks its step on its hex ([README.md](README.md#terms)); so does Wall for a Muster ([troops.md](troops.md)).
 On a no-Corrupt token's hex agents land, but nothing corrupts or flips and no node is lost to agents.
 
 **Muster N.** N troops on each country's lowest-numbered factory, anyone's, else its lowest-numbered city. No
@@ -50,7 +49,7 @@ agents on a player's node destroy the node. **Each placement puts all its agents
 needs its full number of arrivals again. **One aftermath: whatever corrupts takes
 one adversary mark.**
 - **A corrupted site** takes the adversary's cube (replacing a player's). **It destroys only a node on its own hex**
-  (protections apply, [war.md](war.md)); player ambassadors there are lost. Sanctuary (capstone): neither corruption
+  (protections apply, [troops.md](troops.md)); player ambassadors there are lost. Sanctuary (capstone): neither corruption
   nor agents destroy your nodes.
 - **2 agents on a player's node hex destroy the node** (`corrupt_node_at`; a node rule, not corruption: protections
   apply; checked only when the site doesn't corrupt); its agents go to the supply and **it leaves no mark**.
@@ -78,7 +77,7 @@ lands in or builds in a cordoned country.
 - **Surge N: X** (projects): in each country, N agents onto the X not yet the adversary's holding the most agents.
 - **Grow: X**: in each country, the X holding the most agents with a free hex next to it and fewer than `grow_cap`
   (2) facilities next to it builds one **neutral** facility there: the type it has fewer of next to it (ties: a
-  factory; a factory only on a free industrial zone, a station on other open land, never a base), else the other
+  factory; a factory only on a free industrial zone, a station on other open land), else the other
   type, on the lowest-numbered free hex. If that X holds agents or is the adversary's, it comes with 1 agent on it (an arrival).
 
 ## The project deck (candidate)
@@ -96,7 +95,7 @@ third from `THIRD_EFFECT_COST`, 18). The deck never reshuffles in a d3 game.
   move a project; one holding its cost **resolves** at once. With no project left, compute is lost.
 - **Targets are read off the board as it resolves**, in each country: "the X with the most agents on its hex",
   "the hex holding the most player ambassadors", "its lowest-numbered botnet"; ties: the lowest-numbered. "Turns
-  neutral": the owner's cube comes off. **Factory troops**: an adversary factory's own output ([war.md](war.md)).
+  neutral": the owner's cube comes off. **Factory troops**: an adversary factory's own output ([troops.md](troops.md)).
   **The clock**: the top event card is discarded.
 - **Counterplay:** an ambassador on a source; Cyber's hacks; the Researcher's Hack II, off a project.
 
@@ -156,22 +155,22 @@ prints its lines in the Card beat's order (`drafts/adversary/check.py` refuses a
 <!-- generated: adversary -->
 | Card | Stage | Threat (each country) | Infiltrate | Muster | Spill (level 2+) | Grow |
 |---|---|---|---|---|---|---|
-| Probing Strikes | 1 | tier 1 (security) | coastal cities | 0 |  | cities |
-| Factory Drive | 1 | tier 1 (security or industry) | coastal cities | 0 |  | — |
-| Long Patrols | 1 | tier 1 (security or cyber) | cities | 0 |  | cities |
-| War Drums | 1 | tier 1 (security or diplomacy) | cities | 0 |  | cities |
-| Signal Jamming | 1 | tier 1 (security or power) | botnet hexes | 0 |  | research stations |
-| Mobilization | 2 | tier 2 (security) | coastal cities | 0 | cities into factories | cities |
-| Station Raids | 2 | tier 2 (security or cyber) | research stations | 0 | cities into research stations | research stations |
-| Shell Labs | 2 | tier 2 (cyber or industry) | research stations | 0 |  | — |
-| Fifth Column | 2 | tier 2 (diplomacy or cyber) | cities | 0 | factories into cities | cities |
-| Border War | 2 | tier 2 (security) | factories | 0 | cities into factories | factories |
-| Supply Lines | 2 | tier 1 (security or industry); tier 2 (security or industry) | factories | 0 | research stations into factories | factories |
-| Forced March | 2 | tier 2 (any) | cities | 0 | research stations into cities | cities |
-| Total Mobilization | 3 | tier 2 (security); tier 2 (industry or power) | factories, cities | 1 | cities into factories | factories |
-| Blitzkrieg | 3 | tier 2 (any); tier 2 (security or diplomacy) | cities, research stations | 1 | research stations into cities | — |
-| Occupation | 3 | tier 2 (security or cyber); tier 2 (diplomacy) | research stations, cities | 1 | cities into research stations | research stations |
-| Naval Blockade | 3 | tier 2 (industry or power); tier 2 (security or cyber) | coastal cities, factories | 1 | factories into cities | — |
+| Probing Strikes | 1 | tier 1 | coastal cities | 0 |  | cities |
+| Factory Drive | 1 | tier 1 | coastal cities | 0 |  | — |
+| Long Patrols | 1 | tier 1 | cities | 0 |  | cities |
+| War Drums | 1 | tier 1 | cities | 0 |  | cities |
+| Signal Jamming | 1 | tier 1 | botnet hexes | 0 |  | research stations |
+| Mobilization | 2 | tier 2 | coastal cities | 0 | cities into factories | cities |
+| Station Raids | 2 | tier 2 | research stations | 0 | cities into research stations | research stations |
+| Shell Labs | 2 | tier 2 | research stations | 0 |  | — |
+| Fifth Column | 2 | tier 2 | cities | 0 | factories into cities | cities |
+| Border War | 2 | tier 2 | factories | 0 | cities into factories | factories |
+| Supply Lines | 2 | tier 1; tier 2 | factories | 0 | research stations into factories | factories |
+| Forced March | 2 | tier 2 | cities | 0 | research stations into cities | cities |
+| Total Mobilization | 3 | tier 2; tier 2 | factories, cities | 1 | cities into factories | factories |
+| Blitzkrieg | 3 | tier 2; tier 2 | cities, research stations | 1 | research stations into cities | — |
+| Occupation | 3 | tier 2; tier 2 | research stations, cities | 1 | cities into research stations | research stations |
+| Naval Blockade | 3 | tier 2; tier 2 | coastal cities, factories | 1 | factories into cities | — |
 <!-- /generated -->
 
 **For new players:** [rulebook.md](../rulebook.md) §6. About one project a round lands; the compute pile and the card

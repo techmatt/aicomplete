@@ -46,16 +46,6 @@
         "exempt": {"case": "antimatter", "checks": ["standard-over-anchor"], "why": "Matt, 287: Make antimatter (5 cubes) stays an unused hedge, over the anchor by design; antimatter is epic (anchor 18) and its sinks are powerful, so making it is never the plain route"}
       },
       {
-        "name": "Buy a city's energy",
-        "src": "standard:buy_energy",
-        "give": {
-          "credits": "board.city_energy_credits"
-        },
-        "get": {
-          "energy": 1
-        }
-      },
-      {
         "name": "Turn a cube into insight",
         "src": "standard:insight",
         "give": {
@@ -164,17 +154,6 @@
         "narrative": "trust"
       },
       {
-        "name": "Envoy",
-        "src": "standard:envoy",
-        "give": {
-          "ambassadors": "board.envoy_ambassadors"
-        },
-        "get": {
-          "sway": 1
-        },
-        "narrative": "trust"
-      },
-      {
         "name": "Sell a card",
         "src": "standard:sell",
         "give": {
@@ -268,7 +247,7 @@
     },
     "neutral_why": "neutral by design (any tag prints them): draws, credits, triggers and thresholds; threat counters (jam, auto_counter), since every tag answers threats its own way; liberate, the capstone every tag route reaches (player-cards.md, *The liberate capstones*); a tag's own payoffs (gain_per_tag, production_per_tag, income_per_tag, card_discount), which pay for the tag they count; reuse and choose_player, which only point another effect",
     "exceptions": {
-      "ais:researcher:Hack I": "276: Disrupt's job, renamed (Hack II adds compute, which is Cyber): a Cyber card hacks troops (drones) anywhere in a country, no reach: the Researcher's troop answer is remote by design (206), so it is paid in Cyber, not Security"
+      "ais:researcher:Hack I": "276: Disrupt's job, renamed (Hack II adds compute, which is Cyber): a Cyber card hacks troops anywhere in a country, no reach: the Researcher's troop answer is remote by design (206), so it is paid in Cyber, not Security"
     }
   },
   "sway": {
@@ -342,7 +321,6 @@
       {"key": "power:researcher:Hack I", "role": "troop-response"},
       {"key": "power:researcher:Hack II", "role": "sacrifice", "band": [0.05, 2.0], "why": "276: a tier II (2 Cyber), Audit's compute beside Disrupt's troops"},
       {"key": "standard:move", "name": "Dispatch", "role": "staple"},
-      {"key": "standard:buy_energy", "name": "Buy a city's energy", "role": "staple"},
       {"key": "standard:insight", "name": "Turn a cube into insight", "role": "hedge", "why": "252 (Matt's ruling 5) taxed it; 253 (amendment 11525): 1 cube an insight, once a round (2.5 for 3 at the anchors), a fallback under the cards"},
       {"key": "standard:remove", "name": "Remove agents", "role": "hedge", "why": "228 (Matt, 2026-11-13: standard actions are poorly priced hedges, never the better route): 2 ambassadors for 3 agents (0.94) from r100; 1.4-1.6 a seat-game at 1 ambassador, 0.4 at 2"},
       {"key": "standard:station", "name": "Build a research station", "role": "hedge", "why": "252 (Matt's ruling 2): 2 chips, a station making 1 cube a round: a fallback under the cards"},
@@ -352,7 +330,6 @@
       {"key": "standard:ambassador", "name": "Gain a player ambassador", "role": "hedge", "why": "13 credits: the ambassador hedge"},
       {"key": "sell", "name": "Sell a card", "role": "hedge", "why": "a dead hand's 1 credit"},
       {"key": "standard:liberate", "name": "Liberate a site", "role": "win-route"},
-      {"key": "standard:envoy", "name": "Envoy", "role": "sway-tool", "band": [0.0, 2.0], "why": "228: a standard action is a poorly priced hedge, never the better route (Matt): an ambassador (8) for 1 Discord off (4), when the same ambassador is a fifth of a Liberate (the win route), so zero use is the design, not a fault"},
       {"key": "standard:botnet", "name": "Take down a botnet", "role": "sway-tool"},
       {"key": "standard:factory", "name": "Build a factory", "role": "off", "off": "board.factory_build_chips"},
       {"key": "play", "name": "Play a card", "role": "cards"},
@@ -396,7 +373,6 @@
       "board.node_placed",
       "board.troop_moves",
       "board.troop_steps",
-      "board.units_built",
       "board.troops_built",
       "board.markers"
     ],
@@ -413,7 +389,7 @@
     "city_passes": 0,
     "check_counters": ["threats.dealt"],
     "check_prefixes": ["map.adversary_checks.r"],
-    "memory_counters": ["ai.powers_used", "board.std.buy_energy", "board.std.troop", "board.std.insight"],
+    "memory_counters": ["ai.powers_used", "board.std.troop", "board.std.insight"],
     "memory_prefixes": ["cards.used.", "board.converter.", "board.chip_converter."],
     "budget": {
       "components": [24, 36, 49, 75, 88],

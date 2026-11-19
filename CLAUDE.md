@@ -30,6 +30,9 @@ any design, rules, card or pricing work.
   resources, tags and token types are enums (`vocab.rs`): *The op schema* in docs/architecture.md.
 - **Removing a power, op, param or standard action:** before the first build, `git grep` its name in
   `crates/`, `scripts/design_check.json` and `web/scripts`: tests and browser checks that name it break.
+  A param also sits in `configs/variants.json`, `experiments/configs/` and the lab's pins
+  (`crates/aic-core/src/tests/mod.rs`); a standard action in `board.std_off`'s index list, `design_check.json`'s
+  `memory_counters` and `design_check_jobs.json`; an op in `configs/agents/values.json` and `effect_ledger.py`.
   **Changing a tunable's baseline value or a power's cost:** first `git grep` its name and old value in
   `crates/`: tests that pin a baseline number break.
 - **A new standard action** also needs its row order in `crates/aic-sim/src/docs/blocks.rs`, `STANDARD_NAMES` in

@@ -15,7 +15,6 @@ const DRAWN_GLOBALS = new Set([
   'adversary.stage', 'adversary.difficulty', 'adversary.deck', 'adversary.compute',
   'threats.tier', 'alignment.unity', 'alignment.discord', 'alignment.unity_tips',
   'alignment.discord_tips', 'alignment.bar',
-  'board.fronts',
 ]);
 /** Piles drawn by the status strip, the adversary row or the countries strip. */
 const DRAWN_PILES = new Set([
@@ -190,10 +189,9 @@ export function pipelineHtml(v: View): string {
   const di = pile(v, 'adversary.discard');
   if (!deck && !next && !cur) return '';
   const g = v.globals;
-  const short: Record<string, string> = { 'board.fronts': 'fronts' };
-  const head = ['adversary.stage', 'adversary.difficulty', 'adversary.compute', 'threats.tier', 'board.fronts']
+  const head = ['adversary.stage', 'adversary.difficulty', 'adversary.compute', 'threats.tier']
     .map((k) => findValue(g, k)).filter((x): x is Value => !!x)
-    .map((x) => valueChip(x, 'global', short[x.key] ?? x.label.replace('adversary ', ''), false))
+    .map((x) => valueChip(x, 'global', x.label.replace('adversary ', ''), false))
     .join('');
   const peek = deck?.visible.length
     ? `<div class="sline peek" title="${esc(`top of the deck: ${deck.visible.map((c) => c.name).join(', ')}`)}">top: ${deck.visible.map((c) => `<span data-card="${esc(c.id)}" data-where="pile:adversary.deck">${esc(c.name)}</span>`).join(', ')}</div>`
@@ -312,9 +310,8 @@ export function countriesHtml(v: View): string {
       `cities ${cities.length - corrupted - aligned} clean`, ...some(aligned, 'aligned'), ...some(corrupted, 'corrupted', 'adv'),
       ...some(tok('ambassador:adversary'), `agent${tok('ambassador:adversary') === 1 ? '' : 's'}`, 'adv'), ...some(tok('botnet'), `botnet${tok('botnet') === 1 ? '' : 's'}`, 'adv'),
       ...some(tok('troop'), `troop${tok('troop') === 1 ? '' : 's'}`, 'adv'),
-      ...some(tok('unit'), `drone${tok('unit') === 1 ? '' : 's'}`),
     ];
-    const counts = `<span class="counts" title="cities: clean, aligned, corrupted; agents, botnets and troops; drones at bases">${parts.join(' · ')}</span>`;
+    const counts = `<span class="counts" title="cities: clean, aligned, corrupted; agents, botnets and troops">${parts.join(' · ')}</span>`;
     // 184: an on/off round flag (board.view's FLAGS) printed a constant "1" ("Sheltered 1"): its label alone.
     const onOff = /^board\.(blackout|sabotage|shelter|embargo|cordon)$/;
     const flags = c.values.filter((x) => !x.key.startsWith('tokens.') && !x.key.startsWith('board.project'))
@@ -333,15 +330,12 @@ export function countriesHtml(v: View): string {
   return boxes.join('');
 }
 
-/** The board's key: hex kinds, the base pennant, fronts, and whose color is whose. */
+/** The board's key: hex kinds, a threat's source, and whose color is whose. */
 export function legendHtml(): string {
   const t = Object.values(KINDS).map((x) => `<span class="kind" style="background:${x.fill}">${x.label}</span>`).join('');
-  const flag = `<svg viewBox="-0.05 -0.2 0.3 0.4" width="0.9em" height="1.2em" style="vertical-align:middle"><g class="base-mark">
-    <path d="M0,0.17 V-0.17" class="pole"/><path d="M0,-0.17 L0.2,-0.1 L0,-0.03 Z" class="flag" fill="#888"/></g></svg>`;
-  const front = `<svg viewBox="0 -0.1 0.6 0.2" width="1.8em" height="0.8em" style="vertical-align:middle"><g class="fronts war"><line x1="0" y1="0" x2="0.6" y2="0" class="front-link"/></g></svg>`;
   // 265 (D112): the dotted red outline of a face-up threat's source read as corruption.
   const source = `<svg viewBox="-0.8 -0.8 1.6 1.6" width="1em" height="1em" style="vertical-align:middle"><polygon class="mark source" points="0.72,0 0.36,0.62 -0.36,0.62 -0.72,0 -0.36,-0.62 0.36,-0.62"/></svg>`;
-  return `${t}<span class="lg">${source} a face-up threat's source</span><span class="lg">${flag} base: flag in the color of the country it faces</span><span class="lg">${front} front between two bases</span><span class="lg"><span class="sw" style="background:${ADVERSARY_COLOR}"></span> adversary · seat color = its country's</span>`;
+  return `${t}<span class="lg">${source} a face-up threat's source</span><span class="lg"><span class="sw" style="background:${ADVERSARY_COLOR}"></span> adversary · seat color = its country's</span>`;
 }
 
 // ---------- seat panels ----------

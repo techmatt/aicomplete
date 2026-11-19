@@ -72,10 +72,8 @@ export interface HexView {
   neighbors: number[];
   /** The printed hex number (1-16 on its piece). */
   number: number;
-  /** What the hex is: `city`, `base` (a military base), `open` or `ocean`. */
+  /** What the hex is: `city`, `open` or `ocean`. */
   kind: string;
-  /** For a military base: the country across its front. */
-  facing?: number;
   /** A printed industrial zone: cities build factories here. */
   industrial?: boolean;
   tokens: Token[];

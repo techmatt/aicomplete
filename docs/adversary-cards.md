@@ -6,9 +6,8 @@
 
 Project slots: Open, Open, Open.
 
+- **War Rooms** (threat decks). Setup: build each threat deck from every Security and Universal threat of its tier and as many of its other threats, taken at random; shuffle it. The rest stay in the box.
 - **Botnet Recruiters.** In the compute step, each Botnet with no player Ambassador on it puts 1 Agent on the city, research station or factory next to it not yet the adversary's holding the most Agents (else on its own site, if not yet the adversary's), and adds its compute (even when a cordon stops its Agent or it has nowhere to land).
-- **Warmongering.** Each round, a military base with an adversary Troop on or next to it makes 1 extra Drone, even past its cap; at most 1 extra a base in each production, whatever makes it.
-- **War Takes Ground.** When a Drone destroys a factory, it also destroys a Node on that hex.
 - **Weapons Program** (research). When the research track reaches its threshold, spend it: Muster 2: each country, 2 Troops on its lowest-numbered factory (else city). Stronger: Muster 3 instead.
 - **Level 1: Sleeper Cells.** *Cells wake in every city.* When an Agent lands on a city, it falls at 3 agents, not 5.
 - **Level 2: War Footing.** *Every unanswered strike feeds the war machine.* When a threat executes uncountered, the adversary also gains 4 compute.
@@ -19,89 +18,89 @@ Project slots: Open, Open, Open.
 
 | Card | Stage | Text |
 |---|---|---|
-| Probing Strikes | 1 | Threat, each country: Security 1. Infiltrate: coastal cities. Grow: cities. |
-| Factory Drive | 1 | Threat, each country: Security 1 or Industry 1. Infiltrate: coastal cities. Each country: a neutral factory opens on its lowest-numbered free industrial zone. |
-| Long Patrols | 1 | Threat, each country: Security 1 or Cyber 1. Infiltrate: cities. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Grow: cities. |
-| War Drums | 1 | Threat, each country: Security 1 or Diplomacy 1. Infiltrate: cities. Sway 1 toward Discord. Grow: cities. |
-| Signal Jamming | 1 | Threat, each country: Security 1 or Power 1. Infiltrate: botnet hexes. Income: +1 compute a country a round. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Grow: research stations. |
-| Mobilization | 2 | Threat, each country: Security 2. Infiltrate: coastal cities. Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: cities. |
-| Station Raids | 2 | Threat, each country: Security 2 or Cyber 2. Infiltrate: research stations. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the research station next to it not yet the adversary's holding the most. Grow: research stations. |
-| Shell Labs | 2 | Threat, each country: Cyber 2 or Industry 2. Infiltrate: research stations. Each country: a neutral research station opens on its lowest-numbered empty station site. |
-| Fifth Column | 2 | Threat, each country: Diplomacy 2 or Cyber 2. Infiltrate: cities. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Spill (level 2+): each factory not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most. Grow: cities. |
-| Border War | 2 | Threat, each country: Security 2. Infiltrate: factories. Each player with a Node on or next to a front's base destroys 1 of those Nodes. Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: factories. |
-| Supply Lines | 2 | Threat, each country: Security 1 or Industry 1, and Security 2 or Industry 2. Infiltrate: factories. Income: +1 compute a country a round. Spill (level 2+): each research station not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: factories. |
-| Forced March | 2 | Threat, each country: any tier-2 threat. Infiltrate: cities. Every adversary Troop takes 1 more step this round. Spill (level 2+): each research station not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most. Grow: cities. |
-| Total Mobilization | 3 | Threat, each country: Security 2, and Industry 2 or Power 2. Infiltrate: factories. Infiltrate: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Remove 2 Unity from the Unity track. Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: factories. |
-| Blitzkrieg | 3 | Threat, each country: any tier-2 threat, and Security 2 or Diplomacy 2. Infiltrate: cities. Infiltrate: research stations. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Sway 1 toward Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city. Spill (level 2+): each research station not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most. |
-| Occupation | 3 | Threat, each country: Security 2 or Cyber 2, and Diplomacy 2. Infiltrate: research stations. Infiltrate: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the research station next to it not yet the adversary's holding the most. Grow: research stations. |
-| Naval Blockade | 3 | Threat, each country: Industry 2 or Power 2, and Security 2 or Cyber 2. Infiltrate: coastal cities. Infiltrate: factories. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Until the end of next round, cities make no energy and no Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city. Spill (level 2+): each factory not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most. |
+| Probing Strikes | 1 | Threat, each country: a tier-1 threat. Infiltrate: coastal cities. Grow: cities. |
+| Factory Drive | 1 | Threat, each country: a tier-1 threat. Infiltrate: coastal cities. Each country: a neutral factory opens on its lowest-numbered free industrial zone. |
+| Long Patrols | 1 | Threat, each country: a tier-1 threat. Infiltrate: cities. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Grow: cities. |
+| War Drums | 1 | Threat, each country: a tier-1 threat. Infiltrate: cities. Sway 1 toward Discord. Grow: cities. |
+| Signal Jamming | 1 | Threat, each country: a tier-1 threat. Infiltrate: botnet hexes. Income: +1 compute a country a round. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Grow: research stations. |
+| Mobilization | 2 | Threat, each country: a tier-2 threat. Infiltrate: coastal cities. Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: cities. |
+| Station Raids | 2 | Threat, each country: a tier-2 threat. Infiltrate: research stations. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the research station next to it not yet the adversary's holding the most. Grow: research stations. |
+| Shell Labs | 2 | Threat, each country: a tier-2 threat. Infiltrate: research stations. Each country: a neutral research station opens on its lowest-numbered empty station site. |
+| Fifth Column | 2 | Threat, each country: a tier-2 threat. Infiltrate: cities. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Spill (level 2+): each factory not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most. Grow: cities. |
+| Border War | 2 | Threat, each country: a tier-2 threat. Infiltrate: factories. Each player with a Node on or next to a factory destroys 1 of those Nodes. Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: factories. |
+| Supply Lines | 2 | Threat, each country: a tier-1 and a tier-2 threat. Infiltrate: factories. Income: +1 compute a country a round. Spill (level 2+): each research station not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: factories. |
+| Forced March | 2 | Threat, each country: a tier-2 threat. Infiltrate: cities. Every adversary Troop takes 1 more step this round. Spill (level 2+): each research station not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most. Grow: cities. |
+| Total Mobilization | 3 | Threat, each country: 2 tier-2 threats. Infiltrate: factories. Infiltrate: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Remove 2 Unity from the Unity track. Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: factories. |
+| Blitzkrieg | 3 | Threat, each country: 2 tier-2 threats. Infiltrate: cities. Infiltrate: research stations. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Sway 1 toward Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city. Spill (level 2+): each research station not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most. |
+| Occupation | 3 | Threat, each country: 2 tier-2 threats. Infiltrate: research stations. Infiltrate: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the research station next to it not yet the adversary's holding the most. Grow: research stations. |
+| Naval Blockade | 3 | Threat, each country: 2 tier-2 threats. Infiltrate: coastal cities. Infiltrate: factories. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Until the end of next round, cities make no energy and no Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city. Spill (level 2+): each factory not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most. |
 
 ## Threats, tier 1
 
 | Threat | Tags | Locations | If not countered | Counter (one of) |
 |---|---|---|---|---|
-| Orbital Strike | Security | base | 1 adversary Troop lands here. | 3 energy; 8 credits |
-| Commandeer | Security | base, factory | The nearest player pays 3 energy or discards 3 cards. The adversary gains 2 compute. | 3 Ambassadors; 8 credits |
-| Supply Raid | Security + Industry | factory | 1 adversary Troop lands here. The nearest player pays 2 chips or discards 1 card. | 2 Industry tags; 8 credits |
-| Eviction | Security | city | The nearest player pays 2 Ambassadors or discards 2 cards. The adversary gains 4 compute. | 2 Security tags; 8 credits |
-| Call-Up | Security | base | 1 adversary Troop lands here. 1 Fallout lands next to here. | 3 Ambassadors; 8 credits |
-| Provocation | Diplomacy + Security | base | A tier-1 threat is dealt into this country (it executes next round). Sway 2 toward Discord. | 3 Ambassadors; 8 credits |
+| Orbital Strike | Security | factory | 1 adversary Troop lands here. | 3 energy; 8 credits |
+| Commandeer | Security | factory | This country's player pays 3 energy or discards 3 cards. The adversary gains 2 compute. | 3 Ambassadors; 8 credits |
+| Supply Raid | Security + Industry | factory | 1 adversary Troop lands here. This country's player pays 2 chips or discards 1 card. | 2 Industry tags; 8 credits |
+| Eviction | Security | city | This country's player pays 2 Ambassadors or discards 2 cards. The adversary gains 4 compute. | 2 Security tags; 8 credits |
+| Call-Up | Security | coastal city | 1 adversary Troop lands here. 1 Fallout lands next to here. | 3 Ambassadors; 8 credits |
+| Provocation | Diplomacy + Security | city | A tier-1 threat is dealt into this country (it executes next round). Sway 2 toward Discord. | 3 Ambassadors; 8 credits |
 | Agitators | Diplomacy | city | 1 Agent is created here. Sway 2 toward Discord. | 2 Diplomacy tags; 8 credits |
-| Defection | Diplomacy | city | The nearest player pays 2 Ambassadors or discards 2 cards. Sway 1 toward Discord. | 2 Diplomacy tags; 8 credits |
-| Smear Campaign | Diplomacy | city, station | Remove 2 Unity from the Unity track. The nearest player pays 2 energy or discards 2 cards. | 3 Ambassadors; 8 credits |
+| Defection | Diplomacy | city | This country's player pays 2 Ambassadors or discards 2 cards. Sway 1 toward Discord. | 2 Diplomacy tags; 8 credits |
+| Smear Campaign | Diplomacy | city, station | Remove 2 Unity from the Unity track. This country's player pays 2 energy or discards 2 cards. | 3 Ambassadors; 8 credits |
 | Propaganda Blitz | Diplomacy | coastal city | Sway 3 toward Discord. The adversary gains 3 compute. | 3 Ambassadors; 8 credits |
-| Sabotage | Cyber | station | The nearest player loses 4 tokens from their cards. The adversary gains 6 compute. | 2 Cyber tags; 8 credits |
-| Insider Access | Cyber + Diplomacy | station | 1 Agent is created here. The nearest player pays 3 research cubes or discards 2 cards. | 3 Ambassadors; 8 credits |
-| Wiper Malware | Cyber | station | The nearest player discards 2 cards. 2 cubes go onto the adversary's research track. | 3 research cubes; 8 credits |
-| Cryptojacking | Cyber | station, factory | The adversary gains 6 compute. The nearest player pays 2 research cubes or discards 1 card. | 2 Cyber tags; 8 credits |
+| Sabotage | Cyber | station | This country's player loses 4 tokens from their cards. The adversary gains 6 compute. | 2 Cyber tags; 8 credits |
+| Insider Access | Cyber + Diplomacy | station | 1 Agent is created here. This country's player pays 3 research cubes or discards 2 cards. | 3 Ambassadors; 8 credits |
+| Wiper Malware | Cyber | station | This country's player discards 2 cards. 2 cubes go onto the adversary's research track. | 3 research cubes; 8 credits |
+| Cryptojacking | Cyber | station, factory | The adversary gains 6 compute. This country's player pays 2 research cubes or discards 1 card. | 2 Cyber tags; 8 credits |
 | Backdoor | Cyber | station | A Botnet lands on the station here (if it holds one, on the nearest piece without one). | 3 insight; 8 credits |
-| Requisition | Industry | factory, city | The nearest player pays 3 chips or discards 2 cards. The adversary gains 3 compute. | 2 Industry tags; 8 credits |
-| Shakedown | Industry + Diplomacy | city | The nearest player pays 3 chips or discards 2 cards. The adversary gains 4 compute. | 3 Ambassadors; 8 credits |
-| Embargo | Industry | factory | 1 Agent is created here. The nearest player pays 2 energy or discards 2 cards. | 3 chips; 8 credits |
-| Credit Crunch | Industry | coastal city | The nearest player discards 2 cards. The adversary gains 4 compute. | 3 chips; 8 credits |
-| Chip Shortage | Industry | factory | The nearest player pays 3 energy or discards 3 cards. | 3 chips; 8 credits |
-| Blackout | Power + Cyber | city | The nearest player pays 3 energy or discards 3 cards. | 2 Power tags; 8 credits |
-| Load Shedding | Power | city, station | The nearest player turns 1 building face down until the end of next round. The adversary gains 3 compute. | 3 research cubes; 8 credits |
-| Power Surcharge | Power | station | The nearest player pays 2 energy or discards 2 cards. The adversary gains 4 compute. | 3 research cubes; 8 credits |
-| Cooling Failure | Power | station | The nearest player pays 3 research cubes or discards 2 cards. The adversary gains 3 compute. | 2 Power tags; 8 credits |
-| Grid Tap | Power | city | The nearest player pays 2 energy or discards 2 cards. The adversary gains 4 compute. | 3 research cubes; 8 credits |
+| Requisition | Industry | factory, city | This country's player pays 3 chips or discards 2 cards. The adversary gains 3 compute. | 2 Industry tags; 8 credits |
+| Shakedown | Industry + Diplomacy | city | This country's player pays 3 chips or discards 2 cards. The adversary gains 4 compute. | 3 Ambassadors; 8 credits |
+| Embargo | Industry | factory | 1 Agent is created here. This country's player pays 2 energy or discards 2 cards. | 3 chips; 8 credits |
+| Credit Crunch | Industry | coastal city | This country's player discards 2 cards. The adversary gains 4 compute. | 3 chips; 8 credits |
+| Chip Shortage | Industry | factory | This country's player pays 3 energy or discards 3 cards. | 3 chips; 8 credits |
+| Blackout | Power + Cyber | city | This country's player pays 3 energy or discards 3 cards. | 2 Power tags; 8 credits |
+| Load Shedding | Power | city, station | This country's player turns 1 building face down until the end of next round. The adversary gains 3 compute. | 3 research cubes; 8 credits |
+| Power Surcharge | Power | station | This country's player pays 2 energy or discards 2 cards. The adversary gains 4 compute. | 3 research cubes; 8 credits |
+| Cooling Failure | Power | station | This country's player pays 3 research cubes or discards 2 cards. The adversary gains 3 compute. | 2 Power tags; 8 credits |
+| Grid Tap | Power | city | This country's player pays 2 energy or discards 2 cards. The adversary gains 4 compute. | 3 research cubes; 8 credits |
 
 ## Threats, tier 2
 
 | Threat | Tags | Locations | If not countered | Counter (one of) |
 |---|---|---|---|---|
-| Total War | Security | base | 2 adversary Troops land here and march at once. | 4 energy; 11 credits |
+| Total War | Security | factory | 2 adversary Troops land here and march at once. | 4 energy; 11 credits |
 | Siege | Security | factory | The factory here is destroyed, with any Node on its hex. 1 Fallout lands on or next to here. | 4 Ambassadors; 11 credits |
-| Manhunt | Security | base, city | The nearest player pays 3 Ambassadors or discards 3 cards. 1 adversary Troop lands on the base here. | 4 energy; 11 credits |
-| Conscription | Security + Industry | base | 1 adversary Troop lands here. The nearest player pays 2 chips or discards 2 cards. | 4 energy; 11 credits |
-| Casus Belli | Security | base | This base's front has a second war step next round. 2 Fallout land next to here. | 4 Ambassadors; 11 credits |
+| Manhunt | Security | city | This country's player pays 3 Ambassadors or discards 3 cards. 1 adversary Troop lands here. | 4 energy; 11 credits |
+| Conscription | Security + Industry | factory | 1 adversary Troop lands here. This country's player pays 2 chips or discards 2 cards. | 4 energy; 11 credits |
+| Casus Belli | Security | city | Sway 3 toward Discord. 2 Fallout land next to here. | 4 Ambassadors; 11 credits |
 | Overrun | Diplomacy | city | The city here is corrupted. | 4 insight; 11 credits |
 | Insurrection | Diplomacy | city | 4 Agents are created here. Remove 3 Unity from the Unity track. | 3 Diplomacy tags; 11 credits |
 | Deepfake Wave | Diplomacy + Cyber | city, station | Sway 3 toward Discord. Remove 2 Unity from the Unity track. | 4 Ambassadors; 11 credits |
-| Turncoats | Diplomacy | city | The nearest player pays 4 Ambassadors or discards 3 cards. The adversary gains 3 compute. | 3 Diplomacy tags; 11 credits |
+| Turncoats | Diplomacy | city | This country's player pays 4 Ambassadors or discards 3 cards. The adversary gains 3 compute. | 3 Diplomacy tags; 11 credits |
 | Propaganda Ministry | Diplomacy | city, coastal city | Sway 4 toward Discord. The adversary gains 4 compute. | 3 Diplomacy tags; 11 credits |
-| Skimming Operation | Industry + Diplomacy | coastal city | The nearest player pays 4 chips or discards 3 cards. The adversary gains 6 compute. | 4 Ambassadors; 11 credits |
-| Dark Cities | Power + Diplomacy | city, coastal city | The nearest player destroys 1 of their Nodes closest to it. Remove 3 Unity from the Unity track. | 3 Power tags; 11 credits |
+| Skimming Operation | Industry + Diplomacy | coastal city | This country's player pays 4 chips or discards 3 cards. The adversary gains 6 compute. | 4 Ambassadors; 11 credits |
+| Dark Cities | Power + Diplomacy | city, coastal city | This country's player destroys 1 of their Nodes closest to it. Remove 3 Unity from the Unity track. | 3 Power tags; 11 credits |
 | Station Seizure | Cyber | station | 2 Agents are created here. Then the station here flips to the adversary (a player's holds unless 2 Agents and no player Ambassador are on it; one that holds takes another Agent). | 3 Cyber tags; 11 credits |
 | Rootkit | Cyber | station | A Botnet lands on the station here (if it holds one, on the nearest piece without one). 2 Agents are created here. | 3 Cyber tags; 11 credits |
-| Purge Protocols | Cyber | station | The nearest player destroys 1 of their Nodes closest to it and discards 3 cards. | 5 research cubes; 11 credits |
-| Data Breach | Cyber + Industry | station, factory | The nearest player pays 5 research cubes or discards 3 cards. 2 cubes go onto the adversary's research track. | 4 chips; 11 credits |
-| Zero Day | Cyber | station | 4 cubes go onto the adversary's research track. The nearest player turns 1 building face down until the end of next round. | 5 research cubes; 11 credits |
-| Asset Freeze | Industry | factory | The nearest player turns 2 buildings face down until the end of next round and discards 2 cards. | 4 energy; 11 credits |
+| Purge Protocols | Cyber | station | This country's player destroys 1 of their Nodes closest to it and discards 3 cards. | 5 research cubes; 11 credits |
+| Data Breach | Cyber + Industry | station, factory | This country's player pays 5 research cubes or discards 3 cards. 2 cubes go onto the adversary's research track. | 4 chips; 11 credits |
+| Zero Day | Cyber | station | 4 cubes go onto the adversary's research track. This country's player turns 1 building face down until the end of next round. | 5 research cubes; 11 credits |
+| Asset Freeze | Industry | factory | This country's player turns 2 buildings face down until the end of next round and discards 2 cards. | 4 energy; 11 credits |
 | Mass Production | Industry | factory | An adversary factory is built on the free industrial zone nearest here. The adversary gains 5 compute. | 4 chips; 11 credits |
 | Factory Occupation | Industry + Security | factory | The adversary corrupts the factory here, even a player's (with none there, it builds one on the empty zone). The adversary gains 5 compute. | 4 energy; 11 credits |
-| Trade Blockade | Industry | coastal city, factory | 4 Agents are created here. The nearest player pays 3 chips or discards 3 cards. | 4 energy; 11 credits |
-| Grid Collapse | Power | city, coastal city | The nearest player destroys 1 of their Nodes closest to it and pays 4 energy or discards 3 cards. | 5 research cubes; 11 credits |
-| Power Rationing | Power | city | The nearest player pays 4 energy or discards 3 cards. | 4 Ambassadors; 11 credits |
-| Thermal Runaway | Power | station | The nearest player pays 6 research cubes or discards 3 cards. The adversary gains 4 compute. | 3 Power tags; 11 credits |
-| Overload | Power | factory, station | The nearest player destroys 2 of their Nodes closest to it. The adversary gains 6 compute. | 3 Power tags; 11 credits |
-| Garrison State | Universal | city, base | 3 Agents are created on the city here. 1 adversary Troop lands on the base here. | 4 insight; 11 credits |
-| Shock Doctrine | Universal | city, factory | The nearest player pays 2 Ambassadors or discards 2 cards. Remove 3 Unity from the Unity track. | 4 energy; 11 credits |
+| Trade Blockade | Industry | coastal city, factory | 4 Agents are created here. This country's player pays 3 chips or discards 3 cards. | 4 energy; 11 credits |
+| Grid Collapse | Power | city, coastal city | This country's player destroys 1 of their Nodes closest to it and pays 4 energy or discards 3 cards. | 5 research cubes; 11 credits |
+| Power Rationing | Power | city | This country's player pays 4 energy or discards 3 cards. | 4 Ambassadors; 11 credits |
+| Thermal Runaway | Power | station | This country's player pays 6 research cubes or discards 3 cards. The adversary gains 4 compute. | 3 Power tags; 11 credits |
+| Overload | Power | factory, station | This country's player destroys 2 of their Nodes closest to it. The adversary gains 6 compute. | 3 Power tags; 11 credits |
+| Garrison State | Universal | city, factory | 3 Agents are created on the city here. 1 adversary Troop lands on the factory here. | 4 insight; 11 credits |
+| Shock Doctrine | Universal | city, factory | This country's player pays 2 Ambassadors or discards 2 cards. Remove 3 Unity from the Unity track. | 4 energy; 11 credits |
 | Full Spectrum Assault | Universal | station | A Botnet lands on the station here (if it holds one, on the nearest piece without one). A tier-1 threat is dealt into this country (it executes next round). | 4 Ambassadors; 11 credits |
-| Last Ultimatum | Universal | city, base | A tier-2 threat is dealt into this country (it executes next round). The nearest player destroys 1 of their Nodes closest to it. | 5 research cubes; 11 credits |
+| Last Ultimatum | Universal | city | A tier-2 threat is dealt into this country (it executes next round). This country's player destroys 1 of their Nodes closest to it. | 5 research cubes; 11 credits |
 | Iron Curtain | Universal | factory, city | 1 adversary Troop lands on the factory here. Remove 2 Unity from the Unity track. | 4 energy; 11 credits |
-| Arsenal | Security + Industry | factory, base | An adversary factory is built on the free industrial zone nearest here. 1 adversary Troop lands on the factory here. | 4 energy; 11 credits |
-| Cascade Failure | Power + Cyber | station, city | A Botnet lands on the station here (if it holds one, on the nearest piece without one). The nearest player pays 3 energy or discards 3 cards. | 4 insight; 11 credits |
+| Arsenal | Security + Industry | factory | An adversary factory is built on the free industrial zone nearest here. 1 adversary Troop lands on the factory here. | 4 energy; 11 credits |
+| Cascade Failure | Power + Cyber | station, city | A Botnet lands on the station here (if it holds one, on the nearest piece without one). This country's player pays 3 energy or discards 3 cards. | 4 insight; 11 credits |
 
 ## Projects
 

@@ -88,12 +88,12 @@ pub(super) fn threat_at_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, tier: u8
     Ok(())
 }
 
-pub(super) fn each_destroy_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64, bases: bool) -> Res {
+pub(super) fn each_destroy_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64, factories: bool) -> Res {
     let w = cx.world;
     let mut hexes = ctx.hexes(&w, g);
-    // 139 (Border War): only nodes on or next to a front's base.
-    if bases {
-        hexes.retain(|&h| within(&w, h, 1).into_iter().any(|x| is_base(&w, x)));
+    // 292 (Border War; 139: a front's base): only nodes on or next to a factory.
+    if factories {
+        hexes.retain(|&h| within(&w, h, 1).into_iter().any(|x| g.tokens(x, FACTORY) > 0));
     }
     for s in ctx.seats(&w, g) {
         // 175: any source takes a last node (135's threat floor is gone).

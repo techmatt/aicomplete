@@ -226,12 +226,6 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             ambassadors::move_ambassadors(g, cx, seat, *max, &zone, sources.as_deref())?
         }
         Op::GainAmbassadors { count } => cx.add_resource(g, seat, Resource::Ambassadors, *count),
-        // 258: a lasting extra host slot for this seat.
-        Op::HostMore { count } => {
-            let key = host_more_key(seat);
-            let n = g.var(&key) + *count;
-            cx.set_key(g, &key, n);
-        }
         Op::PlaceAmbassadors { count, at } => {
             let zone = ctx.area(&w, g, seat, *at);
             ambassadors::place_ambassadors(g, cx, seat, *count, &zone)?
@@ -413,7 +407,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         }
         Op::AdversaryBuild => adversary::build_all(g, cx, ctx.scope)?,
         Op::ThreatAtNode { tier } => team::threat_at_node(g, cx, ctx, *tier)?,
-        Op::EachDestroyNode { count, bases } => team::each_destroy_node(g, cx, ctx, *count, *bases)?,
+        Op::EachDestroyNode { count, factories } => team::each_destroy_node(g, cx, ctx, *count, *factories)?,
         Op::DestroyNode { count } => team::destroy_nearest_node(g, cx, ctx, *count)?,
         Op::PullUnity { amount } => alignment::pull_unity(g, cx, *amount),
 
@@ -499,11 +493,11 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         }
         Op::PerSite { where_, max, then } => {
             let n = team::per_site_count(&w, g, *where_, *max);
-            // 254: how often a per-site card pays, and how many of its owned sites are hosted cities (stats only).
+            // 254: how often a per-site card pays, and how many of its owned sites are free cities by a player's node (stats only).
             cx.tally(g, &format!("effects.per_site.{}", where_.name()), n);
             if *where_ == crate::op::Where::Owned {
-                let hosted = super::plan::sites_where(&w, g, *where_).into_iter().filter(|&h| is_city(&w, h) && cube_owner(g, h).is_none()).count();
-                cx.tally(g, "effects.per_site.owned_hosted", hosted as i64);
+                let cities = super::plan::sites_where(&w, g, *where_).into_iter().filter(|&h| is_city(&w, h) && cube_owner(g, h).is_none()).count();
+                cx.tally(g, "effects.per_site.owned_cities", cities as i64);
             }
             for _ in 0..n {
                 run(g, cx, then, ctx)?;
@@ -546,11 +540,9 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         | Op::DealThreats { .. }
         | Op::AdversaryFactory { .. }
         | Op::ComputePerMissing { .. }
-        | Op::CorpTroops { .. }
         | Op::DestroyFacility { .. }
         | Op::DisableBuilding { .. }
         | Op::Discard { .. }
-        | Op::ExtraWar
         | Op::LoseAmbassadorsOr { .. }
         | Op::LoseIncome { .. }
         | Op::LoseOr { .. }

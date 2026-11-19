@@ -95,7 +95,7 @@ fn a_location_token_goes_where_most_agents_stand_on_the_hex() {
         put(&mut g, x, ADV_AMBASSADOR, 3);
     }
     set_pile(&mut g, "threats.deck.2", &["propaganda_ministry"]);
-    with_cx(&rules, |cx| threats::deal_tier(&mut g, cx, 2, &[crate::content::PullTag::Any], c)).unwrap();
+    with_cx(&rules, |cx| threats::deal_tier(&mut g, cx, 2, c)).unwrap();
     let got = threats::tokens(&g, &Key::new("propaganda_ministry"));
     assert_eq!(got, vec![coastal], "the city token takes the coastal city; the coastal token has no site left");
 }
@@ -185,7 +185,7 @@ fn counter_with_nodes_removes_nodes_near_it_never_the_last() {
     let (rules, mut g) =
         threat_lab_with(&[r#"threats.orbital_strike.counters=[[{"resource":"energy","amount":3}],[{"nodes_near":1}]]"#]);
     let m = &rules.map;
-    let base = (0..m.hexes.len()).find(|&h| kind(m, h) == HexKind::Base).unwrap();
+    let base = (0..m.hexes.len()).find(|&h| g.tokens(h, FACTORY) > 0).unwrap();
     let c = m.hexes[base].country as usize;
     no_nodes(&mut g);
     put(&mut g, base, node(0), 1);
@@ -233,140 +233,6 @@ fn pass_all(rules: &Rules, g: &mut GameState) {
     }
 }
 
-/// 146: an uncountered threat's harm hits one player, the nearest by node
-/// (hex distance to a token), whether or not that seat is near; a seat near it
-/// but farther is not hit, and no Discord sways beyond what it prints.
-#[test]
-fn an_uncountered_threat_hits_only_the_nearest_seat() {
-    // Seat 1 on the token, seat 0 next to it (near: it may pay).
-    let (rules, mut g, factory, c) = supply_raid_lab(LOSE_2_ENERGY, &[]);
-    let m = &rules.map;
-    let next = at_distance(m, factory, 1, &[]);
-    put(&mut g, factory, node(1), 1);
-    put(&mut g, next, node(0), 1);
-    deal_at(&mut g, "supply_raid", c, &[factory]);
-    for s in 0..g.seats.len() {
-        set_res(&mut g, s, Resource::Energy, 10);
-    }
-    assert!(threats::near(&rules.world(), &g, 0, &Key::new("supply_raid")), "seat 0 may pay");
-    let discord = g.var("alignment.discord");
-    pass_all(&rules, &mut g);
-    assert!(g.pending.is_none(), "one nearest seat: no choice");
-    assert_eq!(energies(&g), [10, 8], "only the seat on its token");
-    assert_eq!(g.var("alignment.discord"), discord, "no unprinted Discord");
-    assert_eq!(counted(&g, "threats.uncountered"), 1);
-    assert_eq!(counted(&g, "threats.hit.s1"), 1);
-    assert!(g.pile("threats.discard.1").contains(&Key::new("supply_raid")));
-
-    // Nobody near it: the nearest node, 2 away, still takes the harm.
-    let (rules, mut g, factory, c) = supply_raid_lab(LOSE_2_ENERGY, &[]);
-    let m = &rules.map;
-    let two = at_distance(m, factory, 2, &[]);
-    put(&mut g, two, node(0), 1);
-    put(&mut g, at_distance(m, factory, 4, &[]), node(1), 1);
-    deal_at(&mut g, "supply_raid", c, &[factory]);
-    for s in 0..g.seats.len() {
-        set_res(&mut g, s, Resource::Energy, 10);
-    }
-    assert!(threats::near_seats(&rules.world(), &g, &Key::new("supply_raid")).is_empty());
-    pass_all(&rules, &mut g);
-    assert!(g.pending.is_none());
-    assert_eq!(energies(&g), [8, 10], "the nearest, not near");
-}
-
-/// 238 (D92): a tie whose harm reads no seat (compute for the adversary) is asked of no one.
-#[test]
-fn a_tie_is_not_asked_when_the_harm_reads_no_seat() {
-    let (rules, mut g, factory, c) = supply_raid_lab(r#"[{"op":"compute","amount":1}]"#, &[]);
-    let m = &rules.map;
-    let a = at_distance(m, factory, 1, &[]);
-    let b = at_distance(m, factory, 1, &[a]);
-    put(&mut g, a, node(0), 1);
-    put(&mut g, b, node(1), 1);
-    deal_at(&mut g, "supply_raid", c, &[factory]);
-    pass_all(&rules, &mut g);
-    if let Some(p) = g.pending.as_ref() {
-        assert!(!p.ask.prompt.contains("takes its harm"), "{}", p.ask.prompt);
-    }
-    answer_all(&rules, &mut g);
-    assert_eq!((counted(&g, "threats.hit_ties"), counted(&g, "threats.hit_ties_unasked")), (0, 1));
-}
-
-/// 146: two seats equally near: the lowest tied seat picks which takes the
-/// harm (a loss choice among the tied seats); its first option is itself.
-#[test]
-fn a_tie_for_nearest_is_the_lowest_tied_seats_choice() {
-    let (rules, mut g, factory, c) = supply_raid_lab(LOSE_2_ENERGY, &[]);
-    let m = &rules.map;
-    let a = at_distance(m, factory, 1, &[]);
-    let b = at_distance(m, factory, 1, &[a]);
-    put(&mut g, a, node(0), 1);
-    put(&mut g, b, node(1), 1);
-    deal_at(&mut g, "supply_raid", c, &[factory]);
-    for s in 0..g.seats.len() {
-        set_res(&mut g, s, Resource::Energy, 10);
-    }
-    pass_all(&rules, &mut g);
-    let p = g.pending.as_ref().expect("a tie is a choice");
-    assert_eq!(p.ask.seat, 0, "the lowest tied seat answers");
-    let opts: Vec<&str> = p.ask.options.iter().map(|o| o.option.as_str()).collect();
-    assert_eq!(opts, ["seat 0", "seat 1"]);
-    answer(&rules, &mut g, 0);
-    answer_all(&rules, &mut g);
-    assert_eq!(energies(&g), [8, 10]);
-    assert_eq!(counted(&g, "threats.hit_ties"), 1);
-
-    // The other answer hands it to seat 1.
-    let (rules, mut g, factory, c) = supply_raid_lab(LOSE_2_ENERGY, &[]);
-    put(&mut g, a, node(0), 1);
-    put(&mut g, b, node(1), 1);
-    deal_at(&mut g, "supply_raid", c, &[factory]);
-    for s in 0..g.seats.len() {
-        set_res(&mut g, s, Resource::Energy, 10);
-    }
-    pass_all(&rules, &mut g);
-    answer_with(&rules, &mut g, "seat 1");
-    answer_all(&rules, &mut g);
-    assert_eq!(energies(&g), [10, 8]);
-}
-
-/// 146: a printed `destroy_node` takes the nearest player's node closest to
-/// the threat, wherever it is, never their last; nobody else loses one.
-#[test]
-fn an_uncountered_threat_destroys_the_nearest_players_closest_node_never_the_last() {
-    const DESTROY: &str = r#"[{"op":"destroy_node","count":1}]"#;
-    let (rules, mut g, factory, c) = supply_raid_lab(DESTROY, &[]);
-    let m = &rules.map;
-    // Seat 0: one node 2 away (not near), one 4 away; seat 1: 3 away and far.
-    let s0_close = at_distance(m, factory, 2, &[]);
-    let s0_far = at_distance(m, factory, 4, &[]);
-    let s1_a = at_distance(m, factory, 3, &[]);
-    let s1_b = at_distance(m, factory, 6, &[]);
-    put(&mut g, s0_close, node(0), 1);
-    put(&mut g, s0_far, node(0), 1);
-    put(&mut g, s1_a, node(1), 1);
-    put(&mut g, s1_b, node(1), 1);
-    deal_at(&mut g, "supply_raid", c, &[factory]);
-    pass_all(&rules, &mut g);
-    answer_all(&rules, &mut g);
-    assert_eq!(g.tokens(s0_close, node(0)), 0, "the nearest player's closest node goes");
-    assert_eq!(g.tokens(s0_far, node(0)), 1);
-    assert_eq!((g.tokens(s1_a, node(1)), g.tokens(s1_b, node(1))), (1, 1), "nobody else's");
-
-    // 175: the nearest player's last node goes too.
-    let (rules, mut g, factory, c) = supply_raid_lab(DESTROY, &[]);
-    let m = &rules.map;
-    let next = at_distance(m, factory, 1, &[]);
-    put(&mut g, factory, node(0), 1);
-    put(&mut g, next, node(1), 1);
-    put(&mut g, at_distance(m, factory, 6, &[]), node(1), 1);
-    deal_at(&mut g, "supply_raid", c, &[factory]);
-    pass_all(&rules, &mut g);
-    answer_all(&rules, &mut g);
-    assert_eq!(total(&g, node(0)), 0, "its last node");
-    assert_eq!(total(&g, node(1)), 2);
-}
-
 /// 146: the Militarist's difficulty line (`threat_compute 4`, from
 /// `board_difficulty_at`) gives the adversary 4 compute per uncountered threat,
 /// none below that difficulty.
@@ -411,15 +277,51 @@ fn near_mask_matches_the_reach() {
     }
 }
 
-/// 184's D86 (a), stated in r80's rulebook and threats.md: if a reshuffled deck has no card that fits, the pull
-/// takes the next card anyway.
+/// 292: an uncountered threat's harm hits one player, the player of the country it was dealt in, whoever stands
+/// nearer; a seat near it may pay but is not hit, nobody is asked, and no Discord sways beyond what it prints.
 #[test]
-fn a_reshuffled_deck_with_no_fitting_card_deals_the_next_anyway() {
-    let (rules, mut g) = threat_lab();
-    set_pile(&mut g, "threats.deck.2", &["propaganda_ministry"]);
-    set_pile(&mut g, "threats.discard.2", &[]);
-    let security = [crate::content::PullTag::Is(crate::vocab::ThreatTag::Security)];
-    with_cx(&rules, |cx| threats::deal_tier(&mut g, cx, 2, &security, 0)).unwrap();
-    assert!(threats::active(&g).iter().any(|(t, _)| t.as_str() == "propaganda_ministry"), "a Diplomacy threat, dealt anyway");
-    assert_eq!(g.stats.counters.get("threats.pull_forced").copied(), Some(1));
+fn an_uncountered_threat_hits_its_countrys_player() {
+    let (rules, mut g, factory, c) = supply_raid_lab(LOSE_2_ENERGY, &[]);
+    let m = &rules.map;
+    let (home, other) = (c, 1 - c);
+    assert_eq!(crate::modules::common::home_country(&rules.world(), home), c);
+    // The other seat on the token, the country's own player far from it.
+    put(&mut g, factory, node(other), 1);
+    put(&mut g, at_distance(m, factory, 4, &[]), node(home), 1);
+    deal_at(&mut g, "supply_raid", c, &[factory]);
+    for s in 0..g.seats.len() {
+        set_res(&mut g, s, Resource::Energy, 10);
+    }
+    assert!(threats::near(&rules.world(), &g, other, &Key::new("supply_raid")), "the other seat may pay");
+    assert!(!threats::near(&rules.world(), &g, home, &Key::new("supply_raid")));
+    let discord = g.var("alignment.discord");
+    pass_all(&rules, &mut g);
+    assert!(g.pending.is_none(), "no choice of who is hit");
+    let mut want = vec![10, 10];
+    want[home] = 8;
+    assert_eq!(energies(&g), want, "only the country's player");
+    assert_eq!(g.var("alignment.discord"), discord, "no unprinted Discord");
+    assert_eq!(counted(&g, "threats.uncountered"), 1);
+    assert_eq!(counted(&g, &format!("threats.hit.s{home}")), 1);
+    assert!(g.pile("threats.discard.1").contains(&Key::new("supply_raid")));
+}
+
+/// 292: a printed `destroy_node` takes the country's player's node closest to the threat, wherever it is; nobody
+/// else loses one, however near.
+#[test]
+fn an_uncountered_threat_destroys_its_countrys_players_closest_node() {
+    const DESTROY: &str = r#"[{"op":"destroy_node","count":1}]"#;
+    let (rules, mut g, factory, c) = supply_raid_lab(DESTROY, &[]);
+    let m = &rules.map;
+    let (home, other) = (c, 1 - c);
+    let close = at_distance(m, factory, 2, &[]);
+    let far = at_distance(m, factory, 4, &[]);
+    let theirs = at_distance(m, factory, 1, &[]);
+    put(&mut g, close, node(home), 1);
+    put(&mut g, far, node(home), 1);
+    put(&mut g, theirs, node(other), 1);
+    deal_at(&mut g, "supply_raid", c, &[factory]);
+    pass_all(&rules, &mut g);
+    answer_all(&rules, &mut g);
+    assert_eq!((g.tokens(close, node(home)), g.tokens(far, node(home)), g.tokens(theirs, node(other))), (0, 1, 1));
 }

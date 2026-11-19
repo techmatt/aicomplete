@@ -126,11 +126,8 @@ pub struct HexView {
     pub neighbors: Vec<usize>,
     /// The printed hex number (1-16 on its piece), for tie-breaks.
     pub number: u8,
-    /// What the hex is: `city`, `base`, `open` or `ocean`.
+    /// What the hex is: `city`, `open` or `ocean`.
     pub kind: &'static str,
-    /// For a military base, the country across its front.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub facing: Option<u8>,
     /// A printed industrial zone (where cities build factories).
     #[serde(skip_serializing_if = "std::ops::Not::not")]
     pub industrial: bool,
@@ -488,7 +485,6 @@ pub(crate) fn generic(rules: &crate::Rules, g: &GameState) -> View {
             neighbors: cell.neighbors.clone(),
             number: cell.number,
             kind: cell.kind.name(),
-            facing: cell.facing,
             industrial: cell.industrial,
             tokens: h
                 .tokens

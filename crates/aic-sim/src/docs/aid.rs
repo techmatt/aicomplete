@@ -16,12 +16,11 @@ const ROUND: &str = "\
 | B | Adversary | **Card** (threats, Infiltrate, Muster, other lines, Spill, Grow; each arrival checks only its own hex: a placement once all its agents there are on, a Spill's move as it lands), **March** (each stack 1 step), **Income** (next card up; compute step: each botnet seeds an agent next to it and adds its compute, the compute even when a cordon stops the seed or it has nowhere to land; then all compute onto the leftmost project at once; research track; firewalls, cordons and no-X tokens off). |
 | C | Cards | Build a hand of 4, draft, keep (1 insight a tier-1; 3 a tier-2, 2 with the keep upgrade, less 1 per 2 Science tags you have). |
 | D | Actions | All at once, until everyone passes. |
-| E | Production | Read from the tracks, less each blocked chip's site: factories, cities (hosts), stations, megaprojects, income; then extra drones. |
+| E | Production | Read from the tracks, less each blocked chip's site: factories, cities (1 energy to every player with a node on or next to one), stations, megaprojects, income. |
 | F | Threats | Each threat not paid off takes effect (and lands 1 agent on its first token), one that waited from last round included. |
-| G | War | Each front fights. |
-| H | Cleanup | This round's effects end (Shelter, round flags). |
+| G | Cleanup | This round's effects end (Shelter, round flags). |
 
-After every action and step: Unity just gained goes on its track or against Discord; tip any full track, Discord first;
+After every action and step: Unity just gained goes on its track; tip any full track, Discord first;
 then check the losses, then the purge.
 ";
 
@@ -47,12 +46,11 @@ fn once_a_round(r: &Rules) -> String {
     };
     format!(
         "Each of these is used at most once a round. **Put a used marker on its used space when you use it** (each \
-         power, building slot and converter prints one; a city takes a bought chip), and clear them all at round \
+         power, building slot and converter prints one), and clear them all at round \
          start.\n\n\
          - **Your board's Growth and powers:** each once: one Growth option, one tier of each power. {}.\n\
          - **Each building's Action** (`→`): once; \"A, OR B\" is one use.\n\
-         - **Standard actions:** Remove a troop {} a round, Turn a cube into insight {} a round, each player; **Buy \
-         energy** once a round a city, for all players together.\n\
+         - **Standard actions:** Remove a troop {} a round, Turn a cube into insight {} a round, each player.\n\
          - **Each megacorp's converter and chip converter:** once a round each, each player.\n\
          - **Vigil** (Protector): only the first {} troops a round pay.\n\
          - **Aegis Doctrine** (Protector capstone): the first save a round.\n\
@@ -199,8 +197,7 @@ fn ambassadors(r: &Rules) -> String {
         "- **An agent meets one** (it lands, or your ambassador arrives): one for one, both off.\n\
          - **Corruption** removes every ambassador on the hex.\n\
          - **Liberate:** city {}, station {}, factory {} (yours on the site pay first, then your supply).\n\
-         - **Remove agents:** {} from your supply. **Envoy:** {}, for 1 Discord off.\n\
-         - **A drone** landing on a base where one stands: one a drone.\n\
+         - **Remove agents:** {} from your supply.\n\
          - **Protecting** your node or facility on its hex (§13): one, instead of the piece.\n\
          - **Threats** that print ambassadors as a cost: from your supply.\n\
          - **Blocking** spends none: an ambassador on a corrupted site stops its output while it stands. A \
@@ -210,7 +207,6 @@ fn ambassadors(r: &Rules) -> String {
         int(r, "board.claim_station"),
         int(r, "board.claim_factory"),
         int(r, "board.remove_ambassadors"),
-        int(r, "board.envoy_ambassadors"),
         int(r, "board.ambassador_credits"),
     )
 }
@@ -223,7 +219,7 @@ fn growth(r: &Rules) -> String {
         "**Grow: X** (the event card's last line), in each country:\n\n\
          1. **Which:** the X holding the most agents (tie: the lowest number) with a free hex next to it{}.\n\
          2. **What:** a neutral facility of the kind it has **fewer of next to it** (tie: a factory), else the other \
-         kind: a factory on a free industrial zone, a station on other open land (no facility, Fallout or base).\n\
+         kind: a factory on a free industrial zone, a station on other open land (no facility or Fallout).\n\
          3. **Agent:** if that X holds {} or is the adversary's, put 1 agent on the new facility (an arrival).\n",
         if cap > 0 { format!(" and fewer than {cap} facilities next to it") } else { String::new() },
         if infest == 1 { "an agent".to_string() } else { format!("{infest} agents") },
