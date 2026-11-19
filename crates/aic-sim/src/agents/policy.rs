@@ -294,6 +294,10 @@ macro_rules! forced_table {
             /// (Exascale Training Cluster, +3 insight a round, was kept in 62-76% of
             /// games and played in 1-3%; with the Researcher, 86% and 0%).
             (plan_spare: bool, false, 1.0, "150: keep plan: under Patience with spare insight, an insight income is worth the heuristic's idle rate, as in its play eval")
+            /// 288 (D120): what the keep plan's `am_makes` counts toward a power's sacrifice (`keep_plan::sac_tags`):
+            /// 0 every tag, the board's too; above 0 the cards' tags alone, plus `plan_sac - 1` of the hand's.
+            /// The eval's twin is `w.sac_tags`: screen the two together.
+            (plan_sac: f64, false, 2.0, "288 (D120): keep plan: tags counted toward a power's sacrifice: 0 all, the board's too; 1 the cards' alone; 1-2 plus that share of the hand's")
         }
     };
 }
@@ -1050,7 +1054,7 @@ impl Policy {
         }
         let standard = |n: &str| legal.iter().position(|a| matches!(a, Action::Standard { act, .. } if act == n));
         // 213 (`am_source`): the seat's antimatter powers and built Actions, each once a round, before the cubes.
-        // 219: a plant's Action (a resource paid) before a board power (a burn or Reclaim): the burns are the rare way.
+        // 219: a plant's Action (a resource paid) before a board power (Overcharge II's sacrifice): the rare way.
         let mut sources: Vec<usize> = if self.behaviors.am_source {
             legal
                 .iter()

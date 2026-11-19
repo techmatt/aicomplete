@@ -274,6 +274,66 @@ pub fn next_infiltrate(w: &World, g: &GameState) -> Vec<(usize, f64)> {
     out
 }
 
+/// 288 (D134), the agents' forecast of the card ahead's last lines (public: the card ahead), after `before` (the
+/// arrivals its earlier lines land, [`next_infiltrate`]'s): each Spill's moves as `(hex, -1)` off a site and `(hex,
+/// +1)` onto the one it reaches (as `adversary::spill` picks, from the board as it will stand), and each Grow's agent
+/// on the hex it builds on (`grow_plan`, when the growing site will hold `grow_infest_at` agents). Approximate where
+/// one line's moves feed the next. Empty when no card is ahead.
+pub fn next_spill(w: &World, g: &GameState, before: &[(usize, f64)]) -> Vec<(usize, f64)> {
+    let build_ahead = g.config.round.iter().position(|p| p == "adversary.build").is_some_and(|i| g.phase <= i);
+    let Some(card) = card_ahead(w, g) else {
+        return Vec::new();
+    };
+    // As `next_infiltrate` reads a cordon: before this round's build it blocks this round's lines.
+    let shut = |c: usize| g.var(&board::flag(RoundFlag::Cordon, c)) >= if build_ahead { 1 } else { 2 };
+    let mut extra = vec![0.0f64; g.hexes.len()];
+    for &(h, n) in before {
+        extra[h] += n;
+    }
+    let agents = |extra: &[f64], h: usize| g.tokens(h, ADV_AMBASSADOR) as f64 + extra[h];
+    let mut out = Vec::new();
+    for line in &card.twists {
+        match line {
+            Op::Spill { site, to } if adversary::level(w, w.int("adversary.spill_at")) => {
+                let mut moved = Vec::new();
+                for c in (0..w.map.countries.len()).filter(|&c| !shut(c)) {
+                    for h in infiltrate_sites(w, g, *site, c).into_iter().filter(|&h| agents(&extra, h) >= 2.0) {
+                        let target = w.map.hexes[h]
+                            .neighbors
+                            .iter()
+                            .copied()
+                            .filter(|&x| infiltrate_fits(w, g, x, *to) && !firewalled(g, x))
+                            .filter(|&x| !shut(w.map.hexes[x].country as usize))
+                            .min_by(|&a, &b| {
+                                agents(&extra, b).total_cmp(&agents(&extra, a)).then(tie(w, a).cmp(&tie(w, b)))
+                            });
+                        if let Some(t) = target {
+                            moved.push((h, -1.0));
+                            moved.push((t, 1.0));
+                        }
+                    }
+                }
+                for &(h, n) in &moved {
+                    extra[h] += n;
+                }
+                out.extend(moved);
+            }
+            Op::Grow { site } => {
+                let infest = w.int("adversary.grow_infest_at").max(1) as f64;
+                for c in (0..w.map.countries.len()).filter(|&c| !shut(c)) {
+                    if let Some((at, z, _)) = grow_plan(w, g, *site, c) {
+                        if agents(&extra, at) >= infest || corrupted(g, at) {
+                            out.push((z, 1.0));
+                        }
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+    out
+}
+
 /// 167: whether board condition `wh` holds on hex `h` now.
 pub fn holds(w: &World, g: &GameState, h: usize, wh: Where) -> bool {
     let amb = |x: usize| player_ambassador(g, x).is_some();

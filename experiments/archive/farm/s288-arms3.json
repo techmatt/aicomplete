@@ -1,0 +1,43 @@
+{
+ "name": "s288-arms3",
+ "note": "288: screen 3, the antimatter tie as a share of the table's 18 (the table itself unchanged) against the bare agents, dev seeds.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp",
+   "set": []
+  },
+  {
+   "name": "br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "agents": [
+  "strategist",
+  "greedy",
+  "strategist:w.am_tie=0.6667",
+  "strategist:w.am_tie=0.3333",
+  "greedy:w.am_tie=0.6667",
+  "greedy:w.am_tie=0.3333"
+ ],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

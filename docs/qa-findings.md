@@ -5,7 +5,7 @@ faults past hunts kept finding. Fixed findings, never to re-report: F1–F100 (0
 1617d75:docs/qa-findings.md`; then each hunt's `fixed.md` and `deferred.md` under `experiments/results/`: 099 (r38,
 F101 on), 118 (r46, F132, D43, W19 on), 145 (r59, F165, D57 on), 169 (r72 → 73, F205, D72 on), 184 (r77 → 78, F225,
 D77, W28 on), 197 (r86, F272, D88, W29 on), 235 (r106, F289, D92, W31 on; 238 fixed D92-D96, D98, D100, D103-D105, r108), 261 (r121 → r122, F322, D106, W34 on; 265 fixed D108, D109, D112, D115, D116; 266 D117), 285 (r135 → r136, F379,
-D120 on; fixed D102; 286 closed D121, D122, D124, D125, D126 (restated), D128, D130, D131, D132 at r137). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
+D120 on; fixed D102; 286 closed D121, D122, D124, D125, D126 (restated), D128, D130, D131, D132 at r137; 288 fixed D106 (built in) and D120 at r138). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
 
 ## Checkers
 
@@ -90,15 +90,13 @@ Each hunt found most of its faults in the same places. Look there first:
 | D83 | art | 12 deck cards name no scene and 6 scenes aren't served: `cards:check` fails. | An art batch or a pool scene. **Pick**. |
 | D84 | boards | Focus (Builder) is never used (199: 0.01-0.04 uses at 2 credits; credits bind first). | With the board redesign. **Matt's call**. |
 | D85 | viewer | Prompts: "which other player?" names no card; "Corrupt factories (at 2): ... onto which?" (agents parse it); "1 seat 1's ambassador" (a record key); a node's protection prompt names no threat. | Prompts and the agents' parser together. **Pick**. |
-| D106 | agents | A research removal is valued at its printed cubes on an empty track. | Value the firing it delays. **Pick** leave. |
 | D107 | rules | Nothing marks a city bought this round. | A Bought marker. **Matt's call**. |
 | D113 | cards | Counterintelligence Sweep, Fusion Commons draw at 0 insight. | 1 insight; no draw. **Matt's call**. |
 | D114 | cards | Five liberate cards' pricing notes use pre-r113 keeps. | Restate. **Pick**. |
 | D118 | rules | The Liberated marker binds Corrupt lines only, not cards that take a site. | Leave; guard. **Matt's call**. |
 | D119 | cards | Faces against house terms: node "Harden", Faraday Yard's box, two-way wordings. | One card-words item. **Pick**. |
-| D120 | agents | `am_makes` and `power_progress` count board tags toward a sacrifice; the engine's test cost 2 of 64 dev games. | A paired read. **Pick**. |
 | D123 | viewer | Draft / Keep below the fold at 1366 (D127), session notes (D129, D133): 285's deferred.md. | One viewer item. **Pick**. |
-| D134 | agents | The arrival forecast leaves out the card's Spill and Grow's agent. | `plan::next_spill` in `fore`. **Pick**. |
+| D134 | agents | The arrival forecast leaves out the card's Spill and Grow's agent. | 288: `plan::next_spill` built, off (`w.spill_read`: -1.7 judge, -2.1 greedy on the dev seeds; it still moves agents off a site the Infiltrate corrupts first). **Won't fix** while it loses. |
 
 ## Won't fix
 

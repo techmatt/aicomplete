@@ -471,21 +471,6 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             };
             one(clause(vec![w(glyph)], format!("a neutral {name} opens on it")))
         }
-        // 219: a board burn; its minus is a loss (179), the land token the adversary's mark.
-        Op::Burn { facility, blight } => {
-            let (piece, pieces) =
-                if *facility == Facility::Factory { ("factory", "factories") } else { ("station", "research stations") };
-            let mut icons = minus(1, piece);
-            if *blight {
-                icons.extend(adversary(vec![w("hex")]));
-            }
-            let say = if *blight {
-                format!("destroy one of your {pieces}; Fallout goes on its hex")
-            } else {
-                format!("destroy one of your {pieces}")
-            };
-            one(clause(icons, say))
-        }
         Op::Cleanse { amount: n, cities, only, at, .. } => {
             let more = n - 1;
             let what = match (*cities, only, more) {

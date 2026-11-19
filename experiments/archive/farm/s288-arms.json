@@ -1,0 +1,51 @@
+{
+ "name": "s288-arms",
+ "note": "288: D120 (s1, s15), D134 (sp) and the antimatter tie (tc, t6, t18) as agent arms against the bare agents, dev seeds.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp",
+   "set": []
+  },
+  {
+   "name": "br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "agents": [
+  "strategist",
+  "greedy",
+  "strategist:plan_sac=1,w.sac_tags=1",
+  "strategist:plan_sac=1.5,w.sac_tags=1.5",
+  "strategist:w.spill_read=1",
+  "strategist:w.am_tie=1,t.resources.antimatter=2.222",
+  "strategist:w.am_tie=1,t.resources.antimatter=6",
+  "strategist:w.am_tie=1",
+  "greedy:plan_sac=1,w.sac_tags=1",
+  "greedy:plan_sac=1.5,w.sac_tags=1.5",
+  "greedy:w.spill_read=1",
+  "greedy:w.am_tie=1,t.resources.antimatter=2.222",
+  "greedy:w.am_tie=1,t.resources.antimatter=6",
+  "greedy:w.am_tie=1"
+ ],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

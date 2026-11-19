@@ -356,6 +356,18 @@ class ReadLib(unittest.TestCase):
             with self.assertRaisesRegex(SystemExit, 'give NAME=SPEC'):
                 run(read_lib.main, [b, '--arm', 'strategist'])
 
+    def test_one_arm_name_for_two_agents(self):
+        # 288: the judge's and greedy's arms of one option share its tag, each paired against its own agent
+        spec = dict(SPEC, variants=[{'name': 'bp', 'set': []}],
+                    agents=['strategist', 'greedy', 'strategist:w.sink=1', 'greedy:w.sink=1'])
+        with tempfile.TemporaryDirectory() as tmp:
+            b = os.path.join(tmp, 'new.jsonl')
+            self.write(b, spec, lambda c, s: c % 4 >= 2)
+            text = run(read_lib.main, [b, '--agent-arms'])
+            n = 2 * len(SEEDS)
+            self.assertIn(f'| strategist | sink1 | 100.0 | 100.0 | 100.0 | +100.0 ± 0.0 | {n} |', text)
+            self.assertIn(f'| greedy | sink1 | 100.0 | 100.0 | 100.0 | +100.0 ± 0.0 | {n} |', text)
+
     def test_one_paired_seed(self):
         # 266 (D117): one paired seed read new = base (`screens.gap` gives 0 below two pairs)
         self.assertEqual(read_lib.paired_gap({('bp', 2, 1): 0}, {('bp', 2, 1): 1}), (0.0, 100.0, 100.0, None, 1))

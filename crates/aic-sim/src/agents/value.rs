@@ -93,7 +93,7 @@ pub struct Override {
 #[cfg(test)]
 pub(crate) const PART_ROWS: &[&str] =
     &["remove_ambassador", "remove_troop", "typed_jam", "liberate_own", "liberate_troops", "liberate_botnet", "cleanse_station",
-      "if_node_next_fresh", "burn_station", "burn_blight", "open_station", "open_factory"];
+      "if_node_next_fresh", "open_station", "open_factory"];
 
 const SOURCE: &str = include_str!("../../../../configs/agents/values.json");
 
@@ -337,7 +337,7 @@ pub struct Ctx {
     /// 128: whether a megaproject is still open to the seat's project cubes (an
     /// Action that places them has no target once none is: Particle Accelerator).
     pub cubes_open: bool,
-    /// 283 (D106, `w.research_delay`): the share of a research-track removal's row that counts: the share of a
+    /// 283 (D106): the share of a research-track removal's row that counts: the share of a
     /// firing the track still reaches this game (1 by default).
     pub research: f64,
 }
@@ -574,11 +574,6 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             Worth::now(row("place_ambassadors") * r(Resource::Ambassadors) * *count as f64)
         }
         Op::BuildFactory => Worth::now(row("build_factory")),
-        // 219: a board burn loses the piece's output for the rounds left, and a blight's Discord drip.
-        Op::Burn { facility, blight } => Worth::now(
-            if *facility == Facility::Factory { row("burn") } else { row("burn_station") }
-                + if *blight { row("burn_blight") } else { 0.0 },
-        ),
         Op::Cleanse { amount, one_country, cities, only, at } => {
             // 234: the target always frees; the rest find `area_share` of their number around it.
             let more = (*amount - 1).max(0) as f64;

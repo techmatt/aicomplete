@@ -605,7 +605,7 @@ impl FalloutAt {
     }
 }
 
-/// A facility kind: a research station or a factory (a cleanse's limit since r35; Burn, CreateSite, TakeSite).
+/// A facility kind: a research station or a factory (a cleanse's limit since r35; CreateSite, TakeSite).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Facility {
@@ -793,14 +793,6 @@ pub enum Op {
     },
     /// Build a factory on a free industrial zone in your reach.
     BuildFactory,
-    /// 219 (Matt, 2026-11-13: the board burns): destroy one of your own `facility` pieces, anywhere, your choice;
-    /// it is gone (no protection is spent: you chose it), your cube and any hardening with it. With `blight`, a
-    /// Fallout token goes on its hex. Rebuilt only the normal way.
-    Burn {
-        facility: Facility,
-        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
-        blight: bool,
-    },
     /// Take the adversary cube off up to `amount` corrupted stations or
     /// factories, one at a time (`one_country`: all in the first one's
     /// country). `cities` (024): corrupted cities too, each liberated as `Liberate`
@@ -1620,7 +1612,7 @@ fn two() -> i64 {
 impl Op {
     /// 234: an op that acts at a place on the map a player picks: on a player card it needs the card's one
     /// target before it (`Content::check`), and acts on that target's area. Your own nodes (`shield_node`,
-    /// `place_node`) and burns of your own pieces are not picked places. A reach Shelter takes no target.
+    /// `place_node`) are not picked places. A reach Shelter takes no target.
     /// 255: an exhaustive match, as [`Op::reads_hit_seat`] and [`Op::slots`], so a new op is decided here (an op
     /// left out was offered with no target in reach: 253's `CreateSite`).
     pub fn is_map(&self) -> bool {
@@ -1660,7 +1652,6 @@ impl Op {
             | Op::PlaceNode { .. }
             | Op::ShieldNode { .. }
             | Op::DelayThreat { .. }
-            | Op::Burn { .. }
             | Op::GainAmbassadors { .. }
             | Op::Target { .. }
             | Op::Shelter
@@ -1836,7 +1827,6 @@ impl Op {
             | Op::RemoveAmbassadorsCountry { .. }
             | Op::RemoveTroops { .. }
             | Op::BuildFactory
-            | Op::Burn { .. }
             | Op::Cleanse { .. }
             | Op::Liberate { .. }
             | Op::ClearCity { .. }
@@ -2122,7 +2112,6 @@ impl Op {
             | Op::RemoveTroops { .. }
             | Op::GainPerTag { .. }
             | Op::BuildFactory
-            | Op::Burn { .. }
             | Op::Cleanse { .. }
             | Op::Liberate { .. }
             | Op::ClearCity { .. }

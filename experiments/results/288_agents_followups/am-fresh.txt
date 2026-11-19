@@ -1,0 +1,42 @@
+== out/288_agents_followups/f288-old.jsonl=experiments/farm/f288-read.json@r138
+r138/base greedy: 720 games; antimatter a seat-game gained 2.49 spent 1.27 (51%); d3-d4 wins: 102, 82% spent any, 59% of their antimatter spent
+  by level (gained > spent a seat-game, share; in wins): d0 2.74 > 1.23 45%, wins 44%; d1 2.93 > 1.51 52%, wins 50%; d2 2.78 > 1.40 50%, wins 54%; d3 2.33 > 1.33 57%, wins 59%; d4 1.65 > 0.88 53%, wins 59%
+  spends a seat-game: use:orbital_relay_launcher 0.17, play:accelerator_diplomacy 0.10, play:nuclear_option 0.09, play:collider_consortium 0.09, play:antimatter_accord 0.09, play:fusion_commons 0.08, play:catalyzed_fab_run 0.08, play:hostile_buyout 0.08, use:containment_reactor 0.07, play:peacekeeping_mission 0.05
+  kinetic_interdiction           kept  16.9% of games, plays 0.13 a game
+  orbital_mass_driver            kept  17.5% of games, plays 0.08 a game
+  fusion_commons                 kept  24.9% of games, plays 0.17 a game
+  singularity_exploit            kept  18.8% of games, plays 0.09 a game
+  containment_reactor            kept  29.7% of games, plays 0.32 a game
+  orbital_relay_launcher         kept  43.3% of games, plays 0.32 a game
+  annihilation_lance             kept  18.5% of games, plays 0.08 a game
+r138/base strategist: 720 games; antimatter a seat-game gained 2.96 spent 1.40 (47%); d3-d4 wins: 127, 80% spent any, 51% of their antimatter spent
+  by level (gained > spent a seat-game, share; in wins): d0 2.94 > 1.33 45%, wins 44%; d1 3.83 > 1.72 45%, wins 49%; d2 3.23 > 1.57 49%, wins 51%; d3 2.62 > 1.35 52%, wins 54%; d4 2.16 > 1.02 47%, wins 46%
+  spends a seat-game: use:orbital_relay_launcher 0.25, play:antimatter_accord 0.10, play:accelerator_diplomacy 0.10, use:kinetic_interdiction 0.09, use:containment_reactor 0.08, play:hostile_buyout 0.08, play:collider_consortium 0.07, play:catalyzed_fab_run 0.07, play:fusion_commons 0.07, play:root_access 0.06
+  kinetic_interdiction           kept  15.8% of games, plays 0.17 a game
+  orbital_mass_driver            kept  18.5% of games, plays 0.08 a game
+  fusion_commons                 kept  19.4% of games, plays 0.14 a game
+  singularity_exploit            kept  18.3% of games, plays 0.09 a game
+  containment_reactor            kept  30.8% of games, plays 0.29 a game
+  orbital_relay_launcher         kept  37.9% of games, plays 0.36 a game
+  annihilation_lance             kept  19.7% of games, plays 0.10 a game
+== out/288_agents_followups/f288-new.jsonl=experiments/farm/f288-read.json@r138s
+r138s/base greedy: 720 games; antimatter a seat-game gained 3.17 spent 1.38 (44%); d3-d4 wins: 120, 92% spent any, 50% of their antimatter spent
+  by level (gained > spent a seat-game, share; in wins): d0 3.20 > 1.23 38%, wins 39%; d1 3.84 > 1.82 47%, wins 47%; d2 3.61 > 1.61 45%, wins 48%; d3 2.85 > 1.25 44%, wins 50%; d4 2.34 > 1.01 43%, wins 51%
+  spends a seat-game: play:antimatter_accord 0.14, play:accelerator_diplomacy 0.12, play:nuclear_option 0.11, play:catalyzed_fab_run 0.11, play:fusion_commons 0.10, play:collider_consortium 0.10, play:hostile_buyout 0.09, use:containment_reactor 0.08, play:peacekeeping_mission 0.06, play:decapitation_strike 0.06
+  kinetic_interdiction           kept  21.0% of games, plays 0.15 a game
+  orbital_mass_driver            kept  18.3% of games, plays 0.10 a game
+  fusion_commons                 kept  22.9% of games, plays 0.21 a game
+  singularity_exploit            kept  11.2% of games, plays 0.11 a game
+  containment_reactor            kept  26.2% of games, plays 0.25 a game
+  orbital_relay_launcher         kept  48.5% of games, plays 0.33 a game
+  annihilation_lance             kept   0.0% of games, plays 0.01 a game
+r138s/base strategist: 720 games; antimatter a seat-game gained 3.82 spent 1.32 (34%); d3-d4 wins: 152, 88% spent any, 43% of their antimatter spent
+  by level (gained > spent a seat-game, share; in wins): d0 3.91 > 1.17 30%, wins 31%; d1 4.45 > 1.54 35%, wins 36%; d2 4.07 > 1.43 35%, wins 35%; d3 3.81 > 1.39 36%, wins 41%; d4 2.87 > 1.06 37%, wins 45%
+  spends a seat-game: play:antimatter_accord 0.13, play:accelerator_diplomacy 0.12, play:fusion_commons 0.11, play:nuclear_option 0.10, play:catalyzed_fab_run 0.09, play:hostile_buyout 0.09, use:kinetic_interdiction 0.08, use:containment_reactor 0.08, play:collider_consortium 0.07, play:peacekeeping_mission 0.06
+  kinetic_interdiction           kept  17.2% of games, plays 0.16 a game
+  orbital_mass_driver            kept  19.0% of games, plays 0.08 a game
+  fusion_commons                 kept  23.3% of games, plays 0.22 a game
+  singularity_exploit            kept  11.5% of games, plays 0.10 a game
+  containment_reactor            kept  24.0% of games, plays 0.25 a game
+  orbital_relay_launcher         kept  46.9% of games, plays 0.39 a game
+  annihilation_lance             kept   0.0% of games, plays 0.01 a game

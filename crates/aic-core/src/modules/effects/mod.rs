@@ -202,7 +202,6 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             let zone = ctx.area(&w, g, seat, Area::On);
             resources::build_factory(g, cx, seat, &zone)?
         }
-        Op::Burn { facility, blight } => resources::burn(g, cx, seat, *facility, *blight)?,
         Op::Cleanse { amount, one_country, cities, only, at } => {
             let zone = ctx.area(&w, g, seat, *at);
             let target = ctx.target.flatten();

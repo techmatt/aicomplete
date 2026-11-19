@@ -82,8 +82,8 @@ pub use search::{Beam, Greedy};
 
 /// What a card's other costs count in credits (273: r127's 3 / 2 / 3, and 2 a cube, 1 an energy or
 /// chip, ÷ 1.5 with the credits): each antimatter this many (not `Weights::antimatter`, whose doc names the
-/// agents' other antimatter rates)...
-const ANTIMATTER_COST: f64 = 2.0;
+/// agents' other antimatter rates; 288: with `w.am_tie` the eval's hand cost reads the table's instead)...
+pub(crate) const ANTIMATTER_COST: f64 = 2.0;
 /// ...each insight this many...
 pub(crate) const INSIGHT_COST: f64 = 4.0 / 3.0;
 /// ...and each point of income lowered this many...
@@ -95,8 +95,13 @@ const UNIT_COST: f64 = 2.0 / 3.0;
 /// A card's cost in credits, with `credits` as its credit price (printed,
 /// or after a seat's discount).
 pub(crate) fn credit_equivalent(d: &CardDef, credits: i64) -> f64 {
+    credit_equivalent_at(d, credits, ANTIMATTER_COST)
+}
+
+/// [`credit_equivalent`] with each antimatter at `antimatter` credits (288, `w.am_tie`).
+pub(crate) fn credit_equivalent_at(d: &CardDef, credits: i64, antimatter: f64) -> f64 {
     credits as f64
-        + ANTIMATTER_COST * d.antimatter as f64
+        + antimatter * d.antimatter as f64
         + CUBE_COST * d.research_cubes as f64
         + UNIT_COST * (d.energy + d.chips) as f64
         + INSIGHT_COST * d.insight as f64
@@ -331,10 +336,11 @@ const SWEEP: &str = "deals=1,lead=0";
 /// deck clock off (`w.clock=0`) and its RNG stream; docs/agents.md, *The tiers*, says what each does. Each step's
 /// screen and fresh read are in its write-up under `experiments/results/`: 157 and 162_judge_purge (the purge term,
 /// clock off), 222_sim_players (`strategy=0`), 245_tune_strategist (hand terms), 249_real_oracle_judge
-/// (`w.card_action`), 257_judge_action_buildings and 258_card_followups (`w.sink` 0.5).
+/// (`w.card_action`), 257_judge_action_buildings and 258_card_followups (`w.sink` 0.5), 288_agents_followups
+/// (`w.am_tie`, greedy's default; the engine's is 0).
 const STRATEGIST: &str = "strategy=0,w.built=4,w.built_cost=0.75,w.clock=0,w.energy_cap=0,w.hand=1.5,w.hand_cost=0.15,\
 w.horizon=0,w.insight_income=0,w.movement=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,\
-w.tag_hand=0,w.purge=3.6,w.last_node=120,w.card_action=3,w.sink=0.5";
+w.tag_hand=0,w.purge=3.6,w.last_node=120,w.card_action=3,w.sink=0.5,w.am_tie=0.6667";
 
 /// A kind's place on the [`LADDER`].
 fn rung(kind: &str) -> Option<usize> {
@@ -554,6 +560,10 @@ impl AgentSpec {
         };
         for (k, v) in &self.weights {
             w.set(k, *v);
+        }
+        // 288: a spec's own `w.antimatter` wins over the tie, which would overwrite it (`Eval::with_table`).
+        if self.weights.contains_key("antimatter") {
+            w.am_tie = 0.0;
         }
         w
     }
@@ -1227,6 +1237,10 @@ mod tests {
         assert_eq!(AgentSpec::parse("greedy").unwrap().label(), "greedy");
         assert!(AgentSpec::parse("greedy:width=3").is_err());
         assert!(AgentSpec::parse("greedy:w.nope=3").is_err());
+        // 288: the antimatter tie is on for greedy and the judge; a spec's own `w.antimatter` turns it off.
+        assert!(AgentSpec::parse("strategist").unwrap().weights().am_tie > 0.0);
+        let own = AgentSpec::parse("strategist:w.antimatter=3").unwrap().weights();
+        assert_eq!((own.am_tie, own.antimatter), (0.0, 3.0));
         // 165: a retired probe is refused with its reason.
         for (name, _) in eval::RETIRED {
             let e = AgentSpec::parse(&format!("engine:w.{name}=1")).unwrap_err();

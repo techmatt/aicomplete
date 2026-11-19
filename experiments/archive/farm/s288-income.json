@@ -1,0 +1,41 @@
+{
+ "name": "s288-income",
+ "note": "288: screen 4, flat antimatter income tied too (w.am_income_tie=1) against the shipped agents, dev seeds.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp",
+   "set": []
+  },
+  {
+   "name": "br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "agents": [
+  "strategist",
+  "greedy",
+  "strategist:w.am_income_tie=1",
+  "greedy:w.am_income_tie=1"
+ ],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

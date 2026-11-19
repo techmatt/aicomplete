@@ -198,8 +198,32 @@ pub fn plan_now(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx) ->
     plan(w, g, s, &[], &one, pc, &pt).map(|(_, p)| p).unwrap_or_default()
 }
 
+/// 288 (D120; `plan_sac` in the keep plan, `w.sac_tags` in the eval): the tags seat `s` counts toward a power's
+/// sacrifice. 0: every tag it has, its board's printed and revealed ones too (as before 288). Above 0: the tags on
+/// its cards alone, which is all a sacrifice can pay with (`cards::sources`), plus `sac - 1` (at most 1) of the tags
+/// on the cards in its hand, the ones it can play toward the sacrifice before it is used.
+/// `all`: its tags, `cards::tag_counts`.
+pub(crate) fn sac_tags(w: &World, g: &GameState, s: usize, all: &[i64; TAGS.len()], sac: f64) -> [f64; TAGS.len()] {
+    let mut out = all.map(|n| n as f64);
+    if sac <= 0.0 {
+        return out;
+    }
+    let board = aic_core::modules::ai::printed_tags(w, s).chain(aic_core::modules::ai::revealed_tags(w, g, s));
+    for t in board {
+        out[*t as usize] -= 1.0;
+    }
+    let hand = (sac - 1.0).clamp(0.0, 1.0);
+    if hand > 0.0 {
+        for t in g.pile(&cards::hand(s)).iter().flat_map(|id| &cards::def(w, id).tags) {
+            out[*t as usize] += hand;
+        }
+    }
+    out
+}
+
 /// 211 (`plan_am`): the antimatter seat `s`'s board powers and built Actions gain, one use each (a round's worth).
-pub(crate) fn am_makes(w: &World, g: &GameState, s: usize) -> i64 {
+/// `sac`: what counts toward a power's sacrifice ([`sac_tags`]).
+pub(crate) fn am_makes(w: &World, g: &GameState, s: usize, sac: f64) -> i64 {
     let gains = |ops: &[Op]| {
         ops.iter()
             .map(|o| match o {
@@ -208,12 +232,13 @@ pub(crate) fn am_makes(w: &World, g: &GameState, s: usize) -> i64 {
             })
             .sum::<i64>()
     };
-    // A power that sacrifices a tag counts once the seat has cards of it in play. (285, deferred: board tags count
-    // here, which the sacrifice never uses; the engine's test, `TagNeed::payable`, cost the judge 2 of 64 games.)
+    // A power that sacrifices a tag counts once the seat has cards of it in play (288, D120: with `sac` 0, the
+    // board's tags count too, which the sacrifice never uses).
     let tags = cards::tag_counts(w, g, s);
+    let sacs = sac_tags(w, g, s, &tags, sac);
     let has = |t: &aic_core::vocab::TagOrAny, n: i64| match t {
-        aic_core::vocab::TagOrAny::Any => tags.iter().sum::<i64>() >= n,
-        aic_core::vocab::TagOrAny::Is(t) => tags[*t as usize] >= n,
+        aic_core::vocab::TagOrAny::Any => sacs.iter().sum::<f64>() >= n as f64,
+        aic_core::vocab::TagOrAny::Is(t) => sacs[*t as usize] >= n as f64,
     };
     // 276: a threshold power counts once its tags are on the seat's cards; a group (Growth, a power's tiers) is one
     // use a round, so it counts its best option only.
@@ -523,7 +548,7 @@ fn plan(
     };
     let patient = economy::patient(w, s);
     // 211 (`plan_am`): antimatter the seat can make each round from its own powers and built Actions.
-    let am_made = if f.plan_am { am_makes(w, g, s) } else { 0 };
+    let am_made = if f.plan_am { am_makes(w, g, s, f.plan_sac) } else { 0 };
     let am_cubes = if f.plan_am { w.int("board.antimatter_cubes") } else { 0 };
     let share = pc.t.rate("target_share");
     // 092 (`plan_bury`): the slots still open, and the tops a building may bury.

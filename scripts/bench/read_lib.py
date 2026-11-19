@@ -15,7 +15,8 @@ default `base`, `off`, else the first) on the same pair, level, agent and seed. 
 levels only. `--agent-arms` (281): an agent with options (`strategist:w.sink=1`) whose bare name (`strategist`) is an
 agent of any READ is an arm of the bare agent, named by its options (`sink1`; `on-sink1` on arm `on`), so it pairs
 against the bare agent's games on the same pair, level and seed. `--arm NAME=SPEC` (286, once per agent, implies
-`--agent-arms`) names SPEC's arm NAME (`--arm sink-high=strategist:w.sink=10`); two specs squashing to one name stop it.
+`--agent-arms`) names SPEC's arm NAME (`--arm sink-high=strategist:w.sink=10`); two specs of one agent squashing to one
+name stop it (288: the judge's and greedy's arms may share one, each paired against its own agent).
 
 Tables: wins by level with the paired gap ± one SE; the gap by level; losses by reason a game; board powers a seat-game
 of their board (by their counters, `ai.power.<board>.<slug>`, so any revision reads right); standard actions a
@@ -61,9 +62,10 @@ def games(read, label=None, agent_arms=(), names=None):
     many = len(spec['configs']) > 1
     as_arm = {a: a.split(':')[0] for a in spec['agents'] if ':' in a and a.split(':')[0] in agent_arms}
     tags = {a: names.get(a) or option_tag(a) for a in as_arm}
-    # 286: `w.sink=1.0` and `w.sink=10` both squash to `sink10`; their games would pool as one arm
-    for t in set(tags.values()):
-        same = sorted(a for a in tags if tags[a] == t)
+    # 286: `w.sink=1.0` and `w.sink=10` both squash to `sink10`; their games would pool as one arm (288: of one bare
+    # agent: the judge's and greedy's arms of one name stay apart, each paired against its own agent)
+    for bare, t in {(as_arm[a], tags[a]) for a in tags}:
+        same = sorted(a for a in tags if tags[a] == t and as_arm[a] == bare)
         if len(same) > 1:
             sys.exit(f"--agent-arms: {' and '.join(same)} are both arm {t}: name them apart with --arm NAME=SPEC")
     # 261: an agent-lever screen ('strategist', 'strategist:w.sink=0.5', ...) keeps each spec whole: cut at ':' only

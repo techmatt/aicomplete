@@ -283,7 +283,6 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::RemoveAmbassadorsCountry { .. }
         | Op::RemoveTroops { .. }
         | Op::BuildFactory
-        | Op::Burn { .. }
         | Op::Cleanse { .. }
         | Op::Liberate { .. }
         | Op::ClearCity { .. }

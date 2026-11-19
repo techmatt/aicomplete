@@ -126,7 +126,6 @@ fn feasible_aimed(
             }
             Op::RemoveAmbassadorsCountry { .. } => any_hex(g, |h| g.tokens(h, ADV_AMBASSADOR) > 0 && in_reach(w, g, seat, h)),
             Op::BuildFactory => !factory_sites(w, g, seat).is_empty(),
-            Op::Burn { facility, .. } => !own_facilities(g, seat, *facility).is_empty(),
             Op::Cleanse { cities, only, .. } => {
                 any_hex(g, |h| cleansable(w, g, h, *cities, *only) && in_reach(w, g, seat, h))
             }

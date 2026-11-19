@@ -1,0 +1,45 @@
+{
+ "name": "s288-arms2",
+ "note": "288: screen 2, the levers' second settings (s2, sp05, t12) against the bare agents, dev seeds.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp",
+   "set": []
+  },
+  {
+   "name": "br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "agents": [
+  "strategist",
+  "greedy",
+  "strategist:plan_sac=2,w.sac_tags=2",
+  "strategist:w.spill_read=0.5",
+  "strategist:w.am_tie=1,t.resources.antimatter=12",
+  "greedy:plan_sac=2,w.sac_tags=2",
+  "greedy:w.spill_read=0.5",
+  "greedy:w.am_tie=1,t.resources.antimatter=12"
+ ],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

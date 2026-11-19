@@ -36,7 +36,6 @@ use std::collections::HashMap;
 use std::hash::BuildHasherDefault;
 use std::sync::Arc;
 
-use super::credit_cost;
 use super::guide;
 use super::strategy::{self, Choice, Mults};
 use super::value::{self, CardValue, Ctx, Worth};
@@ -225,7 +224,9 @@ pub struct Weights {
     pub energy: f64,
     /// Points for a held antimatter. The keep plan prices antimatter at this ÷ the credit weight (`plan_rates`),
     /// shadowing `values.json`'s 18; table-mode hand worth reads the table's 18; a card's antimatter cost is
-    /// `agents::ANTIMATTER_COST` and antimatter income `ANTIMATTER_INCOME_UNIT` (284: the agents' four rates).
+    /// `agents::ANTIMATTER_COST` and flat antimatter income `ANTIMATTER_INCOME_UNIT` points (284: the agents' four
+    /// rates). 288: with `am_tie` on (greedy and the judge) this is set from it, and a card's cost and flat
+    /// antimatter income (1.5 held) follow it.
     pub antimatter: f64,
     pub insight: f64,
     /// An insight held by a seat with Patience (075): it carries over, so it
@@ -369,6 +370,9 @@ pub struct Weights {
     /// 275, above 0: the botnets' coming seeds (`plan::next_seeds`) count this share beside the Infiltrate, read
     /// as `rally_read` reads it (both land before the players act again).
     pub seed_read: f64,
+    /// 288 (D134; 0: off), above 0: the card ahead's Spill and Grow lines (`plan::next_spill`) count this share
+    /// beside the Infiltrate: an agent onto a site as `rally_read` reads an arrival, one off a site against it.
+    pub spill_read: f64,
     /// 147 (D67), above 0: each Fallout token, and open land filling
     /// toward one, costs its Discord drip over the rounds left (up to 3) at its
     /// share of a Discord tip.
@@ -413,13 +417,17 @@ pub struct Weights {
     /// the units it burns, where that beats its flat weight: fuel a converter waits on is worth what it will make (at
     /// `antimatter` 2, below the chip or energy that makes one, a seat with Orbital Relay Launcher made none).
     pub sink: f64,
-    /// 283 (on; 0: the mix before it): the keep price's spare insight covers a keep counted in insight, not in
-    /// r127's credits (`keep_price` divided insight held by credits: a tier-2 keep of 3 read 6).
-    pub keep_units: f64,
-    /// 283 (D106's pick (a); on; 0: off): a held research-track removal counts the firing it delays: its table row
-    /// times the share of a firing the track still reaches this game (`research_share`), not its printed cubes
-    /// whatever the game has left. It changed no game on 960 dev-seed games.
-    pub research_delay: f64,
+    /// 288 (D120; 0: off): the tags counted toward a power's sacrifice in `am_make` and `power_progress`
+    /// (`keep_plan::sac_tags`): 0 every tag, the board's too; above 0 the cards' alone, plus `sac_tags - 1` of
+    /// the hand's. The keep plan's twin is `plan_sac`.
+    pub sac_tags: f64,
+    /// 288 (0: off, the four rates apart), above 0: one antimatter rate, this share of the value table's
+    /// (`values.json` 18, or the spec's `t.resources.antimatter`), in credits: `antimatter` becomes it times the
+    /// credit weight (so the keep plan's
+    /// `plan_rates` and horizon mode's antimatter income follow), the hand terms price a card's antimatter at it
+    /// (not `agents::ANTIMATTER_COST`) and flat mode's antimatter income is `ANTIMATTER_INCOME_UNIT` ÷ 2 held ones
+    /// (its ratio to the 2-point held antimatter it was set beside). A spec setting `w.antimatter` turns it off.
+    pub am_tie: f64,
 }
 
 /// Weights renamed since experiments named them: (former name, name).
@@ -437,7 +445,7 @@ const RENAMED: [(&str, &str); 7] = [
 
 /// 165: the zero-weight probes, retired: (name, why). A spec naming one is refused
 /// with the reason rather than as an unknown weight.
-pub(crate) const RETIRED: [(&str, &str); 9] = [
+pub(crate) const RETIRED: [(&str, &str); 11] = [
     (
         "prod_income",
         "246: flat mode counting a card's production (`economy.production`) at the track's rate: oracle agreement on \
@@ -460,6 +468,16 @@ pub(crate) const RETIRED: [(&str, &str); 9] = [
     ("table_income", "082: a probe that never read a gain; always 0 since"),
     ("team_share", "124 (D47): no gain read (-0.9 +-1.9 alone); always 0 since. The keep plan's `plan_team` remains"),
     ("threshold_tokens", "124 (D47): no gain read (0.0 +-0.9); always 0 since"),
+    (
+        "keep_units",
+        "283: the keep price's spare insight counted in insight, not r127's credits (-0.6 +-1.0 judge alone, +0.0 \
+         beside the anchors table); on since 283, built in at 288",
+    ),
+    (
+        "research_delay",
+        "283 (D106): a held research-track removal at the share of a firing still coming; changed no game on 960 \
+         dev-seed games; on since 283, built in at 288",
+    ),
 ];
 
 /// Weight names only a pre-086 spec uses. Such a spec's `node` meant the
@@ -552,13 +570,15 @@ const WALL_NEAR: u32 = 4;
 /// own points for antimatter and insight, credits (273: 1.5, credits ÷ 1.5 left a point of credit income
 /// worth what r127's was) and 1 for the rest, times `income`.
 const ANTIMATTER_INCOME_UNIT: f64 = 3.0;
+/// 288 (`am_tie`): the held antimatter's points `ANTIMATTER_INCOME_UNIT` was set beside (`Weights::antimatter`).
+const ANTIMATTER_HELD: f64 = 2.0;
 const INSIGHT_INCOME_UNIT: f64 = 1.5;
 const CREDIT_INCOME_UNIT: f64 = 1.5;
 
-/// A resource's income unit (track income and card income alike).
-fn income_unit(r: Resource) -> f64 {
+/// A resource's income unit (track income and card income alike); `am`: antimatter's (`Eval::am_income`).
+fn income_unit(r: Resource, am: f64) -> f64 {
     match r {
-        Resource::Antimatter => ANTIMATTER_INCOME_UNIT,
+        Resource::Antimatter => am,
         Resource::Insight => INSIGHT_INCOME_UNIT,
         Resource::Credits => CREDIT_INCOME_UNIT,
         _ => 1.0,
@@ -706,6 +726,7 @@ impl Default for Weights {
             corrupt_exposure: 0.25,
             rally_read: 1.0,
             seed_read: 1.0,
+            spill_read: 0.0,
             blight: 1.0,
             site_pressure: 1.0,
             block: 4.0,
@@ -717,10 +738,13 @@ impl Default for Weights {
             card_income: 0.0,
             card_action: 0.0,
             sink: 0.0,
-            // 283 (dev seeds, 480 games a cell, with the table at the anchors): keep_units +0.0 on it (+1.9 ± 1.9
-            // judge against base, as the table alone); research_delay changed no game (D106's pick (a)).
-            keep_units: 1.0,
-            research_delay: 1.0,
+            // 288 (D120; dev seeds, 480 games a cell): the cards' tags and the hand's, +0.2 ± 0.5 judge, +0.4 ± 0.6
+            // greedy (the cards' alone -0.2 ± 0.2, -0.2 ± 0.5).
+            sac_tags: 2.0,
+            // 288: the antimatter rates tied at 2/3 of the table's 18 (12 credits): +0.4 ± 1.9 judge, +2.3 ± 2.1
+            // greedy on the dev seeds (the whole 18 +0.0 ± 2.1, +2.5 ± 2.3; a third +0.4, +1.9; the table itself
+            // repriced to 2.22, -4.2 ± 1.8 judge). The engine and its kin (table mode, unscreened) keep it off.
+            am_tie: 0.6667,
         }
     }
 }
@@ -773,6 +797,8 @@ impl Weights {
             energy_cap: 4.0,
             // 149: Movement spaces at `rates.movement` a round (the free move).
             movement: 1.0,
+            // 288: the tie was screened on the flat agents only (the strategist turns it back on).
+            am_tie: 0.0,
             ..Weights::default()
         }
     }
@@ -841,6 +867,11 @@ pub struct Eval {
     mix: bool,
     /// 131: the value table this agent reads (`t.<key>=v` in its spec; else the table).
     pub tbl: &'static value::Table,
+    /// 288 (`w.am_tie`): a card's antimatter cost in credits in the hand terms: `agents::ANTIMATTER_COST`, or
+    /// the tied rate (`am_tie` of the table's antimatter).
+    am_cost: f64,
+    /// 288 (`w.am_tie`): flat mode's antimatter income unit, in points (`ANTIMATTER_INCOME_UNIT`, or tied).
+    am_income: f64,
     /// 149: `rates.movement`, a free move a round in credits, read once.
     movement_rate: f64,
     /// 082: each strategy's multiplier for each card and phase.
@@ -1057,7 +1088,21 @@ impl Eval {
     }
 
     /// 131: an eval reading `tbl` for the value table (see [`value::table_with`]).
-    pub fn with_table(rules: &Rules, w: Weights, tbl: &'static value::Table) -> Eval {
+    pub fn with_table(rules: &Rules, mut w: Weights, tbl: &'static value::Table) -> Eval {
+        // 288 (`am_tie`): one antimatter rate, `am_tie` of the table's (`values.json`, or `t.resources.antimatter`): a
+        // held one at it in the eval's points (so the keep plan's `plan_rates` and horizon mode's income follow), and
+        // a card's antimatter cost at it in the hand terms, and flat mode's antimatter income (`ANTIMATTER_INCOME_UNIT`
+        // points beside a held one's 2: 1.5 held; no card or board makes antimatter income at r138, so dormant).
+        let mut am_income = ANTIMATTER_INCOME_UNIT;
+        let am_cost = if w.am_tie > 0.0 {
+            let rate = w.am_tie * tbl.res(Resource::Antimatter);
+            let credit = if w.table > 0.0 { w.table } else { w.credits };
+            w.antimatter = rate * credit;
+            am_income = ANTIMATTER_INCOME_UNIT / ANTIMATTER_HELD * w.antimatter;
+            rate
+        } else {
+            super::ANTIMATTER_COST
+        };
         let world = rules.world();
         let seats = rules.config.countries as usize;
         // 156: no Unity-deck win (028-155 aimed at the deck's last card): the team
@@ -1129,6 +1174,8 @@ impl Eval {
             mix: tbl.rate("own_mix") > 0.0,
             movement_rate: tbl.rate("movement"),
             tbl,
+            am_cost,
+            am_income,
             facts: Arc::new(
                 world
                     .content
@@ -1137,7 +1184,7 @@ impl Eval {
                     .enumerate()
                     .map(|(i, d)| Fact {
                             index: i,
-                            cost: Self::cost(d),
+                            cost: Self::cost(d, am_cost),
                             value: CardValue::of(tbl, d),
                             // 102 (D24): a token on a card that cashes its own pile out is worth that.
                             token: value::token_worth_cash(tbl, d),
@@ -1231,15 +1278,16 @@ impl Eval {
         }
     }
 
-    fn cost(d: &CardDef) -> f64 {
-        credit_cost(d).max(0.0)
+    /// A card's cost in credits, each antimatter at `am` (`am_cost`).
+    fn cost(d: &CardDef, am: f64) -> f64 {
+        super::credit_equivalent_at(d, d.cost, am).max(0.0)
     }
 
     /// A card in hand, before any chance of paying for it. The packet's
     /// formula stays apart: its keep price sits inside the bracket, and moving
     /// it changes the last bits of a score and so the order of ties.
-    fn card_value(w: &Weights, d: &CardDef) -> f64 {
-        w.hand + w.hand_cost * Self::cost(d)
+    fn card_value(w: &Weights, am: f64, d: &CardDef) -> f64 {
+        w.hand + w.hand_cost * Self::cost(d, am)
     }
 
     /// Adversary cards still to come: the face-up one and the deck.
@@ -1401,6 +1449,18 @@ impl Eval {
         let mut arriving: Vec<f64> = Vec::new();
         if w.rally_read > 0.0 {
             let mut fore = plan::next_infiltrate(&world, g);
+            // 288 (D134, `spill_read`): the card's Spill and Grow lines, after its Infiltrate; a Spill's move off a
+            // site counts against it below.
+            let mut off: Vec<(usize, f64)> = Vec::new();
+            if w.spill_read > 0.0 {
+                for (h, n) in plan::next_spill(&world, g, &fore) {
+                    if n < 0.0 {
+                        off.push((h, n * w.spill_read));
+                    } else {
+                        fore.push((h, n * w.spill_read / w.rally_read));
+                    }
+                }
+            }
             if w.seed_read > 0.0 {
                 fore.extend(plan::next_seeds(&world, g).into_iter().map(|(h, n)| (h, n * w.seed_read / w.rally_read)));
             }
@@ -1421,10 +1481,17 @@ impl Eval {
                     arriving[h] += (n - held as f64).max(0.0) * w.rally_read;
                 }
             }
+            if !off.is_empty() {
+                arriving.resize(g.hexes.len(), 0.0);
+                for (h, n) in off {
+                    arriving[h] += n;
+                }
+            }
         }
         // What site `h` counts toward corrupting: its own adversary ambassadors, plus the coming Rally's expected
         // arrivals (151).
-        let at = |x: usize| tokens[x].adv_ambassador as f64 + arriving.get(x).copied().unwrap_or(0.0);
+        // 288: never below none (a Spill's move off a site, `spill_read`, can outrun what is there).
+        let at = |x: usize| (tokens[x].adv_ambassador as f64 + arriving.get(x).copied().unwrap_or(0.0)).max(0.0);
         let near = self.reach_masks(rules, &tokens);
         let seats = self.seats;
         let mut pieces = 0i64;
@@ -1993,7 +2060,7 @@ impl Eval {
                 + self.cube_unit(s) * res(Resource::ResearchCubes);
             // 251: `ai::track_income`'s pairs, in its order, without its vector.
             ai::each_track_income(&world, g, s, |r, n| {
-                let unit = income_unit(r);
+                let unit = income_unit(r, self.am_income);
                 *v += w.income * unit * n as f64;
             });
             if w.card_income > 0.0 || w.card_action > 0.0 || w.sink > 0.0 {
@@ -2002,23 +2069,23 @@ impl Eval {
             let mut cards: Vec<f64> = g
                 .pile(&cards::hand(s))
                 .iter()
-                .map(|id| Self::card_value(w, cards::def(&world, id)))
+                .map(|id| Self::card_value(w, self.am_cost, cards::def(&world, id)))
                 .collect();
             let drafted = g.pile(&cards::drafted(s)).iter().map(|id| {
                 let d = cards::def(&world, id);
-                (w.drafted * Self::card_value(w, d), d.tier)
+                (w.drafted * Self::card_value(w, self.am_cost, d), d.tier)
             });
             let packet = g.pile(&cards::packet(s)).iter().map(|id| {
                 let d = cards::def(&world, id);
                 let keep = self.keep_price(&world, g, s, d.tier, keep_credits(&world, d.tier));
-                let v = w.hand + w.hand_cost * (Self::cost(d) - w.packet_keep * keep);
+                let v = w.hand + w.hand_cost * (Self::cost(d, self.am_cost) - w.packet_keep * keep);
                 (w.drafted * v.max(0.0), d.tier)
             });
             let picks: Vec<(f64, u8)> = drafted.chain(packet).collect();
             self.keepable(&world, g, s, picks, &mut cards);
             *v += cards.iter().sum::<f64>();
             for id in g.pile(&cards::built(s)) {
-                *v += w.built + w.built_cost * Self::cost(cards::def(&world, id));
+                *v += w.built + w.built_cost * Self::cost(cards::def(&world, id), self.am_cost);
             }
             self.in_play_value(rules, g, s, None, v);
         }
@@ -2051,7 +2118,7 @@ impl Eval {
             card.add(Resource::Insight, -alignment::insight_bonus(g));
             ai::each_track_income(world, g, s, |r, n| card.add(r, -n));
             for (r, n) in card.iter() {
-                let unit = income_unit(r);
+                let unit = income_unit(r, self.am_income);
                 v += w.card_income * w.income * unit * n as f64;
             }
         }
@@ -2295,13 +2362,8 @@ impl Eval {
         if spare <= 0.0 {
             return keep;
         }
-        // 273: r127's keep price in credits (2 an insight), so the share covered stays r127's; 283 (`keep_units`):
-        // the keep's insight, the unit spare insight is counted in.
-        let need = if self.w.keep_units > 0.0 {
-            (keep_credits(world, tier) / super::INSIGHT_COST).max(1.0)
-        } else {
-            (keep_credits(world, tier) * CREDIT_SCALE).max(1.0)
-        };
+        // 283: the keep's insight, the unit spare insight is counted in (273 read r127's credits, 2 an insight).
+        let need = (keep_credits(world, tier) / super::INSIGHT_COST).max(1.0);
         let covered = (spare / need).min(1.0);
         let unit = self.insight_unit(s).max(1e-9);
         keep * (1.0 - covered * (1.0 - (self.w.insight_idle / unit).min(1.0)))
@@ -2368,12 +2430,11 @@ impl Eval {
                 ctx.energy_rate = self.energy_rate(g, s);
                 ctx.cubes_open =
                     w.cube_target <= 0.0 || !aic_core::modules::effects::cube_projects(&world, g, s, false).is_empty();
-                if w.research_delay > 0.0 {
-                    ctx.research = research_share(tbl, &world, g, left);
-                }
+                ctx.research = research_share(tbl, &world, g, left);
                 // 230 (`am_make`): the antimatter the seat makes each round, beside its income.
-                let am_make = if w.am_make > 0.0 { super::keep_plan::am_makes(&world, g, s) } else { 0 };
-                SeatData { s, tags, prices, income, ctx, am_make }
+                let am_make = if w.am_make > 0.0 { super::keep_plan::am_makes(&world, g, s, w.sac_tags) } else { 0 };
+                let sac = super::keep_plan::sac_tags(&world, g, s, &tags, w.sac_tags);
+                SeatData { s, tags, sac, prices, income, ctx, am_make }
             })
             .collect();
         let mut packets: Vec<Vec<(f64, u8)>> = vec![Vec::new(); self.seats];
@@ -2539,7 +2600,8 @@ impl Eval {
     /// square of the share of the tags the seat holds toward it.
     fn power_progress(&self, sd: &SeatData) -> f64 {
         let Some(powers) = self.powers.get(sd.s) else { return 0.0 };
-        let all: i64 = sd.tags.iter().sum();
+        // 288 (D120, `w.sac_tags`): the tags a sacrifice could pay with (all of them, the board's too, at 0).
+        let all: f64 = sd.sac.iter().sum();
         let mut v = 0.0;
         for p in powers {
             let need: i64 = p.tags.iter().map(|(_, n)| n).sum();
@@ -2548,15 +2610,15 @@ impl Eval {
             if !dear || p.worth <= 0.0 {
                 continue;
             }
-            let have: i64 = p
+            let have: f64 = p
                 .tags
                 .iter()
                 .map(|(t, n)| match t {
-                    TagOrAny::Is(t) => sd.tags[*t as usize].min(*n),
-                    TagOrAny::Any => all.min(*n),
+                    TagOrAny::Is(t) => sd.sac[*t as usize].min(*n as f64),
+                    TagOrAny::Any => all.min(*n as f64),
                 })
                 .sum();
-            let share = have as f64 / need as f64;
+            let share = have / need as f64;
             v += self.w.table * self.w.power_progress * p.worth * share * share;
         }
         v
@@ -2698,7 +2760,7 @@ fn same_terms(_: &SeatTerms, _: &SeatTerms) -> bool {
     true
 }
 
-/// 283 (D106, `research_delay`): the share of a research-track firing the track still reaches this game: its cubes
+/// 283 (D106): the share of a research-track firing the track still reaches this game: its cubes
 /// plus `rates.research_round` a country a round for the `left` rounds (the heuristic's risk-weighted count), over
 /// the threshold, at most 1 (0 with no research rule). A held removal card delays a firing as much played early as
 /// late, so long as a firing is still coming; what a play takes now (at most the cubes on the track) is the board
@@ -2764,6 +2826,8 @@ struct SeatData {
     s: usize,
     /// The cards' and the board's tags (`needs` read them too, 150).
     tags: [i64; TAGS.len()],
+    /// 288 (D120, `w.sac_tags`): the tags counted toward a power's sacrifice (`keep_plan::sac_tags`).
+    sac: [f64; TAGS.len()],
     prices: cards::Prices,
     income: aic_core::content::PerResource,
     ctx: Ctx,
@@ -2866,9 +2930,10 @@ mod tests {
         let r = crate::agents::tests::rules(0);
         let mut g = r.new_game(1);
         g.seats[0].resources.insert(Resource::Antimatter, 0);
-        let off = Eval::new(&r, Weights::default());
-        assert_eq!(off.w.sink, 0.0);
-        let on = Eval::new(&r, Weights { sink: 2.0, ..Weights::default() });
+        assert_eq!(Weights::default().sink, 0.0);
+        // 288: at the old flat antimatter (2 points); with `am_tie` an antimatter outweighs Containment Reactor's use.
+        let off = Eval::new(&r, Weights { am_tie: 0.0, ..Weights::default() });
+        let on = Eval::new(&r, Weights { sink: 2.0, am_tie: 0.0, ..Weights::default() });
         let gap = |g: &GameState| on.value(&r, g) - off.value(&r, g);
         assert_eq!(gap(&g), 0.0, "no converter, no term");
         let key = cards::built(0);

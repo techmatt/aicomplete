@@ -97,7 +97,7 @@ pub fn fallout_free(w: &World, g: &GameState, h: usize) -> bool {
 }
 
 /// 227: a Fallout token goes on hex `h`, tallied `fallout.placed` and by `source` (a threat tier, `project`,
-/// `discord`, `event`, `burn`).
+/// `discord`, `event`).
 pub fn place_fallout(g: &mut GameState, cx: &mut Cx, h: usize, source: &str) {
     let w = cx.world;
     cx.add_tokens(g, h, FALLOUT, 1);

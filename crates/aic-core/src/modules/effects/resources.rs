@@ -43,31 +43,6 @@ pub(super) fn token_card(
     Ok(cx.choose(seat, prompt, opts)?.map(|i| ids[i]))
 }
 
-/// 219: seat `seat` destroys one of its own `facility` pieces (its choice, anywhere): the piece, its cube and any
-/// hardening come off, no protection asked (the owner chose it); with `blight`, Fallout goes on the hex.
-pub(super) fn burn(g: &mut GameState, cx: &mut Cx, seat: usize, facility: Facility, blight: bool) -> Res {
-    let w = cx.world;
-    let hexes = own_facilities(g, seat, facility);
-    let kind = facility.token();
-    let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = || format!("Seat {seat}: destroy which of your {}?", if kind == FACTORY { "factories" } else { "stations" });
-    if let Some(i) = cx.choose(seat, prompt, opts)? {
-        let h = hexes[i];
-        cx.add_tokens(g, h, kind, -1);
-        cx.add_tokens(g, h, cube(seat), -1);
-        let n = g.tokens(h, HARDEN);
-        if n > 0 && node_owner(g, h).is_none() {
-            cx.add_tokens(g, h, HARDEN, -n);
-        }
-        if blight && g.tokens(h, FALLOUT) == 0 {
-            adversary::place_fallout(g, cx, h, "burn");
-        }
-        cx.tally(g, &format!("board.burned.{}", if kind == FACTORY { "factory" } else { "station" }), 1);
-        cx.note(Some(h), || format!("Seat {seat} burns its {} at {}", piece_name(kind), hex_name(&w, h)));
-    }
-    Ok(())
-}
-
 pub(super) fn build_factory(g: &mut GameState, cx: &mut Cx, seat: usize, zone: &[usize]) -> Res {
     let w = cx.world;
     let mut hexes = factory_sites(&w, g, seat);

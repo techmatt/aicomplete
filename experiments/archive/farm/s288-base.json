@@ -1,0 +1,39 @@
+{
+ "name": "s288-base",
+ "note": "288: the judge and greedy as built (burn op removed, keep_units and research_delay built in), farmed here and --at main 01f78e3e: no game may differ.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp",
+   "set": []
+  },
+  {
+   "name": "br",
+   "set": [
+    "ai.boards=0,2"
+   ]
+  },
+  {
+   "name": "pr",
+   "set": [
+    "ai.boards=1,2"
+   ]
+  }
+ ],
+ "difficulties": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "agents": [
+  "strategist",
+  "greedy"
+ ],
+ "games": 32,
+ "first_seed": 36800,
+ "records": 0
+}

@@ -20,7 +20,6 @@ enum By {
 const RESOLVED: &[(&str, By, bool)] = &[
     (r#"[{"op":"choose_player"},{"op":"transfer","resource":"credits","max":2}]"#, By::Seat, true),
     (r#"[{"op":"damage_country","ambassadors":1,"troops":1}]"#, By::Seat, true),
-    (r#"[{"op":"burn","facility":"station"}]"#, By::Seat, false),
     (r#"[{"op":"peek","count":2}]"#, By::Seat, true),
     (r#"[{"op":"cut_botnet"}]"#, By::Seat, false),
     (r#"[{"op":"move_one","range":2}]"#, By::Seat, false),
