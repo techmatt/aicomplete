@@ -69,12 +69,12 @@
   "name": "Volunteer Corps",
   "side": "unity",
   "tiers": [
-   {"text": "Sway 1 toward Unity for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 2).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "sway", "side": "unity", "amount": 1, "narrative": "cooperation"}]}]},
-   {"text": "Sway 1 toward Unity for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 3).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "sway", "side": "unity", "amount": 1, "narrative": "cooperation"}]}]},
-   {"text": "Sway 1 toward Unity for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 4).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "sway", "side": "unity", "amount": 1, "narrative": "cooperation"}]}]}
+   {"text": "Remove 1 Discord from the Discord track for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 2).",
+    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "pull_discord", "amount": 1}]}]},
+   {"text": "Remove 1 Discord from the Discord track for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 3).",
+    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "pull_discord", "amount": 1}]}]},
+   {"text": "Remove 1 Discord from the Discord track for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 4).",
+    "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "pull_discord", "amount": 1}]}]}
   ]
  },
  {
@@ -136,12 +136,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Each player removes up to 3 Agents from one hex on or next to a corrupted city.",
-    "effects": [{"op": "remove_where", "pieces": "agents", "count": 3, "per": "player", "where": "by_corrupted_city"}]},
-   {"text": "Each player removes up to 4 Agents from one hex on or next to a corrupted city.",
-    "effects": [{"op": "remove_where", "pieces": "agents", "count": 4, "per": "player", "where": "by_corrupted_city"}]},
-   {"text": "Each player removes up to 5 Agents from one hex on or next to a corrupted city.",
-    "effects": [{"op": "remove_where", "pieces": "agents", "count": 5, "per": "player", "where": "by_corrupted_city"}]}
+   {"text": "Remove 2 Discord from the Discord track for each city holding an Ambassador (at most 1).",
+    "effects": [{"op": "per_site", "where": "ambassador_city", "max": 1, "then": [{"op": "pull_discord", "amount": 2}]}]},
+   {"text": "Remove 2 Discord from the Discord track for each city holding an Ambassador (at most 2).",
+    "effects": [{"op": "per_site", "where": "ambassador_city", "max": 2, "then": [{"op": "pull_discord", "amount": 2}]}]},
+   {"text": "Remove 2 Discord from the Discord track for each city holding an Ambassador (at most 3).",
+    "effects": [{"op": "per_site", "where": "ambassador_city", "max": 3, "then": [{"op": "pull_discord", "amount": 2}]}]}
   ]
  },
  {
@@ -248,12 +248,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Every player gains 2 Ambassadors for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 2).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "gain", "resource": "ambassadors", "amount": 2}]}]},
-   {"text": "Every player gains 2 Ambassadors for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 3).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "gain", "resource": "ambassadors", "amount": 2}]}]},
-   {"text": "Every player gains 2 Ambassadors for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 4).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "gain", "resource": "ambassadors", "amount": 2}]}]}
+   {"text": "Remove 1 Discord from the Discord track for each hex holding an Ambassador (at most 2).",
+    "effects": [{"op": "per_site", "where": "ambassador", "max": 2, "then": [{"op": "pull_discord", "amount": 1}]}]},
+   {"text": "Remove 1 Discord from the Discord track for each hex holding an Ambassador (at most 3).",
+    "effects": [{"op": "per_site", "where": "ambassador", "max": 3, "then": [{"op": "pull_discord", "amount": 1}]}]},
+   {"text": "Remove 1 Discord from the Discord track for each hex holding an Ambassador (at most 4).",
+    "effects": [{"op": "per_site", "where": "ambassador", "max": 4, "then": [{"op": "pull_discord", "amount": 1}]}]}
   ]
  },
  {
@@ -262,12 +262,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Remove 1 Agent from each hex on or next to a corrupted city.",
-    "effects": [{"op": "remove_where", "pieces": "agents", "count": 1, "per": "hex", "where": "by_corrupted_city"}]},
-   {"text": "Remove up to 2 Agents from each hex on or next to a corrupted city.",
-    "effects": [{"op": "remove_where", "pieces": "agents", "count": 2, "per": "hex", "where": "by_corrupted_city"}]},
-   {"text": "Remove up to 3 Agents from each hex on or next to a corrupted city.",
-    "effects": [{"op": "remove_where", "pieces": "agents", "count": 3, "per": "hex", "where": "by_corrupted_city"}]}
+   {"text": "Remove 1 Discord from the Discord track for each free city with no Agent on it (at most 2).",
+    "effects": [{"op": "per_site", "where": "clear_city", "max": 2, "then": [{"op": "pull_discord", "amount": 1}]}]},
+   {"text": "Remove 1 Discord from the Discord track for each free city with no Agent on it (at most 3).",
+    "effects": [{"op": "per_site", "where": "clear_city", "max": 3, "then": [{"op": "pull_discord", "amount": 1}]}]},
+   {"text": "Remove 1 Discord from the Discord track for each free city with no Agent on it (at most 4).",
+    "effects": [{"op": "per_site", "where": "clear_city", "max": 4, "then": [{"op": "pull_discord", "amount": 1}]}]}
   ]
  },
  {
@@ -304,10 +304,10 @@
   "side": "unity",
   "draft": true,
   "tiers": [
+   {"text": "In the next adversary turn, no Troop strikes a hex on or next to an Ambassador.",
+    "effects": [{"op": "prohibit", "step": "strike", "where": "by_ambassador"}]},
    {"text": "In the next adversary turn, no Troop strikes a hex on or next to an Ambassador or a Node.",
     "effects": [{"op": "prohibit", "step": "strike", "where": "by_player"}]},
-   {"text": "In the next adversary turn, no Troop strikes a hex within 2 of an Ambassador or a Node.",
-    "effects": [{"op": "prohibit", "step": "strike", "where": "near_player"}]},
    {"text": "In the next adversary turn, no Troop strikes a hex within 2 of an Ambassador or a Node.",
     "effects": [{"op": "prohibit", "step": "strike", "where": "near_player"}]}
   ]
@@ -327,15 +327,15 @@
  },
  {
   "id": "blight",
-  "name": "Blight",
+  "name": "Captured Labs",
   "side": "discord",
   "tiers": [
-   {"text": "Each country: create 1 Agent on the lowest-numbered city holding Agents, and a neutral factory opens on its lowest-numbered free industrial zone.",
-    "effects": [{"op": "create", "count": 1, "at": "city", "if": "ambassadors"}, {"op": "create_site", "kind": "factory"}]},
-   {"text": "Each country: create 3 Agents on the lowest-numbered city holding Agents, and a neutral factory opens on its lowest-numbered free industrial zone.",
-    "effects": [{"op": "create", "count": 3, "at": "city", "if": "ambassadors"}, {"op": "create_site", "kind": "factory"}]},
-   {"text": "Each country: create 4 Agents on the lowest-numbered city holding Agents, and a neutral factory opens on its lowest-numbered free industrial zone.",
-    "effects": [{"op": "create", "count": 4, "at": "city", "if": "ambassadors"}, {"op": "create_site", "kind": "factory"}]}
+   {"text": "For each corrupted research station (at most 2), 2 cubes go onto the adversary's research track.",
+    "effects": [{"op": "per_site", "where": "corrupted_station", "max": 2, "then": [{"op": "adversary_research", "amount": 2}]}]},
+   {"text": "For each corrupted research station (at most 3), 2 cubes go onto the adversary's research track.",
+    "effects": [{"op": "per_site", "where": "corrupted_station", "max": 3, "then": [{"op": "adversary_research", "amount": 2}]}]},
+   {"text": "For each corrupted research station (at most 4), 2 cubes go onto the adversary's research track.",
+    "effects": [{"op": "per_site", "where": "corrupted_station", "max": 4, "then": [{"op": "adversary_research", "amount": 2}]}]}
   ]
  },
  {
@@ -369,25 +369,25 @@
   "name": "Offensive",
   "side": "discord",
   "tiers": [
-   {"text": "Each country: create 2 Agents on its lowest-numbered city not yet the adversary's; then deal a tier-2 threat with its token on the Node hex with the most Agents and Troops.",
-    "effects": [{"op": "create", "count": 2, "at": "city", "if": "clean"}, {"op": "threat_at_node", "tier": 2}]},
-   {"text": "Each country: create 2 Agents on its lowest-numbered city not yet the adversary's; then deal two tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
-    "effects": [{"op": "create", "count": 2, "at": "city", "if": "clean"}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]},
-   {"text": "Each country: this round's Infiltrate lines land again; then, each country: create 2 Agents on its lowest-numbered city not yet the adversary's; then deal two tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
-    "effects": [{"op": "adversary_build"}, {"op": "create", "count": 2, "at": "city", "if": "clean"}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]}
+   {"text": "Deal a tier-2 threat with its token on the Node hex with the most Agents and Troops.",
+    "effects": [{"op": "threat_at_node", "tier": 2}]},
+   {"text": "Deal two tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
+    "effects": [{"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]},
+   {"text": "Deal three tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
+    "effects": [{"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]}
   ]
  },
  {
   "id": "two_fronts",
-  "name": "Two Fronts",
+  "name": "Standing Army",
   "side": "discord",
   "tiers": [
-   {"text": "Deal 1 extra threat for each corrupted city, research station or factory (at most 2).",
-    "effects": [{"op": "per_site", "where": "corrupted", "max": 2, "then": [{"op": "deal_threats", "count": 1}]}]},
-   {"text": "For each corrupted city, research station or factory (at most 2), deal a tier-2 threat in each country piece.",
-    "effects": [{"op": "per_site", "where": "corrupted", "max": 2, "then": [{"op": "deal_threats", "count": 1, "tier": 2}]}]},
-   {"text": "For each corrupted city, research station or factory (at most 3), deal a tier-2 threat in each country piece.",
-    "effects": [{"op": "per_site", "where": "corrupted", "max": 3, "then": [{"op": "deal_threats", "count": 1, "tier": 2}]}]}
+   {"text": "Each country: 1 Troop lands on its lowest-numbered corrupted factory (a country with none takes no Troop).",
+    "effects": [{"op": "troops", "count": 1, "each_country": true, "at": "corrupted_factory"}]},
+   {"text": "Each country: 1 Troop lands on its lowest-numbered corrupted city with a Node or an Ambassador on or next to it (with none, it garrisons).",
+    "effects": [{"op": "troops", "count": 1, "each_country": true, "at": "besieged_city"}]},
+   {"text": "Each country: 2 Troops land on its lowest-numbered corrupted city with a Node or an Ambassador on or next to it (with none, they garrison).",
+    "effects": [{"op": "troops", "count": 2, "each_country": true, "at": "besieged_city"}]}
   ]
  },
  {
@@ -399,8 +399,8 @@
     "effects": [{"op": "create", "count": 2, "at": "city", "if": "ambassadors"}]},
    {"text": "Each country: create 3 Agents on the lowest-numbered city holding Agents.",
     "effects": [{"op": "create", "count": 3, "at": "city", "if": "ambassadors"}]},
-   {"text": "Each country: create 2 Agents on the lowest-numbered city holding Agents; then 1 Troop garrisons its lowest-numbered corrupted factory (with none, its lowest-numbered corrupted city; with none, its lowest-numbered city).",
-    "effects": [{"op": "create", "count": 2, "at": "city", "if": "ambassadors"}, {"op": "troops", "count": 1, "each_country": true}]}
+   {"text": "Each country: create 4 Agents on the lowest-numbered city holding Agents.",
+    "effects": [{"op": "create", "count": 4, "at": "city", "if": "ambassadors"}]}
   ]
  }
 ]

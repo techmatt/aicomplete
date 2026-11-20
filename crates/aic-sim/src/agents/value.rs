@@ -703,6 +703,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::EachDestroyNode { count, .. } => Worth::now(row("each_destroy_node") * *count as f64),
         Op::DestroyNode { count } => Worth::now(row("destroy_node") * *count as f64),
         Op::PullUnity { amount } => Worth::now(row("pull_unity") * *amount as f64),
+        Op::PullDiscord { amount } => Worth::now(row("pull_discord") * *amount as f64),
         Op::FlipStation { each_country, .. } => {
             Worth::now(row("flip_station") * if *each_country { t.rate("countries") } else { 1.0 })
         }
@@ -749,7 +750,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             Worth::now(row("adversary_research") * per * *amount as f64)
         }
         // 195: the project deck's board verbs, "in each country" at rates.countries.
-        Op::BotnetTroops { count, troops } => {
+        Op::BotnetTroops { count, troops, .. } => {
             Worth::now(row("botnet_troops") * t.rate("countries") * (*count * *troops) as f64)
         }
         // Context-free: priced at every difficulty, though below `adversary.botnet_spread_at` it does nothing (no
@@ -866,7 +867,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::Redeploy => Worth::now(row("redeploy")),
         Op::StandingTroopsBonus { .. } => Worth::now(row("standing_troops_bonus")),
         Op::ThreatCompute { .. } => Worth::now(row("threat_compute")),
-        // 233: `where` each_country builds in every country (War Plants; `team_ops_price_per_country`).
+        // 233: `where` each_country builds in every country (`team_ops_price_per_country`; no project prints one since 297).
         Op::AdversaryFactory { count, where_, .. } => Worth::now(
             row("adversary_factory") * *count as f64 * if where_.is_some() { t.rate("countries") } else { 1.0 },
         ),

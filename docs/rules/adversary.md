@@ -12,9 +12,8 @@ The adversary is a **board** (the Militarist's slots, rules and named levels:
    next round's face-up card becomes this round's (none left: a loss, [alignment.md](alignment.md)) and deals its
    threats; then, in this order: **Escalate** (below), **the board's one rule** (the Militarist's **Commandeered Plants**:
    each factory not yet the adversary's that holds an agent takes 1 more, every round), **Infiltrate X**,
-   **Strike**, then **Redeploy** (where the card shows the icon: [troops.md](troops.md)), at most two other lines
-   (a compute increase, a Discord sway, a site opening, Botnets spread, Blackout, Fallout, Border War's node loss,
-   Unity back).
+   **Strike**, then **Redeploy** (where the card shows the icon: [troops.md](troops.md)), then at most **one**
+   other line (r143: Funding, a site opening, Botnets spread, Blackout or Fallout; 8 of the 16 print none).
 2. **Income**: the top card goes face up as next round's; **outputs** (below); the **compute step**; the
    **research check**; firewalls, cordons and prohibition tokens come off.
 
@@ -33,7 +32,7 @@ nothing escalates. It lands like any arrival (below) and picks nothing.
 
 **Research track (every adversary).** A public row of **six icon slots**, content (the board's research row in
 `content/adversary.json`): a row changes by editing it. Cubes come from corrupted stations
-and from projects' and threats' "cubes onto the research track" lines ([harms.md](../harms.md)), and go nowhere else. In the research check, while the track holds **K cubes** (`research_at` a country, times
+and from "cubes onto the research track" lines ([harms.md](../harms.md): eight threats, three projects, and the Discord card Captured Labs, 2 cubes for each corrupted station), and go nowhere else. In the research check, while the track holds **K cubes** (`research_at` a country, times
 the countries; `research_start` a country at setup) it spends K and its marker advances one slot, whose icon
 happens once as the marker arrives (in each country where it prints so); one check can advance several. **Slot 7
 is a loss** (end reason `research`). Counterintelligence Sweep and Arms Inspectors take cubes off, never a slot back.
@@ -96,10 +95,11 @@ third from `THIRD_EFFECT_COST`, 18).
   last step (uncountered threats, cards), which **waits beside the projects** (public: the warning).
 - **Spending:** all of it at once onto the **leftmost** project (`compute_every` on every one first), one marker
   move a project; one holding its cost **resolves** at once. With no project left, compute is lost.
-- **Targets are read off the board as it resolves**, in each country: "the X with the most agents on its hex",
-  "the hex holding the most player ambassadors", "its lowest-numbered botnet"; ties: the lowest-numbered. "Turns
-  neutral": the owner's cube comes off. **Factory troops** (War Plants): 1 troop on each adversary factory's hex, none under a
-  player ambassador. **The clock**: the top event card is discarded.
+- **Targets are read off the board as it resolves**, in each country, always the lowest-numbered (r143: no
+  project picks by "most agents"): "its lowest-numbered neutral factory", "its two lowest-numbered hexes holding a
+  player node and an agent" (Night Raid), "its lowest-numbered botnet"; Crackdown alone counts ("the hex holding
+  the most player ambassadors"). "Turns neutral": the owner's cube comes off. **Factory troops** (War Plants): 1
+  troop on each corrupted factory's hex, none under a player ambassador. **The clock**: the top event card is discarded.
 - **Counterplay:** an ambassador on a source; Cyber's hacks; the Researcher's Hack II, off a project.
 
 <!-- generated: projects -->
@@ -115,7 +115,7 @@ third from `THIRD_EFFECT_COST`, 18).
 | Crackdown | security | 8 | small (1) |
 | Lab Purge | cyber | 11 | small (1) |
 | Asset Seizure | industry | 13 | small (1) |
-| Botnet Conscripts | cyber | 11 | small (1) |
+| Botnet Conscripts | cyber | 16 | small (1) |
 | Purge Lists | diplomacy | 7 | small (1) |
 | Dirty Bomb | power | 12 | small (1) |
 | Lab Seizure | cyber | 21 | big (2) |
@@ -128,7 +128,7 @@ third from `THIRD_EFFECT_COST`, 18).
 | Data Heist | cyber | 12 | big (2) |
 | Hostile Takeover | industry | 15 | small (1) |
 | Station Coup | cyber | 24 | big (3) |
-| War Plants | industry | 19 | big (2) |
+| War Plants | industry | 22 | small (1) |
 | Recruitment Drive | diplomacy | 24 | small (1) |
 | Propaganda Network | universal | 18 | big (2) |
 | Infiltration Drive | diplomacy | 22 | big (2) |
@@ -167,7 +167,7 @@ prints its lines in the Card beat's order (`drafts/adversary/check.py` refuses a
 | Station Raids | 2 | tier 2 | research stations | — | research stations |
 | Shell Labs | 2 | tier 2 | research stations | — | research stations |
 | Fifth Column | 2 | tier 2 | cities | Strike | cities |
-| Border War | 2 | tier 2 | factories | — | factories |
+| Border War | 2 | tier 2 | factories | Strike | factories |
 | Supply Lines | 2 | tier 1; tier 2 | factories | — | factories |
 | Redeployment | 2 | tier 2 | cities | Redeploy | cities |
 | Total Mobilization | 3 | tier 2; tier 2 | factories, cities | Strike | factories, cities |

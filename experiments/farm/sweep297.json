@@ -1,0 +1,19 @@
+{
+  "name": "sweep297",
+  "note": "297: the research row's clock under the swept content: the judge on the three board pairs at d0-d3 on the dev seeds: K 2 a country (the asked number: the baseline) and K 3 a country (_k3: adversary.research_at 3 at every level). Farm with `farm-seeds 36800 32 OUT sweep297`.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": ["adversary.research_at=2,2,2,2,2"]},
+    {"name": "br", "set": ["ai.boards=0,2", "adversary.research_at=2,2,2,2,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2", "adversary.research_at=2,2,2,2,2"]},
+    {"name": "bp_k3", "set": ["adversary.research_at=3,3,3,3,3"]},
+    {"name": "br_k3", "set": ["ai.boards=0,2", "adversary.research_at=3,3,3,3,3"]},
+    {"name": "pr_k3", "set": ["ai.boards=1,2", "adversary.research_at=3,3,3,3,3"]}
+  ],
+  "difficulties": [0, 1, 2, 3],
+  "agents": ["strategist"],
+  "games": 32,
+  "records": 0
+}

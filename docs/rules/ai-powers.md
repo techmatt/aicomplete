@@ -44,7 +44,7 @@ next to it where printed. `Content::check` holds powers to the cards' check and 
 | Builder | Overcharge II | Overcharge, tier II | 2 Power | gain 2 energy and 1 antimatter |
 | Builder | Fortify I | Fortify, tier I | 1 chip | Target: Troops. Remove 1 Troop on it |
 | Builder | Fortify II | Fortify, tier II | 2 chips | Target: Troops. Remove up to 2 Troops on it; harden a facility on or next to it |
-| Protector | Outpost | node power | 2 energy | place 1 Node; gain 2 credits |
+| Protector | Outpost | node power | 2 energy | place 1 Node within 2 of yours; gain 2 credits |
 | Protector | Accord | node power | 2 energy | place 1 Node; gain 1 ambassador |
 | Protector | Levy | node power | nothing | place 1 Node; gain 1 credit |
 | Protector | Patrol I | Patrol, tier I | 1 energy | Target: Agents or Troops. Push up to 3 from it, each to a hex next to it |
@@ -69,7 +69,7 @@ for its station (285). Cards that place nodes add to them (cards aren't capped).
 
 **The node powers' give / get** (at Matt's unit anchors, [card-guidelines.md](../card-guidelines.md); a node 5.33
 and a station 6.67 from `values.json`; before each step). Cheap: Buy In and Levy +6.33, Field Survey +8.67. Costly:
-Sprawl and Outpost 2 energy (6) for a node and 2 credits +1.33; Annex 1 chip (4) for a node within 2 and 3 credits
+Sprawl 2 energy (6) for a node and 2 credits +1.33, Outpost the same within 2 of yours (r143: the reach is its benefit); Annex 1 chip (4) for a node within 2 and 3 credits
 +4.33 and the reach; Accord 2 energy for a node and an ambassador +4.67; Peer Review 2 insight (5.33) for a node and
 a research cube +4.0; Field Station 2 insight for a station and a node +6.67. A costly power is a second or third node
 bought at a thinner margin than the free one, never instead of it. Once a round each and the steps' rising energy

@@ -289,10 +289,12 @@ fn the_board_verbs_take_the_targets_the_board_shows() {
     // 263: botnets spread from `botnet_spread_at` (1) on; the lab plays d0.
     let (rules, mut g) = lab_with(&[], &["adversary.botnet_spread_at=0"]);
     let m = &rules.map;
-    let f0 = m.numbered(0, piece(0).industry[0]);
-    // A zone not next to f0, so only f1 counts the agents on it.
-    let f1 = piece(0).industry.iter().map(|&n| m.numbered(0, n)).find(|&h| h != f0 && !m.adjacent(f0, h)).unwrap();
-    // Take a factory: country 0's neutral factory with the most agents on or beside it corrupts.
+    let z0 = m.numbered(0, piece(0).industry[0]);
+    // A zone not next to it.
+    let z1 = piece(0).industry.iter().map(|&n| m.numbered(0, n)).find(|&h| h != z0 && !m.adjacent(z0, h)).unwrap();
+    // 297: f0 is the lower-numbered of the two, the one a project takes; the agents stand on the other.
+    let (f0, f1) = if m.hexes[z0].number < m.hexes[z1].number { (z0, z1) } else { (z1, z0) };
+    // Take a factory: country 0's lowest-numbered neutral factory corrupts, wherever the agents are.
     put(&mut g, f0, FACTORY, 1);
     put(&mut g, f1, FACTORY, 1);
     put(&mut g, f1, ADV_AMBASSADOR, 2);
@@ -300,27 +302,27 @@ fn the_board_verbs_take_the_targets_the_board_shows() {
     {
         use crate::modules::common::FIREWALL;
         let mut d88 = g.clone();
-        put(&mut d88, f1, FIREWALL, 1);
-        put(&mut d88, f0, cube(0), 1);
+        put(&mut d88, f0, FIREWALL, 1);
+        put(&mut d88, f1, cube(0), 1);
         run_ops(&rules, &mut d88, &[Op::TakeSite { site: Facility::Factory }]);
-        assert_eq!(d88.tokens(f0, cube(0)), 1, "the guarded neutral one counts: nothing happens");
-        assert!(!corrupted(&d88, f1));
+        assert_eq!(d88.tokens(f1, cube(0)), 1, "the guarded neutral one counts: nothing happens");
+        assert!(!corrupted(&d88, f0));
     }
     run_ops(&rules, &mut g, &[Op::TakeSite { site: Facility::Factory }]);
-    assert!(corrupted(&g, f1) && !corrupted(&g, f0), "the one with agents beside it");
+    assert!(corrupted(&g, f0) && !corrupted(&g, f1), "the lowest-numbered, not the one holding agents");
     // A player's factory turns neutral once no neutral one is left.
-    put(&mut g, f0, cube(0), 1);
+    put(&mut g, f1, cube(0), 1);
     run_ops(&rules, &mut g, &[Op::TakeSite { site: Facility::Factory }]);
-    assert_eq!(g.tokens(f0, cube(0)), 0, "turned neutral");
-    assert!(!corrupted(&g, f0));
+    assert_eq!(g.tokens(f1, cube(0)), 0, "turned neutral");
+    assert!(!corrupted(&g, f1));
     // Every adversary factory makes a troop on its own hex; a player ambassador on one stops it.
-    put(&mut g, f0, ADV_CUBE, 1);
+    put(&mut g, f1, ADV_CUBE, 1);
     put(&mut g, f0, ambassador(0), 1);
     let troops = total(&g, TROOP);
     run_ops(&rules, &mut g, &[Op::FactoryTroops { count: 1 }]);
     assert_eq!((g.tokens(f1, TROOP), total(&g, TROOP)), (1, troops + 1));
-    // 231, Night Raid: an agent onto each of `count` node hexes, the one holding the most agents first. 275: an
-    // arrival that brings a node hex to 2 destroys the node (its agents go to the supply).
+    // 231, Night Raid: an agent onto each of `count` node hexes already holding one (297: a clean node hex takes
+    // none). 275: an arrival that brings a node hex to 2 destroys the node (its agents go to the supply).
     let (a, b) = (m.numbered(1, piece(1).node), m.numbered(1, piece(1).industry[0]));
     put(&mut g, a, node(1), 1);
     put(&mut g, b, node(1), 1);
@@ -328,9 +330,9 @@ fn the_board_verbs_take_the_targets_the_board_shows() {
     let on_a = g.tokens(a, ADV_AMBASSADOR);
     assert_eq!(on_a, 0);
     run_ops(&rules, &mut g, &[Op::AgentsOnNodes { count: 1 }]);
-    assert_eq!((g.tokens(a, ADV_AMBASSADOR), g.tokens(b, ADV_AMBASSADOR), g.tokens(b, node(1))), (0, 0, 0), "most agents first: the 2nd takes the node");
+    assert_eq!((g.tokens(a, ADV_AMBASSADOR), g.tokens(b, ADV_AMBASSADOR), g.tokens(b, node(1))), (0, 0, 0), "the 2nd agent takes the node");
     run_ops(&rules, &mut g, &[Op::AgentsOnNodes { count: 2 }]);
-    assert_eq!((g.tokens(a, ADV_AMBASSADOR), g.tokens(a, node(1))), (1, 1), "the one node hex left in country 1");
+    assert_eq!((g.tokens(a, ADV_AMBASSADOR), g.tokens(a, node(1))), (0, 1), "the node hex left in country 1 holds no agent: none lands");
     // 231: the hex holding the most player ambassadors in each country sends them back to their supplies.
     put(&mut g, a, ambassador(0), 2);
     put(&mut g, a, ambassador(1), 1);
@@ -343,15 +345,15 @@ fn the_board_verbs_take_the_targets_the_board_shows() {
     set_var(&mut g, crate::modules::board::project_key(1, 1), 1);
     run_ops(&rules, &mut g, &[Op::StripCubes { count: 2 }]);
     { use crate::modules::board::project_key as pk; assert_eq!((g.var(&pk(1, 0)), g.var(&pk(1, 1))), (1, 1)); }
-    // A botnet becomes troops, which garrison as any troop does (r141: not on the botnet's hex); a botnet spreads
+    // A botnet becomes troops on its own hex (297: not on the country's garrison, as at r141); a botnet spreads
     // to a site next to one.
     let st = m.numbered(1, piece(1).neutral_station);
     put(&mut g, st, BOTNET, 1);
     let spot = crate::modules::board::garrison_spot(&rules.world(), &g, &m.countries[1].hexes).expect("a garrison in country 1");
     assert_ne!(spot, st);
     let there = g.tokens(spot, TROOP);
-    run_ops(&rules, &mut g, &[Op::BotnetTroops { count: 1, troops: 2 }]);
-    assert_eq!((g.tokens(st, BOTNET), g.tokens(st, TROOP), g.tokens(spot, TROOP)), (0, 0, there + 2));
+    run_ops(&rules, &mut g, &[Op::BotnetTroops { count: 1, troops: 2, least: 1 }]);
+    assert_eq!((g.tokens(st, BOTNET), g.tokens(st, TROOP), g.tokens(spot, TROOP)), (0, 2, there));
     put(&mut g, st, STATION, 1);
     let botnets = total(&g, BOTNET);
     run_ops(&rules, &mut g, &[Op::SpreadBotnets { count: 1 }]);
@@ -364,8 +366,16 @@ fn the_board_verbs_take_the_targets_the_board_shows() {
     put(&mut g, pf, HARDEN, 2);
     put(&mut g, a, HARDEN, 1);
     put(&mut g, a, ADV_AMBASSADOR, 3);
+    // 297: of two hardened facilities the lowest-numbered loses its hardening, wherever the agents are.
+    let other = b;
+    put(&mut g, other, FACTORY, 1);
+    put(&mut g, other, cube(1), 1);
+    put(&mut g, other, HARDEN, 1);
+    let (lo, hi) = if m.hexes[pf].number < m.hexes[other].number { (pf, other) } else { (other, pf) };
+    put(&mut g, hi, ADV_AMBASSADOR, 3);
+    let kept = g.tokens(hi, HARDEN);
     run_ops(&rules, &mut g, &[Op::StripHarden]);
-    assert_eq!((g.tokens(pf, HARDEN), g.tokens(a, HARDEN)), (0, 1));
+    assert_eq!((g.tokens(lo, HARDEN), g.tokens(hi, HARDEN), g.tokens(a, HARDEN)), (0, kept, 1));
     // The clock discards the top event card.
     let deck = g.pile(adversary::DECK).len();
     let next = g.pile(adversary::DECK)[..2].to_vec();
@@ -374,6 +384,37 @@ fn the_board_verbs_take_the_targets_the_board_shows() {
     // 197: each discard goes on the discard's top, as a flip's does (the viewer's "last:" reads the top).
     run_ops(&rules, &mut g, &[Op::Clock { count: 1 }]);
     assert_eq!(g.pile(adversary::DISCARD).first(), next.get(1));
+}
+
+/// 297: Night Raid's line lands nothing on a clean node hex; a node hex holding 1 agent takes the 2nd and loses its
+/// node (275); of two such hexes in a country, `count` 1 takes the lowest-numbered.
+#[test]
+fn night_raid_lands_only_on_a_node_hex_holding_an_agent() {
+    use crate::content::Op;
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    let raid = &crate::content().project("night_raid").effects;
+    assert!(matches!(raid.as_slice(), [Op::AgentsOnNodes { count: 2 }]), "{raid:?}");
+    let mut land: Vec<usize> = hexes_where(m, |h| m.hexes[h].country == 0 && kind(m, h) == HexKind::Open);
+    land.sort_by_key(|&h| m.hexes[h].number);
+    let (clean, low, high) = (land[0], land[1], land[2]);
+    for h in [clean, low, high] {
+        put(&mut g, h, node(0), 1);
+    }
+    let supply = g.var(SUPPLY);
+    // Every node hex clean: nothing lands, though a clean one is the lowest-numbered.
+    run_ops(&rules, &mut g, raid);
+    assert_eq!((total(&g, ADV_AMBASSADOR), g.var(SUPPLY)), (0, supply));
+    // One agent on two of them: `count` 1 raids the lower-numbered, whose node falls to its 2nd agent.
+    put(&mut g, low, ADV_AMBASSADOR, 1);
+    put(&mut g, high, ADV_AMBASSADOR, 1);
+    run_ops(&rules, &mut g, &[Op::AgentsOnNodes { count: 1 }]);
+    assert_eq!((g.tokens(low, node(0)), g.tokens(low, ADV_AMBASSADOR)), (0, 0), "2 agents destroy the node and go back");
+    assert_eq!((g.tokens(high, node(0)), g.tokens(high, ADV_AMBASSADOR)), (1, 1));
+    // The card's own line: the other raided hex falls, and the clean one stays clean throughout.
+    run_ops(&rules, &mut g, raid);
+    assert_eq!((g.tokens(high, node(0)), g.tokens(high, ADV_AMBASSADOR)), (0, 0));
+    assert_eq!((g.tokens(clean, node(0)), g.tokens(clean, ADV_AMBASSADOR)), (1, 0));
 }
 
 /// 233: what `after` changed from `before`: per country (its hexes' tokens, its seat's resources, and the state
@@ -474,6 +515,28 @@ fn project_ops_reach_as_declared() {
             Arc::make_mut(&mut Arc::make_mut(&mut rich.hexes)[x]).tokens.clear();
             assert!(free(&rich, x));
         }
+    }
+    // 297: Night Raid lands only on a node hex already holding an agent, and War Plants makes its troops only on a
+    // corrupted factory (its own factory line went): in every country an agent on one of the seat's node hexes, and
+    // a corrupted factory on empty open land away from the cities whose Fallout lines need the land beside them.
+    // Botnet Conscripts acts only in a country holding 2 botnets: setup's one, and one more on the factory.
+    for c in 0..m.countries.len() {
+        let raid = node_of(&rich, c).into_iter().find(|&h| m.hexes[h].country as usize == c).expect("the seat's node at home");
+        put(&mut rich, raid, ADV_AMBASSADOR, 1);
+        let empty = |h: usize| rich.hexes[h].tokens.is_empty();
+        // The cities a Fallout line may land beside: the corrupted ones, and the country's lowest-numbered clean
+        // one (Infiltration Drive corrupts it first).
+        let mine: Vec<usize> = cities(m).into_iter().filter(|&h| m.hexes[h].country as usize == c).collect();
+        let next = mine.iter().copied().filter(|&h| !corrupted(&rich, h)).min_by_key(|&h| m.hexes[h].number);
+        let beside: Vec<usize> = mine.iter().copied().filter(|&h| corrupted(&rich, h)).chain(next).collect();
+        let clear = |h: usize| beside.iter().all(|&b| m.distance(h, b) > 1);
+        let open = hexes_where(m, |h| m.hexes[h].country as usize == c && kind(m, h) == HexKind::Open && empty(h) && clear(h));
+        let plant = *open.first().unwrap_or_else(|| panic!("country {c}: no empty hex to stage on"));
+        put(&mut rich, plant, FACTORY, 1);
+        put(&mut rich, plant, ADV_CUBE, 1);
+        put(&mut rich, plant, BOTNET, 1);
+        let botnets = m.countries[c].hexes.iter().filter(|&&h| rich.tokens(h, BOTNET) > 0).count();
+        assert!(botnets >= 2, "country {c}: {botnets} botnets");
     }
     // An income rise is one number: compute is kept times the countries (`rally::increase_income`).
     {

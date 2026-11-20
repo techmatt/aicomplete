@@ -103,7 +103,7 @@
    "security"
   ],
   "cost": 10,
-  "text": "Each country: 1 Agent onto each of two different hexes holding a player node (those holding the most Agents first; ties: lowest-numbered). An Agent landing on your node's hex that brings it to 2 destroys your node.",
+  "text": "Each country: 1 Agent onto each of its two lowest-numbered hexes holding a player Node and an Agent. 2 Agents on your Node's hex destroy it.",
   "effects": [
    {
     "op": "agents_on_nodes",
@@ -178,7 +178,7 @@
    "industry"
   ],
   "cost": 13,
-  "text": "Each country: its neutral factory with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned factory picked the same way turns neutral.",
+  "text": "Each country: its lowest-numbered neutral factory is corrupted; with none neutral, its lowest-numbered player-owned factory turns neutral.",
   "effects": [
    {
     "op": "take_site",
@@ -195,13 +195,14 @@
   "tags": [
    "cyber"
   ],
-  "cost": 11,
-  "text": "Each country: its lowest-numbered botnet becomes 2 Troops, which garrison its lowest-numbered corrupted factory (with none, its lowest-numbered corrupted city; with none, its lowest-numbered city).",
+  "cost": 16,
+  "text": "Each country holding 2 or more Botnets: its lowest-numbered Botnet becomes 1 Troop on its hex.",
   "effects": [
    {
     "op": "botnet_troops",
     "count": 1,
-    "troops": 2
+    "troops": 1,
+    "least": 2
    }
   ],
   "harms": [
@@ -357,7 +358,7 @@
    "power"
   ],
   "cost": 10,
-  "text": "Each country: the hardened facility with the most Agents on its hex (ties: lowest-numbered) loses its hardening. Until the end of next round, players' boards and cards make no energy income.",
+  "text": "Each country: its lowest-numbered hardened facility loses its hardening. Until the end of next round, players' boards and cards make no energy income.",
   "effects": [
    {
     "op": "strip_harden"
@@ -454,7 +455,7 @@
    "cyber"
   ],
   "cost": 24,
-  "text": "Each country: its neutral research station with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track.",
+  "text": "Each country: its lowest-numbered neutral research station is corrupted; with none neutral, its lowest-numbered player-owned station turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track.",
   "effects": [
    {
     "op": "take_site",
@@ -482,22 +483,15 @@
   "tags": [
    "industry"
   ],
-  "cost": 19,
-  "text": "Each country: the adversary builds a factory on its free industrial zone next to an Agent, else its lowest-numbered (none free: 2 Agents on one of its factories). Every adversary factory makes 1 Troop on its hex (a player Ambassador on it stops it).",
+  "cost": 22,
+  "text": "Every corrupted factory makes 1 Troop on its hex (a player Ambassador on it stops it).",
   "effects": [
-   {
-    "op": "adversary_factory",
-    "count": 1,
-    "where": "each_country",
-    "fallback_ambassadors": 2
-   },
    {
     "op": "factory_troops",
     "count": 1
    }
   ],
   "harms": [
-   "facilities destroyed or corrupted",
    "troops made"
   ]
  },
@@ -629,18 +623,17 @@
    "security"
   ],
   "cost": 24,
-  "text": "Each country: create 3 Agents on its lowest-numbered research station not yet the adversary's.",
+  "text": "Each country: 2 Troops land on its lowest-numbered corrupted city with a Node or an Ambassador on or next to it (with none, they garrison).",
   "effects": [
    {
-    "op": "create",
-    "count": 3,
-    "at": "station",
-    "if": "clean"
+    "op": "troops",
+    "count": 2,
+    "each_country": true,
+    "at": "besieged_city"
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "facilities destroyed or corrupted"
+   "troops made"
   ]
  }
 ]

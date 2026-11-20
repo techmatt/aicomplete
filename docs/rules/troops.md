@@ -21,7 +21,7 @@ pays what it shows less what its chipped sites make, once, at its own step (chip
 stations, not again at upkeep), and an adversary site under a chip makes no output.
 
 **There is no war** (r139): no fronts, no military bases, no megacorp armies and no War step in the round. Megacorp
-conflict is card content only (Border War, Casus Belli, some Discord cards), each card doing what it prints.
+conflict is card content only (Casus Belli, some event and Discord cards), each card doing what it prints.
 
 ## Factories
 
@@ -36,7 +36,7 @@ conflict is card content only (Border War, Casus Belli, some Discord cards), eac
   neutral factory makes nothing for anyone. One opposing ambassador or agent blocks a
   factory's output while it stands. Threats build adversary factories (Mass Production, Arsenal; Factory
   Occupation on an empty zone), corrupt them (Factory Occupation, unless a firewall or Corrupt prohibition guards it)
-  and destroy them (Siege, leaving Fallout); no threat makes a troop. Projects build or take them (War Plants, Asset
+  and destroy them (Siege, leaving Fallout); no threat makes a troop. Projects take them (Asset
   Seizure, Plant Seizure, Hostile Takeover, Grand Offensive). New neutral factories and stations come from
   site-opening lines (Factory Drive, Shell Labs, the research row's New factory icon: [adversary.md](adversary.md));
   cities hold no chips.
@@ -46,11 +46,16 @@ conflict is card content only (Border War, Casus Belli, some Discord cards), eac
 There are no player troops. Adversary troops are **late and significant**: the players see them coming and must
 plan and invest to meet them (Matt, 2026-11-19). **They garrison, guard and strike, and never move on their own.**
 
-**Where troops come from.** Only these make one: the research row's two **Garrison** slots (4 and 6: 1 troop a
-country), the projects **Botnet Conscripts** (each country's lowest-numbered botnet becomes 2 troops) and **War
-Plants** (every adversary factory makes 1 troop on its own hex; a player ambassador on it stops it), and the
-Discord card **Firestorm** at strength III (1 troop a country). No threat, no event card and no factory's round
-output makes one.
+**Where troops come from** (r143). Only these make one, each by something the table can see: the research row's
+two **Garrison** slots (4 and 6: 1 troop a country); the projects **Botnet Conscripts** (in a country holding 2 or
+more botnets, its lowest-numbered becomes 1 troop **on the botnet's hex**), **War Plants** (every corrupted factory
+makes 1 troop on its own hex; a player ambassador on it stops it) and **Martial Law** (2 troops a country); and
+the Discord card **Standing Army** (strength I: 1 troop on each country's lowest-numbered corrupted factory, none
+where no factory has fallen; II: 1 a country; III: 2). Martial Law's and Standing Army II and III's troops **land
+by the players**: on the country's lowest-numbered corrupted city with a node or an ambassador on or next to it,
+and garrison only where there is none. No threat, no event card
+and no factory's round output makes one. A project's or a card's troop stands where its line puts it: only a
+line that says "garrisons" uses the rule below.
 
 **Garrison.** A new troop goes, in its country, onto the lowest-numbered corrupted factory; with none, the
 lowest-numbered corrupted city; with none, the lowest-numbered city. Nobody chooses. It stays on its hex until a
@@ -59,7 +64,8 @@ Redeploy, a player's Push or Gather ([ambassadors.md](ambassadors.md)), or a rem
 **Guarding.** A corrupted site (city, research station or factory) with a troop on or next to it **can't be
 liberated**: not by the Liberate action, and not by any card that liberates or frees a site (it is no target for
 Rescue, Hostile Buyout, Great Liberation, Reclamation Crew or Back-Channel Talks, and Unity's Reclamation leaves
-its cube). **The answer is to deal with the troop first, then liberate:** remove it (the standard action Remove a
+its cube). One card is the exception (r143): Peacekeeping Mission may target a guarded city, since it first removes
+up to 3 troops on or next to it; its Rescue acts, and claims, only if no guard is left. **The answer is to deal with the troop first, then liberate:** remove it (the standard action Remove a
 troop, the boards' troop powers in [ai-powers.md](ai-powers.md), troop-removal cards, Unity's Peacekeepers and
 Disarmament Talks), or move it away with a Push or Gather (Checkpoint Network, the Protector's Patrol). A troop on
 or next to one of your ambassadors is in your reach for anything that targets troops (r142), so the ambassador
@@ -74,7 +80,7 @@ start) and player-owned research stations and factories; never cities (corruptio
 neutral or adversary-owned facilities. A protection absorbs a hit as it does any destruction (*Destruction* below).
 **The troop is not used up:** it stays and strikes again on the next icon. A troop with no target does nothing. A
 strike that takes a seat's last node ends the game there (the loss; no later troop strikes). The event cards
-printing Strike: stage II's Mobilization and Fifth Column, and all four stage-III cards.
+printing Strike: stage II's Mobilization, Fifth Column and Border War, and all four stage-III cards.
 
 **Redeploy.** An icon, rare: stage II's Redeployment and stage III's Occupation (after its Strike). Each troop
 not on or next to a corrupted city (one on a corrupted factory whose city is free included) is picked up and put on
@@ -109,10 +115,9 @@ factories feed agents to their cities: liberate or block one and its agents stop
 **It is local:** a seat loses nodes only where the board is overrun: an uncountered threat that prints it (the
 player of the country it was dealt in destroys their node closest to its tokens; Siege takes the node on its
 factory's hex), a site that corrupts (only a
-node on its own hex), an arrival leaving `corrupt_node_at` (2) agents on a node hex ([adversary.md](adversary.md)),
-Border War (each player with a node on or next to a factory destroys 1 of those nodes) and an adversary troop's
-Strike (above). No project destroys a node itself (Night Raid lands agents on node hexes, for the
-2-agent rule). **Nothing else destroys a node:** Discord cards, the
+node on its own hex), an arrival leaving `corrupt_node_at` (2) agents on a node hex ([adversary.md](adversary.md))
+and an adversary troop's Strike (above; r143: Border War's own node loss became a Strike icon). No project
+destroys a node itself (Night Raid adds an agent to node hexes already holding one, for the 2-agent rule). **Nothing else destroys a node:** Discord cards, the
 other projects and the other event cards print board pressure instead ([alignment.md](alignment.md)); Offensive deals
 a threat onto the node hex with the most agents and troops. A hit is each player's own pick of which token, absorbed
 as any destruction is (below).

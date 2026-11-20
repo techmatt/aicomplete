@@ -64,6 +64,13 @@
    "unit": "agent",
    "cards": [
     {
+     "name": "Breach and Clear",
+     "units": 3,
+     "other": 0,
+     "use": 0,
+     "note": "297: 3 agents on its target (or 2 troops)"
+    },
+    {
      "name": "Eviction Worm",
      "units": 3,
      "other": "4 * compute",
@@ -231,10 +238,10 @@
    "cards": [
     {
      "name": "Breach and Clear",
-     "units": 1,
+     "units": 2,
      "other": 0,
      "use": 0,
-     "note": "1 troop; draw 2 (271: draws 0 on play, 0 an Action)"
+     "note": "297: 2 troops on its target, or 3 agents (was 1 troop)"
     },
     {
      "name": "Surgical Strike",
@@ -681,7 +688,7 @@
      "units": 1,
      "other": "1.5 * troop + 0.5 * station_owned",
      "use": 0,
-     "note": "up to 3 troops in the country (~1.5); 256: claims a neutral site next to it (~0.5)"
+     "note": "297: up to 3 troops on or next to the city first (~1.5), then the rescue; 256: claims a neutral site next to it (~0.5)"
     },
     {
      "name": "Great Liberation",

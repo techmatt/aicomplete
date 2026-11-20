@@ -456,11 +456,12 @@
       2
      ]
     ],
-    "text": "place 1 Node; gain 2 credits",
+    "text": "place 1 Node within 2 of yours; gain 2 credits",
     "effects": [
      {
       "op": "place_node",
-      "count": 1
+      "count": 1,
+      "range": 2
      },
      {
       "op": "gain",

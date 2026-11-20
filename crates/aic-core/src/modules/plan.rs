@@ -215,6 +215,8 @@ pub fn holds(w: &World, g: &GameState, h: usize, wh: Where) -> bool {
         Where::CorruptedCity => is_city(w, h) && corrupted(g, h),
         Where::ByCorruptedCity => next_to(w, h, |x| is_city(w, x) && corrupted(g, x)),
         Where::Corrupted => corrupted(g, h),
+        Where::CorruptedStation => g.tokens(h, STATION) > 0 && corrupted(g, h),
+        Where::ClearCity => is_city(w, h) && !corrupted(g, h) && g.tokens(h, ADV_AMBASSADOR) == 0,
         // 254: with no city owned (`cities_unowned`), a free city with a player's node on or next to it (292)
         // counts as a player's for the Unity cards that pay per site a player owns.
         Where::Owned => {

@@ -88,7 +88,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   | Hostile Buyout | antimatter, Diplomacy | event | gain 3 ambassadors; any corrupted site, a station or factory becomes yours (254) |
   | Forensic Audit | research cubes | event | rescue the city |
   | Root Access | antimatter, Cyber (needs Cyber tags) | event | remove a botnet on or next to the city |
-  | Peacekeeping Mission | antimatter, Security (needs Security tags) | event | remove up to 3 adversary troops in the city's country |
+  | Peacekeeping Mission | antimatter, Security (needs Security tags) | event | first removes up to 3 troops on or next to the city (so a guarded one is a target); rescues only if none is left |
   | Popular Uprising | Followers | tier-1 building | Action: add 1 Follower here, OR pay 4 Followers to liberate, again and again |
 
   They cost 2-17 credits (the four antimatter ones 4-15 and 1 antimatter), well under the Liberate action

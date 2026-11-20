@@ -406,7 +406,7 @@ def event_step(e):
 
 def event_breaks(ev):
     """151, 275, the event standard (the Rust twin is `content::event_rule_break`): one Infiltrate X (two at stage
-    III), the fixed order (threat, Infiltrate, Strike, Redeploy, other lines), at most two other lines, no Spill or Grow line
+    III), the fixed order (threat, Infiltrate, Strike, Redeploy, other lines), at most one other line (297), no Spill or Grow line
     (293: cut), no per-event compute or creation line, "each country", never "each board" (178, Matt's ruling
     #17; 151 had it the other way)."""
     out = []
@@ -417,8 +417,8 @@ def event_breaks(ev):
         out.append("one Infiltrate X line (two at stage III)")
     if any(a > b for a, b in zip(steps, steps[1:])) or any(event_step(e) < 3 for e in ev.get("twists", [])):
         out.append("a step out of the fixed order (threat, Infiltrate, Strike, Redeploy, other lines)")
-    if steps.count(3) > 2:
-        out.append("more than two other lines (consequences)")
+    if steps.count(3) > 1:
+        out.append("more than one other line (297: an event card is Infiltrate X, its icons and one line at most)")
     if any(e.get("op") in ("spill", "grow", "surge") for e in ev.get("standing", []) + ev.get("twists", [])):
         out.append("a Spill, Grow or Surge line (293: cut; an event card is Infiltrate X plus escalate)")
     if any(e.get("op") in ("compute", "create") for e in ev.get("standing", [])):

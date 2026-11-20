@@ -238,33 +238,63 @@ fn a_discord_tip_no_longer_moves_troops() {
 #[test]
 fn discord_cards_step_up_with_the_discord_tip_count() {
     // 157: tier I on tips 1-2, tier III from the 6th (5 earlier tips).
-    for (tips, each) in [(1, 1), (5, 3)] {
-        // 263: the lab plays d0, whose city number is 5 from r124: this test's 1 + 3 are r123's 4.
-        let (rules, mut g) = lab_with(&[], &["adversary.corrupt_at=4"]);
-        // 138: Blight creates on each country's lowest-numbered city holding one.
+    // 297: read on Firestorm (create 2 / 3 / 4 agents; Blight, now Captured Labs, creates none).
+    for (tips, each) in [(1, 2), (5, 4)] {
+        // A city number no stack here reaches, so the agents created stay to be counted.
+        let (rules, mut g) = lab_with(&[], &["adversary.corrupt_at=9"]);
+        // 138: Firestorm creates on each country's lowest-numbered city holding an agent.
         let seeded: Vec<usize> = (0..2).map(|c| rules.map.numbered(c, piece(c).cities[0])).collect();
         for &h in &seeded {
             put(&mut g, h, ADV_AMBASSADOR, 1);
         }
         set_var(&mut g, "alignment.discord_tips",tips);
-        next_alignment_card(&mut g, Side::Discord, "blight");
+        next_alignment_card(&mut g, Side::Discord, "firestorm");
         fill_bucket(&rules, &mut g, Side::Discord);
-        let corrupt = |g: &GameState| (0..g.hexes.len()).filter(|&h| g.tokens(h, ADV_CUBE) > 0).count();
-        let before = corrupt(&g);
         any_action(&rules, &mut g);
         answer_all(&rules, &mut g);
-        if tips == 1 {
-            assert_eq!(total(&g, ADV_AMBASSADOR), 2 + 2 * each, "{tips} tips");
-            for h in seeded {
-                assert_eq!(g.tokens(h, ADV_AMBASSADOR), 1 + each, "{tips} tips");
-            }
-        } else {
-            // 139: tier III creates 3, then Corrupt cities: the 1 + 3 there are a city's 4,
-            // so a city in each country gathers them and corrupts; they return.
-            assert_eq!(corrupt(&g), before + 2, "{tips} tips");
-            assert_eq!(seeded.iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).sum::<i64>(), 0, "{tips} tips");
+        assert_eq!(total(&g, ADV_AMBASSADOR), 2 + 2 * each, "{tips} tips");
+        for h in seeded {
+            assert_eq!((g.tokens(h, ADV_AMBASSADOR), g.tokens(h, ADV_CUBE)), (1 + each, 0), "{tips} tips");
         }
     }
+}
+
+/// 297: a Unity card's Discord line (`pull_discord`) takes up to its amount off the Discord track, never below 0,
+/// and leaves the Unity track alone; inside `per_site` it repeats for each site.
+#[test]
+fn a_discord_pull_takes_sway_off_the_discord_track_only() {
+    use crate::content::Op;
+    use crate::op::Where;
+    let (rules, g0) = lab(&[]);
+    let w = rules.world();
+    let pulled = |g: &GameState| g.stats.counters.get("alignment.discord_pulled").copied().unwrap_or(0);
+    let tracks = |g: &GameState| (g.var(alignment::track(Side::Discord)), g.var(alignment::track(Side::Unity)));
+    // As a Unity card resolves them: the team's.
+    let pull = |g: &mut GameState, ops: &[Op]| team_ops(&rules, g, ops, |_| 0);
+    let mut g = g0.clone();
+    set_var(&mut g, alignment::track(Side::Discord), 5);
+    set_var(&mut g, alignment::track(Side::Unity), 4);
+    pull(&mut g, &[Op::PullDiscord { amount: 2 }]);
+    assert_eq!((tracks(&g), pulled(&g)), ((3, 4), 2));
+    // More than the track holds: it empties and stays at 0; an empty track gives nothing.
+    pull(&mut g, &[Op::PullDiscord { amount: 7 }]);
+    assert_eq!((tracks(&g), pulled(&g)), ((0, 4), 5));
+    pull(&mut g, &[Op::PullDiscord { amount: 1 }]);
+    assert_eq!((tracks(&g), pulled(&g)), ((0, 4), 5));
+    // Inside `per_site`: once for each site, up to the cap (Safe Corridors: each hex holding an ambassador).
+    let mut g = g0.clone();
+    let land: Vec<usize> = (0..g.hexes.len()).filter(|&h| kind(&rules.map, h) == HexKind::Open).take(3).collect();
+    for &h in &land {
+        put(&mut g, h, ambassador(0), 1);
+    }
+    assert_eq!(crate::modules::plan::sites_where(&w, &g, Where::Ambassador).len(), 3);
+    set_var(&mut g, alignment::track(Side::Discord), 10);
+    set_var(&mut g, alignment::track(Side::Unity), 4);
+    let per = |max: i64| Op::PerSite { where_: Where::Ambassador, max, then: vec![Op::PullDiscord { amount: 2 }] };
+    pull(&mut g, &[per(2)]);
+    assert_eq!(tracks(&g), (6, 4), "2 for each of 2 sites, the cap");
+    pull(&mut g, &[per(9)]);
+    assert_eq!(tracks(&g), (0, 4), "2 for each of the 3 sites, as far as the track goes");
 }
 
 #[test]

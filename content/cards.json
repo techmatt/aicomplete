@@ -2774,12 +2774,12 @@
   "effects": [
    {
     "op": "target",
-    "on": "troops"
+    "on": "adversary"
    },
    {
-    "op": "remove_troops",
-    "count": 1,
-    "at": "on"
+    "op": "damage",
+    "ambassadors": 3,
+    "troops": 2
    }
   ]
  },
@@ -3613,8 +3613,12 @@
     "on": "corrupted_city"
    },
    {
-    "op": "liberate",
-    "troops": 3
+    "op": "remove_troops",
+    "count": 3,
+    "at": "near"
+   },
+   {
+    "op": "liberate"
    },
    {
     "op": "claim_site",

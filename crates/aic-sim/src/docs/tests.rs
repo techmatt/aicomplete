@@ -26,7 +26,7 @@ fn only_tier_two_threats_take_their_own_site() {
     let r = baseline(&[]);
     let taken = captures(&r);
     assert!(taken.iter().all(|c| c.tier == 2), "{:?}", taken.iter().map(|c| &c.name).collect::<Vec<_>>());
-    for name in ["Insurrection", "Trade Blockade", "Garrison State", "Rootkit"] {
+    for name in ["Insurrection", "Trade Blockade", "Closed City", "Rootkit"] {
         assert!(taken.iter().any(|c| c.name == name), "{name}");
     }
     assert!(harm_failures(&r).is_empty(), "{:?}", harm_failures(&r));

@@ -262,8 +262,15 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             resources::build_station(g, cx, seat, &zone)?
         }
         Op::ClaimSite { near } => {
-            let zone = ctx.area(&w, g, seat, if *near { Area::Near } else { Area::On });
-            resources::claim_site(g, cx, seat, &zone, *near)?
+            // 297: a Rescue's claim follows its liberation. With the target still a corrupted city (Peacekeeping
+            // Mission's removal left a guard, so nothing was liberated), nothing is claimed.
+            let unfreed = *near && ctx.area(&w, g, seat, Area::On).iter().any(|&h| crate::modules::common::corrupted_city(&w, g, h));
+            if unfreed {
+                cx.tally(g, "effects.claim_unfreed", 1);
+            } else {
+                let zone = ctx.area(&w, g, seat, if *near { Area::Near } else { Area::On });
+                resources::claim_site(g, cx, seat, &zone, *near)?
+            }
         }
         Op::ProjectCube { count, station } => resources::project_cube(g, cx, seat, *count, *station)?,
         Op::Peek { count } => adversary::peek(g, cx, *count),
@@ -410,6 +417,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::EachDestroyNode { count, factories } => team::each_destroy_node(g, cx, ctx, *count, *factories)?,
         Op::DestroyNode { count } => team::destroy_nearest_node(g, cx, ctx, *count)?,
         Op::PullUnity { amount } => alignment::pull_unity(g, cx, *amount),
+        Op::PullDiscord { amount } => alignment::pull_discord(g, cx, *amount),
 
         // Threats.
         Op::Flag { name, scope: None, rounds: 1, everywhere: false } => {
@@ -454,7 +462,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::DealThreats { count, tier: None, scope: None, each_country: false } => threats::deal_extra(g, cx, *count),
         Op::RemoveBotnets { count } => team::remove_botnets(g, cx, *count)?,
         // 195: the project deck's board verbs.
-        Op::BotnetTroops { count, troops } => team::botnet_troops(g, cx, *count, *troops)?,
+        Op::BotnetTroops { count, troops, least } => team::botnet_troops(g, cx, *count, *troops, *least)?,
         Op::SpreadBotnets { count } => team::spread_botnets(g, cx, *count),
         Op::TakeSite { site } => team::take_site(g, cx, *site)?,
         Op::FactoryTroops { count } => team::factory_troops(g, cx, *count),

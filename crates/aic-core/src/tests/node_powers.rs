@@ -97,7 +97,7 @@ fn an_unaffordable_power_says_what_is_short() {
     assert_eq!(status(&g, free_growth(0)), "game over");
 }
 
-/// 261: a node route is used for its node: with no free hex next to the seat's nodes it isn't offered (Outpost, the
+/// 261: a node route is used for its node: with no free hex in its range of the seat's nodes it isn't offered (Outpost, the
 /// Protector's, was paid in full for its ambassador alone), and a placement there asks no track question.
 #[test]
 fn a_node_route_with_no_free_hex_is_not_offered() {
@@ -108,17 +108,30 @@ fn a_node_route_with_no_free_hex_is_not_offered() {
     put(&mut g, start, node(seat), 1);
     set_res(&mut g, seat, Resource::Energy, 20);
     let outpost = power(&rules, seat, "Outpost");
+    // 297: Outpost places within the range it prints (2), so its route is shut only when every hex that near is taken.
+    let printed = ai::board(&w, seat).powers[power_index(&rules, seat, "Outpost")].effects.iter().find_map(|e| match e {
+        Op::PlaceNode { range, .. } => Some(*range),
+        _ => None,
+    });
+    let range = printed.expect("Outpost places a node");
+    assert_eq!(range, 2);
     assert!(rules.apply_mut(&mut g.clone(), &outpost, None).is_ok(), "offered with a free hex");
-    // Every hex in reach taken by seat 0's nodes: no free hex for seat 1's.
+    // The hexes next to its node taken by seat 0's nodes: still offered, a hex 2 away is free.
     for h in board::node_sites_within(&w, &g, seat, 1) {
         put(&mut g, h, node(0), 1);
     }
-    assert!(board::node_sites_within(&w, &g, seat, 1).is_empty());
+    assert!(board::node_sites_within(&w, &g, seat, 1).is_empty() && !board::node_sites_within(&w, &g, seat, range).is_empty());
+    assert!(rules.apply_mut(&mut g.clone(), &outpost, None).is_ok(), "a free hex 2 away: offered");
+    // Every hex in its range taken: no free hex for seat 1's.
+    for h in board::node_sites_within(&w, &g, seat, range) {
+        put(&mut g, h, node(0), 1);
+    }
+    assert!(board::node_sites_within(&w, &g, seat, range).is_empty());
     assert!(rules.apply_mut(&mut g.clone(), &outpost, None).is_err(), "no free hex: not offered");
     let mut gg = g.clone();
     let mut choices = module::Choices::new(Vec::new());
     let mut cx = test_cx(&rules, &mut choices);
-    let placed = board::place_node_within(&mut gg, &mut cx, seat, 1).unwrap();
+    let placed = board::place_node_within(&mut gg, &mut cx, seat, range).unwrap();
     assert_eq!(placed, None);
     assert!(choices.asked.is_none(), "no track question for a node that can't go down");
 }

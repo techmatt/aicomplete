@@ -75,6 +75,9 @@ any design, rules, card or pricing work.
   rewrites the configs derived from it (`experiments/configs/no_liberate.json`, `no_tier2.json`).
 - A pass editing many cards keeps its edits as one overlay file, written with
   `scripts/cards/apply_overlay.py`, so it reruns from any revision.
+- **Text beside ops.** Only player cards print from their ops (`face.rs`). A threat's, event's, project's, Unity or
+  Discord card's `text` is hand-written beside its ops, and nothing checks they agree: change both, in one script
+  over `drafts/adversary/` and `content/alignment.json` (`scripts/content/sweep_297.py` is the pattern).
 - **The card checklists** (give / get before any sim, at a card's creation, after a later edit, smokes
   before reads, a rules item's first freeze) are in card-guidelines.md, *The anchor check* and
   *An item's card checklist*: read them before any card, conversion or new-op work.

@@ -29,7 +29,8 @@ sys.path.insert(0, os.path.join(ROOT, 'scripts'))
 from screens import cells_of, stream  # noqa: E402
 
 MEASURES = ['agents', 'troops', 'botnets', 'markers', 'corrupted', 'threats', 'credits', 'energy', 'insight',
-            'ambassadors', 'free_keeps', 'income_credits', 'income_insight', 'unity', 'unity_pulled', 'discord']
+            'ambassadors', 'free_keeps', 'income_credits', 'income_insight', 'unity', 'unity_pulled', 'discord',
+            'discord_pulled', 'research']
 
 
 def deck():

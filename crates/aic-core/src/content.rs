@@ -1467,8 +1467,8 @@ pub fn event_line_kind(e: &Op) -> Option<&'static str> {
 }
 
 /// 151, the event standard (the threat card standard's, for events), 275's lines: one Infiltrate X (two at stage
-/// III), its lines in the fixed order (Infiltrate, Strike, Redeploy, other lines), at most two other lines
-/// (consequences), no per-event compute or creation line, and "each
+/// III), its lines in the fixed order (Infiltrate, Strike, Redeploy, other lines), at most one other line
+/// (297: it was two), no per-event compute or creation line, and "each
 /// country", never "each board". The reason it breaks, if it does.
 pub fn event_rule_break(a: &AdversaryCard) -> Option<String> {
     if says_each_board(&a.text) {
@@ -1485,8 +1485,9 @@ pub fn event_rule_break(a: &AdversaryCard) -> Option<String> {
     if steps.windows(2).any(|p| p[0] > p[1]) || a.twists.iter().any(|e| event_step(e) < 3) {
         return Some("a step out of the fixed order (threat, Infiltrate, Strike, Redeploy, other lines)".into());
     }
-    if steps.iter().filter(|&&s| s == 3).count() > 2 {
-        return Some("more than two other lines (consequences)".into());
+    // 297: one other line at most, so a card reads at a glance (it was two).
+    if steps.iter().filter(|&&s| s == 3).count() > 1 {
+        return Some("more than one other line (297: an event card is Infiltrate X, its icons and one line at most)".into());
     }
     if a.standing.iter().any(|e| matches!(e, Op::Compute { .. } | Op::Create { .. })) {
         return Some("a per-event compute or creation line (income and Infiltrate replace them)".into());
@@ -1758,6 +1759,18 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
                 if !matches!(r, Resource::Credits | Resource::Insight) {
                     return Err(format!("{what}: team_income is credits or insight"));
                 }
+            }
+            // 297: a troop line that names its place lands in every country and takes no threat-era field.
+            Op::Troops {
+                at: Some(crate::op::TroopAt::CorruptedFactory | crate::op::TroopAt::BesiegedCity),
+                each_country,
+                destroy,
+                stand,
+                location,
+                if_,
+                ..
+            } if !*each_country || *destroy || *stand || location.is_some() || if_.is_some() => {
+                return Err(format!("{what}: a troop line at a corrupted factory or a besieged city is each_country, with no other field"));
             }
             Op::Troops { each_country: true, .. } | Op::FlipStation { each_country: true, .. }
                 if slot != Slot::Team =>

@@ -143,26 +143,62 @@ fn by_number(w: &World, c: usize) -> Vec<usize> {
     hexes
 }
 
-/// 195: the hex of `hexes` with the most agents; ties: the first (lowest-numbered, as [`by_number`] orders them).
-/// 274 (table time): a project counts the hex only, as Night Raid does (it counted the hex and the six around it:
-/// seven reads a candidate). `adversary.project_hexes_read` counts the candidates read.
-fn most_agents_on(g: &mut GameState, cx: &mut Cx, hexes: &[usize]) -> Option<usize> {
-    cx.tally(g, "adversary.project_hexes_read", hexes.len() as i64);
-    let best = hexes.iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).max()?;
-    hexes.iter().copied().find(|&h| g.tokens(h, ADV_AMBASSADOR) == best)
+/// 297 (a project's or a Discord card's troop line that names its place), in each country, `count` troops:
+/// `TroopAt::CorruptedFactory`: on its lowest-numbered corrupted factory, and a country with none takes no troop;
+/// `TroopAt::BesiegedCity`: on its lowest-numbered corrupted city with a player's node or ambassador on or next to
+/// it, and a country with none garrisons as any troop does. Wall keeps one off the Protector's hex.
+pub(super) fn troops_at(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64, at: crate::op::TroopAt) -> Res {
+    use crate::op::TroopAt;
+    let w = cx.world;
+    let (tally, source) = if ctx.label == "project" { ("adversary.project_troops", "project") } else { ("adversary.discord_troops", "discord") };
+    // As every troop line off a threat: the board's bonus, where one prints it (none does since 267).
+    let count = count + adversary::troop_bonus(&w);
+    for c in 0..w.map.countries.len() {
+        let hexes = by_number(&w, c);
+        let spot = match at {
+            TroopAt::CorruptedFactory => hexes.iter().copied().find(|&h| g.tokens(h, FACTORY) > 0 && corrupted(g, h)),
+            _ => {
+                let by_player = |h: usize| next_to(&w, h, |x| player_ambassador(g, x).is_some() || node_owner(g, x).is_some());
+                let besieged = hexes.iter().copied().find(|&h| corrupted_city(&w, g, h) && by_player(h));
+                if besieged.is_some() {
+                    cx.tally(g, "adversary.troops_besiege", 1);
+                }
+                besieged.or_else(|| board::garrison_spot(&w, g, &hexes))
+            }
+        };
+        let Some(h) = spot else {
+            cx.tally(g, "adversary.troops_no_factory", 1);
+            continue;
+        };
+        for _ in 0..count {
+            if adversary::place_troop(g, cx, h, source) {
+                cx.per_round(g, adversary::OPS, 1);
+                cx.tally(g, tally, 1);
+            }
+        }
+    }
+    Ok(())
 }
 
 /// 195 (`BotnetTroops`): in each country, up to `count` botnets, lowest-numbered first, become `troops` troops each.
-/// r141: they garrison as any troop does (`adversary::land_troops`), not on the botnet's hex; Wall (r98) keeps any
-/// off the Protector's hex.
-pub(super) fn botnet_troops(g: &mut GameState, cx: &mut Cx, count: i64, troops: i64) -> Res {
+/// 297: on the botnet's own hex (r141 garrisoned them on a corrupted site, which left Redeploy nothing to move and
+/// stood every troop away from the players): the table sees which botnet will turn, and takes it down first. Only
+/// in a country holding `least` botnets or more. Wall (r98) keeps any off the Protector's hex.
+pub(super) fn botnet_troops(g: &mut GameState, cx: &mut Cx, count: i64, troops: i64, least: i64) -> Res {
     let w = cx.world;
     for c in 0..w.map.countries.len() {
         let botnets: Vec<usize> = by_number(&w, c).into_iter().filter(|&h| g.tokens(h, BOTNET) > 0).collect();
+        // 297: "each country holding N or more botnets": a country under it keeps its botnets.
+        if (botnets.len() as i64) < least {
+            cx.tally(g, "adversary.botnet_troops_short", 1);
+            continue;
+        }
         for &h in botnets.iter().take(count.max(0) as usize) {
             cx.add_tokens(g, h, BOTNET, -1);
             cx.set_key(g, &adversary::cut_key(h), 0);
-            let placed = adversary::land_troops(g, cx, &w.map.countries[c].hexes, troops, "adversary.project_troops", None, "project")?;
+            let placed = (0..troops).filter(|_| adversary::place_troop_quiet(g, cx, h, "project")).count() as i64;
+            cx.per_round(g, adversary::OPS, placed);
+            cx.tally(g, "adversary.project_troops", placed);
             // 235: what landed (Wall's are tallied as `troops_walled`).
             cx.tally(g, "adversary.botnet_troops", placed);
             cx.note(Some(h), || format!("The botnet at {} becomes {}", hex_name(&w, h), troop_words(placed as usize, troops)));
@@ -208,9 +244,10 @@ pub(super) fn spread_botnets(g: &mut GameState, cx: &mut Cx, count: i64) {
     }
 }
 
-/// 195 (`TakeSite`): in each country, the neutral `site` with the most agents on its hex (274) corrupts; with none
-/// neutral, the player-owned one picked the same way turns neutral. A guarded site (firewall, no-Corrupt token) is skipped,
-/// and a guarded neutral one still counts as neutral (D88).
+/// 195 (`TakeSite`): in each country, the lowest-numbered neutral `site` corrupts (297: the "most agents" pick
+/// went, as Spill's and Surge's did at r140); with none neutral, the lowest-numbered player-owned one turns
+/// neutral. A guarded site (firewall, no-Corrupt token) is skipped, and a guarded neutral one still counts as
+/// neutral (D88).
 pub(super) fn take_site(g: &mut GameState, cx: &mut Cx, site: Facility) -> Res {
     let w = cx.world;
     let kind = site.token();
@@ -222,7 +259,7 @@ pub(super) fn take_site(g: &mut GameState, cx: &mut Cx, site: Facility) -> Res {
         let any_neutral = hexes.iter().any(|&h| cube_owner(g, h).is_none());
         let open: Vec<usize> = hexes.into_iter().filter(|h| !guarded.contains(h)).collect();
         let neutral: Vec<usize> = open.iter().copied().filter(|&h| cube_owner(g, h).is_none()).collect();
-        if let Some(h) = most_agents_on(g, cx, &neutral) {
+        if let Some(&h) = neutral.first() {
             adversary::corrupt_hex(g, cx, h, if site == Facility::Station { CorruptSite::Station } else { CorruptSite::Factory })?;
             cx.tally(g, "adversary.sites_taken", 1);
             cx.note(Some(h), || format!("The neutral {} at {} goes to the adversary", piece_name(kind), hex_name(&w, h)));
@@ -233,7 +270,7 @@ pub(super) fn take_site(g: &mut GameState, cx: &mut Cx, site: Facility) -> Res {
             continue;
         }
         let owned: Vec<usize> = open.into_iter().filter(|&h| cube_owner(g, h).is_some()).collect();
-        if let Some(h) = most_agents_on(g, cx, &owned) {
+        if let Some(&h) = owned.first() {
             if let Some(s) = cube_owner(g, h) {
                 cx.add_tokens(g, h, cube(s), -1);
             }
@@ -274,8 +311,9 @@ fn troop_words(placed: usize, asked: i64) -> String {
     }
 }
 
-/// 231 (`AgentsOnNodes`, Night Raid): in each country, 1 agent onto each of `count` different hexes holding a
-/// player's node, those holding the most agents first (ties: the lowest-numbered); a firewalled hex is passed over.
+/// 231 (`AgentsOnNodes`, Night Raid): in each country, 1 agent onto each of its `count` lowest-numbered hexes that
+/// hold a player's node and an agent (297: no "most agents" pick, and no agent onto a clean node hex: the table
+/// sees which nodes are at risk, the ones an agent already stands on); a firewalled hex is passed over.
 /// 275: each agent is an arrival: a node hex it brings to 2 agents loses its node at once.
 pub(super) fn agents_on_nodes(g: &mut GameState, cx: &mut Cx, count: i64) -> Res {
     let w = cx.world;
@@ -284,10 +322,10 @@ pub(super) fn agents_on_nodes(g: &mut GameState, cx: &mut Cx, count: i64) -> Res
         if board::flagged(g, crate::content::RoundFlag::Cordon, c) {
             continue;
         }
-        let mut hexes: Vec<usize> =
-            by_number(&w, c).into_iter().filter(|&h| node_owner(g, h).is_some() && !firewalled(g, h)).collect();
-        // A stable sort keeps hex-number order among equals.
-        hexes.sort_by_key(|&h| std::cmp::Reverse(g.tokens(h, ADV_AMBASSADOR)));
+        let hexes: Vec<usize> = by_number(&w, c)
+            .into_iter()
+            .filter(|&h| node_owner(g, h).is_some() && g.tokens(h, ADV_AMBASSADOR) > 0 && !firewalled(g, h))
+            .collect();
         for &h in hexes.iter().take(count.max(0) as usize) {
             cx.tally(g, "adversary.night_raid_agents", 1);
             // 235: the note follows the placement: an empty supply lands nothing, an ambassador there cancels it.
@@ -351,15 +389,15 @@ pub(super) fn strip_cubes(g: &mut GameState, cx: &mut Cx, count: i64) {
     }
 }
 
-/// 195 (`StripHarden`): in each country, the hardened facility with the most agents on its hex (274) loses its
-/// hardening tokens.
+/// 195 (`StripHarden`): in each country, the lowest-numbered hardened facility loses its hardening tokens (297:
+/// no "most agents" pick).
 pub(super) fn strip_harden(g: &mut GameState, cx: &mut Cx) {
     let w = cx.world;
     for c in 0..w.map.countries.len() {
         // A facility's hardening: a Science card's node shield on a hex with no facility is no target (195 review).
         let hexes: Vec<usize> =
             by_number(&w, c).into_iter().filter(|&h| g.tokens(h, HARDEN) > 0 && board::hardenable(g, h)).collect();
-        if let Some(h) = most_agents_on(g, cx, &hexes) {
+        if let Some(&h) = hexes.first() {
             let n = g.tokens(h, HARDEN);
             cx.add_tokens(g, h, HARDEN, -n);
             cx.tally(g, "adversary.hardening_stripped", n);

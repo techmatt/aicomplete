@@ -251,6 +251,7 @@ fn op_harms(op: &Op) -> Vec<usize> {
         // The player's side: gains, removals, protections and passives.
         Op::Sway { .. }
         | Op::TeamIncome { .. }
+        | Op::PullDiscord { .. }
         | Op::Gain { .. }
         | Op::GainPerNode { .. }
         | Op::ChoosePlayer

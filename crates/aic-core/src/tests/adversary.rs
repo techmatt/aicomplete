@@ -700,32 +700,59 @@ fn the_players_lose_when_the_next_round_has_no_adversary_card() {
 fn twists_before_the_build_step_are_the_face_up_cards() {
     let (rules, mut g) = lab(&["alignment.sway", "adversary.build"]);
     let w = rules.world();
-    // Probing Strikes prints no twist, War Drums a Discord sway.
+    // Probing Strikes prints no twist, Blitzkrieg a Fallout line (297: the one event card left with a twist).
     set_pile(&mut g, CURRENT, &["mil_s1_probing_strikes"]);
-    set_pile(&mut g, NEXT, &["mil_s1_war_drums"]);
-    let stations = |g: &GameState| adversary::twists(&w, g).iter().any(|t| matches!(t, Op::Sway { .. }));
+    set_pile(&mut g, NEXT, &["mil_s3_blitzkrieg"]);
+    let fallout = |g: &GameState| adversary::twists(&w, g).iter().any(|t| matches!(t, Op::Fallout { .. }));
     g.phase = 0;
-    assert!(stations(&g), "the Sway phase reads the face-up card");
+    assert!(fallout(&g), "the Sway phase reads the face-up card");
     g.phase = 2;
-    assert!(!stations(&g), "after the build step, this round's card");
+    assert!(!fallout(&g), "after the build step, this round's card");
 }
 
+/// 297: no event card prints the Unity pull any more (Total Mobilization lost it); a project still does (Slander
+/// Campaign). Resolved as the project resolves it, up to its amount comes off the Unity track, never below 0, and
+/// the Discord track is left alone.
 #[test]
-fn a_stage_iii_card_pulls_sway_out_of_the_unity_bucket() {
-    let (rules, mut g) = lab(&["adversary.build"]);
+fn a_projects_pull_takes_sway_off_the_unity_track() {
+    let (rules, g0) = lab(&[]);
     let w = rules.world();
-    let card = w.content.adversary.iter().find(|c| c.stage == 3).unwrap();
-    let pull = card.twists.iter().find_map(|t| match t {
+    assert!(
+        !w.content.adversary.iter().any(|c| c.standing.iter().chain(&c.twists).any(|e| matches!(e, Op::PullUnity { .. }))),
+        "no event card prints the pull"
+    );
+    let project = w.content.projects.iter().find(|p| p.effects.iter().any(|e| matches!(e, Op::PullUnity { .. })));
+    let project = project.expect("a project prints the pull");
+    let pull = project.effects.iter().find_map(|e| match e {
         Op::PullUnity { amount } => Some(*amount),
         _ => None,
     });
-    let pull = pull.expect("a stage-III card prints the pull");
-    set_var(&mut g, alignment::track(Side::Unity), pull + 1);
-    g.piles.insert(NEXT.into(), vec![card.id.as_str().into()].into());
-    run(&rules, &mut g);
-    answer_all(&rules, &mut g);
-    assert_eq!(g.stats.counters.get("alignment.unity_pulled").copied(), Some(pull));
-    assert!(g.var(alignment::track(Side::Unity)) <= 1, "the bucket loses the pull");
+    let pull = pull.unwrap();
+    assert!(pull > 1);
+    for (held, left) in [(pull + 1, 1), (pull - 1, 0)] {
+        let mut g = g0.clone();
+        set_var(&mut g, alignment::track(Side::Unity), held);
+        set_var(&mut g, alignment::track(Side::Discord), 3);
+        with_cx(&rules, |cx| effects::run(&mut g, cx, &project.effects, &mut effects::Ctx::team().named("project"))).unwrap();
+        assert_eq!(g.stats.counters.get("alignment.unity_pulled").copied(), Some(held - left), "{held} on the track");
+        assert_eq!(g.var(alignment::track(Side::Unity)), left, "the track loses the pull, never below 0");
+        assert_eq!(g.var(alignment::track(Side::Discord)), 3, "the Discord track is untouched");
+    }
+}
+
+/// 297: an event card reads at a glance: beyond its Infiltrate, Strike and Redeploy icons it prints one line at
+/// most, standing and twists together (it was two).
+#[test]
+fn every_event_card_prints_at_most_one_other_line() {
+    for a in &content().adversary {
+        let other = a
+            .standing
+            .iter()
+            .chain(&a.twists)
+            .filter(|e| !matches!(e, Op::Infiltrate { .. } | Op::Strike | Op::Redeploy))
+            .count();
+        assert!(other <= 1, "{}: {other} lines beyond Infiltrate, Strike and Redeploy", a.id);
+    }
 }
 
 /// 275: every event card opens on its Infiltrate X (two at stage III: Matt's look-ahead names next round's sites a
@@ -752,17 +779,17 @@ fn every_event_card_infiltrates_first() {
 }
 
 /// 151, 275: the load check refuses an event off the event standard (one Infiltrate X, the fixed step order, at
-/// most two other lines, "each board") and a project with more than two consequences.
+/// most one other line, "each board") and a project with more than two consequences.
 #[test]
 fn the_load_check_refuses_an_event_or_a_project_off_the_standard() {
     use crate::content::{event_rule_break, project_rule_break};
     let c = content();
-    // War Drums: Infiltrate | Sway.
-    let base = c.adversary.iter().find(|a| a.id == "mil_s1_war_drums").unwrap();
+    // Blitzkrieg: Infiltrate, Infiltrate, Strike | Fallout (297: its one other line).
+    let base = c.adversary.iter().find(|a| a.id == "mil_s3_blitzkrieg").unwrap();
     assert_eq!(event_rule_break(base), None);
     let infiltrate = base.standing[0].clone();
     let sway = base.twists[0].clone();
-    assert!(matches!(infiltrate, Op::Infiltrate { .. }) && matches!(sway, Op::Sway { .. }));
+    assert!(matches!(infiltrate, Op::Infiltrate { .. }) && matches!(sway, Op::Fallout { .. }));
     let refused = |edit: &dyn Fn(&mut crate::content::AdversaryCard), why: &str| {
         let mut a = base.clone();
         edit(&mut a);
@@ -772,11 +799,8 @@ fn the_load_check_refuses_an_event_or_a_project_off_the_standard() {
     refused(&|a| a.standing.insert(0, infiltrate.clone()), "one Infiltrate X");
     refused(&|a| a.twists.push(infiltrate.clone()), "one Infiltrate X");
     refused(
-        &|a| {
-            a.twists.insert(0, sway.clone());
-            a.twists.insert(0, sway.clone());
-        },
-        "more than two other lines",
+        &|a| a.twists.insert(0, sway.clone()),
+        "more than one other line",
     );
     refused(&|a| a.text = "Muster 1 on each board.".into(), "each board");
     // A project under `THIRD_EFFECT_COST` printing two consequences (Martial Law until 282 priced it at 29); a

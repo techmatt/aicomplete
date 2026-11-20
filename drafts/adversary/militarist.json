@@ -399,18 +399,10 @@
      "site": "city"
     }
    ],
-   "twists": [
-    {
-     "op": "sway",
-     "side": "discord",
-     "amount": 1,
-     "narrative": "fear"
-    }
-   ],
-   "text": "Threat, each country: a tier-1 threat. Infiltrate: cities. Sway 1 toward Discord.",
+   "twists": [],
+   "text": "Threat, each country: a tier-1 threat. Infiltrate: cities.",
    "harms": [
     "adversary pieces placed",
-    "Discord sway",
     "facilities destroyed or corrupted"
    ],
    "value": "293: Infiltrate lands an agent a site of each named type (about 2-3 a country); next round each of those sites still holding an agent takes 1 more (escalate, a rule of the Card beat, priced with the card that names the type: values.json's infiltrate and escalate rows).",
@@ -420,7 +412,8 @@
     "201 (r89, Matt 2026-11-12): Muster 1 removed (fewer troops, each deadlier)",
     "275 (Matt, 2026-11-18): Rally, agent income and Corrupt lines replaced by Infiltrate (two types at stage III), Spill (level 2+) and Grow",
     "292 (r139): the pull's tag line is gone (one threat deck a tier, the next card dealt)",
-    "293 (Matt, 2026-11-19): Spill and Grow lines cut: an event card is Infiltrate X plus escalate (its other lines stay)"
+    "293 (Matt, 2026-11-19): Spill and Grow lines cut: an event card is Infiltrate X plus escalate (its other lines stay)",
+    "297 (Matt, 2026-11-19): \"Sway 1 toward Discord.\" cut (a 1-Sway rider nobody plans around: the card is Infiltrate X alone)"
    ],
    "reuses": null
   },
@@ -442,14 +435,10 @@
     {
      "op": "increase_income",
      "compute": 1
-    },
-    {
-     "op": "spread_botnets",
-     "count": 1
     }
    ],
    "twists": [],
-   "text": "Threat, each country: a tier-1 threat. Infiltrate: botnet hexes. Income: +1 compute a country a round. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station).",
+   "text": "Threat, each country: a tier-1 threat. Infiltrate: botnet hexes. Income: +1 compute a country a round.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
@@ -462,7 +451,8 @@
     "201 (r89, Matt 2026-11-12): a Botnet spread line (botnets spread quickly)",
     "275 (Matt, 2026-11-18): Rally, agent income and Corrupt lines replaced by Infiltrate (two types at stage III), Spill (level 2+) and Grow",
     "292 (r139): the pull's tag line is gone (one threat deck a tier, the next card dealt)",
-    "293 (Matt, 2026-11-19): Spill and Grow lines cut: an event card is Infiltrate X plus escalate (its other lines stay)"
+    "293 (Matt, 2026-11-19): Spill and Grow lines cut: an event card is Infiltrate X plus escalate (its other lines stay)",
+    "297 (Matt, 2026-11-19): \"Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station).\" cut (two other lines became one: it keeps Funding; Long Patrols and Station Raids carry Botnets spread)"
    ],
    "reuses": null
   },
@@ -595,14 +585,10 @@
     },
     {
      "op": "strike"
-    },
-    {
-     "op": "spread_botnets",
-     "count": 1
     }
    ],
    "twists": [],
-   "text": "Threat, each country: a tier-2 threat. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station).",
+   "text": "Threat, each country: a tier-2 threat. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted",
@@ -616,7 +602,8 @@
     "275 (Matt, 2026-11-18): Rally, agent income and Corrupt lines replaced by Infiltrate (two types at stage III), Spill (level 2+) and Grow",
     "292 (r139): the pull's tag line is gone (one threat deck a tier, the next card dealt)",
     "293 (Matt, 2026-11-19): Spill and Grow lines cut: an event card is Infiltrate X plus escalate (its other lines stay)",
-    "294 (Matt, 2026-11-19): \"Infiltrate: cities.\" became \"Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it.\" (a Strike icon in stage II, where games now end: troops strike only on an icon)"
+    "294 (Matt, 2026-11-19): \"Infiltrate: cities.\" became \"Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it.\" (a Strike icon in stage II, where games now end: troops strike only on an icon)",
+    "297 (Matt, 2026-11-19): \"Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station).\" cut (its Strike icon is its one extra; Botnets spread stays on Long Patrols and Station Raids)"
    ],
    "reuses": null
   },
@@ -634,16 +621,13 @@
     {
      "op": "infiltrate",
      "site": "factory"
-    }
-   ],
-   "twists": [
+    },
     {
-     "op": "each_destroy_node",
-     "count": 1,
-     "factories": true
+     "op": "strike"
     }
    ],
-   "text": "Threat, each country: a tier-2 threat. Infiltrate: factories. Each player with a Node on or next to a factory destroys 1 of those Nodes.",
+   "twists": [],
+   "text": "Threat, each country: a tier-2 threat. Infiltrate: factories. Strike: each Troop destroys 1 player Node, research station or factory on or next to it.",
    "harms": [
     "adversary pieces placed",
     "node destroyed",
@@ -657,7 +641,8 @@
     "201 (r89, Matt 2026-11-12): an agent income line (agents grow by stage)",
     "275 (Matt, 2026-11-18): Rally, agent income and Corrupt lines replaced by Infiltrate (two types at stage III), Spill (level 2+) and Grow",
     "292 (r139): the pull's tag line is gone (one threat deck a tier, the next card dealt)",
-    "293 (Matt, 2026-11-19): Spill and Grow lines cut: an event card is Infiltrate X plus escalate (its other lines stay)"
+    "293 (Matt, 2026-11-19): Spill and Grow lines cut: an event card is Infiltrate X plus escalate (its other lines stay)",
+    "297 (Matt, 2026-11-19): \"Each player with a Node on or next to a factory destroys 1 of those Nodes.\" became \"Strike: each Troop destroys 1 player Node, research station or factory on or next to it.\" (the one node loss an event printed with no troop behind it becomes a third stage-II Strike icon: nodes fall to troops, which the table sees coming)"
    ],
    "reuses": null
   },
@@ -771,16 +756,10 @@
      "op": "strike"
     }
    ],
-   "twists": [
-    {
-     "op": "pull_unity",
-     "amount": 2
-    }
-   ],
-   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: factories. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Remove 2 Unity from the Unity track.",
+   "twists": [],
+   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: factories. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it.",
    "harms": [
     "adversary pieces placed",
-    "Unity pulled back",
     "facilities destroyed or corrupted",
     "node destroyed"
    ],
@@ -792,7 +771,8 @@
     "275 (Matt, 2026-11-18): Rally, agent income and Corrupt lines replaced by Infiltrate (two types at stage III), Spill (level 2+) and Grow",
     "292 (r139): the pull's tag line is gone (one threat deck a tier, the next card dealt)",
     "293 (Matt, 2026-11-19): Spill and Grow lines cut: an event card is Infiltrate X plus escalate (its other lines stay)",
-    "294 (Matt, 2026-11-19): \"Muster 1: each country, 1 Troop on its lowest-numbered factory (else city).\" became \"Strike: each Troop destroys 1 player Node, research station or factory on or next to it.\" (no event card musters: troops come from the research row, projects and Discord cards, and strike on this icon, shown a round ahead)"
+    "294 (Matt, 2026-11-19): \"Muster 1: each country, 1 Troop on its lowest-numbered factory (else city).\" became \"Strike: each Troop destroys 1 player Node, research station or factory on or next to it.\" (no event card musters: troops come from the research row, projects and Discord cards, and strike on this icon, shown a round ahead)",
+    "297 (Matt, 2026-11-19): \"Remove 2 Unity from the Unity track.\" cut (a stage-III card already reads two Infiltrates and a Strike)"
    ],
    "reuses": null
   },
@@ -825,20 +805,13 @@
    ],
    "twists": [
     {
-     "op": "sway",
-     "side": "discord",
-     "amount": 1,
-     "narrative": "fear"
-    },
-    {
      "op": "fallout",
      "at": "corrupted_city"
     }
    ],
-   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: cities. Infiltrate: research stations. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Sway 1 toward Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
+   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: cities. Infiltrate: research stations. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
    "harms": [
     "adversary pieces placed",
-    "Discord sway",
     "facilities destroyed or corrupted",
     "Fallout placed",
     "node destroyed"
@@ -852,7 +825,8 @@
     "275 (Matt, 2026-11-18): Rally, agent income and Corrupt lines replaced by Infiltrate (two types at stage III), Spill (level 2+) and Grow",
     "292 (r139): the pull's tag line is gone (one threat deck a tier, the next card dealt)",
     "293 (Matt, 2026-11-19): Spill and Grow lines cut: an event card is Infiltrate X plus escalate (its other lines stay)",
-    "294 (Matt, 2026-11-19): \"Muster 1: each country, 1 Troop on its lowest-numbered factory (else city).\" became \"Strike: each Troop destroys 1 player Node, research station or factory on or next to it.\" (no event card musters: troops come from the research row, projects and Discord cards, and strike on this icon, shown a round ahead)"
+    "294 (Matt, 2026-11-19): \"Muster 1: each country, 1 Troop on its lowest-numbered factory (else city).\" became \"Strike: each Troop destroys 1 player Node, research station or factory on or next to it.\" (no event card musters: troops come from the research row, projects and Discord cards, and strike on this icon, shown a round ahead)",
+    "297 (Matt, 2026-11-19): \"Sway 1 toward Discord.\" cut (two other lines became one: it keeps its Fallout)"
    ],
    "reuses": null
   },
@@ -938,18 +912,12 @@
      "everywhere": true
     }
    ],
-   "twists": [
-    {
-     "op": "fallout",
-     "at": "corrupted_city"
-    }
-   ],
-   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: coastal cities. Infiltrate: factories. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Until the end of next round, cities make no energy and no Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
+   "twists": [],
+   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: coastal cities. Infiltrate: factories. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Until the end of next round, cities make no energy and no Discord.",
    "harms": [
     "adversary pieces placed",
     "production blacked out",
     "facilities destroyed or corrupted",
-    "Fallout placed",
     "node destroyed"
    ],
    "value": "293: Infiltrate lands an agent a site of each named type (about 2-3 a country); next round each of those sites still holding an agent takes 1 more (escalate, a rule of the Card beat, priced with the card that names the type: values.json's infiltrate and escalate rows).",
@@ -961,7 +929,8 @@
     "275 (Matt, 2026-11-18): Rally, agent income and Corrupt lines replaced by Infiltrate (two types at stage III), Spill (level 2+) and Grow",
     "292 (r139): the pull's tag line is gone (one threat deck a tier, the next card dealt)",
     "293 (Matt, 2026-11-19): Spill and Grow lines cut: an event card is Infiltrate X plus escalate (its other lines stay)",
-    "294 (Matt, 2026-11-19): \"Muster 1: each country, 1 Troop on its lowest-numbered factory (else city).\" became \"Strike: each Troop destroys 1 player Node, research station or factory on or next to it.\" (no event card musters: troops come from the research row, projects and Discord cards, and strike on this icon, shown a round ahead)"
+    "294 (Matt, 2026-11-19): \"Muster 1: each country, 1 Troop on its lowest-numbered factory (else city).\" became \"Strike: each Troop destroys 1 player Node, research station or factory on or next to it.\" (no event card musters: troops come from the research row, projects and Discord cards, and strike on this icon, shown a round ahead)",
+    "297 (Matt, 2026-11-19): \"Each country: 1 Fallout lands next to its lowest-numbered corrupted city.\" cut (two other lines became one: it keeps the Blackout a blockade is)"
    ],
    "reuses": null
   }

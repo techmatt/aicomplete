@@ -1,0 +1,16 @@
+# 297 (overhaul 5, the content sweep): the player cards the sweep changes.
+# Rerun: python scripts/cards/apply_overlay.py experiments/results/297_overhaul_5_content_sweep/cards.overlay, then python scripts/regen.py.
+# Give / get at the anchors: experiments/results/297_overhaul_5_content_sweep/README.md, *Player cards*.
+
+# Breach and Clear (tier 1 event, 2 cr, 1 insight): kept 0.21 a game and played 0.03 at r142. It removed 1 troop for
+# 7.33 (2 cr + keep and play insight) where the standard action asks 7 credits: under 1.0 at the anchors, and with
+# no troop in reach it was no card at all (useful alone: ruling 19). An unplayed card gets stronger, not cheaper
+# (Matt): "Target: Agents or Troops. Remove 3 Agents or 2 Troops on it." 2 troops stand on one hex where this item's
+# content stacks them (Martial Law, Standing Army III). A first cut (2 troops, troops only) was still played 0.03.
+cards.breach_and_clear.effects=[{"op": "target", "on": "adversary"}, {"op": "damage", "ambassadors": 3, "troops": 2}]
+
+# Peacekeeping Mission (tier 2 event, 13 cr, 1 antimatter): its troop half came after its Rescue, and a guarded city
+# is no target for a Rescue, so its troops could never open its own target (294's note). Reordered: remove up to 3
+# troops on or next to the city, then Rescue it. The guard stands on or next to the city, so "in its country" narrows
+# to exactly the troops that matter.
+cards.peacekeeping_mission.effects=[{"op": "target", "on": "corrupted_city"}, {"op": "remove_troops", "count": 3, "at": "near"}, {"op": "liberate"}, {"op": "claim_site", "near": true}]

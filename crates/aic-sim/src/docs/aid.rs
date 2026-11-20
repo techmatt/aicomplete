@@ -152,7 +152,7 @@ fn corrupt_numbers(r: &Rules) -> String {
 const TROOPS: &str = "\
 Troops don't move or act on their own. They come late: from the research row, some projects and Discord cards.
 
-1. **Garrison.** A new troop goes on its country's lowest-numbered corrupted factory; with none, its \
+1. **Garrison.** A troop stands where its line puts it; one that garrisons goes on its country's lowest-numbered corrupted factory; with none, its \
 lowest-numbered corrupted city; with none, its lowest-numbered city (never the Protector's node hex: it stays in the \
 supply). It stays there.
 2. **Guard.** A corrupted site with a troop on or next to it can't be liberated. Remove the troop or push it away \

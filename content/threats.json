@@ -1,7 +1,7 @@
 [
  {
   "id": "orbital_strike",
-  "name": "Orbital Strike",
+  "name": "Weapons Test",
   "tier": 1,
   "tags": [
    "security"
@@ -87,7 +87,7 @@
   "locations": [
    "factory"
   ],
-  "text": "2 cubes go onto the adversary's research track. This country's player pays 2 chips or discards 1 card.",
+  "text": "This country's player pays 2 chips or discards 1 card. The adversary gains 4 compute.",
   "counters": [
    [
     {
@@ -104,19 +104,19 @@
   ],
   "effects": [
    {
-    "op": "adversary_research",
-    "amount": 2
-   },
-   {
     "op": "requisition",
     "resource": "chips",
     "amount": 2,
     "cards": 1
+   },
+   {
+    "op": "compute",
+    "amount": 4
    }
   ],
   "harms": [
    "credits or income lost",
-   "adversary research advanced"
+   "projects advanced (compute)"
   ]
  },
  {
@@ -171,7 +171,7 @@
   "locations": [
    "coastal_city"
   ],
-  "text": "2 cubes go onto the adversary's research track. 1 Fallout lands next to here.",
+  "text": "1 Agent is created here. 1 Fallout lands next to here.",
   "counters": [
    [
     {
@@ -188,8 +188,9 @@
   ],
   "effects": [
    {
-    "op": "adversary_research",
-    "amount": 2
+    "op": "create",
+    "count": 1,
+    "at": "location"
    },
    {
     "op": "fallout",
@@ -197,8 +198,8 @@
    }
   ],
   "harms": [
-   "Fallout placed",
-   "adversary research advanced"
+   "adversary pieces placed",
+   "Fallout placed"
   ]
  },
  {
@@ -1030,7 +1031,7 @@
  },
  {
   "id": "total_war",
-  "name": "Total War",
+  "name": "Weapons Program",
   "tier": 2,
   "tags": [
    "security"
@@ -1113,7 +1114,7 @@
   "locations": [
    "city"
   ],
-  "text": "This country's player pays 3 Ambassadors or discards 3 cards. 3 cubes go onto the adversary's research track.",
+  "text": "This country's player pays 3 Ambassadors or discards 3 cards. 2 Agents are created here.",
   "counters": [
    [
     {
@@ -1136,13 +1137,15 @@
     "cards": 3
    },
    {
-    "op": "adversary_research",
-    "amount": 3
+    "op": "create",
+    "count": 2,
+    "at": "location"
    }
   ],
   "harms": [
    "ambassadors lost",
-   "adversary research advanced"
+   "adversary pieces placed",
+   "facilities destroyed or corrupted"
   ]
  },
  {
@@ -1156,7 +1159,7 @@
   "locations": [
    "factory"
   ],
-  "text": "3 cubes go onto the adversary's research track. This country's player pays 2 chips or discards 2 cards.",
+  "text": "2 Agents are created here. This country's player pays 2 chips or discards 2 cards.",
   "counters": [
    [
     {
@@ -1173,8 +1176,9 @@
   ],
   "effects": [
    {
-    "op": "adversary_research",
-    "amount": 3
+    "op": "create",
+    "count": 2,
+    "at": "location"
    },
    {
     "op": "requisition",
@@ -1184,8 +1188,9 @@
    }
   ],
   "harms": [
+   "adversary pieces placed",
    "credits or income lost",
-   "adversary research advanced"
+   "facilities destroyed or corrupted"
   ]
  },
  {
@@ -2054,7 +2059,7 @@
  },
  {
   "id": "garrison_state",
-  "name": "Garrison State",
+  "name": "Closed City",
   "tier": 2,
   "tags": [
    "universal"
@@ -2224,7 +2229,7 @@
  },
  {
   "id": "iron_curtain",
-  "name": "Iron Curtain",
+  "name": "Brain Drain",
   "tier": 2,
   "tags": [
    "universal"

@@ -818,6 +818,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::EachDestroyNode { .. }
         | Op::DestroyNode { .. }
         | Op::PullUnity { .. }
+        | Op::PullDiscord { .. }
         | Op::AdversaryBuild
         | Op::Create { .. }
         | Op::Flag { .. }

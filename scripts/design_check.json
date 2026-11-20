@@ -23,9 +23,9 @@
     ]
   },
   "repeat_powers": {
-    "note": "a power name, or a power's effects (cost aside), on this many boards or more. 'exempt' (252): power name, or several comma-joined (281: \"Sprawl, Outpost\", one reason for the group) -> why it is on every board by a ruling, listed as information",
+    "note": "a power name, or a power's effects (cost aside), on this many boards or more. 'exempt' (252): power name, or several comma-joined (281: \"Buy In, Levy\", one reason for the group) -> why it is on every board by a ruling, listed as information",
     "boards_min": 2,
-    "exempt": {"Sprawl, Outpost": "r142 (Matt, 2026-11-19; 276): the Builder's and the Protector's costly node power for energy (2 energy: place 1 Node; gain 2 credits): the same effect by design", "Buy In, Levy": "277 (Matt, 2026-11-18): the cheap node power, free (a node and a credit): the same effect by design"}
+    "exempt": {"Buy In, Levy": "277 (Matt, 2026-11-18): the cheap node power, free (a node and a credit): the same effect by design"}
   },
   "standard_anchor_max": 1.0,
   "standard_actions": {
@@ -301,7 +301,7 @@
       {"key": "power:builder:Sprawl", "role": "node-power", "band": [0.05, 0.9], "why": "r142 (Matt, 2026-11-19): one cheap node power and two costly ones with a benefit, each once a round, all usable the same round: costly (2 energy: a node and 2 credits)"},
       {"key": "power:builder:Annex", "role": "node-power", "band": [0.05, 0.9], "why": "r142 (Matt, 2026-11-19): one cheap node power and two costly ones with a benefit, each once a round, all usable the same round: costly, reach and a rider (1 chip: a node within 2 and 3 credits)"},
       {"key": "power:protector:Accord", "role": "node-power", "band": [0.05, 0.9], "why": "r142 (Matt, 2026-11-19): one cheap node power and two costly ones with a benefit, each once a round, all usable the same round: costly, a rider (2 energy: a node and an ambassador)"},
-      {"key": "power:protector:Outpost", "role": "node-power", "band": [0.05, 0.9], "why": "r142 (Matt, 2026-11-19): one cheap node power and two costly ones with a benefit, each once a round, all usable the same round: costly (2 energy: a node and 2 credits)"},
+      {"key": "power:protector:Outpost", "role": "node-power", "band": [0.05, 0.9], "why": "r142 (Matt, 2026-11-19): one cheap node power and two costly ones with a benefit, each once a round, all usable the same round: costly (r143, 297: 2 energy: a node within 2 of yours and 2 credits; it was Sprawl's line, used 0.05 beside Accord)"},
       {"key": "power:protector:Levy", "role": "node-power", "band": [0.3, 0.95], "why": "295: the free node power is no longer one pick of three, so it is used most rounds a node can go down (0.47-0.69 a seat-round on the first screen); r142 (Matt, 2026-11-19): one cheap node power and two costly ones with a benefit, each once a round, all usable the same round: the cheap one, free (a node and a credit)"},
       {"key": "power:researcher:Field Survey", "role": "node-power", "band": [0.3, 0.95], "why": "295: the free node power is no longer one pick of three, so it is used most rounds a node can go down (0.47-0.69 a seat-round on the first screen); r142 (Matt, 2026-11-19): one cheap node power and two costly ones with a benefit, each once a round, all usable the same round: the cheap one, free (a node and a card)"},
       {"key": "power:researcher:Peer Review", "role": "node-power", "band": [0.05, 0.9], "why": "r142 (Matt, 2026-11-19): one cheap node power and two costly ones with a benefit, each once a round, all usable the same round: costly (2 insight: a node and a research cube)"},

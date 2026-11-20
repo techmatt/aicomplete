@@ -291,6 +291,7 @@ fn troops(
     let mut spots: Vec<usize> = match at {
         // No new landing place: today's (a factory near it, else a city).
         None => return team::troops(g, cx, ctx, land.count, land.each_country, land.destroy),
+        Some(at @ (TroopAt::CorruptedFactory | TroopAt::BesiegedCity)) => return team::troops_at(g, cx, ctx, land.count, at),
         // 184 (r78): "the base here" with no base token (one country) lands nothing; it fell back to the
         // threat's first token (Garrison State and Manhunt put their troops on a city).
         Some(TroopAt::Location) => match (location, ctx.threat.as_ref()) {

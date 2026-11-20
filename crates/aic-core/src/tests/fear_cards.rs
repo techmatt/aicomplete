@@ -118,8 +118,14 @@ fn the_decks_name_board_conditions() {
                             | Op::Escalate { .. }
                             | Op::ThreatAtNode { .. }
                             | Op::AdversaryBuild
-                            // r141 (Firestorm III): a garrison in each country lands by the board (`garrison_spot`).
-                            | Op::Troops { each_country: true, at: None, .. }
+                            // r141, 297 (Standing Army): a garrison in each country lands by the board (`garrison_spot`),
+                            // on its lowest-numbered corrupted factory and nowhere else, or on its lowest-numbered
+                            // corrupted city with a player's node or ambassador on or next to it.
+                            | Op::Troops {
+                                each_country: true,
+                                at: None | Some(crate::op::TroopAt::CorruptedFactory | crate::op::TroopAt::BesiegedCity),
+                                ..
+                            }
                     ) || matches!(e, Op::Fallout { at, .. } if *at != crate::op::FalloutAt::Location),
                     "{}: {e:?} names no board condition",
                     c.id
@@ -127,6 +133,35 @@ fn the_decks_name_board_conditions() {
             }
         }
     }
+}
+
+/// 297: `corrupted_station` (Captured Labs) holds on a corrupted research station, and not on a corrupted city, a
+/// neutral station or a player's.
+#[test]
+fn a_corrupted_station_is_a_station_with_the_adversarys_cube() {
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let m = &rules.map;
+    assert_eq!(serde_json::from_str::<Where>(r#""corrupted_station""#).unwrap(), Where::CorruptedStation);
+    let city = cities(m)[0];
+    let open: Vec<usize> = hexes_where(m, |h| kind(m, h) == HexKind::Open).into_iter().take(3).collect();
+    let (bad, neutral, owned) = (open[0], open[1], open[2]);
+    put(&mut g, city, ADV_CUBE, 1);
+    for h in [bad, neutral, owned] {
+        put(&mut g, h, STATION, 1);
+    }
+    put(&mut g, bad, ADV_CUBE, 1);
+    put(&mut g, owned, cube(0), 1);
+    assert!(plan::holds(&w, &g, city, Where::CorruptedCity) && !plan::holds(&w, &g, city, Where::CorruptedStation));
+    assert_eq!(plan::sites_where(&w, &g, Where::CorruptedStation), [bad]);
+    // A `per_site` line counts it: once for the one corrupted station, twice with a second.
+    let before = g.resource(0, Resource::Credits);
+    let per = Op::PerSite { where_: Where::CorruptedStation, max: 3, then: vec![Op::Gain { resource: Resource::Credits, amount: 1 }] };
+    run_ops(&rules, &mut g, std::slice::from_ref(&per));
+    assert_eq!(g.resource(0, Resource::Credits), before + 1);
+    put(&mut g, neutral, ADV_CUBE, 1);
+    run_ops(&rules, &mut g, &[per]);
+    assert_eq!(g.resource(0, Resource::Credits), before + 3);
 }
 
 /// 169: a pending prohibition shows as the printed marker would: a labeled global naming the step, the round of the

@@ -296,6 +296,17 @@ pub fn pull_unity(g: &mut GameState, cx: &mut Cx, n: i64) {
     }
 }
 
+/// 297 (Matt, 2026-11-19): up to `n` Sway comes off the Discord track: a Unity card's printed line, the only
+/// thing that takes Discord off (Unity swayed never cancels it).
+pub fn pull_discord(g: &mut GameState, cx: &mut Cx, n: i64) {
+    let k = n.min(g.var(track(Side::Discord))).max(0);
+    if k > 0 {
+        cx.add_key(g, track(Side::Discord), -k);
+        cx.tally(g, "alignment.discord_pulled", k);
+        cx.note(None, || format!("{k} Discord come{} off the Discord track", if k == 1 { "s" } else { "" }));
+    }
+}
+
 
 /// Draws the next card of `side`. The Discord deck never reshuffles (027):
 /// it is the game's clock. 156: an empty Unity deck shuffles its resolved
@@ -364,12 +375,12 @@ fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
 }
 
 /// 167: the board and the team, measured around a Unity or Discord card (deltas tallied as `fx.<id>.<measure>`).
-const FX_MEASURES: [&str; 16] = [
+const FX_MEASURES: [&str; 18] = [
     "agents", "troops", "botnets", "land", "corrupted", "threats", "credits", "energy", "insight", "ambassadors",
-    "free_keeps", "income_credits", "income_insight", "unity", "unity_pulled", "discord",
+    "free_keeps", "income_credits", "income_insight", "unity", "unity_pulled", "discord", "discord_pulled", "research",
 ];
 
-fn fx_snapshot(g: &GameState) -> [i64; 16] {
+fn fx_snapshot(g: &GameState) -> [i64; 18] {
     let board = |kind: &str| (0..g.hexes.len()).map(|h| g.tokens(h, kind)).sum::<i64>();
     let seats = |r: Resource| (0..g.seats.len()).map(|s| g.resource(s, r)).sum::<i64>();
     let counter = |k: &str| g.stats.counters.get(k).copied().unwrap_or(0);
@@ -390,6 +401,9 @@ fn fx_snapshot(g: &GameState) -> [i64; 16] {
         counter("alignment.sway_unity"),
         counter("alignment.unity_pulled"),
         counter("alignment.sway_discord"),
+        // 297: what the four Unity removers take off, and what Captured Labs feeds.
+        counter("alignment.discord_pulled"),
+        counter("adversary.research_made"),
     ]
 }
 

@@ -22,7 +22,7 @@ what it prints; the `cards/*_read.py` readers take seconds.
   `docs/rulebook-friction.md`'s title. First line: the report's `warnings:`. Thresholds
   and bands: `design_check.json`; job parity's cards for each standard job, hand-read (effects as expressions over
   the anchors): `design_check_jobs.json` (`jobs`: per standard row, `{unit, cards: [{name, units, other, use, note}]}`),
-  edited by hand (`experiments/results/249_real_oracle_judge/port_jobs.py` would overwrite it). A `repeat_powers.exempt` key may join names (`"Sprawl, Outpost"`).
+  edited by hand (`experiments/results/249_real_oracle_judge/port_jobs.py` would overwrite it). A `repeat_powers.exempt` key may join names (`"Buy In, Levy"`).
   Never exits 1 on a warning.
 - `cards/cards_doc.py`: regenerates `docs/cards.md`. `cards/deck_text.py DECK...`: a deck as plain text for review
   (`--list` the decks; README, *Card text for review*); `--ids TEXT`: content ids by display name.

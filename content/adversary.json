@@ -334,18 +334,10 @@
      "site": "city"
     }
    ],
-   "twists": [
-    {
-     "op": "sway",
-     "side": "discord",
-     "amount": 1,
-     "narrative": "fear"
-    }
-   ],
-   "text": "Threat, each country: a tier-1 threat. Infiltrate: cities. Sway 1 toward Discord.",
+   "twists": [],
+   "text": "Threat, each country: a tier-1 threat. Infiltrate: cities.",
    "harms": [
     "adversary pieces placed",
-    "Discord sway",
     "facilities destroyed or corrupted"
    ]
   },
@@ -366,14 +358,10 @@
     {
      "op": "increase_income",
      "compute": 1
-    },
-    {
-     "op": "spread_botnets",
-     "count": 1
     }
    ],
    "twists": [],
-   "text": "Threat, each country: a tier-1 threat. Infiltrate: botnet hexes. Income: +1 compute a country a round. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station).",
+   "text": "Threat, each country: a tier-1 threat. Infiltrate: botnet hexes. Income: +1 compute a country a round.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
@@ -474,14 +462,10 @@
     },
     {
      "op": "strike"
-    },
-    {
-     "op": "spread_botnets",
-     "count": 1
     }
    ],
    "twists": [],
-   "text": "Threat, each country: a tier-2 threat. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station).",
+   "text": "Threat, each country: a tier-2 threat. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted",
@@ -501,16 +485,13 @@
     {
      "op": "infiltrate",
      "site": "factory"
-    }
-   ],
-   "twists": [
+    },
     {
-     "op": "each_destroy_node",
-     "count": 1,
-     "factories": true
+     "op": "strike"
     }
    ],
-   "text": "Threat, each country: a tier-2 threat. Infiltrate: factories. Each player with a Node on or next to a factory destroys 1 of those Nodes.",
+   "twists": [],
+   "text": "Threat, each country: a tier-2 threat. Infiltrate: factories. Strike: each Troop destroys 1 player Node, research station or factory on or next to it.",
    "harms": [
     "adversary pieces placed",
     "node destroyed",
@@ -598,16 +579,10 @@
      "op": "strike"
     }
    ],
-   "twists": [
-    {
-     "op": "pull_unity",
-     "amount": 2
-    }
-   ],
-   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: factories. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Remove 2 Unity from the Unity track.",
+   "twists": [],
+   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: factories. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it.",
    "harms": [
     "adversary pieces placed",
-    "Unity pulled back",
     "facilities destroyed or corrupted",
     "node destroyed"
    ]
@@ -639,20 +614,13 @@
    ],
    "twists": [
     {
-     "op": "sway",
-     "side": "discord",
-     "amount": 1,
-     "narrative": "fear"
-    },
-    {
      "op": "fallout",
      "at": "corrupted_city"
     }
    ],
-   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: cities. Infiltrate: research stations. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Sway 1 toward Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
+   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: cities. Infiltrate: research stations. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
    "harms": [
     "adversary pieces placed",
-    "Discord sway",
     "facilities destroyed or corrupted",
     "Fallout placed",
     "node destroyed"
@@ -725,18 +693,12 @@
      "everywhere": true
     }
    ],
-   "twists": [
-    {
-     "op": "fallout",
-     "at": "corrupted_city"
-    }
-   ],
-   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: coastal cities. Infiltrate: factories. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Until the end of next round, cities make no energy and no Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
+   "twists": [],
+   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: coastal cities. Infiltrate: factories. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Until the end of next round, cities make no energy and no Discord.",
    "harms": [
     "adversary pieces placed",
     "production blacked out",
     "facilities destroyed or corrupted",
-    "Fallout placed",
     "node destroyed"
    ]
   }

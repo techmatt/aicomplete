@@ -92,7 +92,6 @@ def rows(games):
         out.append((f'{c} played', m(lambda g, c=c: cnt(g, f'cards.played.{c}'))))
     out += [
         ('  twist: ambassadors gained', m(lambda g: cnt(g, 'board.liberated_ambassadors'))),
-        ('  twist: troops cleared', m(lambda g: cnt(g, 'board.liberated_troops'))),
         ('  twist: botnets removed', m(lambda g: cnt(g, 'board.liberated_botnet'))),
         # 118: this read `cards.once_discarded`, 0 since 106 took `once` off its liberate half.
         # No counter splits that half from its token half, so this is the Action's uses, both halves.

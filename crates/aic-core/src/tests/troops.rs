@@ -126,10 +126,11 @@ fn wall_keeps_a_garrison_off_the_protectors_node_hex() {
     assert_eq!(g.tokens(spot, TROOP), 1);
 }
 
-/// The research row's Garrison icon does what it prints: its troops garrison in each country. Botnet Conscripts'
-/// troops garrison too, not on the botnet's hex.
+/// The research row's Garrison icon does what it prints: its troops garrison in each country. 297: Botnet
+/// Conscripts' troops stand on the botnet's own hex, not on a garrison (r141 garrisoned them); Wall keeps them off
+/// the Protector's node hex.
 #[test]
-fn the_garrison_icon_and_a_botnets_troops_garrison_in_each_country() {
+fn the_garrison_icon_garrisons_and_a_botnets_troops_stand_on_its_hex() {
     let (rules, g0) = lab(&[]);
     let m = &rules.map;
     let w = rules.world();
@@ -154,8 +155,108 @@ fn the_garrison_icon_and_a_botnets_troops_garrison_in_each_country() {
     put(&mut g, c0, ADV_CUBE, 1);
     let net = m.countries[0].hexes.iter().copied().find(|&h| land(m, h) && !cities(m).contains(&h)).unwrap();
     put(&mut g, net, BOTNET, 1);
-    team_ops(&rules, &mut g, &[Op::BotnetTroops { count: 1, troops: 2 }], |_| 0);
-    assert_eq!((g.tokens(net, BOTNET), g.tokens(net, TROOP), g.tokens(c0, TROOP)), (0, 0, 2));
+    let conscripts = [Op::BotnetTroops { count: 1, troops: 2, least: 1 }];
+    let mut walled = g.clone();
+    team_ops(&rules, &mut g, &conscripts, |_| 0);
+    assert_eq!((g.tokens(net, BOTNET), g.tokens(net, TROOP), g.tokens(c0, TROOP)), (0, 2, 0));
+    assert_eq!((total(&g, TROOP), counter(&g, "adversary.botnet_troops")), (2, 2));
+    // Wall: the botnet under the Protector's node still goes, and its troops stay in the supply.
+    put(&mut walled, net, node(1), 1);
+    assert!(board::walled(&w, &walled, net));
+    team_ops(&rules, &mut walled, &conscripts, |_| 0);
+    assert_eq!((walled.tokens(net, BOTNET), total(&walled, TROOP)), (0, 0));
+    assert_eq!((counter(&walled, "adversary.troops_walled"), counter(&walled, "adversary.botnet_troops")), (2, 0));
+}
+
+/// 297: Botnet Conscripts acts only in a country holding `least` botnets (2 as printed): a country holding one keeps
+/// it and takes no troop; a country holding two loses its lowest-numbered one, which becomes a troop on that hex.
+#[test]
+fn botnet_troops_need_the_countrys_least_botnets() {
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    let conscripts = &crate::content().project("botnet_conscripts").effects;
+    assert!(matches!(conscripts.as_slice(), [Op::BotnetTroops { count: 1, troops: 1, least: 2 }]), "{conscripts:?}");
+    let numbered = |c: u8| {
+        let mut v = hexes_where(m, |h| m.hexes[h].country == c && kind(m, h) == HexKind::Open);
+        v.sort_by_key(|&h| m.hexes[h].number);
+        v
+    };
+    let (one, two) = (numbered(0), numbered(1));
+    // Country 0 holds one botnet; country 1 two, the higher-numbered put down first.
+    put(&mut g, one[0], BOTNET, 1);
+    put(&mut g, two[3], BOTNET, 1);
+    put(&mut g, two[1], BOTNET, 1);
+    team_ops(&rules, &mut g, conscripts, |_| 0);
+    assert_eq!((g.tokens(one[0], BOTNET), g.tokens(one[0], TROOP)), (1, 0), "one botnet: kept, no troop");
+    assert_eq!((g.tokens(two[1], BOTNET), g.tokens(two[1], TROOP)), (0, 1), "the lowest-numbered of two becomes a troop there");
+    assert_eq!((g.tokens(two[3], BOTNET), total(&g, TROOP), total(&g, BOTNET)), (1, 1, 2));
+    assert_eq!((counter(&g, "adversary.botnet_troops"), counter(&g, "adversary.botnet_troops_short")), (1, 1));
+    // Country 1 is down to one botnet: the line does nothing more anywhere.
+    team_ops(&rules, &mut g, conscripts, |_| 0);
+    assert_eq!((total(&g, TROOP), total(&g, BOTNET)), (1, 2));
+}
+
+/// 297: a `troops` line `at: corrupted_factory` (Standing Army I) puts its troops on each country's
+/// lowest-numbered corrupted factory; a country with none takes no troop (no fallback to a city).
+#[test]
+fn troops_at_a_corrupted_factory_skip_a_country_with_none() {
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    let op: Op = serde_json::from_str(r#"{"op": "troops", "count": 1, "each_country": true, "at": "corrupted_factory"}"#).unwrap();
+    assert!(matches!(op, Op::Troops { at: Some(crate::op::TroopAt::CorruptedFactory), .. }));
+    let discord = |g: &mut GameState, ops: &[Op]| {
+        with_answers(&rules, g, |_| 0, |g, cx| effects::run(g, cx, ops, &mut effects::Ctx::team().named("discord")));
+    };
+    let mut zones: Vec<usize> = m.countries[0].hexes.iter().copied().filter(|&h| m.hexes[h].industrial).collect();
+    zones.sort_by_key(|&h| m.hexes[h].number);
+    assert!(zones.len() >= 2, "two industrial zones in country 0");
+    // Country 0: a neutral factory on its lower-numbered zone, a corrupted one on the next; a corrupted city in each
+    // country (the plain garrison's fallback) is no landing place here.
+    put(&mut g, zones[0], FACTORY, 1);
+    put(&mut g, zones[1], FACTORY, 1);
+    put(&mut g, zones[1], ADV_CUBE, 1);
+    for c in 0..2 {
+        put(&mut g, cities_of(m, c)[0], ADV_CUBE, 1);
+    }
+    discord(&mut g, std::slice::from_ref(&op));
+    assert_eq!((g.tokens(zones[1], TROOP), total(&g, TROOP)), (1, 1), "country 1 has no corrupted factory: no troop");
+    assert_eq!((counter(&g, "adversary.discord_troops"), counter(&g, "adversary.troops_no_factory")), (1, 1));
+    // The lower-numbered factory corrupted too: it takes the troops, `count` of them.
+    put(&mut g, zones[0], ADV_CUBE, 1);
+    discord(&mut g, &[Op::Troops { count: 2, each_country: true, destroy: false, at: Some(crate::op::TroopAt::CorruptedFactory), stand: false, location: None, if_: None }]);
+    assert_eq!((g.tokens(zones[0], TROOP), g.tokens(zones[1], TROOP), total(&g, TROOP)), (2, 1, 3));
+}
+
+/// 297: a `troops` line `at: besieged_city` (Standing Army II and III, Martial Law) puts its troops on each country's
+/// lowest-numbered corrupted city with a player's node or ambassador on or next to it; a country with none
+/// garrisons as any troop does.
+#[test]
+fn troops_at_a_besieged_city_land_where_the_players_stand() {
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    let w = rules.world();
+    let op: Op = serde_json::from_str(r#"{"op": "troops", "count": 2, "each_country": true, "at": "besieged_city"}"#).unwrap();
+    assert!(matches!(op, Op::Troops { at: Some(crate::op::TroopAt::BesiegedCity), .. }));
+    let discord = |g: &mut GameState| {
+        with_answers(&rules, g, |_| 0, |g, cx| effects::run(g, cx, std::slice::from_ref(&op), &mut effects::Ctx::team().named("discord")));
+    };
+    // Country 0: its two lowest-numbered cities corrupted, a node next to the higher-numbered only. Country 1: a
+    // corrupted city no player stands by.
+    let (low, high) = (cities_of(m, 0)[0], cities_of(m, 0)[1]);
+    let lone = cities_of(m, 1)[1];
+    for h in [low, high, lone] {
+        put(&mut g, h, ADV_CUBE, 1);
+    }
+    let by = m.hexes[high].neighbors.iter().copied().find(|&h| land(m, h) && m.distance(h, low) > 1).expect("land by the one city only");
+    put(&mut g, by, node(0), 1);
+    assert_eq!(board::garrison_spot(&w, &g, &m.countries[0].hexes), Some(low), "the plain garrison is the other city");
+    discord(&mut g);
+    assert_eq!((g.tokens(high, TROOP), g.tokens(low, TROOP), g.tokens(lone, TROOP)), (2, 0, 2), "country 1 garrisons");
+    assert_eq!((total(&g, TROOP), counter(&g, "adversary.troops_besiege")), (4, 1));
+    // An ambassador on the lower-numbered city: it is besieged too, and comes first.
+    put(&mut g, low, ambassador(1), 1);
+    discord(&mut g);
+    assert_eq!((g.tokens(low, TROOP), g.tokens(high, TROOP)), (2, 2));
 }
 
 // ---------- guarding ----------
@@ -410,9 +511,10 @@ fn a_strike_taking_a_seats_last_node_ends_the_game() {
     let (rules, mut g) = lab_with(&["adversary.build"], &["alignment.node_loss=1"]);
     let m = &rules.map;
     let w = rules.world();
-    let card = w.content.adversary.iter().find(|c| c.id == "mil_s2_fifth_column").unwrap();
-    let at = card.standing.iter().position(|e| e == &Op::Strike).expect("Fifth Column prints a Strike");
-    assert!(card.standing[at + 1..].iter().any(|e| matches!(e, Op::SpreadBotnets { .. })), "and a botnet line after it");
+    // 297: Occupation, the card that still prints a line after its Strike (Fifth Column's botnet line went).
+    let card = w.content.adversary.iter().find(|c| c.id == "mil_s3_occupation").unwrap();
+    let at = card.standing.iter().position(|e| e == &Op::Strike).expect("Occupation prints a Strike");
+    assert!(card.standing[at + 1..].contains(&Op::Redeploy), "and a Redeploy after it");
     // Seat 0's only node in country 0 with a troop next to it; in country 1 (struck later) seat 1's factory with
     // a troop on it.
     let p = m.numbered(0, piece(0).node);
@@ -427,17 +529,23 @@ fn a_strike_taking_a_seats_last_node_ends_the_game() {
     put(&mut g, f, cube(1), 1);
     put(&mut g, t1, TROOP, 1);
     put(&mut g, f, TROOP, 1);
-    // A research station for the card's botnet line to land on, were it to run.
-    put(&mut g, m.numbered(1, piece(1).neutral_station), STATION, 1);
+    // A corrupted city neither troop guards, for the card's Redeploy to move them onto, were it to run.
+    let far = cities(m).into_iter().find(|&h| m.distance(h, t1) > 1 && m.distance(h, f) > 1).expect("a city away from both troops");
+    put(&mut g, far, ADV_CUBE, 1);
+    {
+        let mut moved = g.clone();
+        redeploy(&rules, &mut moved);
+        assert_eq!((moved.tokens(t1, TROOP), moved.tokens(f, TROOP)), (0, 0), "a Redeploy would move both");
+    }
     assert!(order(m, t1) < order(m, f));
     // The build takes the face-up card as this round's.
-    set_pile(&mut g, NEXT, &["mil_s2_fifth_column"]);
+    set_pile(&mut g, NEXT, &["mil_s3_occupation"]);
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
     assert_eq!(g.tokens(p, node(0)), 0, "the last node fell");
     assert_eq!((g.tokens(f, FACTORY), counter(&g, "board.troop_strikes")), (1, 1), "the later troop never struck");
-    // Nor do the card's later lines run: Fifth Column's botnets, after its Strike, never spread.
-    assert_eq!(total(&g, BOTNET), 0);
+    // Nor do the card's later lines run: Occupation's Redeploy, after its Strike, moves no troop.
+    assert_eq!((g.tokens(t1, TROOP), g.tokens(f, TROOP), g.tokens(far, TROOP)), (1, 1, 0));
     let o = g.outcome.as_ref().expect("the game ended");
     assert!(!o.won && o.reason == "node", "{o:?}");
 }

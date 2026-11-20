@@ -8,7 +8,10 @@ tracks and two decks of one-shot cards.
 **Two independent tracks (candidate).** Discord Sway fills the **Discord track**, Unity Sway the **Unity track**; both
 start empty, with no shared pool, and nothing on one side empties the other. **Unity never cancels Discord** (r139, Matt 2026-11-19): Unity swayed always
 goes onto the Unity track, with no choice to make, and never stops a Discord tip. Nothing moves Discord off the
-Discord track except a card that prints it.
+Discord track except a card that prints it: **four Unity cards do** (r143; Matt, 2026-11-19: about 4-5 of the 23,
+each by a board condition): Volunteer Corps (1 for each site a player holds), Safe Corridors (1 for each hex
+holding an ambassador), Reconciliation Panel (1 for each free city with no agent on it) and Town Hall Accord (2 for each city
+holding an ambassador), each "at most N", N by strength; they take off what is there, never below 0.
 
 **Tipping.** The Unity track holding `tip_per_player` × players Sway, or the Discord track holding
 `discord_tip_per_player` × players (3 and 4), **tips**: one tip's worth comes off and the rest stays toward the next
@@ -62,7 +65,7 @@ rest of the game".
 
 <!-- generated: alignment -->
 - **unity** (23): Grassroots Funding, Open Market, Think Tank, Ceasefire, Civil Defense, Volunteer Corps, Global Coalition, New Deal, Decommission, Peacekeepers (draft), Town Hall Accord (draft), Popular Mandate (draft), Reclamation (draft), Mutual Aid (draft), Disarmament Talks (draft), Network Cleanup (draft), Citizens' Assembly (draft), Rebuilding Fund (draft), Safe Corridors (draft), Reconciliation Panel (draft), Neighborhood Watch (draft), Rule of Law (draft), Demilitarized Zone (draft).
-- **discord** (7): Incursion, Blight, Propaganda, Scorched Earth, Offensive, Two Fronts, Firestorm.
+- **discord** (7): Incursion, Captured Labs, Propaganda, Scorched Earth, Offensive, Standing Army, Firestorm.
 - Each card's three strengths: [cards.md](../cards.md#unity-and-discord-cards).
 <!-- /generated -->
 
@@ -75,24 +78,22 @@ rest of the game".
   deck reshuffles), one per country in turn from country 0, countered or executed like any other; one dealt after the
   counter phase (by a tip after the action phase, or Offensive) waits a round ([threats.md](threats.md), *Executing*).
   False Flag's come before the counter phase: countered or executed that round.
-- Blight and Firestorm create on the lowest-numbered city holding agents (a creation line); a country with none gains
-  nothing. Blight also opens a neutral factory in each country; Firestorm III also garrisons 1 troop a country
-  ([troops.md](troops.md)).
+- Firestorm creates on the lowest-numbered city holding agents (a creation line); a country with none gains
+  nothing. Captured Labs puts 2 cubes on the research track for each corrupted research station (at most 2, 3, 4);
+  Standing Army is the deck's troop card ([troops.md](troops.md)).
 - **Discord cards destroy no nodes and change no rule for the whole map:** their higher strengths add board pressure
   or take credits, scaled by the corrupted sites (*How the game ends* below); nodes fall only where the board is
   overrun ([troops.md](troops.md)). "A tier-2 threat in each country piece" deals the tier-2 deck's next cards.
-- Offensive acts at once: 2 agents on each country's lowest-numbered city not yet the adversary's (strength III
-  first lands this round's Infiltrate lines again, the
-  face-up card's before the build step), then deals its tier-2 threats into the country of the node hex
+- Offensive deals its tier-2 threats (1, 2, 3 by strength: its one verb since r143) into the country of the node hex
   with the most agents and troops (ties: country, then lower hex), first token on that hex. A located line acts
   only on its own kind of hex (r137, D132): unless that hex is the kind its first location names, the lines placing
-  on it ("here", "the factory here": Overrun's corruption, Garrison State's agents, any such
+  on it ("here", "the factory here": Overrun's corruption, Closed City's agents, any such
   destruction) do nothing; a line measured from it (a factory nearest here,
   Fallout next to it, a botnet's nearest other piece) still measures from it, and it marks who is near and the anchor. Discord cards corrupt
   nothing outright: their creations and Escalates are arrivals, so a city they bring to its number corrupts.
 - **Unity strength III never frees a city:** it widens its card's condition or count, never to a whole step or the
-  whole map (a prohibition's: on or next to, or within 2 of, an ambassador or a node); the removals by corrupted
-  cities (Civil Defense, Town Hall Accord, Reconciliation Panel) stay by them and only raise the count, and
+  whole map (a prohibition's: on or next to, or within 2 of, an ambassador or a node); Civil Defense's removal by
+  corrupted cities stays by them and only raises the count, and
   Reclamation's cubes are stations' and factories' only, and never a troop-guarded site's. The players still reach a city and Liberate it.
 
 **The only win: no corrupted city** (Matt, 2026-11-19). The players win the moment no city on the board is
@@ -104,7 +105,7 @@ stage `clear_win_stage` (1: from round 1). The engine's end reason is `liberated
 **Why:** the win has no steps to track. An early win at d0 by coordinated players is fine, though not easy (Matt).
 
 <!-- generated: game_end -->
-**How the game ends, for new players.** You win the moment no city on the board is corrupted: liberate every corrupted city. Botnets, agents and troops never count, but a troop guards: a corrupted site with a troop on or next to it can't be liberated until the troop is removed or pushed away. Troops come late (the adversary's research row, some projects and Discord cards), sit where they are placed, and on a Strike icon, shown a round ahead on the face-up event card, each destroys one of your nodes, research stations or factories on or next to it. Pressure comes every round: the face-up adversary event card deals threats by your sites and names where its new agents land (one on every site of a kind), and next round every one of those sites still holding an agent takes one more, so you always know where the next wave lands. Agents pile up only where something lands them: a city they land on holding 5 at level 0 (3 from level 1) corrupts, a hex with your node they land on holding 2 loses the node, and corrupted cities and uncountered threats fill the Discord track. Each time it fills, it tips: a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, you lose. Discord cards never destroy your nodes directly, only through the threats and corruptions they bring: they deal more or stronger threats (Offensive aims one at the node hex most crowded with adversary pieces), create agents, escalate them onto a city, take credits and land Fallout (Scorched Earth), more of each the more sites are corrupted. Unity has its own track, which nothing on the Discord side empties: free a corrupted city and you sway Unity (removing a botnet sways none), and each Unity tip brings a good card. Like fear cards, each acts by what is on the board, never by your reach; some forbid the adversary's next Infiltrate, Strike or corruption where your pieces stand. Every Unity and Discord card prints three strengths, and the tip's own count on its side picks which one resolves (strength I on tips below 3, II from tip 3, III from tip 6): a later strength counts more or reaches wider, and Discord's late cards hit harder. The 23 Unity cards reshuffle when the deck runs out. Unity you sway always goes onto the Unity track: nothing takes Discord off its track but a card that says so. You also lose if any player has no nodes left on the board. Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of their own hex (or two agents on it: Night Raid lands them), a troop's Strike on or next to it, and Border War (nodes by a factory). A lost token leaves the game and nothing marks its hex; its income stays. No stage protects your last node: keep a second one on the board. The adversary deck is a round cap too, 13 rounds at most (fewer at the harder levels), and reaching it loses; and the adversary's research track loses the game at its seventh slot. So there are four different pressures: the Discord deck (politics), your nodes (the board), the research track (its stations) and the cap.
+**How the game ends, for new players.** You win the moment no city on the board is corrupted: liberate every corrupted city. Botnets, agents and troops never count, but a troop guards: a corrupted site with a troop on or next to it can't be liberated until the troop is removed or pushed away. Troops come late (the adversary's research row, some projects and Discord cards), sit where they are placed, and on a Strike icon, shown a round ahead on the face-up event card, each destroys one of your nodes, research stations or factories on or next to it. Pressure comes every round: the face-up adversary event card deals threats by your sites and names where its new agents land (one on every site of a kind), and next round every one of those sites still holding an agent takes one more, so you always know where the next wave lands. Agents pile up only where something lands them: a city they land on holding 5 at level 0 (3 from level 1) corrupts, a hex with your node they land on holding 2 loses the node, and corrupted cities and uncountered threats fill the Discord track. Each time it fills, it tips: a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, you lose. Discord cards never destroy your nodes directly, only through the threats and corruptions they bring: they deal more or stronger threats (Offensive aims one at the node hex most crowded with adversary pieces), create agents, escalate them onto a city, take credits, land Fallout (Scorched Earth), feed the research track by its corrupted stations (Captured Labs) and bring troops onto a fallen factory or a corrupted city you stand by (Standing Army), more of each the more sites are corrupted. Unity has its own track, which nothing on the Discord side empties: free a corrupted city and you sway Unity (removing a botnet sways none), and each Unity tip brings a good card. Like fear cards, each acts by what is on the board, never by your reach; some forbid the adversary's next Infiltrate, Strike or corruption where your pieces stand. Every Unity and Discord card prints three strengths, and the tip's own count on its side picks which one resolves (strength I on tips below 3, II from tip 3, III from tip 6): a later strength counts more or reaches wider, and Discord's late cards hit harder. The 23 Unity cards reshuffle when the deck runs out. Unity you sway always goes onto the Unity track: nothing takes Discord off its track but a Unity card that says so (four do, each by what stands on the board). You also lose if any player has no nodes left on the board. Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of their own hex (or two agents on it: Night Raid adds one where one stands) and a troop's Strike on or next to it. A lost token leaves the game and nothing marks its hex; its income stays. No stage protects your last node: keep a second one on the board. The adversary deck is a round cap too, 13 rounds at most (fewer at the harder levels), and reaching it loses; and the adversary's research track loses the game at its seventh slot. So there are four different pressures: the Discord deck (politics), your nodes (the board), the research track (its stations) and the cap.
 <!-- /generated -->
 
 **Losing** (each **locked**): a Discord tip finds the Discord deck empty; a player has no nodes on the board (everyone

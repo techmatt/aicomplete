@@ -165,7 +165,7 @@ fn feasible_aimed(
             Op::Gain { .. } | Op::GainPerNode { .. } | Op::GainAmbassadors { .. } | Op::Cordon
             | Op::Peek { .. } | Op::Production { .. } | Op::ProductionPerTag { .. } | Op::SpreadAmbassadors
             | Op::Troops { .. } | Op::ThreatAtNode { .. } | Op::EachDestroyNode { .. } | Op::DestroyNode { .. }
-            | Op::PullUnity { .. } | Op::FlipStation { .. } | Op::CorruptCity { .. } | Op::PlayersLose { .. }
+            | Op::PullUnity { .. } | Op::PullDiscord { .. } | Op::FlipStation { .. } | Op::CorruptCity { .. } | Op::PlayersLose { .. }
             | Op::AdversaryBuild | Op::LoseNodeOr { .. } | Op::Flag { .. } | Op::Requisition { .. }
             | Op::LoseAmbassador | Op::DiscardMostExpensive | Op::Compute { .. } | Op::ComputeEvery { .. }
             | Op::LoseTokens { .. } | Op::AdversaryFactory { .. } | Op::ComputePerMissing { .. }

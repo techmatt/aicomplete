@@ -110,12 +110,27 @@ pub fn target(w: &World, g: &GameState, legal: &[Action], t: &super::value::Tabl
             _ => {}
         }
     }
+    // 297: a card that removes troops before its Rescue (Peacekeeping Mission) may target a guarded city, and
+    // rescues it only where its removal leaves no troop on or next to it: there the liberation counts, at the
+    // table's row; where a guard stays, neither it nor its claim does.
+    let rescue = ops.iter().position(|o| matches!(o, Op::Liberate { .. }));
+    let removes: i64 =
+        rescue.map_or(0, |at| ops[..at].iter().map(|o| if let Op::RemoveTroops { count, .. } = o { *count } else { 0 }).sum());
     let mut scores: Vec<(f64, usize)> = Vec::new();
     for (i, a) in legal.iter().enumerate() {
         let Some(h) = option_hex(w, a) else { continue };
         // Every Agent and Troop on the target gone first: what comes after it finds the rest.
         let cleared = ops.iter().any(|o| matches!(o, Op::DestroyAll));
-        scores.push((ops.iter().map(|o| finds(w, g, t, o, h, cleared)).sum(), i));
+        let guards: i64 =
+            common::area_of(w, h, aic_core::content::Area::Near).into_iter().map(|x| g.tokens(x, common::TROOP)).sum();
+        let stays = removes > 0 && guards > removes;
+        let frees = if removes > 0 && !stays { t.op("liberate") } else { 0.0 };
+        let found: f64 = ops
+            .iter()
+            .filter(|o| !(stays && matches!(o, Op::Liberate { .. } | Op::ClaimSite { .. })))
+            .map(|o| finds(w, g, t, o, h, cleared))
+            .sum();
+        scores.push((found + frees, i));
     }
     let best = scores.iter().map(|s| s.0).fold(f64::NEG_INFINITY, f64::max);
     // A tie at the top is the search's.
@@ -207,8 +222,8 @@ fn finds(w: &World, g: &GameState, t: &super::value::Table, o: &Op, h: usize, cl
         }
         Op::Harden { count: k, at } => count(*at, &|x| i64::from(board::hardenable(g, x))).min(*k) as f64 * t.op("harden"),
         Op::ClearCity { max } => count(Area::Near, &|x| agents(g, x)).min(if *max > 0 { *max } else { i64::MAX }) as f64 * t.op("clear_city"),
-        // Liberating: the agents on the site come off with it (261: not those next to it, `liberate_site`), the
-        // twist's troops in its country; with `own` (Hostile Buyout) a station or factory becomes the seat's, at
+        // Liberating: the agents on the site come off with it (261: not those next to it, `liberate_site`), a
+        // twist's troops in its country (none prints one since 297); with `own` (Hostile Buyout) a station or factory becomes the seat's, at
         // `liberate_own`'s row, which hedges for a city the card might take (as read on 48 dev seeds: a seen-site
         // price is an agents item's).
         Op::Liberate { troops: k, own, .. } => {

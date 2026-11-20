@@ -79,6 +79,13 @@ pub enum TroopAt {
     Location,
     /// On the factory this threat just built.
     NewFactory,
+    /// 297 (a Discord card's): in each country, on its lowest-numbered corrupted factory; a country with none
+    /// takes no troop (no fallback to a city: the condition is what makes it late).
+    CorruptedFactory,
+    /// 297 (a project's or a Discord card's): in each country, on its lowest-numbered corrupted city with a
+    /// player's node or ambassador on or next to it (where the players are staging a liberation: the troop guards
+    /// that city and a Strike has a piece to hit); a country with none garrisons as any troop does.
+    BesiegedCity,
 }
 
 /// A condition on a threat's troops (135).
@@ -443,10 +450,14 @@ pub enum Where {
     Corrupted,
     /// A site a player owns: a city, research station or factory with a player's cube.
     Owned,
+    /// 297: a corrupted research station (what feeds the adversary's research track).
+    CorruptedStation,
+    /// 297: a free city (no adversary cube) with no agent on it: one the players have kept clear.
+    ClearCity,
 }
 
 impl Where {
-    pub const ALL: [Where; 12] = [
+    pub const ALL: [Where; 14] = [
         Where::Ambassador,
         Where::ByAmbassador,
         Where::ByPlayer,
@@ -459,6 +470,8 @@ impl Where {
         Where::ByCorruptedCity,
         Where::Corrupted,
         Where::Owned,
+        Where::CorruptedStation,
+        Where::ClearCity,
     ];
     /// The words a card prints: "a hex {words}", "each {noun}".
     pub fn words(self) -> &'static str {
@@ -476,6 +489,8 @@ impl Where {
             Where::Corrupted => "corrupted city, research station or factory",
             // 254: no city is owned; a free one beside a player's node counts (292, `plan::holds`).
             Where::Owned => "research station or factory a player owns, or free city with a player's Node on or next to it",
+            Where::CorruptedStation => "corrupted research station",
+            Where::ClearCity => "free city with no Agent on it",
         }
     }
     pub fn name(self) -> &'static str {
@@ -492,6 +507,8 @@ impl Where {
             Where::ByCorruptedCity => "by_corrupted_city",
             Where::Corrupted => "corrupted",
             Where::Owned => "owned",
+            Where::CorruptedStation => "corrupted_station",
+            Where::ClearCity => "clear_city",
         }
     }
 }
@@ -1082,7 +1099,7 @@ pub enum Op {
     /// in board order), its first location token on that hex; it is countered or executes like any other.
     ThreatAtNode { tier: u8 },
     /// Each player in scope destroys `count` of their nodes in scope (their choice), unless absorbed
-    /// (175: a last node too). 139: a threat's or a twist's only (Border War); the team
+    /// (175: a last node too). 139: a threat's or a twist's only (Border War until 297: no card prints it now); the team
     /// slot destroys no node directly (231: Night Raid lands agents on node hexes, `AgentsOnNodes`). `factories` (292, Border War; 139: a front's base): only nodes on or next to a
     /// factory, so a player with none there loses none.
     EachDestroyNode {
@@ -1098,6 +1115,11 @@ pub enum Op {
     },
     /// Up to `amount` Sway comes off the Unity track (027; 136: no Undecided).
     PullUnity {
+        amount: i64,
+    },
+    /// 297 (Matt, 2026-11-19: a few Unity cards remove Discord, each by a board condition): up to `amount` Sway
+    /// comes off the Discord track. A Unity card's line only; Unity swayed never does this.
+    PullDiscord {
         amount: i64,
     },
     /// A research station in scope is corrupted (a player's holds unless `adversary.station_flip_at` agents
@@ -1327,11 +1349,15 @@ pub enum Op {
         count: i64,
     },
     /// 195 (a project's): in each country, up to `count` of its botnets, the lowest-numbered first, each come off and
-    /// become `troops` adversary troops, which garrison as any troop does (no Unity sway: not a removal).
+    /// become `troops` adversary troops on the botnet's own hex (297; no Unity sway: not a removal).
     BotnetTroops {
         #[serde(default = "one", skip_serializing_if = "is_one")]
         count: i64,
         troops: i64,
+        /// 297: only in a country holding at least this many botnets (1: any with one). The condition that makes
+        /// the troop late: every country starts with one botnet, and they spread from there.
+        #[serde(default = "one", skip_serializing_if = "is_one")]
+        least: i64,
     },
     /// 195 (a project's): in each country, `count` times, a new botnet goes on the lowest-numbered site (city,
     /// research station or factory) of that country next to one of its botnets that holds none; with no botnet in the
@@ -1339,22 +1365,22 @@ pub enum Op {
     SpreadBotnets {
         count: i64,
     },
-    /// 195 (a project's): in each country, its neutral `site` with the most agents on its hex (274: the hex only; ties: the
-    /// lowest-numbered) corrupts; with none neutral, its player-owned `site` with the most agents on its hex
-    /// turns neutral (the owner's cube comes off). A firewall or a no-Corrupt token guards a site (skipped); a guarded neutral one still counts as neutral, so nothing happens there (199, D88).
+    /// 195 (a project's): in each country, its lowest-numbered neutral `site` corrupts (297: no "most agents" pick);
+    /// with none neutral, its lowest-numbered player-owned `site` turns neutral (the owner's cube comes off). A
+    /// firewall or a no-Corrupt token guards a site (skipped); a guarded neutral one still counts as neutral, so nothing happens there (199, D88).
     TakeSite {
         site: Facility,
     },
-    /// 195 (a project's): every adversary factory makes `count` troops on its hex, as its own output (a player
+    /// 195 (a project's): every corrupted factory makes `count` troops on its hex, as its own output (a player
     /// ambassador on it stops it).
     FactoryTroops {
         #[serde(default = "one", skip_serializing_if = "is_one")]
         count: i64,
     },
-    /// 231 (Night Raid): in each country, 1 agent from the supply onto each of `count` different hexes holding a
-    /// player's node: those holding the most agents first (ties: the lowest-numbered). An arrival is a landing (a
-    /// firewall skips its hex; it cancels a player ambassador there). 275: the arrival checks its hex, so a node hex
-    /// already holding 1 agent loses its node at once (2 agents on a node).
+    /// 231 (Night Raid): in each country, 1 agent from the supply onto each of its `count` lowest-numbered hexes
+    /// holding a player's node and an agent (297: no "most agents" pick, none onto a clean node hex). An arrival is a
+    /// landing (a firewall skips its hex; it cancels a player ambassador there). 275: the arrival checks its hex, so
+    /// the node hex, already holding 1 agent, loses its node at once (2 agents on a node).
     AgentsOnNodes {
         count: i64,
     },
@@ -1366,8 +1392,8 @@ pub enum Op {
     StripCubes {
         count: i64,
     },
-    /// 195 (a project's): in each country, the hardened facility with the most agents on its hex (274; ties: the
-    /// lowest-numbered) loses its hardening tokens (a node shield on a hex with no facility is no target).
+    /// 195 (a project's): in each country, the lowest-numbered hardened facility loses its hardening tokens (297:
+    /// no "most agents" pick; a node shield on a hex with no facility is no target).
     StripHarden,
     /// 227: Fallout lands, each token on a free open hex (open land with no building, node or Fallout): with `at`
     /// `location` (a threat's), `count` tokens on the threat's token hex or next to it, the lowest-numbered free hex
@@ -1608,6 +1634,7 @@ impl Op {
             | Op::EachDestroyNode { .. }
             | Op::DestroyNode { .. }
             | Op::PullUnity { .. }
+            | Op::PullDiscord { .. }
             | Op::FlipStation { .. }
             | Op::CorruptCity { .. }
             | Op::PlayersLose { .. }
@@ -1730,7 +1757,7 @@ impl Op {
     pub fn team_reach(&self) -> Option<TeamReach> {
         use TeamReach::*;
         Some(match self {
-            Op::Sway { .. } | Op::PullUnity { .. } | Op::Clock { .. } => Once,
+            Op::Sway { .. } | Op::PullUnity { .. } | Op::PullDiscord { .. } | Op::Clock { .. } => Once,
             Op::DealThreats { .. } => {
                 if self.deals_each_country() {
                     EachCountry
@@ -1739,6 +1766,14 @@ impl Op {
                 }
             }
             Op::AdversaryResearch { each_country, .. } => {
+                if *each_country {
+                    EachCountry
+                } else {
+                    Once
+                }
+            }
+            // 297: Martial Law is the first project to print a troop line.
+            Op::Troops { each_country, .. } => {
                 if *each_country {
                     EachCountry
                 } else {
@@ -1772,6 +1807,7 @@ impl Op {
         match self {
             Op::Sway { .. } => &[Player, Threat, Team, Twist],
             Op::PullUnity { .. } => &[Threat, Team, Twist],
+            Op::PullDiscord { .. } => &[Team],
             // 146: "each player" is a twist's only; a threat hits the nearest player.
             Op::EachDestroyNode { .. } => &[Twist],
             Op::DestroyNode { .. } => &[Threat],

@@ -69,7 +69,7 @@ Checked only when the adversary puts agents on a hex (an arrival), and only that
 
 Troops don't move or act on their own. They come late: from the research row, some projects and Discord cards.
 
-1. **Garrison.** A new troop goes on its country's lowest-numbered corrupted factory; with none, its lowest-numbered corrupted city; with none, its lowest-numbered city (never the Protector's node hex: it stays in the supply). It stays there.
+1. **Garrison.** A troop stands where its line puts it; one that garrisons goes on its country's lowest-numbered corrupted factory; with none, its lowest-numbered corrupted city; with none, its lowest-numbered city (never the Protector's node hex: it stays in the supply). It stays there.
 2. **Guard.** A corrupted site with a troop on or next to it can't be liberated. Remove the troop or push it away first.
 3. **Strike** (an icon on the face-up event card, a round ahead, or a research slot): each troop, country by country in hex order, destroys one player node, or player's station or factory, on or next to it (the players choose; never anything on the Protector's node hex): destroyed unless protected (§13). The troop stays. Vigil: 1 insight for each troop on or next to the Protector's nodes.
 4. **Redeploy** (an icon, rare): each troop not on or next to a corrupted city is picked up and put on the nearest corrupted city by land (ties: the lower country, then hex number).

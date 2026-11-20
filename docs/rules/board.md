@@ -16,7 +16,7 @@ below); a corrupted factory pushes its agents along it ([adversary.md](adversary
 one facility per hex. **Empty station sites** are printed too (137, at most one a country; Cintamani and Biomia print none): a neutral station
 opens on one when a card says so (253, Matt's ruling 3: Open Research Campus on its target; the adversary's Shell Labs
 on each country's lowest-numbered, where it has one), as a neutral factory opens on a free industrial zone (Industrial Commons, Factory
-Drive, Blight). A neutral site a card opens is anyone's to claim, but Campus and Commons claim theirs (256). Nothing builds on ocean or on a Fallout token (no node, factory or
+Drive). A neutral site a card opens is anyone's to claim, but Campus and Commons claim theirs (256). Nothing builds on ocean or on a Fallout token (no node, factory or
 station) until it is cleared ([troops.md](troops.md)).
 
 <!-- generated: countries -->

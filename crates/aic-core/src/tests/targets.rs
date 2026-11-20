@@ -285,6 +285,54 @@ fn a_liberate_cards_rider_claims_a_neutral_site_next_to_the_city() {
     assert!(!face_text("nuclear_option").contains("Liberate it."));
 }
 
+/// 297: a card whose list removes troops before its Rescue (Peacekeeping Mission: "Remove 3 Troops on or next to
+/// it. Rescue it.") may target a troop-guarded corrupted city, and frees it when the removal clears every guard;
+/// with a guard left its Rescue does nothing. A plain liberate list still can't target a guarded city.
+#[test]
+fn a_card_removing_troops_first_may_target_a_guarded_city() {
+    use crate::modules::effects;
+    use crate::op::TargetSpec;
+    // The card's needs pinned off: the rule read here is its target, not its tags.
+    let (rules, mut g) = table_with(&["cards.peacekeeping_mission.needs=[]"], &["peacekeeping_mission"], &[]);
+    let w = rules.world();
+    let m = &rules.map;
+    for h in Arc::make_mut(&mut g.hexes).iter_mut() {
+        Arc::make_mut(h).tokens.clear();
+    }
+    let (city, _, beside, other) = by_a_city(&mut g, m);
+    put(&mut g, city, ADV_CUBE, 1);
+    set_res(&mut g, 0, Resource::Antimatter, 2);
+    let list = &crate::modules::cards::def(&w, "peacekeeping_mission").effects;
+    assert!(matches!(list[0], Op::Target { on: TargetSpec::CorruptedCity }), "{list:?}");
+    let removes = list.iter().position(|o| matches!(o, Op::RemoveTroops { .. })).expect("it removes troops");
+    let frees = list.iter().position(|o| matches!(o, Op::Liberate { .. })).expect("it liberates");
+    assert!(removes < frees, "the removal comes first");
+    let plain = [Op::Target { on: TargetSpec::CorruptedCity }, Op::Liberate { own: false, ambassadors: 0, troops: 0, botnet: false }];
+    let targets = |g: &GameState, ops: &[Op]| effects::target_hexes_before(&w, g, 0, TargetSpec::CorruptedCity, &ops[1..]);
+    let play = Action::Play { seat: 0, card: "peacekeeping_mission".into() };
+    // Unguarded: both lists take the city.
+    assert_eq!((targets(&g, list), targets(&g, &plain)), (vec![city], vec![city]));
+    // Guarded by 2 troops next to it: the plain list has no target, the card does.
+    let mut guarded = g.clone();
+    put(&mut guarded, beside, TROOP, 2);
+    assert!(board::troop_guarded(&w, &guarded, city));
+    assert!(targets(&guarded, &plain).is_empty() && !effects::feasible(&w, &guarded, 0, &plain));
+    assert_eq!(targets(&guarded, list), [city]);
+    assert!(rules.legal_actions(&guarded).contains(&play));
+    // Its one target is taken unasked; so are the troops, no more than it removes.
+    rules.apply_mut(&mut guarded, &play, None).unwrap();
+    answer_all(&rules, &mut guarded);
+    assert_eq!((total(&guarded, TROOP), guarded.tokens(city, ADV_CUBE)), (0, 0), "the guards go, then the city is freed");
+    // 4 guards on two hexes, one more than it removes: still its target, and with a guard left nothing is freed.
+    let mut held = g.clone();
+    put(&mut held, beside, TROOP, 2);
+    put(&mut held, other, TROOP, 2);
+    assert_eq!(targets(&held, list), [city]);
+    rules.apply_mut(&mut held, &play, None).unwrap();
+    answer_all(&rules, &mut held);
+    assert_eq!((total(&held, TROOP), held.tokens(city, ADV_CUBE)), (1, 1), "a guard is left: the city stays corrupted");
+}
+
 /// The six country cards: a country-sized effect is the target's country; Shelter takes no target.
 #[test]
 fn country_cards_use_the_target_s_country() {

@@ -143,7 +143,7 @@
     "security"
    ],
    "cost": 10,
-   "text": "Each country: 1 Agent onto each of two different hexes holding a player node (those holding the most Agents first; ties: lowest-numbered). An Agent landing on your node's hex that brings it to 2 destroys your node.",
+   "text": "Each country: 1 Agent onto each of its two lowest-numbered hexes holding a player Node and an Agent. 2 Agents on your Node's hex destroy it.",
    "effects": [
     {
      "op": "agents_on_nodes",
@@ -154,11 +154,12 @@
     "adversary pieces placed",
     "node destroyed"
    ],
-   "value": "give 10 compute a board (20 at 2 countries); get 0.73 a compute (a ratio: 273 moved no ratio).",
-   "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late, once agents stand by nodes. Who plays it: automatic for the adversary (compute step); players answer: remove agents from node hexes in the action phase; firewall.",
+   "value": "give 10 compute a board (20 at 2 countries); get 0.53 a compute at values.json (agents_on_nodes 2.67 a landing): each landing now takes a node unless the agent is cleared first.",
+   "check": "297: 1 consequence (small), every board, one-shot. When it matters: mid to late, once agents stand on node hexes. Players answer: clear the agent off your node's hex; a firewall.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): agents land, the 2-agent rule destroys (players answer first)",
-    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)",
+    "297 (Matt, 2026-11-19): \"Each country: 1 Agent onto each of two different hexes holding a player node (those holding the most Agents first; ties: lowest-numbered). An Agent landing on your node's hex that brings it to 2 destroys your node. (10 a board)\" became \"Each country: 1 Agent onto each of its two lowest-numbered hexes holding a player Node and an Agent. 2 Agents on your Node's hex destroy it.\" at 10 a board (no \"most agents\" pick, and no agent onto a clean node: the nodes at risk are the ones an agent already stands on, which the table can see and clear)"
    ],
    "reuses": null
   },
@@ -246,7 +247,7 @@
     "industry"
    ],
    "cost": 13,
-   "text": "Each country: its neutral factory with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned factory picked the same way turns neutral.",
+   "text": "Each country: its lowest-numbered neutral factory is corrupted; with none neutral, its lowest-numbered player-owned factory turns neutral.",
    "effects": [
     {
      "op": "take_site",
@@ -257,10 +258,11 @@
     "facilities destroyed or corrupted"
    ],
    "value": "give 13 compute a board (26 at 2 countries); get 1.05 a compute (a ratio: 273 moved no ratio).",
-   "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: claim factories; stand ambassadors on them.",
+   "check": "297: 1 consequence (small), every board, one-shot. When it matters: any round. Players answer: claim the factory it names; drain the project.",
    "flags": [
     "231: kept, repriced per board",
-    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)",
+    "297 (Matt, 2026-11-19): \"Each country: its neutral factory with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned factory picked the same way turns neutral. (13 a board)\" became \"Each country: its lowest-numbered neutral factory is corrupted; with none neutral, its lowest-numbered player-owned factory turns neutral.\" at 13 a board (no \"most agents\" pick: the lowest number, as every other line on the adversary's side)"
    ],
    "reuses": null
   },
@@ -270,24 +272,26 @@
    "tags": [
     "cyber"
    ],
-   "cost": 11,
-   "text": "Each country: its lowest-numbered botnet becomes 2 Troops, which garrison its lowest-numbered corrupted factory (with none, its lowest-numbered corrupted city; with none, its lowest-numbered city).",
+   "cost": 16,
+   "text": "Each country holding 2 or more Botnets: its lowest-numbered Botnet becomes 1 Troop on its hex.",
    "effects": [
     {
      "op": "botnet_troops",
      "count": 1,
-     "troops": 2
+     "troops": 1,
+     "least": 2
     }
    ],
    "harms": [
     "troops made"
    ],
-   "value": "give 11 compute a board (22 at 2 countries); get 1.24 a compute (a ratio: 273 moved no ratio).",
-   "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round with botnets. Who plays it: automatic for the adversary (compute step); players answer: take botnets down.",
+   "value": "give 16 compute a board (32 at 2 countries); get 0.21 a compute at values.json (botnet_troops 3.33 a troop): dear for its number by design: a troop on a hex the players chose to build beside is worth more than the row's garrison, and the price is what makes it late.",
+   "check": "297: 1 consequence (small), every board, one-shot. When it matters: once a country holds a second botnet (Botnets spread, a Backdoor). Players answer: keep each country to one botnet (Take down a botnet); remove the troop.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): 2 to 3 troops",
     "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)",
-    "294 (Matt, 2026-11-19): \"Each country: its lowest-numbered botnet becomes 3 Troops on its hex.\" became \"Each country: its lowest-numbered botnet becomes 2 Troops, which garrison its lowest-numbered corrupted factory (with none, its lowest-numbered corrupted city; with none, its lowest-numbered city).\" (troops garrison a corrupted factory, else a city; 3 -> 2 since a troop now stays after it strikes and guards its site)"
+    "294 (Matt, 2026-11-19): \"Each country: its lowest-numbered botnet becomes 3 Troops on its hex.\" became \"Each country: its lowest-numbered botnet becomes 2 Troops, which garrison its lowest-numbered corrupted factory (with none, its lowest-numbered corrupted city; with none, its lowest-numbered city).\" (troops garrison a corrupted factory, else a city; 3 -> 2 since a troop now stays after it strikes and guards its site)",
+    "297 (Matt, 2026-11-19): \"Each country: its lowest-numbered botnet becomes 2 Troops, which garrison its lowest-numbered corrupted factory (with none, its lowest-numbered corrupted city; with none, its lowest-numbered city). (11 a board)\" became \"Each country holding 2 or more Botnets: its lowest-numbered Botnet becomes 1 Troop on its hex.\" at 16 a board (the troop stands where the botnet stood, beside whatever the players built there, so a Strike has something to hit and a Redeploy something to move; one troop, not two, dearer (11 -> 16), and only where botnets have spread: on the first screen the starting botnet turned by round 3 in every early-troop game)"
    ],
    "reuses": null
   },
@@ -497,7 +501,7 @@
     "power"
    ],
    "cost": 10,
-   "text": "Each country: the hardened facility with the most Agents on its hex (ties: lowest-numbered) loses its hardening. Until the end of next round, players' boards and cards make no energy income.",
+   "text": "Each country: its lowest-numbered hardened facility loses its hardening. Until the end of next round, players' boards and cards make no energy income.",
    "effects": [
     {
      "op": "strip_harden"
@@ -513,9 +517,10 @@
     "energy lost"
    ],
    "value": "give 10 compute a board (20 at 2 countries); get 0.68 a compute (a ratio: 273 moved no ratio).",
-   "check": "231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late. Who plays it: automatic for the adversary (compute step); players answer: bank energy; harden again.",
+   "check": "297: 2 consequences (big), every board, one-shot. When it matters: mid to late. Players answer: bank energy; harden again.",
    "flags": [
-    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): the node raid out, a sabotage round in"
+    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): the node raid out, a sabotage round in",
+    "297 (Matt, 2026-11-19): \"Each country: the hardened facility with the most Agents on its hex (ties: lowest-numbered) loses its hardening. Until the end of next round, players' boards and cards make no energy income. (10 a board)\" became \"Each country: its lowest-numbered hardened facility loses its hardening. Until the end of next round, players' boards and cards make no energy income.\" at 10 a board (no \"most agents\" pick: the lowest number, as every other line on the adversary's side)"
    ],
    "reuses": null
   },
@@ -625,7 +630,7 @@
     "cyber"
    ],
    "cost": 24,
-   "text": "Each country: its neutral research station with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track.",
+   "text": "Each country: its lowest-numbered neutral research station is corrupted; with none neutral, its lowest-numbered player-owned station turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track.",
    "effects": [
     {
      "op": "take_site",
@@ -648,11 +653,12 @@
     "adversary research advanced"
    ],
    "value": "give 24 compute a board (48 at 2 countries); get 1.11 a compute (a ratio: 273 moved no ratio) (259: cost 19 -> 24 for the track line).",
-   "check": "231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: claim stations; ambassadors on them.",
+   "check": "297: 3 consequences (big; its cost allows the third), every board, one-shot. When it matters: any round. Players answer: claim the station it names; an ambassador on it stops its cube.",
    "flags": [
     "231: kept, repriced per board",
     "293 (Matt, 2026-11-19): its research line is 1 cube a country (was 2): the track's K went from 5 to 1 a country, so a cube is worth about what 2 were",
-    "294 (Matt, 2026-11-19): \"1 cube goes onto the adversary's research track\" became \"2 cubes go onto the adversary's research track\" (K 2 a country: a cube is half a K-1 cube)"
+    "294 (Matt, 2026-11-19): \"1 cube goes onto the adversary's research track\" became \"2 cubes go onto the adversary's research track\" (K 2 a country: a cube is half a K-1 cube)",
+    "297 (Matt, 2026-11-19): \"Each country: its neutral research station with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track. (24 a board)\" became \"Each country: its lowest-numbered neutral research station is corrupted; with none neutral, its lowest-numbered player-owned station turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track.\" at 24 a board (no \"most agents\" pick: the lowest number, as every other line on the adversary's side; it opens the adversary a research station a country, a cube a round for the row)"
    ],
    "reuses": null
   },
@@ -662,29 +668,23 @@
    "tags": [
     "industry"
    ],
-   "cost": 19,
-   "text": "Each country: the adversary builds a factory on its free industrial zone next to an Agent, else its lowest-numbered (none free: 2 Agents on one of its factories). Every adversary factory makes 1 Troop on its hex (a player Ambassador on it stops it).",
+   "cost": 22,
+   "text": "Every corrupted factory makes 1 Troop on its hex (a player Ambassador on it stops it).",
    "effects": [
-    {
-     "op": "adversary_factory",
-     "count": 1,
-     "where": "each_country",
-     "fallback_ambassadors": 2
-    },
     {
      "op": "factory_troops",
      "count": 1
     }
    ],
    "harms": [
-    "facilities destroyed or corrupted",
     "troops made"
    ],
-   "value": "give 19 compute a board (38 at 2 countries); get 1.39 a compute (a ratio: 273 moved no ratio).",
-   "check": "231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: ambassadors on adversary factories; liberate them.",
+   "value": "give 22 compute a board (44 at 2 countries); get 0.21-0.64 a compute at values.json (a troop 4.67 at one to three corrupted factories a country).",
+   "check": "297: 1 consequence, every board, one-shot. When it matters: once factories have fallen (Commandeered Plants takes one in two rounds). Players answer: an ambassador on each corrupted factory; liberate them.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): every country, not the one with most free zones (Shadow Factories folded in)",
-    "294 (Matt, 2026-11-19): \"Every adversary factory makes 2 Troops on its hex (a player Ambassador on it stops them).\" became \"Every adversary factory makes 1 Troop on its hex (a player Ambassador on it stops it).\" (2 -> 1: a troop now stays after it strikes and guards its factory and the city beside it)"
+    "294 (Matt, 2026-11-19): \"Every adversary factory makes 2 Troops on its hex (a player Ambassador on it stops them).\" became \"Every adversary factory makes 1 Troop on its hex (a player Ambassador on it stops it).\" (2 -> 1: a troop now stays after it strikes and guards its factory and the city beside it)",
+    "297 (Matt, 2026-11-19): \"Each country: the adversary builds a factory on its free industrial zone next to an Agent, else its lowest-numbered (none free: 2 Agents on one of its factories). Every adversary factory makes 1 Troop on its hex (a player Ambassador on it stops it). (19 a board)\" became \"Every corrupted factory makes 1 Troop on its hex (a player Ambassador on it stops it).\" at 22 a board (one thing, by a condition the table sees: it builds no factory of its own, so a board with no corrupted factory takes no troop, and an ambassador on each one stops it; dearer (19 -> 22), so later)"
    ],
    "reuses": null
   },
@@ -857,28 +857,28 @@
     "security"
    ],
    "cost": 24,
-   "text": "Each country: create 3 Agents on its lowest-numbered research station not yet the adversary's.",
+   "text": "Each country: 2 Troops land on its lowest-numbered corrupted city with a Node or an Ambassador on or next to it (with none, they garrison).",
    "effects": [
     {
-     "op": "create",
-     "count": 3,
-     "at": "station",
-     "if": "clean"
+     "op": "troops",
+     "count": 2,
+     "each_country": true,
+     "at": "besieged_city"
     }
    ],
    "harms": [
-    "adversary pieces placed",
-    "facilities destroyed or corrupted"
+    "troops made"
    ],
    "flags": [
     "233: new (231's draft; the deck to 30)",
     "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)",
     "283 (Matt's 282 pick): held at 24 compute (was 29), one Surge line cut; its factory Surge cut; the station Surge 2 -> 3, a capture of the unguarded station whatever it holds (stations corrupt at 3), a player's own included (a candidate)",
-    "293 (Matt, 2026-11-19): \"Surge 3: each country, 3 Agents onto its research station not yet the adversary's holding the most Agents.\" became \"Each country: create 3 Agents on its lowest-numbered research station not yet the adversary's.\" (Surge's most-agents pick is gone; its agents and type stay)"
+    "293 (Matt, 2026-11-19): \"Surge 3: each country, 3 Agents onto its research station not yet the adversary's holding the most Agents.\" became \"Each country: create 3 Agents on its lowest-numbered research station not yet the adversary's.\" (Surge's most-agents pick is gone; its agents and type stay)",
+    "297 (Matt, 2026-11-19): \"Each country: create 3 Agents on its lowest-numbered research station not yet the adversary's. (24 a board)\" became \"Each country: 2 Troops land on its lowest-numbered corrupted city with a Node or an Ambassador on or next to it (with none, they garrison).\" at 24 a board (a third troop project, and the dearest (24): martial law is soldiers in the streets where the players are working, so its troops guard the city being liberated and a Strike finds pieces beside them; its old line (3 agents on a research station) was Lab Seizure's)"
    ],
    "reuses": null,
-   "value": "293: give 24 compute a board; its line lands 3 agents on one research station a country (values.json create, 1.333 an agent a country), corrupting it at its number as Surge 3 did, on the lowest-numbered site not yet the adversary's in place of the one holding the most agents; plus its other lines.",
-   "check": "283: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: ambassadors on stations; clear station stacks."
+   "value": "give 24 compute a board (48 at 2 countries); get 0.39 a compute at values.json (2 troops 9.33): the late, significant one.",
+   "check": "297: 1 consequence, every board, one-shot. When it matters: late (24 a board). Players answer: drain it; hold Remove a troop's credits or a troop card for the round it lands."
   }
  ]
 }

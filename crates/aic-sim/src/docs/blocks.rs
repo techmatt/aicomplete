@@ -692,7 +692,8 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          you lose. Discord cards never destroy your nodes directly, only through the threats and corruptions \
          they bring: they deal more or stronger threats (Offensive \
          aims one at the node hex most crowded with adversary pieces), create agents, escalate them \
-         onto a city, take credits and land Fallout (Scorched Earth), more of each the more sites are corrupted. Unity has its own track, which nothing on the \
+         onto a city, take credits, land Fallout (Scorched Earth), feed the research track by its corrupted stations \
+         (Captured Labs) and bring troops onto a fallen factory or a corrupted city you stand by (Standing Army), more of each the more sites are corrupted. Unity has its own track, which nothing on the \
          Discord side empties: free a corrupted \
          city and you sway Unity (removing a botnet sways none), and each Unity \
          tip brings a good card. \
@@ -701,11 +702,11 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          Every Unity and Discord card prints three strengths, and the tip's own count on its side picks which \
          one resolves (strength I on tips below {t2}, II from tip {t2}, III from tip {t3}): a later strength counts more \
          or reaches wider, and Discord's late cards hit harder. The {unity} Unity cards reshuffle when the deck runs out. \
-         Unity you sway always goes onto the Unity track: nothing takes Discord off its track but a card that \
-         says so. You also lose if any player has no nodes left on the board. \
+         Unity you sway always goes onto the Unity track: nothing takes Discord off its track but a Unity card \
+         that says so (four do, each by what stands on the board). You also lose if any player has no nodes left on the board. \
          Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of \
-         their own hex (or two agents on it: Night Raid lands them), a troop's Strike on or next to it, \
-         and Border War (nodes by a factory). A lost token leaves the game and nothing marks its hex; its \
+         their own hex (or two agents on it: Night Raid adds one where one stands) and a troop's Strike on or \
+         next to it. A lost token leaves the game and nothing marks its hex; its \
          income stays. {safe}The adversary deck is a round cap too, {} rounds at \
          most (fewer at the harder levels), and reaching it loses; and the adversary's research track loses the game \
          at its seventh slot. So there are four different \

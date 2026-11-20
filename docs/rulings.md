@@ -123,7 +123,7 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
   unless printed "on or next to the target" (most tier 1 target-only; tier 2 sizes up with radius 1, never 2); never
   two targets; **Gain** = your supply, **Place** = onto the map; no card picks a country freely ("in the target's
   country"); Shelter is "your nodes and facilities in reach". Kept by 234's picks: megaproject-cube cards keep any
-  open megaproject; Peacekeeping Mission's "in its country".
+  open megaproject (Peacekeeping Mission's "in its country" went at r143: it acts on or next to its target).
 
 ## Boards and pieces
 
@@ -176,7 +176,9 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
   corrupted site can't be liberated with a troop on or next to it; they Strike on an icon shown a round ahead (the
   start: another timing that reads or plays better may be tried and said) and rarely Redeploy toward the nearest
   corrupted city. They come from the research row, projects and Discord cards: late and significant, something
-  players see coming and must plan and invest to meet. The march, Muster and the corrupted factory's troop are gone;
+  players see coming and must plan and invest to meet. A project's or Discord card's line may name the hex its troop
+  lands on (a botnet's, a corrupted factory's, a corrupted city the players stand by: r143, item 5's reading of
+  "where troops land", held for Matt); the row's Garrison keeps the rule. The march, Muster and the corrupted factory's troop are gone;
   the Protector's Wall and Vigil are redone for troops that garrison and strike. It overturns "early troops fine"
   above and makes 2026-11-10's "troops ignore ambassadors" moot (no march to stop; ambassadors still stop no troop).
 - **Harm coverage (Matt, 2026-11-13; a design principle, not a checklist):** threats, Discord cards and adversary
@@ -200,7 +202,8 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
 - **Unity and Discord cards (Matt, 2026-11-09; direction locked):** Spirit Island fear-card shape: board conditions,
   "each player", one verb per card, tiers widening it; Unity prohibitions switch an adversary step off where a
   condition holds. Unity cards help, they don't clear: at most one tier-III card clears cities (2026-11-12).
-- **Unity never cancels Discord (Matt, 2026-11-19):** Unity gained always goes onto the Unity track.
+- **Unity never cancels Discord (Matt, 2026-11-19):** Unity gained always goes onto the Unity track. About 4-5 of
+  the 23 Unity cards remove Discord, each by a board condition (built r143: four); Unity otherwise never does.
 
 ## Rulebook and audits
 

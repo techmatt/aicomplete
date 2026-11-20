@@ -41,6 +41,8 @@ const RESOLVED: &[(&str, By, bool)] = &[
     (r#"[{"op":"pushback","ambassadors":1}]"#, By::Team, false),
     (r#"[{"op":"remove_botnets","count":1}]"#, By::Team, true),
     (r#"[{"op":"one_player","then":[{"op":"gain","resource":"credits","amount":1}]}]"#, By::Team, true),
+    // 297: Border War's twist became a Strike; no card prints it now.
+    (r#"[{"op":"each_destroy_node","count":1}]"#, By::Team, true),
 ];
 
 /// The lab after setup, the board as set up: seat 0 with 10 of each resource, a card in hand and a threat on
