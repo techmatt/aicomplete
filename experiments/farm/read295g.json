@@ -1,0 +1,16 @@
+{
+  "name": "read295g",
+  "note": "295: greedy beside the judge after a change to how liberation is done (tuning-items.md): greedy on the three board pairs, d0-d3, the standard read's grid. Farm with `farm-seeds F 48 OUT read295g`.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [0, 1, 2, 3],
+  "agents": ["greedy"],
+  "games": 48,
+  "records": 0
+}

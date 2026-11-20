@@ -69,6 +69,21 @@ pub fn ambassador(seat: usize) -> &'static str {
     AMBASSADOR[seat]
 }
 
+const TIPPED: [&str; 4] = ["tipped:0", "tipped:1", "tipped:2", "tipped:3"];
+
+/// r142: the marker on seat `s`'s ambassadors on a hex that have used their one action this round (the piece is
+/// tipped over on the table). Counted against the hex's ambassadors: read it through [`ready_ambassadors`].
+pub fn tipped(seat: usize) -> &'static str {
+    TIPPED[seat]
+}
+
+/// r142: seat `s`'s ambassadors on hex `h` that still have their action this round. A marker left by a piece that
+/// has gone counts for nothing (when one of several leaves, a ready one leaves first).
+pub fn ready_ambassadors(g: &GameState, seat: usize, h: usize) -> i64 {
+    let n = g.tokens(h, ambassador(seat));
+    n - g.tokens(h, tipped(seat)).min(n)
+}
+
 pub fn is_city(w: &World, h: usize) -> bool {
     w.map.hexes[h].kind == HexKind::City
 }

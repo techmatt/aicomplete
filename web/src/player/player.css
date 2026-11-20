@@ -90,6 +90,10 @@ ul.ppowers { margin: 0.2em 0; padding: 0; list-style: none; font-size: 0.9em; }
 ul.ppowers li { border: 1px solid var(--line); border-radius: 4px; padding: 0.15em 0.35em; margin-bottom: 0.2em; color: #777; background: #fbfaf7; }
 ul.ppowers li.ready { color: var(--ink); background: #fff; border-color: #9ccc9e; }
 ul.ppowers li small { color: var(--muted); }
+/* 295: used this round (each node power once a round, all three in one round): struck through, its status a tag. */
+ul.ppowers li.used { background: #efece5; border-style: dashed; }
+ul.ppowers li.used > b { text-decoration: line-through; }
+ul.ppowers li.used > small { color: #fff; background: #8d6e63; border-radius: 3px; padding: 0 0.35em; font-weight: 600; }
 ul.ppowers li .pact { margin-left: 0.4em; }
 ul.ppowers .ptext { font-size: 0.92em; }
 .psec h4 { margin: 0.1em 0 0.25em; font-size: 0.95em; color: #444; }

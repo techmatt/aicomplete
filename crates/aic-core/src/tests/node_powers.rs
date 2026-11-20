@@ -52,8 +52,8 @@ fn free_growth(seat: usize) -> &'static str {
     ["Buy In", "Levy"][seat]
 }
 
-/// 252 (Matt's ruling 1): every board has a free node placement paying only the track step's energy; 276: it is a
-/// Growth option, one Growth option a round (Spirit Island's "pick one").
+/// 252 (Matt's ruling 1): every board has a free node placement paying only the track step's energy, once a round;
+/// r142 (Matt, 2026-11-19): it is a node power, and the board's others may be used in the same round.
 #[test]
 fn the_base_route_costs_only_the_step_once_a_round() {
     for seat in [0u8, 1] {
@@ -71,8 +71,9 @@ fn the_base_route_costs_only_the_step_once_a_round() {
         assert_eq!(node_count(&g, seat as usize), before + 1);
         assert_eq!(g.resource(seat as usize, Resource::Energy), 0, "the step's energy alone");
         set_res(&mut g, seat as usize, Resource::Energy, 10);
+        set_res(&mut g, seat as usize, Resource::Chips, 1);
         assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "once a round");
-        assert!(rules.apply_mut(&mut g.clone(), &other, None).is_err(), "one Growth option a round");
+        assert!(rules.apply_mut(&mut g.clone(), &other, None).is_ok(), "another node power, the same round");
     }
 }
 
@@ -153,10 +154,10 @@ fn power_energy(rules: &Rules, seat: usize, name: &str) -> i64 {
     ai::board(&w, seat).powers[power_index(rules, seat, name)].cost.iter().find(|(r, _)| *r == Resource::Energy).unwrap().1
 }
 
-/// 247 (Matt, 2026-11-15: energy powers things); 276: the energy-rich boards' two-node Growth options (the
-/// Builder's Sprawl, the Protector's Outpost) cost energy, not credits or a sacrifice, beside each step's.
+/// 247 (Matt, 2026-11-15: energy powers things); r142: the energy-rich boards' costly node powers (the Builder's
+/// Sprawl, the Protector's Outpost) cost energy, not credits or a sacrifice, beside the step's, and pay 2 credits.
 #[test]
-fn the_two_node_growth_runs_on_energy() {
+fn the_costly_node_power_runs_on_energy() {
     for (seat, name) in [(0usize, "Sprawl"), (1, "Outpost")] {
         let (rules, mut g) = at_step(&[], 1);
         let w = rules.world();
@@ -173,9 +174,9 @@ fn the_two_node_growth_runs_on_energy() {
         let before = node_count(&g, seat);
         rules.apply_mut(&mut g, &grow, None).unwrap();
         answer_all(&rules, &mut g);
-        assert_eq!(node_count(&g, seat), before + 2, "{name} places 2 nodes");
+        assert_eq!(node_count(&g, seat), before + 1, "{name} places 1 node");
         assert_eq!(g.pile(&cards::played(seat)).len(), 1, "no sacrifice");
-        assert_eq!(g.resource(seat, Resource::Credits), 0, "no credits");
+        assert_eq!(g.resource(seat, Resource::Credits), 2, "its benefit");
         assert!(g.resource(seat, Resource::Energy) <= 20, "{name} pays its energy");
     }
 }
@@ -360,11 +361,12 @@ fn a_track_s_last_steps_cost_more() {
     assert_eq!(g.resource(0, Resource::Energy), 0);
 }
 
-/// 276 (diff review): a two-node Growth option is offered only when both its nodes' steps can be paid; it was
-/// paid in full for one.
+/// 276 (diff review): a two-node power is offered only when both its nodes' steps can be paid; it was paid in
+/// full for one. r142: no board prints one (the test makes Sprawl one again).
 #[test]
-fn a_two_node_growth_needs_both_steps() {
-    let (rules, mut g) = at_step(&[], 4);
+fn a_two_node_power_needs_both_steps() {
+    let two = [r#"ais.builder.powers.0.effects=[{"op":"place_node","count":2}]"#];
+    let (rules, mut g) = at_step(&two, 4);
     let w = rules.world();
     let sprawl = power(&rules, 0, "Sprawl");
     let price = power_energy(&rules, 0, "Sprawl");
@@ -452,18 +454,24 @@ fn a_targeted_hardening_needs_a_facility_to_protect() {
     assert!(effects::feasible(&w, &g, 0, &ops));
 }
 
-/// 277 (Matt, 2026-11-18): each board's Growth is one easy option (free, one node) and two costly ones (a price).
+/// r142 (Matt, 2026-11-19): Growth is gone: each board prints ordinary node powers, one cheap (free) and two costly
+/// ones that carry a benefit, each its own use, so all are usable in the same round; each places one node.
 #[test]
-fn each_growth_is_one_easy_option_and_two_costly_ones() {
+fn each_board_prints_one_cheap_node_power_and_two_costly_ones() {
     let (rules, _) = at_step(&[], 1);
     let w = rules.world();
     for b in &w.content.ais {
-        let growth: Vec<_> = b.powers.iter().filter(|p| p.group.as_deref() == Some("Growth")).collect();
-        let easy: Vec<_> = growth.iter().filter(|p| p.cost.is_empty() && p.tags.is_empty()).collect();
-        assert_eq!((growth.len(), easy.len()), (3, 1), "{}: three options, one free", b.id);
+        assert!(b.powers.iter().all(|p| p.group.as_deref() != Some("Growth")), "{}: no Growth group", b.id);
         let nodes = |p: &crate::content::Power| -> i64 {
             p.effects.iter().map(|e| if let Op::PlaceNode { count, .. } = e { *count } else { 0 }).sum()
         };
-        assert_eq!(nodes(easy[0]), 1, "{}: the easy option places one node", b.id);
+        let node_powers: Vec<_> = b.powers.iter().filter(|p| nodes(p) > 0).collect();
+        let cheap: Vec<_> = node_powers.iter().filter(|p| p.cost.is_empty() && p.tags.is_empty()).collect();
+        assert_eq!((node_powers.len(), cheap.len()), (3, 1), "{}: three node powers, one free", b.id);
+        for p in &node_powers {
+            assert!(p.group.is_none(), "{} {}: its own use", b.id, p.name);
+            assert_eq!(nodes(p), 1, "{} {}: one node", b.id, p.name);
+            assert!(p.effects.len() >= 2, "{} {}: a node and a benefit", b.id, p.name);
+        }
     }
 }

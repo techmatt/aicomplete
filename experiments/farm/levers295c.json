@@ -1,0 +1,81 @@
+{
+  "name": "levers295c",
+  "note": "295: the early-win lever at the size a retuned value asks for (tuning-items.md: 500 games a cell, paired, on new seeds): the judge on the three board pairs at d0 under r142, 168 seeds a pair (504 games a cell): the asked numbers (liberate_at 5, 1 corrupted city a country), the pick (_c2: board.start_corrupted 2) and the price alone (_l7: liberate_at 7). Farm with `farm-seeds 50472 168 OUT levers295c`.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": [
+        "board.start_corrupted=1"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2",
+        "board.start_corrupted=1"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2",
+        "board.start_corrupted=1"
+      ]
+    },
+    {
+      "name": "bp_c2",
+      "set": [
+        "board.start_corrupted=2"
+      ]
+    },
+    {
+      "name": "br_c2",
+      "set": [
+        "ai.boards=0,2",
+        "board.start_corrupted=2"
+      ]
+    },
+    {
+      "name": "pr_c2",
+      "set": [
+        "ai.boards=1,2",
+        "board.start_corrupted=2"
+      ]
+    },
+    {
+      "name": "bp_l7",
+      "set": [
+        "board.start_corrupted=1",
+        "board.liberate_at=7"
+      ]
+    },
+    {
+      "name": "br_l7",
+      "set": [
+        "ai.boards=0,2",
+        "board.start_corrupted=1",
+        "board.liberate_at=7"
+      ]
+    },
+    {
+      "name": "pr_l7",
+      "set": [
+        "ai.boards=1,2",
+        "board.start_corrupted=1",
+        "board.liberate_at=7"
+      ]
+    }
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 168,
+  "first_seed": 50472,
+  "records": 0
+}

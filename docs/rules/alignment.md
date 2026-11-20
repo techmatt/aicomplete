@@ -97,7 +97,7 @@ rest of the game".
 
 **The only win: no corrupted city** (Matt, 2026-11-19). The players win the moment no city on the board is
 corrupted. Botnets, agents and troops never count, at any Unity tip count: Unity tips only set card strength. Each
-country starts with `board.start_corrupted` (1) corrupted city; liberating cities ([ambassadors.md](ambassadors.md)) is the whole route, and a troop on or next to a corrupted
+country starts with `board.start_corrupted` (2) corrupted cities; liberating cities ([ambassadors.md](ambassadors.md)) is the whole route, and a troop on or next to a corrupted
 city must go first ([troops.md](troops.md), *Guarding*). No round gate: the win counts from an adversary card of
 stage `clear_win_stage` (1: from round 1). The engine's end reason is `liberated`.
 

@@ -111,12 +111,6 @@ pub fn revealed_tags<'w>(w: &World<'w>, g: &GameState, seat: usize) -> impl Iter
     uncovered_spaces(w, g, seat).flat_map(|u| &u.tags)
 }
 
-/// Seat `s`'s Dispatch (149): free ambassador moves each round, the board's
-/// printed ones and its uncovered Dispatch spaces'.
-pub fn movement(w: &World, g: &GameState, seat: usize) -> i64 {
-    board(w, seat).moves + uncovered_spaces(w, g, seat).map(|u| u.moves).sum::<i64>()
-}
-
 /// Whether seat `s` has uncovered its board's keep upgrade (021: tier-2
 /// keeps cost `cards.keep_tier2_upgraded`).
 pub fn keep2(w: &World, g: &GameState, seat: usize) -> bool {
@@ -398,8 +392,8 @@ pub fn tally_dear_powers(g: &mut GameState, cx: &mut Cx, seat: usize) {
     }
 }
 
-/// 276 (stats only): the board uses seat `s` can make as its action phase begins, a group (Growth's options, a
-/// power's tiers) counted once: the yes/no items a player weighs that round (`ai.offered.<board>`).
+/// 276 (stats only): the board uses seat `s` can make as its action phase begins, a group (a power's tiers)
+/// counted once: the yes/no items a player weighs that round (`ai.offered.<board>`).
 pub fn tally_offered(g: &mut GameState, cx: &mut Cx, seat: usize) {
     let w = cx.world;
     let b = board(&w, seat);
@@ -443,9 +437,6 @@ pub fn uncover_label(u: &Uncover, gain: i64) -> String {
         parts.push("T2 keep -1".into());
     }
     parts.extend(u.tags.iter().map(|t| format!("{t} tag")));
-    if u.moves > 0 {
-        parts.push(format!("Dispatch +{}", u.moves));
-    }
     if builds_station(u) {
         parts.push("free station".into());
     }
@@ -470,9 +461,6 @@ pub fn uncover_words(u: &Uncover, gain: i64) -> String {
         parts.push("T2 keep".into());
     }
     parts.extend(u.tags.iter().map(|t| format!("{t} tag")));
-    if u.moves > 0 {
-        parts.push(format!("Dispatch +{}", u.moves));
-    }
     if builds_station(u) {
         parts.push("free station".into());
     }
@@ -526,9 +514,8 @@ fn power_text(p: &Power) -> String {
         first.next().map_or(String::new(), |c| c.to_uppercase().chain(first).collect::<String>())
     };
     let cost = power_cost(p);
-    // 276: a group is one use a round between its options or tiers.
+    // 276: a group is one use a round between its tiers (r142: a node power is its own use).
     let once = match p.group.as_deref() {
-        Some(GROWTH) => "(Growth: one option a round)".to_string(),
         Some(g) => format!("(once a round, one tier of {g})"),
         None => "(once a round)".to_string(),
     };
@@ -540,9 +527,6 @@ fn power_text(p: &Power) -> String {
     }
     format!("{lead}{}: {} {once}", if lead.is_empty() { cap(&cost) } else { cost }, p.text)
 }
-
-/// 276: the group name of a board's Growth, its node placements (Spirit Island's "pick one").
-pub const GROWTH: &str = "Growth";
 
 /// 276: a threshold power's condition in words: `With 2 Science on your cards`; empty for any other power.
 pub fn power_needs(p: &Power) -> String {
@@ -634,7 +618,7 @@ impl Module for Ai {
         for (r, n) in &p.cost {
             cx.add_resource(g, s, *r, -n);
         }
-        // 276: a Growth option or a tier uses its whole group for the round.
+        // 276: a tier uses its whole group for the round.
         let b = board(&w, s);
         for (j, q) in b.powers.iter().enumerate() {
             if p.shares_use(q) {
@@ -704,13 +688,6 @@ impl Module for Ai {
                             key: t.to_string(),
                             label: format!("{t} tag"),
                             doc: "once uncovered this tag counts like one on your cards (it can't be sacrificed)".into(),
-                        });
-                    }
-                    if u.moves > 0 {
-                        marks.push(TrackMark {
-                            key: "movement".into(),
-                            label: format!("Dispatch +{}", u.moves),
-                            doc: format!("once uncovered, {} more free Dispatch(es) each round; unused ones are lost", u.moves),
                         });
                     }
                     if builds_station(u) {

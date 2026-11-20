@@ -127,6 +127,7 @@ fn lab_config(round: &[&str]) -> Config {
         "board.ambassador_discord=1",
         "board.troop_node=0",
         "board.liberate_at=1",
+        "board.start_corrupted=1",
         // The build asks nothing: pin any new build-step choice off here. (138:
         // the board's creation line lands only on adversary cities, which a lab
         // board has none of until a test puts one.)
@@ -654,9 +655,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 141;
-const GOLDEN_FINGERPRINT: &str = "20ca19868ebcff94";
-const GOLDEN_CONTENT_HASH: &str = "0e3465e68b4484f3";
+const GOLDEN_REVISION: u32 = 142;
+const GOLDEN_FINGERPRINT: &str = "fc034296d57d8cbf";
+const GOLDEN_CONTENT_HASH: &str = "80d7c668a1895541";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

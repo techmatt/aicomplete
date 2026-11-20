@@ -22,7 +22,8 @@ then check the losses, then the win (no city corrupted).
 
 Each of these is used at most once a round. **Put a used marker on its used space when you use it** (each power, building slot and converter prints one), and clear them all at round start.
 
-- **Your board's Growth and powers:** each once: one Growth option, one tier of each power. Builder (Growth, Scrap, Overcharge, Fortify); Protector (Growth, Patrol, Interdict); Researcher (Growth, Lab, Hack).
+- **Your board's powers:** each once: each node power, one tier of each tiered power. Builder (Sprawl, Buy In, Annex, Scrap, Overcharge, Fortify); Protector (Outpost, Accord, Levy, Patrol, Interdict); Researcher (Peer Review, Field Survey, Field Station, Lab, Hack).
+- **Each ambassador:** one move or one act; tip it over when it has.
 - **Each building's Action** (`→`): once; "A, OR B" is one use.
 - **Standard actions:** Remove a troop once a round, Turn a cube into insight once a round, each player.
 - **Each megacorp's converter and chip converter:** once a round each, each player.
@@ -30,7 +31,7 @@ Each of these is used at most once a round. **Put a used marker on its used spac
 - **Aegis Doctrine** (Protector capstone): the first save a round.
 - **A research slot's icon** happens once, as the marker arrives.
 
-**Lasting effects, with their token:** a firewall, a cordon and a no-Infiltrate, no-Strike or no-Corrupt token come off in the next adversary turn's Income beat; Shelter ends at cleanup; a round-flag marker runs through the next round. Insight resets at round start (Patience keeps it); Dispatches refresh.
+**Lasting effects, with their token:** a firewall, a cordon and a no-Infiltrate, no-Strike or no-Corrupt token come off in the next adversary turn's Income beat; Shelter ends at cleanup; a round-flag marker runs through the next round. Insight resets at round start (Patience keeps it); tipped ambassadors stand up.
 
 ## Tip strips (§12, §14)
 
@@ -88,11 +89,11 @@ Troops don't move or act on their own. They come late: from the research row, so
 
 - **An agent meets one** (it lands, or your ambassador arrives): one for one, both off.
 - **Corruption** removes every ambassador on the hex.
-- **Liberate:** city 5, station 4, factory 3 (yours on the site pay first, then your supply).
+- **Liberate** (your ready ambassador on the site acts): city 5, station 4, factory 3 (yours on the site pay first, then your supply).
 - **Remove agents:** 2 from your supply.
 - **Protecting** your node or facility on its hex (§13): one, instead of the piece.
 - **Threats** that print ambassadors as a cost: from your supply.
-- **Blocking** spends none: an ambassador on a corrupted site stops its output while it stands. A **Dispatch** moves one; a troop never touches one.
+- **Blocking** spends none: an ambassador on a corrupted site stops its output while it stands. A **move** is an ambassador's own action (a hex next to it, or any of your nodes); a troop never touches one.
 - **Gain one:** 16 credits, Accord, cards.
 
 ## The adversary's outputs and research row

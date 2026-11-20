@@ -110,7 +110,7 @@ The rulings behind each: [rulings.md](rulings.md), *Design principles*.
   the supply from standard actions or tier-1 cards; any one source over 40% of a resource's supply, or one spend
   over 50% of its use.
 - **Boards differ:** no power or effect repeated on every board. *Warns:* one power name or one effect on 2+ boards. Exempt by ruling: placing nodes, each
-  board's Growth (252, 276); exemptions are `repeat_powers.exempt`, listed as information.
+  board's node powers (252, 276; r142); exemptions are `repeat_powers.exempt`, listed as information.
 - **Standard actions are deliberately poorly priced against cards** (Matt, 2026-11-16: cards are the engine; a
   standard action is a rare fallback). *Warns:* a standard action (each target of Liberate its own row)
   whose get passes its give at the unit anchors ([card-guidelines.md](card-guidelines.md)); **job parity**, its price

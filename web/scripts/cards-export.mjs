@@ -401,13 +401,12 @@ function aiBoard(b, cardName) {
   // 276: a capstone's one-time gain (2 antimatter) printed the bare op name, "gain".
   const effect = (e) => (e.op === 'build_station' ? 'builds a free research station in reach' : e.op === 'gain' ? `${e.amount} ${e.resource.replaceAll('_', ' ')} once` : e.op.replaceAll('_', ' '));
   // 118: a space's income reads +N, apart from the energy that places it.
-  // 184: a Dispatch +N space (r77's name for the Movement add-on) printed nothing.
   // 235: a card-play space's insight (printed as totals) was dropped: the Researcher's first space read '—'.
-  const step = (u) => [(u.income ?? []).map((x) => `+${costs([x])}`).join(", "), u.insight && `insight ${u.insight}`, ...(u.effects ?? []).map(effect), u.moves && `Dispatch +${u.moves}`, u.cost && `${u.cost} energy to place`, u.keep2 && 'tier-2 keep upgrade', ...(u.tags ?? []).map((t) => `${t} tag`), u.capstone && `capstone: ${u.capstone.name}`];
+  const step = (u) => [(u.income ?? []).map((x) => `+${costs([x])}`).join(", "), u.insight && `insight ${u.insight}`, ...(u.effects ?? []).map(effect), u.cost && `${u.cost} energy to place`, u.keep2 && 'tier-2 keep upgrade', ...(u.tags ?? []).map((t) => `${t} tag`), u.capstone && `capstone: ${u.capstone.name}`];
   const track = (l) => l.map((u) => step(u).filter(Boolean).join('; ') || '—').join(' · ');
   const capstones = [...b.economy_track, ...(b.play_track ?? [])].flatMap((u) => u.capstone ?? []);
-  // 276: a power's price, its threshold first ("with 2 science"); Growth's options and a power's tiers print as one
-  // section, in board order (one use a round between them).
+  // 276: a power's price, its threshold first ("with 2 science"); a power's tiers print as one section, in board order
+  // (one use a round between them). 295: a node power is a plain power, a section and a price row of its own.
   const price = (p) => [(p.needs ?? []).map(([t, n]) => `with ${n} ${t}`).join(', '), (p.tags ?? []).map(([t, n]) => `sacrifice ${n} ${t}`).join(', '), costs(p.cost)].filter(Boolean).join('; ') || 'free';
   const groups = [];
   for (const p of b.powers ?? []) {
@@ -415,8 +414,7 @@ function aiBoard(b, cardName) {
     const g = groups.find((x) => x.key === key) ?? (groups.push({ key, grouped: !!p.group, powers: [] }), groups[groups.length - 1]);
     g.powers.push(p);
   }
-  const head = (g) => (g.key === 'Growth' ? 'Growth (pick one a round)' : `Power: ${g.key}`);
-  const option = (g, p) => (g.key === 'Growth' ? p.name : p.name.slice(g.key.length).trim() || p.name);
+  const option = (g, p) => p.name.slice(g.key.length).trim() || p.name;
   const groupText = (g) => (g.grouped ? g.powers.map((p) => `${option(g, p)} (${price(p)}): ${p.text ?? ''}`).join(' · ') : g.powers[0].text ?? '');
   return frameless('ai', b, {
     tier: null,
@@ -425,14 +423,13 @@ function aiBoard(b, cardName) {
     price: [
       ['Credits a round', b.credits],
       ...(b.insight ? [['Insight a round before any card-play space', b.insight]] : []),
-      ...(b.moves ? [['Dispatches a round', b.moves]] : []),
       ...(b.income?.length ? [['Income', costs(b.income)]] : []),
       // 118: a power with no cost and no tags (Synthesis) priced as an empty string.
       ...groups.filter((g) => !g.grouped).map((g) => [`Power: ${g.key}`, price(g.powers[0])]),
     ],
     sections: [
       { head: `Innate: ${b.innate.name}`, text: b.innate.text ?? '' },
-      ...groups.map((g) => ({ head: head(g), text: groupText(g) })),
+      ...groups.map((g) => ({ head: `Power: ${g.key}`, text: groupText(g) })),
       { head: 'Economy track', text: track(b.economy_track) },
       ...(b.play_track?.length ? [{ head: 'Card-play track', text: track(b.play_track) }] : []),
       ...capstones.map((c) => ({ head: `Capstone: ${c.name}`, text: c.text })),

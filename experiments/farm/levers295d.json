@@ -1,0 +1,107 @@
+{
+  "name": "levers295d",
+  "note": "295: the two early-win levers above d0, for information (294's brake screen was d0 only): the judge on the three board pairs at d0-d3 on the dev seeds under r142: the asked numbers (liberate_at 5, 1 corrupted city a country), the pick (_c2: board.start_corrupted 2), the price alone (_l7: liberate_at 7) and both (_c2_l6). Farm with `farm-seeds 36800 32 OUT levers295d`.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": [
+        "board.start_corrupted=1"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2",
+        "board.start_corrupted=1"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2",
+        "board.start_corrupted=1"
+      ]
+    },
+    {
+      "name": "bp_c2",
+      "set": [
+        "board.start_corrupted=2"
+      ]
+    },
+    {
+      "name": "br_c2",
+      "set": [
+        "ai.boards=0,2",
+        "board.start_corrupted=2"
+      ]
+    },
+    {
+      "name": "pr_c2",
+      "set": [
+        "ai.boards=1,2",
+        "board.start_corrupted=2"
+      ]
+    },
+    {
+      "name": "bp_l7",
+      "set": [
+        "board.start_corrupted=1",
+        "board.liberate_at=7"
+      ]
+    },
+    {
+      "name": "br_l7",
+      "set": [
+        "ai.boards=0,2",
+        "board.start_corrupted=1",
+        "board.liberate_at=7"
+      ]
+    },
+    {
+      "name": "pr_l7",
+      "set": [
+        "ai.boards=1,2",
+        "board.start_corrupted=1",
+        "board.liberate_at=7"
+      ]
+    },
+    {
+      "name": "bp_c2_l6",
+      "set": [
+        "board.start_corrupted=2",
+        "board.liberate_at=6"
+      ]
+    },
+    {
+      "name": "br_c2_l6",
+      "set": [
+        "ai.boards=0,2",
+        "board.start_corrupted=2",
+        "board.liberate_at=6"
+      ]
+    },
+    {
+      "name": "pr_c2_l6",
+      "set": [
+        "ai.boards=1,2",
+        "board.start_corrupted=2",
+        "board.liberate_at=6"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

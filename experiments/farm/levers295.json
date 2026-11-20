@@ -1,0 +1,199 @@
+{
+  "name": "levers295",
+  "note": "295: the early-win lever screen on the dev seeds: the judge on the three board pairs at d0 under r142 (an ambassador moves in, then acts). The asked numbers first (liberate_at 5, 1 corrupted city a country, arrives ready; every cell names its start_corrupted, since the baseline has moved to the pick, 2), then the two levers alone and together (_c2: board.start_corrupted 2; _l6, _l7: board.liberate_at 6, 7), and the arrives-spent arm (_a0: board.arrive_ready 0) alone and with each. Farm with `farm-seeds 36800 32 OUT levers295`.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": [
+        "board.start_corrupted=1"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2",
+        "board.start_corrupted=1"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2",
+        "board.start_corrupted=1"
+      ]
+    },
+    {
+      "name": "bp_c2",
+      "set": [
+        "board.start_corrupted=2"
+      ]
+    },
+    {
+      "name": "br_c2",
+      "set": [
+        "ai.boards=0,2",
+        "board.start_corrupted=2"
+      ]
+    },
+    {
+      "name": "pr_c2",
+      "set": [
+        "ai.boards=1,2",
+        "board.start_corrupted=2"
+      ]
+    },
+    {
+      "name": "bp_l6",
+      "set": [
+        "board.start_corrupted=1",
+        "board.liberate_at=6"
+      ]
+    },
+    {
+      "name": "br_l6",
+      "set": [
+        "ai.boards=0,2",
+        "board.start_corrupted=1",
+        "board.liberate_at=6"
+      ]
+    },
+    {
+      "name": "pr_l6",
+      "set": [
+        "ai.boards=1,2",
+        "board.start_corrupted=1",
+        "board.liberate_at=6"
+      ]
+    },
+    {
+      "name": "bp_l7",
+      "set": [
+        "board.start_corrupted=1",
+        "board.liberate_at=7"
+      ]
+    },
+    {
+      "name": "br_l7",
+      "set": [
+        "ai.boards=0,2",
+        "board.start_corrupted=1",
+        "board.liberate_at=7"
+      ]
+    },
+    {
+      "name": "pr_l7",
+      "set": [
+        "ai.boards=1,2",
+        "board.start_corrupted=1",
+        "board.liberate_at=7"
+      ]
+    },
+    {
+      "name": "bp_c2_l6",
+      "set": [
+        "board.start_corrupted=2",
+        "board.liberate_at=6"
+      ]
+    },
+    {
+      "name": "br_c2_l6",
+      "set": [
+        "ai.boards=0,2",
+        "board.start_corrupted=2",
+        "board.liberate_at=6"
+      ]
+    },
+    {
+      "name": "pr_c2_l6",
+      "set": [
+        "ai.boards=1,2",
+        "board.start_corrupted=2",
+        "board.liberate_at=6"
+      ]
+    },
+    {
+      "name": "bp_a0",
+      "set": [
+        "board.start_corrupted=1",
+        "board.arrive_ready=0"
+      ]
+    },
+    {
+      "name": "br_a0",
+      "set": [
+        "ai.boards=0,2",
+        "board.start_corrupted=1",
+        "board.arrive_ready=0"
+      ]
+    },
+    {
+      "name": "pr_a0",
+      "set": [
+        "ai.boards=1,2",
+        "board.start_corrupted=1",
+        "board.arrive_ready=0"
+      ]
+    },
+    {
+      "name": "bp_c2_a0",
+      "set": [
+        "board.start_corrupted=2",
+        "board.arrive_ready=0"
+      ]
+    },
+    {
+      "name": "br_c2_a0",
+      "set": [
+        "ai.boards=0,2",
+        "board.start_corrupted=2",
+        "board.arrive_ready=0"
+      ]
+    },
+    {
+      "name": "pr_c2_a0",
+      "set": [
+        "ai.boards=1,2",
+        "board.start_corrupted=2",
+        "board.arrive_ready=0"
+      ]
+    },
+    {
+      "name": "bp_c2_l6_a0",
+      "set": [
+        "board.start_corrupted=2",
+        "board.liberate_at=6",
+        "board.arrive_ready=0"
+      ]
+    },
+    {
+      "name": "br_c2_l6_a0",
+      "set": [
+        "ai.boards=0,2",
+        "board.start_corrupted=2",
+        "board.liberate_at=6",
+        "board.arrive_ready=0"
+      ]
+    },
+    {
+      "name": "pr_c2_l6_a0",
+      "set": [
+        "ai.boards=1,2",
+        "board.start_corrupted=2",
+        "board.liberate_at=6",
+        "board.arrive_ready=0"
+      ]
+    }
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

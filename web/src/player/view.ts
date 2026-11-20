@@ -221,7 +221,8 @@ function powersHtml(v: View, ctx: PlayerCtx, s: number, mine: Action[]): string 
   const rows = powers.map((c) => {
     const k = Number(c.id.split('.power.')[1]);
     const acts = mine.filter((a) => a.type === 'power' && Number(a.power) === k).map((a) => btn(a, 'Use', 'primary', actionLabel(a, false, true, ctx.cx))).join('');
-    return `<li class="${c.status.startsWith('ready') ? 'ready' : ''}" data-card="${esc(c.id)}" data-where="board:${s}"><b>${esc(c.name)}</b> <small>${esc(c.status)}</small>${acts}<div class="ptext">${esc(c.text ?? '')}</div></li>`;
+    // 295: a power used this round says so in its own style (three node powers may each be used in one round).
+    return `<li class="${c.status.startsWith('ready') ? 'ready' : c.status.startsWith('used') ? 'used' : ''}" data-card="${esc(c.id)}" data-where="board:${s}"><b>${esc(c.name)}</b> <small>${esc(c.status)}</small>${acts}<div class="ptext">${esc(c.text ?? '')}</div></li>`;
   }).join('');
   const innate = b.innate ? `<div class="innate"><b>${esc(b.innate.name)}:</b> ${esc(b.innate.text ?? '')}${b.tags?.length ? ` <small>${b.tags.map(esc).join(', ')} tag (printed)</small>` : ''}</div>` : '';
   return `${innate}${rows ? `<ul class="ppowers">${rows}</ul>` : ''}`;

@@ -61,7 +61,9 @@ liberated**: not by the Liberate action, and not by any card that liberates or f
 Rescue, Hostile Buyout, Great Liberation, Reclamation Crew or Back-Channel Talks, and Unity's Reclamation leaves
 its cube). **The answer is to deal with the troop first, then liberate:** remove it (the standard action Remove a
 troop, the boards' troop powers in [ai-powers.md](ai-powers.md), troop-removal cards, Unity's Peacekeepers and
-Disarmament Talks), or move it away with a Push or Gather (Checkpoint Network, the Protector's Patrol).
+Disarmament Talks), or move it away with a Push or Gather (Checkpoint Network, the Protector's Patrol). A troop on
+or next to one of your ambassadors is in your reach for anything that targets troops (r142), so the ambassador
+you moved onto a guarded city brings its guards into range.
 
 **Strike.** An icon. On an event card it is a line of the Card beat, after Infiltrate
 ([adversary.md](adversary.md)); the card lies face up a round ahead, so **the table sees a Strike coming for a full

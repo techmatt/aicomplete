@@ -748,8 +748,8 @@ fn places_node(effects: &[Op]) -> bool {
 }
 
 /// Whether power `k` is seat `s`'s second node power: one that places,
-/// after a placing power it shares no use with (276: Growth's options are one use, so none is a second; on the
-/// reworked boards the policy is inert, as the rules now give one placement route).
+/// after a placing power it shares no use with (r142: each node power is its own use, so every placing power
+/// after the board's first printed one is a second).
 fn second_node(w: &World, s: usize, k: usize) -> bool {
     let p = &ai::board(w, s).powers;
     (0..k).any(|j| ai::power_places(w, s, j) && !p[j].shares_use(&p[k]))
@@ -1365,7 +1365,7 @@ mod tests {
             let k = ai::board(&w, 0).powers.iter().position(|p| p.name == name).unwrap();
             Action::Power { seat: 0, power: k as u8 }
         };
-        // 276: Sprawl is the Builder's first Growth option (its first node power); Buy In comes second.
+        // r142: Sprawl is the Builder's first printed node power; Buy In comes second.
         let (buy, scrap) = (by_name("Buy In"), by_name("Scrap I"));
         let node = by_name("Sprawl");
         let no_powers = forced("no_powers");
@@ -1373,8 +1373,8 @@ mod tests {
         let no_node = forced("no_node");
         assert!(no_node.ruled_out(&w, &g, &buy) && no_node.ruled_out(&w, &g, &node));
         assert!(!no_node.ruled_out(&w, &g, &scrap));
-        // 276: Growth's options are one use: none is a second node power.
+        // r142: each node power is its own use: every one after the first is a second node power.
         let never_second = forced("never_second_node");
-        assert!(!never_second.ruled_out(&w, &g, &node) && !never_second.ruled_out(&w, &g, &buy));
+        assert!(!never_second.ruled_out(&w, &g, &node) && never_second.ruled_out(&w, &g, &buy));
     }
 }

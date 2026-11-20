@@ -730,10 +730,6 @@ pub struct AiBoard {
     /// cards, for everything but a sacrifice).
     #[serde(default)]
     pub tags: Vec<Tag>,
-    /// 149: Dispatch printed on the board: free ambassador moves each round
-    /// (unused ones are lost), before the track's Dispatch spaces add to it.
-    #[serde(default)]
-    pub moves: i64,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -767,9 +763,6 @@ pub struct Uncover {
     /// cards (requirements, discounts, per-tag income), never for a sacrifice.
     #[serde(default)]
     pub tags: Vec<Tag>,
-    /// 149: "Dispatch +N": N more free ambassador moves each round once uncovered.
-    #[serde(default)]
-    pub moves: i64,
     /// The track's end (068): a standing rule once uncovered.
     #[serde(default)]
     pub capstone: Option<Innate>,
@@ -791,8 +784,8 @@ pub struct Power {
     #[serde(default)]
     pub cost: Vec<Cost>,
     pub effects: Vec<Op>,
-    /// 276: powers sharing a group are one use a round between them: a board's Growth (pick one option) and a
-    /// tiered power's tiers (sacrifice more of the tag for a stronger effect). `None`: a power alone.
+    /// 276: powers sharing a group are one use a round between them: a tiered power's tiers (sacrifice more of
+    /// the tag for a stronger effect). `None`: a power alone (r142: a node power is one, each its own use).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub group: Option<String>,
     /// 276: a threshold power: usable only with at least N of the tag on your cards (board tags count, as for any

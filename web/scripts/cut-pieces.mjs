@@ -6,20 +6,28 @@
 // card's own name aside ("War Rooms", "Survey Drone Fleet": read from content/).
 // 293: Spill, Surge, Grow and seeding.
 // 294: the march and its beat, Muster and its token, the purge's steps and the clear-board bar.
+// 295: Dispatch and Dispatches (the Move action's old name and allotment) and Growth (the node powers' old group);
+// the card "Dispatch Control Room" keeps its name.
 import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /** The cut pieces' words. "in front of you" is no front; a capital War is the step and its log lines. */
 export const CUT_WORDS = String.raw`\b[Dd]rones?\b|\b[Mm]ilitary bases?\b|\bEnvoy\b|Buy a city's energy|\b[Hh]ost(?:s|ed|ing)?\b|\b[Ff]ronts?\b(?! of)|\bWar\b|\bwar (?:step|phase)\b|Warmongering|Twin City Compact|nearest players`
-  // 293: the adversary's Spill, Surge and Grow lines and a botnet's seeding (the players' Growth powers stay; a
-  // singular "seed" alone is the game's: "Seed", "Random seed").
+  // 293: the adversary's Spill, Surge and Grow lines and a botnet's seeding (a singular "seed" alone is the
+  // game's: "Seed", "Random seed").
   + String.raw`|\b[Ss]pill(?:s|ed)?\b|\b[Ss]urg(?:e|es|ed)\b|\b[Ss]eed(?:s|ed|ing)\b|[Bb]otnet(?:'s|s)? seed|\bseed (?:a |another )?[Bb]otnet|\bGrow\b`
   // 294: the march and its beat, Muster and its token, the purge's steps and the clear-board bar (the win's end
   // reason code is "liberated").
-  + String.raw`|\b[Mm]arch(?:es|ed|ing)?\b|\b[Mm]uster(?:s|ed|ing)?\b|\b[Pp]urg(?:e|es|ed|ing)\b|clear-board|\bbar \d+ ?/ ?\d+`;
+  + String.raw`|\b[Mm]arch(?:es|ed|ing)?\b|\b[Mm]uster(?:s|ed|ing)?\b|\b[Pp]urg(?:e|es|ed|ing)\b|clear-board|\bbar \d+ ?/ ?\d+`
+  // 295: the house words Dispatch and Growth, capitalized as the rules printed them.
+  + String.raw`|\bDispatch(?:es|ed)?\b|\bGrowth\b`;
 
-/** Content names that hold one of those words: taken out of the text before it is read. */
+/** 295: the one content name allowed to hold "Dispatch". */
+const KEPT_NAME = 'Dispatch Control Room';
+
+/** Content names that hold one of those words: taken out of the text before it is read. Of the names holding
+ *  "Dispatch" or "Growth", only `KEPT_NAME` is. */
 export function cutWordNames() {
   const dir = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'content');
   const re = new RegExp(CUT_WORDS);
@@ -27,7 +35,7 @@ export function cutWordNames() {
   const walk = (v) => {
     if (Array.isArray(v)) v.forEach(walk);
     else if (v && typeof v === 'object') {
-      if (typeof v.name === 'string' && re.test(v.name)) names.add(v.name);
+      if (typeof v.name === 'string' && re.test(v.name) && (v.name === KEPT_NAME || !/Dispatch|Growth/.test(v.name))) names.add(v.name);
       Object.values(v).forEach(walk);
     }
   };

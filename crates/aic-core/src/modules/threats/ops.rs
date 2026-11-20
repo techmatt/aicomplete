@@ -93,12 +93,11 @@ pub fn lose_ambassador(g: &mut GameState, cx: &mut Cx, seats: &[usize], why: Opt
             cx.add_resource(g, s, Resource::Ambassadors, -1);
             continue;
         }
-        let k = ambassador(s);
         let on = ambassador_hexes(g, s);
         let opts = on.iter().map(|&h| hex_opt(&w, h)).collect();
         let prompt = || format!("{}: lose the ambassador on which hex?", head(why, s));
         if let Some(i) = cx.choose_loss(s, prompt, opts)? {
-            cx.add_tokens(g, on[i], k, -1);
+            crate::modules::board::take_ambassadors(g, cx, s, on[i], 1);
         }
     }
     Ok(())

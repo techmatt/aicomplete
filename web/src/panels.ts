@@ -432,8 +432,8 @@ export function seatValuesHtml(v: View, seatIndex: number): string {
     const used = /(\d+)\s*\/\s*\d+/.exec(built?.label ?? '')?.[1] ?? String(built?.cards.length ?? 0);
     ai.push(`<span class="value" data-value="cards.slots" data-scope="${scope}"><span class="label">slots</span> <b>${used}<small>/${slots.value}</small></b></span>`);
   }
-  // 235: Dispatches left of the round's allotment: full is the start of a round, not a warning.
-  const other = s.values.filter((x) => !SEAT_DRAWN(x.key)).map((x) => valueChip(x, scope, x.label, !x.key.endsWith('.movement'))).join('');
+  // 295: ready ambassadors of those on the map: all ready is the start of a round, not a warning.
+  const other = s.values.filter((x) => !SEAT_DRAWN(x.key)).map((x) => valueChip(x, scope, x.label, !x.key.endsWith('.ambassadors_ready'))).join('');
   // 074: every completed card's converter; one this seat can't use says why. 265 (D112): and what it trades, as the
   // usable one's button does (it said "can't pay it" with no price).
   const trade = (x: Value) => (x.doc ?? '').split(', with a city')[0];

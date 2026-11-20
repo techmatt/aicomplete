@@ -298,10 +298,8 @@ pub struct Weights {
     pub hand_share: f64,
     /// 082, a probe: a supply ambassador in table mode is the table's row times this.
     pub table_ambassador: f64,
-    /// 149: a seat's Movement (free ambassador moves a round) over the rounds
-    /// left, at `rates.movement` credits each times this (horizon mode). Only the
-    /// Movement a round counts, never what is left this round: unused it is lost,
-    /// so holding it is worth nothing.
+    /// 149's weight on a seat's Dispatches a round. r142: inert (Dispatches are gone: every ambassador moves once
+    /// a round); kept so an agent spec naming `w.movement` still parses.
     pub movement: f64,
     /// 082: the share of its play cost a card still to be drafted or kept counts
     /// (table mode). The keep plan judges what a seat can pay; charged in full, a
@@ -528,6 +526,9 @@ fn danger_share(count: i64) -> f64 {
 
 /// 147 (D67): an armored node's exposure, as a share (the armor goes, not the node).
 const ARMORED_SHARE: f64 = 0.25;
+/// r142: what a seat's saving toward a Liberate counts while none of its ambassadors stands on the site yet (the
+/// Liberate is that ambassador's act, a round after it moves in).
+const STAND_OFF: f64 = 0.5;
 /// 147 (D67): rounds of a land token's Discord drip the eval counts (at most).
 const BLIGHT_ROUNDS: f64 = 3.0;
 
@@ -787,7 +788,7 @@ impl Weights {
             // 128: per-tag ops at the count they're played at; spare energy cheap.
             tag_hand: 0.5,
             energy_cap: 4.0,
-            // 149: Movement spaces at `rates.movement` a round (the free move).
+            // r142: inert (no Dispatches).
             movement: 1.0,
             // 288: the tie was screened on the flat agents only (the strategist turns it back on).
             am_tie: 0.0,
@@ -860,8 +861,6 @@ pub struct Eval {
     am_cost: f64,
     /// 288 (`w.am_tie`): flat mode's antimatter income unit, in points (`ANTIMATTER_INCOME_UNIT`, or tied).
     am_income: f64,
-    /// 149: `rates.movement`, a free move a round in credits, read once.
-    movement_rate: f64,
     /// 082: each strategy's multiplier for each card and phase.
     mults: Arc<Mults>,
     /// 082: each seat's strategy, once chosen (none: every multiplier 1).
@@ -1160,7 +1159,6 @@ impl Eval {
                     .collect(),
             ),
             mix: tbl.rate("own_mix") > 0.0,
-            movement_rate: tbl.rate("movement"),
             tbl,
             am_cost,
             am_income,
@@ -1487,19 +1485,23 @@ impl Eval {
                     if let Some(need) = board::liberate_cost(&world, g, h).filter(|_| self.liberate_on) {
                         // r75: the seat's own ambassadors standing on it pay first, its supply the rest
                         // (166 spent anyone's).
+                        // r142: Liberate is the act of an ambassador standing on the site, so a seat with one there
+                        // counts whole and a seat only in reach half (it has still to move in).
                         if w.purge != 0.0 {
                             for (s, b) in bill.iter_mut().enumerate().take(seats) {
-                                if near[s] >> h & 1 != 0 {
+                                if near[s] >> h & 1 != 0 || t.ambassador[s] > 0 {
                                     *b += (need - board::site_standing(g, s, h)).max(0);
                                 }
                             }
                         }
-                        let held = (0..seats)
-                            .filter(|&s| near[s] >> h & 1 != 0)
-                            .map(|s| g.resource(s, Resource::Ambassadors) + board::site_standing(g, s, h))
-                            .max()
-                            .unwrap_or(0) as f64;
-                        v += w.corrupted * w.freeing * 0.25 * (held / need.max(1) as f64).min(1.0);
+                        let share = (0..seats)
+                            .filter(|&s| near[s] >> h & 1 != 0 || t.ambassador[s] > 0)
+                            .map(|s| {
+                                let held = (g.resource(s, Resource::Ambassadors) + board::site_standing(g, s, h)) as f64;
+                                (held / need.max(1) as f64).min(1.0) * if t.ambassador[s] > 0 { 1.0 } else { STAND_OFF }
+                            })
+                            .fold(0.0, f64::max);
+                        v += w.corrupted * w.freeing * 0.25 * share;
                     }
                     // 137: a player ambassador standing on it blocks its diversion.
                     if t.ambassador[..seats].iter().any(|&n| n > 0) {
@@ -1624,12 +1626,13 @@ impl Eval {
                     // 137: saving up for the Liberate action, by the best-placed
                     // seat in reach (as on a city); an ambassador standing on it blocks its compute.
                     if let Some(need) = board::liberate_cost(&world, g, h).filter(|_| self.liberate_on) {
-                        let held = (0..seats)
-                            .filter(|&s| near[s] >> h & 1 != 0)
-                            .map(|s| g.resource(s, Resource::Ambassadors) + board::site_standing(g, s, h))
-                            .max()
-                            .unwrap_or(0) as f64;
-                        let share = (held / need.max(1) as f64).min(1.0);
+                        let share = (0..seats)
+                            .filter(|&s| near[s] >> h & 1 != 0 || t.ambassador[s] > 0)
+                            .map(|s| {
+                                let held = (g.resource(s, Resource::Ambassadors) + board::site_standing(g, s, h)) as f64;
+                                (held / need.max(1) as f64).min(1.0) * if t.ambassador[s] > 0 { 1.0 } else { STAND_OFF }
+                            })
+                            .fold(0.0, f64::max);
                         v += (w.station + flip) * w.station_freeing * share * share;
                     }
                     if t.ambassador[..seats].iter().any(|&n| n > 0) {
@@ -2448,11 +2451,6 @@ impl Eval {
                     unit[i]
                 };
                 v += w.horizon * left * u * n as f64;
-            }
-            if w.movement > 0.0 {
-                // 149: the free moves a round, at the credit's weight.
-                let mv = ai::movement(&world, g, s) as f64;
-                v += w.horizon * left * w.movement * unit[0] * self.movement_rate * mv;
             }
             v += w.horizon * w.production * left * self.energy_income_unit() * *made as f64;
             for id in g.pile(&cards::built(s)) {

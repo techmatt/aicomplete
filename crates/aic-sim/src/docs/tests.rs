@@ -105,7 +105,7 @@ fn every_standard_action_is_named_everywhere() {
     for act in standard {
         let key = format!("standard:{}", act.name());
         assert!(names_block.contains(&format!("\n  {}: ", act.name())), "{} has no STANDARD_NAMES entry", act.name());
-        // Dispatch spends no resource (the seat's Dispatches), so it has no give / get row.
+        // Move spends no resource (the ambassador's action), so it has no give / get row.
         let priced = act !=aic_core::modules::board::StandardAction::Move;
         assert!(!priced || srcs.contains(&key.as_str()), "{key} has no design_check.json standard_actions row");
         assert!(usage.contains(&key.as_str()), "{key} has no design_check.json usage row");
@@ -292,7 +292,6 @@ fn a_track_space_prints_income_upgrade_and_cost() {
         keep2: true,
         cost: 3,
         tags: vec![],
-        moves: 0,
         capstone: None,
         insight: Some(9),
     };

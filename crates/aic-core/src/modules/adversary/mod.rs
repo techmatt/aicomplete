@@ -51,7 +51,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("stage_swap_at", 0, 5, "the difficulty level from which stage1_removed, stage2_added and stage3_added apply"),
     ParamSpec::int("stage2_removed", 0, 3, "difficulty 3+: stage-II cards removed (a shorter round cap)"),
     ParamSpec::int("stage1_added", 0, 3, "difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step)"),
-    ParamSpec::int("extra_corrupted", 0, 3, "difficulty 4: more cities per country start corrupted"),
+    ParamSpec::int("extra_corrupted", 0, 3, "difficulty 4: more cities per country start corrupted (none past the cities the map prints corrupted, 2 a country: nothing while `board.start_corrupted` is 2)"),
     ParamSpec::list("compute_income", 0, 30, "the adversary's base compute income a country a round, at difficulty 0-4 (times the countries: per board)"),
     ParamSpec::list("infiltrate_agents", 0, 5, "275: agents an Infiltrate line lands on each city it names, at difficulty 0-4"),
     ParamSpec::int("infiltrate_facility_cap", 0, 5, "282: at most this many of an Infiltrate line's agents land on each research station, factory or botnet hex it names (cities take every one)"),

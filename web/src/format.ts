@@ -75,7 +75,7 @@ const STANDARD_NAMES: Record<string, string> = {
   station: 'Build a research station',
   remove: 'Remove agents',
   lift: 'Lift Fallout',
-  move: 'Dispatch a player ambassador',
+  move: 'Move an ambassador',
   ambassador: 'Gain a player ambassador',
   liberate: 'Liberate a site',
   insight: 'Turn a cube into insight',
@@ -172,13 +172,13 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
     case 'standard': {
       // The rules publish each standard action's words and cost in the view.
       const s = cx.view?.standard.find((x) => x.act === String(a.act));
-      // 184: with no view (the step line, the log) the key printed: "standard: move" for Dispatch (r77).
+      // 184: with no view (the step line, the log) the key printed: "standard: move" for Move an ambassador.
       if (!s) return STANDARD_NAMES[String(a.act)] ?? `standard: ${words(String(a.act))}`;
       const costs = ([[s.energy, 'energy'], [s.credits, 'credits'], [s.chips, 'chips'], [s.ambassadors, 'ambassadors']] as const)
         .filter(([v]) => v > 0)
         .map(([v, what]) => amount(v, what));
       // 265 (D109): its printed name and cost; the rule text (`actionRule`) is the button's hover (the first clause
-      // of the rule read "Target: a piece or a Botnet. Use 1 Dispatch: ...", or printed the cost twice). Research
+      // of the rule read "Target: a piece or a Botnet. ...", or printed the cost twice). Research
       // cubes come from the doc's "; costs ..." (board/view.rs): the view's fields drop them.
       const cubes = /; costs .*?(\d+) research cubes?/.exec(s.doc);
       if (cubes) costs.push(amount(Number(cubes[1]), 'research_cubes'));
@@ -354,7 +354,7 @@ const KNOWN: Record<string, string> = {
 
 export function tokenColor(kind: string): string {
   if (KNOWN[kind]) return KNOWN[kind];
-  if (/^(cube|node|ambassador):\d+$/.test(kind)) return '#37474f';
+  if (/^(cube|node|ambassador|tipped):\d+$/.test(kind)) return '#37474f';
   let h = 0;
   for (const c of kind) h = (h * 31 + c.charCodeAt(0)) >>> 0;
   return `hsl(${h % 360} 65% 38%)`;
@@ -366,6 +366,8 @@ const TOKEN_NAMES: Record<string, string> = {
   botnet: 'botnet',
   fallout: 'Fallout (nothing may be built here: no node, factory or station)',
   ambassador: 'ambassador',
+  // 295: of a seat's ambassadors on the hex, those that have used the round's action (the board lays them over).
+  tipped: 'tipped ambassador',
   station: 'research station',
   troop: 'adversary troop',
   harden: 'hardening token',

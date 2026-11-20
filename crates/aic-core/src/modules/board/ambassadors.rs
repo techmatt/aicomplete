@@ -20,13 +20,123 @@ pub fn ambassadors_on_board(g: &GameState, seat: usize) -> i64 {
 /// agent there (both removed, no Unity); otherwise it stands on
 /// the piece (137: claiming and liberating are standard actions, so an
 /// arriving ambassador claims nothing).
+///
+/// r142: a piece coming onto the board (from a supply, a converted agent, a card's "place") arrives ready
+/// (`board.arrive_ready` 1; 0, the screen's off arm: it arrives with its action used). One a card moves from
+/// another hex goes through [`carry_ambassador`].
 pub fn place_ambassador(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
+    let used = !arrive_ready(&cx.world);
+    place_ambassador_as(g, cx, seat, h, used);
+}
+
+/// r142: whether an ambassador a card, a power or your supply puts on the board arrives ready.
+pub fn arrive_ready(w: &World) -> bool {
+    w.int("board.arrive_ready") != 0
+}
+
+/// [`place_ambassador`], the piece arriving with its action `used` (tipped over) or ready. Returns whether it
+/// stands there (it didn't cancel an agent).
+pub fn place_ambassador_as(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, used: bool) -> bool {
     if g.tokens(h, ADV_AMBASSADOR) > 0 {
         adversary::remove(g, cx, h, 1);
         cx.tally(g, "board.canceled", 1);
-        return;
+        return false;
+    }
+    // A marker left by a piece that has gone is no mark on the one arriving.
+    let stale = g.tokens(h, tipped(seat)) - g.tokens(h, ambassador(seat));
+    if stale > 0 {
+        cx.add_tokens(g, h, tipped(seat), -stale);
     }
     cx.add_tokens(g, h, ambassador(seat), 1);
+    if used {
+        cx.add_tokens(g, h, tipped(seat), 1);
+    }
+    true
+}
+
+/// r142: one of seat `s`'s ready ambassadors on hex `h` uses its action for the round (it is tipped over).
+pub fn tip_ambassador(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
+    if ready_ambassadors(g, seat, h) > 0 {
+        cx.add_tokens(g, h, tipped(seat), 1);
+    }
+}
+
+/// r142: up to `n` of seat `s`'s ambassadors leave hex `h` (canceled, spent, armor, moved by a card): the one
+/// home of "an ambassador leaves a hex". A ready one leaves first, so the tipped marker is trimmed to the
+/// ambassadors left there. Returns how many went.
+pub fn take_ambassadors(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, n: i64) -> i64 {
+    let gone = -cx.add_tokens(g, h, ambassador(seat), -n);
+    let over = g.tokens(h, tipped(seat)) - g.tokens(h, ambassador(seat));
+    if over > 0 {
+        cx.add_tokens(g, h, tipped(seat), -over);
+    }
+    gone
+}
+
+/// r142: a card or power moves one of seat `s`'s ambassadors from hex `from` onto hex `to`. The move is not the
+/// piece's own action, so it stays as it was: a ready one (one leaves first where any stands) arrives ready, a
+/// tipped one tipped. Returns whether it stands there (it didn't cancel an agent).
+pub fn carry_ambassador(g: &mut GameState, cx: &mut Cx, seat: usize, from: usize, to: usize) -> bool {
+    let used = ready_ambassadors(g, seat, from) == 0 || !arrive_ready(&cx.world);
+    take_ambassadors(g, cx, seat, from, 1);
+    place_ambassador_as(g, cx, seat, to, used)
+}
+
+/// r142: the round ends: every ambassador stands ready again.
+pub(super) fn stand_ambassadors(g: &mut GameState, cx: &mut Cx) {
+    for h in 0..g.hexes.len() {
+        for s in 0..g.seats.len() {
+            let n = g.tokens(h, tipped(s));
+            if n > 0 {
+                cx.add_tokens(g, h, tipped(s), -n);
+            }
+        }
+    }
+}
+
+/// r142, the Move action: where one of seat `s`'s ambassadors may move with its action: a land hex next to a
+/// ready one, or any of the seat's nodes (from the board, or from its supply: the arrival).
+pub fn move_targets(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
+    let supply = g.resource(seat, Resource::Ambassadors) > 0;
+    let ready: Vec<usize> = (0..g.hexes.len()).filter(|&h| ready_ambassadors(g, seat, h) > 0).collect();
+    (0..g.hexes.len())
+        .filter(|&h| {
+            !is_ocean(w, h)
+                && ((g.tokens(h, node(seat)) > 0 && (supply || ready.iter().any(|&x| x != h)))
+                    || w.map.hexes[h].neighbors.iter().any(|x| ready.contains(x)))
+        })
+        .collect()
+}
+
+/// r142, the Move action: one of seat `s`'s ambassadors moves onto hex `to` and has used its action: a ready one
+/// next to it, or (onto one of the seat's nodes) a ready one anywhere or one from its supply. From the supply it
+/// arrives ready under `board.arrive_ready`.
+pub fn walk_ambassador(g: &mut GameState, cx: &mut Cx, seat: usize, to: usize) -> Res {
+    let w = cx.world;
+    let home = g.tokens(to, node(seat)) > 0;
+    let from: Vec<usize> = (0..g.hexes.len())
+        .filter(|&h| h != to && ready_ambassadors(g, seat, h) > 0 && (home || w.map.hexes[to].neighbors.contains(&h)))
+        .collect();
+    let mut opts = Vec::new();
+    if home && g.resource(seat, Resource::Ambassadors) > 0 {
+        opts.push(opt("from your supply"));
+    }
+    let off = opts.len();
+    opts.extend(from.iter().map(|&h| hex_opt(&w, h)));
+    let prompt = || format!("Seat {seat}: move which ambassador to {}?", hex_name(&w, to));
+    let Some(i) = cx.choose(seat, prompt, opts)? else {
+        return Ok(());
+    };
+    if i < off {
+        cx.add_resource(g, seat, Resource::Ambassadors, -1);
+        place_ambassador(g, cx, seat, to);
+        cx.tally(g, "board.amb_arrivals", 1);
+    } else {
+        take_ambassadors(g, cx, seat, from[i - off], 1);
+        place_ambassador_as(g, cx, seat, to, true);
+    }
+    cx.tally(g, &KeyBuf::new("board.amb_moves.").num(seat), 1);
+    Ok(())
 }
 
 /// r75 (Matt's ruling 1): an agent arriving on hex `h` cancels one player ambassador standing there, 1 for 1;
@@ -45,7 +155,7 @@ pub fn agent_cancels(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<Option<usi
         }
     };
     let s = seats[i];
-    cx.add_tokens(g, h, ambassador(s), -1);
+    take_ambassadors(g, cx, s, h, 1);
     Ok(Some(s))
 }
 
@@ -139,7 +249,7 @@ pub fn pay_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
     let k = ambassador(seat);
     let n = g.tokens(h, k).min(left);
     if n > 0 {
-        cx.add_tokens(g, h, k, -n);
+        take_ambassadors(g, cx, seat, h, n);
         cx.tally(g, "board.site_standing_spent", n);
         left -= n;
     }
@@ -184,7 +294,7 @@ pub fn pay_card_claim(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
     let k = ambassador(seat);
     let n = g.tokens(h, k).min(left);
     if n > 0 {
-        cx.add_tokens(g, h, k, -n);
+        take_ambassadors(g, cx, seat, h, n);
         cx.tally(g, "board.site_standing_spent", n);
         left -= n;
     }
@@ -265,7 +375,6 @@ pub fn move_ambassador(g: &mut GameState, cx: &mut Cx, seat: usize, to: usize) -
 /// them from on or next to its target; the supply stays a source).
 pub fn move_ambassador_from(g: &mut GameState, cx: &mut Cx, seat: usize, to: usize, sources: Option<&[usize]>) -> Res {
     let w = cx.world;
-    let k = ambassador(seat);
     let mut from = ambassador_hexes(g, seat);
     from.retain(|&h| h != to && sources.is_none_or(|s| s.contains(&h)));
     let mut opts = Vec::new();
@@ -283,10 +392,10 @@ pub fn move_ambassador_from(g: &mut GameState, cx: &mut Cx, seat: usize, to: usi
     };
     if i < off {
         cx.add_resource(g, seat, Resource::Ambassadors, -1);
+        place_ambassador(g, cx, seat, to);
     } else {
-        cx.add_tokens(g, from[i - off], k, -1);
+        carry_ambassador(g, cx, seat, from[i - off], to);
     }
-    place_ambassador(g, cx, seat, to);
     // 149: ambassador moves a seat makes in a game (the movement read).
     cx.tally(g, &KeyBuf::new("board.amb_moves.").num(seat), 1);
     Ok(())

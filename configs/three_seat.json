@@ -6,8 +6,9 @@
       "module": "board",
       "variant": "corps",
       "params": {
-        "start_corrupted": 1,
+        "start_corrupted": 2,
         "start_ambassadors": 1,
+        "arrive_ready": 1,
         "aligned_bonus": 0,
         "station_cubes": 1,
         "owned_station_cubes": 1,

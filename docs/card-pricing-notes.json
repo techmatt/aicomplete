@@ -5,7 +5,7 @@
   "agency_directorate": "r134 (282): 2 cr kept; stronger (unplayed): a Security play adds 2 Operatives (was 1), at 4 gain 4 insight (was 2): 2 fires in 3-4 rounds 21.3 against pay 15.33: 1.39 (0.35-0.52 before).",
   "agency_field_station": "r127 (271): the draw economy: draws 0 when played (was 2); 6 cr (was 14), moved by its change in the effect ledger's reasoned value (floor 3); the balance pass follows.",
   "air_gap": "r83 (191, D82): Sway 1 cut to fit 7.5 pt; 10 to 6 credits, 0 insight.",
-  "amnesty_decree": "r106 (234): price kept (15 cr); Place 2 Ambassadors on the target (was Gain 2): an ambassador at 8 either way, a Dispatch saved.",
+  "amnesty_decree": "r106 (234): price kept (15 cr); Place 2 Ambassadors on the target (was Gain 2): an ambassador at 8 either way, its move onto the target saved.",
   "annihilation_lance": "r106 (234): 10 to 8 cr; every Agent and Troop on the target (was any hex), 2 Troops on or next to it.",
   "antimatter_accord": "r94 (213, new): a major: 8 cr, 1 am, 1 ins: 6 ambassadors, 4 Unity; anchors: pay 38; get 64 = 1.68; values.json: pay 28.5; get 41.",
   "antiproton_foundry": "r124 (263, Matt's antimatter supply trim): no antimatter when built (the plant's Action is the steady source); Action 1 chip: 1 antimatter and 2 energy; 12 cr, 1 ins; anchors: pay 52; get 108 = 2.08 (was 126 with the when-built 1).",

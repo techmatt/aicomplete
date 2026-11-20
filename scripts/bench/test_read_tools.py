@@ -10,7 +10,7 @@ of the same seeds gives:
 - `read_lib.py`: a `PAIR-ARM` read's cells decoded from the spec, the arms' paired gap, counters, powers, resources;
   `--agent-arms`, `READ@LABEL` and `--levels` (281); `--arm NAME=SPEC` and a tag collision (286).
 - `cards/play_read.py --variant` (281) keeps a lever screen's arm.
-- `fresh_read.py` (286): old → new by agent and level, Growth and per-round power keys out of non-card turns.
+- `fresh_read.py` (286): old → new by agent and level, node powers and per-round power keys out of non-card turns.
 
 No build and no binary: the reads are written here. Python's standard library only.
 """
@@ -470,7 +470,7 @@ class FreshRead(unittest.TestCase):
                 f.write(json.dumps(game(0, False)) + '\n')
             md = os.path.join(tmp, 'read.md')
             text = run(fresh_read.main, [new, old, '--md', md, '--growth', 'buy_in'])
-            # 10 seat-rounds: 4 plays; 2 standard + 1 power (Growth and the .r01 key left out) + 1 use
+            # 10 seat-rounds: 4 plays; 2 standard + 1 power (the node power and the .r01 key left out) + 1 use
             self.assertIn('| strategist | d2 | 0.0 → **100.0** | 5.00 → 5.00 | 1.00 → 1.00 | 2.00 → 2.00 | 1 → 0 | '
                           '0.0 → 0.0 | 2.0 → 2.0 | 0.40 / 0.40 → 0.40 / 0.40 |', text)
             self.assertIn('| greedy | d2 | - → **100.0** |', text)
@@ -478,7 +478,10 @@ class FreshRead(unittest.TestCase):
                 self.assertEqual(f.read(), text)
             with self.assertRaisesRegex(SystemExit, 'unknown flag --agent'):
                 fresh_read.main([new, old, '--agent', 'x'])
-            self.assertIn('buy_in', fresh_read.growth_slugs())
+            # r142: the node powers are the powers that place a node (no `Growth` group), three a board
+            self.assertEqual(fresh_read.growth_slugs(), {
+                'buy_in', 'sprawl', 'annex', 'levy', 'outpost', 'accord', 'field_survey', 'peer_review',
+                'field_station'})
 
 
 if __name__ == '__main__':

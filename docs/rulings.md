@@ -102,8 +102,9 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
   production limits: a runaway pile is fixed at card level. The anchors' table and the worked checks:
   [card-guidelines.md](card-guidelines.md).
 - **Standard actions (Matt, 2026-11-12):** poorly priced hedges, never the better route; none removes corruption
-  except Lift (about 2 research cubes); Liberate needs a site free of agents, and of troops on or next to it
-  (2026-11-19), and is the win route.
+  except Lift (about 2 research cubes); Liberate is the act of your ready ambassador standing on the site
+  (2026-11-19: move in, then act; its price set by calibration), needs the site free of agents, and of troops on or
+  next to it (2026-11-19), and is the win route.
 - **Matt, 2026-11-17:** **cut the Claim standard action** (cards claim).
 - **Sell a card is exempt from job-no-card** (Matt, 2026-11-16): no card needs to sell.
 
@@ -128,14 +129,17 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
 
 - **Nodes (design doc):** nothing places a node anywhere (next to your nodes, occasionally range 2; cards may target); node
   powers give their bonus by position.
-- **Board shape (Matt, 2026-11-18):** boards keep Spirit Island's shape (Growth one easy + two costly, tiered
-  sacrifice powers, at most a few "≥ N tags" threshold powers where hoarding is the point).
+- **Board shape (Matt, 2026-11-18; node powers 2026-11-19):** boards print ordinary node powers, one cheap and one
+  or two costly ones that carry a benefit, usable in the same round (the 2026-11-18 Growth, pick one of one easy +
+  two costly, is overturned), beside tiered sacrifice powers and at most a few "≥ N tags" threshold powers where
+  hoarding is the point.
 - **Moving pieces (Matt, 2026-11-09):** Gather and Push: up to N, distance 1, into or out of a hex in reach;
-  ambassadors, agents and troops move, never botnets or markers. Liberate spends any seat's ambassadors on the site
-  first.
-- **Ambassador actions (Matt, idea, 2026-11-10):** ambassadors stand "ready" and tip over when used (move 1 hex by
-  default; some boards add a botnet removal); would replace the Movement resource. Open whether it adds more than it
-  costs.
+  ambassadors, agents and troops move, never botnets or markers. Liberate is the act of your ready ambassador on
+  the site (2026-11-19): yours standing there pay first, then your supply, never another player's.
+- **Ambassador actions (Matt, 2026-11-19; the 2026-11-10 idea, ruled):** each ambassador has one action a round:
+  move (to a hex next to it, or to any of your nodes) or act; it stands ready and tips over when used. It arrives
+  ready (to try: say how it played, and what arriving spent would change). Dispatches go, and no board gets more.
+  Liberation is move in, then act; its price is set by calibration.
 
 ## Adversary and harms
 
@@ -159,7 +163,7 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
   their row, their event mix and one rule; the map shows which threat is growing. **Rows are data**, content not
   code; the Militarist's row now holds Garrison and Strike icons (294, by editing the row). The adversary's
   Grow need not be kept: escalate and the one-output rule may replace or reshape it wherever that makes its turn
-  simpler (its line left the event cards at r140; the players' Growth is untouched).
+  simpler (its line left the event cards at r140).
 - **Matt, 2026-11-19:** the research track advances every K cubes, start about 3 a country, cubes from round 1
   (overturns 2026-11-17's threshold of 5, 5, 5, 4, 4; the start is the building item's to propose: 0 since 293).
   **K is 2 a country** (on 293's read; overturns 293's K 1), and the row is fed so that
@@ -187,8 +191,12 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
 ## Unity, Discord and winning
 
 - **Winning (Matt, 2026-11-19; overturns 156's stepped purge):** the win is no corrupted city. Purge steps are
-  gone: botnets, agents and troops never count. An early d0 win by coordinated players is fine, though not easy.
-  Card tiers count the current tip.
+  gone: botnets, agents and troops never count. Card tiers count the current tip.
+- **The early-win bar (Matt, 2026-11-19):** a round-2 or round-3 win is rare. The levers are the liberation price
+  (`board.liberate_at`) and the starting corrupted cities (`board.start_corrupted`). An early d0 win by coordinated
+  players is still fine, just not easy or usual. **Rounds:** 7-10 a game is the rough aim, not exact ("whatever
+  ends up being fun, roughly identical to generations in Terraforming Mars"): a direction for the two levers, not a
+  bar.
 - **Unity and Discord cards (Matt, 2026-11-09; direction locked):** Spirit Island fear-card shape: board conditions,
   "each player", one verb per card, tiers widening it; Unity prohibitions switch an adversary step off where a
   condition holds. Unity cards help, they don't clear: at most one tier-III card clears cities (2026-11-12).
@@ -211,11 +219,11 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
 - **Design principles (Matt, 2026-11-12; [principles.md](principles.md) *Design warnings*, checked by
   `scripts/design_check.py`):** capstone and tier-2 resources scarce and earned; no power or effect on every board;
   standard actions poor hedges; Unity and Discord follow the story (extreme acts raise Discord); fewer tokens and
-  less tracking; engines over dials; games aim at 7-9 rounds (Matt, 2026-11-19). Warnings never gate; they go to Matt first.
+  less tracking; engines over dials; games aim at 7-10 rounds, roughly (Matt, 2026-11-19). Warnings never gate; they go to Matt first.
 
 ## Table time and the card economy
 
-- **Table time (Matt, 2026-11-18):** the ~2 h target is **relaxed: games aim at 7-9 rounds (Matt, 2026-11-19), and the sim's minutes
+- **Table time (Matt, 2026-11-18):** the ~2 h target is **relaxed: games aim at 7-10 rounds, roughly (Matt, 2026-11-19), and the sim's minutes
   are assumed wrong until Matt plays it himself and corrects them.** Yardstick: 278's `breakdown.py` at 268's rates
   (15 s a decision) plus the sense that similar strategy and play quality with less bookkeeping, token maintenance,
   math and tracking is better. Complexity slightly (not significantly) above medium Spirit Island. Hard

@@ -169,6 +169,8 @@ fn a_troop_on_or_next_to_a_corrupted_site_guards_it_from_liberation() {
     let w = rules.world();
     let (c, near, beside, _) = by_a_city(&mut g, m);
     put(&mut g, c, ADV_CUBE, 1);
+    // r142: the Liberate is the act of the seat's ambassador on the city.
+    put(&mut g, c, ambassador(0), 1);
     set_res(&mut g, 0, Resource::Ambassadors, 5);
     set_res(&mut g, 0, Resource::Credits, 30);
     let liberate = std_act(0, "liberate");

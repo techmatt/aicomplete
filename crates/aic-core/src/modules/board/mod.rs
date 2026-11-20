@@ -64,15 +64,16 @@ pub static DEF: ModuleDef = ModuleDef {
         name: "corps",
         summary: "Each country is a printed piece with cities, research stations and factories",
         params: &[
-            ParamSpec::int("start_corrupted", 0, 3, "cities per country that start corrupted"),
+            ParamSpec::int("start_corrupted", 0, 2, "cities per country that start corrupted (the map prints 2 a country: its printed corruption order)"),
             ParamSpec::int("start_ambassadors", 0, 10, "player ambassadors each player starts with"),
+            ParamSpec::int("arrive_ready", 0, 1, "r142 (Matt, 2026-11-19, to try): 1, an ambassador a card, a power or your supply puts on the board arrives ready (it may still move or act that round); 0, it arrives with its action used"),
             ParamSpec::list("corp_energy", 0, 10, "energy cubes each city of country i makes a round (a megacorp parameter; the list repeats)"),
             ParamSpec::int("aligned_bonus", 0, 10, "extra energy an aligned city gives its owner"),
             ParamSpec::int("station_cubes", 0, 5, "research cubes a neutral station makes a round (an adversary one: that many onto the adversary's research track, in its Income beat; compute with adversary.research_at 0)"),
             ParamSpec::int("owned_station_cubes", 0, 5, "research cubes a player-owned station makes its owner a round"),
             ParamSpec::int("divert_discord", 0, 5, "Discord per unit of a corrupted city's energy diverted to the adversary"),
             ParamSpec::int("ambassador_discord", 0, 5, "Discord per unit of energy, each round, of an aligned city an agent darkens"),
-            ParamSpec::int("liberate_at", 1, 10, "the Liberate action: ambassadors that liberate an adversary city"),
+            ParamSpec::int("liberate_at", 1, 10, "the Liberate action (an ambassador on the site acts): ambassadors that liberate an adversary city"),
             ParamSpec::int("claim_station", 1, 10, "the Liberate action: ambassadors that liberate an adversary research station (262 cut the Claim action that also paid it; the name stays)"),
             ParamSpec::int("claim_factory", 1, 10, "the Liberate action: ambassadors that liberate an adversary factory (262 cut the Claim action that also paid it; the name stays)"),
             ParamSpec::int("start_nodes", 1, 3, "nodes each player starts with: its start hex, then the lowest-numbered free land hexes next to it (the extras off no track)"),
@@ -96,11 +97,11 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("cities_unowned", 0, 1, "254 (Matt's candidate): 1, players never own a city (no bound city at setup, no city claims, a liberated city is its country's); 0, r114's rule"),
             ParamSpec::int("antimatter_cubes", 0, 10, "standard action, the desperate source: research cubes for 1 antimatter and `antimatter_energy` energy, no limit a round (0: no such action)"),
             ParamSpec::int("antimatter_energy", 0, 5, "262 (Matt, 2026-11-17): standard action Make antimatter: energy it pays beside its antimatter (a binding resource; still a poor hedge at the anchors)"),
-            ParamSpec::int("botnet_credits", 1, 50, "standard action: credits to take down a botnet in reach on a hex holding your ambassador (it stays)"),
-            ParamSpec::list("std_off", 0, 11, "a probe's switch: standard actions not offered, by place in the table from 1 (station, remove, lift, dispatch, ambassador, liberate, insight, botnet, antimatter, troop, factory; 0: none off)"),
+            ParamSpec::int("botnet_credits", 1, 50, "standard action: credits for your ready ambassador on a botnet's hex to take it down (the ambassador stays, tipped)"),
+            ParamSpec::list("std_off", 0, 11, "a probe's switch: standard actions not offered, by place in the table from 1 (station, remove, lift, move, ambassador, liberate, insight, botnet, antimatter, troop, factory; 0: none off)"),
         ],
         phases: &[
-            PhaseSpec::decision("act", "standard actions and projects: station, remove, lift Fallout, dispatch (from the round's Dispatches), ambassador, liberate, sell, take down a botnet, remove a troop; completed megaprojects' converters"),
+            PhaseSpec::decision("act", "standard actions and projects: station, remove, lift Fallout, move an ambassador (its one action a round), ambassador, liberate, sell, take down a botnet, remove a troop; completed megaprojects' converters"),
             PhaseSpec::auto("produce", "the income step (economy's upkeep follows at once): players' factories make chips, cities energy for every player with a node on or next to them (an agent on one stays and darkens it), players' and neutral research stations cubes (an opposing piece blocks one); full megaprojects complete. The adversary's sites make their outputs in its Income beat"),
             PhaseSpec::auto("cleanup", "count the country flags down"),
         ],
@@ -156,11 +157,11 @@ const NEW_FACTORY: &str = "board.new_factory.";
 const DESTROYED_AT: &str = "board.destroyed_at.";
 
 /// The marks a round's end clears outright ([`expire_marks`]); each is in [`MARKS`] too (221: a test checks).
-const ROUND_MARKS: [&str; 4] = [NEW_FACTORY, DESTROYED_AT, MOVED, STD_ONCE];
+const ROUND_MARKS: [&str; 3] = [NEW_FACTORY, DESTROYED_AT, STD_ONCE];
 
 /// 135: every per-round mark [`expire_marks`] counts down, trues or clears
 /// (the view lists them as bookkeeping).
-pub(super) const MARKS: [&str; 7] = [HEX_FLAGS, STAND, OCCUPIED, NEW_FACTORY, DESTROYED_AT, MOVED, STD_ONCE];
+pub(super) const MARKS: [&str; 6] = [HEX_FLAGS, STAND, OCCUPIED, NEW_FACTORY, DESTROYED_AT, STD_ONCE];
 
 /// How many of hex `h`'s adversary troops stand.
 pub fn standing(g: &GameState, h: usize) -> i64 {
@@ -520,13 +521,8 @@ fn expire_marks(g: &mut GameState, cx: &mut Cx) {
             cx.set_key(g, &k, 0);
         }
     }
-    // 149: Dispatch unused this round is lost (tallied, for the movement read).
-    for s in 0..g.seats.len() {
-        let lost = moves_left(&cx.world, g, s);
-        if lost > 0 {
-            cx.tally(g, &KeyBuf::new("board.moves_lost.").num(s), lost);
-        }
-    }
+    // r142: every ambassador stands ready again.
+    stand_ambassadors(g, cx);
     for prefix in ROUND_MARKS {
         for (k, _) in keys_under(g, prefix) {
             cx.set_key(g, &k, 0);
@@ -553,13 +549,13 @@ fn cleanup(g: &mut GameState, cx: &mut Cx) {
     let botnets = adversary::botnet_count(g, None);
     cx.peak(g, "adversary.botnets_peak", botnets);
     // r141, the guarding rule's measure: corrupted cities a troop guards as the round ends, and those of them a
-    // Liberate would otherwise take (no agent on them, in some seat's reach).
+    // Liberate would otherwise take (no agent on them; in some seat's reach, or r142 holding its ambassador).
     let troops: i64 = (0..g.hexes.len()).map(|h| g.tokens(h, TROOP)).sum();
     cx.peak(g, "adversary.troops_peak", troops);
     let guarded: Vec<usize> = (0..g.hexes.len()).filter(|&h| corrupted_city(&w, g, h) && troop_guarded(&w, g, h)).collect();
     for h in guarded {
         cx.tally(g, "board.guarded_city_rounds", 1);
-        if g.tokens(h, ADV_AMBASSADOR) == 0 && (0..g.seats.len()).any(|s| in_reach(&w, g, s, h)) {
+        if g.tokens(h, ADV_AMBASSADOR) == 0 && (0..g.seats.len()).any(|s| in_reach(&w, g, s, h) || g.tokens(h, ambassador(s)) > 0) {
             cx.tally(g, "board.guard_blocked_rounds", 1);
         }
     }

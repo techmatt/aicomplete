@@ -42,9 +42,8 @@ pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) 
         }
     }
     for s in 0..g.seats.len() {
-        let k = ambassador(s);
-        let mine = g.tokens(h, k);
-        cx.add_tokens(g, h, k, -mine);
+        let mine = g.tokens(h, ambassador(s));
+        crate::modules::board::take_ambassadors(g, cx, s, h, mine);
     }
     cx.tally(g, "adversary.corruptions", 1);
     cx.tally(g, &format!("adversary.corruptions.{}", site.name()), 1);

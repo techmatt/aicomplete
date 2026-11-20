@@ -54,8 +54,8 @@
      "name": "Field Station (Researcher)",
      "units": 1,
      "other": "node",
-     "use": "insight",
-     "note": "276: a Growth option: 1 insight: build a station and place a node",
+     "use": "2 * insight",
+     "note": "r142: a node power: 2 insight: build a station and place a node",
      "power": true
     }
    ]

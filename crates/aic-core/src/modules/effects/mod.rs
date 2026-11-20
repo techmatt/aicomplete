@@ -183,7 +183,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::DelayThreat { count } => science::delay_threat(g, cx, seat, *count)?,
         Op::Damage { ambassadors, troops } => {
             let zone = ctx.area(&w, g, seat, Area::On);
-            removal::damage(g, cx, seat, *ambassadors, *troops, &zone)?
+            removal::damage(g, cx, seat, *ambassadors, *troops, &zone, ctx.target.is_some())?
         }
         Op::DamageCountry { ambassadors, troops } => removal::damage_country(g, cx, seat, *ambassadors, *troops)?,
         Op::DestroyAll => {

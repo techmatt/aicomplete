@@ -8,9 +8,10 @@ JSONL and its farm spec). Per agent (as the spec writes it) and level, old → n
 round 4 (`map.cities_corrupted.r01`-`r04`) and at the end (`margin.cities_corrupted_end`), node endings (games),
 research troops (`adversary.research_troops`) and nodes lost to troops (`board.node_lost.strike`; before r141 the
 march's, `board.node_lost.march`) a game, and card
-plays and non-card turns (standard actions, board powers but Growth, card uses) a seat-round. A row only one side
-has shows `-` on the other. `--growth`: the board-power slugs left out of non-card turns (default: every power of
-group `Growth` in content/ais.json, slugged as the `ai.power.<board>.<slug>` counters are). `--md OUT` also writes
+plays and non-card turns (standard actions, board powers but the node powers, card uses) a seat-round. A row only
+one side has shows `-` on the other. `--growth`: the board-power slugs left out of non-card turns (default: the node
+powers, every power in content/ais.json whose effects place a node, r142; the `Growth` group before it; slugged as
+the `ai.power.<board>.<slug>` counters are). `--md OUT` also writes
 the table to OUT. Python's standard library only.
 """
 import json
@@ -26,12 +27,20 @@ from screens import cells_of, stream  # noqa: E402
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 
 
+def places_node(effects):
+    """Whether EFFECTS (an op list, nested ops included) holds a `place_node`."""
+    if isinstance(effects, dict):
+        return effects.get('op') == 'place_node' or any(places_node(v) for v in effects.values())
+    return isinstance(effects, list) and any(places_node(e) for e in effects)
+
+
 def growth_slugs():
-    """The tree's Growth powers' counter slugs (`Buy In` -> `buy_in`)."""
+    """The tree's node powers' counter slugs (`Buy In` -> `buy_in`): the board powers whose effects place a node
+    (r142; the `Growth` group before it)."""
     with open(os.path.join(ROOT, 'content', 'ais.json'), encoding='utf-8') as f:
         boards = json.load(f)
     return {re.sub(r'[^a-z0-9]+', '_', p['name'].lower()).strip('_')
-            for b in boards for p in b.get('powers', []) if p.get('group') == 'Growth'}
+            for b in boards for p in b.get('powers', []) if places_node(p.get('effects', []))}
 
 
 def cnt(g, k):

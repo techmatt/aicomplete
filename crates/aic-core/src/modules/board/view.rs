@@ -25,10 +25,12 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
     // 135: hex flags, standing troops, occupations and registrations.
     keys.extend(MARKS);
     out.bookkeeping(&keys);
-    // 149: each seat's Dispatch left this round, of its Dispatch.
     for s in 0..g.seats.len() {
-        let doc = "Dispatches: free Dispatches this round (an ambassador onto a piece or botnet in reach); what you don't use is lost";
-        out.seat(s, "movement", "Dispatches", moves_left(w, g, s), Some(ai::movement(w, g, s)), doc);
+        // r142: the seat's ambassadors on the board that still have their action this round.
+        let on = ambassadors_on_board(g, s);
+        let ready: i64 = (0..g.hexes.len()).map(|h| ready_ambassadors(g, s, h)).sum();
+        let doc = "ready ambassadors: yours on the board that have not moved or acted this round (a tipped one has); each moves or acts once a round";
+        out.seat(s, "ambassadors_ready", "ready ambassadors", ready, Some(on), doc);
         // 235: a card's reach Shelter (r106) lives in hex flags the view hides as bookkeeping: say it on the seat.
         // It covers the seat's own pieces in its reach as it stands now (238).
         let mine = |h: usize| {
@@ -153,7 +155,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
                     && site_kind(w, g, h).is_some()
                     && g.tokens(h, ADV_AMBASSADOR) == 0
                     && troop_guarded(w, g, h)
-                    && in_reach(w, g, s, h)
+                    && (in_reach(w, g, s, h) || g.tokens(h, ambassador(s)) > 0)
             })
             .count() as i64;
         if refused > 0 {
@@ -163,7 +165,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
                 "Liberate refused",
                 refused,
                 None,
-                "corrupted sites in your reach that can't be liberated: a troop is on or next to each (remove the troop or push it away first)",
+                "corrupted sites in your reach, or holding your ambassador, that can't be liberated: a troop is on or next to each (remove the troop or push it away first)",
             );
         }
     }

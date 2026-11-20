@@ -125,16 +125,16 @@ fn liberating_a_city_pays_from_your_own_ambassadors_and_leaves_it_neutral() {
     assert_eq!(g.stats.counters["board.liberated.city"], 1);
 }
 
-/// 137: Liberate needs the city in reach (a node on or next to it), and
-/// player ambassadors standing on it liberate nothing (the fallback is gone).
+/// r142: Liberate is the act of the seat's ambassador on the city, whatever its reach (137 needed a node on or
+/// next to it); player ambassadors standing on it liberate nothing until one acts (the fallback is gone).
 #[test]
-fn liberating_needs_a_node_on_or_next_to_the_city() {
+fn standing_ambassadors_liberate_nothing_until_one_acts() {
     let (rules, mut g) = lab_with(&[], &HOLD);
     let h = rules.map.numbered(0, piece(0).cities[0]);
     put(&mut g, h, ADV_CUBE, 1);
     put(&mut g, h, ambassador(0), 5);
     set_res(&mut g, 0, Resource::Ambassadors, 5);
-    assert!(!rules.legal_actions(&g).contains(&std_act(0, "liberate")), "no nodes near it");
+    assert!(rules.legal_actions(&g).contains(&std_act(0, "liberate")), "no node near it: the ambassador is there");
     put(&mut g, rules.map.hexes[h].neighbors[0], node(0), 1);
     any_action(&rules, &mut g);
     assert_eq!(g.tokens(h, ADV_CUBE), 1, "standing ambassadors don't liberate it");

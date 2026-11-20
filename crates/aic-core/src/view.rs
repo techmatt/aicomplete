@@ -443,6 +443,12 @@ impl ViewOut<'_> {
 
 /// A token kind in words, for a label: `node:0` is "Seat 0's node",
 /// `ambassador:adversary` "agent" (020: labels were raw keys).
+/// r142: a token that marks a state of other pieces on its hex (`tipped:<seat>`: that seat's ambassadors there
+/// that have used their action), not a piece: a hex shows it, a country's piece totals don't count it.
+fn marker(kind: &str) -> bool {
+    kind.starts_with("tipped:")
+}
+
 fn token_words(kind: &str) -> String {
     match kind.split_once(':') {
         // 166 (Matt, 2026-11-09): the agents print as agents.
@@ -500,6 +506,7 @@ pub(crate) fn generic(rules: &crate::Rules, g: &GameState) -> View {
         .hexes
         .iter()
         .flat_map(|h| h.tokens.keys().map(Key::as_str))
+        .filter(|k| !marker(k))
         .collect();
     let countries = rules
         .map
@@ -511,7 +518,7 @@ pub(crate) fn generic(rules: &crate::Rules, g: &GameState) -> View {
             let mut totals: std::collections::BTreeMap<&str, i64> =
                 kinds.iter().map(|&k| (k, 0)).collect();
             for &h in &geo.hexes {
-                for (k, &n) in &g.hexes[h].tokens {
+                for (k, &n) in g.hexes[h].tokens.iter().filter(|(k, _)| !marker(k.as_str())) {
                     *totals.entry(k.as_str()).or_insert(0) += n;
                 }
             }

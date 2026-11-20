@@ -2,7 +2,7 @@
 //! and the house terms.
 
 use aic_core::config::ParamValue;
-use aic_core::content::{content, AiBoard, Content, Cost, Megaproject, Resource, Uncover};
+use aic_core::content::{content, AiBoard, Content, Cost, Megaproject, Op, Resource, Uncover};
 use aic_core::modules::adversary;
 use aic_core::rules::Tunable;
 use aic_core::Rules;
@@ -384,12 +384,6 @@ pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
                 per_board(r, "ai.start_credits", i),
                 per_board(r, "ai.slots", i),
                 b.tags.iter().map(|t| title(t.name())).collect::<Vec<_>>().join(", "),
-                // 149: printed Dispatches, and the most its spaces raise it to.
-                format!(
-                    "{} (up to {})",
-                    b.moves,
-                    b.moves + b.economy_track.iter().chain(&b.play_track).map(|u| u.moves).sum::<i64>()
-                ),
                 b.economy_track.len().to_string(),
                 b.play_track.len().to_string(),
                 (b.economy_track.len() + b.play_track.len()).to_string(),
@@ -402,7 +396,6 @@ pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
         "Starting credits",
         "Slots",
         "Printed tags",
-        "Dispatches",
         "Economy track",
         "Card-play track",
         "Tokens in all",
@@ -429,9 +422,6 @@ pub(super) fn space(u: &Uncover) -> String {
         parts.push("**keep upgrade**".to_string());
     }
     parts.extend(u.tags.iter().map(|t| format!("{} tag", title(t.name()))));
-    if u.moves > 0 {
-        parts.push(format!("**Dispatch +{}**", u.moves));
-    }
     if aic_core::modules::ai::builds_station(u) {
         parts.push("builds a free research station in reach".to_string());
     }
@@ -492,14 +482,14 @@ pub(super) fn powers_block(c: &Content) -> String {
         for p in &b.powers {
             let mut cost: Vec<String> = p.tags.iter().map(|(t, n)| format!("{n} {}", title(&t.to_string()).replace("Any", "any"))).collect();
             cost.extend(p.cost.iter().map(|(r, n)| r.words(*n)));
-            // A power with no price (Growth's Buy In, say) costs nothing.
+            // A power with no price (Buy In, say) costs nothing.
             let cost = if cost.is_empty() { "nothing".to_string() } else { cost.join(" + ") };
-            // 276: Growth is one option a round; a tiered power one tier; a threshold power counts tags.
+            // 276: a tiered power is one tier a round; a threshold power counts tags. r142: a node power is its own use.
             let needs = aic_core::modules::ai::power_needs(p).replace("With ", "with ");
             let kind = match p.group.as_deref() {
-                Some(aic_core::modules::ai::GROWTH) => "Growth (pick one)".to_string(),
                 Some(g) if needs.is_empty() => format!("{g}, tier {}", p.name.rsplit(' ').next().unwrap_or("")),
                 Some(g) => format!("{g}, tier {}, {needs}", p.name.rsplit(' ').next().unwrap_or("")),
+                None if needs.is_empty() && p.effects.iter().any(|e| matches!(e, Op::PlaceNode { .. })) => "node power".to_string(),
                 None if needs.is_empty() => "power".to_string(),
                 None => needs,
             };
@@ -647,15 +637,15 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          limit on what you hold or on how far cards raise your income; energy you don't spend stays \
          energy, so drafting cards that spend it is up to you.\n\n\
          **Nodes, for new players.** Nodes don't grow on their own. In the action phase you place \
-         them with your board's Growth: pick one of its three options a round, one placing 2 nodes for energy or \
-         insight, the others 1 node and a little more besides; cards can add \
-         more. Every placement, by Growth or card, pays the energy printed on the track space you uncover. You \
+         them with your board's three node powers, each once a round and all usable in the same round: a cheap one \
+         (a node and a little besides, free) and two costly ones that add a benefit; cards can add \
+         more. Every placement, by power or card, pays the energy printed on the track space you uncover. You \
          start with {} energy and next to a city; no city is ever yours, but every free (neutral) city with your node on \
          or next to it pays you its energy every round, and pays every other player beside it too.\n\n\
-         **Dispatches, tags and sales, for new players.** A Dispatch puts one of your ambassadors, \
-         from your supply or anywhere on the map, onto a piece or botnet in your reach and costs nothing, but you \
-         have only your board's Dispatches each round ({} printed, more as Dispatch spaces are \
-         uncovered), and what you don't use is lost, like insight. **One tag rule:** \
+         **Ambassadors, tags and sales, for new players.** Each of your ambassadors on the map does one thing a \
+         round, then is tipped over until the round ends: it moves to a hex next to it or to any of your nodes, \
+         or it acts where it stands (Liberate, Take down a botnet). One from your supply comes onto one of your \
+         nodes{}. **One tag rule:** \
          the tag printed on your AI board, and any a late, costly track space reveals, count like the \
          tags on your cards, for everything a tag does; the only difference is that a board tag can't \
          be sacrificed. You may sell a card from your hand for {} credit; chips can't be sold.\n\n\
@@ -671,7 +661,7 @@ pub(super) fn new_players_block(r: &Rules) -> String {
         range(&insight),
         range(&slots),
         n("ai.start_energy"),
-        range(&c.ais.iter().map(|b| b.moves).collect::<Vec<_>>()),
+        if int(r, "board.arrive_ready") != 0 { " and stands ready" } else { ", which is its action for the round" },
         n("board.sell_credits"),
     )
 }

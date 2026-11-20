@@ -498,3 +498,163 @@ fn income_can_print_ambassadors() {
     set_pile(&mut g, &cards::built(0), &["orbital_embassy"]);
     assert_eq!(economy::ambassador_income(&w, &g, 0), 2);
 }
+
+/// r142 (Matt, 2026-11-19): each ambassador has one action a round. One from the supply arrives on a node of
+/// yours, ready; its move to a hex next to it tips it over, and a tipped one neither moves nor acts.
+#[test]
+fn an_ambassador_moves_once_a_round_and_arrives_ready() {
+    use crate::modules::common::{ready_ambassadors, tipped};
+    let (rules, mut g) = lab(&[]);
+    let (c, n, far, _) = by_a_city(&mut g, &rules.map);
+    set_res(&mut g, 0, Resource::Ambassadors, 1);
+    let w = rules.world();
+    // From the supply it comes onto a node of yours, never straight onto the city next to it.
+    assert_eq!(board::move_targets(&w, &g, 0), vec![n]);
+    act(&rules, &mut g, std_act(0, "move"));
+    assert_eq!((g.resource(0, Resource::Ambassadors), g.tokens(n, ambassador(0)), ready_ambassadors(&g, 0, n)), (0, 1, 1));
+    // It arrived ready: it moves on, to a hex next to it, and has then used its action.
+    assert!(board::move_targets(&w, &g, 0).contains(&c) && !board::move_targets(&w, &g, 0).contains(&n));
+    rules.apply_mut(&mut g, &std_act(0, "move"), None).unwrap();
+    answer_hex(&rules, &mut g, c);
+    answer_all(&rules, &mut g);
+    assert_eq!((g.tokens(n, ambassador(0)), g.tokens(c, ambassador(0)), g.tokens(c, tipped(0))), (0, 1, 1));
+    assert_eq!(ready_ambassadors(&g, 0, c), 0);
+    assert!(board::move_targets(&w, &g, 0).is_empty(), "a tipped ambassador does not move");
+    assert!(!rules.legal_actions(&g).contains(&std_act(0, "move")));
+    // A ready one elsewhere may come to any of your nodes, however far.
+    put(&mut g, far, ambassador(0), 1);
+    let far2 = rules.map.numbered(1, piece(1).cities[0]);
+    put(&mut g, far2, ambassador(0), 1);
+    assert!(board::move_targets(&w, &g, 0).contains(&n));
+}
+
+/// r142, the screen's off arm (`board.arrive_ready` 0): an ambassador arrives with its action used, from the
+/// supply or by a card.
+#[test]
+fn arriving_spent_tips_the_ambassador() {
+    use crate::modules::common::ready_ambassadors;
+    let (rules, mut g) = lab_with(&[], &["board.arrive_ready=0"]);
+    let (c, n, _, _) = by_a_city(&mut g, &rules.map);
+    set_res(&mut g, 0, Resource::Ambassadors, 1);
+    act(&rules, &mut g, std_act(0, "move"));
+    assert_eq!((g.tokens(n, ambassador(0)), ready_ambassadors(&g, 0, n)), (1, 0));
+    with_cx(&rules, |cx| board::place_ambassador(&mut g, cx, 0, c));
+    assert_eq!((g.tokens(c, ambassador(0)), ready_ambassadors(&g, 0, c)), (1, 0));
+}
+
+/// r142 (Matt, 2026-11-19): liberation is move in, then act: the Liberate is the act of the seat's ready
+/// ambassador standing on the site, whatever its reach; its bill is paid by the seat's ambassadors on the site
+/// first, then its supply.
+#[test]
+fn liberate_is_the_act_of_a_ready_ambassador_on_the_site() {
+    use crate::modules::common::{ready_ambassadors, tipped};
+    let (rules, mut g) = lab_with(&[], &["board.liberate_at=3"]);
+    let (c, _n, _, _) = by_a_city(&mut g, &rules.map);
+    let w = rules.world();
+    put(&mut g, c, ADV_CUBE, 1);
+    set_res(&mut g, 0, Resource::Ambassadors, 5);
+    assert!(!board::liberable(&w, &g, 0, c), "in reach and paid for, but no ambassador on it");
+    // It moved in this round: tipped, it can't act until the next.
+    put(&mut g, c, ambassador(0), 1);
+    put(&mut g, c, tipped(0), 1);
+    assert!(!board::liberable(&w, &g, 0, c) && !rules.legal_actions(&g).contains(&std_act(0, "liberate")));
+    put(&mut g, c, tipped(0), 0);
+    assert!(board::liberable(&w, &g, 0, c));
+    // Another seat's ambassador there is no act of yours, and pays nothing.
+    assert!(!board::liberable(&w, &g, 1, c));
+    // No reach is needed: the piece is there.
+    let mut far = g.clone();
+    for h in node_of(&far, 0) {
+        put(&mut far, h, node(0), 0);
+    }
+    assert!(board::liberable(&w, &far, 0, c));
+    act(&rules, &mut g, std_act(0, "liberate"));
+    assert_eq!((g.tokens(c, ADV_CUBE), g.tokens(c, ambassador(0)), g.resource(0, Resource::Ambassadors)), (0, 0, 3));
+    assert_eq!(ready_ambassadors(&g, 0, c), 0);
+}
+
+/// r142: the round's end stands every ambassador up again.
+#[test]
+fn ambassadors_stand_up_at_the_round_end() {
+    use crate::modules::common::{ready_ambassadors, tipped};
+    let rules = Rules::new(&baseline()).unwrap();
+    let mut g = rules.new_game(3);
+    answer_all(&rules, &mut g);
+    let n = node_of(&g, 0)[0];
+    put(&mut g, n, ambassador(0), 2);
+    put(&mut g, n, tipped(0), 2);
+    assert_eq!(ready_ambassadors(&g, 0, n), 0);
+    let round = g.round;
+    while g.round == round && !g.is_over() {
+        if g.pending.is_some() {
+            answer_all(&rules, &mut g);
+            continue;
+        }
+        let legal = rules.legal_actions(&g);
+        let a = legal.iter().find(|a| matches!(a, Action::Pass { .. })).unwrap_or(&legal[0]).clone();
+        rules.apply_mut(&mut g, &a, None).unwrap();
+    }
+    assert_eq!(g.tokens(n, tipped(0)), 0);
+}
+
+/// r142: a troop on or next to one of your ambassadors is in your reach for "Target: Troops": the guard beside a
+/// city your ambassador moved onto can be removed though it stands two hexes from your node (294's gap).
+#[test]
+fn a_troop_next_to_your_ambassador_is_in_reach() {
+    use crate::modules::effects;
+    use crate::op::TargetSpec;
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    let (c, n, _, _) = by_a_city(&mut g, m);
+    let w = rules.world();
+    // A hex next to the city, two from the node.
+    let guard = m.hexes[c].neighbors.iter().copied().find(|&x| kind(m, x) != HexKind::Ocean && m.distance(x, n) == 2);
+    let Some(guard) = guard else { panic!("no hex next to the city two from the node") };
+    put(&mut g, guard, TROOP, 1);
+    assert!(effects::target_hexes(&w, &g, 0, TargetSpec::Troops).is_empty(), "out of the node's reach");
+    put(&mut g, c, ambassador(0), 1);
+    assert_eq!(effects::target_hexes(&w, &g, 0, TargetSpec::Troops), vec![guard]);
+    assert!(effects::target_hexes(&w, &g, 1, TargetSpec::Troops).is_empty(), "only your own ambassador");
+    assert_eq!(effects::target_hexes(&w, &g, 0, TargetSpec::Adversary), vec![guard], "Agents or Troops, where a troop stands");
+    // The op that follows its target acts there (Interdict I: Target: Troops, remove up to 2 on it).
+    let mut x = g.clone();
+    with_answers(&rules, &mut x, |_| 0, |g, cx| {
+        let ops = [Op::Target { on: TargetSpec::Troops }, Op::Damage { ambassadors: 0, troops: 2 }];
+        effects::run(g, cx, &ops, &mut effects::Ctx::seat(0))
+    });
+    assert_eq!(x.tokens(guard, TROOP), 0);
+    put(&mut g, guard, TROOP, 0);
+    put(&mut g, guard, ADV_AMBASSADOR, 1);
+    assert!(effects::target_hexes(&w, &g, 0, TargetSpec::Agents).is_empty(), "troops only");
+    assert!(effects::target_hexes(&w, &g, 0, TargetSpec::Adversary).is_empty(), "an agent alone is out of reach");
+}
+
+/// r142: an ambassador a card moves keeps its state (the move is not its own action): a tipped one arrives
+/// tipped, a ready one ready, and a ready one leaves first. An ambassador that leaves takes its marker with it.
+#[test]
+fn a_card_moves_an_ambassador_as_it_stands() {
+    use crate::modules::common::{ready_ambassadors, tipped};
+    use crate::op::Piece;
+    let (rules, mut g) = lab(&[]);
+    let (c, n, _, _) = by_a_city(&mut g, &rules.map);
+    let gather = [Op::Gather { max: 1, pieces: vec![Piece::Ambassadors], strike: false }];
+    let onto_city = |a: &crate::state::Ask| {
+        let at = rules.map.hexes[c].hex;
+        a.options.iter().position(|o| o.target == Some(at)).unwrap_or(0)
+    };
+    // One ready and one tipped on the node: the gather takes the ready one, which arrives ready.
+    put(&mut g, n, ambassador(0), 2);
+    put(&mut g, n, tipped(0), 1);
+    let mut x = g.clone();
+    with_answers(&rules, &mut x, onto_city, |g, cx| crate::modules::effects::run(g, cx, &gather, &mut crate::modules::effects::Ctx::seat(0)));
+    assert_eq!((x.tokens(c, ambassador(0)), ready_ambassadors(&x, 0, c)), (1, 1));
+    assert_eq!((x.tokens(n, ambassador(0)), x.tokens(n, tipped(0))), (1, 1));
+    // Only a tipped one there: it arrives tipped, and its marker goes with it.
+    put(&mut g, n, ambassador(0), 1);
+    with_answers(&rules, &mut g, onto_city, |g, cx| crate::modules::effects::run(g, cx, &gather, &mut crate::modules::effects::Ctx::seat(0)));
+    assert_eq!((g.tokens(c, ambassador(0)), g.tokens(c, tipped(0)), ready_ambassadors(&g, 0, c)), (1, 1, 0));
+    assert_eq!((g.tokens(n, ambassador(0)), g.tokens(n, tipped(0))), (0, 0));
+    // An agent cancels it: no marker stays behind.
+    with_cx(&rules, |cx| adversary::place(&mut g, cx, c, 1)).unwrap();
+    assert_eq!((g.tokens(c, ambassador(0)), g.tokens(c, tipped(0))), (0, 0));
+}

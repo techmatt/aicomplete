@@ -71,22 +71,22 @@ fn a_bought_cube_goes_on_an_incomplete_project_and_pays_at_completion_only() {
 fn the_second_node_pays_insight_and_no_energy_but_the_step() {
     let (rules, mut g) = c3();
     set_res(&mut g, 2, Resource::Energy, 0);
-    // 252 (Matt's ruling 1): the Researcher's routes don't wait on research cubes: Peer Review costs insight (277: 1).
+    // 252 (Matt's ruling 1): the Researcher's routes don't wait on research cubes: Peer Review costs insight (r142: 2).
     set_res(&mut g, 2, Resource::ResearchCubes, 5);
-    set_res(&mut g, 2, Resource::Insight, 0);
+    set_res(&mut g, 2, Resource::Insight, 1);
     assert!(!rules.legal_actions(&g).contains(&researcher_power(&rules, "Peer Review")));
     set_res(&mut g, 2, Resource::ResearchCubes, 0);
-    set_res(&mut g, 2, Resource::Insight, 1);
+    set_res(&mut g, 2, Resource::Insight, 2);
     assert!(rules.legal_actions(&g).contains(&researcher_power(&rules, "Peer Review")));
 }
 
-/// 276: Field Station is a Growth option: 1 insight, a station for no chips and a node; nothing sacrificed.
+/// 276: Field Station is a node power: 2 insight (r142), a station for no chips and a node; nothing sacrificed.
 #[test]
 fn the_industry_power_builds_a_station_for_no_chips() {
     let (rules, mut g) = c3();
     set_pile(&mut g, &cards::played(2), &["payroll_automation"]);
     set_res(&mut g, 2, Resource::Chips, 0);
-    set_res(&mut g, 2, Resource::Insight, 2);
+    set_res(&mut g, 2, Resource::Insight, 3);
     set_res(&mut g, 2, Resource::Energy, 10);
     let w = rules.world();
     let sites = board::station_sites(&w, &g, 2);
@@ -95,7 +95,7 @@ fn the_industry_power_builds_a_station_for_no_chips() {
     let nodes = crate::modules::common::node_count(&g, 2);
     act(&rules, &mut g, researcher_power(&rules, "Field Station"));
     assert_eq!(g.pile(&cards::played(2)).len(), 1, "no sacrifice");
-    assert_eq!(g.resource(2, Resource::Insight), 1, "1 insight");
+    assert_eq!(g.resource(2, Resource::Insight), 1, "2 insight");
     assert_eq!(crate::modules::common::node_count(&g, 2), nodes + 1, "and a node");
     assert_eq!(g.tokens(before, cube(2)), 1);
     assert_eq!(g.tokens(before, STATION), 1);

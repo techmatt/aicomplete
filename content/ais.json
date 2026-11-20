@@ -43,8 +43,7 @@
       2
      ]
     ],
-    "cost": 1,
-    "moves": 1
+    "cost": 1
    },
    {
     "income": [
@@ -91,17 +90,21 @@
     "cost": [
      [
       "energy",
-      1
+      2
      ]
     ],
-    "text": "place 2 Nodes",
+    "text": "place 1 Node; gain 2 credits",
     "effects": [
      {
       "op": "place_node",
-      "count": 2
+      "count": 1
+     },
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 2
      }
-    ],
-    "group": "Growth"
+    ]
    },
    {
     "name": "Buy In",
@@ -118,8 +121,7 @@
       "resource": "credits",
       "amount": 1
      }
-    ],
-    "group": "Growth"
+    ]
    },
    {
     "name": "Annex",
@@ -130,7 +132,7 @@
       1
      ]
     ],
-    "text": "place 1 Node within 2 of yours; gain 6 credits",
+    "text": "place 1 Node within 2 of yours; gain 3 credits",
     "effects": [
      {
       "op": "place_node",
@@ -140,10 +142,9 @@
      {
       "op": "gain",
       "resource": "credits",
-      "amount": 6
+      "amount": 3
      }
-    ],
-    "group": "Growth"
+    ]
    },
    {
     "name": "Scrap I",
@@ -334,8 +335,7 @@
   ],
   "tags": [
    "industry"
-  ],
-  "moves": 1
+  ]
  },
  {
   "id": "protector",
@@ -402,8 +402,7 @@
       2
      ]
     ],
-    "cost": 1,
-    "moves": 1
+    "cost": 1
    },
    {
     "income": [
@@ -454,17 +453,21 @@
     "cost": [
      [
       "energy",
-      1
+      2
      ]
     ],
-    "text": "place 2 Nodes",
+    "text": "place 1 Node; gain 2 credits",
     "effects": [
      {
       "op": "place_node",
-      "count": 2
+      "count": 1
+     },
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 2
      }
-    ],
-    "group": "Growth"
+    ]
    },
    {
     "name": "Accord",
@@ -472,10 +475,10 @@
     "cost": [
      [
       "energy",
-      1
+      2
      ]
     ],
-    "text": "place 1 Node; gain 1 ambassador and 2 credits",
+    "text": "place 1 Node; gain 1 ambassador",
     "effects": [
      {
       "op": "place_node",
@@ -485,14 +488,8 @@
       "op": "gain",
       "resource": "ambassadors",
       "amount": 1
-     },
-     {
-      "op": "gain",
-      "resource": "credits",
-      "amount": 2
      }
-    ],
-    "group": "Growth"
+    ]
    },
    {
     "name": "Levy",
@@ -509,8 +506,7 @@
       "resource": "credits",
       "amount": 1
      }
-    ],
-    "group": "Growth"
+    ]
    },
    {
     "name": "Patrol I",
@@ -673,8 +669,7 @@
   ],
   "tags": [
    "security"
-  ],
-  "moves": 1
+  ]
  },
  {
   "id": "researcher",
@@ -724,8 +719,7 @@
       2
      ]
     ],
-    "cost": 1,
-    "moves": 1
+    "cost": 1
    },
    {
     "income": [
@@ -778,22 +772,21 @@
     "cost": [
      [
       "insight",
-      1
+      2
      ]
     ],
-    "text": "place 2 Nodes; gain 2 credits",
+    "text": "place 1 Node; gain 1 research cube",
     "effects": [
      {
       "op": "place_node",
-      "count": 2
+      "count": 1
      },
      {
       "op": "gain",
-      "resource": "credits",
-      "amount": 2
+      "resource": "research_cubes",
+      "amount": 1
      }
-    ],
-    "group": "Growth"
+    ]
    },
    {
     "name": "Field Survey",
@@ -809,8 +802,7 @@
       "op": "draw",
       "count": 1
      }
-    ],
-    "group": "Growth"
+    ]
    },
    {
     "name": "Field Station",
@@ -818,7 +810,7 @@
     "cost": [
      [
       "insight",
-      1
+      2
      ]
     ],
     "text": "Target: an open hex. Build a research station on it, paying no chips; place 1 Node",
@@ -834,8 +826,7 @@
       "op": "place_node",
       "count": 1
      }
-    ],
-    "group": "Growth"
+    ]
    },
    {
     "name": "Lab I",
@@ -940,8 +931,12 @@
     "insight": 7
    },
    {
-    "income": [],
-    "moves": 1
+    "income": [
+     [
+      "credits",
+      1
+     ]
+    ]
    },
    {
     "income": [],
@@ -987,7 +982,6 @@
   ],
   "tags": [
    "science"
-  ],
-  "moves": 2
+  ]
  }
 ]

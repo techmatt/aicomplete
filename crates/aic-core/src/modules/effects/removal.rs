@@ -4,10 +4,18 @@ use super::*;
 
 /// 234: `zone` is where a card's ops may act ([`Ctx::area`]): the seat's reach with no target, else the target's
 /// area. Every map op below keeps its own condition and takes only the hexes in it.
-pub(super) fn damage(g: &mut GameState, cx: &mut Cx, seat: usize, ambassadors: i64, troops: i64, zone: &[usize]) -> Res {
+///
+/// r142: `aimed`, `zone` is a target's: the target carried the reach test (a troop beside the seat's ambassador is
+/// in reach, [`target_hexes`]), so the op asks for none of its own. It removed nothing from such a target.
+pub(super) fn damage(g: &mut GameState, cx: &mut Cx, seat: usize, ambassadors: i64, troops: i64, zone: &[usize], aimed: bool) -> Res {
     let w = cx.world;
-    let mut hexes = damage_hexes(&w, g, seat, ambassadors, troops);
-    hexes.retain(|h| zone.contains(h));
+    let hexes: Vec<usize> = if aimed {
+        zone.iter().copied().filter(|&h| adversary::can_damage(g, h, ambassadors, troops)).collect()
+    } else {
+        let mut hexes = damage_hexes(&w, g, seat, ambassadors, troops);
+        hexes.retain(|h| zone.contains(h));
+        hexes
+    };
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || format!("Seat {seat}: remove adversary pieces in which hex?");
     if let Some(i) = cx.choose(seat, prompt, opts)? {

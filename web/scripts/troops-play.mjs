@@ -12,22 +12,21 @@
 // failure), OUT/record.json and screenshots; exit 1 on any failure. At the plain setting troops arrive late
 // (research slot 4), so the game runs on the baseline with `OVERRIDE` below (`--override` replaces it; the summary
 // records it). A Strike is shown ahead by a stage-II card, from round 5: the seed is one whose game lasts that long
-// and shows one (294, seeds 13-90: 75 wins, 9 games that show it, 8 of them wins: 17, 23, 29, 54, 64, 65, 72, 86). The moves come from a small
-// policy (`decide` below) that reads the engine's view and legal actions; every one is then made by clicking the
+// and shows one (295, r142, seeds 13-60: 9 wins, 5 of them showing it: 17, 39, 43, 45, 57). The moves come from a small
+// policy (`decide`, play-policy.mjs) that reads the engine's view and legal actions; every one is then made by clicking the
 // control the player view shows for it (a button, or a highlighted hex on the map), the seat's row first when
 // another seat is shown, and the adversary's turn is stepped through whenever it opens. `--search A-B` plays seeds
 // A to B by the same policy straight through the engine, no clicks and no checks, and prints each one's end and
 // the rounds (a)-(c) could be seen: how the demo's seed was found.
 //
-// The policy: draft from the first tier deck and keep nothing; each round use the board's free Growth power (or one
-// that gains an ambassador), placing the node toward the seat's corrupted city; buy ambassadors toward the Liberate
-// bill; with the bill in hand, or when a Strike is shown ahead against the seat's node, Remove the troop guarding
-// the city; clear agents off it; Liberate.
+// The policy is play-policy.mjs (295: shared with ambassadors-play.mjs, and r142's: node powers each round, an
+// ambassador that moves onto the city one round and liberates it the next).
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { openPage, viewerUrl } from './cdp.mjs';
 import { installCut } from './cut-pieces.mjs';
+import { POLICY } from './play-policy.mjs';
 
 /** The demo's setting, over configs/baseline.json. The research row starts at 8 cubes a country, so its slots 1-4
  *  (the fourth a Garrison) fire in round 1's Income beat: a troop garrisons each country's corrupted city. So that
@@ -55,182 +54,6 @@ for (const [name, params] of Object.entries(override)) {
   if (!m) throw new Error(`--override names no module of the baseline: ${name}`);
   Object.assign(m.params, params);
 }
-
-/** In the page: the policy (`decide`), the click that makes its move (`click`) and what the view shows (`look`). */
-const POLICY = `(() => {
-  const vis = (el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden'; };
-  const isHex = (t) => Array.isArray(t) && t.length === 2;
-  const count = (h, kind) => h.tokens.find((t) => t.kind === kind)?.count ?? 0;
-  const val = (s, k) => aic.view.seats[s].values.find((x) => x.key === k)?.value ?? 0;
-  const glob = (k) => aic.view.globals.find((x) => x.key === k)?.value ?? 0;
-  const reach = (s, h) => [h.index, ...h.neighbors].some((i) => count(aic.view.hexes[i], 'node:' + s) > 0);
-  const guardsOf = (h) => aic.view.arrows.filter((a) => a.kind === 'guard' && a.to === h.index).map((a) => a.from);
-  /** Steps from hex index \`from\` to every hex, over the map's neighbors. */
-  const steps = (from) => {
-    const d = new Map([[from, 0]]);
-    for (const q = [from]; q.length;) { const i = q.shift(); for (const n of aic.view.hexes[i].neighbors) if (!d.has(n)) { d.set(n, d.get(i) + 1); q.push(n); } }
-    return d;
-  };
-  /** Each seat's corrupted city: the pairs taken nearest first, a seat and a city once each while both last. */
-  const targets = () => {
-    const v = aic.view;
-    const cities = v.hexes.filter((h) => h.kind === 'city' && count(h, 'cube:adversary') > 0);
-    const pairs = [];
-    for (const c of cities) {
-      const d = steps(c.index);
-      for (const s of v.seats) {
-        const nodes = v.hexes.filter((h) => count(h, 'node:' + s.index) > 0).map((h) => d.get(h.index) ?? 99);
-        pairs.push({ seat: s.index, city: c, d: Math.min(99, ...nodes) });
-      }
-    }
-    pairs.sort((a, b) => a.d - b.d || a.city.index - b.city.index || a.seat - b.seat);
-    const out = new Map(), taken = new Set();
-    for (const p of pairs) if (!out.has(p.seat) && !taken.has(p.city.index)) { out.set(p.seat, p.city); taken.add(p.city.index); }
-    for (const p of pairs) if (!out.has(p.seat)) out.set(p.seat, p.city);
-    return out;
-  };
-  const hexIndex = (t) => aic.view.hexes.findIndex((h) => h.hex[0] === t[0] && h.hex[1] === t[1]);
-  window.__tp = {
-    /** What the last action taken was for: it picks the answer to the question that follows. */
-    intent: null,
-    /** What one seat wants to do now, or null (it passes). */
-    want(s, mine) {
-      const v = aic.view;
-      const first = mine.find((a) => a.type === 'tier') ?? mine.find((a) => a.type === 'draft');
-      if (first) return { action: first, why: 'draft' };
-      if (!mine.some((a) => a.type === 'pass')) return { action: mine[0], why: 'the only kind of move' };
-      if (!/board\\.act/.test(v.phase?.name ?? '')) return null;
-      const std = (act) => mine.find((a) => a.type === 'standard' && a.act === act);
-      const city = targets().get(s) ?? null;
-      const amb = val(s, 'resource.ambassadors'), credits = val(s, 'resource.credits');
-      const guards = city ? guardsOf(city) : [];
-      const agents = city ? count(city, 'ambassador:adversary') : 0;
-      const bill = 5 + 2 * Math.ceil(agents / 3);
-      if (city && reach(s, city)) {
-        if (!guards.length && !agents && amb >= 5 && std('liberate')) return { action: std('liberate'), why: 'liberate', intent: { kind: 'site', city: city.index } };
-        if (!guards.length && agents && amb >= bill && std('remove')) return { action: std('remove'), why: 'clear the agents', intent: { kind: 'site', city: city.index } };
-        const struck = v.arrows.some((a) => a.kind === 'troop' && a.rounds === 1 && guards.includes(a.from) && count(v.hexes[a.to], 'node:' + s) > 0);
-        if (guards.length && std('troop') && (amb >= bill || struck)) return { action: std('troop'), why: 'remove the guard', intent: { kind: 'troop', city: city.index } };
-      }
-      // One Growth option a round: the one that gains an ambassador, else the free one.
-      const powers = v.seats[s].board?.cards ?? [];
-      const growth = mine.filter((a) => a.type === 'power').map((a) => ({ a, text: powers.find((c) => c.id.endsWith('.power.' + a.power))?.text ?? '' })).filter((p) => /Growth/.test(p.text));
-      const grow = growth.find((p) => /gain 1 ambassador/.test(p.text)) ?? growth.find((p) => !/^Pay /.test(p.text));
-      if (grow) return { action: grow.a, why: 'grow', intent: { kind: 'node', city: city?.index ?? null } };
-      if (city && amb < bill && std('ambassador') && credits >= 16 + (guards.length ? 7 : 0)) return { action: std('ambassador'), why: 'gain an ambassador' };
-      return null;
-    },
-    /** The next move: { action, why }, or null when no action is legal. */
-    decide() {
-      const v = aic.view, legal = aic.legal;
-      if (!legal.length) return null;
-      if (v.choice) {
-        const answers = legal.filter((a) => a.type === 'choose');
-        const hexes = answers.filter((a) => isHex(a.target));
-        const it = this.intent;
-        let best = hexes[0] ?? answers[0] ?? legal[0];
-        if (hexes.length && it?.kind === 'node' && it.city !== null) {
-          const d = steps(it.city);
-          best = hexes.reduce((b, a) => ((d.get(hexIndex(a.target)) ?? 99) < (d.get(hexIndex(b.target)) ?? 99) ? a : b));
-        } else if (hexes.length && it?.kind === 'troop') {
-          const from = (a) => v.arrows.filter((x) => x.kind === 'guard' && x.from === hexIndex(a.target));
-          best = hexes.find((a) => from(a).some((x) => x.to === it.city)) ?? hexes.find((a) => from(a).length) ?? best;
-        } else if (hexes.length && it?.kind === 'site') {
-          best = hexes.find((a) => hexIndex(a.target) === it.city) ?? best;
-        }
-        return { action: best, why: 'answer' + (it ? ' (' + it.kind + ')' : '') };
-      }
-      this.intent = null;
-      for (const s of [...new Set(legal.map((a) => a.seat))].sort()) {
-        const w = this.want(s, legal.filter((a) => a.seat === s));
-        if (w) { this.intent = w.intent ?? null; return w; }
-      }
-      return { action: legal.find((a) => a.type === 'pass') ?? legal[0], why: 'pass' };
-    },
-    /** Makes \`a\` by the player view's own control for it; returns what it clicked, or null when there is none. */
-    click(a) {
-      const key = JSON.stringify(a);
-      const button = () => [...document.querySelectorAll('#player button[data-action]')].filter(vis).find((b) => b.dataset.action === key);
-      const hex = () => isHex(a.target) && [...document.querySelectorAll('#player .hex-pick[data-hexes]')].filter(vis).some((e) => e.dataset.hexes.split(' ').includes(a.target.join(',')));
-      let switched = '';
-      if (!button() && !hex() && aic.focus !== a.seat) {
-        const row = [...document.querySelectorAll('#player [data-seat-focus="' + a.seat + '"]')].find(vis);
-        if (row) { row.click(); switched = 'seat ' + a.seat + ', '; }
-      }
-      const b = button();
-      if (b) { const t = b.textContent; b.click(); return switched + t; }
-      if (hex()) {
-        document.querySelector('#board .hex[data-hex="' + a.target.join(',') + '"]').dispatchEvent(new MouseEvent('click', { bubbles: true }));
-        return switched + 'hex ' + a.target.join(',');
-      }
-      return null;
-    },
-    /** One click of the open "Since your last move" panel (the adversary's turn), or null when it is closed. */
-    turn() {
-      const next = document.querySelector('#p-turn [data-turn="1"]:not([disabled])');
-      if (next) { next.click(); return 'turn step'; }
-      const done = document.querySelector('#p-turn [data-turn="close"]');
-      if (done) { done.click(); return 'turn done'; }
-      return null;
-    },
-    /** What the engine's view holds of the garrison rules now. */
-    state() {
-      const v = aic.view;
-      const guard = v.arrows.filter((a) => a.kind === 'guard');
-      const refused = v.seats.map((s) => val(s.index, 'board.liberate_refused'));
-      return {
-        over: !!v.outcome, round: v.round, phase: v.phase?.name ?? null, choice: !!v.choice, acting: /board\\.act/.test(v.phase?.name ?? '') && !v.choice,
-        troops: v.hexes.reduce((n, h) => n + count(h, 'troop'), 0), guards: guard.length, strikeArrows: v.arrows.filter((a) => a.kind === 'troop').length,
-        strikeAhead: glob('board.strike_ahead'), redeployAhead: glob('board.redeploy_ahead'), corrupted: glob('alignment.corrupted_cities'), refused,
-      };
-    },
-    /** (a) on screen: a troop glyph on a hex whose guard link is drawn with its shield. */
-    garrison() {
-      for (const a of aic.view.arrows.filter((x) => x.kind === 'guard')) {
-        const from = aic.view.hexes[a.from], to = aic.view.hexes[a.to];
-        const troop = [...document.querySelectorAll('#board .token[data-token="troop"][data-hex="' + from.hex.join(',') + '"]')].find(vis);
-        const link = document.querySelector('#board .arrows .arrow.guard[data-from="' + a.from + '"][data-to="' + a.to + '"]');
-        if (troop && link?.querySelector('path.shield') && vis(link)) return { troop: aic.view.countries[from.country].name + ' #' + from.number, guards: aic.view.countries[to.country].name + ' #' + to.number, doc: a.doc };
-      }
-      return null;
-    },
-    /** (b) on screen: the Strike-ahead notice in the adversary's next-round box. */
-    strikeNotice() {
-      const e = [...document.querySelectorAll('#player .slot-box.next .ahead.strike')].find(vis);
-      const next = aic.view.piles.find((p) => p.key === 'adversary.next')?.visible[0];
-      return e ? { text: e.textContent, hover: e.title, next: next?.name ?? null, solidArrows: document.querySelectorAll('#board .arrows .arrow.troop.soon').length } : null;
-    },
-    /** (c) on screen for the shown seat: the Liberate-refused note, and a corrupted site in its reach wearing the
-     *  guard's shield; the hex to hover for the reason. */
-    refusedNote() {
-      const s = aic.focus;
-      const e = [...document.querySelectorAll('#p-bar .prefused')].find(vis);
-      if (!e || !val(s, 'board.liberate_refused')) return null;
-      const a = aic.view.arrows.find((x) => x.kind === 'guard' && reach(s, aic.view.hexes[x.to]) && count(aic.view.hexes[x.to], 'ambassador:adversary') === 0);
-      const mark = a && document.querySelector('#board .arrows .arrow.guard[data-to="' + a.to + '"] path.shield');
-      if (!a || !mark) return null;
-      const to = aic.view.hexes[a.to];
-      const r = document.querySelector('#board .hex[data-hex="' + to.hex.join(',') + '"] .cell').getBoundingClientRect();
-      return { seat: s, text: e.textContent, hover: e.title, site: aic.view.countries[to.country].name + ' #' + to.number, x: r.left + r.width / 2, y: r.top + r.height * 0.75 };
-    },
-    /** \`--search\`: the whole game by the policy, straight through the engine. */
-    fast(max) {
-      const seen = {};
-      const mark = (k, ok) => { if (ok && seen[k] === undefined) seen[k] = aic.view.round; };
-      let i = 0;
-      for (; i < max && !aic.view.outcome; i++) {
-        const st = this.state();
-        if (st.acting) { mark('a', st.guards > 0); mark('b', st.strikeAhead === 1); mark('c', st.refused.some((n) => n > 0)); mark('strikeArrow', st.strikeArrows > 0); mark('redeploy', st.redeployAhead === 1); }
-        const d = this.decide();
-        if (!d) break;
-        aic.act(d.action);
-      }
-      const o = aic.view.outcome;
-      return { seen, actions: i, end: o ? (o.won ? 'WON' : 'LOST') + ' in round ' + o.round + ': ' + o.detail : 'no outcome', won: !!o?.won };
-    },
-  };
-  return true;
-})()`;
 
 const page = await openPage({ width, height });
 let ok = false;

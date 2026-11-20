@@ -26,7 +26,7 @@ then check the losses, then the win (no city corrupted).
 
 /// The once-a-round list: what a player must otherwise remember with nothing on the table to show it.
 fn once_a_round(r: &Rules) -> String {
-    // 276: a group (Growth's options, a power's tiers) is one use and one marker: named once.
+    // 276: a group (a power's tiers) is one use and one marker: named once.
     let uses = |b: &aic_core::content::AiBoard| {
         let mut names: Vec<&str> = Vec::new();
         for p in &b.powers {
@@ -48,7 +48,8 @@ fn once_a_round(r: &Rules) -> String {
         "Each of these is used at most once a round. **Put a used marker on its used space when you use it** (each \
          power, building slot and converter prints one), and clear them all at round \
          start.\n\n\
-         - **Your board's Growth and powers:** each once: one Growth option, one tier of each power. {}.\n\
+         - **Your board's powers:** each once: each node power, one tier of each tiered power. {}.\n\
+         - **Each ambassador:** one move or one act; tip it over when it has.\n\
          - **Each building's Action** (`→`): once; \"A, OR B\" is one use.\n\
          - **Standard actions:** Remove a troop {} a round, Turn a cube into insight {} a round, each player.\n\
          - **Each megacorp's converter and chip converter:** once a round each, each player.\n\
@@ -58,7 +59,7 @@ fn once_a_round(r: &Rules) -> String {
          **Lasting effects, with their token:** a firewall, a cordon and a no-Infiltrate, no-Strike or no-Corrupt token \
          come off in the next adversary turn's Income beat; Shelter ends at cleanup; a round-flag marker runs through \
          the next round. Insight resets at \
-         round start (Patience keeps it); Dispatches refresh.\n",
+         round start (Patience keeps it); tipped ambassadors stand up.\n",
         boards.join("; "),
         times(int(r, "board.troop_per_round")),
         times(int(r, "board.insight_per_round")),
@@ -188,12 +189,13 @@ fn ambassadors(r: &Rules) -> String {
     format!(
         "- **An agent meets one** (it lands, or your ambassador arrives): one for one, both off.\n\
          - **Corruption** removes every ambassador on the hex.\n\
-         - **Liberate:** city {}, station {}, factory {} (yours on the site pay first, then your supply).\n\
+         - **Liberate** (your ready ambassador on the site acts): city {}, station {}, factory {} (yours on the \
+         site pay first, then your supply).\n\
          - **Remove agents:** {} from your supply.\n\
          - **Protecting** your node or facility on its hex (§13): one, instead of the piece.\n\
          - **Threats** that print ambassadors as a cost: from your supply.\n\
          - **Blocking** spends none: an ambassador on a corrupted site stops its output while it stands. A \
-         **Dispatch** moves one; a troop never touches one.\n\
+         **move** is an ambassador's own action (a hex next to it, or any of your nodes); a troop never touches one.\n\
          - **Gain one:** {} credits, Accord, cards.\n",
         int(r, "board.liberate_at"),
         int(r, "board.claim_station"),

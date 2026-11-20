@@ -428,7 +428,9 @@ fn project_ops_reach_as_declared() {
     };
     // Boards 1 and 2: both print a research station (board 0 prints none, so a station op has nothing there).
     // 263: botnets spread from `botnet_spread_at` (1) on; the baseline plays d0.
-    let sets = ["ai.boards=1,2", "adversary.botnet_spread_at=0"];
+    // The staging below corrupts one more city a country and needs a neutral one left for the Infiltrate lines: one
+    // corrupted city a country at setup, whatever the baseline's `start_corrupted`.
+    let sets = ["ai.boards=1,2", "adversary.botnet_spread_at=0", "board.start_corrupted=1"];
     let rules = rules_of(&baseline_with(&sets), "baseline_with", &sets);
     let w = rules.world();
     let m = &w.map;

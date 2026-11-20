@@ -82,7 +82,7 @@ const CASES = [
   // 197: r85-r86's project ops (botnets, sites taken, factory troops, raids, stripped hardening,
   // the clock) as the strategist meets them at d4, with the card-play track at 3.
   { name: 'c3-d4-strategist', config: 'baseline.json', set: ['countries=3', 'adversary.difficulty=4'], agent: 'strategist' },
-  // 285: the card-driven adversary (Infiltrate; 293: Escalate) and the Growth boards as the judge plays them at 3
+  // 285: the card-driven adversary (Infiltrate; 293: Escalate) and the boards' node powers as the judge plays them at 3
   // countries (all three boards), and at 4 countries for its crowded sites.
   { name: 'c3-d3-strategist', config: 'baseline.json', set: ['countries=3', 'adversary.difficulty=3'], agent: 'strategist' },
   { name: 'c4-d1-strategist', config: 'baseline.json', set: ['countries=4', 'adversary.difficulty=1'], agent: 'strategist' },
@@ -154,7 +154,7 @@ const PAGE_LIB = String.raw`(() => {
   // a remove_where sweep and a cleanse.
   const COUNTER_EVENTS_R70 = /^(effects\.(gathered|pushed|moved_canceled|struck|cleansed|firewalls|remove_where\..+)|board\.(site_standing_spent|std\.botnet|aegis_used|protection_declined)|prohibit\.[a-z]+\.[a-z_]+\.(made|fired))$/;
   // 184: r74-r77's contact and corruption: a meeting that cancels an agent and an ambassador, a node
-  // corrupted at 2, Remove agents, Dispatch, a claim or liberation, the last node lost.
+  // corrupted at 2, Remove agents, Move an ambassador, a claim or liberation, the last node lost.
   const COUNTER_EVENTS_R74 = /^(adversary\.(canceled|ambassadors_removed|troops_removed|corruptions\.node)|board\.(std\.(remove|move|claim|liberate)|last_node_lost))$/;
   // r85 (195, 197): each project op acting: a project's act, botnet troops, botnets made and spread,
   // a site taken or neutralized, factory troops (and blocked), a node raid, hardening stripped, the clock.
@@ -252,7 +252,7 @@ const PAGE_LIB = String.raw`(() => {
   const PLACEHOLDER = /\b(undefined|NaN|null|\[object Object\]|TODO|FIXME)\b|\?\?/;
   const RAW_ID = /\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b/;
   // The words docs/spelling.rs refuses in source (STALE there), plus the engine's labels it can't read.
-  const STALE = /adversary(?:'s)? ambassadors?|enemy ambassadors?|adv\. ambassadors?|agents token|Matt to confirm|Security agents?\b|on board: \d+ ambassadors?|corp troops?|\bDeploy(s|ed)?\b|each board|\btier (I|II|III)\b|Movement \+\d/i;
+  const STALE = /adversary(?:'s)? ambassadors?|enemy ambassadors?|adv\. ambassadors?|agents token|Matt to confirm|Security agents?\b|on board: \d+ ambassadors?|corp troops?|\bDeploy(s|ed)?\b|each board|\btier (I|II|III)\b|Movement \+\d|\bDispatch(es|ed)?\b(?! Control Room)|\bGrowth (option|\()|pick one a round/i;
 
   function checks() {
     const issues = [];
@@ -368,15 +368,22 @@ const PAGE_LIB = String.raw`(() => {
       if (hits) add('mark-over-number', (m.getAttribute('class') ?? 'mark') + ' crosses hex number ' + num.textContent);
     }
     // 235: nothing is near danger when a game starts: a value chip drawn as a warning in round 1 (the agent
-    // supply and the Dispatches were drawn so while full, the safe end) is an inverted warning.
+    // supply and, 295, the ready ambassadors were drawn so while full, the safe end) is an inverted warning.
     // (Round 1, not its first phase: a game's first capture is its first choice.)
     if (aic.view.round <= 1)
       // (A seat's last node is real danger from the start: the baseline deals one node.)
       for (const el of document.querySelectorAll('.value.near, .value.danger')) if (vis(el) && !el.dataset.loss) add('warn-at-start', label(el));
     // Every token in the view is drawn.
+    // 295: a seat's ambassadors on a hex are drawn as its ready ones (ambassador:N) and its tipped ones (tipped:N):
+    // every one of them tipped draws no ambassador:N, and tipped:N never shows without the seat's ambassadors there.
     for (const h of aic.view.hexes) for (const tok of h.tokens) {
-      if (tok.count > 0 && !document.querySelector('#board [data-hex="' + h.hex.join(',') + '"][data-token="' + tok.kind + '"]'))
-        add('token-missing', tok.kind + ' x' + tok.count + ' on hex ' + h.hex.join(','));
+      const on = (kind) => document.querySelector('#board [data-hex="' + h.hex.join(',') + '"][data-token="' + kind + '"]');
+      const n = (kind) => h.tokens.find((t) => t.kind === kind)?.count ?? 0;
+      const [base, seat] = tok.kind.split(':');
+      const drawn = base === 'ambassador' && seat !== 'adversary' ? on(tok.kind) || (n('tipped:' + seat) >= tok.count && on('tipped:' + seat))
+        : base === 'tipped' ? on(tok.kind) || n('ambassador:' + seat) === 0 : on(tok.kind);
+      if (tok.count > 0 && !drawn) add('token-missing', tok.kind + ' x' + tok.count + ' on hex ' + h.hex.join(','));
+      if (base === 'tipped' && tok.count > n('ambassador:' + seat)) add('token-missing', tok.kind + ' x' + tok.count + ' on hex ' + h.hex.join(',') + ' with ' + n('ambassador:' + seat) + ' ambassadors of the seat there');
     }
     // 044: every token has its own glyph (r19's marker fell to a hashed-color disc). 221: board.ts's glyph switch is
     // the one list of drawn kinds; its fallback disc carries data-glyph="fallback".

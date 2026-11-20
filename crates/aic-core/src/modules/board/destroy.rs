@@ -103,7 +103,7 @@ pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause
                 return Ok(false);
             }
             Some(Guard::Ambassador(s)) => {
-                cx.add_tokens(g, h, ambassador(s), -1);
+                take_ambassadors(g, cx, s, h, 1);
                 cx.tally(g, "board.ambassador_shield", 1);
                 held(cx, "the ambassador there");
                 return Ok(false);

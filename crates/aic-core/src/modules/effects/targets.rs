@@ -34,8 +34,16 @@ pub fn meets(w: &World, g: &GameState, seat: usize, on: TargetSpec, h: usize) ->
 }
 
 /// 234: the hexes seat `seat` may target with a card's `on`: in its reach, meeting the condition.
+///
+/// r142: a troop on or next to one of your ambassadors is in your reach too ("Target: Troops", and "Target: Agents
+/// or Troops" where a troop stands), so a guard beside a site your ambassador has moved onto can be removed or
+/// pushed though it stands two hexes from your node.
 pub fn target_hexes(w: &World, g: &GameState, seat: usize, on: TargetSpec) -> Vec<usize> {
-    (0..g.hexes.len()).filter(|&h| in_reach(w, g, seat, h) && meets(w, g, seat, on, h)).collect()
+    let by_ambassador = |h: usize| {
+        (on == TargetSpec::Troops || (on == TargetSpec::Adversary && g.tokens(h, TROOP) > 0))
+            && next_to(w, h, |x| g.tokens(x, ambassador(seat)) > 0)
+    };
+    (0..g.hexes.len()).filter(|&h| (in_reach(w, g, seat, h) || by_ambassador(h)) && meets(w, g, seat, on, h)).collect()
 }
 
 /// 261: the hexes a target `on` may take when `rest` follows it in the same list: a site a card opens and then

@@ -10,7 +10,7 @@ pub enum StandardAction {
     /// 210 (Matt, candidate): research cubes lift 1 Fallout token in reach, the one standard action that
     /// removes Fallout (r91 cut Clear, which took markers for credits).
     Lift,
-    /// 149: a free move from the seat's Dispatch (the paid Move is gone).
+    /// r142 (Matt, 2026-11-19): an ambassador's own move, its one action of the round (149's Dispatches are gone).
     Move,
     Ambassador,
     /// 137: liberate an adversary site with massed ambassadors (it replaced
@@ -125,7 +125,7 @@ pub fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::Station => Price { chips: i("station_chips"), ambassadors: i("station_ambassadors"), ..Price::default() },
         StandardAction::Remove => ambassadors(i("remove_ambassadors")),
         StandardAction::Lift => Price { cubes: i("land_cubes"), ..Price::default() },
-        // 149: paid from the seat's Dispatch, not a resource (`moves_left`).
+        // r142: free: it uses the ambassador's action for the round.
         StandardAction::Move => Price::default(),
         StandardAction::Ambassador => credits(i("ambassador_credits")),
         // 137: the ambassadors depend on the site: [`target_price`].
@@ -172,26 +172,10 @@ fn per_round(w: &World, act: StandardAction) -> Option<i64> {
     }
 }
 
-/// The hexes holding a botnet that seat `seat` may take down (r75, Matt's ruling 3): its own ambassador
-/// stands on the hex, and (r81, friction #54) the hex is in its reach, like every other action's target.
-pub fn botnet_targets(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
-    (0..g.hexes.len())
-        .filter(|&h| g.tokens(h, BOTNET) > 0 && g.tokens(h, ambassador(seat)) > 0 && in_reach(w, g, seat, h))
-        .collect()
-}
-
-/// The var counting seat `s`'s Dispatch used this round (149), cleared in cleanup.
-pub fn moved_key(seat: usize) -> KeyBuf {
-    KeyBuf::new(MOVED).num(seat)
-}
-
-/// Prefix of [`moved_key`].
-pub(super) const MOVED: &str = "board.moved.";
-
-/// Seat `s`'s Dispatch left this round (149): its board's [`ai::movement`]
-/// less the free moves it has made.
-pub fn moves_left(w: &World, g: &GameState, seat: usize) -> i64 {
-    ai::movement(w, g, seat) - g.var(&moved_key(seat))
+/// The hexes holding a botnet that seat `seat` may take down (r75, Matt's ruling 3): one of its own ambassadors
+/// stands on the hex, ready: taking it down is that ambassador's action (r142; it needed the hex in reach).
+pub fn botnet_targets(_w: &World, g: &GameState, seat: usize) -> Vec<usize> {
+    (0..g.hexes.len()).filter(|&h| g.tokens(h, BOTNET) > 0 && ready_ambassadors(g, seat, h) > 0).collect()
 }
 
 /// 206: the ops an op-backed standard action runs (troop removal, factory building), so its targets and effect are
@@ -232,9 +216,9 @@ pub fn std_target(act: StandardAction) -> Option<&'static str> {
         StandardAction::Station => "an open hex",
         StandardAction::Remove => "Agents",
         StandardAction::Lift => "Fallout",
-        StandardAction::Move => "a piece or a Botnet",
-        StandardAction::Liberate => "a corrupted site with no Agent on it and no Troop on or next to it",
-        StandardAction::Botnet => "a Botnet on a hex holding your ambassador",
+        StandardAction::Move => "a land hex next to your ready ambassador, or one of your Nodes",
+        StandardAction::Liberate => "a corrupted site holding your ready ambassador, with no Agent on it and no Troop on or next to it",
+        StandardAction::Botnet => "a Botnet on a hex holding your ready ambassador",
         StandardAction::Troop => "Troops",
         StandardAction::Factory => "a free industrial zone",
         StandardAction::Ambassador
@@ -262,12 +246,13 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
             let who = if n == 1 { "an ambassador".to_string() } else { format!("{n} ambassadors") };
             format!("Spend {who} from your supply: remove up to {} on or next to it", w.int("board.remove_count"))
         }
-        // 178 (Matt's ruling #22): Dispatch, not Move (it plays the same: the ambassador comes from anywhere).
-        StandardAction::Move => "Use 1 Dispatch: put a player ambassador on it, from your supply or the board".into(),
+        // r142: the ambassador's one action of the round.
+        StandardAction::Move if arrive_ready(w) => "Move that ambassador onto it (onto your Node: any ready one, or one from your supply, which stays ready); it has acted this round".into(),
+        StandardAction::Move => "Move that ambassador onto it (onto your Node: any ready one, or one from your supply); it has acted this round".into(),
         StandardAction::Ambassador => "gain a player ambassador".into(),
         StandardAction::Liberate => format!(
             // 235: a factory's price is its own (claim_factory), not the station's.
-            "Liberate it: {} ambassadors for a city, {} for a station, {} for a factory; yours on it pay first; it is left neutral",
+            "Your ambassador acts: liberate it for {} ambassadors (a city), {} (a station) or {} (a factory), used up; yours on it pay first, your supply the rest; it is left neutral",
             liberate_ambassadors(w, SiteKind::City),
             liberate_ambassadors(w, SiteKind::Station),
             liberate_ambassadors(w, SiteKind::Factory)
@@ -278,7 +263,7 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
             Resource::Insight.words(w.int("board.cube_insight")),
             per_round(w, act).map(|n| format!(", {} a round", times(n))).unwrap_or_default()
         ),
-        StandardAction::Botnet => "Take it down (your ambassador stays)".into(),
+        StandardAction::Botnet => "Your ambassador acts: take it down (the ambassador stays)".into(),
         StandardAction::Antimatter => {
             match w.int("board.antimatter_energy") {
                 0 => format!("turn {} into 1 antimatter", Resource::ResearchCubes.words(w.int("board.antimatter_cubes"))),
@@ -324,9 +309,13 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
             "its Fallout token comes off: the one standard action that removes Fallout".into(),
         ),
         StandardAction::Move => (
-            "Dispatch a player ambassador",
-            "1 of your Dispatches this round (your board's, unused ones lost)".into(),
-            "a player ambassador goes on it, from your supply or anywhere on the board (not the target itself)".into(),
+            "Move an ambassador",
+            "that ambassador's action this round".into(),
+            if arrive_ready(w) {
+                "the ambassador moves onto it and is tipped over. Onto one of your nodes, any of your ready ambassadors may come, or one from your supply, which arrives ready".into()
+            } else {
+                "the ambassador moves onto it and is tipped over. Onto one of your nodes, any of your ready ambassadors may come, or one from your supply".into()
+            },
         ),
         StandardAction::Ambassador => (
             "Gain a player ambassador",
@@ -339,7 +328,7 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
         StandardAction::Liberate => (
             "Liberate a site",
             format!(
-                "{} ambassadors for a city, {} for a station, {} for a factory; used up: yours on the site first, your supply the rest",
+                "the action of one of your ready ambassadors on the site, and {} ambassadors for a city, {} for a station, {} for a factory; used up: yours on the site first (the one acting among them), your supply the rest",
                 t("board.liberate_at"),
                 t("board.claim_station"),
                 t("board.claim_factory")
@@ -360,7 +349,7 @@ pub fn std_rule_text(act: StandardAction, w: &World, t: &dyn Fn(&str) -> String)
         // r75 (Matt's ruling 3): the first standard way to take a botnet down.
         StandardAction::Botnet => (
             "Take down a botnet",
-            format!("{} credits", t("board.botnet_credits")),
+            format!("the action of your ready ambassador on its hex, and {} credits", t("board.botnet_credits")),
             if w.int("alignment.botnet") > 0 {
                 format!("the botnet comes off (your ambassador stays): sway {} toward Unity", t("alignment.botnet"))
             } else {
@@ -413,11 +402,12 @@ pub fn station_sites(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
         .collect()
 }
 
-/// Whether seat `s` can liberate adversary site `h` now: in its reach (a
-/// botnet doesn't stop it: the setup station holds one) and the ambassadors
-/// in its supply (137).
+/// Whether seat `s` can liberate adversary site `h` now (r142, Matt 2026-11-19: move in, then act): one of its
+/// ambassadors stands on it ready, and its ambassadors there and in its supply pay the bill (137). A botnet
+/// doesn't stop it (the setup station holds one); it needs no reach: the piece is there.
 pub fn liberable(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
-    target_price(w, g, seat, StandardAction::Liberate, h).is_some_and(|p| p.affordable(g, seat)) && in_reach(w, g, seat, h)
+    ready_ambassadors(g, seat, h) > 0
+        && target_price(w, g, seat, StandardAction::Liberate, h).is_some_and(|p| p.affordable(g, seat))
 }
 
 /// The Fallout tokens seat `seat` can lift: any in its reach (210's Lift, 212's card bonus).
@@ -437,21 +427,7 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
         StandardAction::Station => station_sites(w, g, seat),
         StandardAction::Remove => all.filter(|&h| reach(h) && g.tokens(h, ADV_AMBASSADOR) > 0).collect(),
         StandardAction::Lift => land_in_reach(w, g, seat),
-        // Onto a piece in reach, from the supply or another hex: never onto the
-        // hex the seat's only ambassador already holds (020: that charged the
-        // energy and moved nothing).
-        StandardAction::Move if moves_left(w, g, seat) <= 0 => Vec::new(),
-        StandardAction::Move => {
-            let supply = g.resource(seat, Resource::Ambassadors) > 0;
-            let on_board = ambassadors_on_board(g, seat);
-            all.filter(|&h| {
-                // r75: a botnet's hex too, where an ambassador takes it down.
-                (supply || on_board > g.tokens(h, ambassador(seat)))
-                    && reach(h)
-                    && (has_piece(w, g, h) || g.tokens(h, BOTNET) > 0)
-            })
-            .collect()
-        }
+        StandardAction::Move => move_targets(w, g, seat),
         StandardAction::Liberate => all.filter(|&h| liberable(w, g, seat, h)).collect(),
         // Gaining an ambassador, credits or insight needs no target.
         StandardAction::Ambassador => vec![usize::MAX],
@@ -490,7 +466,7 @@ pub(super) fn std_resolve(
         let opts = targets.iter().map(|&h| hex_opt(&w, h)).collect();
         // 184: the printed action's words, not its key (Dispatch's key is still "move", 178).
         let prompt = || match act {
-            StandardAction::Move => format!("Seat {s}: dispatch an ambassador to which hex?"),
+            StandardAction::Move => format!("Seat {s}: move an ambassador to which hex?"),
             StandardAction::Botnet => format!("Seat {s}: take down a botnet on which hex?"),
             StandardAction::Station => format!("Seat {s}: build a research station on which hex?"),
             // 236: Remove agents names its target, the cards' prompt (the agents' target rule answers it).
@@ -546,7 +522,9 @@ pub(super) fn std_resolve(
         }
         StandardAction::Botnet => {
             if let Some(h) = on_hex(cx)? {
-                // r75 (Matt's ruling 3): the ambassador stays; the botnet's Unity is `alignment.botnet`.
+                // r75 (Matt's ruling 3): the ambassador stays; the botnet's Unity is `alignment.botnet`. r142: it
+                // has acted.
+                tip_ambassador(g, cx, s, h);
                 adversary::remove_botnet(g, cx, h);
                 cx.tally(g, "board.botnets_taken_down", 1);
             }
@@ -559,8 +537,7 @@ pub(super) fn std_resolve(
         }
         StandardAction::Move => {
             if let Some(h) = on_hex(cx)? {
-                cx.add_key(g, &moved_key(s), 1);
-                move_ambassador(g, cx, s, h)?;
+                walk_ambassador(g, cx, s, h)?;
             }
         }
         StandardAction::Liberate => {

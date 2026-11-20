@@ -8,6 +8,13 @@ import { boardDetails, trackStepDetails } from './panels';
 function tokenDetails(token: string, hex: string, shown: View): string {
   const h = shown.hexes.find((x) => hexKey(x.hex) === hex);
   const tok = h?.tokens.find((x) => x.kind === token);
+  // 295: a seat's ambassadors, standing or tipped, are one stack with one hover: how many, and how many are used.
+  const [base, seat] = token.split(':');
+  if ((base === 'ambassador' || base === 'tipped') && seat !== 'adversary') {
+    const n = h?.tokens.find((x) => x.kind === `ambassador:${seat}`)?.count ?? 0;
+    const m = Math.min(n, h?.tokens.find((x) => x.kind === `tipped:${seat}`)?.count ?? 0);
+    return `<b>${n} ambassador${n === 1 ? '' : 's'} (seat ${escapeHtml(seat)})</b>${m ? ` (${m} tipped: moved or acted this round)` : ' (ready: each may move or act this round)'}<br><code>${escapeHtml(token)}</code> on ${escapeHtml(countryName(shown, h?.country ?? -1))} #${h?.number} (${escapeHtml(kindName(h?.kind ?? ''))}, hex ${hex})`;
+  }
   return `<b>${escapeHtml(tokenName(token))}</b> × ${tok?.count ?? 0}<br><code>${escapeHtml(token)}</code> on ${escapeHtml(countryName(shown, h?.country ?? -1))} #${h?.number} (${escapeHtml(kindName(h?.kind ?? ''))}, hex ${hex})`;
 }
 
@@ -19,7 +26,13 @@ function hexDetails(hex: string, index: number, shown: View, legal: Action[], cx
     const c = seat !== undefined ? shown.countries[shown.seats[Number(seat)]?.country ?? -1]?.color : undefined;
     return c ? strong(c) : tokenColor(k);
   };
-  const toks = h.tokens.map((x) => `<span class="dot" style="background:${dot(x.kind)}"></span>${escapeHtml(tokenName(x.kind))} × ${x.count}`).join('<br>') || 'no tokens';
+  // 295: tipped ambassadors are some of the seat's ambassadors there, said on their line.
+  const tipped = (k: string) => {
+    const [base, seat] = k.split(':');
+    const m = base === 'ambassador' ? h.tokens.find((x) => x.kind === `tipped:${seat}`)?.count ?? 0 : 0;
+    return m ? ` (${m} tipped: moved or acted this round)` : '';
+  };
+  const toks = h.tokens.filter((x) => !x.kind.startsWith('tipped:')).map((x) => `<span class="dot" style="background:${dot(x.kind)}"></span>${escapeHtml(tokenName(x.kind))} × ${x.count}${tipped(x.kind)}`).join('<br>') || 'no tokens';
   const here = legal.filter((a) => isHex(a.target) && hexKey(a.target) === hex).map((a) => escapeHtml(actionLabel(a, true, true, cx)));
   const arrows = shown.arrows.filter((a) => a.from === h.index || a.to === h.index).map((a) => escapeHtml(contentIds(a.doc)));
   return `<b>${escapeHtml(countryName(shown, h.country))} #${h.number}</b> · ${escapeHtml(kindName(h.kind))}<br>hex ${hex} · index ${h.index} · piece position ${h.piece_pos.join(',')} · ${h.neighbors.length} neighbors<hr>${toks}${arrows.length ? `<hr>${arrows.join('<br>')}` : ''}${here.length ? `<hr>legal here:<br>${here.join('<br>')}` : ''}`;

@@ -588,7 +588,7 @@ fn lose_ambassadors_or(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, s: usize, coun
                 let Some(i) = cx.choose_loss(s, prompt, opts)? else {
                     break;
                 };
-                cx.add_tokens(g, on[i], ambassador(s), -1);
+                crate::modules::board::take_ambassadors(g, cx, s, on[i], 1);
             }
         }
         None => {

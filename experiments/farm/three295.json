@@ -1,0 +1,16 @@
+{
+  "name": "three295",
+  "note": "295: a finish check of the 3-seat config under r142 (configs/three_seat.json: Builder, Protector, Researcher, d0): the judge, 16 dev seeds, with two corrupted cities a country (bpr, the config's value) and with one (bpr_c1). Not a read: it says only that 3-seat games end and how. Farm with `farm-seeds 36800 16 OUT three295`.",
+  "configs": [
+    "configs/three_seat.json"
+  ],
+  "variants": [
+    {"name": "bpr", "set": ["board.start_corrupted=2"]},
+    {"name": "bpr_c1", "set": ["board.start_corrupted=1"]}
+  ],
+  "difficulties": [0],
+  "agents": ["strategist"],
+  "games": 16,
+  "first_seed": 36800,
+  "records": 0
+}

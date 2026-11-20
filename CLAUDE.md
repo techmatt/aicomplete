@@ -35,9 +35,12 @@ any design, rules, card or pricing work.
   `memory_counters` and `design_check_jobs.json`; an op in `configs/agents/values.json`, `effect_ledger.py`,
   `crates/aic-sim/src/docs/{harms,run}.rs` (its harms arm, `PALETTE_OPS`), `tests/unprinted_ops.rs` and `drafts/adversary/check.py`.
   A param, phase or rule's name also sits in the docs generators (`crates/aic-sim/src/docs/{aid,blocks,ladder}.rs`),
-  `configs/three_seat.json` and `web/scripts/e2e-*.mjs`. A new house word holding an old one ("Redeploy", "deploy")
+  `configs/three_seat.json` and `web/scripts/e2e-*.mjs`; a board content field (`AiBoard`, `Uncover`, a power's
+  `group`) in `ai.rs`, `docs/blocks.rs`, `web/scripts/cards-export.mjs`, `scripts/bench/fresh_read.py` and
+  `design_check.json`'s rows. A new house word holding an old one ("Redeploy", "deploy")
   fails `aic-sim docs`' stale-word check (`docs/spelling.rs`, `STALE`): check before the first long build.
-  **Changing a tunable's baseline value or a power's cost:** first `git grep` its name and old value in
+  **Changing a tunable's baseline value or a power's cost:** a setup dial (`board.start_*`) is also assumed by the lab
+  (`lab_config` pins it) and by tests that stage a board from `baseline_with`; first `git grep` its name and old value in
   `crates/`: tests that pin a baseline number break.
 - **A new standard action** also needs its row order in `crates/aic-sim/src/docs/blocks.rs`, `STANDARD_NAMES` in
   `web/src/format.ts` and `scripts/design_check.json`'s rows (`every_standard_action_is_named_everywhere` checks the

@@ -88,6 +88,15 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
       );
       break;
     }
+    case 'tipped': {
+      // 295: a seat's ambassadors that have moved or acted this round: the ambassador laid on its side, faded.
+      const a = glyph(`ambassador:${arg}`, s, paint);
+      a.setAttribute('transform', 'rotate(90)');
+      a.setAttribute('opacity', '0.55');
+      a.setAttribute('class', 'tipped');
+      g.append(a);
+      break;
+    }
     case 'factory':
       g.append(p(`M${f(-s)},${f(0.85 * s)} V${f(-0.15 * s)} L${f(-0.45 * s)},${f(-0.6 * s)} V${f(-0.15 * s)} L${f(0.1 * s)},${f(-0.6 * s)} V${f(-0.15 * s)} L${f(0.45 * s)},${f(-0.5 * s)} V${f(-s)} H${f(s)} V${f(0.85 * s)} Z`, c));
       break;
@@ -158,18 +167,33 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
 }
 
 /** Glyph scale per kind: owner cubes and facilities a little larger than pawns. */
-const SCALE: Record<string, number> = { cube: 1.05, station: 1.1, factory: 1, node: 1, ambassador: 0.9, troop: 0.95, harden: 0.85, botnet: 1, fallout: 0.95, firewall: 0.9, no_infiltrate: 0.8, no_strike: 0.8, no_corrupt: 0.8 };
+const SCALE: Record<string, number> = { cube: 1.05, station: 1.1, factory: 1, node: 1, ambassador: 0.9, tipped: 0.9, troop: 0.95, harden: 0.85, botnet: 1, fallout: 0.95, firewall: 0.9, no_infiltrate: 0.8, no_strike: 0.8, no_corrupt: 0.8 };
 /** The adversary's tokens: its owner cube, its ambassadors, its troops, its botnets, Fallout. */
 const isAdversary = (kind: string) => kind === 'troop' || kind === 'botnet' || kind === 'fallout' || kind.endsWith(':adversary');
-const ORDER = ['cube', 'station', 'factory', 'node', 'harden', 'firewall', 'no_infiltrate', 'no_strike', 'no_corrupt', 'ambassador', 'fallout', 'botnet', 'troop'];
+const ORDER = ['cube', 'station', 'factory', 'node', 'harden', 'firewall', 'no_infiltrate', 'no_strike', 'no_corrupt', 'ambassador', 'tipped', 'fallout', 'botnet', 'troop'];
 const rank = (k: string) => {
   const i = ORDER.indexOf(k.split(':')[0]);
   return i < 0 ? ORDER.length : i;
 };
 
+/**
+ * 295: the stacks as the table sees them. The view's `tipped:<seat>` counts those of the seat's `ambassador:<seat>`
+ * on the hex that have used the round's action: the ready ones stand as `ambassador:<seat>`, the tipped ones lie
+ * beside them as `tipped:<seat>` (never more than the seat has there, never a stack of its own).
+ */
+export function standing(tokens: Token[]): Token[] {
+  const count = (kind: string) => tokens.find((t) => t.kind === kind)?.count ?? 0;
+  return tokens.flatMap((t) => {
+    const [base, seat] = t.kind.split(':');
+    if (base === 'tipped') return [{ ...t, count: Math.min(t.count, count(`ambassador:${seat}`)) }].filter((x) => x.count > 0);
+    if (base === 'ambassador' && seat !== 'adversary') return [{ ...t, count: t.count - Math.min(count(`tipped:${seat}`), t.count) }].filter((x) => x.count > 0);
+    return [t];
+  });
+}
+
 /** Players' pieces and facilities on the upper row, the adversary's on the lower one. */
 function rows(tokens: Token[]): Token[][] {
-  const sorted = [...tokens].sort((a, b) => rank(a.kind) - rank(b.kind) || a.kind.localeCompare(b.kind));
+  const sorted = standing(tokens).sort((a, b) => rank(a.kind) - rank(b.kind) || a.kind.localeCompare(b.kind));
   const top = sorted.filter((t) => !isAdversary(t.kind));
   const bottom = sorted.filter((t) => isAdversary(t.kind));
   return [top, bottom].filter((r) => r.length);

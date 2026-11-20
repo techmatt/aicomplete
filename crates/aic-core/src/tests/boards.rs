@@ -31,19 +31,15 @@ fn printed_and_revealed_tags_count_like_card_tags() {
     assert!(cards::sources(&w, &g, 0).is_empty(), "nor is a revealed one");
 }
 
-/// 149: Movement is the board's printed moves plus its uncovered Movement
-/// spaces; each free move uses one this round, and cleanup gives them back.
+/// r142 (Matt, 2026-11-19): Dispatches are gone, and no board gets more: content printing one is refused.
 #[test]
-fn movement_is_printed_plus_uncovered_spaces() {
-    let (rules, mut g) = lab_actions();
-    let w = rules.world();
-    let b = crate::modules::ai::board(&w, 0);
-    assert_eq!(crate::modules::ai::movement(&w, &g, 0), b.moves + b.economy_track[0].moves);
-    let k = b.economy_track.iter().position(|u| u.moves > 0).expect("a Movement space");
-    set_var(&mut g, board::track_key(0), k as i64 + 1);
-    assert_eq!(crate::modules::ai::movement(&w, &g, 0), b.moves + b.economy_track[..=k].iter().map(|u| u.moves).sum::<i64>());
-    set_var(&mut g, board::moved_key(0), 1);
-    assert_eq!(board::moves_left(&w, &g, 0), crate::modules::ai::movement(&w, &g, 0) - 1);
+fn no_board_prints_a_dispatch() {
+    let board = serde_json::to_value(&crate::content().ais[0]).unwrap();
+    let mut with = board.clone();
+    with["moves"] = 1.into();
+    assert!(serde_json::from_value::<crate::content::AiBoard>(board).is_ok());
+    assert!(serde_json::from_value::<crate::content::AiBoard>(with).is_err());
+    assert!(serde_json::from_str::<crate::content::Uncover>(r#"{"income": [], "moves": 1}"#).is_err());
 }
 
 #[test]

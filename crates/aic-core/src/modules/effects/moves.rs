@@ -90,7 +90,10 @@ fn adversary_piece(kind: &str) -> bool {
 
 /// A piece of token `kind` arrives on hex `to` (it has already left its hex). An agent onto a standing
 /// ambassador cancels both; an ambassador onto agents cancels one; otherwise it stands there.
-pub fn arrive(g: &mut GameState, cx: &mut Cx, kind: &'static str, to: usize) -> Res {
+///
+/// r142: a player ambassador keeps the state it left with (`used`, from [`leave`]): a card's move is not its own
+/// action, so a tipped one arrives tipped.
+pub fn arrive(g: &mut GameState, cx: &mut Cx, kind: &'static str, to: usize, used: bool) -> Res {
     if kind == ADV_AMBASSADOR {
         // r75: the players choose whose ambassador it cancels.
         if board::agent_cancels(g, cx, to)?.is_some() {
@@ -103,8 +106,32 @@ pub fn arrive(g: &mut GameState, cx: &mut Cx, kind: &'static str, to: usize) -> 
         cx.tally(g, "effects.moved_canceled", 1);
         return Ok(());
     }
-    cx.add_tokens(g, to, kind, 1);
+    match (0..g.seats.len()).find(|&s| kind == ambassador(s)) {
+        Some(s) => {
+            let used = used || !board::arrive_ready(&cx.world);
+            board::place_ambassador_as(g, cx, s, to, used);
+        }
+        None => {
+            cx.add_tokens(g, to, kind, 1);
+        }
+    }
     Ok(())
+}
+
+/// r142: one piece of `kind` leaves hex `from` for a Gather or Push. Returns whether it is a player ambassador
+/// that had used its action (a ready one leaves first: `board::take_ambassadors`).
+fn leave(g: &mut GameState, cx: &mut Cx, kind: &'static str, from: usize) -> bool {
+    match (0..g.seats.len()).find(|&s| kind == ambassador(s)) {
+        Some(s) => {
+            let used = ready_ambassadors(g, s, from) == 0;
+            board::take_ambassadors(g, cx, s, from, 1);
+            used
+        }
+        None => {
+            cx.add_tokens(g, from, kind, -1);
+            false
+        }
+    }
 }
 
 /// "2 agents" / "1 troop": a batch's label word.
@@ -160,9 +187,9 @@ pub(super) fn gather(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, piec
         let Some(j) = cx.choose(seat, || format!("Seat {seat}: {GATHER_PIECE} (into {})", hex_name(&w, to)), opts)? else { break };
         let Some(&(k, x, n, _)) = units.get(j) else { break };
         for _ in 0..n {
-            cx.add_tokens(g, x, k, -1);
+            let used = leave(g, cx, k, x);
             cx.tally(g, "effects.gathered", 1);
-            arrive(g, cx, k, to)?;
+            arrive(g, cx, k, to, used)?;
         }
         moved += n;
     }
@@ -245,9 +272,9 @@ pub(super) fn push(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, pieces
         let Some(j) = cx.choose(seat, || format!("Seat {seat}: {PUSH_PIECE} (from {})", hex_name(&w, from)), opts)? else { break };
         let Some(&(k, x, n, _)) = units.get(j) else { break };
         for _ in 0..n {
-            cx.add_tokens(g, from, k, -1);
+            let used = leave(g, cx, k, from);
             cx.tally(g, "effects.pushed", 1);
-            arrive(g, cx, k, x)?;
+            arrive(g, cx, k, x, used)?;
         }
         moved += n;
     }

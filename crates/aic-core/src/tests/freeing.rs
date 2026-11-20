@@ -112,7 +112,9 @@ fn freeing_a_city_and_removing_a_botnet_sway_unity() {
     let city = m.numbered(0, piece(0).cities[0]);
     put(&mut g, city, ADV_CUBE, 1);
     put(&mut g, city, node(0), 1);
-    // 137: the Liberate action (the lab's `liberate_at` is 1).
+    // 137: the Liberate action (the lab's `liberate_at` is 1). r142: the seat's ambassador on the city acts, and
+    // pays the bill.
+    put(&mut g, city, ambassador(0), 1);
     set_res(&mut g, 0, Resource::Ambassadors, 1);
     rules.apply_mut(&mut g, &std_act(0, "liberate"), None).unwrap();
     pick(&rules, &mut g, city);

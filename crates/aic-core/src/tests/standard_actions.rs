@@ -36,9 +36,8 @@ fn standard_actions_are_offered_only_when_affordable_and_targeted() {
         set_res(&mut g, s, Resource::Ambassadors, 0);
         assert!(standard_offered(&rules, &g, s as u8).is_empty(), "seat {s}");
     }
-    // 149: an ambassador and the board's Movement, nothing else, to move one.
+    // r142: an ambassador, nothing else, to move one (from the supply onto a node of yours).
     set_res(&mut g, 0, Resource::Ambassadors, 1);
-    assert!(board::moves_left(&rules.world(), &g, 0) > 0);
     assert_eq!(standard_offered(&rules, &g, 0), ["move".to_string()].into());
     // No ambassadors: no moving.
     set_res(&mut g, 0, Resource::Ambassadors, 0);
@@ -149,18 +148,11 @@ fn standard_actions_cost_what_the_config_says() {
     let price = w.int("board.ambassador_credits");
     assert_eq!((spent(&g, 0), g.resource(0, Resource::Ambassadors)), ((0, price, 0), 2));
 
-    // 149: a move is free and uses 1 of the round's Movement; with none left, none is offered.
+    // r142: a move is free: it uses the ambassador's action. Each one moves once a round (`ambassadors.rs`).
     let mut g = g0.clone();
-    let movement = board::moves_left(&w, &g, 0);
     act(&rules, &mut g, std_act(0, "move"));
     assert_eq!((spent(&g, 0), g.resource(0, Resource::Ambassadors)), ((0, 0, 0), 0));
-    assert_eq!(board::moves_left(&w, &g, 0), movement - 1);
-    while board::moves_left(&w, &g, 0) > 0 {
-        set_res(&mut g, 0, Resource::Ambassadors, 1);
-        act(&rules, &mut g, std_act(0, "move"));
-    }
-    set_res(&mut g, 0, Resource::Ambassadors, 1);
-    assert!(!standard_offered(&rules, &g, 0).contains("move"));
+    assert_eq!(total(&g, ambassador(0)), 1);
 
     let mut g = g0.clone();
     let d = node_of(&g, 0)[0];
@@ -382,9 +374,13 @@ fn liberating_a_station_or_factory_turns_it_neutral() {
         put(&mut g, h, ADV_AMBASSADOR, 0);
         let n = w.int(if tok == STATION { "board.claim_station" } else { "board.claim_factory" });
         assert_eq!(board::liberate_cost(&w, &g, h), Some(n), "{what}");
-        set_res(&mut g, 0, Resource::Ambassadors, n - 1);
-        assert!(!standard_offered(&rules, &g, 0).contains("liberate"), "{what}");
         set_res(&mut g, 0, Resource::Ambassadors, n);
+        assert!(!standard_offered(&rules, &g, 0).contains("liberate"), "{what}: r142, no ambassador of yours on it");
+        // The one on the site acts and pays first, the supply the rest.
+        put(&mut g, h, ambassador(0), 1);
+        set_res(&mut g, 0, Resource::Ambassadors, n - 2);
+        assert!(!standard_offered(&rules, &g, 0).contains("liberate"), "{what}");
+        set_res(&mut g, 0, Resource::Ambassadors, n - 1);
         let unity = g.var("alignment.unity") + crate::modules::alignment::unity_pending(&g);
         act(&rules, &mut g, std_act(0, "liberate"));
         assert_eq!(
@@ -399,7 +395,7 @@ fn liberating_a_station_or_factory_turns_it_neutral() {
             "{what}"
         );
         assert_eq!(g.stats.counters[format!("board.liberated.{what}").as_str()], 1);
-        // Out of reach, it isn't offered.
+        // r142: out of reach it is offered all the same, with the seat's ambassador on it (and never without).
         let mut t = g.clone();
         put(&mut t, h, ADV_CUBE, 1);
         put(&mut t, me, node(0), 0);
@@ -407,6 +403,8 @@ fn liberating_a_station_or_factory_turns_it_neutral() {
         put(&mut t, far, node(0), 1);
         set_res(&mut t, 0, Resource::Ambassadors, 10);
         assert!(!board::liberable(&w, &t, 0, h), "{what}");
+        put(&mut t, h, ambassador(0), 1);
+        assert!(board::liberable(&w, &t, 0, h), "{what}");
     }
 }
 
@@ -549,20 +547,24 @@ fn taking_a_botnet_down_needs_your_ambassador_on_its_hex() {
     assert!(!standard_offered(&rules, &g, 0).contains("botnet"), "another seat's ambassador");
     put(&mut g, h, ambassador(0), 1);
     assert_eq!(board::botnet_targets(&w, &g, 0), vec![h]);
-    // r81 (friction #54): reach, like every other action. An ambassador on a botnet out of reach can't take it down.
+    // r142: the ambassador on the hex acts, whatever the seat's reach (r81 needed the hex in reach).
     let far = (0..m.hexes.len())
         .find(|&x| kind(m, x) != HexKind::Ocean && !crate::modules::common::in_reach(&w, &g, 0, x))
         .unwrap();
     put(&mut g, far, BOTNET, 1);
     put(&mut g, far, ambassador(0), 1);
-    assert_eq!(board::botnet_targets(&w, &g, 0), vec![h], "a botnet out of reach");
+    let mut both = vec![h, far];
+    both.sort_unstable();
+    assert_eq!(board::botnet_targets(&w, &g, 0), both, "a botnet out of reach, its ambassador on it");
     put(&mut g, far, BOTNET, 0);
+    put(&mut g, far, ambassador(0), 0);
     set_res(&mut g, 0, Resource::Credits, price - 1);
     assert!(!standard_offered(&rules, &g, 0).contains("botnet"), "short of the price");
     set_res(&mut g, 0, Resource::Credits, price);
     let unity = g.var("alignment.unity") + crate::modules::alignment::unity_pending(&g);
     act(&rules, &mut g, std_act(0, "botnet"));
     assert_eq!((g.tokens(h, BOTNET), g.tokens(h, ambassador(0)), g.resource(0, Resource::Credits)), (0, 1, 0));
+    assert_eq!(crate::modules::common::ready_ambassadors(&g, 0, h), 0, "r142: it has acted");
     assert_eq!(g.var("alignment.unity") + crate::modules::alignment::unity_pending(&g) - unity, w.int("alignment.botnet"));
     assert_eq!(g.stats.counters["board.botnets_taken_down"], 1);
 }

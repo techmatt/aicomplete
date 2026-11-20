@@ -318,7 +318,7 @@ pub(super) fn recall_ambassadors(g: &mut GameState, cx: &mut Cx) {
         for s in 0..seats {
             let n = g.tokens(h, ambassador(s));
             if n > 0 {
-                cx.add_tokens(g, h, ambassador(s), -n);
+                crate::modules::board::take_ambassadors(g, cx, s, h, n);
                 cx.add_resource(g, s, Resource::Ambassadors, n);
                 cx.tally(g, "adversary.ambassadors_recalled", n);
             }

@@ -1,13 +1,14 @@
 # AI-board powers (module `ai`; [`content/ais.json`](../../content/ais.json))
 
-*Each board's Growth (its node placements) and powers, the boards' insight conversions, shelters and hardening.
+*Each board's node powers and other powers, the boards' insight conversions, shelters and hardening.
 The boards, their special rules and tracks are in [ai-boards.md](ai-boards.md); terms and conventions in
 [README.md](README.md).*
 
-**The shape (Matt, 2026-11-18).** A board prints a **Growth** (pick one option a round, Spirit Island's "pick one"),
-two or three **tiered powers** (pick one tier a round) and at most one **threshold** power: about 3-4 decisions a
-round. Each Growth option and each tier is one use of its group: one used marker a group. In `content/ais.json` a
-power names its `group`; powers sharing one are a single use a round between them.
+**The shape (Matt, 2026-11-18; node powers r142, 2026-11-19).** A board prints three **node powers** (ordinary
+powers: each once a round, all usable in the same round), two or three **tiered powers** (one tier of each a round)
+and at most one **threshold** power. A node power has its own used marker; a tiered power's tiers share one. In
+`content/ais.json` a tier names its `group`, and powers sharing one are a single use a round between them; a node
+power names none.
 
 **Powers (locked: tag costs are sacrifices).** A power's cost names N of one tag or N of `any` tag, never a mix,
 plus optional other resources; in the table a tag in the cost is a sacrifice. A higher **tier** sacrifices more of
@@ -34,48 +35,45 @@ next to it where printed. `Content::check` holds powers to the cards' check and 
 <!-- generated: powers -->
 | Board | Power | Use (once a round) | Cost | Effect |
 |---|---|---|---|---|
-| Builder | Sprawl | Growth (pick one) | 1 energy | place 2 Nodes |
-| Builder | Buy In | Growth (pick one) | nothing | place 1 Node; gain 1 credit |
-| Builder | Annex | Growth (pick one) | 1 chip | place 1 Node within 2 of yours; gain 6 credits |
+| Builder | Sprawl | node power | 2 energy | place 1 Node; gain 2 credits |
+| Builder | Buy In | node power | nothing | place 1 Node; gain 1 credit |
+| Builder | Annex | node power | 1 chip | place 1 Node within 2 of yours; gain 3 credits |
 | Builder | Scrap I | Scrap, tier I | 1 Industry | gain 1 chip |
 | Builder | Scrap II | Scrap, tier II | 2 Industry | gain 1 chip; play a building from your hand, paying no credits |
 | Builder | Overcharge I | Overcharge, tier I | 1 Power | gain 2 energy |
 | Builder | Overcharge II | Overcharge, tier II | 2 Power | gain 2 energy and 1 antimatter |
 | Builder | Fortify I | Fortify, tier I | 1 chip | Target: Troops. Remove 1 Troop on it |
 | Builder | Fortify II | Fortify, tier II | 2 chips | Target: Troops. Remove up to 2 Troops on it; harden a facility on or next to it |
-| Protector | Outpost | Growth (pick one) | 1 energy | place 2 Nodes |
-| Protector | Accord | Growth (pick one) | 1 energy | place 1 Node; gain 1 ambassador and 2 credits |
-| Protector | Levy | Growth (pick one) | nothing | place 1 Node; gain 1 credit |
+| Protector | Outpost | node power | 2 energy | place 1 Node; gain 2 credits |
+| Protector | Accord | node power | 2 energy | place 1 Node; gain 1 ambassador |
+| Protector | Levy | node power | nothing | place 1 Node; gain 1 credit |
 | Protector | Patrol I | Patrol, tier I | 1 energy | Target: Agents or Troops. Push up to 3 from it, each to a hex next to it |
 | Protector | Patrol II | Patrol, tier II | 2 energy | Target: Agents or Troops. Push up to 3 from it, each to a hex next to it; harden a facility on or next to it |
 | Protector | Interdict I | Interdict, tier I | 1 Security | Target: Troops. Remove up to 2 on it |
 | Protector | Interdict II | Interdict, tier II | 2 Security | Target: Agents or Troops. Remove up to 2 Troops and up to 2 Agents on it; draw 1 card |
-| Researcher | Peer Review | Growth (pick one) | 1 insight | place 2 Nodes; gain 2 credits |
-| Researcher | Field Survey | Growth (pick one) | nothing | place 1 Node; draw 1 card |
-| Researcher | Field Station | Growth (pick one) | 1 insight | Target: an open hex. Build a research station on it, paying no chips; place 1 Node |
+| Researcher | Peer Review | node power | 2 insight | place 1 Node; gain 1 research cube |
+| Researcher | Field Survey | node power | nothing | place 1 Node; draw 1 card |
+| Researcher | Field Station | node power | 2 insight | Target: an open hex. Build a research station on it, paying no chips; place 1 Node |
 | Researcher | Lab I | Lab, tier I, with 2 Science on your cards | 1 insight | draw 1 card |
 | Researcher | Lab II | Lab, tier II, with 4 Science on your cards | 1 insight + 2 credits | draw 1 card; add 1 research cube in your color to an open megaproject |
 | Researcher | Hack I | Hack, tier I | 1 Cyber | remove up to 2 Troops in one country |
 | Researcher | Hack II | Hack, tier II | 2 Cyber | remove up to 2 Troops in one country; remove 3 compute from one adversary project |
 <!-- /generated -->
 
-**Growth is the board's node placement** (Matt, 2026-11-18). There is no other node route: each round a board may
-pick one Growth option, and every placement, by Growth or card, pays the energy printed on the track space it
-uncovers (locked). **Each board prints one easy option and two costly ones** (277). The easy one is free, the floor
-you can always take: a node and a small rider. The costly two are the real choice and pull different ways: more
-nodes (Sprawl, Outpost, Peer Review) against a rider or reach (Annex, Accord, Field Station). With no token left, no
-step it can pay or no free hex, an option isn't offered; a two-node option needs both nodes' steps (276) and a free hex
-for its second node once the first is placed (r137, D121), and Field Station an open hex in reach for its station
-(285). Cards that
-place nodes add to Growth (cards aren't capped).
+**The node powers are the board's node placement** (r142, Matt 2026-11-19). There is no other node route, and every
+placement, by power or card, pays the energy printed on the track space it uncovers (locked). **Each board prints
+one cheap node power and two costly ones that carry a benefit**, each used at most once a round and all usable in
+the same round: so a board places 1 node a round free, and up to 3 when it pays. Each places one node. With no token
+left, no step it can pay or no free hex, a node power isn't offered; Field Station also needs an open hex in reach
+for its station (285). Cards that place nodes add to them (cards aren't capped).
 
-**Growth's give / get** (277, at Matt's unit anchors, [card-guidelines.md](../card-guidelines.md); a node 5.33 and a
-station 6.67 from `values.json`; before each step). Easy: Buy In and Levy +6.33, Field Survey +8.67. Costly: Sprawl
-and Outpost 1 energy for 2 nodes +7.67; Annex 1 chip (4) for a node within 2 and 6 credits +7.33 and the reach;
-Accord +9.67; Peer Review 1 insight (2.67) for 2 nodes and 2 credits +10.0; Field Station +9.33. Each costly option
-beats its board's easy one when affordable; a two-node option pays a second step, so where steps cost energy its edge
-narrows (Sprawl and Outpost +4.67 after a 1-energy second step). One option a round and the steps' rising energy cap
-them all.
+**The node powers' give / get** (at Matt's unit anchors, [card-guidelines.md](../card-guidelines.md); a node 5.33
+and a station 6.67 from `values.json`; before each step). Cheap: Buy In and Levy +6.33, Field Survey +8.67. Costly:
+Sprawl and Outpost 2 energy (6) for a node and 2 credits +1.33; Annex 1 chip (4) for a node within 2 and 3 credits
++4.33 and the reach; Accord 2 energy for a node and an ambassador +4.67; Peer Review 2 insight (5.33) for a node and
+a research cube +4.0; Field Station 2 insight for a station and a node +6.67. A costly power is a second or third node
+bought at a thinner margin than the free one, never instead of it. Once a round each and the steps' rising energy
+cap them all.
 
 **Sacrifice is late-game liquidation.** Once the cards needing a tag are played, its tags turn into engine rewards,
 each payoff priced to be worth the card: 1 chip (Scrap I), 2 energy (Overcharge I), up to 2 troops removed on a
@@ -129,7 +127,7 @@ boards' own insight ways are few:
 - **Researcher, Lab** (a threshold power, once a round): with 2 Science on your cards, 1 insight → draw a card; with
   4, also 2 credits → a research cube on an open megaproject. The Researcher's draw outlet and a use for Patience's
   bank. Give / get at `values.json` 2.67 for 3.33 (tier II 4.67 for 7.33, the cube at 4): a small gain. Peer Review and Field Station, its
-  Growth, spend insight too.
+  costly node powers, spend insight too (2 each).
 
 **For new players.** Insight is what you spend to keep and play cards: each round, the number on the rightmost space you've uncovered on
 your card-play track that shows one (3 at the start). When you

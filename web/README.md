@@ -46,7 +46,9 @@ data and random play; Undo and records stay.
   scripts/player-play.mjs [--config three_seat.json] [--seed N] [--out DIR] [--size WxH]` plays a whole game by its
   controls (random, passing least), saves the record, and fails on a cut piece on screen (`cut-pieces.mjs`).
   `node scripts/troops-play.mjs [--seed N] [--out DIR] [--search A-B]` clicks a game to the win by a small policy
-  (override atop it) and fails unless it saw a guard link, the Strike notice and *Liberate refused* (1 min).
+  (`play-policy.mjs`) and fails unless it saw a guard link, the Strike notice and *Liberate refused* (1 min);
+  `ambassadors-play.mjs`, same flags: a move onto a city then its Liberate the next round, two node powers in a
+  round, a tipped ambassador.
 
 ## Using it
 

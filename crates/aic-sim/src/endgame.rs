@@ -48,7 +48,8 @@ pub struct Pieces {
     /// Adversary ambassadors anywhere, and of them on corrupted cities.
     pub ambassadors: i64,
     pub ambassadors_on_corrupted: i64,
-    /// Corrupted cities in some seat's reach (a liberation needs reach).
+    /// Corrupted cities in some seat's reach (a liberate card needs reach; r142: the Liberate action needs the
+    /// seat's ambassador on the city instead).
     pub cities_in_reach: i64,
     /// Ambassadors the Liberate action takes for every corrupted city
     /// (`liberate_at` plus those on it).
