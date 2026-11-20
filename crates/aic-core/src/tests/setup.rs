@@ -1,6 +1,7 @@
 use super::*;
 
-/// 229: the adversary deal's tunables, pinned so the deck sizes below don't move with a dial item:
+/// 229: the adversary deal's tunables, pinned so the deck sizes below don't move with a dial item (229's deal, not
+/// the baseline's, which deals 4 / 4 / 2 with one stage-II card removed from difficulty 3 since r145):
 /// 5, 5, 3 cards; difficulty 3 removes two stage-II cards; difficulty 4 swaps two stage-I cards for a stage-II
 /// (267: tier-2 sooner, built into the stack) and a stage-III.
 pub(super) const DEAL: [&str; 7] = [

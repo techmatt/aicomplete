@@ -66,8 +66,10 @@ def stage_deals():
     out = []
     for d in range(5):
         s1, s2, s3 = a["stage_cards"]
+        # As crates/aic-core/src/modules/adversary/mod.rs deals them (300: stage2_added was missing, so d4 read a
+        # card short of the engine's deck).
         if d >= a["stage_swap_at"]:
-            s1, s3 = s1 - a["stage1_removed"], s3 + a["stage3_added"]
+            s1, s2, s3 = s1 - a["stage1_removed"], s2 + a["stage2_added"], s3 + a["stage3_added"]
         if d >= 3:  # adversary.rs `build`'s literal 3, not a config key (182: deferred)
             s1, s2 = s1 + a["stage1_added"], s2 - a["stage2_removed"]
         s1, s2 = max(s1, 0), max(s2, 0)

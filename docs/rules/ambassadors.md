@@ -44,7 +44,7 @@ Cities, research stations and factories follow one set of rules and differ only 
   2026-11-16, locked). One of your ambassadors moves onto the corrupted site (it is tipped), and the next round,
   ready again, it acts: Liberate. One that arrives ready on the site (a card places it there, or your node stands
   on the site's hex) may act the same round. The action takes massed ambassadors and **leaves the site neutral**: a
-  card may claim it from there. Its price table (r91, Matt, 2026-11-12: one table): `liberate_at` 3 (r145; 5 before) and `free_city` 5 Unity for a city,
+  card may claim it from there. Its price table (r91, Matt, 2026-11-12: one table): `liberate_at` 3 and `free_city` 5 Unity for a city,
   `claim_station` 4 or `claim_factory` 3 (Liberate's since 262 cut Claim; the names stay) and `free_facility` 2
   Unity for a station or factory. **A site with an agent
   on it can't be claimed or liberated** (r91: no "+1 per agent"; clear them first, with Remove agents, a card or a

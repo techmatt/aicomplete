@@ -213,7 +213,10 @@ def main():
         if out:
             print(out, end='')
             if a.no_build and 'wrote ' in out:
-                print('warning: the loader rewrote content/ and --no-build keeps a binary built from the old: rebuild')
+                # 300: going on would fail later at `aic-sim docs` with a misleading content-disagrees message.
+                print('FAILED: the loader rewrote content/ and --no-build keeps a binary built from the old: '
+                      'rerun without --no-build')
+                sys.exit(1)
     if not a.no_build:
         env = dict(os.environ)
         env.setdefault('CARGO_BUILD_JOBS', '3')
