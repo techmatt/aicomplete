@@ -280,19 +280,31 @@ fn build(_b: &Build) -> Result<Box<dyn Module>, String> {
     Ok(Box::new(Board))
 }
 
+/// The cities that start corrupted, each country's first `start_corrupted` (`extra_corrupted` more at level 4) in its
+/// printed corruption order. 301: read from content, not the state, so the adversary's setup (its level-0 agents on
+/// the other cities) doesn't depend on which module sets up first.
+pub fn start_corrupted_cities(w: &World) -> Vec<usize> {
+    let mut corrupt = w.int("board.start_corrupted");
+    if adversary::level(w, 4) {
+        corrupt += w.int("adversary.extra_corrupted");
+    }
+    let mut out = Vec::new();
+    for c in 0..w.map.countries.len() {
+        let piece = &w.content.map.countries[c];
+        out.extend(piece.corrupted.iter().take(corrupt.max(0) as usize).map(|&n| w.map.numbered(c, n)));
+    }
+    out
+}
+
 impl Module for Board {
     fn setup(&self, g: &mut GameState, cx: &mut Cx) {
         let w = cx.world;
-        let mut corrupt = w.int("board.start_corrupted");
-        if adversary::level(&w, 4) {
-            corrupt += w.int("adversary.extra_corrupted");
+        for h in start_corrupted_cities(&w) {
+            cx.add_tokens(g, h, ADV_CUBE, 1);
         }
         for c in 0..w.map.countries.len() {
             let piece = &w.content.map.countries[c];
             let at = |n: u8| w.map.numbered(c, n);
-            for &n in piece.corrupted.iter().take(corrupt as usize) {
-                cx.add_tokens(g, at(n), ADV_CUBE, 1);
-            }
             for &n in &piece.stations {
                 cx.add_tokens(g, at(n), STATION, 1);
                 cx.add_tokens(g, at(n), ADV_CUBE, 1);

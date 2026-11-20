@@ -49,14 +49,14 @@ plan and invest to meet them (Matt, 2026-11-19). **They garrison, guard and stri
 
 **Where troops come from** (r143). Only these make one, each by something the table can see: the research row's
 two **Garrison** slots (4 and 6: 1 troop a country; 2 from level 3, Arms Race's rule, [adversary.md](adversary.md)); the projects **Botnet Conscripts** (in a country holding 2 or
-more botnets, its lowest-numbered becomes 1 troop **on the botnet's hex**), **War Plants** (every corrupted factory
+more botnets, its lowest-numbered comes off and 1 troop **garrisons**, r146), **War Plants** (every corrupted factory
 makes 1 troop on its own hex; a player ambassador on it stops it) and **Martial Law** (2 troops a country); and
 the Discord card **Standing Army** (strength I: 1 troop on each country's lowest-numbered corrupted factory, none
 where no factory has fallen; II: 1 a country; III: 2). Martial Law's and Standing Army II and III's troops **land
 by the players**: on the country's lowest-numbered corrupted city with a node or an ambassador on or next to it,
 and garrison only where there is none. No threat, no event card
-and no factory's round output makes one. A project's or a card's troop stands where its line puts it: only a
-line that says "garrisons" uses the rule below.
+and no factory's round output makes one. A card's line may name a corrupted factory or a corrupted city for its
+troop (War Plants, Martial Law, Standing Army), never another hex (Matt, 297/1); every other troop garrisons.
 
 **Garrison.** A new troop goes, in its country, onto the lowest-numbered corrupted factory; with none, the
 lowest-numbered corrupted city; with none, the lowest-numbered city. Nobody chooses. It stays on its hex until a

@@ -345,15 +345,15 @@ fn the_board_verbs_take_the_targets_the_board_shows() {
     set_var(&mut g, crate::modules::board::project_key(1, 1), 1);
     run_ops(&rules, &mut g, &[Op::StripCubes { count: 2 }]);
     { use crate::modules::board::project_key as pk; assert_eq!((g.var(&pk(1, 0)), g.var(&pk(1, 1))), (1, 1)); }
-    // A botnet becomes troops on its own hex (297: not on the country's garrison, as at r141); a botnet spreads
-    // to a site next to one.
+    // A botnet comes off and its troops garrison (301, Matt 297/1: not on the botnet's hex, as at r143); a botnet
+    // spreads to a site next to one.
     let st = m.numbered(1, piece(1).neutral_station);
     put(&mut g, st, BOTNET, 1);
     let spot = crate::modules::board::garrison_spot(&rules.world(), &g, &m.countries[1].hexes).expect("a garrison in country 1");
     assert_ne!(spot, st);
     let there = g.tokens(spot, TROOP);
     run_ops(&rules, &mut g, &[Op::BotnetTroops { count: 1, troops: 2, least: 1 }]);
-    assert_eq!((g.tokens(st, BOTNET), g.tokens(st, TROOP), g.tokens(spot, TROOP)), (0, 2, there));
+    assert_eq!((g.tokens(st, BOTNET), g.tokens(st, TROOP), g.tokens(spot, TROOP)), (0, 0, there + 2));
     put(&mut g, st, STATION, 1);
     let botnets = total(&g, BOTNET);
     run_ops(&rules, &mut g, &[Op::SpreadBotnets { count: 1 }]);
@@ -470,8 +470,9 @@ fn project_ops_reach_as_declared() {
     // Boards 1 and 2: both print a research station (board 0 prints none, so a station op has nothing there).
     // 263: botnets spread from `botnet_spread_at` (1) on; the baseline plays d0.
     // The staging below corrupts one more city a country and needs a neutral one left for the Infiltrate lines: one
-    // corrupted city a country at setup, whatever the baseline's `start_corrupted`.
-    let sets = ["ai.boards=1,2", "adversary.botnet_spread_at=0", "board.start_corrupted=1"];
+    // corrupted city a country at setup, whatever the baseline's `start_corrupted`, and no level-0 agents on the
+    // free ones (301), which the Infiltrate below would corrupt.
+    let sets = ["ai.boards=1,2", "adversary.botnet_spread_at=0", "board.start_corrupted=1", "adversary.setup_city_agents=0"];
     let rules = rules_of(&baseline_with(&sets), "baseline_with", &sets);
     let w = rules.world();
     let m = &w.map;

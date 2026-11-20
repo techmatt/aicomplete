@@ -15,7 +15,7 @@
         "divert_discord": 1,
         "ambassador_discord": 0,
         "liberate_at": 3,
-        "claim_station": 4,
+        "claim_station": 3,
         "claim_factory": 3,
         "start_nodes": 1,
         "troop_node": 0,
@@ -90,6 +90,13 @@
           5,
           10,
           15
+        ],
+        "setup_city_agents": [
+          4,
+          0,
+          0,
+          0,
+          0
         ],
         "infiltrate_agents": [
           1,

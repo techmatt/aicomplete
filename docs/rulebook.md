@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (fourth draft)
 
-*Rules revision 145. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 146. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -167,7 +167,8 @@ corrupted site), rules/README.md (Terms); content/map.json; crates/aic-core/src/
    - its other printed research stations (one next to the printed **starting hex**) and its printed setup factories
      start **neutral**. Its empty station site and its other industrial zones start empty;
    - its megaproject card goes beside the map, empty.
-   No agents or troops start on the map.
+   No troops start on the map. **At level 0 only**, each city left free takes 4 agents from the supply (one arrival
+   short of its 5; blocked, it pays no energy until they are cleared); at other levels no agents start on the map.
 3. **The adversary** (the Militarist's board):
    - its agent supply is 24 per country;
    - build the **threat decks** as its board's **War Rooms** says: each tier's deck from every Security and
@@ -595,7 +596,7 @@ Liberate, the way to win, is the exception.
 | Action | Cost | Effect |
 |---|---|---|
 | **Move an ambassador** | that ambassador's action this round | onto a land hex next to it, or onto one of your nodes (from your supply: arrives ready) |
-| **Liberate a site** | the action of your ready ambassador on it, and ambassadors: city 3, station 4, factory 3 (below) | a corrupted site with no agent on it and no troop on or next to it: it becomes neutral |
+| **Liberate a site** | the action of your ready ambassador on it, and 3 ambassadors, any site (below) | a corrupted site with no agent on it and no troop on or next to it: it becomes neutral |
 | **Take down a botnet** | the action of your ready ambassador on its hex, and 13 credits | the botnet comes off (your ambassador stays) |
 | **Remove agents** | 3 ambassadors from your supply, used up | target agents: remove up to 3 on or next to it, your choice; nothing is placed |
 | **Remove a troop** | 7 credits | once a round: target troops, remove 1 on it |
@@ -1089,7 +1090,7 @@ every level (§21). Harms: [harms.md](harms.md).
 | Source | Troops | Where |
 |---|---|---|
 | Research row, slots 4 and 6 (**Garrison**) | 1 a country (2 from level 3, Arms Race) | garrisons: the lowest-numbered corrupted factory; with none, the lowest-numbered corrupted city; with none, the lowest-numbered city |
-| **Botnet Conscripts** (project) | 1 in each country holding 2+ botnets | its lowest-numbered botnet becomes the troop, on its hex |
+| **Botnet Conscripts** (project) | 1 in each country holding 2+ botnets | its lowest-numbered botnet comes off; the troop garrisons |
 | **War Plants** (project) | 1 a corrupted factory | on the factory's hex (none under a player ambassador) |
 | **Martial Law** (project) | 2 a country | its lowest-numbered corrupted city with a node or ambassador on or next to it; with none, they garrison |
 | **Standing Army** (Discord), I | 1 a country | its lowest-numbered corrupted factory (none where no factory has fallen) |
@@ -1153,8 +1154,8 @@ costs (liberate, cards, actions) and the threats' costs never change. The table 
 <!-- generated: rulebook_difficulty -->
 | Level | Name | Setup (set once; incomes and threshold a country) | Mid-game rule it adds | Rules active |
 |---|---|---|---|---|
-| 0 | **The Militarist** | Compute income 0 a country; Infiltrate 1 a site; Research track: a slot every 3 cubes a country; Deck 4 / 4 / 2 (10 rounds); Sites print their corrupt numbers: city 5, station 3, factory 3 | — | 0 |
-| 1 | **Sleeper Cells**: *Cells wake in every city.* | Compute income 3 a country | When an Agent lands on a city, it falls at 3 agents, not 5. | 1 |
+| 0 | **The Militarist** | Compute income 0 a country; Infiltrate 1 a site; Research track: a slot every 3 cubes a country; Each free city starts with 4 agents; Deck 4 / 4 / 2 (10 rounds); Sites print their corrupt numbers: city 5, station 3, factory 3 | — | 0 |
+| 1 | **Sleeper Cells**: *Cells wake in every city.* | Compute income 3 a country; Free cities start with no agents | When an Agent lands on a city, it falls at 3 agents, not 5. | 1 |
 | 2 | **War Footing**: *Every unanswered strike feeds the war machine.* | Compute income 5 a country; Research track: a slot every 2 cubes a country | When a threat executes uncountered, the adversary also gains 4 compute. | 2 |
 | 3 | **Arms Race**: *The labs build weapons, not cures.* | Compute income 10 a country; Deck 4 / 3 / 2 (9 rounds) | When the research track reaches a Garrison icon, each country takes 2 Troops, not 1. | 3 |
 | 4 | **War Economy**: *The whole economy marches.* | Compute income 15 a country; Infiltrate 2 a city (1 a site from a station, factory or botnet line); Deck 2 / 4 / 3 (9 rounds) | — | 3 |
@@ -1164,8 +1165,8 @@ The research track's K is a setup step: 3 cubes a country at levels 0-1, 2 from 
 doubles the row's Garrison icons: each one lands 2 troops a country, not 1.
 
 - **Setup:** put the compute income marker on the adversary board's track at the number shown, a country (times the
-  countries in play), and build the event deck with that many stage I / II / III cards (§3). Nothing else to
-  remember.
+  countries in play), and build the event deck with that many stage I / II / III cards (§3); at level 0, put 4
+  agents on each free city. Nothing else to remember.
 - **Mid-game rules** fire only on something you already resolve: agents landing on a city (Sleeper Cells), a threat
   taking effect unpaid (War Footing: its 4 compute comes at the next compute step, §17; a threat that only waits
   gives none). *Rules active* counts the ones in play.

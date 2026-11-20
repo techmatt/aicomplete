@@ -1,0 +1,123 @@
+{
+  "name": "s301e",
+  "note": "301: screen 4, d0 only, on 299's spent fresh seeds 50784-50879, on the priced build: level 0's setup agents on each free city (setup_city_agents 3, 4), a troop a country garrisoned at setup (setup_troops 1), and pairs. Farm with farm-seeds 50784 96 OUT s301e.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-seed3",
+      "set": [
+        "adversary.setup_city_agents=3,0,0,0,0"
+      ]
+    },
+    {
+      "name": "br-seed3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.setup_city_agents=3,0,0,0,0"
+      ]
+    },
+    {
+      "name": "pr-seed3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.setup_city_agents=3,0,0,0,0"
+      ]
+    },
+    {
+      "name": "bp-seed4",
+      "set": [
+        "adversary.setup_city_agents=4,0,0,0,0"
+      ]
+    },
+    {
+      "name": "br-seed4",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.setup_city_agents=4,0,0,0,0"
+      ]
+    },
+    {
+      "name": "pr-seed4",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.setup_city_agents=4,0,0,0,0"
+      ]
+    },
+    {
+      "name": "bp-tr1",
+      "set": [
+        "adversary.setup_troops=1,0,0,0,0"
+      ]
+    },
+    {
+      "name": "br-tr1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.setup_troops=1,0,0,0,0"
+      ]
+    },
+    {
+      "name": "pr-tr1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.setup_troops=1,0,0,0,0"
+      ]
+    },
+    {
+      "name": "bp-seed3sa2",
+      "set": [
+        "adversary.setup_city_agents=3,0,0,0,0",
+        "adversary.setup_agents=2,0,0,0,0"
+      ]
+    },
+    {
+      "name": "br-seed3sa2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.setup_city_agents=3,0,0,0,0",
+        "adversary.setup_agents=2,0,0,0,0"
+      ]
+    },
+    {
+      "name": "pr-seed3sa2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.setup_city_agents=3,0,0,0,0",
+        "adversary.setup_agents=2,0,0,0,0"
+      ]
+    },
+    {
+      "name": "bp-tr1seed2",
+      "set": [
+        "adversary.setup_troops=1,0,0,0,0",
+        "adversary.setup_city_agents=2,0,0,0,0"
+      ]
+    },
+    {
+      "name": "br-tr1seed2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.setup_troops=1,0,0,0,0",
+        "adversary.setup_city_agents=2,0,0,0,0"
+      ]
+    },
+    {
+      "name": "pr-tr1seed2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.setup_troops=1,0,0,0,0",
+        "adversary.setup_city_agents=2,0,0,0,0"
+      ]
+    }
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

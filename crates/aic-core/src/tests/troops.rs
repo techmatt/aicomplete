@@ -110,11 +110,11 @@ fn wall_keeps_a_garrison_off_the_protectors_node_hex() {
     assert_eq!(g.tokens(spot, TROOP), 1);
 }
 
-/// The research row's Garrison icon does what it prints: its troops garrison in each country. 297: Botnet
-/// Conscripts' troops stand on the botnet's own hex, not on a garrison (r141 garrisoned them); Wall keeps them off
-/// the Protector's node hex.
+/// The research row's Garrison icon does what it prints: its troops garrison in each country. 301 (Matt, 297/1):
+/// Botnet Conscripts' botnet comes off and its troops garrison by the rule too, not on the botnet's hex; Wall keeps
+/// them off the Protector's node hex.
 #[test]
-fn the_garrison_icon_garrisons_and_a_botnets_troops_stand_on_its_hex() {
+fn the_garrison_icon_and_a_botnets_troops_garrison() {
     let (rules, g0) = lab(&[]);
     let m = &rules.map;
     let w = rules.world();
@@ -142,11 +142,11 @@ fn the_garrison_icon_garrisons_and_a_botnets_troops_stand_on_its_hex() {
     let conscripts = [Op::BotnetTroops { count: 1, troops: 2, least: 1 }];
     let mut walled = g.clone();
     team_ops(&rules, &mut g, &conscripts, |_| 0);
-    assert_eq!((g.tokens(net, BOTNET), g.tokens(net, TROOP), g.tokens(c0, TROOP)), (0, 2, 0));
+    assert_eq!((g.tokens(net, BOTNET), g.tokens(net, TROOP), g.tokens(c0, TROOP)), (0, 0, 2));
     assert_eq!((total(&g, TROOP), counter(&g, "adversary.botnet_troops")), (2, 2));
-    // Wall: the botnet under the Protector's node still goes, and its troops stay in the supply.
-    put(&mut walled, net, node(1), 1);
-    assert!(board::walled(&w, &walled, net));
+    // Wall: the garrison under the Protector's node keeps them off; the botnet still goes and its troops stay in the supply.
+    put(&mut walled, c0, node(1), 1);
+    assert!(board::walled(&w, &walled, c0));
     team_ops(&rules, &mut walled, &conscripts, |_| 0);
     assert_eq!((walled.tokens(net, BOTNET), total(&walled, TROOP)), (0, 0));
     assert_eq!((counter(&walled, "adversary.troops_walled"), counter(&walled, "adversary.botnet_troops")), (2, 0));
@@ -172,7 +172,10 @@ fn botnet_troops_need_the_countrys_least_botnets() {
     put(&mut g, two[1], BOTNET, 1);
     team_ops(&rules, &mut g, conscripts, |_| 0);
     assert_eq!((g.tokens(one[0], BOTNET), g.tokens(one[0], TROOP)), (1, 0), "one botnet: kept, no troop");
-    assert_eq!((g.tokens(two[1], BOTNET), g.tokens(two[1], TROOP)), (0, 1), "the lowest-numbered of two becomes a troop there");
+    assert_eq!((g.tokens(two[1], BOTNET), g.tokens(two[1], TROOP)), (0, 0), "the lowest-numbered of two comes off");
+    // 301: its troop garrisons by the rule, in its own country.
+    let spot = board::garrison_spot(&rules.world(), &g, &m.countries[1].hexes).expect("a garrison spot");
+    assert_eq!(g.tokens(spot, TROOP), 1, "its troop garrisons");
     assert_eq!((g.tokens(two[3], BOTNET), total(&g, TROOP), total(&g, BOTNET)), (1, 1, 2));
     assert_eq!((counter(&g, "adversary.botnet_troops"), counter(&g, "adversary.botnet_troops_short")), (1, 1));
     // Country 1 is down to one botnet: the line does nothing more anywhere.

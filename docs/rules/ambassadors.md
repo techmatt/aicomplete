@@ -45,7 +45,7 @@ Cities, research stations and factories follow one set of rules and differ only 
   ready again, it acts: Liberate. One that arrives ready on the site (a card places it there, or your node stands
   on the site's hex) may act the same round. The action takes massed ambassadors and **leaves the site neutral**: a
   card may claim it from there. Its price table (r91, Matt, 2026-11-12: one table): `liberate_at` 3 and `free_city` 5 Unity for a city,
-  `claim_station` 4 or `claim_factory` 3 (Liberate's since 262 cut Claim; the names stay) and `free_facility` 2
+  `claim_station` 3 or `claim_factory` 3 (Liberate's since 262 cut Claim; the names stay) and `free_facility` 2
   Unity for a station or factory. **A site with an agent
   on it can't be claimed or liberated** (r91: no "+1 per agent"; clear them first, with Remove agents, a card or a
   power). **Guarding** (r141, Matt 2026-11-19): **a corrupted site with a troop on or next to it can't be liberated**,
@@ -137,7 +137,7 @@ Diplomacy tag on each card you play (127; at 1 a tag of any kind it piled 52-84 
 makes something for its owner; a city is the adversary's or its country's, never a player's. Each of your ambassadors
 on the map does one thing a round, then is tipped over: move (to a hex next to it, or to any of your nodes; from
 your supply onto one of your nodes) or act where it stands. To take a site back from the adversary, move one onto
-it, and next round it acts (Liberate: 3 ambassadors for a city, 4 for a station, 3 for a factory), never with an
+it, and next round it acts (Liberate: 3 ambassadors, any site), never with an
 agent sitting on it or a troop on or next to it; yours standing on it pay first, your supply the rest. Taking one back leaves it neutral and sways
 Unity your way; only cards claim a neutral station or factory, making it yours; a city stays free, and pays 1 energy each round to every player with a node on or next to it. A site you free starts clean: the adversary must land its full corrupt number of
 agents on it again to take it back. A station you own makes 1 cube a round (a

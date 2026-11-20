@@ -1,0 +1,136 @@
+{
+  "name": "s301a",
+  "note": "301: screen 1 on r145, d0 only, on 299's spent fresh seeds 50784-50879 (r145's own read): d0 compute income 2, 3, 5 (a d0-only ladder number); a station liberated at 3 (the price table), alone and with income 3. Farm with farm-seeds 50784 96 OUT s301a.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-base",
+      "set": []
+    },
+    {
+      "name": "br-base",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr-base",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp-st3",
+      "set": [
+        "board.claim_station=3"
+      ]
+    },
+    {
+      "name": "br-st3",
+      "set": [
+        "ai.boards=0,2",
+        "board.claim_station=3"
+      ]
+    },
+    {
+      "name": "pr-st3",
+      "set": [
+        "ai.boards=1,2",
+        "board.claim_station=3"
+      ]
+    },
+    {
+      "name": "bp-inc2",
+      "set": [
+        "adversary.compute_income=2,3,5,10,15"
+      ]
+    },
+    {
+      "name": "br-inc2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=2,3,5,10,15"
+      ]
+    },
+    {
+      "name": "pr-inc2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=2,3,5,10,15"
+      ]
+    },
+    {
+      "name": "bp-inc3",
+      "set": [
+        "adversary.compute_income=3,3,5,10,15"
+      ]
+    },
+    {
+      "name": "br-inc3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=3,3,5,10,15"
+      ]
+    },
+    {
+      "name": "pr-inc3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=3,3,5,10,15"
+      ]
+    },
+    {
+      "name": "bp-inc5",
+      "set": [
+        "adversary.compute_income=5,3,5,10,15"
+      ]
+    },
+    {
+      "name": "br-inc5",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=5,3,5,10,15"
+      ]
+    },
+    {
+      "name": "pr-inc5",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=5,3,5,10,15"
+      ]
+    },
+    {
+      "name": "bp-inc3st3",
+      "set": [
+        "adversary.compute_income=3,3,5,10,15",
+        "board.claim_station=3"
+      ]
+    },
+    {
+      "name": "br-inc3st3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=3,3,5,10,15",
+        "board.claim_station=3"
+      ]
+    },
+    {
+      "name": "pr-inc3st3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=3,3,5,10,15",
+        "board.claim_station=3"
+      ]
+    }
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

@@ -68,6 +68,12 @@ fn setup_items(r: &Rules, level: i64) -> Vec<(&'static str, String)> {
             1 => "Research track: a slot each cube a country".to_string(),
             k => format!("Research track: a slot every {k} cubes a country"),
         }),
+        // 301: level 0's setup agents on each city that starts free (none from level 1, where a city falls at 3).
+        ("seed", match entry(&list(r, "adversary.setup_city_agents"), level) {
+            0 => "Free cities start with no agents".to_string(),
+            1 => "Each free city starts with 1 agent".to_string(),
+            k => format!("Each free city starts with {k} agents"),
+        }),
         ("deck", format!("Deck {} / {} / {} ({} rounds)", n[0], n[1], n[2], n.iter().sum::<usize>())),
         // Printed on the map's sites: the same at every level (a level's rule may say a city falls sooner).
         ("sites", format!(
@@ -203,8 +209,8 @@ fn or_dash(s: String) -> String {
 /// rules/adversary.md's *Difficulty* table: each level's setup and named rule, the rules active, and the dials.
 pub(super) fn difficulty_block(r: &Rules) -> String {
     let keys: [&[&str]; 5] = [
-        &["adversary.compute_income", "adversary.infiltrate_agents", "adversary.research_at", "adversary.corrupt_at"],
-        &["adversary.botnet_spread_at", "adversary.corrupt_cut", "adversary.corrupt_cut_at"],
+        &["adversary.compute_income", "adversary.infiltrate_agents", "adversary.research_at", "adversary.corrupt_at", "adversary.setup_city_agents"],
+        &["adversary.botnet_spread_at","adversary.corrupt_cut", "adversary.corrupt_cut_at"],
         &["adversary.board_difficulty_at"],
         &["adversary.arms_race_at", "adversary.arms_race_troops", "adversary.stage2_removed", "adversary.stage1_added"],
         &["adversary.stage1_removed", "adversary.stage2_added", "adversary.stage3_added", "adversary.stage_swap_at"],

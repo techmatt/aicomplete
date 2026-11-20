@@ -1,0 +1,119 @@
+{
+  "name": "s301b",
+  "note": "301: screen 2 on r145 + P1 (Botnet Conscripts garrisons), d0 only, on 299's spent fresh seeds 50784-50879: agents on each starting corrupted city at setup at level 0 (adversary.setup_agents 1 or 2, a d0-only ladder number), alone and with a station at 3. Farm with farm-seeds 50784 96 OUT s301b.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-base",
+      "set": []
+    },
+    {
+      "name": "br-base",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr-base",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp-sa1",
+      "set": [
+        "adversary.setup_agents=1,0,0,0,0"
+      ]
+    },
+    {
+      "name": "br-sa1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.setup_agents=1,0,0,0,0"
+      ]
+    },
+    {
+      "name": "pr-sa1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.setup_agents=1,0,0,0,0"
+      ]
+    },
+    {
+      "name": "bp-sa2",
+      "set": [
+        "adversary.setup_agents=2,0,0,0,0"
+      ]
+    },
+    {
+      "name": "br-sa2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.setup_agents=2,0,0,0,0"
+      ]
+    },
+    {
+      "name": "pr-sa2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.setup_agents=2,0,0,0,0"
+      ]
+    },
+    {
+      "name": "bp-sa1st3",
+      "set": [
+        "adversary.setup_agents=1,0,0,0,0",
+        "board.claim_station=3"
+      ]
+    },
+    {
+      "name": "br-sa1st3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.setup_agents=1,0,0,0,0",
+        "board.claim_station=3"
+      ]
+    },
+    {
+      "name": "pr-sa1st3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.setup_agents=1,0,0,0,0",
+        "board.claim_station=3"
+      ]
+    },
+    {
+      "name": "bp-sa2st3",
+      "set": [
+        "adversary.setup_agents=2,0,0,0,0",
+        "board.claim_station=3"
+      ]
+    },
+    {
+      "name": "br-sa2st3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.setup_agents=2,0,0,0,0",
+        "board.claim_station=3"
+      ]
+    },
+    {
+      "name": "pr-sa2st3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.setup_agents=2,0,0,0,0",
+        "board.claim_station=3"
+      ]
+    }
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

@@ -16,7 +16,7 @@ conventions: [README.md](README.md).*
 | `board.divert_discord` | 1 | 0..5 | Discord per unit of a corrupted city's energy diverted to the adversary |
 | `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy, each round, of an aligned city an agent darkens |
 | `board.liberate_at` | 3 | 1..10 | the Liberate action (an ambassador on the site acts): ambassadors that liberate an adversary city |
-| `board.claim_station` | 4 | 1..10 | the Liberate action: ambassadors that liberate an adversary research station (262 cut the Claim action that also paid it; the name stays) |
+| `board.claim_station` | 3 | 1..10 | the Liberate action: ambassadors that liberate an adversary research station (262 cut the Claim action that also paid it; the name stays) |
 | `board.claim_factory` | 3 | 1..10 | the Liberate action: ambassadors that liberate an adversary factory (262 cut the Claim action that also paid it; the name stays) |
 | `board.start_nodes` | 1 | 1..3 | nodes each player starts with: its start hex, then the lowest-numbered free land hexes next to it (the extras off no track) |
 | `board.troop_node` | 0 | 0..4 | adversary troops strike nodes from this stage of adversary card on (0: always, 4: never) |
@@ -64,6 +64,7 @@ conventions: [README.md](README.md).*
 | `adversary.stage1_added` | 0 | 0..3 | difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step) |
 | `adversary.extra_corrupted` | 0 | 0..3 | difficulty 4: more cities per country start corrupted (none past the cities the map prints corrupted, 2 a country: nothing while `board.start_corrupted` is 2) |
 | `adversary.compute_income` | 0, 3, 5, 10, 15 | 0..30 | the adversary's base compute income a country a round, at difficulty 0-4 (times the countries: per board) |
+| `adversary.setup_city_agents` | 4, 0, 0, 0, 0 | 0..5 | 301: agents on each city that starts free (not corrupted), at setup, at difficulty 0-4 (toward its corrupt number; the city is blocked) |
 | `adversary.infiltrate_agents` | 1, 1, 1, 1, 2 | 0..5 | 275: agents an Infiltrate line lands on each city it names, at difficulty 0-4 |
 | `adversary.infiltrate_facility_cap` | 1 | 0..5 | 282: at most this many of an Infiltrate line's agents land on each research station, factory or botnet hex it names (cities take every one) |
 | `adversary.threat_agents` | 1 | 0..5 | 275: agents an uncountered threat lands on its anchor (its first location token) as it executes |

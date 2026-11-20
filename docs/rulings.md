@@ -176,9 +176,9 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
   corrupted site can't be liberated with a troop on or next to it; they Strike on an icon shown a round ahead (the
   start: another timing that reads or plays better may be tried and said) and rarely Redeploy toward the nearest
   corrupted city. They come from the research row, projects and Discord cards: late and significant, something
-  players see coming and must plan and invest to meet. A project's or Discord card's line may name the hex its troop
-  lands on (a botnet's, a corrupted factory's, a corrupted city the players stand by: r143, item 5's reading of
-  "where troops land", held for Matt); the row's Garrison keeps the rule. The march, Muster and the corrupted factory's troop are gone;
+  players see coming and must plan and invest to meet. A card may name a corrupted factory or city for its troop
+  (Martial Law, Standing Army II-III, War Plants), never another hex (Matt, 297/1; built r146: Botnet Conscripts'
+  troop garrisons); every other troop keeps the rule. The march, Muster and the corrupted factory's troop are gone;
   the Protector's Wall and Vigil are redone for troops that garrison and strike. It overturned "early troops fine"
   above (restored 2026-11-20: early troops are allowed, a challenge to meet, not prevented) and makes 2026-11-10's "troops ignore ambassadors" moot (no march to stop; ambassadors still stop no troop).
 - **Matt, 2026-11-20 (built r144):** Redeploy moves the troops toward the corrupted city nearest a player piece
@@ -202,7 +202,8 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
 - **Winning (Matt, 2026-11-19; overturns 156's stepped purge):** the win is no corrupted city. Purge steps are
   gone: botnets, agents and troops never count. Card tiers count the current tip.
 - **The early-win bar (Matt, 2026-11-19):** a round-2 or round-3 win is rare. The levers are the liberation price
-  (`board.liberate_at`) and the starting corrupted cities (`board.start_corrupted`). An early d0 win by coordinated
+  (`board.liberate_at`) and the starting corrupted cities (`board.start_corrupted`); a level-0 setup line may act at d0
+  alone (301's prompt; built r146: `adversary.setup_city_agents`). An early d0 win by coordinated
   players is still fine, just not easy or usual. **Game length (Matt, 2026-11-20; replaces 2026-11-19's 7-10):** most
   games run Spirit Island length, about 6-8 rounds; 10-11 is fine as an exceptional game; a spread is good, not one
   fixed length (`design_check.json`'s `rounds`: over half in 6-8, under ~10% at 10+). Running out the deck is a fair

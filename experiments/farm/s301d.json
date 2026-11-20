@@ -1,0 +1,35 @@
+{
+  "name": "s301d",
+  "note": "301: screen 3's d1-d3 cell: the priced build (a station at 3, the liberate cards repriced, values.json's liberate 20, P1) against r145's kept read on 299's seeds 50784-50879. Farm with farm-seeds 50784 96 OUT s301d.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-price",
+      "set": []
+    },
+    {
+      "name": "br-price",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr-price",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

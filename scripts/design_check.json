@@ -122,7 +122,7 @@
         },
         "priced_in": ["sway"],
         "case": "city",
-        "exempt": {"case": "city", "why": "the win route (Matt, 2026-11-13): never a poorly priced hedge; its 5 Sway are in the city's 30 (priced_in; 45 before 273's credits ÷ 1.5). 249: this case only; 252 (Item B): Liberate leaves the site neutral, the city still the win route"},
+        "exempt": {"case": "city", "why": "the win route (Matt, 2026-11-13): never a poorly priced hedge; its 5 Sway are in the city's 20 (priced_in; 301: the action's own bill, 30 before). 249: this case only; 252 (Item B): Liberate leaves the site neutral, the city still the win route"},
         "narrative": "trust"
       },
       {
@@ -194,7 +194,7 @@
       "botnet": 10,
       "station_freed": 10,
       "factory_freed": 4,
-      "city_liberated": 30,
+      "city_liberated": 20,
       "card": 3.33,
       "compute": 1.33,
       "agent": 3.33,
@@ -214,7 +214,7 @@
         "land_token": "210: 3 rounds of a face-up token's 1 Discord, a sway 4 each",
         "node": "206: values.json's node, 8",
         "factory": "206: +1 chip income, 19",
-        "station_owned": "values.json's claim_site, 12 (252: 1 cube a round at 3 for about 4 rounds)",        "city_liberated": "card-guidelines.md's derived line, 45",
+        "station_owned": "values.json's claim_site, 12 (252: 1 cube a round at 3 for about 4 rounds)",        "city_liberated": "301: values.json's liberate, 20: the Liberate action's bill a card replaces (3 ambassadors 16 + their move in 4; 30 before)",
         "agent": "card-guidelines.md, 5",
         "sway": "card-guidelines.md, 4",
         "card": "card-guidelines.md, 5",
@@ -247,6 +247,7 @@
     },
     "neutral_why": "neutral by design (any tag prints them): draws, credits, triggers and thresholds; threat counters (jam, auto_counter), since every tag answers threats its own way; liberate, the capstone every tag route reaches (player-cards.md, *The liberate capstones*); a tag's own payoffs (gain_per_tag, production_per_tag, income_per_tag, card_discount), which pay for the tag they count; reuse and choose_player, which only point another effect",
     "exceptions": {
+      "cards:nuclear_option": "301 (Matt's message 13884): the antimatter weapon frees the stations and factories around the city it blasts, part of the one extreme act (its liberation is neutral), not Diplomacy's cleanup",
       "ais:researcher:Hack I": "276: Disrupt's job, renamed (Hack II adds compute, which is Cyber): a Cyber card hacks troops anywhere in a country, no reach: the Researcher's troop answer is remote by design (206), so it is paid in Cyber, not Security"
     }
   },

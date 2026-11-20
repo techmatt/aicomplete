@@ -128,6 +128,8 @@ fn lab_config(round: &[&str]) -> Config {
         "board.troop_node=0",
         "board.liberate_at=1",
         "board.start_corrupted=1",
+        // 301: level 0's setup agents would take from the supply the emptied board doesn't give back.
+        "adversary.setup_city_agents=0",
         // The build asks nothing: pin any new build-step choice off here. (138:
         // the board's creation line lands only on adversary cities, which a lab
         // board has none of until a test puts one.)
@@ -161,6 +163,8 @@ fn lab_with(phases: &[&str], sets: &[&str]) -> (Rules, GameState) {
     for h in Arc::make_mut(&mut g.hexes).iter_mut() {
         Arc::make_mut(h).tokens.clear();
     }
+    // 301: the emptied board's agents are back in the supply (what setup or round 1 took never leaks into a test).
+    set_var(&mut g, crate::modules::adversary::SUPPLY, crate::modules::adversary::start_supply(&rules.world()));
     (rules, g)
 }
 
@@ -655,9 +659,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 145;
-const GOLDEN_FINGERPRINT: &str = "6e0be0c83b0a67aa";
-const GOLDEN_CONTENT_HASH: &str = "5a3a822e8236785d";
+const GOLDEN_REVISION: u32 = 146;
+const GOLDEN_FINGERPRINT: &str = "af351d5c5743b714";
+const GOLDEN_CONTENT_HASH: &str = "7f0a9afa579e0425";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

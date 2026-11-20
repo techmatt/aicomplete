@@ -85,7 +85,7 @@
     "build_factory": {"credits": 2.667, "per": "factory built"},
     "cleanse": {"credits": 4, "per": "factory cleansed; with cities, a city at liberate's row instead"},
     "cleanse_station": {"credits": 10, "per": "station cleansed, or a station or factory (r35: a flip, a cube a round both ways for the rounds left)"},
-    "liberate": {"credits": 30, "per": "city liberated (5 Sway and a city, its ambassadors and Discord stopped: about 50 in play); no_city_share of it with no city corrupted"},
+    "liberate": {"credits": 20, "per": "city liberated by a card, at the Liberate action's bill it replaces (301: 3 ambassadors 16 + their move in, 3 x move_ambassadors 1.333; was 30 against 5 ambassadors); no_city_share of it with no city corrupted"},
     "liberate_own": {"credits": 8.667, "per": "256 (was liberate_align 5, a city's cube): a liberation that makes the site yours (Hostile Buyout), valued for the station or factory it frees and owns: half of cleanse_station 15 + claim_site 12, as it may take a city (left neutral) instead"},
     "liberate_troops": {"credits": 2, "per": "troop the liberation may clear in its country (about 1.5 there, at remove_troops less its share; r38 x 0.7 with remove_troops)"},
     "liberate_botnet": {"credits": 4.667, "per": "a botnet on or next to the liberated city removed (remove_botnet x about 0.6 for one being there)"},
@@ -162,7 +162,7 @@
     "deal_threats": {"credits": -4.667, "per": "extra threat"},
     "remove_botnets": {"credits": 8, "per": "botnet removed"},
     "adversary_research": {"credits": -2, "per": "259, 293: research cube onto the adversary's track (a project's each_country: x rates.countries), remove_research's worth"},
-    "botnet_troops": {"credits": -3.333, "per": "195: troop a botnet becomes, in each country (troops at -7, less the botnet spent: remove_botnet's 8 without its Sway, 4, over two troops; 297: the card prints one troop on the botnet's hex, in a country holding two botnets, about half of them: the row stands)"},
+    "botnet_troops": {"credits": -3.333, "per": "195: troop a botnet becomes, in each country (troops at -7, less the botnet spent: remove_botnet's 8 without its Sway, 4, over two troops; 297: the card prints one troop, in a country holding two botnets, about half of them; 301: it garrisons: the row stands)"},
     "spread_botnets": {"credits": -10.667, "per": "195: botnet spread, in each country (place_botnet's anchor)"},
     "take_site": {"credits": -10, "per": "195: site taken in each country (corrupt_factory's and flip_station's anchor; a player's turned neutral is a claim lost, about the same)"},
     "factory_troops": {"credits": -4.667, "per": "195: troop each adversary factory makes (troops' row), at about one adversary factory a country (rates.countries)"},
@@ -219,6 +219,7 @@
     "1": 1.0, "2": 1.48, "3": 1.75, "4": 2.37, "6": 3.6
   },
   "overrides": [
+    {"card": "nuclear_option", "credits": -43, "why": "301 (Matt's message 13884): it also frees each corrupted station or factory next to the city, which the table reads as its target plus 5 more at the area share, 50 at cleanse_station; next to a corrupted city stand about 1 (a station 10 or a factory 4: about 7). -43 puts its table get at 25.7 against give 26 (1 antimatter and the tier-2 keep): fair at one site, 1.3 at two."},
     {"card": "field_grant", "credits": 2.667, "why": "246: the table prices a research cube at 3 (anchor 6), so 3 cubes read 10 against give 11.5 (9 credits and the tier-1 keep); at the anchors 18 against 13. +4 puts its table get at about 1.2 x its give."},
     {"card": "deep_state_ledger", "credits": 6.667, "why": "246: the table prices an agent removed at about 2.2 (anchor 5), so +3 insight income and 3 agents removed read 24.8 against give 29.5 (18 credits, 2 insight, the tier-2 keep); at the anchors 51 against 38. +10 puts its table get at about 1.2 x its give."},
     {"card": "smart_grid_backbone", "credits": 13.333, "why": "246: the table fires a Power-play trigger at its generic rate, so 10 credits a Power card and draw 3 read 24.3 against give 36.5 (25 credits, 2 insight, the tier-2 keep); at a Power seat's rate (a Power card a round, 3.5 rounds, and its own play) 60 against 45. +20 puts its table get at about 1.2 x its give."},

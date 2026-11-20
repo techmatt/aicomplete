@@ -196,7 +196,7 @@
    "cyber"
   ],
   "cost": 16,
-  "text": "Each country holding 2 or more Botnets: its lowest-numbered Botnet becomes 1 Troop on its hex.",
+  "text": "Each country holding 2 or more Botnets: remove its lowest-numbered Botnet, and 1 Troop garrisons.",
   "effects": [
    {
     "op": "botnet_troops",

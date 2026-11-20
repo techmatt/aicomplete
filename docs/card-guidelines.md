@@ -99,7 +99,7 @@ income 9.6 (4 rounds × 3 × 0.8); +1 chip income about 13 (4 × 4 × 0.8). A re
 completes the megaproject). Make antimatter (5 cubes, 20, for 24) stays an unused hedge (Matt, 283; design_check
 exempts it, 287); every engine making antimatter shows a clear gain, and every sink pays big, 2.0-2.5× (Matt, 287:
 saving for one is clearly right; a strong route, never the only one). Other units take `values.json` (a sway 2.67, a node
-5.33) or [card-pricing.md](card-pricing.md) (a city liberated 30); a botnet removed is 10 (252). A card whose unit has no anchor sits inside 1.0-2.5× under both readings: a convert at its output's anchor and its
+5.33) or [card-pricing.md](card-pricing.md) (a city liberated by card 20, the action's bill); a botnet removed is 10 (252). A card whose unit has no anchor sits inside 1.0-2.5× under both readings: a convert at its output's anchor and its
 input's, an engine's uses at the measured count and the conservative one.
 
 **The anchor check (give / get)**, one line in its item's write-up, before any sim, for each card, building Action

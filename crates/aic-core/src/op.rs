@@ -1349,7 +1349,7 @@ pub enum Op {
         count: i64,
     },
     /// 195 (a project's): in each country, up to `count` of its botnets, the lowest-numbered first, each come off and
-    /// become `troops` adversary troops on the botnet's own hex (297; no Unity sway: not a removal).
+    /// become `troops` adversary troops, which garrison (301; no Unity sway: not a removal).
     BotnetTroops {
         #[serde(default = "one", skip_serializing_if = "is_one")]
         count: i64,

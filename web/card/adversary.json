@@ -29,6 +29,7 @@
         "Compute income 0 a country",
         "Infiltrate 1 a site",
         "Research track: a slot every 3 cubes a country",
+        "Each free city starts with 4 agents",
         "Deck 4 / 4 / 2 (10 rounds)",
         "Sites print their corrupt numbers: city 5, station 3, factory 3"
       ],
@@ -43,7 +44,8 @@
       "name": "Sleeper Cells",
       "flavor": "Cells wake in every city.",
       "setup": [
-        "Compute income 3 a country"
+        "Compute income 3 a country",
+        "Free cities start with no agents"
       ],
       "rule": "When an Agent lands on a city, it falls at 3 agents, not 5.",
       "new_rules": 1,

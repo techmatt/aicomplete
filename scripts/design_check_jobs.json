@@ -672,9 +672,9 @@
     {
      "name": "The Nuclear Option",
      "units": 1,
-     "other": "-2 * sway + 0.5 * station_owned",
+     "other": "-2 * sway + 0.5 * station_freed + 0.5 * factory_freed + 0.5 * station_owned",
      "use": 0,
-     "note": "Discord 2 (-8); 256: claims a neutral site next to it (~0.5)"
+     "note": "Discord 2 (-8); 301 (Matt 13884): frees each corrupted station or factory next to it (about one a play, half each kind); 256: claims a neutral site next to it (~0.5)"
     },
     {
      "name": "Hostile Buyout",

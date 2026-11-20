@@ -125,7 +125,7 @@ Each project resolves once, at once, in the compute step. Its compute in play is
 | Crackdown | Security | 8 (8 / 16 / 24 / 32) | Each country: every player Ambassador on its hex holding the most (ties: lowest-numbered) goes back to its owner's supply. |
 | Lab Purge | Cyber | 11 (11 / 22 / 33 / 44) | Each open megaproject loses 4 player research cubes, one at a time, each from the player with the most on it (ties: the earliest in player order). |
 | Asset Seizure | Industry | 13 (13 / 26 / 39 / 52) | Each country: its lowest-numbered neutral factory is corrupted; with none neutral, its lowest-numbered player-owned factory turns neutral. |
-| Botnet Conscripts | Cyber | 16 (16 / 32 / 48 / 64) | Each country holding 2 or more Botnets: its lowest-numbered Botnet becomes 1 Troop on its hex. |
+| Botnet Conscripts | Cyber | 16 (16 / 32 / 48 / 64) | Each country holding 2 or more Botnets: remove its lowest-numbered Botnet, and 1 Troop garrisons. |
 | Purge Lists | Diplomacy | 7 (7 / 14 / 21 / 28) | Each player loses 1 Ambassador (from their supply, else one of theirs on the board). |
 | Dirty Bomb | Power | 12 (12 / 24 / 36 / 48) | Each country: 1 Fallout lands next to each of its two lowest-numbered corrupted cities. |
 | Lab Seizure | Cyber | 21 (21 / 42 / 63 / 84) | Each country: create 2 Agents on its lowest-numbered research station not yet the adversary's. Each country: 2 cubes onto the adversary's research track. |

@@ -309,6 +309,17 @@ fn fit_to_target(op: &Op, target: Option<TargetSpec>, cls: &mut [Clause]) {
                 cls[0].icons.extend([w("station"), w("/"), w("factory")]);
             }
         }
+        // 301: a station-and-factory cleanse after a city's liberation (The Nuclear Option) can't take its target
+        // first: it frees the ones next to it, every one when it reaches all six neighbors.
+        Op::Cleanse { cities: false, only: None, amount, .. } if on == TargetSpec::CorruptedCity => {
+            if let Some(c) = cls.first_mut() {
+                c.say = if *amount >= 6 {
+                    "free each corrupted station or factory next to it".into()
+                } else {
+                    format!("free up to {amount} corrupted stations or factories next to it")
+                };
+            }
+        }
         // A claim of the one site a card opens: Open Research Campus's station, Industrial Commons's factory.
         Op::ClaimSite { near: false } if matches!(on, TargetSpec::EmptySite | TargetSpec::StationSite | TargetSpec::FreeZone) => {
             if let Some(c) = cls.first_mut() {

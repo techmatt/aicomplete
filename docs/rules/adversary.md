@@ -32,7 +32,7 @@ nothing escalates. It lands like any arrival (below) and picks nothing.
 
 **Research track (every adversary).** A public row of **six icon slots**, content (the board's research row in
 `content/adversary.json`): a row changes by editing it. Cubes come from corrupted stations
-and from "cubes onto the research track" lines ([harms.md](../harms.md): eight threats, three projects, and the Discord card Captured Labs, 2 cubes for each corrupted station), and go nowhere else. In the research check, while the track holds **K cubes** (`research_at` a country, times
+and from "cubes onto the research track" lines (threats, projects, Captured Labs: [harms.md](../harms.md)), and go nowhere else. In the research check, while the track holds **K cubes** (`research_at` a country, times
 the countries; `research_start` a country at setup) it spends K and its marker advances one slot, whose icon
 happens once as the marker arrives (in each country where it prints so); one check can advance several. **Slot 7
 is a loss** (end reason `research`). Counterintelligence Sweep and Arms Inspectors take cubes off, never a slot back.
@@ -184,8 +184,8 @@ a Strike or Redeploy icon) are face up, as is last round's card (what escalates)
 <!-- generated: difficulty -->
 | Level | Name | Setup (incomes and threshold a country) | Mid-game rule (new) | Rules active | Tunable |
 |---|---|---|---|---|---|
-| 0 | **The Militarist** | Compute income 0 a country; Infiltrate 1 a site; Research track: a slot every 3 cubes a country; Deck 4 / 4 / 2 (10 rounds); Sites print their corrupt numbers: city 5, station 3, factory 3 | — | 0 | `compute_income`, `infiltrate_agents`, `research_at`, `corrupt_at` |
-| 1 | **Sleeper Cells** | Compute income 3 a country | When an Agent lands on a city, it falls at 3 agents, not 5. | 1 | `botnet_spread_at`, `corrupt_cut`, `corrupt_cut_at` |
+| 0 | **The Militarist** | Compute income 0 a country; Infiltrate 1 a site; Research track: a slot every 3 cubes a country; Each free city starts with 4 agents; Deck 4 / 4 / 2 (10 rounds); Sites print their corrupt numbers: city 5, station 3, factory 3 | — | 0 | `compute_income`, `infiltrate_agents`, `research_at`, `corrupt_at`, `setup_city_agents` |
+| 1 | **Sleeper Cells** | Compute income 3 a country; Free cities start with no agents | When an Agent lands on a city, it falls at 3 agents, not 5. | 1 | `botnet_spread_at`, `corrupt_cut`, `corrupt_cut_at` |
 | 2 | **War Footing** | Compute income 5 a country; Research track: a slot every 2 cubes a country | When a threat executes uncountered, the adversary also gains 4 compute. | 2 | `board_difficulty_at` |
 | 3 | **Arms Race** | Compute income 10 a country; Deck 4 / 3 / 2 (9 rounds) | When the research track reaches a Garrison icon, each country takes 2 Troops, not 1. | 3 | `arms_race_at`, `arms_race_troops`, `stage2_removed`, `stage1_added` |
 | 4 | **War Economy** | Compute income 15 a country; Infiltrate 2 a city (1 a site from a station, factory or botnet line); Deck 2 / 4 / 3 (9 rounds) | — | 3 | `stage1_removed`, `stage2_added`, `stage3_added`, `stage_swap_at` |

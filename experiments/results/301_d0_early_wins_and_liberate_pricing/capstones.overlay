@@ -1,0 +1,14 @@
+# 301: the liberate cards repriced against the Liberate action's bill at r145 (3 ambassadors, 16, + their move in, 4:
+# a liberation by card is worth 20, was 30 against 5 ambassadors). Each keeps the get / pay it was priced at; credits
+# come off first (the engine's resource stays at least half the price). Apply with scripts/cards/apply_overlay.py.
+cards.citywide_microgrid.cost=9
+cards.hostile_buyout.cost=8
+cards.nuclear_option.cost=0
+# Matt's message 13884: stronger, not dear: it also frees each corrupted station or factory next to the city.
+# The cleanse goes first, so the printed Rescue (liberate, then claim next to it) may claim a site it just freed.
+cards.nuclear_option.effects=[{"op":"target","on":"corrupted_city"},{"op":"cleanse","amount":6,"one_country":false,"at":"near"},{"op":"liberate"},{"op":"claim_site","near":true},{"op":"sway","side":"discord","amount":2,"narrative":"collateral"}]
+cards.peacekeeping_mission.cost=3
+cards.power_to_the_people.cost=7
+cards.root_access.cost=2
+cards.forensic_audit.research_cubes=2
+cards.popular_uprising.cost=11

@@ -3444,7 +3444,7 @@
   "name": "The Nuclear Option",
   "tier": 2,
   "kind": "event",
-  "cost": 4,
+  "cost": 0,
   "antimatter": 1,
   "insight": 0,
   "tags": [
@@ -3454,6 +3454,12 @@
    {
     "op": "target",
     "on": "corrupted_city"
+   },
+   {
+    "op": "cleanse",
+    "amount": 6,
+    "one_country": false,
+    "at": "near"
    },
    {
     "op": "liberate"
@@ -3475,7 +3481,7 @@
   "name": "Power to the People",
   "tier": 2,
   "kind": "building",
-  "cost": 15,
+  "cost": 7,
   "energy": 4,
   "insight": 0,
   "needs": [
@@ -3516,7 +3522,7 @@
   "name": "Hostile Buyout",
   "tier": 2,
   "kind": "event",
-  "cost": 15,
+  "cost": 8,
   "insight": 0,
   "tags": [
    "diplomacy"
@@ -3540,7 +3546,7 @@
   "tier": 2,
   "kind": "event",
   "cost": 2,
-  "research_cubes": 4,
+  "research_cubes": 2,
   "insight": 1,
   "tags": [
    "science"
@@ -3564,7 +3570,7 @@
   "name": "Root Access",
   "tier": 2,
   "kind": "event",
-  "cost": 12,
+  "cost": 2,
   "insight": 0,
   "needs": [
    [
@@ -3596,7 +3602,7 @@
   "name": "Peacekeeping Mission",
   "tier": 2,
   "kind": "event",
-  "cost": 13,
+  "cost": 3,
   "insight": 0,
   "needs": [
    [
@@ -3632,7 +3638,7 @@
   "name": "Popular Uprising",
   "tier": 1,
   "kind": "building",
-  "cost": 17,
+  "cost": 11,
   "insight": 0,
   "tags": [
    "diplomacy"
@@ -4913,7 +4919,7 @@
   "name": "Citywide Microgrid",
   "tier": 2,
   "kind": "building",
-  "cost": 17,
+  "cost": 9,
   "energy": 4,
   "insight": 1,
   "tags": [

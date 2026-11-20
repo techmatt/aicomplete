@@ -82,7 +82,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
 
   | Card | Engine | Kind | Extra |
   |---|---|---|---|
-  | The Nuclear Option | antimatter | event | sway 2 toward Discord (collateral harm) |
+  | The Nuclear Option | antimatter | event | also frees each corrupted station or factory next to it; sway 2 toward Discord (collateral harm) |
   | Power to the People | energy | building (over Power, needs 2) | income: 1 credit per 2 Power tags on your cards |
   | Citywide Microgrid | energy (4, a late sink) | building | Action: 3 Sway toward Unity |
   | Hostile Buyout | antimatter, Diplomacy | event | gain 3 ambassadors; any corrupted site, a station or factory becomes yours (254) |
@@ -91,12 +91,12 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   | Peacekeeping Mission | antimatter, Security (needs Security tags) | event | first removes up to 3 troops on or next to the city (so a guarded one is a target); rescues only if none is left |
   | Popular Uprising | Followers | tier-1 building | Action: add 1 Follower here, OR pay 4 Followers to liberate, again and again |
 
-  They cost 2-17 credits (the four antimatter ones 4-15 and 1 antimatter), well under the Liberate action
+  They cost 0-11 credits (the four antimatter ones 0-8 and 1 antimatter), priced against the Liberate action's bill
   ([card-pricing.md](../card-pricing.md), *The liberate capstones*). Great Liberation (Diplomacy: its target and 2 more in the target's country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the
   seat that can use it. Loops: each card is one-shot and tier 2, and every route needs nodes next to the city, so
   liberation → clean city → energy → more liberation is capped; Popular Uprising repeats, capped by its once-a-round
-  Action and 4 Followers a liberation (about one every fifth round; every 2-3 with Simulation Cluster's Reuse).
+  Action and 4 Followers a liberation.
 - **Tag discounts (candidate; the Terraforming Mars pattern).** Every `science_every` Science tags you have take 1
   insight off your tier-2 keeps and your card plays; every `industry_every` Industry tags take 1 credit off your
   buildings, as steel does. Neither goes below `discount_floor` (0: a discounted card may be free); the loop "tags,

@@ -53,7 +53,8 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("stage1_added", 0, 3, "difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step)"),
     ParamSpec::int("extra_corrupted", 0, 3, "difficulty 4: more cities per country start corrupted (none past the cities the map prints corrupted, 2 a country: nothing while `board.start_corrupted` is 2)"),
     ParamSpec::list("compute_income", 0, 30, "the adversary's base compute income a country a round, at difficulty 0-4 (times the countries: per board)"),
-    ParamSpec::list("infiltrate_agents", 0, 5, "275: agents an Infiltrate line lands on each city it names, at difficulty 0-4"),
+    ParamSpec::list("setup_city_agents", 0, 5,"301: agents on each city that starts free (not corrupted), at setup, at difficulty 0-4 (toward its corrupt number; the city is blocked)"),
+    ParamSpec::list("infiltrate_agents", 0, 5,"275: agents an Infiltrate line lands on each city it names, at difficulty 0-4"),
     ParamSpec::int("infiltrate_facility_cap", 0, 5, "282: at most this many of an Infiltrate line's agents land on each research station, factory or botnet hex it names (cities take every one)"),
     ParamSpec::int("threat_agents", 0, 5, "275: agents an uncountered threat lands on its anchor (its first location token) as it executes"),
     ParamSpec::int("discord_removed", 0, 3, "difficulty 4+: Discord cards removed at setup (from tier 1)"),
@@ -369,6 +370,22 @@ impl Module for Adversary {
         for c in 0..w.map.countries.len() {
             for &n in &w.content.map.countries[c].stations {
                 cx.add_tokens(g, w.map.numbered(c, n), BOTNET, 1);
+            }
+        }
+        // 301 (level 0's setup, a ladder number): `setup_city_agents` agents from the supply on each city that starts
+        // free (the board's printed corruption order picks the others): the adversary is an arrival or two from
+        // taking a new city, so the players can't liberate the starting ones before it spreads.
+        let seeds = income_at(&w, "adversary.setup_city_agents");
+        if seeds > 0 {
+            let corrupted = board::start_corrupted_cities(&w);
+            for h in 0..g.hexes.len() {
+                if !is_city(&w, h) || corrupted.contains(&h) {
+                    continue;
+                }
+                let n = seeds.min(g.var(SUPPLY));
+                cx.add_tokens(g, h, ADV_AMBASSADOR, n);
+                cx.add_key(g, SUPPLY, -n);
+                cx.tally(g, "adversary.setup_agents", n);
             }
         }
         let mut deck = Vec::new();

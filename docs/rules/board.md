@@ -38,7 +38,10 @@ only an edge: hexes are adjacent across it, and nothing is placed on it or fight
 ## Setup
 
 - Each country: the first `start_corrupted` cities of its printed corruption order get an adversary cube
-  (`adversary.extra_corrupted` more at difficulty 4, but never past the 2 each piece prints); its research station starts corrupted,
+  (`adversary.extra_corrupted` more at difficulty 4, but never past the 2 each piece prints); at level 0 each city
+  left free takes `adversary.setup_city_agents` (4) agents from the supply (r146: one arrival short of falling, so
+  the adversary spreads before the players can liberate the starting cities; the city is blocked: no energy until
+  they are cleared); its research station starts corrupted,
   with a **botnet** on it; its **neutral research stations** and its setup factories, **neutral**, on their printed
   hexes (r83, Matt 2026-11-11: each city starts with at least one neutral factory and one neutral station next to it;
   this map allows it everywhere, so a country has 1-3 stations and 2-3 factories, the table above).

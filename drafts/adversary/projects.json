@@ -273,7 +273,7 @@
     "cyber"
    ],
    "cost": 16,
-   "text": "Each country holding 2 or more Botnets: its lowest-numbered Botnet becomes 1 Troop on its hex.",
+   "text": "Each country holding 2 or more Botnets: remove its lowest-numbered Botnet, and 1 Troop garrisons.",
    "effects": [
     {
      "op": "botnet_troops",
@@ -285,13 +285,14 @@
    "harms": [
     "troops made"
    ],
-   "value": "give 16 compute a board (32 at 2 countries); get 0.21 a compute at values.json (botnet_troops 3.33 a troop): dear for its number by design: a troop on a hex the players chose to build beside is worth more than the row's garrison, and the price is what makes it late.",
+   "value": "give 16 compute a board (32 at 2 countries); get 0.21 a compute at values.json (botnet_troops 3.33 a troop): dear for its number by design: the price is what makes it late (301: the troop garrisons, as the row's do).",
    "check": "297: 1 consequence (small), every board, one-shot. When it matters: once a country holds a second botnet (Botnets spread, a Backdoor). Players answer: keep each country to one botnet (Take down a botnet); remove the troop.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): 2 to 3 troops",
     "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)",
     "294 (Matt, 2026-11-19): \"Each country: its lowest-numbered botnet becomes 3 Troops on its hex.\" became \"Each country: its lowest-numbered botnet becomes 2 Troops, which garrison its lowest-numbered corrupted factory (with none, its lowest-numbered corrupted city; with none, its lowest-numbered city).\" (troops garrison a corrupted factory, else a city; 3 -> 2 since a troop now stays after it strikes and guards its site)",
-    "297 (Matt, 2026-11-19): \"Each country: its lowest-numbered botnet becomes 2 Troops, which garrison its lowest-numbered corrupted factory (with none, its lowest-numbered corrupted city; with none, its lowest-numbered city). (11 a board)\" became \"Each country holding 2 or more Botnets: its lowest-numbered Botnet becomes 1 Troop on its hex.\" at 16 a board (the troop stands where the botnet stood, beside whatever the players built there, so a Strike has something to hit and a Redeploy something to move; one troop, not two, dearer (11 -> 16), and only where botnets have spread: on the first screen the starting botnet turned by round 3 in every early-troop game)"
+    "297 (Matt, 2026-11-19): \"Each country: its lowest-numbered botnet becomes 2 Troops, which garrison its lowest-numbered corrupted factory (with none, its lowest-numbered corrupted city; with none, its lowest-numbered city). (11 a board)\" became \"Each country holding 2 or more Botnets: its lowest-numbered Botnet becomes 1 Troop on its hex.\" at 16 a board (the troop stands where the botnet stood, beside whatever the players built there, so a Strike has something to hit and a Redeploy something to move; one troop, not two, dearer (11 -> 16), and only where botnets have spread: on the first screen the starting botnet turned by round 3 in every early-troop game)",
+    "301 (Matt, 297/1): \"... its lowest-numbered Botnet becomes 1 Troop on its hex.\" became \"... remove its lowest-numbered Botnet, and 1 Troop garrisons.\" at the same 16 (a card may name a corrupted factory or city for its troop, never another hex: the troop garrisons by the rule)"
    ],
    "reuses": null
   },

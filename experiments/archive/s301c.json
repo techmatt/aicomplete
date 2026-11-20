@@ -1,0 +1,136 @@
+{
+  "name": "s301c",
+  "note": "301: screen 3, d0 only, on 299's spent fresh seeds 50784-50879, on the priced build (a station at 3, the liberate cards repriced, values.json's liberate 20, P1): level 0's setup agents on each starting corrupted city (setup_agents) and on each other city (setup_city_agents). Farm with farm-seeds 50784 96 OUT s301c.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-price",
+      "set": []
+    },
+    {
+      "name": "br-price",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr-price",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp-sa2",
+      "set": [
+        "adversary.setup_agents=2,0,0,0,0"
+      ]
+    },
+    {
+      "name": "br-sa2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.setup_agents=2,0,0,0,0"
+      ]
+    },
+    {
+      "name": "pr-sa2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.setup_agents=2,0,0,0,0"
+      ]
+    },
+    {
+      "name": "bp-sa3",
+      "set": [
+        "adversary.setup_agents=3,0,0,0,0"
+      ]
+    },
+    {
+      "name": "br-sa3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.setup_agents=3,0,0,0,0"
+      ]
+    },
+    {
+      "name": "pr-sa3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.setup_agents=3,0,0,0,0"
+      ]
+    },
+    {
+      "name": "bp-seed1",
+      "set": [
+        "adversary.setup_city_agents=1,0,0,0,0"
+      ]
+    },
+    {
+      "name": "br-seed1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.setup_city_agents=1,0,0,0,0"
+      ]
+    },
+    {
+      "name": "pr-seed1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.setup_city_agents=1,0,0,0,0"
+      ]
+    },
+    {
+      "name": "bp-seed2",
+      "set": [
+        "adversary.setup_city_agents=2,0,0,0,0"
+      ]
+    },
+    {
+      "name": "br-seed2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.setup_city_agents=2,0,0,0,0"
+      ]
+    },
+    {
+      "name": "pr-seed2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.setup_city_agents=2,0,0,0,0"
+      ]
+    },
+    {
+      "name": "bp-sa1seed1",
+      "set": [
+        "adversary.setup_agents=1,0,0,0,0",
+        "adversary.setup_city_agents=1,0,0,0,0"
+      ]
+    },
+    {
+      "name": "br-sa1seed1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.setup_agents=1,0,0,0,0",
+        "adversary.setup_city_agents=1,0,0,0,0"
+      ]
+    },
+    {
+      "name": "pr-sa1seed1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.setup_agents=1,0,0,0,0",
+        "adversary.setup_city_agents=1,0,0,0,0"
+      ]
+    }
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

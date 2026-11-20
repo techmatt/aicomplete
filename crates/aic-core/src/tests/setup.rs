@@ -83,11 +83,13 @@ fn setup_places_the_printed_pieces() {
             assert_eq!(g.resource(s, Resource::Ambassadors), 1);
             assert_eq!(g.resource(s, Resource::Credits), crate::modules::ai::start_credits(&rules.world(), s));
         }
-        assert_eq!(
-            total(&g, ADV_AMBASSADOR) + total(&g, TROOP),
-            0
-        );
-        assert_eq!(g.var(SUPPLY), 48, "d{d}");
+        // 301: level 0 only, `setup_city_agents` (4) agents on each city that starts free; no troop at any level.
+        let seeded = if d == 0 { 4 } else { 0 };
+        let free = cities(m).into_iter().filter(|&h| g.tokens(h, ADV_CUBE) == 0).collect::<Vec<_>>();
+        assert!(free.iter().all(|&h| g.tokens(h, ADV_AMBASSADOR) == seeded), "d{d}");
+        assert_eq!(total(&g, ADV_AMBASSADOR), seeded * free.len() as i64, "d{d}");
+        assert_eq!(total(&g, TROOP), 0);
+        assert_eq!(g.var(SUPPLY), 48 - seeded * free.len() as i64, "d{d}");
         // The next adversary card is face up, from stage I.
         let next = g.pile(NEXT);
         assert_eq!(next.len(), 1);

@@ -182,9 +182,9 @@ pub(super) fn troops_at(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64, a
 }
 
 /// 195 (`BotnetTroops`): in each country, up to `count` botnets, lowest-numbered first, become `troops` troops each.
-/// 297: on the botnet's own hex (r141 garrisoned them on a corrupted site, which left Redeploy nothing to move and
-/// stood every troop away from the players): the table sees which botnet will turn, and takes it down first. Only
-/// in a country holding `least` botnets or more. Wall (r98) keeps any off the Protector's hex.
+/// 301 (Matt, 297/1): the botnet comes off and its troops garrison by the rule (the country's lowest-numbered
+/// corrupted factory, else corrupted city, else city), never on the botnet's hex. Only in a country holding `least`
+/// botnets or more. Wall (r98) keeps any off the Protector's hex.
 pub(super) fn botnet_troops(g: &mut GameState, cx: &mut Cx, count: i64, troops: i64, least: i64) -> Res {
     let w = cx.world;
     for c in 0..w.map.countries.len() {
@@ -197,12 +197,17 @@ pub(super) fn botnet_troops(g: &mut GameState, cx: &mut Cx, count: i64, troops: 
         for &h in botnets.iter().take(count.max(0) as usize) {
             cx.add_tokens(g, h, BOTNET, -1);
             cx.set_key(g, &adversary::cut_key(h), 0);
-            let placed = (0..troops).filter(|_| adversary::place_troop_quiet(g, cx, h, "project")).count() as i64;
+            let Some(spot) = board::garrison_spot(&w, g, &by_number(&w, c)) else {
+                continue;
+            };
+            let placed = (0..troops).filter(|_| adversary::place_troop_quiet(g, cx, spot, "project")).count() as i64;
             cx.per_round(g, adversary::OPS, placed);
             cx.tally(g, "adversary.project_troops", placed);
             // 235: what landed (Wall's are tallied as `troops_walled`).
             cx.tally(g, "adversary.botnet_troops", placed);
-            cx.note(Some(h), || format!("The botnet at {} becomes {}", hex_name(&w, h), troop_words(placed as usize, troops)));
+            cx.note(Some(spot), || {
+                format!("The botnet at {} becomes {}, garrisoned at {}", hex_name(&w, h), troop_words(placed as usize, troops), hex_name(&w, spot))
+            });
         }
     }
     Ok(())
