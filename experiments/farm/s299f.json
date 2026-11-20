@@ -1,0 +1,86 @@
+{
+  "name": "s299f",
+  "note": "299: screen 6 on r145 (Liberate 3, deck 4/4/2) and 298's spent fresh seeds (r145's own cell: screen 3's lib3d10), the judge on the three pairs, after Matt's message 13794: cities corrupting at 6 agents (4 from d1) with no starting ambassador; supply ambassadors arriving spent (`arrive_ready` 0, r142's to-try); both. Farm with `farm-seeds 50688 96 OUT s299f`.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-c6amb0",
+      "set": [
+        "adversary.corrupt_at=6",
+        "board.start_ambassadors=0"
+      ]
+    },
+    {
+      "name": "br-c6amb0",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.corrupt_at=6",
+        "board.start_ambassadors=0"
+      ]
+    },
+    {
+      "name": "pr-c6amb0",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.corrupt_at=6",
+        "board.start_ambassadors=0"
+      ]
+    },
+    {
+      "name": "bp-ready0",
+      "set": [
+        "board.arrive_ready=0"
+      ]
+    },
+    {
+      "name": "br-ready0",
+      "set": [
+        "ai.boards=0,2",
+        "board.arrive_ready=0"
+      ]
+    },
+    {
+      "name": "pr-ready0",
+      "set": [
+        "ai.boards=1,2",
+        "board.arrive_ready=0"
+      ]
+    },
+    {
+      "name": "bp-c6ready0",
+      "set": [
+        "adversary.corrupt_at=6",
+        "board.arrive_ready=0"
+      ]
+    },
+    {
+      "name": "br-c6ready0",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.corrupt_at=6",
+        "board.arrive_ready=0"
+      ]
+    },
+    {
+      "name": "pr-c6ready0",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.corrupt_at=6",
+        "board.arrive_ready=0"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

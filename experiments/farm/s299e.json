@@ -1,0 +1,110 @@
+{
+  "name": "s299e",
+  "note": "299: screen 5 on 298's spent fresh seeds, the judge on the three pairs, Liberate at 3 with a 10-card deck (4/4/2; d3 4/3/2) and: a station at 3 ambassadors; a freed city swaying 3 Unity; that with cities corrupting at 6 agents (4 from d1). Farm with `farm-seeds 50688 96 OUT s299e`.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-lib3d10st3",
+      "set": [
+        "board.liberate_at=3",
+        "board.claim_station=3",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "br-lib3d10st3",
+      "set": [
+        "ai.boards=0,2",
+        "board.liberate_at=3",
+        "board.claim_station=3",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "pr-lib3d10st3",
+      "set": [
+        "ai.boards=1,2",
+        "board.liberate_at=3",
+        "board.claim_station=3",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "bp-lib3d10free3",
+      "set": [
+        "board.liberate_at=3",
+        "alignment.free_city=3",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "br-lib3d10free3",
+      "set": [
+        "ai.boards=0,2",
+        "board.liberate_at=3",
+        "alignment.free_city=3",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "pr-lib3d10free3",
+      "set": [
+        "ai.boards=1,2",
+        "board.liberate_at=3",
+        "alignment.free_city=3",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "bp-lib3d10c6free3",
+      "set": [
+        "board.liberate_at=3",
+        "adversary.corrupt_at=6",
+        "alignment.free_city=3",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "br-lib3d10c6free3",
+      "set": [
+        "ai.boards=0,2",
+        "board.liberate_at=3",
+        "adversary.corrupt_at=6",
+        "alignment.free_city=3",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "pr-lib3d10c6free3",
+      "set": [
+        "ai.boards=1,2",
+        "board.liberate_at=3",
+        "adversary.corrupt_at=6",
+        "alignment.free_city=3",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

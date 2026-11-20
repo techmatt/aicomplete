@@ -1,0 +1,101 @@
+{
+  "name": "s299b",
+  "note": "299: screen 2 on 298's spent fresh seeds (base: 298's kept r144 read), the judge on the three pairs: Liberate at 4 with an 11-card deck (5/4/2; d3 5/3/2) or a 10-card one (4/4/2; d3 4/3/2), and the 11-card arm with two starting ambassadors. Farm with `farm-seeds 50688 96 OUT s299b`.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-lib4d11",
+      "set": [
+        "board.liberate_at=4",
+        "adversary.stage_cards=5,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "br-lib4d11",
+      "set": [
+        "ai.boards=0,2",
+        "board.liberate_at=4",
+        "adversary.stage_cards=5,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "pr-lib4d11",
+      "set": [
+        "ai.boards=1,2",
+        "board.liberate_at=4",
+        "adversary.stage_cards=5,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "bp-lib4d10",
+      "set": [
+        "board.liberate_at=4",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "br-lib4d10",
+      "set": [
+        "ai.boards=0,2",
+        "board.liberate_at=4",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "pr-lib4d10",
+      "set": [
+        "ai.boards=1,2",
+        "board.liberate_at=4",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "bp-lib4amb2d11",
+      "set": [
+        "board.liberate_at=4",
+        "board.start_ambassadors=2",
+        "adversary.stage_cards=5,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "br-lib4amb2d11",
+      "set": [
+        "ai.boards=0,2",
+        "board.liberate_at=4",
+        "board.start_ambassadors=2",
+        "adversary.stage_cards=5,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "pr-lib4amb2d11",
+      "set": [
+        "ai.boards=1,2",
+        "board.liberate_at=4",
+        "board.start_ambassadors=2",
+        "adversary.stage_cards=5,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

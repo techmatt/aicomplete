@@ -1,0 +1,180 @@
+{
+  "name": "s299a",
+  "note": "299: screen 1, game length (298's mkspec.py), the judge on the three board pairs crossed with the arms: Liberate at 4, two starting ambassadors, a 10-card deck (4/4/2; d3 4/3/2). Farm with `farm-seeds 36800 32 OUT s299a`.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-base",
+      "set": []
+    },
+    {
+      "name": "br-base",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr-base",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp-lib4",
+      "set": [
+        "board.liberate_at=4"
+      ]
+    },
+    {
+      "name": "br-lib4",
+      "set": [
+        "ai.boards=0,2",
+        "board.liberate_at=4"
+      ]
+    },
+    {
+      "name": "pr-lib4",
+      "set": [
+        "ai.boards=1,2",
+        "board.liberate_at=4"
+      ]
+    },
+    {
+      "name": "bp-amb2",
+      "set": [
+        "board.start_ambassadors=2"
+      ]
+    },
+    {
+      "name": "br-amb2",
+      "set": [
+        "ai.boards=0,2",
+        "board.start_ambassadors=2"
+      ]
+    },
+    {
+      "name": "pr-amb2",
+      "set": [
+        "ai.boards=1,2",
+        "board.start_ambassadors=2"
+      ]
+    },
+    {
+      "name": "bp-deck",
+      "set": [
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "br-deck",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "pr-deck",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "bp-lib4deck",
+      "set": [
+        "board.liberate_at=4",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "br-lib4deck",
+      "set": [
+        "ai.boards=0,2",
+        "board.liberate_at=4",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "pr-lib4deck",
+      "set": [
+        "ai.boards=1,2",
+        "board.liberate_at=4",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "bp-amb2deck",
+      "set": [
+        "board.start_ambassadors=2",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "br-amb2deck",
+      "set": [
+        "ai.boards=0,2",
+        "board.start_ambassadors=2",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "pr-amb2deck",
+      "set": [
+        "ai.boards=1,2",
+        "board.start_ambassadors=2",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "bp-both",
+      "set": [
+        "board.liberate_at=4",
+        "board.start_ambassadors=2",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "br-both",
+      "set": [
+        "ai.boards=0,2",
+        "board.liberate_at=4",
+        "board.start_ambassadors=2",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    },
+    {
+      "name": "pr-both",
+      "set": [
+        "ai.boards=1,2",
+        "board.liberate_at=4",
+        "board.start_ambassadors=2",
+        "adversary.stage_cards=4,4,2",
+        "adversary.stage2_removed=1"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

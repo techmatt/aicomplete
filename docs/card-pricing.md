@@ -133,7 +133,8 @@ moves when any other card changes: to reprice an edited card, move its price by 
 - **A gift to another seat** is 0.75 × face; **a tag left in play** 0.67, then 0.33 each (events leave none).
 - **The liberate capstones**: priced at their own value, at least half in their engine's resource, out of reach
   before mid-game: a city liberated is 30 (5 Sway, the city and the ambassadors and Discord it stops; play reads about
-  33), against the Liberate action's 5 ambassadors at about 27; each engine's twist at its own row (3 ambassadors;
+  33), against the Liberate action's 3 ambassadors at about 16 (r145; 5, about 27, before: the capstones now pay over the
+  action's bill, a question for Matt's liberation anchor); each engine's twist at its own row (3 ambassadors;
   up to 3 troops in the city's country; a botnet next to it). They read 1.0-1.5 at the anchors, inside the
   margin like any fair card: the deck's late credit sinks, pending Matt's liberation anchor.
 

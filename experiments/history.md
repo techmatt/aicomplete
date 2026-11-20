@@ -10,6 +10,7 @@ the findings are in the write-up.
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 299 shorter games: Liberate 3, the deck 4/4/2 (cap 10); length histograms and bars | 145 | [299_shorter_games](results/299_shorter_games/README.md) |
 | 298 overhaul 6: calibration (Redeploy, Arms Race, prices, the judge, rulebook, teach.md) | 144 | [298_overhaul_6_calibration](results/298_overhaul_6_calibration/README.md) |
 | 297 overhaul 5: the content sweep (events, troop content, Unity cards that remove Discord) | 143 | [297_overhaul_5_content_sweep](results/297_overhaul_5_content_sweep/README.md) |
 | 295 overhaul 4: ambassadors move or act once a round, Liberate is their act, node powers | 142 | [295_overhaul_4_ambassadors_node_powers](results/295_overhaul_4_ambassadors_node_powers/README.md) |

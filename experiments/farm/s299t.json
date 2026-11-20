@@ -1,0 +1,17 @@
+{
+  "name": "s299t",
+  "note": "299: the three-seat length screen (configs/three_seat.json: Builder, Protector, Researcher at 3 countries), the judge, d0-d3: r144 (base), Liberate at 4 with an 11-card deck (5/4/2; d3 5/3/2), and that with two starting ambassadors. Farm with `farm-seeds 36800 32 OUT s299t`.",
+  "configs": [
+    "configs/three_seat.json"
+  ],
+  "variants": [
+    {"name": "bpr-base", "set": []},
+    {"name": "bpr-lib4d11", "set": ["board.liberate_at=4", "adversary.stage_cards=5,4,2", "adversary.stage2_removed=1"]},
+    {"name": "bpr-lib4amb2d11", "set": ["board.liberate_at=4", "board.start_ambassadors=2", "adversary.stage_cards=5,4,2", "adversary.stage2_removed=1"]}
+  ],
+  "difficulties": [0, 1, 2, 3],
+  "agents": ["strategist"],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

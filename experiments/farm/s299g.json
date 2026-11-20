@@ -1,0 +1,69 @@
+{
+  "name": "s299g",
+  "note": "299: screen 7 on r145 and 298's spent fresh seeds, the judge on the three pairs: supply ambassadors arriving spent (`arrive_ready` 0) with Liberate at 2, and that with cities corrupting at 6 agents (4 from d1). Farm with `farm-seeds 50688 96 OUT s299g`.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-ready0lib2",
+      "set": [
+        "board.arrive_ready=0",
+        "board.liberate_at=2"
+      ]
+    },
+    {
+      "name": "br-ready0lib2",
+      "set": [
+        "ai.boards=0,2",
+        "board.arrive_ready=0",
+        "board.liberate_at=2"
+      ]
+    },
+    {
+      "name": "pr-ready0lib2",
+      "set": [
+        "ai.boards=1,2",
+        "board.arrive_ready=0",
+        "board.liberate_at=2"
+      ]
+    },
+    {
+      "name": "bp-ready0lib2c6",
+      "set": [
+        "board.arrive_ready=0",
+        "board.liberate_at=2",
+        "adversary.corrupt_at=6"
+      ]
+    },
+    {
+      "name": "br-ready0lib2c6",
+      "set": [
+        "ai.boards=0,2",
+        "board.arrive_ready=0",
+        "board.liberate_at=2",
+        "adversary.corrupt_at=6"
+      ]
+    },
+    {
+      "name": "pr-ready0lib2c6",
+      "set": [
+        "ai.boards=1,2",
+        "board.arrive_ready=0",
+        "board.liberate_at=2",
+        "adversary.corrupt_at=6"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

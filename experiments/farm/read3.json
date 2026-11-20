@@ -1,0 +1,14 @@
+{
+  "name": "read3",
+  "note": "299: the three-seat read, farmable: the judge (strategist) on configs/three_seat.json (Builder, Protector, Researcher at 3 countries), d0-d3. Farm a seed range with `farm-seeds F N OUT read3`; the older side of a paired read farms 298's `s298t` (its `bpr-base` cell is this one) with `--at`.",
+  "configs": [
+    "configs/three_seat.json"
+  ],
+  "variants": [
+    {"name": "bpr-base", "set": []}
+  ],
+  "difficulties": [0, 1, 2, 3],
+  "agents": ["strategist"],
+  "games": 48,
+  "records": 0
+}

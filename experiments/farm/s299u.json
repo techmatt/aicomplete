@@ -1,0 +1,17 @@
+{
+  "name": "s299u",
+  "note": "299: the second three-seat screen (configs/three_seat.json), the judge, d0-d3, each arm Liberate at 3 with a 10-card deck (4/4/2; d3 4/3/2): alone, with two starting ambassadors, with one corrupted city a country at setup. Farm with `farm-seeds 36800 32 OUT s299u`.",
+  "configs": [
+    "configs/three_seat.json"
+  ],
+  "variants": [
+    {"name": "bpr-lib3d10", "set": ["board.liberate_at=3", "adversary.stage_cards=4,4,2", "adversary.stage2_removed=1"]},
+    {"name": "bpr-lib3amb2d10", "set": ["board.liberate_at=3", "board.start_ambassadors=2", "adversary.stage_cards=4,4,2", "adversary.stage2_removed=1"]},
+    {"name": "bpr-lib3c1d10", "set": ["board.liberate_at=3", "board.start_corrupted=1", "adversary.stage_cards=4,4,2", "adversary.stage2_removed=1"]}
+  ],
+  "difficulties": [0, 1, 2, 3],
+  "agents": ["strategist"],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

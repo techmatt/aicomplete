@@ -18,7 +18,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve.
 - [tunables.md](tunables.md): every baseline config parameter (generated).
 
-What the code implements, at rules revision 144 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 145 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -29,8 +29,8 @@ threat decks (to Matt's threat card standard, locked), event deck, board and pro
 each revision changed and why: [rules-history.md](../rules-history.md). What content can
 print: [ops.md](../ops.md).
 
-**Every number below is a candidate**: a starting calibration reasoned for a 7–10
-round game, for simulation to adjust. Names in `code` are config
+**Every number below is a candidate**: a starting calibration for a game of mostly 6–8
+rounds (Matt, 2026-11-20), for simulation to adjust. Names in `code` are config
 tunables (`<module>.<param>`), valued in [Tunables](tunables.md) from
 [`configs/baseline.json`](../../configs/baseline.json); card, threat, adversary-card,
 megaproject and AI-board numbers are content in [`content/`](../../content/).

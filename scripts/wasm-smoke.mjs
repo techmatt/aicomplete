@@ -41,7 +41,7 @@ console.log(`view ${viewOk ? 'ok' : 'BAD'}, record ${recordOk ? 'ok' : 'BAD'} ($
 
 // Must equal GOLDEN_FINGERPRINT in crates/aic-core/src/tests/mod.rs (same config,
 // seed and policy), proving native and wasm builds play the same game.
-const GOLDEN = '363e2918aa703988';
+const GOLDEN = '6e0be0c83b0a67aa';
 // Must equal GOLDEN_CONTENT_HASH there: this game may never pay for a repriced card.
 const GOLDEN_CONTENT = '5a3a822e8236785d';
 // 148: the state's play less its measures (`stats`), computed in the wasm build.

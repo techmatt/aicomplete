@@ -15,7 +15,7 @@ conventions: [README.md](README.md).*
 | `board.owned_station_cubes` | 1 | 0..5 | research cubes a player-owned station makes its owner a round |
 | `board.divert_discord` | 1 | 0..5 | Discord per unit of a corrupted city's energy diverted to the adversary |
 | `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy, each round, of an aligned city an agent darkens |
-| `board.liberate_at` | 5 | 1..10 | the Liberate action (an ambassador on the site acts): ambassadors that liberate an adversary city |
+| `board.liberate_at` | 3 | 1..10 | the Liberate action (an ambassador on the site acts): ambassadors that liberate an adversary city |
 | `board.claim_station` | 4 | 1..10 | the Liberate action: ambassadors that liberate an adversary research station (262 cut the Claim action that also paid it; the name stays) |
 | `board.claim_factory` | 3 | 1..10 | the Liberate action: ambassadors that liberate an adversary factory (262 cut the Claim action that also paid it; the name stays) |
 | `board.start_nodes` | 1 | 1..3 | nodes each player starts with: its start hex, then the lowest-numbered free land hexes next to it (the extras off no track) |
@@ -43,7 +43,7 @@ conventions: [README.md](README.md).*
 | `board.botnet_credits` | 13 | 1..50 | standard action: credits for your ready ambassador on a botnet's hex to take it down (the ambassador stays, tipped) |
 | `board.std_off` | 0 | 0..11 | a probe's switch: standard actions not offered, by place in the table from 1 (station, remove, lift, move, ambassador, liberate, insight, botnet, antimatter, troop, factory; 0: none off) |
 | `adversary.difficulty` | 0 | 0..4 | difficulty level 0-4 (each level includes the ones below) |
-| `adversary.stage_cards` | 5, 5, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
+| `adversary.stage_cards` | 4, 4, 2 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
 | `adversary.supply_per_country` | 24 | 0..40 | agents in the supply per country |
 | `adversary.corrupt_at` | 5 | 1..20 | a city's corrupt number: the agents on it that corrupt it (coastal cities too) |
 | `adversary.corrupt_station_at` | 3 | 1..20 | a research station's corrupt number |
@@ -60,7 +60,7 @@ conventions: [README.md](README.md).*
 | `adversary.stage3_added` | 1 | 0..3 | difficulty stage_swap_at+: stage-III cards added (the cap holds, its end gets harder) |
 | `adversary.stage2_added` | 1 | 0..3 | 267: difficulty stage_swap_at+: stage-II cards added back (tier-2 threats sooner, built into the stack) |
 | `adversary.stage_swap_at` | 4 | 0..5 | the difficulty level from which stage1_removed, stage2_added and stage3_added apply |
-| `adversary.stage2_removed` | 2 | 0..3 | difficulty 3+: stage-II cards removed (a shorter round cap) |
+| `adversary.stage2_removed` | 1 | 0..3 | difficulty 3+: stage-II cards removed (a shorter round cap) |
 | `adversary.stage1_added` | 0 | 0..3 | difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step) |
 | `adversary.extra_corrupted` | 0 | 0..3 | difficulty 4: more cities per country start corrupted (none past the cities the map prints corrupted, 2 a country: nothing while `board.start_corrupted` is 2) |
 | `adversary.compute_income` | 0, 3, 5, 10, 15 | 0..30 | the adversary's base compute income a country a round, at difficulty 0-4 (times the countries: per board) |

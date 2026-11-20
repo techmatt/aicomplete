@@ -127,8 +127,8 @@ fn a_creation_line_lands_on_the_lowest_numbered_sites_meeting_its_condition() {
 }
 
 /// 275 (Matt, 2026-11-18): arrival corruption: an arrival that brings a research station to its number (2)
-/// corrupts it and its agents go to the supply; one that brings a city to 4 doesn't (d0: a city's 5), and the next
-/// one does.
+/// corrupts it and its agents go to the supply; one that brings a city one short of its number doesn't (d0: the
+/// baseline's `corrupt_at`, read from the config), and the next one does.
 #[test]
 fn an_arrival_at_a_sites_number_corrupts_it_and_one_short_does_not() {
     // The mechanism at a station's number 2 (282's baseline prints 3).
@@ -136,7 +136,8 @@ fn an_arrival_at_a_sites_number_corrupts_it_and_one_short_does_not() {
     let m = &rules.map;
     let w = rules.world();
     assert_eq!(adversary::corrupt_n(&w, CorruptSite::Station, 0), 2);
-    assert_eq!(adversary::corrupt_n(&w, CorruptSite::City, 0), 5, "d0");
+    let city_n = adversary::corrupt_n(&w, CorruptSite::City, 0);
+    assert_eq!(city_n, w.int("adversary.corrupt_at"), "d0");
     set_var(&mut g, SUPPLY, 40);
     let s = numbered_where(m, 0, |h| kind(m, h) == HexKind::Open)[0];
     put(&mut g, s, STATION, 1);
@@ -146,11 +147,11 @@ fn an_arrival_at_a_sites_number_corrupts_it_and_one_short_does_not() {
     assert_eq!(g.var(SUPPLY), 40 - 1 + 2, "its agents go to the supply");
     assert_eq!(g.stats.counters["adversary.corruptions_arrival"], 1);
     let c = numbered_where(m, 0, |h| kind(m, h) == HexKind::City)[0];
-    put(&mut g, c, ADV_AMBASSADOR, 3);
+    put(&mut g, c, ADV_AMBASSADOR, city_n - 2);
     with_cx(&rules, |cx| adversary::place(&mut g, cx, c, 1)).unwrap();
-    assert_eq!((g.tokens(c, ADV_CUBE), g.tokens(c, ADV_AMBASSADOR)), (0, 4), "a city at 4 holds at d0");
+    assert_eq!((g.tokens(c, ADV_CUBE), g.tokens(c, ADV_AMBASSADOR)), (0, city_n - 1), "one short holds at d0");
     with_cx(&rules, |cx| adversary::place(&mut g, cx, c, 1)).unwrap();
-    assert_eq!((g.tokens(c, ADV_CUBE), g.tokens(c, ADV_AMBASSADOR)), (1, 0), "at 5 it corrupts");
+    assert_eq!((g.tokens(c, ADV_CUBE), g.tokens(c, ADV_AMBASSADOR)), (1, 0), "at its number it corrupts");
 }
 
 /// 275: nothing is checked where nothing arrived: a city or station already holding its number stays neutral
@@ -239,8 +240,9 @@ fn an_escalate_adds_one_to_each_site_of_its_type_holding_an_agent() {
     assert_eq!(held, vec![2, 0, 3], "only the city holding one, not the empty one or the adversary's");
     assert_eq!(g.tokens(f, ADV_AMBASSADOR), 1);
     assert_eq!(g.stats.counters["adversary.escalated"], 1);
-    // An arrival like any other: the 5th agent corrupts a city (d0).
-    put(&mut g, cities0[0], ADV_AMBASSADOR, 4);
+    // An arrival like any other: the agent reaching its number corrupts a city (d0).
+    let city_n = adversary::corrupt_n(&rules.world(), CorruptSite::City, 0);
+    put(&mut g, cities0[0], ADV_AMBASSADOR, city_n - 1);
     with_cx(&rules, |cx| adversary::escalate(&mut g, cx, SiteType::City, Some(0), "test")).unwrap();
     assert_eq!((g.tokens(cities0[0], ADV_CUBE), g.tokens(cities0[0], ADV_AMBASSADOR)), (1, 0));
 }

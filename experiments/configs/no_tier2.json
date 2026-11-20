@@ -14,7 +14,7 @@
         "owned_station_cubes": 1,
         "divert_discord": 1,
         "ambassador_discord": 0,
-        "liberate_at": 5,
+        "liberate_at": 3,
         "claim_station": 4,
         "claim_factory": 3,
         "start_nodes": 1,
@@ -54,9 +54,9 @@
       "params": {
         "difficulty": 0,
         "stage_cards": [
-          5,
-          5,
-          3
+          4,
+          4,
+          2
         ],
         "supply_per_country": 24,
         "corrupt_at": 5,
@@ -81,7 +81,7 @@
         "stage2_added": 1,
         "stage3_added": 1,
         "stage_swap_at": 4,
-        "stage2_removed": 2,
+        "stage2_removed": 1,
         "stage1_added": 0,
         "extra_corrupted": 0,
         "compute_income": [

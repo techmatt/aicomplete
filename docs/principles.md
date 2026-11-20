@@ -53,15 +53,14 @@ income ÷ insight income (about 17-23 credits ÷ 5-7 insight ≈ 3.5); tier-1 ca
 fairly consistently: the `planner` at 60-75% at 2 and 3 countries, where a gate can tell a good price from a bad
 one. Read a band over 96 seeds: at 48 it is ±7, a paired gap ±8-10.
 
-**Ballpark simulation (Matt, 2026-11-03; supersedes the band above until he names a milestone):** two players only,
-rotating the three board pairs, no c3; an engine smoke read, then the judge (the strategist) at 48 seeds a pair on
-fresh seeds; the target is 45-85 a pair, near 60-75 without chasing it; no gate ([experiments.md](experiments.md),
-*The ballpark read*; the scale and when sets pool: [rulings.md](rulings.md), *Simulation and sim players*).
+**Ballpark simulation (Matt, 2026-11-03; supersedes the band above until he names a milestone):** two players,
+the three board pairs; an engine smoke read, then the judge at 48 seeds a pair on fresh seeds; 45-85 a pair, near
+60-75 without chasing it; no gate ([experiments.md](experiments.md), *The ballpark read*; the scale:
+[rulings.md](rulings.md), *Simulation and sim players*).
 
 **Per-level bands** for the judge (Matt, 2026-11-15: raised, soft): [rulings.md](rulings.md), *Difficulty* (`bench/ladder.py`'s default
-`--bands`). A level that can't meet both keeps its 8-10 rounds over its band. d0 resisted every income dial; its band comes from the
-adversary's levers (263): Botnets don't spread at d0 (`adversary.botnet_spread_at`), and a city corrupts at 5 agents
-there (3 from d1).
+`--bands`). A level that can't meet both keeps its round band over its win band. d0's band comes from the adversary's
+levers (263): no botnet spread (`adversary.botnet_spread_at`), a city at 5 agents (3 from d1).
 
 **Cities corrupted and liberated (Matt, 2026-11-03),** a measured target per difficulty: at easy levels a win may
 need no liberation (the adversary corrupts no new city); at d2 it corrupts at least one new city in most
@@ -131,7 +130,8 @@ The rulings behind each: [rulings.md](rulings.md), *Design principles*.
 - **Every action has an expected use**, a band by its role (a hedge rare but not zero, a board's signature power
   most rounds, a win route most games). *Warns:* `usage`, any power, standard action, converter or resource spend
   outside its band, unused or dominant.
-- **Games run 8-10 rounds.** *Warns:* any level's mean outside 8-10.
+- **Spirit Island length** (Matt, 2026-11-20): most games 6-8 rounds, 10-11 exceptional, a spread. *Warns:* a
+  level with half or fewer in 6-8, or 10%+ at 10+.
 - **A difficulty ladder players can track** (Matt, 2026-11-17: Spirit Island's adversary card): each level
   adds setup and about one mid-game rule, triggered on an event players resolve. *Warns:* a level adding over
   about one mid-game change, or over about three active at the top (`ladder`; one a mid-game dial).

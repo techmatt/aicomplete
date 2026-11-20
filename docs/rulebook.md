@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (fourth draft)
 
-*Rules revision 144. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 145. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -57,10 +57,10 @@ Everyone wins or loses together.
 - **You lose** if any of these happens:
   - a Discord tip finds the Discord deck empty. **The Discord deck is a clock**: 7 cards, never reshuffled (§12);
   - any player has no nodes left on the map;
-  - the adversary's event deck runs out: 13 rounds at most at levels 0-2, 11 at levels 3-4 (the **round cap**);
+  - the adversary's event deck runs out: 10 rounds at most at levels 0-2, 9 at levels 3-4 (the **round cap**);
   - the adversary's research marker reaches the seventh slot of its research row (§6).
 
-Games are meant to run about 7-10 rounds.
+Most games run about 6-8 rounds; a long one reaches the round cap.
 
 **You see the adversary's next move.** Next round's event card is face up all round: the sites its new agents will
 land on, and any Strike or Redeploy icon its troops will follow. Last round's card lies face up too: it says which
@@ -595,7 +595,7 @@ Liberate, the way to win, is the exception.
 | Action | Cost | Effect |
 |---|---|---|
 | **Move an ambassador** | that ambassador's action this round | onto a land hex next to it, or onto one of your nodes (from your supply: arrives ready) |
-| **Liberate a site** | the action of your ready ambassador on it, and ambassadors: city 5, station 4, factory 3 (below) | a corrupted site with no agent on it and no troop on or next to it: it becomes neutral |
+| **Liberate a site** | the action of your ready ambassador on it, and ambassadors: city 3, station 4, factory 3 (below) | a corrupted site with no agent on it and no troop on or next to it: it becomes neutral |
 | **Take down a botnet** | the action of your ready ambassador on its hex, and 13 credits | the botnet comes off (your ambassador stays) |
 | **Remove agents** | 3 ambassadors from your supply, used up | target agents: remove up to 3 on or next to it, your choice; nothing is placed |
 | **Remove a troop** | 7 credits | once a round: target troops, remove 1 on it |
@@ -632,10 +632,10 @@ or placed by a card) may act the same round.
   factory **+2**. A card may claim a station or factory afterward; a city stays its country's. A botnet on the site
   stays. The site holds no agents, so the adversary needs its full corrupt number of arrivals to take it back.
 
-> **Example: move in, then act.** A corrupted city 2 hexes from your node makes 1 Discord a round, and you hold 5
+> **Example: move in, then act.** A corrupted city 2 hexes from your node makes 1 Discord a round, and you hold 3
 > ambassadors in your supply. In round 4 one comes from your supply onto your node (it arrives ready) and moves on to
 > the hex between (tipped). In round 5 it moves onto the city (tipped): the city is blocked and makes no Discord. In
-> round 6 it stands ready and acts: Liberate. The price is 5; it pays 1, your supply pays 4. The cube comes off, you
+> round 6 it stands ready and acts: Liberate. The price is 3; it pays 1, your supply pays 2. The cube comes off, you
 > add 5 Unity, and the city pays 1 energy every round to every player with a node on or next to it. Had a troop stood
 > next to the city, you would have removed it first.
 
@@ -928,7 +928,7 @@ Everyone loses at once if:
 
 - a Discord tip finds the Discord deck empty;
 - any player has no nodes on the map;
-- the Card beat finds no card to turn up (the **round cap**: 13 rounds at levels 0-2, 11 at levels 3-4). The round
+- the Card beat finds no card to turn up (the **round cap**: 10 rounds at levels 0-2, 9 at levels 3-4). The round
   after the cap still opens with its Sway step, so a Discord tip can lose the game there first; then, with no card
   left, you lose;
 - the adversary's research marker reaches slot 7 of its row (in its research check, §6).
@@ -1153,11 +1153,11 @@ costs (liberate, cards, actions) and the threats' costs never change. The table 
 <!-- generated: rulebook_difficulty -->
 | Level | Name | Setup (set once; incomes and threshold a country) | Mid-game rule it adds | Rules active |
 |---|---|---|---|---|
-| 0 | **The Militarist** | Compute income 0 a country; Infiltrate 1 a site; Research track: a slot every 3 cubes a country; Deck 5 / 5 / 3 (13 rounds); Sites print their corrupt numbers: city 5, station 3, factory 3 | — | 0 |
+| 0 | **The Militarist** | Compute income 0 a country; Infiltrate 1 a site; Research track: a slot every 3 cubes a country; Deck 4 / 4 / 2 (10 rounds); Sites print their corrupt numbers: city 5, station 3, factory 3 | — | 0 |
 | 1 | **Sleeper Cells**: *Cells wake in every city.* | Compute income 3 a country | When an Agent lands on a city, it falls at 3 agents, not 5. | 1 |
 | 2 | **War Footing**: *Every unanswered strike feeds the war machine.* | Compute income 5 a country; Research track: a slot every 2 cubes a country | When a threat executes uncountered, the adversary also gains 4 compute. | 2 |
-| 3 | **Arms Race**: *The labs build weapons, not cures.* | Compute income 10 a country; Deck 5 / 3 / 3 (11 rounds) | When the research track reaches a Garrison icon, each country takes 2 Troops, not 1. | 3 |
-| 4 | **War Economy**: *The whole economy marches.* | Compute income 15 a country; Infiltrate 2 a city (1 a site from a station, factory or botnet line); Deck 3 / 4 / 4 (11 rounds) | — | 3 |
+| 3 | **Arms Race**: *The labs build weapons, not cures.* | Compute income 10 a country; Deck 4 / 3 / 2 (9 rounds) | When the research track reaches a Garrison icon, each country takes 2 Troops, not 1. | 3 |
+| 4 | **War Economy**: *The whole economy marches.* | Compute income 15 a country; Infiltrate 2 a city (1 a site from a station, factory or botnet line); Deck 2 / 4 / 3 (9 rounds) | — | 3 |
 <!-- /generated -->
 
 The research track's K is a setup step: 3 cubes a country at levels 0-1, 2 from War Footing. **Arms Race**'s rule

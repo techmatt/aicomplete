@@ -364,8 +364,11 @@
     "spent_share_min": 0.75
   },
   "rounds": {
-    "min": 8,
-    "max": 10
+    "note": "299 (Matt, 2026-11-20): Spirit Island length, most games in rounds 6-8 (over band_share_min of a level's games), 10-11 exceptional (under long_share_max at long_at or more)",
+    "band": [6, 8],
+    "band_share_min": 0.5,
+    "long_at": 10,
+    "long_share_max": 0.1
   },
   "tokens": {
     "note": "table work a round: the adversary's ops (games.jsonl adversary_ops; 267: every compute point onto a project counts as one, so compute income moves it point for point) and these player-side counters, per round, against --old",

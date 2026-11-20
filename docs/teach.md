@@ -20,10 +20,10 @@ corrupted city back and you win, in any round. Nothing else counts: not botnets,
 
 - the Discord deck: seven cards, never reshuffled; the eighth time Discord tips, you lose;
 - your nodes: if any player has no node left on the map, everyone loses;
-- the adversary's event deck: one card a round, 13 rounds at most on the easy levels, 11 on the hard ones;
+- the adversary's event deck: one card a round, 10 rounds at most on the easy levels, 9 on the hard ones;
 - the adversary's research row: when its marker reaches the seventh slot, you lose.
 
-Games are meant to run about seven to ten rounds.
+Most games run about six to eight rounds.
 
 ## The map
 
@@ -71,7 +71,7 @@ next to it or to any of your nodes, or it **acts** where it stands. In the actio
 come onto your nodes, free, and arrive standing, ready to go.
 
 Taking a site back is **move in, then act**. Move an ambassador onto a corrupted site. While it stands there, the site
-makes nothing for the adversary. Next round it stands up and acts: **Liberate**. Pay in ambassadors: 5 for a city, 4
+makes nothing for the adversary. Next round it stands up and acts: **Liberate**. Pay in ambassadors: 3 for a city, 4
 for a station, 3 for a factory, the ones on the site first, then your supply. The adversary's cube comes off, the site
 is neutral again, and you gain Unity. You need no reach for this: your ambassador carries it.
 

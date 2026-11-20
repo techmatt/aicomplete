@@ -29,7 +29,7 @@
         "Compute income 0 a country",
         "Infiltrate 1 a site",
         "Research track: a slot every 3 cubes a country",
-        "Deck 5 / 5 / 3 (13 rounds)",
+        "Deck 4 / 4 / 2 (10 rounds)",
         "Sites print their corrupt numbers: city 5, station 3, factory 3"
       ],
       "rule": "",
@@ -71,7 +71,7 @@
       "flavor": "The labs build weapons, not cures.",
       "setup": [
         "Compute income 10 a country",
-        "Deck 5 / 3 / 3 (11 rounds)"
+        "Deck 4 / 3 / 2 (9 rounds)"
       ],
       "rule": "When the research track reaches a Garrison icon, each country takes 2 Troops, not 1.",
       "new_rules": 1,
@@ -86,7 +86,7 @@
       "setup": [
         "Compute income 15 a country",
         "Infiltrate 2 a city (1 a site from a station, factory or botnet line)",
-        "Deck 3 / 4 / 4 (11 rounds)"
+        "Deck 2 / 4 / 3 (9 rounds)"
       ],
       "rule": "",
       "new_rules": 0,

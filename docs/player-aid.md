@@ -89,7 +89,7 @@ Troops don't move or act on their own. They come late: from the research row, so
 
 - **An agent meets one** (it lands, or your ambassador arrives): one for one, both off.
 - **Corruption** removes every ambassador on the hex.
-- **Liberate** (your ready ambassador on the site acts): city 5, station 4, factory 3 (yours on the site pay first, then your supply).
+- **Liberate** (your ready ambassador on the site acts): city 3, station 4, factory 3 (yours on the site pay first, then your supply).
 - **Remove agents:** 3 from your supply.
 - **Protecting** your node or facility on its hex (§13): one, instead of the piece.
 - **Threats** that print ambassadors as a cost: from your supply.

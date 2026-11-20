@@ -179,8 +179,8 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
   players see coming and must plan and invest to meet. A project's or Discord card's line may name the hex its troop
   lands on (a botnet's, a corrupted factory's, a corrupted city the players stand by: r143, item 5's reading of
   "where troops land", held for Matt); the row's Garrison keeps the rule. The march, Muster and the corrupted factory's troop are gone;
-  the Protector's Wall and Vigil are redone for troops that garrison and strike. It overturns "early troops fine"
-  above and makes 2026-11-10's "troops ignore ambassadors" moot (no march to stop; ambassadors still stop no troop).
+  the Protector's Wall and Vigil are redone for troops that garrison and strike. It overturned "early troops fine"
+  above (restored 2026-11-20: early troops are allowed, a challenge to meet, not prevented) and makes 2026-11-10's "troops ignore ambassadors" moot (no march to stop; ambassadors still stop no troop).
 - **Matt, 2026-11-20 (built r144):** Redeploy moves the troops toward the corrupted city nearest a player piece
   (each onto its own country's); Offensive targets the lowest-numbered node hex holding an agent or a troop, as
   Night Raid reads; too early or too hot is priced higher, not given a rule (Martial Law's compute; every way to gain
@@ -203,9 +203,13 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
   gone: botnets, agents and troops never count. Card tiers count the current tip.
 - **The early-win bar (Matt, 2026-11-19):** a round-2 or round-3 win is rare. The levers are the liberation price
   (`board.liberate_at`) and the starting corrupted cities (`board.start_corrupted`). An early d0 win by coordinated
-  players is still fine, just not easy or usual. **Rounds:** 7-10 a game is the rough aim, not exact ("whatever
-  ends up being fun, roughly identical to generations in Terraforming Mars"): a direction for the two levers, not a
-  bar.
+  players is still fine, just not easy or usual. **Game length (Matt, 2026-11-20; replaces 2026-11-19's 7-10):** most
+  games run Spirit Island length, about 6-8 rounds; 10-11 is fine as an exceptional game; a spread is good, not one
+  fixed length (`design_check.json`'s `rounds`: over half in 6-8, under ~10% at 10+). Running out the deck is a fair
+  loss route, as Spirit Island's invader deck: the deck sets the cap at about round 10-11, and cap losses are fine
+  at any level (what the bar guards against is long, stalled games); K and the ladder aren't distorted to avoid
+  them. Early troops are allowed: one landing early is a challenge the players can deal with, not something to
+  prevent; Martial Law stays at 36.
 - **Unity and Discord cards (Matt, 2026-11-09; direction locked):** Spirit Island fear-card shape: board conditions,
   "each player", one verb per card, tiers widening it; Unity prohibitions switch an adversary step off where a
   condition holds. Unity cards help, they don't clear: at most one tier-III card clears cities (2026-11-12).
@@ -229,11 +233,11 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
 - **Design principles (Matt, 2026-11-12; [principles.md](principles.md) *Design warnings*, checked by
   `scripts/design_check.py`):** capstone and tier-2 resources scarce and earned; no power or effect on every board;
   standard actions poor hedges; Unity and Discord follow the story (extreme acts raise Discord); fewer tokens and
-  less tracking; engines over dials; games aim at 7-10 rounds, roughly (Matt, 2026-11-19). Warnings never gate; they go to Matt first.
+  less tracking; engines over dials; games run Spirit Island length, most in 6-8 rounds (Matt, 2026-11-20). Warnings never gate; they go to Matt first.
 
 ## Table time and the card economy
 
-- **Table time (Matt, 2026-11-18):** the ~2 h target is **relaxed: games aim at 7-10 rounds, roughly (Matt, 2026-11-19), and the sim's minutes
+- **Table time (Matt, 2026-11-18):** the ~2 h target is **relaxed: most games run 6-8 rounds (Matt, 2026-11-20), and the sim's minutes
   are assumed wrong until Matt plays it himself and corrects them.** Yardstick: 278's `breakdown.py` at 268's rates
   (15 s a decision) plus the sense that similar strategy and play quality with less bookkeeping, token maintenance,
   math and tracking is better. Complexity slightly (not significantly) above medium Spirit Island. Hard

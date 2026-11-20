@@ -148,11 +148,11 @@ prints its lines in the Card beat's order (`drafts/adversary/check.py` refuses a
 <!-- generated: round_cap -->
 | Difficulty | Stage I cards | Stage II | Stage III | Stage II from round | Round cap |
 |---|---|---|---|---|---|
-| 0 | 5 | 5 | 3 | 6 | 13 |
-| 1 | 5 | 5 | 3 | 6 | 13 |
-| 2 | 5 | 5 | 3 | 6 | 13 |
-| 3 | 5 | 3 | 3 | 6 | 11 |
-| 4 | 3 | 4 | 4 | 4 | 11 |
+| 0 | 4 | 4 | 2 | 5 | 10 |
+| 1 | 4 | 4 | 2 | 5 | 10 |
+| 2 | 4 | 4 | 2 | 5 | 10 |
+| 3 | 4 | 3 | 2 | 5 | 9 |
+| 4 | 2 | 4 | 3 | 3 | 9 |
 <!-- /generated -->
 
 <!-- generated: adversary -->
@@ -184,11 +184,11 @@ a Strike or Redeploy icon) are face up, as is last round's card (what escalates)
 <!-- generated: difficulty -->
 | Level | Name | Setup (incomes and threshold a country) | Mid-game rule (new) | Rules active | Tunable |
 |---|---|---|---|---|---|
-| 0 | **The Militarist** | Compute income 0 a country; Infiltrate 1 a site; Research track: a slot every 3 cubes a country; Deck 5 / 5 / 3 (13 rounds); Sites print their corrupt numbers: city 5, station 3, factory 3 | — | 0 | `compute_income`, `infiltrate_agents`, `research_at`, `corrupt_at` |
+| 0 | **The Militarist** | Compute income 0 a country; Infiltrate 1 a site; Research track: a slot every 3 cubes a country; Deck 4 / 4 / 2 (10 rounds); Sites print their corrupt numbers: city 5, station 3, factory 3 | — | 0 | `compute_income`, `infiltrate_agents`, `research_at`, `corrupt_at` |
 | 1 | **Sleeper Cells** | Compute income 3 a country | When an Agent lands on a city, it falls at 3 agents, not 5. | 1 | `botnet_spread_at`, `corrupt_cut`, `corrupt_cut_at` |
 | 2 | **War Footing** | Compute income 5 a country; Research track: a slot every 2 cubes a country | When a threat executes uncountered, the adversary also gains 4 compute. | 2 | `board_difficulty_at` |
-| 3 | **Arms Race** | Compute income 10 a country; Deck 5 / 3 / 3 (11 rounds) | When the research track reaches a Garrison icon, each country takes 2 Troops, not 1. | 3 | `arms_race_at`, `arms_race_troops`, `stage2_removed`, `stage1_added` |
-| 4 | **War Economy** | Compute income 15 a country; Infiltrate 2 a city (1 a site from a station, factory or botnet line); Deck 3 / 4 / 4 (11 rounds) | — | 3 | `stage1_removed`, `stage2_added`, `stage3_added`, `stage_swap_at` |
+| 3 | **Arms Race** | Compute income 10 a country; Deck 4 / 3 / 2 (9 rounds) | When the research track reaches a Garrison icon, each country takes 2 Troops, not 1. | 3 | `arms_race_at`, `arms_race_troops`, `stage2_removed`, `stage1_added` |
+| 4 | **War Economy** | Compute income 15 a country; Infiltrate 2 a city (1 a site from a station, factory or botnet line); Deck 2 / 4 / 3 (9 rounds) | — | 3 | `stage1_removed`, `stage2_added`, `stage3_added`, `stage_swap_at` |
 <!-- /generated -->
 
 **The ladder (Spirit Island's adversary card).** Levels are named and cumulative. Each adds

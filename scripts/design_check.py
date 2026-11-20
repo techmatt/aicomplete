@@ -773,14 +773,18 @@ def by_level(games):
 
 
 def check_rounds(games, cfg, o):
-    lo, hi = cfg['rounds']['min'], cfg['rounds']['max']
+    r = cfg['rounds']
+    (lo, hi), share_min, long_at, long_max = r['band'], r['band_share_min'], r['long_at'], r['long_share_max']
     for d, gs in by_level(games).items():
         m = sum(g['rounds'] for g in gs) / len(gs)
         won = [g['rounds'] for g in gs if g['won']]
         mw = f', won games {sum(won) / len(won):.1f}' if won else ''
-        line = f'd{d}: {m:.1f} rounds a game{mw} ({len(gs)} games; target {lo}-{hi})'
-        if not lo <= m <= hi:
-            o.w('rounds', f'd{d} {m:.1f}', line)
+        mid = sum(1 for g in gs if lo <= g['rounds'] <= hi) / len(gs)
+        long_ = sum(1 for g in gs if g['rounds'] >= long_at) / len(gs)
+        line = (f'd{d}: {m:.1f} rounds a game{mw}, {mid:.0%} in rounds {lo}-{hi} (over {share_min:.0%}), '
+                f'{long_:.0%} at {long_at}+ (under {long_max:.0%}) ({len(gs)} games)')
+        if mid <= share_min or long_ >= long_max:
+            o.w('rounds', f'd{d} {mid:.0%} in {lo}-{hi}, {long_:.0%} at {long_at}+', line)
         else:
             o.i(line)
 
