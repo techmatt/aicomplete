@@ -37,7 +37,7 @@ def main():
     ap.add_argument('dirs', nargs='+')
     a = ap.parse_args()
     cells = load(a.dirs)
-    print('| cell | games | win % | purge % | completions | mean round | paid P / A / N | stored | converted | Horizon / Cintamani / Onyx / Biomia uses | idle / no city / unpaid | stations claimed | built | adv station compute / research | compute all / botnets / corp | rounds |')
+    print('| cell | games | win % | purge % | completions | mean round | paid P / N | stored | converted | Horizon / Cintamani / Onyx / Biomia uses | idle / no city / unpaid | stations claimed | built | adv station compute / research | compute all / botnets / corp | rounds |')
     print('|---|' + '---|' * 15)
     rounds = collections.Counter()
     for (variant, agent), gs in sorted(cells.items()):
@@ -55,7 +55,7 @@ def main():
         purge = sum(1 for g in gs if g.get('won') and g.get('reason') == 'purge')
         rounds.update(total)
         print(f"| {variant} {agent} | {n} | {100 * wins / n:.1f} | {100 * purge / n:.0f} | {done / n:.2f} | {mean_round:.1f} "
-              f"| {per('board.cubes_paid.player'):.1f} / {per('board.cubes_paid.adversary'):.1f} / {per('board.cubes_paid.neutral'):.1f} "
+              f"| {per('board.cubes_paid.player'):.1f} / {per('board.cubes_paid.neutral'):.1f} "
               f"| {per('board.cubes_stored'):.1f} | {per('board.cubes_converted'):.1f} | {uses} "
               f"| {per('board.converter_idle'):.2f} / {per('board.converter_no_city'):.2f} / {per('board.converter_unpaid'):.2f} "
               # 145: 137 retired `board.stations_owned` and `board.cubes_after` (both read 0): a station

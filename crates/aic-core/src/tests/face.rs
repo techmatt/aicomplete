@@ -261,7 +261,7 @@ fn icons_show_the_city() {
 fn megaproject_words_name_every_op_they_print() {
     for c in &content().map.countries {
         let m = &c.megaproject;
-        let mut lines = vec![crate::content::Megaproject::words(&m.player), crate::content::Megaproject::words(&m.adversary)];
+        let mut lines = vec![crate::content::Megaproject::words(&m.player)];
         lines.extend(m.converter_of(false).into_iter().chain(m.converter_of(true)).map(|v| v.words()));
         for l in lines {
             assert!(!l.contains('{') && !l.contains('}'), "{}: {l}", m.name);

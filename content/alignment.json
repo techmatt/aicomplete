@@ -369,12 +369,12 @@
   "name": "Offensive",
   "side": "discord",
   "tiers": [
-   {"text": "Surge 2: each country, 2 Agents onto its city not yet the adversary's holding the most Agents; then deal a tier-2 threat with its token on the Node hex with the most Agents and Troops.",
-    "effects": [{"op": "surge", "site": "city", "count": 2}, {"op": "threat_at_node", "tier": 2}]},
-   {"text": "Surge 2: each country, 2 Agents onto its city not yet the adversary's holding the most Agents; then deal two tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
-    "effects": [{"op": "surge", "site": "city", "count": 2}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]},
-   {"text": "Each country: this round's Infiltrate lines land again; then Surge 2: each country, 2 Agents onto its city not yet the adversary's holding the most Agents; then deal two tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
-    "effects": [{"op": "adversary_build"}, {"op": "surge", "site": "city", "count": 2}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]}
+   {"text": "Each country: create 2 Agents on its lowest-numbered city not yet the adversary's; then deal a tier-2 threat with its token on the Node hex with the most Agents and Troops.",
+    "effects": [{"op": "create", "count": 2, "at": "city", "if": "clean"}, {"op": "threat_at_node", "tier": 2}]},
+   {"text": "Each country: create 2 Agents on its lowest-numbered city not yet the adversary's; then deal two tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
+    "effects": [{"op": "create", "count": 2, "at": "city", "if": "clean"}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]},
+   {"text": "Each country: this round's Infiltrate lines land again; then, each country: create 2 Agents on its lowest-numbered city not yet the adversary's; then deal two tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
+    "effects": [{"op": "adversary_build"}, {"op": "create", "count": 2, "at": "city", "if": "clean"}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]}
   ]
  },
  {

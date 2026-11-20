@@ -453,8 +453,6 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         }
         Op::DealThreats { count, tier: None, scope: None, each_country: false } => threats::deal_extra(g, cx, *count),
         Op::RemoveBotnets { count } => team::remove_botnets(g, cx, *count)?,
-        Op::AdversaryCubes { count } => team::adversary_cubes(g, cx, *count),
-        Op::BotnetCubes { count } => team::botnet_cubes(g, cx, *count)?,
         // 195: the project deck's board verbs.
         Op::BotnetTroops { count, troops } => team::botnet_troops(g, cx, *count, *troops),
         Op::SpreadBotnets { count } => team::spread_botnets(g, cx, *count),
@@ -508,17 +506,15 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         }
         Op::RemoveWhere { pieces, count, per, where_ } => team::remove_where(g, cx, *pieces, *count, *per, *where_)?,
         Op::Prohibit { step, where_ } => adversary::prohibit(g, cx, *step, *where_),
-        // 275: the adversary's Infiltrate and Surge lines (Rally's place), and its compute income.
+        // 275, 293: the adversary's Infiltrate and Escalate lines, and its compute income.
         Op::Infiltrate { site } => {
             let source = if ctx.label == "standing" { "event" } else { ctx.label };
             adversary::infiltrate(g, cx, *site, ctx.scope, source)?
         }
-        Op::Surge { site, count } => {
+        Op::Escalate { site } => {
             let source = if ctx.label == "standing" { "event" } else { ctx.label };
-            adversary::surge(g, cx, *site, *count, ctx.scope, source)?
+            adversary::escalate(g, cx, *site, ctx.scope, source)?
         }
-        Op::Spill { site, to } => adversary::spill(g, cx, *site, *to, ctx.scope)?,
-        Op::Grow { site } => adversary::grow(g, cx, *site, ctx.scope)?,
         Op::IncreaseIncome { compute } => adversary::increase_income(g, cx, *compute),
         // 259: research cubes onto the adversary's track (a project's: a country each).
         Op::AdversaryResearch { amount, each_country } => {

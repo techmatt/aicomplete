@@ -139,7 +139,7 @@ pub enum RoundFlag {
     Sabotage,
     /// Sites in the country can't be claimed (027).
     Embargo,
-    /// 275: no Infiltrate, Surge, Spill, Grow, botnet seed, threat anchor or creation line acts there until the end of the next adversary turn (068, 178); troops still land.
+    /// 275, 293: no Infiltrate, Escalate, factory push, threat anchor or creation line acts there until the end of the next adversary turn (068, 178); troops still land.
     Cordon,
 }
 
@@ -188,7 +188,7 @@ impl CreateIf {
     }
 }
 
-/// The site type an Infiltrate, Surge, Spill or Grow line names (151's Rally X; renamed `SiteType` in 281).
+/// The site type an Infiltrate or Escalate line names (151's Rally X; renamed `SiteType` in 281).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum SiteType {
@@ -846,7 +846,7 @@ pub enum Op {
     /// 234: on every hex in your reach, your nodes and the facilities there can't be destroyed this round (238: the
     /// reach when a piece is struck). 247 (241's pick): the country form, printed on no card, is gone.
     Shelter,
-    /// In one country, until the end of the next adversary turn, 275: no Infiltrate, Surge, Spill, Grow, botnet seed, threat anchor or creation line acts there (118; 068:
+    /// In one country, until the end of the next adversary turn, 275, 293: no Infiltrate, Escalate, factory push, threat anchor or creation line acts there (118; 068:
     /// a Security card does an ambassador's job); troops still land. 234: after a card's target, the target's country.
     Cordon,
     /// Play a building from your hand paying no credits; its other costs and
@@ -957,7 +957,7 @@ pub enum Op {
         pieces: Vec<Piece>,
     },
     /// 158: a firewall token on one hex in your reach: no agent
-    /// arrives there (275: Infiltrate, Surge, Spill, Grow's agent, a botnet's seed, threat and Discord placements)
+    /// arrives there (275, 293: Infiltrate, Escalate, a factory's push, threat and Discord placements)
     /// until it comes off at the end of the next adversary turn.
     Firewall,
     /// 158: "with `count` `tag` tags on your cards, also" `then`: resolved when
@@ -1302,27 +1302,10 @@ pub enum Op {
     Infiltrate {
         site: SiteType,
     },
-    /// 275, Surge N: X (a project's or Discord card's line): in each country in scope, `count` agents onto the
-    /// `site` not yet the adversary's holding the most agents (ties: the lowest-numbered).
-    Surge {
-        site: SiteType,
-        count: i64,
-    },
-    /// 275, Spill: X into Y (event cards, from `adversary.spill_at`): in each country, every `site` not yet the
-    /// adversary's holding 2 or more agents moves 1 onto the `to` next to it not yet the adversary's, not firewalled
-    /// and not in a cordoned country, holding the most agents (ties: the lower country, then number; none: it stays). The move is an arrival: a player ambassador cancels it, and the site is
-    /// checked.
-    Spill {
-        site: SiteType,
-        to: SiteType,
-    },
-    /// 275, Grow: X (the adversary's growth; it replaced city growth and its chips): in each country, the `site`
-    /// holding the most agents (ties: the lowest-numbered) with a free hex next to it, not in a cordoned country, and
-    /// fewer than `adversary.grow_cap` facilities next to it, builds a neutral facility there: the type it has fewer
-    /// of next to it (ties: a factory; no free hex for it: the other type), on the first free hex for it (the lower
-    /// country, then number); a site holding agents, or the adversary's, builds it with 1
-    /// agent on it.
-    Grow {
+    /// 293 (Matt, 2026-11-19), Escalate: X (a project's or Discord card's line; the event card's own escalate
+    /// is a rule, read off last round's card): in each country in scope, each `site` not yet the adversary's that
+    /// holds an agent takes 1 more, in hex order. It picks nothing: Surge's and Spill's "most agents" went.
+    Escalate {
         site: SiteType,
     },
     /// 151: the adversary's compute income rises for the rest of the game: `compute` more a round (a country).
@@ -1330,9 +1313,8 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "is_zero")]
         compute: i64,
     },
-    /// 259 (Matt: every adversary gets a research rule): `amount` cubes onto the adversary's research track; a
-    /// project's (`each_country`) puts `amount` a country. The track fires the board's research rule in the compute
-    /// step ([`crate::content::AdversaryBoard::research`]).
+    /// 259, 293: `amount` cubes onto the adversary's research track; a project's (`each_country`) puts `amount` a
+    /// country. Every K cubes advance the board's research row a slot ([`crate::content::AdversaryBoard::research`]).
     AdversaryResearch {
         amount: i64,
         #[serde(default, skip_serializing_if = "is_false")]
@@ -1340,17 +1322,6 @@ pub enum Op {
     },
     /// Remove `count` botnets anywhere on the board, one at a time (players choose).
     RemoveBotnets {
-        count: i64,
-    },
-    /// 185 (Matt's ruling #3): `count` adversary research cubes onto each open megaproject. They fill it like
-    /// any cube and each pays the card's adversary payout at completion (195: Backdoor Research).
-    AdversaryCubes {
-        count: i64,
-    },
-    /// 185 (Matt's ruling #3): up to `count` botnets, one at a time (players choose which), each come off and
-    /// become an adversary research cube on its country's open megaproject; a botnet in a country whose
-    /// megaproject is complete can't. Printed on no card yet.
-    BotnetCubes {
         count: i64,
     },
     /// 195 (a project's): in each country, up to `count` of its botnets, the lowest-numbered first, each come off and
@@ -1437,7 +1408,7 @@ pub enum Op {
     },
     /// 167, a prohibition (158's firewall generalized): in the next adversary turn, `step` doesn't act on a
     /// hex where `where` holds when the step runs. A blocked Infiltrate agent or Muster troop stays in the supply;
-    /// 275: under a Corrupt prohibition a site doesn't corrupt or flip on an arrival (a Spill still moves onto it).
+    /// 275: under a Corrupt prohibition a site doesn't corrupt or flip on an arrival (agents still land on it).
     Prohibit {
         step: Step,
         #[serde(rename = "where")]
@@ -1672,15 +1643,11 @@ impl Op {
             | Op::Pushback { .. }
             | Op::DealThreats { .. }
             | Op::Create { .. }
-            | Op::Spill { .. }
-            | Op::Grow { .. }
             | Op::Infiltrate { .. }
-            | Op::Surge { .. }
+            | Op::Escalate { .. }
             | Op::IncreaseIncome { .. }
             | Op::AdversaryResearch { .. }
             | Op::RemoveBotnets { .. }
-            | Op::AdversaryCubes { .. }
-            | Op::BotnetCubes { .. }
             | Op::BotnetTroops { .. }
             | Op::SpreadBotnets { .. }
             | Op::TakeSite { .. }
@@ -1783,9 +1750,8 @@ impl Op {
                 }
             }
             Op::Infiltrate { .. }
-            | Op::Surge { .. }
+            | Op::Escalate { .. }
             | Op::IncreaseIncome { .. }
-            | Op::AdversaryCubes { .. }
             | Op::SpreadBotnets { .. }
             | Op::AgentsOnNodes { .. }
             | Op::RecallAmbassadors
@@ -1796,8 +1762,6 @@ impl Op {
             | Op::Fallout { .. }
             | Op::AdversaryFactory { .. }
             | Op::FactoryTroops { .. }
-            | Op::Spill { .. }
-            | Op::Grow { .. }
             | Op::AdversaryBuild
             | Op::Requisition { .. }
             | Op::LoseTokens { .. }
@@ -1856,9 +1820,8 @@ impl Op {
             | Op::StandingTroopsBonus { .. }
             | Op::ThreatCompute { .. }
             | Op::Infiltrate { .. }
-            | Op::Surge { .. }
+            | Op::Escalate { .. }
             | Op::IncreaseIncome { .. } => &[Team],
-            Op::AdversaryCubes { .. } | Op::BotnetCubes { .. } => &[Threat, Team],
             // 259: an uncountered threat's, an event's or a project's research line.
             Op::AdversaryResearch { .. } => &[Threat, Team],
             // 227: Fallout from all four adversity sources (threats, Discord cards, adversary events, projects).
@@ -1875,8 +1838,6 @@ impl Op {
             | Op::Clock { .. } => &[Team],
             Op::ComputeEvery { .. } => &[Threat, Team],
             Op::Create { .. } => &[Threat, Team],
-            // 275: an event card's last lines (with its other twists), a project's or Discord card's.
-            Op::Spill { .. } | Op::Grow { .. } => &[Team, Twist],
             Op::CreateSite { .. } => &[Player, Threat, Team],
             Op::Income { .. }
             | Op::IncomePerTag { .. }

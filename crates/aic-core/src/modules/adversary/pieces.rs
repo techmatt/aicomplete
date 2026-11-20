@@ -8,18 +8,14 @@ pub fn place(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) -> Res {
     place_as(g, cx, h, n, false, None)
 }
 
-/// 285: [`place`] with [`place_line`]'s note (a botnet's seed).
+/// 285: [`place`] with [`place_line`]'s note (a factory's own agent, a creation line).
 pub fn place_noted(g: &mut GameState, cx: &mut Cx, h: usize, n: i64, what: &dyn Fn() -> String) -> Res {
     place_as(g, cx, h, n, false, Some(what))
 }
 
-/// r133 (280): [`place`] onto a site an Infiltrate, Surge or Grow line names: its arrival check is made as the
-/// agents go on, in the same read of the site (the rule is the same; only the table's count of checks differs).
-pub fn place_named(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) -> Res {
-    place_as(g, cx, h, n, true, None)
-}
-
-/// 285: [`place_named`] with a note naming the line (`what()`, "Infiltrate (cities)", built only for a reader of
+/// r133 (280), 285: [`place`] onto a site an Infiltrate or Escalate line names: its arrival check is made as the
+/// agents go on, in the same read of the site (the rule is the same; only the table's count of checks differs),
+/// with a note naming the line (`what()`, "Infiltrate (cities)", built only for a reader of
 /// events) and what landed, written after
 /// the arrivals and before the arrival check's own note, so the turn's log says where each line's agents went.
 pub fn place_line(g: &mut GameState, cx: &mut Cx, h: usize, n: i64, what: &dyn Fn() -> String) -> Res {
@@ -41,7 +37,7 @@ fn place_as(g: &mut GameState, cx: &mut Cx, h: usize, n: i64, named: bool, what:
         }
         return Ok(());
     }
-    // 285: a cordon (178) stops every agent landing in its country, whatever line sends it (a neighbor's seed, Night
+    // 285: a cordon (178) stops every agent landing in its country, whatever line sends it (a factory's push, Night
     // Raid, a fallback); they stay in the supply. The lines that read a whole country skip it before this.
     if super::plan::cordoned(&w, g, h) {
         cx.tally(g, "adversary.cordoned", n.max(0));

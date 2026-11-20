@@ -35,11 +35,10 @@ pub(super) struct Level {
 /// The engine dials that change play mid-game, and the level each starts at: each must sit at a level
 /// whose content names a rule, so no mid-game change goes unprinted. 270 (Matt, amendment 12344):
 /// `botnet_spread_at` is not one: each "Botnets spread" card prints its "(level N+)" (checked below).
-const MID_GAME_DIALS: [&str; 4] = [
+const MID_GAME_DIALS: [&str; 3] = [
     "adversary.corrupt_cut_at",
     "adversary.city_cut_at",
     "adversary.board_difficulty_at",
-    "adversary.research_strong_at",
 ];
 
 fn entry(l: &[i64], level: i64) -> i64 {
@@ -64,7 +63,10 @@ fn setup_items(r: &Rules, level: i64) -> Vec<(&'static str, String)> {
         // 285: both are a country's (the engine multiplies by the countries); the reference card printed them bare.
         ("compute", format!("Compute income {} a country", entry(&list(r, "adversary.compute_income"), level))),
         ("agents", infiltrate_text(entry(&list(r, "adversary.infiltrate_agents"), level), int(r, "adversary.infiltrate_facility_cap"))),
-        ("research", format!("Research threshold {} a country", entry(&list(r, "adversary.research_at"), level))),
+        ("research", match entry(&list(r, "adversary.research_at"), level) {
+            1 => "Research track: a slot each cube a country".to_string(),
+            k => format!("Research track: a slot every {k} cubes a country"),
+        }),
         ("deck", format!("Deck {} / {} / {} ({} rounds)", n[0], n[1], n[2], n.iter().sum::<usize>())),
         // Printed on the map's sites: the same at every level (a level's rule may say a city falls sooner).
         ("sites", format!(
@@ -135,7 +137,7 @@ pub(super) fn ladder(r: &Rules) -> Vec<Level> {
             fail(&format!("docs: {name}: a Botnets spread prints \"{mark}\" exactly when `botnet_spread_at` is above 0"));
         }
     }
-    // The other numbers a level's rule prints are content's: War Footing's compute and Arms Race's Muster.
+    // The other numbers a level's rule prints are content's: War Footing's compute.
     let says = |at: &str, words: String| {
         let at = int(r, at);
         if let Some(v) = board.levels.iter().find(|v| v.level == at) {
@@ -154,12 +156,6 @@ pub(super) fn ladder(r: &Rules) -> Vec<Level> {
         if v.rule != board.difficulty.text {
             fail(&format!("docs: level {at} ({})'s rule and the board's difficulty line differ: make them one text", v.name));
         }
-    }
-    let base_muster = board.research.as_ref().and_then(|x| x.effects.first());
-    if let (Some(Op::Troops { count, .. }), Some(Op::Troops { count: base, .. })) =
-        (board.research.as_ref().and_then(|x| x.strong.effects.first()), base_muster)
-    {
-        says("adversary.research_strong_at", format!("musters {count}, not {base}"));
     }
     let mut out: Vec<Level> = Vec::new();
     let mut active = 0;
@@ -203,8 +199,8 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
     let keys: [&[&str]; 5] = [
         &["adversary.compute_income", "adversary.infiltrate_agents", "adversary.research_at", "adversary.corrupt_at"],
         &["adversary.botnet_spread_at", "adversary.corrupt_cut", "adversary.corrupt_cut_at"],
-        &["adversary.board_difficulty_at", "adversary.spill_at"],
-        &["adversary.stage2_removed", "adversary.stage1_added", "adversary.research_strong_at"],
+        &["adversary.board_difficulty_at"],
+        &["adversary.stage2_removed", "adversary.stage1_added"],
         &["adversary.stage1_removed", "adversary.stage2_added", "adversary.stage3_added", "adversary.stage_swap_at"],
     ];
     let rows = ladder(r)
@@ -281,7 +277,7 @@ pub(super) fn adversary_json(r: &Rules) -> String {
         name: &b.name,
         // 292: the threat decks' setup line (the board's lean) leads the board's rules.
         rules: b.threat_deck.iter().map(|d| (d.name.as_str(), d.text.as_str())).chain(b.rules.iter().map(|x| (x.name.as_str(), x.text.as_str()))).collect(),
-        // The stronger effect is a level's named rule (Arms Race), so the card prints it there.
+        // 293: the research row's name and text (its slots: docs/adversary-cards.md).
         research: b.research.as_ref().map(|x| (x.name.as_str(), x.text.as_str())),
         escalation: escalation(),
         levels: ladder(r),

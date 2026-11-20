@@ -28,7 +28,7 @@ mod view;
 pub use ambassadors::*;
 pub use destroy::*;
 pub use node::*;
-pub use production::{city_income, production_income, LEFT};
+pub use production::{city_income, corrupted_cities_discord, production_income, LEFT};
 use production::*;
 pub use standard::*;
 pub use troops::*;
@@ -69,7 +69,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("start_ambassadors", 0, 10, "player ambassadors each player starts with"),
             ParamSpec::list("corp_energy", 0, 10, "energy cubes each city of country i makes a round (a megacorp parameter; the list repeats)"),
             ParamSpec::int("aligned_bonus", 0, 10, "extra energy an aligned city gives its owner"),
-            ParamSpec::int("station_cubes", 0, 5, "research cubes a neutral station makes a round (an adversary one: adversary cubes, then research-track cubes; compute with adversary.research_at 0)"),
+            ParamSpec::int("station_cubes", 0, 5, "research cubes a neutral station makes a round (an adversary one: that many onto the adversary's research track, in its Income beat; compute with adversary.research_at 0)"),
             ParamSpec::int("owned_station_cubes", 0, 5, "research cubes a player-owned station makes its owner a round"),
             ParamSpec::int("divert_discord", 0, 5, "Discord per unit of a corrupted city's energy diverted to the adversary"),
             ParamSpec::int("ambassador_discord", 0, 5, "Discord per unit of energy, each round, of an aligned city an agent darkens"),
@@ -105,7 +105,7 @@ pub static DEF: ModuleDef = ModuleDef {
         phases: &[
             PhaseSpec::decision("act", "standard actions and projects: station, remove, lift Fallout, dispatch (from the round's Dispatches), ambassador, liberate, sell, take down a botnet, remove a troop; completed megaprojects' converters"),
             PhaseSpec::auto("march", "each adversary stack takes its steps: while a target is on or next to its hex, one troop strikes it (used up); else the stack moves one hex toward the nearest (troops ignore ambassadors)"),
-            PhaseSpec::auto("produce", "the income step (economy's upkeep follows at once): factories make chips or adversary troops, cities energy for every player with a node on or next to them (an agent on one stays and darkens it), research stations cubes (an opposing piece blocks one; an adversary station's output waits for the compute step); full megaprojects complete"),
+            PhaseSpec::auto("produce", "the income step (economy's upkeep follows at once): players' factories make chips, cities energy for every player with a node on or next to them (an agent on one stays and darkens it), players' and neutral research stations cubes (an opposing piece blocks one); full megaprojects complete. The adversary's sites make their outputs in its Income beat"),
             PhaseSpec::auto("cleanup", "count the country flags down"),
         ],
         rng: &[],
@@ -230,13 +230,9 @@ pub fn flagged(g: &GameState, f: RoundFlag, country: usize) -> bool {
     g.var(&flag(f, country)) > 0
 }
 
-/// Cubes on country `c`'s megaproject: `None` for the adversary's.
-pub fn project_key(c: usize, owner: Option<usize>) -> KeyBuf {
-    let k = KeyBuf::new(PROJECT).num(c).text(".");
-    match owner {
-        Some(s) => k.num(s),
-        None => k.text("adversary"),
-    }
+/// Seat `s`'s cubes on country `c`'s megaproject (293: it takes neutral and player cubes only).
+pub fn project_key(c: usize, s: usize) -> KeyBuf {
+    KeyBuf::new(PROJECT).num(c).text(".").num(s)
 }
 
 /// Neutral cubes on country `c`'s megaproject (074).

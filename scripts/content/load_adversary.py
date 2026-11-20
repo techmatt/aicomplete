@@ -71,6 +71,9 @@ def board(b):
             "rules": [{"name": r["name"], "text": r["text"], "effects": ops(r["effects"])} for r in b["rules"]],
             "difficulty": {"text": b["difficulty"]["text"], "effects": ops(b["difficulty"]["effects"])},
             **({"research": research(b["research"])} if "research" in b else {}),
+            # 293: the icon vocabulary the research row's slots name.
+            "icons": [{"id": i["id"], "name": i["name"], "glyph": i["glyph"], "text": i["text"],
+                       "effects": ops(i["effects"])} for i in b.get("icons", [])],
             # 267: the ladder's named levels (each adds a setup change and at most one triggered rule); their
             # numbers are the config's (`adversary.*`), set at setup.
             "levels": [{"level": v["level"], "name": v["name"], "flavor": v["flavor"], "rule": v["rule"]}
@@ -79,9 +82,8 @@ def board(b):
 
 
 def research(r):
-    """259: the board's research rule: its effect at the threshold and, from research_strong_at, a stronger one."""
-    return {"name": r["name"], "text": r["text"], "effects": ops(r["effects"]),
-            "strong": {"text": r["strong"]["text"], "effects": ops(r["strong"]["effects"])}}
+    """293: the board's research row: six slots, each naming an icon of the board's vocabulary."""
+    return {"name": r["name"], "text": r["text"], "slots": list(r["slots"])}
 
 
 SACRIFICE = {"security": "Security", "diplomacy": "Diplomacy", "cyber": "Cyber", "industry": "Industry",
@@ -121,7 +123,13 @@ def cards_page(threats, projects, adversary):
         out.append(f"- **{r['name']}.** {r['text']}")
     if "research" in b:
         r = b["research"]
-        out.append(f"- **{r['name']}** (research). {r['text']} Stronger: {r['strong']['text']}")
+        icons = {i["id"]: i for i in b.get("icons", [])}
+        out.append(f"- **{r['name']}** (the research row). {r['text']}")
+        for k, slot in enumerate(r["slots"], 1):
+            out.append(f"  - Slot {k}, **{icons[slot]['name']}**: {icons[slot]['text']}")
+        spare = [i["name"] for i in b.get("icons", []) if i["id"] not in r["slots"]]
+        if spare:
+            out.append(f"  - Icons in the vocabulary this row doesn't use: {', '.join(spare)}.")
     for v in b.get("levels", []):
         rule = f" {v['rule']}" if v["rule"] else " Setup only."
         out.append(f"- **Level {v['level']}: {v['name']}.** *{v['flavor']}*{rule}")

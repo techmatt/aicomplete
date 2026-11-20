@@ -26,21 +26,15 @@
    "cyber"
   ],
   "cost": 14,
-  "text": "4 adversary cubes onto each open megaproject. Each country: 2 cubes onto the adversary's research track.",
+  "text": "Each country: 1 cube onto the adversary's research track.",
   "effects": [
    {
-    "op": "adversary_cubes",
-    "count": 4
-   },
-   {
     "op": "adversary_research",
-    "amount": 2,
+    "amount": 1,
     "each_country": true
    }
   ],
   "harms": [
-   "adversary cubes on megaprojects",
-   "Discord sway",
    "adversary research advanced"
   ]
  },
@@ -257,16 +251,17 @@
    "cyber"
   ],
   "cost": 21,
-  "text": "Surge 2: each country, 2 Agents onto its research station not yet the adversary's holding the most Agents. Each country: 2 cubes onto the adversary's research track.",
+  "text": "Each country: create 2 Agents on its lowest-numbered research station not yet the adversary's. Each country: 1 cube onto the adversary's research track.",
   "effects": [
    {
-    "op": "surge",
-    "site": "station",
-    "count": 2
+    "op": "create",
+    "count": 2,
+    "at": "station",
+    "if": "clean"
    },
    {
     "op": "adversary_research",
-    "amount": 2,
+    "amount": 1,
     "each_country": true
    }
   ],
@@ -301,12 +296,13 @@
    "security"
   ],
   "cost": 14,
-  "text": "Surge 3: each country, 3 Agents onto its coastal city not yet the adversary's holding the most Agents.",
+  "text": "Each country: create 3 Agents on its lowest-numbered coastal city not yet the adversary's.",
   "effects": [
    {
-    "op": "surge",
-    "site": "coastal_city",
-    "count": 3
+    "op": "create",
+    "count": 3,
+    "at": "coastal_city",
+    "if": "clean"
    }
   ],
   "harms": [
@@ -320,12 +316,13 @@
    "industry"
   ],
   "cost": 13,
-  "text": "Surge 2: each country, 2 Agents onto its factory not yet the adversary's holding the most Agents.",
+  "text": "Each country: create 2 Agents on its lowest-numbered factory not yet the adversary's.",
   "effects": [
    {
-    "op": "surge",
-    "site": "factory",
-    "count": 2
+    "op": "create",
+    "count": 2,
+    "at": "factory",
+    "if": "clean"
    }
   ],
   "harms": [
@@ -383,12 +380,13 @@
    "diplomacy"
   ],
   "cost": 21,
-  "text": "Surge 3: each country, 3 Agents onto its city not yet the adversary's holding the most Agents. Sway 5 toward Discord.",
+  "text": "Each country: create 3 Agents on its lowest-numbered city not yet the adversary's. Sway 5 toward Discord.",
   "effects": [
    {
-    "op": "surge",
-    "site": "city",
-    "count": 3
+    "op": "create",
+    "count": 3,
+    "at": "city",
+    "if": "clean"
    },
    {
     "op": "sway",
@@ -435,12 +433,13 @@
    "industry"
   ],
   "cost": 15,
-  "text": "Surge 3: each country, 3 Agents onto its factory not yet the adversary's holding the most Agents.",
+  "text": "Each country: create 3 Agents on its lowest-numbered factory not yet the adversary's.",
   "effects": [
    {
-    "op": "surge",
-    "site": "factory",
-    "count": 3
+    "op": "create",
+    "count": 3,
+    "at": "factory",
+    "if": "clean"
    }
   ],
   "harms": [
@@ -455,7 +454,7 @@
    "cyber"
   ],
   "cost": 24,
-  "text": "Each country: its neutral research station with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track.",
+  "text": "Each country: its neutral research station with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 1 cube goes onto the adversary's research track.",
   "effects": [
    {
     "op": "take_site",
@@ -467,7 +466,7 @@
    },
    {
     "op": "adversary_research",
-    "amount": 2,
+    "amount": 1,
     "each_country": true
    }
   ],
@@ -509,12 +508,13 @@
    "diplomacy"
   ],
   "cost": 24,
-  "text": "Surge 5: each country, 5 Agents onto its city not yet the adversary's holding the most Agents.",
+  "text": "Each country: create 5 Agents on its lowest-numbered city not yet the adversary's.",
   "effects": [
    {
-    "op": "surge",
-    "site": "city",
-    "count": 5
+    "op": "create",
+    "count": 5,
+    "at": "city",
+    "if": "clean"
    }
   ],
   "harms": [
@@ -554,12 +554,13 @@
    "diplomacy"
   ],
   "cost": 22,
-  "text": "Surge 4: each country, 4 Agents onto its city not yet the adversary's holding the most Agents. Then each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
+  "text": "Each country: create 4 Agents on its lowest-numbered city not yet the adversary's. Then each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
   "effects": [
    {
-    "op": "surge",
-    "site": "city",
-    "count": 4
+    "op": "create",
+    "count": 4,
+    "at": "city",
+    "if": "clean"
    },
    {
     "op": "fallout",
@@ -604,15 +605,16 @@
    "universal"
   ],
   "cost": 24,
-  "text": "Each country: this round's Infiltrate lines land again. Surge 2: each country, 2 Agents onto its factory not yet the adversary's holding the most Agents.",
+  "text": "Each country: this round's Infiltrate lines land again. Each country: create 2 Agents on its lowest-numbered factory not yet the adversary's.",
   "effects": [
    {
     "op": "adversary_build"
    },
    {
-    "op": "surge",
-    "site": "factory",
-    "count": 2
+    "op": "create",
+    "count": 2,
+    "at": "factory",
+    "if": "clean"
    }
   ],
   "harms": [
@@ -627,12 +629,13 @@
    "security"
   ],
   "cost": 24,
-  "text": "Surge 3: each country, 3 Agents onto its research station not yet the adversary's holding the most Agents.",
+  "text": "Each country: create 3 Agents on its lowest-numbered research station not yet the adversary's.",
   "effects": [
    {
-    "op": "surge",
-    "site": "station",
-    "count": 3
+    "op": "create",
+    "count": 3,
+    "at": "station",
+    "if": "clean"
    }
   ],
   "harms": [

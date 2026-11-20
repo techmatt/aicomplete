@@ -202,10 +202,37 @@ function drawTokens(layer: SVGGElement, h: HexView, x: number, y: number, paint:
 /**
  * Each adversary troop's next target (019): a dashed arrow from the troop to the
  * piece it is heading for, solid red when it strikes in the next adversary phase.
+ * 293: and each industrial zone's printed arrow to its city (kind `zone`), and a "+1" badge on each site the
+ * next Card beat escalates (kind `escalate`).
  */
 function arrowLayer(view: View, pts: number[][]): SVGElement {
   const layer = el('g', { class: 'arrows' });
   for (const a of view.arrows) {
+    if (a.kind === 'escalate') {
+      // 293: a site the adversary's next Card beat escalates: a small "+1" badge at the hex's upper right (a
+      // troop's own-hex target is the ring below).
+      const [bx, by] = [pts[a.to][0] + 0.58, pts[a.to][1] - 0.42];
+      const g = el('g', { class: 'arrow escalate', 'data-from': a.from, 'data-to': a.to });
+      g.append(el('circle', { cx: f(bx), cy: f(by), r: 0.17 }), el('text', { x: f(bx), y: f(by + 0.07) }, `+${a.count}`), el('title', {}, contentIds(a.doc)));
+      layer.append(g);
+      continue;
+    }
+    if (a.kind === 'zone') {
+      // 293: an industrial zone's printed arrow to its city: a short quiet arrow across their shared edge, drawn
+      // strong ("live") while a corrupted factory there holds an agent to push along it.
+      const [zx, zy] = pts[a.from];
+      const [cx, cy] = pts[a.to];
+      const d = Math.hypot(cx - zx, cy - zy) || 1;
+      const [ux, uy] = [(cx - zx) / d, (cy - zy) / d];
+      const [px, py] = [-uy, ux];
+      const [ex, ey] = [zx + ux * 1.02, zy + uy * 1.02];
+      const g = el('g', { class: `arrow zone${a.count > 0 || a.rounds === 1 ? ' live' : ''}`, 'data-from': a.from, 'data-to': a.to, 'data-count': a.count });
+      g.append(el('line', { x1: f(zx + ux * 0.6), y1: f(zy + uy * 0.6), x2: f(ex), y2: f(ey) }));
+      g.append(el('path', { d: `M${f(ex + ux * 0.16)},${f(ey + uy * 0.16)} L${f(ex + px * 0.09)},${f(ey + py * 0.09)} L${f(ex - px * 0.09)},${f(ey - py * 0.09)} Z` }));
+      g.append(el('title', {}, contentIds(a.doc)));
+      layer.append(g);
+      continue;
+    }
     // From the troop (low on its hex, where the adversary's row sits) toward the
     // target's center, stopping short of it; the head follows the drawn shaft.
     const [ax, ay] = [pts[a.from][0], pts[a.from][1] + 0.3];

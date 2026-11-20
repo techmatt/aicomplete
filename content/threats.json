@@ -515,7 +515,7 @@
   "locations": [
    "station"
   ],
-  "text": "This country's player discards 2 cards. 2 cubes go onto the adversary's research track.",
+  "text": "This country's player discards 2 cards. 1 cube goes onto the adversary's research track.",
   "counters": [
    [
     {
@@ -537,7 +537,7 @@
    },
    {
     "op": "adversary_research",
-    "amount": 2
+    "amount": 1
    }
   ],
   "harms": [
@@ -1661,7 +1661,7 @@
    "station",
    "factory"
   ],
-  "text": "This country's player pays 5 research cubes or discards 3 cards. 2 cubes go onto the adversary's research track.",
+  "text": "This country's player pays 5 research cubes or discards 3 cards. 1 cube goes onto the adversary's research track.",
   "counters": [
    [
     {
@@ -1685,7 +1685,7 @@
    },
    {
     "op": "adversary_research",
-    "amount": 2
+    "amount": 1
    }
   ],
   "harms": [
@@ -1703,7 +1703,7 @@
   "locations": [
    "station"
   ],
-  "text": "4 cubes go onto the adversary's research track. This country's player turns 1 building face down until the end of next round.",
+  "text": "2 cubes go onto the adversary's research track. This country's player turns 1 building face down until the end of next round.",
   "counters": [
    [
     {
@@ -1721,7 +1721,7 @@
   "effects": [
    {
     "op": "adversary_research",
-    "amount": 4
+    "amount": 2
    },
    {
     "op": "disable_building",

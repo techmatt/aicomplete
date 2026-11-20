@@ -65,7 +65,7 @@ absurd") is the one standard action that removes Fallout; a corrupted site's is 
 | Make antimatter | `antimatter_cubes` 5 research cubes | gain 1 antimatter and `antimatter_energy` 2 energy, as often as you have cubes (a desperate trade: the engines make it cheaper) |
 <!-- /generated -->
 
-Build a factory (`factory_build_chips`, 0: off) is a screened candidate; the event cards' Grow lines build neutral factories, which cards claim. The Claim action is cut (262, Matt, 2026-11-17): cards claim.
+Build a factory (`factory_build_chips`, 0: off) is a screened candidate; site-opening lines (Factory Drive, the research row's New factory) open neutral factories, which cards claim. The Claim action is cut (262, Matt, 2026-11-17): cards claim.
 
 ## The round
 
@@ -73,15 +73,15 @@ Build a factory (`factory_build_chips`, 0: off) is a screened candidate; the eve
 |---|---|---|
 | | *(round start)* | Insight is set; abilities and powers refresh |
 | 1 | `alignment.sway` | Discord: the adversary board's printed drip (the Militarist's is 0), and `blight_discord` 1 per Fallout token |
-| 2 | `adversary.event` | The adversary's Card beat ([adversary.md](adversary.md)): the face-up event card becomes this round's |
+| 2 | `adversary.event` | The adversary's Card beat ([adversary.md](adversary.md)): the face-up event card becomes this round's; the last one moves to the last-round space |
 | 3 | `threats.deal` | Its threats: the next card of the tier's deck for each country, its tokens on the board ([threats.md](threats.md)) |
-| 4 | `adversary.build` | The card's Infiltrate X, Muster, other lines, Spill and Grow; each arrival checks the hex it lands on (each placement puts all its agents for a hex on, then checks it once; a Spill moves one agent at a time, each move checked as it lands) |
+| 4 | `adversary.build` | Escalate (last round's site type), the board's one rule (Commandeered Plants), then the card's Infiltrate X, Muster and other lines; each arrival checks the hex it lands on (each placement puts all its agents for a hex on, then checks it once) |
 | 5 | `board.march` | The March beat ([troops.md](troops.md)): `troop_steps` steps each, move or destroy (past ambassadors) |
-| 6 | `adversary.reveal` | The Income beat: next round's card face up (its Infiltrate and Grow sites shown) |
-| 7 | `adversary.compute` | The compute step: each botnet seeds `botnet_seed` 1 agent next to it and adds its compute (the compute even when a cordon stops the seed or it has nowhere to land); then income and the round's banked compute, all at once onto the leftmost project, which resolves as it fills (once; none is ongoing); then the research check (a full track fires once, [adversary.md](adversary.md)); then every firewall, cordon and prohibition token comes off, ending the adversary turn |
+| 6 | `adversary.reveal` | The Income beat: next round's card face up (its Infiltrate sites shown) |
+| 7 | `adversary.compute` | Outputs, one a corrupted site: a city's Discord, a factory's agent (pushed along its arrow), a station's research cube, a botnet's compute; then the compute step: income, the botnets' and the round's banked compute, all at once onto the leftmost project, which resolves as it fills (once; none is ongoing); then the research check (every K cubes advance the marker a slot, [adversary.md](adversary.md)); then every firewall, cordon and prohibition token comes off, ending the adversary turn |
 | 8–11 | `cards.deal`, `.tier`, `.draft`, `.keep` | Round 1's opening hand, then every round's draft and keeps ([player-cards.md](player-cards.md)) |
 | 12 | `cards.play+threats.counter+board.act+ai.power` | Actions, simultaneous: cards, abilities, AI-board powers (nodes come from them), standard actions, countering threats |
-| 13 | `board.produce` | The income step (one step with 14, in this order): factories make chips (a player's) or a troop (the adversary's); each free, unblocked city's energy to every player with a node on or next to it, corrupted cities' Discord; stations' cubes (an adversary station's research cube, once its megaproject is complete, waits for the compute step); full megaprojects complete. One opposing ambassador or agent blocks a site. The table reads it from the tracks and blocked chips ([troops.md](troops.md)) |
+| 13 | `board.produce` | The income step (one step with 14, in this order): players' factories make chips; each free, unblocked city's energy to every player with a node on or next to it; players' and neutral stations' cubes; full megaprojects complete (the adversary's sites produce in phase 7). One opposing ambassador or agent blocks a site. The table reads it from the tracks and blocked chips ([troops.md](troops.md)) |
 | 14 | `economy.upkeep` | The income step, continued: board and card income; building upkeep |
 | 15 | `threats.execute` | Partial payments refunded; uncountered threats execute (each also lands 1 agent on its anchor, [threats.md](threats.md)) |
 | 16 | `board.cleanup` | Round flags removed; tips and the end checks run after every phase |

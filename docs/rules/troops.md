@@ -5,48 +5,48 @@
 ## Every round: production
 
 **Production runs every round** after the action
-phase, as **one income step** in a printed order: factories' chips and adversary troops,
+phase, as **one income step** in a printed order: factories' chips,
 cities' energy, stations' cubes, full megaprojects, then upkeep ([economy.md](economy.md)). **Production is read from
-the tracks** (r133, a table procedure: what each site makes is unchanged). Each
-player's income tracks show their factories' chips and their cities' energy; the adversary's board its corrupted
-cities' Discord. Until a
-country's megaproject completes, every station there (a player's, neutral or corrupted) puts its cube onto that
+the tracks** (r133, a table procedure). Each
+player's income tracks show their factories' chips and their cities' energy. **The adversary's corrupted sites
+produce in its own Income beat**, one output each ([adversary.md](adversary.md)). Until a
+country's megaproject completes, every player's and neutral station there puts its cube onto that
 megaproject, read off the map; once it completes, a player's stations move to their income tracks (research cubes on
-their board), a neutral one's cube goes nowhere, and a corrupted one's goes to the adversary's board (the compute
-step: research, or compute with `research_at` 0). A marker moves only when a site changes hands (claimed, liberated,
+their board) and a neutral one's cube goes nowhere. A marker moves only when a site changes hands (claimed, liberated,
 corrupted, built, destroyed), a megaproject completes or, for a city's energy, a node on or next to it is placed or
 lost ([economy.md](economy.md)). **A "blocked" chip** goes on a producing site when an opposing
 piece arrives (an agent on a city, a player's or neutral station or a player's factory, a player ambassador on an
 adversary site; a blackout's cities) and comes off when the last one leaves: in production each track
 pays what it shows less what its chipped sites make, once, at its own step (chips with factories, cubes with
-stations, not again at upkeep), and each adversary factory without a chip makes its troop.
+stations, not again at upkeep), and an adversary site under a chip makes no output.
 
 **There is no war** (r139): no fronts, no military bases, no megacorp armies and no War step in the round. Megacorp
 conflict is card content only (Border War, Casus Belli, some Discord cards), each card doing what it prints.
 
 ## Factories
 
-- **Ownership:** an owner cube, as stations and cities have. A facility an event card's Grow line builds is always
+- **Ownership:** an owner cube, as stations and cities have. A facility a site-opening line builds is always
   **neutral** ([adversary.md](adversary.md)).
   A neutral factory is claimed, and an adversary one liberated, as any site is
   ([ambassadors.md](ambassadors.md)). Cards that build a factory (Prefab Plant Kit) build the
   player's own, on the card's target, a free zone in reach.
 - **Output** (each round; the site table in [ambassadors.md](ambassadors.md)): a player's factory makes
-  `factory_chips` (1) chip for its owner; an adversary factory makes 1 adversary troop on its hex (**locked**); a
+  `factory_chips` (1) chip for its owner; an adversary factory makes 1 agent, pushed along its zone's printed
+  arrow onto its city ([adversary.md](adversary.md), [board.md](board.md)), and no troop; a
   neutral factory makes nothing for anyone. One opposing ambassador or agent blocks a
-  factory's output while it stands. Threats build adversary factories (Mass Production, Arsenal; Factory
+  factory's output while it stands (a troop occupying an adversary factory blocks it too). Threats build adversary factories (Mass Production, Arsenal; Factory
   Occupation on an empty zone), corrupt them (Factory Occupation, unless a firewall or Corrupt prohibition guards it)
   and destroy them (Siege, leaving Fallout); projects build or take them (War Plants, Asset Seizure, Plant Seizure,
-  Hostile Takeover, Grand Offensive). New neutral factories and stations come from the event cards' **Grow** lines
-  (one a country, beside the named site holding the most agents: [adversary.md](adversary.md)); cities hold no chips.
+  Hostile Takeover, Grand Offensive). New neutral factories and stations come from site-opening lines
+  (Factory Drive, Shell Labs, the research row's icons: [adversary.md](adversary.md)); cities hold no chips.
 
 ## Adversary troops
 
 **The march (candidate).** There are no player troops. Adversary troops are **few and deadly**: they come from
-adversary-owned factories (each round), the stage-III event cards' Muster 1 (each country's lowest-numbered factory,
-else city; no stage-I or stage-II card musters), the research track's Weapons Program (Muster 2 in each country, 3
-from `research_strong_at` 3; [adversary.md](adversary.md)), threats (Orbital Strike, Total War, Call-Up and others:
-each prints it) and projects, only from adversary factories or botnets (War Plants, Botnet Conscripts). A Muster
+the stage-III event cards' Muster 1 (each country's lowest-numbered factory,
+else city; no stage-I or stage-II card musters), threats (Orbital Strike, Total War, Call-Up and others:
+each prints it) and projects, only from adversary factories or botnets (War Plants, Botnet Conscripts). No
+factory's round output and no research slot makes one ([adversary.md](adversary.md)). A Muster
 lands what it prints at every level (267). **Targets:**
 player-owned research stations and factories, **and nodes** (`troop_node` 0, from the start), never cities
 (corruption is the adversary's way in) or neutral or adversary-owned facilities.
@@ -70,8 +70,8 @@ loss; no troop moves or asks after it). A stack's step:
 facilities; agents meet ambassadors. The owner's own ambassador on a facility is still armor against a strike
 ([ambassadors.md](ambassadors.md)).
 
-**Wall (locked).** **No troop is ever placed on the Protector's node hex** (a Muster's, a
-factory's, a botnet's, a threat's or a project's: it stays in the supply; a threat's
+**Wall (locked).** **No troop is ever placed on the Protector's node hex** (a Muster's,
+a threat's or a project's: it stays in the supply; a threat's
 landing, the players' choice, is offered only open hexes), and none enters it: a march goes around it. **Nor can a
 troop strike into it:** a
 facility on a hex with the Protector's node is no target, so it stands until the node goes.
@@ -87,8 +87,8 @@ troop's next target (the nearest; the arrow is solid when the hit lands in the n
 naming how many; a strike card's "on or next to it" (its target) counts the target itself, and the player picks which
 pieces. Removing a troop sways `alignment.troop` (0).
 
-**For new players:** [rulebook.md](../rulebook.md) §2 (sites) and §6 (the march). Adversary factories make the
-troops: liberate or block one and its troops stop coming.
+**For new players:** [rulebook.md](../rulebook.md) §2 (sites) and §6 (the march). Adversary factories feed
+agents to their cities: liberate or block one and its agents stop coming.
 
 **This is the troops' own movement rule**; Push (Checkpoint Network, the Protector's Patrol) moves troops too
 ([ambassadors.md](ambassadors.md)). **A Discord tip doesn't move troops**, and

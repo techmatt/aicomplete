@@ -89,9 +89,11 @@ fn factory_output(g: &mut GameState, cx: &mut Cx) {
         if g.tokens(h, FACTORY) == 0 {
             continue;
         }
-        // 135 (Factory Occupation): a factory a troop occupies makes nothing.
+        // 135 (Factory Occupation): a factory a troop occupies makes nothing (an adversary's: its Income beat).
         if occupied(g, h) {
-            cx.tally(g, "board.factories_occupied", 1);
+            if !corrupted(g, h) {
+                cx.tally(g, "board.factories_occupied", 1);
+            }
             continue;
         }
         if let Some(s) = cube_owner(g, h) {
@@ -101,25 +103,17 @@ fn factory_output(g: &mut GameState, cx: &mut Cx) {
                 cx.add_resource(g, s, Resource::Chips, chips);
                 cx.tally(g, "board.chips_made", chips);
             }
-        } else if corrupted(g, h) {
-            if player_ambassador(g, h).is_some() {
-                // 137: a player ambassador blocks it while it stands.
-                cx.tally(g, "board.blocked.factory_adversary", 1);
-                continue;
-            }
-            if !adversary::place_troop_quiet(g, cx, h, "factory") {
-                continue;
-            }
-            cx.tally(g, "board.troops_built", 1);
-            cx.note(Some(h), || format!("The factory at {} makes an adversary troop", hex_name(&w, h)));
         }
+        // 293 (Matt, 2026-11-19): an adversary factory's one output is an agent, made in the adversary's Income
+        // beat (`adversary::factories_output`), no longer a troop here.
     }
 }
 
 /// The income step, the board's part (r75, Matt's ruling 6: one step in a
 /// printed order; economy's upkeep, the board's and cards' income, follows it at
-/// once): factories make chips or an adversary troop, cities energy, stations
-/// research cubes, then full megaprojects complete. One opposing piece blocks a
+/// once): players' factories make chips, cities energy, players' and neutral stations
+/// research cubes, then full megaprojects complete (293: the adversary's sites make their
+/// outputs in its Income beat, `adversary::compute_step`). One opposing piece blocks a
 /// site; an agent on a city stays and the city is dark (r37 neutral, r38
 /// aligned too).
 pub(super) fn produce(g: &mut GameState, cx: &mut Cx) -> Res {
@@ -141,7 +135,6 @@ pub fn city_output(w: &World, h: usize) -> i64 {
 /// owner; a neutral city's to every player with a node on or next to it (292).
 pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
-    let divert = w.int("board.divert_discord");
     for h in 0..g.hexes.len() {
         if !is_city(&w, h) {
             continue;
@@ -151,16 +144,9 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
         if hex_flagged(&w, g, RoundFlag::Blackout, h) {
             continue;
         }
-        if corrupted(g, h) && player_ambassador(g, h).is_some() {
-            // 137: a player ambassador on an adversary city blocks its diversion.
-            cx.tally(g, "board.blocked.city_adversary", 1);
-        } else if corrupted(g, h) {
-            alignment::discord_from(g, cx, "city", energy * divert);
-            cx.tally(g, "board.energy_diverted", energy);
-            // 235: the log said only "var changed: alignment.discord +1": name the source.
-            if energy * divert > 0 && !w.hot.alignment_off {
-                cx.note(Some(h), || format!("{} (corrupted) diverts its energy: {} Discord", hex_name(&w, h), energy * divert));
-            }
+        if corrupted(g, h) {
+            // 293: a corrupted city's one output is its Discord, made in the adversary's Income beat
+            // ([`corrupted_cities_discord`]).
         } else if g.tokens(h, ADV_AMBASSADOR) > 0 && cube_owner(g, h).is_none() {
             // r37 (Matt): on a neutral city the ambassador stays and the city is dark:
             // no sale, and the unbought energy is lost as usual.
@@ -196,6 +182,29 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
         }
     }
     Ok(())
+}
+
+/// 293 (Matt, 2026-11-19: one output a corrupted site), a corrupted city's: `divert_discord` (1) Discord, in the
+/// adversary's Income beat with the other outputs (it was the city's energy as Discord, in production); a player
+/// ambassador on it blocks it, and so does a blackout on it.
+pub fn corrupted_cities_discord(g: &mut GameState, cx: &mut Cx) {
+    let w = cx.world;
+    let n = w.int("board.divert_discord");
+    for h in 0..g.hexes.len() {
+        if !is_city(&w, h) || !corrupted(g, h) || hex_flagged(&w, g, RoundFlag::Blackout, h) {
+            continue;
+        }
+        if player_ambassador(g, h).is_some() {
+            // 137: a player ambassador on an adversary city blocks its output.
+            cx.tally(g, "board.blocked.city_adversary", 1);
+            continue;
+        }
+        alignment::discord_from(g, cx, "city", n);
+        cx.tally(g, "board.energy_diverted", n);
+        if n > 0 && !w.hot.alignment_off {
+            cx.note(Some(h), || format!("{} (corrupted) makes {n} Discord", hex_name(&w, h)));
+        }
+    }
 }
 
 /// Whose cube a station makes this round.
@@ -262,15 +271,9 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
         // 175: an adversary station's compute is added in the adversary's compute step. 185 (Matt's ruling): until
         // its country's megaproject completes it puts `station_cubes` adversary cubes onto it instead; one player
         // ambassador on it blocks that as it blocks the compute.
+        // 293 (Matt, 2026-11-19): an adversary station's cube goes only onto the adversary's research track, in
+        // its Income beat (`adversary::compute_step`); megaprojects take neutral and player cubes only.
         if corrupted(g, h) {
-            if g.var(&project_done(c)) == 0 {
-                if player_ambassador(g, h).is_some() {
-                    cx.tally(g, "board.blocked.station_adversary", 1);
-                } else {
-                    cx.add_key(g, &project_key(c, None), cubes);
-                    cx.tally(g, "board.adversary_cubes", cubes);
-                }
-            }
             continue;
         }
         if g.tokens(h, ADV_AMBASSADOR) > 0 {
@@ -283,7 +286,7 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
         let made = if matches!(color, Color::Seat(_)) { w.int("board.owned_station_cubes") } else { cubes };
         if g.var(&project_done(c)) == 0 {
             let key = match color {
-                Color::Seat(s) => project_key(c, Some(s)),
+                Color::Seat(s) => project_key(c, s),
                 Color::Neutral => project_neutral(c),
             };
             cx.add_key(g, &key, made);
@@ -310,36 +313,31 @@ fn complete_projects(g: &mut GameState, cx: &mut Cx) -> Res {
             continue;
         }
         let p = &country.megaproject;
-        let adv = g.var(&project_key(c, None));
         let neutral = g.var(&project_neutral(c));
-        let mine: Vec<i64> = (0..g.seats.len()).map(|s| g.var(&project_key(c, Some(s)))).collect();
+        let mine: Vec<i64> = (0..g.seats.len()).map(|s| g.var(&project_key(c, s))).collect();
         let paid: i64 = mine.iter().sum();
-        if adv + neutral + paid < p.cubes {
+        if neutral + paid < p.cubes {
             continue;
         }
         for s in 0..mine.len() {
-            cx.set_key(g, &project_key(c, Some(s)), 0);
+            cx.set_key(g, &project_key(c, s), 0);
         }
-        cx.set_key(g, &project_key(c, None), 0);
         cx.set_key(g, &project_neutral(c), 0);
         cx.set_key(g, &project_done(c), 1);
         cx.tally(g, "board.projects_completed", 1);
         cx.tally(g, &format!("board.completed_round.{}", g.round), 1);
         cx.tally(g, &format!("board.completed.{c}"), 1);
-        for (color, n) in [("player", paid), ("adversary", adv), ("neutral", neutral)] {
+        for (color, n) in [("player", paid), ("neutral", neutral)] {
             cx.tally(g, &format!("board.cubes_paid.{color}"), n);
             cx.set_key(g, &project_paid(c, color), n);
         }
         cx.note(None, || {
-            format!("{} completes: {} cubes pay ({paid} player, {adv} adversary, {neutral} neutral)", p.name, paid + adv + neutral)
+            format!("{} completes: {} cubes pay ({paid} player, {neutral} neutral)", p.name, paid + neutral)
         });
         for (s, &n) in mine.iter().enumerate() {
             for _ in 0..n {
                 effects::run(g, cx, &p.player, &mut effects::Ctx::seat(s))?;
             }
-        }
-        for _ in 0..adv {
-            effects::run(g, cx, &p.adversary, &mut effects::Ctx::team().named("megaproject"))?;
         }
         if g.is_over() {
             return Ok(());

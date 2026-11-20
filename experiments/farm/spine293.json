@@ -1,0 +1,39 @@
+{
+  "name": "spine293",
+  "note": "293: the research row's K screen on the dev seeds: the judge on the three board pairs at d0, K (adversary.research_at) 3 (the asked number), 4 and 5 with no starting cubes, K 3 with 1 starting cube a country (adversary.research_start), then K 2, K 1 and K 2 with 1 starting cube (three variants an arm, in that order). Every arm sets its K (the baseline's moved to 1 after the screen, which ran with the baseline at 3 and the k3 arms unset). Farm with `farm-seeds 36800 32 OUT spine293`.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp_k3", "set": ["adversary.research_at=3,3,3,3,3"]},
+    {"name": "br_k3", "set": ["ai.boards=0,2", "adversary.research_at=3,3,3,3,3"]},
+    {"name": "pr_k3", "set": ["ai.boards=1,2", "adversary.research_at=3,3,3,3,3"]},
+    {"name": "bp_k4", "set": ["adversary.research_at=4,4,4,4,4"]},
+    {"name": "br_k4", "set": ["ai.boards=0,2", "adversary.research_at=4,4,4,4,4"]},
+    {"name": "pr_k4", "set": ["ai.boards=1,2", "adversary.research_at=4,4,4,4,4"]},
+    {"name": "bp_k5", "set": ["adversary.research_at=5,5,5,5,5"]},
+    {"name": "br_k5", "set": ["ai.boards=0,2", "adversary.research_at=5,5,5,5,5"]},
+    {"name": "pr_k5", "set": ["ai.boards=1,2", "adversary.research_at=5,5,5,5,5"]},
+    {"name": "bp_k3s1", "set": ["adversary.research_at=3,3,3,3,3", "adversary.research_start=1"]},
+    {"name": "br_k3s1", "set": ["ai.boards=0,2", "adversary.research_at=3,3,3,3,3", "adversary.research_start=1"]},
+    {"name": "pr_k3s1", "set": ["ai.boards=1,2", "adversary.research_at=3,3,3,3,3", "adversary.research_start=1"]},
+    {"name": "bp_k2", "set": ["adversary.research_at=2,2,2,2,2"]},
+    {"name": "br_k2", "set": ["ai.boards=0,2", "adversary.research_at=2,2,2,2,2"]},
+    {"name": "pr_k2", "set": ["ai.boards=1,2", "adversary.research_at=2,2,2,2,2"]},
+    {"name": "bp_k1", "set": ["adversary.research_at=1,1,1,1,1"]},
+    {"name": "br_k1", "set": ["ai.boards=0,2", "adversary.research_at=1,1,1,1,1"]},
+    {"name": "pr_k1", "set": ["ai.boards=1,2", "adversary.research_at=1,1,1,1,1"]},
+    {"name": "bp_k2s1", "set": ["adversary.research_at=2,2,2,2,2", "adversary.research_start=1"]},
+    {"name": "br_k2s1", "set": ["ai.boards=0,2", "adversary.research_at=2,2,2,2,2", "adversary.research_start=1"]},
+    {"name": "pr_k2s1", "set": ["ai.boards=1,2", "adversary.research_at=2,2,2,2,2", "adversary.research_start=1"]}
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

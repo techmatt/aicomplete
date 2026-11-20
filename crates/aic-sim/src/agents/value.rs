@@ -712,12 +712,10 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::Create { count, sites, .. } => Worth::now(row("create") * t.rate("countries") * (*count * *sites) as f64),
         Op::CreateSite { .. } => Worth::now(row("create_site") * t.rate("countries")),
         // 275: an Infiltrate lands an agent on each named site of a country (its row: the sites a country, priced
-        // per line); a Surge its count on one site a country.
+        // per line).
         Op::Infiltrate { .. } => Worth::now(row("infiltrate") * t.rate("countries")),
-        Op::Surge { count, .. } => Worth::now(row("surge") * t.rate("countries") * *count as f64),
-        // 275: a Spill (from its level) and a Grow, a country each.
-        Op::Spill { .. } => Worth::now(row("spill") * t.rate("countries")),
-        Op::Grow { .. } => Worth::now(row("grow") * t.rate("countries")),
+        // 293: an Escalate, a country (each site of the type holding an agent takes 1 more).
+        Op::Escalate { .. } => Worth::now(row("escalate") * t.rate("countries")),
         // 231: an income rise, a compute point a country a round.
         Op::IncreaseIncome { compute } => Worth::income(row("increase_income") * t.rate("countries") * *compute as f64),
         Op::LoseNodeOr { resource, amount, count } => Worth::now(
@@ -745,14 +743,11 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             row("deal_threats") * *count as f64 * if op.deals_each_country() { t.rate("countries") } else { 1.0 },
         ),
         Op::RemoveBotnets { count } => Worth::now(row("remove_botnets") * *count as f64),
-        // 185: a cube on each open megaproject; a botnet turned into one.
-        Op::AdversaryCubes { count } => Worth::now(row("adversary_cubes") * t.rate("countries") * *count as f64),
         // 259: research cubes onto the adversary's track (a project's: a country each).
         Op::AdversaryResearch { amount, each_country } => {
             let per = if *each_country { t.rate("countries") } else { 1.0 };
             Worth::now(row("adversary_research") * per * *amount as f64)
         }
-        Op::BotnetCubes { count } => Worth::now(row("botnet_cubes") * *count as f64),
         // 195: the project deck's board verbs, "in each country" at rates.countries.
         Op::BotnetTroops { count, troops } => {
             Worth::now(row("botnet_troops") * t.rate("countries") * (*count * *troops) as f64)

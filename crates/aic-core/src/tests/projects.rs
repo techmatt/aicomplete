@@ -81,6 +81,8 @@ fn a_new_row_is_dealt_into_the_slots_when_all_have_resolved() {
             // 259: its research line is a third consequence, refused below cost 18.
             r#"projects.station_coup.effects=[{"op":"take_site","site":"station"},{"op":"fallout","at":"corrupted_station"}]"#,
             "projects.recruitment_drive.cost=11",
+            // 293: its second Escalate is a third consequence, refused below cost 18.
+            r#"projects.recruitment_drive.effects=[{"op":"infiltrate","site":"city"},{"op":"escalate","site":"city"}]"#,
             "projects.war_plants.cost=10",
             "projects.lab_purge.cost=9",
         ],
@@ -337,10 +339,10 @@ fn the_board_verbs_take_the_targets_the_board_shows() {
     assert_eq!((g.tokens(a, ambassador(0)), g.tokens(a, ambassador(1))), (0, 0));
     assert!(g.resource(0, Resource::Ambassadors) >= s0 + 2 && g.resource(1, Resource::Ambassadors) > s1);
     // 231: an open megaproject loses player cubes, the most-held player's first.
-    set_var(&mut g, crate::modules::board::project_key(1, Some(0)), 3);
-    set_var(&mut g, crate::modules::board::project_key(1, Some(1)), 1);
+    set_var(&mut g, crate::modules::board::project_key(1, 0), 3);
+    set_var(&mut g, crate::modules::board::project_key(1, 1), 1);
     run_ops(&rules, &mut g, &[Op::StripCubes { count: 2 }]);
-    { use crate::modules::board::project_key as pk; assert_eq!((g.var(&pk(1, Some(0))), g.var(&pk(1, Some(1)))), (1, 1)); }
+    { use crate::modules::board::project_key as pk; assert_eq!((g.var(&pk(1, 0)), g.var(&pk(1, 1))), (1, 1)); }
     // A botnet becomes troops; a botnet spreads to a site next to one.
     let st = m.numbered(1, piece(1).neutral_station);
     put(&mut g, st, BOTNET, 1);
@@ -451,7 +453,7 @@ fn project_ops_reach_as_declared() {
         put(&mut rich, h, cube(c), 1);
         put(&mut rich, h, HARDEN, 1);
         put(&mut rich, h, ambassador(c), 2);
-        set_var(&mut rich, crate::modules::board::project_key(c, Some(c)), 3);
+        set_var(&mut rich, crate::modules::board::project_key(c, c), 3);
     }
     // A Fallout line lands beside each country's lowest-numbered corrupted cities: clear a hex beside the first one
     // where buildings ring it, so the line has land to take.

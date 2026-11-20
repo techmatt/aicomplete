@@ -116,9 +116,9 @@ country has no such site left, its token goes on the country's lowest-numbered c
 or next to a token, you are *near* that threat and may help pay it off. Each threat prints one way to pay, or two: a
 scarce thing (energy, ambassadors, insight, research cubes, chips, or cards given up for their tags) or credits;
 resources can be pooled between players, giving up cards is done by one player alone. What a threat takes if unpaid is
-never what it asks for. Next the card infiltrates (1 agent on every site of the type it names not yet the
-adversary's) and musters its troops, then its other lines, Spill (level 2+: a crowded site passes 1 agent to
-its busiest neighbor) and Grow (a new neutral facility beside each country's busiest site of the named type), then the march.
+never what it asks for. Next last round's sites escalate (each site of last round's type still holding an agent
+takes 1 more), then the card infiltrates (1 agent on every site of the type it names not yet the
+adversary's) and musters its troops (stage III), then its other lines, then the march.
 A site corrupts the moment an arrival brings it to its number. You draft and act; production then runs from one
 snapshot of the board. At the end of the round each threat nobody paid does what it prints, then lands 1 agent on
 its spot, and nothing else: one consequence, sometimes two, from a short list (troops or agents on its spot, compute, Sway toward
@@ -129,11 +129,11 @@ insight, spent the turn it comes, r82; the full list: [harms.md](../harms.md)). 
 started in the threat's country. Tier 1 is small; tier 2 is about two tier-1s. Compute waits for the adversary's compute
 step, then fills the leftmost project on its board; a full project fires there, the rest slide left and the right
 slot refills. **Harder levels** make the adversary harsher, not threats more or dearer: each level is named,
-adds setup (the income and research markers, the event deck) and at most one rule that fires on an event you already
-resolve: level 1 lets a city corrupt at 3 (the cards' "Botnets spread (level 1+)" start too), 2 gives 4 compute for each unpaid threat (the cards' Spill lines start too), 3 a shorter,
-busier game whose research rule musters more, and 4 a harder deck; no level deals an extra threat
+adds setup (the income marker, the event deck) and at most one rule that fires on an event you already
+resolve: level 1 lets a city corrupt at 3 (the cards' "Botnets spread (level 1+)" start too), 2 gives 4 compute for each unpaid threat, 3 a shorter,
+busier game, and 4 a harder deck; no level deals an extra threat
 ([adversary.md](adversary.md) *Difficulty*). The agents come from the cards' Infiltrate lines (stage III names two
-site types; 2 agents a city at level 4, 1 on a facility) and from botnets, each seeding 1 next to it a round (Botnet Recruiters).
+site types; 2 agents a city at level 4, 1 on a facility), from Escalate and from corrupted factories, each feeding its city 1 a round.
 **What resisted a summary:** that only resource options pool.
 
 **Compute.** Many threats also give the adversary compute, onto its projects ([adversary.md](adversary.md)), when they

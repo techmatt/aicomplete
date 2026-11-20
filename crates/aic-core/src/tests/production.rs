@@ -45,10 +45,9 @@ fn a_full_megaproject_completes_at_the_end_of_production_and_every_cube_pays() {
     owned_station(&rules, &mut g, 0, 0);
     assert_eq!(piece(0).megaproject.cubes, 8);
     for (k, n) in [
-        (board::project_key(0, Some(0)), 3),
-        (board::project_key(0, Some(1)), 1),
-        (board::project_key(0, None), 2),
-        (board::project_neutral(0), 2),
+        (board::project_key(0, 0), 3),
+        (board::project_key(0, 1), 1),
+        (board::project_neutral(0), 4),
     ] {
         set_var(&mut g, k, n);
     }
@@ -57,22 +56,21 @@ fn a_full_megaproject_completes_at_the_end_of_production_and_every_cube_pays() {
     let owned = rules.world().int("board.owned_station_cubes");
     run(&rules, &mut g);
     // 8 + owned cubes on an 8-cube card: all pay. Horizon (075): 3 energy and 3
-    // credits a player cube, 1 Discord an adversary cube, nothing for a neutral
-    // cube. 127: no holding limit, so seat 0 keeps all of it.
+    // credits a player cube, nothing for a neutral cube (293: it takes no adversary cube). 127: no holding limit, so seat 0 keeps all of it.
     assert_eq!((g.resource(0, Resource::Energy) - e0, g.resource(1, Resource::Energy) - e1), ((3 + owned) * 3, 3));
-    assert_eq!(g.var("alignment.discord") - discord, 2);
+    assert_eq!(g.var("alignment.discord") - discord, 0, "no adversary payout, and no city Discord in production");
     assert_eq!(g.var(&board::project_done(0)), 1);
-    for k in [board::project_key(0, Some(0)), board::project_key(0, Some(1)), board::project_key(0, None), board::project_neutral(0)] {
+    for k in [board::project_key(0, 0), board::project_key(0, 1), board::project_neutral(0)] {
         assert_eq!(g.var(&k), 0);
     }
     assert_eq!(g.stats.counters["board.cubes_paid.player"], 4 + owned);
-    assert_eq!(g.stats.counters["board.cubes_paid.adversary"], 2);
-    assert_eq!(g.stats.counters["board.cubes_paid.neutral"], 2);
+    assert!(!g.stats.counters.contains_key("board.cubes_paid.adversary"));
+    assert_eq!(g.stats.counters["board.cubes_paid.neutral"], 4);
     // Afterward the owned station's cubes go to its owner's board, and stay
     // between rounds.
     run(&rules, &mut g);
     assert_eq!(g.resource(0, Resource::ResearchCubes), owned);
-    assert_eq!(g.var(&board::project_key(0, Some(0))), 0);
+    assert_eq!(g.var(&board::project_key(0, 0)), 0);
     run(&rules, &mut g);
     assert_eq!(g.resource(0, Resource::ResearchCubes), 2 * owned);
 }
@@ -81,13 +79,12 @@ fn a_full_megaproject_completes_at_the_end_of_production_and_every_cube_pays() {
 fn a_project_short_of_its_cubes_does_not_complete() {
     let (rules, mut g) = lab(&["board.produce"]);
     owned_station(&rules, &mut g, 0, 0);
-    // Round 1 already put a corrupted and a neutral station's cubes on it (185: the corrupted one's an adversary
-    // cube, so two a round besides the owned station's).
-    set_var(&mut g, board::project_key(0, Some(0)), 1);
+    // Round 1 already put a neutral station's cube on it (293: the corrupted one's goes to the research track).
+    set_var(&mut g, board::project_key(0, 0), 1);
     run(&rules, &mut g);
     assert_eq!(g.var(&board::project_done(0)), 0);
     let owned = rules.world().int("board.owned_station_cubes");
-    assert_eq!(g.var(&board::project_key(0, Some(0))), 1 + owned);
+    assert_eq!(g.var(&board::project_key(0, 0)), 1 + owned);
 }
 
 #[test]
@@ -97,8 +94,7 @@ fn a_neutral_station_makes_a_neutral_cube_unless_an_adversary_ambassador_blocks_
     let (rules, mut g) = lab(&["board.produce"]);
     let h = rules.map.numbered(0, piece(0).neutral_station);
     put(&mut g, h, STATION, 1);
-    let k = board::project_key(0, None);
-    let (neutral, adversary) = (g.var(&board::project_neutral(0)), g.var(&k));
+    let neutral = g.var(&board::project_neutral(0));
     run(&rules, &mut g);
     assert_eq!(g.var(&board::project_neutral(0)), neutral + 1);
     put(&mut g, h, ADV_AMBASSADOR, 1);
@@ -106,50 +102,47 @@ fn a_neutral_station_makes_a_neutral_cube_unless_an_adversary_ambassador_blocks_
         run(&rules, &mut g);
     }
     assert_eq!(g.var(&board::project_neutral(0)), neutral + 1);
-    assert_eq!(g.var(&k), adversary);
     assert_eq!(g.tokens(h, ADV_AMBASSADOR), 1);
     assert_eq!(g.stats.counters["board.blocked.station_neutral"], 2);
 }
 
-/// 185 (Matt's ruling #2): until its country's megaproject completes, an adversary station puts
-/// `station_cubes` adversary cubes onto it in production and makes no compute; after, it makes compute
-/// (137; 175: in the adversary's compute step). A player ambassador on it blocks both.
+/// 293 (Matt, 2026-11-19): an adversary station's one output is a research cube onto the adversary's track, in its
+/// Income beat, from round 1: megaproject open or complete, it puts no cube on the megaproject and makes no compute.
+/// A player ambassador on it blocks it.
 #[test]
-fn an_adversary_station_puts_cubes_before_completion_and_compute_after() {
-    let (rules, mut g) = lab_with(&["board.produce", "adversary.reveal", "adversary.compute"], &["adversary.compute_income=0,0,0,0,0"]);
+fn an_adversary_station_puts_its_cube_on_the_research_track_from_round_one() {
+    let (rules, mut g) = lab_with(&["board.produce", "adversary.reveal", "adversary.compute"], &["adversary.compute_income=0,0,0,0,0", "adversary.research_at=9,9,9,9,9"]);
     let cubes = rules.world().int("board.station_cubes");
     for c in 0..2 {
         let h = rules.map.numbered(c, piece(c).stations[0]);
         put(&mut g, h, STATION, 1);
         put(&mut g, h, ADV_CUBE, 1);
     }
-    let on_projects = |g: &GameState| (0..2).map(|c| g.var(&board::project_key(c, None))).collect::<Vec<_>>();
-    let (made, before) = (g.var(adversary::COMPUTE), on_projects(&g));
-    // (Round 1 of the new game already ran the setup's adversary stations.)
-    let tallied = g.stats.counters.get("board.station_compute").copied().unwrap_or(0);
+    let on_projects = |g: &GameState| (0..2).map(|c| g.var(&board::project_neutral(c)) + g.var(&board::project_key(c, 0)) + g.var(&board::project_key(c, 1))).collect::<Vec<_>>();
+    let corrupted_stations = (0..g.hexes.len()).filter(|&h| g.tokens(h, STATION) > 0 && g.tokens(h, ADV_CUBE) > 0).count() as i64;
+    let neutral_stations: Vec<i64> = (0..2u8).map(|c| (0..g.hexes.len()).filter(|&h| rules.map.hexes[h].country == c && g.tokens(h, STATION) > 0 && g.tokens(h, ADV_CUBE) == 0 && g.tokens(h, ADV_AMBASSADOR) == 0).count() as i64).collect();
+    let (made, before, research) = (g.var(adversary::COMPUTE), on_projects(&g), g.var(adversary::RESEARCH));
+    let botnets = g.stats.counters.get("adversary.compute_botnets").copied().unwrap_or(0);
     run(&rules, &mut g);
-    assert_eq!(g.var(adversary::COMPUTE) - made, 0, "no compute before completion");
-    assert_eq!(on_projects(&g), before.iter().map(|b| b + cubes).collect::<Vec<_>>(), "an adversary cube on each");
+    let from_botnets = g.stats.counters.get("adversary.compute_botnets").copied().unwrap_or(0) - botnets;
+    assert_eq!(g.var(adversary::COMPUTE) - made, from_botnets, "a station makes no compute");
+    assert_eq!(g.var(adversary::RESEARCH) - research, corrupted_stations * cubes, "a cube each, megaprojects open");
+    assert_eq!(on_projects(&g), before.iter().zip(&neutral_stations).map(|(b, n)| b + n * cubes).collect::<Vec<_>>(), "only neutral cubes on the megaprojects");
     // A player ambassador on country 0's station blocks its cube.
     let h0 = rules.map.numbered(0, piece(0).stations[0]);
     put(&mut g, h0, ambassador(0), 1);
-    let before = on_projects(&g);
+    let research = g.var(adversary::RESEARCH);
     run(&rules, &mut g);
-    assert_eq!(on_projects(&g), vec![before[0], before[1] + cubes]);
+    assert_eq!(g.var(adversary::RESEARCH) - research, (corrupted_stations - 1) * cubes);
     put(&mut g, h0, ambassador(0), 0);
     set_var(&mut g, board::project_done(0), 1);
     set_var(&mut g, board::project_done(1), 1);
-    let (made, before) = (g.var(adversary::COMPUTE), on_projects(&g));
     let research = g.var(adversary::RESEARCH);
     run(&rules, &mut g);
-    // 259: with the board's research rule, its research cubes onto the track, not compute.
-    assert_eq!(g.var(adversary::COMPUTE) - made, 0, "no compute after completion");
-    assert_eq!(g.var(adversary::RESEARCH) - research, 2 * cubes, "research after completion");
-    assert_eq!(on_projects(&g), before);
-    assert_eq!(g.stats.counters["board.station_compute"] - tallied, 0);
+    assert_eq!(g.var(adversary::RESEARCH) - research, corrupted_stations * cubes, "the same after completion");
 }
 
-/// 259: the off arm (`research_at` all 0) keeps 185's compute after completion.
+/// 259: the off arm (`research_at` all 0): an adversary station makes compute.
 #[test]
 fn with_the_research_rule_off_an_adversary_station_makes_compute_after_completion() {
     let (rules, mut g) = lab_with(
@@ -167,25 +160,6 @@ fn with_the_research_rule_off_an_adversary_station_makes_compute_after_completio
     run(&rules, &mut g);
     assert_eq!(g.var(adversary::COMPUTE) - made, 2 * cubes);
     assert_eq!(g.var(adversary::RESEARCH), 0);
-}
-
-/// 185 (Matt's ruling #2): a completion holding adversary cubes pays each one the card's adversary payout
-/// (Tidal Grid: 1 Sway to Discord) and spends it.
-#[test]
-fn a_completion_pays_its_adversary_cubes() {
-    let (rules, mut g) = lab(&["board.produce"]);
-    let size = rules.world().content.map.countries[0].megaproject.cubes;
-    set_var(&mut g, board::project_key(0, None), 3);
-    set_var(&mut g, board::project_neutral(0), size - 3);
-    let paid = g.stats.counters.get("board.cubes_paid.adversary").copied().unwrap_or(0);
-    let discord = g.var("alignment.discord");
-    run(&rules, &mut g);
-    assert_eq!(g.var(&board::project_done(0)), 1);
-    assert_eq!(g.var(&board::project_key(0, None)), 0, "spent");
-    // The three set, and any the setup's adversary station put on it this production.
-    let n = g.stats.counters["board.cubes_paid.adversary"] - paid;
-    assert!(n >= 3);
-    assert_eq!(g.var("alignment.discord") - discord, n, "1 Sway to Discord each");
 }
 
 /// 137, kept at 139 (no dial): an agent blocking a station

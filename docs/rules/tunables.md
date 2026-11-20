@@ -10,7 +10,7 @@ conventions: [README.md](README.md).*
 | `board.start_ambassadors` | 1 | 0..10 | player ambassadors each player starts with |
 | `board.corp_energy` | 1 | 0..10 | energy cubes each city of country i makes a round (a megacorp parameter; the list repeats) |
 | `board.aligned_bonus` | 0 | 0..10 | extra energy an aligned city gives its owner |
-| `board.station_cubes` | 1 | 0..5 | research cubes a neutral station makes a round (an adversary one: adversary cubes, then research-track cubes; compute with adversary.research_at 0) |
+| `board.station_cubes` | 1 | 0..5 | research cubes a neutral station makes a round (an adversary one: that many onto the adversary's research track, in its Income beat; compute with adversary.research_at 0) |
 | `board.owned_station_cubes` | 1 | 0..5 | research cubes a player-owned station makes its owner a round |
 | `board.divert_discord` | 1 | 0..5 | Discord per unit of a corrupted city's energy diverted to the adversary |
 | `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy, each round, of an aligned city an agent darkens |
@@ -66,18 +66,14 @@ conventions: [README.md](README.md).*
 | `adversary.compute_income` | 0, 3, 5, 10, 15 | 0..30 | the adversary's base compute income a country a round, at difficulty 0-4 (times the countries: per board) |
 | `adversary.infiltrate_agents` | 1, 1, 1, 1, 2 | 0..5 | 275: agents an Infiltrate line lands on each city it names, at difficulty 0-4 |
 | `adversary.infiltrate_facility_cap` | 1 | 0..5 | 282: at most this many of an Infiltrate line's agents land on each research station, factory or botnet hex it names (cities take every one) |
-| `adversary.spill_at` | 2 | 0..5 | 275: the difficulty level from which an event card's Spill line moves agents; below it the line does nothing |
-| `adversary.botnet_seed` | 1 | 0..5 | 275: agents each botnet (no player ambassador on it) seeds onto the site next to it holding the most agents, in the compute step with its compute (r133) |
-| `adversary.grow_infest_at` | 1 | 1..5 | 275: agents a Grow site holds for its new facility to come with 1 agent on it (an adversary site's always does) |
-| `adversary.grow_cap` | 2 | 0..6 | 275: a Grow site with this many facilities next to it (any owner) doesn't grow (0: no cap) |
 | `adversary.threat_agents` | 1 | 0..5 | 275: agents an uncountered threat lands on its anchor (its first location token) as it executes |
 | `adversary.discord_removed` | 0 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
 | `adversary.station_flip_at` | 2 | 0..5 | agents on a player's research station before an effect can flip it (short of that, one lands there instead) |
-| `adversary.botnet_compute` | 1 | 0..5 | adversary compute each botnet makes a round (none with a player ambassador on it) |
+| `adversary.botnet_compute` | 1 | 0..5 | a botnet's one output: adversary compute each makes a round (none with a player ambassador on it) |
 | `adversary.botnet_spread_at` | 1 | 0..5 | 263: the difficulty level from which a 'Botnets spread' line (event cards, projects) spreads botnets; below it the line does nothing |
 | `adversary.board_difficulty_at` | 2 | 0..5 | the difficulty level from which the adversary board's `difficulty` line applies (267: the Militarist's War Footing, level 2's named rule) |
-| `adversary.research_at` | 5, 5, 5, 4, 4 | 0..30 | 259: research cubes a country that fire the adversary board's research rule, at difficulty 0-4 (times the countries; 0: never) |
-| `adversary.research_strong_at` | 3 | 0..5 | 259: the difficulty level from which the research rule fires its stronger effect |
+| `adversary.research_at` | 1, 1, 1, 1, 1 | 0..30 | 293: K, the research cubes a country that advance the adversary's research track one slot, at difficulty 0-4 (times the countries; 0: no track) |
+| `adversary.research_start` | 0 | 0..30 | 293: research cubes a country on the adversary's track at setup |
 | `alignment.tip_per_player` | 3 | 1..50 | the Unity track tips when it holds this many Sway per player |
 | `alignment.discord_tip_per_player` | 4 | 1..50 | the Discord track tips when it holds this many Sway per player |
 | `alignment.carry` | 2 | 0..2 | Sway past a tip stays toward the next tip: 2 both sides (r75, Matt's ruling 7), 1 Unity's only (r48), 0 neither (a tip empties its track) |

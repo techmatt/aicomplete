@@ -101,7 +101,7 @@ pub(super) fn project_cube(g: &mut GameState, cx: &mut Cx, seat: usize, count: i
     let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
     let prompt = || format!("Seat {seat}: add {} to which country's megaproject?", Resource::ResearchCubes.amount(count));
     if let Some(i) = cx.choose(seat, prompt, opts)? {
-        cx.add_key(g, &board::project_key(cs[i], Some(seat)), count);
+        cx.add_key(g, &board::project_key(cs[i], seat), count);
         cx.tally(g, "board.cubes_bought", count);
         cx.per_round(g, "board.cubes_bought", count);
     }

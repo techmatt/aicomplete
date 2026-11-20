@@ -13,7 +13,7 @@ use super::table;
 
 /// The harms of the ledger, in its row order. 191 (Matt, 2026-11-11): every harm an adversary source can do has a
 /// row; none for insight (not an adversary harm, r82) and none yet for costs raised (paged as a harm, no card).
-pub const HARMS: [&str; 28] = [
+pub const HARMS: [&str; 27] = [
     "node destroyed",
     "city lost",
     "facilities destroyed",
@@ -30,7 +30,6 @@ pub const HARMS: [&str; 28] = [
     "pieces pushed or reach cut",
     "production blacked out",
     "adversary pieces placed",
-    "adversary cubes on megaprojects",
     "adversary income raised",
     "projects advanced (compute)",
     "extra threats",
@@ -46,15 +45,14 @@ pub const HARMS: [&str; 28] = [
     "adversary research advanced",
 ];
 
-/// The sources of the ledger, in its column order. The first six read
+/// The sources of the ledger, in its column order. The first five read
 /// content; `RULE_HARMS` says what the rest do.
-pub const SOURCES: [&str; 12] = [
+pub const SOURCES: [&str; 11] = [
     "tier-1 threats",
     "tier-2 threats",
     "Discord cards",
     "adversary events",
     "adversary projects",
-    "megaprojects",
     "income and Infiltrate",
     "botnets",
     "corruption",
@@ -66,13 +64,12 @@ pub const SOURCES: [&str; 12] = [
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 24] = [
+pub const RULE_HARMS: [(&str, &str, &str); 22] = [
     ("income and Infiltrate", "adversary pieces placed", "every event's Infiltrate X lands `infiltrate_agents` (1; 2 at level 4) on each site of its type, at most `infiltrate_facility_cap` (1) a site from a station, factory or botnet line, not yet the adversary's (275: it replaced Rally and the agent pools; 282: the cap)"),
     ("income and Infiltrate", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
     ("income and Infiltrate", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
     ("income and Infiltrate", "production blacked out", "an agent on a city or station blocks its output while it stands (137)"),
     ("botnets", "projects advanced (compute)", "each botnet makes compute"),
-    ("botnets", "adversary pieces placed", "each botnet with no player ambassador on it seeds `botnet_seed` agent onto the city, station or factory next to it holding the most agents, in the compute step, as it adds its compute (which comes even when a cordon stops the seed or it has nowhere to land; 275; r133)"),
     ("uncountered threats", "adversary pieces placed", "a threat that executes uncountered lands `threat_agents` agent on its anchor, its first location token (275)"),
     ("corruption", "node destroyed", "`corrupt_node_at` agents on a hex with a player's node destroy the node and leave no mark (175, r98; protections apply)"),
     ("corruption", "node destroyed", "a node on the corrupted hex itself is destroyed (its owner may spend a protection: r75)"),
@@ -82,14 +79,12 @@ pub const RULE_HARMS: [(&str, &str, &str); 24] = [
     ("corruption", "facilities corrupted", "a research station or factory that corrupts becomes the adversary's; a firewall or a Corrupt prohibition's token guards every path, flips and threats included (r79, D77; r80)"),
     ("corruption", "ambassadors lost", "player ambassadors on it are lost"),
     ("corruption", "production blacked out", "its energy goes to the adversary"),
-    ("corruption", "Discord sway", "its energy sways Discord each round"),
-    // 185 (Matt's ruling #2): the megaprojects column reads the printed payout; this is what feeds it.
-    ("corruption", "adversary cubes on megaprojects", "an adversary station puts `station_cubes` adversary cubes a round on its country's open megaproject; each pays the card's adversary payout at completion, 1 Sway to Discord (r79)"),
-    ("corruption", "projects advanced (compute)", "before its megaproject is complete, an adversary station's cubes on Polar Compute Array pay 1 adversary compute each at completion (r79)"),
-    // 259 (Matt: the adversary's stations after a project): once its megaproject is complete, a station feeds the track.
-    ("corruption", "adversary research advanced", "once its megaproject is complete, an adversary station puts `station_cubes` research cubes a round on the adversary's research track (259; it made compute before)"),
-    ("adversary research", "adversary pieces placed", "the Militarist's Weapons Program: at `research_at` cubes a country the track spends them and lands 2 troops in each country as a Muster, 3 from `research_strong_at` (259; 267: level 3's rule, Arms Race)"),
-    ("adversary research", "node destroyed", "the troops it lands march and strike nodes as any troop (259)"),
+    ("corruption", "Discord sway", "a corrupted city makes 1 Discord each round, its one output (293)"),
+    // 293 (Matt, 2026-11-19): one output a corrupted site.
+    ("corruption", "adversary research advanced", "a corrupted station puts `station_cubes` research cube a round on the adversary's research track, from round 1 (293: megaprojects take no adversary cube)"),
+    ("corruption", "adversary pieces placed", "a corrupted factory makes 1 agent on itself and pushes it along its zone's arrow onto its city the next round (293: no troop); one whose city is the adversary's keeps its one agent"),
+    ("adversary research", "the clock sped up", "the research track advances a slot for every `research_at` cubes a country, each slot's icon firing once; slot 7 is a loss (293)"),
+    ("income and Infiltrate", "adversary pieces placed", "each site of last round's Infiltrate type that still holds an agent takes 1 more (293: it replaced Spill and Grow); the Militarist's Commandeered Plants does the same to factories every round"),
     // 146: no unprinted harm (the node loss near an uncountered threat and its floor sway are gone); the adversary
     // board may print compute per uncountered threat.
     ("uncountered threats", "projects advanced (compute)", "the adversary board's printed compute per threat that executes uncountered (the Militarist's level-2 rule, War Footing, from `board_difficulty_at`)"),
@@ -104,7 +99,6 @@ pub const RULE_HARMS: [(&str, &str, &str); 24] = [
 const DISCORD_CARDS: usize = 2;
 const ADVERSARY_EVENTS: usize = 3;
 const ADVERSARY_PROJECTS: usize = 4;
-const MEGAPROJECTS: usize = 5;
 /// The first columns: the threats, by tier (146: no tier 3).
 const THREAT_TIERS: usize = 2;
 
@@ -125,17 +119,16 @@ const PROTECTIONS_STRIPPED: usize = 12;
 const PIECES_PUSHED: usize = 13;
 const BLACKED_OUT: usize = 14;
 const PIECES_PLACED: usize = 15;
-const ADVERSARY_CUBES: usize = 16;
-const INCOME_RAISED: usize = 17;
-const PROJECTS_ADVANCED: usize = 18;
-const EXTRA_THREATS: usize = 19;
-const CLOCK_SPED_UP: usize = 20;
-const DISCORD_SWAY: usize = 21;
-const UNITY_PULLED: usize = 22;
-const MEGAPROJECT_DENIED: usize = 23;
-const BLOCKED: usize = 25;
-const FALLOUT_PLACED: usize = 26;
-const RESEARCH_ADVANCED: usize = 27;
+const INCOME_RAISED: usize = 16;
+const PROJECTS_ADVANCED: usize = 17;
+const EXTRA_THREATS: usize = 18;
+const CLOCK_SPED_UP: usize = 19;
+const DISCORD_SWAY: usize = 20;
+const UNITY_PULLED: usize = 21;
+const MEGAPROJECT_DENIED: usize = 22;
+const BLOCKED: usize = 24;
+const FALLOUT_PLACED: usize = 25;
+const RESEARCH_ADVANCED: usize = 26;
 
 /// The row a lost resource falls in. Insight is never a harm (r82: `Content::check` refuses one).
 fn lost(r: Resource) -> Vec<usize> {
@@ -201,8 +194,8 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::CreateSite { .. }
         | Op::AdversaryBuild
         | Op::Infiltrate { .. } => vec![PIECES_PLACED],
-        // 275: a Surge's arrival corrupts the site it lands on at its number (Surge 2 takes a station or factory).
-        Op::Surge { site, .. } => match site {
+        // 293: an Escalate's arrival corrupts the site it lands on at its number.
+        Op::Escalate { site } => match site {
             SiteType::City | SiteType::CoastalCity => vec![PIECES_PLACED, CITY_LOST, AMBASSADORS_LOST],
             _ => vec![PIECES_PLACED, FACILITIES_CORRUPTED, AMBASSADORS_LOST],
         },
@@ -224,13 +217,6 @@ fn op_harms(op: &Op) -> Vec<usize> {
                 vec![PIECES_PLACED, CITY_LOST, AMBASSADORS_LOST]
             }
         }
-        // 275: a Spill moves agents onto a site (an arrival: it may corrupt the site it lands on); a Grow builds a
-        // neutral facility, an agent on it where the site that grows holds agents.
-        Op::Spill { to, .. } => match to {
-            SiteType::City | SiteType::CoastalCity => vec![PIECES_PLACED, CITY_LOST, AMBASSADORS_LOST],
-            _ => vec![PIECES_PLACED, FACILITIES_CORRUPTED, AMBASSADORS_LOST],
-        },
-        Op::Grow { .. } => vec![PIECES_PLACED],
         Op::Fallout { .. } => vec![FALLOUT_PLACED],
         Op::Troops { destroy, .. } => {
             if *destroy {
@@ -243,8 +229,6 @@ fn op_harms(op: &Op) -> Vec<usize> {
         Op::DealThreats { .. } | Op::ThreatAtNode { .. } => vec![EXTRA_THREATS],
         Op::Sway { side, .. } if side.name() == "discord" => vec![DISCORD_SWAY],
         Op::PullUnity { .. } => vec![UNITY_PULLED],
-        // 185: an adversary cube pays a megaproject's adversary payout (Discord, or compute on one card).
-        Op::AdversaryCubes { .. } | Op::BotnetCubes { .. } => vec![ADVERSARY_CUBES, DISCORD_SWAY, PROJECTS_ADVANCED],
         // 259: cubes toward the adversary board's research rule.
         Op::AdversaryResearch { .. } => vec![RESEARCH_ADVANCED],
         // 195: the project deck's board verbs.
@@ -453,11 +437,17 @@ fn harm_marks(r: Option<&Rules>) -> BTreeMap<(usize, usize), Mark> {
     for r in &c.adversary_board.rules {
         add(ADVERSARY_EVENTS, &r.effects);
     }
+    // 293: the research row's icons, each slot once, under the research source (a row edit moves the ledger).
+    if let Some(row) = &c.adversary_board.research {
+        let research = SOURCES.iter().position(|x| *x == "adversary research").expect("the research source");
+        for id in &row.slots {
+            if let Some(icon) = c.adversary_board.icons.iter().find(|i| &i.id == id) {
+                add(research, &icon.effects);
+            }
+        }
+    }
     for p in &c.projects {
         add(ADVERSARY_PROJECTS, &p.effects);
-    }
-    for p in &c.map.countries {
-        add(MEGAPROJECTS, &p.megaproject.adversary);
     }
     let mut out: BTreeMap<(usize, usize), Mark> =
         counts.into_iter().map(|(k, n)| (k, Mark::Count(n))).collect();
@@ -619,8 +609,9 @@ fn agent_flow() -> String {
         .collect();
     format!(
         "The sources and sinks of agents a game-round (the judge, {AGENT_FLOW_READ}). Arrivals are every agent the \
-         adversary puts on the board (Infiltrate, Surge, Grow, botnet seeds, threats' anchors and creation lines, \
-         Spill's moves not counted); a canceled one meets a player ambassador and both come off; removed is the \
+         adversary puts on the board from its supply (when the table was read: Infiltrate, Surge, Grow, botnet seeds, \
+         threats' anchors and creation lines; since r140: Infiltrate, Escalate, a factory's own agent, threats' \
+         anchors and creation lines, a factory's push not counted); a canceled one meets a player ambassador and both come off; removed is the \
          players' removals; corruption returns a corrupted site's agents to the supply.\n\n{}",
         table(
             &["Level", "Arrivals", "Of them Infiltrate", "Canceled", "Removed by players", "Back by corruption",
@@ -642,7 +633,6 @@ mod tests {
             (DISCORD_CARDS, "Discord cards"),
             (ADVERSARY_EVENTS, "adversary events"),
             (ADVERSARY_PROJECTS, "adversary projects"),
-            (MEGAPROJECTS, "megaprojects"),
             // A count, not a column: the threat tiers are the first THREAT_TIERS columns.
             (THREAT_TIERS - 1, "tier-2 threats"),
         ];
@@ -665,7 +655,6 @@ mod tests {
             (PROTECTIONS_STRIPPED, "protections stripped"),
             (BLACKED_OUT, "production blacked out"),
             (PIECES_PLACED, "adversary pieces placed"),
-            (ADVERSARY_CUBES, "adversary cubes on megaprojects"),
             (INCOME_RAISED, "adversary income raised"),
             (PROJECTS_ADVANCED, "projects advanced (compute)"),
             (EXTRA_THREATS, "extra threats"),

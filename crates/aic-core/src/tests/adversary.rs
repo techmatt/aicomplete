@@ -213,124 +213,153 @@ fn a_node_with_two_agents_is_lost_last_node_included() {
     assert_eq!(g.tokens(h, ADV_CUBE), 0, "the city doesn't corrupt");
 }
 
-/// 275: Surge N: X puts its N on the X not yet the adversary's holding the most agents (ties: the
-/// lowest-numbered), and on no other.
+/// 293 (Matt, 2026-11-19): Escalate: X puts 1 more on each X not yet the adversary's that holds an agent, and on
+/// no other: it picks nothing (Surge's and Spill's "most agents" went).
 #[test]
-fn a_surge_lands_on_the_most_infested_site() {
+fn an_escalate_adds_one_to_each_site_of_its_type_holding_an_agent() {
     let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     set_var(&mut g, SUPPLY, 40);
     clear_agents(&mut g);
     let cities0 = numbered_where(m, 0, |h| kind(m, h) == HexKind::City);
+    put(&mut g, cities0[0], ADV_CUBE, 0);
+    put(&mut g, cities0[1], ADV_CUBE, 0);
     put(&mut g, cities0[0], ADV_AMBASSADOR, 1);
-    put(&mut g, cities0[1], ADV_AMBASSADOR, 2);
-    // The adversary's city holds more, but it is no longer a site.
+    put(&mut g, cities0[1], ADV_AMBASSADOR, 0);
+    // The adversary's city holds agents, but it is no longer a site.
     put(&mut g, cities0[2], ADV_CUBE, 1);
     put(&mut g, cities0[2], ADV_AMBASSADOR, 3);
-    with_cx(&rules, |cx| adversary::surge(&mut g, cx, SiteType::City, 2, Some(0), "test")).unwrap();
+    // A factory holding an agent is no city.
+    let f = numbered_where(m, 0, |h| m.hexes[h].industrial)[0];
+    put(&mut g, f, FACTORY, 1);
+    put(&mut g, f, ADV_CUBE, 0);
+    put(&mut g, f, ADV_AMBASSADOR, 1);
+    with_cx(&rules, |cx| adversary::escalate(&mut g, cx, SiteType::City, Some(0), "test")).unwrap();
     let held: Vec<i64> = cities0[..3].iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).collect();
-    assert_eq!(held, vec![1, 4, 3]);
-    // A tie: the lowest-numbered.
+    assert_eq!(held, vec![2, 0, 3], "only the city holding one, not the empty one or the adversary's");
+    assert_eq!(g.tokens(f, ADV_AMBASSADOR), 1);
+    assert_eq!(g.stats.counters["adversary.escalated"], 1);
+    // An arrival like any other: the 5th agent corrupts a city (d0).
     put(&mut g, cities0[0], ADV_AMBASSADOR, 4);
-    with_cx(&rules, |cx| adversary::surge(&mut g, cx, SiteType::City, 1, Some(0), "test")).unwrap();
-    let after = |h: usize| (g.tokens(h, ADV_CUBE), g.tokens(h, ADV_AMBASSADOR));
-    assert_eq!((after(cities0[0]), after(cities0[1])), ((1, 0), (0, 4)), "its 5th agent corrupts it (d0: a city's 5)");
+    with_cx(&rules, |cx| adversary::escalate(&mut g, cx, SiteType::City, Some(0), "test")).unwrap();
+    assert_eq!((g.tokens(cities0[0], ADV_CUBE), g.tokens(cities0[0], ADV_AMBASSADOR)), (1, 0));
 }
 
-/// 275: Spill: X into Y does nothing below `spill_at` (2); from it, each X holding 2 or more moves 1 onto the Y
-/// next to it, an arrival there.
+/// 293: the event card's escalate reads last round's card: this round's card moves to the board's last-round
+/// space at the next flip, and its Infiltrate types are what escalates then; round 1 escalates nothing.
 #[test]
-fn a_spill_waits_for_its_level_then_moves_one_agent() {
-    for (d, moved) in [(0, false), (2, true)] {
-        let level = format!("adversary.difficulty={d}");
-        let (rules, mut g) = lab_with(&[], &[&level]);
-        let m = &rules.map;
-        assert_eq!(rules.world().int("adversary.spill_at"), 2);
-        set_var(&mut g, SUPPLY, 40);
-        clear_agents(&mut g);
-        let (c, lonely) = city_with_lonely_neighbors(m);
-        let f = lonely[0];
-        put(&mut g, f, FACTORY, 1);
-        put(&mut g, c, ADV_AMBASSADOR, 2);
-        with_cx(&rules, |cx| adversary::spill(&mut g, cx, SiteType::City, SiteType::Factory, None)).unwrap();
-        let want = if moved { (1, 1) } else { (2, 0) };
-        assert_eq!((g.tokens(c, ADV_AMBASSADOR), g.tokens(f, ADV_AMBASSADOR)), want, "d{d}");
-        assert_eq!(total(&g, ADV_AMBASSADOR), 2, "d{d}: a move, no new agent");
-    }
-}
-
-/// 285: a cordon (178) keeps out every agent a line would land, a neighbor across a border included: a Spill from an
-/// open country's city, a botnet's seed, and a Grow's new facility all pass over a cordoned country's hexes.
-#[test]
-fn a_cordon_keeps_spills_seeds_and_grows_out_across_a_border() {
-    let (rules, mut g) = lab_with(&[], &["adversary.difficulty=2"]);
-    let m = &rules.map;
+fn the_card_beat_escalates_last_rounds_type() {
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    assert!(g.pile(adversary::LAST).is_empty() && adversary::escalating(&w, &g).is_empty(), "round 1: no card behind");
+    let stations = w.content.adversary.iter().find(|c| adversary::infiltrate_sites(c) == vec![SiteType::Station]).unwrap();
+    let cities = w.content.adversary.iter().find(|c| adversary::infiltrate_sites(c) == vec![SiteType::City]).unwrap();
+    set_pile(&mut g, adversary::LAST, &[stations.id.as_str()]);
+    set_pile(&mut g, CURRENT, &[cities.id.as_str()]);
+    assert_eq!(adversary::escalating(&w, &g), vec![SiteType::Station]);
     set_var(&mut g, SUPPLY, 40);
     clear_agents(&mut g);
-    for h in 0..g.hexes.len() {
-        put(&mut g, h, BOTNET, 0);
-    }
-    // A city of country 0 with a free land neighbor in country 1.
-    let (c, x) = numbered_where(m, 0, |h| kind(m, h) == HexKind::City && g.tokens(h, ADV_CUBE) == 0)
-        .into_iter()
-        .find_map(|c| {
-            m.hexes[c].neighbors.iter().copied().find(|&x| m.hexes[x].country == 1 && !has_building(&g, x) && kind(m, x) != HexKind::City).map(|x| (c, x))
-        })
-        .expect("a city on the border");
-    for &n in &m.hexes[c].neighbors {
-        put(&mut g, n, FACTORY, 0);
-        put(&mut g, n, STATION, 0);
-    }
-    put(&mut g, x, FACTORY, 1);
-    put(&mut g, x, ADV_CUBE, 0);
-    let cordon = |g: &mut GameState, on: bool| set_var(g, board::flag(crate::content::RoundFlag::Cordon, 1), if on { 2 } else { 0 });
-    cordon(&mut g, true);
-    put(&mut g, c, ADV_AMBASSADOR, 2);
-    with_cx(&rules, |cx| adversary::spill(&mut g, cx, SiteType::City, SiteType::Factory, None)).unwrap();
-    assert_eq!((g.tokens(c, ADV_AMBASSADOR), g.tokens(x, ADV_AMBASSADOR)), (2, 0), "no Spill into a cordoned country");
-    // A botnet on the city seeds its own hex, not the cordoned factory next to it.
-    put(&mut g, c, ADV_AMBASSADOR, 0);
-    put(&mut g, c, BOTNET, 1);
-    with_cx(&rules, |cx| adversary::botnets_seed(&mut g, cx)).unwrap();
-    assert_eq!((g.tokens(c, ADV_AMBASSADOR), g.tokens(x, ADV_AMBASSADOR)), (1, 0), "no seed across the border");
-    assert!(plan::next_seeds(&rules.world(), &g).iter().all(|&(h, _)| h != x), "the forecast agrees");
-    // No Grow builds in the cordoned country; open, the same map has one that would.
-    let w = rules.world();
-    let crosses = |g: &GameState| (0..g.hexes.len()).filter(|&h| m.hexes[h].country == 0).filter_map(|h| plan::grow_at(&w, g, h)).any(|(z, _)| m.hexes[z].country == 1);
-    assert!(!crosses(&g), "a Grow passes over the cordoned country");
-    cordon(&mut g, false);
-    assert!(crosses(&g), "the test bites: open, a Grow from country 0 can build across the border");
-    with_cx(&rules, |cx| adversary::spill(&mut g, cx, SiteType::City, SiteType::Factory, None)).unwrap();
-    assert_eq!(g.tokens(x, ADV_AMBASSADOR), 0, "the city's 1 agent spills nothing (the test's control)");
+    let m = &rules.map;
+    let open = numbered_where(m, 0, |h| kind(m, h) == HexKind::Open && !has_building(&g, h));
+    let (s, city) = (open[0], numbered_where(m, 0, |h| kind(m, h) == HexKind::City && g.tokens(h, ADV_CUBE) == 0)[0]);
+    put(&mut g, s, STATION, 1);
+    put(&mut g, s, ADV_AMBASSADOR, 1);
+    put(&mut g, city, ADV_AMBASSADOR, 1);
+    with_cx(&rules, |cx| adversary::escalate_last(&mut g, cx)).unwrap();
+    assert_eq!((g.tokens(s, ADV_AMBASSADOR), g.tokens(city, ADV_AMBASSADOR)), (2, 1), "stations escalate, cities wait a round");
 }
 
-/// 275 (Matt, 2026-11-18): each botnet with no player ambassador on it seeds 1 agent onto the site next to it
-/// holding the most agents, in the compute step; a player ambassador on the botnet stops it.
+/// 293: a cordon keeps an Escalate and a factory's push out of its country.
 #[test]
-fn a_botnet_seeds_an_agent_on_the_busiest_site_next_to_it() {
+fn a_cordon_keeps_an_escalate_and_a_factorys_push_out() {
     let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     set_var(&mut g, SUPPLY, 40);
     clear_agents(&mut g);
-    for h in 0..g.hexes.len() {
-        put(&mut g, h, BOTNET, 0);
-    }
-    let (c, lonely) = city_with_lonely_neighbors(m);
-    let b = lonely[0];
-    put(&mut g, b, BOTNET, 1);
-    put(&mut g, c, ADV_AMBASSADOR, 1);
-    with_cx(&rules, |cx| adversary::botnets_seed(&mut g, cx)).unwrap();
-    assert_eq!((g.tokens(c, ADV_AMBASSADOR), total(&g, ADV_AMBASSADOR)), (2, 2));
-    put(&mut g, b, ambassador(0), 1);
-    with_cx(&rules, |cx| adversary::botnets_seed(&mut g, cx)).unwrap();
-    assert_eq!(total(&g, ADV_AMBASSADOR), 2, "a player ambassador on it stops it");
+    let city = numbered_where(m, 0, |h| kind(m, h) == HexKind::City && g.tokens(h, ADV_CUBE) == 0)[0];
+    put(&mut g, city, ADV_AMBASSADOR, 1);
+    set_var(&mut g, board::flag(crate::content::RoundFlag::Cordon, 0), 2);
+    with_cx(&rules, |cx| adversary::escalate(&mut g, cx, SiteType::City, None, "test")).unwrap();
+    assert_eq!(g.tokens(city, ADV_AMBASSADOR), 1, "no Escalate in a cordoned country");
+    let f = corrupted_factory_pointing_at_a_free_city(&rules, &mut g, 0);
+    put(&mut g, f, ADV_AMBASSADOR, 1);
+    with_cx(&rules, |cx| adversary::factories_output(&mut g, cx)).unwrap();
+    assert_eq!(g.tokens(f, ADV_AMBASSADOR), 1, "its factory neither pushes nor makes");
 }
 
-/// r133 (280, one move a botnet): a botnet passed as blocked whose ambassador a later botnet's seed cancels adds
-/// its compute in the same pass, as r132's second read of the botnets did (seen on the traced seeds: Cintamani's two
-/// starting botnets sit side by side).
+/// A corrupted factory on an industrial zone of country `c` whose arrow's city is not the adversary's (made so).
+fn corrupted_factory_pointing_at_a_free_city(rules: &Rules, g: &mut GameState, c: u8) -> usize {
+    let m = &rules.map;
+    let f = numbered_where(m, c, |h| m.hexes[h].industrial)[0];
+    let city = plan::factory_arrow(&rules.world(), f).expect("a zone's arrow");
+    put(g, f, FACTORY, 1);
+    put(g, f, ADV_CUBE, 1);
+    put(g, city, ADV_CUBE, 0);
+    f
+}
+
+/// 293 (Matt, 2026-11-19: one output a corrupted site): a corrupted factory makes 1 agent on itself, and the next
+/// round pushes it along its zone's printed arrow onto its city, an arrival there, then makes another. No troop.
 #[test]
-fn a_seed_that_cancels_a_blocking_ambassador_frees_that_botnets_compute() {
+fn a_corrupted_factory_makes_an_agent_and_pushes_it_along_its_arrow() {
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let m = &rules.map;
+    set_var(&mut g, SUPPLY, 40);
+    clear_agents(&mut g);
+    // Only this factory is the adversary's.
+    for h in 0..g.hexes.len() {
+        if g.tokens(h, FACTORY) > 0 {
+            put(&mut g, h, ADV_CUBE, 0);
+        }
+    }
+    let f = corrupted_factory_pointing_at_a_free_city(&rules, &mut g, 0);
+    let city = plan::factory_arrow(&w, f).unwrap();
+    assert!(m.adjacent(f, city) && m.hexes[city].country == 0, "a zone's arrow is one hex, to a city of its own country");
+    let troops = total(&g, TROOP);
+    with_cx(&rules, |cx| adversary::factories_output(&mut g, cx)).unwrap();
+    assert_eq!((g.tokens(f, ADV_AMBASSADOR), g.tokens(city, ADV_AMBASSADOR)), (1, 0), "round 1: it makes one on itself");
+    with_cx(&rules, |cx| adversary::factories_output(&mut g, cx)).unwrap();
+    assert_eq!((g.tokens(f, ADV_AMBASSADOR), g.tokens(city, ADV_AMBASSADOR)), (1, 1), "round 2: pushed, and another made");
+    assert_eq!(total(&g, TROOP), troops, "a factory makes no troop");
+    // A player ambassador on the city cancels the pushed agent, 1 for 1.
+    put(&mut g, city, ADV_AMBASSADOR, 0);
+    put(&mut g, city, ambassador(0), 1);
+    with_answers(&rules, &mut g, |_| 0, adversary::factories_output);
+    assert_eq!((g.tokens(city, ADV_AMBASSADOR), g.tokens(city, ambassador(0))), (0, 0));
+    // A player ambassador on the factory blocks its output: nothing moves, nothing is made.
+    put(&mut g, f, ADV_AMBASSADOR, 0);
+    put(&mut g, f, ambassador(0), 1);
+    with_cx(&rules, |cx| adversary::factories_output(&mut g, cx)).unwrap();
+    assert_eq!((g.tokens(f, ADV_AMBASSADOR), g.tokens(city, ADV_AMBASSADOR)), (0, 0));
+}
+
+/// 293: a factory whose city is already the adversary's keeps its one agent and makes no more (no pile).
+#[test]
+fn a_factory_whose_city_has_fallen_keeps_one_guard() {
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    set_var(&mut g, SUPPLY, 40);
+    clear_agents(&mut g);
+    for h in 0..g.hexes.len() {
+        if g.tokens(h, FACTORY) > 0 {
+            put(&mut g, h, ADV_CUBE, 0);
+        }
+    }
+    let f = corrupted_factory_pointing_at_a_free_city(&rules, &mut g, 0);
+    let city = plan::factory_arrow(&w, f).unwrap();
+    put(&mut g, city, ADV_CUBE, 1);
+    for _ in 0..3 {
+        with_cx(&rules, |cx| adversary::factories_output(&mut g, cx)).unwrap();
+    }
+    assert_eq!((g.tokens(f, ADV_AMBASSADOR), g.tokens(city, ADV_AMBASSADOR)), (1, 0));
+    assert_eq!(total(&g, ADV_AMBASSADOR), 1);
+}
+
+/// 293 (Matt, 2026-11-19): a botnet's one output is its compute: it seeds no agent; a player ambassador on it
+/// blocks the compute.
+#[test]
+fn a_botnet_only_makes_compute() {
     let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let per = rules.world().int("adversary.botnet_compute");
@@ -340,15 +369,14 @@ fn a_seed_that_cancels_a_blocking_ambassador_frees_that_botnets_compute() {
         put(&mut g, h, BOTNET, 0);
     }
     let (c, lonely) = city_with_lonely_neighbors(m);
-    let b = *lonely.iter().find(|&&x| x > c).expect("a lonely neighbor after the city in hex order");
-    put(&mut g, c, ADV_CUBE, 0);
+    put(&mut g, lonely[0], BOTNET, 1);
     put(&mut g, c, BOTNET, 1);
     put(&mut g, c, ambassador(1), 1);
     put(&mut g, c, ADV_AMBASSADOR, 1);
-    put(&mut g, b, BOTNET, 1);
-    let pass = with_cx(&rules, |cx| adversary::botnets_seed(&mut g, cx)).unwrap();
-    assert_eq!(g.tokens(c, ambassador(1)), 0, "the seed canceled the ambassador");
-    assert_eq!((pass.compute, pass.blocked), (2 * per, 0));
+    let pass = with_cx(&rules, |cx| adversary::botnets_compute(&mut g, cx));
+    assert_eq!((pass.compute, pass.blocked), (per, per));
+    assert_eq!(total(&g, ADV_AMBASSADOR), 1, "no seed");
+    assert_eq!(g.tokens(c, ambassador(1)), 1);
 }
 
 /// D39: a station flip's face prints `station_flip_at`, so the two stay in step.
@@ -672,14 +700,10 @@ fn the_players_lose_when_the_next_round_has_no_adversary_card() {
 fn twists_before_the_build_step_are_the_face_up_cards() {
     let (rules, mut g) = lab(&["alignment.sway", "adversary.build"]);
     let w = rules.world();
-    // Probing Strikes grows cities, Signal Jamming stations.
+    // Probing Strikes prints no twist, War Drums a Discord sway.
     set_pile(&mut g, CURRENT, &["mil_s1_probing_strikes"]);
-    set_pile(&mut g, NEXT, &["mil_s1_signal_jamming"]);
-    let stations = |g: &GameState| {
-        adversary::twists(&w, g)
-            .iter()
-            .any(|t| matches!(t, Op::Grow { site: SiteType::Station }))
-    };
+    set_pile(&mut g, NEXT, &["mil_s1_war_drums"]);
+    let stations = |g: &GameState| adversary::twists(&w, g).iter().any(|t| matches!(t, Op::Sway { .. }));
     g.phase = 0;
     assert!(stations(&g), "the Sway phase reads the face-up card");
     g.phase = 2;
@@ -733,13 +757,12 @@ fn every_event_card_infiltrates_first() {
 fn the_load_check_refuses_an_event_or_a_project_off_the_standard() {
     use crate::content::{event_rule_break, project_rule_break};
     let c = content();
-    // War Drums: Infiltrate | Sway, Grow.
+    // War Drums: Infiltrate | Sway.
     let base = c.adversary.iter().find(|a| a.id == "mil_s1_war_drums").unwrap();
     assert_eq!(event_rule_break(base), None);
     let infiltrate = base.standing[0].clone();
     let sway = base.twists[0].clone();
-    let grow = base.twists.last().unwrap().clone();
-    assert!(matches!(infiltrate, Op::Infiltrate { .. }) && matches!(grow, Op::Grow { .. }));
+    assert!(matches!(infiltrate, Op::Infiltrate { .. }) && matches!(sway, Op::Sway { .. }));
     let refused = |edit: &dyn Fn(&mut crate::content::AdversaryCard), why: &str| {
         let mut a = base.clone();
         edit(&mut a);
@@ -747,8 +770,7 @@ fn the_load_check_refuses_an_event_or_a_project_off_the_standard() {
         assert!(got.as_deref().is_some_and(|r| r.contains(why)), "{why}: {got:?}");
     };
     refused(&|a| a.standing.insert(0, infiltrate.clone()), "one Infiltrate X");
-    refused(&|a| a.standing.insert(0, grow.clone()), "out of the fixed order");
-    refused(&|a| a.twists.push(grow.clone()), "one Spill line and one Grow line");
+    refused(&|a| a.twists.push(infiltrate.clone()), "one Infiltrate X");
     refused(
         &|a| {
             a.twists.insert(0, sway.clone());
@@ -848,4 +870,206 @@ fn event_lines_come_from_the_fixed_list() {
     let mut a = crate::content().adversary[0].clone();
     a.standing.push(Op::Gain { resource: crate::content::Resource::Credits, amount: 1 });
     assert!(event_rule_break(&a).is_some_and(|why| why.contains("fixed list")));
+}
+
+/// 293: the Card and Income beats through the real phases, two rounds. At each flip this round's card moves to the
+/// last-round space and the one there to the discard; the Card beat escalates last round's type and runs the
+/// board's one rule (Commandeered Plants: a factory holding an agent takes 1 more whatever the cards name); the
+/// Income beat makes each corrupted site's output.
+#[test]
+fn the_card_and_income_beats_run_the_spine_through_the_real_phases() {
+    let (rules, mut g) = lab_with(
+        &["adversary.event", "adversary.build", "adversary.reveal", "adversary.compute"],
+        &["adversary.research_at=9,9,9,9,9"],
+    );
+    let w = rules.world();
+    let m = &rules.map;
+    set_var(&mut g, SUPPLY, 40);
+    clear_agents(&mut g);
+    // Two city cards in a row, so the factory's +1 below is the board rule's alone.
+    // (The lab's setup already ran a round's adversary phases: start from an empty table.)
+    for pile in [CURRENT, adversary::LAST, adversary::DISCARD] {
+        set_pile(&mut g, pile, &[]);
+    }
+    let diverted = g.stats.counters.get("board.energy_diverted").copied().unwrap_or(0);
+    let by_rule = g.stats.counters.get("adversary.escalated.board").copied().unwrap_or(0);
+    set_pile(&mut g, NEXT, &["mil_s1_long_patrols"]);
+    set_pile(&mut g, DECK, &["mil_s1_war_drums", "mil_s1_probing_strikes"]);
+    assert_eq!(w.content.adversary_board.rules[0].effects, vec![Op::Escalate { site: SiteType::Factory }]);
+    // A neutral factory on a zone of country 0, holding an agent.
+    let f = numbered_where(m, 0, |h| m.hexes[h].industrial)[0];
+    put(&mut g, f, FACTORY, 1);
+    put(&mut g, f, ADV_CUBE, 0);
+    put(&mut g, f, ADV_AMBASSADOR, 1);
+    let city = numbered_where(m, 0, |h| kind(m, h) == HexKind::City && g.tokens(h, ADV_CUBE) == 0)[0];
+    let corrupted_cities = (0..g.hexes.len()).filter(|&h| kind(m, h) == HexKind::City && g.tokens(h, ADV_CUBE) > 0).count() as i64;
+    let research = g.var(adversary::RESEARCH);
+
+    // Round 1: nothing behind this card, so only the board rule and the Infiltrate act.
+    run(&rules, &mut g);
+    answer_all(&rules, &mut g);
+    assert_eq!(g.pile(CURRENT), &[Key::new("mil_s1_long_patrols")]);
+    assert!(g.pile(adversary::LAST).is_empty() && g.pile(adversary::DISCARD).is_empty());
+    assert_eq!(g.tokens(f, ADV_AMBASSADOR), 2, "Commandeered Plants: the factory holding an agent took 1 more");
+    assert_eq!(g.tokens(city, ADV_AMBASSADOR), 1, "Infiltrate: cities");
+    assert_eq!(g.stats.counters["adversary.escalated.board"] - by_rule, 1);
+    assert!(!g.stats.counters.contains_key("adversary.escalated.event"));
+    // The Income beat: a Discord from each corrupted city, a cube from each corrupted station.
+    assert_eq!(g.stats.counters["board.energy_diverted"] - diverted, corrupted_cities);
+    let stations = (0..g.hexes.len()).filter(|&h| g.tokens(h, STATION) > 0 && g.tokens(h, ADV_CUBE) > 0).count() as i64;
+    assert_eq!(g.var(adversary::RESEARCH) - research, stations * w.int("board.station_cubes"));
+
+    // Round 2: round 1's card sits in the last-round space; its cities escalate, then this card's Infiltrate.
+    run(&rules, &mut g);
+    answer_all(&rules, &mut g);
+    assert_eq!(g.pile(adversary::LAST), &[Key::new("mil_s1_long_patrols")]);
+    assert_eq!(g.pile(CURRENT), &[Key::new("mil_s1_war_drums")]);
+    assert!(g.pile(adversary::DISCARD).is_empty());
+    if adversary::corrupt_n(&w, CorruptSite::City, 0) > 3 {
+        assert_eq!(g.tokens(city, ADV_AMBASSADOR), 3, "1 held, 1 from the escalate, 1 from this card's Infiltrate");
+    }
+    assert!(g.stats.counters["adversary.escalated.event"] >= 1);
+
+    // Round 3: the last-round card goes to the discard as the next one takes its place.
+    run(&rules, &mut g);
+    answer_all(&rules, &mut g);
+    assert_eq!(g.pile(adversary::LAST), &[Key::new("mil_s1_war_drums")]);
+    assert_eq!(g.pile(adversary::DISCARD), &[Key::new("mil_s1_long_patrols")]);
+}
+
+/// 293: an Escalate is an arrival like an Infiltrate's: a firewall or a no-Infiltrate token keeps its agent in the
+/// supply.
+#[test]
+fn a_firewall_or_a_no_infiltrate_token_stops_an_escalate() {
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    set_var(&mut g, SUPPLY, 40);
+    clear_agents(&mut g);
+    let cities: Vec<usize> = (0..2u8).map(|c| numbered_where(m, c, |h| kind(m, h) == HexKind::City && g.tokens(h, ADV_CUBE) == 0)[0]).collect();
+    for &c in &cities {
+        put(&mut g, c, ADV_AMBASSADOR, 1);
+    }
+    // A third city, open: the control.
+    let open = numbered_where(m, 0, |h| kind(m, h) == HexKind::City && h != cities[0])[0];
+    put(&mut g, open, ADV_CUBE, 0);
+    put(&mut g, open, ADV_AMBASSADOR, 1);
+    put(&mut g, cities[0], FIREWALL, 1);
+    put(&mut g, cities[1], crate::modules::common::prohibit_token(crate::op::Step::Infiltrate), 1);
+    // The view marks only the open one as about to take one more (this round's card names cities).
+    set_pile(&mut g, CURRENT, &["mil_s1_long_patrols"]);
+    let marked: Vec<usize> = rules.view(&g).arrows.iter().filter(|a| a.kind == "escalate").map(|a| a.from).collect();
+    assert_eq!(marked, vec![open]);
+    with_cx(&rules, |cx| adversary::escalate(&mut g, cx, SiteType::City, None, "test")).unwrap();
+    assert_eq!((g.tokens(cities[0], ADV_AMBASSADOR), g.tokens(cities[1], ADV_AMBASSADOR), g.tokens(open, ADV_AMBASSADOR)), (1, 1, 2));
+    assert_eq!(g.var(SUPPLY), 39);
+    assert_eq!(g.stats.counters["adversary.infiltrate_blocked"], 1);
+}
+
+/// 293: a factory whose arrow's city is firewalled keeps its agent and makes no other; an occupying troop stops
+/// its output outright.
+#[test]
+fn a_factory_keeps_its_agent_when_its_city_is_firewalled_or_a_troop_occupies_it() {
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    set_var(&mut g, SUPPLY, 40);
+    clear_agents(&mut g);
+    for h in 0..g.hexes.len() {
+        if g.tokens(h, FACTORY) > 0 {
+            put(&mut g, h, ADV_CUBE, 0);
+        }
+    }
+    let f = corrupted_factory_pointing_at_a_free_city(&rules, &mut g, 0);
+    let city = plan::factory_arrow(&w, f).unwrap();
+    put(&mut g, f, ADV_AMBASSADOR, 1);
+    put(&mut g, city, FIREWALL, 1);
+    with_cx(&rules, |cx| adversary::factories_output(&mut g, cx)).unwrap();
+    assert_eq!((g.tokens(f, ADV_AMBASSADOR), g.tokens(city, ADV_AMBASSADOR), total(&g, ADV_AMBASSADOR)), (1, 0, 1));
+    put(&mut g, city, FIREWALL, 0);
+    put(&mut g, f, ADV_AMBASSADOR, 0);
+    set_var(&mut g, board::occupied_key(f), 1);
+    put(&mut g, f, TROOP, 1);
+    with_cx(&rules, |cx| adversary::factories_output(&mut g, cx)).unwrap();
+    assert_eq!(total(&g, ADV_AMBASSADOR), 0, "an occupied factory makes nothing");
+}
+
+/// 293: a corrupted city's Discord is blocked by a player ambassador on it and by a blackout.
+#[test]
+fn a_corrupted_citys_discord_is_blocked_by_an_ambassador_or_a_blackout() {
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    for h in 0..g.hexes.len() {
+        put(&mut g, h, ADV_CUBE, 0);
+    }
+    let cities: Vec<usize> = (0..2u8).map(|c| numbered_where(m, c, |h| kind(m, h) == HexKind::City)[0]).collect();
+    for &c in &cities {
+        put(&mut g, c, ADV_CUBE, 1);
+    }
+    let made = |g: &GameState| g.stats.counters.get("board.energy_diverted").copied().unwrap_or(0);
+    with_cx(&rules, |cx| board::corrupted_cities_discord(&mut g, cx));
+    assert_eq!(made(&g), 2, "one each");
+    put(&mut g, cities[0], ambassador(0), 1);
+    set_var(&mut g, board::flag(crate::content::RoundFlag::Blackout, 1), 2);
+    with_cx(&rules, |cx| board::corrupted_cities_discord(&mut g, cx));
+    assert_eq!(made(&g), 2, "neither makes any");
+    assert_eq!(g.stats.counters["board.blocked.city_adversary"], 1);
+}
+
+/// 293: every industrial zone of every printed piece has its arrow: one hex long, to a city of its own country, in
+/// every layout; and the view publishes each as a `zone` arrow.
+#[test]
+fn every_industrial_zone_prints_an_arrow_to_a_city_next_to_it() {
+    let content = crate::content();
+    let mut printed: Vec<Vec<(u8, u8)>> = Vec::new();
+    for n in 1..=content.map.countries.len() as u8 {
+        let m = Map::build(content, n).unwrap();
+        for (c, country) in m.countries.iter().enumerate() {
+            let mut arrows = Vec::new();
+            for &h in &country.hexes {
+                if !m.hexes[h].industrial {
+                    assert_eq!(m.hexes[h].arrow, None);
+                    continue;
+                }
+                let t = m.hexes[h].arrow.expect("a zone's arrow");
+                assert!(m.adjacent(h, t) && m.hexes[t].kind == HexKind::City && m.hexes[t].country as usize == c, "{n} countries, piece {c}, zone {}", m.hexes[h].number);
+                arrows.push((m.hexes[h].number, m.hexes[t].number));
+            }
+            // The same on the piece whatever the layout.
+            match printed.get(c) {
+                Some(seen) => assert_eq!(seen, &arrows, "piece {c} in the {n}-country layout"),
+                None => printed.push(arrows),
+            }
+        }
+    }
+    // Horizon, as docs/rules/board.md's table prints it.
+    assert_eq!(printed[0], vec![(2, 6), (8, 7), (11, 7), (13, 14)]);
+    let (rules, g) = lab(&[]);
+    let zones = (0..g.hexes.len()).filter(|&h| rules.map.hexes[h].industrial).count();
+    assert_eq!(rules.view(&g).arrows.iter().filter(|a| a.kind == "zone").count(), zones);
+}
+
+/// 293: the view's `escalate` arrows are the sites the next Card beat's Escalate lands on: the board rule's
+/// factories holding an agent and, once a card is in play, its type's sites holding one.
+#[test]
+fn the_view_marks_the_sites_the_next_card_beat_escalates() {
+    let (rules, mut g) = lab(&["adversary.event", "adversary.build"]);
+    let m = &rules.map;
+    clear_agents(&mut g);
+    set_pile(&mut g, CURRENT, &["mil_s1_long_patrols"]);
+    let city = numbered_where(m, 0, |h| kind(m, h) == HexKind::City && g.tokens(h, ADV_CUBE) == 0)[0];
+    let zones = numbered_where(m, 0, |h| m.hexes[h].industrial);
+    let (f, st) = (zones[0], zones[1]);
+    put(&mut g, f, FACTORY, 1);
+    put(&mut g, st, STATION, 1);
+    for h in [f, st] {
+        put(&mut g, h, ADV_CUBE, 0);
+    }
+    for h in [city, f, st] {
+        put(&mut g, h, ADV_AMBASSADOR, 1);
+    }
+    g.phase = 0;
+    let mut marked: Vec<usize> = rules.view(&g).arrows.iter().filter(|a| a.kind == "escalate").map(|a| a.from).collect();
+    marked.sort();
+    let mut want = vec![city, f];
+    want.sort();
+    assert_eq!(marked, want, "this round's card names cities, the board rule factories; the station isn't marked");
 }

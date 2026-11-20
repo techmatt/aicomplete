@@ -15,13 +15,20 @@
 // run): a base hex, pennant, front or Drone drawn on the map, an Envoy or Buy energy button, a fronts or host value,
 // a War or drones phase in the round bar, and their words in the page's visible text and hovers (`CUT_WORDS`), a
 // card's own name aside ("War Rooms", "Survey Drone Fleet": read from content/).
+//
+// 293: and for the adversary's spine (`spine` in the summary; any problem fails the run): the research row (its slot
+// boxes, the reached ones, the cubes) and the zones' printed arrows match the engine's view every step, last round's
+// card says what escalates, and over the game the row moved. Spill, Surge, Grow and seeding joined `CUT_WORDS`.
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { openPage, viewerUrl } from './cdp.mjs';
 
 /** The cut pieces' words. "in front of you" is no front; a capital War is the step and its log lines. */
-const CUT_WORDS = String.raw`\b[Dd]rones?\b|\b[Mm]ilitary bases?\b|\bEnvoy\b|Buy a city's energy|\b[Hh]ost(?:s|ed|ing)?\b|\b[Ff]ronts?\b(?! of)|\bWar\b|\bwar (?:step|phase)\b|Warmongering|Twin City Compact|nearest players`;
+const CUT_WORDS = String.raw`\b[Dd]rones?\b|\b[Mm]ilitary bases?\b|\bEnvoy\b|Buy a city's energy|\b[Hh]ost(?:s|ed|ing)?\b|\b[Ff]ronts?\b(?! of)|\bWar\b|\bwar (?:step|phase)\b|Warmongering|Twin City Compact|nearest players`
+  // 293: the adversary's Spill, Surge and Grow lines and a botnet's seeding (the players' Growth powers stay; a
+  // singular "seed" alone is the game's: "Seed", "Random seed").
+  + String.raw`|\b[Ss]pill(?:s|ed)?\b|\b[Ss]urg(?:e|es|ed)\b|\b[Ss]eed(?:s|ed|ing)\b|[Bb]otnet(?:'s|s)? seed|\bseed (?:a |another )?[Bb]otnet|\bGrow\b`;
 /** Content names that hold one of those words: taken out of the text before it is read. */
 function cutWordNames() {
   const dir = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'content');
@@ -95,6 +102,54 @@ await page.js(`(() => {
       if (tip && !tip.hidden) read('tip', tip.innerText);
       return [...new Set(found)];
     },
+    /** 293: the adversary's spine as the player view shows it now, against the engine's view: the research row, the
+     *  zones' printed arrows on the map, and last round's card with what escalates. */
+    spine() {
+      const problems = [];
+      const g = (k) => aic.view.globals.find((x) => x.key === k);
+      const slot = g('adversary.research_slot'), cubes = g('adversary.research');
+      const row = [...document.querySelectorAll('#player .research-row')].find(vis);
+      if (!slot || !cubes) problems.push('the view has no research track');
+      else if (!row) problems.push('no research row on screen');
+      else {
+        const boxes = [...row.querySelectorAll('.rslot')];
+        if (boxes.length !== slot.max || !boxes.every(vis)) problems.push('research row: ' + boxes.length + ' slot boxes shown, the track has ' + slot.max);
+        if (!/Loss/.test(boxes[boxes.length - 1]?.textContent ?? '')) problems.push('research row: its last box is not the loss');
+        const reached = row.querySelectorAll('.rslot.reached').length;
+        if (reached !== slot.value) problems.push('research row: ' + reached + ' slots marked reached, the marker is on ' + slot.value);
+        if (boxes.some((b) => !b.classList.contains('loss') && !/: \\S/.test(b.title))) problems.push('research row: a slot with no icon text in its hover');
+        const shown = row.querySelector('.rcubes')?.textContent.replace(/\\s+/g, ' ') ?? '';
+        if (!shown.includes(cubes.value + ' / ' + cubes.max)) problems.push('research row: cubes read "' + shown + '", the view has ' + cubes.value + ' / ' + cubes.max);
+      }
+      const zones = aic.view.arrows.filter((a) => a.kind === 'zone');
+      const drawn = [...document.querySelectorAll('#board .arrows .arrow.zone')];
+      if (drawn.length !== zones.length) problems.push(drawn.length + ' zone arrows drawn, the view has ' + zones.length);
+      const live = zones.filter((a) => a.count > 0 || a.rounds === 1).length;
+      const drawnLive = drawn.filter((e) => e.classList.contains('live')).length;
+      if (drawnLive !== live) problems.push(drawnLive + ' zone arrows drawn live, the view has ' + live);
+      if (drawn.some((e) => e.classList.contains('soon'))) problems.push('a zone arrow drawn as a troop about to strike');
+      const troops = aic.view.arrows.filter((a) => a.kind === 'troop').length;
+      const drawnTroops = document.querySelectorAll('#board .arrows .arrow.troop').length;
+      if (drawnTroops !== troops) problems.push(drawnTroops + ' troop arrows drawn, the view has ' + troops);
+      const escalates = aic.view.arrows.filter((a) => a.kind === 'escalate').length;
+      const badges = [...document.querySelectorAll('#board .arrows .arrow.escalate')];
+      if (badges.length !== escalates) problems.push(badges.length + ' escalate badges drawn, the view has ' + escalates);
+      if (badges.some((e) => !e.querySelector('text') || e.querySelector('line, path'))) problems.push('an escalate badge drawn as a ring or an arrow');
+      const last = aic.view.piles.find((p) => p.key === 'adversary.last');
+      const box = [...document.querySelectorAll('#player .slot-box.last')].find(vis);
+      let escalating = null;
+      if (!last) problems.push('the view has no last-round pile');
+      else if (!box) problems.push('no last-round box on screen');
+      else if (last.visible.length) {
+        const card = last.visible[0];
+        if (!box.textContent.includes(card.name)) problems.push('the last-round box does not name ' + card.name);
+        const types = [...(card.text ?? '').matchAll(/Infiltrate: ([^.]+)\\./g)].map((m) => m[1]);
+        escalating = box.querySelector('.escalates')?.dataset.escalating ?? null;
+        if (escalating === null) problems.push('the last-round box does not say what escalates');
+        else if (types.some((t) => !escalating.includes(t))) problems.push('escalating reads "' + escalating + '", ' + card.name + ' infiltrates ' + types.join(', '));
+      }
+      return { problems, slot: slot?.value ?? 0, cubes: cubes?.value ?? 0, zones: drawn.length, live: drawnLive, badges: badges.length, escalating, rowInView: !!row && (() => { const r = row.getBoundingClientRect(); return row.contains(document.elementFromPoint(r.left + 4, r.bottom - 4)); })() };
+    },
     noControl() {
       const missing = [];
       const seats = [...new Set(aic.legal.map((a) => a.seat))];
@@ -149,9 +204,26 @@ const removed = new Map();
 const lookForRemoved = async (round) => {
   for (const r of await page.js('window.__pp.removed()')) if (!removed.has(r)) removed.set(r, round);
 };
+// 293: the adversary's spine over the game: each problem with the round it first showed in, the research marker's
+// slots and cube counts seen, the zone arrows drawn (and the most drawn live), and what was shown escalating.
+const spine = { problems: new Map(), slots: new Set(), cubes: new Set(), zones: 0, live: 0, badges: 0, escalating: new Set() };
+// 293: one mid-game shot with the research row, a zone arrow and an escalate badge together.
+let spineShot = null;
+const lookAtSpine = async (round) => {
+  const s = await page.js('window.__pp.spine()');
+  for (const p of s.problems) if (!spine.problems.has(p)) spine.problems.set(p, round);
+  spine.slots.add(s.slot);
+  spine.cubes.add(s.cubes);
+  spine.zones = Math.max(spine.zones, s.zones);
+  spine.live = Math.max(spine.live, s.live);
+  spine.badges = Math.max(spine.badges, s.badges);
+  if (!spineShot && s.badges && s.zones && s.slot >= 2 && s.rowInView && round !== 'end') { spineShot = `r${round}-spine`; await shot(spineShot); }
+  if (s.escalating !== null) spine.escalating.add(s.escalating);
+};
 for (let i = 0; i < maxSteps; i++) {
   const st = await page.js(`({ over: !!aic.view.outcome, phase: aic.view.phase && aic.view.phase.name, round: aic.view.round, turn: !!document.querySelector('#p-turn ol') })`);
   if (st.over) break;
+  await lookAtSpine(st.round);
   const missing = await page.js('window.__pp.noControl()');
   noControl += missing.length;
   if (missing.length && noControlSamples.length < 10) noControlSamples.push(...missing.slice(0, 3));
@@ -170,6 +242,14 @@ for (let i = 0; i < maxSteps; i++) {
 }
 await shot('end');
 await lookForRemoved('end');
+await lookAtSpine('end');
+// 293: over a whole game the research track moved, the map showed its zones' arrows and a last-round card escalated.
+const spineProblems = [...spine.problems].map(([what, round]) => `round ${round}: ${what}`);
+if (spine.slots.size + spine.cubes.size < 3) spineProblems.push('the research row never moved');
+if (!spine.zones) spineProblems.push('no zone arrow was ever drawn');
+if (!spine.badges) spineProblems.push('no escalate badge was ever drawn');
+if (!spine.escalating.size) spineProblems.push('no last-round card ever showed what escalates');
+const spineSeen = { slots: [...spine.slots], cubes: [...spine.cubes], zoneArrows: spine.zones, liveZoneArrows: spine.live, escalateBadges: spine.badges, escalating: [...spine.escalating], problems: spineProblems };
 // The record, through the Record dialog.
 await page.js(`document.getElementById('record').click()`);
 const record = await page.js(`document.getElementById('record-text').value`);
@@ -177,10 +257,10 @@ await page.js(`document.getElementById('record-close').click()`);
 writeFileSync(join(out, 'record.json'), record.endsWith('\n') ? record : `${record}\n`);
 const end = await page.js(`({ outcome: aic.view.outcome, actions: aic.timeline.last, seats: aic.view.seats.length, mode: aic.mode })`);
 const removedSeen = [...removed].map(([what, round]) => `round ${round}: ${what}`);
-const summary = { config, seed, size: `${width}x${height}`, ...end, noControl, noControlSamples, removed: removedSeen.length, removedSamples: removedSeen.slice(0, 40), turnSteps, clicks, consoleErrors: page.consoleErrors, shots };
+const summary = { config, seed, size: `${width}x${height}`, ...end, noControl, noControlSamples, removed: removedSeen.length, removedSamples: removedSeen.slice(0, 40), spine: spineSeen, turnSteps, clicks, consoleErrors: page.consoleErrors, shots };
 writeFileSync(join(out, 'summary.json'), `${JSON.stringify(summary, null, 1)}\n`);
 console.log(JSON.stringify(summary, null, 1));
-ok = !!end.outcome && noControl === 0 && removedSeen.length === 0 && !page.consoleErrors.length;
+ok = !!end.outcome && noControl === 0 && removedSeen.length === 0 && spineProblems.length === 0 && !page.consoleErrors.length;
 } finally {
   await page.close();
 }

@@ -4,8 +4,8 @@
 //!
 //! The adversary's creation lines and its card lines' targets live here (138; 015's
 //! deferred call 9: the agents' heuristic used to copy the build):
-//! `adversary::create` places what [`create_plan`] says, and (275) `adversary::infiltrate`, `surge`, `spill` and
-//! `grow` act on what [`infiltrate_sites`], [`most_agents`] and [`grow_plan`] name, so the forecast in
+//! `adversary::create` places what [`create_plan`] says, and (275, 293) `adversary::infiltrate` and `escalate`
+//! act on what [`infiltrate_sites`] names, so the forecast in
 //! [`next_infiltrate`] can't drift from the rule. The troops' forecast is `board::troop_plan`.
 
 use crate::content::{Op, RoundFlag};
@@ -15,8 +15,8 @@ use crate::state::GameState;
 
 use super::{adversary, board};
 use super::common::{
-    buildable, cities_unowned, free_city_by_a_player, corrupted, cube_owner, firewalled, has_building, is_city, is_ocean, next_to, node_owner, player_ambassador, ADV_AMBASSADOR,
-    FALLOUT, BOTNET, FACTORY, STATION, prohibit_token,
+    cities_unowned, free_city_by_a_player, corrupted, cube_owner, firewalled, is_city, is_ocean, next_to, node_owner, player_ambassador, ADV_AMBASSADOR,
+    BOTNET, FACTORY, STATION, prohibit_token,
 };
 
 /// A creation line's printed words (138): `count` on each of the `sites`
@@ -107,7 +107,7 @@ pub fn corrupt_target(w: &World, g: &GameState, h: usize, site: CorruptSite) -> 
     }
 }
 
-/// 275: whether hex `h` is a site of type `at` (an Infiltrate, Surge, Spill or Grow line's type).
+/// 275: whether hex `h` is a site of type `at` (an Infiltrate or Escalate line's type).
 pub fn site_fits(w: &World, g: &GameState, h: usize, at: SiteType) -> bool {
     match at {
         SiteType::City => is_city(w, h),
@@ -118,13 +118,13 @@ pub fn site_fits(w: &World, g: &GameState, h: usize, at: SiteType) -> bool {
     }
 }
 
-/// 275: whether an Infiltrate, Surge or Spill of type `at` lands on hex `h`: a site of the type not yet the
+/// 275: whether an Infiltrate or Escalate of type `at` lands on hex `h`: a site of the type not yet the
 /// adversary's (a corrupted one takes no agent).
 pub fn infiltrate_fits(w: &World, g: &GameState, h: usize, at: SiteType) -> bool {
     site_fits(w, g, h, at) && !corrupted(g, h)
 }
 
-/// 275, the sites an Infiltrate, Surge or Spill of type `at` names in country `c`: every one not yet the
+/// 275, the sites an Infiltrate or Escalate of type `at` names in country `c`: every one not yet the
 /// adversary's, firewalled ones included (their agents stay in the supply), in hex order.
 pub fn infiltrate_sites(w: &World, g: &GameState, at: SiteType, c: usize) -> Vec<usize> {
     let mut all: Vec<usize> = w.map.countries[c].hexes.iter().copied().filter(|&h| infiltrate_fits(w, g, h, at)).collect();
@@ -132,108 +132,34 @@ pub fn infiltrate_sites(w: &World, g: &GameState, at: SiteType, c: usize) -> Vec
     all
 }
 
-/// 275: of `sites`, the one holding the most agents (ties: the lowest-numbered; 285: the lower country first, as the
-/// rulebook's §2 breaks every tie: a Spill's or seed's neighbors cross borders); none: empty. A firewalled one is
-/// passed over (no arrival lands there).
-pub fn most_agents(w: &World, g: &GameState, sites: &[usize]) -> Option<usize> {
-    sites
-        .iter()
-        .copied()
-        .filter(|&h| !firewalled(g, h))
-        .min_by_key(|&h| (std::cmp::Reverse(g.tokens(h, ADV_AMBASSADOR)), tie(w, h)))
-}
-
 /// 285: the rulebook's §2 tie order between hexes: the lower country, then the lower hex number.
 pub fn tie(w: &World, h: usize) -> (u8, u8) {
     (w.map.hexes[h].country, w.map.hexes[h].number)
 }
 
-/// 285: whether hex `h` lies in a cordoned country (178: no agent lands there from a line, a Spill or a seed, and
-/// no Grow builds there). A hex's neighbors cross borders, so a line acting in an open country checks each hex.
+/// 285: whether hex `h` lies in a cordoned country (178: no agent lands there from a line or a
+/// factory's push). A hex's neighbors cross borders, so a line acting in an open country checks each hex.
 pub fn cordoned(w: &World, g: &GameState, h: usize) -> bool {
     board::flagged(g, RoundFlag::Cordon, w.map.hexes[h].country as usize)
 }
 
-/// 275: whether a botnet's seed may land on hex `h`: a city, research station or factory not yet the adversary's
-/// (285: not in a cordoned country, a botnet's neighbor across a border included).
-pub fn seed_fits(w: &World, g: &GameState, h: usize) -> bool {
-    (is_city(w, h) || g.tokens(h, STATION) > 0 || g.tokens(h, FACTORY) > 0) && !corrupted(g, h) && !firewalled(g, h) && !cordoned(w, g, h)
+/// 293 (Matt, 2026-11-19), a factory's arrow: the city a factory on hex `h` pushes its agent onto: its industrial
+/// zone's printed arrow (`Cell::arrow`: the zone's nearest city of its own country, ties the lower number; every
+/// zone is printed next to one, so the arrow is one hex long). A factory standing off a zone reads the same rule
+/// over the whole map (ties: its own country first). None: the map has no city.
+pub fn factory_arrow(w: &World, h: usize) -> Option<usize> {
+    let own = w.map.hexes[h].country;
+    w.map.hexes[h].arrow.or_else(|| {
+        (0..w.map.hexes.len())
+            .filter(|&x| is_city(w, x))
+            .min_by_key(|&x| (w.map.distance(h, x), w.map.hexes[x].country != own, tie(w, x)))
+    })
 }
 
-/// 275: the free hexes next to `at` where a Grow builds a factory (`true`: a free industrial zone) or a research
-/// station (open land that is no industrial zone), the lower country, then number (285); none in a cordoned
-/// country.
-fn grow_hexes(w: &World, g: &GameState, at: usize, factory: bool) -> Vec<usize> {
-    let mut v: Vec<usize> = w.map.hexes[at]
-        .neighbors
-        .iter()
-        .copied()
-        .filter(|&h| !cordoned(w, g, h))
-        .filter(|&h| {
-            if factory {
-                w.map.hexes[h].industrial && !has_building(g, h) && g.tokens(h, FALLOUT) == 0
-            } else {
-                buildable(w, g, h) && !w.map.hexes[h].industrial
-            }
-        })
-        .collect();
-    // 285: a Grow's free hexes cross borders: the lower country first (§2).
-    v.sort_by_key(|&h| tie(w, h));
-    v
-}
-
-/// 275: what Grow site `at` builds: the type it has fewer of next to it (any owner; ties: a factory) if it has a
-/// free hex for it, else the other type; `(hex, factory)`, none: it can't grow.
-pub fn grow_at(w: &World, g: &GameState, at: usize) -> Option<(usize, bool)> {
-    let near = &w.map.hexes[at].neighbors;
-    let f = near.iter().filter(|&&h| g.tokens(h, FACTORY) > 0).count();
-    let s = near.iter().filter(|&&h| g.tokens(h, STATION) > 0).count();
-    let first = f <= s;
-    [first, !first].into_iter().find_map(|factory| grow_hexes(w, g, at, factory).first().map(|&z| (z, factory)))
-}
-
-/// 275, Grow X's candidates in country `c`: every site of the type (the adversary's too) with a free hex next to
-/// it and fewer than `adversary.grow_cap` facilities next to it (any owner; 0: no cap), in hex order.
-pub fn grow_sites(w: &World, g: &GameState, at: SiteType, c: usize) -> Vec<usize> {
-    let cap = w.int("adversary.grow_cap");
-    let room = |h: usize| {
-        cap <= 0 || (w.map.hexes[h].neighbors.iter().filter(|&&x| g.tokens(x, FACTORY) + g.tokens(x, STATION) > 0).count() as i64) < cap
-    };
-    let mut all: Vec<usize> = w.map.countries[c]
-        .hexes
-        .iter()
-        .copied()
-        .filter(|&h| site_fits(w, g, h, at) && room(h) && grow_at(w, g, h).is_some())
-        .collect();
-    all.sort_by_key(|&h| w.map.hexes[h].number);
-    all
-}
-
-/// 275, what Grow X builds in country `c`: `(the site that grows, the hex it builds on, factory)`: the candidate
-/// holding the most agents (ties: the lowest-numbered). None: no site of the type can grow.
-pub fn grow_plan(w: &World, g: &GameState, at: SiteType, c: usize) -> Option<(usize, usize, bool)> {
-    let sites = grow_sites(w, g, at, c);
-    let site = sites.iter().copied().min_by_key(|&h| (std::cmp::Reverse(g.tokens(h, ADV_AMBASSADOR)), w.map.hexes[h].number))?;
-    let (z, factory) = grow_at(w, g, site)?;
-    Some((site, z, factory))
-}
-
-/// 275, the agents' forecast of the botnets' next seeding (public: the botnets and the agents on the board): the
-/// agents each botnet with no player ambassador on it would land now, by hex (as `adversary::botnets_seed` picks;
-/// a cordoned country's botnets seed nothing: a cordon set now still stands at the next seeding).
-pub fn next_seeds(w: &World, g: &GameState) -> Vec<(usize, f64)> {
-    let n = w.int("adversary.botnet_seed");
-    if n <= 0 {
-        return Vec::new();
-    }
-    (0..g.hexes.len())
-        .filter(|&b| g.tokens(b, BOTNET) > 0 && player_ambassador(g, b).is_none())
-        .filter(|&b| !board::flagged(g, RoundFlag::Cordon, w.map.hexes[b].country as usize))
-        .filter_map(|b| {
-            let near: Vec<usize> = w.map.hexes[b].neighbors.iter().copied().filter(|&x| seed_fits(w, g, x)).collect();
-            most_agents(w, g, &near).or(Some(b).filter(|&x| seed_fits(w, g, x))).map(|t| (t, n as f64))
-        })
-        .collect()
+/// 293: whether a factory's pushed agent lands on city `t`: not yet the adversary's, not firewalled, under no
+/// no-Infiltrate token and not in a cordoned country (else the agent stays on its factory).
+pub fn push_lands(w: &World, g: &GameState, t: usize) -> bool {
+    !corrupted(g, t) && !firewalled(g, t) && !prohibited_now(g, Step::Infiltrate, t) && !cordoned(w, g, t)
 }
 
 /// The card whose Card beat comes next: the face-up one, or this round's until its build has run.
@@ -269,66 +195,6 @@ pub fn next_infiltrate(w: &World, g: &GameState) -> Vec<(usize, f64)> {
                     out.push((h, n));
                 }
             }
-        }
-    }
-    out
-}
-
-/// 288 (D134), the agents' forecast of the card ahead's last lines (public: the card ahead), after `before` (the
-/// arrivals its earlier lines land, [`next_infiltrate`]'s): each Spill's moves as `(hex, -1)` off a site and `(hex,
-/// +1)` onto the one it reaches (as `adversary::spill` picks, from the board as it will stand), and each Grow's agent
-/// on the hex it builds on (`grow_plan`, when the growing site will hold `grow_infest_at` agents). Approximate where
-/// one line's moves feed the next. Empty when no card is ahead.
-pub fn next_spill(w: &World, g: &GameState, before: &[(usize, f64)]) -> Vec<(usize, f64)> {
-    let build_ahead = g.config.round.iter().position(|p| p == "adversary.build").is_some_and(|i| g.phase <= i);
-    let Some(card) = card_ahead(w, g) else {
-        return Vec::new();
-    };
-    // As `next_infiltrate` reads a cordon: before this round's build it blocks this round's lines.
-    let shut = |c: usize| g.var(&board::flag(RoundFlag::Cordon, c)) >= if build_ahead { 1 } else { 2 };
-    let mut extra = vec![0.0f64; g.hexes.len()];
-    for &(h, n) in before {
-        extra[h] += n;
-    }
-    let agents = |extra: &[f64], h: usize| g.tokens(h, ADV_AMBASSADOR) as f64 + extra[h];
-    let mut out = Vec::new();
-    for line in &card.twists {
-        match line {
-            Op::Spill { site, to } if adversary::level(w, w.int("adversary.spill_at")) => {
-                let mut moved = Vec::new();
-                for c in (0..w.map.countries.len()).filter(|&c| !shut(c)) {
-                    for h in infiltrate_sites(w, g, *site, c).into_iter().filter(|&h| agents(&extra, h) >= 2.0) {
-                        let target = w.map.hexes[h]
-                            .neighbors
-                            .iter()
-                            .copied()
-                            .filter(|&x| infiltrate_fits(w, g, x, *to) && !firewalled(g, x))
-                            .filter(|&x| !shut(w.map.hexes[x].country as usize))
-                            .min_by(|&a, &b| {
-                                agents(&extra, b).total_cmp(&agents(&extra, a)).then(tie(w, a).cmp(&tie(w, b)))
-                            });
-                        if let Some(t) = target {
-                            moved.push((h, -1.0));
-                            moved.push((t, 1.0));
-                        }
-                    }
-                }
-                for &(h, n) in &moved {
-                    extra[h] += n;
-                }
-                out.extend(moved);
-            }
-            Op::Grow { site } => {
-                let infest = w.int("adversary.grow_infest_at").max(1) as f64;
-                for c in (0..w.map.countries.len()).filter(|&c| !shut(c)) {
-                    if let Some((at, z, _)) = grow_plan(w, g, *site, c) {
-                        if agents(&extra, at) >= infest || corrupted(g, at) {
-                            out.push((z, 1.0));
-                        }
-                    }
-                }
-            }
-            _ => {}
         }
     }
     out

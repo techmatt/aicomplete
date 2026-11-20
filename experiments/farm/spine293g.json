@@ -1,0 +1,27 @@
+{
+  "name": "spine293g",
+  "note": "293: the research row's K under greedy (the new player) on the dev seeds, d0, three board pairs: K 3 (the asked number), K 2 and K 1, three variants an arm in that order. Farm with `farm-seeds 36800 32 OUT spine293g`.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp_k3", "set": ["adversary.research_at=3,3,3,3,3"]},
+    {"name": "br_k3", "set": ["ai.boards=0,2", "adversary.research_at=3,3,3,3,3"]},
+    {"name": "pr_k3", "set": ["ai.boards=1,2", "adversary.research_at=3,3,3,3,3"]},
+    {"name": "bp_k2", "set": ["adversary.research_at=2,2,2,2,2"]},
+    {"name": "br_k2", "set": ["ai.boards=0,2", "adversary.research_at=2,2,2,2,2"]},
+    {"name": "pr_k2", "set": ["ai.boards=1,2", "adversary.research_at=2,2,2,2,2"]},
+    {"name": "bp_k1", "set": ["adversary.research_at=1,1,1,1,1"]},
+    {"name": "br_k1", "set": ["ai.boards=0,2", "adversary.research_at=1,1,1,1,1"]},
+    {"name": "pr_k1", "set": ["ai.boards=1,2", "adversary.research_at=1,1,1,1,1"]}
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "greedy"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

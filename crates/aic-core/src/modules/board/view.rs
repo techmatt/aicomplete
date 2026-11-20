@@ -6,12 +6,12 @@ fn flag_doc(f: RoundFlag) -> &'static str {
     match f {
         // 261: an adversary card makes these (a project, an event, the Militarist's Naval Blockade; no threat does),
         // and it says how long; nothing in the content makes an Embargo.
-        // 285: a blacked-out corrupted city diverts no Discord either (production.rs `city_energy`).
-        RoundFlag::Blackout => "Blackout: while this is up, cities here make no energy and no Discord in production (until the end of the next round, as its card says)",
+        // 285, 293: a blacked-out corrupted city makes no Discord either (production.rs `corrupted_cities_discord`).
+        RoundFlag::Blackout => "Blackout: while this is up, cities here make no energy in production, and corrupted ones no Discord in the adversary's Income beat (until the end of the next round, as its card says)",
         RoundFlag::Sabotage => "Sabotage: while this is up, players with a node here make no energy in upkeep (until the end of the next round, as its card says)",
         RoundFlag::Embargo => "Embargo: while this is up, no site here can be claimed (until the end of the next round)",
-        // 285: every agent arrival, a neighbor's Spill or seed across the border included.
-        RoundFlag::Cordon => "Cordon: until the end of the next adversary turn no agent lands there (any line, a neighbor's Spill or botnet seed included), no Grow builds there, and its own sites' Spill, Grow and botnet seeds don't act, into a neighbor either (troops still land)",
+        // 285, 293: every agent arrival, whatever line or push sends it.
+        RoundFlag::Cordon => "Cordon: until the end of the next adversary turn no agent lands there (any line, an Escalate or a factory's push included), and its own factories neither push nor make agents (troops still land)",
     }
 }
 
@@ -78,10 +78,9 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         }
         let p = &w.content.map.countries[c].megaproject;
         let done = g.var(&project_done(c)) > 0;
-        let total: i64 = g.var(&project_key(c, None))
-            + g.var(&project_neutral(c))
+        let total: i64 = g.var(&project_neutral(c))
             + (0..g.seats.len())
-                .map(|s| g.var(&project_key(c, Some(s))))
+                .map(|s| g.var(&project_key(c, s)))
                 .sum::<i64>();
         out.country(
             c,
@@ -92,14 +91,6 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
             &format!("{}: {} ({} cubes)", p.name, p.text, p.cubes),
         );
         if !done {
-            out.country(
-                c,
-                "project.adversary",
-                "adversary cubes",
-                g.var(&project_key(c, None)),
-                None,
-                "adversary cubes on the megaproject",
-            );
             out.country(
                 c,
                 "project.neutral",
@@ -113,7 +104,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
                     c,
                     &format!("project.{s}"),
                     &format!("seat {s} cubes"),
-                    g.var(&project_key(c, Some(s))),
+                    g.var(&project_key(c, s)),
                     None,
                     "this player's cubes on the megaproject",
                 );
@@ -121,12 +112,12 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         } else {
             out.country(c, "project.done", "completed", 1, None, &p.text);
             let paid = |color: &str| g.var(&project_paid(c, color));
-            let (mine, adv, neutral) = (paid("player"), paid("adversary"), paid("neutral"));
+            let (mine, neutral) = (paid("player"), paid("neutral"));
             out.country(
                 c,
                 "project.paid",
-                &format!("{mine} player, {adv} adversary, {neutral} neutral"),
-                mine + adv + neutral,
+                &format!("{mine} player, {neutral} neutral"),
+                mine + neutral,
                 None,
                 "the cubes on the card when it completed: every one paid, overflow included",
             );
@@ -158,6 +149,44 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
             );
             out.arrow("troop", h, t, n, rounds, &doc);
         }
+    }
+    // 293: each industrial zone's printed arrow to its city (kind `zone`: `count` the agents a corrupted factory
+    // there holds to push, `rounds` 1 when the push lands in the next Income beat, else 0: the printed arrow alone).
+    for h in 0..g.hexes.len() {
+        if !w.map.hexes[h].industrial {
+            continue;
+        }
+        let Some(t) = super::super::plan::factory_arrow(w, h) else {
+            continue;
+        };
+        let live = g.tokens(h, FACTORY) > 0 && corrupted(g, h);
+        let n = if live { g.tokens(h, ADV_AMBASSADOR) } else { 0 };
+        // As `adversary::factories_output` reads it: an occupying troop, a player ambassador or a cordon stops it.
+        let soon = n > 0
+            && super::super::plan::push_lands(w, g, t)
+            && player_ambassador(g, h).is_none()
+            && !occupied(g, h)
+            && !super::super::plan::cordoned(w, g, h);
+        let doc = if soon {
+            format!(
+                "the corrupted factory at {} pushes its agent along its arrow onto {} in the adversary's next Income beat, then makes another",
+                hex_name(w, h),
+                hex_name(w, t)
+            )
+        } else if live {
+            format!(
+                "the corrupted factory at {} makes 1 agent a round and pushes it along its arrow onto {} (not while that city is the adversary's)",
+                hex_name(w, h),
+                hex_name(w, t)
+            )
+        } else {
+            format!(
+                "industrial zone {}: its printed arrow points to {}: a corrupted factory here pushes its agents there",
+                hex_name(w, h),
+                hex_name(w, t)
+            )
+        };
+        out.arrow("zone", h, t, n, i64::from(soon), &doc);
     }
     for act in STANDARD {
         // 206: a cut action (its price param 0) is not published.

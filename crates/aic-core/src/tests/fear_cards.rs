@@ -115,9 +115,7 @@ fn the_decks_name_board_conditions() {
                             | Op::Prohibit { .. }
                             | Op::Create { .. }
                             | Op::CreateSite { .. }
-                            | Op::Surge { .. }
-                            | Op::Spill { .. }
-                            | Op::Grow { .. }
+                            | Op::Escalate { .. }
                             | Op::ThreatAtNode { .. }
                             | Op::AdversaryBuild
                     ) || matches!(e, Op::Fallout { at, .. } if *at != crate::op::FalloutAt::Location),

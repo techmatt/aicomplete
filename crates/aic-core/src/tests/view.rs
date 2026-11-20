@@ -1,5 +1,5 @@
 use super::*;
-use crate::modules::{board, threats};
+use crate::modules::threats;
 
 /// 235 (D101): a power whose tags one source alone can pay takes it unasked; the view names it (the playtest's Audit
 /// took an 11-credit building with no word). Two sources: it asks, and names none.
@@ -86,11 +86,10 @@ fn the_view_shows_the_board_the_fronts_the_projects_and_the_next_card() {
         let p = value("board.project");
         assert_eq!(p.max, Some(piece(c).megaproject.cubes));
         assert!(p.label.contains(&piece(c).megaproject.name));
-        assert_eq!(
-            value("board.project.adversary").value,
-            g.var(&board::project_key(c, None))
-        );
-        assert_eq!(value("tokens.factory").value, piece(c).factories.len() as i64);
+        // 293: the setup factories, and the research row's New factory once its marker reached slot 1 (round 1's
+        // Income beat, with both starting stations unblocked).
+        let opened = i64::from(g.var(crate::modules::adversary::RESEARCH_SLOT) >= 1);
+        assert_eq!(value("tokens.factory").value, piece(c).factories.len() as i64 + opened);
     }
     for s in &v.seats {
         let value = |k: &str| {

@@ -35,29 +35,24 @@
     "cyber"
    ],
    "cost": 14,
-   "text": "4 adversary cubes onto each open megaproject. Each country: 2 cubes onto the adversary's research track.",
+   "text": "Each country: 1 cube onto the adversary's research track.",
    "effects": [
     {
-     "op": "adversary_cubes",
-     "count": 4
-    },
-    {
      "op": "adversary_research",
-     "amount": 2,
+     "amount": 1,
      "each_country": true,
      "why": "259 (Matt, 2026-11-16: some projects feed the research track; staging default 6: Backdoor Research keeps its line and adds this)"
     }
    ],
    "harms": [
-    "adversary cubes on megaprojects",
-    "Discord sway",
     "adversary research advanced"
    ],
    "value": "give 14 compute a board (28 at 2 countries); get 1.17 a compute (a ratio: 273 moved no ratio) (259: cost 9 -> 14 for the track line).",
-   "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: while megaprojects are open (early to mid). Who plays it: automatic for the adversary (compute step); players answer: finish megaprojects first; drain.",
+   "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round (a slot of the research row). Who plays it: automatic for the adversary (compute step); players answer: drain it.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): 2 to 4 cubes",
-    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)",
+    "293 (Matt, 2026-11-19): \"4 adversary cubes onto each open megaproject. Each country: 2 cubes onto the adversary's research track.\" became \"Each country: 1 cube onto the adversary's research track.\" (adversary cubes go only onto its track; at K 1 a cube a country is one slot)"
    ],
    "reuses": null
   },
@@ -351,16 +346,17 @@
     "cyber"
    ],
    "cost": 21,
-   "text": "Surge 2: each country, 2 Agents onto its research station not yet the adversary's holding the most Agents. Each country: 2 cubes onto the adversary's research track.",
+   "text": "Each country: create 2 Agents on its lowest-numbered research station not yet the adversary's. Each country: 1 cube onto the adversary's research track.",
    "effects": [
     {
-     "op": "surge",
-     "site": "station",
-     "count": 2
+     "op": "create",
+     "count": 2,
+     "at": "station",
+     "if": "clean"
     },
     {
      "op": "adversary_research",
-     "amount": 2,
+     "amount": 1,
      "each_country": true,
      "why": "259 (Matt, 2026-11-16): some projects feed the research track; a lab seized is research taken"
     }
@@ -370,12 +366,14 @@
     "facilities destroyed or corrupted",
     "adversary research advanced"
    ],
-   "value": "282: give 21 compute a board (42 at 2 countries), priced as its captures (experiments/results/282_balance_pass/givget.md; 275: 13); its Surge lines land 2 agents a country, 6.7 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 corrupts a station or factory on arrival only if it already holds an Agent (since r134 facilities corrupt at 3; a Surge 3 corrupts an empty one) unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
-   "check": "275: 231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round with agents by stations. Who plays it: automatic for the adversary (compute step); players answer: clear agents next to stations.",
+   "value": "293: give 21 compute a board; its line lands 2 agents on one research station a country (values.json create, 1.333 an agent a country), corrupting it at its number as Surge 2 did, on the lowest-numbered site not yet the adversary's in place of the one holding the most agents; plus its other lines.",
+   "check": "293: 231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round with agents by stations. Who plays it: automatic for the adversary (compute step); players answer: clear agents next to stations.",
    "flags": [
     "231: new (small, a deck margin)",
     "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)",
-    "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)"
+    "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)",
+    "293 (Matt, 2026-11-19): \"Surge 2: each country, 2 Agents onto its research station not yet the adversary's holding the most Agents.\" became \"Each country: create 2 Agents on its lowest-numbered research station not yet the adversary's.\" (Surge's most-agents pick is gone; its agents and type stay)",
+    "293 (Matt, 2026-11-19): its research line is 1 cube a country (was 2): the track's K went from 5 to 1 a country, so a cube is worth about what 2 were"
    ],
    "reuses": null
   },
@@ -411,23 +409,25 @@
     "security"
    ],
    "cost": 14,
-   "text": "Surge 3: each country, 3 Agents onto its coastal city not yet the adversary's holding the most Agents.",
+   "text": "Each country: create 3 Agents on its lowest-numbered coastal city not yet the adversary's.",
    "effects": [
     {
-     "op": "surge",
-     "site": "coastal_city",
-     "count": 3
+     "op": "create",
+     "count": 3,
+     "at": "coastal_city",
+     "if": "clean"
     }
    ],
    "harms": [
     "adversary pieces placed"
    ],
-   "value": "282: give 14 compute a board (28 at 2 countries), priced as its captures (experiments/results/282_balance_pass/givget.md; 275: 9); its Surge lines land 3 agents a country, 10.0 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 corrupts a station or factory on arrival only if it already holds an Agent (since r134 facilities corrupt at 3; a Surge 3 corrupts an empty one) unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
-   "check": "275: 231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: clear coastal stacks; ambassadors on coastal cities.",
+   "value": "293: give 14 compute a board; its line lands 3 agents on one coastal city a country (values.json create, 1.333 an agent a country), corrupting it at its number as Surge 3 did, on the lowest-numbered site not yet the adversary's in place of the one holding the most agents; plus its other lines.",
+   "check": "293: 231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: clear coastal stacks; ambassadors on coastal cities.",
    "flags": [
     "231: new (small, a deck margin)",
     "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)",
-    "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)"
+    "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)",
+    "293 (Matt, 2026-11-19): \"Surge 3: each country, 3 Agents onto its coastal city not yet the adversary's holding the most Agents.\" became \"Each country: create 3 Agents on its lowest-numbered coastal city not yet the adversary's.\" (Surge's most-agents pick is gone; its agents and type stay)"
    ],
    "reuses": null
   },
@@ -438,24 +438,26 @@
     "industry"
    ],
    "cost": 13,
-   "text": "Surge 2: each country, 2 Agents onto its factory not yet the adversary's holding the most Agents.",
+   "text": "Each country: create 2 Agents on its lowest-numbered factory not yet the adversary's.",
    "effects": [
     {
-     "op": "surge",
-     "site": "factory",
-     "count": 2
+     "op": "create",
+     "count": 2,
+     "at": "factory",
+     "if": "clean"
     }
    ],
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"
    ],
-   "value": "282: give 13 compute a board (26 at 2 countries), priced as its captures (experiments/results/282_balance_pass/givget.md; 275: 9); its Surge lines land 2 agents a country, 6.7 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 corrupts a station or factory on arrival only if it already holds an Agent (since r134 facilities corrupt at 3; a Surge 3 corrupts an empty one) unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
-   "check": "275: 231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round with agents by factories. Who plays it: automatic for the adversary (compute step); players answer: clear agents next to factories.",
+   "value": "293: give 13 compute a board; its line lands 2 agents on one factory a country (values.json create, 1.333 an agent a country), corrupting it at its number as Surge 2 did, on the lowest-numbered site not yet the adversary's in place of the one holding the most agents; plus its other lines.",
+   "check": "293: 231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round with agents by factories. Who plays it: automatic for the adversary (compute step); players answer: clear agents next to factories.",
    "flags": [
     "231: new (small, a deck margin)",
     "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)",
-    "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)"
+    "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)",
+    "293 (Matt, 2026-11-19): \"Surge 2: each country, 2 Agents onto its factory not yet the adversary's holding the most Agents.\" became \"Each country: create 2 Agents on its lowest-numbered factory not yet the adversary's.\" (Surge's most-agents pick is gone; its agents and type stay)"
    ],
    "reuses": null
   },
@@ -521,12 +523,13 @@
     "diplomacy"
    ],
    "cost": 21,
-   "text": "Surge 3: each country, 3 Agents onto its city not yet the adversary's holding the most Agents. Sway 5 toward Discord.",
+   "text": "Each country: create 3 Agents on its lowest-numbered city not yet the adversary's. Sway 5 toward Discord.",
    "effects": [
     {
-     "op": "surge",
-     "site": "city",
-     "count": 3
+     "op": "create",
+     "count": 3,
+     "at": "city",
+     "if": "clean"
     },
     {
      "op": "sway",
@@ -539,12 +542,13 @@
     "adversary pieces placed",
     "Discord sway"
    ],
-   "value": "282: give 21 compute a board (42 at 2 countries), priced as its captures (experiments/results/282_balance_pass/givget.md; 275: 14); its Surge lines land 3 agents a country, 10.0 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 corrupts a station or factory on arrival only if it already holds an Agent (since r134 facilities corrupt at 3; a Surge 3 corrupts an empty one) unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
-   "check": "275: 231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: clear city stacks; drain.",
+   "value": "293: give 21 compute a board; its line lands 3 agents on one city a country (values.json create, 1.333 an agent a country), corrupting it at its number as Surge 3 did, on the lowest-numbered site not yet the adversary's in place of the one holding the most agents; plus its other lines.",
+   "check": "293: 231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: clear city stacks; drain.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): the node raid out, Discord in",
     "233: potency at the same cost (231's screen-5 overlay): Sway 3 to 5",
-    "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)"
+    "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)",
+    "293 (Matt, 2026-11-19): \"Surge 3: each country, 3 Agents onto its city not yet the adversary's holding the most Agents.\" became \"Each country: create 3 Agents on its lowest-numbered city not yet the adversary's.\" (Surge's most-agents pick is gone; its agents and type stay)"
    ],
    "reuses": null
   },
@@ -588,24 +592,26 @@
     "industry"
    ],
    "cost": 15,
-   "text": "Surge 3: each country, 3 Agents onto its factory not yet the adversary's holding the most Agents.",
+   "text": "Each country: create 3 Agents on its lowest-numbered factory not yet the adversary's.",
    "effects": [
     {
-     "op": "surge",
-     "site": "factory",
-     "count": 3
+     "op": "create",
+     "count": 3,
+     "at": "factory",
+     "if": "clean"
     }
    ],
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"
    ],
-   "value": "275: give 15 compute a board (30 at 2 countries); its Surge lines land 3 agents a country, 10.0 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 corrupts a station or factory on arrival only if it already holds an Agent (since r134 facilities corrupt at 3; a Surge 3 corrupts an empty one) unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
-   "check": "275: 231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: clear factory stacks; ambassadors on factories.",
+   "value": "293: give 15 compute a board; its line lands 3 agents on one factory a country (values.json create, 1.333 an agent a country), corrupting it at its number as Surge 3 did, on the lowest-numbered site not yet the adversary's in place of the one holding the most agents; plus its other lines.",
+   "check": "293: 231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: clear factory stacks; ambassadors on factories.",
    "flags": [
     "231: kept, repriced per board",
     "233: potency at the same cost (231's screen-5 overlay): corrupts with 1 fewer",
-    "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)"
+    "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)",
+    "293 (Matt, 2026-11-19): \"Surge 3: each country, 3 Agents onto its factory not yet the adversary's holding the most Agents.\" became \"Each country: create 3 Agents on its lowest-numbered factory not yet the adversary's.\" (Surge's most-agents pick is gone; its agents and type stay)"
    ],
    "reuses": null
   },
@@ -616,7 +622,7 @@
     "cyber"
    ],
    "cost": 24,
-   "text": "Each country: its neutral research station with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track.",
+   "text": "Each country: its neutral research station with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 1 cube goes onto the adversary's research track.",
    "effects": [
     {
      "op": "take_site",
@@ -628,7 +634,7 @@
     },
     {
      "op": "adversary_research",
-     "amount": 2,
+     "amount": 1,
      "each_country": true,
      "why": "259 (Matt, 2026-11-16): some projects feed the research track; the third consequence its cost (18+) allows"
     }
@@ -641,7 +647,8 @@
    "value": "give 24 compute a board (48 at 2 countries); get 1.11 a compute (a ratio: 273 moved no ratio) (259: cost 19 -> 24 for the track line).",
    "check": "231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: claim stations; ambassadors on them.",
    "flags": [
-    "231: kept, repriced per board"
+    "231: kept, repriced per board",
+    "293 (Matt, 2026-11-19): its research line is 1 cube a country (was 2): the track's K went from 5 to 1 a country, so a cube is worth about what 2 were"
    ],
    "reuses": null
   },
@@ -683,25 +690,27 @@
     "diplomacy"
    ],
    "cost": 24,
-   "text": "Surge 5: each country, 5 Agents onto its city not yet the adversary's holding the most Agents.",
+   "text": "Each country: create 5 Agents on its lowest-numbered city not yet the adversary's.",
    "effects": [
     {
-     "op": "surge",
-     "site": "city",
-     "count": 5
+     "op": "create",
+     "count": 5,
+     "at": "city",
+     "if": "clean"
     }
    ],
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"
    ],
-   "value": "283: give 24 compute a board (48 at 2 countries): one harm sized to the cost (Matt, 283): Surge 5 corrupts the city holding the most agents in each country at every level (5 at level 0, 3 from level 1, so through two ambassadors), against Infiltration Drive's 22 (Surge 4 and Fallout) and the card anchors' 30 a city; its Surge line lands 5 agents a country, 16.7 at values.json's surge (1.667 an agent, 2 countries), which underprices a corruption.",
+   "value": "293: give 24 compute a board; its line lands 5 agents on one city a country (values.json create, 1.333 an agent a country), corrupting it at its number as Surge 5 did, on the lowest-numbered site not yet the adversary's in place of the one holding the most agents; plus its other lines.",
    "check": "283: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: early is worst. Who plays it: automatic for the adversary (compute step); players answer: drain it; ambassadors on cities; clear city stacks.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): a rally now beside the income",
     "233: potency at the same cost (231's screen-5 overlay): Rally 2 to 3",
     "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)",
-    "283 (Matt's 282 pick): held at 24 compute (was 32), one Surge line cut; its station Surge cut; the city Surge 4 -> 5, a capture of the city holding the most agents at every level (cities corrupt at 5; 3 from level 1, so through two ambassadors there) (a candidate)"
+    "283 (Matt's 282 pick): held at 24 compute (was 32), one Surge line cut; its station Surge cut; the city Surge 4 -> 5, a capture of the city holding the most agents at every level (cities corrupt at 5; 3 from level 1, so through two ambassadors there) (a candidate)",
+    "293 (Matt, 2026-11-19): \"Surge 5: each country, 5 Agents onto its city not yet the adversary's holding the most Agents.\" became \"Each country: create 5 Agents on its lowest-numbered city not yet the adversary's.\" (Surge's most-agents pick is gone; its agents and type stay)"
    ],
    "reuses": null
   },
@@ -744,12 +753,13 @@
     "diplomacy"
    ],
    "cost": 22,
-   "text": "Surge 4: each country, 4 Agents onto its city not yet the adversary's holding the most Agents. Then each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
+   "text": "Each country: create 4 Agents on its lowest-numbered city not yet the adversary's. Then each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
    "effects": [
     {
-     "op": "surge",
-     "site": "city",
-     "count": 4
+     "op": "create",
+     "count": 4,
+     "at": "city",
+     "if": "clean"
     },
     {
      "op": "fallout",
@@ -761,11 +771,12 @@
     "facilities destroyed or corrupted",
     "Fallout placed"
    ],
-   "value": "275: give 22 compute a board (44 at 2 countries); its Surge lines land 4 agents a country, 13.3 at values.json's surge (1.667 an agent, 2 countries) plus its other lines; a Surge 2 corrupts a station or factory on arrival only if it already holds an Agent (since r134 facilities corrupt at 3; a Surge 3 corrupts an empty one) unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
-   "check": "275: 231: 3 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late. Who plays it: automatic for the adversary (compute step); players answer: clear city stacks; ambassadors on cities.",
+   "value": "293: give 22 compute a board; its line lands 4 agents on one city a country (values.json create, 1.333 an agent a country), corrupting it at its number as Surge 4 did, on the lowest-numbered site not yet the adversary's in place of the one holding the most agents; plus its other lines.",
+   "check": "293: 231: 3 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late. Who plays it: automatic for the adversary (compute step); players answer: clear city stacks; ambassadors on cities.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): Fallout added",
-    "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)"
+    "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)",
+    "293 (Matt, 2026-11-19): \"Surge 4: each country, 4 Agents onto its city not yet the adversary's holding the most Agents.\" became \"Each country: create 4 Agents on its lowest-numbered city not yet the adversary's.\" (Surge's most-agents pick is gone; its agents and type stay)"
    ],
    "reuses": null
   },
@@ -807,28 +818,30 @@
     "universal"
    ],
    "cost": 24,
-   "text": "Each country: this round's Infiltrate lines land again. Surge 2: each country, 2 Agents onto its factory not yet the adversary's holding the most Agents.",
+   "text": "Each country: this round's Infiltrate lines land again. Each country: create 2 Agents on its lowest-numbered factory not yet the adversary's.",
    "effects": [
     {
      "op": "adversary_build"
     },
     {
-     "op": "surge",
-     "site": "factory",
-     "count": 2
+     "op": "create",
+     "count": 2,
+     "at": "factory",
+     "if": "clean"
     }
    ],
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted"
    ],
-   "value": "283: give 24 compute a board (48 at 2 countries): this round's Infiltrate lines again (~5) and a factory capture (~13, 282's givget.md); its Surge line lands 2 agents a country, 6.7 at values.json's surge (1.667 an agent, 2 countries); a Surge 2 corrupts a factory on arrival only if it already holds an Agent (since r134 factories corrupt at 3) unless an ambassador cancels one, which the per-agent row underprices (a corruption, a lost node there).",
+   "value": "293: give 24 compute a board; its line lands 2 agents on one factory a country (values.json create, 1.333 an agent a country), corrupting it at its number as Surge 2 did, on the lowest-numbered site not yet the adversary's in place of the one holding the most agents; plus its other lines.",
    "check": "283: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: mid to late. Who plays it: automatic for the adversary (compute step); players answer: clear factory stacks; ambassadors on factories.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): Corrupt factories added",
     "233: potency at the same cost (231's screen-5 overlay): both corrupts with 1 fewer",
     "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)",
-    "283 (Matt's 282 pick): held at 24 compute (was 32), one Surge line cut; its city Surge 3 cut (Infiltrate again 5 + factory capture 13) (a candidate)"
+    "283 (Matt's 282 pick): held at 24 compute (was 32), one Surge line cut; its city Surge 3 cut (Infiltrate again 5 + factory capture 13) (a candidate)",
+    "293 (Matt, 2026-11-19): \"Surge 2: each country, 2 Agents onto its factory not yet the adversary's holding the most Agents.\" became \"Each country: create 2 Agents on its lowest-numbered factory not yet the adversary's.\" (Surge's most-agents pick is gone; its agents and type stay)"
    ],
    "reuses": null
   },
@@ -839,12 +852,13 @@
     "security"
    ],
    "cost": 24,
-   "text": "Surge 3: each country, 3 Agents onto its research station not yet the adversary's holding the most Agents.",
+   "text": "Each country: create 3 Agents on its lowest-numbered research station not yet the adversary's.",
    "effects": [
     {
-     "op": "surge",
-     "site": "station",
-     "count": 3
+     "op": "create",
+     "count": 3,
+     "at": "station",
+     "if": "clean"
     }
    ],
    "harms": [
@@ -854,10 +868,11 @@
    "flags": [
     "233: new (231's draft; the deck to 30)",
     "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)",
-    "283 (Matt's 282 pick): held at 24 compute (was 29), one Surge line cut; its factory Surge cut; the station Surge 2 -> 3, a capture of the unguarded station whatever it holds (stations corrupt at 3), a player's own included (a candidate)"
+    "283 (Matt's 282 pick): held at 24 compute (was 29), one Surge line cut; its factory Surge cut; the station Surge 2 -> 3, a capture of the unguarded station whatever it holds (stations corrupt at 3), a player's own included (a candidate)",
+    "293 (Matt, 2026-11-19): \"Surge 3: each country, 3 Agents onto its research station not yet the adversary's holding the most Agents.\" became \"Each country: create 3 Agents on its lowest-numbered research station not yet the adversary's.\" (Surge's most-agents pick is gone; its agents and type stay)"
    ],
    "reuses": null,
-   "value": "283: give 24 compute a board (48 at 2 countries): one harm sized to the cost (Matt, 283): Surge 3 corrupts the station holding the most agents in each country outright unless an ambassador cancels one (stations corrupt at 3), a player's own included, against Station Coup's 24 (a neutral station, Fallout, 2 track cubes) and 282's ~16 a station capture; its Surge line lands 3 agents a country, 10.0 at values.json's surge (1.667 an agent, 2 countries), which underprices a corruption.",
+   "value": "293: give 24 compute a board; its line lands 3 agents on one research station a country (values.json create, 1.333 an agent a country), corrupting it at its number as Surge 3 did, on the lowest-numbered site not yet the adversary's in place of the one holding the most agents; plus its other lines.",
    "check": "283: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: ambassadors on stations; clear station stacks."
   }
  ]

@@ -14,11 +14,11 @@ const esc = escapeHtml;
 const DRAWN_GLOBALS = new Set([
   'adversary.stage', 'adversary.difficulty', 'adversary.deck', 'adversary.compute',
   'threats.tier', 'alignment.unity', 'alignment.discord', 'alignment.unity_tips',
-  'alignment.discord_tips', 'alignment.bar',
+  'alignment.discord_tips', 'alignment.bar', 'adversary.research', 'adversary.research_slot',
 ]);
 /** Piles drawn by the status strip, the adversary row or the countries strip. */
 const DRAWN_PILES = new Set([
-  'adversary.deck', 'adversary.next', 'adversary.current', 'adversary.discard',
+  'adversary.deck', 'adversary.next', 'adversary.current', 'adversary.last', 'adversary.discard',
   'alignment.deck.unity', 'alignment.deck.discord', 'alignment.resolved.unity', 'alignment.resolved.discord',
   'adversary.projects', 'adversary.projects_done', 'adversary.project_deck',
 ]);
@@ -139,6 +139,12 @@ function lossesHtml(v: View, config: Config): string[] {
     const danger = live && deck.value <= 1 ? ' danger' : '';
     loss.push(`<span class="value${danger}" data-value="${deck.key}" data-scope="global"><span class="label">adversary cards run out</span> <b>${deck.value}</b><small> left</small></span>`);
   }
+  // 293: the adversary's research marker reaching the slot after its row's last.
+  const slot = findValue(g, 'adversary.research_slot');
+  if (slot?.max) {
+    const danger = live && slot.value >= slot.max - 1 ? ' danger' : '';
+    loss.push(`<span class="value${danger}" data-value="${slot.key}" data-scope="global"><span class="label">adversary research reaches slot ${slot.max}</span> <b>${slot.value}</b><small>/${slot.max}</small></span>`);
+  }
   // 044: the third locked loss: a seat's last node, if this config has it.
   const counts = v.seats.map((s) => s.values.find((x) => x.key === 'board.node')?.value);
   if (param(config, 'alignment', 'node_loss') && counts.every((n) => n !== undefined) && counts.length) {
@@ -165,21 +171,56 @@ export function statusHtml(v: View, config: Config): string {
 
 // ---------- the adversary row ----------
 
+/** An adversary card's printed text: content's, else the view's without its "stage n: " (drawn as a chip). */
+const adversaryText = (c: CardView) => content.adversary.find((a) => a.id === c.id)?.text ?? (c.text ?? '').replace(/^stage \d+:\s*/, '');
+
+/** 293: the site types a card's Infiltrate lines name, as printed ("coastal cities"): what escalates the round after. */
+const infiltrateTypes = (c: CardView) => [...new Set([...adversaryText(c).matchAll(/Infiltrate: ([^.]+)\./g)].map((m) => m[1]))];
+
 /** An adversary card face under the box's title: name, stage, then its printed text. */
 function adversaryCard(c: CardView, where: string, title: string): string {
   const def = content.adversary.find((a) => a.id === c.id);
-  // The view's text starts "stage n: "; the stage is drawn as a chip instead.
-  const text = def?.text ?? (c.text ?? '').replace(/^stage \d+:\s*/, '');
+  const text = adversaryText(c);
   const stage = def ? `<span class="stage">stage ${def.stage}</span>` : '';
   return `<div class="acard" data-card="${esc(c.id)}" data-where="${where}"><div class="sline"><span class="stitle">${title}</span><span class="sname">${esc(c.name)}</span>${stage}</div><div class="atext">${esc(text)}</div></div>`;
 }
 
-function cardBox(p: PileView | undefined, title: string, empty: string, cls: string): string {
+function cardBox(p: PileView | undefined, title: string, empty: string, cls: string, foot = ''): string {
   if (!p) return '';
   const cards = p.visible.length
     ? p.visible.map((c) => adversaryCard(c, `pile:${p.key}`, title)).join('')
     : `<div class="sline"><span class="stitle">${title}</span></div><span class="empty">${esc(empty)}</span>`;
-  return `<div class="slot-box ${cls}" data-pile="${esc(p.key)}">${cards}</div>`;
+  return `<div class="slot-box ${cls}" data-pile="${esc(p.key)}">${cards}${foot}</div>`;
+}
+
+/** 293: what escalates this round, under last round's card: the site types its Infiltrate lines named. */
+function escalatesHtml(last: PileView | undefined): string {
+  if (!last?.visible.length) return '';
+  const types = last.visible.flatMap(infiltrateTypes).join(', ');
+  const rule = 'Escalate: each site of last round\'s type that holds an agent takes 1 more';
+  return `<div class="hint escalates" data-escalating="${esc(types)}" title="${esc(rule)}">Escalating: <b>${esc(types || 'nothing')}</b></div>`;
+}
+
+/**
+ * 293: the adversary's research row: its six icon slots (hover: the icon's text), the reached ones filled and the
+ * marker's boxed, the loss slot after them, and the cubes toward the next slot. The row is content's
+ * (`adversary_board.research`); without it, the names in the `research_slot` value's doc.
+ */
+function researchHtml(v: View): string {
+  const slot = findValue(v.globals, 'adversary.research_slot');
+  if (!slot) return '';
+  const cubes = findValue(v.globals, 'adversary.research');
+  const row = content.adversary_board?.research;
+  const icons = content.adversary_board?.icons ?? [];
+  const slots = row
+    ? row.slots.map((id) => icons.find((i) => i.id === id) ?? { name: id.replace(/_/g, ' '), text: '' })
+    : ((slot.doc ?? '').split('once: ')[1]?.split(';')[0].split(', ') ?? []).map((s) => ({ name: s.replace(/^\[?\d+ |\]$/g, ''), text: '' }));
+  const cls = (k: number) => `${k <= slot.value ? ' reached' : ''}${k === slot.value ? ' marker' : ''}`;
+  const boxes = slots.map((s, i) => `<span class="rslot${cls(i + 1)}" data-slot="${i + 1}" title="${esc(`slot ${i + 1}, ${s.name}${s.text ? `: ${s.text}` : ''}${i < slot.value ? ' (reached: it happened)' : ''}`)}">${i + 1} ${esc(s.name)}</span>`);
+  const loss = slots.length + 1;
+  boxes.push(`<span class="rslot loss${cls(loss)}" data-slot="${loss}" title="slot ${loss}: the players lose">${loss} Loss</span>`);
+  const count = cubes ? `<span class="rcubes" data-value="${esc(cubes.key)}" data-scope="global">cubes <b>${cubes.value}</b><small> / ${cubes.max ?? '?'}</small> to the next slot</span>` : '';
+  return `<div class="research-row" data-research-slot="${slot.value}"><span class="stitle" data-value="${esc(slot.key)}" data-scope="global">${esc(row?.name ?? 'Research')}</span>${boxes.join('')}${count}</div>`;
 }
 
 export function pipelineHtml(v: View): string {
@@ -187,6 +228,7 @@ export function pipelineHtml(v: View): string {
   const next = pile(v, 'adversary.next');
   const cur = pile(v, 'adversary.current');
   const di = pile(v, 'adversary.discard');
+  const lastRound = pile(v, 'adversary.last');
   if (!deck && !next && !cur) return '';
   const g = v.globals;
   const head = ['adversary.stage', 'adversary.difficulty', 'adversary.compute', 'threats.tier']
@@ -209,11 +251,13 @@ export function pipelineHtml(v: View): string {
     // 184: "(face up)" headed an empty slot reading "not revealed yet".
     cardBox(next, next?.visible.length ? 'Next round (face up)' : 'Next round', 'not revealed yet', 'next'),
     cardBox(cur, 'This round', 'no card this round', 'current'),
+    // 293: last round's card stays face up: its Infiltrate types escalate this round.
+    cardBox(lastRound, 'Last round','no card yet: nothing escalates', 'last', escalatesHtml(lastRound)),
     discBox,
   ].filter(Boolean);
   const left = onBoard(v, ['ambassador:adversary', 'troop']);
   const pieces = `<span class="left" title="adversary pieces on the board">on board: ${left['ambassador:adversary']} agent${left['ambassador:adversary'] === 1 ? '' : 's'} · ${left.troop} troop${left.troop === 1 ? '' : 's'}</span>`;
-  return `<div class="phead"><b>Adversary</b>${head}${pieces}</div><div class="prow">${boxes.join(arrow)}</div>${projectsHtml(v)}`;
+  return `<div class="phead"><b>Adversary</b>${head}${pieces}</div>${researchHtml(v)}<div class="prow">${boxes.join(arrow)}</div>${projectsHtml(v)}`;
 }
 
 /**
@@ -267,7 +311,8 @@ function threatCard(c: CardView, where: string, v: View): string {
 
 /**
  * A country's megaproject card: its name and a row of cube places, filled left to right
- * by owner (the adversary's, the neutral stations', then each seat's), from `board.project*`.
+ * by owner (the neutral stations', then each seat's; 293: the adversary's cubes go to its research row), from
+ * `board.project*`.
  * A completed card says how many cubes paid, overflow included.
  */
 function megaprojectHtml(v: View, c: View['countries'][number]): string {
@@ -277,8 +322,6 @@ function megaprojectHtml(v: View, c: View['countries'][number]): string {
   const max = total.max ?? 0;
   const done = !!findValue(c.values, 'board.project.done');
   const owners: { label: string; n: number; color: string; key: string }[] = [];
-  const adv = findValue(c.values, 'board.project.adversary');
-  if (adv) owners.push({ label: 'adversary', n: adv.value, color: ADVERSARY_COLOR, key: adv.key });
   const neutral = findValue(c.values, 'board.project.neutral');
   if (neutral) owners.push({ label: 'neutral', n: neutral.value, color: NEUTRAL_COLOR, key: neutral.key });
   for (const s of v.seats) {

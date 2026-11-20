@@ -55,18 +55,14 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::list("compute_income", 0, 30, "the adversary's base compute income a country a round, at difficulty 0-4 (times the countries: per board)"),
     ParamSpec::list("infiltrate_agents", 0, 5, "275: agents an Infiltrate line lands on each city it names, at difficulty 0-4"),
     ParamSpec::int("infiltrate_facility_cap", 0, 5, "282: at most this many of an Infiltrate line's agents land on each research station, factory or botnet hex it names (cities take every one)"),
-    ParamSpec::int("spill_at", 0, 5, "275: the difficulty level from which an event card's Spill line moves agents; below it the line does nothing"),
-    ParamSpec::int("botnet_seed", 0, 5, "275: agents each botnet (no player ambassador on it) seeds onto the site next to it holding the most agents, in the compute step with its compute (r133)"),
-    ParamSpec::int("grow_infest_at", 1, 5, "275: agents a Grow site holds for its new facility to come with 1 agent on it (an adversary site's always does)"),
-    ParamSpec::int("grow_cap", 0, 6, "275: a Grow site with this many facilities next to it (any owner) doesn't grow (0: no cap)"),
     ParamSpec::int("threat_agents", 0, 5, "275: agents an uncountered threat lands on its anchor (its first location token) as it executes"),
     ParamSpec::int("discord_removed", 0, 3, "difficulty 4+: Discord cards removed at setup (from tier 1)"),
     ParamSpec::int("station_flip_at", 0, 5, "agents on a player's research station before an effect can flip it (short of that, one lands there instead)"),
-    ParamSpec::int("botnet_compute", 0, 5, "adversary compute each botnet makes a round (none with a player ambassador on it)"),
+    ParamSpec::int("botnet_compute", 0, 5, "a botnet's one output: adversary compute each makes a round (none with a player ambassador on it)"),
     ParamSpec::int("botnet_spread_at", 0, 5, "263: the difficulty level from which a 'Botnets spread' line (event cards, projects) spreads botnets; below it the line does nothing"),
     ParamSpec::int("board_difficulty_at", 0, 5, "the difficulty level from which the adversary board's `difficulty` line applies (267: the Militarist's War Footing, level 2's named rule)"),
-    ParamSpec::list("research_at", 0, 30, "259: research cubes a country that fire the adversary board's research rule, at difficulty 0-4 (times the countries; 0: never)"),
-    ParamSpec::int("research_strong_at", 0, 5, "259: the difficulty level from which the research rule fires its stronger effect"),
+    ParamSpec::list("research_at", 0, 30, "293: K, the research cubes a country that advance the adversary's research track one slot, at difficulty 0-4 (times the countries; 0: no track)"),
+    ParamSpec::int("research_start", 0, 30, "293: research cubes a country on the adversary's track at setup"),
 ];
 
 /// r80 (ruling #41): the adversary turn's three beats (275; r80 had four), printed as a strip on the adversary board, with the round
@@ -86,12 +82,12 @@ pub fn beat_of(phase: &str) -> Option<&'static str> {
 }
 
 const PHASES: &[PhaseSpec] = &[
-    PhaseSpec::auto("build", "the Card beat after the threats: Infiltrate X (agents on each named site), Muster (its troops), the card's other lines, Spill and Grow; each arrival checks the site it lands on"),
-    PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead (its Infiltrate and Grow sites shown)"),
+    PhaseSpec::auto("build", "the Card beat after the threats: Escalate (each site of last round's type that holds an agent takes 1 more), the board's one rule, Infiltrate X (agents on each named site), Muster (its troops) and the card's other lines; each arrival checks the site it lands on"),
+    PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead (its Infiltrate sites shown: they escalate the round after)"),
     PhaseSpec::auto("event", "the face-up event card becomes this round's (none left: the adversary wins)"),
     // 178 (amendment 8112): its own phase, so a project's prompt doesn't follow the reveal's hidden draw in one
     // phase (a determinized replay of it could resolve another project first). No play change.
-    PhaseSpec::auto("compute", "the Income beat: the compute step (each botnet seeds an agent next to it and adds its compute, the compute even when a cordon stops the seed or it has nowhere to land; then income and the compute banked since the last turn, all onto the leftmost project, which resolves as it fills); then the research check; then every firewall, cordon and prohibition token comes off: the adversary turn ends"),
+    PhaseSpec::auto("compute", "the Income beat: each corrupted site makes its one output (a city 1 Discord, a station 1 research cube, a factory 1 agent after pushing its last along its arrow, a botnet its compute); then income and the compute banked since the last turn, all onto the leftmost project, which resolves as it fills; then the research track advances a slot for every K cubes; then every firewall, cordon and prohibition token comes off: the adversary turn ends"),
 ];
 
 // `run`'s phase indices: each is its phase's position in `PHASES`.
@@ -123,6 +119,8 @@ pub const DISCARD: &str = "adversary.discard";
 pub const CURRENT: &str = "adversary.current";
 /// Next round's card, face up a round ahead.
 pub const NEXT: &str = "adversary.next";
+/// 293: last round's card, kept face up in the board's "last round" space: its Infiltrate types escalate.
+pub const LAST: &str = "adversary.last";
 /// Agents in the supply.
 pub const SUPPLY: &str = "adversary.supply";
 /// Stage of this round's card.
@@ -257,8 +255,13 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
 /// round without one, the build does it). None left: the adversary wins.
 fn flip(g: &mut GameState, cx: &mut Cx) {
     let w = cx.world;
+    // 293: this round's card moves to the "last round" space (its types escalate next round), the one there to
+    // the discard.
+    for id in g.pile(LAST).to_vec() {
+        cx.move_card(g, &id, LAST, DISCARD, true).expect("last round's card");
+    }
     for id in g.pile(CURRENT).to_vec() {
-        cx.move_card(g, &id, CURRENT, DISCARD, true)
+        cx.move_card(g, &id, CURRENT, LAST, true)
             .expect("current card");
     }
     let Some(id) = g.pile(NEXT).first().cloned() else {
@@ -303,6 +306,22 @@ pub fn threat_compute(w: &World) -> i64 {
     base + hard
 }
 
+/// 293: the adversary board's one rule, where it prints a Card-beat line (the Militarist's Commandeered Plants: an
+/// Escalate of its own every round): run after the card's escalate, before its Infiltrate. A rule read elsewhere
+/// (an income or threat-compute line) is no line here.
+fn board_rule(g: &mut GameState, cx: &mut Cx) -> Res {
+    let w = cx.world;
+    for r in &w.content.adversary_board.rules {
+        for e in r.effects.iter().filter(|e| matches!(e, Op::Escalate { .. })) {
+            effects::run(g, cx, std::slice::from_ref(e), &mut effects::Ctx::team().named("board").why(&r.name))?;
+            if g.is_over() {
+                return Ok(());
+            }
+        }
+    }
+    Ok(())
+}
+
 /// The event card's standing lines (135): compute, ambassadors and troops,
 /// resolved as the team's; a Muster gets the difficulty bonus where it lands (`team::troops`, 175).
 fn standing(g: &mut GameState, cx: &mut Cx, c: &AdversaryCard) -> Res {
@@ -339,6 +358,11 @@ impl Module for Adversary {
         }
         cx.set_pile(g, DECK, deck);
         reveal(g, cx);
+        // 293: the research track's starting cubes.
+        let start = w.int("adversary.research_start").max(0) * w.map.countries.len() as i64;
+        if start > 0 && research_on(&w) {
+            cx.set_key(g, RESEARCH, start);
+        }
         // 151: the compute income, from the config's level and the board's own lines (275: no agent income).
         let mut compute = income_at(&w, "adversary.compute_income");
         for e in w.content.adversary_board.rules.iter().flat_map(|r| r.effects.iter()) {
@@ -371,6 +395,15 @@ impl Module for Adversary {
                     return Ok(());
                 };
                 let c = card(&w, &id);
+                // 293: escalate first (last round's type), then the board's one rule, then this card's lines.
+                escalate_last(g, cx)?;
+                if g.is_over() {
+                    return Ok(());
+                }
+                board_rule(g, cx)?;
+                if g.is_over() {
+                    return Ok(());
+                }
                 standing(g, cx, c)?;
                 if g.is_over() {
                     return Ok(());
@@ -381,9 +414,6 @@ impl Module for Adversary {
                         Op::Sway { .. } | Op::EachDestroyNode { .. } | Op::PullUnity { .. } | Op::Fallout { .. } => {
                             effects::run(g, cx, std::slice::from_ref(t), &mut effects::Ctx::team().named("twist").why(&c.name))?
                         }
-                        // 275: the card's last lines, in card order: Spill, then Grow.
-                        Op::Spill { site, to } => spill(g, cx, *site, *to, None)?,
-                        Op::Grow { site } => grow(g, cx, *site, None)?,
                         // Read where it acts: the march.
                         Op::TroopSteps { .. } => {}
                         // The load check lets no other op in: one added to `Slot::Twist`
@@ -410,11 +440,11 @@ impl Module for Adversary {
             }
             REVEAL => reveal(g, cx),
             COMPUTE_STEP => {
-                // r133 (280): the compute step opens with the botnets, each seeding and adding its compute.
+                // 293: the outputs (each corrupted site's one), then the compute onto the projects.
                 if !g.is_over() {
                     compute_step(g, cx)?;
                 }
-                // 259: then the research track, once a round.
+                // 293: then the research track: a slot for every K cubes.
                 if !g.is_over() {
                     research_step(g, cx)?;
                 }
@@ -482,6 +512,8 @@ impl Module for Adversary {
             .map(|id| show(id, "face up: next round"))
             .collect();
         out.pile("next", "Next round's card", None, next.len(), next);
+        let last: Vec<CardView> = g.pile(LAST).iter().map(|id| show(id, "last round: its sites escalate")).collect();
+        out.pile("last", "Last round's card (its sites escalate)", None, last.len(), last);
         let cur: Vec<CardView> = g
             .pile(CURRENT)
             .iter()
@@ -534,24 +566,28 @@ impl Module for Adversary {
             None,
             "compute made since the adversary's last turn: it goes onto the projects in its next compute step",
         );
-        if let (Some(r), true) = (&w.content.adversary_board.research, research_on(w)) {
-            let at = research_threshold(w);
-            out.global(
-                "research",
-                "adv. research",
-                g.var(RESEARCH),
-                Some(at),
-                &format!(
-                    "the adversary's research track: at {at} it spends {at} and fires {} in its compute step ({})",
-                    r.name,
-                    // 261: the stronger text is a change to the rule ("Muster 3 instead."): print it after the rule.
-                    if level(w, w.int("adversary.research_strong_at")) {
-                        format!("{} {}", r.text, r.strong.text)
-                    } else {
-                        r.text.clone()
+        research_view(g, w, out);
+        // 293: the map shows which threat is growing: each site the next Card beat's Escalate lands on (a site of
+        // the escalating type, not yet the adversary's, holding an agent), as an arrow onto itself, kind `escalate`.
+        let mut marked: Vec<usize> = Vec::new();
+        for site in next_escalating(w, g) {
+            for c in 0..w.map.countries.len() {
+                for h in super::plan::infiltrate_sites(w, g, site, c) {
+                    // As the rule: a firewalled or no-Infiltrate site and a cordoned country take none.
+                    let lands = !firewalled(g, h) && !super::plan::prohibited_now(g, Step::Infiltrate, h) && !super::plan::cordoned(w, g, h);
+                    if g.tokens(h, ADV_AMBASSADOR) > 0 && lands && !marked.contains(&h) {
+                        marked.push(h);
+                        out.arrow(
+                            "escalate",
+                            h,
+                            h,
+                            1,
+                            1,
+                            &format!("{} takes 1 more agent in the adversary's next Card beat (Escalate: {}) unless its agents are cleared first", hex_name(w, h), site.plural()),
+                        );
                     }
-                ),
-            );
+                }
+            }
         }
         out.global(
             "difficulty",

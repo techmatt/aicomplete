@@ -1,6 +1,7 @@
-//! 275: the adversary's card-driven lines: Infiltrate X (it replaced Rally, the agent pools and agent income),
-//! Surge, Spill and Grow (it replaced city growth), botnets' seeding, out-of-turn Infiltrates and creation lines.
-//! Every step acts only on the sites its line names; each arrival is checked where it lands ([`arrive_check`]).
+//! 275, 293: the adversary's card-driven lines: Infiltrate X and Escalate (293: it replaced Spill, Surge and Grow),
+//! the one output of a corrupted factory (its agent, pushed along its arrow) and of a botnet (its compute; 293: no
+//! seeding), out-of-turn Infiltrates and creation lines. Every step acts only on the sites its line names; each
+//! arrival is checked where it lands ([`arrive_check`]).
 
 use super::*;
 use crate::op::SiteType;
@@ -22,11 +23,6 @@ pub fn increase_income(g: &mut GameState, cx: &mut Cx, compute: i64) {
 /// 275: the site types a card's Infiltrate lines name, in card order (stage III cards print two).
 pub fn infiltrate_sites(c: &AdversaryCard) -> Vec<SiteType> {
     c.standing.iter().filter_map(|e| if let Op::Infiltrate { site } = e { Some(*site) } else { None }).collect()
-}
-
-/// 275: the site type a card's Grow line names.
-pub fn grow_site(c: &AdversaryCard) -> Option<SiteType> {
-    c.standing.iter().chain(&c.twists).find_map(|e| if let Op::Grow { site } = e { Some(*site) } else { None })
 }
 
 /// 275: agents an Infiltrate lands on each city at this level (`infiltrate_agents`, by difficulty); a station,
@@ -107,148 +103,166 @@ pub fn build_all(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
     Ok(())
 }
 
-/// 275, Surge N: X: in each country in scope, `n` agents onto the X not yet the adversary's holding the most
-/// agents (ties: the lowest-numbered); none of the type: nothing.
-pub fn surge(g: &mut GameState, cx: &mut Cx, site: SiteType, n: i64, scope: Option<usize>, source: &str) -> Res {
+/// 293 (Matt, 2026-11-19), Escalate: X, in country `scope` or every country: each site of the type not yet the
+/// adversary's that holds an agent takes 1 more, in hex order (the sites are read before any lands). It picks
+/// nothing. The event card's own escalate is [`escalate_last`]; a project's or Discord card's line comes here too.
+/// A firewalled or no-Infiltrate site's agent stays in the supply; a cordoned country takes none.
+pub fn escalate(g: &mut GameState, cx: &mut Cx, site: SiteType, scope: Option<usize>, source: &str) -> Res {
     let w = cx.world;
     for c in countries_in(&w, g, scope) {
-        let sites = super::plan::infiltrate_sites(&w, g, site, c);
+        let sites: Vec<usize> =
+            super::plan::infiltrate_sites(&w, g, site, c).into_iter().filter(|&h| g.tokens(h, ADV_AMBASSADOR) > 0).collect();
         cx.per_round(g, CHECKS, sites.len() as i64);
-        let Some(h) = super::plan::most_agents(&w, g, &sites) else {
-            // 285: said, as an Infiltrate with no site is (a Surge with every site firewalled, too).
-            cx.note(None, || {
-                if sites.is_empty() {
-                    format!("Surge {n} ({}): none in {} not yet the adversary's", site.plural(), country_name(&w, c))
-                } else {
-                    format!("Surge {n} ({}): every one in {} is firewalled", site.plural(), country_name(&w, c))
-                }
-            });
-            continue;
-        };
-        let before = arrived(g);
-        place_line(g, cx, h, n, &|| format!("Surge {n} ({})", site.plural()))?;
-        let made = arrived(g) - before;
-        cx.tally(g, "adversary.surged", made);
-        cx.tally(g, &format!("adversary.surged.{source}"), made);
-        if g.is_over() {
-            return Ok(());
+        if sites.is_empty() {
+            cx.note(None, || format!("Escalate ({}): none in {} holds an agent", site.plural(), country_name(&w, c)));
         }
-    }
-    Ok(())
-}
-
-/// 275, Spill: X into Y (event cards' lines, from `spill_at`; below it the line does nothing): in each country,
-/// every X not yet the adversary's holding 2 or more agents moves 1 onto the Y next to it (not yet the
-/// adversary's) holding the most agents (ties: the lower country, then number: 285, §2); none: it stays. The move is an
-/// arrival.
-pub fn spill(g: &mut GameState, cx: &mut Cx, site: SiteType, to: SiteType, scope: Option<usize>) -> Res {
-    let w = cx.world;
-    if !level(&w, w.int("adversary.spill_at")) {
-        // 285: said, as the botnets' "don't spread at this difficulty" is.
-        cx.note(None, || "Spill: not at this difficulty".to_string());
-        return Ok(());
-    }
-    for c in countries_in(&w, g, scope) {
-        let from: Vec<usize> = super::plan::infiltrate_sites(&w, g, site, c)
-            .into_iter()
-            .filter(|&h| g.tokens(h, ADV_AMBASSADOR) >= 2)
-            .collect();
-        cx.per_round(g, CHECKS, from.len() as i64);
-        for h in from {
-            // Its own hex is never its target (a city next to itself). 285: nor a site across a border in a
-            // cordoned country.
-            let near: Vec<usize> = w.map.hexes[h]
-                .neighbors
-                .iter()
-                .copied()
-                .filter(|&x| super::plan::infiltrate_fits(&w, g, x, to) && !firewalled(g, x) && !super::plan::cordoned(&w, g, x))
-                .collect();
-            let Some(t) = super::plan::most_agents(&w, g, &near) else {
-                continue;
-            };
-            if g.tokens(h, ADV_AMBASSADOR) < 2 {
+        let before = arrived(g);
+        for h in sites {
+            if let Some(wh) = super::plan::prohibition_on(g, Step::Infiltrate, h) {
+                cx.tally(g, "adversary.infiltrate_blocked", 1);
+                prohibit_tally(g, cx, Step::Infiltrate, wh, 1);
+                cx.note(Some(h), || format!("Escalate ({}): a no-Infiltrate token keeps its agent off {}", site.plural(), hex_name(&w, h)));
                 continue;
             }
-            cx.tally(g, "adversary.spilled", 1);
-            // 285: named in the log (the turn's summary nets a move to nothing), before the arrival's own note.
-            let landed = move_one(g, cx, h, t)?;
-            cx.note(Some(t), || {
-                let (from, to) = (hex_name(&w, h), hex_name(&w, t));
-                if landed {
-                    format!("Spill: an agent moves from {from} onto {to}")
-                } else {
-                    format!("Spill: an agent moving from {from} onto {to} cancels a player ambassador there")
-                }
-            });
-            if landed {
-                arrive_check(g, cx, t)?;
-            }
+            place_line(g, cx, h, 1, &|| format!("Escalate ({})", site.plural()))?;
             if g.is_over() {
                 return Ok(());
             }
         }
+        let made = arrived(g) - before;
+        cx.tally(g, "adversary.escalated", made);
+        cx.tally(g, &format!("adversary.escalated.{source}"), made);
     }
     Ok(())
 }
 
-/// 275: one agent moves from `from` onto `to` (a Spill): on a player ambassador the two cancel (r75: the players
-/// choose whose). Whether it landed.
+/// 293: the site types last round's event card named (its Infiltrate lines, in card order): what escalates this
+/// round. Read off the card in the board's "last round" space ([`LAST`]); none in round 1.
+pub fn escalating(w: &World, g: &GameState) -> Vec<SiteType> {
+    let mut out: Vec<SiteType> = Vec::new();
+    for id in g.pile(LAST) {
+        for site in infiltrate_sites(card(w, id)) {
+            if !out.contains(&site) {
+                out.push(site);
+            }
+        }
+    }
+    out
+}
+
+/// 293: the site types the next Card beat escalates, as the view marks them: between this round's flip and its
+/// Card beat, last round's card's ([`escalating`]); otherwise this round's card's (it moves to the last-round
+/// space at the next flip), then the board rule's own Escalate type, if it prints one. A round with no event
+/// phase flips inside its Card beat, so there the card is never "flipped, Card beat ahead".
+pub fn next_escalating(w: &World, g: &GameState) -> Vec<SiteType> {
+    let flipped = g.phase_index("adversary.event").is_some_and(|i| g.phase > i);
+    let build_ahead = g.phase_index("adversary.build").is_some_and(|i| g.phase <= i);
+    let mut out = if flipped && build_ahead {
+        escalating(w, g)
+    } else {
+        g.pile(CURRENT).iter().flat_map(|id| infiltrate_sites(card(w, id))).collect()
+    };
+    for e in w.content.adversary_board.rules.iter().flat_map(|r| r.effects.iter()) {
+        if let Op::Escalate { site } = e {
+            out.push(*site);
+        }
+    }
+    let mut seen: Vec<SiteType> = Vec::new();
+    out.retain(|s| {
+        let new = !seen.contains(s);
+        seen.push(*s);
+        new
+    });
+    out
+}
+
+/// 293, the event card's escalate: each site of last round's type(s) that holds an agent takes 1 more
+/// ([`escalate`]), before this round's Infiltrate.
+pub fn escalate_last(g: &mut GameState, cx: &mut Cx) -> Res {
+    let w = cx.world;
+    for site in escalating(&w, g) {
+        escalate(g, cx, site, None, "event")?;
+        if g.is_over() {
+            break;
+        }
+    }
+    Ok(())
+}
+
+/// 293: one agent moves from `from` onto `to` (a factory's agent, along its arrow): on a player ambassador the two
+/// cancel (r75: the players choose whose). Whether it landed.
 fn move_one(g: &mut GameState, cx: &mut Cx, from: usize, to: usize) -> Res<bool> {
     cx.add_tokens(g, from, ADV_AMBASSADOR, -1);
     cx.per_round(g, OPS, 1);
     if board::agent_cancels(g, cx, to)?.is_some() {
         cx.add_key(g, SUPPLY, 1);
         cx.tally(g, "adversary.canceled", 1);
-        // 285: apart, as a Spill's agent comes from the board, not the supply (no `arrivals` tally to cancel).
-        cx.tally(g, "adversary.spill_canceled", 1);
+        // Apart, as a moved agent comes from the board, not the supply (no `arrivals` tally to cancel).
+        cx.tally(g, "adversary.push_canceled", 1);
         return Ok(false);
     }
     cx.add_tokens(g, to, ADV_AMBASSADOR, 1);
     Ok(true)
 }
 
-/// 275, Grow: X (the adversary's growth; it replaced 190's city growth and its chips): in each country in scope,
-/// the X holding the most agents (ties: the lowest-numbered) among those with a free hex next to it builds one
-/// neutral facility there (`plan::grow_plan`): the type it has fewer of next to it (ties: a factory), on the
-/// first free hex of that type (the lower country, then number: 285). A site holding `grow_infest_at` agents (1), or the adversary's, builds it
-/// with 1 agent on it.
-pub fn grow(g: &mut GameState, cx: &mut Cx, site: SiteType, scope: Option<usize>) -> Res {
+/// 293 (Matt, 2026-11-19: one output a corrupted site), a corrupted factory's output, in the Income beat, in hex
+/// order: its agents move along its zone's printed arrow onto its city (`plan::factory_arrow`; an arrival), unless
+/// that city is already the adversary's, firewalled, under a no-Infiltrate token or in a cordoned country; then a
+/// factory holding no agent makes 1 on itself. So a factory feeds its city one agent a round, and one whose city
+/// has fallen keeps a single guard. A player ambassador on it, or a troop occupying it (135), blocks both; a
+/// cordoned country's factories don't act.
+pub fn factories_output(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
-    for c in countries_in(&w, g, scope) {
-        let sites = super::plan::grow_sites(&w, g, site, c);
-        cx.per_round(g, CHECKS, sites.len() as i64);
-        let Some((at, z, factory)) = super::plan::grow_plan(&w, g, site, c) else {
-            cx.tally(g, "adversary.grow_none", 1);
-            // 285: said, as the botnets' "don't spread at this difficulty" is.
-            cx.note(None, || format!("Grow ({}): none in {} has room to grow", site.plural(), country_name(&w, c)));
+    let factories: Vec<usize> = (0..g.hexes.len()).filter(|&h| g.tokens(h, FACTORY) > 0 && corrupted(g, h)).collect();
+    for h in factories {
+        if g.tokens(h, FACTORY) == 0 || !corrupted(g, h) {
             continue;
-        };
-        let (token, name) = if factory { (FACTORY, "factory") } else { (STATION, "station") };
-        cx.add_tokens(g, z, token, 1);
-        cx.per_round(g, OPS, 1);
-        cx.tally(g, &format!("adversary.grew.{name}"), 1);
-        cx.per_round(g, &format!("map.built.{name}"), 1);
-        let infested = g.tokens(at, ADV_AMBASSADOR) >= w.int("adversary.grow_infest_at").max(1) || corrupted(g, at);
-        // 285: the note follows the agent's placement (a firewall, a cordon, an empty supply or an ambassador there
-        // stops it); a fresh site's one agent corrupts nothing, so an arrival's own note rarely comes first.
-        let canceled = |g: &GameState| g.stats.counters.get("adversary.canceled").copied().unwrap_or(0);
-        let (sent, gone) = (arrived(g), canceled(g));
-        if infested {
-            place_named(g, cx, z, 1)?;
         }
-        let landed = arrived(g) > sent && canceled(g) == gone;
-        let agent = match (infested, landed) {
-            (false, _) => "",
-            (true, true) => ", an agent on it",
-            (true, false) if arrived(g) > sent => ", its agent canceled by an ambassador there",
-            (true, false) => ", no agent lands on it",
-        };
-        cx.note(Some(z), || format!("{} grows a neutral {name} at {}{agent}", hex_name(&w, at), hex_name(&w, z)));
-        if landed {
-            cx.tally(g, "adversary.grew_infested", 1);
+        if board::occupied(g, h) {
+            cx.tally(g, "board.factories_occupied", 1);
+            continue;
         }
-        if g.is_over() {
-            return Ok(());
+        if player_ambassador(g, h).is_some() {
+            cx.tally(g, "board.blocked.factory_adversary", 1);
+            continue;
+        }
+        if super::plan::cordoned(&w, g, h) {
+            continue;
+        }
+        cx.per_round(g, CHECKS, 1);
+        let held = g.tokens(h, ADV_AMBASSADOR);
+        let city = super::plan::factory_arrow(&w, h).filter(|&t| super::plan::push_lands(&w, g, t));
+        if let (Some(t), true) = (city, held > 0) {
+            let mut landed: i64 = 0;
+            for _ in 0..held {
+                if move_one(g, cx, h, t)? {
+                    landed += 1;
+                }
+            }
+            cx.tally(g, "adversary.factory_pushed", landed);
+            cx.note(Some(t), || {
+                let (from, to) = (hex_name(&w, h), hex_name(&w, t));
+                let n = if held == 1 { "its agent".to_string() } else { format!("its {held} agents") };
+                if landed == held {
+                    format!("The factory at {from} pushes {n} along its arrow onto {to}")
+                } else {
+                    format!("The factory at {from} pushes {n} along its arrow onto {to}: {} canceled by player ambassadors", held - landed)
+                }
+            });
+            if landed > 0 {
+                arrive_check(g, cx, t)?;
+            }
+            if g.is_over() {
+                return Ok(());
+            }
+        }
+        if g.tokens(h, ADV_AMBASSADOR) == 0 && g.tokens(h, FACTORY) > 0 && corrupted(g, h) {
+            let before = arrived(g);
+            place_noted(g, cx, h, 1, &|| format!("The factory at {} makes an agent", hex_name(&w, h)))?;
+            cx.tally(g, "adversary.factory_agents", arrived(g) - before);
+            if g.is_over() {
+                return Ok(());
+            }
         }
     }
     Ok(())
@@ -260,74 +274,29 @@ pub struct BotnetPass {
     pub blocked: i64,
 }
 
-/// 275: botnets seed, in the Income beat: each botnet with no player ambassador on it places
-/// `adversary.botnet_seed` agents on the site next to it not yet the adversary's holding the most agents (ties:
-/// the lower country, then number); none: on its own hex, if that site is not yet the adversary's. r133 (280, one move a
-/// botnet): the same read adds its `botnet_compute` (none while hacked; a cordon stops the seed, not the compute),
-/// so the compute step reads no botnet again. In hex order, each botnet read as its turn comes; a botnet passed as
-/// blocked whose ambassador a later seed cancels (or whose site that seed corrupts) adds its compute then, as r132's
-/// second read did: play is unchanged.
-pub fn botnets_seed(g: &mut GameState, cx: &mut Cx) -> Res<BotnetPass> {
-    let w = cx.world;
-    let n = w.int("adversary.botnet_seed");
-    let per = w.int("adversary.botnet_compute");
+/// 293 (Matt, 2026-11-19): a botnet's one output is its `botnet_compute` compute (no seeding): none under a player
+/// ambassador or while hacked (021: a hack's cut lasts this one step).
+pub fn botnets_compute(g: &mut GameState, cx: &mut Cx) -> BotnetPass {
+    let per = cx.world.int("adversary.botnet_compute");
     let mut pass = BotnetPass { compute: 0, blocked: 0 };
-    // Botnets passed under a player ambassador: (hex, compute, hacked).
-    let mut stood: Vec<(usize, i64, bool)> = Vec::new();
     let botnets: Vec<usize> = (0..g.hexes.len()).filter(|&h| g.tokens(h, BOTNET) > 0).collect();
     for b in botnets {
         let made = g.tokens(b, BOTNET) * per;
-        if g.tokens(b, BOTNET) == 0 || made == 0 && n <= 0 {
+        if made == 0 {
             continue;
         }
-        let stood_on = player_ambassador(g, b).is_some();
-        // A hack's cut (021) lasts this one step, on a botnet that makes compute.
-        let hacked = made != 0 && g.var(&super::cut_key(b)) > 0;
+        cx.per_round(g, CHECKS, 1);
+        let hacked = g.var(&super::cut_key(b)) > 0;
         if hacked {
             cx.set_key(g, &super::cut_key(b), 0);
         }
-        if stood_on || hacked {
+        if hacked || player_ambassador(g, b).is_some() {
             pass.blocked += made;
         } else {
             pass.compute += made;
         }
-        if stood_on {
-            stood.push((b, made, hacked));
-        }
-        if stood_on || n <= 0 {
-            continue;
-        }
-        cx.per_round(g, CHECKS, 1);
-        let c = w.map.hexes[b].country as usize;
-        if board::flagged(g, crate::content::RoundFlag::Cordon, c) {
-            continue;
-        }
-        let near: Vec<usize> =
-            w.map.hexes[b].neighbors.iter().copied().filter(|&x| super::plan::seed_fits(&w, g, x)).collect();
-        let target = super::plan::most_agents(&w, g, &near).or(Some(b).filter(|&x| super::plan::seed_fits(&w, g, x)));
-        let Some(t) = target else {
-            // 285: said (a botnet with no seed note read as missed).
-            cx.note(Some(b), || format!("The botnet at {} has nowhere to seed", hex_name(&w, b)));
-            continue;
-        };
-        let before = arrived(g);
-        place_noted(g, cx, t, n, &|| format!("The botnet at {} seeds", hex_name(&w, b)))?;
-        cx.tally(g, "adversary.seeded", arrived(g) - before);
-        if g.is_over() {
-            return Ok(pass);
-        }
-        // The seed canceled the last ambassador on a botnet already passed as blocked: it adds its compute now.
-        if let Some(i) = stood.iter().position(|&(h, _, _)| h == t) {
-            if player_ambassador(g, t).is_none() {
-                let (_, made, hacked) = stood.remove(i);
-                if !hacked {
-                    pass.blocked -= made;
-                    pass.compute += made;
-                }
-            }
-        }
     }
-    Ok(pass)
+    pass
 }
 
 /// 138, a creation line: `count` agents on each of the

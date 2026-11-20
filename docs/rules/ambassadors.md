@@ -10,7 +10,7 @@ Cities, research stations and factories follow one set of rules and differ only 
 |---|---|---|---|
 | Neutral | `corp_energy` energy to every player with a node on or next to it ([economy.md](economy.md)) | a neutral cube onto its megaproject ([board.md](board.md)) | nothing |
 | Player | none: **no player owns a city** (254) | `owned_station_cubes` research cubes in its owner's color | `factory_chips` chips to its owner |
-| Adversary | its energy diverted: `divert_discord` Discord a unit | `station_cubes` adversary cubes; after its megaproject, research cubes onto the adversary's track (259) | 1 adversary troop on its hex |
+| Adversary (r140: one output, in its Income beat, [adversary.md](adversary.md)) | `divert_discord` (1) Discord | `station_cubes` (1) research cube onto the adversary's track | 1 agent, pushed along its zone's arrow onto its city |
 
 - **One opposing piece blocks a site's output while it stands.** An agent on a neutral or player
   site, a player ambassador on an adversary site: that round the site makes nothing, and the piece stays
@@ -83,9 +83,9 @@ for the last rounds, and never free a city: the players still reach it and Liber
   does. A converted ambassador is on the board, not in your supply: it is armor or a blocker, and moves like
   any other; standing on the city, it pays toward a Liberate there.
 - **Firewall** (Firewall Array's Action, Air Gap): a token on one land hex in your reach. While it stands no
-  agent arrives there: an Infiltrate's agent for its site stays in the supply, a creation line takes the next site, and so does an adversary-factory
+  agent arrives there: an Infiltrate's or Escalate's agent for its site stays in the supply, a creation line takes the next site, and so does an adversary-factory
   line's fallback onto a factory (r80, 184's D79), a threat's or Discord card's placement there doesn't happen, and a
-  Spill moves no agent onto it. Nothing on it corrupts: an arrival's check (a node's loss too), a station flip
+  factory pushes no agent onto it. Nothing on it corrupts: an arrival's check (a node's loss too), a station flip
   (Station Coup, Station Seizure: a forced flip too) and a threat corrupting its city (Overrun) all skip it (r79, Matt's ruling on D77; agents already on it stay). Troops are not stopped. It comes off at the end of the next adversary turn (its Income beat), so it
   lasts one round; the building places a fresh one each round.
 
@@ -94,8 +94,8 @@ the adversary puts agents there (an arrival, [adversary.md](adversary.md)): the 
 takes no mark (r98).
 One agent on it costs nothing.
 
-- **Every contact is 1 for 1** (r75, Matt's ruling 1). An agent arriving (an Infiltrate, a Surge, a Spill's move, a
-  botnet's seed, a creation line, a Gather or Push, a fallback landing) on a hex holding player ambassadors cancels one of them; with several
+- **Every contact is 1 for 1** (r75, Matt's ruling 1). An agent arriving (an Infiltrate, an Escalate, a factory's
+  push, a creation line, a Gather or Push, a fallback landing) on a hex holding player ambassadors cancels one of them; with several
   players' there, the players choose whose (seat 0 asks for the team). An ambassador arriving on agents cancels one.
   Both go (the agent to the adversary's supply), with no Unity, so a position is held only until the next arrival.
   A claim and Liberate refuse a site with an agent on it (206): clear it first.

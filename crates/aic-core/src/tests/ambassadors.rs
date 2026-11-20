@@ -109,16 +109,18 @@ fn one_opposing_ambassador_blocks_a_factory() {
     );
     assert_eq!(g.stats.counters["board.blocked.factory_player"], 1);
 
-    // The adversary's factory makes 1 adversary troop on its hex;
-    // a player ambassador on it blocks it and stays.
+    // 293: the adversary's factory makes 1 agent on its hex, in the adversary's Income beat (no troop, and
+    // nothing in production); a player ambassador on it blocks it and stays.
     let mut g = g0.clone();
     put(&mut g, factory, ADV_CUBE, 1);
     run(&rules, &mut g);
-    assert_eq!(g.tokens(factory, TROOP), 1);
-    put(&mut g, factory, TROOP, 0);
+    assert_eq!((g.tokens(factory, TROOP), g.tokens(factory, ADV_AMBASSADOR)), (0, 0));
+    with_cx(&rules, |cx| adversary::factories_output(&mut g, cx)).unwrap();
+    assert_eq!((g.tokens(factory, TROOP), g.tokens(factory, ADV_AMBASSADOR)), (0, 1));
+    put(&mut g, factory, ADV_AMBASSADOR, 0);
     put(&mut g, factory, ambassador(1), 1);
-    run(&rules, &mut g);
-    assert_eq!((g.tokens(factory, TROOP), g.tokens(factory, ambassador(1))), (0, 1));
+    with_cx(&rules, |cx| adversary::factories_output(&mut g, cx)).unwrap();
+    assert_eq!((g.tokens(factory, ADV_AMBASSADOR), g.tokens(factory, ambassador(1))), (0, 1));
     assert_eq!(g.stats.counters["board.blocked.factory_adversary"], 1);
     assert_eq!(sway(&g), (0, 0));
 }
@@ -132,12 +134,18 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
     let (city, lonely) = city_with_lonely_neighbors(m);
     let open = lonely[0];
 
-    // A corrupted city's energy goes to the adversary: 1 Discord a unit.
+    // 293: a corrupted city makes 1 Discord, its one output, in the adversary's Income beat (none in production),
+    // and pays no player.
     let mut g = g0.clone();
+    for h in 0..g.hexes.len() {
+        put(&mut g, h, ADV_CUBE, 0);
+    }
     put(&mut g, city, ADV_CUBE, 1);
     put(&mut g, open, node(0), 1);
     run(&rules, &mut g);
-    assert_eq!((discord(&g), res(&g, 0, Resource::Energy)), (1, 0));
+    assert_eq!((discord(&g), res(&g, 0, Resource::Energy)), (0, 0));
+    with_cx(&rules, |cx| board::corrupted_cities_discord(&mut g, cx));
+    assert_eq!(discord(&g), 1);
 
     // r38: on an aligned city the ambassador stays too and the city is dark: no
     // energy to its owner, and `ambassador_discord` (1 here) a unit, every round.
@@ -194,7 +202,7 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
     assert_eq!((g.tokens(city, ADV_AMBASSADOR), g.tokens(station, ADV_AMBASSADOR)), (1, 1));
 
     // 137: an agent on an owned station blocks its cube and
-    // stays; a corrupted station puts an adversary cube on its open megaproject (185);
+    // stays; a corrupted station puts nothing on a megaproject (293: its cube is the research track's);
     // a neutral one makes a neutral cube.
     let mut g = g0.clone();
     let [s0, s1] = [0, 1].map(|c| m.numbered(c, piece(c).stations[0]));
@@ -208,7 +216,7 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
     let compute = g.var(adversary::COMPUTE);
     run(&rules, &mut g);
     // (Round 1 of the new game already put cubes on the projects.)
-    let key = |g: &GameState, c: usize, s: Option<usize>| {
+    let key = |g: &GameState, c: usize, s: usize| {
         let k = board::project_key(c, s);
         g.var(&k) - g0.var(&k)
     };
@@ -216,12 +224,8 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
         let k = board::project_neutral(0);
         g.var(&k) - g0.var(&k)
     };
-    // 185: the corrupted station puts an adversary cube on its open megaproject.
-    let cubes = rules.world().int("board.station_cubes");
-    assert_eq!(
-        (key(&g, 0, None), key(&g, 0, Some(0)), key(&g, 1, None), neutral_key(&g)),
-        (0, 0, cubes, 1)
-    );
+    // 293: the corrupted station puts no cube on a megaproject (its cube goes onto the research track).
+    assert_eq!((key(&g, 0, 0), key(&g, 1, 0), key(&g, 1, 1), neutral_key(&g)), (0, 0, 0, 1));
     // 175: the corrupted station's compute comes in the adversary's compute step, not in production.
     assert_eq!(g.var(adversary::COMPUTE) - compute, 0);
     assert_eq!(g.tokens(s0, ADV_AMBASSADOR), 1);
@@ -230,7 +234,7 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
     put(&mut g, s0, cube(0), 1);
     run(&rules, &mut g);
     // 142: a player-owned station makes `owned_station_cubes`.
-    assert_eq!((key(&g, 0, None), key(&g, 0, Some(0))), (0, rules.world().int("board.owned_station_cubes")));
+    assert_eq!(key(&g, 0, 0), rules.world().int("board.owned_station_cubes"));
 }
 
 /// 137: the owner's ambassador on the hex is armor. r75 (Matt's ruling 5): the
@@ -473,14 +477,12 @@ fn an_ambassador_on_a_factory_stays_and_one_on_a_corrupted_station_blocks_it() {
     put(&mut g, st, ADV_CUBE, 1);
     put(&mut g, st, ambassador(1), 1);
     let c = w.map.hexes[st].country as usize;
-    let adversary_cubes = g.var(&board::project_key(c, None));
-    let seat_cubes = g.var(&board::project_key(c, Some(1)));
+    let seat_cubes = g.var(&board::project_key(c, 1));
     let compute = g.var(adversary::COMPUTE);
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
     assert_eq!((g.tokens(z, ambassador(0)), g.tokens(st, ambassador(1))), (1, 1));
-    assert_eq!(g.var(&board::project_key(c, Some(1))), seat_cubes);
-    assert_eq!(g.var(&board::project_key(c, None)), adversary_cubes);
+    assert_eq!(g.var(&board::project_key(c, 1)), seat_cubes);
     assert_eq!(g.var(adversary::COMPUTE), compute);
     // 175: the block is read in the adversary's compute step.
     with_cx(&rules, |cx| adversary::compute_step(&mut g, cx)).unwrap();

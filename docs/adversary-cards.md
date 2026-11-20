@@ -7,33 +7,40 @@
 Project slots: Open, Open, Open.
 
 - **War Rooms** (threat decks). Setup: build each threat deck from every Security and Universal threat of its tier and as many of its other threats, taken at random; shuffle it. The rest stay in the box.
-- **Botnet Recruiters.** In the compute step, each Botnet with no player Ambassador on it puts 1 Agent on the city, research station or factory next to it not yet the adversary's holding the most Agents (else on its own site, if not yet the adversary's), and adds its compute (even when a cordon stops its Agent or it has nowhere to land).
-- **Weapons Program** (research). When the research track reaches its threshold, spend it: Muster 2: each country, 2 Troops on its lowest-numbered factory (else city). Stronger: Muster 3 instead.
+- **Commandeered Plants.** Every round, after last round's sites escalate: each factory not yet the adversary's that holds an Agent takes 1 more.
+- **War Research** (the research row). Each cube a country on the track (2 cubes with two countries, 3 with three) is spent to advance the marker one slot; the slot's icon happens once. Slot 7: the players lose.
+  - Slot 1, **New factory**: Each country: a neutral factory opens on its lowest-numbered free industrial zone.
+  - Slot 2, **Cells: factories**: Infiltrate: factories.
+  - Slot 3, **Funding**: Income: +1 compute a country a round.
+  - Slot 4, **Fallout**: Each country: a Fallout lands next to its lowest-numbered corrupted city.
+  - Slot 5, **Cells: cities**: Infiltrate: cities.
+  - Slot 6, **Dread**: Sway 3 toward Discord.
+  - Icons in the vocabulary this row doesn't use: New lab, Cells: research stations, Botnet, Blackout.
 - **Level 1: Sleeper Cells.** *Cells wake in every city.* When an Agent lands on a city, it falls at 3 agents, not 5.
 - **Level 2: War Footing.** *Every unanswered strike feeds the war machine.* When a threat executes uncountered, the adversary also gains 4 compute.
-- **Level 3: Arms Race.** *The labs build weapons, not cures.* When Weapons Program fires, it musters 3, not 2.
+- **Level 3: Arms Race.** *The labs build weapons, not cures.* Setup only.
 - **Level 4: War Economy.** *The whole economy marches.* Setup only.
 
 ## Event deck
 
 | Card | Stage | Text |
 |---|---|---|
-| Probing Strikes | 1 | Threat, each country: a tier-1 threat. Infiltrate: coastal cities. Grow: cities. |
+| Probing Strikes | 1 | Threat, each country: a tier-1 threat. Infiltrate: coastal cities. |
 | Factory Drive | 1 | Threat, each country: a tier-1 threat. Infiltrate: coastal cities. Each country: a neutral factory opens on its lowest-numbered free industrial zone. |
-| Long Patrols | 1 | Threat, each country: a tier-1 threat. Infiltrate: cities. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Grow: cities. |
-| War Drums | 1 | Threat, each country: a tier-1 threat. Infiltrate: cities. Sway 1 toward Discord. Grow: cities. |
-| Signal Jamming | 1 | Threat, each country: a tier-1 threat. Infiltrate: botnet hexes. Income: +1 compute a country a round. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Grow: research stations. |
-| Mobilization | 2 | Threat, each country: a tier-2 threat. Infiltrate: coastal cities. Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: cities. |
-| Station Raids | 2 | Threat, each country: a tier-2 threat. Infiltrate: research stations. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the research station next to it not yet the adversary's holding the most. Grow: research stations. |
+| Long Patrols | 1 | Threat, each country: a tier-1 threat. Infiltrate: cities. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). |
+| War Drums | 1 | Threat, each country: a tier-1 threat. Infiltrate: cities. Sway 1 toward Discord. |
+| Signal Jamming | 1 | Threat, each country: a tier-1 threat. Infiltrate: botnet hexes. Income: +1 compute a country a round. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). |
+| Mobilization | 2 | Threat, each country: a tier-2 threat. Infiltrate: coastal cities. |
+| Station Raids | 2 | Threat, each country: a tier-2 threat. Infiltrate: research stations. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). |
 | Shell Labs | 2 | Threat, each country: a tier-2 threat. Infiltrate: research stations. Each country: a neutral research station opens on its lowest-numbered empty station site. |
-| Fifth Column | 2 | Threat, each country: a tier-2 threat. Infiltrate: cities. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). Spill (level 2+): each factory not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most. Grow: cities. |
-| Border War | 2 | Threat, each country: a tier-2 threat. Infiltrate: factories. Each player with a Node on or next to a factory destroys 1 of those Nodes. Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: factories. |
-| Supply Lines | 2 | Threat, each country: a tier-1 and a tier-2 threat. Infiltrate: factories. Income: +1 compute a country a round. Spill (level 2+): each research station not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: factories. |
-| Forced March | 2 | Threat, each country: a tier-2 threat. Infiltrate: cities. Every adversary Troop takes 1 more step this round. Spill (level 2+): each research station not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most. Grow: cities. |
-| Total Mobilization | 3 | Threat, each country: 2 tier-2 threats. Infiltrate: factories. Infiltrate: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Remove 2 Unity from the Unity track. Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the factory next to it not yet the adversary's holding the most. Grow: factories. |
-| Blitzkrieg | 3 | Threat, each country: 2 tier-2 threats. Infiltrate: cities. Infiltrate: research stations. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Sway 1 toward Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city. Spill (level 2+): each research station not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most. |
-| Occupation | 3 | Threat, each country: 2 tier-2 threats. Infiltrate: research stations. Infiltrate: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Spill (level 2+): each city not yet the adversary's holding 2 or more Agents moves 1 onto the research station next to it not yet the adversary's holding the most. Grow: research stations. |
-| Naval Blockade | 3 | Threat, each country: 2 tier-2 threats. Infiltrate: coastal cities. Infiltrate: factories. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Until the end of next round, cities make no energy and no Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city. Spill (level 2+): each factory not yet the adversary's holding 2 or more Agents moves 1 onto the city next to it not yet the adversary's holding the most. |
+| Fifth Column | 2 | Threat, each country: a tier-2 threat. Infiltrate: cities. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station). |
+| Border War | 2 | Threat, each country: a tier-2 threat. Infiltrate: factories. Each player with a Node on or next to a factory destroys 1 of those Nodes. |
+| Supply Lines | 2 | Threat, each country: a tier-1 and a tier-2 threat. Infiltrate: factories. Income: +1 compute a country a round. |
+| Forced March | 2 | Threat, each country: a tier-2 threat. Infiltrate: cities. Every adversary Troop takes 1 more step this round. |
+| Total Mobilization | 3 | Threat, each country: 2 tier-2 threats. Infiltrate: factories. Infiltrate: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Remove 2 Unity from the Unity track. |
+| Blitzkrieg | 3 | Threat, each country: 2 tier-2 threats. Infiltrate: cities. Infiltrate: research stations. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Sway 1 toward Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city. |
+| Occupation | 3 | Threat, each country: 2 tier-2 threats. Infiltrate: research stations. Infiltrate: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). |
+| Naval Blockade | 3 | Threat, each country: 2 tier-2 threats. Infiltrate: coastal cities. Infiltrate: factories. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Until the end of next round, cities make no energy and no Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city. |
 
 ## Threats, tier 1
 
@@ -51,7 +58,7 @@ Project slots: Open, Open, Open.
 | Propaganda Blitz | Diplomacy | coastal city | Sway 3 toward Discord. The adversary gains 3 compute. | 3 Ambassadors; 8 credits |
 | Sabotage | Cyber | station | This country's player loses 4 tokens from their cards. The adversary gains 6 compute. | 2 Cyber tags; 8 credits |
 | Insider Access | Cyber + Diplomacy | station | 1 Agent is created here. This country's player pays 3 research cubes or discards 2 cards. | 3 Ambassadors; 8 credits |
-| Wiper Malware | Cyber | station | This country's player discards 2 cards. 2 cubes go onto the adversary's research track. | 3 research cubes; 8 credits |
+| Wiper Malware | Cyber | station | This country's player discards 2 cards. 1 cube goes onto the adversary's research track. | 3 research cubes; 8 credits |
 | Cryptojacking | Cyber | station, factory | The adversary gains 6 compute. This country's player pays 2 research cubes or discards 1 card. | 2 Cyber tags; 8 credits |
 | Backdoor | Cyber | station | A Botnet lands on the station here (if it holds one, on the nearest piece without one). | 3 insight; 8 credits |
 | Requisition | Industry | factory, city | This country's player pays 3 chips or discards 2 cards. The adversary gains 3 compute. | 2 Industry tags; 8 credits |
@@ -84,8 +91,8 @@ Project slots: Open, Open, Open.
 | Station Seizure | Cyber | station | 2 Agents are created here. Then the station here flips to the adversary (a player's holds unless 2 Agents and no player Ambassador are on it; one that holds takes another Agent). | 3 Cyber tags; 11 credits |
 | Rootkit | Cyber | station | A Botnet lands on the station here (if it holds one, on the nearest piece without one). 2 Agents are created here. | 3 Cyber tags; 11 credits |
 | Purge Protocols | Cyber | station | This country's player destroys 1 of their Nodes closest to it and discards 3 cards. | 5 research cubes; 11 credits |
-| Data Breach | Cyber + Industry | station, factory | This country's player pays 5 research cubes or discards 3 cards. 2 cubes go onto the adversary's research track. | 4 chips; 11 credits |
-| Zero Day | Cyber | station | 4 cubes go onto the adversary's research track. This country's player turns 1 building face down until the end of next round. | 5 research cubes; 11 credits |
+| Data Breach | Cyber + Industry | station, factory | This country's player pays 5 research cubes or discards 3 cards. 1 cube goes onto the adversary's research track. | 4 chips; 11 credits |
+| Zero Day | Cyber | station | 2 cubes go onto the adversary's research track. This country's player turns 1 building face down until the end of next round. | 5 research cubes; 11 credits |
 | Asset Freeze | Industry | factory | This country's player turns 2 buildings face down until the end of next round and discards 2 cards. | 4 energy; 11 credits |
 | Mass Production | Industry | factory | An adversary factory is built on the free industrial zone nearest here. The adversary gains 5 compute. | 4 chips; 11 credits |
 | Factory Occupation | Industry + Security | factory | The adversary corrupts the factory here, even a player's (with none there, it builds one on the empty zone). The adversary gains 5 compute. | 4 energy; 11 credits |
@@ -109,7 +116,7 @@ Each project resolves once, at once, in the compute step. Its compute in play is
 | Project | Tags | Compute a board (in play: 1 / 2 / 3 / 4 countries) | Text |
 |---|---|---|---|
 | Disinformation | Diplomacy | 11 (11 / 22 / 33 / 44) | Sway 8 toward Discord. |
-| Backdoor Research | Cyber | 14 (14 / 28 / 42 / 56) | 4 adversary cubes onto each open megaproject. Each country: 2 cubes onto the adversary's research track. |
+| Backdoor Research | Cyber | 14 (14 / 28 / 42 / 56) | Each country: 1 cube onto the adversary's research track. |
 | Rolling Blackouts | Power | 8 (8 / 16 / 24 / 32) | Until the end of next round, cities make no energy and no Discord. |
 | Botnet Swarm | Cyber | 14 (14 / 28 / 42 / 56) | Each country, twice (level 1+): a botnet spreads to its lowest-numbered city, research station or factory without one next to one of its botnets (a country with no botnet: its lowest-numbered research station). |
 | False Flag | Universal | 9 (9 / 18 / 27 / 36) | Each country: an extra tier-2 threat, any tag. |
@@ -121,20 +128,20 @@ Each project resolves once, at once, in the compute step. Its compute in play is
 | Botnet Conscripts | Cyber | 11 (11 / 22 / 33 / 44) | Each country: its lowest-numbered botnet becomes 3 Troops on its hex. |
 | Purge Lists | Diplomacy | 7 (7 / 14 / 21 / 28) | Each player loses 1 Ambassador (from their supply, else one of theirs on the board). |
 | Dirty Bomb | Power | 12 (12 / 24 / 36 / 48) | Each country: 1 Fallout lands next to each of its two lowest-numbered corrupted cities. |
-| Lab Seizure | Cyber | 21 (21 / 42 / 63 / 84) | Surge 2: each country, 2 Agents onto its research station not yet the adversary's holding the most Agents. Each country: 2 cubes onto the adversary's research track. |
+| Lab Seizure | Cyber | 21 (21 / 42 / 63 / 84) | Each country: create 2 Agents on its lowest-numbered research station not yet the adversary's. Each country: 1 cube onto the adversary's research track. |
 | Slander Campaign | Diplomacy | 9 (9 / 18 / 27 / 36) | Remove 4 Unity from the Unity track. |
-| Coastal Raids | Security | 14 (14 / 28 / 42 / 56) | Surge 3: each country, 3 Agents onto its coastal city not yet the adversary's holding the most Agents. |
-| Plant Seizure | Industry | 13 (13 / 26 / 39 / 52) | Surge 2: each country, 2 Agents onto its factory not yet the adversary's holding the most Agents. |
+| Coastal Raids | Security | 14 (14 / 28 / 42 / 56) | Each country: create 3 Agents on its lowest-numbered coastal city not yet the adversary's. |
+| Plant Seizure | Industry | 13 (13 / 26 / 39 / 52) | Each country: create 2 Agents on its lowest-numbered factory not yet the adversary's. |
 | Rumor Mill | Diplomacy | 8 (8 / 16 / 24 / 32) | Sway 4 toward Discord. |
 | Sabotage Teams | Power | 10 (10 / 20 / 30 / 40) | Each country: the hardened facility with the most Agents on its hex (ties: lowest-numbered) loses its hardening. Until the end of next round, players' boards and cards make no energy income. |
-| Mob Rule | Diplomacy | 21 (21 / 42 / 63 / 84) | Surge 3: each country, 3 Agents onto its city not yet the adversary's holding the most Agents. Sway 5 toward Discord. |
+| Mob Rule | Diplomacy | 21 (21 / 42 / 63 / 84) | Each country: create 3 Agents on its lowest-numbered city not yet the adversary's. Sway 5 toward Discord. |
 | Data Heist | Cyber | 12 (12 / 24 / 36 / 48) | Each player removes 4 tokens from their cards (their choice of cards). Each player pays 7 credits or discards 3 cards. |
-| Hostile Takeover | Industry | 15 (15 / 30 / 45 / 60) | Surge 3: each country, 3 Agents onto its factory not yet the adversary's holding the most Agents. |
-| Station Coup | Cyber | 24 (24 / 48 / 72 / 96) | Each country: its neutral research station with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track. |
+| Hostile Takeover | Industry | 15 (15 / 30 / 45 / 60) | Each country: create 3 Agents on its lowest-numbered factory not yet the adversary's. |
+| Station Coup | Cyber | 24 (24 / 48 / 72 / 96) | Each country: its neutral research station with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 1 cube goes onto the adversary's research track. |
 | War Plants | Industry | 19 (19 / 38 / 57 / 76) | Each country: the adversary builds a factory on its free industrial zone next to an Agent, else its lowest-numbered (none free: 2 Agents on one of its factories). Every adversary factory makes 2 Troops on its hex (a player Ambassador on it stops them). |
-| Recruitment Drive | Diplomacy | 24 (24 / 48 / 72 / 96) | Surge 5: each country, 5 Agents onto its city not yet the adversary's holding the most Agents. |
+| Recruitment Drive | Diplomacy | 24 (24 / 48 / 72 / 96) | Each country: create 5 Agents on its lowest-numbered city not yet the adversary's. |
 | Propaganda Network | Universal | 18 (18 / 36 / 54 / 72) | Income: +1 compute a country a round. Sway 8 toward Discord. |
-| Infiltration Drive | Diplomacy | 22 (22 / 44 / 66 / 88) | Surge 4: each country, 4 Agents onto its city not yet the adversary's holding the most Agents. Then each country: 1 Fallout lands next to its lowest-numbered corrupted city. |
+| Infiltration Drive | Diplomacy | 22 (22 / 44 / 66 / 88) | Each country: create 4 Agents on its lowest-numbered city not yet the adversary's. Then each country: 1 Fallout lands next to its lowest-numbered corrupted city. |
 | Accelerated Timetable | Universal | 20 (20 / 40 / 60 / 80) | Discard the top face-down card of the adversary's event deck, if any: the round cap comes a round sooner. Each country: an extra tier-2 threat, any tag. |
-| Grand Offensive | Universal | 24 (24 / 48 / 72 / 96) | Each country: this round's Infiltrate lines land again. Surge 2: each country, 2 Agents onto its factory not yet the adversary's holding the most Agents. |
-| Martial Law | Security | 24 (24 / 48 / 72 / 96) | Surge 3: each country, 3 Agents onto its research station not yet the adversary's holding the most Agents. |
+| Grand Offensive | Universal | 24 (24 / 48 / 72 / 96) | Each country: this round's Infiltrate lines land again. Each country: create 2 Agents on its lowest-numbered factory not yet the adversary's. |
+| Martial Law | Security | 24 (24 / 48 / 72 / 96) | Each country: create 3 Agents on its lowest-numbered research station not yet the adversary's. |

@@ -135,14 +135,17 @@ export interface View {
   standard: StandardView[];
   /** The open choice, if the rules are waiting for one. */
   choice: ChoiceView | null;
-  /** Where pieces are heading (019: each adversary troop's next target). */
+  /** Where pieces are heading (019: each adversary troop's next target; 293: each industrial zone's printed arrow). */
   arrows: ArrowView[];
   /** Each face-up threat's source type, its source hexes and who may pay (070). */
   threat_sources: ThreatSourceView[];
 }
 /** What feeds a threat: hex indexes of its sources, and the seats that may counter it. */
 export interface ThreatSourceView { threat: string; source: string; hexes: number[]; target?: number | null; seats: number[] }
-/** A piece's heading, hex index to hex index; `rounds` 1 means it arrives this coming round. */
+/** A piece's heading, hex index to hex index; `rounds` 1 means it arrives this coming round. Kind `troop`, or
+ *  `zone` (293): an industrial zone's printed arrow to its city, `count` the agents a corrupted factory there holds
+ *  to push, `rounds` 1 when the push lands in the adversary's next Income beat, else 0; or `escalate` (293, `from` =
+ *  `to`): a site the adversary's next Card beat escalates. */
 export interface ArrowView { kind: string; from: number; to: number; count: number; rounds: number; doc: string }
 
 // --- records (crates/aic-core/src/record.rs) ---
@@ -178,7 +181,13 @@ export interface AiBoardDef {
   /** AI-board powers (021). */
   powers?: { name: string; text?: string; tags: [string, number][]; cost?: [string, number][] }[];
 }
-export interface Content { cards: CardDef[]; threats: ThreatDef[]; adversary: AdversaryDef[]; ais: AiBoardDef[] }
+/** The adversary's board (293): its research row (icon ids, slot 1 first) and the icons they name. */
+export interface AdversaryBoardDef {
+  name: string;
+  research?: { name: string; text: string; slots: string[] };
+  icons?: { id: string; name: string; text: string }[];
+}
+export interface Content { cards: CardDef[]; threats: ThreatDef[]; adversary: AdversaryDef[]; adversary_board?: AdversaryBoardDef; ais: AiBoardDef[] }
 
 /** A state as the engine produced it, plus a parsed copy for display. */
 export interface Snapshot { json: string; state: GameState }

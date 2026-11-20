@@ -1,8 +1,8 @@
 // `npm run e2e:corps` (074): research cubes and the megacorps in a real browser. Plays the baseline
 // with `station_cubes` 2 and `owned_station_cubes` (142: a claimed station's) 5 so a card overflows in round 2: seat 0
 // claims Horizon's neutral station with a card, Cintamani's two stay neutral. 285: each country's printed station starts
-// corrupted with a botnet (board.md, setup) and since 185 puts `station_cubes` adversary cubes a round onto its open
-// megaproject, so every card carries adversary cubes too. Checks the cubes by color, the completion with its overflow
+// corrupted with a botnet (board.md, setup); 293: its cubes go to the adversary's research row, so a megaproject
+// carries player and neutral cubes only. Checks the cubes by color, the completion with its overflow
 // paid, the stored cubes and a usable converter beside an unusable one. Needs the viewer running.
 //   AIC_URL  viewer URL (default http://localhost:5173/)
 // Screenshot: web/e2e-out/corps.png.
@@ -29,7 +29,11 @@ cardsModule.cards = cardsModule.cards.filter((id) => tiers[id] === 2 || id === '
 // Nothing diverts a cube or takes the bound city while the script passes its turns.
 // No agents: a creation line would land one on the claimed station, blocking its cubes. 285: the thresholds keep
 // Infiltrate from corrupting another site; they don't undo setup's corrupted station (Horizon #4, Cintamani #12).
-Object.assign(config.modules.find((m) => m.module === 'adversary').params, { corrupt_at: 20, corrupt_station_at: 20, corrupt_factory_at: 20, supply_per_country: 0 });
+const adversary = config.modules.find((m) => m.module === 'adversary').params;
+Object.assign(adversary, { corrupt_at: 20, corrupt_station_at: 20, corrupt_factory_at: 20, supply_per_country: 0 });
+// 293: the corrupted stations' cubes (at this script's `station_cubes`) would run the adversary's research row to
+// its loss slot within the rounds played here: a slot costs 30 cubes a country (the param's most) instead.
+if ('research_at' in adversary) adversary.research_at = Array.isArray(adversary.research_at) ? adversary.research_at.map(() => 30) : 30;
 
 const page = await openPage();
 const { send, js, until, size, consoleErrors } = page;
@@ -67,17 +71,17 @@ try {
     const count = (p, c) => p.querySelectorAll('.pc[data-color="' + c + '"]').length;
     return { horizon: [count(cells[0], 'seat 0'), count(cells[0], 'adversary')], cintamani: [count(cells[1], 'neutral'), count(cells[1], 'adversary')] };
   })()`);
-  // 285: round 1's production: Horizon 5 player (the claimed station) + 2 adversary (its corrupted #4); Cintamani
-  // 2 + 2 neutral (#2, #11) + 2 adversary (#12). Was 5 player / 5 neutral and no adversary cube (before 185).
-  check(colors.horizon[0] === 5 && colors.horizon[1] === 2, `Horizon's card shows its cubes by color: ${colors.horizon} (player, adversary)`);
-  check(colors.cintamani[0] === 4 && colors.cintamani[1] === 2, `Cintamani's shows neutral cubes: ${colors.cintamani} (neutral, adversary)`);
+  // 293: round 1's production: Horizon 5 player (the claimed station); Cintamani 2 + 2 neutral (#2, #11). No
+  // adversary cube: a corrupted station's goes to the adversary's research row (285: 2 sat on each card).
+  check(colors.horizon[0] === 5 && colors.horizon[1] === 0, `Horizon's card shows its cubes by color: ${colors.horizon} (player, adversary)`);
+  check(colors.cintamani[0] === 4 && colors.cintamani[1] === 0, `Cintamani's shows neutral cubes: ${colors.cintamani} (neutral, adversary)`);
 
-  // Round 2 fills each 8-cube card past its size: every cube pays, overflow included. 285: Horizon 10 player +
-  // 4 adversary = 14; Cintamani 8 neutral + 4 adversary = 12.
+  // Round 2 fills each 8-cube card past its size: every cube pays, overflow included. 293: Horizon 10 player;
+  // Cintamani 8 neutral.
   check(await toRound(page, 3, 600), 'reached round 3');
   const paid = await js(`[...document.querySelectorAll('#countries .ppaid')].map((e) => e.textContent)`);
-  check(paid.length === 2 && paid[0] === '14 cubes paid (10 player, 4 adversary, 0 neutral)', `the card completed with its overflow paid: "${paid[0]}"`);
-  check(paid[1] === '12 cubes paid (0 player, 4 adversary, 8 neutral)', `Cintamani's paid its neutral and adversary cubes: "${paid[1]}"`);
+  check(paid.length === 2 && paid[0] === '10 cubes paid (10 player, 0 neutral)', `the card completed with its overflow paid: "${paid[0]}"`);
+  check(paid[1] === '8 cubes paid (0 player, 8 neutral)', `Cintamani's paid its neutral cubes: "${paid[1]}"`);
   check(await js(`document.querySelectorAll('#countries .project.done').length`) === 2, 'both cards show completed');
 
   // Round 3 stores 5 cubes on seat 0's board; round 4 can spend them.

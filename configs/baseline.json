@@ -99,18 +99,14 @@
           2
         ],
         "infiltrate_facility_cap": 1,
-        "spill_at": 2,
-        "botnet_seed": 1,
-        "grow_infest_at": 1,
         "threat_agents": 1,
-        "grow_cap": 2,
         "discord_removed": 0,
         "station_flip_at": 2,
         "botnet_compute": 1,
         "botnet_spread_at": 1,
         "board_difficulty_at": 2,
-        "research_at": [5, 5, 5, 4, 4],
-        "research_strong_at": 3
+        "research_at": [1, 1, 1, 1, 1],
+        "research_start": 0
       }
     },
     {

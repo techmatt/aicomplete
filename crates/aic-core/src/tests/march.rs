@@ -17,6 +17,11 @@ fn land_at(m: &Map, p: usize, d: i32) -> usize {
         .unwrap()
 }
 
+/// The first troop arrow's rounds (293: the view's arrows also carry the zones' printed arrows).
+fn troop_arrow_rounds(rules: &Rules, g: &GameState) -> i64 {
+    rules.view(g).arrows.iter().find(|a| a.kind == "troop").expect("a troop arrow").rounds
+}
+
 #[test]
 fn a_troop_marches_two_steps_toward_node_then_strikes() {
     let (rules, g0) = lab(&["board.march"]);
@@ -29,17 +34,18 @@ fn a_troop_marches_two_steps_toward_node_then_strikes() {
     let t = land_at(m, p, 3);
     put(&mut g, t, TROOP, 1);
     // The view shows where it is heading, two adversary phases out.
+    // (293: the view's arrows also carry each industrial zone's printed arrow, kind `zone`.)
     let v = rules.view(&g);
-    assert_eq!(v.arrows.len(), 1);
-    assert_eq!((v.arrows[0].from, v.arrows[0].to, v.arrows[0].rounds), (t, p, 2));
+    let arrows: Vec<_> = v.arrows.iter().filter(|a| a.kind == "troop").collect();
+    assert_eq!(arrows.len(), 1);
+    assert_eq!((arrows[0].from, arrows[0].to, arrows[0].rounds), (t, p, 2));
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
     let at = (0..m.hexes.len()).find(|&h| g.tokens(h, TROOP) > 0).unwrap();
     assert_eq!(m.distance(at, p), 1);
     assert_eq!(g.tokens(p, node(0)), 1);
     assert_eq!(g.stats.counters["board.troop_moves"], 2);
-    let v = rules.view(&g);
-    assert_eq!(v.arrows[0].rounds, 1);
+    assert_eq!(troop_arrow_rounds(&rules, &g), 1);
     // 148 (D59): in the action phase, past this round's march, with Forced
     // March (+1 step) face up as next round's card, the arrow reads one
     // adversary phase sooner; this round's card no longer counts.
@@ -47,9 +53,9 @@ fn a_troop_marches_two_steps_toward_node_then_strikes() {
     put(&mut fm, p, node(0), 1);
     put(&mut fm, t, TROOP, 1);
     fm.piles.insert(adversary::CURRENT.into(), vec!["mil_s2_forced_march".into()].into());
-    assert_eq!(rules.view(&fm).arrows[0].rounds, 2, "this round's card is spent");
+    assert_eq!(troop_arrow_rounds(&rules, &fm), 2, "this round's card is spent");
     fm.piles.insert(adversary::NEXT.into(), vec!["mil_s2_forced_march".into()].into());
-    assert_eq!(rules.view(&fm).arrows[0].rounds, 1);
+    assert_eq!(troop_arrow_rounds(&rules, &fm), 1);
     // Next round it strikes, sways no Discord, and is used up.
     let discord = g.var("alignment.discord");
     run(&rules, &mut g);
@@ -57,7 +63,7 @@ fn a_troop_marches_two_steps_toward_node_then_strikes() {
     assert_eq!((g.tokens(p, node(0)), total(&g, TROOP)), (0, 0));
     assert_eq!(g.stats.counters["board.troop_destroyed.node"], 1);
     assert_eq!(g.var("alignment.discord"), discord);
-    assert!(rules.view(&g).arrows.is_empty());
+    assert!(rules.view(&g).arrows.iter().all(|a| a.kind != "troop"));
 
     // Two away: one move, then it destroys in the same round.
     let mut g = g0.clone();
@@ -81,7 +87,7 @@ fn troops_ignore_neutral_buildings_and_cities_and_stay_with_no_target() {
     put(&mut g, city, cube(0), 1);
     run(&rules, &mut g);
     assert_eq!((g.tokens(t, TROOP), g.tokens(f, FACTORY)), (1, 1));
-    assert!(rules.view(&g).arrows.is_empty());
+    assert!(rules.view(&g).arrows.iter().all(|a| a.kind != "troop"));
     // A player-owned factory is a target.
     put(&mut g, f, cube(0), 1);
     run(&rules, &mut g);

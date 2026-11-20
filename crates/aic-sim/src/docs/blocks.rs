@@ -94,18 +94,6 @@ fn pull_words(p: &aic_core::content::Pull) -> String {
     format!("tier {}", p.tier)
 }
 
-/// 275: an event card's Spill line ("cities into factories"), level 2+.
-fn spill_words(a: &aic_core::content::AdversaryCard) -> String {
-    a.twists
-        .iter()
-        .filter_map(|t| match t {
-            aic_core::content::Op::Spill { site, to } => Some(format!("{} into {}", site.plural(), to.plural())),
-            _ => None,
-        })
-        .collect::<Vec<_>>()
-        .join(", ")
-}
-
 pub(super) fn adversary_block() -> String {
     let rows = content()
         .adversary
@@ -113,7 +101,6 @@ pub(super) fn adversary_block() -> String {
         .map(|a| {
             let pulls: Vec<String> = a.pulls.iter().map(pull_words).collect();
             let rally = aic_core::modules::adversary::infiltrate_sites(a).iter().map(|r| r.plural()).collect::<Vec<_>>().join(", ");
-            let grow = aic_core::modules::adversary::grow_site(a).map(|r| r.plural()).unwrap_or("—");
             let deploy: i64 = a
                 .standing
                 .iter()
@@ -126,14 +113,13 @@ pub(super) fn adversary_block() -> String {
                 a.name.clone(),
                 a.stage.to_string(),
                 pulls.join("; "),
-                rally,
+                rally.clone(),
                 deploy.to_string(),
-                spill_words(a),
-                grow.to_string(),
+                rally.clone(),
             ]
         })
         .collect();
-    table(&["Card", "Stage", "Threat (each country)", "Infiltrate", "Muster", "Spill (level 2+)", "Grow"], rows)
+    table(&["Card", "Stage", "Threat (each country)", "Infiltrate", "Muster", "Escalates next round"], rows)
 }
 
 pub(super) fn alignment_block() -> String {
@@ -249,6 +235,17 @@ fn numbers(l: &[u8]) -> String {
 
 /// The printed country pieces.
 pub(super) fn countries_block(c: &Content) -> String {
+    // 293: each industrial zone's printed arrow (zone → its city), the same in every layout.
+    let map = aic_core::map::Map::build(c, c.map.countries.len() as u8).expect("the full map");
+    let arrows = |i: usize| {
+        let mut v: Vec<(u8, u8)> = map.countries[i]
+            .hexes
+            .iter()
+            .filter_map(|&h| map.hexes[h].arrow.map(|t| (map.hexes[h].number, map.hexes[t].number)))
+            .collect();
+        v.sort();
+        v.iter().map(|(z, t)| format!("{z}→{t}")).collect::<Vec<_>>().join(", ")
+    };
     let rows = c
         .map
         .countries
@@ -264,6 +261,7 @@ pub(super) fn countries_block(c: &Content) -> String {
                 numbers(&[&[p.neutral_station][..], &p.more_stations].concat()),
                 numbers(&p.station_sites),
                 format!("{} ({})", numbers(&p.industry), numbers(&p.factories)),
+                arrows(i),
                 p.node.to_string(),
             ]
         })
@@ -278,6 +276,7 @@ pub(super) fn countries_block(c: &Content) -> String {
             "Neutral stations",
             "Empty station sites",
             "Industrial zones (setup factories)",
+            "Zone arrows (zone → its city)",
             "Starting node",
         ],
         rows,
@@ -296,7 +295,7 @@ pub(super) fn corps_block(c: &Content) -> String {
                 format!("{} ({})", p.name, p.flavor),
                 m.name.clone(),
                 m.cubes.to_string(),
-                format!("{} / {}", Megaproject::words(&m.player), Megaproject::words(&m.adversary)),
+                Megaproject::words(&m.player),
                 m.converter.words(),
                 // 199: the chip converter, where the card prints one.
                 m.chip_converter.as_ref().map_or_else(|| "none".to_string(), |c| c.words()),
@@ -308,7 +307,7 @@ pub(super) fn corps_block(c: &Content) -> String {
             "Corp",
             "Megaproject",
             "Cubes",
-            "At completion: player cube / adversary cube",
+            "At completion: each player cube",
             "Converter (as often as you can pay, unless marked)",
             "Chip converter",
         ],
@@ -562,17 +561,12 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
         ],
         [
             "Discord".to_string(),
-            "energy diverted (a corrupted city) or darkened (an agent on an aligned city)".to_string(),
+            "a corrupted city's output, or an aligned city darkened (an agent on it)".to_string(),
             format!(
-                "{} per unit of a corrupted city's, {} per unit, each round, of a dark aligned city's",
+                "{} a corrupted city each round (the adversary's Income beat), {} per unit, each round, of a dark aligned city's",
                 t("board.divert_discord"),
                 t("board.ambassador_discord")
             ),
-        ],
-        [
-            "Discord".to_string(),
-            "adversary cubes on a megaproject as it completes, as its corp's card prints".to_string(),
-            "1 each".to_string(),
         ],
         [
             "Discord".to_string(),
@@ -734,15 +728,15 @@ pub(super) fn game_end_block(r: &Rules) -> String {
     format!(
         "**How the game ends, for new players.** The only way to win is the purge, and Unity eases it, \
          step by step, like terror levels. {easing} Pressure comes every round: the face-up adversary event card deals threats \
-         by your sites and names where its new agents land (one on every site of a kind) and which site grows a \
-         facility, so you always know where the next wave lands. Agents pile up only where something lands them: \
+         by your sites and names where its new agents land (one on every site of a kind), and next round every one of those sites \
+         still holding an agent takes one more, so you always know where the next wave lands. Agents pile up only where something lands them: \
          a city they land on holding {} corrupts, a hex with your node they land on holding {} \
          loses the node, and corrupted \
          cities and uncountered threats fill the Discord track. Each time it \
          fills, it tips: a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, \
          you lose. Discord cards never destroy your nodes directly, only through the threats and corruptions \
          they bring: they deal more or stronger threats (Offensive \
-         aims one at the node hex most crowded with adversary pieces), create agents, surge them \
+         aims one at the node hex most crowded with adversary pieces), create agents, escalate them \
          onto a city, take credits and land Fallout (Scorched Earth), more of each the more sites are corrupted. Unity has its own track, which nothing on the \
          Discord side empties: free a corrupted \
          city and you sway Unity (removing a botnet sways none), and each Unity \
@@ -758,8 +752,9 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          their own hex (or two agents on it: Night Raid lands them), an adversary troop's strike on their hex, \
          and Border War (nodes by a factory). A lost token leaves the game and nothing marks its hex; its \
          income stays. {safe}The adversary deck is a round cap too, {} rounds at \
-         most (fewer at the harder levels), and reaching it loses. So there are three different \
-         pressures: the Discord deck (politics), your nodes (the board) and the cap.\n",
+         most (fewer at the harder levels), and reaching it loses; and the adversary's research track loses the game \
+         at its seventh slot. So there are four different \
+         pressures: the Discord deck (politics), your nodes (the board), the research track (its stations) and the cap.\n",
         city_numbers(r),
         int(r, "adversary.corrupt_node_at"),
         dealt(r, 0).iter().sum::<usize>(),

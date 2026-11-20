@@ -136,7 +136,7 @@ pub fn corrupt_n(w: &World, site: CorruptSite, cut: i64) -> i64 {
 }
 
 /// 275, arrival corruption (it replaced Corrupt X lines, their adjacency move and natural corruption): after the
-/// adversary puts agents on hex `h` (a placement from the supply or a Spill's move; a player's Push or Gather is
+/// adversary puts agents on hex `h` (a placement from the supply or a factory's push; a player's Push or Gather is
 /// no arrival), that hex alone is checked: a city, research station or factory not yet the adversary's holding its
 /// corrupt number corrupts; else a player's node there with `corrupt_node_at` agents is destroyed (a node rule,
 /// no mark). A firewall or a no-Corrupt token holds it. Nothing else on the board is looked at.
@@ -144,7 +144,7 @@ pub fn arrive_check(g: &mut GameState, cx: &mut Cx, h: usize) -> Res {
     arrive_check_as(g, cx, h, false)
 }
 
-/// [`arrive_check`]; `named`: r133 (280), the site an Infiltrate, Surge or Grow line names, its check made in the
+/// [`arrive_check`]; `named`: r133 (280), the site an Infiltrate or Escalate line names, its check made in the
 /// line's read of it, so it is no check of its own (stats only: `map.arrival_folded`, not `CHECKS`).
 pub fn arrive_check_as(g: &mut GameState, cx: &mut Cx, h: usize, named: bool) -> Res {
     let w = cx.world;

@@ -259,7 +259,6 @@ pub struct Megaproject {
     #[serde(default)]
     pub text: String,
     pub player: Vec<Op>,
-    pub adversary: Vec<Op>,
     pub converter: Converter,
     /// 199 (r87, Matt 2026-11-12): a second converter paid in chips, used as the first is (a city of the
     /// country in reach, after completion), so chips hoarded early pay late. Not every corp prints one.
@@ -512,11 +511,13 @@ pub struct AdversaryBoard {
     #[serde(default)]
     pub rules: Vec<BoardRule>,
     pub difficulty: BoardRule,
-    /// 259 (Matt: every adversary gets a research rule): its research cubes stockpile on one track and, at the
-    /// threshold (`adversary.research_at` a country, lower with difficulty), fire this adversary's effect once in
-    /// the compute step (`adversary::research_step`). None: the board has no research rule.
+    /// 293 (Matt, 2026-11-19): the board's research track, a row of icon slots (`adversary::research_step`).
+    /// None: the board has no track.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub research: Option<ResearchRule>,
+    pub research: Option<ResearchRow>,
+    /// 293: the icon vocabulary a research row's slots name: each icon one line a board, card or token prints.
+    #[serde(default)]
+    pub icons: Vec<RowIcon>,
     /// 267: the difficulty ladder's named levels, 1 up (level 0 is the board as printed). Each adds setup
     /// (its numbers are the config's `adversary.*`) and at most one triggered `rule` ("" for setup only).
     #[serde(default)]
@@ -553,15 +554,31 @@ pub struct AdversaryLevel {
     pub rule: String,
 }
 
-/// 259: an adversary board's research rule: `effects` fire at the threshold; from `adversary.research_strong_at`
-/// (d3) `strong` fires instead (Matt: d3-d4 get a stronger effect).
+/// 293 (Matt, 2026-11-19): an adversary board's research row: `slots` name icons of the board's vocabulary
+/// ([`AdversaryBoard::icons`]), left to right. The track's marker advances one slot for every K cubes
+/// (`adversary.research_at` a country) and the slot's icon fires once; the slot past the last is a loss. The row
+/// is data: another board, or a later item, changes it by editing `slots`.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct ResearchRule {
+pub struct ResearchRow {
     pub name: String,
     pub text: String,
+    pub slots: Vec<String>,
+}
+
+/// 293: the slots a research row prints (slot 7 is the loss).
+pub const RESEARCH_SLOTS: usize = 6;
+
+/// 293: one icon of the research rows' vocabulary: its printed `name`, the `glyph` a board prints for it, its
+/// one-line `text` and the ops it fires when the track's marker reaches its slot.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct RowIcon {
+    pub id: String,
+    pub name: String,
+    pub glyph: String,
+    pub text: String,
     pub effects: Vec<Op>,
-    pub strong: BoardRule,
 }
 
 /// A project slot on the adversary board: a project must carry `tag` (or be
@@ -1423,21 +1440,18 @@ pub fn says_each_board(text: &str) -> bool {
     text.to_lowercase().contains("each board")
 }
 
-/// 151, 275: where an event line sits in the fixed step order (threat, Infiltrate, Muster, other lines, Spill,
-/// Grow).
+/// 151, 275, 293: where an event line sits in the fixed step order (threat, Infiltrate, Muster, other lines).
 fn event_step(e: &Op) -> u8 {
     match e {
         Op::Infiltrate { .. } => 0,
         Op::Troops { each_country: true, at: None, stand: false, location: None, if_: None, .. } => 1,
-        Op::Spill { .. } => 3,
-        Op::Grow { .. } => 4,
         _ => 2,
     }
 }
 
 /// r80 (ruling #31): the fixed list of an event card's line kinds, each printed with one icon
 /// (docs/rules/card-grammar.md, *Event lines*): `(kind, icon)`. An event line outside it is off the standard.
-pub const EVENT_LINE_KINDS: [(&str, &str); 13] = [
+pub const EVENT_LINE_KINDS: [(&str, &str); 11] = [
     ("Infiltrate", "agent, then the site glyph"),
     ("Muster", "troop, then the factory glyph"),
     ("Income", "brown box: compute"),
@@ -1449,8 +1463,6 @@ pub const EVENT_LINE_KINDS: [(&str, &str); 13] = [
     ("Forced March", "troop with a plus step"),
     ("Botnet spread", "botnet glyph with an arrow"),
     ("Fallout", "Fallout glyph by a dark-framed city"),
-    ("Spill", "agent arrow from one site glyph to another"),
-    ("Grow", "site glyph, a plus facility beside it"),
 ];
 
 /// r80 (ruling #31): the kind (an [`EVENT_LINE_KINDS`] name) of event line `e`, none if it is no kind on the list.
@@ -1469,15 +1481,13 @@ pub fn event_line_kind(e: &Op) -> Option<&'static str> {
         Op::SpreadBotnets { .. } => "Botnet spread",
         // 275: Corrupt open land's Fallout, printed.
         Op::Fallout { .. } => "Fallout",
-        Op::Spill { .. } => "Spill",
-        Op::Grow { .. } => "Grow",
         _ => return None,
     })
 }
 
 /// 151, the event standard (the threat card standard's, for events), 275's lines: one Infiltrate X (two at stage
-/// III), its lines in the fixed order (Infiltrate, Muster, other lines, Spill, Grow), at most two other lines
-/// (consequences), at most one Spill and one Grow, no per-event compute or creation line, and "each
+/// III), its lines in the fixed order (Infiltrate, Muster, other lines), at most two other lines
+/// (consequences), no per-event compute or creation line, and "each
 /// country", never "each board". The reason it breaks, if it does.
 pub fn event_rule_break(a: &AdversaryCard) -> Option<String> {
     if says_each_board(&a.text) {
@@ -1492,16 +1502,10 @@ pub fn event_rule_break(a: &AdversaryCard) -> Option<String> {
         return Some("one Infiltrate X line (two at stage III)".into());
     }
     if steps.windows(2).any(|p| p[0] > p[1]) || a.twists.iter().any(|e| event_step(e) < 2) {
-        return Some("a step out of the fixed order (threat, Infiltrate, Muster, other lines, Spill, Grow)".into());
+        return Some("a step out of the fixed order (threat, Infiltrate, Muster, other lines)".into());
     }
     if steps.iter().filter(|&&s| s == 2).count() > 2 {
         return Some("more than two other lines (consequences)".into());
-    }
-    if steps.iter().filter(|&&s| s == 3).count() > 1 || steps.iter().filter(|&&s| s == 4).count() > 1 {
-        return Some("at most one Spill line and one Grow line".into());
-    }
-    if a.standing.iter().any(|e| matches!(e, Op::Spill { .. } | Op::Grow { .. })) {
-        return Some("a Spill or Grow line before the other lines (they go last, among the twists)".into());
     }
     if a.standing.iter().any(|e| matches!(e, Op::Compute { .. } | Op::Create { .. })) {
         return Some("a per-event compute or creation line (income and Infiltrate replace them)".into());
@@ -1537,12 +1541,33 @@ fn check_adversary_board(b: &AdversaryBoard) -> Result<(), String> {
             return Err(format!("{what}: {:?} says \"each board\" (each country)", r.name));
         }
     }
-    if let Some(r) = &b.research {
-        if r.effects.is_empty() || r.strong.effects.is_empty() {
-            return Err(format!("{what}: its research rule {:?} needs an effect and a stronger one", r.name));
+    // 293: boards differ by their row, their event mix and one rule.
+    if b.rules.len() > 1 {
+        return Err(format!("{what}: a board prints one rule, not {}", b.rules.len()));
+    }
+    // A rule's line needs a reader: an Escalate runs in the Card beat (`adversary::board_rule`), an income rise is
+    // read at setup, a threat's compute as a threat executes. Another op would load and never act.
+    for r in &b.rules {
+        if let Some(e) = r.effects.iter().find(|e| !matches!(e, Op::Escalate { .. } | Op::IncreaseIncome { .. } | Op::ThreatCompute { .. })) {
+            return Err(format!("{what}: its rule {:?} prints a line nothing reads: {e:?}", r.name));
         }
-        check_ops(&r.effects, Slot::Team, &what)?;
-        check_ops(&r.strong.effects, Slot::Team, &what)?;
+    }
+    for i in &b.icons {
+        if i.effects.is_empty() || i.text.trim().is_empty() {
+            return Err(format!("{what}: icon {:?} needs text and an effect", i.id));
+        }
+        check_ops(&i.effects, Slot::Team, &what)?;
+        if b.icons.iter().filter(|x| x.id == i.id).count() > 1 {
+            return Err(format!("{what}: icon {:?} is listed twice", i.id));
+        }
+    }
+    if let Some(r) = &b.research {
+        if r.slots.len() != RESEARCH_SLOTS {
+            return Err(format!("{what}: its research row {:?} needs {RESEARCH_SLOTS} slots, not {}", r.name, r.slots.len()));
+        }
+        if let Some(id) = r.slots.iter().find(|id| !b.icons.iter().any(|i| &i.id == *id)) {
+            return Err(format!("{what}: its research row names an icon {id:?} not in its vocabulary"));
+        }
     }
     for (k, v) in b.levels.iter().enumerate() {
         if v.level != k as i64 + 1 {
@@ -1628,11 +1653,10 @@ fn check_country_piece(i: usize, p: &CountryPiece, n: usize) -> Result<(), Strin
     }
     let what = format!("project of country piece {i}");
     let m = &p.megaproject;
-    if !(6..=12).contains(&m.cubes) || m.player.is_empty() || m.adversary.is_empty() {
-        return Err(format!("{what}: 6-12 cubes, and a payout for each color"));
+    if !(6..=12).contains(&m.cubes) || m.player.is_empty() {
+        return Err(format!("{what}: 6-12 cubes, and a payout for a player cube"));
     }
     check_ops(&m.player, Slot::Player, &what)?;
-    check_ops(&m.adversary, Slot::Team, &what)?;
     for conv in std::iter::once(&m.converter).chain(m.chip_converter.as_ref()) {
         check_ops(&conv.effects, Slot::Player, &what)?;
         if conv.cost.is_empty() || conv.effects.is_empty() {

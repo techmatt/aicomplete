@@ -108,7 +108,7 @@ def measures(g):
     # arrival less the canceled, where a game tallies arrivals; an older side keeps the old sum.
     if "adversary.arrivals" in c:
         # A Spill's cancel is no arrival's (its agent comes from the board): r136 tallies it apart.
-        placed = c.get("adversary.arrivals", 0) - c.get("adversary.canceled", 0) + c.get("adversary.spill_canceled", 0)
+        placed = c.get("adversary.arrivals", 0) - c.get("adversary.canceled", 0) + c.get("adversary.spill_canceled", 0) + c.get("adversary.push_canceled", 0)
     else:
         placed = c.get("adversary.created", 0) + c.get("adversary.rallied", 0)
     revealed = c.get("adversary.projects_revealed", 0)

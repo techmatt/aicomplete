@@ -174,9 +174,9 @@ fn feasible_aimed(
             | Op::MarchNow { .. } | Op::OccupyFactory { .. } | Op::PlaceBotnet { .. } | Op::CorruptFactory
             | Op::Theft { .. } | Op::TeamIncome { .. } | Op::FreePurchases { .. } | Op::CounterAll
             | Op::Pushback { .. } | Op::DealThreats { .. } | Op::Create { .. } | Op::CreateSite { .. }
-            | Op::Infiltrate { .. } | Op::Surge { .. } | Op::Spill { .. } | Op::Grow { .. }
+            | Op::Infiltrate { .. } | Op::Escalate { .. }
             | Op::IncreaseIncome { .. } | Op::AdversaryResearch { .. } | Op::RemoveBotnets { .. }
-            | Op::AdversaryCubes { .. } | Op::BotnetCubes { .. } | Op::BotnetTroops { .. }
+            | Op::BotnetTroops { .. }
             | Op::SpreadBotnets { .. } | Op::TakeSite { .. } | Op::FactoryTroops { .. } | Op::AgentsOnNodes { .. }
             | Op::RecallAmbassadors | Op::StripCubes { .. } | Op::StripHarden | Op::Fallout { .. }
             | Op::Clock { .. } | Op::OnePlayer { .. } | Op::PerSite { .. } | Op::RemoveWhere { .. }

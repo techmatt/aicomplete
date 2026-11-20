@@ -19,8 +19,8 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
   a player's token is a **Node**, the adversary's a **Botnet**; the Security token prints
   **Operatives**; simulator players are **sim players**. Piece names on cards print capitalized or as the piece's
   symbol; rulebook prose uses plain lowercase.
-- **Terms (locked):** "corrupt" is the adversary's one verb for taking sites; the land scar is **Fallout**; the
-  Protector's Seize is **Reclaim**; node loss is "destroy your node".
+- **Terms (locked):** "corrupt" is the adversary's one verb for taking sites; the land scar is **Fallout**;
+  node loss is "destroy your node".
 
 ## Difficulty
 
@@ -61,25 +61,25 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
   their sinks (soft). **Every resource should be an interesting thing to spend (Matt, 2026-11-11):** each rules item
   reports how each resource is spent and whether it binds.
 - **Watch list (Matt, 2026-11-11):** insight binding at keep and play; Patience carry-over; neutral claim timing;
-  adversary cubes on megaproject payouts; Vigil; Fallout's Discord drip.
+  Vigil; Fallout's Discord drip.
 - **Harms ledger:** [harms.md](harms.md), kept current by every prompt touching threats, cards or the adversary; 191
   makes it complete (no insight row; "costs raised" paged).
 
 ## Resources and engines
 
-- **Board facts (candidates):** slots 5 / 4 / 3; boards print 15 / 13 / 11 credits and +1 energy (Protector 2);
+- **Board facts (candidates):** slots 5 / 4 / 4; boards print 10 / 9 / 7 credits and +1 energy (Protector 2);
   reach 1; converters need a node in a city of their country.
 - **City energy (Matt, 2026-11-19):** each city that is neither corrupted nor blocked pays 1 energy to every player
   with a node on or next to it, on the energy income track; no hosts and no buying. **Resources are not merged.**
 - **Insight:** this round's attention, spent this turn; the card-play track prints absolute values (starts at 3,
   then 199's early-heavy t4 steps); keeps cost 1 insight tier-1, **3 tier-2** (2 upgraded); Patience keeps unspent
   insight (caps banned); no adversary card takes insight; the opening deals 2 tier-1 + 2 tier-2 free; tier-1 play
-  costs are credits (4 a point); Synthesis 2 insight → a card. Matt's aims (design doc *Economy*): about 6 a round
+  costs are credits (4 a point). Matt's aims (design doc *Economy*): about 6 a round
   to drafting and 2-4 to plays (directional); more tier 2 earlier; keeps are a plan; insight must bind, judged by
   slack beside bound rounds, no target. **Draft hand exactly 4 cards (locked).**
-- **Chips (Matt, 2026-11-11/18):** chips cap at 3; a chip is worth 4 credits as a pricing anchor, not an exchange:
-  chips are their own resource, not cut, never trivially exchanged for credits without an engine. City growth is now
-  the adversary's Grow line (r130).
+- **Chips (Matt, 2026-11-11/18):** a chip is worth 4 credits as a pricing anchor, not an exchange:
+  chips are their own resource, not cut, never trivially exchanged for credits without an engine. City growth is
+  gone: the Grow line left the event cards at r140, and new neutral sites come from site-opening lines.
 - **Engines over dials (Matt, 2026-11-12):** chips, energy, antimatter and research cubes feed engines; when players
   skip one, buff its engines until skipping it is clearly bad play; easy levels are met by stronger engines, not
   adversary patches. A claim makes 1 chip a round; megacorps convert chips once their project completes.
@@ -102,8 +102,7 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
   production limits: a runaway pile is fixed at card level. The anchors' table and the worked checks:
   [card-guidelines.md](card-guidelines.md).
 - **Standard actions (Matt, 2026-11-12):** poorly priced hedges, never the better route; none removes corruption
-  except Lift (about 2 research cubes); Claim and Liberate share one table and need a site free of agents; Liberate
-  is the win route.
+  except Lift (about 2 research cubes); Liberate needs a site free of agents and is the win route.
 - **Matt, 2026-11-17:** **cut the Claim standard action** (cards claim).
 - **Sell a card is exempt from job-no-card** (Matt, 2026-11-16): no card needs to sell.
 
@@ -122,7 +121,7 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
   unless printed "on or next to the target" (most tier 1 target-only; tier 2 sizes up with radius 1, never 2); never
   two targets; **Gain** = your supply, **Place** = onto the map; no card picks a country freely ("in the target's
   country"); Shelter is "your nodes and facilities in reach". Kept by 234's picks: megaproject-cube cards keep any
-  open megaproject; Disrupt's "one country" (206); Peacekeeping Mission's "in its country".
+  open megaproject; Peacekeeping Mission's "in its country".
 
 ## Boards and pieces
 
@@ -150,7 +149,19 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
   lives only as content on Discord and event cards, each doing one clear thing.
 - **Card-driven (Matt, 2026-11-18):** the adversary is card-driven with look-ahead and checks on arrival, never a
   board sweep.
-- **Matt, 2026-11-17:** the research threshold stays 5, 5, 5, 4, 4.
+- **Adversary spine (Matt, 2026-11-19):** an event card is Infiltrate X plus escalate: each site of last round's
+  type that holds an agent takes 1 more (Spill and Surge's "most agents" picks go). **One output a corrupted site:**
+  city 1 Discord; station 1 research cube; factory 1 agent (made on itself, pushed next round along its zone's
+  printed arrow to its city); botnet 1 compute and no seeding. Adversary cubes go only onto its research track;
+  megaprojects take neutral and player cubes only. **Research track:** a row of six icon slots on every adversary
+  board, a slot's icon happening once, in each country, as the marker arrives; slot 7 is a loss. Boards differ by
+  their row, their event mix and one rule; the map shows which threat is growing. **Rows are data**, content not
+  code, with non-troop icons only until item 3 swaps troop and Strike icons in by editing the row. The adversary's
+  Grow need not be kept: escalate and the one-output rule may replace or reshape it wherever that makes its turn
+  simpler (its line left the event cards at r140; the players' Growth is untouched).
+- **Matt, 2026-11-19:** the research track advances every K cubes, start about 3 a country, cubes from round 1
+  (overturns 2026-11-17's threshold of 5, 5, 5, 4, 4). K and the starting cubes are the building item's to propose
+  for his review.
 - **Threat vibe (Matt, 2026-11-12; design doc *Adversary system*):** botnets spread quickly but manageable; agents
   on par with ambassadors; troops fewer, deadlier, destroy players left unchecked; early troops fine; players
   protect themselves by an expensive standard action, a different troop power on each board, and cards.
@@ -189,11 +200,11 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
 - **Design principles (Matt, 2026-11-12; [principles.md](principles.md) *Design warnings*, checked by
   `scripts/design_check.py`):** capstone and tier-2 resources scarce and earned; no power or effect on every board;
   standard actions poor hedges; Unity and Discord follow the story (extreme acts raise Discord); fewer tokens and
-  less tracking; engines over dials; games run 8-10 rounds. Warnings never gate; they go to Matt first.
+  less tracking; engines over dials; games aim at 7-9 rounds (Matt, 2026-11-19). Warnings never gate; they go to Matt first.
 
 ## Table time and the card economy
 
-- **Table time (Matt, 2026-11-18):** the ~2 h target is **relaxed: games target ~8-9 rounds, and the sim's minutes
+- **Table time (Matt, 2026-11-18):** the ~2 h target is **relaxed: games aim at 7-9 rounds (Matt, 2026-11-19), and the sim's minutes
   are assumed wrong until Matt plays it himself and corrects them.** Yardstick: 278's `breakdown.py` at 268's rates
   (15 s a decision) plus the sense that similar strategy and play quality with less bookkeeping, token maintenance,
   math and tracking is better. Complexity slightly (not significantly) above medium Spirit Island. Hard

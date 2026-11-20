@@ -42,6 +42,9 @@ pub struct Cell {
     pub station_site: bool,
     /// A coastal city (027): next to ocean, or printed so on the piece.
     pub coastal: bool,
+    /// 293: an industrial zone's printed arrow: the hex index of the city a corrupted factory here pushes its
+    /// agent onto, the zone's nearest city of its own country (ties: the lower number). None off a zone.
+    pub arrow: Option<usize>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -84,6 +87,7 @@ impl Map {
                         industrial: design.industry.contains(&number),
                         station_site: design.station_sites.contains(&number),
                         coastal: design.coast.contains(&number),
+                        arrow: None,
                     });
                 }
             }
@@ -111,6 +115,16 @@ impl Map {
             if hexes[i].kind == HexKind::City && near_ocean {
                 hexes[i].coastal = true;
             }
+        }
+        // 293: each industrial zone's printed arrow, derived from the piece alone so it prints the same in every
+        // layout: its nearest city of its own country (ties: the lower number).
+        for i in 0..hexes.len() {
+            if !hexes[i].industrial {
+                continue;
+            }
+            hexes[i].arrow = (0..hexes.len())
+                .filter(|&x| hexes[x].kind == HexKind::City && hexes[x].country == hexes[i].country)
+                .min_by_key(|&x| (hexes[i].hex.distance(hexes[x].hex), hexes[x].number));
         }
         Ok(Map {
             hexes,

@@ -373,7 +373,6 @@
       "board.node_placed",
       "board.troop_moves",
       "board.troop_steps",
-      "board.troops_built",
       "board.markers"
     ],
     "player_prefixes": [
@@ -384,7 +383,7 @@
   "table_cost": {
     "note": "268 (soft): table cost a round, by level d0-d4 (a level past the list takes the last): components moved (adversary ops + the tokens check's player moves but ops_already, a troop's move being an op + production_counters, a troop's strike among them), per-site checks (site_passes x sites on the map + city_passes x cities + troops marching + check_counters + check_prefixes; 275: no pass looks at every site, so both passes are 0 and the adversary's own checks, each site a line names, each arrival and each botnet, come from map.adversary_checks) and once-a-round uses a seat (memory). Budgets: 267's final read (f267-read2) + about 10%, cross-checked against 268's hand-play (experiments/results/268_table_cost_audit/). The friction review reruns every refresh_every rules revisions.",
     "ops_already": ["board.troop_moves", "board.troop_steps"],
-    "production_counters": ["board.troop_strikes", "board.adversary_cubes", "board.cubes_paid.player", "board.cubes_paid.neutral", "board.cubes_paid.adversary", "board.chips_made"],
+    "production_counters": ["board.troop_strikes", "board.cubes_paid.player", "board.cubes_paid.neutral", "board.chips_made"],
     "site_passes": 0,
     "city_passes": 0,
     "check_counters": ["threats.dealt"],

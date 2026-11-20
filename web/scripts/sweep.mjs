@@ -82,8 +82,8 @@ const CASES = [
   // 197: r85-r86's project ops (botnets, sites taken, factory troops, raids, stripped hardening,
   // the clock) as the strategist meets them at d4, with the card-play track at 3.
   { name: 'c3-d4-strategist', config: 'baseline.json', set: ['countries=3', 'adversary.difficulty=4'], agent: 'strategist' },
-  // 285: r130-r135's card-driven adversary (Infiltrate, Spill, Grow, Surge) and the Growth boards as the judge
-  // plays them at 3 countries (all three boards), and at 4 countries for the Spill's crowded sites.
+  // 285: the card-driven adversary (Infiltrate; 293: Escalate) and the Growth boards as the judge plays them at 3
+  // countries (all three boards), and at 4 countries for its crowded sites.
   { name: 'c3-d3-strategist', config: 'baseline.json', set: ['countries=3', 'adversary.difficulty=3'], agent: 'strategist' },
   { name: 'c4-d1-strategist', config: 'baseline.json', set: ['countries=4', 'adversary.difficulty=1'], agent: 'strategist' },
 ];
@@ -167,9 +167,9 @@ const PAGE_LIB = String.raw`(() => {
   // rider's claim, a site opened, a converter's Action, the adversary research track
   // (made, fired, removed), compute blocked, a march cut short.
   const COUNTER_EVENTS_R107 = /^(ai\.power\.[a-z_]+\.[a-z0-9_]+|adversary\.(research_(made|fired|removed)|compute_blocked)|board\.(claimed_by\.(card|rider)\.[a-z]+|sites_opened\.[a-z_]+|chips_converted|march_cut_by_loss|blocked\.station_adversary))$/;
-  // 275: r130's card-driven adversary: an arrival corruption, a Grow (and its agent), a Spill, a botnet's seed, a
-  // Surge, an uncountered threat's agent at its anchor.
-  const COUNTER_EVENTS_R130 = /^adversary\.(corruptions_arrival|grew\.(factory|station)|grew_infested|spilled|seeded|surged|threat_anchor)$/;
+  // 275: r130's card-driven adversary: an arrival corruption, an uncountered threat's agent at its anchor. 293: an
+  // Escalate's agent, a corrupted factory's agent made and pushed along its zone's arrow.
+  const COUNTER_EVENTS_R130 = /^adversary\.(corruptions_arrival|escalated|factory_pushed|factory_agents|threat_anchor)$/;
   // 285: r130-r135's guards and draws: an Infiltrate a guard stopped, a build's Infiltrate, a guard holding (arrival,
   // flip, take), a Wall stopping a landing, a firewall holding, the purge held off by botnets, research troops, a
   // botnet spread skipped, a node capstone, cubes bought, chips made, a card drawn (scarce since r127), a cordon keeping

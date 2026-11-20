@@ -138,36 +138,6 @@ pub(super) fn remove_botnets(g: &mut GameState, cx: &mut Cx, count: i64) -> Res 
     Ok(())
 }
 
-/// 185 (Matt's ruling #3): `count` adversary research cubes onto each open megaproject.
-pub(super) fn adversary_cubes(g: &mut GameState, cx: &mut Cx, count: i64) {
-    let w = cx.world;
-    for c in 0..w.map.countries.len() {
-        if g.var(&board::project_done(c)) == 0 {
-            cx.add_key(g, &board::project_key(c, None), count);
-            cx.tally(g, "board.adversary_cubes_op", count);
-        }
-    }
-}
-
-/// 185 (Matt's ruling #3): up to `count` botnets in countries with an open megaproject (players choose which) each
-/// come off and become an adversary cube on that megaproject. Not a removal by the players: no Unity for it.
-pub(super) fn botnet_cubes(g: &mut GameState, cx: &mut Cx, count: i64) -> Res {
-    let w = cx.world;
-    for _ in 0..count {
-        let open = |h: usize| g.var(&board::project_done(w.map.hexes[h].country as usize)) == 0;
-        let botnets: Vec<usize> = (0..g.hexes.len()).filter(|&h| g.tokens(h, BOTNET) > 0 && open(h)).collect();
-        let opts = botnets.iter().map(|&h| hex_opt(&w, h)).collect();
-        let Some(i) = cx.choose(0, "Which botnet becomes an adversary research cube?", opts)? else {
-            break;
-        };
-        let h = botnets[i];
-        cx.add_tokens(g, h, BOTNET, -1);
-        cx.set_key(g, &adversary::cut_key(h), 0);
-        cx.add_key(g, &board::project_key(w.map.hexes[h].country as usize, None), 1);
-        cx.tally(g, "board.botnet_cubes", 1);
-    }
-    Ok(())
-}
 
 /// 195: the hexes of country `c`, lowest-numbered first (a project's tie-break).
 fn by_number(w: &World, c: usize) -> Vec<usize> {
@@ -374,11 +344,11 @@ pub(super) fn strip_cubes(g: &mut GameState, cx: &mut Cx, count: i64) {
             continue;
         }
         for _ in 0..count.max(0) {
-            let most = (0..g.seats.len()).rev().max_by_key(|&s| g.var(&board::project_key(c, Some(s))));
-            let Some(s) = most.filter(|&s| g.var(&board::project_key(c, Some(s))) > 0) else {
+            let most = (0..g.seats.len()).rev().max_by_key(|&s| g.var(&board::project_key(c, s)));
+            let Some(s) = most.filter(|&s| g.var(&board::project_key(c, s)) > 0) else {
                 break;
             };
-            cx.add_key(g, &board::project_key(c, Some(s)), -1);
+            cx.add_key(g, &board::project_key(c, s), -1);
             cx.tally(g, "adversary.cubes_stripped", 1);
         }
     }

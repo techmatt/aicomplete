@@ -8,7 +8,7 @@
 //! The board (014): cities are clean, aligned (a player cube) or corrupted
 //! (the adversary's cube). Adversary ambassadors
 //! gather on clean cities until `adversary.corrupt_at` corrupts them, divert
-//! the production of the pieces they sit on (a factory builds a troop),
+//! the production of the pieces they sit on (293: an adversary factory makes an agent),
 //! and come out of a supply that caps them.
 //!
 //! The weights are agent parameters, not rules: they live in [`Weights`]
@@ -94,7 +94,7 @@ pub struct Weights {
     /// cost: it will resolve; 017).
     pub project: f64,
     /// 259: the adversary's research track's fill, as a share of its threshold (a cost: it fires the board's
-    /// research rule; the troops it lands count as troops after). 0: off.
+    /// research row a slot, 293; slot 7 is a loss). 0: off.
     #[serde(default)]
     pub research: f64,
     /// Each player node on the board (reach, site claims, a share of
@@ -136,7 +136,7 @@ pub struct Weights {
     pub reach: f64,
     /// Each research station a player owns; a corrupted one costs as much.
     pub station: f64,
-    /// Each player cube on a megaproject; an adversary cube costs half, and a
+    /// Each player cube on a megaproject (293: it takes no adversary cube), and a
     /// neutral one nothing (074).
     pub project_cube: f64,
     /// Each research cube a seat holds (074): low on purpose, under what every
@@ -367,12 +367,6 @@ pub struct Weights {
     /// ahead's types) counts this share of its agents on each site toward corrupting, a round ahead: the pressure,
     /// at-risk and exposure terms read them as if landed.
     pub rally_read: f64,
-    /// 275, above 0: the botnets' coming seeds (`plan::next_seeds`) count this share beside the Infiltrate, read
-    /// as `rally_read` reads it (both land before the players act again).
-    pub seed_read: f64,
-    /// 288 (D134; 0: off), above 0: the card ahead's Spill and Grow lines (`plan::next_spill`) count this share
-    /// beside the Infiltrate: an agent onto a site as `rally_read` reads an arrival, one off a site against it.
-    pub spill_read: f64,
     /// 147 (D67), above 0: each Fallout token, and open land filling
     /// toward one, costs its Discord drip over the rounds left (up to 3) at its
     /// share of a Discord tip.
@@ -382,7 +376,7 @@ pub struct Weights {
     pub site_pressure: f64,
     /// 137: each adversary city, station or factory a player ambassador stands
     /// on, blocking its output (a city's diversion, a station's compute, a
-    /// factory's troop): about a round's output.
+    /// factory's agent): about a round's output.
     pub block: f64,
     /// 137: each hex where a seat's own ambassador stands on its node or owned
     /// facility: armor, used up instead of the piece.
@@ -515,9 +509,8 @@ fn open_share(world: &aic_core::module::World, g: &GameState, h: usize) -> f64 {
         return 0.0;
     }
     let need = world.content.map.countries[c].megaproject.cubes.max(1);
-    let filled = g.var(&board::project_key(c, None))
-        + g.var(&board::project_neutral(c))
-        + (0..g.seats.len()).map(|s| g.var(&board::project_key(c, Some(s)))).sum::<i64>();
+    let filled = g.var(&board::project_neutral(c))
+        + (0..g.seats.len()).map(|s| g.var(&board::project_key(c, s))).sum::<i64>();
     (1.0 - filled as f64 / need as f64).clamp(0.0, 1.0)
 }
 
@@ -725,8 +718,6 @@ impl Default for Weights {
             // +1.3 ±1.4), keeping most of the drop in nodes lost to corruption (2.3-3.1 a game, 1: 2.2-2.9, off 2.9-4.1).
             corrupt_exposure: 0.25,
             rally_read: 1.0,
-            seed_read: 1.0,
-            spill_read: 0.0,
             blight: 1.0,
             site_pressure: 1.0,
             block: 4.0,
@@ -1442,23 +1433,9 @@ impl Eval {
         // 151: the coming Rally, a round ahead, as expected ambassadors a hex (`rally_read` of them).
         let mut arriving: Vec<f64> = Vec::new();
         if w.rally_read > 0.0 {
-            let mut fore = plan::next_infiltrate(&world, g);
-            // 288 (D134, `spill_read`): the card's Spill and Grow lines, after its Infiltrate; a Spill's move off a
-            // site counts against it below.
-            let mut off: Vec<(usize, f64)> = Vec::new();
-            if w.spill_read > 0.0 {
-                for (h, n) in plan::next_spill(&world, g, &fore) {
-                    if n < 0.0 {
-                        off.push((h, n * w.spill_read));
-                    } else {
-                        fore.push((h, n * w.spill_read / w.rally_read));
-                    }
-                }
-            }
-            if w.seed_read > 0.0 {
-                fore.extend(plan::next_seeds(&world, g).into_iter().map(|(h, n)| (h, n * w.seed_read / w.rally_read)));
-            }
-            // 275: one hex's arrivals (an Infiltrate and a seed) summed first: an ambassador cancels one of them.
+            // 293: the Spill forecast (`spill_read`, 288's pick) and the seed forecast retired with Spill and seeding.
+            let fore = plan::next_infiltrate(&world, g);
+            // 275: one hex's arrivals (two Infiltrate lines) summed first: an ambassador cancels one of them.
             let mut due: Vec<(usize, f64)> = Vec::new();
             for (h, n) in fore {
                 match due.iter_mut().find(|(x, _)| *x == h) {
@@ -1475,16 +1452,9 @@ impl Eval {
                     arriving[h] += (n - held as f64).max(0.0) * w.rally_read;
                 }
             }
-            if !off.is_empty() {
-                arriving.resize(g.hexes.len(), 0.0);
-                for (h, n) in off {
-                    arriving[h] += n;
-                }
-            }
         }
         // What site `h` counts toward corrupting: its own adversary ambassadors, plus the coming Rally's expected
         // arrivals (151).
-        // 288: never below none (a Spill's move off a site, `spill_read`, can outrun what is there).
         let at = |x: usize| (tokens[x].adv_ambassador as f64 + arriving.get(x).copied().unwrap_or(0.0)).max(0.0);
         let near = self.reach_masks(rules, &tokens);
         let seats = self.seats;
@@ -1678,7 +1648,7 @@ impl Eval {
             if t.factory > 0 {
                 if bad {
                     v -= w.owned_factory;
-                    // 137: a player ambassador on an adversary factory blocks its troop.
+                    // 137, 293: a player ambassador on an adversary factory blocks its output (an agent).
                     if t.ambassador[..seats].iter().any(|&n| n > 0) {
                         v += w.block;
                     }
@@ -1815,12 +1785,10 @@ impl Eval {
                 continue;
             }
             let mine: i64 = (0..self.seats)
-                .map(|s| g.var(&board::project_key(c, Some(s))))
+                .map(|s| g.var(&board::project_key(c, s)))
                 .sum();
-            let theirs = g.var(&board::project_key(c, None));
-            // 196: an adversary cube costs half a player cube; 192's `w.adversary_cube` weight was deleted, inert at
-            // r84 and r85 (0, 0.5 and 1 played the same 384 games: nothing moves one inside the eval's one step).
-            v += w.project_cube * (mine as f64 - 0.5 * theirs as f64);
+            // 293: megaprojects take no adversary cube (196's half-cube charge went with them).
+            v += w.project_cube * mine as f64;
         }
         for s in 0..self.seats {
             let held = g.resource(s, Resource::Ambassadors);
@@ -1867,8 +1835,8 @@ impl Eval {
         }
         let resolved = g.stats.counters.get("adversary.projects_resolved");
         v -= w.project * resolved.copied().unwrap_or(0) as f64;
-        // 259: the research track as a share of its threshold (capped at a full one: it fires once a round), and
-        // each fire counted in full, as a resolved project is, so letting it fire never scores as relief.
+        // 259, 293: the research track as a share of K (capped at a full slot), and each slot reached counted in
+        // full, as a resolved project is, so letting it advance never scores as relief.
         if w.research != 0.0 {
             let at = adversary::research_threshold(&world);
             if at > 0 {

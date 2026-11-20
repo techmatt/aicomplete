@@ -58,7 +58,7 @@ fn a_bought_cube_goes_on_an_incomplete_project_and_pays_at_completion_only() {
     act(&rules, &mut g, researcher_power(&rules, "Lab II"));
     assert_eq!(g.resource(2, Resource::Credits), 8);
     assert_eq!(g.pile(&cards::played(2)).len(), 3, "a threshold sacrifices nothing");
-    let on: i64 = (0..w.map.countries.len()).map(|c| g.var(&board::project_key(c, Some(2)))).sum();
+    let on: i64 = (0..w.map.countries.len()).map(|c| g.var(&board::project_key(c, 2))).sum();
     assert_eq!(on, 1);
     for c in 0..w.map.countries.len() {
         set_var(&mut g, board::project_done(c), 1);

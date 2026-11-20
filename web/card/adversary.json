@@ -7,13 +7,13 @@
       "Setup: build each threat deck from every Security and Universal threat of its tier and as many of its other threats, taken at random; shuffle it. The rest stay in the box."
     ],
     [
-      "Botnet Recruiters",
-      "In the compute step, each Botnet with no player Ambassador on it puts 1 Agent on the city, research station or factory next to it not yet the adversary's holding the most Agents (else on its own site, if not yet the adversary's), and adds its compute (even when a cordon stops its Agent or it has nowhere to land)."
+      "Commandeered Plants",
+      "Every round, after last round's sites escalate: each factory not yet the adversary's that holds an Agent takes 1 more."
     ]
   ],
   "research": [
-    "Weapons Program",
-    "When the research track reaches its threshold, spend it: Muster 2: each country, 2 Troops on its lowest-numbered factory (else city)."
+    "War Research",
+    "Each cube a country on the track (2 cubes with two countries, 3 with three) is spent to advance the marker one slot; the slot's icon happens once. Slot 7: the players lose."
   ],
   "escalation": [
     "Stage I: 1 threat a country, tier 1",
@@ -28,7 +28,7 @@
       "setup": [
         "Compute income 0 a country",
         "Infiltrate 1 a site",
-        "Research threshold 5 a country",
+        "Research track: a slot each cube a country",
         "Deck 5 / 5 / 3 (13 rounds)",
         "Sites print their corrupt numbers: city 5, station 3, factory 3"
       ],
@@ -70,14 +70,13 @@
       "flavor": "The labs build weapons, not cures.",
       "setup": [
         "Compute income 10 a country",
-        "Research threshold 4 a country",
         "Deck 5 / 3 / 3 (11 rounds)"
       ],
-      "rule": "When Weapons Program fires, it musters 3, not 2.",
-      "new_rules": 1,
-      "active_rules": 3,
-      "new_changes": 1,
-      "active_changes": 3
+      "rule": "",
+      "new_rules": 0,
+      "active_rules": 2,
+      "new_changes": 0,
+      "active_changes": 2
     },
     {
       "level": 4,
@@ -90,9 +89,9 @@
       ],
       "rule": "",
       "new_rules": 0,
-      "active_rules": 3,
+      "active_rules": 2,
       "new_changes": 0,
-      "active_changes": 3
+      "active_changes": 2
     }
   ]
 }

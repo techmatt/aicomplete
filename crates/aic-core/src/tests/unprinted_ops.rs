@@ -40,7 +40,6 @@ const RESOLVED: &[(&str, By, bool)] = &[
     (r#"[{"op":"counter_all"}]"#, By::Team, true),
     (r#"[{"op":"pushback","ambassadors":1}]"#, By::Team, false),
     (r#"[{"op":"remove_botnets","count":1}]"#, By::Team, true),
-    (r#"[{"op":"botnet_cubes","count":1}]"#, By::Team, true),
     (r#"[{"op":"one_player","then":[{"op":"gain","resource":"credits","amount":1}]}]"#, By::Team, true),
 ];
 

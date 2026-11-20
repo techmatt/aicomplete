@@ -601,7 +601,7 @@
    "locations": [
     "station"
    ],
-   "text": "This country's player discards 2 cards. 2 cubes go onto the adversary's research track.",
+   "text": "This country's player discards 2 cards. 1 cube goes onto the adversary's research track.",
    "counters": [
     [
      {
@@ -623,7 +623,7 @@
     },
     {
      "op": "adversary_research",
-     "amount": 2,
+     "amount": 1,
      "why": "259 (Matt, 2026-11-16): adversary cards feed the research track; a discard traded for 2 cubes at the same harm"
     }
    ],
@@ -635,7 +635,8 @@
    "check": "bites a hand held for next round; the counter asks research cubes",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
-    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player",
+    "293 (Matt, 2026-11-19): its research line is 1 cube (was 2): the track's K went from 5 to 1 a country"
    ],
    "reuses": "wiper_malware"
   },

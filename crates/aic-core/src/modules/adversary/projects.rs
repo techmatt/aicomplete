@@ -164,18 +164,23 @@ pub fn gain_compute(g: &mut GameState, cx: &mut Cx, n: i64) -> Res {
     Ok(())
 }
 
-/// 175, the compute step (the end of the adversary's turn): all compute is added once: the printed income,
-/// each botnet without a player ambassador on it (and not hacked this round), each corrupted research station
-/// without one, and everything banked since the last step (threats, cards, projects). `compute_every` goes
-/// on every visible project first; then each point onto the leftmost visible project (r80), a full one
-/// resolving at once, the rest sliding left and the right slot refilling.
+/// 175, 293: the Income beat's outputs and compute step. Each corrupted site makes its one output (Matt,
+/// 2026-11-19): a city its Discord (`board::corrupted_cities_discord`), a station its research cube, a factory its
+/// agent ([`super::factories_output`]), a botnet its compute. Then all compute is added once: the printed income,
+/// the botnets' and everything banked since the last step (threats, cards, projects). `compute_every` goes on
+/// every visible project first; then each point onto the leftmost visible project (r80), a full one resolving at
+/// once, the rest sliding left and the right slot refilling.
 pub fn compute_step(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
-    // r133 (280): one move a botnet: each seeds and adds its compute in the same read (`botnets_seed`).
-    let pass = super::botnets_seed(g, cx)?;
+    board::corrupted_cities_discord(g, cx);
     if g.is_over() {
         return Ok(());
     }
+    super::factories_output(g, cx)?;
+    if g.is_over() {
+        return Ok(());
+    }
+    let pass = super::botnets_compute(g, cx);
     let income = g.var(INCOME_COMPUTE).max(0);
     cx.tally(g, "adversary.compute_income", income);
     let s = sources(&w, g);
@@ -261,8 +266,7 @@ struct Sources {
 }
 
 /// What makes compute as the board stands, read without changing anything: [`completes_next_step`]'s estimate
-/// (botnets and stations) and [`compute_step`]'s stations. 280: `compute_step` takes the botnets' compute from
-/// `botnets_seed`'s pass instead, which can unblock a botnet a seed frees; the estimate doesn't foresee that.
+/// (botnets and stations) and [`compute_step`]'s stations.
 fn sources(w: &World, g: &GameState) -> Sources {
     let per = w.int("adversary.botnet_compute");
     let mut s = Sources { botnets: 0, blocked: 0, stations: 0, stations_blocked: 0 };
@@ -277,11 +281,11 @@ fn sources(w: &World, g: &GameState) -> Sources {
             s.botnets += n;
         }
     }
-    // 137: an adversary station makes compute; one player ambassador on it blocks it. 185: only once its
-    // country's megaproject is complete (before that it puts adversary cubes on it, in production).
+    // 137: one player ambassador on an adversary station blocks it. 293 (Matt): its cube goes onto the research
+    // track from round 1 (megaprojects take neutral and player cubes only).
     let cubes = w.int("board.station_cubes");
-    for (h, hex) in w.map.hexes.iter().enumerate().take(g.hexes.len()) {
-        if g.tokens(h, STATION) == 0 || !corrupted(g, h) || g.var(&board::project_done(hex.country as usize)) == 0 {
+    for h in 0..g.hexes.len() {
+        if g.tokens(h, STATION) == 0 || !corrupted(g, h) {
             continue;
         }
         if player_ambassador(g, h).is_some() {

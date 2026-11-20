@@ -4,7 +4,7 @@
 
 use super::*;
 use crate::content::{Op, Tag};
-use crate::modules::{alignment, board, cards, economy, effects};
+use crate::modules::{board, cards, economy};
 
 /// The lab at its action phase with these cards out of the decks, seat 0 (the
 /// Builder) holding `hand` and `built`, credits and insight to spare.
@@ -597,37 +597,6 @@ fn vigil_pays_at_most_its_cap_a_round() {
     assert_eq!(g.resource(1, Resource::Insight), 2 * cap, "a new round, a new cap");
 }
 
-/// 185 (Matt's ruling #3): AdversaryCubes puts its count of adversary cubes on each open megaproject.
-#[test]
-fn adversary_cubes_go_on_each_open_megaproject() {
-    let (rules, mut g) = lab(&[]);
-    set_var(&mut g, board::project_done(1), 1);
-    let (a0, a1) = (g.var(&board::project_key(0, None)), g.var(&board::project_key(1, None)));
-    with_cx(&rules, |cx| effects::run(&mut g, cx, &[Op::AdversaryCubes { count: 2 }], &mut effects::Ctx::team())).unwrap();
-    assert_eq!(g.var(&board::project_key(0, None)) - a0, 2);
-    assert_eq!(g.var(&board::project_key(1, None)) - a1, 0, "a complete one takes none");
-}
-
-/// 185 (Matt's ruling #3): BotnetCubes turns a botnet into an adversary cube on its country's open megaproject;
-/// a botnet in a completed country stays, and the players get no Unity for the botnet.
-#[test]
-fn botnet_cubes_turn_a_botnet_into_an_adversary_cube() {
-    let (rules, mut g) = lab(&[]);
-    let m = &rules.map;
-    for h in 0..g.hexes.len() {
-        put(&mut g, h, BOTNET, 0);
-    }
-    let land = |c: u8| (0..m.hexes.len()).find(|&h| m.hexes[h].country == c && kind(m, h) != HexKind::Ocean).unwrap();
-    let (h0, h1) = (land(0), land(1));
-    put(&mut g, h0, BOTNET, 1);
-    put(&mut g, h1, BOTNET, 1);
-    set_var(&mut g, board::project_done(1), 1);
-    let (a0, unity) = (g.var(&board::project_key(0, None)), g.var("alignment.unity"));
-    with_cx(&rules, |cx| effects::run(&mut g, cx, &[Op::BotnetCubes { count: 2 }], &mut effects::Ctx::team())).unwrap();
-    assert_eq!((g.tokens(h0, BOTNET), g.tokens(h1, BOTNET)), (0, 1));
-    assert_eq!(g.var(&board::project_key(0, None)) - a0, 1);
-    assert_eq!(g.var("alignment.unity") + alignment::unity_pending(&g), unity);
-}
 
 #[test]
 fn some_threats_take_insight() {

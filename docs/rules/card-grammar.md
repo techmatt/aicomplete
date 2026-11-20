@@ -29,7 +29,8 @@ prints no "Effect:" (Matt, 264); a standing Effect keeps the label ("Effect: you
 
 **Event lines.** An event card prints only the line kinds in `content::EVENT_LINE_KINDS`, each with its icon there
 (`Content::check` holds to it), in a fixed order: the threat, Infiltrate (two at stage III), Muster, at most two other
-lines, Spill, Grow. Event faces have no icon row yet. A new kind is Matt's call.
+lines. Escalate and the board's one rule are rules of the adversary's turn, printed on its board, not card lines
+([adversary.md](adversary.md)). Event faces have no icon row yet. A new kind is Matt's call.
 
 How each primitive resolves, beyond the card text (the card set: [player-cards.md](player-cards.md); every card:
 [cards.md](../cards.md)):
@@ -96,10 +97,8 @@ How each primitive resolves, beyond the card text (the card set: [player-cards.m
 - **Help cards** (keyword `help`, about 6% of the deck): the player chooses another player; both gain, the helper paying. **In a
   1-player game, "another player" means you**: the gift is yours.
 - **Cordon (`cordon`):** "cordon its country until the end of the next adversary turn" (the target's): until then no agent lands
-  there, whatever line sends it (a Spill from a neighboring country's site or a botnet's seed across a border
-  included), no Grow builds a facility there (from a site next door included), and no Infiltrate, Surge or creation
-  line acts there, a project's included; its own sites' Spill, Grow and botnet seeds don't act either, into an open
-  neighbor included. Troops still land, Gather and Push still move agents in, and its botnets' compute still counts;
+  there, whatever sends it: no Escalate, Commandeered Plants, Infiltrate or creation line acts there, a project's
+  included, and its corrupted factories neither push nor make an agent. Troops still land, Gather and Push still move agents in, and its botnets' compute still counts;
   the rest of the turn goes on.
   Like a firewall it comes off at that turn's Income beat.
 - **Play a building, paying no credits (`free_building`):** the Builder's Scrap II (2 Industry: 1 chip and the building). Its tags are sacrificed first,

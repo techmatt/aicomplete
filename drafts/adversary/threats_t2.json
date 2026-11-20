@@ -734,7 +734,7 @@
     "station",
     "factory"
    ],
-   "text": "This country's player pays 5 research cubes or discards 3 cards. 2 cubes go onto the adversary's research track.",
+   "text": "This country's player pays 5 research cubes or discards 3 cards. 1 cube goes onto the adversary's research track.",
    "counters": [
     [
      {
@@ -758,7 +758,7 @@
     },
     {
      "op": "adversary_research",
-     "amount": 2,
+     "amount": 1,
      "why": "259 (Matt, 2026-11-16): adversary cards feed the research track; 5 compute (5.5) became 2 cubes (6)"
     }
    ],
@@ -770,7 +770,8 @@
    "check": "bites cube holders before a megaproject",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
-    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player",
+    "293 (Matt, 2026-11-19): its research line is 1 cube (was 2): the track's K went from 5 to 1 a country"
    ],
    "reuses": "data_breach"
   },
@@ -784,7 +785,7 @@
    "locations": [
     "station"
    ],
-   "text": "4 cubes go onto the adversary's research track. This country's player turns 1 building face down until the end of next round.",
+   "text": "2 cubes go onto the adversary's research track. This country's player turns 1 building face down until the end of next round.",
    "counters": [
     [
      {
@@ -802,7 +803,7 @@
    "effects": [
     {
      "op": "adversary_research",
-     "amount": 4,
+     "amount": 2,
      "why": "259 (Matt, 2026-11-16): adversary cards feed the research track; 10 compute (11) became 4 cubes (12)"
     },
     {
@@ -819,7 +820,8 @@
    "check": "feeds the projects hard",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
-    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player",
+    "293 (Matt, 2026-11-19): its research line is 2 cubes (was 4): the track's K went from 5 to 1 a country"
    ],
    "reuses": "zero_day"
   },

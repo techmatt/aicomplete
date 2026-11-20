@@ -24,7 +24,11 @@ config.countries = 3;
 Object.assign(config.modules.find((m) => m.module === 'board').params, { station_cubes: 4, owned_station_cubes: 4, troop_steps: 0, station_chips: 0 });
 // Nothing diverts a cube or takes the bound city while the script passes its turns.
 // No agents: a creation line would land one on the claimed station, blocking its cubes.
-Object.assign(config.modules.find((m) => m.module === 'adversary').params, { corrupt_at: 20, corrupt_station_at: 20, corrupt_factory_at: 20, supply_per_country: 0 });
+const adversary = config.modules.find((m) => m.module === 'adversary').params;
+Object.assign(adversary, { corrupt_at: 20, corrupt_station_at: 20, corrupt_factory_at: 20, supply_per_country: 0 });
+// 293: the corrupted stations' cubes (at this script's `station_cubes`) would run the adversary's research row to
+// its loss slot by round 2: a slot costs 30 cubes a country (the param's most) instead.
+if ('research_at' in adversary) adversary.research_at = Array.isArray(adversary.research_at) ? adversary.research_at.map(() => 30) : 30;
 
 const page = await openPage();
 const { send, js, until, size, consoleErrors } = page;

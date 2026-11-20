@@ -146,7 +146,7 @@ pub(super) fn op_uses() -> BTreeMap<String, usize> {
     }
     for p in &c.map.countries {
         let m = &p.megaproject;
-        for ops in [&m.player, &m.adversary, &m.converter.effects] {
+        for ops in [&m.player, &m.converter.effects] {
             add(ops, &mut out);
         }
     }
@@ -167,7 +167,8 @@ pub(super) fn op_uses() -> BTreeMap<String, usize> {
 
 /// 229 (Matt's ruling): the ops kept as a palette for future cards, printed or not. Every other op content
 /// doesn't print stays until the card set freezes.
-pub(super) const PALETTE_OPS: [&str; 5] = ["counter_all", "pushback", "remove_botnets", "one_player", "botnet_cubes"];
+// 293: `botnet_cubes` left the palette with the megaprojects' adversary cubes.
+pub(super) const PALETTE_OPS: [&str; 4] = ["counter_all", "pushback", "remove_botnets", "one_player"];
 
 fn ops_md(src: &str) -> String {
     let uses = op_uses();

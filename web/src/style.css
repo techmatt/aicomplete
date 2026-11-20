@@ -426,6 +426,26 @@ pre.tab { font: 0.85em/1.3 ui-monospace, Consolas, monospace; white-space: pre-w
 .arrows .arrow path { fill: #b3261e; opacity: 0.75; }
 .arrows .arrow.soon line { stroke-dasharray: none; stroke-width: 0.09; opacity: 0.95; }
 .arrows .arrow.soon path { opacity: 0.95; }
+/* 293: an industrial zone's printed arrow to its city: quiet, in the zone mark's brown; "live" (a corrupted factory
+   holds an agent to push along it) in the adversary's red. */
+.arrows .arrow.zone line { stroke: #6d4c41; stroke-width: 0.05; stroke-dasharray: none; opacity: 0.55; }
+.arrows .arrow.zone path { fill: #6d4c41; opacity: 0.55; }
+.arrows .arrow.zone.live line { stroke: #b3261e; stroke-width: 0.1; opacity: 0.95; }
+.arrows .arrow.zone.live path { fill: #b3261e; opacity: 0.95; }
+/* 293: a site the next Card beat escalates: a small quiet "+1" badge in the adversary's purple. */
+.arrows .arrow.escalate circle { fill: #fff; stroke: #5b1a8c; stroke-width: 0.035; stroke-dasharray: none; opacity: 0.9; }
+.arrows .arrow.escalate text { font-size: 0.2px; font-weight: 700; fill: #5b1a8c; text-anchor: middle; }
+/* 293: the adversary's research row: six icon slots and the loss, the reached ones filled, the marker's boxed. */
+.research-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3em; margin-bottom: 0.2em; font-size: 0.85em; }
+.research-row .stitle { font-weight: 600; color: #5b1a8c; white-space: nowrap; }
+.research-row .rslot { border: 1px solid #cdb6dc; border-radius: 3px; padding: 0 0.35em; background: #fff; white-space: nowrap; color: #444; }
+.research-row .rslot.reached { background: #e6d6f2; border-color: #8a60b0; color: #2d0d47; }
+.research-row .rslot.marker { border-color: #5b1a8c; border-width: 2px; font-weight: 600; }
+.research-row .rslot.loss { border-color: #b3261e; color: #8e1b1b; }
+.research-row .rslot.loss.reached { background: #b3261e; color: #fff; }
+.research-row .rcubes { color: var(--muted); white-space: nowrap; }
+.slot-box.last { border-style: dashed; }
+.slot-box .escalates b { color: #8e1b1b; }
 /* Arrows let clicks and hovers through to the hexes under them (020: a shaft over a
    hex was a dead strip for hex picks); a hex's hover lists the arrows from and to it. */
 .arrows .arrow { pointer-events: none; }
