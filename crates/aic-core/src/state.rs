@@ -168,7 +168,7 @@ pub struct Outcome {
     pub won: bool,
     /// The round in which the game ended.
     pub round: u32,
-    /// Stable reason code (`"purge"`, the only win since r67; `"deck_empty"`,
+    /// Stable reason code (`"liberated"`, the only win: no city is corrupted; it was `"purge"` before r141; `"deck_empty"`,
     /// `"discord_deck"`, `"node"`, `"round_limit"`), for aggregation.
     /// `"unity_deck"` (r66 and before) was the Unity-deck win.
     pub reason: String,

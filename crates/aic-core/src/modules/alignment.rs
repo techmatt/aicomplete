@@ -33,10 +33,9 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("free_city", 0, 10, "Sway toward Unity for freeing a corrupted city"),
     ParamSpec::int("free_facility", 0, 10, "Sway toward Unity for liberating an adversary station or factory"),
     ParamSpec::int("botnet", 0, 10, "Sway toward Unity for removing a botnet"),
-    ParamSpec::list("purge_at", 1, 50, "Unity tips at which the purge asks less: agents, then troops, then botnets stop counting (tips, not cards drawn, since the Unity deck reshuffles)"),
     ParamSpec::list("tier_at", 1, 50, "the tip (its side's count, this tip included) from which its cards resolve strength II, then strength III"),
     ParamSpec::int("node_loss", 0, 1, "1: a player with no nodes on the board loses the game for everyone"),
-    ParamSpec::int("clear_win_stage", 1, 3, "the bar-0 win counts only once this round's adversary card is of this stage (1: any time)"),
+    ParamSpec::int("clear_win_stage", 1, 3, "the win (no corrupted city) counts only once this round's adversary card is of this stage (1: any time)"),
 ];
 
 const PHASES: &[PhaseSpec] = &[
@@ -74,10 +73,6 @@ pub static DEF: ModuleDef = ModuleDef {
 
 /// Every variant is one struct: `sway` and the action read the variant.
 fn build(b: &Build) -> Result<Box<dyn Module>, String> {
-    let v = b.list("purge_at")?;
-    if v.is_empty() || v.len() > 3 || v.iter().any(|&x| x < 1) || v.windows(2).any(|p| p[0] > p[1]) {
-        return Err("alignment.purge_at: give up to three Unity-card counts of 1 or more, in order".into());
-    }
     let t = b.list("tier_at")?;
     if t.len() != 2 || t.iter().any(|&x| x < 1) || t[0] > t[1] {
         return Err("alignment.tier_at: give two tip counts of 1 or more, in order (strength II, strength III)".into());
@@ -155,8 +150,8 @@ pub fn cards_left(g: &GameState, side: Side) -> usize {
     g.pile(&deck(side)).len()
 }
 
-/// Unity tips so far, each one card drawn: the purge's steps (136; 156:
-/// counted as tips, since the reshuffle empties the resolved pile).
+/// Unity tips so far, each one card drawn: they set its cards' strength (156: counted as tips, since the
+/// reshuffle empties the resolved pile; r141: the win has no steps to read off them).
 pub fn unity_drawn(g: &GameState) -> i64 {
     g.var(tips_key(Side::Unity))
 }
@@ -200,12 +195,6 @@ pub fn capacity(w: &World, g: &GameState, side: Side) -> i64 {
 /// How many of `thresholds` a tip count has reached.
 fn reached(thresholds: &[i64], tips: i64) -> i64 {
     thresholds.iter().filter(|&&t| tips >= t).count() as i64
-}
-
-/// The clear-board bar level, from Unity cards drawn (136; see
-/// `adversary::under_bar`).
-pub fn bar_level(w: &World, g: &GameState) -> adversary::PurgeLevel {
-    adversary::PurgeLevel::from_steps(reached(w.list("alignment.purge_at"), unity_drawn(g)))
 }
 
 /// Sways `n` toward `side`. Discord goes straight onto the Discord track;
@@ -279,14 +268,10 @@ pub fn for_botnet_removed(g: &mut GameState, cx: &mut Cx) {
     unity_from(g, cx, "botnet", n);
 }
 
-/// Whether the adversary's pieces are under the bar for `level`. The
-/// full bar (no adversary pieces) counts only once this round's adversary
-/// card is of stage `clear_win_stage` (the stages are stacked and public).
-fn purge_won(w: &World, g: &GameState, level: adversary::PurgeLevel) -> bool {
-    if level == adversary::PurgeLevel::All && g.var(adversary::STAGE) < w.hot(Hot::ClearWinStage) {
-        return false;
-    }
-    adversary::under_bar(w, g, level)
+/// The win (r141): no corrupted city on the board, from an adversary card of stage `clear_win_stage` on (1: from
+/// round 1; the stages are stacked and public).
+fn purge_won(w: &World, g: &GameState) -> bool {
+    g.var(adversary::STAGE) >= w.hot(Hot::ClearWinStage) && adversary::under_bar(w, g)
 }
 
 /// Every player's `resource` income rises by `n` for good (credits or
@@ -503,17 +488,8 @@ impl Module for Alignment {
                 return Ok(());
             }
         }
-        let level = bar_level(&w, g);
-        if purge_won(&w, g, level) {
-            cx.end(
-                g,
-                true,
-                "purge",
-                format!(
-                    "the adversary fell under the bar for {} Unity tips",
-                    unity_drawn(g)
-                ),
-            );
+        if purge_won(&w, g) {
+            cx.end(g, true, "liberated", "no city is corrupted".to_string());
         }
         Ok(())
     }
@@ -540,8 +516,8 @@ impl Module for Alignment {
             "unity_tips",
             "Unity tips",
             ut,
-            next(w.list("alignment.purge_at"), ut),
-            "Unity tips so far; the purge asks less at each step, and the next Unity card resolves at the strength they reach",
+            next(w.list("alignment.tier_at"), ut),
+            &tier_words("Unity", w),
         );
         out.global(
             "discord_tips",
@@ -549,19 +525,6 @@ impl Module for Alignment {
             dt,
             next(w.list("alignment.tier_at"), dt),
             &tier_words("Discord", w),
-        );
-        let level = bar_level(w, g);
-        let mut text = level.win_text().to_string();
-        let stage = w.int("alignment.clear_win_stage");
-        if level == adversary::PurgeLevel::All && g.var(adversary::STAGE) < stage {
-            text += &format!(" (from adversary stage {stage})");
-        }
-        out.global(
-            "bar",
-            "clear-board bar",
-            level.steps(),
-            Some(w.list("alignment.purge_at").len() as i64),
-            &text,
         );
         let cities = (0..g.hexes.len()).filter(|&h| is_city(w, h)).count() as i64;
         let bad = (0..g.hexes.len())
@@ -573,7 +536,7 @@ impl Module for Alignment {
             bad,
             Some(cities),
             // 285: no agent income since r130: a corrupted city's harm each round is its energy as Discord.
-            "corrupted cities always count against the purge; each turns its energy into Discord in production unless a player ambassador stands on it",
+            "the win: no corrupted city on the board; each makes Discord every round unless a player ambassador stands on it, and none is liberated with a troop on or next to it",
         );
         // 135: a negative team income (Capital Flight, a project until r85) takes it below 0.
         if g.var(INCOME_BONUS) != 0 {

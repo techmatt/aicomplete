@@ -16,23 +16,20 @@ pub(super) fn regions(w: &World, g: &GameState, ctx: &Ctx, each_country: bool) -
 
 pub(super) fn troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64, each_country: bool, destroy: bool) -> Res {
     let w = cx.world;
-    let base = ctx.says(
-        "Threat: an adversary troop lands on which hex?",
-        "An adversary troop lands on which hex?",
-    );
-    // 118: named for what lands it (a threat's, a Discord card's).
-    let named = ctx.why.as_deref().map(|n| format!("{n}: an adversary troop lands on which hex?"));
-    let prompt = named.as_deref().unwrap_or(base);
-    // 259: the research rule's troops are tallied apart from the projects'.
+    // 259: the research track's troops are tallied apart from the projects'.
     let tally = if ctx.label == "research" { "adversary.research_troops" } else { ctx.says("threats.troops", "adversary.project_troops") };
-    // 151: an event's or a project's troops land deterministically (the lowest-numbered).
-    // 175: each of those is a Muster: a Muster prohibition stops it (267: no level surcharge adds to it).
-    // 259: so is the research rule's (the Militarist's Weapons Program).
-    let muster = ctx.threat.is_none() && matches!(ctx.label, "standing" | "project" | "research");
-    let count = if muster { count + adversary::muster_bonus(&w) } else { count };
+    // r141: what placed it, for the by-round measure (`map.troops_placed.<source>`).
+    let source = match (ctx.threat.is_some(), ctx.label) {
+        (true, _) => "threat",
+        (_, "standing") => "event",
+        (_, "research") => "research",
+        (_, "project") => "project",
+        _ => "discord",
+    };
+    let count = if ctx.threat.is_none() { count + adversary::troop_bonus(&w) } else { count };
     for hexes in regions(&w, g, ctx, each_country) {
         let kills = destroy.then_some(ctx.label);
-        adversary::land_troops(g, cx, &hexes, count, prompt, tally, kills, muster)?;
+        adversary::land_troops(g, cx, &hexes, count, tally, kills, source)?;
     }
     Ok(())
 }
@@ -156,22 +153,22 @@ fn most_agents_on(g: &mut GameState, cx: &mut Cx, hexes: &[usize]) -> Option<usi
 }
 
 /// 195 (`BotnetTroops`): in each country, up to `count` botnets, lowest-numbered first, become `troops` troops each.
-/// They are made on the botnet's own hex, as a factory's output is; Wall (r98) keeps any off the Protector's hex.
-pub(super) fn botnet_troops(g: &mut GameState, cx: &mut Cx, count: i64, troops: i64) {
+/// r141: they garrison as any troop does (`adversary::land_troops`), not on the botnet's hex; Wall (r98) keeps any
+/// off the Protector's hex.
+pub(super) fn botnet_troops(g: &mut GameState, cx: &mut Cx, count: i64, troops: i64) -> Res {
     let w = cx.world;
     for c in 0..w.map.countries.len() {
         let botnets: Vec<usize> = by_number(&w, c).into_iter().filter(|&h| g.tokens(h, BOTNET) > 0).collect();
         for &h in botnets.iter().take(count.max(0) as usize) {
             cx.add_tokens(g, h, BOTNET, -1);
             cx.set_key(g, &adversary::cut_key(h), 0);
-            let placed = (0..troops).filter(|_| adversary::place_troop_quiet(g, cx, h, "project")).count();
+            let placed = adversary::land_troops(g, cx, &w.map.countries[c].hexes, troops, "adversary.project_troops", None, "project")?;
             // 235: what landed (Wall's are tallied as `troops_walled`).
-            cx.tally(g, "adversary.botnet_troops", placed as i64);
-            cx.tally(g, "adversary.project_troops", placed as i64);
-            // 235: the log says what landed: Wall (r98) keeps a troop off the Protector's hex.
-            cx.note(Some(h), || format!("The botnet at {} becomes {}", hex_name(&w, h), troop_words(placed, troops)));
+            cx.tally(g, "adversary.botnet_troops", placed);
+            cx.note(Some(h), || format!("The botnet at {} becomes {}", hex_name(&w, h), troop_words(placed as usize, troops)));
         }
     }
+    Ok(())
 }
 
 /// 195 (`SpreadBotnets`): in each country, `count` new botnets, each on the lowest-numbered site (city, research
@@ -262,7 +259,7 @@ pub(super) fn factory_troops(g: &mut GameState, cx: &mut Cx, count: i64) {
         let placed = (0..count).filter(|_| adversary::place_troop_quiet(g, cx, h, "project")).count();
         cx.tally(g, "adversary.factory_troops", placed as i64);
         cx.tally(g, "adversary.project_troops", placed as i64);
-        // 197: "makes", not "musters": no Muster rule (a no-Muster token) applies here; Wall (r98) does.
+        // Wall (r98) keeps a troop off the Protector's node hex.
         cx.note(Some(h), || format!("The adversary factory at {} makes {}", hex_name(&w, h), troop_words(placed, count)));
     }
 }
@@ -391,7 +388,8 @@ fn removable(w: &World, g: &GameState, h: usize, pieces: Removable) -> bool {
         Removable::Troops => g.tokens(h, TROOP) > 0,
         Removable::Botnets => g.tokens(h, BOTNET) > 0,
         Removable::Fallout => g.tokens(h, FALLOUT) > 0,
-        Removable::Cubes => corrupted(g, h) && !is_city(w, h),
+        // r141, the guarding rule: no cube comes off a site with a troop on or next to it.
+        Removable::Cubes => corrupted(g, h) && !is_city(w, h) && !board::troop_guarded(w, g, h),
     }
 }
 

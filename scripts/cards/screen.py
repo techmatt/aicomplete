@@ -92,8 +92,10 @@ def split(key):
 
 
 def wins_mix(c, gs):
-    # 184: the purge is the only win since r67 (the Unity-deck half read 0 as a measurement).
-    return f"{ends(gs)['purge']}"
+    # 184: one win since r67 (the Unity-deck half read 0 as a measurement); r141: its reason code is `liberated`
+    # (`purge` in older games).
+    e = ends(gs)
+    return f"{e['liberated'] + e['purge']}"
 
 
 def loss_mix(c, gs):
@@ -198,7 +200,7 @@ COLUMNS = {
     'factories': ('factories P / A', per_game('board.factories_built.player', 'board.factories_built.adversary')),
     'factories_end': ('owned at end', per_game('board.factories_end.player')),
     'chips': ('chips made / spent', per_game('board.chips_made', 'board.chips_spent')),
-    'troop_strikes': ('steps / moves / strikes', per_game('board.troop_steps', 'board.troop_moves', 'board.troop_strikes')),
+    'troop_strikes': ('Strike icons / troops redeployed / strike hits', per_game('board.strikes', 'board.troops_redeployed', 'board.troop_strikes')),
     'troop_destroyed': ('destroyed P / S / F', per_game('board.troop_destroyed.node', 'board.troop_destroyed.station', 'board.troop_destroyed.factory')),
     'kept': ('kept', total('cards.kept.')),
     'played': ('played', total('cards.played.')),

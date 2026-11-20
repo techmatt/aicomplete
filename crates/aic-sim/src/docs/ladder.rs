@@ -236,7 +236,7 @@ pub(super) fn rulebook_difficulty_block(r: &Rules) -> String {
 }
 
 /// The adversary's escalation as the event deck carries it, a line a stage: each stage's threats a country
-/// (the most cards print) and whether its cards Muster, read from content.
+/// (the most cards print) and whether its cards all Strike, read from content.
 fn escalation() -> Vec<String> {
     let events = &content().adversary;
     (1..=3u8)
@@ -249,12 +249,12 @@ fn escalation() -> Vec<String> {
             let hi = cards.iter().map(|c| c.pulls.len()).max().unwrap_or(1);
             let tiers: std::collections::BTreeSet<u8> = cards.iter().flat_map(|c| c.pulls.iter().map(|p| p.tier)).collect();
             let tiers: Vec<String> = tiers.iter().map(|t| t.to_string()).collect();
-            let muster = cards.iter().all(|c| c.text.contains("Muster"));
+            let strike = cards.iter().all(|c| c.standing.iter().any(|e| matches!(e, aic_core::content::Op::Strike)));
             let numeral = ["I", "II", "III"][stage as usize - 1];
             let n = if lo == hi { lo.to_string() } else { format!("{lo}-{hi}") };
             let s = if hi == 1 { "" } else { "s" };
             let t = if tiers.len() == 1 { "tier" } else { "tiers" };
-            Some(format!("Stage {numeral}: {n} threat{s} a country, {t} {}{}", tiers.join(" and "), if muster { "; Muster" } else { "" }))
+            Some(format!("Stage {numeral}: {n} threat{s} a country, {t} {}{}", tiers.join(" and "), if strike { "; Strike" } else { "" }))
         })
         .collect()
 }

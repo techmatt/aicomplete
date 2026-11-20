@@ -118,6 +118,8 @@ fn the_decks_name_board_conditions() {
                             | Op::Escalate { .. }
                             | Op::ThreatAtNode { .. }
                             | Op::AdversaryBuild
+                            // r141 (Firestorm III): a garrison in each country lands by the board (`garrison_spot`).
+                            | Op::Troops { each_country: true, at: None, .. }
                     ) || matches!(e, Op::Fallout { at, .. } if *at != crate::op::FalloutAt::Location),
                     "{}: {e:?} names no board condition",
                     c.id

@@ -256,7 +256,7 @@ type Body = fn(&Rules) -> String;
 
 /// Every generated block of `docs/rules/` with its body (182: one table, not a name list and a match); each must
 /// stand in exactly one file there.
-pub(super) const BLOCKS: [(&str, Body); 21] = [
+pub(super) const BLOCKS: [(&str, Body); 20] = [
     ("new_players", new_players_block),
     ("draft_set", |r| draft_set_block(r, content())),
     ("house_terms", |_| house_terms()),
@@ -268,7 +268,6 @@ pub(super) const BLOCKS: [(&str, Body); 21] = [
     ("difficulty", difficulty_block),
     ("sway_sources", sway_sources_block),
     ("alignment", |_| alignment_block()),
-    ("purge_ease", purge_ease_block),
     ("game_end", game_end_block),
     ("standard_actions", standard_actions_block),
     ("boards", |r| boards_block(r, content())),

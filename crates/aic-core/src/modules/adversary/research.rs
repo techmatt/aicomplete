@@ -92,7 +92,8 @@ pub fn research_step(g: &mut GameState, cx: &mut Cx) -> Res {
         return Ok(());
     }
     let len = row_len(&w);
-    while g.var(RESEARCH) >= at && !g.is_over() {
+    // r141: a slot's Strike that took a seat's last node is the loss: the track advances no further.
+    while g.var(RESEARCH) >= at && !g.is_over() && !super::node_lost(&w, g) {
         cx.add_key(g, RESEARCH, -at);
         cx.add_key(g, RESEARCH_SLOT, 1);
         let slot = g.var(RESEARCH_SLOT);

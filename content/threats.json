@@ -9,7 +9,7 @@
   "locations": [
    "factory"
   ],
-  "text": "1 adversary Troop lands here.",
+  "text": "2 cubes go onto the adversary's research track.",
   "counters": [
    [
     {
@@ -26,13 +26,12 @@
   ],
   "effects": [
    {
-    "op": "troops",
-    "count": 1,
-    "at": "location"
+    "op": "adversary_research",
+    "amount": 2
    }
   ],
   "harms": [
-   "adversary pieces placed"
+   "adversary research advanced"
   ]
  },
  {
@@ -88,7 +87,7 @@
   "locations": [
    "factory"
   ],
-  "text": "1 adversary Troop lands here. This country's player pays 2 chips or discards 1 card.",
+  "text": "2 cubes go onto the adversary's research track. This country's player pays 2 chips or discards 1 card.",
   "counters": [
    [
     {
@@ -105,9 +104,8 @@
   ],
   "effects": [
    {
-    "op": "troops",
-    "count": 1,
-    "at": "location"
+    "op": "adversary_research",
+    "amount": 2
    },
    {
     "op": "requisition",
@@ -117,8 +115,8 @@
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "credits or income lost"
+   "credits or income lost",
+   "adversary research advanced"
   ]
  },
  {
@@ -173,7 +171,7 @@
   "locations": [
    "coastal_city"
   ],
-  "text": "1 adversary Troop lands here. 1 Fallout lands next to here.",
+  "text": "2 cubes go onto the adversary's research track. 1 Fallout lands next to here.",
   "counters": [
    [
     {
@@ -190,9 +188,8 @@
   ],
   "effects": [
    {
-    "op": "troops",
-    "count": 1,
-    "at": "location"
+    "op": "adversary_research",
+    "amount": 2
    },
    {
     "op": "fallout",
@@ -200,8 +197,8 @@
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "Fallout placed"
+   "Fallout placed",
+   "adversary research advanced"
   ]
  },
  {
@@ -1041,7 +1038,7 @@
   "locations": [
    "factory"
   ],
-  "text": "2 adversary Troops land here and march at once.",
+  "text": "4 cubes go onto the adversary's research track.",
   "counters": [
    [
     {
@@ -1058,17 +1055,12 @@
   ],
   "effects": [
    {
-    "op": "troops",
-    "count": 2,
-    "at": "location"
-   },
-   {
-    "op": "march_now"
+    "op": "adversary_research",
+    "amount": 4
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "march brought forward"
+   "adversary research advanced"
   ]
  },
  {
@@ -1121,7 +1113,7 @@
   "locations": [
    "city"
   ],
-  "text": "This country's player pays 3 Ambassadors or discards 3 cards. 1 adversary Troop lands here.",
+  "text": "This country's player pays 3 Ambassadors or discards 3 cards. 3 cubes go onto the adversary's research track.",
   "counters": [
    [
     {
@@ -1144,14 +1136,13 @@
     "cards": 3
    },
    {
-    "op": "troops",
-    "count": 1,
-    "at": "location"
+    "op": "adversary_research",
+    "amount": 3
    }
   ],
   "harms": [
    "ambassadors lost",
-   "adversary pieces placed"
+   "adversary research advanced"
   ]
  },
  {
@@ -1165,7 +1156,7 @@
   "locations": [
    "factory"
   ],
-  "text": "1 adversary Troop lands here. This country's player pays 2 chips or discards 2 cards.",
+  "text": "3 cubes go onto the adversary's research track. This country's player pays 2 chips or discards 2 cards.",
   "counters": [
    [
     {
@@ -1182,9 +1173,8 @@
   ],
   "effects": [
    {
-    "op": "troops",
-    "count": 1,
-    "at": "location"
+    "op": "adversary_research",
+    "amount": 3
    },
    {
     "op": "requisition",
@@ -1194,8 +1184,8 @@
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "credits or income lost"
+   "credits or income lost",
+   "adversary research advanced"
   ]
  },
  {
@@ -1661,7 +1651,7 @@
    "station",
    "factory"
   ],
-  "text": "This country's player pays 5 research cubes or discards 3 cards. 1 cube goes onto the adversary's research track.",
+  "text": "This country's player pays 5 research cubes or discards 3 cards. 2 cubes go onto the adversary's research track.",
   "counters": [
    [
     {
@@ -1685,7 +1675,7 @@
    },
    {
     "op": "adversary_research",
-    "amount": 1
+    "amount": 2
    }
   ],
   "harms": [
@@ -1703,7 +1693,7 @@
   "locations": [
    "station"
   ],
-  "text": "2 cubes go onto the adversary's research track. This country's player turns 1 building face down until the end of next round.",
+  "text": "4 cubes go onto the adversary's research track. This country's player turns 1 building face down until the end of next round.",
   "counters": [
    [
     {
@@ -1721,7 +1711,7 @@
   "effects": [
    {
     "op": "adversary_research",
-    "amount": 2
+    "amount": 4
    },
    {
     "op": "disable_building",
@@ -2073,7 +2063,7 @@
    "city",
    "factory"
   ],
-  "text": "3 Agents are created on the city here. 1 adversary Troop lands on the factory here.",
+  "text": "3 Agents are created on the city here. 3 cubes go onto the adversary's research track.",
   "counters": [
    [
     {
@@ -2095,15 +2085,14 @@
     "at": "location"
    },
    {
-    "op": "troops",
-    "count": 1,
-    "at": "location",
-    "location": "factory"
+    "op": "adversary_research",
+    "amount": 3
    }
   ],
   "harms": [
    "adversary pieces placed",
-   "facilities destroyed or corrupted"
+   "facilities destroyed or corrupted",
+   "adversary research advanced"
   ]
  },
  {
@@ -2244,7 +2233,7 @@
    "factory",
    "city"
   ],
-  "text": "1 adversary Troop lands on the factory here. Remove 2 Unity from the Unity track.",
+  "text": "3 cubes go onto the adversary's research track. Remove 2 Unity from the Unity track.",
   "counters": [
    [
     {
@@ -2261,10 +2250,8 @@
   ],
   "effects": [
    {
-    "op": "troops",
-    "count": 1,
-    "at": "location",
-    "location": "factory"
+    "op": "adversary_research",
+    "amount": 3
    },
    {
     "op": "pull_unity",
@@ -2272,8 +2259,8 @@
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "Unity pulled back"
+   "Unity pulled back",
+   "adversary research advanced"
   ]
  },
  {
@@ -2287,7 +2274,7 @@
   "locations": [
    "factory"
   ],
-  "text": "An adversary factory is built on the free industrial zone nearest here. 1 adversary Troop lands on the factory here.",
+  "text": "An adversary factory is built on the free industrial zone nearest here. 3 cubes go onto the adversary's research track.",
   "counters": [
    [
     {
@@ -2307,15 +2294,14 @@
     "op": "adversary_factory"
    },
    {
-    "op": "troops",
-    "count": 1,
-    "at": "location",
-    "location": "factory"
+    "op": "adversary_research",
+    "amount": 3
    }
   ],
   "harms": [
    "facilities destroyed or corrupted",
-   "adversary pieces placed"
+   "adversary pieces placed",
+   "adversary research advanced"
   ]
  },
  {

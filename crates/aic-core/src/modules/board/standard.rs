@@ -233,7 +233,7 @@ pub fn std_target(act: StandardAction) -> Option<&'static str> {
         StandardAction::Remove => "Agents",
         StandardAction::Lift => "Fallout",
         StandardAction::Move => "a piece or a Botnet",
-        StandardAction::Liberate => "an adversary site with no Agent on it",
+        StandardAction::Liberate => "a corrupted site with no Agent on it and no Troop on or next to it",
         StandardAction::Botnet => "a Botnet on a hex holding your ambassador",
         StandardAction::Troop => "Troops",
         StandardAction::Factory => "a free industrial zone",

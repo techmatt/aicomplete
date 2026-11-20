@@ -43,7 +43,7 @@ prints that kind's disagreements. Readers: `experiments/results/245_tune_strateg
 | `--json` | off | Print the summary as JSON: every field below, plus the diff, agent, `max_actions` and rules revision. |
 | `--trace` | off | Print the first game of each config: every action (with its option count) and event (`tokens_changed`, `var_changed`, `card_moved`, ...; a hex is `[q, r]`: map.json's anchor + row × axes[0] + col × axes[1]). Goes to stderr with `--json`; the summary prints after it. Events, piles, tokens: [reads.md](reads.md); a reader: `scripts/bench/trace_lib.py`. |
 | `--save DIR` | off | `run`/`compare`: write the selected games as records into `DIR` (created if needed) as `<config name>-<run\|A\|B>-seed<S>.json`; the paths print after the table, or under `saved` in each `--json` result with the match counts. A write failure exits 2. |
-| `--save-when W` | `loss` | Which games to save: `all`, `win`, `loss`, `timeout`, or an end reason code (`deck_empty`, `discord_deck`, `node`, `purge`, ...). Repeatable; a game matching any is saved. With only `--save-seed` given, no default. A reason code no game ended with warns on stderr. |
+| `--save-when W` | `loss` | Which games to save: `all`, `win`, `loss`, `timeout`, or an end reason code (`deck_empty`, `discord_deck`, `node`, `liberated`, ...). Repeatable; a game matching any is saved. With only `--save-seed` given, no default. A reason code no game ended with warns on stderr. |
 | `--save-seed S` | | Always save this seed, not counted against `--save-max`. Repeatable. A seed outside the range played warns. |
 | `--save-max N` | `20` | Per config, keep the first `N` games `--save-when` matched, in seed order; the output says how many matched. |
 
@@ -110,7 +110,7 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
   `fingerprint()`, `run(first, count, args)` returning the shard's text (`args`: one spec name), `engine()`.
 - **The fingerprint** is the rules revision, the content hash and a hash of two strategist games (baseline, d2, seeds
   36800-36801) with no engine named: the same line on native and wasm while they play alike. About 3 s.
-- **`farm-seeds`** (conductor's remote client) first runs a native `cargo build --release`, runs that
+- **`farm-seeds`** (conductor's remote client; the spec by name, `read`, not its path) first runs a native `cargo build --release`, runs that
   `target/release/aic-sim.exe` on the main box, and builds the browsers' bundle from HEAD: commit the spec, code and
   `content/` before farming, or the two engines play different cards; native shards read the working tree's
   `configs/`: leave it alone until the job ends. Farm lines carry no timings: a main-box game's ms is in the job's `main.log`. The shards write

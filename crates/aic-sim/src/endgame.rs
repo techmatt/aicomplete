@@ -109,7 +109,6 @@ pub struct EndgameRead {
 
 pub fn pieces(rules: &Rules, g: &GameState) -> Pieces {
     let w = rules.world();
-    let level = alignment::bar_level(&w, g);
     let per_use = w.int("board.remove_count").max(1);
     let mut p = Pieces::default();
     let mut loose = 0;
@@ -131,7 +130,7 @@ pub fn pieces(rules: &Rules, g: &GameState) -> Pieces {
     }
     // r75: one Remove takes up to `remove_count` agents (236: on or next to its target; a lower bound here).
     p.remove_actions = (loose + per_use - 1) / per_use;
-    p.purge = adversary::purge_count(&w, g, level);
+    p.purge = adversary::purge_count(&w, g);
     p
 }
 
@@ -206,12 +205,12 @@ pub fn probe(rules: &Rules, probe: &EndgameProbe, g: &GameState, starts: &[GameS
     let mut r = EndgameRead {
         reason: g.outcome.as_ref().map_or(String::new(), |o| o.reason.clone()),
         end_round: g.round,
-        level: alignment::bar_level(&w, g).steps(),
+        level: 0,
         unity_drawn: alignment::unity_drawn(g),
         discord_left: alignment::cards_left(g, Side::Discord) as i64,
         end: pieces(rules, g),
         snap_round: snap.round,
-        snap_level: alignment::bar_level(&w, snap).steps(),
+        snap_level: 0,
         snap: pieces(rules, snap),
         team: team(rules, snap),
         ..Default::default()
@@ -229,8 +228,7 @@ pub fn probe(rules: &Rules, probe: &EndgameProbe, g: &GameState, starts: &[GameS
         let won = s.outcome.as_ref().is_some_and(|o| o.won);
         r.replay_wins += won as usize;
         r.replay_reasons.push(s.outcome.as_ref().map_or("timeout".into(), |o| o.reason.clone()));
-        let lvl = alignment::bar_level(&w, &s);
-        r.replay_purge.push(if won { 0 } else { adversary::purge_count(&w, &s, lvl) });
+        r.replay_purge.push(if won { 0 } else { adversary::purge_count(&w, &s) });
     }
     Some(r)
 }

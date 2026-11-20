@@ -502,17 +502,18 @@ impl Where {
 pub enum Step {
     /// 275: was Rally.
     Infiltrate,
-    /// The adversary's troop line (178, Matt's ruling #17: was Deploy, the node power's word too).
-    Muster,
+    /// r141: the troops' Strike (it was Muster, the troop line, until the garrison ruling): a hex holding its
+    /// token is struck by no troop.
+    Strike,
     Corrupt,
 }
 
 impl Step {
-    pub const ALL: [Step; 3] = [Step::Infiltrate, Step::Muster, Step::Corrupt];
+    pub const ALL: [Step; 3] = [Step::Infiltrate, Step::Strike, Step::Corrupt];
     pub fn name(self) -> &'static str {
         match self {
             Step::Infiltrate => "infiltrate",
-            Step::Muster => "muster",
+            Step::Strike => "strike",
             Step::Corrupt => "corrupt",
         }
     }
@@ -662,9 +663,9 @@ pub enum Event {
     RemoveAmbassadors,
     /// You place tokens of `kind` on your cards: once a placement (178; once a token before r77).
     PlaceTokens { kind: TokenKind },
-    /// An adversary troop ends its march next to your node (an AI board's innate: Vigil; 178, Matt's ruling #18,
-    /// was "your Wall stops a troop"): any march; 185: at most `board.vigil_cap` (1) troops a round.
-    MarchEndsNear,
+    /// Troops Strike with an adversary troop on or next to your node (an AI board's innate: Vigil; r141: it was
+    /// "a troop ends its march next to your node"): once a troop, at most `board.vigil_cap` troops a round.
+    StrikeNear,
 }
 
 impl RoundFlag {
@@ -1053,9 +1054,9 @@ pub enum Op {
     },
 
     // ---------- instant: threats and the team ----------
-    /// `count` adversary troops onto factories in scope (players choose; 151: an event's, a project's or the
-    /// board's on the lowest-numbered), else cities; `each_country`: in each country;
-    /// `destroy`: each takes the node there; `at`, `location`: elsewhere; `stand`: they never march.
+    /// `count` adversary troops garrison in scope (r141: the lowest-numbered corrupted factory, else the
+    /// lowest-numbered corrupted city, else the lowest-numbered city; no choice); `each_country`: in each country;
+    /// `destroy`: each takes the node there; `at`, `location`: elsewhere; `stand`: they never strike or Redeploy.
     Troops {
         count: i64,
         #[serde(default)]
@@ -1066,7 +1067,7 @@ pub enum Op {
         /// Where they land instead of a factory (135).
         #[serde(default, skip_serializing_if = "Option::is_none")]
         at: Option<TroopAt>,
-        /// They stand: never march or strike, until removed (135).
+        /// They stand: never strike or Redeploy, until removed (135).
         #[serde(default, skip_serializing_if = "is_false")]
         stand: bool,
         /// Which of the threat's tokens, when it has two (135).
@@ -1220,11 +1221,12 @@ pub enum Op {
     LoseOr {
         options: Vec<Op>,
     },
-    /// The troops this threat landed march now, `steps` steps (default the march's).
-    MarchNow {
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        steps: Option<i64>,
-    },
+    /// r141, Strike (an event card's line or a research slot's icon): every adversary troop destroys one player
+    /// node, or player-owned research station or factory, on or next to its hex (`board::strike`).
+    Strike,
+    /// r141, Redeploy (an event card's line, rare): each adversary troop not on or next to a corrupted city moves
+    /// onto the nearest one (`board::redeploy`).
+    Redeploy,
     /// A troop occupies the factory under the token (it makes nothing while the troop stands); on a free zone,
     /// `else_compute` compute.
     OccupyFactory {
@@ -1325,7 +1327,7 @@ pub enum Op {
         count: i64,
     },
     /// 195 (a project's): in each country, up to `count` of its botnets, the lowest-numbered first, each come off and
-    /// become `troops` adversary troops on their hex (they march as any troop; no Unity sway: not a removal).
+    /// become `troops` adversary troops, which garrison as any troop does (no Unity sway: not a removal).
     BotnetTroops {
         #[serde(default = "one", skip_serializing_if = "is_one")]
         count: i64,
@@ -1407,14 +1409,14 @@ pub enum Op {
         where_: Where,
     },
     /// 167, a prohibition (158's firewall generalized): in the next adversary turn, `step` doesn't act on a
-    /// hex where `where` holds when the step runs. A blocked Infiltrate agent or Muster troop stays in the supply;
+    /// hex where `where` holds when the step runs. A blocked Infiltrate agent stays in the supply, and no troop strikes a hex under a Strike prohibition;
     /// 275: under a Corrupt prohibition a site doesn't corrupt or flip on an arrival (agents still land on it).
     Prohibit {
         step: Step,
         #[serde(rename = "where")]
         where_: Where,
     },
-    /// A board line: every Muster (175: an event's, a project's, the Protector landing) lands `amount` more
+    /// A board line: every garrison line (an event's, a project's, a research slot's) lands `amount` more
     /// troops a country (267: no board prints one; it was the Militarist's d2 surcharge).
     StandingTroopsBonus {
         amount: i64,
@@ -1494,8 +1496,8 @@ pub enum Op {
     /// Shelter on your own pieces once a round: the first time each round one of your nodes or facilities
     /// would be destroyed, it is sheltered, automatically (r82, Matt; r75-r81 the owner chose to spend it).
     CivicShelter,
-    /// Adversary troops can't enter or strike a hex holding your nodes
-    /// (068: Wall; 075: strikes). An AI board's innate only: `board::walled`
+    /// No adversary troop is placed on, Redeploys onto or strikes a hex holding your nodes
+    /// (068: Wall; 075: strikes; r141: no march to stop). An AI board's innate only: `board::walled`
     /// reads nothing else, and `Content::check` refuses it on a card or a capstone.
     Wall,
     /// All your unspent insight carries over to the next round, gifts included (075: Patience; r82: no carve-out). An
@@ -1517,12 +1519,6 @@ pub enum Op {
         amount: i64,
         to: Resource,
         gain: i64,
-    },
-
-    // ---------- twists: read while the adversary card is current ----------
-    /// Every adversary troop takes `amount` more steps this round.
-    TroopSteps {
-        amount: i64,
     },
 }
 
@@ -1632,7 +1628,8 @@ impl Op {
             | Op::LoseAmbassadorsOr { .. }
             | Op::LoseIncome { .. }
             | Op::LoseOr { .. }
-            | Op::MarchNow { .. }
+            | Op::Strike
+            | Op::Redeploy
             | Op::OccupyFactory { .. }
             | Op::PlaceBotnet { .. }
             | Op::CorruptFactory
@@ -1681,8 +1678,7 @@ impl Op {
             | Op::Patience
             | Op::SupplyInsight { .. }
             | Op::TagsFromHand { .. }
-            | Op::ConvertUpkeep { .. }
-            | Op::TroopSteps { .. } => false,
+            | Op::ConvertUpkeep { .. } => false,
         }
     }
 
@@ -1801,7 +1797,6 @@ impl Op {
             | Op::Discard { .. }
             | Op::LoseAmbassadorsOr { .. }
             | Op::LoseOr { .. }
-            | Op::MarchNow { .. }
             | Op::OccupyFactory { .. }
             | Op::PlaceBotnet { .. }
             | Op::CorruptFactory
@@ -1821,7 +1816,9 @@ impl Op {
             | Op::ThreatCompute { .. }
             | Op::Infiltrate { .. }
             | Op::Escalate { .. }
-            | Op::IncreaseIncome { .. } => &[Team],
+            | Op::IncreaseIncome { .. }
+            | Op::Strike
+            | Op::Redeploy => &[Team],
             // 259: an uncountered threat's, an event's or a project's research line.
             Op::AdversaryResearch { .. } => &[Threat, Team],
             // 227: Fallout from all four adversity sources (threats, Discord cards, adversary events, projects).
@@ -1857,7 +1854,6 @@ impl Op {
             | Op::SupplyInsight { .. }
             | Op::TagsFromHand { .. }
             | Op::ConvertUpkeep { .. } => &[Standing],
-            Op::TroopSteps { .. } => &[Twist],
             Op::GainPerNode { .. }
             | Op::ChoosePlayer
             | Op::OtherGain { .. }

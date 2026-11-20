@@ -1139,7 +1139,7 @@ costs (claim, liberate, cards, actions) and the threats' costs never change. The
 <!-- generated: rulebook_difficulty -->
 | Level | Name | Setup (set once; incomes and threshold a country) | Mid-game rule it adds | Rules active |
 |---|---|---|---|---|
-| 0 | **The Militarist** | Compute income 0 a country; Infiltrate 1 a site; Research track: a slot each cube a country; Deck 5 / 5 / 3 (13 rounds); Sites print their corrupt numbers: city 5, station 3, factory 3 | — | 0 |
+| 0 | **The Militarist** | Compute income 0 a country; Infiltrate 1 a site; Research track: a slot every 2 cubes a country; Deck 5 / 5 / 3 (13 rounds); Sites print their corrupt numbers: city 5, station 3, factory 3 | — | 0 |
 | 1 | **Sleeper Cells**: *Cells wake in every city.* | Compute income 3 a country | When an Agent lands on a city, it falls at 3 agents, not 5. | 1 |
 | 2 | **War Footing**: *Every unanswered strike feeds the war machine.* | Compute income 5 a country | When a threat executes uncountered, the adversary also gains 4 compute. | 2 |
 | 3 | **Arms Race**: *The labs build weapons, not cures.* | Compute income 10 a country; Deck 5 / 3 / 3 (11 rounds) | — | 2 |

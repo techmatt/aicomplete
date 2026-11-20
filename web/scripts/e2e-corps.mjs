@@ -17,7 +17,7 @@ const out = join(web, 'e2e-out');
 mkdirSync(out, { recursive: true });
 
 const config = JSON.parse(readFileSync(join(web, '..', 'configs', 'baseline.json'), 'utf8'));
-Object.assign(config.modules.find((m) => m.module === 'board').params, { station_cubes: 2, owned_station_cubes: 5, troop_steps: 0 });
+Object.assign(config.modules.find((m) => m.module === 'board').params, { station_cubes: 2, owned_station_cubes: 5 });
 // 285: `station_cubes` 5 (to 284) made Horizon 5 player + 5 adversary = 10 in round 1's production, past its 8 before
 // the round-2 read (both cards read 0 cubes, completed). At 2: Horizon 5 + 2 = 7 and Cintamani 2 x 2 neutral + 2 = 6
 // after round 1, both open; round 2 fills them (14 and 12), every cube paying.

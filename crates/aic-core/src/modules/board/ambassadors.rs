@@ -109,12 +109,11 @@ pub fn claim_cost(w: &World, g: &GameState, h: usize) -> Option<i64> {
     Some(claim_ambassadors(w, kind))
 }
 
-/// What liberating adversary site `h` costs in ambassadors (one more for each
-/// agent on it), if it is an adversary site.
+/// What liberating adversary site `h` costs in ambassadors, if it is an adversary site that can be liberated:
+/// no agent on it (206), and no troop on or next to it (r141, the guarding rule).
 pub fn liberate_cost(w: &World, g: &GameState, h: usize) -> Option<i64> {
     let kind = site_kind(w, g, h)?;
-    // 206 (amendment 9208): no agent on it.
-    if !corrupted(g, h) || g.tokens(h, ADV_AMBASSADOR) > 0 {
+    if !corrupted(g, h) || g.tokens(h, ADV_AMBASSADOR) > 0 || troop_guarded(w, g, h) {
         return None;
     }
     Some(liberate_ambassadors(w, kind))

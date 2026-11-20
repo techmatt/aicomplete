@@ -29,19 +29,16 @@ fn k_is_a_country_and_zero_is_the_off_arm() {
     assert_eq!(g.var(RESEARCH), 2 * rules.world().map.countries.len() as i64);
 }
 
-/// Every board's row is content: six slots, each naming an icon of the board's vocabulary, none a troop icon yet
-/// (item 3 swaps those in by editing the row).
+/// Every board's row is content: six slots, each naming an icon of the board's vocabulary. (What its Garrison and
+/// Strike icons do: `troops.rs`.)
 #[test]
-fn the_row_is_six_slots_of_non_troop_icons() {
+fn the_row_is_six_slots_of_the_boards_icons() {
     let b = &crate::content().adversary_board;
     let row = b.research.as_ref().expect("a research row");
     assert_eq!(row.slots.len(), crate::content::RESEARCH_SLOTS);
     for id in &row.slots {
         let icon = b.icons.iter().find(|i| &i.id == id).expect("a slot names an icon of the vocabulary");
-        assert!(
-            !icon.effects.iter().any(|e| matches!(e, Op::Troops { .. } | Op::FactoryTroops { .. } | Op::BotnetTroops { .. } | Op::MarchNow { .. })),
-            "slot {id}: no troop icon ships in 293's rows"
-        );
+        assert!(!icon.effects.is_empty(), "slot {id}: an icon does something");
     }
     assert!(b.rules.len() <= 1, "a board prints one rule");
 }

@@ -90,7 +90,8 @@ Researcher's Hack, paid in Cyber: it hacks troops anywhere in a country, no reac
 Lab (with 2 Science, 1 insight → a card) is its draw outlet; Field Survey and Interdict II draw beside what they do.
 The Builder has no draw power: its cards are its draw.
 
-**Troop powers (early troops decide games).** Each board removes or stops troops its own way, no two alike: the
+**Troop powers.** Troops guard corrupted sites from liberation and strike on a Strike icon
+([troops.md](troops.md)). Each board removes or stops troops its own way, no two alike: the
 Protector's **Interdict** (Security: up to 2 troops on its target; tier II agents too) beside its Patrol (pushes
 them away); the Builder's **Fortify** (chips: 1 troop on its target, tier II up to 2 and a facility hardened); the
 Researcher's **Hack** (Cyber: up to 2 troops in one country, no reach needed). The standard action Remove a troop
@@ -121,12 +122,10 @@ track*); the economy track prints none. Every player has the cube converter, a s
 round (`insight_cubes`, `cube_insight`, `insight_per_round`; [economy.md](economy.md)). **Insight must bind** (the target: about 6 a round to drafting and 2-4 to plays), so the
 boards' own insight ways are few:
 
-- **Protector, Vigil** (an Effect of Wall, not a power; some cap is locked, its size a candidate): the first two
-  troops each round that end their march next to your node pay 1 insight each (`board.vigil_cap` troops a round);
-  later ones that round pay nothing, so a troop parked by your node doesn't pay every march. Any march counts (a
-  threat's immediate march too); a troop used up striking has no end to its march. An Effect because it happens in a
-  march, outside the action phase where powers are used: the march's (phase 5) pays this round's keeps and plays, an
-  immediate march's (phase 16) comes after them.
+- **Protector, Vigil** (an Effect of Wall, not a power; some cap is locked, its size a candidate): when troops
+  Strike, gain 1 insight for each troop on or next to your nodes, at most `board.vigil_cap` (2) a round. Any
+  Strike counts (an event card's or the research row's); a round with none pays nothing. An Effect because it
+  happens in the adversary's turn (phases 4 and 6, before the draft: it pays this round's keeps and plays).
 - **Researcher, Lab** (a threshold power, once a round): with 2 Science on your cards, 1 insight → draw a card; with
   4, also 2 credits → a research cube on an open megaproject. The Researcher's draw outlet and a use for Patience's
   bank. Give / get at `values.json` 2.67 for 3.33 (tier II 4.67 for 7.33, the cube at 4): a small gain. Peer Review and Field Station, its
@@ -135,7 +134,7 @@ boards' own insight ways are few:
 **For new players.** Insight is what you spend to keep and play cards: each round, the number on the rightmost space you've uncovered on
 your card-play track that shows one (3 at the start). When you
 are short, turn 1 research cube into 1 insight once a round (Turn a cube into insight; Cintamani's converter gives 2 insight for 1 cube), and use your board's own
-way: the Protector gains 1 each of the first two times each round a troop ends its march next to its node (Vigil); the
+way: the Protector gains 1 for each troop on or next to its nodes when troops Strike, at most 2 a round (Vigil); the
 Researcher keeps what it doesn't spend (Patience) and may spend 1 for a card (Lab). Insight you don't spend still goes at the round's end (the Researcher
 keeps all of it), but a few threat counters offer insight (3 at tier 1, 4 at tier 2: [threats.md](threats.md) *Counters*),
 so spare insight can stop one.
@@ -149,9 +148,9 @@ station's card is complete, which would otherwise grow its cubes each round, cap
 ## Shelters and hardening
 
 A **shelter** (a card's "Shelter your Nodes and facilities in reach", no target: yours in your reach when a piece would
-be destroyed, so nodes placed after it count) lasts until cleanup (phase 16) of the round it is used in. Used in the actions, it covers the rest of the actions and what comes after them: the income step
-and the threats that execute (phases 13-15). The march (phase 5) has already happened, but a threat's
-immediate march (Total War's, phase 15) meets it. It stops a destruction automatically, spending nothing, and so does the Protector's Aegis Doctrine capstone, a shelter
+be destroyed, so nodes placed after it count) lasts until cleanup (phase 15) of the round it is used in. Used in the actions, it covers the rest of the actions and what comes after them: the income step
+and the threats that execute (phases 12-14). A Strike (phases 4 and 6) has already happened: a Shelter
+doesn't meet one. It stops a destruction automatically, spending nothing, and so does the Protector's Aegis Doctrine capstone, a shelter
 on its own pieces (the first time each round one of its nodes or facilities would be destroyed); the other protections
 (a hardening token below, your own ambassador) are the piece owner's choice ([troops.md](troops.md), *Destruction*).
 

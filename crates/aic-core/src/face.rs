@@ -878,14 +878,15 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::LoseAmbassadorsOr { .. }
         | Op::LoseIncome { .. }
         | Op::LoseOr { .. }
-        | Op::MarchNow { .. }
+        | Op::Strike
+        | Op::Redeploy
         | Op::OccupyFactory { .. }
         | Op::PlaceBotnet { .. }
         | Op::CorruptFactory
         | Op::StandingTroopsBonus { .. }
         | Op::ThreatCompute { .. }
         | Op::Theft { .. }
-        | Op::TroopSteps { .. } => panic!("{op:?} is not an instant player op: Content::check rejects it"),
+        => panic!("{op:?} is not an instant player op: Content::check rejects it"),
     }
 }
 
@@ -931,8 +932,8 @@ fn event_face(on: &Event) -> (Vec<Part>, String) {
             vec![Part::Yours { yours: vec![w(kind.name())] }],
             format!("when you place a {} on one of your cards", token(kind, 1)),
         ),
-        Event::MarchEndsNear => {
-            (vec![w("troop"), w("node")], "when a Troop ends its march next to your Node".to_string())
+        Event::StrikeNear => {
+            (vec![w("troop"), w("node")], "when Troops Strike, for each Troop on or next to your Nodes".to_string())
         }
     }
 }

@@ -42,14 +42,14 @@
   },
   "research": {
    "name": "War Research",
-   "text": "Each cube a country on the track (2 cubes with two countries, 3 with three) is spent to advance the marker one slot; the slot's icon happens once. Slot 7: the players lose.",
+   "text": "Every 2 cubes a country on the track (4 cubes with two countries, 6 with three) are spent to advance the marker one slot; the slot's icon happens once. Slot 7: the players lose.",
    "slots": [
     "factory",
     "cells_factory",
     "income",
-    "fallout",
-    "cells_city",
-    "dread"
+    "garrison",
+    "strike",
+    "garrison"
    ]
   },
   "icons": [
@@ -173,6 +173,41 @@
       "op": "flag",
       "name": "blackout",
       "everywhere": true
+     }
+    ]
+   },
+   {
+    "id": "garrison",
+    "name": "Garrison",
+    "glyph": "troop, then the factory glyph",
+    "text": "Each country: 1 Troop garrisons its lowest-numbered corrupted factory (with none, its lowest-numbered corrupted city; with none, its lowest-numbered city).",
+    "effects": [
+     {
+      "op": "troops",
+      "count": 1,
+      "each_country": true
+     }
+    ]
+   },
+   {
+    "id": "strike",
+    "name": "Strike",
+    "glyph": "troop with a burst",
+    "text": "Strike: each Troop destroys 1 player Node, research station or factory on or next to it.",
+    "effects": [
+     {
+      "op": "strike"
+     }
+    ]
+   },
+   {
+    "id": "redeploy",
+    "name": "Redeploy",
+    "glyph": "troop with an arrow to a dark-framed city",
+    "text": "Redeploy: each Troop not on or next to a corrupted city moves onto the nearest corrupted city.",
+    "effects": [
+     {
+      "op": "redeploy"
      }
     ]
    }
@@ -358,13 +393,17 @@
     {
      "op": "infiltrate",
      "site": "coastal_city"
+    },
+    {
+     "op": "strike"
     }
    ],
    "twists": [],
-   "text": "Threat, each country: a tier-2 threat. Infiltrate: coastal cities.",
+   "text": "Threat, each country: a tier-2 threat. Infiltrate: coastal cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it.",
    "harms": [
     "adversary pieces placed",
-    "facilities destroyed or corrupted"
+    "facilities destroyed or corrupted",
+    "node destroyed"
    ]
   },
   {
@@ -434,15 +473,19 @@
      "site": "city"
     },
     {
+     "op": "strike"
+    },
+    {
      "op": "spread_botnets",
      "count": 1
     }
    ],
    "twists": [],
-   "text": "Threat, each country: a tier-2 threat. Infiltrate: cities. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station).",
+   "text": "Threat, each country: a tier-2 threat. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Botnets spread (level 1+): each country, a Botnet onto its lowest-numbered site without one next to one of its Botnets (a country with none: its lowest-numbered research station).",
    "harms": [
     "adversary pieces placed",
-    "facilities destroyed or corrupted"
+    "facilities destroyed or corrupted",
+    "node destroyed"
    ]
   },
   {
@@ -506,7 +549,7 @@
   },
   {
    "id": "mil_s2_forced_march",
-   "name": "Forced March",
+   "name": "Redeployment",
    "stage": 2,
    "pulls": [
     {
@@ -517,19 +560,17 @@
     {
      "op": "infiltrate",
      "site": "city"
-    }
-   ],
-   "twists": [
+    },
     {
-     "op": "troop_steps",
-     "amount": 1
+     "op": "redeploy"
     }
    ],
-   "text": "Threat, each country: a tier-2 threat. Infiltrate: cities. Every adversary Troop takes 1 more step this round.",
+   "twists": [],
+   "text": "Threat, each country: a tier-2 threat. Infiltrate: cities. Redeploy: each Troop not on or next to a corrupted city moves onto the nearest corrupted city.",
    "harms": [
     "adversary pieces placed",
-    "march brought forward",
-    "facilities destroyed or corrupted"
+    "facilities destroyed or corrupted",
+    "actions or claims blocked"
    ]
   },
   {
@@ -554,9 +595,7 @@
      "site": "city"
     },
     {
-     "op": "troops",
-     "count": 1,
-     "each_country": true
+     "op": "strike"
     }
    ],
    "twists": [
@@ -565,12 +604,12 @@
      "amount": 2
     }
    ],
-   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: factories. Infiltrate: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Remove 2 Unity from the Unity track.",
+   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: factories. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Remove 2 Unity from the Unity track.",
    "harms": [
     "adversary pieces placed",
-    "troops made",
     "Unity pulled back",
-    "facilities destroyed or corrupted"
+    "facilities destroyed or corrupted",
+    "node destroyed"
    ]
   },
   {
@@ -595,9 +634,7 @@
      "site": "station"
     },
     {
-     "op": "troops",
-     "count": 1,
-     "each_country": true
+     "op": "strike"
     }
    ],
    "twists": [
@@ -612,13 +649,13 @@
      "at": "corrupted_city"
     }
    ],
-   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: cities. Infiltrate: research stations. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Sway 1 toward Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
+   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: cities. Infiltrate: research stations. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Sway 1 toward Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
    "harms": [
     "adversary pieces placed",
-    "troops made",
     "Discord sway",
     "facilities destroyed or corrupted",
-    "Fallout placed"
+    "Fallout placed",
+    "node destroyed"
    ]
   },
   {
@@ -643,17 +680,19 @@
      "site": "city"
     },
     {
-     "op": "troops",
-     "count": 1,
-     "each_country": true
+     "op": "strike"
+    },
+    {
+     "op": "redeploy"
     }
    ],
    "twists": [],
-   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: research stations. Infiltrate: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city).",
+   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: research stations. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Redeploy: each Troop not on or next to a corrupted city moves onto the nearest corrupted city.",
    "harms": [
     "adversary pieces placed",
-    "troops made",
-    "facilities destroyed or corrupted"
+    "facilities destroyed or corrupted",
+    "node destroyed",
+    "actions or claims blocked"
    ]
   },
   {
@@ -678,9 +717,7 @@
      "site": "factory"
     },
     {
-     "op": "troops",
-     "count": 1,
-     "each_country": true
+     "op": "strike"
     },
     {
      "op": "flag",
@@ -694,13 +731,13 @@
      "at": "corrupted_city"
     }
    ],
-   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: coastal cities. Infiltrate: factories. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Until the end of next round, cities make no energy and no Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
+   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: coastal cities. Infiltrate: factories. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Until the end of next round, cities make no energy and no Discord. Each country: 1 Fallout lands next to its lowest-numbered corrupted city.",
    "harms": [
     "adversary pieces placed",
-    "troops made",
     "production blacked out",
     "facilities destroyed or corrupted",
-    "Fallout placed"
+    "Fallout placed",
+    "node destroyed"
    ]
   }
  ]

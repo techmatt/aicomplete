@@ -18,10 +18,8 @@ conventions: [README.md](README.md).*
 | `board.claim_station` | 4 | 1..10 | the Liberate action: ambassadors that liberate an adversary research station (262 cut the Claim action that also paid it; the name stays) |
 | `board.claim_factory` | 3 | 1..10 | the Liberate action: ambassadors that liberate an adversary factory (262 cut the Claim action that also paid it; the name stays) |
 | `board.start_nodes` | 1 | 1..3 | nodes each player starts with: its start hex, then the lowest-numbered free land hexes next to it (the extras off no track) |
-| `board.troop_spent` | 1 | 0..1 | 1: an adversary troop that strikes a target is used up |
-| `board.troop_steps` | 1 | 0..5 | steps each adversary troop takes in the march: destroy a target on or next to it, else move 1 hex toward the nearest |
 | `board.troop_node` | 0 | 0..4 | adversary troops strike nodes from this stage of adversary card on (0: always, 4: never) |
-| `board.vigil_cap` | 2 | 1..10 | troops a round whose march ending next to a seat's node pays its Vigil (later ones that round pay nothing) |
+| `board.vigil_cap` | 2 | 1..10 | troops a round on or next to a seat's node at a Strike that pay its Vigil (later ones that round pay nothing) |
 | `board.station_chips` | 2 | 0..20 | standard action: chips to build a research station |
 | `board.station_ambassadors` | 0 | 0..5 | standard action: ambassadors a research station also uses up (candidate; 0: none) |
 | `board.troop_credits` | 7 | 0..50 | standard action Remove a troop: credits for 1 troop in reach (0: no such action) |
@@ -72,7 +70,7 @@ conventions: [README.md](README.md).*
 | `adversary.botnet_compute` | 1 | 0..5 | a botnet's one output: adversary compute each makes a round (none with a player ambassador on it) |
 | `adversary.botnet_spread_at` | 1 | 0..5 | 263: the difficulty level from which a 'Botnets spread' line (event cards, projects) spreads botnets; below it the line does nothing |
 | `adversary.board_difficulty_at` | 2 | 0..5 | the difficulty level from which the adversary board's `difficulty` line applies (267: the Militarist's War Footing, level 2's named rule) |
-| `adversary.research_at` | 1, 1, 1, 1, 1 | 0..30 | 293: K, the research cubes a country that advance the adversary's research track one slot, at difficulty 0-4 (times the countries; 0: no track) |
+| `adversary.research_at` | 2, 2, 2, 2, 2 | 0..30 | 293: K, the research cubes a country that advance the adversary's research track one slot, at difficulty 0-4 (times the countries; 0: no track) |
 | `adversary.research_start` | 0 | 0..30 | 293: research cubes a country on the adversary's track at setup |
 | `alignment.tip_per_player` | 3 | 1..50 | the Unity track tips when it holds this many Sway per player |
 | `alignment.discord_tip_per_player` | 4 | 1..50 | the Discord track tips when it holds this many Sway per player |
@@ -82,10 +80,9 @@ conventions: [README.md](README.md).*
 | `alignment.free_city` | 5 | 0..10 | Sway toward Unity for freeing a corrupted city |
 | `alignment.free_facility` | 2 | 0..10 | Sway toward Unity for liberating an adversary station or factory |
 | `alignment.botnet` | 0 | 0..10 | Sway toward Unity for removing a botnet |
-| `alignment.purge_at` | 3, 7, 7 | 1..50 | Unity tips at which the purge asks less: agents, then troops, then botnets stop counting (tips, not cards drawn, since the Unity deck reshuffles) |
 | `alignment.tier_at` | 3, 6 | 1..50 | the tip (its side's count, this tip included) from which its cards resolve strength II, then strength III |
 | `alignment.node_loss` | 1 | 0..1 | 1: a player with no nodes on the board loses the game for everyone |
-| `alignment.clear_win_stage` | 1 | 1..3 | the bar-0 win counts only once this round's adversary card is of this stage (1: any time) |
+| `alignment.clear_win_stage` | 1 | 1..3 | the win (no corrupted city) counts only once this round's adversary card is of this stage (1: any time) |
 | `ai.boards` | 0, 1, 2 | 0..99 | AI board (index into content/ais.json) of each seat; the list repeats for more seats |
 | `ai.start_credits` | 27, 31, 27 | 0..100 | credits each AI board starts with, by board (Builder, Protector, Researcher), whichever seat plays it; one value sets every board |
 | `ai.start_energy` | 3 | 0..20 | energy each player starts with |

@@ -25,8 +25,17 @@ fn a_troop_line_for_a_missing_token_type_lands_nothing() {
     let w = rules.world();
     let def = w.content.threats.iter().find(|t| t.id == "garrison_state").expect("Garrison State");
     assert_eq!(def.locations, [content::Location::City, content::Location::Factory], "its printed types, city first");
-    let troops: Vec<content::Op> = def.effects.iter().filter(|o| matches!(o, content::Op::Troops { .. })).cloned().collect();
-    assert!(!troops.is_empty());
+    // r141: no threat prints a troop line any more (`threat_rule_break` refuses one); the op still reads a token.
+    assert!(!def.effects.iter().any(|o| matches!(o, content::Op::Troops { .. })));
+    let troops = [content::Op::Troops {
+        count: 1,
+        each_country: false,
+        destroy: false,
+        at: Some(crate::op::TroopAt::Location),
+        stand: false,
+        location: Some(content::Location::Factory),
+        if_: None,
+    }];
     let city = (0..g.hexes.len()).find(|&h| is_city(&w, h) && w.map.hexes[h].country == 0).expect("a city");
     token_on(&mut g, "garrison_state", city);
     let before = g.tokens(city, TROOP);
@@ -102,8 +111,8 @@ fn a_city_liberates_at_one_price_all_game() {
 }
 
 #[test]
-fn a_standing_troop_never_marches_or_strikes() {
-    let (rules, mut g) = lab(&["board.march"]);
+fn a_standing_troop_never_strikes_or_redeploys() {
+    let (rules, mut g) = lab(&[]);
     let w = rules.world();
     let z = (0..g.hexes.len()).find(|&h| w.map.hexes[h].industrial).unwrap();
     put(&mut g, z, FACTORY, 1);
@@ -111,9 +120,11 @@ fn a_standing_troop_never_marches_or_strikes() {
     let next = w.map.hexes[z].neighbors.iter().copied().find(|&h| !is_ocean(&w, h)).unwrap();
     put(&mut g, next, TROOP, 1);
     set_var(&mut g, board::stand_key(next), 1);
-    run(&rules, &mut g);
-    answer_all(&rules, &mut g);
-    assert_eq!((g.tokens(z, FACTORY), g.tokens(next, TROOP)), (1, 1));
+    // A corrupted city elsewhere: a troop free to act would Redeploy onto it.
+    let city = (0..g.hexes.len()).find(|&h| is_city(&w, h) && rules.map.distance(h, next) > 1).unwrap();
+    put(&mut g, city, ADV_CUBE, 1);
+    team_ops(&rules, &mut g, &[crate::content::Op::Strike, crate::content::Op::Redeploy], |_| 0);
+    assert_eq!((g.tokens(z, FACTORY), g.tokens(next, TROOP), g.tokens(city, TROOP)), (1, 1, 0));
 }
 
 /// 227: a threat's Fallout lands next to its token (a city is no open land), the lowest-numbered free hex first,

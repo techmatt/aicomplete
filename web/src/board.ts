@@ -140,7 +140,7 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
       );
       break;
     case 'no_infiltrate':
-    case 'no_muster':
+    case 'no_strike':
     case 'no_corrupt':
       // 197: a prohibition's token (r80): a "no" sign, its fill the step's color.
       g.append(
@@ -158,10 +158,10 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
 }
 
 /** Glyph scale per kind: owner cubes and facilities a little larger than pawns. */
-const SCALE: Record<string, number> = { cube: 1.05, station: 1.1, factory: 1, node: 1, ambassador: 0.9, troop: 0.95, harden: 0.85, botnet: 1, fallout: 0.95, firewall: 0.9, no_infiltrate: 0.8, no_muster: 0.8, no_corrupt: 0.8 };
+const SCALE: Record<string, number> = { cube: 1.05, station: 1.1, factory: 1, node: 1, ambassador: 0.9, troop: 0.95, harden: 0.85, botnet: 1, fallout: 0.95, firewall: 0.9, no_infiltrate: 0.8, no_strike: 0.8, no_corrupt: 0.8 };
 /** The adversary's tokens: its owner cube, its ambassadors, its troops, its botnets, Fallout. */
 const isAdversary = (kind: string) => kind === 'troop' || kind === 'botnet' || kind === 'fallout' || kind.endsWith(':adversary');
-const ORDER = ['cube', 'station', 'factory', 'node', 'harden', 'firewall', 'no_infiltrate', 'no_muster', 'no_corrupt', 'ambassador', 'fallout', 'botnet', 'troop'];
+const ORDER = ['cube', 'station', 'factory', 'node', 'harden', 'firewall', 'no_infiltrate', 'no_strike', 'no_corrupt', 'ambassador', 'fallout', 'botnet', 'troop'];
 const rank = (k: string) => {
   const i = ORDER.indexOf(k.split(':')[0]);
   return i < 0 ? ORDER.length : i;
@@ -200,8 +200,9 @@ function drawTokens(layer: SVGGElement, h: HexView, x: number, y: number, paint:
 }
 
 /**
- * Each adversary troop's next target (019): a dashed arrow from the troop to the
- * piece it is heading for, solid red when it strikes in the next adversary phase.
+ * What each adversary troop can strike (019; 294: troops garrison): a dashed arrow from the troop to a player piece
+ * on or next to it, solid red (`rounds` 1) when a Strike is shown a round ahead. 294: and what it guards (kind
+ * `guard`): a dark dotted link from the troop to the corrupted site, which wears a shield badge: no liberation there.
  * 293: and each industrial zone's printed arrow to its city (kind `zone`), and a "+1" badge on each site the
  * next Card beat escalates (kind `escalate`).
  */
@@ -229,6 +230,24 @@ function arrowLayer(view: View, pts: number[][]): SVGElement {
       const g = el('g', { class: `arrow zone${a.count > 0 || a.rounds === 1 ? ' live' : ''}`, 'data-from': a.from, 'data-to': a.to, 'data-count': a.count });
       g.append(el('line', { x1: f(zx + ux * 0.6), y1: f(zy + uy * 0.6), x2: f(ex), y2: f(ey) }));
       g.append(el('path', { d: `M${f(ex + ux * 0.16)},${f(ey + uy * 0.16)} L${f(ex + px * 0.09)},${f(ey + py * 0.09)} L${f(ex - px * 0.09)},${f(ey - py * 0.09)} Z` }));
+      g.append(el('title', {}, contentIds(a.doc)));
+      layer.append(g);
+      continue;
+    }
+    if (a.kind === 'guard') {
+      // 294: a troop guards this corrupted site (it can't be liberated): a shield badge at the site's upper left
+      // (the escalate badge has the upper right) and, from a troop next to it, a dark dotted link with no head.
+      const [tx, ty] = [pts[a.from][0], pts[a.from][1] + 0.3];
+      const [gx, gy] = [pts[a.to][0] - 0.58, pts[a.to][1] - 0.42];
+      const g = el('g', { class: 'arrow guard', 'data-from': a.from, 'data-to': a.to, 'data-count': a.count });
+      if (a.from !== a.to) {
+        const d = Math.hypot(gx - tx, gy - ty) || 1;
+        const [ux, uy] = [(gx - tx) / d, (gy - ty) / d];
+        g.append(el('line', { x1: f(tx + ux * 0.25), y1: f(ty + uy * 0.25), x2: f(gx - ux * 0.2), y2: f(gy - uy * 0.2) }));
+      }
+      const s = 0.17;
+      g.append(el('path', { class: 'shield', d: `M${f(gx)},${f(gy - s)} L${f(gx + 0.85 * s)},${f(gy - 0.62 * s)} V${f(gy + 0.05 * s)} Q${f(gx + 0.8 * s)},${f(gy + 0.75 * s)} ${f(gx)},${f(gy + 1.02 * s)} Q${f(gx - 0.8 * s)},${f(gy + 0.75 * s)} ${f(gx - 0.85 * s)},${f(gy + 0.05 * s)} V${f(gy - 0.62 * s)} Z` }));
+      g.append(el('path', { class: 'bar', d: `M${f(gx - 0.45 * s)},${f(gy - 0.4 * s)} L${f(gx + 0.45 * s)},${f(gy + 0.5 * s)} M${f(gx + 0.45 * s)},${f(gy - 0.4 * s)} L${f(gx - 0.45 * s)},${f(gy + 0.5 * s)}` }));
       g.append(el('title', {}, contentIds(a.doc)));
       layer.append(g);
       continue;

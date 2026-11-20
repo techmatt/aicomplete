@@ -11,39 +11,18 @@
 // steps through the adversary's turn whenever one is open. At the end it copies the record through the Record
 // dialog into OUT/record.json and writes OUT/summary.json and a few screenshots.
 //
-// 292: every step, and at the end, it also looks for the pieces 292 cut (`removed` in the summary; any fails the
-// run): a base hex, pennant, front or Drone drawn on the map, an Envoy or Buy energy button, a fronts or host value,
-// a War or drones phase in the round bar, and their words in the page's visible text and hovers (`CUT_WORDS`), a
-// card's own name aside ("War Rooms", "Survey Drone Fleet": read from content/).
+// 292: every step, and at the end, it also looks for the pieces cut from the game (`removed` in the summary; any
+// fails the run): the list, and what 292, 293 and 294 each cut, is cut-pieces.mjs.
 //
 // 293: and for the adversary's spine (`spine` in the summary; any problem fails the run): the research row (its slot
 // boxes, the reached ones, the cubes) and the zones' printed arrows match the engine's view every step, last round's
-// card says what escalates, and over the game the row moved. Spill, Surge, Grow and seeding joined `CUT_WORDS`.
-import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+// card says what escalates, and over the game the row moved.
+//
+// 294: the spine check counts the troops' strike arrows (solid only with a Strike shown ahead) and their guard links.
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { openPage, viewerUrl } from './cdp.mjs';
-
-/** The cut pieces' words. "in front of you" is no front; a capital War is the step and its log lines. */
-const CUT_WORDS = String.raw`\b[Dd]rones?\b|\b[Mm]ilitary bases?\b|\bEnvoy\b|Buy a city's energy|\b[Hh]ost(?:s|ed|ing)?\b|\b[Ff]ronts?\b(?! of)|\bWar\b|\bwar (?:step|phase)\b|Warmongering|Twin City Compact|nearest players`
-  // 293: the adversary's Spill, Surge and Grow lines and a botnet's seeding (the players' Growth powers stay; a
-  // singular "seed" alone is the game's: "Seed", "Random seed").
-  + String.raw`|\b[Ss]pill(?:s|ed)?\b|\b[Ss]urg(?:e|es|ed)\b|\b[Ss]eed(?:s|ed|ing)\b|[Bb]otnet(?:'s|s)? seed|\bseed (?:a |another )?[Bb]otnet|\bGrow\b`;
-/** Content names that hold one of those words: taken out of the text before it is read. */
-function cutWordNames() {
-  const dir = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'content');
-  const re = new RegExp(CUT_WORDS);
-  const names = new Set();
-  const walk = (v) => {
-    if (Array.isArray(v)) v.forEach(walk);
-    else if (v && typeof v === 'object') {
-      if (typeof v.name === 'string' && re.test(v.name)) names.add(v.name);
-      Object.values(v).forEach(walk);
-    }
-  };
-  for (const f of readdirSync(dir).filter((x) => x.endsWith('.json'))) walk(JSON.parse(readFileSync(join(dir, f), 'utf8')));
-  return [...names].sort((a, b) => b.length - a.length);
-}
+import { installCut } from './cut-pieces.mjs';
 
 const arg = (k, d) => {
   const i = process.argv.indexOf(`--${k}`);
@@ -66,6 +45,7 @@ await page.js(`(() => { document.getElementById('config').value = '${config}'; d
   document.getElementById('new-form').requestSubmit(); })()`);
 await page.until(`window.aic.timeline.seed === '${seed}' && window.aic.timeline.last === 0`, 'the new game', 30000);
 
+await installCut(page);
 // In the page: the controls the player view shows for the focused seat, and the no-control count over each seat to act.
 await page.js(`(() => {
   const vis = (el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden'; };
@@ -74,34 +54,9 @@ await page.js(`(() => {
     return { exact: new Set(cs.map((e) => e.dataset.action)), hexes: new Set(cs.flatMap((e) => (e.dataset.hexes ?? '').split(' ').filter(Boolean))) };
   };
   const isHex = (t) => Array.isArray(t) && t.length === 2;
-  const CUT = new RegExp(${JSON.stringify(CUT_WORDS)});
-  const NAMES = ${JSON.stringify(cutWordNames())};
-  const CUT_DOM = '#board .k-base, #board .base-mark, #board .fronts, #board .front-link, #board .front-edge, #board .token[data-token^="unit"], '
-    + '[data-value="board.fronts"], [data-value*="host_cap"], [data-value*="host_more"]';
   window.__pp = {
-    /** 292: the cut pieces on screen now: drawn elements, buttons, round-bar phases, then words in visible text and hovers. */
-    removed() {
-      const found = [];
-      for (const e of document.querySelectorAll(CUT_DOM)) if (vis(e)) found.push('element ' + (e.getAttribute('class') || e.dataset.value || e.tagName) + (e.dataset.token ? ' ' + e.dataset.token : ''));
-      for (const h of aic.view.hexes) {
-        if (h.kind === 'base' || h.facing !== undefined) found.push('view hex ' + h.kind + ' ' + h.hex.join(','));
-        for (const t of h.tokens) if (t.kind.split(':')[0] === 'unit') found.push('view token ' + t.kind);
-      }
-      for (const a of aic.legal) if (a.type === 'standard' && /^(envoy|buy_energy)$/.test(String(a.act))) found.push('legal action ' + a.act);
-      for (const p of aic.view.round_order) if (/^board\\.(war|bases)$/.test(p.name)) found.push('phase ' + p.name);
-      const strip = (t) => NAMES.reduce((s, n) => s.split(n).join(' '), t);
-      const read = (where, raw) => {
-        for (const line of strip(raw ?? '').split('\\n')) {
-          const m = CUT.exec(line);
-          if (m) found.push(where + ' "' + m[0] + '": ' + line.trim().slice(0, 120));
-        }
-      };
-      read('text', document.body.innerText);
-      for (const e of document.querySelectorAll('[title]')) if (vis(e)) read('hover', e.getAttribute('title'));
-      const tip = document.getElementById('tip');
-      if (tip && !tip.hidden) read('tip', tip.innerText);
-      return [...new Set(found)];
-    },
+    /** 292: the cut pieces on screen now (cut-pieces.mjs). */
+    removed: () => window.__cut.removed(),
     /** 293: the adversary's spine as the player view shows it now, against the engine's view: the research row, the
      *  zones' printed arrows on the map, and last round's card with what escalates. */
     spine() {
@@ -131,6 +86,14 @@ await page.js(`(() => {
       const troops = aic.view.arrows.filter((a) => a.kind === 'troop').length;
       const drawnTroops = document.querySelectorAll('#board .arrows .arrow.troop').length;
       if (drawnTroops !== troops) problems.push(drawnTroops + ' troop arrows drawn, the view has ' + troops);
+      // 294: each guard link (a troop guards a corrupted site) is drawn with its shield, and none as a strike.
+      const guards = aic.view.arrows.filter((a) => a.kind === 'guard').length;
+      const drawnGuards = [...document.querySelectorAll('#board .arrows .arrow.guard')];
+      if (drawnGuards.length !== guards) problems.push(drawnGuards.length + ' guard links drawn, the view has ' + guards);
+      if (drawnGuards.some((e) => !e.querySelector('path.shield') || e.classList.contains('soon'))) problems.push('a guard link drawn with no shield, or as a strike');
+      const soon = aic.view.arrows.filter((a) => a.kind === 'troop' && a.rounds <= 1).length;
+      const drawnSoon = document.querySelectorAll('#board .arrows .arrow.troop.soon').length;
+      if (drawnSoon !== soon) problems.push(drawnSoon + ' strike arrows drawn solid, the view has ' + soon + ' with a Strike shown');
       const escalates = aic.view.arrows.filter((a) => a.kind === 'escalate').length;
       const badges = [...document.querySelectorAll('#board .arrows .arrow.escalate')];
       if (badges.length !== escalates) problems.push(badges.length + ' escalate badges drawn, the view has ' + escalates);

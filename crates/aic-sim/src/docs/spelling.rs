@@ -69,8 +69,9 @@ pub fn failures() -> Vec<String> {
 
 /// 169, the house words (r70; Matt, amendment 7657): printed text calls the adversary's pieces agents and the
 /// Security token Operatives; 184, r77's renames (178): corp troops are Drones, the node power was Expand (gone at r91) and
-/// the troop line Muster (a substring match: "deployed" is refused too). An old name, or the open naming note, in what a
-/// player reads is refused. Code names may stay, so the crates are not read.
+/// the troop line Muster (a substring match: "deployed" is refused too; r141: Muster is gone, and Redeploy, the
+/// troops' icon, is let through). An old name, or the open naming note, in what a player reads is refused. Code
+/// names may stay, so the crates are not read.
 const STALE: &[&str] = &[
     "adversary ambassador", "adversary's ambassador", "enemy ambassador", "adv. ambassador", "matt to confirm",
     "agents token", "security agent",
@@ -85,7 +86,8 @@ const PLAYER_TEXT: [&str; 8] = [
 
 /// The stale house words in `text`.
 pub fn stale(text: &str) -> Vec<&'static str> {
-    let low = text.to_lowercase();
+    // r141: "Redeploy" is a house word (the troops' icon); the old troop and node verb "deploy" is still refused.
+    let low = text.to_lowercase().replace("redeploy", "");
     STALE.iter().copied().filter(|b| low.contains(b)).collect()
 }
 
@@ -102,7 +104,7 @@ pub fn stale_failures() -> Vec<String> {
             for b in stale(line) {
                 let now = match b {
                     "corp troop" => "gone with war at r139 (they were Drones from r77)",
-                    "deploy" => "Muster (troops) or Growth (nodes; r77; 276: Expand and the node routes became each board's Growth)",
+                    "deploy" => "troops garrison (r141; the line was Muster) and nodes are placed by Growth (276); Redeploy is the troops' icon",
                     _ => "agents, Operatives: docs/rules/README.md, Terms",
                 };
                 out.push(format!("{}:{}: stale house word {b:?} ({now})", path.display(), i + 1));

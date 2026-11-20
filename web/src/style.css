@@ -127,6 +127,7 @@ code { font: 0.92em ui-monospace, Consolas, monospace; }
 .alignment .tips.discord b { color: var(--discord); }
 .alignment .level { white-space: nowrap; }
 .alignment .level b { font-size: 1.25em; color: var(--good); }
+.alignment .level.left b { color: var(--discord); }
 .bar, .prog { position: relative; display: inline-block; height: 1.3em; border-radius: 3px; background: #e7e3da; border: 1px solid #c9c2b4; overflow: hidden; vertical-align: middle; }
 .bar { flex: 1 1 8em; min-width: 8em; max-width: 22em; }
 .bar .fill, .prog .fill { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, #66bb6a, #2e7d32); }
@@ -420,7 +421,15 @@ pre.tab { font: 0.85em/1.3 ui-monospace, Consolas, monospace; white-space: pre-w
   .projects-row .project { line-height: 1.2; height: calc(2.4em + 2px); }
 }
 
-/* 019: each adversary troop's next target. */
+/* 294: a troop guards a corrupted site (no liberation there): a dark dotted link and a shield badge on the site. */
+.arrows .arrow.guard line { stroke: #2a0d3d; stroke-width: 0.07; stroke-dasharray: 0.01 0.13; stroke-linecap: round; opacity: 0.9; }
+.arrows .arrow.guard path.shield { fill: #2a0d3d; stroke: #fff; stroke-width: 0.03; opacity: 1; }
+.arrows .arrow.guard path.bar { fill: none; stroke: #ffb4ab; stroke-width: 0.045; stroke-linecap: round; opacity: 1; }
+/* 294: the Strike / Redeploy icon shown a round ahead, by the adversary's face-up next card. */
+.ahead { display: block; margin-top: 0.2em; padding: 0.1em 0.4em; border-radius: 3px; font-weight: 600; font-size: 0.92em; }
+.ahead.strike { background: #b3261e; color: #fff; }
+.ahead.redeploy { background: #2a0d3d; color: #fff; }
+/* 019: what each adversary troop can strike (dashed; solid once a Strike is shown a round ahead). */
 .arrows .arrow line, .arrows .arrow circle { stroke: #b3261e; stroke-width: 0.06; stroke-dasharray: 0.16 0.1; opacity: 0.75; }
 .arrows .arrow.soon circle { stroke-dasharray: none; stroke-width: 0.09; opacity: 0.95; }
 .arrows .arrow path { fill: #b3261e; opacity: 0.75; }

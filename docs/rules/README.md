@@ -7,8 +7,9 @@ The rules are split by area. Read this page, then only the files your task touch
 - [ambassadors.md](ambassadors.md): the one site model, claiming, liberating, blocking, armor, removing agents.
 - [adversary.md](adversary.md): the adversary's board, event deck (the round cap), Escalate, Infiltrate, one output
   a corrupted site, the research track, arrival corruption, botnets, projects, difficulty.
-- [troops.md](troops.md): production, factories, the adversary march, Wall, node loss.
-- [alignment.md](alignment.md): Sway, tipping, the Unity and Discord decks, the purge, winning and losing.
+- [troops.md](troops.md): production, factories, adversary troops (garrison, guarding, Strike, Redeploy), Wall,
+  node loss.
+- [alignment.md](alignment.md): Sway, tipping, the Unity and Discord decks, winning (no corrupted city) and losing.
 - [economy.md](economy.md): each resource's sources and uses, city energy, standard actions, the round's phases.
 - [ai-boards.md](ai-boards.md): the three boards, their special rules, node tracks and capstones.
 - [ai-powers.md](ai-powers.md): the boards' powers, insight conversions and loops, shelters and hardening.
@@ -17,7 +18,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve.
 - [tunables.md](tunables.md): every baseline config parameter (generated).
 
-What the code implements, at rules revision 140 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 141 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -69,13 +70,13 @@ The house words, as [player-aid.md](../player-aid.md) prints them:
 - **On your cards**: on tags: on your cards in play, covered buildings included, and your board's tags, printed or revealed by its tracks. Tokens count only on the card that holds them.
 - **Action**: once a round, always; "A, OR B" is one use, either half.
 - **Open megaproject**: one that isn't complete; research cubes in your color go only onto one.
-- **Liberate**: a corrupted site: the agents on it come off and the adversary's cube comes off; it is left neutral, a city its country's for good, a station or factory for a card to claim (the action pays for it in ambassadors; a card's is unpaid).
+- **Liberate**: a corrupted site with no troop on or next to it: the agents on it come off and the adversary's cube comes off; it is left neutral, a city its country's for good, a station or factory for a card to claim (the action pays for it in ambassadors; a card's is unpaid).
 - **Rescue**: on a card, a corrupted city: liberate it, then a neutral station or factory next to it with no agent on it becomes yours, unpaid and out of reach too; with none, nothing more happens. The Liberate action never claims.
 - **Convert**: an agent on or next to the city leaves its stack and becomes your ambassador where it stood.
 - **Gather up to N**: pieces (ambassadors, agents, troops; botnets never move) onto the target, each from a hex next to it; you may stop at any piece (a strike, "remove up to N on or next to it", moves nothing).
 - **Push up to N**: pieces from the target, each to a hex next to it that you choose; you may stop at any piece.
 - **Firewall**: a token on a hex: no agent lands or moves there (an Infiltrate's agent for it stays in the supply) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn.
-- **In the next adversary turn, no X**: a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (an Infiltrate's agent for it stays in the supply; no Corrupt: agents may land, but nothing there corrupts, flips or loses a node), and the tokens come off with the firewalls.
+- **In the next adversary turn, no X**: a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (an Infiltrate's agent for it stays in the supply; no Strike: no troop strikes that hex; no Corrupt: agents may land, but nothing there corrupts, flips or loses a node), and the tokens come off with the firewalls.
 <!-- /generated -->
 
 The rest:
@@ -86,7 +87,7 @@ The rest:
 - **Botnet**: the adversary's persistent token ([adversary.md](adversary.md)), placed only by printed lines. Nodes are always the players', botnets always the adversary's.
 - **Reach** (**locked**): a card, board power or standard action that touches the map names **one target** in the
   acting player's reach, printing the condition first ("Target: Troops."; [card-grammar.md](card-grammar.md), *Target*); Shelter takes no target (your reach), Hack one country. Reach is 1 for every player rule: no effect goes past 1 from its target unless it prints "in its country" (where ambassadors move from: [ambassadors.md](ambassadors.md)). The adversary's distances (a factory's push along its arrow, a troop's
-  strike) are its own, not a player's reach. A converter needs a city of its country in your
+  strike and guard on or next to its hex) are its own, not a player's reach. A converter needs a city of its country in your
   reach ([board.md](board.md)).
 - **Site**: a city, research station or factory (one site model, [ambassadors.md](ambassadors.md)).
 - **Site claim**: claiming and liberating, their reach and payment: [ambassadors.md](ambassadors.md).
@@ -97,8 +98,10 @@ The rest:
   or factory with no owner cube is neutral; an adversary cube means corrupted (a factory:
   adversary-owned); a player cube means owned (a station or factory only: no city takes one).
 - **The ladder**: the adversary's pieces, weakest first: agents (the explorers, used
-  up when they act), **botnets** (the towns, persistent), troops, corrupted cities and
-  stations (the cities). Liberating (*Liberate* above) takes a site off the ladder.
+  up when they act), **botnets** (the towns, persistent), troops (garrisons: they guard the corrupted sites on or
+  next to them and strike on a Strike icon, [troops.md](troops.md)), corrupted cities and
+  stations (the cities). Liberating (*Liberate* above) takes a site off the ladder; only corrupted cities stand
+  between the players and the win.
 - **The supply is a cap**: a placement it can't make doesn't happen.
 - **Players choose**: an `Action::Choose` in `legal_actions`. Team choices (adversary steps, production, threats)
   go to seat 0, but which protection a destruction spends to
@@ -108,9 +111,9 @@ The rest:
 ## Off-variants
 
 To measure what a module adds, these variants remove its effect and keep the round: `threats.variant=off` (no
-threats), `alignment.variant=off` (no Sway moves, nothing tips; the purge, the node loss and the
-adversary deck-out stay; with no tips the Discord-deck loss can't happen and the purge never eases, so botnets always count against it), `cards.variant=off`
+threats), `alignment.variant=off` (no Sway moves, nothing tips; the win, the node loss and the
+adversary deck-out stay; with no tips the Discord-deck loss can't happen), `cards.variant=off`
 (no draft or drawing, so no player cards; only Decommission and the Take down a botnet action
 remove a botnet). `board`, `adversary`, `alignment` and `ai` are not removable (each is read by another); `threats=off`,
 `cards=off` and `economy=off` remove the module. Parameters switch off parts: `factory_chips` 0,
-`board.troop_steps` 0 (no march), `adversary.botnet_compute` 0.
+`adversary.botnet_compute` 0.

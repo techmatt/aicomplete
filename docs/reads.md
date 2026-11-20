@@ -20,7 +20,7 @@ What the read scripts quote most (`screens.cnt(game, key)`; more in experiments.
 | Key | What it holds, per game |
 |---|---|
 | `cell` | the cell's index in grid order: configs, then variants, then difficulties, then agents, agent fastest (`experiment::cells_with`; `screens.cells_of`) |
-| `seed`, `difficulty`, `reason` | the seed, a string; the cell's `adversary.difficulty`; how it ended (`purge` the win, `node` a seat left with no nodes, `deck_empty`, `discord_deck`, `timeout`) |
+| `seed`, `difficulty`, `reason` | the seed, a string; the cell's `adversary.difficulty`; how it ended (`liberated` the win, `purge` before r141, `node` a seat left with no nodes, `deck_empty`, `discord_deck`, `timeout`) |
 | `counters['ai.power.<board>.<power>']` | a board power's uses (`modules/ai.rs`; the seats on that board summed), `.rNN` a round's; names: `scripts/powers.py`; `ai.offered.<board>`: uses offered as the action phase begins, a group once |
 | `counters['board.std.<name>']` | a standard action's uses; `board.std_actions` all of them |
 | `counters['cards.played.<card>']`, `['cards.drawn']` | plays of a card / cards drawn off the decks, all seats (keys are flat, dotted strings) |
@@ -76,8 +76,8 @@ From `margin()` in `experiment.rs`, on the final table.
 
 | Key | Holds |
 |---|---|
-| `level` | the purge bar's level, steps reached on `alignment.purge_at` by Unity cards drawn: 0 every adversary piece counts, 1 ambassadors no longer, 2 troops no longer either, 3 corrupted cities only (`adversary/bar.rs`). Not the difficulty |
-| `blockers` | pieces the bar at `level` still counts (corrupted cities, then botnets, troops, ambassadors as the level counts them); 0 on a win |
+| `level` | always 0 since r141 (it was the purge bar's level; the win has no steps now). Not the difficulty |
+| `blockers` | corrupted cities left, all that stands between the players and the win (`adversary/bar.rs`); 0 on a win |
 | `deck_left` | adversary cards still to come, face-up one included |
 | `supply_left`, `supply_start` | adversary ambassadors in the supply at the end and at the start |
 | `cities_corrupted_end`, `cities_aligned_end` | corrupted cities; cities with a player cube, or free with a player's node on or next to them |

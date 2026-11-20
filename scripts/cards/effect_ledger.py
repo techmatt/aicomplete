@@ -382,7 +382,7 @@ def fires(t, on):
         return t.rate('fires_play') * min(max(1.0 - on['at'] / t.rate('rebate_span'), 0.05), 1.0)
     return t.rate({'remove_troop': 'fires_troop', 'remove_compute': 'fires_compute',
                    'remove_ambassadors': 'fires_ambassadors', 'place_tokens': 'fires_tokens',
-                   'march_ends_near': 'fires_wall'}[ev])
+                   'strike_near': 'fires_wall'}[ev])
 
 
 def triggered(t, then):

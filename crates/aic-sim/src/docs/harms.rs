@@ -57,14 +57,14 @@ pub const SOURCES: [&str; 11] = [
     "botnets",
     "corruption",
     "uncountered threats",
-    "march",
+    "troops",
     // 259: the adversary board's research rule firing.
     "adversary research",
 ];
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 22] = [
+pub const RULE_HARMS: [(&str, &str, &str); 23] = [
     ("income and Infiltrate", "adversary pieces placed", "every event's Infiltrate X lands `infiltrate_agents` (1; 2 at level 4) on each site of its type, at most `infiltrate_facility_cap` (1) a site from a station, factory or botnet line, not yet the adversary's (275: it replaced Rally and the agent pools; 282: the cap)"),
     ("income and Infiltrate", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
     ("income and Infiltrate", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
@@ -88,11 +88,13 @@ pub const RULE_HARMS: [(&str, &str, &str); 22] = [
     // 146: no unprinted harm (the node loss near an uncountered threat and its floor sway are gone); the adversary
     // board may print compute per uncountered threat.
     ("uncountered threats", "projects advanced (compute)", "the adversary board's printed compute per threat that executes uncountered (the Militarist's level-2 rule, War Footing, from `board_difficulty_at`)"),
-    // 195: a strike a protection absorbs spends it (the troop is used up either way, `troop_spent`).
-    ("march", "protections stripped", "a strike absorbed by a hardening token or the owner's ambassador spends it (r75; the troop is used up either way)"),
-    ("march", "facilities destroyed", "a troop strikes player-owned facilities, walking past ambassadors (r83, #44); it can't enter or strike a hex with the Protector's node"),
+    // 195: a strike a protection absorbs spends it (the troop stays, r141).
+    ("troops", "protections stripped", "a strike absorbed by a hardening token or the owner's ambassador spends it (r75; the troop stays and strikes again on the next icon)"),
+    ("troops", "facilities destroyed", "on a Strike icon each troop destroys one player-owned facility or node on or next to it (r141); none strikes a hex with the Protector's node"),
     // 201 (r89, Matt 2026-11-12: troops are few and deadly): troops strike nodes from the start (`troop_node` 0).
-    ("march", "node destroyed", "a troop strikes a player's node on or next to its hex (r89, `troop_node` 0; protections apply), one step a march"),
+    ("troops", "node destroyed", "on a Strike icon a troop destroys a player's node on or next to its hex (`troop_node` 0; protections apply)"),
+    // r141 (Matt, 2026-11-19): the guarding rule.
+    ("troops", "actions or claims blocked", "a corrupted site with a troop on or next to it can't be liberated, by the action or by a card (r141)"),
 ];
 
 /// Columns of [`SOURCES`] that read content, for [`harm_marks`].
@@ -189,7 +191,6 @@ fn op_harms(op: &Op) -> Vec<usize> {
         Op::LoseTokens { .. } => vec![TOKENS_STRIPPED],
         Op::AdversaryFactory { .. }
         | Op::PlaceBotnet { .. }
-        | Op::MarchNow { .. }
         | Op::Create { .. }
         | Op::CreateSite { .. }
         | Op::AdversaryBuild
@@ -207,7 +208,11 @@ fn op_harms(op: &Op) -> Vec<usize> {
             }
             v
         }
-        Op::StandingTroopsBonus { .. } | Op::TroopSteps { .. } => vec![INCOME_RAISED],
+        Op::StandingTroopsBonus { .. } => vec![INCOME_RAISED],
+        // r141: a Strike destroys a player's node or facility beside each troop; a Redeploy puts a guard back on a
+        // corrupted city (no liberation there).
+        Op::Strike => vec![FACILITIES_DESTROYED, NODE_DESTROYED],
+        Op::Redeploy => vec![BLOCKED],
         Op::ThreatCompute { .. } => vec![INCOME_RAISED, PROJECTS_ADVANCED],
         // A city corrupted by a card; `at: location` also takes the nodes on and next to it.
         Op::CorruptCity { at } => {
@@ -538,8 +543,8 @@ pub(super) fn harms_md(r: &Rules) -> String {
          One row per harm an adversary source can do, one column per kind of source. A number \
          is how many printed cards do it (a threat, Discord card, twist or project counts once); \
          `yes` is a rule of the board. Insight is no adversary harm, and costs raised has no row yet. \
-         `Discord cards` covers both tiers; `march` is the adversary \
-         troops' strikes, which take nodes from adversary stage {troop_node} on (0: always; 4: never). The `yes` cells \
+         `Discord cards` covers both tiers; `troops` is the adversary \
+         troops' guard and their strikes on a Strike icon, which take nodes from adversary stage {troop_node} on (0: always; 4: never). The `yes` cells \
          are true at the baseline's numbers ({amb_discord}: an agent \
          darkening an aligned city sways only when that is above 0). A printed \"Botnets spread\" counts at every \
          level, though below {spread_at} it does nothing.\n\n{}\n\

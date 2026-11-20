@@ -13,12 +13,12 @@
   ],
   "research": [
     "War Research",
-    "Each cube a country on the track (2 cubes with two countries, 3 with three) is spent to advance the marker one slot; the slot's icon happens once. Slot 7: the players lose."
+    "Every 2 cubes a country on the track (4 cubes with two countries, 6 with three) are spent to advance the marker one slot; the slot's icon happens once. Slot 7: the players lose."
   ],
   "escalation": [
     "Stage I: 1 threat a country, tier 1",
     "Stage II: 1-2 threats a country, tiers 1 and 2",
-    "Stage III: 2 threats a country, tier 2; Muster"
+    "Stage III: 2 threats a country, tier 2; Strike"
   ],
   "levels": [
     {
@@ -28,7 +28,7 @@
       "setup": [
         "Compute income 0 a country",
         "Infiltrate 1 a site",
-        "Research track: a slot each cube a country",
+        "Research track: a slot every 2 cubes a country",
         "Deck 5 / 5 / 3 (13 rounds)",
         "Sites print their corrupt numbers: city 5, station 3, factory 3"
       ],

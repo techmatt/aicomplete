@@ -1,0 +1,30 @@
+{
+  "name": "brake294",
+  "note": "294, for Matt's question on early d0 wins: the judge on the three board pairs at d0, the shipped build (base), then two brakes as a factorial, neither shipped: two corrupted cities a country at setup (board.start_corrupted 2, the map prints 2) and a city's Liberate at 6 ambassadors (board.liberate_at 6, baseline 5), then both. Farm with `farm-seeds 36800 32 OUT brake294`.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]},
+    {"name": "bp_c2", "set": ["board.start_corrupted=2"]},
+    {"name": "br_c2", "set": ["ai.boards=0,2", "board.start_corrupted=2"]},
+    {"name": "pr_c2", "set": ["ai.boards=1,2", "board.start_corrupted=2"]},
+    {"name": "bp_l6", "set": ["board.liberate_at=6"]},
+    {"name": "br_l6", "set": ["ai.boards=0,2", "board.liberate_at=6"]},
+    {"name": "pr_l6", "set": ["ai.boards=1,2", "board.liberate_at=6"]},
+    {"name": "bp_c2_l6", "set": ["board.start_corrupted=2", "board.liberate_at=6"]},
+    {"name": "br_c2_l6", "set": ["ai.boards=0,2", "board.start_corrupted=2", "board.liberate_at=6"]},
+    {"name": "pr_c2_l6", "set": ["ai.boards=1,2", "board.start_corrupted=2", "board.liberate_at=6"]}
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

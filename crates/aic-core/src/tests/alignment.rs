@@ -1,10 +1,6 @@
 use super::*;
-use crate::modules::adversary::PurgeLevel;
 use crate::modules::common::{cube_owner, is_city};
 use crate::modules::{adversary, alignment};
-
-/// This file's purge steps come at 1, 1 and 2 Unity cards drawn.
-const EASE: &str = "alignment.purge_at=1,1,2";
 
 /// No corrupted city and no botnet left (ambassadors and troops stay).
 fn uncorrupt_cities(rules: &Rules, g: &mut GameState) {
@@ -16,31 +12,31 @@ fn uncorrupt_cities(rules: &Rules, g: &mut GameState) {
     }
 }
 
+/// A full Unity bucket tips a card. r141: the tip count sets only the card's strength; the win never reads it.
 #[test]
-fn a_full_unity_bucket_tips_a_card_and_lowers_the_bar() {
-    let (rules, mut g) = action_only(&[EASE]);
+fn a_full_unity_bucket_tips_a_card_and_wins_nothing() {
+    let (rules, mut g) = action_only(&[]);
     let m = &rules.map;
-    // One Unity tip made, the bucket full (2 a player, 2 players); no city
-    // corrupted but agents about. The next card is Civil
-    // Defense (167: tier I removes next to a corrupted city: none here).
-    uncorrupt_cities(&rules, &mut g);
-    for c in 0..2 {
-        put(&mut g, m.numbered(c, piece(c).cities[1]), ADV_AMBASSADOR, 2);
+    let w = rules.world();
+    // One Unity tip made, the bucket full; the opening's corrupted cities stand, and agents well away from
+    // them. The next card is Civil Defense (167: tier I removes next to a corrupted city: none there).
+    let bad: Vec<usize> = cities(m).into_iter().filter(|&h| crate::modules::common::corrupted_city(&w, &g, h)).collect();
+    assert!(!bad.is_empty());
+    for h in 0..m.hexes.len() {
+        put(&mut g, h, ADV_AMBASSADOR, 0);
     }
-    set_var(&mut g, STAGE,1);
+    let far = (0..m.hexes.len()).find(|&h| kind(m, h) != HexKind::Ocean && bad.iter().all(|&c| m.distance(h, c) > 1)).unwrap();
+    put(&mut g, far, ADV_AMBASSADOR, 4);
+    set_var(&mut g, STAGE, 1);
     unity_drawn(&mut g, 1);
     fill_bucket(&rules, &mut g, Side::Unity);
     next_alignment_card(&mut g, Side::Unity, "civil_defense");
     any_action(&rules, &mut g);
-    // The tip: no corrupted city, so no agent comes off; at this bar agents don't count.
     assert_eq!(total(&g, ADV_AMBASSADOR), 4);
     assert_eq!(g.var("alignment.unity_tips"), 2);
     assert_eq!(g.var("alignment.unity"), 0);
     assert!(g.pile("alignment.resolved.unity").iter().any(|k| k.as_str() == "civil_defense"));
-    // Two Unity cards drawn: bar 3 (019), where only corrupted cities count.
-    assert_eq!(alignment::bar_level(&rules.world(), &g), PurgeLevel::CitiesOnly);
-    let o = g.outcome.as_ref().expect("a win");
-    assert!(o.won && o.reason == "purge", "{o:?}");
+    assert!(g.outcome.is_none(), "a city is still corrupted: no win at any tip count");
 }
 
 /// 157 (r68): the tip's own count picks the tier: Grassroots Funding (167: 1 a round for each site a player
@@ -67,80 +63,48 @@ fn the_tip_count_picks_a_unity_cards_tier() {
     }
 }
 
+/// r141: the players win the moment no city is corrupted, whatever botnets, agents and troops remain, at any
+/// Unity tip count, once this round's adversary card is of stage `clear_win_stage`; a corrupted city left is no win.
 #[test]
-fn bar_levels_follow_the_unity_cards_drawn() {
-    use PurgeLevel::*;
-    let rules = Rules::new(&baseline_with(&[EASE])).unwrap();
-    let w = rules.world();
-    let mut g = rules.new_game(1);
-    // 019: `purge_at` 1, 1, 2: ambassadors and troops at 1 card, botnets at 2.
-    for (tips, level) in [(0, All), (1, NoTroops), (2, CitiesOnly), (9, CitiesOnly)] {
-        unity_drawn(&mut g, tips);
-        assert_eq!(alignment::bar_level(&w, &g), level, "{tips} cards");
-    }
-    // 136: `purge_at` 3, 7, 7 (215's baseline, pinned here): 0-2 cards everything counts, 3-6 all but
-    // adversary ambassadors, 7+ only the corrupted cities (troops and botnets drop together).
-    let rules = Rules::new(&baseline_with(&["alignment.purge_at=3,7,7"])).unwrap();
-    let w = rules.world();
-    for (n, level) in [(0, All), (2, All), (3, NoAmbassadors), (6, NoAmbassadors), (7, CitiesOnly), (8, CitiesOnly)] {
-        unity_drawn(&mut g, n);
-        assert_eq!(alignment::bar_level(&w, &g), level, "{n} cards");
-    }
-    assert!(All.win_text().contains("botnet, adversary troop or agent"));
-    assert!(NoAmbassadors.win_text().contains("agents no longer count"));
-    assert!(NoTroops.win_text().contains("no corrupted city or botnet"));
-    assert!(CitiesOnly.win_text().contains("botnets no longer count"));
-}
-
-#[test]
-fn the_board_clear_win_and_the_bar_easing() {
-    // (Unity tips, clear_win_stage, this round's stage, a piece left, wins)
-    let cases: &[(i64, i64, i64, Option<&str>, bool)] = &[
-        (0, 1, 1, None, true),
-        (0, 1, 0, None, false),
-        (0, 2, 1, None, false),
-        (0, 2, 2, None, true),
-        (0, 1, 1, Some(ADV_AMBASSADOR), false),
-        (1, 1, 1, Some(ADV_AMBASSADOR), true),
-        (0, 1, 1, Some(TROOP), false),
-        (1, 1, 1, Some(TROOP), true),
-        (5, 1, 1, Some(ADV_CUBE), false),
-        (0, 1, 1, Some(BOTNET), false),
-        (1, 1, 1, Some(BOTNET), false),
-        (2, 1, 1, Some(BOTNET), true),
+fn no_corrupted_city_wins_whatever_else_remains() {
+    // (Unity tips, clear_win_stage, this round's stage, a corrupted city left, wins)
+    let cases: &[(i64, i64, i64, bool, bool)] = &[
+        (0, 1, 1, false, true),
+        (5, 1, 1, false, true),
+        (0, 1, 0, false, false),
+        (0, 2, 1, false, false),
+        (0, 2, 2, false, true),
+        (0, 1, 1, true, false),
+        (9, 1, 3, true, false),
     ];
-    for &(tips, rule, stage, piece_left, wins) in cases {
-        let (rules, mut g) = action_only(&[EASE, &format!("alignment.clear_win_stage={rule}")]);
+    for &(tips, rule, stage, city_left, wins) in cases {
+        let (rules, mut g) = action_only(&[&format!("alignment.clear_win_stage={rule}")]);
+        let m = &rules.map;
         uncorrupt_cities(&rules, &mut g);
-        set_var(&mut g, STAGE,stage);
+        set_var(&mut g, STAGE, stage);
         unity_drawn(&mut g, tips as usize);
-        if let Some(p) = piece_left {
-            put(&mut g, cities(&rules.map)[0], p, 1);
+        // Botnets, agents and troops stay on the board, on a city and off one.
+        let open = (0..m.hexes.len()).find(|&h| kind(m, h) == HexKind::Open && g.hexes[h].tokens.is_empty()).unwrap();
+        for h in [cities(m)[0], open] {
+            put(&mut g, h, ADV_AMBASSADOR, 2);
+            put(&mut g, h, TROOP, 1);
+            put(&mut g, h, BOTNET, 1);
+        }
+        if city_left {
+            put(&mut g, cities(m)[1], ADV_CUBE, 1);
         }
         any_action(&rules, &mut g);
-        let won = g
-            .outcome
-            .as_ref()
-            .is_some_and(|o| o.won && o.reason == "purge");
-        assert_eq!(
-            won, wins,
-            "{tips} tips, rule {rule}, stage {stage}, {piece_left:?}"
-        );
-        if !wins {
-            // The view says when the clear-board win starts to count.
-            let bar = rules
-                .view(&g)
-                .globals
-                .into_iter()
-                .find(|v| v.key == "alignment.bar")
-                .unwrap();
-            assert_eq!(
-                bar.doc.contains("from adversary stage"),
-                tips < 2 && stage < rule,
-                "{}",
-                bar.doc
-            );
-        }
+        let won = g.outcome.as_ref().is_some_and(|o| o.won && o.reason == "liberated");
+        assert_eq!(won, wins, "{tips} tips, rule {rule}, stage {stage}, a corrupted city left: {city_left}");
+        assert_eq!(g.is_over(), wins);
+        let w = rules.world();
+        assert_eq!(adversary::under_bar(&w, &g), !city_left);
+        assert_eq!(adversary::purge_count(&w, &g), city_left as i64);
+        // The view's win line is the corrupted cities; the purge bar is gone.
+        let v = rules.view(&g);
+        assert!(v.globals.iter().all(|x| x.key != "alignment.bar"));
+        let left = v.globals.iter().find(|x| x.key == "alignment.corrupted_cities").expect("the win line");
+        assert_eq!(left.value, city_left as i64);
     }
 }
 
@@ -148,7 +112,7 @@ fn the_board_clear_win_and_the_bar_easing() {
 /// off.
 #[test]
 fn the_antimatter_action_turns_cubes_into_antimatter_and_sways_nothing() {
-    let (rules, mut g) = action_only(&[EASE, "board.antimatter_cubes=3"]);
+    let (rules, mut g) = action_only(&["board.antimatter_cubes=3"]);
     set_var(&mut g, "alignment.unity",2);
     set_var(&mut g, "alignment.discord",0);
     g.seats[0].resources.insert(Resource::ResearchCubes, 3);
@@ -169,7 +133,7 @@ fn the_antimatter_action_turns_cubes_into_antimatter_and_sways_nothing() {
 /// Discord tip first (028's check ran only after a tip).
 #[test]
 fn a_player_with_no_node_loses_before_a_unity_tip() {
-    let (rules, mut g) = action_only(&[EASE]);
+    let (rules, mut g) = action_only(&[]);
     for h in 0..rules.map.hexes.len() {
         put(&mut g, h, node(1), 0);
     }
@@ -186,7 +150,7 @@ fn a_player_with_no_node_loses_before_a_unity_tip() {
 /// down to 1 per player.
 #[test]
 fn discord_tips_do_not_escalate_and_momentum_shrinks_buckets() {
-    let (rules, mut g) = action_only(&[EASE]);
+    let (rules, mut g) = action_only(&[]);
     set_var(&mut g, "alignment.discord_tips",1);
     fill_bucket(&rules, &mut g, Side::Discord);
     any_action(&rules, &mut g);
@@ -224,7 +188,7 @@ fn sway_past_a_tip_carries_over_to_the_next_tip() {
         (0, Side::Unity, false),
     ] {
         let set = format!("alignment.carry={carry}");
-        let (rules, mut g) = action_only(&[EASE, &set]);
+        let (rules, mut g) = action_only(&[&set]);
         uncorrupt_cities(&rules, &mut g);
         set_var(&mut g, STAGE,1);
         let cap = alignment::capacity(&rules.world(), &g, side);
@@ -239,7 +203,7 @@ fn sway_past_a_tip_carries_over_to_the_next_tip() {
         let left = if carries { 3 } else { 0 };
         assert_eq!(g.var(&key), left, "{what}");
         // Two tips' worth: two tips (and the bucket empty) only if it carries.
-        let (rules, mut g) = action_only(&[EASE, &set]);
+        let (rules, mut g) = action_only(&[&set]);
         uncorrupt_cities(&rules, &mut g);
         set_var(&mut g, STAGE,1);
         set_var(&mut g, &key, 2 * cap);

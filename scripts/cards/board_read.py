@@ -61,7 +61,7 @@ def main():
         n = len(gs)
         per = lambda k: sum(cnt(g, k) for g in gs) / n
         wins = sum(1 for g in gs if g.get('won'))
-        purge = sum(1 for g in gs if g.get('won') and g.get('reason') == 'purge')
+        purge = sum(1 for g in gs if g.get('won') and g.get('reason') in ('liberated', 'purge'))
         p = wins / n if n else 0
         peer_uses = per(peer)
         print(f"| {variant} {agent[:40]} | {n} | {100 * p:.1f} ±{se(p, n):.1f} | {purge} "

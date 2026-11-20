@@ -610,7 +610,7 @@ pub struct Pull {
 }
 
 /// An adversary event card (135): the clock and the stager. 151: its steps always in one order, threat, rally,
-/// muster, corrupt: its pulls; its standing lines (its Rally X, then its Muster troops, then any other line such
+/// muster, corrupt: its pulls; its standing lines (its Infiltrate X, then its Strike and Redeploy, then any other line such
 /// as an income increase); its twists (other lines read while it is current, then its Corrupt X lines).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -1314,21 +1314,6 @@ fn check_threat(t: &ThreatDef) -> Result<(), String> {
     if t.tags.is_empty() || !(1..=2).contains(&t.locations.len()) {
         return Err(format!("threat {:?}: a tag and 1 or 2 locations", t.id));
     }
-    // 184: a troop line "on the X here" names a type the threat prints, and with two tokens it names which (Iron
-    // Curtain's took whichever token came first, a city when no factory had one).
-    for e in &t.effects {
-        if let Op::Troops { at: Some(crate::op::TroopAt::Location), location, .. } = e {
-            match location {
-                Some(l) if !t.locations.contains(l) => {
-                    return Err(format!("threat {:?}: a troop line on a {l:?} token it doesn't print", t.id));
-                }
-                None if t.locations.len() > 1 => {
-                    return Err(format!("threat {:?}: a troop line on a two-token threat names which token", t.id));
-                }
-                _ => {}
-            }
-        }
-    }
     let what = format!("threat {:?}", t.id);
     for item in t.counters.iter().flatten() {
         match item {
@@ -1368,12 +1353,13 @@ fn check_threat(t: &ThreatDef) -> Result<(), String> {
 /// it, a country or the board; an each-country line).
 pub fn threat_rule_break(op: &Op) -> Option<String> {
     match op {
-        Op::Troops { stand: true, .. } => Some("a troop that stands (no special pieces)".into()),
+        // r141 (Matt, 2026-11-19): troops come from the research row, projects and Discord cards, late.
+        Op::Troops { .. } => Some("a troop line (troops come from the research row, projects and Discord cards)".into()),
         Op::OccupyFactory { .. } => Some("a troop that occupies (no special pieces)".into()),
         Op::Flag { name, .. } => Some(format!("flag {name:?} hits every player near it, not the one it hits")),
-        Op::Troops { each_country: true, .. }
-        | Op::FlipStation { each_country: true, .. }
-        | Op::DealThreats { each_country: true, .. } => Some("an each-country line".into()),
+        Op::FlipStation { each_country: true, .. } | Op::DealThreats { each_country: true, .. } => {
+            Some("an each-country line".into())
+        }
         Op::EachDestroyNode { .. } => Some("each player destroys a node (the hit player's: destroy_node)".into()),
         _ => None,
     }
@@ -1440,12 +1426,14 @@ pub fn says_each_board(text: &str) -> bool {
     text.to_lowercase().contains("each board")
 }
 
-/// 151, 275, 293: where an event line sits in the fixed step order (threat, Infiltrate, Muster, other lines).
+/// 151, 275, 293, r141: where an event line sits in the fixed step order (threat, Infiltrate, Strike, Redeploy,
+/// other lines).
 fn event_step(e: &Op) -> u8 {
     match e {
         Op::Infiltrate { .. } => 0,
-        Op::Troops { each_country: true, at: None, stand: false, location: None, if_: None, .. } => 1,
-        _ => 2,
+        Op::Strike => 1,
+        Op::Redeploy => 2,
+        _ => 3,
     }
 }
 
@@ -1453,14 +1441,14 @@ fn event_step(e: &Op) -> u8 {
 /// (docs/rules/card-grammar.md, *Event lines*): `(kind, icon)`. An event line outside it is off the standard.
 pub const EVENT_LINE_KINDS: [(&str, &str); 11] = [
     ("Infiltrate", "agent, then the site glyph"),
-    ("Muster", "troop, then the factory glyph"),
+    ("Strike", "troop with a burst"),
     ("Income", "brown box: compute"),
     ("New factory", "factory glyph with a plus"),
     ("Discord", "Discord track, arrow up"),
     ("Unity back", "Unity track, arrow down"),
     ("Blackout", "city glyph with energy struck through"),
     ("Node loss", "minus node, by a factory"),
-    ("Forced March", "troop with a plus step"),
+    ("Redeploy", "troop with an arrow to a dark-framed city"),
     ("Botnet spread", "botnet glyph with an arrow"),
     ("Fallout", "Fallout glyph by a dark-framed city"),
 ];
@@ -1469,14 +1457,14 @@ pub const EVENT_LINE_KINDS: [(&str, &str); 11] = [
 pub fn event_line_kind(e: &Op) -> Option<&'static str> {
     Some(match e {
         Op::Infiltrate { .. } => "Infiltrate",
-        Op::Troops { each_country: true, at: None, stand: false, location: None, if_: None, .. } => "Muster",
+        Op::Strike => "Strike",
         Op::IncreaseIncome { .. } => "Income",
         Op::CreateSite { .. } => "New factory",
         Op::Sway { side: crate::vocab::Side::Discord, .. } => "Discord",
         Op::PullUnity { .. } => "Unity back",
         Op::Flag { .. } => "Blackout",
         Op::EachDestroyNode { .. } => "Node loss",
-        Op::TroopSteps { .. } => "Forced March",
+        Op::Redeploy => "Redeploy",
         // 201: botnets spread from the event deck (Matt, amendment 9026: an event line).
         Op::SpreadBotnets { .. } => "Botnet spread",
         // 275: Corrupt open land's Fallout, printed.
@@ -1486,7 +1474,7 @@ pub fn event_line_kind(e: &Op) -> Option<&'static str> {
 }
 
 /// 151, the event standard (the threat card standard's, for events), 275's lines: one Infiltrate X (two at stage
-/// III), its lines in the fixed order (Infiltrate, Muster, other lines), at most two other lines
+/// III), its lines in the fixed order (Infiltrate, Strike, Redeploy, other lines), at most two other lines
 /// (consequences), no per-event compute or creation line, and "each
 /// country", never "each board". The reason it breaks, if it does.
 pub fn event_rule_break(a: &AdversaryCard) -> Option<String> {
@@ -1501,10 +1489,10 @@ pub fn event_rule_break(a: &AdversaryCard) -> Option<String> {
     if infiltrates == 0 || infiltrates > if a.stage >= 3 { 2 } else { 1 } {
         return Some("one Infiltrate X line (two at stage III)".into());
     }
-    if steps.windows(2).any(|p| p[0] > p[1]) || a.twists.iter().any(|e| event_step(e) < 2) {
-        return Some("a step out of the fixed order (threat, Infiltrate, Muster, other lines)".into());
+    if steps.windows(2).any(|p| p[0] > p[1]) || a.twists.iter().any(|e| event_step(e) < 3) {
+        return Some("a step out of the fixed order (threat, Infiltrate, Strike, Redeploy, other lines)".into());
     }
-    if steps.iter().filter(|&&s| s == 2).count() > 2 {
+    if steps.iter().filter(|&&s| s == 3).count() > 2 {
         return Some("more than two other lines (consequences)".into());
     }
     if a.standing.iter().any(|e| matches!(e, Op::Compute { .. } | Op::Create { .. })) {

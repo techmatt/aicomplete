@@ -454,10 +454,12 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::DealThreats { count, tier: None, scope: None, each_country: false } => threats::deal_extra(g, cx, *count),
         Op::RemoveBotnets { count } => team::remove_botnets(g, cx, *count)?,
         // 195: the project deck's board verbs.
-        Op::BotnetTroops { count, troops } => team::botnet_troops(g, cx, *count, *troops),
+        Op::BotnetTroops { count, troops } => team::botnet_troops(g, cx, *count, *troops)?,
         Op::SpreadBotnets { count } => team::spread_botnets(g, cx, *count),
         Op::TakeSite { site } => team::take_site(g, cx, *site)?,
         Op::FactoryTroops { count } => team::factory_troops(g, cx, *count),
+        Op::Strike => board::strike(g, cx)?,
+        Op::Redeploy => board::redeploy(g, cx)?,
         Op::AgentsOnNodes { count } => team::agents_on_nodes(g, cx, *count)?,
         Op::RecallAmbassadors => team::recall_ambassadors(g, cx),
         Op::StripCubes { count } => team::strip_cubes(g, cx, *count),
@@ -542,7 +544,6 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         | Op::LoseAmbassadorsOr { .. }
         | Op::LoseIncome { .. }
         | Op::LoseOr { .. }
-        | Op::MarchNow { .. }
         | Op::OccupyFactory { .. }
         | Op::PlaceBotnet { .. }
         | Op::CorruptFactory
@@ -570,7 +571,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         | Op::ConvertUpkeep { .. }
         | Op::StandingTroopsBonus { .. }
         | Op::ThreatCompute { .. }
-        | Op::TroopSteps { .. } => unreachable!("{e:?} is read, not resolved"),
+        => unreachable!("{e:?} is read, not resolved"),
     }
     Ok(())
 }

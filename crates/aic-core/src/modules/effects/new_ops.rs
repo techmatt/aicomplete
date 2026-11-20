@@ -103,19 +103,10 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
                 }
             }
         }
-        Op::MarchNow { steps } => {
-            if let Some(t) = &ctx.threat {
-                let at = g.var(&board::landed_key(t));
-                let n = g.var(&board::landed_count_key(t));
-                if at > 0 && n > 0 {
-                    board::march_now(g, cx, at as usize - 1, n, *steps)?;
-                }
-            }
-        }
         Op::OccupyFactory { else_compute } => {
             if let Some(h) = token(&w, g, ctx, Some(Location::Factory)) {
                 if g.tokens(h, TROOP) > 0 {
-                    // The troop stays: it never marches while it holds the site.
+                    // The troop stands: it never strikes or Redeploys while it holds the site.
                     board::add_standing(g, cx, h, 1);
                 }
                 if g.tokens(h, FACTORY) > 0 {
@@ -184,7 +175,6 @@ fn op_name(e: &Op) -> &'static str {
         Op::LoseAmbassadorsOr { .. } => "lose_ambassadors_or",
         Op::LoseIncome { .. } => "lose_income",
         Op::LoseOr { .. } => "lose_or",
-        Op::MarchNow { .. } => "march_now",
         Op::OccupyFactory { .. } => "occupy_factory",
         Op::PlaceBotnet { .. } => "place_botnet",
         Op::CorruptFactory => "corrupt_factory",
@@ -287,7 +277,7 @@ struct Landing {
 /// Troops (135 fields): on the threat's token or the factory the threat just
 /// built (137 cut "each country's first base"); `if` empty_zone, only where the token's
 /// zone held no factory (before the threat's own destruction); `stand`, they
-/// never march or strike.
+/// never strike or Redeploy.
 fn troops(
     g: &mut GameState,
     cx: &mut Cx,
@@ -342,10 +332,6 @@ fn troops(
                     board::destroy_piece(g, cx, h, node(s), board::Cause::Effect(ctx.label))?;
                 }
             }
-        }
-        if let Some(t) = &ctx.threat {
-            cx.set_key(g, &board::landed_key(t), h as i64 + 1);
-            cx.set_key(g, &board::landed_count_key(t), land.count);
         }
     }
     Ok(())

@@ -34,6 +34,9 @@ any design, rules, card or pricing work.
   (`crates/aic-core/src/tests/mod.rs`); a standard action in `board.std_off`'s index list, `design_check.json`'s
   `memory_counters` and `design_check_jobs.json`; an op in `configs/agents/values.json`, `effect_ledger.py`,
   `crates/aic-sim/src/docs/{harms,run}.rs` (its harms arm, `PALETTE_OPS`), `tests/unprinted_ops.rs` and `drafts/adversary/check.py`.
+  A param, phase or rule's name also sits in the docs generators (`crates/aic-sim/src/docs/{aid,blocks,ladder}.rs`),
+  `configs/three_seat.json` and `web/scripts/e2e-*.mjs`. A new house word holding an old one ("Redeploy", "deploy")
+  fails `aic-sim docs`' stale-word check (`docs/spelling.rs`, `STALE`): check before the first long build.
   **Changing a tunable's baseline value or a power's cost:** first `git grep` its name and old value in
   `crates/`: tests that pin a baseline number break.
 - **A new standard action** also needs its row order in `crates/aic-sim/src/docs/blocks.rs`, `STANDARD_NAMES` in

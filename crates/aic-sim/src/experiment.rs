@@ -537,12 +537,10 @@ pub struct Margin {
     /// Corrupted cities at the end, and cities with a player cube or (261, 292) free with a player's node on or next to them.
     pub cities_corrupted_end: i64,
     pub cities_aligned_end: i64,
-    /// Adversary pieces keeping the current level's bar from being met
-    /// (corrupted cities, and ambassadors or troops the bar still counts;
-    /// 0 on a win): how far a loss was from winning.
+    /// Corrupted cities left (0 on a win): how far a loss was from winning.
     pub blockers: i64,
-    /// The purge bar's level as the game ended (`alignment::bar_level`, 0-3, raised by Unity cards drawn; 3 counts
-    /// cities only): which pieces `blockers` counts. Not the difficulty (`difficulty`).
+    /// Always 0 since r141 (the purge's steps are gone: the win counts corrupted cities only); kept so older
+    /// readers of a games file find the field. Not the difficulty (`difficulty`).
     pub level: i64,
     /// Unity tips.
     pub unity_tips: i64,
@@ -639,11 +637,10 @@ pub const UNSPENT_HIGH: [f64; 5] = [8.0, 4.0, 4.0, 2.0, 3.0];
 
 fn margin(rules: &Rules, g: &GameState) -> Margin {
     let w = rules.world();
-    let level = alignment::bar_level(&w, g);
     let blockers = if g.outcome.as_ref().is_some_and(|o| o.won) {
         0
     } else {
-        adversary::purge_count(&w, g, level)
+        adversary::purge_count(&w, g)
     };
     let cities: Vec<usize> = (0..g.hexes.len())
         .filter(|&h| common::is_city(&w, h))
@@ -661,7 +658,7 @@ fn margin(rules: &Rules, g: &GameState) -> Margin {
             .filter(|&&h| common::cube_owner(g, h).is_some() || common::free_city_by_a_player(&w, g, h))
             .count() as i64,
         blockers,
-        level: level.steps(),
+        level: 0,
         unity_tips: g.var(alignment::tips_key(Side::Unity)),
         botnets_end: (0..g.hexes.len()).map(|h| g.tokens(h, common::BOTNET)).sum(),
         troops_end: (0..g.hexes.len()).map(|h| g.tokens(h, common::TROOP)).sum(),

@@ -257,14 +257,13 @@ export const contentIds = (text: string) => text.replace(/(?<![\w.])[a-z][a-z0-9
 /** "cards.play+threats.counter" → "play + counter". */
 export const shortPhase = (name: string) => RULEBOOK_PHASE[name] ?? name.split('+').map((x) => x.split('.').pop()).join(' + ');
 
-/** 235: the baseline round's phases in the rulebook's words (§4's steps A-H and §6's beats): the bar read engine keys
+/** 235: the baseline round's phases in the rulebook's words (§4's steps A-H and the adversary's two beats, Card and Income): the bar read engine keys
  *  ("deal" twice, "build" for the Card beat's lines, "bases" for growth). The hover keeps the config name. */
 const RULEBOOK_PHASE: Record<string, string> = {
   'alignment.sway': 'A Sway',
   'adversary.event': 'B Card',
   'threats.deal': 'B threats',
   'adversary.build': 'B lines',
-  'board.march': 'B March',
   'adversary.reveal': 'B Income',
   'adversary.compute': 'B compute',
   'cards.deal': 'C opening',
@@ -349,7 +348,7 @@ const KNOWN: Record<string, string> = {
   harden: '#607d8b',
   firewall: '#ff8a65',
   no_infiltrate: '#ffffff',
-  no_muster: '#ffe0b2',
+  no_strike: '#ffe0b2',
   no_corrupt: '#e1bee7',
 };
 
@@ -372,7 +371,7 @@ const TOKEN_NAMES: Record<string, string> = {
   harden: 'hardening token',
   firewall: 'firewall (no agent may arrive here)',
   no_infiltrate: 'no-Infiltrate token (no Infiltrate agent lands here)',
-  no_muster: 'no-Muster token (no Muster here)',
+  no_strike: 'no-Strike token (no troop strikes here)',
   // 285: the Corrupt step went at r130: agents still land; nothing here corrupts or flips.
   no_corrupt: 'no-Corrupt token (agents may land; nothing here corrupts or flips, and no node here is lost to agents)',
 };

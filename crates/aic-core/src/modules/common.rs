@@ -19,8 +19,8 @@ pub const STATION: &str = "station";
 /// The adversary's owner cube (on a city, research station or factory): corrupted.
 pub const ADV_CUBE: &str = "cube:adversary";
 pub const ADV_AMBASSADOR: &str = "ambassador:adversary";
-/// An adversary troop: marches in the adversary phase (019). A strike uses it
-/// up by `troop_spent`.
+/// An adversary troop: it garrisons where placed, guards the corrupted sites on or next to it, and destroys
+/// only on a Strike icon (r141).
 pub const TROOP: &str = "troop";
 /// A hardening token: absorbs one destruction of a facility or node on its hex.
 pub const HARDEN: &str = "harden";
@@ -37,7 +37,7 @@ pub const FIREWALL: &str = "firewall";
 pub fn prohibit_token(step: crate::op::Step) -> &'static str {
     match step {
         crate::op::Step::Infiltrate => "no_infiltrate",
-        crate::op::Step::Muster => "no_muster",
+        crate::op::Step::Strike => "no_strike",
         crate::op::Step::Corrupt => "no_corrupt",
     }
 }

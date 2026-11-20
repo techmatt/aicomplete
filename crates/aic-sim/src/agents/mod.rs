@@ -1278,16 +1278,15 @@ mod tests {
     /// is on course.
     #[test]
     fn deck_clock_penalizes_a_team_behind_the_deck() {
-        // 137: round 1's card may ask where its troops land: a seed whose opening asks nothing. 215: the purge's
-        // last step pinned at 6 (the baseline's 7 since r96), as the arithmetic below reads.
-        let r = config_rules_with("baseline", 0, &["alignment.purge_at=3,6,6"]);
+        // 137: a seed whose opening asks nothing. r141: the Unity target is the weight's own (6), as the
+        // arithmetic below reads (the purge's steps, which set it, are gone).
+        let r = config_rules_with("baseline", 0, &[]);
         let mut g = (1..64).map(|s| r.new_game(s)).find(|g| g.pending.is_none()).unwrap();
         let value = |clock: f64, g: &aic_core::GameState| {
-            let w = eval::Weights { clock, ..Default::default() };
+            let w = eval::Weights { clock, unity_target: 6.0, ..Default::default() };
             eval::Eval::new(&r, w).value(&r, g)
         };
-        // Round 4, one Unity tip (6 Sway: 1.5 a round), 6 tips (36 Sway, 156:
-        // the purge's last step, `purge_at`) for the target: 20 rounds
+        // Round 4, one Unity tip (6 Sway: 1.5 a round), 6 tips (36 Sway, `unity_target`) for the target: 20 rounds
         // needed. Two cards left (the face-up one and one in the deck): 2
         // action phases after this one. 18 short.
         g.round = 4;

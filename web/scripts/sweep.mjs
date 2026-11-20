@@ -14,7 +14,7 @@
 //                 counts each seat to act's actions with that seat shown)
 //   AIC_SWEEP_SHOT_SIZE  the size shot and checked in full (default 1366x768; 1920x1080 or 2560x1440)
 // For each case, aic-sim plays games (greedy, or the case's agent) and saves them as records; the sweep then
-// watches each record step by step (realistic games: wins, purges, late rounds) and
+// watches each record step by step (realistic games: wins, late rounds) and
 // plays as many fresh games of the same resolved config by picking legal actions at
 // random through the page's own `act` (choices, hex picks, passes, undo). Exit code 1
 // if any hard check failed. Writes issues.json, index.html and contact sheets
@@ -165,17 +165,20 @@ const PAGE_LIB = String.raw`(() => {
   const COUNTER_EVENTS_R99 = /^(fallout\.(placed|lifted)|adversary\.(night_raid_agents|ambassadors_recalled|cubes_stripped)|board\.(cubes_to_antimatter|burned\.[a-z_]+)|effects\.(ambassadors_placed|shelter_reach))$/;
   // 261: r107-r121: each board power's first use (the node routes: Expand, Buy In, Accord ...), a card's or
   // rider's claim, a site opened, a converter's Action, the adversary research track
-  // (made, fired, removed), compute blocked, a march cut short.
-  const COUNTER_EVENTS_R107 = /^(ai\.power\.[a-z_]+\.[a-z0-9_]+|adversary\.(research_(made|fired|removed)|compute_blocked)|board\.(claimed_by\.(card|rider)\.[a-z]+|sites_opened\.[a-z_]+|chips_converted|march_cut_by_loss|blocked\.station_adversary))$/;
+  // (made, fired, removed), compute blocked.
+  const COUNTER_EVENTS_R107 = /^(ai\.power\.[a-z_]+\.[a-z0-9_]+|adversary\.(research_(made|fired|removed)|compute_blocked)|board\.(claimed_by\.(card|rider)\.[a-z]+|sites_opened\.[a-z_]+|chips_converted|blocked\.station_adversary))$/;
   // 275: r130's card-driven adversary: an arrival corruption, an uncountered threat's agent at its anchor. 293: an
   // Escalate's agent, a corrupted factory's agent made and pushed along its zone's arrow.
   const COUNTER_EVENTS_R130 = /^adversary\.(corruptions_arrival|escalated|factory_pushed|factory_agents|threat_anchor)$/;
   // 285: r130-r135's guards and draws: an Infiltrate a guard stopped, a build's Infiltrate, a guard holding (arrival,
-  // flip, take), a Wall stopping a landing, a firewall holding, the purge held off by botnets, research troops, a
+  // flip, take), a Wall stopping a landing, a firewall holding, research troops, a
   // botnet spread skipped, a node capstone, cubes bought, chips made, a card drawn (scarce since r127), a cordon keeping
   // an agent out (r136).
-  const COUNTER_EVENTS_R131 = /^(adversary\.(infiltrate_blocked|infiltrated\.build|guard_held\.[a-z_]+|walled_landing|firewall_held|sites_guarded|research_troops|botnets_spread_skipped|cordoned)|alignment\.purge_blocked_by_botnets|board\.(capstones|cubes_bought|chips_made)|cards\.drawn)$/;
-  const COUNTER_ALL = [COUNTER_EVENTS, COUNTER_EVENTS_R41, COUNTER_EVENTS_R55, COUNTER_EVENTS_R70, COUNTER_EVENTS_R74, COUNTER_EVENTS_R85, COUNTER_EVENTS_R99, COUNTER_EVENTS_R107, COUNTER_EVENTS_R130, COUNTER_EVENTS_R131];
+  const COUNTER_EVENTS_R131 = /^(adversary\.(infiltrate_blocked|infiltrated\.build|guard_held\.[a-z_]+|walled_landing|firewall_held|sites_guarded|research_troops|botnets_spread_skipped|cordoned)|board\.(capstones|cubes_bought|chips_made)|cards\.drawn)$/;
+  // 294: r141's garrisoned troops: a Strike, a Redeploy and a troop it moved, a round a troop guarded a corrupted
+  // city, a round a liberation was refused for it, a troop placed (by source), a new most troops on the board.
+  const COUNTER_EVENTS_R141 = /^(board\.(strikes|redeploys|troops_redeployed|guarded_city_rounds|guard_blocked_rounds)|adversary\.troops_peak)$/;
+  const COUNTER_ALL = [COUNTER_EVENTS, COUNTER_EVENTS_R41, COUNTER_EVENTS_R55, COUNTER_EVENTS_R70, COUNTER_EVENTS_R74, COUNTER_EVENTS_R85, COUNTER_EVENTS_R99, COUNTER_EVENTS_R107, COUNTER_EVENTS_R130, COUNTER_EVENTS_R131, COUNTER_EVENTS_R141];
   const counters = () => { const c = aic.timeline.frame.snap.state.stats?.counters ?? {}; return Array.isArray(c) ? Object.fromEntries(c) : c; };
   function counterEvents(c0, c1) {
     return Object.keys(c1).filter((k) => COUNTER_ALL.some((re) => re.test(k)) && (c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);

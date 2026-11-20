@@ -40,7 +40,6 @@ mod map;
 mod fear_cards;
 mod gather_push;
 mod insight_r82;
-mod march;
 mod new_ops;
 mod ops;
 mod overlay;
@@ -56,6 +55,7 @@ mod standard_actions;
 mod targets;
 mod threat_sources;
 mod threats;
+mod troops;
 mod tier2_ops;
 mod unprinted_ops;
 mod view;
@@ -127,8 +127,6 @@ fn lab_config(round: &[&str]) -> Config {
         "board.ambassador_discord=1",
         "board.troop_node=0",
         "board.liberate_at=1",
-        "board.troop_steps=2",
-        "board.troop_spent=1",
         // The build asks nothing: pin any new build-step choice off here. (138:
         // the board's creation line lands only on adversary cities, which a lab
         // board has none of until a test puts one.)
@@ -497,8 +495,7 @@ fn fill_bucket(rules: &Rules, g: &mut GameState, side: Side) {
     set_var(g, format!("alignment.{}", side.name()), cap);
 }
 
-/// 136: `n` Unity cards drawn (the purge's steps count them), with the tip
-/// count to match.
+/// 136: `n` Unity cards drawn, with the tip count to match.
 fn unity_drawn(g: &mut GameState, n: usize) {
     let ids: Vec<&str> = crate::content().alignment.iter().filter(|c| c.side == Side::Unity).map(|c| c.id.as_str()).cycle().take(n).collect();
     set_pile(g, "alignment.resolved.unity", &ids);
@@ -586,6 +583,18 @@ fn run_ops(rules: &Rules, g: &mut GameState, ops: &[content::Op]) {
     run_ops_with(rules, g, Vec::new(), ops);
 }
 
+/// r141: runs `ops` as the team's (an event card's standing lines), each choice answered by `choose`.
+fn team_ops(rules: &Rules, g: &mut GameState, ops: &[content::Op], choose: impl Fn(&crate::state::Ask) -> usize) {
+    with_answers(rules, g, choose, |g, cx| {
+        modules::effects::run(g, cx, ops, &mut modules::effects::Ctx::team().named("standing"))
+    });
+}
+
+/// r141: a Strike icon (troops destroy only on one; no phase strikes), every choice answered with its first option.
+fn strike(rules: &Rules, g: &mut GameState) {
+    team_ops(rules, g, &[content::Op::Strike], |_| 0);
+}
+
 /// Answers a hex choice, if it was asked (a single option is taken for you).
 fn pick(rules: &Rules, g: &mut GameState, h: usize) {
     if g.pending.is_some() {
@@ -645,9 +654,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 140;
-const GOLDEN_FINGERPRINT: &str = "91479702a8b53a6c";
-const GOLDEN_CONTENT_HASH: &str = "6872ef647cabe583";
+const GOLDEN_REVISION: u32 = 141;
+const GOLDEN_FINGERPRINT: &str = "20ca19868ebcff94";
+const GOLDEN_CONTENT_HASH: &str = "0e3465e68b4484f3";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

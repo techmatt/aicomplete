@@ -9,7 +9,7 @@
 
 **The decks (candidate; Matt's threat card standard, 2026-11-07, locked).** One threat deck per tier, each card
 printed once: tier 1 and tier 2; **there is no tier 3**. A tier-2 card is about two tier-1s
-(bigger consequences: a node, a site corrupted, a botnet, more Fallout, troops, Unity pulled back), so no event card
+(bigger consequences: a node, a site corrupted, a botnet, more Fallout, more research cubes, Unity pulled back; no threat makes a troop), so no event card
 deals two tier-1s. Each card carries 1 or 2 **tags**, the player cards' own (Security, Diplomacy, Cyber, Industry, Power, with their icons; r81, friction #47; **Universal** counts as every tag) and 1 or 2 **location
 types** (city, coastal city, research station, factory).
 
@@ -118,10 +118,11 @@ scarce thing (energy, ambassadors, insight, research cubes, chips, or cards give
 resources can be pooled between players, giving up cards is done by one player alone. What a threat takes if unpaid is
 never what it asks for. Next last round's sites escalate (each site of last round's type still holding an agent
 takes 1 more), then the card infiltrates (1 agent on every site of the type it names not yet the
-adversary's) and musters its troops (stage III), then its other lines, then the march.
+adversary's); where it shows a Strike icon, every troop then destroys a player piece on or next to it (the card was
+face up a round ahead); then its other lines.
 A site corrupts the moment an arrival brings it to its number. You draft and act; production then runs from one
 snapshot of the board. At the end of the round each threat nobody paid does what it prints, then lands 1 agent on
-its spot, and nothing else: one consequence, sometimes two, from a short list (troops or agents on its spot, compute, Sway toward
+its spot, and nothing else: one consequence, sometimes two, from a short list (agents on its spot, compute, Sway toward
 Discord, Unity pulled back, a site corrupted, a botnet, Fallout next to its token (227: mild and lifted, so tier 1
 carries 1 and tier 2 up to 2), or the country's player paying energy, chips, cubes or
 ambassadors or discarding cards, losing a building, or a node, or cubes onto the adversary's research track; never

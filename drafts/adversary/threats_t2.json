@@ -12,7 +12,7 @@
    "locations": [
     "factory"
    ],
-   "text": "2 adversary Troops land here and march at once.",
+   "text": "4 cubes go onto the adversary's research track.",
    "counters": [
     [
      {
@@ -29,24 +29,21 @@
    ],
    "effects": [
     {
-     "op": "troops",
-     "count": 2,
-     "at": "location"
-    },
-    {
-     "op": "march_now"
+     "op": "adversary_research",
+     "amount": 4,
+     "why": "294 (Matt, 2026-11-19): no threat lands a troop; its troop became cubes toward the research row, where troops now come from (a troop at values.json troops 4.67, a cube 2)"
     }
    ],
    "harms": [
-    "adversary pieces placed",
-    "march brought forward"
+    "adversary research advanced"
    ],
-   "value": "counter 4 energy (18) or 17 credits (17); uncountered 37 at values.json (a troop 9 with its strike), 2.18x the cheapest counter",
-   "check": "bites from stage II where the factory stands by player sites: the strike comes before the players can answer",
+   "value": "294: its troop line (priced at a troop, 9 with its strike) became 4 research cubes (values.json adversary_research, 2 a cube at K 1; K 2 halves a cube's share of a slot). Before: counter 4 energy (18) or 17 credits (17); uncountered 37 at values.json (a troop 9 with its strike), 2.18x the cheapest counter",
+   "check": "294: bites through the research row: its cubes bring the row's Garrison and Strike slots nearer.",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
     "201 (r89, Matt 2026-11-12): troops 3 -> 2 (fewer troops, each deadlier: they strike nodes)",
-    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player",
+    "294 (Matt, 2026-11-19): \"2 adversary Troops land here and march at once.\" became \"4 cubes go onto the adversary's research track.\" (troops come from the research row, projects and Discord cards; a threat feeds the row)"
    ],
    "reuses": "total_war"
   },
@@ -106,7 +103,7 @@
    "locations": [
     "city"
    ],
-   "text": "This country's player pays 3 Ambassadors or discards 3 cards. 1 adversary Troop lands here.",
+   "text": "This country's player pays 3 Ambassadors or discards 3 cards. 3 cubes go onto the adversary's research track.",
    "counters": [
     [
      {
@@ -129,20 +126,21 @@
      "cards": 3
     },
     {
-     "op": "troops",
-     "count": 1,
-     "at": "location"
+     "op": "adversary_research",
+     "amount": 3,
+     "why": "294 (Matt, 2026-11-19): no threat lands a troop; its troop became cubes toward the research row, where troops now come from (a troop at values.json troops 4.67, a cube 2)"
     }
    ],
    "harms": [
     "ambassadors lost",
-    "adversary pieces placed"
+    "adversary research advanced"
    ],
-   "value": "counter 4 energy (18) or 17 credits (17); uncountered 21 at values.json (a troop 9 with its strike), 1.24x the cheapest counter",
-   "check": "bites diplomats; energy or credits pay it",
+   "value": "294: its troop line (priced at a troop, 9 with its strike) became 3 research cubes (values.json adversary_research, 2 a cube at K 1; K 2 halves a cube's share of a slot). Before: counter 4 energy (18) or 17 credits (17); uncountered 21 at values.json (a troop 9 with its strike), 1.24x the cheapest counter",
+   "check": "294: bites through the research row: its cubes bring the row's Garrison and Strike slots nearer.",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
-    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player",
+    "294 (Matt, 2026-11-19): \"1 adversary Troop lands here.\" became \"3 cubes go onto the adversary's research track.\" (troops come from the research row, projects and Discord cards; a threat feeds the row)"
    ],
    "reuses": "manhunt"
   },
@@ -157,7 +155,7 @@
    "locations": [
     "factory"
    ],
-   "text": "1 adversary Troop lands here. This country's player pays 2 chips or discards 2 cards.",
+   "text": "3 cubes go onto the adversary's research track. This country's player pays 2 chips or discards 2 cards.",
    "counters": [
     [
      {
@@ -174,9 +172,9 @@
    ],
    "effects": [
     {
-     "op": "troops",
-     "count": 1,
-     "at": "location"
+     "op": "adversary_research",
+     "amount": 3,
+     "why": "294 (Matt, 2026-11-19): no threat lands a troop; its troop became cubes toward the research row, where troops now come from (a troop at values.json troops 4.67, a cube 2)"
     },
     {
      "op": "requisition",
@@ -186,15 +184,16 @@
     }
    ],
    "harms": [
-    "adversary pieces placed",
-    "credits or income lost"
+    "credits or income lost",
+    "adversary research advanced"
    ],
-   "value": "counter 4 energy (18) or 17 credits (17); uncountered 26 at values.json (a troop 9 with its strike), 1.53x the cheapest counter",
-   "check": "bites near factories; a normal troop marches and strikes as any",
+   "value": "294: its troop line (priced at a troop, 9 with its strike) became 3 research cubes (values.json adversary_research, 2 a cube at K 1; K 2 halves a cube's share of a slot). Before: counter 4 energy (18) or 17 credits (17); uncountered 26 at values.json (a troop 9 with its strike), 1.53x the cheapest counter",
+   "check": "294: bites through the research row: its cubes bring the row's Garrison and Strike slots nearer.",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
     "201 (r89, Matt 2026-11-12): troops 2 -> 1 (fewer troops, each deadlier: they strike nodes)",
-    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player",
+    "294 (Matt, 2026-11-19): \"1 adversary Troop lands here.\" became \"3 cubes go onto the adversary's research track.\" (troops come from the research row, projects and Discord cards; a threat feeds the row)"
    ],
    "reuses": "conscription"
   },
@@ -734,7 +733,7 @@
     "station",
     "factory"
    ],
-   "text": "This country's player pays 5 research cubes or discards 3 cards. 1 cube goes onto the adversary's research track.",
+   "text": "This country's player pays 5 research cubes or discards 3 cards. 2 cubes go onto the adversary's research track.",
    "counters": [
     [
      {
@@ -758,7 +757,7 @@
     },
     {
      "op": "adversary_research",
-     "amount": 1,
+     "amount": 2,
      "why": "259 (Matt, 2026-11-16): adversary cards feed the research track; 5 compute (5.5) became 2 cubes (6)"
     }
    ],
@@ -771,7 +770,8 @@
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
     "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player",
-    "293 (Matt, 2026-11-19): its research line is 1 cube (was 2): the track's K went from 5 to 1 a country"
+    "293 (Matt, 2026-11-19): its research line is 1 cube (was 2): the track's K went from 5 to 1 a country",
+    "294 (Matt, 2026-11-19): \"1 cube goes onto the adversary's research track.\" became \"2 cubes go onto the adversary's research track.\" (K 2 a country: a cube is half a K-1 cube)"
    ],
    "reuses": "data_breach"
   },
@@ -785,7 +785,7 @@
    "locations": [
     "station"
    ],
-   "text": "2 cubes go onto the adversary's research track. This country's player turns 1 building face down until the end of next round.",
+   "text": "4 cubes go onto the adversary's research track. This country's player turns 1 building face down until the end of next round.",
    "counters": [
     [
      {
@@ -803,7 +803,7 @@
    "effects": [
     {
      "op": "adversary_research",
-     "amount": 2,
+     "amount": 4,
      "why": "259 (Matt, 2026-11-16): adversary cards feed the research track; 10 compute (11) became 4 cubes (12)"
     },
     {
@@ -821,7 +821,8 @@
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
     "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player",
-    "293 (Matt, 2026-11-19): its research line is 2 cubes (was 4): the track's K went from 5 to 1 a country"
+    "293 (Matt, 2026-11-19): its research line is 2 cubes (was 4): the track's K went from 5 to 1 a country",
+    "294 (Matt, 2026-11-19): \"2 cubes go onto the adversary's research track.\" became \"4 cubes go onto the adversary's research track.\" (K 2 a country: a cube is half a K-1 cube)"
    ],
    "reuses": "zero_day"
   },
@@ -1218,7 +1219,7 @@
     "city",
     "factory"
    ],
-   "text": "3 Agents are created on the city here. 1 adversary Troop lands on the factory here.",
+   "text": "3 Agents are created on the city here. 3 cubes go onto the adversary's research track.",
    "counters": [
     [
      {
@@ -1240,23 +1241,24 @@
      "at": "location"
     },
     {
-     "op": "troops",
-     "count": 1,
-     "at": "location",
-     "location": "factory"
+     "op": "adversary_research",
+     "amount": 3,
+     "why": "294 (Matt, 2026-11-19): no threat lands a troop; its troop became cubes toward the research row, where troops now come from (a troop at values.json troops 4.67, a cube 2)"
     }
    ],
    "harms": [
     "adversary pieces placed",
-    "facilities destroyed or corrupted"
+    "facilities destroyed or corrupted",
+    "adversary research advanced"
    ],
-   "value": "counter 4 insight (17.5) or 17 credits (17); uncountered 24 at values.json (a troop 9 with its strike), 1.41x the cheapest counter",
-   "check": "bites both sites",
+   "value": "294: its troop line (priced at a troop, 9 with its strike) became 3 research cubes (values.json adversary_research, 2 a cube at K 1; K 2 halves a cube's share of a slot). Before: counter 4 insight (17.5) or 17 credits (17); uncountered 24 at values.json (a troop 9 with its strike), 1.41x the cheapest counter",
+   "check": "294: bites through the research row: its cubes bring the row's Garrison and Strike slots nearer.",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
     "201 (r89, Matt 2026-11-12): insight counter 7 -> 4 (the new insight income)",
     "201 (r89, Matt 2026-11-12): troops 2 -> 1 (fewer troops, each deadlier: they strike nodes)",
-    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player",
+    "294 (Matt, 2026-11-19): \"1 adversary Troop lands on the factory here.\" became \"3 cubes go onto the adversary's research track.\" (troops come from the research row, projects and Discord cards; a threat feeds the row)"
    ],
    "reuses": "garrison_state"
   },
@@ -1418,7 +1420,7 @@
     "factory",
     "city"
    ],
-   "text": "1 adversary Troop lands on the factory here. Remove 2 Unity from the Unity track.",
+   "text": "3 cubes go onto the adversary's research track. Remove 2 Unity from the Unity track.",
    "counters": [
     [
      {
@@ -1435,10 +1437,9 @@
    ],
    "effects": [
     {
-     "op": "troops",
-     "count": 1,
-     "at": "location",
-     "location": "factory"
+     "op": "adversary_research",
+     "amount": 3,
+     "why": "294 (Matt, 2026-11-19): no threat lands a troop; its troop became cubes toward the research row, where troops now come from (a troop at values.json troops 4.67, a cube 2)"
     },
     {
      "op": "pull_unity",
@@ -1446,14 +1447,15 @@
     }
    ],
    "harms": [
-    "adversary pieces placed",
-    "Unity pulled back"
+    "Unity pulled back",
+    "adversary research advanced"
    ],
-   "value": "counter 4 energy (18) or 17 credits (17); uncountered 26 at values.json (a troop 9 with its strike), 1.53x the cheapest counter",
-   "check": "146: re-cut from tier 3; bites the factory and the Unity race",
+   "value": "294: its troop line (priced at a troop, 9 with its strike) became 3 research cubes (values.json adversary_research, 2 a cube at K 1; K 2 halves a cube's share of a slot). Before: counter 4 energy (18) or 17 credits (17); uncountered 26 at values.json (a troop 9 with its strike), 1.53x the cheapest counter",
+   "check": "294: bites through the research row: its cubes bring the row's Garrison and Strike slots nearer.",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
-    "201 (r89, Matt 2026-11-12): troops 2 -> 1 (fewer troops, each deadlier: they strike nodes)"
+    "201 (r89, Matt 2026-11-12): troops 2 -> 1 (fewer troops, each deadlier: they strike nodes)",
+    "294 (Matt, 2026-11-19): \"1 adversary Troop lands on the factory here.\" became \"3 cubes go onto the adversary's research track.\" (troops come from the research row, projects and Discord cards; a threat feeds the row)"
    ],
    "reuses": "t3_iron_curtain"
   },
@@ -1468,7 +1470,7 @@
    "locations": [
     "factory"
    ],
-   "text": "An adversary factory is built on the free industrial zone nearest here. 1 adversary Troop lands on the factory here.",
+   "text": "An adversary factory is built on the free industrial zone nearest here. 3 cubes go onto the adversary's research track.",
    "counters": [
     [
      {
@@ -1488,21 +1490,22 @@
      "op": "adversary_factory"
     },
     {
-     "op": "troops",
-     "count": 1,
-     "at": "location",
-     "location": "factory"
+     "op": "adversary_research",
+     "amount": 3,
+     "why": "294 (Matt, 2026-11-19): no threat lands a troop; its troop became cubes toward the research row, where troops now come from (a troop at values.json troops 4.67, a cube 2)"
     }
    ],
    "harms": [
     "facilities destroyed or corrupted",
-    "adversary pieces placed"
+    "adversary pieces placed",
+    "adversary research advanced"
    ],
-   "value": "counter 4 energy (18) or 17 credits (17); uncountered 24 at values.json (a troop 9 with its strike), 1.41x the cheapest counter",
-   "check": "146: re-cut from tier 3; a lasting adversary site",
+   "value": "294: its troop line (priced at a troop, 9 with its strike) became 3 research cubes (values.json adversary_research, 2 a cube at K 1; K 2 halves a cube's share of a slot). Before: counter 4 energy (18) or 17 credits (17); uncountered 24 at values.json (a troop 9 with its strike), 1.41x the cheapest counter",
+   "check": "294: bites through the research row: its cubes bring the row's Garrison and Strike slots nearer.",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces",
-    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player"
+    "292 (r139, Matt 2026-11-19): military bases are gone; the harm hits this country's player",
+    "294 (Matt, 2026-11-19): \"1 adversary Troop lands on the factory here.\" became \"3 cubes go onto the adversary's research track.\" (troops come from the research row, projects and Discord cards; a threat feeds the row)"
    ],
    "reuses": "t3_war_economy"
   },

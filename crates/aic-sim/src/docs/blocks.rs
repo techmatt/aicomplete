@@ -47,13 +47,13 @@ pub const HOUSE_TERMS: [(&str, &str); 26] = [
     ("On your cards", "on tags: on your cards in play, covered buildings included, and your board's tags, printed or revealed by its tracks. Tokens count only on the card that holds them"),
     ("Action", "once a round, always; \"A, OR B\" is one use, either half"),
     ("Open megaproject", "one that isn't complete; research cubes in your color go only onto one"),
-    ("Liberate", "a corrupted site: the agents on it come off and the adversary's cube comes off; it is left neutral, a city its country's for good, a station or factory for a card to claim (the action pays for it in ambassadors; a card's is unpaid)"),
+    ("Liberate", "a corrupted site with no troop on or next to it: the agents on it come off and the adversary's cube comes off; it is left neutral, a city its country's for good, a station or factory for a card to claim (the action pays for it in ambassadors; a card's is unpaid)"),
     ("Rescue", "on a card, a corrupted city: liberate it, then a neutral station or factory next to it with no agent on it becomes yours, unpaid and out of reach too; with none, nothing more happens. The Liberate action never claims"),
     ("Convert","an agent on or next to the city leaves its stack and becomes your ambassador where it stood"),
     ("Gather up to N", "pieces (ambassadors, agents, troops; botnets never move) onto the target, each from a hex next to it; you may stop at any piece (a strike, \"remove up to N on or next to it\", moves nothing)"),
     ("Push up to N", "pieces from the target, each to a hex next to it that you choose; you may stop at any piece"),
     ("Firewall", "a token on a hex: no agent lands or moves there (an Infiltrate's agent for it stays in the supply) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn"),
-    ("In the next adversary turn, no X", "a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (an Infiltrate's agent for it stays in the supply; no Corrupt: agents may land, but nothing there corrupts, flips or loses a node), and the tokens come off with the firewalls"),
+    ("In the next adversary turn, no X", "a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (an Infiltrate's agent for it stays in the supply; no Strike: no troop strikes that hex; no Corrupt: agents may land, but nothing there corrupts, flips or loses a node), and the tokens come off with the firewalls"),
 ];
 
 /// `3 credits, 1 energy`.
@@ -101,25 +101,27 @@ pub(super) fn adversary_block() -> String {
         .map(|a| {
             let pulls: Vec<String> = a.pulls.iter().map(pull_words).collect();
             let rally = aic_core::modules::adversary::infiltrate_sites(a).iter().map(|r| r.plural()).collect::<Vec<_>>().join(", ");
-            let deploy: i64 = a
+            // r141: the troop icons a card shows a round ahead.
+            let icons: Vec<&str> = a
                 .standing
                 .iter()
-                .map(|e| match e {
-                    aic_core::content::Op::Troops { count, each_country: true, .. } => *count,
-                    _ => 0,
+                .filter_map(|e| match e {
+                    aic_core::content::Op::Strike => Some("Strike"),
+                    aic_core::content::Op::Redeploy => Some("Redeploy"),
+                    _ => None,
                 })
-                .sum();
+                .collect();
             vec![
                 a.name.clone(),
                 a.stage.to_string(),
                 pulls.join("; "),
                 rally.clone(),
-                deploy.to_string(),
+                if icons.is_empty() { "—".to_string() } else { icons.join(", ") },
                 rally.clone(),
             ]
         })
         .collect();
-    table(&["Card", "Stage", "Threat (each country)", "Infiltrate", "Muster", "Escalates next round"], rows)
+    table(&["Card", "Stage", "Threat (each country)", "Infiltrate", "Troops", "Escalates next round"], rows)
 }
 
 pub(super) fn alignment_block() -> String {
@@ -588,37 +590,6 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
     table(&["Toward", "From", "Amount"], rows.into_iter().map(|r| r.to_vec()).collect())
 }
 
-/// What the purge asks at each step of `purge_at` (Unity cards drawn, 136).
-pub(super) fn purge_ease_block(r: &Rules) -> String {
-    const PIECES: [&str; 3] = ["agents", "adversary troops", "botnets"];
-    let at = list(r, "alignment.purge_at");
-    // Each step's lower bound and the pieces still counting from it.
-    let mut steps: Vec<(i64, usize)> = vec![(0, 0)];
-    for (i, &n) in at.iter().enumerate() {
-        match steps.last_mut() {
-            Some(last) if last.0 == n => last.1 = i + 1,
-            _ => steps.push((n, i + 1)),
-        }
-    }
-    let mut out = String::new();
-    for (k, &(from, gone)) in steps.iter().enumerate() {
-        let range = match steps.get(k + 1) {
-            Some(&(next, _)) if next - 1 > from => format!("{from}-{}", next - 1),
-            Some(_) => from.to_string(),
-            None => format!("{from}+"),
-        };
-        let left: Vec<&str> = PIECES[gone..].iter().rev().copied().collect();
-        let what = if left.is_empty() {
-            "only the corrupted cities".to_string()
-        } else {
-            format!("the corrupted cities, {}", left.join(", "))
-        };
-        out.push_str(&format!("- {range} Unity tips: remove {what};\n"));
-    }
-    out.push_str("- corrupted cities always count.\n");
-    out
-}
-
 /// The draft set's counts (the baseline's `cards` module list) that
 /// player-cards.md quotes: insight to play and energy costs.
 pub(super) fn draft_set_block(r: &Rules, c: &Content) -> String {
@@ -707,16 +678,6 @@ pub(super) fn new_players_block(r: &Rules) -> String {
 
 /// How the game ends, for new players.
 pub(super) fn game_end_block(r: &Rules) -> String {
-    let at = list(r, "alignment.purge_at");
-    let easing = match at.as_slice() {
-        [a, _, b] => format!(
-            "At 0 Unity tips you must purge almost everything: corrupted cities, botnets, adversary troops and \
-             agents. After {a} Unity tips the purge no longer asks you to clear \
-             agents; after {b}, it asks only that the adversary owns no city, and you win the moment it doesn't."
-        ),
-        [a, ..] => format!("After {a} Unity tips the purge no longer asks you to clear agents."),
-        [] => String::new(),
-    };
     let tiers = list(r, "alignment.tier_at");
     let (t2, t3) = (tiers.first().copied().unwrap_or(0), tiers.get(1).copied().unwrap_or(0));
     let unity = content().alignment.iter().filter(|c| c.side == aic_core::content::Side::Unity).count();
@@ -726,8 +687,12 @@ pub(super) fn game_end_block(r: &Rules) -> String {
         n => format!("No stage protects your last node; you start with {n}. "),
     };
     format!(
-        "**How the game ends, for new players.** The only way to win is the purge, and Unity eases it, \
-         step by step, like terror levels. {easing} Pressure comes every round: the face-up adversary event card deals threats \
+        "**How the game ends, for new players.** You win the moment no city on the board is corrupted: liberate \
+         every corrupted city. Botnets, agents and troops never count, but a troop guards: a corrupted site with a \
+         troop on or next to it can't be liberated until the troop is removed or pushed away. Troops come late (the \
+         adversary's research row, some projects and Discord cards), sit where they are placed, and on a Strike \
+         icon, shown a round ahead on the face-up event card, each destroys one of your nodes, research stations \
+         or factories on or next to it. Pressure comes every round: the face-up adversary event card deals threats \
          by your sites and names where its new agents land (one on every site of a kind), and next round every one of those sites \
          still holding an agent takes one more, so you always know where the next wave lands. Agents pile up only where something lands them: \
          a city they land on holding {} corrupts, a hex with your node they land on holding {} \
@@ -742,14 +707,14 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          city and you sway Unity (removing a botnet sways none), and each Unity \
          tip brings a good card. \
          Like fear cards, each acts by what is on the board, never by your reach; some forbid the adversary's next \
-         Infiltrate, Muster or corruption where your pieces stand. \
+         Infiltrate, Strike or corruption where your pieces stand. \
          Every Unity and Discord card prints three strengths, and the tip's own count on its side picks which \
          one resolves (strength I on tips below {t2}, II from tip {t2}, III from tip {t3}): a later strength counts more \
          or reaches wider, and Discord's late cards hit harder. The {unity} Unity cards reshuffle when the deck runs out. \
          Unity you sway always goes onto the Unity track: nothing takes Discord off its track but a card that \
          says so. You also lose if any player has no nodes left on the board. \
          Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of \
-         their own hex (or two agents on it: Night Raid lands them), an adversary troop's strike on their hex, \
+         their own hex (or two agents on it: Night Raid lands them), a troop's Strike on or next to it, \
          and Border War (nodes by a factory). A lost token leaves the game and nothing marks its hex; its \
          income stays. {safe}The adversary deck is a round cap too, {} rounds at \
          most (fewer at the harder levels), and reaching it loses; and the adversary's research track loses the game \

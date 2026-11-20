@@ -18,8 +18,8 @@ a generator would revert them. Edit the JSON here.
 
 `python drafts/adversary/check.py` checks them: ids, deck sizes and tags, the tier rules, counters, the threat card
 standard (two consequences and two counter options at most, no shared currency, no each-player harm, no special
-pieces), the event standard (151, 275: one Infiltrate X, two at stage III; the fixed order threat, Infiltrate, Muster,
-other lines; at most two other lines; no Spill or Grow line (r140: escalate is the board's rule, not a printed
+pieces), the event standard (151, 275: one Infiltrate X, two at stage III; the fixed order threat, Infiltrate, Strike,
+Redeploy, other lines; at most two other lines; no Spill or Grow line (r140: escalate is the board's rule, not a printed
 line); no per-event compute or creation
 line; "each country", never "each board"), a project's two consequences at most, the event pull ladder, the harms
 ledger's rule, and the draw rule (a random-deal simulation at 1-4 countries and every difficulty's stage counts,

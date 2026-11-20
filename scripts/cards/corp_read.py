@@ -52,7 +52,7 @@ def main():
         mean_round = sum(r * v for r, v in total.items()) / done if done else 0
         uses = ' / '.join(f"{per(f'board.converter.{c}'):.2f}" for c in range(len(CORPS)))
         wins = sum(1 for g in gs if g.get('won'))
-        purge = sum(1 for g in gs if g.get('won') and g.get('reason') == 'purge')
+        purge = sum(1 for g in gs if g.get('won') and g.get('reason') in ('liberated', 'purge'))
         rounds.update(total)
         print(f"| {variant} {agent} | {n} | {100 * wins / n:.1f} | {100 * purge / n:.0f} | {done / n:.2f} | {mean_round:.1f} "
               f"| {per('board.cubes_paid.player'):.1f} / {per('board.cubes_paid.neutral'):.1f} "

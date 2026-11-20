@@ -236,20 +236,20 @@ pub fn on_tokens(g: &mut GameState, cx: &mut Cx, seat: usize, kind: TokenKind, n
     Ok(())
 }
 
-/// A troop ended its march next to seat `s`'s node (Vigil).
-pub fn on_march_end(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
+/// Troops struck with one on or next to seat `s`'s node (Vigil), once a troop.
+pub fn on_strike_near(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
     let w = cx.world;
     for (card, on, then) in triggers(&w, g, seat) {
-        if on == Event::MarchEndsNear {
+        if on == Event::StrikeNear {
             fire(g, cx, seat, card, then, 1)?;
         }
     }
     Ok(())
 }
 
-/// Whether seat `s` holds a march-end trigger, Vigil (the march asks before it looks).
+/// Whether seat `s` holds a Strike trigger, Vigil (the strike asks before it looks).
 pub fn has_vigil(w: &World, g: &GameState, seat: usize) -> bool {
-    has_trigger(w, g, seat, |e| *e == Event::MarchEndsNear)
+    has_trigger(w, g, seat, |e| *e == Event::StrikeNear)
 }
 
 // ---------- the instant ops that read a seat's cards ----------

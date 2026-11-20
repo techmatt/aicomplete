@@ -1,6 +1,6 @@
 //! 105: the engine wording (triggers, discounts, rebate, copy, reuse,
 //! threshold) and the insight economy (the cube converter, the corps'
-//! converters, the boards' insight powers, Vigil, insight counters).
+//! converters, the boards' insight powers, insight counters). Vigil: `troops.rs`.
 
 use super::*;
 use crate::content::{Op, Tag};
@@ -556,45 +556,6 @@ fn the_boards_insight_powers() {
     let rules = Rules::new(&lab_config(&[ACTIONS])).unwrap();
     let w = rules.world();
     assert!(!modules::ai::board(&w, 0).powers.iter().any(|p| p.name == "Focus"));
-}
-
-/// 178 (Matt's ruling #18): Vigil pays when a troop ends its march next to the Protector's node.
-#[test]
-fn vigil_pays_when_a_troop_ends_its_march_next_to_your_node() {
-    let (rules, mut g) = lab_with(&["board.march"], &["board.troop_node=0"]);
-    let m = &rules.map;
-    let p = m.numbered(0, piece(0).node);
-    put(&mut g, p, node(1), 1);
-    let t = m.hexes[p].neighbors.iter().copied().find(|&h| kind(m, h) != HexKind::Ocean).unwrap();
-    put(&mut g, t, TROOP, 1);
-    set_res(&mut g, 1, Resource::Insight, 0);
-    run(&rules, &mut g);
-    answer_all(&rules, &mut g);
-    assert_eq!(g.tokens(p, node(1)), 1, "the Wall held");
-    assert_eq!(g.resource(1, Resource::Insight), 1, "Vigil: 1 insight for the troop that ended next to it");
-    assert_eq!(g.stats.counters["board.vigil"], 1);
-}
-
-/// 185 (Matt's ruling #1): Vigil pays at most `vigil_cap` (1) troops a round; the next round it pays again.
-#[test]
-fn vigil_pays_at_most_its_cap_a_round() {
-    let (rules, mut g) = lab_with(&["board.march"], &["board.troop_node=0"]);
-    let cap = rules.world().int("board.vigil_cap");
-    let m = &rules.map;
-    let p = m.numbered(0, piece(0).node);
-    put(&mut g, p, node(1), 1);
-    let t = m.hexes[p].neighbors.iter().copied().find(|&h| kind(m, h) != HexKind::Ocean).unwrap();
-    put(&mut g, t, TROOP, cap + 2);
-    set_res(&mut g, 1, Resource::Insight, 0);
-    run(&rules, &mut g);
-    answer_all(&rules, &mut g);
-    assert_eq!(g.tokens(p, node(1)), 1, "the Wall held");
-    assert_eq!(g.resource(1, Resource::Insight), cap, "only the first `vigil_cap` troops pay");
-    assert_eq!(g.stats.counters["board.vigil_capped"], 2);
-    g.round += 1;
-    run(&rules, &mut g);
-    answer_all(&rules, &mut g);
-    assert_eq!(g.resource(1, Resource::Insight), 2 * cap, "a new round, a new cap");
 }
 
 

@@ -6,7 +6,8 @@ from 282's and 283's `experiments/results/<item>/read.py`, which took two games 
 NEW and OLD are reads in `read_lib.py`'s forms: a run's folder, a games file with its header, or FILE=SPEC (a farmed
 JSONL and its farm spec). Per agent (as the spec writes it) and level, old → new: win %, rounds, cities corrupted by
 round 4 (`map.cities_corrupted.r01`-`r04`) and at the end (`margin.cities_corrupted_end`), node endings (games),
-research troops (`adversary.research_troops`) and nodes lost to the march (`board.node_lost.march`) a game, and card
+research troops (`adversary.research_troops`) and nodes lost to troops (`board.node_lost.strike`; before r141 the
+march's, `board.node_lost.march`) a game, and card
 plays and non-card turns (standard actions, board powers but Growth, card uses) a seat-round. A row only one side
 has shows `-` on the other. `--growth`: the board-power slugs left out of non-card turns (default: every power of
 group `Growth` in content/ais.json, slugged as the `ai.power.<board>.<slug>` counters are). `--md OUT` also writes
@@ -72,7 +73,7 @@ def side(read, growth):
             r4=sum(sum(cnt(g, f'map.cities_corrupted.r0{r}') for r in range(1, 5)) for g in gs) / n,
             end=sum((g.get('margin') or {}).get('cities_corrupted_end', 0) for g in gs) / n,
             node=sum(g['reason'] == 'node' for g in gs), rt=sum(cnt(g, 'adversary.research_troops') for g in gs) / n,
-            march=sum(cnt(g, 'board.node_lost.march') for g in gs) / n, plays=plays / sr,
+            march=sum(cnt(g, 'board.node_lost.march') + cnt(g, 'board.node_lost.strike') for g in gs) / n, plays=plays / sr,
             noncard=(std + powers + uses) / sr)
     return out
 
@@ -84,7 +85,7 @@ FORMS = [('win', '{:.1f}'), ('rounds', '{:.2f}'), ('r4', '{:.2f}'), ('end', '{:.
 def table(new, old):
     """The Markdown lines, old → new (the new win % bold)."""
     L = ['| agent | d | win % old → new | rounds | cities corrupted by r4 | at the end | node endings | research troops '
-         '| nodes lost to the march | plays / non-card turns a seat-round |',
+         '| nodes lost to troops | plays / non-card turns a seat-round |',
          '|---|---|---|---|---|---|---|---|---|---|']
     for key in sorted(set(new) | set(old), key=lambda k: (k[0], k[1])):
         a, b = old.get(key), new.get(key)

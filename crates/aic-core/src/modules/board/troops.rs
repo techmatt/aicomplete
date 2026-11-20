@@ -1,175 +1,115 @@
-//! The march of adversary troops.
+//! Adversary troops (r141, Matt 2026-11-19): they garrison where they are placed and guard the corrupted sites on
+//! or next to them ([`troop_guarded`]: no liberation there); they destroy only on a Strike icon ([`strike`]), and
+//! move only on a Redeploy icon ([`redeploy`]) or a player's Push or Gather. There is no march.
 
 use crate::module::Hot;
+use crate::modules::plan;
+use crate::op::Step;
 use super::*;
 
-/// The adversary phase's march (019): every adversary troop takes `troop_steps` steps; 274: the troops on one hex
-/// march as one stack, stack by stack in hex-number order (fixed when the march starts). A stack's step: while a
-/// target is on or next to its hex, one troop destroys one (players choose); the rest move together one hex toward
-/// the nearest target (players choose among equally good steps, once for the stack; with no target on the board
-/// they stay). A troop that strikes is used up (`troop_spent`).
-/// 135: standing troops never march (they count as marched), and a Forced
-/// March twist adds its steps to every troop's.
-pub(super) fn march(g: &mut GameState, cx: &mut Cx) -> Res {
-    let w = cx.world;
-    let extra: i64 = adversary::twists(&w, g)
-        .iter()
-        .map(|t| match t {
-            Op::TroopSteps { amount } => *amount,
-            _ => 0,
-        })
-        .sum();
-    let steps = w.int("board.troop_steps") + extra;
-    let troops: Vec<usize> = (0..g.hexes.len())
-        .flat_map(|h| std::iter::repeat_n(h, g.tokens(h, TROOP).max(0) as usize))
-        .collect();
-    let marched: Vec<i64> = (0..g.hexes.len()).map(|h| standing(g, h)).collect();
-    march_troops(g, cx, troops, steps, marched)
+/// Whether a troop stands on or next to hex `h`: a corrupted site there can't be liberated, by the action or by
+/// a card (the guarding rule).
+pub fn troop_guarded(w: &World, g: &GameState, h: usize) -> bool {
+    next_to(w, h, |x| g.tokens(x, TROOP) > 0)
 }
 
-/// 135 (Total War, Spearhead): the `n` troops just landed on hex `h` march
-/// now, `steps` steps each (none: the march's); no other troop moves.
-pub fn march_now(g: &mut GameState, cx: &mut Cx, h: usize, n: i64, steps: Option<i64>) -> Res {
-    let w = cx.world;
-    let steps = steps.unwrap_or_else(|| w.int("board.troop_steps"));
-    let n = n.min(g.tokens(h, TROOP) - standing(g, h)).max(0);
-    let marched: Vec<i64> = (0..g.hexes.len())
-        .map(|x| if x == h { g.tokens(x, TROOP) - n } else { g.tokens(x, TROOP) })
-        .collect();
-    cx.tally(g, "board.troops_marched_now", n);
-    march_troops(g, cx, vec![h; n as usize], steps, marched)
+/// Where a country's new troop garrisons: its lowest-numbered corrupted factory, else its lowest-numbered
+/// corrupted city, else its lowest-numbered city (`hexes`: the country's, or a threat's scope).
+pub fn garrison_spot(w: &World, g: &GameState, hexes: &[usize]) -> Option<usize> {
+    let lowest = |f: &dyn Fn(usize) -> bool| hexes.iter().copied().filter(|&h| f(h)).min_by_key(|&h| (w.map.hexes[h].country, w.map.hexes[h].number));
+    lowest(&|h| g.tokens(h, FACTORY) > 0 && corrupted(g, h))
+        .or_else(|| lowest(&|h| corrupted_city(w, g, h)))
+        .or_else(|| lowest(&|h| is_city(w, h)))
 }
 
-/// The march of `troops` (one entry per troop, its hex), `steps` steps
-/// each; `marched` counts the troops on each hex that don't move (none marches twice).
-fn march_troops(g: &mut GameState, cx: &mut Cx, troops: Vec<usize>, steps: i64, mut marched: Vec<i64>) -> Res {
+/// The hexes holding troops that act (standing ones never do), in country then hex-number order, with how many.
+fn stacks(w: &World, g: &GameState) -> Vec<(usize, i64)> {
+    let mut out: Vec<(usize, i64)> =
+        (0..g.hexes.len()).map(|h| (h, g.tokens(h, TROOP) - standing(g, h))).filter(|&(_, n)| n > 0).collect();
+    out.sort_by_key(|&(h, _)| (w.map.hexes[h].country, w.map.hexes[h].number));
+    out
+}
+
+/// Strike (an icon on an event card, shown a round ahead, or on a research slot): every troop destroys one
+/// player node, or player-owned research station or factory, on or next to its hex (players choose which; a
+/// protection absorbs a hit as it does any destruction). The troop stays: a garrison strikes again on the next
+/// icon. Troops strike hex by hex, country by country; a strike that takes a seat's last node ends it.
+/// Then Vigil: each seat holding it is paid once for each troop on or next to its nodes, at most
+/// `board.vigil_cap` a round.
+pub fn strike(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
-    // 178 (Matt's ruling #18): the seats whose Vigil pays when a troop ends its march next to their node (it
-    // paid when a Wall stopped a troop before r77).
-    let vigil: Vec<usize> = (0..g.seats.len()).filter(|&s| cards::has_vigil(&w, g, s)).collect();
-    // 238 (D94): a seat with no node left loses at the step's end, so the march stops there: no troop moves
-    // nor questions after the last node falls.
     let lost = |g: &GameState| w.hot(Hot::NodeLoss) > 0 && adversary::loss(g).is_some();
-    // 274 (table time): the troops that start the march on one hex march as one stack, one step choice for the
-    // stack. Each step, every troop of the stack with a target on or next to it strikes, one target each (a strike
-    // stays one troop's); the rest step together. Troops already on a hex the stack enters march later on their own.
-    // A stack is (hex, troops, steps left, Wall-stop counted); one that splits (a striker that survives,
-    // `troop_spent` 0) queues its parts.
-    let mut stacks: Vec<(usize, i64)> = Vec::new();
-    for from in troops {
-        match stacks.last_mut() {
-            Some((h, n)) if *h == from => *n += 1,
-            _ => stacks.push((from, 1)),
+    cx.tally(g, "board.strikes", 1);
+    cx.per_round(g, "map.strikes", 1);
+    let all = stacks(&w, g);
+    for &(h, n) in &all {
+        for _ in 0..n.min(g.tokens(h, TROOP) - standing(g, h)) {
+            if lost(g) || g.is_over() {
+                return Ok(());
+            }
+            if !strike_from(g, cx, h)? {
+                break;
+            }
         }
     }
-    let mut queue: std::collections::VecDeque<(usize, i64, i64, bool)> = std::collections::VecDeque::new();
-    for (from, n) in stacks {
-        if lost(g) {
-            cx.tally(g, "board.march_cut_by_loss", 1);
-            return Ok(());
+    if lost(g) || g.is_over() {
+        return Ok(());
+    }
+    let vigil: Vec<usize> = (0..g.seats.len()).filter(|&s| cards::has_vigil(&w, g, s)).collect();
+    for s in vigil {
+        let near: i64 = all
+            .iter()
+            .filter(|&&(h, _)| next_to(&w, h, |x| g.tokens(x, node(s)) > 0))
+            .map(|&(h, n)| n.min(g.tokens(h, TROOP)).max(0))
+            .sum();
+        let (round, paid) = (vigil_round(s), vigil_paid(s));
+        if g.var(&round) != g.round as i64 {
+            cx.set_key(g, &round, g.round as i64);
+            cx.set_key(g, &paid, 0);
         }
-        let n = n.min(g.tokens(from, TROOP) - marched[from]);
-        if n <= 0 {
+        for _ in 0..near {
+            if g.var(&paid) >= w.int("board.vigil_cap") {
+                cx.tally(g, "board.vigil_capped", 1);
+                continue;
+            }
+            cx.add_key(g, &paid, 1);
+            cx.tally(g, "board.vigil", 1);
+            cards::on_strike_near(g, cx, s)?;
+        }
+    }
+    Ok(())
+}
+
+/// Redeploy (an icon on an event card, rare): each troop not on or next to a corrupted city moves onto the nearest
+/// corrupted city, counted as a walk over land (ties: the lower country, then hex number). A troop on a corrupted
+/// factory whose city is free leaves it. A city under the Protector's node is no destination (Wall); with none
+/// to reach, the troop stays. (The first reading tried, "each troop guarding no corrupted site", moved a troop in
+/// 1 of 96 hands-off games: a garrison always starts on a corrupted site.)
+pub fn redeploy(g: &mut GameState, cx: &mut Cx) -> Res {
+    let w = cx.world;
+    cx.tally(g, "board.redeploys", 1);
+    cx.per_round(g, "map.redeploys", 1);
+    let open = vec![false; g.hexes.len()];
+    for (h, n) in stacks(&w, g) {
+        if next_to(&w, h, |x| corrupted_city(&w, g, x)) {
             continue;
         }
-        marched[from] += n; // held while the stack walks, so nothing marches it twice; released below
-        cx.tally(g, "board.stacks_marched", 1);
-        queue.push_back((from, n, steps, false));
-        let mut ended: Vec<usize> = Vec::new();
-        while let Some((mut at, mut size, mut left, mut stopped)) = queue.pop_front() {
-            marched[at] -= size;
-            while left > 0 && size > 0 {
-                left -= 1;
-                if lost(g) {
-                    cx.tally(g, "board.march_cut_by_loss", 1);
-                    return Ok(());
-                }
-                // 075: the measure's: a facility a Wall kept this troop off. 099:
-                // once a troop a march, not every step it spends beside the Wall.
-                if !stopped && next_to(&w, at, |x| walled(&w, g, x) && under_wall(g, x)) {
-                    stopped = true;
-                    cx.tally(g, "board.wall_strikes", size);
-                }
-                // r83 (Matt, 2026-11-11, #44): troops ignore ambassadors: a march neither stops for nor removes one
-                // (175's removal is gone). Troops hit facilities; agents meet ambassadors. An owner's ambassador
-                // still guards a facility from the strike (`destroy_piece`'s protections).
-                let mut stay = 0;
-                while size > 0 && has_troop_target(&w, g, at) {
-                    // 238 (D94): a strike that took a seat's last node ends the march before the next troop asks.
-                    if lost(g) {
-                        cx.tally(g, "board.march_cut_by_loss", 1);
-                        return Ok(());
-                    }
-                    size -= 1;
-                    cx.tally(g, "board.troop_steps", 1);
-                    if !strike_from(g, cx, at)? {
-                        ended.push(at);
-                        continue;
-                    }
-                    if w.int("board.troop_spent") == 0 {
-                        stay += 1;
-                    }
-                    if g.is_over() {
-                        return Ok(());
-                    }
-                }
-                if stay > 0 {
-                    marched[at] += stay;
-                    queue.push_back((at, stay, left, stopped));
-                }
-                if size == 0 {
-                    break;
-                }
-                if lost(g) {
-                    cx.tally(g, "board.march_cut_by_loss", 1);
-                    return Ok(());
-                }
-                let Some(to) = step_toward(g, cx, at)? else {
-                    break;
-                };
-                if w.map.hexes[at].neighbors.iter().any(|&n| walled(&w, g, n)) {
-                    cx.tally(g, "board.wall_steps", size);
-                }
-                cx.add_tokens(g, at, TROOP, -size);
-                cx.add_tokens(g, to, TROOP, size);
-                // 285: the turn panel netted a move to nothing ("bookkeeping only"): the step says where.
-                cx.note(Some(to), || {
-                    format!("{} adversary troop{} march{} from {} to {}", size, if size == 1 { "" } else { "s" }, if size == 1 { "es" } else { "" }, hex_name(&w, at), hex_name(&w, to))
-                });
-                cx.per_round(g, adversary::OPS, size);
-                cx.tally(g, "board.troop_steps", size);
-                cx.tally(g, "board.troop_moves", size);
-                cx.tally(g, "board.stack_steps", 1);
-                at = to;
-                if g.is_over() {
-                    return Ok(());
-                }
-            }
-            ended.extend(std::iter::repeat_n(at, size.max(0) as usize));
-        }
-        // Each troop of the stack that ended its march, as the march ends for the stack.
-        for at in ended {
-            marched[at] += 1;
-            // Vigil: a troop that ends its march (any march, a threat's immediate one too) next to the seat's
-            // node pays it once; one used up striking has no end to its march.
-            // 185 (Matt's ruling): capped, `vigil_cap` (1) troops a round per seat; later ones that round pay nothing.
-            for &s in &vigil {
-                if w.map.hexes[at].neighbors.iter().any(|&x| g.tokens(x, node(s)) > 0) {
-                    let (round, paid) = (vigil_round(s), vigil_paid(s));
-                    if g.var(&round) != g.round as i64 {
-                        cx.set_key(g, &round, g.round as i64);
-                        cx.set_key(g, &paid, 0);
-                    }
-                    if g.var(&paid) >= w.int("board.vigil_cap") {
-                        cx.tally(g, "board.vigil_capped", 1);
-                        continue;
-                    }
-                    cx.add_key(g, &paid, 1);
-                    cx.tally(g, "board.vigil", 1);
-                    cards::on_march_end(g, cx, s)?;
-                }
-            }
-        }
+        let from = land_distances(&w, &open, std::iter::once(h));
+        let to = (0..g.hexes.len())
+            .filter(|&x| corrupted_city(&w, g, x) && !walled(&w, g, x) && from[x].is_some())
+            .min_by_key(|&x| (from[x], w.map.hexes[x].country, w.map.hexes[x].number));
+        let Some(to) = to else {
+            cx.tally(g, "board.redeploy_stayed", n);
+            continue;
+        };
+        cx.add_tokens(g, h, TROOP, -n);
+        cx.add_tokens(g, to, TROOP, n);
+        cx.note(Some(to), || {
+            format!("{n} adversary troop{} redeploy{} from {} to {}", if n == 1 { "" } else { "s" }, if n == 1 { "s" } else { "" }, hex_name(&w, h), hex_name(&w, to))
+        });
+        cx.per_round(g, adversary::OPS, n);
+        cx.tally(g, "board.troops_redeployed", n);
+        cx.per_round(g, "map.troops_redeployed", n);
     }
     Ok(())
 }
@@ -179,8 +119,8 @@ fn march_troops(g: &mut GameState, cx: &mut Cx, troops: Vec<usize>, steps: i64, 
 /// neutral or corrupted ones, and never cities).
 pub(super) fn troop_targets_on(w: &World, g: &GameState, h: usize) -> Vec<String> {
     let mut out = Vec::new();
-    // 075: a Wall stops the strike as well as the walk.
-    if walled(w, g, h) {
+    // 075: a Wall stops the strike; a no-Strike token (a Unity card's) does too.
+    if walled(w, g, h) || plan::prohibited_now(g, Step::Strike, h) {
         return out;
     }
     if cube_owner(g, h).is_some() && !corrupted(g, h) {
@@ -199,62 +139,22 @@ pub(super) fn troop_targets_on(w: &World, g: &GameState, h: usize) -> Vec<String
     out
 }
 
-/// Whether hex `h` holds a player-owned facility, what a Wall there saves.
-fn under_wall(g: &GameState, h: usize) -> bool {
-    cube_owner(g, h).is_some() && !corrupted(g, h) && (g.tokens(h, FACTORY) > 0 || g.tokens(h, STATION) > 0)
-}
-
-/// Whether hex `h` holds anything an adversary troop targets.
-fn is_troop_target(w: &World, g: &GameState, h: usize) -> bool {
-    target_here(w, g, h, g.var(adversary::STAGE) >= w.hot(Hot::TroopNode))
-}
-
-/// [`troop_targets_on`] is not empty, without building it (174: the march read every
-/// hex's targets as strings for every step of every troop); `nodes`: the stage
-/// makes a node a target.
-fn target_here(w: &World, g: &GameState, h: usize, nodes: bool) -> bool {
-    if walled(w, g, h) {
-        return false;
-    }
-    (cube_owner(g, h).is_some() && !corrupted(g, h) && (g.tokens(h, FACTORY) > 0 || g.tokens(h, STATION) > 0))
-        || (nodes && node_owner(g, h).is_some())
-}
-
-/// Whether an adversary troop at `h` has a target on or next to it.
-fn has_troop_target(w: &World, g: &GameState, h: usize) -> bool {
-    next_to(w, h, |x| is_troop_target(w, g, x))
-}
-
 /// Whether seat `s` has Wall: `Content::check` keeps it to innates, so no
 /// card's passives need reading.
 pub fn has_wall(w: &World, seat: usize) -> bool {
     ai::board(w, seat).innate.passives.iter().any(|p| matches!(p, Op::Wall))
 }
 
-/// Whether hex `h` holds node of a seat with Wall (068): adversary troops
-/// can't enter it.
+/// Whether hex `h` holds node of a seat with Wall (068): no troop is placed on it or Redeploys onto it, and no
+/// Strike hits it.
 pub fn walled(w: &World, g: &GameState, h: usize) -> bool {
     node_owner(g, h).is_some_and(|s| has_wall(w, s))
 }
 
-/// The hexes adversary troops can't enter now, as a mask.
-fn wall_mask(w: &World, g: &GameState) -> Vec<bool> {
-    let mut mask = vec![false; g.hexes.len()];
-    for s in (0..g.seats.len()).filter(|&s| has_wall(w, s)) {
-        let k = node(s);
-        for (h, m) in mask.iter_mut().enumerate() {
-            *m |= g.tokens(h, k) > 0;
-        }
-    }
-    mask
-}
-
 /// Walking distance over land from the nearest of `sources`, for every hex
 /// (`None`: no land path). Troops never enter ocean, and some pieces print
-/// ocean between hexes, so straight-line distance would strand a troop. Nor
-/// do they enter a walled hex, though one can be a source: a target behind a
-/// Wall is struck from the hex next to it.
-fn land_distances(w: &World, walls: &[bool], sources: impl Iterator<Item = usize>) -> Vec<Option<u32>> {
+/// ocean between hexes, so straight-line distance would strand a troop.
+fn land_distances(w: &World, closed: &[bool], sources: impl Iterator<Item = usize>) -> Vec<Option<u32>> {
     let mut dist: Vec<Option<u32>> = vec![None; w.map.hexes.len()];
     let mut queue = std::collections::VecDeque::new();
     for h in sources {
@@ -266,7 +166,7 @@ fn land_distances(w: &World, walls: &[bool], sources: impl Iterator<Item = usize
     while let Some(h) = queue.pop_front() {
         let d = dist[h].unwrap_or(0);
         for &n in &w.map.hexes[h].neighbors {
-            if dist[n].is_none() && !is_ocean(w, n) && !walls[n] {
+            if dist[n].is_none() && !is_ocean(w, n) && !closed[n] {
                 dist[n] = Some(d + 1);
                 queue.push_back(n);
             }
@@ -275,51 +175,21 @@ fn land_distances(w: &World, walls: &[bool], sources: impl Iterator<Item = usize
     dist
 }
 
-/// Walking distance from the nearest troop target, for every hex (`None`
-/// with no target reachable over land).
-fn target_gaps(w: &World, g: &GameState) -> Vec<Option<u32>> {
-    let nodes = g.var(adversary::STAGE) >= w.hot(Hot::TroopNode);
-    land_distances(w, &wall_mask(w, g), (0..g.hexes.len()).filter(|&h| target_here(w, g, h, nodes)))
-}
-
-/// The land hexes next to `at` that bring a troop closer to the nearest
-/// target, in hex order, none of them walled (068).
-pub fn troop_steps_from(w: &World, g: &GameState, at: usize) -> Vec<usize> {
-    let gaps = target_gaps(w, g);
-    // A walled hex has no distance of its own unless it holds a target: a troop
-    // standing on one (it was there first, or a factory made it) walks off.
-    let open = w.map.hexes[at].neighbors.iter().filter_map(|&n| gaps[n]).min().map(|d| d + 1);
-    let Some(d) = gaps[at].or(open) else {
-        return Vec::new();
-    };
-    w.map.hexes[at]
-        .neighbors
-        .iter()
-        .copied()
-        .filter(|&n| !is_ocean(w, n) && !walled(w, g, n) && gaps[n].is_some_and(|x| x < d))
-        .collect()
-}
-
-/// One move of the adversary troop at `at` toward the nearest target
-/// (players choose among equally good steps). `None`: nowhere to go.
-fn step_toward(g: &mut GameState, cx: &mut Cx, at: usize) -> Res<Option<usize>> {
-    let w = cx.world;
-    let steps = troop_steps_from(&w, g, at);
-    let opts = steps.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = || format!(
-        "The adversary troops at {} move to which hex?",
-        hex_name(&w, at)
-    );
-    Ok(cx.choose(0, prompt, opts)?.map(|i| steps[i]))
-}
-
 /// One adversary troop at `h` strikes a target on or next to its hex
-/// (players choose): it is destroyed or the hit absorbed, and the troop is
-/// used up (`troop_spent`). Returns false when it had no target.
+/// (players choose): it is destroyed or the hit absorbed. Returns false when it had no target.
 fn strike_from(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
     let w = cx.world;
     let mut targets: Vec<(usize, String)> = Vec::new();
     for x in within(&w, h, 1) {
+        // 261: a blocked strike is counted where a Unity prohibition holds (`prohibit.strike.<where>.fired` and
+        // `.blocked`, as Infiltrate's and Corrupt's are).
+        if let Some(wh) = plan::prohibition_on(g, Step::Strike, x).filter(|_| node_owner(g, x).is_some() || cube_owner(g, x).is_some()) {
+            adversary::prohibit_tally(g, cx, Step::Strike, wh, 1);
+        }
+        // 075: the Wall's measure: a player piece this troop would have struck but for the Protector's node there.
+        if walled(&w, g, x) {
+            cx.tally(g, "board.wall_strikes", 1);
+        }
         for k in troop_targets_on(&w, g, x) {
             targets.push((x, k));
         }
@@ -329,20 +199,19 @@ fn strike_from(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
         .map(|(x, k)| opt(format!("{} at {}", piece_name(k), hex_name(&w, *x))))
         .collect();
     let prompt = || format!(
-        "Adversary troop at {}: which target does it destroy?",
+        "Strike: the adversary troop at {} destroys which target?",
         hex_name(&w, h)
     );
     let Some(i) = cx.choose_loss(0, prompt, opts)? else {
         return Ok(false);
     };
     let (x, k) = targets[i].clone();
-    // 289 (D133): the strike named neither the troop nor that it is spent; written before any protection choice, so
-    // a strike answered in the owner's own frame says what struck.
-    let spent = w.int("board.troop_spent") > 0;
+    // 289 (D133): written before any protection choice, so a strike answered in the owner's own frame says what
+    // struck.
     cx.note(Some(x), || {
         let piece = piece_words(&k);
         let the = if piece.starts_with("Seat ") { "" } else { "the " };
-        format!("The adversary troop at {} strikes {the}{piece} at {}{}", hex_name(&w, h), hex_name(&w, x), if spent { " and is used up" } else { "" })
+        format!("The adversary troop at {} strikes {the}{piece} at {}", hex_name(&w, h), hex_name(&w, x))
     });
     cx.tally(g, "board.troop_strikes", 1);
     cx.per_round(g, "map.troop_strikes", 1);
@@ -354,48 +223,16 @@ fn strike_from(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
     } else {
         cx.tally(g, "board.troop_absorbed", 1);
     }
-    if w.int("board.troop_spent") > 0 {
-        cx.add_tokens(g, h, TROOP, -1);
-        cx.tally(g, "board.troops_spent", 1);
-    }
     Ok(true)
 }
 
-/// Where the adversary troops on hex `h` are heading, for the view: the
-/// nearest target over land (ties: country, then hex number; the players
-/// choose in play) and the march in which they strike (1: the next one).
-pub fn troop_plan(w: &World, g: &GameState, h: usize) -> Option<(usize, i64)> {
-    if w.int("board.troop_steps") <= 0 {
-        return None;
-    }
-    // The walk from the troop's side: a walled target ends a walk, so it is
-    // measured as one step past the nearest open hex next to it.
-    let walls = wall_mask(w, g);
-    let from = land_distances(w, &walls, std::iter::once(h));
-    let reach = |x: usize| -> Option<u32> {
-        if !walls[x] || x == h {
-            from[x]
-        } else {
-            w.map.hexes[x].neighbors.iter().filter_map(|&n| from[n]).min().map(|d| d + 1)
-        }
-    };
-    let target = (0..g.hexes.len())
-        .filter(|&x| is_troop_target(w, g, x) && reach(x).is_some())
-        .min_by_key(|&x| (reach(x), w.map.hexes[x].country, w.map.hexes[x].number))?;
-    // 148 (D59): the next march's Forced March twist, from the card current then:
-    // this round's (`adversary::twists`, as `round_pile` reads it) until this
-    // round's march is past, then next round's, face up in `NEXT` from the reveal.
-    let marched = g.phase_index("board.march").is_some_and(|i| g.phase > i);
-    let twists = if marched { adversary::next_twists(w, g) } else { adversary::twists(w, g) };
-    let extra: i64 = twists
-        .iter()
-        .map(|t| match t {
-            Op::TroopSteps { amount } => *amount,
-            _ => 0,
-        })
-        .sum();
-    let steps = (w.int("board.troop_steps") + extra).max(1);
-    // Moves until the target is on or next to the troop, then the strike (r83, #44: ambassadors cost it no step).
-    let moves = (reach(target).unwrap_or(0) as i64 - 1).max(0);
-    Some((target, (moves + steps) / steps))
+/// For the view: the hexes the troops on `h` would strike on the next Strike icon (every target on or next to
+/// it; the players choose one a troop).
+pub fn strike_targets(w: &World, g: &GameState, h: usize) -> Vec<usize> {
+    within(w, h, 1).into_iter().filter(|&x| !troop_targets_on(w, g, x).is_empty()).collect()
+}
+
+/// For the view: the corrupted sites the troops on `h` guard (on or next to it).
+pub fn guarded_sites(w: &World, g: &GameState, h: usize) -> Vec<usize> {
+    within(w, h, 1).into_iter().filter(|&x| corrupted(g, x) && site_kind(w, g, x).is_some()).collect()
 }

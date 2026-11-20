@@ -26,11 +26,11 @@
    "cyber"
   ],
   "cost": 14,
-  "text": "Each country: 1 cube onto the adversary's research track.",
+  "text": "Each country: 2 cubes onto the adversary's research track.",
   "effects": [
    {
     "op": "adversary_research",
-    "amount": 1,
+    "amount": 2,
     "each_country": true
    }
   ],
@@ -196,12 +196,12 @@
    "cyber"
   ],
   "cost": 11,
-  "text": "Each country: its lowest-numbered botnet becomes 3 Troops on its hex.",
+  "text": "Each country: its lowest-numbered botnet becomes 2 Troops, which garrison its lowest-numbered corrupted factory (with none, its lowest-numbered corrupted city; with none, its lowest-numbered city).",
   "effects": [
    {
     "op": "botnet_troops",
     "count": 1,
-    "troops": 3
+    "troops": 2
    }
   ],
   "harms": [
@@ -251,7 +251,7 @@
    "cyber"
   ],
   "cost": 21,
-  "text": "Each country: create 2 Agents on its lowest-numbered research station not yet the adversary's. Each country: 1 cube onto the adversary's research track.",
+  "text": "Each country: create 2 Agents on its lowest-numbered research station not yet the adversary's. Each country: 2 cubes onto the adversary's research track.",
   "effects": [
    {
     "op": "create",
@@ -261,7 +261,7 @@
    },
    {
     "op": "adversary_research",
-    "amount": 1,
+    "amount": 2,
     "each_country": true
    }
   ],
@@ -454,7 +454,7 @@
    "cyber"
   ],
   "cost": 24,
-  "text": "Each country: its neutral research station with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 1 cube goes onto the adversary's research track.",
+  "text": "Each country: its neutral research station with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track.",
   "effects": [
    {
     "op": "take_site",
@@ -466,7 +466,7 @@
    },
    {
     "op": "adversary_research",
-    "amount": 1,
+    "amount": 2,
     "each_country": true
    }
   ],
@@ -483,7 +483,7 @@
    "industry"
   ],
   "cost": 19,
-  "text": "Each country: the adversary builds a factory on its free industrial zone next to an Agent, else its lowest-numbered (none free: 2 Agents on one of its factories). Every adversary factory makes 2 Troops on its hex (a player Ambassador on it stops them).",
+  "text": "Each country: the adversary builds a factory on its free industrial zone next to an Agent, else its lowest-numbered (none free: 2 Agents on one of its factories). Every adversary factory makes 1 Troop on its hex (a player Ambassador on it stops it).",
   "effects": [
    {
     "op": "adversary_factory",
@@ -493,7 +493,7 @@
    },
    {
     "op": "factory_troops",
-    "count": 2
+    "count": 1
    }
   ],
   "harms": [

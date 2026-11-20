@@ -10,6 +10,7 @@ the findings are in the write-up.
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 294 overhaul 3: troops garrison, guard and Strike on an icon; the win is no corrupted city | 141 | [294_overhaul_3_troops_and_winning](results/294_overhaul_3_troops_and_winning/README.md) |
 | 293 overhaul 2: the adversary spine (escalate, one output a site, the research row) | 140 | [293_overhaul_2_adversary_spine](results/293_overhaul_2_adversary_spine/README.md) |
 | 292 overhaul 1, the cuts: war, hosting, Envoy and threat rejection out | r139 | [292_overhaul_1_cuts/README.md](results/292_overhaul_1_cuts/README.md) |
 | 289 Player-view layout pass: draft and keep above the fold, narrated war and strikes, short figures | 138 | [289_viewer_pass](results/289_viewer_pass/README.md) |

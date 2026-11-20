@@ -128,11 +128,10 @@ fn a_config_change_changes_its_block() {
     let top = base.tunables().into_iter().find(|t| t.key == "adversary.stage2_removed").expect("a tunable").max;
     let stage2_removed = format!("adversary.stage2_removed={}", if s2 < top { s2 + 1 } else { s2 - 1 });
     type Block = fn(&Rules) -> String;
-    let blocks: [(&str, Block); 8] = [
+    let blocks: [(&str, Block); 7] = [
         (&stage2_removed, difficulty_block),
         ("board.remove_count=2", standard_actions_block),
         ("alignment.botnet=2", sway_sources_block),
-        ("alignment.purge_at=1,3,5", purge_ease_block),
         ("cards.keep_tier2=5", new_players_block),
         ("adversary.corrupt_at=7", game_end_block),
         ("adversary.stage_cards=3,5,2", round_cap_block),

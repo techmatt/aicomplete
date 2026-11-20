@@ -304,12 +304,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "In the next adversary turn, no Troop is mustered on a site on or next to an Ambassador or a Node: it stays in the supply.",
-    "effects": [{"op": "prohibit", "step": "muster", "where": "by_player"}]},
-   {"text": "In the next adversary turn, no Troop is mustered on a site within 2 of an Ambassador or a Node: it stays in the supply.",
-    "effects": [{"op": "prohibit", "step": "muster", "where": "near_player"}]},
-   {"text": "In the next adversary turn, no Troop is mustered on a site within 2 of an Ambassador or a Node: it stays in the supply.",
-    "effects": [{"op": "prohibit", "step": "muster", "where": "near_player"}]}
+   {"text": "In the next adversary turn, no Troop strikes a hex on or next to an Ambassador or a Node.",
+    "effects": [{"op": "prohibit", "step": "strike", "where": "by_player"}]},
+   {"text": "In the next adversary turn, no Troop strikes a hex within 2 of an Ambassador or a Node.",
+    "effects": [{"op": "prohibit", "step": "strike", "where": "near_player"}]},
+   {"text": "In the next adversary turn, no Troop strikes a hex within 2 of an Ambassador or a Node.",
+    "effects": [{"op": "prohibit", "step": "strike", "where": "near_player"}]}
   ]
  },
  {
@@ -399,8 +399,8 @@
     "effects": [{"op": "create", "count": 2, "at": "city", "if": "ambassadors"}]},
    {"text": "Each country: create 3 Agents on the lowest-numbered city holding Agents.",
     "effects": [{"op": "create", "count": 3, "at": "city", "if": "ambassadors"}]},
-   {"text": "Each country: create 4 Agents on the lowest-numbered city holding Agents.",
-    "effects": [{"op": "create", "count": 4, "at": "city", "if": "ambassadors"}]}
+   {"text": "Each country: create 2 Agents on the lowest-numbered city holding Agents; then 1 Troop garrisons its lowest-numbered corrupted factory (with none, its lowest-numbered corrupted city; with none, its lowest-numbered city).",
+    "effects": [{"op": "create", "count": 2, "at": "city", "if": "ambassadors"}, {"op": "troops", "count": 1, "each_country": true}]}
   ]
  }
 ]

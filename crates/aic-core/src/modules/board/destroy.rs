@@ -14,7 +14,7 @@ pub enum Cause {
 impl Cause {
     pub(super) fn name(self) -> &'static str {
         match self {
-            Cause::Troop => "march",
+            Cause::Troop => "strike",
             Cause::Effect(n) => n,
         }
     }

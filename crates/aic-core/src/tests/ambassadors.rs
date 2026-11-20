@@ -1,4 +1,5 @@
 use super::*;
+use crate::content::Op;
 use crate::modules::common::{is_city, is_ocean};
 use crate::modules::{adversary, board, cards, economy};
 
@@ -241,7 +242,7 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
 /// owner is asked whether to spend it, and may let the piece go instead.
 #[test]
 fn a_player_ambassador_absorbs_a_destruction_when_its_owner_spends_it() {
-    let (rules, mut g) = lab(&["board.march"]);
+    let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let at = m.numbered(0, piece(0).factories[0]);
     for h in std::iter::once(at).chain(m.hexes[at].neighbors.iter().copied()) {
@@ -256,18 +257,17 @@ fn a_player_ambassador_absorbs_a_destruction_when_its_owner_spends_it() {
     let discord = g.var("alignment.discord");
     // Declined, the strike destroys the factory and the ambassador stays.
     let mut declined = g.clone();
-    run(&rules, &mut declined);
-    let p = declined.pending.as_ref().expect("the owner is asked which protection to spend");
-    assert_eq!(p.ask.seat, 0);
-    assert_eq!(p.ask.options.iter().map(|o| o.option.as_str()).collect::<Vec<_>>(), ["spend your ambassador there", board::LET_IT_GO]);
-    answer_with(&rules, &mut declined, board::LET_IT_GO);
-    answer_all(&rules, &mut declined);
+    // The owner is asked which protection to spend.
+    let asked = |a: &crate::state::Ask, take: &str| {
+        assert_eq!(a.seat, 0);
+        assert_eq!(a.options.iter().map(|o| o.option.as_str()).collect::<Vec<_>>(), ["spend your ambassador there", board::LET_IT_GO]);
+        a.options.iter().position(|o| o.option == take).unwrap()
+    };
+    team_ops(&rules, &mut declined, &[Op::Strike], |a| asked(a, board::LET_IT_GO));
     assert_eq!((declined.tokens(at, FACTORY), declined.tokens(at, ambassador(0))), (0, 1));
-    // Spent, the ambassador absorbs the strike; the troop that struck is used up.
-    run(&rules, &mut g);
-    answer_with(&rules, &mut g, "spend your ambassador there");
-    answer_all(&rules, &mut g);
-    assert_eq!(g.tokens(beside, TROOP), 0);
+    // Spent, the ambassador absorbs the strike; the troop that struck stays (r141).
+    team_ops(&rules, &mut g, &[Op::Strike], |a| asked(a, "spend your ambassador there"));
+    assert_eq!(g.tokens(beside, TROOP), 1);
     assert_eq!(
         (
             g.tokens(at, FACTORY),
@@ -277,10 +277,9 @@ fn a_player_ambassador_absorbs_a_destruction_when_its_owner_spends_it() {
         (1, 0, 0)
     );
     assert_eq!(g.var("alignment.discord"), discord);
-    // A second troop destroys it; a troop strike sways no Discord.
-    put(&mut g, at, TROOP, 1);
-    run(&rules, &mut g);
-    assert_eq!((g.tokens(at, FACTORY), g.tokens(at, TROOP)), (0, 0));
+    // The next Strike destroys it (the same troop: it is not used up); a troop strike sways no Discord.
+    strike(&rules, &mut g);
+    assert_eq!((g.tokens(at, FACTORY), g.tokens(beside, TROOP)), (0, 1));
     assert_eq!(g.var("alignment.discord"), discord);
 }
 
@@ -288,14 +287,14 @@ fn a_player_ambassador_absorbs_a_destruction_when_its_owner_spends_it() {
 /// neither stops for nor removes them, and strikes the facility (only the owner's own ambassador guards it).
 #[test]
 fn a_troop_ignores_ambassadors_and_strikes_the_facility() {
-    let (rules, mut g) = lab(&["board.march"]);
+    let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let at = m.numbered(0, piece(0).factories[0]);
     put(&mut g, at, FACTORY, 1);
     put(&mut g, at, cube(0), 1);
     put(&mut g, at, TROOP, 1);
     put(&mut g, at, ambassador(1), 2);
-    run_answered(&rules, &mut g);
+    strike(&rules, &mut g);
     assert_eq!((g.tokens(at, ambassador(1)), g.tokens(at, FACTORY)), (2, 0));
     assert!(!g.stats.counters.contains_key("board.troop_removed_ambassador"));
 }

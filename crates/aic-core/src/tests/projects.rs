@@ -313,7 +313,7 @@ fn the_board_verbs_take_the_targets_the_board_shows() {
     run_ops(&rules, &mut g, &[Op::TakeSite { site: Facility::Factory }]);
     assert_eq!(g.tokens(f0, cube(0)), 0, "turned neutral");
     assert!(!corrupted(&g, f0));
-    // Every adversary factory musters a troop; a player ambassador on one stops it.
+    // Every adversary factory makes a troop on its own hex; a player ambassador on one stops it.
     put(&mut g, f0, ADV_CUBE, 1);
     put(&mut g, f0, ambassador(0), 1);
     let troops = total(&g, TROOP);
@@ -343,11 +343,15 @@ fn the_board_verbs_take_the_targets_the_board_shows() {
     set_var(&mut g, crate::modules::board::project_key(1, 1), 1);
     run_ops(&rules, &mut g, &[Op::StripCubes { count: 2 }]);
     { use crate::modules::board::project_key as pk; assert_eq!((g.var(&pk(1, 0)), g.var(&pk(1, 1))), (1, 1)); }
-    // A botnet becomes troops; a botnet spreads to a site next to one.
+    // A botnet becomes troops, which garrison as any troop does (r141: not on the botnet's hex); a botnet spreads
+    // to a site next to one.
     let st = m.numbered(1, piece(1).neutral_station);
     put(&mut g, st, BOTNET, 1);
+    let spot = crate::modules::board::garrison_spot(&rules.world(), &g, &m.countries[1].hexes).expect("a garrison in country 1");
+    assert_ne!(spot, st);
+    let there = g.tokens(spot, TROOP);
     run_ops(&rules, &mut g, &[Op::BotnetTroops { count: 1, troops: 2 }]);
-    assert_eq!((g.tokens(st, BOTNET), g.tokens(st, TROOP)), (0, 2));
+    assert_eq!((g.tokens(st, BOTNET), g.tokens(st, TROOP), g.tokens(spot, TROOP)), (0, 0, there + 2));
     put(&mut g, st, STATION, 1);
     let botnets = total(&g, BOTNET);
     run_ops(&rules, &mut g, &[Op::SpreadBotnets { count: 1 }]);

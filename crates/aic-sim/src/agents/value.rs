@@ -863,7 +863,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             Worth::now(row("discard_hand") * t.rate("hand_discards") * (r(*resource) * *amount as f64 - t.rate("dead_card")))
         }
         // 135: the new adversary model's threat and team ops (no player card prints them).
-        Op::TroopSteps { .. } => Worth::now(row("troop_steps")),
+        Op::Redeploy => Worth::now(row("redeploy")),
         Op::StandingTroopsBonus { .. } => Worth::now(row("standing_troops_bonus")),
         Op::ThreatCompute { .. } => Worth::now(row("threat_compute")),
         // 233: `where` each_country builds in every country (War Plants; `team_ops_price_per_country`).
@@ -881,7 +881,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::LoseOr { options } => Worth::now(
             options.iter().map(|o| op_worth(t, o).now).fold(f64::NEG_INFINITY, f64::max).max(-1e9) * row("lose_or"),
         ),
-        Op::MarchNow { .. } => Worth::now(row("march_now")),
+        Op::Strike => Worth::now(row("strike")),
         Op::OccupyFactory { .. } => Worth::now(row("occupy_factory")),
         Op::PlaceBotnet { count } => Worth::now(row("place_botnet") * *count as f64),
         Op::CorruptFactory => Worth::now(row("corrupt_factory")),
@@ -914,7 +914,7 @@ fn fires(t: &Table, on: &Event) -> f64 {
         Event::RemoveCompute => t.rate("fires_compute"),
         Event::RemoveAmbassadors => t.rate("fires_ambassadors"),
         Event::PlaceTokens { .. } => t.rate("fires_tokens"),
-        Event::MarchEndsNear => t.rate("fires_wall"),
+        Event::StrikeNear => t.rate("fires_wall"),
     }
 }
 

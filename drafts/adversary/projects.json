@@ -35,11 +35,11 @@
     "cyber"
    ],
    "cost": 14,
-   "text": "Each country: 1 cube onto the adversary's research track.",
+   "text": "Each country: 2 cubes onto the adversary's research track.",
    "effects": [
     {
      "op": "adversary_research",
-     "amount": 1,
+     "amount": 2,
      "each_country": true,
      "why": "259 (Matt, 2026-11-16: some projects feed the research track; staging default 6: Backdoor Research keeps its line and adds this)"
     }
@@ -52,7 +52,8 @@
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): 2 to 4 cubes",
     "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)",
-    "293 (Matt, 2026-11-19): \"4 adversary cubes onto each open megaproject. Each country: 2 cubes onto the adversary's research track.\" became \"Each country: 1 cube onto the adversary's research track.\" (adversary cubes go only onto its track; at K 1 a cube a country is one slot)"
+    "293 (Matt, 2026-11-19): \"4 adversary cubes onto each open megaproject. Each country: 2 cubes onto the adversary's research track.\" became \"Each country: 1 cube onto the adversary's research track.\" (adversary cubes go only onto its track; at K 1 a cube a country is one slot)",
+    "294 (Matt, 2026-11-19): \"1 cube onto the adversary's research track\" became \"2 cubes onto the adversary's research track\" (K 2 a country: a cube is half a K-1 cube)"
    ],
    "reuses": null
   },
@@ -270,12 +271,12 @@
     "cyber"
    ],
    "cost": 11,
-   "text": "Each country: its lowest-numbered botnet becomes 3 Troops on its hex.",
+   "text": "Each country: its lowest-numbered botnet becomes 2 Troops, which garrison its lowest-numbered corrupted factory (with none, its lowest-numbered corrupted city; with none, its lowest-numbered city).",
    "effects": [
     {
      "op": "botnet_troops",
      "count": 1,
-     "troops": 3
+     "troops": 2
     }
    ],
    "harms": [
@@ -285,7 +286,8 @@
    "check": "231: 1 consequence(s) (small; a third only at cost 18 and up), every board, one-shot. When it matters: any round with botnets. Who plays it: automatic for the adversary (compute step); players answer: take botnets down.",
    "flags": [
     "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): 2 to 3 troops",
-    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)"
+    "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)",
+    "294 (Matt, 2026-11-19): \"Each country: its lowest-numbered botnet becomes 3 Troops on its hex.\" became \"Each country: its lowest-numbered botnet becomes 2 Troops, which garrison its lowest-numbered corrupted factory (with none, its lowest-numbered corrupted city; with none, its lowest-numbered city).\" (troops garrison a corrupted factory, else a city; 3 -> 2 since a troop now stays after it strikes and guards its site)"
    ],
    "reuses": null
   },
@@ -346,7 +348,7 @@
     "cyber"
    ],
    "cost": 21,
-   "text": "Each country: create 2 Agents on its lowest-numbered research station not yet the adversary's. Each country: 1 cube onto the adversary's research track.",
+   "text": "Each country: create 2 Agents on its lowest-numbered research station not yet the adversary's. Each country: 2 cubes onto the adversary's research track.",
    "effects": [
     {
      "op": "create",
@@ -356,7 +358,7 @@
     },
     {
      "op": "adversary_research",
-     "amount": 1,
+     "amount": 2,
      "each_country": true,
      "why": "259 (Matt, 2026-11-16): some projects feed the research track; a lab seized is research taken"
     }
@@ -373,7 +375,8 @@
     "233: cost +2 (231's d2 resolved 7.0 small against 5-6; +1 still resolved 6.5 on f233)",
     "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)",
     "293 (Matt, 2026-11-19): \"Surge 2: each country, 2 Agents onto its research station not yet the adversary's holding the most Agents.\" became \"Each country: create 2 Agents on its lowest-numbered research station not yet the adversary's.\" (Surge's most-agents pick is gone; its agents and type stay)",
-    "293 (Matt, 2026-11-19): its research line is 1 cube a country (was 2): the track's K went from 5 to 1 a country, so a cube is worth about what 2 were"
+    "293 (Matt, 2026-11-19): its research line is 1 cube a country (was 2): the track's K went from 5 to 1 a country, so a cube is worth about what 2 were",
+    "294 (Matt, 2026-11-19): \"1 cube onto the adversary's research track\" became \"2 cubes onto the adversary's research track\" (K 2 a country: a cube is half a K-1 cube)"
    ],
    "reuses": null
   },
@@ -622,7 +625,7 @@
     "cyber"
    ],
    "cost": 24,
-   "text": "Each country: its neutral research station with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 1 cube goes onto the adversary's research track.",
+   "text": "Each country: its neutral research station with the most Agents on its hex (ties: lowest-numbered) is corrupted; with none neutral, its player-owned station picked the same way turns neutral. Then each country: 1 Fallout lands next to its lowest-numbered corrupted research station, and 2 cubes go onto the adversary's research track.",
    "effects": [
     {
      "op": "take_site",
@@ -634,7 +637,7 @@
     },
     {
      "op": "adversary_research",
-     "amount": 1,
+     "amount": 2,
      "each_country": true,
      "why": "259 (Matt, 2026-11-16): some projects feed the research track; the third consequence its cost (18+) allows"
     }
@@ -648,7 +651,8 @@
    "check": "231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: claim stations; ambassadors on them.",
    "flags": [
     "231: kept, repriced per board",
-    "293 (Matt, 2026-11-19): its research line is 1 cube a country (was 2): the track's K went from 5 to 1 a country, so a cube is worth about what 2 were"
+    "293 (Matt, 2026-11-19): its research line is 1 cube a country (was 2): the track's K went from 5 to 1 a country, so a cube is worth about what 2 were",
+    "294 (Matt, 2026-11-19): \"1 cube goes onto the adversary's research track\" became \"2 cubes go onto the adversary's research track\" (K 2 a country: a cube is half a K-1 cube)"
    ],
    "reuses": null
   },
@@ -659,7 +663,7 @@
     "industry"
    ],
    "cost": 19,
-   "text": "Each country: the adversary builds a factory on its free industrial zone next to an Agent, else its lowest-numbered (none free: 2 Agents on one of its factories). Every adversary factory makes 2 Troops on its hex (a player Ambassador on it stops them).",
+   "text": "Each country: the adversary builds a factory on its free industrial zone next to an Agent, else its lowest-numbered (none free: 2 Agents on one of its factories). Every adversary factory makes 1 Troop on its hex (a player Ambassador on it stops it).",
    "effects": [
     {
      "op": "adversary_factory",
@@ -669,7 +673,7 @@
     },
     {
      "op": "factory_troops",
-     "count": 2
+     "count": 1
     }
    ],
    "harms": [
@@ -679,7 +683,8 @@
    "value": "give 19 compute a board (38 at 2 countries); get 1.39 a compute (a ratio: 273 moved no ratio).",
    "check": "231: 2 consequence(s) (big; a third only at cost 18 and up), every board, one-shot. When it matters: any round. Who plays it: automatic for the adversary (compute step); players answer: ambassadors on adversary factories; liberate them.",
    "flags": [
-    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): every country, not the one with most free zones (Shadow Factories folded in)"
+    "231: reworked (Matt, 2026-11-14: fewer, bigger, one-shot, every board): every country, not the one with most free zones (Shadow Factories folded in)",
+    "294 (Matt, 2026-11-19): \"Every adversary factory makes 2 Troops on its hex (a player Ambassador on it stops them).\" became \"Every adversary factory makes 1 Troop on its hex (a player Ambassador on it stops it).\" (2 -> 1: a troop now stays after it strikes and guards its factory and the city beside it)"
    ],
    "reuses": null
   },

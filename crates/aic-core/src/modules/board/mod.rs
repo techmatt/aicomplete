@@ -35,9 +35,8 @@ pub use troops::*;
 use view::*;
 
 // 182: `run`'s auto phases by name, indices into the variant's `phases` (0 is `act`); a test checks them.
-const MARCH: usize = 1;
-const PRODUCE: usize = 2;
-const CLEANUP: usize = 3;
+const PRODUCE: usize = 1;
+const CLEANUP: usize = 2;
 
 /// 221: the view hides every mark a round's end clears ([`ROUND_MARKS`] within [`MARKS`]).
 #[cfg(test)]
@@ -52,14 +51,14 @@ fn round_marks_are_hidden_marks() {
 #[test]
 fn phase_indices_match_phases() {
     let phases = DEF.variants[0].phases;
-    for (i, name) in [(MARCH, "march"), (PRODUCE, "produce"), (CLEANUP, "cleanup")] {
+    for (i, name) in [(PRODUCE, "produce"), (CLEANUP, "cleanup")] {
         assert_eq!(phases[i].name, name);
     }
 }
 
 pub static DEF: ModuleDef = ModuleDef {
     id: "board",
-    summary: "Country pieces, cities and facilities; production, the march, ambassadors, standard actions",
+    summary: "Country pieces, cities and facilities; production, troops (garrison, Strike, Redeploy), ambassadors, standard actions",
     requires: &["adversary", "ai", "alignment"],
     variants: &[VariantDef {
         name: "corps",
@@ -77,10 +76,8 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("claim_station", 1, 10, "the Liberate action: ambassadors that liberate an adversary research station (262 cut the Claim action that also paid it; the name stays)"),
             ParamSpec::int("claim_factory", 1, 10, "the Liberate action: ambassadors that liberate an adversary factory (262 cut the Claim action that also paid it; the name stays)"),
             ParamSpec::int("start_nodes", 1, 3, "nodes each player starts with: its start hex, then the lowest-numbered free land hexes next to it (the extras off no track)"),
-            ParamSpec::int("troop_spent", 0, 1, "1: an adversary troop that strikes a target is used up"),
-            ParamSpec::int("troop_steps", 0, 5, "steps each adversary troop takes in the march: destroy a target on or next to it, else move 1 hex toward the nearest"),
             ParamSpec::int("troop_node", 0, 4, "adversary troops strike nodes from this stage of adversary card on (0: always, 4: never)"),
-            ParamSpec::int("vigil_cap", 1, 10, "troops a round whose march ending next to a seat's node pays its Vigil (later ones that round pay nothing)"),
+            ParamSpec::int("vigil_cap", 1, 10, "troops a round on or next to a seat's node at a Strike that pay its Vigil (later ones that round pay nothing)"),
             ParamSpec::int("station_chips", 0, 20, "standard action: chips to build a research station"),
             ParamSpec::int("station_ambassadors", 0, 5, "standard action: ambassadors a research station also uses up (candidate; 0: none)"),
             ParamSpec::int("troop_credits", 0, 50, "standard action Remove a troop: credits for 1 troop in reach (0: no such action)"),
@@ -104,7 +101,6 @@ pub static DEF: ModuleDef = ModuleDef {
         ],
         phases: &[
             PhaseSpec::decision("act", "standard actions and projects: station, remove, lift Fallout, dispatch (from the round's Dispatches), ambassador, liberate, sell, take down a botnet, remove a troop; completed megaprojects' converters"),
-            PhaseSpec::auto("march", "each adversary stack takes its steps: while a target is on or next to its hex, one troop strikes it (used up); else the stack moves one hex toward the nearest (troops ignore ambassadors)"),
             PhaseSpec::auto("produce", "the income step (economy's upkeep follows at once): players' factories make chips, cities energy for every player with a node on or next to them (an agent on one stays and darkens it), players' and neutral research stations cubes (an opposing piece blocks one); full megaprojects complete. The adversary's sites make their outputs in its Income beat"),
             PhaseSpec::auto("cleanup", "count the country flags down"),
         ],
@@ -148,7 +144,7 @@ pub fn hex_flagged(w: &World, g: &GameState, f: RoundFlag, h: usize) -> bool {
     g.var(&hex_flag(f, h)) > 0 || flagged(g, f, w.map.hexes[h].country as usize)
 }
 
-/// Standing troops on hex `h` (135): they never march or strike. A removal
+/// Standing troops on hex `h` (135): they never strike or Redeploy. A removal
 /// takes them down with the hex's troops (cleanup trues the count).
 pub fn stand_key(h: usize) -> KeyBuf {
     KeyBuf::new(STAND).num(h)
@@ -158,16 +154,13 @@ const STAND: &str = "board.stand.";
 const OCCUPIED: &str = "board.occupied.";
 const NEW_FACTORY: &str = "board.new_factory.";
 const DESTROYED_AT: &str = "board.destroyed_at.";
-const LANDED_AT: &str = "board.landed_at.";
-const LANDED_N: &str = "board.landed_n.";
 
 /// The marks a round's end clears outright ([`expire_marks`]); each is in [`MARKS`] too (221: a test checks).
-const ROUND_MARKS: [&str; 6] = [NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED, STD_ONCE];
+const ROUND_MARKS: [&str; 4] = [NEW_FACTORY, DESTROYED_AT, MOVED, STD_ONCE];
 
 /// 135: every per-round mark [`expire_marks`] counts down, trues or clears
 /// (the view lists them as bookkeeping).
-pub(super) const MARKS: [&str; 9] =
-    [HEX_FLAGS, STAND, OCCUPIED, NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED, STD_ONCE];
+pub(super) const MARKS: [&str; 7] = [HEX_FLAGS, STAND, OCCUPIED, NEW_FACTORY, DESTROYED_AT, MOVED, STD_ONCE];
 
 /// How many of hex `h`'s adversary troops stand.
 pub fn standing(g: &GameState, h: usize) -> i64 {
@@ -199,17 +192,6 @@ pub fn new_factory_key(threat: &str) -> KeyBuf {
 /// (135): "on an empty zone ... instead" reads the zone as it was.
 pub fn destroyed_key(threat: &str) -> KeyBuf {
     KeyBuf::new(DESTROYED_AT).text(threat)
-}
-
-/// The hex (plus 1) a threat's troops just landed on, and how many (135):
-/// what "they march at once" moves.
-pub fn landed_key(threat: &str) -> KeyBuf {
-    KeyBuf::new(LANDED_AT).text(threat)
-}
-
-/// How many troops a threat just landed (see [`landed_key`]).
-pub fn landed_count_key(threat: &str) -> KeyBuf {
-    KeyBuf::new(LANDED_N).text(threat)
 }
 
 /// Var keys under `prefix` with their values, in key order.
@@ -437,7 +419,6 @@ impl Module for Board {
 
     fn run(&self, phase: usize, g: &mut GameState, cx: &mut Cx) -> Res {
         match phase {
-            MARCH => march(g, cx)?,
             PRODUCE => {
                 // 189: what kept each card in hand this round (stats only).
                 let w = cx.world;
@@ -569,13 +550,18 @@ fn cleanup(g: &mut GameState, cx: &mut Cx) {
         }
     }
     expire_marks(g, cx);
-    // Rounds that end with only botnets between the players and the
-    // purge (019: botnets are hard to remove).
-    let level = alignment::bar_level(&w, g);
     let botnets = adversary::botnet_count(g, None);
     cx.peak(g, "adversary.botnets_peak", botnets);
-    if level.counts_botnets() && botnets > 0 && adversary::purge_count(&w, g, level) == botnets {
-        cx.tally(g, "alignment.purge_blocked_by_botnets", 1);
+    // r141, the guarding rule's measure: corrupted cities a troop guards as the round ends, and those of them a
+    // Liberate would otherwise take (no agent on them, in some seat's reach).
+    let troops: i64 = (0..g.hexes.len()).map(|h| g.tokens(h, TROOP)).sum();
+    cx.peak(g, "adversary.troops_peak", troops);
+    let guarded: Vec<usize> = (0..g.hexes.len()).filter(|&h| corrupted_city(&w, g, h) && troop_guarded(&w, g, h)).collect();
+    for h in guarded {
+        cx.tally(g, "board.guarded_city_rounds", 1);
+        if g.tokens(h, ADV_AMBASSADOR) == 0 && (0..g.seats.len()).any(|s| in_reach(&w, g, s, h)) {
+            cx.tally(g, "board.guard_blocked_rounds", 1);
+        }
     }
     // Factories per side, as the game ends (the last round's level).
     let mut sides = [0i64; 3];

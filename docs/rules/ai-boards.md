@@ -17,9 +17,9 @@ unblocked city with its node on or next to it), its Growth's steps and Sprawl sp
 finished cards into chips or a building played free (Scrap: Industry), energy or antimatter (Overcharge: Power), and
 chips into troops removed (Fortify).
 
-The **Protector**'s special rule is Wall: no adversary troop is ever placed on a hex with its node, nor enters it or
-strikes into it, so no troop strikes its node or a facility under it (threats and corruption still can). The first two troops each round that end their march next to its node pay it 1 insight
-each (Vigil). Its Growth places 2 nodes for 1 energy (Outpost), 1 with an ambassador and 2 credits for 1 energy (Accord), or 1 and a credit free (Levy);
+The **Protector**'s special rule is Wall: no adversary troop is ever placed on a hex with its node, Redeploys onto it or
+strikes it, so no troop strikes its node or a facility under it (threats and corruption still can). When troops Strike, each troop on or next to its nodes pays it 1 insight, at most 2 a round
+(Vigil). Its Growth places 2 nodes for 1 energy (Outpost), 1 with an ambassador and 2 credits for 1 energy (Accord), or 1 and a credit free (Levy);
 it pushes troops and agents and hardens with energy (Patrol), and its board prints 2 energy a round. It earns 9 credits
 a round, so starts with 31. Each credit space of its economy track adds 1 or 2 credits, the
 first one 1 energy too. Late in the game, a sacrificed Security card removes troops, two of them agents too (Interdict).
@@ -131,7 +131,7 @@ print it ([economy.md](economy.md)). Patience banks all the Researcher's unspent
 insight, gifts too; Open Science's goes only to other players. Followers → ambassadors → alignment → city
 energy → node is capped by building count and the Followers each ambassador costs. Remove agents places nothing,
 capped by the supply. **Dispatches** have no loop: a number a round, used up, gaining nothing held. Wall has no loop,
-but it takes troops away as a harm where the Protector stands; `docs/harms.md`'s checks count sources, so they hold.
+but it takes troops' strikes away as a harm where the Protector stands; `docs/harms.md`'s checks count sources, so they hold.
 
 `ai.boards` (`[0, 1, 2]`: Builder, Protector, Researcher) gives each seat its board, repeating for more seats (4
 players repeat the Builder). A board has no unique cards or starting building: content printing `cards` or `start` on
@@ -141,6 +141,6 @@ one is refused.
 | Board | Special rule |
 |---|---|
 | Builder | *Breadth*: You have 5 building slots; the Protector and the Researcher have 4. |
-| Protector | *Wall*: Adversary Troops can't enter or strike a hex with your Node. Vigil: the first two times each round a Troop ends its march next to your Node, gain 1 insight. |
+| Protector | *Wall*: No adversary Troop is placed on, Redeploys onto or strikes a hex with your Node. Vigil: when Troops Strike, gain 1 insight for each Troop on or next to your Nodes (at most 2 a round). |
 | Researcher | *Patience*: All your unspent insight carries over to the next round, including insight other players gave you. |
 <!-- /generated -->

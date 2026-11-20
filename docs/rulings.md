@@ -102,7 +102,8 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
   production limits: a runaway pile is fixed at card level. The anchors' table and the worked checks:
   [card-guidelines.md](card-guidelines.md).
 - **Standard actions (Matt, 2026-11-12):** poorly priced hedges, never the better route; none removes corruption
-  except Lift (about 2 research cubes); Liberate needs a site free of agents and is the win route.
+  except Lift (about 2 research cubes); Liberate needs a site free of agents, and of troops on or next to it
+  (2026-11-19), and is the win route.
 - **Matt, 2026-11-17:** **cut the Claim standard action** (cards claim).
 - **Sell a card is exempt from job-no-card** (Matt, 2026-11-16): no card needs to sell.
 
@@ -156,15 +157,24 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
   megaprojects take neutral and player cubes only. **Research track:** a row of six icon slots on every adversary
   board, a slot's icon happening once, in each country, as the marker arrives; slot 7 is a loss. Boards differ by
   their row, their event mix and one rule; the map shows which threat is growing. **Rows are data**, content not
-  code, with non-troop icons only until item 3 swaps troop and Strike icons in by editing the row. The adversary's
+  code; the Militarist's row now holds Garrison and Strike icons (294, by editing the row). The adversary's
   Grow need not be kept: escalate and the one-output rule may replace or reshape it wherever that makes its turn
   simpler (its line left the event cards at r140; the players' Growth is untouched).
 - **Matt, 2026-11-19:** the research track advances every K cubes, start about 3 a country, cubes from round 1
-  (overturns 2026-11-17's threshold of 5, 5, 5, 4, 4). K and the starting cubes are the building item's to propose
-  for his review.
+  (overturns 2026-11-17's threshold of 5, 5, 5, 4, 4; the start is the building item's to propose: 0 since 293).
+  **K is 2 a country** (on 293's read; overturns 293's K 1), and the row is fed so that
+  it reaches its higher, scary slots when players don't deal with it: threats, projects, Discord cards and the like
+  open more adversary research stations or add research cubes, each addition kept close to an existing line.
 - **Threat vibe (Matt, 2026-11-12; design doc *Adversary system*):** botnets spread quickly but manageable; agents
   on par with ambassadors; troops fewer, deadlier, destroy players left unchecked; early troops fine; players
   protect themselves by an expensive standard action, a different troop power on each board, and cards.
+- **Troops garrison (Matt, 2026-11-19):** troops garrison where placed (a corrupted factory, else a city); a
+  corrupted site can't be liberated with a troop on or next to it; they Strike on an icon shown a round ahead (the
+  start: another timing that reads or plays better may be tried and said) and rarely Redeploy toward the nearest
+  corrupted city. They come from the research row, projects and Discord cards: late and significant, something
+  players see coming and must plan and invest to meet. The march, Muster and the corrupted factory's troop are gone;
+  the Protector's Wall and Vigil are redone for troops that garrison and strike. It overturns "early troops fine"
+  above and makes 2026-11-10's "troops ignore ambassadors" moot (no march to stop; ambassadors still stop no troop).
 - **Harm coverage (Matt, 2026-11-13; a design principle, not a checklist):** threats, Discord cards and adversary
   projects are where adversity lives: a kind of harm belongs wherever it fits, at the tier it fits (corrupting or
   neutralizing a city reads as tier 2); events and the adversary board may lean. **Fallout goes on all of them**,
@@ -176,8 +186,9 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
 
 ## Unity, Discord and winning
 
-- **Winning (locked; 156):** the purge only, stepped by Unity tips (0-2 everything, 3-6 without ambassadors, 7+
-  cities only since r96: the 7 is a candidate Matt keeps for now); card tiers count the current tip.
+- **Winning (Matt, 2026-11-19; overturns 156's stepped purge):** the win is no corrupted city. Purge steps are
+  gone: botnets, agents and troops never count. An early d0 win by coordinated players is fine, though not easy.
+  Card tiers count the current tip.
 - **Unity and Discord cards (Matt, 2026-11-09; direction locked):** Spirit Island fear-card shape: board conditions,
   "each player", one verb per card, tiers widening it; Unity prohibitions switch an adversary step off where a
   condition holds. Unity cards help, they don't clear: at most one tier-III card clears cities (2026-11-12).
@@ -185,7 +196,7 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
 
 ## Rulebook and audits
 
-- **Rulebook rulings (Matt, 2026-11-10/13):** the turn's beats (as r130 prints them); troops ignore ambassadors. No last-node safety rule ever
+- **Rulebook rulings (Matt, 2026-11-10/13):** the turn's beats (as r130 prints them; two since r141: Card, Income). No last-node safety rule ever
   (tools instead). What's left of 224's list: [rulebook-friction.md](rulebook-friction.md). **Rejected:** a single
   keep price; used-markers (powers are implicitly once a round); purge back to 6. **Print pass components:** one tip
   track per side, agent-count glyphs on project faces, event icon rows, an ambassador box on the aid, the harm box's

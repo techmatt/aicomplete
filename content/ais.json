@@ -340,10 +340,10 @@
  {
   "id": "protector",
   "name": "Protector",
-  "text": "The defender: plays on the board; Troops stop at its Nodes and can't strike there.",
+  "text": "The defender: plays on the board; Troops can't garrison or strike where its Nodes stand.",
   "innate": {
    "name": "Wall",
-   "text": "Adversary Troops can't enter or strike a hex with your Node. Vigil: the first two times each round a Troop ends its march next to your Node, gain 1 insight.",
+   "text": "No adversary Troop is placed on, Redeploys onto or strikes a hex with your Node. Vigil: when Troops Strike, gain 1 insight for each Troop on or next to your Nodes (at most 2 a round).",
    "passives": [
     {
      "op": "wall"
@@ -351,7 +351,7 @@
     {
      "op": "when",
      "on": {
-      "event": "march_ends_near"
+      "event": "strike_near"
      },
      "then": [
       {

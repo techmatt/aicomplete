@@ -64,8 +64,8 @@ such net.
   `cards.unofferable.<id>`: a kept card left in hand at the end with no feasible part.
 - **Runaway check**: a resource's peak per seat (`peaks`) far above a round's income (`gained / rounds`):
   `cards/runaway_read.py`. `sources` / `uses` / `keeps`: `source_read.py`.
-- **Margin**: a win's adversary cards left and ambassador supply; a loss's adversary pieces over the bar
-  (`margin.blockers`, 0 on a win; `margin.level`: the purge bar's level, not the difficulty: [reads.md](reads.md)); every game, `margin.cities_corrupted_end`, `_aligned_end` (free cities by a player's node too).
+- **Margin**: a win's adversary cards left and ambassador supply; a loss's corrupted cities left
+  (`margin.blockers`, 0 on a win; `margin.level` is always 0 since r141: [reads.md](reads.md)); every game, `margin.cities_corrupted_end`, `_aligned_end` (free cities by a player's node too).
   A `deck_empty` loss (the round cap) counts `rounds` one past the cap's printed count, so a level's mean rounds run
   over the rounds played by its round-cap share.
 
@@ -164,12 +164,12 @@ time. The real oracle (`--rows real`, 249) took 170-250 s a game at every level 
 judge; a 4-seed, three-pair d0-d4 read beside the judge and the oracle ran an hour on 4 threads. A card proof is the oracle with `prove=N` (N: the card's row of `aic-sim cards`), seconds a game where it
 proves the card and a whole search where it can't: 243's `proofs.py`.
 
-`experiments/band.json` and `sanity-line.json`: their `note`s. Read band's win mix (the purge by Unity step,
-`ends156.py`) before a rule touching the end state.
+`experiments/band.json` and `sanity-line.json`: their `note`s. Read band's win mix (`ends156.py`; its split by
+Unity step is of the purge before r141) before a rule touching the end state.
 
 **Fresh seeds.** Specs start at seed 0: give a confirming read a `--seed` no screen of this revision used. An item
 that spends seeds updates the ledger after its last read (`bench/seeds.py next N [--take]`; all below *Next free*
-are used). Next free: 50376. **The dev seeds are 36800-36831**, for on/off
+are used). Next free: 50424. **The dev seeds are 36800-36831**, for on/off
 checks and crash-finding (SE ~5 a cell). A 2-8 point effect (a level's income step): screen it paired on this
 revision's spent fresh sets (~500+ games a cell, SE ~2), then confirm once on new seeds.
 

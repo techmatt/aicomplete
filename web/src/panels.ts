@@ -14,7 +14,8 @@ const esc = escapeHtml;
 const DRAWN_GLOBALS = new Set([
   'adversary.stage', 'adversary.difficulty', 'adversary.deck', 'adversary.compute',
   'threats.tier', 'alignment.unity', 'alignment.discord', 'alignment.unity_tips',
-  'alignment.discord_tips', 'alignment.bar', 'adversary.research', 'adversary.research_slot',
+  'alignment.discord_tips', 'alignment.corrupted_cities', 'adversary.research', 'adversary.research_slot',
+  'board.strike_ahead', 'board.redeploy_ahead',
 ]);
 /** Piles drawn by the status strip, the adversary row or the countries strip. */
 const DRAWN_PILES = new Set([
@@ -103,15 +104,15 @@ function alignmentHtml(v: View): { track: string; cards: string[] } {
   const g = v.globals;
   const unity = findValue(g, 'alignment.unity');
   const discord = findValue(g, 'alignment.discord');
-  const bar = findValue(g, 'alignment.bar');
-  if (!unity && !discord && !bar) return { track: '', cards: [] };
-  const level = bar?.value ?? 0;
-  const max = bar?.max ?? 0;
+  // 294: the win is no corrupted city: the count of corrupted cities, its doc the win line.
+  const left = findValue(g, 'alignment.corrupted_cities');
+  if (!unity && !discord && !left) return { track: '', cards: [] };
+  const win = (left?.doc ?? '').split(';')[0];
   const track = `<div class="alignment">
       <span class="alabel">Alignment</span>
       <span class="tug">${bucketBar(unity, 'unity', 'Unity')}${bucketBar(discord, 'discord', 'Discord')}</span>
       ${tipsChip(findValue(g, 'alignment.unity_tips'), 'unity', 'Unity')}${tipsChip(findValue(g, 'alignment.discord_tips'), 'discord', 'Discord')}
-      ${bar ? `<span class="level" data-value="${esc(bar.key)}" data-scope="global">bar <b>${level}</b>/${max}</span><span class="win">${esc(bar.doc ?? '')}</span>` : ''}
+      ${left ? `<span class="level${left.value ? ' left' : ''}" data-value="${esc(left.key)}" data-scope="global" title="${esc(left.doc ?? '')}">corrupted cities <b>${left.value}</b>/${left.max ?? '?'}</span><span class="win">${esc(win)}</span>` : ''}
     </div>`;
   const groups = ([['alignment.resolved.unity', 'unity'], ['alignment.resolved.discord', 'discord']] as const)
     .map(([key, cls]) => [pile(v, key), cls] as const)
@@ -201,6 +202,17 @@ function escalatesHtml(last: PileView | undefined): string {
   return `<div class="hint escalates" data-escalating="${esc(types)}" title="${esc(rule)}">Escalating: <b>${esc(types || 'nothing')}</b></div>`;
 }
 
+/** 294: the Strike and Redeploy icons shown a round ahead (the next card's, or the research row's Strike slot about
+ *  to be reached), as a notice under the face-up next card; nothing while neither is ahead. */
+function aheadHtml(v: View): string {
+  const note = (key: string, cls: string, text: string) => {
+    const x = findValue(v.globals, key);
+    return x?.value ? `<span class="ahead ${cls}" data-value="${esc(x.key)}" data-scope="global" title="${esc(x.doc ?? '')}">${text}</span>` : '';
+  };
+  return note('board.strike_ahead', 'strike', 'Strike ahead, in the next adversary Card beat: every troop destroys a node, research station or factory on or next to it')
+    + note('board.redeploy_ahead', 'redeploy', 'Redeploy ahead, in the next adversary Card beat: each troop not on or next to a corrupted city moves onto the nearest corrupted city');
+}
+
 /**
  * 293: the adversary's research row: its six icon slots (hover: the icon's text), the reached ones filled and the
  * marker's boxed, the loss slot after them, and the cubes toward the next slot. The row is content's
@@ -249,7 +261,7 @@ export function pipelineHtml(v: View): string {
   const boxes = [
     deckBox,
     // 184: "(face up)" headed an empty slot reading "not revealed yet".
-    cardBox(next, next?.visible.length ? 'Next round (face up)' : 'Next round', 'not revealed yet', 'next'),
+    cardBox(next, next?.visible.length ? 'Next round (face up)' : 'Next round', 'not revealed yet', 'next', aheadHtml(v)),
     cardBox(cur, 'This round', 'no card this round', 'current'),
     // 293: last round's card stays face up: its Infiltrate types escalate this round.
     cardBox(lastRound, 'Last round','no card yet: nothing escalates', 'last', escalatesHtml(lastRound)),

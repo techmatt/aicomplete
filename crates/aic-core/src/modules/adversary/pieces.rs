@@ -135,9 +135,9 @@ pub fn remove(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) -> i64 {
 
 
 /// An adversary troop lands on hex `h` (the caller counts it). `source` names what made it for 201's by-round
-/// measure (`map.troops_placed.<source>`: factory, muster, threat, project), a stat only. r98 (Matt, 2026-11-13,
-/// 224 #10): Wall: no troop is ever placed on the Protector's hex (a Muster, a factory's, a botnet's, a threat's
-/// or a project's): it stays in the supply. Returns whether it was placed.
+/// measure (`map.troops_placed.<source>`: event, research, project, threat, discord), a stat only. r98 (Matt,
+/// 2026-11-13, 224 #10): Wall: no troop is ever placed on the Protector's hex: it stays in the supply. Returns
+/// whether it was placed.
 pub fn place_troop(g: &mut GameState, cx: &mut Cx, h: usize, source: &str) -> bool {
     place_troop_as(g, cx, h, source, true)
 }
@@ -163,101 +163,59 @@ fn place_troop_as(g: &mut GameState, cx: &mut Cx, h: usize, source: &str, noted:
     }
     cx.note(Some(h), || {
         let by = match source {
-            "muster" => "a Muster",
+            "event" => "the event card",
+            "research" => "the research track",
+            "discord" => "a Discord card",
             "threat" => "a threat",
             "project" => "a project",
             other => other,
         };
-        format!("An adversary troop lands on {} ({by})", hex_name(&w, h))
+        format!("An adversary troop garrisons {} ({by})", hex_name(&w, h))
     });
     true
 }
 
-/// `count` adversary troops, each onto a factory among `hexes` (players
-/// choose; 151, `muster`: the lowest-numbered, deterministic targeting for events, projects and the board), or
-/// with no factory onto a city. With `destroy`, each destroys the node on the hex it lands on (027), named for
-/// its tally. 175: a `muster` landing is also stopped by a Muster prohibition (the caller adds [`muster_bonus`]).
-#[allow(clippy::too_many_arguments)]
+/// `count` adversary troops garrison among `hexes` (a country's, or a threat's scope): each on the lowest-numbered
+/// corrupted factory there, else its lowest-numbered corrupted city, else its lowest-numbered city
+/// (`board::garrison_spot`: r141, no choice to make). Wall keeps one off the Protector's node hex (it stays in
+/// the supply). With `destroy`, each destroys the node on the hex it lands on (027), named for its tally. Returns
+/// how many were placed.
 pub fn land_troops(
     g: &mut GameState,
     cx: &mut Cx,
     hexes: &[usize],
     count: i64,
-    prompt: &str,
     tally: &str,
     destroy: Option<&'static str>,
-    muster: bool,
-) -> Res {
+    source: &str,
+) -> Res<i64> {
     let w = cx.world;
-    // 261 (D111): the landings a no-Muster token or a Wall stopped, by hex and guard, for one line each after.
-    let mut stopped: Vec<(usize, &str, i64)> = Vec::new();
-    let mut stop = |h: usize, by: &'static str| match stopped.iter_mut().find(|x| x.0 == h && x.1 == by) {
-        Some(x) => x.2 += 1,
-        None => stopped.push((h, by, 1)),
+    let (mut walled, mut placed) = (0, 0);
+    let Some(h) = board::garrison_spot(&w, g, hexes) else {
+        return Ok(0);
     };
     for _ in 0..count {
-        // 068: a landing enters its hex, so a Wall stops it too. 175: a deterministic landing (a Muster) aims at
-        // the lowest-numbered factory whatever stands there, and a Wall there keeps it in the supply; a chosen
-        // one (a threat's) is offered only open hexes.
-        let open = |h: &usize| muster || !board::walled(&w, g, *h);
-        let mut spots: Vec<usize> = hexes
-            .iter()
-            .copied()
-            .filter(open)
-            .filter(|&h| g.tokens(h, FACTORY) > 0)
-            .collect();
-        if spots.is_empty() {
-            spots = hexes.iter().copied().filter(open).filter(|&h| is_city(&w, h)).collect();
-        }
-        let i = if muster {
-            let Some(i) = (0..spots.len()).min_by_key(|&i| w.map.hexes[spots[i]].number) else {
-                break;
-            };
-            i
-        } else {
-            let opts = spots.iter().map(|&h| hex_opt(&w, h)).collect();
-            let Some(i) = cx.choose(0, prompt, opts)? else {
-                break;
-            };
-            i
-        };
-        // 167: a Muster prohibition keeps the troop in the supply where its condition holds.
-        let h = spots[i];
-        if muster {
-            if let Some(wh) = super::plan::prohibition_on(g, Step::Muster, h) {
-                prohibit_tally(g, cx, Step::Muster, wh, 1);
-                stop(h, "A no-Muster token");
-                continue;
-            }
-        }
-        if board::walled(&w, g, h) {
+        if !place_troop(g, cx, h, source) {
             cx.tally(g, "adversary.walled_landing", 1);
-            stop(h, "The Protector's Wall");
+            walled += 1;
             continue;
         }
-        let source = if muster {
-            "muster"
-        } else if tally.starts_with("threats.") {
-            "threat"
-        } else {
-            "project"
-        };
-        place_troop(g, cx, spots[i], source);
+        placed += 1;
         cx.per_round(g, OPS, 1);
         cx.tally(g, tally, 1);
         if let Some(source) = destroy {
             for s in 0..g.seats.len() {
-                if g.tokens(spots[i], node(s)) > 0 {
-                    board::destroy_piece(g, cx, spots[i], node(s), board::Cause::Effect(source))?;
+                if g.tokens(h, node(s)) > 0 {
+                    board::destroy_piece(g, cx, h, node(s), board::Cause::Effect(source))?;
                 }
             }
         }
     }
-    for (h, by, n) in stopped {
-        let troops = if n == 1 { "a troop".to_string() } else { format!("{n} troops") };
-        cx.note(Some(h), || format!("{by} keeps {troops} off {}", hex_name(&w, h)));
+    if walled > 0 {
+        let troops = if walled == 1 { "a troop".to_string() } else { format!("{walled} troops") };
+        cx.note(Some(h), || format!("The Protector's Wall keeps {troops} off {}", hex_name(&w, h)));
     }
-    Ok(())
+    Ok(placed)
 }
 
 /// Whether a removal of `ambassadors` or `troops` has a piece to take on hex

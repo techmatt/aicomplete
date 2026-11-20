@@ -449,8 +449,14 @@ export function renderPlayer(ui: PlayerUi, ctx: PlayerCtx) {
   const all = !v.outcome && !v.choice && passers.length > 1 ? `<button type="button" class="pass-all" data-pass-all="1">Pass every seat still to act (${passers.join(', ')})</button>` : '';
   const others = ctx.legal.filter((a) => a.seat !== focus).map((a) => a.seat);
   const switchTo = [...new Set(others)].map((x) => `<button type="button" data-seat-focus="${x}">${esc(seatName(v, x))} to act ▸</button>`).join('');
+  // 294: the guarding rule, said where Liberate sits: the corrupted sites in the seat's reach a troop keeps it from
+  // liberating (the engine's `liberate_refused`; the map marks each with a shield).
+  const refused = s.values.find((x) => x.key === 'board.liberate_refused');
+  const guarded = refused?.value
+    ? `<span class="prefused" data-value="board.liberate_refused" data-scope="seat:${focus}" title="${esc(refused.doc ?? '')}">Liberate refused: ${refused.value} corrupted site${refused.value === 1 ? '' : 's'} in reach guarded by a troop</span>`
+    : '';
   ui.bar.innerHTML = [
-    std.length ? `<span class="pgroup"><span class="what">Standard actions</span>${std.join('')}</span>` : '',
+    std.length || guarded ? `<span class="pgroup"><span class="what">Standard actions</span>${std.join('')}${guarded}</span>` : '',
     conv.length ? `<span class="pgroup"><span class="what">Converters</span>${conv.join('')}</span>` : '',
     rest.length ? `<span class="pgroup other"><span class="what">Other</span>${rest.join('')}</span>` : '',
     `<span class="pgroup end">${pass.join('')}${all}${switchTo}</span>`,

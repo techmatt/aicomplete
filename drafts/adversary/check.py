@@ -26,7 +26,7 @@ HARMS = [
     "node destroyed", "credits or income lost", "cards discarded", "ambassadors lost",
     "tokens stripped from cards", "facilities destroyed or corrupted", "production blacked out",
     "adversary pieces placed", "projects advanced (compute)", "extra threats", "Discord sway", "Unity pulled back",
-    "actions or claims blocked", "energy lost", "march brought forward", "troops made",
+    "actions or claims blocked", "energy lost", "troops made",
     # 195: the project deck's new harms (the ledger's rows).
     "protections stripped", "the clock sped up",
     # 227: the land scar on all four adversity sources.
@@ -209,8 +209,8 @@ def standard_breaks(c):
         out.append(f"{len(effects)} consequences (two at most)")
     for e in walk_effects(effects):
         op = e.get("op")
-        if op == "troops" and e.get("stand"):
-            out.append("a troop that stands (no special pieces)")
+        if op == "troops":
+            out.append("a troop line (294: troops come from the research row, projects and Discord cards)")
         if op == "occupy_factory":
             out.append(f"{op}: a special piece")
         if op == "each_destroy_node":
@@ -399,17 +399,14 @@ def worst_case(t, mil):
 
 
 def event_step(e):
-    """151, 275, 293: where an event line sits in the fixed step order: Infiltrate 0, Muster 1, other lines 2."""
-    if e.get("op") == "infiltrate":
-        return 0
-    if e.get("op") == "troops" and e.get("each_country") and not any(e.get(k) for k in ("at", "stand", "location", "if")):
-        return 1
-    return 2
+    """151, 275, 293, 294: where an event line sits in the fixed step order: Infiltrate 0, Strike 1, Redeploy 2,
+    other lines 3."""
+    return {"infiltrate": 0, "strike": 1, "redeploy": 2}.get(e.get("op"), 3)
 
 
 def event_breaks(ev):
     """151, 275, the event standard (the Rust twin is `content::event_rule_break`): one Infiltrate X (two at stage
-    III), the fixed order (threat, Infiltrate, Muster, other lines), at most two other lines, no Spill or Grow line
+    III), the fixed order (threat, Infiltrate, Strike, Redeploy, other lines), at most two other lines, no Spill or Grow line
     (293: cut), no per-event compute or creation line, "each country", never "each board" (178, Matt's ruling
     #17; 151 had it the other way)."""
     out = []
@@ -418,9 +415,9 @@ def event_breaks(ev):
     steps = [event_step(e) for e in ev.get("standing", []) + ev.get("twists", [])]
     if not 1 <= steps.count(0) <= (2 if ev.get("stage", 1) >= 3 else 1):
         out.append("one Infiltrate X line (two at stage III)")
-    if any(a > b for a, b in zip(steps, steps[1:])) or any(event_step(e) < 2 for e in ev.get("twists", [])):
-        out.append("a step out of the fixed order (threat, Infiltrate, Muster, other lines)")
-    if steps.count(2) > 2:
+    if any(a > b for a, b in zip(steps, steps[1:])) or any(event_step(e) < 3 for e in ev.get("twists", [])):
+        out.append("a step out of the fixed order (threat, Infiltrate, Strike, Redeploy, other lines)")
+    if steps.count(3) > 2:
         out.append("more than two other lines (consequences)")
     if any(e.get("op") in ("spill", "grow", "surge") for e in ev.get("standing", []) + ev.get("twists", [])):
         out.append("a Spill, Grow or Surge line (293: cut; an event card is Infiltrate X plus escalate)")

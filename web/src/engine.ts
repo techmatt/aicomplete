@@ -135,14 +135,16 @@ export interface View {
   standard: StandardView[];
   /** The open choice, if the rules are waiting for one. */
   choice: ChoiceView | null;
-  /** Where pieces are heading (019: each adversary troop's next target; 293: each industrial zone's printed arrow). */
+  /** Links on the map (294: what each adversary troop can strike and what it guards; 293: each industrial zone's printed arrow). */
   arrows: ArrowView[];
   /** Each face-up threat's source type, its source hexes and who may pay (070). */
   threat_sources: ThreatSourceView[];
 }
 /** What feeds a threat: hex indexes of its sources, and the seats that may counter it. */
 export interface ThreatSourceView { threat: string; source: string; hexes: number[]; target?: number | null; seats: number[] }
-/** A piece's heading, hex index to hex index; `rounds` 1 means it arrives this coming round. Kind `troop`, or
+/** A link between two hexes, by index. Kind `troop` (294): the troops on `from` can strike a player piece on `to`,
+ *  `rounds` 1 when a Strike is shown a round ahead, else 2; `guard` (294): the troops on `from` guard the corrupted
+ *  site on `to`, which can't be liberated (`rounds` 0); or
  *  `zone` (293): an industrial zone's printed arrow to its city, `count` the agents a corrupted factory there holds
  *  to push, `rounds` 1 when the push lands in the adversary's next Income beat, else 0; or `escalate` (293, `from` =
  *  `to`): a site the adversary's next Card beat escalates. */

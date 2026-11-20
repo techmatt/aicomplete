@@ -162,6 +162,6 @@ fn every_unprinted_read_op_is_read_once_on_a_lab_state() {
     content.adversary_board.difficulty.effects =
         vec![serde_json::from_str(r#"{"op":"standing_troops_bonus","amount":2}"#).unwrap()];
     let w = module::World { content: &content, ..rules.world() };
-    assert_eq!(adversary::muster_bonus(&w), 2 * i64::from(adversary::level(&w, w.int("adversary.board_difficulty_at"))));
-    assert_eq!(adversary::muster_bonus(&w), 2, "level 4 reads the difficulty line");
+    assert_eq!(adversary::troop_bonus(&w), 2 * i64::from(adversary::level(&w, w.int("adversary.board_difficulty_at"))));
+    assert_eq!(adversary::troop_bonus(&w), 2, "level 4 reads the difficulty line");
 }

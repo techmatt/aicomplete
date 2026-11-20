@@ -22,10 +22,10 @@ Cities, research stations and factories follow one set of rules and differ only 
   may be used up instead, the owner choosing which protection to spend, or none ([troops.md](troops.md), *Destruction*).
   Only your own guards your piece (r75, Matt's ruling 5): another player's never does, and a neutral site has none.
   One of your ambassadors on your site's hex can cover the site or your node there. Against troops it answers a
-  strike on or next to the troop's hex; troops otherwise ignore ambassadors (r83: a march neither stops for nor
-  removes one, [troops.md](troops.md)).
-- **Liberate's payment rule** (r75, Matt's ruling 2): the bill is the site's price (a site with an agent on it is
-  refused, below); **your own ambassadors standing on the site pay first, then your supply**, never another
+  Strike on its hex; troops otherwise ignore ambassadors (they garrison, guard and strike past them,
+  [troops.md](troops.md)).
+- **Liberate's payment rule** (r75, Matt's ruling 2): the bill is the site's price (a site with an agent on it, or
+  a troop on or next to it, is refused, below); **your own ambassadors standing on the site pay first, then your supply**, never another
   player's. It needs the site in reach; a botnet on or next to it doesn't stop it.
 - **Only cards claim** (262, Matt, 2026-11-17: the Claim standard action is cut; it was used 0.03 a seat-game while
   cards claimed 1.72 a game). A claim puts your cube on a neutral **research station or factory** with no agent on
@@ -47,10 +47,12 @@ Cities, research stations and factories follow one set of rules and differ only 
   `claim_station` 4 or `claim_factory` 3 (Liberate's since 262 cut Claim; the names stay) and `free_facility` 2
   Unity for a station or factory. **A site with an agent
   on it can't be claimed or liberated** (r91: no "+1 per agent"; clear them first, with Remove agents, a card or a
-  power). The adversary's cube comes off. It needs the site **in reach** (your node on or next to it: getting close
+  power). **Guarding** (r141, Matt 2026-11-19): **a corrupted site with a troop on or next to it can't be liberated**,
+  by the action or by a liberate card: remove the troop or Push or Gather it away first ([troops.md](troops.md)).
+  The adversary's cube comes off. It needs the site **in reach** (your node on or next to it: getting close
   is the risk); a botnet on it stays. No agents land on it. Its factories keep their owners. It takes no marker:
   cleared of agents, it corrupts again only when arrivals bring it back to its corrupt number
-  ([adversary.md](adversary.md)). Liberate stays the win route (the purge). A **liberate card** ([player-cards.md](player-cards.md),
+  ([adversary.md](adversary.md)). Liberate is the win route (no corrupted city, [alignment.md](alignment.md)). A **liberate card** ([player-cards.md](player-cards.md),
   *The liberate capstones*) liberates a city exactly so, for its own price instead of the bill: the agents come off,
   Unity sways and it is left neutral; going straight from adversary to yours is a rare card power (Hostile Buyout
   alone, 254: on a corrupted station or factory; a city it frees is left neutral). The price is the same all game (r67; late strength comes from cards).
@@ -64,7 +66,8 @@ Pieces on the board move: **ambassadors** (any seat's), **agents** and **troops*
   after any piece, so a move is never forced into a bad one. Distance 1. The card names which pieces it moves.
 - **Arrivals:** a moved piece arrives as any does. An agent arriving on standing ambassadors cancels one of them; an
   ambassador arriving on agents cancels one; a firewalled hex takes no agent; no troop enters the Protector's node
-  (Wall). Troops otherwise just move.
+  (Wall). Troops otherwise just move: a moved troop garrisons its new hex, guarding and striking from there, so
+  pushing one away from a corrupted site opens it to a Liberate.
 - **A strike** (Kettle Operation, Lure Network's Action, Honeypot Relay) moves nothing: "remove up to N Agents (or
   Troops) on or next to it, your choice" (the card's target): the target counts, and the player picks the pieces,
   batch by batch, and may stop. A card's gather or push acts on its target too ([card-grammar.md](card-grammar.md)).

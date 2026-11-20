@@ -371,8 +371,7 @@
     "note": "table work a round: the adversary's ops (games.jsonl adversary_ops; 267: every compute point onto a project counts as one, so compute income moves it point for point) and these player-side counters, per round, against --old",
     "player_counters": [
       "board.node_placed",
-      "board.troop_moves",
-      "board.troop_steps",
+      "board.troops_redeployed",
       "board.markers"
     ],
     "player_prefixes": [
@@ -381,8 +380,8 @@
     "rise_max": 0.1
   },
   "table_cost": {
-    "note": "268 (soft): table cost a round, by level d0-d4 (a level past the list takes the last): components moved (adversary ops + the tokens check's player moves but ops_already, a troop's move being an op + production_counters, a troop's strike among them), per-site checks (site_passes x sites on the map + city_passes x cities + troops marching + check_counters + check_prefixes; 275: no pass looks at every site, so both passes are 0 and the adversary's own checks, each site a line names, each arrival and each botnet, come from map.adversary_checks) and once-a-round uses a seat (memory). Budgets: 267's final read (f267-read2) + about 10%, cross-checked against 268's hand-play (experiments/results/268_table_cost_audit/). The friction review reruns every refresh_every rules revisions.",
-    "ops_already": ["board.troop_moves", "board.troop_steps"],
+    "note": "268 (soft): table cost a round, by level d0-d4 (a level past the list takes the last): components moved (adversary ops + the tokens check's player moves but ops_already, a redeployed troop being an op + production_counters, a troop's strike among them), per-site checks (site_passes x sites on the map + city_passes x cities + each troop on the map (an upper bound: only a Strike or Redeploy icon looks at one) + check_counters + check_prefixes; 275: no pass looks at every site, so both passes are 0 and the adversary's own checks, each site a line names, each arrival and each botnet, come from map.adversary_checks) and once-a-round uses a seat (memory). Budgets: 267's final read (f267-read2) + about 10%, cross-checked against 268's hand-play (experiments/results/268_table_cost_audit/). The friction review reruns every refresh_every rules revisions.",
+    "ops_already": ["board.troops_redeployed"],
     "production_counters": ["board.troop_strikes", "board.cubes_paid.player", "board.cubes_paid.neutral", "board.chips_made"],
     "site_passes": 0,
     "city_passes": 0,

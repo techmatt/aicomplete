@@ -1,5 +1,5 @@
 //! 268: `docs/player-aid.md`, the table's reference sheet: the round, what is once a round, the tip strips,
-//! the march, the tracks and markers (274), what spends an ambassador and city growth, then the house terms. Every number comes from the rules or content,
+//! the troops (r141: garrison, guard, Strike, Redeploy), the tracks and markers (274), what spends an ambassador and city growth, then the house terms. Every number comes from the rules or content,
 //! so the sheet moves with them; the words are the rulebook's, shortened (it stays the rules' one full statement).
 
 use aic_core::content::content;
@@ -13,7 +13,7 @@ const ROUND: &str = "\
 |---|---|---|
 | | Round start | Set your insight. Clear your used markers (below). |
 | A | Sway | Each Fallout: 1 Discord. |
-| B | Adversary | **Card** (threats; Escalate: each site of last round's type holding an agent takes 1 more; the board's rule; Infiltrate, Muster, other lines; each arrival checks only its own hex, once all its agents there are on), **March** (each stack 1 step), **Income** (next card up; each corrupted site's one output: a city 1 Discord, a station 1 research cube, a factory its agent pushed along its arrow then 1 new agent, a botnet 1 compute; then all compute onto the leftmost project at once; the research track advances a slot for every K cubes; firewalls, cordons and no-X tokens off). |
+| B | Adversary | **Card** (threats; Escalate: each site of last round's type holding an agent takes 1 more; the board's rule; Infiltrate, Strike, Redeploy, other lines; each arrival checks only its own hex, once all its agents there are on), **Income** (next card up; each corrupted site's one output: a city 1 Discord, a station 1 research cube, a factory its agent pushed along its arrow then 1 new agent, a botnet 1 compute; then all compute onto the leftmost project at once; the research track advances a slot for every K cubes; firewalls, cordons and no-X tokens off). |
 | C | Cards | Build a hand of 4, draft, keep (1 insight a tier-1; 3 a tier-2, 2 with the keep upgrade, less 1 per 2 Science tags you have). |
 | D | Actions | All at once, until everyone passes. |
 | E | Production | Read from the tracks, less each blocked chip's site: factories, cities (1 energy to every player with a node on or next to one), stations, megaprojects, income. |
@@ -21,7 +21,7 @@ const ROUND: &str = "\
 | G | Cleanup | This round's effects end (Shelter, round flags). |
 
 After every action and step: Unity just gained goes on its track; tip any full track, Discord first;
-then check the losses, then the purge.
+then check the losses, then the win (no city corrupted).
 ";
 
 /// The once-a-round list: what a player must otherwise remember with nothing on the table to show it.
@@ -55,7 +55,7 @@ fn once_a_round(r: &Rules) -> String {
          - **Vigil** (Protector): only the first {} troops a round pay.\n\
          - **Aegis Doctrine** (Protector capstone): the first save a round.\n\
          - **A research slot's icon** happens once, as the marker arrives.\n\n\
-         **Lasting effects, with their token:** a firewall, a cordon and a no-Infiltrate, no-Muster or no-Corrupt token \
+         **Lasting effects, with their token:** a firewall, a cordon and a no-Infiltrate, no-Strike or no-Corrupt token \
          come off in the next adversary turn's Income beat; Shelter ends at cleanup; a round-flag marker runs through \
          the next round. Insight resets at \
          round start (Patience keeps it); Dispatches refresh.\n",
@@ -66,11 +66,10 @@ fn once_a_round(r: &Rules) -> String {
     )
 }
 
-/// One tip strip a side: each tip's card strength, and on Unity's what the purge still asks for. Merges the
-/// rulebook's two tables (§12's strengths, §14's purge) into one line read off one count.
+/// One tip strip a side: each tip's card strength, and the Discord cards left (r141: the purge's steps are gone,
+/// so Unity's strip shows no "what the win asks" column).
 fn tip_strips(r: &Rules) -> String {
     let tier = list(r, "alignment.tier_at");
-    let purge = list(r, "alignment.purge_at");
     let discord_deck = content().alignment.iter().filter(|c| c.side == Side::Discord).count() as i64;
     let last = discord_deck + 1;
     let strength = |t: i64| {
@@ -82,23 +81,9 @@ fn tip_strips(r: &Rules) -> String {
             "III"
         }
     };
-    let asks = |t: i64| {
-        let mut s = vec!["cities"];
-        if t < purge[2] {
-            s.push("botnets");
-        }
-        if t < purge[1] {
-            s.push("troops");
-        }
-        if t < purge[0] {
-            s.push("agents");
-        }
-        s.join(", ")
-    };
-    let mut out = "Keep one tip-count marker a side on a strip like this, and read everything off its row: the \
-                   strength of the card drawn at that tip, what the purge still needs gone (Unity), and the Discord \
-                   cards left (Discord).\n\n| Tip count | Card drawn at this tip | Unity: you win when the map holds \
-                   none of | Discord cards left |\n|---|---|---|---|\n"
+    let mut out = "Keep one tip-count marker a side on a strip like this, and read off its row the strength of the \
+                   card drawn at that tip and the Discord cards left. You win the moment no city is corrupted, \
+                   at any tip count.\n\n| Tip count | Card drawn at this tip | Discord cards left |\n|---|---|---|\n"
         .to_string();
     for t in 0..=last {
         let count = if t == last { format!("{t}+") } else { t.to_string() };
@@ -108,7 +93,7 @@ fn tip_strips(r: &Rules) -> String {
             t if t <= discord_deck => (discord_deck - t).to_string(),
             _ => "**you lose**".to_string(),
         };
-        out += &format!("| {count} | {card} | {} | {left} |\n", asks(t));
+        out += &format!("| {count} | {card} | {left} |\n");
     }
     let (u, d) = (int(r, "alignment.tip_per_player"), int(r, "alignment.discord_tip_per_player"));
     let at = |k: i64| (1..=4).map(|n| (k * n).to_string()).collect::<Vec<_>>().join(" | ");
@@ -163,16 +148,20 @@ fn corrupt_numbers(r: &Rules) -> String {
            hex once. A Push or Gather is no arrival.\n"
 }
 
-const MARCH: &str = "\
-The troops on each hex march as one stack, stack by stack (country by country, hex order), 1 step; troops on a hex \
-a stack enters march later, on their own:
+const TROOPS: &str = "\
+Troops don't move or act on their own. They come late: from the research row, some projects and Discord cards.
 
-1. **Targets on or next to it?** (players' nodes and players' stations and factories; never anything on the \
-Protector's node hex.) One troop strikes each, while troops last (the players choose): destroyed unless protected \
-(§13). A troop that strikes leaves the map either way.
-2. **The rest** move together 1 hex toward the nearest target by land, never onto the Protector's node hex; ties: \
-the players choose, once for the stack. No way to any target: they stay.
-3. Troops ignore ambassadors. Vigil: a troop ended its march (moved or not) next to the Protector's node.
+1. **Garrison.** A new troop goes on its country's lowest-numbered corrupted factory; with none, its \
+lowest-numbered corrupted city; with none, its lowest-numbered city (never the Protector's node hex: it stays in the \
+supply). It stays there.
+2. **Guard.** A corrupted site with a troop on or next to it can't be liberated. Remove the troop or push it away \
+first.
+3. **Strike** (an icon on the face-up event card, a round ahead, or a research slot): each troop, country by \
+country in hex order, destroys one player node, or player's station or factory, on or next to it (the players \
+choose; never anything on the Protector's node hex): destroyed unless protected (§13). The troop stays. Vigil: 1 \
+insight for each troop on or next to the Protector's nodes.
+4. **Redeploy** (an icon, rare): each troop not on or next to a corrupted city is picked up and put on the nearest \
+corrupted city by land (ties: the lower country, then hex number).
 ";
 
 /// 274 (table time): every running number the table keeps sits on a track or a marker, read, never re-added.
@@ -186,7 +175,7 @@ station, your ambassador on the adversary's) and on a city a blackout darkens; l
 it when the last one leaves.
 - **Your tag dials** (your board): one a tag. Turn it when a card with that tag comes into play or is sacrificed.
 - **Used markers:** on each power, building slot and converter's used space; a bought chip on a city (above).
-- **Unity and Discord tip tracks:** one space a tip; each space prints its card strength, and Unity's the purge's.
+- **Unity and Discord tip tracks:** one space a tip; each space prints its card strength.
 - **The adversary board:** the compute income track, the research row (six icon slots, a marker, and the cubes \
 toward its next slot), the last-round space (the card whose sites escalate), a compute track beside each \
 project slot (a marker, not cubes), and its corrupted sites' outputs.
@@ -255,7 +244,7 @@ pub(super) fn player_aid_md(r: &Rules) -> String {
          rules) and `HOUSE_TERMS` in `crates/aic-sim/src/docs/blocks.rs`: edit them there. The table's reference \
          sheet; the full rules are [rulebook.md](rulebook.md), the marks [card-guidelines.md](card-guidelines.md).\n\n\
          ## The round (rulebook §4)\n\n{ROUND}\n## Once a round (§5, §8, §20)\n\n{}\n\
-         ## Tip strips (§12, §14)\n\n{}\n## Corrupt numbers (§6, §21)\n\n{}\n## The march (§6)\n\n{MARCH}\n\
+         ## Tip strips (§12, §14)\n\n{}\n## Corrupt numbers (§6, §21)\n\n{}\n## Troops\n\n{TROOPS}\n\
          ## Tracks and markers (§2)\n\n{TRACKS}\n## What spends an ambassador (§8)\n\n{}\n\
          ## The adversary's outputs and research row\n\n{}\n## Words on cards\n\n{}",
         once_a_round(r),

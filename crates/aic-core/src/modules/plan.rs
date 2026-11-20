@@ -6,7 +6,7 @@
 //! deferred call 9: the agents' heuristic used to copy the build):
 //! `adversary::create` places what [`create_plan`] says, and (275, 293) `adversary::infiltrate` and `escalate`
 //! act on what [`infiltrate_sites`] names, so the forecast in
-//! [`next_infiltrate`] can't drift from the rule. The troops' forecast is `board::troop_plan`.
+//! [`next_infiltrate`] can't drift from the rule. The troops' forecast is `board::strike_targets`.
 
 use crate::content::{Op, RoundFlag};
 use crate::module::World;
@@ -233,7 +233,7 @@ pub fn sites_where(w: &World, g: &GameState, wh: Where) -> Vec<usize> {
 pub fn prohibit_keys(step: Step) -> (&'static str, &'static str) {
     match step {
         Step::Infiltrate => ("prohibit.infiltrate.round", "prohibit.infiltrate.where"),
-        Step::Muster => ("prohibit.muster.round", "prohibit.muster.where"),
+        Step::Strike => ("prohibit.strike.round", "prohibit.strike.where"),
         Step::Corrupt => ("prohibit.corrupt.round", "prohibit.corrupt.where"),
     }
 }

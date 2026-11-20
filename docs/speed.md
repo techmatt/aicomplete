@@ -59,9 +59,7 @@ snapshot (at r73, 50-95% of a game; 5 s a decision in long games).
   hexes (options that move no token) share that read (`TokenKeys::read_shared`, 251); counts of a seat's nodes
   come off it.
 - **Threats in the heuristic:** each active threat's need and share read every seat's standing counters once a
-  position (`threats::standing_counters`, `need_and_share_with`; `CounterSteps` once an `Eval`). The troop march
-  tests a hex for a target without building its target list (`troops::target_here`).
-
+  position (`threats::standing_counters`, `need_and_share_with`; `CounterSteps` once an `Eval`).
 **What is left, by payoff** (strategist shares at r112 after 251, `profile_win.py`, 5 games from seed 36802; the
 real oracle alike; gains are estimates):
 

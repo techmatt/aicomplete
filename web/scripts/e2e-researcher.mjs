@@ -21,7 +21,7 @@ const config = JSON.parse(readFileSync(join(web, '..', 'configs', 'baseline.json
 config.countries = 3;
 // 262 cut the Claim action: seat 2 builds its station instead (`station_chips` 0, free), beside Onyx's neutral
 // station, so Onyx's card fills by round 2 and seat 2's station stores its cubes from then.
-Object.assign(config.modules.find((m) => m.module === 'board').params, { station_cubes: 4, owned_station_cubes: 4, troop_steps: 0, station_chips: 0 });
+Object.assign(config.modules.find((m) => m.module === 'board').params, { station_cubes: 4, owned_station_cubes: 4, station_chips: 0 });
 // Nothing diverts a cube or takes the bound city while the script passes its turns.
 // No agents: a creation line would land one on the claimed station, blocking its cubes.
 const adversary = config.modules.find((m) => m.module === 'adversary').params;

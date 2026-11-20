@@ -171,7 +171,7 @@ fn feasible_aimed(
             | Op::LoseTokens { .. } | Op::AdversaryFactory { .. } | Op::ComputePerMissing { .. }
             | Op::DestroyFacility { .. } | Op::DisableBuilding { .. } | Op::Discard { .. }
             | Op::LoseAmbassadorsOr { .. } | Op::LoseIncome { .. } | Op::LoseOr { .. }
-            | Op::MarchNow { .. } | Op::OccupyFactory { .. } | Op::PlaceBotnet { .. } | Op::CorruptFactory
+            | Op::Strike | Op::Redeploy | Op::OccupyFactory { .. } | Op::PlaceBotnet { .. } | Op::CorruptFactory
             | Op::Theft { .. } | Op::TeamIncome { .. } | Op::FreePurchases { .. } | Op::CounterAll
             | Op::Pushback { .. } | Op::DealThreats { .. } | Op::Create { .. } | Op::CreateSite { .. }
             | Op::Infiltrate { .. } | Op::Escalate { .. }
@@ -185,7 +185,7 @@ fn feasible_aimed(
             | Op::Threshold { .. } | Op::Slots { .. } | Op::Logistics { .. } | Op::ProjectDrain { .. }
             | Op::AutoCounter { .. } | Op::UnityBonus { .. } | Op::CorruptionShield | Op::CivicShelter | Op::Wall
             | Op::Patience | Op::SupplyInsight { .. } | Op::TagsFromHand { .. } | Op::ConvertUpkeep { .. }
-            | Op::TroopSteps { .. } => true,
+            => true,
         }
     };
     effects.is_empty() || effects.iter().enumerate().any(|(at, e)| acts(at, e))

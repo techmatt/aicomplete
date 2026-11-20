@@ -42,6 +42,11 @@ pub fn target_hexes(w: &World, g: &GameState, seat: usize, on: TargetSpec) -> Ve
 /// claims (Industrial Commons, Open Research Campus) is no target with an agent on it, which no claim takes.
 pub fn target_hexes_before(w: &World, g: &GameState, seat: usize, on: TargetSpec, rest: &[Op]) -> Vec<usize> {
     let mut hexes = target_hexes(w, g, seat, on);
+    // r141, the guarding rule: a card that liberates its target can't take a corrupted site with a troop on or
+    // next to it (a card that only clears agents or lands ambassadors there still can).
+    if rest.iter().any(|o| matches!(o, Op::Liberate { .. })) {
+        hexes.retain(|&h| !board::troop_guarded(w, g, h));
+    }
     if matches!(on, TargetSpec::EmptySite | TargetSpec::FreeZone)
         && rest.iter().any(|o| matches!(o, Op::ClaimSite { near: false }))
     {
@@ -60,18 +65,19 @@ pub fn damage_hexes(w: &World, g: &GameState, seat: usize, ambassadors: i64, tro
 
 /// A corrupted research station or factory, or with `cities` (024: tier-2
 /// ultimates only) a corrupted city: a cleanse target. `only` (r35) limits it
-/// to one facility kind.
+/// to one facility kind. r141, the guarding rule: none with a troop on or next to it.
 pub fn cleansable(w: &World, g: &GameState, h: usize, cities: bool, only: Option<Facility>) -> bool {
     let stations = only != Some(Facility::Factory);
     let factories = only != Some(Facility::Station);
     corrupted(g, h)
         && ((cities && is_city(w, h)) || (stations && g.tokens(h, STATION) > 0) || (factories && g.tokens(h, FACTORY) > 0))
+        && !board::troop_guarded(w, g, h)
 }
 
 /// Corrupted cities in seat `s`'s reach that a liberate card can take (080).
 pub fn liberable_cities(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
     (0..g.hexes.len())
-        .filter(|&h| corrupted_city(w, g, h) && in_reach(w, g, seat, h))
+        .filter(|&h| corrupted_city(w, g, h) && in_reach(w, g, seat, h) && !board::troop_guarded(w, g, h))
         .collect()
 }
 

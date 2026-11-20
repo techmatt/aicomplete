@@ -100,11 +100,10 @@ pub fn save_records(
             .iter()
             .map(|(i, g)| {
                 (*i, format!(
-                    "close loss at difficulty {top_d}: {} in round {}, {} adversary piece(s) over the level-{} bar, supply {} of {}, {} cities corrupted",
+                    "close loss at difficulty {top_d}: {} in round {}, {} corrupted cit(ies) left, supply {} of {}, {} cities corrupted",
                     g.reason,
                     g.rounds,
                     g.margin.blockers,
-                    g.margin.level,
                     g.margin.supply_left,
                     g.margin.supply_start,
                     g.margin.cities_corrupted_end

@@ -69,9 +69,8 @@ const PARAMS: &[ParamSpec] = &[
 /// phases each runs (working names: a rename is this one edit). Threat resolution stays its own round step. 247
 /// (241's pick): read only by a test that holds the round's phases to the strip, so built only for tests.
 #[cfg(test)]
-pub const BEATS: [(&str, &[&str]); 3] = [
+pub const BEATS: [(&str, &[&str]); 2] = [
     ("Card", &["adversary.event", "threats.deal", "adversary.build"]),
-    ("March", &["board.march"]),
     ("Income", &["adversary.reveal", "adversary.compute"]),
 ];
 
@@ -82,7 +81,7 @@ pub fn beat_of(phase: &str) -> Option<&'static str> {
 }
 
 const PHASES: &[PhaseSpec] = &[
-    PhaseSpec::auto("build", "the Card beat after the threats: Escalate (each site of last round's type that holds an agent takes 1 more), the board's one rule, Infiltrate X (agents on each named site), Muster (its troops) and the card's other lines; each arrival checks the site it lands on"),
+    PhaseSpec::auto("build", "the Card beat after the threats: Escalate (each site of last round's type that holds an agent takes 1 more), the board's one rule, Infiltrate X (agents on each named site), Strike (every troop destroys a player piece on or next to it), Redeploy (troops not on or next to a corrupted city move onto the nearest one) and the card's other lines; each arrival checks the site it lands on"),
     PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead (its Infiltrate sites shown: they escalate the round after)"),
     PhaseSpec::auto("event", "the face-up event card becomes this round's (none left: the adversary wins)"),
     // 178 (amendment 8112): its own phase, so a project's prompt doesn't follow the reveal's hidden draw in one
@@ -103,7 +102,7 @@ pub static DEF: ModuleDef = ModuleDef {
     variants: &[
         VariantDef {
             name: "militarist",
-            summary: "The Militarist: bounded creation lines and Corrupt X; troops where the Protector stands",
+            summary: "The Militarist: Infiltrate and Escalate, a research row, troops that garrison and Strike",
             params: PARAMS,
             phases: PHASES,
             rng: &["adversary"],
@@ -195,10 +194,35 @@ pub fn twists<'w>(w: &World<'w>, g: &GameState) -> Vec<&'w Op> {
     g.pile(round_pile(g)).iter().flat_map(|id| card(w, id).twists.iter()).collect()
 }
 
-/// 148 (D59): the twists of next round's card, face up in `NEXT` once revealed
-/// (none before the reveal).
-pub fn next_twists<'w>(w: &World<'w>, g: &GameState) -> Vec<&'w Op> {
-    g.pile(NEXT).iter().take(1).flat_map(|id| card(w, id).twists.iter()).collect()
+/// r141: a seat has no node left and that loses (`alignment.node_loss`): the game ends as the phase does, so what
+/// would follow a Strike in the same phase stops here.
+pub fn node_lost(w: &World, g: &GameState) -> bool {
+    w.hot(crate::module::Hot::NodeLoss) > 0 && loss(g).is_some()
+}
+
+/// r141: whether the card of the next Card beat prints `line` (a Strike or a Redeploy icon, shown a round ahead):
+/// this round's card until its Card beat has run, then next round's, face up in `NEXT` from the reveal.
+pub fn line_ahead(w: &World, g: &GameState, line: &Op) -> bool {
+    let built = g.phase_index("adversary.build").is_some_and(|i| g.phase > i);
+    let pile = if built { NEXT } else { round_pile(g) };
+    g.pile(pile).iter().take(1).any(|id| card(w, id).standing.iter().any(|e| e == line))
+}
+
+/// r141: whether the research track reaches a Strike slot at the next research check, on the cubes it will hold
+/// then: the cubes on it now and one from each corrupted station no player ambassador blocks
+/// (the row and both counts are public: the other way a Strike is seen coming; a threat's or project's cubes
+/// can still bring it sooner).
+pub fn strike_slot_ahead(w: &World, g: &GameState) -> bool {
+    if !research_on(w) {
+        return false;
+    }
+    let stations = (0..g.hexes.len())
+        .filter(|&h| g.tokens(h, STATION) > 0 && corrupted(g, h) && player_ambassador(g, h).is_none())
+        .count() as i64;
+    // Every slot those cubes reach at the next check (one check can advance several).
+    let slots = (g.var(RESEARCH) + stations * w.int("board.station_cubes")) / research_threshold(w);
+    let from = g.var(RESEARCH_SLOT);
+    (from + 1..=from + slots).any(|k| slot_icon(w, k).is_some_and(|i| i.effects.iter().any(|e| matches!(e, Op::Strike))))
 }
 
 /// The pile holding this round's adversary card: the face-up one before this
@@ -277,9 +301,9 @@ fn flip(g: &mut GameState, cx: &mut Cx) {
     });
 }
 
-/// The board's difficulty line's extra troops on every Muster (135; 175: an event's, a project's and the
-/// Protector landing alike), from `adversary.board_difficulty_at`.
-pub fn muster_bonus(w: &World) -> i64 {
+/// The board's difficulty line's extra troops on every garrison line (135; an event's, a project's, a research
+/// slot's; no board prints one since 267), from `adversary.board_difficulty_at`.
+pub fn troop_bonus(w: &World) -> i64 {
     if !level(w, w.int("adversary.board_difficulty_at")) {
         return 0;
     }
@@ -322,12 +346,13 @@ fn board_rule(g: &mut GameState, cx: &mut Cx) -> Res {
     Ok(())
 }
 
-/// The event card's standing lines (135): compute, ambassadors and troops,
-/// resolved as the team's; a Muster gets the difficulty bonus where it lands (`team::troops`, 175).
+/// The event card's standing lines (135): its Infiltrate, Strike, Redeploy and other lines, resolved as the
+/// team's.
 fn standing(g: &mut GameState, cx: &mut Cx, c: &AdversaryCard) -> Res {
     for e in &c.standing {
         effects::run(g, cx, std::slice::from_ref(e), &mut effects::Ctx::team().named("standing").why(&c.name))?;
-        if g.is_over() {
+        // r141: a Strike that took a seat's last node is the loss: no later line of the card runs.
+        if g.is_over() || node_lost(&cx.world, g) {
             break;
         }
     }
@@ -405,7 +430,7 @@ impl Module for Adversary {
                     return Ok(());
                 }
                 standing(g, cx, c)?;
-                if g.is_over() {
+                if g.is_over() || node_lost(&w, g) {
                     return Ok(());
                 }
                 for t in &c.twists {
@@ -414,8 +439,6 @@ impl Module for Adversary {
                         Op::Sway { .. } | Op::EachDestroyNode { .. } | Op::PullUnity { .. } | Op::Fallout { .. } => {
                             effects::run(g, cx, std::slice::from_ref(t), &mut effects::Ctx::team().named("twist").why(&c.name))?
                         }
-                        // Read where it acts: the march.
-                        Op::TroopSteps { .. } => {}
                         // The load check lets no other op in: one added to `Slot::Twist`
                         // needs a reader (044: `_ => {}` swallowed the Unity pull).
                         other => unreachable!("twist with no reader: {other:?}"),
@@ -451,7 +474,7 @@ impl Module for Adversary {
                 // 158: firewalls come off at the end of the adversary turn after they went on; r80 (#53) so do
                 // prohibition tokens.
                 for h in 0..g.hexes.len() {
-                    for kind in [FIREWALL, prohibit_token(Step::Infiltrate), prohibit_token(Step::Muster), prohibit_token(Step::Corrupt)] {
+                    for kind in [FIREWALL, prohibit_token(Step::Infiltrate), prohibit_token(Step::Strike), prohibit_token(Step::Corrupt)] {
                         let n = g.tokens(h, kind);
                         if n > 0 {
                             cx.add_tokens(g, h, kind, -n);
@@ -672,7 +695,7 @@ impl Module for Adversary {
                 Where::ALL.iter().enumerate().filter(|(i, _)| mask & (1 << i) != 0).map(|(_, wh)| wh.words()).collect();
             let name = match step {
                 Step::Infiltrate => "Infiltrate",
-                Step::Muster => "Muster",
+                Step::Strike => "Strike",
                 Step::Corrupt => "Corrupt",
             };
             // 285: no Corrupt step since r130: a no-Corrupt marker lets agents land and stops the site corrupting.
@@ -746,7 +769,7 @@ pub fn prohibit(g: &mut GameState, cx: &mut Cx, step: Step, wh: Where) {
 }
 
 /// 167: a prohibition covered a site the step would act on (`fired`), keeping `n` arrivals or pulls off it.
-fn prohibit_tally(g: &mut GameState, cx: &mut Cx, step: Step, wh: Where, n: i64) {
+pub(crate) fn prohibit_tally(g: &mut GameState, cx: &mut Cx, step: Step, wh: Where, n: i64) {
     cx.tally(g, &format!("prohibit.{}.{}.fired", step.name(), wh.name()), 1);
     cx.tally(g, &format!("prohibit.{}.{}.blocked", step.name(), wh.name()), n.max(0));
 }

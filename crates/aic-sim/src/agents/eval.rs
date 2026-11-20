@@ -78,9 +78,9 @@ pub struct Weights {
     /// of a card's mean worth at that tier (the value table), times the
     /// track's fill toward it. Replaced `unity_deck` (no Unity-deck win).
     pub tier_read: f64,
-    /// 156: the Unity tips the horizon aims for; 0: the purge's last step
-    /// (`purge_at`). Set to the Unity card count to aim as 028-155 did, at the
-    /// deck's last card (the on / off check).
+    /// 156: the Unity tips the horizon aims for; 0: the tip where strength III starts (`alignment.tier_at`'s
+    /// last; r141: the win asks no tip, the pace toward it is still read off Unity). Set to the Unity card count
+    /// to aim as 028-155 did, at the deck's last card.
     pub unity_target: f64,
     /// Each Unity tip made; Sway on the Unity track counts as its share of
     /// the next tip (so a tip about to happen is worth nearly a tip).
@@ -88,7 +88,8 @@ pub struct Weights {
     /// Each Discord tip made (a cost); Sway on the Discord track costs its
     /// share of the next one.
     pub discord_tip: f64,
-    /// Each level the clear-board bar has dropped (Unity tips, 156).
+    /// Unread since r141 (it valued each step the purge had eased; the win has no steps). Kept so a saved agent
+    /// spec naming `w.level` still parses.
     pub level: f64,
     /// Each visible adversary project's fill, as a share of its cost (a
     /// cost: it will resolve; 017).
@@ -393,8 +394,8 @@ pub struct Weights {
     /// can make each round from its powers and built Actions (the keep plan's `am_makes`, no burn or Reclaim)
     /// beside its antimatter income, not the income alone.
     pub am_make: f64,
-    /// 201: with troops striking nodes (`board.troop_node` reached), a seat's node an adversary troop can reach in
-    /// its next march (hex distance at most `board.troop_steps`, the node's hex not walled) adds this much to the
+    /// 201: with troops striking nodes (`board.troop_node` reached), a seat's node an adversary troop can strike
+    /// (on or next to the troop, the node's hex not walled) adds this much to the
     /// seat's exposure (half with a hardening token or the owner's ambassador on it), read like a node filling
     /// toward corruption: charged at `corrupt_exposure` times a node's worth (`node` + `shelter_node`), and,
     /// rounded, taken off the node count `node_danger` reads.
@@ -557,8 +558,8 @@ fn lasting(op: &Op) -> bool {
 
 /// How many of a seat's owned stations the eval counts in full (074).
 const STATIONS_USEFUL: i64 = 2;
-/// How far off a troop makes a Wall's facility worth more: two marches.
-const WALL_NEAR: u32 = 4;
+/// How far off a troop makes a Wall's facility worth more: a strike's reach (on or next to it; r141: no march).
+const WALL_NEAR: u32 = 1;
 /// Flat mode: a point of track income is worth this many of the resource's
 /// own points for antimatter and insight, credits (273: 1.5, credits ÷ 1.5 left a point of credit income
 /// worth what r127's was) and 1 for the rest, times `income`.
@@ -1092,12 +1093,14 @@ impl Eval {
         };
         let world = rules.world();
         let seats = rules.config.countries as usize;
-        // 156: no Unity-deck win (028-155 aimed at the deck's last card): the team
-        // aims for the purge's last step, where only the corrupted cities count.
+        // 156: no Unity-deck win (028-155 aimed at the deck's last card). r141: the win asks no Unity tip, but the
+        // team's pace toward it is still read off Unity (a liberated city sways it): with no `unity_target` the
+        // clock aims at the tip where strength III starts (`alignment.tier_at`'s last, 6; the purge's last step
+        // was 7), until item 6 reteaches the judge. A target of 0 would end every horizon one round out.
         let target_tips = if w.unity_target > 0.0 {
             w.unity_target as i64
         } else {
-            world.list("alignment.purge_at").iter().copied().max().unwrap_or(0)
+            world.list("alignment.tier_at").iter().copied().max().unwrap_or(0)
         };
         // 156: what a card of each side is worth at each tier, the mean over its
         // printed cards at the value table (Discord's is a cost: its rows are negative).
@@ -1461,7 +1464,6 @@ impl Eval {
         let mut pieces = 0i64;
         // 162: each seat's Liberate bill, the corrupted cities in its reach (the purge term).
         let mut bill = [0i64; 4];
-        let level = alignment::bar_level(&world, g);
         // 147 (D67): each seat's nodes on sites filling toward corruption, as
         // shares lost (corruption destroys a node on its own hex), and land
         // corruption's Discord to come.
@@ -1688,17 +1690,24 @@ impl Eval {
             if counts && (0..self.seats).any(|s| near[s] >> h & 1 != 0) {
                 reach += 1;
             }
-            pieces += adversary::against_bar(city && bad, t.botnet, adv, t.troop, level);
+            // r141: the win counts corrupted cities only; a troop guarding one (on or next to it) stands in the
+            // way as the city does, since nothing liberates it past the troop.
+            pieces += (city && bad) as i64;
+            if t.troop > 0
+                && ((city && bad) || world.map.hexes[h].neighbors.iter().any(|&x| tokens[x].adv_cube > 0 && common::is_city(&world, x)))
+            {
+                pieces += t.troop;
+            }
         }
         v -= w.corrupted * corrupted as f64;
         // 082: in table mode a liberation counts as the city it frees.
         if w.table <= 0.0 {
             v += w.liberated * g.stats.counters.get("board.cities_freed").copied().unwrap_or(0) as f64;
         }
-        // 201: troops that strike nodes: each node a troop reaches in its next march (the engine's
-        // `board::troops`: move, else strike on or next to its hex; a walled hex is never struck).
+        // 201, r141: troops that strike nodes: each node on or next to a troop (the engine's `board::strike`; a
+        // walled hex is never struck).
         if w.troop_exposure > 0.0 && g.var(adversary::STAGE) >= world.hot(Hot::TroopNode) {
-            let steps = world.int("board.troop_steps").max(0) as i32;
+            let steps = 1;
             let troops: Vec<usize> = (0..tokens.len()).filter(|&x| tokens[x].troop > 0).collect();
             if steps > 0 && !troops.is_empty() {
                 for (h, t) in tokens.iter().enumerate() {
@@ -1820,7 +1829,6 @@ impl Eval {
                 v += w.tier_read * fill * self.tier_worth[(side == Side::Discord) as usize][tier - 1];
             }
         }
-        v += w.level * level.steps() as f64;
         // A resolved project counts in full, so letting one
         // fill never scores better than holding it back.
         for id in adversary::projects(g) {
@@ -1967,7 +1975,7 @@ impl Eval {
     }
 
     /// Unity so far, in Sway (each tip counts a full bucket at the base
-    /// size), and the Sway the target (`target_tips`, the purge's last step) needs.
+    /// size), and the Sway the target (`target_tips`) needs.
     fn unity_progress(&self, g: &GameState) -> (f64, f64) {
         let per = (self.tip_per_player * self.seats as i64) as f64;
         let tips = g.var(alignment::tips_key(Side::Unity)) as f64;
@@ -2969,7 +2977,6 @@ mod tests {
                 break;
             }
             let tokens = keys.read(&g);
-            let level = alignment::bar_level(&w, &g);
             let mut pieces = 0;
             for (h, t) in tokens.iter().enumerate() {
                 assert_eq!(t.adv_ambassador, g.tokens(h, ADV_AMBASSADOR));
@@ -2985,9 +2992,9 @@ mod tests {
                     assert_eq!(t.ambassador[s], g.tokens(h, common::ambassador(s)));
                 }
                 let city = common::is_city(&w, h) && t.adv_cube > 0;
-                pieces += adversary::against_bar(city, t.botnet, t.adv_ambassador, t.troop, level);
+                pieces += city as i64;
             }
-            assert_eq!(pieces, adversary::purge_count(&w, &g, level));
+            assert_eq!(pieces, adversary::purge_count(&w, &g));
             r.legal_actions_into(&g, &mut legal);
             let Some(a) = legal.get(step % legal.len().max(1)) else { break };
             g = r.apply_to(&g, a, None).expect("a legal action applies");

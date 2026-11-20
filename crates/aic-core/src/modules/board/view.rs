@@ -123,31 +123,80 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
             );
         }
     }
-    // Each adversary troop's next target (019): players see each hit coming.
+    // r141: the Strike and Redeploy icons shown a round ahead, and each garrison: what it guards and what it
+    // would strike (019: players see each hit coming).
+    let strike = adversary::line_ahead(w, g, &Op::Strike) || adversary::strike_slot_ahead(w, g);
+    let redeploy = adversary::line_ahead(w, g, &Op::Redeploy);
+    let troops: i64 = (0..g.hexes.len()).map(|h| g.tokens(h, TROOP)).sum();
+    if troops > 0 || strike || redeploy {
+        out.global(
+            "strike_ahead",
+            "Strike ahead",
+            strike as i64,
+            Some(1),
+            "1: the next adversary Card beat shows a Strike icon (or the research track is about to reach its Strike slot): every troop destroys one player node, research station or factory on or next to it",
+        );
+        out.global(
+            "redeploy_ahead",
+            "Redeploy ahead",
+            redeploy as i64,
+            Some(1),
+            "1: the next adversary Card beat shows a Redeploy icon: each troop not on or next to a corrupted city moves onto the nearest one",
+        );
+    }
+    // The guarding rule, said to the seat it stops: the corrupted sites in its reach that only a troop keeps it
+    // from liberating (no agent on them).
+    for s in 0..g.seats.len() {
+        let refused = (0..g.hexes.len())
+            .filter(|&h| {
+                corrupted(g, h)
+                    && site_kind(w, g, h).is_some()
+                    && g.tokens(h, ADV_AMBASSADOR) == 0
+                    && troop_guarded(w, g, h)
+                    && in_reach(w, g, s, h)
+            })
+            .count() as i64;
+        if refused > 0 {
+            out.seat(
+                s,
+                "liberate_refused",
+                "Liberate refused",
+                refused,
+                None,
+                "corrupted sites in your reach that can't be liberated: a troop is on or next to each (remove the troop or push it away first)",
+            );
+        }
+    }
     for h in 0..g.hexes.len() {
-        // 145: standing troops never march or strike (troops.md): no arrow for them.
-        let n = g.tokens(h, TROOP) - standing(g, h);
+        if g.tokens(h, TROOP) <= 0 {
+            continue;
+        }
+        let all = g.tokens(h, TROOP);
+        let s = if all > 1 { "s" } else { "" };
+        for x in guarded_sites(w, g, h) {
+            let doc = format!(
+                "adversary troop{s} at {} guard{} the corrupted {} at {}: it can't be liberated while a troop is on or next to it",
+                hex_name(w, h),
+                if all > 1 { "" } else { "s" },
+                site_kind(w, g, x).map_or("site", |k| k.name()),
+                hex_name(w, x)
+            );
+            out.arrow("guard", h, x, all, 0, &doc);
+        }
+        // 145: standing troops never strike (troops.md): no strike arrow for them.
+        let n = all - standing(g, h);
         if n <= 0 {
             continue;
         }
-        if let Some((t, rounds)) = troop_plan(w, g, h) {
-            let what = troop_targets_on(w, g, t)
-                .iter()
-                .map(|k| piece_name(k))
-                .collect::<Vec<_>>()
-                .join(", ");
-            let when = if rounds <= 1 {
-                "strikes it in the next adversary phase".to_string()
-            } else {
-                format!("strikes it in {rounds} adversary phases unless stopped")
-            };
+        for t in strike_targets(w, g, h) {
+            let what = troop_targets_on(w, g, t).iter().map(|k| piece_name(k)).collect::<Vec<_>>().join(", ");
+            let when = if strike { "a Strike is shown: it strikes in the next adversary Card beat" } else { "no Strike is shown yet" };
             let doc = format!(
-                "adversary troop{} at {} heading for {what} at {}: {when} (players choose among equally near targets)",
-                if n > 1 { "s" } else { "" },
+                "adversary troop{s} at {} can strike {what} at {}: {when} (one target a troop, the players choose)",
                 hex_name(w, h),
                 hex_name(w, t)
             );
-            out.arrow("troop", h, t, n, rounds, &doc);
+            out.arrow("troop", h, t, n, if strike { 1 } else { 2 }, &doc);
         }
     }
     // 293: each industrial zone's printed arrow to its city (kind `zone`: `count` the agents a corrupted factory

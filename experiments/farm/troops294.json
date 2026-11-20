@@ -1,0 +1,36 @@
+{
+  "name": "troops294",
+  "note": "294: the troops-and-winning smoke on the dev seeds: the judge on the three board pairs at d0 (the asked numbers: K 2, no starting cubes), then the same three with Dispatch and Liberate switched off (board.std_off 4,6: no ambassador is dispatched onto a corrupted station and nothing is liberated by the action), the hands-off arm that shows how far the research row runs when players leave its stations alone; then both again with 1 and with 2 starting cubes a country (adversary.research_start), the lever for feeding the row. Farm with `farm-seeds 36800 32 OUT troops294`.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]},
+    {"name": "bp_off", "set": ["board.std_off=4,6"]},
+    {"name": "br_off", "set": ["ai.boards=0,2", "board.std_off=4,6"]},
+    {"name": "pr_off", "set": ["ai.boards=1,2", "board.std_off=4,6"]},
+    {"name": "bp_s1", "set": ["adversary.research_start=1"]},
+    {"name": "br_s1", "set": ["ai.boards=0,2", "adversary.research_start=1"]},
+    {"name": "pr_s1", "set": ["ai.boards=1,2", "adversary.research_start=1"]},
+    {"name": "bp_off_s1", "set": ["board.std_off=4,6", "adversary.research_start=1"]},
+    {"name": "br_off_s1", "set": ["ai.boards=0,2", "board.std_off=4,6", "adversary.research_start=1"]},
+    {"name": "pr_off_s1", "set": ["ai.boards=1,2", "board.std_off=4,6", "adversary.research_start=1"]},
+    {"name": "bp_s2", "set": ["adversary.research_start=2"]},
+    {"name": "br_s2", "set": ["ai.boards=0,2", "adversary.research_start=2"]},
+    {"name": "pr_s2", "set": ["ai.boards=1,2", "adversary.research_start=2"]},
+    {"name": "bp_off_s2", "set": ["board.std_off=4,6", "adversary.research_start=2"]},
+    {"name": "br_off_s2", "set": ["ai.boards=0,2", "board.std_off=4,6", "adversary.research_start=2"]},
+    {"name": "pr_off_s2", "set": ["ai.boards=1,2", "board.std_off=4,6", "adversary.research_start=2"]}
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

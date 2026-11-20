@@ -822,7 +822,8 @@ def table_cost(gs, cfg, countries):
     """268: what a round costs a human at the table, three proxies from a read's counters (each a sum over the games,
     over their rounds): components moved a round (the adversary's ops, the tokens check's player moves and the
     production pieces); per-site checks a round (each site on the map times the passes that check every site, the
-    cities times growth's passes, each troop's march step, each agent Rally deals and each threat's location test); and
+    cities times growth's passes, each troop on the map (r141: a Strike or Redeploy icon looks at each; counted every
+    round, an upper bound), each agent Rally deals and each threat's location test); and
     once-a-round uses a seat a round, each something a player remembers with no marker on the table."""
     t, tc = cfg['tokens'], cfg['table_cost']
     comp = check = mem = rounds = seat_rounds = 0
@@ -832,7 +833,7 @@ def table_cost(gs, cfg, countries):
         rounds += r
         seat_rounds += r * seats
         comp += sum(g.get('adversary_ops') or [])
-        # A troop's step is already an adversary op: the tokens check's troop counters would count it again.
+        # A redeployed troop is already an adversary op: the tokens check's troop counter would count it again.
         comp += counter_sum(c, [k for k in t['player_counters'] if k not in tc['ops_already']], t['player_prefixes'])
         comp += counter_sum(c, tc['production_counters'])
         cities = sum(len(x['cities']) for x in countries[:seats])

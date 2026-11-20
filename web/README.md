@@ -44,7 +44,9 @@ data and random play; Undo and records stay.
   the debug view's generic chips (`panels.ts`).
 - **Checks:** `AIC_SWEEP_VIEW=player` sweeps it; `node
   scripts/player-play.mjs [--config three_seat.json] [--seed N] [--out DIR] [--size WxH]` plays a whole game by its
-  controls (random, passing least), saves the record, and fails on a cut piece on screen (`removed`).
+  controls (random, passing least), saves the record, and fails on a cut piece on screen (`cut-pieces.mjs`).
+  `node scripts/troops-play.mjs [--seed N] [--out DIR] [--search A-B]` clicks a game to the win by a small policy
+  (override atop it) and fails unless it saw a guard link, the Strike notice and *Liberate refused* (1 min).
 
 ## Using it
 
@@ -59,7 +61,7 @@ data and random play; Undo and records stay.
 - **Actions:** each seat panel offers that seat's legal actions, the view's `standard` ones included. AI board tracks
   (`seats[].board`): solid spaces uncovered, dashed under nodes, boxed the last uncovered. A `vars` track no module
   labels folds under *Unlabeled tracks*.
-- **Timeline:** Ctrl+Z undoes (every state is a replay of config + seed + actions). ⏮ ◀ ▶ ⏭, the slider,
+- **Timeline:** Ctrl+Z undoes. ⏮ ◀ ▶ ⏭, the slider,
   ← → Home End, Space to auto-play at 1x (4 steps a second), 4x or 16x; **Page Up / Down** jump between round
   starts. Clicking a log entry jumps to its step; acting from an earlier step drops the later actions, after
   asking. The log folds by phase; hovering a phase outlines its hexes.
@@ -104,34 +106,30 @@ release `aic-sim` (`AIC_SIM`); its environment variables and defaults are atop t
 
 - **Cases:** `CASES` in the script (`--quick` the first four, `--case c4-d0` one). For each, `aic-sim` saves
   records (greedy, or the case's agent); the sweep **watches** each step by step and **plays** as many
-  fresh games through the page at random (`AIC_SWEEP_SEEDS` a case and mode, 3; simulated from seed
-  `AIC_SWEEP_SEED`, 100).
+  fresh games through the page at random.
 - **Moments:** new rounds, prompts, the first of each key event and counter rise (`COUNTER_EVENTS` and its
   per-revision sets), the end: the checks at 1366×768, layout at the two larger sizes, and a screenshot (at most
   14 a game, plus the end and any failure).
 - **Fail the run** (exit 1): console errors and blocking dialogs, `stuck` (no legal action without an outcome),
   the error bar, page scroll, placeholder text (`undefined`, `NaN`), elements off screen with no scroll to them,
-  `hidden-target`, `clipped` (no ellipsis), `token-unknown`, `stale-word` (an old name for a house word on screen,
-  `STALE` in the script), `case` (`aic-sim` could not play it), `below-fold` (the player view's Draft / Keep
+  `hidden-target`, `clipped` (no ellipsis), `token-unknown`, `stale-word` (`STALE` in the script), `case` (`aic-sim` could not play it), `below-fold` (the player view's Draft / Keep
   buttons or turn panel scrolled out of view). **Reported for a look:** `no-control` (a legal action with no
   control on screen), `raw-id`, `truncated-no-hover`, `truncated`, overlaps, undrawn view tokens, steps over
-  150 ms, heap kept over 50 MB (the first fresh game, at the start and again at the end), `mark-over-number` (a highlight ring across a hex number) and
-  `warn-at-start` (a value drawn as a warning at a game's first phase, as a full allotment drawn as danger).
+  150 ms, heap kept over 50 MB, `mark-over-number` (a highlight ring across a hex number) and
+  `warn-at-start` (a value drawn as a warning at a game's first phase).
 - **Running it:** background it, the viewer served by a process outliving it; at most one sweep beside one browser lane. Don't rebuild `aic-sim` mid-sweep: its records load with a content-hash warning in the error
-  bar, which fails the run (`error-banner`). At r122 a case at one seed (a watched and a played game, ~270
-  captures) takes 6-10 min, a capture ~1.5 s (three sizes): all 27 cases about 4.5 h, so a hunt picks `--case`s
-  (289, r138, player view: six at one seed in 26 min).
+  bar, which fails the run (`error-banner`). A case at one seed (a watched and a played game, ~270 captures)
+  takes 6-10 min: all 27 cases about 4.5 h, so a hunt picks `--case`s (r138, player view: six in 26 min).
   Rules twin: `invariants_hold_in_random_games`.
 - **Output** in `web/sweep-out/`: `shots/`, `issues.json` (game, step, moment), `index.html`, `sheet-N.png`
-  contact sheets (failures framed red), the records. `AIC_SWEEP_VERBOSE=1` times each moment;
-  `AIC_SWEEP_SHOT_SIZE=1920x1080` shoots (and checks in full) at that size.
+  contact sheets (failures framed red), the records.
   Hooks: `window.aic` (main.ts), `scripts/cdp.mjs`.
 
 ## Other checks and the source
 
 - **Kept, never played:** `npm run probe -- DIR card_id...` (`scripts/legal-probe.mjs`): over saved records, the
   steps each card was held, legal to play and played. Legal, never played: the agents' valuation.
-- **Odd input:** `npm run odd` (`scripts/odd.mjs`) runs its scenarios (each a `scenario('NAME', ...)` in the script) against a served viewer (`AIC_URL`) and prints what each bad input said. `--only NAME`, `--seeds N`. About 30 s,
+- **Odd input:** `npm run odd` (`scripts/odd.mjs`) runs its scenarios against a served viewer (`AIC_URL`) and prints what each bad input said. `--only NAME`, `--seeds N`. About 30 s,
   one browser lane.
 - **Source:** `src/` is the viewer (`main.ts` wiring, `engine.ts` the wasm wrapper, `session.ts` the `Timeline`). `card/` is the printed card renderer, used by `tools/card-art/` and the card viewer (`cards/`):
   [tools/card-art/README.md](../tools/card-art/README.md).
@@ -179,8 +177,8 @@ elsewhere; a taken port says so and exits.
   `out/NAME/`, about 1 s a card); card backs (`renderBack`, View: Backs, each tier's keep cost),
   `node scripts/back-shots.mjs [--port N] [--out NAME]` (`out/NAME/backs.png`).
 - **Text sizes:** `npm run cards:fit` (about 2.5 s, no server) fits every player card headless with the real
-  renderer into `out/card-fit.json` (the repo root's `out/`, as for every `out/` path here; fields atop
+  renderer into `out/card-fit.json` (fields atop
   `scripts/cards-fit.mjs`; the target box runs 7.5 down to 6 pt, taking no height from a building's top box). It
-  prints cards below 7.5 pt and exits 1 on any overflow or any box below 7.5 pt (264: no recorded exceptions). A
+  prints cards below 7.5 pt and exits 1 on any overflow or any box below 7.5 pt. A
   box first tries smaller icons (`icons-1`) with its text at 7.5 pt, then steps the text down. It reads the working tree: re-run after an edit. AI board faces (`aiBoard` in the export, `powersHtml` in play) aren't fitted. A box's
   size follows its text's length: joining two clauses' icons on one row saves nothing (258).
