@@ -1,7 +1,7 @@
 # Scripts
 
 What each script under `scripts/` does, and its flags. Run from the repo root. A reader's docstring says in full
-what it prints; the `cards/*_read.py` readers take seconds.
+what it prints.
 
 - `wasm-smoke.mjs`: one game through the wasm package in Node. `wasm-parity.mjs`: replays aic-sim records of each
   `configs/variants.json` variant in wasm.
@@ -90,11 +90,13 @@ what it prints; the `cards/*_read.py` readers take seconds.
 - `bench/trace_lib.py`: the reader for a `run --trace` (reads.md): `walk()` a `Step` a line (round, phase, seat,
   actor, kind, action, options, event, ask), `summary()` (overrides, counters), `card_names()`, `hexes(countries)`.
   A table-time or trace script imports it (tests: `bench/test_trace_lib.py`).
+- `bench/breakdown.py DIR [--level 2] [--compare]`: table minutes a round by step and kind at 268's rates from judge
+  traces (278's recipe; the rulings' yardstick); seats acting at once count the slower, the draft at skilled rates (docstring).
 - `edit/replace.py SPEC.json [--dry-run]`: exact replacements from `[{file, old, new, count}]` (count 1 or `"all"`),
   all or nothing, line endings kept; `--word OLD NEW PATH...` a whole-word rename over tracked files. The hooks refuse
   `sed -i` and heredoc edits: use this, not a one-off script.
 - `bench/speed.py`: games a minute per agent: `pair OLD NEW` (each row on both in turn; `--old-config` for an OLD on
-  another baseline), `table`, `compare`, `specs SIM A B`; `check SIM` (~4 min, mostly planner, one thread, quiet machine) fails at
+  another baseline), `table`, `compare`, `specs SIM A B`; `check SIM` (~4 min, quiet machine) fails at
   1.3 × `speed_baseline.json` (`--update` moves it; across a revision: NO VERDICT). Runs a copy of each SIM. [speed.md](speed.md).
 - `bench/per_decision.py OLD_ROOT NEW_ROOT`: rounds, decisions and ms a game and a decision on the same seeds
   (`--games 16`+, speed.md; `--agent`, `--old-agent` the agents a change touched; `--first 1000` the first seed,
@@ -123,9 +125,7 @@ what it prints; the `cards/*_read.py` readers take seconds.
   `bench/resource_split.py READ...` (flags: docstring): the same per arm, board and round, and spent in won games.
 - `bench/read_lib.py READ[@LABEL]... [--base ARM] [--levels D,...] [--agent-arms] [--arm NAME=SPEC]... [--counters PREFIX...]
   [--cards ID...] [--md OUT]` (same forms): a paired read's tables (its docstring) by arm (`PAIR-ARM` variants) and
-  agent, against the base arm on the same pair, level and seed (`@LABEL`: that read's arms are `LABEL/arm`;
-  `--agent-arms`: `strategist:w.sink=1` is arm `sink1` of `strategist`; `--arm NAME=SPEC` names it, needed where two
-  collide). Its `games`, `paired_gap` and helpers are the library for an item's own reader.
+  agent, against the base arm on the same pair, level and seed (`@LABEL`, `--agent-arms`, `--arm`: docstring). Its `games`, `paired_gap` and helpers are the library for an item's own reader.
 - `bench/fresh_read.py NEW OLD [--md OUT] [--growth SLUG,...]` (same forms): a fresh read against the old revision's,
   old → new per agent and level (columns: docstring).
 - `bench/am_read.py READ[,READ...]` (same forms): antimatter by source, made and spent, per lever and

@@ -1,0 +1,15 @@
+{
+  "name": "s298tg",
+  "note": "298: three seats with greedy beside the judge (configs/three_seat.json, d0-d3): is the long 3-seat game the rules or the judge? Farm with `farm-seeds 36800 32 OUT s298tg`.",
+  "configs": [
+    "configs/three_seat.json"
+  ],
+  "variants": [
+    {"name": "bpr-base", "set": []}
+  ],
+  "difficulties": [0, 1, 2, 3],
+  "agents": ["greedy"],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

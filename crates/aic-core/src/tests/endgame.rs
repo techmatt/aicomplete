@@ -154,8 +154,29 @@ fn stage_one_takes_a_last_node_too() {
     assert_eq!(g.stats.counters["board.last_node_lost"], 1);
 }
 
-/// 139 (Offensive): a Discord card deals a threat onto the board's most
-/// threatened node hex instead of destroying the nodes there.
+/// r144 (Offensive, Matt 2026-11-20): the lowest-numbered node hex holding an agent or a troop takes the threat,
+/// however many stand elsewhere; with none, no threat is dealt.
+#[test]
+fn offensive_takes_the_lowest_numbered_node_hex_holding_an_agent_or_a_troop() {
+    use crate::modules::{effects, threats};
+    let (rules, g0) = lab(&[]);
+    let (a, b) = (rules.map.numbered(0, piece(0).node), rules.map.numbered(1, piece(1).node));
+    let deal = |g: &mut GameState| {
+        with_cx(&rules, |cx| effects::run(g, cx, &[Op::ThreatAtNode { tier: 2 }], &mut effects::Ctx::team().named("discord"))).unwrap();
+    };
+    let mut g = g0.clone();
+    put(&mut g, a, node(0), 1);
+    put(&mut g, b, node(1), 1);
+    deal(&mut g);
+    assert_eq!((threats::active(&g).len(), g.stats.counters["discord.offensive_idle"]), (threats::active(&g0).len(), 1), "no agent or troop by a node: none");
+    put(&mut g, a, TROOP, 1);
+    put(&mut g, b, ADV_AMBASSADOR, 3);
+    deal(&mut g);
+    let (t, _) = *threats::active(&g).last().unwrap();
+    assert_eq!(threats::tokens(&g, &t).first(), Some(&a), "the lower country's, though b holds more");
+}
+
+/// 139 (Offensive): a Discord card deals a threat onto a node hex holding agents instead of destroying the nodes there.
 #[test]
 fn a_discord_card_deals_a_threat_onto_the_most_threatened_node_hex() {
     use crate::modules::{effects, threats};

@@ -18,7 +18,7 @@ Project slots: Open, Open, Open.
   - Icons in the vocabulary this row doesn't use: New lab, Cells: cities, Cells: research stations, Botnet, Fallout, Dread, Blackout, Redeploy.
 - **Level 1: Sleeper Cells.** *Cells wake in every city.* When an Agent lands on a city, it falls at 3 agents, not 5.
 - **Level 2: War Footing.** *Every unanswered strike feeds the war machine.* When a threat executes uncountered, the adversary also gains 4 compute.
-- **Level 3: Arms Race.** *The labs build weapons, not cures.* Setup only.
+- **Level 3: Arms Race.** *The labs build weapons, not cures.* When the research track reaches a Garrison icon, each country takes 2 Troops, not 1.
 - **Level 4: War Economy.** *The whole economy marches.* Setup only.
 
 ## Event deck
@@ -36,10 +36,10 @@ Project slots: Open, Open, Open.
 | Fifth Column | 2 | Threat, each country: a tier-2 threat. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. |
 | Border War | 2 | Threat, each country: a tier-2 threat. Infiltrate: factories. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. |
 | Supply Lines | 2 | Threat, each country: a tier-1 and a tier-2 threat. Infiltrate: factories. Income: +1 compute a country a round. |
-| Redeployment | 2 | Threat, each country: a tier-2 threat. Infiltrate: cities. Redeploy: each Troop not on or next to a corrupted city moves onto the nearest corrupted city. |
+| Redeployment | 2 | Threat, each country: a tier-2 threat. Infiltrate: cities. Redeploy: each Troop moves onto its country's corrupted city nearest a player Node or Ambassador. |
 | Total Mobilization | 3 | Threat, each country: 2 tier-2 threats. Infiltrate: factories. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. |
 | Blitzkrieg | 3 | Threat, each country: 2 tier-2 threats. Infiltrate: cities. Infiltrate: research stations. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Each country: 1 Fallout lands next to its lowest-numbered corrupted city. |
-| Occupation | 3 | Threat, each country: 2 tier-2 threats. Infiltrate: research stations. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Redeploy: each Troop not on or next to a corrupted city moves onto the nearest corrupted city. |
+| Occupation | 3 | Threat, each country: 2 tier-2 threats. Infiltrate: research stations. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Redeploy: each Troop moves onto its country's corrupted city nearest a player Node or Ambassador. |
 | Naval Blockade | 3 | Threat, each country: 2 tier-2 threats. Infiltrate: coastal cities. Infiltrate: factories. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Until the end of next round, cities make no energy and no Discord. |
 
 ## Threats, tier 1
@@ -144,4 +144,4 @@ Each project resolves once, at once, in the compute step. Its compute in play is
 | Infiltration Drive | Diplomacy | 22 (22 / 44 / 66 / 88) | Each country: create 4 Agents on its lowest-numbered city not yet the adversary's. Then each country: 1 Fallout lands next to its lowest-numbered corrupted city. |
 | Accelerated Timetable | Universal | 20 (20 / 40 / 60 / 80) | Discard the top face-down card of the adversary's event deck, if any: the round cap comes a round sooner. Each country: an extra tier-2 threat, any tag. |
 | Grand Offensive | Universal | 24 (24 / 48 / 72 / 96) | Each country: this round's Infiltrate lines land again. Each country: create 2 Agents on its lowest-numbered factory not yet the adversary's. |
-| Martial Law | Security | 24 (24 / 48 / 72 / 96) | Each country: 2 Troops land on its lowest-numbered corrupted city with a Node or an Ambassador on or next to it (with none, they garrison). |
+| Martial Law | Security | 36 (36 / 72 / 108 / 144) | Each country: 2 Troops land on its lowest-numbered corrupted city with a Node or an Ambassador on or next to it (with none, they garrison). |

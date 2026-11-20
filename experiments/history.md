@@ -10,6 +10,7 @@ the findings are in the write-up.
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 298 overhaul 6: calibration (Redeploy, Arms Race, prices, the judge, rulebook, teach.md) | 144 | [298_overhaul_6_calibration](results/298_overhaul_6_calibration/README.md) |
 | 297 overhaul 5: the content sweep (events, troop content, Unity cards that remove Discord) | 143 | [297_overhaul_5_content_sweep](results/297_overhaul_5_content_sweep/README.md) |
 | 295 overhaul 4: ambassadors move or act once a round, Liberate is their act, node powers | 142 | [295_overhaul_4_ambassadors_node_powers](results/295_overhaul_4_ambassadors_node_powers/README.md) |
 | 294 overhaul 3: troops garrison, guard and Strike on an icon; the win is no corrupted city | 141 | [294_overhaul_3_troops_and_winning](results/294_overhaul_3_troops_and_winning/README.md) |

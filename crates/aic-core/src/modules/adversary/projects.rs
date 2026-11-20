@@ -360,6 +360,8 @@ fn resolve_project(g: &mut GameState, cx: &mut Cx, id: &str) -> Res {
         .expect("visible project");
     cx.tally(g, "adversary.projects_resolved", 1);
     cx.tally(g, &KeyBuf::new("adversary.project.").text(id), 1);
+    // 298: by round too (`adversary.project.<id>.rNN`), so a read can say which project landed its troops when.
+    cx.per_round(g, KeyBuf::new("adversary.project.").text(id).as_str(), 1);
     if g.var(FIRST_PROJECT) == 0 {
         cx.set_key(g, FIRST_PROJECT, g.round as i64);
         cx.tally(g, "adversary.first_project_round", g.round as i64);

@@ -1,0 +1,17 @@
+{
+  "name": "s298t",
+  "note": "298: the three-seat screen (configs/three_seat.json: Builder, Protector, Researcher at 3 countries), the judge, d0-d3: the config as derived (base), one corrupted city a country at setup (c1), and Liberate at 4 ambassadors (lib4). Farm with `farm-seeds 36800 32 OUT s298t`.",
+  "configs": [
+    "configs/three_seat.json"
+  ],
+  "variants": [
+    {"name": "bpr-base", "set": []},
+    {"name": "bpr-c1", "set": ["board.start_corrupted=1"]},
+    {"name": "bpr-lib4", "set": ["board.liberate_at=4"]}
+  ],
+  "difficulties": [0, 1, 2, 3],
+  "agents": ["strategist"],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

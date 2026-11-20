@@ -63,6 +63,8 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("board_difficulty_at", 0, 5, "the difficulty level from which the adversary board's `difficulty` line applies (267: the Militarist's War Footing, level 2's named rule)"),
     ParamSpec::list("research_at", 0, 30, "293: K, the research cubes a country that advance the adversary's research track one slot, at difficulty 0-4 (times the countries; 0: no track)"),
     ParamSpec::int("research_start", 0, 30, "293: research cubes a country on the adversary's track at setup"),
+    ParamSpec::int("arms_race_at", 0, 5, "r144: the difficulty level from which a research slot's troop line lands arms_race_troops more troops a country (the Militarist's Arms Race, level 3's named rule)"),
+    ParamSpec::int("arms_race_troops", 0, 3, "r144: the troops a country a research slot's troop line adds from arms_race_at (Arms Race)"),
 ];
 
 /// r80 (ruling #41): the adversary turn's three beats (275; r80 had four), printed as a strip on the adversary board, with the round

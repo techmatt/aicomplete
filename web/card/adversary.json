@@ -28,7 +28,7 @@
       "setup": [
         "Compute income 0 a country",
         "Infiltrate 1 a site",
-        "Research track: a slot every 2 cubes a country",
+        "Research track: a slot every 3 cubes a country",
         "Deck 5 / 5 / 3 (13 rounds)",
         "Sites print their corrupt numbers: city 5, station 3, factory 3"
       ],
@@ -56,7 +56,8 @@
       "name": "War Footing",
       "flavor": "Every unanswered strike feeds the war machine.",
       "setup": [
-        "Compute income 5 a country"
+        "Compute income 5 a country",
+        "Research track: a slot every 2 cubes a country"
       ],
       "rule": "When a threat executes uncountered, the adversary also gains 4 compute.",
       "new_rules": 1,
@@ -72,11 +73,11 @@
         "Compute income 10 a country",
         "Deck 5 / 3 / 3 (11 rounds)"
       ],
-      "rule": "",
-      "new_rules": 0,
-      "active_rules": 2,
-      "new_changes": 0,
-      "active_changes": 2
+      "rule": "When the research track reaches a Garrison icon, each country takes 2 Troops, not 1.",
+      "new_rules": 1,
+      "active_rules": 3,
+      "new_changes": 1,
+      "active_changes": 3
     },
     {
       "level": 4,
@@ -89,9 +90,9 @@
       ],
       "rule": "",
       "new_rules": 0,
-      "active_rules": 2,
+      "active_rules": 3,
       "new_changes": 0,
-      "active_changes": 2
+      "active_changes": 3
     }
   ]
 }

@@ -1,0 +1,20 @@
+{
+  "name": "s298r",
+  "note": "298: the gated Strike rider on the r144 build with the retaught judge (Matt's message 13713): the three board pairs, d0-d3, rider off (base) and on (home, board.strike_home=1). Farm with `farm-seeds 36800 32 OUT s298r`.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp-base", "set": []},
+    {"name": "br-base", "set": ["ai.boards=0,2"]},
+    {"name": "pr-base", "set": ["ai.boards=1,2"]},
+    {"name": "bp-home", "set": ["board.strike_home=1"]},
+    {"name": "br-home", "set": ["ai.boards=0,2", "board.strike_home=1"]},
+    {"name": "pr-home", "set": ["ai.boards=1,2", "board.strike_home=1"]}
+  ],
+  "difficulties": [0, 1, 2, 3],
+  "agents": ["strategist"],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

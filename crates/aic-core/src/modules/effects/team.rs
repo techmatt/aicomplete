@@ -69,18 +69,19 @@ pub(super) fn flip_station(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, each_count
     Ok(())
 }
 
-/// 139 (Offensive): a `tier` threat dealt with its first token on the most threatened node hex in scope.
+/// 139 (Offensive): a `tier` threat dealt with its first token on the lowest-numbered node hex in scope holding an
+/// agent or a troop (r144, Matt 2026-11-20, as Night Raid reads: the last "most" pick went; it was the node hex with
+/// the most agents and troops). With none, no threat.
 pub(super) fn threat_at_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, tier: u8) -> Res {
     let w = cx.world;
-    let threat = |g: &GameState, h: usize| g.tokens(h, ADV_AMBASSADOR) + g.tokens(h, TROOP);
-    // `max_by_key` takes the last of equals: walk from the top.
+    let held = |g: &GameState, h: usize| g.tokens(h, ADV_AMBASSADOR) + g.tokens(h, TROOP) > 0;
     let top = ctx.hexes(&w, g)
         .into_iter()
-        .rev()
-        .filter(|&h| node_owner(g, h).is_some())
-        .max_by_key(|&h| threat(g, h));
-    if let Some(h) = top {
-        threats::deal_at(g, cx, tier, h)?;
+        .filter(|&h| node_owner(g, h).is_some() && held(g, h))
+        .min_by_key(|&h| (w.map.hexes[h].country, w.map.hexes[h].number));
+    match top {
+        Some(h) => threats::deal_at(g, cx, tier, h)?,
+        None => cx.tally(g, "discord.offensive_idle", 1),
     }
     Ok(())
 }

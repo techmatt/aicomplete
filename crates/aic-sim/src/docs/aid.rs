@@ -161,8 +161,8 @@ first.
 country in hex order, destroys one player node, or player's station or factory, on or next to it (the players \
 choose; never anything on the Protector's node hex): destroyed unless protected (§13). The troop stays. Vigil: 1 \
 insight for each troop on or next to the Protector's nodes.
-4. **Redeploy** (an icon, rare): each troop not on or next to a corrupted city is picked up and put on the nearest \
-corrupted city by land (ties: the lower country, then hex number).
+4. **Redeploy** (an icon, rare): each troop is picked up and put on its country's corrupted city nearest a player \
+node or ambassador (ties: the lower hex number); with none, it stays.
 ";
 
 /// 274 (table time): every running number the table keeps sits on a track or a marker, read, never re-added.

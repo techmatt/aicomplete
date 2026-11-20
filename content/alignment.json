@@ -369,11 +369,11 @@
   "name": "Offensive",
   "side": "discord",
   "tiers": [
-   {"text": "Deal a tier-2 threat with its token on the Node hex with the most Agents and Troops.",
+   {"text": "Deal a tier-2 threat with its token on the lowest-numbered Node hex holding an Agent or a Troop (country by country).",
     "effects": [{"op": "threat_at_node", "tier": 2}]},
-   {"text": "Deal two tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
+   {"text": "Deal two tier-2 threats with their tokens on the lowest-numbered Node hex holding an Agent or a Troop (country by country).",
     "effects": [{"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]},
-   {"text": "Deal three tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
+   {"text": "Deal three tier-2 threats with their tokens on the lowest-numbered Node hex holding an Agent or a Troop (country by country).",
     "effects": [{"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]}
   ]
  },

@@ -122,4 +122,5 @@ def main():
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8", newline="\n")  # 298: a redirected table was CRLF on Windows
     main()

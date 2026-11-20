@@ -308,11 +308,6 @@ pub(super) fn rules_file_failures(files: &[(String, String)]) -> Vec<String> {
     out
 }
 
-/// 292 (Matt, 2026-11-19): the rulebook is frozen for the overhaul (seven items rebuild the adversary and the map
-/// side): it describes this revision and says so in its first line, and its "Rules revision N" line is checked
-/// against it, not `RULES_REVISION`. The item that rewrites the rulebook deletes this and checks the source's again.
-pub(super) const RULEBOOK_REVISION: u32 = 138;
-
 /// 184: the rulebook's opening "Rules revision N." names `rev` too (it said 77 at 78).
 pub(super) fn rulebook_revision_failure(text: &str, rev: u32) -> Option<String> {
     const LEAD: &str = "Rules revision ";
@@ -543,7 +538,7 @@ pub fn run(o: &Options) {
     failures.extend(rules_file_failures(&rules_new));
     failures.extend(revision_line_failures(&rules_new, aic_core::RULES_REVISION));
     if let Ok(book) = fs::read_to_string(RULEBOOK_MD) {
-        failures.extend(rulebook_revision_failure(&book, RULEBOOK_REVISION));
+        failures.extend(rulebook_revision_failure(&book, aic_core::RULES_REVISION));
     }
     let faces: Vec<(String, String)> = content().cards.iter().map(|c| (c.name.clone(), card_face(c).full_text())).collect();
     failures.extend(card_quote_failures(&rules_new, &faces));

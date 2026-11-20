@@ -45,7 +45,7 @@ next to it where printed. `Content::check` holds powers to the cards' check and 
 | Builder | Fortify I | Fortify, tier I | 1 chip | Target: Troops. Remove 1 Troop on it |
 | Builder | Fortify II | Fortify, tier II | 2 chips | Target: Troops. Remove up to 2 Troops on it; harden a facility on or next to it |
 | Protector | Outpost | node power | 2 energy | place 1 Node within 2 of yours; gain 2 credits |
-| Protector | Accord | node power | 2 energy | place 1 Node; gain 1 ambassador |
+| Protector | Accord | node power | 3 energy | place 1 Node; gain 1 ambassador |
 | Protector | Levy | node power | nothing | place 1 Node; gain 1 credit |
 | Protector | Patrol I | Patrol, tier I | 1 energy | Target: Agents or Troops. Push up to 3 from it, each to a hex next to it |
 | Protector | Patrol II | Patrol, tier II | 2 energy | Target: Agents or Troops. Push up to 3 from it, each to a hex next to it; harden a facility on or next to it |

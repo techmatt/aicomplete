@@ -36,11 +36,11 @@ and from "cubes onto the research track" lines ([harms.md](../harms.md): eight t
 the countries; `research_start` a country at setup) it spends K and its marker advances one slot, whose icon
 happens once as the marker arrives (in each country where it prints so); one check can advance several. **Slot 7
 is a loss** (end reason `research`). Counterintelligence Sweep and Arms Inspectors take cubes off, never a slot back.
-`research_at` all 0 is the off arm: no track, and stations make compute. **K is 2 a country** (Matt, 2026-11-19),
-and the row is fed to reach its late slots when the players don't deal with it. The
+`research_at` all 0 is the off arm: no track, and stations make compute. **K is a ladder step:** 3 a country at
+levels 0-1, 2 from level 2 (r144), and the row is fed to reach its late slots when the players don't deal with it. The
 Militarist's row, **War Research**: New factory, Cells: factories, Funding, **Garrison, Strike, Garrison** (each
 icon's text: [adversary-cards.md](../adversary-cards.md)): a Garrison makes 1 troop a country
-([troops.md](troops.md)).
+(2 from level 3, Arms Race's rule: `arms_race_at`, `arms_race_troops`; [troops.md](troops.md)).
 
 **Boards differ** by their row, their event mix and their one rule.
 
@@ -96,8 +96,8 @@ third from `THIRD_EFFECT_COST`, 18).
 - **Spending:** all of it at once onto the **leftmost** project (`compute_every` on every one first), one marker
   move a project; one holding its cost **resolves** at once. With no project left, compute is lost.
 - **Targets are read off the board as it resolves**, in each country, always the lowest-numbered (r143: no
-  project picks by "most agents"): "its lowest-numbered neutral factory", "its two lowest-numbered hexes holding a
-  player node and an agent" (Night Raid), "its lowest-numbered botnet"; Crackdown alone counts ("the hex holding
+  project picks by "most agents"; Night Raid: "its two lowest-numbered hexes holding a player node and an agent");
+  Crackdown alone counts ("the hex holding
   the most player ambassadors"). "Turns neutral": the owner's cube comes off. **Factory troops** (War Plants): 1
   troop on each corrupted factory's hex, none under a player ambassador. **The clock**: the top event card is discarded.
 - **Counterplay:** an ambassador on a source; Cyber's hacks; the Researcher's Hack II, off a project.
@@ -134,7 +134,7 @@ third from `THIRD_EFFECT_COST`, 18).
 | Infiltration Drive | diplomacy | 22 | big (2) |
 | Accelerated Timetable | universal | 20 | big (2) |
 | Grand Offensive | universal | 24 | big (2) |
-| Martial Law | security | 24 | small (1) |
+| Martial Law | security | 36 | small (1) |
 <!-- /generated -->
 
 Texts: [adversary-cards.md](../adversary-cards.md).
@@ -184,11 +184,11 @@ a Strike or Redeploy icon) are face up, as is last round's card (what escalates)
 <!-- generated: difficulty -->
 | Level | Name | Setup (incomes and threshold a country) | Mid-game rule (new) | Rules active | Tunable |
 |---|---|---|---|---|---|
-| 0 | **The Militarist** | Compute income 0 a country; Infiltrate 1 a site; Research track: a slot every 2 cubes a country; Deck 5 / 5 / 3 (13 rounds); Sites print their corrupt numbers: city 5, station 3, factory 3 | — | 0 | `compute_income`, `infiltrate_agents`, `research_at`, `corrupt_at` |
+| 0 | **The Militarist** | Compute income 0 a country; Infiltrate 1 a site; Research track: a slot every 3 cubes a country; Deck 5 / 5 / 3 (13 rounds); Sites print their corrupt numbers: city 5, station 3, factory 3 | — | 0 | `compute_income`, `infiltrate_agents`, `research_at`, `corrupt_at` |
 | 1 | **Sleeper Cells** | Compute income 3 a country | When an Agent lands on a city, it falls at 3 agents, not 5. | 1 | `botnet_spread_at`, `corrupt_cut`, `corrupt_cut_at` |
-| 2 | **War Footing** | Compute income 5 a country | When a threat executes uncountered, the adversary also gains 4 compute. | 2 | `board_difficulty_at` |
-| 3 | **Arms Race** | Compute income 10 a country; Deck 5 / 3 / 3 (11 rounds) | — | 2 | `stage2_removed`, `stage1_added` |
-| 4 | **War Economy** | Compute income 15 a country; Infiltrate 2 a city (1 a site from a station, factory or botnet line); Deck 3 / 4 / 4 (11 rounds) | — | 2 | `stage1_removed`, `stage2_added`, `stage3_added`, `stage_swap_at` |
+| 2 | **War Footing** | Compute income 5 a country; Research track: a slot every 2 cubes a country | When a threat executes uncountered, the adversary also gains 4 compute. | 2 | `board_difficulty_at` |
+| 3 | **Arms Race** | Compute income 10 a country; Deck 5 / 3 / 3 (11 rounds) | When the research track reaches a Garrison icon, each country takes 2 Troops, not 1. | 3 | `arms_race_at`, `arms_race_troops`, `stage2_removed`, `stage1_added` |
+| 4 | **War Economy** | Compute income 15 a country; Infiltrate 2 a city (1 a site from a station, factory or botnet line); Deck 3 / 4 / 4 (11 rounds) | — | 3 | `stage1_removed`, `stage2_added`, `stage3_added`, `stage_swap_at` |
 <!-- /generated -->
 
 **The ladder (Spirit Island's adversary card).** Levels are named and cumulative. Each adds

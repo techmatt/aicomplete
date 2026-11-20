@@ -64,7 +64,7 @@
     "level": 3,
     "name": "Arms Race",
     "flavor": "The labs build weapons, not cures.",
-    "rule": ""
+    "rule": "When the research track reaches a Garrison icon, each country takes 2 Troops, not 1."
    },
    {
     "level": 4,
@@ -266,7 +266,7 @@
     "id": "redeploy",
     "name": "Redeploy",
     "glyph": "troop with an arrow to a dark-framed city",
-    "text": "Redeploy: each Troop not on or next to a corrupted city moves onto the nearest corrupted city.",
+    "text": "Redeploy: each Troop moves onto its country's corrupted city nearest a player Node or Ambassador.",
     "effects": [
      {
       "op": "redeploy"
@@ -709,7 +709,7 @@
     }
    ],
    "twists": [],
-   "text": "Threat, each country: a tier-2 threat. Infiltrate: cities. Redeploy: each Troop not on or next to a corrupted city moves onto the nearest corrupted city.",
+   "text": "Threat, each country: a tier-2 threat. Infiltrate: cities. Redeploy: each Troop moves onto its country's corrupted city nearest a player Node or Ambassador.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted",
@@ -725,7 +725,8 @@
     "292 (r139): the pull's tag line is gone (one threat deck a tier, the next card dealt)",
     "293 (Matt, 2026-11-19): Spill and Grow lines cut: an event card is Infiltrate X plus escalate (its other lines stay)",
     "294 (Matt, 2026-11-19): \"Every adversary Troop takes 1 more step this round.\" became \"Redeploy: each Troop not on or next to a corrupted city moves onto the nearest corrupted city.\" (the march is gone: troops garrison, and move only on this icon)",
-    "294 (Matt, 2026-11-19): display name Forced March -> Redeployment (the id stays)"
+    "294 (Matt, 2026-11-19): display name Forced March -> Redeployment (the id stays)",
+    "298 (Matt, 2026-11-20): Redeploy's line: the troops go to the corrupted city nearest a player piece (it moved ~0 troops a game)"
    ],
    "reuses": null
   },
@@ -861,7 +862,7 @@
     }
    ],
    "twists": [],
-   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: research stations. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Redeploy: each Troop not on or next to a corrupted city moves onto the nearest corrupted city.",
+   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: research stations. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Redeploy: each Troop moves onto its country's corrupted city nearest a player Node or Ambassador.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted",
@@ -876,7 +877,8 @@
     "292 (r139): the pull's tag line is gone (one threat deck a tier, the next card dealt)",
     "293 (Matt, 2026-11-19): Spill and Grow lines cut: an event card is Infiltrate X plus escalate (its other lines stay)",
     "294 (Matt, 2026-11-19): \"Muster 1: each country, 1 Troop on its lowest-numbered factory (else city).\" became \"Strike: each Troop destroys 1 player Node, research station or factory on or next to it.\" (no event card musters: troops come from the research row, projects and Discord cards, and strike on this icon, shown a round ahead)",
-    "294 (Matt, 2026-11-19): \"Strike: each Troop destroys 1 player Node, research station or factory on or next to it.\" became \"Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Redeploy: each Troop not on or next to a corrupted city moves onto the nearest corrupted city.\" (a second, late Redeploy icon)"
+    "294 (Matt, 2026-11-19): \"Strike: each Troop destroys 1 player Node, research station or factory on or next to it.\" became \"Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Redeploy: each Troop not on or next to a corrupted city moves onto the nearest corrupted city.\" (a second, late Redeploy icon)",
+    "298 (Matt, 2026-11-20): Redeploy's line: the troops go to the corrupted city nearest a player piece (it moved ~0 troops a game)"
    ],
    "reuses": null
   },

@@ -56,6 +56,7 @@ def step(name, cmd, env=None, capture=False):
 # otherwise failed on until edited by hand).
 REVISION_LINES = [
     ('docs/rules/README.md', re.compile(r'(What the code implements, at rules revision )(\d+)')),
+    ('docs/rulebook.md', re.compile(r'(\*Rules revision )(\d+)')),
 ]
 
 

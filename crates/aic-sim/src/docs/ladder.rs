@@ -35,10 +35,11 @@ pub(super) struct Level {
 /// The engine dials that change play mid-game, and the level each starts at: each must sit at a level
 /// whose content names a rule, so no mid-game change goes unprinted. 270 (Matt, amendment 12344):
 /// `botnet_spread_at` is not one: each "Botnets spread" card prints its "(level N+)" (checked below).
-const MID_GAME_DIALS: [&str; 3] = [
+const MID_GAME_DIALS: [&str; 4] = [
     "adversary.corrupt_cut_at",
     "adversary.city_cut_at",
     "adversary.board_difficulty_at",
+    "adversary.arms_race_at",
 ];
 
 fn entry(l: &[i64], level: i64) -> i64 {
@@ -150,6 +151,11 @@ pub(super) fn ladder(r: &Rules) -> Vec<Level> {
     if compute > 0 {
         says("adversary.board_difficulty_at", format!("{compute} compute"));
     }
+    // r144: Arms Race prints its troop count ("2 Troops, not 1" at `arms_race_troops` 1).
+    let extra = int(r, "adversary.arms_race_troops");
+    if extra > 0 {
+        says("adversary.arms_race_at", format!("{} Troops, not 1", 1 + extra));
+    }
     // War Footing's words are the board's `difficulty` line's, one text.
     let at = int(r, "adversary.board_difficulty_at");
     if let Some(v) = board.levels.iter().find(|v| v.level == at) {
@@ -200,7 +206,7 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
         &["adversary.compute_income", "adversary.infiltrate_agents", "adversary.research_at", "adversary.corrupt_at"],
         &["adversary.botnet_spread_at", "adversary.corrupt_cut", "adversary.corrupt_cut_at"],
         &["adversary.board_difficulty_at"],
-        &["adversary.stage2_removed", "adversary.stage1_added"],
+        &["adversary.arms_race_at", "adversary.arms_race_troops", "adversary.stage2_removed", "adversary.stage1_added"],
         &["adversary.stage1_removed", "adversary.stage2_added", "adversary.stage3_added", "adversary.stage_swap_at"],
     ];
     let rows = ladder(r)

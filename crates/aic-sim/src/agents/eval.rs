@@ -414,6 +414,14 @@ pub struct Weights {
     /// (`keep_plan::sac_tags`): 0 every tag, the board's too; above 0 the cards' alone, plus `sac_tags - 1` of
     /// the hand's. The keep plan's twin is `plan_sac`.
     pub sac_tags: f64,
+    /// 298 (0: off; the judge 1), with `rally_read` on: the forecast a round ahead also reads the next Card beat's
+    /// Escalate (last round's card's types and the board rule's) and each corrupted factory's push, this share of
+    /// their agents ([`Eval::escalate_fore`]).
+    pub adv_read: f64,
+    /// 298 (0: off, the clock reads Unity; the judge 1): the win clock (`tempo_rounds`, horizon mode's rounds left,
+    /// the deck-clock penalty) paces off the win itself, the corrupted cities left at the team's liberation rate
+    /// so far ([`Eval::city_progress`]), not Unity tips.
+    pub lib_clock: f64,
     /// 288 (0: off, the four rates apart), above 0: one antimatter rate, this share of the value table's
     /// (`values.json` 18, or the spec's `t.resources.antimatter`), in credits: `antimatter` becomes it times the
     /// credit weight (so the keep plan's
@@ -734,6 +742,8 @@ impl Default for Weights {
             // 288 (D120; dev seeds, 480 games a cell): the cards' tags and the hand's, +0.2 ± 0.5 judge, +0.4 ± 0.6
             // greedy (the cards' alone -0.2 ± 0.2, -0.2 ± 0.5).
             sac_tags: 2.0,
+            adv_read: 0.0,
+            lib_clock: 0.0,
             // 288: the antimatter rates tied at 2/3 of the table's 18 (12 credits): +0.4 ± 1.9 judge, +2.3 ± 2.1
             // greedy on the dev seeds (the whole 18 +0.0 ± 2.1, +2.5 ± 2.3; a third +0.4, +1.9; the table itself
             // repriced to 2.22, -4.2 ± 1.8 judge). The engine and its kin (table mode, unscreened) keep it off.
@@ -836,6 +846,9 @@ pub struct Eval {
     liberate_on: bool,
     aligned_bonus: i64,
     tip_per_player: i64,
+    /// 298 (`w.lib_clock`): the map's city hexes and the corrupted cities the game starts with.
+    cities: Vec<usize>,
+    start_cities: f64,
     /// The seat with Wall, if a seat has it.
     wall_seat: Option<usize>,
     /// Each seat's Patience (075).
@@ -1133,6 +1146,8 @@ impl Eval {
             liberate_on: board::std_offered(&world, board::StandardAction::Liberate),
             aligned_bonus: world.int("board.aligned_bonus"),
             tip_per_player: world.int("alignment.tip_per_player"),
+            cities: (0..world.map.hexes.len()).filter(|&h| common::is_city(&world, h)).collect(),
+            start_cities: (world.int("board.start_corrupted") * world.map.countries.len() as i64) as f64,
             wall_seat: (0..seats).find(|&s| ai::board(&world, s).innate.passives.iter().any(|p| matches!(p, Op::Wall))),
             patient: std::array::from_fn(|s| s < seats && economy::patient(&world, s)),
             cube_power: std::array::from_fn(|s| {
@@ -1435,7 +1450,10 @@ impl Eval {
         let mut arriving: Vec<f64> = Vec::new();
         if w.rally_read > 0.0 {
             // 293: the Spill forecast (`spill_read`, 288's pick) and the seed forecast retired with Spill and seeding.
-            let fore = plan::next_infiltrate(&world, g);
+            let mut fore = plan::next_infiltrate(&world, g);
+            if w.adv_read > 0.0 {
+                self.escalate_fore(&world, g, &mut fore);
+            }
             // 275: one hex's arrivals (two Infiltrate lines) summed first: an ambassador cancels one of them.
             let mut due: Vec<(usize, f64)> = Vec::new();
             for (h, n) in fore {
@@ -1972,9 +1990,60 @@ impl Eval {
     /// [`Self::tempo_rounds`] to floor each its own way.
     fn win_clock(&self, g: &GameState) -> f64 {
         let clock = Self::cards_left(g) as f64;
+        if self.w.lib_clock > 0.0 {
+            let (left, rate) = self.city_progress(g);
+            return clock.min((left / rate).ceil() + self.w.win_lag);
+        }
         let (points, bar) = self.unity_progress(g);
         let to_win = ((bar - points).max(0.0) / self.unity_rate(g)).ceil() + self.w.win_lag;
         clock.min(to_win)
+    }
+
+    /// 298 (`w.adv_read`): the adversary's arrivals a round ahead beyond the card's Infiltrate lines, as the engine
+    /// runs them: the next Card beat's Escalate (`adversary::next_escalating`: last round's card's types and the
+    /// board rule's, Commandeered Plants: each site of the type not yet the adversary's that holds an agent takes 1
+    /// more; `adversary::escalate`), and each corrupted factory's push in the Income beat (its agents onto its
+    /// arrow's city, `adversary::factories_output`: not when an occupying troop, a player ambassador or a cordon
+    /// stops it, or the city can't take it, `plan::push_lands`). Each counts `adv_read` of its agents.
+    fn escalate_fore(&self, world: &aic_core::module::World, g: &GameState, fore: &mut Vec<(usize, f64)>) {
+        let r = self.w.adv_read;
+        for site in adversary::next_escalating(world, g) {
+            for c in 0..world.map.countries.len() {
+                for h in plan::infiltrate_sites(world, g, site, c) {
+                    if g.tokens(h, ADV_AMBASSADOR) > 0
+                        && !plan::prohibited_now(g, Step::Infiltrate, h)
+                        && !common::firewalled(g, h)
+                        && !plan::cordoned(world, g, h)
+                    {
+                        fore.push((h, r));
+                    }
+                }
+            }
+        }
+        for h in 0..g.hexes.len() {
+            let held = g.tokens(h, ADV_AMBASSADOR);
+            if held == 0 || g.tokens(h, FACTORY) == 0 || !common::corrupted(g, h) {
+                continue;
+            }
+            if board::occupied(g, h) || common::player_ambassador(g, h).is_some() || plan::cordoned(world, g, h) {
+                continue;
+            }
+            if let Some(t) = plan::factory_arrow(world, h).filter(|&t| plan::push_lands(world, g, t)) {
+                fore.push((t, held as f64 * r));
+            }
+        }
+    }
+
+    /// 298 (`w.lib_clock`; r141: the win is no corrupted city): the corrupted cities left, and the team's
+    /// liberation rate a round, the cities it has cut from the start so far over the round number (rounds begun, the current one included:
+    /// a slow read in round 2, as screened; a city
+    /// corrupted since counts against it), at least a twelfth of the starting cities a round; before the team has
+    /// a record (round 1), the starting cities over 6 rounds. Both are public: the map shows the cities.
+    fn city_progress(&self, g: &GameState) -> (f64, f64) {
+        let left = self.cities.iter().filter(|&&h| common::corrupted(g, h)).count() as f64;
+        let start = self.start_cities.max(1.0);
+        let rate = if g.round > 1 { ((start - left) / g.round as f64).max(start / 12.0) } else { start / 6.0 };
+        (left, rate.max(0.05))
     }
 
     /// Unity so far, in Sway (each tip counts a full bucket at the base
@@ -2012,8 +2081,13 @@ impl Eval {
             return 0.0;
         }
         let clock = Self::cards_left(g) as f64;
-        let (points, top) = self.unity_progress(g);
-        let need = (top - points).max(0.0) / self.unity_rate(g);
+        let need = if self.w.lib_clock > 0.0 {
+            let (left, rate) = self.city_progress(g);
+            left / rate
+        } else {
+            let (points, top) = self.unity_progress(g);
+            (top - points).max(0.0) / self.unity_rate(g)
+        };
         self.w.clock * (need - clock).max(0.0)
     }
 

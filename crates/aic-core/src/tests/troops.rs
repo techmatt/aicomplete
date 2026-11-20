@@ -25,22 +25,6 @@ fn counter(g: &GameState, k: &str) -> i64 {
     g.stats.counters.get(k).copied().unwrap_or(0)
 }
 
-/// The walk over land from `from` to every hex (`None`: no land path), as Redeploy counts it.
-fn land_walk(m: &Map, from: usize) -> Vec<Option<u32>> {
-    let mut dist = vec![None; m.hexes.len()];
-    dist[from] = Some(0);
-    let mut queue = std::collections::VecDeque::from([from]);
-    while let Some(h) = queue.pop_front() {
-        for &n in &m.hexes[h].neighbors {
-            if dist[n].is_none() && land(m, n) {
-                dist[n] = Some(dist[h].unwrap() + 1);
-                queue.push_back(n);
-            }
-        }
-    }
-    dist
-}
-
 /// A country's cities, lowest-numbered first.
 fn cities_of(m: &Map, c: usize) -> Vec<usize> {
     let mut out: Vec<usize> = cities(m).into_iter().filter(|&h| m.hexes[h].country as usize == c).collect();
@@ -529,9 +513,15 @@ fn a_strike_taking_a_seats_last_node_ends_the_game() {
     put(&mut g, f, cube(1), 1);
     put(&mut g, t1, TROOP, 1);
     put(&mut g, f, TROOP, 1);
-    // A corrupted city neither troop guards, for the card's Redeploy to move them onto, were it to run.
-    let far = cities(m).into_iter().find(|&h| m.distance(h, t1) > 1 && m.distance(h, f) > 1).expect("a city away from both troops");
-    put(&mut g, far, ADV_CUBE, 1);
+    // A corrupted city in each country away from both troops, for the card's Redeploy to move them onto, were it to
+    // run (r144: each troop goes to its own country's).
+    let fars: Vec<usize> = (0..2)
+        .map(|c| cities_of(m, c).into_iter().find(|&h| m.distance(h, t1) > 1 && m.distance(h, f) > 1).expect("a city away from both troops"))
+        .collect();
+    for &h in &fars {
+        put(&mut g, h, ADV_CUBE, 1);
+    }
+    let far = fars[0];
     {
         let mut moved = g.clone();
         redeploy(&rules, &mut moved);
@@ -548,6 +538,24 @@ fn a_strike_taking_a_seats_last_node_ends_the_game() {
     assert_eq!((g.tokens(t1, TROOP), g.tokens(f, TROOP), g.tokens(far, TROOP)), (1, 1, 0));
     let o = g.outcome.as_ref().expect("the game ended");
     assert!(!o.won && o.reason == "node", "{o:?}");
+}
+
+/// r144 (`board.strike_home` 1, the gated rider): a striking troop also sends one player ambassador on or next to
+/// it back to its owner's supply, with or without a piece to destroy; off, ambassadors stay.
+#[test]
+fn a_strike_sends_home_an_ambassador_by_the_troop_when_the_rider_is_on() {
+    for (on, home) in [("board.strike_home=0", 0), ("board.strike_home=1", 1)] {
+        let (rules, mut g) = lab_with(&[], &[on]);
+        let m = &rules.map;
+        let t = (0..m.hexes.len()).find(|&h| land(m, h) && m.hexes[h].country == 0).unwrap();
+        let x = m.hexes[t].neighbors.iter().copied().find(|&h| land(m, h)).unwrap();
+        put(&mut g, t, TROOP, 1);
+        put(&mut g, x, ambassador(0), 1);
+        let supply = g.resource(0, Resource::Ambassadors);
+        strike(&rules, &mut g);
+        assert_eq!((g.tokens(x, ambassador(0)), g.resource(0, Resource::Ambassadors) - supply), (1 - home, home), "{on}");
+        assert_eq!(counter(&g, "board.troop_sent_home"), home);
+    }
 }
 
 /// A protection absorbs a troop's hit as it does any destruction: hardening is spent, the piece and the troop
@@ -570,110 +578,90 @@ fn hardening_absorbs_a_strike() {
 
 // ---------- Redeploy ----------
 
-/// On a Redeploy a troop not on or next to a corrupted city is put on the nearest corrupted city, counted as a walk over land;
-/// ties go to the lower country, then the lower hex number.
+/// r144 (Matt, 2026-11-20): on a Redeploy each troop moves onto its own country's corrupted city nearest a player
+/// piece (a node or an ambassador; distance in hexes), wherever it stood, the whole stack at once; one already there
+/// stays. Moving the piece moves the destination.
 #[test]
-fn a_troop_guarding_nothing_redeploys_onto_the_nearest_corrupted_city() {
+fn a_redeploy_takes_each_troop_to_its_countrys_corrupted_city_nearest_a_player_piece() {
     let (rules, g0) = lab(&[]);
     let m = &rules.map;
-    let all = cities(m);
-    let spots: Vec<usize> = (0..m.hexes.len()).filter(|&h| land(m, h) && all.iter().all(|&c| m.distance(h, c) > 1)).collect();
-    let pairs = |t: usize| {
-        let d = land_walk(m, t);
-        let all = all.clone();
-        all.clone().into_iter().flat_map(move |a| all.clone().into_iter().map(move |b| (a, b))).filter_map(move |(a, b)| Some((t, a, b, d[a]?, d[b]?)))
+    let w = rules.world();
+    assert!((0..m.hexes.len()).all(|h| (0..g0.seats.len()).all(|s| g0.tokens(h, node(s)) == 0 && g0.tokens(h, ambassador(s)) == 0)));
+    let cs = cities_of(m, 0);
+    assert!(cs.len() >= 2);
+    let (a, b) = (cs[0], cs[1]);
+    // A land hex next to `x` and farther from `y`: where a piece makes `x` the nearer city.
+    let by = |x: usize, y: usize| {
+        (0..m.hexes.len()).find(|&h| land(m, h) && m.distance(h, x) == 1 && m.distance(h, y) > 1).expect("a hex by one city only")
     };
-    // The nearer city wins though the farther one comes first in country and number order.
-    let (t, a, b, ..) = spots
-        .iter()
-        .flat_map(|&t| pairs(t))
-        .find(|&(_, a, b, da, db)| da < db && order(m, a) > order(m, b))
-        .expect("a troop nearer the higher-numbered of two cities");
+    let t = m.countries[0].hexes.iter().copied().find(|&h| land(m, h) && h != a && h != b).unwrap();
     let mut g = g0.clone();
     put(&mut g, a, ADV_CUBE, 1);
     put(&mut g, b, ADV_CUBE, 1);
     put(&mut g, t, TROOP, 2);
+    put(&mut g, by(b, a), node(0), 1);
+    assert_eq!(board::redeploy_spot(&w, &g, 0), Some(b));
     redeploy(&rules, &mut g);
-    assert_eq!((g.tokens(t, TROOP), g.tokens(a, TROOP), g.tokens(b, TROOP)), (0, 2, 0), "the whole stack, to the nearer city");
+    assert_eq!((g.tokens(t, TROOP), g.tokens(a, TROOP), g.tokens(b, TROOP)), (0, 0, 2), "the whole stack, to the city by the node");
     assert_eq!((counter(&g, "board.redeploys"), counter(&g, "board.troops_redeployed")), (1, 2));
-    // There it guards: a second Redeploy leaves it.
+    // Already there: it stays.
     redeploy(&rules, &mut g);
-    assert_eq!(g.tokens(a, TROOP), 2);
-
-    // Equally near: the lower country, then the lower hex number (a pair in two countries where the map has one).
-    let ties: Vec<(usize, usize, usize)> = spots
-        .iter()
-        .flat_map(|&t| pairs(t))
-        .filter(|&(_, a, b, da, db)| da == db && order(m, a) < order(m, b))
-        .map(|(t, a, b, ..)| (t, a, b))
-        .collect();
-    let split = ties.iter().find(|&&(_, a, b)| m.hexes[a].country != m.hexes[b].country && m.hexes[a].number > m.hexes[b].number);
-    let &(t, a, b) = split.or(ties.first()).expect("a troop equally near two cities");
-    let mut g = g0.clone();
-    put(&mut g, a, ADV_CUBE, 1);
-    put(&mut g, b, ADV_CUBE, 1);
-    put(&mut g, t, TROOP, 1);
+    assert_eq!((g.tokens(b, TROOP), counter(&g, "board.redeploy_stayed")), (2, 2));
+    // An ambassador by the other city, and the node gone: the troops follow the piece.
+    let n = by(b, a);
+    put(&mut g, n, node(0), -1);
+    put(&mut g, by(a, b), ambassador(1), 1);
     redeploy(&rules, &mut g);
-    assert_eq!((g.tokens(a, TROOP), g.tokens(b, TROOP), total(&g, TROOP)), (1, 0, 1));
+    assert_eq!((g.tokens(a, TROOP), g.tokens(b, TROOP)), (2, 0));
+    // A troop of another country never crosses: with no corrupted city in its own country it stays.
+    let other = m.countries[1].hexes.iter().copied().find(|&h| land(m, h)).unwrap();
+    put(&mut g, other, TROOP, 1);
+    redeploy(&rules, &mut g);
+    assert_eq!((g.tokens(other, TROOP), g.tokens(a, TROOP)), (1, 2));
 }
 
-/// A troop on or next to a corrupted city stays on a Redeploy (one on a corrupted factory or station away from any
-/// leaves it); so does every troop when no corrupted city can be reached, a standing troop, and a troop whose only
-/// destination is under the Protector's node (Wall).
+/// With no corrupted city in its country, or no player piece on the map, a troop stays on a Redeploy; so does a
+/// standing troop. A city under the Protector's node is no destination (Wall): the next nearest is.
 #[test]
-fn a_redeploy_leaves_a_guarding_troop_and_one_with_nowhere_to_go() {
+fn a_redeploy_leaves_a_troop_with_nowhere_to_go_and_skips_a_walled_city() {
     let (rules, g0) = lab(&[]);
     let m = &rules.map;
-    let all = cities(m);
-    let t = (0..m.hexes.len()).find(|&h| land(m, h) && all.iter().all(|&c| m.distance(h, c) > 1)).unwrap();
-    let d = land_walk(m, t);
-    let mut near: Vec<usize> = all.iter().copied().filter(|&c| d[c].is_some()).collect();
-    near.sort_by_key(|&c| (d[c], order(m, c)));
-    assert!(near.len() >= 2);
+    let cs = cities_of(m, 0);
+    let (a, b) = (cs[0], cs[1]);
+    let t = m.countries[0].hexes.iter().copied().find(|&h| land(m, h) && !cs.contains(&h)).unwrap();
     // No corrupted city: it stays.
     let mut g = g0.clone();
     put(&mut g, t, TROOP, 2);
+    put(&mut g, a, node(0), 1);
     let before = g.hexes.clone();
     redeploy(&rules, &mut g);
     assert_eq!(g.hexes, before);
     assert_eq!((counter(&g, "board.redeploy_stayed"), counter(&g, "board.troops_redeployed")), (2, 0));
-    // A troop on or next to a corrupted city stays, though another corrupted city stands elsewhere.
-    for at in std::iter::once(near[0]).chain(m.hexes[near[0]].neighbors.iter().copied().filter(|&h| land(m, h) && !all.contains(&h)).take(1)) {
-        let mut g = g0.clone();
-        put(&mut g, near[0], ADV_CUBE, 1);
-        put(&mut g, near[1], ADV_CUBE, 1);
-        put(&mut g, at, TROOP, 1);
-        let before = g.hexes.clone();
-        redeploy(&rules, &mut g);
-        assert_eq!(g.hexes, before, "a troop at {at}");
-    }
-    // A corrupted factory or research station is not a city: a troop on one leaves it for the corrupted city.
-    for site in [FACTORY, STATION] {
-        let mut g = g0.clone();
-        put(&mut g, near[0], ADV_CUBE, 1);
-        put(&mut g, t, site, 1);
-        put(&mut g, t, ADV_CUBE, 1);
-        put(&mut g, t, TROOP, 1);
-        redeploy(&rules, &mut g);
-        assert_eq!((g.tokens(t, TROOP), g.tokens(near[0], TROOP)), (0, 1), "{site}");
-    }
+    // No player piece anywhere: it stays.
+    let mut g = g0.clone();
+    put(&mut g, a, ADV_CUBE, 1);
+    put(&mut g, t, TROOP, 1);
+    let before = g.hexes.clone();
+    redeploy(&rules, &mut g);
+    assert_eq!(g.hexes, before);
     // A standing troop never Redeploys.
     let mut g = g0.clone();
-    put(&mut g, near[0], ADV_CUBE, 1);
+    put(&mut g, a, ADV_CUBE, 1);
+    put(&mut g, b, node(0), 1);
     put(&mut g, t, TROOP, 1);
     set_var(&mut g, board::stand_key(t), 1);
     redeploy(&rules, &mut g);
     assert_eq!(g.tokens(t, TROOP), 1);
-    // Wall: the nearest corrupted city under the Protector's node is no destination; the next one is.
+    // Wall: a corrupted city under the Protector's node (seat 1 in the lab) is no destination; the next one is.
     let mut g = g0.clone();
-    put(&mut g, near[0], ADV_CUBE, 1);
-    put(&mut g, near[0], node(1), 1);
+    put(&mut g, a, ADV_CUBE, 1);
+    put(&mut g, a, node(1), 1);
     put(&mut g, t, TROOP, 1);
     redeploy(&rules, &mut g);
-    assert_eq!((g.tokens(t, TROOP), g.tokens(near[0], TROOP)), (1, 0), "only a walled city: it stays");
-    put(&mut g, near[1], ADV_CUBE, 1);
+    assert_eq!((g.tokens(t, TROOP), g.tokens(a, TROOP)), (1, 0), "only a walled city: it stays");
+    put(&mut g, b, ADV_CUBE, 1);
     redeploy(&rules, &mut g);
-    assert_eq!((g.tokens(t, TROOP), g.tokens(near[0], TROOP), g.tokens(near[1], TROOP)), (0, 0, 1));
+    assert_eq!((g.tokens(t, TROOP), g.tokens(a, TROOP), g.tokens(b, TROOP)), (0, 0, 1));
 }
 
 /// Redeployment's icon, through the Card beat: the card's Redeploy line moves the troop.
@@ -689,6 +677,8 @@ fn an_event_cards_redeploy_line_moves_the_troops() {
     for &c in &all {
         put(&mut g, c, ADV_CUBE, 1);
     }
+    // r144: the troops go to the corrupted city nearest a player piece.
+    put(&mut g, t, node(0), 1);
     set_pile(&mut g, NEXT, &[card.id.as_str()]);
     run(&rules, &mut g);
     answer_all(&rules, &mut g);

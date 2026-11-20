@@ -204,7 +204,7 @@
     "id": "redeploy",
     "name": "Redeploy",
     "glyph": "troop with an arrow to a dark-framed city",
-    "text": "Redeploy: each Troop not on or next to a corrupted city moves onto the nearest corrupted city.",
+    "text": "Redeploy: each Troop moves onto its country's corrupted city nearest a player Node or Ambassador.",
     "effects": [
      {
       "op": "redeploy"
@@ -229,7 +229,7 @@
     "level": 3,
     "name": "Arms Race",
     "flavor": "The labs build weapons, not cures.",
-    "rule": ""
+    "rule": "When the research track reaches a Garrison icon, each country takes 2 Troops, not 1."
    },
    {
     "level": 4,
@@ -547,7 +547,7 @@
     }
    ],
    "twists": [],
-   "text": "Threat, each country: a tier-2 threat. Infiltrate: cities. Redeploy: each Troop not on or next to a corrupted city moves onto the nearest corrupted city.",
+   "text": "Threat, each country: a tier-2 threat. Infiltrate: cities. Redeploy: each Troop moves onto its country's corrupted city nearest a player Node or Ambassador.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted",
@@ -655,7 +655,7 @@
     }
    ],
    "twists": [],
-   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: research stations. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Redeploy: each Troop not on or next to a corrupted city moves onto the nearest corrupted city.",
+   "text": "Threat, each country: 2 tier-2 threats. Infiltrate: research stations. Infiltrate: cities. Strike: each Troop destroys 1 player Node, research station or factory on or next to it. Redeploy: each Troop moves onto its country's corrupted city nearest a player Node or Ambassador.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or corrupted",

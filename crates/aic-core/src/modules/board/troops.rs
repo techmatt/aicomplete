@@ -47,7 +47,12 @@ pub fn strike(g: &mut GameState, cx: &mut Cx) -> Res {
             if lost(g) || g.is_over() {
                 return Ok(());
             }
-            if !strike_from(g, cx, h)? {
+            let hit = strike_from(g, cx, h)?;
+            if lost(g) || g.is_over() {
+                return Ok(());
+            }
+            let home = w.int("board.strike_home") > 0 && send_home(g, cx, h)?;
+            if !hit && !home {
                 break;
             }
         }
@@ -80,25 +85,35 @@ pub fn strike(g: &mut GameState, cx: &mut Cx) -> Res {
     Ok(())
 }
 
-/// Redeploy (an icon on an event card, rare): each troop not on or next to a corrupted city moves onto the nearest
-/// corrupted city, counted as a walk over land (ties: the lower country, then hex number). A troop on a corrupted
-/// factory whose city is free leaves it. A city under the Protector's node is no destination (Wall); with none
-/// to reach, the troop stays. (The first reading tried, "each troop guarding no corrupted site", moved a troop in
-/// 1 of 96 hands-off games: a garrison always starts on a corrupted site.)
+/// Whether hex `h` holds a player piece: any seat's node or ambassador.
+fn player_piece(g: &GameState, h: usize) -> bool {
+    (0..g.seats.len()).any(|s| g.tokens(h, node(s)) > 0 || g.tokens(h, ambassador(s)) > 0)
+}
+
+/// Where a Redeploy sends country `c`'s troops (r144, Matt 2026-11-20): its corrupted city nearest a player piece
+/// (a node or an ambassador; distance in hexes; ties: the lower hex number). A city under the Protector's node is no
+/// destination (Wall). None: no corrupted city, or no player piece on the map.
+pub fn redeploy_spot(w: &World, g: &GameState, c: u8) -> Option<usize> {
+    let pieces: Vec<usize> = (0..g.hexes.len()).filter(|&x| player_piece(g, x)).collect();
+    (0..g.hexes.len())
+        .filter(|&x| w.map.hexes[x].country == c && corrupted_city(w, g, x) && !walled(w, g, x))
+        .filter_map(|x| pieces.iter().map(|&p| w.map.distance(x, p)).min().map(|d| (d, w.map.hexes[x].number, x)))
+        .min()
+        .map(|(_, _, x)| x)
+}
+
+/// Redeploy (an icon on an event card, rare; r144, Matt 2026-11-20): each troop moves onto its country's corrupted
+/// city nearest a player piece ([`redeploy_spot`]); one already there stays, and with no such city it stays. So a
+/// Redeploy brings the garrisons to where the players are working: they guard the city being liberated and the next
+/// Strike finds pieces beside them. (r141-r143 moved only troops not on or next to a corrupted city, onto the
+/// nearest one: about 0 troops a game, as a garrison always starts on a corrupted site.)
 pub fn redeploy(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     cx.tally(g, "board.redeploys", 1);
     cx.per_round(g, "map.redeploys", 1);
-    let open = vec![false; g.hexes.len()];
     for (h, n) in stacks(&w, g) {
-        if next_to(&w, h, |x| corrupted_city(&w, g, x)) {
-            continue;
-        }
-        let from = land_distances(&w, &open, std::iter::once(h));
-        let to = (0..g.hexes.len())
-            .filter(|&x| corrupted_city(&w, g, x) && !walled(&w, g, x) && from[x].is_some())
-            .min_by_key(|&x| (from[x], w.map.hexes[x].country, w.map.hexes[x].number));
-        let Some(to) = to else {
+        let to = redeploy_spot(&w, g, w.map.hexes[h].country);
+        let Some(to) = to.filter(|&to| to != h) else {
             cx.tally(g, "board.redeploy_stayed", n);
             continue;
         };
@@ -151,28 +166,35 @@ pub fn walled(w: &World, g: &GameState, h: usize) -> bool {
     node_owner(g, h).is_some_and(|s| has_wall(w, s))
 }
 
-/// Walking distance over land from the nearest of `sources`, for every hex
-/// (`None`: no land path). Troops never enter ocean, and some pieces print
-/// ocean between hexes, so straight-line distance would strand a troop.
-fn land_distances(w: &World, closed: &[bool], sources: impl Iterator<Item = usize>) -> Vec<Option<u32>> {
-    let mut dist: Vec<Option<u32>> = vec![None; w.map.hexes.len()];
-    let mut queue = std::collections::VecDeque::new();
-    for h in sources {
-        if dist[h].is_none() {
-            dist[h] = Some(0);
-            queue.push_back(h);
+/// r144 (`board.strike_home`): a striking troop at `h` also sends home one player ambassador on or next to it
+/// (players choose which; it returns to its owner's supply). The Protector's Wall and a no-Strike token shield
+/// the hex as they shield a strike. Returns false when none stood there.
+fn send_home(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
+    let w = cx.world;
+    let mut spots: Vec<(usize, usize)> = Vec::new();
+    for x in within(&w, h, 1) {
+        if walled(&w, g, x) || plan::prohibited_now(g, Step::Strike, x) {
+            continue;
         }
-    }
-    while let Some(h) = queue.pop_front() {
-        let d = dist[h].unwrap_or(0);
-        for &n in &w.map.hexes[h].neighbors {
-            if dist[n].is_none() && !is_ocean(w, n) && !closed[n] {
-                dist[n] = Some(d + 1);
-                queue.push_back(n);
+        for s in 0..g.seats.len() {
+            if g.tokens(x, ambassador(s)) > 0 {
+                spots.push((x, s));
             }
         }
     }
-    dist
+    let opts = spots.iter().map(|&(x, s)| opt(format!("Seat {s}'s ambassador at {}", hex_name(&w, x)))).collect();
+    let prompt = || format!("Strike: the adversary troop at {} sends which ambassador home?", hex_name(&w, h));
+    let Some(i) = cx.choose_loss(0, prompt, opts)? else {
+        return Ok(false);
+    };
+    let (x, s) = spots[i];
+    if take_ambassadors(g, cx, s, x, 1) > 0 {
+        cx.add_resource(g, s, Resource::Ambassadors, 1);
+        cx.note(Some(x), || format!("The adversary troop at {} sends Seat {s}'s ambassador at {} home", hex_name(&w, h), hex_name(&w, x)));
+        cx.tally(g, "board.troop_sent_home", 1);
+        cx.per_round(g, "map.troop_sent_home", 1);
+    }
+    Ok(true)
 }
 
 /// One adversary troop at `h` strikes a target on or next to its hex

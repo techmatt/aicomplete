@@ -1,0 +1,149 @@
+{
+  "name": "s298a",
+  "note": "298: a lever screen (mkspec.py), the three board pairs crossed with the arms.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-base",
+      "set": [
+        "adversary.arms_race_at=5"
+      ]
+    },
+    {
+      "name": "br-base",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.arms_race_at=5"
+      ]
+    },
+    {
+      "name": "pr-base",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.arms_race_at=5"
+      ]
+    },
+    {
+      "name": "bp-arms",
+      "set": []
+    },
+    {
+      "name": "br-arms",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr-arms",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp-price",
+      "set": [
+        "projects.martial_law.cost=36",
+        "board.ambassador_credits=20",
+        "ais.protector.powers.1.cost=[[\"energy\",3]]",
+        "board.remove_ambassadors=3"
+      ]
+    },
+    {
+      "name": "br-price",
+      "set": [
+        "ai.boards=0,2",
+        "projects.martial_law.cost=36",
+        "board.ambassador_credits=20",
+        "ais.protector.powers.1.cost=[[\"energy\",3]]",
+        "board.remove_ambassadors=3"
+      ]
+    },
+    {
+      "name": "pr-price",
+      "set": [
+        "ai.boards=1,2",
+        "projects.martial_law.cost=36",
+        "board.ambassador_credits=20",
+        "ais.protector.powers.1.cost=[[\"energy\",3]]",
+        "board.remove_ambassadors=3"
+      ]
+    },
+    {
+      "name": "bp-home",
+      "set": [
+        "projects.martial_law.cost=36",
+        "board.ambassador_credits=20",
+        "ais.protector.powers.1.cost=[[\"energy\",3]]",
+        "board.remove_ambassadors=3",
+        "board.strike_home=1"
+      ]
+    },
+    {
+      "name": "br-home",
+      "set": [
+        "ai.boards=0,2",
+        "projects.martial_law.cost=36",
+        "board.ambassador_credits=20",
+        "ais.protector.powers.1.cost=[[\"energy\",3]]",
+        "board.remove_ambassadors=3",
+        "board.strike_home=1"
+      ]
+    },
+    {
+      "name": "pr-home",
+      "set": [
+        "ai.boards=1,2",
+        "projects.martial_law.cost=36",
+        "board.ambassador_credits=20",
+        "ais.protector.powers.1.cost=[[\"energy\",3]]",
+        "board.remove_ambassadors=3",
+        "board.strike_home=1"
+      ]
+    },
+    {
+      "name": "bp-k3",
+      "set": [
+        "projects.martial_law.cost=36",
+        "board.ambassador_credits=20",
+        "ais.protector.powers.1.cost=[[\"energy\",3]]",
+        "board.remove_ambassadors=3",
+        "adversary.research_at=3,3,2,2,2"
+      ]
+    },
+    {
+      "name": "br-k3",
+      "set": [
+        "ai.boards=0,2",
+        "projects.martial_law.cost=36",
+        "board.ambassador_credits=20",
+        "ais.protector.powers.1.cost=[[\"energy\",3]]",
+        "board.remove_ambassadors=3",
+        "adversary.research_at=3,3,2,2,2"
+      ]
+    },
+    {
+      "name": "pr-k3",
+      "set": [
+        "ai.boards=1,2",
+        "projects.martial_law.cost=36",
+        "board.ambassador_credits=20",
+        "ais.protector.powers.1.cost=[[\"energy\",3]]",
+        "board.remove_ambassadors=3",
+        "adversary.research_at=3,3,2,2,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

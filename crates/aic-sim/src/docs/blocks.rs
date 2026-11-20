@@ -691,7 +691,7 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          fills, it tips: a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, \
          you lose. Discord cards never destroy your nodes directly, only through the threats and corruptions \
          they bring: they deal more or stronger threats (Offensive \
-         aims one at the node hex most crowded with adversary pieces), create agents, escalate them \
+         aims one at the lowest-numbered node hex holding an agent or a troop), create agents, escalate them \
          onto a city, take credits, land Fallout (Scorched Earth), feed the research track by its corrupted stations \
          (Captured Labs) and bring troops onto a fallen factory or a corrupted city you stand by (Standing Army), more of each the more sites are corrupted. Unity has its own track, which nothing on the \
          Discord side empties: free a corrupted \

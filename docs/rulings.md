@@ -181,6 +181,13 @@ Areas: [Names and terms](#names-and-terms) · [Difficulty](#difficulty) ·
   "where troops land", held for Matt); the row's Garrison keeps the rule. The march, Muster and the corrupted factory's troop are gone;
   the Protector's Wall and Vigil are redone for troops that garrison and strike. It overturns "early troops fine"
   above and makes 2026-11-10's "troops ignore ambassadors" moot (no march to stop; ambassadors still stop no troop).
+- **Matt, 2026-11-20 (built r144):** Redeploy moves the troops toward the corrupted city nearest a player piece
+  (each onto its own country's); Offensive targets the lowest-numbered node hex holding an agent or a troop, as
+  Night Raid reads; too early or too hot is priced higher, not given a rule (Martial Law's compute; every way to gain
+  an ambassador); Strike gated: the rider "a Strike also sends home one player ambassador next to the troop" is kept
+  only if it gives Strike work at d0-d1 without pushing wins out of band (298: it did not; built, off). Locked with
+  them: no stage on the project deck (complexity); supply ambassadors stay both piece and currency (price them,
+  don't split).
 - **Harm coverage (Matt, 2026-11-13; a design principle, not a checklist):** threats, Discord cards and adversary
   projects are where adversity lives: a kind of harm belongs wherever it fits, at the tier it fits (corrupting or
   neutralizing a city reads as tier 2); events and the adversary board may lean. **Fallout goes on all of them**,

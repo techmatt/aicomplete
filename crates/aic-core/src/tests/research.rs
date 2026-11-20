@@ -69,6 +69,25 @@ fn the_track_advances_a_slot_every_k_cubes_and_each_icon_happens_once() {
     assert!(g.outcome.is_none());
 }
 
+/// r144 (Arms Race, level 3): from `arms_race_at` a Garrison slot lands `1 + arms_race_troops` troops a country;
+/// below it, 1.
+#[test]
+fn arms_race_doubles_the_rows_garrison_from_its_level() {
+    let slot = (1..=6).find(|&k| {
+        let (rules, ..) = research_lab(&[]);
+        adversary::slot_icon(&rules.world(), k).is_some_and(|i| i.effects.iter().any(|e| matches!(e, Op::Troops { .. })))
+    });
+    let slot = slot.expect("a Garrison slot");
+    for (level, each) in [(2, 1), (3, 2)] {
+        let (rules, mut g, at) = research_lab(&[&format!("adversary.difficulty={level}"), "adversary.arms_race_at=3", "adversary.arms_race_troops=1"]);
+        set_var(&mut g, RESEARCH_SLOT, slot - 1);
+        set_var(&mut g, RESEARCH, at);
+        with_answers(&rules, &mut g, |_| 0, adversary::research_step);
+        let n = rules.world().map.countries.len() as i64;
+        assert_eq!(total(&g, TROOP), each * n, "level {level}");
+    }
+}
+
 #[test]
 fn slot_seven_loses_the_game() {
     let (rules, mut g, at) = research_lab(&[]);

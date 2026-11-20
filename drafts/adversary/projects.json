@@ -856,7 +856,7 @@
    "tags": [
     "security"
    ],
-   "cost": 24,
+   "cost": 36,
    "text": "Each country: 2 Troops land on its lowest-numbered corrupted city with a Node or an Ambassador on or next to it (with none, they garrison).",
    "effects": [
     {
@@ -874,11 +874,12 @@
     "275 (Matt, 2026-11-18): Rally and Corrupt lines became Surge lines (agents onto the most-infested site; it corrupts on arrival at its number)",
     "283 (Matt's 282 pick): held at 24 compute (was 29), one Surge line cut; its factory Surge cut; the station Surge 2 -> 3, a capture of the unguarded station whatever it holds (stations corrupt at 3), a player's own included (a candidate)",
     "293 (Matt, 2026-11-19): \"Surge 3: each country, 3 Agents onto its research station not yet the adversary's holding the most Agents.\" became \"Each country: create 3 Agents on its lowest-numbered research station not yet the adversary's.\" (Surge's most-agents pick is gone; its agents and type stay)",
-    "297 (Matt, 2026-11-19): \"Each country: create 3 Agents on its lowest-numbered research station not yet the adversary's. (24 a board)\" became \"Each country: 2 Troops land on its lowest-numbered corrupted city with a Node or an Ambassador on or next to it (with none, they garrison).\" at 24 a board (a third troop project, and the dearest (24): martial law is soldiers in the streets where the players are working, so its troops guard the city being liberated and a Strike finds pieces beside them; its old line (3 agents on a research station) was Lab Seizure's)"
+    "297 (Matt, 2026-11-19): \"Each country: create 3 Agents on its lowest-numbered research station not yet the adversary's. (24 a board)\" became \"Each country: 2 Troops land on its lowest-numbered corrupted city with a Node or an Ambassador on or next to it (with none, they garrison).\" at 24 a board (a third troop project, and the dearest (24): martial law is soldiers in the streets where the players are working, so its troops guard the city being liberated and a Strike finds pieces beside them; its old line (3 agents on a research station) was Lab Seizure's)",
+    "298 (Matt, 2026-11-20): cost 24 -> 36: too early, priced higher (its troops arrived by round 3 at d2-d3 at r143)"
    ],
    "reuses": null,
-   "value": "give 24 compute a board (48 at 2 countries); get 0.39 a compute at values.json (2 troops 9.33): the late, significant one.",
-   "check": "297: 1 consequence, every board, one-shot. When it matters: late (24 a board). Players answer: drain it; hold Remove a troop's credits or a troop card for the round it lands."
+   "value": "give 36 compute a board (72 at 2 countries); get 0.26 a compute at values.json (2 troops 9.33): the late, significant one.",
+   "check": "297: 1 consequence, every board, one-shot. When it matters: late (36 a board). Players answer: drain it; hold Remove a troop's credits or a troop card for the round it lands."
   }
  ]
 }

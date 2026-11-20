@@ -72,7 +72,7 @@ Troops don't move or act on their own. They come late: from the research row, so
 1. **Garrison.** A troop stands where its line puts it; one that garrisons goes on its country's lowest-numbered corrupted factory; with none, its lowest-numbered corrupted city; with none, its lowest-numbered city (never the Protector's node hex: it stays in the supply). It stays there.
 2. **Guard.** A corrupted site with a troop on or next to it can't be liberated. Remove the troop or push it away first.
 3. **Strike** (an icon on the face-up event card, a round ahead, or a research slot): each troop, country by country in hex order, destroys one player node, or player's station or factory, on or next to it (the players choose; never anything on the Protector's node hex): destroyed unless protected (§13). The troop stays. Vigil: 1 insight for each troop on or next to the Protector's nodes.
-4. **Redeploy** (an icon, rare): each troop not on or next to a corrupted city is picked up and put on the nearest corrupted city by land (ties: the lower country, then hex number).
+4. **Redeploy** (an icon, rare): each troop is picked up and put on its country's corrupted city nearest a player node or ambassador (ties: the lower hex number); with none, it stays.
 
 ## Tracks and markers (§2)
 
@@ -90,11 +90,11 @@ Troops don't move or act on their own. They come late: from the research row, so
 - **An agent meets one** (it lands, or your ambassador arrives): one for one, both off.
 - **Corruption** removes every ambassador on the hex.
 - **Liberate** (your ready ambassador on the site acts): city 5, station 4, factory 3 (yours on the site pay first, then your supply).
-- **Remove agents:** 2 from your supply.
+- **Remove agents:** 3 from your supply.
 - **Protecting** your node or facility on its hex (§13): one, instead of the piece.
 - **Threats** that print ambassadors as a cost: from your supply.
 - **Blocking** spends none: an ambassador on a corrupted site stops its output while it stands. A **move** is an ambassador's own action (a hex next to it, or any of your nodes); a troop never touches one.
-- **Gain one:** 16 credits, Accord, cards.
+- **Gain one:** 20 credits, Accord, cards.
 
 ## The adversary's outputs and research row
 
@@ -107,7 +107,7 @@ Each corrupted site makes one thing in the Income beat (a player ambassador on i
 | Factory | its agent moves along its zone's arrow onto its city (not onto one already the adversary's); then, holding none, it makes 1 agent |
 | Botnet | 1 compute |
 
-**War Research** (every 2 cubes a country: one slot; its icon happens once, in each country):
+**War Research** (every 3 cubes a country: one slot; its icon happens once, in each country):
 
 1. **New factory**: Each country: a neutral factory opens on its lowest-numbered free industrial zone.
 2. **Cells: factories**: Infiltrate: factories.

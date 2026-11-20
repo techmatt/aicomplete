@@ -20,16 +20,17 @@
         "start_nodes": 1,
         "troop_node": 0,
         "vigil_cap": 2,
+        "strike_home": 0,
         "station_chips": 2,
         "station_ambassadors": 0,
         "troop_credits": 7,
         "troop_per_round": 1,
         "factory_build_chips": 0,
         "factory_chips": 1,
-        "remove_ambassadors": 2,
+        "remove_ambassadors": 3,
         "remove_count": 3,
         "land_cubes": 2,
-        "ambassador_credits": 16,
+        "ambassador_credits": 20,
         "sell_credits": 1,
         "corp_energy": [
           1
@@ -105,13 +106,15 @@
         "botnet_spread_at": 1,
         "board_difficulty_at": 2,
         "research_at": [
-          2,
-          2,
+          3,
+          3,
           2,
           2,
           2
         ],
-        "research_start": 0
+        "research_start": 0,
+        "arms_race_at": 3,
+        "arms_race_troops": 1
       }
     },
     {

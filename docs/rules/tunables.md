@@ -20,6 +20,7 @@ conventions: [README.md](README.md).*
 | `board.claim_factory` | 3 | 1..10 | the Liberate action: ambassadors that liberate an adversary factory (262 cut the Claim action that also paid it; the name stays) |
 | `board.start_nodes` | 1 | 1..3 | nodes each player starts with: its start hex, then the lowest-numbered free land hexes next to it (the extras off no track) |
 | `board.troop_node` | 0 | 0..4 | adversary troops strike nodes from this stage of adversary card on (0: always, 4: never) |
+| `board.strike_home` | 0 | 0..1 | r144 (Matt 2026-11-20, gated): 1: a Strike also sends home one player ambassador on or next to each striking troop (players choose; it returns to its owner's supply) |
 | `board.vigil_cap` | 2 | 1..10 | troops a round on or next to a seat's node at a Strike that pay its Vigil (later ones that round pay nothing) |
 | `board.station_chips` | 2 | 0..20 | standard action: chips to build a research station |
 | `board.station_ambassadors` | 0 | 0..5 | standard action: ambassadors a research station also uses up (candidate; 0: none) |
@@ -27,10 +28,10 @@ conventions: [README.md](README.md).*
 | `board.troop_per_round` | 1 | 1..5 | times a seat may take Remove a troop a round |
 | `board.factory_build_chips` | 0 | 0..20 | standard action Build a factory: chips for a factory of yours (0: no such action) |
 | `board.factory_chips` | 1 | 0..5 | chips a player-owned factory makes its owner each round |
-| `board.remove_ambassadors` | 2 | 1..5 | standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing) |
+| `board.remove_ambassadors` | 3 | 1..5 | standard action Remove agents: your ambassadors from the supply, used up (r75: it places nothing) |
 | `board.remove_count` | 3 | 1..3 | standard action Remove agents: agents it removes, at most, on or next to its target (the player's choice) |
 | `board.land_cubes` | 2 | 0..10 | standard action Lift Fallout: research cubes to lift 1 Fallout token in reach (0: no such action) |
-| `board.ambassador_credits` | 16 | 1..50 | standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit) |
+| `board.ambassador_credits` | 20 | 1..50 | standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit) |
 | `board.sell_credits` | 1 | 0..20 | standard action: credits for selling a card from hand |
 | `board.cube_insight` | 1 | 0..5 | standard action Turn a cube into insight: insight for `insight_cubes` research cubes, `insight_per_round` times a round (0: no such action) |
 | `board.insight_cubes` | 1 | 1..5 | standard action Turn a cube into insight: research cubes a use (252: taxed) |
@@ -71,8 +72,10 @@ conventions: [README.md](README.md).*
 | `adversary.botnet_compute` | 1 | 0..5 | a botnet's one output: adversary compute each makes a round (none with a player ambassador on it) |
 | `adversary.botnet_spread_at` | 1 | 0..5 | 263: the difficulty level from which a 'Botnets spread' line (event cards, projects) spreads botnets; below it the line does nothing |
 | `adversary.board_difficulty_at` | 2 | 0..5 | the difficulty level from which the adversary board's `difficulty` line applies (267: the Militarist's War Footing, level 2's named rule) |
-| `adversary.research_at` | 2, 2, 2, 2, 2 | 0..30 | 293: K, the research cubes a country that advance the adversary's research track one slot, at difficulty 0-4 (times the countries; 0: no track) |
+| `adversary.research_at` | 3, 3, 2, 2, 2 | 0..30 | 293: K, the research cubes a country that advance the adversary's research track one slot, at difficulty 0-4 (times the countries; 0: no track) |
 | `adversary.research_start` | 0 | 0..30 | 293: research cubes a country on the adversary's track at setup |
+| `adversary.arms_race_at` | 3 | 0..5 | r144: the difficulty level from which a research slot's troop line lands arms_race_troops more troops a country (the Militarist's Arms Race, level 3's named rule) |
+| `adversary.arms_race_troops` | 1 | 0..3 | r144: the troops a country a research slot's troop line adds from arms_race_at (Arms Race) |
 | `alignment.tip_per_player` | 3 | 1..50 | the Unity track tips when it holds this many Sway per player |
 | `alignment.discord_tip_per_player` | 4 | 1..50 | the Discord track tips when it holds this many Sway per player |
 | `alignment.carry` | 2 | 0..2 | Sway past a tip stays toward the next tip: 2 both sides (r75, Matt's ruling 7), 1 Unity's only (r48), 0 neither (a tip empties its track) |

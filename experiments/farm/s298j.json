@@ -1,0 +1,23 @@
+{
+  "name": "s298j",
+  "note": "298: why greedy leads the judge at d0-d2 (fresh, r144): the judge, the judge less each of its own terms (the liberation bill w.purge, the hand terms, the building Action term), and greedy, on the dev seeds, the three pairs, d0-d3. Farm with `farm-seeds 36800 32 OUT s298j`.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [0, 1, 2, 3],
+  "agents": [
+    "strategist",
+    "strategist:w.purge=0",
+    "strategist:w.hand=0,w.hand_cost=0",
+    "strategist:w.card_action=0",
+    "greedy"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

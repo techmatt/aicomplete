@@ -78,6 +78,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("claim_factory", 1, 10, "the Liberate action: ambassadors that liberate an adversary factory (262 cut the Claim action that also paid it; the name stays)"),
             ParamSpec::int("start_nodes", 1, 3, "nodes each player starts with: its start hex, then the lowest-numbered free land hexes next to it (the extras off no track)"),
             ParamSpec::int("troop_node", 0, 4, "adversary troops strike nodes from this stage of adversary card on (0: always, 4: never)"),
+            ParamSpec::int("strike_home", 0, 1, "r144 (Matt 2026-11-20, gated): 1: a Strike also sends home one player ambassador on or next to each striking troop (players choose; it returns to its owner's supply)"),
             ParamSpec::int("vigil_cap", 1, 10, "troops a round on or next to a seat's node at a Strike that pay its Vigil (later ones that round pay nothing)"),
             ParamSpec::int("station_chips", 0, 20, "standard action: chips to build a research station"),
             ParamSpec::int("station_ambassadors", 0, 5, "standard action: ambassadors a research station also uses up (candidate; 0: none)"),

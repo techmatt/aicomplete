@@ -21,19 +21,17 @@ In prose the simulator's players are "sim players"; the code keeps "agents". The
 | `beam` | Beam search over the round's remaining action sequences, scored at the next round's start; replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 |
 | `rollout` | The beam's `candidates` best end-of-round positions, each run `horizon` more rounds by `rollouts` greedy playouts on fresh guesses; best mean wins. | `width` 4, `depth` 120, `branch` 0, `choices` 2, `candidates` 3, `rollouts` 4, `horizon` 2 |
 | `engine` | The heuristic in **horizon mode** (`w.horizon`: income × the rounds left, discounted by danger); holdings by the value table (`w.table=0`: flat terms); the **deck clock** (`w.clock`) charges each round the team's Unity rate would leave it short. Searched like greedy; `width` > 0: a beam, `candidates` > 0: rollouts. | `width` 0, `samples` 1, `choices` 2, `answers` 99 (prompts an answer looks on; 1 loses wins); weights: `Weights::engine` |
-| `strategist` | **The screens' judge**: the engine in flat mode (`w.horizon=0`, `w.table=0`): greedy's flat weights, one action at a time by the table after it, with `w.last_node`, the **purge term** (`w.purge`: ambassadors toward Liberate bills, on the site first; none while `board.std_off` takes Liberate out) and **cheap hand terms** (`w.hand` 1.5, `w.hand_cost` 0.15 against greedy's 3, 0.6: a card is worth little until it's played), no search, no strategy (`strategist:strategy=1` plays one), and **a building's earnings** (`w.card_action` 3, 249: what it earns a round beyond income, its Action's share included, at the value table's rates, for 3 rounds). `w.sink` 0.5 (257-258: a built Action's fuel counts what a use makes; `Weights::sink`), `w.am_tie` (288, below). Flat weights count AI-track income only (`w.card_income` off, 249). | `STRATEGIST`, `agents/mod.rs` |
+| `strategist` | **The screens' judge**: the engine in flat mode (`w.horizon=0`, `w.table=0`): greedy's flat weights, one action at a time, no search, no strategy (`strategist:strategy=1` plays one), plus `w.last_node`, the **purge term** (`w.purge`: ambassadors toward Liberate bills, on the site first), **cheap hand terms** (`w.hand` 1.5, `w.hand_cost` 0.15: a card is worth little until played), **a building's earnings** (`w.card_action` 3, 249: a round's earnings beyond income for 3 rounds), `w.sink` 0.5 (257), `w.am_tie` (288, below), `w.adv_read` (298: the forecast reads Escalate, the board rule and a factory's push) and `w.lib_clock` (298: the win clock paces off corrupted cities left, not Unity). | `STRATEGIST`, `agents/mod.rs` |
 | `planner` | The engine, rolling out a shortlist of action-phase alternatives `horizon` rounds with the engine as policy; the heuristic's best line is taken. A line runs on **full information** but the Alignment deal, valued over `deals` guesses of it (`planner.rs`). | `horizon` 2, `alts` 2, `budget` 8, `margin` 40, `deals` 4, `lead` 0. `sweep[:...]` is `planner:deals=1,lead=0`. |
 | `oracle` | **A measuring stick, opt in**: the planner's search on **full information**, the deal too, each line to the game's end; it follows a winning line, so its win rate is a floor on perfect play (`oracle.rs`). **`worlds`** (249, the real
 oracle): the search on that many worlds sampled from what players see, never the true table; a candidate is taken by
-worlds won, then mean heuristic; `budget` counts lines; no `tries`. **`tries`**: restarts, whole games from the first decision, the first as specified (its game wherever it wins), the rest on other policy seeds, `truth` every other one; **`truth`**: lines score the true table, not a guess; **`prove`**: a card proof (only a line playing that card wins; its draft, keep and play come before the keep plan's). | the planner's four, `reseeds` 0, `threads` 1, `tries` 1, `truth` 0, `prove` 0 |
+worlds won, then mean heuristic; `budget` counts lines; no `tries`. **`tries`**: whole-game restarts on other policy seeds (`truth` every other one); **`truth`**: lines score the true table; **`prove`**: a card proof (only a line playing that card wins). | the planner's four, `reseeds` 0, `threads` 1, `tries` 1, `truth` 0, `prove` 0 |
 
 **Keeping by plan (`agents/keep_plan.rs`, `plan_keep`).** Greedy, engine and planner keep drafts by a plan. At its
 first keep of a round a seat sketches `plan_rounds` rounds from what it holds and earns, fills each round's budget
 with the cards it would play by value per cost (value: the table at the rounds then left × the strategy multiplier;
 cost: its price at the table's rates; `plan_table=0`: the printed price), and keeps each drafted card, best ratio first, only if the
-plan is worth more with it; a play a round later is worth 15% less. Its switches (`plan_short`, `plan_reach`,
-`plan_cover`, `plan_am`, ...; `plan_sac`, 288: a sacrifice counts the tags on the seat's cards and in its hand,
-never its board's), `no_spend` and each **dominance check** (principles.md) are `forced_table!` rows in
+plan is worth more with it; a play a round later is worth 15% less. Its switches (`plan_*`; `plan_sac`, 288: a sacrifice counts the seat's cards' and hand's tags, not its board's), `no_spend` and each **dominance check** (principles.md) are `forced_table!` rows in
 `agents/policy.rs`, each with its default and rule.
 
 **Agent behaviors** (`behavior_table!` in `agents/policy.rs`, each row stating its rule): moves (`agents/moves.rs`),
@@ -94,7 +92,7 @@ As a player says them (the config's `says`):
 
 **The Protector**
 
-- *Troop wall.* Stand your nodes in the troops' way, take the troop removals (Breach and Clear, Security Contractor HQ, Agency Field Station), and clear a country's agents with Kinetic Interdiction.
+- *Troop wall.* Troops garrison and only strike on a shown icon: let your Wall cover the nodes beside a garrison, Push or remove the troop guarding a city (Patrol, Interdict, Breach and Clear, Security Contractor HQ paying for each) before your ambassador liberates it, and clear a country's agents with Kinetic Interdiction.
 - *Counter desk.* Answer threats with the typed jams and counters, build Garrison Command and Joint Task Force, and send Peacekeeping Mission to a corrupted city.
 - *Diplomacy and liberation.* Take Diplomacy and Followers (Liaison Corps, Envoy Briefings, Open Assembly, Accord's ambassador), and free cities with Great Liberation and Popular Uprising.
 - *Civic shelter.* Keep what you have standing: Patrol II, Faraday Yard, Hardpoint Lockdown, Aegis Grid Lockdown, toward Aegis Doctrine.
@@ -148,7 +146,6 @@ enumerated setting past its last value; `policy::check_param`).
 | A skilled player with full information (it sees hidden cards: never a fair player) | `oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1,tries=3` | d4 95 |
 | **The real oracle**: very strong play that can't see the future (the design target) | `bench/skilled_rows.py`'s `real` | none yet |
 
-The ladder: bands in [principles.md](principles.md), the current read of the judge and the real oracle in
-[249](../experiments/results/249_real_oracle_judge/README.md) (r112). After a change to how the game is won, smoke greedy
-beside the strategist: a greedy lead means the engine weights still encode the old win. A strategy pairing's win rate (`strat0`,
+Bands: [principles.md](principles.md). After a change to how the game is won, smoke greedy beside the strategist: a
+greedy lead means the engine weights still encode the old win. A strategy pairing's win rate (`strat0`,
 `strat1`) is the balance read; `aic-sim strategies CONFIG` prints the choices.

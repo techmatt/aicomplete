@@ -622,7 +622,7 @@
   "tags": [
    "security"
   ],
-  "cost": 24,
+  "cost": 36,
   "text": "Each country: 2 Troops land on its lowest-numbered corrupted city with a Node or an Ambassador on or next to it (with none, they garrison).",
   "effects": [
    {

@@ -9,6 +9,7 @@
 
 use crate::content::RowIcon;
 use crate::module::{Cx, Res, World};
+use crate::op::Op;
 use crate::state::GameState;
 use crate::view::ViewOut;
 
@@ -82,6 +83,26 @@ pub fn remove_research(g: &mut GameState, cx: &mut Cx, n: i64) {
     }
 }
 
+/// r144 (the Militarist's level 3, Arms Race): from `adversary.arms_race_at`, a slot's troop line lands
+/// `adversary.arms_race_troops` more a country ("When the research track reaches a Garrison icon, each country takes
+/// 2 Troops, not 1"). Below it, the row's icons as printed.
+fn arms_race(w: &World, effects: &[Op]) -> Vec<Op> {
+    let extra = if super::level(w, w.int("adversary.arms_race_at")) { w.int("adversary.arms_race_troops") } else { 0 };
+    effects
+        .iter()
+        .map(|e| match e {
+            Op::Troops { count, .. } if extra > 0 => {
+                let mut e = e.clone();
+                if let Op::Troops { count: c, .. } = &mut e {
+                    *c = count + extra;
+                }
+                e
+            }
+            e => e.clone(),
+        })
+        .collect()
+}
+
 /// The research check, the end of the Income beat: while the track holds K cubes it spends K and its marker
 /// advances one slot, whose icon fires once (in each country, as it prints); the slot past the row's last ends
 /// the game, lost.
@@ -108,7 +129,8 @@ pub fn research_step(g: &mut GameState, cx: &mut Cx) -> Res {
             continue;
         };
         cx.note(None, || format!("The adversary's research track reaches slot {slot}: {} ({})", icon.name, icon.text));
-        effects::run(g, cx, &icon.effects, &mut effects::Ctx::team().named("research").why(&icon.name))?;
+        let effects = arms_race(&w, &icon.effects);
+        effects::run(g, cx, &effects, &mut effects::Ctx::team().named("research").why(&icon.name))?;
     }
     Ok(())
 }
