@@ -1,11 +1,13 @@
-# Test lanes (README "Build and test"): `cargo test --workspace` runs the fast lane;
-# `cargo test-all` runs everything, the slow lane's #[ignore]d tests included.
-# 283: both run crates/aic-lanes, which hands cargo's own flags (-j N, --no-fail-fast, -p X) to
-# cargo and the rest (--test-threads=N, a name filter, anything after a --) to the tests, as
-# `cargo test --workspace [CARGO FLAGS] -- --include-ignored [TEST ARGS]`. Before, the aliases
-# ended in `-- --include-ignored`, so `cargo test-all -j N` failed in a second on libtest's
+# Test lanes (README "Build and test"): `cargo test-fast` runs the fast lane (`cargo test --workspace`
+# runs the same tests, one binary after another); `cargo test-all` runs everything, the slow lane's
+# #[ignore]d tests included; `cargo test-slow` the slow lane alone.
+# 283: all three run crates/aic-lanes, which hands cargo's own flags (-j N, --no-fail-fast, -p X) to
+# cargo and the rest (--test-threads=N, a name filter, anything after a --) to the tests. Before, the
+# aliases ended in `-- --include-ignored`, so `cargo test-all -j N` failed in a second on libtest's
 # "Unrecognized option: 'j'" (045, 196). A hand-typed `cargo test -- --include-ignored -- X`
 # still makes X a name filter: crates/aic-sim/tests/args_guard.rs refuses it.
+# 310: aic-lanes builds the test binaries (`cargo test --no-run`) and runs them side by side.
 [alias]
+test-fast = "run -q -p aic-lanes -- fast"
 test-all = "run -q -p aic-lanes -- all"
 test-slow = "run -q -p aic-lanes -- slow"

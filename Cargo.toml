@@ -18,9 +18,14 @@ rand_chacha = { version = "0.3", default-features = false, features = ["serde1"]
 
 # Tests play whole games, which unoptimized code runs many times slower. The test
 # build is optimized but keeps debug assertions and overflow checks (inherited
-# from dev).
+# from dev). 310: line tables only (panics and backtraces keep file:line, a debugger
+# loses locals): the test build after an aic-sim edit 10.4 -> 8.0 s, aic-core 13.2 -> 10.6 s.
 [profile.test]
 opt-level = 1
+debug = "line-tables-only"
+
+[profile.test.package."*"]
+opt-level = 3
 
 [profile.release.package.aic-wasm]
 opt-level = "s"

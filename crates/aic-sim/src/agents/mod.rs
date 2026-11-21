@@ -1123,33 +1123,40 @@ mod tests {
     }
 
     /// An agent's decision is the same on two tables that differ only in
-    /// what the printed game hides (deck order and the dice).
+    /// what the printed game hides (deck order and the dice). An agent a thread (310: 1.3 s in turn).
     #[test]
     fn decisions_ignore_hidden_information() {
         let r = rules(0);
-        let mut legal = Vec::new();
-        for spec in ["greedy", "beam:width=2", "engine", "engine:width=2", "strategist"] {
-            let spec = AgentSpec::parse(spec).unwrap();
-            for seed in 0..3 {
-                // Some way into the game, so piles have moved.
-                let (mut a, _) = play(&r, seed, &mut RandomAgent::new(seed), 12);
-                if a.is_over() {
-                    a = r.new_game(seed);
-                }
-                let mut b = a.clone();
-                for (k, p) in b.piles.iter_mut() {
-                    if k.starts_with("cards.deck.") || k.starts_with("threats.deck.") {
-                        std::sync::Arc::make_mut(p).reverse();
-                    }
-                }
-                for (purpose, s) in b.rng.iter_mut() {
-                    *s = std::sync::Arc::new(aic_core::rng::Stream::new(seed + 77, purpose));
-                }
-                r.legal_actions_into(&a, &mut legal);
-                let ia = spec.build(&r, 9).choose(&r, &a, &legal);
-                let ib = spec.build(&r, 9).choose(&r, &b, &legal);
-                assert_eq!(ia, ib, "{} seed {seed}", spec.label());
+        std::thread::scope(|s| {
+            for spec in ["greedy", "beam:width=2", "engine", "engine:width=2", "strategist"] {
+                let r = &r;
+                s.spawn(move || decisions_ignore_hidden_information_for(r, spec));
             }
+        });
+    }
+
+    fn decisions_ignore_hidden_information_for(r: &Rules, spec: &str) {
+        let mut legal = Vec::new();
+        let spec = AgentSpec::parse(spec).unwrap();
+        for seed in 0..3 {
+            // Some way into the game, so piles have moved.
+            let (mut a, _) = play(r, seed, &mut RandomAgent::new(seed), 12);
+            if a.is_over() {
+                a = r.new_game(seed);
+            }
+            let mut b = a.clone();
+            for (k, p) in b.piles.iter_mut() {
+                if k.starts_with("cards.deck.") || k.starts_with("threats.deck.") {
+                    std::sync::Arc::make_mut(p).reverse();
+                }
+            }
+            for (purpose, s) in b.rng.iter_mut() {
+                *s = std::sync::Arc::new(aic_core::rng::Stream::new(seed + 77, purpose));
+            }
+            r.legal_actions_into(&a, &mut legal);
+            let ia = spec.build(r, 9).choose(r, &a, &legal);
+            let ib = spec.build(r, 9).choose(r, &b, &legal);
+            assert_eq!(ia, ib, "{} seed {seed}", spec.label());
         }
     }
 
@@ -1197,8 +1204,11 @@ mod tests {
             *s = std::sync::Arc::new(aic_core::rng::Stream::new(77, purpose));
         }
         r.legal_actions_into(&a, &mut legal);
-        let ia = spec.build(&r, 9).choose(&r, &a, &legal);
-        let ib = spec.build(&r, 9).choose(&r, &b, &legal);
+        // The two decisions side by side (310: 2.3 s in turn).
+        let (ia, ib) = std::thread::scope(|s| {
+            let second = s.spawn(|| spec.build(&r, 9).choose(&r, &b, &legal));
+            (spec.build(&r, 9).choose(&r, &a, &legal), second.join().unwrap())
+        });
         assert_eq!(ia, ib);
     }
 

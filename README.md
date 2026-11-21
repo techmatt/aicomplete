@@ -73,10 +73,11 @@ wasm-pack (`cargo install wasm-pack --locked`); Node (built with 24) for the smo
 ```sh
 cargo build --workspace
 cargo check --tests                           # a missing import in ~1 min, before a full test build
-cargo test --workspace                        # fast lane, the default: ~6 s once built, ~20 s after an aic-sim edit
-cargo test-all                                # full run, slow lane included: ~1 min on 6 test threads once built
+cargo test-fast                               # fast lane, the default: ~4.5 s once built, ~12 s after an aic-sim edit
+cargo test-all                                # full run, slow lane included: ~30 s once built
                                               # (cargo flags such as -j N go to cargo, --test-threads=N to the tests)
-cargo test-slow                               # the slow lane alone: ~50 s
+cargo test-slow                               # the slow lane alone: ~29 s
+cargo test --workspace                        # the fast lane with cargo's runner, a binary at a time: ~6.5 s
 python -m unittest scripts/bench/test_read_tools.py scripts/test_input_checks.py scripts/bench/test_trace_lib.py
                                               # the read scripts' tests (when: docs/scripts.md); the slow lane runs them too
 cargo build --release -p aic-sim              # ~30 s after an aic-sim edit, ~45 s after aic-core, ~1 min cold
@@ -88,15 +89,18 @@ node scripts/wasm-parity.mjs [games]          # native = wasm, variant matrix: ~
 ```
 
 **Test lanes.** The slow lane is the tests marked `#[ignore = "slow lane: ..."]`: whole search-agent games, the
-greedy experiment grid, more seeds of fast-lane replay checks. `test-all` and `test-slow` (`.cargo/config.toml`) run
-`crates/aic-lanes`, which runs `cargo test --workspace [cargo flags] -- --include-ignored` (or `--ignored`) [the rest]:
-cargo's own flags (`-j 3`, `--no-fail-fast`, `-p X`) go to cargo, anything else (`--test-threads=3`, a name filter)
-and all after a `--` to the tests; one slow test: `cargo test-slow <name>` (a `-p aic-sim` build differs from the
-workspace's: ~1 min rebuild each way).
-Times are this machine's, idle; a cold test build is ~2.5 min. Test binaries run in turn, so a lane takes about
-the sum of their slowest tests: split a loop over agents, variants or independent plays into tests or scoped threads. Search agents are slow in the test build (the seat-terms cache's `debug_assert` recomputes each hit;
-`opt-level` 3 bought little): a whole-game test takes cheap agent params. No doctests (`doctest = false`). A red
-crate stops the run: `cargo test-all --no-fail-fast`.
+greedy experiment grid, more seeds of fast-lane replay checks. `test-fast`, `test-all` and `test-slow`
+(`.cargo/config.toml`) run `crates/aic-lanes`, which builds with `cargo test --workspace --no-run [cargo flags]` and
+runs every test binary at once with `[--include-ignored | --ignored] [the rest]`, printing each one's output whole,
+then a summary (`aic-lanes: FAILED: <binaries>` on a red). Cargo's own flags (`-j 3`, `-p X`) go to cargo, the rest
+(`--test-threads=3`, a name filter) and all after a `--` to the tests; one slow test: `cargo test-slow <name>` (a
+`-p aic-sim` build differs from the workspace's: ~1 min rebuild each way). Binaries share no scratch folder.
+Times are this machine's, idle; a cold test build is ~2.5 min (the test profile: line tables only, dependencies at
+`opt-level` 3). The binaries side by side load all 12 cores, so a lane takes about the longest binary under that load:
+the full run waits on `rollout_replays_and_repeats` (24 s alone, ~29 s in the run). The binary slowest last time
+(`target/debug/aic-lanes-times.txt`) runs a priority class above the rest, so its long test keeps its cores. Split a loop over agents,
+variants or independent plays into tests or scoped threads, and keep whole-game tests on cheap agent params.
+No doctests (`doctest = false`).
 
 **Rules changes:** the fast-lane `golden_game` test pins the final state of one fixed game (baseline, seed
 `u64::MAX`, action *k* = legal action `(k × 7919) mod count`). For an intended rules change, bump `RULES_REVISION`

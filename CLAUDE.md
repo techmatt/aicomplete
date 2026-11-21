@@ -126,9 +126,9 @@ screens, how bars are scored, what its report carries.
 ## Working rules
 
 - **Commit to the branch you are on.** Leave nothing uncommitted.
-- **Two test lanes** (commands and times: README, *Build and test*). Run the fast lane, `cargo test
-  --workspace`, after every change, and the full run, `cargo test-all`, before every commit; a commit
-  touching only Markdown outside the generated docs skips the full run. A test slower than about a
+- **Two test lanes** (commands and times: README, *Build and test*). Run the fast lane, `cargo test-fast`
+  (or `cargo test --workspace`, the same tests a binary at a time), after every change, and the full
+  run, `cargo test-all`, before every commit; a commit touching only Markdown outside the generated docs skips the full run. A test slower than about a
   second goes in the slow lane, with a cheaper fast-lane twin where one makes sense. Leave `cargo
   clippy --workspace --all-targets` clean. The repo doesn't use rustfmt. Web's checks:
   [web/README.md](web/README.md).

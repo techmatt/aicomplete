@@ -85,7 +85,7 @@ backtick breaks the file (the fast lane's `node_scripts_parse` checks them all).
 headless Edge or Chrome over the DevTools protocol against a served viewer (the dev server, or *Against a built
 site*). It checks the panels and board, a baseline game (seed 1) to the end, the interactions above, no page
 scroll at 1366×768, 1920×1080 and 2560×1440, words not ids, under 100 ms a step, a 4-country game (may scroll at
-1366×768) and the given record; each `check(...)` names itself. About 15 s; shots in `web/e2e-out/`
+1366×768) and the given record; each `check(...)` names itself. About 30 s (r150); shots in `web/e2e-out/`
 (git-ignored). `board
 fills its pane` measures a fixed game (baseline seed 11, first legal action) a rules change can move: before
 reading a layout change into a failure, diff two revisions' `npm run panes` (its pane heights at the three sizes).
