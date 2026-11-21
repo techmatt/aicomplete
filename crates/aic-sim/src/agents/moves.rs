@@ -62,7 +62,8 @@ pub fn strike(g: &GameState, legal: &[Action]) -> Option<(usize, usize)> {
 /// The option a push, cancel or liberate heuristic picks for the open prompt, and which heuristic (an index into
 /// [`NAMES`]).
 /// `last_node` (177, the eval's `w.last_node` on): the push never lands agents where a last node can tip.
-pub fn pick(w: &World, g: &GameState, legal: &[Action], last_node: bool) -> Option<(usize, usize)> {
+/// `reach` (313, D141, the `reach_rule` behavior): the push ranks only hexes whose agents it may move ([`movable`]).
+pub fn pick(w: &World, g: &GameState, legal: &[Action], last_node: bool, reach: bool) -> Option<(usize, usize)> {
     let p = g.pending.as_ref()?;
     let prompt = p.ask.prompt.as_str();
     let gather = gather_op(w, g);
@@ -81,7 +82,7 @@ pub fn pick(w: &World, g: &GameState, legal: &[Action], last_node: bool) -> Opti
         return gather_piece(w, g, legal, to);
     }
     if prompt.contains(effects::PUSH_FROM) {
-        return push_from(w, g, legal);
+        return push_from(w, g, legal, reach);
     }
     if prompt.contains(effects::PUSH_PIECE) {
         let from = named_hex(w, prompt, " (from ")?;
@@ -96,17 +97,19 @@ pub fn pick(w: &World, g: &GameState, legal: &[Action], last_node: bool) -> Opti
 /// Answers only the target prompt (`effects::TARGET_PROMPT`), for the card the open resolution plays or uses, or
 /// the seat's building whose trigger it is.
 /// `t` is the agent's own value table (266, D117: it read the global one, whatever the spec's `t.` numbers).
-pub fn target(w: &World, g: &GameState, legal: &[Action], t: &super::value::Table) -> Option<(usize, usize)> {
+/// `reach` (313, D141): a Push's or strike's agents count only where the seat may move them ([`movable`]).
+pub fn target(w: &World, g: &GameState, legal: &[Action], t: &super::value::Table, reach: bool) -> Option<(usize, usize)> {
     let p = g.pending.as_ref()?;
     if !p.ask.prompt.contains(effects::TARGET_PROMPT) {
         return None;
     }
+    let seat = reach.then_some(p.ask.seat as usize);
     let ops = target_ops(w, g, &p.ask.prompt)?;
     // A move's target is its own heuristic's (its legal options are the target's hexes).
     for o in &ops {
         match o {
             Op::Gather { pieces, strike: false, .. } => return gather_into(w, g, legal, pieces).map(|(i, _)| (i, TARGET)),
-            Op::Push { .. } => return push_from(w, g, legal).map(|(i, _)| (i, TARGET)),
+            Op::Push { .. } => return push_from(w, g, legal, reach).map(|(i, _)| (i, TARGET)),
             _ => {}
         }
     }
@@ -128,7 +131,7 @@ pub fn target(w: &World, g: &GameState, legal: &[Action], t: &super::value::Tabl
         let found: f64 = ops
             .iter()
             .filter(|o| !(stays && matches!(o, Op::Liberate { .. } | Op::ClaimSite { .. })))
-            .map(|o| finds(w, g, t, o, h, cleared))
+            .map(|o| finds(w, g, t, o, h, cleared, seat))
             .sum();
         scores.push((found + frees, i));
     }
@@ -187,8 +190,10 @@ fn target_ops(w: &World, g: &GameState, prompt: &str) -> Option<Vec<Op>> {
 }
 
 /// What op `o` finds acting on target `h`, at its row: pieces removed or converted, sites freed, tokens lifted,
-/// facilities hardened, each up to its number.
-fn finds(w: &World, g: &GameState, t: &super::value::Table, o: &Op, h: usize, cleared: bool) -> f64 {
+/// facilities hardened, each up to its number. `seat` (313, D141, with `reach_rule`): around a target outside that
+/// seat's node reach (reached through an ambassador), a strike's agents count only on hexes in its node reach, as the
+/// engine's strike takes them (F425).
+fn finds(w: &World, g: &GameState, t: &super::value::Table, o: &Op, h: usize, cleared: bool, seat: Option<usize>) -> f64 {
     use aic_core::content::Area;
     let near = |at: Area| common::area_of(w, h, at);
     let count = |at: Area, f: &dyn Fn(usize) -> i64| -> i64 { near(at).into_iter().map(f).sum() };
@@ -211,7 +216,13 @@ fn finds(w: &World, g: &GameState, t: &super::value::Table, o: &Op, h: usize, cl
         Op::Gather { max, pieces, strike: true } => {
             let take = |x: usize| {
                 (if pieces.contains(&Piece::Troops) { troops(x) } else { 0 }) * 5
-                    + if pieces.contains(&Piece::Agents) { agents(g, x) } else { 0 }
+                    + if pieces.contains(&Piece::Agents)
+                        && seat.is_none_or(|s| common::in_reach(w, g, s, h) || common::in_reach(w, g, s, x))
+                    {
+                        agents(g, x)
+                    } else {
+                        0
+                    }
             };
             count(Area::Near, &take).min(*max * 5) as f64 * t.op("remove_ambassador")
         }
@@ -478,13 +489,20 @@ fn pressure(risk: &[(usize, i64, i64)], h: usize) -> f64 {
     risk.iter().filter(|&&(s, _, _)| s == h).map(|&(_, count, n)| count as f64 / n.max(1) as f64).sum()
 }
 
-/// The push's hex: the one in options whose agents press hardest on a site at risk.
-fn push_from(w: &World, g: &GameState, legal: &[Action]) -> Option<(usize, usize)> {
+/// 313 (D141): the open prompt's seat may move the agents on `h`: the engine's `pushable` takes agents only from a
+/// hex in its node reach (one reached only through an ambassador gives up troops alone).
+fn movable(w: &World, g: &GameState, h: usize) -> bool {
+    g.pending.as_ref().is_none_or(|p| common::in_reach(w, g, p.ask.seat as usize, h))
+}
+
+/// The push's hex: the one in options whose agents press hardest on a site at risk. `reach` (313, D141): only a
+/// hex whose agents the push may move.
+fn push_from(w: &World, g: &GameState, legal: &[Action], reach: bool) -> Option<(usize, usize)> {
     let risk = at_risk(w, g);
     let mut best: Option<(f64, usize)> = None;
     for (i, a) in legal.iter().enumerate() {
         let Some(h) = option_hex(w, a) else { continue };
-        if agents(g, h) == 0 {
+        if agents(g, h) == 0 || (reach && !movable(w, g, h)) {
             continue;
         }
         let p = pressure(&risk, h);

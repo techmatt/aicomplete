@@ -350,6 +350,10 @@ macro_rules! behavior_table {
             /// else wanted the fuel. Instead of a pass, a megaproject converter whose gains all print as resources and
             /// beat its cost at `values.json` (`convert_pick`).
             (convert_rule: bool, 1.0, "262: use a megaproject converter instead of a pass when what it gains beats what it costs at values.json")
+            /// 313 (D141): the push and target heuristics (`agents::moves`) count agents only on hexes the seat may
+            /// move them from, its node reach, as the engine's `pushable` and strike do (a hex reached only through an
+            /// ambassador gives up troops alone).
+            (reach_rule: bool, 0.0, "313 (D141): the push and strike heuristics count agents only where the seat may move them (its node reach, as the engine's pushable)")
         }
     };
 }
@@ -869,10 +873,12 @@ impl Agent for Policy {
         type Heuristic<'a> = &'a dyn Fn() -> Option<(usize, usize)>;
         let heuristics: [(bool, Heuristic<'_>); 3] = [
             (b.strike_rule, &|| super::moves::strike(g, legal)),
-            (b.target_rule, &|| super::moves::target(&world, g, legal, self.eval().map_or_else(value::table, |e| e.tbl))),
+            (b.target_rule, &|| {
+                super::moves::target(&world, g, legal, self.eval().map_or_else(value::table, |e| e.tbl), b.reach_rule)
+            }),
             (b.move_rules, &|| {
                 let last_node = self.eval().is_some_and(|e| e.w.last_node > 0.0);
-                super::moves::pick(&world, g, legal, last_node)
+                super::moves::pick(&world, g, legal, last_node, b.reach_rule)
             }),
         ];
         for (on, pick) in heuristics {

@@ -1,0 +1,39 @@
+{
+  "name": "l313",
+  "note": "313: the skill ladder at r151, its cheap rungs: greedy and the judge (strategist) on the three board pairs, d0-d4, on the ladder's fresh seeds (51552 on). Its oracle rungs: l313o, same seeds. The judge arms are pinned to r151's judge (w.purge 3.6, reach_rule 0) as farmed (313 shipped 1.8 and reach_rule on).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "greedy",
+    "strategist:w.purge=3.6,reach_rule=0"
+  ],
+  "games": 48,
+  "first_seed": 51552,
+  "records": 0
+}

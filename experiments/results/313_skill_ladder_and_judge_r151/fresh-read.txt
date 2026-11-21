@@ -1,0 +1,3 @@
+agent | d0 win / gap (SE) | d1 win / gap (SE) | d2 win / gap (SE) | d3 win / gap (SE) | d4 win / gap (SE) | d2-d3 win / gap (SE) | all win / gap (SE)
+strategist | 94.9 / +1.2 (1.4) | 93.3 / +1.9 (1.6) | 90.0 / +2.3 (1.7) | 80.1 / +3.9 (2.1) | 56.0 / +1.9 (2.3) | 85.1 / +3.1 (1.3) | 82.9 / +2.2 (0.8)
+strategist:w.purge=3.6,reach_rule=0 | 93.8 (n 432) | 91.4 (n 432) | 87.7 (n 432) | 76.2 (n 432) | 54.2 (n 432) | 81.9 (n 864) | 80.6 (n 2160)

@@ -339,10 +339,13 @@ const SWEEP: &str = "deals=1,lead=0";
 /// (`w.card_action`), 257_judge_action_buildings and 258_card_followups (`w.sink` 0.5), 288_agents_followups
 /// (`w.am_tie`, greedy's default; the engine's is 0), 298_overhaul_6_calibration (`w.adv_read`: the forecast reads
 /// Escalate (factories included since 312) and a factory's push; `w.lib_clock`: the win clock paces off corrupted cities left),
-/// 303_antimatter_sinks_and_saving (`w.am_cap`, `w.am_idle`: antimatter beyond 1 or the hand's needs is idle).
+/// 303_antimatter_sinks_and_saving (`w.am_cap`, `w.am_idle`: antimatter beyond 1 or the hand's needs is idle),
+/// 313_skill_ladder_and_judge_r151 (`w.purge` 3.6 -> 1.8; `reach_rule`, D141: the push and strike heuristics count
+/// only agents the seat may move).
 const STRATEGIST: &str = "strategy=0,w.built=4,w.built_cost=0.75,w.clock=0,w.energy_cap=0,w.hand=1.5,w.hand_cost=0.15,\
 w.horizon=0,w.insight_income=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,\
-w.tag_hand=0,w.purge=3.6,w.last_node=120,w.card_action=3,w.sink=0.5,w.am_tie=0.6667,w.am_cap=1,w.am_idle=0.2,w.adv_read=1,w.lib_clock=1";
+w.tag_hand=0,w.purge=1.8,w.last_node=120,w.card_action=3,w.sink=0.5,w.am_tie=0.6667,w.am_cap=1,w.am_idle=0.2,w.adv_read=1,w.lib_clock=1,\
+reach_rule=1";
 
 /// A kind's place on the [`LADDER`].
 fn rung(kind: &str) -> Option<usize> {
@@ -736,7 +739,8 @@ mod tests {
     #[test]
     fn sweep_is_a_planner_profile() {
         let named = |spec: &str| AgentSpec::parse(spec).unwrap().params;
-        assert_eq!(named("strategist"), named("engine:strategy=0"));
+        // 313: the judge's one behavior off the default, its `reach_rule`.
+        assert_eq!(named("strategist"), named("engine:strategy=0,reach_rule=1"));
         assert_eq!(named("sweep"), named("planner:deals=1,lead=0"));
         assert_eq!(named("sweep:budget=4"), named("planner:deals=1,lead=0,budget=4"));
         assert_eq!(named("sweep:deals=2"), named("planner:deals=2,lead=0"));
@@ -817,9 +821,9 @@ mod tests {
                     break;
                 }
                 let w = r.world();
-                if let Some((i, _)) = moves::target(&w, &g, &legal, value::table()) {
+                if let Some((i, _)) = moves::target(&w, &g, &legal, value::table(), false) {
                     answered += 1;
-                    if moves::target(&w, &g, &legal, t0).is_none() {
+                    if moves::target(&w, &g, &legal, t0, false).is_none() {
                         moved += 1;
                         // The plain strategist takes the rule's hex; the zeroed one leaves it to its search, which
                         // (a target rule still on the global table would have answered `i` first) may pick another.

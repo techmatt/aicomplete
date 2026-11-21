@@ -1,0 +1,20 @@
+{
+  "name": "l313o",
+  "note": "313: the skill ladder at r151, its oracle rungs: the full oracle (skilled_rows' `oracle` row: tries=3, sees the deck) and the real oracle (its `real` row: worlds=4, sampled hidden information, 249's judge weights) on the three board pairs, d0-d4, on l313's first seeds (51552 on).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [0, 1, 2, 3, 4],
+  "agents": [
+    "oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1,tries=3",
+    "oracle:strategy=0,worlds=4,alts=3,budget=32,answers=1,truth=1,w.built=4,w.built_cost=0.75,w.clock=0,w.energy_cap=0,w.hand=1.5,w.hand_cost=0.15,w.horizon=0,w.insight_income=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,w.tag_hand=0,w.purge=3.6,w.last_node=120"
+  ],
+  "games": 8,
+  "first_seed": 51552,
+  "records": 0
+}

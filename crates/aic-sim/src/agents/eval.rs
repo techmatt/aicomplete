@@ -350,6 +350,14 @@ pub struct Weights {
     /// is cheap: keep and play what spends it"). Horizon mode and the table's hand terms don't read it.
     pub am_cap: f64,
     pub am_idle: f64,
+    /// 313 (304's deferred `sink_terms` note; 0: off), above 0: a built converter's antimatter fuel is judged
+    /// against what a held unit is worth to `am_value`: `am_idle` of the flat weight while the seat holds antimatter
+    /// beyond [`Eval::am_full`] (with `am_cap`), so idle antimatter reads as fuel, not as the full weight it isn't held at.
+    pub sink_idle: f64,
+    /// 313 (0: off, `INSIGHT_INCOME_UNIT` 1.5, a credit's), above 0: flat mode's unit for an insight a round of
+    /// income (the card-play track, a board's), times `income`. The full oracle uncovers the card-play track where
+    /// the judge took the economy track's credits (313's agree read, 2.4 a game).
+    pub track_insight: f64,
     /// 128, above 0: an Action that places project cubes counts nothing once no
     /// megaproject is open to the seat (`Ctx::cubes_open`). The keep plan's twin
     /// is the forced row `plan_cube_target` (policy.rs).
@@ -750,6 +758,8 @@ impl Default for Weights {
             am_tie: 0.6667,
             am_cap: 0.0,
             am_idle: 1.0,
+            sink_idle: 0.0,
+            track_insight: 0.0,
         }
     }
 }
@@ -2150,7 +2160,12 @@ impl Eval {
                 + self.cube_unit(s) * res(Resource::ResearchCubes);
             // 251: `ai::track_income`'s pairs, in its order, without its vector.
             ai::each_track_income(&world, g, s, |r, n| {
-                let unit = income_unit(r, self.am_income);
+                // 313 (`track_insight`): an insight a round of income at its own unit, not a credit's.
+                let unit = if r == Resource::Insight && w.track_insight > 0.0 {
+                    w.track_insight
+                } else {
+                    income_unit(r, self.am_income)
+                };
                 *v += w.income * unit * n as f64;
             });
             if w.card_income > 0.0 || w.card_action > 0.0 || w.sink > 0.0 {
@@ -2242,8 +2257,17 @@ impl Eval {
     /// the flat weight takes none.
     fn sink_terms(&self, world: &aic_core::module::World, g: &GameState, s: usize) -> f64 {
         let w = &self.w;
+        // 313 (`sink_idle`): idle antimatter is held at `am_idle` of its weight (`am_value`), so that is its fuel's base.
+        let am_base = if w.sink_idle > 0.0
+            && w.am_cap > 0.0
+            && g.resource(s, Resource::Antimatter) as f64 > self.am_full(world, g, s)
+        {
+            w.antimatter * w.am_idle
+        } else {
+            w.antimatter
+        };
         let base = |r: Resource| match r {
-            Resource::Antimatter => w.antimatter,
+            Resource::Antimatter => am_base,
             Resource::ResearchCubes => self.cube_unit(s),
             _ => w.chips,
         };

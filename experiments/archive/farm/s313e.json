@@ -1,0 +1,41 @@
+{
+  "name": "s313e",
+  "note": "313: s313a's three small leads re-read on s313c's seeds (51488 on): the factory danger term (w.on_factory 6 -> 0, 304's note: a factory no longer makes troops), w.purge 0, w.last_node 0, and all three. d1-d4, the three pairs. The judge arms are pinned to r151's judge (w.purge 3.6, reach_rule 0) as farmed (313 shipped 1.8 and reach_rule on).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist:reach_rule=0,w.sink_idle=0,w.track_insight=0,w.purge=3.6",
+    "strategist:reach_rule=0,w.sink_idle=0,w.track_insight=0,w.on_factory=0,w.purge=3.6",
+    "strategist:reach_rule=0,w.sink_idle=0,w.track_insight=0,w.purge=0",
+    "strategist:reach_rule=0,w.sink_idle=0,w.track_insight=0,w.last_node=0,w.purge=3.6",
+    "strategist:reach_rule=0,w.sink_idle=0,w.track_insight=0,w.on_factory=0,w.purge=0,w.last_node=0"
+  ],
+  "games": 64,
+  "first_seed": 51488,
+  "records": 0
+}

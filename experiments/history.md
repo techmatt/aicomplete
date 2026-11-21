@@ -10,6 +10,7 @@ the findings are in the write-up.
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 313 skill ladder at r151 (full oracle 100% d0-d4); judge w.purge 1.8, reach_rule (D141) | 151 | [313_skill_ladder_and_judge_r151](results/313_skill_ladder_and_judge_r151/README.md) |
 | 312 friction picks built: factories always escalate, lowest-numbered threat tokens, Unity floors | 151 | [312_friction_r150_build](results/312_friction_r150_build/README.md) |
 | 310 test cleanup: test binaries side by side (`cargo test-fast`), line-tables test build | 150 | [310_test_cleanup](results/310_test_cleanup/README.md) |
 | 311 disk cleanup: scene rounds' cards.pdf and cards/ renders to the Drive archive (2.2 GB), git gc | 150 | [311_disk_cleanup](results/311_disk_cleanup/README.md) |

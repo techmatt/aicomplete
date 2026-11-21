@@ -154,7 +154,12 @@ def scaled(agent, one, many, threads):
 
 def rows_to_run(only, threads, games=0, scale=False):
     """Each (agent, countries, games on one thread, games on `threads`) `only` lets through.
-    `games`, if set, is the games on `threads`; `scale` takes the rest from the baseline (`scaled`)."""
+    `games`, if set, is the games on `threads`; `scale` takes the rest from the baseline (`scaled`). An `only` naming
+    no row is refused (313: `--only strategist` ran nothing for it, silently)."""
+    names = {a for a, _, _ in TABLE} | {f"{a} c{c}" for a, _, _ in TABLE for c in (2, 3)}
+    unknown = [o for o in only or [] if o not in names]
+    if unknown:
+        raise SystemExit(f"--only {unknown}: no such row; rows: {', '.join(sorted({a for a, _, _ in TABLE}))}")
     for agent, one, many in TABLE:
         if scale:
             one, many = scaled(agent, one, many, threads)

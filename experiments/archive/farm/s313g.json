@@ -1,0 +1,22 @@
+{
+  "name": "s313g",
+  "note": "313: the shipped pair as a 2x2 after the diff review's strike fix (reach_rule's strike count now limits agents only around a target outside node reach, as the engine): w.purge 3.6 / 1.8 by reach_rule 0 / 1, on r151's spent fresh set (51456-51551), d1-d4, the three pairs.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [1, 2, 3, 4],
+  "agents": [
+    "strategist:w.purge=3.6,reach_rule=0",
+    "strategist:w.purge=3.6,reach_rule=1",
+    "strategist:w.purge=1.8,reach_rule=0",
+    "strategist:w.purge=1.8,reach_rule=1"
+  ],
+  "games": 96,
+  "first_seed": 51456,
+  "records": 0
+}
