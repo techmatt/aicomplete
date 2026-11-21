@@ -140,5 +140,8 @@ browser; `npm ci` first):
   `C:\Code\gdrive-sync\aicomplete\archive\art-originals\`, same relative paths, outside the
   junction. `scenes/r1` there is the raw draws only: to rebuild the rest, export commit
   `06ef387`, copy `raw/` into its `art-originals/scenes/r1/`, and run `npm run scene-picker`.
+  Every finished round's `cards.pdf` and `cards/` (the scene-picker's renders, with the faces of
+  their day) sit there too, under `scenes/<round>/`; a picker manifest's "print …/cards.pdf"
+  means that copy.
 - **The master's outer steel band lies in its bleed;** `derive` is what brings it inside
   the trim. Composed singles show the full bleed; the splay is trimmed.

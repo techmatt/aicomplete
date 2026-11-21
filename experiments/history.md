@@ -11,6 +11,7 @@ the findings are in the write-up.
 | Item | Rev | Write-up |
 |---|---|---|
 | 310 test cleanup: test binaries side by side (`cargo test-fast`), line-tables test build | 150 | [310_test_cleanup](results/310_test_cleanup/README.md) |
+| 311 disk cleanup: scene rounds' cards.pdf and cards/ renders to the Drive archive (2.2 GB), git gc | 150 | [311_disk_cleanup](results/311_disk_cleanup/README.md) |
 | 309 rulebook, teach and aid refreshed to r150; friction review rerun (hand play d2, d4 spot) | 150 | [309_rulebook_friction_refresh](results/309_rulebook_friction_refresh/README.md) |
 | 308 bug hunt on the overhaul since 285 (286-307): reach by ambassador, view words | 150 | [308_bug_hunt](results/308_bug_hunt/README.md) |
 | 306 finale buildings: three new, Singularity Exploit converted; antimatter spent a seat-game | 149 | [306_finale_buildings](results/306_finale_buildings/README.md) |
