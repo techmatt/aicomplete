@@ -274,16 +274,13 @@ fn a_botnet_for_the_station_here_never_lands_on_the_city_token() {
 /// 175: a choice threat may take a last node: unable to pay, the player loses it.
 #[test]
 fn a_choice_threat_takes_a_last_node_too() {
-    use crate::modules::threats;
+    use crate::modules::effects;
     let (rules, mut g) = lab(&[]);
     let h = rules.map.numbered(0, piece(0).node);
     put(&mut g, h, node(0), 1);
     set_res(&mut g, 0, Resource::Credits, 2);
-    with_cx(&rules, |cx| {
-        let hexes = crate::modules::common::scope_hexes(&rules.world(), Some(0));
-        threats::lose_node_or(&mut g, cx, &[0], &hexes, Resource::Credits, 6, "threat1", None)
-    })
-    .unwrap();
+    let op = Op::LoseNodeOr { resource: Resource::Credits, amount: 6, count: 1 };
+    with_cx(&rules, |cx| effects::run(&mut g, cx, &[op], &mut effects::Ctx::threat(Some(0)).named("threat1"))).unwrap();
     assert_eq!(g.tokens(h, node(0)), 0);
 }
 

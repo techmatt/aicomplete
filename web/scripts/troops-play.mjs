@@ -6,14 +6,14 @@
 //       marked on the map and its hover saying why,
 //   (d) the end shown as a win reading "no city is corrupted", and no cut piece (cut-pieces.mjs) on any step.
 //
-//   node scripts/troops-play.mjs [--seed 14] [--out DIR] [--size 2560x1440] [--override JSON] [--search 1-40]
+//   node scripts/troops-play.mjs [--seed 30] [--out DIR] [--size 2560x1440] [--override JSON] [--search 1-40]
 //
 // Needs a served viewer (AIC_URL). Writes OUT/summary.json (what was seen and in which round, the moves, any
 // failure), OUT/record.json and screenshots; exit 1 on any failure. At the plain setting troops arrive late
 // (research slot 4), so the game runs on the baseline with `OVERRIDE` below (`--override` replaces it; the summary
 // records it). A Strike is shown ahead by a stage-II card, from round 5: the seed is one whose game lasts that long
 // and shows one (305, r148, seeds 13-60: 44 wins, (a)-(c) all in 14, 25, 28, 30, 41, 47-51 and more; 295's 17 no
-// longer shows a guard). The moves come from a small
+// longer shows a guard; 312, r151, seeds 13-36: (a)-(c) seen in 15, 25, 30, 36, not 14; 30 passes every check, 15 and 25 miss the guarded site's hover). The moves come from a small
 // policy (`decide`, play-policy.mjs) that reads the engine's view and legal actions; every one is then made by clicking the
 // control the player view shows for it (a button, or a highlighted hex on the map), the seat's row first when
 // another seat is shown, and the adversary's turn is stepped through whenever it opens. `--search A-B` plays seeds
@@ -42,7 +42,7 @@ const arg = (k, d) => {
   return i > 0 ? process.argv[i + 1] : d;
 };
 const web = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const seed = arg('seed', '14');
+const seed = arg('seed', '30');
 const out = arg('out', join(web, '..', 'out', 'troops-play'));
 const [width, height] = arg('size', '2560x1440').split('x').map(Number);
 const maxSteps = Number(arg('steps', '4000'));

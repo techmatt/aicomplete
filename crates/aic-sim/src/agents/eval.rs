@@ -415,7 +415,7 @@ pub struct Weights {
     /// the hand's. The keep plan's twin is `plan_sac`.
     pub sac_tags: f64,
     /// 298 (0: off; the judge 1), with `rally_read` on: the forecast a round ahead also reads the next Card beat's
-    /// Escalate (last round's card's types and the board rule's) and each corrupted factory's push, this share of
+    /// Escalate (last round's card's types and factories) and each corrupted factory's push, this share of
     /// their agents ([`Eval::escalate_fore`]).
     pub adv_read: f64,
     /// 298 (0: off, the clock reads Unity; the judge 1): the win clock (`tempo_rounds`, horizon mode's rounds left,
@@ -2044,9 +2044,9 @@ impl Eval {
     }
 
     /// 298 (`w.adv_read`): the adversary's arrivals a round ahead beyond the card's Infiltrate lines, as the engine
-    /// runs them: the next Card beat's Escalate (`adversary::next_escalating`: last round's card's types and the
-    /// board rule's, Commandeered Plants: each site of the type not yet the adversary's that holds an agent takes 1
-    /// more; `adversary::escalate`), and each corrupted factory's push in the Income beat (its agents onto its
+    /// runs them: the next Card beat's Escalate (`adversary::next_escalating`: last round's card's types and, 312,
+    /// factories every round: each site of the type not yet the adversary's that holds an agent takes 1 more;
+    /// `adversary::escalate`), and each corrupted factory's push in the Income beat (its agents onto its
     /// arrow's city, `adversary::factories_output`: not when an occupying troop, a player ambassador or a cordon
     /// stops it, or the city can't take it, `plan::push_lands`). Each counts `adv_read` of its agents.
     fn escalate_fore(&self, world: &aic_core::module::World, g: &GameState, fore: &mut Vec<(usize, f64)>) {

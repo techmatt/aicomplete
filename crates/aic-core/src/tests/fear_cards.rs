@@ -84,6 +84,46 @@ fn remove_where_acts_on_each_covered_hex() {
     assert_eq!(g.tokens(far, ADV_AMBASSADOR), 2, "a hex away from every ambassador keeps its agents");
 }
 
+/// 312 (friction row 5): a Unity card's floor acts only when the fear-card op before it counted none: a
+/// `per_site` with no site, a `remove_where` that took nothing off, a `prohibit` that covered no hex.
+#[test]
+fn a_floor_pays_only_when_the_op_before_it_counts_none() {
+    let (rules, mut g) = lab(&[]);
+    let seats = g.seats.len();
+    for h in 0..g.hexes.len() {
+        for s in 0..seats {
+            put(&mut g, h, ambassador(s), 0);
+        }
+        put(&mut g, h, TROOP, 0);
+    }
+    let floor = Op::Floor { then: vec![Op::Gain { resource: Resource::Credits, amount: 2 }] };
+    let credits = |g: &GameState| (0..seats).map(|s| g.resource(s, Resource::Credits)).collect::<Vec<_>>();
+    let per = Op::PerSite { where_: Where::Ambassador, max: 2, then: vec![Op::PullDiscord { amount: 1 }] };
+    let lists = [
+        per,
+        Op::RemoveWhere { pieces: Removable::Troops, count: 1, per: Per::Hex, where_: Where::ByAmbassador },
+        Op::Prohibit { step: Step::Infiltrate, where_: Where::Ambassador },
+    ];
+    for op in &lists {
+        let before = credits(&g);
+        team_ops(&rules, &mut g, &[op.clone(), floor.clone()], |_| 0);
+        let after = credits(&g);
+        assert!((0..seats).all(|s| after[s] == before[s] + 2), "{op:?}: none counted, every player gains 2");
+    }
+    // An ambassador on a city (a site: a prohibition's floor counts sites) with a troop: each op counts it, and no
+    // floor.
+    let m = &rules.map;
+    let h = (0..g.hexes.len()).find(|&h| kind(m, h) == HexKind::City).unwrap();
+    put(&mut g, h, ambassador(0), 1);
+    put(&mut g, h, TROOP, 1);
+    for op in &lists {
+        let before = credits(&g);
+        team_ops(&rules, &mut g, &[op.clone(), floor.clone()], |_| 0);
+        assert_eq!(credits(&g), before, "{op:?}: it counted, so no floor");
+        put(&mut g, h, TROOP, 1);
+    }
+}
+
 /// "For each corrupted city (at most N)": once per corrupted city, capped.
 #[test]
 fn per_site_counts_the_board() {
@@ -113,6 +153,8 @@ fn the_decks_name_board_conditions() {
                         Op::PerSite { .. }
                             | Op::RemoveWhere { .. }
                             | Op::Prohibit { .. }
+                            // 312: a Unity card's floor reads the op before it (a board condition counted none).
+                            | Op::Floor { .. }
                             | Op::Create { .. }
                             | Op::CreateSite { .. }
                             | Op::Escalate { .. }

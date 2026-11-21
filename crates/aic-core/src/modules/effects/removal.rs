@@ -198,14 +198,13 @@ pub(super) fn cleanse(
             break;
         };
         cx.tally(g, "effects.cleansed", 1);
-        if is_city(&w, hexes[i]) {
-            // 178 (#29): a card's liberation is the Liberate action's: the agents off, the city neutral (252).
-            cx.tally(g, "board.liberated_card", 1);
-            cx.tally(g, "board.liberated_card.city", 1);
-            board::liberate_site(g, cx, seat, hexes[i], false);
-        } else {
-            cx.add_tokens(g, hexes[i], ADV_CUBE, -1);
+        // 178 (#29): a card's liberation is the Liberate action's: the agents off, the site neutral (252). 312 (r151,
+        // Matt, D136): a station or factory too ("free" means one thing everywhere: its agents off, its Unity).
+        cx.tally(g, "board.liberated_card", 1);
+        if let Some(k) = board::site_kind(&w, g, hexes[i]) {
+            cx.tally(g, &format!("board.liberated_card.{}", k.name()), 1);
         }
+        board::liberate_site(g, cx, seat, hexes[i], false);
         if one_country {
             country = Some(w.map.hexes[hexes[i]].country);
         }

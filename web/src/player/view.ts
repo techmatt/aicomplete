@@ -450,7 +450,9 @@ function summary(events: Frame['events']): string {
     const n = (x: number) => `${Math.abs(x)} ambassador${Math.abs(x) === 1 ? '' : 's'} (seat ${seat})`;
     return [up ? `${n(up)} used` : '', down ? `${n(down)} ready again` : ''].filter(Boolean);
   };
+  // 312 (D140): as many added as taken off is a move ("2 adversary troops moved", a Redeploy), not "+2, -2".
   const pieces = [...tok].flatMap(([k, [up, down]]) => k.startsWith('tipped:') ? tipped(k, up, down)
+    : up > 0 && up === -down ? [`${up} ${short(k, up)} moved`]
     : [up ? `+${up} ${short(k, up)}` : '', down ? `${down} ${short(k, down)}` : ''].filter(Boolean));
   // 308: a note's own closing period goes before the "; " joining it to the next part ("...country by country).;").
   const parts = [...notes.map((n) => n.replace(/\.$/, '')), ...(pieces.length ? [`map: ${pieces.join(', ')}`] : [])];

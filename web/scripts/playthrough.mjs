@@ -11,9 +11,10 @@
 // goes through `aic.act`. On the way it:
 //   - shoots each turn phase the first time it shows (round 2 on, so the board has moved): each round-bar phase
 //     the seats act in, each prompt kind, and each step of the adversary's turn panel (OUT/phase-*.png);
-//   - checks every step for what a player could not read: page scroll, an element off screen with no scroll, text
-//     clipped with no ellipsis, a Draft / Keep button or the turn panel below its fold, a placeholder word, a cut
-//     piece (cut-pieces.mjs), a console error;
+//   - checks every step for what a player could not read, with sweep.mjs's screen checks (screen-checks.mjs): page
+//     scroll, an element off screen with no scroll, text clipped with no ellipsis, a Draft / Keep button or the turn
+//     panel below its fold, a placeholder or stale word; and a cut piece (cut-pieces.mjs), a console error (truncated
+//     text and raw ids are listed as `looks`, not failed);
 //   - ticks the overhaul's rules as the player view shows them (`seen` in the summary, `RULES` below): a rule the
 //     game never reached is listed as unreached, not failed (a plain d0 game may never see a troop).
 // Fails (exit 1) on no outcome, any check above, or a rule shown wrongly. Writes OUT/summary.json and OUT/record.json.
@@ -25,6 +26,7 @@ import { fileURLToPath } from 'node:url';
 import { openPage, viewerUrl } from './cdp.mjs';
 import { installCut } from './cut-pieces.mjs';
 import { POLICY } from './play-policy.mjs';
+import { SCREEN_HARD, SCREEN_LIB } from './screen-checks.mjs';
 
 const arg = (k, d) => {
   const i = process.argv.indexOf(`--${k}`);
@@ -40,42 +42,22 @@ const search = arg('search', '');
 const config = readFileSync(join(web, '..', 'configs', file), 'utf8');
 
 /** In the page: the per-step screen checks, and the overhaul's rules as the player view shows them. */
+// 312: the screen checks are screen-checks.mjs's, sweep.mjs's own: a hard kind fails the run, the rest (truncated
+// text, a raw id) are listed in the summary's `looks`.
 const CHECKS = `(() => {
-  const vis = (el) => { const s = getComputedStyle(el); const r = el.getBoundingClientRect(); return s.visibility !== 'hidden' && s.display !== 'none' && r.width > 0 && r.height > 0; };
-  const label = (el) => el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + (typeof el.className === 'string' && el.className ? '.' + el.className.trim().split(/\\s+/).join('.') : '') + ' "' + (el.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 50) + '"';
-  const scrollParent = (el) => { for (let p = el.parentElement; p; p = p.parentElement) { const o = getComputedStyle(p); if (/(auto|scroll)/.test(o.overflow + o.overflowX + o.overflowY)) return p; } return null; };
-  const inside = (r, b) => r.left >= b.left - 1 && r.right <= b.right + 1 && r.top >= b.top - 1 && r.bottom <= b.bottom + 1;
-  const PLACEHOLDER = /\\b(undefined|NaN|null|\\[object Object\\])\\b/;
+  ${SCREEN_LIB};
+  const { vis } = window.__aicScreen;
+  const HARD = new Set(${JSON.stringify(SCREEN_HARD)});
   const count = (h, kind) => h.tokens.find((t) => t.kind === kind)?.count ?? 0;
   const glob = (k) => aic.view.globals.find((x) => x.key === k);
   const any = (sel) => [...document.querySelectorAll(sel)].find(vis);
   window.__pt = {
+    /** { hard, soft }: each a list of "kind: what" lines. */
     screen() {
-      const issues = [];
-      const add = (kind, what) => issues.push(kind + ': ' + what);
-      const de = document.documentElement;
-      if (de.scrollHeight > innerHeight || de.scrollWidth > innerWidth) add('page-scroll', de.scrollWidth + 'x' + de.scrollHeight);
-      if (aic.mode !== 'player') add('debug-view', 'the debug view is on');
-      if (aic.error) add('error-banner', aic.error.slice(0, 160));
-      const view = { left: 0, top: 0, right: innerWidth, bottom: innerHeight };
-      for (const el of document.querySelectorAll('#top, #top *, #player, #player *')) {
-        if (!(el instanceof HTMLElement) || !vis(el)) continue;
-        const r = el.getBoundingClientRect();
-        if (!scrollParent(el) && !inside(r, view)) add('offscreen', label(el) + ' at ' + Math.round(r.left) + ',' + Math.round(r.top) + '-' + Math.round(r.right) + ',' + Math.round(r.bottom));
-        const s = getComputedStyle(el);
-        if (/(hidden|clip)/.test(s.overflow + s.overflowX + s.overflowY) && (el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2)
-          && s.textOverflow !== 'ellipsis' && s.webkitLineClamp === 'none') add('clipped', label(el) + ' ' + el.scrollWidth + 'x' + el.scrollHeight + ' in ' + el.clientWidth + 'x' + el.clientHeight);
-        const own = [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join(' ');
-        if (PLACEHOLDER.test(own)) add('placeholder', label(el));
-      }
-      for (const el of [...document.querySelectorAll('#p-seat .pdcard .pact, #p-turn')].filter((e) => !e.hidden && vis(e))) {
-        const r = el.getBoundingClientRect();
-        const sp = scrollParent(el);
-        const pr = sp && sp.getBoundingClientRect();
-        const box = sp ? { left: pr.left + sp.clientLeft, top: pr.top + sp.clientTop, right: Math.min(innerWidth, pr.left + sp.clientLeft + sp.clientWidth), bottom: Math.min(innerHeight, pr.top + sp.clientTop + sp.clientHeight) } : view;
-        if (!inside(r, box)) add('below-fold', label(el) + ' ends at ' + Math.round(r.bottom) + ', its pane shows to ' + Math.round(box.bottom));
-      }
-      return [...new Set(issues)];
+      const issues = window.__aicScreen.screen('#top, #top *, #player, #player *');
+      if (aic.mode !== 'player') issues.push({ kind: 'debug-view', what: 'the debug view is on' });
+      const lines = (hard) => [...new Set(issues.filter((i) => (i.kind === 'debug-view' || HARD.has(i.kind)) === hard).map((i) => i.kind + ': ' + i.what))];
+      return { hard: lines(true), soft: lines(false) };
     },
     /** The overhaul's rules on screen now: each key true when the player view shows it, a string when it shows it wrongly. */
     rules() {
@@ -153,8 +135,11 @@ try {
     const note = (round, list) => { for (const x of list) if (!issues.has(x)) issues.set(x, round); };
     const seen = {};
     const wrong = new Map();
+    const looks = new Map();
     const look = async (round) => {
-      note(round, await page.js('window.__pt.screen()'));
+      const { hard, soft } = await page.js('window.__pt.screen()');
+      note(round, hard);
+      for (const x of soft) if (!looks.has(x)) looks.set(x, round);
       note(round, (await page.js('window.__cut.removed()')).map((x) => 'cut: ' + x));
       for (const [k, x] of Object.entries(await page.js('window.__pt.rules()'))) {
         if (x === true) seen[k] ??= round;
@@ -216,6 +201,7 @@ try {
       end: end.shown, outcome: end.outcome, rounds: end.round, actions: end.actions, view: end.view, header: end.header,
       heapMB: heap ? Math.round(heap.usedSize / 1e6) : null,
       seen, unreached: RULES.filter((k) => seen[k] === undefined && !wrong.has(k)), failures: failures.slice(0, 60), failureCount: failures.length,
+      looks: [...looks].slice(0, 60).map(([x, r]) => `round ${r}: ${x}`),
       moves, clicks, consoleErrors: page.consoleErrors, shots,
     };
     writeFileSync(join(out, 'summary.json'), `${JSON.stringify(summary, null, 1)}\n`);

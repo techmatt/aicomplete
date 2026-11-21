@@ -76,10 +76,10 @@ fn sites(w: &World, g: &GameState, c: usize, loc: Location) -> Vec<usize> {
     w.map.countries[c].hexes.iter().copied().filter(|&h| is_kind(w, g, h, loc) && !corrupted(g, h)).collect()
 }
 
-/// Puts `threat`'s tokens in country `c`, in printed order: r80 (ruling #46) each on the site of its type (not the
-/// adversary's) with the most agents on its own hex, ties the lowest number; two tokens never share a hex (a token
-/// with no site left stays off). It counted adversary pieces on and next to each site, with a reorder for a token
-/// left off (145).
+/// Puts `threat`'s tokens in country `c`, in printed order: 312 (r151, Matt, friction row 2) each on the
+/// lowest-numbered site of its type not yet the adversary's, as event, project and Discord lines pick (no "most
+/// agents" pick: r80 to r150 took the site with the most agents on it); two tokens never share a hex (a token with
+/// no site left stays off).
 pub(super) fn place_tokens(g: &mut GameState, cx: &mut Cx, threat: &Key, c: usize) {
     let w = cx.world;
     let locs: Vec<(usize, _)> = def(&w, threat).locations.iter().copied().enumerate().take(MAX_TOKENS).collect();
@@ -88,7 +88,7 @@ pub(super) fn place_tokens(g: &mut GameState, cx: &mut Cx, threat: &Key, c: usiz
         let best = sites(&w, g, c, loc)
             .into_iter()
             .filter(|h| !used.contains(h))
-            .max_by_key(|&h| (g.tokens(h, ADV_AMBASSADOR), std::cmp::Reverse(w.map.hexes[h].number)));
+            .min_by_key(|&h| w.map.hexes[h].number);
         if let Some(h) = best {
             used.push(h);
             cx.set_key(g, &loc_key(threat, i), h as i64 + 1);

@@ -43,11 +43,12 @@ pub fn strike(g: &mut GameState, cx: &mut Cx) -> Res {
     cx.per_round(g, "map.strikes", 1);
     let all = stacks(&w, g);
     for &(h, n) in &all {
-        for _ in 0..n.min(g.tokens(h, TROOP) - standing(g, h)) {
+        let of = n.min(g.tokens(h, TROOP) - standing(g, h));
+        for k in 0..of {
             if lost(g) || g.is_over() {
                 return Ok(());
             }
-            let hit = strike_from(g, cx, h)?;
+            let hit = strike_from(g, cx, h, (k + 1, of))?;
             if lost(g) || g.is_over() {
                 return Ok(());
             }
@@ -166,8 +167,9 @@ pub fn walled(w: &World, g: &GameState, h: usize) -> bool {
 }
 
 /// One adversary troop at `h` strikes a target on or next to its hex
-/// (players choose): it is destroyed or the hit absorbed. Returns false when it had no target.
-fn strike_from(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
+/// (players choose): it is destroyed or the hit absorbed. Returns false when it had no target. `nth` is this
+/// troop's place among the hex's strikers (312, D140: "(2nd of 2)" on a repeated question).
+fn strike_from(g: &mut GameState, cx: &mut Cx, h: usize, nth: (i64, i64)) -> Res<bool> {
     let w = cx.world;
     let mut targets: Vec<(usize, String)> = Vec::new();
     for x in within(&w, h, 1) {
@@ -193,8 +195,15 @@ fn strike_from(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
         .iter()
         .map(|(x, k)| opt(format!("{} at {}", owned(*x, k, piece_name(k)), hex_name(&w, *x))))
         .collect();
+    let ordinal = |k: i64| match k {
+        1 => "1st".to_string(),
+        2 => "2nd".to_string(),
+        3 => "3rd".to_string(),
+        k => format!("{k}th"),
+    };
+    let which = if nth.1 > 1 { format!(" ({} of {})", ordinal(nth.0), nth.1) } else { String::new() };
     let prompt = || format!(
-        "Strike: the adversary troop at {} destroys which target?",
+        "Strike{which}: the adversary troop at {} destroys which target?",
         hex_name(&w, h)
     );
     let Some(i) = cx.choose_loss(0, prompt, opts)? else {

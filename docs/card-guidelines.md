@@ -27,7 +27,7 @@ quiet exception.
    at the cards feeding it. A card that draws prints at least 1 insight to play, so a round's chain of plays stops
    when its insight does (Science discounts can take a play to 0).
 8. **One clear idea per card.** Two effects at most, unless a third is the extra cost. A building holds income or
-   tokens, and one Action or Effect; an Action may be "A, OR B" when it is a token card's choice (15).
+   tokens, and one Action or Effect; an Action may have two halves, "(A) ...; OR (B) ...", when it is a token card's choice (15).
 9. **Fits at the default size** (7.5 pt), measured by `npm run cards:fit` ([web/README.md](../web/README.md), *Text
    sizes*), which fails until it fits. Cut words, split ideas or simplify the op rather
    than shrink the type; a card that still can't fit is a play change for Matt. A kind with no frame (threats,

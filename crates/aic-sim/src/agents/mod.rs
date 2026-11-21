@@ -338,7 +338,7 @@ const SWEEP: &str = "deals=1,lead=0";
 /// clock off), 222_sim_players (`strategy=0`), 245_tune_strategist (hand terms), 249_real_oracle_judge
 /// (`w.card_action`), 257_judge_action_buildings and 258_card_followups (`w.sink` 0.5), 288_agents_followups
 /// (`w.am_tie`, greedy's default; the engine's is 0), 298_overhaul_6_calibration (`w.adv_read`: the forecast reads
-/// Escalate, the board rule and a factory's push; `w.lib_clock`: the win clock paces off corrupted cities left),
+/// Escalate (factories included since 312) and a factory's push; `w.lib_clock`: the win clock paces off corrupted cities left),
 /// 303_antimatter_sinks_and_saving (`w.am_cap`, `w.am_idle`: antimatter beyond 1 or the hand's needs is idle).
 const STRATEGIST: &str = "strategy=0,w.built=4,w.built_cost=0.75,w.clock=0,w.energy_cap=0,w.hand=1.5,w.hand_cost=0.15,\
 w.horizon=0,w.insight_income=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,\

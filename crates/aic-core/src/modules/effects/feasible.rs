@@ -180,7 +180,7 @@ fn feasible_aimed(
             | Op::SpreadBotnets { .. } | Op::TakeSite { .. } | Op::FactoryTroops { .. } | Op::AgentsOnNodes { .. }
             | Op::RecallAmbassadors | Op::StripCubes { .. } | Op::StripHarden | Op::Fallout { .. }
             | Op::Clock { .. } | Op::OnePlayer { .. } | Op::PerSite { .. } | Op::RemoveWhere { .. }
-            | Op::Prohibit { .. } | Op::StandingTroopsBonus { .. } | Op::ThreatCompute { .. } | Op::Income { .. }
+            | Op::Prohibit { .. } | Op::Floor { .. } | Op::StandingTroopsBonus { .. } | Op::ThreatCompute { .. } | Op::Income { .. }
             | Op::IncomePerTag { .. } | Op::BuildingDiscount { .. } | Op::CardDiscount { .. } | Op::When { .. }
             | Op::Threshold { .. } | Op::Slots { .. } | Op::Logistics { .. } | Op::ProjectDrain { .. }
             | Op::AutoCounter { .. } | Op::UnityBonus { .. } | Op::CorruptionShield | Op::CivicShelter | Op::Wall

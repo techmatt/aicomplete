@@ -84,7 +84,7 @@ pub fn beat_of(phase: &str) -> Option<&'static str> {
 }
 
 const PHASES: &[PhaseSpec] = &[
-    PhaseSpec::auto("build", "the Card beat after the threats: Escalate (each site of last round's type that holds an agent takes 1 more), the board's one rule, Infiltrate X (agents on each named site), Strike (every troop destroys a player piece on or next to it), Redeploy (each troop moves onto its country's corrupted city nearest a player node or ambassador) and the card's other lines; each arrival checks the site it lands on"),
+    PhaseSpec::auto("build", "the Card beat after the threats: Escalate (each site of last round's type, and each factory, that holds an agent takes 1 more), Infiltrate X (agents on each named site), Strike (every troop destroys a player piece on or next to it), Redeploy (each troop moves onto its country's corrupted city nearest a player node or ambassador) and the card's other lines; each arrival checks the site it lands on"),
     PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead (its Infiltrate sites shown: they escalate the round after)"),
     PhaseSpec::auto("event", "the face-up event card becomes this round's (none left: the adversary wins)"),
     // 178 (amendment 8112): its own phase, so a project's prompt doesn't follow the reveal's hidden draw in one
@@ -313,6 +313,15 @@ fn flip(g: &mut GameState, cx: &mut Cx) {
     });
 }
 
+/// 312 (D139): whether no adversary `phase` (its Card beat, `adversary.build`, or compute step) runs again: the
+/// deck and the next card are both out (the next flip is the cap's loss) and this round's is not still ahead (its
+/// card flipped, the phase not yet run).
+fn no_beat_ahead(g: &GameState, phase: &str) -> bool {
+    let flipped = g.phase_index("adversary.event").is_none_or(|i| g.phase > i);
+    let this_round = flipped && g.phase_index(phase).is_some_and(|i| g.phase <= i);
+    g.pile(DECK).is_empty() && g.pile(NEXT).is_empty() && !this_round
+}
+
 /// The board's difficulty line's extra troops on every garrison line (135; an event's, a project's, a research
 /// slot's; no board prints one since 267), from `adversary.board_difficulty_at`.
 pub fn troop_bonus(w: &World) -> i64 {
@@ -340,22 +349,6 @@ pub fn threat_compute(w: &World) -> i64 {
     let base: i64 = b.rules.iter().map(|r| read(&r.effects)).sum();
     let hard = if level(w, w.int("adversary.board_difficulty_at")) { read(&b.difficulty.effects) } else { 0 };
     base + hard
-}
-
-/// 293: the adversary board's one rule, where it prints a Card-beat line (the Militarist's Commandeered Plants: an
-/// Escalate of its own every round): run after the card's escalate, before its Infiltrate. A rule read elsewhere
-/// (an income or threat-compute line) is no line here.
-fn board_rule(g: &mut GameState, cx: &mut Cx) -> Res {
-    let w = cx.world;
-    for r in &w.content.adversary_board.rules {
-        for e in r.effects.iter().filter(|e| matches!(e, Op::Escalate { .. })) {
-            effects::run(g, cx, std::slice::from_ref(e), &mut effects::Ctx::team().named("board").why(&r.name))?;
-            if g.is_over() {
-                return Ok(());
-            }
-        }
-    }
-    Ok(())
 }
 
 /// The event card's standing lines (135): its Infiltrate, Strike, Redeploy and other lines, resolved as the
@@ -448,12 +441,8 @@ impl Module for Adversary {
                     return Ok(());
                 };
                 let c = card(&w, &id);
-                // 293: escalate first (last round's type), then the board's one rule, then this card's lines.
+                // 293: escalate first (last round's type; 312: and factories), then this card's lines.
                 escalate_last(g, cx)?;
-                if g.is_over() {
-                    return Ok(());
-                }
-                board_rule(g, cx)?;
                 if g.is_over() {
                     return Ok(());
                 }
@@ -621,7 +610,9 @@ impl Module for Adversary {
         // 293: the map shows which threat is growing: each site the next Card beat's Escalate lands on (a site of
         // the escalating type, not yet the adversary's, holding an agent), as an arrow onto itself, kind `escalate`.
         let mut marked: Vec<usize> = Vec::new();
-        for site in next_escalating(w, g) {
+        // 312 (D139): in the cap's last round no Card beat follows this round's: nothing to forecast.
+        let ahead = if no_beat_ahead(g, "adversary.build") { Vec::new() } else { next_escalating(w, g) };
+        for site in ahead {
             for c in 0..w.map.countries.len() {
                 for h in super::plan::infiltrate_sites(w, g, site, c) {
                     // As the rule: a firewalled or no-Infiltrate site and a cordoned country take none.
@@ -666,7 +657,7 @@ impl Module for Adversary {
             }
         };
         // 238 (D100): a project the next compute step fills, as the board stands, says so.
-        let next = projects::completes_next_step(w, g);
+        let next = if no_beat_ahead(g, "adversary.compute") { Vec::new() } else { projects::completes_next_step(w, g) };
         let fill = |id: &str| {
             let soon = if next.iter().any(|k| k.as_str() == id) { ", completes next compute step" } else { "" };
             format!("{}/{} compute{soon}", g.var(&project_key(id)), project_cost(w, g, id))
@@ -777,7 +768,8 @@ fn reveal(g: &mut GameState, cx: &mut Cx) {
 
 /// 167, a prohibition resolves: `step` won't act where `wh` holds in the next adversary turn (this round's
 /// if its build is still ahead, else next round's). Another prohibition of the same step adds its condition.
-pub fn prohibit(g: &mut GameState, cx: &mut Cx, step: Step, wh: Where) {
+/// The sites it covers now (312: a Unity card's floor reads 0 as "did nothing").
+pub fn prohibit(g: &mut GameState, cx: &mut Cx, step: Step, wh: Where) -> i64 {
     let build_ahead = g.phase_index("adversary.build").is_some_and(|i| g.phase <= i);
     let round = g.round as i64 + if build_ahead { 0 } else { 1 };
     let (rk, wk) = super::plan::prohibit_keys(step);
@@ -788,12 +780,16 @@ pub fn prohibit(g: &mut GameState, cx: &mut Cx, step: Step, wh: Where) {
     // r80 (ruling #53): a token on each hex the condition holds on now; the step reads the tokens, not the
     // condition, and they come off with the firewalls.
     let w = cx.world;
-    for h in super::plan::sites_where(&w, g, wh) {
+    let hexes = super::plan::sites_where(&w, g, wh);
+    for &h in &hexes {
         if g.tokens(h, prohibit_token(step)) == 0 {
             cx.add_tokens(g, h, prohibit_token(step), 1);
         }
     }
     cx.tally(g, &format!("prohibit.{}.{}.made", step.name(), wh.name()), 1);
+    // 312 (review): the floor reads the sites covered (a city, research station or factory), as a table reads
+    // "no site qualifies": a token on open land guards nothing an Infiltrate or a corruption could take.
+    hexes.iter().filter(|&&h| crate::modules::board::site_kind(&w, g, h).is_some()).count() as i64
 }
 
 /// 167: a prohibition covered a site the step would act on (`fired`), keeping `n` arrivals or pulls off it.

@@ -861,6 +861,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::PerSite { .. }
         | Op::RemoveWhere { .. }
         | Op::Prohibit { .. }
+        | Op::Floor { .. }
         | Op::Infiltrate { .. }
             | Op::Escalate { .. }
         | Op::IncreaseIncome { .. }
@@ -1207,6 +1208,9 @@ fn above_art(c: &CardDef, f: &mut Face) {
                 plain = this_plain;
                 each_round.push(say);
             }
+            // 312 (friction row 11): a building's own play fires its play trigger (`cards::on_play`); the faces
+            // can't say so (six token buildings' top boxes fell below 7.5 pt, five with "(this too)"): the aid's
+            // *Words on cards* and rulebook §7 do.
             Standing::Effect(parts, say) => effects.push((parts, say)),
         }
     }
@@ -1301,7 +1305,15 @@ fn above_art(c: &CardDef, f: &mut Face) {
             halves.push(said);
         }
         let pay = if shared { format!("pay {}: ", listed(&costs[0])) } else { String::new() };
-        top_said.push(sentence(&format!("action: {pay}{}", halves.join(", OR "))));
+        // 312 (friction row 11): two or more halves are named, so "A, OR pay 2, get B" can't read as one list
+        // (Safehouse Network).
+        let said = if halves.len() > 1 {
+            let named: Vec<String> = halves.iter().enumerate().map(|(i, h)| format!("({}) {h}", (b'A' + i as u8) as char)).collect();
+            format!("{pay}one of: {}", named.join("; OR "))
+        } else {
+            format!("{pay}{}", halves.join(""))
+        };
+        top_said.push(sentence(&format!("action: {said}")));
     }
     f.top_text = top_said.join(" ");
 }

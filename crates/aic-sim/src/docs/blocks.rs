@@ -27,7 +27,7 @@ pub fn strategies_block() -> String {
 }
 
 /// The words cards lean on, once: `docs/rules/README.md`'s *Terms* and the player aid print these.
-pub const HOUSE_TERMS: [(&str, &str); 26] = [
+pub const HOUSE_TERMS: [(&str, &str); 27] = [
     ("Facility", "a research station or factory on the board. A building is always a card. Harden goes on a facility, or on your nodes where a card says so: one hardening token either way"),
     ("Ambassador", "a player's piece, any player's: a card never says whose"),
     ("Agent", "the adversary's piece on the board (the Security token is an Operative)"),
@@ -45,7 +45,9 @@ pub const HOUSE_TERMS: [(&str, &str); 26] = [
     ("At N", "on a building's Effect: when its tokens here reach N, N of them come off and the rest happens"),
     ("Draw", "from the tier-1 deck, with no keep to pay; if it is empty, reshuffle its discard first"),
     ("On your cards", "on tags: on your cards in play, covered buildings included, and your board's tags, printed or revealed by its tracks. Tokens count only on the card that holds them"),
-    ("Action", "once a round, always; \"A, OR B\" is one use, either half"),
+    ("Action", "once a round, always; \"one of: (A) ...; OR (B) ...\" is one use, either half"),
+    // 312 (friction row 11): a self-trigger, which no face can mark and still fit.
+    ("When you play a X card", "on a building: playing this building counts too when it carries X"),
     ("Open megaproject", "one that isn't complete; research cubes in your color go only onto one"),
     ("Liberate", "a corrupted site with no troop on or next to it: a card liberating a city takes the agents on it off (the action needs none there), and the adversary's cube comes off; it is left neutral, a city its country's for good, a station or factory for a card to claim (the action pays for it in ambassadors; a card's is unpaid)"),
     ("Rescue", "on a card, a corrupted city: liberate it, then a neutral station or factory next to it with no agent on it becomes yours, unpaid and out of reach too; with none, nothing more happens. The Liberate action never claims"),

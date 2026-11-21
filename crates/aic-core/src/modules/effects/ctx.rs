@@ -43,6 +43,9 @@ pub struct Ctx {
     /// 234: a `target` op has resolved in this list: `Some(None)` when it found no hex (the map ops after it
     /// do nothing), `Some(Some(h))` its hex. `None`: no target, so each op keeps its own reach.
     pub target: Option<Option<usize>>,
+    /// 312 (friction row 5): what the last fear-card op of this list counted (a `per_site`'s sites, a
+    /// `remove_where`'s pieces removed, a `prohibit`'s sites covered): a `floor` after it acts when it counted 0.
+    pub counted: Option<i64>,
 }
 
 impl Ctx {
@@ -60,6 +63,7 @@ impl Ctx {
             node_spots_before: Vec::new(),
             fresh: false,
             target: None,
+            counted: None,
         }
     }
 

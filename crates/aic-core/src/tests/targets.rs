@@ -323,14 +323,11 @@ fn a_card_removing_troops_first_may_target_a_guarded_city() {
     rules.apply_mut(&mut guarded, &play, None).unwrap();
     answer_all(&rules, &mut guarded);
     assert_eq!((total(&guarded, TROOP), guarded.tokens(city, ADV_CUBE)), (0, 0), "the guards go, then the city is freed");
-    // 4 guards on two hexes, one more than it removes: still its target, and with a guard left nothing is freed.
+    // 312 (D137): 4 guards on two hexes, one more than it removes: no target (it would free nothing).
     let mut held = g.clone();
     put(&mut held, beside, TROOP, 2);
     put(&mut held, other, TROOP, 2);
-    assert_eq!(targets(&held, list), [city]);
-    rules.apply_mut(&mut held, &play, None).unwrap();
-    answer_all(&rules, &mut held);
-    assert_eq!((total(&held, TROOP), held.tokens(city, ADV_CUBE)), (1, 1), "a guard is left: the city stays corrupted");
+    assert!(targets(&held, list).is_empty());
 }
 
 /// The six country cards: a country-sized effect is the target's country; Shelter takes no target.

@@ -59,7 +59,10 @@ each country piece from X / each player from one X" (`remove_where`); **prohibit
 generalized; *In the next adversary turn, no X*, [README.md](README.md#terms)): no Infiltrate, Strike or Corrupt; at
 a token's hex an Infiltrate's agent stays in the supply, no troop strikes a piece (a no-Strike token; the troop
 stays where it is), and a site doesn't corrupt
-(by an arrival, a flip or a threat; a node there isn't lost to agents), though agents still land on a no-Corrupt hex. One made during an adversary turn comes off at that turn's end. Choices
+(by an arrival, a flip or a threat; a node there isn't lost to agents), though agents still land on a no-Corrupt hex. One made during an adversary turn comes off at that turn's end.
+**The floor (r151, `floor`):** every Unity card's strengths end "If there are none" ("If nothing comes off"; on a
+prohibition "If no city, research station or factory qualifies": the sites under its tokens) "every player gains 2
+credits instead": it pays when the count before it is 0, so no tip reads, counts and does nothing. Choices
 are seat 0's (each player's own, theirs). Grassroots Funding and Think Tank move a printed income marker "for the
 rest of the game".
 

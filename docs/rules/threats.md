@@ -39,8 +39,8 @@ way, at the printed tier, a threat's into its own country; one dealt after the c
 **Location tokens.** A dealt threat puts a token on a site of each of its location types in its country (two tokens
 never share a hex), one condition for every type: a site of the type that is **not the adversary's**. Tokens go in
 printed order (r80, Matt's ruling #46),
-each onto the site of its type with **the most agents on its own hex** (troops, botnets and neighbors don't count);
-ties, the lowest hex number. A location type with no such site left in the country gets no token. **The fallback
+each onto the **lowest-numbered** site of its type (r151: as event, project and Discord lines pick; agents don't
+matter), skipping a hex an earlier token took. A location type with no such site left in the country gets no token. **The fallback
 (r139):** a dealt threat with no such site of any of its types puts its one token on the country's lowest-numbered
 city, one not the adversary's first; there none of its located lines acts, whatever its types. The token still marks who is near and where its agent lands. A located line
 ("the factory here") acts only on its own kind of hex (r137, D132): with no token of that kind, as on the fallback
@@ -112,13 +112,13 @@ Its compute waits for the adversary's compute step ([adversary.md](adversary.md)
 
 **For new players (the adversary model).** Each round the adversary's event card comes first. Its top line deals
 threats: in each country, deal the top card of the named tier's threat deck (the decks were built at setup, by the
-line on the adversary's board) and put each location token on the site of its type holding the most agents; if the
+line on the adversary's board) and put each location token on the lowest-numbered site of its type not yet the adversary's; if the
 country has no such site left, its token goes on the country's lowest-numbered city instead. If you have a node or an ambassador on
 or next to a token, you are *near* that threat and may help pay it off. Each threat prints one way to pay, or two: a
 scarce thing (energy, ambassadors, insight, research cubes, chips, or cards given up for their tags) or credits;
 resources can be pooled between players, giving up cards is done by one player alone. What a threat takes if unpaid is
-never what it asks for. Next last round's sites escalate (each site of last round's type still holding an agent
-takes 1 more), then the card infiltrates (1 agent on every site of the type it names not yet the
+never what it asks for. Next last round's sites escalate (each site of last round's type, and every factory, still
+holding an agent takes 1 more), then the card infiltrates (1 agent on every site of the type it names not yet the
 adversary's); where it shows a Strike icon, every troop then destroys a player piece on or next to it (the card was
 face up a round ahead); then its other lines.
 A site corrupts the moment an arrival brings it to its number. You draft and act; production then runs from one
@@ -135,7 +135,7 @@ adds setup (the income marker, the event deck) and at most one rule that fires o
 resolve: level 1 lets a city corrupt at 3 (the cards' "Botnets spread (level 1+)" start too), 2 gives 4 compute for each unpaid threat, 3 a shorter,
 busier game, and 4 a harder deck; no level deals an extra threat
 ([adversary.md](adversary.md) *Difficulty*). The agents come from the cards' Infiltrate lines (stage III names two
-site types; 2 agents a city at level 4, 1 on a facility), from Escalate and from corrupted factories, each feeding its city 1 a round.
+site types; 2 agents a city at level 4, 1 on a facility), from Escalate and from corrupted factories, each feeding its city 1 a round (push, then make 1).
 **What resisted a summary:** that only resource options pool.
 
 **Compute.** Many threats also give the adversary compute, onto its projects ([adversary.md](adversary.md)), when they

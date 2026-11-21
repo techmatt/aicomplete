@@ -436,11 +436,6 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             threats::requisition(g, cx, &ctx.seats(&w, g), *resource, *amount, *n, ctx.why.as_deref())?
         }
         Op::LoseAmbassador => threats::lose_ambassador(g, cx, &ctx.seats(&w, g), ctx.why.as_deref())?,
-        // Count 1 keeps the threat path's prompt words ("or lose a node?"); more nodes: new_ops::lose_node_or (307: one
-        // path would reword this prompt, a call left to Matt).
-        Op::LoseNodeOr { resource, amount, count: 1 } => {
-            threats::lose_node_or(g, cx, &ctx.seats(&w, g), &ctx.hexes(&w, g), *resource, *amount, ctx.label, ctx.why.as_deref())?
-        }
         Op::DiscardMostExpensive => threats::discard_most_expensive(g, cx, &ctx.seats(&w, g), ctx.why.as_deref())?,
         Op::Compute { amount } => {
             if ctx.label == "megaproject" {
@@ -520,9 +515,21 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                     break;
                 }
             }
+            // A blank (`max` 0, the on/off screens' off) counts nothing a floor reads.
+            ctx.counted = (*max > 0).then_some(n);
         }
-        Op::RemoveWhere { pieces, count, per, where_ } => team::remove_where(g, cx, *pieces, *count, *per, *where_)?,
-        Op::Prohibit { step, where_ } => adversary::prohibit(g, cx, *step, *where_),
+        Op::RemoveWhere { pieces, count, per, where_ } => {
+            ctx.counted = Some(team::remove_where(g, cx, *pieces, *count, *per, *where_)?);
+        }
+        Op::Prohibit { step, where_ } => ctx.counted = Some(adversary::prohibit(g, cx, *step, *where_)),
+        // 312 (friction row 5): a Unity card's floor, when the op before it counted none.
+        Op::Floor { then } => {
+            if ctx.counted == Some(0) {
+                cx.tally(g, "effects.floor", 1);
+                run(g, cx, then, ctx)?;
+            }
+            ctx.counted = None;
+        }
         // 275, 293: the adversary's Infiltrate and Escalate lines, and its compute income.
         Op::Infiltrate { site } => {
             let source = if ctx.label == "standing" { "event" } else { ctx.label };

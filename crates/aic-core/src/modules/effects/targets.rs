@@ -53,11 +53,24 @@ pub fn target_hexes_before(w: &World, g: &GameState, seat: usize, on: TargetSpec
     // r141, the guarding rule: a card that liberates its target can't take a corrupted site with a troop on or
     // next to it (a card that only clears agents or lands ambassadors there still can).
     // 297: unless the card removes troops there first (Peacekeeping Mission: "Remove 3 Troops on or next to it.
-    // Rescue it."): a guarded city is its target, and its Rescue acts if the removal left no guard.
+    // Rescue it."). 312 (r151, Matt, D137): then only a site its removal clears of every guard, so a player never
+    // pays for a Rescue that frees nothing.
     if let Some(i) = rest.iter().position(|o| matches!(o, Op::Liberate { .. })) {
-        if !rest[..i].iter().any(|o| matches!(o, Op::RemoveTroops { .. })) {
-            hexes.retain(|&h| !board::troop_guarded(w, g, h));
+        let (mut on_cap, mut near_cap) = (0, 0);
+        for o in &rest[..i] {
+            if let Op::RemoveTroops { count, at, .. } = o {
+                if at.is_on() {
+                    on_cap += count;
+                } else {
+                    near_cap += count;
+                }
+            }
         }
+        hexes.retain(|&h| {
+            let on = g.tokens(h, TROOP);
+            let beside: i64 = w.map.hexes[h].neighbors.iter().map(|&n| g.tokens(n, TROOP)).sum();
+            beside <= near_cap && on + beside <= on_cap + near_cap
+        });
     }
     if matches!(on, TargetSpec::EmptySite | TargetSpec::FreeZone)
         && rest.iter().any(|o| matches!(o, Op::ClaimSite { near: false }))

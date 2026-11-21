@@ -10,7 +10,7 @@ fn pull(rules: &Rules, g: &mut GameState, c: usize) {
 }
 
 #[test]
-fn a_token_lands_on_the_most_threatened_uncorrupted_site() {
+fn a_token_lands_on_the_lowest_numbered_uncorrupted_site() {
     let (rules, mut g) = threat_lab();
     let m = &rules.map;
     let mine: Vec<usize> = cities(m).into_iter().filter(|&h| m.hexes[h].country == 0).collect();
@@ -32,10 +32,10 @@ fn a_token_lands_on_the_most_threatened_uncorrupted_site() {
     // No adversary pieces: the lower city.
     pull(&rules, &mut g, 0);
     assert_eq!(threats::tokens(&g, &Key::new("eviction")), [a]);
-    // An agent on b: b, though a is lower; corrupted cities never.
+    // 312 (r151): an agent on b changes nothing: still the lower city; corrupted cities never.
     put(&mut g, b, ADV_AMBASSADOR, 1);
     pull(&rules, &mut g, 0);
-    assert_eq!(threats::tokens(&g, &Key::new("defection")), [b]);
+    assert_eq!(threats::tokens(&g, &Key::new("defection")), [a]);
 }
 
 /// r81 (friction #47): one tag vocabulary. Every tag a threat, a project or a project slot prints is a

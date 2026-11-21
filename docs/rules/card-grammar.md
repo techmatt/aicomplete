@@ -29,8 +29,7 @@ prints no "Effect:" (Matt, 264); a standing Effect keeps the label ("Effect: you
 
 **Event lines.** An event card prints only the line kinds in `content::EVENT_LINE_KINDS`, each with its icon there
 (`Content::check` holds to it), in a fixed order: the threat, Infiltrate (two at stage III), Strike, Redeploy, at most one other
-line (r143). Escalate and the board's one rule are rules of the adversary's turn, printed on its board, not card lines
-([adversary.md](adversary.md)). Event faces have no icon row yet. A new kind is Matt's call.
+line (r143). Escalate is a rule of the adversary's turn, not a card line ([adversary.md](adversary.md)). Event faces have no icon row yet. A new kind is Matt's call.
 
 How each primitive resolves, beyond the card text (the card set: [player-cards.md](player-cards.md); every card:
 [cards.md](../cards.md)):
@@ -69,10 +68,11 @@ How each primitive resolves, beyond the card text (the card set: [player-cards.m
   is countered at once. **Counter a threat:** partial payments on it are refunded. **Delay N threats:** each skips
   this round's execution, stays up, and can be countered next round; only threats you may counter, as countering and
   jamming; with none, the card still plays for its draw or hardening tokens.
-- **Cleanse:** take the adversary cube off the target, a corrupted research station or factory, then off the rest
-  the card counts next to it (or in its country), one hex at a time. A station becomes neutral. `only` limits it to
-  stations or to factories; its cube icon then carries that facility's glyph. With `cities` (Great Liberation) a
-  corrupted city counts too (its cube carries the city glyph), and it is liberated ([ambassadors.md](ambassadors.md)).
+- **Cleanse** ("free"): the target, a corrupted research station or factory, then the rest the card counts next to
+  it (or in its country), one hex at a time, each liberated as the Liberate action does
+  ([ambassadors.md](ambassadors.md)): its agents and the adversary cube off, its Unity swayed, left neutral (r151,
+  D136: "free" means one thing everywhere). `only` limits it to stations or to factories; its cube icon then carries
+  that facility's glyph. With `cities` (Great Liberation) a corrupted city counts too (the city glyph).
 - **Liberate:** liberate the target, a corrupted city, as the Liberate action does, unpaid
   ([ambassadors.md](ambassadors.md)); the city is left neutral (252). `own` (Hostile Buyout alone) takes any corrupted site, and a station or factory it frees gets your cube (254: a city never does). Each engine's twist: `ambassadors` (gain that many), `troops` (up to that many adversary troops in the city's country come
   off), `botnet` (a botnet on or next to the city comes off; its icon carries the city glyph). Only the liberate capstones print it ([player-cards.md](player-cards.md)).
@@ -97,7 +97,7 @@ How each primitive resolves, beyond the card text (the card set: [player-cards.m
 - **Help cards** (keyword `help`, about 6% of the deck): the player chooses another player; both gain, the helper paying. **In a
   1-player game, "another player" means you**: the gift is yours.
 - **Cordon (`cordon`):** "cordon its country until the end of the next adversary turn" (the target's): until then no agent lands
-  there, whatever sends it: no Escalate, Commandeered Plants, Infiltrate or creation line acts there, a project's
+  there, whatever sends it: no Escalate, Infiltrate or creation line acts there, a project's
   included, and its corrupted factories neither push nor make an agent. Troops still land, Gather and Push still move agents in, and its botnets' compute still counts;
   the rest of the turn goes on.
   Like a firewall it comes off at that turn's Income beat.
@@ -108,7 +108,7 @@ How each primitive resolves, beyond the card text (the card set: [player-cards.m
 **The engine wording (candidate).** Every trigger is an Effect on a building (`:`, `when`): it fires once for each
 action that sets it off (a card play, a building's Action, an AI power, a standard action), its unit printed, with
 no limit a round, and resolves after what caused it. A building counts itself: playing a Science
-building with a Science trigger fires it.
+building with a Science trigger fires it (the face doesn't say so: six token buildings wouldn't fit; the aid's *Words on cards* does).
 
 - **Play triggers (`when`, `play`):** "When you play a Science card, gain 5 credits" (Citation Engine); with no tag, any
   card, printed by no card: **a per-play payout names a tag** (draw is precious; any-card payouts made a cheap card
@@ -139,5 +139,5 @@ building with a Science trigger fires it.
   that tag, a teammate does, you remove a troop. The less mark after the colon makes those cards cheaper. A ringed
   number and discs before the colon count up on the card and pay when they reach it.
 - **Reuse (`reuse`, an Action):** use again another of your buildings' Actions you used this round, paying its cost
-  again, either half of an "A, OR B" Action, not only the half you used (a combo with a strong Action is fine; a card
+  again, either half of a two-half Action ("Action: one of: (A) ...; OR (B) ..."), not only the half you used (a combo with a strong Action is fine; a card
   it breaks is redesigned); never one whose own Action is a reuse (two would loop).

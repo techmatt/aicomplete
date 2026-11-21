@@ -450,9 +450,17 @@ fn take(g: &mut GameState, cx: &mut Cx, h: usize, pieces: Removable, n: i64) -> 
                 adversary::lift_fallout(g, cx, h);
                 cx.tally(g, "effects.land_lifted", 1);
             }
+            // 312 (D136): a cube off a station or factory frees it, as Liberate does (its agents off, its Unity).
             Removable::Cubes => {
                 cx.tally(g, "effects.cleansed", 1);
-                cx.add_tokens(g, h, ADV_CUBE, -1);
+                // Counted as a card's freeing, not the Liberate action's (`energy_read.py` subtracts these).
+                cx.tally(g, "board.liberated_card", 1);
+                match board::free_site(g, cx, h) {
+                    Some(k) => cx.tally(g, &format!("board.liberated_card.{}", k.name()), 1),
+                    None => {
+                        cx.add_tokens(g, h, ADV_CUBE, -1);
+                    }
+                }
             }
         }
         k += 1;
@@ -462,7 +470,7 @@ fn take(g: &mut GameState, cx: &mut Cx, h: usize, pieces: Removable, n: i64) -> 
 
 /// 167, a board-conditioned removal (fear-card shape): on each hex where `wh` holds, in each country piece from
 /// such hexes (players choose, one piece at a time), or each player from one such hex (their choice).
-pub(super) fn remove_where(g: &mut GameState, cx: &mut Cx, pieces: Removable, count: i64, per: Per, wh: Where) -> Res {
+pub(super) fn remove_where(g: &mut GameState, cx: &mut Cx, pieces: Removable, count: i64, per: Per, wh: Where) -> Res<i64> {
     let w = cx.world;
     let fits = |g: &GameState, h: usize| plan::holds(&w, g, h, wh) && removable(&w, g, h, pieces);
     let mut removed = 0;
@@ -515,7 +523,7 @@ pub(super) fn remove_where(g: &mut GameState, cx: &mut Cx, pieces: Removable, co
         }
     }
     cx.tally(g, &format!("effects.remove_where.{}", pieces.words()), removed);
-    Ok(())
+    Ok(removed)
 }
 
 /// 167: "for each `wh` (at most `max`)": how many times `then` resolves.

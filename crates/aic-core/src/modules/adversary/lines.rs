@@ -129,48 +129,44 @@ pub fn escalate(g: &mut GameState, cx: &mut Cx, site: SiteType, scope: Option<us
     Ok(())
 }
 
-/// 293: the site types last round's event card named (its Infiltrate lines, in card order): what escalates this
-/// round. Read off the card in the board's "last round" space ([`LAST`]); none in round 1.
-pub fn escalating(w: &World, g: &GameState) -> Vec<SiteType> {
+/// 312 (r151, Matt, friction row 1): the site type that escalates every round, whatever last round's card named
+/// (the Militarist's Commandeered Plants, folded into the Escalate step: one scan, not two).
+pub const ALWAYS_ESCALATES: SiteType = SiteType::Factory;
+
+/// `types` in order with [`ALWAYS_ESCALATES`] added last, each type once.
+fn with_always(types: impl IntoIterator<Item = SiteType>) -> Vec<SiteType> {
     let mut out: Vec<SiteType> = Vec::new();
-    for id in g.pile(LAST) {
-        for site in infiltrate_sites(card(w, id)) {
-            if !out.contains(&site) {
-                out.push(site);
-            }
+    for site in types.into_iter().chain([ALWAYS_ESCALATES]) {
+        if !out.contains(&site) {
+            out.push(site);
         }
     }
     out
+}
+
+/// 293: the site types that escalate this round: last round's event card's (its Infiltrate lines, in card order,
+/// read off the card in the board's "last round" space, [`LAST`]; none in round 1), then factories (312: every
+/// round, [`ALWAYS_ESCALATES`]).
+pub fn escalating(w: &World, g: &GameState) -> Vec<SiteType> {
+    with_always(g.pile(LAST).iter().flat_map(|id| infiltrate_sites(card(w, id))))
 }
 
 /// 293: the site types the next Card beat escalates, as the view marks them: between this round's flip and its
 /// Card beat, last round's card's ([`escalating`]); otherwise this round's card's (it moves to the last-round
-/// space at the next flip), then the board rule's own Escalate type, if it prints one. A round with no event
-/// phase flips inside its Card beat, so there the card is never "flipped, Card beat ahead".
+/// space at the next flip); factories every time (312). A round with no event phase flips inside its Card beat,
+/// so there the card is never "flipped, Card beat ahead".
 pub fn next_escalating(w: &World, g: &GameState) -> Vec<SiteType> {
     let flipped = g.phase_index("adversary.event").is_some_and(|i| g.phase > i);
     let build_ahead = g.phase_index("adversary.build").is_some_and(|i| g.phase <= i);
-    let mut out = if flipped && build_ahead {
+    if flipped && build_ahead {
         escalating(w, g)
     } else {
-        g.pile(CURRENT).iter().flat_map(|id| infiltrate_sites(card(w, id))).collect()
-    };
-    for e in w.content.adversary_board.rules.iter().flat_map(|r| r.effects.iter()) {
-        if let Op::Escalate { site } = e {
-            out.push(*site);
-        }
+        with_always(g.pile(CURRENT).iter().flat_map(|id| infiltrate_sites(card(w, id))))
     }
-    let mut seen: Vec<SiteType> = Vec::new();
-    out.retain(|s| {
-        let new = !seen.contains(s);
-        seen.push(*s);
-        new
-    });
-    out
 }
 
-/// 293, the event card's escalate: each site of last round's type(s) that holds an agent takes 1 more
-/// ([`escalate`]), before this round's Infiltrate.
+/// 293, the event card's escalate: each site of last round's type(s), and each factory (312), that holds an agent
+/// takes 1 more ([`escalate`]), before this round's Infiltrate.
 pub fn escalate_last(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     for site in escalating(&w, g) {

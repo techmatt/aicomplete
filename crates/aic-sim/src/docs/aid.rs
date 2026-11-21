@@ -13,11 +13,11 @@ const ROUND: &str = "\
 |---|---|---|
 | | Round start | Set your insight. Clear your used markers (below). |
 | A | Sway | Each Fallout: 1 Discord. |
-| B | Adversary | **Card** (threats; Escalate: each site of last round's type holding an agent takes 1 more; the board's rule; Infiltrate, Strike, Redeploy, other lines; each arrival checks only its own hex, once all its agents there are on), **Income** (next card up; each corrupted site's one output: a city 1 Discord, a station 1 research cube, a factory its agent pushed along its arrow then 1 new agent, a botnet 1 compute; then all compute onto the leftmost project at once; the research track advances a slot for every K cubes; firewalls, cordons and no-X tokens off). |
+| B | Adversary | **Card** (threats, each token on the lowest-numbered site of its type; Escalate: each site of last round's type, and each factory, holding an agent takes 1 more; Infiltrate, Strike, Redeploy, other lines; each arrival checks only its own hex, once all its agents there are on), **Income** (next card up; each corrupted site's one output: a city 1 Discord, a station 1 research cube, a factory its agent pushed along its arrow then 1 new agent, a botnet 1 compute; then all compute onto the leftmost project at once: move the remainder onto the next project's track before you slide; the research track advances a slot for every K cubes; firewalls, cordons and no-X tokens off). |
 | C | Cards | Build a hand of 4, draft, keep (1 insight a tier-1; 3 a tier-2, 2 with the keep upgrade, less 1 per 2 Science tags you have). |
 | D | Actions | All at once, until everyone passes. |
-| E | Production | Read from the tracks, less each blocked chip's site: factories, cities (1 energy to every player with a node on or next to one), stations, megaprojects, income. |
-| F | Threats | Each threat not paid off takes effect (and lands 1 agent on its first token), one that waited from last round included. |
+| E | Production | Read from the tracks, less each blocked chip's site: factories, cities (1 energy to every player with a node on or next to one: as you place a node, move your energy marker for each free city on or next to it that your other nodes didn't already touch), stations, megaprojects, income. |
+| F | Threats | Each threat not paid off takes effect in two steps: **its harm, then 1 agent on its first (anchor) token**; one that waited from last round included. |
 | G | Cleanup | This round's effects end (Shelter, round flags). |
 
 After every action and step: Unity just gained goes on its track; tip any full track, Discord first;
@@ -50,7 +50,7 @@ fn once_a_round(r: &Rules) -> String {
          start.\n\n\
          - **Your board's powers:** each once: each node power, one tier of each tiered power. {}.\n\
          - **Each ambassador:** one move or one act; tip it over when it has.\n\
-         - **Each building's Action** (`→`): once; \"A, OR B\" is one use.\n\
+         - **Each building's Action** (`→`): once; \"one of: (A) ...; OR (B) ...\" is one use.\n\
          - **Standard actions:** Remove a troop {} a round, Turn a cube into insight {} a round, each player.\n\
          - **Each megacorp's converter and chip converter:** once a round each, each player.\n\
          - **Vigil** (Protector): only the first {} troops a round pay.\n\
@@ -174,14 +174,15 @@ the markers show, less each blocked site's output (until its megaproject complet
 - **Blocked chips:** on a producing site while an opposing piece stands there (an agent on a free city, or on \
 your or a neutral station or factory; your ambassador on the adversary's) and on a city a blackout darkens; lift \
 it when the last one leaves.
-- **Your tag dials** (your board): one a tag. Turn it when a card with that tag comes into play or is sacrificed.
+- **Your tag dials** (your board): one a tag. Turn it when a card with that tag comes into play or is sacrificed. \
+Discount pips mark each step: Science every {SCIENCE} (1 insight off), Industry every {INDUSTRY} (1 credit off a building).
 - **Used markers:** on each power, building slot and converter's used space.
 - **Unity and Discord tip tracks:** one space a tip; each space prints its card strength.
 - **The adversary board:** the compute income track, the research row (six icon slots, a marker, and the cubes \
 toward its next slot), the last-round space (the card whose sites escalate), a compute track beside each \
 project slot (a marker, not cubes), and its corrupted sites' outputs.
-- **Zone arrows** (the map): each industrial zone prints an arrow to its city; a corrupted factory there pushes \
-its agent along it.
+- **Zone arrows** (the map): each industrial zone prints an arrow to its city and \"push, then make 1\": a \
+corrupted factory there pushes its agent along it, then, holding none, makes 1.
 - **Waits token:** on a threat dealt after the counter phase or delayed; it takes effect next round.
 ";
 
@@ -190,7 +191,8 @@ fn ambassadors(r: &Rules) -> String {
     let (c, s, f) = (int(r, "board.liberate_at"), int(r, "board.claim_station"), int(r, "board.claim_factory"));
     let price = if c == s && s == f { format!("{c} at any site") } else { format!("city {c}, station {s}, factory {f}") };
     format!(
-        "- **An agent meets one** (it lands, or your ambassador arrives): one for one, both off.\n\
+        "- **Arrives ready:** from your supply, placed by a card or power, or converted.\n\
+         - **An agent meets one** (it lands, or your ambassador arrives): one for one, both off.\n\
          - **Corruption** removes every ambassador on the hex.\n\
          - **Liberate** (your ready ambassador on the site acts): {price} (yours on the \
          site pay first, then your supply).\n\
@@ -261,11 +263,15 @@ pub(super) fn player_aid_md(r: &Rules) -> String {
          sheet; the full rules are [rulebook.md](rulebook.md), the marks [card-guidelines.md](card-guidelines.md).\n\n\
          ## The round (rulebook §4)\n\n{ROUND}\n## Once a round (§5, §8, §20)\n\n{}\n\
          ## Tip strips (§12, §14)\n\n{}\n## Corrupt numbers (§6, §21)\n\n{}\n## Troops\n\n{TROOPS}\n\
-         ## Tracks and markers (§2)\n\n{TRACKS}\n## What spends an ambassador (§8)\n\n{}\n\
+         ## Tracks and markers (§2)\n\n{}\n## What spends an ambassador (§8)\n\n{}\n\
          ## The adversary's outputs and research row\n\n{}\n## Your level (§21)\n\n{}\n## Words on cards\n\n{}",
         once_a_round(r),
         tip_strips(r),
         corrupt_numbers(r),
+        // 312 (friction row 3): the dials' discount pips, from the draft's discount steps.
+        TRACKS
+            .replace("{SCIENCE}", &int(r, "cards.science_every").to_string())
+            .replace("{INDUSTRY}", &int(r, "cards.industry_every").to_string()),
         ambassadors(r),
         outputs(r),
         levels(r),

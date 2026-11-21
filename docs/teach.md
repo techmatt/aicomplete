@@ -85,8 +85,8 @@ When an agent lands on your ambassador, or your ambassador walks onto an agent, 
 **Card beat.** Last round's card slides to the side; the face-up card becomes this round's. Then:
 
 - it **deals threats**, one or two in each country;
-- **Escalate**: every site of the kind last round's card named that still holds an agent takes one more;
-- the Militarist's own rule: every factory holding an agent takes one more;
+- **Escalate**: every site of the kind last round's card named, and every factory, that still holds an agent takes
+  one more;
 - **Infiltrate**: one agent onto every site of the kind it names that isn't the adversary's yet, in every country;
 - a **Strike** or **Redeploy** icon, if it shows one, for the troops;
 - at most one other line: compute, a new neutral factory or station, botnets spreading, a blackout or Fallout.
@@ -123,7 +123,7 @@ ambassadors is in your reach, so walking an ambassador up to a guarded city lets
 
 ## Threats
 
-Each threat sits on one or two sites in a country. If your node or ambassador is on or next to one of its tokens,
+Each threat sits on one or two sites in a country, the lowest-numbered of each type not yet the adversary's. If your node or ambassador is on or next to one of its tokens,
 you're **near** it and may help pay it off: one way in full, resources pooled between you, or one player sacrificing
 cards with its tag. Unpaid at the end of the round, it does what it prints to the player whose home country it's in,
 and lands one more agent on its spot.

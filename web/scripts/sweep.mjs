@@ -26,6 +26,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { esc } from '../card/card.js';
 import { openPage, viewerUrl as url } from './cdp.mjs';
+import { SCREEN_HARD, SCREEN_LIB } from './screen-checks.mjs';
 
 const web = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const repo = resolve(web, '..');
@@ -105,7 +106,7 @@ if (process.env.AIC_SWEEP_SHOT_SIZE) {
   SIZES.unshift(...SIZES.splice(i, 1));
 }
 /** Checks that fail the run; the rest are reported for a look. */
-const HARD = new Set(['console', 'stuck', 'error-banner', 'page-scroll', 'placeholder', 'offscreen', 'hidden-target', 'case', 'clipped', 'token-unknown', 'stale-word', 'below-fold']);
+const HARD = new Set([...SCREEN_HARD, 'console', 'stuck', 'hidden-target', 'case', 'token-unknown']);
 /** One act or seek slower than this (ms, render included) is a frame-time spike. */
 const SPIKE_MS = 150;
 /** Captures per game, so a long game can't flood the sheets. */
@@ -251,66 +252,16 @@ const PAGE_LIB = String.raw`(() => {
   }
 
   // ---------- checks ----------
-  const vis = (el) => { const s = getComputedStyle(el); const r = el.getBoundingClientRect();
-    return s.visibility !== 'hidden' && s.display !== 'none' && r.width > 0 && r.height > 0; };
-  const label = (el) => { const id = el.id ? '#' + el.id : ''; const c = typeof el.className === 'string' && el.className ? '.' + el.className.trim().split(/\s+/).join('.') : '';
-    return el.tagName.toLowerCase() + id + c + ' "' + (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 50) + '"'; };
-  const scrollParent = (el) => { for (let p = el.parentElement; p; p = p.parentElement) { const o = getComputedStyle(p); if (/(auto|scroll)/.test(o.overflow + o.overflowX + o.overflowY)) return p; } return null; };
-  const inside = (r, b) => r.left >= b.left - 1 && r.right <= b.right + 1 && r.top >= b.top - 1 && r.bottom <= b.bottom + 1;
-  /** Words on screen that are code, not text: unfilled values and raw ids. */
-  const PLACEHOLDER = /\b(undefined|NaN|null|\[object Object\]|TODO|FIXME)\b|\?\?/;
-  const RAW_ID = /\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b/;
-  // The words crates/aic-sim/src/docs/spelling.rs refuses in source (STALE there), plus the engine's labels it can't read.
-  const STALE = /adversary(?:'s)? ambassadors?|enemy ambassadors?|adv\. ambassadors?|agents token|Matt to confirm|Security agents?\b|on board: \d+ ambassadors?|corp troops?|\bDeploy(s|ed)?\b|each board|\btier (I|II|III)\b|Movement \+\d|\bDispatch(es|ed)?\b(?! Control Room)|\bGrowth (option|\()|pick one a round/i;
+  // 312: the screen checks (scroll, off screen, clipped, placeholder, raw-id and stale words, below the fold) are
+  // screen-checks.mjs's, shared with playthrough.mjs; the rest here are the sweep's own.
+  ${SCREEN_LIB};
+  const { vis, label, scrollParent } = window.__aicScreen;
 
   function checks() {
-    const issues = [];
+    const issues = window.__aicScreen.screen('#top, #source, #board-pane *, #seats *, #piles *, #timeline *, #player *');
     const add = (kind, what) => issues.push({ kind, what });
-    const de = document.documentElement;
-    if (de.scrollHeight > innerHeight || de.scrollWidth > innerWidth || document.body.scrollHeight > innerHeight || document.body.scrollWidth > innerWidth)
-      add('page-scroll', 'page scrolls: ' + de.scrollWidth + 'x' + de.scrollHeight + ' in ' + innerWidth + 'x' + innerHeight);
-    if (aic.error) add('error-banner', aic.error.slice(0, 200));
     if (!aic.view.outcome && !aic.legal.length) add('stuck', 'no legal action and no outcome, round ' + aic.view.round + ' phase ' + (aic.view.phase && aic.view.phase.name));
-    const ui = document.querySelectorAll('#top, #source, #board-pane *, #seats *, #piles *, #timeline *, #player *');
     const view = { left: 0, top: 0, right: innerWidth, bottom: innerHeight };
-    for (const el of ui) {
-      if (!(el instanceof HTMLElement) || !vis(el)) continue;
-      const r = el.getBoundingClientRect();
-      const sp = scrollParent(el);
-      // Off the screen with nothing to scroll it into view.
-      if (!sp && !inside(r, view) && el.closest('#data') === null) add('offscreen', label(el) + ' at ' + Math.round(r.left) + ',' + Math.round(r.top) + '-' + Math.round(r.right) + ',' + Math.round(r.bottom));
-      const s = getComputedStyle(el);
-      const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
-      if (/(hidden|clip)/.test(s.overflow + s.overflowX + s.overflowY) && (el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2)) {
-        const ell = s.textOverflow === 'ellipsis' || s.webkitLineClamp !== 'none';
-        const hover = !!el.closest('[title],[data-card],[data-value],[data-pile],[data-track],[data-board-seat],[data-action]');
-        add(ell ? (hover ? 'truncated' : 'truncated-no-hover') : 'clipped', label(el) + ' ' + el.scrollWidth + 'x' + el.scrollHeight + ' in ' + el.clientWidth + 'x' + el.clientHeight);
-      }
-      if (own) {
-        const t = [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join(' ');
-        if (PLACEHOLDER.test(t)) add('placeholder', label(el));
-        // #source names the config file and the config's own name (baseline): not a raw id.
-        // (No backticks in here: this code sits inside a template string.)
-        if (!el.closest('code, pre, #data, #source') && RAW_ID.test(t)) add('raw-id', label(el) + ' (' + t.match(RAW_ID)[0] + ')');
-        // The engine's hex names (C1 #13) are shown with the country's name (020).
-        if (!el.closest('code, pre, #data') && /\bC\d+ #\d+/.test(t)) add('raw-id', label(el) + ' (engine hex name)');
-        // 169: the house words (r70, amendment 7657): the adversary's pieces are agents, the
-        // Security token Operatives; an old name or an open naming note is a stale word.
-        if (!el.closest('code, pre, #data') && STALE.test(t)) add('stale-word', label(el) + ' (' + t.match(STALE)[0] + ')');
-      }
-    }
-    // 289 (D127, D133): the player view's draft and keep buttons and the open turn panel show without scrolling: each
-    // inside its scroll pane's visible area and the window, as drawn (a player could pass not seeing Keep).
-    if (aic.mode === 'player') {
-      const fold = [...document.querySelectorAll('#p-seat .pdcard .pact, #p-turn')].filter((el) => !el.hidden && vis(el));
-      for (const el of fold) {
-        const r = el.getBoundingClientRect();
-        const sp = scrollParent(el);
-        const pr = sp && sp.getBoundingClientRect();
-        const box = sp ? { left: pr.left + sp.clientLeft, top: pr.top + sp.clientTop, right: Math.min(innerWidth, pr.left + sp.clientLeft + sp.clientWidth), bottom: Math.min(innerHeight, pr.top + sp.clientTop + sp.clientHeight) } : view;
-        if (!inside(r, box)) add('below-fold', label(el) + ' ends at ' + Math.round(r.bottom) + ', its pane shows to ' + Math.round(box.bottom));
-      }
-    }
     // Buttons: each one on screen must be the element under its own center (not covered).
     const buttons = [...document.querySelectorAll('button')].filter((b) => vis(b) && !b.closest('dialog'));
     for (const b of buttons) {

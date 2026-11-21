@@ -84,7 +84,7 @@ pub const RULE_HARMS: &[(&str, &str, &str)] = &[
     ("corruption", "adversary research advanced", "a corrupted station puts `station_cubes` research cube a round on the adversary's research track, from round 1 (293: megaprojects take no adversary cube)"),
     ("corruption", "adversary pieces placed", "a corrupted factory makes 1 agent on itself and pushes it along its zone's arrow onto its city the next round (293: no troop); one whose city is the adversary's keeps its one agent"),
     ("adversary research", "the clock sped up", "the research track advances a slot for every `research_at` cubes a country, each slot's icon firing once; slot 7 is a loss (293)"),
-    ("income and Infiltrate", "adversary pieces placed", "each site of last round's Infiltrate type that still holds an agent takes 1 more (293: it replaced Spill and Grow); the Militarist's Commandeered Plants does the same to factories every round"),
+    ("income and Infiltrate", "adversary pieces placed", "each site of last round's Infiltrate type that still holds an agent takes 1 more (293: it replaced Spill and Grow), and each factory holding one, every round (312: Commandeered Plants folded in)"),
     // 146: no unprinted harm (the node loss near an uncountered threat and its floor sway are gone); the adversary
     // board may print compute per uncountered threat.
     ("uncountered threats", "projects advanced (compute)", "the adversary board's printed compute per threat that executes uncountered (the Militarist's level-2 rule, War Footing, from `board_difficulty_at`)"),
@@ -179,7 +179,7 @@ fn all_harms(ops: &[Op]) -> Vec<usize> {
 fn op_harms(op: &Op) -> Vec<usize> {
     match op {
         // 167: "for each X (at most N)": the harms of what it repeats.
-        Op::PerSite { then, .. } | Op::OnePlayer { then } => all_harms(then),
+        Op::PerSite { then, .. } | Op::OnePlayer { then } | Op::Floor { then } => all_harms(then),
         Op::LoseOr { options } => all_harms(options),
         Op::EachDestroyNode { .. } | Op::DestroyNode { .. } | Op::LoseNodeOr { .. } => vec![NODE_DESTROYED],
         Op::PlayersLose { resource, .. } | Op::LoseIncome { resource, .. } => lost(*resource),

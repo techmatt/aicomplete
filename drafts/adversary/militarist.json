@@ -19,18 +19,7 @@
    "others": 1,
    "text": "Setup: build each threat deck from every Security and Universal threat of its tier and as many of its other threats, taken at random; shuffle it. The rest stay in the box."
   },
-  "rules": [
-   {
-    "name": "Commandeered Plants",
-    "text": "Every round, after last round's sites escalate: each factory not yet the adversary's that holds an Agent takes 1 more.",
-    "effects": [
-     {
-      "op": "escalate",
-      "site": "factory"
-     }
-    ]
-   }
-  ],
+  "rules": [],
   "build": {
    "botnet_compute": 1
   },
@@ -91,17 +80,18 @@
    "troops made",
    "facilities destroyed or corrupted"
   ],
-  "value": "293: Commandeered Plants: a factory holding an agent takes 1 more a round (values.json escalate), so an infiltrated factory falls in two rounds unless its agent is cleared; then it feeds its city an agent a round. Against one ambassador (cancels an agent) or Remove agents.",
-  "check": "293: Botnet Recruiters went with botnet seeding (a botnet only makes compute); the board prints one rule, Commandeered Plants, a research row of six icon slots and its threat-deck line.",
+  "value": "312 (r151): no board rule; Commandeered Plants folded into the spine's Escalate (factories escalate every round, whatever last round's card named: one scan). The board is its research row, its event mix, its War Rooms threat decks and its difficulty line.",
+  "check": "293: Botnet Recruiters went with botnet seeding (a botnet only makes compute); 312: the board prints no rule of its own (Commandeered Plants is the spine's), a research row of six icon slots and its threat-deck line.",
   "flags": [
    "151: Garrisons replaces the board's creation line; build_bonus is gone (ambassador_income's d3 entry is the ladder's step)",
    "275 (Matt, 2026-11-18): Garrisons (+1 agent income) became Botnet Recruiters (botnets seed 1 agent a round)",
    "292 (r139): Warmongering and War Takes Ground went with war (fronts, bases and drones)",
    "292 (r139, amendment 13357): War Rooms: the Security lean lives in the threat decks' setup, not in a tag line on each event card",
    "293 (Matt, 2026-11-19): the spine: Botnet Recruiters cut (no seeding); one rule, Commandeered Plants; the research rule Weapons Program became a row of six non-troop icon slots (item 3 swaps troop icons in by editing `research.slots`)",
-   "294 (Matt, 2026-11-19): the research row takes its troop icons: New factory, Cells: factories, Funding, Garrison, Strike, Garrison (was New factory, Cells: factories, Funding, Fallout, Cells: cities, Dread); K 2 a country"
+   "294 (Matt, 2026-11-19): the research row takes its troop icons: New factory, Cells: factories, Funding, Garrison, Strike, Garrison (was New factory, Cells: factories, Funding, Fallout, Cells: cities, Dread); K 2 a country",
+   "312 (Matt, 2026-11-21, friction row 1): Commandeered Plants folded into Escalate: factories escalate every round in every board's Card beat; the board prints no rule"
   ],
-  "creates_text": "Commandeered Plants: each factory holding an agent takes 1 more a round.",
+  "creates_text": "",
   "icons": [
    {
     "id": "factory",

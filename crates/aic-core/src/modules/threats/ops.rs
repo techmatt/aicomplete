@@ -103,45 +103,6 @@ pub fn lose_ambassador(g: &mut GameState, cx: &mut Cx, seats: &[usize], why: Opt
     Ok(())
 }
 
-/// Each player in `scope` loses a node in `scope` or pays `amount`
-/// `resource` (their choice; 175: a last node too); with neither possible, what they have.
-#[allow(clippy::too_many_arguments)]
-pub fn lose_node_or(
-    g: &mut GameState,
-    cx: &mut Cx,
-    seats: &[usize],
-    hexes: &[usize],
-    resource: Resource,
-    amount: i64,
-    source: &'static str,
-    why: Option<&str>,
-) -> Res {
-    let w = cx.world;
-    for &s in seats {
-        // 175: a last node is no exception.
-        let mine: Vec<usize> = hexes.iter().copied().filter(|&h| g.tokens(h, node(s)) > 0).collect();
-        let mut opts = Vec::new();
-        let can_pay = g.resource(s, resource) >= amount;
-        if can_pay {
-            opts.push(opt(format!("pay {amount} {resource}")));
-        }
-        let off = opts.len();
-        opts.extend(mine.iter().map(|&h| labeled_hex_opt(&w, "lose nodes", h)));
-        let prompt = || format!("{}: pay {amount} {resource} or lose a node?", head(why, s));
-        match cx.choose_loss(s, prompt, opts)? {
-            Some(i) if i < off => cx.add_resource(g, s, resource, -amount),
-            Some(i) => {
-                board::lose_node(g, cx, mine[i - off], s, source);
-            }
-            None => {
-                let k = g.resource(s, resource);
-                cx.add_resource(g, s, resource, -k);
-            }
-        }
-    }
-    Ok(())
-}
-
 /// Each player in `scope` discards their dearest card in hand (their choice
 /// on a tie).
 pub fn discard_most_expensive(g: &mut GameState, cx: &mut Cx, seats: &[usize], why: Option<&str>) -> Res {

@@ -10,16 +10,15 @@ The adversary is a **board** (the Militarist's slots, rules and named levels:
 
 1. **Card**: this round's card moves to the board's **last-round space** (the one there goes to the discard) and
    next round's face-up card becomes this round's (none left: a loss, [alignment.md](alignment.md)) and deals its
-   threats; then, in this order: **Escalate** (below), **the board's one rule** (the Militarist's **Commandeered Plants**:
-   each factory not yet the adversary's that holds an agent takes 1 more, every round), **Infiltrate X**,
+   threats; then, in this order: **Escalate** (below), **Infiltrate X**,
    **Strike**, then **Redeploy** (where the card shows the icon: [troops.md](troops.md)), then at most **one**
    other line (r143: Funding, a site opening, Botnets spread, Blackout or Fallout; 8 of the 16 print none).
 2. **Income**: the top card goes face up as next round's; **outputs** (below); the **compute step**; the
    **research check**; firewalls, cordons and prohibition tokens come off.
 
-**Escalate.** Each site of the type last round's card infiltrated (a stage-III card names two: both), not yet the
-adversary's, that holds an agent takes 1 more, in every country, in hex order. Round 1 has no last-round card:
-nothing escalates. It lands like any arrival (below) and picks nothing.
+**Escalate.** Each site of the type last round's card infiltrated (a stage-III card names two: both), **and every
+factory** (every round, round 1 included; once, even when the card named factories; r151), not yet the adversary's,
+that holds an agent takes 1 more, in every country, in hex order. It lands like any arrival (below) and picks nothing.
 
 **One output a corrupted site**, in the Income beat. A player ambassador on the site blocks it.
 - **City:** `divert_discord` (1) Discord (none under a blackout).
@@ -30,19 +29,19 @@ nothing escalates. It lands like any arrival (below) and picks nothing.
 - **Station:** `station_cubes` (1) research cube onto the adversary's research track, from round 1.
 - **Botnet:** `botnet_compute` (1) compute (none when hacked); it places no agent, and a cordon never stops it.
 
-**Research track (every adversary).** A public row of **six icon slots**, content (the board's research row in
-`content/adversary.json`): a row changes by editing it. Cubes come from corrupted stations
+**Research track (every adversary).** A public row of **six icon slots** (content: `content/adversary.json`).
+Cubes come from corrupted stations
 and from "cubes onto the research track" lines (threats, projects, Captured Labs: [harms.md](../harms.md)), and go nowhere else. In the research check, while the track holds **K cubes** (`research_at` a country, times
 the countries; `research_start` a country at setup) it spends K and its marker advances one slot, whose icon
 happens once as the marker arrives (in each country where it prints so); one check can advance several. **Slot 7
 is a loss** (end reason `research`). Counterintelligence Sweep and Arms Inspectors take cubes off, never a slot back.
 `research_at` all 0 is the off arm: no track, and stations make compute. **K is a ladder step:** 3 a country at
-levels 0-1, 2 from level 2 (r144), and the row is fed to reach its late slots when the players don't deal with it. The
-Militarist's row, **War Research**: New factory, Cells: factories, Funding, **Garrison, Strike, Garrison** (each
+levels 0-1, 2 from level 2 (r144). The Militarist's row, **War Research**: New factory, Cells: factories, Funding, **Garrison, Strike, Garrison** (each
 icon's text: [adversary-cards.md](../adversary-cards.md)): a Garrison makes 1 troop a country
 (2 from level 3, Arms Race's rule: `arms_race_at`, `arms_race_troops`; [troops.md](troops.md)).
 
-**Boards differ** by their row, their event mix and their one rule.
+**Boards differ** by their row, their event mix, their threat decks (the Militarist's War Rooms) and their difficulty
+line; no board prints a rule of its own (r151).
 
 **Income (locked).** Only **compute income** (`compute_income` by difficulty, **a country**: every compute source
 scales with the boards), added in the compute step; events raise it for good. The cards place agents.
@@ -57,30 +56,26 @@ on its hex ([README.md](README.md#terms)), and Wall a troop's ([troops.md](troop
 strikes on its hex, not landings. On a no-Corrupt token's hex agents land, but nothing corrupts or flips and no node is lost to agents.
 
 **Arrival corruption (the one spread rule).** Whenever the adversary puts agents on a hex (any placement from the
-supply: Infiltrate, Escalate, Commandeered Plants, a factory's own agent, a threat's or Discord card's creation, an
+supply: Infiltrate, Escalate, a factory's own agent, a threat's or Discord card's creation, an
 uncountered threat's `threat_agents` (1) on its anchor; or a factory's push), **that hex alone is checked**: a city,
 research station or factory not yet the adversary's holding its number corrupts, and its agents go to the supply;
 else 2 agents on a player's node destroy the node. **Each placement puts all its agents for a hex on, then checks it
 once.** The numbers are printed on the map: **city**
 `corrupt_at` 5 (from d1 `corrupt_cut` makes it 3), **station** `corrupt_station_at` 3, **factory**
-`corrupt_factory_at` 3. A player's Push or Gather is no arrival; nothing else is looked at, so a liberated site
-needs its full number of arrivals again. **One aftermath: whatever corrupts takes
-one adversary mark.**
+`corrupt_factory_at` 3. A player's Push or Gather is no arrival; nothing else is looked at. **One aftermath:
+whatever corrupts takes one adversary mark.**
 - **A corrupted site** takes the adversary's cube (replacing a player's). **It destroys only a node on its own hex**
   (protections apply, [troops.md](troops.md)); player ambassadors there are lost. Sanctuary (capstone): neither corruption
   nor agents destroy your nodes.
 - **2 agents on a player's node hex destroy the node** (`corrupt_node_at`; a node rule, not corruption: protections
   apply; checked only when the site doesn't corrupt); its agents go to the supply and **it leaves no mark**.
 - **Fallout** is the one scar: a token on free open land (no facility, node or Fallout); nothing is built there, and
-  each drips `blight_discord` (1) Discord a round. All four adversity sources print it ([harms.md](../harms.md)): a
-  Fallout line's next to the lowest-numbered corrupted city, a threat's on or next to its anchor, the others next to
-  their site (ties: lower country, then number); none free, it is lost. Lift Fallout ([economy.md](economy.md)) and
-  some cards take one in reach off.
+  each drips `blight_discord` (1) Discord a round. A Fallout line drops it next to the lowest-numbered corrupted city,
+  a threat on or next to its anchor, others next to their site; none free, it is lost. Lift Fallout ([economy.md](economy.md)) and some cards take one in reach off.
 
-**Botnets spread quickly**. Each country starts with one ([board.md](board.md)); more come from printed lines
-(**Botnets spread (level 1+)**, Botnet Swarm; below `botnet_spread_at`, 1, the line does nothing). A botnet stays
-until removed and only makes compute (above); it never counts against the win ([alignment.md](alignment.md)). Removed by tier-2 cards, Decommission and
-Take down a botnet ([economy.md](economy.md)); removing one sways `alignment.botnet` (0: neither).
+**Botnets.** Each country starts with one ([board.md](board.md)); more come from **Botnets spread (level 1+)**
+(below `botnet_spread_at`, 1, it does nothing) and Botnet Swarm. A botnet only makes compute and never counts
+against the win. Tier-2 cards, Decommission and Take down a botnet remove one; that sways `alignment.botnet` (0).
 
 ## The project deck (candidate)
 
@@ -96,8 +91,7 @@ third from `THIRD_EFFECT_COST`, 18).
 - **Spending:** all of it at once onto the **leftmost** project (`compute_every` on every one first), one marker
   move a project; one holding its cost **resolves** at once. With no project left, compute is lost.
 - **Targets are read off the board as it resolves**, in each country, always the lowest-numbered (r143: no
-  project picks by "most agents"; Night Raid: "its two lowest-numbered hexes holding a player node and an agent");
-  Crackdown alone counts ("the hex holding
+  project picks by "most agents", nor, from r151, a threat's tokens: [threats.md](threats.md)); Crackdown alone counts ("the hex holding
   the most player ambassadors"). "Turns neutral": the owner's cube comes off. **Factory troops** (War Plants): 1
   troop on each corrupted factory's hex, none under a player ambassador. **The clock**: the top event card is discarded.
 - **Counterplay:** an ambassador on a source; Cyber's hacks; the Researcher's Hack II, off a project.

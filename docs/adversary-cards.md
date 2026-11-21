@@ -7,7 +7,6 @@
 Project slots: Open, Open, Open.
 
 - **War Rooms** (threat decks). Setup: build each threat deck from every Security and Universal threat of its tier and as many of its other threats, taken at random; shuffle it. The rest stay in the box.
-- **Commandeered Plants.** Every round, after last round's sites escalate: each factory not yet the adversary's that holds an Agent takes 1 more.
 - **War Research** (the research row). Every K cubes on the track (the level line's cubes a country, times the countries) are spent to advance the marker one slot; the slot's icon happens once. Slot 7: the players lose.
   - Slot 1, **New factory**: Each country: a neutral factory opens on its lowest-numbered free industrial zone.
   - Slot 2, **Cells: factories**: Infiltrate: factories.

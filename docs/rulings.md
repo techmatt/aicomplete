@@ -96,6 +96,9 @@ planner's, outside this repo.
   to N a round"; no paid Move; a sold card gives 1 credit. Fallout also comes off as a side bonus on green-feeling
   cards, never a bare removal card or a tier-2 multi-clear. Convert and engine-use cards (no anchor for their unit)
   are priced in band under both readings. Checklist: [card-guidelines.md](card-guidelines.md).
+- **"Free" means one thing (Matt, Nov 21):** a card that frees (cleanses) a corrupted station or factory takes its
+  agents off as Liberate does (D136); a card that removes troops before its rescue (Siegebreaker Reactor,
+  Peacekeeping Mission) offers only cities its removal clears (D137).
 - **Finale buildings (Matt, Nov 20):** not every capstone is a building, but repeatable tier-2 "finale" buildings,
   hard to get and needing building up to, are a natural home for late-game power: their once-a-round Action (24)
   spends a late-game resource (antimatter, or large amounts of energy and the like). Getting the resource and its
@@ -137,17 +140,21 @@ planner's, outside this repo.
 - **War is cut:** no fronts, bases or megacorp armies and no War step; megacorp conflict lives only as content on
   Discord and event cards, each doing one clear thing.
 - **Spine:** an event card is Infiltrate X plus escalate (each site of last round's type holding an agent takes 1
-  more; no "most agents" picks). **One output a corrupted site:** city 1 Discord; station 1 research cube; factory 1
+  more; **Escalate always includes factories**, whatever last round's type: Commandeered Plants is gone as a separate
+  scan, Matt Nov 21; no "most agents" picks, threat location tokens included: each goes on the lowest-numbered
+  site of its type not yet the adversary's, Matt Nov 21). **One output a corrupted site:** city 1 Discord; station 1 research cube; factory 1
   agent (made on itself, pushed next round along its zone's printed arrow to its city); botnet 1 compute and no
   seeding. Adversary cubes go only onto its research track; megaprojects take neutral and player cubes only.
   **Research track:** a row of six icon slots on every adversary board, a slot's icon happening once, in each
-  country, as the marker arrives; slot 7 is a loss. Boards differ by their row, their event mix and one rule; the
+  country, as the marker arrives; slot 7 is a loss. Boards differ by their row, their event mix and at most one rule (the Militarist prints
+  none since Commandeered Plants folded into Escalate; its threat-deck lean and difficulty line remain); the
   map shows which threat is growing. **Rows are data**, content not code (the Militarist's holds Garrison and Strike
   icons).
 - **Research track pace:** it advances every K cubes, **K 3 a country at levels 0-1 and 2 from level 2**, cubes from round 1 (the start is the building item's to
   propose: 0 now); the row is fed so it
   reaches its higher, scary slots when players don't deal with it: threats, projects, Discord cards and the like
-  open more adversary research stations or add research cubes, each addition kept close to an existing line.
+  open more adversary research stations or add research cubes, each addition kept close to an existing line. The
+  K ladder (3 at levels 0-1, 2 from level 2) is Matt's ruling (Nov 21).
 - **Threat vibe (design doc *Adversary system*):** botnets spread quickly but manageable; agents on par with
   ambassadors; troops fewer, deadlier, destroy players left unchecked; players protect themselves by an expensive
   standard action, a different troop power on each board, and cards.
@@ -189,15 +196,16 @@ planner's, outside this repo.
   distorted to avoid them.
 - **Unity and Discord cards (direction locked):** Spirit Island fear-card shape: board conditions, "each player", one
   verb per card, tiers widening it; Unity prohibitions switch an adversary step off where a condition holds. Unity
-  cards help, they don't clear: at most one tier-III card clears cities.
+  cards help, they don't clear: at most one tier-III card clears cities. Each Unity card prints a floor (every
+  player gains 2 credits) when its condition counts none (Matt, Nov 21: friction row 5).
 - **Unity never cancels Discord:** Unity gained always goes onto the Unity track. About 4-5 of the 23 Unity cards
   remove Discord, each by a board condition; Unity otherwise never does.
 
 ## Rulebook and audits
 
 - **Rulebook:** the turn's beats (Card, Income). No last-node safety rule ever (tools instead). Open friction:
-  [rulebook-friction.md](rulebook-friction.md). **Rejected:** a single keep price; used-markers (powers are
-  implicitly once a round). **Print pass components:** one tip track per side, agent-count glyphs on project faces,
+  [rulebook-friction.md](rulebook-friction.md). **Used markers are kept** (274's, on every once-a-round use: Matt
+  Nov 21). **Rejected:** a single keep price. **Print pass components:** one tip track per side, agent-count glyphs on project faces,
   event icon rows, an ambassador box on the aid, the harm box's "Target: this country's player" line, the Discord
   track's tip procedure.
 - **Rules audits:** read rulebook-friction.md's *What a per-rule review misses* before any rules or friction audit; "a dial is a rule"; `design_check`'s `ladder` and `table_cost` checks watch it.

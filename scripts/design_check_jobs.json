@@ -36,8 +36,8 @@
   "chip_inc": 12.67,
   "station_owned": "station_owned",
   "factory": "factory",
-  "station_freed": 10,
-  "factory_freed": 4
+  "station_freed": 15.333,
+  "factory_freed": 9.333
  },
  "jobs": {
   "Build a research station": {

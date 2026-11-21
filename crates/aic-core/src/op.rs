@@ -1328,7 +1328,8 @@ pub enum Op {
         site: SiteType,
     },
     /// 293 (Matt, 2026-11-19), Escalate: X (a project's or Discord card's line; the event card's own escalate
-    /// is a rule, read off last round's card): in each country in scope, each `site` not yet the adversary's that
+    /// is a rule, read off last round's card, and 312 adds factories every round): in each country in scope, each
+    /// `site` not yet the adversary's that
     /// holds an agent takes 1 more, in hex order. It picks nothing: Surge's and Spill's "most agents" went.
     Escalate {
         site: SiteType,
@@ -1442,6 +1443,12 @@ pub enum Op {
         step: Step,
         #[serde(rename = "where")]
         where_: Where,
+    },
+    /// 312 (friction row 5), a Unity card's floor: "If that counted none: `then`": `then` (team ops) resolves when
+    /// the `per_site`, `remove_where` or `prohibit` before it in the list counted 0 (no site, no piece removed, no
+    /// site covered), so no tip reads, counts and does nothing.
+    Floor {
+        then: Vec<Op>,
     },
     /// A board line: every garrison line (an event's, a project's, a research slot's) lands `amount` more
     /// troops a country (267: no board prints one; it was the Militarist's d2 surcharge).
@@ -1687,6 +1694,7 @@ impl Op {
             | Op::PerSite { .. }
             | Op::RemoveWhere { .. }
             | Op::Prohibit { .. }
+            | Op::Floor { .. }
             | Op::StandingTroopsBonus { .. }
             | Op::ThreatCompute { .. }
             | Op::Income { .. }
@@ -1731,6 +1739,7 @@ impl Op {
             | Op::IfNodeNext { then, .. }
             | Op::OnePlayer { then }
             | Op::PerSite { then, .. }
+            | Op::Floor { then }
             | Op::When { then, .. }
             | Op::Threshold { then, .. } => then,
             Op::LoseOr { options } => options,
@@ -1849,6 +1858,7 @@ impl Op {
             | Op::PerSite { .. }
             | Op::RemoveWhere { .. }
             | Op::Prohibit { .. }
+            | Op::Floor { .. }
             | Op::StandingTroopsBonus { .. }
             | Op::ThreatCompute { .. }
             | Op::Infiltrate { .. }

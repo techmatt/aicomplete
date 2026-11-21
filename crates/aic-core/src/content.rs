@@ -1527,10 +1527,10 @@ fn check_adversary_board(b: &AdversaryBoard) -> Result<(), String> {
     if b.rules.len() > 1 {
         return Err(format!("{what}: a board prints one rule, not {}", b.rules.len()));
     }
-    // A rule's line needs a reader: an Escalate runs in the Card beat (`adversary::board_rule`), an income rise is
-    // read at setup, a threat's compute as a threat executes. Another op would load and never act.
+    // A rule's line needs a reader: an income rise is read at setup, a threat's compute as a threat executes. Another
+    // op would load and never act (312: no board Escalate; factories escalate every round in the spine).
     for r in &b.rules {
-        if let Some(e) = r.effects.iter().find(|e| !matches!(e, Op::Escalate { .. } | Op::IncreaseIncome { .. } | Op::ThreatCompute { .. })) {
+        if let Some(e) = r.effects.iter().find(|e| !matches!(e, Op::IncreaseIncome { .. } | Op::ThreatCompute { .. })) {
             return Err(format!("{what}: its rule {:?} prints a line nothing reads: {e:?}", r.name));
         }
     }
@@ -1810,6 +1810,14 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
             }
             Op::RemoveWhere { count, .. } if *count < 1 => {
                 return Err(format!("{what}: remove_where removes at least 1"));
+            }
+            // 312: a floor reads the count of the fear-card op just before it.
+            Op::Floor { then } => {
+                check_ops(then, Slot::Team, what)?;
+                let after = i.checked_sub(1).map(|j| &ops[j]);
+                if then.is_empty() || !matches!(after, Some(Op::PerSite { .. } | Op::RemoveWhere { .. } | Op::Prohibit { .. })) {
+                    return Err(format!("{what}: a floor resolves team ops and follows a per_site, remove_where or prohibit"));
+                }
             }
             // 156: a team card's player ops, resolved by one player.
             Op::OnePlayer { then } => {

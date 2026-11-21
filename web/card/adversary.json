@@ -5,10 +5,6 @@
     [
       "War Rooms",
       "Setup: build each threat deck from every Security and Universal threat of its tier and as many of its other threats, taken at random; shuffle it. The rest stay in the box."
-    ],
-    [
-      "Commandeered Plants",
-      "Every round, after last round's sites escalate: each factory not yet the adversary's that holds an Agent takes 1 more."
     ]
   ],
   "research": [

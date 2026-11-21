@@ -510,7 +510,8 @@ fn discard(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, s: usize, n: i64) -> Res {
 }
 
 /// LoseNodeOr (135: `count` nodes, near it; 175: a last node too): each player near
-/// it pays or loses nodes there (their choice); with neither, what they have.
+/// it pays or loses nodes there (their choice); with neither, what they have. Every
+/// count's one path (312; count 1 was the threats module's own until then).
 fn lose_node_or(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, r: Resource, amount: i64, count: i64) -> Res {
     let w = cx.world;
     let hexes = ctx.hexes(&w, g);
@@ -526,7 +527,8 @@ fn lose_node_or(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, r: Resource, amount: 
         let off = opts.len();
         let first = mine(g);
         opts.extend(first.iter().map(|&h| labeled_hex_opt(&w, "lose nodes", h)));
-        let prompt = || format!("{}: pay {} or lose {count} node{}?", threats::head(ctx.why.as_deref(), s), r.amount(amount), if count == 1 { "" } else { "s" });
+        let lost = if count == 1 { "a node".to_string() } else { format!("{count} nodes") };
+        let prompt = || format!("{}: pay {} or lose {lost}?", threats::head(ctx.why.as_deref(), s), r.amount(amount));
         match cx.choose_loss(s, prompt, opts)? {
             Some(i) if i < off => cx.add_resource(g, s, r, -amount),
             Some(i) => {

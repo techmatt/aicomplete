@@ -18,7 +18,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve.
 - [tunables.md](tunables.md): every baseline config parameter (generated).
 
-What the code implements, at rules revision 150 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 151 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -68,7 +68,8 @@ The house words, as [player-aid.md](../player-aid.md) prints them:
 - **At N**: on a building's Effect: when its tokens here reach N, N of them come off and the rest happens.
 - **Draw**: from the tier-1 deck, with no keep to pay; if it is empty, reshuffle its discard first.
 - **On your cards**: on tags: on your cards in play, covered buildings included, and your board's tags, printed or revealed by its tracks. Tokens count only on the card that holds them.
-- **Action**: once a round, always; "A, OR B" is one use, either half.
+- **Action**: once a round, always; "one of: (A) ...; OR (B) ..." is one use, either half.
+- **When you play a X card**: on a building: playing this building counts too when it carries X.
 - **Open megaproject**: one that isn't complete; research cubes in your color go only onto one.
 - **Liberate**: a corrupted site with no troop on or next to it: a card liberating a city takes the agents on it off (the action needs none there), and the adversary's cube comes off; it is left neutral, a city its country's for good, a station or factory for a card to claim (the action pays for it in ambassadors; a card's is unpaid).
 - **Rescue**: on a card, a corrupted city: liberate it, then a neutral station or factory next to it with no agent on it becomes yours, unpaid and out of reach too; with none, nothing more happens. The Liberate action never claims.

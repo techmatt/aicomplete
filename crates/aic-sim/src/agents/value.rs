@@ -803,6 +803,14 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             Worth::now(row("remove_where") * piece * t.rate("target_share") * reach * *count as f64)
         }
         Op::Prohibit { .. } => Worth::now(row("prohibit")),
+        // 312: a Unity card's floor: its team ops' worth, times the chance the op before it counts none.
+        Op::Floor { then } => {
+            let mut w = Worth::default();
+            for o in then {
+                w += op_worth(t, o);
+            }
+            w.scaled(row("floor"))
+        }
         Op::Income { resource, amount } => Worth::income(row("income") * income_rate(t, *resource) * *amount as f64),
         // 229: counted once, at play (r98, `cards::freeze_tag_income`): valued at the seat's tags in play.
         Op::IncomePerTag { resource, tag, per, amount } => {

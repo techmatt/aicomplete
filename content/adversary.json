@@ -19,18 +19,7 @@
    "others": 1,
    "text": "Setup: build each threat deck from every Security and Universal threat of its tier and as many of its other threats, taken at random; shuffle it. The rest stay in the box."
   },
-  "rules": [
-   {
-    "name": "Commandeered Plants",
-    "text": "Every round, after last round's sites escalate: each factory not yet the adversary's that holds an Agent takes 1 more.",
-    "effects": [
-     {
-      "op": "escalate",
-      "site": "factory"
-     }
-    ]
-   }
-  ],
+  "rules": [],
   "difficulty": {
    "text": "When a threat executes uncountered, the adversary also gains 4 compute.",
    "effects": [

@@ -65,12 +65,12 @@ fn only_seats_near_a_threat_may_pay_and_pooled_credits_counter_it() {
     assert_eq!(counted(&g, "threats.countered.t1"), 1);
 }
 
-/// r80 (ruling #46): each token, in printed order, goes on the site of its type (not the adversary's) with the
-/// most agents on its own hex, ties the lowest number; agents next door don't count, and two tokens never share a
-/// hex: a [city, coastal city] threat whose city token takes the only clean coastal city leaves its coastal token
+/// 312 (r151, friction row 2): each token, in printed order, goes on the lowest-numbered site of its type not yet
+/// the adversary's, whatever agents stand on it (r80-r150 took the one with the most agents); two tokens never share
+/// a hex: a [city, coastal city] threat whose city token takes the only clean coastal city leaves its coastal token
 /// off (145's reorder is gone).
 #[test]
-fn a_location_token_goes_where_most_agents_stand_on_the_hex() {
+fn a_location_token_goes_on_the_lowest_numbered_site() {
     let (rules, mut g) = threat_lab();
     let m = &rules.map;
     let c = (0..m.countries.len())
@@ -88,16 +88,17 @@ fn a_location_token_goes_where_most_agents_stand_on_the_hex() {
         }
         put(&mut g, h, ADV_AMBASSADOR, 0);
     }
-    put(&mut g, coastal, ADV_AMBASSADOR, 1);
-    // Three agents beside the inland city, none on it: they don't count.
-    let beside = m.hexes[inland].neighbors.iter().copied().find(|&x| kind(m, x) != HexKind::Ocean && kind(m, x) != HexKind::City);
-    if let Some(x) = beside {
-        put(&mut g, x, ADV_AMBASSADOR, 3);
-    }
+    // Agents on the higher-numbered city only: they don't draw the token.
+    let (low, high) = if m.hexes[coastal].number < m.hexes[inland].number { (coastal, inland) } else { (inland, coastal) };
+    put(&mut g, high, ADV_AMBASSADOR, 2);
     set_pile(&mut g, "threats.deck.2", &["propaganda_ministry"]);
     with_cx(&rules, |cx| threats::deal_tier(&mut g, cx, 2, c)).unwrap();
     let got = threats::tokens(&g, &Key::new("propaganda_ministry"));
-    assert_eq!(got, vec![coastal], "the city token takes the coastal city; the coastal token has no site left");
+    if low == coastal {
+        assert_eq!(got, vec![coastal], "the city token takes the coastal city; the coastal token has no site left");
+    } else {
+        assert_eq!(got, vec![inland, coastal], "the city token takes the lower inland city, the coastal token the coastal one");
+    }
 }
 
 /// 145: the share paid reads each option in its own currencies: 1 credit

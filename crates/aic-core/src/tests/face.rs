@@ -20,7 +20,8 @@ const FORGE: &str = r#"{"id": "synthetic_data_forge", "name": "Synthetic Data Fo
 #[test]
 fn a_face_opens_with_its_boxes_word() {
     let f = pinned(FORGE);
-    assert_eq!(f.top_text, "Action: add 1 Dataset here, OR get 1 insight per Dataset here.");
+    // 312 (friction row 11): two halves are named.
+    assert_eq!(f.top_text, "Action: one of: (A) add 1 Dataset here; OR (B) get 1 insight per Dataset here.");
     assert_eq!(f.text, "Add 1 Dataset here.");
     let f = pinned(
         r#"{"id": "orbital_mass_driver", "name": "Orbital Mass Driver", "tier": 2, "kind": "building", "cost": 28,

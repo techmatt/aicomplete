@@ -335,7 +335,8 @@ export function renderBoard(svg: SVGSVGElement, view: View, marks: Marks) {
     // A printed industrial zone: a cog outline low on the hex.
     if (h.industrial) {
       g.append(el('circle', { cx: f(x), cy: f(y + 0.62), r: 0.13, class: 'zone-mark' }));
-      g.append(el('title', {}, 'industrial zone: cities build factories here'));
+      // 312 (friction row 8): the zone prints its corrupted factory's output, "push, then make 1".
+      g.append(el('title', {}, 'industrial zone: cities build factories here; a corrupted factory here pushes its agents along the arrow, then makes 1'));
     }
     hexLayer.append(g);
 

@@ -329,7 +329,23 @@ pub fn claim_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, route: 
 /// stays). No agents land on it. A liberate card liberates through here too, unpaid (178, Matt's ruling #29).
 pub fn liberate_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, own: bool) {
     let w = cx.world;
-    let Some(kind) = site_kind(&w, g, h) else { return };
+    let Some(kind) = free_site(g, cx, h) else { return };
+    // 253 (amendment 11525): `liberate_neutral` 0 is r112's rule (the site becomes the liberator's), a screen's
+    // off arm for ruling 4.
+    // 254 (`cities_unowned`): a liberated city is its country's whatever the route (Hostile Buyout's `own` included).
+    let city = kind == SiteKind::City;
+    if !(city && cities_unowned(&w)) && (own || w.int("board.liberate_neutral") == 0) {
+        cx.add_tokens(g, h, cube(seat), 1);
+    }
+    cx.note(Some(h), || format!("Seat {seat} liberates the {} at {}", kind.name(), hex_name(&w, h)));
+}
+
+/// 312 (D136, "free" means one thing): what freeing adversary site `h` does whoever frees it (the Liberate action,
+/// a card, a Unity card's Reclamation): its agents cancel, the adversary's cube comes off and Unity sways (a city
+/// `alignment.free_city`'s way, a station or factory `alignment.free_facility`). Its kind, or `None` with no site.
+pub fn free_site(g: &mut GameState, cx: &mut Cx, h: usize) -> Option<SiteKind> {
+    let w = cx.world;
+    let kind = site_kind(&w, g, h)?;
     let adv = g.tokens(h, ADV_AMBASSADOR);
     if adv > 0 {
         adversary::remove(g, cx, h, adv);
@@ -343,14 +359,7 @@ pub fn liberate_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, own:
     } else {
         alignment::unity_from(g, cx, kind.name(), w.int("alignment.free_facility"));
     }
-    // 253 (amendment 11525): `liberate_neutral` 0 is r112's rule (the site becomes the liberator's), a screen's
-    // off arm for ruling 4.
-    // 254 (`cities_unowned`): a liberated city is its country's whatever the route (Hostile Buyout's `own` included).
-    let city = kind == SiteKind::City;
-    if !(city && cities_unowned(&w)) && (own || w.int("board.liberate_neutral") == 0) {
-        cx.add_tokens(g, h, cube(seat), 1);
-    }
-    cx.note(Some(h), || format!("Seat {seat} liberates the {} at {}", kind.name(), hex_name(&w, h)));
+    Some(kind)
 }
 
 /// Whether an agent stands on hex `h` or an adjacent hex

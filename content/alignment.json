@@ -4,12 +4,12 @@
   "name": "Grassroots Funding",
   "side": "unity",
   "tiers": [
-   {"text": "Every player's credit income rises by 1 for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 2), for the rest of the game.",
-    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "team_income", "resource": "credits", "amount": 1}]}]},
-   {"text": "Every player's credit income rises by 1 for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 3), for the rest of the game.",
-    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "team_income", "resource": "credits", "amount": 1}]}]},
-   {"text": "Every player's credit income rises by 1 for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 4), for the rest of the game.",
-    "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "team_income", "resource": "credits", "amount": 1}]}]}
+   {"text": "Every player's credit income rises by 1 for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 2), for the rest of the game. If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "team_income", "resource": "credits", "amount": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Every player's credit income rises by 1 for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 3), for the rest of the game. If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "team_income", "resource": "credits", "amount": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Every player's credit income rises by 1 for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 4), for the rest of the game. If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "team_income", "resource": "credits", "amount": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -17,12 +17,12 @@
   "name": "Open Market",
   "side": "unity",
   "tiers": [
-   {"text": "For each research station or factory a player owns, or free city with a player's Node on or next to it (at most 2), the next card any player keeps from the draft is free.",
-    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "free_purchases", "count": 1}]}]},
-   {"text": "For each research station or factory a player owns, or free city with a player's Node on or next to it (at most 3), the next card any player keeps from the draft is free.",
-    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "free_purchases", "count": 1}]}]},
-   {"text": "For each research station or factory a player owns, or free city with a player's Node on or next to it (at most 4), the next card any player keeps from the draft is free.",
-    "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "free_purchases", "count": 1}]}]}
+   {"text": "For each research station or factory a player owns, or free city with a player's Node on or next to it (at most 2), the next card any player keeps from the draft is free. If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "free_purchases", "count": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "For each research station or factory a player owns, or free city with a player's Node on or next to it (at most 3), the next card any player keeps from the draft is free. If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "free_purchases", "count": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "For each research station or factory a player owns, or free city with a player's Node on or next to it (at most 4), the next card any player keeps from the draft is free. If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "free_purchases", "count": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -30,12 +30,12 @@
   "name": "Think Tank",
   "side": "unity",
   "tiers": [
-   {"text": "Every player's insight income rises by 1 for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 1), for the rest of the game.",
-    "effects": [{"op": "per_site", "where": "owned", "max": 1, "then": [{"op": "team_income", "resource": "insight", "amount": 1}]}]},
-   {"text": "Every player's insight income rises by 1 for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 1), for the rest of the game.",
-    "effects": [{"op": "per_site", "where": "owned", "max": 1, "then": [{"op": "team_income", "resource": "insight", "amount": 1}]}]},
-   {"text": "Every player's insight income rises by 1 for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 2), for the rest of the game.",
-    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "team_income", "resource": "insight", "amount": 1}]}]}
+   {"text": "Every player's insight income rises by 1 for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 1), for the rest of the game. If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 1, "then": [{"op": "team_income", "resource": "insight", "amount": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Every player's insight income rises by 1 for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 1), for the rest of the game. If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 1, "then": [{"op": "team_income", "resource": "insight", "amount": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Every player's insight income rises by 1 for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 2), for the rest of the game. If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "team_income", "resource": "insight", "amount": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -43,12 +43,12 @@
   "name": "Ceasefire",
   "side": "unity",
   "tiers": [
-   {"text": "Counter an active threat for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 1).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 1, "then": [{"op": "counter_threat"}]}]},
-   {"text": "Counter an active threat for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 2).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "counter_threat"}]}]},
-   {"text": "Counter an active threat for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 3).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "counter_threat"}]}]}
+   {"text": "Counter an active threat for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 1). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 1, "then": [{"op": "counter_threat"}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Counter an active threat for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 2). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "counter_threat"}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Counter an active threat for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 3). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "counter_threat"}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -56,12 +56,12 @@
   "name": "Civil Defense",
   "side": "unity",
   "tiers": [
-   {"text": "In each country piece, remove up to 2 Agents from hexes on or next to a corrupted city.",
-    "effects": [{"op": "remove_where", "pieces": "agents", "count": 2, "per": "country", "where": "by_corrupted_city"}]},
-   {"text": "In each country piece, remove up to 3 Agents from hexes on or next to a corrupted city.",
-    "effects": [{"op": "remove_where", "pieces": "agents", "count": 3, "per": "country", "where": "by_corrupted_city"}]},
-   {"text": "In each country piece, remove up to 4 Agents from hexes on or next to a corrupted city.",
-    "effects": [{"op": "remove_where", "pieces": "agents", "count": 4, "per": "country", "where": "by_corrupted_city"}]}
+   {"text": "In each country piece, remove up to 2 Agents from hexes on or next to a corrupted city. If nothing comes off, every player gains 2 credits instead.",
+    "effects": [{"op": "remove_where", "pieces": "agents", "count": 2, "per": "country", "where": "by_corrupted_city"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "In each country piece, remove up to 3 Agents from hexes on or next to a corrupted city. If nothing comes off, every player gains 2 credits instead.",
+    "effects": [{"op": "remove_where", "pieces": "agents", "count": 3, "per": "country", "where": "by_corrupted_city"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "In each country piece, remove up to 4 Agents from hexes on or next to a corrupted city. If nothing comes off, every player gains 2 credits instead.",
+    "effects": [{"op": "remove_where", "pieces": "agents", "count": 4, "per": "country", "where": "by_corrupted_city"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -69,12 +69,12 @@
   "name": "Volunteer Corps",
   "side": "unity",
   "tiers": [
-   {"text": "Remove 1 Discord from the Discord track for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 2).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "pull_discord", "amount": 1}]}]},
-   {"text": "Remove 1 Discord from the Discord track for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 3).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "pull_discord", "amount": 1}]}]},
-   {"text": "Remove 1 Discord from the Discord track for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 4).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "pull_discord", "amount": 1}]}]}
+   {"text": "Remove 1 Discord from the Discord track for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 2). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "pull_discord", "amount": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Remove 1 Discord from the Discord track for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 3). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "pull_discord", "amount": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Remove 1 Discord from the Discord track for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 4). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "pull_discord", "amount": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -82,12 +82,12 @@
   "name": "Global Coalition",
   "side": "unity",
   "tiers": [
-   {"text": "Counter an active threat for each corrupted city (at most 1).",
-    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 1, "then": [{"op": "counter_threat"}]}]},
-   {"text": "Counter an active threat for each corrupted city (at most 2).",
-    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 2, "then": [{"op": "counter_threat"}]}]},
-   {"text": "Counter an active threat for each corrupted city (at most 3).",
-    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 3, "then": [{"op": "counter_threat"}]}]}
+   {"text": "Counter an active threat for each corrupted city (at most 1). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 1, "then": [{"op": "counter_threat"}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Counter an active threat for each corrupted city (at most 2). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 2, "then": [{"op": "counter_threat"}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Counter an active threat for each corrupted city (at most 3). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 3, "then": [{"op": "counter_threat"}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -95,12 +95,12 @@
   "name": "New Deal",
   "side": "unity",
   "tiers": [
-   {"text": "Every player gains 2 credits and 1 Ambassador for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 2).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 1}]}]},
-   {"text": "Every player gains 2 credits and 2 Ambassadors for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 3).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 2}]}]},
-   {"text": "Every player gains 2 credits and 3 Ambassadors for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 4).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 3}]}]}
+   {"text": "Every player gains 2 credits and 1 Ambassador for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 2). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Every player gains 2 credits and 2 Ambassadors for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 3). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 2}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Every player gains 2 credits and 3 Ambassadors for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 4). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 3}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -108,12 +108,12 @@
   "name": "Decommission",
   "side": "unity",
   "tiers": [
-   {"text": "Remove each Botnet on a hex holding an Ambassador.",
-    "effects": [{"op": "remove_where", "pieces": "botnets", "count": 1, "per": "hex", "where": "ambassador"}]},
-   {"text": "Remove each Botnet on a hex on or next to an Ambassador.",
-    "effects": [{"op": "remove_where", "pieces": "botnets", "count": 1, "per": "hex", "where": "by_ambassador"}]},
-   {"text": "Remove each Botnet on a hex on or next to an Ambassador or a Node.",
-    "effects": [{"op": "remove_where", "pieces": "botnets", "count": 1, "per": "hex", "where": "by_player"}]}
+   {"text": "Remove each Botnet on a hex holding an Ambassador. If nothing comes off, every player gains 2 credits instead.",
+    "effects": [{"op": "remove_where", "pieces": "botnets", "count": 1, "per": "hex", "where": "ambassador"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Remove each Botnet on a hex on or next to an Ambassador. If nothing comes off, every player gains 2 credits instead.",
+    "effects": [{"op": "remove_where", "pieces": "botnets", "count": 1, "per": "hex", "where": "by_ambassador"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Remove each Botnet on a hex on or next to an Ambassador or a Node. If nothing comes off, every player gains 2 credits instead.",
+    "effects": [{"op": "remove_where", "pieces": "botnets", "count": 1, "per": "hex", "where": "by_player"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -122,12 +122,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Remove 1 Troop from each hex on or next to an Ambassador.",
-    "effects": [{"op": "remove_where", "pieces": "troops", "count": 1, "per": "hex", "where": "by_ambassador"}]},
-   {"text": "Remove up to 2 Troops from each hex on or next to an Ambassador.",
-    "effects": [{"op": "remove_where", "pieces": "troops", "count": 2, "per": "hex", "where": "by_ambassador"}]},
-   {"text": "Remove up to 2 Troops from each hex on or next to an Ambassador or a Node.",
-    "effects": [{"op": "remove_where", "pieces": "troops", "count": 2, "per": "hex", "where": "by_player"}]}
+   {"text": "Remove 1 Troop from each hex on or next to an Ambassador. If nothing comes off, every player gains 2 credits instead.",
+    "effects": [{"op": "remove_where", "pieces": "troops", "count": 1, "per": "hex", "where": "by_ambassador"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Remove up to 2 Troops from each hex on or next to an Ambassador. If nothing comes off, every player gains 2 credits instead.",
+    "effects": [{"op": "remove_where", "pieces": "troops", "count": 2, "per": "hex", "where": "by_ambassador"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Remove up to 2 Troops from each hex on or next to an Ambassador or a Node. If nothing comes off, every player gains 2 credits instead.",
+    "effects": [{"op": "remove_where", "pieces": "troops", "count": 2, "per": "hex", "where": "by_player"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -136,12 +136,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Remove 2 Discord from the Discord track for each city holding an Ambassador (at most 1).",
-    "effects": [{"op": "per_site", "where": "ambassador_city", "max": 1, "then": [{"op": "pull_discord", "amount": 2}]}]},
-   {"text": "Remove 2 Discord from the Discord track for each city holding an Ambassador (at most 2).",
-    "effects": [{"op": "per_site", "where": "ambassador_city", "max": 2, "then": [{"op": "pull_discord", "amount": 2}]}]},
-   {"text": "Remove 2 Discord from the Discord track for each city holding an Ambassador (at most 3).",
-    "effects": [{"op": "per_site", "where": "ambassador_city", "max": 3, "then": [{"op": "pull_discord", "amount": 2}]}]}
+   {"text": "Remove 2 Discord from the Discord track for each city holding an Ambassador (at most 1). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "ambassador_city", "max": 1, "then": [{"op": "pull_discord", "amount": 2}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Remove 2 Discord from the Discord track for each city holding an Ambassador (at most 2). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "ambassador_city", "max": 2, "then": [{"op": "pull_discord", "amount": 2}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Remove 2 Discord from the Discord track for each city holding an Ambassador (at most 3). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "ambassador_city", "max": 3, "then": [{"op": "pull_discord", "amount": 2}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -150,12 +150,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Every player gains 3 Ambassadors for each corrupted city (at most 1).",
-    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 1, "then": [{"op": "gain", "resource": "ambassadors", "amount": 3}]}]},
-   {"text": "Every player gains 3 Ambassadors for each corrupted city (at most 2).",
-    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 2, "then": [{"op": "gain", "resource": "ambassadors", "amount": 3}]}]},
-   {"text": "Every player gains 3 Ambassadors for each corrupted city (at most 3).",
-    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 3, "then": [{"op": "gain", "resource": "ambassadors", "amount": 3}]}]}
+   {"text": "Every player gains 3 Ambassadors for each corrupted city (at most 1). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 1, "then": [{"op": "gain", "resource": "ambassadors", "amount": 3}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Every player gains 3 Ambassadors for each corrupted city (at most 2). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 2, "then": [{"op": "gain", "resource": "ambassadors", "amount": 3}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Every player gains 3 Ambassadors for each corrupted city (at most 3). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 3, "then": [{"op": "gain", "resource": "ambassadors", "amount": 3}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -164,12 +164,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Take the adversary cube off each corrupted research station or factory on a hex holding an Ambassador.",
-    "effects": [{"op": "remove_where", "pieces": "cubes", "count": 1, "per": "hex", "where": "ambassador"}]},
-   {"text": "Take the adversary cube off each corrupted research station or factory on a hex on or next to an Ambassador.",
-    "effects": [{"op": "remove_where", "pieces": "cubes", "count": 1, "per": "hex", "where": "by_ambassador"}]},
-   {"text": "Take the adversary cube off each corrupted research station or factory on a hex on or next to an Ambassador or a Node.",
-    "effects": [{"op": "remove_where", "pieces": "cubes", "count": 1, "per": "hex", "where": "by_player"}]}
+   {"text": "Take the adversary cube off each corrupted research station or factory on a hex holding an Ambassador. If nothing comes off, every player gains 2 credits instead.",
+    "effects": [{"op": "remove_where", "pieces": "cubes", "count": 1, "per": "hex", "where": "ambassador"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Take the adversary cube off each corrupted research station or factory on a hex on or next to an Ambassador. If nothing comes off, every player gains 2 credits instead.",
+    "effects": [{"op": "remove_where", "pieces": "cubes", "count": 1, "per": "hex", "where": "by_ambassador"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Take the adversary cube off each corrupted research station or factory on a hex on or next to an Ambassador or a Node. If nothing comes off, every player gains 2 credits instead.",
+    "effects": [{"op": "remove_where", "pieces": "cubes", "count": 1, "per": "hex", "where": "by_player"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -178,12 +178,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Every player gains 1 energy and 1 Ambassador for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 1).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 1, "then": [{"op": "gain", "resource": "energy", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 1}]}]},
-   {"text": "Every player gains 1 energy and 2 Ambassadors for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 2).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "gain", "resource": "energy", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 2}]}]},
-   {"text": "Every player gains 1 energy and 3 Ambassadors for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 3).",
-    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "gain", "resource": "energy", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 3}]}]}
+   {"text": "Every player gains 1 energy and 1 Ambassador for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 1). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 1, "then": [{"op": "gain", "resource": "energy", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Every player gains 1 energy and 2 Ambassadors for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 2). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "gain", "resource": "energy", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 2}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Every player gains 1 energy and 3 Ambassadors for each research station or factory a player owns, or free city with a player's Node on or next to it (at most 3). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "gain", "resource": "energy", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 3}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -192,12 +192,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Each player removes up to 2 Troops from one hex on or next to an Ambassador.",
-    "effects": [{"op": "remove_where", "pieces": "troops", "count": 2, "per": "player", "where": "by_ambassador"}]},
-   {"text": "Each player removes up to 3 Troops from one hex on or next to an Ambassador.",
-    "effects": [{"op": "remove_where", "pieces": "troops", "count": 3, "per": "player", "where": "by_ambassador"}]},
-   {"text": "Each player removes up to 4 Troops from one hex on or next to an Ambassador.",
-    "effects": [{"op": "remove_where", "pieces": "troops", "count": 4, "per": "player", "where": "by_ambassador"}]}
+   {"text": "Each player removes up to 2 Troops from one hex on or next to an Ambassador. If nothing comes off, every player gains 2 credits instead.",
+    "effects": [{"op": "remove_where", "pieces": "troops", "count": 2, "per": "player", "where": "by_ambassador"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Each player removes up to 3 Troops from one hex on or next to an Ambassador. If nothing comes off, every player gains 2 credits instead.",
+    "effects": [{"op": "remove_where", "pieces": "troops", "count": 3, "per": "player", "where": "by_ambassador"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Each player removes up to 4 Troops from one hex on or next to an Ambassador. If nothing comes off, every player gains 2 credits instead.",
+    "effects": [{"op": "remove_where", "pieces": "troops", "count": 4, "per": "player", "where": "by_ambassador"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -206,12 +206,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Lift the Fallout on each hex on or next to an Ambassador.",
-    "effects": [{"op": "remove_where", "pieces": "fallout", "count": 1, "per": "hex", "where": "by_ambassador"}]},
-   {"text": "Lift the Fallout on each hex on or next to an Ambassador or a Node.",
-    "effects": [{"op": "remove_where", "pieces": "fallout", "count": 1, "per": "hex", "where": "by_player"}]},
-   {"text": "Lift the Fallout on each hex within 2 of an Ambassador or a Node.",
-    "effects": [{"op": "remove_where", "pieces": "fallout", "count": 1, "per": "hex", "where": "near_player"}]}
+   {"text": "Lift the Fallout on each hex on or next to an Ambassador. If nothing comes off, every player gains 2 credits instead.",
+    "effects": [{"op": "remove_where", "pieces": "fallout", "count": 1, "per": "hex", "where": "by_ambassador"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Lift the Fallout on each hex on or next to an Ambassador or a Node. If nothing comes off, every player gains 2 credits instead.",
+    "effects": [{"op": "remove_where", "pieces": "fallout", "count": 1, "per": "hex", "where": "by_player"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Lift the Fallout on each hex within 2 of an Ambassador or a Node. If nothing comes off, every player gains 2 credits instead.",
+    "effects": [{"op": "remove_where", "pieces": "fallout", "count": 1, "per": "hex", "where": "near_player"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -220,12 +220,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Sway 1 toward Unity for each corrupted city, research station or factory (at most 2).",
-    "effects": [{"op": "per_site", "where": "corrupted", "max": 2, "then": [{"op": "sway", "side": "unity", "amount": 1, "narrative": "trust"}]}]},
-   {"text": "Sway 1 toward Unity for each corrupted city, research station or factory (at most 3).",
-    "effects": [{"op": "per_site", "where": "corrupted", "max": 3, "then": [{"op": "sway", "side": "unity", "amount": 1, "narrative": "trust"}]}]},
-   {"text": "Sway 1 toward Unity for each corrupted city, research station or factory (at most 4).",
-    "effects": [{"op": "per_site", "where": "corrupted", "max": 4, "then": [{"op": "sway", "side": "unity", "amount": 1, "narrative": "trust"}]}]}
+   {"text": "Sway 1 toward Unity for each corrupted city, research station or factory (at most 2). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "corrupted", "max": 2, "then": [{"op": "sway", "side": "unity", "amount": 1, "narrative": "trust"}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Sway 1 toward Unity for each corrupted city, research station or factory (at most 3). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "corrupted", "max": 3, "then": [{"op": "sway", "side": "unity", "amount": 1, "narrative": "trust"}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Sway 1 toward Unity for each corrupted city, research station or factory (at most 4). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "corrupted", "max": 4, "then": [{"op": "sway", "side": "unity", "amount": 1, "narrative": "trust"}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -234,12 +234,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Every player gains 2 credits and 1 Ambassador for each corrupted city (at most 2).",
-    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 2, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 1}]}]},
-   {"text": "Every player gains 2 credits and 2 Ambassadors for each corrupted city (at most 3).",
-    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 3, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 2}]}]},
-   {"text": "Every player gains 2 credits and 3 Ambassadors for each corrupted city (at most 4).",
-    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 4, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 3}]}]}
+   {"text": "Every player gains 2 credits and 1 Ambassador for each corrupted city (at most 2). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 2, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Every player gains 2 credits and 2 Ambassadors for each corrupted city (at most 3). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 3, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 2}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Every player gains 2 credits and 3 Ambassadors for each corrupted city (at most 4). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "corrupted_city", "max": 4, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 3}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -248,12 +248,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Remove 1 Discord from the Discord track for each hex holding an Ambassador (at most 2).",
-    "effects": [{"op": "per_site", "where": "ambassador", "max": 2, "then": [{"op": "pull_discord", "amount": 1}]}]},
-   {"text": "Remove 1 Discord from the Discord track for each hex holding an Ambassador (at most 3).",
-    "effects": [{"op": "per_site", "where": "ambassador", "max": 3, "then": [{"op": "pull_discord", "amount": 1}]}]},
-   {"text": "Remove 1 Discord from the Discord track for each hex holding an Ambassador (at most 4).",
-    "effects": [{"op": "per_site", "where": "ambassador", "max": 4, "then": [{"op": "pull_discord", "amount": 1}]}]}
+   {"text": "Remove 1 Discord from the Discord track for each hex holding an Ambassador (at most 2). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "ambassador", "max": 2, "then": [{"op": "pull_discord", "amount": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Remove 1 Discord from the Discord track for each hex holding an Ambassador (at most 3). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "ambassador", "max": 3, "then": [{"op": "pull_discord", "amount": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Remove 1 Discord from the Discord track for each hex holding an Ambassador (at most 4). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "ambassador", "max": 4, "then": [{"op": "pull_discord", "amount": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -262,12 +262,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Remove 1 Discord from the Discord track for each free city with no Agent on it (at most 2).",
-    "effects": [{"op": "per_site", "where": "clear_city", "max": 2, "then": [{"op": "pull_discord", "amount": 1}]}]},
-   {"text": "Remove 1 Discord from the Discord track for each free city with no Agent on it (at most 3).",
-    "effects": [{"op": "per_site", "where": "clear_city", "max": 3, "then": [{"op": "pull_discord", "amount": 1}]}]},
-   {"text": "Remove 1 Discord from the Discord track for each free city with no Agent on it (at most 4).",
-    "effects": [{"op": "per_site", "where": "clear_city", "max": 4, "then": [{"op": "pull_discord", "amount": 1}]}]}
+   {"text": "Remove 1 Discord from the Discord track for each free city with no Agent on it (at most 2). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "clear_city", "max": 2, "then": [{"op": "pull_discord", "amount": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Remove 1 Discord from the Discord track for each free city with no Agent on it (at most 3). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "clear_city", "max": 3, "then": [{"op": "pull_discord", "amount": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Remove 1 Discord from the Discord track for each free city with no Agent on it (at most 4). If there are none, every player gains 2 credits instead.",
+    "effects": [{"op": "per_site", "where": "clear_city", "max": 4, "then": [{"op": "pull_discord", "amount": 1}]}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -276,12 +276,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "In the next adversary turn, no Agent lands on a site holding an Ambassador: an Infiltrate's or Escalate's Agents stay in the supply, and a factory pushes none there.",
-    "effects": [{"op": "prohibit", "step": "infiltrate", "where": "ambassador"}]},
-   {"text": "In the next adversary turn, no Agent lands on a site on or next to an Ambassador: an Infiltrate's or Escalate's Agents stay in the supply, and a factory pushes none there.",
-    "effects": [{"op": "prohibit", "step": "infiltrate", "where": "by_ambassador"}]},
-   {"text": "In the next adversary turn, no Agent lands on a site on or next to an Ambassador or a Node: an Infiltrate's or Escalate's Agents stay in the supply, and a factory pushes none there.",
-    "effects": [{"op": "prohibit", "step": "infiltrate", "where": "by_player"}]}
+   {"text": "In the next adversary turn, no Agent lands on a site holding an Ambassador: an Infiltrate's or Escalate's Agents stay in the supply, and a factory pushes none there. If no city, research station or factory qualifies, every player gains 2 credits instead.",
+    "effects": [{"op": "prohibit", "step": "infiltrate", "where": "ambassador"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "In the next adversary turn, no Agent lands on a site on or next to an Ambassador: an Infiltrate's or Escalate's Agents stay in the supply, and a factory pushes none there. If no city, research station or factory qualifies, every player gains 2 credits instead.",
+    "effects": [{"op": "prohibit", "step": "infiltrate", "where": "by_ambassador"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "In the next adversary turn, no Agent lands on a site on or next to an Ambassador or a Node: an Infiltrate's or Escalate's Agents stay in the supply, and a factory pushes none there. If no city, research station or factory qualifies, every player gains 2 credits instead.",
+    "effects": [{"op": "prohibit", "step": "infiltrate", "where": "by_player"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -290,12 +290,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Until the end of the next adversary turn, on each hex on or next to an Ambassador, nothing corrupts or flips and no Node is lost to Agents.",
-    "effects": [{"op": "prohibit", "step": "corrupt", "where": "by_ambassador"}]},
-   {"text": "Until the end of the next adversary turn, on each hex on or next to an Ambassador or a Node, nothing corrupts or flips and no Node is lost to Agents.",
-    "effects": [{"op": "prohibit", "step": "corrupt", "where": "by_player"}]},
-   {"text": "Until the end of the next adversary turn, on each hex within 2 of an Ambassador or a Node, nothing corrupts or flips and no Node is lost to Agents.",
-    "effects": [{"op": "prohibit", "step": "corrupt", "where": "near_player"}]}
+   {"text": "Until the end of the next adversary turn, on each hex on or next to an Ambassador, nothing corrupts or flips and no Node is lost to Agents. If no city, research station or factory qualifies, every player gains 2 credits instead.",
+    "effects": [{"op": "prohibit", "step": "corrupt", "where": "by_ambassador"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Until the end of the next adversary turn, on each hex on or next to an Ambassador or a Node, nothing corrupts or flips and no Node is lost to Agents. If no city, research station or factory qualifies, every player gains 2 credits instead.",
+    "effects": [{"op": "prohibit", "step": "corrupt", "where": "by_player"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "Until the end of the next adversary turn, on each hex within 2 of an Ambassador or a Node, nothing corrupts or flips and no Node is lost to Agents. If no city, research station or factory qualifies, every player gains 2 credits instead.",
+    "effects": [{"op": "prohibit", "step": "corrupt", "where": "near_player"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -304,12 +304,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "In the next adversary turn, no Troop strikes a hex on or next to an Ambassador.",
-    "effects": [{"op": "prohibit", "step": "strike", "where": "by_ambassador"}]},
-   {"text": "In the next adversary turn, no Troop strikes a hex on or next to an Ambassador or a Node.",
-    "effects": [{"op": "prohibit", "step": "strike", "where": "by_player"}]},
-   {"text": "In the next adversary turn, no Troop strikes a hex within 2 of an Ambassador or a Node.",
-    "effects": [{"op": "prohibit", "step": "strike", "where": "near_player"}]}
+   {"text": "In the next adversary turn, no Troop strikes a hex on or next to an Ambassador. If no city, research station or factory qualifies, every player gains 2 credits instead.",
+    "effects": [{"op": "prohibit", "step": "strike", "where": "by_ambassador"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "In the next adversary turn, no Troop strikes a hex on or next to an Ambassador or a Node. If no city, research station or factory qualifies, every player gains 2 credits instead.",
+    "effects": [{"op": "prohibit", "step": "strike", "where": "by_player"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]},
+   {"text": "In the next adversary turn, no Troop strikes a hex within 2 of an Ambassador or a Node. If no city, research station or factory qualifies, every player gains 2 credits instead.",
+    "effects": [{"op": "prohibit", "step": "strike", "where": "near_player"}, {"op": "floor", "then": [{"op": "gain", "resource": "credits", "amount": 2}]}]}
   ]
  },
  {
@@ -317,9 +317,9 @@
   "name": "Incursion",
   "side": "discord",
   "tiers": [
-   {"text": "Deal 1 extra threat for each corrupted city (at most 2).",
+   {"text": "Deal 1 extra threat for each corrupted city (at most 2), of the tier of this round's adversary card's first threat, one country piece at a time from the first.",
     "effects": [{"op": "per_site", "where": "corrupted_city", "max": 2, "then": [{"op": "deal_threats", "count": 1}]}]},
-   {"text": "Deal 1 extra threat for each corrupted city (at most 4).",
+   {"text": "Deal 1 extra threat for each corrupted city (at most 4), of the tier of this round's adversary card's first threat, one country piece at a time from the first.",
     "effects": [{"op": "per_site", "where": "corrupted_city", "max": 4, "then": [{"op": "deal_threats", "count": 1}]}]},
    {"text": "For each corrupted city (at most 3), deal a tier-2 threat in each country piece.",
     "effects": [{"op": "per_site", "where": "corrupted_city", "max": 3, "then": [{"op": "deal_threats", "count": 1, "tier": 2}]}]}

@@ -46,7 +46,7 @@ Undo and records stay.
   the debug view's generic chips (`panels.ts`).
 - **Checks:** `AIC_SWEEP_VIEW=player` sweeps it. `node scripts/playthrough.mjs [--config three_seat.json] [--seed
   N] [--size 1366x768] [--search A-B]` plays a shipped config by `play-policy.mjs`, clicking each move, shoots each
-  phase, fails on clipped or off-screen text and ticks each overhaul rule seen (2-4 min). `player-play.mjs` plays
+  phase, fails on the sweep's hard screen checks (`screen-checks.mjs`) and ticks each overhaul rule seen (2-4 min). `player-play.mjs` plays
   one at random; `troops-play.mjs` and `ambassadors-play.mjs` click a demo game to the win and require its rules
   (a guard, the Strike notice, *Liberate refused*; a move then Liberate, two node powers a round, a tipped ambassador).
 
@@ -114,7 +114,7 @@ release `aic-sim` (`AIC_SIM`); its environment variables and defaults are atop t
   14 a game, plus the end and any failure).
 - **Fail the run** (exit 1): console errors and blocking dialogs, `stuck` (no legal action without an outcome),
   the error bar, page scroll, placeholder text (`undefined`, `NaN`), elements off screen with no scroll to them,
-  `hidden-target`, `clipped` (no ellipsis), `token-unknown`, `stale-word` (`STALE` in the script), `case` (`aic-sim` could not play it), `below-fold` (the player view's Draft / Keep
+  `hidden-target`, `clipped` (no ellipsis), `token-unknown`, `stale-word` (`STALE` in `screen-checks.mjs`), `case` (`aic-sim` could not play it), `below-fold` (the player view's Draft / Keep
   buttons or turn panel scrolled out of view). **Reported for a look:** `no-control` (a legal action with no
   control on screen), `raw-id`, `truncated-no-hover`, `truncated`, overlaps, undrawn view tokens, steps over
   150 ms, heap kept over 50 MB, `mark-over-number` (a highlight ring across a hex number) and

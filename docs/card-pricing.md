@@ -122,7 +122,7 @@ moves when any other card changes: to reprice an edited card, move its price by 
   energy and a gain only through the spare-energy rate; two of the three sinks whose output the table prices lowest
   (an ambassador removed; a draw and chips) carry an override (keep worth only: agents.md).
 - **A station is a flip:** freeing one is worth a cube a round both ways, about 10 (`cleanse_station`); freeing a
-  factory stays about 4.
+  factory stays about 4. Each also sways 2 Unity since r151 (D136: a freed facility is liberated), +5.3 on both.
 - **A gift to another seat** is 0.75 × face; **a tag left in play** 0.67, then 0.33 each (events leave none).
 - **The liberate capstones**: priced against the bill they replace, at least half in their engine's resource, out of
   reach before mid-game: a city liberated by card is 20, the Liberate action's 3 ambassadors (16) and their move in

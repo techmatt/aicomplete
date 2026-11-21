@@ -48,7 +48,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   Fallout only as green cards (programs): a few at tier 1, and Open-Weights Release (4) at tier 2.
 - **Finale buildings (candidate; Matt, 306).** Repeatable tier-2 buildings, hard to get (`needs` 2-3 of a tag or a
   big price), whose once-a-round Action spends a late-game resource; a plant beside one is the late engine:
-  Siegebreaker Reactor (needs 3 Power; 1 antimatter: remove 2 troops on or next to a corrupted city, rescue it),
+  Siegebreaker Reactor (needs 3 Power; 1 antimatter: remove 2 troops by a corrupted city, rescue it),
   Concord Reactor (12 credits, needs 2 Diplomacy; 1 antimatter: 5 ambassadors, 4 Unity), Singularity Exploit (needs
   3 Cyber; 1 antimatter: discard an adversary project, gain 2 insight), Fusion Torch Array (needs 3 Power; 5 energy: rescue
   a corrupted city).
@@ -88,28 +88,27 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   | Hostile Buyout | antimatter, Diplomacy | event | gain 5 ambassadors; any corrupted site, a station or factory becomes yours (254) |
   | Forensic Audit | research cubes | event | rescue the city |
   | Root Access | antimatter, Cyber (needs Cyber tags) | event | remove a botnet on or next to the city; +3 insight income |
-  | Peacekeeping Mission | antimatter, Security (needs Security tags) | event | first removes up to 3 troops on or next to the city; rescues only if none is left; then places 3 ambassadors on it and sways 4 toward Unity |
+  | Peacekeeping Mission | antimatter, Security (needs Security tags) | event | removes up to 3 troops on or next to the city (D137: targets only a city that clears); then places 3 ambassadors on it and sways 4 toward Unity |
   | Beamline Liberation | antimatter, Science | event | gain 7 research cubes |
   | Reactor Retooling | antimatter, Industry | event | +3 chip income |
-  | Popular Uprising | Followers | tier-1 building | Action: add 1 Follower here, OR pay 4 Followers to liberate, again and again |
-  | Siegebreaker Reactor | antimatter, Power (needs 3) | building | Action: first removes 2 troops on or next to the city; rescues only if no guard is left |
+  | Popular Uprising | Followers | tier-1 building | Action: one of: (A) add 1 Follower here; OR (B) pay 4 Followers to liberate |
+  | Siegebreaker Reactor | antimatter, Power (needs 3) | building | Action: removes 2 troops on or next to the city (as Peacekeeping) |
   | Fusion Torch Array | energy (5), Power (needs 3) | building | Action: rescue the city |
 
   They cost 0-11 credits, priced against the Liberate action's bill ([card-pricing.md](../card-pricing.md), *The
   liberate capstones*); the six antimatter events (0-3 credits and 1 antimatter) are sinks at 2.0-2.5×, the two
   finale buildings 1.7-1.8 a use (*Finale buildings*), the rest fair. Great Liberation (Diplomacy: its target and 2 more in the target's country, cities included)
-  liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the
-  seat that can use it. Loops: each card is one-shot and tier 2, and every route needs nodes next to the city, so
-  liberation → clean city → energy → more liberation is capped; Popular Uprising and the two finale buildings repeat,
-  capped by their once-a-round Action and its fuel (4 Followers, 1 antimatter, 5 energy).
+  liberates too. **Part of the draft is guessing who will have which engine.** Loops: each card is one-shot and tier
+  2, so liberation → clean city → energy → more liberation is capped; Popular Uprising and the two finale buildings
+  repeat, capped by their once-a-round Action and its fuel (4 Followers, 1 antimatter, 5 energy).
 - **Tag discounts (candidate; the Terraforming Mars pattern).** Every `science_every` Science tags you have take 1
   insight off your tier-2 keeps and your card plays; every `industry_every` Industry tags take 1 credit off your
-  buildings, as steel does. Neither goes below `discount_floor` (0: a discounted card may be free); the loop "tags,
-  cheaper costs, more tags" is capped by the tags a card needs and the draw, not the floor.
+  buildings, as steel does. Neither goes below `discount_floor` (0: a discounted card may be free). The tag dials
+  print discount pips (display only, r151).
 - **Tags:** Science, Industry, Cyber, Power, Diplomacy, Security; 1-3 a card. Yours are those *on your cards*
   ([README.md](README.md#terms)); a board's can't be sacrificed.
 - **Programs** resolve and stay in your play area (their tags count; powers can sacrifice them); a lasting raise they
-  print stays even when sacrificed (a program's production, say). **Events** resolve
+  print stays even when sacrificed. **Events** resolve
   and go to your played pile (their tags don't count). **Nothing to act on never blocks a card:** a part with nothing
   to act on (a map effect whose target condition no hex in reach meets, a move, a gain per tag with too few tags, a
   draw with no card left) does nothing, and the rest resolves. A program, event or ability is offered only when at
@@ -135,7 +134,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   deck). A covered one holds its tokens and its Action stops; Actions may cost tokens from their own card. Feeder cards
   (five, [cards.md](../cards.md)) add tokens to one of your cards of a type, and its At N pays if they reach it;
   Sabotage and Purge Protocols make each player lose tokens. Sacrificing or discarding a card loses its tokens.
-- **Actions** (`ability`, buildings only) are used (`Use`) once a round, paying their cost. **An OR Action (`or`)** has two halves: one use a round, the player picks a half it can pay and that has
+- **Actions** (`ability`, buildings only) are used (`Use`) once a round, paying their cost. **An OR Action (`or`)** has two halves, printed (A) and (B): one use a round, the player picks a half it can pay and that has
   a target (a half that counts tokens here needs one there). **Ongoing abilities live only on buildings:** income,
   Effect or Action on a program or event is refused when content loads.
 

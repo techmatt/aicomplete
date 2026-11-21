@@ -248,17 +248,19 @@ fn an_escalate_adds_one_to_each_site_of_its_type_holding_an_agent() {
 }
 
 /// 293: the event card's escalate reads last round's card: this round's card moves to the board's last-round
-/// space at the next flip, and its Infiltrate types are what escalates then; round 1 escalates nothing.
+/// space at the next flip, and its Infiltrate types are what escalates then; round 1 escalates only factories
+/// (312: factories every round, whatever the card named).
 #[test]
 fn the_card_beat_escalates_last_rounds_type() {
     let (rules, mut g) = lab(&[]);
     let w = rules.world();
-    assert!(g.pile(adversary::LAST).is_empty() && adversary::escalating(&w, &g).is_empty(), "round 1: no card behind");
+    assert!(g.pile(adversary::LAST).is_empty(), "round 1: no card behind");
+    assert_eq!(adversary::escalating(&w, &g), vec![SiteType::Factory], "round 1: factories only");
     let stations = w.content.adversary.iter().find(|c| adversary::infiltrate_sites(c) == vec![SiteType::Station]).unwrap();
     let cities = w.content.adversary.iter().find(|c| adversary::infiltrate_sites(c) == vec![SiteType::City]).unwrap();
     set_pile(&mut g, adversary::LAST, &[stations.id.as_str()]);
     set_pile(&mut g, CURRENT, &[cities.id.as_str()]);
-    assert_eq!(adversary::escalating(&w, &g), vec![SiteType::Station]);
+    assert_eq!(adversary::escalating(&w, &g), vec![SiteType::Station, SiteType::Factory]);
     set_var(&mut g, SUPPLY, 40);
     clear_agents(&mut g);
     let m = &rules.map;
@@ -899,8 +901,8 @@ fn event_lines_come_from_the_fixed_list() {
 }
 
 /// 293: the Card and Income beats through the real phases, two rounds. At each flip this round's card moves to the
-/// last-round space and the one there to the discard; the Card beat escalates last round's type and runs the
-/// board's one rule (Commandeered Plants: a factory holding an agent takes 1 more whatever the cards name); the
+/// last-round space and the one there to the discard; the Card beat escalates last round's type and factories
+/// (312: a factory holding an agent takes 1 more whatever the cards name, Commandeered Plants folded in); the
 /// Income beat makes each corrupted site's output.
 #[test]
 fn the_card_and_income_beats_run_the_spine_through_the_real_phases() {
@@ -912,16 +914,16 @@ fn the_card_and_income_beats_run_the_spine_through_the_real_phases() {
     let m = &rules.map;
     set_var(&mut g, SUPPLY, 40);
     clear_agents(&mut g);
-    // Two city cards in a row, so the factory's +1 below is the board rule's alone.
+    // Two city cards in a row, so the factory's +1 below is the every-round factory Escalate's alone.
     // (The lab's setup already ran a round's adversary phases: start from an empty table.)
     for pile in [CURRENT, adversary::LAST, adversary::DISCARD] {
         set_pile(&mut g, pile, &[]);
     }
     let diverted = g.stats.counters.get("board.energy_diverted").copied().unwrap_or(0);
-    let by_rule = g.stats.counters.get("adversary.escalated.board").copied().unwrap_or(0);
+    let escalated = g.stats.counters.get("adversary.escalated.event").copied().unwrap_or(0);
     set_pile(&mut g, NEXT, &["mil_s1_long_patrols"]);
     set_pile(&mut g, DECK, &["mil_s1_war_drums", "mil_s1_probing_strikes"]);
-    assert_eq!(w.content.adversary_board.rules[0].effects, vec![Op::Escalate { site: SiteType::Factory }]);
+    assert!(w.content.adversary_board.rules.iter().all(|r| !r.effects.iter().any(|e| matches!(e, Op::Escalate { .. }))));
     // A neutral factory on a zone of country 0, holding an agent.
     let f = numbered_where(m, 0, |h| m.hexes[h].industrial)[0];
     put(&mut g, f, FACTORY, 1);
@@ -931,15 +933,14 @@ fn the_card_and_income_beats_run_the_spine_through_the_real_phases() {
     let corrupted_cities = (0..g.hexes.len()).filter(|&h| kind(m, h) == HexKind::City && g.tokens(h, ADV_CUBE) > 0).count() as i64;
     let research = g.var(adversary::RESEARCH);
 
-    // Round 1: nothing behind this card, so only the board rule and the Infiltrate act.
+    // Round 1: nothing behind this card, so only the factory Escalate and the Infiltrate act.
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
     assert_eq!(g.pile(CURRENT), &[Key::new("mil_s1_long_patrols")]);
     assert!(g.pile(adversary::LAST).is_empty() && g.pile(adversary::DISCARD).is_empty());
-    assert_eq!(g.tokens(f, ADV_AMBASSADOR), 2, "Commandeered Plants: the factory holding an agent took 1 more");
+    assert_eq!(g.tokens(f, ADV_AMBASSADOR), 2, "Escalate (factories): the factory holding an agent took 1 more");
     assert_eq!(g.tokens(city, ADV_AMBASSADOR), 1, "Infiltrate: cities");
-    assert_eq!(g.stats.counters["adversary.escalated.board"] - by_rule, 1);
-    assert!(!g.stats.counters.contains_key("adversary.escalated.event"));
+    assert_eq!(g.stats.counters["adversary.escalated.event"] - escalated, 1);
     // The Income beat: a Discord from each corrupted city, a cube from each corrupted station.
     assert_eq!(g.stats.counters["board.energy_diverted"] - diverted, corrupted_cities);
     let stations = (0..g.hexes.len()).filter(|&h| g.tokens(h, STATION) > 0 && g.tokens(h, ADV_CUBE) > 0).count() as i64;
@@ -1073,8 +1074,8 @@ fn every_industrial_zone_prints_an_arrow_to_a_city_next_to_it() {
     assert_eq!(rules.view(&g).arrows.iter().filter(|a| a.kind == "zone").count(), zones);
 }
 
-/// 293: the view's `escalate` arrows are the sites the next Card beat's Escalate lands on: the board rule's
-/// factories holding an agent and, once a card is in play, its type's sites holding one.
+/// 293: the view's `escalate` arrows are the sites the next Card beat's Escalate lands on: the factories holding an
+/// agent (312: every round) and, once a card is in play, its type's sites holding one.
 #[test]
 fn the_view_marks_the_sites_the_next_card_beat_escalates() {
     let (rules, mut g) = lab(&["adversary.event", "adversary.build"]);
@@ -1097,5 +1098,5 @@ fn the_view_marks_the_sites_the_next_card_beat_escalates() {
     marked.sort();
     let mut want = vec![city, f];
     want.sort();
-    assert_eq!(marked, want, "this round's card names cities, the board rule factories; the station isn't marked");
+    assert_eq!(marked, want, "this round's card names cities, factories always escalate; the station isn't marked");
 }
