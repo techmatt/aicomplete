@@ -487,7 +487,9 @@ fn plan_ctx<'a>(
     // more insight income is worth the idle rate, as the play eval reads it.
     let spare = economy::patient(world, s) && insight_cap > 0.0 && g.resource(s, Resource::Insight) as f64 > insight_cap;
     let insight_idle = (forced.plan_spare && spare).then_some(insight_idle);
-    PlanCtx { table: forced.plan_table, strat, mults: mults.as_deref(), t, project, idle, spare_at, energy_rate, insight_idle }
+    // 303 (`am_cap`): a seat whose antimatter piles up keeps what spends it.
+    let am_spare = ev.map_or((1.0, 0), |e| e.am_spare(world, g, s));
+    PlanCtx { table: forced.plan_table, strat, mults: mults.as_deref(), t, project, idle, spare_at, energy_rate, am_spare, insight_idle }
 }
 
 /// 211: whether card `c` of seat `s` is playable now.

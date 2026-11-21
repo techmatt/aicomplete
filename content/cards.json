@@ -6069,5 +6069,65 @@
     "amount": 2
    }
   ]
+ },
+ {
+  "id": "beamline_liberation",
+  "name": "Beamline Liberation",
+  "tier": 2,
+  "kind": "event",
+  "cost": 0,
+  "antimatter": 1,
+  "insight": 0,
+  "tags": [
+   "science"
+  ],
+  "effects": [
+   {
+    "op": "target",
+    "on": "corrupted_city"
+   },
+   {
+    "op": "liberate"
+   },
+   {
+    "op": "claim_site",
+    "near": true
+   },
+   {
+    "op": "gain",
+    "resource": "research_cubes",
+    "amount": 7
+   }
+  ]
+ },
+ {
+  "id": "reactor_retooling",
+  "name": "Reactor Retooling",
+  "tier": 2,
+  "kind": "event",
+  "cost": 3,
+  "antimatter": 1,
+  "insight": 0,
+  "tags": [
+   "industry"
+  ],
+  "effects": [
+   {
+    "op": "target",
+    "on": "corrupted_city"
+   },
+   {
+    "op": "liberate"
+   },
+   {
+    "op": "claim_site",
+    "near": true
+   },
+   {
+    "op": "production",
+    "resource": "chips",
+    "amount": 3
+   }
+  ]
  }
 ]

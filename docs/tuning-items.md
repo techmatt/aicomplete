@@ -33,7 +33,8 @@ simulation scale among them, are in [rulings.md](rulings.md); recipes and costs 
 
 ## Screening levers
 
-- Each lever is reachable, named by its parameter and screened on and off.
+- Each lever is reachable, named by its parameter and screened on and off. A spec pins the off arm
+  (`strategist:w.am_cap=0`, not the bare `strategist`): the bare agent changes when the item ships the lever.
 - The prompt's *What you may change* closes the list, and says whether a lever you find outside it may ship flagged
   or is report-only.
 - After a change to how the game is won, greedy is read beside the strategist.

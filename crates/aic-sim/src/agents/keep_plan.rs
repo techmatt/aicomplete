@@ -52,6 +52,8 @@ pub struct PlanCtx<'a> {
     pub spare_at: f64,
     /// 128: the seat's `Ctx::energy_rate` at the keep.
     pub energy_rate: f64,
+    /// 303: the seat's `Eval::am_spare` at the keep (idle antimatter is cheap): the share of the rate, and how many.
+    pub am_spare: (f64, i64),
     /// 150 (`plan_spare`): the credits an insight income a round is worth to a
     /// Patience seat whose insight is spare (`None`: the table's rate).
     pub insight_idle: Option<f64>,
@@ -456,7 +458,10 @@ fn under_planned(w: &World, d: &CardDef, planned: &[Key]) -> bool {
 /// other costs at fixed rates (before 082) or the table's (082).
 fn spend(w: &World, g: &GameState, s: usize, d: &CardDef, pc: &PlanCtx, pt: &PlanTable) -> f64 {
     if pc.table {
-        pc.t.cost(d, cards::play_cost(w, g, s, d), cards::play_insight(w, g, s, d), pt.left)
+        // 303 (`am_cap`): its antimatter, up to the seat's idle count, at the idle share (an idle pile is cheap).
+        let (share, spare) = pc.am_spare;
+        let idle = d.antimatter.min(spare) as f64 * pc.t.res(Resource::Antimatter) * (1.0 - share);
+        pc.t.cost(d, cards::play_cost(w, g, s, d), cards::play_insight(w, g, s, d), pt.left) - idle
     } else {
         credit_equivalent(d, cards::play_cost(w, g, s, d))
     }

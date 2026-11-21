@@ -1,0 +1,12 @@
+# 303: three new antimatter sinks (Matt, 2026-11-20: more antimatter cards in the deck), each a tier-2 event paying
+# 1 antimatter, no `needs`, at the sink ruling's 2.0-2.5x get / pay (rulings.md, *Antimatter*). Apply with
+# scripts/cards/apply_overlay.py, then add the ids to configs/baseline.json's deck and run scripts/regen.py.
+# Pay = credits + the tier-2 keep 8 + 18 an antimatter; get at the unit anchors. Each card's why: README.md.
+#
+# Beamline Liberation (science): free the city, its lab is yours: 7 research cubes. 26 + 28 = 54 for 26: 2.08.
+cards.beamline_liberation={"id":"beamline_liberation","name":"Beamline Liberation","tier":2,"kind":"event","cost":0,"antimatter":1,"insight":0,"tags":["science"],"effects":[{"op":"target","on":"corrupted_city"},{"op":"liberate"},{"op":"claim_site","near":true},{"op":"gain","resource":"research_cubes","amount":7}]}
+# Reactor Retooling (industry): free the city, its plants retool for you: +3 chip income. 26 + 39 = 65 for 29: 2.24.
+cards.reactor_retooling={"id":"reactor_retooling","name":"Reactor Retooling","tier":2,"kind":"event","cost":3,"antimatter":1,"insight":0,"tags":["industry"],"effects":[{"op":"target","on":"corrupted_city"},{"op":"liberate"},{"op":"claim_site","near":true},{"op":"production","resource":"chips","amount":3}]}
+# A third, Clearance Strike (security: 4 troops and 6 agents on or next to a corrupted site, 2 ambassadors), ran in
+# the dev screen and was dropped before the freeze: at the troop anchor (3.33 each, not the table's 7.33 for a whole
+# removal) it reads 44 for 26, 1.69, under the sink floor, and 4 troops is a disguised "remove all" (README.md).

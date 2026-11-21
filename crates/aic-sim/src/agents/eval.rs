@@ -350,6 +350,12 @@ pub struct Weights {
     /// draft and use what spends it").
     pub energy_cap: f64,
     pub energy_idle: f64,
+    /// 303 (0: off), above 0: antimatter a seat holds beyond this, or beyond what its hand's cards (needs met) spend
+    /// if that is more, is idle: in flat mode each counts `am_idle` of a held one's weight, and the keep plan prices a
+    /// card's antimatter, up to the idle count, at that share of the rate (`Eval::am_spare`; "a pile you can't spend
+    /// is cheap: keep and play what spends it"). Horizon mode and the table's hand terms don't read it.
+    pub am_cap: f64,
+    pub am_idle: f64,
     /// 128, above 0: an Action that places project cubes counts nothing once no
     /// megaproject is open to the seat (`Ctx::cubes_open`). The keep plan's twin
     /// is the forced row `plan_cube_target` (policy.rs).
@@ -748,6 +754,8 @@ impl Default for Weights {
             // greedy on the dev seeds (the whole 18 +0.0 ± 2.1, +2.5 ± 2.3; a third +0.4, +1.9; the table itself
             // repriced to 2.22, -4.2 ± 1.8 judge). The engine and its kin (table mode, unscreened) keep it off.
             am_tie: 0.6667,
+            am_cap: 0.0,
+            am_idle: 1.0,
         }
     }
 }
@@ -1329,6 +1337,50 @@ impl Eval {
         } else {
             self.energy_unit() * n
         }
+    }
+
+    /// 303 (`am_cap`): the antimatter seat `s` holds in full: `am_cap`, or what its hand's cards whose `needs` are
+    /// met spend, if more (as `am_save` reads the hand; a dead card claims none).
+    fn am_full(&self, world: &aic_core::module::World, g: &GameState, s: usize) -> f64 {
+        let hand = g.pile(&cards::hand(s));
+        let mut claims = 0;
+        if hand.iter().any(|id| cards::def(world, id).antimatter > 0) {
+            let tags = cards::tag_counts(world, g, s);
+            claims = hand
+                .iter()
+                .map(|id| cards::def(world, id))
+                .filter(|d| d.antimatter > 0 && d.needs.iter().all(|(t, n)| tags[*t as usize] >= *n))
+                .map(|d| d.antimatter)
+                .sum::<i64>();
+        }
+        self.w.am_cap.max(claims as f64)
+    }
+
+    /// What `n` antimatter seat `s` holds is worth: a held one's weight each, and (303, `am_cap`, flat mode)
+    /// `am_idle` of it each beyond [`Eval::am_full`].
+    fn am_value(&self, world: &aic_core::module::World, g: &GameState, s: usize, n: f64) -> f64 {
+        let w = &self.w;
+        if w.am_cap > 0.0 && n > w.am_cap {
+            let full = self.am_full(world, g, s);
+            if n > full {
+                return w.antimatter * (full + w.am_idle * (n - full));
+            }
+        }
+        w.antimatter * n
+    }
+
+    /// 303 (`am_cap`): what a card's antimatter costs seat `s` at the keep: the share of the antimatter rate
+    /// (`am_idle`) and how many units take it (those held beyond [`Eval::am_full`]); (1.0, 0) when none is idle.
+    pub fn am_spare(&self, world: &aic_core::module::World, g: &GameState, s: usize) -> (f64, i64) {
+        let w = &self.w;
+        let held = g.resource(s, Resource::Antimatter);
+        if w.am_cap > 0.0 && held as f64 > w.am_cap {
+            let idle = held - self.am_full(world, g, s).ceil() as i64;
+            if idle > 0 {
+                return (w.am_idle.min(1.0), idle);
+            }
+        }
+        (1.0, 0)
     }
 
     /// 128 (`energy_cap`): the share of the table's energy price an energy costs
@@ -2101,7 +2153,7 @@ impl Eval {
             let res = |k: Resource| g.resource(s, k) as f64;
             *v += self.credit_value(res(Resource::Credits))
                 + self.energy_value(res(Resource::Energy))
-                + w.antimatter * res(Resource::Antimatter)
+                + self.am_value(&world, g, s, res(Resource::Antimatter))
                 + self.insight_value(s, res(Resource::Insight))
                 + self.cube_unit(s) * res(Resource::ResearchCubes);
             // 251: `ai::track_income`'s pairs, in its order, without its vector.
@@ -3013,6 +3065,33 @@ mod tests {
         let worse = 2.0 * 6.0 * on.energy_unit() - on.w.antimatter;
         assert!(worse > 0.0 && worse < unit);
         assert!((held(&g, 3) - (2.0 * unit + worse)).abs() < 1e-9, "{} against {}", held(&g, 3), 2.0 * unit + worse);
+    }
+
+    /// 303 (`am_cap`, `am_idle`): off by default; on, antimatter beyond the cap counts `am_idle` of a held one, and
+    /// the keep plan's idle count is what lies beyond it; a hand card whose `needs` are met raises the cap to its
+    /// antimatter, one whose `needs` aren't claims none.
+    #[test]
+    fn idle_antimatter_counts_a_share() {
+        let r = crate::agents::tests::rules(0);
+        let world = r.world();
+        let mut g = r.new_game(1);
+        assert_eq!(Weights::default().am_cap, 0.0);
+        let off = Eval::new(&r, Weights::default());
+        let on = Eval::new(&r, Weights { am_cap: 1.0, am_idle: 0.25, ..Weights::default() });
+        g.piles.insert(cards::hand(0).as_str().into(), Arc::new(Vec::new()));
+        g.seats[0].resources.insert(Resource::Antimatter, 3);
+        let w = on.w.antimatter;
+        assert!((off.am_value(&world, &g, 0, 3.0) - 3.0 * w).abs() < 1e-9);
+        assert!((on.am_value(&world, &g, 0, 1.0) - w).abs() < 1e-9);
+        assert!((on.am_value(&world, &g, 0, 3.0) - 1.5 * w).abs() < 1e-9, "1 in full, 2 at a quarter");
+        assert_eq!(off.am_spare(&world, &g, 0), (1.0, 0));
+        assert_eq!(on.am_spare(&world, &g, 0), (0.25, 2));
+        // Hostile Buyout (1 antimatter, no needs) claims one; Root Access (needs 2 Cyber) claims none here.
+        g.piles.insert(cards::hand(0).as_str().into(), Arc::new(vec!["hostile_buyout".into(), "root_access".into()]));
+        assert!(cards::tag_counts(&world, &g, 0)[aic_core::content::Tag::Cyber as usize] < 2);
+        let on2 = Eval::new(&r, Weights { am_cap: 0.5, am_idle: 0.25, ..Weights::default() });
+        assert_eq!(on2.am_spare(&world, &g, 0), (0.25, 2));
+        assert!((on2.am_value(&world, &g, 0, 3.0) - 1.5 * w).abs() < 1e-9);
     }
 
     #[test]

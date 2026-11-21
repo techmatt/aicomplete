@@ -35,7 +35,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   Unity); no megaproject pays a card at completion.
 
 <!-- generated: draft_set -->
-**The draft set in numbers.** 191 cards (124 tier 1, 67 tier 2). Insight to play: 103 / 60 / 28 cards at 0 / 1 / 2, 18 of the 67 tier-2 cards at 2. An energy cost: 13 cards, 7 of the 77 buildings.
+**The draft set in numbers.** 193 cards (124 tier 1, 69 tier 2). Insight to play: 105 / 60 / 28 cards at 0 / 1 / 2, 18 of the 69 tier-2 cards at 2. An energy cost: 13 cards, 7 of the 77 buildings.
 <!-- /generated -->
 
 - **Energy costs (candidate).** Energy is a second cost on a card whose title reads power-hungry (mostly buildings:
@@ -43,7 +43,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   *Energy as a second cost*). They stay uncommon (counts above), so a seat that makes little energy still has plenty
   to play; seven 2-energy Actions and the energy-hungry tier-2 buildings (Citywide Microgrid and Power to the People
   at 4 energy) serve as late sinks for a seat whose node tracks are full.
-- **Tier 2 is the majors (candidate).** Spirit Island's major powers: big payoffs, 15 of them paid in antimatter (and
+- **Tier 2 is the majors (candidate).** Spirit Island's major powers: big payoffs, 17 of them paid in antimatter (and
   one tier-1 card, Accelerator Diplomacy), for your own or another player's board actions: liberations, troop
   strikes, ambassadors and Unity, energy, chips, cubes. **Antimatter sinks pay big (locked, Matt 287):** saving for one
   is clearly right, a strong route but not the only one (Kinetic Interdiction's country sweep, an Action, Orbital Mass
@@ -88,12 +88,13 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   | Hostile Buyout | antimatter, Diplomacy | event | gain 5 ambassadors; any corrupted site, a station or factory becomes yours (254) |
   | Forensic Audit | research cubes | event | rescue the city |
   | Root Access | antimatter, Cyber (needs Cyber tags) | event | remove a botnet on or next to the city; +3 insight income |
-  | Peacekeeping Mission | antimatter, Security (needs Security tags) | event | first removes up to 3 troops on or next to the city (so a guarded one is a target); rescues only if none is left; then places 3 ambassadors on it and sways 4 toward Unity |
+  | Peacekeeping Mission | antimatter, Security (needs Security tags) | event | first removes up to 3 troops on or next to the city; rescues only if none is left; then places 3 ambassadors on it and sways 4 toward Unity |
+  | Beamline Liberation | antimatter, Science | event | gain 7 research cubes |
+  | Reactor Retooling | antimatter, Industry | event | +3 chip income |
   | Popular Uprising | Followers | tier-1 building | Action: add 1 Follower here, OR pay 4 Followers to liberate, again and again |
 
-  They cost 0-11 credits (the four antimatter ones 0-3 and 1 antimatter), priced against the Liberate action's bill
-  ([card-pricing.md](../card-pricing.md), *The liberate capstones*); the four antimatter ones are sinks and pay
-  2.0-2.5× (rulings, *Antimatter*), the rest fair. Great Liberation (Diplomacy: its target and 2 more in the target's country, cities included)
+  They cost 0-11 credits, priced against the Liberate action's bill ([card-pricing.md](../card-pricing.md), *The
+  liberate capstones*); the six antimatter ones (0-3 credits and 1 antimatter) are sinks at 2.0-2.5×, the rest fair. Great Liberation (Diplomacy: its target and 2 more in the target's country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the
   seat that can use it. Loops: each card is one-shot and tier 2, and every route needs nodes next to the city, so
   liberation → clean city → energy → more liberation is capped; Popular Uprising repeats, capped by its once-a-round
