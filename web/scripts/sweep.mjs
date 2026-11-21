@@ -86,6 +86,10 @@ const CASES = [
   // countries (all three boards), and at 4 countries for its crowded sites.
   { name: 'c3-d3-strategist', config: 'baseline.json', set: ['countries=3', 'adversary.difficulty=3'], agent: 'strategist' },
   { name: 'c4-d1-strategist', config: 'baseline.json', set: ['countries=4', 'adversary.difficulty=1'], agent: 'strategist' },
+  // 308: r142-r149's overhaul as the judge plays it: d0's setup agents and early wins at 2 countries, and the
+  // event deck running out, Strike and Redeploy at their busiest at 4 countries and d4.
+  { name: 'c2-d0-strategist', config: 'baseline.json', set: [], agent: 'strategist' },
+  { name: 'c4-d4-strategist', config: 'baseline.json', set: ['countries=4', 'adversary.difficulty=4'], agent: 'strategist' },
 ];
 const unknown = only.filter((n) => !CASES.some((c) => c.name === n));
 if (unknown.length) throw new Error(`no case ${unknown.join(', ')}; cases: ${CASES.map((c) => c.name).join(', ')}`);
@@ -178,7 +182,12 @@ const PAGE_LIB = String.raw`(() => {
   // 294: r141's garrisoned troops: a Strike, a Redeploy and a troop it moved, a round a troop guarded a corrupted
   // city, a round a liberation was refused for it, a troop placed (by source), a new most troops on the board.
   const COUNTER_EVENTS_R141 = /^(board\.(strikes|redeploys|troops_redeployed|guarded_city_rounds|guard_blocked_rounds)|adversary\.troops_peak)$/;
-  const COUNTER_ALL = [COUNTER_EVENTS, COUNTER_EVENTS_R41, COUNTER_EVENTS_R55, COUNTER_EVENTS_R70, COUNTER_EVENTS_R74, COUNTER_EVENTS_R85, COUNTER_EVENTS_R99, COUNTER_EVENTS_R107, COUNTER_EVENTS_R130, COUNTER_EVENTS_R131, COUNTER_EVENTS_R141];
+  // 308: r142-r149's overhaul: a troop's or Wall's strike on a piece, a troop destroyed by site, a Redeploy that
+  // stayed, a botnet taken down, Vigil, a card's liberation by site, the antimatter standard action, an ambassador
+  // shield, troops besieging, walled or sent by Discord or a project, a project discarded, a push canceled, research's
+  // Infiltrate, an event's Escalate, a Discord pull, and each finale building's Action used (r149).
+  const COUNTER_EVENTS_R142 = /^(board\.(troop_strikes|wall_strikes|troop_destroyed\.[a-z]+|troop_absorbed|redeploy_stayed|botnets_taken_down|vigil(_capped)?|liberated_card\.[a-z]+|std\.antimatter|ambassador_shield)|adversary\.(troops_besiege|troops_walled|discord_troops|project_troops|projects_discarded|push_canceled|botnet_troops_short|infiltrated\.research|escalated\.event)|alignment\.discord_pulled|cards\.used\.(siegebreaker_reactor|concord_reactor|fusion_torch_array|singularity_exploit))$/;
+  const COUNTER_ALL = [COUNTER_EVENTS, COUNTER_EVENTS_R41, COUNTER_EVENTS_R55, COUNTER_EVENTS_R70, COUNTER_EVENTS_R74, COUNTER_EVENTS_R85, COUNTER_EVENTS_R99, COUNTER_EVENTS_R107, COUNTER_EVENTS_R130, COUNTER_EVENTS_R131, COUNTER_EVENTS_R141, COUNTER_EVENTS_R142];
   const counters = () => { const c = aic.timeline.frame.snap.state.stats?.counters ?? {}; return Array.isArray(c) ? Object.fromEntries(c) : c; };
   function counterEvents(c0, c1) {
     return Object.keys(c1).filter((k) => COUNTER_ALL.some((re) => re.test(k)) && (c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);

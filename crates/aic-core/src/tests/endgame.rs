@@ -246,6 +246,31 @@ fn a_threat_dealt_onto_a_node_hex_of_another_kind_places_nothing_there() {
     assert_eq!(adversary::botnet_count(&g, None), before + 1, "on the nearest other piece");
 }
 
+/// 308: Cascade Failure ([station, city]) dealt with no station left to its country has only its city token: "the
+/// station here" is none, so its botnet takes the nearest other piece, not the city (it took the city token's hex).
+#[test]
+fn a_botnet_for_the_station_here_never_lands_on_the_city_token() {
+    use crate::modules::{common::BOTNET, effects};
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let city = rules.map.numbered(1, piece(1).cities[0]);
+    let b = rules.map.numbered(1, piece(1).node);
+    put(&mut g, b, node(1), 1);
+    let id = "cascade_failure";
+    deal(&mut g, id, 1);
+    set_var(&mut g, format!("threats.loc.{id}.1"), city as i64 + 1);
+    let d = w.content.threat(id).clone();
+    assert!(matches!(d.effects[0], Op::PlaceBotnet { .. }), "{:?}", d.effects[0]);
+    let before = adversary::botnet_count(&g, None);
+    with_answers(&rules, &mut g, |_| 0, |g, cx| {
+        let mut ctx = effects::Ctx::threat(Some(1));
+        ctx.threat = Some(Key::new(id));
+        effects::run(g, cx, &d.effects[..1], &mut ctx)
+    });
+    assert_eq!(g.tokens(city, BOTNET), 0, "not on the city token");
+    assert_eq!(adversary::botnet_count(&g, None), before + 1, "on the nearest other piece");
+}
+
 /// 175: a choice threat may take a last node: unable to pay, the player loses it.
 #[test]
 fn a_choice_threat_takes_a_last_node_too() {

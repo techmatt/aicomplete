@@ -629,6 +629,58 @@ fn a_troop_next_to_your_ambassador_is_in_reach() {
     assert!(effects::target_hexes(&w, &g, 0, TargetSpec::Adversary).is_empty(), "an agent alone is out of reach");
 }
 
+/// 308: the same reach for a Push (Patrol, Checkpoint Network: "Target: Agents or Troops. Push ..."): the guard next to
+/// your ambassador, two hexes from your node, moves away; an agent beside it stays (only troops are in that reach).
+#[test]
+fn a_push_moves_a_troop_next_to_your_ambassador() {
+    use crate::modules::effects;
+    use crate::op::{Piece, TargetSpec};
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    let (c, n, _, _) = by_a_city(&mut g, m);
+    let w = rules.world();
+    let guard = m.hexes[c].neighbors.iter().copied().find(|&x| kind(m, x) != HexKind::Ocean && m.distance(x, n) == 2);
+    let Some(guard) = guard else { panic!("no hex next to the city two from the node") };
+    put(&mut g, guard, TROOP, 1);
+    put(&mut g, guard, ADV_AMBASSADOR, 1);
+    let pieces = vec![Piece::Agents, Piece::Troops];
+    assert!(effects::push_hexes(&w, &g, 0, &pieces).is_empty(), "out of the node's reach");
+    put(&mut g, c, ambassador(0), 1);
+    assert_eq!(effects::push_hexes(&w, &g, 0, &pieces), vec![guard]);
+    assert!(effects::push_hexes(&w, &g, 1, &pieces).is_empty(), "only your own ambassador");
+    assert!(effects::push_hexes(&w, &g, 0, &[Piece::Agents]).is_empty(), "an agent there is out of reach");
+    // Patrol's lines: the first option each time (the guard's hex, then the troop's first push; no agent is offered).
+    let ops = [Op::Target { on: TargetSpec::Adversary }, Op::Push { max: 2, pieces }];
+    with_answers(&rules, &mut g, |_| 0, |g, cx| {
+        effects::run(g, cx, &ops, &mut effects::Ctx::seat(0))
+    });
+    assert_eq!((g.tokens(guard, TROOP), g.tokens(guard, ADV_AMBASSADOR)), (0, 1), "the troop moved, the agent stayed");
+}
+
+/// 308: and for a strike (Kettle Operation: "Target: Agents or Troops. Remove up to 6 ... on or next to it"): the guard
+/// next to your ambassador comes off; the agent beside it, out of your node's reach, stays.
+#[test]
+fn a_strike_takes_a_troop_next_to_your_ambassador() {
+    use crate::modules::effects;
+    use crate::op::{Piece, TargetSpec};
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    let (c, n, _, _) = by_a_city(&mut g, m);
+    let w = rules.world();
+    let guard = m.hexes[c].neighbors.iter().copied().find(|&x| kind(m, x) != HexKind::Ocean && m.distance(x, n) == 2);
+    let Some(guard) = guard else { panic!("no hex next to the city two from the node") };
+    put(&mut g, guard, TROOP, 1);
+    put(&mut g, guard, ADV_AMBASSADOR, 1);
+    let pieces = vec![Piece::Agents, Piece::Troops];
+    assert!(!effects::gather_hexes(&w, &g, 0, &pieces, true).contains(&guard), "out of the node's reach");
+    put(&mut g, c, ambassador(0), 1);
+    assert!(effects::gather_hexes(&w, &g, 0, &pieces, true).contains(&guard));
+    assert!(!effects::gather_hexes(&w, &g, 0, &pieces, false).contains(&guard), "a plain gather keeps its reach");
+    let ops = [Op::Target { on: TargetSpec::Adversary }, Op::Gather { max: 6, pieces, strike: true }];
+    with_answers(&rules, &mut g, |_| 0, |g, cx| effects::run(g, cx, &ops, &mut effects::Ctx::seat(0)));
+    assert_eq!((g.tokens(guard, TROOP), g.tokens(guard, ADV_AMBASSADOR)), (0, 1), "the troop came off, the agent stayed");
+}
+
 /// r142: an ambassador a card moves keeps its state (the move is not its own action): a tipped one arrives
 /// tipped, a ready one ready, and a ready one leaves first. An ambassador that leaves takes its marker with it.
 #[test]

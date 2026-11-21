@@ -42,7 +42,7 @@
   },
   "research": {
    "name": "War Research",
-   "text": "Every 2 cubes a country on the track (4 cubes with two countries, 6 with three) are spent to advance the marker one slot; the slot's icon happens once. Slot 7: the players lose.",
+   "text": "Every K cubes on the track (the level line's cubes a country, times the countries) are spent to advance the marker one slot; the slot's icon happens once. Slot 7: the players lose.",
    "slots": [
     "factory",
     "cells_factory",
@@ -222,7 +222,7 @@
    {
     "level": 2,
     "name": "War Footing",
-    "flavor": "Every unanswered strike feeds the war machine.",
+    "flavor": "Every unanswered threat feeds the war machine.",
     "rule": "When a threat executes uncountered, the adversary also gains 4 compute."
    },
    {

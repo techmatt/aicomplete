@@ -238,7 +238,8 @@ fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'st
     let spent: i64 = p.cost.iter().filter(|(r, _)| *r == Resource::Energy).map(|(_, n)| *n).sum();
     // 118: with every node token placed the power read "unaffordable".
     if power_places(w, seat, k) && !can_place(w, g, seat) {
-        return Some("no node left");
+        // 308: "on your tracks": a bare "no node left" read as the node-loss condition beside the map's nodes.
+        return Some("no node token left on your tracks");
     }
     // 261: say which price: Expand prints none, so a bare "unaffordable" left a player looking for one.
     if power_places(w, seat, k) && !board::can_pay_placement(w, g, seat, -spent) {
@@ -250,7 +251,7 @@ fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'st
     let left = (board(w, seat).economy_track.len() - board::track_taken(g, seat).min(board(w, seat).economy_track.len()))
         + (board(w, seat).play_track.len() - board::track2_taken(g, seat).min(board(w, seat).play_track.len()));
     if nodes > left as i64 {
-        return Some("no node left for every node");
+        return Some("too few node tokens left on your tracks");
     }
     if nodes > 1 && !board::can_pay_placements(w, g, seat, nodes, -spent) {
         return Some("unaffordable: the next track spaces' energy for every node, after the power's own");
@@ -380,7 +381,7 @@ pub fn tally_dear_powers(g: &mut GameState, cx: &mut Cx, seat: usize) {
             None => "idle",
             Some("used") => continue,
             Some("needs tags") => "no_tags",
-            Some("no target") | Some("no node left") | Some("no node left for every node") => "no_target",
+            Some("no target") | Some("no node token left on your tracks") | Some("too few node tokens left on your tracks") => "no_target",
             Some(_) => "unpaid",
         };
         let slug = power_slug(&p.name);

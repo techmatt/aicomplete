@@ -1573,7 +1573,7 @@
   "locations": [
    "station"
   ],
-  "text": "A Botnet lands on the station here (if it holds one, on the nearest piece without one). 2 Agents are created here.",
+  "text": "A Botnet lands on the station here (if it holds one, or there is none, on the nearest other piece without one). 2 Agents are created here.",
   "counters": [
    [
     {
@@ -2068,7 +2068,7 @@
    "city",
    "factory"
   ],
-  "text": "3 Agents are created on the city here. 3 cubes go onto the adversary's research track.",
+  "text": "3 Agents are created here. 3 cubes go onto the adversary's research track.",
   "counters": [
    [
     {
@@ -2153,7 +2153,7 @@
   "locations": [
    "station"
   ],
-  "text": "A Botnet lands on the station here (if it holds one, on the nearest piece without one). A tier-1 threat is dealt into this country (it executes next round).",
+  "text": "A Botnet lands on the station here (if it holds one, or there is none, on the nearest other piece without one). A tier-1 threat is dealt into this country (it executes next round).",
   "counters": [
    [
     {
@@ -2321,7 +2321,7 @@
    "station",
    "city"
   ],
-  "text": "A Botnet lands on the station here (if it holds one, on the nearest piece without one). This country's player pays 3 energy or discards 3 cards.",
+  "text": "A Botnet lands on the station here (if it holds one, or there is none, on the nearest other piece without one). This country's player pays 3 energy or discards 3 cards.",
   "counters": [
    [
     {

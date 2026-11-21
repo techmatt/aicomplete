@@ -184,9 +184,14 @@ fn strike_from(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
             targets.push((x, k));
         }
     }
+    // 308: a struck station or factory names its owner, as a node does (seat 0 answers for the table).
+    let owned = |x: usize, k: &str, name: String| match cube_owner(g, x).filter(|_| k == STATION || k == FACTORY) {
+        Some(s) => format!("seat {s}'s {name}"),
+        None => name,
+    };
     let opts = targets
         .iter()
-        .map(|(x, k)| opt(format!("{} at {}", piece_name(k), hex_name(&w, *x))))
+        .map(|(x, k)| opt(format!("{} at {}", owned(*x, k, piece_name(k)), hex_name(&w, *x))))
         .collect();
     let prompt = || format!(
         "Strike: the adversary troop at {} destroys which target?",
@@ -196,10 +201,11 @@ fn strike_from(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
         return Ok(false);
     };
     let (x, k) = targets[i].clone();
+    let owner = cube_owner(g, x).filter(|_| k == STATION || k == FACTORY);
     // 289 (D133): written before any protection choice, so a strike answered in the owner's own frame says what
     // struck.
     cx.note(Some(x), || {
-        let piece = piece_words(&k);
+        let piece = owner.map_or_else(|| piece_words(&k), |s| format!("Seat {s}'s {}", piece_name(&k)));
         let the = if piece.starts_with("Seat ") { "" } else { "the " };
         format!("The adversary troop at {} strikes {the}{piece} at {}", hex_name(&w, h), hex_name(&w, x))
     });

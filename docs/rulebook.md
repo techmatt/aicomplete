@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (fourth draft)
 
-*Rules revision 149. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 150. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -127,7 +127,7 @@ hex it is on.
 | **Hardening token** | — | saves one facility or node once (§13) |
 | **Location token** | — | marks where a threat sits (§10) |
 | **Firewall** | — | no agent lands on its hex, nothing there corrupts (§16) |
-| **No-Infiltrate, no-Strike, no-Corrupt** | — | a Unity card's prohibitions, for the next adversary turn (§12) |
+| **No-Infiltrate, no-Strike, no-Corrupt** | — | a Unity card's prohibitions, until the end of the next adversary turn (§12) |
 | **Round-flag marker** | — | an effect that outlasts its card (a blackout; Sabotage Teams) |
 | **Waits token** | — | on a threat that takes effect a round late (§10) |
 
@@ -623,7 +623,7 @@ ready again, it acts: **Liberate**. One that arrives ready on the site (from you
 or placed by a card) may act the same round.
 
 - **Reach:** none needed: your node need not be near. The round your ambassador stands there tipped is the risk.
-- **Price, in ambassadors:** city **5**, station **4**, factory **3**, the same at every level.
+- **Price, in ambassadors:** **3** at any site (city, station or factory), the same at every level.
 - **Who pays:** your own ambassadors standing on the site pay first (the one acting among them), then your supply.
   Another player's never pay.
 - **No agents, no guards:** a site with an agent on it can't be liberated: clear it first (Remove agents, a card, a
@@ -645,8 +645,8 @@ Liberate does, for the card's own price instead of ambassadors and with no ambas
 only Hostile Buyout may target any corrupted site, and puts your cube on a station or factory it frees (a city it
 frees stays neutral). The others **rescue** it (the cards' word): liberate it, then **claim a facility next to the
 city**: a neutral station or factory there with no agent on it becomes yours, even out of your reach; with none,
-nothing more happens. A guarded city is no target for any of them, except Peacekeeping Mission, which first removes up
-to 3 troops on or next to it and rescues only if none is left.
+nothing more happens. A guarded city is no target for any of them, except Peacekeeping Mission and Siegebreaker
+Reactor, which first remove up to 3 (Siegebreaker 2) troops on or next to it and rescue only if none is left.
 
 **Only cards claim.** A card that lets you **claim** a neutral research station or factory in your reach puts your
 cube on it: it is **yours**. One with an agent on it can't be claimed. Open Research Campus and Industrial Commons
@@ -844,8 +844,8 @@ condition ("for each station or factory a player owns"), never in one player's r
 
 - **The Unity deck** (23 cards) reshuffles when it runs out. Some Unity cards **forbid** the adversary's Infiltrate,
   Strike or Corrupt: put a no-Infiltrate, no-Strike or no-Corrupt token on every hex where the card's condition holds
-  as it resolves. In the next adversary turn that step skips a hex with its token: an Infiltrate's agent for it stays
-  in the supply; no troop strikes a piece there; agents may land on a no-Corrupt hex, but nothing there corrupts and
+  as it resolves. Until the end of the next adversary turn that step skips a hex with its token: no agent lands there
+  (an Infiltrate's or an Escalate's stays in the supply, and a factory pushes none there); no troop strikes a piece there; agents may land on a no-Corrupt hex, but nothing there corrupts and
   no node there is lost to agents. The tokens come off at the end of that turn, like a firewall. No Unity card frees a
   city: you still reach it and Liberate.
 - **The Discord deck** (7 cards: Incursion, Captured Labs, Propaganda, Scorched Earth, Offensive, Standing Army,
@@ -978,7 +978,7 @@ player ambassador there cancels it). The project Station Coup instead turns a pl
 test. A neutral station flips as printed.
 
 **Picking a site.** Event, project and Discord lines pick in each country the **lowest-numbered** site that fits
-("its lowest-numbered neutral factory"). Only threat tokens (§18) and the project Crackdown (the hex holding the most
+("its lowest-numbered neutral factory"); Offensive picks one node hex on the map. Only threat tokens (§18) and the project Crackdown (the hex holding the most
 player ambassadors) count pieces to pick.
 
 *Sources: rules/adversary.md (Arrival corruption), rules/board.md (A station is a defended investment);
@@ -993,6 +993,7 @@ never move.
 
 - **Gather up to N:** pick a land hex in your reach; move pieces into it, each from a hex next to it.
 - **Push up to N:** pick a land hex in your reach; move pieces off it, each to a land hex next to it, your choice.
+  A troop on or next to your ambassador is in your reach too: from its hex, push troops only.
 
 You may stop after any piece. Moved pieces arrive as usual: an agent moved onto players' ambassadors cancels one of
 them, and an ambassador moved onto agents cancels one (§8). No agent enters a firewall; no troop enters the
@@ -1001,7 +1002,8 @@ corrupted site opens it to a Liberate.
 
 **Remove around a hex.** Some cards (Kettle Operation, Lure Network, Honeypot Relay) remove up to N agents, or
 agents and troops, **on or next to** the card's target: the target itself counts, and you choose which pieces, a
-batch at a time, and may stop early. Nothing moves.
+batch at a time, and may stop early. Nothing moves. A target reached only through your ambassador (a troop on or
+next to it) gives up troops around it, and agents only where your nodes reach.
 
 **Convert.** Some late cards turn agents into your ambassadors: up to N agents on or next to a city in your reach
 each become your ambassador where it stood. The converted agents come off first, then your ambassadors go on, so two
@@ -1156,7 +1158,7 @@ costs (liberate, cards, actions) and the threats' costs never change. The table 
 |---|---|---|---|---|
 | 0 | **The Militarist** | Compute income 0 a country; Infiltrate 1 a site; Research track: a slot every 3 cubes a country; Each free city starts with 4 agents; Deck 4 / 4 / 2 (10 rounds); Sites print their corrupt numbers: city 5, station 3, factory 3 | — | 0 |
 | 1 | **Sleeper Cells**: *Cells wake in every city.* | Compute income 3 a country; Free cities start with no agents | When an Agent lands on a city, it falls at 3 agents, not 5. | 1 |
-| 2 | **War Footing**: *Every unanswered strike feeds the war machine.* | Compute income 5 a country; Research track: a slot every 2 cubes a country | When a threat executes uncountered, the adversary also gains 4 compute. | 2 |
+| 2 | **War Footing**: *Every unanswered threat feeds the war machine.* | Compute income 5 a country; Research track: a slot every 2 cubes a country | When a threat executes uncountered, the adversary also gains 4 compute. | 2 |
 | 3 | **Arms Race**: *The labs build weapons, not cures.* | Compute income 10 a country; Deck 4 / 3 / 2 (9 rounds) | When the research track reaches a Garrison icon, each country takes 2 Troops, not 1. | 3 |
 | 4 | **War Economy**: *The whole economy marches.* | Compute income 15 a country; Infiltrate 2 a city (1 a site from a station, factory or botnet line); Deck 2 / 4 / 3 (9 rounds) | — | 3 |
 <!-- /generated -->

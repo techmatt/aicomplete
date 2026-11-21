@@ -8,7 +8,7 @@ Project slots: Open, Open, Open.
 
 - **War Rooms** (threat decks). Setup: build each threat deck from every Security and Universal threat of its tier and as many of its other threats, taken at random; shuffle it. The rest stay in the box.
 - **Commandeered Plants.** Every round, after last round's sites escalate: each factory not yet the adversary's that holds an Agent takes 1 more.
-- **War Research** (the research row). Every 2 cubes a country on the track (4 cubes with two countries, 6 with three) are spent to advance the marker one slot; the slot's icon happens once. Slot 7: the players lose.
+- **War Research** (the research row). Every K cubes on the track (the level line's cubes a country, times the countries) are spent to advance the marker one slot; the slot's icon happens once. Slot 7: the players lose.
   - Slot 1, **New factory**: Each country: a neutral factory opens on its lowest-numbered free industrial zone.
   - Slot 2, **Cells: factories**: Infiltrate: factories.
   - Slot 3, **Funding**: Income: +1 compute a country a round.
@@ -17,7 +17,7 @@ Project slots: Open, Open, Open.
   - Slot 6, **Garrison**: Each country: 1 Troop garrisons its lowest-numbered corrupted factory (with none, its lowest-numbered corrupted city; with none, its lowest-numbered city).
   - Icons in the vocabulary this row doesn't use: New lab, Cells: cities, Cells: research stations, Botnet, Fallout, Dread, Blackout, Redeploy.
 - **Level 1: Sleeper Cells.** *Cells wake in every city.* When an Agent lands on a city, it falls at 3 agents, not 5.
-- **Level 2: War Footing.** *Every unanswered strike feeds the war machine.* When a threat executes uncountered, the adversary also gains 4 compute.
+- **Level 2: War Footing.** *Every unanswered threat feeds the war machine.* When a threat executes uncountered, the adversary also gains 4 compute.
 - **Level 3: Arms Race.** *The labs build weapons, not cures.* When the research track reaches a Garrison icon, each country takes 2 Troops, not 1.
 - **Level 4: War Economy.** *The whole economy marches.* Setup only.
 
@@ -89,7 +89,7 @@ Project slots: Open, Open, Open.
 | Skimming Operation | Industry + Diplomacy | coastal city | This country's player pays 4 chips or discards 3 cards. The adversary gains 6 compute. | 4 Ambassadors; 11 credits |
 | Dark Cities | Power + Diplomacy | city, coastal city | This country's player destroys 1 of their Nodes closest to it. Remove 3 Unity from the Unity track. | 3 Power tags; 11 credits |
 | Station Seizure | Cyber | station | 2 Agents are created here. Then the station here flips to the adversary (a player's holds unless 2 Agents and no player Ambassador are on it; one that holds takes another Agent). | 3 Cyber tags; 11 credits |
-| Rootkit | Cyber | station | A Botnet lands on the station here (if it holds one, on the nearest piece without one). 2 Agents are created here. | 3 Cyber tags; 11 credits |
+| Rootkit | Cyber | station | A Botnet lands on the station here (if it holds one, or there is none, on the nearest other piece without one). 2 Agents are created here. | 3 Cyber tags; 11 credits |
 | Purge Protocols | Cyber | station | This country's player destroys 1 of their Nodes closest to it and discards 3 cards. | 5 research cubes; 11 credits |
 | Data Breach | Cyber + Industry | station, factory | This country's player pays 5 research cubes or discards 3 cards. 2 cubes go onto the adversary's research track. | 4 chips; 11 credits |
 | Zero Day | Cyber | station | 4 cubes go onto the adversary's research track. This country's player turns 1 building face down until the end of next round. | 5 research cubes; 11 credits |
@@ -101,13 +101,13 @@ Project slots: Open, Open, Open.
 | Power Rationing | Power | city | This country's player pays 4 energy or discards 3 cards. | 4 Ambassadors; 11 credits |
 | Thermal Runaway | Power | station | This country's player pays 6 research cubes or discards 3 cards. The adversary gains 4 compute. | 3 Power tags; 11 credits |
 | Overload | Power | factory, station | This country's player destroys 2 of their Nodes closest to it. The adversary gains 6 compute. | 3 Power tags; 11 credits |
-| Closed City | Universal | city, factory | 3 Agents are created on the city here. 3 cubes go onto the adversary's research track. | 4 insight; 11 credits |
+| Closed City | Universal | city, factory | 3 Agents are created here. 3 cubes go onto the adversary's research track. | 4 insight; 11 credits |
 | Shock Doctrine | Universal | city, factory | This country's player pays 2 Ambassadors or discards 2 cards. Remove 3 Unity from the Unity track. | 4 energy; 11 credits |
-| Full Spectrum Assault | Universal | station | A Botnet lands on the station here (if it holds one, on the nearest piece without one). A tier-1 threat is dealt into this country (it executes next round). | 4 Ambassadors; 11 credits |
+| Full Spectrum Assault | Universal | station | A Botnet lands on the station here (if it holds one, or there is none, on the nearest other piece without one). A tier-1 threat is dealt into this country (it executes next round). | 4 Ambassadors; 11 credits |
 | Last Ultimatum | Universal | city | A tier-2 threat is dealt into this country (it executes next round). This country's player destroys 1 of their Nodes closest to it. | 5 research cubes; 11 credits |
 | Brain Drain | Universal | factory, city | 3 cubes go onto the adversary's research track. Remove 2 Unity from the Unity track. | 4 energy; 11 credits |
 | Arsenal | Security + Industry | factory | An adversary factory is built on the free industrial zone nearest here. 3 cubes go onto the adversary's research track. | 4 energy; 11 credits |
-| Cascade Failure | Power + Cyber | station, city | A Botnet lands on the station here (if it holds one, on the nearest piece without one). This country's player pays 3 energy or discards 3 cards. | 4 insight; 11 credits |
+| Cascade Failure | Power + Cyber | station, city | A Botnet lands on the station here (if it holds one, or there is none, on the nearest other piece without one). This country's player pays 3 energy or discards 3 cards. | 4 insight; 11 credits |
 
 ## Projects
 

@@ -10,6 +10,7 @@ the findings are in the write-up.
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 308 bug hunt on the overhaul since 285 (286-307): reach by ambassador, view words | 150 | [308_bug_hunt](results/308_bug_hunt/README.md) |
 | 306 finale buildings: three new, Singularity Exploit converted; antimatter spent a seat-game | 149 | [306_finale_buildings](results/306_finale_buildings/README.md) |
 | 305 overhaul 7: the viewer pass (player view at 1366×768, the turn's map by step, two clicked games) | 148 | [305_overhaul_7_viewer_pass](results/305_overhaul_7_viewer_pass/README.md) |
 | 303 two more antimatter sinks and the judge's idle antimatter: spent ÷ gained 35 → 46% | 148 | [303_antimatter_sinks_and_saving](results/303_antimatter_sinks_and_saving/README.md) |

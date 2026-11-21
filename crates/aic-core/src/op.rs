@@ -1247,8 +1247,8 @@ pub enum Op {
     /// r141, Strike (an event card's line or a research slot's icon): every adversary troop destroys one player
     /// node, or player-owned research station or factory, on or next to its hex (`board::strike`).
     Strike,
-    /// r141, Redeploy (an event card's line, rare): each adversary troop not on or next to a corrupted city moves
-    /// onto the nearest one (`board::redeploy`).
+    /// r141, Redeploy (an event card's line): r144, each adversary troop moves onto its country's corrupted city
+    /// nearest a player node or ambassador (`board::redeploy`).
     Redeploy,
     /// A troop occupies the factory under the token (it makes nothing while the troop stands); on a free zone,
     /// `else_compute` compute.

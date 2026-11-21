@@ -80,7 +80,17 @@ pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause
 pub fn destroy_piece_named(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause: Cause, why: Option<&str>) -> Res<bool> {
     let w = cx.world;
     let owner = piece_owner(g, h, kind);
+    // 308: a held piece's note names it as the strike's did ("Seat 1's research station"), capitalized.
+    let words = || match owner.filter(|_| kind == STATION || kind == FACTORY) {
+        Some(s) => format!("Seat {s}'s {}", piece_name(kind)),
+        None => {
+            let p = piece_words(kind);
+            p[..1].to_uppercase() + &p[1..]
+        }
+    };
+    // 308: each protection that stops it says so, as a spent one does (the turn panel showed "strikes", then nothing).
     if sheltered(&w, g, h, owner) {
+        cx.note(Some(h), || format!("{} at {} holds: it is sheltered", words(), hex_name(&w, h)));
         return Ok(false);
     }
     // r82 (Matt, 2026-11-11): Aegis Doctrine is Shelter on the owner's own pieces once a round: the first
@@ -88,6 +98,7 @@ pub fn destroy_piece_named(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str,
     if let Some(s) = owner.filter(|&s| aegis_ready(&w, g, s)) {
         cx.set_key(g, &cards::civic_used(s), 1);
         cx.tally(g, "board.aegis_used", 1);
+        cx.note(Some(h), || format!("{} at {} holds: Aegis Doctrine stops it (once a round)", words(), hex_name(&w, h)));
         return Ok(false);
     }
     let options = guards(g, h, owner);
@@ -113,7 +124,7 @@ pub fn destroy_piece_named(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str,
         let pick = cx.choose_loss(who, prompt, opts)?.and_then(|i| options.get(i).copied());
         // 289 (D133): a protection spent says so (the turn panel showed a strike, then nothing).
         let held = |cx: &mut Cx, what: &str| {
-            cx.note(Some(h), || format!("{} at {} holds: {what} is spent", piece_words(kind), hex_name(&w, h)));
+            cx.note(Some(h), || format!("{} at {} holds: {what} is spent", words(), hex_name(&w, h)));
         };
         match pick {
             Some(Guard::Harden) => {

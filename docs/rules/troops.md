@@ -65,8 +65,9 @@ Redeploy, a player's Push or Gather ([ambassadors.md](ambassadors.md)), or a rem
 **Guarding.** A corrupted site (city, research station or factory) with a troop on or next to it **can't be
 liberated**: not by the Liberate action, and not by any card that liberates or frees a site (it is no target for
 Rescue, Hostile Buyout, Great Liberation, Reclamation Crew or Back-Channel Talks, and Unity's Reclamation leaves
-its cube). One card is the exception (r143): Peacekeeping Mission may target a guarded city, since it first removes
-up to 3 troops on or next to it; its Rescue acts, and claims, only if no guard is left. **The answer is to deal with the troop first, then liberate:** remove it (the standard action Remove a
+its cube). Two cards are the exception: Peacekeeping Mission (r143) and Siegebreaker Reactor (r149) may target a
+guarded city, since each first removes up to 3 (Siegebreaker 2) troops on or next to it; its Rescue acts, and claims,
+only if no guard is left. **The answer is to deal with the troop first, then liberate:** remove it (the standard action Remove a
 troop, the boards' troop powers in [ai-powers.md](ai-powers.md), troop-removal cards, Unity's Peacekeepers and
 Disarmament Talks), or move it away with a Push or Gather (Checkpoint Network, the Protector's Patrol). A troop on
 or next to one of your ambassadors is in your reach for anything that targets troops (r142), so the ambassador

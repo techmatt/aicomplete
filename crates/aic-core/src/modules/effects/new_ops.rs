@@ -702,7 +702,9 @@ fn destroy_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx) -> Res {
 /// without one (players choose among equals). Returns whether one landed.
 fn place_botnet(g: &mut GameState, cx: &mut Cx, ctx: &Ctx) -> Res<bool> {
     let w = cx.world;
-    let here = token(&w, g, ctx, Some(Location::Station));
+    // 308: the station's token only: Cascade Failure ([station, city]) with no station token put its botnet on the
+    // city token's hex ("the station here" with none acts as the fallback does, below).
+    let here = ctx.threat.as_ref().and_then(|t| threats::token_of(&w, g, t, Location::Station));
     let Some(from) = measured_from(&w, g, ctx, Some(Location::Station)) else {
         return Ok(false);
     };

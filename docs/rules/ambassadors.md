@@ -63,7 +63,8 @@ Cities, research stations and factories follow one set of rules and differ only 
 Pieces on the board move: **ambassadors** (any seat's), **agents** and **troops**. Botnets don't.
 
 - **Gather up to N** pieces into a land hex in your reach, each from a hex next to it, one at a time; **Push up to N**
-  pieces from a land hex in your reach, each to a land hex next to it, the player choosing where. "Up to": stop
+  pieces from a land hex in your reach (troops also from a hex on or next to your ambassador, r150), each to a land
+  hex next to it, the player choosing where. "Up to": stop
   after any piece, so a move is never forced into a bad one. Distance 1. The card names which pieces it moves.
 - **Arrivals:** a moved piece arrives as any does. An agent arriving on standing ambassadors cancels one of them; an
   ambassador arriving on agents cancels one; a firewalled hex takes no agent; no troop enters the Protector's node
@@ -71,7 +72,8 @@ Pieces on the board move: **ambassadors** (any seat's), **agents** and **troops*
   pushing one away from a corrupted site opens it to a Liberate.
 - **A strike** (Kettle Operation, Lure Network's Action, Honeypot Relay) moves nothing: "remove up to N Agents (or
   Troops) on or next to it, your choice" (the card's target): the target counts, and the player picks the pieces,
-  batch by batch, and may stop. A card's gather or push acts on its target too ([card-grammar.md](card-grammar.md)).
+  batch by batch, and may stop (r150: around a troop reached only through your ambassador, agents only where your
+  nodes reach). A card's gather or push acts on its target too ([card-grammar.md](card-grammar.md)).
 - **Where:** Kettle Operation, Lure Network, Honeypot Relay (strikes), Checkpoint Network (push; Action: push),
   Exodus Corridors and Rally the Allies (gather ambassadors), and the Protector's Patrol power (I, 1 energy: push up to 3 agents or
   troops from its target; II, 2 energy, also hardens a facility on or next to it). What a card moves is set by its price, not its tier: about 1.3 credits a piece (`values.json` `gather`, `push`).

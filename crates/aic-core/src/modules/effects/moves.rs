@@ -54,9 +54,11 @@ fn may_arrive(w: &World, g: &GameState, kind: &str, to: usize) -> bool {
 
 /// The hexes a Gather may target: land in reach, with a piece it may take on a hex next to it; a strike's (178):
 /// land in reach with an adversary piece on or next to it.
+/// r142 (308): a strike also takes a hex outside node reach holding a troop on or next to your ambassador (Kettle
+/// Operation's "Target: Agents or Troops"); around it, agents come off only where your nodes reach ([`strike`]).
 pub fn gather_hexes(w: &World, g: &GameState, seat: usize, pieces: &[Piece], strike: bool) -> Vec<usize> {
     (0..g.hexes.len())
-        .filter(|&h| !is_ocean(w, h) && in_reach(w, g, seat, h))
+        .filter(|&h| !is_ocean(w, h) && (in_reach(w, g, seat, h) || (strike && troop_by_ambassador(w, g, seat, h, pieces))))
         .filter(|&h| {
             if strike {
                 return next_to(w, h, |x| tokens_of(g, x, pieces).iter().any(|(k, _)| adversary_piece(k)));
@@ -73,12 +75,32 @@ pub fn gathers_into(w: &World, g: &GameState, h: usize, pieces: &[Piece]) -> boo
         && w.map.hexes[h].neighbors.iter().any(|&x| tokens_of(g, x, pieces).iter().any(|(k, _)| may_arrive(w, g, k, h)))
 }
 
-/// The hexes a Push may empty: land in reach, holding a piece with a land hex next door to go to.
+/// The pieces seat `seat` may push from hex `h`: all of `pieces` there in its reach; r142 (308): a troop on or next to
+/// one of its ambassadors is in its reach too (troops.md, *Guarding*; [`super::target_hexes`]'s rule), so a Push takes
+/// only the troops from such a hex outside its node reach.
+fn pushable(w: &World, g: &GameState, seat: usize, h: usize, pieces: &[Piece]) -> Vec<(&'static str, String)> {
+    if is_ocean(w, h) {
+        return Vec::new();
+    }
+    let mut here = tokens_of(g, h, pieces);
+    if !in_reach(w, g, seat, h) {
+        let by_ambassador = troop_by_ambassador(w, g, seat, h, pieces);
+        here.retain(|(k, _)| by_ambassador && *k == TROOP);
+    }
+    here
+}
+
+/// r142: hex `h` holds a troop `pieces` may take, on or next to one of seat `seat`'s ambassadors (in its reach for
+/// anything that targets troops, wherever its nodes are).
+fn troop_by_ambassador(w: &World, g: &GameState, seat: usize, h: usize, pieces: &[Piece]) -> bool {
+    pieces.contains(&Piece::Troops) && g.tokens(h, TROOP) > 0 && next_to(w, h, |x| g.tokens(x, ambassador(seat)) > 0)
+}
+
+/// The hexes a Push may empty: land holding a piece it may push ([`pushable`]) with a land hex next door to go to.
 pub fn push_hexes(w: &World, g: &GameState, seat: usize, pieces: &[Piece]) -> Vec<usize> {
     (0..g.hexes.len())
-        .filter(|&h| !is_ocean(w, h) && in_reach(w, g, seat, h))
         .filter(|&h| {
-            let here = tokens_of(g, h, pieces);
+            let here = pushable(w, g, seat, h, pieces);
             w.map.hexes[h].neighbors.iter().any(|&x| here.iter().any(|(k, _)| may_arrive(w, g, k, x)))
         })
         .collect()
@@ -204,12 +226,15 @@ fn strike(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, pieces: &[Piece
     let mut around = w.map.hexes[at].neighbors.to_vec();
     around.sort_unstable();
     around.insert(0, at);
+    // 308: around a hex reached only through your ambassador (a troop beside it), agents come off only where your
+    // nodes reach; troops anywhere around it.
+    let troops_only = !in_reach(&w, g, seat, at);
     let mut removed = 0;
     while removed < max {
         let mut units = Vec::new();
         for &x in &around {
             for (k, name) in tokens_of(g, x, pieces) {
-                if adversary_piece(k) {
+                if adversary_piece(k) && (!troops_only || k == TROOP || in_reach(&w, g, seat, x)) {
                     for n in sizes(g.tokens(x, k), max - removed) {
                         units.push((k, x, n, batch(n, &name)));
                     }
@@ -252,7 +277,7 @@ pub(super) fn push(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, pieces
     let mut moved = 0;
     while moved < max {
         let mut units = Vec::new();
-        for (k, name) in tokens_of(g, from, pieces) {
+        for (k, name) in pushable(&w, g, seat, from, pieces) {
             for &x in &dests {
                 if may_arrive(&w, g, k, x) {
                     for n in sizes(g.tokens(from, k), max - moved) {

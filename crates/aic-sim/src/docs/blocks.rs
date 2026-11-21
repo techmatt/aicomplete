@@ -53,7 +53,7 @@ pub const HOUSE_TERMS: [(&str, &str); 26] = [
     ("Gather up to N", "pieces (ambassadors, agents, troops; botnets never move) onto the target, each from a hex next to it; you may stop at any piece (a strike, \"remove up to N on or next to it\", moves nothing)"),
     ("Push up to N", "pieces from the target, each to a hex next to it that you choose; you may stop at any piece"),
     ("Firewall", "a token on a hex: no agent lands or moves there (an Infiltrate's agent for it stays in the supply) and nothing corrupts or flips its site; it comes off at the end of the next adversary turn"),
-    ("In the next adversary turn, no X", "a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (an Infiltrate's agent for it stays in the supply; no Strike: no troop strikes that hex; no Corrupt: agents may land, but nothing there corrupts, flips or loses a node), and the tokens come off with the firewalls"),
+    ("In the next adversary turn, no X", "a Unity card's prohibition: a token on each hex where the condition holds when the card resolves; that step skips a hex with its token (an Infiltrate's or Escalate's agent for it stays in the supply, and a factory pushes none onto it; no Strike: no troop strikes that hex; no Corrupt: agents may land, but nothing there corrupts, flips or loses a node), and the tokens come off with the firewalls"),
 ];
 
 /// `3 credits, 1 energy`.
@@ -687,7 +687,7 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          still holding an agent takes one more, so you always know where the next wave lands. Agents pile up only where something lands them: \
          a city they land on holding {} corrupts, a hex with your node they land on holding {} \
          loses the node, and corrupted \
-         cities and uncountered threats fill the Discord track. Each time it \
+         cities, Fallout and the threats that print it fill the Discord track. Each time it \
          fills, it tips: a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, \
          you lose. Discord cards never destroy your nodes directly, only through the threats and corruptions \
          they bring: they deal more or stronger threats (Offensive \

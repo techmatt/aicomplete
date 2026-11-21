@@ -210,8 +210,14 @@ function aheadHtml(v: View): string {
     const x = findValue(v.globals, key);
     return x?.value ? `<span class="ahead ${cls}" data-value="${esc(x.key)}" data-scope="global" title="${esc(x.doc ?? '')}">${text}</span>` : '';
   };
-  return note('board.strike_ahead', 'strike', 'Strike ahead, in the next adversary Card beat: every troop destroys a node, research station or factory on or next to it')
-    + note('board.redeploy_ahead', 'redeploy', 'Redeploy ahead, in the next adversary Card beat: each troop not on or next to a corrupted city moves onto the nearest corrupted city');
+  // 308: the research row's Strike slot fires in the Income beat, not the Card beat (the hover says which); with no
+  // troop yet the notice says so (a Garrison may still bring one first).
+  const troops = v.hexes.some((h) => h.tokens.some((t) => t.kind === 'troop' && t.count > 0));
+  // 308: inside the Card beat (paused on a Strike's or an arrival's question) the icons are this round's card's, the
+  // next card not yet revealed: "ahead" under "not revealed yet" read as next round's.
+  const now = v.phase?.name === 'adversary.build';
+  return note('board.strike_ahead', 'strike', `${now ? 'Strike in this adversary turn' : 'Strike ahead, in the next adversary turn'}: every troop destroys a node, research station or factory on or next to it${troops ? '' : ' (no troop on the board yet)'}`)
+    + note('board.redeploy_ahead', 'redeploy', `${now ? 'Redeploy in this Card beat' : 'Redeploy ahead, in the next adversary Card beat'}: each troop moves onto its country's corrupted city nearest a player node or ambassador`);
 }
 
 /**
@@ -265,7 +271,9 @@ export function pipelineHtml(v: View): string {
   const boxes = [
     deckBox,
     // 184: "(face up)" headed an empty slot reading "not revealed yet".
-    cardBox(next, next?.visible.length ? 'Next round (face up)' : 'Next round', 'not revealed yet', 'next', aheadHtml(v)),
+    // 308: with the deck out too, no card comes: this is the cap's last round (the game is lost at the next Card beat).
+    cardBox(next, next?.visible.length ? 'Next round (face up)' : 'Next round',
+      deck && deck.count === 0 ? (v.outcome ? 'none: the deck ran out' : 'none: the deck is out, lost at the next Card beat') : 'not revealed yet', 'next', aheadHtml(v)),
     cardBox(cur, 'This round', 'no card this round', 'current'),
     // 293: last round's card stays face up: its Infiltrate types escalate this round.
     cardBox(lastRound, 'Last round','no card yet: nothing escalates', 'last', escalatesHtml(lastRound)),

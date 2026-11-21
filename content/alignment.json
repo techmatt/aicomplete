@@ -276,11 +276,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "In the next adversary turn, no Infiltrate lands on a site holding an Ambassador: its Agents stay in the supply.",
+   {"text": "In the next adversary turn, no Agent lands on a site holding an Ambassador: an Infiltrate's or Escalate's Agents stay in the supply, and a factory pushes none there.",
     "effects": [{"op": "prohibit", "step": "infiltrate", "where": "ambassador"}]},
-   {"text": "In the next adversary turn, no Infiltrate lands on a site on or next to an Ambassador: its Agents stay in the supply.",
+   {"text": "In the next adversary turn, no Agent lands on a site on or next to an Ambassador: an Infiltrate's or Escalate's Agents stay in the supply, and a factory pushes none there.",
     "effects": [{"op": "prohibit", "step": "infiltrate", "where": "by_ambassador"}]},
-   {"text": "In the next adversary turn, no Infiltrate lands on a site on or next to an Ambassador or a Node: its Agents stay in the supply.",
+   {"text": "In the next adversary turn, no Agent lands on a site on or next to an Ambassador or a Node: an Infiltrate's or Escalate's Agents stay in the supply, and a factory pushes none there.",
     "effects": [{"op": "prohibit", "step": "infiltrate", "where": "by_player"}]}
   ]
  },
@@ -290,11 +290,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "In the next adversary turn, on each hex on or next to an Ambassador, nothing corrupts or flips and no Node is lost to Agents.",
+   {"text": "Until the end of the next adversary turn, on each hex on or next to an Ambassador, nothing corrupts or flips and no Node is lost to Agents.",
     "effects": [{"op": "prohibit", "step": "corrupt", "where": "by_ambassador"}]},
-   {"text": "In the next adversary turn, on each hex on or next to an Ambassador or a Node, nothing corrupts or flips and no Node is lost to Agents.",
+   {"text": "Until the end of the next adversary turn, on each hex on or next to an Ambassador or a Node, nothing corrupts or flips and no Node is lost to Agents.",
     "effects": [{"op": "prohibit", "step": "corrupt", "where": "by_player"}]},
-   {"text": "In the next adversary turn, on each hex within 2 of an Ambassador or a Node, nothing corrupts or flips and no Node is lost to Agents.",
+   {"text": "Until the end of the next adversary turn, on each hex within 2 of an Ambassador or a Node, nothing corrupts or flips and no Node is lost to Agents.",
     "effects": [{"op": "prohibit", "step": "corrupt", "where": "near_player"}]}
   ]
  },
@@ -369,11 +369,11 @@
   "name": "Offensive",
   "side": "discord",
   "tiers": [
-   {"text": "Deal a tier-2 threat with its token on the lowest-numbered Node hex holding an Agent or a Troop (country by country).",
+   {"text": "Deal a tier-2 threat with its token on the lowest-numbered Node hex holding an Agent or a Troop (one hex: the lowest country first).",
     "effects": [{"op": "threat_at_node", "tier": 2}]},
-   {"text": "Deal two tier-2 threats with their tokens on the lowest-numbered Node hex holding an Agent or a Troop (country by country).",
+   {"text": "Deal two tier-2 threats with their tokens on the lowest-numbered Node hex holding an Agent or a Troop (one hex: the lowest country first).",
     "effects": [{"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]},
-   {"text": "Deal three tier-2 threats with their tokens on the lowest-numbered Node hex holding an Agent or a Troop (country by country).",
+   {"text": "Deal three tier-2 threats with their tokens on the lowest-numbered Node hex holding an Agent or a Troop (one hex: the lowest country first).",
     "effects": [{"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]}
   ]
  },

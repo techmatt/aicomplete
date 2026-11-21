@@ -136,14 +136,14 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
             "Strike ahead",
             strike as i64,
             Some(1),
-            "1: the next adversary Card beat shows a Strike icon (or the research track is about to reach its Strike slot): every troop destroys one player node, research station or factory on or next to it",
+            "1: a Strike comes in the next adversary turn: the next card shows a Strike icon (in its Card beat), or the research track reaches its Strike slot at the next check (in the Income beat); every troop destroys one player node, research station or factory on or next to it",
         );
         out.global(
             "redeploy_ahead",
             "Redeploy ahead",
             redeploy as i64,
             Some(1),
-            "1: the next adversary Card beat shows a Redeploy icon: each troop not on or next to a corrupted city moves onto the nearest one",
+            "1: the next adversary Card beat shows a Redeploy icon: each troop moves onto its country's corrupted city nearest a player node or ambassador (one already there stays)",
         );
     }
     // The guarding rule, said to the seat it stops: the corrupted sites in its reach that only a troop keeps it
@@ -162,7 +162,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
             out.seat(
                 s,
                 "liberate_refused",
-                "Liberate refused",
+                "guarded sites Liberate can't take",
                 refused,
                 None,
                 "corrupted sites in your reach, or holding your ambassador, that can't be liberated: a troop is on or next to each (remove the troop or push it away first)",
@@ -192,7 +192,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         }
         for t in strike_targets(w, g, h) {
             let what = troop_targets_on(w, g, t).iter().map(|k| piece_name(k)).collect::<Vec<_>>().join(", ");
-            let when = if strike { "a Strike is shown: it strikes in the next adversary Card beat" } else { "no Strike is shown yet" };
+            let when = if strike { "a Strike is shown: it strikes in the next adversary turn" } else { "no Strike is shown yet" };
             let doc = format!(
                 "adversary troop{s} at {} can strike {what} at {}: {when} (one target a troop, the players choose)",
                 hex_name(w, h),
@@ -268,7 +268,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         out.seat(
             s,
             "node",
-            "node on the board",
+            "nodes on the board",
             node_count(g, s),
             None,
             "your nodes: you act within 1 of it, and claim sites on or next to it",
@@ -304,7 +304,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         out.seat(
             s,
             "node_track",
-            "node left on the economy track",
+            "nodes left on the economy track",
             left as i64,
             None,
             "nodes still on your AI board's economy track (the card-play track shows on the board)",

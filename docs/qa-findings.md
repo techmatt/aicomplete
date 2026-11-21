@@ -5,7 +5,7 @@ faults past hunts kept finding. Fixed findings, never to re-report: F1–F100 (0
 1617d75:docs/qa-findings.md`; then each hunt's `fixed.md` and `deferred.md` under `experiments/results/`: 099 (r38,
 F101 on), 118 (r46, F132, D43, W19 on), 145 (r59, F165, D57 on), 169 (r72 → 73, F205, D72 on), 184 (r77 → 78, F225,
 D77, W28 on), 197 (r86, F272, D88, W29 on), 235 (r106, F289, D92, W31 on; 238 fixed D92-D96, D98, D100, D103-D105, r108), 261 (r121 → r122, F322, D106, W34 on; 265 fixed D108, D109, D112, D115, D116; 266 D117), 285 (r135 → r136, F379,
-D120 on; fixed D102; 286 closed D121, D122, D124, D125, D126 (restated), D128, D130, D131, D132 at r137; 288 fixed D106 (built in) and D120 at r138; 289 closed D123, D127, D129, D133 (the troops prompt's words to D85); 305 closed D85, D87, D135 and D50's picks, D52 to won't fix; 307 closed D84 (Focus cut, 206) and D134 (Spill and Grow gone, r140), and dropped W17 and W33 (their cards gone)). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
+D120 on; fixed D102; 286 closed D121, D122, D124, D125, D126 (restated), D128, D130, D131, D132 at r137; 288 fixed D106 (built in) and D120 at r138; 289 closed D123, D127, D129, D133 (the troops prompt's words to D85); 305 closed D85, D87, D135 and D50's picks, D52 to won't fix; 307 closed D84 (Focus cut, 206) and D134 (Spill and Grow gone, r140), and dropped W17 and W33 (their cards gone)), 308 (r149 → r150, F424, D136 on). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
 
 ## Checkers
 
@@ -54,6 +54,8 @@ Each hunt found most of its faults in the same places. Look there first:
   pricing notes, the card viewer's export, e2e lanes and read scripts on the old rule. List every surface.
 - **261's**: a rider read after the step it rides on (Peer Review's paid for its own free station); a lane that
   never loaded (e2e:researcher, a SyntaxError for eight items); an agent fix that weakened the judge (read paired).
+- **308's**: a reach rule (a troop by your ambassador) honored by the target but dropped by the op's own hex list (Push,
+  Kettle); "here" falling back to another location's token; a view flag read inside the beat it forecasts.
 - **285's**: a country guard checked where a line starts, not where it lands (hex neighbors cross borders); a note
   read after an arrival check emptied the hex; a check's fixture copy missing a file a later item reads.
 
@@ -89,6 +91,12 @@ Each hunt found most of its faults in the same places. Look there first:
 | D114 | cards | Five liberate cards' pricing notes use pre-r113 keeps. | Restate. **Pick**. |
 | D118 | rules | The Liberated marker binds Corrupt lines only, not cards that take a site. | Leave; guard. **Matt's call**. |
 | D119 | cards | Faces against house terms: node "Harden", Faraday Yard's box, two-way wordings. | One card-words item. **Pick**. |
+| D136 | rules | A cleanse frees a station or factory but leaves its agents: The Nuclear Option's claim rider can't take it (D80's "free"). | Agents off as Liberate, a bump; word it; refuse it. **Matt's call** (pick: agents off). |
+| D137 | cards | Siegebreaker (2) and Peacekeeping (3) target a city with more guards than they remove: the sink pays for nothing. | Offer only cities it clears, a bump; leave. **Matt's call**. |
+| D138 | rules | At a research loss Discord can read 26/16: the cities' Discord lands in the step the game ends, before a tip. | Leave (rules-correct); a ruling. **Matt's call**. |
+| D139 | viewer | The cap's last round still draws Escalate badges and "completes next compute step". | Suppress with deck and next empty. **Pick**. |
+| D140 | viewer | A Redeploy reads "+2 troops, -2 troops"; two troops on a hex ask one Strike question twice, unnumbered. | Name a move; "(2nd of 2)". **Pick**. |
+| D141 | agents | The push and strike heuristics count agents on a hex reached only through an ambassador (troops only there, F424). | Mirror `pushable` in `agents/moves.rs`. **Pick:** an agents item. |
 
 ## Won't fix
 

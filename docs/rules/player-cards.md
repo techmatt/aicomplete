@@ -92,7 +92,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   | Beamline Liberation | antimatter, Science | event | gain 7 research cubes |
   | Reactor Retooling | antimatter, Industry | event | +3 chip income |
   | Popular Uprising | Followers | tier-1 building | Action: add 1 Follower here, OR pay 4 Followers to liberate, again and again |
-  | Siegebreaker Reactor | antimatter, Power (needs 3) | building | Action: first removes 2 troops on or next to the city |
+  | Siegebreaker Reactor | antimatter, Power (needs 3) | building | Action: first removes 2 troops on or next to the city; rescues only if no guard is left |
   | Fusion Torch Array | energy (5), Power (needs 3) | building | Action: rescue the city |
 
   They cost 0-11 credits, priced against the Liberate action's bill ([card-pricing.md](../card-pricing.md), *The

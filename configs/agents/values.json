@@ -196,7 +196,7 @@
     "copy_income": {"credits": 2, "per": "105: a copied building income, a round (about a typical building's Each round)"},
     "reuse": {"credits": 3.333, "per": "105: another building's Action used again (about a typical Action's use)"},
     "discard_hand": {"credits": 1, "per": "105: a card discarded (rates.hand_discards a use): the resource at its rate less rates.dead_card (a card you would sell)"},
-    "redeploy": {"credits": -2.333, "per": "r141: a Redeploy icon: each troop not on or next to a corrupted city moves onto the nearest one (about half a troop's placing: it guards a city again)"},
+    "redeploy": {"credits": -2.333, "per": "r144: a Redeploy icon: each troop moves onto its country's corrupted city nearest a player node or ambassador (about half a troop's placing: it guards a city again)"},
     "standing_troops_bonus": {"credits": 0, "per": "a board line no content prints since 267 (it was the d2 troop surcharge), never a player's"},
     "threat_compute": {"credits": 0, "per": "the adversary board's compute per uncountered threat (146), never a player's"},
     "adversary_factory": {"credits": -10, "per": "adversary factory built (134's anchor)"},

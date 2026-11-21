@@ -13,7 +13,7 @@
   ],
   "research": [
     "War Research",
-    "Every 2 cubes a country on the track (4 cubes with two countries, 6 with three) are spent to advance the marker one slot; the slot's icon happens once. Slot 7: the players lose."
+    "Every K cubes on the track (the level line's cubes a country, times the countries) are spent to advance the marker one slot; the slot's icon happens once. Slot 7: the players lose."
   ],
   "escalation": [
     "Stage I: 1 threat a country, tier 1",
@@ -56,7 +56,7 @@
     {
       "level": 2,
       "name": "War Footing",
-      "flavor": "Every unanswered strike feeds the war machine.",
+      "flavor": "Every unanswered threat feeds the war machine.",
       "setup": [
         "Compute income 5 a country",
         "Research track: a slot every 2 cubes a country"

@@ -270,8 +270,11 @@ function liberateHtml(v: View, s: number): string {
     const name = `${countryName(v, h.country)} #${h.number}`;
     return `<span class="plib-site${why.length ? ' blocked' : ' ok'}" data-hexes="${esc(hexKey(h.hex))}" title="${esc(doc)}">${esc(name)} (${kind}): ${Number.isFinite(bill) ? `${bill} ambassadors, ${Math.min(here, bill)} here + ${Math.max(0, Math.min(supply, bill - here))} from supply` : ''}${why.length ? ` · <b>blocked:</b> ${esc(why.join('; '))}` : ' · <b>ready</b>'}</span>`;
   });
-  const bills = ['city', 'station', 'factory'].map((k) => `${price(k)} a ${k}`).join(', ');
-  return `<span class="plib" title="${esc(doc)}"><span class="what">Liberate</span>${lines.length ? lines.join('') : `<small>move a ready ambassador onto a corrupted site, then act with it: ${esc(bills)} ambassadors (those on the site first, then your supply); no agent on it, no troop on or next to it</small>`}</span>`;
+  // 308: "3 a city, 3 a station, 3 a factory ambassadors" read wrong: one price when every site's is the same.
+  const prices = ['city', 'station', 'factory'].map((k) => price(k));
+  const bills = prices.every((p) => p === prices[0]) ? `${prices[0]} ambassadors at any site`
+    : ['city', 'station', 'factory'].map((k, i) => `${prices[i]} ambassadors a ${k}`).join(', ');
+  return `<span class="plib" title="${esc(doc)}"><span class="what">Liberate</span>${lines.length ? lines.join('') : `<small>move a ready ambassador onto a corrupted site, then act with it: ${esc(bills)} (those on the site first, then your supply); no agent on it, no troop on or next to it</small>`}</span>`;
 }
 
 /** Buildings in slots (Use on each), then every other card group of the seat as generic chips. */
@@ -300,8 +303,8 @@ function threatControls(root: HTMLElement, ctx: PlayerCtx, mine: Action[]) {
     const el = root.querySelector(`.threat[data-card="${CSS.escape(id)}"]`);
     if (!el) continue;
     const label = (a: Action) => {
-      // 261: "+1 credit", not "+1 credits".
-      if (a.type === 'pay') return `+${amount(Number(a.amount), String(a.resource))}`;
+      // 261: "1 credit", not "1 credits". 308: "pay", not "+": beside a card's "Sell (+1 credit)" the + read as a gain.
+      if (a.type === 'pay') return `pay ${amount(Number(a.amount), String(a.resource))}`;
       if (a.type === 'withdraw') return `take back ${String(a.resource).replace(/_/g, ' ')}`;
       return actionLabel(a, false, true, ctx.cx).replace(/^counter [^:]*: ?/, 'counter: ');
     };
@@ -424,6 +427,10 @@ function summary(events: Frame['events']): string {
   const tok = new Map<string, [number, number]>();
   for (const [k, d] of perHex) {
     const t = k.slice(0, k.lastIndexOf('@'));
+    // 308: a tipped marker is a state of the seat's ambassadors on its hex, not a piece ("-2 tipped ambassadors" at
+    // cleanup read as two lost): counted only where the hex's ambassadors stayed (stood up, or tipped where they
+    // stand); one that left or arrived tipped is already in the ambassadors' own count.
+    if (t.startsWith('tipped:') && (perHex.get(`ambassador:${t.slice('tipped:'.length)}${k.slice(k.lastIndexOf('@'))}`) ?? 0) !== 0) continue;
     const [up, down] = tok.get(t) ?? [0, 0];
     tok.set(t, d > 0 ? [up + d, down] : [up, down + d]);
   }
@@ -438,8 +445,15 @@ function summary(events: Frame['events']): string {
     const plural = Math.abs(n) === 1 || /s$/.test(head) ? head : /[^aeiou]y$/.test(head) ? `${head.slice(0, -1)}ies` : `${head}s`;
     return `${plural}${tail}`;
   };
-  const pieces = [...tok].flatMap(([k, [up, down]]) => [up ? `+${up} ${short(k, up)}` : '', down ? `${down} ${short(k, down)}` : ''].filter(Boolean));
-  const parts = [...notes, ...(pieces.length ? [`map: ${pieces.join(', ')}`] : [])];
+  const tipped = (k: string, up: number, down: number) => {
+    const seat = k.slice('tipped:'.length);
+    const n = (x: number) => `${Math.abs(x)} ambassador${Math.abs(x) === 1 ? '' : 's'} (seat ${seat})`;
+    return [up ? `${n(up)} used` : '', down ? `${n(down)} ready again` : ''].filter(Boolean);
+  };
+  const pieces = [...tok].flatMap(([k, [up, down]]) => k.startsWith('tipped:') ? tipped(k, up, down)
+    : [up ? `+${up} ${short(k, up)}` : '', down ? `${down} ${short(k, down)}` : ''].filter(Boolean));
+  // 308: a note's own closing period goes before the "; " joining it to the next part ("...country by country).;").
+  const parts = [...notes.map((n) => n.replace(/\.$/, '')), ...(pieces.length ? [`map: ${pieces.join(', ')}`] : [])];
   // 265 (D115): no raw engine events ("seat 0 +1 energy", "cards moved: ..."): W5 accepts those in the debug
   // view's log only.
   if (parts.length) return parts.join('; ');

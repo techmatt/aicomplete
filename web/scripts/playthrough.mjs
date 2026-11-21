@@ -84,8 +84,9 @@ const CHECKS = `(() => {
       if (tipped) r.tippedAmbassador = any('#board .token[data-token^="tipped:"] .tipped') ? true : 'a tipped ambassador in the view is not drawn tipped';
       if (aic.legal.some((a) => a.type === 'standard' && a.act === 'liberate' && a.seat === aic.focus)) r.liberateOffered = any('#p-bar button.a-standard[data-action*="liberate"]') ? true : 'Liberate is legal with no button';
       const bill = any('#player .plib');
-      // The bill as the rules print it (3 a city: Liberate at 3), a site's own line or the rule's.
-      if (bill) r.liberateBill = /3 ambassadors, \\d+ here \\+ \\d+ from supply|3 a city/.test(bill.textContent) ? true : 'the Liberate line reads "' + bill.textContent + '"';
+      // The bill as the rules print it (3 at any site: Liberate at 3), a site's own line or the rule's (308: one price
+      // for every site, "3 ambassadors at any site").
+      if (bill) r.liberateBill = /3 ambassadors, \\d+ here \\+ \\d+ from supply|3 ambassadors (at any site|a city)/.test(bill.textContent) ? true : 'the Liberate line reads "' + bill.textContent + '"';
       const blocked = any('#player .plib .blocked');
       if (blocked) r.liberateBlocked = true;
       const powers = [...document.querySelectorAll('#player .ppowers.node li')].filter(vis);

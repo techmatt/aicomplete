@@ -84,7 +84,7 @@ pub fn beat_of(phase: &str) -> Option<&'static str> {
 }
 
 const PHASES: &[PhaseSpec] = &[
-    PhaseSpec::auto("build", "the Card beat after the threats: Escalate (each site of last round's type that holds an agent takes 1 more), the board's one rule, Infiltrate X (agents on each named site), Strike (every troop destroys a player piece on or next to it), Redeploy (troops not on or next to a corrupted city move onto the nearest one) and the card's other lines; each arrival checks the site it lands on"),
+    PhaseSpec::auto("build", "the Card beat after the threats: Escalate (each site of last round's type that holds an agent takes 1 more), the board's one rule, Infiltrate X (agents on each named site), Strike (every troop destroys a player piece on or next to it), Redeploy (each troop moves onto its country's corrupted city nearest a player node or ambassador) and the card's other lines; each arrival checks the site it lands on"),
     PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead (its Infiltrate sites shown: they escalate the round after)"),
     PhaseSpec::auto("event", "the face-up event card becomes this round's (none left: the adversary wins)"),
     // 178 (amendment 8112): its own phase, so a project's prompt doesn't follow the reveal's hidden draw in one
@@ -212,7 +212,8 @@ pub fn node_lost(w: &World, g: &GameState) -> bool {
 }
 
 /// r141: whether the card of the next Card beat prints `line` (a Strike or a Redeploy icon, shown a round ahead):
-/// this round's card until its Card beat has run, then next round's, face up in `NEXT` from the reveal.
+/// this round's card until its Card beat has run, then next round's, face up in `NEXT` from the reveal (inside the
+/// beat, paused on a question, its own lines: the viewer says "this Card beat").
 pub fn line_ahead(w: &World, g: &GameState, line: &Op) -> bool {
     let built = g.phase_index("adversary.build").is_some_and(|i| g.phase > i);
     let pile = if built { NEXT } else { round_pile(g) };
@@ -734,7 +735,7 @@ impl Module for Adversary {
             };
             out.global(
                 &format!("prohibit_{}", step.name()),
-                &format!("no {name} (round)"),
+                &format!("no {name} in round"),
                 round,
                 None,
                 &format!("a Unity prohibition: in round {round}'s adversary turn, {what}"),

@@ -44,7 +44,8 @@ ties, the lowest hex number. A location type with no such site left in the count
 (r139):** a dealt threat with no such site of any of its types puts its one token on the country's lowest-numbered
 city, one not the adversary's first; there none of its located lines acts, whatever its types. The token still marks who is near and where its agent lands. A located line
 ("the factory here") acts only on its own kind of hex (r137, D132): with no token of that kind, as on the fallback
-city or a first token dealt onto a node hex of another kind (Offensive), it does nothing (184).
+city or a first token dealt onto a node hex of another kind (Offensive), it does nothing (184). A line measured
+from the token ("nearest here", Fallout next to it, a botnet's nearest other piece) still measures from it (286).
 
 **Near.** Every threat card prints, above its text, "Payers: any player with a Node or Ambassador on or next to a
 token. Target: this country's player." A player is **near** a threat with one of their nodes or ambassadors on or next to any of its tokens. Only a

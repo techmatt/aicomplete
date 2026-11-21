@@ -345,7 +345,9 @@ function renderPhase() {
   if (v.outcome) {
     const o = v.outcome;
     // The sentence; the reason code (what `--save-when` takes) in its hover (235: "on the board node" read as a typo).
-    status = `<span class="outcome ${o.won ? 'won' : 'lost'}" title="reason code: ${escapeHtml(o.reason)}">${o.won ? 'WON' : 'LOST'} in round ${o.round}: ${escapeHtml(o.detail)}</span>`;
+    // 308: a deck-out ends the game as the next round's Card beat finds no card: the cap's last round was the one before.
+    const when = o.reason === 'deck_empty' ? `after round ${o.round - 1}, the round cap` : `in round ${o.round}`;
+    status = `<span class="outcome ${o.won ? 'won' : 'lost'}" title="reason code: ${escapeHtml(o.reason)}">${o.won ? 'WON' : 'LOST'} ${when}: ${escapeHtml(o.detail)}</span>`;
   } else status = ''; // who is to act is in #prompt
   // 305: the round cap beside the round: the adversary's cards left are the rounds left after this one.
   // The count holds the face-up next card too: before this round's Card beat turns it into this round's card, it is
