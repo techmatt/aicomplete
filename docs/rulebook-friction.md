@@ -1,61 +1,70 @@
-# Rulebook friction (as of rules revision 125)
+# Rulebook friction (as of rules revision 150)
 
-*What the game costs a human at the table, ranked, with the change that would cut it. Matt's test: a rule that can't
-be said well is a bad sign about the rule. Only what **wording can't fix** stays open here. 268 rebuilt this page
-from a hand-play pass (a d2 game resolved in full from [rulebook.md](rulebook.md) and [player-aid.md](player-aid.md),
-and a d4 spot check: the log and per-round counts are in `experiments/results/268_table_cost_audit/`).*
+*What the game costs a human at the table, ranked, with the options that would cut it, for Matt to rule on. Matt's
+test: a rule that can't be said well is a bad sign about the rule. Wording the hand-play could fix is already fixed in
+[rulebook.md](rulebook.md) and [player-aid.md](player-aid.md); what stays here needs a rules, component or content
+change. 309 rebuilt this page after the overhaul, from a hand-play pass: a d2 game resolved in full from the rulebook
+and aid alone, and a d4 spot check of rounds 1, 3 and 5. The logs, errors and per-round counts are in
+`experiments/results/309_rulebook_friction_refresh/`.*
 
 **How it's ranked.** Cost is how often a player meets the rule (every round, most games, rarely) times how much it
 asks each time: a lookup, arithmetic on a printed number, something to remember with nothing on the table to show
 it, a check run for every site or piece, components moved, or a result a player wouldn't predict. **Load** is how
-many such items a player carries **at once** at the peak: easy rules that are each fine alone still add up.
-**Fix** names the kind of change: **P** a rules change, **W** wording or layout, **A** the player aid, **C** a
-component.
+many such items a player carries **at once** at the peak. **Fix** names the kind of change: **P** a rules change,
+**W** wording or layout, **A** the player aid, **C** a component or card face. **Ruling** names the
+[rulings.md](rulings.md) line a row's options touch: a pick that crosses one is Matt's call before it is built.
 
-**The table cost at r125**, per round (two practised players, 3 s a component, 10 s a check, 20 s a lookup, 15 s a
-decision):
+**The table cost at r150**, per round, from the hand logs (two practised players: 3 s a component, 10 s a check, 20 s
+a lookup, 15 s a decision, 5 s a modifier):
 
 | Level | Lookups | Modifiers | Memory (peak, both seats) | Per-site checks | Components | Decisions | Minutes |
 |---|---|---|---|---|---|---|---|
-| d2 (8 rounds) | 13-17 | 12-61 | 12-22 | 81-227 | 127-367 | 40-80 | 40-85 (a game: about 490) |
-| d4 (rounds 1, 5, 10) | 14-24 | 17-44 | 10-12 | 101-250 | 205-560 | 49-87 | 45-103 (a game: over 12 hours) |
-| Setup | 5-6 | 7-8 | 0 | 11-14 | 85-100 | 2-3 | 9-12 |
+| d2 (7 rounds) | 11-16 | 30-42 | 4-6 | 51-75 | 92-165 | 31-44 | 29-39 (a game: about 250) |
+| d4 (rounds 1, 3, 5) | 6-16 | 15-27 | 2-5 | 57-113 | 123-204 | 35-40 | 25-44 |
+| Setup | 0-4 | 2-12 | 0 | 6-80 | 52-122 | 1-2 | 4-22 (d4's counted sorting the threat decks card by card) |
 
-A game runs **6-8 hours at d2 and over 12 at d4**: the largest finding. Most of it is bookkeeping volume (checks that
-find nothing, compute, agents, troops, failed city builds) and the Builder's late action phase, not rules held in mind.
-At d4 the load held in mind is no higher than at d2; the volume is (compute 2-4×, troops up to 25 a round).
+The traced yardstick (`scripts/bench/breakdown.py` on 268's seeds, judge games, the hand log's lookups and modifiers
+modeled in): **24.3 minutes a round at d2 and 23.4 at d4; a game 175 and 166 minutes** (7.2 and 7.1 rounds). At r125
+the hand play read 40-85 minutes a round and about 8 hours a game; 298's yardstick read 209 / 224 minutes at r143. The
+overhaul cut the per-site checks by about 70% (no march, war, growth or site sweeps) and memory from 12-22 items to
+4-6 (used markers, the tipped ambassador). What is left is **volume, not rules held in mind**: the adversary's Card
+beat (about 26 checks a round, most finding nothing), the action phase (9.8 minutes a round, 40% of the table), and
+at d4 the compute and threats that come twice as fast. The hand count runs a third above the yardstick: it counts
+every production recount and threat-token test the trace leaves out.
 
 ## The table
 
-| # | Rule | Met | What it costs | Load | Fix | Smallest fix still open |
+| # | Rule | Met | What it costs | Load | Options (pick **bold**) | Ruling |
 |---|---|---|---|---|---|---|
-| 1 | Builder's late action phase ([§7](rulebook.md#7-cards), [§20](rulebook.md#20-powers-and-capstones)) | every round from round 4 | 9-16 plays a round, each through a rebate, a building discount, an insight discount and a tag count that moves as cards are played and sacrificed: about 20 modifiers a round, a third of table time | 6 tag counts + 3-4 discounts | **P**, **C** done | 274: tag dials, one a tag (§2). Open: no rebate stacking with a discount on one play (cards) |
-| 2 | Once-a-round uses ([§5](rulebook.md#5-your-ai-board), [§8](rulebook.md#8-the-action-phase)) | every round | powers, building Actions, converters, cities bought, Vigil: nothing on the table shows which are spent (an ambassador's one action shows on the piece, ready or tipped) | 12-22 (d2 round 6: Builder 12, Protector 10) | **A** done, **C** done | 268: the aid's *Once a round* list. 274: a used-marker space on each power, building slot and converter, a bought chip on a city (§2's pieces, the aid's *Tracks and markers*) |
-| 3 | City growth and building ([§9](rulebook.md#9-production)) | every round | 6 cities × 8 rounds of grow tests; builds of 4 nested tests; 5 cities sat at 3 chips from round 5, the same failed search every round; 3 facilities built in 8 rounds | 1 | **W** done, **P** | 268: a city whose chips wait is skipped (chips turned over) until a facility next to it is built or destroyed or a hex within 2 frees. Open: a city that can't build loses its chips, or a blocked or corrupted city doesn't grow |
-| 4 | Natural corruption and the node check ([§6](rulebook.md#6-the-adversarys-turn)) | every round | about 35 checks a round (13 sites, 13-21 node hexes); fired 0 times in the d2 game | 0 | **W** done | 268: "look only at hexes holding 2 or more agents" |
-| 5 | Compute ([§17](rulebook.md#17-projects)) | every round | 12-29 compute onto projects a round at d2, 38-81 at d4; three sources at three times; both hand-players misread the running total | 0 | **W** done, **C** done | 268: compute as a marker; 274: a compute track beside each project slot (§2). Open: at d4, compute in units of 5 (**P**) |
-| 6 | Threat dealing ([§10](rulebook.md#10-threats), [§18](rulebook.md#18-threat-details)) | every round | at r125, 45 threat cards turned in a d2 game and the nearest node measured for each threat: both gone at r139 (the dealt card is the next one of a deck built at setup; the harm hits the country's player); 7 threats paid at 0 by jams | 1-2 waiting or delayed threats | **P**, **A** | The jam floor is an off switch (Force Protection Order fails give / get). The r139 cost is unmeasured |
-| 7 | The march ([§11](rulebook.md#11-troops), Wall) | every round from mid-game | at r138, a shortest path around Wall hexes per troop; d4 round 10: 25 troops, 22 steps, 15 tie choices (13 identical): gone at r141 (no march: troops garrison and strike on a Strike icon; the r141 cost is unmeasured) | 0 | **A** done, **P** done | 268: the aid's *The march*; 274: troops on one hex march as one stack, one choice (strikes one troop each) |
-| 8 | Income each round ([§9](rulebook.md#9-production) step 5) | every round | 7-10 printed lines a player re-added every round | 0 | **C** done | 274: income tracks, one marker a resource (§2, §9 step 5, the aid) |
-| 9 | Corrupt numbers ([§6](rulebook.md#corruption), [§21](rulebook.md#21-difficulty)) | every round | up to three modifiers on one printed number (city 5 → 3 from level 1 → 2 on a "(1 fewer)" line → 3 with a Liberated marker) | 3 | **A** done | 268: the aid's *Corrupt numbers* at each level |
-| 10 | City energy ([§9](rulebook.md#9-production) step 2) | every round | at r125 hosting was a matching problem and Buy energy depended on it: both cut at r139 (every free, unblocked city pays every player beside it, read off the energy income track) | none | — | None open |
-| 11 | Unity's two tables ([§12](rulebook.md#tipping), [§14](rulebook.md#14-winning-and-losing)) | most games, late | at r138, strength steps at 3 and 6, purge steps at 3 and 7: two tables, two band edges, read at each tip; the purge steps are gone at r141 (the win is no corrupted city), leaving the strength steps | 2 | **A** done, **C** done | 268: the aid's *Tip strips*; 274: a tip track per side, each space printing its strength and the purge (§2) |
-| 12 | The Income beat at d4 ([§6](rulebook.md#the-turn-two-beats), [§17](rulebook.md#17-projects)) | most rounds at d3-d4 | round 5: three projects resolved, a Discord tip, four extra threats and a muster before anyone acts; the order spans §6, §12, §17 | 3-4 pending effects | **A** | An Income-beat flow card: six numbered steps, tips checked after each project |
-| 13 | Projects ([§17](rulebook.md#17-projects)) | most rounds | "the X with the most agents on or next to it" counts seven hexes a candidate (Asset Seizure: 21 reads) | 0 | **P** done | 274: a project counts the hex only, as Night Raid |
-| 14 | Card faces | every round | four faces below the 7.5 pt floor (Popular Uprising 5.4, Positron Storage Ring 5.8, Retained Earnings 6.3, Particle Accelerator 6.3); long tier-2 texts (Liaison Corps, Power to the People, Open Source Uprising) | 0 | **W** | Shorter op wording for those four (a content pass with `npm run cards:fit`); split Liaison Corps' line |
-| 15 | Event lines ([§6](rulebook.md#the-turn-two-beats)) | every round | event faces print no icon row; each line read in words | 0 | **C** | Draw the missing glyphs (Blackout; r141's Strike and Redeploy) and give event faces an icon row |
-| 16 | Rulebook length | every round | 13,700 words; 13-24 lookups a round, most in §6, §9, §10, §15, §17 | 0 | **A** done | 268: the aid now carries the round, once-a-round list, tip strips, corrupt numbers, the march, ambassador spends and growth |
+| 1 | Escalate and Commandeered Plants ([§6](rulebook.md#the-turn-two-beats)) | every round from round 2 | two "holds an agent" scans of the same sites, back to back: d2 about 85 checks a game for 4 hits; d4 29 checks in 3 rounds for none | 0 | **P: fold the board's rule into Escalate** ("factories always escalate, whatever last round's type"): one scan; P: Commandeered Plants fires only when last round's card didn't name factories; A: an aid line "scan for agents, not for sites" (no rules change) | *Adversary and harms*, Spine ("Boards differ by ... one rule") and Card-driven ("checks on arrival, never a board sweep"): both lines are sweeps |
+| 2 | Threat location tokens ([§10](rulebook.md#10-threats), [§18](rulebook.md#18-threat-details)) | every round | "the site of its type with the most agents, tie the lowest" for each type of each threat: up to 13 checks a round, 17 threats a d2 game, 23 in 6 d4 rounds | 0 | **P: the lowest-numbered site of each type not yet the adversary's**, as event, project and Discord lines pick; A: a placement order on the aid | *Adversary and harms*, Spine: "no 'most agents' picks" (293 took them off the event cards; threat tokens kept theirs) |
+| 3 | The action phase's discounts ([§7](rulebook.md#playing-a-card)) | every round from round 4 | each tier-2 keep 2 modifiers (keep upgrade, then 1 off per 2 Science); the Industry discount a second reading of a dial nothing prompts (a d4 error); about 20 keep modifiers a game | 2-3 | **C: discount pips on the tag dials** (Science at 2, 4, 6; Industry at 3, 6, 9) so the dial shows the discount; A: a keep-cost row on the aid (3, −1 upgrade, −1 per 2 Science, floor 0); P: Science discounts plays only, not keeps | *Table time and the card economy*: discounts about TM's count (C and A keep them); the P option changes *Resources and engines*, Insight's keep prices |
+| 4 | The compute step at d3-d4 ([§17](rulebook.md#17-projects)) | most rounds at d4 | 32-66 compute a round; two projects resolve in one step in rounds 3, 5 and 6, each a resolve, slide and refill with a remainder held in mind | 1 | **A: "move the remainder onto the next project's track before you slide"** (one line on the aid's round); P: at most one project resolves a step, the rest waits (a slower adversary at d4: a rules item to read); P: compute in units of 5 at d4 | none (*Difficulty*'s bands if P) |
+| 5 | Unity tip cards ([§12](rulebook.md#the-cards)) | 8 tips a d2 game | each tip a map-wide count; 5 of the 8 drawn did nothing (Neighborhood Watch, Peacekeepers, Decommission, Global Coalition, Civil Defense): read, counted, zero | 1 | **P (content): each Unity card prints a small floor when its condition counts 0** (say 2 Unity or 2 credits each player); C: one strength a row, the current tip's strength marked; W: shorter faces (three 150-200-character strengths) | *Unity, Discord and winning*: fear-card shape, board conditions (a floor keeps both) |
+| 6 | Threats taking effect ([§10](rulebook.md#10-threats)) | every round; 5-6 a round at d4 | d4 rounds 3 and 5: 12-13 checks and 38-44 components; three on one hex lost an anchor agent (an error); 5 part-payments put on and handed back for nothing | 1-2 | **A: a two-step row a threat on the aid ("its harm, then 1 agent on its anchor")**; P: put resources on a threat only to complete a way (pooled in one go); C: an anchor mark on the first token | *Adversary and harms*, Threats (locked): who may pay is unchanged by either |
+| 7 | Production ([§9](rulebook.md#9-production)) | every round | "read it from the tracks" assumes few changes; with nodes placed every round the hand player recounted 5 cities × 2 seats and every station (14-19 checks), and missed a city across the border (a d4 error) | 0 | **A: the node powers' aid line says "move your energy marker for each free city next to the new node"**, so the track stays right as nodes go down; C: a city-energy pip by each city, taken when a node goes next to it | *Resources and engines*, City energy ("on the energy income track"): the pick keeps the track; the C option adds a piece beside it |
+| 8 | Corrupted factories and zone arrows ([§6](rulebook.md#one-output-a-corrupted-site)) | most rounds; 7 factories in a d4 round | two steps a factory (push along the arrow, then make 1 if empty); two zones (Horizon 11, Cintamani 14) touch two cities and the hand players had no arrow to read | 0 | **C: print each zone's arrow and "push, then make 1" on the zone** (the map's print; the arrow's tie is now in §2); P: a factory only pushes (no new agent while one is on it) | *Adversary and harms*, Spine: "factory 1 agent ... pushed next round along its zone's printed arrow" |
+| 9 | Ambassadors on the map ([§8](rulebook.md#ambassadors-one-action-a-round)) | every round | about 30 moves a game; which arrive ready (from the supply, placed, converted) took a lookup; 9 Infiltrate agents landed on parked ambassadors, so each landing site is a two-piece check | 1 (tipped pieces show the rest) | **A: one aid line "arrives ready: from your supply, placed by a card or power, converted"**; C: a colored base for a piece that arrived this round | *Boards and pieces*, Ambassador actions: "It arrives ready (to try: say how it played...)". How it played: no hand-play error came from it, but which pieces arrive ready (supply, card, convert) took a lookup; arriving spent would end same-round acts from the supply (not measured here) |
+| 10 | Once-a-round uses ([§5](rulebook.md#5-your-ai-board), the aid's *Once a round*) | every round | memory 4-6 at the peak (12-22 at r125): the used markers carry the rest | 4-6 | **Keep the used markers and amend the ruling**; remove them (back to memory: 268 counted 12-22 items) | *Rulebook and audits*: "Rejected: ... used-markers (powers are implicitly once a round)", but 274's markers are in the rules, rulebook and aid |
+| 11 | Card faces | every round | the hand-play's card errors: an "A, OR B" Action whose halves have no names (Safehouse Network), a building that triggers itself (Agency Directorate), Incursion II's extra threat with no tier or country, Open Market's "next 3 kept free" with no token | 0 | **W (content): name the halves, print "(this card counts)" on self-triggers, give Incursion II its tier and country**; C: tokens for lasting card effects | none (a content pass with `npm run cards:fit`) |
+| 12 | Level rules ([§21](rulebook.md#21-difficulty)) | every round at d1+ | 4 lookups in 3 d4 rounds (2 a city, War Footing, Arms Race) | 1 | **A: done (309): the aid's *Your level*** | — |
+| 13 | Rulebook length | every round | 15,600 words; 100 lookups in a 7-round game, flat at 11-16 a round (each round brings a new kind of thing) | 0 | **A: a one-page adversary-turn checklist** (Card: threats, Escalate, the board's rule, Infiltrate, icons; Income: outputs, compute, research), expected to take about 5 lookups a round; W: cut Part 2's restatements of Part 1 (§15 of §6, §19 of §11) | none |
 
-**Errors the hand-players made**, each a rule hard enough to get wrong (fixed in words by 268 unless marked): a
-liberate card on a site with agents (§8 against the aid's Liberate); Fortify hardening a neutral facility (§20); a
-waiting threat forgotten in step F (§4); a sacrificed program's income raise (§7); a corrupted station's cube after
-its megaproject completes (§6, open); a striking troop left on the map (§6, clear already); agents left on a site a
-project corrupted (§6); a threat's Fallout hex (§6); Vigil for a troop that doesn't move (§5); where a canceled
-ambassador goes (§8); the Botnets spread line read two ways (§6; the event cards' own text is open, **W**); Naval
-Blockade's "cities make no energy" read as leaving a corrupted city's Discord on (its card text, open, **W**).
+**Errors the hand-players made**, each a rule hard enough to get wrong. Fixed in words by 309: a jammed-to-0 threat
+is paid off (§10: a d4 error, a d2 lookup); "neither possible" pays from the supply and discards the hand (§10: the
+d4 error was a miscounted hand, but the words read both ways); a contact counts
+as removing agents for an Effect (§8); an arrow's tie (§2); War Rooms reads any tag (§3). Open, each a row above: a
+self-triggering building and an unnamed "A, OR B" half (row 11); a city across the border (row 7); an anchor agent
+lost among three threats (row 6); the Industry discount (row 3). One was the tooling's: the table script named
+threats by id (orbital_strike for Weapons Test), so a threat looked unprinted (`trace_rounds.py` now prints both).
 
-**Closed since r98:** #5 (what spends an ambassador: the aid's box), #2 by the aid and 274's tip tracks
-(row 11). #1, #3 and #4 are rows 3, 13 and 15.
+**Not met in the hand play:** troops never came at d2 (research stopped at slot 3); at d4 one Strike and one
+Redeploy (3 troops × 3 cities × every player piece) read cleanly. Re-check them at the next refresh.
+
+**Closed since r125:** the late action phase's tag counts (274's dials), once-a-round memory (274's used markers, row
+10), city growth (275), natural corruption's node check (r140's arrival checks), threat dealing (r139's decks), the
+march (r141), city energy (r139), Unity's two tables (r141's win), the Income beat's spread across sections, the
+projects' seven-hex counts (297), compute volume at d2 (a compute track), income re-adding (income tracks).
 
 ## What a per-rule review misses
 
@@ -66,7 +75,7 @@ is a check to run on every refresh:
    load column; a hand-play's peak memory and modifiers a round, not only each rule's cost.
 2. **Generated tables read as data.** A generated table looks solved because it is generated. *Check:* read every
    generated block in the rulebook and player aid as rules a player must apply, and count its mid-game entries.
-3. **No refresh.** The review was last run at r98. *Check:* the trigger below; `design_check`'s `friction-stale`.
+3. **No refresh.** *Check:* the trigger below; `design_check`'s `friction-stale`.
 4. **One more dial.** Each balance item reached for one more dial, judging only its own. *Check:* the ladder's
    mid-game count (`design_check` `ladder`) and the principle "a dial is a rule" ([principles.md](principles.md)).
 5. **Simulated playtesters.** Agents apply every modifier perfectly and for free; win rate and tokens moved are blind
@@ -77,34 +86,36 @@ is a check to run on every refresh:
 
 **Rerun this review every 5 rules revisions** (`table_cost.refresh_every` in `scripts/design_check.json`). The title's
 "as of rules revision N" is the record: `design_check.py` warns `friction-stale` once `RULES_REVISION` is 5 or more
-past it, so any rules item's warning check shows it. A refresh:
+past it. A refresh:
 
-1. Trace a 2-player game at d2 and one at d4 (`aic-sim run configs/baseline.json --games 1 --seed S --agent
-   strategist --set adversary.difficulty=2 --trace`) and split it with
-   `experiments/results/268_table_cost_audit/trace_rounds.py TRACE OUTDIR`: `script.md` (what the table reveals and
-   decides), `counts.json` (components, decisions, round-scoped memory) and `check.md` (each round's end state).
-2. A helper resolves the game by hand from the rulebook and aid only, reading each round's check only after logging it
-   ([the brief](../experiments/results/268_table_cost_audit/handplay-brief.md)). Its errors are findings.
-3. Rank as above, rewrite this page and its title's revision, and reset the `table_cost` budgets if a rules change
-   moved them on purpose.
-
-**Minutes by step without a hand pass** (278): `sh experiments/results/278_hard_cut_proposals/traces.sh OUT [k=v ...]`
-traces 268's seeds at d2 and d4 (28 judge games, about 15 s), and `python
-scripts/bench/breakdown.py OUT --level 2` prints every step's decisions, components,
-checks, lookups and modifiers at 268's rates (the last two are 268's r125 hand-log constants, so a `--compare`
-moves only the traced kinds and card faces); `breakdown.py BASE FLAG --compare` reads a flag's minutes against base,
-paired by seed.
+1. **Audit the rulebook, teach and aid against `docs/rules/` and the engine first** (309's two audits found 28
+   mismatches the revision line hid: `regen.py` stamps the revision whatever the text says).
+2. Trace 268's seeds: `python experiments/results/309_rulebook_friction_refresh/traces.py OUT` (d2 and d4, 14 judge
+   games each, 6 at a time, about 15 s, plus the same games as an experiment in `OUT/exp`), then split one game a
+   level with `python experiments/results/268_table_cost_audit/trace_rounds.py OUT/d2-S.out DIR`: `script.md` (what
+   the table reveals and decides, cards by id and name), `counts.json`, and `check.md` (each round's pieces, each
+   seat's resources and the tracks).
+3. A helper resolves the game by hand from the rulebook and aid only, reading each round's check only after logging
+   it ([the brief](../experiments/results/309_rulebook_friction_refresh/handplay-brief.md): **update its step labels
+   to the round first**; `breakdown.py` parses them). Its errors are findings.
+4. `python scripts/bench/breakdown.py OUT --level 2` (and `--level 4`) prints every step's minutes at 268's rates,
+   its lookups and modifiers modeled from the hand log (`--hand DIR`, default 309's; `--hand 268` for r125's);
+   `breakdown.py BASE FLAG --compare` reads a flag's minutes against base, paired by seed.
+5. `python experiments/results/309_rulebook_friction_refresh/table_cost_read.py GAMES.jsonl` prints the three
+   `table_cost` proxies by level beside their budgets: reset a budget only where a rules change moved it on purpose.
+6. Rank as above, rewrite this page and its title's revision.
 
 Between refreshes, `design_check`'s `table-components`, `table-checks` and `table-memory` warn when a level's read
-passes its budget or rises 10% on `--old`.
+passes its budget (309's reset: r149's read + about 10%) or rises 10% on `--old`.
 
 ## Engine against docs/rules
 
 A mismatch between the engine and `docs/rules/` goes here as an M-row (doc says, engine does, where), ranked by how
-badly the doc misleads. None is open at r125: the two the d2 pass suspected (compute income, a project overflow)
-were hand errors, the trace's running compute total read as a project's.
+badly the doc misleads. **None is open at r150.** The d4 pass suspected one (Turncoats, "neither way possible", kept the
+ambassadors): the trace shows the Builder held 3 cards, so the discard was possible and taken; with neither possible
+the engine pays all of the resource from the supply and discards the hand (`threats/ops.rs`, `requisition`), as the
+rules say.
 
 **Not rules for a player** (left out of the rulebook): the engine's 64-tip safety cap in one check, the round-1000
-stop, the embargo state that would forbid a Claim (no content sets it; the threat named Embargo lands
-agents and charges energy or cards), and mechanisms no deck card prints (lowered income, slot-adding buildings, tags
-from hand, place-token triggers, copy income, building upkeep, Sabotage).
+stop, the embargo state that would forbid a Claim (no content sets it), and mechanisms no deck card prints (lowered
+income, slot-adding buildings, tags from hand, place-token triggers, copy income, building upkeep, Sabotage).

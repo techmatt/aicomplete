@@ -39,6 +39,10 @@ def main():
     src, out = sys.argv[1], sys.argv[2]
     countries = int(sys.argv[3]) if len(sys.argv) > 3 else 2
     names = hex_names(countries)
+    card_names = {}
+    for f in ('cards', 'threats', 'projects'):
+        for x in json.load(open(f'content/{f}.json', encoding='utf-8')):
+            card_names[x['id']] = x.get('name', x['id'])
     nm = lambda h: names.get(tuple(h), str(h)) if h else ''
     os.makedirs(out, exist_ok=True)
     rnd, phase = 0, 'setup'
@@ -103,7 +107,10 @@ def main():
             c['cards_moved'] += 1
             fr = e['from']
             if 'deck' in fr:
-                script.append(f'- REVEAL: {e["card"]} from {fr} to {e["to"]}')
+                # 309: the printed name beside the id (an id like orbital_strike prints as Weapons Test).
+                nmc = card_names.get(e['card'])
+                shown = f'{e["card"]} ({nmc})' if nmc and nmc.lower().replace(' ', '_') != e['card'] else e['card']
+                script.append(f'- REVEAL: {shown} from {fr} to {e["to"]}')
         elif t == 'tokens_changed':
             k = e['token'].split(':')[0]
             c['tokens_moved'] += abs(e['delta'])
@@ -111,6 +118,7 @@ def main():
             hexes[tuple(e['hex'])][e['token']] = e['total']
         elif t == 'resource_changed':
             c['resource_changes'] += 1
+            tracks[f'seat{e["seat"]}.{e["resource"]}'] = e['total']  # 309: each seat's resources in check.md
         elif t == 'var_changed':
             k = e['key']
             if any(k.startswith(p) for p in MEMORY):
@@ -121,7 +129,8 @@ def main():
                 c['agents_into_pools'] += e['delta']
             if any(k.startswith(p) for p in TRACKS):
                 c['marker_moves'] += 1
-                if k.startswith(('alignment.', 'adversary.compute', 'adversary.research', 'adversary.pool')):
+                if k.startswith(('alignment.', 'adversary.compute', 'adversary.research', 'adversary.pool',
+                                 'adversary.project.', 'board.project.', 'board.track')):  # 309: projects, AI tracks
                     tracks[k] = e['total']
         elif t == 'game_ended':
             script.append(f'- GAME ENDS: {json.dumps(e)}')

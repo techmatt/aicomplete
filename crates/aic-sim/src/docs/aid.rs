@@ -1,5 +1,5 @@
 //! 268: `docs/player-aid.md`, the table's reference sheet: the round, what is once a round, the tip strips,
-//! the troops (r141: garrison, guard, Strike, Redeploy), the tracks and markers (274), what spends an ambassador and city growth, then the house terms. Every number comes from the rules or content,
+//! the troops (r141: garrison, guard, Strike, Redeploy), the tracks and markers (274), what spends an ambassador, the adversary's outputs and research row, then the house terms. Every number comes from the rules or content,
 //! so the sheet moves with them; the words are the rulebook's, shortened (it stays the rules' one full statement).
 
 use aic_core::content::content;
@@ -169,13 +169,13 @@ node or ambassador (ties: the lower hex number); with none, it stays.
 const TRACKS: &str = "\
 - **Your income tracks** (your board): one marker a resource. Move it when a track space, program or building \
 raises an income, or (your sites' output) when you gain or lose a station or factory or its megaproject \
-completes; in production, collect what \
+completes, or a city's energy when you place or lose a node next to it or it is corrupted or liberated; in production, collect what \
 the markers show, less each blocked site's output (until its megaproject completes, a station's cube goes onto it).
-- **Blocked chips:** on a producing site while an opposing piece stands there (an agent on yours or a neutral \
-station, your ambassador on the adversary's) and on a city a blackout darkens; lift \
+- **Blocked chips:** on a producing site while an opposing piece stands there (an agent on a free city, or on \
+your or a neutral station or factory; your ambassador on the adversary's) and on a city a blackout darkens; lift \
 it when the last one leaves.
 - **Your tag dials** (your board): one a tag. Turn it when a card with that tag comes into play or is sacrificed.
-- **Used markers:** on each power, building slot and converter's used space; a bought chip on a city (above).
+- **Used markers:** on each power, building slot and converter's used space.
 - **Unity and Discord tip tracks:** one space a tip; each space prints its card strength.
 - **The adversary board:** the compute income track, the research row (six icon slots, a marker, and the cubes \
 toward its next slot), the last-round space (the card whose sites escalate), a compute track beside each \
@@ -186,10 +186,13 @@ its agent along it.
 ";
 
 fn ambassadors(r: &Rules) -> String {
+    // 309: one price when the three agree (r146: 3 at any site).
+    let (c, s, f) = (int(r, "board.liberate_at"), int(r, "board.claim_station"), int(r, "board.claim_factory"));
+    let price = if c == s && s == f { format!("{c} at any site") } else { format!("city {c}, station {s}, factory {f}") };
     format!(
         "- **An agent meets one** (it lands, or your ambassador arrives): one for one, both off.\n\
          - **Corruption** removes every ambassador on the hex.\n\
-         - **Liberate** (your ready ambassador on the site acts): city {}, station {}, factory {} (yours on the \
+         - **Liberate** (your ready ambassador on the site acts): {price} (yours on the \
          site pay first, then your supply).\n\
          - **Remove agents:** {} from your supply.\n\
          - **Protecting** your node or facility on its hex (§13): one, instead of the piece.\n\
@@ -197,9 +200,6 @@ fn ambassadors(r: &Rules) -> String {
          - **Blocking** spends none: an ambassador on a corrupted site stops its output while it stands. A \
          **move** is an ambassador's own action (a hex next to it, or any of your nodes); a troop never touches one.\n\
          - **Gain one:** {} credits, Accord, cards.\n",
-        int(r, "board.liberate_at"),
-        int(r, "board.claim_station"),
-        int(r, "board.claim_factory"),
         int(r, "board.remove_ambassadors"),
         int(r, "board.ambassador_credits"),
     )
@@ -208,8 +208,22 @@ fn ambassadors(r: &Rules) -> String {
 /// 293: the adversary's outputs and research row (they took the Grow section's place).
 fn outputs(r: &Rules) -> String {
     let b = &content().adversary_board;
-    let k = list(r, "adversary.research_at").first().copied().unwrap_or(0);
-    let every = if k == 1 { "each cube a country".to_string() } else { format!("every {k} cubes a country") };
+    // 309: K by level (it printed level 0's alone, 3, when levels 2-4 use 2).
+    let ks = list(r, "adversary.research_at");
+    let cubes = |k: i64| if k == 1 { "each cube a country".to_string() } else { format!("every {k} cubes a country") };
+    let mut every = String::new();
+    let mut lv = 0;
+    while lv < ks.len() {
+        let end = (lv..ks.len()).take_while(|&j| ks[j] == ks[lv]).last().unwrap_or(lv);
+        let at = match (lv, end + 1 == ks.len()) {
+            (0, true) => String::new(),
+            (_, true) => format!(" from level {lv}"),
+            _ if lv == end => format!(" at level {lv}"),
+            _ => format!(" at levels {lv}-{end}"),
+        };
+        every += &format!("{}{}{at}", if lv == 0 { "" } else { ", " }, cubes(ks[lv]));
+        lv = end + 1;
+    }
     let row = b.research.as_ref().map_or(String::new(), |row| {
         let slots: Vec<String> = row
             .slots
@@ -248,12 +262,29 @@ pub(super) fn player_aid_md(r: &Rules) -> String {
          ## The round (rulebook §4)\n\n{ROUND}\n## Once a round (§5, §8, §20)\n\n{}\n\
          ## Tip strips (§12, §14)\n\n{}\n## Corrupt numbers (§6, §21)\n\n{}\n## Troops\n\n{TROOPS}\n\
          ## Tracks and markers (§2)\n\n{TRACKS}\n## What spends an ambassador (§8)\n\n{}\n\
-         ## The adversary's outputs and research row\n\n{}\n## Words on cards\n\n{}",
+         ## The adversary's outputs and research row\n\n{}\n## Your level (§21)\n\n{}\n## Words on cards\n\n{}",
         once_a_round(r),
         tip_strips(r),
         corrupt_numbers(r),
         ambassadors(r),
         outputs(r),
+        levels(r),
         house_terms()
     )
+}
+
+/// 309: the ladder on the sheet (the d4 hand play looked up its level's rules in §21 four times in three rounds).
+/// Cumulative, as the rulebook's table: a level keeps every level below it.
+fn levels(r: &Rules) -> String {
+    let rows: String = super::ladder::ladder(r)
+        .into_iter()
+        .map(|v| {
+            let mut parts = v.setup.clone();
+            if !v.rule.is_empty() {
+                parts.push(format!("*{}*", v.rule.trim_end_matches('.')));
+            }
+            format!("- **{} {}:** {}.\n", v.level, v.name, parts.join("; ").trim_end_matches('.'))
+        })
+        .collect();
+    format!("Each level keeps every level below it and adds its line (its rule in italics).\n\n{rows}")
 }

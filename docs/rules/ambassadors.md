@@ -47,7 +47,8 @@ Cities, research stations and factories follow one set of rules and differ only 
   card may claim it from there. Its price table (r91, Matt, 2026-11-12: one table): `liberate_at` 3 and `free_city` 5 Unity for a city,
   `claim_station` 3 or `claim_factory` 3 (Liberate's since 262 cut Claim; the names stay) and `free_facility` 2
   Unity for a station or factory. **A site with an agent
-  on it can't be claimed or liberated** (r91: no "+1 per agent"; clear them first, with Remove agents, a card or a
+  on it can't be claimed or liberated by the action** (a liberate card's city liberation takes its agents off;
+  r91: no "+1 per agent"; clear them first, with Remove agents, a card or a
   power). **Guarding** (r141, Matt 2026-11-19): **a corrupted site with a troop on or next to it can't be liberated**,
   by the action or by a liberate card: remove the troop or Push or Gather it away first ([troops.md](troops.md)).
   The adversary's cube comes off. The action needs **no reach** (your node need not be near: the round your

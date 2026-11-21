@@ -87,8 +87,9 @@ what it prints.
 - `bench/trace_lib.py`: the reader for a `run --trace` (reads.md): `walk()` a `Step` a line (round, phase, seat,
   actor, kind, action, options, event, ask), `summary()` (overrides, counters), `card_names()`, `hexes(countries)`.
   A table-time or trace script imports it (tests: `bench/test_trace_lib.py`).
-- `bench/breakdown.py DIR [--level 2] [--compare]`: table minutes a round by step and kind at 268's rates from judge
-  traces (278's recipe; the rulings' yardstick); seats acting at once count the slower, the draft at skilled rates (docstring).
+- `bench/breakdown.py DIR [--level 2] [--compare] [--hand DIR|268]`: table minutes a round by step and kind at 268's
+  rates from judge traces (the rulings' yardstick; lookups and modifiers modeled from 309's r150 hand log); seats acting
+  at once count the slower, the draft at skilled rates (docstring).
 - `edit/replace.py SPEC.json [--dry-run]`: exact replacements from `[{file, old, new, count}]` (count 1 or `"all"`),
   all or nothing, line endings kept; `--word OLD NEW PATH...` a whole-word rename over tracked files. The hooks refuse
   `sed -i` and heredoc edits: use this, not a one-off script.

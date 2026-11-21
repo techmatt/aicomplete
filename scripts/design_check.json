@@ -384,7 +384,7 @@
     "rise_max": 0.1
   },
   "table_cost": {
-    "note": "268 (soft): table cost a round, by level d0-d4 (a level past the list takes the last): components moved (adversary ops + the tokens check's player moves but ops_already, a redeployed troop being an op + production_counters, a troop's strike among them), per-site checks (site_passes x sites on the map + city_passes x cities + each troop on the map (an upper bound: only a Strike or Redeploy icon looks at one) + check_counters + check_prefixes; 275: no pass looks at every site, so both passes are 0 and the adversary's own checks, each site a line names, each arrival and each botnet, come from map.adversary_checks) and once-a-round uses a seat (memory). Budgets: 267's final read (f267-read2) + about 10%, cross-checked against 268's hand-play (experiments/results/268_table_cost_audit/). The friction review reruns every refresh_every rules revisions.",
+    "note": "268 (soft): table cost a round, by level d0-d4 (a level past the list takes the last): components moved (adversary ops + the tokens check's player moves but ops_already, a redeployed troop being an op + production_counters, a troop's strike among them), per-site checks (site_passes x sites on the map + city_passes x cities + each troop on the map (an upper bound: only a Strike or Redeploy icon looks at one) + check_counters + check_prefixes; 275: no pass looks at every site, so both passes are 0 and the adversary's own checks, each site a line names, each arrival and each botnet, come from map.adversary_checks) and once-a-round uses a seat (memory). Budgets: 309's reset at r150 (the overhaul's cuts, no march, war, growth or per-site passes, took checks from 49-59 to 11-19 and components a fifth to a third down, on purpose): r149's fresh read (306, 1,152 games, d0-d3) and 309's d4 traces (268000-268013) + about 10%; memory unchanged (267's). Cross-checked against 309's hand-play (experiments/results/309_rulebook_friction_refresh/). The friction review reruns every refresh_every rules revisions.",
     "ops_already": ["board.troops_redeployed"],
     "production_counters": ["board.troop_strikes", "board.cubes_paid.player", "board.cubes_paid.neutral", "board.chips_made"],
     "site_passes": 0,
@@ -394,8 +394,8 @@
     "memory_counters": ["ai.powers_used", "board.std.troop", "board.std.insight"],
     "memory_prefixes": ["cards.used.", "board.converter.", "board.chip_converter."],
     "budget": {
-      "components": [24, 36, 49, 75, 88],
-      "checks": [49, 51, 51, 53, 59],
+      "components": [22, 31, 43, 55, 71],
+      "checks": [12, 14, 17, 18, 21],
       "memory": [4.5, 4.5, 4.5, 4.5, 4.5]
     },
     "refresh_every": 5

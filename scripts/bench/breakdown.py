@@ -7,7 +7,7 @@ yardstick, not a clock.
 
 DIR holds traces of judge games: `aic-sim run configs/baseline.json --games 1 --seed S --agent strategist --set
 adversary.difficulty=L --trace` as DIR/d<L>-<S>.out, and the same games as an experiment in DIR/exp/games.jsonl
-(per-round counters; 278's traces.sh is the recipe). Run from the repo root (reads content/ais.json and 268's log).
+(per-round counters; 309's traces.py is the recipe). Run from the repo root (reads content/ais.json and a hand log).
 
 Rates (268): 15 s a decision, 3 s a component, 10 s a check, 20 s a lookup or a new card face, 5 s a modifier.
 Counting, per event:
@@ -17,13 +17,15 @@ Counting, per event:
               moved (once a key a phase), a used marker set and cleared (a tiered power's tiers share one marker),
               in the draft each hand passed
   checks      adversary turn: `map.adversary_checks` (each site a line names, each arrival, each botnet), each troop
-              on the map in the March, each threat card turned in dealing; the action phase: the board uses a seat
+              on the map (an upper bound: only a Strike or Redeploy icon reads one), each threat card turned in
+              dealing; the action phase: the board uses a seat
               could make (`ai.offered.<board>`) and each target a power or card asks for;
               production: each producing income track, blocked chip and adversary factory (280's cut 2, the rule
               since r133; `--sites` reads every factory, station and city instead, 278's model); threats executed:
               each threat on the map
   faces       a card's first showing in the game (a draft hand, a threat placed, an adversary event or project card)
-  lookups,    not in the trace: 268's r125 hand log's per-round totals shared out by step (278). Marked "modeled".
+  lookups,    not in the trace: a hand log's per-round totals shared out by step (278), 309's r150 log by default
+              (`--hand DIR`; `--hand 268` for 268's r125 log). Marked "modeled".
   modifiers
 
 298's fixes to 278's model:
@@ -56,7 +58,7 @@ SECTION = {
     'threats.deal': 'Adversary: threats dealt', 'adversary.build': 'Adversary: lines and arrivals',
     'board.march': 'Adversary: march', 'adversary.reveal': 'Adversary: next card', 'adversary.compute':
     'Adversary: compute and projects', 'cards.deal': 'Draft', 'cards.tier': 'Draft', 'cards.draft': 'Draft',
-    'cards.keep': 'Draft', 'board.produce': 'Production and hosting', 'economy.upkeep': 'Income and upkeep',
+    'cards.keep': 'Draft', 'board.produce': 'Production', 'economy.upkeep': 'Income and upkeep',
     'board.bases': 'Bases', 'threats.execute': 'Threats executed', 'board.war': 'War', 'board.cleanup': 'Cleanup',
 }
 DRAFT_STEP = {'cards.deal': 'opening deal', 'cards.tier': 'tier choice', 'cards.draft': 'pick', 'cards.keep': 'keep'}
@@ -68,10 +70,19 @@ MARKERS = ('ai.power_used.', 'board.energy_bought.', 'board.converter_round.', '
            'board.vigil_round.', 'board.moved.', 'cards.used.')
 SEATS = ('Builder', 'Protector')
 NODE_POWERS = 3  # r142: powers 0-2 of every board
-HAND_LOG = 'experiments/results/268_table_cost_audit/d2/log.md'
-HAND_COUNTS = 'experiments/results/268_table_cost_audit/d2/counts.csv'
-# 268's d4 spot check (rounds 1, 5, 10): lookups and modifiers a round.
-D4_HAND = {'lookups': (14 + 22 + 24) / 3, 'modifiers': (17 + 34 + 44) / 3}
+# The hand log the modeled kinds come from: `--hand DIR` (DIR/d2/log.md, DIR/d2/counts.csv and, for --level 4,
+# DIR/d4/counts.csv), 309's r150 hand play by default; `--hand 268` reads 268's r125 log and d4 constants.
+HAND_309 = 'experiments/results/309_rulebook_friction_refresh/handplay'
+HAND_268 = 'experiments/results/268_table_cost_audit'
+HAND_LOG = HAND_COUNTS = HAND_D4 = None  # set by use_hand()
+
+
+def use_hand(folder):
+    global HAND_LOG, HAND_COUNTS, HAND_D4
+    folder = HAND_268 if folder == '268' else folder
+    HAND_LOG = os.path.join(folder, 'd2', 'log.md')
+    HAND_COUNTS = os.path.join(folder, 'd2', 'counts.csv')
+    HAND_D4 = os.path.join(folder, 'd4', 'counts.csv')
 HAND_SEAT = re.compile(r'^cards\.(packet|drafted|hand)\.(\d)$')
 
 
@@ -232,7 +243,7 @@ def read_trace(path, info, tracks=True):
             actor = None
             turn = {}
             if board is not None and phase == 'board.produce' and rnd > 0:
-                rows[rnd][('Production and hosting', 'tracks and chips read', 'checks')] += board.reads()
+                rows[rnd][('Production', 'tracks and chips read', 'checks')] += board.reads()
             continue
         if board is not None and t == 'tokens_changed':
             n = board.change(tuple(e['hex']), e['token'], e['delta'])
@@ -302,15 +313,15 @@ def add_counters(rows, g, tracks=True):
     for r in rows:
         tag = f'r{r:02d}'
         rows[r][('Adversary: lines and arrivals', 'sites, arrivals, botnets', 'checks')] += c.get(f'map.adversary_checks.{tag}', 0)
-        rows[r][('Adversary: march', 'troops', 'checks')] += c.get(f'map.troops.{tag}', 0)
+        # 309: each troop on the map (r141: no march; an upper bound, as only a Strike or Redeploy icon reads one).
+        rows[r][('Adversary: lines and arrivals', 'troops (Strike, Redeploy)', 'checks')] += c.get(f'map.troops.{tag}', 0)
         sites = sum(c.get(f'map.{k}.{o}.{tag}', 0) for k in ('factories', 'stations') for o in ('adversary', 'neutral', 'player'))
         if not tracks:  # 278's model: every site read at production (280's tracks count the tracks and chips read)
-            rows[r][('Production and hosting', 'sites read', 'checks')] += sites + cities
-        rows[r][('Production and hosting', 'host matching', 'checks')] += c.get(f'map.hosted.{tag}', 0)
+            rows[r][('Production', 'sites read', 'checks')] += sites + cities
 
 
 def hand_model(level):
-    """Lookups and modifiers a round by section (modeled from 268's r125 hand play)."""
+    """Lookups and modifiers a round by section (modeled from the hand log `use_hand` set)."""
     shares = {'lookups': collections.Counter(), 'modifiers': collections.Counter()}
     rnd = None
     for line in open(HAND_LOG, encoding='utf-8'):
@@ -324,7 +335,14 @@ def hand_model(level):
         if len(cells) < 7 or cells[0].startswith('**'):
             continue
         st = cells[0]
-        if st.startswith('A'):
+        if st.startswith(('B Card: threats', 'B Card: lines', 'B Income', 'E Production', 'E Income', 'G Cleanup')):
+            # 309's r150 step labels (its brief): two adversary beats, production and income, no war.
+            sec = {'B Card: threats': 'Adversary: threats dealt', 'B Card: lines': 'Adversary: lines and arrivals',
+                   'B Income': 'Adversary: compute and projects', 'E Production': 'Production',
+                   'E Income': 'Income and upkeep', 'G Cleanup': 'Cleanup'}[next(
+                       k for k in ('B Card: threats', 'B Card: lines', 'B Income', 'E Production', 'E Income',
+                                   'G Cleanup') if st.startswith(k))]
+        elif st.startswith('A'):
             sec = 'Sway'
         elif st.startswith('B'):
             low = st.lower()
@@ -337,7 +355,7 @@ def hand_model(level):
         elif st.startswith('D Protector'):
             sec = 'Action phase|Protector'
         elif st.startswith('E1') or st.startswith('E3'):
-            sec = 'Production and hosting'
+            sec = 'Production'
         elif st.startswith('E5'):
             sec = 'Income and upkeep|E5'
         elif st.startswith('E6'):
@@ -361,7 +379,11 @@ def hand_model(level):
         rows = [r.split(',') for r in f.read().split('\n')[1:] if r and not r.startswith('0,')]
     per_round = {'lookups': statistics.mean(int(r[1]) for r in rows), 'modifiers': statistics.mean(int(r[2]) for r in rows)}
     if level == 4:
-        per_round = dict(D4_HAND)
+        # The d4 spot check's own rounds (268's: rounds 1, 5, 10; 309's: 1, 3, 5), shared out by d2's step shares.
+        with open(HAND_D4, encoding='utf-8') as f:
+            rows4 = [r.split(',') for r in f.read().split('\n')[1:] if r and not r.startswith('0,')]
+        per_round = {'lookups': statistics.mean(int(r[1]) for r in rows4),
+                     'modifiers': statistics.mean(int(r[2]) for r in rows4)}
     out = collections.Counter()
     for kind in ('lookups', 'modifiers'):
         tot = sum(shares[kind].values()) or 1
@@ -444,7 +466,7 @@ def table(mean, rounds, level):
         secs[sec][step][kind] += v
     order = ['Round start', 'Sway', 'Adversary: event card', 'Adversary: threats dealt', 'Adversary: lines and arrivals',
              'Adversary: march', 'Adversary: next card', 'Adversary: compute and projects', 'Draft', 'Action phase',
-             'Production and hosting', 'Income and upkeep', 'Bases', 'Threats executed', 'War', 'Cleanup']
+             'Production', 'Income and upkeep', 'Bases', 'Threats executed', 'War', 'Cleanup']
     out = [f'### d{level}: a round, {rounds:.2f} rounds a game', '',
            '| Section | Step | Decisions | Components | Checks | Lookups | Faces | Modifiers | Minutes |',
            '|---|---|---|---|---|---|---|---|---|']
@@ -538,7 +560,11 @@ def main():
     ap.add_argument('--compare', action='store_true')
     ap.add_argument('--json')
     ap.add_argument('--sites', action='store_true', help="278's production model: every site read")
+    ap.add_argument('--hand', default=HAND_309,
+                    help="the hand log for the modeled lookups and modifiers: a folder with d2/log.md, d2/counts.csv "
+                         "and d4/counts.csv (default: 309's r150 hand play; '268' for 268's r125 log)")
     a = ap.parse_args()
+    use_hand(a.hand)
     tracks = not a.sites
     if a.compare:
         gb, gn = load(a.dirs[0], a.level, tracks), load(a.dirs[1], a.level, tracks)

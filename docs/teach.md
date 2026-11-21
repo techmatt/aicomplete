@@ -109,7 +109,8 @@ Stop its cubes by standing on, or liberating, corrupted stations.
 
 Troops come late, from the research row, a few projects and one Discord card. They never wander. They do three things:
 
-- **garrison**: a new troop goes on its country's lowest-numbered corrupted factory, else its corrupted city;
+- **garrison**: a new troop goes on its country's lowest-numbered corrupted factory, else its lowest-numbered
+  corrupted city, else its lowest-numbered city;
 - **guard**: a corrupted site with a troop on or next to it can't be liberated;
 - **Strike**: on the icon, every troop destroys one node, station or factory of yours on or next to it. The troop
   stays to strike again.
@@ -117,7 +118,7 @@ Troops come late, from the research row, a few projects and one Discord card. Th
 A rare **Redeploy** icon picks up each troop and puts it on its country's corrupted city nearest one of your
 pieces: the garrisons come to where you are working.
 
-An event card's Strike icon is face up a full round before it happens. Use that round. A troop next to one of your
+An event card's Strike icon is face up a full round before it happens. Use that round. A troop on or next to one of your
 ambassadors is in your reach, so walking an ambassador up to a guarded city lets you remove its guard.
 
 ## Threats

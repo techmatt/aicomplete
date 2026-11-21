@@ -76,10 +76,10 @@ Troops don't move or act on their own. They come late: from the research row, so
 
 ## Tracks and markers (§2)
 
-- **Your income tracks** (your board): one marker a resource. Move it when a track space, program or building raises an income, or (your sites' output) when you gain or lose a station or factory or its megaproject completes; in production, collect what the markers show, less each blocked site's output (until its megaproject completes, a station's cube goes onto it).
-- **Blocked chips:** on a producing site while an opposing piece stands there (an agent on yours or a neutral station, your ambassador on the adversary's) and on a city a blackout darkens; lift it when the last one leaves.
+- **Your income tracks** (your board): one marker a resource. Move it when a track space, program or building raises an income, or (your sites' output) when you gain or lose a station or factory or its megaproject completes, or a city's energy when you place or lose a node next to it or it is corrupted or liberated; in production, collect what the markers show, less each blocked site's output (until its megaproject completes, a station's cube goes onto it).
+- **Blocked chips:** on a producing site while an opposing piece stands there (an agent on a free city, or on your or a neutral station or factory; your ambassador on the adversary's) and on a city a blackout darkens; lift it when the last one leaves.
 - **Your tag dials** (your board): one a tag. Turn it when a card with that tag comes into play or is sacrificed.
-- **Used markers:** on each power, building slot and converter's used space; a bought chip on a city (above).
+- **Used markers:** on each power, building slot and converter's used space.
 - **Unity and Discord tip tracks:** one space a tip; each space prints its card strength.
 - **The adversary board:** the compute income track, the research row (six icon slots, a marker, and the cubes toward its next slot), the last-round space (the card whose sites escalate), a compute track beside each project slot (a marker, not cubes), and its corrupted sites' outputs.
 - **Zone arrows** (the map): each industrial zone prints an arrow to its city; a corrupted factory there pushes its agent along it.
@@ -89,7 +89,7 @@ Troops don't move or act on their own. They come late: from the research row, so
 
 - **An agent meets one** (it lands, or your ambassador arrives): one for one, both off.
 - **Corruption** removes every ambassador on the hex.
-- **Liberate** (your ready ambassador on the site acts): city 3, station 3, factory 3 (yours on the site pay first, then your supply).
+- **Liberate** (your ready ambassador on the site acts): 3 at any site (yours on the site pay first, then your supply).
 - **Remove agents:** 3 from your supply.
 - **Protecting** your node or facility on its hex (§13): one, instead of the piece.
 - **Threats** that print ambassadors as a cost: from your supply.
@@ -107,7 +107,7 @@ Each corrupted site makes one thing in the Income beat (a player ambassador on i
 | Factory | its agent moves along its zone's arrow onto its city (not onto one already the adversary's); then, holding none, it makes 1 agent |
 | Botnet | 1 compute |
 
-**War Research** (every 3 cubes a country: one slot; its icon happens once, in each country):
+**War Research** (every 3 cubes a country at levels 0-1, every 2 cubes a country from level 2: one slot; its icon happens once, in each country):
 
 1. **New factory**: Each country: a neutral factory opens on its lowest-numbered free industrial zone.
 2. **Cells: factories**: Infiltrate: factories.
@@ -117,13 +117,23 @@ Each corrupted site makes one thing in the Income beat (a player ambassador on i
 6. **Garrison**: Each country: 1 Troop garrisons its lowest-numbered corrupted factory (with none, its lowest-numbered corrupted city; with none, its lowest-numbered city).
 7. **The players lose.**
 
+## Your level (§21)
+
+Each level keeps every level below it and adds its line (its rule in italics).
+
+- **0 The Militarist:** Compute income 0 a country; Infiltrate 1 a site; Research track: a slot every 3 cubes a country; Each free city starts with 4 agents; Deck 4 / 4 / 2 (10 rounds); Sites print their corrupt numbers: city 5, station 3, factory 3.
+- **1 Sleeper Cells:** Compute income 3 a country; Free cities start with no agents; *When an Agent lands on a city, it falls at 3 agents, not 5*.
+- **2 War Footing:** Compute income 5 a country; Research track: a slot every 2 cubes a country; *When a threat executes uncountered, the adversary also gains 4 compute*.
+- **3 Arms Race:** Compute income 10 a country; Deck 4 / 3 / 2 (9 rounds); *When the research track reaches a Garrison icon, each country takes 2 Troops, not 1*.
+- **4 War Economy:** Compute income 15 a country; Infiltrate 2 a city (1 a site from a station, factory or botnet line); Deck 2 / 4 / 3 (9 rounds).
+
 ## Words on cards
 
 - **Facility**: a research station or factory on the board. A building is always a card. Harden goes on a facility, or on your nodes where a card says so: one hardening token either way.
 - **Ambassador**: a player's piece, any player's: a card never says whose.
 - **Agent**: the adversary's piece on the board (the Security token is an Operative).
 - **Troop**: an adversary troop.
-- **In reach**: on a hex within 1 of your nodes.
+- **In reach**: on a hex within 1 of your nodes; for anything that targets troops, a troop on or next to your ambassador too.
 - **Target**: a card, board power or standard action that touches the map names one target, a hex in your reach meeting its target box ("Target: a corrupted city"): it acts on it, or on or next to it, or in its country, as printed.
 - **Gain**: into your supply.
 - **Place**: onto the map: on the target, or next to it where printed.
@@ -138,7 +148,7 @@ Each corrupted site makes one thing in the Income beat (a player ambassador on i
 - **On your cards**: on tags: on your cards in play, covered buildings included, and your board's tags, printed or revealed by its tracks. Tokens count only on the card that holds them.
 - **Action**: once a round, always; "A, OR B" is one use, either half.
 - **Open megaproject**: one that isn't complete; research cubes in your color go only onto one.
-- **Liberate**: a corrupted site with no troop on or next to it: the agents on it come off and the adversary's cube comes off; it is left neutral, a city its country's for good, a station or factory for a card to claim (the action pays for it in ambassadors; a card's is unpaid).
+- **Liberate**: a corrupted site with no troop on or next to it: a card liberating a city takes the agents on it off (the action needs none there), and the adversary's cube comes off; it is left neutral, a city its country's for good, a station or factory for a card to claim (the action pays for it in ambassadors; a card's is unpaid).
 - **Rescue**: on a card, a corrupted city: liberate it, then a neutral station or factory next to it with no agent on it becomes yours, unpaid and out of reach too; with none, nothing more happens. The Liberate action never claims.
 - **Convert**: an agent on or next to the city leaves its stack and becomes your ambassador where it stood.
 - **Gather up to N**: pieces (ambassadors, agents, troops; botnets never move) onto the target, each from a hex next to it; you may stop at any piece (a strike, "remove up to N on or next to it", moves nothing).
