@@ -651,9 +651,9 @@
     {
      "name": "Root Access",
      "units": 1,
-     "other": "0.6 * botnet + 0.5 * station_owned",
+     "other": "0.6 * botnet + 0.5 * station_owned + 3 * ins_inc",
      "use": 0,
-     "note": "a botnet near (x0.6) ~10; 256: claims a neutral site next to it (~0.5)"
+     "note": "a botnet near (x0.6) ~10; 256: claims a neutral site next to it (~0.5); 302: +3 insight income"
     },
     {
      "name": "Citywide Microgrid",
@@ -672,23 +672,23 @@
     {
      "name": "The Nuclear Option",
      "units": 1,
-     "other": "-2 * sway + 0.5 * station_freed + 0.5 * factory_freed + 0.5 * station_owned",
+     "other": "3 * en_inc1 + 0.5 * station_freed + 0.5 * factory_freed + 0.5 * station_owned",
      "use": 0,
-     "note": "Discord 2 (-8); 301 (Matt 13884): frees each corrupted station or factory next to it (about one a play, half each kind); 256: claims a neutral site next to it (~0.5)"
+     "note": "302 (Matt 13930): +3 energy income for its Discord 2; 301 (Matt 13884): frees each corrupted station or factory next to it (about one a play, half each kind); 256: claims a neutral site next to it (~0.5)"
     },
     {
      "name": "Hostile Buyout",
      "units": 1,
-     "other": "3 * amb",
+     "other": "5 * amb",
      "use": 0,
-     "note": "3 ambassadors 24"
+     "note": "5 ambassadors (302, was 3)"
     },
     {
      "name": "Peacekeeping Mission",
      "units": 1,
-     "other": "1.5 * troop + 0.5 * station_owned",
+     "other": "1.5 * troop + 0.5 * station_owned + 3 * amb + 3 * move + 4 * sway",
      "use": 0,
-     "note": "297: up to 3 troops on or next to the city first (~1.5), then the rescue; 256: claims a neutral site next to it (~0.5)"
+     "note": "297: up to 3 troops on or next to the city first (~1.5), then the rescue; 256: claims a neutral site next to it (~0.5); 302: 3 ambassadors placed on it, sway 4"
     },
     {
      "name": "Great Liberation",
@@ -713,9 +713,9 @@
     {
      "name": "Hostile Buyout",
      "units": 1,
-     "other": "3 * amb + station_owned",
+     "other": "5 * amb + station_owned",
      "use": 0,
-     "note": "254: any corrupted site; a station becomes yours; 3 ambassadors"
+     "note": "254: any corrupted site; a station becomes yours; 5 ambassadors (302)"
     },
     {
      "name": "Reclamation Crew",
@@ -733,9 +733,9 @@
     {
      "name": "Hostile Buyout",
      "units": 1,
-     "other": "3 * amb + factory",
+     "other": "5 * amb + factory",
      "use": 0,
-     "note": "254: any corrupted site; a factory becomes yours; 3 ambassadors"
+     "note": "254: any corrupted site; a factory becomes yours; 5 ambassadors (302)"
     },
     {
      "name": "Back-Channel Talks",

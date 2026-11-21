@@ -134,8 +134,9 @@ moves when any other card changes: to reprice an edited card, move its price by 
 - **The liberate capstones**: priced against the bill they replace, at least half in their engine's resource, out of
   reach before mid-game: a city liberated by card is 20, the Liberate action's 3 ambassadors (16) and their move in
   (4; values.json `liberate`); each engine's twist at its own row. They read 1.0-1.3 at the anchors (each card's
-  line: card-pricing-notes.json); The Nuclear Option also frees each corrupted station or factory next to the city
-  (Matt: antimatter should be worth spending), about 1.0 at one site.
+  line: card-pricing-notes.json), but the four antimatter ones (The Nuclear Option, Hostile Buyout, Root Access,
+  Peacekeeping Mission) are sinks at 2.0-2.5× (rulings, *Antimatter*): stronger effects, never less antimatter.
+  Their income lines act with no city in reach, so The Nuclear Option and Root Access also play early as income.
 
 ## Rates known to be off at r36
 

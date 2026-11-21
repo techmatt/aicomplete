@@ -284,8 +284,8 @@ macro_rules! forced_table {
             (plan_cube_target: bool, false, 1.0, "128: keep plan: a project-cube Action counts no uses once no megaproject is open")
             /// 283 (237's pick): the keep plan reads a card's target condition: a card that is not a building
             /// with no part that could resolve now (`effects::feasible`, which is false for any reason a part
-            /// can't act, a missing target the usual one: Hostile Buyout with no corrupted site, Peacekeeping
-            /// Mission with no corrupted city) counts `rates.target_absent` of its value. 283: -1.3 judge on
+            /// can't act, a missing target the usual one: Hostile Buyout with no corrupted site, Forensic
+            /// Audit with no corrupted city) counts `rates.target_absent` of its value. 283: -1.3 judge on
             /// the dev seeds beside the shipped table (screen c), so off.
             (plan_target: bool, false, 0.0, "283: keep plan: a non-building with nothing to act on now counts rates.target_absent of its value")
             /// 150: under Patience with insight beyond the heuristic's `insight_cap`,

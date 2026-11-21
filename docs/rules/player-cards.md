@@ -82,17 +82,18 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
 
   | Card | Engine | Kind | Extra |
   |---|---|---|---|
-  | The Nuclear Option | antimatter | event | also frees each corrupted station or factory next to it; sway 2 toward Discord (collateral harm) |
+  | The Nuclear Option | antimatter | event | also frees each corrupted station or factory next to it; +3 energy income |
   | Power to the People | energy | building (over Power, needs 2) | income: 1 credit per 2 Power tags on your cards |
   | Citywide Microgrid | energy (4, a late sink) | building | Action: 3 Sway toward Unity |
-  | Hostile Buyout | antimatter, Diplomacy | event | gain 3 ambassadors; any corrupted site, a station or factory becomes yours (254) |
+  | Hostile Buyout | antimatter, Diplomacy | event | gain 5 ambassadors; any corrupted site, a station or factory becomes yours (254) |
   | Forensic Audit | research cubes | event | rescue the city |
-  | Root Access | antimatter, Cyber (needs Cyber tags) | event | remove a botnet on or next to the city |
-  | Peacekeeping Mission | antimatter, Security (needs Security tags) | event | first removes up to 3 troops on or next to the city (so a guarded one is a target); rescues only if none is left |
+  | Root Access | antimatter, Cyber (needs Cyber tags) | event | remove a botnet on or next to the city; +3 insight income |
+  | Peacekeeping Mission | antimatter, Security (needs Security tags) | event | first removes up to 3 troops on or next to the city (so a guarded one is a target); rescues only if none is left; then places 3 ambassadors on it and sways 4 toward Unity |
   | Popular Uprising | Followers | tier-1 building | Action: add 1 Follower here, OR pay 4 Followers to liberate, again and again |
 
-  They cost 0-11 credits (the four antimatter ones 0-8 and 1 antimatter), priced against the Liberate action's bill
-  ([card-pricing.md](../card-pricing.md), *The liberate capstones*). Great Liberation (Diplomacy: its target and 2 more in the target's country, cities included)
+  They cost 0-11 credits (the four antimatter ones 0-3 and 1 antimatter), priced against the Liberate action's bill
+  ([card-pricing.md](../card-pricing.md), *The liberate capstones*); the four antimatter ones are sinks and pay
+  2.0-2.5× (rulings, *Antimatter*), the rest fair. Great Liberation (Diplomacy: its target and 2 more in the target's country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the
   seat that can use it. Loops: each card is one-shot and tier 2, and every route needs nodes next to the city, so
   liberation → clean city → energy → more liberation is capped; Popular Uprising repeats, capped by its once-a-round

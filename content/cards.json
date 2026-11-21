@@ -3469,10 +3469,9 @@
     "near": true
    },
    {
-    "op": "sway",
-    "side": "discord",
-    "amount": 2,
-    "narrative": "collateral"
+    "op": "production",
+    "resource": "energy",
+    "amount": 3
    }
   ]
  },
@@ -3522,7 +3521,7 @@
   "name": "Hostile Buyout",
   "tier": 2,
   "kind": "event",
-  "cost": 8,
+  "cost": 0,
   "insight": 0,
   "tags": [
    "diplomacy"
@@ -3535,7 +3534,7 @@
    {
     "op": "liberate",
     "own": true,
-    "ambassadors": 3
+    "ambassadors": 5
    }
   ],
   "antimatter": 1
@@ -3570,7 +3569,7 @@
   "name": "Root Access",
   "tier": 2,
   "kind": "event",
-  "cost": 2,
+  "cost": 0,
   "insight": 0,
   "needs": [
    [
@@ -3593,6 +3592,11 @@
    {
     "op": "claim_site",
     "near": true
+   },
+   {
+    "op": "production",
+    "resource": "insight",
+    "amount": 3
    }
   ],
   "antimatter": 1
@@ -3629,6 +3633,17 @@
    {
     "op": "claim_site",
     "near": true
+   },
+   {
+    "op": "place_ambassadors",
+    "count": 3,
+    "at": "on"
+   },
+   {
+    "op": "sway",
+    "side": "unity",
+    "amount": 4,
+    "narrative": "trust"
    }
   ],
   "antimatter": 1

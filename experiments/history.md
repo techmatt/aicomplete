@@ -10,6 +10,7 @@ the findings are in the write-up.
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 302 the antimatter capstones to the sink ruling (2.0-2.5×): stronger effects, no antimatter cut | 147 | [302_antimatter_capstones](results/302_antimatter_capstones/README.md) |
 | 301 d0's early wins (level-0 setup agents) and Liberate pricing (a station at 3, the capstones) | 146 | [301_d0_early_wins_and_liberate_pricing](results/301_d0_early_wins_and_liberate_pricing/README.md) |
 | 299 shorter games: Liberate 3, the deck 4/4/2 (cap 10); length histograms and bars | 145 | [299_shorter_games](results/299_shorter_games/README.md) |
 | 298 overhaul 6: calibration (Redeploy, Arms Race, prices, the judge, rulebook, teach.md) | 144 | [298_overhaul_6_calibration](results/298_overhaul_6_calibration/README.md) |

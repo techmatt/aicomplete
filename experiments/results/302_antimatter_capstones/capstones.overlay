@@ -1,0 +1,17 @@
+# 302: the four antimatter liberate capstones to the antimatter-sink ruling (2.0-2.5x get / pay against r146's
+# anchors, a liberation by card 20), by stronger effects; their antimatter (1) stays. Apply with
+# scripts/cards/apply_overlay.py. Each card's why is in the write-up (README.md). The faces are full: cards:fit
+# refused a fifth line on The Nuclear Option and a fourth on Hostile Buyout, so those two change a line in place.
+#
+# The Nuclear Option (power): the city's reactor is yours: +3 energy income, in place of its Discord sway (asked of
+# Matt, questions/aicomplete__302_antimatter_capstones__1; his answer, message 13930: drop it, add +3 energy income).
+cards.nuclear_option.effects=[{"op":"target","on":"corrupted_city"},{"op":"cleanse","amount":6,"one_country":false,"at":"near"},{"op":"liberate"},{"op":"claim_site","near":true},{"op":"production","resource":"energy","amount":3}]
+# Hostile Buyout (diplomacy): the buyout brings its people: 5 ambassadors (was 3), and its 8 credits go.
+cards.hostile_buyout.cost=0
+cards.hostile_buyout.effects=[{"op":"target","on":"corrupted_site"},{"op":"liberate","own":true,"ambassadors":5}]
+# Root Access (cyber): root on the city's network, and its data is yours: +3 insight income; its 2 credits go
+# (four lines at most on its face).
+cards.root_access.cost=0
+cards.root_access.effects=[{"op":"target","on":"corrupted_city"},{"op":"liberate","botnet":true},{"op":"claim_site","near":true},{"op":"production","resource":"insight","amount":3}]
+# Peacekeeping Mission (security): the peacekeepers stay, and the peace holds: 3 ambassadors on the city, 4 Unity.
+cards.peacekeeping_mission.effects=[{"op":"target","on":"corrupted_city"},{"op":"remove_troops","count":3,"at":"near"},{"op":"liberate"},{"op":"claim_site","near":true},{"op":"place_ambassadors","count":3,"at":"on"},{"op":"sway","side":"unity","amount":4,"narrative":"trust"}]
