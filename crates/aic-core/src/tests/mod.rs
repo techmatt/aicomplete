@@ -662,9 +662,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 148;
-const GOLDEN_FINGERPRINT: &str = "11f1a548462c9902";
-const GOLDEN_CONTENT_HASH: &str = "3f06cbf82bc0f260";
+const GOLDEN_REVISION: u32 = 149;
+const GOLDEN_FINGERPRINT: &str = "b3273e4060e7d9a8";
+const GOLDEN_CONTENT_HASH: &str = "92344db6419e780e";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

@@ -22,44 +22,45 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   such as Darknet Exchange's off any card with that tag), and any `insight`, `energy`, `chips`, `antimatter` and
   research cubes it prints, and lowers any income it prints under `lowers` ("lower your credit income 1": that
   production falls for the rest of the game; it can't be played if that income is lower). **Insight to play** is a
-  price of 0, 1 or 2 (counts below): most tier-1 cards 0; a card that draws at least 1 (cards whose draw 271 cut kept
-  their insight, for the balance pass); 2 for the strongest of each tier; it comes from the same insight as keeps. Its `needs` (your tags, *Tags* below) are checked only when it is
+  price of 0, 1 or 2 (counts below): most tier-1 cards 0; a card that draws at least 1; 2 for the strongest of each tier; it comes from the same insight as keeps. Its `needs` (your tags, *Tags* below) are checked only when it is
   played. Prices: [cards.md](../cards.md); reasoning: [card-pricing.md](../card-pricing.md).
 - **Card draw (candidate; draw is precious).** A draw takes the tier-1 deck's top card, no keep. There is no limit on
   plays: cards are scarce instead. On a card, draw 1 is a good benefit, 2 very strong, 3 exceptional (Recursive
   Self-Improvement, Zero-Day Auction); Industry, Power and Security keep a few one-time draw 1s. **Repeatable draw ends
   three tag chains:** Science, Preprint Server (needs 4 Science: when you play a Science card, draw 1); Cyber,
   Command-and-Control Grid (needs 3 Cyber: Action: draw 1; 2 a round with Simulation Cluster's Reuse); Diplomacy, Consulate Tower (needs 3 Diplomacy:
-  when another player plays a Diplomacy card, draw 1). Board powers and converters draw at most 1 (the Researcher's Lab and Field Survey, the Protector's
-  Interdict II; Polar Compute Array's converter: 1 chip, with credits back; Delta Seawall's: 2 chips, with 2 Sway to
-  Unity); no megaproject pays a card at completion.
+  when another player plays a Diplomacy card, draw 1). Board powers and converters draw at most 1
+  ([ai-powers.md](ai-powers.md)); no megaproject pays a card at completion.
 
 <!-- generated: draft_set -->
-**The draft set in numbers.** 193 cards (124 tier 1, 69 tier 2). Insight to play: 105 / 60 / 28 cards at 0 / 1 / 2, 18 of the 69 tier-2 cards at 2. An energy cost: 13 cards, 7 of the 77 buildings.
+**The draft set in numbers.** 196 cards (124 tier 1, 72 tier 2). Insight to play: 108 / 60 / 28 cards at 0 / 1 / 2, 18 of the 72 tier-2 cards at 2. An energy cost: 13 cards, 7 of the 81 buildings.
 <!-- /generated -->
 
 - **Energy costs (candidate).** Energy is a second cost on a card whose title reads power-hungry (mostly buildings:
   heavy machinery, Industry and Power, AI compute), its credits cut to match ([card-pricing.md](../card-pricing.md),
   *Energy as a second cost*). They stay uncommon (counts above), so a seat that makes little energy still has plenty
-  to play; seven 2-energy Actions and the energy-hungry tier-2 buildings (Citywide Microgrid and Power to the People
-  at 4 energy) serve as late sinks for a seat whose node tracks are full.
-- **Tier 2 is the majors (candidate).** Spirit Island's major powers: big payoffs, 17 of them paid in antimatter (and
-  one tier-1 card, Accelerator Diplomacy), for your own or another player's board actions: liberations, troop
+  to play; seven 2-energy Actions, Fusion Torch Array's 5 and the 4-energy tier-2 buildings are late sinks.
+- **Tier 2 is the majors (candidate).** Spirit Island's major powers: big payoffs, 21 of them spending antimatter, to play or by an Action (and
+  two tier-1 cards, Accelerator Diplomacy and Containment Reactor), for your own or another player's board actions: liberations, troop
   strikes, ambassadors and Unity, energy, chips, cubes. **Antimatter sinks pay big (locked, Matt 287):** saving for one
   is clearly right, a strong route but not the only one (Kinetic Interdiction's country sweep, an Action, Orbital Mass
-  Driver's income, Fusion Commons' Unity, Singularity Exploit's project). The draft price is their only acquisition cost. Cards clear
+  Driver's income, Fusion Commons' Unity). The draft price is their only acquisition cost. Cards clear
   Fallout only as green cards (programs): a few at tier 1, and Open-Weights Release (4) at tier 2.
+- **Finale buildings (candidate; Matt, 306).** Repeatable tier-2 buildings, hard to get (`needs` 2-3 of a tag or a
+  big price), whose once-a-round Action spends a late-game resource; a plant beside one is the late engine:
+  Siegebreaker Reactor (needs 3 Power; 1 antimatter: remove 2 troops on or next to a corrupted city, rescue it),
+  Concord Reactor (12 credits, needs 2 Diplomacy; 1 antimatter: 5 ambassadors, 4 Unity), Singularity Exploit (needs
+  3 Cyber; 1 antimatter: discard an adversary project, gain 2 insight), Fusion Torch Array (needs 3 Power; 5 energy: rescue
+  a corrupted city).
 - **The end-game cards (drafts).** Ten tier-2 cards for the last 3-4 rounds act where the agents stand, at the card's
   target: four **convert** them into your ambassadors where they stand, two **strike** them (one troops too) on or next
   to the target, two **firewall** a hex until the end of the next adversary turn, one masses your own, one removes
-  them, or troops, on one hex ([cards.md](../cards.md)). Mass Defection, Rally the Allies (2) and Open Source
-  Uprising (1) also sway Unity; Kettle Operation and Surgical Strike sway 1 Discord. None frees a city, none is global, none makes a
+  them, or troops, on one hex ([cards.md](../cards.md)). None frees a city, none is global, none makes a
   liberation cheaper the next time ([ambassadors.md](ambassadors.md)).
 - **Tags are story, not rules:** no tag owns an effect ([ai-powers.md](ai-powers.md), its tag table). Shields on a
   node hex lean Security, land lifts Diplomacy (three Power cards print one too), delays ([card-grammar.md](card-grammar.md), *Jam*)
   Science; no board power prints any of the three, and no card `needs` a tag for one.
-- **Typed counters (candidate).** Nine tier-1 cards fight one threat tag, the card's own (three Industry, two each
-  Security, Diplomacy and Cyber; Science's and Power's tools stay general), and count for more than they cost toward
+- **Typed counters (candidate).** Nine tier-1 cards fight one threat tag, the card's own (none Science or Power), and count for more than they cost toward
   threats carrying it (or Universal) that the player is near.
 - **Engines (candidate; the Terraforming Mars pattern).** Programs are the green cards: one-shot, and where permanent
   income lives, flat ("raise your credit income by 5") or per tag ("by 1 per 3 Science tags on your cards", one such
@@ -67,9 +68,8 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   per tag at its tag count when played (2 a tag on the engines; Power to the People 1 per 2 Power tags), or flat (the tier-2 engines, Fabrication Megaplex,
   Cryo Sample Vault). **Some engines pay up front:** a one-time gain when built (a drawn card, 2 energy on two Power
   ones, or its first tokens here: the At N cards, *Tokens* below, so its own play, or for Intrusion Lab its first
-  removal of compute or a feeder, fills the first threshold); the engines that paid up front in draws (Capital Projects
-  Office, Vertical Monopoly, Orbital Mass Driver, Hyperscale Botnet and others) lost it to the draw cut and were
-  repriced down instead. A committed seat earns most engines back within 3 rounds (2 is the aim, not yet met: [card-pricing.md](../card-pricing.md), *Engines*). Each tag has a tier-1 play trigger, a tier-2 one
+  removal of compute or a feeder, fills the first threshold). A committed seat earns most engines back within 3
+  rounds ([card-pricing.md](../card-pricing.md), *Engines*). Each tag has a tier-1 play trigger, a tier-2 one
   that counts that tag on the played card (no payout fires on any card), and its engines' payoffs ([card-grammar.md](card-grammar.md), *The engine
   wording*). Cyber and Industry each keep one standing automatic counter (a building: threats of its tag anywhere
   need 6 less of each resource); no other tag has one. No capstone prints a
@@ -92,13 +92,16 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   | Beamline Liberation | antimatter, Science | event | gain 7 research cubes |
   | Reactor Retooling | antimatter, Industry | event | +3 chip income |
   | Popular Uprising | Followers | tier-1 building | Action: add 1 Follower here, OR pay 4 Followers to liberate, again and again |
+  | Siegebreaker Reactor | antimatter, Power (needs 3) | building | Action: first removes 2 troops on or next to the city |
+  | Fusion Torch Array | energy (5), Power (needs 3) | building | Action: rescue the city |
 
   They cost 0-11 credits, priced against the Liberate action's bill ([card-pricing.md](../card-pricing.md), *The
-  liberate capstones*); the six antimatter ones (0-3 credits and 1 antimatter) are sinks at 2.0-2.5×, the rest fair. Great Liberation (Diplomacy: its target and 2 more in the target's country, cities included)
+  liberate capstones*); the six antimatter events (0-3 credits and 1 antimatter) are sinks at 2.0-2.5×, the two
+  finale buildings 1.7-1.8 a use (*Finale buildings*), the rest fair. Great Liberation (Diplomacy: its target and 2 more in the target's country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the
   seat that can use it. Loops: each card is one-shot and tier 2, and every route needs nodes next to the city, so
-  liberation → clean city → energy → more liberation is capped; Popular Uprising repeats, capped by its once-a-round
-  Action and 4 Followers a liberation.
+  liberation → clean city → energy → more liberation is capped; Popular Uprising and the two finale buildings repeat,
+  capped by their once-a-round Action and its fuel (4 Followers, 1 antimatter, 5 energy).
 - **Tag discounts (candidate; the Terraforming Mars pattern).** Every `science_every` Science tags you have take 1
   insight off your tier-2 keeps and your card plays; every `industry_every` Industry tags take 1 credit off your
   buildings, as steel does. Neither goes below `discount_floor` (0: a discounted card may be free); the loop "tags,
@@ -135,9 +138,5 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
 - **Actions** (`ability`, buildings only) are used (`Use`) once a round, paying their cost. **An OR Action (`or`)** has two halves: one use a round, the player picks a half it can pay and that has
   a target (a half that counts tokens here needs one there). **Ongoing abilities live only on buildings:** income,
   Effect or Action on a program or event is refused when content loads.
-
-**Token cards, for new players.** A building that holds Operatives, Datasets, Followers or Capital starts with a few,
-gains more each time you do what it names (play a Science card, say) or by its Action, and at its number pays and
-loses that many. A card only ever counts its own tokens.
 
 (Variant `off`: no draft, [README.md](README.md#off-variants).)

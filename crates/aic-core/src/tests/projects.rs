@@ -242,11 +242,15 @@ fn security_cards_drain_or_discard_a_project() {
 
 #[test]
 fn botnet_takedown_removes_a_botnet_in_reach() {
-    // 119: Singularity Exploit pinned to r46's price and need of 3 Cyber.
+    // 119: Singularity Exploit pinned to r46's price and need of 3 Cyber, and to its program form (306 made it a
+    // building whose Action does this): the ops' rules, read through a play.
     let (rules, mut g) = lab_actions_with(&[
         "cards.singularity_exploit.cost=4",
         "cards.singularity_exploit.antimatter=1",
         r#"cards.singularity_exploit.needs=[["cyber",3]]"#,
+        "cards.singularity_exploit.kind=program",
+        "cards.singularity_exploit.ability=null",
+        r#"cards.singularity_exploit.effects=[{"op":"target","on":"botnet"},{"op":"remove_botnet"},{"op":"discard_project"}]"#,
     ]);
     let m = &rules.map;
     let p = node_of(&g, 0)[0];

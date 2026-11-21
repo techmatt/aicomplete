@@ -100,6 +100,9 @@ collider_consortium,other_gain research_cubes [play],play,"resource=research_cub
 collider_consortium,tags [card],card,science,1.0,0.67,0.67,0.41,0.41
 command_and_control_grid,draw [action],action,count=1,1.0,8.17,8.17,8.63,8.63
 command_and_control_grid,tags [card],card,cyber,1.0,0.67,0.67,0.7,0.7
+concord_reactor,gain_ambassadors [action],action,count=5; pays 1 antimatter,5.0,33.83,6.77,8.45,1.69
+concord_reactor,sway unity [action],action,"side=unity, amount=4, narrative=cooperation; pays 1 antimatter",4.0,13.53,3.38,3.38,0.85
+concord_reactor,tags [card],card,diplomacy,1.0,0.67,0.67,0.17,0.17
 conglomerate_headquarters,add_tokens capital [play],play,"kind=capital, amount=2, here=True",2.0,4.0,2.0,0.9,0.45
 conglomerate_headquarters,when play industry [passive],passive,"on={'event': 'play', 'tag': 'industry'}, then=[{'op': 'add_tokens', 'kind': 'capital', 'amount': 1, 'here': True}]",1.0,0.0,0.0,0.0,0.0
 conglomerate_headquarters,threshold [passive],passive,"at=3, then=[{'op': 'gain', 'resource': 'credits', 'amount': 8}]",1.0,4.2,4.2,0.95,0.95
@@ -236,6 +239,10 @@ fusion_startup_stake,production credits [play],play,"resource=credits, amount=2"
 fusion_startup_stake,target [play],play,on=fallout,1.0,0.0,0.0,0.0,0.0
 fusion_startup_stake,lift_fallout [play],play,"count=1, at=on",1.0,5.6,5.6,3.75,3.75
 fusion_startup_stake,tags [card],card,power,1.0,0.67,0.67,0.45,0.45
+fusion_torch_array,target [action],action,on=corrupted_city; pays 5 energy,1.0,0.0,0.0,0.0,0.0
+fusion_torch_array,liberate [action],action,; pays 5 energy,1.0,18.37,18.37,6.38,6.38
+fusion_torch_array,claim_site [action],action,near=True; pays 5 energy,1.0,3.67,3.67,1.28,1.28
+fusion_torch_array,tags [card],card,power industry,2.0,1.0,0.5,0.35,0.17
 garrison_command,jam typed [action],action,"amount=6, source=security",6.0,7.84,1.31,4.61,0.77
 garrison_command,tags [card],card,security,1.0,0.67,0.67,0.39,0.39
 gigafactory_charter,production credits [play],play,"resource=credits, amount=7",7.0,28.0,4.0,23.77,3.4
@@ -517,14 +524,19 @@ shared_grid_accord,tags [card],card,power diplomacy,2.0,1.0,0.5,0.3,0.15
 shared_threat_intel,jam any [play],play,amount=6,6.0,4.0,0.67,2.22,0.37
 shared_threat_intel,other_gain insight [play],play,"resource=insight, amount=2; to a chosen player",2.0,4.0,2.0,2.22,1.11
 shared_threat_intel,tags [card],card,security cyber,2.0,1.0,0.5,0.56,0.28
+siegebreaker_reactor,target [action],action,on=corrupted_city; pays 1 antimatter,1.0,0.0,0.0,0.0,0.0
+siegebreaker_reactor,remove_troops [action],action,"count=2, at=near; pays 1 antimatter",2.0,5.28,2.64,0.72,0.36
+siegebreaker_reactor,liberate [action],action,; pays 1 antimatter,1.0,19.13,19.13,2.62,2.62
+siegebreaker_reactor,claim_site [action],action,near=True; pays 1 antimatter,1.0,3.83,3.83,0.52,0.52
+siegebreaker_reactor,tags [card],card,security power,2.0,1.0,0.5,0.14,0.07
 signal_hijack,target [play],play,on=troops,1.0,0.0,0.0,0.0,0.0
 signal_hijack,remove_troops [play],play,"count=2, at=on",2.0,5.18,2.59,2.0,1.0
 simulation_cluster,reuse [action],action,,1.0,9.33,9.33,8.43,8.43
 simulation_cluster,tags [card],card,science cyber,2.0,1.0,0.5,0.9,0.45
-singularity_exploit,target [play],play,on=botnet,1.0,0.0,0.0,0.0,0.0
-singularity_exploit,remove_botnet [play],play,,1.0,5.33,5.33,8.47,8.47
-singularity_exploit,discard_project [play],play,,1.0,5.33,5.33,8.47,8.47
-singularity_exploit,tags [card],card,cyber,1.0,0.67,0.67,1.06,1.06
+singularity_exploit,discard_project [action],action,; pays 1 antimatter,1.0,0.0,0.0,0.0,0.0
+singularity_exploit,gain insight [action],action,"resource=insight, amount=2; pays 1 antimatter",2.0,0.0,0.0,0.0,0.0
+singularity_exploit,tags [card],card,cyber,1.0,0.67,0.67,0.09,0.09
+singularity_exploit,override [card],card,,1.0,30,30.0,3.91,3.91
 smart_grid_backbone,when play power [passive],passive,"on={'event': 'play', 'tag': 'power'}, then=[{'op': 'gain', 'resource': 'credits', 'amount': 7}]",1.0,11.02,11.02,6.31,6.31
 smart_grid_backbone,tags [card],card,power,1.0,0.67,0.67,0.38,0.38
 smart_grid_backbone,override [card],card,,1.0,13.33,13.33,7.64,7.64

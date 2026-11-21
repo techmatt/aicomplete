@@ -1,0 +1,107 @@
+{
+  "name": "s306c",
+  "note": "306: the finale buildings' pairing and up-front levers on r149 (seeds 51264-51359): `pair`, Siegebreaker Reactor needs 3 Power and Fusion Torch Array 3 Industry (the plants' tags); `up`, each of the four gains 1 antimatter when built; `both`. The judge as shipped.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-pair",
+      "set": [
+        "cards.siegebreaker_reactor.needs=[[\"power\",3]]",
+        "cards.fusion_torch_array.needs=[[\"industry\",3]]"
+      ]
+    },
+    {
+      "name": "br-pair",
+      "set": [
+        "ai.boards=0,2",
+        "cards.siegebreaker_reactor.needs=[[\"power\",3]]",
+        "cards.fusion_torch_array.needs=[[\"industry\",3]]"
+      ]
+    },
+    {
+      "name": "pr-pair",
+      "set": [
+        "ai.boards=1,2",
+        "cards.siegebreaker_reactor.needs=[[\"power\",3]]",
+        "cards.fusion_torch_array.needs=[[\"industry\",3]]"
+      ]
+    },
+    {
+      "name": "bp-up",
+      "set": [
+        "cards.siegebreaker_reactor.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+        "cards.concord_reactor.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+        "cards.fusion_torch_array.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+        "cards.singularity_exploit.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+      ]
+    },
+    {
+      "name": "br-up",
+      "set": [
+        "ai.boards=0,2",
+        "cards.siegebreaker_reactor.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+        "cards.concord_reactor.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+        "cards.fusion_torch_array.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+        "cards.singularity_exploit.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+      ]
+    },
+    {
+      "name": "pr-up",
+      "set": [
+        "ai.boards=1,2",
+        "cards.siegebreaker_reactor.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+        "cards.concord_reactor.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+        "cards.fusion_torch_array.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+        "cards.singularity_exploit.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+      ]
+    },
+    {
+      "name": "bp-both",
+      "set": [
+        "cards.siegebreaker_reactor.needs=[[\"power\",3]]",
+        "cards.fusion_torch_array.needs=[[\"industry\",3]]",
+        "cards.siegebreaker_reactor.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+        "cards.concord_reactor.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+        "cards.fusion_torch_array.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+        "cards.singularity_exploit.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+      ]
+    },
+    {
+      "name": "br-both",
+      "set": [
+        "ai.boards=0,2",
+        "cards.siegebreaker_reactor.needs=[[\"power\",3]]",
+        "cards.fusion_torch_array.needs=[[\"industry\",3]]",
+        "cards.siegebreaker_reactor.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+        "cards.concord_reactor.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+        "cards.fusion_torch_array.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+        "cards.singularity_exploit.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+      ]
+    },
+    {
+      "name": "pr-both",
+      "set": [
+        "ai.boards=1,2",
+        "cards.siegebreaker_reactor.needs=[[\"power\",3]]",
+        "cards.fusion_torch_array.needs=[[\"industry\",3]]",
+        "cards.siegebreaker_reactor.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+        "cards.concord_reactor.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+        "cards.fusion_torch_array.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]",
+        "cards.singularity_exploit.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":1}]"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 96,
+  "records": 0
+}

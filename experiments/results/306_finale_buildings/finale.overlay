@@ -1,0 +1,26 @@
+# 306: finale buildings (Matt, 2026-11-20: repeatable tier-2 buildings, hard to get and needing building up to,
+# each with a once-a-round Action spending a late-game resource). Apply with scripts/cards/apply_overlay.py, then add
+# the new ids to configs/baseline.json's deck (and three_seat.json's) and run scripts/regen.py.
+# Pay = credits + the tier-2 keep 8 + 18 an antimatter (3 an energy) at build and each use; get at the unit anchors.
+# Each card's why and its hard-to-get: README.md.
+#
+# Siegebreaker Reactor (security, power): needs 3 Power (the power plants' tag: 3 Security in the screen, used 8.6 to
+# 11.7 times in 100 games on 3 Power), 4 credits. Action, 1 antimatter: 2 troops off on or next to the target
+# corrupted city, Rescue it. A use 6.67 + 26 = 32.7 for 18: 1.81. (A third clause, 2 ambassadors placed on it, 2.41 a
+# use, fit at 6.3 pt: cut.)
+cards.siegebreaker_reactor={"id":"siegebreaker_reactor","name":"Siegebreaker Reactor","tier":2,"kind":"building","cost":4,"insight":0,"needs":[["power",3]],"tags":["security","power"],"effects":[],"ability":{"cost":[["antimatter",1]],"effects":[{"op":"target","on":"corrupted_city"},{"op":"remove_troops","count":2,"at":"near"},{"op":"liberate"},{"op":"claim_site","near":true}]}}
+# Concord Reactor (diplomacy): 12 credits and 2 Diplomacy. Action, 1 antimatter: gain 5 ambassadors, sway 4 Unity.
+# A use 26.67 + 10.67 = 37.3 for 18: 2.07.
+cards.concord_reactor={"id":"concord_reactor","name":"Concord Reactor","tier":2,"kind":"building","cost":12,"insight":0,"needs":[["diplomacy",2]],"tags":["diplomacy"],"effects":[],"ability":{"cost":[["antimatter",1]],"effects":[{"op":"gain_ambassadors","count":5},{"op":"sway","side":"unity","amount":4,"narrative":"cooperation"}]}}
+# Fusion Torch Array (power): needs 3 Power, 8 credits. Action, 5 energy: Rescue the target corrupted city.
+# A use 26 for 15: 1.73.
+cards.fusion_torch_array={"id":"fusion_torch_array","name":"Fusion Torch Array","tier":2,"kind":"building","cost":8,"insight":0,"needs":[["power",3]],"tags":["power","industry"],"effects":[],"ability":{"cost":[["energy",5]],"effects":[{"op":"target","on":"corrupted_city"},{"op":"liberate"},{"op":"claim_site","near":true}]}}
+# Singularity Exploit (cyber), converted from a one-shot program (1 antimatter: remove the target botnet, discard a
+# project): needs 3 Cyber, 4 credits. Action, 1 antimatter: discard a visible adversary project, gain 2 insight. A
+# use 24-36 + 5.33 for 18: 1.63-2.30. (The botnet and a 1-antimatter build cost fit at 6.9 pt: cut. A draw 1 rider
+# ran in the screen; the diff review: a second repeatable Cyber draw beside Command-and-Control Grid, so insight.)
+cards.singularity_exploit.kind="building"
+cards.singularity_exploit.cost=4
+cards.singularity_exploit.antimatter=null
+cards.singularity_exploit.effects=[]
+cards.singularity_exploit.ability={"cost":[["antimatter",1]],"effects":[{"op":"discard_project"},{"op":"gain","resource":"insight","amount":2}]}

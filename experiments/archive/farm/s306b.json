@@ -1,0 +1,19 @@
+{
+  "name": "s306b",
+  "note": "306: the keep's idle-antimatter Actions lever (`w.am_act`), on (the judge as shipped) and off, on the r149 deck: the three pairs, d0-d3 (seeds 51264-51359, 303's spent fresh set; and the 16-seed smoke on the dev seeds 36800-36815).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [0, 1, 2, 3],
+  "agents": [
+    "strategist",
+    "strategist:w.am_act=0"
+  ],
+  "games": 96,
+  "records": 0
+}

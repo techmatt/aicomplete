@@ -96,6 +96,12 @@ planner's, outside this repo.
   to N a round"; no paid Move; a sold card gives 1 credit. Fallout also comes off as a side bonus on green-feeling
   cards, never a bare removal card or a tier-2 multi-clear. Convert and engine-use cards (no anchor for their unit)
   are priced in band under both readings. Checklist: [card-guidelines.md](card-guidelines.md).
+- **Finale buildings (Matt, Nov 20):** not every capstone is a building, but repeatable tier-2 "finale" buildings,
+  hard to get and needing building up to, are a natural home for late-game power: their once-a-round Action (24)
+  spends a late-game resource (antimatter, or large amounts of energy and the like). Getting the resource and its
+  spending pathway are each hard enough that together they are the late engine, built while fending off the early
+  game; a free engine beside a plant is the intended payoff, not a risk to price away. Diversity of design is a soft
+  goal.
 - **Tags are flavor and expectations, not rules** (as MtG colors): no tag owns an effect; an effect needs only a
   story fit.
 - **Card targets (locked):** a map card, board power or standard action names one target, a hex in reach (1, fixed);
@@ -138,7 +144,7 @@ planner's, outside this repo.
   country, as the marker arrives; slot 7 is a loss. Boards differ by their row, their event mix and one rule; the
   map shows which threat is growing. **Rows are data**, content not code (the Militarist's holds Garrison and Strike
   icons).
-- **Research track pace:** it advances every K cubes, **K 2 a country**, cubes from round 1 (the start is the building item's to
+- **Research track pace:** it advances every K cubes, **K 3 a country at levels 0-1 and 2 from level 2**, cubes from round 1 (the start is the building item's to
   propose: 0 now); the row is fed so it
   reaches its higher, scary slots when players don't deal with it: threats, projects, Discord cards and the like
   open more adversary research stations or add research cubes, each addition kept close to an existing line.

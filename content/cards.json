@@ -1395,9 +1395,8 @@
   "id": "singularity_exploit",
   "name": "Singularity Exploit",
   "tier": 2,
-  "kind": "program",
-  "cost": 0,
-  "antimatter": 1,
+  "kind": "building",
+  "cost": 4,
   "insight": 0,
   "needs": [
    [
@@ -1411,18 +1410,25 @@
   "keywords": [
    "hack"
   ],
-  "effects": [
-   {
-    "op": "target",
-    "on": "botnet"
-   },
-   {
-    "op": "remove_botnet"
-   },
-   {
-    "op": "discard_project"
-   }
-  ]
+  "effects": [],
+  "ability": {
+   "cost": [
+    [
+     "antimatter",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "discard_project"
+    },
+    {
+     "op": "gain",
+     "resource": "insight",
+     "amount": 2
+    }
+   ]
+  }
  },
  {
   "id": "hyperscale_botnet",
@@ -6129,5 +6135,128 @@
     "amount": 3
    }
   ]
+ },
+ {
+  "id": "siegebreaker_reactor",
+  "name": "Siegebreaker Reactor",
+  "tier": 2,
+  "kind": "building",
+  "cost": 4,
+  "insight": 0,
+  "needs": [
+   [
+    "power",
+    3
+   ]
+  ],
+  "tags": [
+   "security",
+   "power"
+  ],
+  "effects": [],
+  "ability": {
+   "cost": [
+    [
+     "antimatter",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "target",
+     "on": "corrupted_city"
+    },
+    {
+     "op": "remove_troops",
+     "count": 2,
+     "at": "near"
+    },
+    {
+     "op": "liberate"
+    },
+    {
+     "op": "claim_site",
+     "near": true
+    }
+   ]
+  }
+ },
+ {
+  "id": "concord_reactor",
+  "name": "Concord Reactor",
+  "tier": 2,
+  "kind": "building",
+  "cost": 12,
+  "insight": 0,
+  "needs": [
+   [
+    "diplomacy",
+    2
+   ]
+  ],
+  "tags": [
+   "diplomacy"
+  ],
+  "effects": [],
+  "ability": {
+   "cost": [
+    [
+     "antimatter",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "gain_ambassadors",
+     "count": 5
+    },
+    {
+     "op": "sway",
+     "side": "unity",
+     "amount": 4,
+     "narrative": "cooperation"
+    }
+   ]
+  }
+ },
+ {
+  "id": "fusion_torch_array",
+  "name": "Fusion Torch Array",
+  "tier": 2,
+  "kind": "building",
+  "cost": 8,
+  "insight": 0,
+  "needs": [
+   [
+    "power",
+    3
+   ]
+  ],
+  "tags": [
+   "power",
+   "industry"
+  ],
+  "effects": [],
+  "ability": {
+   "cost": [
+    [
+     "energy",
+     5
+    ]
+   ],
+   "effects": [
+    {
+     "op": "target",
+     "on": "corrupted_city"
+    },
+    {
+     "op": "liberate"
+    },
+    {
+     "op": "claim_site",
+     "near": true
+    }
+   ]
+  }
  }
 ]

@@ -68,8 +68,7 @@ moves when any other card changes: to reprice an edited card, move its price by 
   the middle, the big income and late cards dearest, a few cheap ones (each card's cost: `docs/cards.md`). Six
   credits is about two thirds of a round's printed credits on the boards (10 / 9 / 7).
 - **Big early and late cards** (Matt): early jump-starts, no `needs`, playable in rounds 1-3 from the starting 27-31
-  (Fabrication Megaplex, Frontier Lab Charter, National Grid Buildout, beside Gigafactory Charter, Wartime Retooling
-  and Multiyear Defense Budget). The anchors price income at mid-game; bought in round 1-3 it runs about 5 rounds
+  (Fabrication Megaplex, Frontier Lab Charter and others). The anchors price income at mid-game; bought in round 1-3 it runs about 5 rounds
   (about 1.25× the anchor), so a jump-start reads 1.0-1.3 at the anchors and stays under 1.5 early. Late objectives
   reach a goal in one play: Moonshot Grant's 8 cubes fill a megaproject (cubes at 6 when they complete it), the
   liberate capstones. **The majors:** tier-2 cards paying 1 antimatter (18 since 283) for a big payoff, priced at the anchors
@@ -82,18 +81,12 @@ moves when any other card changes: to reprice an edited card, move its price by 
   printed price. That gap is the point; a card that nets below 0 for its own seat is still a bug. **Payback, as
   measured** (the aim is 2 rounds, a bar no item enforces until a repricing pass; Matt, D126): give (credits,
   insight to play and keep, other costs) less the when-built gain and the card's own first fire, over a round's
-  yield at that rate (`scripts/cards/payback.py`). At r137, 15 of 38 engine buildings pay back within 2 rounds and 28
-  within 3 (median 2.3); eight take 5 or more (Power to the People 17.5, Consulate Tower 10.2, Honeypot Relay 6.5,
-  Reconciliation Office 6.3, Supplier Network 6, Security Ops Floor 5.2, Substation Hub 5.1, Preprint Server 5), and
-  two (Agency Field Station, Joint Task Force) yield nothing the script reads.
+  yield at that rate (`scripts/cards/payback.py`, which lists the slow ones).
   **Engines pay up front:** the when-built gain is about two fires, in cards (since 271's scarce draw, at most
   2: Foundation Model Campus) where the fire pays credits, since a credit gain on a credit cost would be a circular
   payment (guideline 5). How the agents read a trigger in play: agents.md, *The value table*.
 - **Card throughput** (271's scarce draw): credits pile up, so the fix is dearer, bigger cards and more of them, but
-  repeatable draw is thin: two engines draw 1 on a tag's plays (Preprint Server on each Science card you play,
-  Consulate Tower on each Diplomacy card another player plays), one Action draws 1 a round (Command-and-Control
-  Grid), board powers draw 1 a use (the Researcher's Field Survey and Lab, the Protector's Interdict II), and two
-  chip converters draw 1 (Polar Compute Array's, Delta Seawall's). The rest is once: 1-2 when a building is built,
+  repeatable draw is thin (two tag engines, one Action, a few board powers and two chip converters draw 1: rules/player-cards.md, *Card draw*). The rest is once: 1-2 when a building is built,
   1-3 when a program or event is played. Late, dear cards (Moonshot Grant, Headquarters Raid) take spare credits. A flat credit sink stays the
   last resort.
 - **Insight off every card** counts `rates.insight_discount_share` (0.25) of the plays: the floor below.
@@ -138,6 +131,12 @@ moves when any other card changes: to reprice an edited card, move its price by 
   Peacekeeping Mission, Beamline Liberation, Reactor Retooling) are sinks at 2.0-2.5× (rulings, *Antimatter*):
   stronger effects, never less antimatter. Their income lines act with no city in reach, so The Nuclear Option, Root
   Access and Reactor Retooling also play early as income.
+- **The finale buildings** (306; rulings, *Finale buildings*): a use's get at the anchors over the resource it spends
+  (Concord Reactor 2.07, Singularity Exploit 1.63-2.30 by the project's fill; Siegebreaker Reactor 1.81, under the
+  antimatter events' 2.0: the third clause that reached 2.41 didn't fit; Fusion Torch Array's energy 1.73), and the
+  card over 3-4 uses with its credits and keep (1.28-1.88).
+  Their price is mostly the build-up: a `needs` of 2-3 or 12 credits, and a plant for the fuel, so they are not
+  priced down for the engine they make beside a plant. Uses per game measured: the 306 write-up.
 
 ## Rates known to be off at r36
 

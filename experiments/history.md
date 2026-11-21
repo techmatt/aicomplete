@@ -10,6 +10,7 @@ the findings are in the write-up.
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 306 finale buildings: three new, Singularity Exploit converted; antimatter spent a seat-game | 149 | [306_finale_buildings](results/306_finale_buildings/README.md) |
 | 305 overhaul 7: the viewer pass (player view at 1366×768, the turn's map by step, two clicked games) | 148 | [305_overhaul_7_viewer_pass](results/305_overhaul_7_viewer_pass/README.md) |
 | 303 two more antimatter sinks and the judge's idle antimatter: spent ÷ gained 35 → 46% | 148 | [303_antimatter_sinks_and_saving](results/303_antimatter_sinks_and_saving/README.md) |
 | 302 the antimatter capstones to the sink ruling (2.0-2.5×): stronger effects, no antimatter cut | 147 | [302_antimatter_capstones](results/302_antimatter_capstones/README.md) |

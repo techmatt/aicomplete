@@ -1,0 +1,22 @@
+{
+  "name": "s306",
+  "note": "306: the finale buildings' screen on r149 (seeds 51264-51359, 303's spent fresh set): the three pairs, d0-d3, each as built (`base`) and eased (`eased`: Siegebreaker Reactor, Fusion Torch Array and Singularity Exploit need 2 of their tag, not 3; Concord Reactor 8 credits, not 12), the judge as shipped and with idle antimatter off (w.am_cap=0).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp-base", "set": []},
+    {"name": "br-base", "set": ["ai.boards=0,2"]},
+    {"name": "pr-base", "set": ["ai.boards=1,2"]},
+    {"name": "bp-eased", "set": ["cards.siegebreaker_reactor.needs=[[\"security\",2]]", "cards.fusion_torch_array.needs=[[\"power\",2]]", "cards.singularity_exploit.needs=[[\"cyber\",2]]", "cards.concord_reactor.cost=8"]},
+    {"name": "br-eased", "set": ["ai.boards=0,2", "cards.siegebreaker_reactor.needs=[[\"security\",2]]", "cards.fusion_torch_array.needs=[[\"power\",2]]", "cards.singularity_exploit.needs=[[\"cyber\",2]]", "cards.concord_reactor.cost=8"]},
+    {"name": "pr-eased", "set": ["ai.boards=1,2", "cards.siegebreaker_reactor.needs=[[\"security\",2]]", "cards.fusion_torch_array.needs=[[\"power\",2]]", "cards.singularity_exploit.needs=[[\"cyber\",2]]", "cards.concord_reactor.cost=8"]}
+  ],
+  "difficulties": [0, 1, 2, 3],
+  "agents": [
+    "strategist",
+    "strategist:w.am_cap=0"
+  ],
+  "games": 96,
+  "records": 0
+}

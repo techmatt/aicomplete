@@ -348,6 +348,13 @@
    "unit": "ambassador",
    "cards": [
     {
+     "name": "Concord Reactor",
+     "units": "5 * uses",
+     "other": "4 * uses * sway",
+     "use": "am",
+     "note": "306: Action 1 antimatter: 5 ambassadors, sway 4, x4"
+    },
+    {
      "name": "Envoy Briefings",
      "units": 2,
      "other": "2 * card",
@@ -477,13 +484,6 @@
      "other": "6 * compute",
      "use": 0,
      "note": "botnet; 6 compute 12"
-    },
-    {
-     "name": "Singularity Exploit",
-     "units": 1,
-     "other": "project",
-     "use": 0,
-     "note": "botnet; discard a project (the project unit, 16)"
     },
     {
      "name": "Decapitation Strike",
@@ -703,6 +703,20 @@
      "other": "0.5 * station_owned",
      "use": 0,
      "note": "Action: a Follower, or 4 Followers: liberate (once in ~5 rounds); 256: claims a neutral site next to it (~0.5)"
+    },
+    {
+     "name": "Siegebreaker Reactor",
+     "units": "uses",
+     "other": "uses * (2 * troop + 0.5 * station_owned)",
+     "use": "am",
+     "note": "306: Action 1 antimatter: 2 troops on or next to the city, rescue it, x4"
+    },
+    {
+     "name": "Fusion Torch Array",
+     "units": "uses",
+     "other": "uses * 0.5 * station_owned",
+     "use": "5 * energy",
+     "note": "306: Action 5 energy: rescue the city, x4"
     }
    ]
   },
