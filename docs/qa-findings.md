@@ -5,7 +5,7 @@ faults past hunts kept finding. Fixed findings, never to re-report: F1–F100 (0
 1617d75:docs/qa-findings.md`; then each hunt's `fixed.md` and `deferred.md` under `experiments/results/`: 099 (r38,
 F101 on), 118 (r46, F132, D43, W19 on), 145 (r59, F165, D57 on), 169 (r72 → 73, F205, D72 on), 184 (r77 → 78, F225,
 D77, W28 on), 197 (r86, F272, D88, W29 on), 235 (r106, F289, D92, W31 on; 238 fixed D92-D96, D98, D100, D103-D105, r108), 261 (r121 → r122, F322, D106, W34 on; 265 fixed D108, D109, D112, D115, D116; 266 D117), 285 (r135 → r136, F379,
-D120 on; fixed D102; 286 closed D121, D122, D124, D125, D126 (restated), D128, D130, D131, D132 at r137; 288 fixed D106 (built in) and D120 at r138; 289 closed D123, D127, D129, D133 (the troops prompt's words to D85); 305 closed D85, D87, D135 and D50's picks, D52 to won't fix). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
+D120 on; fixed D102; 286 closed D121, D122, D124, D125, D126 (restated), D128, D130, D131, D132 at r137; 288 fixed D106 (built in) and D120 at r138; 289 closed D123, D127, D129, D133 (the troops prompt's words to D85); 305 closed D85, D87, D135 and D50's picks, D52 to won't fix; 307 closed D84 (Focus cut, 206) and D134 (Spill and Grow gone, r140), and dropped W17 and W33 (their cards gone)). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
 
 ## Checkers
 
@@ -84,13 +84,11 @@ Each hunt found most of its faults in the same places. Look there first:
 | D80 | words | Great Liberation "frees" cities it liberates; the rulebook never defines "free". | "Liberate or free", or a rulebook line. **Matt's call**. |
 | D82 | cards | Five cards print under 7.5 pt with no recorded exception (Rally the Allies 5.4 pt). | Cut words or record. **Matt's call**. |
 | D83 | art | 12 deck cards name no scene and 6 scenes aren't served: `cards:check` fails. | An art batch or a pool scene. **Pick**. |
-| D84 | boards | Focus (Builder) is never used (199: 0.01-0.04 uses at 2 credits; credits bind first). | With the board redesign. **Matt's call**. |
 | D107 | rules | Nothing marks a city bought this round. | A Bought marker. **Matt's call**. |
 | D113 | cards | Counterintelligence Sweep, Fusion Commons draw at 0 insight. | 1 insight; no draw. **Matt's call**. |
 | D114 | cards | Five liberate cards' pricing notes use pre-r113 keeps. | Restate. **Pick**. |
 | D118 | rules | The Liberated marker binds Corrupt lines only, not cards that take a site. | Leave; guard. **Matt's call**. |
 | D119 | cards | Faces against house terms: node "Harden", Faraday Yard's box, two-way wordings. | One card-words item. **Pick**. |
-| D134 | agents | The arrival forecast leaves out the card's Spill and Grow's agent. | 288: `plan::next_spill` built, off (`w.spill_read`: -1.7 judge, -2.1 greedy on the dev seeds; it still moves agents off a site the Infiltrate corrupts first). **Won't fix** while it loses. |
 
 ## Won't fix
 
@@ -107,7 +105,6 @@ Each hunt found most of its faults in the same places. Look there first:
 | W13 | viewer | A record overlaying content shows the printed text. | experiments.md, *Content levers*; play is the overlay's. |
 | W15 | scripts | `screen.py`'s "cap" column counts deck-out losses. | The round cap: adversary.md's word. |
 | W16 | viewer | The sweep's `truncated` (thousands): threat, project and adversary text cut to fit. | The no-scroll budget (W10); each has a hover. |
-| W17 | cards | "Liquidity Event is dominated by Bonded Warehouse." | It cashes a pile without spending the Action. |
 | W18 | report | A one-agent run says "the ladder is ordered". | True of a one-rung ladder. |
 | W19 | ops | `copy_income` has no card; the agents' copy check is off. | Fix with its card. |
 | W21 | viewer | A card's hover shows its id and pile key. | A developer aid, as W9. |
@@ -117,6 +114,5 @@ Each hunt found most of its faults in the same places. Look there first:
 | W25 | report | "adversary ops/round" counts a game's last, partial round. | Small (1 game in 48). |
 | W20 | content | The place-token loop guard sees only a direct `add_tokens`. | No deck card prints such a trigger. |
 | W31 | cards | Peacekeeper Rotation's move onto a Troops target with no piece does nothing. | Not in the deck: fix with the card. |
-| W33 | rules | Teardown's Fallout lands under a node on the torn-down factory's hex (D99). | Matt's ruling (238): Teardown is the player's own choice. |
 | W34 | scripts | `screen.py`'s 041 preset reads the r98-retired marker counters. | A historical preset, kept as 041's record. |
 | W35 | viewer | (D52) The timeline keeps a state a step. | 305 measured the heap after a whole r148 game in the player view: 14 MB (2 seats, 306 actions), 22 MB (3 seats, 461), 29 MB (4 countries, 624; ~200 MB was an older build's). |

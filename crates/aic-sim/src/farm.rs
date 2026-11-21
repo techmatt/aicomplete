@@ -27,14 +27,14 @@ pub const ENGINE: &str = if cfg!(target_arch = "wasm32") { "wasm" } else { "nati
 pub type Read<'a> = &'a dyn Fn(&str) -> Result<String, String>;
 
 /// The folder of farmed specs, from the repo root.
-pub const SPECS: &str = "experiments/farm";
+const SPECS: &str = "experiments/farm";
 
 /// 284: where a finished item's farm specs go (not built into the bundle); a bare name missing from
 /// [`SPECS`] is read from here, so a kept read's `FILE=NAME` still finds its header natively.
-pub const ARCHIVED: &str = "experiments/archive/farm";
+const ARCHIVED: &str = "experiments/archive/farm";
 
 /// A spec argument's path: a bare name is `experiments/farm/NAME.json`.
-pub fn spec_path(arg: &str) -> String {
+fn spec_path(arg: &str) -> String {
     if arg.contains('/') || arg.contains('\\') || arg.ends_with(".json") {
         arg.to_string()
     } else {
@@ -49,7 +49,7 @@ pub struct Farm {
 }
 
 impl Farm {
-    /// The spec `arg` names (see [`spec_path`]), its files from `read`.
+    /// The spec `arg` names (see `spec_path`), its files from `read`.
     pub fn load(arg: &str, read: Read) -> Result<Farm, String> {
         let mut path = spec_path(arg);
         let mut text = read(&path);
@@ -127,7 +127,7 @@ impl Farm {
 
 /// A game's farm line: `games.jsonl`'s, its timings 0 and its engine named
 /// (none when `engine` is empty).
-pub fn line(r: &GameResult, engine: &str) -> String {
+fn line(r: &GameResult, engine: &str) -> String {
     line_of(r.clone(), engine)
 }
 

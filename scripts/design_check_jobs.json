@@ -1,5 +1,5 @@
 {
- "note": "249: the job-parity check's data (design_check.py check_jobs), ported from 248's hand-read price table (experiments/results/248_standard_actions_probe/price_cards.py). Per standard row (by name): the cards and board powers that do its job, each card's job units, its other effects and an Action's use cost as expressions over `units` (a number, or a design_check anchor's name), `uses` (rounds of an Action or trigger) and `tags` (a tag count at play). A card's pay is read from content (credits + 4 x (keep + play insight) + printed energy, chips, antimatter, cubes). Unit price = (pay + uses x use - other) / units. A power costs its use, once.",
+ "note": "249: the job-parity check's data (design_check.py check_jobs), ported from 248's hand-read price table (experiments/results/248_standard_actions_probe/price_cards.py). Per standard row (by name): the cards and board powers that do its job, each card's job units, its other effects and an Action's use cost as expressions over `units` (a number, or a design_check anchor's name), `uses` (rounds of an Action or trigger) and `tags` (a tag count at play). A card's pay is read from content (credits + 4 x (keep + play insight) + printed energy, chips, antimatter, cubes). Unit price = (pay + uses x use - other) / units. A power costs its use, once. `seen` (307): a hash of the card's or power's content when its row was priced (a card's pay fields excluded, being read live); design_check warns job-stale when it moves: recheck the row, then `python scripts/design_check.py --stamp-jobs NAME`.",
  "uses": 4,
  "tags": 5,
  "keep_insight": {
@@ -48,7 +48,8 @@
      "units": 1,
      "other": "amb",
      "use": 0,
-     "note": "256: a station opens on an empty printed site in reach, yours; 1 ambassador on it"
+     "note": "256: a station opens on an empty printed site in reach, yours; 1 ambassador on it",
+     "seen": "9e4d2e84da"
     },
     {
      "name": "Field Station (Researcher)",
@@ -56,7 +57,8 @@
      "other": "node",
      "use": "2 * insight",
      "note": "r142: a node power: 2 insight: build a station and place a node",
-     "power": true
+     "power": true,
+     "seen": "25829bfac3"
     }
    ]
   },
@@ -68,168 +70,192 @@
      "units": 3,
      "other": 0,
      "use": 0,
-     "note": "297: 3 agents on its target (or 2 troops)"
+     "note": "297: 3 agents on its target (or 2 troops)",
+     "seen": "e9fdc92e8b"
     },
     {
      "name": "Eviction Worm",
      "units": 3,
      "other": "4 * compute",
      "use": 0,
-     "note": "3 agents; 4 compute 8"
+     "note": "3 agents; 4 compute 8",
+     "seen": "5f850db83e"
     },
     {
      "name": "Diplomatic Expulsion",
      "units": 4,
      "other": "sway",
      "use": 0,
-     "note": "4 agents; sway 1"
+     "note": "4 agents; sway 1",
+     "seen": "b56d841da3"
     },
     {
      "name": "Counterinsurgency Campaign",
      "units": 3,
      "other": "1 * cr_inc",
      "use": 0,
-     "note": "3 agents; +1 credit income 4"
+     "note": "3 agents; +1 credit income 4",
+     "seen": "315f6df5fe"
     },
     {
      "name": "Headquarters Raid",
      "units": 5,
      "other": "1 * card",
      "use": 0,
-     "note": "5 agents; draw 4 (271: draws 1 on play, 0 an Action)"
+     "note": "5 agents; draw 4 (271: draws 1 on play, 0 an Action)",
+     "seen": "e2ad45ff8d"
     },
     {
      "name": "Amnesty Decree",
      "units": 4,
      "other": "2 * amb",
      "use": 0,
-     "note": "clear 4 by a corrupted city; 2 ambassadors placed 16"
+     "note": "clear 4 by a corrupted city; 2 ambassadors placed 16",
+     "seen": "5370c37380"
     },
     {
      "name": "Ceasefire Monitors",
      "units": 3,
      "other": "2 * amb",
      "use": 0,
-     "note": "3 agents (or 1 troop); 2 ambassadors 16"
+     "note": "3 agents (or 1 troop); 2 ambassadors 16",
+     "seen": "8f6536f28d"
     },
     {
      "name": "Honeypot Relay",
      "units": 2,
      "other": "card + 2 * 2",
      "use": 0,
-     "note": "up to 2 now; draw 1; 3 cr a removal event (~2 more) 6 (271: draws 0 on play, 0 an Action)"
+     "note": "up to 2 now; draw 1; 3 cr a removal event (~2 more) 6 (271: draws 0 on play, 0 an Action)",
+     "seen": "b7f13c4f4c"
     },
     {
      "name": "Agency Field Station",
      "units": "uses",
      "other": 0,
      "use": 0,
-     "note": "1 agent a Security play (4 in 4 rounds); draw 2 (271: draws 0 on play, 0 an Action)"
+     "note": "1 agent a Security play (4 in 4 rounds); draw 2 (271: draws 0 on play, 0 an Action)",
+     "seen": "fa903024b9"
     },
     {
      "name": "Joint Task Force",
      "units": "2 * uses",
      "other": 0,
      "use": 0,
-     "note": "2 agents an other player's Security play (4 fires); draw 2 (271: draws 0 on play, 0 an Action)"
+     "note": "2 agents an other player's Security play (4 fires); draw 2 (271: draws 0 on play, 0 an Action)",
+     "seen": "406d692ae6"
     },
     {
      "name": "Directed-Energy Array",
      "units": "3 * uses",
      "other": 0,
      "use": "2 * energy",
-     "note": "Action 2 energy: 3 agents, x4"
+     "note": "Action 2 energy: 3 agents, x4",
+     "seen": "0b49d546fd"
     },
     {
      "name": "Field Assay Team",
      "units": "3 * uses",
      "other": 0,
      "use": "cube",
-     "note": "258: Action 1 cube: 3 agents, x4"
+     "note": "258: Action 1 cube: 3 agents, x4",
+     "seen": "50e524a0cd"
     },
     {
      "name": "Air Gap",
      "units": 3,
      "other": "firewall",
      "use": 0,
-     "note": "3 agents; firewall ~5"
+     "note": "3 agents; firewall ~5",
+     "seen": "01e68cbf1d"
     },
     {
      "name": "Killswitch Directive",
      "units": 4,
      "other": "project",
      "use": 0,
-     "note": "4 agents; discard a project 24"
+     "note": "4 agents; discard a project 24",
+     "seen": "4343c824c2"
     },
     {
      "name": "Lure Network",
      "units": "3 * uses",
      "other": 0,
      "use": 0,
-     "note": "Action free: up to 3, x4; draw 2 (271: draws 0 on play, 0 an Action)"
+     "note": "Action free: up to 3, x4; draw 2 (271: draws 0 on play, 0 an Action)",
+     "seen": "ba7768ea17"
     },
     {
      "name": "Liberation Accords",
      "units": 6,
      "other": "4 * amb",
      "use": 0,
-     "note": "6 agents; 4 ambassadors 32"
+     "note": "6 agents; 4 ambassadors 32",
+     "seen": "07087ae3ba"
     },
     {
      "name": "Martial Cordon",
      "units": 6,
      "other": "-sway",
      "use": 0,
-     "note": "6 agents; sway 1 Discord -4"
+     "note": "6 agents; sway 1 Discord -4",
+     "seen": "3d3f9baf77"
     },
     {
      "name": "Kettle Operation",
      "units": 6,
      "other": "-sway",
      "use": 0,
-     "note": "up to 6 agents or troops; Discord -4"
+     "note": "up to 6 agents or troops; Discord -4",
+     "seen": "b46be8ef23"
     },
     {
      "name": "Surgical Strike",
      "units": 4,
      "other": "-sway",
      "use": 0,
-     "note": "4 agents (or 3 troops); Discord -4"
+     "note": "4 agents (or 3 troops); Discord -4",
+     "seen": "a185aa7c4a"
     },
     {
      "name": "Kinetic Interdiction",
      "units": "10 * uses",
      "other": "0",
      "use": "am",
-     "note": "287: Action 1 antimatter: 10 agents in its country, x4"
+     "note": "287: Action 1 antimatter: 10 agents in its country, x4",
+     "seen": "e8802f7ca1"
     },
     {
      "name": "Deep State Ledger",
      "units": 3,
      "other": "3 * ins_inc",
      "use": 0,
-     "note": "3 agents; +3 insight income 36"
+     "note": "3 agents; +3 insight income 36",
+     "seen": "5d13dbc415"
     },
     {
      "name": "Mass Defection",
      "units": 5,
      "other": "5 * amb + 2 * sway",
      "use": 0,
-     "note": "convert 5 (ambassadors where they stood 40); sway 2"
+     "note": "convert 5 (ambassadors where they stood 40); sway 2",
+     "seen": "30e4a3ecba"
     },
     {
      "name": "Double Agents",
      "units": 3,
      "other": "3 * amb + 2 * troop",
      "use": 0,
-     "note": "convert 3 (24); 2 troops 10"
+     "note": "convert 3 (24); 2 troops 10",
+     "seen": "66951ad1d1"
     },
     {
      "name": "Open Source Uprising",
      "units": 4,
      "other": "4 * amb + sway",
      "use": 0,
-     "note": "convert 4 (32); draw 2; sway 1 (271: draws 0 on play, 0 an Action)"
+     "note": "convert 4 (32); draw 2; sway 1 (271: draws 0 on play, 0 an Action)",
+     "seen": "bf5bc64cf2"
     }
    ]
   },
@@ -241,42 +267,48 @@
      "units": 2,
      "other": 0,
      "use": 0,
-     "note": "297: 2 troops on its target, or 3 agents (was 1 troop)"
+     "note": "297: 2 troops on its target, or 3 agents (was 1 troop)",
+     "seen": "e9fdc92e8b"
     },
     {
      "name": "Surgical Strike",
      "units": 3,
      "other": "-sway",
      "use": 0,
-     "note": "3 troops (or 4 agents); Discord -4"
+     "note": "3 troops (or 4 agents); Discord -4",
+     "seen": "a185aa7c4a"
     },
     {
      "name": "Double Agents",
      "units": 2,
      "other": "3 * (agent + amb)",
      "use": 0,
-     "note": "2 troops; convert 3 (39)"
+     "note": "2 troops; convert 3 (39)",
+     "seen": "66951ad1d1"
     },
     {
      "name": "Decapitation Strike",
      "units": 3,
      "other": "botnet",
      "use": 0,
-     "note": "3 troops; botnet 16"
+     "note": "3 troops; botnet 16",
+     "seen": "1bc5e577b7"
     },
     {
      "name": "Annihilation Lance",
      "units": 3,
      "other": "6 * agent - 2 * sway",
      "use": 0,
-     "note": "~1 on it + 2 near; ~6 agents 30; Discord -8"
+     "note": "~1 on it + 2 near; ~6 agents 30; Discord -8",
+     "seen": "3563098258"
     },
     {
      "name": "Kettle Operation",
      "units": 2,
      "other": "4 * agent - sway",
      "use": 0,
-     "note": "~2 troops (p90 3 a country) + 4 agents 20; -4"
+     "note": "~2 troops (p90 3 a country) + 4 agents 20; -4",
+     "seen": "b46be8ef23"
     },
     {
      "name": "Fortify I (Builder)",
@@ -284,7 +316,8 @@
      "other": 0,
      "use": "chip",
      "note": "276: 1 chip: 1 troop on the target",
-     "power": true
+     "power": true,
+     "seen": "71936d3e26"
     },
     {
      "name": "Fortify II (Builder)",
@@ -292,7 +325,8 @@
      "other": "harden",
      "use": "2 * chip",
      "note": "276: 2 chips: up to 2 troops on the target (1.48 in play); harden 1",
-     "power": true
+     "power": true,
+     "seen": "8add6b4750"
     },
     {
      "name": "Hack I (Researcher)",
@@ -300,7 +334,8 @@
      "other": 0,
      "use": 0,
      "note": "276: 1 Cyber sacrifice: up to 2 in one country (sacrifice unpriced; no cube since 276)",
-     "power": true
+     "power": true,
+     "seen": "6d75232e01"
     }
    ]
   },
@@ -312,35 +347,40 @@
      "units": 3,
      "other": "1 * card",
      "use": 0,
-     "note": "lift 3 near; draw 3 (271: draws 1 on play, 0 an Action)"
+     "note": "lift 3 near; draw 3 (271: draws 1 on play, 0 an Action)",
+     "seen": "06342b2344"
     },
     {
      "name": "Fusion Startup Stake",
      "units": 1,
      "other": "en_inc1 + 2 * cr_inc",
      "use": 0,
-     "note": "lift 1; +1 energy, +3 credit income 26"
+     "note": "lift 1; +1 energy, +3 credit income 26",
+     "seen": "8b4d57585c"
     },
     {
      "name": "Pumped Hydro Storage",
      "units": 2,
      "other": "3 * cr_inc",
      "use": 0,
-     "note": "lift 2 near; +3 credit income 12"
+     "note": "lift 2 near; +3 credit income 12",
+     "seen": "25c24d25d0"
     },
     {
      "name": "Shared Grid Accord",
      "units": 1,
      "other": "0.75 * 2 * energy + 2 * sway",
      "use": 0,
-     "note": "lift 1; gift 2 energy 6.75; sway 2"
+     "note": "lift 1; gift 2 energy 6.75; sway 2",
+     "seen": "2973bac846"
     },
     {
      "name": "Open-Weights Release",
      "units": 4,
      "other": "0.75 * 6 * insight",
      "use": 0,
-     "note": "lift 4 near; gift 6 insight 18"
+     "note": "lift 4 near; gift 6 insight 18",
+     "seen": "94b0aa7bb2"
     }
    ]
   },
@@ -352,126 +392,144 @@
      "units": "5 * uses",
      "other": "4 * uses * sway",
      "use": "am",
-     "note": "306: Action 1 antimatter: 5 ambassadors, sway 4, x4"
+     "note": "306: Action 1 antimatter: 5 ambassadors, sway 4, x4",
+     "seen": "f174b5c527"
     },
     {
      "name": "Envoy Briefings",
      "units": 2,
      "other": "2 * card",
      "use": 0,
-     "note": "2; draw 3 (271: draws 2 on play, 0 an Action)"
+     "note": "2; draw 3 (271: draws 2 on play, 0 an Action)",
+     "seen": "ee2f958c88"
     },
     {
      "name": "Fact-Check Network",
      "units": 2,
      "other": "5 * jam",
      "use": 0,
-     "note": "2; typed jam 5 (3.5)"
+     "note": "2; typed jam 5 (3.5)",
+     "seen": "540ee97633"
     },
     {
      "name": "Baseload Contract",
      "units": 2,
      "other": "2 * en_inc1",
      "use": 0,
-     "note": "2; +2 energy income 28"
+     "note": "2; +2 energy income 28",
+     "seen": "7205516a97"
     },
     {
      "name": "Consular Pouch",
      "units": "tags",
      "other": 0,
      "use": 0,
-     "note": "1 a Diplomacy tag (5)"
+     "note": "1 a Diplomacy tag (5)",
+     "seen": "27c5ddec51"
     },
     {
      "name": "Mutual Aid Pact",
      "units": 3,
      "other": "0.75 * 3 * insight",
      "use": 0,
-     "note": "3; gift 3 insight 9"
+     "note": "3; gift 3 insight 9",
+     "seen": "c666f2f86a"
     },
     {
      "name": "Liaison Corps",
      "units": 3,
      "other": "4 * move",
      "use": 0,
-     "note": "3; move 4 (8)"
+     "note": "3; move 4 (8)",
+     "seen": "b58a53ff20"
     },
     {
      "name": "Summit Caucus",
      "units": 3,
      "other": "6 * move",
      "use": 0,
-     "note": "3; consolidate 6 (12)"
+     "note": "3; consolidate 6 (12)",
+     "seen": "7d5539fa70"
     },
     {
      "name": "Peace Conference",
      "units": 3,
      "other": "8 * sway",
      "use": 0,
-     "note": "3; sway 8 (32)"
+     "note": "3; sway 8 (32)",
+     "seen": "19aabeccfd"
     },
     {
      "name": "Trade Delegation",
      "units": 2,
      "other": "2 * cr_inc",
      "use": 0,
-     "note": "2; +3 credit income 12"
+     "note": "2; +3 credit income 12",
+     "seen": "2e0ee5c7e1"
     },
     {
      "name": "Ceasefire Monitors",
      "units": 2,
      "other": "3 * agent",
      "use": 0,
-     "note": "2; 3 agents 15"
+     "note": "2; 3 agents 15",
+     "seen": "8f6536f28d"
     },
     {
      "name": "Holographic Assembly Hall",
      "units": "2 * uses",
      "other": "2 * uses * sway",
      "use": "2 * energy",
-     "note": "Action 2 energy: 2 + sway 2, x4"
+     "note": "Action 2 energy: 2 + sway 2, x4",
+     "seen": "54e7408bad"
     },
     {
      "name": "Accelerator Diplomacy",
      "units": 2,
      "other": "5 * sway",
      "use": 0,
-     "note": "2; sway 5 (20)"
+     "note": "2; sway 5 (20)",
+     "seen": "b02b53b654"
     },
     {
      "name": "Antimatter Accord",
      "units": 6,
      "other": "4 * sway",
      "use": 0,
-     "note": "6; sway 4 (16)"
+     "note": "6; sway 4 (16)",
+     "seen": "741ded6754"
     },
     {
      "name": "Exodus Corridors",
      "units": 4,
      "other": "6 * move",
      "use": 0,
-     "note": "4; gather 6 (12)"
+     "note": "4; gather 6 (12)",
+     "seen": "0a8d5625af"
     },
     {
      "name": "Rally the Allies",
      "units": 5,
      "other": "3 * move + 2 * sway",
      "use": 0,
-     "note": "5; gather 3 (6); sway 2"
+     "note": "5; gather 3 (6); sway 2",
+     "seen": "347b10e607"
     },
     {
      "name": "Liberation Accords",
      "units": 4,
      "other": "6 * agent",
      "use": 0,
-     "note": "4; 6 agents 30"
+     "note": "4; 6 agents 30",
+     "seen": "07087ae3ba"
     },
     {
      "name": "Embassy of Exiles",
      "units": "3 + 2 * uses",
      "other": "2 * uses * agent",
      "use": 0,
-     "note": "3; Action convert 2 (agents 10 + 2 placed), x4"
+     "note": "3; Action convert 2 (agents 10 + 2 placed), x4",
+     "seen": "85d3547355"
     }
    ]
   },
@@ -483,14 +541,16 @@
      "units": 1,
      "other": "6 * compute",
      "use": 0,
-     "note": "botnet; 6 compute 12"
+     "note": "botnet; 6 compute 12",
+     "seen": "ad35b71f53"
     },
     {
      "name": "Decapitation Strike",
      "units": 1,
      "other": "3 * troop",
      "use": 0,
-     "note": "botnet; 3 troops 15"
+     "note": "botnet; 3 troops 15",
+     "seen": "1bc5e577b7"
     }
    ]
   },
@@ -502,70 +562,80 @@
      "units": "tags",
      "other": 0,
      "use": 0,
-     "note": "1 a Cyber tag (5)"
+     "note": "1 a Cyber tag (5)",
+     "seen": "34e9f20b0a"
     },
     {
      "name": "Cryo-Compute Burn",
      "units": "tags",
      "other": 0,
      "use": 0,
-     "note": "1 a Science tag (5)"
+     "note": "1 a Science tag (5)",
+     "seen": "6aa29bd9d2"
     },
     {
      "name": "Endowed Research Chair",
      "units": "2 * 3",
      "other": 0,
      "use": 0,
-     "note": "+2 insight income (24 = 6 insight)"
+     "note": "+2 insight income (24 = 6 insight)",
+     "seen": "5f3530604e"
     },
     {
      "name": "Neural Mirror",
      "units": "2 * 3",
      "other": 0,
      "use": 0,
-     "note": "+1 a 2 Cyber tags (+2 at 5: 6)"
+     "note": "+1 a 2 Cyber tags (+2 at 5: 6)",
+     "seen": "fe6e73c58f"
     },
     {
      "name": "Frontier Lab Charter",
      "units": "2 * 3",
      "other": "1 * cr_inc",
      "use": 0,
-     "note": "+2 insight income (6); +2 credit income 8"
+     "note": "+2 insight income (6); +2 credit income 8",
+     "seen": "a90516e292"
     },
     {
      "name": "Telemetry Archive",
      "units": 6,
      "other": 0,
      "use": 0,
-     "note": "3 at 4 Datasets, 2 a Science play: ~2 fires in 4 rounds"
+     "note": "3 at 4 Datasets, 2 a Science play: ~2 fires in 4 rounds",
+     "seen": "4214aadcc0"
     },
     {
      "name": "Hyperscale Botnet",
      "units": "4 * uses",
      "other": 0,
      "use": 0,
-     "note": "4 a round x4; draw 3 (271: draws 0 on play, 0 an Action)"
+     "note": "4 a round x4; draw 3 (271: draws 0 on play, 0 an Action)",
+     "seen": "e38592958e"
     },
     {
      "name": "Exascale Training Cluster",
      "units": "4 * uses",
      "other": "1 * card",
      "use": 0,
-     "note": "258: 4 a round x4; 4 cards drawn (271: draws 1 on play, 0 an Action)"
+     "note": "258: 4 a round x4; 4 cards drawn (271: draws 1 on play, 0 an Action)",
+     "seen": "c47480edc5"
     },
     {
      "name": "Interdisciplinary Institute",
      "units": "2 * uses",
      "other": 0,
      "use": 0,
-     "note": "2 a Science tag played (~1 a round) x4 (282: was 1); draw 3 (271: Science tags only; draws 0 on play, 0 an Action)"
+     "note": "2 a Science tag played (~1 a round) x4 (282: was 1); draw 3 (271: Science tags only; draws 0 on play, 0 an Action)",
+     "seen": "9730a596a7"
     },
     {
      "name": "Recursive Self-Improvement",
      "units": "3 * 3",
      "other": "3 * card",
      "use": 0,
-     "note": "+3 insight income (9); draw 3"
+     "note": "+3 insight income (9); draw 3",
+     "seen": "d92854c941"
     }
    ]
   },
@@ -577,56 +647,64 @@
      "units": "1 + uses",
      "other": 0,
      "use": "cube",
-     "note": "1 when built; Action 1 cube, x4"
+     "note": "1 when built; Action 1 cube, x4",
+     "seen": "db7a9f0e75"
     },
     {
      "name": "Antiproton Foundry",
      "units": "1 + uses",
      "other": "2 * uses * energy",
      "use": "chip",
-     "note": "258: 1 when built; Action 1 chip: 1 antimatter and 2 energy, x4"
+     "note": "258: 1 when built; Action 1 chip: 1 antimatter and 2 energy, x4",
+     "seen": "6ba879ef9f"
     },
     {
      "name": "Dark Fiber Collider",
      "units": "uses",
      "other": 0,
      "use": "2 * insight",
-     "note": "Action 2 insight, x4; draw 2 (271: draws 0 on play, 0 an Action)"
+     "note": "Action 2 insight, x4; draw 2 (271: draws 0 on play, 0 an Action)",
+     "seen": "6f461dbb76"
     },
     {
      "name": "Treaty Isotope Bank",
      "units": "uses",
      "other": "amb + uses * amb",
      "use": 5,
-     "note": "258: Action 8 credits: 1 antimatter and 1 ambassador, x4; 1 ambassador"
+     "note": "258: Action 8 credits: 1 antimatter and 1 ambassador, x4; 1 ambassador",
+     "seen": "d1960043b4"
     },
     {
      "name": "Cyclotron Lease",
      "units": "uses",
      "other": 0,
      "use": "2 * energy",
-     "note": "Action 2 energy, x4"
+     "note": "Action 2 energy, x4",
+     "seen": "325239e048"
     },
     {
      "name": "Positron Storage Ring",
      "units": "uses",
      "other": 0,
      "use": "2 * energy",
-     "note": "258: Action 2 energy: 1 antimatter and draw 1, x4; draw 2 (269: its 2 energy a Power play cut) (271: draws 0 on play, 0 an Action)"
+     "note": "258: Action 2 energy: 1 antimatter and draw 1, x4; draw 2 (269: its 2 energy a Power play cut) (271: draws 0 on play, 0 an Action)",
+     "seen": "d0c872fa81"
     },
     {
      "name": "Zero-Day Auction",
      "units": 2,
      "other": "3 * card",
      "use": 0,
-     "note": "2; draw 6 (271: draws 3 on play, 0 an Action)"
+     "note": "2; draw 6 (271: draws 3 on play, 0 an Action)",
+     "seen": "0d287a5131"
     },
     {
      "name": "Intrusion Lab",
      "units": 2,
      "other": 0,
      "use": 0,
-     "note": "1 at 2 Operatives, 1 a compute removal: ~2 in 4 rounds"
+     "note": "1 at 2 Operatives, 1 a compute removal: ~2 in 4 rounds",
+     "seen": "3995865122"
     },
     {
      "name": "Overcharge II (Builder)",
@@ -634,7 +712,8 @@
      "other": "2 * energy",
      "use": 0,
      "note": "276: 2 Power sacrifice: 2 energy and 1 antimatter (Teardown's job; sacrifice unpriced)",
-     "power": true
+     "power": true,
+     "seen": "414f089e85"
     }
    ]
   },
@@ -646,77 +725,88 @@
      "units": 1,
      "other": "0.5 * station_owned",
      "use": 0,
-     "note": "draw 2; 256: claims a neutral site next to it (~0.5) (271: draws 0 on play, 0 an Action)"
+     "note": "draw 2; 256: claims a neutral site next to it (~0.5) (271: draws 0 on play, 0 an Action)",
+     "seen": "853b354002"
     },
     {
      "name": "Root Access",
      "units": 1,
      "other": "0.6 * botnet + 0.5 * station_owned + 3 * ins_inc",
      "use": 0,
-     "note": "a botnet near (x0.6) ~10; 256: claims a neutral site next to it (~0.5); 302: +3 insight income"
+     "note": "a botnet near (x0.6) ~10; 256: claims a neutral site next to it (~0.5); 302: +3 insight income",
+     "seen": "776a741794"
     },
     {
      "name": "Citywide Microgrid",
      "units": 1,
      "other": "3 * uses * sway + 0.5 * station_owned",
      "use": "energy",
-     "note": "258: Action 1 energy: sway 3, x4; 256: claims a neutral site next to it (~0.5)"
+     "note": "258: Action 1 energy: sway 3, x4; 256: claims a neutral site next to it (~0.5)",
+     "seen": "9d1839c36b"
     },
     {
      "name": "Power to the People",
      "units": 1,
      "other": "uses * tags / 2 + 0.5 * station_owned",
      "use": 0,
-     "note": "1 cr a Power tag a round (5) x4; 256: claims a neutral site next to it (~0.5)"
+     "note": "1 cr a Power tag a round (5) x4; 256: claims a neutral site next to it (~0.5)",
+     "seen": "773153b965"
     },
     {
      "name": "The Nuclear Option",
      "units": 1,
      "other": "3 * en_inc1 + 0.5 * station_freed + 0.5 * factory_freed + 0.5 * station_owned",
      "use": 0,
-     "note": "302 (Matt 13930): +3 energy income for its Discord 2; 301 (Matt 13884): frees each corrupted station or factory next to it (about one a play, half each kind); 256: claims a neutral site next to it (~0.5)"
+     "note": "302 (Matt 13930): +3 energy income for its Discord 2; 301 (Matt 13884): frees each corrupted station or factory next to it (about one a play, half each kind); 256: claims a neutral site next to it (~0.5)",
+     "seen": "b1336d64d4"
     },
     {
      "name": "Hostile Buyout",
      "units": 1,
      "other": "5 * amb",
      "use": 0,
-     "note": "5 ambassadors (302, was 3)"
+     "note": "5 ambassadors (302, was 3)",
+     "seen": "d0b4784755"
     },
     {
      "name": "Peacekeeping Mission",
      "units": 1,
      "other": "1.5 * troop + 0.5 * station_owned + 3 * amb + 3 * move + 4 * sway",
      "use": 0,
-     "note": "297: up to 3 troops on or next to the city first (~1.5), then the rescue; 256: claims a neutral site next to it (~0.5); 302: 3 ambassadors placed on it, sway 4"
+     "note": "297: up to 3 troops on or next to the city first (~1.5), then the rescue; 256: claims a neutral site next to it (~0.5); 302: 3 ambassadors placed on it, sway 4",
+     "seen": "ce3683cefe"
     },
     {
      "name": "Great Liberation",
      "units": 1,
      "other": "2 * station_freed",
      "use": 0,
-     "note": "+2 more corrupted sites (stations 30; cities: 23 a city)"
+     "note": "+2 more corrupted sites (stations 30; cities: 23 a city)",
+     "seen": "25e74da997"
     },
     {
      "name": "Popular Uprising",
      "units": 1,
      "other": "0.5 * station_owned",
      "use": 0,
-     "note": "Action: a Follower, or 4 Followers: liberate (once in ~5 rounds); 256: claims a neutral site next to it (~0.5)"
+     "note": "Action: a Follower, or 4 Followers: liberate (once in ~5 rounds); 256: claims a neutral site next to it (~0.5)",
+     "seen": "e3743c22da"
     },
     {
      "name": "Siegebreaker Reactor",
      "units": "uses",
      "other": "uses * (2 * troop + 0.5 * station_owned)",
      "use": "am",
-     "note": "306: Action 1 antimatter: 2 troops on or next to the city, rescue it, x4"
+     "note": "306: Action 1 antimatter: 2 troops on or next to the city, rescue it, x4",
+     "seen": "02a6597f7f"
     },
     {
      "name": "Fusion Torch Array",
      "units": "uses",
      "other": "uses * 0.5 * station_owned",
      "use": "5 * energy",
-     "note": "306: Action 5 energy: rescue the city, x4"
+     "note": "306: Action 5 energy: rescue the city, x4",
+     "seen": "5a1f49f125"
     }
    ]
   },
@@ -729,14 +819,16 @@
      "units": 1,
      "other": "5 * amb + station_owned",
      "use": 0,
-     "note": "254: any corrupted site; a station becomes yours; 5 ambassadors (302)"
+     "note": "254: any corrupted site; a station becomes yours; 5 ambassadors (302)",
+     "seen": "d0b4784755"
     },
     {
      "name": "Reclamation Crew",
      "units": 1,
      "other": 0,
      "use": 0,
-     "note": "free a corrupted station"
+     "note": "free a corrupted station",
+     "seen": "e1c99a9190"
     }
    ]
   },
@@ -749,14 +841,16 @@
      "units": 1,
      "other": "5 * amb + factory",
      "use": 0,
-     "note": "254: any corrupted site; a factory becomes yours; 5 ambassadors (302)"
+     "note": "254: any corrupted site; a factory becomes yours; 5 ambassadors (302)",
+     "seen": "d0b4784755"
     },
     {
      "name": "Back-Channel Talks",
      "units": 2,
      "other": "2 * sway",
      "use": 0,
-     "note": "free a corrupted factory and 1 next to it; sway 2"
+     "note": "free a corrupted factory and 1 next to it; sway 2",
+     "seen": "5e76865559"
     }
    ]
   }

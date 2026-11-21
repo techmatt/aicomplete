@@ -16,7 +16,7 @@ H="python scripts/bench/rounds.py"
   echo
   echo "## Screen 1 (r145): d0 compute income 2/3/5; a station at 3 (\`s301a.json\`)"
   echo
-  $H experiments/farm/s301a.json s1=$D/s1/s301a.jsonl --by-arm
+  $H experiments/archive/farm/s301a.json s1=$D/s1/s301a.jsonl --by-arm
   echo
   echo "## Screen 2 (r145 + P1): agents on each starting corrupted city at setup, level 0 (\`archive/s301b.json\`)"
   echo
@@ -30,7 +30,7 @@ H="python scripts/bench/rounds.py"
   echo
   $H experiments/farm/read.json r145=$K/r145-judge.jsonl | grep -v "| d0 |"
   echo
-  $H experiments/farm/s301d.json price=$D/s3/s301d.jsonl | tail -3
+  $H experiments/archive/farm/s301d.json price=$D/s3/s301d.jsonl | tail -3
   echo
   echo "## Screen 4 (the priced build): more agents on the free cities, a troop a country at setup (\`archive/s301e.json\`)"
   echo
@@ -47,5 +47,5 @@ H="python scripts/bench/rounds.py"
   echo
   echo "d0's lever off (\`s301f.json\`: r146 with \`setup_city_agents\` 0, the pricing alone), same seeds:"
   echo
-  $H experiments/farm/s301f.json r146-nolever=$F/r146-nolever.jsonl
+  $H experiments/archive/farm/s301f.json r146-nolever=$F/r146-nolever.jsonl
 } > $S/fresh.md

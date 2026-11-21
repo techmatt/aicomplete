@@ -70,7 +70,7 @@ for its station (285). Cards that place nodes add to them (cards aren't capped).
 **The node powers' give / get** (at Matt's unit anchors, [card-guidelines.md](../card-guidelines.md); a node 5.33
 and a station 6.67 from `values.json`; before each step). Cheap: Buy In and Levy +6.33, Field Survey +8.67. Costly:
 Sprawl 2 energy (6) for a node and 2 credits +1.33, Outpost the same within 2 of yours (r143: the reach is its benefit); Annex 1 chip (4) for a node within 2 and 3 credits
-+4.33 and the reach; Accord 2 energy for a node and an ambassador +4.67; Peer Review 2 insight (5.33) for a node and
++4.33 and the reach; Accord 3 energy (9) for a node and an ambassador +1.67; Peer Review 2 insight (5.33) for a node and
 a research cube +4.0; Field Station 2 insight for a station and a node +6.67. A costly power is a second or third node
 bought at a thinner margin than the free one, never instead of it. Once a round each and the steps' rising energy
 cap them all.

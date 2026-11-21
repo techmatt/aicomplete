@@ -68,7 +68,7 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
                 for _ in 0..*count {
                     let ids: Vec<Key> = g.pile(&cards::built(s)).iter().filter(|c| !cards::disabled(g, s, c)).cloned().collect();
                     let opts = ids.iter().map(|c| opt(*c)).collect();
-                    let prompt = || format!("{}: turn which building face down?", head(ctx, s));
+                    let prompt = || format!("{}: turn which building face down?", threats::head(ctx.why.as_deref(), s));
                     let Some(i) = cx.choose_loss(s, prompt, opts)? else {
                         break;
                     };
@@ -95,7 +95,7 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
         Op::LoseOr { options } => {
             for s in ctx.seats(&w, g) {
                 let opts = options.iter().map(|o| opt(option_words(o))).collect();
-                let prompt = || format!("{}: which do you lose?", head(ctx, s));
+                let prompt = || format!("{}: which do you lose?", threats::head(ctx.why.as_deref(), s));
                 if let Some(i) = cx.choose_loss(s, prompt, opts)? {
                     let mut c = Ctx::seat(s).named(ctx.label);
                     c.why = ctx.why.clone();
@@ -181,14 +181,6 @@ fn op_name(e: &Op) -> &'static str {
         Op::Fallout { .. } => "fallout",
         Op::Theft { .. } => "theft",
         _ => unreachable!("new_ops::one runs only the ops listed here"),
-    }
-}
-
-/// Who a prompt asks, named for the threat resolving.
-fn head(ctx: &Ctx, s: usize) -> String {
-    match &ctx.why {
-        Some(n) => format!("{n}: seat {s}"),
-        None => format!("Seat {s}"),
     }
 }
 
@@ -480,7 +472,7 @@ fn requisition(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, r: Resource, amount: i
         }
         // 184: Data Heist's "pays 3 insight next round" asked "lose 3 insight" (as if from what the seat holds).
         let when = if next_round { " next round" } else { "" };
-        let prompt = || format!("{}: lose {}{when} or discard {cards_w}?", head(ctx, s), r.amount(amount));
+        let prompt = || format!("{}: lose {}{when} or discard {cards_w}?", threats::head(ctx.why.as_deref(), s), r.amount(amount));
         match cx.choose_loss(s, prompt, opts)? {
             Some(0) if can_pay => {
                 if !next_round {
@@ -507,7 +499,7 @@ fn discard(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, s: usize, n: i64) -> Res {
     let hand_key = cards::hand(s);
     for k in 0..n {
         let hand = g.pile(&hand_key);
-        let prompt = || format!("{}: {} ({} of {n})?", head(ctx, s), cards::DISCARD_PROMPT, k + 1);
+        let prompt = || format!("{}: {} ({} of {n})?", threats::head(ctx.why.as_deref(), s), cards::DISCARD_PROMPT, k + 1);
         let Some(j) = cx.choose_key(s, prompt, hand)? else {
             break;
         };
@@ -517,7 +509,7 @@ fn discard(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, s: usize, n: i64) -> Res {
     Ok(())
 }
 
-/// LoseNodeOr (135: `count` nodes, near it, never the last): each player near
+/// LoseNodeOr (135: `count` nodes, near it; 175: a last node too): each player near
 /// it pays or loses nodes there (their choice); with neither, what they have.
 fn lose_node_or(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, r: Resource, amount: i64, count: i64) -> Res {
     let w = cx.world;
@@ -534,7 +526,7 @@ fn lose_node_or(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, r: Resource, amount: 
         let off = opts.len();
         let first = mine(g);
         opts.extend(first.iter().map(|&h| labeled_hex_opt(&w, "lose nodes", h)));
-        let prompt = || format!("{}: pay {} or lose {count} node{}?", head(ctx, s), r.amount(amount), if count == 1 { "" } else { "s" });
+        let prompt = || format!("{}: pay {} or lose {count} node{}?", threats::head(ctx.why.as_deref(), s), r.amount(amount), if count == 1 { "" } else { "s" });
         match cx.choose_loss(s, prompt, opts)? {
             Some(i) if i < off => cx.add_resource(g, s, r, -amount),
             Some(i) => {
@@ -542,7 +534,7 @@ fn lose_node_or(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, r: Resource, amount: 
                 for k in 1..count {
                     let more = mine(g);
                     let opts = more.iter().map(|&h| hex_opt(&w, h)).collect();
-                    let prompt = || format!("{}: lose which node ({} of {count})?", head(ctx, s), k + 1);
+                    let prompt = || format!("{}: lose which node ({} of {count})?", threats::head(ctx.why.as_deref(), s), k + 1);
                     let Some(j) = cx.choose_loss(s, prompt, opts)? else {
                         break;
                     };
@@ -574,7 +566,7 @@ fn lose_ambassadors_or(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, s: usize, coun
     if held > 0 {
         opts.push(opt(format!("lose {lost}")));
     }
-    let prompt = || format!("{}: pay {} or lose {lost}?", head(ctx, s), r.amount(amount));
+    let prompt = || format!("{}: pay {} or lose {lost}?", threats::head(ctx.why.as_deref(), s), r.amount(amount));
     match cx.choose_loss(s, prompt, opts)? {
         Some(0) if can_pay => cx.add_resource(g, s, r, -amount),
         Some(_) => {
@@ -585,7 +577,7 @@ fn lose_ambassadors_or(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, s: usize, coun
                 }
                 let on = ambassador_hexes(g, s);
                 let opts = on.iter().map(|&h| hex_opt(&w, h)).collect();
-                let prompt = || format!("{}: lose the ambassador on which hex?", head(ctx, s));
+                let prompt = || format!("{}: lose the ambassador on which hex?", threats::head(ctx.why.as_deref(), s));
                 let Some(i) = cx.choose_loss(s, prompt, opts)? else {
                     break;
                 };

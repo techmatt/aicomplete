@@ -146,7 +146,7 @@ fn replay_record(path: &str) -> bool {
     }
 }
 
-/// `win (purge)`, `loss (discord_deck)`, `not over (100000 actions)`: a game with no
+/// `win (liberated)`, `loss (discord_deck)`, `not over (100000 actions)`: a game with no
 /// outcome hit the action cap, or (a viewer bug report) was saved mid-game
 /// (020: both read "timeout").
 fn describe(outcome: Option<&Outcome>, actions: usize) -> String {

@@ -39,7 +39,7 @@ unprefixed weight is an error.
 `--out` (default `out/experiments/<name>/`) holds `report.md`, `results.json` (`aic-experiment/2`), `games.csv` (a row
 a game), `cards.csv` (per agent, variant, config, difficulty and card), `records/` and `games.jsonl` (`aic-games/2`).
 A game's `reason`: `liberated` (the win), `deck_empty` (the round cap: `rounds` reads the deck's cards + 1),
-`research`, `discord_deck`; round histograms: `bench/rounds.py`.
+`research`, `node` (a seat lost its last node), `discord_deck`; round histograms: `bench/rounds.py`.
 
 **Paired reads.** *Agents paired, per variant* (`agent_pairs`) and *Fresh-seed confirmation* (`fresh_confirmation`,
 the seeds outside `selection_seeds`): `report.md` says how each pairs.

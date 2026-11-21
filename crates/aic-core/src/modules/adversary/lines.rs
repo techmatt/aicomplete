@@ -50,7 +50,7 @@ fn countries_in(w: &World, g: &GameState, scope: Option<usize>) -> Vec<usize> {
 }
 
 /// 275, Infiltrate X in country `scope` or every country: [`infiltrate_agents_on`] on each site of the type not yet
-/// the adversary's (`plan::infiltrate_plan`), in hex order. A firewalled or no-Infiltrate site's agents stay in
+/// the adversary's (`plan::infiltrate_sites`), in hex order. A firewalled or no-Infiltrate site's agents stay in
 /// the supply; a cordoned country takes none. Tallied `adversary.infiltrated` and by source; each site named is
 /// one check (`map.adversary_checks`).
 pub fn infiltrate(g: &mut GameState, cx: &mut Cx, site: SiteType, scope: Option<usize>, source: &str) -> Res {

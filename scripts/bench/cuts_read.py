@@ -1,6 +1,6 @@
 """Before against after for a rules cut, from two farmed reads of the same seeds (292).
 
-    python scripts/bench/cuts_read.py BEFORE.jsonl AFTER.jsonl [--md]
+    python scripts/bench/cuts_read.py BEFORE.jsonl AFTER.jsonl
 
 Each file is a `farm-seeds` out file (one game a line). Prints, by board pair and overall: games, wins, rounds a
 game, energy income a seat a round (the income step: cities in production, the board and cards in upkeep), the

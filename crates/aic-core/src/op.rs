@@ -792,7 +792,7 @@ pub enum Op {
     /// Take the adversary cube off up to `amount` corrupted stations or
     /// factories, one at a time (`one_country`: all in the first one's
     /// country). `cities` (024): corrupted cities too, each liberated as `Liberate`
-    /// does (`board::liberate`); only a tier-2 ultimate prints it. `only` (r35):
+    /// does (`board::liberate_site`); only a tier-2 ultimate prints it. `only` (r35):
     /// stations alone or factories alone, priced apart (a station is a flip
     /// worth several cubes both ways, a factory stays cheap).
     Cleanse {

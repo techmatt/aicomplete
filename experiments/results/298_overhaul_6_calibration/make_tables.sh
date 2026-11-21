@@ -10,7 +10,7 @@ SMOKE=scripts/bench/smoke_table.py
   echo "# 298: the dev-seed screens"
   echo
   echo "Written by \`make_tables.sh\` (\`screen.py\`) from farmed games; dev seeds 36800-36831, 32 a pair, the judge. Arms"
-  echo "are \`set\` lists (the specs: \`experiments/farm/s298a.json\`, \`s298r.json\`, \`s298t.json\`). Per-seat columns divide by"
+  echo "are \`set\` lists (the specs: \`experiments/archive/farm/s298a.json\`, \`s298r.json\`, \`s298t.json\`). Per-seat columns divide by"
   echo "the seats; Accord is per Protector seat-round."
   echo
   echo "## Screen 1 (f3facbcc: r144's Redeploy and Offensive in, the r143 judge; the three pairs pooled, 96 games a cell)"
@@ -23,21 +23,21 @@ SMOKE=scripts/bench/smoke_table.py
   echo
   echo "## The Strike rider on the final build (4ad672dc: r144 and the retaught judge; Matt's message 13713)"
   echo
-  python $S/screen.py experiments/farm/s298r.json $D/s2/s298r.jsonl
+  python $S/screen.py experiments/archive/farm/s298r.json $D/s2/s298r.jsonl
   echo
   echo "## Three seats (4ad672dc; configs/three_seat.json, Builder + Protector + Researcher, 32 games a cell)"
   echo
   echo "base: the config; c1: one corrupted city a country at setup; lib4: Liberate at 4 ambassadors."
   echo
-  python $S/screen.py experiments/farm/s298t.json $D/s2/s298t.jsonl
+  python $S/screen.py experiments/archive/farm/s298t.json $D/s2/s298t.jsonl
   echo
   echo "Greedy at three seats (\`s298tg.json\`):"
   echo
-  python $S/screen.py experiments/farm/s298tg.json $D/s2/s298tg.jsonl
+  python $S/screen.py experiments/archive/farm/s298tg.json $D/s2/s298tg.jsonl
   echo
   echo "## The judge's own terms against greedy (46bc29cd, the final build; \`s298j.json\`, 384 games an agent; wins (rounds))"
   echo
-  python $S/agents_table.py experiments/farm/s298j.json $D/s3/s298j.jsonl
+  python $S/agents_table.py experiments/archive/farm/s298j.json $D/s3/s298j.jsonl
 } > $S/screens.md
 {
   echo "# 298: the fresh read"

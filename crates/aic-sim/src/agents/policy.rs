@@ -25,7 +25,6 @@ use super::strategy::{self, Choice, Mults};
 use super::value::{self, CardValue, Ctx};
 use super::Strategic;
 
-pub use super::cards::cards_csv;
 pub(crate) use super::cards::{is_capstone, is_liberate};
 
 /// One value of a forced behavior, read from its agent parameter.

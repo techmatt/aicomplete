@@ -82,7 +82,7 @@ with weaker credit engines, dearer cards or keeps, or lower starting credits; ne
 **The starting-economy scaffold (Matt, 2026-11-03).** Until engines carry the economy, every board starts and earns
 much more, the economy track the growing income; it comes down as engines take over, adding no track. Credits stay
 meaningful through the adversary (its agents infiltrate sites each round) and the plain route's price (Gain a
-player ambassador at `ambassador_credits` 16): bought ambassadors are a big investment; cards, buildings and powers the better
+player ambassador at `ambassador_credits` 20): bought ambassadors are a big investment; cards, buildings and powers the better
 route.
 
 **Unspent resources:** held as a seat's last action phase ends (the production and upkeep paid after can't be
@@ -110,7 +110,8 @@ The rulings behind each: [rulings.md](rulings.md), *Design principles*.
   standard action is a rare fallback). *Warns:* a standard action (each target of Liberate its own row)
   whose get passes its give at the unit anchors ([card-guidelines.md](card-guidelines.md)); **job parity**, its price
   per unit of its job under 1.25 × the median card's for that job, or an outcome stronger than theirs (the site
-  yours where cards only free it), or no card for its job (`scripts/design_check_jobs.json`); a **circular anchor**,
+  yours where cards only free it), or no card for its job (`scripts/design_check_jobs.json`; a row priced on a card
+  since changed warns `job-stale`); a **circular anchor**,
   one set from the price of the action it measures. An exemption is per case with a written reason (the city's
   Liberate, the win route), never a whole action.
 - **Unity and Discord follow the story:** Unity is trust and cooperation; Discord is fear, force and collateral

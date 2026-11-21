@@ -50,7 +50,7 @@ saving game records (run, compare):
   --save DIR        write the selected games as game records into DIR (created if needed),
                     named <config name>-<run|A|B>-seed<S>.json
   --save-when W     select games by outcome: all, win, loss, timeout, or an end reason
-                    code such as discord_deck or purge (repeatable; default loss, or none
+                    code such as discord_deck or node (repeatable; default loss, or none
                     when only --save-seed is given)
   --save-seed S     always save this seed, whatever --save-when says (repeatable)
   --save-max N      at most the first N games --save-when selects, in seed order, per
@@ -101,7 +101,7 @@ agree (245):
                     replay each won game the --who kind played (default oracle), asking
                     each agent at every decision; one JSON line an agent: picks that
                     match the recorded one, by group (all, dN) and action kind, as
-                    [same, same or later this round, decisions]. --games: the first N";
+                    [same, same or later this round, decisions]. --games: the first N such games";
 
 const RUN_FLAGS: &[&str] = &[
     "--games", "--seed", "--set", "--agent", "--max-actions", "--threads", "--json",
@@ -159,7 +159,7 @@ fn hint(command: &str, flag: &str) -> &'static str {
         ("experiment", "--agent") => " (use the spec's agents)",
         ("experiment", "--json") => " (results.json is always written)",
         ("experiment", "--save") => " (records are always saved)",
-        ("show" | "run", "--set-a" | "--set-b") => " (one config: use --set)",
+        ("show" | "run" | "map" | "strategies", "--set-a" | "--set-b") => " (one config: use --set)",
         ("replay", "--set" | "--set-a" | "--set-b") => " (a record carries its own config)",
         ("farm", "--threads") => " (a shard is one thread: run more shards side by side)",
         _ => "",

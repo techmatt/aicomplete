@@ -20,6 +20,7 @@ scripts/design_check.json, all candidates. The principles are docs/principles.md
 
 The first line printed is the report header's: `warnings: design: <check> <number>; design: <check> <number>; ...` or `warnings: none`.
 """
+import hashlib
 import json
 import os
 import re
@@ -380,9 +381,7 @@ def check_jobs(cfg, base, a, o):
             if c.get('power'):
                 continue
             card = deck.get(c['name'])
-            if card is None:
-                o.w('job-table', c['name'], f'{row["name"]}: job card {c["name"]!r} is not in content: refresh '
-                    'scripts/design_check_jobs.json')
+            if card is None:  # check_job_rows warns
                 continue
             uses = (c.get('uses', data['uses']) if num(c['use']) else 0)
             prices.append(((card_pay(card, data['keep_insight']) + uses * num(c['use']) - num(c.get('other', 0))) / num(c['units']), c['name']))
@@ -402,6 +401,70 @@ def check_jobs(cfg, base, a, o):
         elif row.get('outcome') and job.get('card_outcome') and rank.index(row['outcome']) > rank.index(job['card_outcome']):
             flag('job-outcome', row['name'], f'{row["name"]}: the action leaves the site {row["outcome"]}; the cards '
                  f'for its job only leave it {job["card_outcome"]}')
+
+
+# 307: what a jobs-table row was priced against. A card's pay fields are read live (card_pay), so they stay out;
+# a power's cost is its row's `use`, so it stays in.
+LIVE_CARD_KEYS = {'id', 'name', 'tier', 'cost', 'insight', 'energy', 'chips', 'antimatter', 'research_cubes'}
+JOBS_FILE = 'scripts/design_check_jobs.json'
+
+
+def job_source(c, deck, boards):
+    """The content a jobs-table row reads: a card by name, or a board power `Name (Board)`; None if gone."""
+    if not c.get('power'):
+        card = deck.get(c['name'])
+        return card and {k: v for k, v in card.items() if k not in LIVE_CARD_KEYS}
+    m = re.fullmatch(r'(.+) \((.+)\)', c['name'])
+    board = m and next((b for b in boards if b['name'] == m[2]), None)
+    p = board and next((p for p in board['powers'] if p['name'] == m[1]), None)
+    return p and {k: v for k, v in p.items() if k not in ('name', 'text')}
+
+
+def job_stamp(src):
+    """A short hash of a row's content (`seen` on the row)."""
+    return hashlib.sha1(json.dumps(src, sort_keys=True, separators=(',', ':')).encode()).hexdigest()[:10]
+
+
+def check_job_rows(cfg, cards, boards, o, data=None):
+    """307: the jobs table against content. Each job names a standard row; each card or power row names one that
+    exists, and its `seen` stamp matches that card's or power's content now (302 and 306 found rows priced against
+    a card's old effects). A changed card: recheck its row's units, other and use, then `--stamp-jobs NAME`."""
+    data = data or jload(JOBS_FILE)
+    rows = {r['name'] for r in cfg['standard_actions']['rows']}
+    deck = {c['name']: c for c in cards}
+    for job, v in data['jobs'].items():
+        if job not in rows:
+            o.w('job-table', job, f'{JOBS_FILE}: job {job!r} names no standard row in design_check.json')
+        for c in v['cards']:
+            src = job_source(c, deck, boards)
+            if src is None:
+                o.w('job-table', c['name'], f'{job}: job {"power" if c.get("power") else "card"} {c["name"]!r} is not '
+                    f'in content: refresh {JOBS_FILE}')
+            elif c.get('seen') != job_stamp(src):
+                o.w('job-stale', c['name'], f'{job}: {c["name"]} changed since its row was priced: recheck its units, '
+                    f'other and use, then `python scripts/design_check.py --stamp-jobs "{c["name"]}"`')
+
+
+def stamp_jobs(names, cards, boards):
+    """`--stamp-jobs NAME[,NAME...]` (or `all`): record each named row's content as reviewed."""
+    data = jload(JOBS_FILE)
+    deck = {c['name']: c for c in cards}
+    want = None if names == 'all' else set(names.split(','))
+    done, n = set(), 0
+    for v in data['jobs'].values():
+        for c in v['cards']:
+            if want is None or c['name'] in want:
+                src = job_source(c, deck, boards)
+                if src is None:
+                    sys.exit(f'{c["name"]}: not in content; fix its row first')
+                c['seen'] = job_stamp(src)
+                done.add(c['name'])
+                n += 1
+    if want and want - done:
+        sys.exit(f'no row names {", ".join(sorted(want - done))}')
+    with open(os.path.join(ROOT, JOBS_FILE), 'w', encoding='utf-8', newline='\n') as f:
+        f.write(json.dumps(data, indent=1, ensure_ascii=False) + '\n')
+    print(f'stamped {n} rows ({len(done)} cards and powers)')
 
 
 def walk_sway(obj, where, tag, found, force_ops, ops_above=frozenset()):
@@ -983,6 +1046,7 @@ def main():
     variants = set(variants.split(',')) if variants else None
     agents = opt('--agent')
     agents = agent_list(agents) if agents else None
+    stamp = opt('--stamp-jobs')
     quiet = '--quiet' in argv
     table = '--usage' in argv
     argv = [a for a in argv if a not in ('--quiet', '--usage')]
@@ -990,13 +1054,18 @@ def main():
     flags = [a for a in argv if a.startswith('-')]
     if flags:
         sys.exit(f"unknown flag {flags[0]}: the flags are --old, --base, --config, --variant, --agent, --quiet, "
-                 "--usage")
+                 "--usage, --stamp-jobs")
     if len(argv) > 1:
         sys.exit(f"one DIR only (got {len(argv)}): pool reads as a comma list, {','.join(argv)}")
     with open(cfg_path, encoding='utf-8') as f:
         cfg = json.load(f)
     cards = jload('content/cards.json')
     boards = jload('content/ais.json')
+    if stamp:
+        if argv:
+            sys.exit('--stamp-jobs takes no DIR')
+        stamp_jobs(stamp, cards, boards)
+        return
     base = flat_baseline(jload('configs/baseline.json'))
     games = load_games(argv[0], variants, agents) if argv else []
     if (variants or agents) and not argv:
@@ -1011,6 +1080,7 @@ def main():
     o = Out()
     check_repeats(boards, cfg, o)
     check_standard(cfg, base, o, games)
+    check_job_rows(cfg, cards, boards, o)
     check_sway(cfg, base, o)
     check_tag_story(cfg, cards, boards, o)
     check_dials(cfg, base_rev, o)

@@ -20,7 +20,7 @@ What the read scripts quote most (`screens.cnt(game, key)`; more in experiments.
 | Key | What it holds, per game |
 |---|---|
 | `cell` | the cell's index in grid order: configs, then variants, then difficulties, then agents, agent fastest (`experiment::cells_with`; `screens.cells_of`) |
-| `seed`, `difficulty`, `reason` | the seed, a string; the cell's `adversary.difficulty`; how it ended (`liberated` the win, `purge` before r141, `node` a seat left with no nodes, `deck_empty`, `discord_deck`, `timeout`) |
+| `seed`, `difficulty`, `reason` | the seed, a string; the cell's `adversary.difficulty`; how it ended (`liberated` the win, `purge` before r141, `node` a seat left with no nodes, `research` the research track past its last slot, `deck_empty`, `discord_deck`, `round_limit`, `timeout`) |
 | `counters['ai.power.<board>.<power>']` | a board power's uses (`modules/ai.rs`; the seats on that board summed), `.rNN` a round's; names: `scripts/powers.py`; `ai.offered.<board>`: uses offered as the action phase begins, a group once |
 | `counters['board.std.<name>']` | a standard action's uses; `board.std_actions` all of them |
 | `counters['cards.played.<card>']`, `['cards.drawn']` | plays of a card / cards drawn off the decks, all seats (keys are flat, dotted strings) |
@@ -122,8 +122,8 @@ Piles (`card_moved`), seats and countries from 0, tiers from 1: `cards.deck.<tie
 `adversary.deck`, `.next`, `.current`, `.discard`, `.project_deck`, `.project_discard`, `.projects`,
 `.projects_done`; `alignment.deck.<side>`, `alignment.resolved.<side>` (`unity`, `discord`).
 
-Tokens (`modules/common.rs`): `node:`, `cube:`, `ambassador:` + seat or `adversary`; `troop`, `unit`, `botnet`,
-`fallout`, `harden`, `firewall`, `factory`, `station`.
+Tokens (`modules/common.rs`): `node:`, `cube:`, `ambassador:` + seat or `adversary`; `troop`, `botnet`,
+`fallout`, `harden`, `firewall`, `factory`, `station`; a prohibition's `no_infiltrate`, `no_strike`.
 
 A hex is axial `[q, r]`. A country's hex number n (1-16) sits at `anchor + i × axes[0] + j × axes[1]`, n =
 4i + j + 1, from its piece in `content/map.json`'s layout for the seat count (`crates/aic-core/src/map.rs`);

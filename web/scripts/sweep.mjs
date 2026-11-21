@@ -251,7 +251,7 @@ const PAGE_LIB = String.raw`(() => {
   /** Words on screen that are code, not text: unfilled values and raw ids. */
   const PLACEHOLDER = /\b(undefined|NaN|null|\[object Object\]|TODO|FIXME)\b|\?\?/;
   const RAW_ID = /\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b/;
-  // The words docs/spelling.rs refuses in source (STALE there), plus the engine's labels it can't read.
+  // The words crates/aic-sim/src/docs/spelling.rs refuses in source (STALE there), plus the engine's labels it can't read.
   const STALE = /adversary(?:'s)? ambassadors?|enemy ambassadors?|adv\. ambassadors?|agents token|Matt to confirm|Security agents?\b|on board: \d+ ambassadors?|corp troops?|\bDeploy(s|ed)?\b|each board|\btier (I|II|III)\b|Movement \+\d|\bDispatch(es|ed)?\b(?! Control Room)|\bGrowth (option|\()|pick one a round/i;
 
   function checks() {

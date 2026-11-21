@@ -11,6 +11,8 @@
 - `cards/effect_ledger.py --reasoned-delta BASE` (281): it needs `--stdout`, refuses `--hold-ratio` beside it and a
   bad BASE, and lists exactly the card whose reasoned value moved.
 - `drafts/adversary/check.py`'s deal (304): its stage counts match the engine's generated `round_cap` table.
+- `design_check_jobs.json` (307): every row names a card or power in content, stamped (`seen`) at its content now.
+- `docs_params.py` (307): the docs' "`param` N" quotes match the baseline.
 
 The read scripts' checks (`read_lib --base`, `paired_gap` on one seed, `play_read` / `use_read` pooling a native
 folder with a farmed read) are in `bench/test_read_tools.py`. No build and no binary. Python's standard library only.
@@ -234,6 +236,54 @@ class CheckDeal(unittest.TestCase):
         self.assertEqual(sorted(engine), [0, 1, 2, 3, 4])
         for d, stages, _ in check.stage_deals():
             self.assertEqual(stages, engine[d], f'difficulty {d}: check.py deals {stages}, the engine {engine[d]}')
+
+
+class JobRows(unittest.TestCase):
+    """307: `scripts/design_check_jobs.json` against content (302's and 306's diff reviews found rows priced against
+    a card's old effects). Red here: recheck the named rows, then `python scripts/design_check.py --stamp-jobs NAME`."""
+
+    def setUp(self):
+        import design_check
+        self.dc = design_check
+        self.cfg = design_check.jload('scripts/design_check.json')
+        self.cards = design_check.jload('content/cards.json')
+        self.boards = design_check.jload('content/ais.json')
+
+    def warnings(self, data=None):
+        o = self.dc.Out()
+        self.dc.check_job_rows(self.cfg, self.cards, self.boards, o, data)
+        return [(c, n) for c, n, _ in o.warn]
+
+    def test_the_table_matches_content(self):
+        self.assertEqual(self.warnings(), [])
+
+    def test_a_changed_card_a_gone_card_and_a_stray_job_are_flagged(self):
+        import copy
+        data = copy.deepcopy(self.dc.jload(self.dc.JOBS_FILE))
+        job, rows = next(iter(data['jobs'].items()))
+        card = next(c for c in rows['cards'] if not c.get('power'))
+        live = next(c for c in self.cards if c['name'] == card['name'])
+        live['cost'] += 1  # read live: no recheck
+        self.assertEqual(self.warnings(data), [])
+        live.setdefault('effects', []).append({'op': 'draw', 'amount': 1})
+        self.assertEqual(self.warnings(data), [('job-stale', card['name'])])
+        card['name'] = 'Gone Card'
+        data['jobs']['Not a standard action'] = {'unit': 'x', 'cards': []}
+        self.assertEqual(sorted(self.warnings(data)), [('job-table', 'Gone Card'), ('job-table', 'Not a standard action')])
+
+
+class DocsParams(unittest.TestCase):
+    """307: hand-written docs quote each tunable at its baseline (`docs_params.py`; r144 left three stale). Red
+    here: fix the quote, or add an on-purpose one (an off arm) to its `ALLOW`."""
+
+    def test_docs_quote_the_baseline(self):
+        import docs_params
+        self.assertEqual(docs_params.stale(), [])
+
+    def test_a_stale_quote_is_found(self):
+        import docs_params
+        self.assertTrue(docs_params.QUOTE.search('spend `remove_ambassadors` (2) ambassadors'))
+        self.assertIsNone(docs_params.QUOTE.search('`remove_ambassadors` 2 to 3'))
 
 
 if __name__ == '__main__':

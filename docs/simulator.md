@@ -25,7 +25,7 @@ $S agree READ/games.jsonl --agent strategist --agents FILE --threads 6  # oracle
 ```
 
 **`agree` (245):** replays each won game a read's `--who` kind played (default `oracle`; a whole spec, that agent's
-cells alone) and asks each `--agent` (repeatable; `--agents FILE`, a spec a line) to choose on every recorded table
+cells alone) and asks each `--agent` (repeatable; `--agents FILE`, a spec a line, `#` lines skipped) to choose on every recorded table
 with more than one legal action; it prints a JSON line an agent, `by` group (`all`, `dN`, and `miss`: where the first
 agent picked otherwise, 249: the read for a recorded agent built on that first agent) and recorded action kind (the
 action's `type`, `any`, and `play:<card>` a card): `[same, same or later this round, decisions]`. The agents follow

@@ -70,8 +70,8 @@ pub fn guards(g: &GameState, h: usize, owner: Option<usize>) -> Vec<Guard> {
 /// A piece of `kind` on hex `h` would be destroyed (175: a last node too). (234) Its owner's reach Shelter on the hex
 /// keeps it, spending nothing. Otherwise r75 (Matt's ruling 5): its owner (seat 0 for a neutral piece)
 /// chooses which protection to spend, or none: a hardening token, the owner's own ambassador on the hex (137: armor; only your own
-/// guards your piece), or the Aegis Doctrine capstone (the Protector's own pieces). Unprotected it goes, and
-/// a war destruction ([`Cause::War`]) sways toward Discord. Returns whether it was destroyed.
+/// guards your piece), or the Aegis Doctrine capstone (the Protector's own pieces). Unprotected it goes.
+/// Returns whether it was destroyed.
 pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause: Cause) -> Res<bool> {
     destroy_piece_named(g, cx, h, kind, cause, None)
 }

@@ -7,7 +7,7 @@ Scripts: [specs162.py](specs162.py) (the farm specs `s162-screen`, `s162-read`, 
 `s162-screen` and `s162-read`, `s162-oracle-d4.json` from the oracle's), [judges162.py](judges162.py) (agents against one another in one run, paired on
 pair and seed, across engines: Matt, message 7325), [speed162.py](speed162.py) (two binaries side by side, one thread
 each, game by game), [cost162.py](cost162.py) (a farmed run's s a game by agent, from the main box's shard log).
-Tables: [screen.md](screen.md), [final.md](final.md), [cost.md](cost.md), [speed.md](speed.md).
+Tables: [screen.md](screen.md), [final.md](final.md), `cost162.py` (the cost table; its output was never committed), [speed.md](speed.md).
 
 ## Part 1: the flat search, faster, the same games
 

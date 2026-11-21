@@ -34,7 +34,7 @@ any design, rules, card or pricing work.
   (`crates/aic-core/src/tests/mod.rs`) and live farm specs (a fast-lane test parses `experiments/farm/`: move a
   finished item's spec to `experiments/archive/farm/`; a retired weight goes in `eval::RETIRED`); a standard action in `board.std_off`'s index list, `design_check.json`'s
   `memory_counters` and `design_check_jobs.json`; an op in `configs/agents/values.json`, `effect_ledger.py`,
-  `crates/aic-sim/src/docs/{harms,run}.rs` (its harms arm, `PALETTE_OPS`), `tests/unprinted_ops.rs` and `drafts/adversary/check.py`.
+  `crates/aic-sim/src/docs/{harms,run}.rs` (its harms arm, `PALETTE_OPS`), `crates/aic-core/src/tests/unprinted_ops.rs` and `drafts/adversary/check.py`.
   A param, phase or rule's name also sits in the docs generators (`crates/aic-sim/src/docs/{aid,blocks,ladder}.rs`),
   `configs/three_seat.json` and `web/scripts/e2e-*.mjs`; a board content field (`AiBoard`, `Uncover`, a power's
   `group`) in `ai.rs`, `docs/blocks.rs`, `web/scripts/cards-export.mjs`, `scripts/bench/fresh_read.py` and
@@ -53,7 +53,8 @@ any design, rules, card or pricing work.
 - **Any change to how games play out:** bump `RULES_REVISION` and update the golden constants
   (README, *Rules changes*). Bump from the constant, not from the prompt's revision number (a bug
   hunt may have taken it), and say so in the rules-history row and the report. A content-only
-  edit moves the content hash constants with no bump unless play changes.
+  edit moves the content hash constants with no bump unless play changes. The browser lanes that
+  replay play (`npm run e2e*`, `web/scripts/*-play.mjs` demo seeds) assert it too and nothing reruns them: rerun them.
 - **Every rules change** updates the `docs/rules/` files it touches and adds its row to
   [docs/rules-history.md](docs/rules-history.md) in the same commit.
 - **After changing threats, cards, adversary rules, content, tunables or `values.json`:** run
@@ -64,7 +65,8 @@ any design, rules, card or pricing work.
   [docs/harms.md](docs/harms.md) can't read from content comes from `RULE_HARMS` in
   `crates/aic-sim/src/docs/harms.rs`.
 - **Before the report**, `git grep` each renamed name and each changed number, and reread the
-  `docs/rules/` file a new mechanic touches: a diff doesn't show the prose it left stale.
+  `docs/rules/` file a new mechanic touches: a diff doesn't show the prose it left stale
+  (`python scripts/docs_params.py` catches a "`param` N" quote only).
 
 ## Cards, mechanics and agents
 
@@ -75,7 +77,7 @@ any design, rules, card or pricing work.
   play, so an id changes only to fix a spelling `docs --check` refuses, in a rules item, with a
   `RULES_REVISION` bump; it strands any note on the old id.
 - **Adding or removing a card** edits `configs/baseline.json`, then `python scripts/regen.py`, which
-  rewrites the configs derived from it (`experiments/configs/no_liberate.json`, `no_tier2.json`).
+  rewrites the configs derived from it (`experiments/configs/no_liberate.json`, `no_tier2.json`, `configs/three_seat.json`).
 - A pass editing many cards keeps its edits as one overlay file, written with
   `scripts/cards/apply_overlay.py`, so it reruns from any revision.
 - **Text beside ops.** Only player cards print from their ops (`face.rs`). A threat's, event's, project's, Unity or

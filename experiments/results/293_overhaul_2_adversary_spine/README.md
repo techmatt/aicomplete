@@ -145,7 +145,7 @@ so K 1 is a much faster clock there; `research_at` is a list by level, ready for
 
 ## The K screen (dev seeds 36800-36831, d0, 96 games an arm)
 
-`experiments/farm/spine293.json` (the judge) and `spine293g.json` (greedy); `k_screen.py` prints the table. Run
+`experiments/archive/farm/spine293.json` (the judge) and `spine293g.json` (greedy); `k_screen.py` prints the table. Run
 before the review's content fixes (Surge then read as Infiltrate + Escalate, cube lines at their r139 sizes), so
 the fresh read above is the confirmation on the final build.
 

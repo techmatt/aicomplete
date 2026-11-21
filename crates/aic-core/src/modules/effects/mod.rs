@@ -436,6 +436,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             threats::requisition(g, cx, &ctx.seats(&w, g), *resource, *amount, *n, ctx.why.as_deref())?
         }
         Op::LoseAmbassador => threats::lose_ambassador(g, cx, &ctx.seats(&w, g), ctx.why.as_deref())?,
+        // Count 1 keeps the threat path's prompt words ("or lose a node?"); more nodes: new_ops::lose_node_or (307: one
+        // path would reword this prompt, a call left to Matt).
         Op::LoseNodeOr { resource, amount, count: 1 } => {
             threats::lose_node_or(g, cx, &ctx.seats(&w, g), &ctx.hexes(&w, g), *resource, *amount, ctx.label, ctx.why.as_deref())?
         }

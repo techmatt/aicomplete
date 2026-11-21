@@ -42,7 +42,7 @@ pub fn main() {
             "{}",
             serde_json::to_string_pretty(&aic_core::describe_modules()).unwrap()
         ),
-        "cards" => print!("{}", agents::policy::cards_csv()),
+        "cards" => print!("{}", agents::cards::cards_csv()),
         "show" => show(&o),
         "map" => map(&o),
         "docs" => docs::run(&o),
@@ -52,8 +52,7 @@ pub fn main() {
         "farm" => exit(farm::cli(&o)),
         "agree" => exit(agree::run(&o)),
         "strategies" => {
-            let path = &o.paths[0];
-            let r = rules(path, &load(path, &o.set.iter().collect::<Vec<_>>()));
+            let r = one_config(&o);
             // 102 (D36): the strategies the strategy player picks (222: the judge plays none), unless --agent says.
             let agent = if o.given.contains("--agent") {
                 o.agent.clone()
@@ -66,11 +65,16 @@ pub fn main() {
     }
 }
 
+/// The rules of a one-config command's config (`show`, `map`, `strategies`), its `--set`s applied.
+fn one_config(o: &Options) -> aic_core::Rules {
+    let path = &o.paths[0];
+    rules(path, &load(path, &o.set.iter().collect::<Vec<_>>()))
+}
+
 /// `aic-sim map` (198): every country's hexes by printed number, with kind, flags and neighbors, so a printed
 /// setup hex can be checked by number (the axes differ by layout, so "next to" can't be read off the numbers).
 fn map(o: &Options) {
-    let path = &o.paths[0];
-    let r = rules(path, &load(path, &o.set.iter().collect::<Vec<_>>()));
+    let r = one_config(o);
     let w = r.world();
     let name = |h: usize| {
         let c = &w.map.hexes[h];
@@ -101,8 +105,7 @@ fn map(o: &Options) {
 
 /// `aic-sim show`: the resolved config, its hashes and the tunables.
 fn show(o: &Options) {
-    let path = &o.paths[0];
-    let r = rules(path, &load(path, &o.set.iter().collect::<Vec<_>>()));
+    let r = one_config(o);
     println!(
         "config hash {}  content hash {}  rules revision {}",
         r.config_hash,

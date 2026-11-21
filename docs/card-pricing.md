@@ -120,7 +120,7 @@ moves when any other card changes: to reprice an edited card, move its price by 
   each 2-energy Action is a use's 6. The table prices energy at the full anchor while its insight, draw and chip
   rates sit at about 0.6 of theirs, so an energy-for-X Action reads as a loss at `values.json` for a seat short of
   energy and a gain only through the spare-energy rate; two of the three sinks whose output the table prices lowest
-  (an ambassador removed; a draw and chips) carry an override.
+  (an ambassador removed; a draw and chips) carry an override (keep worth only: agents.md).
 - **A station is a flip:** freeing one is worth a cube a round both ways, about 10 (`cleanse_station`); freeing a
   factory stays about 4.
 - **A gift to another seat** is 0.75 × face; **a tag left in play** 0.67, then 0.33 each (events leave none).

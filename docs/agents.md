@@ -53,7 +53,7 @@ keep plan, and the table's rates the strategist's buildings' earnings (`w.card_a
 rates*; `Weights` are points). A card is worth its effects now, its standing effects a round × the rounds it counts
 for, a use of its Action × `uses_share` of them (a token card's spend over its cycle of adds), and its tags, over the
 rounds left (`horizon_t1`, `horizon_t2`). An `overrides` row adds flat credits to one card, with its reason, where the
-table under-prices it against the anchors; built, the card keeps it, spread over the rounds left. `t.<key>=v` in a
+table under-prices it against the anchors; built, the card keeps it, spread over the rounds left; never one use of its Action (`value.rs` `one_use`). `t.<key>=v` in a
 spec sets one number for that agent (`t.<section>.<key>` where a name is in two; `t.overrides.<card>=N` replaces a
 card's `overrides` rows with one of N credits, 287). Its resources, a drawn card and the tier-2 horizon sit at the
 unit anchors; its agent-removal and drain rows stay under them. **Antimatter's one rate** (`w.am_tie`, 288):

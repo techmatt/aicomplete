@@ -53,6 +53,7 @@ fn uncovered2(w: &World, g: &GameState, seat: usize) -> usize {
 
 /// Income from the AI board and its nodes track: `(resource, amount)`
 /// pairs (insight sets the round's insight; the rest arrive in upkeep).
+#[cfg(test)]
 pub fn track_income(w: &World, g: &GameState, seat: usize) -> Vec<(Resource, i64)> {
     let mut out = Vec::new();
     each_track_income(w, g, seat, |r, n| out.push((r, n)));
@@ -75,7 +76,7 @@ pub fn insight_gain(b: &AiBoard, i: usize) -> i64 {
     }
 }
 
-/// [`track_income`] a pair at a time, for a caller that only adds them up.
+/// The tests' `track_income` a pair at a time, for a caller that only adds them up.
 pub fn each_track_income(w: &World, g: &GameState, seat: usize, mut f: impl FnMut(Resource, i64)) {
     let b = board(w, seat);
     b.income.iter().for_each(|(r, n)| f(*r, *n));

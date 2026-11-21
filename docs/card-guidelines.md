@@ -129,7 +129,8 @@ printed cost a board × countries, and only the leftmost project holds compute (
   --quiet`); no card already prints the effect (11); a building whose Action prints a cost and two clauses rarely
   fits: `cards:fit` it before the first screen.
 - **After any later edit** (card fit included): re-read its plays per game, update its rows in
-  `scripts/design_check_jobs.json` (nothing checks them against content), rerun `npm run cards:fit` before the freeze.
+  `scripts/design_check_jobs.json` and restamp them (`design_check.py --stamp-jobs NAME`; a stale stamp warns
+  `job-stale` and fails `test_input_checks.py`), rerun `npm run cards:fit` before the freeze.
 - **Smokes before reads.** A new op, resource or token type gets a 2-minute engine smoke (16 seeds) before any band
   read: `scripts/cards/play_read.py` for cards kept and never played, `scripts/cards/board_read.py --powers` for
   powers never used. Before a full read, `python scripts/cards/loop_smoke.py --run` (16 seeds: timeouts, most plays

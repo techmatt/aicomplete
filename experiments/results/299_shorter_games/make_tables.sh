@@ -18,7 +18,7 @@ H="python $S/hist.py"
   echo
   echo "lib4: Liberate at 4; amb2: two starting ambassadors; deck: 4/4/2 (d3 4/3/2); both: all three."
   echo
-  $H experiments/farm/s299a.json s1=$D/s1/s299a.jsonl --by-arm
+  $H experiments/archive/farm/s299a.json s1=$D/s1/s299a.jsonl --by-arm
   echo
   echo "## Screens 2-7 (298's spent fresh seeds 50688-50783, 288 games a level)"
   echo
@@ -29,23 +29,23 @@ H="python $S/hist.py"
   echo
   $H experiments/farm/read.json base=$K/r144-judge.jsonl
   echo
-  $H experiments/farm/s299b.json s2=$D/s2/s299b.jsonl --by-arm
+  $H experiments/archive/farm/s299b.json s2=$D/s2/s299b.jsonl --by-arm
   echo
-  $H experiments/farm/s299c.json s3=$D/s3/s299c.jsonl --by-arm
+  $H experiments/archive/farm/s299c.json s3=$D/s3/s299c.jsonl --by-arm
   echo
-  $H experiments/farm/s299d.json s4=$D/s4/s299d.jsonl --by-arm
+  $H experiments/archive/farm/s299d.json s4=$D/s4/s299d.jsonl --by-arm
   echo
-  $H experiments/farm/s299e.json s5=$D/s5/s299e.jsonl --by-arm
+  $H experiments/archive/farm/s299e.json s5=$D/s5/s299e.jsonl --by-arm
   echo
-  $H experiments/farm/s299f.json s6=$D/s6/s299f.jsonl --by-arm
+  $H experiments/archive/farm/s299f.json s6=$D/s6/s299f.jsonl --by-arm
   echo
-  $H experiments/farm/s299g.json s7=$D/s7/s299g.jsonl --by-arm
+  $H experiments/archive/farm/s299g.json s7=$D/s7/s299g.jsonl --by-arm
   echo
   echo "## Three seats (dev seeds, 32 games a level; \`configs/three_seat.json\`; \`s299t.json\`, \`s299u.json\`)"
   echo
-  $H experiments/farm/s299t.json t=$D/s2/s299t.jsonl --by-arm
+  $H experiments/archive/farm/s299t.json t=$D/s2/s299t.jsonl --by-arm
   echo
-  $H experiments/farm/s299u.json u=$D/s4/s299u.jsonl --by-arm
+  $H experiments/archive/farm/s299u.json u=$D/s4/s299u.jsonl --by-arm
 } > $S/screens.md
 {
   echo "# 299: the fresh reads"
@@ -59,7 +59,7 @@ H="python $S/hist.py"
   F=$D/fresh
   $H experiments/farm/read.json r144=$F/r144-judge.jsonl r145=$F/r145-judge.jsonl
   echo
-  python $S/hist.py experiments/farm/s298t.json r144=$F/r144-3seat.jsonl --by-arm | grep -v "c1 \|lib4 "
+  python $S/hist.py experiments/archive/farm/s298t.json r144=$F/r144-3seat.jsonl --by-arm | grep -v "c1 \|lib4 "
   echo
   python $S/hist.py experiments/farm/read3.json r145=$F/r145-3seat.jsonl
   echo
@@ -69,7 +69,7 @@ H="python $S/hist.py"
   C=$D/confirm
   $H experiments/farm/read.json r144=$C/r144-judge.jsonl alt=$C/r145-judge.jsonl
   echo
-  python $S/hist.py experiments/farm/s298t.json r144=$C/r144-3seat.jsonl --by-arm | grep -v "c1 \|lib4 "
+  python $S/hist.py experiments/archive/farm/s298t.json r144=$C/r144-3seat.jsonl --by-arm | grep -v "c1 \|lib4 "
   echo
   python $S/hist.py experiments/farm/read3.json alt=$C/r145-3seat.jsonl
   echo

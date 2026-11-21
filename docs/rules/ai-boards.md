@@ -19,7 +19,7 @@ chips into troops removed (Fortify).
 
 The **Protector**'s special rule is Wall: no adversary troop is ever placed on a hex with its node, Redeploys onto it or
 strikes it, so no troop strikes its node or a facility under it (threats and corruption still can). When troops Strike, each troop on or next to its nodes pays it 1 insight, at most 2 a round
-(Vigil). Its node powers place a node and a credit free (Levy), a node within 2 of its own and 2 credits for 2 energy (Outpost) and a node and an ambassador for 2 energy (Accord);
+(Vigil). Its node powers place a node and a credit free (Levy), a node within 2 of its own and 2 credits for 2 energy (Outpost) and a node and an ambassador for 3 energy (Accord);
 it pushes troops and agents and hardens with energy (Patrol), and its board prints 2 energy a round. It earns 9 credits
 a round, so starts with 31. Each credit space of its economy track adds 1 or 2 credits, the
 first one 1 energy too. Late in the game, a sacrificed Security card removes troops, two of them agents too (Interdict).
@@ -75,7 +75,7 @@ board prints **three node powers** ([ai-powers.md](ai-powers.md)), ordinary powe
 round, and all three may be used in the same round. **One is cheap and two are costly, with a benefit.** The cheap one
 is free, a node and a small rider (Buy In and Levy a credit, Field Survey a card). The costly two each place one node
 for the board's own currency and carry more (Sprawl, 2 energy: 2 credits; Outpost, 2 energy: within 2 of yours, and 2 credits; Annex, 1 chip: within 2 of
-yours, and 3 credits; Accord, 2 energy: an ambassador; Peer Review, 2 insight: a research cube; Field Station, 2 insight: a
+yours, and 3 credits; Accord, 3 energy: an ambassador; Peer Review, 2 insight: a research cube; Field Station, 2 insight: a
 station). So 1-3 nodes a round come from them (cards that place nodes add to that: cards aren't capped). Two things
 keep the loops short: once a round each and rising step costs cap energy → node → energy income, and the costly
 powers spend what the board's engine makes.

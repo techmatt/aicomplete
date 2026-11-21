@@ -79,7 +79,7 @@ as a record with an optional note, to copy whole or up to the shown step, or tak
 ## Browser check
 
 After editing a script, `node --check` it before a long run: in-page code sits in template strings, where a stray
-backtick breaks the file (the slow lane's `node_scripts_parse` checks them all).
+backtick breaks the file (the fast lane's `node_scripts_parse` checks them all).
 
 `npm run e2e [-- <record.json>]` (`scripts/e2e.mjs`; `AIC_URL`, `AIC_BROWSER`, `AIC_SHOTS` atop it) drives
 headless Edge or Chrome over the DevTools protocol against a served viewer (the dev server, or *Against a built

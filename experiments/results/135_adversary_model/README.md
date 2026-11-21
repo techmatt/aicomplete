@@ -4,7 +4,7 @@ The design doc's *Adversary model* is built and plays all of 134's drafts (`draf
 `scripts/content/load_adversary.py` writes `content/` and the generated listing `docs/adversary-cards.md`). Rules
 revision 54 (bumped from the constant, 53 to 54, as the prompt said). Rules: [threats.md](../../../docs/rules/threats.md),
 [adversary.md](../../../docs/rules/adversary.md), the round in [economy.md](../../../docs/rules/economy.md), war in
-[war.md](../../../docs/rules/war.md).
+`docs/rules/war.md` (cut in 292: `git show 4126a21b^:docs/rules/war.md`).
 
 ## The read (fresh seeds 36392-36439, 48 a cell, the three pairs; r53 = main cfeb4b7 on the same seeds)
 

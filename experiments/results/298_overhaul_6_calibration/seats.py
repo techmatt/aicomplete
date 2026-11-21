@@ -39,8 +39,8 @@ def by_round(games, key):
 def main():
     level, two, three = int(sys.argv[1]), sys.argv[2], sys.argv[3]
     arm = sys.argv[sys.argv.index("--arm") + 1] if "--arm" in sys.argv else "base"
-    spec2 = json.load(open("experiments/farm/s298r.json", encoding="utf-8"))
-    spec3 = json.load(open("experiments/farm/s298t.json", encoding="utf-8"))
+    spec2 = json.load(open("experiments/archive/farm/s298r.json", encoding="utf-8"))
+    spec3 = json.load(open("experiments/archive/farm/s298t.json", encoding="utf-8"))
     g2 = read(two, level, arm, [v["name"] for v in spec2["variants"]])
     g3 = read(three, level, arm, [v["name"] for v in spec3["variants"]])
     print(f"d{level}: {len(g2)} two-seat games, {len(g3)} three-seat games; a seat a round, games still running")

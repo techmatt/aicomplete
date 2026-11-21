@@ -1,4 +1,4 @@
-"""293: the K screen's table from `farm-seeds ... spine293` (experiments/farm/spine293.json: three variants an arm).
+"""293: the K screen's table from `farm-seeds ... spine293` (experiments/archive/farm/spine293.json: three variants an arm).
 
     python k_screen.py OUT.jsonl
 """

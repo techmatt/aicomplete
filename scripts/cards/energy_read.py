@@ -8,7 +8,7 @@ stations an effect could not flip), the three capstones and their twists, Popula
 plays and Action uses (either half: no counter splits off its liberations) and each power
 content/ais.json prices in energy.
 
-    python scripts/cards/energy_read.py DIR [DIR ...] [--md]
+    python scripts/cards/energy_read.py DIR [DIR ...]
 
 Each DIR holds an experiment's games.jsonl and results.json. A variant's seats follow its
 `ai.boards=` override, else the baseline's 0, 1. Seconds.

@@ -8,7 +8,7 @@ spec with N agents. A sink is a card whose `antimatter` cost is above 0 in conte
 `--also` lists more ids after them (a card a screen ran that the tree has dropped). Columns per read: offered / kept /
 played per 100 games of each sink; antimatter gained / spent a seat-game per level (two seats a game); then the
 antimatter a seat holds unspent at the end of each round (`unspent.S.antimatter.rNN`, the mean over seats that
-reach it) and the share of seat-games ending with antimatter held. Spends by use and source: 303's am_spend.py.
+reach it) and the share of seat-games ending with antimatter held. Spends by use and source: bench/am_spend.py.
 """
 import collections
 import json

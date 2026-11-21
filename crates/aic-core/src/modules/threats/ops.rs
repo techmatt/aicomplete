@@ -5,7 +5,7 @@ use super::*;
 
 /// Who a prompt asks, and for which threat when one is resolving (118: "discard which
 /// card?" named nothing).
-fn head(why: Option<&str>, s: usize) -> String {
+pub(crate) fn head(why: Option<&str>, s: usize) -> String {
     match why {
         Some(n) => format!("{n}: seat {s}"),
         None => format!("Seat {s}"),

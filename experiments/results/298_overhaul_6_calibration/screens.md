@@ -1,7 +1,7 @@
 # 298: the dev-seed screens
 
 Written by `make_tables.sh` (`screen.py`) from farmed games; dev seeds 36800-36831, 32 a pair, the judge. Arms
-are `set` lists (the specs: `experiments/farm/s298a.json`, `s298r.json`, `s298t.json`). Per-seat columns divide by
+are `set` lists (the specs: `experiments/archive/farm/s298a.json`, `s298r.json`, `s298t.json`). Per-seat columns divide by
 the seats; Accord is per Protector seat-round.
 
 ## Screen 1 (f3facbcc: r144's Redeploy and Offensive in, the r143 judge; the three pairs pooled, 96 games a cell)

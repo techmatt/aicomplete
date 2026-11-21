@@ -1,5 +1,5 @@
 //! 154: the end-game probe, opt in (`"endgame"` in a spec). For a game lost to
-//! the round cap (155: any loss, with `all_losses`) it records what the purge
+//! the round cap (155: any loss, with `all_losses`) it records what the win (no corrupted city)
 //! still needed at the end, what the team held toward it a few rounds before
 //! (the inputs of a feasibility bound,
 //! read by `experiments/results/154_endgame_r66/endgame154.py`), and, with an
@@ -60,11 +60,11 @@ pub struct Pieces {
     /// to its target). (178: no agent lands on a liberated city, so `remove_after_liberate` and
     /// `free_leaves` are gone.)
     pub remove_actions: i64,
-    /// The purge's count at the state's own level.
+    /// Corrupted cities (r141: the same count as `cities`; kept for older readers).
     pub purge: i64,
 }
 
-/// What the team held toward the purge at the snapshot.
+/// What the team held toward the win at the snapshot.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct Team {
     pub ambassadors_supply: i64,
@@ -93,15 +93,17 @@ pub struct EndgameRead {
     #[serde(default, skip_serializing_if = "String::is_empty")]
     pub reason: String,
     pub end_round: u32,
+    /// Always 0 since r141 (the purge's levels are gone); kept for endgame154.py.
     pub level: i64,
     pub unity_drawn: i64,
     pub discord_left: i64,
     pub end: Pieces,
     pub snap_round: u32,
+    /// Always 0 since r141 (the purge's levels are gone); kept for endgame154.py.
     pub snap_level: i64,
     pub snap: Pieces,
     pub team: Team,
-    /// The replays: how many, how many won, each one's end reason and purge count.
+    /// The replays: how many, how many won, each one's end reason and corrupted cities left.
     pub replays: usize,
     pub replay_wins: usize,
     pub replay_reasons: Vec<String>,

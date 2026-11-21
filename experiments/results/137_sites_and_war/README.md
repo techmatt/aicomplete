@@ -2,7 +2,7 @@
 
 Rules revision 56, bumped from the constant (55 to 56), as the prompt said. Rules: the site model in
 [ambassadors.md](../../../docs/rules/ambassadors.md); bases, war and the new-player summary in
-[war.md](../../../docs/rules/war.md); stations in [board.md](../../../docs/rules/board.md). Where every old job went:
+`docs/rules/war.md` (cut in 292: `git show 4126a21b^:docs/rules/war.md`); stations in [board.md](../../../docs/rules/board.md). Where every old job went:
 [jobs.md](jobs.md). Scripts: [read137.py](read137.py) (136's and 135's tables, plus war, sites and armor a game),
 [levers.py](levers.py) (a `<pair>_<lever>` screen, paired), [diff_counters.py](diff_counters.py). Specs:
 `experiments/read-137.json`, `screen-137-*.json`, `diag-137*.json`, `smoke-137.json`.

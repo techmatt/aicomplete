@@ -1,4 +1,4 @@
-// The pieces cut from the game that must not show in the viewer, shared by player-play.mjs and troops-play.mjs:
+// The pieces cut from the game that must not show in the viewer, shared by player-play.mjs, troops-play.mjs, ambassadors-play.mjs and playthrough.mjs:
 // `installCut(page)` defines `window.__cut.removed()` in the page, which lists every cut piece on screen now.
 //
 // 292: a base hex, pennant, front or Drone drawn on the map, an Envoy or Buy energy button, a fronts or host value,
@@ -13,7 +13,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /** The cut pieces' words. "in front of you" is no front; a capital War is the step and its log lines. */
-export const CUT_WORDS = String.raw`\b[Dd]rones?\b|\b[Mm]ilitary bases?\b|\bEnvoy\b|Buy a city's energy|\b[Hh]ost(?:s|ed|ing)?\b|\b[Ff]ronts?\b(?! of)|\bWar\b|\bwar (?:step|phase)\b|Warmongering|Twin City Compact|nearest players`
+const CUT_WORDS = String.raw`\b[Dd]rones?\b|\b[Mm]ilitary bases?\b|\bEnvoy\b|Buy a city's energy|\b[Hh]ost(?:s|ed|ing)?\b|\b[Ff]ronts?\b(?! of)|\bWar\b|\bwar (?:step|phase)\b|Warmongering|Twin City Compact|nearest players`
   // 293: the adversary's Spill, Surge and Grow lines and a botnet's seeding (a singular "seed" alone is the
   // game's: "Seed", "Random seed").
   + String.raw`|\b[Ss]pill(?:s|ed)?\b|\b[Ss]urg(?:e|es|ed)\b|\b[Ss]eed(?:s|ed|ing)\b|[Bb]otnet(?:'s|s)? seed|\bseed (?:a |another )?[Bb]otnet|\bGrow\b`
@@ -28,7 +28,7 @@ const KEPT_NAME = 'Dispatch Control Room';
 
 /** Content names that hold one of those words: taken out of the text before it is read. Of the names holding
  *  "Dispatch" or "Growth", only `KEPT_NAME` is. */
-export function cutWordNames() {
+function cutWordNames() {
   const dir = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'content');
   const re = new RegExp(CUT_WORDS);
   const names = new Set();

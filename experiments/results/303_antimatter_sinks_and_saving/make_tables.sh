@@ -26,7 +26,7 @@ R=experiments/farm/read.json
   echo
   python $S/am_spend.py r147=$O/fresh/r147-judge.jsonl r148=$O/fresh/r148-judge.jsonl --top 20
 } > $S/fresh.md
-SP=experiments/farm/s303.json
+SP=experiments/archive/farm/s303.json
 {
   echo "# 303: the dev screen (seeds 36800-36831, 384 games an arm)"
   echo

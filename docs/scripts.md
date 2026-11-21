@@ -12,25 +12,26 @@ what it prints.
 - `regen.py [--no-build] [--check | --golden]`: every generator in order (its docstring), the derived
   configs (`no_liberate.py`, `no_tier2.py`, `three_seat.py`) last. `--check` writes nothing and runs every check
   (docstring); `--golden`: also sets the golden constants (README, *Rules changes*).
-- `design_check.py [DIR] [--old DIR] [--base REV] [--config FILE] [--quiet] [--usage] [--variant V,...] [--agent A,...]`: the design
-  warnings ([principles.md](principles.md)): content checks, plus play checks on DIR (a read's folder or
-  `games.jsonl`; a farm out file as FILE=SPEC, SPEC its path (`=experiments/farm/read.json`); one DIR, comma lists pool; an unknown flag stops it). `--old`: the previous revision's read on its seeds; `--base`: the
-  dials' start (default: merge base with main); `--variant`: only those variants' (or a lever's) games, `base` the
-  bare pairs; `--agent`: only those agents' (as the spec writes them), on `--old` too; `--usage`: each action's role, band and use instead. First line: the report's `warnings:`. Thresholds
-  and bands: `design_check.json`; job parity's cards for each standard job, hand-read (effects as expressions over
-  the anchors): `design_check_jobs.json`,
-  edited by hand (249's `port_jobs.py` would overwrite it). A `repeat_powers.exempt` key may join names (`"Buy In, Levy"`).
-  Never exits 1 on a warning.
+- `design_check.py [DIR] [--old DIR] [--base REV] [--config FILE] [--quiet] [--usage] [--variant V,...] [--agent A,...]`:
+  the design warnings ([principles.md](principles.md)): content checks, plus play checks on DIR (a read's folder,
+  `games.jsonl`, or a farm out file as FILE=SPEC; comma lists pool). `--old`: the previous revision's read on its
+  seeds; `--base`: the dials' start (default: merge base with main); `--variant`, `--agent`, `--usage`: docstring.
+  First line: the report's `warnings:`; never exits 1 on a warning. Thresholds and bands: `design_check.json`; job
+  parity's cards for each standard job, hand-read: `design_check_jobs.json` (by hand: 249's `port_jobs.py` would
+  overwrite it). Its rows' `seen` stamps the content each was priced on (`job-stale` when it moves): recheck the
+  row, then `--stamp-jobs NAME[,NAME]` (or `all`). A `repeat_powers.exempt` key may join names (`"Buy In, Levy"`).
+- `docs_params.py`: each "`param` N" quote in README, CLAUDE.md and docs/ against the baseline; exits 1 on a stale
+  one (an on-purpose other value: its `ALLOW`).
 - `cards/cards_doc.py`: regenerates `docs/cards.md`. `cards/deck_text.py DECK...`: a deck as plain text for review
   (`--list` the decks; README, *Card text for review*); `--ids TEXT`: content ids by display name.
 - `cards/apply_overlay.py FILE... [--set ENTRY]... [--check]`: writes overlays into `content/*.json` in place:
-  `cards.<id>.<path>=JSON` lines (the engine `--set`'s keys, paths as `apply_entry` in content.rs; `#` comments), a
-  last step `+` appending to a list, `cards.<id>=<JSON object>` a whole row. Nothing deletes (how to drop a card: its
-  docstring). `--check`: dry run; `--from REV`: over REV's content, not the tree's (a changed overlay drops what it no longer
-  sets; warns of tree edits it would drop). Then `regen.py`. It writes `alignment.json` in its hand layout (`dump_alignment`); threats,
-  adversary and projects: edit `drafts/adversary/`.
+  `cards.<id>.<path>=JSON` lines (the engine `--set`'s keys; `#` comments; line forms and dropping a card: its
+  docstring). `--check`: dry run; `--from REV`: over REV's content, not the tree's (warns of tree edits it would
+  drop). Then `regen.py`. Threats, adversary and projects: edit `drafts/adversary/`.
 - `content/load_adversary.py [--check]`: `drafts/adversary/` (the source) into `content/` and
   `docs/adversary-cards.md`; writes nothing if `drafts/adversary/check.py` gives any ERROR; `--check` only compares.
+- `content/spine_293.py`, `troops_294.py`, `sweep_297.py`, `sweep_298.py`: those items' text-beside-ops passes, each
+  rerun from the revision its docstring names.
 - `configs/no_liberate.py`, `no_tier2.py`: the baseline less every `liberate` card, and with no tier-2 deck (opening
   tier-2 keeps from tier 1), in `experiments/configs/`; `three_seat.py`: `configs/three_seat.json`, the baseline at
   3 countries and difficulty 0 (the viewer's 3-seat game).
@@ -63,7 +64,7 @@ what it prints.
   `cards/economy_read.py [--rounds 10]` card throughput, income, unspent; `cards/energy_read.py` energy held and
   used; `cards/corp_read.py` completions, cubes, converters, stations, adversary compute.
 - `cards/effect_stats.py READ [--screen DIR]`: each Unity and Discord card's resolutions and effects (`fx.<id>.*`),
-  each prohibition's fire rate and blocks; `--screen`: an on/off screen's paired win effect (docstring).
+  each prohibition's fire rate and blocks; `--screen`: docstring.
 - `cards/price_read.py DIR [--agent planner]`: per-card rates and stratified win deltas for one agent
   (experiments.md, *Reading prices*; flags: docstring).
 - `cards/effect_ledger.py`: splits each card's printed cost over its effects pro rata to the reasoned values
@@ -79,8 +80,8 @@ what it prints.
   `--map OLD=NEW` renames in the old output first; `--ignore-content-hash` for a content refactor,
   `--ignore-config-hash` for a dead param removed (`same_play.py` can't: its fingerprints hash the config).
 - `bench/cuts_read.py BEFORE AFTER`: two farm out files, by pair: wins, rounds, energy, Discord tips (292).
-- `bench/same_play.py`: a refactor left play unchanged over countries, difficulties, variants and every agent but
-  the beam, old binary against new (~20 min, 6 threads). `--map` as above; an old binary refusing today's configs:
+- `bench/same_play.py`: a refactor left play unchanged over countries, difficulties, variants and the random, greedy, engine,
+  rollout and planner agents (not the beam or the oracle), old binary against new (~20 min, 6 threads). `--map` as above; an old binary refusing today's configs:
   `run ... --root out/old`. `tracediff A B [--ignore KEY]...`: two `run --trace` outputs' first differing line, after
   its round and phase (`--ignore` drops events naming KEY, `.` ending a prefix, and the field KEY: `config_hash`).
 - `bench/trace_lib.py`: the reader for a `run --trace` (reads.md): `walk()` a `Step` a line (round, phase, seat,
@@ -109,7 +110,8 @@ what it prints.
 - `bench/paired.py DIR... [--pair A B]...`: cells' win %, SE, rounds and ends, and paired gaps pooled over `--pair`s
   on the seeds both played; `--against-base`, `--against-agent A`, `--lever-suffix L`, `--pool`, `--other DIR`,
   `--same-engine` and the cell names: its docstring. After editing ladder.py, paired.py, read_lib.py or screens.py, run
-  `bench/test_read_tools.py`; after apply_overlay.py or design_check.py's arguments, `test_input_checks.py` (the slow lane runs both).
+  `bench/test_read_tools.py`; after apply_overlay.py or design_check.py, `test_input_checks.py`; after trace_lib.py,
+  tracediff or edit/replace.py, `bench/test_trace_lib.py` (the slow lane runs all three).
 - Gates are suspended: `bench/gate_stop_rate.py` and `bench/gate_close.py` (docstrings).
 - `bench/shards.sh EXE DIR SPEC FIRST COUNT OUT`: a farm spec natively in `SHARDS` (6) one-thread shards, under the header into OUT.
 - `bench/first_divergence.py OLD NEW`: where two runs of one spec first differ, per game (`--cells DIR A B`: a run's
@@ -131,6 +133,7 @@ what it prints.
   histogram (bands: ladder.py's). `bench/smoke_table.py LABEL=FILE... [--names A,B,C] [--pairs] [--troops]`: ends, slot, piles, troops.
 - `bench/mkspec.py NAME OUT AGENT LEVELS ARM=SETS... [--note TEXT]`: a lever screen's spec, the three pairs by arm.
   `bench/am_cards.py NAME=FILE[:N:K]... [--also IDS]`: each antimatter sink offered, kept, played; antimatter idle.
+  `bench/am_spend.py NAME=FILE[:N:K]... [--top N]`: antimatter spent by use and made by source per 100 games (303).
 - `bench/card_ranks.py DIR A B [--variant V]...`: Spearman of the cards' keep and play rates, agent B against A.
 - `bench/item_time.py ITEM... [--top N]`: a done item's wall time: sims, builds, tests, the rest.
 - `tune/`: `agent_sweep.py`, `sweep.py`, `log_table.py`, `engine_sweep.py` ([README](../scripts/tune/README.md)).

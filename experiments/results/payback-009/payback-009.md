@@ -17,11 +17,11 @@ difficulties 0 and 4. The two headline levers also ran on 300096–300239 (240 i
 cells reproduce 008's games on those seeds exactly. The first 96 seeds are kinder than
 008's 240: base greedy wins 77% at d4 there, against 71% over all 240.
 
-Results: [`results/payback-009-singles`](results/payback-009-singles),
-[`results/payback-009-combos`](results/payback-009-combos),
-[`results/payback-009-content`](results/payback-009-content) (one directory per
+Results: [`results/payback-009-singles`](../payback-009-singles),
+[`results/payback-009-combos`](../payback-009-combos),
+[`results/payback-009-content`](../payback-009-content) (one directory per
 patch). The game records were deleted in 038 (they never replayed on later rules);
-[their README](results/payback-009-records/README.md) stays. Every table row comes from `scripts/payback/summarize.py` over those directories.
+[their README](../payback-009-records/README.md) stays. Every table row came from `scripts/payback/summarize.py` (since removed; in git) over those directories.
 
 ## Answer
 
