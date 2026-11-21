@@ -104,7 +104,8 @@ try {
     await js(`window.aic.act(window.aic.legal.filter((a) => a.type === 'choose')[0])`);
   }
   // 252: it spends insight, never the stored cubes (Matt's ruling 1).
-  check(await value('resource.research_cubes') === stored, 'it spends no research cubes');
+  // 305: Peer Review gains a research cube since 295 (r142): none spent is at least as many as stored.
+  check(await value('resource.research_cubes') >= stored, 'it spends no research cubes');
   check(consoleErrors.length === 0, `no page errors${consoleErrors.length ? `: ${consoleErrors.join(' | ')}` : ''}`);
 } catch (e) {
   console.error(e);

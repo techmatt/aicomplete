@@ -318,7 +318,29 @@ pub fn reuse(g: &mut GameState, cx: &mut Cx, seat: usize, this: Option<Key>) -> 
     let w = cx.world;
     let ids = reusable(&w, g, seat, this.as_ref().map(|k| k.as_str()));
     let opts = ids.iter().map(|c| opt(*c)).collect();
-    let prompt = || format!("Seat {seat}: use which building's Action again?");
+    // 305 (D50): the reused Action's cost is paid again: the prompt says so, with each one's cost.
+    let prompt = || {
+        let costs: Vec<String> = ids
+            .iter()
+            .map(|id| {
+                let d = def(&w, id.as_str());
+                // Each branch's printed cost (what `use_ability` charges), " or " between branches.
+                let costs: Vec<String> = d
+                    .ability
+                    .as_ref()
+                    .map(|a| a.branches())
+                    .unwrap_or_default()
+                    .iter()
+                    .map(|b| {
+                        let c: Vec<String> = b.cost.iter().map(|(r, n)| r.amount(*n)).collect();
+                        if c.is_empty() { "free".to_string() } else { c.join(" + ") }
+                    })
+                    .collect();
+                format!("{} {}", d.name, costs.join(" or "))
+            })
+            .collect();
+        format!("Seat {seat}: use which building's Action again, paying its cost again ({})?", costs.join("; "))
+    };
     let Some(i) = cx.choose(seat, prompt, opts)? else {
         return Ok(());
     };

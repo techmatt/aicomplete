@@ -330,7 +330,7 @@ fn troops(
         if land.destroy {
             for s in 0..g.seats.len() {
                 if g.tokens(h, node(s)) > 0 {
-                    board::destroy_piece(g, cx, h, node(s), board::Cause::Effect(ctx.label))?;
+                    board::destroy_piece_named(g, cx, h, node(s), board::Cause::Effect(ctx.label), ctx.why.as_deref())?;
                 }
             }
         }
@@ -688,7 +688,7 @@ fn destroy_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx) -> Res {
     if g.tokens(h, FACTORY) == 0 {
         return Ok(());
     }
-    if !board::destroy_piece(g, cx, h, FACTORY, board::Cause::Effect(ctx.label))? {
+    if !board::destroy_piece_named(g, cx, h, FACTORY, board::Cause::Effect(ctx.label), ctx.why.as_deref())? {
         return Ok(());
     }
     if g.tokens(h, FACTORY) == 0 && g.tokens(h, STATION) == 0 && !is_city(&w, h) && corrupted(g, h) {
@@ -700,7 +700,7 @@ fn destroy_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx) -> Res {
     // r75 (Matt's ruling 5): the node on the factory's hex is guarded like any node.
     for s in 0..g.seats.len() {
         if g.tokens(h, node(s)) > 0 {
-            board::destroy_piece(g, cx, h, node(s), board::Cause::Effect(ctx.label))?;
+            board::destroy_piece_named(g, cx, h, node(s), board::Cause::Effect(ctx.label), ctx.why.as_deref())?;
         }
     }
     Ok(())

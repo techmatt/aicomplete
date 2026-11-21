@@ -376,7 +376,8 @@ const PAGE_LIB = String.raw`(() => {
     // Every token in the view is drawn.
     // 295: a seat's ambassadors on a hex are drawn as its ready ones (ambassador:N) and its tipped ones (tipped:N):
     // every one of them tipped draws no ambassador:N, and tipped:N never shows without the seat's ambassadors there.
-    for (const h of aic.view.hexes) for (const tok of h.tokens) {
+    // 305: while the player view's turn panel shows an earlier step, the map draws that step: aic.mapView.
+    for (const h of (aic.mapView ?? aic.view).hexes) for (const tok of h.tokens) {
       const on = (kind) => document.querySelector('#board [data-hex="' + h.hex.join(',') + '"][data-token="' + kind + '"]');
       const n = (kind) => h.tokens.find((t) => t.kind === kind)?.count ?? 0;
       const [base, seat] = tok.kind.split(':');

@@ -218,14 +218,60 @@ function powersHtml(v: View, ctx: PlayerCtx, s: number, mine: Action[]): string 
   const b = v.seats[s].board;
   const powers = (b?.cards ?? []).filter((c) => c.id.includes('.power.'));
   if (!b) return '';
-  const rows = powers.map((c) => {
+  const row = (c: CardView) => {
     const k = Number(c.id.split('.power.')[1]);
     const acts = mine.filter((a) => a.type === 'power' && Number(a.power) === k).map((a) => btn(a, 'Use', 'primary', actionLabel(a, false, true, ctx.cx))).join('');
     // 295: a power used this round says so in its own style (three node powers may each be used in one round).
     return `<li class="${c.status.startsWith('ready') ? 'ready' : c.status.startsWith('used') ? 'used' : ''}" data-card="${esc(c.id)}" data-where="board:${s}"><b>${esc(c.name)}</b> <small>${esc(c.status)}</small>${acts}<div class="ptext">${esc(c.text ?? '')}</div></li>`;
-  }).join('');
+  };
+  // 305: the board's node powers first, under their own heading with how many are left this round (each once a
+  // round, all of them usable in one round); the sacrifice and other powers after them. A node power is one whose
+  // printed text places a node.
+  const node = powers.filter((c) => /place \d+ Node/i.test(c.text ?? ''));
+  const other = powers.filter((c) => !node.includes(c));
+  const used = node.filter((c) => c.status.startsWith('used')).length;
   const innate = b.innate ? `<div class="innate"><b>${esc(b.innate.name)}:</b> ${esc(b.innate.text ?? '')}${b.tags?.length ? ` <small>${b.tags.map(esc).join(', ')} tag (printed)</small>` : ''}</div>` : '';
-  return `${innate}${rows ? `<ul class="ppowers">${rows}</ul>` : ''}`;
+  return [
+    node.length ? `<h4 class="pnode-head">Node powers <small>each once a round · ${used ? `${used} of ${node.length} used this round` : 'none used this round'}</small></h4><ul class="ppowers node">${node.map(row).join('')}</ul>` : '',
+    other.length ? `<h4>${node.length ? 'Other powers' : 'Powers'}</h4><ul class="ppowers">${other.map(row).join('')}</ul>` : '',
+    innate,
+  ].join('');
+}
+
+// ---------- Liberate ----------
+
+/**
+ * 305: where Liberate stands for the shown seat, beside the standard actions: each corrupted site holding its
+ * ambassador, with the bill (its ambassadors there first, then its supply) and what keeps it from liberating now (an
+ * agent on it, a troop guarding it, the ambassador there already used this round, the bill short). Read off the view
+ * (its tokens, guard links and the action's own rule text); the engine's legal actions still decide: the Liberate
+ * button shows only when it is legal. With no ambassador on a corrupted site, the rule in one line.
+ */
+function liberateHtml(v: View, s: number): string {
+  const rule = v.standard.find((x) => x.act === 'liberate');
+  if (!rule) return '';
+  const doc = rule.doc ?? '';
+  const price = (kind: string) => Number(new RegExp(`(\\d+)(?: ambassadors)? \\(a ${kind}\\)`).exec(doc)?.[1] ?? NaN);
+  const count = (h: View['hexes'][number], k: string) => h.tokens.find((t) => t.kind === k)?.count ?? 0;
+  const supply = v.seats[s].values.find((x) => x.key === 'resource.ambassadors')?.value ?? 0;
+  const lines = v.hexes.filter((h) => count(h, 'cube:adversary') > 0 && count(h, `ambassador:${s}`) > 0).map((h) => {
+    const kind = h.kind === 'city' ? 'city' : count(h, 'station') ? 'station' : 'factory';
+    const bill = price(kind);
+    const here = count(h, `ambassador:${s}`);
+    const ready = here - count(h, `tipped:${s}`);
+    const agents = count(h, 'ambassador:adversary');
+    const guarded = v.arrows.some((a) => a.kind === 'guard' && a.to === h.index);
+    const why = [
+      agents ? `${agents} agent${agents === 1 ? '' : 's'} on it: remove ${agents === 1 ? 'it' : 'them'} first` : '',
+      guarded ? 'a troop on or next to it guards it: remove or move the troop first' : '',
+      ready > 0 ? '' : 'your ambassador here has moved or acted this round: it stands up at cleanup, then acts',
+      Number.isFinite(bill) && here + supply < bill ? `short ${bill - here - supply} ambassador${bill - here - supply === 1 ? '' : 's'}` : '',
+    ].filter(Boolean);
+    const name = `${countryName(v, h.country)} #${h.number}`;
+    return `<span class="plib-site${why.length ? ' blocked' : ' ok'}" data-hexes="${esc(hexKey(h.hex))}" title="${esc(doc)}">${esc(name)} (${kind}): ${Number.isFinite(bill) ? `${bill} ambassadors, ${Math.min(here, bill)} here + ${Math.max(0, Math.min(supply, bill - here))} from supply` : ''}${why.length ? ` · <b>blocked:</b> ${esc(why.join('; '))}` : ' · <b>ready</b>'}</span>`;
+  });
+  const bills = ['city', 'station', 'factory'].map((k) => `${price(k)} a ${k}`).join(', ');
+  return `<span class="plib" title="${esc(doc)}"><span class="what">Liberate</span>${lines.length ? lines.join('') : `<small>move a ready ambassador onto a corrupted site, then act with it: ${esc(bills)} ambassadors (those on the site first, then your supply); no agent on it, no troop on or next to it</small>`}</span>`;
 }
 
 /** Buildings in slots (Use on each), then every other card group of the seat as generic chips. */
@@ -320,6 +366,44 @@ export function turnHexes(f: Frame, before: string, over = false): Set<string> |
   return new Set(turn.steps[turn.at].events.flatMap(hexesIn).map(hexKey));
 }
 
+/**
+ * 305: the map as it stood at the end of the shown step of an open turn, or null when that is the board after the
+ * turn (the last step, or no piece moved after it). Each piece a later step changed goes back to its count before
+ * that step's first change (`total - delta`); a troop's strike and guard links go with a troop no longer there.
+ * Tracks, piles and rows are not rolled back: the panel says so.
+ */
+export function turnView(v: View): View | null {
+  if (!turn?.open || turn.at >= turn.steps.length - 1) return null;
+  const before = new Map<string, number>();
+  for (const s of turn.steps.slice(turn.at + 1)) {
+    for (const e of s.events) {
+      if (e.type !== 'tokens_changed' || !isHex(e.hex)) continue;
+      const k = `${hexKey(e.hex as [number, number])}|${String(e.token)}`;
+      if (!before.has(k)) before.set(k, Number(e.total) - Number(e.delta));
+    }
+  }
+  if (!before.size) return null;
+  const hexes = v.hexes.map((h) => {
+    const key = hexKey(h.hex);
+    const tokens = h.tokens.map((t) => ({ ...t }));
+    for (const [k, n] of before) {
+      const at = k.lastIndexOf('|');
+      if (k.slice(0, at) !== key) continue;
+      const kind = k.slice(at + 1);
+      const t = tokens.find((x) => x.kind === kind);
+      if (t) t.count = n;
+      else tokens.push({ kind, count: n });
+    }
+    return { ...h, tokens: tokens.filter((t) => t.count > 0) };
+  });
+  const troops = (i: number) => hexes[i].tokens.some((t) => t.kind === 'troop' && t.count > 0);
+  const arrows = v.arrows.filter((a) => !['troop', 'guard'].includes(a.kind) || troops(a.from));
+  return { ...v, hexes, arrows };
+}
+
+/** 305: the adversary's two beats, by the turn's step labels (`shortPhase`): its card, then its income. */
+const beatOf = (label: string) => /^B (Card|threats|lines)\b/.test(label) ? "the adversary's Card beat" : /^B (Income|compute)\b/.test(label) ? "the adversary's Income beat" : '';
+
 export function turnStep(d: number | 'close' | 'open') {
   if (!turn) return;
   if (d === 'close') turn.open = false;
@@ -374,7 +458,8 @@ function turnHtml(): string {
   if (!turn.open) return `<button type="button" class="pturn-open" data-turn="open">Replay what ran since your last move (${turn.steps.length} step${turn.steps.length === 1 ? '' : 's'})</button>`;
   const t = turn;
   const rows = t.steps.map((s, i) => {
-    const line = `${s.label}: ${summary(s.events)}`;
+    const beat = beatOf(s.label);
+    const line = `${s.label}${beat ? ` (${beat.replace("the adversary's ", '')})` : ''}: ${summary(s.events)}`;
     return `<li class="${i === t.at ? 'now' : ''}" data-turn-step="${i}" title="${esc(line)}">${esc(line)}</li>`;
   }).join('');
   const cur = t.steps[t.at];
@@ -390,10 +475,16 @@ function turnHtml(): string {
   ].filter(Boolean);
   // 289 (D133): the step's notes come before the step list, which scrolls by itself (at 1366x768 the notes sat
   // under the list, below the side column's fold).
-  return `<div class="pturn-head"><b>Since your last move</b> <span>step ${t.at + 1} of ${t.steps.length}: ${esc(cur.label)}</span>
+  const beat = beatOf(cur.label);
+  // 305: the map shows the pieces as they stood at the end of the shown step (`turnView`), not the board after the turn.
+  const past = t.at < t.steps.length - 1 && t.steps.slice(t.at + 1).some((s) => s.events.some((e) => e.type === 'tokens_changed'));
+  const mapNote = past
+    ? `The map shows the pieces as they stood at the end of this step; the rows and tracks show the board after the turn (▶ to the last step for the map after it). Outlined: the hexes this step changed.`
+    : 'The map shows the board after the turn; outlined: the hexes this step changed.';
+  return `<div class="pturn-head"><b>Since your last move</b> <span>step ${t.at + 1} of ${t.steps.length}: ${esc(cur.label)}${beat ? ` · <b class="pbeat">${esc(beat)}</b>` : ''}</span>
       <button type="button" data-turn="-1" ${t.at === 0 ? 'disabled' : ''}>◀</button><button type="button" data-turn="1" ${t.at === t.steps.length - 1 ? 'disabled' : ''}>▶</button>
       <button type="button" data-turn="close">Done</button></div>
-    <div class="pturn-ev"><ul>${shownEvents.map((e) => `<li data-hexes="${hexesIn(e).map(hexKey).join(' ')}">${esc(contentIds(String(e.text)))}</li>`).join('')}${others.length ? `<li><small>${others.join('; ')}: the debug view's log lists them</small></li>` : ''}</ul><small>The map shows the board after the turn; outlined: the hexes this step changed.</small></div>
+    <div class="pturn-ev"><ul>${shownEvents.map((e) => `<li data-hexes="${hexesIn(e).map(hexKey).join(' ')}">${esc(contentIds(String(e.text)))}</li>`).join('')}${others.length ? `<li><small>${others.join('; ')}: the debug view's log lists them</small></li>` : ''}</ul><small>${esc(mapNote)}</small></div>
     <ol>${rows}</ol>`;
 }
 
@@ -456,8 +547,11 @@ export function renderPlayer(ui: PlayerUi, ctx: PlayerCtx) {
   const guarded = refused?.value
     ? `<span class="prefused" data-value="board.liberate_refused" data-scope="seat:${focus}" title="${esc(refused.doc ?? '')}">Liberate refused: ${refused.value} corrupted site${refused.value === 1 ? '' : 's'} in reach guarded by a troop</span>`
     : '';
+  // 305: Liberate's bill and blockers, in the action phase only (it is an action-phase act).
+  const lib = /board\.act/.test(v.phase?.name ?? '') && !v.outcome ? liberateHtml(v, focus) : '';
   ui.bar.innerHTML = [
     std.length || guarded ? `<span class="pgroup"><span class="what">Standard actions</span>${std.join('')}${guarded}</span>` : '',
+    lib ? `<span class="pgroup lib">${lib}</span>` : '',
     conv.length ? `<span class="pgroup"><span class="what">Converters</span>${conv.join('')}</span>` : '',
     rest.length ? `<span class="pgroup other"><span class="what">Other</span>${rest.join('')}</span>` : '',
     `<span class="pgroup end">${pass.join('')}${all}${switchTo}</span>`,
@@ -465,6 +559,7 @@ export function renderPlayer(ui: PlayerUi, ctx: PlayerCtx) {
 
   ui.turn.innerHTML = turnHtml();
   ui.turn.hidden = !turn;
+  ui.turn.classList.toggle('phase-board', !!turnView(v));
   showTurnStep(ui.turn);
   ui.more.innerHTML = pilesHtml(v) + varsHtml(v, true);
 }

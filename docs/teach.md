@@ -71,8 +71,8 @@ next to it or to any of your nodes, or it **acts** where it stands. In the actio
 come onto your nodes, free, and arrive standing, ready to go.
 
 Taking a site back is **move in, then act**. Move an ambassador onto a corrupted site. While it stands there, the site
-makes nothing for the adversary. Next round it stands up and acts: **Liberate**. Pay in ambassadors: 3 for a city, 4
-for a station, 3 for a factory, the ones on the site first, then your supply. The adversary's cube comes off, the site
+makes nothing for the adversary. Next round it stands up and acts: **Liberate**. Pay in ambassadors: 3 for a city, a
+station or a factory, the ones on the site first, then your supply. The adversary's cube comes off, the site
 is neutral again, and you gain Unity. You need no reach for this: your ambassador carries it.
 
 Two things stop a Liberate: **an agent on the site**, so clear it first, and **a troop on or next to it**, so remove or

@@ -5,7 +5,7 @@ faults past hunts kept finding. Fixed findings, never to re-report: F1–F100 (0
 1617d75:docs/qa-findings.md`; then each hunt's `fixed.md` and `deferred.md` under `experiments/results/`: 099 (r38,
 F101 on), 118 (r46, F132, D43, W19 on), 145 (r59, F165, D57 on), 169 (r72 → 73, F205, D72 on), 184 (r77 → 78, F225,
 D77, W28 on), 197 (r86, F272, D88, W29 on), 235 (r106, F289, D92, W31 on; 238 fixed D92-D96, D98, D100, D103-D105, r108), 261 (r121 → r122, F322, D106, W34 on; 265 fixed D108, D109, D112, D115, D116; 266 D117), 285 (r135 → r136, F379,
-D120 on; fixed D102; 286 closed D121, D122, D124, D125, D126 (restated), D128, D130, D131, D132 at r137; 288 fixed D106 (built in) and D120 at r138; 289 closed D123, D127, D129, D133 (the troops prompt's words to D85)). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
+D120 on; fixed D102; 286 closed D121, D122, D124, D125, D126 (restated), D128, D130, D131, D132 at r137; 288 fixed D106 (built in) and D120 at r138; 289 closed D123, D127, D129, D133 (the troops prompt's words to D85); 305 closed D85, D87, D135 and D50's picks, D52 to won't fix). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
 
 ## Checkers
 
@@ -70,9 +70,8 @@ Each hunt found most of its faults in the same places. Look there first:
 | D45 | engine | Fight triggers read the board's net count: a removal plus a placement in one action fires nothing. | Count at the removal ops. **Pick** when common. |
 | D46 | loops | Drain with Security Ops Floor and Intrusion Lab: ~12 for 10 credits. | Leave: compute caps it. **Pick**. |
 | D49 | scripts | `card_ranks.py`'s keep rate counts opening keeps (over 100%). | A draft-keep counter. **Pick**. |
-| D52 | viewer | The timeline keeps a state a step (~200 MB a 4-country game). | Every Nth snapshot. **Pick** if needed. |
 | D56 | content | `Content::check` lets through ops that never run (a `here` op on an AI board, `gain_per_tokens` in a trigger). | Widen the checks. **Pick**. |
-| D50 | viewer | A new player's notes from two real-speed sessions: [viewer-notes.md](../experiments/results/118_bug_hunt_r46/viewer-notes.md). | Picks there. |
+| D50 | viewer | A new player's notes from two real-speed sessions: [viewer-notes.md](../experiments/results/118_bug_hunt_r46/viewer-notes.md); 305 did its picks. | Its three Matt's calls stand: one income figure or a hover on each; the 1-country draft; a wider 4-country strip or a tab. **Matt's call**. |
 | D57 | cards | Exascale Training Cluster kept in 59-72% of games, played in 1-3% (r62). | One pricing for keep and play (an agents item). **Matt's call**. |
 | D58 | speed | At r68 86-91% of greedy's time answers threats' loss prompts (`score_choose`). | A cheaper settle (moves play). **Pick**. |
 | D66 | docs | principles.md's credits a game and card-pricing's cost range unmeasured at r60. | Re-read, restate. **Pick**. |
@@ -83,17 +82,14 @@ Each hunt found most of its faults in the same places. Look there first:
 | D78 | rules | War Economy's troop lands on the factory under its token, not the one it builds. | `at: new_factory`, a bump. **Matt's call**. |
 | D79 | rules | The adversary-factory fallback lets players send agents to a firewalled factory: nothing lands. | Skip firewalled factories. **Matt's call** (the printed rule allows it). |
 | D80 | words | Great Liberation "frees" cities it liberates; the rulebook never defines "free". | "Liberate or free", or a rulebook line. **Matt's call**. |
-| D87 | viewer | Five small faults from sweep 2's sheets (184's deferred.md). | One viewer item. **Pick**. |
 | D82 | cards | Five cards print under 7.5 pt with no recorded exception (Rally the Allies 5.4 pt). | Cut words or record. **Matt's call**. |
 | D83 | art | 12 deck cards name no scene and 6 scenes aren't served: `cards:check` fails. | An art batch or a pool scene. **Pick**. |
 | D84 | boards | Focus (Builder) is never used (199: 0.01-0.04 uses at 2 credits; credits bind first). | With the board redesign. **Matt's call**. |
-| D85 | viewer | Prompts: "which other player?" names no card; "Corrupt factories (at 2): ... onto which?" (agents parse it); "1 seat 1's ambassador" (a record key); a node's protection prompt names no threat; "The adversary troops at X move to which hex?" for one troop (D133). | Prompts and the agents' parser together. **Pick**. |
 | D107 | rules | Nothing marks a city bought this round. | A Bought marker. **Matt's call**. |
 | D113 | cards | Counterintelligence Sweep, Fusion Commons draw at 0 insight. | 1 insight; no draw. **Matt's call**. |
 | D114 | cards | Five liberate cards' pricing notes use pre-r113 keeps. | Restate. **Pick**. |
 | D118 | rules | The Liberated marker binds Corrupt lines only, not cards that take a site. | Leave; guard. **Matt's call**. |
 | D119 | cards | Faces against house terms: node "Harden", Faraday Yard's box, two-way wordings. | One card-words item. **Pick**. |
-| D135 | viewer | The debug view scrolls at 1366×768 late in a long game (sweep `--case c2-d0`, r148, play seed 1000): the countries strip falls off screen and the replay buttons go under the board (295 saw it at r142; `web/src` unchanged since). | Fit the next-round box and the countries strip at 1366×768; a web item. **Pick**. |
 | D134 | agents | The arrival forecast leaves out the card's Spill and Grow's agent. | 288: `plan::next_spill` built, off (`w.spill_read`: -1.7 judge, -2.1 greedy on the dev seeds; it still moves agents off a site the Infiltrate corrupts first). **Won't fix** while it loses. |
 
 ## Won't fix
@@ -123,3 +119,4 @@ Each hunt found most of its faults in the same places. Look there first:
 | W31 | cards | Peacekeeper Rotation's move onto a Troops target with no piece does nothing. | Not in the deck: fix with the card. |
 | W33 | rules | Teardown's Fallout lands under a node on the torn-down factory's hex (D99). | Matt's ruling (238): Teardown is the player's own choice. |
 | W34 | scripts | `screen.py`'s 041 preset reads the r98-retired marker counters. | A historical preset, kept as 041's record. |
+| W35 | viewer | (D52) The timeline keeps a state a step. | 305 measured the heap after a whole r148 game in the player view: 14 MB (2 seats, 306 actions), 22 MB (3 seats, 461), 29 MB (4 countries, 624; ~200 MB was an older build's). |

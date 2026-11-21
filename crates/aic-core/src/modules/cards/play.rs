@@ -450,7 +450,8 @@ fn enter_play(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &CardDef
         cx.move_card(g, id, &hand(seat), &played(seat), false)?;
     }
     // 076: a building's play effects may load it ("add 2 Agents here").
-    let mut ctx = if d.is_building() { effects::Ctx::ability(seat, Key::new(id)) } else { effects::Ctx::seat(seat) };
+    // 305 (D85): named, so its prompts say which card asks ("which other player?" named none).
+    let mut ctx = if d.is_building() { effects::Ctx::ability(seat, Key::new(id)) } else { effects::Ctx::seat(seat).why(&d.name) };
     effects::run(g, cx, &d.effects, &mut ctx)?;
     // 105: then every seat's play triggers (a building counts itself).
     if !g.is_over() {

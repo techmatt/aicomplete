@@ -154,7 +154,8 @@ function lossesHtml(v: View, config: Config): string[] {
   }
   // Unlabeled `vars` (source "engine") are folded under the piles: see `varsHtml`.
   // 235: a full agent supply is the safe end (it drew the warning color from round 1, calming as it emptied).
-  const other = g.filter((x) => !DRAWN_GLOBALS.has(x.key) && x.source !== 'engine').map((x) => valueChip(x, 'global', x.label, x.key !== 'adversary.supply'));
+  // 305 (D87): in key order: the view's globals come from sorted vars, so a track first given a value moved the chips.
+  const other = g.filter((x) => !DRAWN_GLOBALS.has(x.key) && x.source !== 'engine').sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0)).map((x) => valueChip(x, 'global', x.label, x.key !== 'adversary.supply'));
   // The other tracks (Unity bonuses) beside the losses, not in them
   // (020: drawn inside the red "Lose if" group).
   return [
@@ -231,7 +232,10 @@ function researchHtml(v: View): string {
   const boxes = slots.map((s, i) => `<span class="rslot${cls(i + 1)}" data-slot="${i + 1}" title="${esc(`slot ${i + 1}, ${s.name}${s.text ? `: ${s.text}` : ''}${i < slot.value ? ' (reached: it happened)' : ''}`)}">${i + 1} ${esc(s.name)}</span>`);
   const loss = slots.length + 1;
   boxes.push(`<span class="rslot loss${cls(loss)}" data-slot="${loss}" title="slot ${loss}: the players lose">${loss} Loss</span>`);
-  const count = cubes ? `<span class="rcubes" data-value="${esc(cubes.key)}" data-scope="global">cubes <b>${cubes.value}</b><small> / ${cubes.max ?? '?'}</small> to the next slot</span>` : '';
+  // 305: K, the cubes that advance the marker, is the level's cubes a country times the countries: say both.
+  const per = cubes?.max && v.countries.length ? cubes.max / v.countries.length : null;
+  const k = per !== null && Number.isInteger(per) ? ` <span class="rk" title="K: the cubes the track spends to advance one slot, in the adversary's Income beat: the level's cubes a country times the countries">K ${cubes!.max} = ${per} a country</span>` : '';
+  const count = cubes ? `<span class="rcubes" data-value="${esc(cubes.key)}" data-scope="global">cubes <b>${cubes.value}</b><small> / ${cubes.max ?? '?'}</small> to the next slot</span>${k}` : '';
   return `<div class="research-row" data-research-slot="${slot.value}"><span class="stitle" data-value="${esc(slot.key)}" data-scope="global">${esc(row?.name ?? 'Research')}</span>${boxes.join('')}${count}</div>`;
 }
 
@@ -390,7 +394,11 @@ export function legendHtml(): string {
   const t = Object.values(KINDS).map((x) => `<span class="kind" style="background:${x.fill}">${x.label}</span>`).join('');
   // 265 (D112): the dotted red outline of a face-up threat's source read as corruption.
   const source = `<svg viewBox="-0.8 -0.8 1.6 1.6" width="1em" height="1em" style="vertical-align:middle"><polygon class="mark source" points="0.72,0 0.36,0.62 -0.36,0.62 -0.72,0 -0.36,-0.62 0.36,-0.62"/></svg>`;
-  return `${t}<span class="lg">${source} a face-up threat's source</span><span class="lg"><span class="sw" style="background:${ADVERSARY_COLOR}"></span> adversary · seat color = its country's</span>`;
+  // 305 (D87): the map's links had no key: a troop's strike reach (red, dashed; solid with a Strike shown ahead), a
+  // troop's guard (dark dots), an industrial zone's push (brown arrow).
+  const link = (stroke: string, dash: string, w = 2) => `<svg width="1.6em" height="0.7em" viewBox="0 0 24 10" style="vertical-align:middle"><line x1="1" y1="5" x2="23" y2="5" stroke="${stroke}" stroke-width="${w}" stroke-dasharray="${dash}" stroke-linecap="round"/></svg>`;
+  const links = `<span class="lg">${link('#b3261e', '5 3')} a troop's strike reach</span><span class="lg">${link('#2a0d3d', '0.5 4', 2.5)} a troop's guard (no Liberate there)</span><span class="lg">${link('#6d4c41', 'none', 1.5)} a factory's push to its city</span>`;
+  return `${t}<span class="lg">${source} a face-up threat's source</span>${links}<span class="lg"><span class="sw" style="background:${ADVERSARY_COLOR}"></span> adversary · seat color = its country's</span>`;
 }
 
 // ---------- seat panels ----------
@@ -490,7 +498,10 @@ export function seatCardsHtml(v: View, seatIndex: number): string {
   const groups = [...s.cards].sort((a, b) => rank(a.key) - rank(b.key));
   return groups.map((g) => {
     const cls = g.key.replace(/\W/g, '-');
-    const body = g.cards.length ? g.cards.map((c) => cardChip(c, `seat:${seatIndex}:${g.key}`, true)).join('') : '<span class="slot">—</span>';
+    // 305 (D87): while a question is open the hand shows no play marks (a free play's answers stood beside the same
+    // cards badged "unaffordable"), as the player view does (289, D123).
+    const shown = (c: CardView) => (v.choice && g.key === 'cards.hand' ? { ...c, status: '' } : c);
+    const body = g.cards.length ? g.cards.map((c) => cardChip(shown(c), `seat:${seatIndex}:${g.key}`, true)).join('') : '<span class="slot">—</span>';
     return `<div class="row ${cls}"><span class="what" title="${esc(g.key)}">${esc(g.label)}</span>${body}</div>`;
   }).join('');
 }

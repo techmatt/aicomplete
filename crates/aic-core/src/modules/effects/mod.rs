@@ -123,7 +123,12 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             // 111 (Matt's ruling 7): in a 1-player game, "another player" means you.
             let others: Vec<usize> = (0..g.seats.len()).filter(|&s| s != seat || g.seats.len() == 1).collect();
             let opts = others.iter().map(|&s| seat_opt(s)).collect();
-            let prompt = || format!("Seat {seat}: which other player?");
+            // 305 (D85): the prompt names the card (a building's Action by its card; a played card by `why`).
+            let name = ctx.why.clone().or_else(|| ctx.card.as_ref().map(|c| cards::def(&w, c.as_str()).name.clone()));
+            let prompt = || match &name {
+                Some(n) => format!("Seat {seat}: {n}: which other player?"),
+                None => format!("Seat {seat}: which other player?"),
+            };
             ctx.other = cx.choose(seat, prompt, opts)?.map(|i| others[i]);
         }
         Op::OtherGain { resource, amount } => {

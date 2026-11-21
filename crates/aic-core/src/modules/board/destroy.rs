@@ -18,6 +18,20 @@ impl Cause {
             Cause::Effect(n) => n,
         }
     }
+
+    /// 305 (D85): what destroys it, in words, for the protection prompt (it named no cause).
+    fn words(self) -> &'static str {
+        match self {
+            Cause::Troop => "a troop's Strike",
+            Cause::Effect(n) if n.starts_with("threat") => "a threat",
+            Cause::Effect("discord") => "a Discord card",
+            Cause::Effect("project") => "an adversary project",
+            Cause::Effect("research") => "the adversary's research row",
+            Cause::Effect("corruption") => "agents landing on it",
+            Cause::Effect("standing" | "twist" | "board") => "the adversary's card",
+            Cause::Effect(_) => "an effect",
+        }
+    }
 }
 
 /// One protection a destruction may spend (r75, Matt's ruling 5: the owner chooses which, or none). r81
@@ -59,6 +73,11 @@ pub fn guards(g: &GameState, h: usize, owner: Option<usize>) -> Vec<Guard> {
 /// guards your piece), or the Aegis Doctrine capstone (the Protector's own pieces). Unprotected it goes, and
 /// a war destruction ([`Cause::War`]) sways toward Discord. Returns whether it was destroyed.
 pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause: Cause) -> Res<bool> {
+    destroy_piece_named(g, cx, h, kind, cause, None)
+}
+
+/// [`destroy_piece`], `why` naming what destroys it (a threat's name) in the protection prompt (305, D85).
+pub fn destroy_piece_named(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause: Cause, why: Option<&str>) -> Res<bool> {
     let w = cx.world;
     let owner = piece_owner(g, h, kind);
     if sheltered(&w, g, h, owner) {
@@ -88,7 +107,8 @@ pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause
         let prompt = || {
             let piece = piece_name(kind);
             let the = if piece.starts_with("seat ") { "" } else { "the " };
-            format!("Seat {who}: {the}{piece} at {} would be destroyed: spend which protection?", hex_name(&w, h))
+            let by = why.map_or_else(|| cause.words().to_string(), |n| n.to_string());
+            format!("Seat {who}: {the}{piece} at {} would be destroyed by {by}: spend which protection?", hex_name(&w, h))
         };
         let pick = cx.choose_loss(who, prompt, opts)?.and_then(|i| options.get(i).copied());
         // 289 (D133): a protection spent says so (the turn panel showed a strike, then nothing).
@@ -163,7 +183,7 @@ pub fn destroy_own_node(
         None => format!("Seat {s}: destroy which of your nodes?"),
     };
     if let Some(i) = cx.choose_loss(s, prompt, opts)? {
-        destroy_piece(g, cx, mine[i], node(s), cause)?;
+        destroy_piece_named(g, cx, mine[i], node(s), cause, why)?;
     }
     Ok(())
 }

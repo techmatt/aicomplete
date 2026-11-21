@@ -19,7 +19,7 @@ import {
 } from './panels';
 import { Timeline, keptSession, parseSeed, randomSeed, readRecord, revisionNote, storageGet, storageSet } from './session';
 import { printedCard } from './player/printed';
-import { focusSeat, pin, renderPlayer, turnHexes, turnStep } from './player/view';
+import { focusSeat, pin, renderPlayer, turnHexes, turnStep, turnView } from './player/view';
 import './style.css';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -74,6 +74,8 @@ function isConfig(text: string): boolean {
 
 let tl: Timeline;
 let shown: View;
+/** 305: the view the map was drawn from: `shown`, or the turn panel's earlier step (`turnView`). */
+let mapView: View;
 let legal: Action[] = [];
 /** The choice (actions differing only in target hex) waiting for a hex click; set by `render`. */
 let armed: { seat: number; key: string } | null = null;
@@ -256,7 +258,9 @@ function render() {
   // 289 (D129): during a hex answer only the hexes to pick are marked (about 23 changed-hex outlines hid the 2).
   if (mode === 'player' && targets.size) changed.clear();
   const sources = new Set(shown.threat_sources.flatMap((s) => s.hexes.map((i) => hexKey(shown.hexes[i].hex))));
-  renderBoard(ui.board, shown, { targets, changed, sources });
+  // 305: while the turn panel shows an earlier step, the map shows the pieces as they stood at its end.
+  mapView = (turn && turnView(shown)) || shown;
+  renderBoard(ui.board, mapView, { targets, changed, sources });
   renderPrompt(targets.size);
   ui.status.innerHTML = statusHtml(shown, f.snap.state.config);
   ui.pipeline.innerHTML = pipelineHtml(shown);
@@ -301,7 +305,10 @@ function renderPrompt(targets: number) {
   if (v.choice) {
     ui.prompt.className = 'choice';
     const how = targets === 1 ? `click the highlighted hex` : targets ? `click one of the ${targets} highlighted hexes` : mode === 'player' ? 'answer here' : `answer in ${seatName(v.choice.seat)}'s panel`;
-    ui.prompt.innerHTML = `<b>${seatName(v.choice.seat)} decides:</b> ${escapeHtml(contentIds(v.choice.prompt.replace(/^Seat \d+:\s*/, '').replace(/^([^:]+): seat \d+:\s*/, '$1: ')))} <span class="how">— ${how}</span>`;
+    // 305 (D85): a piece's owner in the words ("seat 1's node") named as the seat rows name it.
+    const words = contentIds(v.choice.prompt.replace(/^Seat \d+:\s*/, '').replace(/^([^:]+): seat \d+:\s*/, '$1: '))
+      .replace(/\bseat (\d+)'s\b/g, (_, s: string) => `Seat ${s}${v.seats[Number(s)]?.board ? ` (${v.seats[Number(s)].board!.name})` : ''}'s`);
+    ui.prompt.innerHTML = `<b>${seatName(v.choice.seat)} decides:</b> ${escapeHtml(words)} <span class="how">— ${how}</span>`;
     return;
   }
   const acting = [...new Set(legal.map((a) => a.seat))];
@@ -340,7 +347,14 @@ function renderPhase() {
     // The sentence; the reason code (what `--save-when` takes) in its hover (235: "on the board node" read as a typo).
     status = `<span class="outcome ${o.won ? 'won' : 'lost'}" title="reason code: ${escapeHtml(o.reason)}">${o.won ? 'WON' : 'LOST'} in round ${o.round}: ${escapeHtml(o.detail)}</span>`;
   } else status = ''; // who is to act is in #prompt
-  ui.phaseBar.innerHTML = `<b>Round ${v.round}</b> <span class="order">${order}</span> ${status}`;
+  // 305: the round cap beside the round: the adversary's cards left are the rounds left after this one.
+  // The count holds the face-up next card too: before this round's Card beat turns it into this round's card, it is
+  // this round's, not a later one's.
+  const deck = v.outcome ? undefined : v.globals.find((g) => g.key === 'adversary.deck');
+  const cardBeat = v.round_order.findIndex((p) => p.name === 'adversary.event');
+  const later = deck ? deck.value - (v.phase && cardBeat >= 0 && v.phase.index < cardBeat ? 1 : 0) : 0;
+  const cap = deck ? `<small class="round-cap" title="${escapeHtml(`${deck.value} adversary card${deck.value === 1 ? '' : 's'} left: ${deck.doc ?? ''}`)}"> of ${v.round + later} at most · <span class="deck-left">${deck.value} adversary card${deck.value === 1 ? '' : 's'} left</span></small>` : '';
+  ui.phaseBar.innerHTML = `<b>Round ${v.round}</b>${cap} <span class="order">${order}</span> ${status}`;
 }
 
 /** The choice the seat panels last showed, so a new one scrolls into view once. */
@@ -569,7 +583,7 @@ function hover(el: Element | null, cx: number, cy: number) {
     }
   }
   tipPrinted = '';
-  const html = target ? details(target, shown, legal, labels()) : null;
+  const html = target ? details(target, shown, legal, labels(), mapView ?? shown) : null;
   const hl = el?.closest?.('[data-hexes]') as HTMLElement | null;
   highlight(hl?.dataset.hexes ? hl.dataset.hexes.split(' ').filter(Boolean) : []);
   if (!html) {
@@ -994,6 +1008,8 @@ Object.assign(window, {
     get timeline() { return tl; },
     get view() { return shown; },
     get legal() { return legal; },
+    /** 305: the view the map shows (an earlier step's while the player view's turn panel shows one). */
+    get mapView() { return mapView; },
     play: (configJson: string, seed: string, file = 'script') => setTimeline(Timeline.start(configJson, seed, { kind: 'play', file })),
     open: (text: string, file = 'script') => loadRecordText(text, file),
     act,

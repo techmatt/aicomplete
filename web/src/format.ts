@@ -116,9 +116,13 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
         // 285: "+1 credits" is the record key's (`Resource::amount`); people read "+1 credit" (`Resource::words`).
         ? named.replace(/\+(\d+) ([a-z_][a-z_ ]*?)(?=,|$| \()/g, (_, n, r) => `+${n} ${n === '1' && r === 'credits' ? 'credit' : r} a round`)
         : named;
+      // 305 (D85): a piece's owner is a record key ("1 seat 1's ambassador"): named as the panels name the seat.
+      const seatOf = (n: string) => { const ai = cx.view?.seats[Number(n)]?.board?.name; return `Seat ${n}${ai ? ` (${ai})` : ''}`; };
       const plain = contentIds(leveled).replace('T2 keep -1', 'T2 keep')
         .replace(/^sacrifice stack (.*)$/, 'sacrifice $1 (with any buildings under it)')
-        .replace(/^sacrifice (program|hand) /, 'sacrifice ');
+        .replace(/^sacrifice (program|hand) /, 'sacrifice ')
+        .replace(/^(\d+) seat (\d+)'s ambassadors?$/, (_, n, s) => `${n} ambassador${n === '1' ? '' : 's'} of ${seatOf(s)}`)
+        .replace(/\bseat (\d+)'s\b/g, (_, s) => `${seatOf(s)}'s`);
       return `${plain}${t}`;
     }
     case 'tier':

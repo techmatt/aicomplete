@@ -70,10 +70,11 @@ function cardDetails(id: string, where: string | undefined, shown: View): string
 }
 
 /** The tooltip for element `t`, or null if it has none. */
-export function details(t: HTMLElement | SVGElement, shown: View, legal: Action[], cx: LabelContext): string | null {
+export function details(t: HTMLElement | SVGElement, shown: View, legal: Action[], cx: LabelContext, map: View = shown): string | null {
   const d = t.dataset;
-  if (d.token !== undefined && d.hex) return tokenDetails(d.token, d.hex, shown);
-  if (d.hex && d.index !== undefined) return hexDetails(d.hex, Number(d.index), shown, legal, cx);
+  // 305: a token or hex reads the view the map was drawn from (the turn panel's earlier step, `map`).
+  if (d.token !== undefined && d.hex) return tokenDetails(d.token, d.hex, map);
+  if (d.hex && d.index !== undefined) return hexDetails(d.hex, Number(d.index), map, legal, cx);
   if (d.pile) return pileDetails(d.pile, shown);
   if (d.value) return valueDetails(d.value, d.scope, shown);
   if (d.card) return cardDetails(d.card, d.where, shown);

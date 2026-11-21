@@ -10,6 +10,7 @@ the findings are in the write-up.
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 305 overhaul 7: the viewer pass (player view at 1366×768, the turn's map by step, two clicked games) | 148 | [305_overhaul_7_viewer_pass](results/305_overhaul_7_viewer_pass/README.md) |
 | 303 two more antimatter sinks and the judge's idle antimatter: spent ÷ gained 35 → 46% | 148 | [303_antimatter_sinks_and_saving](results/303_antimatter_sinks_and_saving/README.md) |
 | 302 the antimatter capstones to the sink ruling (2.0-2.5×): stronger effects, no antimatter cut | 147 | [302_antimatter_capstones](results/302_antimatter_capstones/README.md) |
 | 301 d0's early wins (level-0 setup agents) and Liberate pricing (a station at 3, the capstones) | 146 | [301_d0_early_wins_and_liberate_pricing](results/301_d0_early_wins_and_liberate_pricing/README.md) |
