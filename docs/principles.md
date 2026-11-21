@@ -49,11 +49,7 @@ income ÷ insight income (about 17-23 credits ÷ 5-7 insight ≈ 3.5); tier-1 ca
 - **In between:** win rate falls smoothly with difficulty, a stronger team always does better, and the skill gap
   widens as difficulty rises.
 
-**Calibration point (Matt, 2026-10-31): medium difficulty.** At d2 winning takes real skill and a skilled team wins
-fairly consistently: the `planner` at 60-75% at 2 and 3 countries, where a gate can tell a good price from a bad
-one. Read a band over 96 seeds: at 48 it is ±7, a paired gap ±8-10.
-
-**Ballpark simulation (Matt, 2026-11-03; supersedes the band above until he names a milestone):** two players,
+**Ballpark simulation (Matt, 2026-11-03; it superseded 2026-10-31's planner band at d2):** two players,
 the three board pairs; an engine smoke read, then the judge at 48 seeds a pair on fresh seeds; 45-85 a pair, near
 60-75 without chasing it; no gate ([experiments.md](experiments.md), *The ballpark read*; the scale:
 [rulings.md](rulings.md), *Simulation and sim players*).
@@ -99,7 +95,7 @@ read the flag on the planner (its games run longest toward a win) before a fixed
 
 Calibration measures use, not soundness, so `scripts/design_check.py` checks these (thresholds, all candidates:
 `scripts/design_check.json`). **When:** a rules item runs `python scripts/design_check.py READ --old OLD_READ` on its
-first screen and on its fresh read (READ a read's folder or `games.jsonl`; OLD_READ the previous revision's read on
+first screen and on its fresh read (READ a read's folder, `games.jsonl` or a farmed file as `FILE=experiments/farm/SPEC.json`; OLD_READ the previous revision's read on
 its seeds; with no READ only the content and dials checks run). Its first line is the report header's `warnings:`
 line. Warnings never stop work: an item whose own change trips one finishes, calibrates, and reports it first.
 The rulings behind each: [rulings.md](rulings.md), *Design principles*.
@@ -150,7 +146,7 @@ readable timing; printable.
 - pick and play rates (no dead cards, no must-picks);
 - build variety among wins, and an adaptation index (a fixed build loses ground against some adversaries);
 - win probability by round (uncertain into the late game) and margin of victory (mostly narrow);
-- game length (8–10 rounds) and adversary operations per round (low);
+- game length (most 6–8 rounds, 10-11 exceptional) and adversary operations per round (low);
 - resources unspent at game end, per seat and resource (*Scarcity*);
 - help and counter usage;
 - luck share (most outcome variance comes from decisions, not the shuffle).
@@ -193,7 +189,7 @@ Cheap checks that the game rewards what it asks, run occasionally when nearly fr
   (`keep_none=1`) and keeping at random (`keep_random=1`). If keeping nothing does as well, the draft is decoration.
 
 Weigh each measure's cost against the decision it informs: screen cheaply, run expensive measures only on
-finalists. Calibrate by reasoning first: think through when each decision, card and number can matter in an 8–10
+finalists. Calibrate by reasoning first: think through when each decision, card and number can matter in a 6–8
 round game, and set its starting value so it does; simulation then adjusts and evaluates.
 
 Until the rules are close to final, scoping runs use shallow, fast agents and short runs (Matt: rollouts before

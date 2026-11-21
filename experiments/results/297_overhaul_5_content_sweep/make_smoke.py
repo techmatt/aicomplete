@@ -11,8 +11,8 @@ import pathlib
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE))
-import smoke_table  # noqa: E402
+sys.path.insert(0, str(HERE.parents[2] / "scripts" / "bench"))
+import smoke_table  # noqa: E402  (scripts/bench/smoke_table.py since 304)
 
 
 def table(argv):

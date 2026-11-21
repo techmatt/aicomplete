@@ -20,7 +20,7 @@ adversary site; a blackout's cities) and comes off when the last one leaves: in 
 pays what it shows less what its chipped sites make, once, at its own step (chips with factories, cubes with
 stations, not again at upkeep), and an adversary site under a chip makes no output.
 
-**There is no war** (r139): no fronts, no military bases, no megacorp armies and no War step in the round. Megacorp
+**There is no war** (r139): no fronts, no bases, no megacorp armies and no War step in the round. Megacorp
 conflict is card content only (Casus Belli, some event and Discord cards), each card doing what it prints.
 
 ## Factories

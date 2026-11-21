@@ -17,7 +17,7 @@ simulation scale among them, are in [rulings.md](rulings.md); recipes and costs 
 
 ## Before adding a mechanic, card or number
 
-- Reason it first: its place to matter in an 8-10 round game, its starting value, whether sim players can play it,
+- Reason it first: its place to matter in a 6-8 round game, its starting value, whether sim players can play it,
   its loops and caps, give against get ([card-guidelines.md](card-guidelines.md), *The anchor check*).
 - A new harm gets its [harms.md](harms.md) row in the same item.
 - Matt's examples' tags and numbers are variables, not rulings.
@@ -29,6 +29,8 @@ simulation scale among them, are in [rulings.md](rulings.md); recipes and costs 
 - Each rules or tuning item reads the previous binary on fresh seeds, paired.
 - A band check pools two independent sets.
 - A sim-player heuristic gate pools at least 32 seeds.
+- An item editing the agents' eval traces one judge game (`aic-sim run --trace`) or reads `per_decision.py`'s
+  rounds column before its first farm: a collapsed horizon shows there in a minute.
 - Items running alongside each other use disjoint seeds and share no logs.
 
 ## Screening levers

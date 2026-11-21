@@ -14,7 +14,7 @@ use crate::state::GameState;
 use crate::view::ViewOut;
 
 use super::super::effects;
-use super::rally::income_at;
+use super::at_level;
 
 /// The track's cubes toward its next slot (public, on the adversary's board).
 pub const RESEARCH: &str = "adversary.research";
@@ -27,7 +27,7 @@ pub fn research_threshold(w: &World) -> i64 {
     if w.content.adversary_board.research.is_none() {
         return 0;
     }
-    income_at(w, "adversary.research_at").max(0) * w.map.countries.len() as i64
+    at_level(w, "adversary.research_at").max(0) * w.map.countries.len() as i64
 }
 
 /// The research track is in play: the board prints a row and this difficulty's K is above 0 (`research_at` all 0

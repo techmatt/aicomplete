@@ -104,7 +104,8 @@ For a long screen, `cargo build --profile fast -p aic-sim` (`target/fast/`) is 8
 minutes to build.
 
 **Comparing.** Two binaries: `speed.py pair OLD NEW --only engine --only greedy` (with no `--only` the planner
-rows add 20+ minutes, 280) or `per_decision.py OLD NEW`, never two `table` runs (load can halve a
+rows add 20+ minutes, 280) or `per_decision.py OLD NEW` (an old ROOT: `git archive REV configs | tar -x -C out/rREV`, its exe copied in as
+`aic-sim.exe`), never two `table` runs (load can halve a
 table). A `pair` of two rows (`--only engine --only greedy`, 1- and 8-thread columns) took 15+ minutes (240). `bench/same_results.py` (timing aside) checks that a
 speed-up or late fix changed no game, on `experiments/same.json` (strategist, engine, planner and
 `planner:strategy=1` on the three pairs, 192 games; cost: *The agent tiers*); `same_play.py` is wider.

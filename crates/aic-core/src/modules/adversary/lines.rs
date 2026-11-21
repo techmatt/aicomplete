@@ -6,13 +6,6 @@
 use super::*;
 use crate::op::SiteType;
 
-/// 151: the income-list entry for this difficulty (the last entry past the list's end).
-pub(super) fn income_at(w: &World, param: &str) -> i64 {
-    let l = w.list(param);
-    let d = w.int("adversary.difficulty").max(0) as usize;
-    l.get(d).or(l.last()).copied().unwrap_or(0)
-}
-
 /// 151: "increase income": compute for the rest of the game (231, Matt: "+N compute a round" is N a country).
 pub fn increase_income(g: &mut GameState, cx: &mut Cx, compute: i64) {
     let compute = compute * cx.world.map.countries.len() as i64;
@@ -28,7 +21,7 @@ pub fn infiltrate_sites(c: &AdversaryCard) -> Vec<SiteType> {
 /// 275: agents an Infiltrate lands on each city at this level (`infiltrate_agents`, by difficulty); a station,
 /// factory or botnet hex takes at most `infiltrate_facility_cap` of them ([`infiltrate_agents_on`], 282).
 pub fn infiltrate_agents(w: &World) -> i64 {
-    income_at(w, "adversary.infiltrate_agents").max(0)
+    at_level(w, "adversary.infiltrate_agents").max(0)
 }
 
 /// 282: agents an Infiltrate lands on each site of type `site`: [`infiltrate_agents`] on a city, at most

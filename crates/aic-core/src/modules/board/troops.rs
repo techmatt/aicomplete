@@ -51,8 +51,7 @@ pub fn strike(g: &mut GameState, cx: &mut Cx) -> Res {
             if lost(g) || g.is_over() {
                 return Ok(());
             }
-            let home = w.int("board.strike_home") > 0 && send_home(g, cx, h)?;
-            if !hit && !home {
+            if !hit {
                 break;
             }
         }
@@ -164,37 +163,6 @@ pub fn has_wall(w: &World, seat: usize) -> bool {
 /// Strike hits it.
 pub fn walled(w: &World, g: &GameState, h: usize) -> bool {
     node_owner(g, h).is_some_and(|s| has_wall(w, s))
-}
-
-/// r144 (`board.strike_home`): a striking troop at `h` also sends home one player ambassador on or next to it
-/// (players choose which; it returns to its owner's supply). The Protector's Wall and a no-Strike token shield
-/// the hex as they shield a strike. Returns false when none stood there.
-fn send_home(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
-    let w = cx.world;
-    let mut spots: Vec<(usize, usize)> = Vec::new();
-    for x in within(&w, h, 1) {
-        if walled(&w, g, x) || plan::prohibited_now(g, Step::Strike, x) {
-            continue;
-        }
-        for s in 0..g.seats.len() {
-            if g.tokens(x, ambassador(s)) > 0 {
-                spots.push((x, s));
-            }
-        }
-    }
-    let opts = spots.iter().map(|&(x, s)| opt(format!("Seat {s}'s ambassador at {}", hex_name(&w, x)))).collect();
-    let prompt = || format!("Strike: the adversary troop at {} sends which ambassador home?", hex_name(&w, h));
-    let Some(i) = cx.choose_loss(0, prompt, opts)? else {
-        return Ok(false);
-    };
-    let (x, s) = spots[i];
-    if take_ambassadors(g, cx, s, x, 1) > 0 {
-        cx.add_resource(g, s, Resource::Ambassadors, 1);
-        cx.note(Some(x), || format!("The adversary troop at {} sends Seat {s}'s ambassador at {} home", hex_name(&w, h), hex_name(&w, x)));
-        cx.tally(g, "board.troop_sent_home", 1);
-        cx.per_round(g, "map.troop_sent_home", 1);
-    }
-    Ok(true)
 }
 
 /// One adversary troop at `h` strikes a target on or next to its hex

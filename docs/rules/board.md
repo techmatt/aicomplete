@@ -8,7 +8,7 @@ A game has 1–4 countries, one player each. Country *i* is printed piece *i*
 ([`content/map.json`](../../content/map.json)), a 4×4 piece of 16 hexes placed by the
 layout for that country count. Population is implicit: people live in cities.
 
-Hex kinds: **city**, **open** land and **ocean** are printed (no military bases since r139: a former base hex is
+Hex kinds: **city**, **open** land and **ocean** are printed (no bases since r139: a former base hex is
 ordinary open land). **Industrial zones** are a printed marking on open
 hexes next to cities: factories go only there. **Every zone prints an arrow to its city** (r140): the nearest city
 of its own country (ties: the lower hex number), always one hex away and the same in every layout (the table

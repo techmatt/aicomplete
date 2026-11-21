@@ -448,7 +448,7 @@ projects.
 
 *Sources: rules/adversary.md (Each round, One output, Research track, Infiltrate X, Arrival corruption, Botnets);
 docs/adversary-cards.md (the Militarist, the event deck); content/adversary.json;
-crates/aic-core/src/modules/adversary/ (rally.rs, corrupt.rs, research.rs), modules/plan.rs.*
+crates/aic-core/src/modules/adversary/ (lines.rs, corrupt.rs, research.rs), modules/plan.rs.*
 
 ---
 
@@ -982,7 +982,7 @@ test. A neutral station flips as printed.
 player ambassadors) count pieces to pick.
 
 *Sources: rules/adversary.md (Arrival corruption), rules/board.md (A station is a defended investment);
-crates/aic-core/src/modules/adversary/ (rally.rs, corrupt.rs).*
+crates/aic-core/src/modules/adversary/ (lines.rs, corrupt.rs).*
 
 ---
 

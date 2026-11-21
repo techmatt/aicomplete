@@ -722,8 +722,9 @@ fn troops_up(g: &GameState) -> bool {
     (0..g.hexes.len()).any(|h| g.tokens(h, common::TROOP) > 0)
 }
 
-/// The wall turtle's hex (068): of a node prompt's hexes, the one nearest a
-/// troop but not on it, where a wall blocks nothing.
+/// The wall turtle's hex (068, an off-by-default probe): of a node prompt's hexes, the one nearest a troop but
+/// not on it. Written for marching troops; since r141 troops garrison and a Wall node also shields its own hex,
+/// so the "not on it" filter is a leftover kept so the probe's games don't move.
 fn wall_hex(w: &World, g: &GameState, legal: &[Action]) -> Option<usize> {
     let p = g.pending.as_ref()?;
     // 118: the prompt reads "place a node (...)" (it said "place nodes"; the rename

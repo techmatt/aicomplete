@@ -9,12 +9,13 @@ longer regenerated).
 
 | File | Deck |
 |---|---|
-| `threats_t1.json`, `threats_t2.json` | the threat deck of each tier (146 wrote both to Matt's threat card standard with [`threat_cards.py`](../../experiments/results/146_threat_standard/threat_cards.py), which also prints each card's give / get) |
-| `projects.json` | the project deck (151: written with [`adversary_cards.py`](../../experiments/results/151_adversary_income_r65/adversary_cards.py)) |
+| `threats_t1.json`, `threats_t2.json` | an object (`deck`, `note`, `cards`): the threat deck of each tier (146 wrote both to Matt's threat card standard with [`threat_cards.py`](../../experiments/results/146_threat_standard/threat_cards.py), which also prints each card's give / get) |
+| `projects.json` | an object (`deck`, `cards`): the project deck (151: written with [`adversary_cards.py`](../../experiments/results/151_adversary_income_r65/adversary_cards.py)) |
 | `militarist.json` | the Militarist's board (`board`) and event deck (`events`), first written by the same generator |
 
 The 146 and 151 generators are records of their day: 166-178 edited these drafts by hand (rulings since), so rerunning
-a generator would revert them. Edit the JSON here.
+a generator would revert them. Edit the JSON here. (`content/alignment.json` and `content/ais.json` are their own
+source, bare lists; `alignment.json` keeps `apply_overlay.py`'s `dump_alignment` layout.)
 
 `python drafts/adversary/check.py` checks them: ids, deck sizes and tags, the tier rules, counters, the threat card
 standard (two consequences and two counter options at most, no shared currency, no each-player harm, no special

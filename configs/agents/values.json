@@ -24,7 +24,6 @@
     "node": 5.333,
     "node_late": 4,
     "late_rounds": 3,
-    "movement": 0.933,
     "sway": 2.667,
     "drawn_card": 3.333,
     "target_share": 0.7,

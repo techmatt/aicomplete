@@ -5,7 +5,7 @@
 set -e
 D=out/298_overhaul_6_calibration
 S=experiments/results/298_overhaul_6_calibration
-SMOKE=experiments/results/297_overhaul_5_content_sweep/smoke_table.py
+SMOKE=scripts/bench/smoke_table.py
 {
   echo "# 298: the dev-seed screens"
   echo

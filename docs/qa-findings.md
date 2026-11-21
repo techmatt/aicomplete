@@ -93,6 +93,7 @@ Each hunt found most of its faults in the same places. Look there first:
 | D114 | cards | Five liberate cards' pricing notes use pre-r113 keeps. | Restate. **Pick**. |
 | D118 | rules | The Liberated marker binds Corrupt lines only, not cards that take a site. | Leave; guard. **Matt's call**. |
 | D119 | cards | Faces against house terms: node "Harden", Faraday Yard's box, two-way wordings. | One card-words item. **Pick**. |
+| D135 | viewer | The debug view scrolls at 1366×768 late in a long game (sweep `--case c2-d0`, r148, play seed 1000): the countries strip falls off screen and the replay buttons go under the board (295 saw it at r142; `web/src` unchanged since). | Fit the next-round box and the countries strip at 1366×768; a web item. **Pick**. |
 | D134 | agents | The arrival forecast leaves out the card's Spill and Grow's agent. | 288: `plan::next_spill` built, off (`w.spill_read`: -1.7 judge, -2.1 greedy on the dev seeds; it still moves agents off a site the Infiltrate corrupts first). **Won't fix** while it loses. |
 
 ## Won't fix

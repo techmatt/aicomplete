@@ -18,7 +18,7 @@ Counting, per event:
               in the draft each hand passed
   checks      adversary turn: `map.adversary_checks` (each site a line names, each arrival, each botnet), each troop
               on the map in the March, each threat card turned in dealing; the action phase: the board uses a seat
-              could make (`ai.offered.<board>`) and each target a power or card asks for, and 5 a Buy energy;
+              could make (`ai.offered.<board>`) and each target a power or card asks for;
               production: each producing income track, blocked chip and adversary factory (280's cut 2, the rule
               since r133; `--sites` reads every factory, station and city instead, 278's model); threats executed:
               each threat on the map
@@ -68,7 +68,6 @@ MARKERS = ('ai.power_used.', 'board.energy_bought.', 'board.converter_round.', '
            'board.vigil_round.', 'board.moved.', 'cards.used.')
 SEATS = ('Builder', 'Protector')
 NODE_POWERS = 3  # r142: powers 0-2 of every board
-BUY_CHECKS = 5  # 268's hand play: a Buy energy reads the unblocked neutral cities against the host slots
 HAND_LOG = 'experiments/results/268_table_cost_audit/d2/log.md'
 HAND_COUNTS = 'experiments/results/268_table_cost_audit/d2/counts.csv'
 # 268's d4 spot check (rounds 1, 5, 10): lookups and modifiers a round.
@@ -90,6 +89,15 @@ def boards():
         bs = json.load(f)
     return ([[p['name'] for p in b['powers']] for b in bs],
             [[p.get('group') or i for i, p in enumerate(b['powers'])] for b in bs])
+
+
+def cities_in_play():
+    """The cities on the traced map: content/map.json's first N countries' (the engine's), N the baseline's
+    `countries` (the traces run configs/baseline.json)."""
+    with open('configs/baseline.json', encoding='utf-8') as f:
+        n = json.load(f)['countries']
+    with open('content/map.json', encoding='utf-8') as f:
+        return sum(len(c['cities']) for c in json.load(f)['countries'][:n])
 
 
 def act_step(a, names):
@@ -178,9 +186,6 @@ def read_trace(path, info, tracks=True):
     marked = set()
     faces = set()
     picks = collections.Counter()  # seat -> picks this draft
-    with open(path, encoding='utf-8') as f:
-        # The run summary (with its overrides line) follows the trace: read it first.
-        host_fixed = any(x.startswith('run overrides:') and 'board.host_fixed=1' in x for x in f)
     for line in open(path, encoding='utf-8'):
         if line.startswith('ai.offered.'):
             parts = line.split()
@@ -197,10 +202,6 @@ def read_trace(path, info, tracks=True):
                     turn[s] = act_step(a, names)
                 step = f"{SEATS[s]}: {turn.get(s, 'Card plays')}"
                 actor = s
-                if a['type'] == 'standard' and a.get('act') == 'buy_energy':
-                    # A city is for sale only if no player hosts or could host it: the table re-runs the round's
-                    # matching (268 counted 5 checks a buy); with hosts fixed it reads the host tokens (1).
-                    rows[rnd][(sec, step, 'checks')] += 1 if host_fixed else BUY_CHECKS
             elif sec == 'Draft' and s is not None:
                 step = f"{SEATS[s]}: {DRAFT_STEP.get(phase, phase)}"
                 actor = s
@@ -287,8 +288,6 @@ def read_trace(path, info, tracks=True):
                     rows[rnd][(sec, step if phase == ACT else 'used markers cleared', 'components')] += 1
         elif t == 'asked' and phase == ACT and 'target' in e.get('prompt', '').lower() and actor is not None:
             rows[rnd][(sec, step, 'checks')] += 1
-        elif t == 'note' and phase == 'board.war' and e['text'].startswith('War: the fronts fight'):
-            rows[rnd][(sec, 'fronts', 'checks')] += 2  # one front a country (2 countries at 2 players)
     played = max(rows) if rows else 1
     for s, b in enumerate(('builder', 'protector')):
         for r in range(1, played + 1):
@@ -299,13 +298,14 @@ def read_trace(path, info, tracks=True):
 def add_counters(rows, g, tracks=True):
     """Per-round counters from the experiment's games.jsonl line for the same game."""
     c = g['counters']
+    cities = cities_in_play() if not tracks else 0
     for r in rows:
         tag = f'r{r:02d}'
         rows[r][('Adversary: lines and arrivals', 'sites, arrivals, botnets', 'checks')] += c.get(f'map.adversary_checks.{tag}', 0)
         rows[r][('Adversary: march', 'troops', 'checks')] += c.get(f'map.troops.{tag}', 0)
         sites = sum(c.get(f'map.{k}.{o}.{tag}', 0) for k in ('factories', 'stations') for o in ('adversary', 'neutral', 'player'))
         if not tracks:  # 278's model: every site read at production (280's tracks count the tracks and chips read)
-            rows[r][('Production and hosting', 'sites read', 'checks')] += sites + 6  # + 6 cities (2 countries x 3)
+            rows[r][('Production and hosting', 'sites read', 'checks')] += sites + cities
         rows[r][('Production and hosting', 'host matching', 'checks')] += c.get(f'map.hosted.{tag}', 0)
 
 

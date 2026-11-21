@@ -100,11 +100,14 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
   A line is ~82 KB (r112: counters 42%, `actions` 34%, `cards` 15%); a spec's `"drop": ["actions", "cards"]`
   (251, opt in) writes those empty, half the bytes; no `--resume`, and no reader of `actions` (`design_check.py`).
 - **A farmed spec** is a file in `experiments/farm/` (`read`: the strategist, three pairs, d0-d3, a subset: an item's
-  read writes its own d0-d4 spec; `cell-d2`: one cell); the argument is its name. A gated spec, win-probability
+  read writes its own d0-d4 spec; `cell-d2`: one cell; `read3`: three seats, `configs/three_seat.json`); the argument
+  is its name. A spec's `difficulties` and `agents` are spec-wide (no per-variant list): an arm at other levels is
+  a second spec. A gated spec, win-probability
   probes and `inject_panic` are refused: their games depend on more than their seed. The bundle reads no files:
   `configs/`, `experiments/configs/` and `experiments/farm/` are built in (`crates/aic-farm/build.rs`), so commit a
   spec before farming it: one missing from the workers' bundle fails there and the main box reruns its shards late,
-  one at a time (~60 min for a 3,000-game screen). A finished item's specs move to `experiments/archive/farm/` (not built in; a bare name still finds them natively, so a kept read's `FILE=NAME` works). An arm with cards out of the deck is a derived config in `experiments/configs/` (`no_tier2.py`, `no_liberate.py`, run by
+  one at a time (~60 min for a 3,000-game screen). A finished item's specs move to `experiments/archive/farm/` (not built in; a bare name still finds them natively, so a kept read's `FILE=NAME` works; kept reads sit at
+  `C:/Code/aicomplete-control/.conductor/kept/aicomplete/<item>/<n>/`). An arm with cards out of the deck is a derived config in `experiments/configs/` (`no_tier2.py`, `no_liberate.py`, run by
   `regen.py`): no `--set` removes a card from a deck.
 - **The bundle's API** (`farm.mjs`): the default export `init()` (in Node it reads the wasm beside it),
   `fingerprint()`, `run(first, count, args)` returning the shard's text (`args`: one spec name), `engine()`.

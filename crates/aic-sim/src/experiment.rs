@@ -640,7 +640,7 @@ fn margin(rules: &Rules, g: &GameState) -> Margin {
     let blockers = if g.outcome.as_ref().is_some_and(|o| o.won) {
         0
     } else {
-        adversary::purge_count(&w, g)
+        adversary::corrupted_city_count(&w, g)
     };
     let cities: Vec<usize> = (0..g.hexes.len())
         .filter(|&h| common::is_city(&w, h))

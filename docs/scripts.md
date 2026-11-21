@@ -10,19 +10,16 @@ what it prints.
   `farm/compare.py A B [--ms A_ERR B_ERR]`: two engines' outputs of one range: games that differ, win %, paired
   gap, ms a game.
 - `regen.py [--no-build] [--check | --golden]`: every generator in order (its docstring), the derived
-  configs (`no_liberate.py`, `no_tier2.py`, `three_seat.py`) last. `--check` writes nothing: drafts and loader
-  checks, a build (unless `--no-build`), `aic-sim docs --check`, `cards_doc.py --check`, the derived configs' `--check`, the revision lines in
-  `rules/README.md` and `rulebook.md`. `--golden`: also sets the golden constants (README, *Rules changes*).
+  configs (`no_liberate.py`, `no_tier2.py`, `three_seat.py`) last. `--check` writes nothing and runs every check
+  (docstring); `--golden`: also sets the golden constants (README, *Rules changes*).
 - `design_check.py [DIR] [--old DIR] [--base REV] [--config FILE] [--quiet] [--usage] [--variant V,...] [--agent A,...]`: the design
   warnings ([principles.md](principles.md)): content checks, plus play checks on DIR (a read's folder or
   `games.jsonl`; a farm out file as FILE=SPEC, SPEC its path (`=experiments/farm/read.json`); one DIR, comma lists pool; an unknown flag stops it). `--old`: the previous revision's read on its seeds; `--base`: the
   dials' start (default: merge base with main); `--variant`: only those variants' (or a lever's) games, `base` the
-  bare pairs; `--agent`: only those agents' (as the spec writes them), on `--old` too; `--usage`: each action's role, band and use instead (a `usage` row's `levels` reads those difficulties only). Powers are named by the read's `ai.power.*`
-  counters. Table cost (268): `table_cost`'s budgets by level, and `friction-stale` off
-  `docs/rulebook-friction.md`'s title. First line: the report's `warnings:`. Thresholds
+  bare pairs; `--agent`: only those agents' (as the spec writes them), on `--old` too; `--usage`: each action's role, band and use instead. First line: the report's `warnings:`. Thresholds
   and bands: `design_check.json`; job parity's cards for each standard job, hand-read (effects as expressions over
-  the anchors): `design_check_jobs.json` (`jobs`: per standard row, `{unit, cards: [{name, units, other, use, note}]}`),
-  edited by hand (`experiments/results/249_real_oracle_judge/port_jobs.py` would overwrite it). A `repeat_powers.exempt` key may join names (`"Buy In, Levy"`).
+  the anchors): `design_check_jobs.json`,
+  edited by hand (249's `port_jobs.py` would overwrite it). A `repeat_powers.exempt` key may join names (`"Buy In, Levy"`).
   Never exits 1 on a warning.
 - `cards/cards_doc.py`: regenerates `docs/cards.md`. `cards/deck_text.py DECK...`: a deck as plain text for review
   (`--list` the decks; README, *Card text for review*); `--ids TEXT`: content ids by display name.
@@ -38,16 +35,15 @@ what it prints.
   tier-2 keeps from tier 1), in `experiments/configs/`; `three_seat.py`: `configs/three_seat.json`, the baseline at
   3 countries and difficulty 0 (the viewer's 3-seat game).
 - `cards/loop_smoke.py [DIR...] [--run] [--out DIR] [--exe EXE]` (flags: docstring): the loop smoke (no DIR: runs
-  `use.json` to `out/loop-smoke` on a copy of `AIC_SIM` or the release build): timeouts, ends, most plays of one card a game; exits 1 on a timeout or `--max-plays`.
+  `use.json`): timeouts, ends, most plays of one card a game; exits 1 on a timeout or `--max-plays`.
 - `cards/counter_names.py DIR... [--all]` (DIR, games file or `FILE=SPEC`): counter keys the read scripts, web scripts and `crates/aic-sim` (agents
   aside) quote that no game in DIR wrote, and each sweep `COUNTER_EVENTS*` alternative no key matches; rare events
   list too, so don't gate on it.
 - `cards/screen.py`: named columns over experiment outputs (`--columns a,b,c`, `--preset tiers|041|034|018|016`,
   `--sources`, `--list`; `tiers`, offered, kept and played by tier, is a card rework's first screen); `--gate DIR`
   (gates are suspended) each check against its own agent, then unspent.
-- `screens.py` reads a run from Python: `load(dir)` the games with their cells (`stream` also takes `FILE=SPEC`), `cnt(game, key)` a counter (a power is `ai.power.<board>.<name>`: `scripts/powers.py`). `screens.py assemble SPEC
-  FIRST COUNT OUT_DIR SHARD... [--exe EXE]` writes farmed shards (seed order) under the spec's header as
-  `OUT_DIR/games.jsonl`.
+- `screens.py` reads a run from Python: `load(dir)` the games with their cells (`stream` also takes `FILE=SPEC`), `cnt(game, key)` a counter (a power is `ai.power.<board>.<name>`: `scripts/powers.py`). `screens.py assemble`
+  (docstring) writes farmed shards under the spec's header as `OUT_DIR/games.jsonl`.
 - `cards/play_read.py DIR... [--min PCT] [--agents A,B] [--variant V,...]` (DIR, games file or `FILE=SPEC`; agents by spec name, so native
   and farmed reads pool; `--agents` takes it or the label; `--variant` as design_check's): per agent: draft cards kept in over `--min` percent
   of games (default 1) and played in none, and those no game kept. Not why: a card is offered only when some part of
@@ -99,8 +95,7 @@ what it prints.
   another baseline), `table`, `compare`, `specs SIM A B`; `check SIM` (~4 min, quiet machine) fails at
   1.3 × `speed_baseline.json` (`--update` moves it; across a revision: NO VERDICT). Runs a copy of each SIM. [speed.md](speed.md).
 - `bench/per_decision.py OLD_ROOT NEW_ROOT`: rounds, decisions and ms a game and a decision on the same seeds
-  (`--games 16`+, speed.md; `--agent`, `--old-agent` the agents a change touched; `--first 1000` the first seed,
-  `--countries 2`, `--pairs 2` passes, the best kept). A root is an `.exe` or a folder with `aic-sim.exe`
+  (`--games 16`+, speed.md; `--agent`, `--old-agent` the agents a change touched; others: docstring). A root is an `.exe` or a folder with `aic-sim.exe`
   and its `configs/`. `--set K=V` goes to both sides: a content overlay runs the new binary on old content.
 - `bench/seeds.py next N [--take] [--doc FILE]`: the next N fresh seeds from experiments.md; `--take` moves `Next free`.
 - `bench/skilled_rows.py READ.json [--games 24] [--levels 3,4] [--rows ...] [--out ...]`: the oracle's companion spec
@@ -132,6 +127,10 @@ what it prints.
   agent.
 - `bench/projects_read.py READ [--md OUT]` (folder, games file or `FILE=SPEC`): each project's reveals, completions, compute drained and map
   moves a completion, by level.
+- `bench/rounds.py SPEC LABEL=FILE[,FILE]... [--by-arm]`: per level, wins, rounds, the length bars and the round
+  histogram (bands: ladder.py's). `bench/smoke_table.py LABEL=FILE... [--names A,B,C] [--pairs] [--troops]`: ends, slot, piles, troops.
+- `bench/mkspec.py NAME OUT AGENT LEVELS ARM=SETS... [--note TEXT]`: a lever screen's spec, the three pairs by arm.
+  `bench/am_cards.py NAME=FILE[:N:K]... [--also IDS]`: each antimatter sink offered, kept, played; antimatter idle.
 - `bench/card_ranks.py DIR A B [--variant V]...`: Spearman of the cards' keep and play rates, agent B against A.
 - `bench/item_time.py ITEM... [--top N]`: a done item's wall time: sims, builds, tests, the rest.
 - `tune/`: `agent_sweep.py`, `sweep.py`, `log_table.py`, `engine_sweep.py` ([README](../scripts/tune/README.md)).

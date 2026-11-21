@@ -4,16 +4,7 @@ Matt's rulings of 2026-11-19, amendment #13416 (Grow is open to be reshaped) and
 happens once, as the marker arrives). The rules as built: [docs/rules/adversary.md](../../../docs/rules/adversary.md).
 Everything here is a candidate for his review.
 
-## The adversary's whole turn, as a new player is told it
-
-1. **Card.** Flip the event card and deal its threats. Each site of *last round's* type that still holds an agent
-   takes 1 more (escalate); the Militarist then adds 1 to each factory holding an agent (its one rule); then every
-   site of *this* card's type takes 1 (Infiltrate). A site holding its printed number corrupts.
-2. **March.** Troops move and strike, as before.
-3. **Income.** Each corrupted site makes one thing: a city 1 Discord, a research station 1 research cube, a factory
-   1 agent (it walks down its zone's arrow to its city next round), a botnet 1 compute. Compute fills the leftmost
-   project. Every cube a country on the research track moves its marker one slot, and that slot's icon happens
-   once; slot 7 loses the game.
+The turn as built (Card, Income; the march has since gone): [docs/rules/adversary.md](../../../docs/rules/adversary.md).
 
 ## The icon vocabulary
 
@@ -100,11 +91,9 @@ event card; four projects keep one (Night Raid, Asset Seizure, Sabotage Teams, S
 | The four megaprojects | "each adversary cube 1 Sway to Discord" (Polar Compute Array: 1 compute); "Afterward an adversary station here puts its cubes onto the adversary's research track" | both sentences cut |
 | Militarist board | Botnet Recruiters; Weapons Program (Muster 2, 3 at d3) | Commandeered Plants; the War Research row |
 
-A first pass reworded Surge as Infiltrate + Escalate lines; the diff review showed that changed worth (Recruitment
-Drive would take every unguarded city from level 1; Martial Law no longer took a station), so Surge keeps its agents
-and type and only its pick changed, to the creation line's lowest-numbered site. Ops removed: `surge`, `spill`,
-`grow`, `adversary_cubes`, `botnet_cubes` (the last was a palette op, printed on no card). Op added: `escalate` (the
-board rule's line).
+A first pass reworded Surge as Infiltrate + Escalate lines; that changed worth (Recruitment Drive would take every
+unguarded city from level 1), so Surge keeps its agents and only its pick changed. Ops removed: `surge`, `spill`, `grow`, `adversary_cubes`, `botnet_cubes`; added: `escalate` (the board rule's
+line).
 
 ## What resisted a clean rule
 
@@ -179,27 +168,13 @@ read's 8% is lower than the screen's 20% mostly because the cube lines were then
 
 ## Checks
 
-- **Diff review** (Ultracode workflow, four lenses, each finding given to a skeptic): 37 found, 32 confirmed. Fixed:
-  the view's escalate marks and zone arrows now follow the rule's blockers (firewall, no-Infiltrate, cordon, an
-  occupying troop) and a round with no event phase; a board rule printing a line nothing reads is refused at load;
-  K 1 made the r139-sized cube lines jump 2-3 slots (rescaled); the Infiltrate + Escalate rewording of Surge changed
-  worth (a creation line instead); stale text in phase docs, the Blackout hover, the harms ledger, value notes and
-  agent comments; the harms ledger reads the row's icons; `design_check.json` no longer counts factory agents
-  twice; `ladder.py` reads the new cancel counter; seven tests added (the beats through the real phases, the block
-  cases, every piece's arrows, the view's marks). Left for later items: the agents' forecast does not see Escalate,
-  the board rule or a factory's push (item 6 reteaches the judge); Arms Race keeps its name with no rule.
-- **Player view:** `web/scripts/player-play.mjs --config three_seat.json --seed 1` plays to its outcome with its
-  per-step checks (the row's slots and cubes against the engine, zone arrows drawn, "+1" marks equal to the view's,
-  the last-round box) and no Spill, Surge, Grow or seeding on screen; `e2e.mjs`, `e2e-corps.mjs`,
-  `e2e-researcher.mjs`, `e2e-sources.mjs` pass.
-- **Speed** (`bench/per_decision.py`, r139 against r140, 16 games from seed 1000, d2, one thread, ratios): the judge
-  0.79 × a decision (2.1 → 1.6 ms), greedy 0.86 ×, engine 0.94 ×. `speed.py check` gives no verdict across the
-  revision (its engine row reads 1.58 × a game on other games); the baseline is still r139's, not re-based here
-  because another item was running beside this one.
-- **`loop_smoke.py --run`:** no timeouts, no card at the play flag. `play_read.py` and `cards:fit` cover player
-  cards, which this item did not change.
-- **Frozen runs:** the K screen was read before the review's fixes and is not replayed (its arms are spec overrides
-  of a superseded build); the fresh read was farmed on the final commit, after the last rules change.
+- **Diff review:** 37 found, 32 confirmed and fixed (view marks and arrows, cube lines rescaled to K 1, Surge kept
+  as a creation line, a board rule printing a line nothing reads refused at load, stale text, seven tests). Left for later items: the agents' forecast does not see Escalate,
+  the board rule or a factory's push; Arms Race keeps its name with no rule.
+- **Speed** (`bench/per_decision.py`, r139 against r140, d2, ratios): the judge 0.79 × a decision, greedy 0.86 ×,
+  engine 0.94 ×.
+- `loop_smoke.py --run` clean; the K screen was read before the review's fixes and not replayed; the fresh read
+  ran on the final commit.
 - **Design warnings** on the fresh read against r139's: new or moved: `dials-hide-design` (`research_at` 5 → 1 in the
   same change as content: this item's own K), `rounds` at every level (7.0, 7.4, 7.0, 6.6 against the 8-10 band; r139
   warned at d0 and d3), `table-components-rise` d0 +12% (23.0 a round, budget 24), `table-checks-rise` at every level

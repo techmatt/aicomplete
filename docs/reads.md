@@ -58,6 +58,10 @@ Strip `.rNN` keys before reading `cards.kept.` or `cards.played.` as card ids.
 - `board.node_capstones.rNN`: capstones reached in round NN, not held (`modules/board/node.rs`).
 - `map.cities_corrupted.rNN`: cities corrupted in play that round, a retaken one too (`adversary/corrupt.rs`);
   setup's are placed, not counted. No counter tracks retakes.
+- Troops: `map.troops.rNN` (on the map; the first troop round is its first nonzero),
+  `map.troops_placed.<source>.rNN`; `board.strikes` / `map.strikes.rNN`; `board.redeploys` / `map.redeploys.rNN`
+  (`board/production.rs`, `adversary/pieces.rs`, `board/troops.rs`). A project: `adversary.revealed.<id>`, and `adversary.project.<id>`
+  (`.rNN` too) when it resolves (`adversary/projects.rs`).
 - `adversary.ops` (only in `adversary_ops`): token placements and moves, and each compute point put on a project
   one op (`adversary/projects.rs`): a proxy for table time.
 

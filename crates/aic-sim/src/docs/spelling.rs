@@ -71,11 +71,22 @@ pub fn failures() -> Vec<String> {
 /// Security token Operatives; 184, r77's renames (178): corp troops are Drones, the node power was Expand (gone at r91) and
 /// the troop line Muster (a substring match: "deployed" is refused too; r141: Muster is gone, and Redeploy, the
 /// troops' icon, is let through). An old name, or the open naming note, in what a player reads is refused. Code
-/// names may stay, so the crates are not read.
+/// names may stay, so the crates are not read. 304: the words war, the Envoy and Dispatches took with them (r139,
+/// r142) too: "drone", "envoy" and "military base" in any case, "Dispatch" and "Growth" capitalized (the house words;
+/// plain "growth" is English). The card names that keep one ([`KEEP_NAMES`]) are let through.
 const STALE: &[&str] = &[
     "adversary ambassador", "adversary's ambassador", "enemy ambassador", "adv. ambassador", "matt to confirm",
     "agents token", "security agent",
-    "corp troop", "deploy",
+    "corp troop", "deploy", "drone", "envoy", "military base",
+];
+
+/// 304: the stale house words matched as printed (capitalized), not lowercased.
+const STALE_CASED: &[&str] = &["Dispatch", "Growth"];
+
+/// 304: card names (and their ids) that keep a stale word: stripped before the match.
+const KEEP_NAMES: &[&str] = &[
+    "survey drone fleet", "survey_drone_fleet", "envoy briefings", "envoy_briefings", "dispatch control room",
+    "dispatch_control_room",
 ];
 
 /// What a player reads: the content, the rules, the generated faces, the viewer's words.
@@ -87,8 +98,16 @@ const PLAYER_TEXT: [&str; 8] = [
 /// The stale house words in `text`.
 pub fn stale(text: &str) -> Vec<&'static str> {
     // r141: "Redeploy" is a house word (the troops' icon); the old troop and node verb "deploy" is still refused.
-    let low = text.to_lowercase().replace("redeploy", "");
-    STALE.iter().copied().filter(|b| low.contains(b)).collect()
+    let mut low = text.to_lowercase().replace("redeploy", "");
+    let mut cased = text.to_string();
+    for k in KEEP_NAMES {
+        low = low.replace(k, "");
+        while let Some(i) = cased.to_ascii_lowercase().find(k) {
+            cased.replace_range(i..i + k.len(), "");
+        }
+    }
+    let lower = STALE.iter().copied().filter(|b| low.contains(b));
+    lower.chain(STALE_CASED.iter().copied().filter(|b| cased.contains(b))).collect()
 }
 
 /// Every stale house word in what a player reads, one line each (`docs --check`).
@@ -105,6 +124,9 @@ pub fn stale_failures() -> Vec<String> {
                 let now = match b {
                     "corp troop" => "gone with war at r139 (they were Drones from r77)",
                     "deploy" => "troops garrison (r141; the line was Muster) and nodes are placed by node powers (r142); Redeploy is the troops' icon",
+                    "drone" | "military base" => "gone with war at r139",
+                    "envoy" => "the Envoy standard action is gone",
+                    "Dispatch" | "Growth" => "gone at r142: every ambassador moves once a round; boards print node powers",
                     _ => "agents, Operatives: docs/rules/README.md, Terms",
                 };
                 out.push(format!("{}:{}: stale house word {b:?} ({now})", path.display(), i + 1));

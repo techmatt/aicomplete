@@ -28,7 +28,7 @@ ROWS = {
     # 260: 249 left its first, discarded version here (engine weights, strategy=1, 3 worlds), which read 55% to the
     # judge's 70%.
     "real": "oracle:strategy=0,worlds=4,alts=3,budget=32,answers=1,truth=1,w.built=4,w.built_cost=0.75,w.clock=0,"
-            "w.energy_cap=0,w.hand=1.5,w.hand_cost=0.15,w.horizon=0,w.insight_income=0,w.movement=0,w.packet_keep=1,"
+            "w.energy_cap=0,w.hand=1.5,w.hand_cost=0.15,w.horizon=0,w.insight_income=0,w.packet_keep=1,"
             "w.production=0,w.strat_contents=0,w.table=0,w.tag_hand=0,w.purge=3.6,w.last_node=120",
 }
 

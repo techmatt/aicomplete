@@ -25,7 +25,7 @@ import os
 import re
 import subprocess
 import sys
-from collections import defaultdict
+from collections import Counter, defaultdict
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -239,10 +239,19 @@ def check_repeats(boards, cfg, o):
                 f'one effect ({fx[:70]}) on {len(bs)} boards under {len(names)} names: {txt}')
 
 
+def extra_anchors(sa):
+    """The units the anchor table lacks: design_check.json's `extra_anchors`, and a liberated city at values.json's
+    liberate credits (304: one home for the number)."""
+    out = {k: v for k, v in sa['extra_anchors'].items() if k != 'note'}
+    out['city_liberated'] = jload('configs/agents/values.json')['ops']['liberate']['credits']
+    return out
+
+
 def check_standard(cfg, base, o, games):
     sa = cfg['standard_actions']
     a = anchors()
-    a.update({k: v for k, v in sa['extra_anchors'].items() if k != 'note'})
+    a.update(extra_anchors(sa))
+    shared = Counter(row['src'] for row in sa['rows'])
     cap = cfg['standard_anchor_max']
     n = len(games) or 1
 
@@ -271,7 +280,7 @@ def check_standard(cfg, base, o, games):
         counter = 'board.std.' + c.split(':', 1)[-1]
         uses = sum(g['counters'].get(counter, 0) for g in games) / n if games else None
         used = f'; {uses:.2f} uses a game' if uses is not None else ''
-        if used and row.get('case'):
+        if used and shared[c] > 1:
             used += ' (every case of the action)'
         line = f'{row["name"]}: give {gtxt} = {give:g}, get {ttxt} = {get:g} at the anchors: {ratio:.2f}{used} (max {cap})'
         why = exemption(row, o)
@@ -304,7 +313,7 @@ def circular(row, sa, a, give, o):
     itself. Flagged when `anchor_sources.set_from` names it, or when the row's single priced get is an extra anchor
     worth exactly its give with no `independent` derivation."""
     src = sa.get('anchor_sources', {})
-    extra = sa['extra_anchors']
+    extra = extra_anchors(sa)
     for unit in row['get']:
         if unit in row.get('priced_in', ()) or unit not in extra:
             continue

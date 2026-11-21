@@ -149,6 +149,9 @@ fn lab(phases: &[&str]) -> (Rules, GameState) {
 
 /// `lab` with overrides on top of the lab config, whose params are not the
 /// baseline's (`liberate_at` 1): a test of a tunable's value uses `baseline_with`.
+/// The game has already played setup and round 1's `phases` (their vars, tallies and piles stand: a test of the
+/// Card beat empties the event deck's `CURRENT`/`LAST`/`DISCARD` and reads counters as deltas); then every token is
+/// cleared (no factory stands) and the adversary's agent supply is refilled.
 #[track_caller]
 fn lab_with(phases: &[&str], sets: &[&str]) -> (Rules, GameState) {
     let mut round = phases.to_vec();
@@ -660,7 +663,7 @@ fn variant_matrix() -> Vec<Config> {
 // ---------- the golden game ----------
 
 const GOLDEN_REVISION: u32 = 148;
-const GOLDEN_FINGERPRINT: &str = "07d92e6ba5ac2fd4";
+const GOLDEN_FINGERPRINT: &str = "11f1a548462c9902";
 const GOLDEN_CONTENT_HASH: &str = "3f06cbf82bc0f260";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action

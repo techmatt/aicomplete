@@ -108,7 +108,8 @@ pub enum FactoryWhere {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum TheftWho {
-    /// 146: the nearest player, as every threat harm hits.
+    /// 146: the threat's hit player (since 292 the player of the country it was dealt in, as every threat harm
+    /// hits); the serde word `nearest` is the r146 name, kept so content doesn't move.
     Nearest,
 }
 

@@ -1,12 +1,12 @@
 #!/bin/sh
 # 301: rewrites screens.md and fresh.md from the farmed games under out/301_d0_early_wins_and_liberate_pricing/
 # (git-ignored; the fresh files are kept under C:/Code/aicomplete-control/.conductor/kept/aicomplete/
-# 301_d0_early_wins_and_liberate_pricing). Reads with 299's hist.py. Run from the repo root.
+# 301_d0_early_wins_and_liberate_pricing). Reads with bench/rounds.py (299's hist.py). Run from the repo root.
 set -e
 D=out/301_d0_early_wins_and_liberate_pricing
 S=experiments/results/301_d0_early_wins_and_liberate_pricing
 K=C:/Code/aicomplete-control/.conductor/kept/aicomplete/299_shorter_games/299
-H="python experiments/results/299_shorter_games/hist.py"
+H="python scripts/bench/rounds.py"
 {
   echo "# 301: the screens"
   echo

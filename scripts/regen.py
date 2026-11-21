@@ -11,7 +11,7 @@ from `RULES_REVISION` in the source, then runs
 `no_tier2.py` and `three_seat.py` (the derived configs: 122 left no_liberate.json stale when the baseline gained
 params), prints the content hash and rules revision from `aic-sim show configs/baseline.json` (warning if the binary's
 revision isn't the source's), and then `git status --short`. Stops at the first failing step, naming it. `--no-build`
-uses the binary already built (warning if the loader just rewrote the content it embeds).
+uses the binary already built (stopping if the loader just rewrote the content it embeds).
 `--check` writes nothing: it runs the drafts check, the loader's, `aic-sim docs`'s, `cards_doc.py`'s and the derived
 configs' `--check` and the revision lines, and exits 1 if any is stale. Each step prints its wall time.
 `--golden` (281) also sets the golden constants, after the steps above: `GOLDEN_REVISION`, `GOLDEN_FINGERPRINT` and

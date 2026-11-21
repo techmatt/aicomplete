@@ -88,9 +88,6 @@ pub struct Weights {
     /// Each Discord tip made (a cost); Sway on the Discord track costs its
     /// share of the next one.
     pub discord_tip: f64,
-    /// Unread since r141 (it valued each step the purge had eased; the win has no steps). Kept so a saved agent
-    /// spec naming `w.level` still parses.
-    pub level: f64,
     /// Each visible adversary project's fill, as a share of its cost (a
     /// cost: it will resolve; 017).
     pub project: f64,
@@ -298,9 +295,6 @@ pub struct Weights {
     pub hand_share: f64,
     /// 082, a probe: a supply ambassador in table mode is the table's row times this.
     pub table_ambassador: f64,
-    /// 149's weight on a seat's Dispatches a round. r142: inert (Dispatches are gone: every ambassador moves once
-    /// a round); kept so an agent spec naming `w.movement` still parses.
-    pub movement: f64,
     /// 082: the share of its play cost a card still to be drafted or kept counts
     /// (table mode). The keep plan judges what a seat can pay; charged in full, a
     /// tier-2 card (priced at about its value less its keep) reads as worth no
@@ -452,7 +446,9 @@ const RENAMED: [(&str, &str); 7] = [
 
 /// 165: the zero-weight probes, retired: (name, why). A spec naming one is refused
 /// with the reason rather than as an unknown weight.
-pub(crate) const RETIRED: [(&str, &str); 11] = [
+pub(crate) const RETIRED: [(&str, &str); 13] = [
+    ("level", "r141: it valued each step the purge had eased; the win (no corrupted city) has no steps; unread since"),
+    ("movement", "149's weight on a seat's Dispatches; r142: Dispatches are gone (every ambassador moves once a round); unread since"),
     (
         "prod_income",
         "246: flat mode counting a card's production (`economy.production`) at the track's rate: oracle agreement on \
@@ -619,7 +615,6 @@ impl Default for Weights {
             // brings a card; a Discord tip brings one of the adversary's.
             unity_tip: 24.0,
             discord_tip: 16.0,
-            level: 10.0,
             // 017: chosen by hand, not swept.
             project: 30.0,
             // 259: a full track as a project resolving (its Muster lands 4-8 troops at 2 countries).
@@ -711,7 +706,6 @@ impl Default for Weights {
             table: 0.0,
             hand_share: 0.5,
             table_ambassador: 1.0,
-            movement: 0.0,
             pick_cost: 0.0,
             needs_floor: 0.25,
             power_progress: 0.5,
@@ -765,7 +759,7 @@ impl Weights {
     /// weights that no longer stand in for the future (008 sweep).
     ///
     /// The win route (164): the weights that read how the game is won are
-    /// `win`, `blocker` and `level` (the clear-board bar), `unity_tip`,
+    /// `win`, `blocker`, `unity_tip`,
     /// `unity_target` and `tier_read` (the purge's Unity tips, 156), `purge`
     /// (Liberate's bill, 162), `discord_tip` and `discord_danger` (the Discord
     /// loss) and, here, `clock` (011: the projected Unity win against the
@@ -806,8 +800,6 @@ impl Weights {
             // 128: per-tag ops at the count they're played at; spare energy cheap.
             tag_hand: 0.5,
             energy_cap: 4.0,
-            // r142: inert (no Dispatches).
-            movement: 1.0,
             // 288: the tie was screened on the flat agents only (the strategist turns it back on).
             am_tie: 0.0,
             ..Weights::default()
@@ -3145,7 +3137,7 @@ mod tests {
                 let city = common::is_city(&w, h) && t.adv_cube > 0;
                 pieces += city as i64;
             }
-            assert_eq!(pieces, adversary::purge_count(&w, &g));
+            assert_eq!(pieces, adversary::corrupted_city_count(&w, &g));
             r.legal_actions_into(&g, &mut legal);
             let Some(a) = legal.get(step % legal.len().max(1)) else { break };
             g = r.apply_to(&g, a, None).expect("a legal action applies");

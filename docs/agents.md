@@ -11,8 +11,7 @@ In prose the simulator's players are "sim players"; the code keeps "agents". The
 - **`choices` counts prompts** (a placement is two: track, hex; moves take a batch a prompt). A discard prompt
   resolves no further (`discards` 0).
 - **Heuristic** (`agents/eval.rs`, `Weights`, a rule on each field): the board, holdings, Alignment (`w.tier_read`),
-  projects, the adversary's research track (`w.research` 30, 259: its share of the threshold, each fire in full, as a
-  project), and unpaid threats by **the tempo trade** (`w.tempo`: harm over what paying now costs).
+  projects, the adversary's research track (`w.research`: its share of the threshold, as a project), and unpaid threats by **the tempo trade** (`w.tempo`: harm over what paying now costs).
 
 | Spec | What it does | Budget parameters (defaults) |
 |---|---|---|
@@ -21,7 +20,7 @@ In prose the simulator's players are "sim players"; the code keeps "agents". The
 | `beam` | Beam search over the round's remaining action sequences, scored at the next round's start; replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 |
 | `rollout` | The beam's `candidates` best end-of-round positions, each run `horizon` more rounds by `rollouts` greedy playouts on fresh guesses; best mean wins. | `width` 4, `depth` 120, `branch` 0, `choices` 2, `candidates` 3, `rollouts` 4, `horizon` 2 |
 | `engine` | The heuristic in **horizon mode** (`w.horizon`: income × the rounds left, discounted by danger); holdings by the value table (`w.table=0`: flat terms); the **deck clock** (`w.clock`) charges each round the team's Unity rate would leave it short. Searched like greedy; `width` > 0: a beam, `candidates` > 0: rollouts. | `width` 0, `samples` 1, `choices` 2, `answers` 99 (prompts an answer looks on; 1 loses wins); weights: `Weights::engine` |
-| `strategist` | **The screens' judge**: the engine in flat mode (`w.horizon=0`, `w.table=0`): greedy's flat weights, one action at a time, no search, no strategy (`strategist:strategy=1` plays one), plus `w.last_node`, the **purge term** (`w.purge`: ambassadors toward Liberate bills, on the site first), **cheap hand terms** (`w.hand` 1.5, `w.hand_cost` 0.15: a card is worth little until played), **a building's earnings** (`w.card_action` 3, 249), `w.sink` 0.5 (257), `w.am_tie` (288) and `w.am_cap` (303), below, `w.adv_read` and `w.lib_clock` (298; `STRATEGIST` says what each does). | `STRATEGIST`, `agents/mod.rs` |
+| `strategist` | **The screens' judge**: the engine in flat mode (`w.horizon=0`, `w.table=0`): greedy's flat weights, one action at a time, no search, no strategy, plus `w.last_node`, the **purge term** (`w.purge`: ambassadors toward Liberate bills, on the site first), **cheap hand terms** (`w.hand`, `w.hand_cost`: a card is worth little until played), **a building's earnings** (`w.card_action`), `w.sink`, `w.am_tie` and `w.am_cap` (below), `w.adv_read` and `w.lib_clock` (`STRATEGIST` gives each number; each `Weights` field in `agents/eval.rs` says what it does). | `STRATEGIST`, `agents/mod.rs` |
 | `planner` | The engine, rolling out a shortlist of action-phase alternatives `horizon` rounds with the engine as policy; the heuristic's best line is taken. A line runs on **full information** but the Alignment deal, valued over `deals` guesses of it (`planner.rs`). | `horizon` 2, `alts` 2, `budget` 8, `margin` 40, `deals` 4, `lead` 0. `sweep[:...]` is `planner:deals=1,lead=0`. |
 | `oracle` | **A measuring stick, opt in**: the planner's search on **full information**, the deal too, each line to the game's end; it follows a winning line, so its win rate is a floor on perfect play (`oracle.rs`). **`worlds`** (249, the real
 oracle): the search on that many worlds sampled from what players see, never the true table; a candidate is taken by
@@ -31,7 +30,7 @@ worlds won, then mean heuristic; `budget` counts lines; no `tries`. **`tries`**:
 first keep of a round a seat sketches `plan_rounds` rounds from what it holds and earns, fills each round's budget
 with the cards it would play by value per cost (value: the table at the rounds then left × the strategy multiplier;
 cost: its price at the table's rates; `plan_table=0`: the printed price), and keeps each drafted card, best ratio first, only if the
-plan is worth more with it; a play a round later is worth 15% less. Its switches (`plan_*`; `plan_sac`, 288: a sacrifice counts the seat's cards' and hand's tags, not its board's), `no_spend` and each **dominance check** (principles.md) are `forced_table!` rows in
+plan is worth more with it; a play a round later is worth 15% less. Its switches (`plan_*`), `no_spend` and each **dominance check** (principles.md) are `forced_table!` rows in
 `agents/policy.rs`, each with its default and rule.
 
 **Agent behaviors** (`behavior_table!` in `agents/policy.rs`, each row stating its rule): moves (`agents/moves.rs`),
@@ -39,7 +38,7 @@ strikes, targets, playing the plan, selling a dead card, saving and making antim
 agent, and a dominance check's ban wins. Forecasts read the engine's own targeting (`modules/plan.rs`).
 
 **Decision order** (`Policy::choose`; first pick wins): strategies at the round-1 keep; a keep by plan or forced rule;
-the ambassador, free-build and cube rushes; convert for a play (`convert_rule`: at flat energy 0.8 a converter into energy reads as a loss); sell; strike, target, moves; the other forced
+the ambassador, free-build and cube rushes; convert for a play (`convert_rule`); sell; strike, target, moves; the other forced
 rules and `kept_rule` 2; else the search over what no ban or antimatter reserve rules out, the plan's card replacing
 its pick under `kept_rule` 1, 3, 4.
 
@@ -61,8 +60,9 @@ unit anchors; its agent-removal and drain rows stay under them. **Antimatter's o
 greedy, the judge, beam and rollout hold an antimatter, plan it (`plan_rates`) and price a card's at 2/3 of the
 table's 18 (a spec's `w.antimatter` turns it off). The engine and its kin keep 2 points and `ANTIMATTER_COST` 2.
 **Idle antimatter** (`w.am_cap` 1, `w.am_idle` 0.2, the judge's since 303; flat mode): beyond 1, or what its hand's
-cards (needs met) spend, a held one counts a fifth, and the keep plan prices a card's antimatter, up to that idle count,
-at a fifth.
+cards (needs met) spend, a held one counts a fifth, as does a card's, up to that count, in the keep plan. Held
+antimatter is read in four places: the eval's flat worth (`am_value`), `sink_terms` (fuel, at the full
+`w.antimatter`), the keep plan's repriced table (`policy.rs` `plan_ctx`) and `policy::am_reserve` (`am_save`).
 
 The heuristic reads it in table mode (`w.table`, on for `engine`, off for `greedy`; the field says what each holding
 counts):
@@ -129,14 +129,13 @@ row; the spare-insight rule is every agent's.
   `w.energy_idle`.
 - *A cube Action with no megaproject open does nothing* (`w.cube_target`, `plan_cube_target`).
 
-Off (no gain read): `plan_team`. Retired probes (`eval::RETIRED`, `policy::RETIRED`): a spec naming one is refused
-with the reason, as is a value the agent would read as another (on/off not 0 or 1, a fraction of a count, an
-enumerated setting past its last value; `policy::check_param`).
+Off (no gain read): `plan_team`. A spec naming a retired probe (`eval::RETIRED`, `policy::RETIRED`) or a value the
+agent would misread (`policy::check_param`) is refused with the reason.
 
 ## The progress term and the draft
 
 - **`needs`:** a card short of them counts `needs_floor` of its worth plus the rest × the square of the share of the
-  tags held; a dear power (`ai::power_is_dear`), `power_progress` of a use × its tags' share squared.
+  tags held; a dear power (`ai::power_is_dear`), `power_progress` of a use × its tags' share squared (table mode only: 0 for greedy and the judge).
 - **Drafting for the neighbor:** a passed hand's cards count for the next seat, by its strategy.
 
 ## The tiers
@@ -149,6 +148,6 @@ enumerated setting past its last value; `policy::check_param`).
 | A skilled player with full information (it sees hidden cards: never a fair player) | `oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1,tries=3` | d4 95 |
 | **The real oracle**: very strong play that can't see the future (the design target) | `bench/skilled_rows.py`'s `real` | none yet |
 
-Bands: [principles.md](principles.md). After a change to how the game is won, smoke greedy beside the strategist: a
+After a change to how the game is won, smoke greedy beside the strategist: a
 greedy lead means the engine weights still encode the old win. A strategy pairing's win rate (`strat0`,
 `strat1`) is the balance read; `aic-sim strategies CONFIG` prints the choices.

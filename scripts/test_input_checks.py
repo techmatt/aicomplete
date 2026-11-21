@@ -10,6 +10,7 @@
   names only the working-tree edits in fields the overlay doesn't set.
 - `cards/effect_ledger.py --reasoned-delta BASE` (281): it needs `--stdout`, refuses `--hold-ratio` beside it and a
   bad BASE, and lists exactly the card whose reasoned value moved.
+- `drafts/adversary/check.py`'s deal (304): its stage counts match the engine's generated `round_cap` table.
 
 The read scripts' checks (`read_lib --base`, `paired_gap` on one seed, `play_read` / `use_read` pooling a native
 folder with a farmed read) are in `bench/test_read_tools.py`. No build and no binary. Python's standard library only.
@@ -210,6 +211,29 @@ class DesignCheckArgs(unittest.TestCase):
         code, out = self.run_it(os.path.join(HERE, 'no_such_read'))
         self.assertNotEqual(code, 0)
         self.assertIn('no games file', out)
+
+
+class CheckDeal(unittest.TestCase):
+    """304: `drafts/adversary/check.py`'s `stage_deals` mirrors the engine's deal (299 printed d4's deck a card short
+    and wrote it into three docs). The engine's own numbers are the generated `round_cap` table in
+    `docs/rules/adversary.md`, which `aic-sim docs --check` keeps current from the baseline."""
+
+    def test_stage_deals_match_the_engines_round_cap_table(self):
+        import importlib.util
+        root = os.path.dirname(HERE)
+        spec = importlib.util.spec_from_file_location('adversary_check', os.path.join(root, 'drafts', 'adversary', 'check.py'))
+        check = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(check)
+        with open(os.path.join(root, 'docs', 'rules', 'adversary.md'), encoding='utf-8') as f:
+            text = f.read()
+        block = text.split('<!-- generated: round_cap -->', 1)[1].split('<!-- /generated -->', 1)[0]
+        engine = {}
+        for line in block.strip().splitlines()[2:]:
+            cells = [c.strip() for c in line.strip('|').split('|')]
+            engine[int(cells[0])] = tuple(int(c) for c in cells[1:4])
+        self.assertEqual(sorted(engine), [0, 1, 2, 3, 4])
+        for d, stages, _ in check.stage_deals():
+            self.assertEqual(stages, engine[d], f'difficulty {d}: check.py deals {stages}, the engine {engine[d]}')
 
 
 if __name__ == '__main__':

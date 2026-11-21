@@ -174,7 +174,8 @@ fn log_lies(rules: &Rules, g: &GameState, events: &[Event]) -> Vec<String> {
     for e in events {
         let Event::Note { text, hex: Some(at) } = e else { continue };
         let Some(h) = rules.map.hexes.iter().position(|x| x.hex == *at) else { continue };
-        // 286 (D125): the loss's one line is `destroy_piece`'s ("seat 1's node at X destroyed").
+        // 286 (D125): `destroy_piece`'s one line, for any cause ("seat 1's node at X destroyed"). A card that
+        // destroys and re-places a node in one step would trip it: narrow it then.
         if text.contains("'s node at ") && text.contains(" destroyed") && node_owner(g, h).is_some() {
             out.push(format!("log says \"{text}\" but a node stands there"));
         }

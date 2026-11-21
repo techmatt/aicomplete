@@ -16,61 +16,75 @@ fn q(s: &str) -> String {
     format!("\"{}\"", s.replace('"', "\"\""))
 }
 
+/// games.csv's columns, in order: [`games_row`] gives one value each, in the same order (checked every row).
+const GAMES_COLUMNS: &[&str] = &[
+    "config", "variant", "difficulty", "agent", "seed", "won", "reason", "rounds", "decisions", "options", "forced",
+    "probed", "close", "gap_mean", "deck_left", "supply_left", "supply_start", "cities_corrupted_end",
+    "cities_aligned_end", "blockers", "level", "unity_tips", "adversary_ops", "adversary_ops_max", "setup_ops",
+    "pays", "withdraws", "threats_dealt", "threats_countered", "corruptions", "first_corruption_round",
+    "std_actions", "cards_played", "buildings_played", "tier2_played", "buildings_standing",
+    "economy_buildings_standing", "build", "winprob", "ms", "replay_ok",
+];
+
+/// One game's games.csv values, in [`GAMES_COLUMNS`] order.
+fn games_row(c: &Cell, g: &GameResult) -> Vec<String> {
+    let ops: u32 = g.adversary_ops.iter().sum();
+    let wp: Vec<String> = g.winprob.iter().map(|p| format!("{p:.3}")).collect();
+    let cnt = |k: &str| g.counters.get(k).copied().unwrap_or(0);
+    let pl = plays(g, c.rules.world().content);
+    vec![
+        q(&c.config_path),
+        q(&c.variant),
+        c.difficulty.to_string(),
+        q(&c.agent.label()),
+        g.seed.to_string(),
+        (g.won as u8).to_string(),
+        q(&g.reason),
+        g.rounds.to_string(),
+        g.decisions.to_string(),
+        g.options_total.to_string(),
+        g.forced.to_string(),
+        g.probed.to_string(),
+        g.close.to_string(),
+        format!("{:.3}", g.gap_sum / g.probed.max(1) as f64),
+        g.margin.deck_left.to_string(),
+        g.margin.supply_left.to_string(),
+        g.margin.supply_start.to_string(),
+        g.margin.cities_corrupted_end.to_string(),
+        g.margin.cities_aligned_end.to_string(),
+        g.margin.blockers.to_string(),
+        g.margin.level.to_string(),
+        g.margin.unity_tips.to_string(),
+        ops.to_string(),
+        g.adversary_ops.iter().max().unwrap_or(&0).to_string(),
+        g.setup_ops.to_string(),
+        g.pays.to_string(),
+        g.withdraws.to_string(),
+        cnt("threats.dealt").to_string(),
+        cnt("threats.countered").to_string(),
+        cnt("adversary.corruptions").to_string(),
+        cnt("adversary.first_corruption_round").to_string(),
+        cnt("board.std_actions").to_string(),
+        pl[0].to_string(),
+        pl[1].to_string(),
+        pl[2].to_string(),
+        standing(&g.build).to_string(),
+        economy_standing(&g.build, c.rules.world().content).to_string(),
+        q(&g.build),
+        wp.join(";"),
+        format!("{:.1}", g.ms),
+        (g.replay_ok as u8).to_string(),
+    ]
+}
+
 pub fn games_csv(cells: &[Cell], games: &[GameResult]) -> String {
-    let mut s = String::from(
-        "config,variant,difficulty,agent,seed,won,reason,rounds,decisions,options,forced,probed,close,gap_mean,deck_left,supply_left,supply_start,cities_corrupted_end,cities_aligned_end,blockers,level,unity_tips,adversary_ops,adversary_ops_max,setup_ops,pays,withdraws,threats_dealt,threats_countered,corruptions,first_corruption_round,std_actions,cards_played,buildings_played,tier2_played,buildings_standing,economy_buildings_standing,build,winprob,ms,replay_ok\n",
-    );
+    let mut s = GAMES_COLUMNS.join(",");
+    s.push('\n');
     for g in games {
-        let c = &cells[g.cell];
-        let ops: u32 = g.adversary_ops.iter().sum();
-        let wp: Vec<String> = g.winprob.iter().map(|p| format!("{p:.3}")).collect();
-        let cnt = |k: &str| g.counters.get(k).copied().unwrap_or(0);
-        let pl = plays(g, c.rules.world().content);
-        let _ = writeln!(
-            s,
-            "{},{},{},{},{},{},{},{},{},{},{},{},{},{:.3},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{:.1},{}",
-            q(&c.config_path),
-            q(&c.variant),
-            c.difficulty,
-            q(&c.agent.label()),
-            g.seed,
-            g.won as u8,
-            q(&g.reason),
-            g.rounds,
-            g.decisions,
-            g.options_total,
-            g.forced,
-            g.probed,
-            g.close,
-            g.gap_sum / g.probed.max(1) as f64,
-            g.margin.deck_left,
-            g.margin.supply_left,
-            g.margin.supply_start,
-            g.margin.cities_corrupted_end,
-            g.margin.cities_aligned_end,
-            g.margin.blockers,
-            g.margin.level,
-            g.margin.unity_tips,
-            ops,
-            g.adversary_ops.iter().max().unwrap_or(&0),
-            g.setup_ops,
-            g.pays,
-            g.withdraws,
-            cnt("threats.dealt"),
-            cnt("threats.countered"),
-            cnt("adversary.corruptions"),
-            cnt("adversary.first_corruption_round"),
-            cnt("board.std_actions"),
-            pl[0],
-            pl[1],
-            pl[2],
-            standing(&g.build),
-            economy_standing(&g.build, c.rules.world().content),
-            q(&g.build),
-            wp.join(";"),
-            g.ms,
-            g.replay_ok as u8
-        );
+        let row = games_row(&cells[g.cell], g);
+        assert_eq!(row.len(), GAMES_COLUMNS.len(), "games.csv: a value for every column");
+        s.push_str(&row.join(","));
+        s.push('\n');
     }
     s
 }

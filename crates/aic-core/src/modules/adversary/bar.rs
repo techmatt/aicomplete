@@ -4,12 +4,12 @@ use super::*;
 
 /// The corrupted cities on the board: the players win when there is none (r141, Matt 2026-11-19: the purge's
 /// steps are gone; botnets, troops and agents never count).
-pub fn purge_count(w: &World, g: &GameState) -> i64 {
+pub fn corrupted_city_count(w: &World, g: &GameState) -> i64 {
     (0..g.hexes.len()).filter(|&h| corrupted_city(w, g, h)).count() as i64
 }
 
 /// Whether no city is corrupted, stopping at the first: every action asks.
-pub fn under_bar(w: &World, g: &GameState) -> bool {
+pub fn no_corrupted_city(w: &World, g: &GameState) -> bool {
     !(0..g.hexes.len()).any(|h| corrupted_city(w, g, h))
 }
 

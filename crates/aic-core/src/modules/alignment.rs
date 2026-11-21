@@ -270,8 +270,8 @@ pub fn for_botnet_removed(g: &mut GameState, cx: &mut Cx) {
 
 /// The win (r141): no corrupted city on the board, from an adversary card of stage `clear_win_stage` on (1: from
 /// round 1; the stages are stacked and public).
-fn purge_won(w: &World, g: &GameState) -> bool {
-    g.var(adversary::STAGE) >= w.hot(Hot::ClearWinStage) && adversary::under_bar(w, g)
+fn liberated_won(w: &World, g: &GameState) -> bool {
+    g.var(adversary::STAGE) >= w.hot(Hot::ClearWinStage) && adversary::no_corrupted_city(w, g)
 }
 
 /// Every player's `resource` income rises by `n` for good (credits or
@@ -502,7 +502,7 @@ impl Module for Alignment {
                 return Ok(());
             }
         }
-        if purge_won(&w, g) {
+        if liberated_won(&w, g) {
             cx.end(g, true, "liberated", "no city is corrupted".to_string());
         }
         Ok(())

@@ -3,12 +3,9 @@
 Proposals and prototypes only. **No rules change, no `RULES_REVISION` bump** (r132: main at 0873d56, after 277's
 Growth pass).
 
-**Flags.** Two prototype flags stayed in code at baseline 0: `cards.no_pass` (cut 1) and `board.turn_cap` (cut 3). Two more are reverted and kept as patches: [pull_any_tag.patch](pull_any_tag.patch) (cut 6) and
-`host_fixed.patch` (cut 8). A stats-only counter, `map.arrival_checks`, measures cut 4.
-
-**Later (Matt, 2026-11-18; removed in 281):** no turn budget ("too many non-card turns means things are too cheap"),
-so `board.turn_cap` left the code and `host_fixed.patch` was dropped (in git history before 281). `cards.no_pass`
-stays as an ablation switch only: passing is locked.
+**Since (Matt, 2026-11-18):** passing is locked and there is no turn budget, so cuts 1 and 3 are ruled out:
+`cards.no_pass` stays as an ablation switch only, and `board.turn_cap` and `host_fixed.patch` (cut 8) left in 281
+(git history). [pull_any_tag.patch](pull_any_tag.patch) (cut 6) is a patch; `map.arrival_checks` measures cut 4.
 
 With every flag off, the 28 traced games replay identically. Only the config hash moves, and with it
 `GOLDEN_FINGERPRINT`, because the state hashes its config.
@@ -100,18 +97,12 @@ How each line was measured:
 
 The eleven cuts in detail:
 
-1. **Draft without passing; tier split once.**
-   - **Sketch:** each player names the tier split for their hand at once ("two and two"), takes those 4 cards, and keeps what they pay insight for. Nothing is picked or passed.
-   - **Strategy:** a player stops reading the partner's hand. They lose the co-op hand-off (passing the other seat a card it wants) and seeing the first card before choosing the next tier.
-   - **Screen:** no detectable cost (+6 ± 11).
-   - **Confound:** the judge's keep plan ran unchanged.
+1. **Draft without passing; tier split once.** Ruled out (passing is locked). It cost the co-op hand-off; screen +6 ± 11; the draft is 9.4 of a 42-minute round.
 2. **Production from tracks.**
    - **Sketch:** each player's and the adversary's production sits on the income tracks (274's). It moves only when a site changes hands. An ambassador or agent arriving on a producing site places a "blocked" chip, lifted when it leaves.
    - **Strategy:** unchanged. Blocking still blocks, but the table pays for it when pieces move, not by re-reading every site at production. This is the kind of cut 274's income tracks were, scaled to production.
-3. **A turn budget.**
-   - **Sketch:** each seat takes at most 3 turns a round from Growth, powers, standard actions, building Actions and converters. Card plays are never capped (Matt's ruling), and neither are threat payments, Sell or the free counters.
-   - **Strategy:** the seats now average 4.6 (Builder) and 4.8 (Protector) such turns. A good player ranks their board uses and spends 3 on the best; marginal Dispatches, converters and second powers are lost. This is the biggest strategy change here.
-   - **Screen:** −19 ± 12 at cap 3, and also −19 at cap 4. The judge doesn't plan against a budget (a confound, not retuned), so part of that is the agent.
+3. **A turn budget.** Ruled out (no turn budget: cheap turns are a pricing problem). Seats took 4.6 / 4.8 such turns; screen −19 ± 12 at
+   cap 3 and cap 4.
 4. **An arrival's check folded into its line's site read.**
    - **Sketch:** when an Infiltrate, Surge or Grow line places agents on a site it names, the corruption check is made as they are placed, as one read of that site. Today the site is read to place, then checked again.
    - **Strategy:** none; this is a table procedure and a printed sentence. The −1.3 is a ceiling: a Spill's arrivals land on hexes no line named and keep their check.
@@ -149,10 +140,11 @@ The eleven cuts in detail:
 
 ## 3. What I'd do first
 
-1. **The draft (cut 1).** It is the largest cut with no detectable play cost. The draft is 9.4 minutes of a 42-minute round, mostly decisions a printed game can lose without losing the deck-building.
+With cuts 1 and 3 ruled out:
+1. ~~The draft (cut 1)~~.
 2. **Production from tracks with blocked chips (cut 2).** It saves about 2.8 minutes of re-reading every site with no strategy change. It only needs prototyping, as 274's income tracks did.
 3. **Arrivals folded into their line (cut 4).** This is a sentence in the rulebook, worth up to 1.3 minutes, and changes nothing a player decides.
-4. **Then decide the game's length, with the turn budget as the lever.** After 1-3 a d2 game is still about 4.7 hours (35.3 × 8 = 282 minutes) by these rates. The turn budget (cut 3) is the one measured cut that takes real decision time, but it costs the team at cap 3 and cap 4, and the judge isn't tuned for it. Getting to 2 hours needs about 4 rounds. That is a design call: fewer rounds, or a tighter turn budget with content rebalanced around it.
+4. **Then decide the game's length** (a design call; the sim's minutes are now assumed wrong until Matt plays).
 
 ## Files
 
@@ -160,10 +152,7 @@ The eleven cuts in detail:
 - [traces.sh](traces.sh): the 28 traces, and the same games as an experiment for its per-round counters.
 - [s278-trace.json](s278-trace.json): the base traces' spec.
 - [s278-screen.json](s278-screen.json), [s278-screen2.json](s278-screen2.json) and [screen.py](screen.py): the screens.
-  The first screen's `anytag` variant needs [pull_any_tag.patch](pull_any_tag.patch); `hostfix` and `top3` also need
-  `host_fixed.patch` (`git show 68868a2:experiments/results/278_hard_cut_proposals/host_fixed.patch`, written against
-  r132 with `board.turn_cap`, which 281 removed: re-base it). Each patch's param also goes in `configs/baseline.json`
-  and `three_seat.json` (`"pull_any_tag": 0` in the adversary's params, `"host_fixed": 0` in the board's), then `regen.py`.
-  `s278-screen2.json` names `board.turn_cap`, which no longer exists.
+  They ran at r132 and need the patches (`host_fixed.patch` at `git show 68868a2:<this folder>/host_fixed.patch`)
+  and `board.turn_cap`, since removed: they no longer run as they stand.
 - [prototypes.md](prototypes.md): every `--compare`.
 - The traces are kept at conductor's kept folder for 278 (`278/trace-r132-base-and-flags.tgz`, plus the screen's games).

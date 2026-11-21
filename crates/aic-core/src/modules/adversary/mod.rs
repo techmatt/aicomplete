@@ -20,7 +20,7 @@ mod bar;
 mod corrupt;
 mod pieces;
 mod projects;
-mod rally;
+mod lines;
 mod research;
 
 pub use research::*;
@@ -28,7 +28,7 @@ pub use bar::*;
 pub use corrupt::*;
 pub use pieces::*;
 pub use projects::*;
-pub use rally::*;
+pub use lines::*;
 
 const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("difficulty", 0, 4, "difficulty level 0-4 (each level includes the ones below)"),
@@ -159,6 +159,14 @@ pub fn cut_key(h: usize) -> String {
 /// Whether the configured difficulty is at least `n` (setup rules).
 pub fn level(w: &World, n: i64) -> bool {
     w.int("adversary.difficulty") >= n
+}
+
+/// 151: a per-difficulty list param's entry at this game's difficulty (the last entry past the list's end): every
+/// ladder list (`compute_income`, `infiltrate_agents`, `research_at`, `setup_city_agents`) reads through it.
+pub(super) fn at_level(w: &World, param: &str) -> i64 {
+    let l = w.list(param);
+    let d = w.int("adversary.difficulty").max(0) as usize;
+    l.get(d).or(l.last()).copied().unwrap_or(0)
 }
 
 /// The ambassador supply at the start, for the map's countries.
@@ -375,7 +383,7 @@ impl Module for Adversary {
         // 301 (level 0's setup, a ladder number): `setup_city_agents` agents from the supply on each city that starts
         // free (the board's printed corruption order picks the others): the adversary is an arrival or two from
         // taking a new city, so the players can't liberate the starting ones before it spreads.
-        let seeds = income_at(&w, "adversary.setup_city_agents");
+        let seeds = at_level(&w, "adversary.setup_city_agents");
         if seeds > 0 {
             let corrupted = board::start_corrupted_cities(&w);
             for h in 0..g.hexes.len() {
@@ -408,7 +416,7 @@ impl Module for Adversary {
             cx.set_key(g, RESEARCH, start);
         }
         // 151: the compute income, from the config's level and the board's own lines (275: no agent income).
-        let mut compute = income_at(&w, "adversary.compute_income");
+        let mut compute = at_level(&w, "adversary.compute_income");
         for e in w.content.adversary_board.rules.iter().flat_map(|r| r.effects.iter()) {
             if let Op::IncreaseIncome { compute: c } = e {
                 compute += c;

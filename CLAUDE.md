@@ -30,8 +30,9 @@ any design, rules, card or pricing work.
   resources, tags and token types are enums (`vocab.rs`): *The op schema* in docs/architecture.md.
 - **Removing a power, op, param or standard action:** before the first build, `git grep` its name in
   `crates/`, `scripts/design_check.json` and `web/scripts`: tests and browser checks that name it break.
-  A param also sits in `configs/variants.json`, `experiments/configs/` and the lab's pins
-  (`crates/aic-core/src/tests/mod.rs`); a standard action in `board.std_off`'s index list, `design_check.json`'s
+  A param or weight also sits in `configs/variants.json`, `experiments/configs/`, the lab's pins
+  (`crates/aic-core/src/tests/mod.rs`) and live farm specs (a fast-lane test parses `experiments/farm/`: move a
+  finished item's spec to `experiments/archive/farm/`; a retired weight goes in `eval::RETIRED`); a standard action in `board.std_off`'s index list, `design_check.json`'s
   `memory_counters` and `design_check_jobs.json`; an op in `configs/agents/values.json`, `effect_ledger.py`,
   `crates/aic-sim/src/docs/{harms,run}.rs` (its harms arm, `PALETTE_OPS`), `tests/unprinted_ops.rs` and `drafts/adversary/check.py`.
   A param, phase or rule's name also sits in the docs generators (`crates/aic-sim/src/docs/{aid,blocks,ladder}.rs`),
@@ -41,11 +42,13 @@ any design, rules, card or pricing work.
   fails `aic-sim docs`' stale-word check (`docs/spelling.rs`, `STALE`): check before the first long build.
   **Changing a tunable's baseline value or a power's cost:** a setup dial (`board.start_*`) is also assumed by the lab
   (`lab_config` pins it) and by tests that stage a board from `baseline_with`; first `git grep` its name and old value in
-  `crates/`: tests that pin a baseline number break.
+  `crates/`: tests that pin a baseline number break, and `web/scripts/*-play.mjs`' demo seeds
+  (their `OVERRIDE`; re-find one with `--search`).
 - **A new standard action** also needs its row order in `crates/aic-sim/src/docs/blocks.rs`, `STANDARD_NAMES` in
   `web/src/format.ts` and `scripts/design_check.json`'s rows (`every_standard_action_is_named_everywhere` checks the
   last two). **Repricing one** touches `standard.rs`'s `printed_price`, `std_text` and `std_rule_text`, its ParamSpec,
-  `design_check.json`'s row and `design_check_jobs.json`'s job. Fast-lane tests use `TEST_NOOP` (`rules.rs`) as
+  `design_check.json`'s row and `design_check_jobs.json`'s job; Liberate's price is three params (`board.liberate_at`,
+  `claim_station`, `claim_factory`) and `docs/rules/ambassadors.md`'s hand-written line. Fast-lane tests use `TEST_NOOP` (`rules.rs`) as
   filler, not a standard action.
 - **Any change to how games play out:** bump `RULES_REVISION` and update the golden constants
   (README, *Rules changes*). Bump from the constant, not from the prompt's revision number (a bug
@@ -141,7 +144,7 @@ screens, how bars are scored, what its report carries.
 - **Facts learned while working go in the page for their area,** never only in a report: build,
   test and this machine in `README.md`; a run's cost and recipe in `docs/experiments.md`; a script's
   flags in `docs/scripts.md`. A number from a past revision goes in its item's write-up under
-  `experiments/results/`; `experiments/history.md` only indexes them.
+  `experiments/results/`; `experiments/history.md` only indexes them (a row each, summary under 100 characters).
 - **Each doc keeps to 15 KB**: README, CLAUDE.md, the web and card-art READMEs and every `docs/`
   page, `docs/rules/` files included, except those in `BUDGET_EXEMPT`
   (`crates/aic-sim/src/docs/run.rs`); `docs --check` refuses one over. Leave about 1 KB free: an

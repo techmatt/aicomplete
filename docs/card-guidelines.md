@@ -53,7 +53,7 @@ quiet exception.
 17. **Per-tag payoffs** (ruling 11): cards paying "1 income per X tag" each round, and one-off cards producing "1
     energy (or another resource) per X tag on your cards".
 18. **Critical analysis of every card** (ruling 9). Think each card through as a player would: what it does, step by
-    step; its full cost against the plain route (13); when in an 8-10 round game it matters, and for which board;
+    step; its full cost against the plain route (13); when in a 6-8 round game it matters, and for which board;
     its riders (4); whether the text has exactly one reading (2); what decision it creates.
 
 ## Matt's rulings of 2026-11-04
@@ -119,14 +119,15 @@ card cost or rider prints 1 credit: fold it into the price or raise it. A counte
 a per-tag rate of 1 is a rate, not an amount.
 
 **Board state to size removals against:** agents median 6 a country (p90 10) and 6 in a seat's reach (p90 12: a
-power's or standard action's area; a card's is its target); troops 0-1 a country (p90 3); a project holds under its
-cost (7-32 compute a board).
+power's or standard action's area; a card's is its target); troops 0-1 a country (p90 3); a project's cost is its
+printed cost a board × countries, and only the leftmost project holds compute (7-32 a board).
 
 ## An item's card checklist
 
 - **At a card's creation,** before its first measure: its precondition exists in measured play (spare energy at
   round 6, say); a building beats the median building it would cover in a slot; the tag story (`design_check.py
-  --quiet`); no card already prints the effect (11).
+  --quiet`); no card already prints the effect (11); a building whose Action prints a cost and two clauses rarely
+  fits: `cards:fit` it before the first screen.
 - **After any later edit** (card fit included): re-read its plays per game, update its rows in
   `scripts/design_check_jobs.json` (nothing checks them against content), rerun `npm run cards:fit` before the freeze.
 - **Smokes before reads.** A new op, resource or token type gets a 2-minute engine smoke (16 seeds) before any band

@@ -333,7 +333,7 @@ const SWEEP: &str = "deals=1,lead=0";
 /// and no search, with greedy's flat weights and no strategy (`strategy=0`; `strategist:strategy=1` is the strategy
 /// player). It differs from greedy in the purge term (`w.purge`), `w.last_node`, the cheap hand terms (`w.hand`,
 /// `w.hand_cost`: a card is worth little until it's played), a building's earnings (`w.card_action`), `w.sink`, the
-/// deck clock off (`w.clock=0`) and its RNG stream; docs/agents.md, *The tiers*, says what each does. Each step's
+/// deck clock off (`w.clock=0`) and its RNG stream; each `Weights` field (`eval.rs`) says what it does. Each step's
 /// screen and fresh read are in its write-up under `experiments/results/`: 157 and 162_judge_purge (the purge term,
 /// clock off), 222_sim_players (`strategy=0`), 245_tune_strategist (hand terms), 249_real_oracle_judge
 /// (`w.card_action`), 257_judge_action_buildings and 258_card_followups (`w.sink` 0.5), 288_agents_followups
@@ -341,7 +341,7 @@ const SWEEP: &str = "deals=1,lead=0";
 /// Escalate, the board rule and a factory's push; `w.lib_clock`: the win clock paces off corrupted cities left),
 /// 303_antimatter_sinks_and_saving (`w.am_cap`, `w.am_idle`: antimatter beyond 1 or the hand's needs is idle).
 const STRATEGIST: &str = "strategy=0,w.built=4,w.built_cost=0.75,w.clock=0,w.energy_cap=0,w.hand=1.5,w.hand_cost=0.15,\
-w.horizon=0,w.insight_income=0,w.movement=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,\
+w.horizon=0,w.insight_income=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,\
 w.tag_hand=0,w.purge=3.6,w.last_node=120,w.card_action=3,w.sink=0.5,w.am_tie=0.6667,w.am_cap=1,w.am_idle=0.2,w.adv_read=1,w.lib_clock=1";
 
 /// A kind's place on the [`LADDER`].

@@ -13,7 +13,7 @@ use super::table;
 
 /// The harms of the ledger, in its row order. 191 (Matt, 2026-11-11): every harm an adversary source can do has a
 /// row; none for insight (not an adversary harm, r82) and none yet for costs raised (paged as a harm, no card).
-pub const HARMS: [&str; 27] = [
+pub const HARMS: &[&str] = &[
     "node destroyed",
     "city lost",
     "facilities destroyed",
@@ -47,7 +47,7 @@ pub const HARMS: [&str; 27] = [
 
 /// The sources of the ledger, in its column order. The first five read
 /// content; `RULE_HARMS` says what the rest do.
-pub const SOURCES: [&str; 11] = [
+pub const SOURCES: &[&str] = &[
     "tier-1 threats",
     "tier-2 threats",
     "Discord cards",
@@ -64,7 +64,7 @@ pub const SOURCES: [&str; 11] = [
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 23] = [
+pub const RULE_HARMS: &[(&str, &str, &str)] = &[
     ("income and Infiltrate", "adversary pieces placed", "every event's Infiltrate X lands `infiltrate_agents` (1; 2 at level 4) on each site of its type, at most `infiltrate_facility_cap` (1) a site from a station, factory or botnet line, not yet the adversary's (275: it replaced Rally and the agent pools; 282: the cap)"),
     ("income and Infiltrate", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
     ("income and Infiltrate", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
@@ -97,40 +97,61 @@ pub const RULE_HARMS: [(&str, &str, &str); 23] = [
     ("troops", "actions or claims blocked", "a corrupted site with a troop on or next to it can't be liberated, by the action or by a card (r141)"),
 ];
 
+/// 304: an entry's index in [`HARMS`] or [`SOURCES`], by name, at compile time: a renamed or removed entry is a
+/// compile error at the constant naming it, never a silent shift.
+const fn at(list: &[&str], name: &str) -> usize {
+    let mut i = 0;
+    while i < list.len() {
+        let (a, b) = (list[i].as_bytes(), name.as_bytes());
+        if a.len() == b.len() {
+            let mut j = 0;
+            while j < a.len() && a[j] == b[j] {
+                j += 1;
+            }
+            if j == a.len() {
+                return i;
+            }
+        }
+        i += 1;
+    }
+    panic!("no such harms-ledger entry")
+}
+
 /// Columns of [`SOURCES`] that read content, for [`harm_marks`].
-const DISCORD_CARDS: usize = 2;
-const ADVERSARY_EVENTS: usize = 3;
-const ADVERSARY_PROJECTS: usize = 4;
+const DISCORD_CARDS: usize = at(SOURCES, "Discord cards");
+const ADVERSARY_EVENTS: usize = at(SOURCES, "adversary events");
+const ADVERSARY_PROJECTS: usize = at(SOURCES, "adversary projects");
 /// The first columns: the threats, by tier (146: no tier 3).
-const THREAT_TIERS: usize = 2;
+const THREAT_TIERS: usize = at(SOURCES, "tier-2 threats") + 1;
+const _: () = assert!(at(SOURCES, "tier-1 threats") == 0, "the threat tiers are the first columns");
 
 /// Rows of [`HARMS`], for [`op_harms`].
-const NODE_DESTROYED: usize = 0;
-const CITY_LOST: usize = 1;
-const FACILITIES_DESTROYED: usize = 2;
-const FACILITIES_CORRUPTED: usize = 3;
-const CREDITS_LOST: usize = 4;
-const ENERGY_LOST: usize = 5;
-const CHIPS_LOST: usize = 6;
-const ANTIMATTER_LOST: usize = 7;
-const CUBES_LOST: usize = 8;
-const CARDS_DISCARDED: usize = 9;
-const AMBASSADORS_LOST: usize = 10;
-const TOKENS_STRIPPED: usize = 11;
-const PROTECTIONS_STRIPPED: usize = 12;
-const PIECES_PUSHED: usize = 13;
-const BLACKED_OUT: usize = 14;
-const PIECES_PLACED: usize = 15;
-const INCOME_RAISED: usize = 16;
-const PROJECTS_ADVANCED: usize = 17;
-const EXTRA_THREATS: usize = 18;
-const CLOCK_SPED_UP: usize = 19;
-const DISCORD_SWAY: usize = 20;
-const UNITY_PULLED: usize = 21;
-const MEGAPROJECT_DENIED: usize = 22;
-const BLOCKED: usize = 24;
-const FALLOUT_PLACED: usize = 25;
-const RESEARCH_ADVANCED: usize = 26;
+const NODE_DESTROYED: usize = at(HARMS, "node destroyed");
+const CITY_LOST: usize = at(HARMS, "city lost");
+const FACILITIES_DESTROYED: usize = at(HARMS, "facilities destroyed");
+const FACILITIES_CORRUPTED: usize = at(HARMS, "facilities corrupted");
+const CREDITS_LOST: usize = at(HARMS, "credits or income lost");
+const ENERGY_LOST: usize = at(HARMS, "energy lost");
+const CHIPS_LOST: usize = at(HARMS, "chips lost");
+const ANTIMATTER_LOST: usize = at(HARMS, "antimatter lost");
+const CUBES_LOST: usize = at(HARMS, "research cubes lost");
+const CARDS_DISCARDED: usize = at(HARMS, "cards discarded");
+const AMBASSADORS_LOST: usize = at(HARMS, "ambassadors lost");
+const TOKENS_STRIPPED: usize = at(HARMS, "tokens stripped from cards");
+const PROTECTIONS_STRIPPED: usize = at(HARMS, "protections stripped");
+const PIECES_PUSHED: usize = at(HARMS, "pieces pushed or reach cut");
+const BLACKED_OUT: usize = at(HARMS, "production blacked out");
+const PIECES_PLACED: usize = at(HARMS, "adversary pieces placed");
+const INCOME_RAISED: usize = at(HARMS, "adversary income raised");
+const PROJECTS_ADVANCED: usize = at(HARMS, "projects advanced (compute)");
+const EXTRA_THREATS: usize = at(HARMS, "extra threats");
+const CLOCK_SPED_UP: usize = at(HARMS, "the clock sped up");
+const DISCORD_SWAY: usize = at(HARMS, "Discord sway");
+const UNITY_PULLED: usize = at(HARMS, "Unity pulled back");
+const MEGAPROJECT_DENIED: usize = at(HARMS, "a megaproject or converter denied");
+const BLOCKED: usize = at(HARMS, "actions or claims blocked");
+const FALLOUT_PLACED: usize = at(HARMS, "Fallout placed");
+const RESEARCH_ADVANCED: usize = at(HARMS, "adversary research advanced");
 
 /// The row a lost resource falls in. Insight is never a harm (r82: `Content::check` refuses one).
 fn lost(r: Resource) -> Vec<usize> {
@@ -457,7 +478,7 @@ fn harm_marks(r: Option<&Rules>) -> BTreeMap<(usize, usize), Mark> {
     }
     let mut out: BTreeMap<(usize, usize), Mark> =
         counts.into_iter().map(|(k, n)| (k, Mark::Count(n))).collect();
-    for (src, harm, _) in RULE_HARMS {
+    for &(src, harm, _) in RULE_HARMS {
         let s = SOURCES.iter().position(|x| *x == src).expect("a source");
         let h = HARMS.iter().position(|x| *x == harm).expect("a harm");
         out.insert((h, s), Mark::Rule);
@@ -625,53 +646,4 @@ fn agent_flow() -> String {
             rows
         )
     )
-}
-
-/// 221: the hand-numbered columns and rows above name the entries they index, so an inserted harm or source that
-/// shifts them fails here rather than moving a ledger mark to the wrong row.
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn each_index_names_its_entry() {
-        let sources = [
-            (DISCORD_CARDS, "Discord cards"),
-            (ADVERSARY_EVENTS, "adversary events"),
-            (ADVERSARY_PROJECTS, "adversary projects"),
-            // A count, not a column: the threat tiers are the first THREAT_TIERS columns.
-            (THREAT_TIERS - 1, "tier-2 threats"),
-        ];
-        for (i, name) in sources {
-            assert_eq!(SOURCES[i], name, "SOURCES[{i}]");
-        }
-        let harms = [
-            (NODE_DESTROYED, "node destroyed"),
-            (CITY_LOST, "city lost"),
-            (FACILITIES_DESTROYED, "facilities destroyed"),
-            (FACILITIES_CORRUPTED, "facilities corrupted"),
-            (CREDITS_LOST, "credits or income lost"),
-            (ENERGY_LOST, "energy lost"),
-            (CHIPS_LOST, "chips lost"),
-            (ANTIMATTER_LOST, "antimatter lost"),
-            (CUBES_LOST, "research cubes lost"),
-            (CARDS_DISCARDED, "cards discarded"),
-            (AMBASSADORS_LOST, "ambassadors lost"),
-            (TOKENS_STRIPPED, "tokens stripped from cards"),
-            (PROTECTIONS_STRIPPED, "protections stripped"),
-            (BLACKED_OUT, "production blacked out"),
-            (PIECES_PLACED, "adversary pieces placed"),
-            (INCOME_RAISED, "adversary income raised"),
-            (PROJECTS_ADVANCED, "projects advanced (compute)"),
-            (EXTRA_THREATS, "extra threats"),
-            (CLOCK_SPED_UP, "the clock sped up"),
-            (DISCORD_SWAY, "Discord sway"),
-            (UNITY_PULLED, "Unity pulled back"),
-            (BLOCKED, "actions or claims blocked"),
-            (FALLOUT_PLACED, "Fallout placed"),
-        ];
-        for (i, name) in harms {
-            assert_eq!(HARMS[i], name, "HARMS[{i}]");
-        }
-    }
 }

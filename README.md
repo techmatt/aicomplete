@@ -106,7 +106,8 @@ in `crates/aic-core/src/lib.rs` (`python scripts/regen.py` copies it into `docs/
 `python scripts/regen.py --golden` sets all five from the source, `aic-sim show` and a `golden_game` run. The
 fingerprint covers the config and the final state less its measures (`stats`): a rename, or a param added or removed, that
 plays the same moves it with no bump; a new counter doesn't. `GOLDEN_CONTENT_HASH` (wasm-smoke `GOLDEN_CONTENT`) pins the content hash over
-raw bytes: a content-only edit moves it, with no bump unless play changes. By hand: set it first, from `regen.py`'s
+raw bytes: a content-only edit (a text too) moves it, with no bump unless play changes: settle content before
+`regen.py --golden`. By hand: set it first, from `regen.py`'s
 "content hash" line; then a `golden_game` run (revision and fingerprint are checked as a pair before the hash) gives
 the fingerprint: the failing assertion's left side. Copy both, never type them.
 A new phase goes in `configs/baseline.json`'s `round` list and in every lab test config that lists its neighbor
@@ -114,7 +115,8 @@ A new phase goes in `configs/baseline.json`'s `round` list and in every lab test
 
 **This machine.**
 
-- Content and `configs/agents/` are compiled into `aic-sim` (`include_str!`): a `values.json` edit needs a rebuild.
+- Content and `configs/agents/` are compiled into `aic-sim` (`include_str!`): a content or `values.json` edit needs a rebuild
+  (`aic-sim docs` on a stale binary prints the old faces; `regen.py` builds first).
   Game configs are read from the working directory, so an old binary runs from an old tree:
   `git archive <rev> configs | tar -x -C out/old`.
 - A fresh worktree has no `web/node_modules`: `npm ci` in `web/` (~1 min) before `npm run cards:fit`.

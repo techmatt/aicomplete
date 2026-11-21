@@ -539,7 +539,7 @@ fn project_ops_reach_as_declared() {
         let botnets = m.countries[c].hexes.iter().filter(|&&h| rich.tokens(h, BOTNET) > 0).count();
         assert!(botnets >= 2, "country {c}: {botnets} botnets");
     }
-    // An income rise is one number: compute is kept times the countries (`rally::increase_income`).
+    // An income rise is one number: compute is kept times the countries (`lines::increase_income`).
     {
         use crate::modules::adversary::INCOME_COMPUTE;
         let mut g = rich.clone();

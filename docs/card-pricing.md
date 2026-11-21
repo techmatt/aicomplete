@@ -53,7 +53,7 @@ moves when any other card changes: to reprice an edited card, move its price by 
   disagrees, the anchor wins for the price and the table stays the agents': since 283 `values.json` reads the
   resources, a drawn card and a tier-2 horizon at the anchors (the keep moved with insight: 2.67 and 6.93, its
   expected 2.6 insight at tier 2, not the anchor's 8), but an ambassador removed about 1.47 and a
-  troop 7.33 (3.33 each) and a project discard 5.33 (about 16 at 1.33 a compute): at the anchors those lost play. Every credit number is r127's ÷ 1.5 since r128 (273). The recipe and fit below are the agents' view and the effect ledger's.
+  troop removed 7.33 a troop (the unit anchor: 3.33) and a project discard 5.33 (about 16 at 1.33 a compute): at the anchors those lost play. Every credit number is r127's ÷ 1.5 since r128 (273). The recipe and fit below are the agents' view and the effect ledger's.
 - **Tier is power** (ruling 4): costs and effects go up a lot with tier, few cards cost 0, and tier is not a proxy for
   cost.
 - **The recipe:** value the effect at the rates; then credits = value − the keep (`rates.keep_tier1`, `keep_tier2`) −

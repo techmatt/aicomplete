@@ -35,12 +35,9 @@ const AMBASSADOR = '<circle cx="12" cy="6" r="4.2" fill="currentColor"/><path d=
 // 179 (Matt, friction #33): the adversary's agent has a figure of its own, as the map draws it: a
 // brimmed hat over the head and a collar cut into the coat (web/src/board.ts, `ambassador:adversary`).
 const AGENT = '<path d="M8.300 4.600 9 1.300h6l.7 3.300h3.100v1.700H5.200V4.600z" fill="currentColor"/><circle cx="12" cy="9.200" r="3.300" fill="currentColor"/><path fill-rule="evenodd" d="M4 22.500c0-6.800 3-9.800 8-9.800s8 3 8 9.800zM10.300 13.200 12 17.600l1.700-4.400z" fill="currentColor"/>';
-// 179: the corp's troop, the Drone: the map's rank chevrons (`unit`).
-const DRONE = '<path d="M2.500 10.500 12 3l9.500 7.500v4L12 7 2.500 14.500zM2.500 17.500 12 10l9.500 7.500v4L12 14l-9.500 7.500z" fill="currentColor"/>';
 const PIECES = {
   ambassador: AMBASSADOR,
   agent: AGENT,
-  drone: DRONE,
   node: fill('M12 2 4 8.500V22h16V8.500zM9.500 13h5v9h-5z'),
   // A placement that pays no track step: the node, a coin struck through at its shoulder.
   factory: fill('M3 22V10l6 4v-4l6 4V3h6v19z'),

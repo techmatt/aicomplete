@@ -543,24 +543,6 @@ fn a_strike_taking_a_seats_last_node_ends_the_game() {
     assert!(!o.won && o.reason == "node", "{o:?}");
 }
 
-/// r144 (`board.strike_home` 1, the gated rider): a striking troop also sends one player ambassador on or next to
-/// it back to its owner's supply, with or without a piece to destroy; off, ambassadors stay.
-#[test]
-fn a_strike_sends_home_an_ambassador_by_the_troop_when_the_rider_is_on() {
-    for (on, home) in [("board.strike_home=0", 0), ("board.strike_home=1", 1)] {
-        let (rules, mut g) = lab_with(&[], &[on]);
-        let m = &rules.map;
-        let t = (0..m.hexes.len()).find(|&h| land(m, h) && m.hexes[h].country == 0).unwrap();
-        let x = m.hexes[t].neighbors.iter().copied().find(|&h| land(m, h)).unwrap();
-        put(&mut g, t, TROOP, 1);
-        put(&mut g, x, ambassador(0), 1);
-        let supply = g.resource(0, Resource::Ambassadors);
-        strike(&rules, &mut g);
-        assert_eq!((g.tokens(x, ambassador(0)), g.resource(0, Resource::Ambassadors) - supply), (1 - home, home), "{on}");
-        assert_eq!(counter(&g, "board.troop_sent_home"), home);
-    }
-}
-
 /// A protection absorbs a troop's hit as it does any destruction: hardening is spent, the piece and the troop
 /// both stay. (The owner's ambassador: `ambassadors.rs`.)
 #[test]

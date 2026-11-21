@@ -98,8 +98,8 @@ fn no_corrupted_city_wins_whatever_else_remains() {
         assert_eq!(won, wins, "{tips} tips, rule {rule}, stage {stage}, a corrupted city left: {city_left}");
         assert_eq!(g.is_over(), wins);
         let w = rules.world();
-        assert_eq!(adversary::under_bar(&w, &g), !city_left);
-        assert_eq!(adversary::purge_count(&w, &g), city_left as i64);
+        assert_eq!(adversary::no_corrupted_city(&w, &g), !city_left);
+        assert_eq!(adversary::corrupted_city_count(&w, &g), city_left as i64);
         // The view's win line is the corrupted cities; the purge bar is gone.
         let v = rules.view(&g);
         assert!(v.globals.iter().all(|x| x.key != "alignment.bar"));
