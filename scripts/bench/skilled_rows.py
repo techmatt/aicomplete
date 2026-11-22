@@ -14,11 +14,11 @@ state (`all_losses`).
 
 - `real` (249): the real oracle, the fair-information player (Matt, 155, amendment 6814): the oracle's search on
   worlds sampled from what players can see (`worlds`), never the true table, and no restarts. The design target: very
-  strong play that can't see the future. The `real` alias: on the judge's evaluation as it stands (`STRATEGIST`,
-  314); the row runs it at `budget=128` (4x the lines a round), the fair-information yardstick (Matt, Nov 21: 314's
-  strongest fair player, ~330 s a game). At the alias's default budget it read at the judge (80.0 vs 78.3% d0-d4,
-  249). Built on the
-  judge, so `aic-sim agree` against it does not guide judge tuning (docs/rulings.md, *The judge*).
+  strong play that can't see the future. The row is the fair-information yardstick (docs/rulings.md, *The oracles*):
+  316's strongest fair player, the real oracle's search (4 worlds, 3 alternatives, answers one prompt deep) on the
+  engine's evaluation (`strategy=1`) with 128 lines a round: 89% at d4 on fresh seeds at r152, +22 over the judge's
+  eval at the same lines (`real:budget=128`, 315's yardstick), ~85-340 native s a game (d0-d2 to d3-d4). The `real`
+  alias stays the search on the judge's evaluation.
 """
 import argparse
 import json
@@ -27,10 +27,10 @@ import os
 
 ROWS = {
     "oracle": "oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1,tries=3",
-    # 314: the `real` alias, the search on the judge's evaluation as it stands (`STRATEGIST`, agents/mod.rs); 249
-    # pinned the judge's weights of its day (w.purge 3.6, before `w.card_action` and `w.sink`). 315: 4x the lines a
-    # round (`budget=128`), the fair-information yardstick (Matt, Nov 21; 314's strongest fair player).
-    "real": "real:budget=128",
+    # 316: the fair-information yardstick, the real oracle's search on the engine's evaluation at 128 lines a round
+    # (89% at d4 on fresh set C, r152). It replaced 315's `real:budget=128` (the judge's eval: 67% on the same seeds);
+    # 256 lines read no better (81%).
+    "real": "oracle:strategy=1,worlds=4,alts=3,answers=1,truth=1,budget=128",
 }
 
 

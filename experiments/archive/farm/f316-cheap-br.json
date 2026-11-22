@@ -1,0 +1,30 @@
+{
+  "name": "f316-cheap-br",
+  "note": "316: greedy, the judge and the full oracle; pair br, d0-d4, fresh set C (12 seeds from 52222).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "greedy",
+    "strategist",
+    "oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1,tries=3"
+  ],
+  "games": 12,
+  "first_seed": 52222,
+  "records": 0
+}

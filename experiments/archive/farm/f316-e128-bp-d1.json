@@ -1,0 +1,22 @@
+{
+  "name": "f316-e128-bp-d1",
+  "note": "316: row 1: the engine's eval with 128 lines a round; pair bp, d1, fresh set C (8 seeds from 52210).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    }
+  ],
+  "difficulties": [
+    1
+  ],
+  "agents": [
+    "oracle:strategy=1,worlds=4,alts=3,answers=1,truth=1,budget=128"
+  ],
+  "games": 8,
+  "first_seed": 52210,
+  "records": 0
+}

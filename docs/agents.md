@@ -148,7 +148,7 @@ agent would misread (`policy::check_param`) is refused with the reason.
 | The judge | `strategist` | the per-level bands ([principles.md](principles.md)) |
 | A strategy player, information; spot checks | `strategist:strategy=1`; `planner:strategy=1` | none |
 | A skilled player with full information (it sees hidden cards: never a fair player) | `oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1,tries=3` | d4 95 |
-| **The real oracle**: very strong play that can't see the future (the design target) | `real` (on the judge's eval); 314's strongest: `real:budget=128` | none yet |
+| **The real oracle**: very strong play that can't see the future (the design target) | `real` (the judge's eval); the yardstick, `skilled_rows.py`'s `real` row: the engine's eval, 128 lines (316) | none yet |
 
 After a change to how the game is won, smoke greedy beside the strategist: a
 greedy lead means the engine weights still encode the old win. A strategy pairing's win rate (`strat0`,

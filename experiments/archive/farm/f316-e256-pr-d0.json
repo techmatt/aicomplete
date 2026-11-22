@@ -1,0 +1,24 @@
+{
+  "name": "f316-e256-pr-d0",
+  "note": "316: row 2: the engine's eval with 256 lines a round; pair pr, d0, fresh set C (8 seeds from 52234).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "oracle:strategy=1,worlds=4,alts=3,answers=1,truth=1,budget=256"
+  ],
+  "games": 8,
+  "first_seed": 52234,
+  "records": 0
+}

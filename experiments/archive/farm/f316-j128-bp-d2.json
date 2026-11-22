@@ -1,0 +1,22 @@
+{
+  "name": "f316-j128-bp-d2",
+  "note": "316: the judge's eval with 128 lines a round (314's strongest, the yardstick); pair bp, d2, fresh set C (8 seeds from 52210).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "real:budget=128"
+  ],
+  "games": 8,
+  "first_seed": 52210,
+  "records": 0
+}

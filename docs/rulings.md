@@ -38,9 +38,10 @@ planner's, outside this repo.
   (`aic-sim agree`) guides tuning only against an oracle not built on the judge.
 - **The oracles** (`scripts/bench/skilled_rows.py`): the full oracle (its keeps from the engine's keep plan, never
   its search) proves a seed winnable; short of 95 is a direction for buffs, not a blocker. The real oracle
-  (`oracle:worlds=K`, sampled hidden information) reads at the judge's level: at r151 the full oracle's edge is
-  mostly search effort (lines a round) and eval, restarts about 10 points (314). The fair-information yardstick is
-  `real:budget=128` (Matt, Nov 21), `skilled_rows.py`'s `real` row.
+  (`oracle:worlds=K`, sampled hidden information) at 32 lines a round on the judge's eval reads at the judge's level;
+  the full oracle's edge is mostly search effort (lines a round, to 128) and eval, restarts about 10 points (314, 316). The fair-information yardstick is
+  the real oracle's search on the engine's eval with 128 lines a round (316: 89% at d4 on fresh seeds, +22 over
+  `real:budget=128`; 256 lines no better), `skilled_rows.py`'s `real` row (Matt, amendment 14593).
 - **Remote workers:** speed over bit-exactness unless the gain is trivial; paired reads pair same-engine seeds.
 
 ## Measures

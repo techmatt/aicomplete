@@ -49,7 +49,8 @@
 //!   proves the seed winnable and is followed ([`oracle`]). A measuring
 //!   stick for a skilled player, opt in.
 //! - `real` (314): an alias, the real oracle: the oracle's search on sampled worlds ([`REAL`]) on the judge's
-//!   evaluation as it stands ([`STRATEGIST`]), so the fair-information yardstick moves with the judge.
+//!   evaluation as it stands ([`STRATEGIST`]). The fair-information yardstick (316) is the same search on the
+//!   engine's evaluation at 128 lines a round: `scripts/bench/skilled_rows.py`'s `real` row.
 //!
 //! `greedy`, `engine` and `planner` keep by plan: [`policy::Policy`] wraps them, decides
 //! their keeps, applies the dominance checks' forced behaviors and the agent behaviors
@@ -353,7 +354,8 @@ reach_rule=1";
 
 /// `real` (314), the real oracle's search (249): 4 sampled worlds, 3 alternatives a decision, 32 lines a round,
 /// answers one prompt deep, its lines scoring their own world. On [`STRATEGIST`]'s evaluation, so it tracks the
-/// judge (249 pinned the judge's weights of its day; `scripts/bench/skilled_rows.py`'s `real` row).
+/// judge (249 pinned the judge's weights of its day). `scripts/bench/skilled_rows.py`'s `real` row is this search on
+/// the engine's evaluation at 128 lines (316).
 const REAL: &str = "worlds=4,alts=3,budget=32,answers=1,truth=1";
 
 /// A kind's place on the [`LADDER`].
