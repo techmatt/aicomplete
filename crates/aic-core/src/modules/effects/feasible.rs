@@ -172,14 +172,14 @@ fn feasible_aimed(
             | Op::DestroyFacility { .. } | Op::DisableBuilding { .. } | Op::Discard { .. }
             | Op::LoseAmbassadorsOr { .. } | Op::LoseIncome { .. } | Op::LoseOr { .. }
             | Op::Strike | Op::Redeploy | Op::OccupyFactory { .. } | Op::PlaceBotnet { .. } | Op::CorruptFactory
-            | Op::Theft { .. } | Op::TeamIncome { .. } | Op::FreePurchases { .. } | Op::CounterAll
-            | Op::Pushback { .. } | Op::DealThreats { .. } | Op::Create { .. } | Op::CreateSite { .. }
+            | Op::Theft { .. } | Op::TeamIncome { .. } | Op::FreePurchases { .. }
+            | Op::DealThreats { .. } | Op::Create { .. } | Op::CreateSite { .. }
             | Op::Infiltrate { .. } | Op::Escalate { .. }
-            | Op::IncreaseIncome { .. } | Op::AdversaryResearch { .. } | Op::RemoveBotnets { .. }
+            | Op::IncreaseIncome { .. } | Op::AdversaryResearch { .. }
             | Op::BotnetTroops { .. }
             | Op::SpreadBotnets { .. } | Op::TakeSite { .. } | Op::FactoryTroops { .. } | Op::AgentsOnNodes { .. }
             | Op::RecallAmbassadors | Op::StripCubes { .. } | Op::StripHarden | Op::Fallout { .. }
-            | Op::Clock { .. } | Op::OnePlayer { .. } | Op::PerSite { .. } | Op::RemoveWhere { .. }
+            | Op::Clock { .. } | Op::PerSite { .. } | Op::RemoveWhere { .. }
             | Op::Prohibit { .. } | Op::Floor { .. } | Op::StandingTroopsBonus { .. } | Op::ThreatCompute { .. } | Op::Income { .. }
             | Op::IncomePerTag { .. } | Op::BuildingDiscount { .. } | Op::CardDiscount { .. } | Op::When { .. }
             | Op::Threshold { .. } | Op::Slots { .. } | Op::Logistics { .. } | Op::ProjectDrain { .. }

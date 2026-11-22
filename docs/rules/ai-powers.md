@@ -42,14 +42,14 @@ next to it where printed. `Content::check` holds powers to the cards' check and 
 | Builder | Scrap II | Scrap, tier II | 2 Industry | gain 1 chip; play a building from your hand, paying no credits |
 | Builder | Overcharge I | Overcharge, tier I | 1 Power | gain 2 energy |
 | Builder | Overcharge II | Overcharge, tier II | 2 Power | gain 2 energy and 1 antimatter |
-| Builder | Fortify I | Fortify, tier I | 1 chip | Target: Troops. Remove 1 Troop on it |
+| Builder | Fortify I | Fortify, tier I | 1 chip | Target: Agents or Troops. Remove up to 1 Troop and up to 2 Agents on it |
 | Builder | Fortify II | Fortify, tier II | 2 chips | Target: Troops. Remove up to 2 Troops on it; harden a facility on or next to it |
 | Protector | Outpost | node power | 2 energy | place 1 Node within 2 of yours; gain 2 credits |
 | Protector | Accord | node power | 3 energy | place 1 Node; gain 1 ambassador |
 | Protector | Levy | node power | nothing | place 1 Node; gain 1 credit |
 | Protector | Patrol I | Patrol, tier I | 1 energy | Target: Agents or Troops. Push up to 3 from it, each to a hex next to it |
 | Protector | Patrol II | Patrol, tier II | 2 energy | Target: Agents or Troops. Push up to 3 from it, each to a hex next to it; harden a facility on or next to it |
-| Protector | Interdict I | Interdict, tier I | 1 Security | Target: Troops. Remove up to 2 on it |
+| Protector | Interdict I | Interdict, tier I | 1 Security | Target: Agents or Troops. Remove up to 2 Troops and up to 1 Agent on it |
 | Protector | Interdict II | Interdict, tier II | 2 Security | Target: Agents or Troops. Remove up to 2 Troops and up to 2 Agents on it; draw 1 card |
 | Researcher | Peer Review | node power | 2 insight | place 1 Node; gain 1 research cube |
 | Researcher | Field Survey | node power | nothing | place 1 Node; draw 1 card |
@@ -76,9 +76,9 @@ bought at a thinner margin than the free one, never instead of it. Once a round 
 cap them all.
 
 **Sacrifice is late-game liquidation.** Once the cards needing a tag are played, its tags turn into engine rewards,
-each payoff priced to be worth the card: 1 chip (Scrap I), 2 energy (Overcharge I), up to 2 troops removed on a
-target (Interdict I and Hack I); tier II pays a second tag for more: a free building (Scrap II), an antimatter
-(Overcharge II), agents and a card (Interdict II), compute (Hack II).
+each payoff priced to be worth the card: 1 chip (Scrap I), 2 energy (Overcharge I), up to 2 troops and an agent
+removed on a target (Interdict I), up to 2 troops in a country (Hack I); tier II pays a second tag for more: a free
+building (Scrap II), an antimatter (Overcharge II), more agents and a card (Interdict II), compute (Hack II).
 
 **Each power's tag is its story.** A tag-paid power is paid in the tag its effect fits
 (the tag table is below): the Protector's Interdict in Security (force, protection). The one exception is the
@@ -89,11 +89,13 @@ Lab (with 2 Science, 1 insight → a card) is its draw outlet; Field Survey and 
 The Builder has no draw power: its cards are its draw.
 
 **Troop powers.** Troops guard corrupted sites from liberation and strike on a Strike icon
-([troops.md](troops.md)). Each board removes or stops troops its own way, no two alike: the
-Protector's **Interdict** (Security: up to 2 troops on its target; tier II agents too) beside its Patrol (pushes
-them away); the Builder's **Fortify** (chips: 1 troop on its target, tier II up to 2 and a facility hardened); the
+([troops.md](troops.md)). Each board removes or stops troops its own way, paid in its own resource: the
+Protector's **Interdict** (Security: up to 2 troops and 1 agent on its target; tier II 2 agents and a card) beside
+its Patrol (pushes them away); the Builder's **Fortify** (chips: tier I up to 1 troop and 2 agents on its target,
+tier II up to 2 troops and a facility hardened); the
 Researcher's **Hack** (Cyber: up to 2 troops in one country, no reach needed). The standard action Remove a troop
-(`troop_credits` 7 credits, `troop_per_round` once a round) is the hedge.
+(`troop_credits` 7 credits, `troop_per_round` once a round) is the hedge. Fortify I and Interdict I take agents too:
+troops are rare until d3, so a troop-only tier I sat unused.
 
 **Antimatter.** The steady source is the tier-2 converter plants ([economy.md](economy.md)); the Builder's
 Overcharge II (2 Power tags) adds one, and the Protector's and Researcher's capstones pay 2 once. No power spends

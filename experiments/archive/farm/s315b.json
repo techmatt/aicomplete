@@ -1,0 +1,131 @@
+{
+  "name": "s315b",
+  "note": "315's second screen, on s315's seeds 52162-52209 (its base arm is s315's): the cleanse cards two ways (Back-Channel Talks without its Unity rider at 7, or with it at 10), the income cards and Field Grant, Fortify I on agents; the judge, d0-d4.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-cleansea",
+      "set": [
+        "cards.back_channel_talks.effects=[{\"op\": \"target\", \"on\": \"corrupted_factory\"}, {\"op\": \"cleanse\", \"amount\": 2, \"one_country\": false, \"only\": \"factory\", \"at\": \"near\"}]",
+        "cards.station_prefab_order.cost=9",
+        "cards.nuclear_option.cost=2",
+        "cards.great_liberation.effects.1.amount=4"
+      ]
+    },
+    {
+      "name": "br-cleansea",
+      "set": [
+        "ai.boards=0,2",
+        "cards.back_channel_talks.effects=[{\"op\": \"target\", \"on\": \"corrupted_factory\"}, {\"op\": \"cleanse\", \"amount\": 2, \"one_country\": false, \"only\": \"factory\", \"at\": \"near\"}]",
+        "cards.station_prefab_order.cost=9",
+        "cards.nuclear_option.cost=2",
+        "cards.great_liberation.effects.1.amount=4"
+      ]
+    },
+    {
+      "name": "pr-cleansea",
+      "set": [
+        "ai.boards=1,2",
+        "cards.back_channel_talks.effects=[{\"op\": \"target\", \"on\": \"corrupted_factory\"}, {\"op\": \"cleanse\", \"amount\": 2, \"one_country\": false, \"only\": \"factory\", \"at\": \"near\"}]",
+        "cards.station_prefab_order.cost=9",
+        "cards.nuclear_option.cost=2",
+        "cards.great_liberation.effects.1.amount=4"
+      ]
+    },
+    {
+      "name": "bp-cleanseb",
+      "set": [
+        "cards.back_channel_talks.cost=10",
+        "cards.station_prefab_order.cost=9",
+        "cards.nuclear_option.cost=2",
+        "cards.great_liberation.effects.1.amount=4"
+      ]
+    },
+    {
+      "name": "br-cleanseb",
+      "set": [
+        "ai.boards=0,2",
+        "cards.back_channel_talks.cost=10",
+        "cards.station_prefab_order.cost=9",
+        "cards.nuclear_option.cost=2",
+        "cards.great_liberation.effects.1.amount=4"
+      ]
+    },
+    {
+      "name": "pr-cleanseb",
+      "set": [
+        "ai.boards=1,2",
+        "cards.back_channel_talks.cost=10",
+        "cards.station_prefab_order.cost=9",
+        "cards.nuclear_option.cost=2",
+        "cards.great_liberation.effects.1.amount=4"
+      ]
+    },
+    {
+      "name": "bp-income",
+      "set": [
+        "cards.cryptojacking_campaign.effects.0.amount=8",
+        "cards.multiyear_defense_budget.effects.0.amount=6",
+        "cards.field_grant.insight=1",
+        "cards.field_grant.effects=[{\"op\": \"gain\", \"resource\": \"research_cubes\", \"amount\": 3}, {\"op\": \"draw\", \"count\": 1}]"
+      ]
+    },
+    {
+      "name": "br-income",
+      "set": [
+        "ai.boards=0,2",
+        "cards.cryptojacking_campaign.effects.0.amount=8",
+        "cards.multiyear_defense_budget.effects.0.amount=6",
+        "cards.field_grant.insight=1",
+        "cards.field_grant.effects=[{\"op\": \"gain\", \"resource\": \"research_cubes\", \"amount\": 3}, {\"op\": \"draw\", \"count\": 1}]"
+      ]
+    },
+    {
+      "name": "pr-income",
+      "set": [
+        "ai.boards=1,2",
+        "cards.cryptojacking_campaign.effects.0.amount=8",
+        "cards.multiyear_defense_budget.effects.0.amount=6",
+        "cards.field_grant.insight=1",
+        "cards.field_grant.effects=[{\"op\": \"gain\", \"resource\": \"research_cubes\", \"amount\": 3}, {\"op\": \"draw\", \"count\": 1}]"
+      ]
+    },
+    {
+      "name": "bp-fortag",
+      "set": [
+        "ais.builder.powers.7.text=Target: Agents or Troops. Remove up to 1 Troop and up to 2 Agents on it",
+        "ais.builder.powers.7.effects=[{\"op\": \"target\", \"on\": \"adversary\"}, {\"op\": \"damage\", \"troops\": 1}, {\"op\": \"damage\", \"ambassadors\": 2}]"
+      ]
+    },
+    {
+      "name": "br-fortag",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.powers.7.text=Target: Agents or Troops. Remove up to 1 Troop and up to 2 Agents on it",
+        "ais.builder.powers.7.effects=[{\"op\": \"target\", \"on\": \"adversary\"}, {\"op\": \"damage\", \"troops\": 1}, {\"op\": \"damage\", \"ambassadors\": 2}]"
+      ]
+    },
+    {
+      "name": "pr-fortag",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.powers.7.text=Target: Agents or Troops. Remove up to 1 Troop and up to 2 Agents on it",
+        "ais.builder.powers.7.effects=[{\"op\": \"target\", \"on\": \"adversary\"}, {\"op\": \"damage\", \"troops\": 1}, {\"op\": \"damage\", \"ambassadors\": 2}]"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 48,
+  "records": 0
+}

@@ -136,6 +136,7 @@
           "station_freed": 1,
           "sway": "alignment.free_facility"
         },
+        "priced_in": ["sway"],
         "outcome": "neutral",
         "narrative": "trust"
       },
@@ -150,6 +151,7 @@
           "factory_freed": 1,
           "sway": "alignment.free_facility"
         },
+        "priced_in": ["sway"],
         "outcome": "neutral",
         "narrative": "trust"
       },
@@ -208,8 +210,8 @@
       "set_from": {},
       "independent": {
         "botnet": "252: the median card for the job's unit price (design_check_jobs.json's Take down a botnet cards: 14, 15, 16 at r127; 273: ÷ 1.5), no action's price",
-        "station_freed": "248's price table: a corrupted station freed, a cube a round both ways (values.json's cleanse_station, 10; 312: + 2 Unity at rates.sway, 15.333)",
-        "factory_freed": "248's price table: a corrupted factory freed (values.json's cleanse, 4; 312: + 2 Unity at rates.sway, 9.333)",
+        "station_freed": "248's price table: a corrupted station freed, a cube a round both ways (values.json's cleanse_station, 10; 312: + 2 Unity at rates.sway, 15.333; 315: so Liberate's station row prices its own 2 Unity in, `priced_in`, as the city's: 312 counted them twice, 1.29)",
+        "factory_freed": "248's price table: a corrupted factory freed (values.json's cleanse, 4; 312: + 2 Unity at rates.sway, 9.333; 315: Liberate's factory row prices its 2 Unity in)",
         "land_token": "210: 3 rounds of a face-up token's 1 Discord, a sway 4 each",
         "node": "206: values.json's node, 8",
         "factory": "206: +1 chip income, 19",
@@ -321,7 +323,7 @@
       {"key": "power:protector:Interdict II", "role": "sacrifice", "band": [0.05, 2.0], "why": "276: a tier II (2 Security), Debrief's agents and card beside Interdict's troops"},
       {"key": "power:researcher:Hack I", "role": "troop-response"},
       {"key": "power:researcher:Hack II", "role": "sacrifice", "band": [0.05, 2.0], "why": "276: a tier II (2 Cyber), Audit's compute beside Disrupt's troops"},
-      {"key": "standard:move", "name": "Move an ambassador", "role": "staple"},
+      {"key": "standard:move", "name": "Move an ambassador", "role": "staple", "band": [0.1, 2.0], "why": "315 (Matt, message 14555): the ambassador's own action and Liberate's approach (move in, then act), not an economy staple: 1.37 a seat-round at r151, d0-d4"},
       {"key": "standard:insight", "name": "Turn a cube into insight", "role": "hedge", "why": "252 (Matt's ruling 5) taxed it; 253 (amendment 11525): 1 cube an insight, once a round (2.5 for 3 at the anchors), a fallback under the cards"},
       {"key": "standard:remove", "name": "Remove agents", "role": "hedge", "why": "228 (Matt, 2026-11-13: standard actions are poorly priced hedges, never the better route): 2 ambassadors for 3 agents (0.94) from r100; 1.4-1.6 a seat-game at 1 ambassador, 0.4 at 2"},
       {"key": "standard:station", "name": "Build a research station", "role": "hedge", "why": "252 (Matt's ruling 2): 2 chips, a station making 1 cube a round: a fallback under the cards"},

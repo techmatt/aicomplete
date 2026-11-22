@@ -179,7 +179,7 @@ fn all_harms(ops: &[Op]) -> Vec<usize> {
 fn op_harms(op: &Op) -> Vec<usize> {
     match op {
         // 167: "for each X (at most N)": the harms of what it repeats.
-        Op::PerSite { then, .. } | Op::OnePlayer { then } | Op::Floor { then } => all_harms(then),
+        Op::PerSite { then, .. } | Op::Floor { then } => all_harms(then),
         Op::LoseOr { options } => all_harms(options),
         Op::EachDestroyNode { .. } | Op::DestroyNode { .. } | Op::LoseNodeOr { .. } => vec![NODE_DESTROYED],
         Op::PlayersLose { resource, .. } | Op::LoseIncome { resource, .. } => lost(*resource),
@@ -332,9 +332,6 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::Reuse
         | Op::DiscardHand { .. }
         | Op::FreePurchases { .. }
-        | Op::CounterAll
-        | Op::Pushback { .. }
-        | Op::RemoveBotnets { .. }
         | Op::RemoveWhere { .. }
         | Op::Prohibit { .. }
         | Op::Income { .. }

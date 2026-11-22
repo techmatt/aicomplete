@@ -313,11 +313,11 @@
     {
      "name": "Fortify I (Builder)",
      "units": 1,
-     "other": 0,
+     "other": "1.5 * agent",
      "use": "chip",
-     "note": "276: 1 chip: 1 troop on the target",
+     "note": "315: 1 chip: up to 1 troop and up to 2 agents on the target (about 1.5 agents a use, unmeasured)",
      "power": true,
-     "seen": "71936d3e26"
+     "seen": "91bd85bdb8"
     },
     {
      "name": "Fortify II (Builder)",
@@ -779,10 +779,10 @@
     {
      "name": "Great Liberation",
      "units": 1,
-     "other": "2 * station_freed",
+     "other": "3 * station_freed",
      "use": 0,
-     "note": "+2 more corrupted sites (stations 30; cities: 23 a city)",
-     "seen": "25e74da997"
+     "note": "315: +3 more corrupted sites (was 2; read at a station's, as before)",
+     "seen": "1113cf0b3f"
     },
     {
      "name": "Popular Uprising",

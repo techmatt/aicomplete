@@ -121,21 +121,6 @@ pub(super) fn destroy_nearest_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, co
     Ok(())
 }
 
-pub(super) fn remove_botnets(g: &mut GameState, cx: &mut Cx, count: i64) -> Res {
-    let w = cx.world;
-    for _ in 0..count {
-        let botnets: Vec<usize> = (0..g.hexes.len())
-            .filter(|&h| g.tokens(h, BOTNET) > 0)
-            .collect();
-        let opts = botnets.iter().map(|&h| hex_opt(&w, h)).collect();
-        let Some(i) = cx.choose(0, "Remove the botnet in which hex?", opts)? else {
-            break;
-        };
-        adversary::remove_botnet(g, cx, botnets[i]);
-    }
-    Ok(())
-}
-
 
 /// 195: the hexes of country `c`, lowest-numbered first (a project's tie-break).
 fn by_number(w: &World, c: usize) -> Vec<usize> {

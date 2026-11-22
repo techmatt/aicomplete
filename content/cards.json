@@ -689,7 +689,7 @@
   "name": "Reclamation Crew",
   "tier": 1,
   "kind": "program",
-  "cost": 8,
+  "cost": 9,
   "insight": 0,
   "tags": [
    "industry",
@@ -2262,7 +2262,7 @@
   "name": "Back-Channel Talks",
   "tier": 1,
   "kind": "program",
-  "cost": 7,
+  "cost": 10,
   "insight": 0,
   "tags": [
    "diplomacy"
@@ -2429,7 +2429,7 @@
    },
    {
     "op": "cleanse",
-    "amount": 3,
+    "amount": 4,
     "one_country": false,
     "cities": true,
     "at": "country"
@@ -3406,7 +3406,7 @@
   "tier": 1,
   "kind": "program",
   "cost": 6,
-  "insight": 0,
+  "insight": 1,
   "tags": [
    "science"
   ],
@@ -3415,6 +3415,10 @@
     "op": "gain",
     "resource": "research_cubes",
     "amount": 3
+   },
+   {
+    "op": "draw",
+    "count": 1
    }
   ]
  },
@@ -3450,7 +3454,7 @@
   "name": "The Nuclear Option",
   "tier": 2,
   "kind": "event",
-  "cost": 0,
+  "cost": 2,
   "antimatter": 1,
   "insight": 0,
   "tags": [
@@ -3998,7 +4002,7 @@
    {
     "op": "production",
     "resource": "credits",
-    "amount": 5
+    "amount": 8
    }
   ],
   "energy": 2
@@ -4438,7 +4442,7 @@
    {
     "op": "production",
     "resource": "credits",
-    "amount": 5
+    "amount": 7
    },
    {
     "op": "production",

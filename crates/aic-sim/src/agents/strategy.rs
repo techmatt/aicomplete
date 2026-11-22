@@ -150,11 +150,9 @@ fn op_categories(all: &[&Op], c: &mut [bool; CATEGORIES.len()]) {
                 | Op::DamageCountry { .. }
                 | Op::DestroyAll
                 | Op::RemoveBotnet
-                | Op::RemoveBotnets { .. }
                 | Op::RemoveAmbassadorsCountry { .. }
                 | Op::RemoveTroops { .. }
                 | Op::ClearCity { .. }
-                | Op::Pushback { .. }
                 | Op::RemoveWhere { .. }
                 | Op::Convert { .. }
                 | Op::Gather { .. }

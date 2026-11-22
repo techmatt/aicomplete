@@ -1,0 +1,25 @@
+# 315: the card and pricing pass before Matt's playthrough (r151 -> r152). Apply with
+#   python scripts/cards/apply_overlay.py experiments/results/315_card_pricing_pass_r151/cards315.overlay
+# then python scripts/regen.py. Give / get for each line: the write-up's anchor table.
+
+# The cleanse cards (D136's 2 Unity a freed facility, 312, at no price change)
+# Back-Channel Talks: 7 -> 10 credits (2.00 -> 1.53 at the anchors)
+cards.back_channel_talks.cost=10
+# Reclamation Crew: 8 -> 9 credits (1.44 at Unity alone, ~1.75 with an agent cleared -> 1.31 / 1.60)
+cards.station_prefab_order.cost=9
+# The Nuclear Option: 0 -> 2 credits (2.58 -> 2.40, inside the antimatter sinks' 2.0-2.5)
+cards.nuclear_option.cost=2
+# Great Liberation: the target and 3 more in its country (was 2 more): stronger toward the sinks' band
+cards.great_liberation.effects.1.amount=4
+
+# Kept, not played; Field Grant weak (stronger, never cheaper)
+cards.cryptojacking_campaign.effects.0.amount=8
+cards.multiyear_defense_budget.effects.0.amount=7
+cards.field_grant.insight=1
+cards.field_grant.effects=[{"op": "gain", "resource": "research_cubes", "amount": 3}, {"op": "draw", "count": 1}]
+
+# Unused board powers: the troop answers take agents too (troops are rare until d3)
+ais.builder.powers.7.text="Target: Agents or Troops. Remove up to 1 Troop and up to 2 Agents on it"
+ais.builder.powers.7.effects=[{"op": "target", "on": "adversary"}, {"op": "damage", "troops": 1}, {"op": "damage", "ambassadors": 2}]
+ais.protector.powers.5.text="Target: Agents or Troops. Remove up to 2 Troops and up to 1 Agent on it"
+ais.protector.powers.5.effects=[{"op": "target", "on": "adversary"}, {"op": "damage", "troops": 2}, {"op": "damage", "ambassadors": 1}]

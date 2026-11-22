@@ -34,7 +34,7 @@ any design, rules, card or pricing work.
   (`crates/aic-core/src/tests/mod.rs`) and live farm specs (a fast-lane test parses `experiments/farm/`: move a
   finished item's spec to `experiments/archive/farm/`; a retired weight goes in `eval::RETIRED`); a standard action in `board.std_off`'s index list, `design_check.json`'s
   `memory_counters` and `design_check_jobs.json`; an op in `configs/agents/values.json`, `effect_ledger.py`,
-  `crates/aic-sim/src/docs/{harms,run}.rs` (its harms arm, `PALETTE_OPS`), `crates/aic-core/src/tests/unprinted_ops.rs` and `drafts/adversary/check.py`.
+  `crates/aic-sim/src/docs/{harms,run}.rs` (its harms arm), `crates/aic-core/src/tests/unprinted_ops.rs` and `drafts/adversary/check.py`.
   A param, phase or rule's name also sits in the docs generators (`crates/aic-sim/src/docs/{aid,blocks,ladder}.rs`),
   `configs/three_seat.json` and `web/scripts/e2e-*.mjs`; a board content field (`AiBoard`, `Uncover`, a power's
   `group`) in `ai.rs`, `docs/blocks.rs`, `web/scripts/cards-export.mjs`, `scripts/bench/fresh_read.py` and

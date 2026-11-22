@@ -842,10 +842,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::LoseTokens { .. }
         | Op::TeamIncome { .. }
         | Op::FreePurchases { .. }
-        | Op::CounterAll
-        | Op::Pushback { .. }
         | Op::DealThreats { .. }
-        | Op::RemoveBotnets { .. }
         | Op::AdversaryResearch { .. }
         | Op::BotnetTroops { .. }
         | Op::SpreadBotnets { .. }
@@ -857,7 +854,6 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::StripHarden
         | Op::Fallout { .. }
         | Op::Clock { .. }
-        | Op::OnePlayer { .. }
         | Op::PerSite { .. }
         | Op::RemoveWhere { .. }
         | Op::Prohibit { .. }

@@ -1,0 +1,74 @@
+{
+  "name": "s315c",
+  "note": "315's third screen, on s315's seeds 52162-52209 (its base arm is s315's): the candidate build as overlays (Multiyear Defense Budget +7, Interdict I on agents too); the judge, d0-d4.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-final",
+      "set": [
+        "cards.back_channel_talks.cost=10",
+        "cards.station_prefab_order.cost=9",
+        "cards.nuclear_option.cost=2",
+        "cards.great_liberation.effects.1.amount=4",
+        "cards.cryptojacking_campaign.effects.0.amount=8",
+        "cards.multiyear_defense_budget.effects.0.amount=7",
+        "cards.field_grant.insight=1",
+        "cards.field_grant.effects=[{\"op\": \"gain\", \"resource\": \"research_cubes\", \"amount\": 3}, {\"op\": \"draw\", \"count\": 1}]",
+        "ais.builder.powers.7.text=Target: Agents or Troops. Remove up to 1 Troop and up to 2 Agents on it",
+        "ais.protector.powers.5.text=Target: Agents or Troops. Remove up to 2 Troops and up to 1 Agent on it",
+        "ais.builder.powers.7.effects=[{\"op\": \"target\", \"on\": \"adversary\"}, {\"op\": \"damage\", \"troops\": 1}, {\"op\": \"damage\", \"ambassadors\": 2}]",
+        "ais.protector.powers.5.effects=[{\"op\": \"target\", \"on\": \"adversary\"}, {\"op\": \"damage\", \"troops\": 2}, {\"op\": \"damage\", \"ambassadors\": 1}]"
+      ]
+    },
+    {
+      "name": "br-final",
+      "set": [
+        "ai.boards=0,2",
+        "cards.back_channel_talks.cost=10",
+        "cards.station_prefab_order.cost=9",
+        "cards.nuclear_option.cost=2",
+        "cards.great_liberation.effects.1.amount=4",
+        "cards.cryptojacking_campaign.effects.0.amount=8",
+        "cards.multiyear_defense_budget.effects.0.amount=7",
+        "cards.field_grant.insight=1",
+        "cards.field_grant.effects=[{\"op\": \"gain\", \"resource\": \"research_cubes\", \"amount\": 3}, {\"op\": \"draw\", \"count\": 1}]",
+        "ais.builder.powers.7.text=Target: Agents or Troops. Remove up to 1 Troop and up to 2 Agents on it",
+        "ais.protector.powers.5.text=Target: Agents or Troops. Remove up to 2 Troops and up to 1 Agent on it",
+        "ais.builder.powers.7.effects=[{\"op\": \"target\", \"on\": \"adversary\"}, {\"op\": \"damage\", \"troops\": 1}, {\"op\": \"damage\", \"ambassadors\": 2}]",
+        "ais.protector.powers.5.effects=[{\"op\": \"target\", \"on\": \"adversary\"}, {\"op\": \"damage\", \"troops\": 2}, {\"op\": \"damage\", \"ambassadors\": 1}]"
+      ]
+    },
+    {
+      "name": "pr-final",
+      "set": [
+        "ai.boards=1,2",
+        "cards.back_channel_talks.cost=10",
+        "cards.station_prefab_order.cost=9",
+        "cards.nuclear_option.cost=2",
+        "cards.great_liberation.effects.1.amount=4",
+        "cards.cryptojacking_campaign.effects.0.amount=8",
+        "cards.multiyear_defense_budget.effects.0.amount=7",
+        "cards.field_grant.insight=1",
+        "cards.field_grant.effects=[{\"op\": \"gain\", \"resource\": \"research_cubes\", \"amount\": 3}, {\"op\": \"draw\", \"count\": 1}]",
+        "ais.builder.powers.7.text=Target: Agents or Troops. Remove up to 1 Troop and up to 2 Agents on it",
+        "ais.protector.powers.5.text=Target: Agents or Troops. Remove up to 2 Troops and up to 1 Agent on it",
+        "ais.builder.powers.7.effects=[{\"op\": \"target\", \"on\": \"adversary\"}, {\"op\": \"damage\", \"troops\": 1}, {\"op\": \"damage\", \"ambassadors\": 2}]",
+        "ais.protector.powers.5.effects=[{\"op\": \"target\", \"on\": \"adversary\"}, {\"op\": \"damage\", \"troops\": 2}, {\"op\": \"damage\", \"ambassadors\": 1}]"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 48,
+  "records": 0
+}

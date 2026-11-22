@@ -15,14 +15,14 @@ rule is Breadth: five building slots, a wider engine. It starts with 27 credits 
 of its economy track 1 or 2 more, so placing a node is how its income grows; the energy of the cities beside its nodes (1 from each free,
 unblocked city with its node on or next to it), its track steps and Sprawl spend. Its powers turn
 finished cards into chips or a building played free (Scrap: Industry), energy or antimatter (Overcharge: Power), and
-chips into troops removed (Fortify).
+chips into troops and agents removed (Fortify).
 
 The **Protector**'s special rule is Wall: no adversary troop is ever placed on a hex with its node, Redeploys onto it or
 strikes it, so no troop strikes its node or a facility under it (threats and corruption still can). When troops Strike, each troop on or next to its nodes pays it 1 insight, at most 2 a round
 (Vigil). Its node powers place a node and a credit free (Levy), a node within 2 of its own and 2 credits for 2 energy (Outpost) and a node and an ambassador for 3 energy (Accord);
 it pushes troops and agents and hardens with energy (Patrol), and its board prints 2 energy a round. It earns 9 credits
 a round, so starts with 31. Each credit space of its economy track adds 1 or 2 credits, the
-first one 1 energy too. Late in the game, a sacrificed Security card removes troops, two of them agents too (Interdict).
+first one 1 energy too. Late in the game, a sacrificed Security card removes troops and agents, two of them a card too (Interdict).
 
 The **Researcher**'s special rule is Patience: insight it doesn't spend stays into the next round (all of it, even
 insight another player gave it), to save up for a big round. It starts with 27 credits and earns 7 a round, 2

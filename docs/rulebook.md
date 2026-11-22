@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (fourth draft)
 
-*Rules revision 151. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 152. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -1149,8 +1149,8 @@ is counted in hexes from the nearest node or ambassador of any player; ties go t
 already there stays, and one whose country has no corrupted city stays. A corrupted city under the Protector's node
 is no destination.
 
-**Removing troops:** Remove a troop (7 credits, once a round); Fortify I / II (Builder, 1 / 2 chips: 1 / up to 2 on
-its target); Interdict I / II (Protector, 1 / 2 Security: up to 2 on its target); Hack I / II (Researcher, 1 / 2 Cyber:
+**Removing troops:** Remove a troop (7 credits, once a round); Fortify I / II (Builder, 1 / 2 chips: 1 and up to 2
+agents / up to 2 on its target); Interdict I / II (Protector, 1 / 2 Security: up to 2 on its target, and 1 / 2 agents); Hack I / II (Researcher, 1 / 2 Cyber:
 up to 2 in one country, no reach); Patrol (Protector, energy: pushes up to 3); cards; the Unity cards Peacekeepers and
 Disarmament Talks. Removing a troop sways nothing. A Discord tip doesn't move troops.
 

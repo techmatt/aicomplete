@@ -1285,12 +1285,6 @@ pub enum Op {
     FreePurchases {
         count: i64,
     },
-    /// Counter every active threat.
-    CounterAll,
-    /// In each country, remove `ambassadors` agents (players choose).
-    Pushback {
-        ambassadors: i64,
-    },
     /// Deal extra threats now; they execute next round. No field set: `count` in all, countries in
     /// turn, at the tier of the card's first pull. Any field set: `count` per country (the scope's
     /// with `scope` country, else every one), at `tier` or the round's threat tier, any tag.
@@ -1345,10 +1339,6 @@ pub enum Op {
         amount: i64,
         #[serde(default, skip_serializing_if = "is_false")]
         each_country: bool,
-    },
-    /// Remove `count` botnets anywhere on the board, one at a time (players choose).
-    RemoveBotnets {
-        count: i64,
     },
     /// 195 (a project's): in each country, up to `count` of its botnets, the lowest-numbered first, each come off and
     /// become `troops` adversary troops, which garrison (301; no Unity sway: not a removal).
@@ -1412,12 +1402,6 @@ pub enum Op {
     Clock {
         #[serde(default = "one", skip_serializing_if = "is_one")]
         count: i64,
-    },
-    /// 156: one player (the team chooses, among those with something it acts
-    /// on) resolves `then` as their own card would, in their reach: a Unity
-    /// card's way to act where pieces are.
-    OnePlayer {
-        then: Vec<Op>,
     },
     /// 167: "for each `where` (at most `max`)": `then` (team ops) resolves once per hex where the condition
     /// holds when it resolves, counted on the whole board.
@@ -1671,15 +1655,12 @@ impl Op {
             | Op::Theft { .. }
             | Op::TeamIncome { .. }
             | Op::FreePurchases { .. }
-            | Op::CounterAll
-            | Op::Pushback { .. }
             | Op::DealThreats { .. }
             | Op::Create { .. }
             | Op::Infiltrate { .. }
             | Op::Escalate { .. }
             | Op::IncreaseIncome { .. }
             | Op::AdversaryResearch { .. }
-            | Op::RemoveBotnets { .. }
             | Op::BotnetTroops { .. }
             | Op::SpreadBotnets { .. }
             | Op::TakeSite { .. }
@@ -1690,7 +1671,6 @@ impl Op {
             | Op::StripHarden
             | Op::Fallout { .. }
             | Op::Clock { .. }
-            | Op::OnePlayer { .. }
             | Op::PerSite { .. }
             | Op::RemoveWhere { .. }
             | Op::Prohibit { .. }
@@ -1737,7 +1717,6 @@ impl Op {
         match self {
             Op::IfTags { then, .. }
             | Op::IfNodeNext { then, .. }
-            | Op::OnePlayer { then }
             | Op::PerSite { then, .. }
             | Op::Floor { then }
             | Op::When { then, .. }
@@ -1850,11 +1829,7 @@ impl Op {
             Op::Compute { .. } => &[Threat, Team],
             Op::TeamIncome { .. }
             | Op::FreePurchases { .. }
-            | Op::CounterAll
-            | Op::Pushback { .. }
             | Op::ThreatAtNode { .. }
-            | Op::RemoveBotnets { .. }
-            | Op::OnePlayer { .. }
             | Op::PerSite { .. }
             | Op::RemoveWhere { .. }
             | Op::Prohibit { .. }

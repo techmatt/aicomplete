@@ -239,16 +239,19 @@
       1
      ]
     ],
-    "text": "Target: Troops. Remove 1 Troop on it",
+    "text": "Target: Agents or Troops. Remove up to 1 Troop and up to 2 Agents on it",
     "effects": [
      {
       "op": "target",
-      "on": "troops"
+      "on": "adversary"
      },
      {
-      "op": "remove_troops",
-      "count": 1,
-      "at": "on"
+      "op": "damage",
+      "troops": 1
+     },
+     {
+      "op": "damage",
+      "ambassadors": 2
      }
     ],
     "group": "Fortify"
@@ -575,15 +578,19 @@
      ]
     ],
     "cost": [],
-    "text": "Target: Troops. Remove up to 2 on it",
+    "text": "Target: Agents or Troops. Remove up to 2 Troops and up to 1 Agent on it",
     "effects": [
      {
       "op": "target",
-      "on": "troops"
+      "on": "adversary"
      },
      {
       "op": "damage",
       "troops": 2
+     },
+     {
+      "op": "damage",
+      "ambassadors": 1
      }
     ],
     "group": "Interdict"

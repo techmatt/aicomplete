@@ -335,7 +335,7 @@ fn a_card_removing_troops_first_may_target_a_guarded_city() {
 fn country_cards_use_the_target_s_country() {
     assert_eq!(
         face_text("great_liberation"),
-        "Target: a corrupted site. Pay 1 antimatter. Liberate or free it and 2 more corrupted cities, stations or factories in its country."
+        "Target: a corrupted site. Pay 1 antimatter. Liberate or free it and 3 more corrupted cities, stations or factories in its country."
     );
     let shelter = "Shelter your Nodes and facilities in reach this round.";
     assert!(face_text("hardpoint_lockdown").contains(&format!("{shelter} Cordon its country")), "{}", face_text("hardpoint_lockdown"));

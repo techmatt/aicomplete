@@ -1819,13 +1819,6 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
                     return Err(format!("{what}: a floor resolves team ops and follows a per_site, remove_where or prohibit"));
                 }
             }
-            // 156: a team card's player ops, resolved by one player.
-            Op::OnePlayer { then } => {
-                check_ops(then, Slot::Player, what)?;
-                if then.is_empty() || then.iter().any(|o| matches!(o, Op::When { .. } | Op::Threshold { .. })) {
-                    return Err(format!("{what}: one_player resolves instant player ops"));
-                }
-            }
             Op::Threshold { at, then } => {
                 check_ops(then, Slot::Player, what)?;
                 if *at < 1 || then.is_empty() {

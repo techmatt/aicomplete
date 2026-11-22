@@ -33,7 +33,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   ([ai-powers.md](ai-powers.md)); no megaproject pays a card at completion.
 
 <!-- generated: draft_set -->
-**The draft set in numbers.** 196 cards (124 tier 1, 72 tier 2). Insight to play: 108 / 60 / 28 cards at 0 / 1 / 2, 18 of the 72 tier-2 cards at 2. An energy cost: 13 cards, 7 of the 81 buildings.
+**The draft set in numbers.** 196 cards (124 tier 1, 72 tier 2). Insight to play: 107 / 61 / 28 cards at 0 / 1 / 2, 18 of the 72 tier-2 cards at 2. An energy cost: 13 cards, 7 of the 81 buildings.
 <!-- /generated -->
 
 - **Energy costs (candidate).** Energy is a second cost on a card whose title reads power-hungry (mostly buildings:
@@ -97,7 +97,7 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
 
   They cost 0-11 credits, priced against the Liberate action's bill ([card-pricing.md](../card-pricing.md), *The
   liberate capstones*); the six antimatter events (0-3 credits and 1 antimatter) are sinks at 2.0-2.5×, the two
-  finale buildings 1.7-1.8 a use (*Finale buildings*), the rest fair. Great Liberation (Diplomacy: its target and 2 more in the target's country, cities included)
+  finale buildings 1.7-1.8 a use (*Finale buildings*), the rest fair. Great Liberation (Diplomacy: its target and 3 more in the target's country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine.** Loops: each card is one-shot and tier
   2, so liberation → clean city → energy → more liberation is capped; Popular Uprising and the two finale buildings
   repeat, capped by their once-a-round Action and its fuel (4 Followers, 1 antimatter, 5 energy).

@@ -140,13 +140,13 @@ pub fn pieces(rules: &Rules, g: &GameState) -> Pieces {
 /// An op that removes a botnet.
 fn removes_botnet(o: &Op) -> bool {
     // 169: r71's Unity cards remove by board condition (`remove_where`); without it the probe counted none.
-    matches!(o, Op::RemoveBotnet | Op::RemoveBotnets { .. } | Op::CutBotnet | Op::RemoveWhere { pieces: Removable::Botnets, .. })
+    matches!(o, Op::RemoveBotnet | Op::CutBotnet | Op::RemoveWhere { pieces: Removable::Botnets, .. })
 }
 
 /// An op that removes adversary ambassadors (agents).
 fn removes_ambassadors(o: &Op) -> bool {
     // 184: Convert (r77: where it stood) and Amnesty Decree's ClearCity take agents off too.
-    matches!(o, Op::RemoveAmbassadorsCountry { .. } | Op::Pushback { .. } | Op::RemoveWhere { pieces: Removable::Agents, .. })
+    matches!(o, Op::RemoveAmbassadorsCountry { .. } | Op::RemoveWhere { pieces: Removable::Agents, .. })
         || matches!(o, Op::Convert { .. } | Op::ClearCity { .. })
         || matches!(o, Op::Gather { strike: true, pieces, .. } if pieces.contains(&Piece::Agents))
 }

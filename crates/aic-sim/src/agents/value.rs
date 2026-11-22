@@ -93,7 +93,7 @@ pub struct Override {
 #[cfg(test)]
 pub(crate) const PART_ROWS: &[&str] =
     &["remove_ambassador", "remove_troop", "typed_jam", "liberate_own", "liberate_troops", "liberate_botnet", "cleanse_station",
-      "if_node_next_fresh", "open_station", "open_factory"];
+      "if_node_next_fresh", "open_station", "open_factory", "pushback"];
 
 const SOURCE: &str = include_str!("../../../../configs/agents/values.json");
 
@@ -736,14 +736,11 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::LoseTokens { amount } => Worth::now(row("lose_tokens") * *amount as f64),
         Op::TeamIncome { resource, amount } => Worth::income(row("team_income") * r(*resource) * *amount as f64),
         Op::FreePurchases { count } => Worth::now(row("free_purchases") * t.rate("keep_tier1") * *count as f64),
-        Op::CounterAll => Worth::now(row("counter_all")),
-        Op::Pushback { ambassadors } => Worth::now(row("pushback") * t.rate("countries") * *ambassadors as f64),
         // 233, 237: priced per country where the engine deals in every one (`Op::deals_each_country`: a project's
         // `each_country`, an alignment card's `{tier: 2}`; `team_ops_price_per_country`).
         Op::DealThreats { count, .. } => Worth::now(
             row("deal_threats") * *count as f64 * if op.deals_each_country() { t.rate("countries") } else { 1.0 },
         ),
-        Op::RemoveBotnets { count } => Worth::now(row("remove_botnets") * *count as f64),
         // 259: research cubes onto the adversary's track (a project's: a country each).
         Op::AdversaryResearch { amount, each_country } => {
             let per = if *each_country { t.rate("countries") } else { 1.0 };
@@ -769,14 +766,6 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             Worth::now(row("fallout") * reach * *count as f64)
         }
         Op::Clock { count } => Worth::now(row("clock") * *count as f64),
-        // 156: one player resolves seat ops: their worth, at the row's share.
-        Op::OnePlayer { then } => {
-            let mut w = Worth::default();
-            for o in then {
-                w += op_worth(t, o);
-            }
-            w.scaled(row("one_player"))
-        }
         // 167: fear-card shape. "For each X (at most N)": the team ops' worth, times the sites expected.
         Op::PerSite { max, then, .. } => {
             let mut w = Worth::default();

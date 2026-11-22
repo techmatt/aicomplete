@@ -322,12 +322,6 @@ def op_worth(t, o):
         return Worth(income=row(op) * income_r(t, o['resource']) * n('amount'))
     if op == 'free_purchases':
         return Worth(now=row(op) * t.rate('keep_tier1') * n('count'))
-    if op == 'counter_all':
-        return Worth(now=row(op))
-    if op == 'pushback':
-        return Worth(now=row(op) * t.rate('countries') * n('ambassadors'))
-    if op == 'remove_botnets':
-        return Worth(now=row(op) * n('count'))
     if op == 'income_per_tag':
         amount = o.get('amount', 1)
         return Worth(income_per_tag={o['tag']: row(op) * income_r(t, o['resource']) * amount / max(n('per'), 1)})

@@ -289,23 +289,3 @@ pub fn destroy_all(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
         remove_piece(g, cx, Some(seat), h, TROOP);
     }
 }
-
-/// Removes one agent in country `c` (players choose the hex).
-pub fn pushback(g: &mut GameState, cx: &mut Cx, c: usize) -> Res {
-    let w = cx.world;
-    let hexes: Vec<usize> = w.map.countries[c]
-        .hexes
-        .iter()
-        .copied()
-        .filter(|&h| g.tokens(h, ADV_AMBASSADOR) > 0)
-        .collect();
-    let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-    if let Some(i) = cx.choose(
-        0,
-        &format!("Unity: remove an agent in {} from which hex?", country_name(&w, c)),
-        opts,
-    )? {
-        remove_piece(g, cx, None, hexes[i], ADV_AMBASSADOR);
-    }
-    Ok(())
-}

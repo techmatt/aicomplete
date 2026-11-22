@@ -1,0 +1,160 @@
+{
+  "name": "s315",
+  "note": "315's screen: base, the card changes, the power changes and all, as overlays, on the three pairs, d0-d4; the judge; seeds 52162-52209 (48).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-base",
+      "set": []
+    },
+    {
+      "name": "br-base",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr-base",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp-cards",
+      "set": [
+        "cards.back_channel_talks.cost=8",
+        "cards.back_channel_talks.effects=[{\"op\": \"target\", \"on\": \"corrupted_factory\"}, {\"op\": \"cleanse\", \"amount\": 2, \"one_country\": false, \"only\": \"factory\", \"at\": \"near\"}]",
+        "cards.station_prefab_order.cost=9",
+        "cards.nuclear_option.cost=2",
+        "cards.great_liberation.effects.1.amount=4",
+        "cards.cryptojacking_campaign.effects.0.amount=7",
+        "cards.multiyear_defense_budget.effects.0.amount=6",
+        "cards.field_grant.insight=1",
+        "cards.field_grant.effects=[{\"op\": \"gain\", \"resource\": \"research_cubes\", \"amount\": 3}, {\"op\": \"draw\", \"count\": 1}]"
+      ]
+    },
+    {
+      "name": "br-cards",
+      "set": [
+        "ai.boards=0,2",
+        "cards.back_channel_talks.cost=8",
+        "cards.back_channel_talks.effects=[{\"op\": \"target\", \"on\": \"corrupted_factory\"}, {\"op\": \"cleanse\", \"amount\": 2, \"one_country\": false, \"only\": \"factory\", \"at\": \"near\"}]",
+        "cards.station_prefab_order.cost=9",
+        "cards.nuclear_option.cost=2",
+        "cards.great_liberation.effects.1.amount=4",
+        "cards.cryptojacking_campaign.effects.0.amount=7",
+        "cards.multiyear_defense_budget.effects.0.amount=6",
+        "cards.field_grant.insight=1",
+        "cards.field_grant.effects=[{\"op\": \"gain\", \"resource\": \"research_cubes\", \"amount\": 3}, {\"op\": \"draw\", \"count\": 1}]"
+      ]
+    },
+    {
+      "name": "pr-cards",
+      "set": [
+        "ai.boards=1,2",
+        "cards.back_channel_talks.cost=8",
+        "cards.back_channel_talks.effects=[{\"op\": \"target\", \"on\": \"corrupted_factory\"}, {\"op\": \"cleanse\", \"amount\": 2, \"one_country\": false, \"only\": \"factory\", \"at\": \"near\"}]",
+        "cards.station_prefab_order.cost=9",
+        "cards.nuclear_option.cost=2",
+        "cards.great_liberation.effects.1.amount=4",
+        "cards.cryptojacking_campaign.effects.0.amount=7",
+        "cards.multiyear_defense_budget.effects.0.amount=6",
+        "cards.field_grant.insight=1",
+        "cards.field_grant.effects=[{\"op\": \"gain\", \"resource\": \"research_cubes\", \"amount\": 3}, {\"op\": \"draw\", \"count\": 1}]"
+      ]
+    },
+    {
+      "name": "bp-powers",
+      "set": [
+        "ais.builder.powers.7.effects=[{\"op\": \"target\", \"on\": \"troops\"}, {\"op\": \"remove_troops\", \"count\": 1, \"at\": \"near\"}, {\"op\": \"harden\", \"count\": 1, \"at\": \"near\"}]",
+        "ais.builder.powers.8.effects=[{\"op\": \"target\", \"on\": \"troops\"}, {\"op\": \"remove_troops\", \"count\": 2, \"at\": \"near\"}, {\"op\": \"harden\", \"count\": 1, \"at\": \"near\"}]",
+        "ais.protector.powers.5.effects=[{\"op\": \"target\", \"on\": \"troops\"}, {\"op\": \"remove_troops\", \"count\": 2, \"at\": \"near\"}]"
+      ]
+    },
+    {
+      "name": "br-powers",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.powers.7.effects=[{\"op\": \"target\", \"on\": \"troops\"}, {\"op\": \"remove_troops\", \"count\": 1, \"at\": \"near\"}, {\"op\": \"harden\", \"count\": 1, \"at\": \"near\"}]",
+        "ais.builder.powers.8.effects=[{\"op\": \"target\", \"on\": \"troops\"}, {\"op\": \"remove_troops\", \"count\": 2, \"at\": \"near\"}, {\"op\": \"harden\", \"count\": 1, \"at\": \"near\"}]",
+        "ais.protector.powers.5.effects=[{\"op\": \"target\", \"on\": \"troops\"}, {\"op\": \"remove_troops\", \"count\": 2, \"at\": \"near\"}]"
+      ]
+    },
+    {
+      "name": "pr-powers",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.powers.7.effects=[{\"op\": \"target\", \"on\": \"troops\"}, {\"op\": \"remove_troops\", \"count\": 1, \"at\": \"near\"}, {\"op\": \"harden\", \"count\": 1, \"at\": \"near\"}]",
+        "ais.builder.powers.8.effects=[{\"op\": \"target\", \"on\": \"troops\"}, {\"op\": \"remove_troops\", \"count\": 2, \"at\": \"near\"}, {\"op\": \"harden\", \"count\": 1, \"at\": \"near\"}]",
+        "ais.protector.powers.5.effects=[{\"op\": \"target\", \"on\": \"troops\"}, {\"op\": \"remove_troops\", \"count\": 2, \"at\": \"near\"}]"
+      ]
+    },
+    {
+      "name": "bp-all",
+      "set": [
+        "cards.back_channel_talks.cost=8",
+        "cards.back_channel_talks.effects=[{\"op\": \"target\", \"on\": \"corrupted_factory\"}, {\"op\": \"cleanse\", \"amount\": 2, \"one_country\": false, \"only\": \"factory\", \"at\": \"near\"}]",
+        "cards.station_prefab_order.cost=9",
+        "cards.nuclear_option.cost=2",
+        "cards.great_liberation.effects.1.amount=4",
+        "cards.cryptojacking_campaign.effects.0.amount=7",
+        "cards.multiyear_defense_budget.effects.0.amount=6",
+        "cards.field_grant.insight=1",
+        "cards.field_grant.effects=[{\"op\": \"gain\", \"resource\": \"research_cubes\", \"amount\": 3}, {\"op\": \"draw\", \"count\": 1}]",
+        "ais.builder.powers.7.effects=[{\"op\": \"target\", \"on\": \"troops\"}, {\"op\": \"remove_troops\", \"count\": 1, \"at\": \"near\"}, {\"op\": \"harden\", \"count\": 1, \"at\": \"near\"}]",
+        "ais.builder.powers.8.effects=[{\"op\": \"target\", \"on\": \"troops\"}, {\"op\": \"remove_troops\", \"count\": 2, \"at\": \"near\"}, {\"op\": \"harden\", \"count\": 1, \"at\": \"near\"}]",
+        "ais.protector.powers.5.effects=[{\"op\": \"target\", \"on\": \"troops\"}, {\"op\": \"remove_troops\", \"count\": 2, \"at\": \"near\"}]"
+      ]
+    },
+    {
+      "name": "br-all",
+      "set": [
+        "ai.boards=0,2",
+        "cards.back_channel_talks.cost=8",
+        "cards.back_channel_talks.effects=[{\"op\": \"target\", \"on\": \"corrupted_factory\"}, {\"op\": \"cleanse\", \"amount\": 2, \"one_country\": false, \"only\": \"factory\", \"at\": \"near\"}]",
+        "cards.station_prefab_order.cost=9",
+        "cards.nuclear_option.cost=2",
+        "cards.great_liberation.effects.1.amount=4",
+        "cards.cryptojacking_campaign.effects.0.amount=7",
+        "cards.multiyear_defense_budget.effects.0.amount=6",
+        "cards.field_grant.insight=1",
+        "cards.field_grant.effects=[{\"op\": \"gain\", \"resource\": \"research_cubes\", \"amount\": 3}, {\"op\": \"draw\", \"count\": 1}]",
+        "ais.builder.powers.7.effects=[{\"op\": \"target\", \"on\": \"troops\"}, {\"op\": \"remove_troops\", \"count\": 1, \"at\": \"near\"}, {\"op\": \"harden\", \"count\": 1, \"at\": \"near\"}]",
+        "ais.builder.powers.8.effects=[{\"op\": \"target\", \"on\": \"troops\"}, {\"op\": \"remove_troops\", \"count\": 2, \"at\": \"near\"}, {\"op\": \"harden\", \"count\": 1, \"at\": \"near\"}]",
+        "ais.protector.powers.5.effects=[{\"op\": \"target\", \"on\": \"troops\"}, {\"op\": \"remove_troops\", \"count\": 2, \"at\": \"near\"}]"
+      ]
+    },
+    {
+      "name": "pr-all",
+      "set": [
+        "ai.boards=1,2",
+        "cards.back_channel_talks.cost=8",
+        "cards.back_channel_talks.effects=[{\"op\": \"target\", \"on\": \"corrupted_factory\"}, {\"op\": \"cleanse\", \"amount\": 2, \"one_country\": false, \"only\": \"factory\", \"at\": \"near\"}]",
+        "cards.station_prefab_order.cost=9",
+        "cards.nuclear_option.cost=2",
+        "cards.great_liberation.effects.1.amount=4",
+        "cards.cryptojacking_campaign.effects.0.amount=7",
+        "cards.multiyear_defense_budget.effects.0.amount=6",
+        "cards.field_grant.insight=1",
+        "cards.field_grant.effects=[{\"op\": \"gain\", \"resource\": \"research_cubes\", \"amount\": 3}, {\"op\": \"draw\", \"count\": 1}]",
+        "ais.builder.powers.7.effects=[{\"op\": \"target\", \"on\": \"troops\"}, {\"op\": \"remove_troops\", \"count\": 1, \"at\": \"near\"}, {\"op\": \"harden\", \"count\": 1, \"at\": \"near\"}]",
+        "ais.builder.powers.8.effects=[{\"op\": \"target\", \"on\": \"troops\"}, {\"op\": \"remove_troops\", \"count\": 2, \"at\": \"near\"}, {\"op\": \"harden\", \"count\": 1, \"at\": \"near\"}]",
+        "ais.protector.powers.5.effects=[{\"op\": \"target\", \"on\": \"troops\"}, {\"op\": \"remove_troops\", \"count\": 2, \"at\": \"near\"}]"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 48,
+  "records": 0
+}

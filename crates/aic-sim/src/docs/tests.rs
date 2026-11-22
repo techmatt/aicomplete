@@ -5,7 +5,7 @@ use super::blocks::*;
 use super::ladder::{difficulty_block, ladder};
 use super::run::{
     block, budget_warnings, card_note_failures, card_quote_failures, op_docs, op_uses, revision_line_failures, rulebook_revision_failure, rules_file_failures, unknown_params, BLOCKS,
-    DOC_BUDGET, DOC_WARN, PALETTE_OPS,
+    DOC_BUDGET, DOC_WARN,
 };
 
 const BASELINE_JSON: &str = include_str!("../../../../configs/baseline.json");
@@ -251,15 +251,6 @@ fn the_rulebook_difficulty_table_is_in_players_words() {
     let body = book.split_once(open).unwrap().1.split_once("<!-- /generated -->").expect("closed").0;
     assert!(body.starts_with("| Level | Name | Setup (set once"), "{body}");
     assert!(!body.contains('`'), "a tunable name in the rulebook: {body}");
-}
-
-/// 229: every palette op the ops doc names is an op.
-#[test]
-fn the_palette_ops_are_ops() {
-    let ops: Vec<String> = op_docs(include_str!("../../../aic-core/src/op.rs")).into_iter().map(|o| o.name).collect();
-    for p in PALETTE_OPS {
-        assert!(ops.iter().any(|o| o == p), "{p} is no op");
-    }
 }
 
 /// 286: every op no content prints is run once by aic-core's `tests/unprinted_ops.rs` (a sample naming it,

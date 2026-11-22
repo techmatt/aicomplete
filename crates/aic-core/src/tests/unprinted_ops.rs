@@ -37,10 +37,6 @@ const RESOLVED: &[(&str, By, bool)] = &[
     (r#"[{"op":"lose_income","resource":"credits","amount":1}]"#, By::Threat, true),
     (r#"[{"op":"lose_or","options":[{"op":"lose_income","resource":"credits","amount":1},{"op":"discard_most_expensive"}]}]"#, By::Threat, true),
     (r#"[{"op":"occupy_factory","else_compute":2}]"#, By::Threat, true),
-    (r#"[{"op":"counter_all"}]"#, By::Team, true),
-    (r#"[{"op":"pushback","ambassadors":1}]"#, By::Team, false),
-    (r#"[{"op":"remove_botnets","count":1}]"#, By::Team, true),
-    (r#"[{"op":"one_player","then":[{"op":"gain","resource":"credits","amount":1}]}]"#, By::Team, true),
     // 297: Border War's twist became a Strike; no card prints it now.
     (r#"[{"op":"each_destroy_node","count":1}]"#, By::Team, true),
     // 312: the Militarist's Commandeered Plants printed it; the Card beat's Escalate (with factories) runs it now.
@@ -99,8 +95,6 @@ fn every_unprinted_op_resolves_once_on_a_lab_state() {
     };
     let g = run(r#"[{"op":"lose_income","resource":"credits","amount":1}]"#, By::Threat);
     assert_eq!(g.var(&crate::modules::economy::income_debt(0, Resource::Credits)), 1);
-    let g = run(r#"[{"op":"counter_all"}]"#, By::Team);
-    assert!(threats::active(&g).is_empty(), "Manhunt countered");
     let g = run(r#"[{"op":"discard_hand","resource":"credits","amount":2}]"#, By::Seat);
     assert_eq!(g.resource(0, Resource::Credits), 12);
     assert!(g.pile(&cards::hand(0)).is_empty());

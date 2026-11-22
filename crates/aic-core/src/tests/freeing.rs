@@ -3,6 +3,7 @@
 use super::*;
 use crate::content::Op;
 use crate::modules::adversary;
+use crate::op::{Per, Removable, Where};
 
 /// A corrupted city with seat 0's node on it, and an adjacent land hex.
 fn city(rules: &Rules, g: &mut GameState) -> (usize, usize) {
@@ -128,7 +129,7 @@ fn freeing_a_city_and_removing_a_botnet_sway_unity() {
         crate::modules::effects::run(
             &mut g,
             cx,
-            &[content::Op::RemoveBotnets { count: 1 }],
+            &[Op::RemoveWhere { pieces: Removable::Botnets, count: 1, per: Per::Hex, where_: Where::ByPlayer }],
             &mut crate::modules::effects::Ctx::team(),
         )
     })
