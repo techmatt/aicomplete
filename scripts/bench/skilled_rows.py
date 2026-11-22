@@ -14,8 +14,9 @@ state (`all_losses`).
 
 - `real` (249): the real oracle, the fair-information player (Matt, 155, amendment 6814): the oracle's search on
   worlds sampled from what players can see (`worlds`), never the true table, and no restarts. The design target: very
-  strong play that can't see the future. On 249's judge weights; about 135 x a strategist game (r112), and it read
-  at the judge (80.0 vs 78.3% d0-d4, 249).
+  strong play that can't see the future. The `real` alias: on the judge's evaluation as it stands (`STRATEGIST`,
+  314); about 135 x a strategist game (r112), and it read at the judge (80.0 vs 78.3% d0-d4, 249). Built on the
+  judge, so `aic-sim agree` against it does not guide judge tuning (docs/rulings.md, *The judge*).
 """
 import argparse
 import json
@@ -24,12 +25,9 @@ import os
 
 ROWS = {
     "oracle": "oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1,tries=3",
-    # 249's measured spec: the search on the judge's weights as 249 read it (before `w.card_action` and `w.sink`).
-    # 260: 249 left its first, discarded version here (engine weights, strategy=1, 3 worlds), which read 55% to the
-    # judge's 70%.
-    "real": "oracle:strategy=0,worlds=4,alts=3,budget=32,answers=1,truth=1,w.built=4,w.built_cost=0.75,w.clock=0,"
-            "w.energy_cap=0,w.hand=1.5,w.hand_cost=0.15,w.horizon=0,w.insight_income=0,w.packet_keep=1,"
-            "w.production=0,w.strat_contents=0,w.table=0,w.tag_hand=0,w.purge=3.6,w.last_node=120",
+    # 314: the `real` alias, the search on the judge's evaluation as it stands (`STRATEGIST`, agents/mod.rs); 249
+    # pinned the judge's weights of its day (w.purge 3.6, before `w.card_action` and `w.sink`).
+    "real": "real",
 }
 
 

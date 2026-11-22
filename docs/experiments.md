@@ -160,8 +160,9 @@ judge's keeps off the value table; `sweep` is a cheap profile for price screens,
   out/preflight`). Readers: [scripts.md](scripts.md).
 
 **Skilled rows.** `bench/skilled_rows.py READ.json` writes the oracle's companion spec (its docstring): launch it
-with the read. At r151 (313's `l313o`: both oracles, d0-d4, three pairs) 8 seeds (240 games) farmed in 55 min on 4
-main-box shards (the browser worker took none); a game: full oracle 1-5 s on a win, real oracle 45-110 s. A card proof is the oracle with `prove=N` (N: the card's row of `aic-sim cards`), seconds a game where it
+with the read. A game: full oracle 1-5 s on a win, `real` 90-125 s, `real:budget=128` ~330 (per-cell times: the
+broker's `jobs/<id>/main.log`). A shard is 2 seeds of every cell: farm a costly agent a spec per pair and level (314's
+`gen_specs.py`; one 3-pair spec left the browser idle). A card proof is the oracle with `prove=N` (N: the card's row of `aic-sim cards`), seconds a game where it
 proves the card and a whole search where it can't: 243's `proofs.py`.
 
 `experiments/band.json` and `sanity-line.json`: their `note`s. Read band's win mix (`ends156.py`; its split by
@@ -169,7 +170,7 @@ Unity step is of the purge before r141) before a rule touching the end state.
 
 **Fresh seeds.** Specs start at seed 0: give a confirming read a `--seed` no screen of this revision used. An item
 that spends seeds updates the ledger after its last read (`bench/seeds.py next N [--take]`; all below *Next free*
-are used). Next free: 51888. **The dev seeds are 36800-36831**, for on/off
+are used). Next free: 52066. **The dev seeds are 36800-36831**, for on/off
 checks and crash-finding (SE ~5 a cell). A 2-8 point effect (a level's income step): screen it paired on this
 revision's spent fresh sets (~500+ games a cell, SE ~2), then confirm once on new seeds.
 

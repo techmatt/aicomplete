@@ -1,0 +1,24 @@
+{
+  "name": "s314-phases-pr",
+  "note": "314's screen of the real oracle's new options: real:phases=1,budget=64; pair pr, d4, 313's spent ladder seeds (8 from 51552).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    4
+  ],
+  "agents": [
+    "real:phases=1,budget=64"
+  ],
+  "games": 8,
+  "first_seed": 51552,
+  "records": 0
+}

@@ -1,0 +1,39 @@
+{
+  "name": "g314",
+  "note": "314: the greedy-vs-judge read at r151, paired, fresh seeds 51888 on, d0-d4, the three pairs.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "greedy",
+    "strategist"
+  ],
+  "games": 48,
+  "first_seed": 51888,
+  "records": 0
+}

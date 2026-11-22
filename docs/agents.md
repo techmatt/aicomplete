@@ -20,11 +20,13 @@ In prose the simulator's players are "sim players"; the code keeps "agents". The
 | `beam` | Beam search over the round's remaining action sequences, scored at the next round's start; replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 |
 | `rollout` | The beam's `candidates` best end-of-round positions, each run `horizon` more rounds by `rollouts` greedy playouts on fresh guesses; best mean wins. | `width` 4, `depth` 120, `branch` 0, `choices` 2, `candidates` 3, `rollouts` 4, `horizon` 2 |
 | `engine` | The heuristic in **horizon mode** (`w.horizon`: income × the rounds left, discounted by danger); holdings by the value table (`w.table=0`: flat terms); the **deck clock** (`w.clock`) charges each round the team's Unity rate would leave it short. Searched like greedy; `width` > 0: a beam, `candidates` > 0: rollouts. | `width` 0, `samples` 1, `choices` 2, `answers` 99 (prompts an answer looks on; 1 loses wins); weights: `Weights::engine` |
-| `strategist` | **The screens' judge**: the engine in flat mode (`w.horizon=0`, `w.table=0`): greedy's flat weights, one action at a time, no search, no strategy, plus `w.last_node`, the **purge term** (`w.purge`: ambassadors toward Liberate bills, on the site first), **cheap hand terms** (`w.hand`, `w.hand_cost`: a card is worth little until played), **a building's earnings** (`w.card_action`), `w.sink`, `w.am_tie` and `w.am_cap` (below), `w.adv_read` and `w.lib_clock`, and `reach_rule` (313: its push and strike heuristics count only agents it may move) (`STRATEGIST` gives each number; each `Weights` field in `agents/eval.rs` says what it does). | `STRATEGIST`, `agents/mod.rs` |
+| `strategist` | **The screens' judge**: the engine in flat mode (`w.horizon=0`, `w.table=0`): greedy's flat weights, one action at a time, no search, no strategy, plus the **purge term** (`w.purge`: ambassadors toward Liberate bills), **cheap hand terms** (`w.hand`, `w.hand_cost`), **a building's earnings** (`w.card_action`) and the rest of `STRATEGIST`'s list (each `Weights` field in `agents/eval.rs` says what it does). | `STRATEGIST`, `agents/mod.rs` |
 | `planner` | The engine, rolling out a shortlist of action-phase alternatives `horizon` rounds with the engine as policy; the heuristic's best line is taken. A line runs on **full information** but the Alignment deal, valued over `deals` guesses of it (`planner.rs`). | `horizon` 2, `alts` 2, `budget` 8, `margin` 40, `deals` 4, `lead` 0. `sweep[:...]` is `planner:deals=1,lead=0`. |
 | `oracle` | **A measuring stick, opt in**: the planner's search on **full information**, the deal too, each line to the game's end; it follows a winning line, so its win rate is a floor on perfect play (`oracle.rs`). **`worlds`** (249, the real
-oracle): the search on that many worlds sampled from what players see, never the true table; a candidate is taken by
-worlds won, then mean heuristic; `budget` counts lines; no `tries`. **`tries`**: whole-game restarts on other policy seeds (`truth` every other one); **`truth`**: lines score the true table; **`prove`**: a card proof (only a line playing that card wins). | the planner's four, `reseeds` 0, `threads` 1, `tries` 1, `truth` 0, `prove` 0 |
+oracle; alias `real`: on `STRATEGIST`, 4 worlds, 32 lines a round): the search on worlds sampled from what players
+see; a candidate is taken by worlds won, then mean heuristic; `budget` counts lines (it sets the decisions searched:
+314); `phases=1` searches the draft too, `lone=1` skips a lone candidate; `tries` there only measures (it reads the
+true loss). **`tries`**: whole-game restarts on other policy seeds (`truth` every other one); **`truth`**: lines score the (world's) table; **`prove`**: a card proof. | the planner's four, `reseeds` 0, `threads` 1, `tries` 1, `truth` 0, `prove` 0, `phases` 0, `lone` 0 |
 
 **Keeping by plan (`agents/keep_plan.rs`, `plan_keep`).** Greedy, engine and planner keep drafts by a plan. At its
 first keep of a round a seat sketches `plan_rounds` rounds from what it holds and earns, fills each round's budget
@@ -146,7 +148,7 @@ agent would misread (`policy::check_param`) is refused with the reason.
 | The judge | `strategist` | the per-level bands ([principles.md](principles.md)) |
 | A strategy player, information; spot checks | `strategist:strategy=1`; `planner:strategy=1` | none |
 | A skilled player with full information (it sees hidden cards: never a fair player) | `oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1,tries=3` | d4 95 |
-| **The real oracle**: very strong play that can't see the future (the design target) | `bench/skilled_rows.py`'s `real` | none yet |
+| **The real oracle**: very strong play that can't see the future (the design target) | `real` (on the judge's eval); 314's strongest: `real:budget=128` | none yet |
 
 After a change to how the game is won, smoke greedy beside the strategist: a
 greedy lead means the engine weights still encode the old win. A strategy pairing's win rate (`strat0`,

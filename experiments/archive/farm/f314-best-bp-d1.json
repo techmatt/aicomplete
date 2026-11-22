@@ -1,0 +1,22 @@
+{
+  "name": "f314-best-bp-d1",
+  "note": "314, the strongest fair player (real:budget=128); pair bp, d1, fresh set B (6 seeds from 51954).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    }
+  ],
+  "difficulties": [
+    1
+  ],
+  "agents": [
+    "real:budget=128"
+  ],
+  "games": 6,
+  "first_seed": 51954,
+  "records": 0
+}

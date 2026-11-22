@@ -1,0 +1,24 @@
+{
+  "name": "f314-r5-pr-d3",
+  "note": "314, step 3's middle point: real:budget=64 (2x the lines a round); pair pr, d3, fresh set A (6 seeds from 51948).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    3
+  ],
+  "agents": [
+    "real:budget=64"
+  ],
+  "games": 6,
+  "first_seed": 51948,
+  "records": 0
+}

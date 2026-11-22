@@ -1,0 +1,24 @@
+{
+  "name": "f314-best-pr-d0",
+  "note": "314, the strongest fair player (real:budget=128); pair pr, d0, fresh set B (5 seeds from 51965).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "real:budget=128"
+  ],
+  "games": 5,
+  "first_seed": 51965,
+  "records": 0
+}

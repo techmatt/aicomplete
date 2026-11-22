@@ -1,0 +1,30 @@
+{
+  "name": "f314-bcheap-br",
+  "note": "314: greedy, the judge and the full oracle beside the strongest fair player; pair br, d0-d4, set B.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "greedy",
+    "strategist",
+    "oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1,tries=3"
+  ],
+  "games": 5,
+  "first_seed": 51960,
+  "records": 0
+}

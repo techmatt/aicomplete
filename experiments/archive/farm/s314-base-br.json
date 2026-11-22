@@ -1,0 +1,24 @@
+{
+  "name": "s314-base-br",
+  "note": "314's screen of the real oracle's new options: real; pair br, d4, 313's spent ladder seeds (8 from 51552).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    4
+  ],
+  "agents": [
+    "real"
+  ],
+  "games": 8,
+  "first_seed": 51552,
+  "records": 0
+}

@@ -1,0 +1,28 @@
+{
+  "name": "f314-r0-pr",
+  "note": "314, the strong fair player's decomposition: the real oracle (`real`: the judge's eval, 4 worlds, 32 lines a round); pair pr, d0-d4, fresh set A (6 seeds from 51948).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "real"
+  ],
+  "games": 6,
+  "first_seed": 51948,
+  "records": 0
+}

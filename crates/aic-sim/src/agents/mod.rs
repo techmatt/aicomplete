@@ -48,6 +48,8 @@
 //!   deal included, each line played to the game's end: a line that wins
 //!   proves the seed winnable and is followed ([`oracle`]). A measuring
 //!   stick for a skilled player, opt in.
+//! - `real` (314): an alias, the real oracle: the oracle's search on sampled worlds ([`REAL`]) on the judge's
+//!   evaluation as it stands ([`STRATEGIST`]), so the fair-information yardstick moves with the judge.
 //!
 //! `greedy`, `engine` and `planner` keep by plan: [`policy::Policy`] wraps them, decides
 //! their keeps, applies the dominance checks' forced behaviors and the agent behaviors
@@ -321,6 +323,8 @@ pub const LADDER: &[(&str, &[Param])] = &[
             ("salt", 0.0, "243: moves every line's policy seed (a restart's try)"),
             ("prove", 0.0, "243, a card proof: only a line that plays this card wins, and lines take it at every chance (1-based row of `aic-sim cards`; 0: off)"),
             ("worlds", 0.0, "249, the real oracle: worlds sampled from what players can see, every candidate played to the end on each; `budget` then counts lines (0: the full oracle, on the true table)"),
+            ("phases", 0.0, "314, with worlds: 1 searches every phase's decisions (the draft too), 0 the action phase's alone"),
+            ("lone", 0.0, "314, with worlds: 1 plays a decision's lone candidate unsearched, saving the round's lines for a choice"),
         ],
     ),
 ];
@@ -347,6 +351,11 @@ w.horizon=0,w.insight_income=0,w.packet_keep=1,w.production=0,w.strat_contents=0
 w.tag_hand=0,w.purge=1.8,w.last_node=120,w.card_action=3,w.sink=0.5,w.am_tie=0.6667,w.am_cap=1,w.am_idle=0.2,w.adv_read=1,w.lib_clock=1,\
 reach_rule=1";
 
+/// `real` (314), the real oracle's search (249): 4 sampled worlds, 3 alternatives a decision, 32 lines a round,
+/// answers one prompt deep, its lines scoring their own world. On [`STRATEGIST`]'s evaluation, so it tracks the
+/// judge (249 pinned the judge's weights of its day; `scripts/bench/skilled_rows.py`'s `real` row).
+const REAL: &str = "worlds=4,alts=3,budget=32,answers=1,truth=1";
+
 /// A kind's place on the [`LADDER`].
 fn rung(kind: &str) -> Option<usize> {
     LADDER.iter().position(|(k, _)| *k == kind)
@@ -362,13 +371,16 @@ impl AgentSpec {
         } else if kind == "strategist" {
             swept = format!("{STRATEGIST},{rest}");
             ("engine", swept.as_str())
+        } else if kind == "real" {
+            swept = format!("{STRATEGIST},{REAL},{rest}");
+            ("oracle", swept.as_str())
         } else {
             (kind, rest)
         };
         let Some(rung) = rung(kind) else {
             let names: Vec<&str> = LADDER.iter().map(|(k, _)| *k).collect();
             return Err(format!(
-                "unknown agent {kind:?}; known: {}, or the aliases strategist, sweep",
+                "unknown agent {kind:?}; known: {}, or the aliases strategist, real, sweep",
                 names.join(", ")
             ));
         };
@@ -445,9 +457,10 @@ impl AgentSpec {
                 ));
             }
         }
-        if kind == "oracle" && params["worlds"] > 0.0 && (params["tries"] > 1.0 || params["prove"] > 0.0 || params["reseeds"] > 0.0) {
-            // 249: a restart reads the true game's loss; a proof and reseeds are the full oracle's.
-            return Err(format!("agent {spec:?}: worlds (the real oracle) takes no tries, prove or reseeds"));
+        if kind == "oracle" && params["worlds"] > 0.0 && (params["prove"] > 0.0 || params["reseeds"] > 0.0) {
+            // 249: a proof and reseeds are the full oracle's. 314: `tries` is taken, as a measuring arm only: a
+            // restart reads the true game's loss, so the real oracle with tries is no fair-information player.
+            return Err(format!("agent {spec:?}: worlds (the real oracle) takes no prove or reseeds"));
         }
         eval::check_names(weights.keys().map(String::as_str)).map_err(|e| format!("agent {spec:?}: {e}"))?;
         value::table_with(&table).map_err(|e| format!("agent {spec:?}: {e}"))?;
@@ -723,6 +736,8 @@ impl AgentSpec {
                     salt: self.p("salt") as u64,
                     prove: self.prove_card(),
                     worlds: self.p("worlds"),
+                    phases: self.p("phases"),
+                    lone: self.p("lone"),
                 },
             )),
             k => unreachable!("agent kind {k} is checked in parse"),
@@ -744,6 +759,14 @@ mod tests {
         assert_eq!(named("sweep"), named("planner:deals=1,lead=0"));
         assert_eq!(named("sweep:budget=4"), named("planner:deals=1,lead=0,budget=4"));
         assert_eq!(named("sweep:deals=2"), named("planner:deals=2,lead=0"));
+        // 314: `real` is the real oracle on the judge's evaluation, a spec's own numbers last.
+        let real = |spec: &str| {
+            let s = AgentSpec::parse(spec).unwrap();
+            (s.kind, s.params, s.weights)
+        };
+        assert_eq!(real("real"), real(&format!("oracle:{STRATEGIST},{REAL}")));
+        assert_eq!(real("real:budget=128").1["budget"], 128.0);
+        assert!(AgentSpec::parse("real:tries=3").is_ok());
     }
 
     /// 131: `t.<key>=v` sets one value-table number for one agent: none is the

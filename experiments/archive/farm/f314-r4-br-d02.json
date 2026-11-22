@@ -1,0 +1,26 @@
+{
+  "name": "f314-r4-br-d02",
+  "note": "314, the strong fair player's decomposition: step 3: 8 worlds a candidate (2x the lines, the same decisions); pair br, d0-d2, fresh set A (6 seeds from 51942).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2
+  ],
+  "agents": [
+    "real:worlds=8,budget=64"
+  ],
+  "games": 6,
+  "first_seed": 51942,
+  "records": 0
+}
