@@ -1,0 +1,103 @@
+{
+ "name": "scene_batch_11",
+ "title": "Card scenes, batch 11",
+ "intro": "Keep or reject each scene, in the C and E mix. Each tile is the bare scene over two real cards, a program or event and a building, composed at 300 dpi with the full bleed showing: the program window is the whole scene, the building window its center. Scenes are a pool: the card a scene was written for is a suggestion. The second card only shows the other window. For true size, print art-originals/scenes/b11/cards.pdf at 100%. Use the notes for what to change.",
+ "rows": [
+  {
+   "id": "antiproton_foundry_line",
+   "label": "1. Industry: A heavy industrial production line feeding chip trays into a ring of shielded magnets, a single bright point held at its center.",
+   "note": "Written for Antiproton Foundry. Shown on Prefab Plant Kit and Antiproton Foundry. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_11/antiproton_foundry_line.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "dark_fiber_collider",
+   "label": "2. Power: A small collider ring threaded through a dim server hall, fiber bundles glowing violet along it, an engineer reading a terminal.",
+   "note": "Written for Dark Fiber Collider. Shown on Shared Compute Grant and Dark Fiber Collider. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_11/dark_fiber_collider.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "treaty_isotope_bank",
+   "label": "3. Power: A neutral-flagged vault of shielded flasks behind glass, two delegations signing a ledger at a long table before it.",
+   "note": "Written for Treaty Isotope Bank. Shown on Summit Caucus and Treaty Isotope Bank. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_11/treaty_isotope_bank.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "penning_trap_racks",
+   "label": "4. Science: Rows of tall cylindrical magnetic traps in a clean white hall, each holding a faint violet glow, a technician logging one by hand.",
+   "note": "Written for Penning Trap Array. Shown on Predictive Modeling and Penning Trap Array. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_11/penning_trap_racks.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "cryo_sample_dewars",
+   "label": "5. Science: A cold vault of steaming liquid-nitrogen dewars on steel shelves, a researcher in thick gloves lifting out a frosted sample rack.",
+   "note": "Written for Cryo Sample Vault. Shown on Dataset Scraper and Cryo Sample Vault. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_11/cryo_sample_dewars.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "field_assay_tent",
+   "label": "6. Science: A small field lab tent on a muddy street corner, two scientists running a portable analyzer while a patrol waits beside them.",
+   "note": "Written for Field Assay Team. Shown on Recruit Operatives and Field Assay Team. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_11/field_assay_tent.jpg",
+     "label": "keep"
+    }
+   ]
+  }
+ ]
+}
