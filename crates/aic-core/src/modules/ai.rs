@@ -750,6 +750,9 @@ impl Module for Ai {
                         why => why.unwrap_or("ready").into(),
                     },
                     cost: None,
+                    // 320: a node power, as the rules read one (the player view grouped them by their text).
+                    node: power_places(w, s, k),
+                    ..Default::default()
                 })
                 .collect();
             out.board(

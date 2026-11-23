@@ -1,6 +1,49 @@
 use super::*;
 use crate::modules::threats;
 
+/// 320: `apply_traced` plays as `apply` does (state and events alike), and keeps one board per phase or round mark
+/// the action ran into, keyed by that mark's index in the events: what the turn panel's earlier steps draw.
+#[test]
+fn apply_traced_plays_as_apply_and_keeps_a_board_per_mark() {
+    let mut rules = Rules::new(&baseline()).unwrap();
+    let mut g = rules.new_game(3);
+    let mut multi = 0;
+    for step in 0..300 {
+        if g.is_over() {
+            break;
+        }
+        let legal = rules.legal_actions(&g);
+        // Pass where a seat may (so the rounds turn over), else a spread of the rest.
+        let a = legal.iter().find(|a| matches!(a, Action::Pass { .. })).unwrap_or(&legal[step * 7919 % legal.len()]).clone();
+        let (next, events) = rules.apply(&g, &a).unwrap();
+        let (traced, tevents, marks) = rules.apply_traced(&g, &a).unwrap();
+        assert_eq!((&traced, &tevents), (&next, &events), "step {step}");
+        let at: Vec<usize> = events
+            .iter()
+            .enumerate()
+            .filter(|(_, e)| matches!(e, Event::PhaseStarted { .. } | Event::RoundStarted { .. }))
+            .map(|(i, _)| i)
+            .collect();
+        assert_eq!(marks.iter().map(|m| m.0).collect::<Vec<_>>(), at, "step {step}");
+        if marks.len() > 1 {
+            multi += 1;
+            // Each board is a whole, viewable state; the round never runs backward, and a round mark's board is the
+            // round that ended (its number unchanged).
+            for w in marks.windows(2) {
+                assert!(w[0].1.round <= w[1].1.round);
+            }
+            for (at, b) in &marks {
+                if let Event::RoundStarted { round } = &events[*at] {
+                    assert_eq!(b.round + 1, *round, "step {step}");
+                }
+                let _ = rules.view(b);
+            }
+        }
+        g = next;
+    }
+    assert!(multi > 0, "no action ran through several phases");
+}
+
 /// 235 (D101): a power whose tags one source alone can pay takes it unasked; the view names it (the playtest's Audit
 /// took an 11-credit building with no word). Two sources: it asks, and names none.
 #[test]

@@ -49,7 +49,8 @@ const CHECKS = `(() => {
   const { vis } = window.__aicScreen;
   const HARD = new Set(${JSON.stringify(SCREEN_HARD)});
   const count = (h, kind) => h.tokens.find((t) => t.kind === kind)?.count ?? 0;
-  const glob = (k) => aic.view.globals.find((x) => x.key === k);
+  // 320: the board the page draws (the turn panel's earlier step while it shows one: map, tracks and rows alike).
+  const glob = (k) => aic.mapView.globals.find((x) => x.key === k);
   const any = (sel) => [...document.querySelectorAll(sel)].find(vis);
   window.__pt = {
     /** { hard, soft }: each a list of "kind: what" lines. */
@@ -61,8 +62,8 @@ const CHECKS = `(() => {
     },
     /** The overhaul's rules on screen now: each key true when the player view shows it, a string when it shows it wrongly. */
     rules() {
-      const v = aic.view, r = {};
-      const tipped = !document.querySelector('#p-turn.phase-board:not([hidden])') && v.hexes.some((h) => h.tokens.some((t) => t.kind.startsWith('tipped:') && t.count > 0));
+      const v = aic.mapView, r = {};
+      const tipped = v.hexes.some((h) => h.tokens.some((t) => t.kind.startsWith('tipped:') && t.count > 0));
       if (tipped) r.tippedAmbassador = any('#board .token[data-token^="tipped:"] .tipped') ? true : 'a tipped ambassador in the view is not drawn tipped';
       if (aic.legal.some((a) => a.type === 'standard' && a.act === 'liberate' && a.seat === aic.focus)) r.liberateOffered = any('#p-bar button.a-standard[data-action*="liberate"]') ? true : 'Liberate is legal with no button';
       const bill = any('#player .plib');
@@ -78,13 +79,34 @@ const CHECKS = `(() => {
       if (turn && vis(turn) && /card beat/i.test(turn.textContent)) r.cardBeat = true;
       if (turn && vis(turn) && /income beat/i.test(turn.textContent)) r.incomeBeat = true;
       if (document.querySelector('#p-turn.phase-board')) r.phaseBoard = true;
+      // 320: an earlier step of the turn shows that step's tracks and rows, not the board after the turn: each seat
+      // row's resources and the research row's slot read the drawn board's, and once they differ from the board now
+      // the rollback is seen.
+      if (document.querySelector('#p-turn.phase-board:not([hidden])') && v !== aic.view) {
+        const res = (view, s, k) => view.seats[s].values.find((x) => x.key === 'resource.' + k)?.value ?? 0;
+        const bad = [];
+        let differs = false;
+        for (const s of v.seats) {
+          for (const el of document.querySelectorAll('#p-seats .pseat[data-seat-focus="' + s.index + '"] .sres[data-value^="resource."]')) {
+            const k = el.dataset.value.slice('resource.'.length);
+            const shown = Number(el.querySelector('b')?.textContent);
+            if (shown !== res(v, s.index, k)) bad.push('seat ' + s.index + ' ' + k + ' reads ' + shown + ', the step has ' + res(v, s.index, k));
+            if (res(v, s.index, k) !== res(aic.view, s.index, k)) differs = true;
+          }
+        }
+        const slot = document.querySelector('#player .research-row')?.dataset.researchSlot;
+        const want = glob('adversary.research_slot')?.value;
+        if (slot !== undefined && want !== undefined && Number(slot) !== want) bad.push('the research row reads slot ' + slot + ', the step has ' + want);
+        if (want !== aic.view.globals.find((x) => x.key === 'adversary.research_slot')?.value) differs = true;
+        if (bad.length) r.pastRows = bad.join('; ');
+        else if (differs) r.pastRows = true;
+      }
       if (glob('board.strike_ahead')?.value === 1) r.strikeAhead = any('#player .slot-box.next .ahead.strike') ? true : 'a Strike ahead with no notice';
       if (glob('board.redeploy_ahead')?.value === 1) r.redeployAhead = any('#player .slot-box.next .ahead.redeploy') ? true : 'a Redeploy ahead with no notice';
-      // While the turn panel shows an earlier step the map draws that step (#p-turn.phase-board), not the view after.
-      const after = !document.querySelector('#p-turn.phase-board:not([hidden])');
-      const troops = after ? v.hexes.reduce((n, h) => n + count(h, 'troop'), 0) : 0;
+      // v is the board drawn: an earlier step's while the turn panel shows one (#p-turn.phase-board).
+      const troops = v.hexes.reduce((n, h) => n + count(h, 'troop'), 0);
       if (troops) r.troops = any('#board .token[data-token="troop"]') ? true : 'troops in the view, none drawn';
-      if (after && v.arrows.some((a) => a.kind === 'guard')) r.garrison = any('#board .arrows .arrow.guard path.shield') ? true : 'a guard link with no shield';
+      if (v.arrows.some((a) => a.kind === 'guard')) r.garrison = any('#board .arrows .arrow.guard path.shield') ? true : 'a guard link with no shield';
       const row = any('#player .research-row');
       if (row) r.researchRow = true;
       const k = any('#player .research-row .rk');
@@ -191,10 +213,12 @@ try {
     const record = await page.js(`document.getElementById('record-text').value`);
     await page.js(`document.getElementById('record-close').click()`);
     writeFileSync(join(out, 'record.json'), record.endsWith('\n') ? record : `${record}\n`);
-    const RULES = ['tippedAmbassador', 'liberateOffered', 'liberateBill', 'liberateBlocked', 'nodePowers', 'nodePowerUsed', 'cardBeat', 'incomeBeat', 'phaseBoard',
+    const RULES = ['tippedAmbassador', 'liberateOffered', 'liberateBill', 'liberateBlocked', 'nodePowers', 'nodePowerUsed', 'cardBeat', 'incomeBeat', 'phaseBoard', 'pastRows',
       'strikeAhead', 'redeployAhead', 'troops', 'garrison', 'researchRow', 'researchK', 'roundCap', 'deckLeft', 'discord', 'unity'];
     const failures = [...[...issues].map(([x, r]) => `round ${r}: ${x}`), ...wrong.values()];
     if (!end.outcome) failures.push('no outcome');
+    // 320: the bar for Matt's playthrough: a turn step shown before the board after it shows that step's rows.
+    if (seen.pastRows === undefined && !wrong.has('pastRows')) failures.push('no earlier turn step showed rows that differ from the board after the turn');
     if (page.consoleErrors.length) failures.push(`${page.consoleErrors.length} console errors`);
     const summary = {
       how: 'every move clicked in the player view (web/scripts/playthrough.mjs)', config: file, seed, size: `${width}x${height}`,

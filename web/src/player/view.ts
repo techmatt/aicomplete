@@ -4,7 +4,7 @@
 // hex); any action no component claims, and any view part no component draws, falls back to the generic
 // rendering (a labeled button, a chip), so a new module shows with no new UI work. No rules live here.
 
-import { param, type Action, type CardView, type Config, type View } from '../engine';
+import { param, phaseViews, type Action, type CardView, type Config, type Snapshot, type View } from '../engine';
 import { actionLabel, actionRule, amount, contentIds, countryName, escapeHtml as esc, hexKey, hexesIn, isHex, strong, tokenName, type LabelContext } from '../format';
 import { phaseGroups } from '../log';
 import { cardChip, pilesHtml, seatValuesHtml, varsHtml } from '../panels';
@@ -20,6 +20,9 @@ export interface PlayerCtx {
   /** The frame shown, and the phase name it was taken in (the step before's). */
   frame: Frame;
   before: string;
+  /** 320: the board the turn panel shows (`turnView`, an earlier step's), else `view`: the seat rows, the shown seat's
+   *  tracks and values and the piles draw from it; the hand, powers, bar and every control from `view` (the board now). */
+  board?: View;
 }
 
 export interface PlayerUi {
@@ -165,14 +168,15 @@ function draftHtml(v: View, ctx: PlayerCtx, s: number, mine: Action[]): string {
     parts.push(`<h4>${esc(packet.label)}${drafts.length ? ' <small>take one; the rest pass on</small>' : ''}</h4>` + row(packet.cards, 'cards.packet',
       (c) => drafts.filter((a) => a.card === c.id).map((a) => btn(a, 'Draft', 'primary')).join(''),
       (c) => {
-        // 261: the seat's own keep price, from the tile's status (the config's base ignored the keep upgrade).
-        const k = /keep (\d+ insight|free)/.exec(c.status)?.[1];
+        // 261: the seat's own keep price (the config's base ignored the keep upgrade). 320: the view's field, not the
+        // status words.
+        const k = c.keep === undefined ? undefined : c.keep ? `${c.keep} insight` : 'free';
         return `${c.cost ?? '?'} credits to play${k !== undefined ? ` · keep ${k}` : ''}`;
       }));
   }
   if (drafted?.cards.length) {
     parts.push(`<h4>${esc(drafted.label)}</h4>` + row(drafted.cards, 'cards.drafted',
-      (c) => keeps.filter((a) => a.card === c.id).map((a) => btn(a, `Keep${/keep (\d+) insight/.test(c.status) ? ` (${/keep (\d+) insight/.exec(c.status)![1]} insight)` : ''}`, 'primary')).join(''),
+      (c) => keeps.filter((a) => a.card === c.id).map((a) => btn(a, `Keep${c.keep ? ` (${c.keep} insight)` : ''}`, 'primary')).join(''),
       (c) => `${c.cost ?? '?'} credits to play · ${c.status}`));
   }
   return `<div class="psec draft">${parts.join('')}</div>`;
@@ -225,9 +229,9 @@ function powersHtml(v: View, ctx: PlayerCtx, s: number, mine: Action[]): string 
     return `<li class="${c.status.startsWith('ready') ? 'ready' : c.status.startsWith('used') ? 'used' : ''}" data-card="${esc(c.id)}" data-where="board:${s}"><b>${esc(c.name)}</b> <small>${esc(c.status)}</small>${acts}<div class="ptext">${esc(c.text ?? '')}</div></li>`;
   };
   // 305: the board's node powers first, under their own heading with how many are left this round (each once a
-  // round, all of them usable in one round); the sacrifice and other powers after them. A node power is one whose
-  // printed text places a node.
-  const node = powers.filter((c) => /place \d+ Node/i.test(c.text ?? ''));
+  // round, all of them usable in one round); the sacrifice and other powers after them. A node power is one that
+  // places nodes (320: the view's `node` field; it was read off the printed text).
+  const node = powers.filter((c) => c.node);
   const other = powers.filter((c) => !node.includes(c));
   const used = node.filter((c) => c.status.startsWith('used')).length;
   const innate = b.innate ? `<div class="innate"><b>${esc(b.innate.name)}:</b> ${esc(b.innate.text ?? '')}${b.tags?.length ? ` <small>${b.tags.map(esc).join(', ')} tag (printed)</small>` : ''}</div>` : '';
@@ -244,14 +248,15 @@ function powersHtml(v: View, ctx: PlayerCtx, s: number, mine: Action[]): string 
  * 305: where Liberate stands for the shown seat, beside the standard actions: each corrupted site holding its
  * ambassador, with the bill (its ambassadors there first, then its supply) and what keeps it from liberating now (an
  * agent on it, a troop guarding it, the ambassador there already used this round, the bill short). Read off the view
- * (its tokens, guard links and the action's own rule text); the engine's legal actions still decide: the Liberate
- * button shows only when it is legal. With no ambassador on a corrupted site, the rule in one line.
+ * (its tokens, guard links and the action's per-site prices, 320: `sites`, which replaced a regex over its words);
+ * the engine's legal actions still decide: the Liberate button shows only when it is legal. With no ambassador on a
+ * corrupted site, the rule in one line.
  */
 function liberateHtml(v: View, s: number): string {
   const rule = v.standard.find((x) => x.act === 'liberate');
   if (!rule) return '';
   const doc = rule.doc ?? '';
-  const price = (kind: string) => Number(new RegExp(`(\\d+)(?: ambassadors)? \\(a ${kind}\\)`).exec(doc)?.[1] ?? NaN);
+  const price = (kind: string) => rule.sites?.find((x) => x.kind === kind)?.ambassadors ?? NaN;
   const count = (h: View['hexes'][number], k: string) => h.tokens.find((t) => t.kind === k)?.count ?? 0;
   const supply = v.seats[s].values.find((x) => x.key === 'resource.ambassadors')?.value ?? 0;
   const lines = v.hexes.filter((h) => count(h, 'cube:adversary') > 0 && count(h, `ambassador:${s}`) > 0).map((h) => {
@@ -335,7 +340,15 @@ function promptControls(ctx: PlayerCtx, mine: Action[]): string {
 
 // ---------- the adversary's turn ----------
 
-interface Turn { frame: Frame; steps: { label: string; events: Frame['events'] }[]; at: number; open: boolean }
+interface Turn {
+  frame: Frame;
+  /** `end`: the index of the mark closing the step in the frame's events (`apply_phases` keys the board there). */
+  steps: { label: string; events: Frame['events']; end: number; phase?: string }[];
+  at: number;
+  open: boolean;
+  /** 320: the board at each mark, fetched once, the first time an earlier step shows. */
+  views?: { at: number; view: View }[];
+}
 let turn: Turn | null = null;
 /** The adversary's phases by their rulebook step (`shortPhase`): B its card and lines, F threats. */
 const ADV_PHASE = /^[BF] /;
@@ -351,7 +364,7 @@ function turnOf(f: Frame, before: string): Turn['steps'] {
     && groups[0].events.some((e) => e.type === 'note' && / strikes | destroyed| holds: /.test(String(e.text)));
   if (groups.length < 2 && !answered) return [];
   // A phase that changed nothing is no step.
-  return groups.filter((g) => g.events.length).map((g) => ({ label: g.label, events: g.events }));
+  return groups.filter((g) => g.events.length).map((g) => ({ label: g.label, events: g.events, end: g.end, phase: g.phase }));
 }
 
 /** The hexes the shown step of the adversary's turn changed, or null when no turn is open for `f`. */
@@ -370,38 +383,32 @@ export function turnHexes(f: Frame, before: string, over = false): Set<string> |
 }
 
 /**
- * 305: the map as it stood at the end of the shown step of an open turn, or null when that is the board after the
- * turn (the last step, or no piece moved after it). Each piece a later step changed goes back to its count before
- * that step's first change (`total - delta`); a troop's strike and guard links go with a troop no longer there.
- * Tracks, piles and rows are not rolled back: the panel says so.
+ * 305: the board as it stood at the end of the shown step of an open turn, or null when that is the board after the
+ * turn (the last step). 320: the whole board, the engine's own view of it (`phaseViews` replays the step's action
+ * from `prev`, the state before it, and keeps the view at each phase mark): the map, tracks, rows and piles all go
+ * back (305 rolled back the map's pieces only).
  */
-export function turnView(v: View): View | null {
-  if (!turn?.open || turn.at >= turn.steps.length - 1) return null;
-  const before = new Map<string, number>();
-  for (const s of turn.steps.slice(turn.at + 1)) {
-    for (const e of s.events) {
-      if (e.type !== 'tokens_changed' || !isHex(e.hex)) continue;
-      const k = `${hexKey(e.hex as [number, number])}|${String(e.token)}`;
-      if (!before.has(k)) before.set(k, Number(e.total) - Number(e.delta));
-    }
+export function turnView(prev: Snapshot | undefined): View | null {
+  if (!turn?.open || turn.at >= turn.steps.length - 1 || !prev || !turn.frame.action) return null;
+  try {
+    turn.views ??= phaseViews(prev, turn.frame.action);
+  } catch {
+    // An action the engine refuses from `prev` (none should: it is the step's own) shows the board after the turn.
+    turn.views = [];
   }
-  if (!before.size) return null;
-  const hexes = v.hexes.map((h) => {
-    const key = hexKey(h.hex);
-    const tokens = h.tokens.map((t) => ({ ...t }));
-    for (const [k, n] of before) {
-      const at = k.lastIndexOf('|');
-      if (k.slice(0, at) !== key) continue;
-      const kind = k.slice(at + 1);
-      const t = tokens.find((x) => x.kind === kind);
-      if (t) t.count = n;
-      else tokens.push({ kind, count: n });
-    }
-    return { ...h, tokens: tokens.filter((t) => t.count > 0) };
-  });
-  const troops = (i: number) => hexes[i].tokens.some((t) => t.kind === 'troop' && t.count > 0);
-  const arrows = v.arrows.filter((a) => !['troop', 'guard'].includes(a.kind) || troops(a.from));
-  return { ...v, hexes, arrows };
+  const step = turn.steps[turn.at];
+  return turn.views.find((x) => x.at === step.end)?.view ?? null;
+}
+
+/**
+ * 320: `v` (an earlier step's board, `turnView`) for the phase bar: a board at a mark stands at the next phase's
+ * door, so the bar marks the shown step's own phase. `first`: the config's name of the phase the step's action was
+ * taken in, the phase of a step no `phase_started` mark opened.
+ */
+export function stepPhaseView(v: View, first?: string): View {
+  const name = turn?.open ? turn.steps[turn.at]?.phase ?? first : undefined;
+  const i = name ? v.round_order.findIndex((p) => p.name === name) : -1;
+  return i < 0 ? v : { ...v, phase: { index: i, name: name!, kind: v.round_order[i].kind, waiting: [] } };
 }
 
 /** 305: the adversary's two beats, by the turn's step labels (`shortPhase`): its card, then its income. */
@@ -467,7 +474,8 @@ function summary(events: Frame['events']): string {
   return what ? `${what} changed (the seat rows show them)` : 'bookkeeping only (tracks)';
 }
 
-function turnHtml(): string {
+/** `past`: whether the board drawn is the shown step's (`turnView`), not the board after the turn. */
+function turnHtml(past: boolean): string {
   if (!turn) return '';
   // 265 (D115): one heading, "Since your last move": the steps run from the players' own phases (D Actions,
   // E income) through the adversary's, so "The adversary's turn" misnamed most of them.
@@ -492,11 +500,10 @@ function turnHtml(): string {
   // 289 (D133): the step's notes come before the step list, which scrolls by itself (at 1366x768 the notes sat
   // under the list, below the side column's fold).
   const beat = beatOf(cur.label);
-  // 305: the map shows the pieces as they stood at the end of the shown step (`turnView`), not the board after the turn.
-  const past = t.at < t.steps.length - 1 && t.steps.slice(t.at + 1).some((s) => s.events.some((e) => e.type === 'tokens_changed'));
+  // 305: the map shows the board as it stood at the end of the shown step (`turnView`). 320: the tracks and rows too.
   const mapNote = past
-    ? `The map shows the pieces as they stood at the end of this step; the rows and tracks show the board after the turn (▶ to the last step for the map after it). Outlined: the hexes this step changed.`
-    : 'The map shows the board after the turn; outlined: the hexes this step changed.';
+    ? `The map, tracks and rows show the board as it stood at the end of this step; the shown seat's hand, powers and buttons are the board now (▶ to the last step for the board after the turn). Outlined: the hexes this step changed.`
+    : 'The board after the turn; outlined: the hexes this step changed.';
   return `<div class="pturn-head"><b>Since your last move</b> <span>step ${t.at + 1} of ${t.steps.length}: ${esc(cur.label)}${beat ? ` · <b class="pbeat">${esc(beat)}</b>` : ''}</span>
       <button type="button" data-turn="-1" ${t.at === 0 ? 'disabled' : ''}>◀</button><button type="button" data-turn="1" ${t.at === t.steps.length - 1 ? 'disabled' : ''}>▶</button>
       <button type="button" data-turn="close">Done</button></div>
@@ -519,7 +526,8 @@ export function renderPlayer(ui: PlayerUi, ctx: PlayerCtx) {
   const v = ctx.view;
   const focus = focusSeat(v, ctx.legal);
   const mine = ctx.legal.filter((a) => a.seat === focus);
-  ui.seats.innerHTML = stripHtml(v, ctx.legal, focus);
+  const board = ctx.board ?? v;
+  ui.seats.innerHTML = stripHtml(board, ctx.legal, focus);
 
   // 261: an open question's answers are its seat's, whichever seat is shown (pinning another seat emptied the bar
   // that says "answer here").
@@ -537,7 +545,7 @@ export function renderPlayer(ui: PlayerUi, ctx: PlayerCtx) {
   ui.seat.innerHTML = `
     <div class="p-head"><span class="swatch"></span><b>${esc(seatName(v, focus))}</b> <small>${esc(countryName(v, s.country))}</small>${st.text ? `<span class="pst ${st.cls}">${st.text}</span>` : ''}</div>
     <div class="p-body${draft ? ' drafting' : ''}">
-      <div class="p-info">${seatValuesHtml(v, focus)}</div>
+      <div class="p-info">${seatValuesHtml(board, focus)}</div>
       <div class="p-powers">${powersHtml(v, ctx, focus, mine)}</div>
       <div class="p-hand">${draft}${handHtml(v, ctx, focus, mine)}</div>
       <div class="p-built">${builtHtml(v, ctx, focus, mine)}</div>
@@ -573,9 +581,9 @@ export function renderPlayer(ui: PlayerUi, ctx: PlayerCtx) {
     `<span class="pgroup end">${pass.join('')}${all}${switchTo}</span>`,
   ].join('');
 
-  ui.turn.innerHTML = turnHtml();
+  ui.turn.innerHTML = turnHtml(board !== v);
   ui.turn.hidden = !turn;
-  ui.turn.classList.toggle('phase-board', !!turnView(v));
+  ui.turn.classList.toggle('phase-board', board !== v);
   showTurnStep(ui.turn);
-  ui.more.innerHTML = pilesHtml(v) + varsHtml(v, true);
+  ui.more.innerHTML = pilesHtml(board) + varsHtml(board, true);
 }

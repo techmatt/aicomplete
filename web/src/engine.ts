@@ -60,7 +60,8 @@ export interface Value {
   source: string;
   doc?: string;
 }
-export interface CardView { id: string; name: string; text?: string; status: string; cost?: number }
+/** 320: `keep`, a draft or drafted card's keep price for its seat in insight (0 free); `node`, a power placing nodes. */
+export interface CardView { id: string; name: string; text?: string; status: string; cost?: number; keep?: number; node?: boolean }
 export interface CardGroup { key: string; label: string; source: string; cards: CardView[] }
 export interface PileView { key: string; label: string; source: string; owner: number | null; count: number; visible: CardView[] }
 export interface Token { kind: string; count: number }
@@ -119,6 +120,8 @@ export interface StandardView {
   chips: number;
   ambassadors: number;
   doc: string;
+  /** 320: a price set by the target's site kind (Liberate's ambassadors), each kind's. */
+  sites?: { kind: string; ambassadors: number }[];
 }
 
 export interface View {
@@ -238,6 +241,14 @@ export function apply(snap: Snapshot, action: Action): Step {
 
 export function view(snap: Snapshot): View {
   return JSON.parse(wasm.view(snap.json));
+}
+
+/**
+ * 320: the board at each phase or round mark `action` ran into from `snap`: `at` is the mark's index in the step's
+ * events, `view` the board as it stood there (the phase before it done). Play is `apply`'s; this replays it.
+ */
+export function phaseViews(snap: Snapshot, action: Action): { at: number; view: View }[] {
+  return JSON.parse(wasm.apply_phases(snap.json, JSON.stringify(action)));
 }
 
 /** The record text (engine-formatted) for the game `actions` took to `snap`. */

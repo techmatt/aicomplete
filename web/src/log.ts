@@ -15,11 +15,15 @@ const evItem = (e: GameEvent) => {
  * `phase_started` event and each new round with `round_started`; the events before the
  * first mark belong to the phase the action was taken in (`before`, the step's phase).
  */
-export function phaseGroups(events: GameEvent[], before: string): { label: string; round: boolean; events: GameEvent[] }[] {
-  const groups = [{ label: before, round: false, events: [] as GameEvent[] }];
-  for (const e of events) {
-    if (e.type === 'phase_started') groups.push({ label: shortPhase(String(e.phase)), round: false, events: [] });
-    else if (e.type === 'round_started') groups.push({ label: `Round ${e.round}`, round: true, events: [] });
+export function phaseGroups(events: GameEvent[], before: string): { label: string; round: boolean; events: GameEvent[]; end: number; phase?: string }[] {
+  // 320: `end`, the index of the mark that closes a group (`events.length` for the last): the engine's `apply_phases`
+  // keys the board at a group's end by it. `phase`, the config's phase name a `phase_started` group runs.
+  const groups: { label: string; round: boolean; events: GameEvent[]; end: number; phase?: string }[] = [{ label: before, round: false, events: [], end: events.length }];
+  for (const [i, e] of events.entries()) {
+    const mark = e.type === 'phase_started' || e.type === 'round_started';
+    if (mark) groups[groups.length - 1].end = i;
+    if (e.type === 'phase_started') groups.push({ label: shortPhase(String(e.phase)), round: false, events: [], end: events.length, phase: String(e.phase) });
+    else if (e.type === 'round_started') groups.push({ label: `Round ${e.round}`, round: true, events: [], end: events.length });
     else groups[groups.length - 1].events.push(e);
   }
   if (!groups[0].events.length) groups.shift();

@@ -255,6 +255,15 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
             format!("{}; costs {}", std_text(w, act), if cost.is_empty() { "nothing".into() } else { cost.join(" + ") })
         };
         out.standard(act.name(), e, cr, chips, ambassadors, &doc);
+        // 320: Liberate's price per site kind as fields (the player view read them off the words).
+        if matches!(act, StandardAction::Liberate) {
+            out.standard_sites(
+                [SiteKind::City, SiteKind::Station, SiteKind::Factory]
+                    .into_iter()
+                    .map(|k| crate::view::SitePrice { kind: k.name().into(), ambassadors: liberate_ambassadors(w, k) })
+                    .collect(),
+            );
+        }
     }
     for s in 0..g.seats.len() {
         out.seat(

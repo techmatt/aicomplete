@@ -553,6 +553,7 @@ impl Module for Threats {
                 text: format!("{THREAT_FRAME} {} Counter: {need}.{extra}", d.text),
                 status: need,
                 cost: None,
+                ..Default::default()
             }
         };
         for c in 0..w.map.countries.len() {

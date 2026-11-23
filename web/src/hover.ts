@@ -75,10 +75,13 @@ export function details(t: HTMLElement | SVGElement, shown: View, legal: Action[
   // 305: a token or hex reads the view the map was drawn from (the turn panel's earlier step, `map`).
   if (d.token !== undefined && d.hex) return tokenDetails(d.token, d.hex, map);
   if (d.hex && d.index !== undefined) return hexDetails(d.hex, Number(d.index), map, legal, cx);
-  if (d.pile) return pileDetails(d.pile, shown);
-  if (d.value) return valueDetails(d.value, d.scope, shown);
-  if (d.card) return cardDetails(d.card, d.where, shown);
-  if (d.track) return trackStepDetails(shown, d.track);
+  // 320: so does everything else drawn from it (rows, tracks, piles, cards); the shown seat's hand, powers, buildings
+  // and the bar are the board now.
+  const v = map !== shown && !t.closest('#p-bar, #p-seat .p-hand, #p-seat .p-powers, #p-seat .p-built') ? map : shown;
+  if (d.pile) return pileDetails(d.pile, v);
+  if (d.value) return valueDetails(d.value, d.scope, v);
+  if (d.card) return cardDetails(d.card, d.where, v);
+  if (d.track) return trackStepDetails(v, d.track);
   if (d.boardSeat !== undefined) return boardDetails(shown, Number(d.boardSeat));
   if (d.action) return `<code>${escapeHtml(d.action)}</code>`;
   return null;

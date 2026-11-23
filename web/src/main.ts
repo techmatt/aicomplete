@@ -19,7 +19,7 @@ import {
 } from './panels';
 import { Timeline, keptSession, parseSeed, randomSeed, readRecord, revisionNote, storageGet, storageSet } from './session';
 import { printedCard } from './player/printed';
-import { focusSeat, pin, renderPlayer, turnHexes, turnStep, turnView } from './player/view';
+import { focusSeat, pin, renderPlayer, stepPhaseView, turnHexes, turnStep, turnView } from './player/view';
 import './style.css';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -258,16 +258,22 @@ function render() {
   // 289 (D129): during a hex answer only the hexes to pick are marked (about 23 changed-hex outlines hid the 2).
   if (mode === 'player' && targets.size) changed.clear();
   const sources = new Set(shown.threat_sources.flatMap((s) => s.hexes.map((i) => hexKey(shown.hexes[i].hex))));
-  // 305: while the turn panel shows an earlier step, the map shows the pieces as they stood at its end.
-  mapView = (turn && turnView(shown)) || shown;
+  // 305: while the turn panel shows an earlier step, the map shows the board as it stood at its end. 320: the phase
+  // bar, tracks, adversary row, threat rows and seat rows too (only the map went back, and they showed the board
+  // after the turn); the question, the shown seat's hand and powers and every control stay the board now.
+  mapView = (turn && turnView(tl.frames[tl.cursor - 1]?.snap)) || shown;
+  if (mapView !== shown) {
+    const ps = tl.frames[tl.cursor - 1]?.snap.state;
+    renderPhase(stepPhaseView(mapView, ps ? ps.config.round[ps.phase] : undefined));
+  }
   renderBoard(ui.board, mapView, { targets, changed, sources });
   renderPrompt(targets.size);
-  ui.status.innerHTML = statusHtml(shown, f.snap.state.config);
-  ui.pipeline.innerHTML = pipelineHtml(shown);
-  ui.countries.innerHTML = countriesHtml(shown);
+  ui.status.innerHTML = statusHtml(mapView, f.snap.state.config);
+  ui.pipeline.innerHTML = pipelineHtml(mapView);
+  ui.countries.innerHTML = countriesHtml(mapView);
   if (mode === 'player') {
     renderPlayer({ ...playerUi, countries: ui.countries, prompt: ui.prompt }, {
-      view: shown, legal, config: f.snap.state.config, cx: labels(), frame: f, before: stepPhase(),
+      view: shown, legal, config: f.snap.state.config, cx: labels(), frame: f, before: stepPhase(), board: mapView,
     });
   } else {
     renderSeats();
@@ -336,8 +342,8 @@ function countryNames(): string[] | undefined {
   return shown?.countries.map((c) => c.name);
 }
 
-function renderPhase() {
-  const v = shown;
+/** The round and phase bar, of `v` (320: the turn panel's earlier step while it shows one). */
+function renderPhase(v: View = shown) {
   const order = v.round_order
     .map((p, i) => `<span class="phase ${p.kind}${v.phase?.index === i ? ' now' : ''}" title="${escapeHtml(p.name)} (${p.kind})">${escapeHtml(shortPhase(p.name))}</span>`)
     .join('<span class="arrow">›</span>');

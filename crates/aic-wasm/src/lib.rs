@@ -156,6 +156,21 @@ pub fn legal_actions(state_json: &str) -> Result<String, JsValue> {
     Ok(to_json(&aic_core::legal_actions(&state).map_err(err)?))
 }
 
+/// 320: the views an action passed through, as a JSON array of `{at, view}`: `at` is the index in `apply`'s events
+/// of a `round_started` or `phase_started` mark, `view` the board as it stood there (the phase before it done).
+#[wasm_bindgen]
+pub fn apply_phases(state_json: &str, action_json: &str) -> Result<String, JsValue> {
+    #[derive(Serialize)]
+    struct Mark {
+        at: usize,
+        view: aic_core::View,
+    }
+    let state: GameState = parse("state", state_json)?;
+    let action: Action = parse("action", action_json)?;
+    let marks = aic_core::apply_phases(&state, &action).map_err(err)?;
+    Ok(to_json(&marks.into_iter().map(|(at, view)| Mark { at, view }).collect::<Vec<_>>()))
+}
+
 /// Applies an action. Returns an `Applied` (`.state`, `.events`).
 #[wasm_bindgen]
 pub fn apply(state_json: &str, action_json: &str) -> Result<Applied, JsValue> {

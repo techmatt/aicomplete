@@ -588,6 +588,7 @@ impl Module for Alignment {
                 text: format!("{}: {}", c.side.title(), c.text()),
                 status: status.to_string(),
                 cost: None,
+                ..Default::default()
             }
         };
         for side in [Side::Unity, Side::Discord] {

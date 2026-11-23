@@ -15,7 +15,7 @@ const DRAWN_GLOBALS = new Set([
   'adversary.stage', 'adversary.difficulty', 'adversary.deck', 'adversary.compute',
   'threats.tier', 'alignment.unity', 'alignment.discord', 'alignment.unity_tips',
   'alignment.discord_tips', 'alignment.corrupted_cities', 'adversary.research', 'adversary.research_slot',
-  'board.strike_ahead', 'board.redeploy_ahead',
+  'board.strike_ahead', 'board.redeploy_ahead', 'adversary.escalate_ahead',
 ]);
 /** Piles drawn by the status strip, the adversary row or the countries strip. */
 const DRAWN_PILES = new Set([
@@ -176,9 +176,6 @@ export function statusHtml(v: View, config: Config): string {
 /** An adversary card's printed text: content's, else the view's without its "stage n: " (drawn as a chip). */
 const adversaryText = (c: CardView) => content.adversary.find((a) => a.id === c.id)?.text ?? (c.text ?? '').replace(/^stage \d+:\s*/, '');
 
-/** 293: the site types a card's Infiltrate lines name, as printed ("coastal cities"): what escalates the round after. */
-const infiltrateTypes = (c: CardView) => [...new Set([...adversaryText(c).matchAll(/Infiltrate: ([^.]+)\./g)].map((m) => m[1]))];
-
 /** An adversary card face under the box's title: name, stage, then its printed text. */
 function adversaryCard(c: CardView, where: string, title: string): string {
   const def = content.adversary.find((a) => a.id === c.id);
@@ -195,12 +192,18 @@ function cardBox(p: PileView | undefined, title: string, empty: string, cls: str
   return `<div class="slot-box ${cls}" data-pile="${esc(p.key)}">${cards}${foot}</div>`;
 }
 
-/** 293: what escalates this round, under last round's card: the site types its Infiltrate lines named. */
-function escalatesHtml(last: PileView | undefined): string {
-  if (!last?.visible.length) return '';
-  const types = last.visible.flatMap(infiltrateTypes).join(', ');
-  const rule = 'Escalate: each site of last round\'s type that holds an agent takes 1 more';
-  return `<div class="hint escalates" data-escalating="${esc(types)}" title="${esc(rule)}">Escalating: <b>${esc(types || 'nothing')}</b></div>`;
+/**
+ * 293: what the next Card beat escalates, under the next card. 320 (D139): the engine's `adversary.escalate_ahead`
+ * (it was read off last round's card's words, which miss the factories Escalate always includes, and it stayed in
+ * the cap's last round, when no Card beat is ahead): nothing while none is ahead.
+ */
+function escalatesHtml(v: View): string {
+  const x = findValue(v.globals, 'adversary.escalate_ahead');
+  // Paused inside the Card beat's lines (a Strike's or an arrival's question), this beat's Escalate has run already
+  // (a turn step's board at the lines' door, with no question open, has it still ahead).
+  if (!x?.value || (v.phase?.name === 'adversary.build' && v.choice)) return '';
+  const what = (x.doc ?? '').replace(/^Escalate: /, '');
+  return `<div class="hint escalates" data-escalating="${esc(what)}" data-value="${esc(x.key)}" data-scope="global" title="${esc(x.doc ?? '')}">Escalate in the next Card beat: <b>${esc(what)}</b></div>`;
 }
 
 /** 294: the Strike and Redeploy icons shown a round ahead (the next card's, or the research row's Strike slot about
@@ -273,10 +276,11 @@ export function pipelineHtml(v: View): string {
     // 184: "(face up)" headed an empty slot reading "not revealed yet".
     // 308: with the deck out too, no card comes: this is the cap's last round (the game is lost at the next Card beat).
     cardBox(next, next?.visible.length ? 'Next round (face up)' : 'Next round',
-      deck && deck.count === 0 ? (v.outcome ? 'none: the deck ran out' : 'none: the deck is out, lost at the next Card beat') : 'not revealed yet', 'next', aheadHtml(v)),
+      deck && deck.count === 0 ? (v.outcome ? 'none: the deck ran out' : 'none: the deck is out, lost at the next Card beat') : 'not revealed yet', 'next', aheadHtml(v) + escalatesHtml(v)),
     cardBox(cur, 'This round', 'no card this round', 'current'),
-    // 293: last round's card stays face up: its Infiltrate types escalate this round.
-    cardBox(lastRound, 'Last round','no card yet: nothing escalates', 'last', escalatesHtml(lastRound)),
+    // 293: last round's card stays face up: its Infiltrate types escalated this round (320: what the next Card beat
+    // escalates is under the next card).
+    cardBox(lastRound, 'Last round','no card yet', 'last'),
     discBox,
   ].filter(Boolean);
   const left = onBoard(v, ['ambassador:adversary', 'troop']);

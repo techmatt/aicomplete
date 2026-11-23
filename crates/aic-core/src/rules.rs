@@ -45,6 +45,9 @@ pub struct Rules {
     ai_boards: Vec<i64>,
     /// The hot parameters, read once (see [`World::hot`]).
     hot: HotParams,
+    /// 320: set only inside [`Rules::apply_traced`]: the state as each phase or round is entered, by its marker
+    /// event's index. Display only (the turn panel's earlier steps); play never reads it.
+    trace: Option<std::sync::Mutex<Vec<(usize, GameState)>>>,
 }
 
 /// The `ai.boards` parameter, or nothing without the `ai` module.
@@ -272,6 +275,7 @@ impl Rules {
             variants,
             ai_boards,
             hot,
+            trace: None,
         })
     }
 
@@ -726,6 +730,29 @@ impl Rules {
         Ok((next, events))
     }
 
+    /// 320: [`Rules::apply`], plus the state as it stood at each `round_started` or `phase_started` event the action
+    /// ran into, keyed by that event's index in the events: the board at the end of the phase before it. For a
+    /// client's replay of an action that ran through several phases (the adversary's turn); the result is the same
+    /// as `apply`'s.
+    #[allow(clippy::type_complexity)]
+    pub fn apply_traced(
+        &mut self,
+        g: &GameState,
+        a: &Action,
+    ) -> Result<(GameState, Vec<Event>, Vec<(usize, GameState)>), String> {
+        self.trace = Some(std::sync::Mutex::new(Vec::new()));
+        let r = self.apply(g, a);
+        let marks = self.trace.take().map(|t| t.into_inner().unwrap_or_else(|e| e.into_inner())).unwrap_or_default();
+        r.map(|(next, events)| (next, events, marks))
+    }
+
+    /// 320: under [`Rules::apply_traced`], keeps `g` as it stands before the marker event at `at`.
+    fn mark(&self, g: &GameState, at: usize) {
+        if let Some(t) = &self.trace {
+            t.lock().unwrap_or_else(|e| e.into_inner()).push((at, g.clone()));
+        }
+    }
+
     /// Runs phases from `g.phase` until a decision phase is entered or the
     /// game ends, starting new rounds as needed.
     pub(crate) fn enter(&self, g: &mut GameState, mut events: Option<&mut Vec<Event>>) {
@@ -738,6 +765,14 @@ impl Rules {
                     let detail = format!("no module ended the game within {MAX_ROUNDS} rounds");
                     end_game(g, false, "round_limit", detail, events.as_deref_mut());
                     return;
+                }
+                if let Some(log) = events.as_deref() {
+                    // 320: the board at the end of the round, still in its last phase (the round's number unchanged).
+                    if self.trace.is_some() {
+                        let mut end = g.clone();
+                        end.phase = self.round.len().saturating_sub(1);
+                        self.mark(&end, log.len());
+                    }
                 }
                 g.round += 1;
                 g.phase = 0;
@@ -756,6 +791,7 @@ impl Rules {
             }
             let p = &self.round[g.phase];
             if let Some(log) = events.as_deref_mut() {
+                self.mark(g, log.len());
                 log.push(Event::PhaseStarted {
                     phase: p.name.clone(),
                 });

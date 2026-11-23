@@ -167,20 +167,21 @@ try {
       check(mid.threats > 0, `mid-game: ${mid.threats} threats shown with their countries`);
       check((await hover('#pipeline .slot-box.next .acard')).length > 0, 'mid-game: hovering the next adversary card shows its text');
       // 293: the adversary's spine in the debug view: the research row (six icon slots and the loss, the reached ones
-      // marked, the cubes), last round's card with what escalates, and each zone's printed arrow apart from a troop's.
+      // marked, the cubes), what the next Card beat escalates, and each zone's printed arrow apart from a troop's.
       const spine = await js(`(() => {
         const g = (k) => window.aic.view.globals.find((x) => x.key === k);
         const zones = window.aic.view.arrows.filter((a) => a.kind === 'zone').length;
         return { slots: document.querySelectorAll('#pipeline .research-row .rslot').length, max: g('adversary.research_slot')?.max,
           reached: document.querySelectorAll('#pipeline .research-row .rslot.reached').length, slot: g('adversary.research_slot')?.value,
           cubes: document.querySelector('#pipeline .research-row .rcubes')?.textContent ?? '', held: g('adversary.research')?.value,
-          escalating: document.querySelector('#pipeline .slot-box.last .escalates')?.dataset.escalating ?? '',
+          escalating: document.querySelector('#pipeline .slot-box.next .escalates')?.dataset.escalating ?? '', ahead: g('adversary.escalate_ahead')?.value ?? 0,
           escalates: window.aic.view.arrows.filter((a) => a.kind === 'escalate').length, badges: document.querySelectorAll('#board .arrows .arrow.escalate').length,
           zones, drawn: document.querySelectorAll('#board .arrows .arrow.zone').length, soon: document.querySelectorAll('#board .arrows .arrow.zone.soon').length }; })()`);
       check(spine.slots > 1 && spine.slots === spine.max && spine.reached === spine.slot, `mid-game: the research row shows ${spine.slots} slots, ${spine.reached} reached (the marker is on ${spine.slot})`);
       check(spine.badges === spine.escalates, `mid-game: ${spine.badges} of ${spine.escalates} escalate badges drawn`);
       check(spine.cubes.includes(`${spine.held} /`), `mid-game: the research row counts its cubes ("${spine.cubes}")`);
-      check(spine.escalating.length > 0, `mid-game: last round's card says what escalates ("${spine.escalating}")`);
+      // 320 (D139): under the next card, from the engine's `adversary.escalate_ahead` (none when no Card beat is ahead).
+      check((spine.escalating.length > 0) === (spine.ahead > 0) && (!spine.ahead || spine.escalating.includes('factories')), `mid-game: the next card says what the next Card beat escalates ("${spine.escalating}", ${spine.ahead} types ahead)`);
       check(spine.zones > 0 && spine.drawn === spine.zones && spine.soon === 0, `mid-game: ${spine.drawn} of ${spine.zones} zone arrows drawn, none as a troop's`);
     }
     if (st.round >= 1 && st.phase.includes('cards.play') && !shots.has('powers')) {

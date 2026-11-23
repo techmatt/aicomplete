@@ -47,6 +47,7 @@ fn card_view(w: &World, g: &GameState, s: usize, id: &str, status: &str, cost: O
         text,
         status: status.to_string(),
         cost,
+        ..Default::default()
     }
 }
 
@@ -130,11 +131,13 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
             .map(|id| {
                 let tier = def(w, id).tier;
                 // An Open Market free keep waives it, as on the drafted tile below.
-                let st = match if alignment::free_purchases(g) > 0 { 0 } else { keep_need(w, g, s, tier) } {
+                let need = if alignment::free_purchases(g) > 0 { 0 } else { keep_need(w, g, s, tier) };
+                let st = match need {
                     0 => format!("draft, tier {tier}, keep free"),
                     n => format!("draft, tier {tier}, keep {n} insight"),
                 };
-                card(s, id, &st, Some(play_cost(w, g, s, def(w, id))))
+                // 320: the price as a field too (the player view read it off the status words).
+                CardView { keep: Some(need), ..card(s, id, &st, Some(play_cost(w, g, s, def(w, id)))) }
             })
             .collect();
         if !pk.is_empty() {
@@ -150,7 +153,7 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
                     0 => "keep free".to_string(),
                     i => format!("keep {i} insight"),
                 };
-                card(s, id, &st, Some(play_cost(w, g, s, def(w, id))))
+                CardView { keep: Some(ins), ..card(s, id, &st, Some(play_cost(w, g, s, def(w, id)))) }
             })
             .collect();
         if !dr.is_empty() {

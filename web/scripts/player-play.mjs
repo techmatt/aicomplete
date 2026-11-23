@@ -15,8 +15,8 @@
 // fails the run): the list, and what 292, 293 and 294 each cut, is cut-pieces.mjs.
 //
 // 293: and for the adversary's spine (`spine` in the summary; any problem fails the run): the research row (its slot
-// boxes, the reached ones, the cubes) and the zones' printed arrows match the engine's view every step, last round's
-// card says what escalates, and over the game the row moved.
+// boxes, the reached ones, the cubes) and the zones' printed arrows match the engine's view every step, the next
+// card says what the next Card beat escalates (320: the engine's escalate_ahead), and over the game the row moved.
 //
 // 294: the spine check counts the troops' strike arrows (solid only with a Strike shown ahead) and their guard links.
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -58,10 +58,12 @@ await page.js(`(() => {
     /** 292: the cut pieces on screen now (cut-pieces.mjs). */
     removed: () => window.__cut.removed(),
     /** 293: the adversary's spine as the player view shows it now, against the engine's view: the research row, the
-     *  zones' printed arrows on the map, and last round's card with what escalates. */
+     *  zones' printed arrows on the map, last round's card, and what the next Card beat escalates. */
     spine() {
       const problems = [];
-      const g = (k) => aic.view.globals.find((x) => x.key === k);
+      // 320: the board the page draws (an earlier step's while the turn panel shows one: map, tracks and rows).
+      const v = aic.mapView ?? aic.view;
+      const g = (k) => v.globals.find((x) => x.key === k);
       const slot = g('adversary.research_slot'), cubes = g('adversary.research');
       const row = [...document.querySelectorAll('#player .research-row')].find(vis);
       if (!slot || !cubes) problems.push('the view has no research track');
@@ -76,29 +78,29 @@ await page.js(`(() => {
         const shown = row.querySelector('.rcubes')?.textContent.replace(/\\s+/g, ' ') ?? '';
         if (!shown.includes(cubes.value + ' / ' + cubes.max)) problems.push('research row: cubes read "' + shown + '", the view has ' + cubes.value + ' / ' + cubes.max);
       }
-      const zones = aic.view.arrows.filter((a) => a.kind === 'zone');
+      const zones = v.arrows.filter((a) => a.kind === 'zone');
       const drawn = [...document.querySelectorAll('#board .arrows .arrow.zone')];
       if (drawn.length !== zones.length) problems.push(drawn.length + ' zone arrows drawn, the view has ' + zones.length);
       const live = zones.filter((a) => a.count > 0 || a.rounds === 1).length;
       const drawnLive = drawn.filter((e) => e.classList.contains('live')).length;
       if (drawnLive !== live) problems.push(drawnLive + ' zone arrows drawn live, the view has ' + live);
       if (drawn.some((e) => e.classList.contains('soon'))) problems.push('a zone arrow drawn as a troop about to strike');
-      const troops = aic.view.arrows.filter((a) => a.kind === 'troop').length;
+      const troops = v.arrows.filter((a) => a.kind === 'troop').length;
       const drawnTroops = document.querySelectorAll('#board .arrows .arrow.troop').length;
       if (drawnTroops !== troops) problems.push(drawnTroops + ' troop arrows drawn, the view has ' + troops);
       // 294: each guard link (a troop guards a corrupted site) is drawn with its shield, and none as a strike.
-      const guards = aic.view.arrows.filter((a) => a.kind === 'guard').length;
+      const guards = v.arrows.filter((a) => a.kind === 'guard').length;
       const drawnGuards = [...document.querySelectorAll('#board .arrows .arrow.guard')];
       if (drawnGuards.length !== guards) problems.push(drawnGuards.length + ' guard links drawn, the view has ' + guards);
       if (drawnGuards.some((e) => !e.querySelector('path.shield') || e.classList.contains('soon'))) problems.push('a guard link drawn with no shield, or as a strike');
-      const soon = aic.view.arrows.filter((a) => a.kind === 'troop' && a.rounds <= 1).length;
+      const soon = v.arrows.filter((a) => a.kind === 'troop' && a.rounds <= 1).length;
       const drawnSoon = document.querySelectorAll('#board .arrows .arrow.troop.soon').length;
       if (drawnSoon !== soon) problems.push(drawnSoon + ' strike arrows drawn solid, the view has ' + soon + ' with a Strike shown');
-      const escalates = aic.view.arrows.filter((a) => a.kind === 'escalate').length;
+      const escalates = v.arrows.filter((a) => a.kind === 'escalate').length;
       const badges = [...document.querySelectorAll('#board .arrows .arrow.escalate')];
       if (badges.length !== escalates) problems.push(badges.length + ' escalate badges drawn, the view has ' + escalates);
       if (badges.some((e) => !e.querySelector('text') || e.querySelector('line, path'))) problems.push('an escalate badge drawn as a ring or an arrow');
-      const last = aic.view.piles.find((p) => p.key === 'adversary.last');
+      const last = v.piles.find((p) => p.key === 'adversary.last');
       const box = [...document.querySelectorAll('#player .slot-box.last')].find(vis);
       let escalating = null;
       if (!last) problems.push('the view has no last-round pile');
@@ -106,10 +108,16 @@ await page.js(`(() => {
       else if (last.visible.length) {
         const card = last.visible[0];
         if (!box.textContent.includes(card.name)) problems.push('the last-round box does not name ' + card.name);
-        const types = [...(card.text ?? '').matchAll(/Infiltrate: ([^.]+)\\./g)].map((m) => m[1]);
-        escalating = box.querySelector('.escalates')?.dataset.escalating ?? null;
-        if (escalating === null) problems.push('the last-round box does not say what escalates');
-        else if (types.some((t) => !escalating.includes(t))) problems.push('escalating reads "' + escalating + '", ' + card.name + ' infiltrates ' + types.join(', '));
+      }
+      // 320 (D139): what the next Card beat escalates sits under the next card, from the engine's
+      // adversary.escalate_ahead; nothing when no Card beat is ahead (the cap's last round).
+      const ahead = v.globals.find((x) => x.key === 'adversary.escalate_ahead');
+      const nextBox = [...document.querySelectorAll('#player .slot-box.next')].find(vis);
+      if (ahead && nextBox && !(v.phase?.name === 'adversary.build' && v.choice)) {
+        escalating = nextBox.querySelector('.escalates')?.dataset.escalating ?? null;
+        if (ahead.value > 0 && escalating === null) problems.push('the next-card box does not say what escalates');
+        else if (ahead.value > 0 && !ahead.doc.includes(escalating)) problems.push('escalating reads "' + escalating + '", the view says "' + ahead.doc + '"');
+        else if (!ahead.value && escalating !== null) problems.push('an Escalate notice with none ahead');
       }
       return { problems, slot: slot?.value ?? 0, cubes: cubes?.value ?? 0, zones: drawn.length, live: drawnLive, badges: badges.length, escalating, rowInView: !!row && (() => { const r = row.getBoundingClientRect(); return row.contains(document.elementFromPoint(r.left + 4, r.bottom - 4)); })() };
     },

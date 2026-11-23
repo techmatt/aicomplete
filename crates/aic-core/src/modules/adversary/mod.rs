@@ -535,6 +535,7 @@ impl Module for Adversary {
                 text: card_text(c),
                 status: status.to_string(),
                 cost: None,
+                ..Default::default()
             }
         };
         let deck = g.pile(DECK);
@@ -612,6 +613,21 @@ impl Module for Adversary {
         let mut marked: Vec<usize> = Vec::new();
         // 312 (D139): in the cap's last round no Card beat follows this round's: nothing to forecast.
         let ahead = if no_beat_ahead(g, "adversary.build") { Vec::new() } else { next_escalating(w, g) };
+        // 320 (D139): the types the next Card beat escalates, for the adversary row's notice (the player view read
+        // them off last round's card's words, which miss the factories Escalate always includes, and kept showing
+        // them in the cap's last round). 0: no Escalate ahead.
+        let kinds: Vec<&str> = ahead.iter().map(|s| s.plural()).collect();
+        out.global(
+            "escalate_ahead",
+            "Escalate ahead",
+            kinds.len() as i64,
+            None,
+            &if kinds.is_empty() {
+                "no Escalate ahead: no adversary Card beat is still to come".to_string()
+            } else {
+                format!("Escalate: {} (each not yet the adversary's that holds an agent takes 1 more)", kinds.join(", "))
+            },
+        );
         for site in ahead {
             for c in 0..w.map.countries.len() {
                 for h in super::plan::infiltrate_sites(w, g, site, c) {
@@ -654,6 +670,7 @@ impl Module for Adversary {
                 },
                 status: status.to_string(),
                 cost: Some(project_cost(w, g, id)),
+                ..Default::default()
             }
         };
         // 238 (D100): a project the next compute step fills, as the board stands, says so.

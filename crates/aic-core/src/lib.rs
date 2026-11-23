@@ -76,6 +76,15 @@ pub fn apply(state: &GameState, action: &Action) -> Result<(GameState, Vec<Event
     rules_for(state)?.apply(state, action)
 }
 
+/// 320: the view at each phase or round mark `action` ran into, keyed by that mark's index in `apply`'s events (the
+/// board at the end of the phase before it; see [`Rules::apply_traced`]). For a client replaying the steps of one
+/// action (the adversary's turn after the last pass): play is `apply`'s.
+pub fn apply_phases(state: &GameState, action: &Action) -> Result<Vec<(usize, View)>, String> {
+    let mut rules = rules_for(state)?;
+    let (_, _, marks) = rules.apply_traced(state, action)?;
+    Ok(marks.iter().map(|(at, g)| (*at, rules.view(g))).collect())
+}
+
 /// The generic view of a state (see `view.rs`), for clients.
 pub fn view(state: &GameState) -> Result<View, String> {
     Ok(rules_for(state)?.view(state))

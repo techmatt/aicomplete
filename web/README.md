@@ -40,8 +40,9 @@ Undo and records stay.
   root) on hover. The draft shows the offered cards printed with their keep price across the seat panel, shrunk
   until the Draft / Keep buttons show unscrolled.
 - ***Since your last move*** steps through the phases run, atop the side column: the notes, then the step list,
-  each adversary step named by its beat (Card or Income). The map shows the pieces as at the end of the shown step
-  (`turnView`), outlining the hexes it changed; rows and tracks show the board after the turn.
+  each adversary step named by its beat (Card or Income). The map, tracks and rows show the board at the end of the
+  shown step (`turnView`, from the engine's `apply_phases`), outlining the hexes it changed; the shown seat's hand,
+  powers and controls are the board now.
 - **New modules:** an action no component draws is a button under *Other*; card groups, piles and values fall to
   the debug view's generic chips (`panels.ts`).
 - **Checks:** `AIC_SWEEP_VIEW=player` sweeps it. `node scripts/playthrough.mjs [--config three_seat.json] [--seed
@@ -85,9 +86,8 @@ backtick breaks the file (the fast lane's `node_scripts_parse` checks them all).
 headless Edge or Chrome over the DevTools protocol against a served viewer (the dev server, or *Against a built
 site*). It checks the panels and board, a baseline game (seed 1) to the end, the interactions above, no page
 scroll at 1366×768, 1920×1080 and 2560×1440, words not ids, under 100 ms a step, a 4-country game (may scroll at
-1366×768) and the given record; each `check(...)` names itself. About 30 s (r150); shots in `web/e2e-out/`
-(git-ignored). `board
-fills its pane` measures a fixed game (baseline seed 11, first legal action) a rules change can move: before
+1366×768) and the given record. About 30 s (r150); shots in `web/e2e-out/` (git-ignored). `board fills its pane`
+measures a fixed game (baseline seed 11, first legal action) a rules change can move: before
 reading a layout change into a failure, diff two revisions' `npm run panes` (its pane heights at the three sizes).
 
 `npm run e2e:corps` and `e2e:researcher`, run the same way, play a quiet baseline (settings atop their scripts)
@@ -121,7 +121,7 @@ release `aic-sim` (`AIC_SIM`); its environment variables and defaults are atop t
   `warn-at-start` (a value drawn as a warning at a game's first phase).
 - **Running it:** background it, the viewer served by a process outliving it; at most one sweep beside one browser lane. Don't rebuild `aic-sim` mid-sweep: its records load with a content-hash warning in the error
   bar, which fails the run (`error-banner`). A case at one seed (a watched and a played game) takes
-  3-10 min (r148: c2-d0 3, c3-d0 5), so a hunt picks `--case`s. Rules twin: `invariants_hold_in_random_games`.
+  3-10 min, so a hunt picks `--case`s. Rules twin: `invariants_hold_in_random_games`.
 - **Output** in `web/sweep-out/`: `shots/`, `issues.json` (game, step, moment), `index.html`, `sheet-N.png`
   contact sheets (failures framed red), the records.
   Hooks: `window.aic` (main.ts), `scripts/cdp.mjs`.

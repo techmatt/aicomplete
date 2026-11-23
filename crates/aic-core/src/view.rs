@@ -90,6 +90,16 @@ pub struct StandardView {
     pub ambassadors: i64,
     /// What it does and costs, in words.
     pub doc: String,
+    /// 320: a price that depends on the target's site kind (Liberate's ambassadors), each kind's.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub sites: Vec<SitePrice>,
+}
+
+/// 320: what a standard action costs at one kind of site (`city`, `station`, `factory`).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct SitePrice {
+    pub kind: String,
+    pub ambassadors: i64,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -264,7 +274,7 @@ pub struct CardGroup {
     pub cards: Vec<CardView>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize)]
 pub struct CardView {
     /// Content card id.
     pub id: String,
@@ -276,6 +286,12 @@ pub struct CardView {
     pub status: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cost: Option<i64>,
+    /// 320: a draft or drafted card's keep price for its seat, in insight (0: free), as its status words it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub keep: Option<i64>,
+    /// 320: a board power that places nodes (a node power: each once a round, all usable in one round).
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub node: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -345,7 +361,15 @@ impl ViewOut<'_> {
             chips,
             ambassadors,
             doc: doc.to_string(),
+            sites: Vec::new(),
         });
+    }
+
+    /// 320: the per-site prices of the standard action last published with [`Self::standard`].
+    pub fn standard_sites(&mut self, sites: Vec<SitePrice>) {
+        if let Some(s) = self.view.standard.last_mut() {
+            s.sites = sites;
+        }
     }
 
     /// A value of the whole game. One with the key of a `vars` track
@@ -631,6 +655,7 @@ pub(crate) fn finish(view: &mut View, g: &GameState, content: &Content) {
                 text: String::new(),
                 status: "used".to_string(),
                 cost: None,
+                ..Default::default()
             })
             .collect();
         if !rest.is_empty() {

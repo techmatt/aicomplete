@@ -177,7 +177,10 @@ refuse a global with more than one dot: a new state key's prefix goes in its mod
 
 A card's `status` is the module's word; the viewer styles `ready`, `used`, `unaffordable` and `no target`, any
 other as text. The view is display data: never read by the rules, not in the state, fingerprint or replay; a hook
-can't draw from the RNG.
+can't draw from the RNG. A fact the viewer acts on is a field (a power's `node`, a draft card's `keep`, Liberate's
+per-site `sites`), never read back out of `text` or `status` words. `apply_phases` (wasm; `Rules::apply_traced`)
+replays one action and returns the view at each `phase_started` / `round_started` mark, for the turn panel's
+earlier steps; the trace is display only.
 
 **The client assumes:** unknown token kinds draw as counters. Only `Action::Choose` with a hex target arms a
 hex pick; any other action is a button labeled from its fields (a hex field under another name needs viewer work).
