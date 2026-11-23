@@ -43,6 +43,7 @@ body > #player { flex: 1 1 0; }
 /* Threats show whole here, their controls under them. */
 .player-mode .threat { display: block; -webkit-line-clamp: unset; overflow: visible; }
 .tacts { display: flex; flex-wrap: wrap; gap: 0.2em; margin: 0.15em 0 0.25em; }
+.tacts .tseat { align-self: center; font-size: 0.85em; font-weight: 600; padding-left: 0.3em; border-left: 4px solid var(--tint); }
 
 /* The seats: one summary row each; click to show that seat. */
 #p-seats { display: flex; flex-direction: column; gap: 0.25em; }
@@ -62,8 +63,10 @@ body > #player { flex: 1 1 0; }
 /* 289 (D133): atop the side column while open, so all of it shows without scrolling at 1366x768. */
 #p-turn { order: -1; border: 2px solid #e0a100; background: #fff8e6; border-radius: 4px; padding: 0.3em 0.5em; }
 .pturn-head { display: flex; align-items: center; gap: 0.4em; flex-wrap: wrap; }
-.pturn-head span { color: var(--muted); }
-.pturn-head button:last-child { margin-left: auto; }
+/* 321: ◀ ▶ Done hold one spot beside the fixed title, the step's label on its own line under them: the label's
+   length wrapped the row and moved ▶ under the mouse between steps. */
+.pturn-head span { color: var(--muted); order: 1; flex-basis: 100%; }
+.pturn-head button[data-turn="-1"] { margin-left: auto; }
 /* 289 (D133): the shown step's notes first, then the step list, which scrolls by itself (the notes sat under it,
    below the side column's fold at 1366x768). */
 #p-turn ol { margin: 0.25em 0 0; padding-left: 1.8em; font-size: 0.9em; max-height: 9em; overflow-y: auto; border-top: 1px solid #e8d49a; }
@@ -120,6 +123,7 @@ ul.ppowers .ptext { font-size: 0.92em; }
 .pdraft { display: flex; flex-wrap: wrap; gap: 0.6em; }
 .pdcard { display: flex; flex-direction: column; align-items: center; gap: 0.2em; }
 .pd-note { font-size: 0.85em; color: #555; max-width: 17em; text-align: center; }
+.pd-note .warn { color: var(--warn); }
 .printed-host { flex: none; }
 
 /* Controls. */

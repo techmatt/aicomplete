@@ -10,6 +10,7 @@ the findings are in the write-up.
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 321 bug hunt, player view for a three-seat playthrough: seat focus, hovers, turn panel, needs | 153 | [321_bug_hunt_ui_usability](results/321_bug_hunt_ui_usability/README.md) |
 | 317 card pass: 12 tier-2 cards reworked as late plays; d1-d4 +3-7 (fresh) | 153 | [317_card_pass_r153](results/317_card_pass_r153/README.md) |
 | 316 strong fair player 2: engine eval at 128 lines reads 89% at d4, the new yardstick; 256 no better | 152 | [316_strong_fair_player_2](results/316_strong_fair_player_2/README.md) |
 | 315 card and pricing pass: cleanse cards repriced, troop powers take agents, unprinted ops deleted | 152 | [315_card_pricing_pass_r151](results/315_card_pricing_pass_r151/README.md) |

@@ -41,11 +41,22 @@ export interface PlayerUi {
 let pinned: number | null = null;
 export const pin = (seat: number | null) => { pinned = seat; };
 
-/** The seat the view shows: the pinned one, else the open choice's, else the first seat to act. */
+/** 321: the seat that took the last action. One person plays every seat: after seat 1's move the view went back to
+ *  seat 0 (the first to act), so each of seat 1's moves took a click on its row first, and seat 0's buttons stood
+ *  where seat 1's had been. */
+let stay: { seat: number; at: string } | null = null;
+const phaseKey = (v: View) => `${v.round}:${v.phase?.name ?? ''}`;
+/** Called with the view the action was taken in: the view stays on its seat inside that phase only (a new phase or
+ *  round opens on the first seat to act). */
+export const stayWith = (seat: number | null, v?: View) => { stay = seat === null || !v ? null : { seat, at: phaseKey(v) }; };
+
+/** The seat the view shows: the pinned one, else the open choice's, else the seat that just acted while it still has
+ *  a move, else the first seat to act. */
 export function focusSeat(v: View, legal: Action[]): number {
   if (pinned !== null && v.seats[pinned]) return pinned;
   if (v.choice) return v.choice.seat;
   const acting = legal.map((a) => a.seat);
+  if (stay && stay.at === phaseKey(v) && acting.includes(stay.seat)) return stay.seat;
   return acting.length ? Math.min(...acting) : 0;
 }
 
@@ -119,11 +130,14 @@ function tile(s: number, c: CardView, where: string, acts: string): string {
   // 261: a draft tile's status ("draft, tier N, keep K insight") is the note under it already.
   const status = c.status && !['ready', 'draft', 'built', 'in play'].includes(c.status) && !c.status.startsWith('draft, ') ? c.status : '';
   const ok = c.status.startsWith('ready');
+  // 321: "ready · map part: no target" plays, but its map lines do nothing (Arcology Foundry's 4 Ambassadors): its
+  // status line is a warning, the tile still playable.
+  const warn = !ok || /no target/.test(c.status);
   return `<div class="ptile${ok ? ' ok' : ''}" data-card="${esc(c.id)}" data-where="seat:${s}:${where}"${printable(c.id) ? ` data-printed="${esc(c.id)}"` : ''}>
     <div class="pt-head">${c.cost !== undefined ? `<span class="pt-cost" title="credits">${c.cost}</span>` : ''}<b class="pt-name">${esc(c.name)}</b></div>
     ${head ? `<div class="pt-meta">${esc(head)}</div>` : ''}
     <div class="pt-text">${esc(rules)}</div>
-    ${status ? `<div class="pt-status${ok ? '' : ' warn'}">${esc(status)}</div>` : ''}
+    ${status ? `<div class="pt-status${warn ? ' warn' : ''}">${esc(status)}</div>` : ''}
     ${acts ? `<div class="pt-acts">${acts}</div>` : ''}</div>`;
 }
 
@@ -139,6 +153,19 @@ function handHtml(v: View, ctx: PlayerCtx, s: number, mine: Action[]): string {
     return tile(s, v.choice ? { ...c, status: '' } : c, 'cards.hand', acts);
   });
   return `<div class="psec"><h4>${esc(hand.label)} <small>${hand.cards.length}</small></h4><div class="ptiles">${tiles.join('') || '<span class="empty">no cards in hand</span>'}</div></div>`;
+}
+
+/** 321: a card's tag needs the seat doesn't meet, in words ("needs 3 industry (you have 1)"), read off the card's
+ *  bracket and the seat's tag values; '' when met or none. The draft and keep notes said the price only, so a keep
+ *  could spend 3 insight on a card the seat can't play for rounds. */
+function unmetNeeds(v: View, s: number, c: CardView): string {
+  const m = /(?:^|, )needs ((?:\d+ [a-z]+(?:, (?=\d))?)+)/.exec(splitText(c.text).head);
+  if (!m) return '';
+  const short = m[1].split(', ').map((x) => x.split(' ')).filter(([n, tag]) => {
+    const have = v.seats[s].values.find((x) => x.key === `cards.tag.${tag}`)?.value ?? 0;
+    return have < Number(n);
+  }).map(([n, tag]) => `${n} ${tag} (you have ${v.seats[s].values.find((x) => x.key === `cards.tag.${tag}`)?.value ?? 0})`);
+  return short.length ? `needs ${short.join(', ')}` : '';
 }
 
 /** The draft's layout: tier choice, the hand in front of the seat, then the drafted cards to keep, printed. */
@@ -162,7 +189,7 @@ function draftHtml(v: View, ctx: PlayerCtx, s: number, mine: Action[]): string {
     `<div class="pdraft">${cards.map((c) => `<div class="pdcard" data-card="${esc(c.id)}" data-where="seat:${s}:${key}">
       <div class="pslot" data-print="${esc(c.id)}"></div>
       ${printable(c.id) ? '' : tile(s, c, key, '')}
-      <div class="pd-note">${esc(note(c))}</div><div class="pd-acts">${act(c)}</div></div>`).join('')}</div>`;
+      <div class="pd-note">${esc(note(c))}${unmetNeeds(v, s, c) ? ` · <span class="warn">${esc(unmetNeeds(v, s, c))}</span>` : ''}</div><div class="pd-acts">${act(c)}</div></div>`).join('')}</div>`;
   if (packet?.cards.length) {
     // 289 (D129): "take one" only once there is a Draft button (it showed before the tier build was chosen).
     parts.push(`<h4>${esc(packet.label)}${drafts.length ? ' <small>take one; the rest pass on</small>' : ''}</h4>` + row(packet.cards, 'cards.packet',
@@ -313,7 +340,10 @@ function threatControls(root: HTMLElement, ctx: PlayerCtx, mine: Action[]) {
       if (a.type === 'withdraw') return `take back ${String(a.resource).replace(/_/g, ' ')}`;
       return actionLabel(a, false, true, ctx.cx).replace(/^counter [^:]*: ?/, 'counter: ');
     };
-    el.insertAdjacentHTML('beforeend', `<span class="tacts">${acts.map((a) => btn(a, label(a), a.type === 'counter_with' ? 'primary' : '', actionLabel(a, false, true, ctx.cx))).join('')}</span>`);
+    // 321: the paying seat named before its buttons: they are the shown seat's, in a row far from its panel (one
+    // person plays every seat, and the shown seat follows whoever acted).
+    const who = `<span class="tseat" style="--tint:${strong(ctx.view.countries[ctx.view.seats[focusSeat(ctx.view, ctx.legal)].country]?.color ?? '#cccccc')}">${esc(seatName(ctx.view, focusSeat(ctx.view, ctx.legal)))}:</span>`;
+    el.insertAdjacentHTML('beforeend', `<span class="tacts">${who}${acts.map((a) => btn(a, label(a), a.type === 'counter_with' ? 'primary' : '', actionLabel(a, false, true, ctx.cx))).join('')}</span>`);
   }
 }
 
@@ -334,8 +364,19 @@ function promptControls(ctx: PlayerCtx, mine: Action[]): string {
       if (same.length > 1) for (const a of same) out.push(btn(a, actionLabel(a, false, true, ctx.cx), '', '').replace('<button', `<button data-hexes="${k}"`));
     }
   }
-  for (const a of answers.filter((x) => !isHex(x.target))) out.push(btn(a, actionLabel(a, false, true, ctx.cx), 'primary'));
+  for (const a of answers.filter((x) => !isHex(x.target))) out.push(btn(a, actionLabel(a, false, true, ctx.cx), 'primary', optionHover(ctx.view, a)));
   return `<span class="pchoices">${out.join('')}</span>`;
+}
+
+/** 321: an answer naming a card (a project to discard, a card to take) hovers that card as the view has it: its
+ *  progress and its text (the answer said "choose Mob Rule" with no hover; the projects sat below the side column's
+ *  fold). */
+function optionHover(v: View, a: Action): string {
+  const id = typeof a.option === 'string' ? a.option : typeof a.card === 'string' ? a.card : '';
+  if (!id) return '';
+  const pools = [...v.piles.map((p) => p.visible), ...v.seats.flatMap((s) => s.cards.map((g) => g.cards)), ...v.countries.flatMap((c) => c.cards.map((g) => g.cards))];
+  const c = pools.flat().find((x) => x.id === id);
+  return c ? [c.name, c.status, c.text].filter(Boolean).join(' · ') : '';
 }
 
 // ---------- the adversary's turn ----------
@@ -413,6 +454,9 @@ export function stepPhaseView(v: View, first?: string): View {
 
 /** 305: the adversary's two beats, by the turn's step labels (`shortPhase`): its card, then its income. */
 const beatOf = (label: string) => /^B (Card|threats|lines)\b/.test(label) ? "the adversary's Card beat" : /^B (Income|compute)\b/.test(label) ? "the adversary's Income beat" : '';
+
+/** 321: whether the turn panel shows its steps (← → step it then). */
+export const turnOpen = () => !!turn?.open;
 
 export function turnStep(d: number | 'close' | 'open') {
   if (!turn) return;
@@ -568,7 +612,8 @@ export function renderPlayer(ui: PlayerUi, ctx: PlayerCtx) {
   // 294: the guarding rule, said where Liberate sits: the corrupted sites in the seat's reach a troop keeps it from
   // liberating (the engine's `liberate_refused`; the map marks each with a shield).
   const refused = s.values.find((x) => x.key === 'board.liberate_refused');
-  const guarded = refused?.value
+  // 321: not once the game is over (it stood beside the end banner).
+  const guarded = refused?.value && !v.outcome
     ? `<span class="prefused" data-value="board.liberate_refused" data-scope="seat:${focus}" title="${esc(refused.doc ?? '')}">Liberate refused: ${refused.value} corrupted site${refused.value === 1 ? '' : 's'} in reach guarded by a troop</span>`
     : '';
   // 305: Liberate's bill and blockers, in the action phase only (it is an action-phase act).

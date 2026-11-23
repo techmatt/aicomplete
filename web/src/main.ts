@@ -19,7 +19,7 @@ import {
 } from './panels';
 import { Timeline, keptSession, parseSeed, randomSeed, readRecord, revisionNote, storageGet, storageSet } from './session';
 import { printedCard } from './player/printed';
-import { focusSeat, pin, renderPlayer, stepPhaseView, turnHexes, turnStep, turnView } from './player/view';
+import { focusSeat, pin, renderPlayer, stayWith, stepPhaseView, turnHexes, turnOpen, turnStep, turnView } from './player/view';
 import './style.css';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -162,6 +162,7 @@ function confirmDropLater(): boolean {
 function setTimeline(t: Timeline) {
   stopAutoplay();
   pin(null);
+  stayWith(null);
   tl = t;
   // 261: the player view plays the live game, as `setMode` keeps it: a record opened, dropped or loaded there (or a
   // session restored) showed its setup step, with no timeline to move on and every control dropping the record.
@@ -197,8 +198,11 @@ function loadRecordText(text: string, file: string) {
 
 function act(a: Action) {
   if (!confirmDropLater()) return;
-  // 242: after an action the player view follows whoever must act again.
+  // 242: after an action the player view follows whoever must act again. 321: the seat that acted first, while it
+  // still has a move.
   pin(null);
+  // A draft pick hands the next pick round back to the first seat (the last to pick went first again).
+  stayWith(a.type === 'draft' ? null : a.seat, shown);
   // Acting from a focused action button (the keyboard): keep focus in that seat's
   // buttons across the re-render (020: it fell back to the page body every time).
   // (235: only when the keyboard put it there: after a click the refocused button took the next Space.)
@@ -575,7 +579,7 @@ function hover(el: Element | null, cx: number, cy: number) {
   // 242: a player card in the player view opens as it prints, its status under it.
   const printed = mode === 'player' ? (el?.closest?.('[data-printed]') as HTMLElement | null) : null;
   if (printed && target) {
-    const more = details(target, shown, legal, labels()) ?? '';
+    const more = details(target, shown, legal, labels(), shown, true) ?? '';
     const key = `${printed.dataset.printed}|${more}`;
     // Built once per card and status: the mouse moving over it only moves the tip.
     const host = key === tipPrinted && !ui.tip.hidden ? null : printedCard(printed.dataset.printed!, 1.25);
@@ -591,7 +595,7 @@ function hover(el: Element | null, cx: number, cy: number) {
     }
   }
   tipPrinted = '';
-  const html = target ? details(target, shown, legal, labels(), mapView ?? shown) : null;
+  const html = target ? details(target, shown, legal, labels(), mapView ?? shown, mode === 'player') : null;
   const hl = el?.closest?.('[data-hexes]') as HTMLElement | null;
   highlight(hl?.dataset.hexes ? hl.dataset.hexes.split(' ').filter(Boolean) : []);
   if (!html) {
@@ -710,6 +714,7 @@ $('undo').onclick = () => {
 /** One uniformly random legal action at the last step; false once the game is over. */
 function randomAction(): boolean {
   pin(null);
+  stayWith(null);
   tl.seek(tl.last);
   const moves = legalActions(tl.frame.snap);
   if (!moves.length) return false;
@@ -833,6 +838,12 @@ document.addEventListener('keydown', (e) => {
   // a keyboard-focused button got its Space above.
   if (mode === 'player' && ['ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown', ' ', 'r'].includes(e.key)) {
     if (e.key === ' ' && target.closest('button')) e.preventDefault();
+    // 321: ← → step the open "Since your last move" panel, as its ◀ ▶ do (the game itself never moves by a key here).
+    if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && turnOpen() && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.preventDefault();
+      turnStep(e.key === 'ArrowLeft' ? -1 : 1);
+      render();
+    }
     return;
   }
   const keys: Record<string, () => void> = {

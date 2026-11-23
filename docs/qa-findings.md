@@ -5,13 +5,15 @@ faults past hunts kept finding. Fixed findings, never to re-report: F1–F100 (0
 1617d75:docs/qa-findings.md`; then each hunt's `fixed.md` and `deferred.md` under `experiments/results/`: 099 (r38,
 F101 on), 118 (r46, F132, D43, W19 on), 145 (r59, F165, D57 on), 169 (r72 → 73, F205, D72 on), 184 (r77 → 78, F225,
 D77, W28 on), 197 (r86, F272, D88, W29 on), 235 (r106, F289, D92, W31 on; 238 fixed D92-D96, D98, D100, D103-D105, r108), 261 (r121 → r122, F322, D106, W34 on; 265 fixed D108, D109, D112, D115, D116; 266 D117), 285 (r135 → r136, F379,
-D120 on; fixed D102; 286 closed D121, D122, D124, D125, D126 (restated), D128, D130, D131, D132 at r137; 288 fixed D106 (built in) and D120 at r138; 289 closed D123, D127, D129, D133 (the troops prompt's words to D85); 305 closed D85, D87, D135 and D50's picks, D52 to won't fix; 307 closed D84 (Focus cut, 206) and D134 (Spill and Grow gone, r140), and dropped W17 and W33 (their cards gone)), 308 (r149 → r150, F424, D136 on; 312 built D136, D137, D139 and D140 at r151 (320 put D139's Escalate notice on the engine's `escalate_ahead`), and D138 is left by Matt's ruling). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
+D120 on; fixed D102; 286 closed D121, D122, D124, D125, D126, D128, D130, D131, D132 at r137; 288 fixed D106 and D120 at r138; 289 closed D123, D127, D129, D133; 305 closed D85, D87, D135 and D50's picks, D52 to won't fix; 307 closed D84 and D134, and dropped W17 and W33), 308 (r149 → r150, F424, D136 on; 312 built D136, D137, D139 and D140 at r151, and D138 is left by Matt's ruling), 321 (r153,
+F446, D142 on). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
 
 ## Checkers
 
 `web/scripts/sweep.mjs` (web/README.md *The sweep*), `legal-probe.mjs` (`npm run probe`: kept, never played),
-`odd.mjs` (`npm run odd`), `crates/aic-core/src/tests/invariants.rs`, `scripts/wasm-parity.mjs` (native = wasm) and
-the e2e lanes. What they already catch, so a hunt needn't hand-check it:
+`odd.mjs` (`npm run odd`), `crates/aic-core/src/tests/invariants.rs`, `scripts/wasm-parity.mjs` (native = wasm), the
+e2e lanes, `playthrough.mjs` (a clicked game: raw-JSON hovers, turn panel buttons moving, the view leaving a seat with a
+move) and `cards-play.mjs` (named cards played in the player view, a report per card). What they already catch:
 
 - The sweep: what fails the run and what it reports for a look (raw ids, clipping, spikes, `no-control`,
   `mark-over-number`, `warn-at-start`, `stale-word`, the moments by revision) are in web/README.md, *The sweep*.
@@ -26,9 +28,9 @@ the e2e lanes. What they already catch, so a hunt needn't hand-check it:
 
 Each hunt found most of its faults in the same places. Look there first:
 
-- **Options with nothing to act on**: a move onto the hex the ambassador already holds, a removal on a hex holding only
-  what it can't remove, a cost knob at 0 making a free endless action; a target hex where the card's op does nothing.
-  The invariants test catches what a seed reaches; `feasible.rs` and `targets.rs` hide the rest.
+- **Options with nothing to act on**: a move onto the ambassador's own hex, a removal where nothing it removes stands,
+  a cost knob at 0 making a free endless action. The invariants test catches what a seed reaches; `feasible.rs` and
+  `targets.rs` hide the rest.
 - **Words that contradict the code**: hand-written faces, the rules and rulebook (whole sections revisions behind),
   architecture.md and README. Check each against what runs.
 - **A log line ahead of its act**: a note written before a placement or protection decides ("lands", "destroy"), a
@@ -36,9 +38,8 @@ Each hunt found most of its faults in the same places. Look there first:
 - **An inverted warning**: a countdown or allotment drawn as danger while full.
 - **Raw names in what players read**: ids, token keys, hex and country indices in prompts, notes, traces and labels.
 - **Printed cost against charge**: a button or prompt showing the printed base where a discount or surcharge applies.
-- **Report statistics**: a per-round mean over games that never reached the round; a label that hides its average.
+- **Report statistics**: a per-round mean over games that never reached the round.
 - **The hunt's own fixes**: every independent review of a hunt's diff found five to eight faults in it. Get one.
-- **Untestable here**: the scene tools' kill of a hung draw on Windows is not exercised (it needs a real hang).
 - **An offer judged before its price**: random games rarely reach it: write the state.
 - **Measures gone quiet**: a definition matching nothing after a rules change; an empty column reads as a measure.
 - **Kept, never played**: keep plan and play check price a card differently. `play_read.py`, then `npm run probe`.
@@ -58,6 +59,8 @@ Each hunt found most of its faults in the same places. Look there first:
   Kettle); "here" falling back to another location's token; a view flag read inside the beat it forecasts.
 - **285's**: a country guard checked where a line starts, not where it lands (hex neighbors cross borders); a note
   read after an arrival check emptied the hex; a check's fixture copy missing a file a later item reads.
+- **321's** (the player view as one person playing every seat): the debug view's aids (raw JSON, keys, indexes) in its
+  hovers; a control that moves or a view that changes seat under the mouse; a price shown without the needs.
 
 ## Open, deferred to Matt
 
@@ -92,6 +95,12 @@ Each hunt found most of its faults in the same places. Look there first:
 | D118 | rules | The Liberated marker binds Corrupt lines only, not cards that take a site. | Leave; guard. **Matt's call**. |
 | D119 | cards | Faces against house terms: node "Harden", Faraday Yard's box, two-way wordings. | One card-words item. **Pick**. |
 | D141 | agents | The push and strike heuristics count agents on a hex reached only through an ambassador (troops only there, F424). | Mirror `pushable` in `agents/moves.rs`. **Pick:** an agents item. |
+| D142 | viewer | The adversary's turn can't be reopened after the round's first move (the replay covers the last move only). | Its own replay button all round; leave. **Pick** the button. |
+| D143 | viewer | *Pass every seat* in the keep phase ends unseen seats' keeps in one click. | Hide it there; confirm; leave. **Pick** hide. |
+| D144 | viewer | At 1366×768 late in a game the map shrinks to ~200 px as the bar grows. | Seat panel 32vh; one-row bar; leave. **Matt's call**. |
+| D145 | viewer | The draft takes ~7 clicks a seat a round (216 of 460 in a three-seat game). | A *4 from tier N* shortcut; leave. **Matt's call**. |
+| D146 | cards | Agency Directorate pays its 2 Ambassadors when built (a building counts itself); 317's price omits it. | Count it in the note; leave. **Matt's call**. |
+| D147 | view | A discarded adversary project reads "done", as if completed. | One word for both ("gone"); leave. **Pick** the word. |
 
 ## Won't fix
 

@@ -61,6 +61,19 @@ fn ready_mark(w: &World, g: &GameState, s: usize, ops: &[Op]) -> &'static str {
     if dead { "ready · map part: no target" } else { "ready" }
 }
 
+/// 321: a hand card's unmet tag needs and what the seat holds, "needs tags: 3 industry (you have 1)" (it said "needs
+/// tags", the count only in the card's bracket and the seat's tag values elsewhere).
+fn needs_words(w: &World, g: &GameState, s: usize, d: &CardDef) -> String {
+    let have = tag_counts(w, g, s);
+    let short: Vec<String> = d
+        .needs
+        .iter()
+        .filter(|(t, n)| have[*t as usize] < *n)
+        .map(|(t, n)| format!("{n} {t} (you have {})", have[*t as usize]))
+        .collect();
+    if short.is_empty() { "needs tags".to_string() } else { format!("needs tags: {}", short.join(", ")) }
+}
+
 pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut) {
     let card = |s: usize, id: &str, status: &str, cost: Option<i64>| card_view(w, g, s, id, status, cost);
     for s in 0..g.seats.len() {
@@ -71,11 +84,15 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
                 // 285 (D123): while a question is open nothing plays from the hand: the play check's "unaffordable"
                 // stood beside Scrap II's prompt building that very card free.
                 let st = if g.pending.is_some() {
-                    "waiting on the question"
+                    "waiting on the question".to_string()
                 } else {
-                    blocked(w, g, s, id).unwrap_or_else(|| ready_mark(w, g, s, &def(w, id).effects))
+                    match blocked(w, g, s, id) {
+                        Some("needs tags") => needs_words(w, g, s, def(w, id)),
+                        Some(why) => why.to_string(),
+                        None => ready_mark(w, g, s, &def(w, id).effects).to_string(),
+                    }
                 };
-                card(s, id, st, Some(play_cost(w, g, s, def(w, id))))
+                card(s, id, &st, Some(play_cost(w, g, s, def(w, id))))
             })
             .collect();
         out.cards(s, "hand", "hand", hand_cards);

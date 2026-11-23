@@ -148,7 +148,8 @@ fn up_to_in(g: &mut GameState, cx: &mut Cx, seat: usize, area: &[usize], max: i6
             held[0]
         } else {
             let opts = held.iter().map(|&h| hex_opt(&w, h)).collect();
-            let prompt = || format!("Seat {seat}: remove {} from which hex?", piece_name(kind));
+            // 321: with how many are left to take (a removal of 4 asked twice with no count).
+            let prompt = || format!("Seat {seat}: remove {} from which hex? ({left} left to remove)", piece_name(kind));
             match cx.choose(seat, prompt, opts)? {
                 Some(k) => held[k],
                 None => break,

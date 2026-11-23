@@ -169,6 +169,7 @@ try {
       }
     };
     const shotSeen = new Set();
+    const hovered = new Set();
     const clicks = {};
     const moves = [];
     for (let i = 0; i < maxSteps; i++) {
@@ -189,12 +190,40 @@ try {
           if (!shotSeen.has(`moment ${k}`) && re.test(notes)) { shotSeen.add(`moment ${k}`); await shot(`moment-${k}-r${st.round}`); }
         }
       }
+      // 321: a player-view control hovers its words, never the action's raw JSON (it did over every button): one
+      // real mouse move over the first control at each new moment.
+      if (moment && !hovered.has(moment)) {
+        hovered.add(moment);
+        const at = await page.js(`(() => { const b = [...document.querySelectorAll('#player button[data-action]')].find((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.top >= 0 && r.bottom <= innerHeight; });
+          if (!b) return null; const r = b.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, what: b.textContent.trim() }; })()`);
+        if (at) {
+          await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: at.x, y: at.y });
+          const tip = await page.js(`(() => { const t = document.getElementById('tip'); return t && !t.hidden ? t.innerText : ''; })()`);
+          if (/\{"type":/.test(tip)) note(st.round, [`raw-hover: "${at.what}" hovers its action's JSON`]);
+          await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 1, y: 1 });
+        }
+      }
+      // 321: ◀ ▶ Done hold their place from step to step (the step's label wrapped the row and moved ▶ under the mouse).
+      const navAt = `(() => { const b = document.querySelector('#p-turn [data-turn="1"]'); if (!b) return null; const r = b.getBoundingClientRect(); return Math.round(r.left) + ',' + Math.round(r.top); })()`;
+      const nav = await page.js(navAt);
       const turn = await page.js('window.__tp.turn()');
-      if (turn) { clicks[turn] = (clicks[turn] ?? 0) + 1; continue; }
+      if (turn) {
+        clicks[turn] = (clicks[turn] ?? 0) + 1;
+        const after = turn === 'turn step' ? await page.js(navAt) : null;
+        if (nav && after && after !== nav) note(st.round, [`turn-nav-moved: the turn panel's ▶ moved from ${nav} to ${after} between steps`]);
+        continue;
+      }
       const d = await page.js('window.__tp.decide()');
       if (!d) throw new Error(`step ${i}: no legal action and no outcome (round ${st.round}, ${st.phase})`);
+      const before = await page.js(`aic.view.round + ':' + (aic.view.phase?.name ?? '')`);
       const what = await page.js(`window.__tp.click(${JSON.stringify(d.action)})`);
       if (what === null) throw new Error(`step ${i}: the player view shows no control for ${JSON.stringify(d.action)} (round ${st.round}, ${st.phase})`);
+      // 321: one person plays every seat: after a seat's move the view stays on it while it has a move in the same
+      // phase (it went back to seat 0, whose buttons then stood where the acting seat's had been). A draft pick hands
+      // the next pick round to the first seat.
+      const left = d.action.type === 'draft' ? null : await page.js(`(() => { const s = ${d.action.seat}; if (aic.view.choice || aic.view.outcome || aic.view.round + ':' + (aic.view.phase?.name ?? '') !== ${JSON.stringify(before)}) return null;
+        return aic.legal.some((a) => a.seat === s) && aic.focus !== s ? 'seat ' + s + ' still has a move, the view shows seat ' + aic.focus : null; })()`);
+      if (left) note(st.round, [`focus-left-seat: ${left}`]);
       clicks[d.why] = (clicks[d.why] ?? 0) + 1;
       if (!['pass', 'draft'].includes(d.why)) moves.push(`round ${st.round}: seat ${d.action.seat} ${d.why}: ${what.replace(/\s+/g, ' ').trim()}`);
       if (d.why === 'liberate' && !shotSeen.has('moment liberated')) { shotSeen.add('moment liberated'); await shot(`moment-liberated-r${st.round}`); }

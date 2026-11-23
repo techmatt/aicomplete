@@ -27,27 +27,27 @@ npm run build                  # wasm + typecheck + static site in web/dist/ (92
 ## Player view
 
 *Player view* / *Debug view* (V) switches, remembered (`aic.view` in `localStorage`; a fresh browser opens the debug
-view, as the scripts expect). The player view (`src/player/`) hides the timeline, log, raw data and random play;
-Undo and records stay.
+view). The player view (`src/player/`) hides the timeline, log, raw data and random play.
 
-- **Layout:** the round (with its cap and the adversary cards left) and question over the map; at the right a row
-  per seat (click one to show it), the Alignment, the adversary, each country's threats; under the map the shown
-  seat (the one deciding, else the first to act): its node powers (used this round marked), board, hand and
-  buildings, then a bar of standard actions, Liberate's line (each corrupted site holding its ambassador: the bill,
-  ready or what blocks it), converters and *Done (pass)*. From 2200 px wide the seat panel and bar run the full width.
-- **Controls sit on the objects:** *Play* / *Sell* on a hand card, *Use* on a power or building, pay on a threat, a
-  hex click for a hex answer; other answers in the question bar. A hand card opens printed (`web/card/`, in a shadow
-  root) on hover. The draft shows the offered cards printed with their keep price across the seat panel, shrunk
-  until the Draft / Keep buttons show unscrolled.
+- **Layout:** the round and question over the map; at the right a row per seat (click one to show it), the
+  Alignment, the adversary, each country's threats; under the map the shown seat (the one deciding, else the one that
+  just acted while it has a move in that phase, else the first to act): node powers, board, hand and buildings, then
+  a bar of standard actions, Liberate's line (each corrupted site holding its ambassador: the bill, ready or what
+  blocks it), converters and *Done (pass)*. From 2200 px wide the seat panel and bar run the full width.
+- **Controls sit on the objects:** *Play* / *Sell* on a hand card, *Use* on a power or building, pay on a threat (the
+  paying seat named), a hex click for a hex answer; other answers in the question bar. A hand card opens printed
+  (`web/card/`, in a shadow root) on hover; hovers drop the debug view's keys. The draft shows the offered cards
+  printed with their keep price, shrunk until the Draft / Keep buttons show unscrolled.
 - ***Since your last move*** steps through the phases run, atop the side column: the notes, then the step list,
   each adversary step named by its beat (Card or Income). The map, tracks and rows show the board at the end of the
   shown step (`turnView`, from the engine's `apply_phases`), outlining the hexes it changed; the shown seat's hand,
-  powers and controls are the board now.
+  powers and controls are the board now. ← → step it while open.
 - **New modules:** an action no component draws is a button under *Other*; card groups, piles and values fall to
   the debug view's generic chips (`panels.ts`).
 - **Checks:** `AIC_SWEEP_VIEW=player` sweeps it. `node scripts/playthrough.mjs [--config three_seat.json] [--seed
   N] [--size 1366x768] [--search A-B]` plays a shipped config by `play-policy.mjs`, clicking each move, shoots each
-  phase, fails on the sweep's hard screen checks (`screen-checks.mjs`) and ticks each overhaul rule seen (2-4 min). `player-play.mjs` plays
+  phase, fails on the sweep's hard screen checks (`screen-checks.mjs`), a raw-JSON hover, ▶ moving between turn
+  steps or the view leaving a seat with a move, and ticks each overhaul rule seen (2-4 min). `player-play.mjs` plays
   one at random; `troops-play.mjs` and `ambassadors-play.mjs` click a demo game to the win and require its rules
   (a guard, the Strike notice, *Liberate refused*; a move then Liberate, two node powers a round, a tipped ambassador).
 
@@ -57,7 +57,7 @@ Undo and records stay.
   plays every seat, in any order in a simultaneous phase; draft phases offer no pass. *Pass every seat*, *Random
   action* (R) and *Random to end* speed debugging.
 - **Choices:** the question shows in the amber bar. A hex answer highlights its hexes (purple): click one; two
-  answers on one hex also get a button each. Other answers are buttons in the seat's panel.
+  answers on one hex also get a button each.
 - **The board:** player pieces on a hex's upper row, the adversary's on the lower; the legend keys the troops'
   links. Hover anything for details; hexes the shown step changed have an amber outline.
 - **Actions:** each seat panel offers that seat's legal actions. AI board tracks: solid spaces uncovered, dashed
@@ -65,9 +65,9 @@ Undo and records stay.
 - **Timeline:** Ctrl+Z undoes. ⏮ ◀ ▶ ⏭, the slider, ← → Home End, Space to auto-play at 1x, 4x or 16x; **Page Up /
   Down** jump between round starts. Clicking a log entry jumps to its step; acting from an earlier step drops the
   later actions, after asking. The log folds by phase; hovering a phase outlines its hexes.
-- **The header** shows the engine version and rules revision. The error bar flags a saved session (`localStorage`,
-  replayed on load) whose config changed or no longer loads, or a record from another revision; one that no longer
-  loads or replays is kept (`copy(aic.keptSession())`). A record that stops replaying saves whole: a reload stops there.
+- **The header** shows the engine and rules revision. The error bar flags a saved session (`localStorage`, replayed
+  on load) whose config changed or no longer loads, or a record from another revision; one that no longer loads is
+  kept (`copy(aic.keptSession())`).
 
 ## Game records
 
@@ -87,18 +87,17 @@ headless Edge or Chrome over the DevTools protocol against a served viewer (the 
 site*). It checks the panels and board, a baseline game (seed 1) to the end, the interactions above, no page
 scroll at 1366×768, 1920×1080 and 2560×1440, words not ids, under 100 ms a step, a 4-country game (may scroll at
 1366×768) and the given record. About 30 s (r150); shots in `web/e2e-out/` (git-ignored). `board fills its pane`
-measures a fixed game (baseline seed 11, first legal action) a rules change can move: before
-reading a layout change into a failure, diff two revisions' `npm run panes` (its pane heights at the three sizes).
+measures a fixed game (baseline seed 11) a rules change can move: diff two revisions' `npm run panes` first.
 
-`npm run e2e:corps` and `e2e:researcher`, run the same way, play a quiet baseline (settings atop their scripts)
-for cubes, converters and the Researcher's board; `e2e:sources` checks a face-up threat's sources and a forged
-payment refused.
+`npm run e2e:corps`, `e2e:researcher` (cubes, converters, the Researcher's board) and `e2e:sources` (a threat's
+sources, a forged payment refused) run the same way.
 
-**Against a built site:** a dev-server rebuild breaks a run mid-way (`reading 'view'`), so while the engine is
-edited serve a snapshot: `node scripts/build-wasm.mjs && npx vite build && npx vite preview --port $PORT
+**Against a built site:** a dev-server rebuild breaks a run mid-way, so while the engine is edited serve a
+snapshot: `node scripts/build-wasm.mjs && npx vite build && npx vite preview --port $PORT
 --strictPort`, `AIC_URL=http://localhost:$PORT/` (after a `web/src/` edit, `npx vite build` alone, ~1 s). A killed
-wrapper's `node` can hold the port (`--strictPort` fails): kill it. **An old revision side by side** (about 3
-min): `git archive REV | tar -x -C out/rREV`, then in its `web/` `npm ci` and a snapshot on another port.
+wrapper's `node` can hold the port (`--strictPort` fails): kill it. **An old revision side by side** (~3 min):
+`git archive REV | tar -x -C out/rREV`, then `npm ci` and a snapshot there. A `vite build` empties `dist/` under a
+running sweep: rebuild between runs.
 
 ## The sweep
 
@@ -106,12 +105,10 @@ min): `git archive REV | tar -x -C out/rREV`, then in its `web/` `npm ci` and a 
 the moments that matter over many games. It needs a served viewer (`AIC_URL`; *Against a built site*) and a
 release `aic-sim` (`AIC_SIM`); its environment variables and defaults are atop the script.
 
-- **Cases:** `CASES` in the script (`--quick` the first four, `--case c4-d0` one). For each, `aic-sim` saves
-  records (greedy, or the case's agent); the sweep **watches** each step by step and **plays** as many
-  fresh games through the page at random.
-- **Moments:** new rounds, prompts, the first of each key event and counter rise (`COUNTER_EVENTS` and its
-  per-revision sets), the end: the checks at 1366×768, layout at the two larger sizes, and a screenshot (at most
-  14 a game, plus the end and any failure).
+- **Cases:** `CASES` in the script (`--quick` the first four, `--case NAME` each named). For each, `aic-sim` saves
+  records; the sweep **watches** each step by step and **plays** as many fresh games at random.
+- **Moments:** new rounds, prompts, the first of each key event and counter rise (`COUNTER_EVENTS`), the end:
+  the checks at 1366×768, layout at the larger sizes, a screenshot (at most 14 a game, plus the end and failures).
 - **Fail the run** (exit 1): console errors and blocking dialogs, `stuck` (no legal action without an outcome),
   the error bar, page scroll, placeholder text (`undefined`, `NaN`), elements off screen with no scroll to them,
   `hidden-target`, `clipped` (no ellipsis), `token-unknown`, `stale-word` (`STALE` in `screen-checks.mjs`), `case` (`aic-sim` could not play it), `below-fold` (the player view's Draft / Keep
@@ -119,20 +116,23 @@ release `aic-sim` (`AIC_SIM`); its environment variables and defaults are atop t
   control on screen), `raw-id`, `truncated-no-hover`, `truncated`, overlaps, undrawn view tokens, steps over
   150 ms, heap kept over 50 MB, `mark-over-number` (a highlight ring across a hex number) and
   `warn-at-start` (a value drawn as a warning at a game's first phase).
-- **Running it:** background it, the viewer served by a process outliving it; at most one sweep beside one browser lane. Don't rebuild `aic-sim` mid-sweep: its records load with a content-hash warning in the error
-  bar, which fails the run (`error-banner`). A case at one seed (a watched and a played game) takes
-  3-10 min, so a hunt picks `--case`s. Rules twin: `invariants_hold_in_random_games`.
+- **Running it:** background it, the viewer served by a process outliving it; at most one sweep beside one browser
+  lane. Don't rebuild `aic-sim` mid-sweep (a content-hash warning fails the run). A case at one seed (a watched and a
+  played game) takes 3-10 min, so a hunt picks `--case`s. Rules twin: `invariants_hold_in_random_games`.
 - **Output** in `web/sweep-out/`: `shots/`, `issues.json` (game, step, moment), `index.html`, `sheet-N.png`
   contact sheets (failures framed red), the records.
   Hooks: `window.aic` (main.ts), `scripts/cdp.mjs`.
 
 ## Other checks and the source
 
-- **Kept, never played:** `npm run probe -- DIR card_id...` (`scripts/legal-probe.mjs`): over saved records, the
-  steps each card was held, legal to play and played.
+- **Kept, never played:** `npm run probe -- DIR card_id...`: over saved records, the steps each card was held,
+  legal and played.
 - **Odd input:** `npm run odd` (`scripts/odd.mjs`, `--only NAME`, `--seeds N`; ~30 s) prints what each bad input said.
-- **Source:** `src/` is the viewer (`main.ts` wiring, `engine.ts` the wasm wrapper, `session.ts` the `Timeline`). `card/` is the printed card renderer, used by `tools/card-art/` and the card viewer (`cards/`):
-  [tools/card-art/README.md](../tools/card-art/README.md).
+- **Cards played in the viewer:** `node scripts/cards-play.mjs ID,ID... [--seed 3] [--rounds 6]` (~1 min for 12)
+  stages the cards in a rigged three-seat game (setup atop the script), clicks each Play and Use, and writes
+  `report.md`: per card, its questions, notes, resource and map changes, a shot. Read it against the faces.
+- **Source:** `src/` (`main.ts` wiring, `engine.ts` the wasm wrapper, `session.ts` the `Timeline`); `card/`, the
+  printed card renderer: [tools/card-art/README.md](../tools/card-art/README.md).
 
 ## Card viewer
 

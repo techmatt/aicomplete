@@ -63,6 +63,24 @@ fn a_power_names_its_lone_sacrifice() {
     assert!(!two.contains("Sacrifices:"), "{two}");
 }
 
+/// 321: a hand card short of its tags says which and what the seat holds (it said "needs tags", the count only in
+/// its bracket and the seat's tag values elsewhere); once met, the reason goes.
+#[test]
+fn a_hand_card_short_of_its_tags_says_what_it_needs() {
+    let (rules, mut g) = lab_actions();
+    let status = |g: &GameState| {
+        let v = rules.view(g);
+        v.seats[0].cards.iter().find(|x| x.key == "cards.hand").unwrap().cards[0].status.clone()
+    };
+    let have = crate::modules::cards::tag_counts(&rules.world(), &g, 0)[crate::content::Tag::Industry as usize];
+    assert!(have < 3, "the lab's seat 0 starts short of 3 Industry");
+    set_pile(&mut g, &crate::modules::cards::hand(0), &["orbital_mass_driver"]);
+    assert_eq!(status(&g), format!("needs tags: 3 industry (you have {have})"));
+    let played = crate::modules::cards::played(0);
+    set_pile(&mut g, &played, &["supply_chain_audit", "antitrust_action", "payroll_automation"]);
+    assert!(!status(&g).starts_with("needs tags"), "{}", status(&g));
+}
+
 #[test]
 fn the_view_shows_the_board_the_fronts_the_projects_and_the_next_card() {
     // This reads an opening that stops at the draft.
