@@ -122,7 +122,7 @@ pub(crate) fn check_param(name: &str, x: f64) -> Option<Result<(), String>> {
 
 /// 229: the keep-plan numbers and forced probes retired, (name, why): a spec naming one is refused with the
 /// reason rather than as an unknown parameter (as `eval::RETIRED` does for weights).
-pub(crate) const RETIRED: [(&str, &str); 8] = [
+pub(crate) const RETIRED: [(&str, &str); 10] = [
     ("plan_credit", "024's credit price of a keep in the keep plan; read by nothing since 189 (retired 266)"),
     ("plan_hand", "024's probe guard (keep nothing with this many cards in hand); always 0 since 082"),
     ("old_counters", "135's off arm of the new counter kinds' read; not read since"),
@@ -130,6 +130,8 @@ pub(crate) const RETIRED: [(&str, &str); 8] = [
     ("strat_power_uses", "092: always 1 (one use of each board power in the strategy choice)"),
     ("plan_chain", "107: off (-2.8 +-2.2 for the strategist on 96 dev seeds: chain cards kept, never played)"),
     ("engine_rush", "107's probe (keep and play every engine card at once); not read since"),
+    ("phases", "314's real-oracle option (search the draft too): +0.0 +-10.4 at d4 beside 64 lines; never used (retired 319)"),
+    ("lone", "314's real-oracle option (a lone candidate unsearched): +4.2 +-4.2 at d4; never used (retired 319)"),
     ("burn_late", "230's wait for the board burns and Reclaim; no board power burns or reclaims since r131 (retired 286, D122)"),
 ];
 

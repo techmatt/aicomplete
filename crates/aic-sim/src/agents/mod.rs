@@ -324,8 +324,6 @@ pub const LADDER: &[(&str, &[Param])] = &[
             ("salt", 0.0, "243: moves every line's policy seed (a restart's try)"),
             ("prove", 0.0, "243, a card proof: only a line that plays this card wins, and lines take it at every chance (1-based row of `aic-sim cards`; 0: off)"),
             ("worlds", 0.0, "249, the real oracle: worlds sampled from what players can see, every candidate played to the end on each; `budget` then counts lines (0: the full oracle, on the true table)"),
-            ("phases", 0.0, "314, with worlds: 1 searches every phase's decisions (the draft too), 0 the action phase's alone"),
-            ("lone", 0.0, "314, with worlds: 1 plays a decision's lone candidate unsearched, saving the round's lines for a choice"),
         ],
     ),
 ];
@@ -738,8 +736,6 @@ impl AgentSpec {
                     salt: self.p("salt") as u64,
                     prove: self.prove_card(),
                     worlds: self.p("worlds"),
-                    phases: self.p("phases"),
-                    lone: self.p("lone"),
                 },
             )),
             k => unreachable!("agent kind {k} is checked in parse"),

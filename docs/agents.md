@@ -25,8 +25,8 @@ In prose the simulator's players are "sim players"; the code keeps "agents". The
 | `oracle` | **A measuring stick, opt in**: the planner's search on **full information**, the deal too, each line to the game's end; it follows a winning line, so its win rate is a floor on perfect play (`oracle.rs`). **`worlds`** (249, the real
 oracle; alias `real`, the fair yardstick since 317: the engine's eval, 4 worlds, 128 lines a round): the search on worlds sampled from what players
 see; a candidate is taken by worlds won, then mean heuristic; `budget` counts lines (it sets the decisions searched:
-314); `phases=1` searches the draft too, `lone=1` skips a lone candidate; `tries` there only measures (it reads the
-true loss). **`tries`**: whole-game restarts on other policy seeds (`truth` every other one); **`truth`**: lines score the (world's) table; **`prove`**: a card proof. | the planner's four, `reseeds` 0, `threads` 1, `tries` 1, `truth` 0, `prove` 0, `phases` 0, `lone` 0 |
+314); `tries` there only measures (it reads the
+true loss). **`tries`**: whole-game restarts on other policy seeds (`truth` every other one); **`truth`**: lines score the (world's) table; **`prove`**: a card proof. | the planner's four, `reseeds` 0, `threads` 1, `tries` 1, `truth` 0, `prove` 0 |
 
 **Keeping by plan (`agents/keep_plan.rs`, `plan_keep`).** Greedy, engine and planner keep drafts by a plan. At its
 first keep of a round a seat sketches `plan_rounds` rounds from what it holds and earns, fills each round's budget

@@ -75,11 +75,6 @@ pub struct OracleCfg {
     /// 249, the real oracle: worlds sampled from what the players can see, each candidate played to the end on
     /// every one ([`Oracle::choose_real`]); 0: the full oracle, on the true table.
     pub worlds: usize,
-    /// 314, the real oracle: 1 searches every phase's decisions (the draft too), 0 the action phase's alone.
-    pub phases: usize,
-    /// 314, the real oracle: 1 plays a decision's lone candidate (within `margin`) unsearched, so the round's
-    /// lines go to decisions with a choice; 0 plays it out on every world as 249 did.
-    pub lone: usize,
 }
 
 /// A line of play to the end of the game.
@@ -495,8 +490,7 @@ impl Oracle {
     /// `horizon` rounds on; a candidate that wins on every world ends the search. Between searches it plays the
     /// move most followed lines play next; a line is dropped once the table shows what its world guessed
     /// otherwise. With none left, the engine's pick. No restarts in a fair player: a restart reads the true game's
-    /// loss (314 takes `tries` here as a measuring arm only). 314: `phases` searches every phase, the draft too;
-    /// `lone` plays a lone candidate unsearched.
+    /// loss (314 takes `tries` here as a measuring arm only).
     /// On a pending choice its worlds follow `determinize`'s pending rule: a step that drew a pile out and
     /// reshuffled keeps the table's streams in its snapshot (rare), within the agents' standing exception (151),
     /// whose shortlist scores the true table there.
@@ -516,10 +510,7 @@ impl Oracle {
         let vote = self.vote(legal);
         let secure = vote.is_some() && self.followed.len() == k && self.followed.iter().all(|l| l.won);
         let mut chosen = None;
-        // 314 (`phases`): outside the action phase only a decision with no pending prompt is searched, so a world
-        // never keeps the table's streams for a step that drew out a pile (`determinize`'s pending rule).
-        let phase = searched_phase(state) || (self.cfg.phases > 0 && state.pending.is_none());
-        if !secure && phase && self.spent.1 + k <= self.cfg.budget {
+        if !secure && searched_phase(state) && self.spent.1 + k <= self.cfg.budget {
             let worlds: Vec<GameState> = (0..k)
                 .map(|_| {
                     let mut w = state.clone();
@@ -546,12 +537,6 @@ impl Oracle {
                 seen.push(key);
                 cands.push(i);
             }
-            // 314 (`lone`): a lone candidate is no choice: play it, and keep the round's lines for a real one.
-            let lone = self.cfg.lone > 0 && cands.len() == 1;
-            if lone {
-                chosen = Some(cands[0]);
-                cands.clear();
-            }
             let mut best: Option<(usize, (usize, f64), Vec<Line>)> = None;
             for i in cands {
                 if self.spent.1 + k > self.cfg.budget {
@@ -573,7 +558,7 @@ impl Oracle {
             if let Some((i, _, lines)) = best {
                 chosen = Some(i);
                 self.followed = lines;
-            } else if !lone {
+            } else {
                 chosen = Some(engine);
             }
         }

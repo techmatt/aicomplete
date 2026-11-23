@@ -1,5 +1,9 @@
 # 314: a strong fair-information player at r151
 
+**Read on (316, set C, r152):** the combination this page left unrun, the engine's eval with 128 lines, reads 89% at
+d4 (`real:budget=128` on the judge's eval 67%), and 256 lines did not beat 128: the "still climbing" verdict below
+rested on set A, the set its rows were picked on. 319 retired the `phases` and `lone` options (no gain, never used).
+
 Base: main 897b72f, r151. No rules or content change; `RULES_REVISION` stays 151 and greedy's and the judge's play is
 unchanged (the two retired weights were 0). Readers: `table.py` (the tables, `--set B` for the strongest run),
 `screen.py` (the option screen); specs: `gen_specs.py` (in `experiments/archive/farm/`, `f314-*`, `s314-*`, `g314*`);

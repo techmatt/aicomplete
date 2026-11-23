@@ -162,7 +162,7 @@ judge's keeps off the value table; `sweep` is a cheap profile for price screens,
 **Skilled rows.** `bench/skilled_rows.py READ.json` writes the oracle's companion spec (its docstring): launch it
 with the read. A game: full oracle 1-5 s on a win, the real oracle at 32 lines 90-125 s; at 128 lines a round ~85-180 d0-d2,
 ~330 d3-d4 (judge's or engine's eval); 256 lines ~1.5x at d3-d4 (per shard: `jobs/<id>/shards/*.who.json`). A shard is 2 seeds of every cell: farm a costly agent a spec per pair and level (314's
-`gen_specs.py`; one 3-pair spec left the browser idle). A card proof is the oracle with `prove=N` (N: the card's row of `aic-sim cards`), seconds a game where it
+`gen_specs.py`). The broker deals a shard to each open job in turn: launch the rows a later pick reads first. A card proof is the oracle with `prove=N` (N: the card's row of `aic-sim cards`), seconds a game where it
 proves the card and a whole search where it can't: 243's `proofs.py`.
 
 `experiments/band.json` and `sanity-line.json`: their `note`s. Read band's win mix (`ends156.py`; its split by
