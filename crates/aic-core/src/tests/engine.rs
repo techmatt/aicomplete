@@ -213,7 +213,9 @@ fn a_threshold_cashes_the_tokens_its_trigger_leaves() {
 fn copy_raises_income_by_a_buildings_output() {
     // No card prints the copy since r43 (Payroll Automation became a Capital feeder): pinned to it here.
     let copy = r#"cards.payroll_automation.effects=[{"op":"copy_income"}]"#;
-    let (rules, mut g) = table_with(&[copy], &["payroll_automation"], &["orbital_mass_driver"]);
+    // 317: Orbital Mass Driver's income became an Action: its r152 income pinned here.
+    let driver = r#"cards.orbital_mass_driver.passives=[{"op":"income","resource":"credits","amount":13}]"#;
+    let (rules, mut g) = table_with(&[copy, driver], &["payroll_automation"], &["orbital_mass_driver"]);
     let w = rules.world();
     let before = economy::income(&w, &g, 0)[Resource::Credits];
     let foundry: i64 = cards::def(&w, "orbital_mass_driver")

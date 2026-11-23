@@ -23,7 +23,7 @@ In prose the simulator's players are "sim players"; the code keeps "agents". The
 | `strategist` | **The screens' judge**: the engine in flat mode (`w.horizon=0`, `w.table=0`): greedy's flat weights, one action at a time, no search, no strategy, plus the **purge term** (`w.purge`: ambassadors toward Liberate bills), **cheap hand terms** (`w.hand`, `w.hand_cost`), **a building's earnings** (`w.card_action`) and the rest of `STRATEGIST`'s list (each `Weights` field in `agents/eval.rs` says what it does). | `STRATEGIST`, `agents/mod.rs` |
 | `planner` | The engine, rolling out a shortlist of action-phase alternatives `horizon` rounds with the engine as policy; the heuristic's best line is taken. A line runs on **full information** but the Alignment deal, valued over `deals` guesses of it (`planner.rs`). | `horizon` 2, `alts` 2, `budget` 8, `margin` 40, `deals` 4, `lead` 0. `sweep[:...]` is `planner:deals=1,lead=0`. |
 | `oracle` | **A measuring stick, opt in**: the planner's search on **full information**, the deal too, each line to the game's end; it follows a winning line, so its win rate is a floor on perfect play (`oracle.rs`). **`worlds`** (249, the real
-oracle; alias `real`: on `STRATEGIST`, 4 worlds, 32 lines a round): the search on worlds sampled from what players
+oracle; alias `real`, the fair yardstick since 317: the engine's eval, 4 worlds, 128 lines a round): the search on worlds sampled from what players
 see; a candidate is taken by worlds won, then mean heuristic; `budget` counts lines (it sets the decisions searched:
 314); `phases=1` searches the draft too, `lone=1` skips a lone candidate; `tries` there only measures (it reads the
 true loss). **`tries`**: whole-game restarts on other policy seeds (`truth` every other one); **`truth`**: lines score the (world's) table; **`prove`**: a card proof. | the planner's four, `reseeds` 0, `threads` 1, `tries` 1, `truth` 0, `prove` 0, `phases` 0, `lone` 0 |
@@ -148,7 +148,7 @@ agent would misread (`policy::check_param`) is refused with the reason.
 | The judge | `strategist` | the per-level bands ([principles.md](principles.md)) |
 | A strategy player, information; spot checks | `strategist:strategy=1`; `planner:strategy=1` | none |
 | A skilled player with full information (it sees hidden cards: never a fair player) | `oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1,tries=3` | d4 95 |
-| **The real oracle**: very strong play that can't see the future (the design target) | `real` (the judge's eval); the yardstick, `skilled_rows.py`'s `real` row: the engine's eval, 128 lines (316) | none yet |
+| **The real oracle**: very strong play that can't see the future (the design target) | `real`, the yardstick, `skilled_rows.py`'s `real` row: the engine's eval, 128 lines (316; the alias since 317) | none yet |
 
 After a change to how the game is won, smoke greedy beside the strategist: a
 greedy lead means the engine weights still encode the old win. A strategy pairing's win rate (`strat0`,

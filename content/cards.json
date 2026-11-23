@@ -422,7 +422,7 @@
   "name": "Foundation Model Campus",
   "tier": 2,
   "kind": "building",
-  "cost": 11,
+  "cost": 8,
   "insight": 2,
   "needs": [
    [
@@ -434,22 +434,28 @@
    "science",
    "cyber"
   ],
-  "passives": [
-   {
-    "op": "income_per_tag",
-    "resource": "credits",
-    "tag": "science",
-    "per": 1,
-    "amount": 2
-   }
-  ],
   "effects": [
    {
     "op": "draw",
     "count": 2
    }
   ],
-  "energy": 2
+  "ability": {
+   "cost": [
+    [
+     "insight",
+     2
+    ]
+   ],
+   "effects": [
+    {
+     "op": "sway",
+     "side": "unity",
+     "amount": 4,
+     "narrative": "cooperation"
+    }
+   ]
+  }
  },
  {
   "id": "orbital_observatory_array",
@@ -904,7 +910,7 @@
   "name": "Arcology Foundry",
   "tier": 2,
   "kind": "program",
-  "cost": 7,
+  "cost": 6,
   "insight": 1,
   "needs": [
    [
@@ -917,14 +923,18 @@
   ],
   "effects": [
    {
-    "op": "production",
-    "resource": "credits",
-    "amount": 5
+    "op": "target",
+    "on": "corrupted_city"
    },
    {
-    "op": "production",
+    "op": "place_ambassadors",
+    "count": 4,
+    "at": "on"
+   },
+   {
+    "op": "gain",
     "resource": "chips",
-    "amount": 1
+    "amount": 3
    }
   ],
   "energy": 2
@@ -946,20 +956,28 @@
    "industry",
    "power"
   ],
-  "passives": [
-   {
-    "op": "income",
-    "resource": "credits",
-    "amount": 13
-   },
-   {
-    "op": "income",
-    "resource": "chips",
-    "amount": 2
-   }
-  ],
   "effects": [],
-  "antimatter": 1
+  "ability": {
+   "cost": [
+    [
+     "chips",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "target",
+     "on": "corrupted_factory"
+    },
+    {
+     "op": "cleanse",
+     "amount": 1,
+     "one_country": false,
+     "only": "factory",
+     "at": "on"
+    }
+   ]
+  }
  },
  {
   "id": "eviction_worm",
@@ -1840,7 +1858,7 @@
   "name": "Continental Supergrid",
   "tier": 2,
   "kind": "program",
-  "cost": 13,
+  "cost": 16,
   "insight": 2,
   "needs": [
    [
@@ -1854,16 +1872,30 @@
   ],
   "effects": [
    {
-    "op": "production",
+    "op": "gain",
     "resource": "energy",
-    "amount": 2
+    "amount": 4
    },
    {
-    "op": "production_per_tag",
-    "resource": "credits",
-    "tag": "power",
-    "per": 2
+    "op": "gain_ambassadors",
+    "count": 3
+   },
+   {
+    "op": "choose_player"
+   },
+   {
+    "op": "other_gain",
+    "resource": "energy",
+    "amount": 4
+   },
+   {
+    "op": "other_gain",
+    "resource": "ambassadors",
+    "amount": 3
    }
+  ],
+  "keywords": [
+   "help"
   ]
  },
  {
@@ -1871,7 +1903,7 @@
   "name": "Beamed Power Constellation",
   "tier": 2,
   "kind": "program",
-  "cost": 9,
+  "cost": 7,
   "insight": 1,
   "needs": [
    [
@@ -1884,8 +1916,7 @@
   ],
   "effects": [
    {
-    "op": "place_node",
-    "count": 3
+    "op": "shelter"
    },
    {
     "op": "gain_per_node",
@@ -2817,7 +2848,7 @@
   "name": "Agency Directorate",
   "tier": 2,
   "kind": "building",
-  "cost": 2,
+  "cost": 10,
   "insight": 2,
   "needs": [
    [
@@ -2825,24 +2856,10 @@
     2
    ]
   ],
-  "replaces": "security",
   "tags": [
    "security"
   ],
-  "keywords": [
-   "tokens"
-  ],
-  "tokens": {
-   "kind": "agents"
-  },
-  "effects": [
-   {
-    "op": "add_tokens",
-    "kind": "agents",
-    "amount": 3,
-    "here": true
-   }
-  ],
+  "effects": [],
   "passives": [
    {
     "op": "when",
@@ -2852,21 +2869,8 @@
     },
     "then": [
      {
-      "op": "add_tokens",
-      "kind": "agents",
-      "amount": 2,
-      "here": true
-     }
-    ]
-   },
-   {
-    "op": "threshold",
-    "at": 4,
-    "then": [
-     {
-      "op": "gain",
-      "resource": "insight",
-      "amount": 4
+      "op": "gain_ambassadors",
+      "count": 2
      }
     ]
    }
@@ -2983,30 +2987,18 @@
   "name": "Annihilation Lance",
   "tier": 2,
   "kind": "event",
-  "cost": 5,
-  "antimatter": 1,
+  "cost": 10,
   "insight": 0,
   "tags": [
    "power"
   ],
   "effects": [
    {
-    "op": "target",
-    "on": "adversary"
+    "op": "discard_project"
    },
    {
-    "op": "destroy_all"
-   },
-   {
-    "op": "remove_troops",
-    "count": 2,
-    "at": "near"
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 2,
-    "narrative": "collateral"
+    "op": "drain_all",
+    "amount": 12
    }
   ]
  },
@@ -3329,9 +3321,9 @@
   "id": "vertical_monopoly",
   "name": "Vertical Monopoly",
   "tier": 2,
-  "kind": "building",
-  "cost": 11,
-  "insight": 2,
+  "kind": "program",
+  "cost": 12,
+  "insight": 1,
   "needs": [
    [
     "industry",
@@ -3341,16 +3333,14 @@
   "tags": [
    "industry"
   ],
-  "passives": [
+  "effects": [
    {
-    "op": "income_per_tag",
-    "resource": "credits",
+    "op": "gain_per_tag",
+    "resource": "antimatter",
     "tag": "industry",
-    "per": 1,
-    "amount": 2
+    "per": 2
    }
-  ],
-  "effects": []
+  ]
  },
  {
   "id": "market_stabilization_board",
@@ -4051,12 +4041,12 @@
   "name": "Zero-Day Auction",
   "tier": 2,
   "kind": "program",
-  "cost": 4,
+  "cost": 6,
   "insight": 2,
   "needs": [
    [
     "cyber",
-    5
+    4
    ]
   ],
   "tags": [
@@ -4065,13 +4055,13 @@
   ],
   "effects": [
    {
-    "op": "gain",
-    "resource": "antimatter",
-    "amount": 2
+    "op": "remove_research",
+    "amount": 8
    },
    {
-    "op": "draw",
-    "count": 3
+    "op": "gain",
+    "resource": "antimatter",
+    "amount": 1
    }
   ]
  },
@@ -4483,8 +4473,8 @@
   "name": "Homeland Security Act",
   "tier": 2,
   "kind": "program",
-  "cost": 12,
-  "insight": 2,
+  "cost": 10,
+  "insight": 1,
   "needs": [
    [
     "security",
@@ -4497,15 +4487,16 @@
   ],
   "effects": [
    {
-    "op": "production",
-    "resource": "energy",
-    "amount": 2
+    "op": "target",
+    "on": "agents"
    },
    {
-    "op": "production_per_tag",
-    "resource": "credits",
-    "tag": "security",
-    "per": 2
+    "op": "remove_ambassadors_country",
+    "max": 4,
+    "at": "near"
+   },
+   {
+    "op": "cordon"
    }
   ]
  },
@@ -4709,8 +4700,8 @@
   "name": "Fusion Research Campus",
   "tier": 2,
   "kind": "building",
-  "cost": 2,
-  "insight": 2,
+  "cost": 6,
+  "insight": 1,
   "needs": [
    [
     "power",
@@ -4721,23 +4712,34 @@
    "power",
    "science"
   ],
-  "passives": [
+  "effects": [
    {
-    "op": "when",
-    "on": {
-     "event": "play",
-     "tag": "power"
-    },
-    "then": [
-     {
-      "op": "gain",
-      "resource": "energy",
-      "amount": 2
-     }
-    ]
+    "op": "gain",
+    "resource": "energy",
+    "amount": 3
    }
   ],
-  "effects": []
+  "ability": {
+   "cost": [
+    [
+     "energy",
+     3
+    ]
+   ],
+   "effects": [
+    {
+     "op": "target",
+     "on": "corrupted_station"
+    },
+    {
+     "op": "cleanse",
+     "amount": 1,
+     "one_country": false,
+     "only": "station",
+     "at": "on"
+    }
+   ]
+  }
  },
  {
   "id": "envoy_briefings",
@@ -5397,22 +5399,28 @@
   ],
   "effects": [],
   "ability": {
+   "cost": [
+    [
+     "credits",
+     12
+    ]
+   ],
    "effects": [
     {
      "op": "target",
-     "on": "agents"
+     "on": "corrupted_city"
     },
     {
-     "op": "gather",
-     "max": 3,
-     "pieces": [
-      "agents"
-     ],
-     "strike": true
+     "op": "liberate"
     }
    ]
   },
-  "draft": true
+  "needs": [
+   [
+    "cyber",
+    2
+   ]
+  ]
  },
  {
   "id": "firewall_array",

@@ -1,0 +1,80 @@
+# 317: twelve tier-2 cards reworked as late-game majors (r152 -> r153). Apply with
+#   python scripts/cards/apply_overlay.py experiments/results/317_card_pass_r153/cards317.overlay
+# then python scripts/regen.py. The give / get for each card: the write-up's table (README.md).
+# Picked: the 12 tier-2 cards played least on 315's r152 judge read (seeds 52066-52161, 288 games a level),
+# leaving out 213's reworked majors, the finale buildings, the liberate capstones and Command-and-Control Grid
+# (the Cyber chain's repeatable draw engine, rulings *Card plays*).
+
+# Fusion Research Campus: energy frees corrupted research stations, once a round (was +2 energy a Power card)
+# (the loop smoke had the judge keep it and never build it: engines pay up front, so 3 energy when built, its first use)
+cards.fusion_research_campus.cost=6
+cards.fusion_research_campus.insight=1
+cards.fusion_research_campus.passives=null
+cards.fusion_research_campus.effects=[{"op": "gain", "resource": "energy", "amount": 3}]
+cards.fusion_research_campus.ability={"cost": [["energy", 3]], "effects": [{"op": "target", "on": "corrupted_station"}, {"op": "cleanse", "amount": 1, "one_country": false, "only": "station", "at": "on"}]}
+
+# Arcology Foundry: resettles a corrupted city, its new residents standing ready to pay its Liberate bill (was +5 credit, +1 chip income)
+cards.arcology_foundry.cost=6
+cards.arcology_foundry.effects=[{"op": "target", "on": "corrupted_city"}, {"op": "place_ambassadors", "count": 4, "at": "on"}, {"op": "gain", "resource": "chips", "amount": 3}]
+
+# Vertical Monopoly: a program cashing a built-up Industry engine into antimatter (was a building, 2 credits a tag a round)
+cards.vertical_monopoly.kind=program
+cards.vertical_monopoly.cost=12
+cards.vertical_monopoly.insight=1
+cards.vertical_monopoly.passives=null
+cards.vertical_monopoly.effects=[{"op": "gain_per_tag", "resource": "antimatter", "tag": "industry", "per": 2}]
+
+# Annihilation Lance: a strike on the adversary's late projects (was a one-hex wipe for 1 antimatter)
+# (diff review, twice: compute lands on the leftmost project only, so its get is about 32 at the anchors, under the
+# antimatter sinks' 2.0 floor at any price; it drops the antimatter and is a tier-2 major priced in 1.0-2.5)
+cards.annihilation_lance.cost=10
+cards.annihilation_lance.antimatter=null
+cards.annihilation_lance.effects=[{"op": "discard_project"}, {"op": "drain_all", "amount": 12}]
+
+# Orbital Mass Driver: chips free a corrupted factory, once a round (was 13 credits and 2 chips a round for 1 antimatter)
+cards.orbital_mass_driver.cost=4
+cards.orbital_mass_driver.antimatter=null
+cards.orbital_mass_driver.passives=null
+cards.orbital_mass_driver.ability={"cost": [["chips", 1]], "effects": [{"op": "target", "on": "corrupted_factory"}, {"op": "cleanse", "amount": 1, "one_country": false, "only": "factory", "at": "on"}]}
+
+# Homeland Security Act: locks a country down for the final push (was +2 energy, +1 credit per 2 Security tags)
+cards.homeland_security_act.cost=10
+cards.homeland_security_act.insight=1
+cards.homeland_security_act.effects=[{"op": "target", "on": "agents"}, {"op": "remove_ambassadors_country", "max": 4, "at": "near"}, {"op": "cordon"}]
+
+# Continental Supergrid: the team's endgame fuel, a help card (was +2 energy, +1 credit per 2 Power tags)
+cards.continental_supergrid.cost=16
+cards.continental_supergrid.keywords=["help"]
+cards.continental_supergrid.effects=[{"op": "gain", "resource": "energy", "amount": 4}, {"op": "gain_ambassadors", "count": 3}, {"op": "choose_player"}, {"op": "other_gain", "resource": "energy", "amount": 4}, {"op": "other_gain", "resource": "ambassadors", "amount": 3}]
+
+# Zero-Day Auction: sets the adversary's research back (was 2 antimatter and draw 3 at 5 Cyber)
+cards.zero_day_auction.cost=6
+cards.zero_day_auction.needs=[["cyber", 4]]
+cards.zero_day_auction.effects=[{"op": "remove_research", "amount": 8}, {"op": "gain", "resource": "antimatter", "amount": 1}]
+
+# Foundation Model Campus: insight into Unity, once a round (was 2 credits a Science tag a round)
+cards.foundation_model_campus.cost=8
+cards.foundation_model_campus.energy=null
+cards.foundation_model_campus.passives=null
+cards.foundation_model_campus.ability={"cost": [["insight", 2]], "effects": [{"op": "sway", "side": "unity", "amount": 4, "narrative": "cooperation"}]}
+
+# Lure Network: bribes lure a city's occupiers out, once a round, a late credit sink (was up to 3 agents removed a round)
+# (an Action can't print an ambassador cost: abilities pay resources the content checker knows, credits here)
+# (diff review: no needs and 10 credits put a liberation a round in reach from the first tier-2 draft; the finale
+# buildings carry a needs or 12 credits and spend a late-game amount: needs 2 Cyber, 12 credits a use)
+cards.lure_network.needs=[["cyber", 2]]
+cards.lure_network.draft=null
+cards.lure_network.ability={"cost": [["credits", 12]], "effects": [{"op": "target", "on": "corrupted_city"}, {"op": "liberate"}]}
+
+# Agency Directorate: each Security card played recruits ambassadors for the liberation bills (was Operatives, 4 insight at 4)
+cards.agency_directorate.cost=10
+# (diff review: an engine now, so no `replaces`: it no longer buries a Security building)
+cards.agency_directorate.replaces=null
+cards.agency_directorate.keywords=null
+cards.agency_directorate.tokens=null
+cards.agency_directorate.effects=[]
+cards.agency_directorate.passives=[{"op": "when", "on": {"event": "play", "tag": "security"}, "then": [{"op": "gain_ambassadors", "count": 2}]}]
+
+# Beamed Power Constellation: shelters the network before a Strike and cashes it in (was 3 nodes placed)
+cards.beamed_power_constellation.cost=7
+cards.beamed_power_constellation.effects=[{"op": "shelter"}, {"op": "gain_per_node", "resource": "energy"}]

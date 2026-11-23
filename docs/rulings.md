@@ -41,7 +41,8 @@ planner's, outside this repo.
   (`oracle:worlds=K`, sampled hidden information) at 32 lines a round on the judge's eval reads at the judge's level;
   the full oracle's edge is mostly search effort (lines a round, to 128) and eval, restarts about 10 points (314, 316). The fair-information yardstick is
   the real oracle's search on the engine's eval with 128 lines a round (316: 89% at d4 on fresh seeds, +22 over
-  `real:budget=128`; 256 lines no better), `skilled_rows.py`'s `real` row (Matt, amendment 14593).
+  the judge's eval at 128 lines; 256 lines no better), `skilled_rows.py`'s `real` row (Matt, amendment 14593), and
+  the `real` alias since 317 (Matt, Nov 22: one player; its 89 ± 5% at d4 meets the soft 90% ceiling).
 - **Remote workers:** speed over bit-exactness unless the gain is trivial; paired reads pair same-engine seeds.
 
 ## Measures
@@ -101,6 +102,9 @@ planner's, outside this repo.
 - **"Free" means one thing (Matt, Nov 21):** a card that frees (cleanses) a corrupted station or factory takes its
   agents off as Liberate does (D136); a card that removes troops before its rescue (Siegebreaker Reactor,
   Peacekeeping Mission) offers only cities its removal clears (D137).
+- **315's picks (Matt, Nov 21):** Great Liberation is the fair multi-site capstone, exempt from the antimatter sinks'
+  2.0-2.5 band; a "Target: Agents or Troops" power reaching a hex through a troop next to your ambassador also
+  removes that hex's agents (printed as is until Matt's playthrough).
 - **Finale buildings (Matt, Nov 20):** not every capstone is a building, but repeatable tier-2 "finale" buildings,
   hard to get and needing building up to, are a natural home for late-game power: their once-a-round Action (24)
   spends a late-game resource (antimatter, or large amounts of energy and the like). Getting the resource and its

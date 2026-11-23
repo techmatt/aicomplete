@@ -178,14 +178,6 @@
      "seen": "4343c824c2"
     },
     {
-     "name": "Lure Network",
-     "units": "3 * uses",
-     "other": 0,
-     "use": 0,
-     "note": "Action free: up to 3, x4; draw 2 (271: draws 0 on play, 0 an Action)",
-     "seen": "ba7768ea17"
-    },
-    {
      "name": "Liberation Accords",
      "units": 6,
      "other": "4 * amb",
@@ -256,6 +248,14 @@
      "use": 0,
      "note": "convert 4 (32); draw 2; sway 1 (271: draws 0 on play, 0 an Action)",
      "seen": "bf5bc64cf2"
+    },
+    {
+     "name": "Homeland Security Act",
+     "units": 4,
+     "other": "3 * agent",
+     "use": 0,
+     "note": "317: 4 agents near the target; its country cordoned (a country's Infiltrate, ~3 agents)",
+     "seen": "322796a073"
     }
    ]
   },
@@ -293,14 +293,6 @@
      "use": 0,
      "note": "3 troops; botnet 16",
      "seen": "1bc5e577b7"
-    },
-    {
-     "name": "Annihilation Lance",
-     "units": 3,
-     "other": "6 * agent - 2 * sway",
-     "use": 0,
-     "note": "~1 on it + 2 near; ~6 agents 30; Discord -8",
-     "seen": "3563098258"
     },
     {
      "name": "Kettle Operation",
@@ -530,6 +522,30 @@
      "use": 0,
      "note": "3; Action convert 2 (agents 10 + 2 placed), x4",
      "seen": "85d3547355"
+    },
+    {
+     "name": "Continental Supergrid",
+     "units": 3,
+     "other": "4 * energy + 0.75 * (4 * energy + 3 * amb)",
+     "use": 0,
+     "note": "317: 3 and 4 energy; another player the same (a gift, x0.75)",
+     "seen": "d2e65bc0c7"
+    },
+    {
+     "name": "Arcology Foundry",
+     "units": 4,
+     "other": "4 * move + 3 * chip",
+     "use": 0,
+     "note": "317: 4 placed on a corrupted city (each a move saved); 3 chips",
+     "seen": "050277c218"
+    },
+    {
+     "name": "Agency Directorate",
+     "units": "2 * uses",
+     "other": 0,
+     "use": 0,
+     "note": "317: 2 a Security card played, about 1 a round, x4",
+     "seen": "92497f9c69"
     }
    ]
   },
@@ -691,14 +707,6 @@
      "seen": "d0c872fa81"
     },
     {
-     "name": "Zero-Day Auction",
-     "units": 2,
-     "other": "3 * card",
-     "use": 0,
-     "note": "2; draw 6 (271: draws 3 on play, 0 an Action)",
-     "seen": "0d287a5131"
-    },
-    {
      "name": "Intrusion Lab",
      "units": 2,
      "other": 0,
@@ -714,6 +722,22 @@
      "note": "276: 2 Power sacrifice: 2 energy and 1 antimatter (Teardown's job; sacrifice unpriced)",
      "power": true,
      "seen": "414f089e85"
+    },
+    {
+     "name": "Zero-Day Auction",
+     "units": 1,
+     "other": "8 * 2",
+     "use": 0,
+     "note": "317: 1; 8 adversary research cubes off (values.json remove_research 2)",
+     "seen": "d05286dee6"
+    },
+    {
+     "name": "Vertical Monopoly",
+     "units": 2,
+     "other": 0,
+     "use": 0,
+     "note": "317: 1 per 2 Industry tags, floored (4-5 tags: 2)",
+     "seen": "19ecbaebb1"
     }
    ]
   },
@@ -807,6 +831,14 @@
      "use": "5 * energy",
      "note": "306: Action 5 energy: rescue the city, x4",
      "seen": "5a1f49f125"
+    },
+    {
+     "name": "Lure Network",
+     "units": "uses",
+     "other": 0,
+     "use": "12 * credit",
+     "note": "317: Action 12 credits: rescue a corrupted city, x4 (needs 2 Cyber)",
+     "seen": "bf7765ef98"
     }
    ]
   },
@@ -829,6 +861,14 @@
      "use": 0,
      "note": "free a corrupted station",
      "seen": "e1c99a9190"
+    },
+    {
+     "name": "Fusion Research Campus",
+     "units": "uses",
+     "other": "3 * energy",
+     "use": "3 * energy",
+     "note": "317: Action 3 energy: free a corrupted station, x4; 3 energy when built",
+     "seen": "79ea4ec6e0"
     }
    ]
   },
@@ -851,6 +891,14 @@
      "use": 0,
      "note": "free a corrupted factory and 1 next to it; sway 2",
      "seen": "5e76865559"
+    },
+    {
+     "name": "Orbital Mass Driver",
+     "units": "uses",
+     "other": 0,
+     "use": "chip",
+     "note": "317: Action 1 chip: free a corrupted factory, x4",
+     "seen": "174f2367af"
     }
    ]
   }

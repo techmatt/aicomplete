@@ -48,9 +48,9 @@
 //!   deal included, each line played to the game's end: a line that wins
 //!   proves the seed winnable and is followed ([`oracle`]). A measuring
 //!   stick for a skilled player, opt in.
-//! - `real` (314): an alias, the real oracle: the oracle's search on sampled worlds ([`REAL`]) on the judge's
-//!   evaluation as it stands ([`STRATEGIST`]). The fair-information yardstick (316) is the same search on the
-//!   engine's evaluation at 128 lines a round: `scripts/bench/skilled_rows.py`'s `real` row.
+//! - `real` (314; 317): an alias, the real oracle and the fair-information yardstick: the oracle's search on
+//!   sampled worlds on the engine's evaluation at 128 lines a round ([`REAL`]), the same player as
+//!   `scripts/bench/skilled_rows.py`'s `real` row.
 //!
 //! `greedy`, `engine` and `planner` keep by plan: [`policy::Policy`] wraps them, decides
 //! their keeps, applies the dominance checks' forced behaviors and the agent behaviors
@@ -352,11 +352,11 @@ w.horizon=0,w.insight_income=0,w.packet_keep=1,w.production=0,w.strat_contents=0
 w.tag_hand=0,w.purge=1.8,w.last_node=120,w.card_action=3,w.sink=0.5,w.am_tie=0.6667,w.am_cap=1,w.am_idle=0.2,w.adv_read=1,w.lib_clock=1,\
 reach_rule=1";
 
-/// `real` (314), the real oracle's search (249): 4 sampled worlds, 3 alternatives a decision, 32 lines a round,
-/// answers one prompt deep, its lines scoring their own world. On [`STRATEGIST`]'s evaluation, so it tracks the
-/// judge (249 pinned the judge's weights of its day). `scripts/bench/skilled_rows.py`'s `real` row is this search on
-/// the engine's evaluation at 128 lines (316).
-const REAL: &str = "worlds=4,alts=3,budget=32,answers=1,truth=1";
+/// `real`, the fair-information yardstick (316; the alias since 317, Matt Nov 22): the real oracle's search (249) on
+/// 4 sampled worlds, 3 alternatives a decision, 128 lines a round, answers one prompt deep, its lines scoring their own
+/// world, on the engine's evaluation (`strategy=1`). `scripts/bench/skilled_rows.py`'s `real` row is the same player.
+/// 314-316's `real` (the judge's evaluation, 32 lines) is `oracle:{STRATEGIST},worlds=4,alts=3,budget=32,answers=1,truth=1`.
+const REAL: &str = "strategy=1,worlds=4,alts=3,answers=1,truth=1,budget=128";
 
 /// A kind's place on the [`LADDER`].
 fn rung(kind: &str) -> Option<usize> {
@@ -374,7 +374,7 @@ impl AgentSpec {
             swept = format!("{STRATEGIST},{rest}");
             ("engine", swept.as_str())
         } else if kind == "real" {
-            swept = format!("{STRATEGIST},{REAL},{rest}");
+            swept = format!("{REAL},{rest}");
             ("oracle", swept.as_str())
         } else {
             (kind, rest)
@@ -761,13 +761,14 @@ mod tests {
         assert_eq!(named("sweep"), named("planner:deals=1,lead=0"));
         assert_eq!(named("sweep:budget=4"), named("planner:deals=1,lead=0,budget=4"));
         assert_eq!(named("sweep:deals=2"), named("planner:deals=2,lead=0"));
-        // 314: `real` is the real oracle on the judge's evaluation, a spec's own numbers last.
+        // 317: `real` is the fair yardstick, skilled_rows.py's `real` row (the engine's evaluation, 128 lines), a
+        // spec's own numbers last.
         let real = |spec: &str| {
             let s = AgentSpec::parse(spec).unwrap();
             (s.kind, s.params, s.weights)
         };
-        assert_eq!(real("real"), real(&format!("oracle:{STRATEGIST},{REAL}")));
-        assert_eq!(real("real:budget=128").1["budget"], 128.0);
+        assert_eq!(real("real"), real("oracle:strategy=1,worlds=4,alts=3,answers=1,truth=1,budget=128"));
+        assert_eq!(real("real:budget=32").1["budget"], 32.0);
         assert!(AgentSpec::parse("real:tries=3").is_ok());
     }
 

@@ -133,8 +133,8 @@ building with a Science trigger fires it (the face doesn't say so: six token bui
   own play fires its trigger (Telemetry Archive: its 2 Datasets, then the 2 its Science play adds, so At 4 pays at
   once).
 - **Per-tag income:** a program's "raise your credit income by 1 per 3 Science tags on your cards (including
-  this)" (`production_per_tag`, Research Royalties) counts once, when it resolves; later tags don't raise it. A building's "each round, 2 credits per Science tag on your cards (including this)" (`income_per_tag` with an
-  `amount`, Foundation Model Campus) pays every round while it is active, at the tag count frozen when it was played.
+  this)" (`production_per_tag`, Research Royalties) counts once, when it resolves; later tags don't raise it. A building's "each round, 1 credit per 2 Power tags on your cards (including this)" (`income_per_tag`,
+  Power to the People) pays every round while it is active, at the tag count frozen when it was played.
 - **For new players:** a building with a colon pays you every time the thing on its left happens: you play a card of
   that tag, a teammate does, you remove a troop. The less mark after the colon makes those cards cheaper. A ringed
   number and discs before the colon count up on the card and pay when they reach it.

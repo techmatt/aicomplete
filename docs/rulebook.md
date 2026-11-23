@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (fourth draft)
 
-*Rules revision 152. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 153. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -1037,7 +1037,7 @@ them, and an ambassador moved onto agents cancels one (§8). No agent enters a f
 Protector's node hex. A moved troop garrisons its new hex, guarding and striking from there, so pushing one away from a
 corrupted site opens it to a Liberate.
 
-**Remove around a hex.** Some cards (Kettle Operation, Lure Network, Honeypot Relay) remove up to N agents, or
+**Remove around a hex.** Some cards (Kettle Operation, Honeypot Relay) remove up to N agents, or
 agents and troops, **on or next to** the card's target: the target itself counts, and you choose which pieces, a
 batch at a time, and may stop early. Nothing moves. A target reached only through your ambassador (a troop on or
 next to it) gives up troops around it, and agents only where your nodes reach.

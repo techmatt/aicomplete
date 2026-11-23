@@ -71,17 +71,17 @@ Pieces on the board move: **ambassadors** (any seat's), **agents** and **troops*
   ambassador arriving on agents cancels one; a firewalled hex takes no agent; no troop enters the Protector's node
   (Wall). Troops otherwise just move: a moved troop garrisons its new hex, guarding and striking from there, so
   pushing one away from a corrupted site opens it to a Liberate.
-- **A strike** (Kettle Operation, Lure Network's Action, Honeypot Relay) moves nothing: "remove up to N Agents (or
+- **A strike** (Kettle Operation, Honeypot Relay) moves nothing: "remove up to N Agents (or
   Troops) on or next to it, your choice" (the card's target): the target counts, and the player picks the pieces,
   batch by batch, and may stop (r150: around a troop reached only through your ambassador, agents only where your
   nodes reach). A card's gather or push acts on its target too ([card-grammar.md](card-grammar.md)).
-- **Where:** Kettle Operation, Lure Network, Honeypot Relay (strikes), Checkpoint Network (push; Action: push),
+- **Where:** Kettle Operation, Honeypot Relay (strikes), Checkpoint Network (push; Action: push),
   Exodus Corridors and Rally the Allies (gather ambassadors), and the Protector's Patrol power (I, 1 energy: push up to 3 agents or
   troops from its target; II, 2 energy, also hardens a facility on or next to it). What a card moves is set by its price, not its tier: about 1.3 credits a piece (`values.json` `gather`, `push`).
 
 ## Convert and firewall (r69; Matt, 2026-11-09; candidate)
 
-Ten tier-2 cards (drafts, [player-cards.md](player-cards.md)) act on the agents where they stand,
+Nine tier-2 cards (drafts, [player-cards.md](player-cards.md)) act on the agents where they stand,
 for the last rounds, and never free a city: the players still reach it and Liberate.
 
 - **Convert** (Mass Defection, Double Agents, Open Source Uprising, Embassy of Exiles' Action): up to N agents on or next to one city in your reach leave the adversary's stack (to its supply) and become

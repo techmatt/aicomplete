@@ -17,8 +17,8 @@ state (`all_losses`).
   strong play that can't see the future. The row is the fair-information yardstick (docs/rulings.md, *The oracles*):
   316's strongest fair player, the real oracle's search (4 worlds, 3 alternatives, answers one prompt deep) on the
   engine's evaluation (`strategy=1`) with 128 lines a round: 89% at d4 on fresh seeds at r152, +22 over the judge's
-  eval at the same lines (`real:budget=128`, 315's yardstick), ~85-340 native s a game (d0-d2 to d3-d4). The `real`
-  alias stays the search on the judge's evaluation.
+  eval at the same lines (315's yardstick, then `real:budget=128`), ~85-340 native s a game (d0-d2 to d3-d4). The `real`
+  alias (agents/mod.rs) is this same player since 317 (Matt, Nov 22).
 """
 import argparse
 import json

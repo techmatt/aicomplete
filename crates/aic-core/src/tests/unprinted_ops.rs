@@ -39,6 +39,8 @@ const RESOLVED: &[(&str, By, bool)] = &[
     (r#"[{"op":"occupy_factory","else_compute":2}]"#, By::Threat, true),
     // 297: Border War's twist became a Strike; no card prints it now.
     (r#"[{"op":"each_destroy_node","count":1}]"#, By::Team, true),
+    // 317: Annihilation Lance printed it until it became a project sink.
+    (r#"[{"op":"destroy_all"}]"#, By::Seat, true),
     // 312: the Militarist's Commandeered Plants printed it; the Card beat's Escalate (with factories) runs it now.
     (r#"[{"op":"escalate","site":"city"}]"#, By::Team, true),
 ];

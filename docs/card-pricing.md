@@ -63,7 +63,7 @@ moves when any other card changes: to reprice an edited card, move its price by 
   agents' reading, CLAUDE.md's give / get) is `effect_ledger.py --stdout`'s reasoned − printed − `rates.keep_tierN`
   (283's `experiments/results/283_agents_antimatter/table_nets.py` prints every card's).
 - **A `needs` chain is the price** (ruling 10): needs 2-3 of a tag on an engine, needs 3-4 sits 2-4 under the recipe,
-  needs 5-6 about half and much bigger (Zero-Day Auction, needs 5 Cyber: 2 antimatter and draw 3).
+  needs 5-6 about half and much bigger (no card needs 5 since 317's Zero-Day Auction, needs 4 Cyber).
 - **The cost curve** (Terraforming Mars scale; Matt: fewer cheap cards, more dear and high-impact ones): most cards in
   the middle, the big income and late cards dearest, a few cheap ones (each card's cost: `docs/cards.md`). Six
   credits is about two thirds of a round's printed credits on the boards (10 / 9 / 7).
@@ -83,7 +83,7 @@ moves when any other card changes: to reprice an edited card, move its price by 
   insight to play and keep, other costs) less the when-built gain and the card's own first fire, over a round's
   yield at that rate (`scripts/cards/payback.py`, which lists the slow ones).
   **Engines pay up front:** the when-built gain is about two fires, in cards (since 271's scarce draw, at most
-  2: Foundation Model Campus) where the fire pays credits, since a credit gain on a credit cost would be a circular
+  2: Orbital Embassy) where the fire pays credits, since a credit gain on a credit cost would be a circular
   payment (guideline 5). How the agents read a trigger in play: agents.md, *The value table*.
 - **Card throughput** (271's scarce draw): credits pile up, so the fix is dearer, bigger cards and more of them, but
   repeatable draw is thin (two tag engines, one Action, a few board powers and two chip converters draw 1: rules/player-cards.md, *Card draw*). The rest is once: 1-2 when a building is built,
@@ -94,8 +94,7 @@ moves when any other card changes: to reprice an edited card, move its price by 
   tags) makes a 1-insight card free to play; no deck card prints an insight discount. Science's discount prints
   credits (Grad Student Pool).
 - **One shape for one job across the tags:** a per-tag income program ("raise your credit income by 1 per 3 X tags"),
-  needs 2 of X, 4 credits and no play insight, one per tag (priced at 6 tags at play, 1.30 at the anchors); a
-  building's per-tag income pays 2 a tag (Foundation Model Campus); a standing counter (`auto_counter`, Cyber's
+  needs 2 of X, 4 credits and no play insight, one per tag (priced at 6 tags at play, 1.30 at the anchors); a standing counter (`auto_counter`, Cyber's
   and Industry's) 9 credits and no play insight, needs 2; a typed jam 5 and a rider of its tag; a free typed-jam Action building 5
   credits and no play insight, about 2 a round.
 - **Income has a horizon:** any income counts for the rounds left at a typical
@@ -133,8 +132,8 @@ moves when any other card changes: to reprice an edited card, move its price by 
   Access and Reactor Retooling also play early as income.
 - **The finale buildings** (306; rulings, *Finale buildings*): a use's get at the anchors over the resource it spends
   (Concord Reactor 2.07, Singularity Exploit 1.63-2.30 by the project's fill; Siegebreaker Reactor 1.81, under the
-  antimatter events' 2.0: the third clause that reached 2.41 didn't fit; Fusion Torch Array's energy 1.73), and the
-  card over 3-4 uses with its credits and keep (1.28-1.88).
+  antimatter events' 2.0: the third clause that reached 2.41 didn't fit; Fusion Torch Array's energy 1.73; Lure Network's 12 credits 1.67, 317), and the
+  card over 3-4 uses with its credits and keep (1.02-1.88).
   Their price is mostly the build-up: a `needs` of 2-3 or 12 credits, and a plant for the fuel, so they are not
   priced down for the engine they make beside a plant. Uses per game measured: the 306 write-up.
 

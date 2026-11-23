@@ -76,11 +76,12 @@ fn rush_build_pays_tags_and_no_credits() {
 #[test]
 fn rush_build_needs_a_building_left_once_paid() {
     // Open Assembly pinned to 4 energy: no building prints energy and no needs since r42.
-    // Vertical Monopoly pinned to needs Industry 4 (r43 printed 3).
+    // Vertical Monopoly pinned to needs Industry 4 (r43 printed 3), and a building (317 made it a program).
     // 119: Market Stabilization Board pinned to r46's needs Industry 2 and no energy.
     let (rules, mut g) = lab_actions_with(&[
         "cards.open_assembly.energy=4",
         r#"cards.vertical_monopoly.needs=[["industry",4]]"#,
+        r#"cards.vertical_monopoly.kind="building""#,
         r#"cards.market_stabilization_board.needs=[["industry",2]]"#,
         "cards.market_stabilization_board.energy=0",
     ]);
