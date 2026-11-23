@@ -10,19 +10,18 @@ Needs the root README's *Toolchain*.
 
 ```sh
 cd web
-npm ci                         # once per worktree
-npm run dev [-- --port N]      # builds the wasm, then serves http://localhost:5173/ (or port N)
-npm run wasm                   # only rebuild web/src/wasm/ from crates/aic-wasm
+npm ci                         # once per worktree (npm run dev runs it when node_modules is stale)
+npm run dev [-- --port N]      # serves http://localhost:5173/ (or port N), building a stale wasm
+npm run wasm [-- --force]      # only rebuild web/src/wasm/ from crates/aic-wasm
 npm run check                  # typecheck (needs web/src/wasm/: npm run wasm first)
 npm run build                  # wasm + typecheck + static site in web/dist/ (92 s cold)
 ```
 
-- **The wasm build:** `scripts/build-wasm.mjs` runs `wasm-pack build crates/aic-wasm --target web --release` into
-  `web/src/wasm/` (git-ignored); 74 s in a fresh target dir (background it there). `AIC_WASM_PROFILE=dev` builds
-  unoptimized.
-- **While the dev server runs**, an edit under `crates/` (tests and `aic-sim` included) or `content/` rebuilds the
-  wasm and reloads the page; a new or edited file in `configs/` reloads it. A failed rebuild keeps the last good
-  engine, the error in the server's terminal.
+- **The wasm build:** `scripts/build-wasm.mjs` (`AIC_WASM_PROFILE=dev` unoptimized) into `web/src/wasm/`
+  (git-ignored): 74 s cold, ~50 s (wasm-opt) warm; skipped when its inputs are unchanged (its header).
+- **The dev server** (`scripts/dev.mjs`, conductor's *Play game*) builds the wasm at its start behind a waiting page,
+  and on an edit under `crates/` or `content/`, then reloads; an edit in `configs/` reloads. A failed rebuild keeps
+  the last good engine, the error in the server's terminal.
 
 ## Player view
 
@@ -94,8 +93,8 @@ sources, a forged payment refused) run the same way.
 
 **Against a built site:** a dev-server rebuild breaks a run mid-way, so while the engine is edited serve a
 snapshot: `node scripts/build-wasm.mjs && npx vite build && npx vite preview --port $PORT
---strictPort`, `AIC_URL=http://localhost:$PORT/` (after a `web/src/` edit, `npx vite build` alone, ~1 s). A killed
-wrapper's `node` can hold the port (`--strictPort` fails): kill it. **An old revision side by side** (~3 min):
+--strictPort`, `AIC_URL=http://localhost:$PORT/` (a `web/src/` edit: `npx vite build`, ~1 s). A killed wrapper's
+`node` can hold the port: kill it. **An old revision side by side** (~3 min):
 `git archive REV | tar -x -C out/rREV`, then `npm ci` and a snapshot there. A `vite build` empties `dist/` under a
 running sweep: rebuild between runs.
 

@@ -250,7 +250,11 @@
     "neutral_why": "neutral by design (any tag prints them): draws, credits, triggers and thresholds; threat counters (jam, auto_counter), since every tag answers threats its own way; liberate, the capstone every tag route reaches (player-cards.md, *The liberate capstones*); a tag's own payoffs (gain_per_tag, production_per_tag, income_per_tag, card_discount), which pay for the tag they count; reuse and choose_player, which only point another effect",
     "exceptions": {
       "cards:nuclear_option": "301 (Matt's message 13884): the antimatter weapon frees the stations and factories around the city it blasts, part of the one extreme act (its liberation is neutral), not Diplomacy's cleanup",
-      "ais:researcher:Hack I": "276: Disrupt's job, renamed (Hack II adds compute, which is Cyber): a Cyber card hacks troops anywhere in a country, no reach: the Researcher's troop answer is remote by design (206), so it is paid in Cyber, not Security"
+      "ais:researcher:Hack I": "276: Disrupt's job, renamed (Hack II adds compute, which is Cyber): a Cyber card hacks troops anywhere in a country, no reach: the Researcher's troop answer is remote by design (206), so it is paid in Cyber, not Security",
+      "cards:foundation_model_campus": "322 (Matt, Nov 22, 317's picks): its Unity on a Science card stands; the tags are flavor",
+      "cards:orbital_mass_driver": "322 (Matt, Nov 22, 317's picks): its factory freeing on an Industry/Power card stands; the tags are flavor",
+      "cards:agency_directorate": "322 (Matt, Nov 22, 317's picks): its ambassadors on a Security card stand; the tags are flavor",
+      "cards:annihilation_lance": "322 (Matt, Nov 22, 317's picks): its projects on a Power card stand; the tags are flavor"
     }
   },
   "sway": {

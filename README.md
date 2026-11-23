@@ -55,7 +55,7 @@ front end sit on top, holding no rules. Build and test are below; other areas ha
 | `tools/card-art/` | Card frames, icons, scenes and print. |
 | `art/` | Committed frame masters and guides; scenes are in `art-originals/`, a git-ignored junction. |
 | `picks/` | Matt's picks: the pickers' round manifests. |
-| `web/` | Browser viewer (Vite + TS on `aic-wasm`): `cd web && npm ci && npm run dev` builds the wasm (~9 s warm) and serves http://localhost:5173/. The card viewer (`npm run cards`, conductor's button), records, browser checks: [web/README.md](web/README.md). |
+| `web/` | Browser viewer (Vite + TS on `aic-wasm`): `cd web && npm run dev` installs its packages and builds a stale wasm, serving http://localhost:5173/. The card viewer (`npm run cards`, conductor's button), records, browser checks: [web/README.md](web/README.md). |
 
 ## Card text for review
 
