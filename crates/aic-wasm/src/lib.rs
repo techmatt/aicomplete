@@ -52,6 +52,12 @@ pub fn content() -> String {
     to_json(aic_core::content())
 }
 
+/// 323: the content a config plays, its overlay applied (as `content`). Solo's config resolves level texts this way.
+#[wasm_bindgen]
+pub fn content_for(config_json: &str) -> Result<String, JsValue> {
+    Ok(to_json(rules(config_json)?.content()))
+}
+
 /// Validates a config. Returns `{"config": <resolved>, "hash": "<16 hex>"}`.
 #[wasm_bindgen]
 pub fn resolve_config(config_json: &str) -> Result<String, JsValue> {

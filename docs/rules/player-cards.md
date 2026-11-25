@@ -17,7 +17,8 @@ The cards config lists the cards in the decks (`configs/baseline.json`; content 
   rest to seat *s*+1, until the hands are gone; nobody may pass in `cards.tier` or `cards.draft`. `cards.keep`: keep
   any drafted cards for insight, `keep_tier1` a tier-1 card, `keep_tier2` a tier-2 (`keep_tier2_upgraded` with the
   board's keep upgrade), round 1 included; credits never buy a keep, so one you lack the insight for isn't made. An
-  Open Market free keep is used first. The rest are discarded when the action phase begins.
+  Open Market free keep is used first. The rest are discarded when the action phase begins. **Solo** (`take=4` of
+  `deal=7`): take 4 from your own hand, nothing passed, the rest discarded ([board.md](board.md#solo)).
 - **Playing** a card costs its credits, less your discounts (Industry tags and Master Plan off a building; a tag discount
   such as Darknet Exchange's off any card with that tag), and any `insight`, `energy`, `chips`, `antimatter` and
   research cubes it prints, and lowers any income it prints under `lowers` ("lower your credit income 1": that

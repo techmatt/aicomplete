@@ -101,4 +101,5 @@ conventions: [README.md](README.md).*
 | `cards.industry_every` | 3 | 0..10 | 1 credit off buildings per this many Industry tags (0: off) |
 | `cards.discount_floor` | 0 | 0..5 | tag and building discounts stop at this cost; a cost printed under it stays |
 | `cards.no_pass` | 0 | 0..1 | 278 (table-time prototype): 1, each player keeps from the hand they built; no picks or passing |
+| `cards.take` | 0 | 0..10 | 323 (solo's draw-and-keep): N, each player takes N cards one at a time from the hand they built, nothing passed, and the rest are discarded (0: the passing draft) |
 <!-- /generated -->

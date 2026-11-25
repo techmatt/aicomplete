@@ -48,6 +48,7 @@ const DRAFT_PARAMS: &[ParamSpec] = &[
     ParamSpec::int("industry_every", 0, 10, "1 credit off buildings per this many Industry tags (0: off)"),
     ParamSpec::int("discount_floor", 0, 5, "tag and building discounts stop at this cost; a cost printed under it stays"),
     ParamSpec::int("no_pass", 0, 1, "278 (table-time prototype): 1, each player keeps from the hand they built; no picks or passing"),
+    ParamSpec::int("take", 0, 10, "323 (solo's draw-and-keep): N, each player takes N cards one at a time from the hand they built, nothing passed, and the rest are discarded (0: the passing draft)"),
 ];
 
 pub static DEF: ModuleDef = ModuleDef {
@@ -250,6 +251,8 @@ struct Cards {
     off: bool,
     /// 278 (table-time prototype, `cards.no_pass`): each seat's built hand is its draft, nothing passed.
     no_pass: bool,
+    /// 323 (solo, `cards.take`): cards each seat takes from its own built hand, none passed (0: the passing draft).
+    take: i64,
 }
 
 fn build(b: &Build) -> Result<Box<dyn Module>, String> {
@@ -260,6 +263,7 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
         cards: b.cards.clone(),
         off: false,
         no_pass: b.int("no_pass")? > 0,
+        take: b.int("take")?,
     }))
 }
 
@@ -271,6 +275,7 @@ fn build_off(b: &Build) -> Result<Box<dyn Module>, String> {
         cards: b.cards.clone(),
         off: true,
         no_pass: false,
+        take: 0,
     }))
 }
 
@@ -322,6 +327,14 @@ impl Module for Cards {
                     for s in 0..g.seats.len() {
                         for id in g.pile(&packet(s)).to_vec() {
                             cx.move_card(g, &id, &packet(s), &drafted(s), false).unwrap();
+                        }
+                    }
+                }
+                // 323 (`cards.take`): a seat with no hand to take from is done (nothing reaches it).
+                if self.take > 0 {
+                    for s in 0..g.seats.len() {
+                        if g.pile(&packet(s)).is_empty() {
+                            g.seats[s].passed = true;
                         }
                     }
                 }
@@ -464,7 +477,7 @@ impl Module for Cards {
         let s = a.seat() as usize;
         match a {
             Action::Tier { tier, .. } => self.take_tier(g, cx, s, *tier)?,
-            Action::Draft { card, .. } => draft_pick(g, cx, s, card)?,
+            Action::Draft { card, .. } => draft_pick(g, cx, s, card, self.take)?,
             Action::Keep { card, .. } => self.keep_card(g, cx, s, card)?,
             // 105: what a play or an Action removes fires the seat's fight triggers.
             Action::Play { card, .. } => fighting_play(g, cx, s, card, |g, cx| play_card(g, cx, s, card))?,

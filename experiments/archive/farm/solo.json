@@ -1,0 +1,35 @@
+{
+  "name": "solo",
+  "note": "323: one-player mode's judge read: configs/solo.json (one country, d1's numbers built in, draw 7 take 4) on each board. Soft numbers to report, not to dial. Farm a seed range with `aic-sim farm solo --seed F --games N --out FILE`.",
+  "configs": [
+    "configs/solo.json"
+  ],
+  "variants": [
+    {
+      "name": "builder",
+      "set": [
+        "ai.boards=0"
+      ]
+    },
+    {
+      "name": "protector",
+      "set": [
+        "ai.boards=1"
+      ]
+    },
+    {
+      "name": "researcher",
+      "set": [
+        "ai.boards=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    1
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 96,
+  "records": 0
+}

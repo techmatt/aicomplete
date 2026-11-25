@@ -227,7 +227,10 @@ export function resolveConfig(configJson: string): { config: Config; hash: strin
 
 /** A new game with its setup events. `seed` is a decimal u64 string. */
 export function start(configJson: string, seed: string): Step {
-  return step(wasm.start(configJson, seed));
+  const s = step(wasm.start(configJson, seed));
+  // 323: the texts the game plays, its config's content overlay applied (solo prints its level lines resolved).
+  content = JSON.parse(wasm.content_for(configJson));
+  return s;
 }
 
 export function legalActions(snap: Snapshot): Action[] {

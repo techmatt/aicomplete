@@ -243,7 +243,9 @@ function researchHtml(v: View): string {
   boxes.push(`<span class="rslot loss${cls(loss)}" data-slot="${loss}" title="slot ${loss}: the players lose">${loss} Loss</span>`);
   // 305: K, the cubes that advance the marker, is the level's cubes a country times the countries: say both.
   const per = cubes?.max && v.countries.length ? cubes.max / v.countries.length : null;
-  const k = per !== null && Number.isInteger(per) ? ` <span class="rk" title="K: the cubes the track spends to advance one slot, in the adversary's Income beat: the level's cubes a country times the countries">K ${cubes!.max} = ${per} a country</span>` : '';
+  // 323: solo (one country) shows K resolved, with no level or country sum.
+  const k = per !== null && v.countries.length === 1 ? ` <span class="rk" title="K: the cubes the track spends to advance one slot, in the adversary's Income beat">K ${cubes!.max}</span>`
+    : per !== null && Number.isInteger(per) ? ` <span class="rk" title="K: the cubes the track spends to advance one slot, in the adversary's Income beat: the level's cubes a country times the countries">K ${cubes!.max} = ${per} a country</span>` : '';
   const count = cubes ? `<span class="rcubes" data-value="${esc(cubes.key)}" data-scope="global">cubes <b>${cubes.value}</b><small> / ${cubes.max ?? '?'}</small> to the next slot</span>${k}` : '';
   return `<div class="research-row" data-research-slot="${slot.value}"><span class="stitle" data-value="${esc(slot.key)}" data-scope="global">${esc(row?.name ?? 'Research')}</span>${boxes.join('')}${count}</div>`;
 }
@@ -256,7 +258,8 @@ export function pipelineHtml(v: View): string {
   const lastRound = pile(v, 'adversary.last');
   if (!deck && !next && !cur) return '';
   const g = v.globals;
-  const head = ['adversary.stage', 'adversary.difficulty', 'adversary.compute', 'threats.tier']
+  // 323: solo (one country) has no level to show: its numbers are level 1's, built in.
+  const head = ['adversary.stage', ...(v.countries.length === 1 ? [] : ['adversary.difficulty']), 'adversary.compute', 'threats.tier']
     .map((k) => findValue(g, k)).filter((x): x is Value => !!x)
     .map((x) => valueChip(x, 'global', x.label.replace('adversary ', ''), false))
     .join('');

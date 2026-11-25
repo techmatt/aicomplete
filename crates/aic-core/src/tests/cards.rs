@@ -19,6 +19,30 @@ fn draft_picks_cannot_be_passed() {
         .is_err());
 }
 
+/// 323: solo's draw-and-keep (`configs/solo.json`: `cards.deal` 7, `cards.take` 4): the player picks 4 from the 7
+/// they built, nothing passed, and the other 3 go to the discards; the keep follows.
+#[test]
+fn solo_draws_seven_and_takes_four() {
+    let solo = Config::from_json(include_str!("../../../../configs/solo.json")).unwrap();
+    assert_eq!(solo.countries, 1);
+    let rules = Rules::new(&solo).unwrap();
+    let mut g = rules.new_game(2);
+    advance_to(&rules, &mut g, "cards.draft");
+    let discards = |g: &GameState| g.pile("cards.discard.1").len() + g.pile("cards.discard.2").len();
+    let before = discards(&g);
+    assert_eq!(g.pile("cards.packet.0").len(), 7);
+    for k in 0..4 {
+        let legal = rules.legal_actions(&g);
+        assert_eq!(legal.len(), 7 - k, "pick {k}: {legal:?}");
+        assert!(legal.iter().all(|a| matches!(a, Action::Draft { .. })), "{legal:?}");
+        rules.apply_mut(&mut g, &legal[0], None).unwrap();
+    }
+    assert!(g.pile("cards.packet.0").is_empty());
+    assert_eq!(g.pile("cards.drafted.0").len(), 4);
+    assert_eq!(discards(&g), before + 3);
+    assert!(!rules.legal_actions(&g).iter().any(|a| matches!(a, Action::Draft { .. })));
+}
+
 #[test]
 fn every_card_is_unique_in_every_game() {
     let rules = Rules::new(&baseline()).unwrap();

@@ -186,13 +186,15 @@ function draftHtml(v: View, ctx: PlayerCtx, s: number, mine: Action[]): string {
     }).join('')}</div>`);
   }
   const row = (cards: CardView[], key: string, act: (c: CardView) => string, note: (c: CardView) => string) =>
-    `<div class="pdraft">${cards.map((c) => `<div class="pdcard" data-card="${esc(c.id)}" data-where="seat:${s}:${key}">
+    `<div class="pdraft${cards.length > 5 ? ' many' : ''}">${cards.map((c) => `<div class="pdcard" data-card="${esc(c.id)}" data-where="seat:${s}:${key}">
       <div class="pslot" data-print="${esc(c.id)}"></div>
       ${printable(c.id) ? '' : tile(s, c, key, '')}
       <div class="pd-note">${esc(note(c))}${unmetNeeds(v, s, c) ? ` · <span class="warn">${esc(unmetNeeds(v, s, c))}</span>` : ''}</div><div class="pd-acts">${act(c)}</div></div>`).join('')}</div>`;
   if (packet?.cards.length) {
     // 289 (D129): "take one" only once there is a Draft button (it showed before the tier build was chosen).
-    parts.push(`<h4>${esc(packet.label)}${drafts.length ? ' <small>take one; the rest pass on</small>' : ''}</h4>` + row(packet.cards, 'cards.packet',
+    // 323: solo's draw-and-keep (`cards.take`) passes nothing: the hand's own label says how many to take.
+    const passing = !(Number(param(ctx.config, 'cards', 'take')) > 0);
+    parts.push(`<h4>${esc(packet.label)}${drafts.length && passing ? ' <small>take one; the rest pass on</small>' : ''}</h4>` + row(packet.cards, 'cards.packet',
       (c) => drafts.filter((a) => a.card === c.id).map((a) => btn(a, 'Draft', 'primary')).join(''),
       (c) => {
         // 261: the seat's own keep price (the config's base ignored the keep upgrade). 320: the view's field, not the

@@ -44,7 +44,8 @@ view). The player view (`src/player/`) hides the timeline, log, raw data and ran
 - **New modules:** an action no component draws is a button under *Other*; card groups, piles and values fall to
   the debug view's generic chips (`panels.ts`).
 - **Checks:** `AIC_SWEEP_VIEW=player` sweeps it. `node scripts/playthrough.mjs [--config three_seat.json] [--seed
-  N] [--size 1366x768] [--search A-B]` plays a shipped config by `play-policy.mjs`, clicking each move, shoots each
+  N] [--size 1366x768] [--search A-B] [--board N]` plays a shipped config by `play-policy.mjs` (`solo.json` started
+  through the header's Config and Board selects and New game), clicking each move, shoots each
   phase, fails on the sweep's hard screen checks (`screen-checks.mjs`), a raw-JSON hover, ▶ moving between turn
   steps or the view leaving a seat with a move, and ticks each overhaul rule seen (2-4 min). `player-play.mjs` plays
   one at random; `troops-play.mjs` and `ambassadors-play.mjs` click a demo game to the win and require its rules

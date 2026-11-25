@@ -1,9 +1,10 @@
 // 305: a whole plain game played through the player view, as a person playing every seat would: the bar for Matt's
 // playthrough of the overhauled game. Unlike troops-play.mjs and ambassadors-play.mjs it plays a config as it ships
-// (no override): `baseline.json` (two seats, d0) or `three_seat.json`.
+// (no override): `baseline.json` (two seats, d0), `three_seat.json` or `solo.json` (323: one player, started through
+// the header's Config and Board selects and New game, as a player starts it; `--board` 0-2, default the Builder).
 //
 //   node scripts/playthrough.mjs [--config baseline.json] [--seed 1] [--out DIR] [--size 1366x768] [--steps 4000]
-//                                [--search A-B]
+//                                [--search A-B] [--board N]
 //
 // Needs a served viewer (AIC_URL). The moves come from play-policy.mjs's small policy (it reads the engine's view to
 // choose); every one is made by clicking the control the player view shows for it, and the adversary's turn is
@@ -40,6 +41,10 @@ const [width, height] = arg('size', '1366x768').split('x').map(Number);
 const maxSteps = Number(arg('steps', '4000'));
 const search = arg('search', '');
 const config = readFileSync(join(web, '..', 'configs', file), 'utf8');
+// 323: a one-country config is solo: it starts through the New game form, on `--board` (0 Builder, 1 Protector,
+// 2 Researcher; default the config's own).
+const solo = JSON.parse(config).countries === 1;
+const board = arg('board', String(JSON.parse(config).modules.find((m) => m.module === 'ai').params.boards[0]));
 
 /** In the page: the per-step screen checks, and the overhaul's rules as the player view shows them. */
 // 312: the screen checks are screen-checks.mjs's, sweep.mjs's own: a hard kind fails the run, the rest (truncated
@@ -130,6 +135,24 @@ try {
   await page.until('window.aic && window.aic.view', 'the viewer to start', 30000);
   await page.js(`window.aic.setView('player')`);
   const start = async (s) => {
+    // 323: a solo config starts as a player starts it: the header's Config and Board selects, the seed, New game.
+    if (solo) {
+      const bad = await page.js(`(() => {
+        const cfg = document.getElementById('config'), pick = document.getElementById('board-pick'), b = document.getElementById('board-choice');
+        cfg.value = ${JSON.stringify(file)}; cfg.dispatchEvent(new Event('change'));
+        if (cfg.value !== ${JSON.stringify(file)}) return 'no ' + ${JSON.stringify(file)} + ' in the Config select';
+        if (pick.hidden) return 'no Board select for a solo config';
+        b.value = ${JSON.stringify(board)};
+        if (b.value !== ${JSON.stringify(board)}) return 'no board ' + ${JSON.stringify(board)} + ' in the Board select';
+        document.getElementById('seed').value = '${s}';
+        document.querySelector('#new-form button[type=submit]').click();
+        return null;
+      })()`);
+      if (bad) throw new Error(`new game: ${bad}`);
+      await page.until(`window.aic.timeline.seed === '${s}' && window.aic.timeline.last === 0 && JSON.parse(window.aic.timeline.configJson).modules.find((m) => m.module === 'ai').params.boards[0] === ${Number(board)}`, `the seed-${s} solo game on board ${board}`, 30000);
+      await page.js(POLICY);
+      return;
+    }
     await page.js(`window.aic.play(${JSON.stringify(config)}, '${s}', ${JSON.stringify(file)})`);
     await page.until(`window.aic.timeline.seed === '${s}' && window.aic.timeline.last === 0`, `the seed-${s} game`, 30000);
     await page.js(POLICY);

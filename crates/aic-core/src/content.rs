@@ -1893,13 +1893,19 @@ fn apply_entry(files: &mut [serde_json::Value], entry: &str) -> Result<(), Strin
         serde_json::from_str(value).unwrap_or_else(|_| Value::String(value.to_string()));
     let ix = OVERLAY_TABLES.iter().find(|(t, _)| *t == table).expect("is_overlay_key: a table").1;
     let corps = table == "corps";
-    // 135: the adversary file is its board and its event list; an overlay reaches the events.
-    let rows = match table {
-        "corps" => files[ix].get_mut("countries"),
-        "adversary" => files[ix].get_mut("events"),
-        _ => Some(&mut files[ix]),
+    // 135: the adversary file is its board and its event list; an overlay reaches the events, and (323) the board
+    // by its id.
+    let board_id = (table == "adversary").then(|| files[ix].pointer("/board/id").and_then(Value::as_str) == Some(id));
+    let rows: Vec<&mut Value> = if board_id == Some(true) {
+        files[ix].get_mut("board").into_iter().collect()
+    } else {
+        let rows = match table {
+            "corps" => files[ix].get_mut("countries"),
+            "adversary" => files[ix].get_mut("events"),
+            _ => Some(&mut files[ix]),
+        };
+        rows.and_then(Value::as_array_mut).ok_or_else(|| fail("not a list".into()))?.iter_mut().collect()
     };
-    let rows = rows.and_then(Value::as_array_mut).ok_or_else(|| fail("not a list".into()))?;
     let mut hit = false;
     for row in rows {
         let name = if corps {

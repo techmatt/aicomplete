@@ -158,7 +158,10 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
             })
             .collect();
         if !pk.is_empty() {
-            out.cards(s, "packet", "draft hand", pk);
+            // 323 (solo, `cards.take`): the hand says how many more the seat takes from it.
+            let left = m.take - g.pile(&drafted(s)).len() as i64;
+            let label = if m.take > 0 { format!("draft hand: take {left} more, the rest are discarded") } else { "draft hand".into() };
+            out.cards(s, "packet", &label, pk);
         }
         let dr: Vec<CardView> = g
             .pile(&drafted(s))

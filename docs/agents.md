@@ -72,6 +72,7 @@ counts):
 - **A card in hand:** `hand_share` (under 1) of its net worth, times the chance of paying and the progress term.
 - **A card to draft or keep:** its value × the strategy multiplier, less `pick_cost` (0: the keep plan judges what a
   seat can pay) of its play cost, less its keep × `packet_keep` in the packet; × `hand_share`, then `drafted`.
+  Solo's draw-and-keep (`cards.take`): only the hand's best `take` less those drafted count.
 - **A trigger or threshold:** as the `when` and `threshold` rows' `per` say (`own_mix`, `mix_prior`, `own_fill`,
   `raised_rounds`); insight off every card: card-pricing.md.
 - **A token:** what its card's spend pays per token (a cash-out's rate, D24), else the held rate.

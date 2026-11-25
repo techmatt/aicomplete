@@ -8,7 +8,7 @@ because content is compiled into the binary; then builds `aic-sim` (release; `CA
 default 3), sets docs/rules/README.md's "at rules revision N" line and docs/rulebook.md's "Rules revision N" (283)
 from `RULES_REVISION` in the source, then runs
 `aic-sim docs`, `scripts/cards/cards_doc.py`, `scripts/cards/effect_ledger.py` and `scripts/configs/no_liberate.py`,
-`no_tier2.py` and `three_seat.py` (the derived configs: 122 left no_liberate.json stale when the baseline gained
+`no_tier2.py`, `three_seat.py` and `solo.py` (the derived configs: 122 left no_liberate.json stale when the baseline gained
 params), prints the content hash and rules revision from `aic-sim show configs/baseline.json` (warning if the binary's
 revision isn't the source's), and then `git status --short`. Stops at the first failing step, naming it. `--no-build`
 uses the binary already built (stopping if the loader just rewrote the content it embeds).
@@ -226,7 +226,7 @@ def main():
     if a.check:
         step('aic-sim docs --check', [SIM, 'docs', '--check'])
         step('cards_doc.py --check', [PY, os.path.join('scripts', 'cards', 'cards_doc.py'), '--check'])
-        for derived in ('no_liberate.py', 'no_tier2.py', 'three_seat.py'):  # 284: the derived configs
+        for derived in ('no_liberate.py', 'no_tier2.py', 'three_seat.py', 'solo.py'):  # 284: the derived configs (323: solo)
             step(f'{derived} --check', [PY, os.path.join('scripts', 'configs', derived), '--check'])
         if not readme_revision(source_revision(), check=True):
             sys.exit(1)
@@ -239,6 +239,7 @@ def main():
     step('no_liberate.py', [PY, os.path.join('scripts', 'configs', 'no_liberate.py')])
     step('no_tier2.py', [PY, os.path.join('scripts', 'configs', 'no_tier2.py')])
     step('three_seat.py', [PY, os.path.join('scripts', 'configs', 'three_seat.py')])
+    step('solo.py', [PY, os.path.join('scripts', 'configs', 'solo.py')])
     content_form()
     out = step('aic-sim show', [SIM, 'show', os.path.join('configs', 'baseline.json')], capture=True)
     first = out.splitlines()[0] if out else ''

@@ -199,6 +199,11 @@ fn compile_round(names: &[String], instances: &[Instance]) -> Result<Vec<PhaseRe
 }
 
 impl Rules {
+    /// 323: the content these rules play, the config's overlay applied (the viewer shows a game's own texts).
+    pub fn content(&self) -> &'static Content {
+        self.content
+    }
+
     pub fn new(config: &Config) -> Result<Rules, String> {
         let (content, content_hash) = overlaid(&config.content)?;
         let map = Map::build(content, config.countries)?;

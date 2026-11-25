@@ -10,7 +10,7 @@ what it prints.
   `farm/compare.py A B [--ms A_ERR B_ERR]`: two engines' outputs of one range: games that differ, win %, paired
   gap, ms a game.
 - `regen.py [--no-build] [--check | --golden]`: every generator in order (its docstring), the derived
-  configs (`no_liberate.py`, `no_tier2.py`, `three_seat.py`) last. `--check` writes nothing and runs every check
+  configs (`no_liberate.py`, `no_tier2.py`, `three_seat.py`, `solo.py`) last. `--check` writes nothing and runs every check
   (docstring); `--golden`: also sets the golden constants (README, *Rules changes*).
 - `design_check.py [DIR] [--old DIR] [--base REV] [--config FILE] [--quiet] [--usage] [--variant V,...] [--agent A,...]`:
   the design warnings ([principles.md](principles.md)): content checks, plus play checks on DIR (a read's folder,
@@ -34,7 +34,8 @@ what it prints.
   rerun from the revision its docstring names.
 - `configs/no_liberate.py`, `no_tier2.py`: the baseline less every `liberate` card, and with no tier-2 deck (opening
   tier-2 keeps from tier 1), in `experiments/configs/`; `three_seat.py`: `configs/three_seat.json`, the baseline at
-  3 countries and difficulty 0 (the viewer's 3-seat game).
+  3 countries and difficulty 0 (the viewer's 3-seat game); `solo.py`: `configs/solo.json`, one-player mode (one
+  country, d1's numbers, draw 7 take 4, its "(level 1+)" texts and K resolved by a content overlay; docstring).
 - `cards/loop_smoke.py [DIR...] [--run] [--out DIR] [--exe EXE]` (flags: docstring): the loop smoke (no DIR: runs
   `use.json`): timeouts, ends, most plays of one card a game; exits 1 on a timeout or `--max-plays`.
 - `cards/counter_names.py DIR... [--all]` (DIR, games file or `FILE=SPEC`): counter keys the read scripts, web scripts and `crates/aic-sim` (agents

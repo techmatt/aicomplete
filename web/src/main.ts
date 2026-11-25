@@ -28,6 +28,8 @@ const ui = {
   version: $('version'),
   newForm: $<HTMLFormElement>('new-form'),
   config: $<HTMLSelectElement>('config'),
+  boardPick: $('board-pick'),
+  boardChoice: $<HTMLSelectElement>('board-choice'),
   seed: $<HTMLInputElement>('seed'),
   error: $('error'),
   source: $('source'),
@@ -69,6 +71,41 @@ function isConfig(text: string): boolean {
     return 'modules' in JSON.parse(text);
   } catch {
     return false;
+  }
+}
+
+/** 323: the AI boards a solo player picks from (content/ais.json's order, `ai.boards`' indices). */
+const BOARD_NAMES: string[] = (JSON.parse(
+  Object.values(import.meta.glob('../../content/ais.json', { query: '?raw', import: 'default', eager: true }))[0] as string,
+) as { name: string }[]).map((b) => b.name);
+
+/** 323: a one-country config (solo) plays the board the Board select names: its `ai.boards` set to it. */
+function soloConfig(text: string): boolean {
+  try {
+    return JSON.parse(text).countries === 1;
+  } catch {
+    return false;
+  }
+}
+
+/** The config text a new game plays: a solo config with the chosen board, else the file as it is. */
+function withBoard(text: string, board: string): string {
+  if (!soloConfig(text) || board === '') return text;
+  const cfg = JSON.parse(text);
+  const ai = (cfg.modules as { module: string; params: Record<string, unknown> }[]).find((m) => m.module === 'ai');
+  if (!ai) return text;
+  ai.params.boards = [Number(board)];
+  return JSON.stringify(cfg, null, 2) + '\n';
+}
+
+/** The Board select shows for a solo config only, on the config's own board until the player picks another. */
+function syncBoardPick(fromConfig: boolean) {
+  const text = CONFIGS[ui.config.value];
+  const solo = text !== undefined && soloConfig(text);
+  ui.boardPick.hidden = !solo;
+  if (solo && fromConfig) {
+    const ai = (JSON.parse(text).modules as { module: string; params: { boards?: number[] } }[]).find((m) => m.module === 'ai');
+    ui.boardChoice.value = String(ai?.params.boards?.[0] ?? 0);
   }
 }
 
@@ -175,7 +212,7 @@ function setTimeline(t: Timeline) {
 function newGame(file: string, seed: string) {
   const text = CONFIGS[file];
   if (text === undefined) throw new Error(`no config ${file}`);
-  setTimeline(Timeline.start(text, seed, { kind: 'play', file }));
+  setTimeline(Timeline.start(withBoard(text, ui.boardChoice.value), seed, { kind: 'play', file }));
 }
 
 function loadRecordText(text: string, file: string) {
@@ -977,6 +1014,9 @@ async function main() {
   ui.version.textContent = `${version} · rules r${rulesRevision}`;
   $('legend').innerHTML = legendHtml();
   ui.config.innerHTML = Object.keys(CONFIGS).map((f) => `<option>${escapeHtml(f)}</option>`).join('');
+  // 323: solo's board, the Builder suggested for a first game.
+  ui.boardChoice.innerHTML = BOARD_NAMES.map((n, i) => `<option value="${i}">${escapeHtml(n)}${i === 0 ? ' (suggested)' : ''}</option>`).join('');
+  ui.config.addEventListener('change', () => syncBoardPick(true));
   let restored: Timeline | null = null;
   let restoreError: string | null = null;
   try {
@@ -989,6 +1029,12 @@ async function main() {
   if (restored) {
     const file = restored.source.file;
     if (CONFIGS[file] !== undefined) ui.config.value = file;
+    syncBoardPick(true);
+    // 323: a solo session keeps the board it was started on.
+    if (soloConfig(restored.configJson)) {
+      const ai = (JSON.parse(restored.configJson).modules as { module: string; params: { boards?: number[] } }[]).find((m) => m.module === 'ai');
+      if (ai?.params.boards?.length) ui.boardChoice.value = String(ai.params.boards[0]);
+    }
     ui.seed.value = restored.seed;
     setTimeline(restored);
     // 099: a session saved under other rules says so, replayed or not.
@@ -1004,12 +1050,13 @@ async function main() {
     else if (other) showError(`saved session ${other}it replayed, but may not be the game it was`);
     // The session keeps the config it started with: say so when the file has changed
     // since (a retuned baseline), or the game shown is not what the file now plays.
-    else if (restored.source.kind === 'play' && CONFIGS[file] !== undefined && !sameJson(CONFIGS[file], restored.configJson))
+    else if (restored.source.kind === 'play' && CONFIGS[file] !== undefined && !sameJson(withBoard(CONFIGS[file], ui.boardChoice.value), restored.configJson))
       showError(`saved session: this game was started with an older copy of ${file}; New game plays the current one`);
     else if (restored.source.kind === 'play' && CONFIGS[file] === undefined && file.endsWith('.json'))
       showError(`saved session: ${file} is no longer in configs/; this game keeps the copy it started with`);
   } else {
     ui.config.value = CONFIGS['baseline.json'] !== undefined ? 'baseline.json' : Object.keys(CONFIGS)[0];
+    syncBoardPick(true);
     ui.seed.value = '1';
     newGame(ui.config.value, '1');
     // After the new game, which clears the error bar (020: the reason was wiped at once).

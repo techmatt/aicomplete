@@ -23,6 +23,18 @@ planner's, outside this repo.
 - At higher difficulty the adversary must spread, corrupting more cities before the players can liberate them (an
   adversary cleared before it takes new cities is bad design).
 
+## One-player mode (Matt, Nov 25)
+
+- **One-player mode** is a valid game, though it isn't the strategic design target: one board and one country (16
+  hexes, its two corrupted cities to win). The player picks any of the three boards; Builder is suggested for a first
+  game. It is the learning mode (`configs/solo.json`).
+- **Solo bakes in the d1 numbers** (city corrupts at 3 agents from level 1, research K 3, event deck 10 rounds, and
+  the rest of d1's values). Wherever the solo game shows a number to the player (card faces, prompts, rules text in
+  the view), it shows the resolved value, never "N (M from level X)". Other levels come back later as a separate set
+  of numbers, not conditional text.
+- **Alone, "another player" means you** (Matt's ruling 7, r44): a gift is yours, a teammate trigger fires on your
+  own plays, a shared gain lands once. Solo's other adjustments: [rules/board.md](rules/board.md#solo).
+
 ## Simulation and sim players
 
 - **Scale:** 2 players, pairs B+P, B+R, P+R, 48 seeds a cell, d0-d3 (d4 read too), paired against the previous

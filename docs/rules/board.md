@@ -58,6 +58,26 @@ only an edge: hexes are adjacent across it, and nothing is placed on it or fight
 - The adversary's supply: `adversary.supply_per_country` agents per country.
 - The adversary deck is dealt and its top card revealed face up as round 1's card.
 
+## Solo
+
+One-player mode (Matt, Nov 25; [rulings](../rulings.md)) is `configs/solo.json`, derived from the baseline by
+`scripts/configs/solo.py`: the learning mode, not the design target. Multi-seat play is untouched; each solo
+adjustment lives in that config:
+
+- **One country, one seat** (16 hexes; its two corrupted cities are the win); `ai.boards` picks any board, the
+  Builder (0) suggested (the viewer's Board select beside New game; the sim's `--set ai.boards=N`).
+- **Level 1's numbers built in** (`adversary.difficulty=1`): a city falls at 3 agents, research K 3, the 10-round
+  deck, compute income 3, no setup agents on free cities, Botnets spread. No level is offered. Texts print the
+  resolved line: the config's content overlay drops "(level 1+)" (two event cards, the board's Botnets spread
+  icon, Botnet Swarm) and prints the research row's K as 3; the viewer hides the level chip and prints "K 3".
+- **Draw and keep** (`cards.deal=7`, `cards.take=4`): a 2-player seat sees its own 4 cards and the 3 its partner
+  passes it (the partner's first pick never comes round) and drafts 4; solo builds 7 and takes 4, nothing passed,
+  the 3 left discarded. Keeps cost as ever.
+- **Kept as the 1-player rules were** (ruling 7, r44): "another player" means you (a gift is yours, a teammate
+  trigger fires on your plays, a shared gain lands once, the Researcher's capstone insight comes to you); tipping is
+  per player (Unity 3, Discord 4); projects, compute and K are a country's (× 1); every threat is dealt in your
+  country and only you can pay it; a Unity floor's "every player" is you.
+
 ## Research cubes and the corps (candidate)
 
 **Country = corp: one piece, one corp (locked).** Each piece bears its corp's name, and its

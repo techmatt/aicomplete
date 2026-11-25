@@ -185,7 +185,7 @@ corrupted site), rules/README.md (Terms); content/map.json; crates/aic-core/src/
 5. **Players** take AI boards in this order, which is the **player order**: Builder, Protector, Researcher, then a
    second Builder. Sit in player order: cards pass around the table by it (§7). Player 1 plays in country 1, and so
    on: that is your **home country**. With 2 players the Builder and the Protector play by default (any two may);
-   solo, the Builder plays. Each player:
+   solo, any one board plays (the Builder suggested). Each player:
    - places the first node from their **economy track** on their country's starting hex. This uncovers the track's
      first space, which shows nothing (§5);
    - takes 1 ambassador into their supply, 3 energy and their board's starting credits;
@@ -506,7 +506,8 @@ drafts and keeps like every round.
 1. **Build a hand.** Each player takes the top card of the tier-1 or the tier-2 deck, your choice each time, one at a
    time until they have 4. Each arrives face up, so you see it before choosing the next. (This is not a draw.)
 2. **Draft.** Take one card from the hand in front of you and pass the rest on, until the hands are gone. Always
-   pass to the next player in player order. Solo, you take all 4, then keep those you want.
+   pass to the next player in player order. Solo, you build a hand of 7 and take 4 of them, discarding the rest
+   (§22).
 3. **Keep.** Pay **1 insight** for each tier-1 card and **3 insight** for each tier-2 card you keep (2 with the keep
    upgrade, and less with Science discounts, below). Credits can't pay for a keep: when your insight runs out, you
    keep no more. Discard the cards you don't keep.
@@ -1226,13 +1227,17 @@ doubles the row's Garrison icons: each one lands 2 troops a country, not 1.
 
 - **Countries:** one per player, 1-4.
 - **Boards:** Builder, Protector, Researcher, then a second Builder. 2 players: the Builder and the Protector by
-  default, or any two. Solo: the Builder.
+  default, or any two. Solo: any one board; the Builder is suggested for a first game.
 - **Tipping:** the Unity track tips at 3 × the number of players, the Discord track at 4 ×.
 - **Projects** print one cost a board, times the number of countries in play (§17); the compute income, every
   "+N compute" line and the research track's cubes a slot are a country's too.
-- **Solo:** you take all 4 cards in the draft and keep those you want, paying as usual (§7). "Another player" on a
-  card means you: an Effect that fires when another player plays a card fires on your own plays, and a shared gain
-  is paid once.
+- **Solo** is the learning mode: one board, one country (its 16 hexes; free its two corrupted cities to win), and
+  level 1's numbers built in (a city corrupts at 3 agents, research K 3, the 10-round event deck): there is no level
+  to choose, and solo's components print those numbers alone.
+- **Solo draft (draw and keep):** you build a hand of 7 cards, choosing each one's tier as usual, then take 4 of them
+  one at a time and discard the other 3; nothing passes. Keep those you want, paying as usual (§7). "Another player"
+  on a card means you: an Effect that fires when another player plays a card fires on your own plays, and a shared
+  gain is paid once.
 
 *Sources: rules/board.md (The layouts), rules/ai-boards.md (`ai.boards`), rules/alignment.md (Tipping),
 rules/adversary.md (projects, Research track), rules/card-grammar.md (Help cards, Teammate triggers).*
