@@ -2,7 +2,8 @@
 
 *A spoken teach for new players, of the game as built (the revision the [rulebook](rulebook.md) names). Read it aloud with the map, a board and
 the adversary's board on the table. Detail: the [rulebook](rulebook.md) (its § numbers are given below), the
-[player aid](player-aid.md) and [rules/](rules/README.md).*
+[player aid](player-aid.md) and [rules/](rules/README.md). The viewer's solo tutorial (`web/src/tutorial.ts`) follows
+this order and wording: an edit here may want the same there.*
 
 ## What you are
 

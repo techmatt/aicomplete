@@ -135,7 +135,16 @@ function browserPath() {
  * consoleErrors, close }`; `js(expr)` evaluates an (awaited) expression in the page
  * and returns its JSON value.
  */
-export async function openPage({ width = 1366, height = 768 } = {}) {
+/** 325: a fresh browser opens the player view on solo.json under the new-game screen (Matt, Nov 25). The scripts
+ *  written before keep their old start, the debug view on baseline.json, by setting both before the page loads (and
+ *  again after a `localStorage.clear()` and reload), unless the page already holds a choice. `fresh: true` opens the
+ *  page as a new player's browser does. */
+const OLD_DEFAULTS = `try {
+  if (localStorage.getItem('aic.view') === null) localStorage.setItem('aic.view', 'debug');
+  if (localStorage.getItem('aic.firstConfig') === null) localStorage.setItem('aic.firstConfig', 'baseline.json');
+} catch {}`;
+
+export async function openPage({ width = 1366, height = 768, fresh = false } = {}) {
   mkdirSync(profileRoot, { recursive: true });
   sweepStaleProfiles();
   const profile = mkdtempSync(join(profileRoot, 'aic-cdp-'));
@@ -226,5 +235,6 @@ export async function openPage({ width = 1366, height = 768 } = {}) {
   await send('Page.enable');
   await send('Runtime.enable');
   await send('Log.enable');
+  if (!fresh) await send('Page.addScriptToEvaluateOnNewDocument', { source: OLD_DEFAULTS });
   return { send, js, until, size, shot, consoleErrors, close };
 }

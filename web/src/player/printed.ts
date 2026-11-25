@@ -1,7 +1,8 @@
 // 242: a player card as it prints (web/card/), for the player view's hover and draft. The printed card's
 // stylesheet would clash with the viewer's `.card` chips, so each face lives in its own shadow root.
 // Content rows come from content/cards.json and the face words from web/card/faces.json, as the card
-// viewer's export joins them (`render: { ...row, ...face }`); no scene art (those are 3.6 MB each).
+// viewer's export joins them (`render: { ...row, ...face }`). 325: a card's scene when the dev server serves it
+// downsized (`loadScenes`); else the frame alone.
 
 import { fitCards, frameOf, inset, renderCard } from '../../card/card.js';
 import cardCss from '../../card/card.css?inline';
@@ -30,6 +31,19 @@ function addFonts() {
   document.head.append(st);
 }
 
+/** 325: card id -> its scene's URL, from the dev server (vite.config.ts's `sceneArt`); empty on a built site. */
+let scenes: Record<string, string> = {};
+
+/** Asks the dev server which cards have a scene drawn; before the first card prints (a host is cached with its art). */
+export async function loadScenes() {
+  try {
+    const r = await fetch('./__scenes.json');
+    if (r.ok && /json/.test(r.headers.get('content-type') ?? '')) scenes = await r.json();
+  } catch {
+    scenes = {};
+  }
+}
+
 /** Whether `id` is a player card this view can print. */
 export const printable = (id: string) => byId.has(id) && frames[frameOf(byId.get(id)!)] !== undefined;
 
@@ -52,7 +66,7 @@ export function printedCard(id: string, scale: number): HTMLElement | null {
   host.style.width = `${CARD_PX.w * scale}px`;
   host.style.height = `${CARD_PX.h * scale}px`;
   const root = host.attachShadow({ mode: 'open' });
-  const html = renderCard({ ...row, ...(faces[id] ?? {}) }, layout, url, fits[frame]);
+  const html = renderCard({ ...row, ...(faces[id] ?? {}) }, layout, url, fits[frame], scenes[id]);
   root.innerHTML = `<style>${cardCss}\n.scaled{transform:scale(${scale});transform-origin:0 0;width:69mm;height:94mm}</style><div class="scaled">${html}</div>`;
   // Fit after the host is attached (measuring needs layout); a detached host fits on its next frame.
   requestAnimationFrame(() => fitHost(host));

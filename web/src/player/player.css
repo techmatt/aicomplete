@@ -4,6 +4,8 @@
 
 #app[hidden], #player[hidden], #p-turn[hidden], #p-draft[hidden] { display: none; }
 .player-mode #timeline, .player-mode .debug-only { display: none; }
+/* 325: the player view starts games from the new-game screen (New game…); the debug view keeps the header's form. */
+.player-mode #new-form, body:not(.player-mode) .player-only { display: none; }
 body > #player { flex: 1 1 0; }
 
 #player {
@@ -212,6 +214,32 @@ ul.ppowers li.ready .ptext { color: #333; }
 #tip .tip-under { max-width: 26em; margin-top: 0.3em; font-size: 0.9em; }
 #tip .tip-why { max-width: 26em; margin-bottom: 0.25em; padding: 0.1em 0.4em; border-radius: 3px; background: #fff3e0; color: #8a3b00; font-weight: 600; }
 #tip:has(.printed-host) { max-width: none; }
+
+/* ---------- 325: the new-game screen and the tutorial ---------- */
+#new-dialog { width: min(40em, 92vw); border: 1px solid var(--line); border-radius: 8px; padding: 0.8em 1.1em; }
+#new-dialog h2 { margin: 0 0 0.5em; }
+#new-dialog .nd-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4em 0.7em; padding: 0.55em 0; border-top: 1px solid var(--line); }
+#new-dialog .nd-row p { flex: 1 1 100%; margin: 0; color: var(--muted); font-size: 0.9em; }
+#new-dialog .nd-first { border-top: 0; }
+#new-dialog .big { font-size: 1.15em; padding: 0.35em 0.9em; }
+#new-dialog .tools { display: flex; justify-content: flex-end; border-top: 1px solid var(--line); padding-top: 0.5em; }
+
+#tutorial { position: fixed; z-index: 40; width: min(24em, 34vw); max-height: calc(100vh - 8px); overflow: auto; background: #fffef6;
+  border: 2px solid #e0a100; border-radius: 8px; box-shadow: 0 6px 22px #0004; padding: 0.5em 0.75em; font-size: 0.92em; line-height: 1.35; }
+#tutorial[hidden] { display: none; }
+#tutorial.tut-wait { width: min(19em, 30vw); opacity: 0.94; }
+#tutorial .tut-head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5em; }
+#tutorial .tut-head small { color: var(--muted); white-space: nowrap; }
+#tutorial p { margin: 0.35em 0; }
+#tutorial ul { margin: 0.3em 0; padding-left: 1.2em; }
+#tutorial li { margin: 0.12em 0; }
+#tutorial .tut-btns { display: flex; align-items: center; gap: 0.5em; justify-content: flex-end; margin-top: 0.3em; }
+#tutorial .tut-todo { margin-right: auto; color: #8a5a00; font-style: italic; }
+#tutorial .tut-foot { display: flex; gap: 0.5em; justify-content: flex-end; margin-top: 0.35em; padding-top: 0.3em; border-top: 1px dashed #e6d6a8; }
+#tutorial .tut-foot button { font-size: 0.85em; }
+#tutorial-rings { position: fixed; inset: 0; pointer-events: none; z-index: 39; }
+.tut-ring { position: fixed; border: 3px solid #e0a100; border-radius: 7px; box-shadow: 0 0 0 3px #e0a10044; animation: tut-pulse 1.6s ease-in-out infinite; }
+@keyframes tut-pulse { 50% { box-shadow: 0 0 0 7px #e0a10022; } }
 
 @media (max-height: 820px) {
   .pturn-ev { max-height: 8em; }

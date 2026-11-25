@@ -25,8 +25,17 @@ npm run build                  # wasm + typecheck + static site in web/dist/ (92
 
 ## Player view
 
-*Player view* / *Debug view* (V) switches, remembered (`aic.view` in `localStorage`; a fresh browser opens the debug
-view). The player view (`src/player/`) hides the timeline, log, raw data and random play.
+*Player view* / *Debug view* (V) switches, remembered (`aic.view` in `localStorage`). **A fresh browser** (no saved
+view or session) opens the player view on `solo.json` under the **new-game screen** (*New game…*): the tutorial first,
+then solo on any board, then any config. The player view (`src/player/`) hides the timeline, log, raw data and random
+play, and the header's form (the debug view's).
+
+- **The tutorial** (`src/tutorial.ts`, `TUTORIAL`: solo, Builder, seed 24): prompts in `docs/teach.md`'s order,
+  each outlining what it names, to round 2's Liberate and a hand-off. A "do" step waits for the view to show it done
+  (*Skip step*); it suggests, never forces. `scripts/tutorial-play.mjs [--size WxH]` clicks it from a fresh browser to
+  the hand-off, shooting each step; it fails on a stuck step or a misplaced prompt (~40 s).
+- **Scenes:** the dev server downsizes each printed card's scene from `art-originals/` (`sceneArt` in
+  `vite.config.ts`, `scripts/scene-thumb.py`, Pillow; cached in `out/scene-cache/`); a built site prints frames alone.
 
 - **Layout (324):** the map in the middle. Left, always shown: the adversary's cards (the next face up, with its
   notices), projects (the leftmost whole), research row, then threats, Alignment and loss clocks. Right, *What … can
@@ -34,7 +43,7 @@ view). The player view (`src/player/`) hides the timeline, log, raw data and ran
   shaded, why on hover (`data-why`), and those unused this round are named atop it. The foot, a fixed height (the
   map keeps its share at 1366×768): a row per seat (the board's name opens its whole face), then the hand and
   buildings printed (`web/card/`, shadow roots reused across renders). The shown seat: the one deciding, else the
-  one that just acted while it has a move in that phase, else the first to act. No scene art yet.
+  one that just acted while it has a move in that phase, else the first to act.
 - **The draft** shows over the map, its cards printed as large as one row fits (*Show the map* folds it).
 - **Undo** (Ctrl+Z) only inside the action phase, back to its start, never past a draw from a deck (`undoRoom`,
   main.ts); the header's unlimited Undo is the debug view's.
@@ -51,21 +60,19 @@ view). The player view (`src/player/`) hides the timeline, log, raw data and ran
 
 ## Using it
 
-- **Play:** pick a config (any in `configs/`; `baseline.json` by default) and a seed, then *New game*. One person
-  plays every seat, in any order in a simultaneous phase; draft phases offer no pass. *Pass every seat*, *Random
-  action* (R) and *Random to end* speed debugging.
+- **Play:** a config and a seed, then *New game*. Scripts (`cdp.mjs`'s `openPage`) open the debug view on
+  `baseline.json` (`aic.firstConfig`) unless `fresh: true`. One person plays every seat, in any order.
 - **Choices:** the question shows in the amber bar. A hex answer highlights its hexes (purple): click one; two
   answers on one hex also get a button each.
 - **The board:** player pieces on a hex's upper row, the adversary's on the lower; the legend keys the troops'
   links. Hover anything for details; hexes the shown step changed have an amber outline.
 - **Actions:** each seat panel offers that seat's legal actions. AI board tracks: solid spaces uncovered, dashed
-  under nodes, boxed the last uncovered. A `vars` track no module labels folds under *Unlabeled tracks*.
+  under nodes, boxed the last uncovered.
 - **Timeline:** Ctrl+Z undoes. ⏮ ◀ ▶ ⏭, the slider, ← → Home End, Space to auto-play at 1x, 4x or 16x; **Page Up /
   Down** jump between round starts. Clicking a log entry jumps to its step; acting from an earlier step drops the
   later actions, after asking. The log folds by phase; hovering a phase outlines its hexes.
-- **The header** shows the engine and rules revision. The error bar flags a saved session (`localStorage`, replayed
-  on load) whose config changed or no longer loads, or a record from another revision; one that no longer loads is
-  kept (`copy(aic.keptSession())`).
+- **The header** shows the engine and rules revision. The error bar flags a saved session whose config changed or
+  no longer loads (kept: `copy(aic.keptSession())`), or a record from another revision.
 
 ## Game records
 
@@ -90,8 +97,8 @@ measures a fixed game (baseline seed 11) a rules change can move: diff two revis
 `npm run e2e:corps`, `e2e:researcher` (cubes, converters, the Researcher's board) and `e2e:sources` (a threat's
 sources, a forged payment refused) run the same way.
 
-**Against a built site:** a dev-server rebuild breaks a run mid-way, so while the engine is edited serve a
-snapshot: `node scripts/build-wasm.mjs && npx vite build && npx vite preview --port $PORT
+**Against a built site:** a dev-server rebuild, or any `web/src/` edit (vite reloads the page), breaks a run mid-way,
+so while editing serve a snapshot: `node scripts/build-wasm.mjs && npx vite build && npx vite preview --port $PORT
 --strictPort`, `AIC_URL=http://localhost:$PORT/` (a `web/src/` edit: `npx vite build`, ~1 s). A killed wrapper's
 `node` can hold the port: kill it. **An old revision side by side** (~3 min):
 `git archive REV | tar -x -C out/rREV`, then `npm ci` and a snapshot there. A `vite build` empties `dist/` under a
@@ -152,17 +159,13 @@ elsewhere; a taken port says so and exits.
   the checkout's `out/experiments/` (highest revision, then most plain agents, then most games); labels carry the revision; a
   collapsed *N warnings ▸* line flags one behind the rules. Default agent: the ladder's highest. A screen meant for
   the viewer commits its `results.json`.
-  - Kept % is keeps per 100 games (the opening deal is kept undrafted, so a report's kept ÷ offered can pass
-    100%). Played % is played ÷ (kept + drawn). Win Δ comes from `games.csv`, which names only buildings standing
-    at the end: blank for other cards.
-  - A CSV under `experiments/results/` with a `card` (or `id`) column and a column with `reason` in its name
-    (`card-prices.csv` by convention) adds the reasoned price and printed minus reasoned; one whose `revision` is
-    older than `RULES_REVISION` is passed over silently (the CLI export names it). None is current.
+  - Kept % is keeps per 100 games (the opening deal is kept undrafted). Played % is played ÷ (kept + drawn). Win Δ
+    (from `games.csv`) is blank but for buildings standing at the end.
+  - A CSV under `experiments/results/` with a `card` column and a `reason` column adds the reasoned price; one older
+    than `RULES_REVISION` is passed over (the CLI export names it). None is current.
 - **Notes:** `review/card-notes.json` in the checkout (git-ignored), by card id (fields: `saveNote` in
-  `cards-server.mjs`). `flag`: empty, `ok`, `too cheap`, `too dear`, `rework` or `unclear text`; `text`: the card's
-  text at saving; `hash`: a SHA-256 prefix of its content row and face, key order aside (`contentHash` in
-  `out/cards-export.json`). Closing or stepping saves (previous file kept as `.bak`); a broken notes file shows on
-  the page and refuses saves.
+  `cards-server.mjs`; `hash`, `contentHash` in the export). Closing or stepping saves (the old file kept as `.bak`);
+  a broken notes file shows on the page and refuses saves.
 - **Badges:** *changed since your note* when the note's `hash` is stale (saving again clears it); *New* for a card
   missing from `review/card-seen.json`, until opened, noted or *Mark all seen* (the first run seeds it with all).
 - **Pricing:** a card's one current line from `docs/card-pricing-notes.json`, under *Pricing* in the large view
@@ -174,8 +177,6 @@ elsewhere; a taken port says so and exits.
 - **Shots:** `node scripts/card-shots.mjs ID,ID [--port N] [--out NAME]` (large view, `out/NAME/`, ~1 s a card);
   card backs, `node scripts/back-shots.mjs [--port N] [--out NAME]` (`out/NAME/backs.png`).
 - **Text sizes:** `npm run cards:fit` (about 2.5 s, no server) fits every player card headless with the real
-  renderer into `out/card-fit.json` (fields atop
-  `scripts/cards-fit.mjs`; the target box runs 7.5 down to 6 pt, taking no height from a building's top box). It
-  prints cards below 7.5 pt and exits 1 on any overflow or any box below 7.5 pt. A
-  box first tries smaller icons (`icons-1`) with its text at 7.5 pt, then steps the text down. It reads the working tree: re-run after an edit. AI board faces (`aiBoard` in the export, `powersHtml` in play) aren't fitted. A box's
-  size follows its text's length: joining two clauses' icons on one row saves nothing (258).
+  renderer into `out/card-fit.json` (fields and the size ladder atop `scripts/cards-fit.mjs`); it exits 1 on any
+  overflow or any box below 7.5 pt. It reads the working tree: re-run after an edit. AI board faces aren't fitted. A
+  box's size follows its text's length: joining two clauses' icons on one row saves nothing (258).

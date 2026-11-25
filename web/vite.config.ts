@@ -1,8 +1,9 @@
 import { spawn } from 'node:child_process';
-import { statSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig, type Plugin, type ViteDevServer } from 'vite';
+import { originalsDir } from './card/originals.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repo = resolve(here, '..');
@@ -90,9 +91,105 @@ function engineWatch(): Plugin {
   };
 }
 
+/**
+ * 325 (Matt, Nov 25): the player view's printed cards show their scenes. Dev only: `/__scenes.json` maps each card id
+ * to its scene's URL (tools/card-art/scenes.json's `card`, for a scene drawn in art-originals/, the latest batch first,
+ * as the card viewer picks it), and `/__scene/<id>.jpg` serves that scene downsized (scripts/scene-thumb.py, Python and
+ * Pillow), cached in out/scene-cache/ (git-ignored). Nothing is committed; a built site, or a card with no scene drawn,
+ * prints its frame alone.
+ */
+function sceneArt(): Plugin {
+  const WIDTH = 480;
+  const cacheDir = resolve(repo, 'out', 'scene-cache');
+  let files: Map<string, string> | null = null;
+  let cards: Record<string, string> = {};
+  /** Scene id -> its newest original, and card id -> scene id; read once (a new batch: restart the server). */
+  const index = () => {
+    if (files) return;
+    files = new Map();
+    const base = originalsDir(repo);
+    const dir = join(base, 'scenes');
+    const batches = existsSync(dir) ? readdirSync(dir).filter((d) => /^b\d+$/.test(d)).sort((a, b) => Number(b.slice(1)) - Number(a.slice(1))) : [];
+    for (const b of batches) for (const f of readdirSync(join(dir, b))) if (f.endsWith('.png') && !files.has(f.slice(0, -4))) files.set(f.slice(0, -4), join(dir, b, f));
+    try {
+      const pool = JSON.parse(readFileSync(resolve(repo, 'tools/card-art/scenes.json'), 'utf8')).scenes ?? {};
+      for (const group of Object.values(pool) as Record<string, { card?: string }>[])
+        for (const [id, s] of Object.entries(group)) if (s.card && files.has(id)) cards[s.card] = `./__scene/${id}.jpg`;
+    } catch {
+      cards = {};
+    }
+  };
+  const pending = new Map<string, Promise<boolean>>();
+  // At most 3 downsizes at once (a cold cache asks for a draft's and a hand's scenes together), each given 30 s (an
+  // original still syncing from Drive can stall the read): a refused or slow one prints the frame alone.
+  let running = 0;
+  const queue: (() => void)[] = [];
+  const slot = () => new Promise<void>((go) => (running < 3 ? (running++, go()) : queue.push(() => (running++, go()))));
+  const free = () => {
+    running--;
+    queue.shift()?.();
+  };
+  const thumb = (src: string, dst: string) => {
+    let p = pending.get(dst);
+    if (!p) {
+      p = slot().then(() => new Promise<boolean>((done) => {
+        mkdirSync(cacheDir, { recursive: true });
+        const py = spawn(process.platform === 'win32' ? 'python' : 'python3', [resolve(here, 'scripts/scene-thumb.py'), src, dst, String(WIDTH)], { stdio: 'ignore' });
+        const timer = setTimeout(() => py.kill(), 30_000);
+        py.on('error', () => done(false));
+        py.on('exit', (code) => {
+          clearTimeout(timer);
+          done(code === 0 && existsSync(dst));
+        });
+      })).finally(() => {
+        free();
+        pending.delete(dst);
+      });
+      pending.set(dst, p);
+    }
+    return p;
+  };
+  return {
+    name: 'aic-scene-art',
+    apply: 'serve',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const path = (req.url ?? '/').split('?')[0];
+        if (path === '/__scenes.json') {
+          index();
+          res.setHeader('Content-Type', 'application/json');
+          res.setHeader('Cache-Control', 'no-store');
+          return res.end(JSON.stringify(cards));
+        }
+        const m = /^\/__scene\/([a-z0-9_-]+)\.jpg$/.exec(path);
+        if (!m) return next();
+        index();
+        const src = files!.get(m[1]);
+        if (!src) {
+          res.statusCode = 404;
+          return res.end();
+        }
+        const dst = join(cacheDir, `${m[1]}-${Math.round(statSync(src).mtimeMs)}-${WIDTH}.jpg`);
+        const send = () => {
+          res.setHeader('Content-Type', 'image/jpeg');
+          res.setHeader('Cache-Control', 'max-age=86400');
+          res.end(readFileSync(dst));
+        };
+        if (existsSync(dst)) return send();
+        void thumb(src, dst).then((ok) => {
+          if (ok) return send();
+          server.config.logger.warn(`scene ${m[1]}: could not downsize ${src} (Python with Pillow on PATH?)`);
+          res.statusCode = 404;
+          res.end();
+        });
+      });
+    },
+  };
+}
+
 export default defineConfig({
   base: './',
-  plugins: [engineWatch()],
+  plugins: [engineWatch(), sceneArt()],
   server: {
     // configs/ and content/ live beside web/.
     fs: { allow: [repo] },

@@ -18,12 +18,13 @@ import {
   statusHtml, varsHtml,
 } from './panels';
 import { Timeline, keptSession, parseSeed, randomSeed, readRecord, revisionNote, storageGet, storageSet } from './session';
-import { printedCard } from './player/printed';
+import { loadScenes, printedCard } from './player/printed';
 import {
   focusSeat, isAdversaryPhase, isAdversaryTurn, pin, renderPlayer, replayTurn, stayWith, stepPhaseView, toggleDraft, turnHexes, turnOpen,
   turnStep, turnStepFrame,
   turnView, type UndoRoom,
 } from './player/view';
+import { TUTORIAL, initTutorial, startTutorial, stopTutorial, tutorialActive, tutorialState, updateTutorial } from './tutorial';
 import './style.css';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -59,6 +60,10 @@ const ui = {
   recordNote: $<HTMLInputElement>('record-note'),
   recordMsg: $('record-msg'),
   recordFile: $<HTMLInputElement>('record-file'),
+  newDialog: $<HTMLDialogElement>('new-dialog'),
+  ndBoard: $<HTMLSelectElement>('nd-board'),
+  ndConfig: $<HTMLSelectElement>('nd-config'),
+  ndSeed: $<HTMLInputElement>('nd-seed'),
 };
 
 /** Every config in configs/ (a file with `modules`; not variants.json's override matrix), read
@@ -130,7 +135,8 @@ let varsOpen = false;
 /** The player view (play through the objects) or the debug view (everything, the timeline and the raw data). */
 type Mode = 'player' | 'debug';
 const VIEW_KEY = 'aic.view';
-let mode: Mode = storageGet(VIEW_KEY) === 'player' ? 'player' : 'debug';
+// 325 (Matt, Nov 25): a fresh browser opens the player view (scripts that want the debug view set it themselves).
+let mode: Mode = storageGet(VIEW_KEY) === 'debug' ? 'debug' : 'player';
 
 const playerUi = {
   root: $('player'),
@@ -205,6 +211,8 @@ function setTimeline(t: Timeline) {
   stopAutoplay();
   pin(null);
   stayWith(null);
+  // 325: a game started any way (a script's too) closes the new-game screen.
+  if (ui.newDialog.open) ui.newDialog.close();
   tl = t;
   // 261: the player view plays the live game, as `setMode` keeps it: a record opened, dropped or loaded there (or a
   // session restored) showed its setup step, with no timeline to move on and every control dropping the record.
@@ -214,9 +222,11 @@ function setTimeline(t: Timeline) {
   commit();
 }
 
-function newGame(file: string, seed: string) {
+function newGame(file: string, seed: string, tutorial = false) {
   const text = CONFIGS[file];
   if (text === undefined) throw new Error(`no config ${file}`);
+  // 325: any other new game leaves the tutorial.
+  if (!tutorial) stopTutorial();
   setTimeline(Timeline.start(withBoard(text, ui.boardChoice.value), seed, { kind: 'play', file }));
 }
 
@@ -334,6 +344,7 @@ function render() {
     renderTab();
   }
   renderTimeline();
+  updateTutorial();
   // 118: the hover was redone only when the mouse moved, so autoplay, the keys or an
   // action left it showing the old step's values (or a removed button's) under a still mouse.
   if (mouse) hover(document.elementFromPoint(mouse.x, mouse.y), mouse.x, mouse.y);
@@ -828,6 +839,61 @@ ui.newForm.addEventListener('submit', (e) => {
   guard(() => newGame(ui.config.value, seed));
 });
 
+// ---------- 325: the new-game screen and the tutorial ----------
+
+/** A new game of `file` (a solo config on `board`) at `seed`, the header's selects following it. */
+function startGame(file: string, seed: string, board: string | null, tutorial = false) {
+  if (!tl) return;
+  ui.config.value = file;
+  syncBoardPick(true);
+  if (board !== null) ui.boardChoice.value = board;
+  ui.seed.value = seed;
+  guard(() => newGame(file, seed, tutorial));
+}
+
+/** The solo game's board, from its config (null for a multi-seat config). */
+function soloBoard(configJson: string): number | null {
+  if (!soloConfig(configJson)) return null;
+  const ai = (JSON.parse(configJson).modules as { module: string; params: { boards?: number[] } }[]).find((m) => m.module === 'ai');
+  return ai?.params.boards?.[0] ?? 0;
+}
+
+let boardOf: { json: string; board: number | null } | null = null;
+initTutorial({
+  view: () => shown,
+  legal: () => legal,
+  config: () => tl.frame.snap.state.config,
+  playerMode: () => mode === 'player',
+  game: () => {
+    if (boardOf?.json !== tl.configJson) boardOf = { json: tl.configJson, board: soloBoard(tl.configJson) };
+    return { seed: tl.seed, file: tl.source.kind === 'play' ? tl.source.file : '', board: boardOf.board };
+  },
+  restart: () => startGame(TUTORIAL.file, TUTORIAL.seed, TUTORIAL.board, true),
+});
+
+function openNewGame() {
+  if (!tl || ui.newDialog.open) return;
+  ui.ndConfig.value = ui.config.value;
+  ui.newDialog.showModal();
+  $('nd-tutorial').focus();
+}
+
+$('new-open').onclick = openNewGame;
+$('nd-close').onclick = () => ui.newDialog.close();
+$('nd-tutorial').onclick = () => {
+  if (CONFIGS[TUTORIAL.file] === undefined) return showError(`the tutorial needs configs/${TUTORIAL.file}`);
+  startTutorial();
+};
+$('nd-solo').onclick = () => {
+  const solo = Object.keys(CONFIGS).find((f) => f === TUTORIAL.file) ?? Object.keys(CONFIGS).find((f) => soloConfig(CONFIGS[f]));
+  if (solo) startGame(solo, randomSeed(), ui.ndBoard.value);
+};
+$('nd-other').onclick = () => {
+  const seed = ui.ndSeed.value.trim() === '' ? randomSeed() : parseSeed(ui.ndSeed.value);
+  if (seed === null) return showError('the seed must be a whole number from 0 to 18446744073709551615');
+  startGame(ui.ndConfig.value, seed, null);
+};
+
 $('random-seed').onclick = () => {
   if (!tl) return; // 118: as New game
   ui.seed.value = randomSeed();
@@ -1111,7 +1177,8 @@ function sameJson(a: string, b: string): boolean {
 }
 
 async function main() {
-  await load();
+  // 325: which cards have a scene (the dev server's), before the first card prints.
+  await Promise.all([load(), loadScenes()]);
   setMode(mode);
   ui.version.textContent = `${version} · rules r${rulesRevision}`;
   $('legend').innerHTML = legendHtml();
@@ -1119,6 +1186,8 @@ async function main() {
   // 323: solo's board, the Builder suggested for a first game.
   ui.boardChoice.innerHTML = BOARD_NAMES.map((n, i) => `<option value="${i}">${escapeHtml(n)}${i === 0 ? ' (suggested)' : ''}</option>`).join('');
   ui.config.addEventListener('change', () => syncBoardPick(true));
+  ui.ndBoard.innerHTML = ui.boardChoice.innerHTML;
+  ui.ndConfig.innerHTML = ui.config.innerHTML;
   let restored: Timeline | null = null;
   let restoreError: string | null = null;
   try {
@@ -1157,12 +1226,17 @@ async function main() {
     else if (restored.source.kind === 'play' && CONFIGS[file] === undefined && file.endsWith('.json'))
       showError(`saved session: ${file} is no longer in configs/; this game keeps the copy it started with`);
   } else {
-    ui.config.value = CONFIGS['baseline.json'] !== undefined ? 'baseline.json' : Object.keys(CONFIGS)[0];
+    // 325 (Matt, Nov 25): a fresh browser plays solo, the new-game screen over it offering the tutorial first.
+    // `aic.firstConfig` in localStorage: the scripts' own start (scripts/cdp.mjs keeps theirs on baseline.json).
+    const first = [storageGet('aic.firstConfig'), TUTORIAL.file, 'baseline.json'].find((f) => f && CONFIGS[f] !== undefined);
+    ui.config.value = first ?? Object.keys(CONFIGS)[0];
     syncBoardPick(true);
     ui.seed.value = '1';
     newGame(ui.config.value, '1');
     // After the new game, which clears the error bar (020: the reason was wiped at once).
     if (restoreError) showError(restoreError);
+    // (Not over a restore error: the dialog would hide the bar saying how to get the session back.)
+    if (mode === 'player' && !restoreError) openNewGame();
   }
 }
 
@@ -1190,5 +1264,8 @@ Object.assign(window, {
     showSeat: (s: number | null) => { pin(s); render(); },
     keptSession,
     get error() { return ui.error.hidden ? null : ui.error.textContent; },
+    /** 325: the tutorial (its state: the step shown, every step's id), and the new-game screen. */
+    tutorial: { start: startTutorial, stop: stopTutorial, get state() { return tutorialState(); }, get active() { return tutorialActive(); } },
+    newGameScreen: openNewGame,
   },
 });

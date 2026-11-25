@@ -18,6 +18,7 @@
         <button type="button" id="random-seed" title="New game with a random seed">Random seed</button>
       </form>
       <div class="tools">
+        <button type="button" id="new-open" class="player-only primary" title="Start a game: the tutorial, solo or another setup">New game…</button>
         <button type="button" id="view-toggle" title="Switch between the player view and the debug view (V)">Player view</button>
         <button type="button" id="undo" class="debug-only" title="Drop the last action (Ctrl+Z)">Undo</button>
         <button type="button" id="random-action" class="debug-only" title="Take one random legal action (R)">Random action</button>
@@ -102,6 +103,27 @@
         <button type="button" id="record-load">Load pasted record</button>
         <button type="button" id="record-close">Close</button>
       </div>
+    </dialog>
+
+    <!-- 325: the new-game screen: the tutorial first, then solo (any board), then any config. -->
+    <dialog id="new-dialog">
+      <h2>New game</h2>
+      <div class="nd-row nd-first">
+        <button type="button" id="nd-tutorial" class="primary big">Tutorial: your first game</button>
+        <p>Solo on the Builder, a set game: short prompts walk you through the first two rounds, then you play on.
+          Skip or restart it any time.</p>
+      </div>
+      <div class="nd-row">
+        <button type="button" id="nd-solo">Solo game</button>
+        <label>Board <select id="nd-board"></select></label>
+        <p>One board, one country, a random seed: your two corrupted cities to win.</p>
+      </div>
+      <div class="nd-row">
+        <button type="button" id="nd-other">Other setup</button>
+        <label>Config <select id="nd-config"></select></label>
+        <label>Seed <input id="nd-seed" type="text" inputmode="numeric" autocomplete="off" size="12" placeholder="random" /></label>
+      </div>
+      <div class="tools"><button type="button" id="nd-close">Close</button></div>
     </dialog>
 
     <script type="module" src="/src/main.ts"></script>

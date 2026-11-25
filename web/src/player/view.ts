@@ -777,7 +777,7 @@ export function renderPlayer(ui: PlayerUi, ctx: PlayerCtx) {
   const all = !v.outcome && !v.choice && passers.length > 1 && v.phase?.name !== 'cards.keep' ? `<button type="button" class="pass-all" data-pass-all="1">Pass every seat still to act (${passers.join(', ')})</button>` : '';
   const others = [...new Set(ctx.legal.filter((a) => a.seat !== focus).map((a) => a.seat))];
   const switchTo = others.map((x) => `<button type="button" data-seat-focus="${x}">${esc(seatName(v, x))} to act ▸</button>`).join('');
-  const body = v.outcome ? '<p class="pa-note">The game is over: New game (at the top) starts another.</p>'
+  const body = v.outcome ? '<p class="pa-note">The game is over: New game… (at the top) starts another.</p>'
     : v.choice && v.choice.seat === focus ? '<p class="pa-note">Answer the question above the map first.</p>'
     : v.choice ? `<p class="pa-note">${esc(seatName(v, v.choice.seat))} is answering a question above the map.</p>`
     : draft ? `<p class="pa-note">${draftFolded ? 'The draft is folded away: ' : ''}Pick from the cards over the map.${draftFolded ? ' <button type="button" data-draft-toggle="1">Show the draft ▴</button>' : ''}</p>${actionsHtml(ctx, focus, mine)}`

@@ -208,7 +208,8 @@ try {
     await page.js(`(window.aic.open(${JSON.stringify(text)}, 'odd'), true)`);
     const s = await state();
     if (s.cursor !== s.last) fails.push(`player-view-record-space-pin: a record opened in the player view shows step ${s.cursor} of ${s.last}`);
-    const kept = await page.js(`(() => { const b = document.getElementById('random-seed'); b.focus();
+    // 325: the player view's header button is New game… (the header's form is the debug view's).
+    const kept = await page.js(`(() => { const b = document.getElementById('new-open'); b.focus();
       b.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); return ${key(' ')}; })()`);
     if (kept) fails.push('player-view-record-space-pin: Space after clicking a header button was left to the button');
     if (!(await toChoice())) return void fails.push('player-view-record-space-pin: no question came up to pin past');
