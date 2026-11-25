@@ -253,7 +253,7 @@ try {
     for (let i = 0; i < 1500 && !(bar && turn && power && conv && cubedSeen.size); i++) {
       const r = await page.js(`(() => {
         const out = {};
-        const std = [...document.querySelectorAll('#p-bar .a-standard')];
+        const std = [...document.querySelectorAll('#p-act .a-standard')];
         if (std.length) out.std = std.map((b) => [b.textContent, b.title]);
         // The cube-priced ones (Lift Fallout, Turn a cube into insight, Make antimatter) name their cubes.
         const cubed = std.filter((b) => ['lift', 'insight', 'antimatter'].includes(JSON.parse(b.dataset.action).act));
@@ -261,7 +261,7 @@ try {
         const t = document.getElementById('p-turn');
         if (!t.hidden && t.querySelector('.pturn-head')) out.turn = [t.querySelector('.pturn-head b').textContent, t.querySelector('.pturn-ev').textContent + ' ' + t.querySelector('ol').textContent];
         else if (!t.hidden && t.querySelector('[data-turn=open]')) t.querySelector('[data-turn=open]').click();
-        const conv = [...document.querySelectorAll('#p-seat .converter.unusable')].map((c) => c.textContent);
+        const conv = [...document.querySelectorAll('#p-board-body .converter.unusable')].map((c) => c.textContent);
         if (conv.length) out.conv = conv;
         const f = window.aic.timeline.frame.action;
         if (f && f.type === 'power') out.power = [document.getElementById('step').textContent, document.getElementById('step').title];

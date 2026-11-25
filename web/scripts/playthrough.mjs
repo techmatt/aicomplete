@@ -17,7 +17,10 @@
 //     panel below its fold, a placeholder or stale word; and a cut piece (cut-pieces.mjs), a console error (truncated
 //     text and raw ids are listed as `looks`, not failed);
 //   - ticks the overhaul's rules as the player view shows them (`seen` in the summary, `RULES` below): a rule the
-//     game never reached is listed as unreached, not failed (a plain d0 game may never see a troop).
+//     game never reached is listed as unreached, not failed (a plain d0 game may never see a troop);
+//   - 324: once a round from round 2 reopens the last adversary turn from its Replay button and steps it; once a
+//     round undoes the first action-phase move with the panel's Undo (it must take back one move and make it legal
+//     again), once a game with *Undo to the phase's start* (back to the phase's first step, or a draw's stop).
 // Fails (exit 1) on no outcome, any check above, or a rule shown wrongly. Writes OUT/summary.json and OUT/record.json.
 // `--search A-B` plays seeds A to B by the policy straight through the engine (no clicks) and prints each end and the
 // rounds the troop rules first showed: how a seed that reaches them is found.
@@ -70,7 +73,7 @@ const CHECKS = `(() => {
       const v = aic.mapView, r = {};
       const tipped = v.hexes.some((h) => h.tokens.some((t) => t.kind.startsWith('tipped:') && t.count > 0));
       if (tipped) r.tippedAmbassador = any('#board .token[data-token^="tipped:"] .tipped') ? true : 'a tipped ambassador in the view is not drawn tipped';
-      if (aic.legal.some((a) => a.type === 'standard' && a.act === 'liberate' && a.seat === aic.focus)) r.liberateOffered = any('#p-bar button.a-standard[data-action*="liberate"]') ? true : 'Liberate is legal with no button';
+      if (aic.legal.some((a) => a.type === 'standard' && a.act === 'liberate' && a.seat === aic.focus)) r.liberateOffered = any('#p-act button.a-standard[data-action*="liberate"]') ? true : 'Liberate is legal with no button';
       const bill = any('#player .plib');
       // The bill as the rules print it (3 at any site: Liberate at 3), a site's own line or the rule's (308: one price
       // for every site, "3 ambassadors at any site").
@@ -87,7 +90,8 @@ const CHECKS = `(() => {
       // 320: an earlier step of the turn shows that step's tracks and rows, not the board after the turn: each seat
       // row's resources and the research row's slot read the drawn board's, and once they differ from the board now
       // the rollback is seen.
-      if (document.querySelector('#p-turn.phase-board:not([hidden])') && v !== aic.view) {
+      // 324: a turn the game opened itself, not a replay (a replay's last step is its frame's board, not a rollback).
+      if (document.querySelector('#p-turn.phase-board:not([hidden]):not(.replay)') && v !== aic.view) {
         const res = (view, s, k) => view.seats[s].values.find((x) => x.key === 'resource.' + k)?.value ?? 0;
         const bad = [];
         let differs = false;
@@ -122,6 +126,25 @@ const CHECKS = `(() => {
       if (deck) r.deckLeft = /\\d/.test(deck.textContent) ? true : 'the deck reads "' + deck.textContent + '"';
       if (any('#player [data-track="alignment.discord"], #player [data-value="alignment.discord"]')) r.discord = true;
       if (any('#player [data-track="alignment.unity"], #player [data-value="alignment.unity"]')) r.unity = true;
+      // 324: the overhauled view's parts. The hand and buildings print; a card, power or building Action that can't be
+      // used now is shaded with its reason; the unused powers and Actions are named; Undo shows in the action phase;
+      // the last adversary turn has its Replay button all round (D142); a gone project reads "gone" (D147).
+      if (any('#p-seat .pcard .printed-host')) r.printedCards = true;
+      const shaded = [...document.querySelectorAll('#p-seat .pcard.blocked, #p-act li.blocked, #p-act .pa-card.blocked')].filter(vis);
+      if (shaded.length && !aic.view.choice) r.shadedWhy = shaded.every((e) => e.dataset.why) ? true : 'a shaded card or power with no reason: ' + shaded.find((e) => !e.dataset.why).textContent.trim().slice(0, 60);
+      // In the action phase "not now" is no reason (it read so for a seat that had passed, before 324's review).
+      const notNow = /board\\.act/.test(aic.view.phase?.name ?? '') ? shaded.find((e) => /used in the action phase/.test(e.dataset.why ?? '')) : null;
+      if (notNow) r.shadedWhy = 'in the action phase a shaded card says "' + notNow.dataset.why + '"';
+      if (any('#p-act .pa-remind')) r.reminder = true;
+      if (any('#p-act [data-undo="1"]:not([disabled])')) r.undo = true;
+      if (any('#p-turn [data-turn="replay"]')) r.replayButton = true;
+      const gone = any('#player [data-pile="adversary.projects_done"]');
+      if (gone) r.goneProject = /gone/.test(gone.textContent) && !/done/.test(gone.textContent) ? true : 'the gone projects read "' + gone.textContent + '"';
+      // 323's ruling: solo shows level 1's numbers resolved, never a level.
+      if (v.countries.length === 1) {
+        const lv = /from level|\\blevels? \\d|\\bd[0-4]\\b/i.exec(document.getElementById('player').innerText);
+        r.bakedNumbers = lv ? 'solo shows a level: "' + lv[0] + '"' : true;
+      }
       return r;
     },
   };
@@ -195,6 +218,10 @@ try {
     const hovered = new Set();
     const clicks = {};
     const moves = [];
+    const replayed = new Set();
+    const undone = new Set();
+    const phaseStart = new Map();
+    let undidStart = false;
     for (let i = 0; i < maxSteps; i++) {
       const st = await page.js(`({ ...window.__tp.state(), prompt: aic.view.choice ? aic.view.choice.prompt.replace(/^Seat \\d+: */, '').replace(/[0-9#]+/g, 'N').slice(0, 40) : null,
         turn: (() => { const e = document.querySelector('#p-turn .pturn-head span'); return e ? e.textContent : null; })() })`);
@@ -236,11 +263,52 @@ try {
         if (nav && after && after !== nav) note(st.round, [`turn-nav-moved: the turn panel's ▶ moved from ${nav} to ${after} between steps`]);
         continue;
       }
+      // 324 (D142): once a round, from round 2, the last adversary turn is reopened from its Replay button in the
+      // action phase and stepped through (the turn panel's steps above), after the game has moved on from it.
+      if (st.round >= 2 && /board\.act/.test(st.phase ?? '') && !st.choice && !replayed.has(st.round)) {
+        replayed.add(st.round);
+        if (await page.js(`(() => { const b = document.querySelector('#p-turn [data-turn="replay"]'); if (!b) return false; b.click(); return !!document.querySelector('#p-turn.open'); })()`)) {
+          clicks.replay = (clicks.replay ?? 0) + 1;
+          continue;
+        }
+        note(st.round, ['replay: no Replay button for the adversary turn in the action phase, or it opened nothing']);
+      }
       const d = await page.js('window.__tp.decide()');
       if (!d) throw new Error(`step ${i}: no legal action and no outcome (round ${st.round}, ${st.phase})`);
       const before = await page.js(`aic.view.round + ':' + (aic.view.phase?.name ?? '')`);
       const what = await page.js(`window.__tp.click(${JSON.stringify(d.action)})`);
       if (what === null) throw new Error(`step ${i}: the player view shows no control for ${JSON.stringify(d.action)} (round ${st.round}, ${st.phase})`);
+      // 324: Undo, once a round: the first action-phase move each round is taken back by the panel's Undo and made again
+      // (the policy reads the view, so it decides the same and the game is unchanged).
+      // Once a game, from the second action of a phase, *Undo to the phase's start* instead: back to the step the phase
+      // began at, unless the panel says a draw stops it sooner.
+      const act = /board\.act/.test(st.phase ?? '');
+      const phaseKey = `${st.round}:${st.phase}`;
+      if (act && !phaseStart.has(phaseKey)) phaseStart.set(phaseKey, (await page.js('aic.timeline.last')) - 1);
+      // From round 3 the first action phase with two moves takes the phase-start undo (its first move is let be).
+      const made = act ? (await page.js('aic.timeline.last')) - phaseStart.get(phaseKey) : 0;
+      const waitStart = !undidStart && st.round >= 3 && made < 2;
+      if (act && d.action.type !== 'pass' && !undone.has(st.round) && !waitStart) {
+        const toStart = !undidStart && st.round >= 3;
+        const r = await page.js(`(() => { const b = document.querySelector('#p-act [data-undo="${toStart ? 'start' : '1'}"]'); if (!b || b.disabled) return null;
+          const n = aic.timeline.last; const why = document.querySelector('#p-act .pa-undo small')?.textContent ?? ''; b.click();
+          return { back: n - aic.timeline.last, last: aic.timeline.last, why, again: aic.legal.some((a) => JSON.stringify(a) === ${JSON.stringify(JSON.stringify(d.action))}) }; })()`);
+        if (r !== null) {
+          undone.add(st.round);
+          if (toStart) {
+            undidStart = true;
+            // The phase's first step is the one whose action ended the phase before: the step number before it.
+            if (r.last !== phaseStart.get(phaseKey) && !r.why) note(st.round, [`undo: Undo to the phase's start left step ${r.last}, the phase began after step ${phaseStart.get(phaseKey)}`]);
+            if (r.last < phaseStart.get(phaseKey)) note(st.round, [`undo: Undo to the phase's start went past it (step ${r.last}, the phase began after ${phaseStart.get(phaseKey)})`]);
+            clicks.undoStart = (clicks.undoStart ?? 0) + 1;
+          } else {
+            if (r.back !== 1) note(st.round, [`undo: Undo took back ${r.back} actions, not 1`]);
+            if (!r.again) note(st.round, ['undo: after Undo the move taken back is not legal again']);
+            clicks.undo = (clicks.undo ?? 0) + 1;
+          }
+          continue;
+        }
+      }
       // 321: one person plays every seat: after a seat's move the view stays on it while it has a move in the same
       // phase (it went back to seat 0, whose buttons then stood where the acting seat's had been). A draft pick hands
       // the next pick round to the first seat.
@@ -266,7 +334,8 @@ try {
     await page.js(`document.getElementById('record-close').click()`);
     writeFileSync(join(out, 'record.json'), record.endsWith('\n') ? record : `${record}\n`);
     const RULES = ['tippedAmbassador', 'liberateOffered', 'liberateBill', 'liberateBlocked', 'nodePowers', 'nodePowerUsed', 'cardBeat', 'incomeBeat', 'phaseBoard', 'pastRows',
-      'strikeAhead', 'redeployAhead', 'troops', 'garrison', 'researchRow', 'researchK', 'roundCap', 'deckLeft', 'discord', 'unity'];
+      'strikeAhead', 'redeployAhead', 'troops', 'garrison', 'researchRow', 'researchK', 'roundCap', 'deckLeft', 'discord', 'unity',
+      'printedCards', 'shadedWhy', 'reminder', 'undo', 'replayButton', 'goneProject', ...(solo ? ['bakedNumbers'] : [])];
     const failures = [...[...issues].map(([x, r]) => `round ${r}: ${x}`), ...wrong.values()];
     if (!end.outcome) failures.push('no outcome');
     // 320: the bar for Matt's playthrough: a turn step shown before the board after it shows that step's rows.

@@ -1,125 +1,32 @@
-/* 242: the player view. Laid out for 2560x1440: the map and the countries' threats left, the seats and the
-   adversary right, the focused seat's board, hand and buildings across the foot, its controls under them. */
+/* 242: the player view. 324: the map in the middle; the adversary at the left, always shown; what the shown seat can
+   do now at the right; the seat's numbers, hand and buildings across the foot, the cards printed. The foot's height
+   is fixed, so the map keeps its share late in a game at 1366x768 (321's D144). */
 
-#app[hidden], #player[hidden], #p-turn[hidden] { display: none; }
+#app[hidden], #player[hidden], #p-turn[hidden], #p-draft[hidden] { display: none; }
 .player-mode #timeline, .player-mode .debug-only { display: none; }
 body > #player { flex: 1 1 0; }
 
 #player {
+  --strip-h: clamp(150px, 24vh, 330px);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(340px, 30vw, 800px);
-  grid-template-rows: minmax(0, 1fr) auto auto;
+  grid-template-columns: clamp(250px, 21vw, 460px) minmax(0, 1fr) clamp(270px, 22vw, 470px);
+  grid-template-rows: minmax(0, 1fr) var(--strip-h);
+  grid-template-areas: "side main act" "seat seat seat";
   gap: var(--gap);
   padding: var(--gap);
   min-height: 0;
 }
 #player > section { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; min-height: 0; min-width: 0; }
-#p-main { display: flex; flex-direction: column; }
-#p-main > * { flex: none; }
-#p-main > #board-wrap { flex: 1 1 0; min-height: 26vh; }
-#p-adv #countries { flex-direction: column; overflow: visible; border: 1px solid var(--line); border-radius: 4px; }
-#p-adv .country { flex: none; }
-#p-side { display: flex; flex-direction: column; gap: var(--gap); padding: var(--gap); overflow: auto; }
-#p-side > * { flex: none; }
-#p-adv #status, #p-adv #pipeline { border: 1px solid var(--line); border-radius: 4px; }
-#p-adv { display: flex; flex-direction: column; gap: var(--gap); }
-#p-more-box summary { color: var(--muted); cursor: pointer; }
 
-/* The adversary row in the narrow column: its boxes two a line, its cards and projects whole. */
-#p-adv .prow { flex-wrap: wrap; }
-#p-adv .parrow { display: none; }
-#p-adv .slot-box { flex: 1 1 40%; }
-#p-adv .slot-box .sline { flex-wrap: wrap; white-space: normal; }
-#p-adv .slot-box .hint { white-space: normal; }
-#p-adv .acard .atext { display: block; -webkit-line-clamp: unset; }
-#p-adv .projects-row { flex-wrap: wrap; }
-#p-adv .projects-row .project { flex: 1 1 100%; display: block; -webkit-line-clamp: unset; height: auto; }
-
-/* 265 (D112): a country's megaproject shows whole in the side column (its name and status were cut to "◆ Ti…"):
-   the name and cubes on a line, the status wrapping under them. */
-.player-mode .country .project { flex-wrap: wrap; }
-.player-mode .country .project > b, .player-mode .country .project small { white-space: normal; overflow: visible; }
-
-/* Threats show whole here, their controls under them. */
-.player-mode .threat { display: block; -webkit-line-clamp: unset; overflow: visible; }
-.tacts { display: flex; flex-wrap: wrap; gap: 0.2em; margin: 0.15em 0 0.25em; }
-.tacts .tseat { align-self: center; font-size: 0.85em; font-weight: 600; padding-left: 0.3em; border-left: 4px solid var(--tint); }
-
-/* The seats: one summary row each; click to show that seat. */
-#p-seats { display: flex; flex-direction: column; gap: 0.25em; }
-.pseat { border: 1px solid var(--line); border-left: 6px solid var(--tint); border-radius: 4px; padding: 0.2em 0.45em; background: #fff; cursor: pointer; }
-.pseat.focus { outline: 2px solid var(--accent); background: #f3f8ff; }
-.pseat .shead { display: flex; align-items: center; gap: 0.4em; }
-.pseat .shead small { color: var(--muted); }
-.swatch { width: 0.9em; height: 0.9em; border-radius: 2px; background: var(--tint); border: 1px solid #0003; display: inline-block; }
-.pst { margin-left: auto; font-size: 0.85em; padding: 0 0.4em; border-radius: 3px; color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
-.pst.act { color: #fff; background: var(--accent); border-color: var(--accent); }
-.pst.done { color: var(--good); border-color: var(--good); }
-.pseat .sline { display: flex; flex-wrap: wrap; gap: 0.15em 0.6em; font-size: 0.88em; color: #444; }
-.sres { white-space: nowrap; }
-.sres small { color: var(--good); margin-left: 0.15em; font-weight: 600; }
-
-/* The adversary's turn, a step at a time. */
-/* 289 (D133): atop the side column while open, so all of it shows without scrolling at 1366x768. */
-#p-turn { order: -1; border: 2px solid #e0a100; background: #fff8e6; border-radius: 4px; padding: 0.3em 0.5em; }
-.pturn-head { display: flex; align-items: center; gap: 0.4em; flex-wrap: wrap; }
-/* 321: ◀ ▶ Done hold one spot beside the fixed title, the step's label on its own line under them: the label's
-   length wrapped the row and moved ▶ under the mouse between steps. */
-.pturn-head span { color: var(--muted); order: 1; flex-basis: 100%; }
-.pturn-head button[data-turn="-1"] { margin-left: auto; }
-/* 289 (D133): the shown step's notes first, then the step list, which scrolls by itself (the notes sat under it,
-   below the side column's fold at 1366x768). */
-#p-turn ol { margin: 0.25em 0 0; padding-left: 1.8em; font-size: 0.9em; max-height: 9em; overflow-y: auto; border-top: 1px solid #e8d49a; }
-#p-turn ol li { cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #555; }
-#p-turn ol li.now { color: var(--ink); font-weight: 600; background: #ffe9a8; }
-.pturn-ev { font-size: 0.85em; max-height: 12em; overflow-y: auto; }
-.pturn-ev ul { margin: 0.2em 0; padding-left: 1.4em; }
-.pturn-ev small { color: var(--muted); }
-.pturn-open { align-self: flex-start; }
-
-/* The focused seat. */
-#p-seat { grid-column: 1 / -1; border-left: 6px solid var(--tint) !important; max-height: 38vh; overflow: auto; padding: 0.3em 0.5em; }
-.p-head { display: flex; align-items: center; gap: 0.5em; font-size: 1.08em; margin-bottom: 0.25em; }
-.p-head small { color: var(--muted); }
-.p-body { display: grid; grid-template-columns: minmax(18em, 1fr) minmax(0, 2.4fr) minmax(14em, 1fr); grid-template-areas: "info hand built" "powers hand built"; gap: 0 calc(var(--gap) * 1.5); align-items: start; }
-/* 289 (D127): the draft and keep take the buildings column too; the buildings go under the powers. */
-.p-body.drafting { grid-template-areas: "info hand hand" "powers hand hand" "built hand hand"; }
-.p-info { grid-area: info; }
-.p-powers { grid-area: powers; }
-.p-hand { grid-area: hand; }
-.p-built { grid-area: built; }
-.p-info .innate { color: #555; font-size: 0.88em; margin: 0.2em 0; }
-ul.ppowers { margin: 0.2em 0; padding: 0; list-style: none; font-size: 0.9em; }
-ul.ppowers li { border: 1px solid var(--line); border-radius: 4px; padding: 0.15em 0.35em; margin-bottom: 0.2em; color: #777; background: #fbfaf7; }
-ul.ppowers li.ready { color: var(--ink); background: #fff; border-color: #9ccc9e; }
-ul.ppowers li small { color: var(--muted); }
-/* 295: used this round (each node power once a round, all three in one round): struck through, its status a tag. */
-ul.ppowers li.used { background: #efece5; border-style: dashed; }
-ul.ppowers li.used > b { text-decoration: line-through; }
-ul.ppowers li.used > small { color: #fff; background: #8d6e63; border-radius: 3px; padding: 0 0.35em; font-weight: 600; }
-ul.ppowers li .pact { margin-left: 0.4em; }
-ul.ppowers .ptext { font-size: 0.92em; }
-.psec h4 { margin: 0.1em 0 0.25em; font-size: 0.95em; color: #444; }
-.psec h4 small { color: var(--muted); font-weight: normal; }
-.psec + .psec { margin-top: 0.4em; }
-#player .empty { color: #aaa; font-style: italic; }
-
-.ptiles { display: flex; flex-wrap: wrap; gap: 0.35em; }
-.ptile { width: 13.5em; border: 1px solid #c9c2b4; border-radius: 5px; background: #fffdf8; padding: 0.25em 0.4em; display: flex; flex-direction: column; gap: 0.1em; cursor: help; }
-.ptile.ok { border-color: #66bb6a; box-shadow: 0 0 0 1px #66bb6a55; }
-.ptiles.small .ptile { width: 12em; }
-.pt-head { display: flex; align-items: baseline; gap: 0.3em; }
-.pt-cost { flex: none; font-weight: 700; color: #7a5d00; background: #f6e7b3; border-radius: 3px; padding: 0 0.3em; }
-.pt-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pt-meta { font-size: 0.78em; color: var(--muted); }
-.pt-text { font-size: 0.82em; line-height: 1.25; color: #333; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
-.pt-status { font-size: 0.8em; color: var(--good); }
-.pt-status.warn { color: var(--warn); }
-.pt-acts { display: flex; gap: 0.25em; margin-top: auto; padding-top: 0.15em; }
-
-/* The draft: the offered cards side by side, printed. */
-.psec.draft { border: 1px solid #c9b8e6; background: #faf7ff; border-radius: 5px; padding: 0.3em 0.45em; margin-bottom: 0.4em; }
+/* ---------- the map, and the draft over it ---------- */
+#p-main { grid-area: main; display: grid; grid-template-rows: auto auto minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); }
+#p-main > #board-wrap { grid-row: 3; grid-column: 1; min-height: 0; }
+#p-draft { grid-row: 3; grid-column: 1; z-index: 2; overflow: auto; background: #faf7ffee; border-top: 3px solid var(--tint, #c9b8e6); padding: 0.3em 0.6em; }
+.pdraft-head { display: flex; align-items: center; gap: 0.6em; margin-bottom: 0.2em; }
+.pdraft-head .pdraft-hide { margin-left: auto; }
 .ptiers { display: flex; align-items: center; gap: 0.5em; flex-wrap: wrap; margin-bottom: 0.3em; }
+#p-draft h4 { margin: 0.2em 0; font-size: 0.95em; color: #444; }
+#p-draft h4 small { color: var(--muted); font-weight: normal; }
 .pdraft { display: flex; flex-wrap: wrap; gap: 0.6em; }
 .pdcard { display: flex; flex-direction: column; align-items: center; gap: 0.2em; }
 .pd-note { font-size: 0.85em; color: #555; max-width: 17em; text-align: center; }
@@ -127,6 +34,121 @@ ul.ppowers .ptext { font-size: 0.92em; }
 /* 323: solo's 7-card hand: each note wraps to its card's width, so the shrinking cards fit one row. */
 .pdraft.many .pdcard { width: min-content; }
 .printed-host { flex: none; }
+
+/* ---------- the adversary, always shown ---------- */
+#p-side { grid-area: side; display: flex; flex-direction: column; gap: var(--gap); padding: var(--gap); overflow: auto; }
+#p-side > * { flex: none; min-width: 0; }
+/* The adversary's cards, projects and research first, then the threats, then the Alignment and the clocks. */
+#p-adv { display: flex; flex-direction: column; gap: var(--gap); min-width: 0; overflow-wrap: anywhere; }
+#p-adv > * { min-width: 0; }
+#p-adv #pipeline { order: 1; }
+#p-adv #countries { order: 2; }
+#p-adv #status { order: 3; }
+#p-adv #status .alignment, #p-adv #status .acards { flex-wrap: wrap; }
+#p-adv #status, #p-adv #pipeline { border: 1px solid var(--line); border-radius: 4px; }
+#p-adv #countries { flex-direction: column; overflow: visible; border: 1px solid var(--line); border-radius: 4px; }
+#p-adv .country { flex: none; }
+/* Its cards as faces: a dark strip with the box's title, the name, the text whole. */
+#p-adv .prow { flex-wrap: wrap; gap: 0.3em; }
+#p-adv .parrow { display: none; }
+#p-adv .slot-box { flex: 1 1 100%; border-radius: 4px; }
+#p-adv .slot-box.next, #p-adv .slot-box.current { border: 2px solid #33363d; background: #eee9dc; padding: 0; }
+#p-adv .slot-box.next .acard > .sline, #p-adv .slot-box.current .acard > .sline { background: #33363d; color: #fff; padding: 0.1em 0.4em; }
+#p-adv .slot-box.next .acard > .sline .stage, #p-adv .slot-box.current .acard > .sline .stage { color: #ddd; }
+#p-adv .slot-box.next .stitle, #p-adv .slot-box.current .stitle { color: #f3e3a0; text-transform: uppercase; font-size: 0.85em; }
+#p-adv .slot-box.next > .sline .stitle, #p-adv .slot-box.current > .sline .stitle { color: #33363d; }
+#p-adv .slot-box > .sline { padding: 0 0.4em; }
+#p-adv .slot-box > .empty { padding: 0 0.4em 0.2em; display: block; }
+#p-adv .slot-box.next .atext, #p-adv .slot-box.current .atext, #p-adv .slot-box.next > .hint, #p-adv .slot-box.next > .ahead { margin: 0 0.4em; }
+#p-adv .slot-box.next > .ahead { margin-bottom: 0.25em; }
+#p-adv .slot-box.deck, #p-adv .slot-box.discard { display: none; }
+#p-adv .slot-box.last { flex-basis: 100%; }
+#p-adv .slot-box.last .atext { display: none; }
+#p-adv .slot-box .sline { flex-wrap: wrap; white-space: normal; }
+#p-adv .slot-box .hint { white-space: normal; }
+#p-adv .acard .atext { display: block; -webkit-line-clamp: unset; }
+#p-adv .projects-row { flex-wrap: wrap; }
+#p-adv .projects-row .project { flex: 1 1 100%; display: block; -webkit-line-clamp: unset; height: auto; }
+/* The leftmost project is the one compute fills: whole, its bar wide; the rest a line each. */
+#p-adv .projects-row .project:first-of-type { border: 2px solid #8e1b1b; }
+#p-adv .projects-row .project:first-of-type .prog { min-width: 9em; }
+#p-adv .projects-row .project .tname { white-space: normal; display: block; }
+#p-adv .projects-row .project .prog { max-width: 100%; white-space: normal; height: auto; }
+#p-adv .projects-row .project .prog .ptext { white-space: normal; }
+#p-adv .acards .adeck { white-space: normal; }
+#p-adv .projects-row .project:not(:first-of-type) .ttext { display: none; }
+/* 265 (D112): a country's megaproject shows whole. */
+.player-mode .country .project { flex-wrap: wrap; }
+.player-mode .country .project > b, .player-mode .country .project small { white-space: normal; overflow: visible; }
+.player-mode .threat { display: block; -webkit-line-clamp: unset; overflow: visible; }
+/* 324: a threat as its card: the threat's red edge, the text whole. */
+#p-adv .threat { border: 1px solid #e3cfcf; border-left: 4px solid #8a2a22; border-radius: 4px; background: #fff; padding: 0.1em 0.35em; margin: 0.15em 0; }
+
+/* The adversary's turn, a step at a time, atop the adversary column. */
+#p-turn { order: -1; border: 2px solid #e0a100; background: #fff8e6; border-radius: 4px; padding: 0.3em 0.5em; display: flex; flex-direction: column; gap: 0.25em; }
+#p-turn:not(.open) { border-width: 1px; padding: 0.25em; }
+.pturn-head { display: flex; align-items: center; gap: 0.4em; flex-wrap: wrap; }
+/* 321: ◀ ▶ Done hold one spot beside the fixed title, the step's label on its own line under them. */
+.pturn-head span { color: var(--muted); order: 1; flex-basis: 100%; }
+.pturn-head button[data-turn="-1"] { margin-left: auto; }
+#p-turn ol { margin: 0.25em 0 0; padding-left: 1.8em; font-size: 0.9em; max-height: 9em; overflow-y: auto; border-top: 1px solid #e8d49a; }
+#p-turn ol li { cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #555; }
+#p-turn ol li.now { color: var(--ink); font-weight: 600; background: #ffe9a8; }
+.pturn-ev { font-size: 0.85em; max-height: 12em; overflow-y: auto; }
+.pturn-ev ul { margin: 0.2em 0; padding-left: 1.4em; }
+.pturn-ev small { color: var(--muted); }
+.pturn-open { align-self: stretch; text-align: left; }
+.pbeat { color: #7a4f00; }
+#p-turn.phase-board { border-color: #c77700; }
+
+/* ---------- what you can do now ---------- */
+#p-act { grid-area: act; display: flex; flex-direction: column; border-top: 4px solid var(--tint, var(--line)) !important; }
+.pa-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3em 0.45em; padding: 0.3em 0.5em; border-bottom: 1px solid var(--line); }
+.pa-head .pa-phase { flex-basis: 100%; color: var(--muted); }
+.pa-undo { display: flex; flex-wrap: wrap; gap: 0.3em; align-items: center; padding: 0.25em 0.5em; border-bottom: 1px solid var(--line); }
+.pa-undo small { color: var(--muted); flex-basis: 100%; }
+.pa-remind { padding: 0.25em 0.5em; background: #fff6d8; border-bottom: 1px solid #ecd58b; font-size: 0.9em; }
+.pa-remind small { color: #6b5a1e; }
+.pa-body { flex: 1 1 0; min-height: 0; overflow-y: auto; padding: 0.25em 0.5em; }
+.pa-note { margin: 0.3em 0; color: #444; }
+.pa-sec + .pa-sec { margin-top: 0.45em; }
+.pa-sec h4 { margin: 0.1em 0 0.2em; font-size: 0.95em; color: #444; }
+.pa-sec h4 small { color: var(--muted); font-weight: normal; }
+.pa-btnrow { display: flex; flex-wrap: wrap; gap: 0.25em; }
+.pa-card { display: flex; flex-wrap: wrap; align-items: center; gap: 0.1em 0.35em; padding: 0.15em 0.3em; border: 1px solid #9ccc9e; border-radius: 4px; background: #fff; margin-bottom: 0.2em; cursor: help; }
+.pa-card .pa-cost { flex: none; font-weight: 700; color: #7a5d00; background: #f6e7b3; border-radius: 3px; padding: 0 0.3em; min-width: 1.4em; text-align: center; }
+.pa-card b { flex: 1 1 8em; min-width: 0; }
+.pa-card small { flex-basis: 100%; color: var(--muted); }
+.pa-card .pa-btns { display: inline-flex; gap: 0.2em; margin-left: auto; }
+.pa-card.blocked { border-color: var(--line); background: #f3f1ec; color: #777; }
+.pa-card.blocked .pa-cost { opacity: 0.6; }
+.pa-threat { border: 1px solid #e3cfcf; border-left: 4px solid #8a2a22; border-radius: 4px; padding: 0.15em 0.35em; margin-bottom: 0.2em; background: #fff; }
+.pa-threat small { color: var(--muted); }
+ul.ppowers { margin: 0.1em 0; padding: 0; list-style: none; font-size: 0.92em; }
+ul.ppowers li { display: flex; flex-wrap: wrap; align-items: center; gap: 0 0.35em; border: 1px solid var(--line); border-radius: 4px; padding: 0.15em 0.35em; margin-bottom: 0.2em; color: #777; background: #f3f1ec; cursor: help; }
+ul.ppowers li.ready { color: var(--ink); background: #fff; border-color: #9ccc9e; }
+ul.ppowers li small { color: var(--muted); flex: 1 1 6em; min-width: 0; }
+ul.ppowers li.blocked small { flex-basis: 100%; order: 2; }
+/* 295: used this round: struck through, its status a tag. */
+ul.ppowers li.used { background: #efece5; border-style: dashed; }
+ul.ppowers li.used > b { text-decoration: line-through; }
+ul.ppowers li.used > small { flex: none; color: #fff; background: #8d6e63; border-radius: 3px; padding: 0 0.35em; font-weight: 600; }
+ul.ppowers li .pact { margin-left: auto; }
+ul.ppowers li .ptext { flex-basis: 100%; order: 3; font-size: 0.88em; line-height: 1.25; color: #555; }
+ul.ppowers li.ready .ptext { color: #333; }
+.pnode-head { margin: 0 0 0.15em; }
+.pa-foot { display: flex; flex-wrap: wrap; gap: 0.3em; padding: 0.35em 0.5em; border-top: 1px solid var(--line); }
+.pa-foot:empty { display: none; }
+.pa-foot .pact.pass { font-size: 1.05em; padding: 0.25em 1em; }
+.pa-foot .pass-all, .pa-foot [data-seat-focus] { font-size: 0.85em; }
+/* 294: a troop guards corrupted sites in the seat's reach: Liberate is refused there. */
+.prefused { display: inline-block; margin-top: 0.2em; padding: 0.05em 0.45em; border-radius: 3px; background: #2a0d3d; color: #fff; font-size: 0.88em; font-weight: 600; }
+/* 305: Liberate's bill and what blocks it, a site a line. */
+.plib { display: flex; flex-direction: column; gap: 0.2em; margin-top: 0.25em; font-size: 0.88em; }
+.plib small { color: #555; }
+.plib-site { padding: 0.05em 0.45em; border-radius: 3px; border: 1px solid #9ccc9e; background: #eef8ee; }
+.plib-site.blocked { border-color: #c9a2df; background: #f6effb; }
+.pa-sec.other .pact { border-color: #e0a100; }
 
 /* Controls. */
 .pact { white-space: nowrap; }
@@ -136,57 +158,62 @@ ul.ppowers .ptext { font-size: 0.92em; }
 .pact.pass { background: #2b2b33; color: #fff; border-color: #2b2b33; }
 .pchoices { display: inline-flex; flex-wrap: wrap; gap: 0.3em; margin-left: 0.5em; vertical-align: middle; }
 .pchoices .hex-pick { font-weight: 600; color: #8a6d2b; }
-#p-bar { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 0.3em 1em; padding: 0.2em 0.3em; }
-#p-bar:empty { display: none; }
-#p-bar .pgroup { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.25em; }
-#p-bar .pgroup .what { color: var(--muted); font-size: 0.88em; }
-#p-bar .pgroup.end { margin-left: auto; }
-/* 294: a troop guards corrupted sites in the seat's reach: Liberate is refused there. */
-#p-bar .prefused { padding: 0.05em 0.45em; border-radius: 3px; background: #2a0d3d; color: #fff; font-size: 0.88em; font-weight: 600; white-space: nowrap; }
-#p-bar .pgroup.other .pact { border-color: #e0a100; }
-/* 305: Liberate's bill and what blocks it, a site a line. */
-#p-bar .plib { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.2em 0.5em; font-size: 0.88em; }
-#p-bar .plib .what { color: var(--muted); }
-#p-bar .plib small { color: #555; }
-#p-bar .plib-site { padding: 0.05em 0.45em; border-radius: 3px; border: 1px solid #9ccc9e; background: #eef8ee; }
-#p-bar .plib-site.blocked { border-color: #c9a2df; background: #f6effb; }
-/* 305: the node powers' heading, then their list; a used one is dimmed and tagged. */
-.pnode-head { margin: 0 0 0.15em; font-size: 0.95em; }
-.pnode-head small { color: var(--muted); font-weight: normal; }
-.pbeat { color: #7a4f00; }
-#p-turn.phase-board { border-color: #c77700; }
+
+/* ---------- the seat strip: numbers, hand, buildings ---------- */
+#p-seat { grid-area: seat; display: flex; gap: calc(var(--gap) * 1.5); padding: 0.25em 0.45em; border-left: 6px solid var(--tint) !important; overflow: auto; }
+#p-seats { flex: 0 0 clamp(240px, 22vw, 460px); display: flex; flex-direction: column; gap: 0.25em; overflow-y: auto; }
+.pseat { border: 1px solid var(--line); border-left: 6px solid var(--tint); border-radius: 4px; padding: 0.15em 0.4em; background: #fff; }
+.pseat[title] { cursor: pointer; }
+.pseat.focus { outline: 2px solid var(--accent); background: #f3f8ff; }
+.pseat .shead { display: flex; align-items: center; gap: 0.4em; }
+.pseat .shead small { color: var(--muted); }
+.pseat .board-name { padding: 0 0.4em; font-weight: 600; }
+.swatch { width: 0.9em; height: 0.9em; border-radius: 2px; background: var(--tint); border: 1px solid #0003; display: inline-block; flex: none; }
+.pst { margin-left: auto; font-size: 0.85em; padding: 0 0.4em; border-radius: 3px; color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
+.pst.act { color: #fff; background: var(--accent); border-color: var(--accent); }
+.pst.done { color: var(--good); border-color: var(--good); }
+.pseat .sline { display: flex; flex-wrap: wrap; gap: 0.1em 0.6em; font-size: 0.9em; color: #444; }
+.pseat .sline.tracks { color: #24586a; }
+.sres, .strack { white-space: nowrap; }
+.sres b { font-size: 1.08em; }
+.sres small { color: var(--good); margin-left: 0.15em; font-weight: 600; }
+.strack small { color: var(--muted); }
+.pcards { min-width: 0; display: flex; flex-direction: column; }
+.pcards.hand { flex: 1.5 1 0; }
+.pcards.built { flex: 1 1 0; }
+.pcards.chips { flex: 0 1 14em; overflow: auto; }
+.pcards.other { flex: 0.6 1 0; }
+.pcards.other .pcard.ok { box-shadow: none; }
+.pcards h4 { margin: 0 0 0.1em; font-size: 0.9em; color: #444; white-space: nowrap; }
+.pcards h4 small { color: var(--muted); font-weight: normal; }
+.prow-cards { flex: 1 1 0; min-height: 0; display: flex; gap: 0.3em; overflow: auto; align-items: flex-start; }
+.pcard { position: relative; flex: none; border-radius: 6px; cursor: help; }
+.pcard.ok { box-shadow: 0 0 0 2px #66bb6a; }
+.pcard.blocked .printed-host, .pcard.blocked .ptile { filter: grayscale(0.85) opacity(0.55); }
+.pbadge { position: absolute; left: 50%; bottom: 4px; transform: translateX(-50%); white-space: nowrap; font-size: 0.75em; font-weight: 600; padding: 0 0.35em; border-radius: 3px; background: #2e7d32; color: #fff; }
+.pcard.blocked .pbadge, .pcard:not(.ok) .pbadge { background: #8d6e63; }
+#player .empty { color: #aaa; font-style: italic; }
+.ptile { width: 9em; height: 100%; border: 1px solid #c9c2b4; border-radius: 5px; background: #fffdf8; padding: 0.2em 0.35em; overflow: hidden; }
+.pt-head { display: flex; align-items: baseline; gap: 0.3em; }
+.pt-cost { flex: none; font-weight: 700; color: #7a5d00; background: #f6e7b3; border-radius: 3px; padding: 0 0.3em; }
+.pt-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pt-text { font-size: 0.8em; line-height: 1.2; color: #333; }
+
+/* ---------- the board's whole face ---------- */
+#p-board-dialog { max-width: min(46em, 92vw); max-height: 88vh; padding: 0; border: 1.2mm solid #24586a; border-radius: 8px; background: #eee9dc; }
+#p-board-dialog form { text-align: right; padding: 0.4em 0.6em; }
+.plain-board .strip { background: #24586a; color: #fff; padding: 0.3em 0.7em; display: flex; justify-content: space-between; text-transform: uppercase; letter-spacing: 0.03em; font-weight: 600; font-size: 0.85em; }
+.plain-board h3 { margin: 0.3em 0.7em 0.1em; font-size: 1.4em; }
+.plain-board .innate { margin: 0.2em 0.7em; }
+.plain-board .pb-values, .plain-board h4, .plain-board .pb-powers { margin-left: 0.7em; margin-right: 0.7em; }
+.pb-powers { padding-left: 1.2em; }
+.pb-powers li { margin-bottom: 0.3em; }
 
 #tip .tip-under { max-width: 26em; margin-top: 0.3em; font-size: 0.9em; }
+#tip .tip-why { max-width: 26em; margin-bottom: 0.25em; padding: 0.1em 0.4em; border-radius: 3px; background: #fff3e0; color: #8a3b00; font-weight: 600; }
 #tip:has(.printed-host) { max-width: none; }
 
-/* 265 (D112): a long programs row (generic chips) wraps in its column rather than scrolling the seat panel sideways;
-   at 2560x1440 the powers take their own column beside the seat's values, so the last ones (Patrol ... Hack)
-   show without a scroll under the tracks and converters. */
-.p-body > * { min-width: 0; }
-.p-built .psec > div { display: flex; flex-wrap: wrap; gap: 0.2em; }
-.p-built .chip { white-space: normal; }
-@media (min-width: 2200px) {
-  .p-body { grid-template-columns: minmax(18em, 1.55fr) minmax(24em, 2fr) minmax(0, 1.25fr) minmax(14em, 1fr); grid-template-areas: "info powers hand built"; }
-  .p-body.drafting { grid-template-areas: "info powers hand hand" "built powers hand hand"; }
-  .p-powers ul.ppowers { columns: 2; column-gap: 0.4em; }
-  .p-powers ul.ppowers li { break-inside: avoid; }
-}
-
-/* 305: below 2200 px the side column runs the window's height and the seat panel and its bar sit under the map only:
-   at 1366x768 the side column was 300 px tall, the adversary's row and research row three scrolls down, and the
-   board's node powers under the fold of the seat panel. The seat panel gives the powers their own column, first. */
-@media (max-width: 2199px) {
-  #p-side { grid-row: 1 / -1; grid-column: 2; }
-  #p-seat, #p-bar { grid-column: 1; }
-  .p-body { grid-template-columns: minmax(15em, 1fr) minmax(15em, 1.05fr) minmax(0, 1.5fr); grid-template-areas: "powers info hand" "built info hand"; }
-  /* The draft and keep take the panel's width; the board and buildings go under them. */
-  .p-body.drafting { grid-template-areas: "hand hand hand" "powers info built"; }
-  .p-built .ptiles.small .ptile { width: 10.5em; }
-}
-
 @media (max-height: 820px) {
-  #p-seat { max-height: 40vh; }
   .pturn-ev { max-height: 8em; }
   #p-turn ol { max-height: 5.5em; }
-  .ptile { width: 11.5em; }
 }

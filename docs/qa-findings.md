@@ -6,7 +6,7 @@ faults past hunts kept finding. Fixed findings, never to re-report: F1–F100 (0
 F101 on), 118 (r46, F132, D43, W19 on), 145 (r59, F165, D57 on), 169 (r72 → 73, F205, D72 on), 184 (r77 → 78, F225,
 D77, W28 on), 197 (r86, F272, D88, W29 on), 235 (r106, F289, D92, W31 on; 238 fixed D92-D96, D98, D100, D103-D105, r108), 261 (r121 → r122, F322, D106, W34 on; 265 fixed D108, D109, D112, D115, D116; 266 D117), 285 (r135 → r136, F379,
 D120 on; fixed D102; 286 closed D121, D122, D124, D125, D126, D128, D130, D131, D132 at r137; 288 fixed D106 and D120 at r138; 289 closed D123, D127, D129, D133; 305 closed D85, D87, D135 and D50's picks, D52 to won't fix; 307 closed D84 and D134, and dropped W17 and W33), 308 (r149 → r150, F424, D136 on; 312 built D136, D137, D139 and D140 at r151, and D138 is left by Matt's ruling), 321 (r153,
-F446, D142 on). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
+F446, D142 on; 324 closed D142, D143, D144 and D147). A new finding takes the next number. Each is **fixed** (the change in git), **deferred** to Matt (options, a pick) or **won't fix** (why).
 
 ## Checkers
 
@@ -95,12 +95,8 @@ Each hunt found most of its faults in the same places. Look there first:
 | D118 | rules | The Liberated marker binds Corrupt lines only, not cards that take a site. | Leave; guard. **Matt's call**. |
 | D119 | cards | Faces against house terms: node "Harden", Faraday Yard's box, two-way wordings. | One card-words item. **Pick**. |
 | D141 | agents | The push and strike heuristics count agents on a hex reached only through an ambassador (troops only there, F424). | Mirror `pushable` in `agents/moves.rs`. **Pick:** an agents item. |
-| D142 | viewer | The adversary's turn can't be reopened after the round's first move (the replay covers the last move only). | Its own replay button all round; leave. **Pick** the button. |
-| D143 | viewer | *Pass every seat* in the keep phase ends unseen seats' keeps in one click. | Hide it there; confirm; leave. **Pick** hide. |
-| D144 | viewer | At 1366×768 late in a game the map shrinks to ~200 px as the bar grows. | Seat panel 32vh; one-row bar; leave. **Matt's call**. |
 | D145 | viewer | The draft takes ~7 clicks a seat a round (216 of 460 in a three-seat game). | A *4 from tier N* shortcut; leave. **Matt's call**. |
 | D146 | cards | Agency Directorate pays its 2 Ambassadors when built (a building counts itself); 317's price omits it. | Count it in the note; leave. **Matt's call**. |
-| D147 | view | A discarded adversary project reads "done", as if completed. | One word for both ("gone"); leave. **Pick** the word. |
 
 ## Won't fix
 

@@ -691,10 +691,11 @@ impl Module for Adversary {
         out.pile(
             "projects_done",
             // A discarded project (Zero-Day Wipe) goes here too (020: labeled "resolved").
-            "Adversary projects resolved or discarded",
+            "Adversary projects gone (resolved or discarded)",
             None,
             done.len(),
-            done.iter().map(|id| pshow(id, "done")).collect(),
+            // 324 (321's D147): "gone", not "done": a discarded project read as completed.
+            done.iter().map(|id| pshow(id, "gone")).collect(),
         );
         out.pile(
             "project_deck",

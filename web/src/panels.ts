@@ -303,7 +303,7 @@ function projectsHtml(v: View): string {
   const cards = (row?.visible ?? []).map((c) =>
     `<div class="project" data-card="${esc(c.id)}" data-where="pile:adversary.projects"><span class="tname"><b>${esc(c.name)}</b>${progressBars(c.status)}</span><span class="ttext">${esc(c.text ?? '')}</span></div>`);
   const last = done?.visible[done.visible.length - 1];
-  const doneText = done ? `<span class="adeck" data-pile="adversary.projects_done" title="resolved or discarded">done <b>${done.count}</b>${last ? ` <small>last: <span data-card="${esc(last.id)}" data-where="pile:adversary.projects_done">${esc(last.name)}</span></small>` : ''}</span>` : '';
+  const doneText = done ? `<span class="adeck" data-pile="adversary.projects_done" title="resolved or discarded (321's D147: one word for both, as the pile can't tell them apart)">gone <b>${done.count}</b>${last ? ` <small>last: <span data-card="${esc(last.id)}" data-where="pile:adversary.projects_done">${esc(last.name)}</span></small>` : ''}</span>` : '';
   const deckText = deck ? `<span class="adeck" data-pile="adversary.project_deck">deck <b>${deck.count}</b></span>` : '';
   return `<div class="projects-row" data-pile="adversary.projects"><span class="stitle">Projects</span>${cards.join('') || '<span class="empty">none visible</span>'}${doneText}${deckText}</div>`;
 }

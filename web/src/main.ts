@@ -5,7 +5,7 @@
 import { renderBoard } from './board';
 import {
   checkRecord, legalActions, load, recordText, resolveConfig, rulesRevision, version, view as engineView,
-  type Action, type CardView, type View,
+  type Action, type CardView, type GameEvent, type View,
 } from './engine';
 import {
   actionLabel, actionRule, choiceKey, contentIds, countryName, escapeHtml, hexKey, hexesIn, isHex, shortPhase, strong,
@@ -19,7 +19,11 @@ import {
 } from './panels';
 import { Timeline, keptSession, parseSeed, randomSeed, readRecord, revisionNote, storageGet, storageSet } from './session';
 import { printedCard } from './player/printed';
-import { focusSeat, pin, renderPlayer, stayWith, stepPhaseView, turnHexes, turnOpen, turnStep, turnView } from './player/view';
+import {
+  focusSeat, isAdversaryPhase, isAdversaryTurn, pin, renderPlayer, replayTurn, stayWith, stepPhaseView, toggleDraft, turnHexes, turnOpen,
+  turnStep, turnStepFrame,
+  turnView, type UndoRoom,
+} from './player/view';
 import './style.css';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -132,11 +136,12 @@ const playerUi = {
   root: $('player'),
   main: $('p-main'),
   adv: $('p-adv'),
-  seats: $('p-seats'),
   seat: $('p-seat'),
-  bar: $('p-bar'),
+  act: $('p-act'),
   turn: $('p-turn'),
-  more: $('p-more'),
+  draft: $('p-draft'),
+  boardDialog: $<HTMLDialogElement>('p-board-dialog'),
+  boardBody: $('p-board-body'),
 };
 
 /** Moves the shared panels (map, phase bar, prompt, status, adversary row, countries) into the chosen view. */
@@ -155,7 +160,7 @@ function setMode(m: Mode) {
       tl.seek(tl.last);
       tl.save();
     }
-    playerUi.main.append(ui.phaseBar, ui.prompt, wrap);
+    playerUi.main.append(ui.phaseBar, ui.prompt, wrap, playerUi.draft);
     playerUi.adv.append(ui.status, ui.pipeline, ui.countries);
   } else {
     $('board-pane').append(ui.phaseBar, ui.prompt, ui.status, ui.pipeline, wrap, ui.countries);
@@ -302,9 +307,13 @@ function render() {
   // 305: while the turn panel shows an earlier step, the map shows the board as it stood at its end. 320: the phase
   // bar, tracks, adversary row, threat rows and seat rows too (only the map went back, and they showed the board
   // after the turn); the question, the shown seat's hand and powers and every control stay the board now.
-  mapView = (turn && turnView(tl.frames[tl.cursor - 1]?.snap)) || shown;
+  // 324 (D142): the turn shown may be an earlier frame's (its Replay button): the state before that frame.
+  const tf = turn ? turnStepFrame() : null;
+  const ti = tf ? tl.frames.indexOf(tf) : -1;
+  const before = ti > 0 ? ti - 1 : tl.cursor - 1;
+  mapView = (turn && turnView((fr) => tl.frames[tl.frames.indexOf(fr) - 1]?.snap)) || shown;
   if (mapView !== shown) {
-    const ps = tl.frames[tl.cursor - 1]?.snap.state;
+    const ps = tl.frames[before]?.snap.state;
     renderPhase(stepPhaseView(mapView, ps ? ps.config.round[ps.phase] : undefined));
   }
   renderBoard(ui.board, mapView, { targets, changed, sources });
@@ -313,8 +322,10 @@ function render() {
   ui.pipeline.innerHTML = pipelineHtml(mapView);
   ui.countries.innerHTML = countriesHtml(mapView);
   if (mode === 'player') {
+    const adv = lastAdversaryTurn();
     renderPlayer({ ...playerUi, countries: ui.countries, prompt: ui.prompt }, {
       view: shown, legal, config: f.snap.state.config, cx: labels(), frame: f, before: stepPhase(), board: mapView,
+      undo: undoRoom(), replay: adv >= 0 ? tl.frames[adv].snap.state.round : null,
     });
   } else {
     renderSeats();
@@ -368,10 +379,64 @@ function renderPrompt(targets: number) {
     : '';
 }
 
-/** The phase the shown step's action was taken in (the log's first group). */
-function stepPhase(): string {
-  const ps = tl.frames[tl.cursor - 1]?.snap.state;
+/** The phase the shown step's action was taken in (the log's first group); `i`, another step's. */
+function stepPhase(i = tl.cursor): string {
+  const ps = tl.frames[i - 1]?.snap.state;
   return ps ? shortPhase(ps.config.round[ps.phase] ?? 'setup') : 'setup';
+}
+
+/** 324 (D142): the last step up to the one shown that ran the adversary's turn, or -1. Found once a step. */
+let advFound: { frame: unknown; at: number } | null = null;
+function lastAdversaryTurn(): number {
+  if (advFound?.frame === tl.frame) return advFound.at;
+  let at = -1;
+  for (let i = tl.cursor; i > 0; i--) {
+    if (isAdversaryTurn(tl.frames[i], stepPhase(i))) {
+      at = i;
+      break;
+    }
+  }
+  advFound = { frame: tl.frame, at };
+  return at;
+}
+
+/** 324: a deck's card (a draw, a deal, a reveal) or a reshuffle: what a printed game can't take back. */
+const revealed = (events: GameEvent[]) => events.some((e) => (e.type === 'card_moved' && /(^|\.)(deck|project_deck)(\.|$)/.test(String(e.from)))
+  || (e.type === 'note' && /reshuffl/i.test(String(e.text))));
+
+/**
+ * 324: what the player view's Undo may take back: the actions since the shown action phase began (every seat's, in a
+ * game of several), stopping after one that drew or revealed a card from a deck (undoing it would show what comes
+ * next). Nothing outside an action phase, nor once the game is over.
+ */
+function undoRoom(): UndoRoom {
+  const cur = tl.frames[tl.last].snap.state;
+  const name = cur.config.round[cur.phase] ?? '';
+  if (cur.outcome || !/board\.act/.test(name) || tl.source.kind !== 'play') return { back: 0, why: '' };
+  let i = tl.last;
+  while (i > 0) {
+    const ps = tl.frames[i - 1].snap.state;
+    if (ps.round !== cur.round || ps.phase !== cur.phase) break;
+    if (revealed(tl.frames[i].events)) {
+      const a = tl.frames[i].action;
+      const what = a ? actionLabel(a, false, false, labels()) : 'a step';
+      return { back: tl.last - i, why: `Undo stops after ${what}: it drew a card from a deck, and taking it back would show what comes next` };
+    }
+    i--;
+  }
+  return { back: tl.last - i, why: '' };
+}
+
+/** 324: Undo in the player view, `n` actions or back to the phase's start, inside `undoRoom` only. */
+function undoPlayer(n: number | 'start') {
+  const room = undoRoom();
+  const k = Math.min(room.back, n === 'start' ? room.back : n);
+  if (!k) return;
+  for (let j = 0; j < k; j++) tl.undo();
+  showError(null);
+  pin(null);
+  stayWith(null);
+  commit();
 }
 
 function labels(): LabelContext {
@@ -615,8 +680,11 @@ function hover(el: Element | null, cx: number, cy: number) {
   const target = el?.closest?.('[data-token],[data-hex][data-index],[data-value],[data-card],[data-pile],[data-track],[data-board-seat],[data-action]') as HTMLElement | null;
   // 242: a player card in the player view opens as it prints, its status under it.
   const printed = mode === 'player' ? (el?.closest?.('[data-printed]') as HTMLElement | null) : null;
+  // 324: why a shaded card, power or building Action can't be used now, atop the tip.
+  const whyEl = mode === 'player' ? (el?.closest?.('[data-why]') as HTMLElement | null) : null;
+  const why = whyEl?.dataset.why ? `<div class="tip-why">${escapeHtml(whyEl.dataset.why)}</div>` : '';
   if (printed && target) {
-    const more = details(target, shown, legal, labels(), shown, true) ?? '';
+    const more = why + (details(target, shown, legal, labels(), shown, true) ?? '');
     const key = `${printed.dataset.printed}|${more}`;
     // Built once per card and status: the mouse moving over it only moves the tip.
     const host = key === tipPrinted && !ui.tip.hidden ? null : printedCard(printed.dataset.printed!, 1.25);
@@ -632,7 +700,8 @@ function hover(el: Element | null, cx: number, cy: number) {
     }
   }
   tipPrinted = '';
-  const html = target ? details(target, shown, legal, labels(), mapView ?? shown, mode === 'player') : null;
+  const found = target ? details(target, shown, legal, labels(), mapView ?? shown, mode === 'player') : null;
+  const html = why || found ? why + (found ?? '') : null;
   const hl = el?.closest?.('[data-hexes]') as HTMLElement | null;
   highlight(hl?.dataset.hexes ? hl.dataset.hexes.split(' ').filter(Boolean) : []);
   if (!html) {
@@ -689,6 +758,37 @@ playerUi.root.addEventListener('click', (e) => {
     return;
   }
   if (el.closest('[data-pass-all]')) return passAll();
+  // 324: Undo inside the action phase; the board's whole face; the draft folded away to see the map.
+  const u = el.closest('button[data-undo]') as HTMLElement | null;
+  if (u) return undoPlayer(u.dataset.undo === 'start' ? 'start' : 1);
+  const bo = el.closest('[data-board-open]') as HTMLElement | null;
+  if (bo) {
+    if (Number(bo.dataset.boardOpen) !== focusSeat(shown, legal)) pin(Number(bo.dataset.boardOpen));
+    render();
+    playerUi.boardDialog.showModal();
+    // Its Close button takes the focus, which scrolled the face to its foot.
+    playerUi.boardDialog.scrollTop = 0;
+    return;
+  }
+  if (el.closest('[data-draft-toggle]')) {
+    toggleDraft();
+    return render();
+  }
+  if (el.closest('[data-turn="replay"]')) {
+    const at = lastAdversaryTurn();
+    if (at > 0) {
+      // 324 (diff review): a question asked inside the turn (a Strike's target, a node's protection) splits it into
+      // the last pass's frame and each answer's: the replay runs them all, from the pass.
+      let from = at;
+      while (from > 1 && tl.frames[from].action?.type === 'choose' && isAdversaryPhase(stepPhase(from))) from--;
+      let to = at;
+      while (to < tl.cursor && tl.frames[to + 1].action?.type === 'choose' && isAdversaryPhase(stepPhase(to + 1))) to++;
+      const parts = [];
+      for (let i = from; i <= to; i++) parts.push({ frame: tl.frames[i], before: stepPhase(i) });
+      replayTurn(parts, tl.frame);
+    }
+    return render();
+  }
   const seat = el.closest('[data-seat-focus]') as HTMLElement | null;
   if (seat) {
     pin(Number(seat.dataset.seatFocus));
@@ -896,7 +996,9 @@ document.addEventListener('keydown', (e) => {
   };
   if (e.key === 'z' && (e.ctrlKey || e.metaKey)) {
     e.preventDefault();
-    $('undo').click();
+    // 324: the player view's Undo stays inside the action phase (`undoRoom`).
+    if (mode === 'player') undoPlayer(1);
+    else $('undo').click();
     return;
   }
   // Leave browser shortcuts (Ctrl+R, Alt+←, ...) alone.

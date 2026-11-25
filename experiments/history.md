@@ -10,6 +10,7 @@ the findings are in the write-up.
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 324 player view for solo: map central, printed cards, a can-do-now panel, undo, adversary replay | 153 | [324_ui_overhaul_solo](results/324_ui_overhaul_solo/README.md) |
 | 323 solo mode: draw 7 take 4, d1 built in; judge 92 / 99.5 / 100% (B / P / R), 4.7-5.9 rounds | 153 | [323_solo_mode](results/323_solo_mode/README.md) |
 | 321 bug hunt, player view for a three-seat playthrough: seat focus, hovers, turn panel, needs | 153 | [321_bug_hunt_ui_usability](results/321_bug_hunt_ui_usability/README.md) |
 | 317 card pass: 12 tier-2 cards reworked as late plays; d1-d4 +3-7 (fresh) | 153 | [317_card_pass_r153](results/317_card_pass_r153/README.md) |

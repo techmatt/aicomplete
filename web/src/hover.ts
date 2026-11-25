@@ -66,6 +66,8 @@ function cardDetails(id: string, where: string | undefined, shown: View, plain =
     kind === 'seat' ? shown.seats[Number(a)]?.cards.find((g) => g.key === key)?.cards ?? []
     : kind === 'country' ? shown.countries[Number(a)]?.cards.find((g) => g.key === key)?.cards ?? []
     : kind === 'pile' ? shown.piles.find((p) => p.key === [a, ...rest].join(':'))?.visible ?? []
+    // 324: a board's power (the player view's panel lists them by `board:<seat>`).
+    : kind === 'board' ? shown.seats[Number(a)]?.board?.cards ?? []
     : [];
   const c = pool.find((x) => x.id === id);
   if (!c) return null;
@@ -81,7 +83,8 @@ export function details(t: HTMLElement | SVGElement, shown: View, legal: Action[
   if (d.hex && d.index !== undefined) return hexDetails(d.hex, Number(d.index), map, legal, cx, plain);
   // 320: so does everything else drawn from it (rows, tracks, piles, cards); the shown seat's hand, powers, buildings
   // and the bar are the board now.
-  const v = map !== shown && !t.closest('#p-bar, #p-seat .p-hand, #p-seat .p-powers, #p-seat .p-built') ? map : shown;
+  // 324: the panel of what the seat can do and its printed cards are the board now; the seat rows draw from `map`.
+  const v = map !== shown && !t.closest('#p-act, #p-seat .pcards, #p-draft') ? map : shown;
   if (d.pile) return pileDetails(d.pile, v, plain);
   if (d.value) return valueDetails(d.value, d.scope, v, plain);
   if (d.card) return cardDetails(d.card, d.where, v, plain);

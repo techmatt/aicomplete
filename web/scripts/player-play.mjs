@@ -144,7 +144,7 @@ await page.js(`(() => {
       const opts = [...buttons.map((b) => ({ b, w: /a-pass|a-sell/.test(b.className) ? 1 : 6 })), ...picks.map((h) => ({ h, w: 6 }))];
       if (!opts.length) {
         // Show another seat to act and move there in the same call (the next step's count unpins it).
-        const other = switched ? null : document.querySelector('#p-bar [data-seat-focus]');
+        const other = switched ? null : document.querySelector('#p-act [data-seat-focus]');
         if (other) { other.click(); const m = this.move(true); return m && 'switch seat, ' + m; }
         return null;
       }

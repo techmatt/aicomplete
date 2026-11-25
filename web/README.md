@@ -28,28 +28,26 @@ npm run build                  # wasm + typecheck + static site in web/dist/ (92
 *Player view* / *Debug view* (V) switches, remembered (`aic.view` in `localStorage`; a fresh browser opens the debug
 view). The player view (`src/player/`) hides the timeline, log, raw data and random play.
 
-- **Layout:** the round and question over the map; at the right a row per seat (click one to show it), the
-  Alignment, the adversary, each country's threats; under the map the shown seat (the one deciding, else the one that
-  just acted while it has a move in that phase, else the first to act): node powers, board, hand and buildings, then
-  a bar of standard actions, Liberate's line (each corrupted site holding its ambassador: the bill, ready or what
-  blocks it), converters and *Done (pass)*. From 2200 px wide the seat panel and bar run the full width.
-- **Controls sit on the objects:** *Play* / *Sell* on a hand card, *Use* on a power or building, pay on a threat (the
-  paying seat named), a hex click for a hex answer; other answers in the question bar. A hand card opens printed
-  (`web/card/`, in a shadow root) on hover; hovers drop the debug view's keys. The draft shows the offered cards
-  printed with their keep price, shrunk until the Draft / Keep buttons show unscrolled.
-- ***Since your last move*** steps through the phases run, atop the side column: the notes, then the step list,
-  each adversary step named by its beat (Card or Income). The map, tracks and rows show the board at the end of the
-  shown step (`turnView`, from the engine's `apply_phases`), outlining the hexes it changed; the shown seat's hand,
-  powers and controls are the board now. ← → step it while open.
+- **Layout (324):** the map in the middle. Left, always shown: the adversary's cards (the next face up, with its
+  notices), projects (the leftmost whole), research row, then threats, Alignment and loss clocks. Right, *What … can
+  do now*: the shown seat's legal actions only, *Done (pass)* at its foot; a power or Action it can't use is listed
+  shaded, why on hover (`data-why`), and those unused this round are named atop it. The foot, a fixed height (the
+  map keeps its share at 1366×768): a row per seat (the board's name opens its whole face), then the hand and
+  buildings printed (`web/card/`, shadow roots reused across renders). The shown seat: the one deciding, else the
+  one that just acted while it has a move in that phase, else the first to act. No scene art yet.
+- **The draft** shows over the map, its cards printed as large as one row fits (*Show the map* folds it).
+- **Undo** (Ctrl+Z) only inside the action phase, back to its start, never past a draw from a deck (`undoRoom`,
+  main.ts); the header's unlimited Undo is the debug view's.
+- ***Since your last move*** steps through the phases run, atop the left column, each adversary step named by its
+  beat; ***Replay the adversary's turn*** reopens the last one all round (D142). The map, tracks and rows show the
+  board at the shown step's end (`turnView`, the engine's `apply_phases`); controls are the board now. ← → step it.
 - **New modules:** an action no component draws is a button under *Other*; card groups, piles and values fall to
   the debug view's generic chips (`panels.ts`).
-- **Checks:** `AIC_SWEEP_VIEW=player` sweeps it. `node scripts/playthrough.mjs [--config three_seat.json] [--seed
-  N] [--size 1366x768] [--search A-B] [--board N]` plays a shipped config by `play-policy.mjs` (`solo.json` started
-  through the header's Config and Board selects and New game), clicking each move, shoots each
-  phase, fails on the sweep's hard screen checks (`screen-checks.mjs`), a raw-JSON hover, ▶ moving between turn
-  steps or the view leaving a seat with a move, and ticks each overhaul rule seen (2-4 min). `player-play.mjs` plays
-  one at random; `troops-play.mjs` and `ambassadors-play.mjs` click a demo game to the win and require its rules
-  (a guard, the Strike notice, *Liberate refused*; a move then Liberate, two node powers a round, a tipped ambassador).
+- **Checks:** `AIC_SWEEP_VIEW=player` sweeps it. `node scripts/playthrough.mjs` (flags atop it) plays a shipped config
+  by `play-policy.mjs`, clicking each move (once a round an Undo and the adversary's replay), shoots each phase,
+  fails on the sweep's hard screen checks (`screen-checks.mjs`) and its own (atop it), and ticks each rule seen
+  (2-4 min). `player-play.mjs` plays one at random; `troops-play.mjs` and `ambassadors-play.mjs` click a demo game to
+  the win and require its rules (a guard, the Strike notice, *Liberate refused*; Liberate, node powers, tipping).
 
 ## Using it
 

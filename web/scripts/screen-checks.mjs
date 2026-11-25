@@ -60,7 +60,7 @@ export const SCREEN_LIB = String.raw`(() => {
     // 289 (D127, D133): the player view's draft and keep buttons and the open turn panel show without scrolling: each
     // inside its scroll pane's visible area and the window, as drawn (a player could pass not seeing Keep).
     if (aic.mode === 'player') {
-      const fold = [...document.querySelectorAll('#p-seat .pdcard .pact, #p-turn')].filter((el) => !el.hidden && vis(el));
+      const fold = [...document.querySelectorAll('#p-draft .pdcard .pact, #p-turn')].filter((el) => !el.hidden && vis(el));
       for (const el of fold) {
         const r = el.getBoundingClientRect();
         const sp = scrollParent(el);

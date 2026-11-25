@@ -55,8 +55,14 @@ export function printedCard(id: string, scale: number): HTMLElement | null {
   const html = renderCard({ ...row, ...(faces[id] ?? {}) }, layout, url, fits[frame]);
   root.innerHTML = `<style>${cardCss}\n.scaled{transform:scale(${scale});transform-origin:0 0;width:69mm;height:94mm}</style><div class="scaled">${html}</div>`;
   // Fit after the host is attached (measuring needs layout); a detached host fits on its next frame.
-  requestAnimationFrame(() => {
-    if (host.isConnected) void fitCards(root);
-  });
+  requestAnimationFrame(() => fitHost(host));
   return host;
+}
+
+/** 324: fits a printed host's text once it is in the page (`data-fitted` marks it done); a host still detached waits
+ *  for a later call (the player view's cache puts a host back in the page and calls this again). */
+export function fitHost(host: HTMLElement) {
+  if (!host.isConnected || host.dataset.fitted || !host.shadowRoot) return;
+  host.dataset.fitted = '1';
+  void fitCards(host.shadowRoot);
 }

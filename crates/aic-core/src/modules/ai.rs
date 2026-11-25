@@ -219,6 +219,24 @@ fn short_words(w: &World, g: &GameState, seat: usize, k: usize) -> Option<String
     (!short.is_empty()).then(|| format!("unaffordable: needs {}", short.join(", ")))
 }
 
+/// 324: a "needs tags" power's status with its numbers, for the view: each tag short and what the seat holds.
+fn needs_words(w: &World, g: &GameState, seat: usize, k: usize) -> String {
+    let Some(p) = board(w, seat).powers.get(k) else { return "needs tags".into() };
+    let short: Vec<String> = p
+        .needs
+        .iter()
+        .map(|(t, n)| (t, n, cards::tags(w, g, seat, *t)))
+        .filter(|(_, n, have)| have < n)
+        .map(|(t, n, have)| format!("{n} {t} (you have {have})"))
+        .collect();
+    if !short.is_empty() {
+        return format!("needs tags: {}", short.join(", "));
+    }
+    // Its threshold is met: what it lacks is the sacrifice (cards of yours carrying the tags; board tags never pay).
+    let pay: Vec<String> = p.tags.iter().map(|(t, n)| format!("{n} {t}")).collect();
+    if pay.is_empty() { "needs tags".into() } else { format!("needs tags to sacrifice: {} on your cards in play", pay.join(", ")) }
+}
+
 /// Why seat `s` can't use its board's power `k` now, or `None` if it can.
 fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'static str> {
     let Some(p) = board(w, seat).powers.get(k) else {
@@ -747,6 +765,8 @@ impl Module for Ai {
                         Some("used") => "used".into(),
                         _ if g.pending.is_some() => "waiting on the question".into(),
                         Some(why) if why.starts_with("unaffordable") => short_words(w, g, s, k).unwrap_or_else(|| why.into()),
+                        // 324: the tags it needs, in numbers ("needs tags: 2 science (you have 0)"), as a hand card's.
+                        Some("needs tags") => needs_words(w, g, s, k),
                         why => why.unwrap_or("ready").into(),
                     },
                     cost: None,

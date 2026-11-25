@@ -194,7 +194,7 @@ export const POLICY = `(() => {
      *  guard's shield; the hex to hover for the reason. */
     refusedNote() {
       const s = aic.focus;
-      const e = [...document.querySelectorAll('#p-bar .prefused')].find(vis);
+      const e = [...document.querySelectorAll('#p-act .prefused')].find(vis);
       if (!e || !val(s, 'board.liberate_refused')) return null;
       const a = aic.view.arrows.find((x) => x.kind === 'guard' && reach(s, aic.view.hexes[x.to]) && count(aic.view.hexes[x.to], 'ambassador:adversary') === 0);
       const mark = a && document.querySelector('#board .arrows .arrow.guard[data-to="' + a.to + '"] path.shield');
