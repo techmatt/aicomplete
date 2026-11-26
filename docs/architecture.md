@@ -152,7 +152,8 @@ code: `std_ops` and `std_target` in `board/standard.rs`.
 `aic-sim docs` rewrites the `<!-- generated: NAME -->` blocks (`BLOCKS`, each in one file) in
 [rules/](rules/README.md), [agents.md](agents.md) (`strategies`) and [rulebook.md](rulebook.md) §21
 (`rulebook_difficulty`); all of [ops.md](ops.md), [harms.md](harms.md) and [player-aid.md](player-aid.md); and
-`web/card/faces.json` and `web/card/adversary.json` (267: the reference card's words, aic-sim's `docs/ladder.rs`). The rest of the rulebook, the rules files' prose outside a block and `drafts/adversary/`
+`web/card/faces.json`, `web/card/print-faces.json` (327: the boards', event cards', projects', threats' and research
+row's faces, `print_face.rs`) and `web/card/adversary.json` (267: the reference card's words, aic-sim's `docs/ladder.rs`). The rest of the rulebook, the rules files' prose outside a block and `drafts/adversary/`
 texts are hand-written. Most "for new players" paragraphs are prose; rules/README.md's and alignment.md's are
 blocks (`new_players_block`, `game_end_block`): edit those in `blocks.rs`. Scripts ([scripts.md](scripts.md)) write [cards.md](cards.md) from the faces (the fast lane checks
 it), and the adversary's `content/` and [adversary-cards.md](adversary-cards.md). A block is a pure function of

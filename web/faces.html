@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AI Complete: printed faces</title>
+  <link rel="stylesheet" href="card/card.css">
+  <link rel="stylesheet" href="card/print.css">
+  <style>
+    body { margin: 0; background: #20242b; color: #e8ebef; font: 14px system-ui, sans-serif; }
+    header { padding: 10px 18px; display: flex; gap: 18px; align-items: baseline; }
+    header a { color: #9cc3ff; }
+    h2 { margin: 18px 18px 8px; font: 600 18px 'Saira Condensed', sans-serif; letter-spacing: .04em; }
+    .row { display: flex; flex-wrap: wrap; gap: 14px; padding: 0 18px 10px; align-items: flex-start; }
+    .trim { width: 63mm; height: 88mm; overflow: hidden; border-radius: 3mm; position: relative; background: #000; box-shadow: 0 1px 6px #0008; }
+    .trim > .card { position: absolute; left: -3mm; top: -3mm; }
+    #status { color: #f0b070; }
+  </style>
+</head>
+<body>
+  <header><b>Printed faces</b><span>Boards, the research strip, event cards, projects and threats, from content (hover any for its rules text).</span><a href="/cards.html">Card viewer</a><a href="/mockup.html">Solo screen mockup</a><span id="status"></span></header>
+  <main id="sheet"></main>
+  <script type="module" src="cards/faces.js"></script>
+</body>
+</html>

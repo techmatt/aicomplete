@@ -138,6 +138,10 @@ function staticFile(path) {
     return f.startsWith(base + sep) ? f : null;
   };
   if (path === '/cards.html') return join(WEB, 'cards.html');
+  // 327: every printed face beyond player cards on one sheet, and the solo screen's static mockup.
+  if (path === '/faces.html') return join(WEB, 'faces.html');
+  if (path === '/mockup.html') return join(WEB, 'mockup.html');
+  if (path.startsWith('/mockup/')) return within(join(WEB, 'mockup'), path.slice(8));
   if (path.startsWith('/cards/')) return within(join(WEB, 'cards'), path.slice(7));
   if (path.startsWith('/card/')) return within(join(WEB, 'card'), path.slice(6));
   if (path.startsWith('/art/')) return within(join(REPO, 'art'), path.slice(5));

@@ -100,9 +100,8 @@ sources, a forged payment refused) run the same way.
 **Against a built site:** a dev-server rebuild, or any `web/src/` edit (vite reloads the page), breaks a run mid-way,
 so while editing serve a snapshot: `node scripts/build-wasm.mjs && npx vite build && npx vite preview --port $PORT
 --strictPort`, `AIC_URL=http://localhost:$PORT/` (a `web/src/` edit: `npx vite build`, ~1 s). A killed wrapper's
-`node` can hold the port: kill it. **An old revision side by side** (~3 min):
-`git archive REV | tar -x -C out/rREV`, then `npm ci` and a snapshot there. A `vite build` empties `dist/` under a
-running sweep: rebuild between runs.
+`node` can hold the port: kill it. **An old revision:** `git archive REV | tar -x -C out/rREV`, `npm ci`, a snapshot
+there. A `vite build` empties `dist/` under a running sweep.
 
 ## The sweep
 
@@ -122,8 +121,7 @@ release `aic-sim` (`AIC_SIM`); its environment variables and defaults are atop t
   150 ms, heap kept over 50 MB, `mark-over-number` (a highlight ring across a hex number) and
   `warn-at-start` (a value drawn as a warning at a game's first phase).
 - **Running it:** background it, the viewer served by a process outliving it; at most one sweep beside one browser
-  lane. Don't rebuild `aic-sim` mid-sweep (a content-hash warning fails the run). A case at one seed (a watched and a
-  played game) takes 3-10 min, so a hunt picks `--case`s. Rules twin: `invariants_hold_in_random_games`.
+  lane; no `aic-sim` rebuild mid-sweep. A case at one seed takes 3-10 min, so a hunt picks `--case`s.
 - **Output** in `web/sweep-out/`: `shots/`, `issues.json` (game, step, moment), `index.html`, `sheet-N.png`
   contact sheets (failures framed red), the records.
   Hooks: `window.aic` (main.ts), `scripts/cdp.mjs`.
@@ -150,19 +148,20 @@ Plain Node over its checkout (no `npm install`, wasm or cargo); the export takes
 elsewhere; a taken port says so and exits.
 
 - **Every card in content** (country pieces are map, not cards), player cards through `web/card/card.js` with the
-  `art-originals/` scene `tools/card-art/scenes.json` names, if any; a kind with no frame gets a plain face. Scenes
-  load on scroll (gray for a second).
-- **The export** (`web/scripts/cards-export.mjs`, to `out/cards-export.json`) reads `content/`,
-  `web/card/faces.json`, `web/card/adversary.json`, `configs/baseline.json` and the stats and pricing files below, never running `aic-sim
-  docs`: a card edited without it shows its old text. **Rebuild** on the page re-exports in ~0.1 s.
+  `art-originals/` scene `tools/card-art/scenes.json` names, if any; boards, event cards, projects and threats
+  through `web/card/print.js`; Unity and Discord cards get a plain face. Scenes load on scroll.
+- **327:** `/faces.html` shows every printed face beyond player cards; `/mockup.html` (`?size=1366`), the solo
+  screen's static mockup, draws `web/mockup/state.json`, which `scripts/mockup-state.mjs` (flags atop it) writes
+  from a saved record with the dev server up.
+- **The export** (`web/scripts/cards-export.mjs`, to `out/cards-export.json`) reads `content/`, `web/card/faces.json`,
+  `print-faces.json`, `adversary.json`, `configs/baseline.json` and the stats and pricing files below, never running
+  `aic-sim docs`: a card edited without it shows its old text. **Rebuild** re-exports in ~0.1 s.
 - **Stats:** the newest `results.json` of 100+ games with a per-card `cards` table, in `experiments/results/` or
   the checkout's `out/experiments/` (highest revision, then most plain agents, then most games); labels carry the revision; a
   collapsed *N warnings ▸* line flags one behind the rules. Default agent: the ladder's highest. A screen meant for
   the viewer commits its `results.json`.
-  - Kept % is keeps per 100 games (the opening deal is kept undrafted). Played % is played ÷ (kept + drawn). Win Δ
-    (from `games.csv`) is blank but for buildings standing at the end.
-  - A CSV under `experiments/results/` with a `card` column and a `reason` column adds the reasoned price; one older
-    than `RULES_REVISION` is passed over (the CLI export names it). None is current.
+  Column meanings: `buildStats` in `cards-export.mjs`. A CSV under `experiments/results/` with `card` and `reason`
+  columns adds the reasoned price; one older than `RULES_REVISION` is passed over. None is current.
 - **Notes:** `review/card-notes.json` in the checkout (git-ignored), by card id (fields: `saveNote` in
   `cards-server.mjs`; `hash`, `contentHash` in the export). Closing or stepping saves (the old file kept as `.bak`);
   a broken notes file shows on the page and refuses saves.

@@ -1111,6 +1111,24 @@ fn sentence(s: &str) -> String {
     }
 }
 
+/// 327: an op list's icon lines and words, as a card's panel prints them (`gain`: "gain" below the art, "get" after
+/// an arrow), for the printed faces beyond player cards (`print_face`): one home for a player op's icons.
+pub(crate) fn op_lines(ops: &[Op], gain: &str) -> Vec<(Vec<Part>, String)> {
+    clauses(ops, gain).into_iter().map(|c| (c.icons, c.say)).collect()
+}
+
+/// 327: a standing op's icon line, as a building's top box prints it (an AI board's special rule).
+pub(crate) fn standing_icons(op: &Op) -> Vec<Part> {
+    match standing(op, None) {
+        Standing::Income(p, _) | Standing::Effect(p, _) => p,
+    }
+}
+
+/// 327: a resource's icon name, for `print_face`.
+pub(crate) fn resource_icon(r: Resource) -> &'static str {
+    icon(r)
+}
+
 /// The face of `c`, generated from its ops.
 pub fn card_face(c: &CardDef) -> Face {
     let target = c.all_ops().into_iter().find_map(|o| match o {

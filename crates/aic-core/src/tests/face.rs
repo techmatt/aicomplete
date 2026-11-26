@@ -187,7 +187,75 @@ fn icon_lines_print_only_what_the_viewer_draws() {
         }
         bad.extend(all.into_iter().filter(|w| !known.contains(*w) && !number(w)).map(|w| format!("{}: {w:?}", c.id)));
     }
+    // 327: the printed faces beyond player cards (print_face, web/card/print.js), `tier:N` their own mark.
+    let f = crate::print_face::print_faces(content(), &[5, 4, 4]);
+    let mut printed: Vec<(String, Vec<Part>)> = Vec::new();
+    for (id, b) in &f.boards {
+        printed.push((id.clone(), b.income.clone()));
+        printed.push((id.clone(), b.tags.clone()));
+        printed.push((id.clone(), b.rule_line.concat()));
+        for s in b.economy.iter().chain(&b.play) {
+            printed.push((id.clone(), [s.pay.clone(), s.get.clone()].concat()));
+        }
+        for p in &b.powers {
+            printed.push((format!("{id} {}", p.name), p.line.clone()));
+        }
+    }
+    for (id, e) in &f.events {
+        printed.extend(e.lines.iter().map(|l| (id.clone(), l.icons.clone())));
+    }
+    for (id, p) in &f.projects {
+        printed.extend(p.lines.iter().map(|l| (id.clone(), l.clone())));
+        printed.push((id.clone(), p.tags.clone()));
+    }
+    for (id, t) in &f.threats {
+        printed.extend(t.pay.iter().chain(&t.unpaid).map(|l| (id.clone(), l.clone())));
+        printed.push((id.clone(), [t.tags.clone(), t.sites.clone()].concat()));
+    }
+    printed.extend(f.research.iter().map(|s| (s.id.clone(), s.icons.clone())));
+    for (id, line) in &printed {
+        let mut all = Vec::new();
+        words(line, &mut all);
+        let tier = |w: &str| w.strip_prefix("tier:").is_some_and(|n| !n.is_empty() && n.chars().all(|c| c.is_ascii_digit()));
+        bad.extend(all.into_iter().filter(|w| !known.contains(*w) && !number(w) && !tier(w)).map(|w| format!("{id}: {w:?}")));
+    }
     assert!(bad.is_empty(), "icon-line words the viewer can't draw:\n{}", bad.join("\n"));
+}
+
+/// 327: every op a threat, project, event card or research slot holds prints a line on its face (print_face's
+/// `adversary_line` has a wildcard: an op it doesn't know prints nothing, and this refuses it), and every board
+/// power has its icons after the arrow.
+#[test]
+fn every_printed_face_has_its_lines() {
+    let c = content();
+    let f = crate::print_face::print_faces(c, &[5, 4, 4]);
+    let mut silent = Vec::new();
+    for t in &c.threats {
+        silent.extend(t.effects.iter().filter(|op| crate::print_face::adversary_line(op).is_empty()).map(|op| format!("threat {}: {op:?}", t.id)));
+    }
+    for p in &c.projects {
+        silent.extend(p.effects.iter().filter(|op| crate::print_face::adversary_line(op).is_empty()).map(|op| format!("project {}: {op:?}", p.id)));
+    }
+    for e in &c.adversary {
+        silent.extend(e.standing.iter().chain(&e.twists).filter(|op| crate::print_face::adversary_line(op).is_empty()).map(|op| format!("event {}: {op:?}", e.id)));
+    }
+    for i in &c.adversary_board.icons {
+        silent.extend(i.effects.iter().filter(|op| crate::print_face::adversary_line(op).is_empty()).map(|op| format!("research {}: {op:?}", i.id)));
+    }
+    assert!(silent.is_empty(), "ops no printed face draws:\n{}", silent.join("\n"));
+    assert_eq!(f.boards.len(), c.ais.len());
+    assert_eq!(f.threats.len(), c.threats.len());
+    assert_eq!(f.projects.len(), c.projects.len());
+    assert_eq!(f.events.len(), c.adversary.len());
+    for (id, b) in &f.boards {
+        assert!(!b.rule_line.is_empty(), "{id}: its special rule has no icon line");
+        for p in &b.powers {
+            let arrow = p.line.iter().position(|x| *x == crate::face::Part::Word("\u{2192}".into())).expect("an arrow");
+            assert!(arrow + 1 < p.line.len(), "{id} {}: nothing after the arrow", p.name);
+        }
+    }
+    // The research row: its slots, then the loss.
+    assert_eq!(f.research.last().map(|s| s.id.as_str()), Some("lose"));
 }
 
 /// 179 (Matt's icon rulings, friction #33-#40): each mark means one thing. Pinned cards, so a card pass leaves it.

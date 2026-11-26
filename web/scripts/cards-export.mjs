@@ -499,6 +499,17 @@ export function exportCards(root = REPO) {
   for (const c of players) if (!faces[c.id]) warnings.push(`${c.id} has no face in web/card/faces.json: run aic-sim docs`);
   for (const id of Object.keys(faces)) if (!players.some((c) => c.id === id)) warnings.push(`faces.json has ${id}, which is no card: run aic-sim docs`);
 
+  // 327: the printed faces of boards, event cards, projects and threats (aic-sim docs), by kind.
+  const printFile = join(root, 'web', 'card', 'print-faces.json');
+  const prints = existsSync(printFile) ? readJson(printFile) : null;
+  if (!prints) warnings.push('web/card/print-faces.json is missing: run aic-sim docs');
+  const PRINT_GROUP = { threat: 'threats', adversary: 'events', project: 'projects', ai: 'boards' };
+  for (const c of cards) {
+    const face = prints?.[PRINT_GROUP[c.kind]]?.[c.id];
+    if (face) c.print = face;
+    else if (prints && PRINT_GROUP[c.kind]) warnings.push(`${c.id} has no face in web/card/print-faces.json: run aic-sim docs`);
+  }
+
   const notes = cardNotes(root, warnings);
   const scenes = sceneMap(root, warnings);
   const lib = readFileSync(join(root, 'crates', 'aic-core', 'src', 'lib.rs'), 'utf8');
@@ -532,6 +543,8 @@ export function exportCards(root = REPO) {
     // 235: the backs print each tier's keep cost from the config (the renderer had tier 2 at 2 since r95's 3).
     keep: { 1: keep.keep_tier1, 2: keep.keep_tier2 },
     fits: readJson(join(root, 'art', 'frames', 'r3', 'fit.json')),
+    // 327: the research strip's slots (print.js `renderResearch`), for the viewer and the mockup.
+    research: prints?.research ?? [],
     cards: out,
     stats: { source: stats.source, columns: stats.columns, byAgent: stats.byAgent, reasoned_from: stats.reasoned_from, reasoned_stale: stats.reasoned_stale },
     warnings,

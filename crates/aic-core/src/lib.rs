@@ -29,6 +29,7 @@ pub mod map;
 pub mod module;
 pub mod modules;
 pub mod op;
+pub mod print_face;
 pub mod record;
 pub mod rng;
 pub mod rules;

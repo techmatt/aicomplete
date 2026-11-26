@@ -63,8 +63,8 @@ function requirement(card, x, box) {
 const WORD = (w) => () => `<span class="fx-word">${w}</span>`;
 const TEXT = { '→': arrow, '/': () => '<span class="fx-per">/</span>', ':': () => '<span class="fx-num">:</span>', OR: WORD('OR'), ALL: WORD('ALL'), ACT: WORD('ACT') };
 
-/** One part of an icon line: a box of parts, an icon, a connector or a number. */
-function part(p) {
+/** One part of an icon line: a box of parts, an icon, a connector or a number (327: print.js draws with it too). */
+export function part(p) {
   if (p.income) return `<span class="income">${p.income.map(part).join('')}</span>`;
   if (p.adversary) return `<span class="adversary">${p.adversary.map(part).join('')}</span>`;
   if (p.other) return `<span class="other">${p.other.map(part).join('')}</span>`;
@@ -73,7 +73,9 @@ function part(p) {
   if (isTag(p)) return `<span class="fx-tag">${tagMedallion(p.slice(1))}</span>`;
   if (isIcon(p)) return icon(p);
   // 179: `less:N` (a discount or a jam) and `at:N` (At N), each its own mark.
-  const m = /^(less|at):(\d+)$/.exec(p);
+  const m = /^(less|at|tier):(\d+)$/.exec(p);
+  // 327: `tier:N`, a threat's tier as its roman numeral (print.js), after the threat it qualifies.
+  if (m?.[1] === 'tier') return `<span class="fx-tier" aria-label="tier ${m[2]}">${'I'.repeat(Number(m[2]))}</span>`;
   if (m) return m[1] === 'less' ? less(m[2]) : atRing(m[2]);
   if (/^[−+]?[≤≥]?[\dn]+$/.test(p)) return `<span class="fx-num">${esc(p)}</span>`;
   throw new Error(`no icon or number ${p}`);

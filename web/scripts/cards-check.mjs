@@ -22,7 +22,7 @@ const ROOT = join(OUT, 'root');
 
 rmSync(ROOT, { recursive: true, force: true });
 // 285: every file cards-export.mjs reads (267 added web/card/adversary.json; the check crashed at its export since).
-for (const p of ['content', 'configs', 'web/card/faces.json', 'web/card/adversary.json', 'web/card/layout.json','art/frames/r3/fit.json', 'docs/card-pricing-notes.json', 'tools/card-art/scenes.json', 'crates/aic-core/src/lib.rs', 'experiments/results/screen-027-endgame']) {
+for (const p of ['content', 'configs', 'web/card/faces.json', 'web/card/print-faces.json', 'web/card/adversary.json', 'web/card/layout.json','art/frames/r3/fit.json', 'docs/card-pricing-notes.json', 'tools/card-art/scenes.json', 'crates/aic-core/src/lib.rs', 'experiments/results/screen-027-endgame']) {
   mkdirSync(dirname(join(ROOT, p)), { recursive: true });
   cpSync(join(REPO, p), join(ROOT, p), { recursive: true });
 }
@@ -65,11 +65,11 @@ const page = await openPage({ width: 1500, height: 950 });
 try {
   await page.send('Page.navigate', { url: URL_ });
   await page.until(`document.querySelectorAll('.tile').length > 0`, 'the cards');
-  const data = await page.js(`(({ cards, stats }) => ({ cards: cards.map((c) => ({ id: c.id, kind: c.kind, tags: c.tags, cost: c.cost, render: !!c.render })), columns: stats.columns.length }))(window.cardViewer.data)`);
+  const data = await page.js(`(({ cards, stats }) => ({ cards: cards.map((c) => ({ id: c.id, kind: c.kind, tags: c.tags, cost: c.cost, render: !!c.render || (!!c.print && c.kind !== 'ai') })), columns: stats.columns.length }))(window.cardViewer.data)`);
   check((await ids(page)).length === data.cards.length, `all ${data.cards.length} cards on the page`);
   for (const k of ['program', 'building', 'event', 'threat', 'unity', 'discord', 'adversary', 'project', 'megaproject', 'ai'])
     check(data.cards.some((c) => c.kind === k) && (await page.js(`!!document.querySelector('#kinds [data-v="${k}"]')`)), `kind ${k} has a filter and cards`);
-  check((await page.js(`document.querySelectorAll('.tile .card').length`)) === data.cards.filter((c) => c.render).length, 'every player card went through the renderer');
+  check((await page.js(`document.querySelectorAll('.tile .card').length`)) === data.cards.filter((c) => c.render).length, 'every player card went through the renderer (327: and every event card, project and threat)');
   check(await page.js(`[...document.querySelectorAll('.tile .plain h3')].every((h) => h.textContent)`), 'every frameless card has a named face');
   // The copy's stats are from an older revision, so there is at least that one notice.
   check(await page.js(`(() => { const n = document.getElementById('notice'); return !n.hidden && !n.open && /^\\d+ warnings?$/.test(n.querySelector('summary').textContent); })()`), 'warnings sit on one collapsed line');

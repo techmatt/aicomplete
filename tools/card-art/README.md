@@ -54,6 +54,23 @@ fails if `faces.json` is stale. The grammar is in docs/rules/card-grammar.md. Th
 renderer fails on an icon word it doesn't know. `tools/card-art/samples.json` says which
 card shows each variant and which buildings show the splay.
 
+**Printed faces beyond player cards (327).** Matt (Nov 25): show the printed component, rules text on hover.
+`crates/aic-core/src/print_face.rs` turns the AI boards, the adversary's event cards, projects, threats and research
+row into icon lines (a player op through `face.rs`, an adversary op through `adversary_line`, one line an op in the
+dark frame); `aic-sim docs` writes `web/card/print-faces.json`. `web/card/print.js` (with `print.css`) draws them:
+`renderBoard` a 180 × 110 mm steel panel (the two node tracks as spaces a node token covers, each space's pay and
+reward; the three node powers and each tiered power as boxes with a used-marker socket, a tiered power's tiers in one
+box; the special rule as one icon line), `renderResearch` the slot strip and its marker, and `renderThreat`,
+`renderProject`, `renderEvent` cards on a player frame recolored by kind (threats red, projects violet, event cards
+slate), through `renderCard`, so `fitCards` sizes them. Their words are the content's hand-written `text`, in each
+face's `title`; the faces print icons only. A scene shows in the art window where `scenes.json` names one, else an
+emblem (a threat's sites, a project's compute track, an event card's stage). New marks, one meaning each: `coastal`,
+`escalate`, `strike`, `redeploy`, `spread`, `blackout`, `sabotage`, `embargo`, `free`, `corrupt`, `research_track`,
+`facedown`, `token`, `discord`, `recall`, `carry`, `again`, `deck`, `lose`, and `tier:N` (a threat's tier); the
+adversary's own income is the raise arrow in its dark frame, never the brown box. `npm run
+cards:fit` fits them with the player cards and fails on a board box that spills; the fast lane's
+`every_printed_face_has_its_lines` refuses an op no face draws.
+
 **Trim and splay.** `layout.json` is the frame as painted. `derive` scales every frame in,
 so the outer steel edge lands 0.5 mm inside the trim (`inset_mm` 3.5, 90% wide, 92.6% tall),
 and fills the bleed by mirroring the steel band. `inset()` in `card.js` carries the zones

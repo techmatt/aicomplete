@@ -1,0 +1,116 @@
+/* 327: the printed faces beyond player cards (print.js). Needs card.css. */
+
+/* The adversary's cards: the building frame recolored, one color a kind: threats red, projects violet, event cards
+   gunmetal. The frame's steel stays steel (only the strip carries hue). */
+.card.adv-threat .frame { filter: hue-rotate(-28deg) saturate(1.35) brightness(.86); }
+.card.adv-project .frame { filter: hue-rotate(235deg) saturate(.9) brightness(.8); }
+.card.adv-event .frame { filter: hue-rotate(185deg) saturate(.3) brightness(.9) contrast(1.1); }
+/* Few icons a box: they print larger than a player card's, until fitCards' ladder steps them down. */
+.card.adv .effect:not(.icons-1):not(.dense) .ico { width: 6.600mm; height: 6.600mm; }
+.card.adv .effect:not(.icons-1):not(.dense) .fx-num { font-size: 14pt; }
+.card.adv .effect:not(.icons-1):not(.dense) .fx-tag .medallion { width: 6mm; height: 6mm; }
+.card.adv .effect:not(.icons-1):not(.dense) .fx-tier { font-size: 11pt; }
+.card.adv .effect .fx-icons { align-items: center; row-gap: 1mm; column-gap: 2.400mm; }
+.card.adv .lasting .fx-line + .fx-line { border-left: none; padding-left: 0; }
+.card.adv .cost { font-size: 15pt; }
+.card .fx-tier { font-family: 'Saira Condensed', sans-serif; font-weight: 700; font-size: 8.500pt; line-height: 1; padding: 0 .4mm; border: .3mm solid currentColor; border-radius: .8mm; margin-left: -.2mm; }
+
+/* The art window when a card has no scene: an emblem on the kind's ground. */
+.card .emblem { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.200mm; box-sizing: border-box;
+  background: radial-gradient(ellipse at 50% 40%, #39404c 0%, #15181d 80%); color: #eef1f4; font-family: 'Saira Condensed', sans-serif; }
+.card.adv-threat .emblem { background: radial-gradient(ellipse at 50% 40%, #5a2a26 0%, #1d0d0c 80%); }
+.card.adv-project .emblem { background: radial-gradient(ellipse at 50% 40%, #3d2f5c 0%, #140f20 80%); }
+.card .emblem.over-art { background: none; justify-content: flex-end; padding-bottom: 1.200mm; }
+.card .emblem.over-art > * { background: rgb(15 18 22 / 78%); border-radius: 1.200mm; padding: .8mm 1.600mm; }
+.card .emblem.over-art .emblem-say, .card .emblem.over-art .emblem-stage { display: none; }
+.card .emblem.over-art .ico { width: 6.500mm; height: 6.500mm; }
+.card .emblem .ico { width: 11mm; height: 11mm; color: #eef1f4; }
+.card .emblem .ico.piece { color: #eef1f4; }
+.card .emblem-row { display: flex; align-items: center; gap: 2.500mm; }
+.card .emblem-on { display: flex; align-items: center; gap: .8mm; }
+.card .emblem-on .ico { width: 8mm; height: 8mm; }
+.card .emblem-or { font-size: 16pt; font-weight: 700; }
+.card .emblem-say { font-size: 7.500pt; font-weight: 600; letter-spacing: .03em; opacity: .85; }
+.card .emblem-stage { font-size: 24pt; font-weight: 700; letter-spacing: .06em; }
+
+/* A project's compute track: a cell a compute, filled as the adversary pays it in. */
+.card .compute-track { display: grid; grid-template-columns: repeat(var(--cols), 4.600mm); gap: .9mm; }
+.compute-track .cell { width: 4.600mm; height: 4.600mm; box-sizing: border-box; border: .35mm solid #8fb0e6; border-radius: .7mm; background: rgb(58 111 196 / 18%); }
+.compute-track .cell.on { background: #3a6fc4; border-color: #d6e4fb; box-shadow: inset 0 0 0 .4mm rgb(255 255 255 / 25%); }
+
+/* Shared look for the print-only components (the strip and the board), drawn at true size in mm. */
+.research-strip, .board-face { --steel: linear-gradient(180deg, #d9dde2 0%, #8e959e 45%, #e9ecef 55%, #a2a8b0 100%); text-rendering: geometricPrecision; color: #15181c; font-family: 'Saira Condensed', sans-serif; }
+.research-strip .ico, .board-face .ico { position: relative; display: inline-block; flex: none; width: 5mm; height: 5mm; background: center / 100% 100% no-repeat; }
+.research-strip .ico.tile, .board-face .ico.tile { background-image: url('containers/tile.png'); color: #fff; }
+.research-strip .ico.disc, .board-face .ico.disc { background-image: url('containers/disc.png'); color: #fff; }
+.research-strip .ico.tile::before, .board-face .ico.tile::before, .research-strip .ico.disc::before, .board-face .ico.disc::before { content: ''; position: absolute; background: var(--c); mix-blend-mode: multiply; }
+.research-strip .ico.tile::before, .board-face .ico.tile::before { inset: 8%; border-radius: 8%; }
+.research-strip .ico.disc::before, .board-face .ico.disc::before { inset: 0; border-radius: 50%; }
+.research-strip svg.glyph, .board-face svg.glyph { display: block; width: 100%; height: 100%; }
+.research-strip .ico svg.glyph, .board-face .ico svg.glyph { position: absolute; inset: 16%; width: 68%; height: 68%; }
+.research-strip .ico.piece svg.glyph, .board-face .ico.piece svg.glyph { inset: 0; width: 100%; height: 100%; }
+.research-strip .medallion, .board-face .medallion { display: block; position: relative; width: 5mm; height: 5mm; background: url('containers/ring.png') center / 100% 100% no-repeat; color: var(--c); }
+.research-strip .medallion svg.glyph, .board-face .medallion svg.glyph { position: absolute; inset: 20%; width: 60%; height: 60%; }
+.research-strip .fx-line, .board-face .fx-line { display: flex; align-items: center; gap: .5mm; }
+.research-strip .fx-num, .board-face .fx-num { font-weight: 700; font-size: 11pt; line-height: 1; }
+.research-strip .fx-per, .board-face .fx-per { font-weight: 700; font-size: 12pt; line-height: 1; }
+.research-strip .fx-word, .board-face .fx-word { font-weight: 700; font-size: 8pt; letter-spacing: .04em; }
+.research-strip svg.arrow, .board-face svg.arrow { width: 3.400mm; height: 3.400mm; flex: none; }
+.research-strip .fx-less, .board-face .fx-less { display: inline-flex; align-items: center; }
+.research-strip svg.less, .board-face svg.less { width: 3mm; height: 3mm; }
+.research-strip .income, .research-strip .adversary, .board-face .income, .board-face .adversary { display: flex; align-items: center; gap: .5mm; padding: 0 1mm; border-style: solid; border-width: .5mm; border-image-width: .5mm; border-image-repeat: stretch; }
+.research-strip .income, .board-face .income { border-image-source: url('containers/income.png'); border-image-slice: 15% 5% fill; color: #fff6e2; }
+.research-strip .adversary, .board-face .adversary { border-image-source: url('containers/adversary.png'); border-image-slice: 15% 5% fill; color: #f2f4f6; }
+.research-strip .adversary .ico.piece, .board-face .adversary .ico.piece, .board-face .income .ico.piece { color: currentColor; }
+.board-face .income .ico[aria-label='raise'], .research-strip .income .ico[aria-label='raise'] { width: 3mm; }
+.board-face .fx-tag .medallion { width: 4.600mm; height: 4.600mm; }
+
+/* The research strip: a printed steel strip, its slots in a row, the marker on the slot reached. */
+.research-strip { display: inline-flex; gap: 1mm; padding: 1.200mm; border-radius: 1.800mm; background: var(--steel); box-shadow: inset 0 0 0 .4mm #5b6168, 0 .5mm 1.200mm rgb(0 0 0 / 45%); }
+.research-strip .rslot { position: relative; width: 19mm; height: 13mm; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border-radius: 1.200mm; background: #efeadc; border: .35mm solid #23262a; }
+.research-strip .rslot.past { background: #b9b3a4; }
+.research-strip .rslot.past .fx-line { opacity: .55; }
+.research-strip .rslot.last { background: #3a1513; }
+.research-strip .rslot.last .adversary { border-image-source: none; border: none; }
+.research-strip .rnum { position: absolute; left: .8mm; top: .3mm; font-size: 7.500pt; font-weight: 700; opacity: .7; }
+.research-strip .rslot.last .rnum { color: #f2d0cc; }
+.research-strip .rmark { position: absolute; right: -1.200mm; top: -1.500mm; }
+.research-strip .rmark .ico { width: 5.500mm; height: 5.500mm; color: #c22f2f; filter: drop-shadow(0 .3mm .4mm rgb(0 0 0 / 60%)); }
+
+/* An AI board: a steel panel, the name plate and rule over the two tracks, the powers below. */
+.board-face { position: relative; width: 180mm; height: 110mm; box-sizing: border-box; padding: 3mm 3.500mm; display: grid; grid-template-rows: auto auto 1fr; gap: 2.200mm;
+  border-radius: 3mm; background: linear-gradient(160deg, #2c3440 0%, #1a2029 55%, #262e39 100%); box-shadow: inset 0 0 0 1.200mm #8e959e, inset 0 0 0 1.600mm #23262a, 0 1mm 3mm rgb(0 0 0 / 55%); }
+.board-head { display: flex; align-items: center; gap: 3mm; padding: 1.200mm 2.500mm; border-radius: 1.600mm; background: var(--steel); }
+.board-name { font-weight: 700; font-size: 20pt; letter-spacing: .04em; line-height: 1.200; }
+.board-tags { display: flex; gap: .8mm; }
+.board-tags .medallion { width: 6mm; height: 6mm; }
+.board-rule { margin-left: auto; display: flex; align-items: center; gap: 1.800mm; padding: .8mm 2mm; border-radius: 1.200mm; background: #efeadc; border: .35mm solid #23262a; }
+.board-rule .rule-name { font-weight: 700; font-size: 10pt; letter-spacing: .05em; text-transform: uppercase; }
+.tracks { display: grid; gap: 1.500mm; }
+.track { display: grid; grid-template-columns: 16mm repeat(7, 1fr); gap: 1.200mm; align-items: stretch; }
+.track-name { align-self: center; color: #d9dde2; font-weight: 700; font-size: 9pt; letter-spacing: .05em; text-transform: uppercase; line-height: 1.050; }
+.space .ico, .space .medallion { width: 5.800mm; height: 5.800mm; }
+.space .fx-num { font-size: 13pt; }
+.space .pay .ico { width: 5mm; height: 5mm; }
+.space { position: relative; height: 22mm; box-sizing: border-box; border-radius: 1.400mm; background: #efeadc; border: .35mm solid #23262a; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6mm; padding: 2.600mm .6mm .6mm; }
+.track.play .space { background: #e6e0f0; }
+.space .pay { position: absolute; left: .5mm; top: .4mm; transform: scale(.72); transform-origin: left top; }
+.space .get { display: flex; flex-direction: column; align-items: center; gap: .5mm; }
+.space .insight-total { display: flex; align-items: center; gap: .4mm; font-weight: 700; font-size: 13pt; line-height: 1; }
+.space .capstone { font-weight: 700; font-size: 8pt; line-height: 1.050; text-align: center; color: #6b4a12; }
+.space .node-token { position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%); width: 10mm; height: 10mm; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 35% 30%, #f6f7f9 0%, #a7adb4 60%, #6b727b 100%); box-shadow: 0 .6mm 1mm rgb(0 0 0 / 55%); }
+.space .node-token .ico { width: 6mm; height: 6mm; color: #23262a; }
+.space.covered .get { opacity: .35; }
+.powers { display: grid; grid-template-rows: auto auto; gap: 1.500mm; align-content: start; }
+.power-set { display: flex; gap: 1.500mm; }
+.powers .ico, .powers .medallion { width: 5.600mm; height: 5.600mm; }
+.power { flex: 1 1 0; min-width: 0; box-sizing: border-box; padding: 1.200mm 1.800mm 1.400mm; border-radius: 1.400mm; background: #efeadc; border: .35mm solid #23262a; display: flex; flex-direction: column; gap: .6mm; }
+.power.tiered { background: #e9e2cf; }
+.power-head { display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 9.500pt; letter-spacing: .03em; line-height: 1; }
+.used-socket { width: 4.600mm; height: 4.600mm; box-sizing: border-box; border-radius: 50%; border: .35mm dashed #6b727b; display: flex; align-items: center; justify-content: center; }
+.used-socket.on { border-style: solid; border-color: #23262a; }
+.used-socket .ico { width: 3.800mm; height: 3.800mm; color: #c22f2f; }
+.tier-row { display: flex; align-items: center; gap: 1mm; }
+.tier-num { font-weight: 700; font-size: 8pt; min-width: 3.400mm; text-align: center; border: .3mm solid currentColor; border-radius: .8mm; line-height: 1.100; }
+.power .fx-line { flex-wrap: wrap; row-gap: .3mm; }

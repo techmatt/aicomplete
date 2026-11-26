@@ -15,6 +15,7 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import { fitCards, frameOf, inset, renderCard } from '../card/card.js';
+import { printFace } from '../card/print.js';
 import { REPO, exportCards } from './cards-export.mjs';
 import { openPage } from './cdp.mjs';
 
@@ -23,17 +24,33 @@ const OUT = join(REPO, 'out');
 const started = performance.now();
 
 const data = exportCards(REPO);
-const players = data.cards.filter((c) => c.render);
+// 327: the adversary's printed cards (event cards, projects, threats: web/card/print.js) fit as player cards do;
+// the boards, drawn at a fixed size, are checked for anything spilling out of a space or power box.
+const players = data.cards.filter((c) => c.render || (c.print && c.kind !== 'ai'));
+const boards = data.cards.filter((c) => c.print && c.kind === 'ai');
 const layout = inset(data.layout);
 const frameUrl = (f) => pathToFileURL(join(REPO, 'art', 'frames', 'r3', `${f}.jpg`)).href;
 const face = (c) => {
+  if (!c.render) return printFace(c, layout, frameUrl, data.fits);
   const f = frameOf(c);
   return renderCard(c.render, layout, frameUrl(f), data.fits[f]);
 };
 
 mkdirSync(OUT, { recursive: true });
 const html = join(OUT, 'card-fit-page.html');
-writeFileSync(html, `<!doctype html><html><head><meta charset="utf-8"><base href="${pathToFileURL(join(REPO, 'web', 'card')).href}/"><link rel="stylesheet" href="card.css"></head><body>${players.map(face).join('')}</body></html>`);
+writeFileSync(html, `<!doctype html><html><head><meta charset="utf-8"><base href="${pathToFileURL(join(REPO, 'web', 'card')).href}/"><link rel="stylesheet" href="card.css"><link rel="stylesheet" href="print.css"></head><body>${players.map(face).join('')}${boards.map((c) => printFace(c)).join('')}</body></html>`);
+
+/** 327: each board's spaces and power boxes, and the board itself: what runs past its box, by name. */
+function boardSpills() {
+  const out = [];
+  for (const b of document.querySelectorAll('.board-face')) {
+    const name = b.querySelector('.board-name').textContent;
+    for (const box of [b, ...b.querySelectorAll('.space, .power, .board-head')]) {
+      if (box.scrollHeight > box.clientHeight + 1 || box.scrollWidth > box.clientWidth + 1) out.push(`${name}: ${box.className} ${(box.title || box.textContent).slice(0, 40)}`);
+    }
+  }
+  return out;
+}
 
 /**
  * How far each box and title runs past its edge once fitCards has sized it, in px, measured as
@@ -85,12 +102,14 @@ function overruns() {
 
 const page = await openPage({ width: 900, height: 900 });
 let rows;
+let spills = [];
 let fonts;
 let runs;
 try {
   await page.send('Page.navigate', { url: pathToFileURL(html).href });
   await page.until(`document.readyState === 'complete' && document.querySelectorAll('.card').length === ${players.length}`, 'the cards');
   rows = await page.js(`(${fitCards})()`);
+  spills = await page.js(`(${boardSpills})()`);
   fonts = await page.js(`[...document.fonts].filter((f) => f.status === 'loaded').length`);
   if (rows.some((r) => r.overflow.length)) runs = await page.js(`(${overruns})()`);
 } finally {
@@ -116,7 +135,9 @@ const bySize = (found, box) =>
     .join(', ');
 const held = (box) => list.filter(([, c]) => c[box] != null).length;
 const any = new Set([...below('top'), ...below('effect')].map(([id]) => id));
-console.log(`${list.length} player cards, ${any.size} with a box below ${GOAL_PT} pt`);
+console.log(`${list.length} cards (${data.cards.filter((c) => c.render).length} player, ${list.length - data.cards.filter((c) => c.render).length} adversary), ${any.size} with a box below ${GOAL_PT} pt`);
+console.log(`${boards.length} boards, ${spills.length} boxes spilling`);
+for (const s of spills) console.log(`SPILL ${s}`);
 for (const [box, label] of [['top', 'top box'], ['effect', 'effect box']]) {
   const found = below(box);
   console.log(`${label}: ${found.length} of ${held(box)} below${found.length ? ` (${bySize(found, box)})` : ''}`);
@@ -140,4 +161,4 @@ for (const [id, c] of broken) console.log(`OVERFLOW ${id}: ${c.where.map((w) => 
 console.log(`out/card-fit.json, ${((performance.now() - started) / 1000).toFixed(1)} s`);
 // 264: no recorded exceptions: a box below the goal fails as an overflow does.
 if (any.size) console.log(`BELOW ${GOAL_PT} pt: ${[...any].join(', ')}`);
-process.exit(broken.length || any.size ? 1 : 0);
+process.exit(broken.length || any.size || spills.length ? 1 : 0);

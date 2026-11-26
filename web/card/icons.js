@@ -90,6 +90,45 @@ const PIECES = {
   counter: `${fill('M12 2 23 21H1z')}${line('M3 3l18 18', 3)}`,
   // 105: a card you play, for a trigger or a discount: a card with an arrow onto it.
   play: `<rect x="6" y="8" width="12" height="14" rx="1.600" fill="none" stroke="currentColor" stroke-width="2"/>${line('M12 1.500v8M8.800 6.300 12 9.500l3.200-3.200', 2.200)}`,
+  // 327: the printed faces beyond player cards (print.js): the adversary's marks, one meaning each.
+  // A coastal city: the city over a wave.
+  coastal: `${fill('M5 15V8h3.500V4.500h2.500V2h2.500v5.500H19V15z')}${line('M2 19.500q2.500-2.500 5 0t5 0 5 0 5 0', 2)}`,
+  // Escalate: each site holding an agent takes 1 more: the agent over a double chevron up.
+  escalate: `<g transform="translate(2 6) scale(.6)">${AGENT}</g>${line('M15 9.500l3.500-3.500 3.500 3.500M15 15l3.500-3.500 3.500 3.500', 2.200)}`,
+  // Strike: the troops' attack, a burst.
+  strike: fill('M12 1.500 14.200 8.300 21 5.500 16.700 11.300 22.500 15 15.300 15.400 15.800 22.500 12 16.700 8.200 22.500 8.700 15.400 1.500 15 7.300 11.300 3 5.500 9.800 8.300z'),
+  // Redeploy: the troops move to the corrupted city nearest a player piece: a curved arrow onto a city.
+  redeploy: `${line('M3 19C3 9 9 5 15.500 6.500', 2.400)}${line('M12.500 3l3.500 3.500-3.500 3.500', 2.400)}${fill('M15 22v-6h2.500v-3h2v-2.500h2V22z')}`,
+  // Botnets spread: three linked dots, the last new.
+  spread: `<circle cx="5" cy="17" r="3" fill="currentColor"/><circle cx="12" cy="7" r="3" fill="currentColor"/><circle cx="19" cy="17" r="3" fill="none" stroke="currentColor" stroke-width="1.800" stroke-dasharray="2 1.500"/>${line('M6.700 14.500 10.300 9.500M13.700 9.500l3.600 5', 1.800)}`,
+  // Blackout: cities make no energy (and no Discord): the city struck through.
+  blackout: `${fill('M3 22V11h5V6h3V2h3v8h7v12z')}${line('M2 3l20 19', 2.600)}`,
+  // Sabotage: players with a node there make no energy in upkeep: the energy bolt struck through.
+  sabotage: `${fill('M13.800 2 5.500 13.400h5.200L9.200 22l9.300-12.600h-5.600z')}${line('M3 3l18 18', 2.600)}`,
+  // Again: a line acts a second time (the adversary builds now: its Infiltrate lines land again): a loop arrow.
+  again: `${line('M19 12a7 7 0 1 1-2.100-5', 2.400)}${line('M17.500 2.500v4.500H13', 2.400)}`,
+  // Embargo: no site can be claimed: the claim's flag struck through.
+  embargo: `${line('M7 22V2.500', 2)}${fill('M8 2.500 19 7 8 11.500z')}${line('M3 3l18 18', 2.600)}`,
+  // Free: paying no credits (Scrap II's building, Field Station's station): the coin struck through.
+  free: `<circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2.400"/>${line('M5 19 19 5', 2.600)}`,
+  // Corrupt: the adversary takes a site: the cracked hex.
+  corrupt: `${fill('M12 2 20.700 7v10L12 22 3.300 17V7z')}<path d="M12 4.500 10 10l3.500 2.500L11 19" fill="none" stroke="#efeadc" stroke-width="1.700" stroke-linejoin="round"/>`,
+  // Cubes onto the adversary's research track: a cube on a three-slot strip.
+  research_track: `${line('M2 20h20M2 17v6M9 17v6M15 17v6M22 17v6', 1.600)}${fill('M12 2 19 6v7.500L12 17.500 5 13.500V6z')}`,
+  // A building turned face down until the end of next round: the card, back up.
+  facedown: `<rect x="4" y="3" width="16" height="19" rx="1.500" fill="currentColor"/>${line('M8 8l8 8M16 8l-8 8', 1.800).replace('currentColor', '#efeadc')}`,
+  // Tokens off your cards: an empty disc.
+  token: `<circle cx="12" cy="12" r="8.500" fill="none" stroke="currentColor" stroke-width="2.400"/><circle cx="12" cy="12" r="3.500" fill="currentColor"/>`,
+  // Sway toward Discord: the Alignment marker moving away from Unity (sway mirrored).
+  discord: `${line('M3 12h18M3 8v8M21 8v8', 2.200)}${fill('M15 6.500 8 12l7 5.500z')}`,
+  // Sent back to the supply: the arrow home.
+  recall: line('M20 6v6a5 5 0 0 1-5 5H5M9 12.500 4.500 17 9 21.500', 2.400),
+  // Kept into the next round (Patience): the arrow over the round's line.
+  carry: `${line('M3 16h18M3 12.500v7M21 12.500v7', 1.600)}${line('M4 10C7 3.500 15 3.500 19 8.500M19.500 3.500v5.500H14', 2.400)}`,
+  // The adversary's event deck.
+  deck: `<rect x="7" y="2.500" width="13" height="17" rx="1.600" fill="none" stroke="currentColor" stroke-width="2"/><rect x="4" y="5" width="13" height="17" rx="1.600" fill="currentColor"/>`,
+  // The research row's last slot: the players lose.
+  lose: `<circle cx="12" cy="10" r="8" fill="currentColor"/><path d="M8.500 8.500h2M13.500 8.500h2M8 14q4-3 8 0" fill="none" stroke="#efeadc" stroke-width="1.800" stroke-linecap="round"/>${fill('M8 17h8v5H8z')}`,
   // The adversary deck, looked at.
   peek: `<rect x="5" y="2.500" width="14" height="19" rx="1.600" fill="none" stroke="currentColor" stroke-width="2"/><g transform="translate(5.400 5.400) scale(.55)">${EYE}</g>`,
 };

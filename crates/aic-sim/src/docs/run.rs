@@ -39,6 +39,8 @@ const OPS_MD: &str = "docs/ops.md";
 const OP_SOURCE: &str = "crates/aic-core/src/op.rs";
 const HARMS_MD: &str = "docs/harms.md";
 const FACES_JSON: &str = "web/card/faces.json";
+/// 327: the boards', event cards', projects', threats' and research row's printed faces (`print_face`).
+const PRINT_FACES_JSON: &str = "web/card/print-faces.json";
 /// 267: the adversary reference card's words (`ladder::adversary_json`), for the face pipeline.
 const ADVERSARY_JSON: &str = "web/card/adversary.json";
 const PLAYER_AID_MD: &str = "docs/player-aid.md";
@@ -211,6 +213,49 @@ fn faces_json() -> String {
         })
         .collect();
     format!("{{\n{}\n}}\n", rows.join(",\n"))
+}
+
+/// 327: every printed face beyond player cards, a group a key and one face a line, so a change shows as that face's diff.
+fn print_faces_json() -> String {
+    // The solo game's numbers (Matt, Nov 25): each board's building slots, from configs/solo.json.
+    let solo: serde_json::Value = serde_json::from_str(&fs::read_to_string("configs/solo.json").unwrap_or_else(|e| fail(&format!("configs/solo.json: {e}"))))
+        .unwrap_or_else(|e| fail(&format!("configs/solo.json: {e}")));
+    let slots: Vec<i64> = solo["modules"]
+        .as_array()
+        .and_then(|ms| ms.iter().find(|m| m["module"] == "ai"))
+        .and_then(|m| m["params"]["slots"].as_array())
+        .map(|a| a.iter().filter_map(|v| v.as_i64()).collect())
+        .unwrap_or_default();
+    let f = aic_core::print_face::print_faces(content(), &slots);
+    fn group<T: serde::Serialize>(rows: &[(String, T)]) -> String {
+        let lines: Vec<String> = rows
+            .iter()
+            .map(|(id, face)| format!("  {}: {}", serde_json::to_string(id).expect("an id is JSON"), serde_json::to_string(face).expect("a face is JSON")))
+            .collect();
+        format!("{{
+{}
+ }}", lines.join(",
+"))
+    }
+    let research: Vec<String> = f.research.iter().map(|s| format!("  {}", serde_json::to_string(s).expect("a slot is JSON"))).collect();
+    format!(
+        "{{
+ \"boards\": {},
+ \"events\": {},
+ \"projects\": {},
+ \"threats\": {},
+ \"research\": [
+{}
+ ]
+}}
+",
+        group(&f.boards),
+        group(&f.events),
+        group(&f.projects),
+        group(&f.threats),
+        research.join(",
+")
+    )
 }
 
 const OPEN: &str = "<!-- generated: ";
@@ -504,6 +549,7 @@ pub fn run(o: &Options) {
     // Path, what it should hold, what it holds.
     let mut files: Vec<(String, String, String)> = vec![
         (FACES_JSON.to_string(), faces_json(), on_disk(FACES_JSON)),
+        (PRINT_FACES_JSON.to_string(), print_faces_json(), on_disk(PRINT_FACES_JSON)),
         (ADVERSARY_JSON.to_string(), adversary_json(&r), on_disk(ADVERSARY_JSON)),
         (OPS_MD.to_string(), ops_md(&src), on_disk(OPS_MD)),
         (HARMS_MD.to_string(), harms_md(&r), on_disk(HARMS_MD)),

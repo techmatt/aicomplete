@@ -2,6 +2,7 @@
 // Player cards go through the one renderer; every other kind is a plain face drawn from the
 // same export. No card words live here: only labels of the page itself.
 import { esc, fitCards, frameOf, inset, renderBack, renderCard } from '../card/card.js';
+import { printFace } from '../card/print.js';
 import { plainFace } from './plain.js';
 import { referenceFace } from './reference.js';
 
@@ -108,8 +109,24 @@ function printed(c) {
 
 const plain = (c) => plainFace(c, label(c.kind), c.scene ? `/scene/${c.scene}.png` : undefined);
 
+// 327: boards, event cards, projects and threats as they print (web/card/print.js); a board is wider than a card.
+function printedOther(c) {
+  const art = c.scene ? `/scene/${c.scene}.png` : undefined;
+  const html = printFace(c, layout, (f) => `/art/frames/r3/${f}.jpg`, data.fits, art);
+  if (html === null) return null;
+  return c.kind === 'ai' ? `<div class="board-trim">${html}</div>` : `<div class="trim">${html}</div>`;
+}
+
 function face(c) {
   if (c.reference) return referenceFace(c); // 267: the adversary reference card
+  if (c.print) {
+    try {
+      const html = printedOther(c);
+      if (html) return html;
+    } catch (e) {
+      return plain({ ...c, text: `${c.text} [print.js: ${e.message}]`, sections: [] });
+    }
+  }
   if (!c.render) return plain(c);
   try {
     return printed(c);

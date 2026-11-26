@@ -55,6 +55,8 @@ main.grid { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; 
 .scaled { zoom: var(--zoom, .6); }
 .trim { width: 63mm; height: 88mm; overflow: hidden; border-radius: 3mm; position: relative; background: #000; box-shadow: 0 1px 6px #0008; }
 .trim > .card { position: absolute; left: -3mm; top: -3mm; }
+/* 327: an AI board prints as a panel, 180 by 110 mm. */
+.board-trim { width: 180mm; height: 110mm; }
 
 /* A card kind with no frame yet: name, type and text, all from content. */
 .plain { width: 63mm; height: 88mm; border-radius: 3mm; background: #eee9dc; color: #1b1c1f; overflow: hidden; display: flex; flex-direction: column; font-family: 'Source Serif 4', Georgia, serif; font-weight: 400; box-shadow: 0 1px 6px #0008; border: 1.2mm solid var(--tone); }
