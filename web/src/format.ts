@@ -104,6 +104,7 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       const seat = /^seat (\d+)$/.exec(o);
       if (seat) {
         const ai = cx.view?.seats[Number(seat[1])]?.board?.name;
+        if (playerSeats) return `choose ${playerSeats.length === 1 ? 'yourself' : playerSeats[Number(seat[1])] ?? `seat ${seat[1]}`}${t}`;
         return `choose Seat ${seat[1]}${ai ? ` (${ai})` : ''}${t}`;
       }
       // 184: a card answer (a discard, say) read as if the card were played: "seat 0: Liberation Accords".
@@ -117,12 +118,19 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
         ? named.replace(/\+(\d+) ([a-z_][a-z_ ]*?)(?=,|$| \()/g, (_, n, r) => `+${n} ${n === '1' && r === 'credits' ? 'credit' : r} a round`)
         : named;
       // 305 (D85): a piece's owner is a record key ("1 seat 1's ambassador"): named as the panels name the seat.
-      const seatOf = (n: string) => { const ai = cx.view?.seats[Number(n)]?.board?.name; return `Seat ${n}${ai ? ` (${ai})` : ''}`; };
-      const plain = contentIds(leveled).replace('T2 keep -1', 'T2 keep')
+      const seatOf = (n: string) => {
+        const ai = cx.view?.seats[Number(n)]?.board?.name;
+        return `Seat ${n}${ai ? ` (${ai})` : ''}`;
+      };
+      const base = contentIds(leveled).replace('T2 keep -1', 'T2 keep')
         .replace(/^sacrifice stack (.*)$/, 'sacrifice $1 (with any buildings under it)')
-        .replace(/^sacrifice (program|hand) /, 'sacrifice ')
-        .replace(/^(\d+) seat (\d+)'s ambassadors?$/, (_, n, s) => `${n} ambassador${n === '1' ? '' : 's'} of ${seatOf(s)}`)
-        .replace(/\bseat (\d+)'s\b/g, (_, s) => `${seatOf(s)}'s`);
+        .replace(/^sacrifice (program|hand) /, 'sacrifice ');
+      // 326: the player view names the owner as it names seats ("1 of your ambassadors", "Builder's node").
+      const plain = playerSeats
+        ? seatText(base.replace(/^(\d+) seat (\d+)'s (ambassadors?)$/, (_, n, s, w) => `${n} of seat ${s}'s ${n === '1' ? 'ambassadors' : w}`))
+        : base
+          .replace(/^(\d+) seat (\d+)'s ambassadors?$/, (_, n, s) => `${n} ambassador${n === '1' ? '' : 's'} of ${seatOf(s)}`)
+          .replace(/\bseat (\d+)'s\b/g, (_, s) => `${seatOf(s)}'s`);
       return `${plain}${t}`;
     }
     case 'tier':
@@ -382,13 +390,85 @@ const TOKEN_NAMES: Record<string, string> = {
   no_corrupt: 'no-Corrupt token (agents may land; nothing here corrupts or flips, and no node here is lost to agents)',
 };
 
-/** "node:1" → "node (seat 1)", "cube:adversary" → "owner cube (adversary)". */
+/** "node:1" → "node (seat 1)", "cube:adversary" → "owner cube (adversary)". 326: in the player view a seat's piece is
+ *  named by its board ("node (Builder)"), or "(yours)" alone (`setPlayerSeats`). */
 export function tokenName(kind: string): string {
   const [base, owner] = kind.split(':');
   const name = TOKEN_NAMES[base] ?? words(base);
   if (owner === undefined) return name;
   if (kind === 'ambassador:adversary') return 'agent';
-  return owner === 'adversary' ? `${name} (adversary${base === 'cube' ? ': corrupted' : ''})` : `${name} (seat ${owner})`;
+  if (owner === 'adversary') return `${name} (adversary${base === 'cube' ? ': corrupted' : ''})`;
+  return `${name} (${playerSeats ? (playerSeats.length === 1 ? 'yours' : playerSeats[Number(owner)] ?? `seat ${owner}`) : `seat ${owner}`})`;
+}
+
+// ---------- 326: seats as the player view names them ----------
+
+/** The player view's seat names while it shows (null: the debug view, where seats are "Seat N"). */
+let playerSeats: string[] | null = null;
+export const setPlayerSeats = (names: string[] | null) => { playerSeats = names; };
+/** A seat in running text: "seat 1" in the debug view, its player-view name ("Builder", "you") in the player view. */
+export const seatWord = (i: number) => playerSeats ? playerSeats[i] ?? `seat ${i}` : `seat ${i}`;
+/** Whether the player view is drawing (its seat names set). */
+export const inPlayerView = () => playerSeats !== null;
+
+/** Verbs the engine's notes put after a seat ("seat 0 pays"): solo's "you" takes them without the s. */
+const SEAT_VERBS = /^(has|is|pays|gains|loses|discards|draws|takes|places|removes|holds|keeps|plays|uses|moves|wins|claims|liberates|firewalls|gathers|pushes|targets|frees|builds|sells|counters)$/;
+
+/**
+ * 326 (diff review): engine words naming a seat ("seat 0's node", "Seat 1 pays", "seat 2 has no nodes") as the player
+ * view names it: its board's name, solo's "you" in grammar ("your node", "you pay", "you have"). Unchanged in the
+ * debug view.
+ */
+export function seatText(text: string): string {
+  if (!playerSeats) return text;
+  const names = playerSeats;
+  const solo = names.length === 1;
+  // A capital at the text's or a sentence's start only ("strikes Seat 0's station": "strikes your station").
+  const cap = (word: string, at: number, all: string) => (at === 0 || /[.!?]\s*$/.test(all.slice(0, at)) ? word[0].toUpperCase() + word.slice(1) : word);
+  const name = (n: string) => names[Number(n)] ?? `seat ${n}`;
+  return text
+    // "remove 1 seat 0's node": "remove 1 of your nodes".
+    .replace(/\b(\d+) [Ss]eat (\d+)'s (nodes?|ambassadors?)\b/g, (m, k: string, _n: string, w: string) => (solo ? `${k} of your ${/s$/.test(w) ? w : `${w}s`}` : m))
+    .replace(/\b[Ss]eat (\d+)'s\b/g, (_, n: string, at: number, all: string) => (solo ? cap('your', at, all) : `${name(n)}'s`))
+    // "Seat 0 [Card] targets X" (a card's target note): "Your [Card] targets X".
+    .replace(/\b[Ss]eat (\d+)(?= \[)/g, (_, n: string, at: number, all: string) => (solo ? cap('your', at, all) : `${name(n)}'s`))
+    .replace(/\b[Ss]eat (\d+) (\w+)\b/g, (_, n: string, verb: string, at: number, all: string) => {
+      if (!solo) return `${name(n)} ${verb}`;
+      if (!SEAT_VERBS.test(verb)) return `${cap('you', at, all)} ${verb}`;
+      // Each listed verb drops its s ("pays" → "pay"), its es after sh, ch, x or ss ("pushes" → "push"); "has" and
+      // "is" are irregular.
+      const bare = verb === 'has' ? 'have' : verb === 'is' ? 'are' : verb.slice(0, /(sh|ch|x|ss)es$/.test(verb) ? -2 : -1);
+      return `${cap('you', at, all)} ${bare}`;
+    })
+    .replace(/\b[Ss]eat (\d+)\b/g, (_, n: string, at: number, all: string) => (solo ? cap('you', at, all) : name(n)));
+}
+
+/** 326 (Matt, Nov 25): no "Seat 0" in the player view. A seat is its board's name ("Builder"), its country's added
+ *  when two seats share a board; solo's one seat is "you". */
+export function seatNames(v: View): string[] {
+  if (v.seats.length === 1) return ['you'];
+  const boards = v.seats.map((s) => s.board?.name ?? '');
+  return v.seats.map((s, i) => {
+    const country = v.countries[s.country]?.name ?? '';
+    if (!boards[i]) return country || `player ${i + 1}`;
+    return boards.filter((b) => b === boards[i]).length > 1 && country ? `${boards[i]} (${country})` : boards[i];
+  });
+}
+
+/** 326: the player view's five steps of a round (the engine's phases are the debug view's): each phase by its rulebook
+ *  step, A-B the adversary's, C cards, D actions, E income, F-G threats (cleanup closes the round with them). */
+export const PLAYER_STEPS = ['Adversary', 'Cards', 'Actions', 'Income', 'Threats'] as const;
+export function playerStep(phase: string): number {
+  const letter = RULEBOOK_PHASE[phase]?.[0];
+  const byLetter: Record<string, number> = { A: 0, B: 0, C: 1, D: 2, E: 3, F: 4, G: 4 };
+  if (letter && byLetter[letter] !== undefined) return byLetter[letter];
+  // A phase the rulebook table doesn't name (another config's module): by its module.
+  if (/board\.act|cards\.play/.test(phase)) return 2;
+  if (/^cards\./.test(phase)) return 1;
+  if (/^(adversary|alignment)\./.test(phase)) return 0;
+  if (/^(board\.produce|economy\.)/.test(phase)) return 3;
+  if (/^threats\.|cleanup/.test(phase)) return 4;
+  return -1;
 }
 
 export function escapeHtml(s: string): string {

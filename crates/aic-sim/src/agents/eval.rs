@@ -513,23 +513,6 @@ pub fn check_names<'a>(names: impl IntoIterator<Item = &'a str>) -> Result<(), S
     Ok(())
 }
 
-/// 323 (solo's draw-and-keep, `cards.take`): of seat `s`'s hand only the best `take` less what it has drafted can
-/// still be drafted (the rest are discarded, never passed to a partner): the eval counts those alone, so each pick
-/// weighs a card's worth (every card in the hand counted alike, and a pick only moved one from hand to drafted).
-fn take_best(world: &aic_core::module::World, g: &GameState, s: usize, packet: &mut Vec<(f64, u8)>) {
-    // An empty hand first: no draft is on (and `cards=off` configures no `cards.take`).
-    if packet.is_empty() {
-        return;
-    }
-    let take = world.int("cards.take");
-    if take <= 0 {
-        return;
-    }
-    let room = (take - g.pile(&cards::drafted(s)).len() as i64).max(0) as usize;
-    packet.sort_by(|a, b| b.0.total_cmp(&a.0));
-    packet.truncate(room);
-}
-
 /// A drafted card's keep price in credits (its tier's insight at
 /// `INSIGHT_COST`), for valuing the draft packet (023).
 fn keep_credits(world: &aic_core::module::World, tier: u8) -> f64 {
@@ -2191,17 +2174,12 @@ impl Eval {
                 let d = cards::def(&world, id);
                 (w.drafted * Self::card_value(w, self.am_cost, d), d.tier)
             });
-            let mut packet: Vec<(f64, u8)> = g
-                .pile(&cards::packet(s))
-                .iter()
-                .map(|id| {
-                    let d = cards::def(&world, id);
-                    let keep = self.keep_price(&world, g, s, d.tier, keep_credits(&world, d.tier));
-                    let v = w.hand + w.hand_cost * (Self::cost(d, self.am_cost) - w.packet_keep * keep);
-                    (w.drafted * v.max(0.0), d.tier)
-                })
-                .collect();
-            take_best(&world, g, s, &mut packet);
+            let packet = g.pile(&cards::packet(s)).iter().map(|id| {
+                let d = cards::def(&world, id);
+                let keep = self.keep_price(&world, g, s, d.tier, keep_credits(&world, d.tier));
+                let v = w.hand + w.hand_cost * (Self::cost(d, self.am_cost) - w.packet_keep * keep);
+                (w.drafted * v.max(0.0), d.tier)
+            });
             let picks: Vec<(f64, u8)> = drafted.chain(packet).collect();
             self.keepable(&world, g, s, picks, &mut cards);
             *v += cards.iter().sum::<f64>();
@@ -2564,9 +2542,6 @@ impl Eval {
                 let worth = self.hand_worth(&world, g, &seats[to], left, id, true);
                 packets[to].push((w.drafted * (worth - w.packet_keep * keep).max(0.0), tier));
             }
-        }
-        for (s, packet) in packets.iter_mut().enumerate() {
-            take_best(&world, g, s, packet);
         }
         for (s, made) in prod.iter().enumerate() {
             let sd = &seats[s];

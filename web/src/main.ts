@@ -8,8 +8,8 @@ import {
   type Action, type CardView, type GameEvent, type View,
 } from './engine';
 import {
-  actionLabel, actionRule, choiceKey, contentIds, countryName, escapeHtml, hexKey, hexesIn, isHex, shortPhase, strong,
-  type LabelContext,
+  actionLabel, actionRule, choiceKey, contentIds, countryName, escapeHtml, hexKey, hexesIn, isHex, PLAYER_STEPS, playerStep,
+  seatNames, seatText, setPlayerSeats, shortPhase, strong, type LabelContext,
 } from './format';
 import { details } from './hover';
 import { logEntry } from './log';
@@ -134,9 +134,10 @@ let varsOpen = false;
 
 /** The player view (play through the objects) or the debug view (everything, the timeline and the raw data). */
 type Mode = 'player' | 'debug';
-const VIEW_KEY = 'aic.view';
-// 325 (Matt, Nov 25): a fresh browser opens the player view (scripts that want the debug view set it themselves).
-let mode: Mode = storageGet(VIEW_KEY) === 'debug' ? 'debug' : 'player';
+// 326 (Matt, Nov 25): the player view is the default: a fresh or returning browser opens it, and the toggle isn't
+// remembered (a saved debug setting no longer wins). `aic.startView` in localStorage is the scripts' own start
+// (scripts/cdp.mjs keeps theirs on the debug view), as `aic.firstConfig` is.
+let mode: Mode = storageGet('aic.startView') === 'debug' ? 'debug' : 'player';
 
 const playerUi = {
   root: $('player'),
@@ -153,7 +154,6 @@ const playerUi = {
 /** Moves the shared panels (map, phase bar, prompt, status, adversary row, countries) into the chosen view. */
 function setMode(m: Mode) {
   mode = m;
-  storageSet(VIEW_KEY, m);
   document.body.classList.toggle('player-mode', m === 'player');
   playerUi.root.hidden = m !== 'player';
   $('app').hidden = m === 'player';
@@ -282,6 +282,8 @@ function render() {
   const f = tl.frame;
   shown = engineView(f.snap);
   legal = legalActions(f.snap);
+  // 326: the player view names seats by their boards (or "you"), its pieces' hovers and legend included.
+  setPlayerSeats(mode === 'player' ? seatNames(shown) : null);
   // An open choice answered by picking a hex arms that pick at once.
   const pick = legal.find((a) => a.seat === shown.choice?.seat && a.type === 'choose' && isHex(a.target));
   armed = pick ? { seat: pick.seat, key: choiceKey(pick) } : null;
@@ -333,7 +335,7 @@ function render() {
   ui.countries.innerHTML = countriesHtml(mapView);
   if (mode === 'player') {
     const adv = lastAdversaryTurn();
-    renderPlayer({ ...playerUi, countries: ui.countries, prompt: ui.prompt }, {
+    renderPlayer({ ...playerUi, countries: ui.countries, prompt: ui.prompt, pipeline: ui.pipeline }, {
       view: shown, legal, config: f.snap.state.config, cx: labels(), frame: f, before: stepPhase(), board: mapView,
       undo: undoRoom(), replay: adv >= 0 ? tl.frames[adv].snap.state.round : null,
     });
@@ -362,7 +364,10 @@ const PHASE_HINTS: Record<string, string> = {
 /** Who the game waits for, and the open choice's question, above the board. */
 function renderPrompt(targets: number) {
   const v = shown;
+  // 326: the player view names a seat by its board, solo's as "you" (no "Seat 0").
+  const names = mode === 'player' ? seatNames(v) : null;
   const seatName = (s: number) => {
+    if (names) return escapeHtml(names[s] ?? '');
     const ai = v.seats[s]?.board?.name;
     return `Seat ${s}${ai ? ` (${escapeHtml(ai)})` : ''}`;
   };
@@ -375,9 +380,17 @@ function renderPrompt(targets: number) {
     ui.prompt.className = 'choice';
     const how = targets === 1 ? `click the highlighted hex` : targets ? `click one of the ${targets} highlighted hexes` : mode === 'player' ? 'answer here' : `answer in ${seatName(v.choice.seat)}'s panel`;
     // 305 (D85): a piece's owner in the words ("seat 1's node") named as the seat rows name it.
-    const words = contentIds(v.choice.prompt.replace(/^Seat \d+:\s*/, '').replace(/^([^:]+): seat \d+:\s*/, '$1: '))
-      .replace(/\bseat (\d+)'s\b/g, (_, s: string) => `Seat ${s}${v.seats[Number(s)]?.board ? ` (${v.seats[Number(s)].board!.name})` : ''}'s`);
-    ui.prompt.innerHTML = `<b>${seatName(v.choice.seat)} decides:</b> ${escapeHtml(words)} <span class="how">— ${how}</span>`;
+    const stripped = contentIds(v.choice.prompt.replace(/^Seat \d+:\s*/, '').replace(/^([^:]+): seat \d+:\s*/, '$1: '));
+    // 326: the player view's seat words, solo's in grammar ("your node", "you pay").
+    const words = names ? seatText(stripped)
+      : stripped.replace(/\bseat (\d+)'s\b/gi, (_, s: string) => `Seat ${s}${v.seats[Number(s)]?.board ? ` (${v.seats[Number(s)].board!.name})` : ''}'s`);
+    const who = names?.length === 1 ? 'You decide' : `${seatName(v.choice.seat)} decides`;
+    ui.prompt.innerHTML = `<b>${who}:</b> ${escapeHtml(words)} <span class="how">— ${how}</span>`;
+    return;
+  }
+  // 326: the player view's right panel says whose move it is ("Your move"): no engine phase line over the map.
+  if (mode === 'player') {
+    ui.prompt.innerHTML = '';
     return;
   }
   const acting = [...new Set(legal.map((a) => a.seat))];
@@ -459,18 +472,34 @@ function countryNames(): string[] | undefined {
   return shown?.countries.map((c) => c.name);
 }
 
+/** 326: what each of the player view's five steps is, on its hover. */
+const STEP_HINTS = [
+  "Sway (each Fallout token adds a Discord), then the adversary's turn: its Card beat (threats, its lines) and its Income beat (what its corrupted sites make, compute onto its project)",
+  'Build a hand from the tier-1 and tier-2 decks, then keep what you pay insight for',
+  'Play cards, use powers, building Actions and standard actions, in any order, until you pass',
+  'Your factories, cities, stations and income pay',
+  'Every threat nobody paid off takes effect; then cleanup stands your ambassadors back up',
+];
+
 /** The round and phase bar, of `v` (320: the turn panel's earlier step while it shows one). */
 function renderPhase(v: View = shown) {
-  const order = v.round_order
-    .map((p, i) => `<span class="phase ${p.kind}${v.phase?.index === i ? ' now' : ''}" title="${escapeHtml(p.name)} (${p.kind})">${escapeHtml(shortPhase(p.name))}</span>`)
-    .join('<span class="arrow">›</span>');
+  // 326 (Matt, Nov 25): the player view shows a round's five steps, the current one lit; the engine's phases (its
+  // sub-steps) are the debug view's.
+  const now = v.phase ? playerStep(v.phase.name) : -1;
+  const order = mode === 'player'
+    ? PLAYER_STEPS.map((name, i) => `<span class="phase step${now === i ? ' now' : ''}" title="${escapeHtml(STEP_HINTS[i])}">${name}</span>`).join('<span class="arrow">›</span>')
+    : v.round_order
+      .map((p, i) => `<span class="phase ${p.kind}${v.phase?.index === i ? ' now' : ''}" title="${escapeHtml(p.name)} (${p.kind})">${escapeHtml(shortPhase(p.name))}</span>`)
+      .join('<span class="arrow">›</span>');
   let status: string;
   if (v.outcome) {
     const o = v.outcome;
     // The sentence; the reason code (what `--save-when` takes) in its hover (235: "on the board node" read as a typo).
     // 308: a deck-out ends the game as the next round's Card beat finds no card: the cap's last round was the one before.
     const when = o.reason === 'deck_empty' ? `after round ${o.round - 1}, the round cap` : `in round ${o.round}`;
-    status = `<span class="outcome ${o.won ? 'won' : 'lost'}" title="reason code: ${escapeHtml(o.reason)}">${o.won ? 'WON' : 'LOST'} ${when}: ${escapeHtml(o.detail)}</span>`;
+    // 326: the player view names a seat as it does everywhere ("Builder has no nodes left", "you have ...").
+    const detail = mode === 'player' ? seatText(o.detail) : o.detail;
+    status = `<span class="outcome ${o.won ? 'won' : 'lost'}" title="reason code: ${escapeHtml(o.reason)}">${o.won ? 'WON' : 'LOST'} ${when}: ${escapeHtml(detail)}</span>`;
   } else status = ''; // who is to act is in #prompt
   // 305: the round cap beside the round: the adversary's cards left are the rounds left after this one.
   // The count holds the face-up next card too: before this round's Card beat turns it into this round's card, it is
@@ -1256,7 +1285,7 @@ Object.assign(window, {
     open: (text: string, file = 'script') => loadRecordText(text, file),
     act,
     seek,
-    /** 242: 'player' or 'debug'; `setView` switches (and remembers it, as the toggle does). */
+    /** 242: 'player' or 'debug'; `setView` switches, as the toggle does (326: for this page only). */
     get mode() { return mode; },
     setView: (m: Mode) => setMode(m),
     /** 242: the seat the player view shows; `showSeat(null)` follows whoever must act again. */

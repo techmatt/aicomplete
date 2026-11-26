@@ -140,6 +140,15 @@ const CHECKS = `(() => {
       if (any('#p-turn [data-turn="replay"]')) r.replayButton = true;
       const gone = any('#player [data-pile="adversary.projects_done"]');
       if (gone) r.goneProject = /gone/.test(gone.textContent) && !/done/.test(gone.textContent) ? true : 'the gone projects read "' + gone.textContent + '"';
+      // 326's cleanup: the bar's five steps, the current one lit; no seat number in the player view; nothing shaded in
+      // the draft or keep; the panel says "Your move"; the turn's replay under the adversary's cards.
+      const steps = [...document.querySelectorAll('#phase-bar .phase')].map((e) => e.textContent);
+      r.fiveSteps = steps.join(' ') === 'Adversary Cards Actions Income Threats' ? (aic.view.phase && !document.querySelector('#phase-bar .phase.now') ? 'no step lit in ' + aic.view.phase.name : true) : 'the phase bar reads ' + steps.join(' · ');
+      const seatNo = /\\bseat \\d/i.exec(document.getElementById('player').innerText);
+      r.noSeatNumbers = seatNo ? 'the player view prints "' + seatNo[0] + '"' : true;
+      if (/^cards\\.(tier|draft|keep)$/.test(aic.view.phase?.name ?? '')) r.draftUnshaded = any('#p-seat .pcard.blocked') ? 'a card is shaded in ' + aic.view.phase.name : true;
+      if (any('#p-act .pa-head')) r.yourMove = /Your move|Done for this phase|Waiting|Game over/.test(document.querySelector('#p-act .pa-head').textContent) ? true : 'the panel reads "' + document.querySelector('#p-act .pa-head').textContent.trim().slice(0, 40) + '"';
+      if (any('#p-turn') && document.querySelector('#pipeline .prow')) r.replayWithCards = document.querySelector('#pipeline #p-turn + .prow') ? true : 'the turn replay is not with the adversary cards';
       // 323's ruling: solo shows level 1's numbers resolved, never a level.
       if (v.countries.length === 1) {
         const lv = /from level|\\blevels? \\d|\\bd[0-4]\\b/i.exec(document.getElementById('player').innerText);
@@ -335,7 +344,8 @@ try {
     writeFileSync(join(out, 'record.json'), record.endsWith('\n') ? record : `${record}\n`);
     const RULES = ['tippedAmbassador', 'liberateOffered', 'liberateBill', 'liberateBlocked', 'nodePowers', 'nodePowerUsed', 'cardBeat', 'incomeBeat', 'phaseBoard', 'pastRows',
       'strikeAhead', 'redeployAhead', 'troops', 'garrison', 'researchRow', 'researchK', 'roundCap', 'deckLeft', 'discord', 'unity',
-      'printedCards', 'shadedWhy', 'reminder', 'undo', 'replayButton', 'goneProject', ...(solo ? ['bakedNumbers'] : [])];
+      'printedCards', 'shadedWhy', 'reminder', 'undo', 'replayButton', 'goneProject', 'fiveSteps', 'noSeatNumbers', 'draftUnshaded',
+      'yourMove', 'replayWithCards', ...(solo ? ['bakedNumbers'] : [])];
     const failures = [...[...issues].map(([x, r]) => `round ${r}: ${x}`), ...wrong.values()];
     if (!end.outcome) failures.push('no outcome');
     // 320: the bar for Matt's playthrough: a turn step shown before the board after it shows that step's rows.

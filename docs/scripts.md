@@ -35,7 +35,7 @@ what it prints.
 - `configs/no_liberate.py`, `no_tier2.py`: the baseline less every `liberate` card, and with no tier-2 deck (opening
   tier-2 keeps from tier 1), in `experiments/configs/`; `three_seat.py`: `configs/three_seat.json`, the baseline at
   3 countries and difficulty 0 (the viewer's 3-seat game); `solo.py`: `configs/solo.json`, one-player mode (one
-  country, d1's numbers, draw 7 take 4, its "(level 1+)" texts and K resolved by a content overlay; docstring).
+  country, d1's numbers, the 4-card hand built is the draft (`cards.no_pass`), its "(level 1+)" texts and K resolved by a content overlay; docstring).
 - `cards/loop_smoke.py [DIR...] [--run] [--out DIR] [--exe EXE]` (flags: docstring): the loop smoke (no DIR: runs
   `use.json`): timeouts, ends, most plays of one card a game; exits 1 on a timeout or `--max-plays`.
 - `cards/counter_names.py DIR... [--all]` (DIR, games file or `FILE=SPEC`): counter keys the read scripts, web scripts and `crates/aic-sim` (agents

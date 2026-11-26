@@ -177,7 +177,7 @@
       "module": "cards",
       "variant": "draft",
       "params": {
-        "deal": 7,
+        "deal": 4,
         "opening_deal": 2,
         "opening_deal_tier2": 2,
         "keep_tier1": 1,
@@ -186,8 +186,7 @@
         "science_every": 2,
         "industry_every": 3,
         "discount_floor": 0,
-        "no_pass": 0,
-        "take": 4
+        "no_pass": 1
       },
       "cards": [
         "field_grant",

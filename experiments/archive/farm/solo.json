@@ -1,6 +1,6 @@
 {
   "name": "solo",
-  "note": "323: one-player mode's judge read: configs/solo.json (one country, d1's numbers built in, draw 7 take 4) on each board. Soft numbers to report, not to dial. Farm a seed range with `aic-sim farm solo --seed F --games N --out FILE`.",
+  "note": "323: one-player mode's judge read: configs/solo.json (one country, d1's numbers built in; 326: the 4-card hand built is the draft) on each board. Soft numbers to report, not to dial. Farm a seed range with `aic-sim farm solo --seed F --games N --out FILE`.",
   "configs": [
     "configs/solo.json"
   ],

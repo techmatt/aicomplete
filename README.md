@@ -80,6 +80,8 @@ cargo test-slow                               # the slow lane alone: ~29 s
 cargo test --workspace                        # the fast lane with cargo's runner, a binary at a time: ~6.5 s
 python -m unittest scripts/bench/test_read_tools.py scripts/test_input_checks.py scripts/bench/test_trace_lib.py
                                               # the read scripts' tests (when: docs/scripts.md); the slow lane runs them too
+                                              # (its `python_read_tools`: rerun this line to see the case; a doc
+                                              # quoting "`param` N" off the baseline is docs_params.py's)
 cargo build --release -p aic-sim              # ~30 s after an aic-sim edit, ~45 s after aic-core, ~1 min cold
 ./target/release/aic-sim docs                 # regenerate the generated docs (--check: report only)
 wasm-pack build crates/aic-wasm --target web  # ~20 s cold, ~9 s warm -> crates/aic-wasm/pkg (git-ignored)

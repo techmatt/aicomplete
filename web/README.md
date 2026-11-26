@@ -25,8 +25,9 @@ npm run build                  # wasm + typecheck + static site in web/dist/ (92
 
 ## Player view
 
-*Player view* / *Debug view* (V) switches, remembered (`aic.view` in `localStorage`). **A fresh browser** (no saved
-view or session) opens the player view on `solo.json` under the **new-game screen** (*New game…*): the tutorial first,
+*Player view* / *Debug view* (V) switches, for this page only: **every load opens the player view** (Matt, Nov 25;
+scripts start elsewhere with `aic.startView` in `localStorage`). **A fresh browser** (no saved
+session) opens it on `solo.json` under the **new-game screen** (*New game…*): the tutorial first,
 then solo on any board, then any config. The player view (`src/player/`) hides the timeline, log, raw data and random
 play, and the header's form (the debug view's).
 
@@ -37,17 +38,20 @@ play, and the header's form (the debug view's).
 - **Scenes:** the dev server downsizes each printed card's scene from `art-originals/` (`sceneArt` in
   `vite.config.ts`, `scripts/scene-thumb.py`, Pillow; cached in `out/scene-cache/`); a built site prints frames alone.
 
-- **Layout (324):** the map in the middle. Left, always shown: the adversary's cards (the next face up, with its
-  notices), projects (the leftmost whole), research row, then threats, Alignment and loss clocks. Right, *What … can
-  do now*: the shown seat's legal actions only, *Done (pass)* at its foot; a power or Action it can't use is listed
-  shaded, why on hover (`data-why`), and those unused this round are named atop it. The foot, a fixed height (the
-  map keeps its share at 1366×768): a row per seat (the board's name opens its whole face), then the hand and
-  buildings printed (`web/card/`, shadow roots reused across renders). The shown seat: the one deciding, else the
-  one that just acted while it has a move in that phase, else the first to act.
-- **The draft** shows over the map, its cards printed as large as one row fits (*Show the map* folds it).
+- **Layout (324, 326):** the map in the middle, under the round's **five steps** (Adversary · Cards · Actions · Income
+  · Threats, the current lit; the engine's phases are the debug view's: `playerStep`, format.ts). Left, always shown:
+  the adversary's cards (the next face up, with its notices), the turn's replay under them, projects (the leftmost
+  whole), research row, then threats, Alignment and loss clocks. Right, *Your move*: the shown seat's legal actions
+  only, *Done (pass)* at its foot; a power or Action it can't use is listed shaded, why on hover (`data-why`), and
+  those unused this round are named atop it. The foot, a fixed height (the map keeps its share at 1366×768): a row
+  per seat (the board's name opens its whole face), then the hand and buildings printed, shaded only on the seat's
+  own move in the action phase. The shown seat: `focusSeat`. **No seat numbers:** a seat is its board's name (solo's
+  "you": `seatNames`, format.ts).
+- **The draft** shows over the map and the right panel's width, *Done keeping* in its head, its cards printed as
+  large as one row fits, a caption only for what the face doesn't print (*Show the map* folds it to its head).
 - **Undo** (Ctrl+Z) only inside the action phase, back to its start, never past a draw from a deck (`undoRoom`,
   main.ts); the header's unlimited Undo is the debug view's.
-- ***Since your last move*** steps through the phases run, atop the left column, each adversary step named by its
+- ***Since your last move*** steps through the phases run, under the adversary's cards, each adversary step named by its
   beat; ***Replay the adversary's turn*** reopens the last one all round (D142). The map, tracks and rows show the
   board at the shown step's end (`turnView`, the engine's `apply_phases`); controls are the board now. ← → step it.
 - **New modules:** an action no component draws is a button under *Other*; card groups, piles and values fall to
@@ -61,18 +65,14 @@ play, and the header's form (the debug view's).
 ## Using it
 
 - **Play:** a config and a seed, then *New game*. Scripts (`cdp.mjs`'s `openPage`) open the debug view on
-  `baseline.json` (`aic.firstConfig`) unless `fresh: true`. One person plays every seat, in any order.
+  `baseline.json` (`aic.startView`, `aic.firstConfig`) unless `fresh: true`. One person plays every seat, in any order.
 - **Choices:** the question shows in the amber bar. A hex answer highlights its hexes (purple): click one; two
-  answers on one hex also get a button each.
-- **The board:** player pieces on a hex's upper row, the adversary's on the lower; the legend keys the troops'
-  links. Hover anything for details; hexes the shown step changed have an amber outline.
-- **Actions:** each seat panel offers that seat's legal actions. AI board tracks: solid spaces uncovered, dashed
-  under nodes, boxed the last uncovered.
+  answers on one hex also get a button each. Hexes the shown step changed have an amber outline.
 - **Timeline:** Ctrl+Z undoes. ⏮ ◀ ▶ ⏭, the slider, ← → Home End, Space to auto-play at 1x, 4x or 16x; **Page Up /
   Down** jump between round starts. Clicking a log entry jumps to its step; acting from an earlier step drops the
   later actions, after asking. The log folds by phase; hovering a phase outlines its hexes.
-- **The header** shows the engine and rules revision. The error bar flags a saved session whose config changed or
-  no longer loads (kept: `copy(aic.keptSession())`), or a record from another revision.
+- **The error bar** flags a saved session whose config changed or no longer loads (kept:
+  `copy(aic.keptSession())`), or a record from another revision.
 
 ## Game records
 
@@ -84,8 +84,8 @@ as a record with an optional note, to copy whole or up to the shown step, or tak
 
 ## Browser check
 
-After editing a script, `node --check` it before a long run: in-page code sits in template strings, where a stray
-backtick breaks the file (the fast lane's `node_scripts_parse` checks them all).
+After editing a script, `node --check` it before a long run (in-page code sits in template strings). Before/after
+shots of the solo cards and action phases: `node scripts/phase-shots.mjs --out DIR [--size WxH] [--config FILE]`.
 
 `npm run e2e [-- <record.json>]` (`scripts/e2e.mjs`; `AIC_URL`, `AIC_BROWSER`, `AIC_SHOTS` atop it) drives
 headless Edge or Chrome over the DevTools protocol against a served viewer (the dev server, or *Against a built

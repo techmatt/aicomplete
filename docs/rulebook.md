@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (fourth draft)
 
-*Rules revision 153. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 154. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -506,8 +506,7 @@ drafts and keeps like every round.
 1. **Build a hand.** Each player takes the top card of the tier-1 or the tier-2 deck, your choice each time, one at a
    time until they have 4. Each arrives face up, so you see it before choosing the next. (This is not a draw.)
 2. **Draft.** Take one card from the hand in front of you and pass the rest on, until the hands are gone. Always
-   pass to the next player in player order. Solo, you build a hand of 7 and take 4 of them, discarding the rest
-   (§22).
+   pass to the next player in player order. Solo, the hand of 4 you built is your draft: nothing passes (§22).
 3. **Keep.** Pay **1 insight** for each tier-1 card and **3 insight** for each tier-2 card you keep (2 with the keep
    upgrade, and less with Science discounts, below). Credits can't pay for a keep: when your insight runs out, you
    keep no more. Discard the cards you don't keep.
@@ -1234,8 +1233,8 @@ doubles the row's Garrison icons: each one lands 2 troops a country, not 1.
 - **Solo** is the learning mode: one board, one country (its 16 hexes; free its two corrupted cities to win), and
   level 1's numbers built in (a city corrupts at 3 agents, research K 3, the 10-round event deck): there is no level
   to choose, and solo's components print those numbers alone.
-- **Solo draft (draw and keep):** you build a hand of 7 cards, choosing each one's tier as usual, then take 4 of them
-  one at a time and discard the other 3; nothing passes. Keep those you want, paying as usual (§7). "Another player"
+- **Solo draft:** you build a hand of 4 cards, choosing each one's tier as usual, and those 4 are your draft; nothing
+  passes. Keep those you want, paying as usual (§7). "Another player"
   on a card means you: an Effect that fires when another player plays a card fires on your own plays, and a shared
   gain is paid once.
 

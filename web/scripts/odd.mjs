@@ -352,7 +352,7 @@ try {
   // 285: the player view's "Since your last move" names the adversary's lines (no Infiltrate note before), and a
   // step that moved pieces (a -1 here, +1 there nets to 0) read "bookkeeping only (tracks)".
   await scenario('player-view-turn-panel-names-lines', async () => {
-    await page.js("(localStorage.setItem('aic.view', 'player'), true)");
+    await page.js("(localStorage.setItem('aic.startView', 'player'), true)");
     await load();
     let infiltrate = '', panels = 0, netZero = 0;
     for (let i = 0; i < 1500; i++) {

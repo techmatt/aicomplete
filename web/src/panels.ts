@@ -6,7 +6,7 @@
 // pile falls back to a generic chip so nothing goes unshown.
 
 import { content, param, type CardView, type Config, type PileView, type Value, type View } from './engine';
-import { ADVERSARY_COLOR, NEUTRAL_COLOR, countryName, escapeHtml, extraCosts, hexKey, KINDS, strong } from './format';
+import { ADVERSARY_COLOR, NEUTRAL_COLOR, countryName, escapeHtml, extraCosts, hexKey, inPlayerView, KINDS, seatWord, strong } from './format';
 
 const esc = escapeHtml;
 
@@ -319,7 +319,7 @@ function sourceBadge(v: View, id: string): { badge: string; hexes: string } {
   const none = s.seats.length === 0;
   // 145: the r54+ rule (threats.md, *Near*): a node or an ambassador on or next to a location token.
   const says = none ? 'no one near it: no one can counter'
-    : refused.length ? `seat ${refused.join(', ')}: not near it, can't counter` : '';
+    : refused.length ? `${refused.map(seatWord).join(', ')}: not near it, can't counter` : '';
   const n = s.hexes.length;
   const title = `${s.source.replace(/\+/g, ', ')}: ${n} location token${n === 1 ? '' : 's'} on the map. You are near it (you may pay toward it; its harm hits you) with a node or ambassador on or next to a token.`;
   return {
@@ -357,7 +357,7 @@ function megaprojectHtml(v: View, c: View['countries'][number]): string {
   if (neutral) owners.push({ label: 'neutral', n: neutral.value, color: NEUTRAL_COLOR, key: neutral.key });
   for (const s of v.seats) {
     const x = findValue(c.values, `board.project.${s.index}`);
-    if (x) owners.push({ label: `seat ${s.index}`, n: x.value, color: strong(v.countries[s.country]?.color ?? '#888888'), key: x.key });
+    if (x) owners.push({ label: seatWord(s.index), n: x.value, color: strong(v.countries[s.country]?.color ?? '#888888'), key: x.key });
   }
   const cells: string[] = [];
   for (const o of owners) for (let i = 0; i < o.n; i++) cells.push(`<span class="pc" data-color="${esc(o.label)}" style="background:${o.color}" title="${esc(o.label)}"></span>`);
@@ -397,7 +397,7 @@ export function countriesHtml(v: View): string {
       : `<div class="row"><span class="what">${esc(g.label)}</span>${g.cards.map((x) => cardChip(x, `country:${c.index}:${g.key}`)).join('')}</div>`).join('');
     const project = megaprojectHtml(v, c);
     return `<div class="country" data-country="${c.index}" style="--tint:${strong(c.color)};--soft:${c.color}">
-      <div class="chead"><b title="country ${c.index}">${esc(countryName(v, c.index))}</b>${seat ? ` seat ${seat.index}${ai ? ` · ${esc(ai)}` : ''}` : ''} ${counts}${flags}</div>
+      <div class="chead"><b title="country ${c.index}">${esc(countryName(v, c.index))}</b>${seat ? (inPlayerView() ? (ai ? ` ${esc(ai)}` : '') : ` seat ${seat.index}${ai ? ` · ${esc(ai)}` : ''}`) : ''} ${counts}${flags}</div>
       ${project}
       ${groups || (project ? '' : '<div class="none">no threat</div>')}</div>`;
   });
@@ -413,7 +413,7 @@ export function legendHtml(): string {
   // troop's guard (dark dots), an industrial zone's push (brown arrow).
   const link = (stroke: string, dash: string, w = 2) => `<svg width="1.6em" height="0.7em" viewBox="0 0 24 10" style="vertical-align:middle"><line x1="1" y1="5" x2="23" y2="5" stroke="${stroke}" stroke-width="${w}" stroke-dasharray="${dash}" stroke-linecap="round"/></svg>`;
   const links = `<span class="lg">${link('#b3261e', '5 3')} a troop's strike reach</span><span class="lg">${link('#2a0d3d', '0.5 4', 2.5)} a troop's guard (no Liberate there)</span><span class="lg">${link('#6d4c41', 'none', 1.5)} a factory's push to its city</span>`;
-  return `${t}<span class="lg">${source} a face-up threat's source</span>${links}<span class="lg"><span class="sw" style="background:${ADVERSARY_COLOR}"></span> adversary · seat color = its country's</span>`;
+  return `${t}<span class="lg">${source} a face-up threat's source</span>${links}<span class="lg"><span class="sw" style="background:${ADVERSARY_COLOR}"></span> adversary · a player's color = their country's</span>`;
 }
 
 // ---------- seat panels ----------

@@ -34,6 +34,10 @@ planner's, outside this repo.
   of numbers, not conditional text.
 - **Alone, "another player" means you** (Matt's ruling 7, r44): a gift is yours, a teammate trigger fires on your
   own plays, a shared gain lands once. Solo's other adjustments: [rules/board.md](rules/board.md#solo).
+- **Solo's draft hand is 4 cards** (Matt, Nov 25, 326), the locked 4: you build 4 (each card's tier chosen), nothing
+  passes, then keep as usual. 323's build 7 / take 4 is withdrawn.
+- **The player view is the default** (Matt, Nov 25, 326): *Play game* and every browser load open it; the debug view
+  is one button away, and a saved debug setting never wins.
 
 ## Simulation and sim players
 

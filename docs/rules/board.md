@@ -70,9 +70,8 @@ adjustment lives in that config:
   deck, compute income 3, no setup agents on free cities, Botnets spread. No level is offered. Texts print the
   resolved line: the config's content overlay drops "(level 1+)" (two event cards, the board's Botnets spread
   icon, Botnet Swarm) and prints the research row's K as 3; the viewer hides the level chip and prints "K 3".
-- **Draw and keep** (`cards.deal=7`, `cards.take=4`): a 2-player seat sees its own 4 cards and the 3 its partner
-  passes it (the partner's first pick never comes round) and drafts 4; solo builds 7 and takes 4, nothing passed,
-  the 3 left discarded. Keeps cost as ever.
+- **The draft hand is 4 cards** (Matt, Nov 25; `cards.deal=4`, `cards.no_pass=1`): you build 4, choosing each one's
+  tier, and those 4 are your draft, nothing passed; keeps cost as ever.
 - **Kept as the 1-player rules were** (ruling 7, r44): "another player" means you (a gift is yours, a teammate
   trigger fires on your plays, a shared gain lands once, the Researcher's capstone insight comes to you); tipping is
   per player (Unity 3, Discord 4); projects, compute and K are a country's (× 1); every threat is dealt in your

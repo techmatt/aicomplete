@@ -132,7 +132,8 @@ and lands one more agent on its spot.
 ## Cards and the draft
 
 At the start you get two tier-1 and two tier-2 cards, free. Every round, each player builds a hand of four, one card at
-a time from either deck. Then draft: take one, pass the rest to the next player, until they're gone. Keep what you
+a time from either deck. Then draft: take one, pass the rest to the next player, until they're gone (solo: your four
+are your draft, nothing passes). Keep what you
 drafted for insight: 1 for a tier-1 card, 3 for a tier-2.
 
 **Programs** stay in front of you and are where lasting income comes from. **Buildings** go in your slots: an Action

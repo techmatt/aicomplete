@@ -520,22 +520,7 @@ fn place_building(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &Car
     Ok(())
 }
 
-pub(super) fn draft_pick(g: &mut GameState, cx: &mut Cx, s: usize, card: &Key, take: i64) -> Res {
-    if take > 0 {
-        // 323 (solo's draw-and-keep, `cards.take`): picks from the seat's own hand, none passed; once it has
-        // taken `take` (or the hand is gone) the rest are discarded and the seat is done.
-        cx.move_card(g, card, &packet(s), &drafted(s), false)?;
-        if g.pile(&drafted(s)).len() as i64 >= take || g.pile(&packet(s)).is_empty() {
-            for id in g.pile(&packet(s)).to_vec() {
-                discard(g, cx, &id, &packet(s));
-            }
-            g.seats[s].passed = true;
-        }
-        if (0..g.seats.len()).all(|p| g.pile(&packet(p)).is_empty()) {
-            pass_all(g);
-        }
-        return Ok(());
-    }
+pub(super) fn draft_pick(g: &mut GameState, cx: &mut Cx, s: usize, card: &Key) -> Res {
     if g.var(&picked_key(s)) > 0 {
         return Err("already took a card from this hand".into());
     }

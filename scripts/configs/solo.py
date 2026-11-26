@@ -7,8 +7,8 @@ What it changes from the baseline (each solo adjustment is listed in docs/rules/
 - `countries` 1, `adversary.difficulty` 1: d1's numbers, resolved by the engine (city 3, K 3, the 10-round deck).
 - `ai.boards` [0]: the Builder, the suggested first board; the board is the player's choice (the viewer's Board
   select beside New game, `--set ai.boards=1` or `2` in the sim).
-- The draft is a draw-and-keep: `cards.deal` 7 (the cards a seat sees over a 2-player draft round: its own 4 and
-  the 3 its partner passes it) and `cards.take` 4 (the 4 a seat drafts), nothing passed.
+- The draft hand is 4 cards, as every game's (Matt, Nov 25, 326): `cards.no_pass` 1, the hand you build (each card's
+  tier chosen) is your draft, nothing passed; then the keep as usual.
 - Every "(level 1+)" a content text prints is dropped (a content overlay on the text alone): solo shows its
   resolved rule, never a level condition. A "(level N+)" above 1 would print a line solo never plays: refused.
 """
@@ -35,9 +35,8 @@ assert 'difficulty' in adv, 'baseline has no adversary.difficulty'
 adv['difficulty'] = LEVEL
 module('ai')['boards'] = [0]
 cards = module('cards')
-assert 'take' in cards and 'deal' in cards, 'baseline has no cards.take or cards.deal'
-cards['deal'] = 7
-cards['take'] = 4
+assert 'no_pass' in cards and cards.get('deal') == 4, 'baseline has no cards.no_pass, or its draft hand is not 4'
+cards['no_pass'] = 1
 
 # Content texts that print a level condition: the resolved line, as solo plays it.
 MARK = re.compile(r' ?\(level (\d)\+\)')

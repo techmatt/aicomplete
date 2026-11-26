@@ -138,9 +138,9 @@ function browserPath() {
 /** 325: a fresh browser opens the player view on solo.json under the new-game screen (Matt, Nov 25). The scripts
  *  written before keep their old start, the debug view on baseline.json, by setting both before the page loads (and
  *  again after a `localStorage.clear()` and reload), unless the page already holds a choice. `fresh: true` opens the
- *  page as a new player's browser does. */
+ *  page as a new player's browser does. 326: the view is `aic.startView` (the toggle is no longer remembered). */
 const OLD_DEFAULTS = `try {
-  if (localStorage.getItem('aic.view') === null) localStorage.setItem('aic.view', 'debug');
+  if (localStorage.getItem('aic.startView') === null) localStorage.setItem('aic.startView', 'debug');
   if (localStorage.getItem('aic.firstConfig') === null) localStorage.setItem('aic.firstConfig', 'baseline.json');
 } catch {}`;
 

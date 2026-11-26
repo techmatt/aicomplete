@@ -45,7 +45,7 @@ export interface TutorialHost {
 const count = (v: View, i: number, kind: string) => v.hexes[i].tokens.find((t) => t.kind === kind)?.count ?? 0;
 const val = (v: View, k: string) => v.seats[0]?.values.find((x) => x.key === k)?.value ?? 0;
 const phase = (v: View) => v.phase?.name ?? '';
-/** The cards phases before the action phase: build (tier), take (draft), keep. */
+/** The cards phases before the action phase: build (tier), draft (none in solo since 326), keep. */
 const drafting = (v: View) => /^cards\.(tier|draft|keep)$/.test(phase(v));
 const acting = (v: View) => /board\.act/.test(phase(v)) && !v.outcome;
 const corrupted = (v: View) => v.hexes.filter((h) => count(v, h.index, 'cube:adversary') > 0);
@@ -127,14 +127,12 @@ const STEPS: Step[] = [
   {
     id: 'round',
     title: 'A round, in order',
-    body: () => `${list([
-      '<b>Sway.</b> Each Fallout token on the map adds a Discord.',
-      "<b>The adversary's turn</b>, two beats: its <b>Card</b> beat, then its <b>Income</b> beat.",
-      '<b>Cards.</b> Build a hand, take, keep.',
+    body: () => `<p>Five steps, the bar above the map lighting the one under way:</p>${list([
+      "<b>Adversary.</b> Each Fallout token on the map adds a Discord (Sway); then the adversary's turn, two beats: its <b>Card</b> beat, then its <b>Income</b> beat.",
+      '<b>Cards.</b> Build a hand, then keep.',
       '<b>Actions.</b> In any order, until you pass.',
-      '<b>Production.</b> Your factories, cities, stations and income pay.',
-      '<b>Threats.</b> Every threat nobody paid off takes effect.',
-      '<b>Cleanup.</b> Stand your ambassadors back up.',
+      '<b>Income.</b> Your factories, cities, stations and income pay.',
+      '<b>Threats.</b> Every threat nobody paid off takes effect; then cleanup stands your ambassadors back up.',
     ])}<p>Notice the adversary acts before you do, and its next card is already face up: you always see its next move
       coming. Round 1's adversary turn has run already.</p>`,
     at: () => ['#phase-bar'],
@@ -164,36 +162,25 @@ const STEPS: Step[] = [
   {
     id: 'build',
     title: 'Cards: build your hand',
-    body: () => {
-      const [deal, take] = [param('cards', 'deal'), param('cards', 'take')];
-      return `<p>Each round you build a hand of <b>${deal ?? 'your'} cards</b>, one at a time, from either deck: a tier-1
+    // 326 (Matt, Nov 25): solo's draft hand is 4 cards, the hand you build: nothing is taken from it or passed.
+    body: () => `<p>Each round you build a hand of <b>${param('cards', 'deal') ?? 'your'} cards</b>, one at a time, from either deck: a tier-1
         card costs ${param('cards', 'keep_tier1') ?? 'less'} insight to keep, a tier-2 card ${param('cards', 'keep_tier2') ?? 'more'} and is stronger.
-        Then you take ${take ?? 'some'} of them${deal && take ? ` and the other ${deal - take} are discarded` : ''}.</p><p>Pick a deck for each card now.</p>`;
-    },
+        Each card arrives face up, so you see it before choosing the next.</p><p>Pick a deck for each card now.</p>`,
     at: () => ['#p-draft .ptiers'],
     when: (v) => phase(v) === 'cards.tier',
     wait: 'the cards phase',
     done: (v) => phase(v) !== 'cards.tier',
   },
   {
-    id: 'take',
-    title: 'Take your cards',
-    body: (v) => `<p>Take ${param('cards', 'take') ?? 'your cards'}${param('cards', 'deal') ? ` of your ${param('cards', 'deal')}` : ''}, one at a time. <b>Programs</b> stay in front of you and are where lasting income comes
-      from. <b>Buildings</b> go in your slots (the Builder has ${val(v, 'cards.slots') || 'five'}): an Action once a round, or an Effect that pays when its
-      trigger happens. <b>Events</b> are used once. Every card shows tags: they unlock other cards and pay for your
-      board's sacrifice powers. Hover a card to read it.</p>`,
-    at: () => ['#p-draft'],
-    when: (v) => phase(v) === 'cards.draft',
-    wait: 'the take',
-    done: (v) => phase(v) !== 'cards.draft' && phase(v) !== 'cards.tier',
-  },
-  {
     id: 'keep',
     title: 'Keep what you can pay for',
-    body: (v) => `<p>Keep what you took for <b>insight</b>: ${param('cards', 'keep_tier1') ?? 'less'} for a tier-1 card, ${param('cards', 'keep_tier2') ?? 'more'} for a tier-2 (each card shows its price). You have
-      <b>${val(v, 'resource.insight')}</b> insight, and what you don't spend is gone. Keep the cards you want, then
-      <i>Done keeping</i>.</p>`,
-    at: () => ['#p-draft', '#p-act .pa-foot'],
+    body: (v) => `<p>Keep what you built for <b>insight</b>: ${param('cards', 'keep_tier1') ?? 'less'} for a tier-1 card, ${param('cards', 'keep_tier2') ?? 'more'} for a tier-2 (each Keep button shows its price). You have
+      <b>${val(v, 'resource.insight')}</b> insight, and what you don't spend is gone; the cards you don't keep are discarded.</p>
+      <p><b>Programs</b> stay in front of you and are where lasting income comes from. <b>Buildings</b> go in your slots
+      (the Builder has ${val(v, 'cards.slots') || 'five'}): an Action once a round, or an Effect that pays when its trigger happens. <b>Events</b> are
+      used once. Every card shows tags: they unlock other cards and pay for your board's sacrifice powers. Hover a card
+      to read it. Keep the cards you want, then <i>Done keeping</i>.</p>`,
+    at: () => ['#p-draft', '#p-draft .pass'],
     when: (v) => phase(v) === 'cards.keep',
     wait: 'the keep',
     done: (v) => !drafting(v),
@@ -278,7 +265,7 @@ const STEPS: Step[] = [
   {
     id: 'cards2',
     title: 'Cards again',
-    body: () => `<p>Build, take and keep, as in round 1. Next you liberate the city.</p>`,
+    body: () => `<p>Build and keep, as in round 1. Next you liberate the city.</p>`,
     at: () => ['#p-draft'],
     when: (v) => v.round > 1 && drafting(v),
     wait: "round 2's cards",

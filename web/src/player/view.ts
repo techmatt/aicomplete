@@ -6,7 +6,7 @@
 // module shows with no new UI work. No rules live here.
 
 import { type Action, type CardView, type Config, type Snapshot, type View, param, phaseViews, view as engineView } from '../engine';
-import { actionLabel, actionRule, amount, contentIds, countryName, escapeHtml as esc, hexKey, hexesIn, isHex, strong, tokenName, type LabelContext } from '../format';
+import { actionLabel, actionRule, amount, contentIds, countryName, escapeHtml as esc, hexKey, hexesIn, isHex, PLAYER_STEPS, playerStep, seatNames, seatText, strong, tokenName, type LabelContext } from '../format';
 import { phaseGroups } from '../log';
 import { cardChip, seatValuesHtml } from '../panels';
 import type { Frame } from '../session';
@@ -38,6 +38,12 @@ export interface PlayerUi {
   turn: HTMLElement;
   draft: HTMLElement;
   countries: HTMLElement;
+  /** 326: the adversary's row: the turn's replay sits under its cards. */
+  pipeline: HTMLElement;
+  /** 326: the player view's root: `wide` while the map and draft take the right panel's width. */
+  root: HTMLElement;
+  /** The adversary column's body (the turn's replay goes back above it when there is no card row). */
+  adv: HTMLElement;
   prompt: HTMLElement;
   boardBody: HTMLElement;
 }
@@ -76,7 +82,11 @@ function btn(a: Action, label: string, cls = '', title = ''): string {
   return `<button type="button" class="pact a-${esc(a.type)} ${cls}" data-action="${esc(JSON.stringify(a))}"${title ? ` title="${esc(title)}"` : ''}>${esc(label)}</button>`;
 }
 
-const seatName = (v: View, s: number) => `Seat ${s}${v.seats[s]?.board ? ` (${v.seats[s].board!.name})` : ''}`;
+/** 326 (Matt, Nov 25): no "Seat 0" in the player view: a seat is its board's name, solo's "you". */
+const seatName = (v: View, s: number) => seatNames(v)[s] ?? '';
+const solo = (v: View) => v.seats.length === 1;
+/** Engine words naming a seat ("seat 0", "Seat 1's") as the player view names it (solo's in grammar: "your node"). */
+const seatsInText = seatText;
 const group = (v: View, s: number, key: string) => v.seats[s]?.cards.find((g) => g.key === key);
 const val = (v: View, s: number, k: string) => v.seats[s]?.values.find((x) => x.key === k);
 /** "[building, tier 1, industry, +1 insight] rules" → the bracket and the rules. */
@@ -177,7 +187,7 @@ function seatsHtml(v: View, legal: Action[], focus: number): string {
     const mine = s.index === focus;
     const board = s.board ? `<button type="button" class="board-name" data-board-open="${s.index}" data-board-seat="${s.index}" title="the whole board: tracks, powers and what each space gives">${esc(s.board.name)} ▸</button>` : '';
     return `<div class="pseat${mine ? ' focus' : ''}" data-seat-focus="${s.index}" style="--tint:${strong(c?.color ?? '#cccccc')}"${v.seats.length > 1 ? ' title="show this seat"' : ''}>
-      <div class="shead"><span class="swatch"></span><b>Seat ${s.index}</b> ${board} <small>${esc(countryName(v, s.country))}</small>${st.text ? `<span class="pst ${st.cls}">${st.text}</span>` : ''}</div>
+      <div class="shead"><span class="swatch"></span>${board || `<b>${esc(seatName(v, s.index))}</b>`} <small>${esc(countryName(v, s.country))}</small>${st.text ? `<span class="pst ${st.cls}">${st.text}</span>` : ''}</div>
       <div class="sline">${resHtml(v, s.index)}${extra}</div>
       ${mine ? `<div class="sline tracks">${tracksHtml(v, s.index)}</div>` : ''}</div>`;
   }).join('');
@@ -193,16 +203,17 @@ function reason(v: View, s: number, c: CardView): string {
   }
   if (st === 'used') return 'used this round';
   // Ready by its own terms, but the seat has passed this phase, or it isn't this phase's to use (a hand card in the draft).
-  if (st.startsWith('ready') && v.seats[s]?.passed && v.phase?.kind === 'decision') return 'not now: this seat has passed (Done) for this phase';
+  if (st.startsWith('ready') && v.seats[s]?.passed && v.phase?.kind === 'decision') return 'not now: passed (Done) for this phase';
   if (st.startsWith('ready')) return 'not now: it is used in the action phase';
   if (st === 'waiting on the question') return 'answer the question first';
   return st.replace(/^unaffordable: /, "can't afford it: ").replace(/^needs tags: /, 'needs tags on your cards: ');
 }
 
-/** A printed card in the strip (or a compact tile for a card with no printed face), shaded when it can't be used. */
-function cardSlot(s: number, c: CardView, where: string, ok: boolean, note: string, badge = ''): string {
+/** A printed card in the strip (or a compact tile for a card with no printed face): `ok` usable now (ringed), `blocked`
+ *  shaded with the reason on hover (326: only on your move, never in the draft or keep), '' neither. */
+function cardSlot(s: number, c: CardView, where: string, state: 'ok' | 'blocked' | '', note: string, badge = ''): string {
   const face = printable(c.id) ? `<div class="pslot" data-print="${esc(c.id)}"></div>` : tile(s, c, where);
-  return `<div class="pcard${ok ? ' ok' : ' blocked'}" data-card="${esc(c.id)}" data-where="seat:${s}:${where}"${printable(c.id) ? ` data-printed="${esc(c.id)}"` : ''}${note ? ` data-why="${esc(note)}"` : ''}>${face}${badge ? `<span class="pbadge">${esc(badge)}</span>` : ''}</div>`;
+  return `<div class="pcard${state ? ` ${state}` : ''}" data-card="${esc(c.id)}" data-where="seat:${s}:${where}"${printable(c.id) ? ` data-printed="${esc(c.id)}"` : ''}${note ? ` data-why="${esc(note)}"` : ''}>${face}${badge ? `<span class="pbadge">${esc(badge)}</span>` : ''}</div>`;
 }
 
 /** A compact tile for a card with no printed face. */
@@ -213,14 +224,19 @@ function tile(s: number, c: CardView, where: string): string {
     <div class="pt-text">${esc(rules)}</div></div>`;
 }
 
+/** 326 (Matt, Nov 25): whether the strip marks what can't be used: only on the seat's own move in the action phase
+ *  (never in the draft or keep, nor while a question is open). */
+const yourMove = (v: View, mine: Action[]) => actionPhase(v) && !v.outcome && !v.choice && mine.length > 0;
+
 function handStrip(v: View, s: number, mine: Action[]): string {
   const hand = group(v, s, 'cards.hand');
   if (!hand) return '';
+  const marking = yourMove(v, mine);
   const cards = hand.cards.map((c) => {
+    if (!marking) return cardSlot(s, c, 'cards.hand', '', '');
     const plays = mine.some((a) => a.type === 'play' && a.card === c.id);
-    // 289 (D123): while a question is open the hand shows no play marks.
-    const note = v.choice ? '' : plays ? (c.status.includes('no target') ? `playable, but ${c.status.replace(/^ready · /, '')}` : '') : reason(v, s, c);
-    return cardSlot(s, c, 'cards.hand', plays || !!v.choice, note);
+    const note = plays ? (c.status.includes('no target') ? `playable, but ${c.status.replace(/^ready · /, '')}` : '') : reason(v, s, c);
+    return cardSlot(s, c, 'cards.hand', plays ? 'ok' : 'blocked', note);
   });
   return `<div class="pcards hand"><h4>${esc(hand.label)} <small>${hand.cards.length}</small></h4><div class="prow-cards">${cards.join('') || '<span class="empty">no cards in hand</span>'}</div></div>`;
 }
@@ -229,11 +245,14 @@ function builtStrip(v: View, s: number, mine: Action[]): string {
   const out: string[] = [];
   const built = group(v, s, 'cards.built');
   if (built) {
+    const marking = yourMove(v, mine);
     const cards = built.cards.map((c) => {
       const uses = mine.some((a) => a.type === 'use' && a.card === c.id);
       const hasAction = !['built', 'stacked'].includes(c.status);
       const badge = c.status === 'used' ? 'Action used' : uses ? 'Action ready' : '';
-      return cardSlot(s, c, 'cards.built', !hasAction || uses || c.status === 'used', hasAction && !uses && c.status !== 'used' ? `its Action: ${reason(v, s, c)}` : '', badge);
+      // 326: shaded only when its Action can't be used on your move; a building with an Effect alone never is.
+      const blocked = marking && hasAction && !uses && c.status !== 'used';
+      return cardSlot(s, c, 'cards.built', uses ? 'ok' : blocked ? 'blocked' : '', blocked ? `its Action: ${reason(v, s, c)}` : '', badge);
     });
     out.push(`<div class="pcards built"><h4>${esc(built.label)}</h4><div class="prow-cards">${cards.join('') || '<span class="empty">no buildings</span>'}</div></div>`);
   }
@@ -242,7 +261,7 @@ function builtStrip(v: View, s: number, mine: Action[]): string {
   const drawn = new Set(['cards.hand', 'cards.built', 'cards.packet', 'cards.drafted']);
   for (const g of v.seats[s].cards.filter((x) => !drawn.has(x.key) && x.cards.length)) {
     out.push(g.cards.every((c) => printable(c.id))
-      ? `<div class="pcards other"><h4>${esc(g.label)} <small>${g.cards.length}</small></h4><div class="prow-cards">${g.cards.map((c) => cardSlot(s, c, g.key, true, '')).join('')}</div></div>`
+      ? `<div class="pcards other"><h4>${esc(g.label)} <small>${g.cards.length}</small></h4><div class="prow-cards">${g.cards.map((c) => cardSlot(s, c, g.key, '', '')).join('')}</div></div>`
       : `<div class="pcards chips"><h4>${esc(g.label)}</h4><div>${g.cards.map((c) => cardChip(c, `seat:${s}:${g.key}`)).join('')}</div></div>`);
   }
   return out.join('');
@@ -253,7 +272,7 @@ function boardHtml(v: View, s: number): string {
   const b = v.seats[s]?.board;
   if (!b) return '';
   const powers = b.cards.filter((c) => c.id.includes('.power.')).map((c) => `<li><b>${esc(c.name)}</b> <small>${esc(c.status)}</small><div>${esc(c.text ?? '')}</div></li>`).join('');
-  return `<div class="plain-board tone-ai"><div class="strip"><span>AI board</span><span>Seat ${s}</span></div><h3>${esc(b.name)}</h3>
+  return `<div class="plain-board tone-ai"><div class="strip"><span>AI board</span><span>${esc(countryName(v, v.seats[s].country))}</span></div><h3>${esc(b.name)}</h3>
     ${b.innate ? `<p class="innate"><b>${esc(b.innate.name)}:</b> ${esc(b.innate.text ?? '')}${b.tags?.length ? ` <small>${b.tags.map(esc).join(', ')} tag (printed)</small>` : ''}</p>` : ''}
     <div class="pb-values">${seatValuesHtml(v, s)}</div>
     ${powers ? `<h4>Powers</h4><ul class="pb-powers">${powers}</ul>` : ''}</div>`;
@@ -271,8 +290,9 @@ function unmetNeeds(v: View, s: number, c: CardView): string {
   return short.length ? `needs ${short.join(', ')}` : '';
 }
 
-/** The draft's layout: tier choice, the hand in front of the seat, then the drafted cards to keep, printed. */
-function draftHtml(v: View, ctx: PlayerCtx, s: number, mine: Action[]): string {
+/** The draft's layout: tier choice, the hand in front of the seat, then the drafted cards to keep, printed. 326:
+ *  `controls` (Done keeping and the like) sit in its head, as it takes the right panel's width. */
+function draftHtml(v: View, ctx: PlayerCtx, s: number, mine: Action[], controls = ''): string {
   const tiers = mine.filter((a) => a.type === 'tier');
   const packet = group(v, s, 'cards.packet');
   const drafted = group(v, s, 'cards.drafted');
@@ -291,23 +311,24 @@ function draftHtml(v: View, ctx: PlayerCtx, s: number, mine: Action[]): string {
   const row = (cards: CardView[], key: string, act: (c: CardView) => string, note: (c: CardView) => string) =>
     `<div class="pdraft${cards.length > 5 ? ' many' : ''}">${cards.map((c) => `<div class="pdcard" data-card="${esc(c.id)}" data-where="seat:${s}:${key}"${printable(c.id) ? ` data-printed="${esc(c.id)}"` : ''}>
       ${printable(c.id) ? `<div class="pslot" data-print="${esc(c.id)}"></div>` : tile(s, c, key)}
-      <div class="pd-note">${esc(note(c))}${unmetNeeds(v, s, c) ? ` · <span class="warn">${esc(unmetNeeds(v, s, c))}</span>` : ''}</div><div class="pd-acts">${act(c)}</div></div>`).join('')}</div>`;
+      <div class="pd-note">${[note(c) ? esc(note(c)) : '', unmetNeeds(v, s, c) ? `<span class="warn">${esc(unmetNeeds(v, s, c))}</span>` : ''].filter(Boolean).join(' · ')}</div><div class="pd-acts">${act(c)}</div></div>`).join('')}</div>`;
+  // 326 (Matt, Nov 25): a caption says only what the printed card doesn't (its cost is printed): the keep price where
+  // no Keep button says it, and an unmet need.
   if (packet?.cards.length) {
-    // 323: solo's draw-and-keep (`cards.take`) passes nothing: the hand's own label says how many to take.
-    const passing = !(Number(param(ctx.config, 'cards', 'take')) > 0);
-    parts.push(`<h4>${esc(packet.label)}${drafts.length && passing ? ' <small>take one; the rest pass on</small>' : ''}</h4>` + row(packet.cards, 'cards.packet',
+    // 326: the headings in words, not the engine's pile labels ("draft hand", "drafted (keep?)").
+    parts.push(`<h4>${solo(v) ? 'Your hand' : `${esc(seatName(v, s))}'s hand`} to draft from${drafts.length ? ' <small>take one; the rest pass on</small>' : ''}</h4>` + row(packet.cards, 'cards.packet',
       (c) => drafts.filter((a) => a.card === c.id).map((a) => btn(a, 'Draft', 'primary')).join(''),
-      (c) => {
-        const k = c.keep === undefined ? undefined : c.keep ? `${c.keep} insight` : 'free';
-        return `${c.cost ?? '?'} credits to play${k !== undefined ? ` · keep ${k}` : ''}`;
-      }));
+      (c) => c.keep === undefined ? '' : c.keep ? `keep ${c.keep} insight` : 'keep free'));
   }
   if (drafted?.cards.length) {
-    parts.push(`<h4>${esc(drafted.label)}</h4>` + row(drafted.cards, 'cards.drafted',
-      (c) => keeps.filter((a) => a.card === c.id).map((a) => btn(a, `Keep${c.keep ? ` (${c.keep} insight)` : ''}`, 'primary')).join(''),
-      (c) => `${c.cost ?? '?'} credits to play · ${c.status}`));
+    const insight = val(v, s, 'resource.insight')?.value ?? 0;
+    parts.push(`<h4>${keeps.length ? 'Keep which? <small>each at its price; the rest are discarded</small>' : 'Drafted so far'}</h4>` + row(drafted.cards, 'cards.drafted',
+      (c) => keeps.filter((a) => a.card === c.id).map((a) => btn(a, `Keep${c.keep ? ` (${c.keep} insight)` : ' (free)'}`, 'primary')).join(''),
+      (c) => keeps.some((a) => a.card === c.id) || !keeps.length && !ctx.legal.some((a) => a.seat === s) ? ''
+        : c.keep ? `keep ${c.keep} insight (you have ${insight})` : c.status));
   }
-  return `<div class="pdraft-head"><b>${esc(seatName(v, s))}: the draft</b><button type="button" class="pdraft-hide" data-draft-toggle="1">Show the map ▾</button></div>${parts.join('')}`;
+  const title = solo(v) ? 'Your draft' : `${seatName(v, s)}'s draft`;
+  return `<div class="pdraft-head"><b>${esc(title)}</b>${controls}<button type="button" class="pdraft-hide" data-draft-toggle="1">${draftFolded ? 'Show the draft ▴' : 'Show the map ▾'}</button></div>${parts.join('')}`;
 }
 
 /** The draft's printed cards at their largest. */
@@ -631,6 +652,16 @@ export function stepPhaseView(v: View, first?: string): View {
 /** 305: the adversary's two beats, by the turn's step labels (`shortPhase`): its card, then its income. */
 const beatOf = (label: string) => /^B (Card|threats|lines)\b/.test(label) ? "the adversary's Card beat" : /^B (Income|compute)\b/.test(label) ? "the adversary's Income beat" : '';
 
+/** 326 (Matt, Nov 25): a step named by the round's five steps (the engine's sub-steps are the debug view's): its step,
+ *  then the beat or part of it ("Adversary: Card beat", "Threats: cleanup"). */
+function stepName(s: Step): string {
+  const i = s.phase ? playerStep(s.phase) : -1;
+  if (i < 0) return s.label.replace(/^[A-G] /, '');
+  const beat = beatOf(s.label);
+  const part = beat ? beat.replace("the adversary's ", '') : /^A /.test(s.label) ? 'Sway' : /^G /.test(s.label) ? 'cleanup' : '';
+  return `${PLAYER_STEPS[i]}${part ? `: ${part}` : ''}`;
+}
+
 /** 321: whether the turn panel shows its steps (← → step it then). */
 export const turnOpen = () => !!turn?.open;
 
@@ -646,7 +677,7 @@ export function turnStep(d: number | 'close' | 'open') {
 
 /** A step in words: the rules' own notes, then the pieces it added or took off the map, then what else moved. */
 function summary(events: Frame['events']): string {
-  const notes = [...new Set(events.filter((e) => e.type === 'note').map((e) => contentIds(String(e.text))))];
+  const notes = [...new Set(events.filter((e) => e.type === 'note').map((e) => seatsInText(contentIds(String(e.text)))))];
   // 285: netted per hex, then added and taken off apart, so a move (-1 here, +1 there) reads as both.
   const perHex = new Map<string, number>();
   for (const e of events) {
@@ -667,13 +698,14 @@ function summary(events: Frame['events']): string {
     const full = tokenName(k);
     const at = full.indexOf(' (');
     const head = at < 0 ? full : full.slice(0, at);
-    const tail = at >= 0 && /^ \((seat \d+|adversary)\)$/.test(full.slice(at)) ? full.slice(at) : '';
+    // 326: a seat's piece is named by the player view's seat name ("(Builder)", "(yours)").
+    const tail = at >= 0 && k.includes(':') ? full.slice(full.lastIndexOf(' (')) : '';
     const plural = Math.abs(n) === 1 || /s$/.test(head) ? head : /[^aeiou]y$/.test(head) ? `${head.slice(0, -1)}ies` : `${head}s`;
     return `${plural}${tail}`;
   };
   const tipped = (k: string, up: number, down: number) => {
     const seat = k.slice('tipped:'.length);
-    const n = (x: number) => `${Math.abs(x)} ambassador${Math.abs(x) === 1 ? '' : 's'} (seat ${seat})`;
+    const n = (x: number) => `${Math.abs(x)} ambassador${Math.abs(x) === 1 ? '' : 's'} (${tokenName(`tipped:${seat}`).replace(/^.* \((.*)\)$/, '$1')})`;
     return [up ? `${n(up)} used` : '', down ? `${n(down)} ready again` : ''].filter(Boolean);
   };
   // 312 (D140): as many added as taken off is a move.
@@ -686,7 +718,7 @@ function summary(events: Frame['events']): string {
     events.some((e) => e.type === 'resource_changed') ? 'resources' : '',
     events.some((e) => e.type === 'card_moved') ? 'cards' : '',
   ].filter(Boolean).join(' and ');
-  return what ? `${what} changed (the seat rows show them)` : 'bookkeeping only (tracks)';
+  return what ? `${what} changed (your numbers under the map show them)` : 'bookkeeping only (tracks)';
 }
 
 /** `past`: whether the board drawn is the shown step's (`turnView`), not the board now. */
@@ -697,8 +729,7 @@ function turnHtml(past: boolean, replay: number | null): string {
   if (!turn.open) return `${again}<button type="button" class="pturn-open" data-turn="open">Replay what ran since your last move (${turn.steps.length} step${turn.steps.length === 1 ? '' : 's'})</button>`;
   const t = turn;
   const rows = t.steps.map((s, i) => {
-    const beat = beatOf(s.label);
-    const line = `${s.label}${beat ? ` (${beat.replace("the adversary's ", '')})` : ''}: ${summary(s.events)}`;
+    const line = `${stepName(s)}: ${summary(s.events)}`;
     return `<li class="${i === t.at ? 'now' : ''}" data-turn-step="${i}" title="${esc(line)}">${esc(line)}</li>`;
   }).join('');
   const cur = t.steps[t.at];
@@ -709,15 +740,14 @@ function turnHtml(past: boolean, replay: number | null): string {
     onMap ? `${onMap} piece change${onMap === 1 ? '' : 's'} on the map (outlined)` : '',
     rest ? `${rest} other change${rest === 1 ? '' : 's'} (resources, cards, tracks)` : '',
   ].filter(Boolean);
-  const beat = beatOf(cur.label);
   const mapNote = past
     ? `The map, tracks and adversary panel show the board as it stood at the end of this step; your hand, powers and buttons are the board now${t.replay ? '' : ' (▶ to the last step for the board after the turn)'}. Outlined: the hexes this step changed.`
     : 'The board after the turn; outlined: the hexes this step changed.';
   const title = t.replay ? "The adversary's turn (replay)" : 'Since your last move';
-  return `<div class="pturn-head"><b>${title}</b> <span>step ${t.at + 1} of ${t.steps.length}: ${esc(cur.label)}${beat ? ` · <b class="pbeat">${esc(beat)}</b>` : ''}</span>
+  return `<div class="pturn-head"><b>${title}</b> <span>step ${t.at + 1} of ${t.steps.length}: ${esc(stepName(cur))}</span>
       <button type="button" data-turn="-1" ${t.at === 0 ? 'disabled' : ''}>◀</button><button type="button" data-turn="1" ${t.at === t.steps.length - 1 ? 'disabled' : ''}>▶</button>
       <button type="button" data-turn="close">Done</button></div>
-    <div class="pturn-ev"><ul>${shownEvents.map((e) => `<li data-hexes="${hexesIn(e).map(hexKey).join(' ')}">${esc(contentIds(String(e.text)))}</li>`).join('')}${others.length ? `<li><small>${others.join('; ')}: the debug view's log (V) lists them</small></li>` : ''}</ul><small>${esc(mapNote)}</small></div>
+    <div class="pturn-ev"><ul>${shownEvents.map((e) => `<li data-hexes="${hexesIn(e).map(hexKey).join(' ')}">${esc(seatsInText(contentIds(String(e.text))))}</li>`).join('')}${others.length ? `<li><small>${others.join('; ')}: the debug view's log (V) lists them</small></li>` : ''}</ul><small>${esc(mapNote)}</small></div>
     <ol>${rows}</ol>`;
 }
 
@@ -753,10 +783,22 @@ export function renderPlayer(ui: PlayerUi, ctx: PlayerCtx) {
   const c = v.countries[s.country];
   const tint = strong(c?.color ?? '#cccccc');
 
-  // The draft, over the map.
-  const draft = draftHtml(v, ctx, focus, mine);
+  // What the shown seat can do now: its pass, and (one person playing every seat) the others still to act.
+  const st = seatStatus(v, ctx.legal, focus);
+  const pass = mine.filter((a) => a.type === 'pass').map((a) => btn(a, v.phase?.name === 'cards.keep' ? 'Done keeping (pass)' : 'Done (pass)', 'pass'));
+  // 321 (D143): no *Pass every seat* in the keep phase: a keep is each seat's own choice.
+  const passers = (v.phase?.waiting ?? []).filter((x) => ctx.legal.some((a) => a.seat === x && a.type === 'pass'));
+  const all = !v.outcome && !v.choice && passers.length > 1 && v.phase?.name !== 'cards.keep' ? `<button type="button" class="pass-all" data-pass-all="1">Pass for everyone still to act (${passers.map((x) => seatName(v, x)).join(', ')})</button>` : '';
+  const others = [...new Set(ctx.legal.filter((a) => a.seat !== focus).map((a) => a.seat))];
+  const switchTo = others.map((x) => `<button type="button" data-seat-focus="${x}">${esc(seatName(v, x))} to act ▸</button>`).join('');
+  const foot = `${pass.join('')}${all}${switchTo}`;
+
+  // The draft, over the map. 326 (Matt, Nov 25): it takes the right panel's width, its Done and seat buttons in its
+  // head, unless the seat has something else to do there (a module's own action outside the draft's).
+  const draft = draftHtml(v, ctx, focus, mine, foot ? `<span class="pdraft-acts">${foot}</span>` : '');
   if (draft && draftFrame !== ctx.frame && draftFrame?.snap.state.phase !== ctx.frame.snap.state.phase) draftFolded = false;
-  ui.draft.hidden = !draft || draftFolded;
+  ui.draft.hidden = !draft;
+  ui.draft.classList.toggle('folded', !!draft && draftFolded);
   ui.draft.innerHTML = draft;
   ui.draft.style.setProperty('--tint', tint);
   if (draft && draftFrame !== ctx.frame) ui.draft.scrollTop = 0;
@@ -769,28 +811,37 @@ export function renderPlayer(ui: PlayerUi, ctx: PlayerCtx) {
   placePrinted(ui.seat, stripScale(ui.seat));
   ui.boardBody.innerHTML = boardHtml(board, focus);
 
-  // What the shown seat can do now.
-  const st = seatStatus(v, ctx.legal, focus);
-  const pass = mine.filter((a) => a.type === 'pass').map((a) => btn(a, v.phase?.name === 'cards.keep' ? 'Done keeping (pass)' : 'Done (pass)', 'pass'));
-  // 321 (D143): no *Pass every seat* in the keep phase: a keep is each seat's own choice.
-  const passers = (v.phase?.waiting ?? []).filter((x) => ctx.legal.some((a) => a.seat === x && a.type === 'pass'));
-  const all = !v.outcome && !v.choice && passers.length > 1 && v.phase?.name !== 'cards.keep' ? `<button type="button" class="pass-all" data-pass-all="1">Pass every seat still to act (${passers.join(', ')})</button>` : '';
-  const others = [...new Set(ctx.legal.filter((a) => a.seat !== focus).map((a) => a.seat))];
-  const switchTo = others.map((x) => `<button type="button" data-seat-focus="${x}">${esc(seatName(v, x))} to act ▸</button>`).join('');
+  const rest = draft && !v.choice && !v.outcome ? actionsHtml(ctx, focus, mine) : '';
+  // The panel's width goes back to the map and cards when it would hold nothing to do: the draft (its controls in its
+  // head), a question outside the action phase (its answers over the map), the game's end. In the action phase a
+  // question keeps the panel (its Undo; the map doesn't jump under the hex to pick).
+  const drafting = !!draft && !v.choice && !v.outcome && !/data-action=/.test(rest);
+  const wide = drafting || !!v.outcome || (!!v.choice && !actionPhase(v));
+  ui.root.classList.toggle('wide', wide);
   const body = v.outcome ? '<p class="pa-note">The game is over: New game… (at the top) starts another.</p>'
     : v.choice && v.choice.seat === focus ? '<p class="pa-note">Answer the question above the map first.</p>'
     : v.choice ? `<p class="pa-note">${esc(seatName(v, v.choice.seat))} is answering a question above the map.</p>`
-    : draft ? `<p class="pa-note">${draftFolded ? 'The draft is folded away: ' : ''}Pick from the cards over the map.${draftFolded ? ' <button type="button" data-draft-toggle="1">Show the draft ▴</button>' : ''}</p>${actionsHtml(ctx, focus, mine)}`
+    : draft ? rest
     : actionsHtml(ctx, focus, mine);
-  const phase = v.phase && !v.outcome ? `<small class="pa-phase">${esc(st.text === 'to act' ? (actionPhase(v) ? 'your action phase: use any of these, in any order, then Done' : 'your move') : st.text === 'done' ? 'done for this phase' : '')}</small>` : '';
+  // 326 (Matt, Nov 25): "Your move", no seat number; another seat's name only when one person plays several.
+  const who = solo(v) ? '' : ` · ${seatName(v, focus)}`;
+  const head = v.outcome ? 'Game over' : st.cls === 'act' ? `Your move${who}` : st.text === 'done' ? `Done for this phase${who}` : `Waiting${who}`;
+  const phase = v.phase && !v.outcome && st.text === 'to act' && actionPhase(v) ? '<small class="pa-phase">use any of these, in any order, then Done</small>' : '';
   ui.act.style.setProperty('--tint', tint);
-  ui.act.innerHTML = `<div class="pa-head"><span class="swatch"></span><b>What ${esc(seatName(v, focus))} can do now</b>${st.text ? `<span class="pst ${st.cls}">${st.text}</span>` : ''}${phase}</div>
+  ui.act.innerHTML = wide ? '' : `<div class="pa-head"><span class="swatch"></span><b>${esc(head)}</b>${phase}</div>
     ${undoHtml(ctx.undo, v)}${reminderHtml(ctx, focus, mine)}
     <div class="pa-body">${body}</div>
-    <div class="pa-foot">${pass.join('')}${all}${switchTo}</div>`;
+    <div class="pa-foot">${draft ? '' : foot}</div>`;
 
   ui.turn.innerHTML = turnHtml(board !== v, ctx.replay);
   ui.turn.hidden = !ui.turn.innerHTML.trim();
+  // 326 (Matt, Nov 25): the adversary's turn replays with the cards it replays, not atop the column: right over them
+  // (under them, its ◀ ▶ moved as each step's cards changed height).
+  const cards = ui.pipeline.querySelector('.prow');
+  if (cards) cards.before(ui.turn);
+  else if (ui.turn.nextElementSibling !== ui.adv) ui.adv.before(ui.turn);
+  // Open, it is read a step at a time: in the column's view (it no longer heads the column).
+  if (turn?.open && !ui.turn.hidden) ui.turn.scrollIntoView({ block: 'nearest' });
   ui.turn.classList.toggle('phase-board', board !== v);
   ui.turn.classList.toggle('open', !!turn?.open);
   ui.turn.classList.toggle('replay', !!turn?.open && turn.replay);

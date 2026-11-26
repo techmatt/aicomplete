@@ -10,6 +10,7 @@ the findings are in the write-up.
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 326 solo draft hand 4 (no take); player view: five steps, Your move, no seat numbers, default | 154 | [326_solo_draft_4_and_view_cleanup](results/326_solo_draft_4_and_view_cleanup/README.md) |
 | 325 solo tutorial: 20 prompts to round 2's Liberate; fresh browser opens it; card scenes in play | 153 | [325_solo_tutorial](results/325_solo_tutorial/README.md) |
 | 324 player view for solo: map central, printed cards, a can-do-now panel, undo, adversary replay | 153 | [324_ui_overhaul_solo](results/324_ui_overhaul_solo/README.md) |
 | 323 solo mode: draw 7 take 4, d1 built in; judge 92 / 99.5 / 100% (B / P / R), 4.7-5.9 rounds | 153 | [323_solo_mode](results/323_solo_mode/README.md) |

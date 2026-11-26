@@ -2,7 +2,7 @@
 // Board-track and board-name hovers live with their drawing in panels.ts.
 
 import type { Action, CardView, View } from './engine';
-import { actionLabel, contentIds, countryName, escapeHtml, hexKey, isHex, kindName, strong, tokenColor, tokenName, type LabelContext } from './format';
+import { actionLabel, contentIds, countryName, escapeHtml, hexKey, isHex, kindName, seatText, strong, tokenColor, tokenName, type LabelContext } from './format';
 import { boardDetails, trackStepDetails } from './panels';
 
 function tokenDetails(token: string, hex: string, shown: View, plain = false): string {
@@ -16,7 +16,7 @@ function tokenDetails(token: string, hex: string, shown: View, plain = false): s
   if ((base === 'ambassador' || base === 'tipped') && seat !== 'adversary') {
     const n = h?.tokens.find((x) => x.kind === `ambassador:${seat}`)?.count ?? 0;
     const m = Math.min(n, h?.tokens.find((x) => x.kind === `tipped:${seat}`)?.count ?? 0);
-    return `<b>${n} ambassador${n === 1 ? '' : 's'} (seat ${escapeHtml(seat)})</b>${m ? ` (${m} tipped: moved or acted this round)` : ' (ready: each may move or act this round)'}<br>${key}on ${escapeHtml(countryName(shown, h?.country ?? -1))} #${h?.number} (${escapeHtml(kindName(h?.kind ?? ''))}${at})`;
+    return `<b>${n} ambassador${n === 1 ? '' : 's'} (${escapeHtml(tokenName(`ambassador:${seat}`).replace(/^ambassador \((.*)\)$/, '$1'))})</b>${m ? ` (${m} tipped: moved or acted this round)` : ' (ready: each may move or act this round)'}<br>${key}on ${escapeHtml(countryName(shown, h?.country ?? -1))} #${h?.number} (${escapeHtml(kindName(h?.kind ?? ''))}${at})`;
   }
   return `<b>${escapeHtml(tokenName(token))}</b> × ${tok?.count ?? 0}<br>${key}on ${escapeHtml(countryName(shown, h?.country ?? -1))} #${h?.number} (${escapeHtml(kindName(h?.kind ?? ''))}${at})`;
 }
@@ -71,7 +71,9 @@ function cardDetails(id: string, where: string | undefined, shown: View, plain =
     : [];
   const c = pool.find((x) => x.id === id);
   if (!c) return null;
-  return `<b>${escapeHtml(c.name)}</b>${plain ? '' : ` <code>${escapeHtml(c.id)}</code>`}${c.cost !== undefined ? ` · cost ${c.cost}` : ''}<br>${escapeHtml(c.status)}${c.text ? `<br>${escapeHtml(c.text)}` : ''}${plain ? '' : `<br><small>${escapeHtml(where ?? '')}</small>`}`;
+  // 326: the player view's hover names seats as it does ("Paid: you 2 credits", not "seat 0").
+  const words = (s: string) => (plain ? seatText(s) : s);
+  return `<b>${escapeHtml(c.name)}</b>${plain ? '' : ` <code>${escapeHtml(c.id)}</code>`}${c.cost !== undefined ? ` · cost ${c.cost}` : ''}<br>${escapeHtml(words(c.status))}${c.text ? `<br>${escapeHtml(words(c.text))}` : ''}${plain ? '' : `<br><small>${escapeHtml(where ?? '')}</small>`}`;
 }
 
 /** The tooltip for element `t`, or null if it has none. */

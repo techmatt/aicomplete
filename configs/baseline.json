@@ -176,8 +176,7 @@
         "science_every": 2,
         "industry_every": 3,
         "discount_floor": 0,
-        "no_pass": 0,
-        "take": 0
+        "no_pass": 0
       },
       "cards": [
         "field_grant",

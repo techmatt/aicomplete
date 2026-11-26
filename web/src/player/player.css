@@ -33,8 +33,17 @@ body > #player { flex: 1 1 0; }
 .pdcard { display: flex; flex-direction: column; align-items: center; gap: 0.2em; }
 .pd-note { font-size: 0.85em; color: #555; max-width: 17em; text-align: center; }
 .pd-note .warn { color: var(--warn); }
-/* 323: solo's 7-card hand: each note wraps to its card's width, so the shrinking cards fit one row. */
+/* A hand of over 5 (a 3-seat packet): each note wraps to its card's width, so the shrinking cards fit one row. */
 .pdraft.many .pdcard { width: min-content; }
+/* 326 (Matt, Nov 25): the map and the draft take the right panel's width when it has nothing to do (it said "pick
+   from the cards" in the draft): the draft's Done and seat buttons in its head; folded away, the head alone stays. */
+#player.wide { grid-template-areas: "side main main" "seat seat seat"; }
+#player.wide > #p-act { display: none; }
+.pdraft-acts { display: inline-flex; flex-wrap: wrap; gap: 0.3em; }
+.pdraft-acts .pact.pass { font-size: 1.05em; padding: 0.2em 1em; }
+.pdraft-acts .pass-all, .pdraft-acts [data-seat-focus] { font-size: 0.85em; }
+#p-draft.folded { align-self: start; overflow: visible; padding-bottom: 0.3em; border-bottom: 1px solid var(--line); }
+#p-draft.folded > :not(.pdraft-head) { display: none; }
 .printed-host { flex: none; }
 
 /* ---------- the adversary, always shown ---------- */
@@ -86,7 +95,8 @@ body > #player { flex: 1 1 0; }
 /* 324: a threat as its card: the threat's red edge, the text whole. */
 #p-adv .threat { border: 1px solid #e3cfcf; border-left: 4px solid #8a2a22; border-radius: 4px; background: #fff; padding: 0.1em 0.35em; margin: 0.15em 0; }
 
-/* The adversary's turn, a step at a time, atop the adversary column. */
+/* The adversary's turn, a step at a time: 326, under the adversary's cards it replays. */
+#pipeline #p-turn { margin: 0.3em 0; }
 #p-turn { order: -1; border: 2px solid #e0a100; background: #fff8e6; border-radius: 4px; padding: 0.3em 0.5em; display: flex; flex-direction: column; gap: 0.25em; }
 #p-turn:not(.open) { border-width: 1px; padding: 0.25em; }
 .pturn-head { display: flex; align-items: center; gap: 0.4em; flex-wrap: wrap; }
@@ -102,6 +112,9 @@ body > #player { flex: 1 1 0; }
 .pturn-open { align-self: stretch; text-align: left; }
 .pbeat { color: #7a4f00; }
 #p-turn.phase-board { border-color: #c77700; }
+
+/* 326: the player view's five steps of a round, the current one lit (the engine's phases are the debug view's). */
+.phase.step { font-size: 0.95em; padding: 0.05em 0.6em; }
 
 /* ---------- what you can do now ---------- */
 #p-act { grid-area: act; display: flex; flex-direction: column; border-top: 4px solid var(--tint, var(--line)) !important; }
